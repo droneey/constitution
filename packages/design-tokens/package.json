@@ -2,7 +2,7 @@
   "name": "@droneey/design-tokens",
   "version": "0.0.0",
   "private": true,
-  "description": "The tokens every droneey interface is drawn with, in the W3C Design Tokens format, and the resolver of their modes.",
+  "description": "The tokens every droneey interface is drawn with, in the W3C Design Tokens format, the resolver of their modes, and the runner that builds each platform's theme from them.",
   "license": "SEE LICENSE IN LICENSE.md",
   "author": {
     "name": "Dmytro Kurovskyi",
@@ -15,20 +15,40 @@
     "directory": "packages/design-tokens"
   },
   "type": "module",
+  "bin": {
+    "design-tokens": "./src/entrypoints/design-build/main.ts"
+  },
   "exports": {
+    ".": "./src/index.ts",
     "./tokens/*": "./tokens/*"
   },
+  "imports": {
+    "#/*": "./src/*"
+  },
   "scripts": {
+    "lint:check": "biome check --error-on-warnings",
+    "lint:fix": "biome check --write",
+    "type:check": "tsc -b",
     "test": "CI=1 bun test",
-    "architecture:check": "depcruise tests --config .dependency-cruiser.mjs",
-    "unused:check": "knip --no-config-hints && knip --strict --no-config-hints"
+    "mutation:check": "mutation-check",
+    "mutation:all": "mutation-check all",
+    "architecture:check": "depcruise src tests --config .dependency-cruiser.mjs",
+    "unused:check": "knip --no-config-hints && knip --strict --no-config-hints",
+    "markdown:check": "rumdl check . && rumdl fmt --check .",
+    "markdown:fix": "rumdl check --fix",
+    "yaml:check": "yamllint --strict ."
+  },
+  "dependencies": {
+    "style-dictionary": "^5.7.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.5.15",
+    "@droneey/mutation-check": "workspace:*",
+    "@stryker-mutator/core": "10.0.0",
     "@types/bun": "1.4.3",
     "colorjs.io": "0.7.1",
     "dependency-cruiser": "18.6.0",
     "knip": "6.41.0",
-    "style-dictionary": "5.7.0",
     "typescript": "7.0.2"
   }
 }

@@ -16,7 +16,7 @@ An executable script names the shell it is written for on its first line: `#!/us
 
 ### shell-file-ends-in-sh → format-has-one-extension · SHOULD
 
-A shell file ends in `.sh`; a command installed on a user's path under its own name is built or linked from such a file.
+A shell file ends in **`.sh`**; a command installed on a user's path under its own name is built or linked from such a file.
 
 | Why | Tags |
 |---|---|

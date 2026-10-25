@@ -16,7 +16,7 @@ The program awaits each Ink app's `waitUntilExit()` and unmounts it on every way
 
 ### ink-interrupt-ends-the-run-as-interrupted → interrupt-ends-the-run-promptly · MUST
 
-An app that reads keys is rendered with `exitOnCtrlC: false`, and its Ctrl-C ends the run as an interrupt, through the program's own stopping, with the interrupt's exit code.
+An app that reads keys is rendered with **`exitOnCtrlC`** set to `false`, and its Ctrl-C ends the run as an interrupt, through the program's own stopping, with the interrupt's exit code.
 
 | Why | Tags |
 |---|---|

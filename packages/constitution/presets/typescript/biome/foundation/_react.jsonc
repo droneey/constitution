@@ -49,8 +49,44 @@
           },
           "style": {
             "useFragmentSyntax": "error",
-            "useComponentExportOnlyModules": "error",
+            "useComponentExportOnlyModules": "off",
             "useReactFunctionComponents": "error",
+            "useNamingConvention": {
+              "level": "error",
+              "options": {
+                "conventions": [
+                  {
+                    "selector": {
+                      "kind": "typeParameter",
+                    },
+                    "match": "T([A-Z].*)?",
+                    "formats": [
+                      "PascalCase",
+                    ],
+                  },
+                  {
+                    "selector": {
+                      "kind": "objectLiteralProperty",
+                    },
+                    "match": "[_$]*([^_$].*?)[_$]*",
+                    "formats": [
+                      "camelCase",
+                      "PascalCase",
+                    ],
+                  },
+                  {
+                    "selector": {
+                      "kind": "typeProperty",
+                    },
+                    "match": "[_$]*([^_$].*?)[_$]*",
+                    "formats": [
+                      "camelCase",
+                      "PascalCase",
+                    ],
+                  },
+                ],
+              },
+            },
             "useConsistentCurlyBraces": "error",
             "useSelfClosingElements": "error",
           },
@@ -82,6 +118,18 @@
     "./.droneey/constitution/presets/typescript/biome/foundation/plugins/modern-react-api-only.grit",
     {
       "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/nothing-rendered-as-null.grit",
+      "includes": [
+        "**/*.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/compound-parts-share-the-root-context.grit",
+      "includes": [
+        "**/*.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/file-is-one-semantic-unit.grit",
       "includes": [
         "**/*.tsx",
       ],

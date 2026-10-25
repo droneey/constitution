@@ -1,6 +1,6 @@
 # constitution.yaml
 
-> The file at a project's root that names its blocks, its packs, its check and its overrides.
+> The file at a project's root, and in each member of its workspace, that names its blocks, its packs, its overrides and, at the root, its check.
 
 ```yaml
 axes:
@@ -25,14 +25,13 @@ implementations:
   - biome
   - bun
   - git
-packages: {}
 packs:
   - constitution
 check: bun run check
 overrides: []
 ```
 
-Every key is required; a missing or an unknown key is a warning in the digest. `/constitution:ratify` writes them in this order.
+Every key is required; a missing or an unknown key is a warning in the digest. `/constitution:ratify` writes them in this order. A member of a workspace keeps a file of its own, of every key but `check`: [members of a workspace](#members-of-a-workspace).
 
 ## Keys
 
@@ -43,9 +42,8 @@ Every key is required; a missing or an unknown key is a warning in the digest. `
 | `platforms` | the ids of its platform blocks | `[]` |
 | `languages` | the ids of its language blocks | `[]` |
 | `implementations` | the ids of its library, tool and service blocks | `[]` |
-| `packages` | every package of a workspace, each with the blocks it adds | `{}` |
-| `packs` | the folders of blocks it follows beside the Constitution's, relative to the root | `[]` |
-| `check` | the command that runs every check | `null` |
+| `packs` | the folders of blocks it follows beside the Constitution's, relative to the file's folder | `[]` |
+| `check` | the command that runs every check; at the root alone | `null` |
 | `overrides` | the rules it lowers | `[]` |
 
 Core is never listed: it is always active. An abstract block, whose id starts with `_`, is never listed either; the blocks that extend it are.
@@ -69,31 +67,6 @@ What the project is written in. [The languages](../../packages/constitution/bloc
 ## implementations
 
 The libraries, tools and services the project installs, runs or reaches. [The implementations](../../packages/constitution/blocks/implementations) are the blocks to list, and [Choose the blocks](../guides/choose-blocks.md) says how to find each layer's.
-
-## packages
-
-Each unit is a path, two spaces in; its keys sit four spaces in and add to the repository's for the files under that path:
-
-```yaml
-packages:
-  apps/web:
-    axes:
-      - architecture
-    domains:
-      - ui
-      - untrusted-client
-    platforms:
-      - browser
-    languages:
-      - html
-    implementations:
-      - react-dom
-    overrides: []
-```
-
-A unit takes `axes`, `domains`, `platforms`, `languages`, `implementations` and `overrides`. Its `axes` replace the repository's; without them it follows the repository's.
-
-Every package of the workspace is listed, and one that adds nothing is written `<path>: {}`: the hook knows a package's folder only by its path here, so a folder that keeps a tool's configuration of its own and that no path names gets a `wiring` warning in the digest.
 
 ## packs
 
@@ -121,6 +94,36 @@ overrides:
 | `until` | optional; a date, `YYYY-MM-DD`, after which the override lowers nothing |
 
 [Override a rule](../guides/override-a-rule.md) explains what an override does.
+
+## Members of a workspace
+
+Each member of the workspace keeps a `constitution.yaml` in its own folder, with every key of the root's but `check`:
+
+```yaml
+axes:
+  - architecture
+domains:
+  - ui
+  - untrusted-client
+  - version-control
+platforms:
+  - browser
+languages:
+  - typescript
+  - html
+implementations:
+  - react-dom
+  - biome
+  - git
+packs: []
+overrides: []
+```
+
+The members are the folders the workspace declares: the globs of `workspaces` in the root's `package.json` that reach a folder holding a `package.json`, and those of `members` of `[tool.uv.workspace]` in the root's `pyproject.toml` that reach a folder holding a `pyproject.toml`; a glob after `!`, or under uv's `exclude`, leaves its folders out. Nothing passes from one file to another: a member follows only the axes, blocks, packs and overrides its own file lists, so it names the repository's blocks it follows too, and lists a pack by its path from its own folder. The root's file covers the files no member holds.
+
+A member with no `constitution.yaml`, or one that cannot be read or does not parse, is a `config` warning in the digest and in `constitution presets check`, and its files follow no block. A `packages` key, which listed the members' blocks in the root's file before, is a warning too: each member's blocks go into its own file.
+
+The project is the farthest folder with a `constitution.yaml`, up to the root of its repository, from where a session starts or a command runs.
 
 ## The YAML it reads
 

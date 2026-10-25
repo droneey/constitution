@@ -31,9 +31,17 @@ const attempted = <TOutcome>(input: {
   return outcome;
 };
 
-// A failure the operating system reports, which carries its code: ENOENT, EACCES, ELOOP.
-const isSystemError = (error: unknown): boolean => error instanceof Error && 'code' in error;
-
 const isSyntaxError = (error: unknown): boolean => error instanceof SyntaxError;
 
-export { attempted, isSyntaxError, isSystemError, recognisedFailure };
+/** The syntax error a parse failed with; any other failure is rethrown. */
+const syntaxErrorOf = (error: unknown): SyntaxError => {
+  if (error instanceof SyntaxError) {
+    return error;
+  }
+
+  throw error;
+};
+
+const isRangeError = (error: unknown): boolean => error instanceof RangeError;
+
+export { attempted, isRangeError, isSyntaxError, recognisedFailure, syntaxErrorOf };

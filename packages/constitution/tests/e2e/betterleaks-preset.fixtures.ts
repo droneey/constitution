@@ -16,27 +16,28 @@ interface Scan {
   output: string;
 }
 
-const REPOSITORY = join(import.meta.dir, '..', '..');
-const BETTERLEAKS = miseBinary('betterleaks');
+const repository = join(import.meta.dir, '..', '..');
+const betterleaks = miseBinary('betterleaks');
 
 // A token of GitHub's shape, drawn at random on each run: no source file holds
 // one, and a random body carries the entropy the scanner looks for.
 const TOKEN_BYTES = 48;
 const TOKEN_BODY_LENGTH = 36;
-const TOKEN = `ghp_${randomBytes(TOKEN_BYTES)
+const token = `ghp_${randomBytes(TOKEN_BYTES)
   .toString('base64')
   .replaceAll(/[^A-Za-z0-9]/g, '')
   .slice(0, TOKEN_BODY_LENGTH)}`;
 
 // The dependency a lockfile names, joined at run time: written out, this file
 // would hold the very line the preset lets through in bun.lock only.
-const PASSWORD_PACKAGE = [
+const passwordPackage = [
   '@inquirer',
   'password',
 ].join('/');
 
 const scanStaged = (project: Project): Scan => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-betterleaks-'));
+
   const git = (args: readonly string[]): void => {
     spawnSync(
       'git',
@@ -53,8 +54,9 @@ const scanStaged = (project: Project): Scan => {
     'init',
     '--quiet',
   ]);
+
   mkdirSync(join(folder, '.droneey'));
-  symlinkSync(REPOSITORY, join(folder, '.droneey', 'constitution'));
+  symlinkSync(repository, join(folder, '.droneey', 'constitution'));
   writeFileSync(
     join(folder, '.betterleaks.toml'),
     '[extend]\npath = ".droneey/constitution/presets/common/betterleaks/foundation/core.toml"\n',
@@ -77,7 +79,7 @@ const scanStaged = (project: Project): Scan => {
         hook: Hook.PreCommit,
         job: 'secrets',
         part: 'betterleaks',
-      }).replace(/^betterleaks /, `"${BETTERLEAKS}" `),
+      }).replace(/^betterleaks /, `"${betterleaks}" `),
     ],
     {
       cwd: folder,
@@ -96,4 +98,4 @@ const scanStaged = (project: Project): Scan => {
   };
 };
 
-export { PASSWORD_PACKAGE, scanStaged, TOKEN };
+export { passwordPackage, scanStaged, token };

@@ -5,8 +5,8 @@ import { join } from 'node:path';
 
 import { miseBinary } from './mise.fixtures';
 
-const REPOSITORY = join(import.meta.dir, '..', '..');
-const OSV_SCANNER = miseBinary('osv-scanner');
+const repository = join(import.meta.dir, '..', '..');
+const osvScanner = miseBinary('osv-scanner');
 const REFUSED = /not recognized as spdx: (?<ids>.+)$/m;
 const ACCEPTED = 'cannot retrieve licenses locally';
 
@@ -15,8 +15,8 @@ interface Verdict {
   refused: readonly string[];
 }
 
-const ALLOWLIST = readFileSync(
-  join(REPOSITORY, 'presets', 'common', 'osv-scanner', 'foundation', 'core.txt'),
+const allowlist = readFileSync(
+  join(repository, 'presets', 'common', 'osv-scanner', 'foundation', 'core.txt'),
   'utf8',
 )
   .trim()
@@ -27,7 +27,7 @@ const ALLOWLIST = readFileSync(
 const verdictOn = (licences: readonly string[]): Verdict => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-osv-scanner-'));
   const scanning = spawnSync(
-    OSV_SCANNER,
+    osvScanner,
     [
       'scan',
       'source',
@@ -52,4 +52,4 @@ const verdictOn = (licences: readonly string[]): Verdict => {
   };
 };
 
-export { ALLOWLIST, verdictOn };
+export { allowlist, verdictOn };

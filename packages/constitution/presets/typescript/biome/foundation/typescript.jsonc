@@ -112,7 +112,8 @@
         "useExplicitReturnType": "error",
         "useDisposables": "error",
         "noUnsafePlusOperands": "error",
-        "noBaseToString": "error",
+        // Biome 2.5.15 reads a type that shares its name with its companion object as that object, and reports its values.
+        "noBaseToString": "off",
         "noMisleadingReturnType": "error",
         "noFloatingPromises": "error",
         "noMisusedPromises": "error",
@@ -139,6 +140,13 @@
     },
     {
       "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/closed-name-set-is-a-string-enum.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/identifier-case-by-kind.grit",
       "includes": [
         "**/*.ts",
         "**/*.tsx",

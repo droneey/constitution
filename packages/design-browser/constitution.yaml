@@ -1,0 +1,33 @@
+axes:
+  - architecture
+  - workflow
+domains:
+  - workspace
+  - ui
+  - design-system
+  - untrusted-client
+platforms:
+  - browser
+languages:
+  - typescript
+  - json
+  - toml
+  - yaml
+  - markdown
+  - html
+  - css
+implementations:
+  - bun
+  - tsc
+  - biome
+  - dependency-cruiser
+  - knip
+  - rumdl
+  - yamllint
+  - bun-test
+  - stryker
+  - react-dom
+  - tailwind
+  - testing-library
+packs: []
+overrides: []

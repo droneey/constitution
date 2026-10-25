@@ -5,13 +5,12 @@ requires: [cli]
 extends: _react
 abstract: false
 languages: []
-dictionary: [Ink, ink-testing-library, useAnimation, isScreenReaderEnabled, exitOnCtrlC]
 governs: ["**/*.tsx", "**/*.hooks.ts"]
 ---
 
 # Ink
 
-> React rendering to a terminal: a tree of boxes and text laid out by flexbox, redrawn as one frame, and read from the keyboard.
+> React rendering to a terminal through **Ink**: a tree of boxes and text laid out by flexbox, redrawn as one frame, and read from the keyboard.
 
 ## Requirements
 

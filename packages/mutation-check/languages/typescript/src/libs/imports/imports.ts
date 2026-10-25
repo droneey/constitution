@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { dirname, extname, isAbsolute, relative, resolve } from 'node:path';
 
-const LOADERS = new Map<string, Bun.JavaScriptLoader>([
+const loaders = new Map<string, Bun.JavaScriptLoader>([
   [
     '.ts',
     'ts',
@@ -12,7 +12,7 @@ const LOADERS = new Map<string, Bun.JavaScriptLoader>([
   ],
 ]);
 
-const loaderOf = (path: string): Bun.JavaScriptLoader | undefined => LOADERS.get(extname(path));
+const loaderOf = (path: string): Bun.JavaScriptLoader | undefined => loaders.get(extname(path));
 
 const importsOf = (path: string): readonly string[] => {
   const loader = loaderOf(path);

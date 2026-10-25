@@ -36,7 +36,7 @@ grep -rn "^### <slug> " "<repository root>/.droneey/constitution/blocks" <each p
 
 ### 2. Add, change or remove
 
-Look for an override of this rule in the scope the owner means — the top-level `overrides`, or those under a unit in `packages:`.
+Look for an override of this rule in the scope the owner means — the `overrides` of the root's `constitution.yaml`, or of a member's in its folder.
 
 - **None there**: this adds one. Go on with steps 3 to 6.
 - **One there**: show it and ask whether to change it or remove it. To change it, ask only for the fields the owner wants changed and keep the rest. To remove it, go to step 7.
@@ -55,13 +55,11 @@ Ask whether the override ends on a date. It is optional; when given, it is a dat
 
 ### 6. The scope
 
-Ask whether the override applies to the whole repository or to one unit — one of the paths under `packages:`. An override under a unit applies to the files under its path only.
+Ask whether the override applies to the repository's own files or to one member of its workspace. Each `constitution.yaml` lowers the rule only for the files of its unit: the root's for the files no member holds, a member's for the files under its folder; nothing passes from one to another, so a rule lowered in several units is lowered in each one's file.
 
 ### 7. Show the change, then write
 
-Show the exact lines you will add, change or remove in `constitution.yaml`, and ask for a yes for this override. Write only after that yes.
-
-An override at the top level:
+Show the exact lines you will add, change or remove in the unit's `constitution.yaml`, and ask for a yes for this override. Write only after that yes. An override has one shape in every unit's file:
 
 ```yaml
 overrides:
@@ -71,23 +69,11 @@ overrides:
     until: 2026-12-31
 ```
 
-Under a unit, the same shape two levels deeper:
-
-```yaml
-packages:
-  apps/web:
-    implementations: [react-dom]
-    overrides:
-      - rule: data-view-shows-every-state
-        level: MAY
-        reason: "The kit renders the states its caller passes"
-```
-
 The hook reads a fixed subset of YAML, so keep this form exactly:
 
 - `- rule:` opens an override, and `level:`, `reason:` and `until:` sit two spaces deeper than its `-`; omit `until:` when there is no date;
 - the reason is double-quoted, with a `"` or `\` inside it written as `\"` or `\\`;
-- `overrides: []` becomes `overrides:` with the entries below it; when the last top-level override goes, write `overrides: []` again; when the last override of a unit goes, remove its `overrides:` line;
+- `overrides: []` becomes `overrides:` with the entries below it; when the last override of the file goes, write `overrides: []` again;
 - change nothing else in the file.
 
 ### 8. Check it

@@ -1,10 +1,10 @@
-import { Icon, IconName } from '@droneey/design-web/react-dom';
+import { Icon, IconName } from '@droneey/design-browser/react-dom';
 import type { Item } from 'fumadocs-core/page-tree';
 import type { LoaderPlugin } from 'fumadocs-core/source';
 
-import { docsRoute, mainContentId } from '#/shared/constants';
+import { DOCS_ROUTE, MAIN_CONTENT_ID } from '#/shared/constants';
 
-import { isPassportPath, pageSlugsOf } from '../../domain/utils';
+import { isPassportPath, pageSlugsOf } from '../../domain/entities';
 
 interface MarkdownPage {
   data: {
@@ -14,11 +14,10 @@ interface MarkdownPage {
   url: string;
 }
 
-/** a page's path in its collection, by the path the site serves it under */
-const collectionPaths = new Map<string, string>();
+const collectionPathsBySitePath = new Map<string, string>();
 
 /** records each file's path in its collection, for `collectionPathOf` */
-const renamed = <
+const servedUnderSitePaths = <
   TSource extends {
     files: {
       path: string;
@@ -26,13 +25,14 @@ const renamed = <
   },
 >(
   from: TSource,
-  pathOf: (path: string) => string,
+  sitePathOf: (path: string) => string,
 ): TSource => ({
   ...from,
   files: from.files.map((file) => {
-    const path = pathOf(file.path);
+    const path = sitePathOf(file.path);
 
-    collectionPaths.set(path, file.path);
+    collectionPathsBySitePath.set(path, file.path);
+
     return {
       ...file,
       path,
@@ -43,20 +43,20 @@ const renamed = <
 const passportAsIndex = (path: string): string =>
   `${pageSlugsOf(path).join('/')}${isPassportPath(path) ? '/index' : ''}.md`;
 
-const collectionPathOf = (path: string): string => collectionPaths.get(path) ?? path;
+const collectionPathOf = (path: string): string => collectionPathsBySitePath.get(path) ?? path;
 
 /**
  * A link to a whole page leads to its main region, since the library places a page, for its
  * breadcrumbs, its neighbours and the open folder, at the first entry of its address.
  */
 const crossLinked = (node: Item, path: string | undefined): Item => {
-  if (path !== undefined || node.external === true || !node.url.startsWith(docsRoute)) {
+  if (path !== undefined || node.external === true || !node.url.startsWith(DOCS_ROUTE)) {
     return node;
   }
 
   return {
     ...node,
-    url: node.url.includes('#') ? node.url : `${node.url}#${mainContentId}`,
+    url: node.url.includes('#') ? node.url : `${node.url}#${MAIN_CONTENT_ID}`,
     name: (
       <>
         {node.name}
@@ -83,4 +83,4 @@ const markdownOfPage = async (
 
 ${await page.data.getText('processed')}`;
 
-export { collectionPathOf, crossLinks, markdownOfPage, passportAsIndex, renamed };
+export { collectionPathOf, crossLinks, markdownOfPage, passportAsIndex, servedUnderSitePaths };

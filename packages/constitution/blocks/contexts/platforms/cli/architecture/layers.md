@@ -24,16 +24,8 @@ The library that parses the command line has its home past the edge in the comma
 
 ### command-is-its-operations-binding-unit → delivery-unit-beside-what-it-serves · SHOULD
 
-A command is the binding unit of the operation it runs: one file carrying the `cli` role in the language's spelling, in that operation's folder of the application layer — `use-cases/{queries,commands}/<op>/` of the feature, or of the composition module whose features it composes; no folder of the tree gathers the commands.
+A command is the binding unit of the operation it runs: one file carrying the role suffix **`.cli`** in the language's spelling, in that operation's folder of the application layer — `use-cases/{queries,commands}/<op>/` of the feature, or of the composition module whose features it composes; no folder of the tree gathers the commands.
 
 | Why | Tags |
 |---|---|
 | a command changes with its operation and is found beside it, as a binding unit of any other interface is; a folder that gathers commands names the platform the whole program already is. | [] |
-
-### command-built-by-a-factory-the-root-calls → delivery-unit-stays-thin · SHOULD
-
-Each command file exports a factory named after its command in the language's spelling, which builds the command from the context it is handed; the root builds the context, calls each factory and registers the command it returns.
-
-| Why | Tags |
-|---|---|
-| a command receives what it needs from the root, the root lists every command the program answers, and a spec builds a command with fakes. | [] |

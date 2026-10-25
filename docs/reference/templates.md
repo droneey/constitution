@@ -28,6 +28,7 @@ Every tool with [parts](presets.md) has a fragment of its configuration that sho
 | `<chain end>` | the part none of the others extends |
 | `<copied parts>` | the content of each part, unchanged save `<package>`, filled as below, each between its own lines `# from <path>` and `# end <path>` |
 | `<name>`, `<package>` | the project's name, and the import package of its code |
+| `<unit folders>` | at the root of a workspace, each folder its members lie in, one entry each; left out with its entry elsewhere |
 | `<Dockerfile>` | the path of the Dockerfile a task of `mise.toml` names, proposed from the repository and asked of the owner |
 | `<compose files>` | the paths of the Compose files a task of `mise.toml` names, proposed from the repository and asked of the owner |
 | `<every other task the fragments give, in order>` | in poe's `check`, every other task the fragments give, in the order printed |

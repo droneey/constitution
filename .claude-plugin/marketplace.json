@@ -6,7 +6,7 @@
     "url": "https://kurovskyi.dev"
   },
   "metadata": {
-    "description": "The plugins of droneey: the Constitution every repository is built by."
+    "description": "We create, we use, we share."
   },
   "plugins": [
     {
@@ -17,7 +17,7 @@
         "path": "packages/constitution",
         "ref": "v0.80.0"
       },
-      "description": "The rules every Droneey repository is built by, declared per project in constitution.yaml."
+      "description": "Rules written in blood. For every project."
     }
   ]
 }

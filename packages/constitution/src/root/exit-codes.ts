@@ -5,10 +5,11 @@ enum ExitCode {
   Failure = 1,
   // an unknown command, a bad flag
   Usage = 2,
-  // the program's own defect
   Defect = 70,
   // ended by an interrupt, SIGINT: 128 + 2
   Interrupted = 130,
+  // its reader closed standard output, SIGPIPE: 128 + 13
+  ClosedPipe = 141,
   // ended by a termination request, SIGTERM: 128 + 15
   Terminated = 143,
 }

@@ -35,4 +35,4 @@ Both listen on `127.0.0.1:3000`, or on `DOCS_PORT`. The image builds from the re
 | `content/examples` | one example per rule, `<slug>.md`, shown at the foot of its card |
 | `docker`, `compose.yaml`, `scripts` | the image, its Compose services and the script that runs them |
 
-The site's look is `@droneey/design-web`'s: its stylesheet, its Tailwind theme and its components, icons and popover through `@droneey/design-web/react-dom`, with the site's own Fumadocs skin over them, and the repository's accent, `brand.tokens.json` at its root, which the root route hands to its `ThemeProvider`.
+The site's look is `@droneey/design-browser`'s: its stylesheet, its Tailwind theme and its components, icons and popover through `@droneey/design-browser/react-dom`, with the site's own Fumadocs skin over them, and the repository's accent, `brand.tokens.json` at its root, which the root route hands to its `ThemeProvider`.

@@ -8,7 +8,7 @@ declare global {
   };
 }
 
-const WIDE = globalThis.innerWidth;
+const wideWidth = globalThis.innerWidth;
 
 /** in CSS pixels */
 const viewportOf = (width: number): void => {
@@ -18,7 +18,8 @@ const viewportOf = (width: number): void => {
 };
 
 afterEach(() => {
-  viewportOf(WIDE);
+  viewportOf(wideWidth);
+
   delete document.documentElement.dataset.sidebar;
 });
 
@@ -43,26 +44,25 @@ describe('documentFrame', () => {
     expect(isNarrow).toBe(narrow);
   });
 
-  test.each([
-    {
-      collapsed: true,
-      state: 'collapsed',
-    },
-    {
-      collapsed: false,
-      state: 'open',
-    },
-  ])(
-    'should set the document data-sidebar to $state when the sidebar collapsed is $collapsed',
-    ({ collapsed, state }) => {
-      // Arrange
-      const root = document.documentElement;
+  test('should set the document data-sidebar to collapsed when it marks the sidebar collapsed', () => {
+    // Arrange
+    const root = document.documentElement;
 
-      // Act
-      documentFrame.markSidebar(collapsed);
+    // Act
+    documentFrame.markSidebarCollapsed();
 
-      // Assert
-      expect(root.dataset.sidebar).toBe(state);
-    },
-  );
+    // Assert
+    expect(root.dataset.sidebar).toBe('collapsed');
+  });
+
+  test('should set the document data-sidebar to open when it marks the sidebar open', () => {
+    // Arrange
+    const root = document.documentElement;
+
+    // Act
+    documentFrame.markSidebarOpen();
+
+    // Assert
+    expect(root.dataset.sidebar).toBe('open');
+  });
 });

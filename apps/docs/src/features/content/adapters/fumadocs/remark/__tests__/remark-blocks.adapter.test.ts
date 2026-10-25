@@ -24,12 +24,12 @@ import {
   whyOf,
 } from './remark-blocks.adapter.fixtures';
 
-const NO_OPTIONS: BlocksOptions = {
+const noOptions: BlocksOptions = {
   addresses: new Map(),
   examples: new Map(),
 };
 
-const ADDRESSES = new Map([
+const ruleAddresses = new Map([
   [
     'name-says-what',
     '/docs/core/names#name-says-what',
@@ -137,7 +137,7 @@ describe('remarkBlocks', () => {
     ({ card, examples, tree }) => {
       // Arrange
       const options = {
-        addresses: ADDRESSES,
+        addresses: ruleAddresses,
         examples,
       };
 
@@ -193,7 +193,7 @@ describe('remarkBlocks', () => {
       const tree = treeOf(heading);
 
       // Act
-      remarkBlocks(NO_OPTIONS)(tree);
+      remarkBlocks(noOptions)(tree);
 
       // Assert
       expect([
@@ -247,7 +247,7 @@ describe('remarkBlocks', () => {
     };
 
     // Act
-    remarkBlocks(NO_OPTIONS)(tree);
+    remarkBlocks(noOptions)(tree);
 
     // Assert
     expect(textsOf(partsOf(tree, 'rule-tag'))).toStrictEqual(tags);
@@ -307,7 +307,7 @@ describe('remarkBlocks', () => {
       };
 
       // Act
-      remarkBlocks(NO_OPTIONS)(tree);
+      remarkBlocks(noOptions)(tree);
 
       // Assert
       expect(partOf(tree, 'rule-why')).toStrictEqual(why);
@@ -346,7 +346,7 @@ describe('remarkBlocks', () => {
 
       // Act
       remarkBlocks({
-        addresses: ADDRESSES,
+        addresses: ruleAddresses,
         examples: new Map(),
       })(tree);
 
@@ -412,7 +412,7 @@ describe('remarkBlocks', () => {
       const tree = treeOf(markdown);
 
       // Act
-      remarkBlocks(NO_OPTIONS)(tree);
+      remarkBlocks(noOptions)(tree);
 
       // Assert
       expect(outlineOf(tree)).toStrictEqual(outline);
@@ -424,7 +424,7 @@ describe('remarkBlocks', () => {
     const tree = treeOf('### **name-says-what**![mark](mark.png) · MUST');
 
     // Act
-    remarkBlocks(NO_OPTIONS)(tree);
+    remarkBlocks(noOptions)(tree);
 
     // Assert
     expect(outlineOf(tree)).toStrictEqual([
@@ -440,7 +440,7 @@ describe('remarkBlocks', () => {
     const tree = treeOf('## second-level · MUST\n\n#### fourth-level · MUST\n\nText.');
 
     // Act
-    remarkBlocks(NO_OPTIONS)(tree);
+    remarkBlocks(noOptions)(tree);
 
     // Assert
     expect(tree).toStrictEqual(
@@ -453,7 +453,7 @@ describe('remarkBlocks', () => {
     const tree = treeOf('# Names\n\n> Governs names.\n\nIntro.');
 
     // Act
-    remarkBlocks(NO_OPTIONS)(tree);
+    remarkBlocks(noOptions)(tree);
 
     // Assert
     expect(tree).toStrictEqual(treeOf('Intro.'));
@@ -467,7 +467,7 @@ describe('remarkBlocks', () => {
 
     // Act
     remarkBlocks({
-      addresses: ADDRESSES,
+      addresses: ruleAddresses,
       examples: new Map(),
     })(tree);
 

@@ -1,31 +1,34 @@
 import { describe, expect, it } from 'bun:test';
 
-import { attempted, isSyntaxError, isSystemError, recognisedFailure } from '../failures.utils';
+import {
+  attempted,
+  isRangeError,
+  isSyntaxError,
+  recognisedFailure,
+  syntaxErrorOf,
+} from '../failures.utils';
 
-const SYSTEM_ERROR = Object.assign(new Error('no such file'), {
-  code: 'ENOENT',
-});
-const SYNTAX_ERROR = new SyntaxError('Unexpected token');
-const DEFECT = new TypeError('undefined is not a function');
+const syntaxError = new SyntaxError('Unexpected token');
+const defect = new TypeError('undefined is not a function');
 
 describe('recognisedFailure', () => {
   it('should give back the failure when the catch recognises it', () => {
     // Arrange
-    const error = SYSTEM_ERROR;
+    const error = syntaxError;
 
     // Act
     const failure = recognisedFailure({
       error,
-      isRecognised: isSystemError,
+      isRecognised: isSyntaxError,
     });
 
     // Assert
-    expect(failure).toBe(SYSTEM_ERROR);
+    expect(failure).toBe(syntaxError);
   });
 
   it('should rethrow the failure when the catch does not recognise it', async () => {
     // Arrange
-    const error = DEFECT;
+    const error = defect;
 
     // Act
     const outcome = Promise.try(() =>
@@ -36,7 +39,7 @@ describe('recognisedFailure', () => {
     );
 
     // Assert
-    await expect(outcome).rejects.toBe(DEFECT);
+    await expect(outcome).rejects.toBe(defect);
   });
 });
 
@@ -50,7 +53,7 @@ describe('attempted', () => {
     {
       condition: 'the effect fails as the caller expects',
       effect: (): string => {
-        throw SYNTAX_ERROR;
+        throw syntaxError;
       },
       outcome: undefined,
     },
@@ -71,7 +74,7 @@ describe('attempted', () => {
   it('should rethrow the failure when the effect fails as the caller does not expect', async () => {
     // Arrange
     const effect = (): string => {
-      throw DEFECT;
+      throw defect;
     };
 
     // Act
@@ -83,36 +86,7 @@ describe('attempted', () => {
     );
 
     // Assert
-    await expect(outcome).rejects.toBe(DEFECT);
-  });
-});
-
-describe('isSystemError', () => {
-  it.each([
-    {
-      condition: 'the error carries a code',
-      error: SYSTEM_ERROR,
-      isSystem: true,
-    },
-    {
-      condition: 'the error carries none',
-      error: DEFECT,
-      isSystem: false,
-    },
-    {
-      condition: 'the thrown value is no error',
-      error: 'ENOENT',
-      isSystem: false,
-    },
-  ])('should say $isSystem when $condition', ({ error, isSystem }) => {
-    // Arrange
-    const thrown: unknown = error;
-
-    // Act
-    const answer = isSystemError(thrown);
-
-    // Assert
-    expect(answer).toBe(isSystem);
+    await expect(outcome).rejects.toBe(defect);
   });
 });
 
@@ -120,12 +94,12 @@ describe('isSyntaxError', () => {
   it.each([
     {
       condition: 'the error is a syntax error',
-      error: SYNTAX_ERROR,
+      error: syntaxError,
       isSyntax: true,
     },
     {
       condition: 'the error is another',
-      error: DEFECT,
+      error: defect,
       isSyntax: false,
     },
   ])('should say $isSyntax when $condition', ({ error, isSyntax }) => {
@@ -137,5 +111,53 @@ describe('isSyntaxError', () => {
 
     // Assert
     expect(answer).toBe(isSyntax);
+  });
+});
+
+describe('isRangeError', () => {
+  it.each([
+    {
+      condition: 'the error is a range error',
+      error: new RangeError('invalid date'),
+      isRange: true,
+    },
+    {
+      condition: 'the error is another',
+      error: defect,
+      isRange: false,
+    },
+  ])('should say $isRange when $condition', ({ error, isRange }) => {
+    // Arrange
+    const thrown: unknown = error;
+
+    // Act
+    const answer = isRangeError(thrown);
+
+    // Assert
+    expect(answer).toBe(isRange);
+  });
+});
+
+describe('syntaxErrorOf', () => {
+  it('should give back a syntax error when a parse failed with one', () => {
+    // Arrange
+    const thrown: unknown = syntaxError;
+
+    // Act
+    const failure = syntaxErrorOf(thrown);
+
+    // Assert
+    expect(failure).toBe(syntaxError);
+  });
+
+  it('should rethrow any other failure when a parse failed with it', async () => {
+    // Arrange
+    const thrown: unknown = defect;
+
+    // Act
+    const outcome = Promise.try(() => syntaxErrorOf(thrown));
+
+    // Assert
+    await expect(outcome).rejects.toBe(defect);
   });
 });

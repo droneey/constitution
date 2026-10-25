@@ -27,3 +27,11 @@ A TypeScript package imports the data it needs at run time from its single sourc
 | Why | Tags |
 |---|---|
 | Bun 1.4.3 parses a YAML or JSON file at import and writes its content into the bundle, so the built package runs without the file, while a published source would import a file its consumer never installs. | [] |
+
+### install-settings-only-in-the-root → new-release-adopted-after-a-cooldown · MUST
+
+The root's `bunfig.toml` holds the `[install]` of the whole workspace; no package's `bunfig.toml` holds an `[install]`.
+
+| Why | Tags |
+|---|---|
+| Bun 1.4.3 installs the workspace into its one lockfile by the root's `[install]`, from the root and from a package alike, and ignores a package's, so a cooldown written in a package holds nothing while it reads as held. | [] |

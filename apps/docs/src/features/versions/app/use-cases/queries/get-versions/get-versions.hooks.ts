@@ -1,43 +1,33 @@
 import { use, useEffect, useState } from 'react';
 
-import type { Versions } from '../../../../domain/entities';
 import { GetVersionsContext } from '../../../providers';
+import { VersionsStatus } from './get-versions.constants';
+import type { VersionsState } from './get-versions.types';
 
-export type Releases =
-  | {
-      status: 'loading';
-    }
-  | {
-      status: 'failed';
-    }
-  | ({
-      status: 'loaded';
-    } & Versions);
-
-/** read once the caller mounts */
-export function useVersions(): Releases {
+export function useGetVersions(): VersionsState {
   const getVersions = use(GetVersionsContext);
-  const [releases, setReleases] = useState<Releases>({
-    status: 'loading',
+  const [versionsState, setVersionsState] = useState<VersionsState>({
+    status: VersionsStatus.Loading,
   });
 
   useEffect(() => {
     if (getVersions === undefined) {
       return;
     }
+
     const controller = new AbortController();
 
     getVersions(controller.signal)
       .then((versions) =>
-        setReleases({
-          status: 'loaded',
+        setVersionsState({
+          status: VersionsStatus.Loaded,
           ...versions,
         }),
       )
       .catch(() => {
         if (!controller.signal.aborted) {
-          setReleases({
-            status: 'failed',
+          setVersionsState({
+            status: VersionsStatus.Failed,
           });
         }
       });
@@ -47,5 +37,5 @@ export function useVersions(): Releases {
     getVersions,
   ]);
 
-  return releases;
+  return versionsState;
 }

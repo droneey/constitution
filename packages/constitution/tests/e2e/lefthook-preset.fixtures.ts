@@ -19,7 +19,7 @@ interface HookRun {
   output: string;
 }
 
-const PRESET = z.record(
+const preset = z.record(
   z.string(),
   z.object({
     jobs: z.array(
@@ -38,32 +38,32 @@ interface PartJob {
   run: string;
 }
 
-const REPOSITORY = join(import.meta.dir, '..', '..');
-const PRESETS_FOLDER = join(REPOSITORY, 'presets', 'common', 'lefthook', 'workflow');
-const SHELLCHECK_RC = join(
-  REPOSITORY,
+const repository = join(import.meta.dir, '..', '..');
+const presetsFolder = join(repository, 'presets', 'common', 'lefthook', 'workflow');
+const shellcheckRc = join(
+  repository,
   'presets',
   'shell',
   'shellcheck',
   'foundation',
   'self.shellcheckrc',
 );
-const SHELLCHECK = miseBinary('shellcheck');
+const shellcheck = miseBinary('shellcheck');
 
 const presetConfig = (part: string): unknown =>
-  YAML.parse(readFileSync(join(PRESETS_FOLDER, `${part}.yaml`), 'utf8'));
+  YAML.parse(readFileSync(join(presetsFolder, `${part}.yaml`), 'utf8'));
 
 const jobRun = (input: { hook: Hook; job: string; part: string }): string =>
-  PRESET.parse(presetConfig(input.part))[input.hook]?.jobs.find(({ name }) => name === input.job)
+  preset.parse(presetConfig(input.part))[input.hook]?.jobs.find(({ name }) => name === input.job)
     ?.run ?? 'exit 99';
 
 const partJobs = (): readonly PartJob[] =>
-  readdirSync(PRESETS_FOLDER)
+  readdirSync(presetsFolder)
     .filter((file) => file.endsWith('.yaml') && file !== 'bindings.yaml')
     .flatMap((file) => {
       const part = file.slice(0, -'.yaml'.length);
 
-      return Object.entries(PRESET.parse(presetConfig(part))).flatMap(([hook, { jobs }]) =>
+      return Object.entries(preset.parse(presetConfig(part))).flatMap(([hook, { jobs }]) =>
         jobs.map(({ name, run }) => ({
           hook,
           job: name,
@@ -77,10 +77,10 @@ const partJobs = (): readonly PartJob[] =>
 // the message file in place of {1}; ShellCheck reads the command as such a script.
 const shellCheckRun = (run: string): HookRun => {
   const check = spawnSync(
-    SHELLCHECK,
+    shellcheck,
     [
       '--rcfile',
-      SHELLCHECK_RC,
+      shellcheckRc,
       '--shell=sh',
       '--format=gcc',
       '-',

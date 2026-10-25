@@ -5,10 +5,9 @@ requires: [_react]
 extends: null
 abstract: false
 languages: []
-dictionary: [TanStack Form, useForm]
 governs: ["**/*.tsx"]
 ---
 
 # TanStack Form
 
-> The project's only form library.
+> **TanStack Form**, the project's only form library, whose form state **`useForm`** holds.

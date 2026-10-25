@@ -10,6 +10,12 @@ export default join(
   architectureWorkspace,
   // the project's own settings, joined after the parts
   {
+    // The root holds the direction between units; what a unit imports from npm is held by its own
+    // configuration. A collapse to one module per unit would lose the dependency types the
+    // workspace's rules read.
+    options: {
+      includeOnly: '^(?:apps|packages)/',
+    },
     forbidden: [
       {
         name: 'design-tokens-know-no-platform',
@@ -18,17 +24,17 @@ export default join(
           path: '^packages/design-tokens/',
         },
         to: {
-          path: '^packages/design-(terminal|web)/',
+          path: '^packages/design-(browser|cli)/',
         },
       },
       {
         name: 'design-platforms-blind-to-each-other',
         severity: 'error',
         from: {
-          path: '^packages/design-(terminal|web)/',
+          path: '^packages/design-(browser|cli)/',
         },
         to: {
-          path: '^packages/design-(terminal|web)/',
+          path: '^packages/design-(browser|cli)/',
           pathNot: '^packages/design-$1/',
         },
       },

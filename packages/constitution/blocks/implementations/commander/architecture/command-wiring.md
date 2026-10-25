@@ -4,7 +4,7 @@
 
 ## General
 
-### commander-command-from-a-factory → command-built-by-a-factory-the-root-calls · SHOULD
+### commander-command-from-a-factory → command-built-by-a-factory-the-root-calls · MUST
 
 A command's factory returns a `Command` with its description, options and action, and the root adds it to the program.
 

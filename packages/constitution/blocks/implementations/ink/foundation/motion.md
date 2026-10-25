@@ -6,7 +6,7 @@
 
 ### ink-animation-driven-by-use-animation → reduced-motion-honoured · MUST
 
-An Ink animation — a spinner, a step that runs, a bar that fills — is driven by `useAnimation`, and is inactive, `isActive: false`, where the run asks for reduced motion; no component keeps a timer of its own.
+An Ink animation — a spinner, a step that runs, a bar that fills — is driven by **`useAnimation`**, and is inactive, `isActive: false`, where the run asks for reduced motion; no component keeps a timer of its own.
 
 | Why | Tags |
 |---|---|

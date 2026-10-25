@@ -11,13 +11,13 @@ type Files = Readonly<Record<string, string>>;
 
 const UNIT = 'packages/api';
 
-const ORDER = `${UNIT}/src/order.utils.ts`;
+const orderPath = `${UNIT}/src/order.utils.ts`;
 
 const WORKSPACE: Files = {
   '.gitignore': 'dist/\n',
-  [ORDER]: 'export const total = 1;\n',
+  [orderPath]: 'export const total = 1;\n',
   'packages/web/src/order.utils.ts': 'export const total = 1;\n',
-};
+} as const;
 
 const git = (input: { args: readonly string[]; folder: string }): void => {
   spawnSync('git', input.args, {
@@ -77,7 +77,7 @@ const workspaceOf = (folder: string): void => {
   });
   commit({
     files: {
-      [ORDER]: 'export const total = 5;\n',
+      [orderPath]: 'export const total = 5;\n',
     },
     folder,
   });
@@ -100,7 +100,7 @@ const workspaceOf = (folder: string): void => {
   });
   commit({
     files: {
-      [ORDER]: 'export const total = 2;\n',
+      [orderPath]: 'export const total = 2;\n',
     },
     folder,
   });
@@ -108,7 +108,7 @@ const workspaceOf = (folder: string): void => {
     files: {
       [`${UNIT}/dist/main.js`]: 'export {};\n',
       [`${UNIT}/src/line.utils.ts`]: 'export const line = 1;\n',
-      [ORDER]: 'export const total = 3;\n',
+      [orderPath]: 'export const total = 3;\n',
       'packages/web/src/line.utils.ts': 'export const line = 1;\n',
       'packages/web/src/order.utils.ts': 'export const total = 3;\n',
     },
@@ -213,7 +213,7 @@ describe('branchIn', () => {
     const { baseText } = branchIn(workspace);
 
     // Act
-    const text = baseText(ORDER);
+    const text = baseText(orderPath);
 
     // Assert
     expect(text).toBe('export const total = 1;\n');

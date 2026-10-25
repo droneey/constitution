@@ -30,9 +30,9 @@ const COMMAND = [
   `--config=./${CONFIG}`,
   'test',
   '--bail',
-];
+] as const;
 
-const SPECS = new Bun.Glob('**/*.test.{ts,tsx}');
+const specFiles = new Bun.Glob('**/*.test.{ts,tsx}');
 
 const isTable = (table: unknown): table is Readonly<Record<string, unknown>> =>
   typeof table === 'object' && table !== null;
@@ -61,7 +61,7 @@ const specsOf = (text: string): readonly string[] => {
   const { ignored, root } = settingsOf(text);
 
   return [
-    ...SPECS.scanSync({
+    ...specFiles.scanSync({
       cwd: root,
     }),
   ]
@@ -110,6 +110,7 @@ const runSpecs = (input: {
 const specsRunner = (): TestRunner => {
   let running: Bun.Subprocess | undefined;
   let specs: ReadonlyMap<string, readonly string[]> = new Map();
+
   const started = (subprocess: Bun.Subprocess): void => {
     running = subprocess;
   };
@@ -192,8 +193,8 @@ const specsRunner = (): TestRunner => {
 
 specsRunner.inject = [] as const;
 
-const strykerPlugins = [
+const STRYKER_PLUGINS = [
   declareFactoryPlugin(PluginKind.TestRunner, 'bun-specs', specsRunner),
 ] as const;
 
-export { strykerPlugins };
+export { STRYKER_PLUGINS as strykerPlugins };

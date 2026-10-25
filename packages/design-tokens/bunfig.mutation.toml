@@ -1,0 +1,7 @@
+[test]
+root = "."
+preload = ["./tests/sandbox.fixtures.ts"]
+coverage = false
+
+[run]
+bun = true

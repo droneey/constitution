@@ -6,7 +6,7 @@
 
 ### consumers-and-jobs-beside-the-work-they-run → delivery-unit-beside-what-it-serves · SHOULD
 
-A consumer, one `.consumer` file per message type, lives in `consumers/` of the application layer of the feature that owns the work, or of the composition module whose reaction it carries; a job, one `.job` file per job, lives in `jobs/` the same way.
+A consumer, one `.consumer` file per message type, lives in **`consumers/`** of the application layer of the feature that owns the work, or of the composition module whose reaction it carries; a job, one `.job` file per job, lives in **`jobs/`** the same way.
 
 | Why | Tags |
 |---|---|

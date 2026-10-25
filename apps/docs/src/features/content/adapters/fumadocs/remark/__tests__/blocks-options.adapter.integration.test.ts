@@ -5,13 +5,13 @@ import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 import { enterRepository } from '../../repository/__tests__/repository.fixtures';
 import { blocksOptionsOf } from '../blocks-options.adapter';
 
-const BLOCKS = {
+const BLOCK_FILES = {
   'blocks/core/core.md': '# Core\n\n### core-rule · MUST\n',
   'blocks/core/deep/notes.txt': '### not-markdown · MUST\n',
   'blocks/core/deep/rules.md': '### deep-rule → core-rule · SHOULD\n#### not-a-rule · MUST\n',
   'blocks/core/names.md': '# Names\n\n### name-says-what · MUST\n\n### name-is-short · MAY\n',
   'blocks/domains/ui/ui.md': '### ui-rule · MUST\n',
-};
+} as const;
 
 const repository = {
   leave: (): void => undefined,
@@ -21,7 +21,7 @@ const repository = {
 beforeEach(() => {
   const entered = enterRepository({
     files: {
-      ...BLOCKS,
+      ...BLOCK_FILES,
       'examples/core-rule.md': '```ts title="Avoid"\nlet a;\n```\n',
       'examples/notes.txt': 'no example',
     },

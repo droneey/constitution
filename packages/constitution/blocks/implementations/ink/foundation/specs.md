@@ -6,7 +6,7 @@
 
 ### ink-component-spec-reads-the-frame → component-spec-proves-behaviour-and-keyboard · SHOULD
 
-A component's spec renders it with ink-testing-library's `render`, presses keys by writing to its `stdin`, and asserts the text of `lastFrame()` with the colour stripped.
+A component's spec renders it with the `render` of **`ink-testing-library`**, presses keys by writing to its `stdin`, and asserts the text of `lastFrame()` with the colour stripped.
 
 | Why | Tags |
 |---|---|
@@ -16,7 +16,7 @@ A component's spec renders it with ink-testing-library's `render`, presses keys 
 
 ### ink-control-spec-reads-the-screen-reader-output → component-spec-proves-behaviour-and-keyboard · MUST
 
-A control's spec renders it with `isScreenReaderEnabled` on and asserts the role, the state and the label of the output Ink reads out.
+A control's spec renders it with **`isScreenReaderEnabled`** on and asserts the role, the state and the label of the output Ink reads out.
 
 | Why | Tags |
 |---|---|

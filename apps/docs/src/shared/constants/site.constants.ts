@@ -1,10 +1,10 @@
-export const appName = 'Constitution';
+export const APP_NAME = 'Constitution';
 
-export const docsRoute = '/docs';
+export const DOCS_ROUTE = '/docs';
 
-export const mainContentId = 'main';
+export const MAIN_CONTENT_ID = 'main';
 
-export const gitConfig = {
+export const GIT_CONFIG = {
   repo: 'constitution',
   user: 'droneey',
 } as const;

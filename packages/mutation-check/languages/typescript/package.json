@@ -26,16 +26,21 @@
     "#/*": "./src/*"
   },
   "scripts": {
+    "lint:check": "biome check --error-on-warnings",
+    "lint:fix": "biome check --write",
+    "type:check": "tsc -b",
     "test": "CI=1 bun test",
     "mutation:check": "bun src/main.ts",
     "mutation:all": "bun src/main.ts all",
     "architecture:check": "depcruise src --config .dependency-cruiser.mjs",
-    "unused:check": "knip --no-config-hints && knip --strict --no-config-hints"
+    "unused:check": "knip --no-config-hints && knip --strict --no-config-hints",
+    "yaml:check": "yamllint --strict ."
   },
   "dependencies": {
     "@stryker-mutator/api": "^10.0.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.5.15",
     "@stryker-mutator/core": "10.0.0",
     "@types/bun": "1.4.3",
     "@types/node": "26.6.5",

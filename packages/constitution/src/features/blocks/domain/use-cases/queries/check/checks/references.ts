@@ -1,0 +1,109 @@
+import { Rule } from '#/kernel/entities';
+import type { Finding } from '#/kernel/types';
+import { directoryOf, withoutCodeFences } from '#/kernel/utils';
+import { BlockId, RuleSlug } from '#/kernel/value-objects';
+
+import type { BlockFile } from '../../../../entities';
+import { Block } from '../../../../entities';
+import type { Check, CheckInput } from '../check.types';
+import { inlineCodeSpans, linkTargetsOf, resolveLink } from '../shared/markdown';
+
+enum ReferencesCode {
+  LinkIntoOtherBlock = 'link-into-other-block',
+  NamesOtherRule = 'names-rule-of-other-block',
+  CitesDecision = 'cites-decision',
+}
+
+const TABLE_ROW = /^\s*\|/;
+const FOLDER_SEPARATOR = '/';
+const DECISION = /\bADR-\d{4}\b/g;
+
+const ownerOf = (input: { blocks: readonly Block[]; target: string }): Block | undefined =>
+  input.blocks.find((block) => {
+    const folder = directoryOf(block.passport.path);
+
+    return input.target === folder || input.target.startsWith(`${folder}${FOLDER_SEPARATOR}`);
+  });
+
+const linkFindings = (input: {
+  block: Block;
+  blocks: readonly Block[];
+  file: BlockFile;
+}): readonly Finding[] =>
+  linkTargetsOf(input.file.body).flatMap((target) => {
+    const owner = ownerOf({
+      blocks: input.blocks,
+      target: resolveLink({
+        path: input.file.path,
+        target,
+      }),
+    });
+
+    return owner === undefined || Block.sameAs(owner, input.block)
+      ? []
+      : [
+          {
+            code: ReferencesCode.LinkIntoOtherBlock,
+            message: `links to ${target}, a file of the block ${owner.id}; a block refers to another only through its front matter and with/ file names`,
+            path: input.file.path,
+          },
+        ];
+  });
+
+const slugFindings = (input: {
+  block: Block;
+  file: BlockFile;
+  slugs: ReadonlyMap<RuleSlug, Rule>;
+}): readonly Finding[] => {
+  const prose = withoutCodeFences(input.file.body)
+    .split('\n')
+    .filter((line) => !TABLE_ROW.test(line))
+    .join('\n');
+
+  return [
+    ...new Set(inlineCodeSpans(prose)),
+  ].flatMap((span) => {
+    const rule = RuleSlug.is(span) ? input.slugs.get(span) : undefined;
+
+    return rule === undefined || BlockId.equals(rule.block, input.block.id)
+      ? []
+      : [
+          {
+            code: ReferencesCode.NamesOtherRule,
+            message: `names the rule ${span} of ${rule.block}; a rule refers to another only as the parent in its heading`,
+            path: input.file.path,
+          },
+        ];
+  });
+};
+
+const decisionFindings = (file: BlockFile): readonly Finding[] =>
+  [
+    ...new Set(withoutCodeFences(file.body).match(DECISION)),
+  ].map((decision) => ({
+    code: ReferencesCode.CitesDecision,
+    message: `cites ${decision}; a block states its rules without citing the decision log`,
+    path: file.path,
+  }));
+
+const referencesCheck: Check = ({ constitution }: CheckInput): readonly Finding[] => {
+  const slugs = Rule.bySlug(constitution.rules);
+
+  return constitution.blocks.flatMap((block) =>
+    Block.filesOf(block).flatMap((file) => [
+      ...linkFindings({
+        block,
+        blocks: constitution.blocks,
+        file,
+      }),
+      ...slugFindings({
+        block,
+        file,
+        slugs,
+      }),
+      ...decisionFindings(file),
+    ]),
+  );
+};
+
+export { referencesCheck };

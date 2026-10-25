@@ -12,13 +12,13 @@
       "path": "./packages/constitution"
     },
     {
-      "path": "./packages/design-terminal"
+      "path": "./packages/design-cli"
     },
     {
       "path": "./packages/design-tokens"
     },
     {
-      "path": "./packages/design-web"
+      "path": "./packages/design-browser"
     },
     {
       "path": "./packages/mutation-check/languages/typescript"

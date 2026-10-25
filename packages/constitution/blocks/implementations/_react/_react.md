@@ -5,14 +5,13 @@ requires: [ui, typescript]
 extends: null
 abstract: true
 languages: []
-dictionary: [React, JSX, React Compiler, .hooks, .context]
 governs: ["**/*.tsx", "**/*.hooks.ts", "**/*.context.ts"]
 ---
 
 # React
 
-> React as every renderer shares it.
+> **React** as every renderer shares it.
 
 A project lists the renderer's block, which brings this one.
 
-**Vocabulary:** folder `hooks`, a set of reusable hooks; suffixes `.hooks`, a file of hooks beside its component or operation, and `.context`, a compound's or provider's context.
+Components are written in **JSX**, and the build runs the **React Compiler** over them. A compound's or provider's context lives in a file ending in **`.context`**.

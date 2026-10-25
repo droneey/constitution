@@ -1,7 +1,7 @@
-import type { VersionsRepository } from '../../../../contracts';
+import type { VersionsQueryRepository } from '../../../../contracts';
 import type { Versions } from '../../../../entities';
 
-interface FakeVersionsRepository extends VersionsRepository {
+interface FakeVersionsRepository extends VersionsQueryRepository {
   signals: AbortSignal[];
 }
 

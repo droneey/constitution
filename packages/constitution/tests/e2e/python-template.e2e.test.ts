@@ -4,14 +4,14 @@ import { isFoundIn, partTable, python, runTask, templateTable } from './python-t
 
 // A run of the check, mutmut's above all, takes seconds, not milliseconds.
 const RUN_MS = 60_000;
-const MANY_LINES = Array.from(
+const manyLines = Array.from(
   {
     length: 100,
   },
   () => '  total += 1',
 );
-const LONG_FUNCTION = python('def tally() -> int:', '  total = 0', ...MANY_LINES, '  return total');
-const TANGLED = python(
+const longFunction = python('def tally() -> int:', '  total = 0', ...manyLines, '  return total');
+const tangled = python(
   'def tangle(items: list[int]) -> int:',
   '  count = 0',
   '  for item in items:',
@@ -26,7 +26,7 @@ const TANGLED = python(
   '            count += 2',
   '  return count',
 );
-const SPEC_OF_ONE_CASE = python(
+const specOfOneCase = python(
   'from shop.orders import total',
   '',
   '',
@@ -40,7 +40,8 @@ const SPEC_OF_ONE_CASE = python(
   '  # Assert',
   '  assert result == 5',
 );
-const ORDERS_WITH_LABEL = (comment: string): string =>
+
+const ordersWithLabel = (comment: string): string =>
   python(
     'def total(prices: list[int], *, discount: int) -> int:',
     '  return max(sum(prices) - discount, 0)',
@@ -53,11 +54,13 @@ const ORDERS_WITH_LABEL = (comment: string): string =>
     'def label() -> str:',
     `  return 'orders'${comment}`,
   );
+
 // A feature's folders, as core's tree lays them out, before a case adds a layer.
-const FEATURE = {
+const feature = {
   'src/shop/features/__init__.py': '',
   'src/shop/features/orders/__init__.py': '',
 };
+
 const spec = (...body: readonly string[]): string =>
   python(
     'import socket',
@@ -163,7 +166,7 @@ describe('the python template', () => {
     {
       condition: 'a function holds more than 100 lines',
       changes: {
-        'src/shop/kernel.py': LONG_FUNCTION,
+        'src/shop/kernel.py': longFunction,
       },
       finding: [
         'src/shop/kernel.py:1',
@@ -176,7 +179,7 @@ describe('the python template', () => {
     {
       condition: "a function's cognitive complexity passes 15",
       changes: {
-        'src/shop/kernel.py': TANGLED,
+        'src/shop/kernel.py': tangled,
       },
       finding: [
         'FAILED',
@@ -222,7 +225,7 @@ describe('the python template', () => {
     {
       condition: "a feature's domain imports pydantic",
       changes: {
-        ...FEATURE,
+        ...feature,
         'src/shop/features/orders/domain/__init__.py': '',
         'src/shop/features/orders/domain/order_entity.py': 'from pydantic import BaseModel\n',
       },
@@ -247,7 +250,7 @@ describe('the python template', () => {
     {
       condition: "a feature's domain imports logging",
       changes: {
-        ...FEATURE,
+        ...feature,
         'src/shop/features/orders/domain/__init__.py': '',
         'src/shop/features/orders/domain/order_entity.py': 'import logging\n',
       },
@@ -259,7 +262,7 @@ describe('the python template', () => {
     {
       condition: "a feature's application layer runs a process through a lib",
       changes: {
-        ...FEATURE,
+        ...feature,
         'src/shop/features/orders/app/__init__.py': '',
         'src/shop/features/orders/app/orders_export.py': 'from shop.libs.run import run\n',
         'src/shop/libs/__init__.py': '',
@@ -274,7 +277,7 @@ describe('the python template', () => {
     {
       condition: 'a feature imports structlog',
       changes: {
-        ...FEATURE,
+        ...feature,
         'src/shop/features/orders/app/__init__.py': '',
         'src/shop/features/orders/app/orders_logs.py': 'import structlog\n',
       },
@@ -288,7 +291,7 @@ describe('the python template', () => {
     {
       condition: "a feature's application layer imports httpx2",
       changes: {
-        ...FEATURE,
+        ...feature,
         'src/shop/features/orders/app/__init__.py': '',
         'src/shop/features/orders/app/orders_client.py': 'import httpx2\n',
       },
@@ -302,7 +305,7 @@ describe('the python template', () => {
     {
       condition: "a feature's application layer imports a package no block gives a home",
       changes: {
-        ...FEATURE,
+        ...feature,
         'src/shop/features/orders/app/__init__.py': '',
         'src/shop/features/orders/app/orders_dates.py': 'import arrow\n',
       },
@@ -315,7 +318,7 @@ describe('the python template', () => {
     {
       condition: 'a shared adapter imports a feature',
       changes: {
-        ...FEATURE,
+        ...feature,
         'src/shop/adapters/__init__.py': '',
         'src/shop/adapters/mail/__init__.py': 'from shop.features import orders\n',
       },
@@ -327,7 +330,7 @@ describe('the python template', () => {
     {
       condition: 'a feature imports the entry file',
       changes: {
-        ...FEATURE,
+        ...feature,
         'src/shop/features/orders/app/__init__.py': '',
         'src/shop/features/orders/app/orders_start.py': 'from shop.main import main\n',
         'src/shop/main.py': 'def main() -> None:\n  pass\n',
@@ -340,7 +343,7 @@ describe('the python template', () => {
     {
       condition: 'a feature imports the integration of a host framework',
       changes: {
-        ...FEATURE,
+        ...feature,
         'src/shop/features/orders/app/__init__.py': '',
         'src/shop/features/orders/app/orders_router.py':
           'from shop.integrations.fastapi import router\n',
@@ -368,7 +371,7 @@ describe('the python template', () => {
     {
       condition: 'a binding unit imports an adapter past its port',
       changes: {
-        ...FEATURE,
+        ...feature,
         'src/shop/features/orders/adapters/__init__.py': '',
         'src/shop/features/orders/adapters/http/__init__.py': 'ADAPTER = 1\n',
         'src/shop/features/orders/app/__init__.py': 'from ..adapters.http import ADAPTER\n',
@@ -394,7 +397,7 @@ describe('the python template', () => {
     {
       condition: 'a read use-case imports a write one',
       changes: {
-        ...FEATURE,
+        ...feature,
         'src/shop/features/orders/domain/__init__.py': '',
         'src/shop/features/orders/domain/use_cases/__init__.py': '',
         'src/shop/features/orders/domain/use_cases/commands/__init__.py': '',
@@ -411,7 +414,7 @@ describe('the python template', () => {
     {
       condition: 'the root imports a layer folder',
       changes: {
-        ...FEATURE,
+        ...feature,
         'src/shop/root/__init__.py': '',
         'src/shop/root/wiring.py': 'from shop import features\n',
       },
@@ -463,7 +466,7 @@ describe('the python template', () => {
     {
       condition: "a binding unit imports a port of its feature's domain",
       changes: {
-        ...FEATURE,
+        ...feature,
         'src/shop/features/orders/app/__init__.py': '',
         'src/shop/features/orders/app/orders_api.py':
           'from shop.features.orders.domain.contracts import ORDERS\n',
@@ -549,7 +552,7 @@ describe('the python template', () => {
     {
       condition: 'a branch is never taken',
       changes: {
-        'tests/test_orders.py': SPEC_OF_ONE_CASE,
+        'tests/test_orders.py': specOfOneCase,
       },
       finding: [
         'Required test coverage of 100.0% not reached',
@@ -599,7 +602,7 @@ describe('the python template', () => {
     {
       condition: 'a changed spec lets a mutant of its module live',
       changes: {
-        'tests/test_orders.py': SPEC_OF_ONE_CASE,
+        'tests/test_orders.py': specOfOneCase,
       },
       finding: [
         'mutation: shop.orders.x_total__mutmut_',
@@ -609,7 +612,7 @@ describe('the python template', () => {
     {
       condition: 'no spec reaches a new function',
       changes: {
-        'src/shop/orders.py': ORDERS_WITH_LABEL(''),
+        'src/shop/orders.py': ordersWithLabel(''),
       },
       finding: [
         'mutation: shop.orders.x_label__mutmut_1: no tests',
@@ -672,7 +675,7 @@ describe('the python template', () => {
     {
       condition: 'an adapter parses with pydantic and calls through httpx2',
       changes: {
-        ...FEATURE,
+        ...feature,
         'src/shop/features/orders/adapters/__init__.py': '',
         'src/shop/features/orders/adapters/http/__init__.py': '',
         'src/shop/features/orders/adapters/http/orders_adapter.py': python(
@@ -694,7 +697,7 @@ describe('the python template', () => {
     {
       condition: "the root reaches a feature's adapter through the adapter's own surface",
       changes: {
-        ...FEATURE,
+        ...feature,
         'src/shop/features/orders/adapters/__init__.py': '',
         'src/shop/features/orders/adapters/http/__init__.py': 'ADAPTER = 1\n',
         'src/shop/root/__init__.py': '',
@@ -706,7 +709,7 @@ describe('the python template', () => {
     {
       condition: "the package's surface offers a feature's adapter to its consumers",
       changes: {
-        ...FEATURE,
+        ...feature,
         'src/shop/__init__.py': python(
           'from .features.orders.adapters.http import ADAPTER',
           'from .orders import total, totals',
@@ -722,7 +725,7 @@ describe('the python template', () => {
       condition:
         "a feature's delivery unit declares a FastAPI router and a composition module's adapter sends mail",
       changes: {
-        ...FEATURE,
+        ...feature,
         'src/shop/composition/__init__.py': '',
         'src/shop/composition/checkout/__init__.py': '',
         'src/shop/composition/checkout/adapters/__init__.py': '',
@@ -770,7 +773,7 @@ describe('the python template', () => {
     {
       condition: 'the only mutants of a new line are marked equivalent',
       changes: {
-        'src/shop/orders.py': ORDERS_WITH_LABEL('  # pragma: no mutate -- a name no spec reads'),
+        'src/shop/orders.py': ordersWithLabel('  # pragma: no mutate -- a name no spec reads'),
       },
       task: 'mutation:check',
     },

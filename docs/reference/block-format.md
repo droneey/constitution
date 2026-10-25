@@ -72,7 +72,6 @@ requires: [_react, remote-data]
 extends: null
 abstract: false
 languages: []
-dictionary: [TanStack Query, QueryClient, useQuery, useSuspenseQuery, useMutation]
 governs: ["**/*.hooks.ts", "**/root/providers/**", "**/cache.utils.ts"]
 ---
 ```
@@ -85,10 +84,25 @@ governs: ["**/*.hooks.ts", "**/root/providers/**", "**/cache.utils.ts"]
 | `extends` | an abstract implementation it is a kind of, or `null` |
 | `abstract` | `true` for a base other blocks extend; its id starts with `_` |
 | `languages` | for a tool, the language blocks whose files its presets cover, `[]` for one that covers no language's files |
-| `dictionary` | the brands, words and file names only this block and the blocks that depend on it may write |
 | `governs` | the globs of the files it governs; a domain and a platform govern `**`, a language only its files' extensions, never a manifest or a tool's configuration, which the tool's block governs |
 
-Then come the title, `# <Name>`, and one line of what the block is, as a quote: `> The project's only cache of server data.` Plain paragraphs after it give the block's setup — how its tool or library is configured: its preset parts, templates, configuration files and exclusions. An implementation closes its passport with its [Requirements](#requirements). That is the whole passport.
+Then come the title, `# <Name>`, and one line of what the block is, as a quote: `> **TanStack Query**, the project's only cache of server data.` Plain paragraphs after it name in bold what else the block owns — ``One **`QueryClient`** holds the cache`` — and give the block's setup — how its tool or library is configured: its preset parts, templates, configuration files and exclusions. An implementation closes its passport with its [Requirements](#requirements). That is the whole passport.
+
+## Terms
+
+A term is defined once, in bold, in the rule or the passport that says what it is; every other mention is plain. Bold is a definition only outside inline code and code fences, so `**/root/**` in backticks defines nothing, and bold is never used for emphasis.
+
+| Written | Term | Kind |
+|---|---|---|
+| `**binding unit**` | `binding unit` | a concept: lower-case words |
+| `**Bounded context.**` opening a sentence | `bounded context` | a concept, its capital the sentence's: a lead-in ends in `.` or `:`, which the term drops |
+| `**TanStack Start**` | `TanStack Start` | a brand, as written |
+| ``**`widgets/`**`` | `widgets/` | a folder, which ends in `/` |
+| ``**`.stories`**`` | `.stories` | a suffix, which starts with `.` |
+| ``**`renovate.json`**`` | `renovate.json` | a file, a name with an extension |
+| ``**`createServerFn`**`` | `createServerFn` | an API, a command or a package, any other code span |
+
+A term's owner is the block of the file that defines it, and its axis that file's axis: a passport and `foundation/` are foundation's, and a seam takes the axis of its folder. A brand the block is named after, and the files, commands and APIs of its tool, are defined in its passport, in the line of what it is or the setup after it; a concept, a folder or a suffix in the rule, or the opening paragraph of the chapter, that says what it is. [Terms](terms.md) lists every one.
 
 ## A rule
 
@@ -122,7 +136,7 @@ A domain, a platform or core may list, in a chapter under a heading `Requirement
 
 ## What the check refuses
 
-`constitution check` fails on:
+`constitution blocks check`, and `constitution check` with it, fails on:
 
 - a file outside a block folder, a stray file inside one, a file of an axis named after its block, or two blocks with one id;
 - a passport that holds a rule, and a Requirements table anywhere but an implementation's passport;
@@ -131,7 +145,7 @@ A domain, a platform or core may list, in a chapter under a heading `Requirement
 - a block that governs a file of a language it does not require, directly or through the blocks it requires or extends;
 - a link or a slug that names another block anywhere but the front matter, a `with/` name or a heading's arrow;
 - an abstract block without an heir, or one that names its heirs;
-- a word of a block's `dictionary` outside that block and the blocks that depend on it, and a word of `vocabulary.yaml` outside its axis;
+- a term defined twice; a term of the architecture or of the workflow used in a chapter or a seam of another axis — a passport speaks of the whole block, every axis at once; a term used in a file whose block cannot reach its owner — core's terms are every block's; a folder or a suffix written in backticks without its `/` or its `.`, where its owner is in reach; and bold that is neither plain words nor one code span;
 - a rule without a statement, a Why or a known tag, a slug used twice, and a heading or a table that misses the format;
 - a rule that tightens a rule of its own block, or of an axis it may not reach, at a level looser than that rule's or equal to it;
 - a seam named after its own block, after no block or after core, after a block of a layer its block may not pair with, or after a block along a dependency — one its block requires or extends, or one that requires or extends its block, directly or through another — and a seam titled otherwise than the other block's passport;

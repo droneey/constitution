@@ -114,11 +114,11 @@ An enum is declared `enum`, never `const enum`.
 
 ### invariant-value-is-a-branded-type → invariant-value-is-plain-immutable-data · MUST
 
-A value that keeps an invariant is a branded type — of a primitive, or of a plain object with `readonly` fields, never a class instance — built by `create<Name>`, which throws the value's error when the invariant fails, narrowed by `is<Name>`, and, where it is an object, compared by `equals<Name>`, never by `===`.
+A value that keeps an invariant is a branded type — of a primitive, or of a plain object with `readonly` fields, never a class instance — and a `const` object of the same name holds its functions: built only by `<Name>.create`, which throws the value's error when the invariant fails, narrowed by `<Name>.is`, and, where it is an object, compared by `<Name>.equals`, never by `===`; no cast and no object literal stands in for `create`, in specs as in production.
 
 | Why | Tags |
 |---|---|
-| the brand is reachable only through the check, and the value stays plain data every boundary can carry. | [] |
+| the brand is reachable only through the check, the value stays plain data every boundary can carry, and one name says at each call what is built and what is asked of it. | [] |
 
 ### business-types-readonly → value-immutable-by-default · SHOULD
 

@@ -1,0 +1,140 @@
+@layer overrides {
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #fd-search-dialog-content {
+    width: calc(100% - 2 * var(--spacing-sm));
+    border-radius: var(--radius-2xl);
+
+    & > div:has(> [data-fd-search-dialog-input]) {
+      gap: var(--spacing-xs);
+      height: var(--spacing-header);
+      padding: 0 calc(var(--spacing-sm) - 1px);
+
+      & > svg {
+        flex-shrink: 0;
+        width: var(--spacing-icon-md);
+        height: var(--spacing-icon-md);
+      }
+
+      & > button {
+        flex-shrink: 0;
+        min-width: var(--spacing-control-xs);
+        height: var(--spacing-control-xs);
+        padding: 0 var(--spacing-2xs);
+        border-radius: var(--radius-sm);
+        font-family: var(--font-sans);
+        font-size: var(--text-xs);
+        cursor: pointer;
+        transition: background-color var(--duration-fast) var(--ease-standard);
+
+        &:hover {
+          background-color: var(--color-fd-accent);
+        }
+      }
+    }
+  }
+
+  /* the input is the dialog's only field and holds the caret, so it draws no ring */
+  [data-fd-search-dialog-input] {
+    font-size: var(--text-base);
+
+    &:focus-visible {
+      outline: none;
+    }
+  }
+
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #fd-search-list {
+    padding: calc(var(--spacing-xs) - 1px);
+
+    & ::highlight(fd-search) {
+      color: var(--color-accent-text);
+      text-decoration: none;
+    }
+
+    & [role='option'] {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: var(--spacing-control-md);
+      padding: var(--spacing-xs);
+      overflow: visible;
+      border-radius: var(--radius-lg);
+      font-size: var(--text-sm);
+      font-weight: var(--font-weight-ui);
+      cursor: pointer;
+
+      &[aria-selected='true'] {
+        background-color: transparent;
+      }
+
+      & [data-docs-body] {
+        font-size: inherit;
+      }
+
+      & p {
+        margin: 0;
+      }
+
+      & > div:first-child:not(:empty) {
+        gap: var(--spacing-2xs);
+        margin-bottom: var(--spacing-2xs);
+
+        & > svg {
+          width: var(--spacing-icon-md);
+          height: var(--spacing-icon-md);
+        }
+      }
+
+      & > div:last-child {
+        padding-inline-start: 0;
+      }
+    }
+
+    /* a page's headings and passages sit on a line under it, as a folder's items do */
+    & [role='option']:has(> [role='none']) {
+      margin-inline-start: var(--spacing-sm);
+
+      & > [role='none'] {
+        inset-block: 0;
+        inset-inline-start: calc(-1 * var(--spacing-2xs));
+      }
+    }
+
+    /* biome-ignore lint/style/noDescendingSpecificity: the linter reads the nested selector without its parent; the two rules never style the same element */
+    & [role='option']:not(:has(> [role='none'])) + [role='option'] > [role='none'] {
+      top: var(--spacing-2xs);
+    }
+
+    /* biome-ignore lint/style/noDescendingSpecificity: the linter reads the nested selector without its parent; the two rules never style the same element */
+    & [role='option']:not(:has(+ [role='option'] > [role='none'])) > [role='none'] {
+      bottom: var(--spacing-2xs);
+    }
+
+    & [role='option']:has(> svg) {
+      /* biome-ignore lint/style/noDescendingSpecificity: the linter reads the nested selector without its parent; the two rules never style the same element */
+      & > svg {
+        inset-inline-start: var(--spacing-xs);
+        top: 50%;
+        width: var(--spacing-icon-md);
+        height: var(--spacing-icon-md);
+        translate: 0 -50%;
+      }
+
+      & > div:last-child {
+        padding-inline-start: calc(var(--spacing-icon-md) + var(--spacing-xs));
+      }
+    }
+
+    & [role='option'][data-highlighted] {
+      background-color: transparent;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
+    /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+    #fd-search-list:has(:active) > [data-glide] {
+      scale: var(--scale-control-pressed);
+      transition-duration: var(--duration-fast);
+    }
+  }
+}

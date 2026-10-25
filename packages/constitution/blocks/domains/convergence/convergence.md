@@ -5,7 +5,6 @@ requires: [config-file]
 extends: null
 abstract: false
 languages: []
-dictionary: []
 governs: ["**"]
 ---
 

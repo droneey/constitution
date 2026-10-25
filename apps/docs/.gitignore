@@ -1,3 +1,19 @@
+# core: build
+dist/
+coverage/
+
+# typescript: dependencies
+node_modules/
+
+# typescript: caches
+*.tsbuildinfo
+
+# tsc: the declarations and build info of a unit's project
+.tsc-cache/
+
+# stryker
+.stryker-tmp/
+
 # tanstack-router: the generator's temporary files
 .tanstack/
 
@@ -7,3 +23,6 @@
 
 # fumadocs-mdx: the collections it generates
 .source/
+
+# mise
+mise.local.toml

@@ -20,7 +20,7 @@ Puts a repository under the Constitution. It takes no arguments.
 4. Reads the manifests, lock files, tool configurations, folders and CI, and proposes each block with the evidence that picked it, then the blocks those require.
 5. Offers a block of the project's own pack for a library the release has no block for.
 6. Finds the command that runs every check, or asks for it.
-7. Asks whether the [units of a workspace](constitution-yaml.md#packages) follow blocks of their own.
+7. Asks which blocks each [member of a workspace](constitution-yaml.md#members-of-a-workspace) follows, for a `constitution.yaml` of its own.
 8. Interviews you for `PROJECT.md`, a question or two at a time.
 9. Wires each tool's configuration from its [template](templates.md) with the [parts](presets.md#the-parts-a-project-takes) its unit takes, shows the diff, and writes it once you agree; run again, it brings the configurations up to the blocks and the release.
 
@@ -35,7 +35,7 @@ Adds, changes or removes one override: a Constitution rule lowered for the whole
   - the new level, lower than the rule's own, `SHOULD` or `MAY`; a `MAY` rule cannot be lowered;
   - your reason, one line in your words; there is no override without one;
   - until when it holds, if ever;
-  - its scope: the whole repository, or one unit under `packages:`.
+  - its scope: the repository, or one member of its workspace, whose own `constitution.yaml` takes the override.
 - Shows the exact lines of [the entry](constitution-yaml.md#overrides) and writes them once you agree.
 
 [Override a rule](../guides/override-a-rule.md) explains what an override does.

@@ -6,7 +6,7 @@
 
 ### expo-router-root-is-root-routes → delivery-unit-registered-by-the-root · MUST
 
-Expo Router's root is `src/root/routes/`, set by the `root` option of its config plugin, so the routes are the root's registration and `app` keeps its meaning as a feature's layer.
+Expo Router's root is `src/root/routes/`, set by its config plugin's `root: 'src/root/routes'`, so the routes are the root's registration and `app/` keeps its meaning as a feature's layer.
 
 | Why | Tags |
 |---|---|

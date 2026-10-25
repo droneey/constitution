@@ -7,7 +7,7 @@ const exported = (name: string): string => `export const ${name} = 1;\n`;
 const importing = (input: { from: string; name: string }): string =>
   `import { ${input.name} } from '${input.from}';\nexport const uses = ${input.name};\n`;
 
-const WELL_FORMED = {
+const wellFormed = {
   'src/adapters/mail/index.ts': "export { sendMail } from './mail.adapter';\n",
   'src/adapters/mail/mail.adapter.ts': importing({
     from: '../../libs/smtp',
@@ -72,7 +72,7 @@ const UNITS: Readonly<Record<string, string>> = {
   money: 'packages/money',
   smtp: 'packages/smtp',
   web: 'apps/web',
-};
+} as const;
 
 const workspaceProject = (files: Readonly<Record<string, string>>) => ({
   files: {
@@ -123,7 +123,7 @@ describe('the dependency-cruiser layer set', () => {
   it('should report no violation when an application follows the layer matrix', () => {
     // Arrange
     const project = {
-      files: WELL_FORMED,
+      files: wellFormed,
     };
 
     // Act

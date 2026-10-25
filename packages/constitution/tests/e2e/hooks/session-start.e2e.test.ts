@@ -3,7 +3,7 @@ import { join } from 'node:path';
 
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 
-import { CORE_TEXT } from '../constitution.fixtures';
+import { coreText } from '../constitution.fixtures';
 import { browserAppContext, everyCodeContext, unparsedContext } from '../digests.fixtures';
 import type { Cut, HookRun, Warning } from '../hook.fixtures';
 import {
@@ -35,30 +35,32 @@ import {
   Breakage,
   createPluginRoot,
   createRealPluginRoot,
-  FORMAT,
   LINK,
   linkArchive,
+  releaseFormat,
   removePluginRoots,
 } from '../plugin-root.fixtures';
 import type { ProjectLayout } from '../project.fixtures';
 import {
-  BROWSER_APP,
-  CLI,
+  browserApp,
   ConfigKey,
+  cli,
   configOf,
   createProject,
-  HTML_SITE,
-  LIBRARY,
+  htmlSite,
+  library,
   lineNumberOf,
+  memberConfigOf,
   OWN_PACK,
-  PACK_PROJECT,
   packBlockFiles,
   packPath,
-  RATIFIED,
-  REAL_CLI,
-  REAL_WEB_APP,
+  packProject,
   Repository,
+  ratified,
+  realCli,
+  realWebApp,
   removeProjects,
+  workspaceOf,
 } from '../project.fixtures';
 
 interface Place {
@@ -160,7 +162,7 @@ interface NoticeCase {
   dangling?: boolean | undefined;
   // the archive's constitutionFormat, or undefined for the default archive's
   format?: number | string | undefined;
-  // what the notice names: the archive, a format, the command to run
+  // what the notice names: the archive and the command to run
   names: (archive: string) => readonly string[];
   // no archive is linked into the project
   unlinked?: boolean | undefined;
@@ -182,6 +184,7 @@ interface AxesView {
 interface AxesCase {
   condition: string;
   config: string;
+  files?: ProjectLayout['files'];
   view: AxesView;
 }
 
@@ -191,34 +194,36 @@ interface BlockListCase {
   layout: ProjectLayout;
 }
 
-const FOUND = configOf({
+const found = configOf({
   domains: '[version-control]',
   implementations: '[git]',
 });
+
 const fourDataStatesOverride = (fields: string): string =>
   `\n  - rule: four-data-states\n${fields}`;
+
 // A project that sets off a warning of every code.
-const EVERY_CODE: ProjectLayout = {
+const everyCode: ProjectLayout = {
   config: configOf({
     domains: '[analytics, version-control]',
     implementations: '[_react, tanstak-query, ui, matomo, git, react-dom]',
     languages: '[typescript]',
-    omit: ConfigKey.Packages,
+    omit: ConfigKey.Platforms,
     overrides: fourDataStatesOverride('    level: MAY\n    reason: "later"\n    until: 2020-01-01'),
     packs: '[packs/gone]',
   }),
 };
-const UNPARSED_CONFIG = configOf({
+const unparsedConfig = configOf({
   check: '&check bun run check',
 });
 // The block list of one domain is three lines: its layer's heading, the key, the domain.
-const ONE_DOMAIN: ProjectLayout = {
+const oneDomain: ProjectLayout = {
   config: configOf({
     domains: '[synthetic-001]',
   }),
 };
 const PROBE_ID = 'u01';
-const MISE_INSTALL = 'mise install';
+const DOCTOR = 'constitution doctor';
 const FILLING_WARNINGS = 10;
 
 const AXIS_DOMAINS = '[ui, remote-data, version-control]';
@@ -226,18 +231,18 @@ const DOMAINS = '## Domains';
 const READS_ARE_CANCELLABLE = 'reads-are-cancellable';
 const FOUR_DATA_STATES = 'four-data-states';
 const LABELS_ON_FIELDS = 'labels-on-fields';
-const BELOW_FOUR_DATA_STATES = [
+const belowFourDataStates = [
   'loading-state-shown',
   'skeleton-matches-content',
   'error-state-offers-retry',
 ];
 const OPTIMISTIC_WRITES_ROLL_BACK = 'optimistic-writes-roll-back';
 const COMMITS_ARE_ATOMIC = 'commits-are-atomic';
-const EVERY_AXIS: AxesView = {
+const everyAxis: AxesView = {
   musts: [
     READS_ARE_CANCELLABLE,
     FOUR_DATA_STATES,
-    ...BELOW_FOUR_DATA_STATES,
+    ...belowFourDataStates,
     LABELS_ON_FIELDS,
     OPTIMISTIC_WRITES_ROLL_BACK,
     COMMITS_ARE_ATOMIC,
@@ -250,10 +255,10 @@ const EVERY_AXIS: AxesView = {
   ],
   warnings: [],
 };
-const BASE_ONLY: AxesView = {
+const baseOnly: AxesView = {
   musts: [
     FOUR_DATA_STATES,
-    ...BELOW_FOUR_DATA_STATES,
+    ...belowFourDataStates,
   ],
   index: [
     DOMAINS,
@@ -263,15 +268,21 @@ const BASE_ONLY: AxesView = {
   ],
   warnings: [],
 };
-const axesConfigOf = (input: { axes: string; packages?: string }): string =>
+
+const axesConfigOf = (axes: string): string =>
   configOf({
-    ...(input.packages === undefined
-      ? {}
-      : {
-          packages: input.packages,
-        }),
-    axes: input.axes,
+    axes,
     domains: '[ui, version-control]',
+  });
+
+// A workspace of packages/web, which follows the axes given and the repository's domains with
+// remote-data.
+const axesMemberOf = (axes: string): ProjectLayout['files'] =>
+  workspaceOf({
+    'packages/web': memberConfigOf({
+      axes,
+      domains: '[ui, version-control, remote-data]',
+    }),
   });
 
 const archiveIn = (project: string): string => join(project, LINK);
@@ -296,7 +307,7 @@ describe('session-start hook', () => {
     {
       condition: 'CLAUDE_PLUGIN_ROOT is unset',
       cwd: '',
-      layout: CLI,
+      layout: cli,
       pluginRootUnset: true,
     },
     {
@@ -308,7 +319,7 @@ describe('session-start hook', () => {
       condition: 'constitution.yaml lies only above the repository root',
       cwd: '',
       layout: {
-        aboveConfig: FOUND,
+        aboveConfig: found,
       },
     },
     {
@@ -316,14 +327,14 @@ describe('session-start hook', () => {
         'no repository holds the start folder and constitution.yaml lies only in its parent',
       cwd: '',
       layout: {
-        aboveConfig: FOUND,
+        aboveConfig: found,
         repository: Repository.None,
       },
     },
     {
       condition: 'CLAUDE_PROJECT_DIR names a folder that does not exist',
       cwd: '',
-      layout: CLI,
+      layout: cli,
       projectDir: 'gone',
     },
   ])(
@@ -415,7 +426,7 @@ describe('session-start hook', () => {
     ({ cwd, nonUtf8Byte, projectDir, repository, spawnOutside }) => {
       // Arrange
       const project = createProject({
-        config: FOUND,
+        config: found,
         files: {
           'b\\s/.keep': '',
           'c\u0001x/.keep': '',
@@ -541,20 +552,6 @@ describe('session-start hook', () => {
       })}check:bun run check\n`,
     },
     {
-      at: '  web:\n    domains: [i18n]',
-      condition: 'an application path is repeated',
-      config: configOf({
-        packages: '\n  web:\n    domains: [ui]\n  web:\n    domains: [i18n]',
-      }),
-    },
-    {
-      at: 'domains: [i18n]',
-      condition: "an application's key is repeated",
-      config: configOf({
-        packages: '\n  web:\n    domains: [ui]\n    domains: [i18n]',
-      }),
-    },
-    {
       at: 'level: SHOULD',
       condition: "an override's field is repeated",
       config: configOf({
@@ -566,13 +563,6 @@ describe('session-start hook', () => {
       condition: "an override's field is indented past its item",
       config: configOf({
         overrides: fourDataStatesOverride('      level: MAY'),
-      }),
-    },
-    {
-      at: 'stack: [react]',
-      condition: 'an application has a key outside the grammar',
-      config: configOf({
-        packages: '\n  web:\n    stack: [react]',
       }),
     },
   ])('should name the line and give only core when $condition', ({ at, config }) => {
@@ -592,7 +582,7 @@ describe('session-start hook', () => {
 
     // Assert
     expect({
-      core: context.includes(CORE_TEXT),
+      core: context.includes(coreText),
       index: indexOf(context),
       line: factNumberOf(context),
       warnings: warningsOf({
@@ -613,12 +603,12 @@ describe('session-start hook', () => {
   it.each<ReadCase>([
     {
       condition: 'CRLF line ends',
-      config: FOUND.replaceAll('\n', '\r\n'),
+      config: found.replaceAll('\n', '\r\n'),
       count: 3,
     },
     {
       condition: 'a document marker on its first line',
-      config: `---\n${FOUND}`,
+      config: `---\n${found}`,
       count: 3,
     },
     {
@@ -632,7 +622,6 @@ describe('session-start hook', () => {
     {
       condition: 'empty flow collections with blanks inside',
       config: configOf({
-        packages: '{ }',
         domains: '[ ]',
         overrides: '[ ]',
       }),
@@ -666,10 +655,10 @@ describe('session-start hook', () => {
     expect(printed).toBe(count);
   });
 
-  it('should take the nearest constitution.yaml when two lie on the way up', () => {
+  it('should take the farthest constitution.yaml of the repository when two lie on the way up', () => {
     // Arrange
     const project = createProject({
-      config: FOUND,
+      config: found,
       files: {
         'sub/constitution.yaml': configOf({
           domains: '[ui]',
@@ -677,6 +666,7 @@ describe('session-start hook', () => {
         'sub/deep/.keep': '',
       },
     });
+
     linkArchive({
       archive: archiveOf(root),
       project: join(project, 'sub'),
@@ -695,12 +685,12 @@ describe('session-start hook', () => {
     );
 
     // Assert
-    expect(count).toBe(2);
+    expect(count).toBe(3);
   });
 
   it('should read the files without a warning when they are written from the templates', () => {
     // Arrange
-    const project = createProject(RATIFIED);
+    const project = createProject(ratified);
 
     // Act
     const context = contextOf(
@@ -862,11 +852,15 @@ describe('session-start hook', () => {
       ],
     },
     {
-      condition: "an application's block lacks a block it requires",
+      condition: "a member's block lacks a block it requires",
       layout: {
-        config: configOf({
-          packages:
-            '\n  web:\n    domains: [untrusted-client, unreliable-network]\n    platforms: [browser]\n    implementations: [react-dom]',
+        config: configOf({}),
+        files: workspaceOf({
+          web: memberConfigOf({
+            domains: '[untrusted-client, unreliable-network]',
+            implementations: '[react-dom]',
+            platforms: '[browser]',
+          }),
         }),
       },
       warnings: [
@@ -967,14 +961,19 @@ describe('session-start hook', () => {
       ],
     },
     {
-      condition: 'a block of the pack requires a block of the pack active only in an application',
+      condition: 'a block of the pack requires a block of the pack active only in a member',
       layout: {
         config: configOf({
-          packages: '\n  packages/x:\n    implementations: [beta]',
           implementations: '[alpha]',
           packs: `[${OWN_PACK}]`,
         }),
         files: {
+          ...workspaceOf({
+            'packages/x': memberConfigOf({
+              implementations: '[beta]',
+              packs: `[../../${OWN_PACK}]`,
+            }),
+          }),
           ...packBlockFiles({
             fields: {
               requires: '[beta]',
@@ -1052,13 +1051,17 @@ describe('session-start hook', () => {
       ],
     },
     {
-      condition: 'an application adds nothing the repository lacks for a missing block',
+      condition: 'a member lists none of the blocks of the repository that lack a block',
       layout: {
         config: configOf({
-          packages: '\n  web:\n    domains: [i18n]',
           domains: '[untrusted-client, unreliable-network]',
           implementations: '[react-dom]',
           platforms: '[browser]',
+        }),
+        files: workspaceOf({
+          web: memberConfigOf({
+            domains: '[i18n]',
+          }),
         }),
       },
       warnings: [
@@ -1071,7 +1074,7 @@ describe('session-start hook', () => {
     },
     {
       condition: 'every code applies',
-      layout: EVERY_CODE,
+      layout: everyCode,
       warnings: [
         [
           'missing',
@@ -1095,7 +1098,7 @@ describe('session-start hook', () => {
         ],
         [
           'config',
-          'packages',
+          'platforms',
         ],
         [
           'pack',
@@ -1126,16 +1129,19 @@ describe('session-start hook', () => {
       ],
     },
     {
-      condition: "an application's key holds nothing",
+      condition: "a member's key holds nothing",
       layout: {
-        config: configOf({
-          packages: '\n  web:\n    domains:',
+        config: configOf({}),
+        files: workspaceOf({
+          web: memberConfigOf({
+            domains: '',
+          }),
         }),
       },
       warnings: [
         [
           'config',
-          'web',
+          'web/constitution.yaml',
           'domains',
         ],
       ],
@@ -1181,16 +1187,39 @@ describe('session-start hook', () => {
       ],
     },
     {
-      condition: 'packages holds nothing',
+      condition: "the repository still names its packages' blocks",
       layout: {
-        config: configOf({
-          packages: '',
-        }),
+        config: `${configOf({})}packages:\n  web:\n    domains: [ui]\n`,
       },
       warnings: [
         [
           'config',
           'packages',
+        ],
+      ],
+    },
+    {
+      condition: 'a member keeps no constitution.yaml, and another one that does not parse',
+      layout: {
+        config: configOf({}),
+        files: {
+          ...workspaceOf({
+            api: 'domains: [ui\n',
+          }),
+          'package.json': '{"workspaces": ["api", "web"]}\n',
+          'web/package.json': '{}\n',
+        },
+      },
+      warnings: [
+        [
+          'config',
+          'api/constitution.yaml',
+          '1',
+        ],
+        [
+          'config',
+          'web',
+          'constitution.yaml',
         ],
       ],
     },
@@ -1356,11 +1385,11 @@ describe('session-start hook', () => {
           [packPath({
             id: 'kit',
           })]:
-            '---\nid: kit\nsummary: "Kit."\nrequires: [nothing-here]\nextends: ghost\nabstract: false\nlanguages: []\ndictionary: []\ngoverns: []\n---\n\n# Kit\n',
+            '---\nid: kit\nsummary: "Kit."\nrequires: [nothing-here]\nextends: ghost\nabstract: false\nlanguages: []\ngoverns: []\n---\n\n# Kit\n',
           [packPath({
             id: 'tool',
           })]:
-            '---\nid: tool\nsummary: "Tool."\nrequires: []\nextends: git\nabstract: false\nlanguages: []\ndictionary: []\ngoverns: []\n---\n\n# Tool\n',
+            '---\nid: tool\nsummary: "Tool."\nrequires: []\nextends: git\nabstract: false\nlanguages: []\ngoverns: []\n---\n\n# Tool\n',
         },
       },
       warnings: [
@@ -1399,22 +1428,31 @@ describe('session-start hook', () => {
       warnings: [],
     },
     {
-      condition: "an application's override lowers the requirement its library does not meet",
+      condition: "a member's override lowers the requirement its library does not meet",
       layout: {
-        config: configOf({
-          packages:
-            '\n  web:\n    domains: [analytics]\n    implementations: [matomo]\n    overrides:\n      - rule: analytics-consent-first\n        level: SHOULD\n        reason: "no banner yet"',
+        config: configOf({}),
+        files: workspaceOf({
+          web: memberConfigOf({
+            domains: '[analytics]',
+            implementations: '[matomo]',
+            overrides:
+              '\n  - rule: analytics-consent-first\n    level: SHOULD\n    reason: "no banner yet"',
+          }),
         }),
       },
       warnings: [],
     },
     {
-      condition: 'an application shares the library that misses a requirement',
+      condition: 'a member leaves out the library that misses a requirement',
       layout: {
         config: configOf({
-          packages: '\n  web:\n    domains: [ui]',
           domains: '[analytics]',
           implementations: '[matomo]',
+        }),
+        files: workspaceOf({
+          web: memberConfigOf({
+            domains: '[ui]',
+          }),
         }),
       },
       warnings: [
@@ -1541,12 +1579,12 @@ describe('session-start hook', () => {
   it.each<GoldenCase>([
     {
       context: browserAppContext,
-      layout: BROWSER_APP,
+      layout: browserApp,
       project: 'a browser application with a block of its own pack and an override',
     },
     {
       context: everyCodeContext,
-      layout: EVERY_CODE,
+      layout: everyCode,
       project: 'one that sets off a warning of every code',
     },
     {
@@ -1554,12 +1592,12 @@ describe('session-start hook', () => {
         unparsedContext({
           line: lineNumberOf({
             at: '&check',
-            config: UNPARSED_CONFIG,
+            config: unparsedConfig,
           }),
           root: archive,
         }),
       layout: {
-        config: UNPARSED_CONFIG,
+        config: unparsedConfig,
       },
       project: 'one whose constitution.yaml does not parse',
     },
@@ -1596,7 +1634,7 @@ describe('session-start hook', () => {
         'bun (workflow: lockfile)',
         'git (workflow: tags)',
       ],
-      layout: CLI,
+      layout: cli,
       project: 'a command-line program',
     },
     {
@@ -1620,7 +1658,7 @@ describe('session-start hook', () => {
         '## Overrides',
         'four-data-states',
       ],
-      layout: LIBRARY,
+      layout: library,
       project: 'a library whose package is an application with its override',
     },
     {
@@ -1646,7 +1684,7 @@ describe('session-start hook', () => {
         'i18n [domains] (plurals)',
         'paraglide [implementations]',
       ],
-      layout: PACK_PROJECT,
+      layout: packProject,
       project: 'one with a pack of its own, one of its blocks in an application',
     },
     {
@@ -1661,7 +1699,7 @@ describe('session-start hook', () => {
         '## Implementations',
         'git (workflow: tags)',
       ],
-      layout: HTML_SITE,
+      layout: htmlSite,
       project: 'a plain HTML site in no language',
     },
   ])('should list the blocks in index order when the project is $project', ({ index, layout }) => {
@@ -1685,11 +1723,11 @@ describe('session-start hook', () => {
 
   it.each([
     {
-      layout: REAL_WEB_APP,
+      layout: realWebApp,
       shape: 'the reference web application',
     },
     {
-      layout: REAL_CLI,
+      layout: realCli,
       shape: 'the reference command-line tool',
     },
   ])(
@@ -1816,14 +1854,18 @@ describe('session-start hook', () => {
     expect(run.stdout).toContain('1.0\\u007f0');
   });
 
-  it('should mark a rule with every override of it, in the order of the file, when a project overrides rules', () => {
+  it("should mark a rule with every override of it, the repository's first, when a project and its member override rules", () => {
     // Arrange
     const project = createProject({
       config: configOf({
-        packages:
-          '\n  web:\n    overrides:\n      - rule: four-data-states\n        level: SHOULD\n        reason: "the kit decides"',
         domains: '[ui]',
         overrides: fourDataStatesOverride('    level: MAY\n    reason: "a prototype"'),
+      }),
+      files: workspaceOf({
+        web: memberConfigOf({
+          domains: '[ui]',
+          overrides: fourDataStatesOverride('    level: SHOULD\n    reason: "the kit decides"'),
+        }),
       }),
     });
 
@@ -1838,7 +1880,7 @@ describe('session-start hook', () => {
     });
 
     // Assert
-    expect(mustsOf(session)).toContain('four-data-states (SHOULD in web; MAY)');
+    expect(mustsOf(session)).toContain('four-data-states (MAY; SHOULD in web)');
   });
 
   // Each case measures the digest of its project under the default core, then
@@ -1886,14 +1928,14 @@ describe('session-start hook', () => {
       context: contextOf(
         runHook({
           event: HookEvent.Startup,
-          project: createProject(ONE_DOMAIN),
+          project: createProject(oneDomain),
           root,
         }),
       ),
       edge,
       past,
     });
-    const project = createProject(ONE_DOMAIN);
+    const project = createProject(oneDomain);
 
     // Act
     const context = contextOf(
@@ -1914,14 +1956,14 @@ describe('session-start hook', () => {
       context: contextOf(
         runHook({
           event: HookEvent.Startup,
-          project: createProject(ONE_DOMAIN),
+          project: createProject(oneDomain),
           root,
         }),
       ),
       edge: Edge.LastLine,
       past: 0,
     });
-    const project = createProject(ONE_DOMAIN);
+    const project = createProject(oneDomain);
 
     // Act
     const bytes = bytesAfterHeader(
@@ -1945,7 +1987,7 @@ describe('session-start hook', () => {
     },
   ])('should name the event $name when the hook runs at $event', ({ event, name }) => {
     // Arrange
-    const project = createProject(CLI);
+    const project = createProject(cli);
 
     // Act
     const output = outputOf(
@@ -1960,24 +2002,16 @@ describe('session-start hook', () => {
     expect(output.event).toBe(name);
   });
 
-  it.each<NoticeCase>([
-    {
-      condition: 'the project holds no archive',
-      names: (archive): readonly string[] => [
-        archive,
-        MISE_INSTALL,
-      ],
-      unlinked: true,
-    },
-    {
-      condition: "the project's archive link points nowhere",
-      dangling: true,
-      names: (archive): readonly string[] => [
-        archive,
-        MISE_INSTALL,
-      ],
-    },
-    ...[
+  it.each<NoticeCase>(
+    [
+      {
+        condition: 'the project holds no archive',
+        unlinked: true,
+      },
+      {
+        condition: "the project's archive link points nowhere",
+        dangling: true,
+      },
       {
         breakage: Breakage.Format,
         condition:
@@ -1985,32 +2019,26 @@ describe('session-start hook', () => {
       },
       {
         condition: 'the block format is older than the oldest the plugin reads',
-        format: FORMAT - 1,
+        format: releaseFormat - 1,
       },
       {
         condition: 'the block format is written as text',
-        format: String(FORMAT),
+        format: String(releaseFormat),
       },
-    ].map((older: Omit<NoticeCase, 'names'>) => ({
-      ...older,
-      // the oldest format the plugin reads, its newest while it reads one
+      {
+        condition: 'the block format is newer than the plugin reads',
+        format: releaseFormat + 1,
+      },
+    ].map((notice: Omit<NoticeCase, 'names'>) => ({
+      ...notice,
+      // the one line names the archive and the command that says what is wrong
       names: (archive: string): readonly string[] => [
         archive,
-        String(FORMAT),
-        MISE_INSTALL,
+        DOCTOR,
       ],
     })),
-    {
-      condition: 'the block format is newer than the plugin reads',
-      format: FORMAT + 1,
-      names: (archive): readonly string[] => [
-        archive,
-        String(FORMAT + 1),
-        'constitution@droneey',
-      ],
-    },
-  ])(
-    'should give only the reason and save no state when $condition',
+  )(
+    'should point to doctor in one line and save no state when $condition',
     ({ breakage, dangling, format, names, unlinked }) => {
       // Arrange
       const plugin =
@@ -2028,7 +2056,7 @@ describe('session-start hook', () => {
                     format,
                   }),
             });
-      const project = createProject(CLI);
+      const project = createProject(cli);
       const session = newSession();
 
       if (dangling === true) {
@@ -2056,7 +2084,7 @@ describe('session-start hook', () => {
           names: names(archiveIn(project)),
           text: context,
         }),
-        rules: context.includes(CORE_TEXT),
+        rules: context.includes(coreText),
         saved: existsSync(stateFolderOf(session)),
         stderr: run.stderr,
       }).toStrictEqual({
@@ -2072,9 +2100,9 @@ describe('session-start hook', () => {
   it('should give the digest when the block format is the newest the plugin reads', () => {
     // Arrange
     const plugin = createPluginRoot({
-      format: FORMAT,
+      format: releaseFormat,
     });
-    const project = createProject(CLI);
+    const project = createProject(cli);
 
     // Act
     const count = factNumberOf(
@@ -2095,26 +2123,26 @@ describe('session-start hook', () => {
     {
       breakage: Breakage.Manifest,
       condition: 'the archive lacks package.json',
-      layout: CLI,
+      layout: cli,
       stderr: ({ archive }): string => `constitution hook: cannot read ${archive}/package.json\n`,
     },
     {
       breakage: Breakage.Core,
       condition: "the archive lacks core's card",
-      layout: CLI,
+      layout: cli,
       stderr: (): string => 'constitution hook: cannot build the digest\n',
     },
     {
       breakage: Breakage.Version,
       condition: "the archive's package.json has no version",
-      layout: CLI,
+      layout: cli,
       stderr: ({ archive }): string =>
         `constitution hook: ${archive}/package.json has no version\n`,
     },
     {
       condition: 'constitution.yaml cannot be read',
       layout: {
-        ...CLI,
+        ...cli,
         unreadable: [
           'constitution.yaml',
         ],
@@ -2156,11 +2184,15 @@ describe('session-start hook', () => {
 
   it.each<BlockListCase>([
     {
-      condition: "a top-level block's with/ file is active only in an application",
+      condition: "a block's with/ file is active only in a member",
       layout: {
         config: configOf({
-          packages: '\n  packages/web:\n    domains: [remote-data]',
           domains: '[ui]',
+        }),
+        files: workspaceOf({
+          'packages/web': memberConfigOf({
+            domains: '[ui, remote-data]',
+          }),
         }),
       },
       index: [
@@ -2196,7 +2228,7 @@ describe('session-start hook', () => {
       config: configOf({
         domains: AXIS_DOMAINS,
       }),
-      view: EVERY_AXIS,
+      view: everyAxis,
     },
     {
       condition: 'the repository follows only the base',
@@ -2204,7 +2236,7 @@ describe('session-start hook', () => {
         axes: '[]',
         domains: AXIS_DOMAINS,
       }),
-      view: BASE_ONLY,
+      view: baseOnly,
     },
     {
       condition: 'constitution.yaml has no axes key',
@@ -2213,7 +2245,7 @@ describe('session-start hook', () => {
         omit: ConfigKey.Axes,
       }),
       view: {
-        ...EVERY_AXIS,
+        ...everyAxis,
         warnings: [
           [
             'config',
@@ -2229,7 +2261,7 @@ describe('session-start hook', () => {
         domains: AXIS_DOMAINS,
       }),
       view: {
-        ...BASE_ONLY,
+        ...baseOnly,
         warnings: [
           [
             'config',
@@ -2248,7 +2280,7 @@ describe('session-start hook', () => {
         musts: [
           READS_ARE_CANCELLABLE,
           FOUR_DATA_STATES,
-          ...BELOW_FOUR_DATA_STATES,
+          ...belowFourDataStates,
           LABELS_ON_FIELDS,
           OPTIMISTIC_WRITES_ROLL_BACK,
         ],
@@ -2268,16 +2300,14 @@ describe('session-start hook', () => {
     },
     {
       condition:
-        'an application follows an axis the repository leaves out, for its own block and a top-level one',
-      config: axesConfigOf({
-        packages: '\n  packages/web:\n    axes: [architecture]\n    domains: [remote-data]',
-        axes: '[]',
-      }),
+        "a member follows an axis the repository leaves out, for its own block and one of the repository's",
+      config: axesConfigOf('[]'),
+      files: axesMemberOf('[architecture]'),
       view: {
         musts: [
           READS_ARE_CANCELLABLE,
           FOUR_DATA_STATES,
-          ...BELOW_FOUR_DATA_STATES,
+          ...belowFourDataStates,
           LABELS_ON_FIELDS,
           OPTIMISTIC_WRITES_ROLL_BACK,
         ],
@@ -2293,15 +2323,13 @@ describe('session-start hook', () => {
       },
     },
     {
-      condition: 'an application follows only the base while the repository follows every axis',
-      config: axesConfigOf({
-        packages: '\n  packages/web:\n    axes: []\n    domains: [remote-data]',
-        axes: '[architecture, workflow]',
-      }),
+      condition: 'a member follows only the base while the repository follows every axis',
+      config: axesConfigOf('[architecture, workflow]'),
+      files: axesMemberOf('[]'),
       view: {
         musts: [
           FOUR_DATA_STATES,
-          ...BELOW_FOUR_DATA_STATES,
+          ...belowFourDataStates,
           LABELS_ON_FIELDS,
           COMMITS_ARE_ATOMIC,
         ],
@@ -2310,21 +2338,20 @@ describe('session-start hook', () => {
           'ui (screens; architecture: forms)',
           'version-control (workflow: commits)',
           '## packages/web',
+          'leaves out',
           'remote-data [domains]',
         ],
         warnings: [],
       },
     },
     {
-      condition: 'an application lists foundation in its axes',
-      config: axesConfigOf({
-        packages: '\n  packages/web:\n    axes: [foundation, workflow]\n    domains: [remote-data]',
-        axes: '[]',
-      }),
+      condition: 'a member lists foundation in its axes',
+      config: axesConfigOf('[]'),
+      files: axesMemberOf('[foundation, workflow]'),
       view: {
         musts: [
           FOUR_DATA_STATES,
-          ...BELOW_FOUR_DATA_STATES,
+          ...belowFourDataStates,
           COMMITS_ARE_ATOMIC,
         ],
         index: [
@@ -2338,7 +2365,7 @@ describe('session-start hook', () => {
         warnings: [
           [
             'config',
-            'packages/web',
+            'packages/web/constitution.yaml',
             'foundation',
           ],
         ],
@@ -2346,10 +2373,11 @@ describe('session-start hook', () => {
     },
   ])(
     'should give the files and MUST rules of the axes followed when $condition',
-    ({ config, view }) => {
+    ({ config, files, view }) => {
       // Arrange
       const project = createProject({
         config,
+        files,
       });
       const session = newSession();
 

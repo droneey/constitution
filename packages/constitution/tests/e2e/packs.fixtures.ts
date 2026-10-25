@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
-import { CLI_PATH } from './cli.fixtures';
+import { cliPath } from './cli.fixtures';
 
 type Files = Readonly<Record<string, string>>;
 
@@ -12,7 +12,7 @@ interface Run {
   passed: boolean;
 }
 
-const REPOSITORY = join(import.meta.dir, '..', '..');
+const repository = join(import.meta.dir, '..', '..');
 
 const created: string[] = [];
 
@@ -45,7 +45,6 @@ const packFilesOf = (parent: string): Files => ({
     'extends: null',
     'abstract: false',
     'languages: []',
-    'dictionary: []',
     'governs: ["**/acme.*"]',
     '---',
     '',
@@ -81,6 +80,7 @@ const createPack = (parent = 'dependency-reached-through-its-public-entry'): str
     '--quiet',
     folder,
   ]);
+
   for (const [path, text] of Object.entries(packFilesOf(parent))) {
     mkdirSync(dirname(join(folder, path)), {
       recursive: true,
@@ -95,11 +95,11 @@ const createPack = (parent = 'dependency-reached-through-its-public-entry'): str
 // base, as a pack's author runs the one its base's archive carries.
 const checkPack = (pack: string): Run => {
   const run = spawnSync(
-    CLI_PATH,
+    cliPath,
     [
       'check',
       '--base',
-      REPOSITORY,
+      repository,
     ],
     {
       cwd: pack,

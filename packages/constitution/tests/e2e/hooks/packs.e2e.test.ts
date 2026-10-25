@@ -21,7 +21,7 @@ import { ConfigKey, configOf, createProject, removeProjects } from '../project.f
 let root = '';
 
 // The files of Acme's axes a reminder names, and its MUST rules.
-const ACME_NAMES = [
+const acmeNames = [
   'packs/acme/blocks/implementations/acme/acme.md',
   'packs/acme/blocks/implementations/acme/foundation/dependencies.md',
   'packs/acme/blocks/implementations/acme/architecture/root.md',
@@ -29,7 +29,7 @@ const ACME_NAMES = [
   'acme-client-wired-by-the-root',
 ];
 // The warnings of the project whose pack's rule carries out no rule, in their order.
-const UNKNOWN_PARENT = [
+const unknownParent = [
   [
     'pack',
     'packs/gone',
@@ -57,8 +57,10 @@ const startProject = (
       [ConfigKey.Packs]: '[packs/acme, packs/gone]',
     }),
   });
+
   mkdirSync(join(project, 'packs'));
   symlinkSync(pack, join(project, 'packs', 'acme'));
+
   const session = newSession();
 
   return {
@@ -188,10 +190,10 @@ describe('a pack in a project', () => {
     // Assert
     expect(
       mentionedOf({
-        names: ACME_NAMES,
+        names: acmeNames,
         text: reminder,
       }),
-    ).toStrictEqual(ACME_NAMES);
+    ).toStrictEqual(acmeNames);
   });
 
   it('should warn of the rule when a rule of the pack carries out a rule nobody holds', () => {
@@ -205,8 +207,8 @@ describe('a pack in a project', () => {
     expect(
       warningsOf({
         context,
-        like: UNKNOWN_PARENT,
+        like: unknownParent,
       }),
-    ).toStrictEqual(UNKNOWN_PARENT);
+    ).toStrictEqual(unknownParent);
   });
 });

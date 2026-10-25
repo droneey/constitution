@@ -128,6 +128,7 @@ const themeMenuMarkup = (highlighted: string): ElementSpec => ({
 /** the simulated page lays nothing out, so each row is placed by hand, a row's height below the one before */
 const mountList = (spec: ElementSpec): HTMLElement => {
   const rows: HTMLElement[] = [];
+
   const build = ({
     tag,
     attributes = {},
@@ -140,14 +141,17 @@ const mountList = (spec: ElementSpec): HTMLElement => {
     for (const [name, attribute] of Object.entries(attributes)) {
       element.setAttribute(name, attribute);
     }
+
     element.textContent = text ?? '';
     element.append(...children.map(build));
+
     if (isRow === true) {
       rows.push(element);
     }
 
     return element;
   };
+
   const list = build(spec);
 
   for (const [index, row] of rows.entries()) {
@@ -156,6 +160,7 @@ const mountList = (spec: ElementSpec): HTMLElement => {
       value: (index + 1) * ROW_HEIGHT,
     });
   }
+
   document.body.append(list);
 
   return list;

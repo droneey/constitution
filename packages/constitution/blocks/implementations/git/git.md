@@ -5,12 +5,13 @@ requires: [version-control]
 extends: null
 abstract: false
 languages: []
-dictionary: [Git, git, .gitignore, .gitattributes, .gitkeep, Git LFS]
 governs: [".gitignore", ".gitattributes"]
 ---
 
 # Git
 
-> Version control with git: what is ignored, annotated tags, large files and worktrees.
+> Version control with **Git**, through the **`git`** command: what is ignored, annotated tags, large files and worktrees.
+
+**`.gitignore`** lists what is ignored, **`.gitattributes`** how files are treated, a **`.gitkeep`** keeps an empty folder, and **Git LFS** stores large files. Git runs a hook at each step of a commit: **`pre-commit`** before it is made, **`commit-msg`** on its message.
 
 A git-flow framework requires this block and may tighten it.

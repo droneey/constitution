@@ -14,7 +14,7 @@ OSV-Scanner reads every lockfile of the repository, in every language, developme
 
 ### accepted-vulnerability-states-reason-and-expiry → dependency-free-of-known-vulnerabilities · MUST
 
-An accepted vulnerability is an `[[IgnoredVulns]]` entry in `osv-scanner.toml` with its `reason` and an `ignoreUntil` date.
+An accepted vulnerability is an `[[IgnoredVulns]]` entry in **`osv-scanner.toml`** with its `reason` and an `ignoreUntil` date.
 
 | Why | Tags |
 |---|---|

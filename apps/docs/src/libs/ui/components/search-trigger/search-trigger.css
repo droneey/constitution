@@ -1,0 +1,54 @@
+@layer overrides {
+  /* the sidebar's version menu draws its trigger as this field by `data-sidebar-field` */
+  :is([data-search-full], [data-sidebar-field]) {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    width: 100%;
+    height: var(--spacing-control-lg);
+    padding: 0 calc(var(--spacing-xs) - 1px);
+    border: 1px solid var(--color-fd-border);
+    border-radius: var(--radius-xl);
+    background-color: var(--color-fill-field);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-ui);
+    text-align: start;
+    transition: background-color var(--duration-fast) var(--ease-standard);
+
+    &:hover,
+    &[data-popup-open] {
+      background-color: var(--color-fill-field-hover);
+      color: inherit;
+    }
+
+    & > svg {
+      flex-shrink: 0;
+      width: var(--spacing-icon-md);
+      height: var(--spacing-icon-md);
+    }
+  }
+
+  [data-search-full] {
+    color: var(--color-fd-muted-foreground);
+
+    &:hover {
+      color: var(--color-fd-muted-foreground);
+    }
+
+    & > div:last-child {
+      gap: var(--spacing-2xs);
+    }
+
+    & kbd {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: var(--spacing-control-xs);
+      height: var(--spacing-control-xs);
+      padding-inline: var(--spacing-2xs);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-sans);
+      font-size: var(--text-xs);
+    }
+  }
+}

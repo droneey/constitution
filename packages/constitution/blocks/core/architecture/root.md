@@ -6,7 +6,7 @@
 
 ### composition-root-wires-everything · MUST
 
-The composition root chooses every concrete implementation, builds every adapter, every use case and every stateful client — a cache, a store, a connection — applies every decorator — behaviour wrapped around an implementation of a contract, not a language's decorator syntax — and wires the program in one known place. A unit receives its dependencies typed by their contracts, or a use case by its own type — as parameters or, in a delivery or binding unit, from a typed scope the root fills — and never builds an adapter or asks a registry for one by its contract. A framework's container, where the program's framework block brings one, wires only from bindings the root declares, never by scanning, name or convention; where the framework brings no container, the root wires by hand, with no container library.
+The **composition root** chooses every concrete implementation, builds every adapter, every use case and every stateful client — a cache, a store, a connection — applies every decorator — behaviour wrapped around an implementation of a contract, not a language's decorator syntax — and wires the program in one known place, its **wiring file**. A unit receives its dependencies typed by their contracts, or a use case by its own type — as parameters or, in a delivery or binding unit, from a typed scope the root fills — and never builds an adapter or asks a registry for one by its contract. A framework's container, where the program's framework block brings one, wires only from bindings the root declares, never by scanning, name or convention; where the framework brings no container, the root wires by hand, with no container library.
 
 | Why | Tags |
 |---|---|
@@ -22,7 +22,7 @@ A package holds at most one composition root, and a library holds none. A progra
 
 ### delivery-unit-registered-by-the-root · MUST
 
-The root registers every delivery unit with its framework — each address, handler, subscription or schedule the program answers — by the names the surfaces of features and composition offer; no unit is found by scanning a folder or registers itself on import. Where the framework fixes the folder of its registration, the registration lives there, holds only what the framework asks of it — the address and its parsing, guards, loading, the handoff to the unit — and belongs to the root.
+The root registers every **delivery unit** with its framework — each address, handler, subscription or schedule the program answers — by the names the surfaces of features and composition offer; no unit is found by scanning a folder or registers itself on import. Where the framework fixes the folder of its registration, the registration lives there, holds only what the framework asks of it — the address and its parsing, guards, loading, the handoff to the unit — and belongs to the root.
 
 | Why | Tags |
 |---|---|

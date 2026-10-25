@@ -1,19 +1,25 @@
 import type { ReactElement } from 'react';
 import { use } from 'react';
 
-import { useVersions } from '#/features/versions';
+import { useGetVersions } from '#/features/versions';
 
-import { DocsLocationContext } from '../../../app/providers';
+import { DocsBuiltVersionContext, DocsLocationContext } from '../../../app/providers';
 import { DocsVersionMenu } from '../../components/docs-version-menu';
 
-export function DocsVersionWidget(): ReactElement {
+export function DocsVersionWidget(): ReactElement | null {
   const { href } = use(DocsLocationContext);
+  const currentVersion = use(DocsBuiltVersionContext);
+  const versionsState = useGetVersions();
+
+  if (currentVersion === undefined) {
+    return null;
+  }
 
   return (
     <DocsVersionMenu
-      current={import.meta.env.VITE_CONSTITUTION_VERSION}
-      href={href}
-      releases={useVersions()}
+      currentVersion={currentVersion}
+      pageHref={href}
+      versionsState={versionsState}
     />
   );
 }

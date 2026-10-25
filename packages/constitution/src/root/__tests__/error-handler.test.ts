@@ -1,42 +1,72 @@
 import { describe, expect, it } from 'bun:test';
 
-import { ProjectError, ProjectFailure } from '#/features/constitution';
+import { ColourLevel, createTheme, ThemeMode } from '@droneey/design-cli';
+import { CommanderError } from 'commander';
 
+import { TreeError, TreeFailure } from '#/features/blocks';
+import { ProjectError, ProjectFailure } from '#/kernel/errors';
+import { outputFlagsOf } from '#/shared/cli';
+
+import { clockOf } from '../configuration';
 import { createErrorHandler } from '../error-handler';
-import type { ExitCode } from '../exit-codes';
+import { ExitCode } from '../exit-codes';
 
-const PREFIX = 'constitution hook';
+const testTheme = createTheme({
+  colourLevel: ColourLevel.None,
+  isMotionReduced: true,
+  mode: ThemeMode.Dark,
+});
 
-// The handler over a run that keeps every exit code and every line written to standard error.
-const handlerOf = (): {
-  codes: ExitCode[];
+// The handler of a run of a hook, or of a person's command, that keeps what it writes.
+const handlerOf = (input: {
+  isHook: boolean;
+}): {
   errors: ReturnType<typeof createErrorHandler>;
-  lines: string[];
+  written: () => string;
 } => {
-  const codes: ExitCode[] = [];
-  const lines: string[] = [];
+  let written = '';
 
   return {
-    codes,
     errors: createErrorHandler({
-      setExitCode: (code: ExitCode): void => {
-        codes.push(code);
-      },
+      isHook: () => input.isHook,
+      theme: () => testTheme,
       writeError: (text: string): void => {
-        lines.push(text);
+        written += text;
       },
     }),
-    lines,
+    written: () => written,
   };
 };
+
+// What the root's clock throws when the environment fixes a day written otherwise than YYYY-MM-DD.
+const malformedDayFailure = ((): unknown => {
+  try {
+    return clockOf('2026-6-15').today();
+  } catch (error) {
+    return error;
+  }
+})();
+
+// What the output flags throw when an option does not parse.
+const unparsedOptionsFailure = ((): unknown => {
+  try {
+    return outputFlagsOf({
+      plain: 'yes',
+    });
+  } catch (error) {
+    return error;
+  }
+})();
 
 describe('createErrorHandler', () => {
   it.each([
     {
       condition: 'the archive is missing',
       failure: {
-        code: ProjectFailure.ArchiveMissing,
-        path: '.droneey/constitution',
+        code: ProjectFailure.ReleaseMissing,
+        details: {
+          path: '.droneey/constitution',
+        },
       },
       line: 'constitution hook: .droneey/constitution does not exist — run mise install\n',
     },
@@ -44,7 +74,9 @@ describe('createErrorHandler', () => {
       condition: 'the blocks cannot be listed',
       failure: {
         code: ProjectFailure.BlocksUnlisted,
-        path: '/archive/blocks',
+        details: {
+          path: '/archive/blocks',
+        },
       },
       line: 'constitution hook: cannot list the blocks of /archive/blocks\n',
     },
@@ -52,8 +84,10 @@ describe('createErrorHandler', () => {
       condition: 'constitution.yaml does not parse at a line',
       failure: {
         code: ProjectFailure.ConfigUnparsed,
-        line: 12,
-        path: 'constitution.yaml',
+        details: {
+          line: 12,
+          path: 'constitution.yaml',
+        },
       },
       line: 'constitution hook: constitution.yaml does not parse at line 12\n',
     },
@@ -61,7 +95,9 @@ describe('createErrorHandler', () => {
       condition: 'constitution.yaml does not parse at no known line',
       failure: {
         code: ProjectFailure.ConfigUnparsed,
-        path: 'constitution.yaml',
+        details: {
+          path: 'constitution.yaml',
+        },
       },
       line: 'constitution hook: constitution.yaml does not parse at line 0\n',
     },
@@ -69,7 +105,9 @@ describe('createErrorHandler', () => {
       condition: 'constitution.yaml cannot be read',
       failure: {
         code: ProjectFailure.ConfigUnreadable,
-        path: '/work/constitution.yaml',
+        details: {
+          path: '/work/constitution.yaml',
+        },
       },
       line: 'constitution hook: cannot read /work/constitution.yaml\n',
     },
@@ -77,7 +115,9 @@ describe('createErrorHandler', () => {
       condition: 'the core cannot be read',
       failure: {
         code: ProjectFailure.CoreUnreadable,
-        path: '/archive/blocks/core/core.md',
+        details: {
+          path: '/archive/blocks/core/core.md',
+        },
       },
       line: 'constitution hook: cannot build the digest\n',
     },
@@ -85,7 +125,9 @@ describe('createErrorHandler', () => {
       condition: 'the manifest cannot be read',
       failure: {
         code: ProjectFailure.ManifestUnreadable,
-        path: '/archive/package.json',
+        details: {
+          path: '/archive/package.json',
+        },
       },
       line: 'constitution hook: cannot read /archive/package.json\n',
     },
@@ -93,7 +135,9 @@ describe('createErrorHandler', () => {
       condition: 'no project is found',
       failure: {
         code: ProjectFailure.NoProject,
-        path: '/work',
+        details: {
+          path: '/work',
+        },
       },
       line: 'constitution hook: no constitution.yaml in this folder or above it\n',
     },
@@ -101,115 +145,330 @@ describe('createErrorHandler', () => {
       condition: 'the manifest has no version',
       failure: {
         code: ProjectFailure.VersionMissing,
-        path: '/archive/package.json',
+        details: {
+          path: '/archive/package.json',
+        },
       },
       line: 'constitution hook: /archive/package.json has no version\n',
     },
   ])(
-    'should write its line and end with the failure code when $condition',
-    async ({ failure, line }) => {
+    'should write its one line and end with the failure code when a hook fails as $condition',
+    ({ failure, line }) => {
       // Arrange
-      const handler = handlerOf();
-      const work = (): void => {
-        throw new ProjectError(failure);
-      };
+      const handler = handlerOf({
+        isHook: true,
+      });
 
       // Act
-      await handler.errors.run({
-        prefix: PREFIX,
-        work,
-      });
+      const code = handler.errors.codeOf(new ProjectError(failure));
 
       // Assert
       expect({
-        codes: handler.codes,
-        lines: handler.lines,
+        code,
+        written: handler.written(),
       }).toStrictEqual({
-        codes: [
-          1,
-        ],
-        lines: [
-          line,
-        ],
+        code: ExitCode.Failure,
+        written: line,
       });
     },
   );
 
   it.each([
     {
-      condition: 'the work throws an error of its own',
-      work: (): void => {
-        throw new TypeError('undefined is not an object');
-      },
+      failure: ProjectFailure.NoProject,
+      written:
+        '✗ no constitution.yaml in this folder or above it\n  → run /constitution:ratify in a Claude Code session to write one\n',
     },
     {
-      condition: 'the work rejects',
-      work: async (): Promise<void> => {
-        await Promise.reject(new RangeError('Maximum call stack size exceeded'));
-      },
+      failure: ProjectFailure.ConfigUnparsed,
+      written:
+        '✗ constitution.yaml does not parse at line 0\n  → fix constitution.yaml at that line\n',
     },
-  ])('should ask for a report and end with the defect code when $condition', async ({ work }) => {
+    {
+      failure: ProjectFailure.ConfigUnreadable,
+      written: '✗ cannot read /work/constitution.yaml\n  → make constitution.yaml readable\n',
+    },
+  ])(
+    'should write the failure block, and end with the failure code, when a command fails as $failure',
+    ({ failure, written }) => {
+      // Arrange
+      const handler = handlerOf({
+        isHook: false,
+      });
+
+      // Act
+      const code = handler.errors.codeOf(
+        new ProjectError({
+          code: failure,
+          details: {
+            path: '/work/constitution.yaml',
+          },
+        }),
+      );
+
+      // Assert
+      expect({
+        code,
+        written: handler.written(),
+      }).toStrictEqual({
+        code: ExitCode.Failure,
+        written,
+      });
+    },
+  );
+
+  it.each([
+    {
+      code: TreeFailure.TimedOut,
+      written:
+        '✗ git did not list the files of /work/constitution in time\n  → run git status there, which says what git cannot read\n',
+    },
+    {
+      code: TreeFailure.Failed,
+      written:
+        '✗ git could not list the files of /work/constitution\n  → run git status there, which says what git cannot read\n',
+    },
+  ])(
+    'should name the folder git could not list, and end with the failure code, when it $code',
+    ({ code, written }) => {
+      // Arrange
+      const handler = handlerOf({
+        isHook: false,
+      });
+
+      // Act
+      const exit = handler.errors.codeOf(
+        new TreeError({
+          code,
+          details: {
+            path: '/work/constitution',
+          },
+        }),
+      );
+
+      // Assert
+      expect({
+        exit,
+        written: handler.written(),
+      }).toStrictEqual({
+        exit: ExitCode.Failure,
+        written,
+      });
+    },
+  );
+
+  it('should name the file it could not read, with what to do, and end with the failure code, when a listed file is unreadable', () => {
     // Arrange
-    const handler = handlerOf();
+    const handler = handlerOf({
+      isHook: false,
+    });
 
     // Act
-    await handler.errors.run({
-      prefix: 'constitution check',
-      work,
-    });
+    const exit = handler.errors.codeOf(
+      new TreeError({
+        code: TreeFailure.Unreadable,
+        details: {
+          path: '/work/constitution/blocks/core/core.md',
+        },
+      }),
+    );
 
     // Assert
     expect({
-      codes: handler.codes,
-      lines: handler.lines,
+      exit,
+      written: handler.written(),
     }).toStrictEqual({
-      codes: [
-        70,
-      ],
-      lines: [
-        'constitution check: the run stopped on an error of its own; report it at https://github.com/droneey/constitution/issues\n',
-      ],
+      exit: ExitCode.Failure,
+      written:
+        '✗ cannot read /work/constitution/blocks/core/core.md\n  → make the file readable, or remove it from the tree\n',
     });
   });
 
-  it('should write nothing, set no code and say the work started when the work succeeds', async () => {
+  it.each([
+    {
+      isHook: true,
+      written:
+        'constitution hook: CONSTITUTION_TODAY is "2026-6-15", which is no date written YYYY-MM-DD\n',
+    },
+    {
+      isHook: false,
+      written:
+        '✗ CONSTITUTION_TODAY is "2026-6-15", which is no date written YYYY-MM-DD\n  → unset CONSTITUTION_TODAY, which only the program\'s specs set\n',
+    },
+  ])(
+    'should say which setting it cannot take and end with the usage code when the hook is $isHook',
+    ({ isHook, written }) => {
+      // Arrange
+      const handler = handlerOf({
+        isHook,
+      });
+
+      // Act
+      const exit = handler.errors.codeOf(malformedDayFailure);
+
+      // Assert
+      expect({
+        exit,
+        written: handler.written(),
+      }).toStrictEqual({
+        exit: ExitCode.Usage,
+        written,
+      });
+    },
+  );
+
+  it.each([
+    ProjectFailure.ReleaseMissing,
+    ProjectFailure.BlocksUnlisted,
+    ProjectFailure.CoreUnreadable,
+    ProjectFailure.ManifestUnreadable,
+    ProjectFailure.VersionMissing,
+  ])('should point to doctor when a command fails as %s', (failure) => {
     // Arrange
-    const handler = handlerOf();
-    const done: string[] = [];
+    const handler = handlerOf({
+      isHook: false,
+    });
 
     // Act
-    await handler.errors.run({
-      prefix: PREFIX,
-      work: async (): Promise<void> => {
-        await Promise.resolve();
-        done.push('work');
-      },
+    handler.errors.codeOf(
+      new ProjectError({
+        code: failure,
+        details: {
+          path: '/work/.droneey/constitution',
+        },
+      }),
+    );
+
+    // Assert
+    expect(handler.written().split('\n')[1]).toBe(
+      '  → run constitution doctor, which says what is wrong with the installation',
+    );
+  });
+
+  it.each([
+    {
+      condition: 'a hook',
+      isHook: true,
+      written:
+        'constitution hook: the run stopped on an error of its own; report it at https://github.com/droneey/constitution/issues\n',
+    },
+    {
+      condition: 'a command',
+      isHook: false,
+      written:
+        '✗ the run stopped on an error of its own\n  → report it at https://github.com/droneey/constitution/issues\n',
+    },
+  ])(
+    'should ask for a report and end with the defect code when $condition throws an error of its own',
+    ({ isHook, written }) => {
+      // Arrange
+      const handler = handlerOf({
+        isHook,
+      });
+
+      // Act
+      const code = handler.errors.codeOf(new TypeError('undefined is not an object'));
+
+      // Assert
+      expect({
+        code,
+        written: handler.written(),
+      }).toStrictEqual({
+        code: ExitCode.Defect,
+        written,
+      });
+    },
+  );
+
+  it.each([
+    {
+      code: ExitCode.Success,
+      condition: 'help or the version was asked for',
+      exitCode: 0,
+    },
+    {
+      code: ExitCode.Usage,
+      condition: 'the command line was typed wrong',
+      exitCode: 1,
+    },
+  ])('should end with $code, writing nothing more, when $condition', ({ code, exitCode }) => {
+    // Arrange
+    const handler = handlerOf({
+      isHook: false,
     });
+
+    // Act
+    const ended = handler.errors.codeOf(
+      new CommanderError(exitCode, 'commander.unknownCommand', 'unknown'),
+    );
 
     // Assert
     expect({
-      codes: handler.codes,
-      done,
-      hasStarted: handler.errors.hasStarted(),
-      lines: handler.lines,
+      code: ended,
+      written: handler.written(),
     }).toStrictEqual({
-      codes: [],
-      done: [
-        'work',
-      ],
-      hasStarted: true,
-      lines: [],
+      code,
+      written: '',
     });
   });
 
-  it('should say no work started when no command ran', () => {
+  it.each([
+    {
+      condition: 'a command',
+      isHook: false,
+      written:
+        '✗ the options do not parse\n  plain: Invalid input: expected boolean, received string\n',
+    },
+    {
+      condition: 'a hook',
+      isHook: true,
+      written: 'constitution hook: the options do not parse\n',
+    },
+  ])(
+    'should end with the usage code, what does not parse said, when the options of $condition do not parse',
+    ({ isHook, written }) => {
+      // Arrange
+      const handler = handlerOf({
+        isHook,
+      });
+
+      // Act
+      const code = handler.errors.codeOf(unparsedOptionsFailure);
+
+      // Assert
+      expect({
+        code,
+        written: handler.written(),
+      }).toStrictEqual({
+        code: ExitCode.Usage,
+        written,
+      });
+    },
+  );
+
+  it('should write what commander says of a command line typed wrong as a failure block', () => {
     // Arrange
-    const handler = handlerOf();
+    const handler = handlerOf({
+      isHook: false,
+    });
 
     // Act
-    const hasStarted = handler.errors.hasStarted();
+    handler.errors.writeUsage("error: unknown command 'chek'\n(Did you mean check?)\n");
 
     // Assert
-    expect(hasStarted).toBe(false);
+    expect(handler.written()).toBe("✗ unknown command 'chek'\n  (Did you mean check?)\n");
+  });
+
+  it('should keep a message that opens with no prefix of commander whole', () => {
+    // Arrange
+    const handler = handlerOf({
+      isHook: false,
+    });
+
+    // Act
+    handler.errors.writeUsage('too many arguments; error: see help');
+
+    // Assert
+    expect(handler.written()).toBe('✗ too many arguments; error: see help\n');
   });
 });

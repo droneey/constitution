@@ -5,13 +5,14 @@ requires: [python, pydantic, rest-api]
 extends: null
 abstract: false
 languages: []
-dictionary: [FastAPI, fastapi, Starlette, starlette, Uvicorn, uvicorn]
 governs: ["**/app/**", "**/root/**"]
 ---
 
 # FastAPI
 
-> Serves the program over HTTP, on Starlette, run by Uvicorn.
+> **FastAPI** serves the program over HTTP, on **Starlette**, run by **Uvicorn**.
+
+Their packages are **`fastapi`**, **`starlette`** and **`uvicorn`**.
 
 pydantic parses a handler's parameters and renders its return value, and the app's `lifespan` holds what the program keeps open.
 

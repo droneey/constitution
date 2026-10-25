@@ -20,7 +20,7 @@ let root = '';
 
 const ORDER_CARD = 'src/features/orders/ui/order-card.tsx';
 // The file a note names, ui's passport and one of its MUST rules.
-const UI_NAMES = [
+const uiNames = [
   ORDER_CARD,
   'blocks/domains/ui/ui.md',
   'four-data-states',
@@ -132,7 +132,7 @@ describe('the reminders of the post-tool-use hook', () => {
     expect({
       blocks: remindedOf(reminder),
       mentioned: mentionedOf({
-        names: UI_NAMES,
+        names: uiNames,
         text: context,
       }),
       within: context.length <= 300,
@@ -140,7 +140,7 @@ describe('the reminders of the post-tool-use hook', () => {
       blocks: [
         'ui',
       ],
-      mentioned: UI_NAMES,
+      mentioned: uiNames,
       within: true,
     });
   });

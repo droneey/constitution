@@ -6,7 +6,7 @@ import { enterRepository } from './repository.fixtures';
 
 const MARK = '<img src=".brand/diamond.svg" width="18" height="18" alt="">';
 
-const README = [
+const readmeText = [
   '<p align="center"><img src=".brand/banner-light.svg" alt="Constitution"></p>',
   '',
   'The Constitution is one set of rules.',
@@ -59,7 +59,7 @@ describe('sidebarOf', () => {
     // Arrange
     repository.leave = enterRepository({
       files: {
-        'README.md': README,
+        'README.md': readmeText,
       },
       folders: [
         'packages/constitution/blocks/domains',
@@ -89,7 +89,7 @@ describe('sidebarOf', () => {
     // Arrange
     repository.leave = enterRepository({
       files: {
-        'README.md': README,
+        'README.md': readmeText,
       },
       folders: [
         'packages/constitution/blocks/domains',
@@ -175,7 +175,7 @@ describe('sectionSummaryOf', () => {
     // Arrange
     repository.leave = enterRepository({
       files: {
-        'README.md': README,
+        'README.md': readmeText,
       },
     }).leave;
 

@@ -44,6 +44,7 @@ describe('DocsNotFoundScreen', () => {
 
     // Assert
     const main = screen.getByRole('main');
+
     expect([
       main.id,
       main.tabIndex,
@@ -89,6 +90,7 @@ describe('DocsNotFoundScreen', () => {
     const repository = screen.getByRole('link', {
       name: 'GitHub',
     });
+
     expect([
       repository.textContent,
       repository.getAttribute('target'),
@@ -103,11 +105,14 @@ describe('DocsNotFoundScreen', () => {
   test('should slide a block under the items of a menu that opens on it', async () => {
     // Arrange
     renderInDocs(<DocsNotFoundScreen />);
+
     const menu = document.createElement('div');
     menu.setAttribute('role', 'menu');
+
     const lightTheme = document.createElement('div');
     lightTheme.setAttribute('role', 'menuitem');
     lightTheme.textContent = 'Light';
+
     menu.append(lightTheme);
 
     // Act

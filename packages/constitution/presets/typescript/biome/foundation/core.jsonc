@@ -77,6 +77,7 @@
   },
   "plugins": [
     "./.droneey/constitution/presets/typescript/biome/foundation/plugins/catch-handles-only-what-it-recognises.grit",
+    "./.droneey/constitution/presets/typescript/biome/foundation/plugins/statements-grouped-by-blank-lines.grit",
     {
       "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/case-named-should-when.grit",
       "includes": [

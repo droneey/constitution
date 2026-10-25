@@ -26,6 +26,14 @@
       ],
     },
     {
+      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/business-types-readonly.grit",
+      "includes": [
+        "**/domain/**",
+        "**/kernel/**",
+        "!**/__tests__/**",
+      ],
+    },
+    {
       "path": "./.droneey/constitution/presets/typescript/biome/architecture/plugins/surface-only-re-exports.grit",
       "includes": [
         "**/index.ts",

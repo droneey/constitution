@@ -6,7 +6,7 @@ const MUTATE = [
   'src/**/*.ts',
   '!src/**/__tests__/**',
   '!src/entrypoints/**',
-];
+] as const;
 
 const diffOf = (files: Readonly<Record<string, readonly string[]>>): string =>
   Object.entries(files)
@@ -56,7 +56,7 @@ const IMPORTS: Readonly<Record<string, readonly string[]>> = {
   'src/orders/price.utils.ts': [
     'src/orders/order.ts',
   ],
-};
+} as const;
 
 const targetsOf = (input: {
   codeChanged?: (path: string) => boolean;

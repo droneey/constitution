@@ -42,10 +42,10 @@ It stays under Claude Code's limit of 10,000 characters and holds:
 2. `constitution.yaml makes <n> blocks active.`;
 3. the warnings about `constitution.yaml` and about the tools' configurations that do not take the parts of their blocks, to tell you at the start of a session;
 4. [core's passport](../../packages/constitution/blocks/core/core.md) whole, its front matter aside, whose list of core's chapters gives the order they are read in;
-5. every active block by layer — a domain or a context with its summary, an implementation by its library's name — with its chapters and seams, foundation's first, then axis by axis, on the axes the project follows, and its pack in square brackets; then each unit's blocks;
+5. every active block by layer — a domain or a context with its summary, an implementation by its library's name — with its chapters and seams, foundation's first, then axis by axis, on the axes the project follows, and its pack in square brackets; then, for each member of the workspace, what its own `constitution.yaml` adds to the repository's and what it leaves out;
 6. the overrides.
 
-A repository without `constitution.yaml` gets nothing. Without `.droneey/constitution/`, the digest only asks for `mise install`.
+A repository without `constitution.yaml` gets nothing. When `.droneey/constitution/` is missing, or holds a release of a block format this program cannot read, the digest is one line that names it and points to `constitution doctor`.
 
 ### What the hooks need
 
@@ -57,6 +57,11 @@ The resolved set of blocks is kept outside the project, in `/tmp/droneey-constit
 
 `constitution` is the same program outside a session:
 
-- `constitution check` checks the blocks of the folder it runs in when it holds a Constitution or a pack (`--base <folder>` names the Constitution a pack extends), then the project around it: the warnings of `constitution.yaml` and of the wiring that the digest gives. It exits 1 on a finding or a warning.
-- `constitution wiring` prints the configuration files the project's tools read, each with the units it serves, its template and the parts it takes, which `/constitution:ratify` writes.
+- `constitution check` runs the two checks below in turn: the blocks of the folder it runs in, when it holds a Constitution or a pack, then the project around it. `--base <folder>` names the Constitution a pack extends.
+- `constitution blocks check` checks the blocks of the folder it runs in alone, the pack's against `--base <folder>`.
+- `constitution presets check` gives the warnings of the project's `constitution.yaml`, of each member's and of the wiring, the ones the digest gives; a member of the workspace that keeps no `constitution.yaml` is one of them.
+- `constitution presets plan` prints the configuration files the project's tools read, each with the units it serves, its template and the parts it takes, which `/constitution:ratify` writes.
+- `constitution doctor` says how the installation stands, and changes nothing: the plugin, which differs from this program only when its own files — its manifest, hooks, skills and agents — differ from those the program was built with, compared by a hash of their content, its version then saying which is older; the latest release, which it skips without a network; the program on `PATH`; the project's `.droneey/constitution` link and the release behind it; and lefthook's git hooks. Each part that is not sound comes with what to do.
 - `constitution hook <event>` is what the hooks run.
+
+Each command opens its help, `-h` or `--help`, with examples. On a terminal a check draws a spinner on standard error while each step runs, and its result in colour; in a pipe, in CI, under `NO_COLOR` or with `--plain` it prints the same as plain text, each step's line on standard error and the result on standard output; `--no-color` and `--no-motion` take away only the colour or the motion. A command exits 0 when all is sound, 1 on a finding, a warning or a part to look at, 2 on a command line typed wrong, 70 on a defect of its own, and 130 when interrupted.

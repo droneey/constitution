@@ -16,16 +16,8 @@ A set of interface primitives is a set of components, each a module of its own i
 
 ### theme-module-lives-in-the-ui-library · MUST
 
-The theme module lives in `libs/ui/theme/`: the token source — or, where a package of tokens supplies them, the reading of them — the outputs generated from it, the theme's constants and modes, and the code that applies them.
+The theme module lives in `libs/ui/theme/`: the token source, or the outputs generated from tokens a package supplies, the theme's constants and modes, and the code that applies them.
 
 | Why | Tags |
 |---|---|
 | the theme knows nothing of the application, and one home lets a tool and a reviewer find every token. | [ux] |
-
-### token-package-ships-its-tokens-in-tokens → package-laid-out-by-the-tree · SHOULD
-
-A package of tokens holds them as the content it ships, in `tokens/`, and no theme module.
-
-| Why | Tags |
-|---|---|
-| the tokens are data every platform reads at its build, so the package ships them as they are and holds no code of a platform. | [] |

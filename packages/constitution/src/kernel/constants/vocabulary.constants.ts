@@ -6,11 +6,15 @@ enum Axis {
 
 // Each axis keeps a folder in a block and in a preset alike; foundation is always followed, and a
 // project lists the others it follows.
-const AXES: readonly Axis[] = [
+const AXES = [
   Axis.Foundation,
   Axis.Architecture,
   Axis.Workflow,
-];
+] as const;
+const OPTIONAL_AXES = [
+  Axis.Architecture,
+  Axis.Workflow,
+] as const;
 
 enum Kind {
   Core = 'core',
@@ -27,29 +31,48 @@ enum Layer {
   Implementation = 'implementation',
 }
 
-const LAYERS: readonly Layer[] = [
+const LAYERS = [
   Layer.Core,
   Layer.Domain,
   Layer.Platform,
   Layer.Language,
   Layer.Implementation,
-];
+] as const;
 
-const LAYER_RANK: Readonly<Record<Layer, number>> = {
+const LAYER_RANK = {
   [Layer.Core]: 0,
   [Layer.Domain]: 1,
   [Layer.Implementation]: 3,
   [Layer.Language]: 2,
   [Layer.Platform]: 2,
-};
+} as const satisfies Readonly<Record<Layer, number>>;
 
-const KIND_OF_LAYER: Readonly<Record<Layer, Kind>> = {
+// The folder of each layer under the blocks folder; core's is its one block's.
+const LAYER_FOLDER = {
+  [Layer.Core]: 'core',
+  [Layer.Domain]: 'domains',
+  [Layer.Implementation]: 'implementations',
+  [Layer.Language]: 'contexts/languages',
+  [Layer.Platform]: 'contexts/platforms',
+} as const satisfies Readonly<Record<Layer, string>>;
+
+const LAYER_ARTICLE = {
+  [Layer.Core]: 'a',
+  [Layer.Domain]: 'a',
+  [Layer.Implementation]: 'an',
+  [Layer.Language]: 'a',
+  [Layer.Platform]: 'a',
+} as const satisfies Readonly<Record<Layer, string>>;
+
+const KIND_OF_LAYER = {
   [Layer.Core]: Kind.Core,
   [Layer.Domain]: Kind.Domain,
   [Layer.Implementation]: Kind.Implementation,
   [Layer.Language]: Kind.Context,
   [Layer.Platform]: Kind.Context,
-};
+} as const satisfies Readonly<Record<Layer, Kind>>;
+
+const BLOCKS_FOLDER = 'blocks';
 
 enum Level {
   Must = 'MUST',
@@ -57,13 +80,21 @@ enum Level {
   May = 'MAY',
 }
 
-const LEVELS: readonly Level[] = [
+const LEVELS = [
   Level.Must,
   Level.Should,
   Level.May,
-];
+] as const;
+// An override lowers a rule, so it sets one of these, never MUST.
+type LoweredLevel = Level.Should | Level.May;
 
-enum Tag {
+const LOWERED_LEVELS: readonly LoweredLevel[] = [
+  Level.Should,
+  Level.May,
+] as const;
+
+// A lens names a concern a review reads every block for; a rule's Tags list its lenses.
+enum Lens {
   Security = 'security',
   A11y = 'a11y',
   Performance = 'performance',
@@ -73,4 +104,21 @@ enum Tag {
   Errors = 'errors',
 }
 
-export { AXES, Axis, KIND_OF_LAYER, Kind, LAYER_RANK, LAYERS, Layer, LEVELS, Level, Tag };
+export type { LoweredLevel };
+export {
+  AXES,
+  Axis,
+  BLOCKS_FOLDER,
+  KIND_OF_LAYER,
+  Kind,
+  LAYER_ARTICLE,
+  LAYER_FOLDER,
+  LAYER_RANK,
+  LAYERS,
+  Layer,
+  LEVELS,
+  Lens,
+  Level,
+  LOWERED_LEVELS,
+  OPTIONAL_AXES,
+};

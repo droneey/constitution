@@ -33,12 +33,12 @@ interface PluginRootOptions {
 }
 
 const INSTALLED = '1.0.0';
-const REPOSITORY = join(import.meta.dir, '..', '..');
+const repository = join(import.meta.dir, '..', '..');
 // The block format of this repository's release, the one its hooks read, found
 // in its package.json as the hook finds it.
-const FORMAT = Number(
+const releaseFormat = Number(
   /"constitutionFormat"\s*:\s*(\d+)/u.exec(
-    readFileSync(join(REPOSITORY, 'package.json'), 'utf8'),
+    readFileSync(join(repository, 'package.json'), 'utf8'),
   )?.[1],
 );
 const HOOKS = 'hooks';
@@ -58,8 +58,9 @@ const copyHook = (root: string): void => {
   mkdirSync(join(root, HOOKS), {
     recursive: true,
   });
-  for (const name of readdirSync(join(REPOSITORY, HOOKS)).filter((file) => file.endsWith('.sh'))) {
-    copyFileSync(join(REPOSITORY, HOOKS, name), join(root, HOOKS, name));
+
+  for (const name of readdirSync(join(repository, HOOKS)).filter((file) => file.endsWith('.sh'))) {
+    copyFileSync(join(repository, HOOKS, name), join(root, HOOKS, name));
   }
 };
 
@@ -102,7 +103,7 @@ const writeManifest = (input: {
 // The plugin brings the hooks; the archive beside it, the blocks and the
 // manifest that names their format, as a release packs them.
 const createPluginRoot = (options: PluginRootOptions = {}): string => {
-  const { breakage, coreBody, format = FORMAT } = options;
+  const { breakage, coreBody, format = releaseFormat } = options;
   const folder = mkdtempSync(join(tmpdir(), 'constitution-plugin-'));
   const root = join(folder, PLUGIN);
   const archive = join(folder, ARCHIVE);
@@ -143,11 +144,11 @@ const createRealPluginRoot = (): string => {
 
   created.push(folder);
   copyHook(root);
-  copyFileSync(join(REPOSITORY, 'package.json'), join(root, 'package.json'));
-  cpSync(join(REPOSITORY, 'blocks'), join(archive, 'blocks'), {
+  copyFileSync(join(repository, 'package.json'), join(root, 'package.json'));
+  cpSync(join(repository, 'blocks'), join(archive, 'blocks'), {
     recursive: true,
   });
-  copyFileSync(join(REPOSITORY, 'package.json'), join(archive, 'package.json'));
+  copyFileSync(join(repository, 'package.json'), join(archive, 'package.json'));
 
   return root;
 };
@@ -215,10 +216,10 @@ export {
   coreBodyOfBytes,
   createPluginRoot,
   createRealPluginRoot,
-  FORMAT,
   INSTALLED,
   LINK,
   linkArchive,
+  releaseFormat,
   removeFolder,
   removePluginRoots,
 };

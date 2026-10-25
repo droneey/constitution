@@ -70,7 +70,9 @@ const docsContentFake = (): DocsContentFake => {
     docs: {
       loadPage: (slugs: string[]): Promise<DocsPageData> => {
         loads.push(slugs);
+
         const page = pages.get(slugs.join('/'));
+
         if (page === undefined) {
           throw notFound();
         }
@@ -81,6 +83,7 @@ const docsContentFake = (): DocsContentFake => {
         if (type !== guide.type || path !== guide.path) {
           throw notFound();
         }
+
         const entry: DocsPageEntry = {
           body: (): undefined => undefined,
           description,

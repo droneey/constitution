@@ -56,7 +56,7 @@ A data port is a repository per side — one for reads, one for writes — for e
 
 ### outside-shape-mapped-in-the-adapter · MUST
 
-An outside shape — a response, a row, a message, a file format — is mapped to the inner model in the adapter, in both directions, its spellings of absence included; a wire shape never travels inward.
+An outside shape, a **wire model** — a response, a row, a message, a file format — is mapped to the inner model in the adapter, in both directions, its spellings of absence included; a wire shape never travels inward.
 
 | Why | Tags |
 |---|---|

@@ -33,18 +33,21 @@ plugin({
         },
         async ({ path }) => {
           const source = await Bun.file(path).text();
+
           if (!importsMacro(source)) {
             return {
               contents: source,
               loader,
             };
           }
+
           const { code } = await transform(source, basename(path), {
             macro: {
               descriptorFields: 'all',
               ...mapMacroOptions(config),
             },
           });
+
           return {
             contents: code,
             loader,
@@ -52,15 +55,18 @@ plugin({
         },
       );
     }
+
     build.onLoad(
       {
         filter: /\.po$/,
       },
       async ({ path }) => {
         const found = getCatalogForFile(relative(config.rootDir, path), await getCatalogs(config));
+
         if (!found) {
           throw new Error(`${path} belongs to no catalog of lingui.config.ts`);
         }
+
         const { messages } = await found.catalog.getTranslations(found.locale, {
           fallbackLocales: config.fallbackLocales,
           sourceLocale: config.sourceLocale,
@@ -68,6 +74,7 @@ plugin({
         const { source } = createCompiledCatalog(found.locale, messages, {
           namespace: 'es',
         });
+
         return {
           contents: source,
           loader: 'js',

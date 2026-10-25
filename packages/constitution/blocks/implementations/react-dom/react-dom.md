@@ -5,10 +5,9 @@ requires: [browser, html]
 extends: _react
 abstract: false
 languages: []
-dictionary: [React DOM]
 governs: ["**/*.tsx"]
 ---
 
 # React DOM
 
-> React rendering to the browser's document.
+> React rendering to the browser's document through **React DOM**.

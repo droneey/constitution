@@ -46,6 +46,14 @@ Code takes the longer, plain form over the terse, clever one: no nested conditio
 |---|---|
 | clever code saves its author a minute and costs every reader more. | [] |
 
+### statements-grouped-by-blank-lines · SHOULD
+
+A blank line sets apart from the statements before and after it a compound statement — a condition, a loop, a switch, a try —, a `delete`, and a function, declared or held by a variable. It comes before a return, a throw, a break or a continue, and after one when code follows it. A variable declaration begins a group: a blank line comes before it when another kind of statement precedes it, the calls and assignments on its variable or its members that directly follow it belong to the group, and a blank line ends the group before the next statement of another kind. Consecutive declarations, consecutive expression statements outside a group, and the first statement of a block need none.
+
+| Why | Tags |
+|---|---|
+| a blank line shows where one step of a body ends and the next begins, so a reader takes the body in by its steps instead of line by line, and with the places fixed no review argues over them. | [] |
+
 ## Dead code
 
 ### code-never-commented-out · MUST

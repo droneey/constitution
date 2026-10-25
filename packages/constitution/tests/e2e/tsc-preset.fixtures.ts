@@ -8,12 +8,12 @@ interface Project {
   parts: readonly string[];
 }
 
-const REPOSITORY = join(import.meta.dir, '..', '..');
-const TSC = join(REPOSITORY, 'node_modules', '.bin', 'tsc');
-const PRESETS_FOLDER = join(REPOSITORY, 'presets', 'typescript', 'tsc', 'foundation');
+const repository = join(import.meta.dir, '..', '..');
+const tsc = join(repository, 'node_modules', '.bin', 'tsc');
+const presetsFolder = join(repository, 'presets', 'typescript', 'tsc', 'foundation');
 
 const presetParts = (): readonly string[] =>
-  readdirSync(PRESETS_FOLDER)
+  readdirSync(presetsFolder)
     .filter((name) => name.endsWith('.json'))
     .map((name) => name.replace(/\.json$/, ''))
     .toSorted((left, right) => left.localeCompare(right));
@@ -23,7 +23,7 @@ const typeChecks = (project: Project): boolean => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-tsconfig-'));
 
   mkdirSync(join(folder, '.droneey'));
-  symlinkSync(REPOSITORY, join(folder, '.droneey', 'constitution'));
+  symlinkSync(repository, join(folder, '.droneey', 'constitution'));
   writeFileSync(
     join(folder, 'tsconfig.json'),
     JSON.stringify({
@@ -32,7 +32,7 @@ const typeChecks = (project: Project): boolean => {
       ),
       compilerOptions: {
         typeRoots: [
-          join(REPOSITORY, 'node_modules', '@types'),
+          join(repository, 'node_modules', '@types'),
         ],
       },
       include: [
@@ -46,7 +46,7 @@ const typeChecks = (project: Project): boolean => {
   );
   writeFileSync(join(folder, 'main.ts'), project.main);
 
-  const compilation = spawnSync(TSC, [
+  const compilation = spawnSync(tsc, [
     '-p',
     folder,
   ]);

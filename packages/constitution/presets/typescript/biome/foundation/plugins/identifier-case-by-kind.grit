@@ -1,0 +1,106 @@
+language js
+
+pattern screaming_snake_case() { r"[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)*" }
+
+pattern pascal_case() { r"[A-Z][A-Za-z0-9]*" }
+
+pattern primitive_literal() {
+  or {
+    JsStringLiteralExpression(),
+    JsNumberLiteralExpression(),
+    JsBigintLiteralExpression(),
+    JsBooleanLiteralExpression(),
+    JsRegexLiteralExpression(),
+    JsUnaryExpression(argument=or {
+      JsNumberLiteralExpression(),
+      JsBigintLiteralExpression()
+    }),
+    JsTemplateExpression() as $template where {
+      $template <: r"(?s)`.*",
+      $template <: not contains JsTemplateElement()
+    }
+  }
+}
+
+pattern as_const() {
+  TsAsExpression(expression=or {
+    primitive_literal(),
+    JsObjectExpression(),
+    JsArrayExpression()
+  }) as $fixed where { $fixed <: r"(?s).*\bas\s+const" }
+}
+
+pattern literal() {
+  or {
+    primitive_literal(),
+    as_const(),
+    TsSatisfiesExpression(expression=as_const())
+  }
+}
+
+pattern component_value() {
+  or {
+    JsArrowFunctionExpression(),
+    JsFunctionExpression(),
+    JsCallExpression(callee=$callee) where {
+      $callee <: r"(?:[A-Za-z]+\.)?(?:memo|forwardRef|lazy|createContext|assign)"
+    }
+  }
+}
+
+pattern companion_of_a_type($module) {
+  $name where {
+    $module <: contains or {
+      TsTypeAliasDeclaration(binding_identifier=$type),
+      TsInterfaceDeclaration(id=$type)
+    } where { $type <: $name }
+  }
+}
+
+pattern exported_by_a_clause($module) {
+  $name where {
+    $module <: contains or {
+      JsExportNamedShorthandSpecifier(name=$exported),
+      JsExportNamedSpecifier(local_name=$exported)
+    } where { $exported <: $name }
+  }
+}
+
+JsVariableDeclarator(id=$name, initializer=JsInitializerClause(expression=$value)) as $constant where {
+  $name <: JsIdentifierBinding(),
+  $constant <: within JsVariableDeclaration() as $declaration where {
+    $declaration <: r"(?s)const\s.*"
+  },
+  $constant <: not within or {
+    JsFunctionBody(),
+    JsBlockStatement(),
+    JsStaticInitializationBlockClassMember(),
+    JsForStatement(),
+    JsForOfStatement(),
+    JsForInStatement()
+  },
+  $constant <: within JsModule() as $module,
+  or {
+    and {
+      $value <: literal(),
+      $name <: not screaming_snake_case(),
+      not and { $value <: not primitive_literal(), $name <: companion_of_a_type($module) },
+      register_diagnostic(span=$name, message="A module-level constant holding a literal is SCREAMING_SNAKE_CASE", severity="error")
+    },
+    and {
+      $value <: not literal(),
+      or {
+        $name <: screaming_snake_case(),
+        and {
+          $name <: pascal_case(),
+          $value <: not component_value(),
+          $name <: not companion_of_a_type($module),
+          // An exported name may be one a framework reads by its spelling.
+          $constant <: not within JsExport(),
+          $name <: not exported_by_a_clause($module)
+        }
+      },
+      register_diagnostic(span=$name, message="A module-level constant computed at run time is camelCase, or PascalCase for a component or the companion of a type of its name", severity="error")
+    }
+  }
+}

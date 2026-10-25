@@ -5,7 +5,6 @@ requires: [remote-service]
 extends: null
 abstract: false
 languages: []
-dictionary: []
 governs: ["**"]
 ---
 

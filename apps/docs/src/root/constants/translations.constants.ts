@@ -1,5 +1,5 @@
 /** the library's labels in sentence case */
-export const translations: Readonly<Record<string, string>> = {
+export const TRANSLATIONS: Readonly<Record<string, string>> = {
   'Back to Home(404 not found page)': 'Back to home',
   'Close Banner(banner)(aria-label)': 'Close banner',
   'Close Search(search dialog)(aria-label)': 'Close search',
@@ -26,4 +26,4 @@ export const translations: Readonly<Record<string, string>> = {
   'Show Sidebar(sidebar)': 'Show sidebar',
   'Table of Contents(inline table of contents)': 'Table of contents',
   'Toggle Theme(theme switcher)(aria-label)': 'Toggle theme',
-};
+} as const;

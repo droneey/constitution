@@ -6,7 +6,7 @@
 
 ### changes-reach-main-line-through-review · MUST
 
-Every change reaches the main line through a reviewed change request; the release automation's version commit and tag are the one exception.
+Every change reaches the main line through a reviewed change request, a **pull request** or a merge request as its host names it; the version commit and tag of the **release automation**, the tool that numbers and tags each release, are the one exception.
 
 | Why | Tags |
 |---|---|
@@ -14,7 +14,7 @@ Every change reaches the main line through a reviewed change request; the releas
 
 ### change-request-lands-as-one-commit · MUST
 
-A change request reaches the main line as one commit, and no work-in-progress or fix-up commit reaches it.
+A change request reaches the main line as one commit, its commits joined by a **squash**, and no work-in-progress or fix-up commit reaches it.
 
 | Why | Tags |
 |---|---|

@@ -9,7 +9,7 @@ import {
   crossLinks,
   markdownOfPage,
   passportAsIndex,
-  renamed,
+  servedUnderSitePaths,
 } from '../pages.adapter';
 
 const ARROW = /<svg\b(?=[^>]*\baria-hidden="true")(?=[^>]*\bdata-cross-link="")[^>]*>.*<\/svg>/;
@@ -37,8 +37,8 @@ const addressesOf = (nodes: readonly Node[]): readonly string[] =>
       : [],
   );
 
-describe('renamed', () => {
-  it('should serve every file under the path asked when a source is renamed', () => {
+describe('servedUnderSitePaths', () => {
+  it('should serve every file under the path asked when a source is servedUnderSitePaths', () => {
     // Arrange
     const source = {
       files: [
@@ -51,7 +51,7 @@ describe('renamed', () => {
     };
 
     // Act
-    const served = renamed(source, (path) => `served-${path}`);
+    const served = servedUnderSitePaths(source, (path) => `served-${path}`);
 
     // Assert
     expect(served).toStrictEqual({
@@ -69,7 +69,7 @@ describe('renamed', () => {
 describe('collectionPathOf', () => {
   it('should give the path the collection knows when the site serves the page under another', () => {
     // Arrange
-    renamed(
+    servedUnderSitePaths(
       {
         files: [
           {
@@ -77,11 +77,11 @@ describe('collectionPathOf', () => {
           },
         ],
       },
-      () => 'renamed-glossary.md',
+      () => 'servedUnderSitePaths-glossary.md',
     );
 
     // Act
-    const path = collectionPathOf('renamed-glossary.md');
+    const path = collectionPathOf('servedUnderSitePaths-glossary.md');
 
     // Assert
     expect(path).toBe('PROJECT.md');
@@ -89,13 +89,13 @@ describe('collectionPathOf', () => {
 
   it('should give the path itself when the site serves the page under its own', () => {
     // Arrange
-    const served = 'guides/never-renamed.md';
+    const served = 'guides/never-servedUnderSitePaths.md';
 
     // Act
     const path = collectionPathOf(served);
 
     // Assert
-    expect(path).toBe('guides/never-renamed.md');
+    expect(path).toBe('guides/never-servedUnderSitePaths.md');
   });
 });
 

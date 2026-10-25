@@ -47,13 +47,15 @@ features/<f>/
 └── index.*                the surface
 ```
 
-A surface is the file the language resolves when a folder is imported. A binding unit binds one operation to the program's framework.
+A surface is the file the language resolves when a folder is imported. A **binding unit** binds one operation to the program's framework.
 
 ## The vocabulary
 
-- Layers: `root`, `features`, `composition`, `adapters`, `kernel`, `shared`, `libs`, `integrations`, `entrypoints`, `domain`, `app`.
-- Roles: `contracts` (ports, in a feature's domain or in the kernel), `use-cases`, `queries`, `commands`, `entities`, `value-objects`, `repositories`, `errors`, `constants`, `types`, `utils`, `steps`, `models` (wire and stored shapes inside adapters), `providers` (framework providers and the instances they wire).
-- Suffixes: `.entity`, `.value-object`, `.error`, `.repository`, `.port`, `.adapter` (a port's implementation that is no repository), `.use-case`, `.utils`, `.types`, `.constants`, `.model`, `.config`.
+The layers are the folders of the tree. **`root/`** is the composition root: the wiring file, the providers, the configuration parsed at start, the handler of last resort and the registration of every delivery unit. **`features/`** holds the features, bounded contexts blind to each other. **`composition/`** holds modules laid out as features: what several features make together, and the delivery units that compose them. **`adapters/`** holds the adapters, each implementing ports over one outside system: the kernel's at the top of the source, a feature's own contracts inside the feature. **`kernel/`** holds the domain the features share: the vocabulary and the ports two or more features need. **`shared/`** holds, at any level, what two or more of its neighbours need and the level gives no other home. **`libs/`** holds code that knows nothing of the product: primitives and vendor clients, publishable. **`integrations/`** holds the package's integration into a host framework, an entry of its own. **`entrypoints/`** holds another artefact of the program, or a command of a tooling program. Inside a feature, **`domain/`** is the pure layer, and **`app/`** holds the binding units and the role folders they need.
+
+A role folder holds members of one kind. **`contracts/`** holds the ports, in a feature's domain or in the kernel, and **`repositories/`** inside it holds the data ports. **`use-cases/`** holds the use cases, one folder for each operation. Under `use-cases/` and `repositories/`, **`queries/`** holds the reads and **`commands/`** the writes. **`entities/`** holds the business types and enumerations, and **`value-objects/`** the values with an invariant. **`errors/`** holds the expected failures: a feature's in its domain, those every feature shares in the kernel. **`constants/`** holds a module's constants and `types/` its types, vocabulary with no behaviour. **`utils/`** holds pure helpers with no meaning of the product. **`steps/`** holds a pipeline's stages. **`models/`** holds the wire models and stored shapes, inside adapters. **`providers/`** holds the framework's providers and the instances they wire.
+
+A role file's suffix names its role. **`.entity`** marks an entity, **`.value-object`** a value object and `.error` an error. **`.repository`** marks a data port, **`.port`** any other port, and **`.adapter`** a port's implementation that is no repository. **`.use-case`** marks a use case, and **`.model`** a wire model or a stored shape. **`.utils`**, `.types` and **`.constants`** mark the files of helpers, types and constants, and `.config` a file of configuration.
 
 The language fixes the spelling. Each block names its own folders and suffixes, and a project adds its own the same way.
 
@@ -85,7 +87,7 @@ A package’s root holds its manifest, its source, the suites that drive the bui
 
 ### code-in-several-languages-holds-a-package-per-language · SHOULD
 
-Code that serves one purpose in several languages holds `languages/<language>/`, one package for each language with the tree in its `src/`, and beside it `shared/`, what the languages need written in none of them, laid out by meaning — `schema/`, `conformance/`; `languages/` appears with the second language and `shared/` with its first file, and until then the code is the package itself.
+Code that serves one purpose in several languages holds `languages/<language>/`, one package for each language with the tree in its `src/`, and beside it `shared/`, what the languages need written in none of them, laid out by meaning — `schema/`, `conformance/`; **`languages/`** appears with the second language and `shared/` with its first file, and until then the code is the package itself.
 
 | Why | Tags |
 |---|---|
@@ -101,7 +103,7 @@ A feature, and a module of composition, holds its layers, its specs and its surf
 
 ### failures-live-with-their-contract · SHOULD
 
-Failures every feature shares, and the base error every error the application declares extends, live in the kernel’s errors, a feature’s in its domain’s errors.
+Failures every feature shares, and the base error every error the application declares extends, live in the kernel’s errors, and a feature’s own, each a **domain error**, in its domain’s errors.
 
 | Why | Tags |
 |---|---|
@@ -159,7 +161,7 @@ A feature’s surface offers its operations and their presentation — use cases
 
 ### surface-only-on-a-module-or-one-kind · MUST
 
-A module has a surface, its door, and so does a role folder, whose members are of one kind; a layer folder, whose members lie on different sides of the boundaries the imports hold, has none and is never an import target — save `root/`, whose surface the entry files import — and neither has the source of an application, whose members are of different kinds. The source of a package others import is a module, and only its consumers import its surface.
+A module has a surface, its door, and so does a **role folder**, whose members are of one kind; a **layer folder**, whose members lie on different sides of the boundaries the imports hold, has none and is never an import target — save `root/`, whose surface the entry files import — and neither has the source of an application, whose members are of different kinds. The source of a package others import is a module, and only its consumers import its surface.
 
 | Why | Tags |
 |---|---|
@@ -177,7 +179,7 @@ A folder whose purpose a layer or a role of the active vocabulary names takes th
 
 ### file-carries-its-role-suffix · MUST
 
-A file carries its role’s suffix, whatever its folder; a surface, an entry, a name a tool fixes, a unit named after its own folder, a member of a set whose role has no suffix, a registry and a binding unit named after its operation carry none. A spec keeps the suffix of the file it proves.
+A **role file**, a file of a role, carries its **role suffix**, whatever its folder; a surface, an entry, a name a tool fixes, a unit named after its own folder, a member of a set whose role has no suffix, a registry and a binding unit named after its operation carry none. A spec keeps the suffix of the file it proves.
 
 | Why | Tags |
 |---|---|

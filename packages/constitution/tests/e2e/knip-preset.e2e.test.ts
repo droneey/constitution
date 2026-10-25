@@ -4,7 +4,7 @@ import { unusedCode } from './knip-preset.fixtures';
 
 const ENTITIES = 'src/features/orders/domain/entities';
 
-const WIRED = {
+const wired = {
   [`${ENTITIES}/index.ts`]: "export { order, draft } from './order.entity';\n",
   [`${ENTITIES}/order.entity.ts`]: 'export const order = 1;\nexport const draft = 2;\n',
   'src/entrypoints/run/main.ts':
@@ -17,7 +17,7 @@ describe('the knip preset', () => {
     // Arrange
     const project = {
       files: {
-        ...WIRED,
+        ...wired,
         [`${ENTITIES}/lonely.entity.ts`]: 'export const lonely = 1;\n',
       },
     };
@@ -35,7 +35,7 @@ describe('the knip preset', () => {
     // Arrange
     const project = {
       files: {
-        ...WIRED,
+        ...wired,
         [`${ENTITIES}/order.entity.ts`]:
           'export const order = 1;\nexport const draft = 2;\nexport const hidden = 3;\n',
       },
@@ -54,7 +54,7 @@ describe('the knip preset', () => {
     // Arrange
     const project = {
       files: {
-        ...WIRED,
+        ...wired,
         [`${ENTITIES}/__tests__/order.fixtures.ts`]: 'export const anOrder = 1;\n',
         [`${ENTITIES}/__tests__/total.utils.test.ts`]:
           "import { expect, test } from 'bun:test';\nimport { anOrder } from './order.fixtures';\nimport { total } from '../total.utils';\ntest('total', () => {\n  expect(total(anOrder)).toBe(1);\n});\n",
@@ -75,7 +75,7 @@ describe('the knip preset', () => {
   it('should report nothing when every file and export is used', () => {
     // Arrange
     const project = {
-      files: WIRED,
+      files: wired,
     };
 
     // Act
@@ -135,7 +135,7 @@ describe('the knip preset', () => {
     ({ binary, part }) => {
       // Arrange
       const project = {
-        files: WIRED,
+        files: wired,
         parts: [
           part,
         ],
@@ -155,7 +155,7 @@ describe('the knip preset', () => {
   it('should report a missing binary when a script runs a tool whose part the project does not join', () => {
     // Arrange
     const project = {
-      files: WIRED,
+      files: wired,
       scripts: {
         tool: 'osv-scanner',
       },

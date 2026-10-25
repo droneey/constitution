@@ -4,8 +4,8 @@ import { existsSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { CLI_FOLDER } from './cli.fixtures';
-import { CORE_TEXT } from './constitution.fixtures';
+import { cliFolder } from './cli.fixtures';
+import { coreText } from './constitution.fixtures';
 import { archiveOf, coreBodyOfBytes, createPluginRoot, linkArchive } from './plugin-root.fixtures';
 
 enum HookEvent {
@@ -47,7 +47,7 @@ interface HookOutput {
 }
 
 // CI's macOS entry of the hooks matrix sets HOOK_SHELL=/bin/bash to run the hook under bash 3.2.
-const SHELL: string = process.env['HOOK_SHELL'] ?? 'bash';
+const shell: string = process.env['HOOK_SHELL'] ?? 'bash';
 const WARNINGS = '⚠️ Warnings';
 // A session carries the user's locale; the hook must not depend on it.
 const LOCALE = 'en_US.UTF-8';
@@ -55,8 +55,9 @@ const PLACEHOLDER = '@';
 const NOT_UTF8 = 0xe9;
 // A hook that blocks, on a named pipe say, fails its case instead of the run.
 const TIMEOUT_MS = 20_000;
-// The day the program reads where it runs, the one an override that ends today names.
-const HOOK_TODAY = Temporal.Now.plainDateISO().toString();
+// The day the hook's clock gives, by the variable the root reads: the spec never reads the real clock.
+const HOOK_TODAY = '2026-06-15';
+const TODAY_VARIABLE = 'CONSTITUTION_TODAY';
 const HOOK = 'hook.sh';
 
 // Claude Code names the event's fields in snake case.
@@ -132,8 +133,9 @@ const runHook = (call: HookCall): HookRun => {
       project: call.project,
     });
   }
+
   const hookRun = spawnSync(
-    SHELL,
+    shell,
     [
       join(call.root, 'hooks', HOOK),
       'session-start',
@@ -145,7 +147,7 @@ const runHook = (call: HookCall): HookRun => {
       env: Object.fromEntries([
         [
           'PATH',
-          `${CLI_FOLDER}:${process.env['PATH'] ?? ''}`,
+          `${cliFolder}:${process.env['PATH'] ?? ''}`,
         ],
         [
           'LANG',
@@ -154,6 +156,10 @@ const runHook = (call: HookCall): HookRun => {
         [
           'LC_ALL',
           LOCALE,
+        ],
+        [
+          TODAY_VARIABLE,
+          HOOK_TODAY,
         ],
         ...(call.pluginRootUnset === true
           ? []
@@ -407,11 +413,11 @@ enum Edge {
 
 // The bytes of a core body that put the edge `past` bytes beyond the room the
 // budget leaves, measured on `context`: the digest of a project whose list fits
-// whole, under the plugin root whose core holds CORE_TEXT.
+// whole, under the plugin root whose core holds coreText.
 const coreBodyAt = (input: { context: string; edge: Edge; past: number }): number => {
   const list = blockListOf(input.context);
   const beyond = input.edge === Edge.Heading ? bytesOf(list.slice(1)) : 0;
-  const rest = bytesAfterHeader(input.context) - Buffer.byteLength(CORE_TEXT) - beyond;
+  const rest = bytesAfterHeader(input.context) - Buffer.byteLength(coreText) - beyond;
 
   return BUDGET - LEFT_OUT_RESERVE + input.past - rest;
 };
@@ -458,7 +464,7 @@ const runScript = (call: {
   script: string;
 }): HookRun => {
   const hookRun = spawnSync(
-    SHELL,
+    shell,
     [
       join(call.root, 'hooks', HOOK),
       call.script.replace(/\.sh$/u, ''),
@@ -481,8 +487,12 @@ const runScript = (call: {
           LOCALE,
         ],
         [
+          TODAY_VARIABLE,
+          HOOK_TODAY,
+        ],
+        [
           'PATH',
-          `${CLI_FOLDER}:${process.env['PATH'] ?? ''}`,
+          `${cliFolder}:${process.env['PATH'] ?? ''}`,
         ],
       ]),
       input: JSON.stringify(call.event),

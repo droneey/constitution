@@ -5,13 +5,12 @@ requires: [react-dom, tailwind, json]
 extends: null
 abstract: false
 languages: []
-dictionary: [shadcn, Base UI, components.json]
 governs: ["components.json", "**/libs/ui/components/**"]
 ---
 
 # shadcn
 
-> The UI kit's components, added as source on Base UI primitives and made the project's own.
+> The UI kit's components, added as **`shadcn`** source on **Base UI** primitives and made the project's own; **`components.json`** names the kit's folders.
 
 ## Requirements
 

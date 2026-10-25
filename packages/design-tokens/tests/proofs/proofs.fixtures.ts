@@ -11,7 +11,7 @@ enum ThemeMode {
 
 type DesignTokens = ReadonlyMap<string, unknown>;
 
-const TOKENS = fileURLToPath(new URL('../../tokens/', import.meta.url));
+const tokensPath = fileURLToPath(new URL('../../tokens/', import.meta.url));
 
 const READ_PLATFORM = 'tokens';
 
@@ -24,7 +24,7 @@ const GRID_GROUPS: readonly string[] = [
   'size.',
   'text.',
   'leading.',
-];
+] as const;
 const GRID: readonly number[] = [
   4,
   8,
@@ -43,7 +43,7 @@ const GRID: readonly number[] = [
   272,
   352,
   768,
-];
+] as const;
 
 /** the pairs of roles whose contrast every mode must reach: 4.5 for text, 3 for a control and the focus ring, 7 for body text */
 const PAIRS = [
@@ -207,7 +207,7 @@ const readMode = async (mode: ThemeMode): Promise<DesignTokens> => {
         'size.tokens.json',
         'motion.tokens.json',
         `theme/${mode}.tokens.json`,
-      ].map((set) => `${TOKENS}${set}`),
+      ].map((set) => `${tokensPath}${set}`),
       log: {
         verbosity: 'silent',
       },
@@ -232,7 +232,7 @@ const readMode = async (mode: ThemeMode): Promise<DesignTokens> => {
   );
 };
 
-const MODES: Readonly<Record<ThemeMode, DesignTokens>> = {
+const modes: Readonly<Record<ThemeMode, DesignTokens>> = {
   [ThemeMode.Light]: await readMode(ThemeMode.Light),
   [ThemeMode.Dark]: await readMode(ThemeMode.Dark),
 };
@@ -274,12 +274,12 @@ const colourOf = (tokens: DesignTokens, path: string): PlainColorObject => {
 
 const contrastOf = (pair: { background: string; foreground: string; mode: ThemeMode }): number =>
   contrastWCAG21(
-    colourOf(MODES[pair.mode], `color.${pair.foreground}`),
-    colourOf(MODES[pair.mode], `color.${pair.background}`),
+    colourOf(modes[pair.mode], `color.${pair.foreground}`),
+    colourOf(modes[pair.mode], `color.${pair.background}`),
   );
 
 const pixelsOf = (path: string): number => {
-  const measure = MODES[ThemeMode.Light].get(path);
+  const measure = modes[ThemeMode.Light].get(path);
 
   if (typeof measure === 'string') {
     return pixelsOf(measure.slice(1, -1));
@@ -288,7 +288,7 @@ const pixelsOf = (path: string): number => {
   return isRecord(measure) && typeof measure['value'] === 'number' ? measure['value'] : Number.NaN;
 };
 
-const CONTRAST_CASES = Object.values(ThemeMode).flatMap((mode) =>
+const contrastCases = Object.values(ThemeMode).flatMap((mode) =>
   PAIRS.map(([foreground, background, minimum]) => ({
     background,
     foreground,
@@ -297,8 +297,8 @@ const CONTRAST_CASES = Object.values(ThemeMode).flatMap((mode) =>
   })),
 );
 
-const SIZE_PATHS: readonly string[] = [
-  ...MODES[ThemeMode.Light].keys(),
+const sizePaths: readonly string[] = [
+  ...modes[ThemeMode.Light].keys(),
 ].filter((path) => GRID_GROUPS.some((group) => path.startsWith(group)));
 
-export { CONTRAST_CASES, contrastOf, GRID, pixelsOf, SIZE_PATHS };
+export { contrastCases, contrastOf, GRID, pixelsOf, sizePaths };

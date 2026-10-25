@@ -1,38 +1,43 @@
 import type { ReactElement } from 'react';
 
-import {
-  Icon,
-  IconName,
-  Popover,
-  PopoverPanel,
-  PopoverTrigger,
-  PopoverWidth,
-} from '@droneey/design-web/react-dom';
+import { Icon, IconName, Popover, PopoverWidth } from '@droneey/design-browser/react-dom';
 
-import type { Releases } from '#/features/versions';
-import { addressIn } from '#/features/versions';
+import type { Version, VersionsState } from '#/features/versions';
+import { pageAddressIn, VersionsStatus } from '#/features/versions';
+
+import { POPOVER_OFFSET_PX } from '../../constants';
 
 interface DocsVersionMenuProps {
-  current: string;
-  href: string;
-  releases: Releases;
+  currentVersion: Version;
+  pageHref: string;
+  versionsState: VersionsState;
 }
 
-/** until the releases load, it lists only the one the page belongs to */
-export function DocsVersionMenu({ current, href, releases }: DocsVersionMenuProps): ReactElement {
+const onlyCurrentVersion = (
+  currentVersion: Version,
+): {
+  latest: undefined;
+  versions: Version[];
+} => ({
+  latest: undefined,
+  versions: [
+    currentVersion,
+  ],
+});
+
+export function DocsVersionMenu({
+  currentVersion,
+  pageHref,
+  versionsState,
+}: DocsVersionMenuProps): ReactElement {
   const { latest, versions } =
-    releases.status === 'loaded'
-      ? releases
-      : {
-          latest: undefined,
-          versions: [
-            current,
-          ],
-        };
+    versionsState.status === VersionsStatus.Loaded
+      ? versionsState
+      : onlyCurrentVersion(currentVersion);
 
   return (
     <Popover>
-      <PopoverTrigger
+      <Popover.Trigger
         className='text-fd-foreground'
         data-sidebar-field=''
       >
@@ -40,21 +45,21 @@ export function DocsVersionMenu({ current, href, releases }: DocsVersionMenuProp
           className='text-fd-muted-foreground'
           name={IconName.Version}
         />
-        <span className='font-medium'>v{current}</span>
-        {current === latest && <span className='text-xs text-fd-primary'>latest</span>}
+        <span className='font-medium'>v{currentVersion}</span>
+        {currentVersion === latest && <span className='text-xs text-fd-primary'>latest</span>}
         <Icon
           className='ms-auto text-fd-muted-foreground'
           name={IconName.Switch}
         />
-      </PopoverTrigger>
-      <PopoverPanel
+      </Popover.Trigger>
+      <Popover.Panel
         align='start'
         // Stryker disable ObjectLiteral,StringLiteral: the axis matters only when the popup would overflow the viewport, which a document without layout never reports
         collisionAvoidance={{
           fallbackAxisSide: 'none',
         }}
         // Stryker restore ObjectLiteral,StringLiteral
-        sideOffset={8}
+        sideOffset={POPOVER_OFFSET_PX}
         width={PopoverWidth.Anchor}
       >
         <nav aria-label='Versions'>
@@ -62,11 +67,11 @@ export function DocsVersionMenu({ current, href, releases }: DocsVersionMenuProp
             {versions.map((version) => (
               <li key={version}>
                 <a
-                  aria-current={version === current ? 'page' : undefined}
+                  aria-current={version === currentVersion ? 'page' : undefined}
                   className='flex h-control-md items-center gap-xs rounded-lg px-xs'
-                  href={addressIn({
-                    latest: latest ?? current,
-                    path: href,
+                  href={pageAddressIn({
+                    latest: latest ?? currentVersion,
+                    path: pageHref,
                     version,
                   })}
                 >
@@ -74,7 +79,7 @@ export function DocsVersionMenu({ current, href, releases }: DocsVersionMenuProp
                   {version === latest && (
                     <span className='text-xs text-fd-muted-foreground'>latest</span>
                   )}
-                  {version === current && (
+                  {version === currentVersion && (
                     <Icon
                       className='ms-auto text-fd-primary'
                       name={IconName.Selected}
@@ -84,18 +89,18 @@ export function DocsVersionMenu({ current, href, releases }: DocsVersionMenuProp
               </li>
             ))}
           </ul>
-          {releases.status === 'loading' && (
+          {versionsState.status === VersionsStatus.Loading && (
             <p className='flex h-control-md items-center px-xs text-fd-muted-foreground'>
               Loading versions…
             </p>
           )}
-          {releases.status === 'failed' && (
+          {versionsState.status === VersionsStatus.Failed && (
             <p className='flex h-control-md items-center px-xs text-fd-muted-foreground'>
               Versions unavailable
             </p>
           )}
         </nav>
-      </PopoverPanel>
+      </Popover.Panel>
     </Popover>
   );
 }

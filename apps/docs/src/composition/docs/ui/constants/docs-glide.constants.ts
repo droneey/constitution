@@ -1,7 +1,7 @@
-import type { GlideLists } from '@droneey/design-web/react-dom';
+import type { GlideLists } from '@droneey/design-browser/react-dom';
 
 /** the sidebar is left out, since its block is the library's own */
-export const glideLists: GlideLists = {
+export const GLIDE_LISTS: GlideLists = {
   "nav[aria-label='Versions']": {
     rows: 'a',
     filled: "[aria-current='page']",
@@ -22,4 +22,4 @@ export const glideLists: GlideLists = {
     marked: 'data-highlighted',
     filled: "[aria-checked='true']",
   },
-};
+} as const;

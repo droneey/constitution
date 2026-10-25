@@ -1,3 +1,5 @@
+/* The typography plugin's styles are utilities, so the site's styles of rendered Markdown sit in
+   the later `prose` layer, and its restyling of the library in `overrides`, after both. */
 @layer theme, base, components, utilities, prose, overrides;
 
 /* biome-ignore lint/nursery/useLayeredStyles: the imported stylesheet declares its own cascade layers */
@@ -11,12 +13,12 @@
 /* biome-ignore lint/nursery/useLayeredStyles: the font faces it declares belong to no layer */
 @import '@fontsource-variable/geist-mono';
 /* biome-ignore lint/nursery/useLayeredStyles: the imported stylesheet declares its own cascade layers */
-@import '@droneey/design-web/styles.css';
+@import '@droneey/design-browser/styles.css';
 /* biome-ignore lint/nursery/useLayeredStyles: Tailwind reads @theme only outside a layer */
-@import '@droneey/design-web/tailwind.css';
+@import '@droneey/design-browser/tailwind.css';
 /* biome-ignore lint/nursery/useLayeredStyles: the imported stylesheet declares its own cascade layers */
-@import '@droneey/design-web/react-dom/styles.css';
+@import '@droneey/design-browser/react-dom/styles.css';
 /* biome-ignore lint/nursery/useLayeredStyles: Tailwind reads @theme only outside a layer */
-@import '../libs/ui/fumadocs/fumadocs.css';
+@import '../libs/ui/index.css';
 /* biome-ignore lint/nursery/useLayeredStyles: the imported stylesheet declares its own cascade layers */
-@import '../composition/docs/ui/docs.css';
+@import '../composition/docs/index.css';

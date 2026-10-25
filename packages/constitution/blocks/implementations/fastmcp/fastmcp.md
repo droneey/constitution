@@ -5,13 +5,12 @@ requires: [python, pydantic, mcp-api]
 extends: null
 abstract: false
 languages: []
-dictionary: [FastMCP, fastmcp]
 governs: ["**/app/**", "**/root/**"]
 ---
 
 # FastMCP
 
-> Serves the program's tools, resources and prompts to models over MCP.
+> **FastMCP**, the package **`fastmcp`**, serves the program's tools, resources and prompts to models over MCP.
 
 A tool's docstring and annotations are all the model knows of it, and pydantic parses its arguments before it runs.
 

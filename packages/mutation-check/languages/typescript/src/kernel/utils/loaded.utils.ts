@@ -1,5 +1,5 @@
 interface Graph {
-  importsOf: (path: string) => readonly string[];
+  readonly importsOf: (path: string) => readonly string[];
 }
 
 // Each file the path loads, directly or through others, with the number of imports between them.
@@ -40,8 +40,8 @@ const specsByFile = (
   const loaders = new Map<
     string,
     {
-      depth: number;
-      spec: string;
+      readonly depth: number;
+      readonly spec: string;
     }[]
   >();
 

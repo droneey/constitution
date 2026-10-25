@@ -1,9 +1,9 @@
 import { afterEach, describe, expect, test } from 'bun:test';
 
-import { useGlide } from '@droneey/design-web/react-dom';
+import { useGlide } from '@droneey/design-browser/react-dom';
 import { cleanup, renderHook, screen, within } from '@testing-library/react';
 
-import { glideLists } from '../docs-glide.constants';
+import { GLIDE_LISTS } from '../docs-glide.constants';
 import {
   mountList,
   placeOf,
@@ -53,7 +53,8 @@ describe('glideLists', () => {
     ({ markup, pointed, place }) => {
       // Arrange
       const list = mountList(markup);
-      renderHook(() => useGlide(glideLists));
+
+      renderHook(() => useGlide(GLIDE_LISTS));
 
       // Act
       pointAt(screen.getByText(pointed));
@@ -107,7 +108,7 @@ describe('glideLists', () => {
       const root = mountList(markup);
 
       // Act
-      renderHook(() => useGlide(glideLists));
+      renderHook(() => useGlide(GLIDE_LISTS));
 
       // Assert
       expect(placeOf(listOf(root))).toStrictEqual(place);

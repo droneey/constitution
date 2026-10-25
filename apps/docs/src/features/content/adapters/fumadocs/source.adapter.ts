@@ -4,10 +4,10 @@ import type { InferPageType, LLMsWithPages, MetaData, Source } from 'fumadocs-co
 import { llms, loader } from 'fumadocs-core/source';
 import { lucideIconsPlugin } from 'fumadocs-core/source/lucide-icons';
 
-import { docsRoute } from '#/shared/constants';
+import { DOCS_ROUTE } from '#/shared/constants';
 import { blocks, documents, glossary, guide, overview, quickStart } from '#collections/server';
 
-import { crossLinks, markdownOfPage, passportAsIndex, renamed } from './pages.adapter';
+import { crossLinks, markdownOfPage, passportAsIndex, servedUnderSitePaths } from './pages.adapter';
 import {
   axisFoldersOf,
   BLOCK_LAYERS,
@@ -15,45 +15,14 @@ import {
   GLOSSARY,
   layerBlocksOf,
   QUICK_START,
-  SEAMS,
+  SEAMS_FOLDER,
   SITE_DOCUMENTS,
-  SITE_LAYERS,
   seamHoldersOf,
   sidebarOf,
+  siteLayers,
 } from './repository';
-
-interface SidebarFolder {
-  icon?: string;
-  pages?: string[];
-  title?: string;
-}
-
-const LAYER_FOLDERS: Readonly<Record<string, Pick<SidebarFolder, 'icon' | 'title'>>> = {
-  contexts: {
-    icon: 'Boxes',
-    title: 'Contexts',
-  },
-  'contexts/languages': {
-    icon: 'Code',
-    title: 'Languages',
-  },
-  'contexts/platforms': {
-    icon: 'MonitorSmartphone',
-    title: 'Platforms',
-  },
-  core: {
-    icon: 'ScrollText',
-    title: 'Core',
-  },
-  domains: {
-    icon: 'Shapes',
-    title: 'Domains',
-  },
-  implementations: {
-    icon: 'Wrench',
-    title: 'Implementations',
-  },
-};
+import { AXIS_SEPARATOR, LAYER_FOLDERS } from './source.constants';
+import type { SidebarFolder } from './source.types';
 
 type GuidePageData =
   ReturnType<typeof guide.toFumadocsSource> extends Source<infer TConfig>
@@ -116,12 +85,13 @@ const blockSubfolders = (): ReturnType<typeof metaFile>[] => {
       title: titleOfAxis(axis),
     });
   }
+
   for (const folder of layers.flatMap(seamHoldersOf)) {
     folders.set(folder, {
       ...folders.get(folder),
       pages: [
         '...',
-        SEAMS,
+        SEAMS_FOLDER,
       ],
     });
   }
@@ -131,8 +101,6 @@ const blockSubfolders = (): ReturnType<typeof metaFile>[] => {
   ].map(([folder, meta]) => metaFile(`${folder}/meta.json`, meta));
 };
 
-const AXIS_SEPARATOR = '/';
-
 const blockFolders = (): ReturnType<typeof metaFile>[] => {
   const chapters = coreChaptersOf();
   const axes = [
@@ -140,14 +108,16 @@ const blockFolders = (): ReturnType<typeof metaFile>[] => {
   ];
 
   return [
-    ...SITE_LAYERS.filter((folder) => !BLOCK_LAYERS.includes(folder)).map((folder) =>
-      metaFile(`${folder}/meta.json`, {
-        ...LAYER_FOLDERS[folder],
-        pages: BLOCK_LAYERS.filter((layer) => layer.startsWith(`${folder}/`)).map((layer) =>
-          layer.slice(folder.length + 1),
-        ),
-      }),
-    ),
+    ...siteLayers
+      .filter((folder) => !BLOCK_LAYERS.includes(folder))
+      .map((folder) =>
+        metaFile(`${folder}/meta.json`, {
+          ...LAYER_FOLDERS[folder],
+          pages: BLOCK_LAYERS.filter((layer) => layer.startsWith(`${folder}/`)).map((layer) =>
+            layer.slice(folder.length + 1),
+          ),
+        }),
+      ),
     ...BLOCK_LAYERS.map((layer) =>
       metaFile(`${layer}/meta.json`, {
         ...LAYER_FOLDERS[layer],
@@ -173,7 +143,7 @@ const blockFolders = (): ReturnType<typeof metaFile>[] => {
 
 /** built when first asked, since building it reads the repository */
 const contentSource = lazily(() => {
-  const sidebar = sidebarOf(docsRoute);
+  const sidebar = sidebarOf(DOCS_ROUTE);
   const guideSource: GuideSource = {
     files: [
       ...guide.toFumadocsSource().files,
@@ -187,15 +157,18 @@ const contentSource = lazily(() => {
 
   return loader(
     {
-      blocks: renamed(blocks.toFumadocsSource(), passportAsIndex),
-      documents: renamed(documents.toFumadocsSource(), (path) => `${SITE_DOCUMENTS[path]}.md`),
-      glossary: renamed(glossary.toFumadocsSource(), () => `${GLOSSARY}.md`),
+      blocks: servedUnderSitePaths(blocks.toFumadocsSource(), passportAsIndex),
+      documents: servedUnderSitePaths(
+        documents.toFumadocsSource(),
+        (path) => `${SITE_DOCUMENTS[path]}.md`,
+      ),
+      glossary: servedUnderSitePaths(glossary.toFumadocsSource(), () => `${GLOSSARY}.md`),
       guide: guideSource,
-      overview: renamed(overview.toFumadocsSource(), () => 'index.md'),
-      quickStart: renamed(quickStart.toFumadocsSource(), () => `${QUICK_START}.md`),
+      overview: servedUnderSitePaths(overview.toFumadocsSource(), () => 'index.md'),
+      quickStart: servedUnderSitePaths(quickStart.toFumadocsSource(), () => `${QUICK_START}.md`),
     },
     {
-      baseUrl: docsRoute,
+      baseUrl: DOCS_ROUTE,
       plugins: [
         lucideIconsPlugin(),
         crossLinks,

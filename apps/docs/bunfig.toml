@@ -17,8 +17,5 @@ coveragePathIgnorePatterns = [
   "**/packages/**",
 ]
 
-[install]
-minimumReleaseAge = 259200 # three days, in seconds
-
 [run]
 bun = true

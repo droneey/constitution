@@ -1,47 +1,25 @@
 import { statSync } from 'node:fs';
 import { relative, resolve } from 'node:path';
 
-import { gitConfig } from '#/shared/constants';
+import { GIT_CONFIG } from '#/shared/constants';
 
-import { pageSlugsOf } from '../../../domain/utils';
+import { MARKDOWN_EXTENSION, pageSlugsOf } from '../../../domain/entities';
+import {
+  BLOCKS_FOLDER,
+  DOCS_FOLDER,
+  GLOSSARY,
+  PROJECT_FILE,
+  QUICK_START,
+  README_FILE,
+  SITE_DOCUMENTS,
+  siteLayers,
+} from './repository.constants';
 
 /** the site builds from its own folder; the path is resolved when asked, since the browser has none */
 const inRepository = (path = ''): string => resolve('../..', path);
 
-/** the same folders in blocks/ and on the site */
-// Stryker disable StringLiteral: the site's loader and build read the layers, which no spec loads; the specs see contexts/ through either of its layers
-const BLOCK_LAYERS: readonly string[] = [
-  'core',
-  'domains',
-  'contexts/platforms',
-  'contexts/languages',
-  'implementations',
-];
-// Stryker restore StringLiteral
-
-const QUICK_START = 'quick-start';
-
-/** the page made of PROJECT.md's glossary, and that section's anchor */
-const GLOSSARY = 'glossary';
-
-const SITE_DOCUMENTS: Readonly<Record<string, string>> = {
-  'CONTRIBUTING.md': 'contributing',
-  'DECISIONS.md': 'decisions',
-};
-
-const DOCS_FOLDER = 'docs/';
-
-const BLOCKS_FOLDER = 'packages/constitution/blocks/';
-
-/** contexts/ holds two layers, and the sidebar one folder for them */
-const SITE_LAYERS: readonly string[] = [
-  ...new Set(BLOCK_LAYERS.map((layer) => layer.replace(/\/.*/, ''))),
-];
-
 const blockLayerOf = (path: string): string | undefined =>
-  SITE_LAYERS.find((layer) => path === `${BLOCKS_FOLDER}${layer}`);
-
-const MARKDOWN = '.md';
+  siteLayers.find((layer) => path === `${BLOCKS_FOLDER}${layer}`);
 
 interface RepositoryPath {
   hash: string;
@@ -55,14 +33,14 @@ const githubAddressOf = (path: string): string => {
     ? 'tree'
     : 'blob';
 
-  return `https://github.com/${gitConfig.user}/${gitConfig.repo}/${kind}/main/${path}`;
+  return `https://github.com/${GIT_CONFIG.user}/${GIT_CONFIG.repo}/${kind}/main/${path}`;
 };
 
 /** a page where the site renders the file, GitHub's view where it does not */
 const addressOf = (baseUrl: string, path: string, hash: string): string => {
   const anchor = hash === '' ? '' : `#${hash}`;
 
-  if (path === 'README.md') {
+  if (path === README_FILE) {
     // a heading of the README opens with the brand's mark, which GitHub's anchor keeps as a hyphen
     const section = hash.replace(/^-/, '');
 
@@ -72,19 +50,22 @@ const addressOf = (baseUrl: string, path: string, hash: string): string => {
 
     return section === '' ? baseUrl : `${baseUrl}#${section}`;
   }
-  if (path.startsWith(DOCS_FOLDER) && path.endsWith(MARKDOWN)) {
-    return `${baseUrl}/${path.slice(DOCS_FOLDER.length, -MARKDOWN.length)}${anchor}`;
+
+  if (path.startsWith(DOCS_FOLDER) && path.endsWith(MARKDOWN_EXTENSION)) {
+    return `${baseUrl}/${path.slice(DOCS_FOLDER.length, -MARKDOWN_EXTENSION.length)}${anchor}`;
   }
-  if (path === 'PROJECT.md' && hash === GLOSSARY) {
+
+  if (path === PROJECT_FILE && hash === GLOSSARY) {
     return `${baseUrl}/${GLOSSARY}`;
   }
+
   if (path in SITE_DOCUMENTS) {
     return `${baseUrl}/${SITE_DOCUMENTS[path]}${anchor}`;
   }
 
   const block = path.startsWith(BLOCKS_FOLDER) ? path.slice(BLOCKS_FOLDER.length) : undefined;
 
-  if (block?.endsWith(MARKDOWN)) {
+  if (block?.endsWith(MARKDOWN_EXTENSION)) {
     return (
       [
         baseUrl,
@@ -116,15 +97,4 @@ const repositoryPathOf = (from: string, url: string): RepositoryPath | undefined
       };
 };
 
-export {
-  addressOf,
-  BLOCK_LAYERS,
-  BLOCKS_FOLDER,
-  blockLayerOf,
-  GLOSSARY,
-  inRepository,
-  QUICK_START,
-  repositoryPathOf,
-  SITE_DOCUMENTS,
-  SITE_LAYERS,
-};
+export { addressOf, blockLayerOf, inRepository, repositoryPathOf };

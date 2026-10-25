@@ -3,6 +3,8 @@ import { fromHtml } from 'hast-util-from-html';
 import type { Data, Node, Root } from 'mdast';
 import { visit } from 'unist-util-visit';
 
+import { DIAGRAM_COLOURS, DIAGRAM_SPACING_PX } from './remark-diagrams.constants';
+
 interface Diagram extends Node {
   data: Data;
   type: 'diagram';
@@ -21,19 +23,6 @@ type FigureContent = NonNullable<Data['hChildren']>[number];
 
 type ParsedContent = ReturnType<typeof fromHtml>['children'][number];
 
-/** in pixels, between the nodes of a diagram, its layers and its edge */
-const SPACING = 32;
-
-const COLOURS = {
-  accent: 'var(--color-accent-solid)',
-  bg: 'var(--color-surface-base)',
-  border: 'color-mix(in oklch, var(--color-accent-solid) 45%, transparent)',
-  fg: 'var(--color-text-primary)',
-  line: 'color-mix(in oklch, var(--color-accent-solid) 60%, var(--color-text-muted))',
-  muted: 'var(--color-text-muted)',
-  surface: 'color-mix(in oklch, var(--color-accent-solid) 7%, var(--color-surface-level-1))',
-};
-
 const labelOf = (chart: string): string =>
   `Diagram: ${[
     ...chart.matchAll(/\[([^\]]+)\]/g),
@@ -47,10 +36,10 @@ const isFigureContent = (child: ParsedContent): child is FigureContent =>
 
 const diagramOf = (chart: string): Diagram => {
   const svg = renderMermaidSVG(chart, {
-    ...COLOURS,
-    layerSpacing: SPACING,
-    nodeSpacing: SPACING,
-    padding: SPACING,
+    ...DIAGRAM_COLOURS,
+    layerSpacing: DIAGRAM_SPACING_PX,
+    nodeSpacing: DIAGRAM_SPACING_PX,
+    padding: DIAGRAM_SPACING_PX,
     transparent: true,
   });
   const parsed = fromHtml(svg, {
@@ -90,6 +79,7 @@ const remarkDiagrams =
       ) {
         return;
       }
+
       parent.children.splice(index, 1, diagramOf(node.value));
     });
   };

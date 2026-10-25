@@ -3,9 +3,9 @@ import { applyMdxPreset, defineConfig, defineDocs } from 'fumadocs-mdx/config';
 import type { PluggableList } from 'unified';
 import { z } from 'zod';
 
-import { docsRoute } from '#/shared/constants';
+import { DOCS_ROUTE } from '#/shared/constants';
 
-import { pseudo } from './src/features/content/adapters/fumadocs/pseudo.grammar';
+import { PSEUDO } from './src/features/content/adapters/fumadocs/pseudo-grammar.constants';
 import {
   blocksOptionsOf,
   remarkBlocks,
@@ -16,27 +16,28 @@ import {
   remarkRelease,
   remarkRepoLinks,
   remarkSections,
+  remarkTerms,
 } from './src/features/content/adapters/fumadocs/remark';
 import {
   BLOCK_LAYERS,
+  DOCUMENTATION_SECTION,
   documentIconOf,
   GLOSSARY,
   guideIconOf,
-  ICONS,
+  ICONS_BY_ADDRESS,
   inRepository,
   QUICK_START,
   releaseOf,
   sectionSummaryOf,
   sidebarOf,
   taglineOf,
+  termsOf,
 } from './src/features/content/adapters/fumadocs/repository';
 import { markdownSchema } from './src/features/content/adapters/fumadocs/schema.adapter';
 
 const QUICK_START_SECTION = 'Quick start';
 
-const DOCUMENTATION_SECTION = 'Documentation';
-
-const codeOptions: RehypeCodeOptions = {
+const CODE_OPTIONS: RehypeCodeOptions = {
   langs: [
     'ts',
     'tsx',
@@ -45,17 +46,17 @@ const codeOptions: RehypeCodeOptions = {
     'toml',
     'bash',
     'md',
-    pseudo,
+    PSEUDO,
   ],
   themes: {
     dark: 'catppuccin-mocha',
     light: 'github-light-high-contrast',
   },
-};
+} as const;
 
 const markdownOptions = (remarkPlugins: PluggableList): ReturnType<typeof applyMdxPreset> =>
   applyMdxPreset({
-    rehypeCodeOptions: codeOptions,
+    rehypeCodeOptions: CODE_OPTIONS,
     remarkPlugins: (plugins) => [
       remarkDropTitle,
       ...remarkPlugins,
@@ -68,7 +69,7 @@ const markdownOptions = (remarkPlugins: PluggableList): ReturnType<typeof applyM
       [
         remarkRepoLinks,
         {
-          baseUrl: docsRoute,
+          baseUrl: DOCS_ROUTE,
         },
       ],
       remarkDiagrams,
@@ -87,7 +88,14 @@ const guide = defineDocs({
       includeProcessedMarkdown: true,
     },
     schema: markdownSchema(guideIconOf),
-    mdxOptions: markdownOptions([]),
+    mdxOptions: markdownOptions([
+      [
+        remarkTerms,
+        {
+          terms: termsOf(DOCS_ROUTE),
+        },
+      ],
+    ]),
   },
 });
 
@@ -108,7 +116,7 @@ const overview = defineDocs({
       includeProcessedMarkdown: true,
     },
     schema: (context) =>
-      markdownSchema(() => ICONS[''])(context).extend({
+      markdownSchema(() => ICONS_BY_ADDRESS[''])(context).extend({
         description: z.string().default(taglineOf()),
         title: z.string().default('Overview'),
       }),
@@ -143,7 +151,7 @@ const quickStart = defineDocs({
       includeProcessedMarkdown: true,
     },
     schema: (context) =>
-      markdownSchema(() => ICONS[`/${QUICK_START}`])(context).extend({
+      markdownSchema(() => ICONS_BY_ADDRESS[`/${QUICK_START}`])(context).extend({
         description: z.string().default(sectionSummaryOf(QUICK_START_SECTION) ?? ''),
         title: z.string().default(QUICK_START_SECTION),
       }),
@@ -176,8 +184,8 @@ const glossary = defineDocs({
       includeProcessedMarkdown: true,
     },
     schema: (context) =>
-      markdownSchema(() => ICONS[`/${GLOSSARY}`])(context).extend({
-        description: z.string().default(sidebarOf(docsRoute).descriptions.get(GLOSSARY) ?? ''),
+      markdownSchema(() => ICONS_BY_ADDRESS[`/${GLOSSARY}`])(context).extend({
+        description: z.string().default(sidebarOf(DOCS_ROUTE).descriptions.get(GLOSSARY) ?? ''),
         title: z.string().default('Glossary'),
       }),
     mdxOptions: markdownOptions([
@@ -225,14 +233,14 @@ const blocks = defineDocs({
     schema: markdownSchema(() => undefined),
     mdxOptions: async (environment) => {
       const options = blocksOptionsOf({
-        baseUrl: docsRoute,
+        baseUrl: DOCS_ROUTE,
         blocks: inRepository('packages/constitution/blocks'),
         examples: 'content/examples',
         folders: BLOCK_LAYERS,
       });
 
       return await applyMdxPreset({
-        rehypeCodeOptions: codeOptions,
+        rehypeCodeOptions: CODE_OPTIONS,
         remarkPlugins: (plugins) => [
           [
             remarkBlocks,
@@ -241,7 +249,7 @@ const blocks = defineDocs({
           [
             remarkRepoLinks,
             {
-              baseUrl: docsRoute,
+              baseUrl: DOCS_ROUTE,
             },
           ],
           remarkDiagrams,

@@ -2,6 +2,8 @@ import { describe, expect, it } from 'bun:test';
 
 import { ZodError } from 'zod';
 
+import { VersionError } from '../../../domain/errors';
+import { createVersion } from '../../../domain/value-objects';
 import { createStaticFileVersionsRepository } from '../versions.repository';
 import { transportServing, versionsFileOf } from './versions.repository.fixtures';
 
@@ -23,11 +25,11 @@ describe('createStaticFileVersionsRepository', () => {
 
     // Assert
     expect(versions).toStrictEqual({
-      latest: '0.70.0',
+      latest: createVersion('0.70.0'),
       versions: [
-        '0.70.0',
-        '0.69.2',
-        '0.9.10',
+        createVersion('0.70.0'),
+        createVersion('0.69.2'),
+        createVersion('0.9.10'),
       ],
     });
   });
@@ -54,9 +56,9 @@ describe('createStaticFileVersionsRepository', () => {
 
     // Assert
     expect(versions).toStrictEqual({
-      latest: '10.20.30',
+      latest: createVersion('10.20.30'),
       versions: [
-        '10.20.30',
+        createVersion('10.20.30'),
       ],
     });
   });
@@ -103,49 +105,43 @@ describe('createStaticFileVersionsRepository', () => {
 
   it.each([
     {
-      condition: 'the latest has a prefix',
+      condition: 'the latest is no release version',
       file: versionsFileOf({
         latest: 'v0.70.0',
       }),
     },
     {
-      condition: 'the latest has a suffix',
-      file: versionsFileOf({
-        latest: '0.70.0-beta',
-      }),
-    },
-    {
-      condition: 'the latest has two parts',
-      file: versionsFileOf({
-        latest: '0.70',
-      }),
-    },
-    {
-      condition: 'the latest has a letter for a part',
-      file: versionsFileOf({
-        latest: '0.x.0',
-      }),
-    },
-    {
-      condition: 'the latest is missing',
-      file: versionsFileOf({
-        latest: undefined,
-      }),
-    },
-    {
-      condition: 'a release has a prefix',
-      file: versionsFileOf({
-        versions: [
-          'v0.69.2',
-        ],
-      }),
-    },
-    {
-      condition: 'a release has a suffix',
+      condition: 'a release is no release version',
       file: versionsFileOf({
         versions: [
           '0.69.2.1',
         ],
+      }),
+    },
+  ])('should refuse the file with the version when $condition', async ({ file }) => {
+    // Arrange
+    const repository = createStaticFileVersionsRepository(
+      '/versions.json',
+      transportServing({
+        '/versions.json': {
+          body: file,
+          status: 200,
+        },
+      }),
+    );
+
+    // Act
+    const read = repository.read(new AbortController().signal);
+
+    // Assert
+    await expect(read).rejects.toBeInstanceOf(VersionError);
+  });
+
+  it.each([
+    {
+      condition: 'the latest is missing',
+      file: versionsFileOf({
+        latest: undefined,
       }),
     },
     {

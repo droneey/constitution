@@ -4,38 +4,47 @@ import { mentionedOf } from '../hook.fixtures';
 import { removePluginRoots } from '../plugin-root.fixtures';
 import { ConfigKey, removeProjects } from '../project.fixtures';
 import {
-  BIOME_PARTS,
   biomeJson,
+  biomeParts,
   createWiredPluginRoot,
   createWiredProject,
   cruiserConfig,
   digestOf,
   importLinterCopy,
-  OSV_TASK,
+  osvTask,
   PACK,
-  PACK_FILES,
   packConfig,
+  packFiles,
   part,
-  ROOT_CRUISER,
+  rootCruiser,
   ruffMarker,
   vultureCopy,
   wiredConfig,
+  wiredMember,
+  wiredWorkspace,
   wiringListOf,
   wiringOf,
 } from '../wiring.fixtures';
 
 let root = '';
 
-const PACKAGE_CRUISER = cruiserConfig([
+const packageCruiser = cruiserConfig([
   'typescript/dependency-cruiser/foundation/self.mjs',
   'typescript/dependency-cruiser/architecture/core.mjs',
   'typescript/dependency-cruiser/architecture/workspace.mjs',
 ]);
-const VULTURE = part('python/vulture/foundation/core.toml');
+const vulture = part('python/vulture/foundation/core.toml');
+// A member that runs Biome alone of the repository's tools, with react-dom's part beside its own.
+const WEB_ONLY: Partial<Record<ConfigKey, string>> = {
+  [ConfigKey.Implementations]: '[biome, react-dom]',
+  [ConfigKey.Languages]: '[typescript]',
+} as const;
 
 interface Case {
   config?: string;
   files?: Readonly<Record<string, string>>;
+  // the constitution.yaml of the member apps/web
+  member?: string;
   name: string;
   omit?: readonly string[];
   tracked?: Readonly<Record<string, string>>;
@@ -73,13 +82,13 @@ describe('the wiring of a project', () => {
     {
       name: 'each configuration takes the parts of its blocks',
       tracked: {
-        'packages/kit/.dependency-cruiser.mjs': PACKAGE_CRUISER,
+        'packages/kit/.dependency-cruiser.mjs': packageCruiser,
       },
       warned: [],
     },
     {
       files: {
-        'biome.json': biomeJson(BIOME_PARTS.slice(0, -1)),
+        'biome.json': biomeJson(biomeParts.slice(0, -1)),
       },
       name: 'a configuration lacks a part of its blocks',
       warned: [
@@ -92,7 +101,7 @@ describe('the wiring of a project', () => {
     {
       files: {
         'biome.json': biomeJson([
-          ...BIOME_PARTS,
+          ...biomeParts,
           part('typescript/biome/foundation/react-dom.jsonc'),
         ]),
       },
@@ -106,7 +115,7 @@ describe('the wiring of a project', () => {
     },
     {
       files: {
-        'biome.json': `${biomeJson(BIOME_PARTS)}// ${part('typescript/biome/foundation/react-dom.jsonc')}\n${JSON.stringify(
+        'biome.json': `${biomeJson(biomeParts)}// ${part('typescript/biome/foundation/react-dom.jsonc')}\n${JSON.stringify(
           {
             plugins: [
               'tools/presets/typescript/biome/foundation/react-dom.jsonc',
@@ -179,7 +188,7 @@ describe('the wiring of a project', () => {
     },
     {
       files: {
-        'pyproject.toml': `${ruffMarker()}\n${vultureCopy(60).replace(VULTURE, `${VULTURE} by hand`)}\n${importLinterCopy()}`,
+        'pyproject.toml': `${ruffMarker()}\n${vultureCopy(60).replace(vulture, `${vulture} by hand`)}\n${importLinterCopy()}`,
       },
       name: 'a marker says more than its path',
       warned: [
@@ -203,7 +212,7 @@ describe('the wiring of a project', () => {
     },
     {
       files: {
-        '.dependency-cruiser.mjs': PACKAGE_CRUISER,
+        '.dependency-cruiser.mjs': packageCruiser,
       },
       name: "the workspace's root takes a part its packages hold",
       warned: [
@@ -216,7 +225,7 @@ describe('the wiring of a project', () => {
     {
       name: 'a configuration in a folder no unit names lacks a part',
       tracked: {
-        'packages/kit/.dependency-cruiser.mjs': ROOT_CRUISER,
+        'packages/kit/.dependency-cruiser.mjs': rootCruiser,
       },
       warned: [
         [
@@ -228,7 +237,7 @@ describe('the wiring of a project', () => {
     {
       name: 'the folder of a configuration that lacks a part is named in other than ASCII',
       tracked: {
-        'packages/kät/.dependency-cruiser.mjs': ROOT_CRUISER,
+        'packages/kät/.dependency-cruiser.mjs': rootCruiser,
       },
       warned: [
         [
@@ -239,7 +248,7 @@ describe('the wiring of a project', () => {
     },
     {
       files: {
-        'packages/kit/.dependency-cruiser.mjs': ROOT_CRUISER,
+        'packages/kit/.dependency-cruiser.mjs': rootCruiser,
       },
       name: 'git does not track a configuration in a folder no unit names',
       warned: [],
@@ -252,7 +261,7 @@ describe('the wiring of a project', () => {
         [],
       ),
       files: {
-        '.dependency-cruiser.mjs': ROOT_CRUISER,
+        '.dependency-cruiser.mjs': rootCruiser,
       },
       name: 'the root of a workspace that follows no architecture names its workspace part',
       warned: [
@@ -315,7 +324,7 @@ describe('the wiring of a project', () => {
   it.each<Case>([
     {
       files: {
-        'apps/web/biome.json': biomeJson(BIOME_PARTS),
+        'apps/web/biome.json': biomeJson(biomeParts),
       },
       name: "a unit's own file lacks the part of a block the unit adds",
       warned: [
@@ -326,18 +335,18 @@ describe('the wiring of a project', () => {
       ],
     },
     {
-      name: 'the root serves a unit that keeps no file of its own',
+      name: 'a unit that follows a tool keeps no file of it, though the root does',
       warned: [
         [
-          'biome.json',
-          'typescript/foundation/react-dom',
+          'biome',
+          'apps/web',
         ],
       ],
     },
     {
       files: {
         'apps/web/biome.json': biomeJson([
-          ...BIOME_PARTS,
+          ...biomeParts,
           part('typescript/biome/foundation/react-dom.jsonc'),
         ]),
       },
@@ -345,26 +354,23 @@ describe('the wiring of a project', () => {
       warned: [],
     },
     {
-      config: wiredConfig({
-        [ConfigKey.Packages]:
-          '\n  apps/web:\n    implementations: [react-dom]\n    overrides:\n      - rule: configuration-takes-every-part-of-its-blocks\n        level: MAY\n        reason: "The site keeps its own configuration"',
+      member: wiredMember([], {
+        ...WEB_ONLY,
+        [ConfigKey.Overrides]:
+          '\n  - rule: configuration-takes-every-part-of-its-blocks\n    level: MAY\n    reason: "The site keeps its own configuration"',
       }),
       name: "the unit's override lowers the rule the root's file would hold it to",
       warned: [],
     },
-  ])('should hold a file to the units it serves when $name', ({ config, files, warned }) => {
+  ])('should hold a file to the units it serves when $name', ({ files, member, warned }) => {
     // Arrange
     const project = createWiredProject({
-      config:
-        config ??
-        wiredConfig({
-          [ConfigKey.Packages]: '\n  apps/web:\n    implementations: [react-dom]',
+      files: {
+        ...wiredWorkspace({
+          'apps/web': member ?? wiredMember([], WEB_ONLY),
         }),
-      ...(files === undefined
-        ? {}
-        : {
-            files,
-          }),
+        ...files,
+      },
     });
 
     // Act
@@ -380,13 +386,15 @@ describe('the wiring of a project', () => {
   it("should leave out the root's task of a tool the unit's own mise.toml does not run", () => {
     // Arrange
     const project = createWiredProject({
-      config: wiredConfig({
-        [ConfigKey.Packages]:
-          '\n  apps/web:\n    languages: [dockerfile]\n    implementations: [hadolint]',
-      }),
       files: {
+        ...wiredWorkspace({
+          'apps/web': wiredMember([], {
+            [ConfigKey.Implementations]: '[hadolint]',
+            [ConfigKey.Languages]: '[dockerfile]',
+          }),
+        }),
         'apps/web/mise.toml': `[tasks."dockerfile:check"]\nrun = "hadolint --config ${part('dockerfile/hadolint/foundation/dockerfile.yaml')} Dockerfile"\n`,
-        'mise.toml': OSV_TASK,
+        'mise.toml': osvTask,
       },
     });
 
@@ -465,11 +473,11 @@ describe('the wiring of a project', () => {
     },
   );
 
-  it('should warn of a folder that keeps a configuration of its own and no path under packages: names', () => {
+  it('should warn of a folder that keeps a configuration of its own and is no member of the workspace', () => {
     // Arrange
     const project = createWiredProject({
       tracked: {
-        'packages/kit/.dependency-cruiser.mjs': PACKAGE_CRUISER,
+        'packages/kit/.dependency-cruiser.mjs': packageCruiser,
       },
     });
 
@@ -532,9 +540,9 @@ describe('the wiring ratify writes', () => {
       '.dependency-cruiser.mjs (new) for .',
       'biome.json (new) for .',
       'biome .droneey/constitution/templates/project/common/biome/biome.json',
-      ...BIOME_PARTS.slice(0, 1),
+      ...biomeParts.slice(0, 1),
       'biome .droneey/constitution/templates/project/typescript/biome/biome.json',
-      ...BIOME_PARTS.slice(1),
+      ...biomeParts.slice(1),
     ];
 
     // Act
@@ -547,14 +555,14 @@ describe('the wiring ratify writes', () => {
     expect(listed.filter((line) => expected.includes(line))).toStrictEqual(expected);
   });
 
-  it("should list a package under the root's file of a tool when its own file of that name names no part", () => {
+  it('should list a package under its own file of a tool when that file names no part', () => {
     // Arrange
     const project = createWiredProject({
-      config: wiredConfig({
-        [ConfigKey.Packages]: '\n  packages/kit: {}',
-      }),
       files: {
-        'packages/kit/.dependency-cruiser.mjs': PACKAGE_CRUISER,
+        ...wiredWorkspace({
+          'packages/kit': wiredMember(),
+        }),
+        'packages/kit/.dependency-cruiser.mjs': packageCruiser,
         'packages/kit/biome.json': '{ "root": false }\n',
       },
     });
@@ -567,7 +575,8 @@ describe('the wiring ratify writes', () => {
 
     // Assert
     expect(listed.filter((line) => line.includes('biome.json for'))).toStrictEqual([
-      'biome.json for ., packages/kit',
+      'biome.json for .',
+      'packages/kit/biome.json for packages/kit',
     ]);
   });
 });
@@ -578,7 +587,7 @@ describe("the wiring of a pack's parts and templates", () => {
       files: {
         'acme.toml': `extends = "${PACK}/presets/common/acme/foundation/self.toml"\n`,
         'biome.json': biomeJson([
-          ...BIOME_PARTS,
+          ...biomeParts,
           `${PACK}/presets/typescript/biome/foundation/acme.jsonc`,
         ]),
       },
@@ -601,7 +610,7 @@ describe("the wiring of a pack's parts and templates", () => {
       files: {
         'acme.toml': 'strict = true\n',
         'biome.json': biomeJson([
-          ...BIOME_PARTS,
+          ...biomeParts,
           `${PACK}/presets/typescript/biome/foundation/acme.jsonc`,
         ]),
       },
@@ -618,7 +627,7 @@ describe("the wiring of a pack's parts and templates", () => {
     const project = createWiredProject({
       config: packConfig(),
       files: {
-        ...PACK_FILES,
+        ...packFiles,
         ...files,
       },
     });
@@ -638,7 +647,7 @@ describe("the wiring of a pack's parts and templates", () => {
     const project = createWiredProject({
       bare: true,
       config: packConfig(),
-      files: PACK_FILES,
+      files: packFiles,
     });
     const expected = [
       'acme.toml (new) for .',

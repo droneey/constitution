@@ -5,6 +5,7 @@
     {
       "includes": [
         "**/components/**",
+        "!**/__tests__/**",
       ],
       "linter": {
         "rules": {

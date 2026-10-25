@@ -5,13 +5,14 @@ requires: [cli, typescript]
 extends: null
 abstract: false
 languages: []
-dictionary: [commander, CommanderError, exitOverride, parseAsync, configureOutput, configureHelp, copyInheritedSettings]
 governs: ["**/*.cli.ts"]
 ---
 
 # commander
 
-> The argument parser of a JavaScript command line: commands, flags, help and the errors of a command line typed wrong.
+> **`commander`**, the argument parser of a JavaScript command line: commands, flags, help and the errors of a command line typed wrong.
+
+The program runs by **`parseAsync`**, with **`exitOverride`** on, so a command line typed wrong throws a **`CommanderError`**; **`configureOutput`** gives it the writers, **`configureHelp`** shapes its help, and **`copyInheritedSettings`** passes the program's settings to a command added to it.
 
 ## Requirements
 

@@ -18,13 +18,63 @@ jobs:
         npx --yes bun@1.4.3 install --production --frozen-lockfile --ignore-scripts
         && npx --yes bun@1.4.3 run build
         && tar -czf constitution.tar.gz -C packages/constitution
-        package.json blocks presets templates tools vocabulary.yaml
+        package.json blocks presets templates tools
         && sha256sum constitution.tar.gz > constitution.tar.gz.sha256
-        && npx --yes bun@1.4.3 run build:cli
-      # The constitution program for each platform, an archive of bin/constitution that mise
-      # unpacks beside the Constitution's as its additional asset.
       assets: >-
         constitution.tar.gz constitution.tar.gz.sha256
-        dist/cli/constitution-linux-x64.tar.gz dist/cli/constitution-linux-arm64.tar.gz
-        dist/cli/constitution-macos-x64.tar.gz dist/cli/constitution-macos-arm64.tar.gz
-        dist/cli/constitution-windows-x64.tar.gz
+
+  # The constitution program for each platform, an archive of bin/constitution
+  # that mise unpacks beside the Constitution's as its additional asset; Bun
+  # builds every platform's from one runner.
+  cli:
+    name: cli (${{ matrix.target }})
+    needs: pre-release
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        include:
+          - target: linux-x64
+            archive: linux-x64
+            program: constitution
+          - target: linux-arm64
+            archive: linux-arm64
+            program: constitution
+          - target: darwin-x64
+            archive: macos-x64
+            program: constitution
+          - target: darwin-arm64
+            archive: macos-arm64
+            program: constitution
+          - target: windows-x64
+            archive: windows-x64
+            program: constitution.exe
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # The build runs the React Compiler, a development dependency.
+      - name: Install dependencies
+        run: npx --yes bun@1.4.3 install --frozen-lockfile --ignore-scripts
+
+      - name: Build the program
+        env:
+          TARGET: ${{ matrix.target }}
+          PROGRAM: ${{ matrix.program }}
+        run: >-
+          npx --yes bun@1.4.3 run build:cli
+          --target "bun-${TARGET}" --outfile "dist/cli/bin/${PROGRAM}"
+
+      - name: Pack the archive
+        env:
+          ARCHIVE: ${{ matrix.archive }}
+        run: tar -czf "constitution-${ARCHIVE}.tar.gz" -C dist/cli bin
+
+      - name: Upload it to the release
+        env:
+          ARCHIVE: ${{ matrix.archive }}
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: gh release upload "$TAG" "constitution-${ARCHIVE}.tar.gz" --clobber

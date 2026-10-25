@@ -9,11 +9,11 @@ interface Mutation {
   survivors: number;
 }
 
-const REPOSITORY = join(import.meta.dir, '..', '..');
-const STRYKER = join(REPOSITORY, 'node_modules', '.bin', 'stryker');
+const repository = join(import.meta.dir, '..', '..');
+const stryker = join(repository, 'node_modules', '.bin', 'stryker');
 
 // The sources of the runner and the ignorer stand in for the archive's build, which the check makes later.
-const CONFIG = `import bunTest from './.droneey/constitution/presets/typescript/stryker/foundation/bun-test.mjs';
+const config = `import bunTest from './.droneey/constitution/presets/typescript/stryker/foundation/bun-test.mjs';
 import core from './.droneey/constitution/presets/typescript/stryker/foundation/core.mjs';
 import mise from './.droneey/constitution/presets/typescript/stryker/foundation/mise.mjs';
 import self from './.droneey/constitution/presets/typescript/stryker/foundation/self.mjs';
@@ -38,7 +38,7 @@ const mutationOf = (spec: string, source = TOTAL): Mutation => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-stryker-'));
   const files = {
     'bunfig.mutation.toml': readFileSync(
-      join(REPOSITORY, 'templates', 'project', 'typescript', 'stryker', 'bunfig.mutation.toml'),
+      join(repository, 'templates', 'project', 'typescript', 'stryker', 'bunfig.mutation.toml'),
       'utf8',
     ),
     'package.json': JSON.stringify({
@@ -47,7 +47,7 @@ const mutationOf = (spec: string, source = TOTAL): Mutation => {
     }),
     'src/__tests__/order.utils.test.ts': spec,
     'src/order.utils.ts': source,
-    'stryker.config.mjs': CONFIG,
+    'stryker.config.mjs': config,
   };
 
   for (const [path, text] of Object.entries(files)) {
@@ -58,15 +58,15 @@ const mutationOf = (spec: string, source = TOTAL): Mutation => {
   }
 
   mkdirSync(join(folder, '.droneey'));
-  symlinkSync(REPOSITORY, join(folder, '.droneey', 'constitution'));
+  symlinkSync(repository, join(folder, '.droneey', 'constitution'));
   // Stryker's plugins and the specs' runner resolve from this package's node_modules.
-  symlinkSync(join(REPOSITORY, 'node_modules'), join(folder, 'node_modules'));
+  symlinkSync(join(repository, 'node_modules'), join(folder, 'node_modules'));
 
   const running = spawnSync(
     'bun',
     [
       '--bun',
-      STRYKER,
+      stryker,
       'run',
     ],
     {

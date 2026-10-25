@@ -1,6 +1,6 @@
 # Design tokens
 
-The tokens every droneey interface is drawn with, in the [W3C Design Tokens format](https://www.designtokens.org/tr/drafts/format/) 2025.10, and nothing else: no code ships from this package.
+The tokens every Droneey interface is drawn with, in the [W3C Design Tokens format](https://www.designtokens.org/tr/drafts/format/) 2025.10, and the runner that builds each platform's theme from them.
 
 | File | Holds |
 |---|---|
@@ -12,9 +12,22 @@ The tokens every droneey interface is drawn with, in the [W3C Design Tokens form
 | `tokens/theme/light.tokens.json`, `tokens/theme/dark.tokens.json` | the same roles naming other steps in each mode, the focus ring's colour among them |
 | `tokens/design.resolver.json` | the resolver of the 2025.10 Resolver module: the sets every mode takes, and the `theme` modifier whose contexts are the two mode files |
 
-A tool that reads resolvers takes `design.resolver.json`; one that does not, such as Figma's import or Tokens Studio's sets, takes the files of the mode it shows. Each platform's package reads them at build time as `@droneey/design-tokens/tokens/<file>`.
+A tool that reads resolvers takes `design.resolver.json`; one that does not, such as Figma's import or Tokens Studio's sets, takes the files of the mode it shows. Each platform's package reads them at build time as `@droneey/design-tokens/tokens/<file>`, through the resolver.
 
 The specs in `tests/proofs` prove the default theme: every pair of roles it declares reaches its contrast in both modes, the focus ring against the surfaces it is drawn on among them, and every size sits on the grid.
+
+## The build
+
+A platform's package keeps only its Style Dictionary configurations and its own formats, in a module whose default export is the list of them, and runs them through this package's command, `design-tokens`, from its own folder:
+
+| Command | Does |
+|---|---|
+| `design-tokens build <config>` | builds each configuration `<config>` exports, one after the other, and writes their files |
+| `design-tokens check <config>` | writes nothing, and lists every file whose content differs from what its build would write |
+
+Either exits with 0 when sound, and with 1 when a file is stale, the module lies outside the working folder or exports no list, or the build fails. A platform names the two `design:build` and `design:check`.
+
+Its configurations read the resolver through `themeModesOf`, from `@droneey/design-tokens`: each mode of the `theme` modifier, the default marked, with the paths of the files every mode takes and of its own context's, resolved from the resolver's URL.
 
 ## The accent
 

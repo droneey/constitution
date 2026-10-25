@@ -13,9 +13,10 @@ import {
 
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { RootProvider } from 'fumadocs-ui/provider/tanstack';
 
-import { DocsNotFoundScreen } from '#/composition/docs';
+import { DocsBuiltVersionContext, DocsNotFoundScreen } from '#/composition/docs';
+import { createVersion } from '#/features/versions';
+import { RootProvider } from '#/libs/ui';
 
 import { Route } from '../routes/docs/$';
 import type { RouterContext } from '../wiring';
@@ -32,7 +33,9 @@ const routerAt = (address: string, content: DocsContentFake) => {
           enabled: false,
         }}
       >
-        <Outlet />
+        <DocsBuiltVersionContext value={createVersion('0.70.0')}>
+          <Outlet />
+        </DocsBuiltVersionContext>
       </RootProvider>
     ),
   });
@@ -220,6 +223,7 @@ describe('docs route', () => {
   test('should hand the screen the address the browser shows', async () => {
     // Arrange
     const router = routerAt('/docs/guides/write-a-pack', docsContentFake());
+
     render(<RouterProvider router={router} />);
 
     // Act

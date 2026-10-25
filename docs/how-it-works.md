@@ -56,7 +56,7 @@ flowchart TD
   release --> tools["Tool configurations<br/>extend the presets"] --> check(["One check"])
 ```
 
-- **`constitution.yaml`** names the release, the blocks, the check command and the overrides. [Every key](reference/constitution-yaml.md).
+- **`constitution.yaml`** names the release, the blocks, the check command and the overrides; a member of a workspace keeps one of its own. [Every key](reference/constitution-yaml.md).
 - **The release**, which mise installs and links as `.droneey/constitution/`, holds the blocks, the [presets](reference/presets.md), the [templates](reference/templates.md) and the tools the presets run; mise also puts its [`constitution` program](reference/plugin.md#the-program) on `PATH`, which checks the project and does the hooks' work.
 - **The plugin** is the engine: the hooks, the skills and the reviewer. Its hooks run the release's program, which reads the rules from the release, so every repository follows exactly the release it pins.
 - **`PROJECT.md`** describes the product, and **`DECISIONS.md`** keeps the project's choices between real alternatives.

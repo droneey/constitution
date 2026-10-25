@@ -5,13 +5,12 @@ requires: [analytics, browser, typescript]
 extends: null
 abstract: false
 languages: []
-dictionary: [Matomo, _mtm, _paq]
 governs: ["**/matomo.sink.ts"]
 ---
 
 # Matomo
 
-> An analytics service.
+> **Matomo**, an analytics service, which the page feeds through the queues of its tracker, **`_paq`**, and of its tag manager, **`_mtm`**.
 
 ## Requirements
 

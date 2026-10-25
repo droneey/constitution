@@ -5,7 +5,6 @@ requires: [typescript, tsc, _api, http-server]
 extends: null
 abstract: false
 languages: []
-dictionary: [NestJS, Nest, "@nestjs", nestjs-pino, nest-cli.json, .swcrc]
 governs: ["nest-cli.json", ".swcrc", "**/root/**", "**/*.module.ts", "**/*.controller.ts"]
 ---
 
@@ -13,9 +12,7 @@ governs: ["nest-cli.json", ".swcrc", "**/root/**", "**/*.module.ts", "**/*.contr
 
 > Builds an HTTP server program from modules whose providers the injector wires by their constructors' types.
 
-NestJS's parts of the Constitution's release archive and the templates `templates/project/typescript/nestjs/.swcrc` and `templates/project/typescript/nestjs/tsconfig.json` keep the decorator metadata the injector reads.
-
-**Vocabulary:** suffixes `.module`, a module; `.controller`, a controller; `.provider`, a token bound to its implementation by `useClass` or `useFactory`; `.filter`, `.pipe`, `.guard` and `.interceptor`, the framework's providers of a request.
+**NestJS**, **Nest** for short, ships as the **`@nestjs`** packages, and **`nest-cli.json`** holds its command line's settings. Its parts of the Constitution's release archive and its templates of **`.swcrc`** and `tsconfig.json` keep the decorator metadata the injector reads.
 
 ## Requirements
 

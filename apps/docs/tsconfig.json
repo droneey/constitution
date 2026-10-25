@@ -27,7 +27,7 @@
   ],
   "references": [
     {
-      "path": "../../packages/design-web"
+      "path": "../../packages/design-browser"
     }
   ]
 }

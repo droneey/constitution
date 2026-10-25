@@ -1,6 +1,6 @@
 {
   "name": "constitution",
-  "description": "The Droneey Constitution: the rules a project declares in constitution.yaml, delivered at session start.",
+  "description": "Rules written in blood. For every project.",
   "author": {
     "name": "Dmytro Kurovskyi",
     "email": "me@kurovskyi.dev",

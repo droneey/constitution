@@ -15,9 +15,9 @@ import { fromMarkdown } from 'mdast-util-from-markdown';
 import { visit } from 'unist-util-visit';
 
 import type { Rule } from '../../../domain/entities';
-import { Level } from '../../../domain/entities';
-import { ruleOf } from '../../../domain/utils';
-import { isHeading } from '../markdown';
+import { ruleOf } from '../../../domain/entities';
+import { isHeading, SUBSECTION_HEADING_DEPTH } from '../markdown';
+import { exampleTones, LEVEL_LETTERS } from './remark-blocks.constants';
 import { dropTitle } from './remark-drop-title.adapter';
 
 interface BlocksOptions {
@@ -48,25 +48,6 @@ interface RuleHeading {
 }
 
 type Properties = Readonly<Record<string, string | string[]>>;
-
-const RULE_DEPTH = 3;
-
-const LETTERS: Readonly<Record<Level, string>> = {
-  [Level.May]: 'Y',
-  [Level.Must]: 'M',
-  [Level.Should]: 'S',
-};
-
-const TONES: ReadonlyMap<string, string> = new Map([
-  [
-    'Avoid',
-    'avoid',
-  ],
-  [
-    'Prefer',
-    'prefer',
-  ],
-]);
 
 const textOf = (parent: Parent): string =>
   parent.children
@@ -124,7 +105,7 @@ const box = (properties: Properties, children: RootContent[]): Box => ({
 });
 
 const ruleHeadingOf = (node: RootContent): RuleHeading | undefined => {
-  if (!isHeading(node, RULE_DEPTH)) {
+  if (!isHeading(node, SUBSECTION_HEADING_DEPTH)) {
     return undefined;
   }
 
@@ -143,7 +124,8 @@ const sectionEnd = (children: readonly RootContent[], from: number): number => {
     (child, index) =>
       index > from &&
       // Stryker disable next-line ConditionalExpression: only a heading has a depth, so checking its type only narrows it
-      ((child.type === 'heading' && child.depth <= RULE_DEPTH) || child.type === 'ruleCard'),
+      ((child.type === 'heading' && child.depth <= SUBSECTION_HEADING_DEPTH) ||
+        child.type === 'ruleCard'),
   );
 
   return next === -1 ? children.length : next;
@@ -197,7 +179,7 @@ const columnOf = (node: Code): Column => {
   const meta = node.meta ?? '';
   // Stryker disable next-line StringLiteral: a code block without a title matches no tone either way
   const title = /title="([^"]+)"/.exec(meta)?.[1] ?? '';
-  const tone = TONES.get(title);
+  const tone = exampleTones.get(title);
 
   return {
     column:
@@ -221,7 +203,6 @@ const columnOf = (node: Code): Column => {
   };
 };
 
-// A pair titled Avoid and Prefer sits side by side; anything else is shown once, at full width.
 const exampleOf = (markdown: string): Box => {
   const columns = fromMarkdown(markdown).children.map(
     (node): Column =>
@@ -242,14 +223,14 @@ const exampleOf = (markdown: string): Box => {
 };
 
 /** a line apart from the heading, so its slug is linked as every slug outside a heading is */
-const parentLineOf = (parent: string | undefined): Paragraph[] =>
-  parent === undefined
+const tightenedRuleLineOf = (tightens: string | undefined): Paragraph[] =>
+  tightens === undefined
     ? []
     : [
         {
           children: [
             text('→ '),
-            code(parent),
+            code(tightens),
           ],
           data: {
             hProperties: {
@@ -291,7 +272,7 @@ const cardOf = (
     children: [
       meta,
       heading,
-      ...parentLineOf(rule.parent),
+      ...tightenedRuleLineOf(rule.tightens),
       ...body.map((node) => (node.type === 'table' ? whyOf(node) : node)),
       ...(example === undefined
         ? []
@@ -342,7 +323,7 @@ const ruleHeading = (heading: Heading): void => {
   heading.children = [
     span(part('rule-mark', rule.level.toLowerCase()), [
       span(part('rule-mark-letter'), [
-        text(LETTERS[rule.level]),
+        text(LEVEL_LETTERS[rule.level]),
       ]),
       span(
         {
@@ -375,6 +356,7 @@ const linkSlugs = (tree: Root, options: BlocksOptions): void => {
     ) {
       return;
     }
+
     parent.children.splice(index, 1, linkTo(address, node));
   });
 };
@@ -387,7 +369,7 @@ const remarkBlocks =
     linkSlugs(tree, options);
     // Stryker disable next-line StringLiteral: only a heading has a depth, so visiting every node finds the same ones
     visit(tree, 'heading', (heading) => {
-      if (heading.depth === RULE_DEPTH) {
+      if (heading.depth === SUBSECTION_HEADING_DEPTH) {
         ruleHeading(heading);
       }
     });

@@ -1,0 +1,24 @@
+axes:
+  - architecture
+  - workflow
+domains:
+  - workspace
+platforms: []
+languages:
+  - python
+  - toml
+  - yaml
+implementations:
+  - uv
+  - yamllint
+  - poe
+  - ruff
+  - ty
+  - pytest
+  - mutmut
+  - deptry
+  - vulture
+  - complexipy
+  - python-check
+packs: []
+overrides: []

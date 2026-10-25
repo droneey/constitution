@@ -1,0 +1,129 @@
+language js
+
+pattern pascal_case() { r"[A-Z][A-Za-z0-9]*" }
+
+pattern component_function() {
+  or {
+    JsArrowFunctionExpression(),
+    JsFunctionExpression(),
+    JsCallExpression(callee=$callee) where { $callee <: r"(?:[A-Za-z]+\.)?(?:memo|forwardRef)" }
+  }
+}
+
+pattern declared_function($module) {
+  $name where {
+    $module <: contains or {
+      JsFunctionDeclaration(id=$id),
+      JsVariableDeclarator(id=$id, initializer=JsInitializerClause(expression=component_function()))
+    } where { $id <: $name }
+  }
+}
+
+// A compound is the component its parts are attached to by Object.assign.
+pattern component_value($module) {
+  or {
+    component_function(),
+    `Object.assign($root, $_)` where {
+      $root <: or {
+        component_function(),
+        and { pascal_case(),
+        declared_function($module) }
+      }
+    }
+  }
+}
+
+pattern component_named($module) {
+  $name where {
+    $name <: pascal_case(),
+    $module <: contains or {
+      JsFunctionDeclaration(id=$id),
+      JsVariableDeclarator(id=$id, initializer=JsInitializerClause(expression=component_value($module)))
+    } where { $id <: $name }
+  }
+}
+
+pattern value_declared($module) {
+  $name where {
+    $module <: contains or {
+      JsFunctionDeclaration(id=$id),
+      JsVariableDeclarator(id=$id),
+      JsClassDeclaration(id=$id),
+      TsEnumDeclaration(id=$id)
+    } where { $id <: $name }
+  }
+}
+
+pattern type_declared($module) {
+  $name where {
+    $module <: contains or {
+      TsTypeAliasDeclaration(binding_identifier=$id),
+      TsInterfaceDeclaration(id=$id)
+    } where { $id <: $name }
+  }
+}
+
+// A local value that is no component, or an imported name in no component's case.
+pattern non_component_name($module) {
+  $name where {
+    $name <: not component_named($module),
+    or {
+      $name <: value_declared($module),
+      and { $name <: not type_declared($module), $name <: not pascal_case() }
+    }
+  }
+}
+
+pattern exports_component($module) {
+  contains or {
+    JsExport(export_clause=JsFunctionDeclaration(id=pascal_case())),
+    JsExport(export_clause=JsVariableDeclarationClause()) as $statement where {
+      $statement <: contains JsVariableDeclarator(id=pascal_case(), initializer=JsInitializerClause(expression=component_value($module)))
+    },
+    JsExportNamedShorthandSpecifier(name=component_named($module)),
+    JsExportNamedSpecifier(local_name=component_named($module))
+  }
+}
+
+pattern type_only_export() {
+  or {
+    r"(?s)type\s.*",
+    within JsExportNamedClause() as $clause where { $clause <: r"(?s)type\s.*" },
+    within JsExportNamedFromClause() as $clause where { $clause <: r"(?s)type\s.*" }
+  }
+}
+
+or {
+  or {
+    JsExportNamedShorthandSpecifier(name=$name),
+    JsExportNamedSpecifier(local_name=$name)
+  } as $export where {
+    $export <: not type_only_export(),
+    $export <: within JsModule() as $module,
+    $name <: non_component_name($module)
+  },
+  JsExportNamedFromSpecifier(source_name=$name) as $export where {
+    $export <: not type_only_export(),
+    $name <: not pascal_case(),
+    $export <: within JsModule() as $module
+  },
+  JsExport(export_clause=JsFunctionDeclaration(id=$name)) as $export where {
+    $name <: not pascal_case(),
+    $export <: within JsModule() as $module
+  },
+  JsVariableDeclarator(id=$name, initializer=JsInitializerClause(expression=$value)) as $export where {
+    $export <: within JsExport(),
+    $export <: not within JsFunctionBody(),
+    $export <: within JsModule() as $module,
+    not and { $name <: pascal_case(), $value <: component_value($module) }
+  },
+  JsExport(export_clause=or {
+    JsClassDeclaration(),
+    TsEnumDeclaration(),
+    JsExportDefaultExpressionClause(),
+    JsExportFromClause()
+  }) as $export where { $export <: within JsModule() as $module }
+} where {
+  $module <: exports_component($module),
+  register_diagnostic(span=$export, message="A module that exports a component exports only components, so Fast Refresh can swap it: move this value into a file of its own", severity="error")
+}

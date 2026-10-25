@@ -6,7 +6,7 @@
 
 ### components-named-in-pascal-case → identifier-case-by-kind · SHOULD
 
-A component is named in PascalCase.
+A component is named in PascalCase, and so is the key a compound's part is reached by.
 
 | Why | Tags |
 |---|---|

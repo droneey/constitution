@@ -3,7 +3,7 @@ import { describe, expect, it } from 'bun:test';
 import { remarkSections } from '../remark-sections.adapter';
 import { treeOf } from './mdast.fixtures';
 
-const README = [
+const readme = [
   '# The Constitution',
   '',
   'Intro.',
@@ -39,7 +39,7 @@ describe('remarkSections', () => {
     },
     {
       condition: 'the page drops nothing',
-      expected: README,
+      expected: readme,
       options: {},
     },
     {
@@ -65,7 +65,7 @@ describe('remarkSections', () => {
     },
   ])('should leave the sections asked when $condition', ({ expected, options }) => {
     // Arrange
-    const tree = treeOf(README);
+    const tree = treeOf(readme);
 
     // Act
     remarkSections(options)(tree);

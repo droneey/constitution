@@ -2,6 +2,8 @@
 
 > Governs a component's place in the tree, its name, its folder and what it may import.
 
+The presentation layer of a feature, and of a composition module, is its **`ui/`**; `shared/ui` and `libs/ui` hold the application's shared and generic ones. In it, **`screens/`** holds a composition module's screens, **`components/`** the presentational components, **`widgets/`** the smart ones and `assets/` the icons, images and fonts: a feature adds `ui/{components,widgets}/`, a composition module `ui/{screens,components,widgets}/`. A component's map of variants lives in a file ending in **`.variants`**.
+
 ## Place
 
 ### component-lives-where-its-knowledge-lives → code-placed-by-its-reason-to-change · MUST

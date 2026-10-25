@@ -13,13 +13,13 @@ interface Project {
   source: string;
 }
 
-const REPORT = z.array(
+const report = z.array(
   z.object({
     code: z.string().nullable(),
   }),
 );
 
-const RUFF = uvBinary('ruff');
+const ruff = uvBinary('ruff');
 const MODULE = 'src/shop/orders.py';
 const FAILED = 2;
 
@@ -33,7 +33,7 @@ const ruffRun = (input: { args: readonly string[]; project: Project }): SpawnSyn
     files: filesOf(input.project),
     run: (folder) => {
       const running = spawnSync(
-        RUFF,
+        ruff,
         [
           ...input.args,
           '--no-cache',
@@ -65,7 +65,7 @@ const lintCodes = (project: Project): readonly string[] => {
 
   return [
     ...new Set(
-      REPORT.parse(JSON.parse(linting.stdout)).flatMap(({ code }) =>
+      report.parse(JSON.parse(linting.stdout)).flatMap(({ code }) =>
         code === null
           ? []
           : [

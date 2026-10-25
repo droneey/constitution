@@ -1,0 +1,8 @@
+extends: ../../../../.droneey/constitution/presets/yaml/yamllint/foundation/self.yaml
+
+# .gitignore's paths
+ignore: |
+  .pytest_cache/
+  .ruff_cache/
+  .complexipy_cache/
+  mutants/

@@ -1,1 +1,1 @@
-export { DocsToc, DocsTocDropdown } from './docs-toc';
+export { DocsToc } from './docs-toc';

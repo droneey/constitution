@@ -5,13 +5,14 @@ requires: [ui, browser, typescript, css, html]
 extends: null
 abstract: false
 languages: []
-dictionary: [Tailwind, cva, tailwind-merge, clsx, "@utility", "@theme"]
 governs: ["**/*.css", "**/*.variants.ts"]
 ---
 
 # Tailwind
 
-> Styling through utilities generated from the design system's tokens, with `cva` for variant maps and `cn()` for merging classes.
+> Styling through **Tailwind**'s utilities generated from the design system's tokens, with **`cva`** for variant maps and `cn()` for merging classes.
+
+`cn()` joins classes with **`clsx`** and merges them with **`tailwind-merge`**; the theme's tokens are one **`@theme`** block, and a utility of the project's own is an **`@utility`**.
 
 ## Requirements
 

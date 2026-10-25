@@ -5,13 +5,12 @@ requires: [_react]
 extends: null
 abstract: false
 languages: []
-dictionary: [Testing Library, userEvent]
 governs: ["**/__tests__/**/*.test.tsx"]
 ---
 
 # Testing Library
 
-> Specs that render the user interface and use it as a person does.
+> **Testing Library**: specs that render the user interface and use it as a person does, through **`userEvent`**.
 
 ## Requirements
 

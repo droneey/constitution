@@ -26,6 +26,7 @@
     "postinstall": "fumadocs-mdx",
     "lint:check": "biome check --error-on-warnings",
     "lint:fix": "biome check --write",
+    "type:check": "tsc -b",
     "test": "CI=1 bun test",
     "mutation:check": "mutation-check",
     "mutation:all": "mutation-check all",
@@ -33,10 +34,13 @@
     "docker:check": "mise run dockerfile:check && mise run compose:check",
     "unused:check": "knip --no-config-hints && knip --strict --no-config-hints",
     "shell:check": "shellcheck scripts/*.sh && shfmt -d scripts",
-    "audit:check": "mise run audit:check"
+    "audit:check": "mise run audit:check",
+    "markdown:check": "rumdl check . && rumdl fmt --check .",
+    "markdown:fix": "rumdl check --fix",
+    "yaml:check": "yamllint --strict ."
   },
   "dependencies": {
-    "@droneey/design-web": "workspace:*",
+    "@droneey/design-browser": "workspace:*",
     "@fontsource-variable/geist": "^5.3.0",
     "@fontsource-variable/geist-mono": "^5.3.0",
     "@tanstack/react-router": "^1.170.41",

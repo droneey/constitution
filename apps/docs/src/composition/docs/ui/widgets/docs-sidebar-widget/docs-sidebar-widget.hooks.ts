@@ -4,16 +4,12 @@ import { useSidebar } from '#/libs/ui';
 
 import { DocsFrameContext, DocsLocationContext } from '../../../app/providers';
 
-/**
- * Marks the sidebar's state on the frame; on a narrow screen, where the open sidebar pushes the page
- * out of view, it collapses the sidebar when the site opens and after each page.
- */
-export function useSidebarFrame(): void {
+export function useSidebarOnFrame(): void {
   const { collapsed, setCollapsed } = useSidebar();
   const { path } = use(DocsLocationContext);
   const frame = use(DocsFrameContext);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: each new page runs it again, so the sidebar closes over the page it opened
+  // biome-ignore lint/correctness/useExhaustiveDependencies: each new page runs it again, so on a narrow screen, where the open sidebar pushes the page out of view, the sidebar closes over the page it opened
   useLayoutEffect(() => {
     if (frame?.isNarrow()) {
       setCollapsed(true);
@@ -25,7 +21,15 @@ export function useSidebarFrame(): void {
   ]);
 
   useLayoutEffect(() => {
-    frame?.markSidebar(collapsed);
+    if (frame === undefined) {
+      return;
+    }
+
+    if (collapsed) {
+      frame.markSidebarCollapsed();
+    } else {
+      frame.markSidebarOpen();
+    }
   }, [
     collapsed,
     frame,

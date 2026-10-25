@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'bun:test';
 
-import { CONTRAST_CASES, contrastOf, GRID, pixelsOf, SIZE_PATHS } from './proofs.fixtures';
+import { contrastCases, contrastOf, GRID, pixelsOf, sizePaths } from './proofs.fixtures';
 
 describe('the default theme', () => {
-  it.each(CONTRAST_CASES)(
+  it.each(contrastCases)(
     'should give $foreground on $background at least $minimum:1 in the $mode mode',
     (pair) => {
       // Arrange
@@ -17,7 +17,7 @@ describe('the default theme', () => {
     },
   );
 
-  it.each(SIZE_PATHS)('should keep %s on the grid', (path) => {
+  it.each(sizePaths)('should keep %s on the grid', (path) => {
     // Arrange
     const grid = GRID;
 

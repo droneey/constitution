@@ -35,7 +35,6 @@ const passportFile = (block: BlockFixture): string =>
     `extends: ${block.extends ?? 'null'}`,
     `abstract: ${String(block.abstract ?? false)}`,
     `languages: ${list(block.languages)}`,
-    'dictionary: []',
     `governs: [${(block.governs ?? []).map((glob) => JSON.stringify(glob)).join(', ')}]`,
     '---',
     '',
@@ -69,7 +68,7 @@ const AXIS_FOLDERS: readonly string[] = [
   'foundation',
   'architecture',
   'workflow',
-];
+] as const;
 
 /** a path with no axis folder is foundation's */
 const inAxis = (path: string): string =>
@@ -95,7 +94,7 @@ const blockFiles = (
 };
 
 // Core's card runs close to its 3,500 bytes, as the real one may.
-const CORE_BODY = [
+const coreLines = [
   '# Core',
   '',
   'Read this digest first, then the files of the blocks it names before you change code they govern.',
@@ -115,7 +114,7 @@ const CORE_BODY = [
 ].join('\n');
 
 // The digest gives core's card without its front matter and the blank lines around it.
-const CORE_TEXT = `${CORE_BODY.trim()}\n`;
+const coreText = `${coreLines.trim()}\n`;
 
 const coreFiles = (body: string): Files =>
   blockFiles({
@@ -662,7 +661,7 @@ const syntheticFiles = (): Files =>
   );
 
 // A core body of the case's own sets how much of the budget core's text takes.
-const constitutionFiles = (coreBody: string = CORE_BODY): Files => ({
+const constitutionFiles = (coreBody: string = coreLines): Files => ({
   ...coreFiles(coreBody),
   ...domainFiles(),
   ...contextFiles(),
@@ -671,4 +670,4 @@ const constitutionFiles = (coreBody: string = CORE_BODY): Files => ({
 });
 
 export type { Files };
-export { CORE_TEXT, constitutionFiles };
+export { constitutionFiles, coreText };

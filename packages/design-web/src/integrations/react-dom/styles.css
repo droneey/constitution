@@ -1,4 +1,0 @@
-/* biome-ignore lint/nursery/useLayeredStyles: it declares its own layers */
-@import './components/icon/icon.css';
-/* biome-ignore lint/nursery/useLayeredStyles: it declares its own layers */
-@import './components/popover/popover.css';

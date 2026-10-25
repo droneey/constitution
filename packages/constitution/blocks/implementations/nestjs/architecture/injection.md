@@ -22,11 +22,11 @@ No provider, controller or guard takes `ModuleRef` and calls its `get` or `resol
 
 ### contracts-injected-by-token → composition-root-wires-everything · MUST
 
-A dependency that stands for a contract is injected by a token — an abstract class, or a `Symbol` named by `@Inject` — and bound to its implementation with `useClass` or `useFactory` in a module's `providers`; a constructor never names a concrete adapter class.
+A dependency that stands for a contract is injected by a token — an abstract class, or a `Symbol` named by `@Inject` — and bound to its implementation with `useClass` or `useFactory` in a module's `providers: [...]`; a constructor never names a concrete adapter class.
 
 | Why | Tags |
 |---|---|
-| a module's `providers` then name every concrete choice, and a spec replaces one by binding the same token to a fake. | [testing] |
+| a module's `providers: [...]` then name every concrete choice, and a spec replaces one by binding the same token to a fake. | [testing] |
 
 ### adapter-is-an-injectable-class → adapter-built-by-factory-object-or-class · SHOULD
 

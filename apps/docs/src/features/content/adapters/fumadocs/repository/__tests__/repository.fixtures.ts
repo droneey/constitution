@@ -24,12 +24,14 @@ export const enterRepository = (input: {
       recursive: true,
     });
   }
+
   for (const [path, text] of Object.entries(input.files ?? {})) {
     mkdirSync(dirname(join(root, path)), {
       recursive: true,
     });
     writeFileSync(join(root, path), text);
   }
+
   process.chdir(join(root, 'apps/docs'));
 
   return {

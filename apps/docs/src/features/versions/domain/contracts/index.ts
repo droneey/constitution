@@ -1,1 +1,1 @@
-export type { VersionsRepository } from './repositories/queries';
+export type { VersionsQueryRepository } from './repositories/queries';

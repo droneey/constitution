@@ -49,16 +49,21 @@ The Droneey Constitution: the engineering rules every Droneey repository is buil
 - **Section** — a `##` part of a chapter or a seam that names a part of its subject: `General`, first, for the rules about the whole subject, and `Requirements for implementation`, last.
 - **Seam** — a `with/<other>.md` file: the rules that hold only when two blocks meet.
 - **Rule** — a heading with a slug and a level, a statement, its Why and its tags.
+- **Slug** — a rule's kebab-case name, one across the Constitution and its packs: bindings, overrides and other rules name a rule by it.
+- **Tightens** — a rule's `→ <rule>` link: it narrows that rule for its block's case, never looser, and takes its level when it states none.
 - **Level** — `MUST`, `SHOULD` or `MAY`: how hard a rule binds.
 - **Lens** — a tag on a rule, for a review of one concern across every block.
+- **Requirement** — a rule of a `Requirements for implementation` section: what a tool of that kind must offer; an implementation's passport answers each with how and whether it is met.
 - **Active set** — the blocks a project follows: core, the blocks it lists, and the bases they extend.
-- **Unit** — a path under `packages:` whose files follow blocks of their own.
+- **Unit** — the repository, or a member of its workspace, whose files follow the blocks of its own `constitution.yaml`.
 - **Override** — a project's recorded lowering of one rule, with the user's consent and a reason.
 - **Pack** — a folder of blocks beside the Constitution's, shaped like it, that a project lists under `packs:`.
 - **Release** — a tagged version of the Constitution, installed by mise into `.droneey/constitution/`.
 - **Preset** — the configuration of one tool that holds rules, split into parts.
+- **Preset scope** — the language a preset's tool serves, or `common` for a tool every project runs: the first folder under `presets/` and `templates/project/`.
 - **Part** — one file of a preset, named after the block its settings need.
 - **Binding** — an entry of `bindings.yaml`: which setting of which part holds which rule.
+- **Template** — a file a project starts from: `templates/project/<scope>/<block>/` holds the files that wire a block's presets in, beside the starting `constitution.yaml`, `PROJECT.md`, `DECISIONS.md` and a new block's skeleton.
 - **Digest** — what the plugin gives an agent at the start of a session: the release, the warnings and the active blocks.
 - **Check** — the one command that runs every tool, named by `check:`.
 - **Owned word** — a brand, a language or a file name that only its block and the blocks that depend on it may write.

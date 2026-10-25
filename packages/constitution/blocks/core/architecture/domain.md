@@ -5,10 +5,10 @@
 ## The vocabulary
 
 - **Ubiquitous language.** Names match the business, mirrored from the people who own it and kept in the project's glossary.
-- **A feature is a bounded context.** One word may mean different things in two features.
+- **Bounded context.** A feature is one: one word may mean different things in two features.
 - **Ports and adapters.** A port names what the domain needs, in the domain's words; an adapter implements it over one outside system.
-- **Entities, value objects, use cases.** Business types with identity; small values that guard an invariant; every operation a feature offers, and the business rules it carries. Their form is the language's.
-- **Domain events.** A domain event records, in the past tense, what happened, in the domain's words.
+- Entities are the business types with identity; a **value object** is a small value that guards an invariant; a **use case** is an operation a feature offers, with the business rules it carries. Their form is the language's.
+- **Domain event.** It records, in the past tense, what happened, in the domain's words.
 
 ## Where rules live
 
@@ -90,7 +90,7 @@ A command returns no data — only its success or its expected failure; the call
 
 ### query-and-command-apart · MUST
 
-Where a feature splits its read side from its write side, the two never import each other, directly or through a surface that joins them.
+Where a feature splits its **read side** from its **write side**, the two never import each other, directly or through a surface that joins them.
 
 | Why | Tags |
 |---|---|

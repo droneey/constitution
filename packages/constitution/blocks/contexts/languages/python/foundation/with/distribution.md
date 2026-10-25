@@ -6,7 +6,7 @@
 
 ### py-typed-where-code-is-imported → distributed-unit-ships-its-types · MUST
 
-A published package whose code a consumer imports ships `py.typed` in its import package, beside its `__init__.py`.
+A published package whose code a consumer imports ships **`py.typed`** in its import package, beside its `__init__.py`.
 
 | Why | Tags |
 |---|---|

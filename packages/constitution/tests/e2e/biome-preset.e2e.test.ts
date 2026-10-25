@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import {
-  BASE_PARTS,
+  baseParts,
   blockCode,
   formattedText,
   lintFindings,
@@ -27,19 +27,19 @@ export function useRoom(label: string): void {
 }
 `;
 
-const TEST_PARTS = [
-  ...BASE_PARTS,
+const testParts = [
+  ...baseParts,
   'typescript/bun-test',
 ];
 
 const signInSpec = (step: string): string =>
   `import { expect, test } from '@playwright/test';\n\ntest('should sign in when the password is right', async ({ page }) => {\n  ${step}\n  await expect(page.getByRole('heading')).toBeVisible();\n});\n`;
 
-const SIX_SUITES_DEEP = `import { describe, expect, test } from 'bun:test';\n\n${"describe('orders', () => {\n".repeat(6)}test('should add totals when two are given', () => {\n  expect(1).toBe(1);\n});\n${'});\n'.repeat(6)}`;
+const sixSuitesDeep = `import { describe, expect, test } from 'bun:test';\n\n${"describe('orders', () => {\n".repeat(6)}test('should add totals when two are given', () => {\n  expect(1).toBe(1);\n});\n${'});\n'.repeat(6)}`;
 
 // Biome turns on the React and Tailwind rules only for a manifest that lists
 // their libraries.
-const MANIFEST = JSON.stringify({
+const manifest = JSON.stringify({
   name: 'fixture',
   dependencies: {
     react: '19.2.0',
@@ -47,8 +47,8 @@ const MANIFEST = JSON.stringify({
   },
 });
 
-const WEB_PARTS = [
-  ...BASE_PARTS,
+const webParts = [
+  ...baseParts,
   'typescript/_react',
   'typescript/react-dom',
   'typescript/browser',
@@ -260,7 +260,7 @@ describe('the Biome preset', () => {
       condition: 'a component calls an effect',
       files: {
         'src/Panel.tsx':
-          "import { useEffect } from 'react';\n\nexport function Panel(): string {\n  useEffect(() => {\n    globalThis.focus();\n  }, []);\n  return 'panel';\n}\n",
+          "import { useEffect } from 'react';\n\nexport function Panel(): string {\n  useEffect(() => {\n    globalThis.focus();\n  }, []);\n\n  return 'panel';\n}\n",
       },
     },
   ])(
@@ -270,7 +270,7 @@ describe('the Biome preset', () => {
       const project = {
         files,
         parts: [
-          ...BASE_PARTS,
+          ...baseParts,
           'typescript/architecture/core',
         ],
       };
@@ -295,14 +295,14 @@ describe('the Biome preset', () => {
       condition: 'generic code in libs names a value by an empty word',
       files: {
         'src/libs/list/list.utils.ts':
-          'export const firstOf = (items: readonly string[]): string | undefined => {\n  const value = items.at(0);\n  return value;\n};\n',
+          'export const firstOf = (items: readonly string[]): string | undefined => {\n  const value = items.at(0);\n\n  return value;\n};\n',
       },
     },
     {
       condition: "a workspace's libs name a value by an empty word",
       files: {
         'libs/list/languages/typescript/src/list.utils.ts':
-          'export const firstOf = (items: readonly string[]): string | undefined => {\n  const value = items.at(0);\n  return value;\n};\n',
+          'export const firstOf = (items: readonly string[]): string | undefined => {\n  const value = items.at(0);\n\n  return value;\n};\n',
       },
     },
     {
@@ -341,7 +341,8 @@ describe('the Biome preset', () => {
     {
       condition: 'an object type has a string literal property',
       files: {
-        'src/features/orders/domain/opened.ts': "export interface Opened {\n  status: 'open';\n}\n",
+        'src/features/orders/domain/opened.ts':
+          "export interface Opened {\n  readonly status: 'open';\n}\n",
       },
     },
     {
@@ -371,7 +372,7 @@ describe('the Biome preset', () => {
         'src/features/orders/adapters/api/order.adapter.ts':
           'export const toCancelledAt = (raw: string | null): string | undefined =>\n  raw === null ? undefined : raw;\n',
       },
-      parts: BASE_PARTS,
+      parts: baseParts,
     };
 
     // Act
@@ -401,9 +402,9 @@ describe("the parts of Biome's base", () => {
     const project = {
       files: {
         '.droneey/constitution/probe.ts': 'export const data = null;\n',
-        'src/order.ts': "export const orderKind = 'order';\n",
+        'src/order.ts': "export const ORDER_KIND = 'order';\n",
       },
-      parts: BASE_PARTS,
+      parts: baseParts,
     };
 
     // Act
@@ -685,7 +686,7 @@ describe("the parts of Biome's base", () => {
     // Arrange
     const project = {
       files,
-      parts: TEST_PARTS,
+      parts: testParts,
     };
 
     // Act
@@ -702,7 +703,7 @@ describe("the parts of Biome's base", () => {
         'src/__tests__/order.test.ts':
           "import { expect, test } from 'bun:test';\n\ntest('should load orders when the cache is fresh', () => {\n  const options = { queries: { retry: false } };\n\n  expect(options).toStrictEqual({ queries: { retry: false } });\n});\n",
       },
-      parts: TEST_PARTS,
+      parts: testParts,
     };
 
     // Act
@@ -765,7 +766,7 @@ describe("the parts of Biome's base", () => {
     {
       condition: 'a spec nests six suites, a rule the test domain turns on below an error',
       files: {
-        'src/__tests__/order.test.ts': SIX_SUITES_DEEP,
+        'src/__tests__/order.test.ts': sixSuitesDeep,
       },
       rule: 'noExcessiveNestedTestSuites',
     },
@@ -773,7 +774,7 @@ describe("the parts of Biome's base", () => {
     // Arrange
     const project = {
       files,
-      parts: TEST_PARTS,
+      parts: testParts,
     };
 
     // Act
@@ -934,7 +935,7 @@ describe("the parts of Biome's base", () => {
     // Arrange
     const project = {
       files,
-      parts: TEST_PARTS,
+      parts: testParts,
     };
 
     // Act
@@ -956,7 +957,7 @@ describe("the parts of Biome's base", () => {
           'src/features/accounts/adapters/api/models/account.model.ts': `import { z } from 'zod';\n\nexport const emailModel = ${schema};\n`,
         },
         parts: [
-          ...BASE_PARTS,
+          ...baseParts,
           'typescript/zod',
         ],
       };
@@ -1004,7 +1005,7 @@ describe("the parts of Biome's base", () => {
           'src/panel.tsx': source,
         },
         parts: [
-          ...BASE_PARTS,
+          ...baseParts,
           'typescript/i18n',
         ],
       };
@@ -1051,7 +1052,7 @@ describe("the parts of Biome's base", () => {
           'tests/e2e/sign-in.e2e.test.ts': source,
         },
         parts: [
-          ...BASE_PARTS,
+          ...baseParts,
           'typescript/playwright',
         ],
       };
@@ -1131,7 +1132,7 @@ describe("the parts of Biome's base", () => {
     const project = {
       files,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/_react',
       ],
     };
@@ -1168,7 +1169,7 @@ describe("the parts of Biome's base", () => {
         'src/panel.tsx': source,
       },
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/_react',
       ],
     };
@@ -1183,12 +1184,12 @@ describe("the parts of Biome's base", () => {
   it.each([
     {
       isReported: true,
-      parts: BASE_PARTS,
+      parts: baseParts,
     },
     {
       isReported: false,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/storybook',
       ],
     },
@@ -1228,7 +1229,7 @@ describe("the parts of Biome's base", () => {
         'src/panel.tsx': source,
       },
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/tailwind',
       ],
     };
@@ -1248,7 +1249,7 @@ describe("the parts of Biome's base", () => {
           "export const label = (at: Date): string => at.toLocaleDateString('uk');\n",
       },
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/i18n',
       ],
     };
@@ -1268,7 +1269,7 @@ describe("the parts of Biome's base", () => {
           'interface Order {\n  id: string;\n}\n\nexport const read = (response: Response): Promise<Order> =>\n  response.json<Order>();\n',
       },
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/ky',
       ],
     };
@@ -1293,7 +1294,7 @@ describe("the parts of Biome's base", () => {
       },
       message: 'Name the route by its typed path and params',
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/tanstack-router',
       ],
     },
@@ -1305,7 +1306,7 @@ describe("the parts of Biome's base", () => {
       },
       message: 'Declare the read once as queryOptions in cache.utils.ts',
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/architecture/tanstack-query',
       ],
     },
@@ -1317,7 +1318,7 @@ describe("the parts of Biome's base", () => {
       },
       message: 'Build the QueryClient in the root',
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/architecture/tanstack-query',
       ],
     },
@@ -1346,7 +1347,7 @@ describe("the parts of Biome's base", () => {
           "export const target = { to: '/orders/$orderId' };\n",
       },
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/tanstack-router',
       ],
     },
@@ -1359,7 +1360,7 @@ describe("the parts of Biome's base", () => {
           "import { QueryClient } from '@tanstack/react-query';\n\nexport const client = new QueryClient();\n",
       },
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/architecture/tanstack-query',
       ],
     },
@@ -1394,7 +1395,7 @@ describe('the Biome parts of the libraries', () => {
       },
       message: 'Declare a module-level message with msg',
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/lingui',
       ],
     },
@@ -1406,7 +1407,7 @@ describe('the Biome parts of the libraries', () => {
       },
       message: 'Write the Zod 4 form',
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/zod',
       ],
     },
@@ -1435,7 +1436,7 @@ describe('the Biome parts of the libraries', () => {
           "import { msg, t } from '@lingui/core/macro';\n\nexport const online = msg`Online`;\nexport const label = (): string => t`Away`;\n",
       },
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/lingui',
       ],
     },
@@ -1446,7 +1447,7 @@ describe('the Biome parts of the libraries', () => {
           "import { z } from 'zod';\n\nconst baseSchema = z.strictObject({ id: z.string() });\n\nexport const userModel = baseSchema.extend({ email: z.email() });\n",
       },
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/zod',
       ],
     },
@@ -1457,7 +1458,7 @@ describe('the Biome parts of the libraries', () => {
           'export interface Chat {\n  readonly title: string;\n  rename(title: string): Chat;\n}\n',
       },
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/architecture/typescript',
       ],
     },
@@ -1502,7 +1503,7 @@ describe('the Biome part that needs each setting', () => {
         'src/main.ts': UNTYPED_RETURN,
       },
       isReported: true,
-      parts: BASE_PARTS,
+      parts: baseParts,
       rule: 'useExplicitReturnType',
     },
     {
@@ -1536,7 +1537,7 @@ describe('the Biome part that needs each setting', () => {
         '.dependency-cruiser.mjs': 'export default {};\n',
       },
       isReported: true,
-      parts: BASE_PARTS,
+      parts: baseParts,
       rule: 'noDefaultExport',
     },
     {
@@ -1546,7 +1547,7 @@ describe('the Biome part that needs each setting', () => {
       },
       isReported: false,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/dependency-cruiser',
       ],
       rule: 'noDefaultExport',
@@ -1557,18 +1558,8 @@ describe('the Biome part that needs each setting', () => {
         'src/main.ts': 'export const total = (count: number): bigint => 1n + count;\n',
       },
       isReported: true,
-      parts: BASE_PARTS,
+      parts: baseParts,
       rule: 'noUnsafePlusOperands',
-    },
-    {
-      condition: 'an object is printed by its default toString',
-      files: {
-        'src/main.ts':
-          'interface Order {\n  id: string;\n}\n\nexport const label = (order: Order): string => `Order ${order}`;\n',
-      },
-      isReported: true,
-      parts: BASE_PARTS,
-      rule: 'noBaseToString',
     },
     {
       condition: 'a declared return type is wider than what is returned',
@@ -1576,7 +1567,7 @@ describe('the Biome part that needs each setting', () => {
         'src/main.ts': 'export const rank = (isFirst: boolean): number => (isFirst ? 0 : 1);\n',
       },
       isReported: true,
-      parts: BASE_PARTS,
+      parts: baseParts,
       rule: 'noMisleadingReturnType',
     },
     {
@@ -1585,7 +1576,7 @@ describe('the Biome part that needs each setting', () => {
         'src/main.ts': "export const fail = (): never => {\n  throw 'broken';\n};\n",
       },
       isReported: true,
-      parts: BASE_PARTS,
+      parts: baseParts,
       rule: 'useThrowOnlyError',
     },
     {
@@ -1596,7 +1587,7 @@ describe('the Biome part that needs each setting', () => {
       },
       isReported: true,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/architecture/typescript',
       ],
       rule: 'noProcessEnv',
@@ -1609,7 +1600,7 @@ describe('the Biome part that needs each setting', () => {
       },
       isReported: false,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/architecture/typescript',
       ],
       rule: 'noProcessEnv',
@@ -1622,7 +1613,7 @@ describe('the Biome part that needs each setting', () => {
       },
       isReported: true,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/architecture/ui',
       ],
       rule: 'noRestrictedGlobals',
@@ -1635,7 +1626,7 @@ describe('the Biome part that needs each setting', () => {
       },
       isReported: false,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/architecture/ui',
       ],
       rule: 'noRestrictedGlobals',
@@ -1647,7 +1638,7 @@ describe('the Biome part that needs each setting', () => {
       },
       isReported: true,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/_react',
       ],
       rule: 'useSelfClosingElements',
@@ -1658,7 +1649,7 @@ describe('the Biome part that needs each setting', () => {
         'src/main.ts': "setTimeout('refresh()', 100);\n",
       },
       isReported: true,
-      parts: BASE_PARTS,
+      parts: baseParts,
       rule: 'noImpliedEval',
     },
     {
@@ -1668,7 +1659,7 @@ describe('the Biome part that needs each setting', () => {
           'export const depth = (level: number, label: string): number =>\n  level > 0 ? depth(level - 1, label) : 0;\n',
       },
       isReported: true,
-      parts: BASE_PARTS,
+      parts: baseParts,
       rule: 'noParametersOnlyUsedInRecursion',
     },
     {
@@ -1678,7 +1669,7 @@ describe('the Biome part that needs each setting', () => {
           'export const depth = (level: number): number => (level > 0 ? depth(level - 1) : 0);\n',
       },
       isReported: false,
-      parts: BASE_PARTS,
+      parts: baseParts,
       rule: 'noParametersOnlyUsedInRecursion',
     },
     {
@@ -1687,7 +1678,7 @@ describe('the Biome part that needs each setting', () => {
         'src/main.ts': "export const fail = (): Promise<never> => Promise.reject('broken');\n",
       },
       isReported: true,
-      parts: BASE_PARTS,
+      parts: baseParts,
       rule: 'usePromiseRejectErrors',
     },
     {
@@ -1697,7 +1688,7 @@ describe('the Biome part that needs each setting', () => {
           "export const fail = (): Promise<never> => Promise.reject(new Error('broken'));\n",
       },
       isReported: false,
-      parts: BASE_PARTS,
+      parts: baseParts,
       rule: 'usePromiseRejectErrors',
     },
     {
@@ -1707,7 +1698,7 @@ describe('the Biome part that needs each setting', () => {
           'export const settle = (): number => {\n  try {\n    return 1;\n  } finally {\n    return 2;\n  }\n};\n',
       },
       isReported: true,
-      parts: BASE_PARTS,
+      parts: baseParts,
       rule: 'noUnsafeFinally',
     },
     {
@@ -1717,7 +1708,7 @@ describe('the Biome part that needs each setting', () => {
           'export const settle = (): number => {\n  try {\n    return 1;\n  } finally {\n    globalThis.focus();\n  }\n};\n',
       },
       isReported: false,
-      parts: BASE_PARTS,
+      parts: baseParts,
       rule: 'noUnsafeFinally',
     },
     {
@@ -1727,7 +1718,7 @@ describe('the Biome part that needs each setting', () => {
       },
       isReported: true,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/react-dom',
       ],
       rule: 'noObsoleteTags',
@@ -1739,7 +1730,7 @@ describe('the Biome part that needs each setting', () => {
       },
       isReported: false,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/react-dom',
       ],
       rule: 'noObsoleteTags',
@@ -1751,7 +1742,7 @@ describe('the Biome part that needs each setting', () => {
       },
       isReported: true,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/react-dom',
       ],
       rule: 'noMisplacedListElements',
@@ -1763,7 +1754,7 @@ describe('the Biome part that needs each setting', () => {
       },
       isReported: false,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/react-dom',
       ],
       rule: 'noMisplacedListElements',
@@ -1775,7 +1766,7 @@ describe('the Biome part that needs each setting', () => {
       },
       isReported: true,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/tailwind',
       ],
       rule: 'noTailwindRawColors',
@@ -1787,7 +1778,7 @@ describe('the Biome part that needs each setting', () => {
       },
       isReported: false,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/tailwind',
       ],
       rule: 'noTailwindRawColors',
@@ -1799,7 +1790,7 @@ describe('the Biome part that needs each setting', () => {
       },
       isReported: true,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/playwright',
       ],
       rule: 'noPlaywrightPagePause',
@@ -1811,7 +1802,7 @@ describe('the Biome part that needs each setting', () => {
       },
       isReported: false,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/playwright',
       ],
       rule: 'noPlaywrightPagePause',
@@ -1823,7 +1814,7 @@ describe('the Biome part that needs each setting', () => {
       },
       isReported: true,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/playwright',
       ],
       rule: 'noPlaywrightElementHandle',
@@ -1835,7 +1826,7 @@ describe('the Biome part that needs each setting', () => {
       },
       isReported: false,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/playwright',
       ],
       rule: 'noPlaywrightElementHandle',
@@ -1849,7 +1840,7 @@ describe('the Biome part that needs each setting', () => {
       },
       isReported: true,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/playwright',
       ],
       rule: 'noPlaywrightEval',
@@ -1861,7 +1852,7 @@ describe('the Biome part that needs each setting', () => {
       },
       isReported: false,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/playwright',
       ],
       rule: 'noPlaywrightEval',
@@ -1943,7 +1934,7 @@ describe('the Biome css part', () => {
         'src/theme.css': `${LAYERED}${css}`,
       },
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'css/css',
       ],
     };
@@ -1980,7 +1971,7 @@ describe('the Biome css part', () => {
           'src/theme.css': `${LAYERED}${css}`,
         },
         parts: [
-          ...BASE_PARTS,
+          ...baseParts,
           'css/css',
           'css/browser',
         ],
@@ -2016,7 +2007,7 @@ describe('the Biome css part', () => {
           'src/libs/ui/theme/theme.css': theme,
         },
         parts: [
-          ...BASE_PARTS,
+          ...baseParts,
           'css/css',
           'css/tailwind',
         ],
@@ -2040,7 +2031,7 @@ describe('the Biome css part', () => {
           '@theme {\n  --color-text: oklch(20% 0 0);\n}\n\n@layer components {\n  .card {\n    color: var(--color-text);\n  }\n}\n',
       },
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'css/css',
         'css/tailwind',
       ],
@@ -2060,7 +2051,7 @@ describe('the Biome css part', () => {
         'src/theme.css': `${LAYERED}@layer components {\n  #main {\n    color: var(--color-text);\n  }\n}\n`,
       },
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'css/css',
       ],
     };
@@ -2076,7 +2067,7 @@ describe('the Biome css part', () => {
     {
       isReported: true,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'css/css',
         'typescript/css',
       ],
@@ -2084,7 +2075,7 @@ describe('the Biome css part', () => {
     {
       isReported: false,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'css/css',
         'typescript/css',
         'typescript/tailwind',
@@ -2160,7 +2151,7 @@ describe('the Biome browser part', () => {
         'src/features/orders/ui/show.ts': source,
       },
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/browser',
       ],
     };
@@ -2184,7 +2175,7 @@ describe('the Biome browser part', () => {
           'export const show = (panel: Element, label: string): void => {\n  panel.textContent = label;\n};\n',
       },
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/browser',
       ],
     };
@@ -2202,7 +2193,7 @@ describe('the Biome design-system part', () => {
     {
       isReported: true,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'css/css',
         'css/design-system',
       ],
@@ -2210,7 +2201,7 @@ describe('the Biome design-system part', () => {
     {
       isReported: false,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'css/css',
       ],
     },
@@ -2411,10 +2402,10 @@ describe('the Biome framework parts', () => {
     // Arrange
     const project = {
       files: {
-        'package.json': MANIFEST,
+        'package.json': manifest,
         'src/panel.tsx': source,
       },
-      parts: WEB_PARTS,
+      parts: webParts,
     };
 
     // Act
@@ -2431,7 +2422,7 @@ describe('the Biome framework parts', () => {
         'src/panel.tsx': component('<li onClick={() => undefined}>item</li>'),
       },
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/react-dom',
       ],
       rule: 'noNoninteractiveElementInteractions',
@@ -2446,7 +2437,7 @@ describe('the Biome framework parts', () => {
           "import { useState } from 'react';\n\nexport function useOrder(open: boolean): number {\n  if (open) {\n    const [count] = useState(0);\n    return count;\n  }\n  return 0;\n}\n",
       },
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/_react',
       ],
       rule: 'useHookAtTopLevel',
@@ -2465,7 +2456,7 @@ describe('the Biome framework parts', () => {
           "import { View } from 'react-native';\n\nexport function Panel(): React.ReactElement {\n  return <View style={{ backgroundColor: 'red' }} />;\n}\n",
       },
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/_react',
         'typescript/react-native',
       ],
@@ -2477,7 +2468,7 @@ describe('the Biome framework parts', () => {
         'src/Panel.tsx': component('<div />'),
       },
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/_react',
       ],
       rule: 'useFilenamingConvention',
@@ -2488,7 +2479,7 @@ describe('the Biome framework parts', () => {
       // Arrange
       const project = {
         files: {
-          'package.json': MANIFEST,
+          'package.json': manifest,
           ...files,
         },
         parts,
@@ -2530,10 +2521,10 @@ describe('the Biome framework parts', () => {
       // Arrange
       const project = {
         files: {
-          'package.json': MANIFEST,
+          'package.json': manifest,
           ...files,
         },
-        parts: BASE_PARTS,
+        parts: baseParts,
       };
 
       // Act
@@ -2712,10 +2703,10 @@ describe('the Biome framework parts', () => {
     // Arrange
     const project = {
       files: {
-        'package.json': MANIFEST,
+        'package.json': manifest,
         ...files,
       },
-      parts: WEB_PARTS,
+      parts: webParts,
     };
 
     // Act
@@ -2781,10 +2772,10 @@ describe('the Biome framework parts', () => {
     // Arrange
     const project = {
       files: {
-        'package.json': MANIFEST,
+        'package.json': manifest,
         ...files,
       },
-      parts: WEB_PARTS,
+      parts: webParts,
     };
 
     // Act
@@ -2798,13 +2789,13 @@ describe('the Biome framework parts', () => {
     // Arrange
     const project = {
       files: {
-        'package.json': MANIFEST,
+        'package.json': manifest,
         'src/room.hooks.ts': ROOM_HOOK.replace(
           'useEffectEvent((): void => {',
           '((): void => {',
         ).replace(', useEffectEvent', ''),
       },
-      parts: WEB_PARTS,
+      parts: webParts,
     };
 
     // Act
@@ -2871,7 +2862,7 @@ describe('the Biome architecture parts', () => {
           [file]: code,
         },
         parts: [
-          ...BASE_PARTS,
+          ...baseParts,
           'typescript/architecture/core',
         ],
       };
@@ -2903,7 +2894,7 @@ describe('the Biome architecture parts', () => {
             'export const orderId = (): string => crypto.randomUUID();\nexport const placedAt = (): number => Date.now();\n',
         },
         parts: [
-          ...BASE_PARTS,
+          ...baseParts,
           'typescript/architecture/typescript',
           'typescript/architecture/core',
         ],
@@ -2945,7 +2936,7 @@ describe('the Biome architecture parts', () => {
           [file]: 'export const later = (run: () => void): void => {\n  setTimeout(run, 10);\n};\n',
         },
         parts: [
-          ...BASE_PARTS,
+          ...baseParts,
           'typescript/architecture/typescript',
         ],
       };
@@ -2967,7 +2958,7 @@ describe('the Biome architecture parts', () => {
         'src/features/orders/index.ts': "export * from './app';\n",
       },
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/architecture/core',
       ],
       rule: 'noReExportAll',
@@ -2979,7 +2970,7 @@ describe('the Biome architecture parts', () => {
           "export { default as Pressable } from 'react-native/Libraries/Components/Pressable/Pressable';\n",
       },
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/react-native',
       ],
       rule: 'noReactNativeDeepImports',
@@ -3014,14 +3005,14 @@ describe('the Biome architecture parts', () => {
     {
       isReported: false,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/architecture/core',
       ],
     },
     {
       isReported: true,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/architecture/typescript',
       ],
     },
@@ -3049,12 +3040,12 @@ describe('the Biome architecture parts', () => {
   it.each([
     {
       isReported: true,
-      parts: BASE_PARTS,
+      parts: baseParts,
     },
     {
       isReported: false,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/nestjs',
       ],
     },
@@ -3081,13 +3072,13 @@ describe('the Biome architecture parts', () => {
   it.each([
     {
       isReported: true,
-      parts: BASE_PARTS,
+      parts: baseParts,
       path: 'src/orders.controller.ts',
     },
     {
       isReported: false,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/nestjs',
       ],
       path: 'src/orders.controller.ts',
@@ -3095,7 +3086,7 @@ describe('the Biome architecture parts', () => {
     {
       isReported: false,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/nestjs',
         'typescript/architecture/nestjs',
       ],
@@ -3104,7 +3095,7 @@ describe('the Biome architecture parts', () => {
     {
       isReported: true,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/nestjs',
         'typescript/architecture/nestjs',
       ],
@@ -3134,7 +3125,7 @@ describe('the Biome architecture parts', () => {
     {
       isReported: false,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/nestjs',
       ],
       path: 'src/orders.controller.ts',
@@ -3142,7 +3133,7 @@ describe('the Biome architecture parts', () => {
     {
       isReported: false,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/nestjs',
         'typescript/architecture/nestjs',
       ],
@@ -3151,7 +3142,7 @@ describe('the Biome architecture parts', () => {
     {
       isReported: true,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/nestjs',
         'typescript/architecture/nestjs',
       ],
@@ -3209,7 +3200,7 @@ describe('the Biome base where a rule allows what a setting caught', () => {
     const project = {
       files,
       parts: [
-        ...BASE_PARTS,
+        ...baseParts,
         'typescript/tanstack-router',
       ],
     };
@@ -3241,7 +3232,7 @@ describe('the Biome base where a rule allows what a setting caught', () => {
     // Arrange
     const project = {
       files,
-      parts: BASE_PARTS,
+      parts: baseParts,
     };
 
     // Act

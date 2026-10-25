@@ -5,18 +5,18 @@ import { delimiter, join } from 'node:path';
 import { z } from 'zod';
 
 import type { Files } from './python-project.fixtures';
-import { inPythonProject, REPOSITORY, writeFiles } from './python-project.fixtures';
-import { ENVIRONMENT } from './uv.fixtures';
+import { inPythonProject, repository, writeFiles } from './python-project.fixtures';
+import { uvEnvironment } from './uv.fixtures';
 
 interface Run {
   isClean: boolean;
   output: string;
 }
 
-const TEMPLATES = join(REPOSITORY, 'templates', 'project', 'python');
-const PRESETS = join(REPOSITORY, 'presets', 'python');
+const templates = join(repository, 'templates', 'project', 'python');
+const presets = join(repository, 'presets', 'python');
 const ARCHIVE = '.droneey/constitution';
-const GIT_IDENTITY = [
+const gitIdentity = [
   '-c',
   'user.name=Constitution',
   '-c',
@@ -27,7 +27,7 @@ const python = (...lines: readonly string[]): string => `${lines.join('\n')}\n`;
 
 // The blocks of the shop's scope, Python's, in the order the hook reads them:
 // the language, then its tools and libraries by id.
-const BLOCKS = [
+const blocks = [
   'python',
   'complexipy',
   'deptry',
@@ -47,7 +47,7 @@ const BLOCKS = [
   'uv',
   'vulture',
 ];
-const AXES = [
+const axes = [
   'foundation',
   'architecture',
 ];
@@ -58,10 +58,11 @@ const listOf = (folder: string): readonly string[] =>
 // A tool's parts as /constitution:ratify computes them: on each axis, self,
 // core and the language's, then the other blocks' in their order.
 const partsOf = (tool: string): readonly string[] =>
-  AXES.flatMap((axis) => {
-    const files = listOf(join(PRESETS, tool, axis)).filter(
+  axes.flatMap((axis) => {
+    const files = listOf(join(presets, tool, axis)).filter(
       (file) => file.includes('.') && file !== 'bindings.yaml',
     );
+
     const named = (name: string): readonly string[] =>
       files.filter((file) => file.slice(0, file.indexOf('.')) === name);
 
@@ -69,13 +70,13 @@ const partsOf = (tool: string): readonly string[] =>
       'self',
       'core',
       'python',
-      ...BLOCKS.filter((block) => block !== 'python'),
+      ...blocks.filter((block) => block !== 'python'),
     ]
       .flatMap(named)
       .map((file) => `presets/python/${tool}/${axis}/${file}`);
   });
 
-const textOf = (part: string): string => readFileSync(join(REPOSITORY, part), 'utf8');
+const textOf = (part: string): string => readFileSync(join(repository, part), 'utf8');
 
 // The part the others lead to: none of them extends it.
 const chainEndOf = (parts: readonly string[]): string =>
@@ -103,20 +104,20 @@ const filled = (input: { parts: readonly string[]; text: string }): string => {
     .replaceAll('<package>', 'shop');
 };
 
-const MERGED_TABLES = [
+const mergedTableNames = [
   '[dependency-groups]',
   '[tool.mutmut]',
   '[tool.poe.tasks]',
 ];
 
-const TABLE = z.record(z.string(), z.unknown());
+const tableSchema = z.record(z.string(), z.unknown());
 
 // One table from each fragment that gives it: the keys of every fragment, a
 // list several give holding the entries of each without repeats.
 const mergedTable = (input: { sections: readonly string[]; table: string }): string => {
   const settings = input.sections
     .filter((section) => section.startsWith(`${input.table}\n`))
-    .map((section) => TABLE.parse(Bun.TOML.parse(section.slice(input.table.length + 1))));
+    .map((section) => tableSchema.parse(Bun.TOML.parse(section.slice(input.table.length + 1))));
   const keys = [
     ...new Set(settings.flatMap((setting) => Object.keys(setting))),
   ];
@@ -144,12 +145,12 @@ const mergedTable = (input: { sections: readonly string[]; table: string }): str
 const mergedTables = (text: string): string => {
   const sections = text.split(/(?=^\[)/mu);
   const kept = sections.filter(
-    (section) => !MERGED_TABLES.some((table) => section.startsWith(`${table}\n`)),
+    (section) => !mergedTableNames.some((table) => section.startsWith(`${table}\n`)),
   );
 
   return [
     ...kept,
-    ...MERGED_TABLES.map((table) =>
+    ...mergedTableNames.map((table) =>
       mergedTable({
         sections,
         table,
@@ -159,34 +160,36 @@ const mergedTables = (text: string): string => {
 };
 
 const assembled = (path: string): string => {
-  const text = BLOCKS.flatMap((block) => {
-    const fragment = join(TEMPLATES, block, path);
+  const text = blocks
+    .flatMap((block) => {
+      const fragment = join(templates, block, path);
 
-    return existsSync(fragment)
-      ? [
-          filled({
-            parts: partsOf(block),
-            text: readFileSync(fragment, 'utf8'),
-          }),
-        ]
-      : [];
-  }).join('\n');
+      return existsSync(fragment)
+        ? [
+            filled({
+              parts: partsOf(block),
+              text: readFileSync(fragment, 'utf8'),
+            }),
+          ]
+        : [];
+    })
+    .join('\n');
 
   return path.endsWith('.toml') ? mergedTables(text) : text;
 };
 
-const PYPROJECT = assembled('pyproject.toml');
+const pyproject = assembled('pyproject.toml');
 
 // The template's files as a project copies them, its package named shop.
-const TEMPLATE_FILES: Files = {
+const templateFiles: Files = {
   '.gitignore': `${assembled('.gitignore')}/.droneey\n`,
-  'pyproject.toml': PYPROJECT,
+  'pyproject.toml': pyproject,
   'tests/conftest.py': assembled('tests/conftest.py'),
 };
 
 // A package that keeps every rule of the template: a surface, a module, an
 // async function, and specs that kill each of their mutants.
-const SHOP: Files = {
+const shop: Files = {
   'src/shop/__init__.py': python(
     'from .orders import total, totals',
     '',
@@ -242,7 +245,7 @@ const git = (folder: string, args: readonly string[]): void => {
   const running = spawnSync(
     'git',
     [
-      ...GIT_IDENTITY,
+      ...gitIdentity,
       ...args,
     ],
     {
@@ -263,8 +266,8 @@ const git = (folder: string, args: readonly string[]): void => {
 const runInTemplate = (input: { changes: Files; command: readonly string[] }): Run =>
   inPythonProject({
     files: {
-      ...TEMPLATE_FILES,
-      ...SHOP,
+      ...templateFiles,
+      ...shop,
     },
     run: (folder) => {
       git(folder, [
@@ -292,7 +295,7 @@ const runInTemplate = (input: { changes: Files; command: readonly string[] }): R
         ...Object.entries(process.env).filter(([name]) => name !== 'CI'),
         [
           'PATH',
-          `${join(ENVIRONMENT, 'bin')}${delimiter}${process.env['PATH'] ?? ''}`,
+          `${join(uvEnvironment, 'bin')}${delimiter}${process.env['PATH'] ?? ''}`,
         ],
         [
           'PYTHONPATH',
@@ -327,7 +330,7 @@ const TASKS: Readonly<Record<string, string>> = {
   'unused:check': 'vulture',
   'test:check': 'pytest --cov',
   'mutation:check': 'python .droneey/constitution/tools/mutmut-check/dist/mutmut-check.pyz',
-};
+} as const;
 
 const commandOf = (task: string): string => {
   const command = task === 'check' ? Object.values(TASKS).join(' && ') : TASKS[task];
@@ -350,17 +353,19 @@ const runTask = (input: { changes: Files; task: string }): Run =>
     ],
   });
 
-const SETTINGS = z.object({
+const settingsSchema = z.object({
   tool: z.record(z.string(), z.unknown()),
 });
 
 // A tool's table in the assembled pyproject.toml, and in the tool's part,
 // which it carries since the tool reads no file but the project's.
 const templateTable = (tool: string): unknown =>
-  SETTINGS.parse(Bun.TOML.parse(PYPROJECT)).tool[tool];
+  settingsSchema.parse(Bun.TOML.parse(pyproject)).tool[tool];
 
 const partTable = (tool: string): unknown =>
-  SETTINGS.parse(Bun.TOML.parse(textOf(`presets/python/${tool}/foundation/core.toml`))).tool[tool];
+  settingsSchema.parse(Bun.TOML.parse(textOf(`presets/python/${tool}/foundation/core.toml`))).tool[
+    tool
+  ];
 
 // Whether one line of a tool's output holds every text of a finding: the package,
 // the place and the home a finding names, say, rather than its sentence.

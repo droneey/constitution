@@ -3,20 +3,20 @@ import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
-import { ENVIRONMENT } from './uv.fixtures';
+import { uvEnvironment } from './uv.fixtures';
 
 type Files = Readonly<Record<string, string>>;
 
-const REPOSITORY = join(import.meta.dir, '..', '..');
+const repository = join(import.meta.dir, '..', '..');
 
 // A package laid out as the python block lays it out.
 const SHOP_PACKAGE: Files = {
   'src/shop/__init__.py': '',
-};
+} as const;
 
 // The archive's Python tools, built as the release builds them from the
 // sources of their import packages, which the workspace's environment installs.
-const TOOLS = [
+const tools = [
   {
     module: 'droneey_python_check',
     tool: 'python-check',
@@ -29,7 +29,7 @@ const TOOLS = [
 
 const sourceOf = (module: string): string =>
   spawnSync(
-    join(ENVIRONMENT, 'bin', 'python'),
+    join(uvEnvironment, 'bin', 'python'),
     [
       '-c',
       `import pathlib, ${module}; print(pathlib.Path(${module}.__file__).parent.parent)`,
@@ -63,10 +63,10 @@ const linkConstitution = (input: { folder: string; withTools: boolean }): void =
     'presets',
     'templates',
   ]) {
-    symlinkSync(join(REPOSITORY, entry), join(constitution, entry));
+    symlinkSync(join(repository, entry), join(constitution, entry));
   }
 
-  for (const { module, tool } of input.withTools ? TOOLS : []) {
+  for (const { module, tool } of input.withTools ? tools : []) {
     const dist = join(constitution, 'tools', tool, 'dist');
 
     mkdirSync(dist, {
@@ -74,7 +74,7 @@ const linkConstitution = (input: { folder: string; withTools: boolean }): void =
     });
 
     const building = spawnSync(
-      join(ENVIRONMENT, 'bin', 'python'),
+      join(uvEnvironment, 'bin', 'python'),
       [
         '-m',
         'zipapp',
@@ -122,4 +122,4 @@ const inPythonProject = <TResult>(input: {
 };
 
 export type { Files };
-export { inPythonProject, REPOSITORY, writeFiles };
+export { inPythonProject, repository, writeFiles };

@@ -5,10 +5,11 @@ requires: [toml]
 extends: null
 abstract: false
 languages: []
-dictionary: [mise, mise.toml, mise.lock, mise.local.toml, mise-action]
 governs: ["mise.toml", "mise.lock"]
 ---
 
 # mise
 
-> Pins the tools outside the package manager.
+> **`mise`** pins the tools outside the package manager.
+
+**`mise.toml`** names each tool's version, **`mise.lock`** its checksums, **`mise.local.toml`** a developer's own overrides, and **`mise-action`** installs them in CI.

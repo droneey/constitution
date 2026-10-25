@@ -1,7 +1,9 @@
 export { GetVersionsContext } from './app/providers';
-export type { Releases } from './app/use-cases';
-export { useVersions } from './app/use-cases';
+export type { VersionsState } from './app/use-cases';
+export { useGetVersions, VersionsStatus } from './app/use-cases';
 export type { Versions } from './domain/entities';
+export { pageAddressIn } from './domain/entities';
 export type { GetVersions } from './domain/use-cases';
 export { createGetVersions } from './domain/use-cases';
-export { addressIn } from './domain/utils';
+export type { Version } from './domain/value-objects';
+export { createVersion } from './domain/value-objects';

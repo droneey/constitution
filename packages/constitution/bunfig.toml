@@ -12,10 +12,10 @@ coveragePathIgnorePatterns = [
   "tests/**",
   "**/main.*",
   "**/root/wiring.*",
+  # Another unit of the workspace, which its own specs cover.
+  "../design-cli/**",
+  "../design-tokens/**",
 ]
-
-[install]
-minimumReleaseAge = 259200 # three days, in seconds
 
 [run]
 bun = true

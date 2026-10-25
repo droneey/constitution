@@ -2,6 +2,14 @@
 # from .droneey/constitution/presets/markdown/rumdl/foundation/self.toml, .droneey/constitution/presets/markdown/rumdl/foundation/core.toml
 extends = ".droneey/constitution/presets/markdown/rumdl/foundation/core.toml"
 
+# rumdl: the members, each checked by its own configuration in its own run
+[global]
+exclude = [
+  "apps/**",
+  "packages/**",
+]
+force_exclude = true
+
 # The archive's entries, repeated since this table replaces its own.
 [per-file-ignores]
 "**/AGENTS.md" = ["MD033"]

@@ -4,7 +4,7 @@
 
 ## General
 
-### bunli-command-from-a-factory → command-built-by-a-factory-the-root-calls · SHOULD
+### bunli-command-from-a-factory → command-built-by-a-factory-the-root-calls · MUST
 
 A command's factory returns `defineCommand({ name, description, options, handler })`, and `createCLI` registers the commands the root built.
 

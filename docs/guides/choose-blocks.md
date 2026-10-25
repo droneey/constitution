@@ -57,32 +57,30 @@ A new session reads `constitution.yaml` and reports what does not hold, at the t
 
 ## Give a part of a workspace its own blocks
 
-In a workspace, a unit adds blocks for the files under its path, on top of the repository's:
+In a workspace, each member keeps a `constitution.yaml` of its own, in its folder, with the blocks its files follow — the repository's it shares among them, since nothing passes from the root's file to a member's:
 
 ```yaml
-packages:
-  apps/web:
-    domains:
-      - ui
-      - untrusted-client
-    platforms:
-      - browser
-    languages:
-      - html
-    implementations:
-      - react-dom
-  apps/api:
-    domains:
-      - http-server
-      - rest-api
-    platforms:
-      - server
-    implementations:
-      - nestjs
-      - tsc
+axes:
+  - architecture
+  - workflow
+domains:
+  - ui
+  - untrusted-client
+  - version-control
+platforms:
+  - browser
+languages:
+  - typescript
+  - html
+implementations:
+  - react-dom
+  - biome
+  - git
+packs: []
+overrides: []
 ```
 
-A repository of one unit writes `packages: {}`. [`packages`](../reference/constitution-yaml.md#packages) lists the keys a unit takes, and how its `axes` replace the repository's.
+A member's file takes every key of the root's but `check`. The members are the folders the root's `package.json` and `pyproject.toml` declare as its workspace; [members of a workspace](../reference/constitution-yaml.md#members-of-a-workspace) says how they are found.
 
 ## Check the result
 

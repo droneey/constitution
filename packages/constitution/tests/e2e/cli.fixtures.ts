@@ -5,20 +5,20 @@ import { join } from 'node:path';
 
 // The program a release ships, built once for the specs of a run as the release builds it: a hook
 // finds it on its PATH, as mise puts it there.
-const REPOSITORY = join(import.meta.dir, '..', '..');
+const workspace = join(import.meta.dir, '..', '..', '..', '..');
 
 const build = (): string => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-cli-'));
   const run = spawnSync(
     'bun',
     [
-      'build',
-      '--compile',
-      join(REPOSITORY, 'src', 'main.ts'),
+      'run',
+      'build:cli',
       '--outfile',
       join(folder, 'constitution'),
     ],
     {
+      cwd: workspace,
       encoding: 'utf8',
     },
   );
@@ -30,7 +30,7 @@ const build = (): string => {
   return folder;
 };
 
-const CLI_FOLDER = build();
-const CLI_PATH = join(CLI_FOLDER, 'constitution');
+const cliFolder = build();
+const cliPath = join(cliFolder, 'constitution');
 
-export { CLI_FOLDER, CLI_PATH };
+export { cliFolder, cliPath };

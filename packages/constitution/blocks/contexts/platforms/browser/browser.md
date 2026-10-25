@@ -5,7 +5,6 @@ requires: [untrusted-client]
 extends: null
 abstract: false
 languages: []
-dictionary: []
 governs: ["**"]
 ---
 
