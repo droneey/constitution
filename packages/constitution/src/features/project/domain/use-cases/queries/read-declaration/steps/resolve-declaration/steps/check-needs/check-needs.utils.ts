@@ -1,11 +1,10 @@
 import { Level } from '#/kernel/constants';
-import { Met, WarningCode } from '#/kernel/entities';
+import { Met, WarningCode, WarningKind } from '#/kernel/entities';
 
 import type { CatalogueAnswer } from '../../../../../../../entities';
 import { AppliedOverrides, ProjectModel, ResolvedUnit } from '../../../../../../../entities';
 import { keyOfLayer } from '../../shared/layer-keys';
 import type { WarningLog } from '../../shared/warning-log';
-import { heirsText, whereText } from '../../shared/wording';
 
 // Each unit warns of what its own blocks need and it does not list.
 const warnOfRequires = (input: {
@@ -29,9 +28,18 @@ const warnOfRequires = (input: {
 
       log.add({
         code: WarningCode.Missing,
-        message: `${block.id}${whereText(unit.path)} needs ${required} — add ${
-          need.isAbstract ? heirsText(ProjectModel.heirsOf(model, required)) : required
-        } to ${keyOfLayer(need.layer)}`,
+        details: {
+          block: block.id,
+          ...(need.isAbstract
+            ? {
+                heirs: ProjectModel.heirsOf(model, required),
+              }
+            : {}),
+          key: keyOfLayer(need.layer),
+          required,
+          unit: unit.path,
+        },
+        kind: WarningKind.BlockNeeded,
       });
     }
   }
@@ -80,7 +88,12 @@ const warnOfAnswers = (input: {
 
     input.log.add({
       code: WarningCode.NotMet,
-      message: `${answer.block}${whereText(input.unit.path)} does not meet ${answer.requirement} — see its Requirements table`,
+      details: {
+        block: answer.block,
+        requirement: answer.requirement,
+        unit: input.unit.path,
+      },
+      kind: WarningKind.RequirementNotMet,
     });
   }
 };

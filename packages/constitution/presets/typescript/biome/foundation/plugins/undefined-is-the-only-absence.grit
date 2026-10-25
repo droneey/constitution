@@ -12,5 +12,5 @@ language js
     `Object.create(null)`,
     `JSON.stringify($_, null, $_)`
   },
-  register_diagnostic(span=$value, message="null outside the boundary: internal code spells absence as undefined; an adapter maps null to it", severity="error")
+  register_diagnostic(span=$value, message="[undefined-is-the-only-absence] null outside the boundary: internal code spells absence as undefined; an adapter maps null to it", severity="error")
 }

@@ -6,7 +6,7 @@ import { pathToFileURL } from 'node:url';
 
 import { mutateTargets } from '#/features/targets';
 import { branchIn } from '#/libs/git';
-import { importsOf, loaderOf } from '#/libs/imports';
+import { loaderOf } from '#/libs/imports';
 
 const CONFIG_FILES = [
   'stryker.config.mjs',
@@ -82,8 +82,6 @@ if (process.argv.includes('all')) {
         path,
       }),
     diff: branch.diff,
-    exists: existsSync,
-    importsOf,
     mutate: mutatePatterns(await loadConfig()),
     untracked: branch.untracked,
   });

@@ -1,13 +1,11 @@
 import { describe, expect, it } from 'bun:test';
 
+import { BlockId } from '#/kernel/value-objects';
+
 import type { Files } from '../../../../../../__tests__/constitution.fixtures';
-import {
-  checkInputOf,
-  findingOf,
-  passportFile,
-} from '../../../../../../__tests__/constitution.fixtures';
+import { checkInputOf, passportFile } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { cyclesCheck } from '../cycles';
+import { CyclesCode, cyclesCheck } from '../cycles';
 
 const requiring = (input: { id: string; requires: readonly string[] }): Files => ({
   [`blocks/implementations/${input.id}/${input.id}.md`]: passportFile({
@@ -72,13 +70,17 @@ describe('cyclesCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'dependency-cycle',
-        names: [
-          'biome → lingui → biome',
-        ],
+      {
+        code: CyclesCode.Cycle,
+        details: {
+          cycle: [
+            BlockId.create('biome'),
+            BlockId.create('lingui'),
+            BlockId.create('biome'),
+          ],
+        },
         path: 'blocks/implementations/biome/biome.md',
-      }),
+      },
     ]);
   });
 

@@ -3,27 +3,35 @@ import { describe, expect, it } from 'bun:test';
 import { orderFindings } from '../order-findings.utils';
 
 describe('orderFindings', () => {
-  it('should order findings by path, then by code, then by message when the paths and codes are equal', () => {
+  it('should order findings by path, then by code, and keep the given order when the paths and codes are equal', () => {
     // Arrange
     const findings = [
       {
         code: 'b-code',
-        message: 'a',
+        details: {
+          id: 'a',
+        },
         path: 'x.md',
       },
       {
         code: 'a-code',
-        message: 'z',
+        details: {
+          id: 'z',
+        },
         path: 'x.md',
       },
       {
         code: 'z-code',
-        message: 'z',
+        details: {
+          id: 'z',
+        },
         path: 'a.md',
       },
       {
         code: 'a-code',
-        message: 'y',
+        details: {
+          id: 'y',
+        },
         path: 'x.md',
       },
     ];
@@ -35,22 +43,30 @@ describe('orderFindings', () => {
     expect(sorted).toStrictEqual([
       {
         code: 'z-code',
-        message: 'z',
+        details: {
+          id: 'z',
+        },
         path: 'a.md',
       },
       {
         code: 'a-code',
-        message: 'y',
+        details: {
+          id: 'z',
+        },
         path: 'x.md',
       },
       {
         code: 'a-code',
-        message: 'z',
+        details: {
+          id: 'y',
+        },
         path: 'x.md',
       },
       {
         code: 'b-code',
-        message: 'a',
+        details: {
+          id: 'a',
+        },
         path: 'x.md',
       },
     ]);

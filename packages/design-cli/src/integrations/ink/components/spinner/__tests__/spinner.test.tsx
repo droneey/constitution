@@ -11,24 +11,24 @@ import { Spinner } from '../spinner';
 describe('Spinner', () => {
   it("should draw the step's symbol and the work going on when the theme holds still", () => {
     // Arrange
-    const tree = <Spinner label='Reading the blocks' />;
+    const tree = <Spinner label='lint' />;
 
     // Act
     const { lastFrame } = renderWithTheme(tree);
 
     // Assert
-    expect(lastFrame()).toBe('▸ Reading the blocks…');
+    expect(lastFrame()).toBe('▸ lint…');
   });
 
   it('should read out the work going on without the spinner', () => {
     // Arrange
-    const tree = <Spinner label='Reading the blocks' />;
+    const tree = <Spinner label='lint' />;
 
     // Act
     const spoken = screenReaderOutputOf(tree);
 
     // Assert
-    expect(spoken).toBe('timer: (busy) Reading the blocks…');
+    expect(spoken).toBe('timer: (busy) lint…');
   });
 });
 

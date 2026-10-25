@@ -1,9 +1,9 @@
-import { ProjectUnit, Resolution, WarningCode } from '#/kernel/entities';
+import type { ProjectWarning } from '#/kernel/entities';
+import { ProjectUnit, Resolution, WarningCode, WarningKind } from '#/kernel/entities';
 
 import type { BlockCardParser } from '../../../../../contracts';
 import type { CatalogueSource, ProjectConfig, UnreadMember } from '../../../../../entities';
 import { MemberProblem, ProjectModel } from '../../../../../entities';
-import { CONFIG } from '../../../shared/project-paths';
 import type { WarningLog } from './shared/warning-log';
 import { createWarningLog } from './shared/warning-log';
 import { activeBlocksOf, mustRulesOf } from './steps/activate-blocks';
@@ -13,19 +13,41 @@ import { listBlocks } from './steps/list-blocks';
 import { readCatalogue } from './steps/read-catalogue';
 import { resolveUnits, warnOfKeys } from './steps/resolve-units';
 
+const memberWarnings: {
+  readonly [TProblem in MemberProblem]: (member: UnreadMember) => ProjectWarning;
+} = {
+  [MemberProblem.Missing]: (member) => ({
+    code: WarningCode.Config,
+    details: {
+      member: member.path,
+    },
+    kind: WarningKind.MemberWithoutConfig,
+  }),
+  [MemberProblem.Unparsed]: (member) => ({
+    code: WarningCode.Config,
+    details: {
+      ...(member.line === undefined
+        ? {}
+        : {
+            line: member.line,
+          }),
+      member: member.path,
+    },
+    kind: WarningKind.MemberConfigUnparsed,
+  }),
+  [MemberProblem.Unreadable]: (member) => ({
+    code: WarningCode.Config,
+    details: {
+      member: member.path,
+    },
+    kind: WarningKind.MemberConfigUnreadable,
+  }),
+};
+
 // A member of the workspace whose constitution.yaml is missing or cannot be read declares nothing.
 const warnOfMembers = (input: { log: WarningLog; unread: readonly UnreadMember[] }): void => {
   for (const member of input.unread) {
-    const messages: Readonly<Record<MemberProblem, string>> = {
-      [MemberProblem.Missing]: `${member.path} is a member of the workspace with no ${CONFIG} — write one that lists the blocks it follows`,
-      [MemberProblem.Unparsed]: `${member.path}/${CONFIG} does not parse at line ${String(member.line ?? 0)} — fix it, as its blocks are left out`,
-      [MemberProblem.Unreadable]: `cannot read ${member.path}/${CONFIG} — make it readable, as its blocks are left out`,
-    };
-
-    input.log.add({
-      code: WarningCode.Config,
-      message: messages[member.problem],
-    });
+    input.log.add(memberWarnings[member.problem](member));
   }
 };
 

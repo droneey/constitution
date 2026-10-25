@@ -1,7 +1,7 @@
 import { RELEASE_FOLDER } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
 import type { ProjectWarning } from '#/kernel/entities';
-import { ProjectUnit, WarningCode } from '#/kernel/entities';
+import { ProjectUnit, WarningCode, WarningKind } from '#/kernel/entities';
 
 // A unit whose link to the release leads back to a folder that holds the link, the unit's own or
 // one above it: a tool that walks the unit follows it without end.
@@ -20,8 +20,11 @@ const releaseLoopsOf = (input: {
       ? [
           {
             code: WarningCode.Loop,
-            message: `${ProjectUnit.nameOf(unit)}/${RELEASE_FOLDER} leads back into a folder that holds it — link it to the release outside the unit`,
-          },
+            details: {
+              unit: unit.path,
+            },
+            kind: WarningKind.ReleaseLinkLoops,
+          } satisfies ProjectWarning,
         ]
       : [];
   });

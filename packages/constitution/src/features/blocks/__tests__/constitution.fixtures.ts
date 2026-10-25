@@ -188,7 +188,7 @@ const checkInputOf = (
 
   if (findings.length > 0) {
     throw new Error(
-      `The fixture does not load: ${findings.map((finding) => `${finding.path}: ${finding.message}`).join('; ')}`,
+      `The fixture does not load: ${findings.map((finding) => `${finding.path}: ${finding.code} ${JSON.stringify(finding.details)}`).join('; ')}`,
     );
   }
 
@@ -210,8 +210,6 @@ const textOf = (input: { files: Readonly<Files>; path: string }): string => {
 
 const without = (input: { files: Readonly<Files>; path: string }): Files =>
   Object.fromEntries(Object.entries(input.files).filter(([candidate]) => candidate !== input.path));
-
-export { findingOf } from '#/__tests__/finding.fixtures';
 
 export type { BlockFixture, Files, RuleFixture };
 export {

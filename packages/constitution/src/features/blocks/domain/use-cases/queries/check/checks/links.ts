@@ -1,4 +1,4 @@
-import type { Finding } from '#/kernel/types';
+import type { FindingOf } from '#/kernel/types';
 
 import { Block, DocumentPath } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
@@ -7,6 +7,15 @@ import { foldersOf, linkTargetsOf, resolveLink } from '../shared/markdown';
 enum LinksCode {
   MissingTarget = 'link-to-missing-file',
 }
+
+interface LinksDetails {
+  readonly [LinksCode.MissingTarget]: {
+    /** the link's target as written */
+    readonly target: string;
+  };
+}
+
+type LinksFinding = FindingOf<LinksDetails>;
 
 interface Document {
   // The files and folders its links may reach.
@@ -21,7 +30,7 @@ const knownOf = (paths: ReadonlySet<string>): ReadonlySet<string> =>
     ...foldersOf(paths),
   ]);
 
-const linksCheck: Check = ({ constitution }: CheckInput): readonly Finding[] => {
+const linksCheck: Check<LinksFinding> = ({ constitution }: CheckInput): readonly LinksFinding[] => {
   const known = knownOf(constitution.paths);
   const repositoryKnown = knownOf(constitution.repositoryPaths);
   const { decisions, readme } = constitution.documents;
@@ -67,10 +76,13 @@ const linksCheck: Check = ({ constitution }: CheckInput): readonly Finding[] => 
       })
       .map((target) => ({
         code: LinksCode.MissingTarget,
-        message: `links to a missing file "${target}"`,
+        details: {
+          target,
+        },
         path: document.path,
       })),
   );
 };
 
-export { linksCheck };
+export type { LinksDetails };
+export { LinksCode, linksCheck };

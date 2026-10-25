@@ -1,13 +1,15 @@
 import { describe, expect, it } from 'bun:test';
 
+import { Layer } from '#/kernel/constants';
+import type { FindingOf } from '#/kernel/types';
+import { BlockId } from '#/kernel/value-objects';
+
 import type { BlockFixture } from '../../../../../../__tests__/constitution.fixtures';
-import {
-  checkInputOf,
-  findingOf,
-  passportFile,
-} from '../../../../../../__tests__/constitution.fixtures';
+import { checkInputOf, passportFile } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { frontMatterCheck } from '../front-matter';
+import { FrontMatterField } from '../../../../../entities';
+import type { FrontMatterDetails } from '../front-matter';
+import { FrontMatterCode, frontMatterCheck } from '../front-matter';
 
 const UI = 'blocks/domains/ui/ui.md';
 const CORE = 'blocks/core/core.md';
@@ -32,38 +34,39 @@ describe('frontMatterCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'field-outside-layer',
-        names: [
-          'abstract',
-          'core',
-        ],
+      {
+        code: FrontMatterCode.FieldOutsideLayer,
+        details: {
+          field: FrontMatterField.Abstract,
+          layer: Layer.Core,
+        },
         path: CORE,
-      }),
-      findingOf({
-        code: 'abstract-id-without-underscore',
+      },
+      {
+        code: FrontMatterCode.AbstractWithoutUnderscore,
+        details: {},
         path: CORE,
-      }),
+      },
     ]);
   });
 
   it.each<{
     block: BlockFixture;
-    code: string;
-    names?: readonly string[];
-    path: string;
+    finding: FindingOf<FrontMatterDetails>;
   }>([
     {
       block: {
         body: '# UI\n',
         id: 'ux',
       },
-      code: 'id-mismatches-folder',
-      names: [
-        'ux',
-        'ui',
-      ],
-      path: UI,
+      finding: {
+        code: FrontMatterCode.IdMismatch,
+        details: {
+          declared: BlockId.create('ux'),
+          folder: BlockId.create('ui'),
+        },
+        path: UI,
+      },
     },
     {
       block: {
@@ -73,12 +76,14 @@ describe('frontMatterCheck', () => {
           'i18n',
         ],
       },
-      code: 'field-outside-layer',
-      names: [
-        'requires',
-        'core',
-      ],
-      path: CORE,
+      finding: {
+        code: FrontMatterCode.FieldOutsideLayer,
+        details: {
+          field: FrontMatterField.Requires,
+          layer: Layer.Core,
+        },
+        path: CORE,
+      },
     },
     {
       block: {
@@ -86,12 +91,14 @@ describe('frontMatterCheck', () => {
         extends: 'i18n',
         id: 'core',
       },
-      code: 'field-outside-layer',
-      names: [
-        'extends',
-        'core',
-      ],
-      path: CORE,
+      finding: {
+        code: FrontMatterCode.FieldOutsideLayer,
+        details: {
+          field: FrontMatterField.Extends,
+          layer: Layer.Core,
+        },
+        path: CORE,
+      },
     },
     {
       block: {
@@ -101,12 +108,14 @@ describe('frontMatterCheck', () => {
           'typescript',
         ],
       },
-      code: 'field-outside-layer',
-      names: [
-        'languages',
-        'language',
-      ],
-      path: TYPESCRIPT,
+      finding: {
+        code: FrontMatterCode.FieldOutsideLayer,
+        details: {
+          field: FrontMatterField.Languages,
+          layer: Layer.Language,
+        },
+        path: TYPESCRIPT,
+      },
     },
     {
       block: {
@@ -116,12 +125,14 @@ describe('frontMatterCheck', () => {
           'typescript',
         ],
       },
-      code: 'field-outside-layer',
-      names: [
-        'languages',
-        'platform',
-      ],
-      path: BROWSER,
+      finding: {
+        code: FrontMatterCode.FieldOutsideLayer,
+        details: {
+          field: FrontMatterField.Languages,
+          layer: Layer.Platform,
+        },
+        path: BROWSER,
+      },
     },
     {
       block: {
@@ -131,11 +142,13 @@ describe('frontMatterCheck', () => {
           'ui',
         ],
       },
-      code: 'languages-names-no-language',
-      names: [
-        'ui',
-      ],
-      path: BIOME,
+      finding: {
+        code: FrontMatterCode.NotLanguage,
+        details: {
+          listed: BlockId.create('ui'),
+        },
+        path: BIOME,
+      },
     },
     {
       block: {
@@ -145,11 +158,13 @@ describe('frontMatterCheck', () => {
           'kotlin',
         ],
       },
-      code: 'languages-names-no-language',
-      names: [
-        'kotlin',
-      ],
-      path: BIOME,
+      finding: {
+        code: FrontMatterCode.NotLanguage,
+        details: {
+          listed: BlockId.create('kotlin'),
+        },
+        path: BIOME,
+      },
     },
     {
       block: {
@@ -157,8 +172,11 @@ describe('frontMatterCheck', () => {
         body: '# React\n',
         id: '_react',
       },
-      code: 'underscore-id-not-abstract',
-      path: 'blocks/implementations/_react/_react.md',
+      finding: {
+        code: FrontMatterCode.UnderscoreNotAbstract,
+        details: {},
+        path: 'blocks/implementations/_react/_react.md',
+      },
     },
     {
       block: {
@@ -166,16 +184,19 @@ describe('frontMatterCheck', () => {
         body: '# Biome\n',
         id: 'biome',
       },
-      code: 'abstract-id-without-underscore',
-      path: BIOME,
+      finding: {
+        code: FrontMatterCode.AbstractWithoutUnderscore,
+        details: {},
+        path: BIOME,
+      },
     },
   ])(
-    'should report $code when a block breaks a rule of its front matter',
-    ({ block, path, ...finding }) => {
+    'should report $finding.code when a block breaks a rule of its front matter',
+    ({ block, finding }) => {
       // Arrange
       const input = checkInputOf({
         ...validFiles(),
-        [path]: passportFile(block),
+        [finding.path]: passportFile(block),
       });
 
       // Act
@@ -183,10 +204,7 @@ describe('frontMatterCheck', () => {
 
       // Assert
       expect(findings).toStrictEqual([
-        findingOf({
-          ...finding,
-          path,
-        }),
+        finding,
       ]);
     },
   );

@@ -1,18 +1,29 @@
 import { Axis } from '#/kernel/constants';
-import type { Finding } from '#/kernel/types';
+import type { FindingOf } from '#/kernel/types';
 import { splitFrontMatter } from '#/kernel/utils';
-import type { BlockFolder, FileInBlock } from '#/kernel/value-objects';
+import type { BlockFolder, BlockId, FileInBlock } from '#/kernel/value-objects';
 import { BlockFileKind, BlockFilePlace } from '#/kernel/value-objects';
 
 import type { FileTree, FrontMatterParser } from '../../../../../../../contracts';
 import type { PartFile } from '../../../../../../../entities';
 import { Block, BlockFile, BlockOrigin } from '../../../../../../../entities';
+import type { FrontMatterReadFinding } from './front-matter.utils';
 import { readFrontMatter } from './front-matter.utils';
 
 enum BlockLoadCode {
   SecondaryFrontMatter = 'front-matter-outside-passport',
   WithoutPassport = 'block-without-passport',
 }
+
+interface BlockLoadDetails {
+  readonly [BlockLoadCode.SecondaryFrontMatter]: object;
+  readonly [BlockLoadCode.WithoutPassport]: {
+    /** the id the folder names, whose passport is <id>.md */
+    readonly id: BlockId;
+  };
+}
+
+type BlockLoadFinding = FindingOf<BlockLoadDetails> | FrontMatterReadFinding;
 
 type PlacedFile = Exclude<
   FileInBlock,
@@ -50,7 +61,7 @@ interface Secondary {
 
 interface BlockLoaded {
   readonly block?: Block;
-  readonly findings: readonly Finding[];
+  readonly findings: readonly BlockLoadFinding[];
 }
 
 const lineCount = (text: string): number => text.split('\n').length - (text.endsWith('\n') ? 1 : 0);
@@ -73,12 +84,12 @@ const groupByFolder = (located: readonly Located[]): readonly BlockGroup[] => {
   ];
 };
 
-const secondaryFindings = (secondary: readonly Secondary[]): readonly Finding[] =>
+const secondaryFindings = (secondary: readonly Secondary[]): readonly BlockLoadFinding[] =>
   secondary
     .filter(({ text }) => splitFrontMatter(text).frontMatter !== undefined)
     .map(({ place }) => ({
       code: BlockLoadCode.SecondaryFrontMatter,
-      message: 'has front matter; only the passport of a block carries it',
+      details: {},
       path: place.path,
     }));
 
@@ -108,7 +119,9 @@ const loadBlock = (input: {
       findings: [
         {
           code: BlockLoadCode.WithoutPassport,
-          message: `has no passport ${folder.id}.md`,
+          details: {
+            id: folder.id,
+          },
           path: folder.dir,
         },
       ],
@@ -161,5 +174,5 @@ const loadBlock = (input: {
   };
 };
 
-export type { Located };
-export { groupByFolder, loadBlock };
+export type { BlockLoadDetails, BlockLoadFinding, Located };
+export { BlockLoadCode, groupByFolder, loadBlock };

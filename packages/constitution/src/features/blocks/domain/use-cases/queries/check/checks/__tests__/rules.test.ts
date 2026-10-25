@@ -1,8 +1,13 @@
 import { describe, expect, it } from 'bun:test';
 
-import { checkInputOf, findingOf, rule } from '../../../../../../__tests__/constitution.fixtures';
+import { Axis, Level } from '#/kernel/constants';
+import type { FindingOf } from '#/kernel/types';
+import { BlockId, RuleSlug } from '#/kernel/value-objects';
+
+import { checkInputOf, rule } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { rulesCheck } from '../rules';
+import type { RulesDetails } from '../rules';
+import { RulesCode, rulesCheck } from '../rules';
 
 const PRINCIPLES = 'blocks/core/foundation/principles.md';
 const WORKFLOW = 'blocks/core/workflow/workflow.md';
@@ -53,50 +58,50 @@ describe('rulesCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'rule-without-statement',
-        names: [
-          'bare',
-        ],
+      {
+        code: RulesCode.WithoutStatement,
+        details: {
+          slug: RuleSlug.create('bare'),
+        },
         path: PRINCIPLES,
-      }),
-      findingOf({
-        code: 'rule-without-why',
-        names: [
-          'bare',
-        ],
+      },
+      {
+        code: RulesCode.WithoutWhy,
+        details: {
+          slug: RuleSlug.create('bare'),
+        },
         path: PRINCIPLES,
-      }),
-      findingOf({
-        code: 'tag-not-a-lens',
-        names: [
-          'bare',
-          'vibes',
-        ],
+      },
+      {
+        code: RulesCode.TagNotLens,
+        details: {
+          slug: RuleSlug.create('bare'),
+          tag: 'vibes',
+        },
         path: PRINCIPLES,
-      }),
-      findingOf({
-        code: 'tag-not-a-lens',
-        names: [
-          'b',
-          'types',
-        ],
+      },
+      {
+        code: RulesCode.TagNotLens,
+        details: {
+          slug: RuleSlug.create('b'),
+          tag: 'types',
+        },
         path: PRINCIPLES,
-      }),
-      findingOf({
-        code: 'slug-opens-with-no',
-        names: [
-          'no-any-written',
-        ],
+      },
+      {
+        code: RulesCode.SlugOpensWithNo,
+        details: {
+          slug: RuleSlug.create('no-any-written'),
+        },
         path: PRINCIPLES,
-      }),
-      findingOf({
-        code: 'rule-without-why',
-        names: [
-          'c',
-        ],
+      },
+      {
+        code: RulesCode.WithoutWhy,
+        details: {
+          slug: RuleSlug.create('c'),
+        },
         path: PRINCIPLES,
-      }),
+      },
     ]);
   });
 
@@ -115,47 +120,59 @@ describe('rulesCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'rule-defined-twice',
-        names: [
-          'dependencies-point-inward',
-          PRINCIPLES,
-        ],
+      {
+        code: RulesCode.DefinedTwice,
+        details: {
+          firstFile: PRINCIPLES,
+          slug: RuleSlug.create('dependencies-point-inward'),
+        },
         path: WORKFLOW,
-      }),
+      },
     ]);
   });
 
   it.each<{
-    code: string;
-    names: string[];
+    finding: FindingOf<RulesDetails>;
     parent: string;
   }>([
     {
-      code: 'parent-out-of-reach',
-      names: [
-        'i18n-plurals-by-cldr',
-        'four-data-states',
-        'ui',
-      ],
+      finding: {
+        code: RulesCode.ParentOutOfReach,
+        details: {
+          parent: RuleSlug.create('four-data-states'),
+          parentBlock: BlockId.create('ui'),
+          slug: RuleSlug.create('i18n-plurals-by-cldr'),
+        },
+        path: I18N,
+      },
       parent: 'four-data-states',
     },
     {
-      code: 'parent-chain-cycle',
-      names: [
-        'i18n-plurals-by-cldr → i18n-plurals-by-cldr',
-      ],
+      finding: {
+        code: RulesCode.ParentChainCycle,
+        details: {
+          cycle: [
+            RuleSlug.create('i18n-plurals-by-cldr'),
+            RuleSlug.create('i18n-plurals-by-cldr'),
+          ],
+          slug: RuleSlug.create('i18n-plurals-by-cldr'),
+        },
+        path: I18N,
+      },
       parent: 'i18n-plurals-by-cldr',
     },
     {
-      code: 'parent-not-a-rule',
-      names: [
-        'i18n-plurals-by-cldr',
-        'plurals-by-icu',
-      ],
+      finding: {
+        code: RulesCode.ParentNotRule,
+        details: {
+          parent: RuleSlug.create('plurals-by-icu'),
+          slug: RuleSlug.create('i18n-plurals-by-cldr'),
+        },
+        path: I18N,
+      },
       parent: 'plurals-by-icu',
     },
-  ])('should report $code when a rule carries out $parent', ({ code, names, parent }) => {
+  ])('should report $finding.code when a rule carries out $parent', ({ finding, parent }) => {
     // Arrange
     const files = validFiles();
 
@@ -172,41 +189,42 @@ describe('rulesCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code,
-        names,
-        path: I18N,
-      }),
+      finding,
     ]);
   });
 
   it.each<{
-    code: string;
-    names: string[];
+    finding: FindingOf<RulesDetails>;
     parent: string;
   }>([
     {
-      code: 'parent-seam-out-of-reach',
-      names: [
-        'portals-for-overlays',
-        'optimistic-writes-roll-back',
-        'ui',
-        'remote-data',
-      ],
+      finding: {
+        code: RulesCode.ParentSeamOutOfReach,
+        details: {
+          parent: RuleSlug.create('optimistic-writes-roll-back'),
+          parentBlock: BlockId.create('ui'),
+          parentSeam: BlockId.create('remote-data'),
+          slug: RuleSlug.create('portals-for-overlays'),
+        },
+        path: PORTALS,
+      },
       parent: 'optimistic-writes-roll-back',
     },
     {
-      code: 'parent-out-of-reach',
-      names: [
-        'portals-for-overlays',
-        'i18n-plurals-by-cldr',
-        'i18n',
-      ],
+      finding: {
+        code: RulesCode.ParentOutOfReach,
+        details: {
+          parent: RuleSlug.create('i18n-plurals-by-cldr'),
+          parentBlock: BlockId.create('i18n'),
+          slug: RuleSlug.create('portals-for-overlays'),
+        },
+        path: PORTALS,
+      },
       parent: 'i18n-plurals-by-cldr',
     },
   ])(
-    'should report $code when a rule carries out a parent its place cannot reach',
-    ({ code, names, parent }) => {
+    'should report $finding.code when a rule carries out a parent its place cannot reach',
+    ({ finding, parent }) => {
       // Arrange
       const files = validFiles();
 
@@ -223,11 +241,7 @@ describe('rulesCheck', () => {
 
       // Assert
       expect(findings).toStrictEqual([
-        findingOf({
-          code,
-          names,
-          path: PORTALS,
-        }),
+        finding,
       ]);
     },
   );
@@ -260,20 +274,30 @@ describe('rulesCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'parent-chain-cycle',
-        names: [
-          'dependencies-point-inward → names-reveal-intent → dependencies-point-inward',
-        ],
+      {
+        code: RulesCode.ParentChainCycle,
+        details: {
+          cycle: [
+            RuleSlug.create('dependencies-point-inward'),
+            RuleSlug.create('names-reveal-intent'),
+            RuleSlug.create('dependencies-point-inward'),
+          ],
+          slug: RuleSlug.create('dependencies-point-inward'),
+        },
         path: PRINCIPLES,
-      }),
-      findingOf({
-        code: 'parent-chain-cycle',
-        names: [
-          'names-reveal-intent → dependencies-point-inward → names-reveal-intent',
-        ],
+      },
+      {
+        code: RulesCode.ParentChainCycle,
+        details: {
+          cycle: [
+            RuleSlug.create('names-reveal-intent'),
+            RuleSlug.create('dependencies-point-inward'),
+            RuleSlug.create('names-reveal-intent'),
+          ],
+          slug: RuleSlug.create('names-reveal-intent'),
+        },
         path: PRINCIPLES,
-      }),
+      },
     ]);
   });
 
@@ -321,12 +345,12 @@ describe('rulesCheck', () => {
         slug: 'i18n-plurals-by-cldr',
       },
       condition: 'a rule of foundation carries out a workflow rule',
-      names: [
-        'i18n-plurals-by-cldr',
-        'rules-bind',
-        'workflow',
-        'foundation',
-      ],
+      details: {
+        axis: Axis.Foundation,
+        parent: RuleSlug.create('rules-bind'),
+        parentAxis: Axis.Workflow,
+        slug: RuleSlug.create('i18n-plurals-by-cldr'),
+      },
       parent: 'rules-bind',
     },
     {
@@ -335,15 +359,15 @@ describe('rulesCheck', () => {
         slug: 'reads-are-cancellable',
       },
       condition: 'an architecture rule carries out a workflow rule',
-      names: [
-        'reads-are-cancellable',
-        'rules-bind',
-        'workflow',
-        'architecture',
-      ],
+      details: {
+        axis: Axis.Architecture,
+        parent: RuleSlug.create('rules-bind'),
+        parentAxis: Axis.Workflow,
+        slug: RuleSlug.create('reads-are-cancellable'),
+      },
       parent: 'rules-bind',
     },
-  ])('should report the reference when $condition', ({ child, names, parent }) => {
+  ])('should report the reference when $condition', ({ child, details, parent }) => {
     // Arrange
     const files = validFiles();
 
@@ -359,11 +383,11 @@ describe('rulesCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'parent-off-axis',
-        names,
+      {
+        code: RulesCode.ParentOffAxis,
+        details,
         path: child.file,
-      }),
+      },
     ]);
   });
 
@@ -399,16 +423,16 @@ describe('rulesCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'rule-looser-than-parent',
-        names: [
-          'portals-for-overlays',
-          'SHOULD',
-          'MUST',
-          'four-data-states',
-        ],
+      {
+        code: RulesCode.LooserThanParent,
+        details: {
+          level: Level.Should,
+          parent: RuleSlug.create('four-data-states'),
+          parentLevel: Level.Must,
+          slug: RuleSlug.create('portals-for-overlays'),
+        },
         path: PORTALS,
-      }),
+      },
     ]);
   });
 
@@ -429,14 +453,14 @@ describe('rulesCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'rule-without-level',
-        names: [
-          'portals-for-overlays',
-          'four-data-states',
-        ],
+      {
+        code: RulesCode.WithoutLevel,
+        details: {
+          parent: RuleSlug.create('four-data-states'),
+          slug: RuleSlug.create('portals-for-overlays'),
+        },
         path: PORTALS,
-      }),
+      },
     ]);
   });
 
@@ -471,22 +495,22 @@ describe('rulesCheck', () => {
 
       // Assert
       expect(findings).toStrictEqual([
-        findingOf({
-          code: 'parent-in-own-block',
-          names: [
-            slug,
-            parent,
-          ],
+        {
+          code: RulesCode.ParentInOwnBlock,
+          details: {
+            parent: RuleSlug.create(parent),
+            slug: RuleSlug.create(slug),
+          },
           path: file,
-        }),
+        },
       ]);
     },
   );
 
   it.each<{
     body: string;
-    chapter: string;
     condition: string;
+    details: RulesDetails[RulesCode.OutsideParentChapter];
     file: string;
   }>([
     {
@@ -494,9 +518,14 @@ describe('rulesCheck', () => {
         tightens: 'dependencies-point-inward',
         slug: 'types-point-inward',
       })}`,
-      chapter: 'Types',
       condition:
         "of a language sits in a chapter titled for another, under a section named for its parent's",
+      details: {
+        chapter: 'Types',
+        parent: RuleSlug.create('dependencies-point-inward'),
+        parentChapter: 'Principles',
+        slug: RuleSlug.create('types-point-inward'),
+      },
       file: TYPES,
     },
     {
@@ -504,8 +533,13 @@ describe('rulesCheck', () => {
         tightens: 'dependencies-point-inward',
         slug: 'delivery-points-inward',
       })}`,
-      chapter: 'Delivery',
       condition: 'of a platform sits in a chapter titled for another',
+      details: {
+        chapter: 'Delivery',
+        parent: RuleSlug.create('dependencies-point-inward'),
+        parentChapter: 'Principles',
+        slug: RuleSlug.create('delivery-points-inward'),
+      },
       file: DELIVERY,
     },
     {
@@ -513,13 +547,17 @@ describe('rulesCheck', () => {
         tightens: 'dependencies-point-inward',
         slug: 'types-point-inward',
       }),
-      chapter: 'untitled',
       condition: 'of a language sits in a file with no title',
+      details: {
+        parent: RuleSlug.create('dependencies-point-inward'),
+        parentChapter: 'Principles',
+        slug: RuleSlug.create('types-point-inward'),
+      },
       file: TYPES,
     },
   ])(
     'should report a rule that carries out a rule of core when it $condition',
-    ({ body, chapter, file }) => {
+    ({ body, details, file }) => {
       // Arrange
       const files = validFiles();
 
@@ -532,15 +570,11 @@ describe('rulesCheck', () => {
 
       // Assert
       expect(findings).toStrictEqual([
-        findingOf({
-          code: 'rule-outside-parent-chapter',
-          names: [
-            chapter,
-            'dependencies-point-inward',
-            'Principles',
-          ],
+        {
+          code: RulesCode.OutsideParentChapter,
+          details,
           path: file,
-        }),
+        },
       ]);
     },
   );
@@ -564,16 +598,15 @@ describe('rulesCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'rule-outside-parent-chapter',
-        names: [
-          'types-point-inward',
-          'Types',
-          'bare-rule',
-          'untitled',
-        ],
+      {
+        code: RulesCode.OutsideParentChapter,
+        details: {
+          chapter: 'Types',
+          parent: RuleSlug.create('bare-rule'),
+          slug: RuleSlug.create('types-point-inward'),
+        },
         path: TYPES,
-      }),
+      },
     ]);
   });
 

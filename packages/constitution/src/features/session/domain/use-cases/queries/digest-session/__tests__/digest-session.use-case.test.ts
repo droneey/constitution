@@ -2,7 +2,8 @@ import { describe, expect, it } from 'bun:test';
 
 import { corePassport, PROJECT, releaseFolderPath } from '#/__tests__/project-place.fixtures';
 import { CORE_TEXT } from '#/__tests__/project-source.fake';
-import { ConfigReadStatus, ReleaseStatus, WarningCode } from '#/kernel/entities';
+import type { ProjectWarning } from '#/kernel/entities';
+import { ConfigReadStatus, ReleaseStatus, WarningCode, WarningKind } from '#/kernel/entities';
 import { isProjectError, ProjectError, ProjectFailure } from '#/kernel/errors';
 import { PackPath, repositoryUnit, Version } from '#/kernel/value-objects';
 
@@ -23,9 +24,10 @@ const kept = {
     repositoryUnit,
   ],
 };
-const unchecked = {
+const unchecked: ProjectWarning = {
   code: WarningCode.Wiring,
-  message: 'cannot check the wiring',
+  details: {},
+  kind: WarningKind.WiringUnchecked,
 };
 
 // The code and the path of the ProjectError an act throws; undefined when it throws none.
@@ -102,9 +104,12 @@ describe('digestSession', () => {
 
   it('should give the warnings of constitution.yaml before those of the wiring when both warn', () => {
     // Arrange
-    const unknown = {
+    const unknown: ProjectWarning = {
       code: WarningCode.Unknown,
-      message: 'nope is not a block — check the name',
+      details: {
+        name: 'nope',
+      },
+      kind: WarningKind.NameUnknown,
     };
     const ports = sessionPortsOf({
       project: {
@@ -124,7 +129,12 @@ describe('digestSession', () => {
       wiring: wiringOf((opened) => [
         {
           code: WarningCode.Wiring,
-          message: `${opened.project} ${opened.releaseFolder} ${opened.packs.join(', ')}`,
+          details: {
+            member: opened.project,
+            path: opened.releaseFolder,
+            tool: opened.packs.join(', '),
+          },
+          kind: WarningKind.MemberNotSkipped,
         },
       ]),
     });
@@ -149,7 +159,12 @@ describe('digestSession', () => {
         unknown,
         {
           code: WarningCode.Wiring,
-          message: `${PROJECT} ${releaseFolderPath} packs/acme`,
+          details: {
+            member: PROJECT,
+            path: releaseFolderPath,
+            tool: 'packs/acme',
+          },
+          kind: WarningKind.MemberNotSkipped,
         },
       ],
     });

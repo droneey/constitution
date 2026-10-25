@@ -188,6 +188,31 @@ describe('createErrorHandler', () => {
       failure: ProjectFailure.ConfigUnreadable,
       written: '✗ cannot read /work/constitution.yaml\n  → make constitution.yaml readable\n',
     },
+    {
+      failure: ProjectFailure.ReleaseMissing,
+      written:
+        '✗ /work/constitution.yaml does not exist — run mise install\n  → run constitution doctor, which says what is wrong with the installation\n',
+    },
+    {
+      failure: ProjectFailure.BlocksUnlisted,
+      written:
+        '✗ cannot list the blocks of /work/constitution.yaml\n  → run constitution doctor, which says what is wrong with the installation\n',
+    },
+    {
+      failure: ProjectFailure.CoreUnreadable,
+      written:
+        '✗ cannot build the digest\n  → run constitution doctor, which says what is wrong with the installation\n',
+    },
+    {
+      failure: ProjectFailure.ManifestUnreadable,
+      written:
+        '✗ cannot read /work/constitution.yaml\n  → run constitution doctor, which says what is wrong with the installation\n',
+    },
+    {
+      failure: ProjectFailure.VersionMissing,
+      written:
+        '✗ /work/constitution.yaml has no version\n  → run constitution doctor, which says what is wrong with the installation\n',
+    },
   ])(
     'should write the failure block, and end with the failure code, when a command fails as $failure',
     ({ failure, written }) => {
@@ -318,34 +343,6 @@ describe('createErrorHandler', () => {
   );
 
   it.each([
-    ProjectFailure.ReleaseMissing,
-    ProjectFailure.BlocksUnlisted,
-    ProjectFailure.CoreUnreadable,
-    ProjectFailure.ManifestUnreadable,
-    ProjectFailure.VersionMissing,
-  ])('should point to doctor when a command fails as %s', (failure) => {
-    // Arrange
-    const handler = handlerOf({
-      isHook: false,
-    });
-
-    // Act
-    handler.errors.codeOf(
-      new ProjectError({
-        code: failure,
-        details: {
-          path: '/work/.droneey/constitution',
-        },
-      }),
-    );
-
-    // Assert
-    expect(handler.written().split('\n')[1]).toBe(
-      '  → run constitution doctor, which says what is wrong with the installation',
-    );
-  });
-
-  it.each([
     {
       condition: 'a hook',
       isHook: true,
@@ -446,29 +443,30 @@ describe('createErrorHandler', () => {
     },
   );
 
-  it('should write what commander says of a command line typed wrong as a failure block', () => {
-    // Arrange
-    const handler = handlerOf({
-      isHook: false,
-    });
+  it.each([
+    {
+      condition: 'its message opens with the prefix of commander',
+      said: "error: unknown command 'chek'\n(Did you mean check?)\n",
+      written: "✗ unknown command 'chek'\n  (Did you mean check?)\n",
+    },
+    {
+      condition: 'its message opens with no prefix of commander',
+      said: 'too many arguments; error: see help',
+      written: '✗ too many arguments; error: see help\n',
+    },
+  ])(
+    'should write what commander says of a command line typed wrong as a failure block when $condition',
+    ({ said, written }) => {
+      // Arrange
+      const handler = handlerOf({
+        isHook: false,
+      });
 
-    // Act
-    handler.errors.writeUsage("error: unknown command 'chek'\n(Did you mean check?)\n");
+      // Act
+      handler.errors.writeUsage(said);
 
-    // Assert
-    expect(handler.written()).toBe("✗ unknown command 'chek'\n  (Did you mean check?)\n");
-  });
-
-  it('should keep a message that opens with no prefix of commander whole', () => {
-    // Arrange
-    const handler = handlerOf({
-      isHook: false,
-    });
-
-    // Act
-    handler.errors.writeUsage('too many arguments; error: see help');
-
-    // Assert
-    expect(handler.written()).toBe('✗ too many arguments; error: see help\n');
-  });
+      // Assert
+      expect(handler.written()).toBe(written);
+    },
+  );
 });

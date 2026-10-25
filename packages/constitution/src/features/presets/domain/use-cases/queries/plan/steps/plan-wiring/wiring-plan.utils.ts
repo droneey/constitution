@@ -1,6 +1,13 @@
 import { ProjectUnit } from '#/kernel/entities';
 import { BlockSource } from '#/kernel/value-objects';
 
+import type {
+  PlannedFile,
+  PlannedScope,
+  PlannedTool,
+  UntemplatedTool,
+  WiringPlan,
+} from '../../../../../entities';
 import { Parts, Takes, WiringContext } from '../../../../../entities';
 import {
   expectedOf,
@@ -13,9 +20,6 @@ import {
   scopesOf,
   wiringRule,
 } from '../../../shared/wiring';
-
-const SCOPE_INDENT = '  ';
-const PART_INDENT = '    ';
 
 // The folder whose file at path serves a unit that takes the tool: the unit's own when the tool's
 // template there takes parts, since a configuration serves only the unit it lies in; else the
@@ -66,25 +70,6 @@ const unitsOf = (input: {
         isRepositoryTool(input),
   );
 
-const headingOf = (input: {
-  context: WiringContext;
-  folder: string;
-  path: string;
-  units: readonly ProjectUnit[];
-}): string => {
-  const { context, folder, path } = input;
-  const isNew = !WiringContext.hasFolder(context, {
-    folder,
-    path,
-  });
-  const names = input.units.map(ProjectUnit.nameOf).join(', ');
-  const lowers = ProjectUnit.isLowered(ownerOf(input), wiringRule)
-    ? ` (its overrides lower ${wiringRule})`
-    : '';
-
-  return `${fileOf(input)}${isNew ? ' (new)' : ''} for ${names}${lowers}`;
-};
-
 interface ToolUnits {
   readonly tool: string;
   readonly units: readonly ProjectUnit[];
@@ -115,35 +100,35 @@ const toolUnitsOf = (input: FolderInput): readonly ToolUnits[] => {
     }));
 };
 
-const templateLines = (
+const plannedToolsOf = (
   input: FolderInput & {
     entry: ToolUnits;
     scope: string;
   },
-): readonly string[] => {
+): readonly PlannedTool[] => {
   const { context, entry, folder, path, scope } = input;
-  const adds = folder !== '' && !holdsBlock(context.rootBlocks, entry.tool);
+  const isAdded = folder !== '' && !holdsBlock(context.rootBlocks, entry.tool);
 
   return Parts.fragmentsOf(context.parts, {
     scope,
     tool: entry.tool,
   })
     .filter((fragment) => fragment.path === path)
-    .flatMap((fragment) => [
-      `${SCOPE_INDENT}${entry.tool} ${fragment.at}${adds ? ' (the folder adds it)' : ''}`,
-      ...(fragment.takes === Takes.Nothing
-        ? []
-        : expectedOf({
-            context,
-            isAtRoot: folder === '',
-            path,
-            tool: entry.tool,
-            units: entry.units,
-          })
-            .filter((part) => part.scope === scope)
-            .map(
-              (part) =>
-                `${PART_INDENT}${namePathOf({
+    .map((fragment) => ({
+      isAdded,
+      parts:
+        fragment.takes === Takes.Nothing
+          ? []
+          : expectedOf({
+              context,
+              isAtRoot: folder === '',
+              path,
+              tool: entry.tool,
+              units: entry.units,
+            })
+              .filter((part) => part.scope === scope)
+              .map((part) =>
+                namePathOf({
                   // Stryker disable ObjectLiteral,StringLiteral: every part taken has its file
                   file: Parts.fileOf(context.parts, part) ?? {
                     path: '',
@@ -151,54 +136,70 @@ const templateLines = (
                   },
                   // Stryker restore ObjectLiteral,StringLiteral
                   folder,
-                })}`,
-            )),
-    ]);
+                }),
+              ),
+      template: fragment.at,
+      tool: entry.tool,
+    }));
 };
 
-const folderLines = (input: FolderInput): readonly string[] => {
-  const { context } = input;
+const plannedFilesOf = (input: FolderInput): readonly PlannedFile[] => {
+  const { context, folder, path } = input;
   const tools = toolUnitsOf(input);
   const units = context.resolution.units.filter((unit) =>
     tools.some((entry) => entry.units.includes(unit)),
   );
-  const lines = scopesOf({
+  const scopes = scopesOf({
     context,
     reach: reachOf(units),
-  }).flatMap((scope) =>
-    tools
-      .filter(
-        (entry) =>
-          entry.units.length > 0 &&
-          scopesOf({
-            context,
-            reach: reachOf(entry.units),
-          }).includes(scope),
-      )
-      .flatMap((entry) =>
-        templateLines({
-          ...input,
-          entry,
-          scope,
-        }),
-      ),
-  );
+  })
+    .map(
+      (scope): PlannedScope => ({
+        scope,
+        tools: tools
+          .filter(
+            (entry) =>
+              entry.units.length > 0 &&
+              scopesOf({
+                context,
+                reach: reachOf(entry.units),
+              }).includes(scope),
+          )
+          .flatMap((entry) =>
+            plannedToolsOf({
+              ...input,
+              entry,
+              scope,
+            }),
+          ),
+      }),
+    )
+    .filter((planned) => planned.tools.length > 0);
 
-  return lines.length === 0
+  return scopes.length === 0
     ? []
     : [
-        headingOf({
-          ...input,
-          units,
-        }),
-        ...lines,
+        {
+          file: fileOf(input),
+          isNew: !WiringContext.hasFolder(context, {
+            folder,
+            path,
+          }),
+          ...(ProjectUnit.isLowered(ownerOf(input), wiringRule)
+            ? {
+                lowers: wiringRule,
+              }
+            : {}),
+          scopes,
+          units: units.map((unit) => unit.path),
+        },
       ];
 };
 
 // The files a project's tools read, each with the units it serves, each tool's template and the
 // parts it takes in their order; then the tools of the release that have no template. A unit that
 // keeps no file of a path is planned one in its own folder.
-const planWiringOf = (context: WiringContext): readonly string[] => {
+const planWiringOf = (context: WiringContext): WiringPlan => {
   const files = context.parts.paths.flatMap((path) => {
     const kept = WiringContext.foldersAt(context, path);
     const folders = [
@@ -210,7 +211,7 @@ const planWiringOf = (context: WiringContext): readonly string[] => {
     ];
 
     return folders.flatMap((folder) =>
-      folderLines({
+      plannedFilesOf({
         context,
         folder,
         path,
@@ -224,7 +225,7 @@ const planWiringOf = (context: WiringContext): readonly string[] => {
         unit,
       ]),
     }).flatMap((scope) =>
-      context.blocks.flatMap((tool) => {
+      context.blocks.flatMap((tool): readonly UntemplatedTool[] => {
         const at = {
           scope,
           tool,
@@ -234,17 +235,24 @@ const planWiringOf = (context: WiringContext): readonly string[] => {
           Parts.hasTool(context.parts, at) &&
           Parts.fragmentsOf(context.parts, at).length === 0
           ? [
-              `no template: ${scope}/${tool} — wire presets/${scope}/${tool}/ from what the tool reads`,
+              at,
             ]
           : [];
       }),
     ),
   );
 
-  return [
-    ...files,
-    ...new Set(untemplated),
-  ];
+  return {
+    files,
+    untemplated: [
+      ...new Map(
+        untemplated.map((tool) => [
+          `${tool.scope}/${tool.tool}`,
+          tool,
+        ]),
+      ).values(),
+    ],
+  };
 };
 
 export { planWiringOf };

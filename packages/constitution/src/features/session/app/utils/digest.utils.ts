@@ -1,3 +1,5 @@
+import { warningTextOf } from '#/shared/cli';
+
 import type { DigestContents, DigestRelease } from '../../domain/entities';
 import { DigestKind } from '../../domain/entities';
 import { blockListLines } from './block-list.utils';
@@ -36,7 +38,7 @@ const resolvedDigestOf = (
     blockList: blockListLines(contents.listing),
     core: contents.core,
     isStartup: contents.isStartup,
-    warnings: contents.warnings,
+    warnings: contents.warnings.map((warning) => `- ${warning.code}: ${warningTextOf(warning)}`),
   }),
   head: [
     releaseLine(contents.release),

@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
@@ -48,10 +48,57 @@ const writeFiles = (folder: string, files: Files): void => {
   }
 };
 
+// A tool as the release builds it, which a project with tools holds.
+interface BuiltTool {
+  readonly archive: Buffer;
+  readonly tool: string;
+}
+
+/** @throws Error when the tool does not build. */
+const builtTool = (input: { module: string; tool: string }): BuiltTool => {
+  const folder = mkdtempSync(join(tmpdir(), 'constitution-python-tool-'));
+  const archive = join(folder, `${input.tool}.pyz`);
+
+  try {
+    const building = spawnSync(
+      join(uvEnvironment, 'bin', 'python'),
+      [
+        '-m',
+        'zipapp',
+        sourceOf(input.module),
+        '-m',
+        `${input.module}.main:main`,
+        '-o',
+        archive,
+      ],
+      {
+        encoding: 'utf8',
+      },
+    );
+
+    if (building.status !== 0) {
+      throw new Error(`${input.tool} did not build: ${building.stderr}`);
+    }
+
+    return {
+      archive: readFileSync(archive),
+      tool: input.tool,
+    };
+  } finally {
+    rmSync(folder, {
+      force: true,
+      recursive: true,
+    });
+  }
+};
+
+/** @throws Error when a tool does not build. */
+const buildTools = (): readonly BuiltTool[] => tools.map(builtTool);
+
 // The Constitution is linked where a project links it: its presets and
 // templates from this package, and its tools, when the project runs them,
-// built into the project's folder.
-const linkConstitution = (input: { folder: string; withTools: boolean }): void => {
+// written into the project's folder.
+const linkConstitution = (input: { folder: string; tools: readonly BuiltTool[] }): void => {
   const { folder } = input;
   const constitution = join(folder, '.droneey', 'constitution');
 
@@ -66,51 +113,42 @@ const linkConstitution = (input: { folder: string; withTools: boolean }): void =
     symlinkSync(join(repository, entry), join(constitution, entry));
   }
 
-  for (const { module, tool } of input.withTools ? tools : []) {
-    const dist = join(constitution, 'tools', tool, 'dist');
+  for (const tool of input.tools) {
+    const dist = join(constitution, 'tools', tool.tool, 'dist');
 
     mkdirSync(dist, {
       recursive: true,
     });
-
-    const building = spawnSync(
-      join(uvEnvironment, 'bin', 'python'),
-      [
-        '-m',
-        'zipapp',
-        sourceOf(module),
-        '-m',
-        `${module}.main:main`,
-        '-o',
-        join(dist, `${tool}.pyz`),
-      ],
-      {
-        encoding: 'utf8',
-      },
-    );
-
-    if (building.status !== 0) {
-      throw new Error(`${tool} did not build: ${building.stderr}`);
-    }
+    writeFileSync(join(dist, `${tool.tool}.pyz`), tool.archive);
   }
+};
+
+const fillPythonProject = (
+  folder: string,
+  input: {
+    files: Files;
+    tools?: readonly BuiltTool[];
+  },
+): void => {
+  linkConstitution({
+    folder,
+    tools: input.tools ?? [],
+  });
+  writeFiles(folder, {
+    ...SHOP_PACKAGE,
+    ...input.files,
+  });
 };
 
 const inPythonProject = <TResult>(input: {
   files: Files;
   run: (folder: string) => TResult;
-  withTools?: boolean;
+  tools?: readonly BuiltTool[];
 }): TResult => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-python-'));
 
   try {
-    linkConstitution({
-      folder,
-      withTools: input.withTools ?? false,
-    });
-    writeFiles(folder, {
-      ...SHOP_PACKAGE,
-      ...input.files,
-    });
+    fillPythonProject(folder, input);
 
     return input.run(folder);
   } finally {
@@ -121,5 +159,24 @@ const inPythonProject = <TResult>(input: {
   }
 };
 
-export type { Files };
-export { inPythonProject, repository, writeFiles };
+const inPythonProjectAsync = async <TResult>(input: {
+  files: Files;
+  run: (folder: string) => Promise<TResult>;
+  tools?: readonly BuiltTool[];
+}): Promise<TResult> => {
+  const folder = mkdtempSync(join(tmpdir(), 'constitution-python-'));
+
+  try {
+    fillPythonProject(folder, input);
+
+    return await input.run(folder);
+  } finally {
+    rmSync(folder, {
+      force: true,
+      recursive: true,
+    });
+  }
+};
+
+export type { BuiltTool, Files };
+export { buildTools, inPythonProject, inPythonProjectAsync, repository, writeFiles };

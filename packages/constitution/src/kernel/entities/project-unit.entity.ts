@@ -9,8 +9,6 @@ interface ProjectUnit {
   readonly path: UnitPath;
 }
 
-const REPOSITORY_NAME = '.';
-
 const createUnit = (input: ProjectUnit): ProjectUnit => ({
   axes: input.axes,
   blocks: input.blocks,
@@ -20,17 +18,12 @@ const createUnit = (input: ProjectUnit): ProjectUnit => ({
 
 const isRepositoryUnit = (unit: ProjectUnit): boolean => UnitPath.isRepository(unit.path);
 
-/** The unit's folder as a message names it: "." for the repository. */
-const nameOfUnit = (unit: ProjectUnit): string =>
-  isRepositoryUnit(unit) ? REPOSITORY_NAME : unit.path;
-
 const isLoweredIn = (unit: ProjectUnit, rule: RuleSlug): boolean => unit.loweredRules.has(rule);
 
 const ProjectUnit = {
   create: createUnit,
   isLowered: isLoweredIn,
   isRepository: isRepositoryUnit,
-  nameOf: nameOfUnit,
 } as const;
 
 export { ProjectUnit };

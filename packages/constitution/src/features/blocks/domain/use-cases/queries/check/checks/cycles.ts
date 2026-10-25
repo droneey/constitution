@@ -1,5 +1,5 @@
 import { Layer } from '#/kernel/constants';
-import type { Finding } from '#/kernel/types';
+import type { FindingOf } from '#/kernel/types';
 import { BlockId } from '#/kernel/value-objects';
 
 import type { BlockGraph } from '../../../../entities';
@@ -9,6 +9,15 @@ import type { Check, CheckInput } from '../check.types';
 enum CyclesCode {
   Cycle = 'dependency-cycle',
 }
+
+interface CyclesDetails {
+  readonly [CyclesCode.Cycle]: {
+    /** the blocks of the cycle from the block it is reported at, which closes it again */
+    readonly cycle: readonly BlockId[];
+  };
+}
+
+type CyclesFinding = FindingOf<CyclesDetails>;
 
 interface Search {
   readonly block: Block;
@@ -65,7 +74,10 @@ const cycleFrom = (search: Search): readonly BlockId[] | undefined => {
   return undefined;
 };
 
-const cyclesCheck: Check = ({ graph, constitution }: CheckInput): readonly Finding[] => {
+const cyclesCheck: Check<CyclesFinding> = ({
+  graph,
+  constitution,
+}: CheckInput): readonly CyclesFinding[] => {
   const reported = new Set<BlockId>();
 
   return constitution.blocks.flatMap((block) => {
@@ -92,11 +104,14 @@ const cyclesCheck: Check = ({ graph, constitution }: CheckInput): readonly Findi
     return [
       {
         code: CyclesCode.Cycle,
-        message: `is part of a dependency cycle: ${cycle.join(' → ')}`,
+        details: {
+          cycle,
+        },
         path: block.passport.path,
       },
     ];
   });
 };
 
-export { cyclesCheck };
+export type { CyclesDetails };
+export { CyclesCode, cyclesCheck };

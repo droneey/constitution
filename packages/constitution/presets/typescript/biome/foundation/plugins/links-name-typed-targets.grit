@@ -11,5 +11,5 @@ or {
     `$_ + $_`
   },
   $target <: r"(?s)['\"`]/.*",
-  register_diagnostic(span=$target, message="Name the route by its typed path and params: a path built from strings escapes the route types", severity="error")
+  register_diagnostic(span=$target, message="[links-name-typed-targets] Name the route by its typed path and params: a path built from strings escapes the route types", severity="error")
 }

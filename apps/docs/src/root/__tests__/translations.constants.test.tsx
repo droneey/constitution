@@ -65,6 +65,7 @@ describe('translations', () => {
     );
 
     // Assert
+    // biome-ignore lint/plugin/case-pins-meaning-never-wording: the one golden case of a label the root provider relabels
     expect(screen.getByRole('link').textContent).toBe('Back to home');
   });
 });

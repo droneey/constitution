@@ -6,5 +6,5 @@ jsx_attribute(name=$name, value=$value) where {
     `crypto.randomUUID()`,
     `Math.random()`
   },
-  register_diagnostic(span=$value, message="Take an id from useId: a random one differs between server and client", severity="error")
+  register_diagnostic(span=$value, message="[labels-bound-with-use-id] Take an id from useId: a random one differs between server and client", severity="error")
 }

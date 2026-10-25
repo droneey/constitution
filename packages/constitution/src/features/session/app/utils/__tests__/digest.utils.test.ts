@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'bun:test';
 
 import { Layer } from '#/kernel/constants';
-import { WarningCode } from '#/kernel/entities';
+import type { ProjectWarning } from '#/kernel/entities';
+import { WarningCode, WarningKind } from '#/kernel/entities';
 import { BlockId, BlockSource, Version } from '#/kernel/value-objects';
+import { warningTextOf } from '#/shared/cli';
 
 import { DigestKind } from '../../../domain/entities';
 import { digestOf } from '../digest.utils';
@@ -36,6 +38,14 @@ describe('digestOf', () => {
     'should give the release and the count, then the warnings, core and the block list, when $condition',
     ({ count, counted }) => {
       // Arrange
+      const warning: ProjectWarning = {
+        code: WarningCode.Config,
+        details: {
+          file: 'constitution.yaml',
+          key: 'check',
+        },
+        kind: WarningKind.KeyMissing,
+      };
       const contents = {
         core: '# Core\n',
         count,
@@ -55,10 +65,7 @@ describe('digestOf', () => {
         },
         release: releaseFiles,
         warnings: [
-          {
-            code: WarningCode.Config,
-            message: 'constitution.yaml has no check',
-          },
+          warning,
         ],
       } as const;
 
@@ -69,7 +76,7 @@ describe('digestOf', () => {
       expect(digest).toStrictEqual({
         body: [
           '⚠️ Warnings',
-          '- config: constitution.yaml has no check',
+          `- config: ${warningTextOf(warning)}`,
           '',
           '# Core',
           '',

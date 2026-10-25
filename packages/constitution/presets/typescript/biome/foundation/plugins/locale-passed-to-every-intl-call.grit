@@ -12,5 +12,5 @@ or {
   `Intl.$formatter()`,
   `Intl.$formatter(undefined, $...)`
 } as $call where {
-  register_diagnostic(span=$call, message="Pass the active locale: without one the runtime's locale decides", severity="error")
+  register_diagnostic(span=$call, message="[locale-passed-to-every-intl-call] Pass the active locale: without one the runtime's locale decides", severity="error")
 }

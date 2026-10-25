@@ -1,15 +1,9 @@
-import type { ProjectWarning } from '#/kernel/entities';
-import { ProjectUnit, WarningCode } from '#/kernel/entities';
+import type { ProjectWarning, WiringProblem } from '#/kernel/entities';
+import { ProjectUnit, WarningCode, WarningKind, WiringProblemKind } from '#/kernel/entities';
 import type { UnitPath } from '#/kernel/value-objects';
 import { PartAddress } from '#/kernel/value-objects';
 
-import {
-  Parts,
-  Takes,
-  WiringContext,
-  WiringProblem,
-  WiringProblemKind,
-} from '../../../../../entities';
+import { Parts, Takes, WiringContext } from '../../../../../entities';
 import type { WiringReads } from '../../../shared/wiring';
 import {
   expectedOf,
@@ -18,7 +12,6 @@ import {
   isRepositoryTool,
   namedOf,
   ownerOf,
-  RATIFY,
   servingFolderOf,
   wiringRule,
 } from '../../../shared/wiring';
@@ -181,10 +174,16 @@ const nowhereOf = (input: {
             unit: unit.path,
           }),
       )
-      .map((tool) => ({
-        code: WarningCode.Wiring,
-        message: `${tool} is wired nowhere for ${ProjectUnit.nameOf(unit)}${RATIFY}`,
-      })),
+      .map(
+        (tool): ProjectWarning => ({
+          code: WarningCode.Wiring,
+          details: {
+            tool,
+            unit: unit.path,
+          },
+          kind: WarningKind.ToolWiredNowhere,
+        }),
+      ),
   );
 };
 
@@ -436,8 +435,12 @@ const fileWarningsOf = (
       ? [
           {
             code: WarningCode.Unlisted,
-            message: `${folder} keeps its own ${path} — declare the folder a member, with a constitution.yaml of its own`,
-          },
+            details: {
+              folder,
+              path,
+            },
+            kind: WarningKind.FolderKeepsConfig,
+          } satisfies ProjectWarning,
         ]
       : []),
     ...(checked.problems.length === 0
@@ -445,8 +448,12 @@ const fileWarningsOf = (
       : [
           {
             code: WarningCode.Wiring,
-            message: `${fileOf(input)} ${WiringProblem.textOf(checked.problems)}${RATIFY}`,
-          },
+            details: {
+              file: fileOf(input),
+              problems: checked.problems,
+            },
+            kind: WarningKind.FileMiswired,
+          } satisfies ProjectWarning,
         ]),
   ];
 };

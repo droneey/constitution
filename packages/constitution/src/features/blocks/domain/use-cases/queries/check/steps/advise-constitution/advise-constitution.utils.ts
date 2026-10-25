@@ -1,7 +1,7 @@
 import { KIND_OF_LAYER } from '#/kernel/constants';
 import type { Rule } from '#/kernel/entities';
 
-import type { BlockGraph, Constitution } from '../../../../../entities';
+import type { BlockGraph, Constitution, SimilarRules } from '../../../../../entities';
 import { Block } from '../../../../../entities';
 
 const WORD = /[a-z]{3,}/g;
@@ -43,7 +43,7 @@ const areSiblings = (input: { graph: BlockGraph; left: Rule; right: Rule }): boo
 const adviseConstitution = (input: {
   graph: BlockGraph;
   constitution: Constitution;
-}): readonly string[] => {
+}): readonly SimilarRules[] => {
   const { rules } = input.constitution;
   const words = rules.map((rule) => wordsOf(rule.statement));
 
@@ -62,9 +62,16 @@ const adviseConstitution = (input: {
             right: words[index + 1 + offset] ?? new Set(),
           }) >= SIMILAR,
       )
-      .map(
-        (right) => `similar rules: ${left.slug} (${left.block}) and ${right.slug} (${right.block})`,
-      ),
+      .map((right) => ({
+        left: {
+          block: left.block,
+          slug: left.slug,
+        },
+        right: {
+          block: right.block,
+          slug: right.slug,
+        },
+      })),
   );
 };
 

@@ -17,7 +17,7 @@ jobs:
   # change back.
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 15
     permissions:
       contents: read
     steps:
@@ -43,9 +43,8 @@ jobs:
       - name: Lint the workflows
         run: actionlint -color
 
-  # The program each release ships, built on that platform's own runner and run
-  # through its end-to-end specs — the commands and the hooks under the
-  # system's bash — before the change merges.
+  # check proves the logic once; a program the release ships can still break on
+  # its own platform, so each is built and run on its own runner.
   program:
     name: program (${{ matrix.target }})
     runs-on: ${{ matrix.runner }}

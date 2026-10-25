@@ -172,7 +172,8 @@ interface FailureCase {
   breakage?: Breakage;
   condition: string;
   layout: ProjectLayout;
-  stderr: (paths: { archive: string; project: string }) => string;
+  // the file the line names, from the paths of the run; empty for a failure that names no file
+  named: (paths: { archive: string; project: string }) => string;
 }
 
 interface AxesView {
@@ -1868,6 +1869,8 @@ describe('session-start hook', () => {
         }),
       }),
     });
+    // the rule's slug, then each level that lowers it, the repository's first, each member named
+    const marked = 'four-data-states (MAY; SHOULD in web)';
 
     const session = newSession();
 
@@ -1880,7 +1883,7 @@ describe('session-start hook', () => {
     });
 
     // Assert
-    expect(mustsOf(session)).toContain('four-data-states (MAY; SHOULD in web)');
+    expect(mustsOf(session)).toContain(marked);
   });
 
   // Each case measures the digest of its project under the default core, then
@@ -2124,20 +2127,19 @@ describe('session-start hook', () => {
       breakage: Breakage.Manifest,
       condition: 'the archive lacks package.json',
       layout: cli,
-      stderr: ({ archive }): string => `constitution hook: cannot read ${archive}/package.json\n`,
+      named: ({ archive }): string => `${archive}/package.json`,
     },
     {
       breakage: Breakage.Core,
       condition: "the archive lacks core's card",
       layout: cli,
-      stderr: (): string => 'constitution hook: cannot build the digest\n',
+      named: (): string => '',
     },
     {
       breakage: Breakage.Version,
       condition: "the archive's package.json has no version",
       layout: cli,
-      stderr: ({ archive }): string =>
-        `constitution hook: ${archive}/package.json has no version\n`,
+      named: ({ archive }): string => `${archive}/package.json`,
     },
     {
       condition: 'constitution.yaml cannot be read',
@@ -2147,12 +2149,11 @@ describe('session-start hook', () => {
           'constitution.yaml',
         ],
       },
-      stderr: ({ project }): string =>
-        `constitution hook: cannot read ${project}/constitution.yaml\n`,
+      named: ({ project }): string => `${project}/constitution.yaml`,
     },
   ])(
-    'should write one line to stderr and exit 1 when $condition',
-    ({ breakage, layout, stderr }) => {
+    'should write one line of the hook to stderr, naming the file it stopped at, and exit 1 when $condition',
+    ({ breakage, layout, named }) => {
       // Arrange
       const plugin = createPluginRoot(
         breakage === undefined
@@ -2162,6 +2163,10 @@ describe('session-start hook', () => {
             },
       );
       const project = createProject(layout);
+      const file = named({
+        archive: archiveIn(project),
+        project,
+      });
 
       // Act
       const run = runHook({
@@ -2171,16 +2176,43 @@ describe('session-start hook', () => {
       });
 
       // Assert
-      expect(run).toStrictEqual<HookRun>({
+      expect({
+        exitCode: run.exitCode,
+        lines: run.stderr.trimEnd().split('\n').length,
+        namesFile: run.stderr.includes(file),
+        opensAsTheHook: run.stderr.startsWith('constitution hook: '),
+        stdout: run.stdout,
+      }).toStrictEqual({
         exitCode: 1,
-        stderr: stderr({
-          archive: archiveIn(project),
-          project,
-        }),
+        lines: 1,
+        namesFile: true,
+        opensAsTheHook: true,
         stdout: '',
       });
     },
   );
+
+  it('should write the line of the hook word for word when the archive lacks package.json', () => {
+    // Arrange
+    const plugin = createPluginRoot({
+      breakage: Breakage.Manifest,
+    });
+    const project = createProject(cli);
+
+    // Act
+    const run = runHook({
+      event: HookEvent.Startup,
+      project,
+      root: plugin,
+    });
+
+    // Assert
+    expect(run).toStrictEqual<HookRun>({
+      exitCode: 1,
+      stderr: `constitution hook: cannot read ${archiveIn(project)}/package.json\n`,
+      stdout: '',
+    });
+  });
 
   it.each<BlockListCase>([
     {

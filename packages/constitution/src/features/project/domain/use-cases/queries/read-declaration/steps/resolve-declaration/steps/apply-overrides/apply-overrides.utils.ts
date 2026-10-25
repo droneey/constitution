@@ -1,6 +1,6 @@
 import { LOWERED_LEVELS } from '#/kernel/constants';
 import type { ListedOverride, ProjectWarning } from '#/kernel/entities';
-import { Lowering, WarningCode } from '#/kernel/entities';
+import { Lowering, WarningCode, WarningKind } from '#/kernel/entities';
 import type { RuleSlug, UnitPath } from '#/kernel/value-objects';
 
 import type { ProjectConfig } from '../../../../../../../entities';
@@ -26,7 +26,11 @@ const liveOf = (input: {
   if (named === undefined || written === undefined || reason === undefined) {
     return warn({
       code: WarningCode.Config,
-      message: `the override on line ${override.line} has no ${ConfigOverride.missingFieldsOf(override).join(', ')} — complete it or remove it`,
+      details: {
+        line: override.line,
+        missing: ConfigOverride.missingFieldsOf(override),
+      },
+      kind: WarningKind.OverrideIncomplete,
     });
   }
 
@@ -35,7 +39,11 @@ const liveOf = (input: {
   if (level === undefined) {
     return warn({
       code: WarningCode.Config,
-      message: `the override of ${named} sets the level ${written} — write SHOULD or MAY`,
+      details: {
+        level: written,
+        rule: named,
+      },
+      kind: WarningKind.OverrideLevelNotLowered,
     });
   }
 
@@ -46,7 +54,11 @@ const liveOf = (input: {
   if (writtenUntil !== undefined && until === undefined) {
     return warn({
       code: WarningCode.Config,
-      message: `the override of ${named} has until ${writtenUntil} — write a date as YYYY-MM-DD`,
+      details: {
+        rule: named,
+        until: writtenUntil,
+      },
+      kind: WarningKind.OverrideUntilMalformed,
     });
   }
 
@@ -55,14 +67,21 @@ const liveOf = (input: {
   if (rule === undefined) {
     return warn({
       code: WarningCode.Override,
-      message: `${named} names no rule — check the slug`,
+      details: {
+        rule: named,
+      },
+      kind: WarningKind.OverrideNamesNoRule,
     });
   }
 
   if (until !== undefined && Temporal.PlainDate.compare(until, input.today) < 0) {
     return warn({
       code: WarningCode.Override,
-      message: `${named} expired on ${until.toString()} — renew or remove it`,
+      details: {
+        rule: named,
+        until: until.toString(),
+      },
+      kind: WarningKind.OverrideExpired,
     });
   }
 

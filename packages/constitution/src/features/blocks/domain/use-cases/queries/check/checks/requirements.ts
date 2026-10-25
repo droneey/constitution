@@ -1,6 +1,6 @@
 import { Layer } from '#/kernel/constants';
 import { Met, RequirementAnswer, Rule } from '#/kernel/entities';
-import type { Finding, Problem } from '#/kernel/types';
+import type { FindingOf, ProblemOf } from '#/kernel/types';
 import { BlockId, RuleSlug } from '#/kernel/value-objects';
 
 import { BlockGraph } from '../../../../entities';
@@ -19,6 +19,41 @@ enum RequirementsCode {
   Repeated = 'answer-repeated',
 }
 
+interface RequirementsDetails {
+  readonly [RequirementsCode.OutsideImplementation]: object;
+  readonly [RequirementsCode.OutsidePassport]: object;
+  readonly [RequirementsCode.NotRule]: {
+    readonly requirement: RuleSlug;
+  };
+  readonly [RequirementsCode.OwnRule]: {
+    readonly requirement: RuleSlug;
+  };
+  readonly [RequirementsCode.OutOfReach]: {
+    /** the block of the rule the answer names */
+    readonly owner: BlockId;
+    readonly requirement: RuleSlug;
+  };
+  readonly [RequirementsCode.MetUnknown]: {
+    /** the Met cell as written */
+    readonly met: string;
+    readonly requirement: RuleSlug;
+  };
+  readonly [RequirementsCode.WithoutHow]: {
+    readonly requirement: RuleSlug;
+  };
+  readonly [RequirementsCode.WithoutCover]: {
+    readonly met: Met;
+    readonly requirement: RuleSlug;
+  };
+  readonly [RequirementsCode.Repeated]: {
+    readonly requirement: RuleSlug;
+  };
+}
+
+type RequirementsFinding = FindingOf<RequirementsDetails>;
+
+type RequirementsProblem = ProblemOf<RequirementsDetails>;
+
 const shortOf: ReadonlySet<Met> = new Set([
   Met.Partly,
   Met.No,
@@ -28,20 +63,24 @@ const targetProblem = (input: {
   answer: RequirementAnswer;
   graph: BlockGraph;
   target: Rule | undefined;
-}): Problem | undefined => {
+}): RequirementsProblem | undefined => {
   const { requirement } = input.answer;
 
   if (input.target === undefined) {
     return {
       code: RequirementsCode.NotRule,
-      message: `answers "${requirement}", which is not a rule`,
+      details: {
+        requirement,
+      },
     };
   }
 
   if (BlockId.equals(input.target.block, input.answer.block)) {
     return {
       code: RequirementsCode.OwnRule,
-      message: `answers "${requirement}", a rule of its own block; a Requirements table answers the blocks above`,
+      details: {
+        requirement,
+      },
     };
   }
 
@@ -52,14 +91,17 @@ const targetProblem = (input: {
     ? undefined
     : {
         code: RequirementsCode.OutOfReach,
-        message: `answers "${requirement}" of ${input.target.block}, which its block may not refer to`,
+        details: {
+          owner: input.target.block,
+          requirement,
+        },
       };
 };
 
 const coverProblem = (input: {
   answer: RequirementAnswer;
   ownSlugs: ReadonlySet<RuleSlug>;
-}): Problem | undefined => {
+}): RequirementsProblem | undefined => {
   const met = RequirementAnswer.metOf(input.answer);
 
   // Stryker disable next-line ConditionalExpression: the test only narrows the type
@@ -69,7 +111,10 @@ const coverProblem = (input: {
     ? undefined
     : {
         code: RequirementsCode.WithoutCover,
-        message: `answers "${input.answer.requirement}" ${met} without naming the rule that covers the rest`,
+        details: {
+          met,
+          requirement: input.answer.requirement,
+        },
       };
 };
 
@@ -77,27 +122,34 @@ const formProblems = (input: {
   answer: RequirementAnswer;
   isRepeated: boolean;
   ownSlugs: ReadonlySet<RuleSlug>;
-}): readonly (Problem | undefined)[] => {
+}): readonly (RequirementsProblem | undefined)[] => {
   const { how, requirement, writtenMet } = input.answer;
 
   return [
     RequirementAnswer.metOf(input.answer) === undefined
       ? {
           code: RequirementsCode.MetUnknown,
-          message: `answers "${requirement}" with Met "${writtenMet}"; Met is ${Met.Yes}, ${Met.Partly} or ${Met.No}`,
+          details: {
+            met: writtenMet,
+            requirement,
+          },
         }
       : undefined,
     how === ''
       ? {
           code: RequirementsCode.WithoutHow,
-          message: `answers "${requirement}" without saying how`,
+          details: {
+            requirement,
+          },
         }
       : undefined,
     coverProblem(input),
     input.isRepeated
       ? {
           code: RequirementsCode.Repeated,
-          message: `answers "${requirement}" twice`,
+          details: {
+            requirement,
+          },
         }
       : undefined,
   ];
@@ -107,7 +159,7 @@ const answerFindings = (input: {
   answers: readonly RequirementAnswer[];
   graph: BlockGraph;
   rules: readonly Rule[];
-}): readonly Finding[] => {
+}): readonly RequirementsFinding[] => {
   const slugs = Rule.bySlug(input.rules);
   const seen = new Set<string>();
 
@@ -117,7 +169,7 @@ const answerFindings = (input: {
 
     seen.add(key);
 
-    return [
+    const problems: readonly (RequirementsProblem | undefined)[] = [
       targetProblem({
         answer,
         graph: input.graph,
@@ -132,7 +184,9 @@ const answerFindings = (input: {
             .map((rule) => rule.slug),
         ),
       }),
-    ].flatMap((problem) =>
+    ];
+
+    return problems.flatMap((problem) =>
       problem === undefined
         ? []
         : [
@@ -145,7 +199,10 @@ const answerFindings = (input: {
   });
 };
 
-const requirementsCheck: Check = ({ graph, constitution }: CheckInput): readonly Finding[] => {
+const requirementsCheck: Check<RequirementsFinding> = ({
+  graph,
+  constitution,
+}: CheckInput): readonly RequirementsFinding[] => {
   const isInImplementation = (answer: RequirementAnswer): boolean =>
     // Stryker disable next-line OptionalChaining: every answer comes from a loaded block
     graph.get(answer.block)?.layer === Layer.Implementation;
@@ -156,8 +213,8 @@ const requirementsCheck: Check = ({ graph, constitution }: CheckInput): readonly
 
   const fileFindings = (input: {
     isMisplaced: (answer: RequirementAnswer) => boolean;
-    problem: Problem;
-  }): readonly Finding[] =>
+    problem: RequirementsProblem;
+  }): readonly RequirementsFinding[] =>
     [
       ...new Set(
         constitution.requirementAnswers.filter(input.isMisplaced).map((answer) => answer.file),
@@ -172,7 +229,7 @@ const requirementsCheck: Check = ({ graph, constitution }: CheckInput): readonly
       isMisplaced: (answer: RequirementAnswer): boolean => !isInImplementation(answer),
       problem: {
         code: RequirementsCode.OutsideImplementation,
-        message: 'answers requirements, which only an implementation does',
+        details: {},
       },
     }),
     // The answers describe the block whole, so its passport holds them, never a chapter or a seam.
@@ -181,8 +238,7 @@ const requirementsCheck: Check = ({ graph, constitution }: CheckInput): readonly
         isInImplementation(answer) && !isInPassport(answer),
       problem: {
         code: RequirementsCode.OutsidePassport,
-        message:
-          "answers requirements outside the block's passport; an implementation answers them in its passport <id>.md",
+        details: {},
       },
     }),
   ];
@@ -197,4 +253,5 @@ const requirementsCheck: Check = ({ graph, constitution }: CheckInput): readonly
   ];
 };
 
-export { requirementsCheck };
+export type { RequirementsDetails };
+export { RequirementsCode, requirementsCheck };

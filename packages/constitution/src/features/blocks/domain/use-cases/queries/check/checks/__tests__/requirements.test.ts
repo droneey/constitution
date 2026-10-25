@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'bun:test';
 
-import {
-  checkInputOf,
-  findingOf,
-  rule,
-  textOf,
-} from '../../../../../../__tests__/constitution.fixtures';
+import { Met } from '#/kernel/entities';
+import type { FindingOf } from '#/kernel/types';
+import { BlockId, RuleSlug } from '#/kernel/value-objects';
+
+import { checkInputOf, rule, textOf } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import type { CheckInput } from '../../check.types';
-import { requirementsCheck } from '../requirements';
+import type { RequirementsDetails } from '../requirements';
+import { RequirementsCode, requirementsCheck } from '../requirements';
 
 const LINGUI = 'blocks/implementations/lingui/lingui.md';
 const ANSWER = '| `i18n-plurals-by-cldr` | ICU plural | yes |';
@@ -62,10 +62,11 @@ describe('requirementsCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'requirements-outside-implementation',
+      {
+        code: RequirementsCode.OutsideImplementation,
+        details: {},
         path,
-      }),
+      },
     ]);
   });
 
@@ -103,50 +104,62 @@ describe('requirementsCheck', () => {
 
       // Assert
       expect(findings).toStrictEqual([
-        findingOf({
-          code: 'requirements-outside-passport',
+        {
+          code: RequirementsCode.OutsidePassport,
+          details: {},
           path,
-        }),
+        },
       ]);
     },
   );
 
   it.each<{
-    code: string;
-    names: readonly string[];
+    finding: FindingOf<RequirementsDetails>;
     row: string;
   }>([
     {
-      code: 'answer-names-no-rule',
-      names: [
-        'no-such-rule',
-      ],
+      finding: {
+        code: RequirementsCode.NotRule,
+        details: {
+          requirement: RuleSlug.create('no-such-rule'),
+        },
+        path: LINGUI,
+      },
       row: '| `no-such-rule` | x | yes |',
     },
     {
-      code: 'answer-out-of-reach',
-      names: [
-        'portals-for-overlays',
-        'react-dom',
-      ],
+      finding: {
+        code: RequirementsCode.OutOfReach,
+        details: {
+          owner: BlockId.create('react-dom'),
+          requirement: RuleSlug.create('portals-for-overlays'),
+        },
+        path: LINGUI,
+      },
       row: '| `portals-for-overlays` | x | yes |',
     },
     {
-      code: 'answer-met-unknown',
-      names: [
-        'i18n-plurals-by-cldr',
-        'met',
-      ],
+      finding: {
+        code: RequirementsCode.MetUnknown,
+        details: {
+          met: 'met',
+          requirement: RuleSlug.create('i18n-plurals-by-cldr'),
+        },
+        path: LINGUI,
+      },
       row: '| `i18n-plurals-by-cldr` | ICU plural | met |',
     },
     {
-      code: 'answer-without-how',
-      names: [
-        'i18n-plurals-by-cldr',
-      ],
+      finding: {
+        code: RequirementsCode.WithoutHow,
+        details: {
+          requirement: RuleSlug.create('i18n-plurals-by-cldr'),
+        },
+        path: LINGUI,
+      },
       row: '| `i18n-plurals-by-cldr` |  | yes |',
     },
-  ])('should report $code when a row breaks its rule', ({ code, names, row }) => {
+  ])('should report $finding.code when a row breaks its rule', ({ finding, row }) => {
     // Arrange
     const input = answering([
       row,
@@ -157,11 +170,7 @@ describe('requirementsCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code,
-        names,
-        path: LINGUI,
-      }),
+      finding,
     ]);
   });
 
@@ -177,23 +186,23 @@ describe('requirementsCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'answer-repeated',
-        names: [
-          'i18n-plurals-by-cldr',
-        ],
+      {
+        code: RequirementsCode.Repeated,
+        details: {
+          requirement: RuleSlug.create('i18n-plurals-by-cldr'),
+        },
         path: LINGUI,
-      }),
+      },
     ]);
   });
 
   it.each([
     {
-      met: 'partly',
+      met: Met.Partly,
       row: '| `i18n-plurals-by-cldr` | ICU plural; catalogs-compile does the rest | partly |',
     },
     {
-      met: 'no',
+      met: Met.No,
       row: '| `i18n-plurals-by-cldr` | none; `any-never-typed` stands in | no |',
     },
   ])(
@@ -209,14 +218,14 @@ describe('requirementsCheck', () => {
 
       // Assert
       expect(findings).toStrictEqual([
-        findingOf({
-          code: 'answer-without-covering-rule',
-          names: [
-            'i18n-plurals-by-cldr',
+        {
+          code: RequirementsCode.WithoutCover,
+          details: {
             met,
-          ],
+            requirement: RuleSlug.create('i18n-plurals-by-cldr'),
+          },
           path: LINGUI,
-        }),
+        },
       ]);
     },
   );
@@ -253,13 +262,13 @@ describe('requirementsCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'answer-names-own-rule',
-        names: [
-          'catalogs-compile',
-        ],
+      {
+        code: RequirementsCode.OwnRule,
+        details: {
+          requirement: RuleSlug.create('catalogs-compile'),
+        },
         path: LINGUI,
-      }),
+      },
     ]);
   });
 });

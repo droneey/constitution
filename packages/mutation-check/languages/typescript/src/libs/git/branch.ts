@@ -1,6 +1,8 @@
 import type { SpawnSyncReturns } from 'node:child_process';
 import { spawnSync } from 'node:child_process';
 
+import { GitError, GitFailure } from './git.error.ts';
+
 interface Branch {
   baseText: (path: string) => string;
   diff: string;
@@ -24,8 +26,13 @@ const branchIn = (folder: string): Branch => {
     });
 
     if (done.error !== undefined) {
-      throw new Error(`git ${args.join(' ')} failed in ${folder}`, {
+      throw new GitError({
         cause: done.error,
+        code: GitFailure.NotRun,
+        details: {
+          args,
+          folder,
+        },
       });
     }
 
@@ -37,7 +44,14 @@ const branchIn = (folder: string): Branch => {
     const done = runGit(args);
 
     if (done.status !== 0) {
-      throw new Error(`git ${args.join(' ')} failed in ${folder}: ${done.stderr.trim()}`);
+      throw new GitError({
+        code: GitFailure.Failed,
+        details: {
+          args,
+          folder,
+          stderr: done.stderr.trim(),
+        },
+      });
     }
 
     return done.stdout;

@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'bun:test';
 
-import type { Finding } from '#/kernel/types';
+import type { FindingOf } from '#/kernel/types';
 
-import { checkInputOf, findingOf } from '../../../../../../__tests__/constitution.fixtures';
+import { checkInputOf } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { budgetCheck } from '../budget';
+import type { BudgetDetails } from '../budget';
+import { BudgetCode, budgetCheck } from '../budget';
 
 const PRINCIPLES = 'blocks/core/foundation/principles.md';
 
@@ -18,7 +19,7 @@ const linesOf = (count: number): string =>
 
 describe('budgetCheck', () => {
   it.each<{
-    expected: Finding[];
+    expected: readonly FindingOf<BudgetDetails>[];
     lines: number;
   }>([
     {
@@ -27,13 +28,14 @@ describe('budgetCheck', () => {
     },
     {
       expected: [
-        findingOf({
-          code: 'file-over-line-budget',
-          names: [
-            '501',
-          ],
+        {
+          code: BudgetCode.FileOverBudget,
+          details: {
+            budget: 500,
+            lines: 501,
+          },
           path: PRINCIPLES,
-        }),
+        },
       ],
       lines: 501,
     },

@@ -142,6 +142,7 @@ describe('Confirm', () => {
     const spoken = screenReaderOutputOf(tree);
 
     // Assert
+    // biome-ignore lint/plugin/case-pins-meaning-never-wording: the one golden of what the prompt says to a screen reader
     expect(spoken).toBe('Overwrite?, yes or no');
   });
 });

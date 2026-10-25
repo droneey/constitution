@@ -1,13 +1,14 @@
 import { describe, expect, it } from 'bun:test';
 
+import { Layer } from '#/kernel/constants';
+import type { FindingOf } from '#/kernel/types';
+import { BlockId } from '#/kernel/value-objects';
+
 import type { BlockFixture } from '../../../../../../__tests__/constitution.fixtures';
-import {
-  checkInputOf,
-  findingOf,
-  passportFile,
-} from '../../../../../../__tests__/constitution.fixtures';
+import { checkInputOf, passportFile } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { requiresCheck } from '../requires';
+import type { RequiresDetails } from '../requires';
+import { RequiresCode, requiresCheck } from '../requires';
 
 const BROWSER = 'blocks/contexts/platforms/browser/browser.md';
 const BIOME = 'blocks/implementations/biome/biome.md';
@@ -35,28 +36,36 @@ describe('requiresCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'requires-core',
+      {
+        code: RequiresCode.RequiresCore,
+        details: {},
         path: BROWSER,
-      }),
-      findingOf({
-        code: 'requires-out-of-layer',
-        names: [
-          'typescript',
-        ],
+      },
+      {
+        code: RequiresCode.RequiresOutOfLayer,
+        details: {
+          allowed: [
+            Layer.Domain,
+            Layer.Platform,
+          ],
+          layer: Layer.Platform,
+          required: BlockId.create('typescript'),
+          requiredLayer: Layer.Language,
+        },
         path: BROWSER,
-      }),
-      findingOf({
-        code: 'requires-no-block',
-        names: [
-          'webgl',
-        ],
+      },
+      {
+        code: RequiresCode.RequiresNoBlock,
+        details: {
+          required: BlockId.create('webgl'),
+        },
         path: BROWSER,
-      }),
-      findingOf({
-        code: 'requires-itself',
+      },
+      {
+        code: RequiresCode.RequiresItself,
+        details: {},
         path: BROWSER,
-      }),
+      },
     ]);
   });
 
@@ -100,13 +109,18 @@ describe('requiresCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'requires-out-of-layer',
-        names: [
-          'browser',
-        ],
+      {
+        code: RequiresCode.RequiresOutOfLayer,
+        details: {
+          allowed: [
+            Layer.Domain,
+          ],
+          layer: Layer.Domain,
+          required: BlockId.create('browser'),
+          requiredLayer: Layer.Platform,
+        },
         path: 'blocks/domains/i18n/i18n.md',
-      }),
+      },
     ]);
   });
 
@@ -152,36 +166,48 @@ describe('requiresCheck', () => {
 
   it.each<{
     base: string;
-    code: string;
-    names: string[];
+    finding: FindingOf<RequiresDetails>;
   }>([
     {
       base: 'eslint',
-      code: 'extends-no-block',
-      names: [
-        'eslint',
-      ],
+      finding: {
+        code: RequiresCode.ExtendsNoBlock,
+        details: {
+          base: BlockId.create('eslint'),
+        },
+        path: BIOME,
+      },
     },
     {
       base: 'biome',
-      code: 'extends-itself',
-      names: [],
+      finding: {
+        code: RequiresCode.ExtendsItself,
+        details: {},
+        path: BIOME,
+      },
     },
     {
       base: 'ui',
-      code: 'extends-other-layer',
-      names: [
-        'ui',
-      ],
+      finding: {
+        code: RequiresCode.ExtendsOtherLayer,
+        details: {
+          base: BlockId.create('ui'),
+          baseLayer: Layer.Domain,
+        },
+        path: BIOME,
+      },
     },
     {
       base: 'lingui',
-      code: 'extends-concrete-block',
-      names: [
-        'lingui',
-      ],
+      finding: {
+        code: RequiresCode.ExtendsConcrete,
+        details: {
+          base: BlockId.create('lingui'),
+        },
+        path: BIOME,
+      },
     },
-  ])('should report $code when an implementation extends $base', ({ base, code, names }) => {
+  ])('should report $finding.code when an implementation extends $base', ({ base, finding }) => {
     // Arrange
     const files = validFiles();
 
@@ -198,11 +224,7 @@ describe('requiresCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code,
-        names,
-        path: BIOME,
-      }),
+      finding,
     ]);
   });
 });

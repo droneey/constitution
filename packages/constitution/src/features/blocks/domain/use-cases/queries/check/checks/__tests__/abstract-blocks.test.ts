@@ -1,13 +1,11 @@
 import { describe, expect, it } from 'bun:test';
 
+import { BlockId } from '#/kernel/value-objects';
+
 import type { Files } from '../../../../../../__tests__/constitution.fixtures';
-import {
-  checkInputOf,
-  findingOf,
-  passportFile,
-} from '../../../../../../__tests__/constitution.fixtures';
+import { checkInputOf, passportFile } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { abstractBlocksCheck } from '../abstract-blocks';
+import { AbstractBlocksCode, abstractBlocksCheck } from '../abstract-blocks';
 
 const REACT = 'blocks/implementations/_react/_react.md';
 const REACT_CHAPTER = 'blocks/implementations/_react/foundation/renderers.md';
@@ -37,10 +35,11 @@ describe('abstractBlocksCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'abstract-block-without-heir',
+      {
+        code: AbstractBlocksCode.WithoutHeir,
+        details: {},
         path: REACT,
-      }),
+      },
     ]);
   });
 
@@ -81,13 +80,13 @@ describe('abstractBlocksCheck', () => {
 
       // Assert
       expect(findings).toStrictEqual([
-        findingOf({
-          code: 'base-names-heir',
-          names: [
-            'react-dom',
-          ],
+        {
+          code: AbstractBlocksCode.NamesHeir,
+          details: {
+            heir: BlockId.create('react-dom'),
+          },
           path,
-        }),
+        },
       ]);
     },
   );
@@ -105,13 +104,13 @@ describe('abstractBlocksCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'base-seam-named-after-heir',
-        names: [
-          'react-dom',
-        ],
+      {
+        code: AbstractBlocksCode.SeamNamesHeir,
+        details: {
+          heir: BlockId.create('react-dom'),
+        },
         path: 'blocks/implementations/_react/architecture/with/react-dom.md',
-      }),
+      },
     ]);
   });
 

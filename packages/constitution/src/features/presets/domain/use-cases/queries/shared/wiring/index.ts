@@ -10,7 +10,6 @@ export {
   isBeneath,
   isRepositoryTool,
   ownerOf,
-  RATIFY,
   reachOf,
   scopesOf,
   servingFolderOf,

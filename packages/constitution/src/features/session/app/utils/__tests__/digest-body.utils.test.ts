@@ -1,7 +1,5 @@
 import { describe, expect, it } from 'bun:test';
 
-import { WarningCode } from '#/kernel/entities';
-
 import { budgetedBodyOf } from '../digest-body.utils';
 
 const HEADING = '⚠️ Warnings';
@@ -10,12 +8,12 @@ const NOTE_OF_ONE =
 const NOTE_OF_TWO =
   '2 more lines of the block list did not fit; constitution.yaml names every block.';
 
-// Warnings whose lines, "- wiring: <message>", take 499, 333, 400, 700 and 20 bytes.
-const m489 = 'w'.repeat(489);
-const m323 = 'w'.repeat(323);
-const m390 = 'w'.repeat(390);
-const m690 = 'w'.repeat(690);
-const m10 = 'w'.repeat(10);
+// Lines of warnings that take 499, 333, 400, 700 and 20 bytes.
+const m489 = `- wiring: ${'w'.repeat(489)}`;
+const m323 = `- wiring: ${'w'.repeat(323)}`;
+const m390 = `- wiring: ${'w'.repeat(390)}`;
+const m690 = `- wiring: ${'w'.repeat(690)}`;
+const m10 = `- wiring: ${'w'.repeat(10)}`;
 
 // Core of one line that, with its line break, takes 9000 bytes of the digest's 9400.
 const largeCore = 'c'.repeat(8999);
@@ -43,14 +41,8 @@ describe('budgetedBodyOf', () => {
       ],
       isStartup: true,
       warnings: [
-        {
-          code: WarningCode.Unknown,
-          message: 'nope is not a block',
-        },
-        {
-          code: WarningCode.Wiring,
-          message: 'cannot check the wiring',
-        },
+        '- unknown: nope is not a block',
+        '- wiring: cannot check the wiring',
       ],
     },
     {
@@ -67,10 +59,7 @@ describe('budgetedBodyOf', () => {
       blockList: [],
       isStartup: false,
       warnings: [
-        {
-          code: WarningCode.Config,
-          message: 'constitution.yaml has no check',
-        },
+        '- config: constitution.yaml has no check',
       ],
     },
     {
@@ -95,10 +84,7 @@ describe('budgetedBodyOf', () => {
       blockList: [],
       isStartup: false,
       warnings: [
-        {
-          code: WarningCode.Config,
-          message: 'constitution.yaml has no check',
-        },
+        '- config: constitution.yaml has no check',
       ],
     },
     {
@@ -148,12 +134,12 @@ describe('budgetedBodyOf', () => {
     {
       body: [
         HEADING,
-        `- wiring: ${m489}`,
-        `- wiring: ${m489}`,
+        m489,
+        m489,
         'and 1 more',
       ],
       condition: 'two lines fill the 1000 bytes exactly',
-      messages: [
+      warnings: [
         m489,
         m489,
         m10,
@@ -162,12 +148,12 @@ describe('budgetedBodyOf', () => {
     {
       body: [
         HEADING,
-        `- wiring: ${m323}`,
-        `- wiring: ${m323}`,
+        m323,
+        m323,
         'and 1 more',
       ],
       condition: 'each line costs its line break too',
-      messages: [
+      warnings: [
         m323,
         m323,
         m323,
@@ -176,11 +162,11 @@ describe('budgetedBodyOf', () => {
     {
       body: [
         HEADING,
-        `- wiring: ${m390}`,
+        m390,
         'and 2 more',
       ],
       condition: 'a shorter line follows one that does not fit',
-      messages: [
+      warnings: [
         m390,
         m690,
         m10,
@@ -188,20 +174,17 @@ describe('budgetedBodyOf', () => {
     },
   ])(
     'should give the warnings that fit in 1000 bytes and count the rest when $condition',
-    ({ body, messages }) => {
+    ({ body, warnings }) => {
       // Arrange
-      const warnings = messages.map((message) => ({
-        code: WarningCode.Wiring,
-        message,
-      }));
-
-      // Act
-      const given = budgetedBodyOf({
+      const contents = {
         blockList: [],
         core: '',
         isStartup: false,
         warnings,
-      });
+      };
+
+      // Act
+      const given = budgetedBodyOf(contents);
 
       // Assert
       expect(given).toStrictEqual(body);

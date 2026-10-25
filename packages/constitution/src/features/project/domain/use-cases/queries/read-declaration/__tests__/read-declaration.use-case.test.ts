@@ -2,10 +2,9 @@ import { describe, expect, it } from 'bun:test';
 
 import { createFakeProjectFiles } from '#/__tests__/project-files.fake';
 import { PROJECT, projectPlace, releaseFolderPath } from '#/__tests__/project-place.fixtures';
-import { warningOf } from '#/__tests__/warning.fixtures';
 import { Axis, Layer } from '#/kernel/constants';
 import type { Declaration } from '#/kernel/entities';
-import { ConfigReadStatus, WarningCode } from '#/kernel/entities';
+import { ConfigReadStatus, WarningCode, WarningKind } from '#/kernel/entities';
 import { ProjectFailure } from '#/kernel/errors';
 import { PackPath } from '#/kernel/value-objects';
 
@@ -180,37 +179,42 @@ describe('readDeclaration', () => {
           }),
         ],
         warnings: [
-          warningOf({
+          {
             code: WarningCode.Pack,
-            names: [
-              './rules/blocks/implementations/lint/foundation/style.md',
-            ],
-          }),
-          warningOf({
+            details: {
+              file: './rules/blocks/implementations/lint/foundation/style.md',
+            },
+            kind: WarningKind.FileUnreadable,
+          },
+          {
             code: WarningCode.Pack,
-            names: [
-              'extra',
-            ],
-          }),
-          warningOf({
+            details: {
+              where: 'extra',
+            },
+            kind: WarningKind.PackNotInstalled,
+          },
+          {
             code: WarningCode.Constitution,
-            names: [
-              '/work/project/.droneey/constitution/blocks/core/core.md',
-            ],
-          }),
-          warningOf({
+            details: {
+              file: '/work/project/.droneey/constitution/blocks/core/core.md',
+            },
+            kind: WarningKind.FrontMatterMissing,
+          },
+          {
             code: WarningCode.Constitution,
-            names: [
-              '/work/project/.droneey/constitution/blocks/domains/ui/foundation/forms.md',
-            ],
-          }),
-          warningOf({
+            details: {
+              file: '/work/project/.droneey/constitution/blocks/domains/ui/foundation/forms.md',
+            },
+            kind: WarningKind.FileUnreadable,
+          },
+          {
             code: WarningCode.Override,
-            names: [
-              'inputs-are-labelled',
-              '2026-06-14',
-            ],
-          }),
+            details: {
+              rule: 'inputs-are-labelled',
+              until: '2026-06-14',
+            },
+            kind: WarningKind.OverrideExpired,
+          },
         ],
       },
       status: ConfigReadStatus.Parsed,

@@ -1,12 +1,12 @@
 import { Placeholder } from '#/kernel/constants';
 import type { ProjectWarning } from '#/kernel/entities';
-import { ProjectUnit, WarningCode } from '#/kernel/entities';
+import { ProjectUnit, WarningCode, WarningKind } from '#/kernel/entities';
 
 import type { ConfigurationParser, Setting } from '../../../../../contracts';
 import type { Skip } from '../../../../../entities';
 import { WiringContext } from '../../../../../entities';
 import type { WiringReads } from '../../../shared/wiring';
-import { holdsBlock, isBeneath, RATIFY } from '../../../shared/wiring';
+import { holdsBlock, isBeneath } from '../../../shared/wiring';
 
 type Table = Readonly<Record<string, Setting>>;
 
@@ -220,10 +220,16 @@ const unitSkipsOf = (input: {
                 }),
               ),
           )
-          .map((folder) => ({
-            code: WarningCode.Wiring,
-            message: `${skip.path} skips ${folder}, which holds no member of the workspace${RATIFY}`,
-          })),
+          .map(
+            (folder): ProjectWarning => ({
+              code: WarningCode.Wiring,
+              details: {
+                folder,
+                path: skip.path,
+              },
+              kind: WarningKind.SkipOfNoMember,
+            }),
+          ),
         ...members
           .filter(
             (member) =>
@@ -234,10 +240,17 @@ const unitSkipsOf = (input: {
                 }),
               ),
           )
-          .map((member) => ({
-            code: WarningCode.Wiring,
-            message: `${skip.path} does not skip ${member}, a member of the workspace that ${skip.tool} would reach into from the root${RATIFY}`,
-          })),
+          .map(
+            (member): ProjectWarning => ({
+              code: WarningCode.Wiring,
+              details: {
+                member,
+                path: skip.path,
+                tool: skip.tool,
+              },
+              kind: WarningKind.MemberNotSkipped,
+            }),
+          ),
       ];
     });
 };

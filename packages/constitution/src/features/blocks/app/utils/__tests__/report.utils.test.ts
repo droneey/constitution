@@ -2,14 +2,18 @@ import { describe, expect, it } from 'bun:test';
 
 import { StepStatus, Tone } from '@droneey/design-cli';
 
+import { BlockId, RuleSlug } from '#/kernel/value-objects';
 import { noteSection } from '#/shared/cli';
 
+import type { BlockFinding, Validation } from '../../../domain/use-cases/queries/check';
+import { RequiresCode } from '../../../domain/use-cases/queries/check';
+import { findingTextOf } from '../finding-text.utils';
 import { blocksOutcomeOf, blocksSectionsOf } from '../report.utils';
 
-const finding = {
-  code: 'missing-why',
-  message: 'a rule has no Why',
-  path: 'blocks/core/core.md',
+const finding: BlockFinding = {
+  code: RequiresCode.RequiresItself,
+  details: {},
+  path: 'blocks/domains/ui/ui.md',
 };
 
 describe('blocksOutcomeOf', () => {
@@ -64,7 +68,16 @@ describe('blocksSectionsOf', () => {
     // Arrange
     const validation = {
       advice: [
-        'similar rules: a (x) and b (y)',
+        {
+          left: {
+            block: BlockId.create('x'),
+            slug: RuleSlug.create('a'),
+          },
+          right: {
+            block: BlockId.create('y'),
+            slug: RuleSlug.create('b'),
+          },
+        },
       ],
       findings: [
         finding,
@@ -78,7 +91,7 @@ describe('blocksSectionsOf', () => {
     expect(sections).toStrictEqual([
       noteSection({
         lines: [
-          'blocks/core/core.md: a rule has no Why [missing-why]',
+          `blocks/domains/ui/ui.md: ${findingTextOf(finding)} [requires-itself]`,
         ],
         title: '1 finding in the blocks',
         tone: Tone.Error,
@@ -89,6 +102,55 @@ describe('blocksSectionsOf', () => {
         ],
         title: 'Advice on the blocks',
         tone: Tone.Info,
+      }),
+    ]);
+  });
+
+  it('should give the findings by file, then by code, then by their text', () => {
+    // Arrange
+    const webgl: BlockFinding = {
+      code: RequiresCode.RequiresNoBlock,
+      details: {
+        required: BlockId.create('webgl'),
+      },
+      path: 'blocks/domains/ui/ui.md',
+    };
+    const i18n: BlockFinding = {
+      code: RequiresCode.RequiresItself,
+      details: {},
+      path: 'blocks/domains/i18n/i18n.md',
+    };
+    const canvas: BlockFinding = {
+      code: RequiresCode.RequiresNoBlock,
+      details: {
+        required: BlockId.create('canvas'),
+      },
+      path: 'blocks/domains/ui/ui.md',
+    };
+    const validation = {
+      advice: [],
+      findings: [
+        webgl,
+        i18n,
+        canvas,
+        finding,
+      ],
+    } satisfies Validation;
+
+    // Act
+    const sections = blocksSectionsOf(validation);
+
+    // Assert
+    expect(sections).toStrictEqual([
+      noteSection({
+        lines: [
+          `blocks/domains/i18n/i18n.md: ${findingTextOf(i18n)} [requires-itself]`,
+          `blocks/domains/ui/ui.md: ${findingTextOf(finding)} [requires-itself]`,
+          `blocks/domains/ui/ui.md: ${findingTextOf(canvas)} [requires-no-block]`,
+          `blocks/domains/ui/ui.md: ${findingTextOf(webgl)} [requires-no-block]`,
+        ],
+        title: '4 findings in the blocks',
+        tone: Tone.Error,
       }),
     ]);
   });

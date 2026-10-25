@@ -1,5 +1,5 @@
 import { Rule } from '#/kernel/entities';
-import type { Finding } from '#/kernel/types';
+import type { FindingOf } from '#/kernel/types';
 import { directoryOf, withoutCodeFences } from '#/kernel/utils';
 import { BlockId, RuleSlug } from '#/kernel/value-objects';
 
@@ -13,6 +13,26 @@ enum ReferencesCode {
   NamesOtherRule = 'names-rule-of-other-block',
   CitesDecision = 'cites-decision',
 }
+
+interface ReferencesDetails {
+  readonly [ReferencesCode.LinkIntoOtherBlock]: {
+    /** the block whose file the link reaches */
+    readonly owner: BlockId;
+    /** the link's target as written */
+    readonly target: string;
+  };
+  readonly [ReferencesCode.NamesOtherRule]: {
+    /** the block of the rule named */
+    readonly owner: BlockId;
+    readonly slug: RuleSlug;
+  };
+  readonly [ReferencesCode.CitesDecision]: {
+    /** the decision as cited, ADR-<number> */
+    readonly decision: string;
+  };
+}
+
+type ReferencesFinding = FindingOf<ReferencesDetails>;
 
 const TABLE_ROW = /^\s*\|/;
 const FOLDER_SEPARATOR = '/';
@@ -29,7 +49,7 @@ const linkFindings = (input: {
   block: Block;
   blocks: readonly Block[];
   file: BlockFile;
-}): readonly Finding[] =>
+}): readonly ReferencesFinding[] =>
   linkTargetsOf(input.file.body).flatMap((target) => {
     const owner = ownerOf({
       blocks: input.blocks,
@@ -44,7 +64,10 @@ const linkFindings = (input: {
       : [
           {
             code: ReferencesCode.LinkIntoOtherBlock,
-            message: `links to ${target}, a file of the block ${owner.id}; a block refers to another only through its front matter and with/ file names`,
+            details: {
+              owner: owner.id,
+              target,
+            },
             path: input.file.path,
           },
         ];
@@ -54,7 +77,7 @@ const slugFindings = (input: {
   block: Block;
   file: BlockFile;
   slugs: ReadonlyMap<RuleSlug, Rule>;
-}): readonly Finding[] => {
+}): readonly ReferencesFinding[] => {
   const prose = withoutCodeFences(input.file.body)
     .split('\n')
     .filter((line) => !TABLE_ROW.test(line))
@@ -70,23 +93,30 @@ const slugFindings = (input: {
       : [
           {
             code: ReferencesCode.NamesOtherRule,
-            message: `names the rule ${span} of ${rule.block}; a rule refers to another only as the parent in its heading`,
+            details: {
+              owner: rule.block,
+              slug: rule.slug,
+            },
             path: input.file.path,
           },
         ];
   });
 };
 
-const decisionFindings = (file: BlockFile): readonly Finding[] =>
+const decisionFindings = (file: BlockFile): readonly ReferencesFinding[] =>
   [
     ...new Set(withoutCodeFences(file.body).match(DECISION)),
   ].map((decision) => ({
     code: ReferencesCode.CitesDecision,
-    message: `cites ${decision}; a block states its rules without citing the decision log`,
+    details: {
+      decision,
+    },
     path: file.path,
   }));
 
-const referencesCheck: Check = ({ constitution }: CheckInput): readonly Finding[] => {
+const referencesCheck: Check<ReferencesFinding> = ({
+  constitution,
+}: CheckInput): readonly ReferencesFinding[] => {
   const slugs = Rule.bySlug(constitution.rules);
 
   return constitution.blocks.flatMap((block) =>
@@ -106,4 +136,5 @@ const referencesCheck: Check = ({ constitution }: CheckInput): readonly Finding[
   );
 };
 
-export { referencesCheck };
+export type { ReferencesDetails };
+export { ReferencesCode, referencesCheck };

@@ -1,1 +1,1 @@
-export { CONFIG, joinPath, ROOT } from './project-paths.utils';
+export { joinPath, ROOT } from './project-paths.utils';

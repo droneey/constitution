@@ -6,17 +6,19 @@ import { dirname, join } from 'node:path';
 import { afterAll, describe, expect, test } from 'bun:test';
 
 import { branchIn } from '../branch.ts';
+import { GitError, GitFailure } from '../git.error.ts';
 
 type Files = Readonly<Record<string, string>>;
 
 const UNIT = 'packages/api';
 
 const orderPath = `${UNIT}/src/order.utils.ts`;
+const BASE_ORDER = 'export const total = 1;\n';
 
 const WORKSPACE: Files = {
   '.gitignore': 'dist/\n',
-  [orderPath]: 'export const total = 1;\n',
-  'packages/web/src/order.utils.ts': 'export const total = 1;\n',
+  [orderPath]: BASE_ORDER,
+  'packages/web/src/order.utils.ts': BASE_ORDER,
 } as const;
 
 const git = (input: { args: readonly string[]; folder: string }): void => {
@@ -120,17 +122,21 @@ const HEADERS = /^(?:\+\+\+|@@) .*$/gm;
 
 interface Failure {
   readonly causeCode: unknown;
-  readonly message: string;
+  readonly code: GitFailure;
+  readonly details: unknown;
 }
 
+// What a caller can tell of a failure of git: its code, what it ran, and the system's code beneath it.
 const failureOf = (read: () => unknown): Failure | undefined => {
   try {
     read();
   } catch (error) {
-    if (error instanceof Error && error.cause instanceof Error && 'code' in error.cause) {
+    if (error instanceof GitError) {
       return {
-        causeCode: error.cause.code,
-        message: error.message,
+        causeCode:
+          error.cause instanceof Error && 'code' in error.cause ? error.cause.code : undefined,
+        code: error.code,
+        details: error.details,
       };
     }
   }
@@ -205,7 +211,7 @@ describe('branchIn', () => {
     const text = baseText('src/order.utils.ts');
 
     // Assert
-    expect(text).toBe('export const total = 1;\n');
+    expect(text).toBe(BASE_ORDER);
   });
 
   test('should read the text a file had where the branch left the main line when run from the root', () => {
@@ -216,7 +222,7 @@ describe('branchIn', () => {
     const text = baseText(orderPath);
 
     // Assert
-    expect(text).toBe('export const total = 1;\n');
+    expect(text).toBe(BASE_ORDER);
   });
 
   test('should read no text for a file the main line never had', () => {
@@ -235,12 +241,22 @@ describe('branchIn', () => {
     const folder = lone;
 
     // Act
-    const read = (): unknown => branchIn(folder);
+    const failure = failureOf(() => branchIn(folder));
 
     // Assert
-    expect(read).toThrow(
-      `git merge-base HEAD origin/main failed in ${lone}: fatal: Not a valid object name origin/main`,
-    );
+    expect(failure).toStrictEqual({
+      causeCode: undefined,
+      code: GitFailure.Failed,
+      details: {
+        args: [
+          'merge-base',
+          'HEAD',
+          'origin/main',
+        ],
+        folder: lone,
+        stderr: expect.stringMatching(/\S$/),
+      },
+    });
   });
 
   test('should fail when git cannot run in the folder', () => {
@@ -253,7 +269,15 @@ describe('branchIn', () => {
     // Assert
     expect(failure).toStrictEqual({
       causeCode: 'ENOENT',
-      message: `git merge-base HEAD origin/main failed in ${missing}`,
+      code: GitFailure.NotRun,
+      details: {
+        args: [
+          'merge-base',
+          'HEAD',
+          'origin/main',
+        ],
+        folder: missing,
+      },
     });
   });
 });

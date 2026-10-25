@@ -1,5 +1,4 @@
 import ast
-import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -8,8 +7,6 @@ if TYPE_CHECKING:
   from collections.abc import Callable, Iterator, Mapping
 
 SOURCE_ROOT = Path('src')
-SPEC = re.compile(r'^test_(?P<name>[a-z0-9_]+)\.py$')
-TESTS = 'tests'
 INIT = '__init__'
 # mutmut names a method's mutants by its class between these separators
 SEPARATOR = 'ǁ'
@@ -56,43 +53,18 @@ def _function_globs(*, path: Path, source: str, lines: tuple[range, ...] | None)
       yield f'{module}.{key}__mutmut_*'
 
 
-def _imported_sources(*, spec: str, sources: tuple[Path, ...]) -> Iterator[Path]:
-  by_module = {module_name(source): source for source in sources}
-
-  for node in ast.walk(ast.parse(spec)):
-    if isinstance(node, ast.ImportFrom) and node.module is not None:
-      names = [node.module, *(f'{node.module}.{alias.name}' for alias in node.names)]
-    elif isinstance(node, ast.Import):
-      names = [alias.name for alias in node.names]
-    else:
-      continue
-
-    yield from (by_module[name] for name in names if name in by_module)
-
-
-def _proven_sources(changes: Changes) -> Iterator[Path]:
-  for path in (*changes.lines, *changes.untracked):
-    spec = SPEC.match(path.name)
-
-    if spec is None or TESTS not in path.parts:
-      continue
-
-    yield from (source for source in changes.sources if source.stem == spec['name'])
-    yield from _imported_sources(spec=changes.read(path), sources=changes.sources)
-
-
 def mutant_globs(changes: Changes) -> tuple[str, ...]:
   sources = set(changes.sources)
-  whole = {path for path in changes.untracked if path in sources} | set(_proven_sources(changes))
-  touched = {
-    path: lines for path, lines in changes.lines.items() if path in sources and path not in whole
-  }
+  targets = [
+    *((path, None) for path in changes.untracked if path in sources),
+    *((path, lines) for path, lines in changes.lines.items() if path in sources),
+  ]
 
   return tuple(
     sorted(
       {
         glob
-        for path, lines in [*((path, None) for path in whole), *touched.items()]
+        for path, lines in targets
         for glob in _function_globs(path=path, source=changes.read(path), lines=lines)
       },
     ),

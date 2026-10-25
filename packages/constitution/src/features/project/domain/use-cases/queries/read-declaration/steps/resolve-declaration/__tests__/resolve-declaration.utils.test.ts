@@ -1,10 +1,9 @@
 import { describe, expect, it } from 'bun:test';
 
-import { warningOf } from '#/__tests__/warning.fixtures';
 import { Axis, Layer, Level } from '#/kernel/constants';
 import type { ProjectWarning } from '#/kernel/entities';
-import { WarningCode } from '#/kernel/entities';
-import { BlockSource, UnitPath } from '#/kernel/value-objects';
+import { WarningCode, WarningKind } from '#/kernel/entities';
+import { BlockId, BlockSource, PackPath, RuleSlug, UnitPath } from '#/kernel/value-objects';
 
 import type { BlockFixture } from '../../../../../../../__tests__/project.fixtures';
 import { Folder, parsers, ruleOf } from '../../../../../../../__tests__/project.fixtures';
@@ -146,77 +145,78 @@ describe('resolveDeclaration', () => {
       text: 'colour: blue\n',
       unread: [],
       warnings: [
-        warningOf({
+        {
           code: WarningCode.Config,
-          names: [
-            'constitution.yaml',
-            'axes',
-            'axes: [architecture, workflow]',
-          ],
-        }),
-        warningOf({
+          details: {
+            file: 'constitution.yaml',
+            key: 'axes',
+          },
+          kind: WarningKind.KeyMissing,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'constitution.yaml',
-            'domains',
-            'domains: []',
-          ],
-        }),
-        warningOf({
+          details: {
+            file: 'constitution.yaml',
+            key: 'domains',
+          },
+          kind: WarningKind.KeyMissing,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'constitution.yaml',
-            'platforms',
-            'platforms: []',
-          ],
-        }),
-        warningOf({
+          details: {
+            file: 'constitution.yaml',
+            key: 'platforms',
+          },
+          kind: WarningKind.KeyMissing,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'constitution.yaml',
-            'languages',
-            'languages: []',
-          ],
-        }),
-        warningOf({
+          details: {
+            file: 'constitution.yaml',
+            key: 'languages',
+          },
+          kind: WarningKind.KeyMissing,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'constitution.yaml',
-            'implementations',
-            'implementations: []',
-          ],
-        }),
-        warningOf({
+          details: {
+            file: 'constitution.yaml',
+            key: 'implementations',
+          },
+          kind: WarningKind.KeyMissing,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'constitution.yaml',
-            'packs',
-            'packs: []',
-          ],
-        }),
-        warningOf({
+          details: {
+            file: 'constitution.yaml',
+            key: 'packs',
+          },
+          kind: WarningKind.KeyMissing,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'constitution.yaml',
-            'check',
-            'check: <the command that runs every check, or null>',
-          ],
-        }),
-        warningOf({
+          details: {
+            file: 'constitution.yaml',
+            key: 'check',
+          },
+          kind: WarningKind.KeyMissing,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'constitution.yaml',
-            'overrides',
-            'overrides: []',
-          ],
-        }),
-        warningOf({
+          details: {
+            file: 'constitution.yaml',
+            key: 'overrides',
+          },
+          kind: WarningKind.KeyMissing,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'constitution.yaml',
-            'colour',
-          ],
-        }),
+          details: {
+            file: 'constitution.yaml',
+            key: 'colour',
+          },
+          kind: WarningKind.KeyUnknown,
+        },
       ],
     },
     {
@@ -225,70 +225,70 @@ describe('resolveDeclaration', () => {
       text: 'axes:\ndomains:\nplatforms:\nlanguages:\nimplementations:\npacks:\ncheck:\noverrides:\n',
       unread: [],
       warnings: [
-        warningOf({
+        {
           code: WarningCode.Config,
-          names: [
-            'constitution.yaml',
-            'axes',
-            'write axes: [architecture, workflow]',
-          ],
-        }),
-        warningOf({
+          details: {
+            file: 'constitution.yaml',
+            key: 'axes',
+          },
+          kind: WarningKind.KeyEmpty,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'constitution.yaml',
-            'domains',
-            'write domains: []',
-          ],
-        }),
-        warningOf({
+          details: {
+            file: 'constitution.yaml',
+            key: 'domains',
+          },
+          kind: WarningKind.KeyEmpty,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'constitution.yaml',
-            'platforms',
-            'write platforms: []',
-          ],
-        }),
-        warningOf({
+          details: {
+            file: 'constitution.yaml',
+            key: 'platforms',
+          },
+          kind: WarningKind.KeyEmpty,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'constitution.yaml',
-            'languages',
-            'write languages: []',
-          ],
-        }),
-        warningOf({
+          details: {
+            file: 'constitution.yaml',
+            key: 'languages',
+          },
+          kind: WarningKind.KeyEmpty,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'constitution.yaml',
-            'implementations',
-            'write implementations: []',
-          ],
-        }),
-        warningOf({
+          details: {
+            file: 'constitution.yaml',
+            key: 'implementations',
+          },
+          kind: WarningKind.KeyEmpty,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'constitution.yaml',
-            'packs',
-            'write packs: []',
-          ],
-        }),
-        warningOf({
+          details: {
+            file: 'constitution.yaml',
+            key: 'packs',
+          },
+          kind: WarningKind.KeyEmpty,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'constitution.yaml',
-            'check',
-            'write check: null',
-          ],
-        }),
-        warningOf({
+          details: {
+            file: 'constitution.yaml',
+            key: 'check',
+          },
+          kind: WarningKind.KeyEmpty,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'constitution.yaml',
-            'overrides',
-            'write overrides: []',
-          ],
-        }),
+          details: {
+            file: 'constitution.yaml',
+            key: 'overrides',
+          },
+          kind: WarningKind.KeyEmpty,
+        },
       ],
     },
     {
@@ -301,13 +301,14 @@ describe('resolveDeclaration', () => {
       text: yamlOf(),
       unread: [],
       warnings: [
-        warningOf({
+        {
           code: WarningCode.Config,
-          names: [
-            'apps/web/constitution.yaml',
-            'domains',
-          ],
-        }),
+          details: {
+            file: 'apps/web/constitution.yaml',
+            key: 'domains',
+          },
+          kind: WarningKind.KeyEmpty,
+        },
       ],
     },
     {
@@ -318,63 +319,70 @@ describe('resolveDeclaration', () => {
       text: yamlOf(),
       unread: [],
       warnings: [
-        warningOf({
+        {
           code: WarningCode.Config,
-          names: [
-            'apps/web/constitution.yaml',
-            'axes',
-          ],
-        }),
-        warningOf({
+          details: {
+            file: 'apps/web/constitution.yaml',
+            key: 'axes',
+          },
+          kind: WarningKind.KeyMissing,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'apps/web/constitution.yaml',
-            'platforms',
-          ],
-        }),
-        warningOf({
+          details: {
+            file: 'apps/web/constitution.yaml',
+            key: 'platforms',
+          },
+          kind: WarningKind.KeyMissing,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'apps/web/constitution.yaml',
-            'languages',
-          ],
-        }),
-        warningOf({
+          details: {
+            file: 'apps/web/constitution.yaml',
+            key: 'languages',
+          },
+          kind: WarningKind.KeyMissing,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'apps/web/constitution.yaml',
-            'implementations',
-          ],
-        }),
-        warningOf({
+          details: {
+            file: 'apps/web/constitution.yaml',
+            key: 'implementations',
+          },
+          kind: WarningKind.KeyMissing,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'apps/web/constitution.yaml',
-            'packs',
-          ],
-        }),
-        warningOf({
+          details: {
+            file: 'apps/web/constitution.yaml',
+            key: 'packs',
+          },
+          kind: WarningKind.KeyMissing,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'apps/web/constitution.yaml',
-            'overrides',
-          ],
-        }),
-        warningOf({
+          details: {
+            file: 'apps/web/constitution.yaml',
+            key: 'overrides',
+          },
+          kind: WarningKind.KeyMissing,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'apps/web/constitution.yaml',
-            'check',
-            'only the repository',
-          ],
-        }),
-        warningOf({
+          details: {
+            file: 'apps/web/constitution.yaml',
+            key: 'check',
+          },
+          kind: WarningKind.KeyUnknown,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'apps/web/constitution.yaml',
-            'colour',
-          ],
-        }),
+          details: {
+            file: 'apps/web/constitution.yaml',
+            key: 'colour',
+          },
+          kind: WarningKind.KeyUnknown,
+        },
       ],
     },
     {
@@ -385,14 +393,14 @@ describe('resolveDeclaration', () => {
       }),
       unread: [],
       warnings: [
-        warningOf({
+        {
           code: WarningCode.Config,
-          names: [
-            'constitution.yaml',
-            'packages',
-            'of its own',
-          ],
-        }),
+          details: {
+            file: 'constitution.yaml',
+            key: 'packages',
+          },
+          kind: WarningKind.KeyUnknown,
+        },
       ],
     },
     {
@@ -407,29 +415,27 @@ describe('resolveDeclaration', () => {
       }),
       unread: [],
       warnings: [
-        warningOf({
+        {
           code: WarningCode.Config,
-          names: [
-            'constitution.yaml',
-            'foundation',
-            'axes',
-          ],
-        }),
-        warningOf({
+          details: {
+            file: 'constitution.yaml',
+          },
+          kind: WarningKind.FoundationListed,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'axes',
-            'colour',
-          ],
-        }),
-        warningOf({
+          details: {
+            axis: 'colour',
+          },
+          kind: WarningKind.AxisUnknown,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'apps/web/constitution.yaml',
-            'foundation',
-            'axes',
-          ],
-        }),
+          details: {
+            file: 'apps/web/constitution.yaml',
+          },
+          kind: WarningKind.FoundationListed,
+        },
       ],
     },
     {
@@ -450,28 +456,41 @@ describe('resolveDeclaration', () => {
           path: UnitPath.create('packages/ui'),
           problem: MemberProblem.Unreadable,
         },
+        {
+          path: UnitPath.create('packages/cli'),
+          problem: MemberProblem.Unparsed,
+        },
       ],
       warnings: [
-        warningOf({
+        {
           code: WarningCode.Config,
-          names: [
-            'apps/web',
-            'constitution.yaml',
-          ],
-        }),
-        warningOf({
+          details: {
+            member: UnitPath.create('apps/web'),
+          },
+          kind: WarningKind.MemberWithoutConfig,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'apps/api/constitution.yaml',
-            '3',
-          ],
-        }),
-        warningOf({
+          details: {
+            line: 3,
+            member: UnitPath.create('apps/api'),
+          },
+          kind: WarningKind.MemberConfigUnparsed,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'packages/ui/constitution.yaml',
-          ],
-        }),
+          details: {
+            member: UnitPath.create('packages/ui'),
+          },
+          kind: WarningKind.MemberConfigUnreadable,
+        },
+        {
+          code: WarningCode.Config,
+          details: {
+            member: UnitPath.create('packages/cli'),
+          },
+          kind: WarningKind.MemberConfigUnparsed,
+        },
       ],
     },
   ])(
@@ -505,13 +524,13 @@ describe('resolveDeclaration', () => {
         domains: 'domains: [rules/ui]',
       },
       warnings: [
-        warningOf({
+        {
           code: WarningCode.Unknown,
-          names: [
-            'rules/ui',
-            'packs',
-          ],
-        }),
+          details: {
+            name: 'rules/ui',
+          },
+          kind: WarningKind.NameIsPath,
+        },
       ],
     },
     {
@@ -523,12 +542,13 @@ describe('resolveDeclaration', () => {
         domains: 'domains: [forms]',
       },
       warnings: [
-        warningOf({
+        {
           code: WarningCode.Unknown,
-          names: [
-            'forms',
-          ],
-        }),
+          details: {
+            name: 'forms',
+          },
+          kind: WarningKind.NameUnknown,
+        },
       ],
     },
     {
@@ -540,14 +560,13 @@ describe('resolveDeclaration', () => {
         platforms: 'platforms: [core]',
       },
       warnings: [
-        warningOf({
+        {
           code: WarningCode.WrongKey,
-          names: [
-            'core',
-            'always active',
-            'platforms',
-          ],
-        }),
+          details: {
+            key: 'platforms',
+          },
+          kind: WarningKind.CoreListed,
+        },
       ],
     },
     {
@@ -559,22 +578,28 @@ describe('resolveDeclaration', () => {
         domains: 'domains: [store, base]',
       },
       warnings: [
-        warningOf({
+        {
           code: WarningCode.Abstract,
-          names: [
-            'store',
-            'mobx',
-            'redux',
-            'zustand',
-          ],
-        }),
-        warningOf({
+          details: {
+            heirs: [
+              BlockId.create('mobx'),
+              BlockId.create('redux'),
+              BlockId.create('zustand'),
+            ],
+            name: 'store',
+          },
+          kind: WarningKind.AbstractListed,
+        },
+        {
           code: WarningCode.Abstract,
-          names: [
-            'base',
-            'store',
-          ],
-        }),
+          details: {
+            heirs: [
+              BlockId.create('store'),
+            ],
+            name: 'base',
+          },
+          kind: WarningKind.AbstractListed,
+        },
       ],
     },
     {
@@ -595,38 +620,46 @@ describe('resolveDeclaration', () => {
         platforms: 'platforms: [redux]',
       },
       warnings: [
-        warningOf({
+        {
           code: WarningCode.WrongKey,
-          names: [
-            'web',
-            'domains',
-            'platforms',
-          ],
-        }),
-        warningOf({
+          details: {
+            key: 'domains',
+            layer: Layer.Platform,
+            name: 'web',
+            toKey: 'platforms',
+          },
+          kind: WarningKind.BlockUnderWrongKey,
+        },
+        {
           code: WarningCode.WrongKey,
-          names: [
-            'redux',
-            'platforms',
-            'implementations',
-          ],
-        }),
-        warningOf({
+          details: {
+            key: 'platforms',
+            layer: Layer.Implementation,
+            name: 'redux',
+            toKey: 'implementations',
+          },
+          kind: WarningKind.BlockUnderWrongKey,
+        },
+        {
           code: WarningCode.WrongKey,
-          names: [
-            'ui',
-            'languages',
-            'domains',
-          ],
-        }),
-        warningOf({
+          details: {
+            key: 'languages',
+            layer: Layer.Domain,
+            name: 'ui',
+            toKey: 'domains',
+          },
+          kind: WarningKind.BlockUnderWrongKey,
+        },
+        {
           code: WarningCode.WrongKey,
-          names: [
-            'typescript',
-            'implementations',
-            'languages',
-          ],
-        }),
+          details: {
+            key: 'implementations',
+            layer: Layer.Language,
+            name: 'typescript',
+            toKey: 'languages',
+          },
+          kind: WarningKind.BlockUnderWrongKey,
+        },
       ],
     },
     {
@@ -686,14 +719,17 @@ describe('resolveDeclaration', () => {
         }),
       ],
       warnings: [
-        warningOf({
+        {
           code: WarningCode.Missing,
-          names: [
-            'vite',
-            'ui',
-            'domains',
-          ],
-        }),
+          details: {
+            block: BlockId.create('vite'),
+            heirs: [],
+            key: 'domains',
+            required: BlockId.create('ui'),
+            unit: UnitPath.create(''),
+          },
+          kind: WarningKind.BlockNeeded,
+        },
       ],
     },
     {
@@ -731,48 +767,55 @@ describe('resolveDeclaration', () => {
         }),
       ],
       warnings: [
-        warningOf({
+        {
           code: WarningCode.Missing,
-          names: [
-            'vite',
-            'ui',
-            'domains',
-          ],
-        }),
-        warningOf({
+          details: {
+            block: BlockId.create('vite'),
+            key: 'domains',
+            required: BlockId.create('ui'),
+            unit: UnitPath.create(''),
+          },
+          kind: WarningKind.BlockNeeded,
+        },
+        {
           code: WarningCode.Missing,
-          names: [
-            'nest',
-            'apps/web',
-            'store',
-            'domains',
-          ],
-        }),
-        warningOf({
+          details: {
+            block: BlockId.create('nest'),
+            heirs: [],
+            key: 'domains',
+            required: BlockId.create('store'),
+            unit: UnitPath.create('apps/web'),
+          },
+          kind: WarningKind.BlockNeeded,
+        },
+        {
           code: WarningCode.Missing,
-          names: [
-            'nest',
-            'apps/web',
-            'web',
-            'platforms',
-          ],
-        }),
-        warningOf({
+          details: {
+            block: BlockId.create('nest'),
+            key: 'platforms',
+            required: BlockId.create('web'),
+            unit: UnitPath.create('apps/web'),
+          },
+          kind: WarningKind.BlockNeeded,
+        },
+        {
           code: WarningCode.Missing,
-          names: [
-            'vite',
-            'apps/web',
-            'ui',
-            'domains',
-          ],
-        }),
-        warningOf({
+          details: {
+            block: BlockId.create('vite'),
+            key: 'domains',
+            required: BlockId.create('ui'),
+            unit: UnitPath.create('apps/web'),
+          },
+          kind: WarningKind.BlockNeeded,
+        },
+        {
           code: WarningCode.Constitution,
-          names: [
-            'nest',
-            'typescript',
-          ],
-        }),
+          details: {
+            block: BlockId.create('nest'),
+            required: 'typescript',
+          },
+          kind: WarningKind.RequiredNoBlock,
+        },
       ],
     },
   ])('should warn of a need not listed when $condition', ({ keys, members, sources, warnings }) => {
@@ -807,29 +850,33 @@ describe('resolveDeclaration', () => {
         },
       },
       warnings: [
-        warningOf({
+        {
           code: WarningCode.NotMet,
-          names: [
-            'react',
-            'inputs-are-labelled',
-          ],
-        }),
-        warningOf({
+          details: {
+            block: BlockId.create('react'),
+            requirement: RuleSlug.create('inputs-are-labelled'),
+            unit: UnitPath.create(''),
+          },
+          kind: WarningKind.RequirementNotMet,
+        },
+        {
           code: WarningCode.NotMet,
-          names: [
-            'react',
-            'apps/web',
-            'inputs-are-labelled',
-          ],
-        }),
-        warningOf({
+          details: {
+            block: BlockId.create('react'),
+            requirement: RuleSlug.create('inputs-are-labelled'),
+            unit: UnitPath.create('apps/web'),
+          },
+          kind: WarningKind.RequirementNotMet,
+        },
+        {
           code: WarningCode.NotMet,
-          names: [
-            'react',
-            'apps/web',
-            'screens-are-reviewed',
-          ],
-        }),
+          details: {
+            block: BlockId.create('react'),
+            requirement: RuleSlug.create('screens-are-reviewed'),
+            unit: UnitPath.create('apps/web'),
+          },
+          kind: WarningKind.RequirementNotMet,
+        },
       ],
     },
     {
@@ -846,22 +893,24 @@ describe('resolveDeclaration', () => {
         },
       },
       warnings: [
-        warningOf({
+        {
           code: WarningCode.NotMet,
-          names: [
-            'vite',
-            'apps/api',
-            'inputs-are-labelled',
-          ],
-        }),
-        warningOf({
+          details: {
+            block: BlockId.create('vite'),
+            requirement: RuleSlug.create('inputs-are-labelled'),
+            unit: UnitPath.create('apps/api'),
+          },
+          kind: WarningKind.RequirementNotMet,
+        },
+        {
           code: WarningCode.NotMet,
-          names: [
-            'vite',
-            'apps/web',
-            'inputs-are-labelled',
-          ],
-        }),
+          details: {
+            block: BlockId.create('vite'),
+            requirement: RuleSlug.create('inputs-are-labelled'),
+            unit: UnitPath.create('apps/web'),
+          },
+          kind: WarningKind.RequirementNotMet,
+        },
       ],
     },
     {
@@ -879,14 +928,15 @@ describe('resolveDeclaration', () => {
         },
       },
       warnings: [
-        warningOf({
+        {
           code: WarningCode.NotMet,
-          names: [
-            'vite',
-            'apps/web',
-            'inputs-are-labelled',
-          ],
-        }),
+          details: {
+            block: BlockId.create('vite'),
+            requirement: RuleSlug.create('inputs-are-labelled'),
+            unit: UnitPath.create('apps/web'),
+          },
+          kind: WarningKind.RequirementNotMet,
+        },
       ],
     },
     {
@@ -931,66 +981,87 @@ describe('resolveDeclaration', () => {
       overrides:
         'overrides:\n  - rule: inputs-are-labelled\n  - level: SHOULD\n  - reason: A reason.\n    until: 2026-07-01',
       warnings: [
-        warningOf({
+        {
           code: WarningCode.Config,
-          names: [
-            '9',
-            'level, reason',
-          ],
-        }),
-        warningOf({
+          details: {
+            line: 9,
+            missing: [
+              'level',
+              'reason',
+            ],
+          },
+          kind: WarningKind.OverrideIncomplete,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            '10',
-            'rule, reason',
-          ],
-        }),
-        warningOf({
+          details: {
+            line: 10,
+            missing: [
+              'rule',
+              'reason',
+            ],
+          },
+          kind: WarningKind.OverrideIncomplete,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            '11',
-            'rule, level',
-          ],
-        }),
+          details: {
+            line: 11,
+            missing: [
+              'rule',
+              'level',
+            ],
+          },
+          kind: WarningKind.OverrideIncomplete,
+        },
       ],
     },
     {
       condition: 'an override leaves out only its rule',
       overrides: 'overrides:\n  - level: SHOULD\n    reason: A reason.',
       warnings: [
-        warningOf({
+        {
           code: WarningCode.Config,
-          names: [
-            '9',
-            'rule',
-          ],
-        }),
+          details: {
+            line: 9,
+            missing: [
+              'rule',
+            ],
+          },
+          kind: WarningKind.OverrideIncomplete,
+        },
       ],
     },
     {
       condition: 'an override leaves out only its level',
       overrides: 'overrides:\n  - rule: inputs-are-labelled\n    reason: A reason.',
       warnings: [
-        warningOf({
+        {
           code: WarningCode.Config,
-          names: [
-            '9',
-            'level',
-          ],
-        }),
+          details: {
+            line: 9,
+            missing: [
+              'level',
+            ],
+          },
+          kind: WarningKind.OverrideIncomplete,
+        },
       ],
     },
     {
       condition: 'an override leaves out only its reason',
       overrides: 'overrides:\n  - rule: inputs-are-labelled\n    level: SHOULD',
       warnings: [
-        warningOf({
+        {
           code: WarningCode.Config,
-          names: [
-            '9',
-            'reason',
-          ],
-        }),
+          details: {
+            line: 9,
+            missing: [
+              'reason',
+            ],
+          },
+          kind: WarningKind.OverrideIncomplete,
+        },
       ],
     },
     {
@@ -998,13 +1069,14 @@ describe('resolveDeclaration', () => {
       overrides:
         'overrides:\n  - rule: inputs-are-labelled\n    level: MUST\n    reason: A reason.',
       warnings: [
-        warningOf({
+        {
           code: WarningCode.Config,
-          names: [
-            'inputs-are-labelled',
-            'MUST',
-          ],
-        }),
+          details: {
+            level: 'MUST',
+            rule: 'inputs-are-labelled',
+          },
+          kind: WarningKind.OverrideLevelNotLowered,
+        },
       ],
     },
     {
@@ -1012,48 +1084,54 @@ describe('resolveDeclaration', () => {
       overrides:
         'overrides:\n  - rule: inputs-are-labelled\n    level: SHOULD\n    reason: A reason.\n    until: soon\n  - rule: focus-is-shown\n    level: SHOULD\n    reason: A reason.\n    until: x2026-07-01\n  - rule: themes-are-tokens\n    level: SHOULD\n    reason: A reason.\n    until: 2026-07-01x\n  - rule: hooks-at-top-level\n    level: SHOULD\n    reason: A reason.\n    until: 2026-02-30\n  - rule: screens-are-reviewed\n    level: SHOULD\n    reason: A reason.\n    until: 2026-07-01T10:00\n  - rule: state-is-not-in-screens\n    level: SHOULD\n    reason: A reason.\n    until: +002026-07-01',
       warnings: [
-        warningOf({
+        {
           code: WarningCode.Config,
-          names: [
-            'inputs-are-labelled',
-            'soon',
-          ],
-        }),
-        warningOf({
+          details: {
+            rule: 'inputs-are-labelled',
+            until: 'soon',
+          },
+          kind: WarningKind.OverrideUntilMalformed,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'focus-is-shown',
-            'x2026-07-01',
-          ],
-        }),
-        warningOf({
+          details: {
+            rule: 'focus-is-shown',
+            until: 'x2026-07-01',
+          },
+          kind: WarningKind.OverrideUntilMalformed,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'themes-are-tokens',
-            '2026-07-01x',
-          ],
-        }),
-        warningOf({
+          details: {
+            rule: 'themes-are-tokens',
+            until: '2026-07-01x',
+          },
+          kind: WarningKind.OverrideUntilMalformed,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'hooks-at-top-level',
-            '2026-02-30',
-          ],
-        }),
-        warningOf({
+          details: {
+            rule: 'hooks-at-top-level',
+            until: '2026-02-30',
+          },
+          kind: WarningKind.OverrideUntilMalformed,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'screens-are-reviewed',
-            '2026-07-01T10:00',
-          ],
-        }),
-        warningOf({
+          details: {
+            rule: 'screens-are-reviewed',
+            until: '2026-07-01T10:00',
+          },
+          kind: WarningKind.OverrideUntilMalformed,
+        },
+        {
           code: WarningCode.Config,
-          names: [
-            'state-is-not-in-screens',
-            '+002026-07-01',
-          ],
-        }),
+          details: {
+            rule: 'state-is-not-in-screens',
+            until: '+002026-07-01',
+          },
+          kind: WarningKind.OverrideUntilMalformed,
+        },
       ],
     },
     {
@@ -1061,19 +1139,21 @@ describe('resolveDeclaration', () => {
       overrides:
         'overrides:\n  - rule: no-such-rule\n    level: MAY\n    reason: A reason.\n  - rule: inputs-are-labelled\n    level: SHOULD\n    reason: A reason.\n    until: 2026-06-14\n  - rule: focus-is-shown\n    level: MAY\n    reason: A reason.\n    until: 2026-06-15',
       warnings: [
-        warningOf({
+        {
           code: WarningCode.Override,
-          names: [
-            'no-such-rule',
-          ],
-        }),
-        warningOf({
+          details: {
+            rule: 'no-such-rule',
+          },
+          kind: WarningKind.OverrideNamesNoRule,
+        },
+        {
           code: WarningCode.Override,
-          names: [
-            'inputs-are-labelled',
-            '2026-06-14',
-          ],
-        }),
+          details: {
+            rule: 'inputs-are-labelled',
+            until: '2026-06-14',
+          },
+          kind: WarningKind.OverrideExpired,
+        },
       ],
     },
   ])('should warn of an override that cannot hold when $condition', ({ overrides, warnings }) => {
@@ -1418,13 +1498,14 @@ describe('resolveDeclaration', () => {
         }),
       ],
       warnings: [
-        warningOf({
+        {
           code: WarningCode.Constitution,
-          names: [
-            'cache',
-            'gone',
-          ],
-        }),
+          details: {
+            base: 'gone',
+            block: BlockId.create('cache'),
+          },
+          kind: WarningKind.BaseNoBlock,
+        },
       ],
     });
   });
@@ -2186,15 +2267,15 @@ describe('resolveDeclaration', () => {
         ],
       ],
       warnings: [
-        warningOf({
+        {
           code: WarningCode.Pack,
-          names: [
-            'lint',
-            './rules',
-            'apps/web/constitution.yaml',
-            'packs',
-          ],
-        }),
+          details: {
+            file: 'apps/web/constitution.yaml',
+            name: 'lint',
+            pack: PackPath.create('./rules'),
+          },
+          kind: WarningKind.PackUnlisted,
+        },
       ],
     });
   });

@@ -18,5 +18,5 @@ language js
     JsDoWhileStatement(),
     JsConditionalExpression()
   } as $logic,
-  register_diagnostic(span=$logic, message="Keep logic out of a case: variants are rows of a table, expected values are literals", severity="error")
+  register_diagnostic(span=$logic, message="[case-holds-no-logic] Keep logic out of a case: variants are rows of a table, expected values are literals", severity="error")
 }

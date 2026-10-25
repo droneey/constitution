@@ -70,4 +70,4 @@ const specsByFile = (
   );
 };
 
-export { loadedBy, specsByFile };
+export { specsByFile };

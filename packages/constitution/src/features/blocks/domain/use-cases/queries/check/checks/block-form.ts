@@ -1,6 +1,8 @@
+import { GENERAL_SECTION, GOVERNS_LINE, REQUIREMENTS_SECTION } from '#/kernel/constants';
 import type { Rule } from '#/kernel/entities';
-import type { Finding, Problem } from '#/kernel/types';
+import type { FindingOf, ProblemOf } from '#/kernel/types';
 import { withoutCodeFences } from '#/kernel/utils';
+import type { RuleSlug } from '#/kernel/value-objects';
 
 import type { Block, BlockFile } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
@@ -15,25 +17,37 @@ enum BlockFormCode {
   GeneralNotFirst = 'general-section-not-first',
 }
 
+interface BlockFormDetails {
+  readonly [BlockFormCode.PassportHoldsRules]: object;
+  readonly [BlockFormCode.WithoutGoverns]: object;
+  readonly [BlockFormCode.WithoutRules]: object;
+  readonly [BlockFormCode.RuleOutsideSection]: {
+    readonly slug: RuleSlug;
+  };
+  readonly [BlockFormCode.SectionRepeatsTitle]: {
+    readonly section: string;
+  };
+  readonly [BlockFormCode.RequirementsNotLast]: object;
+  readonly [BlockFormCode.GeneralNotFirst]: object;
+}
+
+type BlockFormFinding = FindingOf<BlockFormDetails>;
+
+type BlockFormProblem = ProblemOf<BlockFormDetails>;
+
 const RULE_HEADING = '### ';
 const TITLE = /^# (.+)/;
-const GOVERNS = '> Governs ';
 const SECTION = /^## (.+)/;
-/** first in a file that holds it */
-const GENERAL = 'General';
-/** last in a file that holds it */
-const REQUIREMENTS = 'Requirements for implementation';
 
 const linesOf = (file: BlockFile): readonly string[] => withoutCodeFences(file.body).split('\n');
 
 // The passport says what the block is and how it is set up; its rules live in its axes' chapters.
-const passportFindings = (block: Block): readonly Finding[] =>
+const passportFindings = (block: Block): readonly BlockFormFinding[] =>
   linesOf(block.passport).some((line) => line.startsWith(RULE_HEADING))
     ? [
         {
           code: BlockFormCode.PassportHoldsRules,
-          message:
-            "holds rules; a block's passport holds its front matter, its title, what the block is, its setup and an implementation's Requirements, and its rules live in the chapters of its axes",
+          details: {},
           path: block.passport.path,
         },
       ]
@@ -57,65 +71,76 @@ const openingOf = (
 const openingProblems = (opening: {
   governs: string | undefined;
   title: string | undefined;
-}): readonly Problem[] =>
-  opening.title !== undefined && opening.governs?.startsWith(GOVERNS) === true
+}): readonly BlockFormProblem[] =>
+  opening.title !== undefined && opening.governs?.startsWith(GOVERNS_LINE) === true
     ? []
     : [
         {
           code: BlockFormCode.WithoutGoverns,
-          message: `opens without its "# <Title>" and a "${GOVERNS}…" line; a chapter or a seam opens with both`,
+          details: {},
         },
       ];
 
 const sectionProblems = (input: {
   sections: readonly string[];
   title: string | undefined;
-}): readonly Problem[] => {
+}): readonly BlockFormProblem[] => {
   const { sections, title } = input;
-  const requirements = sections.indexOf(REQUIREMENTS);
+  const requirements = sections.indexOf(REQUIREMENTS_SECTION);
 
   return [
     ...sections
       .filter((section) => section.toLowerCase() === title?.toLowerCase())
-      .map((section) => ({
-        code: BlockFormCode.SectionRepeatsTitle,
-        message: `has the section "${section}", named like the file's title; a section names a part of the file's subject`,
-      })),
+      .map(
+        (section): BlockFormProblem => ({
+          code: BlockFormCode.SectionRepeatsTitle,
+          details: {
+            section,
+          },
+        }),
+      ),
     ...(requirements === -1 || requirements === sections.length - 1
       ? []
       : [
           {
             code: BlockFormCode.RequirementsNotLast,
-            message: `has sections after "${REQUIREMENTS}", which is the last section`,
-          },
+            details: {},
+          } satisfies BlockFormProblem,
         ]),
-    ...(sections.indexOf(GENERAL) > 0
+    ...(sections.indexOf(GENERAL_SECTION) > 0
       ? [
           {
             code: BlockFormCode.GeneralNotFirst,
-            message: `has sections before "${GENERAL}", which is the first section`,
-          },
+            details: {},
+          } satisfies BlockFormProblem,
         ]
       : []),
   ];
 };
 
-const ruleProblems = (rules: readonly Rule[]): readonly Problem[] =>
+const ruleProblems = (rules: readonly Rule[]): readonly BlockFormProblem[] =>
   rules.length === 0
     ? [
         {
           code: BlockFormCode.WithoutRules,
-          message: 'holds no rule; a chapter or a seam holds at least one',
+          details: {},
         },
       ]
     : rules
         .filter((rule) => rule.section === undefined)
-        .map((rule) => ({
-          code: BlockFormCode.RuleOutsideSection,
-          message: `has the rule "${rule.slug}" under no section; every rule sits under a "## " section`,
-        }));
+        .map(
+          (rule): BlockFormProblem => ({
+            code: BlockFormCode.RuleOutsideSection,
+            details: {
+              slug: rule.slug,
+            },
+          }),
+        );
 
-const fileFindings = (input: { file: BlockFile; rules: readonly Rule[] }): readonly Finding[] => {
+const fileFindings = (input: {
+  file: BlockFile;
+  rules: readonly Rule[];
+}): readonly BlockFormFinding[] => {
   const { file } = input;
   const lines = linesOf(file);
   const opening = openingOf(lines);
@@ -133,7 +158,9 @@ const fileFindings = (input: { file: BlockFile; rules: readonly Rule[] }): reado
   }));
 };
 
-const blockFormCheck: Check = ({ constitution }: CheckInput): readonly Finding[] =>
+const blockFormCheck: Check<BlockFormFinding> = ({
+  constitution,
+}: CheckInput): readonly BlockFormFinding[] =>
   constitution.blocks.flatMap((block) => [
     ...passportFindings(block),
     ...block.parts.flatMap((file) =>
@@ -144,4 +171,5 @@ const blockFormCheck: Check = ({ constitution }: CheckInput): readonly Finding[]
     ),
   ]);
 
-export { blockFormCheck };
+export type { BlockFormDetails };
+export { BlockFormCode, blockFormCheck };

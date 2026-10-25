@@ -1,3 +1,4 @@
+import { CONFIG_FILE } from '#/kernel/constants';
 import type { OpenedProject } from '#/kernel/entities';
 import { ConfigReadStatus } from '#/kernel/entities';
 import { ProjectError, ProjectFailure } from '#/kernel/errors';
@@ -5,7 +6,7 @@ import { ProjectError, ProjectFailure } from '#/kernel/errors';
 import { findProject } from '../find-project';
 import type { ProjectPorts } from '../read-declaration';
 import { readDeclaration } from '../read-declaration';
-import { CONFIG, joinPath } from '../shared/project-paths';
+import { joinPath } from '../shared/project-paths';
 
 /**
  * The project around the start folder with what it declares resolved, for the commands a person
@@ -51,7 +52,7 @@ const openProject = (
         line: declaration.line,
         path: joinPath({
           folder: place.project,
-          name: CONFIG,
+          name: CONFIG_FILE,
         }),
       },
     });

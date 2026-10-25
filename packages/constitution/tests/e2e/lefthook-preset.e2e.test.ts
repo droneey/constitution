@@ -35,52 +35,52 @@ describe('the commit message hook', () => {
   it.each([
     {
       condition: 'its type is not one of the four',
-      message: 'docs: Explain the presets',
+      commit: 'docs: Explain the presets',
       output: "Invalid type 'docs'. Allowed: feat, fix, refactor, chore",
     },
     {
       condition: 'it has a scope',
-      message: 'feat(biome): Add a preset',
+      commit: 'feat(biome): Add a preset',
       output: 'Commit must match format: type: Subject, or type!: Subject for a breaking change',
     },
     {
       condition: 'the colon has no space after it',
-      message: 'feat:Add a preset',
+      commit: 'feat:Add a preset',
       output: 'Commit must match format: type: Subject, or type!: Subject for a breaking change',
     },
     {
       condition: 'the subject starts in lower case',
-      message: 'fix: keep the header short',
+      commit: 'fix: keep the header short',
       output: 'Subject must start with an uppercase letter (sentence-case)',
     },
     {
       condition: 'the subject is a placeholder',
-      message: 'chore: Wip',
+      commit: 'chore: Wip',
       output: "Subject 'Wip' says nothing; say what changed",
     },
     {
       condition: 'the subject is a placeholder of two words',
-      message: 'fix: Fix stuff',
+      commit: 'fix: Fix stuff',
       output: "Subject 'Fix stuff' says nothing; say what changed",
     },
     {
       condition: 'the header passes 100 characters',
-      message: `feat: ${'A'.repeat(95)}`,
+      commit: `feat: ${'A'.repeat(95)}`,
       output: 'Header must be 100 characters or less (got 101)',
     },
     {
       condition: 'it carries a body',
-      message: 'feat: Add a preset\n\nBecause the kit needs one',
+      commit: 'feat: Add a preset\n\nBecause the kit needs one',
       output: 'Body must be empty; a footer holds only trailers',
     },
     {
       condition: 'its footer holds prose beside a trailer',
-      message: 'feat: Add a preset\n\nSigned-off-by: A Person <a@example.com>\nAnd a note',
+      commit: 'feat: Add a preset\n\nSigned-off-by: A Person <a@example.com>\nAnd a note',
       output: 'Body must be empty; a footer holds only trailers',
     },
-  ])('should reject a message when $condition', ({ message, output }) => {
+  ])('should reject a message when $condition', ({ commit, output }) => {
     // Arrange
-    const text = `${message}\n`;
+    const text = `${commit}\n`;
 
     // Act
     const check = checkCommitMessage(text);

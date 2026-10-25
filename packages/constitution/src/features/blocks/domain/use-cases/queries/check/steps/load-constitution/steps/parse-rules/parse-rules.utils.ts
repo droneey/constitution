@@ -1,6 +1,5 @@
-import type { Rule, RuleSource } from '#/kernel/entities';
+import type { RequirementsParsed, Rule, RuleSource, RulesParsed } from '#/kernel/entities';
 import { RequirementAnswer, StatedRule } from '#/kernel/entities';
-import type { Finding } from '#/kernel/types';
 import { withoutCodeFences } from '#/kernel/utils';
 
 import type { BlockFile } from '../../../../../../../entities';
@@ -8,7 +7,10 @@ import { Block } from '../../../../../../../entities';
 
 interface BlockRulesParsed {
   readonly answers: readonly RequirementAnswer[];
-  readonly findings: readonly Finding[];
+  readonly findings: readonly (
+    | RequirementsParsed['findings'][number]
+    | RulesParsed['findings'][number]
+  )[];
   readonly rules: readonly Rule[];
 }
 

@@ -1,6 +1,12 @@
 import type { ProjectSource } from '#/kernel/contracts';
 import type { ProjectWarning } from '#/kernel/entities';
-import { ConfigReadStatus, ReleaseStatus, Resolution, WarningCode } from '#/kernel/entities';
+import {
+  ConfigReadStatus,
+  ReleaseStatus,
+  Resolution,
+  WarningCode,
+  WarningKind,
+} from '#/kernel/entities';
 
 import type { WiringCheck, WiringReport } from '../../../contracts';
 import { WiringCheckStatus } from '../../../contracts';
@@ -20,7 +26,8 @@ interface DigestSessionPorts {
 
 const uncheckedWiring: ProjectWarning = {
   code: WarningCode.Wiring,
-  message: 'cannot check the wiring',
+  details: {},
+  kind: WarningKind.WiringUnchecked,
 };
 
 // A wiring that cannot be checked costs its warnings, never the digest.

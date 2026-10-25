@@ -1,8 +1,11 @@
-import { describe, expect, it } from 'bun:test';
+import { beforeAll, describe, expect, it } from 'bun:test';
 
-import { presetParts, typeChecks } from './tsc-preset.fixtures';
+import { createTypeCheckBatch, presetParts } from './tsc-preset.fixtures';
+
+const { typeCheckCases, typeCheckRegistered, typeChecks } = createTypeCheckBatch();
 
 const EMPTY = 'export {};\n';
+const CHECK_TIMEOUT = 60_000;
 const TYPE_IMPORTED_AS_VALUE =
   "import { Order } from './order';\nexport const orders: Order[] = [];\n";
 const IMPORT_WITH_TS_EXTENSION =
@@ -33,19 +36,28 @@ const PARAMETER_DECORATOR =
 const EXPORT_UNTYPED = 'export const sum = (a: number, b: number) => a + b;\n';
 const EXPORT_TYPED = 'export const sum = (a: number, b: number): number => a + b;\n';
 
+// One build checks the projects of every table.
+beforeAll(typeCheckRegistered, CHECK_TIMEOUT);
+
 describe('the tsconfig preset', () => {
-  it.each([
-    ...presetParts(),
-  ])('should resolve and check an empty project when a project extends %s', (part) => {
+  it.each(
+    typeCheckCases(
+      presetParts().map((part) => ({
+        main: EMPTY,
+        part,
+        parts: [
+          ...new Set([
+            'self',
+            part,
+          ]),
+        ],
+      })),
+    ),
+  )('should resolve and check an empty project when a project extends $part', ({ main, parts }) => {
     // Arrange
     const project = {
-      main: EMPTY,
-      parts: [
-        ...new Set([
-          'self',
-          part,
-        ]),
-      ],
+      main,
+      parts,
     };
 
     // Act
@@ -55,173 +67,175 @@ describe('the tsconfig preset', () => {
     expect(isClean).toBe(true);
   });
 
-  it.each([
-    {
-      condition: 'a type is imported without `import type`',
-      main: TYPE_IMPORTED_AS_VALUE,
-      parts: [
-        'self',
-        'core',
-        'bun',
-      ],
-    },
-    {
-      condition: 'code follows a return',
-      main: UNREACHABLE_CODE,
-      parts: [
-        'self',
-        'core',
-        'bun',
-      ],
-    },
-    {
-      condition: 'a class field has no initializer',
-      main: FIELD_WITHOUT_INITIALIZER,
-      parts: [
-        'self',
-        'core',
-        'bun',
-      ],
-    },
-    {
-      condition: 'a type is imported without `import type`, though Nest reads decorator metadata',
-      main: TYPE_IMPORTED_AS_VALUE,
-      parts: [
-        'self',
-        'core',
-        'bun',
-        'nestjs',
-      ],
-    },
-    {
-      condition: 'a class field has no initializer, though Nest fills request classes',
-      main: FIELD_WITHOUT_INITIALIZER,
-      parts: [
-        'self',
-        'core',
-        'bun',
-        'nestjs',
-      ],
-    },
-    {
-      condition: 'an import names its .ts extension',
-      main: IMPORT_WITH_TS_EXTENSION,
-      parts: [
-        'self',
-        'core',
-        'bun',
-        'nestjs',
-      ],
-    },
-    {
-      condition: 'code outside a browser reads the document',
-      main: READS_THE_DOCUMENT,
-      parts: [
-        'self',
-        'core',
-        'bun',
-      ],
-    },
-    {
-      condition: 'an optional field is set to undefined',
-      main: OPTIONAL_SET_TO_UNDEFINED,
-      parts: [
-        'self',
-        'core',
-        'bun',
-      ],
-    },
-    {
-      condition: 'an indexed element is read as present',
-      main: INDEX_READ_AS_PRESENT,
-      parts: [
-        'self',
-        'core',
-        'bun',
-      ],
-    },
-    {
-      condition: 'a local is never read',
-      main: UNUSED_LOCAL,
-      parts: [
-        'self',
-        'core',
-        'bun',
-      ],
-    },
-    {
-      condition: 'a parameter is never read',
-      main: UNUSED_PARAMETER,
-      parts: [
-        'self',
-        'core',
-        'bun',
-      ],
-    },
-    {
-      condition: 'a method overrides without override',
-      main: OVERRIDE_UNMARKED,
-      parts: [
-        'self',
-        'core',
-        'bun',
-      ],
-    },
-    {
-      condition: 'a path returns no value',
-      main: PATH_WITHOUT_RETURN,
-      parts: [
-        'self',
-        'core',
-        'bun',
-      ],
-    },
-    {
-      condition: 'a case falls through',
-      main: CASE_FALLS_THROUGH,
-      parts: [
-        'self',
-        'core',
-        'bun',
-      ],
-    },
-    {
-      condition: 'a parameter is implicitly any',
-      main: IMPLICIT_ANY,
-      parts: [
-        'self',
-        'core',
-        'bun',
-      ],
-    },
-    {
-      condition: 'a label is never used',
-      main: UNUSED_LABEL,
-      parts: [
-        'self',
-        'core',
-        'bun',
-      ],
-    },
-    {
-      condition: 'a constructor parameter takes a decorator',
-      main: PARAMETER_DECORATOR,
-      parts: [
-        'self',
-        'core',
-        'bun',
-      ],
-    },
-    {
-      condition: "a distributed package's export leaves its type to inference",
-      main: EXPORT_UNTYPED,
-      parts: [
-        'self',
-        'core',
-        'distribution',
-      ],
-    },
-  ])('should fail the type check of $parts when $condition', ({ main, parts }) => {
+  it.each(
+    typeCheckCases([
+      {
+        condition: 'a type is imported without `import type`',
+        main: TYPE_IMPORTED_AS_VALUE,
+        parts: [
+          'self',
+          'core',
+          'bun',
+        ],
+      },
+      {
+        condition: 'code follows a return',
+        main: UNREACHABLE_CODE,
+        parts: [
+          'self',
+          'core',
+          'bun',
+        ],
+      },
+      {
+        condition: 'a class field has no initializer',
+        main: FIELD_WITHOUT_INITIALIZER,
+        parts: [
+          'self',
+          'core',
+          'bun',
+        ],
+      },
+      {
+        condition: 'a type is imported without `import type`, though Nest reads decorator metadata',
+        main: TYPE_IMPORTED_AS_VALUE,
+        parts: [
+          'self',
+          'core',
+          'bun',
+          'nestjs',
+        ],
+      },
+      {
+        condition: 'a class field has no initializer, though Nest fills request classes',
+        main: FIELD_WITHOUT_INITIALIZER,
+        parts: [
+          'self',
+          'core',
+          'bun',
+          'nestjs',
+        ],
+      },
+      {
+        condition: 'an import names its .ts extension',
+        main: IMPORT_WITH_TS_EXTENSION,
+        parts: [
+          'self',
+          'core',
+          'bun',
+          'nestjs',
+        ],
+      },
+      {
+        condition: 'code outside a browser reads the document',
+        main: READS_THE_DOCUMENT,
+        parts: [
+          'self',
+          'core',
+          'bun',
+        ],
+      },
+      {
+        condition: 'an optional field is set to undefined',
+        main: OPTIONAL_SET_TO_UNDEFINED,
+        parts: [
+          'self',
+          'core',
+          'bun',
+        ],
+      },
+      {
+        condition: 'an indexed element is read as present',
+        main: INDEX_READ_AS_PRESENT,
+        parts: [
+          'self',
+          'core',
+          'bun',
+        ],
+      },
+      {
+        condition: 'a local is never read',
+        main: UNUSED_LOCAL,
+        parts: [
+          'self',
+          'core',
+          'bun',
+        ],
+      },
+      {
+        condition: 'a parameter is never read',
+        main: UNUSED_PARAMETER,
+        parts: [
+          'self',
+          'core',
+          'bun',
+        ],
+      },
+      {
+        condition: 'a method overrides without override',
+        main: OVERRIDE_UNMARKED,
+        parts: [
+          'self',
+          'core',
+          'bun',
+        ],
+      },
+      {
+        condition: 'a path returns no value',
+        main: PATH_WITHOUT_RETURN,
+        parts: [
+          'self',
+          'core',
+          'bun',
+        ],
+      },
+      {
+        condition: 'a case falls through',
+        main: CASE_FALLS_THROUGH,
+        parts: [
+          'self',
+          'core',
+          'bun',
+        ],
+      },
+      {
+        condition: 'a parameter is implicitly any',
+        main: IMPLICIT_ANY,
+        parts: [
+          'self',
+          'core',
+          'bun',
+        ],
+      },
+      {
+        condition: 'a label is never used',
+        main: UNUSED_LABEL,
+        parts: [
+          'self',
+          'core',
+          'bun',
+        ],
+      },
+      {
+        condition: 'a constructor parameter takes a decorator',
+        main: PARAMETER_DECORATOR,
+        parts: [
+          'self',
+          'core',
+          'bun',
+        ],
+      },
+      {
+        condition: "a distributed package's export leaves its type to inference",
+        main: EXPORT_UNTYPED,
+        parts: [
+          'self',
+          'core',
+          'distribution',
+        ],
+      },
+    ]),
+  )('should fail the type check of $parts when $condition', ({ main, parts }) => {
     // Arrange
     const project = {
       main,
@@ -235,63 +249,65 @@ describe('the tsconfig preset', () => {
     expect(isClean).toBe(false);
   });
 
-  it.each([
-    {
-      condition: 'code follows a return, as only the core part refuses it',
-      main: UNREACHABLE_CODE,
-      parts: [
-        'self',
-        'bun',
-      ],
-    },
-    {
-      condition: 'an import names its .ts extension',
-      main: IMPORT_WITH_TS_EXTENSION,
-      parts: [
-        'self',
-        'core',
-        'bun',
-      ],
-    },
-    {
-      condition: 'browser code reads the document',
-      main: READS_THE_DOCUMENT,
-      parts: [
-        'self',
-        'core',
-        'browser',
-        '_react',
-      ],
-    },
-    {
-      condition: 'code on Bun reads Bun',
-      main: READS_BUN,
-      parts: [
-        'self',
-        'core',
-        'bun',
-      ],
-    },
-    {
-      condition: 'a constructor parameter takes a decorator the injector reads',
-      main: PARAMETER_DECORATOR,
-      parts: [
-        'self',
-        'core',
-        'bun',
-        'nestjs',
-      ],
-    },
-    {
-      condition: "a distributed package's export writes its type",
-      main: EXPORT_TYPED,
-      parts: [
-        'self',
-        'core',
-        'distribution',
-      ],
-    },
-  ])('should pass the type check of $parts when $condition', ({ main, parts }) => {
+  it.each(
+    typeCheckCases([
+      {
+        condition: 'code follows a return, as only the core part refuses it',
+        main: UNREACHABLE_CODE,
+        parts: [
+          'self',
+          'bun',
+        ],
+      },
+      {
+        condition: 'an import names its .ts extension',
+        main: IMPORT_WITH_TS_EXTENSION,
+        parts: [
+          'self',
+          'core',
+          'bun',
+        ],
+      },
+      {
+        condition: 'browser code reads the document',
+        main: READS_THE_DOCUMENT,
+        parts: [
+          'self',
+          'core',
+          'browser',
+          '_react',
+        ],
+      },
+      {
+        condition: 'code on Bun reads Bun',
+        main: READS_BUN,
+        parts: [
+          'self',
+          'core',
+          'bun',
+        ],
+      },
+      {
+        condition: 'a constructor parameter takes a decorator the injector reads',
+        main: PARAMETER_DECORATOR,
+        parts: [
+          'self',
+          'core',
+          'bun',
+          'nestjs',
+        ],
+      },
+      {
+        condition: "a distributed package's export writes its type",
+        main: EXPORT_TYPED,
+        parts: [
+          'self',
+          'core',
+          'distribution',
+        ],
+      },
+    ]),
+  )('should pass the type check of $parts when $condition', ({ main, parts }) => {
     // Arrange
     const project = {
       main,

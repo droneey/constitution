@@ -1,12 +1,8 @@
 import { describe, expect, it } from 'bun:test';
 
-import {
-  checkInputOf,
-  findingOf,
-  without,
-} from '../../../../../../__tests__/constitution.fixtures';
+import { checkInputOf, without } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { linksCheck } from '../links';
+import { LinksCode, linksCheck } from '../links';
 
 const PRINCIPLES = 'blocks/core/foundation/principles.md';
 const README = 'README.md';
@@ -30,13 +26,13 @@ describe('linksCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'link-to-missing-file',
-        names: [
-          'blocks/core/core.md',
-        ],
+      {
+        code: LinksCode.MissingTarget,
+        details: {
+          target: 'blocks/core/core.md',
+        },
         path: README,
-      }),
+      },
     ]);
   });
 
@@ -55,27 +51,27 @@ describe('linksCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'link-to-missing-file',
-        names: [
-          'gone.md',
-        ],
+      {
+        code: LinksCode.MissingTarget,
+        details: {
+          target: 'gone.md',
+        },
         path: PRINCIPLES,
-      }),
-      findingOf({
-        code: 'link-to-missing-file',
-        names: [
-          'local/plan.md',
-        ],
+      },
+      {
+        code: LinksCode.MissingTarget,
+        details: {
+          target: 'local/plan.md',
+        },
         path: README,
-      }),
-      findingOf({
-        code: 'link-to-missing-file',
-        names: [
-          'local/draft.md',
-        ],
+      },
+      {
+        code: LinksCode.MissingTarget,
+        details: {
+          target: 'local/draft.md',
+        },
         path: 'DECISIONS.md',
-      }),
+      },
     ]);
   });
 
@@ -92,13 +88,13 @@ describe('linksCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'link-to-missing-file',
-        names: [
-          '../workflow/workflow',
-        ],
+      {
+        code: LinksCode.MissingTarget,
+        details: {
+          target: '../workflow/workflow',
+        },
         path: PRINCIPLES,
-      }),
+      },
     ]);
   });
 
@@ -146,13 +142,13 @@ describe('linksCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'link-to-missing-file',
-        names: [
-          'gone.md',
-        ],
+      {
+        code: LinksCode.MissingTarget,
+        details: {
+          target: 'gone.md',
+        },
         path: PRINCIPLES,
-      }),
+      },
     ]);
   });
 });

@@ -1,4 +1,5 @@
-import type { Finding } from '../types';
+import { REQUIREMENTS_HEADING, REQUIREMENTS_TABLE_HEADER } from '../constants';
+import type { FindingOf } from '../types';
 import type { MarkdownSection } from '../utils';
 import { sectionsOf } from '../utils';
 import type { BlockId } from '../value-objects';
@@ -25,6 +26,19 @@ enum RequirementsTableCode {
   HeadingMisshapen = 'requirements-heading-misshapen',
 }
 
+interface RequirementsTableDetails {
+  readonly [RequirementsTableCode.HeaderMisshapen]: {
+    /** the header row as written */
+    readonly row: string;
+  };
+  readonly [RequirementsTableCode.RowMisshapen]: {
+    readonly row: string;
+  };
+  readonly [RequirementsTableCode.HeadingMisshapen]: {
+    readonly heading: string;
+  };
+}
+
 interface AnswerSource {
   readonly block: BlockId;
   readonly file: string;
@@ -34,16 +48,23 @@ interface AnswerSource {
 
 interface RequirementsParsed {
   readonly answers: readonly RequirementAnswer[];
-  readonly findings: readonly Finding[];
+  readonly findings: readonly FindingOf<RequirementsTableDetails>[];
 }
 
-const SECTION = '## Requirements';
 const NEAR_SECTION = /^#{1,6}\s*requirements$/i;
 const ROW = /^\|\s*`?([a-z0-9]+(?:-[a-z0-9]+)*)`?\s*\|\s*([^|]*?)\s*\|\s*([^|]*?)\s*\|$/;
 const SEPARATOR = /^\|?[\s:|-]+\|?$/;
-const HEADER = /^\|\s*Requirement\s*\|\s*How\s*\|\s*Met\s*\|$/;
 const NEAR_HEADER = /^\|\s*Requirement\s*\|/;
 const PIPE = '|';
+
+// A row without the padding of its cells, so the header is known however its columns are aligned.
+const unpadded = (row: string): string =>
+  row
+    .split(PIPE)
+    .map((cell) => cell.trim())
+    .join(PIPE);
+
+const headerRow = unpadded(REQUIREMENTS_TABLE_HEADER);
 
 const create = (input: RequirementAnswer): RequirementAnswer => ({
   block: input.block,
@@ -61,7 +82,7 @@ const create = (input: RequirementAnswer): RequirementAnswer => ({
 const rowsOf = (input: { section: MarkdownSection; source: AnswerSource }): RequirementsParsed => {
   const rows = input.section.lines
     .map((line) => line.trim())
-    .filter((line) => line.includes(PIPE) && !SEPARATOR.test(line) && !HEADER.test(line));
+    .filter((line) => line.includes(PIPE) && !SEPARATOR.test(line) && unpadded(line) !== headerRow);
 
   return {
     answers: rows.flatMap((row) => {
@@ -92,19 +113,15 @@ const rowsOf = (input: { section: MarkdownSection; source: AnswerSource }): Requ
     }),
     findings: rows
       .filter((row) => !ROW.test(row))
-      .map((row) =>
-        NEAR_HEADER.test(row)
-          ? {
-              code: RequirementsTableCode.HeaderMisshapen,
-              message: `has the header "${row}" in its Requirements; it is "| Requirement | How | Met |"`,
-              path: input.source.file,
-            }
-          : {
-              code: RequirementsTableCode.RowMisshapen,
-              message: `has the row "${row}" in its Requirements, which is not "| \`<requirement>\` | <how> | <met> |"`,
-              path: input.source.file,
-            },
-      ),
+      .map((row) => ({
+        code: NEAR_HEADER.test(row)
+          ? RequirementsTableCode.HeaderMisshapen
+          : RequirementsTableCode.RowMisshapen,
+        details: {
+          row,
+        },
+        path: input.source.file,
+      })),
   };
 };
 
@@ -114,7 +131,7 @@ const readSection = (input: {
 }): RequirementsParsed => {
   const heading = input.section.heading.trim();
 
-  if (heading === SECTION) {
+  if (heading === REQUIREMENTS_HEADING) {
     return rowsOf(input);
   }
 
@@ -124,7 +141,9 @@ const readSection = (input: {
       ? [
           {
             code: RequirementsTableCode.HeadingMisshapen,
-            message: `has the heading "${heading}", which names the Requirements section; it is "${SECTION}"`,
+            details: {
+              heading,
+            },
             path: input.source.file,
           },
         ]
@@ -155,5 +174,5 @@ const RequirementAnswer = {
   parse,
 } as const;
 
-export type { AnswerSource, RequirementsParsed };
+export type { AnswerSource, RequirementsParsed, RequirementsTableDetails };
 export { Met, RequirementAnswer, RequirementsTableCode };

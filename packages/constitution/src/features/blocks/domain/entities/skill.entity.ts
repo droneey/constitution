@@ -1,5 +1,11 @@
 import type { ReadStatus } from './document-read.entity';
 
+/** The fields the front matter of a skill or an agent declares. */
+enum SkillField {
+  Name = 'name',
+  Description = 'description',
+}
+
 type SkillFrontMatterRead =
   | {
       readonly description: string | undefined;
@@ -25,3 +31,4 @@ interface Agent {
 }
 
 export type { Agent, Skill, SkillFrontMatterRead };
+export { SkillField };

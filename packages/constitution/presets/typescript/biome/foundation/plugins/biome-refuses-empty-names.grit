@@ -13,5 +13,5 @@ JsIdentifierBinding() as $name where {
     `stuff`,
     `thing`
   },
-  register_diagnostic(span=$name, message="Name what it holds: an empty word says nothing", severity="error")
+  register_diagnostic(span=$name, message="[biome-refuses-empty-names] Name what it holds: an empty word says nothing", severity="error")
 }

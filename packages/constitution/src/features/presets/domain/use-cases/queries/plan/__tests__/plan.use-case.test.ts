@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import { Layer } from '#/kernel/constants';
+import { RuleSlug, UnitPath } from '#/kernel/value-objects';
 
 import type { Files, WiringFixture } from '../../../../../__tests__/wiring.fixtures';
 import {
@@ -16,13 +17,12 @@ import {
   packFilesIn,
   part,
   planInputOf,
-  plannedOf,
-  REACT_DOM,
   RULE,
   rootCruiser,
   template,
   wiringOf,
 } from '../../../../../__tests__/wiring.fixtures';
+import type { PlannedFile, PlannedScope, WiringPlan } from '../../../../entities';
 import { planPresets } from '../plan.use-case';
 
 // A member's acme.toml that takes no part yet.
@@ -93,11 +93,30 @@ const planFiles: Files = {
   'biome.json': biomeJson(planParts),
 };
 
+// A file of the plan, the rule its owner lowers by its slug and its units by their paths.
+const plannedFile = (input: {
+  file: string;
+  isNew: boolean;
+  lowers?: string;
+  scopes: readonly PlannedScope[];
+  units: readonly string[];
+}): PlannedFile => ({
+  file: input.file,
+  isNew: input.isNew,
+  ...(input.lowers === undefined
+    ? {}
+    : {
+        lowers: RuleSlug.create(input.lowers),
+      }),
+  scopes: input.scopes,
+  units: input.units.map(UnitPath.create),
+});
+
 describe('planPresets', () => {
   it.each<{
     condition: string;
     fixture: WiringFixture;
-    lines: string[];
+    planned: WiringPlan;
   }>([
     {
       condition: 'the project keeps no file and a tool has no template',
@@ -127,15 +146,60 @@ describe('planPresets', () => {
           },
         ],
       },
-      lines: [
-        'biome.json (new) for .',
-        '  biome .droneey/constitution/templates/project/common/biome/biome.json',
-        '    .droneey/constitution/presets/common/biome/foundation/self.jsonc',
-        'packages/kit/biome.json (new) for packages/kit',
-        '  biome .droneey/constitution/templates/project/common/biome/biome.json',
-        '    .droneey/constitution/presets/common/biome/foundation/self.jsonc',
-        'no template: typescript/knip — wire presets/typescript/knip/ from what the tool reads',
-      ],
+      planned: {
+        files: [
+          plannedFile({
+            file: 'biome.json',
+            isNew: true,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('common/biome/foundation/self.jsonc'),
+                    ],
+                    template: template('common/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+            ],
+          }),
+          plannedFile({
+            file: 'packages/kit/biome.json',
+            isNew: true,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('common/biome/foundation/self.jsonc'),
+                    ],
+                    template: template('common/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              'packages/kit',
+            ],
+          }),
+        ],
+        untemplated: [
+          {
+            scope: 'typescript',
+            tool: 'knip',
+          },
+        ],
+      },
     },
     {
       condition: 'a package adds a tool and its overrides lower the rule',
@@ -178,120 +242,226 @@ describe('planPresets', () => {
           },
         ],
       },
-      lines: [
-        'apps/web/biome.json for apps/web (its overrides lower configuration-takes-every-part-of-its-blocks)',
-        '  biome .droneey/constitution/templates/project/common/biome/biome.json (the folder adds it)',
-        '    .droneey/constitution/presets/common/biome/foundation/self.jsonc',
-      ],
+      planned: {
+        files: [
+          plannedFile({
+            file: 'apps/web/biome.json',
+            isNew: false,
+            lowers: RULE,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: true,
+                    parts: [
+                      part('common/biome/foundation/self.jsonc'),
+                    ],
+                    template: template('common/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              'apps/web',
+            ],
+          }),
+        ],
+        untemplated: [],
+      },
     },
-  ])('should word each line as its format pins when $condition', ({ fixture, lines }) => {
-    // Arrange
-    const input = wiringOf(fixture);
+    {
+      condition: 'two tools have no template',
+      fixture: {
+        blocks: [
+          {
+            id: 'core',
+            layer: Layer.Core,
+          },
+          {
+            id: 'typescript',
+            layer: Layer.Language,
+          },
+          implementationOf('knip'),
+          implementationOf('react-dom'),
+        ],
+        project: {},
+        release: {
+          'presets/typescript/knip/foundation/core.json': '{}\n',
+          'presets/typescript/react-dom/foundation/core.json': '{}\n',
+        },
+      },
+      planned: {
+        files: [],
+        untemplated: [
+          {
+            scope: 'typescript',
+            tool: 'knip',
+          },
+          {
+            scope: 'typescript',
+            tool: 'react-dom',
+          },
+        ],
+      },
+    },
+  ])(
+    'should mark each file new, lowered or added and list the tools without a template when $condition',
+    ({ fixture, planned }) => {
+      // Arrange
+      const input = wiringOf(fixture);
 
-    // Act
-    const planned = planPresets(planInputOf(input));
+      // Act
+      const plan = planPresets(planInputOf(input));
 
-    // Assert
-    expect(planned).toStrictEqual(lines);
-  });
+      // Assert
+      expect(plan).toStrictEqual(planned);
+    },
+  );
 
   it.each<{
     condition: string;
     fixture: WiringFixture;
-    planned: string[][];
+    planned: WiringPlan;
   }>([
     {
       condition: 'the project keeps no file',
       fixture: {
         project: {},
       },
-      planned: [
-        [
-          '.dependency-cruiser.mjs',
-          'new',
-          '.',
+      planned: {
+        files: [
+          plannedFile({
+            file: '.dependency-cruiser.mjs',
+            isNew: true,
+            scopes: [
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('typescript/dependency-cruiser/foundation/self.mjs'),
+                      part('typescript/dependency-cruiser/architecture/workspace.mjs'),
+                    ],
+                    template: template('typescript/dependency-cruiser/.dependency-cruiser.mjs'),
+                    tool: 'dependency-cruiser',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+            ],
+          }),
+          plannedFile({
+            file: 'biome.json',
+            isNew: true,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('common/biome/foundation/self.jsonc'),
+                    ],
+                    template: template('common/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('typescript/biome/foundation/self.jsonc'),
+                      part('typescript/biome/foundation/core.jsonc'),
+                      part('typescript/biome/foundation/typescript.jsonc'),
+                    ],
+                    template: template('typescript/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+            ],
+          }),
+          plannedFile({
+            file: 'mise.toml',
+            isNew: true,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('common/osv-scanner/foundation/core.txt'),
+                    ],
+                    template: template('common/osv-scanner/mise.toml'),
+                    tool: 'osv-scanner',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+            ],
+          }),
+          plannedFile({
+            file: 'pyproject.toml',
+            isNew: true,
+            scopes: [
+              {
+                scope: 'python',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [],
+                    template: template('python/python/pyproject.toml'),
+                    tool: 'python',
+                  },
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('python/ruff/foundation/self.toml'),
+                      part('python/ruff/foundation/core.toml'),
+                    ],
+                    template: template('python/ruff/pyproject.toml'),
+                    tool: 'ruff',
+                  },
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('python/vulture/foundation/core.toml'),
+                    ],
+                    template: template('python/vulture/pyproject.toml'),
+                    tool: 'vulture',
+                  },
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('python/import-linter/foundation/core.toml'),
+                    ],
+                    template: template('python/import-linter/pyproject.toml'),
+                    tool: 'import-linter',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+            ],
+          }),
         ],
-        [
-          'dependency-cruiser',
-          template('typescript/dependency-cruiser/.dependency-cruiser.mjs'),
-        ],
-        [
-          part('typescript/dependency-cruiser/foundation/self.mjs'),
-        ],
-        [
-          part('typescript/dependency-cruiser/architecture/workspace.mjs'),
-        ],
-        [
-          'biome.json',
-          'new',
-          '.',
-        ],
-        [
-          'biome',
-          template('common/biome/biome.json'),
-        ],
-        [
-          part('common/biome/foundation/self.jsonc'),
-        ],
-        [
-          'biome',
-          template('typescript/biome/biome.json'),
-        ],
-        [
-          part('typescript/biome/foundation/self.jsonc'),
-        ],
-        [
-          part('typescript/biome/foundation/core.jsonc'),
-        ],
-        [
-          part('typescript/biome/foundation/typescript.jsonc'),
-        ],
-        [
-          'mise.toml',
-          'new',
-          '.',
-        ],
-        [
-          'osv-scanner',
-          template('common/osv-scanner/mise.toml'),
-        ],
-        [
-          part('common/osv-scanner/foundation/core.txt'),
-        ],
-        [
-          'pyproject.toml',
-          'new',
-          '.',
-        ],
-        [
-          'python',
-          template('python/python/pyproject.toml'),
-        ],
-        [
-          'ruff',
-          template('python/ruff/pyproject.toml'),
-        ],
-        [
-          part('python/ruff/foundation/self.toml'),
-        ],
-        [
-          part('python/ruff/foundation/core.toml'),
-        ],
-        [
-          'vulture',
-          template('python/vulture/pyproject.toml'),
-        ],
-        [
-          part('python/vulture/foundation/core.toml'),
-        ],
-        [
-          'import-linter',
-          template('python/import-linter/pyproject.toml'),
-        ],
-        [
-          part('python/import-linter/foundation/core.toml'),
-        ],
-      ],
+        untemplated: [],
+      },
     },
     {
       condition: 'two units take the tools of one file apart',
@@ -315,45 +485,69 @@ describe('planPresets', () => {
           },
         ],
       },
-      planned: [
-        [
-          'pyproject.toml',
-          'new',
-          '.',
-          'packages/kit',
+      planned: {
+        files: [
+          plannedFile({
+            file: 'pyproject.toml',
+            isNew: true,
+            scopes: [
+              {
+                scope: 'python',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [],
+                    template: template('python/python/pyproject.toml'),
+                    tool: 'python',
+                  },
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('python/vulture/foundation/core.toml'),
+                    ],
+                    template: template('python/vulture/pyproject.toml'),
+                    tool: 'vulture',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+              'packages/kit',
+            ],
+          }),
+          plannedFile({
+            file: 'packages/kit/pyproject.toml',
+            isNew: true,
+            scopes: [
+              {
+                scope: 'python',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [],
+                    template: template('python/python/pyproject.toml'),
+                    tool: 'python',
+                  },
+                  {
+                    isAdded: true,
+                    parts: [
+                      part('python/ruff/foundation/self.toml'),
+                      part('python/ruff/foundation/core.toml'),
+                    ],
+                    template: template('python/ruff/pyproject.toml'),
+                    tool: 'ruff',
+                  },
+                ],
+              },
+            ],
+            units: [
+              'packages/kit',
+            ],
+          }),
         ],
-        [
-          'python',
-          template('python/python/pyproject.toml'),
-        ],
-        [
-          'vulture',
-          template('python/vulture/pyproject.toml'),
-        ],
-        [
-          part('python/vulture/foundation/core.toml'),
-        ],
-        [
-          'packages/kit/pyproject.toml',
-          'new',
-          'packages/kit',
-        ],
-        [
-          'python',
-          template('python/python/pyproject.toml'),
-        ],
-        [
-          'ruff',
-          template('python/ruff/pyproject.toml'),
-          'adds',
-        ],
-        [
-          part('python/ruff/foundation/self.toml'),
-        ],
-        [
-          part('python/ruff/foundation/core.toml'),
-        ],
-      ],
+        untemplated: [],
+      },
     },
     {
       condition: 'a package keeps a file of a tool with a workspace part',
@@ -377,39 +571,58 @@ describe('planPresets', () => {
           },
         ],
       },
-      planned: [
-        [
-          '.dependency-cruiser.mjs',
-          '.',
+      planned: {
+        files: [
+          plannedFile({
+            file: '.dependency-cruiser.mjs',
+            isNew: false,
+            scopes: [
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('typescript/dependency-cruiser/foundation/self.mjs'),
+                      part('typescript/dependency-cruiser/architecture/workspace.mjs'),
+                    ],
+                    template: template('typescript/dependency-cruiser/.dependency-cruiser.mjs'),
+                    tool: 'dependency-cruiser',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+            ],
+          }),
+          plannedFile({
+            file: 'packages/kit/.dependency-cruiser.mjs',
+            isNew: false,
+            scopes: [
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('typescript/dependency-cruiser/foundation/self.mjs'),
+                      part('typescript/dependency-cruiser/architecture/core.mjs'),
+                      part('typescript/dependency-cruiser/architecture/workspace.mjs'),
+                    ],
+                    template: template('typescript/dependency-cruiser/.dependency-cruiser.mjs'),
+                    tool: 'dependency-cruiser',
+                  },
+                ],
+              },
+            ],
+            units: [
+              'packages/kit',
+            ],
+          }),
         ],
-        [
-          'dependency-cruiser',
-          template('typescript/dependency-cruiser/.dependency-cruiser.mjs'),
-        ],
-        [
-          part('typescript/dependency-cruiser/foundation/self.mjs'),
-        ],
-        [
-          part('typescript/dependency-cruiser/architecture/workspace.mjs'),
-        ],
-        [
-          'packages/kit/.dependency-cruiser.mjs',
-          'packages/kit',
-        ],
-        [
-          'dependency-cruiser',
-          template('typescript/dependency-cruiser/.dependency-cruiser.mjs'),
-        ],
-        [
-          part('typescript/dependency-cruiser/foundation/self.mjs'),
-        ],
-        [
-          part('typescript/dependency-cruiser/architecture/core.mjs'),
-        ],
-        [
-          part('typescript/dependency-cruiser/architecture/workspace.mjs'),
-        ],
-      ],
+        untemplated: [],
+      },
     },
     {
       condition: "a pack holds a tool's template and its part",
@@ -430,20 +643,33 @@ describe('planPresets', () => {
         },
         release: {},
       },
-      planned: [
-        [
-          'acme.toml',
-          'new',
-          '.',
+      planned: {
+        files: [
+          plannedFile({
+            file: 'acme.toml',
+            isNew: true,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      'packs/acme/presets/common/acme/foundation/self.toml',
+                    ],
+                    template: './packs/acme/templates/project/common/acme/acme.toml',
+                    tool: 'acme',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+            ],
+          }),
         ],
-        [
-          'acme',
-          './packs/acme/templates/project/common/acme/acme.toml',
-        ],
-        [
-          'packs/acme/presets/common/acme/foundation/self.toml',
-        ],
-      ],
+        untemplated: [],
+      },
     },
     {
       condition:
@@ -460,20 +686,33 @@ describe('planPresets', () => {
         release: {},
         units: acmeUnits,
       },
-      planned: [
-        [
-          'apps/web/acme.toml',
-          'apps/web',
+      planned: {
+        files: [
+          plannedFile({
+            file: 'apps/web/acme.toml',
+            isNew: false,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: true,
+                    parts: [
+                      'packs/acme/presets/common/acme/foundation/self.toml',
+                    ],
+                    template: 'apps/web/packs/acme/templates/project/common/acme/acme.toml',
+                    tool: 'acme',
+                  },
+                ],
+              },
+            ],
+            units: [
+              'apps/web',
+            ],
+          }),
         ],
-        [
-          'acme',
-          'apps/web/packs/acme/templates/project/common/acme/acme.toml',
-          'adds',
-        ],
-        [
-          'packs/acme/presets/common/acme/foundation/self.toml',
-        ],
-      ],
+        untemplated: [],
+      },
     },
     {
       condition:
@@ -490,36 +729,49 @@ describe('planPresets', () => {
         release: {},
         units: acmeUnits,
       },
-      planned: [
-        [
-          'apps/web/acme.toml',
-          'apps/web',
+      planned: {
+        files: [
+          plannedFile({
+            file: 'apps/web/acme.toml',
+            isNew: false,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: true,
+                    parts: [
+                      '../../packs/acme/presets/common/acme/foundation/self.toml',
+                    ],
+                    template: 'packs/acme/templates/project/common/acme/acme.toml',
+                    tool: 'acme',
+                  },
+                ],
+              },
+            ],
+            units: [
+              'apps/web',
+            ],
+          }),
         ],
-        [
-          'acme',
-          'packs/acme/templates/project/common/acme/acme.toml',
-          'adds',
-        ],
-        [
-          '../../packs/acme/presets/common/acme/foundation/self.toml',
-        ],
-      ],
+        untemplated: [],
+      },
     },
   ])("should list the files of the release's tools when $condition", ({ fixture, planned }) => {
     // Arrange
     const input = wiringOf(fixture);
 
     // Act
-    const lines = planPresets(planInputOf(input));
+    const plan = planPresets(planInputOf(input));
 
     // Assert
-    expect(plannedOf(lines)).toStrictEqual(planned);
+    expect(plan).toStrictEqual(planned);
   });
 
   it.each<{
     condition: string;
     fixture: WiringFixture;
-    planned: string[][];
+    planned: WiringPlan;
   }>([
     {
       condition: 'the repository keeps its files',
@@ -534,37 +786,67 @@ describe('planPresets', () => {
           },
         ],
       },
-      planned: [
-        [
-          '.biomeignore',
-          '.',
+      planned: {
+        files: [
+          plannedFile({
+            file: '.biomeignore',
+            isNew: false,
+            scopes: [
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [],
+                    template: template('typescript/biome/.biomeignore'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+            ],
+          }),
+          plannedFile({
+            file: 'biome.json',
+            isNew: false,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('common/biome/foundation/self.jsonc'),
+                    ],
+                    template: template('common/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('typescript/biome/foundation/self.jsonc'),
+                      part('typescript/biome/foundation/core.jsonc'),
+                    ],
+                    template: template('typescript/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+            ],
+          }),
         ],
-        [
-          'biome',
-          template('typescript/biome/.biomeignore'),
-        ],
-        [
-          'biome.json',
-          '.',
-        ],
-        [
-          'biome',
-          template('common/biome/biome.json'),
-        ],
-        [
-          part('common/biome/foundation/self.jsonc'),
-        ],
-        [
-          'biome',
-          template('typescript/biome/biome.json'),
-        ],
-        [
-          part('typescript/biome/foundation/self.jsonc'),
-        ],
-        [
-          part('typescript/biome/foundation/core.jsonc'),
-        ],
-      ],
+        untemplated: [],
+      },
     },
     {
       condition: 'the repository keeps a file that names no part',
@@ -579,37 +861,67 @@ describe('planPresets', () => {
           },
         ],
       },
-      planned: [
-        [
-          '.biomeignore',
-          '.',
+      planned: {
+        files: [
+          plannedFile({
+            file: '.biomeignore',
+            isNew: false,
+            scopes: [
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [],
+                    template: template('typescript/biome/.biomeignore'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+            ],
+          }),
+          plannedFile({
+            file: 'biome.json',
+            isNew: false,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('common/biome/foundation/self.jsonc'),
+                    ],
+                    template: template('common/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('typescript/biome/foundation/self.jsonc'),
+                      part('typescript/biome/foundation/core.jsonc'),
+                    ],
+                    template: template('typescript/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+            ],
+          }),
         ],
-        [
-          'biome',
-          template('typescript/biome/.biomeignore'),
-        ],
-        [
-          'biome.json',
-          '.',
-        ],
-        [
-          'biome',
-          template('common/biome/biome.json'),
-        ],
-        [
-          part('common/biome/foundation/self.jsonc'),
-        ],
-        [
-          'biome',
-          template('typescript/biome/biome.json'),
-        ],
-        [
-          part('typescript/biome/foundation/self.jsonc'),
-        ],
-        [
-          part('typescript/biome/foundation/core.jsonc'),
-        ],
-      ],
+        untemplated: [],
+      },
     },
     {
       condition: 'a package takes no tool of the file',
@@ -629,42 +941,70 @@ describe('planPresets', () => {
           },
         ],
       },
-      planned: [
-        [
-          '.biomeignore',
-          '.',
-          'apps/web',
+      planned: {
+        files: [
+          plannedFile({
+            file: '.biomeignore',
+            isNew: false,
+            scopes: [
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [],
+                    template: template('typescript/biome/.biomeignore'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+              'apps/web',
+            ],
+          }),
+          plannedFile({
+            file: 'biome.json',
+            isNew: false,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('common/biome/foundation/self.jsonc'),
+                    ],
+                    template: template('common/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('typescript/biome/foundation/self.jsonc'),
+                      part('typescript/biome/foundation/core.jsonc'),
+                      part('typescript/biome/foundation/react-dom.jsonc'),
+                    ],
+                    template: template('typescript/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+              'apps/web',
+            ],
+          }),
         ],
-        [
-          'biome',
-          template('typescript/biome/.biomeignore'),
-        ],
-        [
-          'biome.json',
-          '.',
-          'apps/web',
-        ],
-        [
-          'biome',
-          template('common/biome/biome.json'),
-        ],
-        [
-          part('common/biome/foundation/self.jsonc'),
-        ],
-        [
-          'biome',
-          template('typescript/biome/biome.json'),
-        ],
-        [
-          part('typescript/biome/foundation/self.jsonc'),
-        ],
-        [
-          part('typescript/biome/foundation/core.jsonc'),
-        ],
-        [
-          part(REACT_DOM),
-        ],
-      ],
+        untemplated: [],
+      },
     },
     {
       condition: 'a block is named self',
@@ -683,37 +1023,67 @@ describe('planPresets', () => {
           },
         ],
       },
-      planned: [
-        [
-          '.biomeignore',
-          '.',
+      planned: {
+        files: [
+          plannedFile({
+            file: '.biomeignore',
+            isNew: false,
+            scopes: [
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [],
+                    template: template('typescript/biome/.biomeignore'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+            ],
+          }),
+          plannedFile({
+            file: 'biome.json',
+            isNew: false,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('common/biome/foundation/self.jsonc'),
+                    ],
+                    template: template('common/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('typescript/biome/foundation/self.jsonc'),
+                      part('typescript/biome/foundation/core.jsonc'),
+                    ],
+                    template: template('typescript/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+            ],
+          }),
         ],
-        [
-          'biome',
-          template('typescript/biome/.biomeignore'),
-        ],
-        [
-          'biome.json',
-          '.',
-        ],
-        [
-          'biome',
-          template('common/biome/biome.json'),
-        ],
-        [
-          part('common/biome/foundation/self.jsonc'),
-        ],
-        [
-          'biome',
-          template('typescript/biome/biome.json'),
-        ],
-        [
-          part('typescript/biome/foundation/self.jsonc'),
-        ],
-        [
-          part('typescript/biome/foundation/core.jsonc'),
-        ],
-      ],
+        untemplated: [],
+      },
     },
     {
       condition: "a template sits in a scope's folder",
@@ -732,40 +1102,68 @@ describe('planPresets', () => {
           },
         ],
       },
-      planned: [
-        [
-          '.biomeignore',
-          '.',
+      planned: {
+        files: [
+          plannedFile({
+            file: '.biomeignore',
+            isNew: false,
+            scopes: [
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [],
+                    template: template('typescript/biome/.biomeignore'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+            ],
+          }),
+          plannedFile({
+            file: 'biome.json',
+            isNew: false,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('common/biome/foundation/self.jsonc'),
+                    ],
+                    template: template('common/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('typescript/biome/foundation/self.jsonc'),
+                      part('typescript/biome/foundation/core.jsonc'),
+                      part('typescript/biome/foundation/react-dom.jsonc'),
+                    ],
+                    template: template('typescript/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+            ],
+          }),
         ],
-        [
-          'biome',
-          template('typescript/biome/.biomeignore'),
-        ],
-        [
-          'biome.json',
-          '.',
-        ],
-        [
-          'biome',
-          template('common/biome/biome.json'),
-        ],
-        [
-          part('common/biome/foundation/self.jsonc'),
-        ],
-        [
-          'biome',
-          template('typescript/biome/biome.json'),
-        ],
-        [
-          part('typescript/biome/foundation/self.jsonc'),
-        ],
-        [
-          part('typescript/biome/foundation/core.jsonc'),
-        ],
-        [
-          part('typescript/biome/foundation/react-dom.jsonc'),
-        ],
-      ],
+        untemplated: [],
+      },
     },
     {
       condition: 'a package keeps a file of the name and the repository none',
@@ -783,69 +1181,123 @@ describe('planPresets', () => {
           },
         ],
       },
-      planned: [
-        [
-          '.biomeignore',
-          'new',
-          '.',
+      planned: {
+        files: [
+          plannedFile({
+            file: '.biomeignore',
+            isNew: true,
+            scopes: [
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [],
+                    template: template('typescript/biome/.biomeignore'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+            ],
+          }),
+          plannedFile({
+            file: 'packages/kit/.biomeignore',
+            isNew: true,
+            scopes: [
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [],
+                    template: template('typescript/biome/.biomeignore'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              'packages/kit',
+            ],
+          }),
+          plannedFile({
+            file: 'biome.json',
+            isNew: true,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('common/biome/foundation/self.jsonc'),
+                    ],
+                    template: template('common/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('typescript/biome/foundation/self.jsonc'),
+                      part('typescript/biome/foundation/core.jsonc'),
+                    ],
+                    template: template('typescript/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+            ],
+          }),
+          plannedFile({
+            file: 'packages/kit/biome.json',
+            isNew: false,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('common/biome/foundation/self.jsonc'),
+                    ],
+                    template: template('common/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('typescript/biome/foundation/self.jsonc'),
+                      part('typescript/biome/foundation/core.jsonc'),
+                    ],
+                    template: template('typescript/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              'packages/kit',
+            ],
+          }),
         ],
-        [
-          'biome',
-          template('typescript/biome/.biomeignore'),
-        ],
-        [
-          'packages/kit/.biomeignore',
-          'new',
-          'packages/kit',
-        ],
-        [
-          'biome',
-          template('typescript/biome/.biomeignore'),
-        ],
-        [
-          'biome.json',
-          'new',
-          '.',
-        ],
-        [
-          'biome',
-          template('common/biome/biome.json'),
-        ],
-        [
-          part('common/biome/foundation/self.jsonc'),
-        ],
-        [
-          'biome',
-          template('typescript/biome/biome.json'),
-        ],
-        [
-          part('typescript/biome/foundation/self.jsonc'),
-        ],
-        [
-          part('typescript/biome/foundation/core.jsonc'),
-        ],
-        [
-          'packages/kit/biome.json',
-          'packages/kit',
-        ],
-        [
-          'biome',
-          template('common/biome/biome.json'),
-        ],
-        [
-          part('common/biome/foundation/self.jsonc'),
-        ],
-        [
-          'biome',
-          template('typescript/biome/biome.json'),
-        ],
-        [
-          part('typescript/biome/foundation/self.jsonc'),
-        ],
-        [
-          part('typescript/biome/foundation/core.jsonc'),
-        ],
-      ],
+        untemplated: [],
+      },
     },
     {
       condition: 'no unit takes the tool',
@@ -860,7 +1312,10 @@ describe('planPresets', () => {
           },
         ],
       },
-      planned: [],
+      planned: {
+        files: [],
+        untemplated: [],
+      },
     },
     {
       condition: 'a package keeps a file that names no part',
@@ -879,68 +1334,123 @@ describe('planPresets', () => {
           },
         ],
       },
-      planned: [
-        [
-          '.biomeignore',
-          'new',
-          '.',
+      planned: {
+        files: [
+          plannedFile({
+            file: '.biomeignore',
+            isNew: true,
+            scopes: [
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [],
+                    template: template('typescript/biome/.biomeignore'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+            ],
+          }),
+          plannedFile({
+            file: 'packages/kit/.biomeignore',
+            isNew: true,
+            scopes: [
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [],
+                    template: template('typescript/biome/.biomeignore'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              'packages/kit',
+            ],
+          }),
+          plannedFile({
+            file: 'biome.json',
+            isNew: false,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('common/biome/foundation/self.jsonc'),
+                    ],
+                    template: template('common/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('typescript/biome/foundation/self.jsonc'),
+                      part('typescript/biome/foundation/core.jsonc'),
+                    ],
+                    template: template('typescript/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+            ],
+          }),
+          plannedFile({
+            file: 'packages/kit/biome.json',
+            isNew: false,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('common/biome/foundation/self.jsonc'),
+                    ],
+                    template: template('common/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('typescript/biome/foundation/self.jsonc'),
+                      part('typescript/biome/foundation/core.jsonc'),
+                    ],
+                    template: template('typescript/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              'packages/kit',
+            ],
+          }),
         ],
-        [
-          'biome',
-          template('typescript/biome/.biomeignore'),
-        ],
-        [
-          'packages/kit/.biomeignore',
-          'new',
-          'packages/kit',
-        ],
-        [
-          'biome',
-          template('typescript/biome/.biomeignore'),
-        ],
-        [
-          'biome.json',
-          '.',
-        ],
-        [
-          'biome',
-          template('common/biome/biome.json'),
-        ],
-        [
-          part('common/biome/foundation/self.jsonc'),
-        ],
-        [
-          'biome',
-          template('typescript/biome/biome.json'),
-        ],
-        [
-          part('typescript/biome/foundation/self.jsonc'),
-        ],
-        [
-          part('typescript/biome/foundation/core.jsonc'),
-        ],
-        [
-          'packages/kit/biome.json',
-          'packages/kit',
-        ],
-        [
-          'biome',
-          template('common/biome/biome.json'),
-        ],
-        [
-          part('common/biome/foundation/self.jsonc'),
-        ],
-        [
-          'biome',
-          template('typescript/biome/biome.json'),
-        ],
-        [
-          part('typescript/biome/foundation/self.jsonc'),
-        ],
-        [
-          part('typescript/biome/foundation/core.jsonc'),
-        ],
-      ],
+        untemplated: [],
+      },
     },
     {
       condition: 'a package keeps a file that names the parts of a block it adds',
@@ -966,62 +1476,105 @@ describe('planPresets', () => {
           },
         ],
       },
-      planned: [
-        [
-          '.biomeignore',
-          '.',
-          'apps/web',
+      planned: {
+        files: [
+          plannedFile({
+            file: '.biomeignore',
+            isNew: false,
+            scopes: [
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [],
+                    template: template('typescript/biome/.biomeignore'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+              'apps/web',
+            ],
+          }),
+          plannedFile({
+            file: 'biome.json',
+            isNew: false,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('common/biome/foundation/self.jsonc'),
+                    ],
+                    template: template('common/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('typescript/biome/foundation/self.jsonc'),
+                      part('typescript/biome/foundation/core.jsonc'),
+                    ],
+                    template: template('typescript/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+            ],
+          }),
+          plannedFile({
+            file: 'apps/web/biome.json',
+            isNew: false,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('common/biome/foundation/self.jsonc'),
+                    ],
+                    template: template('common/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('typescript/biome/foundation/self.jsonc'),
+                      part('typescript/biome/foundation/core.jsonc'),
+                      part('typescript/biome/foundation/react-dom.jsonc'),
+                    ],
+                    template: template('typescript/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              'apps/web',
+            ],
+          }),
         ],
-        [
-          'biome',
-          template('typescript/biome/.biomeignore'),
-        ],
-        [
-          'biome.json',
-          '.',
-        ],
-        [
-          'biome',
-          template('common/biome/biome.json'),
-        ],
-        [
-          part('common/biome/foundation/self.jsonc'),
-        ],
-        [
-          'biome',
-          template('typescript/biome/biome.json'),
-        ],
-        [
-          part('typescript/biome/foundation/self.jsonc'),
-        ],
-        [
-          part('typescript/biome/foundation/core.jsonc'),
-        ],
-        [
-          'apps/web/biome.json',
-          'apps/web',
-        ],
-        [
-          'biome',
-          template('common/biome/biome.json'),
-        ],
-        [
-          part('common/biome/foundation/self.jsonc'),
-        ],
-        [
-          'biome',
-          template('typescript/biome/biome.json'),
-        ],
-        [
-          part('typescript/biome/foundation/self.jsonc'),
-        ],
-        [
-          part('typescript/biome/foundation/core.jsonc'),
-        ],
-        [
-          part('typescript/biome/foundation/react-dom.jsonc'),
-        ],
-      ],
+        untemplated: [],
+      },
     },
     {
       condition: 'a folder between a unit and the root keeps a file of the name',
@@ -1044,69 +1597,123 @@ describe('planPresets', () => {
           },
         ],
       },
-      planned: [
-        [
-          '.biomeignore',
-          'new',
-          '.',
+      planned: {
+        files: [
+          plannedFile({
+            file: '.biomeignore',
+            isNew: true,
+            scopes: [
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [],
+                    template: template('typescript/biome/.biomeignore'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+            ],
+          }),
+          plannedFile({
+            file: 'a/.biomeignore',
+            isNew: false,
+            scopes: [
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [],
+                    template: template('typescript/biome/.biomeignore'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              'a/b',
+            ],
+          }),
+          plannedFile({
+            file: 'biome.json',
+            isNew: true,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('common/biome/foundation/self.jsonc'),
+                    ],
+                    template: template('common/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('typescript/biome/foundation/self.jsonc'),
+                      part('typescript/biome/foundation/core.jsonc'),
+                    ],
+                    template: template('typescript/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+            ],
+          }),
+          plannedFile({
+            file: 'a/b/biome.json',
+            isNew: true,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('common/biome/foundation/self.jsonc'),
+                    ],
+                    template: template('common/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('typescript/biome/foundation/self.jsonc'),
+                      part('typescript/biome/foundation/core.jsonc'),
+                    ],
+                    template: template('typescript/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              'a/b',
+            ],
+          }),
         ],
-        [
-          'biome',
-          template('typescript/biome/.biomeignore'),
-        ],
-        [
-          'a/.biomeignore',
-          'a/b',
-        ],
-        [
-          'biome',
-          template('typescript/biome/.biomeignore'),
-        ],
-        [
-          'biome.json',
-          'new',
-          '.',
-        ],
-        [
-          'biome',
-          template('common/biome/biome.json'),
-        ],
-        [
-          part('common/biome/foundation/self.jsonc'),
-        ],
-        [
-          'biome',
-          template('typescript/biome/biome.json'),
-        ],
-        [
-          part('typescript/biome/foundation/self.jsonc'),
-        ],
-        [
-          part('typescript/biome/foundation/core.jsonc'),
-        ],
-        [
-          'a/b/biome.json',
-          'new',
-          'a/b',
-        ],
-        [
-          'biome',
-          template('common/biome/biome.json'),
-        ],
-        [
-          part('common/biome/foundation/self.jsonc'),
-        ],
-        [
-          'biome',
-          template('typescript/biome/biome.json'),
-        ],
-        [
-          part('typescript/biome/foundation/self.jsonc'),
-        ],
-        [
-          part('typescript/biome/foundation/core.jsonc'),
-        ],
-      ],
+        untemplated: [],
+      },
     },
     {
       condition: 'a member keeps a file of the name in its own folder and the root one of its own',
@@ -1127,66 +1734,123 @@ describe('planPresets', () => {
           },
         ],
       },
-      planned: [
-        [
-          '.biomeignore',
-          '.',
+      planned: {
+        files: [
+          plannedFile({
+            file: '.biomeignore',
+            isNew: false,
+            scopes: [
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [],
+                    template: template('typescript/biome/.biomeignore'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+            ],
+          }),
+          plannedFile({
+            file: 'apps/web/.biomeignore',
+            isNew: false,
+            scopes: [
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [],
+                    template: template('typescript/biome/.biomeignore'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              'apps/web',
+            ],
+          }),
+          plannedFile({
+            file: 'biome.json',
+            isNew: false,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('common/biome/foundation/self.jsonc'),
+                    ],
+                    template: template('common/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('typescript/biome/foundation/self.jsonc'),
+                      part('typescript/biome/foundation/core.jsonc'),
+                    ],
+                    template: template('typescript/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+            ],
+          }),
+          plannedFile({
+            file: 'apps/web/biome.json',
+            isNew: false,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('common/biome/foundation/self.jsonc'),
+                    ],
+                    template: template('common/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('typescript/biome/foundation/self.jsonc'),
+                      part('typescript/biome/foundation/core.jsonc'),
+                    ],
+                    template: template('typescript/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              'apps/web',
+            ],
+          }),
         ],
-        [
-          'biome',
-          template('typescript/biome/.biomeignore'),
-        ],
-        [
-          'apps/web/.biomeignore',
-          'apps/web',
-        ],
-        [
-          'biome',
-          template('typescript/biome/.biomeignore'),
-        ],
-        [
-          'biome.json',
-          '.',
-        ],
-        [
-          'biome',
-          template('common/biome/biome.json'),
-        ],
-        [
-          part('common/biome/foundation/self.jsonc'),
-        ],
-        [
-          'biome',
-          template('typescript/biome/biome.json'),
-        ],
-        [
-          part('typescript/biome/foundation/self.jsonc'),
-        ],
-        [
-          part('typescript/biome/foundation/core.jsonc'),
-        ],
-        [
-          'apps/web/biome.json',
-          'apps/web',
-        ],
-        [
-          'biome',
-          template('common/biome/biome.json'),
-        ],
-        [
-          part('common/biome/foundation/self.jsonc'),
-        ],
-        [
-          'biome',
-          template('typescript/biome/biome.json'),
-        ],
-        [
-          part('typescript/biome/foundation/self.jsonc'),
-        ],
-        [
-          part('typescript/biome/foundation/core.jsonc'),
-        ],
-      ],
+        untemplated: [],
+      },
     },
     {
       condition:
@@ -1209,39 +1873,67 @@ describe('planPresets', () => {
           },
         ],
       },
-      planned: [
-        [
-          '.biomeignore',
-          'apps/web',
+      planned: {
+        files: [
+          plannedFile({
+            file: '.biomeignore',
+            isNew: false,
+            scopes: [
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [],
+                    template: template('typescript/biome/.biomeignore'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              'apps/web',
+            ],
+          }),
+          plannedFile({
+            file: 'apps/web/biome.json',
+            isNew: false,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: true,
+                    parts: [
+                      part('common/biome/foundation/self.jsonc'),
+                    ],
+                    template: template('common/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: true,
+                    parts: [
+                      part('typescript/biome/foundation/self.jsonc'),
+                      part('typescript/biome/foundation/core.jsonc'),
+                    ],
+                    template: template('typescript/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              'apps/web',
+            ],
+          }),
         ],
-        [
-          'biome',
-          template('typescript/biome/.biomeignore'),
-        ],
-        [
-          'apps/web/biome.json',
-          'apps/web',
-        ],
-        [
-          'biome',
-          template('common/biome/biome.json'),
-          'adds',
-        ],
-        [
-          part('common/biome/foundation/self.jsonc'),
-        ],
-        [
-          'biome',
-          template('typescript/biome/biome.json'),
-          'adds',
-        ],
-        [
-          part('typescript/biome/foundation/self.jsonc'),
-        ],
-        [
-          part('typescript/biome/foundation/core.jsonc'),
-        ],
-      ],
+        untemplated: [],
+      },
     },
     {
       condition: "a file of another name lies where a template's path would cut the root's folder",
@@ -1259,38 +1951,67 @@ describe('planPresets', () => {
           },
         ],
       },
-      planned: [
-        [
-          '.biomeignore',
-          'new',
-          '.',
+      planned: {
+        files: [
+          plannedFile({
+            file: '.biomeignore',
+            isNew: true,
+            scopes: [
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [],
+                    template: template('typescript/biome/.biomeignore'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+            ],
+          }),
+          plannedFile({
+            file: 'biome.json',
+            isNew: false,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('common/biome/foundation/self.jsonc'),
+                    ],
+                    template: template('common/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+              {
+                scope: 'typescript',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('typescript/biome/foundation/self.jsonc'),
+                      part('typescript/biome/foundation/core.jsonc'),
+                    ],
+                    template: template('typescript/biome/biome.json'),
+                    tool: 'biome',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+            ],
+          }),
         ],
-        [
-          'biome',
-          template('typescript/biome/.biomeignore'),
-        ],
-        [
-          'biome.json',
-          '.',
-        ],
-        [
-          'biome',
-          template('common/biome/biome.json'),
-        ],
-        [
-          part('common/biome/foundation/self.jsonc'),
-        ],
-        [
-          'biome',
-          template('typescript/biome/biome.json'),
-        ],
-        [
-          part('typescript/biome/foundation/self.jsonc'),
-        ],
-        [
-          part('typescript/biome/foundation/core.jsonc'),
-        ],
-      ],
+        untemplated: [],
+      },
     },
   ])('should list each file with the units it serves when $condition', ({ fixture, planned }) => {
     // Arrange
@@ -1301,45 +2022,60 @@ describe('planPresets', () => {
     });
 
     // Act
-    const lines = planPresets(planInputOf(input));
+    const plan = planPresets(planInputOf(input));
 
     // Assert
-    expect(plannedOf(lines)).toStrictEqual(planned);
+    expect(plan).toStrictEqual(planned);
   });
   it.each<{
     condition: string;
     path: string;
-    planned: string[][];
+    planned: WiringPlan;
   }>([
     {
       condition: "the tool's bindings alone",
       path: 'presets/typescript/react-dom/foundation/bindings.yaml',
-      planned: [],
+      planned: {
+        files: [],
+        untemplated: [],
+      },
     },
     {
       condition: 'a file in a folder of an axis alone',
       path: 'presets/typescript/react-dom/foundation/plugins/no-enum.grit',
-      planned: [],
+      planned: {
+        files: [],
+        untemplated: [],
+      },
     },
     {
       condition: 'a file in a folder that is no axis alone',
       path: 'presets/typescript/react-dom/notes/core.json',
-      planned: [],
+      planned: {
+        files: [],
+        untemplated: [],
+      },
     },
     {
       condition: 'a file without a name alone',
       path: 'presets/typescript/react-dom/foundation/.json',
-      planned: [],
+      planned: {
+        files: [],
+        untemplated: [],
+      },
     },
     {
       condition: 'a part',
       path: 'presets/typescript/react-dom/foundation/core.json',
-      planned: [
-        [
-          'typescript/react-dom',
-          'presets/typescript/react-dom/',
+      planned: {
+        files: [],
+        untemplated: [
+          {
+            scope: 'typescript',
+            tool: 'react-dom',
+          },
         ],
-      ],
+      },
     },
   ])(
     'should list a tool that has no template when its presets hold $condition',
@@ -1363,46 +2099,70 @@ describe('planPresets', () => {
       });
 
       // Act
-      const lines = planPresets(planInputOf(input));
+      const plan = planPresets(planInputOf(input));
 
       // Assert
-      expect(plannedOf(lines)).toStrictEqual(planned);
+      expect(plan).toStrictEqual(planned);
     },
   );
   it.each<{
     condition: string;
     fixture: WiringFixture;
-    planned: string[][];
+    planned: WiringPlan;
   }>([
     {
       condition: 'only the root follows the tool',
       fixture: {},
-      planned: [
-        [
-          'lefthook.yaml',
-          'new',
-          '.',
-          'packages/check',
+      planned: {
+        files: [
+          plannedFile({
+            file: 'lefthook.yaml',
+            isNew: true,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('common/lefthook/workflow/biome.yaml'),
+                      part('common/lefthook/workflow/ruff.yaml'),
+                    ],
+                    template: template('common/lefthook/lefthook.yaml'),
+                    tool: 'lefthook',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+              'packages/check',
+            ],
+          }),
+          plannedFile({
+            file: 'mise.toml',
+            isNew: true,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [],
+                    template: template('common/lefthook/mise.toml'),
+                    tool: 'lefthook',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+              'packages/check',
+            ],
+          }),
         ],
-        [
-          template('common/lefthook/lefthook.yaml'),
-        ],
-        [
-          part('common/lefthook/workflow/biome.yaml'),
-        ],
-        [
-          part('common/lefthook/workflow/ruff.yaml'),
-        ],
-        [
-          'mise.toml',
-          'new',
-          '.',
-          'packages/check',
-        ],
-        [
-          template('common/lefthook/mise.toml'),
-        ],
-      ],
+        untemplated: [],
+      },
     },
     {
       condition:
@@ -1415,45 +2175,95 @@ describe('planPresets', () => {
         },
         units: hooksOwnUnits,
       },
-      planned: [
-        [
-          'lefthook.yaml',
-          'new',
-          '.',
+      planned: {
+        files: [
+          plannedFile({
+            file: 'lefthook.yaml',
+            isNew: true,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('common/lefthook/workflow/biome.yaml'),
+                    ],
+                    template: template('common/lefthook/lefthook.yaml'),
+                    tool: 'lefthook',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+            ],
+          }),
+          plannedFile({
+            file: 'packages/check/lefthook.yaml',
+            isNew: false,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [
+                      part('common/lefthook/workflow/ruff.yaml'),
+                    ],
+                    template: template('common/lefthook/lefthook.yaml'),
+                    tool: 'lefthook',
+                  },
+                ],
+              },
+            ],
+            units: [
+              'packages/check',
+            ],
+          }),
+          plannedFile({
+            file: 'mise.toml',
+            isNew: true,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [],
+                    template: template('common/lefthook/mise.toml'),
+                    tool: 'lefthook',
+                  },
+                ],
+              },
+            ],
+            units: [
+              '',
+            ],
+          }),
+          plannedFile({
+            file: 'packages/check/mise.toml',
+            isNew: true,
+            scopes: [
+              {
+                scope: 'common',
+                tools: [
+                  {
+                    isAdded: false,
+                    parts: [],
+                    template: template('common/lefthook/mise.toml'),
+                    tool: 'lefthook',
+                  },
+                ],
+              },
+            ],
+            units: [
+              'packages/check',
+            ],
+          }),
         ],
-        [
-          template('common/lefthook/lefthook.yaml'),
-        ],
-        [
-          part('common/lefthook/workflow/biome.yaml'),
-        ],
-        [
-          'packages/check/lefthook.yaml',
-          'packages/check',
-        ],
-        [
-          template('common/lefthook/lefthook.yaml'),
-        ],
-        [
-          part('common/lefthook/workflow/ruff.yaml'),
-        ],
-        [
-          'mise.toml',
-          'new',
-          '.',
-        ],
-        [
-          template('common/lefthook/mise.toml'),
-        ],
-        [
-          'packages/check/mise.toml',
-          'new',
-          'packages/check',
-        ],
-        [
-          template('common/lefthook/mise.toml'),
-        ],
-      ],
+        untemplated: [],
+      },
     },
     {
       condition: 'no unit follows the tool',
@@ -1469,7 +2279,10 @@ describe('planPresets', () => {
           hooksMember,
         ],
       },
-      planned: [],
+      planned: {
+        files: [],
+        untemplated: [],
+      },
     },
   ])(
     "should list the root's file of a tool no member follows with every unit, and of one a member follows with the root alone, when $condition",
@@ -1484,10 +2297,10 @@ describe('planPresets', () => {
       });
 
       // Act
-      const lines = planPresets(planInputOf(input));
+      const plan = planPresets(planInputOf(input));
 
       // Assert
-      expect(plannedOf(lines)).toStrictEqual(planned);
+      expect(plan).toStrictEqual(planned);
     },
   );
 });

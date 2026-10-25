@@ -1,5 +1,7 @@
+import type { ValueFindingDetails } from '#/kernel/entities';
+import { ValueSite } from '#/kernel/entities';
 import { ValueFailure } from '#/kernel/errors';
-import type { Finding } from '#/kernel/types';
+import type { FindingOf } from '#/kernel/types';
 import type { PresetFolder } from '#/kernel/value-objects';
 import { PartAddress, PresetFileKind, PresetPartPath, RuleSlug } from '#/kernel/value-objects';
 
@@ -12,9 +14,24 @@ enum BindingsFileCode {
   OffSchema = 'bindings-off-schema',
 }
 
+interface BindingsFileDetails {
+  readonly [BindingsFileCode.NotYaml]: {
+    readonly reason: string;
+  };
+  readonly [BindingsFileCode.OffSchema]: {
+    /** the path of the field the schema refuses, empty for the whole file */
+    readonly field: string;
+    readonly reason: string;
+  };
+}
+
+type BindingsFileFinding = FindingOf<
+  BindingsFileDetails & Pick<ValueFindingDetails, ValueFailure.PartAddress | ValueFailure.RuleSlug>
+>;
+
 interface BindingsLoaded {
   readonly bindings: readonly Binding[];
-  readonly findings: readonly Finding[];
+  readonly findings: readonly BindingsFileFinding[];
 }
 
 const loadFile = (input: {
@@ -31,7 +48,9 @@ const loadFile = (input: {
       findings: [
         {
           code: BindingsFileCode.NotYaml,
-          message: `is not valid YAML: ${read.reason}`,
+          details: {
+            reason: read.reason,
+          },
           path,
         },
       ],
@@ -41,11 +60,16 @@ const loadFile = (input: {
   if (read.status === ReadStatus.Mismatched) {
     return {
       bindings: [],
-      findings: read.issues.map((issue) => ({
-        code: BindingsFileCode.OffSchema,
-        message: `does not match its schema: ${issue.field === '' ? '<root>' : issue.field}: ${issue.message}`,
-        path,
-      })),
+      findings: read.issues.map(
+        (issue): BindingsFileFinding => ({
+          code: BindingsFileCode.OffSchema,
+          details: {
+            field: issue.field,
+            reason: issue.message,
+          },
+          path,
+        }),
+      ),
     };
   }
 
@@ -85,18 +109,28 @@ const loadFile = (input: {
     findings: [
       ...parts
         .filter((name) => !PartAddress.is(candidateOf(name)))
-        .map((name) => ({
-          code: ValueFailure.PartAddress,
-          message: `binds the part "${name}", which is not a file name: it is empty or holds a "/"`,
-          path,
-        })),
+        .map(
+          (written): BindingsFileFinding => ({
+            code: ValueFailure.PartAddress,
+            details: {
+              site: ValueSite.BoundPart,
+              written,
+            },
+            path,
+          }),
+        ),
       ...entries
         .filter(({ rule }) => !RuleSlug.is(rule))
-        .map(({ rule }) => ({
-          code: ValueFailure.RuleSlug,
-          message: `binds "${rule}", which is not a kebab-case slug`,
-          path,
-        })),
+        .map(
+          ({ rule }): BindingsFileFinding => ({
+            code: ValueFailure.RuleSlug,
+            details: {
+              site: ValueSite.BoundRule,
+              written: rule,
+            },
+            path,
+          }),
+        ),
     ],
   };
 };
@@ -125,4 +159,5 @@ const readBindings = (input: {
   };
 };
 
-export { readBindings };
+export type { BindingsFileDetails };
+export { BindingsFileCode, readBindings };

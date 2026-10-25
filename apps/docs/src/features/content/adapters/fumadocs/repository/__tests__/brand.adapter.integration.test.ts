@@ -18,8 +18,7 @@ describe('taglineOf', () => {
     // Arrange
     repository.leave = enterRepository({
       files: {
-        'brand.yaml':
-          'version: 1\nwordmark:\n  - Constitution\ntagline: The rules every repository is built by\n',
+        'brand.yaml': 'version: 1\nwordmark:\n  - Constitution\ntagline: Rules\n',
       },
     }).leave;
 
@@ -27,7 +26,7 @@ describe('taglineOf', () => {
     const tagline = taglineOf();
 
     // Assert
-    expect(tagline).toBe('The rules every repository is built by');
+    expect(tagline).toBe('Rules');
   });
 
   it('should fail when the brand has no tagline', () => {

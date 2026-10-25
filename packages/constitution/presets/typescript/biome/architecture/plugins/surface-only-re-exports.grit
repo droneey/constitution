@@ -23,5 +23,5 @@ or {
   JsTryStatement()
 } as $statement where {
   $statement <: not within JsFunctionBody(),
-  register_diagnostic(span=$statement, message="A surface only re-exports by name: move this into a file of its own", severity="error")
+  register_diagnostic(span=$statement, message="[surface-only-re-exports] A surface only re-exports by name: move this into a file of its own", severity="error")
 }

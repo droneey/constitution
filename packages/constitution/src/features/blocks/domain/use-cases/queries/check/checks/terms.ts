@@ -1,5 +1,5 @@
 import { Axis, Layer } from '#/kernel/constants';
-import type { Finding } from '#/kernel/types';
+import type { FindingOf } from '#/kernel/types';
 import { isHeading, withoutCodeFences } from '#/kernel/utils';
 import type { BlockId } from '#/kernel/value-objects';
 
@@ -7,7 +7,7 @@ import type { BlockFile } from '../../../../entities';
 import { Block, BlockFileRole, BlockGraph } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
 import { inlineCodeSpans } from '../shared/markdown';
-import type { Term } from '../shared/terms';
+import type { Term, TermKind } from '../shared/terms';
 import { otherSpellingOf, termMatcher, termsIn } from '../shared/terms';
 import { collapseWhitespace } from '../shared/tokens';
 
@@ -18,6 +18,39 @@ enum TermsCode {
   OutOfReach = 'term-out-of-reach',
   Misspelled = 'term-misspelled',
 }
+
+interface TermsDetails {
+  readonly [TermsCode.Misshapen]: {
+    /** the text set in bold */
+    readonly written: string;
+  };
+  readonly [TermsCode.DefinedTwice]: {
+    /** the block of the term's first definition */
+    readonly firstBlock: BlockId;
+    readonly firstFile: string;
+    readonly term: string;
+  };
+  readonly [TermsCode.OffAxis]: {
+    /** the axis of the file that uses the term */
+    readonly axis: Axis;
+    readonly term: string;
+    readonly termAxis: Axis;
+  };
+  readonly [TermsCode.OutOfReach]: {
+    /** the block that defines the term */
+    readonly owner: BlockId;
+    readonly term: string;
+  };
+  readonly [TermsCode.Misspelled]: {
+    readonly kind: TermKind;
+    readonly owner: BlockId;
+    readonly term: string;
+    /** the other spelling the file writes */
+    readonly written: string;
+  };
+}
+
+type TermsFinding = FindingOf<TermsDetails>;
 
 interface Definition extends Term {
   readonly axis: Axis;
@@ -37,7 +70,7 @@ interface Placed {
 
 interface Glossary {
   readonly defined: readonly Defined[];
-  readonly findings: readonly Finding[];
+  readonly findings: readonly TermsFinding[];
 }
 
 const placedFiles = (blocks: readonly Block[]): readonly Placed[] =>
@@ -50,17 +83,21 @@ const placedFiles = (blocks: readonly Block[]): readonly Placed[] =>
 
 const glossaryOf = (files: readonly Placed[]): Glossary => {
   const first = new Map<string, Definition>();
-  const findings: Finding[] = [];
+  const findings: TermsFinding[] = [];
 
   for (const { block, file } of files) {
     const read = termsIn(file.body);
 
     findings.push(
-      ...read.misshapen.map((text) => ({
-        code: TermsCode.Misshapen,
-        message: `sets "${text}" in bold, which is neither plain words nor one code span; bold defines a term`,
-        path: file.path,
-      })),
+      ...read.misshapen.map(
+        (written): TermsFinding => ({
+          code: TermsCode.Misshapen,
+          details: {
+            written,
+          },
+          path: file.path,
+        }),
+      ),
     );
 
     for (const term of read.terms) {
@@ -77,7 +114,11 @@ const glossaryOf = (files: readonly Placed[]): Glossary => {
       } else {
         findings.push({
           code: TermsCode.DefinedTwice,
-          message: `defines "${term.term}", which ${earlier.path} of ${earlier.block} defines already; a term is defined once`,
+          details: {
+            firstBlock: earlier.block,
+            firstFile: earlier.path,
+            term: term.term,
+          },
           path: file.path,
         });
       }
@@ -107,7 +148,7 @@ const axisProseOf = (file: BlockFile): string =>
 const axisFindings = (input: {
   defined: readonly Defined[];
   files: readonly Placed[];
-}): readonly Finding[] =>
+}): readonly TermsFinding[] =>
   input.files
     .filter(({ file }) => file.role !== BlockFileRole.Passport)
     .flatMap(({ file }) => {
@@ -119,7 +160,11 @@ const axisFindings = (input: {
         )
         .map((term) => ({
           code: TermsCode.OffAxis,
-          message: `uses "${term.term}", a term of the ${term.axis}; ${file.axis} holds whatever the ${term.axis}`,
+          details: {
+            axis: file.axis,
+            term: term.term,
+            termAxis: term.axis,
+          },
           path: file.path,
         }));
     });
@@ -147,7 +192,7 @@ const reachFindings = (input: {
   graph: BlockGraph;
   defined: readonly Defined[];
   files: readonly Placed[];
-}): readonly Finding[] =>
+}): readonly TermsFinding[] =>
   input.files.flatMap((placed) => {
     const isReached = reaches({
       graph: input.graph,
@@ -159,7 +204,10 @@ const reachFindings = (input: {
       .filter((term) => !isReached(term) && term.matches(prose))
       .map((term) => ({
         code: TermsCode.OutOfReach,
-        message: `uses "${term.term}", which ${term.block} defines; only ${term.block} and the blocks that build on it may`,
+        details: {
+          owner: term.block,
+          term: term.term,
+        },
         path: placed.file.path,
       }));
   });
@@ -169,7 +217,7 @@ const spellingFindings = (input: {
   graph: BlockGraph;
   defined: readonly Defined[];
   files: readonly Placed[];
-}): readonly Finding[] =>
+}): readonly TermsFinding[] =>
   input.files.flatMap((placed) => {
     const isReached = reaches({
       graph: input.graph,
@@ -185,7 +233,12 @@ const spellingFindings = (input: {
         ? [
             {
               code: TermsCode.Misspelled,
-              message: `writes \`${other}\`, which ${term.block} defines as \`${term.term}\`; a ${term.kind} keeps one spelling`,
+              details: {
+                kind: term.kind,
+                owner: term.block,
+                term: term.term,
+                written: other,
+              },
               path: placed.file.path,
             },
           ]
@@ -193,7 +246,10 @@ const spellingFindings = (input: {
     });
   });
 
-const termsCheck: Check = ({ graph, constitution }: CheckInput): readonly Finding[] => {
+const termsCheck: Check<TermsFinding> = ({
+  graph,
+  constitution,
+}: CheckInput): readonly TermsFinding[] => {
   const files = placedFiles(constitution.blocks);
   const { defined, findings } = glossaryOf(files);
 
@@ -216,4 +272,5 @@ const termsCheck: Check = ({ graph, constitution }: CheckInput): readonly Findin
   ];
 };
 
-export { termsCheck };
+export type { TermsDetails };
+export { TermsCode, termsCheck };

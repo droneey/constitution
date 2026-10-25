@@ -1,14 +1,18 @@
 import { describe, expect, it } from 'bun:test';
 
 import { Axis } from '#/kernel/constants';
-import { RequirementAnswer } from '#/kernel/entities';
-import type { Finding } from '#/kernel/types';
+import {
+  RequirementAnswer,
+  RequirementsTableCode,
+  RuleFormCode,
+  ValueSite,
+} from '#/kernel/entities';
+import { ValueFailure } from '#/kernel/errors';
 import { BlockId, PartAddress, RuleSlug } from '#/kernel/value-objects';
 
 import type { Files } from '../../../../../../../__tests__/constitution.fixtures';
 import {
   blockFiles,
-  findingOf,
   loadedOf,
   packSourceOf,
   passportFile,
@@ -19,7 +23,12 @@ import { packFiles } from '../../../../../../../__tests__/pack-files.fixtures';
 import { paraglideCard } from '../../../../../../../__tests__/templates.fixtures';
 import { validFiles } from '../../../../../../../__tests__/valid-files.fixtures';
 import { Binding, Block, BlockFile, ReadStatus } from '../../../../../../entities';
-import { loadConstitution } from '../load-constitution.utils';
+import type { ConstitutionLoaded } from '../load-constitution.utils';
+import { LoadCode, loadConstitution } from '../load-constitution.utils';
+import { BlockLoadCode, FrontMatterReadCode, PlaceCode } from '../steps/load-blocks';
+import { BindingsFileCode } from '../steps/read-bindings';
+
+type LoadFinding = ConstitutionLoaded['findings'][number];
 
 const uiPassport = passportFile({
   body: '# UI\n',
@@ -270,10 +279,11 @@ describe('loadConstitution', () => {
 
       // Assert
       expect(loaded.findings).toStrictEqual([
-        findingOf({
-          code: 'outside-block-folder',
+        {
+          code: PlaceCode.OutsideBlockFolder,
+          details: {},
           path,
-        }),
+        },
       ]);
     },
   );
@@ -305,39 +315,50 @@ describe('loadConstitution', () => {
 
       // Assert
       expect(loaded.findings).toStrictEqual([
-        findingOf({
-          code: 'stray-block-file',
+        {
+          code: PlaceCode.StrayBlockFile,
+          details: {},
           path,
-        }),
+        },
       ]);
     },
   );
 
-  it.each([
+  it.each<{
+    condition: string;
+    files: Files;
+    finding: LoadFinding;
+  }>([
     {
-      code: 'id-not-kebab-case',
       condition: "a block's folder is named by no kebab-case id",
       files: {
         'blocks/domains/Design_System/Design_System.md': uiPassport,
         'blocks/domains/Design_System/foundation/tokens.md': '# Tokens\n',
       },
-      names: [
-        'Design_System',
-      ],
-      path: 'blocks/domains/Design_System',
+      finding: {
+        code: ValueFailure.BlockId,
+        details: {
+          site: ValueSite.BlockFolder,
+          written: 'Design_System',
+        },
+        path: 'blocks/domains/Design_System',
+      },
     },
     {
-      code: 'id-not-kebab-case',
       condition: 'a seam is named by no kebab-case id',
       files: {
         'blocks/domains/ui/architecture/with/Remote_Data.md': '# UI with remote data\n',
         'blocks/domains/ui/ui.md': uiPassport,
       },
-      names: [],
-      path: 'blocks/domains/ui/architecture/with/Remote_Data.md',
+      finding: {
+        code: ValueFailure.BlockId,
+        details: {
+          site: ValueSite.SeamFile,
+        },
+        path: 'blocks/domains/ui/architecture/with/Remote_Data.md',
+      },
     },
     {
-      code: 'slug-not-kebab-case',
       condition: "a rule's heading names no kebab-case slug",
       files: {
         'blocks/domains/ui/foundation/forms.md': `# Forms\n\n## General\n\n${rule({
@@ -345,49 +366,64 @@ describe('loadConstitution', () => {
         })}`,
         'blocks/domains/ui/ui.md': uiPassport,
       },
-      names: [
-        'Inputs_Labelled',
-      ],
-      path: 'blocks/domains/ui/foundation/forms.md',
+      finding: {
+        code: ValueFailure.RuleSlug,
+        details: {
+          site: ValueSite.RuleHeading,
+          written: 'Inputs_Labelled',
+        },
+        path: 'blocks/domains/ui/foundation/forms.md',
+      },
     },
     {
-      code: 'slug-not-kebab-case',
       condition: 'bindings.yaml binds a key that is no kebab-case slug',
       files: {
         'presets/typescript/biome/foundation/bindings.yaml': 'core:\n  Rule_Name: [useAwait]\n',
         'presets/typescript/biome/foundation/core.jsonc': '{}\n',
       },
-      names: [
-        'Rule_Name',
-      ],
-      path: 'presets/typescript/biome/foundation/bindings.yaml',
+      finding: {
+        code: ValueFailure.RuleSlug,
+        details: {
+          site: ValueSite.BoundRule,
+          written: 'Rule_Name',
+        },
+        path: 'presets/typescript/biome/foundation/bindings.yaml',
+      },
     },
     {
-      code: 'part-address-not-path-segments',
       condition: 'bindings.yaml binds a part whose name holds a "/"',
       files: {
         'presets/typescript/biome/foundation/bindings.yaml':
           'react/dom:\n  sample-rule: [useAwait]\n',
         'presets/typescript/biome/foundation/core.jsonc': '{}\n',
       },
-      names: [
-        'react/dom',
-      ],
-      path: 'presets/typescript/biome/foundation/bindings.yaml',
+      finding: {
+        code: ValueFailure.PartAddress,
+        details: {
+          site: ValueSite.BoundPart,
+          written: 'react/dom',
+        },
+        path: 'presets/typescript/biome/foundation/bindings.yaml',
+      },
     },
     {
-      code: 'part-address-not-path-segments',
       condition: 'bindings.yaml binds a part with no name',
       files: {
         'presets/typescript/biome/foundation/bindings.yaml': '"":\n  sample-rule: [useAwait]\n',
         'presets/typescript/biome/foundation/core.jsonc': '{}\n',
       },
-      names: [],
-      path: 'presets/typescript/biome/foundation/bindings.yaml',
+      finding: {
+        code: ValueFailure.PartAddress,
+        details: {
+          site: ValueSite.BoundPart,
+          written: '',
+        },
+        path: 'presets/typescript/biome/foundation/bindings.yaml',
+      },
     },
   ])(
     'should report the malformed name where it is read, and bind nothing by it, when $condition',
-    ({ code, files, names, path }) => {
+    ({ files, finding }) => {
       // Arrange
       const tree = files;
 
@@ -401,11 +437,7 @@ describe('loadConstitution', () => {
       }).toStrictEqual({
         bindings: [],
         findings: [
-          findingOf({
-            code,
-            names,
-            path,
-          }),
+          finding,
         ],
       });
     },
@@ -491,27 +523,29 @@ describe('loadConstitution', () => {
 
   it.each<{
     files: Files;
-    finding: Finding;
+    finding: LoadFinding;
   }>([
     {
       files: {
         'blocks/domains/ui/foundation/with/i18n.md': '---\nid: i18n\n---\n# UI with i18n\n',
         'blocks/domains/ui/ui.md': uiPassport,
       },
-      finding: findingOf({
-        code: 'front-matter-outside-passport',
+      finding: {
+        code: BlockLoadCode.SecondaryFrontMatter,
+        details: {},
         path: 'blocks/domains/ui/foundation/with/i18n.md',
-      }),
+      },
     },
     {
       files: {
         'blocks/domains/ui/architecture/ui.md': '# UI\n',
         'blocks/domains/ui/ui.md': uiPassport,
       },
-      finding: findingOf({
-        code: 'chapter-named-after-its-block',
+      finding: {
+        code: PlaceCode.ChapterNamedAfterBlock,
+        details: {},
         path: 'blocks/domains/ui/architecture/ui.md',
-      }),
+      },
     },
   ])(
     'should report $finding.code when a file breaks the layout of its block',
@@ -531,30 +565,31 @@ describe('loadConstitution', () => {
 
   it.each<{
     files: Files;
-    finding: Finding;
+    finding: LoadFinding;
     name: string;
   }>([
     {
       files: {
         'blocks/domains/ui/foundation/screens.md': '# Screens\n',
       },
-      finding: findingOf({
-        code: 'block-without-passport',
-        names: [
-          'ui.md',
-        ],
+      finding: {
+        code: BlockLoadCode.WithoutPassport,
+        details: {
+          id: BlockId.create('ui'),
+        },
         path: 'blocks/domains/ui',
-      }),
+      },
       name: 'a layer folder has no passport',
     },
     {
       files: {
         'blocks/domains/ui/ui.md': '# UI\n',
       },
-      finding: findingOf({
-        code: 'front-matter-missing',
+      finding: {
+        code: FrontMatterReadCode.Missing,
+        details: {},
         path: 'blocks/domains/ui/ui.md',
-      }),
+      },
       name: 'its passport has no front matter',
     },
   ])('should load no block and report why when $name', ({ files, finding }) => {
@@ -595,30 +630,39 @@ describe('loadConstitution', () => {
 
     // Assert
     expect(loaded.findings).toStrictEqual([
-      findingOf({
-        code: 'block-id-shared',
-        names: [
-          'ui',
-          'blocks/contexts/platforms/ui/ui.md, blocks/implementations/ui/ui.md',
-        ],
+      {
+        code: LoadCode.IdShared,
+        details: {
+          id: BlockId.create('ui'),
+          others: [
+            'blocks/contexts/platforms/ui/ui.md',
+            'blocks/implementations/ui/ui.md',
+          ],
+        },
         path: 'blocks/domains/ui/ui.md',
-      }),
-      findingOf({
-        code: 'block-id-shared',
-        names: [
-          'ui',
-          'blocks/domains/ui/ui.md, blocks/implementations/ui/ui.md',
-        ],
+      },
+      {
+        code: LoadCode.IdShared,
+        details: {
+          id: BlockId.create('ui'),
+          others: [
+            'blocks/domains/ui/ui.md',
+            'blocks/implementations/ui/ui.md',
+          ],
+        },
         path: 'blocks/contexts/platforms/ui/ui.md',
-      }),
-      findingOf({
-        code: 'block-id-shared',
-        names: [
-          'ui',
-          'blocks/domains/ui/ui.md, blocks/contexts/platforms/ui/ui.md',
-        ],
+      },
+      {
+        code: LoadCode.IdShared,
+        details: {
+          id: BlockId.create('ui'),
+          others: [
+            'blocks/domains/ui/ui.md',
+            'blocks/contexts/platforms/ui/ui.md',
+          ],
+        },
         path: 'blocks/implementations/ui/ui.md',
-      }),
+      },
     ]);
   });
 
@@ -687,20 +731,20 @@ describe('loadConstitution', () => {
         }),
       ],
       findings: [
-        findingOf({
-          code: 'rule-heading-misshapen',
-          names: [
-            '## loose · MUST',
-          ],
+        {
+          code: RuleFormCode.HeadingMisshapen,
+          details: {
+            heading: '## loose · MUST',
+          },
           path: 'blocks/implementations/lingui/workflow/catalogs.md',
-        }),
-        findingOf({
-          code: 'requirements-row-misshapen',
-          names: [
-            '| i18n typed keys | catalogs | yes |',
-          ],
+        },
+        {
+          code: RequirementsTableCode.RowMisshapen,
+          details: {
+            row: '| i18n typed keys | catalogs | yes |',
+          },
           path: 'blocks/implementations/lingui/lingui.md',
-        }),
+        },
       ],
       rules: [
         [
@@ -800,34 +844,47 @@ describe('loadConstitution', () => {
     });
   });
 
-  it.each([
+  it.each<{
+    finding: LoadFinding;
+    name: string;
+    text: string;
+  }>([
     {
-      code: 'bindings-not-yaml',
+      finding: {
+        code: BindingsFileCode.NotYaml,
+        details: {
+          reason: 'Unexpected flow-seq-end token in YAML stream: "]"',
+        },
+        path: 'presets/typescript/biome/foundation/bindings.yaml',
+      },
       name: 'the file is not YAML',
-      names: [
-        'Unexpected flow-seq-end token in YAML stream: "]"',
-      ],
       text: 'core: ]\n',
     },
     {
-      code: 'bindings-off-schema',
+      finding: {
+        code: BindingsFileCode.OffSchema,
+        details: {
+          field: '',
+          reason: 'Invalid input: expected record, received array',
+        },
+        path: 'presets/typescript/biome/foundation/bindings.yaml',
+      },
       name: 'the file is a list',
-      names: [
-        '<root>',
-        'Invalid input: expected record, received array',
-      ],
       text: '- core\n',
     },
     {
-      code: 'bindings-off-schema',
+      finding: {
+        code: BindingsFileCode.OffSchema,
+        details: {
+          field: 'core.any-never-typed',
+          reason: 'Too small: expected array to have >=1 items',
+        },
+        path: 'presets/typescript/biome/foundation/bindings.yaml',
+      },
       name: 'a rule lists no setting',
-      names: [
-        'core.any-never-typed',
-        'Too small: expected array to have >=1 items',
-      ],
       text: 'core:\n  any-never-typed: []\n',
     },
-  ])('should report the bindings and load none when $name', ({ code, names, text }) => {
+  ])('should report the bindings and load none when $name', ({ finding, text }) => {
     // Arrange
     const files: Files = {
       ...validFiles(),
@@ -844,11 +901,7 @@ describe('loadConstitution', () => {
     }).toStrictEqual({
       bindings: [],
       findings: [
-        findingOf({
-          code,
-          names,
-          path: 'presets/typescript/biome/foundation/bindings.yaml',
-        }),
+        finding,
       ],
     });
   });
@@ -924,6 +977,48 @@ describe('loadConstitution', () => {
           'blocks/implementations/acme/acme.md',
         ],
       });
+    },
+  );
+
+  it.each<{
+    base: Files;
+    condition: string;
+    findings: readonly LoadFinding[];
+  }>([
+    {
+      base: validFiles(),
+      condition: 'loads',
+      findings: [],
+    },
+    {
+      base: {
+        ...validFiles(),
+        'blocks/domains/ui/drafts.txt': 'drafts\n',
+        'blocks/domains/ui/notes.txt': 'notes\n',
+      },
+      condition: 'does not load',
+      findings: [
+        {
+          code: LoadCode.BaseDoesNotLoad,
+          details: {},
+          path: '.droneey/constitution',
+        },
+      ],
+    },
+  ])(
+    'should report the base once, at its folder, only when the base the pack extends $condition',
+    ({ base, findings }) => {
+      // Arrange
+      const source = packSourceOf({
+        base,
+        pack: packFiles(),
+      });
+
+      // Act
+      const loaded = loadConstitution(source);
+
+      // Assert
+      expect(loaded.findings).toStrictEqual(findings);
     },
   );
 });

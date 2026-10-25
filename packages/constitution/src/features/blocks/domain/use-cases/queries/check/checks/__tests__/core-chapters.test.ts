@@ -1,12 +1,11 @@
 import { describe, expect, it } from 'bun:test';
 
-import {
-  checkInputOf,
-  findingOf,
-  passportFile,
-} from '../../../../../../__tests__/constitution.fixtures';
+import type { FindingOf } from '#/kernel/types';
+
+import { checkInputOf, passportFile } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { coreChaptersCheck } from '../core-chapters';
+import type { CoreChaptersDetails } from '../core-chapters';
+import { CoreChaptersCode, coreChaptersCheck } from '../core-chapters';
 
 const CORE = 'blocks/core/core.md';
 
@@ -68,59 +67,72 @@ describe('coreChaptersCheck', () => {
   });
 
   it.each<{
-    code: string;
     condition: string;
+    finding: FindingOf<CoreChaptersDetails>;
     items: string[];
-    named: string;
   }>([
     {
-      code: 'core-chapter-unlisted',
       condition: 'leaves a chapter out',
+      finding: {
+        code: CoreChaptersCode.ChapterUnlisted,
+        details: {
+          chapter: 'blocks/core/workflow/workflow.md',
+        },
+        path: CORE,
+      },
       items: [
         '- `foundation/`: [principles](foundation/principles.md).',
       ],
-      named: 'blocks/core/workflow/workflow.md',
     },
     {
-      code: 'core-list-names-no-chapter',
       condition: 'links a file that is no chapter of core',
+      finding: {
+        code: CoreChaptersCode.ListsNoChapter,
+        details: {
+          entry: 'blocks/core/core.md',
+        },
+        path: CORE,
+      },
       items: [
         '- `foundation/`: [principles](foundation/principles.md), [passport](core.md).',
         '- `workflow/`: [workflow](workflow/workflow.md).',
       ],
-      named: 'blocks/core/core.md',
     },
     {
-      code: 'core-list-names-no-chapter',
       condition: 'links a file core does not hold',
+      finding: {
+        code: CoreChaptersCode.ListsNoChapter,
+        details: {
+          entry: 'blocks/core/foundation/gone.md',
+        },
+        path: CORE,
+      },
       items: [
         '- `foundation/`: [gone](foundation/gone.md), [principles](foundation/principles.md).',
         '- `workflow/`: [workflow](workflow/workflow.md).',
       ],
-      named: 'blocks/core/foundation/gone.md',
     },
     {
-      code: 'core-chapter-listed-twice',
       condition: 'links a chapter twice',
+      finding: {
+        code: CoreChaptersCode.ListedTwice,
+        details: {
+          entry: 'blocks/core/foundation/principles.md',
+        },
+        path: CORE,
+      },
       items: [
         '- `foundation/`: [principles](foundation/principles.md), [principles](foundation/principles.md).',
         '- `workflow/`: [workflow](workflow/workflow.md).',
       ],
-      named: 'blocks/core/foundation/principles.md',
     },
-  ])('should report the passport when its list $condition', ({ code, items, named }) => {
+  ])('should report the passport when its list $condition', ({ finding, items }) => {
     // Act
     const findings = checkWith(items);
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code,
-        names: [
-          named,
-        ],
-        path: CORE,
-      }),
+      finding,
     ]);
   });
 });

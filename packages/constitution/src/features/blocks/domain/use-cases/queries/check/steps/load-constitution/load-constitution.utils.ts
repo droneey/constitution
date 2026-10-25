@@ -1,6 +1,12 @@
 import { LAYERS, PRESETS_FOLDER, TEMPLATES_FOLDER } from '#/kernel/constants';
-import type { Finding } from '#/kernel/types';
+import type {
+  RequirementsTableDetails,
+  RuleFormDetails,
+  ValueFindingDetails,
+} from '#/kernel/entities';
+import type { FindingOf } from '#/kernel/types';
 import { compareText, normalizePath } from '#/kernel/utils';
+import type { BlockId } from '#/kernel/value-objects';
 
 import type {
   BindingsParser,
@@ -10,8 +16,10 @@ import type {
 } from '../../../../../contracts';
 import type { Constitution, PresetFile } from '../../../../../entities';
 import { Block } from '../../../../../entities';
+import type { BlockLoadDetails, FrontMatterReadDetails, PlaceDetails } from './steps/load-blocks';
 import { loadBlocks } from './steps/load-blocks';
 import { parseBlockRules } from './steps/parse-rules';
+import type { BindingsFileDetails } from './steps/read-bindings';
 import { readBindings } from './steps/read-bindings';
 import { readDocuments } from './steps/read-documents';
 
@@ -19,6 +27,27 @@ enum LoadCode {
   BaseDoesNotLoad = 'base-does-not-load',
   IdShared = 'block-id-shared',
 }
+
+interface LoadDetails {
+  readonly [LoadCode.BaseDoesNotLoad]: object;
+  readonly [LoadCode.IdShared]: {
+    readonly id: BlockId;
+    /** the passports of the other blocks of that id */
+    readonly others: readonly string[];
+  };
+}
+
+/** What each code of the load steps' own findings names. */
+type LoadFindingDetails = BindingsFileDetails &
+  BlockLoadDetails &
+  FrontMatterReadDetails &
+  LoadDetails &
+  PlaceDetails;
+
+/** A finding of loading the Constitution, its rules' parse included. */
+type LoadFinding = FindingOf<
+  LoadFindingDetails & RequirementsTableDetails & RuleFormDetails & ValueFindingDetails
+>;
 
 /** The installed Constitution a pack extends. */
 interface Base {
@@ -29,7 +58,7 @@ interface Base {
 
 interface ConstitutionLoaded {
   readonly constitution: Constitution;
-  readonly findings: readonly Finding[];
+  readonly findings: readonly LoadFinding[];
 }
 
 const presetsPrefix = `${PRESETS_FOLDER}/`;
@@ -38,7 +67,7 @@ const templatesPrefix = `${TEMPLATES_FOLDER}/`;
 const byLayerThenId = (left: Block, right: Block): number =>
   LAYERS.indexOf(left.layer) - LAYERS.indexOf(right.layer) || compareText(left.id, right.id);
 
-const duplicateIdFindings = (blocks: readonly Block[]): readonly Finding[] =>
+const duplicateIdFindings = (blocks: readonly Block[]): readonly LoadFinding[] =>
   blocks.flatMap((block) => {
     const others = blocks.filter(
       (other) => Block.sameAs(other, block) && other.passport.path !== block.passport.path,
@@ -49,14 +78,14 @@ const duplicateIdFindings = (blocks: readonly Block[]): readonly Finding[] =>
       : [
           {
             code: LoadCode.IdShared,
-            message: `shares the id "${block.id}" with ${others.map((other) => other.passport.path).join(', ')}; an id names one block`,
+            details: {
+              id: block.id,
+              others: others.map((other) => other.passport.path),
+            },
             path: block.passport.path,
           },
         ];
   });
-
-const BASE_BROKEN =
-  'is the Constitution this pack extends, and it does not load; check it before the pack';
 
 const SEPARATOR = '/';
 
@@ -140,9 +169,9 @@ const loadConstitution = (input: {
         ? [
             {
               code: LoadCode.BaseDoesNotLoad,
-              message: BASE_BROKEN,
+              details: {},
               path: base.folder,
-            },
+            } satisfies LoadFinding,
           ]
         : []),
       ...duplicateIdFindings(blocks),
@@ -152,5 +181,5 @@ const loadConstitution = (input: {
   };
 };
 
-export type { Base, ConstitutionLoaded };
-export { loadConstitution };
+export type { Base, ConstitutionLoaded, LoadFindingDetails };
+export { LoadCode, loadConstitution };

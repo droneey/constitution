@@ -1,39 +1,87 @@
 import { describe, expect, it } from 'bun:test';
 
-import { WarningCode } from '#/kernel/entities';
+import type { ProjectWarning } from '#/kernel/entities';
+import { WarningCode, WarningKind } from '#/kernel/entities';
 
 import { createWarningLog } from '../warning-log.utils';
 
+const unreadable: ProjectWarning = {
+  code: WarningCode.Pack,
+  details: {
+    file: 'rules/domains/ui/ui.md',
+  },
+  kind: WarningKind.FileUnreadable,
+};
+
 describe('createWarningLog', () => {
-  it('should keep a warning once when its code and message are given again', () => {
+  it('should keep a warning once when its code, kind and details are given again', () => {
     // Arrange
     const log = createWarningLog();
 
-    log.add({
-      code: WarningCode.Pack,
-      message: 'rules is not installed',
-    });
-    log.add({
-      code: WarningCode.Constitution,
-      message: 'rules is not installed',
-    });
+    log.add(unreadable);
 
     // Act
     log.add({
       code: WarningCode.Pack,
-      message: 'rules is not installed',
+      details: {
+        file: 'rules/domains/ui/ui.md',
+      },
+      kind: WarningKind.FileUnreadable,
     });
 
     // Assert
     expect(log.list()).toStrictEqual([
-      {
-        code: WarningCode.Pack,
-        message: 'rules is not installed',
-      },
-      {
+      unreadable,
+    ]);
+  });
+
+  it.each<{
+    condition: string;
+    other: ProjectWarning;
+  }>([
+    {
+      condition: 'only its code differs',
+      other: {
         code: WarningCode.Constitution,
-        message: 'rules is not installed',
+        details: {
+          file: 'rules/domains/ui/ui.md',
+        },
+        kind: WarningKind.FileUnreadable,
       },
+    },
+    {
+      condition: 'only its kind differs',
+      other: {
+        code: WarningCode.Pack,
+        details: {
+          file: 'rules/domains/ui/ui.md',
+        },
+        kind: WarningKind.FrontMatterMissing,
+      },
+    },
+    {
+      condition: 'only its details differ',
+      other: {
+        code: WarningCode.Pack,
+        details: {
+          file: 'rules/domains/api/api.md',
+        },
+        kind: WarningKind.FileUnreadable,
+      },
+    },
+  ])('should keep both warnings when $condition', ({ other }) => {
+    // Arrange
+    const log = createWarningLog();
+
+    log.add(unreadable);
+
+    // Act
+    log.add(other);
+
+    // Assert
+    expect(log.list()).toStrictEqual([
+      unreadable,
+      other,
     ]);
   });
 
@@ -43,19 +91,25 @@ describe('createWarningLog', () => {
 
     log.add({
       code: WarningCode.Constitution,
-      message: 'first constitution',
+      details: {
+        file: 'blocks/domains/ui/ui.md',
+      },
+      kind: WarningKind.FileUnreadable,
     });
-    log.add({
-      code: WarningCode.Pack,
-      message: 'first pack',
-    });
+    log.add(unreadable);
     log.add({
       code: WarningCode.Constitution,
-      message: 'second constitution',
+      details: {
+        file: 'blocks/domains/api/api.md',
+      },
+      kind: WarningKind.FileUnreadable,
     });
     log.add({
-      code: WarningCode.Missing,
-      message: 'missing',
+      code: WarningCode.Unknown,
+      details: {
+        name: 'forms',
+      },
+      kind: WarningKind.NameUnknown,
     });
 
     // Act
@@ -64,20 +118,26 @@ describe('createWarningLog', () => {
     // Assert
     expect(warnings).toStrictEqual([
       {
-        code: WarningCode.Missing,
-        message: 'missing',
+        code: WarningCode.Unknown,
+        details: {
+          name: 'forms',
+        },
+        kind: WarningKind.NameUnknown,
       },
+      unreadable,
       {
-        code: WarningCode.Pack,
-        message: 'first pack',
+        code: WarningCode.Constitution,
+        details: {
+          file: 'blocks/domains/ui/ui.md',
+        },
+        kind: WarningKind.FileUnreadable,
       },
       {
         code: WarningCode.Constitution,
-        message: 'first constitution',
-      },
-      {
-        code: WarningCode.Constitution,
-        message: 'second constitution',
+        details: {
+          file: 'blocks/domains/api/api.md',
+        },
+        kind: WarningKind.FileUnreadable,
       },
     ]);
   });

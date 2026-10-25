@@ -1,5 +1,3 @@
-import type { ProjectWarning } from '#/kernel/entities';
-
 // The digest's budgets count bytes: the room after its header, the warnings' share of it, and the
 // room kept for the note of the block list's lines left out.
 const BUDGET_BYTES = 9400;
@@ -29,14 +27,10 @@ const openSection = (body: Body): void => {
   }
 };
 
-const putWarnings = (input: {
-  body: Body;
-  isStartup: boolean;
-  warnings: readonly ProjectWarning[];
-}): void => {
-  const { body, warnings } = input;
+const putWarnings = (input: { body: Body; isStartup: boolean; lines: readonly string[] }): void => {
+  const { body, lines } = input;
 
-  if (warnings.length === 0) {
+  if (lines.length === 0) {
     return;
   }
 
@@ -46,7 +40,6 @@ const putWarnings = (input: {
     line: input.isStartup ? '⚠️ Warnings — tell the user at the start of the session' : '⚠️ Warnings',
   });
 
-  const lines = warnings.map((warning) => `- ${warning.code}: ${warning.message}`);
   let given = 0;
   let bytes = 0;
 
@@ -158,12 +151,12 @@ const coreBodyOf = (core: string): readonly string[] => {
   return body.lines;
 };
 
-/** The warnings, core's text and the block list, each within its share of the budget. */
+/** The warnings' lines, core's text and the block list, each within its share of the budget. */
 const budgetedBodyOf = (input: {
   blockList: readonly string[];
   core: string;
   isStartup: boolean;
-  warnings: readonly ProjectWarning[];
+  warnings: readonly string[];
 }): readonly string[] => {
   const body: Body = {
     lines: [],
@@ -173,7 +166,7 @@ const budgetedBodyOf = (input: {
   putWarnings({
     body,
     isStartup: input.isStartup,
-    warnings: input.warnings,
+    lines: input.warnings,
   });
   putCore({
     body,

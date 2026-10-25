@@ -1,11 +1,11 @@
 import { LAYERS, Layer } from '#/kernel/constants';
-import type { Finding } from '#/kernel/types';
+import type { FindingOf } from '#/kernel/types';
 import { BlockId } from '#/kernel/value-objects';
 
 import type { Block, BlockGraph, FrontMatter } from '../../../../entities';
+import { FrontMatterField } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
 import { requirableBy } from '../shared/layers';
-import { aBlock } from '../shared/wording';
 
 enum FrontMatterCode {
   IdMismatch = 'id-mismatches-folder',
@@ -15,88 +15,116 @@ enum FrontMatterCode {
   UnderscoreNotAbstract = 'underscore-id-not-abstract',
 }
 
-enum LayerField {
-  Requires = 'requires',
-  Extends = 'extends',
-  Abstract = 'abstract',
-  Languages = 'languages',
+/** a field of the front matter that only some layers fill */
+type LayerField =
+  | FrontMatterField.Requires
+  | FrontMatterField.Extends
+  | FrontMatterField.Abstract
+  | FrontMatterField.Languages;
+
+interface FrontMatterDetails {
+  readonly [FrontMatterCode.IdMismatch]: {
+    readonly declared: BlockId;
+    readonly folder: BlockId;
+  };
+  readonly [FrontMatterCode.FieldOutsideLayer]: {
+    readonly field: LayerField;
+    readonly layer: Layer;
+  };
+  readonly [FrontMatterCode.NotLanguage]: {
+    readonly listed: BlockId;
+  };
+  readonly [FrontMatterCode.AbstractWithoutUnderscore]: object;
+  readonly [FrontMatterCode.UnderscoreNotAbstract]: object;
 }
 
+type FrontMatterFinding = FindingOf<FrontMatterDetails>;
+
 const LAYER_FIELDS: readonly LayerField[] = [
-  LayerField.Requires,
-  LayerField.Extends,
-  LayerField.Abstract,
-  LayerField.Languages,
+  FrontMatterField.Requires,
+  FrontMatterField.Extends,
+  FrontMatterField.Abstract,
+  FrontMatterField.Languages,
 ] as const;
 
 const builtOn: readonly Layer[] = LAYERS.filter((layer) => layer !== Layer.Core);
 
 const filledOn: Readonly<Record<LayerField, readonly Layer[]>> = {
-  [LayerField.Abstract]: builtOn,
-  [LayerField.Extends]: builtOn,
-  [LayerField.Languages]: [
+  [FrontMatterField.Abstract]: builtOn,
+  [FrontMatterField.Extends]: builtOn,
+  [FrontMatterField.Languages]: [
     Layer.Implementation,
   ],
-  [LayerField.Requires]: LAYERS.filter((layer) => requirableBy(layer).length > 0),
+  [FrontMatterField.Requires]: LAYERS.filter((layer) => requirableBy(layer).length > 0),
 };
 
 const isEmpty = (field: FrontMatter[LayerField]): boolean =>
   field === undefined || field === false || (Array.isArray(field) && field.length === 0);
 
-const identityFindings = (block: Block): readonly Finding[] =>
+const identityFindings = (block: Block): readonly FrontMatterFinding[] =>
   BlockId.equals(block.frontMatter.id, block.id)
     ? []
     : [
         {
           code: FrontMatterCode.IdMismatch,
-          message: `declares the id "${block.frontMatter.id}"; its folder names it "${block.id}"`,
+          details: {
+            declared: block.frontMatter.id,
+            folder: block.id,
+          },
           path: block.passport.path,
         },
       ];
 
-const layerFindings = (block: Block): readonly Finding[] =>
+const layerFindings = (block: Block): readonly FrontMatterFinding[] =>
   LAYER_FIELDS.filter(
     (field) => !(filledOn[field].includes(block.layer) || isEmpty(block.frontMatter[field])),
   ).map((field) => ({
     code: FrontMatterCode.FieldOutsideLayer,
-    message: `sets "${field}", which ${aBlock(block.layer)} leaves empty`,
+    details: {
+      field,
+      layer: block.layer,
+    },
     path: block.passport.path,
   }));
 
 // A tool's languages are those whose files its presets cover. A layer that
 // leaves the field empty is reported by layerFindings alone.
-const languageFindings = (input: { block: Block; graph: BlockGraph }): readonly Finding[] =>
-  filledOn[LayerField.Languages].includes(input.block.layer)
+const languageFindings = (input: {
+  block: Block;
+  graph: BlockGraph;
+}): readonly FrontMatterFinding[] =>
+  filledOn[FrontMatterField.Languages].includes(input.block.layer)
     ? input.block.frontMatter.languages
         .filter((id) => input.graph.get(id)?.layer !== Layer.Language)
-        .map((id) => ({
+        .map((listed) => ({
           code: FrontMatterCode.NotLanguage,
-          message: `languages lists ${id}, which is not a language block`,
+          details: {
+            listed,
+          },
           path: input.block.passport.path,
         }))
     : [];
 
-const flagFindings = (block: Block): readonly Finding[] => {
+const flagFindings = (block: Block): readonly FrontMatterFinding[] => {
   const isAbstract = block.frontMatter.abstract;
 
   return isAbstract === BlockId.isAbstract(block.id)
     ? []
     : [
-        isAbstract
-          ? {
-              code: FrontMatterCode.AbstractWithoutUnderscore,
-              message: 'is abstract, so its id starts with "_"',
-              path: block.passport.path,
-            }
-          : {
-              code: FrontMatterCode.UnderscoreNotAbstract,
-              message: 'has an id starting with "_", so it is abstract',
-              path: block.passport.path,
-            },
+        {
+          code: isAbstract
+            ? FrontMatterCode.AbstractWithoutUnderscore
+            : FrontMatterCode.UnderscoreNotAbstract,
+          details: {},
+          path: block.passport.path,
+        },
       ];
 };
 
-const frontMatterCheck: Check = ({ graph, constitution }: CheckInput): readonly Finding[] =>
+const frontMatterCheck: Check<FrontMatterFinding> = ({
+  graph,
+  constitution,
+}: CheckInput): readonly FrontMatterFinding[] =>
   constitution.blocks.flatMap((block) => [
     ...identityFindings(block),
     ...layerFindings(block),
@@ -107,4 +135,5 @@ const frontMatterCheck: Check = ({ graph, constitution }: CheckInput): readonly 
     ...flagFindings(block),
   ]);
 
-export { frontMatterCheck };
+export type { FrontMatterDetails };
+export { FrontMatterCode, frontMatterCheck };

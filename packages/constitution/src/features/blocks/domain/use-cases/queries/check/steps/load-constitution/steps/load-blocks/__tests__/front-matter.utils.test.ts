@@ -1,12 +1,14 @@
 import { describe, expect, it } from 'bun:test';
 
+import { ValueSite } from '#/kernel/entities';
+import { ValueFailure } from '#/kernel/errors';
 import { BlockId, Glob } from '#/kernel/value-objects';
 
-import { findingOf } from '../../../../../../../../../__tests__/constitution.fixtures';
 import { createFakeFrontMatterParser } from '../../../../../../../../../__tests__/front-matter-parser.fake';
 import type { FrontMatterFields, FrontMatterRead } from '../../../../../../../../contracts';
-import { FrontMatter, ReadStatus } from '../../../../../../../../entities';
-import { readFrontMatter } from '../front-matter.utils';
+import { FrontMatter, FrontMatterField, ReadStatus } from '../../../../../../../../entities';
+import type { FrontMatterReadFinding } from '../front-matter.utils';
+import { FrontMatterReadCode, readFrontMatter } from '../front-matter.utils';
 
 const PATH = 'blocks/domains/ui/ui.md';
 const TEXT = '---\nid: ui\n---\n# UI\n';
@@ -20,8 +22,15 @@ const FIELDS: FrontMatterFields = {
   requires: [],
   summary: 'The ui block.',
 } as const;
-// A message that interpolates a value it does not hold reads "undefined" or "NaN".
-const UNFILLED = /undefined|NaN/;
+const fieldOrder = [
+  FrontMatterField.Id,
+  FrontMatterField.Summary,
+  FrontMatterField.Requires,
+  FrontMatterField.Extends,
+  FrontMatterField.Abstract,
+  FrontMatterField.Languages,
+  FrontMatterField.Governs,
+];
 const keyLines = [
   'id',
   'summary',
@@ -136,10 +145,11 @@ describe('readFrontMatter', () => {
       expect(loaded).toStrictEqual({
         body: text,
         findings: [
-          findingOf({
-            code: 'front-matter-missing',
+          {
+            code: FrontMatterReadCode.Missing,
+            details: {},
             path: PATH,
-          }),
+          },
         ],
       });
     },
@@ -161,10 +171,9 @@ describe('readFrontMatter', () => {
   });
 
   it.each<{
-    code: string;
+    finding: FrontMatterReadFinding;
     lines: readonly string[];
     name: string;
-    names: readonly string[];
     read: FrontMatterRead;
   }>([
     {
@@ -173,11 +182,17 @@ describe('readFrontMatter', () => {
         'summary: Screens: states.',
         'requires: []',
       ],
-      code: 'front-matter-not-yaml',
-      names: [
-        'line 3 (summary)',
-        'broken',
-      ],
+      finding: {
+        code: FrontMatterReadCode.NotYaml,
+        details: {
+          at: {
+            key: 'summary',
+            line: 3,
+          },
+          reason: 'broken',
+        },
+        path: PATH,
+      },
       name: 'a YAML error on the line of a field',
       read: {
         line: 2,
@@ -190,11 +205,17 @@ describe('readFrontMatter', () => {
         'id: ui',
         'summary : Screens.',
       ],
-      code: 'front-matter-not-yaml',
-      names: [
-        'line 3 (summary)',
-        'broken',
-      ],
+      finding: {
+        code: FrontMatterReadCode.NotYaml,
+        details: {
+          at: {
+            key: 'summary',
+            line: 3,
+          },
+          reason: 'broken',
+        },
+        path: PATH,
+      },
       name: 'a YAML error on the line of a field with a space before its colon',
       read: {
         line: 2,
@@ -208,11 +229,17 @@ describe('readFrontMatter', () => {
         'governs:',
         '  - pattern: *.tsx',
       ],
-      code: 'front-matter-not-yaml',
-      names: [
-        'line 4 (governs)',
-        'broken',
-      ],
+      finding: {
+        code: FrontMatterReadCode.NotYaml,
+        details: {
+          at: {
+            key: 'governs',
+            line: 4,
+          },
+          reason: 'broken',
+        },
+        path: PATH,
+      },
       name: 'a YAML error on a nested line under a field',
       read: {
         line: 3,
@@ -225,11 +252,16 @@ describe('readFrontMatter', () => {
         '- id',
         'summary: Screens.',
       ],
-      code: 'front-matter-not-yaml',
-      names: [
-        'line 2',
-        'broken',
-      ],
+      finding: {
+        code: FrontMatterReadCode.NotYaml,
+        details: {
+          at: {
+            line: 2,
+          },
+          reason: 'broken',
+        },
+        path: PATH,
+      },
       name: 'a YAML error above every field',
       read: {
         line: 1,
@@ -241,10 +273,13 @@ describe('readFrontMatter', () => {
       lines: [
         'id: ui',
       ],
-      code: 'front-matter-not-yaml',
-      names: [
-        'broken',
-      ],
+      finding: {
+        code: FrontMatterReadCode.NotYaml,
+        details: {
+          reason: 'broken',
+        },
+        path: PATH,
+      },
       name: 'a YAML error at no known line',
       read: {
         line: undefined,
@@ -256,8 +291,11 @@ describe('readFrontMatter', () => {
       lines: [
         '- id',
       ],
-      code: 'front-matter-not-a-mapping',
-      names: [],
+      finding: {
+        code: FrontMatterReadCode.NotMapping,
+        details: {},
+        path: PATH,
+      },
       name: 'a list',
       read: {
         status: ReadStatus.NotMapping,
@@ -267,18 +305,21 @@ describe('readFrontMatter', () => {
       lines: [
         'abstract: "no"',
       ],
-      code: 'front-matter-off-schema',
-      names: [
-        'abstract',
-        'expected a boolean',
-      ],
+      finding: {
+        code: FrontMatterReadCode.OffSchema,
+        details: {
+          field: 'abstract',
+          reason: 'expected boolean',
+        },
+        path: PATH,
+      },
       name: 'a field of the wrong type',
       read: {
         fields: undefined,
         issues: [
           {
             field: 'abstract',
-            message: 'expected a boolean',
+            message: 'expected boolean',
           },
         ],
         keys: keyLines,
@@ -289,25 +330,28 @@ describe('readFrontMatter', () => {
       lines: [
         'id: ui',
       ],
-      code: 'front-matter-off-schema',
-      names: [
-        '<root>',
-        'expected an object',
-      ],
+      finding: {
+        code: FrontMatterReadCode.OffSchema,
+        details: {
+          field: '',
+          reason: 'expected object',
+        },
+        path: PATH,
+      },
       name: 'an issue at the root',
       read: {
         fields: undefined,
         issues: [
           {
             field: '',
-            message: 'expected an object',
+            message: 'expected object',
           },
         ],
         keys: keyLines,
         status: ReadStatus.Mapping,
       },
     },
-  ])('should report $code when the parser reads $name', ({ code, lines, names, read }) => {
+  ])('should report $finding.code when the parser reads $name', ({ finding, lines, read }) => {
     // Arrange
     const parser = createFakeFrontMatterParser(read);
     const text = [
@@ -328,97 +372,119 @@ describe('readFrontMatter', () => {
     expect(loaded).toStrictEqual({
       body: '# UI',
       findings: [
-        findingOf({
-          code,
-          names,
-          path: PATH,
-        }),
+        finding,
       ],
     });
-    expect(loaded.findings[0]?.message).not.toMatch(UNFILLED);
   });
 
   it.each<{
-    code: string;
     fields?: Partial<FrontMatterFields>;
+    finding: FrontMatterReadFinding;
     keys?: readonly string[];
     name: string;
-    names: readonly string[];
   }>([
     {
+      finding: {
+        code: FrontMatterReadCode.FieldMissing,
+        details: {
+          field: FrontMatterField.Governs,
+        },
+        path: PATH,
+      },
       keys: keyLines.filter((key) => key !== 'governs'),
-      code: 'front-matter-field-missing',
-      names: [
-        'governs',
-      ],
       name: 'a missing field',
     },
     {
+      finding: {
+        code: FrontMatterReadCode.FieldUnknown,
+        details: {
+          key: 'brands',
+        },
+        path: PATH,
+      },
       keys: [
         ...keyLines,
-        'brands',
-      ],
-      code: 'front-matter-field-unknown',
-      names: [
         'brands',
       ],
       name: 'an unknown field',
     },
     {
+      finding: {
+        code: FrontMatterReadCode.OutOfOrder,
+        details: {
+          order: fieldOrder,
+        },
+        path: PATH,
+      },
       keys: [
         'summary',
         'id',
         ...keyLines.slice(2),
       ],
-      code: 'front-matter-out-of-order',
-      names: [],
       name: 'its fields out of order',
     },
     {
       fields: {
         id: 'ui_kit',
       },
-      code: 'id-not-kebab-case',
-      names: [
-        'ui_kit',
-      ],
+      finding: {
+        code: ValueFailure.BlockId,
+        details: {
+          site: ValueSite.FrontMatterId,
+          written: 'ui_kit',
+        },
+        path: PATH,
+      },
       name: 'an id in snake case',
     },
     {
       fields: {
         summary: `${'A'.repeat(70)}.`,
       },
-      code: 'summary-too-long',
-      names: [
-        '71',
-      ],
+      finding: {
+        code: FrontMatterReadCode.SummaryTooLong,
+        details: {
+          characters: 71,
+          limit: 70,
+        },
+        path: PATH,
+      },
       name: 'a summary of 71 characters',
     },
     {
       fields: {
         summary: 'Screens. And tokens',
       },
-      code: 'summary-not-one-sentence',
-      names: [],
+      finding: {
+        code: FrontMatterReadCode.SummaryNotSentence,
+        details: {},
+        path: PATH,
+      },
       name: 'a summary with no full stop at its end',
     },
     {
       fields: {
         summary: 'Screens\nand tokens.',
       },
-      code: 'summary-not-one-sentence',
-      names: [],
+      finding: {
+        code: FrontMatterReadCode.SummaryNotSentence,
+        details: {},
+        path: PATH,
+      },
       name: 'a summary over two lines',
     },
     {
       fields: {
         extends: 'Bad',
       },
-      code: 'entry-not-block-id',
-      names: [
-        'extends',
-        'Bad',
-      ],
+      finding: {
+        code: FrontMatterReadCode.NotBlockId,
+        details: {
+          entry: 'Bad',
+          field: FrontMatterField.Extends,
+        },
+        path: PATH,
+      },
       name: 'an extends that is no block id',
     },
     {
@@ -427,11 +493,14 @@ describe('readFrontMatter', () => {
           'Bad',
         ],
       },
-      code: 'entry-not-block-id',
-      names: [
-        'requires',
-        'Bad',
-      ],
+      finding: {
+        code: FrontMatterReadCode.NotBlockId,
+        details: {
+          entry: 'Bad',
+          field: FrontMatterField.Requires,
+        },
+        path: PATH,
+      },
       name: 'a requires entry that is no block id',
     },
     {
@@ -440,11 +509,14 @@ describe('readFrontMatter', () => {
           'Type Script',
         ],
       },
-      code: 'entry-not-block-id',
-      names: [
-        'languages',
-        'Type Script',
-      ],
+      finding: {
+        code: FrontMatterReadCode.NotBlockId,
+        details: {
+          entry: 'Type Script',
+          field: FrontMatterField.Languages,
+        },
+        path: PATH,
+      },
       name: 'a languages entry that is no block id',
     },
     {
@@ -454,11 +526,14 @@ describe('readFrontMatter', () => {
           'css',
         ],
       },
-      code: 'entry-repeated',
-      names: [
-        'languages',
-        'css',
-      ],
+      finding: {
+        code: FrontMatterReadCode.EntryRepeated,
+        details: {
+          entry: 'css',
+          field: FrontMatterField.Languages,
+        },
+        path: PATH,
+      },
       name: 'the same language in languages twice',
     },
     {
@@ -467,8 +542,11 @@ describe('readFrontMatter', () => {
           '',
         ],
       },
-      code: 'entry-empty',
-      names: [],
+      finding: {
+        code: FrontMatterReadCode.EntryEmpty,
+        details: {},
+        path: PATH,
+      },
       name: 'an empty governs entry',
     },
     {
@@ -477,10 +555,14 @@ describe('readFrontMatter', () => {
           'src/my ui/**',
         ],
       },
-      code: 'glob-holds-whitespace',
-      names: [
-        '"src/my ui/**"',
-      ],
+      finding: {
+        code: ValueFailure.Glob,
+        details: {
+          site: ValueSite.Governs,
+          written: 'src/my ui/**',
+        },
+        path: PATH,
+      },
       name: 'a governs glob with a space',
     },
     {
@@ -489,13 +571,17 @@ describe('readFrontMatter', () => {
           'src/ui\t**',
         ],
       },
-      code: 'glob-holds-whitespace',
-      names: [
-        '"src/ui\\t**"',
-      ],
+      finding: {
+        code: ValueFailure.Glob,
+        details: {
+          site: ValueSite.Governs,
+          written: 'src/ui\t**',
+        },
+        path: PATH,
+      },
       name: 'a governs glob with a tab',
     },
-  ])('should report $code when the front matter has $name', ({ code, fields, keys, names }) => {
+  ])('should report $finding.code when the front matter has $name', ({ fields, finding, keys }) => {
     // Arrange
     const read = mappingOf({
       fields,
@@ -509,11 +595,7 @@ describe('readFrontMatter', () => {
     expect(loaded).toStrictEqual({
       body: BODY,
       findings: [
-        findingOf({
-          code,
-          names,
-          path: PATH,
-        }),
+        finding,
       ],
     });
   });
@@ -535,14 +617,57 @@ describe('readFrontMatter', () => {
     expect(loaded).toStrictEqual({
       body: BODY,
       findings: [
-        findingOf({
-          code: 'entry-empty',
+        {
+          code: FrontMatterReadCode.EntryEmpty,
+          details: {},
           path: PATH,
-        }),
-        findingOf({
-          code: 'glob-holds-whitespace',
+        },
+        {
+          code: ValueFailure.Glob,
+          details: {
+            site: ValueSite.Governs,
+            written: ' ',
+          },
           path: PATH,
-        }),
+        },
+      ],
+    });
+  });
+
+  it('should report a problem met at two entries once', () => {
+    // Arrange
+    const read = mappingOf({
+      fields: {
+        requires: [
+          'Bad',
+          'Bad',
+        ],
+      },
+    });
+
+    // Act
+    const loaded = readOf(read);
+
+    // Assert
+    expect(loaded).toStrictEqual({
+      body: BODY,
+      findings: [
+        {
+          code: FrontMatterReadCode.NotBlockId,
+          details: {
+            entry: 'Bad',
+            field: FrontMatterField.Requires,
+          },
+          path: PATH,
+        },
+        {
+          code: FrontMatterReadCode.EntryRepeated,
+          details: {
+            entry: 'Bad',
+            field: FrontMatterField.Requires,
+          },
+          path: PATH,
+        },
       ],
     });
   });

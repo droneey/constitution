@@ -1,14 +1,11 @@
 import { describe, expect, it } from 'bun:test';
 
-import type { Finding } from '#/kernel/types';
+import type { FindingOf } from '#/kernel/types';
 
-import {
-  checkInputOf,
-  findingOf,
-  without,
-} from '../../../../../../__tests__/constitution.fixtures';
+import { checkInputOf, without } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { decisionsCheck } from '../decisions';
+import type { DecisionsDetails } from '../decisions';
+import { DecisionsCode, decisionsCheck } from '../decisions';
 
 const LOG = 'DECISIONS.md';
 const ACCEPTED = '**Date:** 2026-09-25 · **Status:** Accepted';
@@ -38,27 +35,29 @@ describe('decisionsCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'decision-log-missing',
+      {
+        code: DecisionsCode.LogMissing,
+        details: {},
         path: LOG,
-      }),
+      },
     ]);
   });
 
   it.each<{
-    expected: Finding[];
+    expected: FindingOf<DecisionsDetails>[];
     name: string;
     numbers: string[];
   }>([
     {
       expected: [
-        findingOf({
-          code: 'decision-out-of-order',
-          names: [
-            'ADR-0001',
-          ],
+        {
+          code: DecisionsCode.OutOfOrder,
+          details: {
+            entry: 1,
+            previous: 1,
+          },
           path: LOG,
-        }),
+        },
       ],
       name: 'a number repeats',
       numbers: [
@@ -68,14 +67,14 @@ describe('decisionsCheck', () => {
     },
     {
       expected: [
-        findingOf({
-          code: 'decision-out-of-order',
-          names: [
-            'ADR-0002',
-            'ADR-0003',
-          ],
+        {
+          code: DecisionsCode.OutOfOrder,
+          details: {
+            entry: 2,
+            previous: 3,
+          },
           path: LOG,
-        }),
+        },
       ],
       name: 'a number falls',
       numbers: [
@@ -107,119 +106,119 @@ describe('decisionsCheck', () => {
   });
 
   it.each<{
-    expected: Finding[];
+    expected: FindingOf<DecisionsDetails>[];
     line: string;
   }>([
     {
       expected: [
-        findingOf({
-          code: 'decision-without-date-line',
-          names: [
-            'ADR-0001',
-          ],
+        {
+          code: DecisionsCode.WithoutDateLine,
+          details: {
+            entry: 1,
+          },
           path: LOG,
-        }),
+        },
       ],
       line: '**Date:** 2026-09-25 · **Status:** Done',
     },
     {
       expected: [
-        findingOf({
-          code: 'decision-without-date-line',
-          names: [
-            'ADR-0001',
-          ],
+        {
+          code: DecisionsCode.WithoutDateLine,
+          details: {
+            entry: 1,
+          },
           path: LOG,
-        }),
+        },
       ],
       line: '- **Date:** 2026-09-25 · **Status:** Accepted',
     },
     {
       expected: [
-        findingOf({
-          code: 'decision-without-date-line',
-          names: [
-            'ADR-0001',
-          ],
+        {
+          code: DecisionsCode.WithoutDateLine,
+          details: {
+            entry: 1,
+          },
           path: LOG,
-        }),
+        },
       ],
       line: '**Date:** 2026-09-25 · **Status:** Accepted by the team',
     },
     {
       expected: [
-        findingOf({
-          code: 'decision-without-date-line',
-          names: [
-            'ADR-0001',
-          ],
+        {
+          code: DecisionsCode.WithoutDateLine,
+          details: {
+            entry: 1,
+          },
           path: LOG,
-        }),
+        },
       ],
       line: '**Date:** 2026-09-25 · **Status:** Superseded by ADR-0002',
     },
     {
       expected: [
-        findingOf({
-          code: 'decision-date-not-in-calendar',
-          names: [
-            'ADR-0001',
-            '2026-02-30',
-          ],
+        {
+          code: DecisionsCode.NotCalendarDate,
+          details: {
+            date: '2026-02-30',
+            entry: 1,
+          },
           path: LOG,
-        }),
+        },
       ],
       line: '**Date:** 2026-02-30 · **Status:** Accepted',
     },
     {
       expected: [
-        findingOf({
-          code: 'decision-date-not-in-calendar',
-          names: [
-            'ADR-0001',
-            '2026-13-05',
-          ],
+        {
+          code: DecisionsCode.NotCalendarDate,
+          details: {
+            date: '2026-13-05',
+            entry: 1,
+          },
           path: LOG,
-        }),
+        },
       ],
       line: '**Date:** 2026-13-05 · **Status:** Accepted',
     },
     {
       expected: [
-        findingOf({
-          code: 'decision-date-not-in-calendar',
-          names: [
-            'ADR-0001',
-            '2027-02-29',
-          ],
+        {
+          code: DecisionsCode.NotCalendarDate,
+          details: {
+            date: '2027-02-29',
+            entry: 1,
+          },
           path: LOG,
-        }),
+        },
       ],
       line: '**Date:** 2027-02-29 · **Status:** Accepted',
     },
     {
       expected: [
-        findingOf({
-          code: 'decision-date-not-in-calendar',
-          names: [
-            'ADR-0001',
-            '2026-00-10',
-          ],
+        {
+          code: DecisionsCode.NotCalendarDate,
+          details: {
+            date: '2026-00-10',
+            entry: 1,
+          },
           path: LOG,
-        }),
+        },
       ],
       line: '**Date:** 2026-00-10 · **Status:** Accepted',
     },
     {
       expected: [
-        findingOf({
-          code: 'decision-date-not-in-calendar',
-          names: [
-            'ADR-0001',
-            '2026-05-00',
-          ],
+        {
+          code: DecisionsCode.NotCalendarDate,
+          details: {
+            date: '2026-05-00',
+            entry: 1,
+          },
           path: LOG,
-        }),
+        },
       ],
       line: '**Date:** 2026-05-00 · **Status:** Accepted',
     },

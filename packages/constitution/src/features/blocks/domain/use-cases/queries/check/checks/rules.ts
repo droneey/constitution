@@ -1,6 +1,7 @@
+import type { Axis, Level } from '#/kernel/constants';
 import { Layer, Lens } from '#/kernel/constants';
 import { Rule } from '#/kernel/entities';
-import type { Finding, Problem } from '#/kernel/types';
+import type { FindingOf, ProblemOf } from '#/kernel/types';
 import type { RuleSlug } from '#/kernel/value-objects';
 import { BlockId } from '#/kernel/value-objects';
 
@@ -25,36 +26,120 @@ enum RulesCode {
   OutsideParentChapter = 'rule-outside-parent-chapter',
 }
 
+interface RulesDetails {
+  readonly [RulesCode.SlugOpensWithNo]: {
+    readonly slug: RuleSlug;
+  };
+  readonly [RulesCode.WithoutStatement]: {
+    readonly slug: RuleSlug;
+  };
+  readonly [RulesCode.WithoutWhy]: {
+    readonly slug: RuleSlug;
+  };
+  readonly [RulesCode.TagNotLens]: {
+    readonly slug: RuleSlug;
+    readonly tag: string;
+  };
+  readonly [RulesCode.DefinedTwice]: {
+    /** the file of the rule's first definition */
+    readonly firstFile: string;
+    readonly slug: RuleSlug;
+  };
+  readonly [RulesCode.ParentNotRule]: {
+    readonly parent: RuleSlug;
+    readonly slug: RuleSlug;
+  };
+  readonly [RulesCode.ParentChainCycle]: {
+    /** the slugs of the chain, from the rule back to it */
+    readonly cycle: readonly RuleSlug[];
+    readonly slug: RuleSlug;
+  };
+  readonly [RulesCode.ParentInOwnBlock]: {
+    readonly parent: RuleSlug;
+    readonly slug: RuleSlug;
+  };
+  readonly [RulesCode.ParentOutOfReach]: {
+    readonly parent: RuleSlug;
+    readonly parentBlock: BlockId;
+    readonly slug: RuleSlug;
+  };
+  readonly [RulesCode.ParentSeamOutOfReach]: {
+    readonly parent: RuleSlug;
+    readonly parentBlock: BlockId;
+    readonly parentSeam: BlockId;
+    readonly slug: RuleSlug;
+  };
+  readonly [RulesCode.ParentOffAxis]: {
+    readonly axis: Axis;
+    readonly parent: RuleSlug;
+    readonly parentAxis: Axis;
+    readonly slug: RuleSlug;
+  };
+  readonly [RulesCode.LooserThanParent]: {
+    readonly level: Level;
+    readonly parent: RuleSlug;
+    readonly parentLevel: Level;
+    readonly slug: RuleSlug;
+  };
+  readonly [RulesCode.WithoutLevel]: {
+    readonly parent: RuleSlug;
+    readonly slug: RuleSlug;
+  };
+  readonly [RulesCode.OutsideParentChapter]: {
+    /** the title of the rule's chapter, if it has one */
+    readonly chapter?: string;
+    readonly parent: RuleSlug;
+    /** the title of the parent's chapter, if it has one */
+    readonly parentChapter?: string;
+    readonly slug: RuleSlug;
+  };
+}
+
+type RulesFinding = FindingOf<RulesDetails>;
+
+type RulesProblem = ProblemOf<RulesDetails>;
+
 const lenses: readonly string[] = Object.values(Lens);
 
-const fieldProblems = (rule: Rule): readonly (Problem | undefined)[] => {
+const fieldProblems = (rule: Rule): readonly (RulesProblem | undefined)[] => {
   const { slug } = rule;
 
   return [
     slug.startsWith('no-')
       ? {
           code: RulesCode.SlugOpensWithNo,
-          message: `rule "${slug}" opens with "no-"; a slug says what holds`,
+          details: {
+            slug,
+          },
         }
       : undefined,
     rule.statement === ''
       ? {
           code: RulesCode.WithoutStatement,
-          message: `rule "${slug}" has no statement`,
+          details: {
+            slug,
+          },
         }
       : undefined,
     rule.why === ''
       ? {
           code: RulesCode.WithoutWhy,
-          message: `rule "${slug}" has no Why`,
+          details: {
+            slug,
+          },
         }
       : undefined,
     ...rule.writtenLenses
       .filter((lens) => !lenses.includes(lens))
-      .map((lens) => ({
-        code: RulesCode.TagNotLens,
-        message: `rule "${slug}" has the tag "${lens}", which is not a lens`,
-      })),
+      .map(
+        (tag): RulesProblem => ({
+          code: RulesCode.TagNotLens,
+          details: {
+            slug,
+            tag,
+          },
+        }),
+      ),
   ];
 };
 
@@ -65,7 +150,7 @@ const placementProblem = (input: {
   parent: RuleSlug;
   rule: Rule;
   target: Rule;
-}): Problem | undefined => {
+}): RulesProblem | undefined => {
   const { parent, rule, target } = input;
   const { slug } = rule;
 
@@ -78,11 +163,20 @@ const placementProblem = (input: {
     return target.seam === undefined
       ? {
           code: RulesCode.ParentOutOfReach,
-          message: `rule "${slug}" carries out "${parent}" of ${target.block}, which its block may not refer to`,
+          details: {
+            parent,
+            parentBlock: target.block,
+            slug,
+          },
         }
       : {
           code: RulesCode.ParentSeamOutOfReach,
-          message: `rule "${slug}" carries out "${parent}" of ${target.block} with ${target.seam}, which its place does not reach`,
+          details: {
+            parent,
+            parentBlock: target.block,
+            parentSeam: target.seam,
+            slug,
+          },
         };
   }
 
@@ -94,14 +188,24 @@ const placementProblem = (input: {
   ) {
     return {
       code: RulesCode.ParentOffAxis,
-      message: `rule "${slug}" carries out "${parent}" on ${target.axis}, which a rule on ${rule.axis} may not refer to`,
+      details: {
+        axis: rule.axis,
+        parent,
+        parentAxis: target.axis,
+        slug,
+      },
     };
   }
 
   if (Rule.isLooserThan(rule, target)) {
     return {
       code: RulesCode.LooserThanParent,
-      message: `rule "${slug}" is ${rule.level} while it carries out the ${target.level} rule "${parent}"; a rule is never looser than the rule it carries out`,
+      details: {
+        level: rule.level,
+        parent,
+        parentLevel: target.level,
+        slug,
+      },
     };
   }
 
@@ -109,7 +213,10 @@ const placementProblem = (input: {
     ? undefined
     : {
         code: RulesCode.WithoutLevel,
-        message: `rule "${slug}" carries out "${parent}" without a level; a rule that carries out another states its own, never looser than it`,
+        details: {
+          parent,
+          slug,
+        },
       };
 };
 
@@ -124,7 +231,7 @@ const chapterProblem = (input: {
   graph: BlockGraph;
   rule: Rule;
   target: Rule;
-}): Problem | undefined => {
+}): RulesProblem | undefined => {
   const { rule, target } = input;
   // Stryker disable next-line OptionalChaining: every rule's block is in the index
   const layer = input.graph.get(rule.block)?.layer;
@@ -137,7 +244,20 @@ const chapterProblem = (input: {
     rule.chapterTitle !== target.chapterTitle
     ? {
         code: RulesCode.OutsideParentChapter,
-        message: `rule "${rule.slug}" sits in the chapter "${rule.chapterTitle ?? 'untitled'}" while it carries out "${target.slug}" of core's chapter "${target.chapterTitle ?? 'untitled'}"; a rule of a language or a platform that tightens core sits in the chapter titled like its parent's`,
+        details: {
+          ...(rule.chapterTitle === undefined
+            ? {}
+            : {
+                chapter: rule.chapterTitle,
+              }),
+          parent: target.slug,
+          ...(target.chapterTitle === undefined
+            ? {}
+            : {
+                parentChapter: target.chapterTitle,
+              }),
+          slug: rule.slug,
+        },
       }
     : undefined;
 };
@@ -146,7 +266,7 @@ const parentProblem = (input: {
   graph: BlockGraph;
   rule: Rule;
   slugs: ReadonlyMap<RuleSlug, Rule>;
-}): Problem | undefined => {
+}): RulesProblem | undefined => {
   const { slug, tightens: parent } = input.rule;
   const target = Rule.tightenedIn(input.rule, input.slugs);
   const cycle = Rule.tighteningCycleOf(input.rule, input.slugs);
@@ -158,21 +278,30 @@ const parentProblem = (input: {
   if (target === undefined) {
     return {
       code: RulesCode.ParentNotRule,
-      message: `rule "${slug}" carries out "${parent}", which is not a rule`,
+      details: {
+        parent,
+        slug,
+      },
     };
   }
 
   if (cycle !== undefined) {
     return {
       code: RulesCode.ParentChainCycle,
-      message: `rule "${slug}" carries out a chain that comes back to it: ${cycle.join(' → ')}`,
+      details: {
+        cycle,
+        slug,
+      },
     };
   }
 
   return BlockId.equals(target.block, input.rule.block)
     ? {
         code: RulesCode.ParentInOwnBlock,
-        message: `rule "${slug}" carries out "${parent}", a rule of its own block; a rule carries out only a rule of another block`,
+        details: {
+          parent,
+          slug,
+        },
       }
     : (placementProblem({
         graph: input.graph,
@@ -187,26 +316,34 @@ const parentProblem = (input: {
         }));
 };
 
-const rulesCheck: Check = ({ graph, constitution }: CheckInput): readonly Finding[] => {
+const rulesCheck: Check<RulesFinding> = ({
+  graph,
+  constitution,
+}: CheckInput): readonly RulesFinding[] => {
   const slugs = Rule.bySlug(constitution.rules);
 
   return constitution.rules.flatMap((rule) => {
     const first = slugs.get(rule.slug) ?? rule;
 
-    return [
+    const problems: readonly (RulesProblem | undefined)[] = [
       ...fieldProblems(rule),
       first === rule
         ? undefined
         : {
             code: RulesCode.DefinedTwice,
-            message: `rule "${rule.slug}" is also defined in ${first.file}`,
+            details: {
+              firstFile: first.file,
+              slug: rule.slug,
+            },
           },
       parentProblem({
         graph,
         rule,
         slugs,
       }),
-    ].flatMap((problem) =>
+    ];
+
+    return problems.flatMap((problem) =>
       problem === undefined
         ? []
         : [
@@ -219,4 +356,5 @@ const rulesCheck: Check = ({ graph, constitution }: CheckInput): readonly Findin
   });
 };
 
-export { rulesCheck };
+export type { RulesDetails };
+export { RulesCode, rulesCheck };

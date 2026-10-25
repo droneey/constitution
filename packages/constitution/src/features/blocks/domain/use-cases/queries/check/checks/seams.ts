@@ -1,5 +1,5 @@
 import { Layer } from '#/kernel/constants';
-import type { Finding, Problem } from '#/kernel/types';
+import type { FindingOf, ProblemOf } from '#/kernel/types';
 import { stemOf } from '#/kernel/utils';
 import { BlockId } from '#/kernel/value-objects';
 
@@ -7,7 +7,6 @@ import type { Block } from '../../../../entities';
 import { BlockFile, BlockFileRole, BlockGraph } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
 import { pairableBy } from '../shared/layers';
-import { aBlock, blocksOf } from '../shared/wording';
 
 enum SeamsCode {
   NamedAfterOwnBlock = 'seam-named-after-own-block',
@@ -18,6 +17,35 @@ enum SeamsCode {
   TitleMismatch = 'seam-title-mismatch',
   ChapterNamedAfterBlock = 'chapter-named-after-block',
 }
+
+interface SeamsDetails {
+  readonly [SeamsCode.NamedAfterOwnBlock]: object;
+  readonly [SeamsCode.BlockPairsWithNone]: {
+    readonly block: BlockId;
+  };
+  readonly [SeamsCode.NotPair]: {
+    readonly other: BlockId;
+  };
+  readonly [SeamsCode.OutOfLayer]: {
+    /** the layers the block may pair with */
+    readonly allowed: readonly Layer[];
+    readonly layer: Layer;
+    readonly other: BlockId;
+    readonly otherLayer: Layer;
+  };
+  readonly [SeamsCode.AlongDependency]: {
+    readonly block: BlockId;
+    readonly other: BlockId;
+  };
+  readonly [SeamsCode.TitleMismatch]: object;
+  readonly [SeamsCode.ChapterNamedAfterBlock]: {
+    readonly block: BlockId;
+  };
+}
+
+type SeamsFinding = FindingOf<SeamsDetails>;
+
+type SeamsProblem = ProblemOf<SeamsDetails>;
 
 interface Subject {
   readonly block: Block;
@@ -43,10 +71,10 @@ type Pairing =
     }
   | {
       readonly kind: PairingKind.Refused;
-      readonly problem: Problem;
+      readonly problem: SeamsProblem;
     };
 
-const refused = (problem: Problem): Pairing => ({
+const refused = (problem: SeamsProblem): Pairing => ({
   kind: PairingKind.Refused,
   problem,
 });
@@ -62,28 +90,37 @@ const pairingOf = (
   if (BlockId.equals(input.other, input.block.id)) {
     return refused({
       code: SeamsCode.NamedAfterOwnBlock,
-      message: 'is named after its own block',
+      details: {},
     });
   }
 
   if (allowed.length === 0) {
     return refused({
       code: SeamsCode.BlockPairsWithNone,
-      message: `is a with/ file of ${input.block.id}, which pairs with no block`,
+      details: {
+        block: input.block.id,
+      },
     });
   }
 
   if (target === undefined || target.layer === Layer.Core) {
     return refused({
       code: SeamsCode.NotPair,
-      message: `is named after ${input.other}, which is not a block it may pair with`,
+      details: {
+        other: input.other,
+      },
     });
   }
 
   if (!allowed.includes(target.layer)) {
     return refused({
       code: SeamsCode.OutOfLayer,
-      message: `is named after ${input.other}, ${aBlock(target.layer)}; ${aBlock(input.block.layer)} pairs only with ${blocksOf(allowed)}`,
+      details: {
+        allowed,
+        layer: input.block.layer,
+        other: input.other,
+        otherLayer: target.layer,
+      },
     });
   }
 
@@ -94,7 +131,10 @@ const pairingOf = (
   return linked
     ? refused({
         code: SeamsCode.AlongDependency,
-        message: `is named after ${input.other}, which ${input.block.id} requires or extends, or which requires or extends it; such a rule is the dependent block's own`,
+        details: {
+          block: input.block.id,
+          other: input.other,
+        },
       })
     : {
         kind: PairingKind.Paired,
@@ -103,15 +143,15 @@ const pairingOf = (
 };
 
 /** a seam titled otherwise than the other block's passport, since the seam's folder already names the block it belongs to */
-const titleProblem = (input: { file: BlockFile; other: Block }): Problem | undefined =>
+const titleProblem = (input: { file: BlockFile; other: Block }): SeamsProblem | undefined =>
   titleOf(input.file.body) === titleOf(input.other.passport.body)
     ? undefined
     : {
         code: SeamsCode.TitleMismatch,
-        message: "is titled otherwise than the other block's passport, whose title a seam takes",
+        details: {},
       };
 
-const seamFindings = (subject: Subject): readonly Finding[] =>
+const seamFindings = (subject: Subject): readonly SeamsFinding[] =>
   subject.block.parts.flatMap((file) => {
     const other = BlockFile.seamOf(file);
 
@@ -141,7 +181,7 @@ const seamFindings = (subject: Subject): readonly Finding[] =>
         ];
   });
 
-const chapterFindings = (subject: Subject): readonly Finding[] =>
+const chapterFindings = (subject: Subject): readonly SeamsFinding[] =>
   subject.block.parts
     .filter((file) => file.role === BlockFileRole.Chapter)
     .flatMap((file) => {
@@ -150,18 +190,25 @@ const chapterFindings = (subject: Subject): readonly Finding[] =>
         path: file.path,
       });
 
-      return BlockGraph.named(subject.graph, name) === undefined
+      const block = BlockGraph.named(subject.graph, name);
+
+      return block === undefined
         ? []
         : [
             {
               code: SeamsCode.ChapterNamedAfterBlock,
-              message: `takes the id of the block ${name}; a file named after a block belongs in with/`,
+              details: {
+                block: block.id,
+              },
               path: file.path,
             },
           ];
     });
 
-const seamsCheck: Check = ({ graph, constitution }: CheckInput): readonly Finding[] =>
+const seamsCheck: Check<SeamsFinding> = ({
+  graph,
+  constitution,
+}: CheckInput): readonly SeamsFinding[] =>
   constitution.blocks.flatMap((block) => [
     ...seamFindings({
       block,
@@ -173,4 +220,5 @@ const seamsCheck: Check = ({ graph, constitution }: CheckInput): readonly Findin
     }),
   ]);
 
-export { seamsCheck };
+export type { SeamsDetails };
+export { SeamsCode, seamsCheck };

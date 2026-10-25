@@ -20,5 +20,5 @@ or {
   `crypto.getRandomValues($_)`,
   `Temporal.Now.$method($...)`
 } as $call where {
-  register_diagnostic(span=$call, message="An effect outside the edge: the clock, randomness and identifiers reach this code through a port", severity="error")
+  register_diagnostic(span=$call, message="[effects-held-only-by-the-edge] An effect outside the edge: the clock, randomness and identifiers reach this code through a port", severity="error")
 }

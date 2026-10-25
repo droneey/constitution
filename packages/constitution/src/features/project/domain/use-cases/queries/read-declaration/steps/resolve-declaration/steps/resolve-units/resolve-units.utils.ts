@@ -1,14 +1,12 @@
-import { Axis, LAYER_ARTICLE, Layer, OPTIONAL_AXES } from '#/kernel/constants';
-import { WarningCode } from '#/kernel/entities';
+import { Axis, CHECK_KEY, CONFIG_FILE, Layer, OPTIONAL_AXES } from '#/kernel/constants';
+import { WarningCode, WarningKind } from '#/kernel/entities';
 import type { BlockId } from '#/kernel/value-objects';
 import { coreBlockId, SourceKind, UnitPath } from '#/kernel/value-objects';
 
 import type { ConfigItem, ProjectConfig, ResolvedUnits } from '../../../../../../../entities';
 import { DeclaredUnit, ProjectModel, ResolvedUnit } from '../../../../../../../entities';
-import { CONFIG } from '../../../../../shared/project-paths';
 import { keyOfLayer, layerOfKey } from '../../shared/layer-keys';
 import type { WarningLog } from '../../shared/warning-log';
-import { heirsText } from '../../shared/wording';
 
 const KEYS: readonly string[] = [
   'axes',
@@ -22,37 +20,12 @@ const KEYS: readonly string[] = [
 ] as const;
 const AXES_KEY = 'axes';
 const PACKS_KEY = 'packs';
-const CHECK_KEY = 'check';
-const PACKAGES_KEY = 'packages';
-const ADD: Readonly<Record<string, string>> = {
-  axes: 'axes: [architecture, workflow]',
-  check: 'check: <the command that runs every check, or null>',
-  overrides: 'overrides: []',
-  packs: 'packs: []',
-} as const;
-const FILL: Readonly<Record<string, string>> = {
-  axes: 'write axes: [architecture, workflow], or axes: [] for neither',
-  check: 'name the command that runs every check, or write check: null',
-  overrides: 'write overrides: []',
-  packs: 'write packs: []',
-} as const;
 
-const fileOf = (unit: DeclaredUnit): string => UnitPath.pathOf(unit.path, CONFIG);
+const fileOf = (unit: DeclaredUnit): string => UnitPath.pathOf(unit.path, CONFIG_FILE);
 
 // A member names no check: the repository's is the one check of the whole tree.
 const keysOf = (unit: DeclaredUnit): readonly string[] =>
   UnitPath.isRepository(unit.path) ? KEYS : KEYS.filter((key) => key !== CHECK_KEY);
-
-const unknownKeyOf = (input: { file: string; key: string }): string => {
-  if (input.key === PACKAGES_KEY) {
-    return `${input.file} lists packages — write each package's blocks in a constitution.yaml of its own, and remove the key`;
-  }
-
-  // the repository's check is known, so a check that reaches here is a member's
-  return input.key === CHECK_KEY
-    ? `${input.file} names a check, which only the repository's ${CONFIG} names — remove it`
-    : `${input.file} has the unknown key ${input.key} — remove it`;
-};
 
 const warnOfUnitKeys = (input: { log: WarningLog; unit: DeclaredUnit }): void => {
   const { log, unit } = input;
@@ -64,7 +37,11 @@ const warnOfUnitKeys = (input: { log: WarningLog; unit: DeclaredUnit }): void =>
     if (!config.keys.includes(key)) {
       log.add({
         code: WarningCode.Config,
-        message: `${file} has no ${key} key — add ${ADD[key] ?? `${key}: []`}`,
+        details: {
+          file,
+          key,
+        },
+        kind: WarningKind.KeyMissing,
       });
     }
   }
@@ -73,10 +50,11 @@ const warnOfUnitKeys = (input: { log: WarningLog; unit: DeclaredUnit }): void =>
     if (!known.includes(key)) {
       log.add({
         code: WarningCode.Config,
-        message: unknownKeyOf({
+        details: {
           file,
           key,
-        }),
+        },
+        kind: WarningKind.KeyUnknown,
       });
     }
   }
@@ -84,7 +62,11 @@ const warnOfUnitKeys = (input: { log: WarningLog; unit: DeclaredUnit }): void =>
   for (const key of config.empties) {
     log.add({
       code: WarningCode.Config,
-      message: `${file} leaves ${key} empty — ${FILL[key] ?? `write ${key}: []`}`,
+      details: {
+        file,
+        key,
+      },
+      kind: WarningKind.KeyEmpty,
     });
   }
 };
@@ -107,12 +89,18 @@ const pickedAxesOf = (input: { log: WarningLog; unit: DeclaredUnit }): ReadonlyS
     if (listed.text === Axis.Foundation) {
       log.add({
         code: WarningCode.Config,
-        message: `${fileOf(unit)} lists foundation in axes — foundation is always followed, remove it`,
+        details: {
+          file: fileOf(unit),
+        },
+        kind: WarningKind.FoundationListed,
       });
     } else if (OPTIONAL_AXES.find((axis) => axis === listed.text) === undefined) {
       log.add({
         code: WarningCode.Config,
-        message: `axes names ${listed.text} — write architecture or workflow`,
+        details: {
+          axis: listed.text,
+        },
+        kind: WarningKind.AxisUnknown,
       });
     } else {
       picked.add(listed.text);
@@ -150,7 +138,10 @@ const declaredOf = (input: {
   if (name.includes('/')) {
     log.add({
       code: WarningCode.Unknown,
-      message: `${name} is a path — put the block in a pack listed under packs: and name it by its id`,
+      details: {
+        name,
+      },
+      kind: WarningKind.NameIsPath,
     });
 
     return [];
@@ -159,7 +150,10 @@ const declaredOf = (input: {
   if (block === undefined) {
     log.add({
       code: WarningCode.Unknown,
-      message: `${name} is not a block — check the name`,
+      details: {
+        name,
+      },
+      kind: WarningKind.NameUnknown,
     });
 
     return [];
@@ -168,7 +162,10 @@ const declaredOf = (input: {
   if (block.layer === Layer.Core) {
     log.add({
       code: WarningCode.WrongKey,
-      message: `core is always active — remove it from ${entry.key}`,
+      details: {
+        key: entry.key,
+      },
+      kind: WarningKind.CoreListed,
     });
 
     return [];
@@ -177,7 +174,11 @@ const declaredOf = (input: {
   if (block.isAbstract) {
     log.add({
       code: WarningCode.Abstract,
-      message: `${name} cannot be listed — list ${heirsText(ProjectModel.heirsOf(model, block.id))}`,
+      details: {
+        heirs: ProjectModel.heirsOf(model, block.id),
+        name,
+      },
+      kind: WarningKind.AbstractListed,
     });
 
     return [];
@@ -186,7 +187,12 @@ const declaredOf = (input: {
   if (block.source.kind === SourceKind.Pack && !DeclaredUnit.listsPack(unit, block.source.pack)) {
     log.add({
       code: WarningCode.Pack,
-      message: `${name} comes from ${block.source.pack}, which ${fileOf(unit)} does not list — add it to packs`,
+      details: {
+        file: fileOf(unit),
+        name,
+        pack: block.source.pack,
+      },
+      kind: WarningKind.PackUnlisted,
     });
 
     return [];
@@ -195,7 +201,13 @@ const declaredOf = (input: {
   if (block.layer !== layerOfKey(entry.key)) {
     log.add({
       code: WarningCode.WrongKey,
-      message: `${name} is ${LAYER_ARTICLE[block.layer]} ${block.layer} — move it from ${entry.key} to ${keyOfLayer(block.layer)}`,
+      details: {
+        key: entry.key,
+        layer: block.layer,
+        name,
+        toKey: keyOfLayer(block.layer),
+      },
+      kind: WarningKind.BlockUnderWrongKey,
     });
   }
 

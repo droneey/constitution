@@ -1,8 +1,11 @@
 import { describe, expect, it } from 'bun:test';
 
+import { BlockId, RuleSlug } from '#/kernel/value-objects';
+
 import type { RuleFixture } from '../../../../../../../__tests__/constitution.fixtures';
 import { checkInputOf, rule } from '../../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../../__tests__/valid-files.fixtures';
+import type { SimilarRules } from '../../../../../../entities';
 import { adviseConstitution } from '../advise-constitution.utils';
 
 const I18N = 'blocks/domains/i18n/foundation/plurals.md';
@@ -19,7 +22,7 @@ interface Scenario {
 }
 
 interface Row extends Scenario {
-  expected: readonly string[];
+  expected: readonly SimilarRules[];
   name: string;
 }
 
@@ -66,7 +69,16 @@ describe('adviseConstitution', () => {
   it.each<Row>([
     {
       expected: [
-        'similar rules: first-rule (i18n) and second-rule (ui)',
+        {
+          left: {
+            block: BlockId.create('i18n'),
+            slug: RuleSlug.create('first-rule'),
+          },
+          right: {
+            block: BlockId.create('ui'),
+            slug: RuleSlug.create('second-rule'),
+          },
+        },
       ],
       name: 'two domains share half their words',
       ...pairOf({
@@ -78,7 +90,16 @@ describe('adviseConstitution', () => {
     },
     {
       expected: [
-        'similar rules: first-rule (i18n) and second-rule (ui)',
+        {
+          left: {
+            block: BlockId.create('i18n'),
+            slug: RuleSlug.create('first-rule'),
+          },
+          right: {
+            block: BlockId.create('ui'),
+            slug: RuleSlug.create('second-rule'),
+          },
+        },
       ],
       name: 'two domains share words of three letters',
       ...pairOf({
@@ -90,7 +111,16 @@ describe('adviseConstitution', () => {
     },
     {
       expected: [
-        'similar rules: first-rule (i18n) and second-rule (ui)',
+        {
+          left: {
+            block: BlockId.create('i18n'),
+            slug: RuleSlug.create('first-rule'),
+          },
+          right: {
+            block: BlockId.create('ui'),
+            slug: RuleSlug.create('second-rule'),
+          },
+        },
       ],
       name: 'two domains differ only in words shorter than three letters',
       ...pairOf({
@@ -102,7 +132,16 @@ describe('adviseConstitution', () => {
     },
     {
       expected: [
-        'similar rules: first-rule (i18n) and second-rule (ui)',
+        {
+          left: {
+            block: BlockId.create('i18n'),
+            slug: RuleSlug.create('first-rule'),
+          },
+          right: {
+            block: BlockId.create('ui'),
+            slug: RuleSlug.create('second-rule'),
+          },
+        },
       ],
       name: 'two domains differ only in capitalization',
       ...pairOf({
@@ -124,7 +163,16 @@ describe('adviseConstitution', () => {
     },
     {
       expected: [
-        'similar rules: first-rule (browser) and second-rule (typescript)',
+        {
+          left: {
+            block: BlockId.create('browser'),
+            slug: RuleSlug.create('first-rule'),
+          },
+          right: {
+            block: BlockId.create('typescript'),
+            slug: RuleSlug.create('second-rule'),
+          },
+        },
       ],
       name: 'a platform and a language, one kind, say the same',
       ...pairOf({

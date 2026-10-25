@@ -1,12 +1,11 @@
 import type { Layer } from '#/kernel/constants';
-import type { Finding, Problem } from '#/kernel/types';
+import type { FindingOf, ProblemOf } from '#/kernel/types';
 import { BlockId, coreBlockId } from '#/kernel/value-objects';
 
 import type { BlockGraph } from '../../../../entities';
 import { Block } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
 import { requirableBy } from '../shared/layers';
-import { aBlock, blocksOf } from '../shared/wording';
 
 enum RequiresCode {
   RequiresCore = 'requires-core',
@@ -19,6 +18,36 @@ enum RequiresCode {
   ExtendsConcrete = 'extends-concrete-block',
 }
 
+interface RequiresDetails {
+  readonly [RequiresCode.RequiresCore]: object;
+  readonly [RequiresCode.RequiresNoBlock]: {
+    readonly required: BlockId;
+  };
+  readonly [RequiresCode.RequiresItself]: object;
+  readonly [RequiresCode.RequiresOutOfLayer]: {
+    /** the layers the block may require */
+    readonly allowed: readonly Layer[];
+    readonly layer: Layer;
+    readonly required: BlockId;
+    readonly requiredLayer: Layer;
+  };
+  readonly [RequiresCode.ExtendsNoBlock]: {
+    readonly base: BlockId;
+  };
+  readonly [RequiresCode.ExtendsItself]: object;
+  readonly [RequiresCode.ExtendsOtherLayer]: {
+    readonly base: BlockId;
+    readonly baseLayer: Layer;
+  };
+  readonly [RequiresCode.ExtendsConcrete]: {
+    readonly base: BlockId;
+  };
+}
+
+type RequiresFinding = FindingOf<RequiresDetails>;
+
+type RequiresProblem = ProblemOf<RequiresDetails>;
+
 interface Subject {
   readonly block: Block;
   readonly graph: BlockGraph;
@@ -29,27 +58,29 @@ const requireProblem = (
     allowed: readonly Layer[];
     id: BlockId;
   },
-): Problem | undefined => {
+): RequiresProblem | undefined => {
   const target = input.graph.get(input.id);
 
   if (BlockId.equals(input.id, coreBlockId)) {
     return {
       code: RequiresCode.RequiresCore,
-      message: 'requires core, which is always active',
+      details: {},
     };
   }
 
   if (target === undefined) {
     return {
       code: RequiresCode.RequiresNoBlock,
-      message: `requires ${input.id}, which is not a block`,
+      details: {
+        required: input.id,
+      },
     };
   }
 
   if (Block.sameAs(target, input.block)) {
     return {
       code: RequiresCode.RequiresItself,
-      message: 'requires itself',
+      details: {},
     };
   }
 
@@ -57,11 +88,16 @@ const requireProblem = (
     ? undefined
     : {
         code: RequiresCode.RequiresOutOfLayer,
-        message: `requires ${input.id}, ${aBlock(target.layer)}; ${aBlock(input.block.layer)} requires only ${blocksOf(input.allowed)}`,
+        details: {
+          allowed: input.allowed,
+          layer: input.block.layer,
+          required: input.id,
+          requiredLayer: target.layer,
+        },
       };
 };
 
-const extendsProblem = (subject: Subject): Problem | undefined => {
+const extendsProblem = (subject: Subject): RequiresProblem | undefined => {
   const base = subject.block.frontMatter.extends;
 
   if (base === undefined) {
@@ -73,21 +109,26 @@ const extendsProblem = (subject: Subject): Problem | undefined => {
   if (target === undefined) {
     return {
       code: RequiresCode.ExtendsNoBlock,
-      message: `extends ${base}, which is not a block`,
+      details: {
+        base,
+      },
     };
   }
 
   if (Block.sameAs(target, subject.block)) {
     return {
       code: RequiresCode.ExtendsItself,
-      message: 'extends itself',
+      details: {},
     };
   }
 
   if (target.layer !== subject.block.layer) {
     return {
       code: RequiresCode.ExtendsOtherLayer,
-      message: `extends ${base}, ${aBlock(target.layer)}; a block extends only a base of its own layer`,
+      details: {
+        base,
+        baseLayer: target.layer,
+      },
     };
   }
 
@@ -95,13 +136,15 @@ const extendsProblem = (subject: Subject): Problem | undefined => {
     ? undefined
     : {
         code: RequiresCode.ExtendsConcrete,
-        message: `extends ${base}, a concrete block; a block extends only an abstract base — require it instead`,
+        details: {
+          base,
+        },
       };
 };
 
 // A layer that requires or extends nothing leaves the fields empty; the
 // front-matter check reports a filled one, so this check skips those layers.
-const blockFindings = (subject: Subject): readonly Finding[] => {
+const blockFindings = (subject: Subject): readonly RequiresFinding[] => {
   const allowed = requirableBy(subject.block.layer);
   const problems = [
     ...(allowed.length === 0
@@ -128,7 +171,10 @@ const blockFindings = (subject: Subject): readonly Finding[] => {
   );
 };
 
-const requiresCheck: Check = ({ graph, constitution }: CheckInput): readonly Finding[] =>
+const requiresCheck: Check<RequiresFinding> = ({
+  graph,
+  constitution,
+}: CheckInput): readonly RequiresFinding[] =>
   constitution.blocks.flatMap((block) =>
     blockFindings({
       block,
@@ -136,4 +182,5 @@ const requiresCheck: Check = ({ graph, constitution }: CheckInput): readonly Fin
     }),
   );
 
-export { requiresCheck };
+export type { RequiresDetails };
+export { RequiresCode, requiresCheck };

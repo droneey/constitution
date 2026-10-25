@@ -8,19 +8,17 @@ describe('FailureBlock', () => {
     // Arrange
     const failure = {
       details: [
-        'no constitution.yaml',
+        'constitution.yaml',
       ],
-      hint: 'run constitution init',
-      title: 'No project here',
+      hint: 'init',
+      title: 'no-project',
     };
 
     // Act
     const { lastFrame } = renderWithTheme(<FailureBlock failure={failure} />);
 
     // Assert
-    expect(lastFrame()).toBe(
-      '✗ No project here\n  no constitution.yaml\n  → run constitution init',
-    );
+    expect(lastFrame()).toBe('✗ no-project\n  constitution.yaml\n  → init');
   });
 
   it('should leave the next step out when the failure names none', () => {

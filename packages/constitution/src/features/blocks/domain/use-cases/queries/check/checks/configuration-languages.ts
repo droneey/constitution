@@ -1,6 +1,7 @@
 import { Layer } from '#/kernel/constants';
-import type { Finding } from '#/kernel/types';
+import type { FindingOf } from '#/kernel/types';
 import { isGoverned } from '#/kernel/utils';
+import type { BlockId, Glob } from '#/kernel/value-objects';
 
 import { Block, BlockGraph } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
@@ -9,11 +10,20 @@ enum ConfigurationLanguagesCode {
   NotRequired = 'configuration-language-not-required',
 }
 
+interface ConfigurationLanguagesDetails {
+  readonly [ConfigurationLanguagesCode.NotRequired]: {
+    readonly glob: Glob;
+    readonly language: BlockId;
+  };
+}
+
+type ConfigurationLanguagesFinding = FindingOf<ConfigurationLanguagesDetails>;
+
 const blockFindings = (input: {
   block: Block;
   graph: BlockGraph;
   languages: readonly Block[];
-}): readonly Finding[] => {
+}): readonly ConfigurationLanguagesFinding[] => {
   const reached = BlockGraph.closureOf(input.graph, input.block.id);
 
   // A glob read as a path matches a language's pattern only when it ends in that language's extension.
@@ -29,16 +39,19 @@ const blockFindings = (input: {
       )
       .map((language) => ({
         code: ConfigurationLanguagesCode.NotRequired,
-        message: `governs ${glob}, a file of ${language.id}, without requiring ${language.id} directly or through the blocks it requires or extends`,
+        details: {
+          glob,
+          language: language.id,
+        },
         path: input.block.passport.path,
       })),
   );
 };
 
-const configurationLanguagesCheck: Check = ({
+const configurationLanguagesCheck: Check<ConfigurationLanguagesFinding> = ({
   graph,
   constitution,
-}: CheckInput): readonly Finding[] => {
+}: CheckInput): readonly ConfigurationLanguagesFinding[] => {
   const languages = constitution.blocks.filter((block) => block.layer === Layer.Language);
 
   return constitution.blocks.flatMap((block) =>
@@ -50,4 +63,5 @@ const configurationLanguagesCheck: Check = ({
   );
 };
 
-export { configurationLanguagesCheck };
+export type { ConfigurationLanguagesDetails };
+export { ConfigurationLanguagesCode, configurationLanguagesCheck };

@@ -1,10 +1,11 @@
+import { CONFIG_FILE } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
 import { ConfigReadStatus, FileRead } from '#/kernel/entities';
 
 import type { ConfigParser, Workspace } from '../../../../../contracts';
 import type { DeclaredUnit, UnreadMember } from '../../../../../entities';
 import { MemberProblem } from '../../../../../entities';
-import { CONFIG, joinPath } from '../../../shared/project-paths';
+import { joinPath } from '../../../shared/project-paths';
 
 const readMembers = (input: {
   configParser: ConfigParser;
@@ -24,7 +25,7 @@ const readMembers = (input: {
         folder: input.project,
         name: path,
       }),
-      name: CONFIG,
+      name: CONFIG_FILE,
     });
     const isFile = input.files.isFile(file);
     const text = isFile ? FileRead.textOf(input.files.read(file)) : undefined;

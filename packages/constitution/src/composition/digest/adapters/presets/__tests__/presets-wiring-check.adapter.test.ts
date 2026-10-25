@@ -3,12 +3,11 @@ import { describe, expect, it } from 'bun:test';
 import { createFakeProjectFiles } from '#/__tests__/project-files.fake';
 import { PROJECT, projectPlace, releaseFolderPath } from '#/__tests__/project-place.fixtures';
 import { createFakeWorkingTree } from '#/__tests__/working-tree.fake';
-import type { WiringReport } from '#/features/session';
 import { WiringCheckStatus } from '#/features/session';
 import { Axis, Layer } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
 import type { OpenedProject } from '#/kernel/entities';
-import { BlockListing, ProjectUnit, Resolution, WarningCode } from '#/kernel/entities';
+import { BlockListing, ProjectUnit, Resolution, WarningCode, WarningKind } from '#/kernel/entities';
 import { BlockId, coreBlockId, repositoryUnit } from '#/kernel/value-objects';
 
 import { createPresetsWiringCheck } from '../presets-wiring-check.adapter';
@@ -79,18 +78,6 @@ const failingFiles: ProjectFiles = {
   },
 };
 
-// A report's status and, where it was checked, the code of each warning and whether it names biome.
-const reportOf = (report: WiringReport): unknown =>
-  report.status === WiringCheckStatus.Checked
-    ? {
-        status: report.status,
-        warnings: report.warnings.map((warning) => ({
-          code: warning.code,
-          isBiomeNamed: warning.message.includes('biome'),
-        })),
-      }
-    : report;
-
 describe('createPresetsWiringCheck', () => {
   it("should give the presets' warning as checked when a configuration lacks the parts of its blocks", () => {
     // Arrange
@@ -106,12 +93,16 @@ describe('createPresetsWiringCheck', () => {
     const report = check.check(project);
 
     // Assert
-    expect(reportOf(report)).toStrictEqual({
+    expect(report).toStrictEqual({
       status: WiringCheckStatus.Checked,
       warnings: [
         {
           code: WarningCode.Wiring,
-          isBiomeNamed: true,
+          details: {
+            tool: 'biome',
+            unit: repositoryUnit,
+          },
+          kind: WarningKind.ToolWiredNowhere,
         },
       ],
     });

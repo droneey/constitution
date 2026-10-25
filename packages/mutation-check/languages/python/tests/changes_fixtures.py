@@ -42,13 +42,10 @@ def changes_of(
   *,
   lines: Mapping[str, tuple[range, ...]] | None = None,
   untracked: tuple[str, ...] = (),
-  extra: Mapping[str, str] | None = None,
 ) -> Changes:
-  files = {**FILES, **(extra or {})}
-
   return Changes(
     lines={Path(path): ranges for path, ranges in (lines or {}).items()},
     untracked=tuple(Path(path) for path in untracked),
     sources=tuple(Path(path) for path in FILES),
-    read=lambda path: files[str(path)],
+    read=lambda path: FILES[str(path)],
   )

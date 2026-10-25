@@ -125,13 +125,13 @@ describe('formatTaskList', () => {
 describe('formatWaiting', () => {
   it('should write the work going on, its line left open', () => {
     // Arrange
-    const label = 'Reading the blocks';
+    const label = 'lint';
 
     // Act
     const written = formatWaiting(createPlainTheme(), label);
 
     // Assert
-    expect(written).toBe('▸ Reading the blocks…');
+    expect(written).toBe('▸ lint…');
   });
 });
 
@@ -202,19 +202,17 @@ describe('formatFailure', () => {
     // Arrange
     const failure = {
       details: [
-        'constitution.yaml: no such file',
+        'constitution.yaml: ENOENT',
       ],
-      hint: 'run constitution init',
-      title: 'No project here',
+      hint: 'init',
+      title: 'no-project',
     };
 
     // Act
     const written = formatFailure(createPlainTheme(), failure);
 
     // Assert
-    expect(written).toBe(
-      '✗ No project here\n  constitution.yaml: no such file\n  → run constitution init',
-    );
+    expect(written).toBe('✗ no-project\n  constitution.yaml: ENOENT\n  → init');
   });
 
   it('should leave the next step out when the failure names none', () => {

@@ -257,7 +257,7 @@ describe('markdownOfPage', () => {
     // Arrange
     const page = {
       data: {
-        getText: (kind: 'processed'): Promise<string> => Promise.resolve(`The ${kind} body.`),
+        getText: (kind: 'processed'): Promise<string> => Promise.resolve(`**${kind}**`),
         title: 'Names',
       },
       url: '/docs/core/names',
@@ -267,6 +267,6 @@ describe('markdownOfPage', () => {
     const markdown = await markdownOfPage(page);
 
     // Assert
-    expect(markdown).toBe('# Names (/docs/core/names)\n\nThe processed body.');
+    expect(markdown).toBe('# Names (/docs/core/names)\n\n**processed**');
   });
 });

@@ -2,5 +2,5 @@ language js
 
 `$callee($...)` where {
   $callee <: r"(?:test|it|describe)(?:\.(?:concurrent|serial|each))*\.(?:todo|if|skipIf|todoIf|failing)(?:\.each)?",
-  register_diagnostic(span=$callee, message="Write the case so it runs every time: no todo, conditional or expected-failure case", severity="error")
+  register_diagnostic(span=$callee, message="[test-never-skipped-or-empty] Write the case so it runs every time: no todo, conditional or expected-failure case", severity="error")
 }

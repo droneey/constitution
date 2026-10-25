@@ -13,7 +13,7 @@ const readmeText = [
   '',
   `## ${MARK} Quick start`,
   '',
-  '> Install the plugin, pin a release, **ratify** a project.',
+  '> Install, pin, **ratify**.',
   '>',
   '> Then start.',
   '',
@@ -183,7 +183,7 @@ describe('sectionSummaryOf', () => {
     const summary = sectionSummaryOf('Quick start');
 
     // Assert
-    expect(summary).toBe('Install the plugin, pin a release, ratify a project.');
+    expect(summary).toBe('Install, pin, ratify.');
   });
 
   it.each([

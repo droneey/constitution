@@ -1,5 +1,6 @@
-import { COMMON_SCOPE, Layer, Placeholder, TEMPLATES_FOLDER } from '#/kernel/constants';
-import type { Finding, Problem } from '#/kernel/types';
+import { COMMON_SCOPE, Layer, Placeholder } from '#/kernel/constants';
+import type { FindingOf, ProblemOf } from '#/kernel/types';
+import type { PartAddress } from '#/kernel/value-objects';
 import { PresetFileKind, PresetPartPath, TemplatePath } from '#/kernel/value-objects';
 
 import { BlockGraph } from '../../../../entities';
@@ -12,27 +13,45 @@ enum TemplatesCode {
   ScopeNotCovered = 'template-scope-not-covered',
 }
 
-const templatesPrefix = `${TEMPLATES_FOLDER}/`;
-const LAYOUT =
-  'is not a fragment of a block: templates/project/<scope>/<block>/<path>, the scope common or a language';
+interface TemplatesDetails {
+  readonly [TemplatesCode.StrayFile]: object;
+  readonly [TemplatesCode.ToolWithoutTemplate]: {
+    readonly scope: string;
+    readonly tool: string;
+  };
+  readonly [TemplatesCode.NamesNoBlock]: {
+    readonly scope: string;
+    readonly tool: string;
+  };
+  readonly [TemplatesCode.ScopeNotCovered]: {
+    readonly scope: string;
+  };
+}
+
+type TemplatesFinding = FindingOf<TemplatesDetails>;
+
+type TemplatesProblem = ProblemOf<TemplatesDetails>;
 
 const templateProblem = (input: {
   graph: CheckInput['graph'];
   path: string;
-}): Problem | undefined => {
+}): TemplatesProblem | undefined => {
   const place = TemplatePath.parse(input.path);
 
   if (place === undefined) {
     return {
       code: TemplatesCode.StrayFile,
-      message: LAYOUT,
+      details: {},
     };
   }
 
   if (BlockGraph.named(input.graph, place.tool) === undefined) {
     return {
       code: TemplatesCode.NamesNoBlock,
-      message: `is in ${templatesPrefix}${place.scope}/${place.tool}/, which names no block; a template is a fragment its block owns`,
+      details: {
+        scope: place.scope,
+        tool: place.tool,
+      },
     };
   }
 
@@ -41,48 +60,68 @@ const templateProblem = (input: {
     ? undefined
     : {
         code: TemplatesCode.ScopeNotCovered,
-        message: `is in ${templatesPrefix}${place.scope}/, which is neither ${COMMON_SCOPE} nor a language`,
+        details: {
+          scope: place.scope,
+        },
       };
 };
 
-const toolFindings = (input: CheckInput): readonly Finding[] => {
-  const tools = new Set(
-    input.constitution.presets.flatMap(({ path }) => {
-      const preset = PresetPartPath.parse(path);
+const folderOf = (place: { scope: string; tool: string }): string => `${place.scope}/${place.tool}`;
 
-      return preset?.kind === PresetFileKind.Part
-        ? [
-            `${preset.scope}/${preset.tool}`,
-          ]
-        : [];
-    }),
+const toolFindings = (input: CheckInput): readonly TemplatesFinding[] => {
+  const parts = input.constitution.presets.flatMap(({ path }) => {
+    const preset = PresetPartPath.parse(path);
+
+    return preset?.kind === PresetFileKind.Part
+      ? [
+          preset,
+        ]
+      : [];
+  });
+  const tools = new Map(
+    parts.map(
+      (
+        part,
+      ): readonly [
+        string,
+        PartAddress,
+      ] => [
+        folderOf(part),
+        part,
+      ],
+    ),
   );
 
   return [
     ...tools,
   ]
     .filter(
-      (folder) =>
+      ([folder]) =>
         !input.constitution.templates.some(({ path, text }) => {
           const place = TemplatePath.parse(path);
 
           return (
-            place !== undefined &&
-            `${place.scope}/${place.tool}` === folder &&
-            text.includes(Placeholder.Parts)
+            place !== undefined && folderOf(place) === folder && text.includes(Placeholder.Parts)
           );
         }),
     )
-    .map((folder) => ({
-      code: TemplatesCode.ToolWithoutTemplate,
-      message: `has parts and no template in ${templatesPrefix}${folder}/ that takes them by ${Placeholder.Parts}`,
-      path: `presets/${folder}/`,
-    }));
+    .map(
+      ([folder, part]): TemplatesFinding => ({
+        code: TemplatesCode.ToolWithoutTemplate,
+        details: {
+          scope: part.scope,
+          tool: part.tool,
+        },
+        path: `presets/${folder}/`,
+      }),
+    );
 };
 
-const templatesCheck: Check = (input: CheckInput): readonly Finding[] => [
+const templatesCheck: Check<TemplatesFinding> = (
+  input: CheckInput,
+): readonly TemplatesFinding[] => [
   ...toolFindings(input),
-  ...input.constitution.templates.flatMap(({ path }) => {
+  ...input.constitution.templates.flatMap(({ path }): readonly TemplatesFinding[] => {
     const problem = templateProblem({
       graph: input.graph,
       path,
@@ -99,4 +138,5 @@ const templatesCheck: Check = (input: CheckInput): readonly Finding[] => [
   }),
 ];
 
-export { templatesCheck };
+export type { TemplatesDetails };
+export { TemplatesCode, templatesCheck };

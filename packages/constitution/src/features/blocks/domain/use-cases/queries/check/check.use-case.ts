@@ -1,6 +1,5 @@
 import { BLOCKS_FOLDER } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
-import type { Finding } from '#/kernel/types';
 
 import type {
   BindingsParser,
@@ -9,7 +8,9 @@ import type {
   FrontMatterParser,
   ManifestParser,
 } from '../../../contracts';
+import type { SimilarRules } from '../../../entities';
 import { Block, BlockGraph } from '../../../entities';
+import type { BlockFinding } from './block-finding.types';
 import type { Check } from './check.types';
 import {
   abstractBlocksCheck,
@@ -38,7 +39,7 @@ import type { Base } from './steps/load-constitution';
 import { loadConstitution } from './steps/load-constitution';
 import { orderFindings } from './steps/order-findings';
 
-const checks: readonly Check[] = [
+const checks: readonly Check<BlockFinding>[] = [
   frontMatterCheck,
   requiresCheck,
   configurationLanguagesCheck,
@@ -62,8 +63,8 @@ const checks: readonly Check[] = [
 ];
 
 interface Validation {
-  readonly advice: readonly string[];
-  readonly findings: readonly Finding[];
+  readonly advice: readonly SimilarRules[];
+  readonly findings: readonly BlockFinding[];
 }
 
 interface Parsers {
@@ -92,7 +93,7 @@ const validate = (
       .map((file) => file.path),
   );
 
-  const ownOf = (all: readonly Finding[]): readonly Finding[] =>
+  const ownOf = (all: readonly BlockFinding[]): readonly BlockFinding[] =>
     all.filter((finding) => !baseFiles.has(finding.path));
 
   if (findings.length > 0) {

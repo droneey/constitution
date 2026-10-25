@@ -1,6 +1,8 @@
+import type { Axis } from '#/kernel/constants';
 import { COMMON_SCOPE, SELF_PART } from '#/kernel/constants';
 import { Rule } from '#/kernel/entities';
-import type { Finding, Problem } from '#/kernel/types';
+import type { FindingOf, ProblemOf } from '#/kernel/types';
+import type { RuleSlug } from '#/kernel/value-objects';
 import { BlockId, PartAddress, PresetFileKind, PresetPartPath } from '#/kernel/value-objects';
 
 import type { Binding, PresetFile } from '../../../../entities';
@@ -15,6 +17,40 @@ enum BindingsCode {
   PartMissing = 'binding-part-missing',
   SettingMissing = 'binding-setting-missing',
 }
+
+interface BindingsDetails {
+  readonly [BindingsCode.NotRule]: {
+    readonly rule: RuleSlug;
+  };
+  readonly [BindingsCode.OffAxis]: {
+    /** the axis whose bindings hold the binding */
+    readonly axis: Axis;
+    readonly rule: RuleSlug;
+    readonly ruleAxis: Axis;
+  };
+  readonly [BindingsCode.OutOfReach]: {
+    readonly part: string;
+    readonly rule: RuleSlug;
+    readonly ruleBlock: BlockId;
+  };
+  readonly [BindingsCode.PartMissing]: {
+    readonly axis: Axis;
+    readonly part: string;
+    readonly rule: RuleSlug;
+    readonly scope: string;
+    readonly tool: string;
+  };
+  readonly [BindingsCode.SettingMissing]: {
+    /** the path of the part's file */
+    readonly file: string;
+    readonly rule: RuleSlug;
+    readonly setting: string;
+  };
+}
+
+type BindingsFinding = FindingOf<BindingsDetails>;
+
+type BindingsProblem = ProblemOf<BindingsDetails>;
 
 const partOf = (input: {
   binding: Binding;
@@ -65,13 +101,15 @@ const bindingProblem = (input: {
   graph: BlockGraph;
   presets: readonly PresetFile[];
   rule: Rule | undefined;
-}): Problem | undefined => {
+}): BindingsProblem | undefined => {
   const { binding, rule } = input;
 
   if (rule === undefined) {
     return {
       code: BindingsCode.NotRule,
-      message: `binds "${binding.rule}", which is not a rule`,
+      details: {
+        rule: binding.rule,
+      },
     };
   }
 
@@ -84,7 +122,11 @@ const bindingProblem = (input: {
   ) {
     return {
       code: BindingsCode.OffAxis,
-      message: `binds ${rule.slug}, a rule of ${rule.axis}, under ${binding.part.axis}`,
+      details: {
+        axis: binding.part.axis,
+        rule: rule.slug,
+        ruleAxis: rule.axis,
+      },
     };
   }
 
@@ -97,7 +139,11 @@ const bindingProblem = (input: {
   ) {
     return {
       code: BindingsCode.OutOfReach,
-      message: `binds ${rule.slug}, a rule of ${rule.block}, to the part ${binding.part.name}, which may hold only rules of its block, of the blocks above it, of a seam with it or of its tool`,
+      details: {
+        part: binding.part.name,
+        rule: rule.slug,
+        ruleBlock: rule.block,
+      },
     };
   }
 
@@ -106,7 +152,13 @@ const bindingProblem = (input: {
   if (part === undefined) {
     return {
       code: BindingsCode.PartMissing,
-      message: `binds ${rule.slug} to the part ${binding.part.name}, which presets/${binding.part.scope}/${binding.part.tool}/${binding.part.axis}/ does not hold`,
+      details: {
+        axis: binding.part.axis,
+        part: binding.part.name,
+        rule: rule.slug,
+        scope: binding.part.scope,
+        tool: binding.part.tool,
+      },
     };
   }
 
@@ -114,14 +166,21 @@ const bindingProblem = (input: {
     ? undefined
     : {
         code: BindingsCode.SettingMissing,
-        message: `binds ${rule.slug} to "${binding.setting}", which ${part.path} does not hold`,
+        details: {
+          file: part.path,
+          rule: rule.slug,
+          setting: binding.setting,
+        },
       };
 };
 
-const bindingsCheck: Check = ({ graph, constitution }: CheckInput): readonly Finding[] => {
+const bindingsCheck: Check<BindingsFinding> = ({
+  graph,
+  constitution,
+}: CheckInput): readonly BindingsFinding[] => {
   const rules = Rule.bySlug(constitution.rules);
 
-  return constitution.bindings.flatMap((binding) => {
+  return constitution.bindings.flatMap((binding): readonly BindingsFinding[] => {
     const problem = bindingProblem({
       binding,
       graph,
@@ -140,4 +199,5 @@ const bindingsCheck: Check = ({ graph, constitution }: CheckInput): readonly Fin
   });
 };
 
-export { bindingsCheck };
+export type { BindingsDetails };
+export { BindingsCode, bindingsCheck };
