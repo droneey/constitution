@@ -104,14 +104,14 @@ const everyCodeContext = (root: string): string =>
     root,
     warnings: [
       '⚠️ Warnings — tell the user at the start of the session',
-      '- missing: react-dom needs browser — add browser to platforms',
-      '- abstract: _react cannot be listed — list react-dom',
-      '- unknown: tanstak-query is not a block — check the name',
-      '- wrong-key: ui is a domain — move it from implementations to domains',
       '- config: constitution.yaml has no platforms key — add platforms: []',
-      '- pack: packs/gone is not installed — run mise install, or check the path',
-      '- not-met: matomo does not meet analytics-consent-first — see its Requirements table',
-      '- override: four-data-states expired on 2020-01-01 — renew or remove it',
+      '- blocks: _react cannot be listed — list react-dom',
+      '- blocks: tanstak-query is not a block — check the name',
+      '- blocks: ui is a domain — move it from implementations to domains',
+      '- requirements: react-dom needs browser — add browser to platforms',
+      '- requirements: matomo does not meet analytics-consent-first — see its Requirements table',
+      '- overrides: four-data-states expired on 2020-01-01 — renew or remove it',
+      '- installation: packs/gone is not installed — run mise install, or check the path',
     ],
   });
 

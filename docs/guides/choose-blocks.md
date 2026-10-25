@@ -44,15 +44,15 @@ implementations:
 
 ## Let the warnings finish the list
 
-A new session reads `constitution.yaml` and reports what does not hold, at the top of its digest:
+A new session reads `constitution.yaml` and reports what does not hold, at the top of its digest. Each warning opens with the subject to fix: `config` for the file's keys, `blocks` for the ids it lists, `requirements` for what a block needs, `overrides`, `workspace` for its members, `installation` for what mise installs, `wiring` for a tool's configuration, and `packs` or `constitution` for a file of a pack or of the release. Those that finish the list:
 
 | Warning | What to do |
 |---|---|
-| `missing: A needs B — add B to <key>` | list B as well; a block brings the blocks it requires |
-| `unknown: X is not a block — check the name` | correct the id, or [write a block](write-a-pack.md) for it |
-| `wrong-key: X is an implementation — move it from languages to implementations` | move the id to its layer's key |
-| `abstract: _x cannot be listed — list <heirs>` | list the block that extends it instead |
-| `not-met: X does not meet <rule>` | read X's Requirements table: another rule stands in, or the block does not fit |
+| `requirements: A needs B — add B to <key>` | list B as well; a block brings the blocks it requires |
+| `blocks: X is not a block — check the name` | correct the id, or [write a block](write-a-pack.md) for it |
+| `blocks: X is an implementation — move it from languages to implementations` | move the id to its layer's key |
+| `blocks: _x cannot be listed — list <heirs>` | list the block that extends it instead |
+| `requirements: X does not meet <rule>` | read X's Requirements table: another rule stands in, or the block does not fit |
 | `wiring: <file> lacks <part> — run /constitution:ratify` | run `/constitution:ratify`, which wires the file with [the parts](../reference/presets.md#the-parts-a-project-takes) of its blocks |
 
 ## Give a part of a workspace its own blocks

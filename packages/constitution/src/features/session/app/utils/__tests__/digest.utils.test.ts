@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import { Layer } from '#/kernel/constants';
 import type { ProjectWarning } from '#/kernel/entities';
-import { WarningCode, WarningKind } from '#/kernel/entities';
+import { WarningKind } from '#/kernel/entities';
 import { BlockId, BlockSource, Version } from '#/kernel/value-objects';
 import { warningTextOf } from '#/shared/cli';
 
@@ -39,7 +39,6 @@ describe('digestOf', () => {
     ({ count, counted }) => {
       // Arrange
       const warning: ProjectWarning = {
-        code: WarningCode.Config,
         details: {
           file: 'constitution.yaml',
           key: 'check',

@@ -5,7 +5,7 @@ import { StepStatus } from '@droneey/design-cli';
 import { createFakeContext, runCommand } from '#/__tests__/command-line.fake';
 import type { Validation } from '#/features/blocks';
 import type { ProjectWarning } from '#/kernel/entities';
-import { ValueSite, WarningCode, WarningKind } from '#/kernel/entities';
+import { ValueSite, WarningKind } from '#/kernel/entities';
 import { ValueFailure } from '#/kernel/errors';
 
 import { createCheckCommand } from '../check.cli';
@@ -19,7 +19,6 @@ const finding: Validation['findings'][number] = {
   path: 'blocks/domains/ui/ui.md',
 };
 const warning: ProjectWarning = {
-  code: WarningCode.Unknown,
   details: {
     name: 'nope',
   },

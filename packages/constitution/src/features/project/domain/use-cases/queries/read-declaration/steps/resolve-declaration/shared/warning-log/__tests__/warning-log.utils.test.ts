@@ -1,20 +1,21 @@
 import { describe, expect, it } from 'bun:test';
 
 import type { ProjectWarning } from '#/kernel/entities';
-import { WarningCode, WarningKind } from '#/kernel/entities';
+import { WarningKind } from '#/kernel/entities';
+import { SourceKind } from '#/kernel/value-objects';
 
 import { createWarningLog } from '../warning-log.utils';
 
 const unreadable: ProjectWarning = {
-  code: WarningCode.Pack,
   details: {
     file: 'rules/domains/ui/ui.md',
+    source: SourceKind.Pack,
   },
   kind: WarningKind.FileUnreadable,
 };
 
 describe('createWarningLog', () => {
-  it('should keep a warning once when its code, kind and details are given again', () => {
+  it('should keep a warning once when its kind and details are given again', () => {
     // Arrange
     const log = createWarningLog();
 
@@ -22,9 +23,9 @@ describe('createWarningLog', () => {
 
     // Act
     log.add({
-      code: WarningCode.Pack,
       details: {
         file: 'rules/domains/ui/ui.md',
+        source: SourceKind.Pack,
       },
       kind: WarningKind.FileUnreadable,
     });
@@ -40,21 +41,11 @@ describe('createWarningLog', () => {
     other: ProjectWarning;
   }>([
     {
-      condition: 'only its code differs',
-      other: {
-        code: WarningCode.Constitution,
-        details: {
-          file: 'rules/domains/ui/ui.md',
-        },
-        kind: WarningKind.FileUnreadable,
-      },
-    },
-    {
       condition: 'only its kind differs',
       other: {
-        code: WarningCode.Pack,
         details: {
           file: 'rules/domains/ui/ui.md',
+          source: SourceKind.Pack,
         },
         kind: WarningKind.FrontMatterMissing,
       },
@@ -62,9 +53,9 @@ describe('createWarningLog', () => {
     {
       condition: 'only its details differ',
       other: {
-        code: WarningCode.Pack,
         details: {
           file: 'rules/domains/api/api.md',
+          source: SourceKind.Pack,
         },
         kind: WarningKind.FileUnreadable,
       },
@@ -90,22 +81,21 @@ describe('createWarningLog', () => {
     const log = createWarningLog();
 
     log.add({
-      code: WarningCode.Constitution,
       details: {
         file: 'blocks/domains/ui/ui.md',
+        source: SourceKind.Release,
       },
       kind: WarningKind.FileUnreadable,
     });
     log.add(unreadable);
     log.add({
-      code: WarningCode.Constitution,
       details: {
         file: 'blocks/domains/api/api.md',
+        source: SourceKind.Release,
       },
       kind: WarningKind.FileUnreadable,
     });
     log.add({
-      code: WarningCode.Unknown,
       details: {
         name: 'forms',
       },
@@ -118,7 +108,6 @@ describe('createWarningLog', () => {
     // Assert
     expect(warnings).toStrictEqual([
       {
-        code: WarningCode.Unknown,
         details: {
           name: 'forms',
         },
@@ -126,16 +115,16 @@ describe('createWarningLog', () => {
       },
       unreadable,
       {
-        code: WarningCode.Constitution,
         details: {
           file: 'blocks/domains/ui/ui.md',
+          source: SourceKind.Release,
         },
         kind: WarningKind.FileUnreadable,
       },
       {
-        code: WarningCode.Constitution,
         details: {
           file: 'blocks/domains/api/api.md',
+          source: SourceKind.Release,
         },
         kind: WarningKind.FileUnreadable,
       },

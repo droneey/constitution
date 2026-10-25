@@ -1,6 +1,6 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 
-import { mentionedOf } from '../hook.fixtures';
+import { mentionedOf, warningLinesOf } from '../hook.fixtures';
 import { removePluginRoots } from '../plugin-root.fixtures';
 import { ConfigKey, removeProjects } from '../project.fixtures';
 import {
@@ -489,9 +489,8 @@ describe('the wiring of a project', () => {
 
     // Assert
     expect(
-      context
-        .split('\n')
-        .filter((line) => line.startsWith('- unlisted: '))
+      warningLinesOf(context)
+        .filter((line) => line.startsWith('- workspace: '))
         .map((line) =>
           mentionedOf({
             names: [

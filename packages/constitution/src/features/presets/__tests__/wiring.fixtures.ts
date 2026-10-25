@@ -9,7 +9,6 @@ import {
   ConfigReadStatus,
   ProjectUnit,
   Resolution,
-  WarningCode,
   WarningKind,
 } from '#/kernel/entities';
 import { BlockId, PackPath, RuleSlug, UnitPath } from '#/kernel/value-objects';
@@ -411,7 +410,6 @@ const hooksOwnUnits = [
 // The warnings of the wiring, each built from the values it names, a unit by its path.
 
 const toolWiredNowhere = (details: { tool: string; unit: string }): ProjectWarning => ({
-  code: WarningCode.Wiring,
   details: {
     tool: details.tool,
     unit: UnitPath.create(details.unit),
@@ -422,19 +420,16 @@ const toolWiredNowhere = (details: { tool: string; unit: string }): ProjectWarni
 const folderKeepsConfig = (
   details: WarningDetails[WarningKind.FolderKeepsConfig],
 ): ProjectWarning => ({
-  code: WarningCode.Unlisted,
   details,
   kind: WarningKind.FolderKeepsConfig,
 });
 
 const fileMiswired = (details: WarningDetails[WarningKind.FileMiswired]): ProjectWarning => ({
-  code: WarningCode.Wiring,
   details,
   kind: WarningKind.FileMiswired,
 });
 
 const skipOfNoMember = (details: WarningDetails[WarningKind.SkipOfNoMember]): ProjectWarning => ({
-  code: WarningCode.Wiring,
   details,
   kind: WarningKind.SkipOfNoMember,
 });
@@ -442,13 +437,11 @@ const skipOfNoMember = (details: WarningDetails[WarningKind.SkipOfNoMember]): Pr
 const memberNotSkipped = (
   details: WarningDetails[WarningKind.MemberNotSkipped],
 ): ProjectWarning => ({
-  code: WarningCode.Wiring,
   details,
   kind: WarningKind.MemberNotSkipped,
 });
 
 const releaseLinkLoops = (details: { unit: string }): ProjectWarning => ({
-  code: WarningCode.Loop,
   details: {
     unit: UnitPath.create(details.unit),
   },

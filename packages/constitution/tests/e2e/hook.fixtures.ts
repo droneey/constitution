@@ -562,5 +562,6 @@ export {
   tellsTheUserOf,
   unknownIdsFilling,
   warningCutOf,
+  warningLinesOf,
   warningsOf,
 };

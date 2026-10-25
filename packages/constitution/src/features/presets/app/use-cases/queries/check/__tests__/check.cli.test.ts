@@ -4,13 +4,12 @@ import { StepStatus } from '@droneey/design-cli';
 
 import { createFakeContext, runCommand } from '#/__tests__/command-line.fake';
 import type { ProjectWarning } from '#/kernel/entities';
-import { WarningCode, WarningKind } from '#/kernel/entities';
+import { WarningKind } from '#/kernel/entities';
 import { UnitPath } from '#/kernel/value-objects';
 
 import { createPresetsCheckCommand } from '../check.cli';
 
 const wiredNowhere: ProjectWarning = {
-  code: WarningCode.Wiring,
   details: {
     tool: 'biome',
     unit: UnitPath.create(''),

@@ -121,7 +121,7 @@ overrides: []
 
 The members are the folders the workspace declares: the globs of `workspaces` in the root's `package.json` that reach a folder holding a `package.json`, and those of `members` of `[tool.uv.workspace]` in the root's `pyproject.toml` that reach a folder holding a `pyproject.toml`; a glob after `!`, or under uv's `exclude`, leaves its folders out. Nothing passes from one file to another: a member follows only the axes, blocks, packs and overrides its own file lists, so it names the repository's blocks it follows too, and lists a pack by its path from its own folder. The root's file covers the files no member holds.
 
-A member with no `constitution.yaml`, or one that cannot be read or does not parse, is a `config` warning in the digest and in `constitution presets check`, and its files follow no block. A `packages` key, which listed the members' blocks in the root's file before, is a warning too: each member's blocks go into its own file.
+A member with no `constitution.yaml` is a `workspace` warning, and one whose file cannot be read or does not parse a `config` warning, in the digest and in `constitution presets check`; either way its files follow no block. A `packages` key, which listed the members' blocks in the root's file before, is a warning too: each member's blocks go into its own file.
 
 The project is the farthest folder with a `constitution.yaml`, up to the root of its repository, from where a session starts or a command runs.
 

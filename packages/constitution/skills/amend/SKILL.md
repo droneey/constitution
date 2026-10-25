@@ -84,4 +84,4 @@ Run the hook as a session start would, from the repository root:
 printf '{"cwd":"%s","hook_event_name":"SessionStart","source":"startup"}\n' "$(pwd)" | constitution hook session-start
 ```
 
-The digest it prints lists the override under the overrides, and no warning names it. A `config` or `override` warning about it means the entry is wrong: fix it and show the owner. The change reaches the main branch through a pull request like any other, and git history keeps its record.
+The digest it prints lists the override under the overrides, and no warning names it. An `overrides` warning about it means the entry is wrong: fix it and show the owner. The change reaches the main branch through a pull request like any other, and git history keeps its record.

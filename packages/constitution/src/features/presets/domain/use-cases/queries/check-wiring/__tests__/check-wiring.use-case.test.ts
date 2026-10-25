@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import { Axis } from '#/kernel/constants';
-import type { ProjectWarning } from '#/kernel/entities';
-import { WarningCode, WiringProblemKind } from '#/kernel/entities';
+import { ProjectWarning, WarningCode, WiringProblemKind } from '#/kernel/entities';
 
 import type { Files, WiringFixture } from '../../../../../__tests__/wiring.fixtures';
 import {
@@ -2878,7 +2877,9 @@ describe('checkWiring', () => {
     const warnings = checkWiring(input);
 
     // Assert
-    expect(warnings.filter((warning) => warning.code === WarningCode.Loop)).toStrictEqual([
+    expect(
+      warnings.filter((warning) => ProjectWarning.codeOf(warning) === WarningCode.Installation),
+    ).toStrictEqual([
       releaseLinkLoops({
         unit: '',
       }),

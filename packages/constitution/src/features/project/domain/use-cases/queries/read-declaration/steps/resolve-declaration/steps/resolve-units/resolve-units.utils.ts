@@ -1,5 +1,5 @@
 import { Axis, CHECK_KEY, CONFIG_FILE, Layer, OPTIONAL_AXES } from '#/kernel/constants';
-import { WarningCode, WarningKind } from '#/kernel/entities';
+import { WarningKind } from '#/kernel/entities';
 import type { BlockId } from '#/kernel/value-objects';
 import { coreBlockId, SourceKind, UnitPath } from '#/kernel/value-objects';
 
@@ -36,7 +36,6 @@ const warnOfUnitKeys = (input: { log: WarningLog; unit: DeclaredUnit }): void =>
   for (const key of known) {
     if (!config.keys.includes(key)) {
       log.add({
-        code: WarningCode.Config,
         details: {
           file,
           key,
@@ -49,7 +48,6 @@ const warnOfUnitKeys = (input: { log: WarningLog; unit: DeclaredUnit }): void =>
   for (const key of config.keys) {
     if (!known.includes(key)) {
       log.add({
-        code: WarningCode.Config,
         details: {
           file,
           key,
@@ -61,7 +59,6 @@ const warnOfUnitKeys = (input: { log: WarningLog; unit: DeclaredUnit }): void =>
 
   for (const key of config.empties) {
     log.add({
-      code: WarningCode.Config,
       details: {
         file,
         key,
@@ -88,7 +85,6 @@ const pickedAxesOf = (input: { log: WarningLog; unit: DeclaredUnit }): ReadonlyS
   for (const listed of unit.config.items.filter((entry) => entry.key === AXES_KEY)) {
     if (listed.text === Axis.Foundation) {
       log.add({
-        code: WarningCode.Config,
         details: {
           file: fileOf(unit),
         },
@@ -96,7 +92,6 @@ const pickedAxesOf = (input: { log: WarningLog; unit: DeclaredUnit }): ReadonlyS
       });
     } else if (OPTIONAL_AXES.find((axis) => axis === listed.text) === undefined) {
       log.add({
-        code: WarningCode.Config,
         details: {
           axis: listed.text,
         },
@@ -137,7 +132,6 @@ const declaredOf = (input: {
 
   if (name.includes('/')) {
     log.add({
-      code: WarningCode.Unknown,
       details: {
         name,
       },
@@ -149,7 +143,6 @@ const declaredOf = (input: {
 
   if (block === undefined) {
     log.add({
-      code: WarningCode.Unknown,
       details: {
         name,
       },
@@ -161,7 +154,6 @@ const declaredOf = (input: {
 
   if (block.layer === Layer.Core) {
     log.add({
-      code: WarningCode.WrongKey,
       details: {
         key: entry.key,
       },
@@ -173,7 +165,6 @@ const declaredOf = (input: {
 
   if (block.isAbstract) {
     log.add({
-      code: WarningCode.Abstract,
       details: {
         heirs: ProjectModel.heirsOf(model, block.id),
         name,
@@ -186,7 +177,6 @@ const declaredOf = (input: {
 
   if (block.source.kind === SourceKind.Pack && !DeclaredUnit.listsPack(unit, block.source.pack)) {
     log.add({
-      code: WarningCode.Pack,
       details: {
         file: fileOf(unit),
         name,
@@ -200,7 +190,6 @@ const declaredOf = (input: {
 
   if (block.layer !== layerOfKey(entry.key)) {
     log.add({
-      code: WarningCode.WrongKey,
       details: {
         key: entry.key,
         layer: block.layer,

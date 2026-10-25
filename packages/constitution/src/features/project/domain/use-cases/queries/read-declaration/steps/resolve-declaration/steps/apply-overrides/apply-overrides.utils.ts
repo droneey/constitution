@@ -1,6 +1,6 @@
 import { LOWERED_LEVELS } from '#/kernel/constants';
 import type { ListedOverride, ProjectWarning } from '#/kernel/entities';
-import { Lowering, WarningCode, WarningKind } from '#/kernel/entities';
+import { Lowering, WarningKind } from '#/kernel/entities';
 import type { RuleSlug, UnitPath } from '#/kernel/value-objects';
 
 import type { ProjectConfig } from '../../../../../../../entities';
@@ -25,7 +25,6 @@ const liveOf = (input: {
 
   if (named === undefined || written === undefined || reason === undefined) {
     return warn({
-      code: WarningCode.Config,
       details: {
         line: override.line,
         missing: ConfigOverride.missingFieldsOf(override),
@@ -38,7 +37,6 @@ const liveOf = (input: {
 
   if (level === undefined) {
     return warn({
-      code: WarningCode.Config,
       details: {
         level: written,
         rule: named,
@@ -53,7 +51,6 @@ const liveOf = (input: {
 
   if (writtenUntil !== undefined && until === undefined) {
     return warn({
-      code: WarningCode.Config,
       details: {
         rule: named,
         until: writtenUntil,
@@ -66,7 +63,6 @@ const liveOf = (input: {
 
   if (rule === undefined) {
     return warn({
-      code: WarningCode.Override,
       details: {
         rule: named,
       },
@@ -76,7 +72,6 @@ const liveOf = (input: {
 
   if (until !== undefined && Temporal.PlainDate.compare(until, input.today) < 0) {
     return warn({
-      code: WarningCode.Override,
       details: {
         rule: named,
         until: until.toString(),

@@ -14,8 +14,8 @@ export type { Declaration, OpenedProject } from './project.entity';
 export { ConfigReadStatus } from './project.entity';
 export { ProjectPlace } from './project-place.entity';
 export { ProjectUnit } from './project-unit.entity';
-export type { ProjectWarning, WarningDetails } from './project-warning.entity';
-export { WarningCode, WarningKind } from './project-warning.entity';
+export type { WarningDetails } from './project-warning.entity';
+export { ProjectWarning, WarningCode, WarningKind } from './project-warning.entity';
 export type { Release } from './release.entity';
 export { NEWEST_FORMAT, OLDEST_FORMAT, ReleaseStatus } from './release.entity';
 export type {

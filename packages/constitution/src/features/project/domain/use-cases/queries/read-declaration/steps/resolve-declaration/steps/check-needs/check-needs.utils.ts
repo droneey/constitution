@@ -1,5 +1,5 @@
 import { Level } from '#/kernel/constants';
-import { Met, WarningCode, WarningKind } from '#/kernel/entities';
+import { Met, WarningKind } from '#/kernel/entities';
 
 import type { CatalogueAnswer } from '../../../../../../../entities';
 import { AppliedOverrides, ProjectModel, ResolvedUnit } from '../../../../../../../entities';
@@ -27,7 +27,6 @@ const warnOfRequires = (input: {
       }
 
       log.add({
-        code: WarningCode.Missing,
         details: {
           block: block.id,
           ...(need.isAbstract
@@ -87,7 +86,6 @@ const warnOfAnswers = (input: {
     }
 
     input.log.add({
-      code: WarningCode.NotMet,
       details: {
         block: answer.block,
         requirement: answer.requirement,
