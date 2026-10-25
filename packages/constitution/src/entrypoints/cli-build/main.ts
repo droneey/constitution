@@ -23,6 +23,8 @@ const TARGETS: readonly Bun.Build.CompileTarget[] = [
   'bun-windows-x64',
 ] as const;
 const COMPONENTS = /\/packages\/[^/]+\/src\/.+\.(?:tsx|hooks\.ts)$/;
+const DEVTOOLS = /^react-devtools-core$/;
+const STUB_NAMESPACE = 'stub';
 const SUCCESS_EXIT_CODE = 0;
 const FAILURE_EXIT_CODE = 1;
 
@@ -95,6 +97,33 @@ const reactCompilerPlugin: Bun.BunPlugin = {
   },
 };
 
+// Ink reaches react-devtools-core only when DEV is set, and no install of the program holds it, so
+// the bundle takes an empty module in its place.
+const devtoolsStubPlugin: Bun.BunPlugin = {
+  name: 'devtools-stub',
+  setup: (build): void => {
+    build.onResolve(
+      {
+        filter: DEVTOOLS,
+      },
+      ({ path }) => ({
+        namespace: STUB_NAMESPACE,
+        path,
+      }),
+    );
+    build.onLoad(
+      {
+        filter: DEVTOOLS,
+        namespace: STUB_NAMESPACE,
+      },
+      () => ({
+        contents: 'export default {};',
+        loader: 'js',
+      }),
+    );
+  },
+};
+
 /** The logs of a build that failed are printed. */
 const buildProgram = async (): Promise<boolean> => {
   const { values } = parseArgs({
@@ -158,8 +187,10 @@ const buildProgram = async (): Promise<boolean> => {
     minify: true,
     plugins: [
       reactCompilerPlugin,
+      devtoolsStubPlugin,
     ],
     target: 'bun',
+    throw: false,
   });
 
   if (!built.success) {
