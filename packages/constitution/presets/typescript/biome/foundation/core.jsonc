@@ -94,6 +94,15 @@
         "**/*.test.tsx",
       ],
     },
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/case-pins-meaning-never-wording.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/tests/**",
+      ],
+    },
   ],
   "overrides": [
     {

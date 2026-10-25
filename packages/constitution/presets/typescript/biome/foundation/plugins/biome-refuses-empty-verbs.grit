@@ -23,5 +23,5 @@ or {
     `set`,
     `update`
   },
-  register_diagnostic(span=$name, message="Name what the function does and to what: a verb alone says nothing", severity="error")
+  register_diagnostic(span=$name, message="[biome-refuses-empty-verbs] Name what the function does and to what: a verb alone says nothing", severity="error")
 }

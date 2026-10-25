@@ -24,4 +24,6 @@ export {
   Level,
   LOWERED_LEVELS,
   OPTIONAL_AXES,
+  RULE_TABLE_CELLS,
+  RULE_TABLE_HEADER,
 } from './vocabulary.constants';

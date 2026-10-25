@@ -20,5 +20,5 @@ language js
       }
     }
   },
-  register_diagnostic(span=$option, message="Fix or delete a flaky case; never retry it", severity="error")
+  register_diagnostic(span=$option, message="[failed-test-never-retried] Fix or delete a flaky case; never retry it", severity="error")
 }

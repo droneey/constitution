@@ -5,5 +5,5 @@ or {
   `$schema.brand<$brand>($...)`
 } where {
   $schema <: r"z\..*",
-  register_diagnostic(span=$schema, message="Build the value through its create function, not a brand of the schema's own", severity="error")
+  register_diagnostic(span=$schema, message="[schema-never-brands] Build the value through its create function, not a brand of the schema's own", severity="error")
 }

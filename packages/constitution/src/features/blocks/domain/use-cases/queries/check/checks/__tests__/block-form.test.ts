@@ -1,13 +1,16 @@
 import { describe, expect, it } from 'bun:test';
 
+import type { FindingOf } from '#/kernel/types';
+import { RuleSlug } from '#/kernel/value-objects';
+
 import {
   checkInputOf,
-  findingOf,
   passportFile,
   rule,
 } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { blockFormCheck } from '../block-form';
+import type { BlockFormDetails } from '../block-form';
+import { BlockFormCode, blockFormCheck } from '../block-form';
 
 const UNTRUSTED_CLIENT = 'blocks/domains/untrusted-client/untrusted-client.md';
 
@@ -41,10 +44,11 @@ describe('blockFormCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'passport-holds-rules',
+      {
+        code: BlockFormCode.PassportHoldsRules,
+        details: {},
         path: UNTRUSTED_CLIENT,
-      }),
+      },
     ]);
   });
 
@@ -93,94 +97,112 @@ const formsRule = rule({
 
 describe('blockFormCheck on chapters and seams', () => {
   it.each<{
-    code: string;
     condition: string;
-    file: string;
-    names: readonly string[];
+    finding: FindingOf<BlockFormDetails>;
     text: string;
   }>([
     {
-      code: 'file-without-governs',
       condition: 'a chapter opens without a Governs line',
-      file: PLURALS,
-      names: [],
+      finding: {
+        code: BlockFormCode.WithoutGoverns,
+        details: {},
+        path: PLURALS,
+      },
       text: `# Plurals\n\n## General\n\n${pluralsRule}`,
     },
     {
-      code: 'file-without-governs',
       condition: 'a chapter opens with a Governs line and no title',
-      file: PLURALS,
-      names: [],
+      finding: {
+        code: BlockFormCode.WithoutGoverns,
+        details: {},
+        path: PLURALS,
+      },
       text: `> Governs plurals.\n\n## General\n\n${pluralsRule}`,
     },
     {
-      code: 'file-without-governs',
       condition: 'a chapter opens with a section in place of its title',
-      file: PLURALS,
-      names: [],
+      finding: {
+        code: BlockFormCode.WithoutGoverns,
+        details: {},
+        path: PLURALS,
+      },
       text: `## Plurals\n\n> Governs plurals.\n\n${pluralsRule}`,
     },
     {
-      code: 'file-without-governs',
       condition: 'a chapter puts prose between its title and its Governs line',
-      file: PLURALS,
-      names: [],
+      finding: {
+        code: BlockFormCode.WithoutGoverns,
+        details: {},
+        path: PLURALS,
+      },
       text: `# Plurals\n\nPlurals vary.\n\n> Governs plurals.\n\n## General\n\n${pluralsRule}`,
     },
     {
-      code: 'file-without-governs',
       condition: 'a seam opens without a Governs line',
-      file: UI_WITH_REMOTE_DATA,
-      names: [],
+      finding: {
+        code: BlockFormCode.WithoutGoverns,
+        details: {},
+        path: UI_WITH_REMOTE_DATA,
+      },
       text: `# Remote data\n\n## General\n\n${rule({
         tightens: 'reads-are-cancellable',
         slug: 'optimistic-writes-roll-back',
       })}`,
     },
     {
-      code: 'chapter-without-rules',
       condition: 'a chapter holds no rule',
-      file: PLURALS,
-      names: [],
+      finding: {
+        code: BlockFormCode.WithoutRules,
+        details: {},
+        path: PLURALS,
+      },
       text: '# Plurals\n\n> Governs plurals.\n\n## General\n\nNothing is ruled yet.\n',
     },
     {
-      code: 'rule-outside-section',
       condition: 'a rule sits under no section',
-      file: PLURALS,
-      names: [
-        'i18n-plurals-by-cldr',
-      ],
+      finding: {
+        code: BlockFormCode.RuleOutsideSection,
+        details: {
+          slug: RuleSlug.create('i18n-plurals-by-cldr'),
+        },
+        path: PLURALS,
+      },
       text: `# Plurals\n\n> Governs plurals.\n\n${pluralsRule}`,
     },
     {
-      code: 'section-repeats-title',
       condition: "a section is named like the file's title",
-      file: PLURALS,
-      names: [
-        'plurals',
-      ],
+      finding: {
+        code: BlockFormCode.SectionRepeatsTitle,
+        details: {
+          section: 'plurals',
+        },
+        path: PLURALS,
+      },
       text: `\n# Plurals\n\n> Governs plurals.\n\n## plurals\n\n${pluralsRule}`,
     },
     {
-      code: 'requirements-section-not-last',
       condition: 'a section follows the Requirements for implementation',
-      file: PLURALS,
-      names: [],
+      finding: {
+        code: BlockFormCode.RequirementsNotLast,
+        details: {},
+        path: PLURALS,
+      },
       text: `# Plurals\n\n> Governs plurals.\n\n## Requirements for implementation\n\n${pluralsRule}\n## Forms\n\n${formsRule}`,
     },
     {
-      code: 'general-section-not-first',
       condition: 'a section comes before General',
-      file: PLURALS,
-      names: [],
+      finding: {
+        code: BlockFormCode.GeneralNotFirst,
+        details: {},
+        path: PLURALS,
+      },
       text: `# Plurals\n\n> Governs plurals.\n\n## Forms\n\n${formsRule}\n## General\n\n${pluralsRule}`,
     },
-  ])('should report the file when $condition', ({ code, file, names, text }) => {
+  ])('should report the file when $condition', ({ finding, text }) => {
     // Arrange
     const files = validFiles();
 
-    files[file] = text;
+    files[finding.path] = text;
 
     const input = checkInputOf(files);
 
@@ -189,11 +211,7 @@ describe('blockFormCheck on chapters and seams', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code,
-        names,
-        path: file,
-      }),
+      finding,
     ]);
   });
 
@@ -210,14 +228,16 @@ describe('blockFormCheck on chapters and seams', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'file-without-governs',
+      {
+        code: BlockFormCode.WithoutGoverns,
+        details: {},
         path: PLURALS,
-      }),
-      findingOf({
-        code: 'chapter-without-rules',
+      },
+      {
+        code: BlockFormCode.WithoutRules,
+        details: {},
         path: PLURALS,
-      }),
+      },
     ]);
   });
 

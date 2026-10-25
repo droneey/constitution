@@ -8,5 +8,5 @@ or {
   `React.useCallback($...)`,
   `React.memo($...)`
 } as $call where {
-  register_diagnostic(span=$call, message="Leave memoisation to the React Compiler; an effect's callback is wrapped in useEffectEvent", severity="error")
+  register_diagnostic(span=$call, message="[react-compiler-on] Leave memoisation to the React Compiler; an effect's callback is wrapped in useEffectEvent", severity="error")
 }

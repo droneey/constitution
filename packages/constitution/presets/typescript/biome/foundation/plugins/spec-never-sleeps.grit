@@ -6,5 +6,5 @@ or {
   `new Promise($executor)` where { $executor <: contains `setTimeout($...)` },
   JsImport() as $import where { $import <: r"(?s).*setTimeout.*node:timers/promises.*" }
 } as $sleep where {
-  register_diagnostic(span=$sleep, message="Wait for a condition or advance a fake clock, never a fixed delay", severity="error")
+  register_diagnostic(span=$sleep, message="[spec-never-sleeps] Wait for a condition or advance a fake clock, never a fixed delay", severity="error")
 }

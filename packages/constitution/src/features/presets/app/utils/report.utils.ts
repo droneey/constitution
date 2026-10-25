@@ -2,7 +2,7 @@ import { StepStatus, Tone } from '@droneey/design-cli';
 
 import type { ProjectWarning } from '#/kernel/entities';
 import type { Section, TaskOutcome } from '#/shared/cli';
-import { countOf, noteSection } from '#/shared/cli';
+import { countOf, noteSection, warningTextOf } from '#/shared/cli';
 
 const WARNING = 'warning';
 
@@ -33,7 +33,7 @@ const presetsSectionsOf = (warnings: readonly ProjectWarning[] | undefined): rea
     ? []
     : [
         noteSection({
-          lines: warnings.map((warning) => `${warning.code}: ${warning.message}`),
+          lines: warnings.map((warning) => `${warning.code}: ${warningTextOf(warning)}`),
           title: `${countOf({
             count: warnings.length,
             noun: WARNING,

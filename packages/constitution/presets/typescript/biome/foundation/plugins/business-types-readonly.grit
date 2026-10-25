@@ -10,5 +10,5 @@ or {
     JsFormalParameter(),
     TsFunctionType()
   },
-  register_diagnostic(span=$field, message="A field of a business type that is not readonly: the value is shared, and a change made in place goes unseen", severity="error")
+  register_diagnostic(span=$field, message="[business-types-readonly] A field of a business type that is not readonly: the value is shared, and a change made in place goes unseen", severity="error")
 }

@@ -84,7 +84,7 @@ A case proves one intent and asserts it with strict equality on the whole outcom
 |---|---|
 | a failing case then names one broken behaviour, and a partial assertion lets the rest of the outcome change unseen. | [testing] |
 
-### case-pins-meaning-never-wording · SHOULD
+### case-pins-meaning-never-wording · MUST
 
 A case reads a message, a report or a rendered text by what it means — its code, its subject, the values it names, the part the case is about, taken from the value before it is rendered where the unit gives one — and compares that whole; the wording and the layout of a format are pinned once, by one golden file or one table of cases.
 
@@ -300,7 +300,7 @@ Logic — all production code but the entry files, the file that wires the progr
 
 ### every-mutant-killed · MUST
 
-Mutation testing measures the specs, and every mutant of the logic a change touches — its changed lines, its new files and the files whose specs it changes — is killed; a mutant no behaviour can tell apart, and one in code no caller relies on — a log call, the text of a diagnostic — is left out by the tool's configuration or marked in the code with its reason.
+Mutation testing measures the specs, and every mutant of the logic a change touches — its changed lines and its new files — is killed; a mutant no behaviour can tell apart, and one in code no caller relies on — a log call, the text of a diagnostic — is left out by the tool's configuration or marked in the code with its reason.
 
 | Why | Tags |
 |---|---|

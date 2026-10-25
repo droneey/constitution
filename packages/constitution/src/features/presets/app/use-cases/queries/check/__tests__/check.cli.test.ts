@@ -4,9 +4,19 @@ import { StepStatus } from '@droneey/design-cli';
 
 import { createFakeContext, runCommand } from '#/__tests__/command-line.fake';
 import type { ProjectWarning } from '#/kernel/entities';
-import { WarningCode } from '#/kernel/entities';
+import { WarningCode, WarningKind } from '#/kernel/entities';
+import { UnitPath } from '#/kernel/value-objects';
 
 import { createPresetsCheckCommand } from '../check.cli';
+
+const wiredNowhere: ProjectWarning = {
+  code: WarningCode.Wiring,
+  details: {
+    tool: 'biome',
+    unit: UnitPath.create(''),
+  },
+  kind: WarningKind.ToolWiredNowhere,
+};
 
 const runOf = async (
   warnings: readonly ProjectWarning[] | undefined,
@@ -57,10 +67,7 @@ describe('createPresetsCheckCommand', () => {
       failures: 1,
       status: StepStatus.Warned,
       warnings: [
-        {
-          code: WarningCode.Wiring,
-          message: 'biome.json lacks a part',
-        },
+        wiredNowhere,
       ],
     },
     {

@@ -1,13 +1,11 @@
 import { describe, expect, it } from 'bun:test';
 
-import { findingOf } from '#/__tests__/finding.fixtures';
-
 import { Axis, Level } from '../../constants';
 import { ValueFailure } from '../../errors';
-import type { Finding } from '../../types';
 import { BlockId, coreBlockId, RuleSlug } from '../../value-objects';
-import type { RuleSource } from '../stated-rule.entity';
-import { StatedRule } from '../stated-rule.entity';
+import type { RuleSource, RulesParsed } from '../stated-rule.entity';
+import { RuleFormCode, StatedRule } from '../stated-rule.entity';
+import { ValueSite } from '../value-finding.entity';
 
 const FILE = 'blocks/core/foundation/principles.md';
 const AGREEMENT = 'blocks/core/foundation/agreement.md';
@@ -49,13 +47,6 @@ const unstatedRuleOf = (fields: Partial<StatedRule>): StatedRule => ({
   writtenLenses: [],
   ...fields,
 });
-
-const found = (input: { code: string; names: readonly string[] }): Finding =>
-  findingOf({
-    code: input.code,
-    names: input.names,
-    path: FILE,
-  });
 
 describe('StatedRule.parse', () => {
   it('should read the heading, the statement and the table when a root rule is complete', () => {
@@ -151,23 +142,37 @@ describe('StatedRule.parse', () => {
     },
   );
 
-  it.each([
+  it.each<{
+    condition: string;
+    finding: RulesParsed['findings'][number];
+    heading: string;
+  }>([
     {
       condition: 'its slug is not kebab-case',
+      finding: {
+        code: ValueFailure.RuleSlug,
+        details: {
+          site: ValueSite.RuleHeading,
+          written: 'Inputs_Labelled',
+        },
+        path: FILE,
+      },
       heading: '### Inputs_Labelled · MUST',
-      names: [
-        'Inputs_Labelled',
-      ],
     },
     {
       condition: 'the slug it tightens is not kebab-case',
+      finding: {
+        code: ValueFailure.RuleSlug,
+        details: {
+          rule: 'inputs-labelled',
+          site: ValueSite.TightenedRule,
+          written: 'Focus_Shown',
+        },
+        path: FILE,
+      },
       heading: '### inputs-labelled → Focus_Shown · MUST',
-      names: [
-        'inputs-labelled',
-        'Focus_Shown',
-      ],
     },
-  ])('should report the slug and read no rule when $condition', ({ heading, names }) => {
+  ])('should report the slug and read no rule when $condition', ({ finding, heading }) => {
     // Arrange
     const source = sourceOf([
       heading,
@@ -181,10 +186,7 @@ describe('StatedRule.parse', () => {
     // Assert
     expect(parsed).toStrictEqual({
       findings: [
-        found({
-          code: ValueFailure.RuleSlug,
-          names,
-        }),
+        finding,
       ],
       rules: [],
     });
@@ -233,12 +235,13 @@ describe('StatedRule.parse', () => {
     // Assert
     expect(parsed).toStrictEqual({
       findings: [
-        found({
-          code: 'rule-heading-misshapen',
-          names: [
+        {
+          code: RuleFormCode.HeadingMisshapen,
+          details: {
             heading,
-          ],
-        }),
+          },
+          path: FILE,
+        },
       ],
       rules: [],
     });
@@ -267,19 +270,20 @@ describe('StatedRule.parse', () => {
   });
 
   it.each<{
-    findings: readonly Finding[];
+    findings: RulesParsed['findings'];
     lines: readonly string[];
     name: string;
     rule: Partial<StatedRule>;
   }>([
     {
       findings: [
-        found({
-          code: 'rule-without-table',
-          names: [
-            'a',
-          ],
-        }),
+        {
+          code: RuleFormCode.WithoutTable,
+          details: {
+            slug: RuleSlug.create('a'),
+          },
+          path: FILE,
+        },
       ],
       lines: [],
       name: 'no table',
@@ -289,13 +293,14 @@ describe('StatedRule.parse', () => {
     },
     {
       findings: [
-        found({
-          code: 'rule-with-many-tables',
-          names: [
-            'a',
-            '2',
-          ],
-        }),
+        {
+          code: RuleFormCode.TablesMany,
+          details: {
+            count: 2,
+            slug: RuleSlug.create('a'),
+          },
+          path: FILE,
+        },
       ],
       lines: [
         ...table,
@@ -309,12 +314,13 @@ describe('StatedRule.parse', () => {
     },
     {
       findings: [
-        found({
-          code: 'rule-table-header-misshapen',
-          names: [
-            'a',
-          ],
-        }),
+        {
+          code: RuleFormCode.HeaderMisshapen,
+          details: {
+            slug: RuleSlug.create('a'),
+          },
+          path: FILE,
+        },
       ],
       lines: [
         '| Why | Check | Tags |',
@@ -326,19 +332,21 @@ describe('StatedRule.parse', () => {
     },
     {
       findings: [
-        found({
-          code: 'rule-table-header-misshapen',
-          names: [
-            'a',
-          ],
-        }),
-        found({
-          code: 'rule-table-rows-not-one',
-          names: [
-            'a',
-            '0',
-          ],
-        }),
+        {
+          code: RuleFormCode.HeaderMisshapen,
+          details: {
+            slug: RuleSlug.create('a'),
+          },
+          path: FILE,
+        },
+        {
+          code: RuleFormCode.RowsNotOne,
+          details: {
+            count: 0,
+            slug: RuleSlug.create('a'),
+          },
+          path: FILE,
+        },
       ],
       lines: [
         '| Why | Tags |',
@@ -351,13 +359,14 @@ describe('StatedRule.parse', () => {
     },
     {
       findings: [
-        found({
-          code: 'rule-table-rows-not-one',
-          names: [
-            'a',
-            '2',
-          ],
-        }),
+        {
+          code: RuleFormCode.RowsNotOne,
+          details: {
+            count: 2,
+            slug: RuleSlug.create('a'),
+          },
+          path: FILE,
+        },
       ],
       lines: [
         ...table,
@@ -368,13 +377,14 @@ describe('StatedRule.parse', () => {
     },
     {
       findings: [
-        found({
-          code: 'rule-table-cells-miscounted',
-          names: [
-            'a',
-            '1',
-          ],
-        }),
+        {
+          code: RuleFormCode.CellsMiscounted,
+          details: {
+            count: 1,
+            slug: RuleSlug.create('a'),
+          },
+          path: FILE,
+        },
       ],
       lines: [
         '| Why | Tags |',
@@ -398,13 +408,14 @@ describe('StatedRule.parse', () => {
     },
     {
       findings: [
-        found({
-          code: 'rule-tags-not-a-list',
-          names: [
-            'a',
-            'ux, data',
-          ],
-        }),
+        {
+          code: RuleFormCode.TagsNotList,
+          details: {
+            slug: RuleSlug.create('a'),
+            tags: 'ux, data',
+          },
+          path: FILE,
+        },
       ],
       lines: [
         '| Why | Tags |',
@@ -416,12 +427,13 @@ describe('StatedRule.parse', () => {
     },
     {
       findings: [
-        found({
-          code: 'rule-table-header-misshapen',
-          names: [
-            'a',
-          ],
-        }),
+        {
+          code: RuleFormCode.HeaderMisshapen,
+          details: {
+            slug: RuleSlug.create('a'),
+          },
+          path: FILE,
+        },
       ],
       lines: [
         '| Why | Tags |',
@@ -433,12 +445,13 @@ describe('StatedRule.parse', () => {
     },
     {
       findings: [
-        found({
-          code: 'rule-table-header-misshapen',
-          names: [
-            'a',
-          ],
-        }),
+        {
+          code: RuleFormCode.HeaderMisshapen,
+          details: {
+            slug: RuleSlug.create('a'),
+          },
+          path: FILE,
+        },
       ],
       lines: [
         '| Why | Tags |',
@@ -450,13 +463,14 @@ describe('StatedRule.parse', () => {
     },
     {
       findings: [
-        found({
-          code: 'rule-tags-not-a-list',
-          names: [
-            'a',
-            'see [ux]',
-          ],
-        }),
+        {
+          code: RuleFormCode.TagsNotList,
+          details: {
+            slug: RuleSlug.create('a'),
+            tags: 'see [ux]',
+          },
+          path: FILE,
+        },
       ],
       lines: [
         '| Why | Tags |',
@@ -468,13 +482,14 @@ describe('StatedRule.parse', () => {
     },
     {
       findings: [
-        found({
-          code: 'rule-tags-not-a-list',
-          names: [
-            'a',
-            '[ux] too',
-          ],
-        }),
+        {
+          code: RuleFormCode.TagsNotList,
+          details: {
+            slug: RuleSlug.create('a'),
+            tags: '[ux] too',
+          },
+          path: FILE,
+        },
       ],
       lines: [
         '| Why | Tags |',
@@ -486,20 +501,22 @@ describe('StatedRule.parse', () => {
     },
     {
       findings: [
-        found({
-          code: 'rule-holds-label',
-          names: [
-            'a',
-            'Why',
-          ],
-        }),
-        found({
-          code: 'rule-holds-label',
-          names: [
-            'a',
-            'Implements',
-          ],
-        }),
+        {
+          code: RuleFormCode.HoldsLabel,
+          details: {
+            label: 'Why',
+            slug: RuleSlug.create('a'),
+          },
+          path: FILE,
+        },
+        {
+          code: RuleFormCode.HoldsLabel,
+          details: {
+            label: 'Implements',
+            slug: RuleSlug.create('a'),
+          },
+          path: FILE,
+        },
       ],
       lines: [
         '**Why:** it keeps the code honest.',
@@ -551,13 +568,13 @@ describe('StatedRule.parse', () => {
     // Assert
     expect(parsed).toStrictEqual({
       findings: [
-        findingOf({
-          code: 'rule-heading-misshapen',
-          names: [
-            '### x - MUST',
-          ],
+        {
+          code: RuleFormCode.HeadingMisshapen,
+          details: {
+            heading: '### x - MUST',
+          },
           path: AGREEMENT,
-        }),
+        },
       ],
       rules: [
         ruleOf({

@@ -1,8 +1,10 @@
 import { Placeholder } from '#/kernel/constants';
+import type { WiringProblem } from '#/kernel/entities';
+import { WiringProblemKind } from '#/kernel/entities';
 import { PartAddress } from '#/kernel/value-objects';
 
-import type { WiringContext, WiringProblem } from '../../../../../entities';
-import { Parts, WiringProblemKind } from '../../../../../entities';
+import type { WiringContext } from '../../../../../entities';
+import { Parts } from '../../../../../entities';
 import type { WiringReads } from '../../../shared/wiring';
 import { isAnchored, isComment, namedOf, presetsPrefix } from '../../../shared/wiring';
 

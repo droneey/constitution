@@ -27,5 +27,5 @@ or {
     JsSetterObjectMember(),
     JsConstructorClassMember()
   },
-  register_diagnostic(span=$message, message="Declare a module-level message with msg and translate it where it renders: t at module level runs once, before the locale is active", severity="error")
+  register_diagnostic(span=$message, message="[module-level-messages-are-descriptors] Declare a module-level message with msg and translate it where it renders: t at module level runs once, before the locale is active", severity="error")
 }

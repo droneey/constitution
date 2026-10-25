@@ -11,6 +11,7 @@ export type {
   SectionOf,
   Task,
   TaskOutcome,
+  TextsOf,
 } from './types';
 export {
   baseFlagsOf,
@@ -20,4 +21,5 @@ export {
   outputFlagsOf,
   pairsSection,
   stepsSection,
+  warningTextOf,
 } from './utils';

@@ -1,11 +1,14 @@
 import { describe, expect, it } from 'bun:test';
 
-import type { Finding } from '#/kernel/types';
+import { Axis } from '#/kernel/constants';
+import type { FindingOf } from '#/kernel/types';
+import { BlockId, RuleSlug } from '#/kernel/value-objects';
 
 import type { Files } from '../../../../../../__tests__/constitution.fixtures';
-import { checkInputOf, findingOf, rule } from '../../../../../../__tests__/constitution.fixtures';
+import { checkInputOf, rule } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { bindingsCheck } from '../bindings';
+import type { BindingsDetails } from '../bindings';
+import { BindingsCode, bindingsCheck } from '../bindings';
 
 const BINDINGS = 'presets/typescript/biome/foundation/bindings.yaml';
 const PART = 'presets/typescript/biome/foundation/_react.jsonc';
@@ -15,7 +18,7 @@ const presetFiles = (): Files => ({
   [PART]: '{ "useHookAtTopLevel": "error" }\n',
 });
 
-const findingsOf = (files: Readonly<Files>): readonly Finding[] =>
+const findingsOf = (files: Readonly<Files>): readonly FindingOf<BindingsDetails>[] =>
   bindingsCheck(
     checkInputOf({
       ...validFiles(),
@@ -78,36 +81,49 @@ describe('bindingsCheck', () => {
     expect(findings).toStrictEqual([]);
   });
 
-  it.each([
+  it.each<{
+    finding: FindingOf<BindingsDetails>;
+    name: string;
+    yaml: string;
+  }>([
     {
-      code: 'binding-names-no-rule',
+      finding: {
+        code: BindingsCode.NotRule,
+        details: {
+          rule: RuleSlug.create('hooks-anywhere'),
+        },
+        path: BINDINGS,
+      },
       name: 'the rule does not exist',
-      names: [
-        'hooks-anywhere',
-      ],
       yaml: '  hooks-anywhere: [useHookAtTopLevel]\n',
     },
     {
-      code: 'binding-off-axis',
+      finding: {
+        code: BindingsCode.OffAxis,
+        details: {
+          axis: Axis.Foundation,
+          rule: RuleSlug.create('reads-are-cancellable'),
+          ruleAxis: Axis.Architecture,
+        },
+        path: BINDINGS,
+      },
       name: 'the rule sits on another axis',
-      names: [
-        'reads-are-cancellable',
-        'architecture',
-        'foundation',
-      ],
       yaml: '  reads-are-cancellable: [useHookAtTopLevel]\n',
     },
     {
-      code: 'binding-setting-missing',
+      finding: {
+        code: BindingsCode.SettingMissing,
+        details: {
+          file: PART,
+          rule: RuleSlug.create('four-data-states'),
+          setting: 'noUselessFragments',
+        },
+        path: BINDINGS,
+      },
       name: 'the part does not spell the setting',
-      names: [
-        'four-data-states',
-        'noUselessFragments',
-        PART,
-      ],
       yaml: '  four-data-states: [noUselessFragments]\n',
     },
-  ])('should report the binding when $name', ({ code, names, yaml }) => {
+  ])('should report the binding when $name', ({ finding, yaml }) => {
     // Arrange
     const files = {
       ...presetFiles(),
@@ -119,43 +135,27 @@ describe('bindingsCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code,
-        names,
-        path: BINDINGS,
-      }),
+      finding,
     ]);
   });
 
   it.each([
     {
-      code: 'binding-out-of-reach',
       name: 'a domain part holds a rule of a library',
-      names: [
-        'hooks-at-top-level',
-        '_react',
-        'ui',
-      ],
-      part: 'presets/typescript/biome/foundation/ui.jsonc',
+      part: 'ui',
       yaml: 'ui:\n  hooks-at-top-level: [useHookAtTopLevel]\n',
     },
     {
-      code: 'binding-out-of-reach',
       name: "the tool's own part holds a rule of a library beside it",
-      names: [
-        'hooks-at-top-level',
-        '_react',
-        'self',
-      ],
-      part: 'presets/typescript/biome/foundation/self.jsonc',
+      part: 'self',
       yaml: 'self:\n  hooks-at-top-level: [useHookAtTopLevel]\n',
     },
-  ])('should report the binding when $name', ({ code, names, part, yaml }) => {
+  ])('should report the binding out of reach when $name', ({ part, yaml }) => {
     // Arrange
     const files = {
       ...presetFiles(),
       [BINDINGS]: yaml,
-      [part]: '{ "useHookAtTopLevel": "error" }\n',
+      [`presets/typescript/biome/foundation/${part}.jsonc`]: '{ "useHookAtTopLevel": "error" }\n',
     };
 
     // Act
@@ -163,11 +163,15 @@ describe('bindingsCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code,
-        names,
+      {
+        code: BindingsCode.OutOfReach,
+        details: {
+          part,
+          rule: RuleSlug.create('hooks-at-top-level'),
+          ruleBlock: BlockId.create('_react'),
+        },
         path: BINDINGS,
-      }),
+      },
     ]);
   });
 
@@ -240,15 +244,15 @@ describe('bindingsCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'binding-out-of-reach',
-        names: [
-          'optimistic-writes-roll-back',
-          'ui',
-          'i18n',
-        ],
+      {
+        code: BindingsCode.OutOfReach,
+        details: {
+          part: 'i18n',
+          rule: RuleSlug.create('optimistic-writes-roll-back'),
+          ruleBlock: BlockId.create('ui'),
+        },
         path: bindings,
-      }),
+      },
     ]);
   });
 
@@ -267,15 +271,15 @@ describe('bindingsCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'binding-out-of-reach',
-        names: [
-          'any-never-typed',
-          'typescript',
-          'i18n',
-        ],
+      {
+        code: BindingsCode.OutOfReach,
+        details: {
+          part: 'i18n',
+          rule: RuleSlug.create('any-never-typed'),
+          ruleBlock: BlockId.create('typescript'),
+        },
         path: bindings,
-      }),
+      },
     ]);
   });
 
@@ -298,17 +302,17 @@ describe('bindingsCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'binding-part-missing',
-        names: [
-          'four-data-states',
-          'ui',
-          'typescript',
-          'biome',
-          'foundation/',
-        ],
+      {
+        code: BindingsCode.PartMissing,
+        details: {
+          axis: Axis.Foundation,
+          part: 'ui',
+          rule: RuleSlug.create('four-data-states'),
+          scope: 'typescript',
+          tool: 'biome',
+        },
         path: BINDINGS,
-      }),
+      },
     ]);
   });
 });

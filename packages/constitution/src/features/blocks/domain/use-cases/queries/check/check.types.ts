@@ -7,6 +7,6 @@ interface CheckInput {
   readonly graph: BlockGraph;
 }
 
-type Check = (input: CheckInput) => readonly Finding[];
+type Check<TFinding extends Finding = Finding> = (input: CheckInput) => readonly TFinding[];
 
 export type { Check, CheckInput };

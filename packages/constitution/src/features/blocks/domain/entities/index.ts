@@ -17,4 +17,5 @@ export type {
   MarketplacePlugin,
   PluginManifest,
 } from './manifest.entity';
+export type { RuleNamed, SimilarRules } from './similar-rules.entity';
 export type { Agent, Skill, SkillFrontMatterRead } from './skill.entity';

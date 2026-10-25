@@ -1,11 +1,13 @@
 import { BLOCKS_FOLDER } from '#/kernel/constants';
+import type { ValueFindingDetails } from '#/kernel/entities';
+import { ValueSite } from '#/kernel/entities';
 import { ValueFailure } from '#/kernel/errors';
-import type { Finding, Problem } from '#/kernel/types';
+import type { FindingOf, ProblemOf } from '#/kernel/types';
 import { BlockFileKind, BlockFilePlace, Placement } from '#/kernel/value-objects';
 
 import type { FileTree, FrontMatterParser } from '../../../../../../../contracts';
 import type { Block } from '../../../../../../../entities';
-import type { Located } from './load-block.utils';
+import type { BlockLoadFinding, Located } from './load-block.utils';
 import { groupByFolder, loadBlock } from './load-block.utils';
 
 enum PlaceCode {
@@ -14,15 +16,20 @@ enum PlaceCode {
   ChapterNamedAfterBlock = 'chapter-named-after-its-block',
 }
 
+interface PlaceDetails {
+  readonly [PlaceCode.OutsideBlockFolder]: object;
+  readonly [PlaceCode.StrayBlockFile]: object;
+  readonly [PlaceCode.ChapterNamedAfterBlock]: object;
+}
+
+type PlaceProblem = ProblemOf<PlaceDetails & Pick<ValueFindingDetails, ValueFailure.BlockId>>;
+
+type BlocksLoadedFinding =
+  | FindingOf<PlaceDetails & Pick<ValueFindingDetails, ValueFailure.BlockId>>
+  | BlockLoadFinding;
+
 const blocksPrefix = `${BLOCKS_FOLDER}/`;
-const OUTSIDE =
-  'is not inside a block folder; a block is blocks/core, or a folder <id>/ in domains, contexts/platforms, contexts/languages or implementations';
-const STRAY =
-  'is not a block file; a block holds at its root its passport <id>.md, and in foundation/, architecture/ and workflow/ its chapters <name>.md and its seams with/<block>.md';
-const NAMED_AFTER_BLOCK =
-  "is named after its block; an axis holds named chapters and seams, and the block's id names only its passport <id>.md";
-const SEAM_OF_NO_BLOCK_ID =
-  "is a seam whose name is not a kebab-case block id; a seam is with/<block>.md, named after the other block's id";
+
 type UnplacedFile =
   | BlockFileKind.NamedAfterBlock
   | BlockFileKind.SeamOfNoBlockId
@@ -31,17 +38,19 @@ type UnplacedFile =
 const UNPLACED = {
   [BlockFileKind.NamedAfterBlock]: {
     code: PlaceCode.ChapterNamedAfterBlock,
-    message: NAMED_AFTER_BLOCK,
+    details: {},
   },
   [BlockFileKind.SeamOfNoBlockId]: {
     code: ValueFailure.BlockId,
-    message: SEAM_OF_NO_BLOCK_ID,
+    details: {
+      site: ValueSite.SeamFile,
+    },
   },
   [BlockFileKind.Stray]: {
     code: PlaceCode.StrayBlockFile,
-    message: STRAY,
+    details: {},
   },
-} as const satisfies Readonly<Record<UnplacedFile, Problem>>;
+} as const satisfies Readonly<Record<UnplacedFile, PlaceProblem>>;
 
 interface Unplaced {
   readonly file: UnplacedFile;
@@ -118,7 +127,7 @@ const locate = (paths: readonly string[]): Location => {
 
 interface BlocksLoaded {
   readonly blocks: readonly Block[];
-  readonly findings: readonly Finding[];
+  readonly findings: readonly BlocksLoadedFinding[];
 }
 
 const loadBlocks = (input: { parser: FrontMatterParser; tree: FileTree }): BlocksLoaded => {
@@ -141,16 +150,23 @@ const loadBlocks = (input: { parser: FrontMatterParser; tree: FileTree }): Block
           ],
     ),
     findings: [
-      ...located.outside.map((path) => ({
-        code: PlaceCode.OutsideBlockFolder,
-        message: OUTSIDE,
-        path,
-      })),
-      ...located.misnamed.map(({ dir, name }) => ({
-        code: ValueFailure.BlockId,
-        message: `is a block folder named "${name}", which is not a kebab-case block id`,
-        path: dir,
-      })),
+      ...located.outside.map(
+        (path): BlocksLoadedFinding => ({
+          code: PlaceCode.OutsideBlockFolder,
+          details: {},
+          path,
+        }),
+      ),
+      ...located.misnamed.map(
+        ({ dir, name }): BlocksLoadedFinding => ({
+          code: ValueFailure.BlockId,
+          details: {
+            site: ValueSite.BlockFolder,
+            written: name,
+          },
+          path: dir,
+        }),
+      ),
       ...located.unplaced.map(({ file, path }) => ({
         ...UNPLACED[file],
         path,
@@ -160,5 +176,5 @@ const loadBlocks = (input: { parser: FrontMatterParser; tree: FileTree }): Block
   };
 };
 
-export type { BlocksLoaded };
-export { loadBlocks };
+export type { BlocksLoaded, BlocksLoadedFinding, PlaceDetails };
+export { loadBlocks, PlaceCode };

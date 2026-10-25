@@ -1,13 +1,14 @@
 import { describe, expect, it } from 'bun:test';
 
+import { BlockId, Glob } from '#/kernel/value-objects';
+
 import type { Files } from '../../../../../../__tests__/constitution.fixtures';
-import {
-  blockFiles,
-  checkInputOf,
-  findingOf,
-} from '../../../../../../__tests__/constitution.fixtures';
+import { blockFiles, checkInputOf } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { configurationLanguagesCheck } from '../configuration-languages';
+import {
+  ConfigurationLanguagesCode,
+  configurationLanguagesCheck,
+} from '../configuration-languages';
 
 const TOOL_PATH = 'blocks/implementations/tool/tool.md';
 
@@ -64,14 +65,14 @@ describe('configurationLanguagesCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'configuration-language-not-required',
-        names: [
-          glob,
-          'json',
-        ],
+      {
+        code: ConfigurationLanguagesCode.NotRequired,
+        details: {
+          glob: Glob.create(glob),
+          language: BlockId.create('json'),
+        },
         path: TOOL_PATH,
-      }),
+      },
     ]);
   });
 

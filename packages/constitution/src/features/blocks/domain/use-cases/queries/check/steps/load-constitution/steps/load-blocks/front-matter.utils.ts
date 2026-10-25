@@ -1,5 +1,7 @@
+import type { ValueFindingDetails } from '#/kernel/entities';
+import { ValueSite } from '#/kernel/entities';
 import { ValueFailure } from '#/kernel/errors';
-import type { Finding, Problem } from '#/kernel/types';
+import type { FindingOf, ProblemOf } from '#/kernel/types';
 import { splitFrontMatter } from '#/kernel/utils';
 import { BlockId, Glob } from '#/kernel/value-objects';
 
@@ -22,33 +24,92 @@ enum FrontMatterReadCode {
   EntryRepeated = 'entry-repeated',
 }
 
-interface FrontMatterLoaded {
-  readonly body: string;
-  readonly findings: readonly Finding[];
-  readonly frontMatter?: FrontMatter;
-}
-
-enum ListField {
+enum FrontMatterField {
+  Id = 'id',
+  Summary = 'summary',
   Requires = 'requires',
+  Extends = 'extends',
+  Abstract = 'abstract',
   Languages = 'languages',
   Governs = 'governs',
 }
 
-const FIELDS: readonly string[] = [
-  'id',
-  'summary',
-  'requires',
-  'extends',
-  'abstract',
-  'languages',
-  'governs',
+type ListField = FrontMatterField.Requires | FrontMatterField.Languages | FrontMatterField.Governs;
+
+/** a field that names blocks by their ids */
+type IdField = FrontMatterField.Requires | FrontMatterField.Languages | FrontMatterField.Extends;
+
+interface FrontMatterReadDetails {
+  readonly [FrontMatterReadCode.Missing]: object;
+  readonly [FrontMatterReadCode.NotYaml]: {
+    /** where the parser stopped, when it says so */
+    readonly at?: {
+      /** the top-level field the line belongs to */
+      readonly key?: string;
+      /** the line of the file, counted from 1 */
+      readonly line: number;
+    };
+    readonly reason: string;
+  };
+  readonly [FrontMatterReadCode.NotMapping]: object;
+  readonly [FrontMatterReadCode.FieldMissing]: {
+    readonly field: FrontMatterField;
+  };
+  readonly [FrontMatterReadCode.FieldUnknown]: {
+    readonly key: string;
+  };
+  readonly [FrontMatterReadCode.OutOfOrder]: {
+    readonly order: readonly FrontMatterField[];
+  };
+  readonly [FrontMatterReadCode.OffSchema]: {
+    /** the path of the field the schema refuses, empty for the whole front matter */
+    readonly field: string;
+    readonly reason: string;
+  };
+  readonly [FrontMatterReadCode.SummaryTooLong]: {
+    readonly characters: number;
+    readonly limit: number;
+  };
+  readonly [FrontMatterReadCode.SummaryNotSentence]: object;
+  readonly [FrontMatterReadCode.NotBlockId]: {
+    readonly entry: string;
+    readonly field: IdField;
+  };
+  readonly [FrontMatterReadCode.EntryEmpty]: object;
+  readonly [FrontMatterReadCode.EntryRepeated]: {
+    readonly entry: string;
+    readonly field: ListField;
+  };
+}
+
+type FrontMatterReadProblem = ProblemOf<
+  FrontMatterReadDetails & Pick<ValueFindingDetails, ValueFailure.BlockId | ValueFailure.Glob>
+>;
+
+type FrontMatterReadFinding = FindingOf<
+  FrontMatterReadDetails & Pick<ValueFindingDetails, ValueFailure.BlockId | ValueFailure.Glob>
+>;
+
+interface FrontMatterLoaded {
+  readonly body: string;
+  readonly findings: readonly FrontMatterReadFinding[];
+  readonly frontMatter?: FrontMatter;
+}
+
+const FIELDS: readonly FrontMatterField[] = [
+  FrontMatterField.Id,
+  FrontMatterField.Summary,
+  FrontMatterField.Requires,
+  FrontMatterField.Extends,
+  FrontMatterField.Abstract,
+  FrontMatterField.Languages,
+  FrontMatterField.Governs,
 ] as const;
 const LIST_FIELDS: readonly ListField[] = [
-  ListField.Requires,
-  ListField.Languages,
-  ListField.Governs,
+  FrontMatterField.Requires,
+  FrontMatterField.Languages,
+  FrontMatterField.Governs,
 ] as const;
-const fieldOrder = FIELDS.join(', ');
 const ONE_SENTENCE = /^[^\n\r\t]+\.$/;
 const TOP_LEVEL_KEY = /^([A-Za-z_][\w-]*)\s*:/;
 const WHITESPACE = /\s/;
@@ -66,11 +127,13 @@ const yamlProblem = (input: {
   line: number | undefined;
   lines: readonly string[];
   reason: string;
-}): Problem => {
+}): FrontMatterReadProblem => {
   if (input.line === undefined) {
     return {
       code: FrontMatterReadCode.NotYaml,
-      message: `front matter is not valid YAML: ${input.reason}`,
+      details: {
+        reason: input.reason,
+      },
     };
   }
 
@@ -78,25 +141,44 @@ const yamlProblem = (input: {
     line: input.line,
     lines: input.lines,
   });
-  const line = `line ${input.line + OPENING_LINES}`;
+  const line = input.line + OPENING_LINES;
 
   return {
     code: FrontMatterReadCode.NotYaml,
-    message: `front matter ${key === undefined ? line : `${line} (${key})`} is not valid YAML: ${input.reason}`,
+    details: {
+      at:
+        key === undefined
+          ? {
+              line,
+            }
+          : {
+              key,
+              line,
+            },
+      reason: input.reason,
+    },
   };
 };
 
-const keyProblems = (keys: readonly string[]): readonly Problem[] => {
-  const missing = FIELDS.filter((field) => !keys.includes(field)).map((field) => ({
-    code: FrontMatterReadCode.FieldMissing,
-    message: `front matter lacks "${field}"; every block declares every field`,
-  }));
+const keyProblems = (keys: readonly string[]): readonly FrontMatterReadProblem[] => {
+  const missing = FIELDS.filter((field) => !keys.includes(field)).map(
+    (field): FrontMatterReadProblem => ({
+      code: FrontMatterReadCode.FieldMissing,
+      details: {
+        field,
+      },
+    }),
+  );
   const unknown = keys
-    .filter((key) => !FIELDS.includes(key))
-    .map((key) => ({
-      code: FrontMatterReadCode.FieldUnknown,
-      message: `front matter has "${key}", which is not a field`,
-    }));
+    .filter((key) => !FIELDS.some((field) => field === key))
+    .map(
+      (key): FrontMatterReadProblem => ({
+        code: FrontMatterReadCode.FieldUnknown,
+        details: {
+          key,
+        },
+      }),
+    );
 
   if (missing.length > 0 || unknown.length > 0) {
     return [
@@ -105,28 +187,36 @@ const keyProblems = (keys: readonly string[]): readonly Problem[] => {
     ];
   }
 
-  return keys.join(', ') === fieldOrder
+  return keys.every((key, index) => key === FIELDS[index])
     ? []
     : [
         {
           code: FrontMatterReadCode.OutOfOrder,
-          message: `front matter lists its fields out of order; the order is ${fieldOrder}`,
+          details: {
+            order: FIELDS,
+          },
         },
       ];
 };
 
-const issueProblem = (issue: FieldIssue): Problem => ({
+const issueProblem = (issue: FieldIssue): FrontMatterReadProblem => ({
   code: FrontMatterReadCode.OffSchema,
-  message: `front matter: ${issue.field === '' ? '<root>' : issue.field}: ${issue.message}`,
+  details: {
+    field: issue.field,
+    reason: issue.message,
+  },
 });
 
-const summaryProblems = (summary: string): readonly Problem[] => [
+const summaryProblems = (summary: string): readonly FrontMatterReadProblem[] => [
   ...(summary.length > SUMMARY_LENGTH
     ? [
         {
           code: FrontMatterReadCode.SummaryTooLong,
-          message: `front matter: summary has ${summary.length} characters; it holds at most ${SUMMARY_LENGTH}`,
-        },
+          details: {
+            characters: summary.length,
+            limit: SUMMARY_LENGTH,
+          },
+        } satisfies FrontMatterReadProblem,
       ]
     : []),
   ...(ONE_SENTENCE.test(summary)
@@ -134,19 +224,22 @@ const summaryProblems = (summary: string): readonly Problem[] => [
     : [
         {
           code: FrontMatterReadCode.SummaryNotSentence,
-          message: 'front matter: summary is one sentence on one line, ending with a full stop',
-        },
+          details: {},
+        } satisfies FrontMatterReadProblem,
       ]),
 ];
 
-const scalarProblems = (fields: FrontMatterFields): readonly Problem[] => [
+const scalarProblems = (fields: FrontMatterFields): readonly FrontMatterReadProblem[] => [
   ...(BlockId.is(fields.id)
     ? []
     : [
         {
           code: ValueFailure.BlockId,
-          message: `front matter: id "${fields.id}" is not a kebab-case block id`,
-        },
+          details: {
+            site: ValueSite.FrontMatterId,
+            written: fields.id,
+          },
+        } satisfies FrontMatterReadProblem,
       ]),
   ...summaryProblems(fields.summary),
   // Stryker disable next-line ConditionalExpression: "undefined" passes as a block id too
@@ -155,8 +248,11 @@ const scalarProblems = (fields: FrontMatterFields): readonly Problem[] => [
     : [
         {
           code: FrontMatterReadCode.NotBlockId,
-          message: `front matter: extends "${fields.extends}", which is not a block id`,
-        },
+          details: {
+            entry: fields.extends,
+            field: FrontMatterField.Extends,
+          },
+        } satisfies FrontMatterReadProblem,
       ]),
 ];
 
@@ -164,44 +260,64 @@ const repeatsOf = (values: readonly string[]): readonly string[] => [
   ...new Set(values.filter((entry, index) => values.indexOf(entry) !== index)),
 ];
 
-const notBlockIds = (input: { field: ListField; values: readonly string[] }): readonly Problem[] =>
+const notBlockIds = (input: {
+  field: IdField;
+  values: readonly string[];
+}): readonly FrontMatterReadProblem[] =>
   input.values
-    .filter((id) => !BlockId.is(id))
-    .map((id) => ({
-      code: FrontMatterReadCode.NotBlockId,
-      message: `front matter: ${input.field} "${id}", which is not a block id`,
-    }));
+    .filter((entry) => !BlockId.is(entry))
+    .map(
+      (entry): FrontMatterReadProblem => ({
+        code: FrontMatterReadCode.NotBlockId,
+        details: {
+          entry,
+          field: input.field,
+        },
+      }),
+    );
 
-const entryProblems = (fields: FrontMatterFields): readonly Problem[] => [
+const entryProblems = (fields: FrontMatterFields): readonly FrontMatterReadProblem[] => [
   ...notBlockIds({
-    field: ListField.Requires,
+    field: FrontMatterField.Requires,
     values: fields.requires,
   }),
   ...notBlockIds({
-    field: ListField.Languages,
+    field: FrontMatterField.Languages,
     values: fields.languages,
   }),
   ...fields.governs
     .filter((glob) => glob.trim() === '')
-    .map(() => ({
-      code: FrontMatterReadCode.EntryEmpty,
-      message: 'front matter: governs holds no empty entry',
-    })),
+    .map(
+      (): FrontMatterReadProblem => ({
+        code: FrontMatterReadCode.EntryEmpty,
+        details: {},
+      }),
+    ),
   ...fields.governs
     .filter((glob) => WHITESPACE.test(glob))
-    .map((glob) => ({
-      code: ValueFailure.Glob,
-      message: `front matter: governs lists ${JSON.stringify(glob)}, which holds whitespace; the index separates globs with spaces`,
-    })),
+    .map(
+      (written): FrontMatterReadProblem => ({
+        code: ValueFailure.Glob,
+        details: {
+          site: ValueSite.Governs,
+          written,
+        },
+      }),
+    ),
   ...LIST_FIELDS.flatMap((field) =>
-    repeatsOf(fields[field]).map((repeat) => ({
-      code: FrontMatterReadCode.EntryRepeated,
-      message: `front matter: ${field} lists "${repeat}" twice`,
-    })),
+    repeatsOf(fields[field]).map(
+      (entry): FrontMatterReadProblem => ({
+        code: FrontMatterReadCode.EntryRepeated,
+        details: {
+          entry,
+          field,
+        },
+      }),
+    ),
   ),
 ];
 
-const fieldProblems = (fields: FrontMatterFields): readonly Problem[] => [
+const fieldProblems = (fields: FrontMatterFields): readonly FrontMatterReadProblem[] => [
   ...scalarProblems(fields),
   ...entryProblems(fields),
 ];
@@ -233,12 +349,12 @@ const readFrontMatter = (input: {
   const parts = splitFrontMatter(input.text);
 
   // A problem met at several entries, such as two empty ones, is reported once.
-  const failed = (found: readonly Problem[]): FrontMatterLoaded => ({
+  const failed = (found: readonly FrontMatterReadProblem[]): FrontMatterLoaded => ({
     body: parts.body,
     findings: [
       ...new Map(
         found.map((problem) => [
-          problem.message,
+          JSON.stringify(problem),
           problem,
         ]),
       ).values(),
@@ -252,7 +368,7 @@ const readFrontMatter = (input: {
     return failed([
       {
         code: FrontMatterReadCode.Missing,
-        message: 'has no front matter; a passport opens with it',
+        details: {},
       },
     ]);
   }
@@ -273,7 +389,7 @@ const readFrontMatter = (input: {
     return failed([
       {
         code: FrontMatterReadCode.NotMapping,
-        message: 'front matter is not a mapping of fields',
+        details: {},
       },
     ]);
   }
@@ -295,4 +411,5 @@ const readFrontMatter = (input: {
       };
 };
 
-export { readFrontMatter };
+export type { FrontMatterReadDetails, FrontMatterReadFinding };
+export { FrontMatterField, FrontMatterReadCode, readFrontMatter };

@@ -10,7 +10,7 @@ const keyByLayer: ReadonlyMap<Layer, string> = new Map(
 );
 const layerByKey: ReadonlyMap<string, Layer> = new Map(LAYER_KEYS);
 
-// Stryker disable next-line StringLiteral: core, the one layer no key lists, is always active, so no message names its key
+// Stryker disable next-line StringLiteral: core, the one layer no key lists, is always active, so no warning names its key
 const keyOfLayer = (layer: Layer): string => keyByLayer.get(layer) ?? '';
 
 const layerOfKey = (key: string): Layer | undefined => layerByKey.get(key);

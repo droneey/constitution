@@ -1,9 +1,8 @@
 import { describe, expect, it } from 'bun:test';
 
-import { warningOf } from '#/__tests__/warning.fixtures';
 import { Axis, Layer, Level } from '#/kernel/constants';
-import { Met, WarningCode } from '#/kernel/entities';
-import { BlockSource, PackPath } from '#/kernel/value-objects';
+import { Met, WarningCode, WarningKind } from '#/kernel/entities';
+import { BlockId, BlockSource, PackPath, RuleSlug } from '#/kernel/value-objects';
 
 import { passportOf, ruleOf } from '../../../../../../../../../__tests__/project.fixtures';
 import type { CatalogueSource } from '../../../../../../../../entities';
@@ -297,13 +296,14 @@ describe('readCatalogue', () => {
       ],
       rules: [],
       warnings: [
-        warningOf({
+        {
           code: WarningCode.Constitution,
-          names: [
-            'd',
-            'ghost',
-          ],
-        }),
+          details: {
+            base: 'ghost',
+            block: BlockId.create('d'),
+          },
+          kind: WarningKind.BaseNoBlock,
+        },
       ],
     });
   });
@@ -327,12 +327,13 @@ describe('readCatalogue', () => {
         ],
         rules: [],
         warnings: [
-          warningOf({
+          {
             code: WarningCode.Pack,
-            names: [
-              'tools/rules',
-            ],
-          }),
+            details: {
+              where: '/project/tools/rules',
+            },
+            kind: WarningKind.PackNotInstalled,
+          },
         ],
       },
       sources: [
@@ -359,12 +360,13 @@ describe('readCatalogue', () => {
         blocks: [],
         rules: [],
         warnings: [
-          warningOf({
+          {
             code: WarningCode.Constitution,
-            names: [
-              '/release/blocks/README.md',
-            ],
-          }),
+            details: {
+              file: '/release/blocks/README.md',
+            },
+            kind: WarningKind.OutsideBlockFolder,
+          },
         ],
       },
       sources: [
@@ -383,12 +385,13 @@ describe('readCatalogue', () => {
         blocks: [],
         rules: [],
         warnings: [
-          warningOf({
+          {
             code: WarningCode.Pack,
-            names: [
-              '/project/rules/blocks/core/core.md',
-            ],
-          }),
+            details: {
+              file: '/project/rules/blocks/core/core.md',
+            },
+            kind: WarningKind.OutsideBlockFolder,
+          },
         ],
       },
       sources: [
@@ -415,12 +418,13 @@ describe('readCatalogue', () => {
         ],
         rules: [],
         warnings: [
-          warningOf({
+          {
             code: WarningCode.Constitution,
-            names: [
-              '/release/blocks/domains/ui/ui.md',
-            ],
-          }),
+            details: {
+              file: '/release/blocks/domains/ui/ui.md',
+            },
+            kind: WarningKind.FileUnreadable,
+          },
         ],
       },
       sources: [
@@ -447,12 +451,13 @@ describe('readCatalogue', () => {
         ],
         rules: [],
         warnings: [
-          warningOf({
+          {
             code: WarningCode.Pack,
-            names: [
-              '/project/rules/blocks/domains/ui/foundation/screens.md',
-            ],
-          }),
+            details: {
+              file: '/project/rules/blocks/domains/ui/foundation/screens.md',
+            },
+            kind: WarningKind.FileUnreadable,
+          },
         ],
       },
       sources: [
@@ -481,18 +486,20 @@ describe('readCatalogue', () => {
         ],
         rules: [],
         warnings: [
-          warningOf({
+          {
             code: WarningCode.Constitution,
-            names: [
-              '/release/blocks/domains/Design_System/Design_System.md',
-            ],
-          }),
-          warningOf({
+            details: {
+              file: '/release/blocks/domains/Design_System/Design_System.md',
+            },
+            kind: WarningKind.FolderMisnamed,
+          },
+          {
             code: WarningCode.Constitution,
-            names: [
-              '/release/blocks/domains/ui/architecture/with/Remote_Data.md',
-            ],
-          }),
+            details: {
+              file: '/release/blocks/domains/ui/architecture/with/Remote_Data.md',
+            },
+            kind: WarningKind.NotBlockFile,
+          },
         ],
       },
       sources: [
@@ -528,12 +535,13 @@ describe('readCatalogue', () => {
           }),
         ],
         warnings: [
-          warningOf({
+          {
             code: WarningCode.Constitution,
-            names: [
-              '/release/blocks/domains/ui/ui.md',
-            ],
-          }),
+            details: {
+              file: '/release/blocks/domains/ui/ui.md',
+            },
+            kind: WarningKind.FrontMatterMissing,
+          },
         ],
       },
       sources: [
@@ -559,22 +567,63 @@ describe('readCatalogue', () => {
         ],
         rules: [],
         warnings: [
-          'foundation/a.md/b.md',
-          'foundation/deep/with/a.md',
-          'foundation/deep/x.md',
-          'foundation/with/a.md/b.md',
-          'foundation/with/deep/x.md',
-          'guides/a.md',
-          'guides/with/a.md',
-          'notes.md',
-        ].map((name) =>
-          warningOf({
+          {
             code: WarningCode.Constitution,
-            names: [
-              `/release/blocks/domains/ui/${name}`,
-            ],
-          }),
-        ),
+            details: {
+              file: '/release/blocks/domains/ui/foundation/a.md/b.md',
+            },
+            kind: WarningKind.NotBlockFile,
+          },
+          {
+            code: WarningCode.Constitution,
+            details: {
+              file: '/release/blocks/domains/ui/foundation/deep/with/a.md',
+            },
+            kind: WarningKind.NotBlockFile,
+          },
+          {
+            code: WarningCode.Constitution,
+            details: {
+              file: '/release/blocks/domains/ui/foundation/deep/x.md',
+            },
+            kind: WarningKind.NotBlockFile,
+          },
+          {
+            code: WarningCode.Constitution,
+            details: {
+              file: '/release/blocks/domains/ui/foundation/with/a.md/b.md',
+            },
+            kind: WarningKind.NotBlockFile,
+          },
+          {
+            code: WarningCode.Constitution,
+            details: {
+              file: '/release/blocks/domains/ui/foundation/with/deep/x.md',
+            },
+            kind: WarningKind.NotBlockFile,
+          },
+          {
+            code: WarningCode.Constitution,
+            details: {
+              file: '/release/blocks/domains/ui/guides/a.md',
+            },
+            kind: WarningKind.NotBlockFile,
+          },
+          {
+            code: WarningCode.Constitution,
+            details: {
+              file: '/release/blocks/domains/ui/guides/with/a.md',
+            },
+            kind: WarningKind.NotBlockFile,
+          },
+          {
+            code: WarningCode.Constitution,
+            details: {
+              file: '/release/blocks/domains/ui/notes.md',
+            },
+            kind: WarningKind.NotBlockFile,
+          },
+        ],
       },
       sources: [
         sourceOf({
@@ -611,20 +660,22 @@ describe('readCatalogue', () => {
         ],
         rules: [],
         warnings: [
-          warningOf({
+          {
             code: WarningCode.Pack,
-            names: [
-              '/project/rules/blocks/domains/ui/ui.md',
-              'ui',
-            ],
-          }),
-          warningOf({
+            details: {
+              block: BlockId.create('ui'),
+              file: '/project/rules/blocks/domains/ui/ui.md',
+            },
+            kind: WarningKind.BlockRepeated,
+          },
+          {
             code: WarningCode.Pack,
-            names: [
-              '/project/more/blocks/domains/ui/ui.md',
-              'ui',
-            ],
-          }),
+            details: {
+              block: BlockId.create('ui'),
+              file: '/project/more/blocks/domains/ui/ui.md',
+            },
+            kind: WarningKind.BlockRepeated,
+          },
         ],
       },
       sources: [
@@ -680,13 +731,14 @@ describe('readCatalogue', () => {
           }),
         ],
         warnings: [
-          warningOf({
+          {
             code: WarningCode.Constitution,
-            names: [
-              '/release/blocks/domains/ui/foundation/screens.md',
-              'one',
-            ],
-          }),
+            details: {
+              file: '/release/blocks/domains/ui/foundation/screens.md',
+              rule: RuleSlug.create('one'),
+            },
+            kind: WarningKind.RuleRepeated,
+          },
         ],
       },
       sources: [
@@ -726,20 +778,22 @@ describe('readCatalogue', () => {
         ],
         rules: [],
         warnings: [
-          warningOf({
+          {
             code: WarningCode.Constitution,
-            names: [
-              'ui',
-              'ghost',
-            ],
-          }),
-          warningOf({
+            details: {
+              block: BlockId.create('ui'),
+              required: 'ghost',
+            },
+            kind: WarningKind.RequiredNoBlock,
+          },
+          {
             code: WarningCode.Constitution,
-            names: [
-              'ui',
-              'Bad_Name',
-            ],
-          }),
+            details: {
+              block: BlockId.create('ui'),
+              required: 'Bad_Name',
+            },
+            kind: WarningKind.RequiredNoBlock,
+          },
         ],
       },
       sources: [
@@ -775,13 +829,14 @@ describe('readCatalogue', () => {
         ],
         rules: [],
         warnings: [
-          warningOf({
+          {
             code: WarningCode.Pack,
-            names: [
-              'kit',
-              'ghost',
-            ],
-          }),
+            details: {
+              base: 'ghost',
+              block: BlockId.create('kit'),
+            },
+            kind: WarningKind.BaseNoBlock,
+          },
         ],
       },
       sources: [
@@ -817,13 +872,14 @@ describe('readCatalogue', () => {
         ],
         rules: [],
         warnings: [
-          warningOf({
+          {
             code: WarningCode.Constitution,
-            names: [
-              'ui',
-              'api',
-            ],
-          }),
+            details: {
+              base: 'api',
+              block: BlockId.create('ui'),
+            },
+            kind: WarningKind.BaseConcrete,
+          },
         ],
       },
       sources: [
@@ -865,13 +921,14 @@ describe('readCatalogue', () => {
           }),
         ],
         warnings: [
-          warningOf({
+          {
             code: WarningCode.Constitution,
-            names: [
-              'kit-rule',
-              'ghost',
-            ],
-          }),
+            details: {
+              rule: RuleSlug.create('kit-rule'),
+              tightens: RuleSlug.create('ghost'),
+            },
+            kind: WarningKind.TightensUnknownRule,
+          },
         ],
       },
       sources: [

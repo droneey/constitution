@@ -1,14 +1,18 @@
 import { describe, expect, it } from 'bun:test';
 
-import {
-  checkSourceOf,
-  findingOf,
-  rule,
-  textOf,
-} from '../../../../../__tests__/constitution.fixtures';
+import { BlockId, RuleSlug } from '#/kernel/value-objects';
+
+import { checkSourceOf, rule, textOf } from '../../../../../__tests__/constitution.fixtures';
 import { ACME, packFiles } from '../../../../../__tests__/pack-files.fixtures';
 import { validFiles } from '../../../../../__tests__/valid-files.fixtures';
 import { checkBlocks } from '../check.use-case';
+import { BudgetCode, RulesCode } from '../checks';
+import {
+  FrontMatterField,
+  FrontMatterReadCode,
+  LoadCode,
+  PlaceCode,
+} from '../steps/load-constitution';
 
 const REMOTE_DATA = 'blocks/domains/remote-data/remote-data.md';
 const UI = 'blocks/domains/ui/foundation/screens.md';
@@ -46,18 +50,19 @@ describe('checkBlocks', () => {
     expect(validation).toStrictEqual({
       advice: [],
       findings: [
-        findingOf({
-          code: 'entry-not-block-id',
-          names: [
-            'extends',
-            'Bad',
-          ],
+        {
+          code: FrontMatterReadCode.NotBlockId,
+          details: {
+            entry: 'Bad',
+            field: FrontMatterField.Extends,
+          },
           path: REMOTE_DATA,
-        }),
-        findingOf({
-          code: 'stray-block-file',
+        },
+        {
+          code: PlaceCode.StrayBlockFile,
+          details: {},
           path: 'blocks/domains/ui/notes.txt',
-        }),
+        },
       ],
     });
   });
@@ -96,20 +101,21 @@ describe('checkBlocks', () => {
     expect(validation).toStrictEqual({
       advice: [],
       findings: [
-        findingOf({
-          code: 'file-over-line-budget',
-          names: [
-            '513',
-          ],
+        {
+          code: BudgetCode.FileOverBudget,
+          details: {
+            budget: 500,
+            lines: 513,
+          },
           path: PRINCIPLES,
-        }),
-        findingOf({
-          code: 'rule-without-why',
-          names: [
-            'dependencies-point-inward',
-          ],
+        },
+        {
+          code: RulesCode.WithoutWhy,
+          details: {
+            slug: RuleSlug.create('dependencies-point-inward'),
+          },
           path: PRINCIPLES,
-        }),
+        },
       ],
     });
   });
@@ -133,7 +139,16 @@ describe('checkBlocks', () => {
     // Assert
     expect(validation).toStrictEqual({
       advice: [
-        'similar rules: i18n-plurals-by-cldr (i18n) and screens-plurals-by-cldr (ui)',
+        {
+          left: {
+            block: BlockId.create('i18n'),
+            slug: RuleSlug.create('i18n-plurals-by-cldr'),
+          },
+          right: {
+            block: BlockId.create('ui'),
+            slug: RuleSlug.create('screens-plurals-by-cldr'),
+          },
+        },
       ],
       findings: [],
     });
@@ -224,10 +239,11 @@ describe('checkBlocks', () => {
     expect(validation).toStrictEqual({
       advice: [],
       findings: [
-        findingOf({
-          code: 'base-does-not-load',
+        {
+          code: LoadCode.BaseDoesNotLoad,
+          details: {},
           path: '/work/base',
-        }),
+        },
       ],
     });
   });

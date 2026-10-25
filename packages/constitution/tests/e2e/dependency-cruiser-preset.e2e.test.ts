@@ -120,14 +120,14 @@ const workspaceProject = (files: Readonly<Record<string, string>>) => ({
 });
 
 describe('the dependency-cruiser layer set', () => {
-  it('should report no violation when an application follows the layer matrix', () => {
+  it('should report no violation when an application follows the layer matrix', async () => {
     // Arrange
     const project = {
       files: wellFormed,
     };
 
     // Act
-    const { cruised, violations } = cruise(project);
+    const { cruised, violations } = await cruise(project);
 
     // Assert
     expect({
@@ -600,14 +600,14 @@ describe('the dependency-cruiser layer set', () => {
       },
       rule: 'writes-never-reach-reads',
     },
-  ])('should report $rule when $condition', ({ files, rule }) => {
+  ])('should report $rule when $condition', async ({ files, rule }) => {
     // Arrange
     const project = {
       files,
     };
 
     // Act
-    const { violations } = cruise(project);
+    const { violations } = await cruise(project);
 
     // Assert
     expect(violations).toContain(rule);
@@ -1073,7 +1073,7 @@ describe('the dependency-cruiser layer set', () => {
     },
   ])(
     'should report $rule when $condition and a project extends that part',
-    ({ files, parts, rule }) => {
+    async ({ files, parts, rule }) => {
       // Arrange
       const project = {
         files,
@@ -1081,14 +1081,14 @@ describe('the dependency-cruiser layer set', () => {
       };
 
       // Act
-      const { violations } = cruise(project);
+      const { violations } = await cruise(project);
 
       // Assert
       expect(violations).toContain(rule);
     },
   );
 
-  it("should report no violation when a feature's surface re-exports its widget and a project extends the ui part", () => {
+  it("should report no violation when a feature's surface re-exports its widget and a project extends the ui part", async () => {
     // Arrange
     const project = {
       files: {
@@ -1105,13 +1105,13 @@ describe('the dependency-cruiser layer set', () => {
     };
 
     // Act
-    const { violations } = cruise(project);
+    const { violations } = await cruise(project);
 
     // Assert
     expect(violations).toStrictEqual([]);
   });
 
-  it('should report no violation when a widget imports an enum of its entities at run time', () => {
+  it('should report no violation when a widget imports an enum of its entities at run time', async () => {
     // Arrange
     const project = {
       files: {
@@ -1129,13 +1129,13 @@ describe('the dependency-cruiser layer set', () => {
     };
 
     // Act
-    const { violations } = cruise(project);
+    const { violations } = await cruise(project);
 
     // Assert
     expect(violations).toStrictEqual([]);
   });
 
-  it('should report no violation when an application follows the rules of every part', () => {
+  it('should report no violation when an application follows the rules of every part', async () => {
     // Arrange
     const project = {
       files: {
@@ -1219,7 +1219,7 @@ describe('the dependency-cruiser layer set', () => {
     };
 
     // Act
-    const { violations } = cruise(project);
+    const { violations } = await cruise(project);
 
     // Assert
     expect(violations).toStrictEqual([]);
@@ -1286,18 +1286,18 @@ describe('the dependency-cruiser layer set', () => {
       },
       rule: 'root-imports-units-by-name',
     },
-  ])('should report $rule when $condition in a workspace', ({ files, rule }) => {
+  ])('should report $rule when $condition in a workspace', async ({ files, rule }) => {
     // Arrange
     const project = workspaceProject(files);
 
     // Act
-    const { violations } = cruise(project);
+    const { violations } = await cruise(project);
 
     // Assert
     expect(violations).toContain(rule);
   });
 
-  it('should report no violation when the units of a workspace import downward by name', () => {
+  it('should report no violation when the units of a workspace import downward by name', async () => {
     // Arrange
     const project = workspaceProject({
       'packages/eros/shared/schema/kinds.yaml': '- validation\n',
@@ -1321,7 +1321,7 @@ describe('the dependency-cruiser layer set', () => {
     });
 
     // Act
-    const { violations } = cruise(project);
+    const { violations } = await cruise(project);
 
     // Assert
     expect(violations).toStrictEqual([]);
@@ -1342,7 +1342,7 @@ describe('the development files the parts name', () => {
     },
   ])(
     'should report no-development-dependency-in-production only for production code when $condition',
-    ({ file, reported }) => {
+    async ({ file, reported }) => {
       // Arrange
       const project = {
         files: {
@@ -1354,7 +1354,7 @@ describe('the development files the parts name', () => {
       };
 
       // Act
-      const { violations } = cruise(project);
+      const { violations } = await cruise(project);
 
       // Assert
       expect(violations.includes('no-development-dependency-in-production')).toBe(reported);
@@ -1374,7 +1374,7 @@ describe('the development files the parts name', () => {
     },
   ])(
     "should report no-development-dependency-in-production only for production code when $condition by the project's own settings",
-    ({ file, reported }) => {
+    async ({ file, reported }) => {
       // Arrange
       const project = {
         files: {
@@ -1389,7 +1389,7 @@ describe('the development files the parts name', () => {
       };
 
       // Act
-      const { violations } = cruise(project);
+      const { violations } = await cruise(project);
 
       // Assert
       expect(violations.includes('no-development-dependency-in-production')).toBe(reported);
@@ -1467,7 +1467,7 @@ describe("the parts of dependency-cruiser's base", () => {
       },
       rule: 'no-deprecated-core',
     },
-  ])('should report $rule when $condition', ({ files, rule }) => {
+  ])('should report $rule when $condition', async ({ files, rule }) => {
     // Arrange
     const project = {
       files,
@@ -1478,7 +1478,7 @@ describe("the parts of dependency-cruiser's base", () => {
     };
 
     // Act
-    const { violations } = cruise(project);
+    const { violations } = await cruise(project);
 
     // Assert
     expect(violations).toContain(rule);
@@ -1530,7 +1530,7 @@ describe("the parts of dependency-cruiser's base", () => {
           "import { devtool } from 'devtool';\nimport { anOrder } from './order.fixtures';\nexport const checked = devtool + anOrder;\n",
       },
     },
-  ])('should report no violation when $condition', ({ files }) => {
+  ])('should report no violation when $condition', async ({ files }) => {
     // Arrange
     const project = {
       files,
@@ -1541,7 +1541,7 @@ describe("the parts of dependency-cruiser's base", () => {
     };
 
     // Act
-    const { cruised, violations } = cruise(project);
+    const { cruised, violations } = await cruise(project);
 
     // Assert
     expect({

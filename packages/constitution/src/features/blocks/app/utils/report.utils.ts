@@ -1,11 +1,33 @@
 import { StepStatus, Tone } from '@droneey/design-cli';
 
+import { compareText } from '#/kernel/utils';
 import type { Section, TaskOutcome } from '#/shared/cli';
 import { countOf, noteSection } from '#/shared/cli';
 
+import type { SimilarRules } from '../../domain/entities';
 import type { Validation } from '../../domain/use-cases/queries/check';
+import { findingTextOf } from './finding-text.utils';
 
 const FINDING = 'finding';
+
+// The report gives a file's findings of one code in the order of their text, as a reader scans
+// them.
+const linesOf = (findings: Validation['findings']): readonly string[] =>
+  findings
+    .map((finding) => ({
+      finding,
+      text: findingTextOf(finding),
+    }))
+    .toSorted(
+      (left, right) =>
+        compareText(left.finding.path, right.finding.path) ||
+        compareText(left.finding.code, right.finding.code) ||
+        compareText(left.text, right.text),
+    )
+    .map(({ finding, text }) => `${finding.path}: ${text} [${finding.code}]`);
+
+const adviceOf = ({ left, right }: SimilarRules): string =>
+  `similar rules: ${left.slug} (${left.block}) and ${right.slug} (${right.block})`;
 
 const blocksOutcomeOf = (validation: Validation | undefined): TaskOutcome => {
   if (validation === undefined) {
@@ -37,9 +59,7 @@ const blocksSectionsOf = (validation: Validation | undefined): readonly Section[
     ? []
     : [
         noteSection({
-          lines: validation.findings.map(
-            (finding) => `${finding.path}: ${finding.message} [${finding.code}]`,
-          ),
+          lines: linesOf(validation.findings),
           title: `${countOf({
             count: validation.findings.length,
             noun: FINDING,
@@ -51,7 +71,7 @@ const blocksSectionsOf = (validation: Validation | undefined): readonly Section[
     ? []
     : [
         noteSection({
-          lines: validation.advice,
+          lines: validation.advice.map(adviceOf),
           title: 'Advice on the blocks',
           tone: Tone.Info,
         }),

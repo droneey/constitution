@@ -1,17 +1,20 @@
 import { describe, expect, it } from 'bun:test';
 
-import type { Finding } from '#/kernel/types';
+import { Axis } from '#/kernel/constants';
+import type { FindingOf } from '#/kernel/types';
+import { BlockId, coreBlockId } from '#/kernel/value-objects';
 
 import type { Files } from '../../../../../../__tests__/constitution.fixtures';
 import {
   checkInputOf,
-  findingOf,
   passportFile,
   rule,
   textOf,
 } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { termsCheck } from '../terms';
+import { TermKind } from '../../shared/terms';
+import type { TermsDetails } from '../terms';
+import { TermsCode, termsCheck } from '../terms';
 
 const CORE = 'blocks/core/core.md';
 const PRINCIPLES = 'blocks/core/foundation/principles.md';
@@ -33,7 +36,9 @@ const withCoreTerms = (files: Files): Files => ({
   )}`,
 });
 
-const checked = (input: { path: string; text: string }): readonly Finding[] => {
+type TermsFinding = FindingOf<TermsDetails>;
+
+const checked = (input: { path: string; text: string }): readonly TermsFinding[] => {
   const files = withCoreTerms(validFiles());
 
   files[input.path] = input.text;
@@ -41,32 +46,37 @@ const checked = (input: { path: string; text: string }): readonly Finding[] => {
   return termsCheck(checkInputOf(files));
 };
 
-const offAxis = (input: { axis: string; path: string; term: string }): Finding =>
-  findingOf({
-    code: 'term-off-axis',
-    names: [
-      input.term,
-      input.axis,
-    ],
-    path: input.path,
-  });
+const offAxis = (input: {
+  axis: Axis;
+  path: string;
+  term: string;
+  termAxis: Axis;
+}): TermsFinding => ({
+  code: TermsCode.OffAxis,
+  details: {
+    axis: input.axis,
+    term: input.term,
+    termAxis: input.termAxis,
+  },
+  path: input.path,
+});
 
-const inFoundation = (term: string): Finding =>
+const inFoundation = (term: string): TermsFinding =>
   offAxis({
-    axis: 'architecture',
+    axis: Axis.Foundation,
     path: PRINCIPLES,
     term,
+    termAxis: Axis.Architecture,
   });
 
-const outOfReach = (input: { owner: string; path: string; term: string }): Finding =>
-  findingOf({
-    code: 'term-out-of-reach',
-    names: [
-      input.term,
-      input.owner,
-    ],
-    path: input.path,
-  });
+const outOfReach = (input: { owner: string; path: string; term: string }): TermsFinding => ({
+  code: TermsCode.OutOfReach,
+  details: {
+    owner: BlockId.create(input.owner),
+    term: input.term,
+  },
+  path: input.path,
+});
 
 describe('termsCheck', () => {
   it('should find nothing when every term is defined once and used where its owner is reached', () => {
@@ -95,22 +105,24 @@ describe('termsCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'term-defined-twice',
-        names: [
-          'squash merge',
-          PRINCIPLES,
-        ],
+      {
+        code: TermsCode.DefinedTwice,
+        details: {
+          firstBlock: coreBlockId,
+          firstFile: PRINCIPLES,
+          term: 'squash merge',
+        },
         path: WORKFLOW,
-      }),
-      findingOf({
-        code: 'term-defined-twice',
-        names: [
-          'Biome',
-          'biome',
-        ],
+      },
+      {
+        code: TermsCode.DefinedTwice,
+        details: {
+          firstBlock: BlockId.create('biome'),
+          firstFile: 'blocks/implementations/biome/biome.md',
+          term: 'Biome',
+        },
         path: LINGUI,
-      }),
+      },
       outOfReach({
         owner: 'biome',
         path: LINGUI,
@@ -128,18 +140,18 @@ describe('termsCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'term-misshapen',
-        names: [
-          'the `x` folder',
-        ],
+      {
+        code: TermsCode.Misshapen,
+        details: {
+          written: 'the `x` folder',
+        },
         path: PRINCIPLES,
-      }),
+      },
     ]);
   });
 
   it.each<{
-    expected: readonly Finding[];
+    expected: readonly TermsFinding[];
     name: string;
     path: string;
     text: string;
@@ -173,14 +185,16 @@ describe('termsCheck', () => {
     {
       expected: [
         offAxis({
-          axis: 'workflow',
+          axis: Axis.Foundation,
           path: PRINCIPLES,
           term: 'squash merge',
+          termAxis: Axis.Workflow,
         }),
         offAxis({
-          axis: 'workflow',
+          axis: Axis.Foundation,
           path: PRINCIPLES,
           term: 'feature/',
+          termAxis: Axis.Workflow,
         }),
       ],
       name: 'a chapter of foundation uses terms of the workflow',
@@ -190,9 +204,10 @@ describe('termsCheck', () => {
     {
       expected: [
         offAxis({
-          axis: 'architecture',
+          axis: Axis.Workflow,
           path: WORKFLOW,
           term: 'port',
+          termAxis: Axis.Architecture,
         }),
       ],
       name: 'a workflow chapter uses a term of the architecture',
@@ -211,7 +226,7 @@ describe('termsCheck', () => {
   });
 
   it.each<{
-    expected: readonly Finding[];
+    expected: readonly TermsFinding[];
     name: string;
     path: string;
     text: string;
@@ -291,22 +306,26 @@ describe('termsCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'term-misspelled',
-        names: [
-          '`adapters`',
-          'adapters/',
-        ],
+      {
+        code: TermsCode.Misspelled,
+        details: {
+          kind: TermKind.Folder,
+          owner: coreBlockId,
+          term: 'adapters/',
+          written: 'adapters',
+        },
         path: PORTS,
-      }),
-      findingOf({
-        code: 'term-misspelled',
-        names: [
-          '`port`',
-          '.port',
-        ],
+      },
+      {
+        code: TermsCode.Misspelled,
+        details: {
+          kind: TermKind.Suffix,
+          owner: coreBlockId,
+          term: '.port',
+          written: 'port',
+        },
         path: PORTS,
-      }),
+      },
     ]);
   });
 

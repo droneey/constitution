@@ -1,7 +1,5 @@
 import { matchesGlob } from 'node:path';
 
-import { loadedBy } from '#/kernel/utils';
-
 interface Range {
   readonly end: number;
   readonly start: number;
@@ -10,8 +8,6 @@ interface Range {
 interface Changes {
   readonly codeChanged: (path: string) => boolean;
   readonly diff: string;
-  readonly exists: (path: string) => boolean;
-  readonly importsOf: (path: string) => readonly string[];
   readonly mutate: readonly string[];
   readonly untracked: readonly string[];
 }
@@ -19,8 +15,6 @@ interface Changes {
 const SECTION = /^diff --git /m;
 const FILE = /\+\+\+ b\/(.+)/;
 const HUNKS = /^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@/gm;
-const SPEC = /\/__tests__\/([^/]+?)(?:\.integration)?\.(?:test|spec)\.(tsx?)$/;
-const TESTS = '/__tests__/';
 
 const linesOf = (section: string): readonly Range[] =>
   [
@@ -55,36 +49,6 @@ const changedLines = (diff: string): ReadonlyMap<string, readonly Range[]> =>
     }),
   );
 
-const loadedInBoundary = (input: {
-  importsOf: (path: string) => readonly string[];
-  spec: string;
-}): readonly string[] => {
-  const boundary = `${input.spec.slice(0, input.spec.indexOf(TESTS))}/`;
-
-  return [
-    input.spec.replace(SPEC, '/$1.$2'),
-    ...[
-      ...loadedBy({
-        importsOf: input.importsOf,
-        path: input.spec,
-      }).keys(),
-    ].filter((path) => path.startsWith(boundary)),
-  ];
-};
-
-const provenFiles = (input: {
-  importsOf: (path: string) => readonly string[];
-  paths: readonly string[];
-}): readonly string[] =>
-  input.paths
-    .filter((path) => SPEC.test(path))
-    .flatMap((spec) =>
-      loadedInBoundary({
-        importsOf: input.importsOf,
-        spec,
-      }),
-    );
-
 const isMutated = (input: { mutate: readonly string[]; path: string }): boolean =>
   input.mutate.some((pattern) => !pattern.startsWith('!') && matchesGlob(input.path, pattern)) &&
   !input.mutate.some(
@@ -92,37 +56,18 @@ const isMutated = (input: { mutate: readonly string[]; path: string }): boolean 
   );
 
 const mutateTargets = (changes: Changes): readonly string[] => {
-  const ranges = new Map(
-    [
-      ...changedLines(changes.diff),
-    ].filter(([path]) => changes.codeChanged(path)),
-  );
-  const whole = new Set([
-    ...changes.untracked,
-    ...provenFiles({
-      importsOf: changes.importsOf,
-      paths: [
-        ...ranges.keys(),
-        ...changes.untracked,
-      ],
-    }),
-  ]);
-
   const mutated = (path: string): boolean =>
-    changes.exists(path) &&
     isMutated({
       mutate: changes.mutate,
       path,
     });
 
   return [
+    ...changes.untracked.filter(mutated),
     ...[
-      ...whole,
-    ].filter(mutated),
-    ...[
-      ...ranges,
+      ...changedLines(changes.diff),
     ]
-      .filter(([path]) => !whole.has(path) && mutated(path))
+      .filter(([path]) => mutated(path) && changes.codeChanged(path))
       .flatMap(([path, lines]) => lines.map(({ end, start }) => `${path}:${start}-${end}`)),
   ];
 };

@@ -20,7 +20,7 @@ import { createClaudePluginRegistry } from '#/features/installation/adapters/cla
 import { createGitHubReleaseFeed } from '#/features/installation/adapters/github';
 import { createLefthookGitHooks } from '#/features/installation/adapters/lefthook';
 import { createPathProgram } from '#/features/installation/adapters/path';
-import type { ConfigurationParser } from '#/features/presets';
+import type { ConfigurationParser, WiringPlan } from '#/features/presets';
 import {
   checkPresets,
   createPresetsCheckCommand,
@@ -378,7 +378,7 @@ const registerCommands = (registration: Registration): void => {
         }),
         createPresetsPlanCommand({
           ...context,
-          planPresets: (start: string): readonly string[] =>
+          planPresets: (start: string): WiringPlan =>
             planPresets({
               ...ports,
               start,

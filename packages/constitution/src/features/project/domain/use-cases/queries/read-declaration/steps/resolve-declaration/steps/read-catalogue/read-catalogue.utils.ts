@@ -1,24 +1,16 @@
-import { StatedRule, WarningCode } from '#/kernel/entities';
-import type { BlockSource, RuleSlug } from '#/kernel/value-objects';
-import { BlockId, Glob, SourceKind } from '#/kernel/value-objects';
+import { StatedRule, WarningCode, WarningKind } from '#/kernel/entities';
+import type { RuleSlug } from '#/kernel/value-objects';
+import { BlockId, Glob } from '#/kernel/value-objects';
 
 import type { BlockCardParser } from '../../../../../../../contracts';
 import type { Catalogue, CatalogueSource } from '../../../../../../../entities';
 import { CatalogueBlock, CatalogueRule } from '../../../../../../../entities';
 import type { WarningLog } from '../../shared/warning-log';
 import type { BlockDraft, ReadState } from './catalogue.utils';
-import { readFile } from './catalogue.utils';
+import { codeOfSource, readFile } from './catalogue.utils';
 import { inCatalogueOrder } from './catalogue-order.utils';
 
 const MARKDOWN = '.md';
-
-// A problem in the Constitution's own files, which its release checks, or in a pack's.
-const warnFor = (input: { log: WarningLog; message: string; source: BlockSource }): void => {
-  input.log.add({
-    code: input.source.kind === SourceKind.Release ? WarningCode.Constitution : WarningCode.Pack,
-    message: input.message,
-  });
-};
 
 const draftNamed = (input: {
   drafts: ReadonlyMap<BlockId, BlockDraft>;
@@ -84,20 +76,26 @@ const checkBase = (input: {
   });
 
   if (baseDraft === undefined) {
-    warnFor({
-      log,
-      message: `${draft.id} extends ${base}, which is not a block — fix its front matter`,
-      source: draft.source,
+    log.add({
+      code: codeOfSource(draft.source),
+      details: {
+        base,
+        block: draft.id,
+      },
+      kind: WarningKind.BaseNoBlock,
     });
 
     return false;
   }
 
   if (!baseDraft.card.isAbstract) {
-    warnFor({
-      log,
-      message: `${draft.id} extends ${base}, a concrete block; a block extends only an abstract base — require it instead`,
-      source: draft.source,
+    log.add({
+      code: codeOfSource(draft.source),
+      details: {
+        base,
+        block: draft.id,
+      },
+      kind: WarningKind.BaseConcrete,
     });
   }
 
@@ -120,10 +118,13 @@ const checkLinks = (input: {
           name: required,
         }) === undefined
       ) {
-        warnFor({
-          log,
-          message: `${draft.id} requires ${required}, which is not a block — fix its front matter`,
-          source: draft.source,
+        log.add({
+          code: codeOfSource(draft.source),
+          details: {
+            block: draft.id,
+            required,
+          },
+          kind: WarningKind.RequiredNoBlock,
         });
       }
     }
@@ -153,10 +154,13 @@ const checkTightened = (input: {
   for (const draft of input.drafts.values()) {
     for (const rule of input.rules.filter((stated) => BlockId.equals(stated.block, draft.id))) {
       if (rule.tightens !== undefined && !slugs.has(rule.tightens)) {
-        warnFor({
-          log: input.log,
-          message: `${rule.slug} → ${rule.tightens}: ${rule.tightens} is an unknown rule — check the slug`,
-          source: draft.source,
+        input.log.add({
+          code: codeOfSource(draft.source),
+          details: {
+            rule: rule.slug,
+            tightens: rule.tightens,
+          },
+          kind: WarningKind.TightensUnknownRule,
         });
       }
     }
@@ -208,7 +212,10 @@ const readCatalogue = (input: {
     if (source.files === undefined) {
       input.log.add({
         code: WarningCode.Pack,
-        message: `${source.where} is not installed — run mise install, or check the path`,
+        details: {
+          where: source.where,
+        },
+        kind: WarningKind.PackNotInstalled,
       });
 
       continue;

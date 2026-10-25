@@ -93,6 +93,10 @@ const LOWERED_LEVELS: readonly LoweredLevel[] = [
   Level.May,
 ] as const;
 
+// A rule states its Why and Tags in one table of this header and one row of as many cells.
+const RULE_TABLE_HEADER = '| Why | Tags |';
+const RULE_TABLE_CELLS = 2;
+
 // A lens names a concern a review reads every block for; a rule's Tags list its lenses.
 enum Lens {
   Security = 'security',
@@ -121,4 +125,6 @@ export {
   Level,
   LOWERED_LEVELS,
   OPTIONAL_AXES,
+  RULE_TABLE_CELLS,
+  RULE_TABLE_HEADER,
 };

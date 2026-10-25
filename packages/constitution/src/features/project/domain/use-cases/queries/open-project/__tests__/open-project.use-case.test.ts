@@ -2,9 +2,8 @@ import { describe, expect, it } from 'bun:test';
 
 import { createFakeProjectFiles } from '#/__tests__/project-files.fake';
 import { PROJECT, releaseFolderPath } from '#/__tests__/project-place.fixtures';
-import { warningOf } from '#/__tests__/warning.fixtures';
 import { Axis, Layer } from '#/kernel/constants';
-import { WarningCode } from '#/kernel/entities';
+import { WarningCode, WarningKind } from '#/kernel/entities';
 import { ProjectFailure } from '#/kernel/errors';
 
 import { createFakeClock } from '../../../../../__tests__/clock.fake';
@@ -145,12 +144,13 @@ describe('openProject', () => {
           }),
         ],
         warnings: [
-          warningOf({
+          {
             code: WarningCode.Constitution,
-            names: [
-              '/work/project/.droneey/constitution/blocks/core/core.md',
-            ],
-          }),
+            details: {
+              file: '/work/project/.droneey/constitution/blocks/core/core.md',
+            },
+            kind: WarningKind.FrontMatterMissing,
+          },
         ],
       },
     });

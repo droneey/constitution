@@ -1,3 +1,4 @@
+import type { WiringPlan } from '../../../entities';
 import type { PresetsPorts } from '../check';
 import { contextOf } from '../shared/wiring';
 import { planWiringOf } from './steps/plan-wiring';
@@ -13,7 +14,7 @@ const planPresets = (
   input: PresetsPorts & {
     start: string;
   },
-): readonly string[] =>
+): WiringPlan =>
   planWiringOf(
     contextOf({
       ...input.source.open(input.start),

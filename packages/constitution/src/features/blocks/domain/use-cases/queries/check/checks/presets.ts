@@ -1,6 +1,7 @@
+import type { Axis } from '#/kernel/constants';
 import { COMMON_SCOPE, Layer, SELF_PART } from '#/kernel/constants';
 import { Rule } from '#/kernel/entities';
-import type { Finding, Problem } from '#/kernel/types';
+import type { FindingOf, ProblemOf } from '#/kernel/types';
 import type { PresetFolder } from '#/kernel/value-objects';
 import { BlockId, PresetFileKind, PresetPartPath, RuleSlug } from '#/kernel/value-objects';
 
@@ -16,8 +17,34 @@ enum PresetsCode {
   PluginOffAxis = 'plugin-off-axis',
 }
 
-const LAYOUT =
-  'is not a part of a preset: presets/<scope>/<tool>/<axis>/<block>.<extension>, presets/<scope>/<tool>/<axis>/plugins/<rule>.grit, presets/<scope>/<tool>/<axis>/bindings.yaml, the axis foundation, architecture or workflow, or a module the configurations of a scope share, presets/<scope>/<name>.<extension>';
+interface PresetsDetails {
+  readonly [PresetsCode.StrayFile]: object;
+  readonly [PresetsCode.ToolNamesNoBlock]: {
+    readonly scope: string;
+    readonly tool: string;
+  };
+  readonly [PresetsCode.ScopeNotCovered]: {
+    readonly scope: string;
+    readonly tool: string;
+  };
+  readonly [PresetsCode.PartNamesNoBlock]: {
+    readonly name: string;
+  };
+  readonly [PresetsCode.PluginNamesNoRule]: {
+    readonly rule: string;
+  };
+  readonly [PresetsCode.PluginOffAxis]: {
+    /** the axis whose plugins folder holds the plugin */
+    readonly axis: Axis;
+    readonly rule: RuleSlug;
+    readonly ruleAxis: Axis;
+  };
+}
+
+type PresetsFinding = FindingOf<PresetsDetails>;
+
+type PresetsProblem = ProblemOf<PresetsDetails>;
+
 // a module the configurations of a scope import, beside its tools' folders
 const SHARED = /^presets\/([^/]+)\/[^/.][^/]*\.[^/.]+$/;
 
@@ -25,7 +52,7 @@ const nameProblem = (input: {
   isBlock: (name: string) => boolean;
   preset: PresetPartPath;
   rules: ReadonlyMap<RuleSlug, Rule>;
-}): Problem | undefined => {
+}): PresetsProblem | undefined => {
   const { preset } = input;
 
   if (preset.kind === PresetFileKind.Bindings) {
@@ -39,7 +66,9 @@ const nameProblem = (input: {
       ? undefined
       : {
           code: PresetsCode.PartNamesNoBlock,
-          message: `is named "${name}", which is neither a block nor ${SELF_PART}`,
+          details: {
+            name,
+          },
         };
   }
 
@@ -48,7 +77,9 @@ const nameProblem = (input: {
   if (rule === undefined) {
     return {
       code: PresetsCode.PluginNamesNoRule,
-      message: `is named "${preset.rule}", which is not a rule; a plugin is named after the rule it holds`,
+      details: {
+        rule: preset.rule,
+      },
     };
   }
 
@@ -56,11 +87,18 @@ const nameProblem = (input: {
     ? undefined
     : {
         code: PresetsCode.PluginOffAxis,
-        message: `holds ${preset.rule}, a rule of ${rule.axis}, in ${preset.axis}/plugins/`,
+        details: {
+          axis: preset.axis,
+          rule: rule.slug,
+          ruleAxis: rule.axis,
+        },
       };
 };
 
-const scopeProblem = (input: { graph: BlockGraph; folder: PresetFolder }): Problem | undefined => {
+const scopeProblem = (input: {
+  graph: BlockGraph;
+  folder: PresetFolder;
+}): PresetsProblem | undefined => {
   const { graph } = input;
   const { scope, tool } = input.folder;
   const covered = BlockGraph.named(graph, tool)?.frontMatter.languages ?? [];
@@ -73,16 +111,22 @@ const scopeProblem = (input: { graph: BlockGraph; folder: PresetFolder }): Probl
     ? undefined
     : {
         code: PresetsCode.ScopeNotCovered,
-        message: `is in presets/${scope}/, which is neither ${COMMON_SCOPE} nor a language ${tool} covers`,
+        details: {
+          scope,
+          tool,
+        },
       };
 };
 
-const presetsCheck: Check = ({ graph, constitution }: CheckInput): readonly Finding[] => {
+const presetsCheck: Check<PresetsFinding> = ({
+  graph,
+  constitution,
+}: CheckInput): readonly PresetsFinding[] => {
   const rules = Rule.bySlug(constitution.rules);
 
   const isBlock = (name: string): boolean => BlockGraph.named(graph, name) !== undefined;
 
-  return constitution.presets.flatMap(({ path }) => {
+  return constitution.presets.flatMap(({ path }): readonly PresetsFinding[] => {
     const shared = SHARED.exec(path)?.[1];
 
     if (
@@ -99,18 +143,21 @@ const presetsCheck: Check = ({ graph, constitution }: CheckInput): readonly Find
       return [
         {
           code: PresetsCode.StrayFile,
-          message: LAYOUT,
+          details: {},
           path,
         },
       ];
     }
 
-    return [
+    const problems: readonly (PresetsProblem | undefined)[] = [
       isBlock(preset.tool)
         ? undefined
         : {
             code: PresetsCode.ToolNamesNoBlock,
-            message: `is in presets/${preset.scope}/${preset.tool}/, which names no block`,
+            details: {
+              scope: preset.scope,
+              tool: preset.tool,
+            },
           },
       scopeProblem({
         graph,
@@ -121,7 +168,9 @@ const presetsCheck: Check = ({ graph, constitution }: CheckInput): readonly Find
         preset,
         rules,
       }),
-    ].flatMap((problem) =>
+    ];
+
+    return problems.flatMap((problem) =>
       problem === undefined
         ? []
         : [
@@ -134,4 +183,5 @@ const presetsCheck: Check = ({ graph, constitution }: CheckInput): readonly Find
   });
 };
 
-export { presetsCheck };
+export type { PresetsDetails };
+export { PresetsCode, presetsCheck };

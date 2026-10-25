@@ -10,5 +10,5 @@ or {
   } as $classes where { $classes <: not within jsx_attribute() }
 } where {
   $classes <: r"(?s).*\btransition-all\b.*",
-  register_diagnostic(span=$classes, message="Name what moves with transition, transition-colors, transition-opacity or transition-transform: transition-all also animates layout and every colour of a theme switch", severity="error")
+  register_diagnostic(span=$classes, message="[transition-all-never-used] Name what moves with transition, transition-colors, transition-opacity or transition-transform: transition-all also animates layout and every colour of a theme switch", severity="error")
 }

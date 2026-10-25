@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'bun:test';
 
-import { checkInputOf, findingOf } from '../../../../../../__tests__/constitution.fixtures';
+import { BlockId, RuleSlug } from '#/kernel/value-objects';
+
+import { checkInputOf } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { referencesCheck } from '../references';
+import { ReferencesCode, referencesCheck } from '../references';
 
 const PRINCIPLES = 'blocks/core/foundation/principles.md';
 const UI = 'blocks/domains/ui/foundation/forms.md';
@@ -10,26 +12,26 @@ const UI = 'blocks/domains/ui/foundation/forms.md';
 describe('referencesCheck', () => {
   it.each([
     {
+      details: {
+        owner: BlockId.create('react-dom'),
+        target: '../../implementations/react-dom/react-dom.md',
+      },
       name: 'a file',
-      names: [
-        '../../implementations/react-dom/react-dom.md',
-        'react-dom',
-      ],
       path: PRINCIPLES,
       text: '# Principles\n\nSee [portals](../../implementations/react-dom/react-dom.md).\n',
     },
     {
+      details: {
+        owner: BlockId.create('i18n'),
+        target: '../../i18n/',
+      },
       name: 'the folder',
-      names: [
-        '../../i18n/',
-        'i18n',
-      ],
       path: UI,
       text: '# UI\n\nSee [i18n](../../i18n/).\n',
     },
   ])(
     'should report a link into another block when it leads to $name of that block',
-    ({ names, path, text }) => {
+    ({ details, path, text }) => {
       // Arrange
       const files = validFiles();
 
@@ -42,11 +44,11 @@ describe('referencesCheck', () => {
 
       // Assert
       expect(findings).toStrictEqual([
-        findingOf({
-          code: 'link-into-other-block',
-          names,
+        {
+          code: ReferencesCode.LinkIntoOtherBlock,
+          details,
           path,
-        }),
+        },
       ]);
     },
   );
@@ -77,14 +79,14 @@ describe('referencesCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'names-rule-of-other-block',
-        names: [
-          'portals-for-overlays',
-          'react-dom',
-        ],
+      {
+        code: ReferencesCode.NamesOtherRule,
+        details: {
+          owner: BlockId.create('react-dom'),
+          slug: RuleSlug.create('portals-for-overlays'),
+        },
         path: PRINCIPLES,
-      }),
+      },
     ]);
   });
 
@@ -101,20 +103,20 @@ describe('referencesCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'cites-decision',
-        names: [
-          'ADR-0012',
-        ],
+      {
+        code: ReferencesCode.CitesDecision,
+        details: {
+          decision: 'ADR-0012',
+        },
         path: UI,
-      }),
-      findingOf({
-        code: 'cites-decision',
-        names: [
-          'ADR-0030',
-        ],
+      },
+      {
+        code: ReferencesCode.CitesDecision,
+        details: {
+          decision: 'ADR-0030',
+        },
         path: UI,
-      }),
+      },
     ]);
   });
 

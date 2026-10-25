@@ -6,5 +6,5 @@ language js
     r".*\.querySelector",
     r".*\.querySelectorAll"
   },
-  register_diagnostic(span=$call, message="Find an element as a person does: by role, then by label and text", severity="error")
+  register_diagnostic(span=$call, message="[queries-by-role-label-text] Find an element as a person does: by role, then by label and text", severity="error")
 }

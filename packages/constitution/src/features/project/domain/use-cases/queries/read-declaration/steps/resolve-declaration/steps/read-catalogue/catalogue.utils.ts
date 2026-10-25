@@ -1,5 +1,5 @@
 import { Axis, Layer } from '#/kernel/constants';
-import { RequirementAnswer, StatedRule, WarningCode } from '#/kernel/entities';
+import { RequirementAnswer, StatedRule, WarningCode, WarningKind } from '#/kernel/entities';
 import { splitFrontMatter, withoutCodeFences } from '#/kernel/utils';
 import type { FileInBlock, RuleSlug } from '#/kernel/value-objects';
 import {
@@ -60,13 +60,10 @@ const EMPTY_CARD: BlockCard = {
   summary: '',
 } as const;
 
-const warnOf = (input: { message: string; source: CatalogueSource; state: ReadState }): void => {
-  input.state.log.add({
-    code:
-      input.source.source.kind === SourceKind.Release ? WarningCode.Constitution : WarningCode.Pack,
-    message: input.message,
-  });
-};
+// The code of a problem in a source's files: the Constitution's own, which its release checks, or a
+// pack's.
+const codeOfSource = (source: BlockSource): WarningCode =>
+  source.kind === SourceKind.Release ? WarningCode.Constitution : WarningCode.Pack;
 
 const whereOf = (input: { path: string; source: CatalogueSource }): string =>
   `${input.source.where}/${input.path}`;
@@ -82,13 +79,15 @@ const readRules = (
   const { sourceFile: file, source, state } = input;
 
   if (file.text === undefined) {
-    warnOf({
-      message: `${whereOf({
-        path: file.path,
-        source,
-      })} cannot be read — its rules are left out`,
-      source,
-      state,
+    state.log.add({
+      code: codeOfSource(source.source),
+      details: {
+        file: whereOf({
+          path: file.path,
+          source,
+        }),
+      },
+      kind: WarningKind.FileUnreadable,
     });
 
     return;
@@ -111,13 +110,16 @@ const readRules = (
     axis: input.axis,
   }).rules) {
     if (state.slugs.has(rule.slug)) {
-      warnOf({
-        message: `${whereOf({
-          path: file.path,
-          source,
-        })} repeats the rule ${rule.slug} — the first is used`,
-        source,
-        state,
+      state.log.add({
+        code: codeOfSource(source.source),
+        details: {
+          file: whereOf({
+            path: file.path,
+            source,
+          }),
+          rule: rule.slug,
+        },
+        kind: WarningKind.RuleRepeated,
       });
     } else {
       state.slugs.add(rule.slug);
@@ -155,10 +157,12 @@ const readPassport = (
   });
 
   if (file.text === undefined) {
-    warnOf({
-      message: `${where} cannot be read — its rules are left out`,
-      source,
-      state,
+    state.log.add({
+      code: codeOfSource(source.source),
+      details: {
+        file: where,
+      },
+      kind: WarningKind.FileUnreadable,
     });
 
     return;
@@ -167,10 +171,12 @@ const readPassport = (
   const { frontMatter } = splitFrontMatter(file.text);
 
   if (frontMatter === undefined) {
-    warnOf({
-      message: `${where} has no front matter — the block is read without it`,
-      source,
-      state,
+    state.log.add({
+      code: codeOfSource(source.source),
+      details: {
+        file: where,
+      },
+      kind: WarningKind.FrontMatterMissing,
     });
   } else {
     state.drafts.set(input.draft.id, {
@@ -213,13 +219,15 @@ const readPart = (
       axis: file.axis,
     });
   } else {
-    warnOf({
-      message: `${whereOf({
-        path: input.sourceFile.path,
-        source: input.source,
-      })} is not a block file — move or remove it`,
-      source: input.source,
-      state: input.state,
+    input.state.log.add({
+      code: codeOfSource(input.source.source),
+      details: {
+        file: whereOf({
+          path: input.sourceFile.path,
+          source: input.source,
+        }),
+      },
+      kind: WarningKind.NotBlockFile,
     });
   }
 };
@@ -261,13 +269,16 @@ const draftOf = (
     return draft;
   }
 
-  warnOf({
-    message: `${whereOf({
-      path: input.sourceFile.path,
-      source,
-    })} repeats the block ${id} — the one read first is used`,
-    source,
-    state,
+  state.log.add({
+    code: codeOfSource(source.source),
+    details: {
+      block: id,
+      file: whereOf({
+        path: input.sourceFile.path,
+        source,
+      }),
+    },
+    kind: WarningKind.BlockRepeated,
   });
   state.skipped.push({
     id,
@@ -291,20 +302,24 @@ const readFile = (input: FileInput): void => {
       place.folder.layer === Layer.Core &&
       input.source.source.kind !== SourceKind.Release)
   ) {
-    warnOf({
-      message: `${where} is not inside a block folder of a domain, a context or an implementation`,
-      source: input.source,
-      state: input.state,
+    input.state.log.add({
+      code: codeOfSource(input.source.source),
+      details: {
+        file: where,
+      },
+      kind: WarningKind.OutsideBlockFolder,
     });
 
     return;
   }
 
   if (place.placement === Placement.MisnamedFolder) {
-    warnOf({
-      message: `${where} is in a block folder whose name is not a kebab-case block id — rename the folder`,
-      source: input.source,
-      state: input.state,
+    input.state.log.add({
+      code: codeOfSource(input.source.source),
+      details: {
+        file: where,
+      },
+      kind: WarningKind.FolderMisnamed,
     });
 
     return;
@@ -339,4 +354,4 @@ const readFile = (input: FileInput): void => {
 };
 
 export type { BlockDraft, ReadState };
-export { readFile };
+export { codeOfSource, readFile };

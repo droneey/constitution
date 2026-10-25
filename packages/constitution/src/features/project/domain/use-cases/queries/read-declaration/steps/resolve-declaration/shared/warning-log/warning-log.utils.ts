@@ -9,13 +9,13 @@ interface WarningLog {
 
 const codes: readonly WarningCode[] = Object.values(WarningCode);
 
-/** A warning given twice is kept once, where it was first given. */
+/** A warning given again, of the same code, kind and details, is kept once, where first given. */
 const createWarningLog = (): WarningLog => {
   const given = new Map<string, ProjectWarning>();
 
   return {
     add: (warning: ProjectWarning): void => {
-      given.set(`${warning.code}\n${warning.message}`, warning);
+      given.set(`${warning.code}\n${warning.kind}\n${JSON.stringify(warning.details)}`, warning);
     },
     list: (): readonly ProjectWarning[] =>
       codes.flatMap((code) =>

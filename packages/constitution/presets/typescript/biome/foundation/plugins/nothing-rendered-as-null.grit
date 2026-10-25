@@ -24,5 +24,5 @@ language js
       }
     }
   },
-  register_diagnostic(span=$value, message="null outside the boundary: internal code spells absence as undefined; an adapter maps null to it", severity="error")
+  register_diagnostic(span=$value, message="[nothing-rendered-as-null] null outside the boundary: internal code spells absence as undefined; an adapter maps null to it", severity="error")
 }

@@ -17,5 +17,5 @@ or {
   `document.write($...)`,
   `document.writeln($...)`
 } as $injection where {
-  register_diagnostic(span=$injection, message="Render markup through the element interfaces or a sanitising renderer, never as raw HTML", severity="error")
+  register_diagnostic(span=$injection, message="[raw-html-never-reaches-the-dom] Render markup through the element interfaces or a sanitising renderer, never as raw HTML", severity="error")
 }

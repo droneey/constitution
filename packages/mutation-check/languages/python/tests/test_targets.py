@@ -1,5 +1,5 @@
 import pytest
-from changes_fixtures import changes_of, python
+from changes_fixtures import changes_of
 
 from droneey_mutation_check.targets import Changes, mutant_globs
 
@@ -54,43 +54,14 @@ ORDERS_ALL = (
       id="a line of a folder's surface",
     ),
     pytest.param(
-      changes_of(lines={'README.md': (range(1, 2),)}),
+      changes_of(
+        lines={'README.md': (range(1, 2),), 'tests/test_orders.py': (range(1, 2),)},
+        untracked=('tests/test_basket.py',),
+      ),
       (),
-      id='a file outside src/',
+      id='specs and a file outside src/',
     ),
     pytest.param(changes_of(untracked=('src/shop/orders.py',)), ORDERS_ALL, id='a new file'),
-    pytest.param(
-      changes_of(untracked=('tests/test_orders.py',), extra={'tests/test_orders.py': ''}),
-      ORDERS_ALL,
-      id='a new spec named after a module',
-    ),
-    pytest.param(
-      changes_of(
-        lines={'README.md': (range(1, 2),), 'tests/kernel/test_money.py': (range(1, 2),)},
-        extra={'tests/kernel/test_money.py': ''},
-      ),
-      ('shop.kernel.money.x_cents__mutmut_*',),
-      id='a changed spec named after a module',
-    ),
-    pytest.param(
-      changes_of(
-        lines={'tests/test_basket.py': (range(1, 2),)},
-        extra={
-          'tests/test_basket.py': python(
-            'from shop.orders import Basket', 'import shop.kernel.money', 'from . import x'
-          )
-        },
-      ),
-      ('shop.kernel.money.x_cents__mutmut_*', *ORDERS_ALL),
-      id='a changed spec that imports modules',
-    ),
-    pytest.param(
-      changes_of(
-        lines={'tests/orders_fixtures.py': (range(1, 2),), 'docs/test_orders.py': (range(1, 2),)},
-      ),
-      (),
-      id='a changed helper of the specs',
-    ),
   ],
 )
 def test_should_mutate_the_functions_a_change_touches(

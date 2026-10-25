@@ -213,5 +213,5 @@ statement() as $b where {
       }
     }
   },
-  register_diagnostic(span=$b, message="Put a blank line before this statement: a compound statement, a return, throw, break or continue, a delete and a function stand apart, and a declaration's group, the declaration and the statements operating on its variable, ends with one", severity="error")
+  register_diagnostic(span=$b, message="[statements-grouped-by-blank-lines] Put a blank line before this statement: a compound statement, a return, throw, break or continue, a delete and a function stand apart, and a declaration's group, the declaration and the statements operating on its variable, ends with one", severity="error")
 }

@@ -3,5 +3,5 @@ language js
 JsCatchClause(body=$body) as $catch where {
   $body <: JsBlockStatement(statements=[]),
   $body <: r"(?s)\{\s*(?://|/\*).*",
-  register_diagnostic(span=$catch, message="A catch with no statement is empty: handle the failure, rethrow it, or suppress noEmptyBlockStatements with the reason", severity="error")
+  register_diagnostic(span=$catch, message="[catch-handles-only-what-it-recognises] A catch with no statement is empty: handle the failure, rethrow it, or suppress noEmptyBlockStatements with the reason", severity="error")
 }

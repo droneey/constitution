@@ -7,13 +7,13 @@ import { headingTextOf, isHeading, plainTextOf } from '../markdown.adapter';
 describe('plainTextOf', () => {
   it('should read the text without its marks when a line has some', () => {
     // Arrange
-    const markdown = 'Governs **names**, `code` and [links](docs/links.md).';
+    const markdown = '**names**, `code`, [links](docs/links.md).';
 
     // Act
     const text = plainTextOf(markdown);
 
     // Assert
-    expect(text).toBe('Governs names, code and links.');
+    expect(text).toBe('names, code, links.');
   });
 });
 

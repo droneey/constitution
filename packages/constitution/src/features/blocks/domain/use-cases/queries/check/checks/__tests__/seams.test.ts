@@ -1,12 +1,13 @@
 import { describe, expect, it } from 'bun:test';
 
-import {
-  checkInputOf,
-  findingOf,
-  passportFile,
-} from '../../../../../../__tests__/constitution.fixtures';
+import { Layer } from '#/kernel/constants';
+import type { FindingOf } from '#/kernel/types';
+import { BlockId } from '#/kernel/value-objects';
+
+import { checkInputOf, passportFile } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { seamsCheck } from '../seams';
+import type { SeamsDetails } from '../seams';
+import { SeamsCode, seamsCheck } from '../seams';
 
 /** a seam titled as its other block's passport in the valid files, so only its pairing is in question */
 const seamOf = (path: string): string => {
@@ -21,77 +22,97 @@ const seamOf = (path: string): string => {
 
 describe('seamsCheck', () => {
   it.each<{
-    code: string;
-    names: string[];
-    path: string;
+    finding: FindingOf<SeamsDetails>;
   }>([
     {
-      code: 'seam-out-of-layer',
-      names: [
-        'biome',
-      ],
-      path: 'blocks/contexts/platforms/browser/architecture/with/biome.md',
+      finding: {
+        code: SeamsCode.OutOfLayer,
+        details: {
+          allowed: [
+            Layer.Domain,
+            Layer.Platform,
+            Layer.Language,
+          ],
+          layer: Layer.Platform,
+          other: BlockId.create('biome'),
+          otherLayer: Layer.Implementation,
+        },
+        path: 'blocks/contexts/platforms/browser/architecture/with/biome.md',
+      },
     },
     {
-      code: 'seam-named-after-own-block',
-      names: [],
-      path: 'blocks/domains/ui/foundation/with/ui.md',
+      finding: {
+        code: SeamsCode.NamedAfterOwnBlock,
+        details: {},
+        path: 'blocks/domains/ui/foundation/with/ui.md',
+      },
     },
     {
-      code: 'seam-names-no-pair',
-      names: [
-        'core',
-      ],
-      path: 'blocks/domains/ui/workflow/with/core.md',
+      finding: {
+        code: SeamsCode.NotPair,
+        details: {
+          other: BlockId.create('core'),
+        },
+        path: 'blocks/domains/ui/workflow/with/core.md',
+      },
     },
     {
-      code: 'seam-names-no-pair',
-      names: [
-        'nowhere',
-      ],
-      path: 'blocks/domains/ui/architecture/with/nowhere.md',
+      finding: {
+        code: SeamsCode.NotPair,
+        details: {
+          other: BlockId.create('nowhere'),
+        },
+        path: 'blocks/domains/ui/architecture/with/nowhere.md',
+      },
     },
     {
-      code: 'seam-along-a-dependency',
-      names: [
-        'typescript',
-      ],
-      path: 'blocks/implementations/biome/foundation/with/typescript.md',
+      finding: {
+        code: SeamsCode.AlongDependency,
+        details: {
+          block: BlockId.create('biome'),
+          other: BlockId.create('typescript'),
+        },
+        path: 'blocks/implementations/biome/foundation/with/typescript.md',
+      },
     },
     {
-      code: 'seam-along-a-dependency',
-      names: [
-        'ui',
-      ],
-      path: 'blocks/implementations/react-dom/foundation/with/ui.md',
+      finding: {
+        code: SeamsCode.AlongDependency,
+        details: {
+          block: BlockId.create('react-dom'),
+          other: BlockId.create('ui'),
+        },
+        path: 'blocks/implementations/react-dom/foundation/with/ui.md',
+      },
     },
     {
-      code: 'seam-of-unpairing-block',
-      names: [
-        'core',
-      ],
-      path: 'blocks/core/foundation/with/ui.md',
+      finding: {
+        code: SeamsCode.BlockPairsWithNone,
+        details: {
+          block: BlockId.create('core'),
+        },
+        path: 'blocks/core/foundation/with/ui.md',
+      },
     },
-  ])('should report $code when $path pairs with a block it may not', ({ code, names, path }) => {
-    // Arrange
-    const files = validFiles();
+  ])(
+    'should report $finding.code when $finding.path pairs with a block it may not',
+    ({ finding }) => {
+      // Arrange
+      const files = validFiles();
 
-    files[path] = seamOf(path);
+      files[finding.path] = seamOf(finding.path);
 
-    const input = checkInputOf(files);
+      const input = checkInputOf(files);
 
-    // Act
-    const findings = seamsCheck(input);
+      // Act
+      const findings = seamsCheck(input);
 
-    // Assert
-    expect(findings).toStrictEqual([
-      findingOf({
-        code,
-        names,
-        path,
-      }),
-    ]);
-  });
+      // Assert
+      expect(findings).toStrictEqual([
+        finding,
+      ]);
+    },
+  );
 
   it.each([
     'blocks/contexts/platforms/browser/foundation/with/typescript.md',
@@ -128,13 +149,13 @@ describe('seamsCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'chapter-named-after-block',
-        names: [
-          'ui',
-        ],
+      {
+        code: SeamsCode.ChapterNamedAfterBlock,
+        details: {
+          block: BlockId.create('ui'),
+        },
         path: 'blocks/core/architecture/ui.md',
-      }),
+      },
     ]);
   });
 
@@ -178,10 +199,11 @@ describe('seamsCheck', () => {
 
       // Assert
       expect(findings).toStrictEqual([
-        findingOf({
-          code: 'seam-title-mismatch',
+        {
+          code: SeamsCode.TitleMismatch,
+          details: {},
           path,
-        }),
+        },
       ]);
     },
   );

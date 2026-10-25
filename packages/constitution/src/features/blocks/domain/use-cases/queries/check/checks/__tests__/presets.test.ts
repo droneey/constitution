@@ -1,16 +1,17 @@
 import { describe, expect, it } from 'bun:test';
 
-import type { Finding } from '#/kernel/types';
+import { Axis } from '#/kernel/constants';
+import type { FindingOf } from '#/kernel/types';
+import { RuleSlug } from '#/kernel/value-objects';
 
-import {
-  blockFiles,
-  checkInputOf,
-  findingOf,
-} from '../../../../../../__tests__/constitution.fixtures';
+import { blockFiles, checkInputOf } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { presetsCheck } from '../presets';
+import type { PresetsDetails } from '../presets';
+import { PresetsCode, presetsCheck } from '../presets';
 
-const findingsOf = (paths: readonly string[]): readonly Finding[] =>
+type PresetsFinding = FindingOf<PresetsDetails>;
+
+const findingsOf = (paths: readonly string[]): readonly PresetsFinding[] =>
   presetsCheck(
     checkInputOf({
       ...validFiles(),
@@ -88,281 +89,118 @@ describe('presetsCheck', () => {
   });
 
   it.each<{
-    code: string;
     name: string;
-    names: string[];
     path: string;
   }>([
     {
-      code: 'stray-preset-file',
       name: "a part sits at its tool folder's root",
-      names: [],
       path: 'presets/typescript/biome/core.jsonc',
     },
     {
-      code: 'stray-preset-file',
       name: 'a part sits in a folder that is no axis',
-      names: [],
       path: 'presets/typescript/biome/notes/core.jsonc',
     },
     {
-      code: 'stray-preset-file',
       name: 'a part sits in a folder of an axis folder',
-      names: [],
       path: 'presets/typescript/biome/architecture/nested/core.jsonc',
     },
     {
-      code: 'stray-preset-file',
       name: 'a part sits in an axis folder of an axis folder',
-      names: [],
       path: 'presets/typescript/biome/architecture/workflow/core.jsonc',
     },
     {
-      code: 'stray-preset-file',
       name: 'a part sits in a presets folder of a tool folder',
-      names: [],
       path: 'presets/typescript/biome/nested/presets/common/biome/foundation/core.jsonc',
     },
     {
-      code: 'stray-preset-file',
       name: 'a shared module sits in a domain',
-      names: [],
       path: 'presets/ui/join.mjs',
     },
     {
-      code: 'stray-preset-file',
       name: 'a shared module sits in a scope that names no block',
-      names: [],
       path: 'presets/nowhere/join.mjs',
     },
     {
-      code: 'stray-preset-file',
       name: 'a shared module sits in a presets folder of a tool folder',
-      names: [],
       path: 'presets/typescript/biome/presets/common/join.mjs',
     },
     {
-      code: 'stray-preset-file',
       name: 'a folder is named like a shared module',
-      names: [],
       path: 'presets/typescript/join.mjs/notes.txt',
     },
     {
-      code: 'stray-preset-file',
       name: 'a shared module is hidden',
-      names: [],
       path: 'presets/typescript/.join.mjs',
     },
     {
-      code: 'stray-preset-file',
       name: 'a shared module has no extension',
-      names: [],
       path: 'presets/typescript/join',
     },
     {
-      code: 'stray-preset-file',
       name: 'a part is hidden',
-      names: [],
       path: 'presets/typescript/biome/foundation/.core.jsonc',
     },
     {
-      code: 'stray-preset-file',
       name: 'a part has an empty extension',
-      names: [],
       path: 'presets/typescript/biome/foundation/core.',
     },
     {
-      code: 'stray-preset-file',
       name: 'a folder is named like a part',
-      names: [],
       path: 'presets/typescript/biome/foundation/core.jsonc/notes.txt',
     },
     {
-      code: 'stray-preset-file',
       name: "a plugin sits in its tool folder's root plugins folder",
-      names: [],
       path: 'presets/typescript/biome/plugins/hooks-at-top-level.grit',
     },
     {
-      code: 'stray-preset-file',
       name: 'a plugin sits in a folder of a tool folder',
-      names: [],
       path: 'presets/typescript/biome/x/plugins/hooks-at-top-level.grit',
     },
     {
-      code: 'stray-preset-file',
       name: 'a plugin sits in a folder of its plugins folder',
-      names: [],
       path: 'presets/typescript/biome/foundation/plugins/nested/hooks-at-top-level.grit',
     },
     {
-      code: 'stray-preset-file',
       name: 'a folder is named like a plugin',
-      names: [],
       path: 'presets/typescript/biome/foundation/plugins/hooks-at-top-level.grit/notes.grit',
     },
     {
-      code: 'stray-preset-file',
       name: 'a GritQL file sits in a folder that is no plugins folder',
-      names: [],
       path: 'presets/typescript/biome/x/hooks-at-top-level.grit',
     },
     {
-      code: 'stray-preset-file',
       name: 'a plugin carries a second extension',
-      names: [],
       path: 'presets/typescript/biome/foundation/plugins/hooks-at-top-level.grit.bak',
     },
     {
-      code: 'stray-preset-file',
       name: 'a plugin is hidden',
-      names: [],
       path: 'presets/typescript/biome/foundation/plugins/.hooks-at-top-level.grit',
     },
     {
-      code: 'stray-preset-file',
       name: 'a plugin is not GritQL',
-      names: [],
       path: 'presets/typescript/biome/foundation/plugins/hooks-at-top-level.json',
     },
     {
-      code: 'stray-preset-file',
       name: 'the bindings sit outside a scope folder',
-      names: [],
       path: 'presets/biome/bindings.yaml',
     },
     {
-      code: 'stray-preset-file',
       name: "the bindings sit at their tool folder's root",
-      names: [],
       path: 'presets/typescript/biome/bindings.yaml',
     },
     {
-      code: 'stray-preset-file',
       name: 'the bindings sit in a folder that is no axis',
-      names: [],
       path: 'presets/typescript/biome/notes/bindings.yaml',
     },
     {
-      code: 'stray-preset-file',
       name: 'the bindings sit two folders deep in an axis folder',
-      names: [],
       path: 'presets/typescript/biome/architecture/nested/bindings.yaml',
     },
     {
-      code: 'stray-preset-file',
       name: 'a folder is named like the bindings',
-      names: [],
       path: 'presets/typescript/biome/foundation/bindings.yaml/notes.txt',
     },
-    {
-      code: 'part-names-no-block',
-      name: 'the bindings carry a second extension',
-      names: [
-        'bindings',
-      ],
-      path: 'presets/typescript/biome/foundation/bindings.yaml.bak',
-    },
-    {
-      code: 'preset-scope-not-covered',
-      name: 'a part sits in a scope that names no block',
-      names: [
-        'nowhere',
-        'biome',
-      ],
-      path: 'presets/nowhere/biome/architecture/ui.jsonc',
-    },
-    {
-      code: 'preset-scope-not-covered',
-      name: 'a part sits in a scope that is a domain, not a language',
-      names: [
-        'ui',
-        'biome',
-      ],
-      path: 'presets/ui/biome/architecture/typescript.jsonc',
-    },
-    {
-      code: 'preset-scope-not-covered',
-      name: 'a part sits in a language its tool does not cover',
-      names: [
-        'css',
-        'biome',
-      ],
-      path: 'presets/css/biome/foundation/core.jsonc',
-    },
-    {
-      code: 'preset-scope-not-covered',
-      name: 'the bindings sit in a language their tool does not cover',
-      names: [
-        'css',
-        'biome',
-      ],
-      path: 'presets/css/biome/foundation/bindings.yaml',
-    },
-    {
-      code: 'preset-tool-names-no-block',
-      name: 'the bindings of a tool that is no block',
-      names: [
-        'common',
-        'eslint',
-      ],
-      path: 'presets/common/eslint/foundation/bindings.yaml',
-    },
-    {
-      code: 'preset-scope-not-covered',
-      name: 'a part of a tool that covers any language sits in a domain',
-      names: [
-        'ui',
-        'lingui',
-      ],
-      path: 'presets/ui/lingui/foundation/core.jsonc',
-    },
-    {
-      code: 'preset-tool-names-no-block',
-      name: "a language's folder holds a tool that names no block",
-      names: [
-        'typescript',
-        'eslint',
-      ],
-      path: 'presets/typescript/eslint/foundation/core.mjs',
-    },
-    {
-      code: 'part-names-no-block',
-      name: 'a part is named after no block',
-      names: [
-        'react',
-      ],
-      path: 'presets/typescript/biome/foundation/react.jsonc',
-    },
-    {
-      code: 'plugin-names-no-rule',
-      name: 'a plugin is named after no rule',
-      names: [
-        'null-free',
-      ],
-      path: 'presets/typescript/biome/foundation/plugins/null-free.grit',
-    },
-    {
-      code: 'plugin-off-axis',
-      name: 'a plugin of foundation holds a rule of architecture',
-      names: [
-        'reads-are-cancellable',
-        'architecture',
-        'foundation/',
-      ],
-      path: 'presets/typescript/biome/foundation/plugins/reads-are-cancellable.grit',
-    },
-    {
-      code: 'plugin-off-axis',
-      name: 'a plugin of architecture holds a rule of foundation',
-      names: [
-        'hooks-at-top-level',
-        'foundation',
-        'architecture/',
-      ],
-      path: 'presets/typescript/biome/architecture/plugins/hooks-at-top-level.grit',
-    },
-  ])('should report the file when $name', ({ code, names, path }) => {
+  ])('should report a stray file when $name', ({ path }) => {
     // Arrange
     const paths = [
       path,
@@ -373,11 +211,161 @@ describe('presetsCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code,
-        names,
+      {
+        code: PresetsCode.StrayFile,
+        details: {},
         path,
-      }),
+      },
+    ]);
+  });
+
+  it.each<{
+    finding: PresetsFinding;
+    name: string;
+  }>([
+    {
+      finding: {
+        code: PresetsCode.PartNamesNoBlock,
+        details: {
+          name: 'bindings',
+        },
+        path: 'presets/typescript/biome/foundation/bindings.yaml.bak',
+      },
+      name: 'the bindings carry a second extension',
+    },
+    {
+      finding: {
+        code: PresetsCode.ScopeNotCovered,
+        details: {
+          scope: 'nowhere',
+          tool: 'biome',
+        },
+        path: 'presets/nowhere/biome/architecture/ui.jsonc',
+      },
+      name: 'a part sits in a scope that names no block',
+    },
+    {
+      finding: {
+        code: PresetsCode.ScopeNotCovered,
+        details: {
+          scope: 'ui',
+          tool: 'biome',
+        },
+        path: 'presets/ui/biome/architecture/typescript.jsonc',
+      },
+      name: 'a part sits in a scope that is a domain, not a language',
+    },
+    {
+      finding: {
+        code: PresetsCode.ScopeNotCovered,
+        details: {
+          scope: 'css',
+          tool: 'biome',
+        },
+        path: 'presets/css/biome/foundation/core.jsonc',
+      },
+      name: 'a part sits in a language its tool does not cover',
+    },
+    {
+      finding: {
+        code: PresetsCode.ScopeNotCovered,
+        details: {
+          scope: 'css',
+          tool: 'biome',
+        },
+        path: 'presets/css/biome/foundation/bindings.yaml',
+      },
+      name: 'the bindings sit in a language their tool does not cover',
+    },
+    {
+      finding: {
+        code: PresetsCode.ToolNamesNoBlock,
+        details: {
+          scope: 'common',
+          tool: 'eslint',
+        },
+        path: 'presets/common/eslint/foundation/bindings.yaml',
+      },
+      name: 'the bindings of a tool that is no block',
+    },
+    {
+      finding: {
+        code: PresetsCode.ScopeNotCovered,
+        details: {
+          scope: 'ui',
+          tool: 'lingui',
+        },
+        path: 'presets/ui/lingui/foundation/core.jsonc',
+      },
+      name: 'a part of a tool that covers any language sits in a domain',
+    },
+    {
+      finding: {
+        code: PresetsCode.ToolNamesNoBlock,
+        details: {
+          scope: 'typescript',
+          tool: 'eslint',
+        },
+        path: 'presets/typescript/eslint/foundation/core.mjs',
+      },
+      name: "a language's folder holds a tool that names no block",
+    },
+    {
+      finding: {
+        code: PresetsCode.PartNamesNoBlock,
+        details: {
+          name: 'react',
+        },
+        path: 'presets/typescript/biome/foundation/react.jsonc',
+      },
+      name: 'a part is named after no block',
+    },
+    {
+      finding: {
+        code: PresetsCode.PluginNamesNoRule,
+        details: {
+          rule: 'null-free',
+        },
+        path: 'presets/typescript/biome/foundation/plugins/null-free.grit',
+      },
+      name: 'a plugin is named after no rule',
+    },
+    {
+      finding: {
+        code: PresetsCode.PluginOffAxis,
+        details: {
+          axis: Axis.Foundation,
+          rule: RuleSlug.create('reads-are-cancellable'),
+          ruleAxis: Axis.Architecture,
+        },
+        path: 'presets/typescript/biome/foundation/plugins/reads-are-cancellable.grit',
+      },
+      name: 'a plugin of foundation holds a rule of architecture',
+    },
+    {
+      finding: {
+        code: PresetsCode.PluginOffAxis,
+        details: {
+          axis: Axis.Architecture,
+          rule: RuleSlug.create('hooks-at-top-level'),
+          ruleAxis: Axis.Foundation,
+        },
+        path: 'presets/typescript/biome/architecture/plugins/hooks-at-top-level.grit',
+      },
+      name: 'a plugin of architecture holds a rule of foundation',
+    },
+  ])('should report $finding.code when $name', ({ finding }) => {
+    // Arrange
+    const paths = [
+      finding.path,
+    ];
+
+    // Act
+    const findings = findingsOf(paths);
+
+    // Assert
+    expect(findings).toStrictEqual([
+      finding,
     ]);
   });
 });

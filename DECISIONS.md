@@ -15,7 +15,7 @@
 | Overrides and precedence | ADR-0020 |
 | The anatomy | ADR-0032, ADR-0036, ADR-0157, ADR-0158 |
 | The rest | ADR-0045 |
-| Testing | ADR-0046 – ADR-0048 |
+| Testing | ADR-0046 – ADR-0048, ADR-0220, ADR-0221 |
 | Code | ADR-0050, ADR-0052 |
 | Core | ADR-0053, ADR-0057, ADR-0058, ADR-0060, ADR-0062, ADR-0063 |
 | Blocks | ADR-0064, ADR-0066 – ADR-0071, ADR-0074, ADR-0092, ADR-0095, ADR-0209, ADR-0210, ADR-0211 |
@@ -332,7 +332,7 @@
 
 **Date:** 2026-09-28 · **Status:** Accepted
 
-- **Decision.** `mutants-all-killed` runs over the lines a change touches, every new file and every file whose spec a change touches, and no longer reuses earlier results.
+- **Decision.** `mutants-all-killed` runs over the lines a change touches and every new file, and no longer reuses earlier results.
 - **Rejected.** Stryker's incremental report: with no test reported per mutant Stryker cannot tell which tests meet it, so a cached result hid a survivor in one run and kept a killed mutant as surviving in another.
 - **Why.** A result is trusted only when it was run; mutating the changed lines keeps the run short without a cache.
 
@@ -687,7 +687,7 @@
 
 **Date:** 2026-10-04 · **Status:** Accepted
 
-- **Decision.** Seven implementations, each held to core's testing and code rules in Python. `pytest` — strict, `importlib`, warnings as errors, a coverage gate of 100 percent of lines and branches through pytest-cov with `--cov` never in `addopts`, pytest-randomly's order, no rerun plugin, `tests/integration/` and `tests/e2e/` left out of the unit specs by `norecursedirs`, the network refused by an autouse fixture of `tests/conftest.py` that the integration folder overrides, no `unittest.mock` and no patched module, async specs on anyio's plugin; run in each package with `pythonpath = ["tests"]`. Ruff's part `pytest.toml` extends `python.toml` as the last link of the chain, with `PT` and the bans of skips, expected failures, the `flaky` mark, `unittest.mock` and `pytest_asyncio`, and a project lifts only `S101` and `INP001` in `tests/`. `hypothesis` — properties written with `@given`, counterexamples kept by `@example`, and under `CI` its own `ci` profile, which already derandomizes and keeps no database. `mutmut` — every mutant killed, an equivalent one marked on its line by `# pragma: no mutate -- <reason>`, each mutant run without randomness or coverage; its gate is the archive's `tools/mutmut-check`, which clears `mutants/`, mutates the functions a change touches, a new module whole and the module a changed spec is named after with those it imports, and fails on every mutant not killed — survivor, untested or timed out. `import-linter` — core's import rules as contracts named after them, written over wildcards (`*.kernel`, `*.features.*`) so one template fits any package. `deptry` — unused dependencies and dev tools imported by the program. `vulture` — unused code from a confidence of 60, over `src` alone so code only the specs reach is dead, names a framework reaches in `ignore_names` with a reason. `complexipy` — cognitive complexity within core's limit. `python-check`, the constitution's own Python tool in the archive's `tools/`, holds a function of at most 100 lines and a file of at most 500 outside `tests/`, and a relative import kept inside its module — a feature, a top-level folder, or the package root — with a feature never importing its own absolute path. The settings of the tools without `extends` start from `templates/project/python/pyproject.toml`, and `tests/conftest.py` beside it; Both Python tools are members of this repository's uv workspace and are held by its check — format, lint, types, their own limits, coverage, mutation and unused code — and the release builds them as `.pyz` archives the project's interpreter runs.
+- **Decision.** Seven implementations, each held to core's testing and code rules in Python. `pytest` — strict, `importlib`, warnings as errors, a coverage gate of 100 percent of lines and branches through pytest-cov with `--cov` never in `addopts`, pytest-randomly's order, no rerun plugin, `tests/integration/` and `tests/e2e/` left out of the unit specs by `norecursedirs`, the network refused by an autouse fixture of `tests/conftest.py` that the integration folder overrides, no `unittest.mock` and no patched module, async specs on anyio's plugin; run in each package with `pythonpath = ["tests"]`. Ruff's part `pytest.toml` extends `python.toml` as the last link of the chain, with `PT` and the bans of skips, expected failures, the `flaky` mark, `unittest.mock` and `pytest_asyncio`, and a project lifts only `S101` and `INP001` in `tests/`. `hypothesis` — properties written with `@given`, counterexamples kept by `@example`, and under `CI` its own `ci` profile, which already derandomizes and keeps no database. `mutmut` — every mutant killed, an equivalent one marked on its line by `# pragma: no mutate -- <reason>`, each mutant run without randomness or coverage; its gate is the archive's `tools/mutmut-check`, which clears `mutants/`, mutates the functions a change touches and a new module whole, and fails on every mutant not killed — survivor, untested or timed out. `import-linter` — core's import rules as contracts named after them, written over wildcards (`*.kernel`, `*.features.*`) so one template fits any package. `deptry` — unused dependencies and dev tools imported by the program. `vulture` — unused code from a confidence of 60, over `src` alone so code only the specs reach is dead, names a framework reaches in `ignore_names` with a reason. `complexipy` — cognitive complexity within core's limit. `python-check`, the constitution's own Python tool in the archive's `tools/`, holds a function of at most 100 lines and a file of at most 500 outside `tests/`, and a relative import kept inside its module — a feature, a top-level folder, or the package root — with a feature never importing its own absolute path. The settings of the tools without `extends` start from `templates/project/python/pyproject.toml`, and `tests/conftest.py` beside it; Both Python tools are members of this repository's uv workspace and are held by its check — format, lint, types, their own limits, coverage, mutation and unused code — and the release builds them as `.pyz` archives the project's interpreter runs.
 - **Rejected.** Extending `tools/mutation-check` to drive mutmut, which would make a repository without JavaScript install Bun to run one gate; a threshold below every mutant, which core forbids; `mutate_only_covered_lines`, which hides the mutants no spec reaches; a profile of the project's own for CI, which Hypothesis already ships; a whitelist module for vulture, which Ruff then flags as a module of useless expressions outside a package; vulture at 80, which reports no unused function or class; per-file ignores in a Ruff part, which resolve against the part's own folder; a Python tool installed from the archive as a package, which a project would have to build, for a zip archive the interpreter runs as it is.
 - **Why.** Python's specs are measured as TypeScript's are — by coverage of every branch and by every mutant killed — and its imports and sizes are held by tools, not by review, so a package written in both languages meets the same bar in each.
 
@@ -1706,3 +1706,28 @@
   - A `dictionary` of brands, APIs and file names in each passport's front matter: a list that named a word without saying what it is, beside prose that said it again.
   - A glossary file, or a glossary section per block: a third place for a meaning the rule already states, and one more list to keep in step with it.
 - **Why.** The rule that says what a word means is where a reader looks for it, and one bold span there gives the check its owner, its axis and its spelling with nothing kept beside it.
+
+## ADR-0220 — A change mutates only its changed lines and its new files
+
+**Date:** 2026-10-25 · **Status:** Accepted
+
+- **Decision.** `every-mutant-killed` holds the mutants of a change's changed lines and of every line of its new files. A change to a spec alone mutates nothing: its subject and the files it loads are no longer mutated whole. Which specs run for a mutant is unchanged: in TypeScript, the specs that load the mutated file. `mutation-check` and `mutmut-check` select their targets so; `mutation:all` still mutates everything.
+- **Rejected.**
+  - Mutating whole the file a changed spec is named after and every file it loads inside its boundary (#214): the run grew with the size of the code a spec reaches, not with the change, and blew CI's budget — 9,301 mutants on #377.
+  - A scheduled full run off the pull request's path: the owner wants no workflow after merging.
+  - An advisory score that gates nothing, as Google uses: the owner keeps the gate at every mutant killed.
+- **Why.** Mutants tie to what a change touches, so the gate's cost follows the change, as Google's, Infection's, Arcmutate's and cargo-mutants' runs on a change do.
+
+## ADR-0221 — A case pins meaning, never wording, held by a Biome plugin
+
+**Date:** 2026-10-25 · **Status:** Accepted
+
+- **Decision.** `case-pins-meaning-never-wording` binds as MUST, and the TypeScript preset holds it with the plugin `case-pins-meaning-never-wording.grit`, bound in the `core` part beside `case-named-should-when` and `case-holds-no-logic` and applied to spec files. In a spec it refuses prose — three words in a row, in any script — as the expected value of the strict and containment matchers and of `toThrow`, and as any `message:` property. The one table or golden case of a renderer pins the wording: its rows reach the assertion through a variable, and a golden that must write its text in the assertion carries `biome-ignore lint/plugin/case-pins-meaning-never-wording: <reason>`. The program follows the rule itself: its findings and warnings carry a code and their values, and it renders their text at the edge from one table per format.
+- **Rejected.**
+  - Keeping it a SHOULD and fixing the specs once: the pattern comes back with the next spec.
+  - A runner's lint or a stock Biome rule: none refuses prose in an expected value.
+  - Refusing every string literal in an assertion: codes, ids, paths and values are what a case should compare.
+  - Refusing prose anywhere in an expected value: it flags parsed data a case compares by meaning, and every golden table; only `message:` is refused everywhere, since a spec writes a message only as an expected outcome.
+  - Exempting renderer specs by path: that hides a fragile assertion in the same file; a suppression names the plugin and its reason in the one place.
+  - Binding it in `bun-test`: the rule is core's, and `core` already holds the plugins of core's rules about cases, which read the same Jest-style calls.
+- **Why.** As a SHOULD no tool held, the rule was not kept: the domain built message text, specs compared it, and one rewording broke specs across the suite; a MUST only a reviewer checks fails the same way, while a plugin refuses the pattern as it is written.

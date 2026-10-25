@@ -9,6 +9,7 @@ import { componentViolationsIn } from '../../../../__tests__/axe.fixtures';
 import type { ViewportFake } from '../../../../__tests__/intersection-observer.fake';
 import { viewportFake } from '../../../../__tests__/intersection-observer.fake';
 import { renderOnPage } from '../../../../__tests__/toc.fixtures';
+import { ON_THIS_PAGE_LABEL } from '../../../constants';
 import { DocsTocDropdown } from '../docs-toc-dropdown';
 
 let viewport: ViewportFake;
@@ -40,7 +41,7 @@ describe('DocsTocDropdown', () => {
     renderOnPage(dropdown);
 
     // Assert
-    expect(screen.getByRole('button').textContent).toBe('On this page');
+    expect(screen.getByRole('button').textContent).toBe(ON_THIS_PAGE_LABEL);
   });
 
   test('should name the topmost heading on screen when the reader scrolls', () => {

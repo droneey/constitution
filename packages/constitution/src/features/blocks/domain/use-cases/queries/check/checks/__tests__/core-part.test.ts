@@ -1,12 +1,8 @@
 import { describe, expect, it } from 'bun:test';
 
-import {
-  checkInputOf,
-  findingOf,
-  passportFile,
-} from '../../../../../../__tests__/constitution.fixtures';
+import { checkInputOf, passportFile } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { corePartCheck } from '../core-part';
+import { CorePartCode, corePartCheck } from '../core-part';
 
 const CORE = 'blocks/core/core.md';
 
@@ -42,13 +38,14 @@ describe('corePartCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual([
-      findingOf({
-        code: 'core-over-byte-budget',
-        names: [
-          '3509',
-        ],
+      {
+        code: CorePartCode.OverBudget,
+        details: {
+          budget: 3500,
+          bytes: 3509,
+        },
         path: CORE,
-      }),
+      },
     ]);
   });
 

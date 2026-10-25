@@ -1,1 +1,1 @@
-export { loadedBy, specsByFile } from './loaded.utils.ts';
+export { specsByFile } from './loaded.utils.ts';

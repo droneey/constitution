@@ -57,6 +57,8 @@ core:
     - case-named-should-when.grit
   case-holds-no-logic:
     - case-holds-no-logic.grit
+  case-pins-meaning-never-wording:
+    - case-pins-meaning-never-wording.grit
   error-keeps-its-cause:
     - useErrorCause
   deprecated-form-never-used:

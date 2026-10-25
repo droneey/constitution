@@ -1,10 +1,8 @@
 import { describe, expect, it } from 'bun:test';
 
-import { findingOf } from '#/__tests__/finding.fixtures';
-
 import { BlockId, RuleSlug } from '../../value-objects';
 import type { AnswerSource } from '../requirement-answer.entity';
-import { Met, RequirementAnswer } from '../requirement-answer.entity';
+import { Met, RequirementAnswer, RequirementsTableCode } from '../requirement-answer.entity';
 
 const FILE = 'blocks/implementations/lingui/lingui.md';
 
@@ -200,13 +198,13 @@ describe('RequirementAnswer.parse', () => {
     expect(parsed).toStrictEqual({
       answers: [],
       findings: [
-        findingOf({
-          code: 'requirements-row-misshapen',
-          names: [
+        {
+          code: RequirementsTableCode.RowMisshapen,
+          details: {
             row,
-          ],
+          },
           path: FILE,
-        }),
+        },
       ],
     });
   });
@@ -229,13 +227,13 @@ describe('RequirementAnswer.parse', () => {
     expect(parsed).toStrictEqual({
       answers: [],
       findings: [
-        findingOf({
-          code: 'requirements-header-misshapen',
-          names: [
-            header,
-          ],
+        {
+          code: RequirementsTableCode.HeaderMisshapen,
+          details: {
+            row: header,
+          },
           path: FILE,
-        }),
+        },
       ],
     });
   });
@@ -259,13 +257,13 @@ describe('RequirementAnswer.parse', () => {
       expect(parsed).toStrictEqual({
         answers: [],
         findings: [
-          findingOf({
-            code: 'requirements-heading-misshapen',
-            names: [
+          {
+            code: RequirementsTableCode.HeadingMisshapen,
+            details: {
               heading,
-            ],
+            },
             path: FILE,
-          }),
+          },
         ],
       });
     },

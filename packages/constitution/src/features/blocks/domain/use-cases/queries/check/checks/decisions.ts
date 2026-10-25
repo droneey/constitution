@@ -1,4 +1,4 @@
-import type { Finding, Problem } from '#/kernel/types';
+import type { FindingOf, ProblemOf } from '#/kernel/types';
 import { withoutCodeFences } from '#/kernel/utils';
 
 import { DocumentPath } from '../../../../entities';
@@ -11,17 +11,36 @@ enum DecisionsCode {
   NotCalendarDate = 'decision-date-not-in-calendar',
 }
 
+interface DecisionsDetails {
+  readonly [DecisionsCode.LogMissing]: object;
+  readonly [DecisionsCode.OutOfOrder]: {
+    /** the number of the entry, as its heading ADR-<number> gives it */
+    readonly entry: number;
+    readonly previous: number;
+  };
+  readonly [DecisionsCode.WithoutDateLine]: {
+    readonly entry: number;
+  };
+  readonly [DecisionsCode.NotCalendarDate]: {
+    /** the date as written, YYYY-MM-DD */
+    readonly date: string;
+    readonly entry: number;
+  };
+}
+
+type DecisionsFinding = FindingOf<DecisionsDetails>;
+
+type DecisionsProblem = ProblemOf<DecisionsDetails>;
+
 interface Entry {
   readonly dateLine: string;
   readonly number: number;
 }
 
 const ENTRY = /^## ADR-(\d{4})\b/;
-const DATE_LINE = /^\*\*Date:\*\* (\d{4})-(\d{2})-(\d{2}) · \*\*Status:\*\* (?:Accepted|Proposed)$/;
-const NUMBER_WIDTH = 4;
+const DATE_LINE =
+  /^\*\*Date:\*\* ((\d{4})-(\d{2})-(\d{2})) · \*\*Status:\*\* (?:Accepted|Proposed)$/;
 const MONTHS = 12;
-
-const nameOf = (number: number): string => `ADR-${String(number).padStart(NUMBER_WIDTH, '0')}`;
 
 const entriesOf = (text: string): readonly Entry[] => {
   const lines = withoutCodeFences(text).split('\n');
@@ -53,8 +72,12 @@ const isCalendarDate = (input: { day: number; month: number; year: number }): bo
       year: input.year,
     }).daysInMonth;
 
-const calendarProblem = (input: { match: RegExpExecArray; name: string }): Problem | undefined => {
-  const [, year, month, day] = input.match;
+const calendarProblem = (input: {
+  entry: number;
+  match: RegExpExecArray;
+}): DecisionsProblem | undefined => {
+  // Stryker disable next-line StringLiteral: the pattern always captures the date
+  const [, date = '', year, month, day] = input.match;
 
   return isCalendarDate({
     day: Number(day),
@@ -64,64 +87,71 @@ const calendarProblem = (input: { match: RegExpExecArray; name: string }): Probl
     ? undefined
     : {
         code: DecisionsCode.NotCalendarDate,
-        message: `entry ${input.name} is dated ${year}-${month}-${day}, which is not a calendar date`,
+        details: {
+          date,
+          entry: input.entry,
+        },
       };
 };
 
-const lineProblem = (entry: Entry): Problem | undefined => {
+const lineProblem = (entry: Entry): DecisionsProblem | undefined => {
   const match = DATE_LINE.exec(entry.dateLine);
-  const name = nameOf(entry.number);
 
   if (match === null) {
     return {
       code: DecisionsCode.WithoutDateLine,
-      message: `entry ${name} has no line "**Date:** YYYY-MM-DD · **Status:** Accepted|Proposed" under its heading`,
+      details: {
+        entry: entry.number,
+      },
     };
   }
 
   return calendarProblem({
+    entry: entry.number,
     match,
-    name,
   });
 };
 
-const entryFindings = (entries: readonly Entry[]): readonly Finding[] =>
+const entryFindings = (entries: readonly Entry[]): readonly DecisionsFinding[] =>
   entries.flatMap((entry, index) => {
     const previous = entries[index - 1];
-    const problem = lineProblem(entry);
+    const orderProblem: DecisionsProblem | undefined =
+      previous === undefined || entry.number > previous.number
+        ? undefined
+        : {
+            code: DecisionsCode.OutOfOrder,
+            details: {
+              entry: entry.number,
+              previous: previous.number,
+            },
+          };
 
     return [
-      ...(previous === undefined || entry.number > previous.number
-        ? []
-        : [
-            {
-              code: DecisionsCode.OutOfOrder,
-              message: `entry ${nameOf(entry.number)} follows ${nameOf(previous.number)}; the numbers of the log only rise`,
-            },
-          ]),
-      ...(problem === undefined
-        ? []
-        : [
-            problem,
-          ]),
-    ].map((found) => ({
-      ...found,
-      path: DocumentPath.Decisions,
-    }));
+      orderProblem,
+      lineProblem(entry),
+    ]
+      .filter((problem) => problem !== undefined)
+      .map((problem) => ({
+        ...problem,
+        path: DocumentPath.Decisions,
+      }));
   });
 
-const decisionsCheck: Check = ({ constitution }: CheckInput): readonly Finding[] => {
+const decisionsCheck: Check<DecisionsFinding> = ({
+  constitution,
+}: CheckInput): readonly DecisionsFinding[] => {
   const log = constitution.documents.decisions;
 
   return log === undefined
     ? [
         {
           code: DecisionsCode.LogMissing,
-          message: 'is missing; the Constitution keeps its decision log at the root',
+          details: {},
           path: DocumentPath.Decisions,
         },
       ]
     : entryFindings(entriesOf(log));
 };
 
-export { decisionsCheck };
+export type { DecisionsDetails };
+export { DecisionsCode, decisionsCheck };

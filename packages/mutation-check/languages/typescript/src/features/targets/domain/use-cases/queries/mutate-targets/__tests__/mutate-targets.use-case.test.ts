@@ -20,44 +20,6 @@ const diffOf = (files: Readonly<Record<string, readonly string[]>>): string =>
     )
     .join('\n');
 
-const IMPORTS: Readonly<Record<string, readonly string[]>> = {
-  'src/__tests__/json.adapter.integration.test.ts': [
-    'src/json.adapter.ts',
-  ],
-  'src/__tests__/missing.utils.test.ts': [
-    'src/missing.utils.ts',
-  ],
-  'src/__tests__/order.utils.test.ts': [
-    'src/order.utils.ts',
-  ],
-  'src/__tests__/order.utils.test.ts.snap': [
-    'src/order.utils.ts',
-  ],
-  'src/__tests__/shop.fixtures.ts': [
-    'src/orders/orders.use-case.ts',
-  ],
-  'src/orders/__tests__/order.fixtures.ts': [
-    'src/orders/order.ts',
-  ],
-  'src/orders/__tests__/orders.use-case.test.ts': [
-    'src/__tests__/shop.fixtures.ts',
-  ],
-  'src/orders/orders.use-case.ts': [
-    'src/orders/steps/charge.ts',
-  ],
-  'src/orders/__tests__/order.test.ts': [
-    'src/orders/order.ts',
-    'src/orders/__tests__/order.fixtures.ts',
-  ],
-  'src/orders/order.ts': [
-    'src/orders/price.utils.ts',
-    'src/kernel/money.ts',
-  ],
-  'src/orders/price.utils.ts': [
-    'src/orders/order.ts',
-  ],
-} as const;
-
 const targetsOf = (input: {
   codeChanged?: (path: string) => boolean;
   diff: string;
@@ -67,8 +29,6 @@ const targetsOf = (input: {
   mutateTargets({
     codeChanged: input.codeChanged ?? (() => true),
     diff: input.diff,
-    exists: (path) => !path.includes('missing'),
-    importsOf: (path) => IMPORTS[path] ?? [],
     mutate: input.mutate ?? MUTATE,
     untracked: input.untracked ?? [],
   });
@@ -134,88 +94,12 @@ describe('mutation targets', () => {
       targets: [],
     },
     {
-      condition: 'a spec changes',
-      diff: diffOf({
-        'src/__tests__/order.utils.test.ts': [
-          '@@ -5 +5 @@',
-        ],
-      }),
-      targets: [
-        'src/order.utils.ts',
-      ],
-    },
-    {
-      condition: 'an integration spec changes beside the file it proves',
-      diff: diffOf({
-        'src/__tests__/json.adapter.integration.test.ts': [
-          '@@ -5 +5 @@',
-        ],
-        'src/json.adapter.ts': [
-          '@@ -2 +2 @@',
-        ],
-      }),
-      targets: [
-        'src/json.adapter.ts',
-      ],
-    },
-    {
-      condition: 'the file a changed spec proves no longer exists',
-      diff: diffOf({
-        'src/__tests__/missing.utils.test.ts': [
-          '@@ -5 +5 @@',
-        ],
-      }),
-      targets: [],
-    },
-    {
-      condition:
-        'a changed spec loads helpers of its boundary, one through a cycle, and a file of another',
-      diff: diffOf({
-        'src/orders/__tests__/order.test.ts': [
-          '@@ -5 +5 @@',
-        ],
-      }),
-      targets: [
-        'src/orders/order.ts',
-        'src/orders/price.utils.ts',
-      ],
-    },
-    {
-      condition: 'a changed spec reaches its boundary through a fixture outside it',
-      diff: diffOf({
-        'src/orders/__tests__/orders.use-case.test.ts': [
-          '@@ -5 +5 @@',
-        ],
-      }),
-      targets: [
-        'src/orders/orders.use-case.ts',
-        'src/orders/steps/charge.ts',
-      ],
-    },
-    {
-      condition: 'a changed spec loads nothing the resolver reports',
-      diff: diffOf({
-        'src/__tests__/total.utils.test.ts': [
-          '@@ -5 +5 @@',
-        ],
-      }),
-      targets: [
-        'src/total.utils.ts',
-      ],
-    },
-    {
-      condition: 'a fixture a spec loads changes',
-      diff: diffOf({
-        'src/orders/__tests__/order.fixtures.ts': [
-          '@@ -2 +2 @@',
-        ],
-      }),
-      targets: [],
-    },
-    {
-      condition: 'the configuration leaves the changed file out',
+      condition: 'the configuration leaves the changed files out',
       diff: diffOf({
         'README.md': [
+          '@@ -1 +1 @@',
+        ],
+        'src/__tests__/order.utils.test.ts': [
           '@@ -1 +1 @@',
         ],
         'src/entrypoints/run/main.ts': [
@@ -256,27 +140,6 @@ describe('mutation targets', () => {
     ]);
   });
 
-  test('should mutate nothing when a snapshot beside a spec changes', () => {
-    // Arrange
-    const changes = {
-      diff: diffOf({
-        'src/__tests__/order.utils.test.ts.snap': [
-          '@@ -1 +1 @@',
-        ],
-      }),
-      mutate: [
-        'src/**',
-        '!src/**/__tests__/**',
-      ],
-    };
-
-    // Act
-    const found = targetsOf(changes);
-
-    // Assert
-    expect(found).toStrictEqual([]);
-  });
-
   test('should keep a file when a pattern without its first character would exclude it', () => {
     // Arrange
     const changes = {
@@ -299,14 +162,11 @@ describe('mutation targets', () => {
     ]);
   });
 
-  test('should mutate nothing when a change only reformats a spec and the file it is named after', () => {
+  test('should mutate nothing when a change only reformats a mutated file', () => {
     // Arrange
     const changes = {
       codeChanged: () => false,
       diff: diffOf({
-        'src/__tests__/order.utils.test.ts': [
-          '@@ -1,3 +1 @@',
-        ],
         'src/order.utils.ts': [
           '@@ -1,3 +1 @@',
         ],

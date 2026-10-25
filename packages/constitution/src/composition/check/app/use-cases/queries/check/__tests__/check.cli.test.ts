@@ -5,18 +5,25 @@ import { StepStatus } from '@droneey/design-cli';
 import { createFakeContext, runCommand } from '#/__tests__/command-line.fake';
 import type { Validation } from '#/features/blocks';
 import type { ProjectWarning } from '#/kernel/entities';
-import { WarningCode } from '#/kernel/entities';
+import { ValueSite, WarningCode, WarningKind } from '#/kernel/entities';
+import { ValueFailure } from '#/kernel/errors';
 
 import { createCheckCommand } from '../check.cli';
 
-const finding = {
-  code: 'missing-why',
-  message: 'a rule has no Why',
-  path: 'blocks/core/core.md',
+const finding: Validation['findings'][number] = {
+  code: ValueFailure.Glob,
+  details: {
+    site: ValueSite.Governs,
+    written: 'src/**/*.ts lib',
+  },
+  path: 'blocks/domains/ui/ui.md',
 };
-const warning = {
+const warning: ProjectWarning = {
   code: WarningCode.Unknown,
-  message: 'nope is not a block',
+  details: {
+    name: 'nope',
+  },
+  kind: WarningKind.NameUnknown,
 };
 
 const runOf = async (input: {

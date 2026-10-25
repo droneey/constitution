@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import { Layer } from '#/kernel/constants';
-import { WarningCode } from '#/kernel/entities';
+import { WarningCode, WarningKind } from '#/kernel/entities';
 import { BlockId, BlockSource, Version } from '#/kernel/value-objects';
 
 import { DigestKind } from '../../../domain/entities';
@@ -57,7 +57,11 @@ describe('digestOf', () => {
         warnings: [
           {
             code: WarningCode.Config,
-            message: 'constitution.yaml has no check',
+            details: {
+              file: 'constitution.yaml',
+              key: 'check',
+            },
+            kind: WarningKind.KeyMissing,
           },
         ],
       } as const;
@@ -69,7 +73,7 @@ describe('digestOf', () => {
       expect(digest).toStrictEqual({
         body: [
           '⚠️ Warnings',
-          '- config: constitution.yaml has no check',
+          '- config: constitution.yaml has no check key — add check: <the command that runs every check, or null>',
           '',
           '# Core',
           '',

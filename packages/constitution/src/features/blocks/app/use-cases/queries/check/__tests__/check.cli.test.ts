@@ -5,6 +5,7 @@ import { StepStatus } from '@droneey/design-cli';
 import { createFakeContext, runCommand } from '#/__tests__/command-line.fake';
 
 import type { Validation } from '../../../../../domain/use-cases/queries/check';
+import { RequiresCode } from '../../../../../domain/use-cases/queries/check';
 import { createBlocksCheckCommand } from '../check.cli';
 
 const runOf = async (input: {
@@ -113,9 +114,9 @@ describe('createBlocksCheckCommand', () => {
         advice: [],
         findings: [
           {
-            code: 'missing-why',
-            message: 'a rule has no Why',
-            path: 'blocks/core/core.md',
+            code: RequiresCode.RequiresItself,
+            details: {},
+            path: 'blocks/domains/ui/ui.md',
           },
         ],
       },

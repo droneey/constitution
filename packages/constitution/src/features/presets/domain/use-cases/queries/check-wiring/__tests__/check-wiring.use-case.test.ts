@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import { Axis } from '#/kernel/constants';
 import type { ProjectWarning } from '#/kernel/entities';
-import { WarningCode } from '#/kernel/entities';
+import { WarningCode, WiringProblemKind } from '#/kernel/entities';
 
 import type { Files, WiringFixture } from '../../../../../__tests__/wiring.fixtures';
 import {
@@ -10,6 +10,8 @@ import {
   BIOME_PARTS,
   BLOCKS,
   biomeJson,
+  fileMiswired,
+  folderKeepsConfig,
   HOOKS_RELEASE,
   hooksBlocks,
   hooksMember,
@@ -20,6 +22,7 @@ import {
   implementationOf,
   importLinter,
   importLinterCopy,
+  memberNotSkipped,
   PACK_FILES,
   packageCruiser,
   packFilesIn,
@@ -28,13 +31,15 @@ import {
   REACT_DOM,
   RELEASE,
   RULE,
+  releaseLinkLoops,
   ruffConfig,
   ruffSection,
+  skipOfNoMember,
+  toolWiredNowhere,
   UNBIOMED,
   vultureCopy,
   vulturePart,
   vultureSection,
-  warnedOf,
   wired,
   wiringOf,
 } from '../../../../../__tests__/wiring.fixtures';
@@ -73,14 +78,6 @@ const chained = [
   implementationOf('fastapi'),
 ];
 
-const edited = [
-  [
-    'wiring',
-    'pyproject.toml',
-    'python/foundation/core',
-  ],
-];
-
 const acmeBiome = `${biomeJson(BIOME_PARTS)}"acme": "packs/acme/presets/typescript/biome/foundation/acme.jsonc"\n`;
 
 // A member's Biome and acme, each naming the pack's parts by the path given.
@@ -88,21 +85,6 @@ const memberAcmeFiles = (pack: string): Files => ({
   'apps/web/acme.toml': `extends = "${pack}/presets/common/acme/foundation/self.toml"\n`,
   'apps/web/biome.json': `${biomeJson(BIOME_PARTS)}"acme": "${pack}/presets/typescript/biome/foundation/acme.jsonc"\n`,
 });
-
-// A member whose files name no part of its pack where they find it.
-const memberUnwired = [
-  [
-    'wiring',
-    'acme',
-    'apps/web',
-  ],
-  [
-    'wiring',
-    'apps/web/biome.json',
-    'lacks',
-    'typescript/foundation/acme',
-  ],
-];
 
 const pyprojectOf = (input: { linter?: string; ruff?: string; vulture?: string }): Files => ({
   ...wired,
@@ -202,10 +184,10 @@ describe('checkWiring', () => {
         },
       },
       warnings: [
-        {
-          code: WarningCode.Wiring,
-          message: 'biome is wired nowhere for . — run /constitution:ratify',
-        },
+        toolWiredNowhere({
+          tool: 'biome',
+          unit: '',
+        }),
       ],
     },
     {
@@ -220,11 +202,10 @@ describe('checkWiring', () => {
         ],
       },
       warnings: [
-        {
-          code: WarningCode.Unlisted,
-          message:
-            'tools keeps its own biome.json — declare the folder a member, with a constitution.yaml of its own',
-        },
+        folderKeepsConfig({
+          folder: 'tools',
+          path: 'biome.json',
+        }),
       ],
     },
     {
@@ -247,11 +228,29 @@ describe('checkWiring', () => {
         },
       },
       warnings: [
-        {
-          code: WarningCode.Wiring,
-          message:
-            'biome.json lacks common/foundation/self, typescript/foundation/self, typescript/foundation/core and 1 more; names typescript/foundation/react-dom, typescript/foundation/vue, typescript/foundation/svelte and 1 more, which it does not take — run /constitution:ratify',
-        },
+        fileMiswired({
+          file: 'biome.json',
+          problems: [
+            {
+              kind: WiringProblemKind.Lacks,
+              parts: [
+                'common/foundation/self',
+                'typescript/foundation/self',
+                'typescript/foundation/core',
+                'typescript/foundation/typescript',
+              ],
+            },
+            {
+              kind: WiringProblemKind.NamesBeyond,
+              parts: [
+                'typescript/foundation/react-dom',
+                'typescript/foundation/vue',
+                'typescript/foundation/svelte',
+                'typescript/foundation/solid',
+              ],
+            },
+          ],
+        }),
       ],
     },
     {
@@ -273,11 +272,27 @@ describe('checkWiring', () => {
         }),
       },
       warnings: [
-        {
-          code: WarningCode.Wiring,
-          message:
-            "pyproject.toml a marker of import-linter says more than its path; its marker of ruff lists the links out of order; it extends a link of ruff short of the chain's end; the copy of python/foundation/core is edited inside — run /constitution:ratify",
-        },
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.MarkerSaysMore,
+              tool: 'import-linter',
+            },
+            {
+              kind: WiringProblemKind.MarkerOutOfOrder,
+              tool: 'ruff',
+            },
+            {
+              kind: WiringProblemKind.ExtendsShortOfEnd,
+              tool: 'ruff',
+            },
+            {
+              kind: WiringProblemKind.CopyEdited,
+              part: 'python/foundation/core',
+            },
+          ],
+        }),
       ],
     },
     {
@@ -299,28 +314,54 @@ describe('checkWiring', () => {
         },
       },
       warnings: [
-        {
-          code: WarningCode.Wiring,
-          message:
-            "pyproject.toml lacks ruff:python/foundation/core, vulture:python/foundation/core; the copy of python/foundation/core has no end line; it extends a link of ruff short of the chain's end; holds a copy of python/foundation/gone the release no longer has; copies python/foundation/django, which it does not take — run /constitution:ratify",
-        },
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.Lacks,
+              parts: [
+                'ruff:python/foundation/core',
+                'vulture:python/foundation/core',
+              ],
+            },
+            {
+              kind: WiringProblemKind.CopyWithoutEnd,
+              part: 'python/foundation/core',
+            },
+            {
+              kind: WiringProblemKind.ExtendsShortOfEnd,
+              tool: 'ruff',
+            },
+            {
+              kind: WiringProblemKind.CopyOfRemovedPart,
+              part: 'python/foundation/gone',
+            },
+            {
+              kind: WiringProblemKind.CopyNotTaken,
+              part: 'python/foundation/django',
+            },
+          ],
+        }),
       ],
     },
-  ])('should word each warning as its format pins when $condition', ({ fixture, warnings }) => {
-    // Arrange
-    const input = wiringOf(fixture);
+  ])(
+    'should give each warning with the values it names when $condition',
+    ({ fixture, warnings }) => {
+      // Arrange
+      const input = wiringOf(fixture);
 
-    // Act
-    const found = checkWiring(input);
+      // Act
+      const found = checkWiring(input);
 
-    // Assert
-    expect(found).toStrictEqual(warnings);
-  });
+      // Assert
+      expect(found).toStrictEqual(warnings);
+    },
+  );
 
   it.each<{
     condition: string;
     fixture: WiringFixture;
-    warned: string[][];
+    warned: ProjectWarning[];
   }>([
     {
       condition: 'each file takes the parts of its blocks',
@@ -339,12 +380,17 @@ describe('checkWiring', () => {
         },
       },
       warned: [
-        [
-          'wiring',
-          'biome.json',
-          'names',
-          'typescript/foundation/react-dom',
-        ],
+        fileMiswired({
+          file: 'biome.json',
+          problems: [
+            {
+              kind: WiringProblemKind.NamesBeyond,
+              parts: [
+                'typescript/foundation/react-dom',
+              ],
+            },
+          ],
+        }),
       ],
     },
     {
@@ -365,12 +411,17 @@ describe('checkWiring', () => {
         units: webUnits,
       },
       warned: [
-        [
-          'wiring',
-          'biome.json',
-          'names',
-          'typescript/foundation/react-dom',
-        ],
+        fileMiswired({
+          file: 'biome.json',
+          problems: [
+            {
+              kind: WiringProblemKind.NamesBeyond,
+              parts: [
+                'typescript/foundation/react-dom',
+              ],
+            },
+          ],
+        }),
       ],
     },
     {
@@ -382,12 +433,17 @@ describe('checkWiring', () => {
         },
       },
       warned: [
-        [
-          'wiring',
-          'biome.json',
-          'lacks',
-          'typescript/foundation/typescript',
-        ],
+        fileMiswired({
+          file: 'biome.json',
+          problems: [
+            {
+              kind: WiringProblemKind.Lacks,
+              parts: [
+                'typescript/foundation/typescript',
+              ],
+            },
+          ],
+        }),
       ],
     },
     {
@@ -411,12 +467,17 @@ describe('checkWiring', () => {
         },
       },
       warned: [
-        [
-          'wiring',
-          'biome.json',
-          'names',
-          'common/foundation/common',
-        ],
+        fileMiswired({
+          file: 'biome.json',
+          problems: [
+            {
+              kind: WiringProblemKind.NamesBeyond,
+              parts: [
+                'common/foundation/common',
+              ],
+            },
+          ],
+        }),
       ],
     },
     {
@@ -468,12 +529,17 @@ describe('checkWiring', () => {
         },
       },
       warned: [
-        [
-          'wiring',
-          'biome.json',
-          'lacks',
-          'typescript/foundation/typescript',
-        ],
+        fileMiswired({
+          file: 'biome.json',
+          problems: [
+            {
+              kind: WiringProblemKind.Lacks,
+              parts: [
+                'typescript/foundation/typescript',
+              ],
+            },
+          ],
+        }),
       ],
     },
     {
@@ -578,17 +644,21 @@ describe('checkWiring', () => {
         ],
       },
       warned: [
-        [
-          'wiring',
-          'knip',
-          '.',
-        ],
-        [
-          'wiring',
-          '.dependency-cruiser.mjs',
-          'names',
-          'typescript/architecture/workspace',
-        ],
+        toolWiredNowhere({
+          tool: 'knip',
+          unit: '',
+        }),
+        fileMiswired({
+          file: '.dependency-cruiser.mjs',
+          problems: [
+            {
+              kind: WiringProblemKind.NamesBeyond,
+              parts: [
+                'typescript/architecture/workspace',
+              ],
+            },
+          ],
+        }),
       ],
     },
     {
@@ -603,12 +673,17 @@ describe('checkWiring', () => {
         ],
       },
       warned: [
-        [
-          'wiring',
-          '.dependency-cruiser.mjs',
-          'names',
-          'typescript/architecture/workspace',
-        ],
+        fileMiswired({
+          file: '.dependency-cruiser.mjs',
+          problems: [
+            {
+              kind: WiringProblemKind.NamesBeyond,
+              parts: [
+                'typescript/architecture/workspace',
+              ],
+            },
+          ],
+        }),
       ],
     },
     {
@@ -620,12 +695,17 @@ describe('checkWiring', () => {
         },
       },
       warned: [
-        [
-          'wiring',
-          '.dependency-cruiser.mjs',
-          'names',
-          'typescript/architecture/core',
-        ],
+        fileMiswired({
+          file: '.dependency-cruiser.mjs',
+          problems: [
+            {
+              kind: WiringProblemKind.NamesBeyond,
+              parts: [
+                'typescript/architecture/core',
+              ],
+            },
+          ],
+        }),
       ],
     },
     {
@@ -638,14 +718,23 @@ describe('checkWiring', () => {
         ],
       },
       warned: [
-        [
-          'wiring',
-          '.dependency-cruiser.mjs',
-          'lacks',
-          'typescript/architecture/core',
-          'names',
-          'typescript/architecture/workspace',
-        ],
+        fileMiswired({
+          file: '.dependency-cruiser.mjs',
+          problems: [
+            {
+              kind: WiringProblemKind.Lacks,
+              parts: [
+                'typescript/architecture/core',
+              ],
+            },
+            {
+              kind: WiringProblemKind.NamesBeyond,
+              parts: [
+                'typescript/architecture/workspace',
+              ],
+            },
+          ],
+        }),
       ],
     },
     {
@@ -660,12 +749,10 @@ describe('checkWiring', () => {
         ],
       },
       warned: [
-        [
-          'unlisted',
-          'tools/lint',
-          '.dependency-cruiser.mjs',
-          'constitution.yaml',
-        ],
+        folderKeepsConfig({
+          folder: 'tools/lint',
+          path: '.dependency-cruiser.mjs',
+        }),
       ],
     },
   ])('should hold each file to the parts its units take when $condition', ({ fixture, warned }) => {
@@ -676,13 +763,13 @@ describe('checkWiring', () => {
     const warnings = checkWiring(input);
 
     // Assert
-    expect(warnedOf(warnings)).toStrictEqual(warned);
+    expect(warnings).toStrictEqual(warned);
   });
 
   it.each<{
     condition: string;
     fixture: WiringFixture;
-    warned: string[][];
+    warned: ProjectWarning[];
   }>([
     {
       condition: 'it names only the parts of its blocks',
@@ -697,14 +784,19 @@ describe('checkWiring', () => {
         },
       },
       warned: [
-        [
-          'wiring',
-          'biome.json',
-          'lacks',
-          'typescript/foundation/self',
-          'typescript/foundation/core',
-          'typescript/foundation/typescript',
-        ],
+        fileMiswired({
+          file: 'biome.json',
+          problems: [
+            {
+              kind: WiringProblemKind.Lacks,
+              parts: [
+                'typescript/foundation/self',
+                'typescript/foundation/core',
+                'typescript/foundation/typescript',
+              ],
+            },
+          ],
+        }),
       ],
     },
     {
@@ -713,13 +805,18 @@ describe('checkWiring', () => {
         project: wired,
       },
       warned: [
-        [
-          'wiring',
-          'biome.json',
-          'lacks',
-          'typescript/foundation/vue',
-          'typescript/foundation/react-dom',
-        ],
+        fileMiswired({
+          file: 'biome.json',
+          problems: [
+            {
+              kind: WiringProblemKind.Lacks,
+              parts: [
+                'typescript/foundation/vue',
+                'typescript/foundation/react-dom',
+              ],
+            },
+          ],
+        }),
       ],
     },
     {
@@ -735,12 +832,17 @@ describe('checkWiring', () => {
         },
       },
       warned: [
-        [
-          'wiring',
-          'biome.json',
-          'lacks',
-          'common/foundation/self',
-        ],
+        fileMiswired({
+          file: 'biome.json',
+          problems: [
+            {
+              kind: WiringProblemKind.Lacks,
+              parts: [
+                'common/foundation/self',
+              ],
+            },
+          ],
+        }),
       ],
     },
   ])(
@@ -764,7 +866,7 @@ describe('checkWiring', () => {
       const warnings = checkWiring(input);
 
       // Assert
-      expect(warnedOf(warnings)).toStrictEqual(warned);
+      expect(warnings).toStrictEqual(warned);
     },
   );
 
@@ -794,24 +896,33 @@ describe('checkWiring', () => {
     const warnings = checkWiring(input);
 
     // Assert
-    expect(warnedOf(warnings)).toStrictEqual([
-      [
-        'wiring',
-        'biome.json',
-        'lacks',
-        'common/foundation/self',
-        'common/architecture/core',
-        'common/workflow/self',
-        'names',
-        'typescript/foundation/react-dom',
-      ],
+    expect(warnings).toStrictEqual([
+      fileMiswired({
+        file: 'biome.json',
+        problems: [
+          {
+            kind: WiringProblemKind.Lacks,
+            parts: [
+              'common/foundation/self',
+              'common/architecture/core',
+              'common/workflow/self',
+            ],
+          },
+          {
+            kind: WiringProblemKind.NamesBeyond,
+            parts: [
+              'typescript/foundation/react-dom',
+            ],
+          },
+        ],
+      }),
     ]);
   });
 
   it.each<{
     condition: string;
     fixture: WiringFixture;
-    warned: string[][];
+    warned: ProjectWarning[];
   }>([
     {
       condition: "a unit's own file lacks the part of a block it adds",
@@ -824,12 +935,17 @@ describe('checkWiring', () => {
         units: webUnits,
       },
       warned: [
-        [
-          'wiring',
-          'apps/web/biome.json',
-          'lacks',
-          'typescript/foundation/react-dom',
-        ],
+        fileMiswired({
+          file: 'apps/web/biome.json',
+          problems: [
+            {
+              kind: WiringProblemKind.Lacks,
+              parts: [
+                'typescript/foundation/react-dom',
+              ],
+            },
+          ],
+        }),
       ],
     },
     {
@@ -839,11 +955,10 @@ describe('checkWiring', () => {
         units: webUnits,
       },
       warned: [
-        [
-          'wiring',
-          'biome',
-          'apps/web',
-        ],
+        toolWiredNowhere({
+          tool: 'biome',
+          unit: 'apps/web',
+        }),
       ],
     },
     {
@@ -905,11 +1020,10 @@ describe('checkWiring', () => {
         ],
       },
       warned: [
-        [
-          'wiring',
-          'biome',
-          'packages/kit',
-        ],
+        toolWiredNowhere({
+          tool: 'biome',
+          unit: 'packages/kit',
+        }),
       ],
     },
     {
@@ -934,12 +1048,10 @@ describe('checkWiring', () => {
         ],
       },
       warned: [
-        [
-          'unlisted',
-          'tools/lint',
-          'biome.json',
-          'constitution.yaml',
-        ],
+        folderKeepsConfig({
+          folder: 'tools/lint',
+          path: 'biome.json',
+        }),
       ],
     },
     {
@@ -976,11 +1088,10 @@ describe('checkWiring', () => {
         }),
       },
       warned: [
-        [
-          'wiring',
-          'vulture',
-          '.',
-        ],
+        toolWiredNowhere({
+          tool: 'vulture',
+          unit: '',
+        }),
       ],
     },
     {
@@ -1022,11 +1133,10 @@ describe('checkWiring', () => {
         ],
       },
       warned: [
-        [
-          'wiring',
-          'biome',
-          'packages/kit',
-        ],
+        toolWiredNowhere({
+          tool: 'biome',
+          unit: 'packages/kit',
+        }),
       ],
     },
     {
@@ -1050,26 +1160,28 @@ describe('checkWiring', () => {
         ],
       },
       warned: [
-        [
-          'wiring',
-          'biome',
-          'packages/kit',
-        ],
-        [
-          'unlisted',
-          'packages/kitten',
-          'biome.json',
-          'constitution.yaml',
-        ],
-        [
-          'wiring',
-          'packages/kitten/biome.json',
-          'names',
-          'common/foundation/self',
-          'typescript/foundation/self',
-          'typescript/foundation/core',
-          '1',
-        ],
+        toolWiredNowhere({
+          tool: 'biome',
+          unit: 'packages/kit',
+        }),
+        folderKeepsConfig({
+          folder: 'packages/kitten',
+          path: 'biome.json',
+        }),
+        fileMiswired({
+          file: 'packages/kitten/biome.json',
+          problems: [
+            {
+              kind: WiringProblemKind.NamesBeyond,
+              parts: [
+                'common/foundation/self',
+                'typescript/foundation/self',
+                'typescript/foundation/core',
+                'typescript/foundation/typescript',
+              ],
+            },
+          ],
+        }),
       ],
     },
     {
@@ -1100,12 +1212,10 @@ describe('checkWiring', () => {
         ],
       },
       warned: [
-        [
-          'unlisted',
-          'packages/kit/config',
-          'biome.json',
-          'constitution.yaml',
-        ],
+        folderKeepsConfig({
+          folder: 'packages/kit/config',
+          path: 'biome.json',
+        }),
       ],
     },
     {
@@ -1142,12 +1252,10 @@ describe('checkWiring', () => {
         ],
       },
       warned: [
-        [
-          'unlisted',
-          'packages/kit/inner/config',
-          'biome.json',
-          'constitution.yaml',
-        ],
+        folderKeepsConfig({
+          folder: 'packages/kit/inner/config',
+          path: 'biome.json',
+        }),
       ],
     },
   ])('should hold each file to the units it serves when $condition', ({ fixture, warned }) => {
@@ -1158,13 +1266,13 @@ describe('checkWiring', () => {
     const warnings = checkWiring(input);
 
     // Assert
-    expect(warnedOf(warnings)).toStrictEqual(warned);
+    expect(warnings).toStrictEqual(warned);
   });
 
   it.each<{
     condition: string;
     fixture: WiringFixture;
-    warned: string[][];
+    warned: ProjectWarning[];
   }>([
     {
       condition: 'a hidden folder keeps it',
@@ -1223,12 +1331,10 @@ describe('checkWiring', () => {
         ],
       },
       warned: [
-        [
-          'unlisted',
-          'v1.2',
-          'biome.json',
-          'constitution.yaml',
-        ],
+        folderKeepsConfig({
+          folder: 'v1.2',
+          path: 'biome.json',
+        }),
       ],
     },
     {
@@ -1258,18 +1364,21 @@ describe('checkWiring', () => {
         ],
       },
       warned: [
-        [
-          'wiring',
-          'biome.json',
-          'lacks',
-          'typescript/foundation/typescript',
-        ],
-        [
-          'unlisted',
-          'tools/lint',
-          'biome.json',
-          'constitution.yaml',
-        ],
+        fileMiswired({
+          file: 'biome.json',
+          problems: [
+            {
+              kind: WiringProblemKind.Lacks,
+              parts: [
+                'typescript/foundation/typescript',
+              ],
+            },
+          ],
+        }),
+        folderKeepsConfig({
+          folder: 'tools/lint',
+          path: 'biome.json',
+        }),
       ],
     },
     {
@@ -1298,12 +1407,10 @@ describe('checkWiring', () => {
         ],
       },
       warned: [
-        [
-          'unlisted',
-          'tools/lint',
-          '.dependency-cruiser.mjs',
-          'constitution.yaml',
-        ],
+        folderKeepsConfig({
+          folder: 'tools/lint',
+          path: '.dependency-cruiser.mjs',
+        }),
       ],
     },
     {
@@ -1314,11 +1421,10 @@ describe('checkWiring', () => {
         ],
       },
       warned: [
-        [
-          'wiring',
-          'biome',
-          '.',
-        ],
+        toolWiredNowhere({
+          tool: 'biome',
+          unit: '',
+        }),
       ],
     },
     {
@@ -1346,12 +1452,10 @@ describe('checkWiring', () => {
         ],
       },
       warned: [
-        [
-          'unlisted',
-          'tools/lint',
-          '.github/workflows/ci.yml',
-          'constitution.yaml',
-        ],
+        folderKeepsConfig({
+          folder: 'tools/lint',
+          path: '.github/workflows/ci.yml',
+        }),
       ],
     },
   ])("should check a file at a template's path when $condition", ({ fixture, warned }) => {
@@ -1362,13 +1466,13 @@ describe('checkWiring', () => {
     const warnings = checkWiring(input);
 
     // Assert
-    expect(warnedOf(warnings)).toStrictEqual(warned);
+    expect(warnings).toStrictEqual(warned);
   });
 
   it.each<{
     condition: string;
     fixture: WiringFixture;
-    warned: string[][];
+    warned: ProjectWarning[];
   }>([
     {
       condition: 'a comment names a part it does not take',
@@ -1419,12 +1523,17 @@ describe('checkWiring', () => {
         },
       },
       warned: [
-        [
-          'wiring',
-          'biome.json',
-          'names',
-          'typescript/foundation/react-dom',
-        ],
+        fileMiswired({
+          file: 'biome.json',
+          problems: [
+            {
+              kind: WiringProblemKind.NamesBeyond,
+              parts: [
+                'typescript/foundation/react-dom',
+              ],
+            },
+          ],
+        }),
       ],
     },
     {
@@ -1460,12 +1569,17 @@ describe('checkWiring', () => {
         },
       },
       warned: [
-        [
-          'wiring',
-          'biome.json',
-          'names',
-          'typescript/foundation/react-dom',
-        ],
+        fileMiswired({
+          file: 'biome.json',
+          problems: [
+            {
+              kind: WiringProblemKind.NamesBeyond,
+              parts: [
+                'typescript/foundation/react-dom',
+              ],
+            },
+          ],
+        }),
       ],
     },
     {
@@ -1481,12 +1595,17 @@ describe('checkWiring', () => {
         },
       },
       warned: [
-        [
-          'wiring',
-          'biome.json',
-          'names',
-          'typescript/foundation/react-dom',
-        ],
+        fileMiswired({
+          file: 'biome.json',
+          problems: [
+            {
+              kind: WiringProblemKind.NamesBeyond,
+              parts: [
+                'typescript/foundation/react-dom',
+              ],
+            },
+          ],
+        }),
       ],
     },
     {
@@ -1501,12 +1620,17 @@ describe('checkWiring', () => {
         },
       },
       warned: [
-        [
-          'wiring',
-          'biome.json',
-          'names',
-          'typescript/foundation/react-dom',
-        ],
+        fileMiswired({
+          file: 'biome.json',
+          problems: [
+            {
+              kind: WiringProblemKind.NamesBeyond,
+              parts: [
+                'typescript/foundation/react-dom',
+              ],
+            },
+          ],
+        }),
       ],
     },
     {
@@ -1518,12 +1642,17 @@ describe('checkWiring', () => {
         },
       },
       warned: [
-        [
-          'wiring',
-          'biome.json',
-          'names',
-          'typescript/foundation/react-dom',
-        ],
+        fileMiswired({
+          file: 'biome.json',
+          problems: [
+            {
+              kind: WiringProblemKind.NamesBeyond,
+              parts: [
+                'typescript/foundation/react-dom',
+              ],
+            },
+          ],
+        }),
       ],
     },
     {
@@ -1604,12 +1733,17 @@ describe('checkWiring', () => {
         },
       },
       warned: [
-        [
-          'wiring',
-          'biome.json',
-          'names',
-          'typescript/foundation/acme',
-        ],
+        fileMiswired({
+          file: 'biome.json',
+          problems: [
+            {
+              kind: WiringProblemKind.NamesBeyond,
+              parts: [
+                'typescript/foundation/acme',
+              ],
+            },
+          ],
+        }),
       ],
     },
     {
@@ -1670,14 +1804,14 @@ describe('checkWiring', () => {
     const warnings = checkWiring(input);
 
     // Assert
-    expect(warnedOf(warnings)).toStrictEqual(warned);
+    expect(warnings).toStrictEqual(warned);
   });
 
   it.each<{
     condition: string;
     copy: string;
     original: string;
-    warned: string[][];
+    warned: ProjectWarning[];
   }>([
     {
       condition: 'the copy fills the package',
@@ -1694,19 +1828,49 @@ describe('checkWiring', () => {
     {
       condition: 'the copy leaves the package empty',
       copy: 'ancestors = [""]\n',
-      warned: edited,
+      warned: [
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.CopyEdited,
+              part: 'python/foundation/core',
+            },
+          ],
+        }),
+      ],
       original: 'ancestors = ["<package>"]\n',
     },
     {
       condition: 'the copy changes the text before the package',
       copy: 'ancestor = ["shop"]\n',
-      warned: edited,
+      warned: [
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.CopyEdited,
+              part: 'python/foundation/core',
+            },
+          ],
+        }),
+      ],
       original: 'ancestors = ["<package>"]\n',
     },
     {
       condition: 'the copy changes the text after the package',
       copy: 'ancestors = ["shop"],\n',
-      warned: edited,
+      warned: [
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.CopyEdited,
+              part: 'python/foundation/core',
+            },
+          ],
+        }),
+      ],
       original: 'ancestors = ["<package>"]\n',
     },
     {
@@ -1718,25 +1882,65 @@ describe('checkWiring', () => {
     {
       condition: 'the copy leaves the first of two packages empty',
       copy: 'layers = [".a", "shop.b"]\n',
-      warned: edited,
+      warned: [
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.CopyEdited,
+              part: 'python/foundation/core',
+            },
+          ],
+        }),
+      ],
       original: 'layers = ["<package>.a", "<package>.b"]\n',
     },
     {
       condition: 'the copy leaves the second of two packages empty',
       copy: 'layers = ["s.a", ".b"]\n',
-      warned: edited,
+      warned: [
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.CopyEdited,
+              part: 'python/foundation/core',
+            },
+          ],
+        }),
+      ],
       original: 'layers = ["<package>.a", "<package>.b"]\n',
     },
     {
       condition: 'the copy loses the text between two packages',
       copy: 'layers = ["shop.a" "shop.b"]\n',
-      warned: edited,
+      warned: [
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.CopyEdited,
+              part: 'python/foundation/core',
+            },
+          ],
+        }),
+      ],
       original: 'layers = ["<package>.a", "<package>.b"]\n',
     },
     {
       condition: 'two packages sit side by side',
       copy: 'name = "shop"\n',
-      warned: edited,
+      warned: [
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.CopyEdited,
+              part: 'python/foundation/core',
+            },
+          ],
+        }),
+      ],
       original: 'name = "<package><package>"\n',
     },
     {
@@ -1748,13 +1952,33 @@ describe('checkWiring', () => {
     {
       condition: 'the copy changes a line without a package',
       copy: 'min = 80\n',
-      warned: edited,
+      warned: [
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.CopyEdited,
+              part: 'python/foundation/core',
+            },
+          ],
+        }),
+      ],
       original: 'min = 60\n',
     },
     {
       condition: 'the copy holds a line more',
       copy: 'min = 60\nmax = 90\n',
-      warned: edited,
+      warned: [
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.CopyEdited,
+              part: 'python/foundation/core',
+            },
+          ],
+        }),
+      ],
       original: 'min = 60\n',
     },
     {
@@ -1785,13 +2009,13 @@ describe('checkWiring', () => {
     const warnings = checkWiring(input);
 
     // Assert
-    expect(warnedOf(warnings)).toStrictEqual(warned);
+    expect(warnings).toStrictEqual(warned);
   });
 
   it.each<{
     condition: string;
     vulture: string;
-    warned: string[][];
+    warned: ProjectWarning[];
   }>([
     {
       condition: "it names a path of the project's own",
@@ -1812,11 +2036,15 @@ describe('checkWiring', () => {
       condition: 'it names a file in a folder of an axis',
       vulture: `${vultureSection}# from ${part('python/vulture/foundation/sub/core.toml')}\n`,
       warned: [
-        [
-          'wiring',
-          'pyproject.toml',
-          'python/foundation/sub',
-        ],
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.CopyOfRemovedPart,
+              part: 'python/foundation/sub',
+            },
+          ],
+        }),
       ],
     },
     {
@@ -1826,11 +2054,15 @@ describe('checkWiring', () => {
         `# from ${vulturePart},${part('python/vulture/foundation/django.toml')}`,
       ),
       warned: [
-        [
-          'wiring',
-          'pyproject.toml',
-          'vulture',
-        ],
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.MarkerSaysMore,
+              tool: 'vulture',
+            },
+          ],
+        }),
       ],
     },
     {
@@ -1840,11 +2072,15 @@ describe('checkWiring', () => {
         '#from',
       ),
       warned: [
-        [
-          'wiring',
-          'pyproject.toml',
-          'python/foundation/core',
-        ],
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.CopyEdited,
+              part: 'python/foundation/core',
+            },
+          ],
+        }),
       ],
     },
     {
@@ -1854,11 +2090,15 @@ describe('checkWiring', () => {
         ' \t# \tfrom',
       ),
       warned: [
-        [
-          'wiring',
-          'pyproject.toml',
-          'python/foundation/core',
-        ],
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.CopyEdited,
+              part: 'python/foundation/core',
+            },
+          ],
+        }),
       ],
     },
     {
@@ -1870,22 +2110,30 @@ describe('checkWiring', () => {
       condition: 'its end names another part',
       vulture: vultureSection.replace(`# end ${vulturePart}`, `# end ${importLinter}`),
       warned: [
-        [
-          'wiring',
-          'pyproject.toml',
-          'python/foundation/core',
-        ],
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.CopyWithoutEnd,
+              part: 'python/foundation/core',
+            },
+          ],
+        }),
       ],
     },
     {
       condition: 'its end comes before it',
       vulture: `# end ${vulturePart}\n${vultureSection.replace(`# end ${vulturePart}`, '')}`,
       warned: [
-        [
-          'wiring',
-          'pyproject.toml',
-          'python/foundation/core',
-        ],
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.CopyWithoutEnd,
+              part: 'python/foundation/core',
+            },
+          ],
+        }),
       ],
     },
     {
@@ -1899,7 +2147,17 @@ describe('checkWiring', () => {
         `# end ${vulturePart}`,
         `min_confidence = 60 # end ${vulturePart}`,
       ),
-      warned: edited,
+      warned: [
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.CopyWithoutEnd,
+              part: 'python/foundation/core',
+            },
+          ],
+        }),
+      ],
     },
     {
       condition: 'it ends with blanks',
@@ -1910,11 +2168,15 @@ describe('checkWiring', () => {
       condition: 'its end is no comment',
       vulture: vultureSection.replace(`# end ${vulturePart}`, `end ${vulturePart}`),
       warned: [
-        [
-          'wiring',
-          'pyproject.toml',
-          'python/foundation/core',
-        ],
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.CopyWithoutEnd,
+              part: 'python/foundation/core',
+            },
+          ],
+        }),
       ],
     },
   ])("should read a copy's marker when $condition", ({ vulture, warned }) => {
@@ -1929,12 +2191,12 @@ describe('checkWiring', () => {
     const warnings = checkWiring(input);
 
     // Assert
-    expect(warnedOf(warnings)).toStrictEqual(warned);
+    expect(warnings).toStrictEqual(warned);
   });
 
   it.each<{
     links: string[];
-    warned: string[][];
+    warned: ProjectWarning[];
   }>([
     {
       links: [
@@ -1952,13 +2214,21 @@ describe('checkWiring', () => {
         'fastapi',
       ],
       warned: [
-        [
-          'wiring',
-          'pyproject.toml',
-          'lacks',
-          'ruff:python/foundation/pytest',
-          'ruff',
-        ],
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.Lacks,
+              parts: [
+                'ruff:python/foundation/pytest',
+              ],
+            },
+            {
+              kind: WiringProblemKind.MarkerOutOfOrder,
+              tool: 'ruff',
+            },
+          ],
+        }),
       ],
     },
     {
@@ -1969,11 +2239,15 @@ describe('checkWiring', () => {
         'fastapi',
       ],
       warned: [
-        [
-          'wiring',
-          'pyproject.toml',
-          'ruff',
-        ],
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.MarkerOutOfOrder,
+              tool: 'ruff',
+            },
+          ],
+        }),
       ],
     },
   ])(
@@ -1991,14 +2265,14 @@ describe('checkWiring', () => {
       const warnings = checkWiring(input);
 
       // Assert
-      expect(warnedOf(warnings)).toStrictEqual(warned);
+      expect(warnings).toStrictEqual(warned);
     },
   );
 
   it.each<{
     condition: string;
     fixture: WiringFixture;
-    warned: string[][];
+    warned: ProjectWarning[];
   }>([
     {
       condition: 'a comment extends a link short of the end',
@@ -2017,11 +2291,15 @@ describe('checkWiring', () => {
         }),
       },
       warned: [
-        [
-          'wiring',
-          'pyproject.toml',
-          'ruff',
-        ],
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.ExtendsShortOfEnd,
+              tool: 'ruff',
+            },
+          ],
+        }),
       ],
     },
     {
@@ -2050,12 +2328,17 @@ describe('checkWiring', () => {
         },
       },
       warned: [
-        [
-          'wiring',
-          'pyproject.toml',
-          'names',
-          'ruff:typescript/foundation/self',
-        ],
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.NamesBeyond,
+              parts: [
+                'ruff:typescript/foundation/self',
+              ],
+            },
+          ],
+        }),
       ],
     },
     {
@@ -2115,110 +2398,162 @@ describe('checkWiring', () => {
     const warnings = checkWiring(input);
 
     // Assert
-    expect(warnedOf(warnings)).toStrictEqual(warned);
+    expect(warnings).toStrictEqual(warned);
   });
 
   it.each<{
     condition: string;
     line: string;
-    warned: string[][];
+    warned: ProjectWarning[];
   }>([
     {
       condition: 'it extends a part by its file',
       line: 'extend = "pytest.toml"\n',
       warned: [
-        [
-          'wiring',
-          'pyproject.toml',
-          'lacks',
-          'ruff:python/foundation/pytest',
-          'ruff',
-        ],
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.Lacks,
+              parts: [
+                'ruff:python/foundation/pytest',
+              ],
+            },
+            {
+              kind: WiringProblemKind.MarkerOutOfOrder,
+              tool: 'ruff',
+            },
+          ],
+        }),
       ],
     },
     {
       condition: 'it extends a part with no blank around the sign',
       line: 'extends="pytest.toml"\n',
       warned: [
-        [
-          'wiring',
-          'pyproject.toml',
-          'lacks',
-          'ruff:python/foundation/pytest',
-          'ruff',
-        ],
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.Lacks,
+              parts: [
+                'ruff:python/foundation/pytest',
+              ],
+            },
+            {
+              kind: WiringProblemKind.MarkerOutOfOrder,
+              tool: 'ruff',
+            },
+          ],
+        }),
       ],
     },
     {
       condition: 'it extends a part with tabs around the sign',
       line: 'extend\t=\t"pytest.toml"\n',
       warned: [
-        [
-          'wiring',
-          'pyproject.toml',
-          'lacks',
-          'ruff:python/foundation/pytest',
-          'ruff',
-        ],
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.Lacks,
+              parts: [
+                'ruff:python/foundation/pytest',
+              ],
+            },
+            {
+              kind: WiringProblemKind.MarkerOutOfOrder,
+              tool: 'ruff',
+            },
+          ],
+        }),
       ],
     },
     {
       condition: 'it extends a part in a folder, with a comment after it',
       line: 'line-length = 100\nextend = "../shared/pytest.toml" # the tests\n',
       warned: [
-        [
-          'wiring',
-          'pyproject.toml',
-          'lacks',
-          'ruff:python/foundation/pytest',
-          'ruff',
-        ],
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.Lacks,
+              parts: [
+                'ruff:python/foundation/pytest',
+              ],
+            },
+            {
+              kind: WiringProblemKind.MarkerOutOfOrder,
+              tool: 'ruff',
+            },
+          ],
+        }),
       ],
     },
     {
       condition: 'it extends a part by its name alone',
       line: 'extend = "pytest"\n',
       warned: [
-        [
-          'wiring',
-          'pyproject.toml',
-          'lacks',
-          'ruff:python/foundation/pytest',
-          'ruff',
-        ],
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.Lacks,
+              parts: [
+                'ruff:python/foundation/pytest',
+              ],
+            },
+            {
+              kind: WiringProblemKind.MarkerOutOfOrder,
+              tool: 'ruff',
+            },
+          ],
+        }),
       ],
     },
     {
       condition: 'the line is indented',
       line: ' extend = "pytest.toml"\n',
       warned: [
-        [
-          'wiring',
-          'pyproject.toml',
-          'ruff',
-        ],
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.MarkerOutOfOrder,
+              tool: 'ruff',
+            },
+          ],
+        }),
       ],
     },
     {
       condition: 'the line quotes no path',
       line: 'extend = pytest.toml\n',
       warned: [
-        [
-          'wiring',
-          'pyproject.toml',
-          'ruff',
-        ],
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.MarkerOutOfOrder,
+              tool: 'ruff',
+            },
+          ],
+        }),
       ],
     },
     {
       condition: 'it extends a block that has no part',
       line: 'extend = "django.toml"\n',
       warned: [
-        [
-          'wiring',
-          'pyproject.toml',
-          'ruff',
-        ],
+        fileMiswired({
+          file: 'pyproject.toml',
+          problems: [
+            {
+              kind: WiringProblemKind.MarkerOutOfOrder,
+              tool: 'ruff',
+            },
+          ],
+        }),
       ],
     },
   ])('should take the link a chained part extends when $condition', ({ line, warned }) => {
@@ -2257,7 +2592,7 @@ describe('checkWiring', () => {
     const warnings = checkWiring(input);
 
     // Assert
-    expect(warnedOf(warnings)).toStrictEqual(warned);
+    expect(warnings).toStrictEqual(warned);
   });
 
   it('should hold an empty copy to its part when the part cannot be read', () => {
@@ -2275,13 +2610,13 @@ describe('checkWiring', () => {
     const warnings = checkWiring(input);
 
     // Assert
-    expect(warnedOf(warnings)).toStrictEqual([]);
+    expect(warnings).toStrictEqual([]);
   });
 
   it.each<{
     condition: string;
     files: Files;
-    warned: string[][];
+    warned: ProjectWarning[];
   }>([
     {
       condition: "each file takes the pack's parts by its path",
@@ -2297,12 +2632,17 @@ describe('checkWiring', () => {
         'acme.toml': `extends = "${ACME_SELF}"\n`,
       },
       warned: [
-        [
-          'wiring',
-          'biome.json',
-          'lacks',
-          'typescript/foundation/acme',
-        ],
+        fileMiswired({
+          file: 'biome.json',
+          problems: [
+            {
+              kind: WiringProblemKind.Lacks,
+              parts: [
+                'typescript/foundation/acme',
+              ],
+            },
+          ],
+        }),
       ],
     },
     {
@@ -2312,11 +2652,10 @@ describe('checkWiring', () => {
         'biome.json': acmeBiome,
       },
       warned: [
-        [
-          'wiring',
-          'acme',
-          '.',
-        ],
+        toolWiredNowhere({
+          tool: 'acme',
+          unit: '',
+        }),
       ],
     },
   ])("should wire a pack's parts and templates when $condition", ({ files, warned }) => {
@@ -2340,14 +2679,14 @@ describe('checkWiring', () => {
     const warnings = checkWiring(input);
 
     // Assert
-    expect(warnedOf(warnings)).toStrictEqual(warned);
+    expect(warnings).toStrictEqual(warned);
   });
 
   it.each<{
     condition: string;
     files: Files;
     pack: string;
-    warned: string[][];
+    warned: ProjectWarning[];
   }>([
     {
       condition: 'its files name them by their path from its folder',
@@ -2365,7 +2704,23 @@ describe('checkWiring', () => {
         ...memberAcmeFiles('apps/web/packs/acme'),
       },
       pack: 'apps/web/packs/acme',
-      warned: memberUnwired,
+      warned: [
+        toolWiredNowhere({
+          tool: 'acme',
+          unit: 'apps/web',
+        }),
+        fileMiswired({
+          file: 'apps/web/biome.json',
+          problems: [
+            {
+              kind: WiringProblemKind.Lacks,
+              parts: [
+                'typescript/foundation/acme',
+              ],
+            },
+          ],
+        }),
+      ],
     },
     {
       condition: 'its files name the pack the repository keeps by their path from its folder',
@@ -2383,7 +2738,23 @@ describe('checkWiring', () => {
         ...memberAcmeFiles('packs/acme'),
       },
       pack: 'packs/acme',
-      warned: memberUnwired,
+      warned: [
+        toolWiredNowhere({
+          tool: 'acme',
+          unit: 'apps/web',
+        }),
+        fileMiswired({
+          file: 'apps/web/biome.json',
+          problems: [
+            {
+              kind: WiringProblemKind.Lacks,
+              parts: [
+                'typescript/foundation/acme',
+              ],
+            },
+          ],
+        }),
+      ],
     },
   ])(
     "should anchor a member's pack at the member's folder when $condition",
@@ -2419,14 +2790,14 @@ describe('checkWiring', () => {
       const warnings = checkWiring(input);
 
       // Assert
-      expect(warnedOf(warnings)).toStrictEqual(warned);
+      expect(warnings).toStrictEqual(warned);
     },
   );
 
   it.each<{
     condition: string;
     links: Readonly<Record<string, string>>;
-    warned: string[][];
+    warned: ProjectWarning[];
   }>([
     {
       condition: "a member's link names the member's own folder",
@@ -2434,10 +2805,9 @@ describe('checkWiring', () => {
         'apps/web/.droneey/constitution': 'apps/web',
       },
       warned: [
-        [
-          'loop',
-          'apps/web/.droneey/constitution',
-        ],
+        releaseLinkLoops({
+          unit: 'apps/web',
+        }),
       ],
     },
     {
@@ -2446,10 +2816,9 @@ describe('checkWiring', () => {
         'apps/web/.droneey/constitution': '',
       },
       warned: [
-        [
-          'loop',
-          'apps/web/.droneey/constitution',
-        ],
+        releaseLinkLoops({
+          unit: 'apps/web',
+        }),
       ],
     },
     {
@@ -2494,7 +2863,7 @@ describe('checkWiring', () => {
     const warnings = checkWiring(input);
 
     // Assert
-    expect(warnedOf(warnings)).toStrictEqual(warned);
+    expect(warnings).toStrictEqual(warned);
   });
 
   it("should refuse the repository's link to the release when it names the repository", () => {
@@ -2509,18 +2878,17 @@ describe('checkWiring', () => {
     const warnings = checkWiring(input);
 
     // Assert
-    expect(warnedOf(warnings).filter(([code]) => code === 'loop')).toStrictEqual([
-      [
-        'loop',
-        './.droneey/constitution',
-      ],
+    expect(warnings.filter((warning) => warning.code === WarningCode.Loop)).toStrictEqual([
+      releaseLinkLoops({
+        unit: '',
+      }),
     ]);
   });
 
   it.each<{
     condition: string;
     fixture: WiringFixture;
-    warned: string[][];
+    warned: ProjectWarning[];
   }>([
     {
       condition: "it skips each member's folder",
@@ -2540,12 +2908,10 @@ describe('checkWiring', () => {
         },
       },
       warned: [
-        [
-          'wiring',
-          'biome.json',
-          'docs/site',
-          'workspace',
-        ],
+        skipOfNoMember({
+          folder: 'docs/site',
+          path: 'biome.json',
+        }),
       ],
     },
     {
@@ -2572,13 +2938,11 @@ describe('checkWiring', () => {
         },
       },
       warned: [
-        [
-          'wiring',
-          'biome.json',
-          'packages/kit',
-          'workspace',
-          'biome',
-        ],
+        memberNotSkipped({
+          member: 'packages/kit',
+          path: 'biome.json',
+          tool: 'biome',
+        }),
       ],
     },
     {
@@ -2593,13 +2957,11 @@ describe('checkWiring', () => {
         },
       },
       warned: [
-        [
-          'wiring',
-          'biome.json',
-          'packages/kit',
-          'workspace',
-          'biome',
-        ],
+        memberNotSkipped({
+          member: 'packages/kit',
+          path: 'biome.json',
+          tool: 'biome',
+        }),
       ],
     },
     {
@@ -2624,11 +2986,10 @@ describe('checkWiring', () => {
         project: UNBIOMED,
       },
       warned: [
-        [
-          'wiring',
-          'biome',
-          '.',
-        ],
+        toolWiredNowhere({
+          tool: 'biome',
+          unit: '',
+        }),
       ],
     },
   ])(
@@ -2659,7 +3020,7 @@ describe('checkWiring', () => {
       const warnings = checkWiring(input);
 
       // Assert
-      expect(warnedOf(warnings)).toStrictEqual(warned);
+      expect(warnings).toStrictEqual(warned);
     },
   );
 
@@ -2667,7 +3028,7 @@ describe('checkWiring', () => {
     condition: string;
     project?: Files;
     release?: Files;
-    warned: string[][];
+    warned: ProjectWarning[];
   }>([
     {
       condition: "each job and each file skips each member's folder",
@@ -2691,12 +3052,10 @@ describe('checkWiring', () => {
         ]),
       },
       warned: [
-        [
-          'wiring',
-          'lefthook.yaml',
-          'docs/site',
-          'workspace',
-        ],
+        skipOfNoMember({
+          folder: 'docs/site',
+          path: 'lefthook.yaml',
+        }),
       ],
     },
     {
@@ -2716,13 +3075,11 @@ describe('checkWiring', () => {
         ]),
       },
       warned: [
-        [
-          'wiring',
-          'lefthook.yaml',
-          'packages/kit',
-          'workspace',
-          'shfmt',
-        ],
+        memberNotSkipped({
+          member: 'packages/kit',
+          path: 'lefthook.yaml',
+          tool: 'shfmt',
+        }),
       ],
     },
     {
@@ -2746,20 +3103,16 @@ describe('checkWiring', () => {
         'lefthook.yaml': lefthookOf(SKIPPING_JOBS.slice(0, 1)),
       },
       warned: [
-        [
-          'wiring',
-          'lefthook.yaml',
-          'apps/web',
-          'workspace',
-          'shfmt',
-        ],
-        [
-          'wiring',
-          'lefthook.yaml',
-          'packages/kit',
-          'workspace',
-          'shfmt',
-        ],
+        memberNotSkipped({
+          member: 'apps/web',
+          path: 'lefthook.yaml',
+          tool: 'shfmt',
+        }),
+        memberNotSkipped({
+          member: 'packages/kit',
+          path: 'lefthook.yaml',
+          tool: 'shfmt',
+        }),
       ],
     },
     {
@@ -2768,34 +3121,26 @@ describe('checkWiring', () => {
         'lefthook.yaml': 'pre-commit:\n  parallel: true\n',
       },
       warned: [
-        [
-          'wiring',
-          'lefthook.yaml',
-          'apps/web',
-          'workspace',
-          'shellcheck',
-        ],
-        [
-          'wiring',
-          'lefthook.yaml',
-          'packages/kit',
-          'workspace',
-          'shellcheck',
-        ],
-        [
-          'wiring',
-          'lefthook.yaml',
-          'apps/web',
-          'workspace',
-          'shfmt',
-        ],
-        [
-          'wiring',
-          'lefthook.yaml',
-          'packages/kit',
-          'workspace',
-          'shfmt',
-        ],
+        memberNotSkipped({
+          member: 'apps/web',
+          path: 'lefthook.yaml',
+          tool: 'shellcheck',
+        }),
+        memberNotSkipped({
+          member: 'packages/kit',
+          path: 'lefthook.yaml',
+          tool: 'shellcheck',
+        }),
+        memberNotSkipped({
+          member: 'apps/web',
+          path: 'lefthook.yaml',
+          tool: 'shfmt',
+        }),
+        memberNotSkipped({
+          member: 'packages/kit',
+          path: 'lefthook.yaml',
+          tool: 'shfmt',
+        }),
       ],
     },
     {
@@ -2804,20 +3149,16 @@ describe('checkWiring', () => {
         '.rumdl.toml': '[global]\nexclude = [\n',
       },
       warned: [
-        [
-          'wiring',
-          '.rumdl.toml',
-          'apps/web',
-          'workspace',
-          'rumdl',
-        ],
-        [
-          'wiring',
-          '.rumdl.toml',
-          'packages/kit',
-          'workspace',
-          'rumdl',
-        ],
+        memberNotSkipped({
+          member: 'apps/web',
+          path: '.rumdl.toml',
+          tool: 'rumdl',
+        }),
+        memberNotSkipped({
+          member: 'packages/kit',
+          path: '.rumdl.toml',
+          tool: 'rumdl',
+        }),
       ],
     },
     {
@@ -2826,20 +3167,16 @@ describe('checkWiring', () => {
         '.rumdl.toml': 'exclude = ["apps/**", "packages/**"]\n',
       },
       warned: [
-        [
-          'wiring',
-          '.rumdl.toml',
-          'apps/web',
-          'workspace',
-          'rumdl',
-        ],
-        [
-          'wiring',
-          '.rumdl.toml',
-          'packages/kit',
-          'workspace',
-          'rumdl',
-        ],
+        memberNotSkipped({
+          member: 'apps/web',
+          path: '.rumdl.toml',
+          tool: 'rumdl',
+        }),
+        memberNotSkipped({
+          member: 'packages/kit',
+          path: '.rumdl.toml',
+          tool: 'rumdl',
+        }),
       ],
     },
     {
@@ -2856,12 +3193,10 @@ describe('checkWiring', () => {
         '.yamllint.yaml': 'ignore: |\n  /apps/**\n  /packages/**\n  /docs/site/**\n',
       },
       warned: [
-        [
-          'wiring',
-          '.yamllint.yaml',
-          'docs/site',
-          'workspace',
-        ],
+        skipOfNoMember({
+          folder: 'docs/site',
+          path: '.yamllint.yaml',
+        }),
       ],
     },
     {
@@ -2896,20 +3231,16 @@ describe('checkWiring', () => {
         '.yamllint.yaml': 'ignore: |\n  /**\n',
       },
       warned: [
-        [
-          'wiring',
-          '.yamllint.yaml',
-          'apps/web',
-          'workspace',
-          'yamllint',
-        ],
-        [
-          'wiring',
-          '.yamllint.yaml',
-          'packages/kit',
-          'workspace',
-          'yamllint',
-        ],
+        memberNotSkipped({
+          member: 'apps/web',
+          path: '.yamllint.yaml',
+          tool: 'yamllint',
+        }),
+        memberNotSkipped({
+          member: 'packages/kit',
+          path: '.yamllint.yaml',
+          tool: 'yamllint',
+        }),
       ],
     },
     {
@@ -2978,7 +3309,7 @@ describe('checkWiring', () => {
       const warnings = checkWiring(input);
 
       // Assert
-      expect(warnedOf(warnings)).toStrictEqual(warned);
+      expect(warnings).toStrictEqual(warned);
     },
   );
 
@@ -2995,12 +3326,12 @@ describe('checkWiring', () => {
     const warnings = checkWiring(input);
 
     // Assert
-    expect(warnedOf(warnings)).toStrictEqual([]);
+    expect(warnings).toStrictEqual([]);
   });
   it.each<{
     condition: string;
     fixture: WiringFixture;
-    warned: string[][];
+    warned: ProjectWarning[];
   }>([
     {
       condition: "only the root follows the tool and its file takes a member's part",
@@ -3026,12 +3357,17 @@ describe('checkWiring', () => {
         },
       },
       warned: [
-        [
-          'wiring',
-          'lefthook.yaml',
-          'lacks',
-          'common/workflow/ruff',
-        ],
+        fileMiswired({
+          file: 'lefthook.yaml',
+          problems: [
+            {
+              kind: WiringProblemKind.Lacks,
+              parts: [
+                'common/workflow/ruff',
+              ],
+            },
+          ],
+        }),
       ],
     },
     {
@@ -3048,12 +3384,17 @@ describe('checkWiring', () => {
         },
       },
       warned: [
-        [
-          'wiring',
-          'lefthook.yaml',
-          'lacks',
-          'common/workflow/ruff',
-        ],
+        fileMiswired({
+          file: 'lefthook.yaml',
+          problems: [
+            {
+              kind: WiringProblemKind.Lacks,
+              parts: [
+                'common/workflow/ruff',
+              ],
+            },
+          ],
+        }),
       ],
     },
     {
@@ -3089,12 +3430,17 @@ describe('checkWiring', () => {
         units: hooksOwnUnits,
       },
       warned: [
-        [
-          'wiring',
-          'lefthook.yaml',
-          'names',
-          'common/workflow/ruff',
-        ],
+        fileMiswired({
+          file: 'lefthook.yaml',
+          problems: [
+            {
+              kind: WiringProblemKind.NamesBeyond,
+              parts: [
+                'common/workflow/ruff',
+              ],
+            },
+          ],
+        }),
       ],
     },
     {
@@ -3173,12 +3519,17 @@ describe('checkWiring', () => {
         ],
       },
       warned: [
-        [
-          'wiring',
-          'biome.json',
-          'lacks',
-          'typescript/foundation/react-dom',
-        ],
+        fileMiswired({
+          file: 'biome.json',
+          problems: [
+            {
+              kind: WiringProblemKind.Lacks,
+              parts: [
+                'typescript/foundation/react-dom',
+              ],
+            },
+          ],
+        }),
       ],
     },
   ])(
@@ -3199,7 +3550,7 @@ describe('checkWiring', () => {
       const warnings = checkWiring(input);
 
       // Assert
-      expect(warnedOf(warnings)).toStrictEqual(warned);
+      expect(warnings).toStrictEqual(warned);
     },
   );
 });

@@ -133,7 +133,7 @@ file(body=$module) where {
     JsVariableDeclarator()
   } as $export where {
     $export <: non_component_export($module),
-    register_diagnostic(span=$export, message="A module that exports a component exports only components, so Fast Refresh can swap it: move this value into a file of its own", severity="error"),
+    register_diagnostic(span=$export, message="[file-is-one-semantic-unit] A module that exports a component exports only components, so Fast Refresh can swap it: move this value into a file of its own", severity="error"),
     // Biome keeps what a match adds to its matching state and copies that
     // state at every node, so each match would slow the next: the diagnostic
     // stays, the match fails.

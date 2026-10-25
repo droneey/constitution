@@ -10,7 +10,7 @@ or {
       TsNumberType(),
       TsTypeOperatorType()
     },
-    register_diagnostic(span=$set, message="A closed set of named values is a string enum, not a type taken from an as-const array", severity="error")
+    register_diagnostic(span=$set, message="[closed-name-set-is-a-string-enum] A closed set of named values is a string enum, not a type taken from an as-const array", severity="error")
   },
   TsUnionType(types=$members) as $union where {
     $members <: every TsStringLiteralType(),
@@ -20,6 +20,6 @@ or {
       `Exclude<$_, $_>`,
       `Extract<$_, $_>`
     },
-    register_diagnostic(span=$union, message="A closed set of named values is a string enum, not a union of string literals", severity="error")
+    register_diagnostic(span=$union, message="[closed-name-set-is-a-string-enum] A closed set of named values is a string enum, not a union of string literals", severity="error")
   }
 }

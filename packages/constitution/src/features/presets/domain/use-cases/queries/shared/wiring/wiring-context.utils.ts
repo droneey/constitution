@@ -9,7 +9,6 @@ import { namedOf } from './named.utils';
 
 // The rule the wiring holds; a unit whose overrides lower it is left out of the check.
 const wiringRule = RuleSlug.create('configuration-takes-every-part-of-its-blocks');
-const RATIFY = ' — run /constitution:ratify';
 
 interface Reach {
   readonly axes: ReadonlySet<string>;
@@ -274,7 +273,6 @@ export {
   isBeneath,
   isRepositoryTool,
   ownerOf,
-  RATIFY,
   reachOf,
   scopesOf,
   servingFolderOf,

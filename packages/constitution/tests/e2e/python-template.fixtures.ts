@@ -5,12 +5,18 @@ import { delimiter, join } from 'node:path';
 import { z } from 'zod';
 
 import type { Files } from './python-project.fixtures';
-import { inPythonProject, repository, writeFiles } from './python-project.fixtures';
+import { inPythonProjectAsync, repository, writeFiles } from './python-project.fixtures';
 import { uvEnvironment } from './uv.fixtures';
 
 interface Run {
-  isClean: boolean;
-  output: string;
+  readonly isClean: boolean;
+  readonly output: string;
+}
+
+// One area of the check, or the whole of it, over the template with the files a case changes.
+interface TaskRun {
+  readonly changes: Files;
+  readonly task: string;
 }
 
 const templates = join(repository, 'templates', 'project', 'python');
@@ -263,13 +269,13 @@ const git = (folder: string, args: readonly string[]): void => {
 // origin/main; the files a case changes are written over it. The package
 // stands in for its install by PYTHONPATH, and the tools are the repository's
 // own, pinned to the template's versions.
-const runInTemplate = (input: { changes: Files; command: readonly string[] }): Run =>
-  inPythonProject({
+const runInTemplate = (input: { changes: Files; command: readonly string[] }): Promise<Run> =>
+  inPythonProjectAsync({
     files: {
       ...templateFiles,
       ...shop,
     },
-    run: (folder) => {
+    run: async (folder) => {
       git(folder, [
         'init',
         '--quiet',
@@ -302,15 +308,26 @@ const runInTemplate = (input: { changes: Files; command: readonly string[] }): R
           'src',
         ],
       ]);
-      const running = spawnSync(input.command[0] ?? '', input.command.slice(1), {
-        cwd: folder,
-        encoding: 'utf8',
-        env: environment,
-      });
+      const running = Bun.spawn(
+        [
+          ...input.command,
+        ],
+        {
+          cwd: folder,
+          env: environment,
+          stderr: 'pipe',
+          stdout: 'pipe',
+        },
+      );
+      const [stdout, stderr, status] = await Promise.all([
+        new Response(running.stdout).text(),
+        new Response(running.stderr).text(),
+        running.exited,
+      ]);
 
       return {
-        isClean: running.status === 0,
-        output: `${running.stdout}${running.stderr}`,
+        isClean: status === 0,
+        output: `${stdout}${stderr}`,
       };
     },
     withTools: true,
@@ -343,7 +360,7 @@ const commandOf = (task: string): string => {
 };
 
 // One area of the check, or the whole of it, over the template.
-const runTask = (input: { changes: Files; task: string }): Run =>
+const runTask = (input: TaskRun): Promise<Run> =>
   runInTemplate({
     changes: input.changes,
     command: [
@@ -352,6 +369,64 @@ const runTask = (input: { changes: Files; task: string }): Run =>
       commandOf(input.task),
     ],
   });
+
+// The runs take seconds each, mutmut's above all, so this many run at a time.
+const RUNS_AT_ONCE = 4;
+
+const registered = new Map<string, TaskRun>();
+const ran = new Map<string, Run>();
+
+const keyOf = (input: TaskRun): string =>
+  JSON.stringify([
+    input.task,
+    Object.entries(input.changes).toSorted(([left], [right]) => left.localeCompare(right)),
+  ]);
+
+// A table registers its runs while the file is collected.
+const taskCase = <TRow extends TaskRun>(row: TRow): TRow => {
+  registered.set(keyOf(row), row);
+
+  return row;
+};
+
+const taskCases = <TRow extends TaskRun>(rows: readonly TRow[]): readonly TRow[] =>
+  rows.map(taskCase);
+
+// Runs every registered run, once the tables are collected.
+const runRegistered = async (): Promise<void> => {
+  const queue = registered.entries();
+
+  const runNext = async (): Promise<void> => {
+    const next = queue.next();
+
+    if (next.done !== true) {
+      const [key, input] = next.value;
+
+      ran.set(key, await runTask(input));
+      await runNext();
+    }
+  };
+
+  await Promise.all(
+    Array.from(
+      {
+        length: RUNS_AT_ONCE,
+      },
+      runNext,
+    ),
+  );
+};
+
+/** @throws Error when no table registered the run. */
+const runOf = (input: TaskRun): Run => {
+  const run = ran.get(keyOf(input));
+
+  if (run === undefined) {
+    throw new Error(`No table registered the run of ${input.task}`);
+  }
+
+  return run;
+};
 
 const settingsSchema = z.object({
   tool: z.record(z.string(), z.unknown()),
@@ -372,4 +447,4 @@ const partTable = (tool: string): unknown =>
 const isFoundIn = (input: { finding: readonly string[]; output: string }): boolean =>
   input.output.split('\n').some((line) => input.finding.every((text) => line.includes(text)));
 
-export { isFoundIn, partTable, python, runTask, templateTable };
+export { isFoundIn, partTable, python, runOf, runRegistered, taskCase, taskCases, templateTable };

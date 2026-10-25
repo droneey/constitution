@@ -1,14 +1,38 @@
 import { describe, expect, it } from 'bun:test';
 
 import { createFakeContext, runCommand } from '#/__tests__/command-line.fake';
+import { UnitPath } from '#/kernel/value-objects';
 import { linesSection } from '#/shared/cli';
 
+import type { WiringPlan } from '../../../../../domain/entities';
+import { planLinesOf } from '../../../../utils';
 import { createPresetsPlanCommand } from '../plan.cli';
 
-const plan = [
-  'biome.json for .',
-  '  biome .droneey/constitution/templates/project/typescript/biome/biome.json',
-];
+const plan: WiringPlan = {
+  files: [
+    {
+      file: 'biome.json',
+      isNew: false,
+      scopes: [
+        {
+          scope: 'typescript',
+          tools: [
+            {
+              isAdded: false,
+              parts: [],
+              template: '.droneey/constitution/templates/project/typescript/biome/biome.json',
+              tool: 'biome',
+            },
+          ],
+        },
+      ],
+      units: [
+        UnitPath.create(''),
+      ],
+    },
+  ],
+  untemplated: [],
+};
 
 describe('createPresetsPlanCommand', () => {
   it.each([
@@ -38,7 +62,7 @@ describe('createPresetsPlanCommand', () => {
       });
       const command = createPresetsPlanCommand({
         ...context,
-        planPresets: (from: string): readonly string[] => {
+        planPresets: (from: string): WiringPlan => {
           asked.push(from);
 
           return plan;
@@ -62,7 +86,7 @@ describe('createPresetsPlanCommand', () => {
         ],
         printed: [
           [
-            linesSection(plan),
+            linesSection(planLinesOf(plan)),
           ],
         ],
       });

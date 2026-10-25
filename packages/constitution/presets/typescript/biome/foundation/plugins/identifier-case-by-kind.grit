@@ -85,7 +85,7 @@ JsVariableDeclarator(id=$name, initializer=JsInitializerClause(expression=$value
       $value <: literal(),
       $name <: not screaming_snake_case(),
       not and { $value <: not primitive_literal(), $name <: companion_of_a_type($module) },
-      register_diagnostic(span=$name, message="A module-level constant holding a literal is SCREAMING_SNAKE_CASE", severity="error")
+      register_diagnostic(span=$name, message="[identifier-case-by-kind] A module-level constant holding a literal is SCREAMING_SNAKE_CASE", severity="error")
     },
     and {
       $value <: not literal(),
@@ -100,7 +100,7 @@ JsVariableDeclarator(id=$name, initializer=JsInitializerClause(expression=$value
           $name <: not exported_by_a_clause($module)
         }
       },
-      register_diagnostic(span=$name, message="A module-level constant computed at run time is camelCase, or PascalCase for a component or the companion of a type of its name", severity="error")
+      register_diagnostic(span=$name, message="[identifier-case-by-kind] A module-level constant computed at run time is camelCase, or PascalCase for a component or the companion of a type of its name", severity="error")
     }
   },
   // Biome keeps what a match adds to its matching state and copies that state

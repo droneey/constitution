@@ -3,8 +3,15 @@ import { PROJECT, releaseFolderPath } from '#/__tests__/project-place.fixtures';
 import { createFakeProjectSource } from '#/__tests__/project-source.fake';
 import { createFakeWorkingTree } from '#/__tests__/working-tree.fake';
 import { Axis, Layer } from '#/kernel/constants';
-import type { ProjectWarning } from '#/kernel/entities';
-import { BlockListing, ConfigReadStatus, ProjectUnit, Resolution } from '#/kernel/entities';
+import type { ProjectWarning, WarningDetails } from '#/kernel/entities';
+import {
+  BlockListing,
+  ConfigReadStatus,
+  ProjectUnit,
+  Resolution,
+  WarningCode,
+  WarningKind,
+} from '#/kernel/entities';
 import { BlockId, PackPath, RuleSlug, UnitPath } from '#/kernel/value-objects';
 
 import { createConfigurationParser } from '../adapters/configuration';
@@ -401,48 +408,52 @@ const hooksOwnUnits = [
   },
 ];
 
-// What a warning or a line means: the names it gives, in their order, each a path, a file, a
-// part, a block, a count or a word that tells one list from another.
-const GAP = /[^\w./:<>-]+/u;
-const ids: readonly string[] = [
-  ...BLOCKS.map((block) => block.id),
-  'acme',
-  'django',
-  'fastapi',
-  'github',
-  'hadolint',
-  'knip',
-  'pytest',
-  'react-dom',
-  'rumdl',
-  'shellcheck',
-  'shfmt',
-  'yamllint',
-];
-const WORDS: readonly string[] = [
-  'adds',
-  'lacks',
-  'lower',
-  'names',
-  'new',
-] as const;
+// The warnings of the wiring, each built from the values it names, a unit by its path.
 
-const isName = (token: string): boolean =>
-  (/[./]/u.test(token) && !token.startsWith('/')) ||
-  /^\d+$/u.test(token) ||
-  ids.includes(token) ||
-  WORDS.includes(token);
+const toolWiredNowhere = (details: { tool: string; unit: string }): ProjectWarning => ({
+  code: WarningCode.Wiring,
+  details: {
+    tool: details.tool,
+    unit: UnitPath.create(details.unit),
+  },
+  kind: WarningKind.ToolWiredNowhere,
+});
 
-const mentionsOf = (text: string): readonly string[] => text.split(GAP).filter(isName);
+const folderKeepsConfig = (
+  details: WarningDetails[WarningKind.FolderKeepsConfig],
+): ProjectWarning => ({
+  code: WarningCode.Unlisted,
+  details,
+  kind: WarningKind.FolderKeepsConfig,
+});
 
-const warnedOf = (warnings: readonly ProjectWarning[]): readonly (readonly string[])[] =>
-  warnings.map((warning) => [
-    warning.code,
-    ...mentionsOf(warning.message),
-  ]);
+const fileMiswired = (details: WarningDetails[WarningKind.FileMiswired]): ProjectWarning => ({
+  code: WarningCode.Wiring,
+  details,
+  kind: WarningKind.FileMiswired,
+});
 
-const plannedOf = (lines: readonly string[]): readonly (readonly string[])[] =>
-  lines.map(mentionsOf);
+const skipOfNoMember = (details: WarningDetails[WarningKind.SkipOfNoMember]): ProjectWarning => ({
+  code: WarningCode.Wiring,
+  details,
+  kind: WarningKind.SkipOfNoMember,
+});
+
+const memberNotSkipped = (
+  details: WarningDetails[WarningKind.MemberNotSkipped],
+): ProjectWarning => ({
+  code: WarningCode.Wiring,
+  details,
+  kind: WarningKind.MemberNotSkipped,
+});
+
+const releaseLinkLoops = (details: { unit: string }): ProjectWarning => ({
+  code: WarningCode.Loop,
+  details: {
+    unit: UnitPath.create(details.unit),
+  },
+  kind: WarningKind.ReleaseLinkLoops,
+});
 
 export type { Files, WiringFixture };
 export {
@@ -450,6 +461,8 @@ export {
   BIOME_PARTS,
   BLOCKS,
   biomeJson,
+  fileMiswired,
+  folderKeepsConfig,
   HOOKS_RELEASE,
   hooksBlocks,
   hooksMember,
@@ -460,25 +473,27 @@ export {
   implementationOf,
   importLinter,
   importLinterCopy,
+  memberNotSkipped,
   PACK_FILES,
   packageCruiser,
   packFilesIn,
   part,
   planInputOf,
-  plannedOf,
   pyproject,
   REACT_DOM,
   RELEASE,
   RULE,
+  releaseLinkLoops,
   rootCruiser,
   ruffConfig,
   ruffSection,
+  skipOfNoMember,
   template,
+  toolWiredNowhere,
   UNBIOMED,
   vultureCopy,
   vulturePart,
   vultureSection,
-  warnedOf,
   wired,
   wiringOf,
 };

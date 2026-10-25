@@ -1,5 +1,5 @@
 language js
 
 `$_.json<$_>()` as $call where {
-  register_diagnostic(span=$call, message="A response body is unknown until a schema parses it: .json<T>() is a cast", severity="error")
+  register_diagnostic(span=$call, message="[ky-body-parsed-by-schema] A response body is unknown until a schema parses it: .json<T>() is a cast", severity="error")
 }

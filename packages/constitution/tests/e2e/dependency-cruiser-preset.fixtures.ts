@@ -1,8 +1,9 @@
-import { spawnSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
+import { cruise as cruiseModules } from 'dependency-cruiser';
+import extractDepcruiseConfig from 'dependency-cruiser/config-utl/extract-depcruise-config';
 import { z } from 'zod';
 
 enum Declaration {
@@ -48,7 +49,6 @@ const report = z.object({
 });
 
 const repository = join(import.meta.dir, '..', '..');
-const depcruise = join(repository, 'node_modules', '.bin', 'depcruise');
 
 const baseParts = [
   'typescript/self',
@@ -183,8 +183,7 @@ const configOf = (parts: readonly string[], own: Readonly<Record<string, unknown
     ),
   ).replace('  {},\n', `  ${JSON.stringify(own)},\n`);
 
-const cruise = (project: Project): Cruise => {
-  const folder = mkdtempSync(join(tmpdir(), 'constitution-depcruise-'));
+const writeProject = (folder: string, project: Project): void => {
   const files = {
     ...installedFiles(),
     ...project.files,
@@ -229,30 +228,11 @@ const cruise = (project: Project): Cruise => {
 
   mkdirSync(join(folder, '.droneey'));
   symlinkSync(repository, join(folder, '.droneey', 'constitution'));
+};
 
-  const cruising = spawnSync(
-    depcruise,
-    [
-      ...(project.roots ?? [
-        'src',
-      ]),
-      '--config',
-      '.dependency-cruiser.mjs',
-      '--output-type',
-      'json',
-    ],
-    {
-      cwd: folder,
-      encoding: 'utf8',
-    },
-  );
-
-  rmSync(folder, {
-    force: true,
-    recursive: true,
-  });
-
-  const { summary } = report.parse(JSON.parse(cruising.stdout));
+// The json reporter's output is the text of the result.
+const cruiseOf = (output: unknown): Cruise => {
+  const { summary } = report.parse(JSON.parse(String(output)));
 
   return {
     cruised: summary.totalCruised,
@@ -260,6 +240,44 @@ const cruise = (project: Project): Cruise => {
       ...new Set(summary.violations.map(({ rule }) => rule.name)),
     ],
   };
+};
+
+// dependency-cruiser runs in the spec's process, as its command line runs it: it resolves the
+// configuration and the modules from the working folder, so the cruise holds the process there.
+const cruise = async (project: Project): Promise<Cruise> => {
+  const folder = mkdtempSync(join(tmpdir(), 'constitution-depcruise-'));
+  const workingFolder = process.cwd();
+
+  writeProject(folder, project);
+  process.chdir(folder);
+
+  try {
+    const cruising = await cruiseModules(
+      [
+        ...(project.roots ?? [
+          'src',
+        ]),
+      ],
+      {
+        outputType: 'json',
+        ruleSet: await extractDepcruiseConfig('./.dependency-cruiser.mjs'),
+        validate: true,
+      },
+      {},
+      {
+        babelConfig: {},
+        tsConfig: {},
+      },
+    );
+
+    return cruiseOf(cruising.output);
+  } finally {
+    process.chdir(workingFolder);
+    rmSync(folder, {
+      force: true,
+      recursive: true,
+    });
+  }
 };
 
 export { configFromTemplate, cruise };

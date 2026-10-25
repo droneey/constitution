@@ -7,5 +7,5 @@ or {
   `$client.setQueryData($key, $_)`
 } where {
   $key <: JsArrayExpression(),
-  register_diagnostic(span=$key, message="Take the key from the key factory: an inline key drifts from it and an invalidation misses it", severity="error")
+  register_diagnostic(span=$key, message="[keys-only-from-the-key-factory] Take the key from the key factory: an inline key drifts from it and an invalidation misses it", severity="error")
 }

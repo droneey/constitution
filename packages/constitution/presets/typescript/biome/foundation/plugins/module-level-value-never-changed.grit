@@ -11,5 +11,5 @@ or {
     }
   }
 } where {
-  register_diagnostic(span=$s, message="Declare a module-level variable as const", severity="error")
+  register_diagnostic(span=$s, message="[module-level-value-never-changed] Declare a module-level variable as const", severity="error")
 }

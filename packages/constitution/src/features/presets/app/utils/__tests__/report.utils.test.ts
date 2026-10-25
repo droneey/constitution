@@ -2,14 +2,18 @@ import { describe, expect, it } from 'bun:test';
 
 import { StepStatus, Tone } from '@droneey/design-cli';
 
-import { WarningCode } from '#/kernel/entities';
-import { noteSection } from '#/shared/cli';
+import type { ProjectWarning } from '#/kernel/entities';
+import { WarningCode, WarningKind } from '#/kernel/entities';
+import { noteSection, warningTextOf } from '#/shared/cli';
 
 import { presetsOutcomeOf, presetsSectionsOf } from '../report.utils';
 
-const warning = {
+const warning: ProjectWarning = {
   code: WarningCode.Unknown,
-  message: 'nope is not a block',
+  details: {
+    name: 'nope',
+  },
+  kind: WarningKind.NameUnknown,
 };
 
 describe('presetsOutcomeOf', () => {
@@ -67,8 +71,8 @@ describe('presetsSectionsOf', () => {
     expect(sections).toStrictEqual([
       noteSection({
         lines: [
-          'unknown: nope is not a block',
-          'unknown: nope is not a block',
+          `unknown: ${warningTextOf(warning)}`,
+          `unknown: ${warningTextOf(warning)}`,
         ],
         title: '2 warnings in the project',
         tone: Tone.Warning,
