@@ -14,9 +14,13 @@ const UNIT = 'packages/api';
 
 const orderPath = `${UNIT}/src/order.utils.ts`;
 const BASE_ORDER = 'export const total = 1;\n';
+const namePath = `${UNIT}/src/name.utils.ts`;
+// more bytes than characters, so a reader that counts characters loses its place after it
+const BASE_NAME = "export const name = 'Дмитро';\n";
 
 const WORKSPACE: Files = {
   '.gitignore': 'dist/\n',
+  [namePath]: BASE_NAME,
   [orderPath]: BASE_ORDER,
   'packages/web/src/order.utils.ts': BASE_ORDER,
 } as const;
@@ -228,37 +232,60 @@ describe('branchIn', () => {
     ]);
   });
 
-  it('should read the text a file of the unit had where the branch left the main line', () => {
+  it('should read the texts the files of the unit had where the branch left the main line, and none for a new one', () => {
     // Arrange
-    const { baseText } = branchOf(join(workspace, UNIT));
+    const { baseTexts } = branchOf(join(workspace, UNIT));
 
     // Act
-    const text = baseText('src/order.utils.ts');
+    const texts = baseTexts([
+      'src/name.utils.ts',
+      'src/line.utils.ts',
+      // a new file whose name holds what reads like the header of an object
+      'src/a 1 2.ts',
+      'src/order.utils.ts',
+    ]);
 
     // Assert
-    expect(text).toBe(BASE_ORDER);
+    expect(texts).toStrictEqual(
+      new Map([
+        [
+          'src/name.utils.ts',
+          BASE_NAME,
+        ],
+        [
+          'src/line.utils.ts',
+          '',
+        ],
+        [
+          'src/a 1 2.ts',
+          '',
+        ],
+        [
+          'src/order.utils.ts',
+          BASE_ORDER,
+        ],
+      ]),
+    );
   });
 
   it('should read the text a file had where the branch left the main line when run from the root', () => {
     // Arrange
-    const { baseText } = branchOf(workspace);
+    const { baseTexts } = branchOf(workspace);
 
     // Act
-    const text = baseText(orderPath);
+    const texts = baseTexts([
+      orderPath,
+    ]);
 
     // Assert
-    expect(text).toBe(BASE_ORDER);
-  });
-
-  it('should read no text for a file the main line never had', () => {
-    // Arrange
-    const { baseText } = branchOf(join(workspace, UNIT));
-
-    // Act
-    const text = baseText('src/line.utils.ts');
-
-    // Assert
-    expect(text).toBe('');
+    expect(texts).toStrictEqual(
+      new Map([
+        [
+          orderPath,
+          BASE_ORDER,
+        ],
+      ]),
+    );
   });
 
   it("should fail with git's reason when the repository has no main line", () => {

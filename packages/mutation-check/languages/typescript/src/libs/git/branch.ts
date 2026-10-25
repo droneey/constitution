@@ -4,7 +4,8 @@ import { spawnSync } from 'node:child_process';
 import { GitError, GitFailure } from './git.error.ts';
 
 interface Branch {
-  readonly baseText: (path: string) => string;
+  // the text each path had where the branch left the main line, empty for a file it never had
+  readonly baseTexts: (paths: readonly string[]) => ReadonlyMap<string, string>;
   readonly diff: string;
   readonly untracked: readonly string[];
 }
@@ -23,6 +24,47 @@ const GIT_OUTPUT_LIMIT_BYTES = 268_435_456;
 
 const TIMED_OUT = 'ETIMEDOUT';
 
+const NEWLINE = 0x0a;
+
+// `cat-file --batch` answers a name with `<id> <type> <size>` and the object's bytes, or with the name
+// and why it has no object, such as `missing`.
+const OBJECT_HEADER = /^[\da-f]+ \S+ (\d+)/;
+
+// The answer is read as bytes, since a size counts bytes and a text may hold several to a character.
+const textsOf = (input: {
+  answer: Buffer;
+  paths: readonly string[];
+}): ReadonlyMap<string, string> => {
+  let offset = 0;
+
+  return new Map(
+    input.paths.map((path) => {
+      const end = input.answer.indexOf(NEWLINE, offset);
+      const size = input.answer.toString('utf8', offset, end).match(OBJECT_HEADER)?.[1];
+      const start = end + 1;
+
+      if (size === undefined) {
+        offset = start;
+
+        return [
+          path,
+          '',
+        ] as const;
+      }
+
+      const stop = start + Number(size);
+
+      // the object's bytes end in a newline of their own
+      offset = stop + 1;
+
+      return [
+        path,
+        input.answer.toString('utf8', start, stop),
+      ] as const;
+    }),
+  );
+};
+
 /**
  * Git reads paths from the folder and lists only its subtree, so a unit of a workspace checks its
  * own changes.
@@ -32,11 +74,12 @@ const TIMED_OUT = 'ETIMEDOUT';
 const branchIn = (input: BranchInput): Branch => {
   const { folder } = input;
 
-  const runGit = (args: readonly string[]): SpawnSyncReturns<string> => {
+  // Stryker disable next-line StringLiteral: only `cat-file --batch` reads its input, and gets one
+  const runGit = (args: readonly string[], stdin = ''): SpawnSyncReturns<Buffer> => {
     const done = spawnSync('git', args, {
       cwd: folder,
-      encoding: 'utf8',
       env: input.env,
+      input: stdin,
       maxBuffer: GIT_OUTPUT_LIMIT_BYTES,
       timeout: input.timeoutMs,
     });
@@ -59,8 +102,8 @@ const branchIn = (input: BranchInput): Branch => {
   };
 
   // A base or a diff git could not give would read as no change, and the gate would pass unchecked.
-  const git = (args: readonly string[]): string => {
-    const done = runGit(args);
+  const git = (args: readonly string[], stdin?: string): Buffer => {
+    const done = runGit(args, stdin);
 
     if (done.status !== 0) {
       throw new GitError({
@@ -68,7 +111,7 @@ const branchIn = (input: BranchInput): Branch => {
         details: {
           args,
           folder,
-          stderr: done.stderr.trim(),
+          stderr: done.stderr.toString().trim(),
         },
       });
     }
@@ -80,17 +123,24 @@ const branchIn = (input: BranchInput): Branch => {
     'merge-base',
     'HEAD',
     MAINLINE,
-  ]).trim();
+  ])
+    .toString()
+    .trim();
 
   return {
-    // `cat-file blob` reads nothing for a file the main line never had, where `show` would take the
-    // name for a path and print the head commit
-    baseText: (path) =>
-      runGit([
-        'cat-file',
-        'blob',
-        `${base}:./${path}`,
-      ]).stdout,
+    // One git for all the paths, `./` resolving each from the folder; a file the main line never had
+    // answers `missing` and reads as empty.
+    baseTexts: (paths) =>
+      textsOf({
+        answer: git(
+          [
+            'cat-file',
+            '--batch',
+          ],
+          paths.map((path) => `${base}:./${path}\n`).join(''),
+        ),
+        paths,
+      }),
     diff: git([
       'diff',
       '-U0',
@@ -99,12 +149,13 @@ const branchIn = (input: BranchInput): Branch => {
       '--relative',
       '--merge-base',
       MAINLINE,
-    ]),
+    ]).toString(),
     untracked: git([
       'ls-files',
       '--others',
       '--exclude-standard',
     ])
+      .toString()
       .split('\n')
       .filter((path) => path !== ''),
   };
