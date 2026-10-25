@@ -6,48 +6,15 @@ on:
       - 'v*'
 
 jobs:
-  pre-release:
-    uses: droneey/.github/.github/workflows/cd-release.yaml@b1df2c9432a507a8c2ff15d19ecf524c6ad9ddf0 # v2.6.0
-    permissions:
-      contents: write
-    with:
-      prerelease: true
-      # The install runs no package's scripts: the archive needs none, and the
-      # docs app's would read presets through a link this job never makes.
-      assets-command: >-
-        npx --yes bun@1.4.3 install --production --frozen-lockfile --ignore-scripts
-        && npx --yes bun@1.4.3 run build
-        && tar -czf constitution.tar.gz -C packages/constitution
-        package.json blocks presets templates tools
-        && sha256sum constitution.tar.gz > constitution.tar.gz.sha256
-      assets: >-
-        constitution.tar.gz constitution.tar.gz.sha256
-
-  # The constitution program for each platform, an archive of bin/constitution
-  # that mise unpacks beside the Constitution's as its additional asset; Bun
-  # builds every platform's from one runner.
-  cli:
-    name: cli (${{ matrix.target }})
-    needs: pre-release
+  # Every file the release carries, built before it opens: an immutable release
+  # takes no file after. The Constitution's archive with its checksum, and the
+  # constitution program for each platform, an archive of bin/constitution that
+  # mise unpacks beside it; Bun builds every platform's from one runner.
+  assets:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
-      contents: write
-    strategy:
-      matrix:
-        include:
-          - target: linux-x64
-            archive: linux-x64
-            program: constitution
-          - target: linux-arm64
-            archive: linux-arm64
-            program: constitution
-          - target: darwin-x64
-            archive: macos-x64
-            program: constitution
-          - target: darwin-arm64
-            archive: macos-arm64
-            program: constitution
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -57,26 +24,45 @@ jobs:
         with:
           version: 2026.10.9
 
-      # The build runs the React Compiler, a development dependency.
+      # The build of the program runs the React Compiler, a development
+      # dependency.
       - name: Install dependencies
         run: bun install --frozen-lockfile --ignore-scripts
 
-      - name: Build the program
-        env:
-          TARGET: ${{ matrix.target }}
-          PROGRAM: ${{ matrix.program }}
-        run: >-
-          bun run build:cli
-          --target "bun-${TARGET}" --outfile "dist/cli/bin/${PROGRAM}"
+      - name: Pack the Constitution
+        run: |
+          bun run build
+          tar -czf constitution.tar.gz -C packages/constitution package.json blocks presets templates tools
+          sha256sum constitution.tar.gz > constitution.tar.gz.sha256
 
-      - name: Pack the archive
-        env:
-          ARCHIVE: ${{ matrix.archive }}
-        run: tar -czf "constitution-${ARCHIVE}.tar.gz" -C dist/cli bin
+      - name: Build the program for each platform
+        run: |
+          for platform in linux-x64:linux-x64 linux-arm64:linux-arm64 darwin-x64:macos-x64 darwin-arm64:macos-arm64; do
+            target="${platform%%:*}"
+            archive="${platform##*:}"
+            bun run build:cli --target "bun-${target}" --outfile "dist/cli/${archive}/bin/constitution"
+            tar -czf "constitution-${archive}.tar.gz" -C "dist/cli/${archive}" bin
+          done
 
-      - name: Upload it to the release
-        env:
-          ARCHIVE: ${{ matrix.archive }}
-          GH_TOKEN: ${{ github.token }}
-          TAG: ${{ github.ref_name }}
-        run: gh release upload "$TAG" "constitution-${ARCHIVE}.tar.gz" --clobber
+      - name: Hand the files to the release
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-assets
+          path: |
+            constitution.tar.gz
+            constitution.tar.gz.sha256
+            constitution-*.tar.gz
+          if-no-files-found: error
+
+  pre-release:
+    needs: assets
+    uses: droneey/.github/.github/workflows/cd-release.yaml@1b247b5e6f351a996ce828435b1a4cd89f387914 # v2.8.0
+    permissions:
+      contents: write
+    with:
+      prerelease: true
+      assets-artifact: release-assets
+      assets: >-
+        constitution.tar.gz constitution.tar.gz.sha256
+        constitution-linux-x64.tar.gz constitution-linux-arm64.tar.gz
+        constitution-macos-x64.tar.gz constitution-macos-arm64.tar.gz
