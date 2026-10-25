@@ -1,0 +1,138 @@
+{
+  "color": {
+    "$type": "color",
+    "$description": "The roles the interface reads in the dark mode, each a step of a scale; the other mode's file names the same roles.",
+    "surface": {
+      "canvas": {
+        "$value": "{color.neutral.950}"
+      },
+      "base": {
+        "$value": "{color.neutral.900}"
+      },
+      "level-1": {
+        "$value": "{color.neutral.850}"
+      },
+      "level-2": {
+        "$value": "{color.neutral.825}"
+      }
+    },
+    "text": {
+      "primary": {
+        "$value": "{color.neutral.50}"
+      },
+      "muted": {
+        "$value": "{color.neutral.400}"
+      },
+      "danger": {
+        "$value": "{color.red.300}"
+      },
+      "success": {
+        "$value": "{color.green.300}"
+      },
+      "warning": {
+        "$value": "{color.orange.300}"
+      },
+      "info": {
+        "$value": "{color.blue.300}"
+      }
+    },
+    "border": {
+      "base": {
+        "$value": "{color.neutral.800}"
+      },
+      "strong": {
+        "$value": "{color.neutral.700}"
+      },
+      "danger": {
+        "$value": "{color.overlay.red-300-35}"
+      },
+      "success": {
+        "$value": "{color.overlay.green-300-35}"
+      }
+    },
+    "fill": {
+      "muted": {
+        "$value": "{color.neutral.850}"
+      },
+      "field": {
+        "$value": "{color.neutral.850}"
+      },
+      "field-hover": {
+        "$value": "{color.neutral.825}"
+      },
+      "hover": {
+        "$value": "{color.overlay.neutral-50-6}"
+      },
+      "danger": {
+        "$value": "{color.overlay.red-600-8}"
+      },
+      "success": {
+        "$value": "{color.overlay.green-600-8}"
+      }
+    },
+    "selection": {
+      "base": {
+        "$value": "{color.brand.800}"
+      }
+    },
+    "ring": {
+      "focus": {
+        "$value": "{color.brand.300}"
+      }
+    },
+    "accent": {
+      "solid": {
+        "$value": "{color.brand.300}"
+      },
+      "hover": {
+        "$value": "{color.brand.200}"
+      },
+      "pressed": {
+        "$value": "{color.brand.100}"
+      },
+      "subtle": {
+        "$value": "{color.brand.900}"
+      },
+      "text": {
+        "$value": "{color.brand.300}"
+      },
+      "end": {
+        "$value": "{color.brand.200}"
+      },
+      "muted": {
+        "$value": "{color.brand.800}"
+      },
+      "on-solid": {
+        "$value": "{color.neutral.950}"
+      }
+    }
+  },
+  "font": {
+    "weight": {
+      "$type": "fontWeight",
+      "normal": {
+        "$value": 370
+      },
+      "medium": {
+        "$value": 470
+      },
+      "semibold": {
+        "$value": 570
+      },
+      "bold": {
+        "$value": 670
+      },
+      "ui": {
+        "$value": 420,
+        "$description": "Interface text: a touch heavier than body text."
+      }
+    }
+  },
+  "stroke": {
+    "$type": "number",
+    "$description": "The stroke of icons, lighter in the dark mode, where light marks spread.",
+    "icon": {
+      "$value": 1.75
+    }
+  }
+}

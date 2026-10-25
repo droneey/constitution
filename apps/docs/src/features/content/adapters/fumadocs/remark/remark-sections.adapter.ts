@@ -1,6 +1,6 @@
 import type { Heading, Root, RootContent } from 'mdast';
 
-import { headingTextOf, isHeading } from '../markdown';
+import { headingTextOf, isHeading, SECTION_HEADING_DEPTH } from '../markdown';
 
 interface SectionsOptions {
   /** by the text of their headings */
@@ -15,8 +15,6 @@ interface Section {
   heading: Heading | undefined;
 }
 
-const SECTION_DEPTH = 2;
-
 const sectionsOf = (children: readonly RootContent[]): Section[] => {
   let current: Section = {
     body: [],
@@ -27,7 +25,7 @@ const sectionsOf = (children: readonly RootContent[]): Section[] => {
   ];
 
   for (const node of children) {
-    if (isHeading(node, SECTION_DEPTH)) {
+    if (isHeading(node, SECTION_HEADING_DEPTH)) {
       current = {
         body: [],
         heading: node,

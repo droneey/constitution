@@ -1,14 +1,14 @@
 import { spawnSync } from 'node:child_process';
 
 import { inPythonProject } from './python-project.fixtures';
-import { ENVIRONMENT, uvBinary } from './uv.fixtures';
+import { uvBinary, uvEnvironment } from './uv.fixtures';
 
 interface CheckOutcome {
   isClean: boolean;
   rules: readonly string[];
 }
 
-const TY = uvBinary('ty');
+const ty = uvBinary('ty');
 const PART = '.droneey/constitution/presets/python/ty/foundation/self.toml';
 const FAILED = 2;
 const FINDING = /^[^:\n]+:\d+:\d+: (?:error|warning)\[(?<rule>[a-z-]+)\]/gm;
@@ -26,13 +26,13 @@ const typeCheck = (source: string): CheckOutcome =>
     },
     run: (folder) => {
       const checking = spawnSync(
-        TY,
+        ty,
         [
           'check',
           '--config-file',
           PART,
           '--python',
-          ENVIRONMENT,
+          uvEnvironment,
           '--output-format',
           'concise',
         ],

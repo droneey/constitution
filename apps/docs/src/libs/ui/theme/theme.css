@@ -1,11 +1,8 @@
-/* biome-ignore lint/plugin/utilities-only-from-tokens: Fumadocs styles its own components with Tailwind's default scales; constitution.yaml lowers the rule for the site */
+/* biome-ignore lint/plugin/utilities-only-from-tokens: Fumadocs needs Tailwind's default scales */
 @theme {
-  /* One layout at every width: the library's medium breakpoint, where it switches to its phone
-     layout, is the smallest screen. */
+  /* The library switches to its phone layout below its medium breakpoint; the site keeps one
+     layout at every width. */
   --breakpoint-md: 0rem;
-
-  --font-sans: 'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'Geist Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
 
   /* The search dialog opens from the keyboard many times a day, so it does not animate. */
   --animate-fd-fade-in: fd-fade-in var(--duration-base) var(--ease-out);
@@ -18,8 +15,8 @@
   --animate-fd-dialog-in: none;
   --animate-fd-dialog-out: none;
 
-  /* The library's colour names on the site's tokens, in place of its default palette, whose
-     unlayered `.dark` block would beat every layer; the callout hues keep the library's values. */
+  /* In place of the library's default palette, whose unlayered `.dark` block would beat every
+     layer; the callout hues keep the library's values. */
   --color-fd-background: var(--color-surface-base);
   --color-fd-foreground: var(--color-text-primary);
   --color-fd-muted: var(--color-fill-muted);
@@ -35,7 +32,7 @@
   --color-fd-secondary-foreground: var(--color-text-primary);
   --color-fd-accent: var(--color-fill-hover);
   --color-fd-accent-foreground: var(--color-text-primary);
-  --color-fd-ring: var(--color-accent-solid);
+  --color-fd-ring: var(--color-ring-focus);
   --color-fd-overlay: hsla(0, 0%, 0%, 0.2);
   --color-fd-info: oklch(62.3% 0.214 259.815);
   --color-fd-warning: oklch(76.9% 0.188 70.08);
@@ -49,131 +46,73 @@
 }
 
 @layer base {
-  html {
-    color-scheme: light dark;
-    font-family: var(--font-sans);
-    -webkit-font-smoothing: antialiased;
-    caret-color: var(--color-accent-solid);
-    -webkit-tap-highlight-color: transparent;
-
-    @supports (scrollbar-gutter: stable) {
-      scrollbar-gutter: stable;
-    }
-
-    @supports (accent-color: auto) {
-      accent-color: var(--color-accent-solid);
-    }
-
-    @supports (scrollbar-color: auto) {
-      scrollbar-color: var(--color-border-strong) transparent;
-    }
+  /* set before focus, so a colour transition never fades the ring in from the text's colour */
+  * {
+    outline-color: var(--color-fd-ring);
   }
 
-  /* biome-ignore lint/nursery/noUnusedClasses: next-themes sets this class on the document */
-  html.light {
-    color-scheme: light;
-  }
-
-  /* biome-ignore lint/nursery/noUnusedClasses: next-themes sets this class on the document */
-  html.dark {
-    color-scheme: dark;
-  }
-
-  button:not(:disabled),
-  summary {
-    cursor: pointer;
-  }
-
-  body {
-    font-weight: var(--font-weight-normal);
-  }
-
-  /* biome-ignore lint/nursery/noUnusedClasses: lucide sets this class on its icons */
-  svg.lucide {
-    stroke-width: var(--stroke-icon);
-  }
-
-  /* biome-ignore lint/nursery/useBaseline: behind @supports selector(), which the linter does not read as a guard */
-  @supports selector(::selection) {
-    /* biome-ignore lint/nursery/useBaseline: behind @supports selector(), which the linter does not read as a guard */
-    ::selection {
-      background-color: var(--color-selection-base);
-    }
-  }
-
-  code,
-  pre,
-  kbd {
-    font-family: var(--font-mono);
-  }
-
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    animation-duration: var(--duration-base);
-    animation-timing-function: var(--ease-out);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    ::view-transition-old(root),
-    ::view-transition-new(root) {
-      animation-duration: 0s;
-    }
+  :where(:focus-visible) {
+    border-radius: var(--radius-sm);
   }
 }
-
-@utility text-gradient-accent {
-  color: var(--color-accent-solid);
-
-  @supports (background-clip: text) {
-    background: linear-gradient(90deg, var(--color-accent-solid), var(--color-accent-end));
-    background-clip: text;
-    color: transparent;
-  }
-}
-
-@utility focusable {
-  /* biome-ignore lint/nursery/useLayeredStyles: Tailwind defines a utility outside every layer */
-  &:focus-visible {
-    outline: 2px solid var(--color-fd-ring);
-    outline-offset: 2px;
-  }
-}
-
-/* The layer comes after the utilities it remaps. */
 
 @layer overrides {
-  /* biome-ignore lint/nursery/noUnusedClasses: the library's own utility class, remapped to the site's motion tokens */
+  :focus-visible {
+    --tw-ring-shadow: 0 0 transparent;
+    outline: var(--ring-focus-width) solid var(--color-fd-ring);
+    outline-offset: var(--ring-focus-offset);
+  }
+
+  :focus:not(:focus-visible),
+  h1[tabindex='-1']:focus {
+    outline: none;
+  }
+
+  /* without it the sidebar loses its hover, and its scrollbar fades out and back, on every page */
+  /* biome-ignore lint/nursery/useBaseline: behind @supports selector(), which the linter does not read as a guard */
+  @supports selector(::view-transition) {
+    /* biome-ignore lint/nursery/useBaseline: behind @supports selector(), which the linter does not read as a guard */
+    ::view-transition {
+      pointer-events: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
+    :is(a, button, [role='menuitemradio']):active {
+      transform: scale(var(--scale-control-pressed));
+      transition-property: color, background-color, border-color, transform;
+      transition-duration: var(--duration-fast);
+      transition-timing-function: var(--ease-out);
+    }
+  }
+}
+
+/* after the utilities it remaps */
+@layer overrides {
+  /* biome-ignore lint/nursery/noUnusedClasses: Fumadocs uses it */
   .duration-100,
-  /* biome-ignore lint/nursery/noUnusedClasses: the library's own utility class, remapped to the site's motion tokens */
+  /* biome-ignore lint/nursery/noUnusedClasses: Fumadocs uses it */
   .duration-150 {
     transition-duration: var(--duration-fast);
   }
 
-  /* biome-ignore lint/nursery/noUnusedClasses: the library's own utility class, remapped to the site's motion tokens */
+  /* biome-ignore lint/nursery/noUnusedClasses: Fumadocs uses it */
   .duration-200,
-  /* biome-ignore lint/nursery/noUnusedClasses: the library's own utility class, remapped to the site's motion tokens */
+  /* biome-ignore lint/nursery/noUnusedClasses: Fumadocs uses it */
   .duration-250,
-  /* biome-ignore lint/nursery/noUnusedClasses: the library's own utility class, remapped to the site's motion tokens */
+  /* biome-ignore lint/nursery/noUnusedClasses: Fumadocs uses it */
   .duration-300,
-  /* biome-ignore lint/nursery/noUnusedClasses: the library's own utility class, remapped to the site's motion tokens */
+  /* biome-ignore lint/nursery/noUnusedClasses: Fumadocs uses it */
   .duration-400,
-  /* biome-ignore lint/nursery/noUnusedClasses: the library's own utility class, remapped to the site's motion tokens */
+  /* biome-ignore lint/nursery/noUnusedClasses: Fumadocs uses it */
   .duration-450 {
     transition-duration: var(--duration-base);
   }
 
-  /* biome-ignore lint/nursery/noUnusedClasses: the library's own utility class, remapped to the site's motion tokens */
+  /* biome-ignore lint/nursery/noUnusedClasses: Fumadocs uses it */
   .ease-out,
-  /* biome-ignore lint/nursery/noUnusedClasses: the library's own utility class, remapped to the site's motion tokens */
+  /* biome-ignore lint/nursery/noUnusedClasses: Fumadocs uses it */
   .ease-in-out {
     transition-timing-function: var(--ease-out);
-  }
-
-  @media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
-    button:active {
-      transform: scale(0.98);
-      transition-property: color, background-color, border-color, transform;
-      transition-duration: var(--duration-fast);
-    }
   }
 }

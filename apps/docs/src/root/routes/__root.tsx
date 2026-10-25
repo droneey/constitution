@@ -2,22 +2,27 @@ import type { ReactElement } from 'react';
 
 import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from '@tanstack/react-router';
 
-import { RootProvider } from 'fumadocs-ui/provider/tanstack';
+import { ThemeProvider } from '@droneey/design-browser/react-dom';
 
-import { DocsFrameContext, DocsSearchWidget } from '#/composition/docs';
+import { DocsBuiltVersionContext, DocsFrameContext, DocsSearchWidget } from '#/composition/docs';
 import { documentFrame } from '#/composition/docs/adapters/document';
-import { createGetVersions, GetVersionsContext } from '#/features/versions';
+import { createGetVersions, createVersion, GetVersionsContext } from '#/features/versions';
 import { createStaticFileVersionsRepository } from '#/features/versions/adapters/static-file';
-import { appName, mainContentId } from '#/shared/constants';
+import { RootProvider } from '#/libs/ui';
+import { APP_NAME, MAIN_CONTENT_ID } from '#/shared/constants';
 
+import brand from '../../../../../brand.tokens.json' with { type: 'json' };
 import appCss from '../app.css?url';
-import { translations } from '../constants';
+import { TRANSLATIONS } from '../constants';
 import type { RouterContext } from '../wiring';
 
 const getVersions = createGetVersions(createStaticFileVersionsRepository('/versions.json'));
 
+const builtVersion = createVersion(import.meta.env.VITE_CONSTITUTION_VERSION);
+
 // a modifier, so a key typed for a screen reader or a speech command never switches the theme
-const isThemeHotKey = (e: KeyboardEvent): boolean => e.altKey && e.shiftKey && e.code === 'KeyD';
+const isThemeHotKey = (event: KeyboardEvent): boolean =>
+  event.altKey && event.shiftKey && event.code === 'KeyD';
 
 function RootComponent(): ReactElement {
   return (
@@ -30,29 +35,33 @@ function RootComponent(): ReactElement {
       </head>
       <body className='flex flex-col min-h-svh'>
         <a
-          className='focusable sr-only z-60 rounded-lg bg-fd-primary text-sm font-medium text-fd-primary-foreground focus:not-sr-only focus:fixed focus:top-xs focus:start-xs focus:inline-flex focus:h-control-md focus:items-center focus:px-sm'
-          href={`#${mainContentId}`}
+          className='focusable sr-only z-surface-top rounded-lg bg-fd-primary text-sm font-medium text-fd-primary-foreground focus:not-sr-only focus:fixed focus:top-xs focus:inset-s-xs focus:inline-flex focus:h-control-md focus:items-center focus:px-sm'
+          href={`#${MAIN_CONTENT_ID}`}
         >
           Skip to content
         </a>
-        <RootProvider
-          i18n={{
-            translations,
-          }}
-          search={{
-            // biome-ignore lint/style/useNamingConvention: Fumadocs' root provider names the search dialog's slot SearchDialog
-            SearchDialog: DocsSearchWidget,
-          }}
-          theme={{
-            hotKey: isThemeHotKey,
-          }}
-        >
-          <GetVersionsContext value={getVersions}>
-            <DocsFrameContext value={documentFrame}>
-              <Outlet />
-            </DocsFrameContext>
-          </GetVersionsContext>
-        </RootProvider>
+        <ThemeProvider accent={brand}>
+          <RootProvider
+            i18n={{
+              translations: TRANSLATIONS,
+            }}
+            search={{
+              // biome-ignore lint/plugin/compound-parts-share-the-root-context: Fumadocs' root provider names the search dialog's slot SearchDialog
+              SearchDialog: DocsSearchWidget,
+            }}
+            theme={{
+              hotKey: isThemeHotKey,
+            }}
+          >
+            <GetVersionsContext value={getVersions}>
+              <DocsBuiltVersionContext value={builtVersion}>
+                <DocsFrameContext value={documentFrame}>
+                  <Outlet />
+                </DocsFrameContext>
+              </DocsBuiltVersionContext>
+            </GetVersionsContext>
+          </RootProvider>
+        </ThemeProvider>
         <Scripts />
       </body>
     </html>
@@ -70,7 +79,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: appName,
+        title: APP_NAME,
       },
     ],
     links: [

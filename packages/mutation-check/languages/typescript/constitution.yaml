@@ -1,0 +1,22 @@
+axes:
+  - architecture
+  - workflow
+domains:
+  - workspace
+platforms: []
+languages:
+  - typescript
+  - json
+  - toml
+  - yaml
+implementations:
+  - bun
+  - tsc
+  - biome
+  - dependency-cruiser
+  - knip
+  - yamllint
+  - bun-test
+  - stryker
+packs: []
+overrides: []

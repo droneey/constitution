@@ -24,7 +24,7 @@ A `.ts` or `.tsx` file in `__tests__/` or `tests/` is a `.test`, `.<kind>.test`,
 
 ### source-file-named-in-kebab-case → file-name-in-its-owners-case · MUST
 
-A source file is a kebab-case `.ts` or `.tsx` file, save a name a framework or a tool reads by its spelling, which its block names.
+A source file is a kebab-case **`.ts`** or **`.tsx`** file, save a name a framework or a tool reads by its spelling, which its block names.
 
 | Why | Tags |
 |---|---|

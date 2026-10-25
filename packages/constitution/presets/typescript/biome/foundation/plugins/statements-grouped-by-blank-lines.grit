@@ -1,0 +1,217 @@
+language js
+
+pattern declaration() { JsVariableStatement() }
+
+pattern compound() {
+  or {
+    JsIfStatement(),
+    JsForStatement(),
+    JsForInStatement(),
+    JsForOfStatement(),
+    JsWhileStatement(),
+    JsDoWhileStatement(),
+    JsSwitchStatement(),
+    JsTryStatement(),
+    JsTryFinallyStatement()
+  }
+}
+
+pattern jump() {
+  or {
+    JsReturnStatement(),
+    JsThrowStatement(),
+    JsBreakStatement(),
+    JsContinueStatement()
+  }
+}
+
+pattern deletion() { JsExpressionStatement(expression=`delete $_`) }
+
+pattern function_like() {
+  or {
+    JsFunctionDeclaration(),
+    JsVariableStatement(declaration=JsVariableDeclaration(declarators=some JsVariableDeclarator(initializer=JsInitializerClause(expression=or {
+      JsArrowFunctionExpression(),
+      JsFunctionExpression()
+    }))))
+  }
+}
+
+pattern statement() {
+  or {
+    declaration(),
+    compound(),
+    jump(),
+    JsExpressionStatement(),
+    JsFunctionDeclaration(),
+    JsClassDeclaration(),
+    JsBlockStatement(),
+    JsLabeledStatement(),
+    JsEmptyStatement(),
+    JsDebuggerStatement(),
+    JsWithStatement()
+  }
+}
+
+// GritQL patterns cannot recurse, so a member chain is unrolled to three accesses and a group to eight statements.
+pattern member1($id) {
+  or {
+    $id,
+    JsStaticMemberExpression(object=$id),
+    JsComputedMemberExpression(object=$id)
+  }
+}
+pattern member2($id) {
+  or {
+    member1($id),
+    JsStaticMemberExpression(object=member1($id)),
+    JsComputedMemberExpression(object=member1($id))
+  }
+}
+pattern member3($id) {
+  or {
+    member2($id),
+    JsStaticMemberExpression(object=member2($id)),
+    JsComputedMemberExpression(object=member2($id))
+  }
+}
+
+// A call or an assignment on the variable or one of its members.
+pattern operates_on($id) {
+  JsExpressionStatement(expression=or {
+    JsCallExpression(callee=member3($id)),
+    JsAssignmentExpression(left=or {
+      $id,
+      JsStaticMemberAssignment(object=member2($id)),
+      JsComputedMemberAssignment(object=member2($id))
+    })
+  })
+}
+
+pattern declares($id) {
+  JsVariableStatement(declaration=JsVariableDeclaration(declarators=[
+    JsVariableDeclarator(id=$id)
+  ])) where { $id <: JsIdentifierBinding() }
+}
+
+// A declaration of one variable, or a statement operating on it that the declaration's group runs on to.
+pattern group1($id) {
+  or {
+    declares($id),
+    and { after declares($id),
+    operates_on($id) }
+  }
+}
+pattern group2($id) {
+  or {
+    declares($id),
+    and { after group1($id),
+    operates_on($id) }
+  }
+}
+pattern group3($id) {
+  or {
+    declares($id),
+    and { after group2($id),
+    operates_on($id) }
+  }
+}
+pattern group4($id) {
+  or {
+    declares($id),
+    and { after group3($id),
+    operates_on($id) }
+  }
+}
+pattern group5($id) {
+  or {
+    declares($id),
+    and { after group4($id),
+    operates_on($id) }
+  }
+}
+pattern group6($id) {
+  or {
+    declares($id),
+    and { after group5($id),
+    operates_on($id) }
+  }
+}
+pattern group7($id) {
+  or {
+    declares($id),
+    and { after group6($id),
+    operates_on($id) }
+  }
+}
+pattern group8($id) {
+  or {
+    declares($id),
+    and { after group7($id),
+    operates_on($id) }
+  }
+}
+
+// Spaces and comments only, with a comment on every line between the two statements.
+pattern gap_without_blank_line() {
+  r"(?:[ \t]|//[^\n]*|/\*(?s:.*?)\*/)*(?:\n[ \t]*(?://[^\n]*|/\*(?s:.*?)\*/)(?:[ \t]|//[^\n]*|/\*(?s:.*?)\*/)*)*(?:\n[ \t]*)?"
+}
+
+statement() as $b where {
+  $b <: after $a,
+  $a <: statement(),
+  or {
+    $a <: or {
+      compound(),
+      jump(),
+      deletion(),
+      function_like()
+    },
+    $b <: or {
+      compound(),
+      jump(),
+      deletion(),
+      function_like()
+    },
+    and { $b <: declaration(), $a <: not declaration() },
+    and {
+      $b <: not declaration(),
+      $a <: or {
+        declaration(),
+        group8($_)
+      },
+      not and { $a <: group8($id), $b <: operates_on($id) }
+    }
+  },
+  $b <: within or {
+    JsFunctionBody(),
+    JsBlockStatement(),
+    JsCaseClause(),
+    JsDefaultClause(),
+    JsStaticInitializationBlockClassMember(),
+    JsModule(),
+    JsScript()
+  } as $c,
+  // A node's text leaves out the lines around it, so the gap between the two statements is read from
+  // their container's text: after the one before, or before this one, whichever the other does not contain.
+  $text = text($c),
+  or {
+    and {
+      $after_a = split($text, text($a)),
+      $after_a <: some $p where {
+        $q = split($p, text($b)),
+        $q <: [$gap, $_, ...],
+        $gap <: gap_without_blank_line()
+      }
+    },
+    and {
+      $before_b = split($text, text($b)),
+      $before_b <: some $r where {
+        $s = split($r, text($a)),
+        $s <: [$_, ..., $gap],
+        $gap <: gap_without_blank_line()
+      }
+    }
+  },
+  register_diagnostic(span=$b, message="Put a blank line before this statement: a compound statement, a return, throw, break or continue, a delete and a function stand apart, and a declaration's group, the declaration and the statements operating on its variable, ends with one", severity="error")
+}

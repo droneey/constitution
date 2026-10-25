@@ -12,4 +12,6 @@ export default {
   tsconfigFile: 'stryker-has-no-tsconfig.json',
   // biome-ignore lint/style/useNamingConvention: Stryker names the option timeoutMS
   timeoutMS: 30_000,
+  // Half the cores leave the machine free for the work around the run.
+  concurrency: '50%',
 };

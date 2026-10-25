@@ -6,7 +6,7 @@
 
 ### versions-follow-semver · MUST
 
-Versions follow semantic versioning: major for a breaking change of an entry, minor for an addition, patch for a fix.
+Versions follow **semantic versioning**, **semver** for short: major for a breaking change of an entry, minor for an addition, patch for a fix; a **pre-release** carries its label after a hyphen, as `2.0.0-rc.1`.
 
 | Why | Tags |
 |---|---|

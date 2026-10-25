@@ -5,10 +5,11 @@ requires: [git, json]
 extends: null
 abstract: false
 languages: []
-dictionary: [Renovate, renovate.json, renovate.json5, .renovaterc]
 governs: ["renovate.json"]
 ---
 
 # Renovate
 
-> The bot that proposes dependency updates.
+> **Renovate**, the bot that proposes dependency updates.
+
+Of the files it reads its settings from — **`renovate.json`**, **`renovate.json5`** and **`.renovaterc`** — the fleet uses the first.

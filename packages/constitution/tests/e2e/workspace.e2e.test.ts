@@ -14,8 +14,8 @@ import {
   manifestOf,
   PRESETS,
   PYTHON_PACKAGES,
-  REPOSITORY,
   removeWorkspace,
+  repository,
   runTool,
   UNITS,
   write,
@@ -37,7 +37,7 @@ afterEach(() => {
   }
 });
 
-const DEPENDENCY_CRUISER = configFromTemplate(
+const dependencyCruiser = configFromTemplate(
   [
     'self',
     'core',
@@ -48,7 +48,7 @@ const DEPENDENCY_CRUISER = configFromTemplate(
 );
 
 // Each TypeScript package's own parts, from its folder, in the order ratify computes them.
-const CRUISER_PARTS = [
+const cruiserParts = [
   'self',
   'core',
   'typescript',
@@ -63,12 +63,12 @@ const cruisers = Object.fromEntries(
     `${folder}/.dependency-cruiser.mjs`,
     cruiserOf({
       depth: depthOf(folder),
-      parts: CRUISER_PARTS,
+      parts: cruiserParts,
     }),
   ]),
 );
 
-const STRYKER = `import bunTest from '../../${PRESETS}/stryker/foundation/bun-test.mjs';
+const stryker = `import bunTest from '../../${PRESETS}/stryker/foundation/bun-test.mjs';
 import core from '../../${PRESETS}/stryker/foundation/core.mjs';
 import self from '../../${PRESETS}/stryker/foundation/self.mjs';
 
@@ -223,7 +223,7 @@ describe('a workspace on the presets', () => {
   it('should report units-imported-by-name when a package imports another by a path into its folder', () => {
     // Arrange
     const folder = workspace({
-      '.dependency-cruiser.mjs': DEPENDENCY_CRUISER,
+      '.dependency-cruiser.mjs': dependencyCruiser,
       'packages/money/src/kernel/constants/index.ts': 'export const ZERO = 0;\n',
       'packages/orders/src/kernel/constants/price.constants.ts':
         "import { ZERO } from '../../../../../packages/money/src/kernel/constants/index.ts';\n\nexport const price = ZERO;\n",
@@ -351,7 +351,7 @@ describe('a workspace on the presets', () => {
     const folder = workspace({
       'apps/web/bunfig.mutation.toml':
         '[test]\nroot = "./src"\npathIgnorePatterns = ["**/main.test.*"]\ncoverage = false\n',
-      'apps/web/stryker.config.mjs': STRYKER,
+      'apps/web/stryker.config.mjs': stryker,
     });
 
     commitBase(folder);
@@ -368,7 +368,7 @@ describe('a workspace on the presets', () => {
     // Act
     const { output, passed } = runTool(folder, {
       args: [
-        join(REPOSITORY, 'node_modules', '.bin', 'mutation-check'),
+        join(repository, 'node_modules', '.bin', 'mutation-check'),
       ],
       folder: 'apps/web',
       program: 'bun',

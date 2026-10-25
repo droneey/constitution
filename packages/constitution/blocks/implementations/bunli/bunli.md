@@ -5,13 +5,12 @@ requires: [bun, cli]
 extends: null
 abstract: false
 languages: []
-dictionary: [bunli]
 governs: ["**/*.cli.ts"]
 ---
 
 # bunli
 
-> The command framework of a Bun program.
+> **`bunli`**, the command framework of a Bun program.
 
 ## Requirements
 

@@ -5,8 +5,7 @@
 /.droneey
 
 # core: build
-**/dist/
-**/coverage/
+/dist/
 
 # core: IDE
 .claude/settings.local.json
@@ -16,29 +15,19 @@
 /local/
 
 # typescript: dependencies
-**/node_modules/
+/node_modules/
 
-# typescript: caches
-*.tsbuildinfo
+# mise
+/mise.local.toml
 
-# tsc: the declarations and build info of a unit's project
-.tsc-cache/
+# python: environments
+.venv/
 
-# stryker
-.stryker-tmp/
-
-# python: bytecode
-__pycache__/
-
-# pytest: caches and coverage
-.pytest_cache/
-.coverage
+# ruff
+.ruff_cache/
 
 # complexipy
 .complexipy_cache/
 
-# mutmut
-mutants/
-
-# mise
-mise.local.toml
+# rumdl
+.rumdl_cache/

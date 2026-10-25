@@ -1,0 +1,17 @@
+language js
+
+or {
+  or {
+    JsPropertyObjectMember(name=$name),
+    JsShorthandPropertyObjectMember(name=$name)
+  } where {
+    $name <: r"[_$]*[A-Z][A-Za-z0-9]*[_$]*",
+    $name <: not within `Object.assign($_, $_)`,
+    register_diagnostic(span=$name, message="Only a compound's part, attached to its root by Object.assign, is a PascalCase key: name this one in camelCase", severity="error")
+  },
+  TsPropertySignatureTypeMember(name=$name) where {
+    $name <: r"[_$]*[A-Z][A-Za-z0-9]*[_$]*",
+    $name <: not within JsVariableDeclarator(initializer=JsInitializerClause(expression=`Object.assign($_, $_)`)),
+    register_diagnostic(span=$name, message="Only a compound's part, attached to its root by Object.assign, is a PascalCase key: name this one in camelCase", severity="error")
+  }
+}

@@ -1,0 +1,20 @@
+@layer overrides {
+  a[data-card] + button[aria-live] {
+    &:focus-visible {
+      opacity: 1;
+    }
+
+    @media (pointer: coarse) {
+      opacity: 1;
+    }
+  }
+
+  [role='main'] > nav:last-child > a {
+    background-color: var(--color-fill-field);
+    transition: background-color var(--duration-fast) var(--ease-standard);
+
+    &:hover {
+      background-color: var(--color-fill-field-hover);
+    }
+  }
+}

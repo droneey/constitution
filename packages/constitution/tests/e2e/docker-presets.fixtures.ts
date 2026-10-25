@@ -12,13 +12,13 @@ interface Lint {
   exitCode: number | undefined;
 }
 
-const HADOLINT_REPORT = z.array(
+const hadolintReport = z.array(
   z.object({
     code: z.string(),
   }),
 );
 
-const DCLINT_REPORT = z.array(
+const dclintReport = z.array(
   z.object({
     messages: z.array(
       z.object({
@@ -28,10 +28,10 @@ const DCLINT_REPORT = z.array(
   }),
 );
 
-const REPOSITORY = join(import.meta.dir, '..', '..');
-const PRESETS = join(REPOSITORY, 'presets');
-const DCLINT = join(REPOSITORY, 'node_modules', '.bin', 'dclint');
-const HADOLINT = miseBinary('hadolint');
+const repository = join(import.meta.dir, '..', '..');
+const presets = join(repository, 'presets');
+const dclint = join(repository, 'node_modules', '.bin', 'dclint');
+const hadolint = miseBinary('hadolint');
 
 const inFolder = <TResult>(input: {
   file: string;
@@ -58,12 +58,12 @@ const lintDockerfile = (text: string): Lint =>
     file: 'Dockerfile',
     run: (path: string): Lint => {
       const run = spawnSync(
-        HADOLINT,
+        hadolint,
         [
           '--format',
           'json',
           '--config',
-          join(PRESETS, 'dockerfile', 'hadolint', 'foundation', 'dockerfile.yaml'),
+          join(presets, 'dockerfile', 'hadolint', 'foundation', 'dockerfile.yaml'),
           path,
         ],
         {
@@ -72,7 +72,7 @@ const lintDockerfile = (text: string): Lint =>
       );
 
       return {
-        codes: HADOLINT_REPORT.parse(JSON.parse(run.stdout)).map(({ code }) => code),
+        codes: hadolintReport.parse(JSON.parse(run.stdout)).map(({ code }) => code),
         exitCode: run.status ?? undefined,
       };
     },
@@ -84,12 +84,12 @@ const lintCompose = (text: string): Lint =>
     file: 'compose.yaml',
     run: (path: string): Lint => {
       const run = spawnSync(
-        DCLINT,
+        dclint,
         [
           '--formatter',
           'json',
           '--config',
-          join(PRESETS, 'yaml', 'dclint', 'foundation', 'compose.yaml'),
+          join(presets, 'yaml', 'dclint', 'foundation', 'compose.yaml'),
           path,
         ],
         {
@@ -98,9 +98,9 @@ const lintCompose = (text: string): Lint =>
       );
 
       return {
-        codes: DCLINT_REPORT.parse(JSON.parse(run.stdout)).flatMap(({ messages }) =>
-          messages.map(({ rule }) => rule),
-        ),
+        codes: dclintReport
+          .parse(JSON.parse(run.stdout))
+          .flatMap(({ messages }) => messages.map(({ rule }) => rule)),
         exitCode: run.status ?? undefined,
       };
     },

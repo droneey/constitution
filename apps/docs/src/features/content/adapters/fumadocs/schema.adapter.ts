@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { pageSchema } from 'fumadocs-core/source/schema';
 import { z } from 'zod';
 
-import { summaryLineOf, titleOf } from '../../domain/utils';
+import { summaryLineOf, titleOf } from '../../domain/entities';
 import { plainTextOf } from './markdown';
 
 interface MarkdownFields {

@@ -7,7 +7,7 @@ const exported = (name: string): string => `export const ${name} = 1;\n`;
 const importing = (input: { from: string; name: string }): string =>
   `import { ${input.name} } from '${input.from}';\nexport const uses = ${input.name};\n`;
 
-const WELL_FORMED = {
+const wellFormed = {
   'src/adapters/mail/index.ts': "export { sendMail } from './mail.adapter';\n",
   'src/adapters/mail/mail.adapter.ts': importing({
     from: '../../libs/smtp',
@@ -72,7 +72,7 @@ const UNITS: Readonly<Record<string, string>> = {
   money: 'packages/money',
   smtp: 'packages/smtp',
   web: 'apps/web',
-};
+} as const;
 
 const workspaceProject = (files: Readonly<Record<string, string>>) => ({
   files: {
@@ -123,7 +123,7 @@ describe('the dependency-cruiser layer set', () => {
   it('should report no violation when an application follows the layer matrix', () => {
     // Arrange
     const project = {
-      files: WELL_FORMED,
+      files: wellFormed,
     };
 
     // Act
@@ -1351,6 +1351,41 @@ describe('the development files the parts name', () => {
         parts: [
           'typescript/storybook',
         ],
+      };
+
+      // Act
+      const { violations } = cruise(project);
+
+      // Assert
+      expect(violations.includes('no-development-dependency-in-production')).toBe(reported);
+    },
+  );
+
+  it.each([
+    {
+      condition: 'a build tool the project names imports a development dependency',
+      file: 'src/entrypoints/build/main.ts',
+      reported: false,
+    },
+    {
+      condition: 'production code beside the build tool imports the development dependency',
+      file: 'src/libs/ui/button.ts',
+      reported: true,
+    },
+  ])(
+    "should report no-development-dependency-in-production only for production code when $condition by the project's own settings",
+    ({ file, reported }) => {
+      // Arrange
+      const project = {
+        files: {
+          [file]: "import { devtool } from 'devtool';\nexport const shown = devtool;\n",
+        },
+        own: {
+          developmentFiles: [
+            '^src/entrypoints/build/',
+          ],
+        },
+        parts: [],
       };
 
       // Act

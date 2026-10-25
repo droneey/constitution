@@ -5,7 +5,6 @@ requires: []
 extends: null
 abstract: false
 languages: []
-dictionary: []
 governs: ["**"]
 ---
 

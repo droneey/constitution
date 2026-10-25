@@ -5,7 +5,6 @@ requires: [typescript]
 extends: null
 abstract: false
 languages: []
-dictionary: []
 governs: ["**/adapters/**"]
 ---
 

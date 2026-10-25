@@ -5,10 +5,9 @@ requires: []
 extends: null
 abstract: false
 languages: []
-dictionary: [Dockerfile, .dockerignore]
 governs: ["**/Dockerfile", "**/*.Dockerfile", "**/.dockerignore"]
 ---
 
 # Dockerfile
 
-> The file a container image is built from, step by step, and the `.dockerignore` that trims the context its build is sent: what it pins, how its steps fail, the user it runs as and the secrets it never keeps.
+> The **Dockerfile** a container image is built from, step by step, and the **`.dockerignore`** that trims the context its build is sent: what it pins, how its steps fail, the user it runs as and the secrets it never keeps.

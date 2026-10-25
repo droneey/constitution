@@ -19,6 +19,8 @@ yamllint = "1.38.0"
 postinstall = [
   "mkdir -p .droneey",
   "ln -sfn ../packages/constitution .droneey/constitution",
+  # the constitution program, run from its sources: bun puts it on PATH in ~/.bun/bin
+  "cd packages/constitution && bun link",
   "lefthook install",
   "uv sync --locked",
 ]

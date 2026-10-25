@@ -9,3 +9,4 @@ export { remarkRelease } from './remark-release.adapter';
 export { remarkRepoLinks } from './remark-repo-links.adapter';
 export type { SectionsOptions } from './remark-sections.adapter';
 export { remarkSections } from './remark-sections.adapter';
+export { remarkTerms } from './remark-terms.adapter';

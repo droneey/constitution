@@ -2,11 +2,13 @@
 
 > Governs the suffixes of Nest's files and their place in the tree, what a feature's module imports and takes from the root, global modules, and where NestJS is imported.
 
+A module's file ends in **`.module.ts`** and a controller's in **`.controller.ts`**; a token bound to its implementation by `useClass` or `useFactory` ends in **`.provider.ts`**, and the framework's providers of a request in **`.filter.ts`**, **`.pipe.ts`**, **`.guard.ts`** and **`.interceptor.ts`**.
+
 ## General
 
 ### nestjs-files-in-the-tree → package-laid-out-by-the-tree · SHOULD
 
-The root's module, `root/root.module.ts`, is the program's wiring file and imports the modules of features and of composition; a feature's module is `<feature>.module.ts` in its `app/`, and a composition module's is `<name>.module.ts` in `composition/<name>/app/`. A controller is `<name>.controller.ts` in the `app/` of the feature it serves alone, or of the composition module whose features it composes. A custom provider and a provider of a request sit in the `providers/` folder beside the module that lists them; a class the program writes — a use-case, an adapter, a repository — keeps the suffix of its role. A `providers/` folder holds only `.provider`, `.filter`, `.pipe`, `.guard` and `.interceptor` files, and its surface.
+The root's module, `root/root.module.ts`, is the program's wiring file and imports the modules of features and of composition; a feature's module is `<feature>.module.ts` in its `app/`, and a composition module's is `<name>.module.ts` in `composition/<name>/app/`. A controller is `<name>.controller.ts` in the `app/` of the feature it serves alone, or of the composition module whose features it composes. A custom provider and a provider of a request sit in the `providers/` folder beside the module that lists them; a class the program writes — a use-case, an adapter, a repository — keeps the suffix of its role. A `providers/` folder holds only `.provider.ts`, `.filter.ts`, `.pipe.ts`, `.guard.ts` and `.interceptor.ts` files, and its surface.
 
 | Why | Tags |
 |---|---|

@@ -5,13 +5,12 @@ requires: [json]
 extends: null
 abstract: false
 languages: [typescript, css, json]
-dictionary: [Biome, biome.json, biome-ignore, GritQL, .grit]
 governs: ["biome.json", "**/*.grit"]
 ---
 
 # Biome
 
-> Formats and lints.
+> **Biome** formats and lints, by its settings in **`biome.json`**, with rules of our own in **GritQL**.
 
 The limits are errors, with both line limits off under `**/__tests__/**`; `useMaxParams` counts positional parameters, while whether values make one whole is reviewed.
 

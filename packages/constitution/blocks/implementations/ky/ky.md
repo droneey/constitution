@@ -5,13 +5,12 @@ requires: [typescript, remote-service]
 extends: null
 abstract: false
 languages: []
-dictionary: [ky]
 governs: ["**/providers/**", "**/adapters/**"]
 ---
 
 # ky
 
-> The HTTP client of the transport.
+> **`ky`**, the HTTP client of the transport.
 
 ## Requirements
 

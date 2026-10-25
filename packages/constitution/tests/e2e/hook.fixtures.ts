@@ -1,10 +1,11 @@
 import { spawnSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { chmodSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { CORE_TEXT } from './constitution.fixtures';
+import { cliFolder } from './cli.fixtures';
+import { coreText } from './constitution.fixtures';
 import { archiveOf, coreBodyOfBytes, createPluginRoot, linkArchive } from './plugin-root.fixtures';
 
 enum HookEvent {
@@ -46,7 +47,7 @@ interface HookOutput {
 }
 
 // CI's macOS entry of the hooks matrix sets HOOK_SHELL=/bin/bash to run the hook under bash 3.2.
-const SHELL: string = process.env['HOOK_SHELL'] ?? 'bash';
+const shell: string = process.env['HOOK_SHELL'] ?? 'bash';
 const WARNINGS = '⚠️ Warnings';
 // A session carries the user's locale; the hook must not depend on it.
 const LOCALE = 'en_US.UTF-8';
@@ -54,9 +55,10 @@ const PLACEHOLDER = '@';
 const NOT_UTF8 = 0xe9;
 // A hook that blocks, on a named pipe say, fails its case instead of the run.
 const TIMEOUT_MS = 20_000;
-// The day the hook's `date` prints: the spec never reads the real clock.
+// The day the hook's clock gives, by the variable the root reads: the spec never reads the real clock.
 const HOOK_TODAY = '2026-06-15';
-const EXECUTABLE = 0o755;
+const TODAY_VARIABLE = 'CONSTITUTION_TODAY';
+const HOOK = 'hook.sh';
 
 // Claude Code names the event's fields in snake case.
 const eventOf = (input: {
@@ -120,23 +122,10 @@ const inputOf = (input: {
   return bytes;
 };
 
-// A `date` of the test's own, first on the hook's PATH, in a folder of its own:
-// the plugin root may be this repository, which a spec never writes to.
-const createFakeClock = (): string => {
-  const folder = mkdtempSync(join(tmpdir(), 'constitution-clock-'));
-  const date = join(folder, 'date');
-
-  writeFileSync(date, `#!/bin/sh\necho ${HOOK_TODAY}\n`);
-  chmodSync(date, EXECUTABLE);
-
-  return folder;
-};
-
 // A clean environment: the session that runs the tests sets CLAUDE_PROJECT_DIR
 // and CLAUDE_PLUGIN_ROOT of its own.
 const runHook = (call: HookCall): HookRun => {
   const cwd = join(call.project, call.cwd ?? '');
-  const clock = createFakeClock();
 
   if (call.unlinked !== true) {
     linkArchive({
@@ -144,10 +133,12 @@ const runHook = (call: HookCall): HookRun => {
       project: call.project,
     });
   }
+
   const hookRun = spawnSync(
-    SHELL,
+    shell,
     [
-      join(call.root, 'hooks', 'session-start.sh'),
+      join(call.root, 'hooks', HOOK),
+      'session-start',
     ],
     {
       cwd: call.spawnOutside !== true && existsSync(cwd) ? cwd : tmpdir(),
@@ -156,7 +147,7 @@ const runHook = (call: HookCall): HookRun => {
       env: Object.fromEntries([
         [
           'PATH',
-          `${clock}:${process.env['PATH'] ?? ''}`,
+          `${cliFolder}:${process.env['PATH'] ?? ''}`,
         ],
         [
           'LANG',
@@ -165,6 +156,10 @@ const runHook = (call: HookCall): HookRun => {
         [
           'LC_ALL',
           LOCALE,
+        ],
+        [
+          TODAY_VARIABLE,
+          HOOK_TODAY,
         ],
         ...(call.pluginRootUnset === true
           ? []
@@ -191,11 +186,6 @@ const runHook = (call: HookCall): HookRun => {
       }),
     },
   );
-
-  rmSync(clock, {
-    force: true,
-    recursive: true,
-  });
 
   return {
     exitCode: hookRun.status ?? undefined,
@@ -423,11 +413,11 @@ enum Edge {
 
 // The bytes of a core body that put the edge `past` bytes beyond the room the
 // budget leaves, measured on `context`: the digest of a project whose list fits
-// whole, under the plugin root whose core holds CORE_TEXT.
+// whole, under the plugin root whose core holds coreText.
 const coreBodyAt = (input: { context: string; edge: Edge; past: number }): number => {
   const list = blockListOf(input.context);
   const beyond = input.edge === Edge.Heading ? bytesOf(list.slice(1)) : 0;
-  const rest = bytesAfterHeader(input.context) - Buffer.byteLength(CORE_TEXT) - beyond;
+  const rest = bytesAfterHeader(input.context) - Buffer.byteLength(coreText) - beyond;
 
   return BUDGET - LEFT_OUT_RESERVE + input.past - rest;
 };
@@ -474,9 +464,10 @@ const runScript = (call: {
   script: string;
 }): HookRun => {
   const hookRun = spawnSync(
-    SHELL,
+    shell,
     [
-      join(call.root, 'hooks', call.script),
+      join(call.root, 'hooks', HOOK),
+      call.script.replace(/\.sh$/u, ''),
     ],
     {
       cwd: tmpdir(),
@@ -496,8 +487,12 @@ const runScript = (call: {
           LOCALE,
         ],
         [
+          TODAY_VARIABLE,
+          HOOK_TODAY,
+        ],
+        [
           'PATH',
-          process.env['PATH'] ?? '',
+          `${cliFolder}:${process.env['PATH'] ?? ''}`,
         ],
       ]),
       input: JSON.stringify(call.event),

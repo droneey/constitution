@@ -6,7 +6,7 @@
 
 ### commit-header-type-and-subject · MUST
 
-A commit's header follows Conventional Commits 1.0.0 as `type: Subject`, with one of four types: `feat` adds behaviour; `fix` fixes a bug; `refactor` changes structure without changing behaviour; `chore` is everything else that changes no behaviour — dependencies, tooling, documentation, releases. A breaking change is marked by `!` right before the colon: `feat!: Split the settings`. No scope; at most 100 characters; the subject starts with a capital letter and is in the imperative.
+A commit's header makes it a **conventional commit**, by Conventional Commits 1.0.0: `type: Subject`, with one of four types: **`feat`**, written `feat:`, adds behaviour; `fix:` fixes a bug; `refactor:` changes structure without changing behaviour; `chore:` is everything else that changes no behaviour — dependencies, tooling, documentation, releases. A breaking change is marked by `!` right before the colon, as in `feat!: Split the settings`. No scope; at most 100 characters; the subject starts with a capital letter and is in the imperative.
 
 | Why | Tags |
 |---|---|
@@ -30,7 +30,7 @@ A commit's body is empty, and its footer holds only trailers such as `Signed-off
 
 ### commit-checked-by-the-hooks · MUST
 
-The commit hooks hold what can be checked of a commit before it is made: its branch's name, its message and its staged files.
+A **commit hook** runs as a commit is made. The commit hooks hold what can be checked of a commit before it is made: its branch's name, its message and its staged files.
 
 | Why | Tags |
 |---|---|

@@ -1,0 +1,110 @@
+language js
+
+pattern screaming_snake_case() { r"[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)*" }
+
+pattern pascal_case() { r"[A-Z][A-Za-z0-9]*" }
+
+pattern primitive_literal() {
+  or {
+    JsStringLiteralExpression(),
+    JsNumberLiteralExpression(),
+    JsBigintLiteralExpression(),
+    JsBooleanLiteralExpression(),
+    JsRegexLiteralExpression(),
+    JsUnaryExpression(argument=or {
+      JsNumberLiteralExpression(),
+      JsBigintLiteralExpression()
+    }),
+    JsTemplateExpression() as $template where {
+      $template <: includes r"^`",
+      $template <: not contains JsTemplateElement()
+    }
+  }
+}
+
+pattern as_const() {
+  TsAsExpression(expression=or {
+    primitive_literal(),
+    JsObjectExpression(),
+    JsArrayExpression()
+  }) as $fixed where { $fixed <: includes r"\bas\s+const$" }
+}
+
+pattern literal() {
+  or {
+    primitive_literal(),
+    as_const(),
+    TsSatisfiesExpression(expression=as_const())
+  }
+}
+
+pattern component_value() {
+  or {
+    JsArrowFunctionExpression(),
+    JsFunctionExpression(),
+    JsCallExpression(callee=$callee) where {
+      $callee <: r"(?:[A-Za-z]+\.)?(?:memo|forwardRef|lazy|createContext|assign)"
+    }
+  }
+}
+
+pattern companion_of_a_type($module) {
+  $name where {
+    $module <: contains or {
+      TsTypeAliasDeclaration(binding_identifier=$name),
+      TsInterfaceDeclaration(id=$name)
+    }
+  }
+}
+
+pattern exported_by_a_clause($module) {
+  $name where {
+    $module <: contains or {
+      JsExportNamedShorthandSpecifier(name=$name),
+      JsExportNamedSpecifier(local_name=$name)
+    }
+  }
+}
+
+JsVariableDeclarator(id=$name, initializer=JsInitializerClause(expression=$value)) as $constant where {
+  $name <: JsIdentifierBinding(),
+  $constant <: not within or {
+    JsFunctionBody(),
+    JsBlockStatement(),
+    JsStaticInitializationBlockClassMember(),
+    JsForStatement(),
+    JsForOfStatement(),
+    JsForInStatement()
+  },
+  $constant <: within JsVariableDeclaration() as $declaration where {
+    $declaration <: includes r"^const\s"
+  },
+  $constant <: within JsModule() as $module,
+  or {
+    and {
+      $value <: literal(),
+      $name <: not screaming_snake_case(),
+      not and { $value <: not primitive_literal(), $name <: companion_of_a_type($module) },
+      register_diagnostic(span=$name, message="A module-level constant holding a literal is SCREAMING_SNAKE_CASE", severity="error")
+    },
+    and {
+      $value <: not literal(),
+      or {
+        $name <: screaming_snake_case(),
+        and {
+          $name <: pascal_case(),
+          $value <: not component_value(),
+          // An exported name may be one a framework reads by its spelling.
+          $constant <: not within JsExport(),
+          $name <: not companion_of_a_type($module),
+          $name <: not exported_by_a_clause($module)
+        }
+      },
+      register_diagnostic(span=$name, message="A module-level constant computed at run time is camelCase, or PascalCase for a component or the companion of a type of its name", severity="error")
+    }
+  },
+  // Biome keeps what a match adds to its matching state and copies that state
+  // before every declarator, so each match would slow the next: the diagnostic
+  // stays, the match fails.
+  false
+}

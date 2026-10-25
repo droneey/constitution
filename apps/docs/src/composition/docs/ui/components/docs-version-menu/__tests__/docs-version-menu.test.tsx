@@ -3,7 +3,8 @@ import { afterEach, describe, expect, test } from 'bun:test';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import type { Releases } from '#/features/versions';
+import type { VersionsState } from '#/features/versions';
+import { createVersion, VersionsStatus } from '#/features/versions';
 
 import { componentViolationsIn } from '../../../../__tests__/axe.fixtures';
 import { versionsFixture } from '../../../../__tests__/docs.fixtures';
@@ -11,8 +12,8 @@ import { DocsVersionMenu } from '../docs-version-menu';
 
 afterEach(cleanup);
 
-const loaded: Releases = {
-  status: 'loaded',
+const loaded: VersionsState = {
+  status: VersionsStatus.Loaded,
   ...versionsFixture(),
 };
 
@@ -29,32 +30,32 @@ describe('DocsVersionMenu', () => {
   test.each([
     {
       condition: 'the releases are loading',
-      releases: {
-        status: 'loading',
+      versionsState: {
+        status: VersionsStatus.Loading,
       },
       shown: 'v0.70.0',
     },
     {
       condition: 'this release is the latest',
-      releases: loaded,
+      versionsState: loaded,
       shown: 'v0.70.0latest',
     },
   ] satisfies {
     condition: string;
-    releases: Releases;
+    versionsState: VersionsState;
     shown: string;
   }[])(
     'should name this release, and whether it is the latest, when $condition',
-    ({ releases, shown }) => {
+    ({ versionsState, shown }) => {
       // Arrange
-      const current = '0.70.0';
+      const currentVersion = createVersion('0.70.0');
 
       // Act
       render(
         <DocsVersionMenu
-          current={current}
-          href='/docs/guides/write-a-pack'
-          releases={releases}
+          currentVersion={currentVersion}
+          pageHref='/docs/guides/write-a-pack'
+          versionsState={versionsState}
         />,
       );
 
@@ -65,14 +66,14 @@ describe('DocsVersionMenu', () => {
 
   test('should name no release the latest when this site belongs to an older one', () => {
     // Arrange
-    const current = '0.69.2';
+    const currentVersion = createVersion('0.69.2');
 
     // Act
     render(
       <DocsVersionMenu
-        current={current}
-        href='/v0.69.2/docs/guides/write-a-pack'
-        releases={loaded}
+        currentVersion={currentVersion}
+        pageHref='/v0.69.2/docs/guides/write-a-pack'
+        versionsState={loaded}
       />,
     );
 
@@ -84,30 +85,30 @@ describe('DocsVersionMenu', () => {
     {
       condition: 'the releases are loading',
       notice: 'Loading versions…',
-      releases: {
-        status: 'loading',
+      versionsState: {
+        status: VersionsStatus.Loading,
       },
     },
     {
       condition: 'the releases cannot be read',
       notice: 'Versions unavailable',
-      releases: {
-        status: 'failed',
+      versionsState: {
+        status: VersionsStatus.Failed,
       },
     },
   ] satisfies {
     condition: string;
     notice: string;
-    releases: Releases;
+    versionsState: VersionsState;
   }[])(
     'should offer only this release and say why when $condition',
-    async ({ notice, releases }) => {
+    async ({ notice, versionsState }) => {
       // Arrange
       render(
         <DocsVersionMenu
-          current='0.70.0'
-          href='/docs/guides/write-a-pack'
-          releases={releases}
+          currentVersion={createVersion('0.70.0')}
+          pageHref='/docs/guides/write-a-pack'
+          versionsState={versionsState}
         />,
       );
 
@@ -131,9 +132,9 @@ describe('DocsVersionMenu', () => {
     // Arrange
     render(
       <DocsVersionMenu
-        current='0.70.0'
-        href='/docs/guides/write-a-pack'
-        releases={loaded}
+        currentVersion={createVersion('0.70.0')}
+        pageHref='/docs/guides/write-a-pack'
+        versionsState={loaded}
       />,
     );
 
@@ -151,9 +152,9 @@ describe('DocsVersionMenu', () => {
     // Arrange
     render(
       <DocsVersionMenu
-        current='0.70.0'
-        href='/docs/guides/write-a-pack'
-        releases={loaded}
+        currentVersion={createVersion('0.70.0')}
+        pageHref='/docs/guides/write-a-pack'
+        versionsState={loaded}
       />,
     );
 
@@ -172,9 +173,9 @@ describe('DocsVersionMenu', () => {
     // Arrange
     render(
       <DocsVersionMenu
-        current='0.69.2'
-        href='/v0.69.2/docs/guides/write-a-pack'
-        releases={loaded}
+        currentVersion={createVersion('0.69.2')}
+        pageHref='/v0.69.2/docs/guides/write-a-pack'
+        versionsState={loaded}
       />,
     );
 
@@ -192,9 +193,9 @@ describe('DocsVersionMenu', () => {
     // Arrange
     render(
       <DocsVersionMenu
-        current='0.69.2'
-        href='/v0.69.2/docs/guides/write-a-pack'
-        releases={loaded}
+        currentVersion={createVersion('0.69.2')}
+        pageHref='/v0.69.2/docs/guides/write-a-pack'
+        versionsState={loaded}
       />,
     );
 
@@ -215,9 +216,9 @@ describe('DocsVersionMenu', () => {
     // Arrange
     render(
       <DocsVersionMenu
-        current='0.69.2'
-        href='/v0.69.2/docs/guides/write-a-pack'
-        releases={loaded}
+        currentVersion={createVersion('0.69.2')}
+        pageHref='/v0.69.2/docs/guides/write-a-pack'
+        versionsState={loaded}
       />,
     );
 
@@ -240,9 +241,9 @@ describe('DocsVersionMenu', () => {
     // Arrange
     render(
       <DocsVersionMenu
-        current='0.69.2'
-        href='/v0.69.2/docs/guides/write-a-pack'
-        releases={loaded}
+        currentVersion={createVersion('0.69.2')}
+        pageHref='/v0.69.2/docs/guides/write-a-pack'
+        versionsState={loaded}
       />,
     );
     await openMenu();

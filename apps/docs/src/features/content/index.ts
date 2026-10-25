@@ -1,1 +1,1 @@
-export { slugsOfMarkdownAddress } from './domain/utils';
+export { slugsOfMarkdownAddress } from './domain/entities';

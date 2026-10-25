@@ -5,12 +5,11 @@ requires: [_react]
 extends: null
 abstract: false
 languages: []
-dictionary: [Storybook, .stories, .storybook]
 governs: ["**/*.stories.tsx", ".storybook/**"]
 ---
 
 # Storybook
 
-> A catalogue of the UI kit.
+> **Storybook**, a catalogue of the UI kit, set up in **`.storybook/`**.
 
-**Vocabulary:** suffix `.stories`.
+A story file ends in **`.stories`**.

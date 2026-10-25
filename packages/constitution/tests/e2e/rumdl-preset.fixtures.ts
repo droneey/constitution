@@ -12,15 +12,15 @@ interface Lint {
   exitCode: number | undefined;
 }
 
-const RUMDL_REPORT = z.array(
+const rumdlReport = z.array(
   z.object({
     rule: z.string(),
   }),
 );
 
-const REPOSITORY = join(import.meta.dir, '..', '..');
-const PRESET = join(REPOSITORY, 'presets', 'markdown', 'rumdl', 'foundation', 'core.toml');
-const RUMDL = miseBinary('rumdl');
+const repository = join(import.meta.dir, '..', '..');
+const preset = join(repository, 'presets', 'markdown', 'rumdl', 'foundation', 'core.toml');
+const rumdl = miseBinary('rumdl');
 
 const inProject = <TResult>(input: {
   files: Readonly<Record<string, string>>;
@@ -29,7 +29,8 @@ const inProject = <TResult>(input: {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-rumdl-'));
 
   try {
-    writeFileSync(join(folder, '.rumdl.toml'), `extends = ${JSON.stringify(PRESET)}\n`);
+    writeFileSync(join(folder, '.rumdl.toml'), `extends = ${JSON.stringify(preset)}\n`);
+
     for (const [path, text] of Object.entries(input.files)) {
       mkdirSync(dirname(join(folder, path)), {
         recursive: true,
@@ -51,7 +52,7 @@ const lintDocuments = (files: Readonly<Record<string, string>>): Lint =>
     files,
     run: (folder: string): Lint => {
       const run = spawnSync(
-        RUMDL,
+        rumdl,
         [
           'check',
           '--output-format',
@@ -66,7 +67,7 @@ const lintDocuments = (files: Readonly<Record<string, string>>): Lint =>
 
       return {
         codes: [
-          ...new Set(RUMDL_REPORT.parse(JSON.parse(run.stdout)).map(({ rule }) => rule)),
+          ...new Set(rumdlReport.parse(JSON.parse(run.stdout)).map(({ rule }) => rule)),
         ].toSorted(),
         exitCode: run.status ?? undefined,
       };

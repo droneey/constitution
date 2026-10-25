@@ -6,7 +6,9 @@ const dropSummary = (tree: Root): void => {
   if (first?.type !== 'blockquote') {
     return;
   }
+
   first.children.shift();
+
   if (first.children.length === 0) {
     tree.children.shift();
   }
@@ -20,6 +22,7 @@ const dropTitle = (tree: Root): void => {
   if (first?.type !== 'heading' || first.depth !== 1) {
     return;
   }
+
   tree.children.shift();
   dropSummary(tree);
 };

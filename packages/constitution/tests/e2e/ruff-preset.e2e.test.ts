@@ -4,7 +4,7 @@ import { isFormatted, lintCodes } from './ruff-preset.fixtures';
 
 const python = (...lines: readonly string[]): string => `${lines.join('\n')}\n`;
 
-const WELL_FORMED = python(
+const wellFormed = python(
   '"""Orders and their totals."""',
   '',
   'from datetime import UTC, datetime',
@@ -17,15 +17,15 @@ const WELL_FORMED = python(
   'def stamp(label: str) -> str:',
   "  return f'{label} {datetime.now(tz=UTC).isoformat()}'",
 );
-const DEBUG_PRINT = python('def show(label: str) -> None:', '  print(label)');
-const BREAKPOINT = python('def show(label: str) -> None:', '  breakpoint()', '  _ = label');
-const FOUR_POSITIONAL = python(
+const debugPrint = python('def show(label: str) -> None:', '  print(label)');
+const breakpoint = python('def show(label: str) -> None:', '  breakpoint()', '  _ = label');
+const fourPositional = python(
   'def total(price: int, count: int, tax: int, fee: int) -> int:',
   '  return price * count + tax + fee',
 );
-const UNUSED_ARGUMENT = python('def total(price: int, count: int) -> int:', '  return price');
-const UNUSED_IMPORT = python('import os');
-const CAUSE_DROPPED = python(
+const unusedArgument = python('def total(price: int, count: int) -> int:', '  return price');
+const unusedImport = python('import os');
+const causeDropped = python(
   'class OrderNotFoundError(Exception):',
   '  pass',
   '',
@@ -36,16 +36,16 @@ const CAUSE_DROPPED = python(
   '  except ValueError:',
   '    raise OrderNotFoundError',
 );
-const UNANNOTATED = python('def total(prices):', '  return sum(prices)');
-const NAIVE_NOW = python(
+const unannotated = python('def total(prices):', '  return sum(prices)');
+const naiveNow = python(
   'from datetime import datetime',
   '',
   '',
   'def stamp() -> str:',
   '  return datetime.now().isoformat()',
 );
-const SYS_PATH = python('import sys', '', "sys.path.append('lib')");
-const EXCEPT_PASS = python(
+const sysPath = python('import sys', '', "sys.path.append('lib')");
+const exceptPass = python(
   'def order_id(text: str) -> int:',
   '  try:',
   '    return int(text)',
@@ -53,7 +53,7 @@ const EXCEPT_PASS = python(
   '    pass',
   '  return 0',
 );
-const TYPE_VAR_CLASS = python(
+const typeVarClass = python(
   'from typing import Generic, TypeVar',
   '',
   "T = TypeVar('T')",
@@ -63,56 +63,51 @@ const TYPE_VAR_CLASS = python(
   '  def __init__(self, item: T) -> None:',
   '    self.item = item',
 );
-const BLANKET_NOQA = python('import os  # noqa');
-const UNUSED_NOQA = python('LIMIT = 10  # noqa: E501 -- the line is short');
-const TODO_WITH_ISSUE = python('# TODO(#12): round each line', 'LIMIT = 10');
-const DOUBLE_QUOTES = python('LABEL = "orders"');
+const blanketNoqa = python('import os  # noqa');
+const unusedNoqa = python('LIMIT = 10  # noqa: E501 -- the line is short');
+const todoWithIssue = python('# TODO(#12): round each line', 'LIMIT = 10');
+const doubleQuotes = python('LABEL = "orders"');
+
 const spec = (...lines: readonly string[]): string => python('import pytest', '', '', ...lines);
-const SKIP_MARK = spec(
+
+const skipMark = spec(
   "@pytest.mark.skip(reason='later')",
   'def test_should_count() -> None:',
   '  assert pytest',
 );
-const SKIP_IF_MARK = spec(
+const skipIfMark = spec(
   "@pytest.mark.skipif(condition=True, reason='later')",
   'def test_should_count() -> None:',
   '  assert pytest',
 );
-const XFAIL_MARK = spec(
-  '@pytest.mark.xfail',
-  'def test_should_count() -> None:',
-  '  assert pytest',
-);
-const SKIP_CALL = spec('def test_should_count() -> None:', "  pytest.skip('later')");
-const XFAIL_CALL = spec('def test_should_count() -> None:', "  pytest.xfail('later')");
-const IMPORT_OR_SKIP = spec(
+const xfailMark = spec('@pytest.mark.xfail', 'def test_should_count() -> None:', '  assert pytest');
+const skipCall = spec('def test_should_count() -> None:', "  pytest.skip('later')");
+const xfailCall = spec('def test_should_count() -> None:', "  pytest.xfail('later')");
+const importOrSkip = spec(
   'def test_should_count() -> None:',
   "  assert pytest.importorskip('yaml')",
 );
-const FLAKY_MARK = spec(
-  '@pytest.mark.flaky',
-  'def test_should_count() -> None:',
-  '  assert pytest',
-);
-const MOCK = python(
+const flakyMark = spec('@pytest.mark.flaky', 'def test_should_count() -> None:', '  assert pytest');
+const mock = python(
   'from unittest import mock',
   '',
   '',
   'def test_should_count() -> None:',
   '  assert mock',
 );
-const PYTEST_ASYNCIO = python(
+const pytestAsyncio = python(
   'import pytest_asyncio',
   '',
   '',
   'def test_should_count() -> None:',
   '  assert pytest_asyncio',
 );
-const BROAD_RAISES = spec(
+const broadRaises = spec(
   'def test_should_refuse() -> None:',
   '  with pytest.raises(ValueError):',
   "    int('ten')",
 );
+
 const route = (...lines: readonly string[]): string =>
   python(
     'from typing import Annotated',
@@ -124,12 +119,13 @@ const route = (...lines: readonly string[]): string =>
     '',
     ...lines,
   );
-const ANNOTATED_ROUTE = route(
+
+const annotatedRoute = route(
   "@app.get('/orders/{order_id}')",
   'async def order(order_id: int, page: Annotated[int, Query()] = 1) -> int:',
   '  return order_id + page',
 );
-const DEFAULT_QUERY = python(
+const defaultQuery = python(
   'from fastapi import FastAPI, Query',
   '',
   'app = FastAPI()',
@@ -139,27 +135,28 @@ const DEFAULT_QUERY = python(
   'async def orders(page: int = Query(1)) -> int:',
   '  return page',
 );
-const UNREAD_PATH_PARAMETER = route(
+const unreadPathParameter = route(
   "@app.get('/orders/{order_id}')",
   'async def order(page: Annotated[int, Query()] = 1) -> int:',
   '  return page',
 );
-const HTTP_EXCEPTION = python(
+const httpException = python(
   'from fastapi import HTTPException',
   '',
   '',
   'def refuse() -> None:',
   '  raise HTTPException(status_code=404)',
 );
-const STARLETTE_EXCEPTION = python(
+const starletteException = python(
   'from starlette.exceptions import HTTPException',
   '',
   '',
   'def refuse() -> None:',
   '  raise HTTPException(status_code=404)',
 );
-const BARE_NUMBER = python('def is_bulk(count: int) -> bool:', '  return count > 12');
-const FOUR_SPACES = python('def total(prices: list[int]) -> int:', '    return sum(prices)');
+const bareNumber = python('def is_bulk(count: int) -> bool:', '  return count > 12');
+const fourSpaces = python('def total(prices: list[int]) -> int:', '    return sum(prices)');
+
 const longCall = (width: number): string => {
   const head = 'TOTAL = sum(';
   const tail = ')';
@@ -180,7 +177,7 @@ describe('the ruff preset', () => {
     // Arrange
     const project = {
       part,
-      source: WELL_FORMED,
+      source: wellFormed,
     };
 
     // Act
@@ -195,85 +192,85 @@ describe('the ruff preset', () => {
       code: 'F401',
       condition: 'an import is never used',
       part: 'core',
-      source: UNUSED_IMPORT,
+      source: unusedImport,
     },
     {
       code: 'B904',
       condition: 'an exception is raised in an except clause without its cause',
       part: 'core',
-      source: CAUSE_DROPPED,
+      source: causeDropped,
     },
     {
       code: 'ARG001',
       condition: 'a parameter is never read',
       part: 'core',
-      source: UNUSED_ARGUMENT,
+      source: unusedArgument,
     },
     {
       code: 'T201',
       condition: 'shipped code prints',
       part: 'core',
-      source: DEBUG_PRINT,
+      source: debugPrint,
     },
     {
       code: 'T100',
       condition: 'shipped code stops at a breakpoint',
       part: 'core',
-      source: BREAKPOINT,
+      source: breakpoint,
     },
     {
       code: 'PLR0917',
       condition: 'a function takes four positional parameters',
       part: 'core',
-      source: FOUR_POSITIONAL,
+      source: fourPositional,
     },
     {
       code: 'PLR2004',
       condition: 'a comparison names a bare number',
       part: 'core',
-      source: BARE_NUMBER,
+      source: bareNumber,
     },
     {
       code: 'ANN001',
       condition: 'a parameter is not annotated',
       part: 'python',
-      source: UNANNOTATED,
+      source: unannotated,
     },
     {
       code: 'DTZ005',
       condition: 'a datetime is made without its time zone',
       part: 'python',
-      source: NAIVE_NOW,
+      source: naiveNow,
     },
     {
       code: 'TID251',
       condition: 'code changes sys.path',
       part: 'python',
-      source: SYS_PATH,
+      source: sysPath,
     },
     {
       code: 'S110',
       condition: 'an except body only passes',
       part: 'python',
-      source: EXCEPT_PASS,
+      source: exceptPass,
     },
     {
       code: 'UP046',
       condition: 'a generic class is declared through TypeVar and Generic',
       part: 'python',
-      source: TYPE_VAR_CLASS,
+      source: typeVarClass,
     },
     {
       code: 'PGH004',
       condition: 'a noqa names no code',
       part: 'self',
-      source: BLANKET_NOQA,
+      source: blanketNoqa,
     },
     {
       code: 'RUF100',
       condition: 'a noqa silences nothing',
       part: 'self',
-      source: UNUSED_NOQA,
+      source: unusedNoqa,
     },
   ])(
     'should report $code when $condition and a project extends $part',
@@ -297,55 +294,55 @@ describe('the ruff preset', () => {
       code: 'T201',
       condition: 'shipped code prints',
       part: 'self',
-      source: DEBUG_PRINT,
+      source: debugPrint,
     },
     {
       code: 'PLR0917',
       condition: 'a function takes four positional parameters',
       part: 'self',
-      source: FOUR_POSITIONAL,
+      source: fourPositional,
     },
     {
       code: 'ARG001',
       condition: 'a parameter is never read',
       part: 'self',
-      source: UNUSED_ARGUMENT,
+      source: unusedArgument,
     },
     {
       code: 'ANN001',
       condition: 'a parameter is not annotated',
       part: 'core',
-      source: UNANNOTATED,
+      source: unannotated,
     },
     {
       code: 'DTZ005',
       condition: 'a datetime is made without its time zone',
       part: 'core',
-      source: NAIVE_NOW,
+      source: naiveNow,
     },
     {
       code: 'TID251',
       condition: 'code changes sys.path',
       part: 'core',
-      source: SYS_PATH,
+      source: sysPath,
     },
     {
       code: 'S110',
       condition: 'the except body of a named exception only passes',
       part: 'core',
-      source: EXCEPT_PASS,
+      source: exceptPass,
     },
     {
       code: 'TID251',
       condition: 'a spec is marked to be skipped',
       part: 'python',
-      source: SKIP_MARK,
+      source: skipMark,
     },
     {
       code: 'PT011',
       condition: 'a spec expects a broad exception without a match',
       part: 'python',
-      source: BROAD_RAISES,
+      source: broadRaises,
     },
   ])(
     'should leave $code to a later part when $condition and a project extends only $part',
@@ -368,7 +365,7 @@ describe('the ruff preset', () => {
     // Arrange
     const project = {
       part: 'python',
-      source: TODO_WITH_ISSUE,
+      source: todoWithIssue,
     };
 
     // Act
@@ -383,43 +380,43 @@ describe("the ruff preset's part of pytest", () => {
   it.each([
     {
       condition: 'a spec is marked to be skipped',
-      source: SKIP_MARK,
+      source: skipMark,
     },
     {
       condition: 'a spec is marked to be skipped under a condition',
-      source: SKIP_IF_MARK,
+      source: skipIfMark,
     },
     {
       condition: 'a spec is marked to fail',
-      source: XFAIL_MARK,
+      source: xfailMark,
     },
     {
       condition: 'a spec skips itself',
-      source: SKIP_CALL,
+      source: skipCall,
     },
     {
       condition: 'a spec marks itself as failing',
-      source: XFAIL_CALL,
+      source: xfailCall,
     },
     {
       condition: 'a spec skips itself when a module is missing',
-      source: IMPORT_OR_SKIP,
+      source: importOrSkip,
     },
     {
       condition: 'a spec is marked to be run again',
-      source: FLAKY_MARK,
+      source: flakyMark,
     },
     {
       condition: 'a spec patches with unittest.mock',
-      source: MOCK,
+      source: mock,
     },
     {
       condition: 'a spec imports pytest-asyncio',
-      source: PYTEST_ASYNCIO,
+      source: pytestAsyncio,
     },
     {
       condition: "code changes sys.path, a ban of the python part's",
-      source: SYS_PATH,
+      source: sysPath,
     },
   ])('should report TID251 when $condition', ({ source }) => {
     // Arrange
@@ -439,7 +436,7 @@ describe("the ruff preset's part of pytest", () => {
     // Arrange
     const project = {
       part: 'pytest',
-      source: BROAD_RAISES,
+      source: broadRaises,
     };
 
     // Act
@@ -457,7 +454,7 @@ describe("the ruff preset's part of FastAPI", () => {
     // Arrange
     const project = {
       part: 'fastapi',
-      source: ANNOTATED_ROUTE,
+      source: annotatedRoute,
     };
 
     // Act
@@ -471,32 +468,32 @@ describe("the ruff preset's part of FastAPI", () => {
     {
       code: 'FAST002',
       condition: "a parameter's source is its default value",
-      source: DEFAULT_QUERY,
+      source: defaultQuery,
     },
     {
       code: 'FAST003',
       condition: 'the handler does not take a parameter of its path',
-      source: UNREAD_PATH_PARAMETER,
+      source: unreadPathParameter,
     },
     {
       code: 'TID251',
       condition: "the program imports FastAPI's HTTPException",
-      source: HTTP_EXCEPTION,
+      source: httpException,
     },
     {
       code: 'TID251',
       condition: "the program imports Starlette's HTTPException",
-      source: STARLETTE_EXCEPTION,
+      source: starletteException,
     },
     {
       code: 'TID251',
       condition: 'a spec patches with unittest.mock, which the part bans again',
-      source: MOCK,
+      source: mock,
     },
     {
       code: 'TID251',
       condition: 'a spec is marked to be skipped, which the part bans again',
-      source: SKIP_MARK,
+      source: skipMark,
     },
   ])('should report $code when $condition', ({ code, source }) => {
     // Arrange
@@ -515,11 +512,11 @@ describe("the ruff preset's part of FastAPI", () => {
   it.each([
     {
       code: 'FAST002',
-      source: DEFAULT_QUERY,
+      source: defaultQuery,
     },
     {
       code: 'TID251',
-      source: HTTP_EXCEPTION,
+      source: httpException,
     },
   ])(
     'should leave $code to the FastAPI part when a project extends only pytest',
@@ -544,7 +541,7 @@ describe('the ruff formatter', () => {
     {
       condition: 'a module is written in single quotes and two spaces',
       isAccepted: true,
-      source: WELL_FORMED,
+      source: wellFormed,
     },
     {
       condition: 'a line is 100 characters long',
@@ -559,12 +556,12 @@ describe('the ruff formatter', () => {
     {
       condition: 'a string is in double quotes',
       isAccepted: false,
-      source: DOUBLE_QUOTES,
+      source: doubleQuotes,
     },
     {
       condition: 'a block is indented by four spaces',
       isAccepted: false,
-      source: FOUR_SPACES,
+      source: fourSpaces,
     },
   ])('should hold the layout of self when $condition', ({ isAccepted, source }) => {
     // Arrange

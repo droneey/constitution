@@ -23,7 +23,7 @@ interface Findings {
   rules: readonly string[];
 }
 
-const REPORT = z.object({
+const report = z.object({
   diagnostics: z.array(
     z.object({
       category: z.string(),
@@ -32,7 +32,7 @@ const REPORT = z.object({
   ),
 });
 
-const PRESET = z.object({
+const preset = z.object({
   plugins: z
     .array(
       z.union([
@@ -45,12 +45,12 @@ const PRESET = z.object({
     .optional(),
 });
 
-const REPOSITORY = join(import.meta.dir, '..', '..');
-const BIOME = join(REPOSITORY, 'node_modules', '.bin', 'biome');
-const PRESETS_FOLDER = join(REPOSITORY, 'presets');
-const BLOCKS = join(REPOSITORY, 'blocks');
+const repository = join(import.meta.dir, '..', '..');
+const biome = join(repository, 'node_modules', '.bin', 'biome');
+const presetsFolder = join(repository, 'presets');
+const blocks = join(repository, 'blocks');
 
-const BASE_PARTS = [
+const baseParts = [
   'common/self',
   'typescript/self',
   'typescript/core',
@@ -58,12 +58,12 @@ const BASE_PARTS = [
 ];
 
 const PARTS: readonly string[] = [
-  ...BASE_PARTS,
+  ...baseParts,
   'typescript/bun-test',
   'typescript/_react',
   'typescript/architecture/core',
   'typescript/architecture/typescript',
-];
+] as const;
 
 const writeFiles = (folder: string, files: Readonly<Record<string, string>>): void => {
   for (const [path, text] of Object.entries(files)) {
@@ -82,7 +82,7 @@ const inProject = <T>(project: Project, run: (folder: string) => T): T => {
   mkdirSync(join(folder, '.droneey', 'constitution'), {
     recursive: true,
   });
-  symlinkSync(join(REPOSITORY, 'presets'), join(folder, '.droneey/constitution', 'presets'));
+  symlinkSync(join(repository, 'presets'), join(folder, '.droneey/constitution', 'presets'));
   writeFiles(folder, {
     ...project.files,
     'biome.json': JSON.stringify({
@@ -109,7 +109,7 @@ const inProject = <T>(project: Project, run: (folder: string) => T): T => {
 const lintFindings = (project: Project): Findings => {
   const linting = inProject(project, (folder) =>
     spawnSync(
-      BIOME,
+      biome,
       [
         'lint',
         '--reporter=json',
@@ -121,7 +121,7 @@ const lintFindings = (project: Project): Findings => {
       },
     ),
   );
-  const { diagnostics } = REPORT.parse(JSON.parse(linting.stdout));
+  const { diagnostics } = report.parse(JSON.parse(linting.stdout));
 
   return {
     plugins: diagnostics
@@ -140,11 +140,11 @@ const formattedText = (source: string): string =>
       files: {
         'src/order.ts': source,
       },
-      parts: BASE_PARTS,
+      parts: baseParts,
     },
     (folder) => {
       spawnSync(
-        BIOME,
+        biome,
         [
           'format',
           '--write',
@@ -161,18 +161,18 @@ const formattedText = (source: string): string =>
   );
 
 const presetFiles = (): readonly string[] =>
-  readdirSync(PRESETS_FOLDER, {
+  readdirSync(presetsFolder, {
     recursive: true,
   })
     .map(String)
     .filter((path) => path.split('/')[1] === 'biome' && path.endsWith('.jsonc'))
     .toSorted((left, right) => left.localeCompare(right));
 
-const presetText = (path: string): string => readFileSync(join(PRESETS_FOLDER, path), 'utf8');
+const presetText = (path: string): string => readFileSync(join(presetsFolder, path), 'utf8');
 
 const presetWords = (): readonly string[] => {
   const segments = presetFiles()
-    .flatMap((path) => PRESET.parse(Bun.JSONC.parse(presetText(path))).plugins ?? [])
+    .flatMap((path) => preset.parse(Bun.JSONC.parse(presetText(path))).plugins ?? [])
     .flatMap((plugin) => (typeof plugin === 'string' ? [] : plugin.includes))
     .flatMap((glob) => glob.replace(/^!/, '').split('/'))
     .filter((segment) => segment !== '**')
@@ -185,15 +185,15 @@ const presetWords = (): readonly string[] => {
 
 // What the blocks write as code — in backticks, or in a block's `governs`.
 const blockCode = (): readonly string[] =>
-  readdirSync(BLOCKS, {
+  readdirSync(blocks, {
     recursive: true,
   })
     .map(String)
     .filter((path) => path.endsWith('.md'))
-    .map((path) => readFileSync(join(BLOCKS, path), 'utf8'))
+    .map((path) => readFileSync(join(blocks, path), 'utf8'))
     .flatMap((text) => [
       ...text.matchAll(/`([^`\n]+)`|"([^"\n]+)"/g),
     ])
     .map(([, code, quoted]) => code ?? quoted ?? '');
 
-export { BASE_PARTS, blockCode, formattedText, lintFindings, presetFiles, presetText, presetWords };
+export { baseParts, blockCode, formattedText, lintFindings, presetFiles, presetText, presetWords };

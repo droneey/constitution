@@ -30,13 +30,14 @@ type Files = Readonly<Record<string, string | undefined>>;
 
 const EXECUTABLE = 0o755;
 
-const REPOSITORY = join(import.meta.dir, '..', '..');
-const BIN = join(REPOSITORY, 'node_modules', '.bin');
+const repository = join(import.meta.dir, '..', '..');
+const bin = join(repository, 'node_modules', '.bin');
 const PRESETS = '.droneey/constitution/presets/typescript';
 
 /** a part with no axis folder is foundation's */
 const inAxis = (part: string): string => (part.includes('/') ? part : `foundation/${part}`);
-const TEMPLATES = join(REPOSITORY, 'templates', 'project');
+
+const templates = join(repository, 'templates', 'project');
 
 // Each TypeScript package's folder, by the name that follows its unit's folder.
 const UNITS: Readonly<Record<string, string>> = {
@@ -45,7 +46,7 @@ const UNITS: Readonly<Record<string, string>> = {
   '@shop/money': 'packages/money',
   '@shop/orders': 'packages/orders',
   '@shop/web': 'apps/web',
-};
+} as const;
 
 // Each Python package's folder: a library the workspace releases, in two
 // languages, an application and the library of packages/ it uses.
@@ -53,14 +54,14 @@ const PYTHON_PACKAGES: readonly string[] = [
   'packages/eros/languages/python',
   'apps/reports',
   'packages/tabula',
-];
+] as const;
 
 // A file symlink inside a package, then the file it points to: data a package
 // takes at run time from its unit's single source.
 const LINKS: Readonly<Record<string, string>> = {
   'packages/eros/languages/python/src/shop_eros/kernel/constants/kinds.yaml':
     '../../../../../../shared/schema/kinds.yaml',
-};
+} as const;
 
 const jsonFileOf = (fields: unknown): string => `${JSON.stringify(fields, undefined, 2)}\n`;
 
@@ -137,21 +138,21 @@ const pyprojectOf = (input: { lines?: readonly string[]; name: string }): string
 
 // bun's fragment and bun-test's, assembled as ratify does
 const bunfig = [
-  readFileSync(join(TEMPLATES, 'typescript', 'bun', 'bunfig.toml'), 'utf8'),
-  readFileSync(join(TEMPLATES, 'typescript', 'bun-test', 'bunfig.toml'), 'utf8'),
+  readFileSync(join(templates, 'typescript', 'bun', 'bunfig.toml'), 'utf8'),
+  readFileSync(join(templates, 'typescript', 'bun-test', 'bunfig.toml'), 'utf8'),
 ].join('\n');
 const bunfigIntegration = readFileSync(
-  join(TEMPLATES, 'typescript', 'bun-test', 'bunfig.integration.toml'),
+  join(templates, 'typescript', 'bun-test', 'bunfig.integration.toml'),
   'utf8',
 ).replace('coveragePathIgnorePatterns = [\n', 'coveragePathIgnorePatterns = [\n  "../**",\n');
 const sandbox = readFileSync(
-  join(TEMPLATES, 'typescript', 'bun-test', 'src', '__tests__', 'sandbox.fixtures.ts'),
+  join(templates, 'typescript', 'bun-test', 'src', '__tests__', 'sandbox.fixtures.ts'),
   'utf8',
 );
 
 // A package an application must not import outside the edge, built into its
 // dist/ as a registry's package is, and the framework eros integrates with.
-const INSTALLED: Files = {
+const installed: Files = {
   'node_modules/@nestjs/common/index.d.ts':
     'export declare const Module: (metadata: { providers: readonly unknown[] }) => (target: object) => void;\n',
   'node_modules/@nestjs/common/index.js': 'export const Module = () => () => undefined;\n',
@@ -174,7 +175,7 @@ const INSTALLED: Files = {
 // eros, a library the workspace releases, in two languages: its data in no
 // language once, in shared/, and a package for each language laid out by
 // layers, with its integrations into host frameworks as entries of their own.
-const EROS: Files = {
+const eros: Files = {
   'packages/eros/shared/conformance/cases.yaml': '- code: validation.email\n  status: 422\n',
   'packages/eros/shared/schema/kinds.yaml': '- validation\n- not-found\n',
   'packages/eros/languages/typescript/bunfig.toml': bunfig,
@@ -340,7 +341,7 @@ KINDS = tuple(
 };
 
 // An application in Python alone, and the library of packages/ it takes from the workspace.
-const REPORTS: Files = {
+const reports: Files = {
   'packages/tabula/pyproject.toml': pyprojectOf({
     name: 'shop-tabula',
   }),
@@ -380,7 +381,7 @@ const REPORTS: Files = {
 };
 
 // A browser application whose specs are checked by a configuration of their own.
-const WEB: Files = {
+const web: Files = {
   'apps/web/bunfig.toml': bunfig,
   'apps/web/bunfig.integration.toml': bunfigIntegration,
   'apps/web/package.json': manifestOf({
@@ -458,7 +459,7 @@ export const label = (id: OrderId): string => \`Order \${describeOrder({ id, tot
 };
 
 // A NestJS API on the compiler options of its framework, and what the apps share.
-const API_AND_SHARED: Files = {
+const apiAndShared: Files = {
   'packages/money/package.json': manifestOf({
     exports: {
       '.': './src/index.ts',
@@ -624,16 +625,16 @@ const knipOf = (input: { depth: number; own: readonly string[] }): string => {
 
 // The workspace's root: one workspace for each language, the parts each tool
 // joins, and the configuration of each package checked by its own parts.
-const WORKSPACE: Files = {
-  ...INSTALLED,
-  ...EROS,
-  ...REPORTS,
-  ...WEB,
-  ...API_AND_SHARED,
+const workspaceFiles: Files = {
+  ...installed,
+  ...eros,
+  ...reports,
+  ...web,
+  ...apiAndShared,
   '.gitignore': [
-    readFileSync(join(TEMPLATES, 'common', 'core', '.gitignore'), 'utf8'),
-    readFileSync(join(TEMPLATES, 'typescript', 'typescript', '.gitignore'), 'utf8'),
-    readFileSync(join(TEMPLATES, 'typescript', 'tsc', '.gitignore'), 'utf8'),
+    readFileSync(join(templates, 'common', 'core', '.gitignore'), 'utf8'),
+    readFileSync(join(templates, 'typescript', 'typescript', '.gitignore'), 'utf8'),
+    readFileSync(join(templates, 'typescript', 'tsc', '.gitignore'), 'utf8'),
   ].join('\n'),
   'apps/api/biome.json': jsonFileOf({
     root: false,
@@ -728,8 +729,8 @@ const link = (folder: string): void => {
     recursive: true,
   });
 
-  for (const entry of readdirSync(join(REPOSITORY, 'node_modules'))) {
-    symlinkSync(join(REPOSITORY, 'node_modules', entry), join(folder, 'node_modules', entry));
+  for (const entry of readdirSync(join(repository, 'node_modules'))) {
+    symlinkSync(join(repository, 'node_modules', entry), join(folder, 'node_modules', entry));
   }
 
   for (const [name, path] of Object.entries(UNITS)) {
@@ -741,7 +742,7 @@ const link = (folder: string): void => {
   }
 
   mkdirSync(join(folder, '.droneey'));
-  symlinkSync(REPOSITORY, join(folder, '.droneey', 'constitution'));
+  symlinkSync(repository, join(folder, '.droneey', 'constitution'));
   mkdirSync(join(folder, 'apps', 'api', '.droneey'));
   symlinkSync(
     '../../../.droneey/constitution',
@@ -764,7 +765,7 @@ const createWorkspace = (changes: Files = {}): string => {
 
   write({
     files: {
-      ...WORKSPACE,
+      ...workspaceFiles,
       ...changes,
     },
     folder,
@@ -794,7 +795,7 @@ const runTool = (workspace: string, command: Command): Run => {
       ],
       [
         'PATH',
-        `${join(workspace, '.shims')}:${BIN}:${process.env['PATH'] ?? ''}`,
+        `${join(workspace, '.shims')}:${bin}:${process.env['PATH'] ?? ''}`,
       ],
     ]),
   });
@@ -851,8 +852,8 @@ export {
   manifestOf,
   PRESETS,
   PYTHON_PACKAGES,
-  REPOSITORY,
   removeWorkspace,
+  repository,
   runTool,
   UNITS,
   write,

@@ -5,13 +5,12 @@ requires: [typescript]
 extends: null
 abstract: false
 languages: []
-dictionary: [zod, Zod]
 governs: ["**/models/**", "**/adapters/**"]
 ---
 
 # zod
 
-> Parses untrusted input into the program's types.
+> **Zod**, the package **`zod`**, parses untrusted input into the program's types.
 
 ## Requirements
 

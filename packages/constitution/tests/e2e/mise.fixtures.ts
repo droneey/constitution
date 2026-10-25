@@ -1,7 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { join } from 'node:path';
 
-const REPOSITORY = join(import.meta.dir, '..', '..');
+const repository = join(import.meta.dir, '..', '..');
 
 // mise pins the tool for this repository; its shim does not resolve in a
 // temporary folder, so a check runs the binary it points to.
@@ -13,7 +13,7 @@ const miseBinary = (tool: string): string => {
       tool,
     ],
     {
-      cwd: REPOSITORY,
+      cwd: repository,
       encoding: 'utf8',
     },
   ).stdout.trim();

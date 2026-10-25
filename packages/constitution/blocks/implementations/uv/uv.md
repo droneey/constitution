@@ -5,15 +5,14 @@ requires: [python, toml]
 extends: null
 abstract: false
 languages: []
-dictionary: [uv, uvx, uv.lock, uv_build]
 governs: ["pyproject.toml", "uv.lock"]
 ---
 
 # uv
 
-> Installs the dependencies, resolves one version of each for the whole workspace into `uv.lock`, runs the tools of the `dev` group and builds packages with its own backend.
+> Installs the dependencies, resolves one version of each for the whole workspace into **`uv.lock`**, runs the tools of the `dev` group and builds packages with its own backend.
 
-uv's settings are `[tool.uv]` of the root `pyproject.toml`, which starts from the template `templates/project/python/python/pyproject.toml` of the Constitution's release archive.
+**`uv`** runs a tool of the environment, and **`uvx`** one in an environment of its own. Its settings are `[tool.uv]` of the root `pyproject.toml`, which starts from the template of a Python project's `pyproject.toml` in the Constitution's release archive.
 
 ## Requirements
 

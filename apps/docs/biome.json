@@ -1,9 +1,8 @@
 {
   "$schema": "../../node_modules/@biomejs/biome/configuration_schema.json",
-  "root": false,
+  "root": true,
   "extends": [
     "./.droneey/constitution/presets/common/biome/foundation/self.jsonc",
-    "./.droneey/constitution/presets/common/biome/foundation/git.jsonc",
     "./.droneey/constitution/presets/css/biome/foundation/self.jsonc",
     "./.droneey/constitution/presets/css/biome/foundation/css.jsonc",
     "./.droneey/constitution/presets/css/biome/foundation/design-system.jsonc",
@@ -26,6 +25,12 @@
     "./.droneey/constitution/presets/typescript/biome/architecture/typescript.jsonc",
     "./.droneey/constitution/presets/typescript/biome/architecture/ui.jsonc"
   ],
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true,
+    "root": "."
+  },
   "files": {
     "includes": [
       "!**/*.gen.*"

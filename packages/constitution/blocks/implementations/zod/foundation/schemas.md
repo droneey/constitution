@@ -6,7 +6,7 @@
 
 ### schema-never-brands → invariant-value-is-a-branded-type · MUST
 
-A schema never calls `.brand()`; it produces a branded value through the value's own `create<Name>`, after the schema has checked the invariant, as in `z.string().refine(isEmail).transform(createEmail)`, since a transform that throws escapes `safeParse`.
+A schema never calls `.brand()`; it produces a branded value through the value's own `<Name>.create`, after the schema has checked the invariant, as in `z.string().refine(Email.is).transform(Email.create)`, since a transform that throws escapes `safeParse`.
 
 | Why | Tags |
 |---|---|

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
+import { createVersion } from '../../../../value-objects';
 import { createGetVersions } from '../get-versions.use-case';
 import { createFakeVersionsRepository } from './versions.repository.fake';
 
@@ -8,10 +9,10 @@ describe('createGetVersions', () => {
     // Arrange
     const getVersions = createGetVersions(
       createFakeVersionsRepository({
-        latest: '0.70.0',
+        latest: createVersion('0.70.0'),
         versions: [
-          '0.70.0',
-          '0.69.2',
+          createVersion('0.70.0'),
+          createVersion('0.69.2'),
         ],
       }),
     );
@@ -21,10 +22,10 @@ describe('createGetVersions', () => {
 
     // Assert
     expect(versions).toStrictEqual({
-      latest: '0.70.0',
+      latest: createVersion('0.70.0'),
       versions: [
-        '0.70.0',
-        '0.69.2',
+        createVersion('0.70.0'),
+        createVersion('0.69.2'),
       ],
     });
   });
@@ -32,9 +33,9 @@ describe('createGetVersions', () => {
   it('should hand the signal to the repository when it reads', async () => {
     // Arrange
     const repository = createFakeVersionsRepository({
-      latest: '0.70.0',
+      latest: createVersion('0.70.0'),
       versions: [
-        '0.70.0',
+        createVersion('0.70.0'),
       ],
     });
     const { signal } = new AbortController();

@@ -6,30 +6,14 @@
     "./.droneey/constitution/presets/typescript/biome/foundation/self.jsonc",
     "./.droneey/constitution/presets/typescript/biome/foundation/core.jsonc",
     "./.droneey/constitution/presets/typescript/biome/foundation/typescript.jsonc",
-    "./.droneey/constitution/presets/typescript/biome/foundation/bun-test.jsonc",
     "./.droneey/constitution/presets/typescript/biome/foundation/dependency-cruiser.jsonc",
-    "./.droneey/constitution/presets/typescript/biome/foundation/zod.jsonc",
     "./.droneey/constitution/presets/typescript/biome/architecture/core.jsonc",
     "./.droneey/constitution/presets/typescript/biome/architecture/typescript.jsonc"
   ],
   "files": {
     "includes": [
-      "!!packages/constitution/templates/project/**/biome.json"
+      "!!apps",
+      "!!packages"
     ]
-  },
-  "overrides": [
-    {
-      "includes": [
-        "**/__tests__/**",
-        "**/tests/**"
-      ],
-      "linter": {
-        "rules": {
-          "suspicious": {
-            "noTemplateCurlyInString": "off"
-          }
-        }
-      }
-    }
-  ]
+  }
 }

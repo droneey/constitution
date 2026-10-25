@@ -1,0 +1,20 @@
+/* biome-ignore lint/nursery/useLayeredStyles: Tailwind reads @theme only outside a layer */
+@import '../../libs/ui/theme/tailwind.gen.css';
+
+@utility text-gradient-accent {
+  color: var(--color-accent-solid);
+
+  @supports (background-clip: text) {
+    background: linear-gradient(90deg, var(--color-accent-solid), var(--color-accent-end));
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+@utility focusable {
+  /* biome-ignore lint/nursery/useLayeredStyles: Tailwind places utilities itself */
+  &:focus-visible {
+    outline: var(--ring-focus-width) solid var(--color-ring-focus);
+    outline-offset: var(--ring-focus-offset);
+  }
+}

@@ -1,10 +1,12 @@
-/** below this width the open sidebar pushes the page out of view */
-const NARROW = '(width < 48rem)';
+import { NARROW_SCREEN_QUERY, SidebarMark } from './document-frame.constants';
 
 /** the frame's styles read the `data-sidebar` it marks */
 export const documentFrame = {
-  isNarrow: (): boolean => globalThis.matchMedia(NARROW).matches,
-  markSidebar: (collapsed: boolean): void => {
-    document.documentElement.dataset.sidebar = collapsed ? 'collapsed' : 'open';
+  isNarrow: (): boolean => globalThis.matchMedia(NARROW_SCREEN_QUERY).matches,
+  markSidebarCollapsed: (): void => {
+    document.documentElement.dataset.sidebar = SidebarMark.Collapsed;
+  },
+  markSidebarOpen: (): void => {
+    document.documentElement.dataset.sidebar = SidebarMark.Open;
   },
 };

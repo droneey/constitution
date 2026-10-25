@@ -4,7 +4,7 @@
 
 ## General
 
-The part `presets/python/ruff/foundation/pytest.toml` extends `python.toml` with pytest's style (`PT`) and the bans that hold core's and pytest's rules on specs, and a project that tests with pytest extends it, the last link of the chain.
+Ruff's part for pytest extends its part for Python with pytest's style (`PT`) and the bans that hold core's and pytest's rules on specs, and a project that tests with pytest extends it, the last link of the chain.
 
 ### specs-lift-only-assert-package-and-literal-rules · SHOULD
 

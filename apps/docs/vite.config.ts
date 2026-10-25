@@ -10,14 +10,14 @@ import { nitro } from 'nitro/vite';
 import { defineConfig } from 'vite';
 import { z } from 'zod';
 
-const CONSTITUTION_MANIFEST = new URL('../../packages/constitution/package.json', import.meta.url);
+const constitutionManifest = new URL('../../packages/constitution/package.json', import.meta.url);
 
 const manifestShape = z.object({
   version: z.string().regex(/^\d+\.\d+\.\d+$/),
 });
 
 const { version: constitutionVersion } = manifestShape.parse(
-  JSON.parse(readFileSync(CONSTITUTION_MANIFEST, 'utf8')),
+  JSON.parse(readFileSync(constitutionManifest, 'utf8')),
 );
 
 export default defineConfig({

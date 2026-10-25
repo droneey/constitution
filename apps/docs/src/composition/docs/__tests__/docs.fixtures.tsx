@@ -5,21 +5,21 @@ import { render } from '@testing-library/react';
 import { FrameworkProvider } from 'fumadocs-core/framework';
 import { RootProvider } from 'fumadocs-ui/provider/base';
 
-import type { GetVersions, Versions } from '#/features/versions';
-import { GetVersionsContext } from '#/features/versions';
-import type { PageTreeRoot, TOCItemType } from '#/libs/ui';
+import { createFakeGetVersions } from '#/__tests__/get-versions.fake';
+import type { GetVersions, Version, Versions } from '#/features/versions';
+import { createVersion, GetVersionsContext } from '#/features/versions';
+import type { mdxComponents, PageTreeRoot, TocHeading } from '#/libs/ui';
 
 import type { DocsFrame } from '../app/providers';
-import { DocsFrameContext } from '../app/providers';
-import type { mdxComponents } from '../ui/constants';
+import { DocsBuiltVersionContext, DocsFrameContext } from '../app/providers';
 import type { DocsPageEntry } from '../ui/screens/docs-page';
 import { DocsSearchWidget } from '../ui/widgets/docs-search-widget';
-import { pendingVersions } from './get-versions.fake';
 
 interface DocsProviders {
   frame?: DocsFrame;
   getVersions?: GetVersions;
   pathname?: string;
+  release?: Version | undefined;
 }
 
 const noParams = (): Record<string, string> => ({});
@@ -33,10 +33,10 @@ const staticRouter = (): {
 });
 
 const versionsFixture = (overrides: Partial<Versions> = {}): Versions => ({
-  latest: '0.70.0',
+  latest: createVersion('0.70.0'),
   versions: [
-    '0.70.0',
-    '0.69.2',
+    createVersion('0.70.0'),
+    createVersion('0.69.2'),
   ],
   ...overrides,
 });
@@ -57,7 +57,7 @@ const pageTreeFixture = (): PageTreeRoot => ({
   ],
 });
 
-const tocFixture = (): TOCItemType[] => [
+const tocFixture = (): TocHeading[] => [
   {
     depth: 2,
     title: 'Placement',
@@ -99,11 +99,19 @@ const pageEntryFixture = (overrides: Partial<DocsPageEntry> = {}): DocsPageEntry
   };
 };
 
-const renderInDocs = (
-  ui: ReactElement,
-  { frame, getVersions = pendingVersions, pathname = '/docs' }: DocsProviders = {},
-): RenderResult =>
-  render(ui, {
+const releaseOf = (providers: DocsProviders): Version | undefined =>
+  'release' in providers ? providers.release : createVersion('0.70.0');
+
+/** the release is 0.70.0 unless the providers name one, or `undefined` for none */
+const renderInDocs = (ui: ReactElement, providers: DocsProviders = {}): RenderResult => {
+  const {
+    frame,
+    getVersions = createFakeGetVersions().getVersions,
+    pathname = '/docs',
+  } = providers;
+  const release = releaseOf(providers);
+
+  return render(ui, {
     wrapper: ({ children }: { children: ReactNode }): ReactElement => (
       <FrameworkProvider
         useParams={noParams}
@@ -112,7 +120,7 @@ const renderInDocs = (
       >
         <RootProvider
           search={{
-            // biome-ignore lint/style/useNamingConvention: Fumadocs' root provider names the search dialog's slot SearchDialog
+            // biome-ignore lint/plugin/compound-parts-share-the-root-context: Fumadocs' root provider names the search dialog's slot SearchDialog
             SearchDialog: DocsSearchWidget,
           }}
           theme={{
@@ -120,11 +128,14 @@ const renderInDocs = (
           }}
         >
           <GetVersionsContext value={getVersions}>
-            <DocsFrameContext value={frame}>{children}</DocsFrameContext>
+            <DocsBuiltVersionContext value={release}>
+              <DocsFrameContext value={frame}>{children}</DocsFrameContext>
+            </DocsBuiltVersionContext>
           </GetVersionsContext>
         </RootProvider>
       </FrameworkProvider>
     ),
   });
+};
 
 export { pageEntryFixture, pageTreeFixture, renderInDocs, tocFixture, versionsFixture };

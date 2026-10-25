@@ -1,0 +1,34 @@
+{
+  "color": {
+    "$type": "color",
+    "surface": {
+      "base": {
+        "$value": "{color.neutral.900}"
+      }
+    },
+    "accent": {
+      "solid": {
+        "$value": "{color.brand.600}"
+      }
+    },
+    "fill": {
+      "hover": {
+        "$value": "{color.overlay.neutral-900-6}"
+      }
+    }
+  },
+  "font": {
+    "weight": {
+      "$type": "fontWeight",
+      "normal": {
+        "$value": 370
+      }
+    }
+  },
+  "stroke": {
+    "$type": "number",
+    "icon": {
+      "$value": 1.75
+    }
+  }
+}

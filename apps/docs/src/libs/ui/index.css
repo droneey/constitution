@@ -1,0 +1,12 @@
+/* biome-ignore lint/nursery/useLayeredStyles: Tailwind reads @theme only outside a layer */
+@import './theme/theme.css';
+/* biome-ignore lint/nursery/useLayeredStyles: it declares its own layers */
+@import './components/docs-layout/docs-layout.css';
+/* biome-ignore lint/nursery/useLayeredStyles: it declares its own layers */
+@import './components/sidebar/sidebar.css';
+/* biome-ignore lint/nursery/useLayeredStyles: it declares its own layers */
+@import './components/search-trigger/search-trigger.css';
+/* biome-ignore lint/nursery/useLayeredStyles: it declares its own layers */
+@import './components/search-dialog/search-dialog.css';
+/* biome-ignore lint/nursery/useLayeredStyles: it declares its own layers */
+@import './components/docs-page/docs-page.css';

@@ -3,17 +3,17 @@ import { matchesGlob } from 'node:path';
 import { loadedBy } from '#/kernel/utils';
 
 interface Range {
-  end: number;
-  start: number;
+  readonly end: number;
+  readonly start: number;
 }
 
 interface Changes {
-  codeChanged: (path: string) => boolean;
-  diff: string;
-  exists: (path: string) => boolean;
-  importsOf: (path: string) => readonly string[];
-  mutate: readonly string[];
-  untracked: readonly string[];
+  readonly codeChanged: (path: string) => boolean;
+  readonly diff: string;
+  readonly exists: (path: string) => boolean;
+  readonly importsOf: (path: string) => readonly string[];
+  readonly mutate: readonly string[];
+  readonly untracked: readonly string[];
 }
 
 const SECTION = /^diff --git /m;
@@ -107,6 +107,7 @@ const mutateTargets = (changes: Changes): readonly string[] => {
       ],
     }),
   ]);
+
   const mutated = (path: string): boolean =>
     changes.exists(path) &&
     isMutated({

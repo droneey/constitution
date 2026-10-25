@@ -1,0 +1,289 @@
+{
+  "dimension": {
+    "$type": "dimension",
+    "$description": "Every size on the 8-pixel grid, with 4 where a tight space needs it; radii follow nesting.",
+    "4": {
+      "$value": {
+        "unit": "px",
+        "value": 4
+      }
+    },
+    "8": {
+      "$value": {
+        "unit": "px",
+        "value": 8
+      }
+    },
+    "12": {
+      "$value": {
+        "unit": "px",
+        "value": 12
+      }
+    },
+    "14": {
+      "$value": {
+        "unit": "px",
+        "value": 14
+      }
+    },
+    "16": {
+      "$value": {
+        "unit": "px",
+        "value": 16
+      }
+    },
+    "20": {
+      "$value": {
+        "unit": "px",
+        "value": 20
+      }
+    },
+    "24": {
+      "$value": {
+        "unit": "px",
+        "value": 24
+      }
+    },
+    "28": {
+      "$value": {
+        "unit": "px",
+        "value": 28
+      }
+    },
+    "32": {
+      "$value": {
+        "unit": "px",
+        "value": 32
+      }
+    },
+    "40": {
+      "$value": {
+        "unit": "px",
+        "value": 40
+      }
+    },
+    "48": {
+      "$value": {
+        "unit": "px",
+        "value": 48
+      }
+    },
+    "56": {
+      "$value": {
+        "unit": "px",
+        "value": 56
+      }
+    },
+    "64": {
+      "$value": {
+        "unit": "px",
+        "value": 64
+      }
+    },
+    "240": {
+      "$value": {
+        "unit": "px",
+        "value": 240
+      }
+    },
+    "272": {
+      "$value": {
+        "unit": "px",
+        "value": 272
+      }
+    },
+    "352": {
+      "$value": {
+        "unit": "px",
+        "value": 352
+      }
+    },
+    "768": {
+      "$value": {
+        "unit": "px",
+        "value": 768
+      }
+    }
+  },
+  "spacing": {
+    "$type": "dimension",
+    "2xs": {
+      "$value": "{dimension.4}"
+    },
+    "xs": {
+      "$value": "{dimension.8}"
+    },
+    "sm": {
+      "$value": "{dimension.16}"
+    },
+    "md": {
+      "$value": "{dimension.24}"
+    },
+    "lg": {
+      "$value": "{dimension.32}"
+    },
+    "xl": {
+      "$value": "{dimension.48}"
+    },
+    "2xl": {
+      "$value": "{dimension.64}"
+    }
+  },
+  "size": {
+    "$type": "dimension",
+    "control": {
+      "xs": {
+        "$value": "{dimension.24}"
+      },
+      "md": {
+        "$value": "{dimension.40}"
+      },
+      "lg": {
+        "$value": "{dimension.48}"
+      }
+    },
+    "icon": {
+      "md": {
+        "$value": "{dimension.16}"
+      }
+    },
+    "header": {
+      "$value": "{dimension.56}",
+      "$description": "A common token: the height of the application's header."
+    },
+    "popup": {
+      "min": {
+        "$value": "{dimension.240}",
+        "$description": "A common token: the narrowest a dropdown opens."
+      },
+      "max": {
+        "$value": "{dimension.352}",
+        "$description": "A common token: the widest a dropdown opens."
+      }
+    },
+    "layout": {
+      "sidebar": {
+        "$value": "{dimension.272}",
+        "$description": "A common token: the width of the sidebar and of the contents column beside the page."
+      },
+      "page": {
+        "$value": "{dimension.768}",
+        "$description": "A common token: the widest the page's text runs."
+      }
+    }
+  },
+  "radius": {
+    "4": {
+      "$value": {
+        "unit": "px",
+        "value": 4
+      }
+    },
+    "8": {
+      "$value": {
+        "unit": "px",
+        "value": 8
+      }
+    },
+    "12": {
+      "$value": {
+        "unit": "px",
+        "value": 12
+      }
+    },
+    "16": {
+      "$value": {
+        "unit": "px",
+        "value": 16
+      }
+    },
+    "24": {
+      "$value": {
+        "unit": "px",
+        "value": 24
+      }
+    },
+    "32": {
+      "$value": {
+        "unit": "px",
+        "value": 32
+      }
+    },
+    "surface": {
+      "raised": {
+        "$value": "{radius.12}"
+      }
+    },
+    "$type": "dimension"
+  },
+  "text": {
+    "$type": "dimension",
+    "$description": "The type scale: a major third, 1.25, rounded to the 4-pixel grid, with 14 for interface text. Tailwind reads each step as its text-* size, so the library's classes take it too.",
+    "xs": {
+      "$value": "{dimension.12}"
+    },
+    "sm": {
+      "$value": "{dimension.14}"
+    },
+    "base": {
+      "$value": "{dimension.16}"
+    },
+    "lg": {
+      "$value": "{dimension.20}"
+    },
+    "xl": {
+      "$value": "{dimension.24}"
+    },
+    "2xl": {
+      "$value": "{dimension.32}"
+    },
+    "3xl": {
+      "$value": "{dimension.40}"
+    }
+  },
+  "leading": {
+    "$type": "dimension",
+    "$description": "The line height of each step of the type scale.",
+    "xs": {
+      "$value": "{dimension.20}"
+    },
+    "sm": {
+      "$value": "{dimension.20}"
+    },
+    "base": {
+      "$value": "{dimension.28}"
+    },
+    "lg": {
+      "$value": "{dimension.28}"
+    },
+    "xl": {
+      "$value": "{dimension.32}"
+    },
+    "2xl": {
+      "$value": "{dimension.40}"
+    },
+    "3xl": {
+      "$value": "{dimension.48}"
+    }
+  },
+  "ring": {
+    "$type": "dimension",
+    "$description": "The focus ring, a line off the 8-pixel grid: the primitive, and the roles that read it.",
+    "2": {
+      "$value": {
+        "unit": "px",
+        "value": 2
+      }
+    },
+    "focus": {
+      "width": {
+        "$value": "{ring.2}",
+        "$description": "How thick the focus ring is drawn."
+      },
+      "offset": {
+        "$value": "{ring.2}",
+        "$description": "The gap between the focus ring and the edge of what it marks."
+      }
+    }
+  }
+}

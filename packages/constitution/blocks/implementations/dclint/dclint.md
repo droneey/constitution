@@ -5,7 +5,6 @@ requires: [compose]
 extends: null
 abstract: false
 languages: [yaml]
-dictionary: [dclint, DCLint]
 governs: []
 ---
 
@@ -13,4 +12,4 @@ governs: []
 
 > Lints Docker Compose files.
 
-DCLint is a development dependency in a JavaScript repository and a pinned tool in any other. It reads its configuration from the command line, every rule an error, and holds every active rule of a Compose file that a linter can see.
+**DCLint**, run as **`dclint`**, is a development dependency in a JavaScript repository and a pinned tool in any other. It reads its configuration from the command line, every rule an error, and holds every active rule of a Compose file that a linter can see.

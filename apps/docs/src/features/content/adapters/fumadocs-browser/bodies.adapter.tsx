@@ -33,7 +33,7 @@ const render = ({ default: Body }: CompiledMDXProperties, props: BodyProps): Rea
   <Body {...props} />
 );
 
-const COLLECTIONS: ReadonlyMap<string, Bodies> = new Map([
+const bodiesByCollection: ReadonlyMap<string, Bodies> = new Map([
   [
     'blocks',
     {
@@ -105,6 +105,7 @@ const loadingOf = (type: string, path: string, bodies: Bodies): Promise<Loaded> 
     loadings.get(key) ??
     bodies.loader.preload(path).then((loaded) => {
       loadedBodies.set(key, loaded);
+
       return loaded;
     });
 
@@ -114,7 +115,7 @@ const loadingOf = (type: string, path: string, bodies: Bodies): Promise<Loaded> 
 };
 
 const pageBodyOf = (type: string, path: string): PageBody | undefined => {
-  const bodies = COLLECTIONS.get(type);
+  const bodies = bodiesByCollection.get(type);
 
   if (bodies === undefined || !Object.hasOwn(bodies.raw, `./${path}`)) {
     return undefined;

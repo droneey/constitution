@@ -31,6 +31,7 @@ const branchIn = (folder: string): Branch => {
 
     return done;
   };
+
   // A base or a diff git could not give would read as no change, and the gate would pass unchecked.
   const git = (args: readonly string[]): string => {
     const done = runGit(args);
@@ -41,6 +42,7 @@ const branchIn = (folder: string): Branch => {
 
     return done.stdout;
   };
+
   const base = git([
     'merge-base',
     'HEAD',

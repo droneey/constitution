@@ -14,7 +14,7 @@
 
 ### uv-build-backend-capped · SHOULD
 
-A package builds with `uv_build`, required in `[build-system]` with a floor and a cap below the next minor: `uv_build>=0.13,<0.14`.
+A package builds with **`uv_build`**, required in `[build-system]` with a floor and a cap below the next minor: `uv_build>=0.13,<0.14`.
 
 | Why | Tags |
 |---|---|

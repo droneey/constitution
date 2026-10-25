@@ -5,13 +5,12 @@ requires: [i18n, typescript]
 extends: null
 abstract: false
 languages: []
-dictionary: [Lingui, lingui.config.ts]
 governs: ["lingui.config.ts", "**/locales/**"]
 ---
 
 # Lingui
 
-> Messages as ICU catalogs, one per locale.
+> Messages as ICU catalogs, one per locale, compiled by **Lingui** as **`lingui.config.ts`** sets.
 
 ## Requirements
 

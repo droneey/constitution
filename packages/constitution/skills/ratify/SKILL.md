@@ -24,7 +24,7 @@ The project folder holds:
 
 ## What you write
 
-- **`constitution.yaml`** at the repository root: the blocks the repository follows, its units, the one command that runs its checks, and its overrides. The session-start hook reads it and gives every agent the rules of those blocks, so a block listed by mistake costs every session, and a block left out leaves its rules unenforced.
+- **`constitution.yaml`** at the repository root: the blocks the repository follows, the one command that runs its checks, and its overrides; and in a workspace one in each member's folder, with the blocks that member follows. The session-start hook reads them and gives every agent the rules of those blocks, so a block listed by mistake costs every session, and a block left out leaves its rules unenforced.
 - **`PROJECT.md`** beside it: what the product is, for whom, the domains of its business, its entities, its boundaries, its critical scenarios and its glossary. It gives any agent the context of the whole, so a change fits the product and not just the task.
 - **`DECISIONS.md`** beside them, from the template, when the repository has none: the log where every later choice between real alternatives is recorded with what was rejected and why. Any choice the owner names during the interview — a store, a framework, a boundary — goes in as its first entries.
 - **A block of the project's own pack** for each library the owner wants rules for that the plugin has no block for: a folder of blocks shaped like the Constitution — `constitution/` unless the owner names another — listed under `packs:`.
@@ -38,7 +38,30 @@ Work in this order, and keep the owner in the loop: propose, let them confirm or
 
 ### 1. Check what is there
 
-If the release above reads `(not installed)`, or the block list does, the project has no Constitution to read yet. Propose to install it first: in `mise.toml`, the tool `"github:droneey/constitution" = { version = "<plugin version>", asset_pattern = "constitution.tar.gz", strip_components = 0 }` and the `postinstall` hooks `mkdir -p .droneey` and `ln -sfn "$(mise where github:droneey/constitution)" .droneey/constitution`, with the installed plugin's version above; and `/.droneey` in `.gitignore`. After the owner's yes, write them, run `mise install`, and ask the owner to run `/constitution:ratify` again, which then reads the release's blocks. Stop here until then.
+If the release above reads `(not installed)`, or the block list does, the project has no Constitution to read yet. Propose to install it first: in `mise.toml`, the tool `github:droneey/constitution` with the release's archive and, for each platform, its `constitution` program, which the hooks run, and the `postinstall` hooks that link the release, with the installed plugin's version above:
+
+```toml
+[tools."github:droneey/constitution"]
+version = "<plugin version>"
+asset_pattern = "constitution.tar.gz"
+strip_components = 0
+bin_path = "bin"
+
+[tools."github:droneey/constitution".platforms]
+linux-x64 = { additional_asset_patterns = ["constitution-linux-x64.tar.gz"] }
+linux-arm64 = { additional_asset_patterns = ["constitution-linux-arm64.tar.gz"] }
+macos-x64 = { additional_asset_patterns = ["constitution-macos-x64.tar.gz"] }
+macos-arm64 = { additional_asset_patterns = ["constitution-macos-arm64.tar.gz"] }
+windows-x64 = { additional_asset_patterns = ["constitution-windows-x64.tar.gz"] }
+
+[hooks]
+postinstall = [
+  "mkdir -p .droneey",
+  "ln -sfn \"$(mise where github:droneey/constitution)\" .droneey/constitution",
+]
+```
+
+and `/.droneey` in `.gitignore`. After the owner's yes, write them, run `mise install`, and ask the owner to run `/constitution:ratify` again, which then reads the release's blocks. Stop here until then.
 
 If `constitution.yaml`, `PROJECT.md` or `DECISIONS.md` is already at the root, say so and ask whether to replace it. If decisions are kept elsewhere — `docs/adr/`, `docs/decisions/` — say so and ask whether to move them into `DECISIONS.md` or leave them and write none. With a no, leave that file alone: do not write it and skip its part of the work. Either way, build the proposal from the repository and the owner, not from files already there.
 
@@ -76,7 +99,8 @@ For a block of the project's own pack, fill the template's placeholders from the
 - `id` is its folder's name and its file's name without `.md`, and must not be an id from the list above;
 - `summary` is one sentence of at most 70 characters, ending with a full stop;
 - `requires` names the blocks it needs — Constitution ids or other blocks of the pack —, the language of each configuration file it governs among them, unless a block it requires brings it; `extends` names an abstract Constitution base it inherits, an id that starts with `_`, or stays `null` — a Constitution block it builds on goes under `requires`;
-- `languages` lists, for a tool, the language blocks whose files its presets cover — Constitution ids or language blocks of the pack — and stays `[]` for a tool that covers no language's files and for a library; `dictionary` its brand and file names; `governs` the file globs its rules govern, its configuration files among them — a language block governs only its files' extensions;
+- `languages` lists, for a tool, the language blocks whose files its presets cover — Constitution ids or language blocks of the pack — and stays `[]` for a tool that covers no language's files and for a library; `governs` the file globs its rules govern, its configuration files among them — a language block governs only its files' extensions;
+- the passport's line of what the block is names the library in bold, `> **Paraglide** compiles …`, which defines it as the block's term, and each file, command or API the block owns is set in bold once, as a code span, where the passport first names it: ``**`project.inlang/`**``; every other mention is plain;
 - the passport's **setup** paragraph says what the block's parts and templates cannot show — how the library is set up, a quirk of the tool, a limit of what it holds; drop it when there is nothing to say;
 - the passport's **Requirements** table answers the requirements for implementation of the blocks above it — rules a domain, a platform or core asks of any library doing its job; read the files of the blocks it requires under `.droneey/constitution/blocks/` to find them. One row per requirement: its slug, how the library meets it, and whether it is met. `yes` — it meets the rule as written; `partly` — it meets the rule's purpose or part of its letter, and a rule of the block covers the part it misses; `no` — it cannot meet the rule, and a rule of the block replaces it. A `partly` or `no` row names that rule in How by its slug in backticks, and the rule is written with the owner as below. Drop the section when there is nothing to answer;
 - a **rule** is written only when the owner states one, in the chapter template's format, with a slug no rule heading of the Constitution's blocks holds. Drop the chapter, and its `foundation/` folder, when there is none.
@@ -89,25 +113,30 @@ A block of the project's own pack is a draft until a person reviews it; say so.
 
 ### 5. Ask about units
 
-When the repository is a workspace — apps, the packages they share or the repository releases, a server beside a web client — list every package under `packages:`, and ask which blocks each follows beyond the repository's. Top-level keys apply everywhere; a package adds its own blocks for the files under its path, whether it sits in `apps/` or `packages/`, and one with none of its own is written `<path>: {}`:
+When the repository is a workspace — apps, the packages they share or the repository releases, a server beside a web client — each member its manifests declare keeps a `constitution.yaml` of its own in its folder: the members are the folders that `workspaces` of the root's `package.json` and `members` of uv's workspace in the root's `pyproject.toml` name. Nothing passes from the root's file to a member's: ask which blocks, axes and packs each member follows, propose for each the root's blocks that hold its files too, and write them in its own file. A member's file takes every key of the root's but `check`, which only the root names, and lists a pack by its path from the member's folder:
 
 ```yaml
-packages:
-  apps/web:
-    domains:
-      - ui
-      - untrusted-client
-      - remote-service
-    platforms:
-      - browser
-    languages:
-      - html
-    implementations:
-      - react-dom
-  packages/kit: {}
+axes:
+  - architecture
+  - workflow
+domains:
+  - ui
+  - untrusted-client
+  - version-control
+platforms:
+  - browser
+languages:
+  - typescript
+  - html
+implementations:
+  - react-dom
+  - biome
+  - git
+packs: []
+overrides: []
 ```
 
-A path is relative to the root, two spaces in; its keys are `axes`, `domains`, `platforms`, `languages` and `implementations`, four spaces in, each a block list. A package's `axes` replace the repository's. Write `packages: {}` when the repository is one package. A folder that keeps a tool's configuration of its own and no path names is a warning of the digest.
+A member with no `constitution.yaml`, and a folder that keeps a tool's configuration of its own but is no member, are warnings of the digest.
 
 ### 6. Interview for PROJECT.md
 
@@ -133,7 +162,7 @@ Use the owner's own words: the glossary seeds the language of the code. Keep it 
 
 Show the owner everything you will write:
 
-- `constitution.yaml` exactly as it will be written;
+- `constitution.yaml` exactly as it will be written, the root's and each member's;
 - `PROJECT.md` in full;
 - `DECISIONS.md` in full, when it will be written;
 - each block of the project's own pack in full.
@@ -142,22 +171,22 @@ Then list every `partly` and `no` row of the Requirements tables of the blocks y
 
 Write only after the owner's yes, and only the files the owner agreed to.
 
-- **`constitution.yaml`** is `.droneey/constitution/templates/constitution.yaml` with `<check command>` replaced by the check command, and each `[]` or `{}` replaced where there is something to list. Keep every key, in the template's order. Write every list as a block list, an item to a line, `[]` only when it is empty, as the presets of yamllint and yamlfmt ask. The hook reads a fixed subset of YAML: a block list, or a flow list `[a, b]`; a value holding `:` or `#` is double-quoted; there are no anchors, tags or multi-line strings.
+- **`constitution.yaml`** is `.droneey/constitution/templates/constitution.yaml` with `<check command>` replaced by the check command, and each `[]` replaced where there is something to list; a member's is the same without its `check` line. Keep every key, in the template's order. Write every list as a block list, an item to a line, `[]` only when it is empty, as the presets of yamllint and yamlfmt ask. The hook reads a fixed subset of YAML: a block list, or a flow list `[a, b]`; a value holding `:` or `#` is double-quoted; there are no anchors, tags or multi-line strings.
 - **`PROJECT.md`** keeps the template's title and blockquote as they are, then the sections that have content, without the template's `<!-- -->` guidance.
 - **`DECISIONS.md`** is `.droneey/constitution/templates/DECISIONS.md`, keeping its title, its blockquote and the `<!-- -->` entry format later entries copy, with the owner's choices as its entries; written only when the repository has none.
 
 ### 9. Wire the tools' configurations
 
-Once `constitution.yaml` is written, run, from the repository root:
+Once every `constitution.yaml` is written, run, from the repository root:
 
 ```bash
-bash "${CLAUDE_PLUGIN_ROOT}/hooks/wiring.sh"
+constitution presets plan
 ```
 
-It prints each file the active blocks give — `<path> for <units>` at each folder that holds one, `(new)` at the root when none does there — with the units it serves, `.` for the repository: for each tool, the units whose nearest file at or above their folder names that tool's parts, and, where no file names them yet, the unit its folder lies in and each beneath it without a nearer file of that name. Under the file come the fragment of each block, `.droneey/constitution/templates/project/<scope>/<block>/<path>`, and under a tool's fragment the parts it takes, in order. Each package keeps its tools' configurations in its own folder; the root of a workspace keeps the tools that run once for the whole repository — the commit hooks, the secrets scan, the manifests' check, a scan of every lockfile — and, of each other tool, only its own part and its workspace part. Keep the repository's layout where it already follows this: update each file that exists, and write a new one where its package needs it. A tool that takes no part on the axes its unit follows gets no file. Ask the owner for what only they know: `<name>`, the project's name; `<package>`, the import package of its Python code; the paths a task of `mise.toml` names, such as a Dockerfile or a Compose file, which you propose from the repository. Write each file from it:
+It prints each file the active blocks give — `<path> for <units>`, `(new)` where the folder holds none yet — with the units it serves, `.` for the repository: for a tool no member follows, the root's file serves every unit; for any other tool, each unit's own file serves that unit alone, and a template that takes no part is read from the nearest folder at or above the unit that keeps the file. Under the file come the fragment of each block, `.droneey/constitution/templates/project/<scope>/<block>/<path>`, and under a tool's fragment the parts it takes, in order. Each package keeps its tools' configurations in its own folder; the root of a workspace keeps the tools that run once for the whole repository — the commit hooks, the secrets scan, the manifests' check, a scan of every lockfile — and, of each other tool, only its own part and its workspace part. Keep the repository's layout where it already follows this: update each file that exists, and write a new one where its package needs it. A tool that takes no part on the axes its unit follows gets no file. Ask the owner for what only they know: `<name>`, the project's name; `<package>`, the import package of its Python code; the paths a task of `mise.toml` names, such as a Dockerfile or a Compose file, which you propose from the repository. Write each file from it:
 
-- **Assemble** the file from its fragments, one after the other in the order printed, each under its block's line as the fragment writes it. In a structured file — JSON, TOML, YAML, code — merge each fragment's table, list or script into the file's own: a list the fragments share, such as `extends` of `biome.json` or `preload` of `bunfig.toml`, holds the entries of each fragment in the order printed, without repeats; a table, such as `[dependency-groups]`, `devDependencies`, `scripts` or `[tool.poe.tasks]`, holds the keys of every fragment. A `check` script or task runs every other one the fragments give, in the order printed. A fragment marked `(the folder adds it)` is the only one a file the tool also reads from the folders above, as git reads `.gitignore`, takes there; every other file takes all its fragments.
-- **Fill** the placeholders: `<presets>` becomes the path from the file to the release's `presets` folder, starting with `./` or `../`; `<parts>` becomes the printed parts, each by its path relative to the file and starting with `./` or `../` — one entry each in a list; in code one import each, named in camelCase after the part, with its axis before it off `foundation` (`architectureCore`), and `part` in the template's body stands for the whole list, in order, so a configuration that joins its parts is only their imports and one `join(…)` with the project's own settings last. `<chain end>` becomes the printed part none of the others extends, which a part's own `extend` or `extends` line shows; `<copied parts>`, between `# from <parts>` and `# end <parts>`, one pair to a part — its line `# from <path>`, its content unchanged save `<package>`, which becomes the unit's import package, its line `# end <path>` — with the project's own settings outside the pairs. Biome reaches the parts of a package through a `.droneey/constitution` link in the package's folder to the root's: create it when it is missing.
+- **Assemble** the file from its fragments, one after the other in the order printed, each under its block's line as the fragment writes it. In a structured file — JSON, TOML, YAML, code — merge each fragment's table, list or script into the file's own: a list the fragments share, such as `extends` of `biome.json` or `preload` of `bunfig.toml`, holds the entries of each fragment in the order printed, without repeats; a table, such as `[dependency-groups]`, `devDependencies`, `scripts` or `[tool.poe.tasks]`, holds the keys of every fragment. A `check` script or task runs every other one the fragments give, in the order printed. A fragment marked `(the folder adds it)` is the only one a file the tool also reads from the folders above, as git reads `.gitignore`, takes there; every other file takes all its fragments. In a workspace, a table that a rule gives to the root alone, such as `[install]` of `bunfig.toml`, goes only into the root's file.
+- **Fill** the placeholders: `<presets>` becomes the path from the file to the release's `presets` folder, starting with `./` or `../`; `<parts>` becomes the printed parts, each by its path relative to the file and starting with `./` or `../` — one entry each in a list; in code one import each, named in camelCase after the part, with its axis before it off `foundation` (`architectureCore`), and `part` in the template's body stands for the whole list, in order, so a configuration that joins its parts is only their imports and one `join(…)` with the project's own settings last. `<unit folders>` becomes, at the root of a workspace, one entry for each folder its members lie in, as the root's `workspaces` globs and uv's `members` name them (`apps`, `packages`), and is left out with its entry everywhere else; `<chain end>` becomes the printed part none of the others extends, which a part's own `extend` or `extends` line shows; `<copied parts>`, between `# from <parts>` and `# end <parts>`, one pair to a part — its line `# from <path>`, its content unchanged save `<package>`, which becomes the unit's import package, its line `# end <path>` — with the project's own settings outside the pairs. Biome reaches the parts of a package through a `.droneey/constitution` link in the package's folder to the root's: create it when it is missing.
 - **Format** each file as its formatter would, Biome's sorted imports included, so the first check passes.
 - **Keep the project's own settings.** When the file exists, keep every setting of its own after the parts and change only how it takes them; when a part now holds a setting the file repeats, drop the repetition, save a setting a block's fragment writes, and say so.
 - **A tool with no template** — a line `no template: <scope>/<tool>` — is a pack's tool: wire its parts in `<pack>/presets/<scope>/<tool>/` from what you know of the tool, and say that no template guided it.
@@ -169,7 +198,7 @@ Show the owner the diff of every file you will write, write only after the owner
 Run the hook as a session start would, from the repository root:
 
 ```bash
-printf '{"cwd":"%s","hook_event_name":"SessionStart","source":"startup"}\n' "$(pwd)" | CLAUDE_PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT}" bash "${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh"
+printf '{"cwd":"%s","hook_event_name":"SessionStart","source":"startup"}\n' "$(pwd)" | constitution hook session-start
 ```
 
 It prints the digest as JSON. The digest's second line must say `constitution.yaml makes <n> blocks active.`; a line that says the file does not parse names the line to fix. Each line under `⚠️ Warnings` says what is wrong and how to fix it: fix a mistake of yours in the files, a `wiring` warning included, and bring any other warning to the owner. Then tell the owner the files reach the main branch through a pull request like any change, and that the next session starts with the digest of these blocks.

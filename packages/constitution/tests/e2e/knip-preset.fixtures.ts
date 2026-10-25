@@ -18,7 +18,7 @@ interface Unused {
   files: readonly string[];
 }
 
-const REPORT = z.object({
+const report = z.object({
   issues: z.array(
     z.object({
       binaries: z.array(
@@ -57,8 +57,8 @@ export default {
 `;
 };
 
-const REPOSITORY = join(import.meta.dir, '..', '..');
-const KNIP = join(REPOSITORY, 'node_modules', '.bin', 'knip');
+const repository = join(import.meta.dir, '..', '..');
+const knip = join(repository, 'node_modules', '.bin', 'knip');
 
 const unusedCode = (project: Project): Unused => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-knip-'));
@@ -83,10 +83,10 @@ const unusedCode = (project: Project): Unused => {
   }
 
   mkdirSync(join(folder, '.droneey'));
-  symlinkSync(REPOSITORY, join(folder, '.droneey', 'constitution'));
+  symlinkSync(repository, join(folder, '.droneey', 'constitution'));
 
   const running = spawnSync(
-    KNIP,
+    knip,
     [
       '--reporter',
       'json',
@@ -108,7 +108,7 @@ const unusedCode = (project: Project): Unused => {
     recursive: true,
   });
 
-  const { issues } = REPORT.parse(JSON.parse(running.stdout));
+  const { issues } = report.parse(JSON.parse(running.stdout));
 
   return {
     binaries: issues.flatMap(({ binaries }) => binaries.map(({ name }) => name)),

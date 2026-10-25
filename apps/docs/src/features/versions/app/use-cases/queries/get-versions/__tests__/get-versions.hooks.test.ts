@@ -2,62 +2,65 @@ import { afterEach, describe, expect, it } from 'bun:test';
 
 import { cleanup, renderHook, waitFor } from '@testing-library/react';
 
-import { useVersions } from '../get-versions.hooks';
-import { createFakeGetVersions } from './get-versions.fake';
-import { renderReleases } from './get-versions.hooks.fixtures';
+import { createFakeGetVersions } from '#/__tests__/get-versions.fake';
+
+import { createVersion } from '../../../../../domain/value-objects';
+import { VersionsStatus } from '../get-versions.constants';
+import { useGetVersions } from '../get-versions.hooks';
+import { renderVersionsState } from './get-versions.hooks.fixtures';
 
 afterEach(() => {
   cleanup();
 });
 
-describe('useVersions', () => {
+describe('useGetVersions', () => {
   it('should be loading when the read has not answered yet', () => {
     // Arrange
     const { getVersions } = createFakeGetVersions();
 
     // Act
-    const { result: releases } = renderReleases(getVersions);
+    const { result: versionsState } = renderVersionsState(getVersions);
 
     // Assert
-    expect(releases.current).toStrictEqual({
-      status: 'loading',
+    expect(versionsState.current).toStrictEqual({
+      status: VersionsStatus.Loading,
     });
   });
 
   it('should stay loading when no use case is provided', () => {
     // Arrange
-    const hook = useVersions;
+    const hook = useGetVersions;
 
     // Act
-    const { result: releases } = renderHook(hook);
+    const { result: versionsState } = renderHook(hook);
 
     // Assert
-    expect(releases.current).toStrictEqual({
-      status: 'loading',
+    expect(versionsState.current).toStrictEqual({
+      status: VersionsStatus.Loading,
     });
   });
 
   it('should hold the releases when the read answers', async () => {
     // Arrange
     const { getVersions } = createFakeGetVersions({
-      latest: '0.70.0',
+      latest: createVersion('0.70.0'),
       versions: [
-        '0.70.0',
-        '0.69.2',
+        createVersion('0.70.0'),
+        createVersion('0.69.2'),
       ],
     });
 
     // Act
-    const { result: releases } = renderReleases(getVersions);
+    const { result: versionsState } = renderVersionsState(getVersions);
 
     // Assert
     await waitFor(() => {
-      expect(releases.current).toStrictEqual({
-        latest: '0.70.0',
-        status: 'loaded',
+      expect(versionsState.current).toStrictEqual({
+        latest: createVersion('0.70.0'),
+        status: VersionsStatus.Loaded,
         versions: [
-          '0.70.0',
-          '0.69.2',
+          createVersion('0.70.0'),
+          createVersion('0.69.2'),
         ],
       });
     });
@@ -68,12 +71,12 @@ describe('useVersions', () => {
     const { getVersions } = createFakeGetVersions(new Error('unreadable'));
 
     // Act
-    const { result: releases } = renderReleases(getVersions);
+    const { result: versionsState } = renderVersionsState(getVersions);
 
     // Assert
     await waitFor(() => {
-      expect(releases.current).toStrictEqual({
-        status: 'failed',
+      expect(versionsState.current).toStrictEqual({
+        status: VersionsStatus.Failed,
       });
     });
   });
@@ -81,7 +84,7 @@ describe('useVersions', () => {
   it('should abort the read when the caller unmounts', () => {
     // Arrange
     const { getVersions, signals } = createFakeGetVersions();
-    const { unmount } = renderReleases(getVersions);
+    const { unmount } = renderVersionsState(getVersions);
 
     // Act
     unmount();
@@ -94,12 +97,14 @@ describe('useVersions', () => {
 
   it('should hold the newer releases when the older read is aborted', async () => {
     // Arrange
-    const { result: releases, provide } = renderReleases(createFakeGetVersions().getVersions);
+    const { result: versionsState, provide } = renderVersionsState(
+      createFakeGetVersions().getVersions,
+    );
     const newer = createFakeGetVersions({
-      latest: '0.71.0',
+      latest: createVersion('0.71.0'),
       versions: [
-        '0.71.0',
-        '0.70.0',
+        createVersion('0.71.0'),
+        createVersion('0.70.0'),
       ],
     });
 
@@ -108,12 +113,12 @@ describe('useVersions', () => {
 
     // Assert
     await waitFor(() => {
-      expect(releases.current).toStrictEqual({
-        latest: '0.71.0',
-        status: 'loaded',
+      expect(versionsState.current).toStrictEqual({
+        latest: createVersion('0.71.0'),
+        status: VersionsStatus.Loaded,
         versions: [
-          '0.71.0',
-          '0.70.0',
+          createVersion('0.71.0'),
+          createVersion('0.70.0'),
         ],
       });
     });

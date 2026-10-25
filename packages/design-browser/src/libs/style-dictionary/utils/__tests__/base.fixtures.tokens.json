@@ -1,0 +1,182 @@
+{
+  "color": {
+    "$type": "color",
+    "neutral": {
+      "0": {
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            1,
+            0,
+            286
+          ],
+          "hex": "#fff"
+        }
+      },
+      "900": {
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.19,
+            0.005,
+            286
+          ],
+          "hex": "#131316"
+        }
+      }
+    },
+    "brand": {
+      "600": {
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.55,
+            0.21,
+            318
+          ],
+          "hex": "#a239be"
+        }
+      }
+    },
+    "overlay": {
+      "neutral-900-6": {
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.19,
+            0.005,
+            286
+          ],
+          "alpha": 0.06
+        }
+      }
+    }
+  },
+  "dimension": {
+    "$type": "dimension",
+    "8": {
+      "$value": {
+        "unit": "px",
+        "value": 8
+      }
+    },
+    "16": {
+      "$value": {
+        "unit": "px",
+        "value": 16
+      }
+    }
+  },
+  "spacing": {
+    "$type": "dimension",
+    "sm": {
+      "$value": "{dimension.16}"
+    }
+  },
+  "size": {
+    "$type": "dimension",
+    "icon": {
+      "md": {
+        "$value": "{dimension.16}"
+      }
+    }
+  },
+  "text": {
+    "$type": "dimension",
+    "sm": {
+      "$value": "{dimension.16}"
+    }
+  },
+  "leading": {
+    "$type": "dimension",
+    "sm": {
+      "$value": "{dimension.8}"
+    }
+  },
+  "radius": {
+    "$type": "dimension",
+    "8": {
+      "$value": {
+        "unit": "px",
+        "value": 8
+      }
+    },
+    "surface": {
+      "raised": {
+        "$value": "{radius.8}"
+      }
+    }
+  },
+  "shadow": {
+    "$type": "shadow",
+    "drop": {
+      "sm": {
+        "$value": [
+          {
+            "color": {
+              "colorSpace": "oklch",
+              "components": [
+                0,
+                0,
+                0
+              ],
+              "alpha": 0.1
+            },
+            "offsetX": {
+              "value": 0,
+              "unit": "px"
+            },
+            "offsetY": {
+              "value": 4,
+              "unit": "px"
+            },
+            "blur": {
+              "value": 6,
+              "unit": "px"
+            },
+            "spread": {
+              "value": -4,
+              "unit": "px"
+            }
+          }
+        ]
+      }
+    },
+    "surface": {
+      "raised": {
+        "$value": "{shadow.drop.sm}"
+      }
+    }
+  },
+  "duration": {
+    "$type": "duration",
+    "fast": {
+      "$value": {
+        "unit": "ms",
+        "value": 100
+      }
+    }
+  },
+  "ease": {
+    "$type": "cubicBezier",
+    "out": {
+      "$value": [
+        0.23,
+        1,
+        0.32,
+        1
+      ]
+    }
+  },
+  "layer": {
+    "$type": "number",
+    "50": {
+      "$value": 50
+    },
+    "surface": {
+      "raised": {
+        "$value": "{layer.50}"
+      }
+    }
+  }
+}

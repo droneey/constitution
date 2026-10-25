@@ -2,10 +2,17 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
+import { cliPath } from './cli.fixtures';
 import type { Files } from './constitution.fixtures';
 import { contextOf, HookEvent, runHook } from './hook.fixtures';
 import { archiveOf, createRealPluginRoot, LINK, linkArchive } from './plugin-root.fixtures';
-import { ConfigKey, configOf, createProject } from './project.fixtures';
+import {
+  ConfigKey,
+  configOf,
+  createProject,
+  memberConfigOf,
+  workspaceOf,
+} from './project.fixtures';
 
 // A release's presets and templates as far as a case reads them: Biome's
 // parts, which a file takes by their paths; dependency-cruiser's, which a
@@ -50,12 +57,13 @@ const RELEASE: Files = {
     '[tasks."audit:check"]\nrun = "osv-scanner --licenses=<parts>"\n',
   'templates/project/dockerfile/hadolint/mise.toml':
     '[tasks."dockerfile:check"]\nrun = "hadolint --config <parts> Dockerfile"\n',
-};
+} as const;
 
-const PRESETS = `${LINK}/presets`;
-const part = (path: string): string => `${PRESETS}/${path}`;
+const presets = `${LINK}/presets`;
 
-const BIOME_PARTS: readonly string[] = [
+const part = (path: string): string => `${presets}/${path}`;
+
+const biomeParts: readonly string[] = [
   'common/biome/foundation/self.jsonc',
   'typescript/biome/foundation/self.jsonc',
   'typescript/biome/foundation/core.jsonc',
@@ -127,18 +135,37 @@ const wiredConfig = (
     ...config,
   });
 
+// A member's constitution.yaml of the base configuration's blocks and the implementations given.
+const wiredMember = (
+  implementations: readonly string[] = [],
+  config: Partial<Record<ConfigKey, string>> = {},
+): string =>
+  memberConfigOf({
+    [ConfigKey.Domains]: '[workspace]',
+    [ConfigKey.Languages]: LANGUAGES,
+    [ConfigKey.Implementations]: `[${[
+      IMPLEMENTATIONS,
+      ...implementations,
+    ].join(', ')}]`,
+    ...config,
+  });
+
+// A workspace of the members given, each by its path with its constitution.yaml.
+const wiredWorkspace = (members: Readonly<Record<string, string>>): Files => workspaceOf(members);
+
 // A file for every tool the base configuration makes active, each taking its parts.
 const cruiserConfig = (parts: readonly string[]): string =>
   `export default { extends: [${parts.map((path) => `'${part(path)}'`).join(', ')}] };\n`;
-const ROOT_CRUISER = cruiserConfig([
+
+const rootCruiser = cruiserConfig([
   'typescript/dependency-cruiser/foundation/self.mjs',
   'typescript/dependency-cruiser/architecture/workspace.mjs',
 ]);
-const OSV_TASK = `[tasks."audit:check"]\nrun = "osv-scanner --licenses=${part('common/osv-scanner/foundation/core.txt')}"\n`;
-const WIRED: Files = {
-  '.dependency-cruiser.mjs': ROOT_CRUISER,
-  'biome.json': biomeJson(BIOME_PARTS),
-  'mise.toml': OSV_TASK,
+const osvTask = `[tasks."audit:check"]\nrun = "osv-scanner --licenses=${part('common/osv-scanner/foundation/core.txt')}"\n`;
+const wired: Files = {
+  '.dependency-cruiser.mjs': rootCruiser,
+  'biome.json': biomeJson(biomeParts),
+  'mise.toml': osvTask,
   'pyproject.toml': `${ruffMarker()}\n${vultureCopy(60)}\n${importLinterCopy()}`,
 };
 
@@ -147,7 +174,7 @@ const createWiredProject = (input: WiredProject): string => {
     config: input.config ?? wiredConfig(),
     files: Object.fromEntries(
       Object.entries({
-        ...(input.bare === true ? {} : WIRED),
+        ...(input.bare === true ? {} : wired),
         ...input.files,
         ...input.tracked,
       }).filter(([path]) => !(input.omit ?? []).includes(path)),
@@ -174,7 +201,7 @@ const createWiredProject = (input: WiredProject): string => {
 // A pack the project keeps in packs/acme: its block acme, a part of Biome for
 // it, and acme as a tool of its own, whose template takes its part.
 const PACK = 'packs/acme';
-const PACK_FILES: Files = {
+const packFiles: Files = {
   [`${PACK}/blocks/implementations/acme/acme.md`]: [
     '---',
     'id: acme',
@@ -183,7 +210,6 @@ const PACK_FILES: Files = {
     'extends: null',
     'abstract: false',
     'languages: []',
-    'dictionary: []',
     'governs: []',
     '---',
     '',
@@ -214,6 +240,7 @@ const digestOf = (input: { project: string; root: string }): string =>
   );
 
 const WIRING = '- wiring: ';
+
 const wiringOf = (context: string): readonly string[] =>
   context
     .split('\n')
@@ -227,9 +254,10 @@ const wiringListOf = (input: { project: string; root: string }): readonly string
   });
 
   return spawnSync(
-    process.env['HOOK_SHELL'] ?? 'bash',
+    cliPath,
     [
-      join(input.root, 'hooks', 'wiring.sh'),
+      'presets',
+      'plan',
     ],
     {
       cwd: input.project,
@@ -252,22 +280,24 @@ const wiringListOf = (input: { project: string; root: string }): readonly string
 };
 
 export {
-  BIOME_PARTS,
   biomeJson,
+  biomeParts,
   createWiredPluginRoot,
   createWiredProject,
   cruiserConfig,
   digestOf,
   importLinterCopy,
-  OSV_TASK,
+  osvTask,
   PACK,
-  PACK_FILES,
   packConfig,
+  packFiles,
   part,
-  ROOT_CRUISER,
+  rootCruiser,
   ruffMarker,
   vultureCopy,
   wiredConfig,
+  wiredMember,
+  wiredWorkspace,
   wiringListOf,
   wiringOf,
 };

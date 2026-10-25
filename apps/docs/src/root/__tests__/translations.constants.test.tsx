@@ -6,7 +6,7 @@ import { RootProvider } from 'fumadocs-ui/provider/base';
 
 import { DefaultNotFound } from '#/libs/ui';
 
-import { translations } from '../constants';
+import { TRANSLATIONS } from '../constants';
 
 afterEach(cleanup);
 
@@ -14,7 +14,9 @@ afterEach(cleanup);
 const labelOf = (key: string): string => key.replace(/\(.*$/, '');
 
 const atTheRoot = (): string => '/';
+
 const noParams = (): Record<string, string> => ({});
+
 const staticRouter = (): {
   push: () => void;
   refresh: () => void;
@@ -24,7 +26,7 @@ const staticRouter = (): {
 });
 
 describe('translations', () => {
-  test.each(Object.entries(translations))(
+  test.each(Object.entries(TRANSLATIONS))(
     'should give the label %p in sentence case',
     (key, label) => {
       // Arrange
@@ -41,7 +43,7 @@ describe('translations', () => {
   test('should relabel the library pieces when the root provides them', () => {
     // Arrange
     const i18n = {
-      translations,
+      translations: TRANSLATIONS,
     };
 
     // Act

@@ -5,47 +5,22 @@ import type { ListItem, RootContent } from 'mdast';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { toString as textOf } from 'mdast-util-to-string';
 
-import { headingTextOf, isHeading } from '../markdown';
+import { withoutMarkdownExtension } from '../../../domain/entities';
 import {
-  addressOf,
-  blockLayerOf,
-  inRepository,
+  headingTextOf,
+  isHeading,
+  SECTION_HEADING_DEPTH,
+  SUBSECTION_HEADING_DEPTH,
+} from '../markdown';
+import { DOCUMENTATION_SECTION, ICONS_BY_ADDRESS } from './navigation.constants';
+import { addressOf, blockLayerOf, inRepository, repositoryPathOf } from './repository.adapter';
+import {
+  DOCS_FOLDER,
   QUICK_START,
-  repositoryPathOf,
+  README_FILE,
   SITE_DOCUMENTS,
-  SITE_LAYERS,
-} from './repository.adapter';
-
-const DOCUMENTATION = 'Documentation';
-
-const SECTION_DEPTH = 2;
-
-const GROUP_DEPTH = 3;
-
-/** by the address each entry leads to, from the site's base */
-// Stryker disable StringLiteral: the icons are the site's choice of design, which a spec could only restate
-const ICONS: Readonly<Record<string, string>> = {
-  '': 'BookOpenText',
-  '/core#precedence': 'Layers',
-  '/core/foundation/placement': 'MapPin',
-  '/decisions': 'Scale',
-  '/glossary': 'BookA',
-  '/guides/check-in-ci': 'GitPullRequest',
-  '/guides/choose-blocks': 'Blocks',
-  '/guides/override-a-rule': 'ChevronsDown',
-  '/guides/upgrade': 'CircleArrowUp',
-  '/guides/use-the-presets': 'SlidersHorizontal',
-  '/guides/write-a-pack': 'Package',
-  '/how-it-works': 'Workflow',
-  '/quick-start': 'SquareTerminal',
-  '/reference/block-format': 'FileText',
-  '/reference/constitution-yaml': 'FileCode',
-  '/reference/plugin': 'Plug',
-  '/reference/presets': 'Settings2',
-  '/reference/skills': 'SquareSlash',
-  '/reference/templates': 'Files',
-};
-// Stryker restore StringLiteral
+  siteLayers,
+} from './repository.constants';
 
 interface Entry {
   address: string;
@@ -80,7 +55,7 @@ const entryOf = (baseUrl: string, listed: ListItem): Entry | undefined => {
     return undefined;
   }
 
-  const target = repositoryPathOf(inRepository('README.md'), link.url);
+  const target = repositoryPathOf(inRepository(README_FILE), link.url);
 
   if (target === undefined) {
     return undefined;
@@ -96,27 +71,33 @@ const entryOf = (baseUrl: string, listed: ListItem): Entry | undefined => {
 
 const readmeNodes = (): RootContent[] =>
   // Stryker disable next-line StringLiteral: the parser reads a buffer as UTF-8 too
-  fromMarkdown(readFileSync(inRepository('README.md'), 'utf8')).children;
+  fromMarkdown(readFileSync(inRepository(README_FILE), 'utf8')).children;
 
 const sectionStartOf = (nodes: readonly RootContent[], title: string): number =>
-  nodes.findIndex((node) => isHeading(node, SECTION_DEPTH) && headingTextOf(node) === title);
+  nodes.findIndex(
+    (node) => isHeading(node, SECTION_HEADING_DEPTH) && headingTextOf(node) === title,
+  );
 
 const documentationOf = (baseUrl: string): Group[] => {
   const nodes = readmeNodes();
-  const start = sectionStartOf(nodes, DOCUMENTATION);
-  const end = nodes.findIndex((node, index) => index > start && isHeading(node, SECTION_DEPTH));
+  const start = sectionStartOf(nodes, DOCUMENTATION_SECTION);
+  const end = nodes.findIndex(
+    (node, index) => index > start && isHeading(node, SECTION_HEADING_DEPTH),
+  );
   const groups: Group[] = [];
 
   if (start === -1) {
-    throw new Error(`README.md has no section ${DOCUMENTATION}`);
+    throw new Error(`${README_FILE} has no section ${DOCUMENTATION_SECTION}`);
   }
+
   for (const node of nodes.slice(start + 1, end === -1 ? undefined : end)) {
-    if (isHeading(node, GROUP_DEPTH)) {
+    if (isHeading(node, SUBSECTION_HEADING_DEPTH)) {
       groups.push({
         entries: [],
         group: headingTextOf(node),
       });
     }
+
     if (node.type === 'list') {
       groups
         .at(-1)
@@ -137,7 +118,7 @@ const placeOf = (baseUrl: string, address: string): Place => {
 };
 
 const linkEntryOf = ({ address, title }: Entry, fromBase: string): string => {
-  const icon = ICONS[fromBase];
+  const icon = ICONS_BY_ADDRESS[fromBase];
 
   return `${icon === undefined ? '' : `[${icon}]`}[${title}](${address})`;
 };
@@ -146,10 +127,12 @@ const sidebarEntryOf = (entry: Entry, { fromBase, page }: Place): string => {
   if (entry.layer !== undefined) {
     return entry.layer;
   }
-  if (page === undefined || SITE_LAYERS.some((folder) => page.startsWith(`${folder}/`))) {
+
+  if (page === undefined || siteLayers.some((folder) => page.startsWith(`${folder}/`))) {
     return linkEntryOf(entry, fromBase);
   }
-  if (SITE_LAYERS.includes(page)) {
+
+  if (siteLayers.includes(page)) {
     return page;
   }
 
@@ -175,6 +158,7 @@ const sidebarOf = (
           ]
         : []),
     );
+
     for (const entry of entries) {
       const place = placeOf(baseUrl, entry.address);
 
@@ -204,10 +188,9 @@ const sectionSummaryOf = (title: string): string | undefined => {
 };
 
 const guideIconOf = (path: string): string | undefined =>
-  // Stryker disable next-line Regex: a guide's path holds .md only at its end
-  ICONS[`/${relative(inRepository('docs'), path).replace(/\.md$/, '')}`];
+  ICONS_BY_ADDRESS[`/${withoutMarkdownExtension(relative(inRepository(DOCS_FOLDER), path))}`];
 
 const documentIconOf = (path: string): string | undefined =>
-  ICONS[`/${SITE_DOCUMENTS[basename(path)]}`];
+  ICONS_BY_ADDRESS[`/${SITE_DOCUMENTS[basename(path)]}`];
 
-export { documentIconOf, guideIconOf, ICONS, sectionSummaryOf, sidebarOf };
+export { documentIconOf, guideIconOf, sectionSummaryOf, sidebarOf };

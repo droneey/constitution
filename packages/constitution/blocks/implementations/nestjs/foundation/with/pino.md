@@ -6,7 +6,7 @@
 
 ### nest-logs-through-the-pino-instance → one-instance-writes-every-record · MUST
 
-nestjs-pino's `LoggerModule.forRoot({ pinoHttp: { logger } })` takes the instance, the application is created with `bufferLogs: true`, and `app.useLogger(app.get(Logger))` makes nestjs-pino's logger Nest's own.
+The `LoggerModule.forRoot({ pinoHttp: { logger } })` takes the instance, the application is created with `bufferLogs: true`, and `app.useLogger(app.get(Logger))` makes the logger of **`nestjs-pino`** Nest's own.
 
 | Why | Tags |
 |---|---|

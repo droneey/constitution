@@ -1,4 +1,4 @@
-import { CORE_TEXT } from './constitution.fixtures';
+import { coreText } from './constitution.fixtures';
 import { INSTALLED } from './plugin-root.fixtures';
 
 // The digests a case pins whole, as a reader sees them: the one place their
@@ -29,7 +29,7 @@ const contextWith = (input: {
       : [
           input.warnings.join('\n'),
         ]),
-    CORE_TEXT.trimEnd(),
+    coreText.trimEnd(),
     ...(input.body === undefined
       ? []
       : [
@@ -108,7 +108,7 @@ const everyCodeContext = (root: string): string =>
       '- abstract: _react cannot be listed — list react-dom',
       '- unknown: tanstak-query is not a block — check the name',
       '- wrong-key: ui is a domain — move it from implementations to domains',
-      '- config: constitution.yaml has no packages key — add packages: {}',
+      '- config: constitution.yaml has no platforms key — add platforms: []',
       '- pack: packs/gone is not installed — run mise install, or check the path',
       '- not-met: matomo does not meet analytics-consent-first — see its Requirements table',
       '- override: four-data-states expired on 2020-01-01 — renew or remove it',

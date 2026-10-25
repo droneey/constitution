@@ -24,7 +24,7 @@ An integration spec sits in `tests/integration/`, an end-to-end spec in `tests/e
 
 ### module-named-in-snake-case → file-name-in-its-owners-case · MUST
 
-A module is a snake_case `.py` file and its stub a `.pyi`; a folder of the import package is a snake_case package — `value_objects/`, `use_cases/` — a generated module `<name>_gen.py` and a generated package `<name>_gen/`; a folder of `tests/` is a snake_case folder that is no package; the interpreter's `__pycache__/` and `.pyc` files keep the names it gives them.
+A module is a snake_case **`.py`** file and its stub a **`.pyi`**; a folder of the import package is a snake_case package — `value_objects/`, `use_cases/` — a generated module `<name>_gen.py` and a generated package `<name>_gen/`; a folder of `tests/` is a snake_case folder that is no package; the interpreter's `__pycache__/` and `.pyc` files keep the names it gives them.
 
 | Why | Tags |
 |---|---|
@@ -42,7 +42,7 @@ A package's code sits in `src/<import name>/`, its import package, and no module
 
 ### source-folder-is-a-regular-package · MUST
 
-Every folder of the import package holds an `__init__.py`; the import tree has no namespace package.
+Every folder of the import package holds an **`__init__.py`**; the import tree has no namespace package.
 
 | Why | Tags |
 |---|---|

@@ -5,12 +5,13 @@ requires: [git, toml]
 extends: null
 abstract: false
 languages: []
-dictionary: [Betterleaks, betterleaks, .betterleaks.toml, .betterleaksignore, "betterleaks:allow"]
 governs: [".betterleaks.toml", ".betterleaksignore"]
 ---
 
 # Betterleaks
 
-> Finds secrets in changes and history.
+> **Betterleaks** finds secrets in changes and history.
+
+The **`betterleaks`** command reads its settings from **`.betterleaks.toml`**.
 
 Its default rules — cloud keys, forge tokens, private keys, JWTs, credentials in connection strings — hold every active rule on committed secrets.

@@ -18,6 +18,65 @@ jobs:
         npx --yes bun@1.4.3 install --production --frozen-lockfile --ignore-scripts
         && npx --yes bun@1.4.3 run build
         && tar -czf constitution.tar.gz -C packages/constitution
-        package.json blocks presets templates tools vocabulary.yaml
+        package.json blocks presets templates tools
         && sha256sum constitution.tar.gz > constitution.tar.gz.sha256
-      assets: constitution.tar.gz constitution.tar.gz.sha256
+      assets: >-
+        constitution.tar.gz constitution.tar.gz.sha256
+
+  # The constitution program for each platform, an archive of bin/constitution
+  # that mise unpacks beside the Constitution's as its additional asset; Bun
+  # builds every platform's from one runner.
+  cli:
+    name: cli (${{ matrix.target }})
+    needs: pre-release
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        include:
+          - target: linux-x64
+            archive: linux-x64
+            program: constitution
+          - target: linux-arm64
+            archive: linux-arm64
+            program: constitution
+          - target: darwin-x64
+            archive: macos-x64
+            program: constitution
+          - target: darwin-arm64
+            archive: macos-arm64
+            program: constitution
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup the toolchain
+        uses: jdx/mise-action@08ae2a091c038e1e05ec6f5115dc5c69d5a2a6b8 # v5.1.2
+        with:
+          version: 2026.10.9
+
+      # The build runs the React Compiler, a development dependency.
+      - name: Install dependencies
+        run: bun install --frozen-lockfile --ignore-scripts
+
+      - name: Build the program
+        env:
+          TARGET: ${{ matrix.target }}
+          PROGRAM: ${{ matrix.program }}
+        run: >-
+          bun run build:cli
+          --target "bun-${TARGET}" --outfile "dist/cli/bin/${PROGRAM}"
+
+      - name: Pack the archive
+        env:
+          ARCHIVE: ${{ matrix.archive }}
+        run: tar -czf "constitution-${ARCHIVE}.tar.gz" -C dist/cli bin
+
+      - name: Upload it to the release
+        env:
+          ARCHIVE: ${{ matrix.archive }}
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: gh release upload "$TAG" "constitution-${ARCHIVE}.tar.gz" --clobber

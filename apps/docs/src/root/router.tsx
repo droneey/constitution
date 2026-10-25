@@ -1,12 +1,11 @@
 import type { Router } from '@tanstack/react-router';
 import { createRouter } from '@tanstack/react-router';
 
-import { DocsNotFoundScreen, pageScrollerSelector } from '#/composition/docs';
+import { DocsNotFoundScreen, PAGE_SCROLLER_SELECTOR } from '#/composition/docs';
 
 import { routeTree } from './routeTree.gen';
 import { routerContext } from './wiring';
 
-/** the router the framework asks for */
 export function getRouter(): Router<typeof routeTree> {
   return createRouter({
     context: routerContext,
@@ -16,7 +15,7 @@ export function getRouter(): Router<typeof routeTree> {
     routeTree,
     scrollRestoration: true,
     scrollToTopSelectors: [
-      pageScrollerSelector,
+      PAGE_SCROLLER_SELECTOR,
     ],
   });
 }

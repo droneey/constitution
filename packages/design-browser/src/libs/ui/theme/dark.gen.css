@@ -1,0 +1,42 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+.dark {
+  --font-weight-normal: 370;
+  --font-weight-medium: 470;
+  --font-weight-semibold: 570;
+  --font-weight-bold: 670;
+  --font-weight-ui: 420; /** Interface text: a touch heavier than body text. */
+  --stroke-icon: 1.75;
+  --color-surface-canvas: var(--color-neutral-950);
+  --color-surface-base: var(--color-neutral-900);
+  --color-surface-level-1: var(--color-neutral-850);
+  --color-surface-level-2: var(--color-neutral-825);
+  --color-text-primary: var(--color-neutral-50);
+  --color-text-muted: var(--color-neutral-400);
+  --color-text-danger: var(--color-red-300);
+  --color-text-success: var(--color-green-300);
+  --color-text-warning: var(--color-orange-300);
+  --color-text-info: var(--color-blue-300);
+  --color-border-base: var(--color-neutral-800);
+  --color-border-strong: var(--color-neutral-700);
+  --color-border-danger: var(--color-overlay-red-300-35);
+  --color-border-success: var(--color-overlay-green-300-35);
+  --color-fill-muted: var(--color-neutral-850);
+  --color-fill-field: var(--color-neutral-850);
+  --color-fill-field-hover: var(--color-neutral-825);
+  --color-fill-hover: var(--color-overlay-neutral-50-6);
+  --color-fill-danger: var(--color-overlay-red-600-8);
+  --color-fill-success: var(--color-overlay-green-600-8);
+  --color-selection-base: var(--color-brand-800);
+  --color-ring-focus: var(--color-brand-300);
+  --color-accent-solid: var(--color-brand-300);
+  --color-accent-hover: var(--color-brand-200);
+  --color-accent-pressed: var(--color-brand-100);
+  --color-accent-subtle: var(--color-brand-900);
+  --color-accent-text: var(--color-brand-300);
+  --color-accent-end: var(--color-brand-200);
+  --color-accent-muted: var(--color-brand-800);
+  --color-accent-on-solid: var(--color-neutral-950);
+}

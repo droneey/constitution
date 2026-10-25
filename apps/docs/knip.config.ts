@@ -2,7 +2,6 @@ import { join } from '../../.droneey/constitution/presets/typescript/join.mjs';
 import architectureCore from '../../.droneey/constitution/presets/typescript/knip/architecture/core.mjs';
 import architectureTanstackRouter from '../../.droneey/constitution/presets/typescript/knip/architecture/tanstack-router.mjs';
 import architectureTanstackStart from '../../.droneey/constitution/presets/typescript/knip/architecture/tanstack-start.mjs';
-import betterleaks from '../../.droneey/constitution/presets/typescript/knip/foundation/betterleaks.mjs';
 import core from '../../.droneey/constitution/presets/typescript/knip/foundation/core.mjs';
 import mise from '../../.droneey/constitution/presets/typescript/knip/foundation/mise.mjs';
 import osvScanner from '../../.droneey/constitution/presets/typescript/knip/foundation/osv-scanner.mjs';
@@ -11,14 +10,11 @@ import shellcheck from '../../.droneey/constitution/presets/typescript/knip/foun
 import shfmt from '../../.droneey/constitution/presets/typescript/knip/foundation/shfmt.mjs';
 import stryker from '../../.droneey/constitution/presets/typescript/knip/foundation/stryker.mjs';
 import tanstackStart from '../../.droneey/constitution/presets/typescript/knip/foundation/tanstack-start.mjs';
-import uv from '../../.droneey/constitution/presets/typescript/knip/foundation/uv.mjs';
 import yamllint from '../../.droneey/constitution/presets/typescript/knip/foundation/yamllint.mjs';
-import workflowLefthook from '../../.droneey/constitution/presets/typescript/knip/workflow/lefthook.mjs';
 
 // knip has no extends, so the parts are joined.
 export default join(
   core,
-  betterleaks,
   mise,
   osvScanner,
   rumdl,
@@ -26,12 +22,10 @@ export default join(
   shfmt,
   stryker,
   tanstackStart,
-  uv,
   yamllint,
   architectureCore,
   architectureTanstackRouter,
   architectureTanstackStart,
-  workflowLefthook,
   // the project's own settings, joined after the parts
   {
     entry: [

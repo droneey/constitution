@@ -30,15 +30,15 @@ interface Session {
 const CHECK = 'bun run check';
 // What the gate says: its decision, or a review asked for in a system message,
 // then the names it gives, the check to run or the blocks the changes fall under.
-const NOTHING: readonly string[] = [];
+const NOTHING: readonly string[] = [] as const;
 const BLOCKED: readonly string[] = [
   'block',
   CHECK,
-];
+] as const;
 const REVIEW: readonly string[] = [
   'review',
   'ui',
-];
+] as const;
 
 const gateOf = (stdout: string): readonly string[] => {
   const parsed: unknown = stdout === '' ? {} : JSON.parse(stdout);
@@ -134,7 +134,7 @@ const write = (input: { path: string; project: string }): void => {
 
 const fire = (input: {
   event: string;
-  fields?: Readonly<Record<string, string>>;
+  fields?: Readonly<Record<string, unknown>>;
   script: string;
   session: Session;
 }): HookRun =>
@@ -194,7 +194,7 @@ const stop = (input: {
       fields: Object.fromEntries([
         [
           'stop_hook_active',
-          input.active === true ? 'true' : 'false',
+          input.active === true,
         ],
       ]),
       script: 'stop.sh',

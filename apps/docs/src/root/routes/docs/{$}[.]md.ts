@@ -12,6 +12,7 @@ export const Route = createFileRoute('/docs/{$}.md')({
         const page = contentSource().getPage([
           ...slugsOfMarkdownAddress(params._splat?.split('/') ?? []),
         ]);
+
         if (!page) {
           throw notFound();
         }

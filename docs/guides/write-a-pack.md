@@ -43,10 +43,10 @@ A pack shared between projects is linked as the release is, by mise, for example
 
 ## Check it
 
-The release carries the Constitution's own check. Run it in the pack:
+The `constitution` program the project installs with the release is the Constitution's own check. Run it in the pack:
 
 ```bash
-bun .droneey/constitution/tools/constitution/dist/blocks-check.js --base .droneey/constitution
+constitution blocks check --base .droneey/constitution
 ```
 
 The pack's blocks load beside the Constitution's, so every arrow and `requires` resolves, and only the pack's findings are reported. [What the check refuses](../reference/block-format.md#what-the-check-refuses) lists them all.

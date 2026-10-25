@@ -1,0 +1,100 @@
+@layer overrides {
+  /* the list is a stop of its own, so the keyboard can scroll it; its fading edges would clip its
+     ring, which its unmasked frame draws instead */
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-sidebar [data-id$='-viewport']:focus-visible {
+    outline: none;
+  }
+
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-sidebar :has(> [data-id$='-viewport']:focus-visible) {
+    border-radius: var(--radius-lg);
+    outline: var(--ring-focus-width) solid var(--color-fd-ring);
+    outline-offset: calc(-1 * var(--ring-focus-width));
+  }
+
+  /* the logo's icon on the fields' leading icons, the collapse icon on their trailing ones */
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-sidebar > div > div:first-child {
+    gap: var(--spacing-xs);
+    margin-block: var(--spacing-xs);
+    padding-inline: var(--spacing-sm);
+
+    & > a:first-child {
+      height: var(--spacing-control-md);
+      padding-inline-start: var(--spacing-xs);
+      gap: var(--spacing-xs);
+      border-radius: var(--radius-lg);
+      font-size: var(--text-base);
+    }
+
+    & > button:last-child {
+      margin-inline-end: calc(-1 * var(--spacing-2xs));
+    }
+  }
+
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-sidebar > div > div:nth-child(2) {
+    gap: var(--spacing-xs);
+    padding-inline: var(--spacing-sm);
+  }
+
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-sidebar [data-id$='-viewport'] {
+    padding-inline: var(--spacing-sm);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-ui);
+  }
+
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-sidebar [data-id$='-viewport'] :is(a, button):not([data-sidebar-field]) {
+    gap: var(--spacing-xs);
+    min-height: var(--spacing-control-md);
+    padding: 0 var(--spacing-xs);
+    border-radius: var(--radius-lg);
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+
+    & > svg {
+      width: var(--spacing-icon-md);
+      height: var(--spacing-icon-md);
+    }
+
+    & > [data-icon] {
+      transition-duration: var(--duration-base);
+      transition-timing-function: var(--ease-out);
+    }
+
+    /* a folder's panel grows and fades; its rows keep their size, so only its height moves them */
+    & + div {
+      transition-property: height, opacity;
+      transition-duration: var(--duration-base);
+      transition-timing-function: var(--ease-out);
+    }
+
+    /* the list scrolls, so an outer ring would be clipped */
+    &:focus-visible {
+      outline-offset: calc(-1 * var(--ring-focus-width));
+    }
+
+    &[data-highlighted] {
+      background-color: transparent;
+    }
+  }
+
+  /* the library's own block under the hovered row, drawn as the glide's */
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-sidebar [data-id$='-viewport'] > div > [aria-hidden]:first-child {
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-lg);
+    background-color: var(--color-fd-accent);
+    background-clip: content-box;
+  }
+
+  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
+  #nd-sidebar [data-cross-link] {
+    margin-inline-start: auto;
+    color: var(--color-text-muted);
+  }
+}

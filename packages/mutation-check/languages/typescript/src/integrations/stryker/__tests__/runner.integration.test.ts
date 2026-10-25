@@ -27,7 +27,7 @@ const PROJECT: Files = {
     "import { RATE } from './rate.ts';\n\nexport const total = (price: number): number => price + price * RATE;\n",
   'src/wait.ts': `export const wait = (): Promise<void> => Bun.sleep(${ACTIVE} === '9' ? 60_000 : 0);\n`,
   'tests/e2e/total.e2e.test.ts': `import { expect, test } from 'bun:test';\nimport { total } from '../../src/total.ts';\n\ntest('should run with no mutant', () => {\n  expect(${ACTIVE}).toBeUndefined();\n  expect(total(2)).toBe(3);\n});\n`,
-};
+} as const;
 
 const [plugin] = strykerPlugins;
 
@@ -35,7 +35,7 @@ const DRY_RUN: DryRunOptions = {
   coverageAnalysis: 'off',
   disableBail: false,
   timeout: 60_000,
-};
+} as const;
 
 const inProject = async <T>(
   files: Files,

@@ -24,5 +24,10 @@
     "vite.config.ts",
     "source.config.ts",
     ".source/*.ts"
+  ],
+  "references": [
+    {
+      "path": "../../packages/design-browser"
+    }
   ]
 }

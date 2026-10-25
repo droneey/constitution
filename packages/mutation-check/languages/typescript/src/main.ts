@@ -12,7 +12,7 @@ const CONFIG_FILES = [
   'stryker.config.mjs',
   'stryker.config.js',
   'stryker.config.json',
-];
+] as const;
 
 // A change that only reformats leaves the transpiled code as it was, so it gives no mutant.
 const codeChanged = (input: { baseText: (path: string) => string; path: string }): boolean => {

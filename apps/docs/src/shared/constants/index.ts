@@ -1,1 +1,1 @@
-export { appName, docsRoute, gitConfig, mainContentId } from './site.constants';
+export { APP_NAME, DOCS_ROUTE, GIT_CONFIG, MAIN_CONTENT_ID } from './site.constants';

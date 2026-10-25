@@ -1,7 +1,7 @@
 import type { Ignorer, NodePath } from '@stryker-mutator/api/ignore';
 import { declareValuePlugin, PluginKind } from '@stryker-mutator/api/plugin';
 
-const LOG_LEVELS: ReadonlySet<unknown> = new Set([
+const logLevels: ReadonlySet<unknown> = new Set([
   'trace',
   'debug',
   'info',
@@ -41,7 +41,7 @@ const isLogCall = (node: unknown): boolean => {
   return (
     isOfType(node, 'ExpressionStatement') &&
     isOfType(call, 'CallExpression') &&
-    LOG_LEVELS.has(propertyOf(callee)) &&
+    logLevels.has(propertyOf(callee)) &&
     isLogger(fieldOf(callee, 'object'))
   );
 };
@@ -72,8 +72,8 @@ const diagnostics: Ignorer = {
   },
 };
 
-const strykerPlugins = [
+const STRYKER_PLUGINS = [
   declareValuePlugin(PluginKind.Ignore, 'diagnostics', diagnostics),
 ] as const;
 
-export { strykerPlugins };
+export { STRYKER_PLUGINS as strykerPlugins };

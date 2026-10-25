@@ -1,2 +1,2 @@
-export type { Releases } from './queries/get-versions';
-export { useVersions } from './queries/get-versions';
+export type { VersionsState } from './queries/get-versions';
+export { useGetVersions, VersionsStatus } from './queries/get-versions';

@@ -1,0 +1,139 @@
+import { describe, expect, it } from 'bun:test';
+
+import { Layer } from '#/kernel/constants';
+import { WarningCode } from '#/kernel/entities';
+import { BlockId, BlockSource, Version } from '#/kernel/value-objects';
+
+import { DigestKind } from '../../../domain/entities';
+import { digestOf } from '../digest.utils';
+
+const RELEASE_FOLDER = '/work/project/.droneey/constitution';
+const releaseFiles = {
+  folder: RELEASE_FOLDER,
+  version: Version.create('1.0.0'),
+};
+const RELEASE_LINE =
+  "The Droneey Constitution 1.0.0 supplies this repository's rules. Block files live under /work/project/.droneey/constitution.";
+const emptyListing = {
+  overrides: [],
+  repository: [],
+  units: [],
+};
+
+describe('digestOf', () => {
+  it.each([
+    {
+      condition: 'one block is active',
+      count: 1,
+      counted: 'constitution.yaml makes 1 block active.',
+    },
+    {
+      condition: 'several blocks are active',
+      count: 2,
+      counted: 'constitution.yaml makes 2 blocks active.',
+    },
+  ])(
+    'should give the release and the count, then the warnings, core and the block list, when $condition',
+    ({ count, counted }) => {
+      // Arrange
+      const contents = {
+        core: '# Core\n',
+        count,
+        isStartup: false,
+        kind: DigestKind.Resolved,
+        listing: {
+          ...emptyListing,
+          repository: [
+            {
+              files: [],
+              id: BlockId.create('ui'),
+              layer: Layer.Domain,
+              source: BlockSource.create(),
+              summary: 'The screens.',
+            },
+          ],
+        },
+        release: releaseFiles,
+        warnings: [
+          {
+            code: WarningCode.Config,
+            message: 'constitution.yaml has no check',
+          },
+        ],
+      } as const;
+
+      // Act
+      const digest = digestOf(contents);
+
+      // Assert
+      expect(digest).toStrictEqual({
+        body: [
+          '⚠️ Warnings',
+          '- config: constitution.yaml has no check',
+          '',
+          '# Core',
+          '',
+          '## Domains (blocks/domains/<id>/<id>.md)',
+          "In brackets, a block's chapters and seams, named without .md: foundation's first, then <axis>: <file>, ... An implementation is named by its library alone; square brackets name a block's pack or, in an application, its layer.",
+          '- ui: The screens.',
+        ],
+        head: [
+          RELEASE_LINE,
+          counted,
+        ],
+      });
+    },
+  );
+
+  it('should give core alone and the line constitution.yaml stops at when it does not parse', () => {
+    // Arrange
+    const contents = {
+      core: '---\nid: core\n---\n\n# Core\n',
+      kind: DigestKind.Unparsed,
+      line: 4,
+      release: releaseFiles,
+    } as const;
+
+    // Act
+    const digest = digestOf(contents);
+
+    // Assert
+    expect(digest).toStrictEqual({
+      body: [
+        '# Core',
+      ],
+      head: [
+        RELEASE_LINE,
+        'constitution.yaml does not parse at line 4; only core applies.',
+      ],
+    });
+  });
+
+  it('should give one line that names the release folder and points to doctor when the release cannot give the rules', () => {
+    // Arrange
+    const contents = {
+      kind: DigestKind.NoRelease,
+      releaseFolder: RELEASE_FOLDER,
+    } as const;
+
+    // Act
+    const digest = digestOf(contents);
+
+    // Assert
+    expect({
+      body: digest.body,
+      lines: digest.head.length,
+      names: [
+        RELEASE_FOLDER,
+        'constitution doctor',
+      ].map((name) => digest.head[0]?.includes(name)),
+    }).toStrictEqual({
+      body: [],
+      lines: 1,
+      names: [
+        true,
+        true,
+      ],
+    });
+  });
+});

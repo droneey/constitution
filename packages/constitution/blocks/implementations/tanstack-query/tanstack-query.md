@@ -5,13 +5,14 @@ requires: [_react, remote-data]
 extends: null
 abstract: false
 languages: []
-dictionary: [TanStack Query, QueryClient, useQuery, useSuspenseQuery, useMutation]
 governs: ["**/*.hooks.ts", "**/root/providers/**", "**/cache.utils.ts"]
 ---
 
 # TanStack Query
 
-> The project's only cache of server data.
+> **TanStack Query**, the project's only cache of server data.
+
+One **`QueryClient`** holds the cache; a read goes through **`useQuery`** or **`useSuspenseQuery`**, and a write through **`useMutation`**.
 
 ## Requirements
 

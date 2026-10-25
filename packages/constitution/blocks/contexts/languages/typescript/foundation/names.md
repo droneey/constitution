@@ -6,11 +6,11 @@
 
 ### identifier-case-by-kind → name-case-by-kind · SHOULD
 
-Types, classes, enums and enum members are PascalCase; functions, variables and instances camelCase; a module-level constant holding a primitive or a regular expression SCREAMING_SNAKE_CASE, and one holding an object, an array or a function camelCase. A function a framework renders by the case of its name takes the case that framework's block names.
+Types, interfaces, classes, enums and enum members are PascalCase; a module-level constant initialised by a literal written out — a primitive, a regular expression, a template without expressions, or an object or array literal declared `as const` — SCREAMING_SNAKE_CASE; a `const` object that holds the functions of a type of the same name takes that name; functions, variables, instances, object and type keys, and every other value, one computed from constants included, camelCase. A name for what a framework renders takes the case that framework's block names.
 
 | Why | Tags |
 |---|---|
-| the case tells what kind of thing a name is before its declaration is read. | [] |
+| the case tells what kind of thing a name is before its declaration is read; an enum member stays PascalCase, unlike Google's CONSTANT_CASE, because it is also the literal type a union's discriminant names. | [] |
 
 ### type-names-undecorated · SHOULD
 

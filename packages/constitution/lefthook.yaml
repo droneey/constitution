@@ -1,6 +1,0 @@
-# A template's pyproject.toml takes the presets from where a project links them, so ruff cannot load it here.
-pre-commit:
-  jobs:
-    - name: ruff
-      exclude:
-        - "packages/constitution/templates/**"

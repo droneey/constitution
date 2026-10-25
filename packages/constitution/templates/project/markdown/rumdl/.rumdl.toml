@@ -1,3 +1,10 @@
 # rumdl: the Constitution's parts, each extending the one before; rumdl extends the last
 # from <parts>
 extends = "<chain end>"
+
+# rumdl: the members, each checked by its own configuration in its own run
+[global]
+exclude = [
+  "<unit folders>/**",
+]
+force_exclude = true

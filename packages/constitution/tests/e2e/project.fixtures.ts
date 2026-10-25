@@ -20,7 +20,6 @@ enum ConfigKey {
   Platforms = 'platforms',
   Languages = 'languages',
   Implementations = 'implementations',
-  Packages = 'packages',
   Packs = 'packs',
   Check = 'check',
   Overrides = 'overrides',
@@ -41,7 +40,7 @@ type Config = Partial<Record<ConfigKey, string>> & {
 interface ProjectLayout {
   aboveConfig?: string;
   config?: string;
-  files?: Files;
+  files?: Files | undefined;
   links?: Readonly<Record<string, string>>;
   namedPipes?: readonly string[];
   // a worktree's root holds .git as a file
@@ -58,10 +57,9 @@ const DEFAULTS: Readonly<Record<ConfigKey, string>> = {
   implementations: '[]',
   languages: '[]',
   overrides: '[]',
-  packages: '{}',
   packs: '[]',
   platforms: '[]',
-};
+} as const;
 
 const created: string[] = [];
 
@@ -76,6 +74,33 @@ const configOf = (config: Config): string =>
     })
     .join('\n')
     .concat('\n');
+
+// A member's constitution.yaml: every key of the repository's but check.
+const memberConfigOf = (config: Config): string =>
+  configOf({
+    ...config,
+    omit: ConfigKey.Check,
+  });
+
+// A workspace of the members given, each by its path with its constitution.yaml: the root's
+// package.json declares them, and each holds a package.json of its own.
+const workspaceOf = (members: Readonly<Record<string, string>>): Files => ({
+  'package.json': `${JSON.stringify({
+    workspaces: Object.keys(members),
+  })}\n`,
+  ...Object.fromEntries(
+    Object.entries(members).flatMap(([path, config]) => [
+      [
+        `${path}/package.json`,
+        '{}\n',
+      ],
+      [
+        `${path}/${CONFIG}`,
+        config,
+      ],
+    ]),
+  ),
+});
 
 const lineNumberOf = (input: { at: string; config: string }): number =>
   input.config.slice(0, input.config.indexOf(input.at)).split('\n').length;
@@ -222,7 +247,6 @@ const packBlockFiles = (input: {
       extends: 'null',
       abstract: 'false',
       languages: '[]',
-      dictionary: '[]',
       governs: '[]',
       ...input.fields,
     },
@@ -230,17 +254,16 @@ const packBlockFiles = (input: {
   }),
 });
 
-const PARAGLIDE_FILES: Files = packBlockFiles({
+const paraglideFiles: Files = packBlockFiles({
   fields: {
     requires: '[i18n, typescript]',
     summary: 'Paraglide messages, compiled per locale.',
-    dictionary: '[Paraglide]',
   },
   id: 'paraglide',
 });
 
 // Modelled on the reference web application.
-const BROWSER_APP: ProjectLayout = {
+const browserApp: ProjectLayout = {
   config: [
     'axes: [architecture, workflow]',
     'domains: [ui, remote-data, i18n, analytics, version-control,',
@@ -249,7 +272,6 @@ const BROWSER_APP: ProjectLayout = {
     'languages: [typescript]',
     'implementations: [react-dom, tanstack-query, matomo, biome, git, lefthook,',
     '                  betterleaks, paraglide]',
-    'packages: {}',
     `packs: [${OWN_PACK}]`,
     'check: bun run check',
     'overrides:',
@@ -259,11 +281,11 @@ const BROWSER_APP: ProjectLayout = {
     '    until: 2999-12-31',
     '',
   ].join('\n'),
-  files: PARAGLIDE_FILES,
+  files: paraglideFiles,
 };
 
 // Modelled on nydra, with block sequences.
-const CLI: ProjectLayout = {
+const cli: ProjectLayout = {
   config: [
     'axes: [architecture, workflow]',
     'domains:',
@@ -273,7 +295,6 @@ const CLI: ProjectLayout = {
     '- cli',
     'languages: [typescript]',
     'implementations: [bun, biome, git, betterleaks]',
-    'packages: {}',
     'packs: []',
     'check: bun run check',
     'overrides: []',
@@ -282,30 +303,36 @@ const CLI: ProjectLayout = {
 };
 
 // Modelled on devkit: packages as applications, one with its own override.
-const LIBRARY: ProjectLayout = {
+const library: ProjectLayout = {
   config: [
     'axes: [architecture, workflow]',
     'domains: [version-control]',
     'platforms: []',
     'languages: [typescript]',
     'implementations: [biome, git, lefthook, betterleaks]',
-    'packages:',
-    '  packages/react-kit:',
-    '    domains: [ui, untrusted-client, unreliable-network]',
-    '    platforms: [browser]',
-    '    implementations: [react-dom]',
-    '    overrides:',
-    '      - rule: four-data-states',
-    '        level: MAY',
-    '        reason: "The kit renders the states its caller passes"',
     'packs: []',
     'check: bun run check',
     'overrides: []',
     '',
   ].join('\n'),
+  files: workspaceOf({
+    'packages/react-kit': [
+      'axes: [architecture, workflow]',
+      'domains: [version-control, ui, untrusted-client, unreliable-network]',
+      'platforms: [browser]',
+      'languages: [typescript]',
+      'implementations: [biome, git, lefthook, betterleaks, react-dom]',
+      'packs: []',
+      'overrides:',
+      '  - rule: four-data-states',
+      '    level: MAY',
+      '    reason: "The kit renders the states its caller passes"',
+      '',
+    ].join('\n'),
+  }),
 };
 
-const HTML_SITE: ProjectLayout = {
+const htmlSite: ProjectLayout = {
   config: configOf({
     check: 'npx html-validate .',
     domains: '[ui, untrusted-client, unreliable-network, version-control]',
@@ -317,24 +344,32 @@ const HTML_SITE: ProjectLayout = {
 // A pack of blocks of every kind of front matter: CRLF line ends, a quoted
 // summary, block lists, a Constitution host, an abstract Constitution base and
 // one block in an application.
-const PACK_PROJECT: ProjectLayout = {
+const packProject: ProjectLayout = {
   config: [
     'axes: [architecture, workflow]',
     'domains: [version-control, ui, untrusted-client, unreliable-network]',
     'platforms: [browser]',
     'languages: [typescript]',
     'implementations: [react-dom, betterleaks, git, git-flow, lint-kit]',
-    'packages:',
-    '  packages/web:',
-    '    domains: [i18n]',
-    '    implementations: [paraglide, lint-kit]',
     `packs: [${OWN_PACK}]`,
     'check: bun run check',
     'overrides: []',
     '',
   ].join('\n'),
   files: {
-    ...PARAGLIDE_FILES,
+    ...workspaceOf({
+      'packages/web': [
+        'axes: [architecture, workflow]',
+        'domains: [version-control, ui, untrusted-client, unreliable-network, i18n]',
+        'platforms: [browser]',
+        'languages: [typescript]',
+        'implementations: [react-dom, betterleaks, git, git-flow, lint-kit, paraglide]',
+        `packs: [../../${OWN_PACK}]`,
+        'overrides: []',
+        '',
+      ].join('\n'),
+    }),
+    ...paraglideFiles,
     [packPath({
       id: 'git-flow',
     })]: [
@@ -347,7 +382,6 @@ const PACK_PROJECT: ProjectLayout = {
       'extends: null',
       'abstract: false',
       'languages: []',
-      'dictionary: []',
       'governs: []',
       '---',
       '',
@@ -364,7 +398,6 @@ const PACK_PROJECT: ProjectLayout = {
       'abstract: false',
       'languages:',
       '  - typescript',
-      'dictionary: []',
       'governs: []',
       '---',
       '',
@@ -372,7 +405,7 @@ const PACK_PROJECT: ProjectLayout = {
   },
 };
 
-const TEMPLATES = join(import.meta.dir, '..', '..', 'templates');
+const templates = join(import.meta.dir, '..', '..', 'templates');
 
 const fromTemplate = (input: {
   fills: ReadonlyArray<
@@ -385,12 +418,12 @@ const fromTemplate = (input: {
 }): string =>
   input.fills.reduce(
     (text, [placeholder, filling]) => text.replace(placeholder, filling),
-    readFileSync(join(TEMPLATES, input.name), 'utf8'),
+    readFileSync(join(templates, input.name), 'utf8'),
   );
 
 // The files /ratify writes from the templates; only the placeholders of the
 // block's front matter are filled, and the project lists its own pack.
-const RATIFIED: ProjectLayout = {
+const ratified: ProjectLayout = {
   config: fromTemplate({
     fills: [
       [
@@ -447,7 +480,7 @@ const RATIFIED: ProjectLayout = {
 
 // The reference web application and command-line tool, as the real blocks of
 // this repository would serve them.
-const REAL_WEB_APP: ProjectLayout = {
+const realWebApp: ProjectLayout = {
   config: [
     'axes: [architecture, workflow]',
     '',
@@ -459,7 +492,6 @@ const REAL_WEB_APP: ProjectLayout = {
     '                  tailwind, shadcn, storybook, ky, zod, vite, bun-test, testing-library,',
     '                  matomo, lingui, bun, tsc, biome, dependency-cruiser, knip,',
     '                  syncpack, stryker, git, lefthook, betterleaks, osv-scanner, renovate, mise]',
-    'packages: {}',
     'packs: []',
     'check: bun run check',
     'overrides: []',
@@ -467,7 +499,7 @@ const REAL_WEB_APP: ProjectLayout = {
   ].join('\n'),
 };
 
-const REAL_CLI: ProjectLayout = {
+const realCli: ProjectLayout = {
   config: [
     'axes: [architecture, workflow]',
     '',
@@ -477,7 +509,6 @@ const REAL_CLI: ProjectLayout = {
     'implementations: [bun, bun-test, bunli, zod, yaml-js, yamllint, tsc, biome, dependency-cruiser,',
     '                  knip, syncpack, stryker, mise, git, lefthook, betterleaks,',
     '                  osv-scanner, renovate]',
-    'packages: {}',
     'packs: []',
     'check: bun run check',
     'overrides: []',
@@ -487,21 +518,23 @@ const REAL_CLI: ProjectLayout = {
 
 export type { ProjectLayout };
 export {
-  BROWSER_APP,
-  CLI,
+  browserApp,
   ConfigKey,
+  cli,
   configOf,
   createProject,
-  HTML_SITE,
-  LIBRARY,
+  htmlSite,
+  library,
   lineNumberOf,
+  memberConfigOf,
   OWN_PACK,
-  PACK_PROJECT,
   packBlockFiles,
   packPath,
-  RATIFIED,
-  REAL_CLI,
-  REAL_WEB_APP,
+  packProject,
   Repository,
+  ratified,
+  realCli,
+  realWebApp,
   removeProjects,
+  workspaceOf,
 };

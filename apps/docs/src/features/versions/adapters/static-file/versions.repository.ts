@@ -1,8 +1,8 @@
-import type { VersionsRepository } from '../../domain/contracts';
+import type { VersionsQueryRepository } from '../../domain/contracts';
 import type { Versions } from '../../domain/entities';
+import { createVersion } from '../../domain/value-objects';
 import { versionsModel } from './models';
 
-/** `fetch`, or a transport that serves captured answers */
 type Transport = (
   address: string,
   init: {
@@ -14,7 +14,7 @@ type Transport = (
 export const createStaticFileVersionsRepository = (
   address: string,
   transport: Transport = fetch,
-): VersionsRepository => ({
+): VersionsQueryRepository => ({
   read: async (signal: AbortSignal): Promise<Versions> => {
     const response = await transport(address, {
       signal,
@@ -24,6 +24,11 @@ export const createStaticFileVersionsRepository = (
       throw new Error(`${address} answered ${response.status}`);
     }
 
-    return versionsModel.parse(await response.json());
+    const file = versionsModel.parse(await response.json());
+
+    return {
+      latest: createVersion(file.latest),
+      versions: file.versions.map(createVersion),
+    };
   },
 });

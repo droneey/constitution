@@ -5,10 +5,11 @@ requires: []
 extends: null
 abstract: false
 languages: []
-dictionary: [Python, .py, .pyi, __init__.py, __main__.py, main.py, py.typed, pyproject.toml, PEP 695]
 governs: ["**/*.py", "**/*.pyi"]
 ---
 
 # Python
 
-> Code written in Python: its modules and import packages, the annotations a type checker reads, its asynchronous code, and the specs that prove it.
+> Code written in **Python**: its modules and import packages, the annotations a type checker reads, its asynchronous code, and the specs that prove it.
+
+A program starts at **`main.py`**, which **`__main__.py`** calls, and a project declares its packages, its dependencies and its tools' settings in **`pyproject.toml`**. Generics are written as **PEP 695** declares them.

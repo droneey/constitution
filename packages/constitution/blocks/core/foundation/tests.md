@@ -4,9 +4,9 @@
 
 ## Levels
 
-- **Unit** — one boundary, with fakes of the contracts through which it reaches the outside.
-- **Integration** — the code that talks to an outside system, against its real engine inside a sandbox: a temporary folder, the real parser, a disposable container.
-- **End-to-end** — a critical scenario of `PROJECT.md`, through the built program, the way its users reach it.
+- **Unit spec.** One boundary, with fakes of the contracts through which it reaches the outside.
+- **Integration spec.** The code that talks to an outside system, against its real engine inside a sandbox: a temporary folder, the real parser, a disposable container.
+- **End-to-end spec.** A critical scenario of `PROJECT.md`, through the built program, the way its users reach it.
 
 ## What a spec proves
 

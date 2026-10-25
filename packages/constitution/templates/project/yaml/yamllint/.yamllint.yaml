@@ -1,2 +1,6 @@
 # yamllint: the part of the Constitution's release it extends
 extends: <parts>
+
+# yamllint: the members, each checked by its own configuration in its own run
+ignore: |
+  /<unit folders>/**

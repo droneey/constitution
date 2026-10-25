@@ -68,6 +68,24 @@ license.ignore = true
 reason = "this repository's own package, a member of its Bun workspace, under the repository's LICENSE.md"
 
 [[PackageOverrides]]
+name = "@droneey/design-cli"
+ecosystem = "npm"
+license.ignore = true
+reason = "this repository's own design system for the command line, a member of its Bun workspace, under the repository's LICENSE.md"
+
+[[PackageOverrides]]
+name = "@droneey/design-tokens"
+ecosystem = "npm"
+license.ignore = true
+reason = "this repository's own design tokens, a member of its Bun workspace, under the repository's LICENSE.md"
+
+[[PackageOverrides]]
+name = "@droneey/design-browser"
+ecosystem = "npm"
+license.ignore = true
+reason = "this repository's own design system for the web, a member of its Bun workspace, under the repository's LICENSE.md"
+
+[[PackageOverrides]]
 name = "@droneey/docs"
 ecosystem = "npm"
 license.ignore = true

@@ -5,12 +5,9 @@ requires: [react-dom]
 extends: null
 abstract: false
 languages: []
-dictionary: [TanStack Router, routeTree.gen.ts]
 governs: ["src/routes/**", "src/router.tsx", "src/root/routes/**", "src/root/router.tsx"]
 ---
 
 # TanStack Router
 
-> The project's only router.
-
-**Vocabulary:** folder `root/routes`, the registration of a browser application's screens.
+> **TanStack Router**, the project's only router, which generates its tree in **`routeTree.gen.ts`**.

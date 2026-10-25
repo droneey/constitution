@@ -19,6 +19,12 @@ _react:
     - noNestedComponentDefinitions
   react-compiler-on:
     - react-compiler-on.grit
+  identifier-case-by-kind:
+    - useNamingConvention
+  compound-parts-share-the-root-context:
+    - compound-parts-share-the-root-context.grit
+  file-is-one-semantic-unit:
+    - file-is-one-semantic-unit.grit
 bun-test:
   module-never-mocked-in-a-spec:
     - module-never-mocked-in-a-spec.grit
@@ -33,6 +39,8 @@ bun-test:
 core:
   code-reads-plainly:
     - noNestedTernary
+  statements-grouped-by-blank-lines:
+    - statements-grouped-by-blank-lines.grit
   dead-code-deleted:
     - noParametersOnlyUsedInRecursion
     - noUnreachable
@@ -221,7 +229,6 @@ typescript:
   return-type-no-wider-than-returned:
     - noMisleadingReturnType
   value-made-text-by-a-named-form:
-    - noBaseToString
     - noUnsafePlusOperands
   enum-never-declared-const:
     - noConstEnum
@@ -233,6 +240,7 @@ typescript:
   finally-never-leaves-by-a-jump:
     - noUnsafeFinally
   identifier-case-by-kind:
+    - identifier-case-by-kind.grit
     - useNamingConvention
   any-never-written:
     - noExplicitAny

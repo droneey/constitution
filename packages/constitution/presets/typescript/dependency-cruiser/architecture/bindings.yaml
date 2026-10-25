@@ -7,6 +7,9 @@ bun:
 bunli:
   bunli-imported-by-commands:
     - bunli-imported-by-commands
+commander:
+  commander-imported-by-commands:
+    - commander-imported-by-commands
 _react:
   react-imported-by-the-ui-and-binding-units:
     - react-imported-by-the-ui-and-binding-units
@@ -75,6 +78,9 @@ core:
 expo:
   ui-never-touches-navigation:
     - ui-imports-no-expo-router
+ink:
+  ink-imported-by-the-ui:
+    - ink-imported-by-the-ui
 lingui:
   lingui-only-where-text-is-rendered:
     - lingui-only-where-text-is-rendered

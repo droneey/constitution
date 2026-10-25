@@ -1,1 +1,1 @@
-export { GetVersionsContext } from './versions.context';
+export { GetVersionsContext } from './get-versions.context';

@@ -8,7 +8,7 @@ import { enterRepository } from './repository.fixtures';
 const CORE = 'packages/constitution/blocks/core';
 
 // a link in the passport's prose, or in an item that names no axis folder, is no entry
-const PASSPORT = [
+const passportText = [
   '# Core',
   '',
   'Prose may quote - `foundation/`: [code](foundation/code.md) mid-line.',
@@ -26,7 +26,7 @@ const CORE_FILES = {
   [`${CORE}/architecture/layers.md`]: '# Layers\n',
   [`${CORE}/foundation/code.md`]: '# Code\n',
   [`${CORE}/foundation/placement.md`]: '# Placement\n',
-};
+} as const;
 
 const cardOf = (id: string, base: string): string =>
   `---\nid: ${id}\nextends: ${base}\n---\n\n# ${id}\n`;
@@ -46,7 +46,7 @@ describe('coreChaptersOf', () => {
     repository.leave = enterRepository({
       files: {
         ...CORE_FILES,
-        [`${CORE}/core.md`]: PASSPORT,
+        [`${CORE}/core.md`]: passportText,
       },
     }).leave;
 
@@ -68,19 +68,19 @@ describe('coreChaptersOf', () => {
         [`${CORE}/foundation/names.md`]: '# Names\n',
       },
       named: 'names',
-      passport: PASSPORT,
+      passport: passportText,
     },
     {
       condition: 'lists a chapter core does not have',
       extra: {},
       named: 'types',
-      passport: `${PASSPORT}- \`foundation/\`: [types](foundation/types.md)\n`,
+      passport: `${passportText}- \`foundation/\`: [types](foundation/types.md)\n`,
     },
     {
       condition: 'lists a chapter twice',
       extra: {},
       named: 'code twice',
-      passport: `${PASSPORT}- \`workflow/\`: [code](foundation/code.md)\n`,
+      passport: `${passportText}- \`workflow/\`: [code](foundation/code.md)\n`,
     },
   ])(
     'should stop the build, naming the entry, when the passport $condition',
@@ -107,6 +107,7 @@ describe('layerBlocksOf', () => {
   it('should list a layer by the names of its blocks, an abstract block right above those that extend it', () => {
     // Arrange
     const domains = 'packages/constitution/blocks/domains';
+
     repository.leave = enterRepository({
       files: {
         [`${domains}/_api/_api.md`]: cardOf('_api', 'null'),
@@ -150,6 +151,7 @@ describe('axisFoldersOf', () => {
   it("should give each axis folder of a layer's blocks", () => {
     // Arrange
     const domains = 'packages/constitution/blocks/domains';
+
     repository.leave = enterRepository({
       files: {
         [`${domains}/i18n/i18n.md`]: cardOf('i18n', 'null'),
@@ -174,6 +176,7 @@ describe('seamHoldersOf', () => {
   it("should give each axis folder of a layer's blocks that holds seams", () => {
     // Arrange
     const domains = 'packages/constitution/blocks/domains';
+
     repository.leave = enterRepository({
       files: {
         [`${domains}/i18n/i18n.md`]: cardOf('i18n', 'null'),

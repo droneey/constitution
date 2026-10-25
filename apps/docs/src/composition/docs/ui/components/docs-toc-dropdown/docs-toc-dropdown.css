@@ -1,0 +1,6 @@
+@layer overrides {
+  [data-toc-dropdown] [data-toc-list],
+  [data-toc-dropdown] :has(> [data-toc-list]) {
+    padding-block: 0;
+  }
+}

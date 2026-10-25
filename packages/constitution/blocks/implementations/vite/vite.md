@@ -5,10 +5,9 @@ requires: [_js-runtime]
 extends: null
 abstract: false
 languages: []
-dictionary: [Vite, vite.config.ts, import.meta.env]
 governs: ["vite.config.ts", "vite.*.config.ts"]
 ---
 
 # Vite
 
-> Builds and serves the browser bundle.
+> **Vite** builds and serves the browser bundle, as **`vite.config.ts`** sets, and hands the build's own facts to the code in **`import.meta.env`**.

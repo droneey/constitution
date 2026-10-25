@@ -1,0 +1,71 @@
+{
+  "shadow": {
+    "$type": "shadow",
+    "$description": "The shadows that lift a surface off the page: drop, the primitives, and surface, the roles that read them.",
+    "drop": {
+      "lg": {
+        "$value": [
+          {
+            "color": {
+              "colorSpace": "oklch",
+              "components": [
+                0,
+                0,
+                0
+              ],
+              "alpha": 0.1
+            },
+            "offsetX": {
+              "value": 0,
+              "unit": "px"
+            },
+            "offsetY": {
+              "value": 10,
+              "unit": "px"
+            },
+            "blur": {
+              "value": 15,
+              "unit": "px"
+            },
+            "spread": {
+              "value": -3,
+              "unit": "px"
+            }
+          },
+          {
+            "color": {
+              "colorSpace": "oklch",
+              "components": [
+                0,
+                0,
+                0
+              ],
+              "alpha": 0.1
+            },
+            "offsetX": {
+              "value": 0,
+              "unit": "px"
+            },
+            "offsetY": {
+              "value": 4,
+              "unit": "px"
+            },
+            "blur": {
+              "value": 6,
+              "unit": "px"
+            },
+            "spread": {
+              "value": -4,
+              "unit": "px"
+            }
+          }
+        ]
+      }
+    },
+    "surface": {
+      "raised": {
+        "$value": "{shadow.drop.lg}"
+      }
+    }
+  }
+}

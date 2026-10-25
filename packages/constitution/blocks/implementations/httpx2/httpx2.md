@@ -5,13 +5,12 @@ requires: [python, remote-service]
 extends: null
 abstract: false
 languages: []
-dictionary: [httpx2]
 governs: ["**/adapters/**", "**/root/**"]
 ---
 
 # httpx2
 
-> The HTTP client of the transport.
+> **`httpx2`**, the HTTP client of the transport.
 
 ## Requirements
 

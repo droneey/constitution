@@ -1,26 +1,16 @@
-export {
-  axisFoldersOf,
-  coreChaptersOf,
-  layerBlocksOf,
-  SEAMS,
-  seamHoldersOf,
-} from './blocks.adapter';
+export { axisFoldersOf, coreChaptersOf, layerBlocksOf, seamHoldersOf } from './blocks.adapter';
+export { SEAMS_FOLDER } from './blocks.constants';
 export { taglineOf } from './brand.adapter';
-export {
-  documentIconOf,
-  guideIconOf,
-  ICONS,
-  sectionSummaryOf,
-  sidebarOf,
-} from './navigation.adapter';
+export { documentIconOf, guideIconOf, sectionSummaryOf, sidebarOf } from './navigation.adapter';
+export { DOCUMENTATION_SECTION, ICONS_BY_ADDRESS } from './navigation.constants';
 export { releaseOf } from './release.adapter';
+export { addressOf, inRepository, repositoryPathOf } from './repository.adapter';
 export {
-  addressOf,
   BLOCK_LAYERS,
+  BLOCKS_FOLDER,
   GLOSSARY,
-  inRepository,
   QUICK_START,
-  repositoryPathOf,
   SITE_DOCUMENTS,
-  SITE_LAYERS,
-} from './repository.adapter';
+  siteLayers,
+} from './repository.constants';
+export { termsOf } from './terms.adapter';

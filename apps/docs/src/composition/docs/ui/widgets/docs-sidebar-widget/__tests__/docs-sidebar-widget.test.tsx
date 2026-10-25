@@ -5,13 +5,15 @@ import type { ReactElement } from 'react';
 import { cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { DocsLayout, SidebarProvider } from '#/libs/ui';
+import { DocsLayout, Sidebar } from '#/libs/ui';
 
 import { componentViolationsIn } from '../../../../__tests__/axe.fixtures';
 import { pageTreeFixture, renderInDocs } from '../../../../__tests__/docs.fixtures';
-import { frameFake } from '../../../../__tests__/docs-frame.fake';
+import { FrameMark, frameFake } from '../../../../__tests__/docs-frame.fake';
 import { DocsLocationContext } from '../../../../app/providers';
-import { layoutOptions } from '../../../constants';
+import { DocsNavTitle } from '../../../components/docs-nav-title';
+import { DocsRepositoryIcon } from '../../../components/docs-repository-icon';
+import { REPOSITORY_LINK } from '../../../constants';
 import { DocsSidebarWidget } from '../docs-sidebar-widget';
 
 afterEach(cleanup);
@@ -19,7 +21,7 @@ afterEach(cleanup);
 const sidebar = {
   drawer: (): undefined => undefined,
   main: DocsSidebarWidget,
-  provider: SidebarProvider,
+  provider: Sidebar.Provider,
 };
 
 const layoutOn = (path: string): ReactElement => (
@@ -30,7 +32,15 @@ const layoutOn = (path: string): ReactElement => (
     }}
   >
     <DocsLayout
-      {...layoutOptions}
+      links={[
+        {
+          ...REPOSITORY_LINK,
+          icon: <DocsRepositoryIcon />,
+        },
+      ]}
+      nav={{
+        title: <DocsNavTitle />,
+      }}
       slots={{
         sidebar,
       }}
@@ -62,7 +72,7 @@ describe('DocsSidebarWidget', () => {
       marks.at(-1),
     ]).toStrictEqual([
       'true',
-      false,
+      FrameMark.Open,
     ]);
   });
 
@@ -83,7 +93,7 @@ describe('DocsSidebarWidget', () => {
       marks.at(-1),
     ]).toStrictEqual([
       'false',
-      true,
+      FrameMark.Collapsed,
     ]);
   });
 
@@ -95,6 +105,7 @@ describe('DocsSidebarWidget', () => {
     const { rerender } = renderInDocs(layoutOn('index.md'), {
       frame,
     });
+
     await userEvent.click(toggle());
 
     // Act
@@ -106,7 +117,7 @@ describe('DocsSidebarWidget', () => {
       marks.at(-1),
     ]).toStrictEqual([
       'false',
-      true,
+      FrameMark.Collapsed,
     ]);
   });
 
@@ -126,13 +137,14 @@ describe('DocsSidebarWidget', () => {
       marks.at(-1),
     ]).toStrictEqual([
       'true',
-      false,
+      FrameMark.Open,
     ]);
   });
 
   test('should tell the frame when the reader collapses the sidebar', async () => {
     // Arrange
     const { frame, marks } = frameFake();
+
     renderInDocs(layoutOn('index.md'), {
       frame,
     });
@@ -141,7 +153,7 @@ describe('DocsSidebarWidget', () => {
     await userEvent.click(toggle());
 
     // Assert
-    expect(marks.at(-1)).toBe(true);
+    expect(marks.at(-1)).toBe(FrameMark.Collapsed);
   });
 
   test('should show the page tree when the root gives no frame', () => {

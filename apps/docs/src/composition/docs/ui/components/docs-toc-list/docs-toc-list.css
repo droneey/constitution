@@ -1,0 +1,86 @@
+@layer overrides {
+  /* a section is a row of plain text; the entries under it sit on a line, as a folder's do */
+  [data-toc-list] > a {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: var(--spacing-control-md);
+    padding-inline: var(--spacing-xs);
+    border-radius: var(--radius-lg);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-ui);
+    cursor: pointer;
+
+    /* the list scrolls, so an outer ring would be clipped */
+    &:focus-visible {
+      outline-offset: calc(-1 * var(--ring-focus-width));
+    }
+
+    &[data-highlighted] {
+      background-color: transparent;
+    }
+
+    &[data-level='0'] {
+      font-weight: var(--font-weight-medium);
+    }
+
+    &[data-level='1'] {
+      margin-inline-start: var(--spacing-sm);
+
+      &::before {
+        content: '';
+        position: absolute;
+        inset-block: 0;
+        inset-inline-start: calc(-1 * var(--spacing-2xs));
+        width: 1px;
+        background-color: var(--color-fd-border);
+        transition: background-color var(--duration-fast) var(--ease-standard);
+      }
+
+      &:first-child::before {
+        top: var(--spacing-2xs);
+      }
+
+      &:last-child::before,
+      &:has(+ [data-level='0'])::before {
+        bottom: var(--spacing-2xs);
+      }
+
+      &[data-active='true']::before {
+        background-color: var(--color-fd-primary);
+      }
+    }
+  }
+
+  [data-toc-list] > [data-level='0'] + [data-level='1']::before {
+    top: var(--spacing-2xs);
+  }
+
+  [data-toc-text] {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    & code {
+      min-width: 0;
+      overflow: hidden;
+      padding: 0;
+      border: 0;
+      background: none;
+      font-size: var(--text-xs);
+      font-weight: var(--font-weight-normal);
+      text-overflow: ellipsis;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
+    [data-toc-list]:has(:active) > [data-glide] {
+      scale: var(--scale-control-pressed);
+      transition-duration: var(--duration-fast);
+    }
+  }
+}

@@ -1,0 +1,12 @@
+# python: bytecode
+__pycache__/
+
+# pytest: caches and coverage
+.pytest_cache/
+.coverage
+
+# complexipy
+.complexipy_cache/
+
+# mutmut
+mutants/

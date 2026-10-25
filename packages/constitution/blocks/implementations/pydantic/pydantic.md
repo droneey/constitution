@@ -5,15 +5,14 @@ requires: [python]
 extends: null
 abstract: false
 languages: []
-dictionary: [pydantic, Pydantic, pydantic-settings, BaseSettings, SecretStr]
 governs: ["**/models/**", "**/adapters/**", "**/root/**"]
 ---
 
 # pydantic
 
-> Parses what crosses the program's edge — a request, a response, a document, the environment — into models, and stays at the edge: the business types inside are frozen dataclasses.
+> **Pydantic**, the package **`pydantic`**, parses what crosses the program's edge — a request, a response, a document, the environment — into models, and stays at the edge: the business types inside are frozen dataclasses.
 
-pydantic-settings reads the environment into one settings model.
+**`pydantic-settings`** reads the environment into one settings model, a **`BaseSettings`**, and a secret is typed **`SecretStr`**.
 
 ## Requirements
 

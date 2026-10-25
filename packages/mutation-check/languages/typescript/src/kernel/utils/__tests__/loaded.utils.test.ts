@@ -20,7 +20,7 @@ const IMPORTS: Readonly<Record<string, readonly string[]>> = {
     'src/price.ts',
     'src/order.ts',
   ],
-};
+} as const;
 
 const importsOf = (path: string): readonly string[] => IMPORTS[path] ?? [];
 

@@ -11,8 +11,8 @@ interface Manifest {
   version: string;
 }
 
-const REPOSITORY = join(import.meta.dir, '..', '..');
-const SYNCPACK = join(REPOSITORY, 'node_modules', '.bin', 'syncpack');
+const repository = join(import.meta.dir, '..', '..');
+const syncpack = join(repository, 'node_modules', '.bin', 'syncpack');
 
 const CONFIG = `import jsRuntime from './.droneey/constitution/presets/json/syncpack/foundation/_js-runtime.mjs';
 import bun from './.droneey/constitution/presets/json/syncpack/foundation/bun.mjs';
@@ -60,12 +60,13 @@ const versionIssues = (packages: readonly Manifest[]): readonly string[] => {
     });
     writeFileSync(join(folder, path), JSON.stringify(manifest));
   }
+
   mkdirSync(join(folder, '.droneey'));
-  symlinkSync(REPOSITORY, join(folder, '.droneey', 'constitution'));
+  symlinkSync(repository, join(folder, '.droneey', 'constitution'));
   writeFileSync(join(folder, '.syncpackrc.mjs'), CONFIG);
 
   const linting = spawnSync(
-    SYNCPACK,
+    syncpack,
     [
       'lint',
     ],

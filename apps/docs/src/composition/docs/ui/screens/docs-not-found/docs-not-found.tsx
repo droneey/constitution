@@ -1,17 +1,29 @@
 import type { ReactElement } from 'react';
 
-import { DefaultNotFound, HomeLayout, useGlide } from '#/libs/ui';
-import { mainContentId } from '#/shared/constants';
+import { useGlide } from '@droneey/design-browser/react-dom';
 
-import { layoutOptions } from '../../constants';
+import { DefaultNotFound, HomeLayout } from '#/libs/ui';
+import { MAIN_CONTENT_ID } from '#/shared/constants';
+
+import { DocsNavTitle } from '../../components/docs-nav-title';
+import { DocsRepositoryIcon } from '../../components/docs-repository-icon';
+import { GLIDE_LISTS, REPOSITORY_LINK } from '../../constants';
 
 export function DocsNotFoundScreen(): ReactElement {
-  useGlide();
+  useGlide(GLIDE_LISTS);
 
   return (
     <HomeLayout
-      {...layoutOptions}
-      id={mainContentId}
+      id={MAIN_CONTENT_ID}
+      links={[
+        {
+          ...REPOSITORY_LINK,
+          icon: <DocsRepositoryIcon />,
+        },
+      ]}
+      nav={{
+        title: <DocsNavTitle />,
+      }}
       tabIndex={-1}
     >
       <DefaultNotFound />

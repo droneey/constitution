@@ -1,0 +1,209 @@
+import { resolve } from 'node:path';
+import { parseArgs } from 'node:util';
+
+import { transformSync } from '@babel/core';
+import reactCompiler from 'babel-plugin-react-compiler';
+
+import { pluginFingerprintOf } from '#/libs/claude-plugin';
+
+import { BuildError, BuildFailure, isBuildError } from './errors';
+
+// Builds the constitution program into one executable: `--target`, one of Bun's, the host's by
+// default; `--outfile`, from the folder it runs in, dist/cli/constitution by default. The React
+// Compiler memoises every component and hook of the program and of the design system on the way,
+// and the fingerprint of the plugin's files in the package is built in, for doctor to compare the
+// installed plugin's with.
+const entryFile = resolve(import.meta.dir, '../../main.ts');
+const packageFolder = resolve(import.meta.dir, '../../..');
+const TARGETS: readonly Bun.Build.CompileTarget[] = [
+  'bun-linux-x64',
+  'bun-linux-arm64',
+  'bun-darwin-x64',
+  'bun-darwin-arm64',
+] as const;
+const COMPONENTS = /\/packages\/[^/]+\/src\/.+\.(?:tsx|hooks\.ts)$/;
+const DEVTOOLS = /^react-devtools-core$/;
+const STUB_NAMESPACE = 'stub';
+const SUCCESS_EXIT_CODE = 0;
+const FAILURE_EXIT_CODE = 1;
+
+const writeError = (text: string): void => {
+  process.stderr.write(text);
+};
+
+const buildMessages: Readonly<Record<BuildFailure, (given: string) => string>> = {
+  [BuildFailure.TargetUnknown]: (given) => `--target ${given} is none of ${TARGETS.join(', ')}`,
+  [BuildFailure.PluginUnreadable]: (given) => `the plugin's files under ${given} cannot be read`,
+  [BuildFailure.CompilerGaveNothing]: (given) => `the React Compiler gave nothing for ${given}`,
+};
+
+const messageOf = (error: unknown): string => {
+  if (isBuildError(error)) {
+    return buildMessages[error.code](error.details.given);
+  }
+
+  return error instanceof Error ? error.message : String(error);
+};
+
+const reactCompilerPlugin: Bun.BunPlugin = {
+  name: 'react-compiler',
+  setup: (build): void => {
+    build.onLoad(
+      {
+        filter: COMPONENTS,
+      },
+      async ({ path }) => {
+        const isJsx = path.endsWith('.tsx');
+        const compiled = transformSync(await Bun.file(path).text(), {
+          babelrc: false,
+          configFile: false,
+          filename: path,
+          parserOpts: {
+            plugins: isJsx
+              ? [
+                  'typescript',
+                  'jsx',
+                ]
+              : [
+                  'typescript',
+                ],
+          },
+          plugins: [
+            [
+              reactCompiler,
+              {
+                panicThreshold: 'all_errors',
+              },
+            ],
+          ],
+        });
+
+        if (typeof compiled?.code !== 'string') {
+          throw new BuildError({
+            code: BuildFailure.CompilerGaveNothing,
+            details: {
+              given: path,
+            },
+          });
+        }
+
+        return {
+          contents: compiled.code,
+          loader: isJsx ? 'tsx' : 'ts',
+        };
+      },
+    );
+  },
+};
+
+// Ink reaches react-devtools-core only when DEV is set, and no install of the program holds it, so
+// the bundle takes an empty module in its place.
+const devtoolsStubPlugin: Bun.BunPlugin = {
+  name: 'devtools-stub',
+  setup: (build): void => {
+    build.onResolve(
+      {
+        filter: DEVTOOLS,
+      },
+      ({ path }) => ({
+        namespace: STUB_NAMESPACE,
+        path,
+      }),
+    );
+    build.onLoad(
+      {
+        filter: DEVTOOLS,
+        namespace: STUB_NAMESPACE,
+      },
+      () => ({
+        contents: 'export default {};',
+        loader: 'js',
+      }),
+    );
+  },
+};
+
+/** The logs of a build that failed are printed. */
+const buildProgram = async (): Promise<boolean> => {
+  const { values } = parseArgs({
+    options: {
+      outfile: {
+        default: 'dist/cli/constitution',
+        type: 'string',
+      },
+      target: {
+        type: 'string',
+      },
+    },
+  });
+
+  const target = TARGETS.find((known) => known === values.target);
+
+  if (values.target !== undefined && target === undefined) {
+    throw new BuildError({
+      code: BuildFailure.TargetUnknown,
+      details: {
+        given: values.target,
+      },
+    });
+  }
+
+  const fingerprint = pluginFingerprintOf(packageFolder);
+
+  if (fingerprint === undefined) {
+    throw new BuildError({
+      code: BuildFailure.PluginUnreadable,
+      details: {
+        given: packageFolder,
+      },
+    });
+  }
+
+  const built = await Bun.build({
+    compile: {
+      autoloadBunfig: false,
+      autoloadDotenv: false,
+      outfile: values.outfile,
+      ...(target === undefined
+        ? {}
+        : {
+            target,
+          }),
+    },
+    define: Object.fromEntries([
+      [
+        'CONSTITUTION_PLUGIN_FINGERPRINT',
+        JSON.stringify(fingerprint),
+      ],
+      [
+        'process.env.NODE_ENV',
+        '"production"',
+      ],
+    ]),
+    entrypoints: [
+      entryFile,
+    ],
+    minify: true,
+    plugins: [
+      reactCompilerPlugin,
+      devtoolsStubPlugin,
+    ],
+    target: 'bun',
+    throw: false,
+  });
+
+  if (!built.success) {
+    for (const log of built.logs) {
+      writeError(`${String(log)}\n`);
+    }
+  }
+
+  return built.success;
+};
+
+try {
+  process.exitCode = (await buildProgram()) ? SUCCESS_EXIT_CODE : FAILURE_EXIT_CODE;
+} catch (error) {
+  writeError(`cli-build: ${messageOf(error)}\n`);
+  process.exitCode = FAILURE_EXIT_CODE;
+}

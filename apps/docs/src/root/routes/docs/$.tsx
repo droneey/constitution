@@ -4,7 +4,7 @@ import { createFileRoute, notFound, useLocation } from '@tanstack/react-router';
 
 import { DocsPageScreen } from '#/composition/docs';
 import { useFumadocsLoader } from '#/libs/ui';
-import { appName } from '#/shared/constants';
+import { APP_NAME } from '#/shared/constants';
 
 import { slugsShape } from '../../constants';
 import type { DocsPageData, RouterContext } from '../../wiring';
@@ -24,7 +24,6 @@ function DocsRoute(): ReactElement {
   );
 }
 
-/** loads the body before the page renders */
 const loadDocsPage = async ({
   context,
   params,
@@ -42,9 +41,11 @@ const loadDocsPage = async ({
   if (!slugs.success) {
     throw notFound();
   }
+
   const loaded = await context.docs.loadPage(slugs.data);
 
   await context.docs.pageOf(loaded).preload();
+
   return loaded;
 };
 
@@ -59,7 +60,7 @@ const headOf = ({
 } => ({
   meta: [
     {
-      title: loaderData === undefined ? appName : `${loaderData.title} · ${appName}`,
+      title: loaderData === undefined ? APP_NAME : `${loaderData.title} · ${APP_NAME}`,
     },
   ],
 });

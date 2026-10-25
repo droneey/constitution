@@ -3,6 +3,7 @@
     "../../.droneey/constitution/presets/typescript/tsc/foundation/self.json",
     "../../.droneey/constitution/presets/typescript/tsc/foundation/core.json",
     "../../.droneey/constitution/presets/typescript/tsc/foundation/workspace.json",
+    "../../.droneey/constitution/presets/typescript/tsc/foundation/_react.json",
     "../../.droneey/constitution/presets/typescript/tsc/foundation/bun.json"
   ],
   "compilerOptions": {
@@ -14,7 +15,9 @@
     }
   },
   "include": [
+    "package.json",
     "src/**/*.ts",
+    "src/**/*.tsx",
     "tests/**/*.ts",
     "presets/typescript/stryker/foundation/bun-test.mjs",
     "presets/json/syncpack/foundation/self.mjs",
@@ -26,6 +29,9 @@
   "references": [
     {
       "path": "../mutation-check/languages/typescript"
+    },
+    {
+      "path": "../design-cli"
     }
   ]
 }

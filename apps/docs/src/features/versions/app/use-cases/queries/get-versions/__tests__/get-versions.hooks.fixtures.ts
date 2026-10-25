@@ -6,17 +6,20 @@ import { renderHook } from '@testing-library/react';
 
 import type { GetVersions } from '../../../../../domain/use-cases';
 import { GetVersionsContext } from '../../../../providers';
-import type { Releases } from '../get-versions.hooks';
-import { useVersions } from '../get-versions.hooks';
+import { useGetVersions } from '../get-versions.hooks';
+import type { VersionsState } from '../get-versions.types';
 
-interface RenderedReleases extends RenderHookResult<Releases, unknown> {
+interface RenderedVersionsState extends RenderHookResult<VersionsState, unknown> {
   provide: (getVersions: GetVersions | undefined) => void;
 }
 
-export const renderReleases = (getVersions: GetVersions | undefined): RenderedReleases => {
+export const renderVersionsState = (
+  getVersions: GetVersions | undefined,
+): RenderedVersionsState => {
   const provided = {
     current: getVersions,
   };
+
   const wrapper = ({ children }: { children: ReactNode }): ReactNode =>
     createElement(
       GetVersionsContext,
@@ -25,7 +28,8 @@ export const renderReleases = (getVersions: GetVersions | undefined): RenderedRe
       },
       children,
     );
-  const rendered = renderHook(useVersions, {
+
+  const rendered = renderHook(useGetVersions, {
     wrapper,
   });
 

@@ -14,11 +14,10 @@ permissions:
 
 jobs:
   # The project's one check, the same command an agent runs before it hands a
-  # change back; Ubuntu's awk is mawk unless gawk is installed, so the hook's
-  # specs inside it run under mawk.
+  # change back.
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 60
     permissions:
       contents: read
     steps:
@@ -35,12 +34,6 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Put mawk first as awk
-        run: |
-          mkdir -p "${RUNNER_TEMP}/mawk"
-          ln -s "$(command -v mawk)" "${RUNNER_TEMP}/mawk/awk"
-          echo "${RUNNER_TEMP}/mawk" >> "${GITHUB_PATH}"
-
       - name: Check
         run: bun run check
 
@@ -50,25 +43,27 @@ jobs:
       - name: Lint the workflows
         run: actionlint -color
 
-  # The hook must run under every shell and awk a project may have: its specs
-  # again under gawk, whose length() counts bytes under the hook's LC_ALL=C as
-  # mawk's and BSD awk's do, and under the bash 3.2 and the awk macOS ships.
-  test-hooks:
+  # The program each release ships, built on that platform's own runner and run
+  # through its end-to-end specs — the commands and the hooks under the
+  # system's bash — before the change merges.
+  program:
+    name: program (${{ matrix.target }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 15
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
         include:
-          - environment: gawk
-            os: ubuntu-latest
-            shell: bash
-          - environment: macOS bash 3.2 and awk
-            os: macos-latest
-            shell: /bin/bash
-    name: test:hooks (${{ matrix.environment }})
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 15
-    permissions:
-      contents: read
+          - target: linux-x64
+            runner: ubuntu-latest
+          - target: linux-arm64
+            runner: ubuntu-24.04-arm
+          - target: darwin-x64
+            runner: macos-15-intel
+          - target: darwin-arm64
+            runner: macos-latest
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -81,16 +76,7 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Put gawk first as awk
-        if: matrix.environment == 'gawk'
-        run: |
-          sudo apt-get update --quiet
-          sudo apt-get install --yes gawk
-          mkdir -p "${RUNNER_TEMP}/gawk"
-          ln -s "$(command -v gawk)" "${RUNNER_TEMP}/gawk/awk"
-          echo "${RUNNER_TEMP}/gawk" >> "${GITHUB_PATH}"
-
-      - name: Run the hook's specs
+      - name: Run the program's specs
         env:
-          HOOK_SHELL: ${{ matrix.shell }}
-        run: bun run test:hooks
+          HOOK_SHELL: /bin/bash
+        run: bun run test:program

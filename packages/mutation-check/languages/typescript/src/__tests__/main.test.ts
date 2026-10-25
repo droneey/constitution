@@ -28,19 +28,19 @@ interface Outcome {
   strykerArguments: string | undefined;
 }
 
-const MAIN = resolve(import.meta.dirname, '../main.ts');
+const mainScript = resolve(import.meta.dirname, '../main.ts');
 
 const SOURCE = {
   'src/order.utils.ts': 'export const total = 1;\nexport const count = 2;\n',
-};
+} as const;
 
 const CONFIG = {
   'stryker.config.mjs': "export default { mutate: ['src/**/*.ts', '!src/**/__tests__/**'] };\n",
-};
+} as const;
 
 const CHANGE = {
   'src/order.utils.ts': 'export const total = 1;\nexport const count = 3;\n',
-};
+} as const;
 
 const git = (input: { args: readonly string[]; folder: string }): void => {
   spawnSync('git', input.args, {
@@ -160,7 +160,7 @@ const runCheck = (check: Check): Outcome => {
   const running = spawnSync(
     'bun',
     [
-      MAIN,
+      mainScript,
       ...(check.mode === undefined
         ? []
         : [

@@ -24,7 +24,7 @@ A language has a block of its own once three rules lose their meaning without it
 
 ### rule-placed-on-the-axis-its-readers-share · MUST
 
-A rule sits in `architecture/` when a team with another architecture would not want it — layers and the direction of dependencies, ports and adapters, the homes of input, output and state, the wiring, the isolation of parts, the tree; in `workflow/` when a team with another workflow would not want it — how a change travels from the idea to the release: its branch, commit, review, gates and hooks, merge, release and updates, and who submits, commits and ships it; otherwise in `foundation/`, which every project follows. A rule that bundles two axes is split, one rule on each, and a rule that carries out a rule sits on that rule's axis or one that stands on it.
+A rule sits in `architecture/` when a team with another architecture would not want it — layers and the direction of dependencies, the seams to outside systems, the homes of input, output and state, the wiring, the isolation of parts, the tree; in `workflow/` when a team with another workflow would not want it — how a change travels from the idea to the release: its branch, commit, review, gates and hooks, merge, release and updates, and who submits, commits and ships it; otherwise in `foundation/`, which every project follows. A rule that bundles two axes is split, one rule on each, and a rule that carries out a rule sits on that rule's axis or one that stands on it.
 
 | Why | Tags |
 |---|---|

@@ -10,30 +10,30 @@ interface Analysis {
   exitCode: number | undefined;
 }
 
-const SHELLCHECK_REPORT = z.array(
+const shellcheckReport = z.array(
   z.object({
     code: z.number(),
   }),
 );
 
-const REPOSITORY = join(import.meta.dir, '..', '..');
-const SHELLCHECK_RC = join(
-  REPOSITORY,
+const repository = join(import.meta.dir, '..', '..');
+const shellcheckRc = join(
+  repository,
   'presets',
   'shell',
   'shellcheck',
   'foundation',
   'self.shellcheckrc',
 );
-const SHELLCHECK = miseBinary('shellcheck');
+const shellcheck = miseBinary('shellcheck');
 
 // The project copies the archive's rc to .shellcheckrc; the spec points at it.
 const analyseScript = (text: string): Analysis => {
   const run = spawnSync(
-    SHELLCHECK,
+    shellcheck,
     [
       '--rcfile',
-      SHELLCHECK_RC,
+      shellcheckRc,
       '--format=json',
       '-',
     ],
@@ -45,7 +45,7 @@ const analyseScript = (text: string): Analysis => {
 
   return {
     codes: [
-      ...new Set(SHELLCHECK_REPORT.parse(JSON.parse(run.stdout)).map(({ code }) => code)),
+      ...new Set(shellcheckReport.parse(JSON.parse(run.stdout)).map(({ code }) => code)),
     ].toSorted((left, right) => left - right),
     exitCode: run.status ?? undefined,
   };

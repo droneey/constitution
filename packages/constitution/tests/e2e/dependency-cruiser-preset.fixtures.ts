@@ -22,6 +22,8 @@ interface Project {
   files: Readonly<Record<string, string>>;
   // A link's path, then the folder it points to, as a package manager links a workspace's units.
   links?: Readonly<Record<string, string>>;
+  // The project's own settings, joined after the parts.
+  own?: Readonly<Record<string, unknown>>;
   parts?: readonly string[];
   roots?: readonly string[];
   workspaces?: readonly string[];
@@ -32,7 +34,7 @@ interface Cruise {
   violations: readonly string[];
 }
 
-const REPORT = z.object({
+const report = z.object({
   summary: z.object({
     totalCruised: z.number(),
     violations: z.array(
@@ -45,10 +47,10 @@ const REPORT = z.object({
   }),
 });
 
-const REPOSITORY = join(import.meta.dir, '..', '..');
-const DEPCRUISE = join(REPOSITORY, 'node_modules', '.bin', 'depcruise');
+const repository = join(import.meta.dir, '..', '..');
+const depcruise = join(repository, 'node_modules', '.bin', 'depcruise');
 
-const BASE_PARTS = [
+const baseParts = [
   'typescript/self',
   'typescript/core',
   'typescript/typescript',
@@ -110,7 +112,7 @@ const INSTALLED: Readonly<Record<string, Installed>> = {
   zod: {
     declaration: Declaration.Production,
   },
-};
+} as const;
 
 const installedFiles = (): Readonly<Record<string, string>> =>
   Object.fromEntries(
@@ -141,9 +143,9 @@ const declared = (declarations: readonly Declaration[]): Readonly<Record<string,
       ]),
   );
 
-const TEMPLATE = readFileSync(
+const template = readFileSync(
   join(
-    REPOSITORY,
+    repository,
     'templates',
     'project',
     'typescript',
@@ -161,7 +163,8 @@ const configFromTemplate = (
 ): string => {
   const names = paths.map((_, index) => `part${String(index)}`);
 
-  return TEMPLATE.replace('<presets>', presets)
+  return template
+    .replace('<presets>', presets)
     .replace(
       "import * as part from '<parts>';",
       paths.map((path, index) => `import * as ${names[index] ?? ''} from '${path}';`).join('\n'),
@@ -169,16 +172,16 @@ const configFromTemplate = (
     .replace('  part,\n', names.map((name) => `  ${name},\n`).join(''));
 };
 
-const configOf = (parts: readonly string[]): string =>
+const configOf = (parts: readonly string[], own: Readonly<Record<string, unknown>> = {}): string =>
   configFromTemplate(
     [
-      ...BASE_PARTS,
+      ...baseParts,
       ...parts,
     ].map(
       (part) =>
         `./.droneey/constitution/presets/${part.replace('/', '/dependency-cruiser/').replace(/\/dependency-cruiser\/(?!architecture\/|workflow\/)/, '/dependency-cruiser/foundation/')}.mjs`,
     ),
-  );
+  ).replace('  {},\n', `  ${JSON.stringify(own)},\n`);
 
 const cruise = (project: Project): Cruise => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-depcruise-'));
@@ -189,6 +192,7 @@ const cruise = (project: Project): Cruise => {
       project.parts ?? [
         'typescript/architecture/core',
       ],
+      project.own,
     ),
     'package.json': JSON.stringify({
       dependencies: declared([
@@ -224,10 +228,10 @@ const cruise = (project: Project): Cruise => {
   }
 
   mkdirSync(join(folder, '.droneey'));
-  symlinkSync(REPOSITORY, join(folder, '.droneey', 'constitution'));
+  symlinkSync(repository, join(folder, '.droneey', 'constitution'));
 
   const cruising = spawnSync(
-    DEPCRUISE,
+    depcruise,
     [
       ...(project.roots ?? [
         'src',
@@ -248,7 +252,7 @@ const cruise = (project: Project): Cruise => {
     recursive: true,
   });
 
-  const { summary } = REPORT.parse(JSON.parse(cruising.stdout));
+  const { summary } = report.parse(JSON.parse(cruising.stdout));
 
   return {
     cruised: summary.totalCruised,

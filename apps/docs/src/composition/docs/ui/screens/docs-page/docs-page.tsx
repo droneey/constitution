@@ -1,26 +1,17 @@
-import type { ComponentType, ReactElement, RefCallback } from 'react';
-import { Suspense, use, useState } from 'react';
+import type { ReactElement } from 'react';
+import { Suspense } from 'react';
 
-import type { BaseSlots, FullSearchTriggerProps, PageTreeRoot, TOCItemType } from '#/libs/ui';
-import {
-  DocsBody,
-  DocsDescription,
-  DocsLayout,
-  DocsPage,
-  DocsTitle,
-  FullSearchTrigger,
-  SearchTrigger,
-  SidebarProvider,
-  TOCProvider,
-  useGlide,
-} from '#/libs/ui';
-import { mainContentId } from '#/shared/constants';
+import type { PageTreeRoot } from '#/libs/ui';
+import { DocsLayout } from '#/libs/ui';
 
 import { DocsLocationContext } from '../../../app/providers';
-import { DocsToc, DocsTocDropdown } from '../../components/docs-toc';
-import { layoutOptions, mdxComponents } from '../../constants';
-import { DocsSidebarWidget } from '../../widgets/docs-sidebar-widget';
-import { DocsVersionWidget } from '../../widgets/docs-version-widget';
+import { DocsNavTitle } from '../../components/docs-nav-title';
+import { DocsRepositoryIcon } from '../../components/docs-repository-icon';
+import { REPOSITORY_LINK } from '../../constants';
+import { DocsPageContent } from './components';
+import { searchTrigger, sidebar } from './docs-page.constants';
+import { useHasNavigated } from './docs-page.hooks';
+import type { DocsPageEntry } from './docs-page.types';
 
 interface DocsPageScreenProps {
   href: string;
@@ -29,119 +20,8 @@ interface DocsPageScreenProps {
   path: string;
 }
 
-function SidebarFields(props: FullSearchTriggerProps): ReactElement {
-  return (
-    <>
-      <DocsVersionWidget />
-      <FullSearchTrigger {...props} />
-    </>
-  );
-}
-
-const searchTrigger: BaseSlots['searchTrigger'] = {
-  full: SidebarFields,
-  sm: SearchTrigger,
-};
-
-const nothing = (): undefined => undefined;
-
-// one sidebar at every width, so the library's drawer is left out
-const sidebar = {
-  drawer: nothing,
-  main: DocsSidebarWidget,
-  provider: SidebarProvider,
-};
-
-// every width keeps the page's bar and its dropdown, so the narrow screen's own TOC bar is left out
-const pageSlots = {
-  toc: {
-    dropdown: DocsTocDropdown,
-    main: DocsToc,
-    popover: nothing,
-    provider: TOCProvider,
-  },
-};
-
-// the page panel remounts after the router resolves, so the heading takes focus as it attaches
-const focusOnAttach: RefCallback<HTMLHeadingElement> = (heading) =>
-  heading?.focus({
-    preventScroll: true,
-  });
-
-function DocsContent({
-  navigated,
-  page,
-  path,
-}: {
-  navigated: boolean;
-  page: DocsPageEntry;
-  path: string;
-}): ReactElement {
-  const { toc } = page.loaded() ?? use(page.load());
-  const Body = page.body;
-  // here, not in the root: its lists are on the page only once this content, which waits for its body, is hydrated
-  useGlide();
-
-  // the page panel remounts on each page, so the TOC's observer does too, or it watches the old headings;
-  // the page is a stop of the keyboard, as the sidebar's list is, so the arrows scroll its panel
-  return (
-    <DocsPage
-      id={mainContentId}
-      key={path}
-      role='main'
-      slots={pageSlots}
-      tabIndex={0}
-      toc={toc}
-    >
-      <DocsTitle
-        ref={navigated ? focusOnAttach : undefined}
-        tabIndex={-1}
-      >
-        {page.title}
-      </DocsTitle>
-      <DocsDescription
-        className='text-base'
-        data-docs-description=''
-      >
-        {page.description}
-      </DocsDescription>
-      <DocsBody data-docs-body=''>
-        <Body components={mdxComponents} />
-      </DocsBody>
-    </DocsPage>
-  );
-}
-
-export interface DocsPageEntry {
-  body: ComponentType<{
-    components?: typeof mdxComponents;
-  }>;
-  description: string;
-  load: () => Promise<{
-    toc: TOCItemType[];
-  }>;
-  /** undefined until the body has loaded */
-  loaded: () =>
-    | {
-        toc: TOCItemType[];
-      }
-    | undefined;
-  title: string;
-}
-
-/** a navigation inside the site moves focus to the page's heading; the first load leaves focus where it is */
 export function DocsPageScreen({ href, page, pageTree, path }: DocsPageScreenProps): ReactElement {
-  const [shown, setShown] = useState({
-    navigated: false,
-    path,
-  });
-
-  if (shown.path !== path) {
-    setShown({
-      navigated: true,
-      path,
-    });
-  }
+  const hasNavigated = useHasNavigated(path);
 
   return (
     <DocsLocationContext
@@ -151,7 +31,15 @@ export function DocsPageScreen({ href, page, pageTree, path }: DocsPageScreenPro
       }}
     >
       <DocsLayout
-        {...layoutOptions}
+        links={[
+          {
+            ...REPOSITORY_LINK,
+            icon: <DocsRepositoryIcon />,
+          },
+        ]}
+        nav={{
+          title: <DocsNavTitle />,
+        }}
         slots={{
           searchTrigger,
           sidebar,
@@ -159,8 +47,8 @@ export function DocsPageScreen({ href, page, pageTree, path }: DocsPageScreenPro
         tree={pageTree}
       >
         <Suspense>
-          <DocsContent
-            navigated={shown.navigated}
+          <DocsPageContent
+            hasNavigated={hasNavigated}
             page={page}
             path={path}
           />

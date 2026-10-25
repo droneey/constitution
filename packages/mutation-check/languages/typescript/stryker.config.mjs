@@ -2,14 +2,12 @@ import { join } from '../../../../.droneey/constitution/presets/typescript/join.
 import architectureCore from '../../../../.droneey/constitution/presets/typescript/stryker/architecture/core.mjs';
 import bunTest from '../../../../.droneey/constitution/presets/typescript/stryker/foundation/bun-test.mjs';
 import core from '../../../../.droneey/constitution/presets/typescript/stryker/foundation/core.mjs';
-import git from '../../../../.droneey/constitution/presets/typescript/stryker/foundation/git.mjs';
-import mise from '../../../../.droneey/constitution/presets/typescript/stryker/foundation/mise.mjs';
 import self from '../../../../.droneey/constitution/presets/typescript/stryker/foundation/self.mjs';
-import uv from '../../../../.droneey/constitution/presets/typescript/stryker/foundation/uv.mjs';
+import workspace from '../../../../.droneey/constitution/presets/typescript/stryker/foundation/workspace.mjs';
 
 // Stryker has no extends, so the parts are joined.
 export default {
-  ...join(self, core, bunTest, git, mise, uv, architectureCore),
+  ...join(self, core, workspace, bunTest, architectureCore),
   // the runner and the ignorers are this package's own source
   plugins: [
     './src/integrations/stryker/runner.ts',

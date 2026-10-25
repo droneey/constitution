@@ -1,10 +1,12 @@
-import { afterEach, beforeEach, describe, expect, mock, spyOn, test } from 'bun:test';
+import { afterEach, describe, expect, mock, spyOn, test } from 'bun:test';
 
 import type { ReactElement } from 'react';
 
 import type { RenderResult } from '@testing-library/react';
 import { act, cleanup, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+
+import { createFakeGetVersions } from '#/__tests__/get-versions.fake';
 
 import { screenViolationsIn } from '../../../../__tests__/axe.fixtures';
 import {
@@ -13,21 +15,13 @@ import {
   renderInDocs,
   versionsFixture,
 } from '../../../../__tests__/docs.fixtures';
-import { frameFake } from '../../../../__tests__/docs-frame.fake';
-import { loadedVersions } from '../../../../__tests__/get-versions.fake';
-import { pageScrollerSelector } from '../../../constants';
+import { FrameMark, frameFake } from '../../../../__tests__/docs-frame.fake';
+import { PAGE_SCROLLER_SELECTOR } from '../../../constants';
 import { DocsPageScreen } from '../docs-page';
-
-const BUILT_VERSION = process.env.VITE_CONSTITUTION_VERSION;
-
-beforeEach(() => {
-  process.env.VITE_CONSTITUTION_VERSION = '0.70.0';
-});
 
 afterEach(() => {
   cleanup();
   mock.restore();
-  process.env.VITE_CONSTITUTION_VERSION = BUILT_VERSION;
 });
 
 const overview = pageEntryFixture();
@@ -66,6 +60,7 @@ const navigate = (rendered: RenderResult, page: ReactElement): Promise<void> =>
 
 const lastOf = (elements: HTMLElement[]): HTMLElement => {
   const [last] = elements.slice(-1);
+
   if (last === undefined) {
     throw new Error('expected at least one element');
   }
@@ -138,6 +133,7 @@ describe('DocsPageScreen', () => {
 
     // Assert
     const main = screen.getByRole('main');
+
     expect([
       main.id,
       main.tabIndex,
@@ -156,9 +152,26 @@ describe('DocsPageScreen', () => {
 
     // Assert
     // biome-ignore lint/plugin/queries-by-role-label-text: the page's scroller is a layout element of Fumadocs, which no role, label or text names
-    expect(document.querySelector(pageScrollerSelector)?.contains(screen.getByRole('main'))).toBe(
+    expect(document.querySelector(PAGE_SCROLLER_SELECTOR)?.contains(screen.getByRole('main'))).toBe(
       true,
     );
+  });
+
+  test('should name the site and link its repository from an icon named GitHub', async () => {
+    // Arrange
+    renderInDocs(overviewPage());
+
+    // Act
+    await headingOf('Overview');
+
+    // Assert
+    expect(
+      screen
+        .getAllByRole('link', {
+          name: 'GitHub',
+        })
+        .map((link) => link.getAttribute('href')),
+    ).toContain('https://github.com/droneey/constitution');
   });
 
   test('should keep the heading out of the tab order', async () => {
@@ -186,6 +199,7 @@ describe('DocsPageScreen', () => {
   test('should move focus to the heading when the reader opens another page', async () => {
     // Arrange
     const rendered = renderInDocs(overviewPage());
+
     await headingOf('Overview');
 
     // Act
@@ -198,7 +212,9 @@ describe('DocsPageScreen', () => {
   test('should leave the scroll to the router when the heading takes focus', async () => {
     // Arrange
     const rendered = renderInDocs(overviewPage());
+
     await headingOf('Overview');
+
     const focus = spyOn(HTMLElement.prototype, 'focus');
 
     // Act
@@ -248,7 +264,7 @@ describe('DocsPageScreen', () => {
   test('should offer the version menu above the search field in the sidebar', async () => {
     // Arrange
     renderInDocs(overviewPage(), {
-      getVersions: loadedVersions(versionsFixture()),
+      getVersions: createFakeGetVersions(versionsFixture()).getVersions,
     });
 
     // Act
@@ -256,6 +272,7 @@ describe('DocsPageScreen', () => {
 
     // Assert
     const sidebar = within(screen.getByRole('complementary'));
+
     expect(
       (await versionMenu()).compareDocumentPosition(
         sidebar.getByRole('button', {
@@ -268,7 +285,7 @@ describe('DocsPageScreen', () => {
   test('should link the releases to the page the reader is on', async () => {
     // Arrange
     renderInDocs(guidePage(), {
-      getVersions: loadedVersions(versionsFixture()),
+      getVersions: createFakeGetVersions(versionsFixture()).getVersions,
     });
     await headingOf('Write a pack');
 
@@ -296,7 +313,7 @@ describe('DocsPageScreen', () => {
 
     // Assert
     await headingOf('Overview');
-    expect(marks.at(-1)).toBe(false);
+    expect(marks.at(-1)).toBe(FrameMark.Open);
   });
 
   test('should collapse the sidebar again when the reader opens another page on a narrow screen', async () => {
@@ -307,6 +324,7 @@ describe('DocsPageScreen', () => {
     const rendered = renderInDocs(overviewPage(), {
       frame,
     });
+
     await headingOf('Overview');
     // the collapsed sidebar is out of reach, so the reader opens it from the page's header, last in the document
     await userEvent.click(
@@ -321,13 +339,13 @@ describe('DocsPageScreen', () => {
     await navigate(rendered, guidePage());
 
     // Assert
-    expect(marks.at(-1)).toBe(true);
+    expect(marks.at(-1)).toBe(FrameMark.Collapsed);
   });
 
   test('should pass the WCAG 2.2 A and AA scan when its contents have loaded', async () => {
     // Arrange
     renderInDocs(overviewPage(), {
-      getVersions: loadedVersions(versionsFixture()),
+      getVersions: createFakeGetVersions(versionsFixture()).getVersions,
     });
     await headingOf('Overview');
 

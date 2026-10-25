@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import { lintCompose, lintDockerfile } from './docker-presets.fixtures';
 
-const DOCKERFILE = [
+const dockerfile = [
   'FROM node:24.8.0-bookworm-slim',
   'SHELL ["/bin/bash", "-o", "pipefail", "-c"]',
   'RUN apt-get update \\',
@@ -14,7 +14,7 @@ const DOCKERFILE = [
   '',
 ].join('\n');
 
-const COMPOSE = [
+const compose = [
   'name: shop',
   '',
   'x-logging: &logging',
@@ -50,7 +50,7 @@ const COMPOSE = [
 describe('the hadolint dockerfile part', () => {
   it('should report nothing when a Dockerfile follows the dockerfile block', () => {
     // Arrange
-    const text = DOCKERFILE;
+    const text = dockerfile;
 
     // Act
     const lint = lintDockerfile(text);
@@ -119,7 +119,7 @@ describe('the hadolint dockerfile part', () => {
     },
   ])('should fail with $code when $condition', ({ code, from, to }) => {
     // Arrange
-    const text = DOCKERFILE.replace(from, to);
+    const text = dockerfile.replace(from, to);
 
     // Act
     const lint = lintDockerfile(text);
@@ -137,7 +137,7 @@ describe('the hadolint dockerfile part', () => {
 describe('the dclint compose part', () => {
   it('should report nothing when a Compose file follows the compose block', () => {
     // Arrange
-    const text = COMPOSE;
+    const text = compose;
 
     // Act
     const lint = lintCompose(text);
@@ -194,7 +194,7 @@ describe('the dclint compose part', () => {
     },
   ])('should fail with $rule when $condition', ({ from, rule, to }) => {
     // Arrange
-    const text = COMPOSE.replace(from, to);
+    const text = compose.replace(from, to);
 
     // Act
     const lint = lintCompose(text);
