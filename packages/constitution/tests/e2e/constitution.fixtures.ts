@@ -1,4 +1,4 @@
-import { Axis } from '#/kernel/constants';
+import { AXES, Axis } from '#/kernel/constants';
 
 type Files = Record<string, string>;
 
@@ -51,9 +51,9 @@ const rule = (input: RuleFixture): string =>
     headingOf(input),
     input.statement,
     '',
-    '| Why | Tags |',
-    '|---|---|',
-    '| it keeps the fixture honest. | [] |',
+    '| Why |',
+    '|---|',
+    '| it keeps the fixture honest. |',
     '',
   ].join('\n');
 
@@ -64,15 +64,9 @@ const section = (input: {
 }): string =>
   `# ${input.title}\n\n${input.governs === undefined ? '' : `> Governs ${input.governs}\n\n`}${input.rules.map(rule).join('\n')}`;
 
-const AXIS_FOLDERS: readonly string[] = [
-  'foundation',
-  'architecture',
-  'workflow',
-] as const;
-
 /** a path with no axis folder is foundation's */
 const inAxis = (path: string): string =>
-  AXIS_FOLDERS.some((axis) => path.startsWith(`${axis}/`)) ? path : `foundation/${path}`;
+  AXES.some((axis) => path.startsWith(`${axis}/`)) ? path : `${Axis.Foundation}/${path}`;
 
 const blockFiles = (
   input: BlockFixture & {

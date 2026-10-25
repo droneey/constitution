@@ -1,7 +1,7 @@
 {
   "linter": {
     "rules": {
-      "nursery": {
+      "suspicious": {
         "useBaseline": "error",
       },
     },

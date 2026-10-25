@@ -15,7 +15,6 @@ const TEXT = '---\nid: ui\n---\n# UI\n';
 const BODY = '# UI\n';
 const FIELDS: FrontMatterFields = {
   abstract: false,
-  extends: undefined,
   governs: [],
   id: 'ui',
   languages: [],
@@ -49,7 +48,6 @@ const mappingOf = (input: {
     ...FIELDS,
     ...input.fields,
   },
-  issues: [],
   keys: input.keys ?? keyLines,
   status: ReadStatus.Mapping,
 });
@@ -116,7 +114,19 @@ describe('readFrontMatter', () => {
     const loaded = readOf(read);
 
     // Assert
-    expect(loaded.frontMatter?.extends).toBe(BlockId.create('_store'));
+    expect(loaded).toStrictEqual({
+      body: BODY,
+      findings: [],
+      frontMatter: FrontMatter.create({
+        abstract: true,
+        extends: BlockId.create('_store'),
+        governs: [],
+        id: BlockId.create('_redux-like'),
+        languages: [],
+        requires: [],
+        summary: 'The ui block.',
+      }),
+    });
   });
 
   it.each([
@@ -282,7 +292,6 @@ describe('readFrontMatter', () => {
       },
       name: 'a YAML error at no known line',
       read: {
-        line: undefined,
         reason: 'broken',
         status: ReadStatus.NotYaml,
       },
@@ -315,7 +324,6 @@ describe('readFrontMatter', () => {
       },
       name: 'a field of the wrong type',
       read: {
-        fields: undefined,
         issues: [
           {
             field: 'abstract',
@@ -323,7 +331,7 @@ describe('readFrontMatter', () => {
           },
         ],
         keys: keyLines,
-        status: ReadStatus.Mapping,
+        status: ReadStatus.Mismatched,
       },
     },
     {
@@ -340,7 +348,6 @@ describe('readFrontMatter', () => {
       },
       name: 'an issue at the root',
       read: {
-        fields: undefined,
         issues: [
           {
             field: '',
@@ -348,7 +355,7 @@ describe('readFrontMatter', () => {
           },
         ],
         keys: keyLines,
-        status: ReadStatus.Mapping,
+        status: ReadStatus.Mismatched,
       },
     },
   ])('should report $finding.code when the parser reads $name', ({ finding, lines, read }) => {

@@ -28,16 +28,18 @@ const runsCheck = (input: { check: string; command: string }): boolean => {
   );
 };
 
+interface RecordCheckInput {
+  readonly command: string;
+  readonly session: SessionId;
+  readonly sessions: SessionCommandRepository;
+  readonly workingTree: WorkingTree;
+}
+
 /**
  * Records the fingerprint of the tree as checked when a command the agent ran is the project's
  * check; records nothing when it is not, or the session keeps no state or names no check.
  */
-const recordCheck = (input: {
-  command: string;
-  session: SessionId;
-  sessions: SessionCommandRepository;
-  workingTree: WorkingTree;
-}): void => {
+const recordCheck = (input: RecordCheckInput): void => {
   const state = input.sessions.state(input.session);
 
   if (state === undefined) {

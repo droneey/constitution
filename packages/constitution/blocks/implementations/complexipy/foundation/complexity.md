@@ -8,6 +8,6 @@
 
 No snapshot of the functions over the limit is kept to let them pass.
 
-| Why | Tags |
-|---|---|
-| a snapshot lets every function already over the limit stay as it is, so the check fails only on new ones. | [] |
+| Why |
+|---|
+| a snapshot lets every function already over the limit stay as it is, so the check fails only on new ones. |

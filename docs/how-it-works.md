@@ -32,19 +32,19 @@ Inside a block, a rule sits in a chapter of one of three axes, each a folder of 
 
 ## A rule
 
-A rule is a heading with its slug and level, a statement, and a table of its reason and tags:
+A rule is a heading with its slug and level, a statement, and a table of its reason:
 
 ```md
 ### failure-told-apart-by-code · MUST
 
 A failure is told apart by its type or its code, never by its message.
 
-| Why | Tags |
-|---|---|
-| a message is text a person may reword at any time. | [errors] |
+| Why |
+|---|
+| a message is text a person may reword at any time. |
 ```
 
-`MUST` binds, `SHOULD` is left only with a stated reason, and `MAY` is a choice; [how to use it](../packages/constitution/blocks/core/core.md#how-to-use-it) says what each asks of the agent. The tags are lenses, for a review of one concern across every block. [The block format](reference/block-format.md#a-rule) gives every part of a rule, the lenses, and how a rule tightens another.
+`MUST` binds, `SHOULD` is left only with a stated reason, and `MAY` is a choice; [how to use it](../packages/constitution/blocks/core/core.md#how-to-use-it) says what each asks of the agent. [The block format](reference/block-format.md#a-rule) gives every part of a rule and how a rule tightens another.
 
 ## What a project holds
 

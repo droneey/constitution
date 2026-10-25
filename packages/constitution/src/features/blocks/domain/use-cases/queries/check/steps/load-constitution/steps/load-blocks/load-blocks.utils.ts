@@ -3,11 +3,12 @@ import type { ValueFindingDetails } from '#/kernel/entities';
 import { ValueSite } from '#/kernel/entities';
 import { ValueFailure } from '#/kernel/errors';
 import type { FindingOf, ProblemOf } from '#/kernel/types';
+import type { FileInBlock } from '#/kernel/value-objects';
 import { BlockFileKind, BlockFilePlace, Placement } from '#/kernel/value-objects';
 
 import type { FileTree, FrontMatterParser } from '../../../../../../../contracts';
 import type { Block } from '../../../../../../../entities';
-import type { BlockLoadFinding, Located } from './load-block.utils';
+import type { BlockLoadFinding, Located, PlacedFile, UnplacedFile } from './load-block.utils';
 import { groupByFolder, loadBlock } from './load-block.utils';
 
 enum PlaceCode {
@@ -30,11 +31,6 @@ type BlocksLoadedFinding =
 
 const blocksPrefix = `${BLOCKS_FOLDER}/`;
 
-type UnplacedFile =
-  | BlockFileKind.NamedAfterBlock
-  | BlockFileKind.SeamOfNoBlockId
-  | BlockFileKind.Stray;
-
 const UNPLACED = {
   [BlockFileKind.NamedAfterBlock]: {
     code: PlaceCode.ChapterNamedAfterBlock,
@@ -51,6 +47,8 @@ const UNPLACED = {
     details: {},
   },
 } as const satisfies Readonly<Record<UnplacedFile, PlaceProblem>>;
+
+const isPlaced = (file: FileInBlock): file is PlacedFile => !Object.hasOwn(UNPLACED, file.kind);
 
 interface Unplaced {
   readonly file: UnplacedFile;
@@ -97,11 +95,7 @@ const locate = (paths: readonly string[]): Location => {
 
     const { file } = place;
 
-    if (
-      file.kind === BlockFileKind.Passport ||
-      file.kind === BlockFileKind.Chapter ||
-      file.kind === BlockFileKind.Seam
-    ) {
+    if (isPlaced(file)) {
       placed.push({
         file,
         folder: place.folder,
@@ -130,7 +124,12 @@ interface BlocksLoaded {
   readonly findings: readonly BlocksLoadedFinding[];
 }
 
-const loadBlocks = (input: { parser: FrontMatterParser; tree: FileTree }): BlocksLoaded => {
+interface LoadBlocksInput {
+  readonly parser: FrontMatterParser;
+  readonly tree: FileTree;
+}
+
+const loadBlocks = (input: LoadBlocksInput): BlocksLoaded => {
   const underBlocks = input.tree.list().filter((path) => path.startsWith(blocksPrefix));
   const located = locate(underBlocks);
   const loaded = groupByFolder(located.placed).map((group) =>
@@ -176,5 +175,5 @@ const loadBlocks = (input: { parser: FrontMatterParser; tree: FileTree }): Block
   };
 };
 
-export type { BlocksLoaded, PlaceDetails };
+export type { PlaceDetails };
 export { loadBlocks, PlaceCode };

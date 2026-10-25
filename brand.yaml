@@ -7,7 +7,8 @@ accent:
   from: 85
   to: 65
 motif: |
-  <g fill="none" stroke="url(#motif)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+  <g fill="none" stroke="url(#motif)" stroke-width="8"
+     stroke-linecap="round" stroke-linejoin="round">
     <path d="M44.476 8.82a8 8 0 0 1 7.048 0l31.36 15.384A2 2 0 0 1 82 28h-68a2 2 0 0 1-.88-3.796z"/>
     <path d="M24 72v-28M40 72v-28M56 72v-28M72 72v-28M12 88h72"/>
   </g>

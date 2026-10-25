@@ -15,4 +15,5 @@ source_paths = ["src"]
 do_not_mutate = ["*/main.py", "*/root/wiring.py", "*_gen.py", "*_gen/*"]
 # a log call's text and level are no behaviour a caller relies on
 do_not_mutate_patterns = ['^\s*logger\.(debug|info|warning|error|exception|critical)\(']
-pytest_add_cli_args = ["-p", "no:randomly"]
+# each mutant's run collects the integration specs too, as the coverage gate's run does
+pytest_add_cli_args = ["-p", "no:randomly", "-o", "norecursedirs=.* e2e"]

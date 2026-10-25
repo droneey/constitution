@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'bun:test';
+import { describe, expect, it } from 'bun:test';
 
 import {
   createMemoryHistory,
@@ -39,7 +39,7 @@ const routerAt = (address: string) => {
 };
 
 describe('index route', () => {
-  test('should send the reader to the overview of the documentation when the site opens', async () => {
+  it('should send the reader to the overview of the documentation when the site opens', async () => {
     // Arrange
     const router = routerAt('/');
 

@@ -1,13 +1,17 @@
+import { PROGRAM_NAME } from '#/kernel/constants';
 import type { Version } from '#/kernel/value-objects';
 
 import type { ProgramPath } from '../../../../../contracts';
 import type { PartDiagnosis } from '../../../../../entities';
 import { Diagnosis } from '../../../../../entities';
 
-const PROGRAM = 'constitution';
+interface PathReportInput {
+  readonly path: ProgramPath;
+  readonly program: Version;
+}
 
-const pathReport = (input: { path: ProgramPath; program: Version }): PartDiagnosis => {
-  const found = input.path.find(PROGRAM);
+const pathReport = (input: PathReportInput): PartDiagnosis => {
+  const found = input.path.find(PROGRAM_NAME);
 
   if (found === undefined) {
     return {

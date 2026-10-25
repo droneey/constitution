@@ -8,9 +8,9 @@
 
 An export's documentation is a `/** … */` block on its declaration that states no type: no `{string}` after `@param`, no `@returns {T}`.
 
-| Why | Tags |
-|---|---|
-| the editor shows that block wherever the export is used, and a type written in it repeats the signature and drifts from it. | [] |
+| Why |
+|---|
+| the editor shows that block wherever the export is used, and a type written in it repeats the signature and drifts from it. |
 
 ## Deprecation
 
@@ -18,6 +18,6 @@ An export's documentation is a `/** … */` block on its declaration that states
 
 Code kept only for its old callers carries a JSDoc `@deprecated` tag that names its replacement.
 
-| Why | Tags |
-|---|---|
-| the tag travels with the declaration, so every use of it is marked where it is written, not only where it is declared. | [] |
+| Why |
+|---|
+| the tag travels with the declaration, so every use of it is marked where it is written, not only where it is declared. |

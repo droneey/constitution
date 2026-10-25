@@ -15,7 +15,3 @@ switch_case_indent = true
 # local
 [*.md]
 trim_trailing_whitespace = false
-
-[digests/**]
-insert_final_newline = unset
-trim_trailing_whitespace = false

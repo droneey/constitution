@@ -10,6 +10,6 @@ Lefthook's part of the workflow for Betterleaks runs `betterleaks git --pre-comm
 
 `pre-commit` scans the staged changes for secrets.
 
-| Why | Tags |
-|---|---|
-| a secret stopped before the commit never reaches history, where it is compromised for good. | [] |
+| Why |
+|---|
+| a secret stopped before the commit never reaches history, where it is compromised for good. |

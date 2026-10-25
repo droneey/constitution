@@ -23,7 +23,12 @@ const wordPatterns: Readonly<Record<WordKind, (word: string) => string>> = {
 
 const collapseWhitespace = (text: string): string => text.replaceAll(WHITESPACE, ' ');
 
-const containsId = (input: { id: string; text: string }): boolean =>
+interface ContainsIdInput {
+  readonly id: string;
+  readonly text: string;
+}
+
+const containsId = (input: ContainsIdInput): boolean =>
   new RegExp(`(?<![\\w.-])${RegExp.escape(input.id)}(?![\\w-])`).test(input.text);
 
 // A hyphen continues a block id, so "react-dom-extra" is not react-dom, but it
@@ -37,7 +42,12 @@ const ownedWordMatcher = (word: string): ((text: string) => boolean) => {
   return (text: string): boolean => text.includes(normalized) && pattern.test(text);
 };
 
-const wordMatcher = (input: { kind: WordKind; word: string }): ((text: string) => boolean) => {
+interface WordMatcherInput {
+  readonly kind: WordKind;
+  readonly word: string;
+}
+
+const wordMatcher = (input: WordMatcherInput): ((text: string) => boolean) => {
   const pattern = new RegExp(wordPatterns[input.kind](RegExp.escape(input.word)), ANY_CASE);
 
   return (text: string): boolean => pattern.test(text);

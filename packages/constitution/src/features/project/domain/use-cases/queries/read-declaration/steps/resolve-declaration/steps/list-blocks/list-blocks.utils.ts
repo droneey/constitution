@@ -59,7 +59,11 @@ const listedOf = (input: ListInput): ListedBlock => ({
   id: input.block.id,
   layer: input.block.layer,
   source: input.block.source,
-  summary: input.block.summary,
+  ...(input.block.summary === undefined
+    ? {}
+    : {
+        summary: input.block.summary,
+      }),
 });
 
 const repositoryBlocksOf = (input: {
@@ -138,13 +142,15 @@ const unitListingOf = (input: {
   };
 };
 
+interface ListBlocksInput {
+  readonly applied: AppliedOverrides;
+  readonly model: ProjectModel;
+  readonly units: ResolvedUnits;
+}
+
 // The block list a session's digest closes with: the repository's blocks, what each member adds
 // to them and leaves out of them, then the overrides that hold.
-const listBlocks = (input: {
-  applied: AppliedOverrides;
-  model: ProjectModel;
-  units: ResolvedUnits;
-}): BlockListing => {
+const listBlocks = (input: ListBlocksInput): BlockListing => {
   const [repository, ...members] = input.units;
 
   return BlockListing.create({

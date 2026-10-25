@@ -27,11 +27,10 @@
             "useJsxKeyInIterable": "error",
             "noNestedComponentDefinitions": "error",
             "noReactPropAssignments": "error",
+            "noComponentHookFactories": "error",
           },
           "nursery": {
-            "noComponentHookFactories": "error",
             "useReactCompiler": "error",
-            "noReactStringRefs": "error",
             "useReactNamingConvention": "error",
             "useReactFunctionComponentDefinition": {
               "level": "error",
@@ -46,6 +45,7 @@
             "noLeakedRender": "error",
             "noDuplicateJsxProps": "error",
             "noDuplicatedSpreadProps": "error",
+            "noReactStringRefs": "error",
           },
           "style": {
             "useFragmentSyntax": "error",

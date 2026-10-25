@@ -1,7 +1,11 @@
 import type { WiringPlan } from '../../../entities';
-import type { PresetsPorts } from '../check';
+import type { PresetsPorts } from '../shared/presets-ports';
 import { contextOf } from '../shared/wiring';
 import { planWiringOf } from './steps/plan-wiring';
+
+interface PlanPresetsInput extends PresetsPorts {
+  readonly start: string;
+}
 
 /**
  * The configuration files the project's tools read, each with the units it serves, its template
@@ -10,11 +14,7 @@ import { planWiringOf } from './steps/plan-wiring';
  * @throws {@link ProjectError} when no project is found, its release is not installed, or its
  * constitution.yaml or its blocks cannot be read
  */
-const planPresets = (
-  input: PresetsPorts & {
-    start: string;
-  },
-): WiringPlan =>
+const planPresets = (input: PlanPresetsInput): WiringPlan =>
   planWiringOf(
     contextOf({
       ...input.source.open(input.start),

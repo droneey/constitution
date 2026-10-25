@@ -1,3 +1,5 @@
+import { within } from '@testing-library/react';
+
 interface ElementSpec {
   readonly attributes?: Readonly<Record<string, string>>;
   readonly children?: readonly ElementSpec[];
@@ -176,9 +178,10 @@ const pointAt = (row: Element): void => {
 };
 
 const placeOf = (list: HTMLElement): BlockPlace => {
-  // biome-ignore lint/plugin/queries-by-role-label-text: the block is a decoration hidden from assistive technology, which CSS finds by its attribute
-  const found = list.querySelector(':scope > [data-glide]');
-  const block = found instanceof HTMLElement ? found : undefined;
+  // A list's own block, not one of a list nested in it.
+  const block = within(list)
+    .queryAllByTestId('glide')
+    .find((found) => found.parentElement === list);
   const top = Number.parseFloat(block?.style.translate.split(' ')[1] ?? '');
   const row = [
     ...list.getElementsByTagName('*'),

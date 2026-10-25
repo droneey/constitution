@@ -52,11 +52,8 @@ describe('blocksOutcomeOf', () => {
       },
     },
   ])('should end the step as $outcome.status when $condition', ({ outcome, validation }) => {
-    // Arrange
-    const checked = validation;
-
     // Act
-    const given = blocksOutcomeOf(checked);
+    const given = blocksOutcomeOf(validation);
 
     // Assert
     expect(given).toStrictEqual(outcome);
@@ -168,11 +165,8 @@ describe('blocksSectionsOf', () => {
       },
     },
   ])('should give nothing when $condition', ({ validation }) => {
-    // Arrange
-    const checked = validation;
-
     // Act
-    const sections = blocksSectionsOf(checked);
+    const sections = blocksSectionsOf(validation);
 
     // Assert
     expect(sections).toStrictEqual([]);

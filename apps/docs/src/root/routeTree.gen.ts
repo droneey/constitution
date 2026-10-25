@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LlmsFullDottxtRouteImport } from './routes/llms-full[.]txt'
 import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
+import { Route as ApiNavigationRouteImport } from './routes/api/navigation'
+import { Route as ApiPagesRouteImport } from './routes/api/pages'
 import { Route as ApiSearchRouteImport } from './routes/api/search'
 import { Route as DocsSplatRouteImport } from './routes/docs/$'
 import { Route as DocsChar123Char125DotmdRouteImport } from './routes/docs/{$}[.]md'
@@ -29,6 +31,16 @@ const LlmsFullDottxtRoute = LlmsFullDottxtRouteImport.update({
 const LlmsDottxtRoute = LlmsDottxtRouteImport.update({
   id: '/llms.txt',
   path: '/llms.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiNavigationRoute = ApiNavigationRouteImport.update({
+  id: '/api/navigation',
+  path: '/api/navigation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPagesRoute = ApiPagesRouteImport.update({
+  id: '/api/pages',
+  path: '/api/pages',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiSearchRoute = ApiSearchRouteImport.update({
@@ -51,6 +63,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/llms-full.txt': typeof LlmsFullDottxtRoute
   '/llms.txt': typeof LlmsDottxtRoute
+  '/api/navigation': typeof ApiNavigationRoute
+  '/api/pages': typeof ApiPagesRoute
   '/api/search': typeof ApiSearchRoute
   '/docs/$': typeof DocsSplatRoute
   '/docs/{$}.md': typeof DocsChar123Char125DotmdRoute
@@ -59,6 +73,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/llms-full.txt': typeof LlmsFullDottxtRoute
   '/llms.txt': typeof LlmsDottxtRoute
+  '/api/navigation': typeof ApiNavigationRoute
+  '/api/pages': typeof ApiPagesRoute
   '/api/search': typeof ApiSearchRoute
   '/docs/$': typeof DocsSplatRoute
   '/docs/{$}.md': typeof DocsChar123Char125DotmdRoute
@@ -68,6 +84,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/llms-full.txt': typeof LlmsFullDottxtRoute
   '/llms.txt': typeof LlmsDottxtRoute
+  '/api/navigation': typeof ApiNavigationRoute
+  '/api/pages': typeof ApiPagesRoute
   '/api/search': typeof ApiSearchRoute
   '/docs/$': typeof DocsSplatRoute
   '/docs/{$}.md': typeof DocsChar123Char125DotmdRoute
@@ -78,6 +96,8 @@ export interface FileRouteTypes {
     | '/'
     | '/llms-full.txt'
     | '/llms.txt'
+    | '/api/navigation'
+    | '/api/pages'
     | '/api/search'
     | '/docs/$'
     | '/docs/{$}.md'
@@ -86,6 +106,8 @@ export interface FileRouteTypes {
     | '/'
     | '/llms-full.txt'
     | '/llms.txt'
+    | '/api/navigation'
+    | '/api/pages'
     | '/api/search'
     | '/docs/$'
     | '/docs/{$}.md'
@@ -94,6 +116,8 @@ export interface FileRouteTypes {
     | '/'
     | '/llms-full.txt'
     | '/llms.txt'
+    | '/api/navigation'
+    | '/api/pages'
     | '/api/search'
     | '/docs/$'
     | '/docs/{$}.md'
@@ -103,6 +127,8 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LlmsFullDottxtRoute: typeof LlmsFullDottxtRoute
   LlmsDottxtRoute: typeof LlmsDottxtRoute
+  ApiNavigationRoute: typeof ApiNavigationRoute
+  ApiPagesRoute: typeof ApiPagesRoute
   ApiSearchRoute: typeof ApiSearchRoute
   DocsSplatRoute: typeof DocsSplatRoute
   DocsChar123Char125DotmdRoute: typeof DocsChar123Char125DotmdRoute
@@ -129,6 +155,20 @@ declare module '@tanstack/react-router' {
       path: '/llms.txt'
       fullPath: '/llms.txt'
       preLoaderRoute: typeof LlmsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/navigation': {
+      id: '/api/navigation'
+      path: '/api/navigation'
+      fullPath: '/api/navigation'
+      preLoaderRoute: typeof ApiNavigationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/pages': {
+      id: '/api/pages'
+      path: '/api/pages'
+      fullPath: '/api/pages'
+      preLoaderRoute: typeof ApiPagesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/search': {
@@ -159,6 +199,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LlmsFullDottxtRoute: LlmsFullDottxtRoute,
   LlmsDottxtRoute: LlmsDottxtRoute,
+  ApiNavigationRoute: ApiNavigationRoute,
+  ApiPagesRoute: ApiPagesRoute,
   ApiSearchRoute: ApiSearchRoute,
   DocsSplatRoute: DocsSplatRoute,
   DocsChar123Char125DotmdRoute: DocsChar123Char125DotmdRoute,
@@ -168,10 +210,11 @@ export const routeTree = rootRouteImport
   ._addFileTypes<FileRouteTypes>()
 
 import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
+import type { startInstance } from './wiring.ts'
 declare module '@tanstack/react-start' {
   interface Register {
     ssr: true
     router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
   }
 }

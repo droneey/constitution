@@ -3,6 +3,12 @@
     "rules": {
       "complexity": {
         "noImportantStyles": "error",
+        "noExcessiveSelectorClasses": {
+          "level": "error",
+          "options": {
+            "maxClasses": 3,
+          },
+        },
       },
       "correctness": {
         "noMissingVarFunction": "error",
@@ -10,19 +16,15 @@
       "style": {
         "noDescendingSpecificity": "error",
       },
+      "suspicious": {
+        "noDuplicateSelectors": "error",
+      },
       "nursery": {
         "useLayeredStyles": "error",
         "useNamedLayer": "error",
-        "noExcessiveSelectorClasses": {
-          "level": "error",
-          "options": {
-            "maxClasses": 3,
-          },
-        },
         "noUndeclaredCustomProperties": "error",
         "noInvalidPropertyInitValue": "error",
         "noUnusedClasses": "error",
-        "noDuplicateSelectors": "error",
       },
     },
   },

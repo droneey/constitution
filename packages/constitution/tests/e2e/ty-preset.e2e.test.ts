@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
+import { python } from './python-project.fixtures';
 import { typeCheck } from './ty-preset.fixtures';
-
-const python = (...lines: readonly string[]): string => `${lines.join('\n')}\n`;
 
 const wellTyped = python(
   'from typing import override',
@@ -129,11 +128,8 @@ describe('the ty preset', () => {
       source: redundantCast,
     },
   ])('should fail the check with $rule when $condition', ({ rule, source }) => {
-    // Arrange
-    const code = source;
-
     // Act
-    const check = typeCheck(code);
+    const check = typeCheck(source);
 
     // Assert
     expect(check).toStrictEqual({
@@ -166,11 +162,8 @@ describe("the ty preset's hold on pydantic", () => {
       source: model('def dump(order: Order) -> int:', '  return len(order.dict())'),
     },
   ])('should fail the check with deprecated when a model uses $form', ({ source }) => {
-    // Arrange
-    const code = source;
-
     // Act
-    const check = typeCheck(code);
+    const check = typeCheck(source);
 
     // Assert
     expect(check).toStrictEqual({

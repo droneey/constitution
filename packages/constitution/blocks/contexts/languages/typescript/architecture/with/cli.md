@@ -8,6 +8,6 @@
 
 A command's file is named `<op>.cli.ts`, after the operation it runs.
 
-| Why | Tags |
-|---|---|
-| the role then reads in the file's name as every other role does in TypeScript, and the command stands apart from the operation's other binding units in its folder. | [] |
+| Why |
+|---|
+| the role then reads in the file's name as every other role does in TypeScript, and the command stands apart from the operation's other binding units in its folder. |

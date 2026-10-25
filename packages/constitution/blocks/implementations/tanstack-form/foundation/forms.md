@@ -8,6 +8,6 @@
 
 Values, errors, touched and submitting state live in the form instance, with no state per field beside it.
 
-| Why | Tags |
-|---|---|
-| one home for a form's state keeps validation, submission and display in agreement. | [] |
+| Why |
+|---|
+| one home for a form's state keeps validation, submission and display in agreement. |

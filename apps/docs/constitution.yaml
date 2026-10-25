@@ -2,6 +2,7 @@ axes:
   - architecture
   - workflow
 domains:
+  - version-control
   - workspace
   - ui
   - design-system
@@ -23,6 +24,7 @@ implementations:
   - tsc
   - biome
   - dependency-cruiser
+  - git
   - knip
   - mise
   - osv-scanner
@@ -30,6 +32,7 @@ implementations:
   - shfmt
   - rumdl
   - yamllint
+  - tombi
   - bun-test
   - stryker
   - zod
@@ -47,7 +50,10 @@ packs: []
 overrides:
   - rule: selector-never-targets-an-id
     level: MAY
+    # the program reads an override's reason from its one line
+    # yamllint disable-line rule:line-length
     reason: "Fumadocs exposes the parts of its layout only by their ids, so the site's styles reach them there"
   - rule: utilities-only-from-tokens
     level: SHOULD
+    # yamllint disable-line rule:line-length
     reason: "Fumadocs styles its own components with Tailwind's default scales, so the theme cannot reset them"

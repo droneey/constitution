@@ -21,6 +21,10 @@ interface ProjectPorts {
   readonly workspace: Workspace;
 }
 
+interface ReadDeclarationInput extends ProjectPorts {
+  readonly place: ProjectPlace;
+}
+
 /**
  * What the constitution.yaml of a project and of each member of its workspace declare, read against
  * the release the project pins and the packs they list.
@@ -28,11 +32,7 @@ interface ProjectPorts {
  * @throws {@link ProjectError} when constitution.yaml cannot be read, or the release's blocks
  * cannot be listed
  */
-const readDeclaration = (
-  input: ProjectPorts & {
-    place: ProjectPlace;
-  },
-): Declaration => {
+const readDeclaration = (input: ReadDeclarationInput): Declaration => {
   const { files } = input;
   const { project, releaseFolder } = input.place;
   const path = joinPath({

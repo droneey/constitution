@@ -8,6 +8,6 @@
 
 Plans and working notes live in a **`local/`** folder that version control ignores; a decision record is committed.
 
-| Why | Tags |
-|---|---|
-| working notes are true for a day, and committed they mislead every later reader. | [] |
+| Why |
+|---|
+| working notes are true for a day, and committed they mislead every later reader. |

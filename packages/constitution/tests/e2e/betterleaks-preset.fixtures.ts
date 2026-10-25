@@ -38,64 +38,66 @@ const passwordPackage = [
 const scanStaged = (project: Project): Scan => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-betterleaks-'));
 
-  const git = (args: readonly string[]): void => {
-    spawnSync(
-      'git',
+  try {
+    const git = (args: readonly string[]): void => {
+      spawnSync(
+        'git',
+        [
+          ...args,
+        ],
+        {
+          cwd: folder,
+        },
+      );
+    };
+
+    git([
+      'init',
+      '--quiet',
+    ]);
+
+    mkdirSync(join(folder, '.droneey'));
+    symlinkSync(repository, join(folder, '.droneey', 'constitution'));
+    writeFileSync(
+      join(folder, '.betterleaks.toml'),
+      '[extend]\npath = ".droneey/constitution/presets/common/betterleaks/foundation/core.toml"\n',
+    );
+
+    for (const [path, text] of Object.entries(project.files)) {
+      writeFileSync(join(folder, path), text);
+    }
+
+    git([
+      'add',
+      '.',
+    ]);
+
+    const scanning = spawnSync(
+      'sh',
       [
-        ...args,
+        '-c',
+        jobRun({
+          hook: Hook.PreCommit,
+          job: 'secrets',
+          part: 'betterleaks',
+        }).replace(/^betterleaks /, `"${betterleaks}" `),
       ],
       {
         cwd: folder,
+        encoding: 'utf8',
       },
     );
-  };
 
-  git([
-    'init',
-    '--quiet',
-  ]);
-
-  mkdirSync(join(folder, '.droneey'));
-  symlinkSync(repository, join(folder, '.droneey', 'constitution'));
-  writeFileSync(
-    join(folder, '.betterleaks.toml'),
-    '[extend]\npath = ".droneey/constitution/presets/common/betterleaks/foundation/core.toml"\n',
-  );
-
-  for (const [path, text] of Object.entries(project.files)) {
-    writeFileSync(join(folder, path), text);
+    return {
+      exitCode: scanning.status ?? undefined,
+      output: `${scanning.stdout}${scanning.stderr}`,
+    };
+  } finally {
+    rmSync(folder, {
+      force: true,
+      recursive: true,
+    });
   }
-
-  git([
-    'add',
-    '.',
-  ]);
-
-  const scanning = spawnSync(
-    'sh',
-    [
-      '-c',
-      jobRun({
-        hook: Hook.PreCommit,
-        job: 'secrets',
-        part: 'betterleaks',
-      }).replace(/^betterleaks /, `"${betterleaks}" `),
-    ],
-    {
-      cwd: folder,
-      encoding: 'utf8',
-    },
-  );
-
-  rmSync(folder, {
-    force: true,
-    recursive: true,
-  });
-
-  return {
-    exitCode: scanning.status ?? undefined,
-    output: `${scanning.stdout}${scanning.stderr}`,
-  };
 };
 
 export { passwordPackage, scanStaged, token };

@@ -8,6 +8,6 @@
 
 Signing out resets the analytics library's identifier, so the next person on the device starts as a new visitor.
 
-| Why | Tags |
-|---|---|
-| an identifier kept across a sign-out joins two people's use into one profile. | [data, security] |
+| Why |
+|---|
+| an identifier kept across a sign-out joins two people's use into one profile. |

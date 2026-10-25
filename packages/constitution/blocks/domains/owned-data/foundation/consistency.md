@@ -8,9 +8,9 @@
 
 A stored record that a write decides on from a read made in an earlier request carries a version the store checks on that write, and a write made on an older version is refused as a conflict.
 
-| Why | Tags |
-|---|---|
-| the version is how the store tells a write made on a stale read from a fresh one. | [data] |
+| Why |
+|---|
+| the version is how the store tells a write made on a stale read from a fresh one. |
 
 ## Invariants
 
@@ -18,6 +18,6 @@ A stored record that a write decides on from a read made in an earlier request c
 
 An invariant the store can express — a uniqueness, a reference, a required value, a range — is also declared in the store as a constraint, beside the check in the code.
 
-| Why | Tags |
-|---|---|
-| two concurrent writes each pass the code's check, and only the store sees them together. | [data] |
+| Why |
+|---|
+| two concurrent writes each pass the code's check, and only the store sees them together. |

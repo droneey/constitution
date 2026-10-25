@@ -54,16 +54,27 @@ const pathFrom = (input: { folder: string; place: string }): string => {
   ]);
 };
 
+interface AnchorInput {
+  readonly before: string;
+  readonly folder: string;
+  readonly naming: Naming;
+}
+
 // Whether the text before "presets/" ends with the release's path, or with a path that leads from
 // the folder to a pack.
-const isAnchored = (input: { before: string; folder: string; naming: Naming }): boolean =>
+const isAnchored = (input: AnchorInput): boolean =>
   input.before.endsWith(releaseFolderEnd) ||
   input.naming.packs.has(
     placeOf(`${input.folder}${SEPARATOR}${input.before.slice(input.before.search(PATH_TAIL))}`),
   );
 
+interface NamePathInput {
+  readonly file: SourceFile;
+  readonly folder: string;
+}
+
 // The path a configuration in the folder names a part's file by.
-const namePathOf = (input: { file: SourceFile; folder: string }): string =>
+const namePathOf = (input: NamePathInput): string =>
   `${
     input.file.source.kind === SourceKind.Release
       ? RELEASE_FOLDER
@@ -106,15 +117,17 @@ const namedInLine = (input: {
   });
 };
 
+interface NamedInput {
+  readonly folder: string;
+  readonly isCodeOnly: boolean;
+  readonly naming: Naming;
+  readonly text: string;
+  readonly tool: string;
+}
+
 // The parts of tool a text in the folder names, as <scope>/<axis>/<name>, each once in the order
 // found.
-const namedOf = (input: {
-  folder: string;
-  isCodeOnly: boolean;
-  naming: Naming;
-  text: string;
-  tool: string;
-}): readonly string[] => {
+const namedOf = (input: NamedInput): readonly string[] => {
   const scopes = Parts.scopesOf(input.naming.parts, input.tool);
   const named = new Set<string>();
 
@@ -141,5 +154,4 @@ const namedOf = (input: {
   ];
 };
 
-export type { Naming };
 export { isAnchored, isComment, namedOf, namePathOf, presetsPrefix };

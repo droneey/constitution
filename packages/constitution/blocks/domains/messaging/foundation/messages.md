@@ -8,17 +8,17 @@
 
 A message carries an identifier its publisher mints once per occurrence and keeps across every retry, its type, its source and the time of what it records — in CloudEvents' names where the broker leaves the choice.
 
-| Why | Tags |
-|---|---|
-| a consumer tells a redelivery from a new message only by an identifier that survives every retry, and one the broker mints anew on each send defeats every check of duplicates. | [data] |
+| Why |
+|---|
+| a consumer tells a redelivery from a new message only by an identifier that survives every retry, and one the broker mints anew on each send defeats every check of duplicates. |
 
 ### message-carries-its-correlation-and-causation · SHOULD
 
 A message carries the correlation identifier of the work that began its chain and, as its causation identifier, the identifier of the message or request that caused it.
 
-| Why | Tags |
-|---|---|
-| a chain of messages crosses programs, queues and days, and only these two identifiers tie a reply to its request and a late effect to its cause after the traces are sampled away. | [] |
+| Why |
+|---|
+| a chain of messages crosses programs, queues and days, and only these two identifiers tie a reply to its request and a late effect to its cause after the traces are sampled away. |
 
 ## Contract
 
@@ -26,17 +26,17 @@ A message carries the correlation identifier of the work that began its chain an
 
 A message another program sends or reads — its channel, its type and the schema of each version — is declared in a document a machine reads, such as AsyncAPI, kept in the repository, and a spec checks every message the program sends against it.
 
-| Why | Tags |
-|---|---|
-| publishers and consumers deploy apart and read one contract, and a publisher that drifts from it fails a spec, not a consumer in production. | [] |
+| Why |
+|---|
+| publishers and consumers deploy apart and read one contract, and a publisher that drifts from it fails a spec, not a consumer in production. |
 
 ### message-type-changed-only-by-addition → format-changed-in-steps · MUST
 
 A message type another program reads changes only by addition — a new optional field; a removal, a rename or a change of meaning is a new version of the type, published beside the old one until no consumer reads it; a check against the last released schema fails on any other change.
 
-| Why | Tags |
-|---|---|
-| a queue and a log keep messages written before the change, and consumers deployed before it read them and the new ones alike, so an incompatibility a check finds before the merge is one no consumer meets. | [data] |
+| Why |
+|---|
+| a queue and a log keep messages written before the change, and consumers deployed before it read them and the new ones alike, so an incompatibility a check finds before the merge is one no consumer meets. |
 
 ## Content
 
@@ -44,14 +44,14 @@ A message type another program reads changes only by addition — a new optional
 
 A message carries only the fields its type declares — the identifiers and the facts of what happened — never an entity or a stored record serialised whole.
 
-| Why | Tags |
-|---|---|
-| a record sent whole sends every field later added to it to every subscriber, and ties each of them to the publisher's storage. | [data, security] |
+| Why |
+|---|
+| a record sent whole sends every field later added to it to every subscriber, and ties each of them to the publisher's storage. |
 
 ### message-carries-no-secret-and-only-needed-personal-data → secret-and-personal-data-kept-out-of-output · MUST
 
 A message carries no secret — a password, a token, a key — and no personal data its consumers do not need, which they otherwise reach by an identifier.
 
-| Why | Tags |
-|---|---|
-| a broker keeps messages, their copies in dead letters and their replays beyond the reach of a rotation or an erasure, and every subscriber reads them. | [security, data] |
+| Why |
+|---|
+| a broker keeps messages, their copies in dead letters and their replays beyond the reach of a rotation or an erasure, and every subscriber reads them. |

@@ -8,6 +8,6 @@
 
 Permissions, notifications, background work, secure storage and sensors are reached through adapters behind ports, never from a screen or the domain.
 
-| Why | Tags |
-|---|---|
-| each capability then has one place that asks for its permission and handles a refusal, and a spec replaces it with a fake. | [testing] |
+| Why |
+|---|
+| each capability then has one place that asks for its permission and handles a refusal, and a spec replaces it with a fake. |

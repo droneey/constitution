@@ -6,11 +6,10 @@ import type { TreeError } from '#/features/blocks';
 import { isTreeError, TreeFailure } from '#/features/blocks';
 import type { ProjectError } from '#/kernel/errors';
 import { isProjectError, ProjectFailure } from '#/kernel/errors';
-import { isUsageError } from '#/shared/cli';
+import { ExitCode, isUsageError } from '#/shared/cli';
 
 import type { ConfigurationError } from './configuration.error';
 import { ConfigurationFailure, isConfigurationError } from './configuration.error';
-import { ExitCode } from './exit-codes';
 
 const ISSUES = 'https://github.com/droneey/constitution/issues';
 const HOOK = 'constitution hook';
@@ -21,7 +20,7 @@ const messageOf = (error: ProjectError): string => {
   const messages: Readonly<Record<ProjectFailure, string>> = {
     [ProjectFailure.ReleaseMissing]: `${error.details.path} does not exist — run mise install`,
     [ProjectFailure.BlocksUnlisted]: `cannot list the blocks of ${error.details.path}`,
-    [ProjectFailure.ConfigUnparsed]: `constitution.yaml does not parse at line ${String(error.details.line ?? 0)}`,
+    [ProjectFailure.ConfigUnparsed]: `constitution.yaml does not parse${error.details.line === undefined ? '' : ` at line ${String(error.details.line)}`}`,
     [ProjectFailure.ConfigUnreadable]: `cannot read ${error.details.path}`,
     [ProjectFailure.CoreUnreadable]: 'cannot build the digest',
     [ProjectFailure.ManifestUnreadable]: `cannot read ${error.details.path}`,
@@ -52,6 +51,7 @@ const treeMessageOf = (error: TreeError): string => {
     [TreeFailure.Failed]: `git could not list the files of ${error.details.path}`,
     [TreeFailure.TimedOut]: `git did not list the files of ${error.details.path} in time`,
     [TreeFailure.Unreadable]: `cannot read ${error.details.path}`,
+    [TreeFailure.TooLarge]: `the blocks of ${error.details.path} hold more files than a release does`,
   };
 
   return messages[error.code];
@@ -63,6 +63,7 @@ const treeHintOf = (failure: TreeFailure): string => {
     [TreeFailure.Failed]: gitStatus,
     [TreeFailure.TimedOut]: gitStatus,
     [TreeFailure.Unreadable]: 'make the file readable, or remove it from the tree',
+    [TreeFailure.TooLarge]: DOCTOR,
   };
 
   return hints[failure];
@@ -93,16 +94,18 @@ interface ErrorHandler {
   readonly writeUsage: (message: string) => void;
 }
 
+interface ErrorHandlerInput {
+  readonly isHook: () => boolean;
+  readonly theme: () => Theme;
+  readonly writeError: (text: string) => void;
+}
+
 /**
  * The handler of last resort: a failure the program foresees ends the run with the code the user
  * can act on, a usage error with the usage code, any other with the code of a defect. A hook
  * writes one line, as its callers read it; a person gets the failure block.
  */
-const createErrorHandler = (input: {
-  isHook: () => boolean;
-  theme: () => Theme;
-  writeError: (text: string) => void;
-}): ErrorHandler => {
+const createErrorHandler = (input: ErrorHandlerInput): ErrorHandler => {
   const write = (
     failure: FailureContent & {
       line: string;

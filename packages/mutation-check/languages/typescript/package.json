@@ -29,22 +29,27 @@
     "lint:check": "biome check --error-on-warnings",
     "lint:fix": "biome check --write",
     "type:check": "tsc -b",
-    "test": "CI=1 bun test",
-    "mutation:check": "bun src/main.ts",
-    "mutation:all": "bun src/main.ts all",
+    "test:unit": "CI=1 bun test",
+    "test:integration": "CI=1 bun --config=./bunfig.integration.toml test",
+    "test:e2e": "CI=1 bun --config=./bunfig.e2e.toml test",
+    "test": "bun run test:unit && bun run test:integration && bun run test:e2e",
+    "mutation:check": "bun --no-env-file src/main.ts",
+    "mutation:all": "bun --no-env-file src/main.ts all",
     "architecture:check": "depcruise src --config .dependency-cruiser.mjs",
     "unused:check": "knip --no-config-hints && knip --strict --no-config-hints",
-    "yaml:check": "yamllint --strict ."
+    "yaml:check": "yamllint --strict .",
+    "toml:check": "tombi format --check && tombi lint",
+    "toml:fix": "tombi format"
   },
   "dependencies": {
     "@stryker-mutator/api": "^10.0.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.15",
+    "@biomejs/biome": "2.6.2",
     "@stryker-mutator/core": "10.0.0",
     "@types/bun": "1.4.3",
     "@types/node": "26.6.5",
-    "dependency-cruiser": "18.6.0",
+    "dependency-cruiser": "18.7.0",
     "knip": "6.41.0",
     "typescript": "7.0.2"
   }

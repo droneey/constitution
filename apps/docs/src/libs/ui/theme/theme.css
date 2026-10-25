@@ -69,9 +69,9 @@
   }
 
   /* without it the sidebar loses its hover, and its scrollbar fades out and back, on every page */
-  /* biome-ignore lint/nursery/useBaseline: behind @supports selector(), which the linter does not read as a guard */
+  /* biome-ignore lint/suspicious/useBaseline: behind @supports selector(), which the linter does not read as a guard */
   @supports selector(::view-transition) {
-    /* biome-ignore lint/nursery/useBaseline: behind @supports selector(), which the linter does not read as a guard */
+    /* biome-ignore lint/suspicious/useBaseline: behind @supports selector(), which the linter does not read as a guard */
     ::view-transition {
       pointer-events: none;
     }

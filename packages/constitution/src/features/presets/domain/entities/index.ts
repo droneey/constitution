@@ -1,4 +1,4 @@
-export type { Fragment, Skip, SourceFile } from './parts.entity';
+export type { PresetPart, Skip, SourceFile } from './parts.entity';
 export { Parts, Takes } from './parts.entity';
 export { WiringContext } from './wiring-context.entity';
 export type {

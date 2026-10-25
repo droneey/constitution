@@ -5,6 +5,7 @@ import type { BlockFinding, BlockFindingDetails } from '../../domain/use-cases/q
 import { budgetTexts } from './budget-texts.utils';
 import { decisionsTexts } from './decisions-texts.utils';
 import { loadTexts } from './load-texts.utils';
+import { pluginTexts } from './plugin-texts.utils';
 import { presetsTexts } from './presets-texts.utils';
 import { referencesTexts } from './references-texts.utils';
 import { requirementsTexts } from './requirements-texts.utils';
@@ -19,6 +20,7 @@ const findingTexts: TextsOf<BlockFindingDetails> = {
   ...budgetTexts,
   ...decisionsTexts,
   ...loadTexts,
+  ...pluginTexts,
   ...presetsTexts,
   ...referencesTexts,
   ...requirementsTexts,
@@ -30,7 +32,6 @@ const findingTexts: TextsOf<BlockFindingDetails> = {
   ...valueTexts,
 };
 
-/** What a finding of the blocks says, as the report of the blocks words it. */
 const findingTextOf = (finding: BlockFinding): string =>
   textOf(findingTexts, finding.code, finding.details);
 

@@ -4,16 +4,7 @@ import { chooseOutput, createTheme, OutputMode } from '@droneey/design-cli';
 import type { CommandIo, Renderer, Report, Task } from '#/shared/cli';
 
 import { createPlainRenderer } from './plain-renderer';
-
-interface Streams {
-  readonly stderr: NodeJS.WritableStream;
-  readonly stdin: NodeJS.ReadableStream;
-  readonly stdout: NodeJS.WritableStream;
-}
-
-interface ClosableRenderer extends Renderer {
-  readonly close: () => Promise<void>;
-}
+import type { Streams, TerminalRenderer } from './terminal-renderer';
 
 interface Presentation {
   readonly close: () => Promise<void>;
@@ -21,22 +12,24 @@ interface Presentation {
   readonly theme: () => Theme;
 }
 
+interface PresentationInput {
+  readonly accent: AccentTokens;
+  readonly env: Readonly<Record<string, string | undefined>>;
+  readonly flags: () => OutputFlags;
+  readonly io: CommandIo;
+  readonly isTerminal: boolean;
+  readonly streams: Streams;
+}
+
 /**
  * The plain path never loads Ink; the terminal path loads it, and the screens, on its first step
  * or result.
  */
-const createPresentation = (input: {
-  accent: AccentTokens;
-  env: Readonly<Record<string, string | undefined>>;
-  flags: () => OutputFlags;
-  io: CommandIo;
-  isTerminal: boolean;
-  streams: Streams;
-}): Presentation => {
+const createPresentation = (input: PresentationInput): Presentation => {
   let output: Output | undefined;
   let theme: Theme | undefined;
   let chosen: Promise<Renderer> | undefined;
-  let terminal: Promise<ClosableRenderer> | undefined;
+  let terminal: Promise<TerminalRenderer> | undefined;
 
   const outputOf = (): Output => {
     output ??= chooseOutput({
@@ -61,7 +54,7 @@ const createPresentation = (input: {
     return theme;
   };
 
-  const terminalRendererOf = async (): Promise<ClosableRenderer> => {
+  const terminalRendererOf = async (): Promise<TerminalRenderer> => {
     const { createTerminalRenderer } = await import('./terminal-renderer');
 
     return createTerminalRenderer({
@@ -106,5 +99,5 @@ const createPresentation = (input: {
   };
 };
 
-export type { Streams };
+export type { Streams } from './terminal-renderer';
 export { createPresentation };

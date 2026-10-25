@@ -3,9 +3,8 @@ import type { FindingOf, ProblemOf } from '#/kernel/types';
 import { BlockId, coreBlockId } from '#/kernel/value-objects';
 
 import type { BlockGraph } from '../../../../entities';
-import { Block } from '../../../../entities';
+import { Block, requirableBy } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
-import { requirableBy } from '../shared/layers';
 
 enum RequiresCode {
   RequiresCore = 'requires-core',

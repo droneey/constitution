@@ -1,31 +1,31 @@
-import { Axis, CHECK_KEY, CONFIG_FILE, Layer, OPTIONAL_AXES } from '#/kernel/constants';
+import { Axis, CHECK_KEY, CONFIG_FILE, Layer } from '#/kernel/constants';
 import { WarningKind } from '#/kernel/entities';
 import type { BlockId } from '#/kernel/value-objects';
 import { coreBlockId, SourceKind, UnitPath } from '#/kernel/value-objects';
 
+import { OPTIONAL_AXES } from '../../../../../../../constants';
 import type { ConfigItem, ProjectConfig, ResolvedUnits } from '../../../../../../../entities';
-import { DeclaredUnit, ProjectModel, ResolvedUnit } from '../../../../../../../entities';
+import {
+  ConfigKey,
+  DeclaredUnit,
+  LIST_KEYS,
+  ProjectModel,
+  ResolvedUnit,
+} from '../../../../../../../entities';
 import { keyOfLayer, layerOfKey } from '../../shared/layer-keys';
 import type { WarningLog } from '../../shared/warning-log';
 
-const KEYS: readonly string[] = [
-  'axes',
-  'domains',
-  'platforms',
-  'languages',
-  'implementations',
-  'packs',
-  'check',
-  'overrides',
-] as const;
-const AXES_KEY = 'axes';
-const PACKS_KEY = 'packs';
+const configKeys: readonly string[] = [
+  ...LIST_KEYS,
+  CHECK_KEY,
+  ConfigKey.Overrides,
+];
 
 const fileOf = (unit: DeclaredUnit): string => UnitPath.pathOf(unit.path, CONFIG_FILE);
 
 // A member names no check: the repository's is the one check of the whole tree.
 const keysOf = (unit: DeclaredUnit): readonly string[] =>
-  UnitPath.isRepository(unit.path) ? KEYS : KEYS.filter((key) => key !== CHECK_KEY);
+  UnitPath.isRepository(unit.path) ? configKeys : configKeys.filter((key) => key !== CHECK_KEY);
 
 const warnOfUnitKeys = (input: { log: WarningLog; unit: DeclaredUnit }): void => {
   const { log, unit } = input;
@@ -68,7 +68,12 @@ const warnOfUnitKeys = (input: { log: WarningLog; unit: DeclaredUnit }): void =>
   }
 };
 
-const warnOfKeys = (input: { config: ProjectConfig; log: WarningLog }): void => {
+interface WarnOfKeysInput {
+  readonly config: ProjectConfig;
+  readonly log: WarningLog;
+}
+
+const warnOfKeys = (input: WarnOfKeysInput): void => {
   for (const unit of input.config.units) {
     warnOfUnitKeys({
       log: input.log,
@@ -82,7 +87,7 @@ const pickedAxesOf = (input: { log: WarningLog; unit: DeclaredUnit }): ReadonlyS
   const { log, unit } = input;
   const picked = new Set<string>();
 
-  for (const listed of unit.config.items.filter((entry) => entry.key === AXES_KEY)) {
+  for (const listed of unit.config.items.filter((entry) => entry.key === ConfigKey.Axes)) {
     if (listed.text === Axis.Foundation) {
       log.add({
         details: {
@@ -109,7 +114,8 @@ const pickedAxesOf = (input: { log: WarningLog; unit: DeclaredUnit }): ReadonlyS
 // both.
 const axesOf = (input: { log: WarningLog; unit: DeclaredUnit }): ReadonlySet<Axis> => {
   const { unit } = input;
-  const isListed = unit.config.lists.includes(AXES_KEY) && !unit.config.empties.includes(AXES_KEY);
+  const isListed =
+    unit.config.lists.includes(ConfigKey.Axes) && !unit.config.empties.includes(ConfigKey.Axes);
   const picked = pickedAxesOf(input);
 
   return new Set([
@@ -207,7 +213,7 @@ const declaredOf = (input: {
 };
 
 const isDeclared = (entry: ConfigItem): boolean =>
-  entry.key !== AXES_KEY && entry.key !== PACKS_KEY;
+  entry.key !== ConfigKey.Axes && entry.key !== ConfigKey.Packs;
 
 // A unit's blocks start from core, in the catalogue's order; then each block its unit lists joins
 // them, with its bases.
@@ -230,13 +236,15 @@ const blocksOf = (input: {
     ),
   ]);
 
+interface ResolveUnitsInput {
+  readonly config: ProjectConfig;
+  readonly log: WarningLog;
+  readonly model: ProjectModel;
+}
+
 // A resolved unit for each declared one, the repository's first: each holds its own axes and blocks
 // alone. Every unit's axes are read before any unit's blocks.
-const resolveUnits = (input: {
-  config: ProjectConfig;
-  log: WarningLog;
-  model: ProjectModel;
-}): ResolvedUnits => {
+const resolveUnits = (input: ResolveUnitsInput): ResolvedUnits => {
   const [repository, ...members] = input.config.units;
 
   const withAxes = (

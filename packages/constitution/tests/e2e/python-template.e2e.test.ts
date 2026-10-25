@@ -1,10 +1,11 @@
 import { beforeAll, describe, expect, it } from 'bun:test';
 
+import { python } from './python-project.fixtures';
 import {
   createTaskBatch,
   isFoundIn,
+  mutationCodesOf,
   partTable,
-  python,
   templateTable,
 } from './python-template.fixtures';
 
@@ -47,6 +48,20 @@ const specOfOneCase = python(
   '',
   '  # Assert',
   '  assert result == 5',
+);
+
+// The function of the base, changed: each mutant of the changed line is run.
+const reorderedOrders = python(
+  'def total(prices: list[int], *, discount: int) -> int:',
+  '  return max(0, sum(prices) - discount)',
+  '',
+  '',
+  'async def totals(baskets: list[list[int]]) -> list[int]:',
+  '  return [total(basket, discount=0) for basket in baskets]',
+);
+const failingIntegrationSpec = python(
+  'def test_should_reach_the_engine() -> None:',
+  '  assert False',
 );
 
 const ordersWithLabel = (comment: string): string =>
@@ -105,14 +120,7 @@ describe('the python template', () => {
 
   const wholeCheck = taskCase({
     changes: {
-      'src/shop/orders.py': python(
-        'def total(prices: list[int], *, discount: int) -> int:',
-        '  return max(0, sum(prices) - discount)',
-        '',
-        '',
-        'async def totals(baskets: list[list[int]]) -> list[int]:',
-        '  return [total(basket, discount=0) for basket in baskets]',
-      ),
+      'src/shop/orders.py': reorderedOrders,
     },
     task: 'check',
   });
@@ -127,10 +135,12 @@ describe('the python template', () => {
     // Assert
     expect({
       isClean: run.isClean,
-      isMutated: run.output.includes('mutation: every mutant killed'),
+      mutation: mutationCodesOf(run.output),
     }).toStrictEqual({
       isClean: true,
-      isMutated: true,
+      mutation: [
+        'killed',
+      ],
     });
   });
 
@@ -567,7 +577,18 @@ describe('the python template', () => {
         finding: [
           'Required test coverage of 100.0% not reached',
         ],
-        task: 'test:check',
+        task: 'test',
+      },
+      {
+        condition: 'an integration spec fails',
+        changes: {
+          'tests/integration/test_engine.py': failingIntegrationSpec,
+        },
+        finding: [
+          'FAILED',
+          'tests/integration/test_engine.py',
+        ],
+        task: 'test',
       },
       {
         condition: 'a spec warns',
@@ -580,7 +601,7 @@ describe('the python template', () => {
         finding: [
           'DeprecationWarning: old',
         ],
-        task: 'test:check',
+        task: 'test',
       },
       {
         condition: 'a spec carries an unknown marker',
@@ -594,7 +615,7 @@ describe('the python template', () => {
         finding: [
           "'slow' not found in `markers` configuration option",
         ],
-        task: 'test:check',
+        task: 'test',
       },
       {
         condition: 'a spec reaches the network',
@@ -607,7 +628,7 @@ describe('the python template', () => {
         finding: [
           'ConnectionRefusedError',
         ],
-        task: 'test:check',
+        task: 'test',
       },
       {
         condition: 'no spec reaches a new function',
@@ -615,18 +636,28 @@ describe('the python template', () => {
           'src/shop/orders.py': ordersWithLabel(''),
         },
         finding: [
-          'mutation: shop.orders.x_label__mutmut_1: no tests',
+          'mutation: not-killed: ',
+          'shop.orders.x_label__mutmut_1',
+          'no tests',
+        ],
+        task: 'mutation:check',
+      },
+      {
+        condition: "an integration spec fails, which each mutant's run collects",
+        changes: {
+          'src/shop/orders.py': reorderedOrders,
+          'tests/integration/test_engine.py': failingIntegrationSpec,
+        },
+        finding: [
+          'tests/integration/test_engine.py',
         ],
         task: 'mutation:check',
       },
     ]),
   )('should fail $task when $condition', ({ changes, finding, task }) => {
-    // Arrange
-    const changed = changes;
-
     // Act
     const run = runOf({
-      changes: changed,
+      changes,
       task,
     });
 
@@ -646,16 +677,6 @@ describe('the python template', () => {
   it.each(
     taskCases([
       {
-        condition: 'an integration spec fails, which the unit run leaves out',
-        changes: {
-          'tests/integration/test_engine.py': python(
-            'def test_should_reach_the_engine() -> None:',
-            '  assert False',
-          ),
-        },
-        task: 'test:check',
-      },
-      {
         condition: '__main__.py calls main() of main.py',
         changes: {
           'src/shop/__main__.py': 'from shop.main import main\n\nmain()\n',
@@ -668,7 +689,7 @@ describe('the python template', () => {
         changes: {
           '.hypothesis/examples/0a1b2c3d/4e5f6a7b': '',
         },
-        task: 'test:check',
+        task: 'test',
       },
       {
         condition: 'an adapter parses with pydantic and calls through httpx2',
@@ -784,12 +805,9 @@ describe('the python template', () => {
       },
     ]),
   )('should pass $task when $condition', ({ changes, task }) => {
-    // Arrange
-    const changed = changes;
-
     // Act
     const run = runOf({
-      changes: changed,
+      changes,
       task,
     });
 

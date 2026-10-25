@@ -13,6 +13,8 @@ import {
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
+import { z } from 'zod';
+
 import { configFromTemplate } from './dependency-cruiser-preset.fixtures';
 
 interface Run {
@@ -38,6 +40,17 @@ const PRESETS = '.droneey/constitution/presets/typescript';
 const inAxis = (part: string): string => (part.includes('/') ? part : `foundation/${part}`);
 
 const templates = join(repository, 'templates', 'project');
+
+// The specs as bun-test's template runs them: the unit run, then the run that holds the gate.
+const testScript = z
+  .object({
+    scripts: z.object({
+      test: z.string(),
+    }),
+  })
+  .parse(
+    JSON.parse(readFileSync(join(templates, 'typescript', 'bun-test', 'package.json'), 'utf8')),
+  ).scripts.test;
 
 // Each TypeScript package's folder, by the name that follows its unit's folder.
 const UNITS: Readonly<Record<string, string>> = {
@@ -94,12 +107,14 @@ const tsconfigOf = (input: {
     })),
   });
 
-const manifestOf = (input: {
-  dependencies?: readonly string[];
-  exports?: Readonly<Record<string, string>>;
-  fields?: Readonly<Record<string, unknown>>;
-  name: string;
-}): string =>
+interface ManifestInput {
+  readonly dependencies?: readonly string[];
+  readonly exports?: Readonly<Record<string, string>>;
+  readonly fields?: Readonly<Record<string, unknown>>;
+  readonly name: string;
+}
+
+const manifestOf = (input: ManifestInput): string =>
   jsonFileOf({
     name: input.name,
     private: true,
@@ -109,7 +124,7 @@ const manifestOf = (input: {
       '#/*': './src/*',
     },
     scripts: {
-      test: 'bun test',
+      test: testScript,
     },
     dependencies: Object.fromEntries(
       (input.dependencies ?? []).map((name) => [
@@ -141,6 +156,10 @@ const bunfig = [
   readFileSync(join(templates, 'typescript', 'bun', 'bunfig.toml'), 'utf8'),
   readFileSync(join(templates, 'typescript', 'bun-test', 'bunfig.toml'), 'utf8'),
 ].join('\n');
+const bunfigMutation = readFileSync(
+  join(templates, 'typescript', 'stryker', 'bunfig.mutation.toml'),
+  'utf8',
+);
 const bunfigIntegration = readFileSync(
   join(templates, 'typescript', 'bun-test', 'bunfig.integration.toml'),
   'utf8',
@@ -698,8 +717,13 @@ const workspaceFiles: Files = {
   }),
 };
 
+interface CruiserInput {
+  readonly depth: number;
+  readonly parts: readonly string[];
+}
+
 // Each package's own parts of dependency-cruiser, from its folder, written in the template.
-const cruiserOf = (input: { depth: number; parts: readonly string[] }): string =>
+const cruiserOf = (input: CruiserInput): string =>
   configFromTemplate(
     input.parts.map(
       (part) => `${'../'.repeat(input.depth)}${PRESETS}/dependency-cruiser/${inAxis(part)}.mjs`,
@@ -707,7 +731,12 @@ const cruiserOf = (input: { depth: number; parts: readonly string[] }): string =
     `${'../'.repeat(input.depth)}.droneey/constitution/presets`,
   );
 
-const write = (input: { files: Files; folder: string }): void => {
+interface WriteInput {
+  readonly files: Files;
+  readonly folder: string;
+}
+
+const write = (input: WriteInput): void => {
   for (const [path, text] of Object.entries(input.files)) {
     if (text === undefined) {
       rmSync(join(input.folder, path), {
@@ -845,6 +874,7 @@ const removeWorkspace = (workspace: string): void => {
 };
 
 export {
+  bunfigMutation,
   commitBase,
   createWorkspace,
   cruiserOf,

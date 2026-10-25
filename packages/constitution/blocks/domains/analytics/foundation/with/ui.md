@@ -8,6 +8,6 @@
 
 A page view names its screen by the template of its address — `/chats/:id` — never by the address with its identifiers or query values.
 
-| Why | Tags |
-|---|---|
-| views of one screen then add up to one row, and no identifier in an address reaches the analytics service. | [data, security] |
+| Why |
+|---|
+| views of one screen then add up to one row, and no identifier in an address reaches the analytics service. |

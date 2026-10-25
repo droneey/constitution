@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { existsSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, realpathSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -31,6 +31,8 @@ interface HookCall {
   session?: string | undefined;
   // the process starts outside the project, so only the event names cwd
   spawnOutside?: boolean | undefined;
+  // neither XDG_STATE_HOME nor HOME is set, so no folder keeps the session
+  stateHomeUnset?: boolean | undefined;
   // no archive is linked into the project
   unlinked?: boolean | undefined;
 }
@@ -59,6 +61,18 @@ const TIMEOUT_MS = 20_000;
 const HOOK_TODAY = '2026-06-15';
 const TODAY_VARIABLE = 'CONSTITUTION_TODAY';
 const HOOK = 'hook.sh';
+const STATE_HOME_VARIABLE = 'XDG_STATE_HOME';
+
+// The state home of every hook the specs run, so none writes into the user's: a folder of this
+// process's own, removed when it exits.
+const stateHome = realpathSync(mkdtempSync(join(tmpdir(), 'constitution-state-')));
+
+process.once('exit', () => {
+  rmSync(stateHome, {
+    force: true,
+    recursive: true,
+  });
+});
 
 // Claude Code names the event's fields in snake case.
 const eventOf = (input: {
@@ -161,6 +175,14 @@ const runHook = (call: HookCall): HookRun => {
           TODAY_VARIABLE,
           HOOK_TODAY,
         ],
+        ...(call.stateHomeUnset === true
+          ? []
+          : [
+              [
+                STATE_HOME_VARIABLE,
+                stateHome,
+              ],
+            ]),
         ...(call.pluginRootUnset === true
           ? []
           : [
@@ -251,7 +273,12 @@ const isMentioned = (input: { name: string; text: string }): boolean => {
   return false;
 };
 
-const mentionedOf = (input: { names: readonly string[]; text: string }): readonly string[] =>
+interface MentionedInput {
+  readonly names: readonly string[];
+  readonly text: string;
+}
+
+const mentionedOf = (input: MentionedInput): readonly string[] =>
   input.names.filter((name) =>
     isMentioned({
       name,
@@ -279,6 +306,36 @@ const blockListOf = (context: string): readonly string[] => {
   const [first = ''] = list;
 
   return first.startsWith(HEADING) || (list.length === 1 && NOTE.test(first)) ? list : [];
+};
+
+const OVERRIDES = '## Overrides';
+
+// An override the digest lists: the rule it names, then the level it lowers the rule to.
+type ListedOverride = readonly [
+  string,
+  string,
+];
+
+// The overrides section, wherever it stands, each item read as its rule and its level; the
+// member and the end that may follow are wording.
+const overridesOf = (context: string): readonly ListedOverride[] => {
+  const lines = linesOf(context);
+  const start = lines.indexOf(OVERRIDES);
+
+  if (start === -1) {
+    return [];
+  }
+
+  const end = lines.indexOf('', start);
+
+  return lines.slice(start + 1, end === -1 ? undefined : end).map((line) => {
+    const [rule = '', rest = ''] = line.slice(ITEM.length).split(': ');
+
+    return [
+      rule,
+      rest.split(' ')[0] ?? '',
+    ];
+  });
 };
 
 // The mark of an application's item that adds files to a block the repository lists.
@@ -373,9 +430,14 @@ const warningCutOf = (context: string): Cut => cutOf(warningSectionOf(context).s
 // A warning as its code, then the names it gives.
 type Warning = readonly string[];
 
+interface WarningsInput {
+  readonly context: string;
+  readonly like: readonly Warning[];
+}
+
 // Each warning given, read as its code and, of the names its counterpart in
 // `like` gives, those it mentions: the words around them are wording.
-const warningsOf = (input: { context: string; like: readonly Warning[] }): readonly Warning[] =>
+const warningsOf = (input: WarningsInput): readonly Warning[] =>
   warningLinesOf(input.context).map((line, index) => [
     line.slice(ITEM.length, line.indexOf(': ')),
     ...mentionedOf({
@@ -411,10 +473,16 @@ enum Edge {
   Heading = 'its heading',
 }
 
+interface EdgeOffset {
+  readonly context: string;
+  readonly edge: Edge;
+  readonly past: number;
+}
+
 // The bytes of a core body that put the edge `past` bytes beyond the room the
 // budget leaves, measured on `context`: the digest of a project whose list fits
 // whole, under the plugin root whose core holds coreText.
-const coreBodyAt = (input: { context: string; edge: Edge; past: number }): number => {
+const coreBodyAt = (input: EdgeOffset): number => {
   const list = blockListOf(input.context);
   const beyond = input.edge === Edge.Heading ? bytesOf(list.slice(1)) : 0;
   const rest = bytesAfterHeader(input.context) - Buffer.byteLength(coreText) - beyond;
@@ -424,7 +492,7 @@ const coreBodyAt = (input: { context: string; edge: Edge; past: number }): numbe
 
 // A plugin root whose core's body puts the edge of the block list `past` bytes
 // beyond the room the budget leaves; `context` as coreBodyAt measures it.
-const pluginAtEdge = (input: { context: string; edge: Edge; past: number }): string =>
+const pluginAtEdge = (input: EdgeOffset): string =>
   createPluginRoot({
     coreBody: coreBodyOfBytes(coreBodyAt(input)),
   });
@@ -433,15 +501,17 @@ const ID_PREFIX = 'u';
 const ID_NUMBER_WIDTH = 2;
 const PADDING = 'x';
 
+interface UnknownIdsInput {
+  readonly count: number;
+  readonly past: number;
+  readonly probe: string;
+  readonly probeId: string;
+}
+
 // The ids of `count` unknown blocks whose warnings take the warnings' budget and
 // `past` bytes more, newlines included, measured on `probe`: a digest that warns
 // of the one unknown block `probeId`.
-const unknownIdsFilling = (input: {
-  count: number;
-  past: number;
-  probe: string;
-  probeId: string;
-}): readonly string[] => {
+const unknownIdsFilling = (input: UnknownIdsInput): readonly string[] => {
   const perWarning = bytesOf(warningLinesOf(input.probe)) - input.probeId.length;
   const room = WARNING_BUDGET + input.past - input.count * perWarning;
   const length = Math.floor(room / input.count);
@@ -458,11 +528,13 @@ const unknownIdsFilling = (input: {
   );
 };
 
-const runScript = (call: {
-  event: Readonly<Record<string, unknown>>;
-  root: string;
-  script: string;
-}): HookRun => {
+interface ScriptCall {
+  readonly event: Readonly<Record<string, unknown>>;
+  readonly root: string;
+  readonly script: string;
+}
+
+const runScript = (call: ScriptCall): HookRun => {
   const hookRun = spawnSync(
     shell,
     [
@@ -491,6 +563,10 @@ const runScript = (call: {
           HOOK_TODAY,
         ],
         [
+          STATE_HOME_VARIABLE,
+          stateHome,
+        ],
+        [
           'PATH',
           `${cliFolder}:${process.env['PATH'] ?? ''}`,
         ],
@@ -508,7 +584,7 @@ const runScript = (call: {
 
 const sessions: string[] = [];
 
-// A spec isolates its state by a session id of its own: the hooks' folder is fixed.
+// A spec isolates its state by a session id of its own: the state home is shared by the process.
 const newSession = (): string => {
   const session = `spec-${randomUUID()}`;
 
@@ -518,7 +594,7 @@ const newSession = (): string => {
 };
 
 const stateFolderOf = (session: string): string =>
-  join('/tmp', `droneey-constitution-${String(process.getuid?.() ?? 0)}`, session);
+  join(stateHome, 'droneey-constitution', 'sessions', session);
 
 const mustsOf = (session: string): readonly string[] =>
   readFileSync(join(stateFolderOf(session), 'active.tsv'), 'utf8')
@@ -536,7 +612,7 @@ const removeSessions = (): void => {
   }
 };
 
-export type { Cut, HookRun, Warning };
+export type { Cut, HookRun, ListedOverride, Warning };
 export {
   BUDGET,
   bytesAfterHeader,
@@ -553,6 +629,7 @@ export {
   mustsOf,
   newSession,
   outputOf,
+  overridesOf,
   pluginAtEdge,
   remindedOf,
   removeSessions,

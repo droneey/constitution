@@ -11,9 +11,9 @@ const FILE = 'blocks/core/foundation/principles.md';
 const AGREEMENT = 'blocks/core/foundation/agreement.md';
 const table = [
   '',
-  '| Why | Tags |',
-  '|---|---|',
-  '| it keeps the code honest. | [] |',
+  '| Why |',
+  '|---|',
+  '| it keeps the code honest. |',
 ];
 
 const sourceOf = (lines: readonly string[]): RuleSource => ({
@@ -32,7 +32,6 @@ const ruleOf = (fields: Partial<StatedRule>): StatedRule => ({
   statedLevel: Level.Must,
   statement: 'A.',
   why: 'it keeps the code honest.',
-  writtenLenses: [],
   ...fields,
 });
 
@@ -44,7 +43,6 @@ const unstatedRuleOf = (fields: Partial<StatedRule>): StatedRule => ({
   slug: RuleSlug.create('a'),
   statement: 'A.',
   why: 'it keeps the code honest.',
-  writtenLenses: [],
   ...fields,
 });
 
@@ -59,9 +57,9 @@ describe('StatedRule.parse', () => {
         'Every data view shows',
         '  four states.  ',
         '',
-        '| Why | Tags |',
-        '| :-: | --- |',
-        '|  an empty screen cannot be told from a slow one. |  [ux,  a11y ] |',
+        '| Why |',
+        '| :-: |',
+        '|  an empty screen cannot be told from a slow one. |',
         '',
         '**Example:**',
         'Prose after the example.',
@@ -87,10 +85,6 @@ describe('StatedRule.parse', () => {
           slug: RuleSlug.create('four-data-states'),
           statement: 'Every data view shows four states.',
           why: 'an empty screen cannot be told from a slow one.',
-          writtenLenses: [
-            'ux',
-            'a11y',
-          ],
         }),
       ],
     });
@@ -321,13 +315,21 @@ describe('StatedRule.parse', () => {
           },
           path: FILE,
         },
+        {
+          code: RuleFormCode.CellsMiscounted,
+          details: {
+            count: 2,
+            slug: RuleSlug.create('a'),
+          },
+          path: FILE,
+        },
       ],
       lines: [
-        '| Why | Check | Tags |',
-        '|---|---|---|',
+        '| Why | Tags |',
+        '|---|---|',
         '| it keeps the code honest. | [] |',
       ],
-      name: 'the header of the old form',
+      name: 'the table of the old form, with its Tags',
       rule: {},
     },
     {
@@ -349,8 +351,8 @@ describe('StatedRule.parse', () => {
         },
       ],
       lines: [
-        '| Why | Tags |',
-        '| it keeps the code honest. | [] |',
+        '| Why |',
+        '| it keeps the code honest. |',
       ],
       name: 'no delimiter row',
       rule: {
@@ -370,28 +372,9 @@ describe('StatedRule.parse', () => {
       ],
       lines: [
         ...table,
-        '| it keeps the tests honest. | [] |',
+        '| it keeps the tests honest. |',
       ],
       name: 'two rows',
-      rule: {},
-    },
-    {
-      findings: [
-        {
-          code: RuleFormCode.CellsMiscounted,
-          details: {
-            count: 1,
-            slug: RuleSlug.create('a'),
-          },
-          path: FILE,
-        },
-      ],
-      lines: [
-        '| Why | Tags |',
-        '|---|---|',
-        '| it keeps the code honest. |',
-      ],
-      name: 'a row of one cell',
       rule: {},
     },
     {
@@ -406,26 +389,28 @@ describe('StatedRule.parse', () => {
         {
           code: RuleFormCode.CellsMiscounted,
           details: {
-            count: 1,
+            count: 0,
             slug: RuleSlug.create('a'),
           },
           path: FILE,
         },
       ],
       lines: [
-        '| Why | Tags',
-        '|---|---',
-        '| it keeps the code honest. | []',
+        '| Why',
+        '|---',
+        '| it keeps the code honest.',
       ],
       name: 'a table whose lines lack their closing pipe',
-      rule: {},
+      rule: {
+        why: '',
+      },
     },
     {
       findings: [],
       lines: [
-        '| Why | Tags |',
-        '|---|---|',
-        '|  | [] |',
+        '| Why |',
+        '|---|',
+        '|  |',
       ],
       name: 'an empty Why, which the rules check reports',
       rule: {
@@ -435,25 +420,6 @@ describe('StatedRule.parse', () => {
     {
       findings: [
         {
-          code: RuleFormCode.TagsNotList,
-          details: {
-            slug: RuleSlug.create('a'),
-            tags: 'ux, data',
-          },
-          path: FILE,
-        },
-      ],
-      lines: [
-        '| Why | Tags |',
-        '|---|---|',
-        '| it keeps the code honest. | ux, data |',
-      ],
-      name: 'Tags that are no list',
-      rule: {},
-    },
-    {
-      findings: [
-        {
           code: RuleFormCode.HeaderMisshapen,
           details: {
             slug: RuleSlug.create('a'),
@@ -462,9 +428,9 @@ describe('StatedRule.parse', () => {
         },
       ],
       lines: [
-        '| Why | Tags |',
-        '| x- | --- |',
-        '| it keeps the code honest. | [] |',
+        '| Why |',
+        '| x- |',
+        '| it keeps the code honest. |',
       ],
       name: 'a delimiter cell with a word before its dashes',
       rule: {},
@@ -480,49 +446,11 @@ describe('StatedRule.parse', () => {
         },
       ],
       lines: [
-        '| Why | Tags |',
-        '| --- | -x |',
-        '| it keeps the code honest. | [] |',
+        '| Why |',
+        '| -x |',
+        '| it keeps the code honest. |',
       ],
       name: 'a delimiter cell with a word after its dashes',
-      rule: {},
-    },
-    {
-      findings: [
-        {
-          code: RuleFormCode.TagsNotList,
-          details: {
-            slug: RuleSlug.create('a'),
-            tags: 'see [ux]',
-          },
-          path: FILE,
-        },
-      ],
-      lines: [
-        '| Why | Tags |',
-        '|---|---|',
-        '| it keeps the code honest. | see [ux] |',
-      ],
-      name: 'Tags with a word before the list',
-      rule: {},
-    },
-    {
-      findings: [
-        {
-          code: RuleFormCode.TagsNotList,
-          details: {
-            slug: RuleSlug.create('a'),
-            tags: '[ux] too',
-          },
-          path: FILE,
-        },
-      ],
-      lines: [
-        '| Why | Tags |',
-        '|---|---|',
-        '| it keeps the code honest. | [ux] too |',
-      ],
-      name: 'Tags with a word after the list',
       rule: {},
     },
     {
@@ -635,9 +563,6 @@ describe('StatedRule.inheritLevels', () => {
       section: 'Screens',
       statedLevel: Level.Should,
       tightens: RuleSlug.create('b'),
-      writtenLenses: [
-        'ux',
-      ],
     });
 
     // Act
@@ -659,9 +584,6 @@ describe('StatedRule.inheritLevels', () => {
         statement: 'A.',
         tightens: RuleSlug.create('b'),
         why: 'it keeps the code honest.',
-        writtenLenses: [
-          'ux',
-        ],
       },
     ]);
   });

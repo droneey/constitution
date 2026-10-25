@@ -1,6 +1,7 @@
 import { parseDocument } from 'yaml';
 
 import type { BlockCard, BlockCardParser } from '../../domain/contracts';
+import { EMPTY_CARD } from '../../domain/contracts';
 
 const isMapping = (parsed: unknown): parsed is Record<string, unknown> =>
   typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed);
@@ -24,16 +25,8 @@ const listOf = (field: unknown): readonly string[] => {
       ];
 };
 
-const EMPTY_CARD: BlockCard = {
-  extends: undefined,
-  governs: [],
-  isAbstract: false,
-  requires: [],
-  summary: '',
-} as const;
-
-// A project reads a card it can: a field left out, or of another form, is empty, and a front
-// matter that is no YAML mapping gives an empty card.
+// A project reads a card it can: a field left out, or of another form, is empty or absent, and a
+// front matter that is no YAML mapping gives an empty card.
 const card = (yaml: string): BlockCard => {
   const document = parseDocument(yaml);
   const parsed: unknown = document.errors.length === 0 ? document.toJS() : undefined;
@@ -43,13 +36,22 @@ const card = (yaml: string): BlockCard => {
   }
 
   const base = textOf(parsed['extends']);
+  const summary = textOf(parsed['summary']);
 
   return {
-    extends: base === '' ? undefined : base,
+    ...(base === ''
+      ? {}
+      : {
+          extends: base,
+        }),
     governs: listOf(parsed['governs']),
     isAbstract: parsed['abstract'] === true || parsed['abstract'] === 'true',
     requires: listOf(parsed['requires']),
-    summary: textOf(parsed['summary']),
+    ...(summary === ''
+      ? {}
+      : {
+          summary,
+        }),
   };
 };
 

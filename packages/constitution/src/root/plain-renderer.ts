@@ -14,17 +14,11 @@ const sectionTextOf = (input: { section: Section; theme: Theme }): string => {
       return formatNote(theme, section.note);
     case SectionKind.Pairs:
       return formatKeyValues(theme, section.pairs);
-    default: {
-      // Steps, the one kind left: a kind added to the union fails to compile here
-      const steps: Extract<
-        Section,
-        {
-          kind: SectionKind.Steps;
-        }
-      > = section;
-
-      return formatTaskList(theme, steps.steps);
-    }
+    case SectionKind.Steps:
+      return formatTaskList(theme, section.steps);
+    // Stryker disable next-line ConditionalExpression: no kind reaches the default, which only the compiler reads
+    default:
+      return section satisfies never;
   }
 };
 
@@ -38,7 +32,12 @@ const formatReport = (input: { report: Report; theme: Theme }): string =>
     )
     .join('\n\n');
 
-const createPlainRenderer = (input: { io: CommandIo; theme: Theme }): Renderer => ({
+interface PlainRendererInput {
+  readonly io: CommandIo;
+  readonly theme: Theme;
+}
+
+const createPlainRenderer = (input: PlainRendererInput): Renderer => ({
   print: async (report: Report): Promise<void> => {
     const text = formatReport({
       report,

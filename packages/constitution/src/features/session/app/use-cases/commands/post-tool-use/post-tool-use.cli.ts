@@ -8,13 +8,6 @@ import type { SessionId } from '../../../../domain/value-objects';
 import { AgentId } from '../../../../domain/value-objects';
 import { contextOutputOf, hookEventOf, reminderNotesOf, sessionIdOf } from '../../../utils';
 
-// Stryker disable ArrayDeclaration,StringLiteral: help text commander prints; no caller relies on it
-const DESCRIPTION = 'Name the blocks that govern a file the agent reads or edits, once a session.';
-const EXAMPLES: readonly string[] = [
-  `printf '{"session_id":"s1","tool_input":{"file_path":"src/main.ts"}}' | constitution hook post-tool-use`,
-] as const;
-// Stryker restore ArrayDeclaration,StringLiteral
-
 const EVENT = 'PostToolUse';
 
 interface PostToolUseContext extends CommandContext {
@@ -32,8 +25,15 @@ interface PostToolUseContext extends CommandContext {
 
 /** PostToolUse of a tool that reads or edits a file. */
 const createPostToolUseCommand = (context: PostToolUseContext): Command =>
-  context.withExamples(
-    new Command('post-tool-use').description(DESCRIPTION).action(async (): Promise<void> => {
+  new Command('post-tool-use')
+    .description('Name the blocks that govern a file the agent reads or edits, once a session.')
+    .addHelpText(
+      'before',
+      context.helpExamples([
+        `printf '{"session_id":"s1","tool_input":{"file_path":"src/main.ts"}}' | constitution hook post-tool-use`,
+      ]),
+    )
+    .action(async (): Promise<void> => {
       const event = hookEventOf(await context.io.readInput());
       const session = sessionIdOf(event);
       const agent = event.field('agent_id');
@@ -74,8 +74,6 @@ const createPostToolUseCommand = (context: PostToolUseContext): Command =>
           }),
         );
       }
-    }),
-    EXAMPLES,
-  );
+    });
 
 export { createPostToolUseCommand };

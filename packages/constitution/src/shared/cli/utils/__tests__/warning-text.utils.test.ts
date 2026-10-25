@@ -662,6 +662,15 @@ describe('warningTextOf', () => {
       },
     },
     {
+      text: 'biome.json cannot be read, so the wiring it holds is left unchecked — make it readable',
+      warning: {
+        details: {
+          file: 'biome.json',
+        },
+        kind: WarningKind.WiringFileUnreadable,
+      },
+    },
+    {
       text: 'biome.json skips docs, which holds no member of the workspace — run /constitution:ratify',
       warning: {
         details: {
@@ -708,11 +717,8 @@ describe('warningTextOf', () => {
       },
     },
   ])('should say $warning.kind as every report of warnings words it', ({ text, warning }) => {
-    // Arrange
-    const given = warning;
-
     // Act
-    const said = warningTextOf(given);
+    const said = warningTextOf(warning);
 
     // Assert
     expect(said).toBe(text);

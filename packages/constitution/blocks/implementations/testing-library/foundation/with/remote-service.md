@@ -8,6 +8,6 @@
 
 The render helper replaces the transport with captured responses.
 
-| Why | Tags |
-|---|---|
-| every spec then runs against answers the vendor really gave. | [] |
+| Why |
+|---|
+| every spec then runs against answers the vendor really gave. |

@@ -15,7 +15,7 @@ import { BlockId, PackPath, RuleSlug, UnitPath } from '#/kernel/value-objects';
 
 import { createConfigurationParser } from '../adapters/configuration';
 import type { ConfigurationParser } from '../domain/contracts';
-import type { PresetsPorts } from '../domain/use-cases/queries/check';
+import type { PresetsPorts } from '../domain/use-cases/queries/shared/presets-ports';
 import type { WiringInput } from '../domain/use-cases/queries/shared/wiring';
 
 // A project's wiring as the check reads it: the release's presets and templates, the project's
@@ -409,7 +409,12 @@ const hooksOwnUnits = [
 
 // The warnings of the wiring, each built from the values it names, a unit by its path.
 
-const toolWiredNowhere = (details: { tool: string; unit: string }): ProjectWarning => ({
+interface ToolWiredNowhereFixture {
+  readonly tool: string;
+  readonly unit: string;
+}
+
+const toolWiredNowhere = (details: ToolWiredNowhereFixture): ProjectWarning => ({
   details: {
     tool: details.tool,
     unit: UnitPath.create(details.unit),
@@ -429,6 +434,13 @@ const fileMiswired = (details: WarningDetails[WarningKind.FileMiswired]): Projec
   kind: WarningKind.FileMiswired,
 });
 
+const wiringFileUnreadable = (file: string): ProjectWarning => ({
+  details: {
+    file,
+  },
+  kind: WarningKind.WiringFileUnreadable,
+});
+
 const skipOfNoMember = (details: WarningDetails[WarningKind.SkipOfNoMember]): ProjectWarning => ({
   details,
   kind: WarningKind.SkipOfNoMember,
@@ -441,7 +453,11 @@ const memberNotSkipped = (
   kind: WarningKind.MemberNotSkipped,
 });
 
-const releaseLinkLoops = (details: { unit: string }): ProjectWarning => ({
+interface ReleaseLinkLoopsFixture {
+  readonly unit: string;
+}
+
+const releaseLinkLoops = (details: ReleaseLinkLoopsFixture): ProjectWarning => ({
   details: {
     unit: UnitPath.create(details.unit),
   },
@@ -488,5 +504,6 @@ export {
   vulturePart,
   vultureSection,
   wired,
+  wiringFileUnreadable,
   wiringOf,
 };

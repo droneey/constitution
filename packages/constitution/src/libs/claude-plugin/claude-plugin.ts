@@ -22,7 +22,8 @@ const PARENT = '..';
 // The texts a manifest gives its fields, a list's items among them; one that names no file of the
 // plugin adds nothing.
 const namedOf = (root: string): readonly string[] =>
-  Object.values(new Object(JSON.parse(readFileSync(join(root, manifestFile)).toString())))
+  // Stryker disable next-line StringLiteral: an encoding left empty is UTF-8 as well; the rule asks that it be named
+  Object.values(new Object(JSON.parse(readFileSync(join(root, manifestFile), 'utf8'))))
     .flat()
     .filter((value): value is string => typeof value === 'string');
 
@@ -70,6 +71,7 @@ const fingerprintOf = (root: string): string | undefined => {
       )
       .filter(isInside),
   );
+  // biome-ignore lint/suspicious/useArraySortCompare: paths in UTF-16 order, the default, are the order every copy shares
   const files = [
     ...new Set(
       [

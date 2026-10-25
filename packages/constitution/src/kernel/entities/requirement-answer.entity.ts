@@ -174,5 +174,5 @@ const RequirementAnswer = {
   parse,
 } as const;
 
-export type { AnswerSource, RequirementsParsed, RequirementsTableDetails };
+export type { RequirementsParsed, RequirementsTableDetails };
 export { Met, RequirementAnswer, RequirementsTableCode };

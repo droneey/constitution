@@ -8,12 +8,9 @@ export { WiringCheckStatus } from './domain/contracts';
 export type { SessionCommandRepository } from './domain/contracts/repositories/commands';
 export type { SessionQueryRepository } from './domain/contracts/repositories/queries';
 export type {
-  HookEventName,
   Reminder,
   SessionDigest,
-  SessionOrigin,
   SessionStart,
-  SessionState,
   StopEvent,
   StopJudgement,
 } from './domain/entities';
@@ -22,8 +19,7 @@ export { markTurn } from './domain/use-cases/commands/mark-turn';
 export { recordCheck } from './domain/use-cases/commands/record-check';
 export { recordJudgement } from './domain/use-cases/commands/record-judgement';
 export { recordReminders } from './domain/use-cases/commands/record-reminders';
-export type { DigestSessionPorts } from './domain/use-cases/queries/digest-session';
 export { digestSession } from './domain/use-cases/queries/digest-session';
 export { judgeStop } from './domain/use-cases/queries/judge-stop';
 export { remindOfFile } from './domain/use-cases/queries/remind-of-file';
-export type { AgentId, SessionId } from './domain/value-objects';
+export type { SessionId } from './domain/value-objects';

@@ -1,7 +1,7 @@
-import { InvalidValueError } from '../errors';
-import { AXIS_FOLDERS } from './block.entity';
+import { InvalidValueError, ValueFailure } from '../errors';
+import { Axis, Block } from './block.entity';
 
-/** the grammar the Constitution's check reads a definition by */
+/** what a term names, as the Constitution's grammar reads a definition */
 enum TermKind {
   Concept = 'concept',
   Brand = 'brand',
@@ -14,7 +14,7 @@ enum TermKind {
 interface Term {
   /** the page that defines it, and the anchor of its rule when a rule does */
   readonly address: string;
-  readonly axis: string;
+  readonly axis: Axis;
   readonly block: string;
   readonly kind: TermKind;
   readonly name: string;
@@ -22,73 +22,19 @@ interface Term {
   readonly sentence: string;
 }
 
-interface TermName {
-  readonly kind: TermKind;
-  readonly name: string;
-}
-
-const CONCEPT = /^[a-z]+(?:[ -][a-z]+)*$/;
-const LEAD_IN_END = /[.:]$/;
-const FILE_NAME = /^[\w-]+(?:\.[\w-]+)+$/;
-const FOLDER_END = '/';
-const SUFFIX_START = '.';
-const FOUNDATION = 'foundation';
 const PATH_SEPARATOR = '/';
 const SENTENCE_BREAK = /(?<=[.!?])\s+(?=[A-Z*`[(])/g;
-const WHITESPACE = /\s+/g;
-
-const codeKindOf = (name: string): TermKind => {
-  if (name.endsWith(FOLDER_END)) {
-    return TermKind.Folder;
-  }
-
-  if (name.startsWith(SUFFIX_START)) {
-    return TermKind.Suffix;
-  }
-
-  return FILE_NAME.test(name) ? TermKind.File : TermKind.Api;
-};
-
-// A lead-in closes on "." or ":" and opens its sentence, so a capital that opens it is the
-// sentence's, not the term's.
-const plainNameOf = (text: string): TermName => {
-  const words = text.replaceAll(WHITESPACE, ' ');
-  const isLeadIn = LEAD_IN_END.test(words);
-  const name = isLeadIn ? words.slice(0, -1) : words;
-  const lowered = isLeadIn ? `${name.charAt(0).toLowerCase()}${name.slice(1)}` : name;
-
-  return CONCEPT.test(lowered)
-    ? {
-        kind: TermKind.Concept,
-        name: lowered,
-      }
-    : {
-        kind: TermKind.Brand,
-        name,
-      };
-};
-
-/** the term a bold span defines: one code span, or plain words */
-const nameOf = (bold: { isCode: boolean; text: string }): TermName =>
-  bold.isCode
-    ? {
-        kind: codeKindOf(bold.text),
-        name: bold.text,
-      }
-    : plainNameOf(bold.text);
-
-const isAxisFolder = (segment: string): boolean => AXIS_FOLDERS.includes(segment);
 
 /** a passport's axis is foundation's, and a seam's is the folder it sits in */
-const axisOf = (path: string): string =>
-  path.split(PATH_SEPARATOR).find(isAxisFolder) ?? FOUNDATION;
+const axisOf = (path: string): Axis =>
+  path.split(PATH_SEPARATOR).find(Block.isAxis) ?? Axis.Foundation;
 
 /** the folder that holds the passport, from a path below the blocks folder */
-const blockOf = (path: string): string => {
+const blockOf = (path: string): string | undefined => {
   const segments = path.split(PATH_SEPARATOR);
-  const axis = segments.findIndex(isAxisFolder);
+  const axis = segments.findIndex(Block.isAxis);
 
-  return (axis === -1 ? segments.at(-2) : segments[axis - 1]) ?? '';
+  return axis === -1 ? segments.at(-2) : segments[axis - 1];
 };
 
 /** the sentence of `text` that holds the character at `offset` */
@@ -107,19 +53,14 @@ const sentenceAround = (input: { offset: number; text: string }): string => {
     .trim();
 };
 
-/** @throws {@link InvalidValueError} when the name is empty or the axis is none of the three */
+/** @throws {@link InvalidValueError} when the name is empty */
 const create = (input: Term): Term => {
   if (input.name.trim() === '') {
     throw new InvalidValueError({
-      field: 'name',
-      value: input.name,
-    });
-  }
-
-  if (!isAxisFolder(input.axis)) {
-    throw new InvalidValueError({
-      field: 'axis',
-      value: input.axis,
+      code: ValueFailure.TermNameEmpty,
+      details: {
+        value: input.name,
+      },
     });
   }
 
@@ -139,12 +80,12 @@ const is = (candidate: unknown): candidate is Term =>
   candidate instanceof Object &&
   [
     'address',
-    'axis',
     'block',
     'name',
     'sentence',
   ].every((field) => typeof Reflect.get(candidate, field) === 'string') &&
-  termKinds.includes(String(Reflect.get(candidate, 'kind')));
+  termKinds.includes(String(Reflect.get(candidate, 'kind'))) &&
+  Block.isAxis(String(Reflect.get(candidate, 'axis')));
 
 const equals = (left: Term, right: Term): boolean => left.name === right.name;
 
@@ -160,7 +101,6 @@ const Term = {
   create,
   equals,
   is,
-  nameOf,
   sentenceAround,
 } as const;
 

@@ -11,8 +11,10 @@ import type {
 } from '@stryker-mutator/api/test-runner';
 import { DryRunStatus, MutantRunStatus, TestStatus } from '@stryker-mutator/api/test-runner';
 
-import { specsByFile } from '#/kernel/utils';
 import { importsOf } from '#/libs/imports';
+
+import { childEnvOf } from './child-env.utils.ts';
+import { specsByFile } from './specs-by-file.utils.ts';
 
 // Stryker's INSTRUMENTER_CONSTANTS.ACTIVE_MUTANT_ENV_VARIABLE: its module reads Stryker's schema
 // beside it when imported, and the archive's bundle of this runner carries no schema.
@@ -86,10 +88,10 @@ const runSpecs = (input: {
       ...input.specs.map((spec) => `./${spec}`),
     ],
     {
-      env: {
-        ...Bun.env,
-        ...input.env,
-      },
+      env: childEnvOf({
+        environment: Bun.env,
+        own: input.env,
+      }),
       stderr: 'pipe',
       stdout: 'ignore',
     },

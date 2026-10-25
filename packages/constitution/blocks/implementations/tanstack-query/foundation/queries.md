@@ -8,17 +8,17 @@
 
 A read goes through `useQuery`, or `useSuspenseQuery` where the read suspends, and a write through `useMutation`.
 
-| Why | Tags |
-|---|---|
-| the cache then handles loading, deduplication and retries, which a hand-written request gets wrong. | [data] |
+| Why |
+|---|
+| the cache then handles loading, deduplication and retries, which a hand-written request gets wrong. |
 
 ### query-result-returned-as-status-union → data-result-is-union-by-status · MUST
 
 What wraps a query or a mutation returns Query's own result narrowed by its `status` — pending; error, with its typed error and, after a failed refetch, the data already shown; success, with its data. Or the read suspends — `useSuspenseQuery` — and the boundary above it handles the pending and failed states. The error type is registered once for the cache, and no default is invented.
 
-| Why | Tags |
-|---|---|
-| consumers then handle states, not combinations of flags, and never mistake "not loaded" for "empty". | [data] |
+| Why |
+|---|
+| consumers then handle states, not combinations of flags, and never mistake "not loaded" for "empty". |
 
 ## Inputs and streams
 
@@ -26,17 +26,17 @@ What wraps a query or a mutation returns Query's own result narrowed by its `sta
 
 A query driven by typing is keyed on the debounced or deferred value, and keeps the previous result as its placeholder.
 
-| Why | Tags |
-|---|---|
-| a query per keystroke floods the server, and a blank list between keystrokes flickers. | [] |
+| Why |
+|---|
+| a query per keystroke floods the server, and a blank list between keystrokes flickers. |
 
 ### stream-folded-into-cache-per-frame → fast-source-updates-once-per-frame · SHOULD
 
 A stream's events reach the cache in batches, with at most one cache write per frame.
 
-| Why | Tags |
-|---|---|
-| a cache write per event redraws every subscriber on every event. | [data] |
+| Why |
+|---|
+| a cache write per event redraws every subscriber on every event. |
 
 ## Cancellation and retries
 
@@ -44,14 +44,14 @@ A stream's events reach the cache in batches, with at most one cache write per f
 
 `queryFn` passes Query's abort signal to the operation it calls, down to the request, so a screen that is left cancels its read.
 
-| Why | Tags |
-|---|---|
-| a read nobody waits for still costs the network and the server. | [] |
+| Why |
+|---|
+| a read nobody waits for still costs the network and the server. |
 
 ### query-retry-only-transient → failure-retried-only-when-transient · MUST
 
 The client's `retry` is a predicate on the error's transience, with a limit — never the default three retries on every error — and `false` where the transport already retries; a mutation retries only when it is idempotent.
 
-| Why | Tags |
-|---|---|
-| retrying a failure that will not change delays the error the user needs to see. | [] |
+| Why |
+|---|
+| retrying a failure that will not change delays the error the user needs to see. |

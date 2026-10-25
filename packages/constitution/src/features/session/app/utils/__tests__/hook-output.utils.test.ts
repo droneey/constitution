@@ -50,11 +50,8 @@ describe('jsonTextOf', () => {
       text: 'a ~é😀\u0080b',
     },
   ])('should escape the text byte for byte when it holds $condition', ({ escaped, text }) => {
-    // Arrange
-    const input = text;
-
     // Act
-    const json = jsonTextOf(input);
+    const json = jsonTextOf(text);
 
     // Assert
     expect(json).toBe(escaped);

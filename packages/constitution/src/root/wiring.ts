@@ -57,20 +57,22 @@ import {
   recordReminders,
   remindOfFile,
 } from '#/features/session';
-import { createTmpSessionRepository } from '#/features/session/adapters/session-store';
+import type { SessionsPlace } from '#/features/session/adapters/session-store';
+import { createXdgSessionRepository } from '#/features/session/adapters/session-store';
+import { PROGRAM_NAME } from '#/kernel/constants';
 import type { ProjectFiles, ProjectSource, WorkingTree } from '#/kernel/contracts';
 import type { ProjectWarning } from '#/kernel/entities';
 import { Version } from '#/kernel/value-objects';
-import { createHelpLayout } from '#/libs/commander';
+import { configureHelpLayout } from '#/libs/commander';
 import type { CommandContext, CommandIo, CommandPlaces } from '#/shared/cli';
-import { OUTPUT_FLAGS, outputFlagsOf } from '#/shared/cli';
+import { ExitCode, OUTPUT_FLAGS, outputFlagsOf } from '#/shared/cli';
 
 import { clockOf } from './configuration';
 import type { ErrorHandler } from './error-handler';
 import { createErrorHandler } from './error-handler';
-import { ExitCode } from './exit-codes';
 import type { Streams } from './presentation';
 import { createPresentation } from './presentation';
+import { stateFolderWarningText } from './state-folder-warning';
 
 interface ProgramInput {
   readonly accent: AccentTokens;
@@ -83,8 +85,7 @@ interface ProgramInput {
     readonly output: Readonly<Record<string, string | undefined>>;
     /** the plugin's folder, when Claude Code runs a hook from it */
     readonly pluginRoot: string | undefined;
-    /** the folder each session keeps its state in */
-    readonly sessions: string;
+    readonly sessions: SessionsPlace;
     /** the day the specs fix the clock at, YYYY-MM-DD; absent for the system's clock */
     readonly today?: string;
   };
@@ -99,12 +100,13 @@ interface ProgramInput {
 }
 
 interface Program {
+  /** the handler of last resort for a failure outside a run: writes it and gives its code */
+  readonly fail: (error: unknown) => ExitCode;
   readonly run: (args: readonly string[]) => Promise<ExitCode>;
   /** ends whatever is still drawn, as an interrupt asks */
   readonly stop: () => Promise<void>;
 }
 
-const NAME = 'constitution';
 const HOOK = 'hook';
 // The time each outside call may take: a run of git, of a program on PATH, of lefthook, and the
 // call that asks GitHub for the latest release.
@@ -112,8 +114,11 @@ const GIT_TIMEOUT_MS = 30_000;
 const PROGRAM_TIMEOUT_MS = 5000;
 const LEFTHOOK_TIMEOUT_MS = 10_000;
 const RELEASE_TIMEOUT_MS = 3000;
-// The folders the workspace's globs list at most in one look.
+// The files a folder of a release or a pack lists at most, the workspace's folders in one look, and
+// the globs one workspace glob's braces spell out.
+const FOLDER_FILES = 10_000;
 const WORKSPACE_FOLDERS = 10_000;
+const WORKSPACE_GLOBS = 1000;
 
 interface Ports {
   readonly configurations: ConfigurationParser;
@@ -126,7 +131,9 @@ interface Ports {
 
 const portsOf = (input: ProgramInput): Ports => {
   const configurations = createConfigurationParser();
-  const files = createNodeProjectFiles();
+  const files = createNodeProjectFiles({
+    maxFiles: FOLDER_FILES,
+  });
   const workingTree = createGitWorkingTree({
     env: input.environment.commands,
     timeoutMs: GIT_TIMEOUT_MS,
@@ -135,8 +142,11 @@ const portsOf = (input: ProgramInput): Ports => {
   return {
     configurations,
     files,
-    sessions: createTmpSessionRepository({
-      folder: input.environment.sessions,
+    sessions: createXdgSessionRepository({
+      ...input.environment.sessions,
+      maxSessions: FOLDER_FILES,
+      now: (): Temporal.Instant => Temporal.Now.instant(),
+      warn: (warning): void => input.io.writeError(stateFolderWarningText(warning)),
     }),
     source: createProjectSource({
       cardParser: createYamlBlockCardParser(),
@@ -145,6 +155,7 @@ const portsOf = (input: ProgramInput): Ports => {
       files,
       workspace: createManifestWorkspace({
         maxFolders: WORKSPACE_FOLDERS,
+        maxGlobs: WORKSPACE_GLOBS,
       }),
     }),
     wiring: createPresetsWiringCheck({
@@ -195,10 +206,10 @@ const groupOf = (input: {
   name: string;
   parent: Command;
 }): Command =>
-  input.context.withExamples(
-    new Command(input.name).description(input.description).copyInheritedSettings(input.parent),
-    input.examples,
-  );
+  new Command(input.name)
+    .description(input.description)
+    .addHelpText('before', input.context.helpExamples(input.examples))
+    .copyInheritedSettings(input.parent);
 
 interface Registration {
   readonly context: CommandContext;
@@ -319,13 +330,19 @@ const registerCommands = (registration: Registration): void => {
     folder: string;
   }): Validation | undefined =>
     checkBlocks({
-      ...asked,
+      ...(asked.base === undefined
+        ? {}
+        : {
+            base: asked.base,
+          }),
       bindingsParser: createYamlBindingsParser(),
       files: ports.files,
+      folder: asked.folder,
       frontMatterParser: createYamlFrontMatterParser(),
       manifestParser: createJsonManifestParser(),
       trees: createGitFileTrees({
         env: programInput.environment.commands,
+        maxFiles: FOLDER_FILES,
         timeoutMs: GIT_TIMEOUT_MS,
       }),
     });
@@ -392,8 +409,7 @@ const registerCommands = (registration: Registration): void => {
 };
 
 const createProgram = (input: ProgramInput): Program => {
-  const examples = new Map<unknown, readonly string[]>();
-  const program = new Command(NAME);
+  const program = new Command(PROGRAM_NAME);
   let running: Command | undefined;
   let isFailed = false;
   const presentation = createPresentation({
@@ -409,6 +425,7 @@ const createProgram = (input: ProgramInput): Program => {
     theme: presentation.theme,
     writeError: input.io.writeError,
   });
+  const helpExamples = configureHelpLayout(program, presentation.theme);
 
   program
     .description(
@@ -422,14 +439,6 @@ const createProgram = (input: ProgramInput): Program => {
       writeErr: input.io.writeError,
       writeOut: input.io.write,
     })
-    .configureHelp({
-      formatHelp: (command, helper) =>
-        createHelpLayout({
-          examplesOf: (asked: Command) => examples.get(asked) ?? [],
-          theme: presentation.theme(),
-        }).formatHelp(command, helper),
-      showGlobalOptions: true,
-    })
     .exitOverride()
     .showSuggestionAfterError(true)
     .hook('preAction', (_program: Command, action: Command): void => {
@@ -440,33 +449,35 @@ const createProgram = (input: ProgramInput): Program => {
     program.option(flag.flags, flag.description);
   }
 
-  examples.set(program, [
-    'constitution check',
-    'constitution doctor',
-    'constitution presets plan',
-  ]);
-  registerCommands({
-    ports: portsOf(input),
-    context: {
-      io: input.io,
-      places: input.places,
-      renderer: presentation.renderer,
-      setFailed: (): void => {
-        isFailed = true;
-      },
-      withExamples: <TCommand>(command: TCommand, given: readonly string[]): TCommand => {
-        examples.set(command, given);
-
-        return command;
-      },
-    },
-    program,
-    programInput: input,
-  });
+  program.addHelpText(
+    'before',
+    helpExamples([
+      'constitution check',
+      'constitution doctor',
+      'constitution presets plan',
+    ]),
+  );
 
   return {
+    fail: errors.codeOf,
     run: async (args: readonly string[]): Promise<ExitCode> => {
       try {
+        // building the ports parses the configuration: a malformed setting fails the start here
+        registerCommands({
+          ports: portsOf(input),
+          context: {
+            io: input.io,
+            places: input.places,
+            renderer: presentation.renderer,
+            setFailed: (): void => {
+              isFailed = true;
+            },
+            helpExamples,
+          },
+          program,
+          programInput: input,
+        });
+
         await program.parseAsync(args, {
           from: 'user',
         });
@@ -484,5 +495,4 @@ const createProgram = (input: ProgramInput): Program => {
   };
 };
 
-export type { Program, ProgramInput };
 export { createProgram };

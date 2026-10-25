@@ -8,17 +8,17 @@
 
 A tool server never asks for a password, a key, a token or a payment credential through a form the client shows; it sends the user to a URL of its own, which carries no credential or personal data.
 
-| Why | Tags |
-|---|---|
-| what a form collects passes through the client and the model's context, where logs and other servers read it. | [security] |
+| Why |
+|---|
+| what a form collects passes through the client and the model's context, where logs and other servers read it. |
 
 ### url-elicitation-completed-by-the-same-user · MUST
 
 A server checks, by its own sign-in, that the user who completes a URL elicitation is the one it was issued for, before it keeps what the flow yields.
 
-| Why | Tags |
-|---|---|
-| an attacker forwards the link to a victim and otherwise receives the victim's tokens. | [security] |
+| Why |
+|---|
+| an attacker forwards the link to a victim and otherwise receives the victim's tokens. |
 
 ## Long calls
 
@@ -26,9 +26,9 @@ A server checks, by its own sign-in, that the user who completes a URL elicitati
 
 A tool call that may outlast the client's patience answers with a task of the protocol's tasks extension where the client supports it, and otherwise sends progress notifications on its response stream when its request asks for them.
 
-| Why | Tags |
-|---|---|
-| a client with no news from a call cuts it at its timeout, while a task lets it follow the work without holding the call open. | [ux] |
+| Why |
+|---|
+| a client with no news from a call cuts it at its timeout, while a task lets it follow the work without holding the call open. |
 
 ## State
 
@@ -36,6 +36,6 @@ A tool call that may outlast the client's patience answers with a task of the pr
 
 A `requestState` a tool server hands a client is read as the caller's input when it returns: where it steers access or what the tool does it is protected by an HMAC or an AEAD and carries the caller, a short expiry and the request it belongs to, each checked, and a state that may be used once is consumed on the server.
 
-| Why | Tags |
-|---|---|
-| the state passes through the client, which may change it, replay it or hand it to another caller. | [security] |
+| Why |
+|---|
+| the state passes through the client, which may change it, replay it or hand it to another caller. |

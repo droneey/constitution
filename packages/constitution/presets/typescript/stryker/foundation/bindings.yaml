@@ -3,6 +3,9 @@ bun-test:
     - coverageAnalysis
     - plugins
     - testRunner
+commander:
+  every-mutant-killed:
+    - diagnosticsTextArguments
 core:
   every-mutant-killed:
     - break

@@ -115,12 +115,12 @@ describe('the knip preset', () => {
       part: 'typescript/shfmt',
     },
     {
-      binary: 'uv',
-      part: 'typescript/uv',
+      binary: 'tombi',
+      part: 'typescript/tombi',
     },
     {
-      binary: 'yamlfmt',
-      part: 'typescript/yamlfmt',
+      binary: 'uv',
+      part: 'typescript/uv',
     },
     {
       binary: 'yamllint',

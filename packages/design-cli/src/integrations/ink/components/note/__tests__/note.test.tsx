@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import { Tone } from '#/libs/ui';
 
-import { renderWithTheme } from '../../../__tests__/ink.fixtures';
+import { renderWithTheme, screenReaderOutputOf } from '../../../__tests__/ink.fixtures';
 import { Note } from '../note';
 
 describe('Note', () => {
@@ -26,5 +26,21 @@ describe('Note', () => {
       `│ one${' '.repeat(94)}│`,
       `╰${'─'.repeat(98)}╯`,
     ]);
+  });
+
+  it('should read out its tone and its title', () => {
+    // Arrange
+    const note = {
+      lines: [],
+      title: 'Heads up',
+      tone: Tone.Warning,
+    };
+
+    // Act
+    const spoken = screenReaderOutputOf(<Note note={note} />);
+
+    // Assert
+    // biome-ignore lint/plugin/case-pins-meaning-never-wording: the one golden of what the note says to a screen reader
+    expect(spoken).toBe('warning Heads up');
   });
 });

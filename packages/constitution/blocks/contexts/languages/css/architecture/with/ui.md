@@ -8,6 +8,6 @@
 
 A component's own stylesheet is in the component's folder, named after the component.
 
-| Why | Tags |
-|---|---|
-| the styles then move, and are deleted, with the component. | [] |
+| Why |
+|---|
+| the styles then move, and are deleted, with the component. |

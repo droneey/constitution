@@ -41,11 +41,8 @@ describe('RuleSlug', () => {
       text: '-inputs',
     },
   ])('should tell a slug when $condition', ({ isSlug, text }) => {
-    // Arrange
-    const candidate = text;
-
     // Act
-    const isRuleSlug = RuleSlug.is(candidate);
+    const isRuleSlug = RuleSlug.is(text);
 
     // Assert
     expect(isRuleSlug).toBe(isSlug);
@@ -61,11 +58,8 @@ describe('RuleSlug', () => {
       given: 42,
     },
   ])('should tell no slug when $condition', ({ given }) => {
-    // Arrange
-    const candidate: unknown = given;
-
     // Act
-    const isValue = RuleSlug.is(candidate);
+    const isValue = RuleSlug.is(given);
 
     // Assert
     expect(isValue).toBe(false);

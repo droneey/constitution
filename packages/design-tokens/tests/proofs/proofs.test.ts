@@ -6,14 +6,11 @@ describe('the default theme', () => {
   it.each(contrastCases)(
     'should give $foreground on $background at least $minimum:1 in the $mode mode',
     (pair) => {
-      // Arrange
-      const { minimum } = pair;
-
       // Act
       const contrast = contrastOf(pair);
 
       // Assert
-      expect(contrast).toBeGreaterThanOrEqual(minimum);
+      expect(contrast).toBeGreaterThanOrEqual(pair.minimum);
     },
   );
 

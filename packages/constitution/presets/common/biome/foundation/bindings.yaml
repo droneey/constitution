@@ -1,3 +1,7 @@
 self:
   biome-formats-every-file-it-reads:
     - formatter
+  formatters-share-one-indent-and-width:
+    - indentStyle
+    - indentWidth
+    - lineWidth

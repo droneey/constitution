@@ -7,13 +7,6 @@ import { StopVerdict } from '../../../../domain/entities';
 import type { SessionId } from '../../../../domain/value-objects';
 import { hookEventNameOf, hookEventOf, jsonTextOf, sessionIdOf } from '../../../utils';
 
-// Stryker disable ArrayDeclaration,StringLiteral: help text commander prints; no caller relies on it
-const DESCRIPTION = 'Hold the hand-back until the check passed on the tree, and ask for a review.';
-const EXAMPLES: readonly string[] = [
-  `printf '{"session_id":"s1","hook_event_name":"Stop"}' | constitution hook stop`,
-] as const;
-// Stryker restore ArrayDeclaration,StringLiteral
-
 interface StopContext extends CommandContext {
   readonly judgeStop: (event: StopEvent) => StopJudgement | undefined;
   readonly recordJudgement: (input: { judgement: StopJudgement; session: SessionId }) => void;
@@ -25,24 +18,25 @@ const answerOf = (judgement: StopJudgement): string | undefined => {
       return undefined;
     case StopVerdict.Blocked:
       return `{"decision":"block","reason":"The tree changed since the check last passed. Run the project's check, \`${jsonTextOf(judgement.check)}\`, and hand back only when it passes."}\n`;
-    default: {
-      // Review, the one verdict left: a verdict added to the union fails to compile here
-      const review: Extract<
-        StopJudgement,
-        {
-          verdict: StopVerdict.Review;
-        }
-      > = judgement;
-
-      return `{"systemMessage":"Changed files fall under ${jsonTextOf(review.blocks.join(', '))}; /check edits reviews them against the rules."}\n`;
-    }
+    case StopVerdict.Review:
+      return `{"systemMessage":"Changed files fall under ${jsonTextOf(judgement.blocks.join(', '))}; /check edits reviews them against the rules."}\n`;
+    // Stryker disable next-line ConditionalExpression: no verdict reaches the default, which only the compiler reads
+    default:
+      return judgement satisfies never;
   }
 };
 
 /** Stop and SubagentStop: the hand-back gate, the tree it judged recorded. */
 const createStopCommand = (context: StopContext): Command =>
-  context.withExamples(
-    new Command('stop').description(DESCRIPTION).action(async (): Promise<void> => {
+  new Command('stop')
+    .description('Hold the hand-back until the check passed on the tree, and ask for a review.')
+    .addHelpText(
+      'before',
+      context.helpExamples([
+        `printf '{"session_id":"s1","hook_event_name":"Stop"}' | constitution hook stop`,
+      ]),
+    )
+    .action(async (): Promise<void> => {
       const event = hookEventOf(await context.io.readInput());
       const session = sessionIdOf(event);
       const agentName = event.field('agent_name');
@@ -82,8 +76,6 @@ const createStopCommand = (context: StopContext): Command =>
       if (answer !== undefined) {
         context.io.write(answer);
       }
-    }),
-    EXAMPLES,
-  );
+    });
 
 export { createStopCommand };

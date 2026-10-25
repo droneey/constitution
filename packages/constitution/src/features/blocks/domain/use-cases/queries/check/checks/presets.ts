@@ -1,5 +1,5 @@
 import type { Axis } from '#/kernel/constants';
-import { COMMON_SCOPE, Layer, SELF_PART } from '#/kernel/constants';
+import { COMMON_SCOPE, Layer, PRESETS_FOLDER, SELF_PART } from '#/kernel/constants';
 import { Rule } from '#/kernel/entities';
 import type { FindingOf, ProblemOf } from '#/kernel/types';
 import type { PresetFolder } from '#/kernel/value-objects';
@@ -46,7 +46,7 @@ type PresetsFinding = FindingOf<PresetsDetails>;
 type PresetsProblem = ProblemOf<PresetsDetails>;
 
 // a module the configurations of a scope import, beside its tools' folders
-const SHARED = /^presets\/([^/]+)\/[^/.][^/]*\.[^/.]+$/;
+const sharedModule = new RegExp(`^${RegExp.escape(PRESETS_FOLDER)}/([^/]+)/[^/.][^/]*\\.[^/.]+$`);
 
 const nameProblem = (input: {
   isBlock: (name: string) => boolean;
@@ -127,7 +127,7 @@ const presetsCheck: Check<PresetsFinding> = ({
   const isBlock = (name: string): boolean => BlockGraph.named(graph, name) !== undefined;
 
   return constitution.presets.flatMap(({ path }): readonly PresetsFinding[] => {
-    const shared = SHARED.exec(path)?.[1];
+    const shared = sharedModule.exec(path)?.[1];
 
     if (
       shared === COMMON_SCOPE ||

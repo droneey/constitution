@@ -8,6 +8,6 @@
 
 pino-http takes the program's instance as `logger`.
 
-| Why | Tags |
-|---|---|
-| pino-http given no `logger` builds an instance of its own, which writes the caller's `authorization` header unmasked. | [data, security] |
+| Why |
+|---|
+| pino-http given no `logger` builds an instance of its own, which writes the caller's `authorization` header unmasked. |

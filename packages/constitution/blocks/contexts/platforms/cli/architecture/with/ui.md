@@ -8,6 +8,6 @@
 
 A command renders its screen through a renderer the root hands it, which loads the terminal renderer and the screen; the command imports neither.
 
-| Why | Tags |
-|---|---|
-| the command stays a binding unit the interface imports and never the reverse, and the root alone chooses between the terminal and the plain path. | [] |
+| Why |
+|---|
+| the command stays a binding unit the interface imports and never the reverse, and the root alone chooses between the terminal and the plain path. |

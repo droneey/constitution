@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it } from 'bun:test';
 
 import { cleanup, render, screen } from '@testing-library/react';
 
+import { componentViolationsIn } from '../../../__tests__/axe.fixtures';
 import {
   applyStylesheet,
   removeStylesheets,
@@ -78,5 +79,35 @@ describe('Icon', () => {
       strokeWidth: TOKEN_VALUES['--stroke-icon'],
       width: TOKEN_VALUES['--size-icon-md'],
     });
+  });
+
+  it.each([
+    {
+      condition: 'it decorates a text',
+      tree: (
+        <p>
+          Rules
+          <Icon name={IconName.Expand} />
+        </p>
+      ),
+    },
+    {
+      condition: 'it has a label',
+      tree: (
+        <Icon
+          label='Current version'
+          name={IconName.Selected}
+        />
+      ),
+    },
+  ])('should break no rule of WCAG A and AA when $condition', async ({ tree }) => {
+    // Arrange
+    render(tree);
+
+    // Act
+    const violations = await componentViolationsIn();
+
+    // Assert
+    expect(violations).toStrictEqual([]);
   });
 });

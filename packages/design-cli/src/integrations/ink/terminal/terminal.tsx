@@ -3,10 +3,16 @@ import { StrictMode } from 'react';
 
 import { render } from 'ink';
 
-import type { Choice } from '../components';
 import { Confirm, Select, TextInput, ThemeProvider } from '../components';
 import { AnswerKind } from './terminal.constants';
-import type { Answer, TerminalInput, TerminalView } from './terminal.types';
+import type {
+  Answer,
+  AskConfirmInput,
+  AskSelectInput,
+  AskTextInput,
+  TerminalInput,
+  TerminalView,
+} from './terminal.types';
 
 /** Ctrl-C reaches the tree as a key, never as Ink's own exit, so a question can end the run as interrupted. */
 const openTerminalView = ({ accent, output, streams }: TerminalInput): TerminalView => {
@@ -68,12 +74,7 @@ const ask = async <T,>(
   }
 };
 
-const askSelect = <T,>(
-  input: TerminalInput & {
-    choices: readonly Choice<T>[];
-    message: string;
-  },
-): Promise<Answer<T>> =>
+const askSelect = <T,>(input: AskSelectInput<T>): Promise<Answer<T>> =>
   ask<T>({
     ...input,
     question: (answer, interrupt) => (
@@ -86,12 +87,7 @@ const askSelect = <T,>(
     ),
   });
 
-const askConfirm = (
-  input: TerminalInput & {
-    defaultAnswer: boolean;
-    message: string;
-  },
-): Promise<Answer<boolean>> =>
+const askConfirm = (input: AskConfirmInput): Promise<Answer<boolean>> =>
   ask<boolean>({
     ...input,
     question: (answer, interrupt) => (
@@ -100,16 +96,12 @@ const askConfirm = (
         message={input.message}
         onInterrupt={interrupt}
         onSubmit={answer}
+        words={input.words}
       />
     ),
   });
 
-const askText = (
-  input: TerminalInput & {
-    message: string;
-    placeholder: string;
-  },
-): Promise<Answer<string>> =>
+const askText = (input: AskTextInput): Promise<Answer<string>> =>
   ask<string>({
     ...input,
     question: (answer, interrupt) => (

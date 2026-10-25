@@ -106,11 +106,8 @@ describe('PartAddress', () => {
       text: 'typescript/biome/foundation/',
     },
   ])('should refuse an address when $condition', ({ input, text }) => {
-    // Arrange
-    const address = input;
-
     // Act
-    const create = (): PartAddress => PartAddress.create(address);
+    const create = (): PartAddress => PartAddress.create(input);
 
     // Assert
     expect(create).toThrow(
@@ -177,11 +174,8 @@ describe('PartAddress', () => {
       isAddress: false,
     },
   ])('should say $isAddress when $condition', ({ candidate, isAddress }) => {
-    // Arrange
-    const given: unknown = candidate;
-
     // Act
-    const answer = PartAddress.is(given);
+    const answer = PartAddress.is(candidate);
 
     // Assert
     expect(answer).toBe(isAddress);

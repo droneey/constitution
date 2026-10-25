@@ -1,0 +1,10 @@
+# tombi — the Constitution's parts, copied, each between its two lines, since tombi reads no other file
+# from <parts>
+<copied parts>
+# end <parts>
+
+# tombi — the members, each checked by its own configuration in its own run
+[files]
+exclude = [
+  "<unit folders>/**",
+]

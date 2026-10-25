@@ -77,11 +77,8 @@ describe('installationOutcomeOf', () => {
       },
     },
   ])('should end the step as $outcome.status when $condition', ({ diagnoses, outcome }) => {
-    // Arrange
-    const found = diagnoses;
-
     // Act
-    const given = installationOutcomeOf(found);
+    const given = installationOutcomeOf(diagnoses);
 
     // Assert
     expect(given).toStrictEqual(outcome);

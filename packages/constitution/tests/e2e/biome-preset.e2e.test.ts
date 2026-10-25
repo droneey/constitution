@@ -6,6 +6,7 @@ import {
   createLintBatch,
   formattedText,
   presetFiles,
+  presetPluginPaths,
   presetText,
   presetWords,
 } from './biome-preset.fixtures';
@@ -257,6 +258,134 @@ describe('the Biome preset', () => {
         },
         plugin: 'file-is-one-semantic-unit',
       },
+      {
+        condition: 'an exported function takes an object typed inline',
+        files: {
+          'src/features/orders/order.ts':
+            'export const totalOf = (input: { count: number; price: number }): number =>\n  input.count * input.price;\n',
+        },
+        plugin: 'parameter-object-has-a-named-type',
+      },
+      {
+        condition: 'an exported function declaration takes an object typed inline',
+        files: {
+          'src/features/orders/order.ts':
+            'export function totalOf(input: { count: number; price: number }): number {\n  return input.count * input.price;\n}\n',
+        },
+        plugin: 'parameter-object-has-a-named-type',
+      },
+      {
+        condition: 'an exported function takes an object typed inline beside a named type',
+        files: {
+          'src/features/orders/order.ts':
+            'interface OrderPorts {\n  readonly clock: () => number;\n}\n\nexport const placeOrder = (input: OrderPorts & { id: string }): string => input.id;\n',
+        },
+        plugin: 'parameter-object-has-a-named-type',
+      },
+      {
+        condition: 'a function an export list names takes an object typed inline',
+        files: {
+          'src/features/orders/order.ts':
+            'const totalOf = (input: { count: number; price: number }): number =>\n  input.count * input.price;\n\nexport { totalOf };\n',
+        },
+        plugin: 'parameter-object-has-a-named-type',
+      },
+      {
+        condition: 'a function an export list renames takes an object typed inline',
+        files: {
+          'src/features/orders/order.ts':
+            'const totalOf = (input: { count: number; price: number }): number =>\n  input.count * input.price;\n\nexport { totalOf as orderTotalOf };\n',
+        },
+        plugin: 'parameter-object-has-a-named-type',
+      },
+      {
+        condition: 'a function property of an exported interface takes an object typed inline',
+        files: {
+          'src/features/orders/order.port.ts':
+            'export interface OrderRepository {\n  readonly save: (input: { id: string; total: number }) => void;\n}\n',
+        },
+        plugin: 'parameter-object-has-a-named-type',
+      },
+      {
+        condition: 'a method of a type an export list names takes an object typed inline',
+        files: {
+          'src/features/orders/order.port.ts':
+            'interface OrderRepository {\n  save(input: { id: string; total: number }): void;\n}\n\nexport type { OrderRepository };\n',
+        },
+        plugin: 'parameter-object-has-a-named-type',
+      },
+      {
+        condition: 'a case opens no section',
+        files: {
+          'src/__tests__/order.test.ts':
+            "import { expect, test } from 'bun:test';\n\ntest('should add totals', () => {\n  expect(1 + 1).toBe(2);\n});\n",
+        },
+        plugin: 'case-split-by-arrange-act-assert-comments',
+      },
+      {
+        condition: 'a case asserts with no Act',
+        files: {
+          'src/__tests__/order.test.ts':
+            "import { expect, test } from 'bun:test';\n\ntest('should add totals', () => {\n  // Arrange\n  const total = 1 + 1;\n\n  // Assert\n  expect(total).toBe(2);\n});\n",
+        },
+        plugin: 'case-split-by-arrange-act-assert-comments',
+      },
+      {
+        condition: 'a case arranges after it acts',
+        files: {
+          'src/__tests__/order.test.ts':
+            "import { expect, test } from 'bun:test';\n\ntest('should add totals', () => {\n  // Act\n  const total = 1 + 1;\n\n  // Arrange\n  const expected = 2;\n\n  // Assert\n  expect(total).toBe(expected);\n});\n",
+        },
+        plugin: 'case-split-by-arrange-act-assert-comments',
+      },
+      {
+        condition: 'a case asserts before it acts',
+        files: {
+          'src/__tests__/order.test.ts':
+            "import { expect, test } from 'bun:test';\n\ntest('should add totals', () => {\n  // Assert\n  expect(2).toBe(2);\n\n  // Act\n  String(1 + 1);\n});\n",
+        },
+        plugin: 'case-split-by-arrange-act-assert-comments',
+      },
+      {
+        condition: 'a case leaves its Arrange empty',
+        files: {
+          'src/__tests__/order.test.ts':
+            "import { expect, test } from 'bun:test';\n\ntest('should add totals', () => {\n  // Arrange\n\n  // Act\n  const total = 1 + 1;\n\n  // Assert\n  expect(total).toBe(2);\n});\n",
+        },
+        plugin: 'case-split-by-arrange-act-assert-comments',
+      },
+      {
+        condition: 'a case writes its Act comment after a statement',
+        files: {
+          'src/__tests__/order.test.ts':
+            "import { expect, test } from 'bun:test';\n\ntest('should add totals', () => {\n  const total = 1 + 1; // Act\n\n  // Assert\n  expect(total).toBe(2);\n});\n",
+        },
+        plugin: 'case-split-by-arrange-act-assert-comments',
+      },
+      {
+        condition: 'a case acts twice before it asserts',
+        files: {
+          'src/__tests__/order.test.ts':
+            "import { expect, test } from 'bun:test';\n\ntest('should add totals', () => {\n  // Act\n  const total = 1 + 1;\n\n  // Act\n  const doubled = total * 2;\n\n  // Assert\n  expect(doubled).toBe(4);\n});\n",
+        },
+        plugin: 'case-split-by-arrange-act-assert-comments',
+      },
+      {
+        condition: 'a lifecycle case ends on an Act',
+        files: {
+          'src/__tests__/order.test.ts':
+            "import { expect, test } from 'bun:test';\n\ntest('should add totals', () => {\n  // Act\n  const total = 1 + 1;\n\n  // Assert\n  expect(total).toBe(2);\n\n  // Act\n  String(total);\n});\n",
+        },
+        plugin: 'case-split-by-arrange-act-assert-comments',
+      },
+      {
+        condition: "a table's case opens no section",
+        files: {
+          'src/__tests__/order.test.ts':
+            "import { expect, test } from 'bun:test';\n\ntest.each([1])('should keep %p', (count) => {\n  expect(count).toBe(1);\n});\n",
+        },
+        plugin: 'case-split-by-arrange-act-assert-comments',
+      },
     ]),
   )('should report a plugin finding when $condition', ({ files, plugin }) => {
     // Arrange
@@ -285,7 +414,7 @@ describe('the Biome preset', () => {
           condition: 'a component memoises a value by hand',
           files: {
             'src/Panel.tsx':
-              "import { useMemo } from 'react';\n\nexport function Panel({ label }: { label: string }): string {\n  return useMemo(() => label.trim(), [label]);\n}\n",
+              "import { useMemo } from 'react';\n\ninterface PanelProps {\n  readonly label: string;\n}\n\nexport function Panel({ label }: PanelProps): string {\n  return useMemo(() => label.trim(), [label]);\n}\n",
           },
         },
         {
@@ -370,10 +499,17 @@ describe('the Biome preset', () => {
         },
       },
       {
+        condition: "a subset's type is taken from an as-const array of an enum's members",
+        files: {
+          'src/features/orders/domain/order-status.ts':
+            "export enum OrderStatus {\n  Open = 'open',\n  Paid = 'paid',\n  Closed = 'closed',\n}\n\nexport const SETTLED = [OrderStatus.Paid, OrderStatus.Closed] as const;\n\nexport type Settled = (typeof SETTLED)[number];\n",
+        },
+      },
+      {
         condition: 'a case reads should without a condition',
         files: {
           'src/__tests__/order.test.ts':
-            "import { expect, test } from 'bun:test';\n\ntest('should add totals', () => {\n  expect(1).toBe(1);\n});\n",
+            "import { expect, test } from 'bun:test';\n\ntest('should add totals', () => {\n  // Act\n  const total = 1 + 1;\n\n  // Assert\n  expect(total).toBe(2);\n});\n",
         },
       },
       {
@@ -387,7 +523,56 @@ describe('the Biome preset', () => {
         condition: "a spec builds a fake function through vi's object",
         files: {
           'src/__tests__/order.test.ts':
-            "import { expect, test, vi } from 'bun:test';\n\ntest('should call the loader when asked', () => {\n  const load = vi.fn();\n\n  load();\n\n  expect(load).toHaveBeenCalledTimes(1);\n});\n",
+            "import { expect, test, vi } from 'bun:test';\n\ntest('should call the loader when asked', () => {\n  // Arrange\n  const load = vi.fn();\n\n  // Act\n  load();\n\n  // Assert\n  expect(load).toHaveBeenCalledTimes(1);\n});\n",
+        },
+      },
+      {
+        condition: 'a function inside its module takes an object typed inline',
+        files: {
+          'src/features/orders/order.ts':
+            'const totalOf = (input: { count: number; price: number }): number =>\n  input.count * input.price;\n\nexport const priceOf = (count: number): number => totalOf({ count, price: 3 });\n',
+        },
+      },
+      {
+        condition: 'an exported function takes an object of a named type',
+        files: {
+          'src/features/orders/order.ts':
+            'interface TotalInput {\n  readonly count: number;\n  readonly price: number;\n}\n\nexport const totalOf = (input: TotalInput): number => input.count * input.price;\n',
+        },
+      },
+      {
+        condition: 'the callback an exported function takes types its own object inline',
+        files: {
+          'src/features/orders/order.ts':
+            "export const visitOrder = (visit: (order: { id: string }) => void): void => {\n  visit({ id: 'order' });\n};\n",
+        },
+      },
+      {
+        condition: "a local function's name is part of a name the export list holds",
+        files: {
+          'src/features/orders/order.ts':
+            'const total = (input: { count: number; price: number }): number => input.count * input.price;\n\nconst totalOf = (count: number): number => total({ count, price: 3 });\n\nexport { totalOf };\n',
+        },
+      },
+      {
+        condition: 'a case arranges, acts and asserts',
+        files: {
+          'src/__tests__/order.test.ts':
+            "import { expect, test } from 'bun:test';\n\ntest('should add totals', () => {\n  // Arrange\n  const count = 2;\n\n  // Act\n  const total = count * 3;\n\n  // Assert\n  expect(total).toBe(6);\n});\n",
+        },
+      },
+      {
+        condition: "a table's case takes every input from its row",
+        files: {
+          'src/__tests__/order.test.ts':
+            "import { expect, test } from 'bun:test';\n\ntest.each([1])('should keep %p', (count) => {\n  // Act\n  const kept = String(count);\n\n  // Assert\n  expect(kept).toBe('1');\n});\n",
+        },
+      },
+      {
+        condition: 'a lifecycle case repeats an Act and its Assert',
+        files: {
+          'src/__tests__/order.test.ts':
+            "import { expect, test } from 'bun:test';\n\ntest('should add totals', () => {\n  // Arrange\n  const totals = [1];\n\n  // Act\n  totals.push(2);\n\n  // Assert\n  expect(totals).toStrictEqual([1, 2]);\n\n  // Act\n  totals.push(3);\n\n  // Assert\n  expect(totals).toStrictEqual([1, 2, 3]);\n});\n",
         },
       },
     ]),
@@ -404,23 +589,15 @@ describe('the Biome preset', () => {
     expect(plugins).toStrictEqual([]);
   });
 
-  const adapterOnTheBase = lintCase({
-    files: {
-      'src/features/orders/adapters/api/order.adapter.ts':
-        'export const toCancelledAt = (raw: string | null): string | undefined =>\n  raw === null ? undefined : raw;\n',
-    },
-    parts: baseParts,
-  });
-
-  it('should report a plugin finding when an adapter maps null from the wire and a project extends only the self, core and typescript parts of the base', () => {
+  it('should declare each plugin in one entry of one part when the parts are read together', () => {
     // Arrange
-    const project = adapterOnTheBase;
+    const paths = presetPluginPaths();
 
     // Act
-    const { plugins } = lintFindings(project);
+    const repeated = paths.filter((path, index) => paths.indexOf(path) !== index);
 
     // Assert
-    expect(plugins).toContain('undefined-is-the-only-absence');
+    expect(repeated).toStrictEqual([]);
   });
 
   it('should name only folders, files and suffixes the blocks write when the preset scopes its rules', () => {
@@ -734,7 +911,7 @@ describe("the parts of Biome's base", () => {
   const clientThatRetriesNothing = lintCase({
     files: {
       'src/__tests__/order.test.ts':
-        "import { expect, test } from 'bun:test';\n\ntest('should load orders when the cache is fresh', () => {\n  const options = { queries: { retry: false } };\n\n  expect(options).toStrictEqual({ queries: { retry: false } });\n});\n",
+        "import { expect, test } from 'bun:test';\n\ntest('should load orders when the cache is fresh', () => {\n  // Act\n  const options = { queries: { retry: false } };\n\n  // Assert\n  expect(options).toStrictEqual({ queries: { retry: false } });\n});\n",
     },
     parts: testParts,
   });
@@ -843,6 +1020,22 @@ describe("the parts of Biome's base", () => {
           files: {
             'src/features/orders/order.ts':
               'export const orders = {\n  handle(): number {\n    return 1;\n  },\n};\n',
+          },
+          plugin: 'biome-refuses-empty-verbs',
+        },
+        {
+          condition: 'a generic function is named by an empty verb',
+          files: {
+            'src/features/orders/order.ts':
+              'export function get<T>(order: T): T {\n  return order;\n}\n',
+          },
+          plugin: 'biome-refuses-empty-verbs',
+        },
+        {
+          condition: 'a function expression bound to a constant is named by an empty verb',
+          files: {
+            'src/features/orders/order.ts':
+              'export const update = function (total: number): number {\n  return total + 1;\n};\n',
           },
           plugin: 'biome-refuses-empty-verbs',
         },
@@ -1170,14 +1363,21 @@ describe("the parts of Biome's base", () => {
           condition: 'a component takes a ref object as a prop',
           files: {
             'src/panel.tsx':
-              "import type { RefObject } from 'react';\n\nexport function Panel({ box }: { box: RefObject<HTMLDivElement | null> }): React.ReactElement {\n  return <div ref={box} />;\n}\n",
+              "import type { RefObject } from 'react';\n\ninterface PanelProps {\n  readonly box: RefObject<HTMLDivElement | null>;\n}\n\nexport function Panel({ box }: PanelProps): React.ReactElement {\n  return <div ref={box} />;\n}\n",
           },
         },
         {
           condition: 'a component renders the null branch of a conditional',
           files: {
             'src/panel.tsx':
-              'export function Panel({ isOpen }: { isOpen: boolean }): React.ReactElement | null {\n  return isOpen ? <div /> : null;\n}\n',
+              'interface PanelProps {\n  readonly isOpen: boolean;\n}\n\nexport function Panel({ isOpen }: PanelProps): React.ReactElement | null {\n  return isOpen ? <div /> : null;\n}\n',
+          },
+        },
+        {
+          condition: 'a component renders nothing in the first branch of a conditional',
+          files: {
+            'src/panel.tsx':
+              'interface PanelProps {\n  readonly isBusy: boolean;\n}\n\nexport function Panel({ isBusy }: PanelProps): React.ReactElement | null {\n  return isBusy ? null : <div />;\n}\n',
           },
         },
         {
@@ -1221,6 +1421,12 @@ describe("the parts of Biome's base", () => {
               'export const settings = new Proxy(\n  {},\n  {\n    get(target, property) {\n      return Reflect.get(target, property);\n    },\n  },\n);\n',
           },
         },
+        {
+          condition: 'a constant named by a verb holds no function',
+          files: {
+            'src/settings.ts': "export const update = Symbol('update');\n",
+          },
+        },
       ],
       {
         parts: [
@@ -1255,6 +1461,15 @@ describe("the parts of Biome's base", () => {
           },
         },
         {
+          condition:
+            'a conditional returns null as its first branch beside a value that is no markup',
+          plugin: 'nothing-rendered-as-null',
+          files: {
+            'src/panel.tsx':
+              'export const countOf = (isHidden: boolean): number | undefined => (isHidden ? null : 1) ?? undefined;\n',
+          },
+        },
+        {
           condition: 'a callback that is no component returns null',
           plugin: 'nothing-rendered-as-null',
           files: {
@@ -1269,6 +1484,11 @@ describe("the parts of Biome's base", () => {
             'src/panel.tsx':
               "import { useState } from 'react';\n\nexport const useMode = (): unknown => useState<'idle' | 'busy'>('idle');\n",
           },
+          parts: [
+            ...baseParts,
+            'typescript/_react',
+            'typescript/architecture/typescript',
+          ],
         },
       ],
       {
@@ -2566,20 +2786,12 @@ describe('the Biome framework parts', () => {
           plugin: 'field-declares-its-autocomplete',
         },
         {
-          condition: 'a spec finds an element by its test id',
-          files: {
-            'src/__tests__/panel.test.tsx':
-              "import { screen } from '@testing-library/react';\n\nexport const panel = (): HTMLElement => screen.getByTestId('panel');\n",
-          },
-          plugin: 'queries-by-role-label-text',
-        },
-        {
           condition: 'a spec finds an element by a selector',
           files: {
             'src/__tests__/panel.test.tsx':
               "export const panel = (container: HTMLElement): Element | null =>\n  container.querySelector('.panel');\n",
           },
-          plugin: 'queries-by-role-label-text',
+          plugin: 'spec-never-selects-from-the-document',
         },
         {
           condition: 'a class list sizes with h-screen',
@@ -2759,6 +2971,13 @@ describe('the Biome framework parts', () => {
               "import { screen } from '@testing-library/react';\n\nexport const panel = (): HTMLElement => screen.getByRole('region');\n",
           },
         },
+        {
+          condition: 'a spec finds an element no role, label or text names by its test id',
+          files: {
+            'src/__tests__/panel.test.tsx':
+              "import { screen } from '@testing-library/react';\n\nexport const glide = (): HTMLElement => screen.getByTestId('glide');\n",
+          },
+        },
       ],
       {
         files: {
@@ -2900,6 +3119,59 @@ describe('the Biome architecture parts', () => {
     ),
   )(
     'should report an effect reached through a global $isReported in $file when a project extends the core part',
+    ({ files, isReported, parts }) => {
+      // Arrange
+      const project = {
+        files,
+        parts,
+      };
+
+      // Act
+      const { rules } = lintFindings(project);
+
+      // Assert
+      expect(rules.includes('noRestrictedGlobals')).toBe(isReported);
+    },
+  );
+
+  it.each(
+    lintCases(
+      [
+        {
+          file: 'src/features/orders/domain/entities/order.entity.ts',
+          files: {
+            'src/features/orders/domain/entities/order.entity.ts':
+              "export const read = (): Promise<string> => Bun.file('orders.json').text();\n",
+          },
+          isReported: true,
+        },
+        {
+          file: 'src/features/orders/adapters/files/orders.adapter.ts',
+          files: {
+            'src/features/orders/adapters/files/orders.adapter.ts':
+              "export const read = (): Promise<string> => Bun.file('orders.json').text();\n",
+          },
+          isReported: false,
+        },
+        {
+          file: 'src/kernel/values/money.ts',
+          files: {
+            'src/kernel/values/money.ts':
+              "export const load = (): Promise<Response> => fetch('/orders');\n",
+          },
+          isReported: true,
+        },
+      ],
+      {
+        parts: [
+          ...baseParts,
+          'typescript/architecture/core',
+          'typescript/architecture/bun',
+        ],
+      },
+    ),
+  )(
+    'should report an effect reached through a global $isReported in $file when a project extends the bun part after core',
     ({ files, isReported, parts }) => {
       // Arrange
       const project = {
@@ -3071,6 +3343,48 @@ describe('the Biome architecture parts', () => {
     ),
   )(
     'should report a declaring surface $isReported when a project extends $parts',
+    ({ files, isReported, parts }) => {
+      // Arrange
+      const project = {
+        files,
+        parts,
+      };
+
+      // Act
+      const { plugins } = lintFindings(project);
+
+      // Assert
+      expect(plugins.includes('surface-only-re-exports')).toBe(isReported);
+    },
+  );
+
+  it.each(
+    lintCases(
+      [
+        {
+          files: {
+            'src/root/routes/index.tsx': 'export const Route = 1;\n',
+          },
+          isReported: false,
+          place: 'a route the framework registers under the root',
+        },
+        {
+          files: {
+            'src/root/index.ts': "export const ROOT = 'root';\n",
+          },
+          isReported: true,
+          place: "the root's surface",
+        },
+      ],
+      {
+        parts: [
+          ...baseParts,
+          'typescript/architecture/typescript',
+        ],
+      },
+    ),
+  )(
+    "should report a declaring index $isReported in $place when a project extends the language's architecture part",
     ({ files, isReported, parts }) => {
       // Arrange
       const project = {

@@ -1,6 +1,6 @@
 import { Placeholder } from '#/kernel/constants';
 import type { ProjectWarning } from '#/kernel/entities';
-import { ProjectUnit, WarningKind } from '#/kernel/entities';
+import { FileReadStatus, ProjectUnit, WarningKind } from '#/kernel/entities';
 
 import type { ConfigurationParser, Setting } from '../../../../../contracts';
 import type { Skip } from '../../../../../entities';
@@ -136,7 +136,8 @@ const stepFrom = (input: { setting: Setting | undefined; step: Step }): Setting 
 };
 
 // The folders the root's file of a skip lists where its template writes <unit folders>, none when
-// the file does not parse; undefined when the template's settings hold no such list.
+// the file does not parse; undefined when the template's settings hold no such list, or the file
+// cannot be read, which the check of the configurations warns of.
 const skippedOf = (input: {
   parser: ConfigurationParser;
   reads: WiringReads;
@@ -146,12 +147,13 @@ const skippedOf = (input: {
   const place = placeIn({
     setting: parser.parse({
       path: skip.template.path,
-      text: reads.partText(skip.template),
+      text: skip.text,
     }),
     steps: [],
   });
+  const read = reads.content(skip.path);
 
-  if (place === undefined) {
+  if (place === undefined || read.status !== FileReadStatus.Read) {
     return undefined;
   }
 
@@ -164,7 +166,7 @@ const skippedOf = (input: {
       }),
     parser.parse({
       path: skip.path,
-      text: reads.content(skip.path),
+      text: read.text,
     }),
   );
 
@@ -178,13 +180,15 @@ const skippedOf = (input: {
     .map((entry) => entry.slice(before.length, entry.length - after.length));
 };
 
+interface UnitSkipsInput {
+  readonly context: WiringContext;
+  readonly parser: ConfigurationParser;
+  readonly reads: WiringReads;
+}
+
 // Each folder the root's run of a tool skips holds a member of the workspace, and each member lies
 // in one: the root runs the tool on its own files alone, and each member on its own.
-const unitSkipsOf = (input: {
-  context: WiringContext;
-  parser: ConfigurationParser;
-  reads: WiringReads;
-}): readonly ProjectWarning[] => {
+const unitSkipsOf = (input: UnitSkipsInput): readonly ProjectWarning[] => {
   const { context } = input;
   const members = context.resolution.units
     .filter((unit) => !ProjectUnit.isRepository(unit))

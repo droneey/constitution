@@ -1,6 +1,7 @@
 import { compareText } from '#/kernel/utils';
 
 import type { FileTree } from '../domain/contracts';
+import { TreeError, TreeFailure } from '../domain/errors';
 
 const createFakeFileTree = (files: Readonly<Record<string, string>>): FileTree => ({
   list: (): readonly string[] => Object.keys(files).toSorted(compareText),
@@ -8,7 +9,12 @@ const createFakeFileTree = (files: Readonly<Record<string, string>>): FileTree =
     const text = files[path];
 
     if (text === undefined) {
-      throw new Error(`No such file: ${path}`);
+      throw new TreeError({
+        code: TreeFailure.Unreadable,
+        details: {
+          path,
+        },
+      });
     }
 
     return text;

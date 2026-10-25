@@ -37,4 +37,27 @@ const configOf = (buildPath: string): Config => ({
   },
 });
 
-export { configOf, FILE, OUTPUT, platformlessConfig };
+const TEXTLESS_FORMAT = 'textless';
+
+/** a configuration whose format gives no text for its file in `buildPath` */
+const textlessConfigOf = (buildPath: string): Config => ({
+  ...platformlessConfig,
+  hooks: {
+    formats: {
+      [TEXTLESS_FORMAT]: (): object => ({}),
+    },
+  },
+  platforms: {
+    css: {
+      buildPath,
+      files: [
+        {
+          destination: FILE,
+          format: TEXTLESS_FORMAT,
+        },
+      ],
+    },
+  },
+});
+
+export { configOf, FILE, OUTPUT, platformlessConfig, textlessConfigOf };

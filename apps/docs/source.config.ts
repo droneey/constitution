@@ -1,13 +1,23 @@
+import { createRequire } from 'node:module';
+import { dirname, join } from 'node:path';
+
 import type { RehypeCodeOptions } from 'fumadocs-core/mdx-plugins';
 import { applyMdxPreset, defineConfig, defineDocs } from 'fumadocs-mdx/config';
 import type { PluggableList } from 'unified';
 import { z } from 'zod';
 
-import { DOCS_ROUTE } from '#/shared/constants';
-
-import { PSEUDO } from './src/features/content/adapters/fumadocs/pseudo-grammar.constants';
 import {
+  BLOCK_LAYERS,
   blocksOptionsOf,
+  DOCUMENTATION_SECTION,
+  documentIconOf,
+  GLOSSARY,
+  guideIconOf,
+  ICONS_BY_ADDRESS,
+  markdownSchema,
+  PSEUDO,
+  QUICK_START,
+  releaseOf,
   remarkBlocks,
   remarkDiagrams,
   remarkDropHtml,
@@ -17,23 +27,17 @@ import {
   remarkRepoLinks,
   remarkSections,
   remarkTerms,
-} from './src/features/content/adapters/fumadocs/remark';
-import {
-  BLOCK_LAYERS,
-  DOCUMENTATION_SECTION,
-  documentIconOf,
-  GLOSSARY,
-  guideIconOf,
-  ICONS_BY_ADDRESS,
-  inRepository,
-  QUICK_START,
-  releaseOf,
   sectionSummaryOf,
   sidebarOf,
   taglineOf,
   termsOf,
-} from './src/features/content/adapters/fumadocs/repository';
-import { markdownSchema } from './src/features/content/adapters/fumadocs/schema.adapter';
+} from '#/features/content/adapters/fumadocs-mdx';
+import { DOCS_ROUTE } from '#/shared/constants';
+
+const constitutionBlocks = join(
+  dirname(createRequire(import.meta.url).resolve('@droneey/constitution/package.json')),
+  'blocks',
+);
 
 const QUICK_START_SECTION = 'Quick start';
 
@@ -221,7 +225,7 @@ const documents = defineDocs({
 });
 
 const blocks = defineDocs({
-  dir: '../../packages/constitution/blocks',
+  dir: constitutionBlocks,
   docs: {
     async: true,
     files: [
@@ -234,7 +238,7 @@ const blocks = defineDocs({
     mdxOptions: async (environment) => {
       const options = blocksOptionsOf({
         baseUrl: DOCS_ROUTE,
-        blocks: inRepository('packages/constitution/blocks'),
+        blocks: constitutionBlocks,
         examples: 'content/examples',
         folders: BLOCK_LAYERS,
       });

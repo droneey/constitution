@@ -3,7 +3,7 @@ import { describe, expect, it } from 'bun:test';
 import { HEADER, outputsOf } from './configs.fixtures';
 
 describe('configsOf', () => {
-  it("should write every token of the default mode on the root, a role naming its step, Tailwind's theme with its radius names, and the durations of reduced motion", async () => {
+  it("should write every token of the default mode on the root, a role naming its step, Tailwind's theme with its own names kept apart from its aliases, and the durations of reduced motion", async () => {
     // Arrange
     const build = outputsOf();
 
@@ -44,17 +44,20 @@ describe('configsOf', () => {
   --color-fill-hover: var(--color-fill-hover);
   --spacing-sm: var(--spacing-sm);
   --size-icon-md: var(--size-icon-md);
-  --spacing-icon-md: var(--size-icon-md);
   --text-sm: var(--text-sm);
   --leading-sm: var(--leading-sm);
-  --text-sm--line-height: var(--leading-sm);
   --radius-surface-raised: var(--radius-surface-raised);
   --shadow-surface-raised: var(--shadow-surface-raised);
   --duration-fast: var(--duration-fast);
   --ease-out: var(--ease-out);
   --layer-surface-raised: var(--layer-surface-raised);
-  --z-index-surface-raised: var(--layer-surface-raised);
   --font-weight-normal: var(--font-weight-normal);
+}
+
+@theme inline {
+  --spacing-icon-md: var(--size-icon-md);
+  --text-sm--line-height: var(--leading-sm);
+  --z-index-surface-raised: var(--layer-surface-raised);
   --radius-xs: var(--radius-4);
   --radius-sm: var(--radius-4);
   --radius-md: var(--radius-8);

@@ -12,7 +12,7 @@ interface ListedBlock {
   readonly id: BlockId;
   readonly layer: Layer;
   readonly source: BlockSource;
-  readonly summary: string;
+  readonly summary?: string;
 }
 
 enum UnitEntryKind {
@@ -48,7 +48,7 @@ interface ListedOverride {
   readonly until?: Temporal.PlainDate;
 }
 
-/** The block list a session's digest closes with: core's aside, each list in the catalogue's order. */
+/** The blocks a session's digest lists, each list in the catalogue's order; the overrides print before them. */
 interface BlockListing {
   readonly overrides: readonly ListedOverride[];
   readonly repository: readonly ListedBlock[];

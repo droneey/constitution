@@ -1,0 +1,15 @@
+{
+  "color": {
+    "$type": "color",
+    "plain": {
+      "0": {
+        "$value": "#ffffff"
+      }
+    },
+    "text": {
+      "plain": {
+        "$value": "{color.plain.0}"
+      }
+    }
+  }
+}

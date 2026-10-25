@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'bun:test';
+import { describe, expect, it } from 'bun:test';
 
 import { mutateTargets } from '../mutate-targets.use-case.ts';
 
@@ -34,7 +34,7 @@ const targetsOf = (input: {
   });
 
 describe('mutation targets', () => {
-  test.each([
+  it.each([
     {
       condition: 'a hunk changes lines of a mutated file',
       diff: diffOf({
@@ -121,7 +121,7 @@ describe('mutation targets', () => {
     expect(found).toStrictEqual(targets);
   });
 
-  test('should mutate a new file whole when git does not track it yet', () => {
+  it('should mutate a new file whole when git does not track it yet', () => {
     // Arrange
     const changes = {
       diff: '',
@@ -140,7 +140,7 @@ describe('mutation targets', () => {
     ]);
   });
 
-  test('should keep a file when a pattern without its first character would exclude it', () => {
+  it('should keep a file when a pattern without its first character would exclude it', () => {
     // Arrange
     const changes = {
       diff: diffOf({
@@ -162,7 +162,7 @@ describe('mutation targets', () => {
     ]);
   });
 
-  test('should mutate nothing when a change only reformats a mutated file', () => {
+  it('should mutate nothing when a change only reformats a mutated file', () => {
     // Arrange
     const changes = {
       codeChanged: () => false,

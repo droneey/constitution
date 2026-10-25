@@ -15,7 +15,7 @@ const decisionsTexts: TextsOf<DecisionsDetails> = {
   [DecisionsCode.OutOfOrder]: ({ entry, previous }) =>
     `entry ${decisionOf(entry)} follows ${decisionOf(previous)}; the numbers of the log only rise`,
   [DecisionsCode.WithoutDateLine]: ({ entry }) =>
-    `entry ${decisionOf(entry)} has no line "**Date:** YYYY-MM-DD · **Status:** Accepted|Proposed" under its heading`,
+    `entry ${decisionOf(entry)} has no line "**Date:** YYYY-MM-DD · **Status:** Accepted|Proposed|Superseded by ADR-NNNN" under its heading`,
   [DecisionsCode.NotCalendarDate]: ({ date, entry }) =>
     `entry ${decisionOf(entry)} is dated ${date}, which is not a calendar date`,
 };

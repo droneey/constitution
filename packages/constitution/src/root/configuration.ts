@@ -18,8 +18,9 @@ const dayOf = (text: string): Temporal.PlainDate | undefined =>
 
 /**
  * The clock the program reads the day from: a fixed day when the environment names one, the
- * system's otherwise. A day written otherwise than YYYY-MM-DD gives a clock that refuses to be
- * read, so the command that needs the day fails with a ConfigurationError.
+ * system's otherwise.
+ *
+ * @throws {@link ConfigurationError} when the day is written otherwise than YYYY-MM-DD
  */
 const clockOf = (today: string | undefined): Clock => {
   if (today === undefined) {
@@ -29,17 +30,13 @@ const clockOf = (today: string | undefined): Clock => {
   const day = dayOf(today);
 
   if (day === undefined) {
-    return {
-      today: (): Temporal.PlainDate => {
-        throw new ConfigurationError({
-          code: ConfigurationFailure.DayMalformed,
-          details: {
-            variable: TODAY_VARIABLE,
-            written: today,
-          },
-        });
+    throw new ConfigurationError({
+      code: ConfigurationFailure.DayMalformed,
+      details: {
+        variable: TODAY_VARIABLE,
+        written: today,
       },
-    };
+    });
   }
 
   return createFixedClock(day);

@@ -1,4 +1,5 @@
 import { Axis, Layer } from '#/kernel/constants';
+import type { Term, TermKind } from '#/kernel/entities';
 import type { FindingOf } from '#/kernel/types';
 import { isHeading, withoutCodeFences } from '#/kernel/utils';
 import type { BlockId } from '#/kernel/value-objects';
@@ -7,7 +8,6 @@ import type { BlockFile } from '../../../../entities';
 import { Block, BlockFileRole, BlockGraph } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
 import { inlineCodeSpans } from '../shared/markdown';
-import type { Term, TermKind } from '../shared/terms';
 import { otherSpellingOf, termMatcher, termsIn } from '../shared/terms';
 import { collapseWhitespace } from '../shared/tokens';
 

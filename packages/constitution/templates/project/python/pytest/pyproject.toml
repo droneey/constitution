@@ -10,7 +10,7 @@ dev = [
 
 # pytest: its tasks
 [tool.poe.tasks]
-"test" = "pytest --cov"
+"test" = 'pytest --cov -o "norecursedirs=.* e2e"'
 
 # pytest: the specs, strict and offline, in a random order
 [tool.pytest]

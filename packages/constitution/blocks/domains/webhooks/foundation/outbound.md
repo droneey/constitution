@@ -8,14 +8,14 @@
 
 A webhook the program sends carries its delivery identifier in `webhook-id`, the same on every retry, the time it was sent in `webhook-timestamp` as whole seconds since the epoch, and in `webhook-signature` its signature over `<id>.<timestamp>.<body>`, written `v1,` and the base64 of an HMAC-SHA256 or `v1a,` and the base64 of an Ed25519 signature; while a secret rotates, the header lists the old and the new signature, separated by a space. The body sent is the very bytes signed.
 
-| Why | Tags |
-|---|---|
-| one format spares each receiver a parser of its own, and the specification's libraries verify it as written; a body written again after it was signed fails verification over a single space. | [security] |
+| Why |
+|---|
+| one format spares each receiver a parser of its own, and the specification's libraries verify it as written; a body written again after it was signed fails verification over a single space. |
 
 ### endpoint-answering-gone-disabled-at-once → failed-push-retried-then-held · MUST
 
 An endpoint that answers a webhook `410 Gone` is disabled at once, with no retry, and its owner told.
 
-| Why | Tags |
-|---|---|
-| the specification reads `410` as the receiver saying it wants no more webhooks from this sender, and asks the sender to disable the endpoint. | [] |
+| Why |
+|---|
+| the specification reads `410` as the receiver saying it wants no more webhooks from this sender, and asks the sender to disable the endpoint. |

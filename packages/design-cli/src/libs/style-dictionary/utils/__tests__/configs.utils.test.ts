@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
+import { MalformedTokenError } from '../../errors';
 import { HEADER, outputsOf } from './configs.fixtures';
 
 describe('configsOf', () => {
@@ -57,5 +58,39 @@ export { tokens };
 `,
       },
     ]);
+  });
+
+  it.each([
+    {
+      name: 'a measure written as a bare number',
+      file: 'bare-measure.fixtures.tokens.json',
+      token: 'duration-slow',
+    },
+    {
+      name: 'a measure left empty',
+      file: 'absent-measure.fixtures.tokens.json',
+      token: 'duration-slow',
+    },
+    {
+      name: 'a measure whose value is text',
+      file: 'text-measure.fixtures.tokens.json',
+      token: 'duration-slow',
+    },
+    {
+      name: 'a colour written as text',
+      file: 'hex-colour.fixtures.tokens.json',
+      token: 'color-plain-0',
+    },
+  ])('should refuse $name', async ({ file, token }) => {
+    // Arrange
+    const malformed = [
+      file,
+    ];
+
+    // Act
+    const build = outputsOf(malformed);
+
+    // Assert
+    await expect(build).rejects.toThrow(new MalformedTokenError(token));
   });
 });

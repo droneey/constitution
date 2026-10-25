@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
+import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
 import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -33,7 +33,7 @@ const openList = async (): Promise<void> => {
 };
 
 describe('DocsTocDropdown', () => {
-  test('should read On this page before the reader reaches a heading', () => {
+  it('should read On this page before the reader reaches a heading', () => {
     // Arrange
     const dropdown = <DocsTocDropdown />;
 
@@ -44,7 +44,7 @@ describe('DocsTocDropdown', () => {
     expect(screen.getByRole('button').textContent).toBe(ON_THIS_PAGE_LABEL);
   });
 
-  test('should name the topmost heading on screen when the reader scrolls', () => {
+  it('should name the topmost heading on screen when the reader scrolls', () => {
     // Arrange
     renderOnPage(<DocsTocDropdown />);
 
@@ -55,7 +55,7 @@ describe('DocsTocDropdown', () => {
     expect(screen.getByRole('button').textContent).toBe('Layer');
   });
 
-  test('should roll the label in from below before the reader reaches a heading', () => {
+  it('should roll the label in from below before the reader reaches a heading', () => {
     // Arrange
     const dropdown = <DocsTocDropdown />;
 
@@ -66,7 +66,7 @@ describe('DocsTocDropdown', () => {
     expect(screen.getByText('On this page').style.getPropertyValue('--fd-roll')).toBe('1');
   });
 
-  test('should roll the heading in from below when the reader scrolls down', () => {
+  it('should roll the heading in from below when the reader scrolls down', () => {
     // Arrange
     renderOnPage(<DocsTocDropdown />);
     scrollTo('placement');
@@ -78,7 +78,7 @@ describe('DocsTocDropdown', () => {
     expect(screen.getByText('Layer').style.getPropertyValue('--fd-roll')).toBe('1');
   });
 
-  test('should roll the heading in from above when the reader scrolls up', () => {
+  it('should roll the heading in from above when the reader scrolls up', () => {
     // Arrange
     renderOnPage(<DocsTocDropdown />);
     scrollTo('layer');
@@ -90,7 +90,7 @@ describe('DocsTocDropdown', () => {
     expect(screen.getByText('Placement').style.getPropertyValue('--fd-roll')).toBe('-1');
   });
 
-  test('should show no progress when the page has no headings', () => {
+  it('should show no progress when the page has no headings', () => {
     // Arrange
     const toc: TocHeading[] = [];
 
@@ -107,7 +107,7 @@ describe('DocsTocDropdown', () => {
     ).toBe('0');
   });
 
-  test('should show the share read up to the last heading on screen when the reader scrolls', () => {
+  it('should show the share read up to the last heading on screen when the reader scrolls', () => {
     // Arrange
     renderOnPage(<DocsTocDropdown />);
 
@@ -124,7 +124,7 @@ describe('DocsTocDropdown', () => {
     ).toBe('0.6666666666666666');
   });
 
-  test('should leave the unread share of the ring empty when the reader scrolls', () => {
+  it('should leave the unread share of the ring empty when the reader scrolls', () => {
     // Arrange
     renderOnPage(<DocsTocDropdown />);
 
@@ -146,7 +146,7 @@ describe('DocsTocDropdown', () => {
     });
   });
 
-  test('should list the page headings when the reader opens it', async () => {
+  it('should list the page headings when the reader opens it', async () => {
     // Arrange
     renderOnPage(<DocsTocDropdown />);
 
@@ -161,7 +161,7 @@ describe('DocsTocDropdown', () => {
     ]);
   });
 
-  test('should close the list when the reader picks a heading', async () => {
+  it('should close the list when the reader picks a heading', async () => {
     // Arrange
     renderOnPage(<DocsTocDropdown />);
     await openList();
@@ -177,7 +177,7 @@ describe('DocsTocDropdown', () => {
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
   });
 
-  test('should pass the WCAG 2.2 A and AA scan when the reader opens it', async () => {
+  it('should pass the WCAG 2.2 A and AA scan when the reader opens it', async () => {
     // Arrange
     renderOnPage(<DocsTocDropdown />);
     await openList();

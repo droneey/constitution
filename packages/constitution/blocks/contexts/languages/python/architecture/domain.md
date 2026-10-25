@@ -8,6 +8,6 @@
 
 A feature's `domain/` imports neither `logging` nor a logging library.
 
-| Why | Tags |
-|---|---|
-| a domain that cannot reach a logger returns what happened to its caller, which decides what an operator is told. | [] |
+| Why |
+|---|
+| a domain that cannot reach a logger returns what happened to its caller, which decides what an operator is told. |

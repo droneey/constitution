@@ -8,6 +8,6 @@
 
 `root/` registers the middleware that enters each request's trace id, beside the instance it creates.
 
-| Why | Tags |
-|---|---|
-| the instance's `mixin` reads the id the middleware enters, so the code that configures the one wires the other. | [] |
+| Why |
+|---|
+| the instance's `mixin` reads the id the middleware enters, so the code that configures the one wires the other. |

@@ -1,195 +1,56 @@
 import { describe, expect, it } from 'bun:test';
 
-import { InvalidValueError } from '../../errors';
+import { InvalidValueError, ValueFailure } from '../../errors';
+import { Axis } from '../block.entity';
 import { Term, TermKind } from '../term.entity';
 
 const bindingUnit = Term.create({
   address: '/docs/core/architecture/layout',
-  axis: 'architecture',
+  axis: Axis.Architecture,
   block: 'core',
   kind: TermKind.Concept,
   name: 'binding unit',
   sentence: 'A **binding unit** binds one operation to the program’s framework.',
 });
 
-describe('Term.nameOf', () => {
-  it.each([
-    {
-      bold: {
-        isCode: false,
-        text: 'binding unit',
-      },
-      condition: 'plain lower-case words',
-      expected: {
-        kind: TermKind.Concept,
-        name: 'binding unit',
-      },
-    },
-    {
-      bold: {
-        isCode: false,
-        text: 'Ubiquitous \nlanguage.',
-      },
-      condition: 'a lead-in closed by a full stop across a line break',
-      expected: {
-        kind: TermKind.Concept,
-        name: 'ubiquitous language',
-      },
-    },
-    {
-      bold: {
-        isCode: false,
-        text: 'TanStack Start:',
-      },
-      condition: 'a lead-in that names a brand',
-      expected: {
-        kind: TermKind.Brand,
-        name: 'TanStack Start',
-      },
-    },
-    {
-      bold: {
-        isCode: false,
-        text: 'Unit',
-      },
-      condition: 'a capital outside a lead-in',
-      expected: {
-        kind: TermKind.Brand,
-        name: 'Unit',
-      },
-    },
-    {
-      bold: {
-        isCode: false,
-        text: 'Ports and adapters.',
-      },
-      condition: 'a lead-in of three words',
-      expected: {
-        kind: TermKind.Concept,
-        name: 'ports and adapters',
-      },
-    },
-    {
-      bold: {
-        isCode: false,
-        text: 'Next.js',
-      },
-      condition: 'a brand with a dot inside',
-      expected: {
-        kind: TermKind.Brand,
-        name: 'Next.js',
-      },
-    },
-    {
-      bold: {
-        isCode: true,
-        text: 'routeTree.gen.ts',
-      },
-      condition: 'a file of two extensions',
-      expected: {
-        kind: TermKind.File,
-        name: 'routeTree.gen.ts',
-      },
-    },
-    {
-      bold: {
-        isCode: true,
-        text: 'node:fs.promises',
-      },
-      condition: 'code that ends like a file name',
-      expected: {
-        kind: TermKind.Api,
-        name: 'node:fs.promises',
-      },
-    },
-    {
-      bold: {
-        isCode: true,
-        text: 'tsconfig.json#paths',
-      },
-      condition: 'code that starts like a file name',
-      expected: {
-        kind: TermKind.Api,
-        name: 'tsconfig.json#paths',
-      },
-    },
-    {
-      bold: {
-        isCode: true,
-        text: 'widgets/',
-      },
-      condition: 'a folder',
-      expected: {
-        kind: TermKind.Folder,
-        name: 'widgets/',
-      },
-    },
-    {
-      bold: {
-        isCode: true,
-        text: '.stories',
-      },
-      condition: 'a suffix',
-      expected: {
-        kind: TermKind.Suffix,
-        name: '.stories',
-      },
-    },
-    {
-      bold: {
-        isCode: true,
-        text: 'renovate.json',
-      },
-      condition: 'a file',
-      expected: {
-        kind: TermKind.File,
-        name: 'renovate.json',
-      },
-    },
-    {
-      bold: {
-        isCode: true,
-        text: 'bun:test',
-      },
-      condition: 'any other code',
-      expected: {
-        kind: TermKind.Api,
-        name: 'bun:test',
-      },
-    },
-  ])('should read $condition', ({ bold, expected }) => {
-    // Act
-    const name = Term.nameOf(bold);
-
-    // Assert
-    expect(name).toStrictEqual(expected);
-  });
-});
+/** the code and the details a creation failed with, or the error itself when it is none of the feature's */
+const failureOf = (create: () => Term): unknown => {
+  try {
+    return create();
+  } catch (error) {
+    return error instanceof InvalidValueError
+      ? {
+          code: error.code,
+          details: error.details,
+        }
+      : error;
+  }
+};
 
 describe('Term.axisOf and Term.blockOf', () => {
   it.each([
     {
-      axis: 'foundation',
+      axis: Axis.Foundation,
       block: 'core',
       path: 'core/core.md',
     },
     {
-      axis: 'architecture',
+      axis: Axis.Architecture,
       block: 'core',
       path: 'core/architecture/layout.md',
     },
     {
-      axis: 'foundation',
+      axis: Axis.Foundation,
       block: 'bun',
       path: 'implementations/bun/bun.md',
     },
     {
-      axis: 'workflow',
+      axis: Axis.Workflow,
       block: 'lefthook',
       path: 'implementations/lefthook/workflow/with/betterleaks.md',
     },
     {
-      axis: 'foundation',
+      axis: Axis.Foundation,
       block: 'python',
       path: 'contexts/languages/python/foundation/types.md',
     },
@@ -212,7 +73,7 @@ describe('Term.axisOf and Term.blockOf', () => {
     const block = Term.blockOf('core.md');
 
     // Assert
-    expect(block).toBe('');
+    expect(block).toBeUndefined();
   });
 });
 
@@ -251,32 +112,22 @@ describe('Term.sentenceAround', () => {
 });
 
 describe('Term.create', () => {
-  it.each([
-    {
-      field: 'name',
-      input: {
+  it('should refuse a term whose name is blank', () => {
+    // Act
+    const failure = failureOf(() =>
+      Term.create({
         ...bindingUnit,
         name: ' ',
-      },
-    },
-    {
-      field: 'axis',
-      input: {
-        ...bindingUnit,
-        axis: 'delivery',
-      },
-    },
-  ])('should refuse a term whose $field is invalid', ({ field, input }) => {
-    // Act
-    const creating = (): Term => Term.create(input);
-
-    // Assert
-    expect(creating).toThrow(
-      new InvalidValueError({
-        field,
-        value: String(Reflect.get(input, field)),
       }),
     );
+
+    // Assert
+    expect(failure).toStrictEqual({
+      code: ValueFailure.TermNameEmpty,
+      details: {
+        value: ' ',
+      },
+    });
   });
 });
 
@@ -302,6 +153,13 @@ describe('Term.is', () => {
       candidate: {
         ...bindingUnit,
         kind: 'word',
+      },
+    },
+    {
+      expected: false,
+      candidate: {
+        ...bindingUnit,
+        axis: 'delivery',
       },
     },
   ])('should tell a term from $candidate', ({ candidate, expected }) => {

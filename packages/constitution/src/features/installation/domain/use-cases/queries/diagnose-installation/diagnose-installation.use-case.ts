@@ -19,14 +19,16 @@ interface DiagnoseInstallationPorts {
   readonly source: ProjectSource;
 }
 
+interface DiagnoseInstallationInput extends DiagnoseInstallationPorts {
+  /** the fingerprint of the plugin's files this program was built with, if it can be read */
+  readonly fingerprint: string | undefined;
+  readonly program: Version;
+  readonly start: string;
+}
+
 /** It changes nothing; the latest release is skipped where GitHub cannot be reached. */
 const diagnoseInstallation = async (
-  input: DiagnoseInstallationPorts & {
-    /** the fingerprint of the plugin's files this program was built with, if it can be read */
-    fingerprint: string | undefined;
-    program: Version;
-    start: string;
-  },
+  input: DiagnoseInstallationInput,
 ): Promise<readonly PartDiagnosis[]> => {
   const { program } = input;
   const latest = await input.releases.latest();

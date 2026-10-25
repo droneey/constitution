@@ -8,8 +8,8 @@ enum SkillField {
 
 type SkillFrontMatterRead =
   | {
-      readonly description: string | undefined;
-      readonly name: string | undefined;
+      readonly description?: string;
+      readonly name?: string;
       readonly status: ReadStatus.Parsed;
     }
   | {
@@ -19,14 +19,15 @@ type SkillFrontMatterRead =
 
 interface Skill {
   readonly directory: string;
-  // undefined when the file does not open with a front matter
-  readonly frontMatter: SkillFrontMatterRead | undefined;
+  /** absent when the file does not open with a front matter */
+  readonly frontMatter?: SkillFrontMatterRead;
   readonly path: string;
 }
 
 interface Agent {
   readonly file: string;
-  readonly frontMatter: SkillFrontMatterRead | undefined;
+  /** absent when the file does not open with a front matter */
+  readonly frontMatter?: SkillFrontMatterRead;
   readonly path: string;
 }
 

@@ -8,41 +8,41 @@
 
 An overlay — a dialog, a popover, a toast — renders through a portal, or in the top layer the platform gives a modal `<dialog>` and a `popover`.
 
-| Why | Tags |
-|---|---|
-| outside the portal, a parent's overflow or stacking context clips it, and focus management breaks. | [a11y, ux] |
+| Why |
+|---|
+| outside the portal, a parent's overflow or stacking context clips it, and focus management breaks. |
 
 ### browser-apis-read-outside-render → browser-global-never-read-while-rendering · MUST
 
 Browser APIs are read in a hook's effect, or through `useSyncExternalStore` with a server snapshot, never during render.
 
-| Why | Tags |
-|---|---|
-| read during render, they break server rendering and tear between renders. | [] |
+| Why |
+|---|
+| read during render, they break server rendering and tear between renders. |
 
 ### inline-style-only-custom-properties-and-geometry → tokens-single-source-of-appearance · MUST
 
 An element's inline `style` is an object literal of custom properties only; geometry a positioning library computes is the one other inline value, and its suppression says so.
 
-| Why | Tags |
-|---|---|
-| an inline visual value is a value written outside the tokens, while a custom property passes data to the stylesheet that styles it. | [ux] |
+| Why |
+|---|
+| an inline visual value is a value written outside the tokens, while a custom property passes data to the stylesheet that styles it. |
 
 ### jsx-images-declare-their-size → image-declares-its-size · SHOULD
 
 An `<img>` written in JSX declares `width` and `height`.
 
-| Why | Tags |
-|---|---|
-| this is the form of the rule the linter sees in markup. | [performance] |
+| Why |
+|---|
+| this is the form of the rule the linter sees in markup. |
 
 ### dangerously-set-inner-html-never-used → raw-html-never-reaches-the-dom · MUST
 
 `dangerouslySetInnerHTML` is never set.
 
-| Why | Tags |
-|---|---|
-| it writes a string into the DOM as markup, past React's escaping. | [] |
+| Why |
+|---|
+| it writes a string into the DOM as markup, past React's escaping. |
 
 ## Render errors
 
@@ -50,9 +50,9 @@ An `<img>` written in JSX declares `width` and `height`.
 
 Render errors are reported once, through the root's `onUncaughtError`, `onCaughtError` and `onRecoverableError`; a boundary renders the failure and reports nothing.
 
-| Why | Tags |
-|---|---|
-| the root sees every render error, the ones a boundary catches included, so each is reported once. | [] |
+| Why |
+|---|
+| the root sees every render error, the ones a boundary catches included, so each is reported once. |
 
 ## Head
 
@@ -60,6 +60,6 @@ Render errors are reported once, through the root's `onUncaughtError`, `onCaught
 
 Unless another active block claims the document's head, React's hoisted elements are its one writer: no head library, no effect writing to the document head, and no script tag inserted by hand, save by the one module that wraps a third-party service, which appends its script once to the body.
 
-| Why | Tags |
-|---|---|
-| a library or an effect is a second writer of the head, and it and React overwrite each other; a hand-inserted script runs twice or too early, unless the one module that wraps its service appends it once to the body, which leaves the head to React. | [ux] |
+| Why |
+|---|
+| a library or an effect is a second writer of the head, and it and React overwrite each other; a hand-inserted script runs twice or too early, unless the one module that wraps its service appends it once to the body, which leaves the head to React. |

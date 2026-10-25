@@ -1,0 +1,79 @@
+language js
+
+// Each parameter typed by an object type written inline, alone or as a part of an intersection,
+// gets a diagnostic, and the match fails, so the next parameter binds afresh.
+pattern inline_object_parameters() {
+  JsParameters(items=some JsFormalParameter(type_annotation=TsTypeAnnotation(ty=or {
+    TsObjectType() as $type,
+    TsIntersectionType(types=some TsObjectType() as $type)
+  })) where {
+    register_diagnostic(span=$type, message="[parameter-object-has-a-named-type] Type the object an exported function takes by a named type, declared beside it", severity="error"),
+    false
+  })
+}
+
+pattern function_value() {
+  or {
+    JsArrowFunctionExpression(parameters=inline_object_parameters()),
+    JsFunctionExpression(parameters=inline_object_parameters())
+  }
+}
+
+pattern function_members() {
+  some or {
+    TsMethodSignatureTypeMember(parameters=inline_object_parameters()),
+    TsPropertySignatureTypeMember(type_annotation=TsTypeAnnotation(ty=TsFunctionType(parameters=inline_object_parameters())))
+  }
+}
+
+pattern functions_declared() {
+  JsVariableDeclaration(declarators=some JsVariableDeclarator(initializer=JsInitializerClause(expression=function_value())))
+}
+
+pattern reported_declaration() {
+  or {
+    JsFunctionDeclaration(parameters=inline_object_parameters()),
+    TsDeclareFunctionDeclaration(parameters=inline_object_parameters()),
+    JsVariableDeclarationClause(declaration=functions_declared()),
+    JsVariableStatement(declaration=functions_declared()),
+    TsInterfaceDeclaration(members=function_members()),
+    TsTypeAliasDeclaration(ty=or {
+      TsObjectType(members=function_members()),
+      TsFunctionType(parameters=inline_object_parameters())
+    })
+  }
+}
+
+pattern local_declaration($name) {
+  or {
+    JsFunctionDeclaration(id=$name),
+    TsDeclareFunctionDeclaration(id=$name),
+    JsVariableStatement(declaration=JsVariableDeclaration(declarators=some JsVariableDeclarator(id=$name))),
+    TsInterfaceDeclaration(id=$name),
+    TsTypeAliasDeclaration(binding_identifier=$name)
+  }
+}
+
+// Only the module's own statements are read, never the code inside them. A declaration an export
+// list names is looked up in that list only when it holds an object type and the list's text holds
+// its name, first by the text of each name, which is quicker than reading each specifier's parts.
+file(body=JsModule(items=$items)) where {
+  or {
+    $items <: some JsExport(export_clause=reported_declaration()),
+    $items <: some JsExport(export_clause=JsExportNamedClause(specifiers=$listed)) where {
+      $items <: some local_declaration($name) as $declaration where {
+        $declaration <: contains TsObjectType(),
+        $listed <: includes $name,
+        or {
+          $listed <: some $name,
+          $listed <: some or {
+            JsExportNamedShorthandSpecifier(name=$name),
+            JsExportNamedSpecifier(local_name=$name)
+          }
+        },
+        $declaration <: reported_declaration()
+      },
+      false
+    }
+  }
+}

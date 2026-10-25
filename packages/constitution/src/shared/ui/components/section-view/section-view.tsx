@@ -13,8 +13,11 @@ const contentOf = (section: SectionViewProps['section']): ReactElement => {
       return <Note note={section.note} />;
     case SectionKind.Pairs:
       return <KeyValueList pairs={section.pairs} />;
-    default:
+    case SectionKind.Steps:
       return <TaskList steps={section.steps} />;
+    // Stryker disable next-line ConditionalExpression: no kind reaches the default, which only the compiler reads
+    default:
+      return section satisfies never;
   }
 };
 

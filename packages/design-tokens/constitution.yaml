@@ -2,6 +2,7 @@ axes:
   - architecture
   - workflow
 domains:
+  - version-control
   - workspace
   - ui
   - design-system
@@ -17,9 +18,11 @@ implementations:
   - tsc
   - biome
   - dependency-cruiser
+  - git
   - knip
   - rumdl
   - yamllint
+  - tombi
   - bun-test
   - stryker
 packs: []

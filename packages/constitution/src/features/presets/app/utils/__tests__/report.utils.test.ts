@@ -4,6 +4,7 @@ import { StepStatus, Tone } from '@droneey/design-cli';
 
 import type { ProjectWarning } from '#/kernel/entities';
 import { WarningKind } from '#/kernel/entities';
+import type { TaskOutcome } from '#/shared/cli';
 import { noteSection, warningTextOf } from '#/shared/cli';
 
 import { presetsOutcomeOf, presetsSectionsOf } from '../report.utils';
@@ -16,13 +17,27 @@ const warning: ProjectWarning = {
 };
 
 describe('presetsOutcomeOf', () => {
-  it.each([
+  it.each<{
+    condition: string;
+    outcome: TaskOutcome;
+    statusWithoutProject?: StepStatus;
+    warnings: readonly ProjectWarning[] | undefined;
+  }>([
     {
       condition: 'no project lies around the folder',
       outcome: {
         detail: 'no constitution.yaml in this folder or above it',
         status: StepStatus.Skipped,
       },
+      warnings: undefined,
+    },
+    {
+      condition: 'no project lies around the folder and the caller ends such a step failed',
+      outcome: {
+        detail: 'no constitution.yaml in this folder or above it',
+        status: StepStatus.Failed,
+      },
+      statusWithoutProject: StepStatus.Failed,
       warnings: undefined,
     },
     {
@@ -43,16 +58,16 @@ describe('presetsOutcomeOf', () => {
         warning,
       ],
     },
-  ])('should end the step as $outcome.status when $condition', ({ outcome, warnings }) => {
-    // Arrange
-    const checked = warnings;
+  ])(
+    'should end the step as $outcome.status when $condition',
+    ({ outcome, statusWithoutProject, warnings }) => {
+      // Act
+      const given = presetsOutcomeOf(warnings, statusWithoutProject);
 
-    // Act
-    const given = presetsOutcomeOf(checked);
-
-    // Assert
-    expect(given).toStrictEqual(outcome);
-  });
+      // Assert
+      expect(given).toStrictEqual(outcome);
+    },
+  );
 });
 
 describe('presetsSectionsOf', () => {
@@ -89,11 +104,8 @@ describe('presetsSectionsOf', () => {
       warnings: [],
     },
   ])('should give nothing when $condition', ({ warnings }) => {
-    // Arrange
-    const checked = warnings;
-
     // Act
-    const sections = presetsSectionsOf(checked);
+    const sections = presetsSectionsOf(warnings);
 
     // Assert
     expect(sections).toStrictEqual([]);

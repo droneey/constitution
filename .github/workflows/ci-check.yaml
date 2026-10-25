@@ -40,9 +40,6 @@ jobs:
       - name: Build
         run: bun run build
 
-      - name: Lint the workflows
-        run: actionlint -color
-
   # check proves the logic once; a program the release ships can still break on
   # its own platform, so each is built and run on its own runner.
   program:

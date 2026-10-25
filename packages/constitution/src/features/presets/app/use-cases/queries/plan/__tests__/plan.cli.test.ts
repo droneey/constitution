@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'bun:test';
 
-import { createFakeContext, runCommand } from '#/__tests__/command-line.fake';
+import { createFakeContext, runCommand } from '#/__tests__/command-context.fake';
 import { UnitPath } from '#/kernel/value-objects';
+import type { CommandPlaces } from '#/shared/cli';
 import { linesSection } from '#/shared/cli';
 
 import type { WiringPlan } from '../../../../../domain/entities';
@@ -35,7 +36,11 @@ const plan: WiringPlan = {
 };
 
 describe('createPresetsPlanCommand', () => {
-  it.each([
+  it.each<{
+    condition: string;
+    places: Partial<CommandPlaces>;
+    start: string;
+  }>([
     {
       condition: 'Claude Code names the project',
       places: {
@@ -48,7 +53,6 @@ describe('createPresetsPlanCommand', () => {
       condition: 'Claude Code names none',
       places: {
         cwd: '/work/project/package',
-        projectDir: '',
       },
       start: '/work/project/package',
     },

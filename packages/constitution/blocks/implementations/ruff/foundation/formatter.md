@@ -6,8 +6,8 @@
 
 ### ruff-format-is-the-formatter → one-formatter-per-language · MUST
 
-Ruff formats every Python file: two spaces, single quotes, docstrings in double quotes, lines of at most 100.
+Ruff formats every Python file, with single quotes and docstrings in double quotes.
 
-| Why | Tags |
-|---|---|
-| one formatter for Python ends every argument about its layout. | [] |
+| Why |
+|---|
+| one formatter for Python ends every argument about its layout. |

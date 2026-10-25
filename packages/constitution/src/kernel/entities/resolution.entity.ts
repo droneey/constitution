@@ -48,5 +48,4 @@ const Resolution = {
   }),
 } as const;
 
-export type { ResolvedBlock };
 export { Resolution };

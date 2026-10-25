@@ -8,6 +8,6 @@
 
 In Bash, a function declares every variable it sets as `local`.
 
-| Why | Tags |
-|---|---|
-| a variable a function sets without `local` changes the caller's variable of the same name, an effect no call shows. | [] |
+| Why |
+|---|
+| a variable a function sets without `local` changes the caller's variable of the same name, an effect no call shows. |

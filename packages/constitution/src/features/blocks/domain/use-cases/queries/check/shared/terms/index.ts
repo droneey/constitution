@@ -1,2 +1,2 @@
-export type { Term, TermsRead } from './terms.utils';
-export { otherSpellingOf, TermKind, termMatcher, termsIn } from './terms.utils';
+export type { TermsRead } from './terms.utils';
+export { otherSpellingOf, termMatcher, termsIn } from './terms.utils';

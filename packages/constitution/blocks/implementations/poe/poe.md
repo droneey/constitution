@@ -10,6 +10,6 @@ governs: ["pyproject.toml"]
 
 # Poe the Poet
 
-> Runs the tasks a Python project declares in `pyproject.toml`, each in the environment the package manager entered, and the check that runs every other one.
+> Runs the tasks a Python project declares in `pyproject.toml`, each in the environment the package manager entered, and the check that runs the tests and every gate.
 
-**Poe the Poet**, the package **`poethepoet`**, is pinned in the `dev` group. Its settings are `[tool.poe]` of the root `pyproject.toml`, which starts from Poe the Poet's template of `pyproject.toml` in the Constitution's release archive: the executor `simple`, and a task `check` whose sequence holds every other task the tools' fragments give, in order.
+**Poe the Poet**, the package **`poethepoet`**, is pinned in the `dev` group. Its settings are `[tool.poe]` of the root `pyproject.toml`, which starts from Poe the Poet's template of `pyproject.toml` in the Constitution's release archive: the executor `simple`, and a task `check` whose sequence holds `test` and every `*:check` task the tools' fragments give, in order.

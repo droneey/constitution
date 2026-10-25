@@ -17,7 +17,6 @@ interface RuleText {
   readonly statement: string;
   readonly tightens?: RuleSlug;
   readonly why: string;
-  readonly writtenLenses: readonly string[];
 }
 
 interface Rule extends RulePlace, RuleText {
@@ -54,7 +53,6 @@ const create = (input: Rule): Rule => ({
         tightens: input.tightens,
       }),
   why: input.why,
-  writtenLenses: input.writtenLenses,
 });
 
 /** The rules by slug; a slug written twice names the rule read first. */

@@ -24,6 +24,7 @@
     "test:program": "bun --cwd=packages/constitution run test:program",
     "blocks:check": "bun --cwd=packages/constitution run blocks:check",
     "build": "bun build --target=bun --packages=external ./packages/mutation-check/languages/typescript/src/main.ts --outdir packages/constitution/tools/mutation-check/dist && bun build --target=bun ./packages/mutation-check/languages/typescript/src/integrations/stryker/runner.ts ./packages/mutation-check/languages/typescript/src/integrations/stryker/ignorers.ts --outdir packages/constitution/tools/mutation-check/dist && mkdir -p packages/constitution/tools/python-check/dist packages/constitution/tools/mutmut-check/dist && python3 -m zipapp packages/python-check/src -m droneey_python_check.main:main -o packages/constitution/tools/python-check/dist/python-check.pyz && python3 -m zipapp packages/mutation-check/languages/python/src -m droneey_mutation_check.main:main -o packages/constitution/tools/mutmut-check/dist/mutmut-check.pyz",
+    "prebuild:cli": "bun run --filter '@droneey/constitution^...' build",
     "build:cli": "bun packages/constitution/src/entrypoints/cli-build/main.ts",
     "mutation:check": "bun run --filter '*' --sequential --bun mutation:check && scripts/poe-each.sh mutation:check",
     "mutation:all": "bun run --filter '*' --sequential --bun mutation:all && scripts/poe-each.sh mutation:all",
@@ -41,9 +42,11 @@
     "markdown:check": "rumdl check . && rumdl fmt --check . && bun run --filter '*' markdown:check",
     "markdown:fix": "rumdl check --fix && bun run --filter '*' markdown:fix",
     "yaml:check": "yamllint --strict . && bun run --filter '*' yaml:check && scripts/poe-each.sh yaml:check",
+    "toml:check": "tombi format --check && tombi lint && bun run --filter '*' toml:check && scripts/poe-each.sh toml:check",
+    "toml:fix": "tombi format && bun run --filter '*' toml:fix && scripts/poe-each.sh toml:fix",
     "renovate:check": "renovate-config-validator --strict",
-    "design:check": "bun run --filter '*' design:check",
-    "check": "bun run format:check && bun run lint:check && bun run packages:check && bun run type:check && bun run code:check && bun run complexity:check && bun run architecture:check && bun run --parallel test mutation:check && bun run design:check && bun run blocks:check && bun run secrets:check && bun run unused:check && bun run dependencies:check && bun run audit:check && bun run shell:check && bun run docker:check && bun run markdown:check && bun run yaml:check && bun run renovate:check"
+    "workflows:check": "actionlint",
+    "check": "bun run format:check && bun run lint:check && bun run packages:check && bun run type:check && bun run code:check && bun run complexity:check && bun run architecture:check && bun run --parallel test mutation:check && bun run blocks:check && bun run secrets:check && bun run unused:check && bun run dependencies:check && bun run audit:check && bun run shell:check && bun run docker:check && bun run markdown:check && bun run yaml:check && bun run toml:check && bun run renovate:check && bun run workflows:check"
   },
   "workspaces": [
     "apps/*",
@@ -51,8 +54,8 @@
     "packages/*/languages/typescript"
   ],
   "devDependencies": {
-    "@biomejs/biome": "2.5.15",
-    "dependency-cruiser": "18.6.0",
+    "@biomejs/biome": "2.6.2",
+    "dependency-cruiser": "18.7.0",
     "knip": "6.41.0",
     "syncpack": "15.3.3",
     "typescript": "7.0.2"

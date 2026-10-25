@@ -1,3 +1,5 @@
+export type { ConfirmKeys, ConfirmWordsInput } from './confirm';
+export { ConfirmWords, UnusableConfirmWordsError } from './confirm';
 export type {
   Column,
   FailureContent,

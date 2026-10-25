@@ -112,7 +112,7 @@
         "useExplicitReturnType": "error",
         "useDisposables": "error",
         "noUnsafePlusOperands": "error",
-        // Biome 2.5.15 reads a type that shares its name with its companion object as that object, and reports its values.
+        // Biome 2.6.2 reads a type that shares its name with its companion object as that object, and reports its values.
         "noBaseToString": "off",
         "noMisleadingReturnType": "error",
         "noFloatingPromises": "error",
@@ -132,21 +132,14 @@
       ],
     },
     {
-      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/undefined-is-the-only-absence.grit",
-      "includes": [
-        "**",
-        "!**/*.tsx",
-      ],
-    },
-    {
-      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/closed-name-set-is-a-string-enum.grit",
+      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/identifier-case-by-kind.grit",
       "includes": [
         "**/*.ts",
         "**/*.tsx",
       ],
     },
     {
-      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/identifier-case-by-kind.grit",
+      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/parameter-object-has-a-named-type.grit",
       "includes": [
         "**/*.ts",
         "**/*.tsx",

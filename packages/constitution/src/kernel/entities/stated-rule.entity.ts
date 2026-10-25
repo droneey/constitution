@@ -1,5 +1,5 @@
 import type { Axis } from '../constants';
-import { LEVELS, Level, RULE_TABLE_CELLS, RULE_TABLE_HEADER } from '../constants';
+import { Level, RULE_TABLE_CELLS, RULE_TABLE_HEADER } from '../constants';
 import { ValueFailure } from '../errors';
 import type { FindingOf, ProblemOf } from '../types';
 import type { MarkdownSection } from '../utils';
@@ -8,6 +8,7 @@ import type { BlockId } from '../value-objects';
 import { RuleSlug } from '../value-objects';
 import type { RulePlace, RuleText } from './rule.entity';
 import { Rule } from './rule.entity';
+import { RuleHeading } from './rule-heading.entity';
 import type { ValueFindingDetails } from './value-finding.entity';
 import { ValueSite } from './value-finding.entity';
 
@@ -23,7 +24,6 @@ enum RuleFormCode {
   HeaderMisshapen = 'rule-table-header-misshapen',
   RowsNotOne = 'rule-table-rows-not-one',
   CellsMiscounted = 'rule-table-cells-miscounted',
-  TagsNotList = 'rule-tags-not-a-list',
   HoldsLabel = 'rule-holds-label',
 }
 
@@ -52,11 +52,6 @@ interface RuleFormDetails {
     readonly count: number;
     readonly slug: RuleSlug;
   };
-  readonly [RuleFormCode.TagsNotList]: {
-    readonly slug: RuleSlug;
-    /** the Tags cell as written */
-    readonly tags: string;
-  };
   readonly [RuleFormCode.HoldsLabel]: {
     readonly label: string;
     readonly slug: RuleSlug;
@@ -79,12 +74,6 @@ interface RuleSource {
   readonly text: string;
 }
 
-interface Heading {
-  readonly level?: Level;
-  readonly slug: string;
-  readonly tightens?: string;
-}
-
 interface Table {
   readonly cells: readonly string[];
   readonly problems: readonly RuleFormProblem[];
@@ -100,7 +89,7 @@ interface RulesParsed {
   readonly rules: readonly StatedRule[];
 }
 
-const HEADING = /^### (\S+)(?: → (\S+))?(?: · (\S+))?$/;
+const RULE_MARK = '### ';
 const TITLE = /^# (.+)/;
 const SECTION = /^## (.+)/;
 const LOOKS_LIKE_RULE = /\b(?:MUST|SHOULD|MAY)\W*$| → /;
@@ -108,38 +97,8 @@ const DASHES = /^:?-+:?$/;
 const LABEL_LINE = /^\*\*([^*]+):\*\*/;
 const EXAMPLE = 'Example';
 
-const headingOf = (text: string): Heading | undefined => {
-  const match = HEADING.exec(text);
-  const word = match?.[3];
-  const level = LEVELS.find((candidate) => candidate === word);
-
-  if (
-    match === null ||
-    (word !== undefined && level === undefined) ||
-    (word === undefined && match[2] === undefined)
-  ) {
-    return undefined;
-  }
-
-  const tightens = match[2];
-
-  return {
-    // Stryker disable next-line ConditionalExpression: the rule a heading makes leaves an absent level out
-    ...(level === undefined
-      ? {}
-      : {
-          level,
-        }),
-    // Stryker disable next-line StringLiteral: the pattern always captures the slug
-    slug: match[1] ?? '',
-    // Stryker disable next-line ConditionalExpression: the rule a heading makes leaves an absent tightened slug out
-    ...(tightens === undefined
-      ? {}
-      : {
-          tightens,
-        }),
-  };
-};
+const headingOf = (text: string): RuleHeading | undefined =>
+  text.startsWith(RULE_MARK) ? RuleHeading.of(text.slice(RULE_MARK.length)) : undefined;
 
 const tableOf = (input: { lines: readonly string[]; slug: RuleSlug }): Table => {
   const { slug } = input;
@@ -241,17 +200,8 @@ const statementOf = (lines: readonly string[]): string => {
     .join(' ');
 };
 
-const lensesOf = (cell: string): readonly string[] | undefined =>
-  cell.startsWith('[') && cell.endsWith(']')
-    ? cell
-        .slice(1, -1)
-        .split(',')
-        .map((lens) => lens.trim())
-        .filter((lens) => lens !== '')
-    : undefined;
-
 // A slug a heading names is a kebab-case token; a heading that names another is no rule.
-const slugProblemOf = (heading: Heading): SlugProblem | undefined => {
+const slugProblemOf = (heading: RuleHeading): SlugProblem | undefined => {
   if (!RuleSlug.is(heading.slug)) {
     return {
       code: ValueFailure.RuleSlug,
@@ -343,23 +293,9 @@ const readSection = (input: {
     lines,
     slug,
   });
-  const [why = '', cell = '[]'] = table.cells;
-  const lenses = lensesOf(cell);
-  const tagsProblems: readonly RuleFormProblem[] =
-    lenses === undefined
-      ? [
-          {
-            code: RuleFormCode.TagsNotList,
-            details: {
-              slug,
-              tags: cell,
-            },
-          },
-        ]
-      : [];
+  const [why = ''] = table.cells;
   const problems: readonly RuleFormProblem[] = [
     ...table.problems,
-    ...tagsProblems,
     ...labelProblems({
       lines,
       slug,
@@ -383,7 +319,6 @@ const readSection = (input: {
             tightens: RuleSlug.create(heading.tightens),
           }),
       why,
-      writtenLenses: lenses ?? [],
     },
   };
 };

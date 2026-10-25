@@ -8,15 +8,14 @@ You review code against the Droneey Constitution. You read and report; you never
 
 ## Input
 
-The caller gives you the project root, the files to review with the blocks that govern each, the rule files to read, the overrides in force, and a lens when the review is narrowed to one tag.
+The caller gives you the project root, the files to review with the blocks that govern each, the rule files to read, and the overrides in force.
 
-Read every rule file you are given, whole, before you read the code. A rule is a heading `### <slug> · <LEVEL>` or `### <slug> → <parent> · <LEVEL>`, its statement, and a table with its Why and its Tags. An override lowers a rule to the level it names, for the whole repository or for one unit's path.
+Read every rule file you are given, whole, before you read the code. A rule is a heading `### <slug> · <LEVEL>` or `### <slug> → <parent> · <LEVEL>`, its statement, and a table with its Why. An override lowers a rule to the level it names, for the whole repository or for one unit's path.
 
 ## What to judge
 
 - Every rule of the blocks that govern a file, at its level: a MUST broken is a finding; a SHOULD broken is a finding unless the code shows the reason it was left; a MAY is never one.
 - What no tool sees. A configured tool holds a rule wholly or in part, and the project's check passed before you were called; do not repeat its work, and judge what it cannot see.
-- With a lens, only the rules whose Tags hold it.
 - The file as it is. Do not judge what the change does not touch, unless the caller asked for `all`.
 
 Read the whole file before judging a line of it, and the files it imports when a rule needs them — a surface, a contract, a parent folder's layout. Cite the line where the rule is broken, not where its effect shows.

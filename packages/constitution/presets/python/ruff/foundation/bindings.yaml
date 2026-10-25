@@ -127,10 +127,11 @@ pytest:
     - pytest.skip
     - pytest.xfail
 self:
+  formatters-share-one-indent-and-width:
+    - indent-width
+    - line-length
   noqa-names-its-codes:
     - PGH
     - RUF
   ruff-format-is-the-formatter:
-    - indent-width
-    - line-length
     - quote-style

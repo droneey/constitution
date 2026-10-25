@@ -28,17 +28,27 @@ jobs:
       - name: Pack the Constitution
         run: |
           bun run build
-          tar -czf constitution.tar.gz -C packages/constitution package.json blocks presets templates tools
+          tar -czf constitution.tar.gz -C packages/constitution \
+            package.json blocks presets templates tools
           sha256sum constitution.tar.gz > constitution.tar.gz.sha256
 
       - name: Build the program for each platform
         run: |
-          for platform in linux-x64:linux-x64 linux-arm64:linux-arm64 darwin-x64:macos-x64 darwin-arm64:macos-arm64; do
+          for platform in linux-x64:linux-x64 linux-arm64:linux-arm64 \
+            darwin-x64:macos-x64 darwin-arm64:macos-arm64; do
             target="${platform%%:*}"
             archive="${platform##*:}"
-            bun run build:cli --target "bun-${target}" --outfile "dist/cli/${archive}/bin/constitution"
+            bun run build:cli --target "bun-${target}" \
+              --outfile "dist/cli/${archive}/bin/constitution"
             tar -czf "constitution-${archive}.tar.gz" -C "dist/cli/${archive}" bin
           done
+
+      # The site under its release's address, which the docs image serves beside the others'
+      - name: Build the site
+        run: |
+          bun run --cwd apps/docs build:release
+          tar -czf constitution-docs.tar.gz -C apps/docs/.output/public .
+          sha256sum constitution-docs.tar.gz > constitution-docs.tar.gz.sha256
 
       - name: Hand the files to the release
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -48,10 +58,13 @@ jobs:
             constitution.tar.gz
             constitution.tar.gz.sha256
             constitution-*.tar.gz
+            constitution-docs.tar.gz.sha256
           if-no-files-found: error
 
   pre-release:
     needs: assets
+    # Renovate reads the version from the comment after the pinned digest
+    # yamllint disable-line rule:line-length
     uses: droneey/.github/.github/workflows/cd-release.yaml@1b247b5e6f351a996ce828435b1a4cd89f387914 # v2.8.0
     permissions:
       contents: write
@@ -62,3 +75,4 @@ jobs:
         constitution.tar.gz constitution.tar.gz.sha256
         constitution-linux-x64.tar.gz constitution-linux-arm64.tar.gz
         constitution-macos-x64.tar.gz constitution-macos-arm64.tar.gz
+        constitution-docs.tar.gz constitution-docs.tar.gz.sha256

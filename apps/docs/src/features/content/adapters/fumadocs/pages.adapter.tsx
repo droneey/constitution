@@ -1,3 +1,6 @@
+import type { ReactNode } from 'react';
+import { isValidElement } from 'react';
+
 import { Icon, IconName } from '@droneey/design-browser/react-dom';
 import type { Item } from 'fumadocs-core/page-tree';
 import type { LoaderPlugin } from 'fumadocs-core/source';
@@ -14,36 +17,45 @@ interface MarkdownPage {
   url: string;
 }
 
-const collectionPathsBySitePath = new Map<string, string>();
+interface SitePaths {
+  /** the path a page has in its collection, from the path the site serves it under */
+  readonly collectionPathOf: (path: string) => string;
+  /** records each file's path in its collection, for `collectionPathOf` */
+  readonly servedUnderSitePaths: <
+    TSource extends {
+      files: {
+        path: string;
+      }[];
+    },
+  >(
+    from: TSource,
+    sitePathOf: (path: string) => string,
+  ) => TSource;
+}
 
-/** records each file's path in its collection, for `collectionPathOf` */
-const servedUnderSitePaths = <
-  TSource extends {
-    files: {
-      path: string;
-    }[];
-  },
->(
-  from: TSource,
-  sitePathOf: (path: string) => string,
-): TSource => ({
-  ...from,
-  files: from.files.map((file) => {
-    const path = sitePathOf(file.path);
+const createSitePaths = (): SitePaths => {
+  const collectionPathsBySitePath = new Map<string, string>();
 
-    collectionPathsBySitePath.set(path, file.path);
+  return {
+    collectionPathOf: (path) => collectionPathsBySitePath.get(path) ?? path,
+    servedUnderSitePaths: (from, sitePathOf) => ({
+      ...from,
+      files: from.files.map((file) => {
+        const path = sitePathOf(file.path);
 
-    return {
-      ...file,
-      path,
-    };
-  }),
-});
+        collectionPathsBySitePath.set(path, file.path);
+
+        return {
+          ...file,
+          path,
+        };
+      }),
+    }),
+  };
+};
 
 const passportAsIndex = (path: string): string =>
   `${pageSlugsOf(path).join('/')}${isPassportPath(path) ? '/index' : ''}.md`;
-
-const collectionPathOf = (path: string): string => collectionPathsBySitePath.get(path) ?? path;
 
 /**
  * A link to a whole page leads to its main region, since the library places a page, for its
@@ -77,10 +89,42 @@ const crossLinks: LoaderPlugin = {
   },
 };
 
+/** a link the sidebar writes by its address, which the loader leaves off the base it serves its pages under */
+const linksUnder = (siteBase: string): LoaderPlugin => ({
+  // Stryker disable next-line StringLiteral: the name only labels the plugin in fumadocs' diagnostics
+  name: 'links-under-site-base',
+  transformPageTree: {
+    file: (node) =>
+      node.url.startsWith(DOCS_ROUTE)
+        ? {
+            ...node,
+            url: `${siteBase}${node.url.slice(1)}`,
+          }
+        : node,
+  },
+});
+
+/** the text a reader sees of an entry's name, which a cross link wraps with its arrow */
+const textOfName = (name: ReactNode): string => {
+  if (typeof name === 'string') {
+    return name;
+  }
+
+  if (Array.isArray(name)) {
+    return name.map(textOfName).join('');
+  }
+
+  return isValidElement<{
+    children?: ReactNode;
+  }>(name)
+    ? textOfName(name.props.children)
+    : '';
+};
+
 const markdownOfPage = async (
   page: MarkdownPage,
 ): Promise<string> => `# ${page.data.title} (${page.url})
 
 ${await page.data.getText('processed')}`;
 
-export { collectionPathOf, crossLinks, markdownOfPage, passportAsIndex, servedUnderSitePaths };
+export { createSitePaths, crossLinks, linksUnder, markdownOfPage, passportAsIndex, textOfName };

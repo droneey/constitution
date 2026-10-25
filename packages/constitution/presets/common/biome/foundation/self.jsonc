@@ -15,6 +15,14 @@
     "expand": "always",
     "useEditorconfig": true,
   },
+  "markdown": {
+    "formatter": {
+      "enabled": false,
+    },
+    "linter": {
+      "enabled": false,
+    },
+  },
   "linter": {
     "rules": {
       "preset": "recommended",
@@ -49,6 +57,7 @@
         "useFlatMap": "error",
         "useIndexOf": "error",
         "useLiteralKeys": "error",
+        "useMathMinMax": "error",
         "useNumericLiterals": "error",
         "useOptionalChain": "error",
         "useRegexLiterals": "error",
@@ -60,6 +69,7 @@
       "performance": {
         "noAccumulatingSpread": "error",
         "noDynamicNamespaceImportAccess": "error",
+        "useDomNodeTextContent": "error",
       },
       "style": {
         "noDescendingSpecificity": "error",

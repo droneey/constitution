@@ -8,22 +8,22 @@
 
 A `RequestValidationError` is answered as a validation failure whose details point at each field it refused, each entry of `errors()` by its `loc`, `type` and `msg` without its `input` and `ctx`; Starlette's `HTTPException` — an unknown route, a method not allowed — is answered as the kind its status maps to.
 
-| Why | Tags |
-|---|---|
-| FastAPI raises these before any handler runs, with no code of the error kit, so their answer takes its kind from their status or their fields; an entry's `input` is the value the caller sent, a password or a card number among them, and its `ctx` may quote it. | [errors, security] |
+| Why |
+|---|
+| FastAPI raises these before any handler runs, with no code of the error kit, so their answer takes its kind from their status or their fields; an entry's `input` is the value the caller sent, a password or a card number among them, and its `ctx` may quote it. |
 
 ### program-raises-no-http-exception → error-carries-a-code-never-a-status · MUST
 
 The program raises the error kit's errors, never `HTTPException`.
 
-| Why | Tags |
-|---|---|
-| an `HTTPException` carries a status and no code, and ties the code that raises it to HTTP. | [errors] |
+| Why |
+|---|
+| an `HTTPException` carries a status and no code, and ties the code that raises it to HTTP. |
 
 ### unexpected-error-logged-once → failure-logged-once · SHOULD
 
 The handler of an unexpected failure logs it, and a filter on the `uvicorn.error` logger drops the record of the same exception, which Starlette raises again after the handler has answered.
 
-| Why | Tags |
-|---|---|
-| Starlette always raises an unhandled exception again for the server, so without the filter every such failure is logged twice. | [errors] |
+| Why |
+|---|
+| Starlette always raises an unhandled exception again for the server, so without the filter every such failure is logged twice. |

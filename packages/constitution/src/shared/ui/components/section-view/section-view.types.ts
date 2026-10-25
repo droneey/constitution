@@ -12,4 +12,4 @@ interface SectionViewProps {
   readonly section: DrawnSection;
 }
 
-export type { DrawnSection, SectionViewProps };
+export type { SectionViewProps };

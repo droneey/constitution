@@ -18,7 +18,4 @@ class WorkingTreeError extends ProgramError<WorkingTreeFailure, GitStderr> {
   }
 }
 
-const isWorkingTreeError = (error: unknown): error is WorkingTreeError =>
-  error instanceof WorkingTreeError;
-
-export { isWorkingTreeError, WorkingTreeError, WorkingTreeFailure };
+export { WorkingTreeError, WorkingTreeFailure };

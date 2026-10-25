@@ -2,11 +2,28 @@ import { describe, expect, it } from 'bun:test';
 
 import { StepStatus } from '@droneey/design-cli';
 
-import { createFakeContext, runCommand } from '#/__tests__/command-line.fake';
+import { createFakeContext, runCommand } from '#/__tests__/command-context.fake';
 
 import type { Validation } from '../../../../../domain/use-cases/queries/check';
 import { RequiresCode } from '../../../../../domain/use-cases/queries/check';
+import { blocksOutcomeOf } from '../../../../utils';
 import { createBlocksCheckCommand } from '../check.cli';
+
+const soundValidation: Validation = {
+  advice: [],
+  findings: [],
+};
+
+const foundValidation: Validation = {
+  advice: [],
+  findings: [
+    {
+      code: RequiresCode.RequiresItself,
+      details: {},
+      path: 'blocks/domains/ui/ui.md',
+    },
+  ],
+};
 
 const runOf = async (input: {
   args: readonly string[];
@@ -72,10 +89,7 @@ describe('createBlocksCheckCommand', () => {
     // Arrange
     const asked = {
       args,
-      validation: {
-        advice: [],
-        findings: [],
-      },
+      validation: soundValidation,
     };
 
     // Act
@@ -94,10 +108,7 @@ describe('createBlocksCheckCommand', () => {
       ran: [
         {
           label: 'Blocks',
-          outcome: {
-            detail: 'every block is sound',
-            status: StepStatus.Done,
-          },
+          outcome: blocksOutcomeOf(soundValidation),
         },
       ],
     });
@@ -106,20 +117,8 @@ describe('createBlocksCheckCommand', () => {
   it.each([
     {
       condition: 'the blocks have findings',
-      outcome: {
-        detail: '1 finding',
-        status: StepStatus.Failed,
-      },
-      validation: {
-        advice: [],
-        findings: [
-          {
-            code: RequiresCode.RequiresItself,
-            details: {},
-            path: 'blocks/domains/ui/ui.md',
-          },
-        ],
-      },
+      outcome: blocksOutcomeOf(foundValidation),
+      validation: foundValidation,
     },
     {
       condition: 'the folder holds no blocks',

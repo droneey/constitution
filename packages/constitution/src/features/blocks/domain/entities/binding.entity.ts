@@ -35,10 +35,5 @@ const Binding = {
   }),
 } as const;
 
-interface PresetFile {
-  readonly path: string;
-  readonly text: string;
-}
-
-export type { BindingsDocument, BindingsRead, PresetFile };
+export type { BindingsDocument, BindingsRead };
 export { Binding };

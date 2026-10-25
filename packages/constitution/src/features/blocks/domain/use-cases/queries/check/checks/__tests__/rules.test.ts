@@ -31,14 +31,10 @@ describe('rulesCheck', () => {
       '',
       '### bare · MUST',
       '',
-      '| Why | Tags |',
-      '|---|---|',
-      '|  | [vibes, ux] |',
+      '| Why |',
+      '|---|',
+      '|  |',
       '',
-      rule({
-        slug: 'b',
-        tags: '[types]',
-      }),
       rule({
         slug: 'no-any-written',
       }),
@@ -69,22 +65,6 @@ describe('rulesCheck', () => {
         code: RulesCode.WithoutWhy,
         details: {
           slug: RuleSlug.create('bare'),
-        },
-        path: PRINCIPLES,
-      },
-      {
-        code: RulesCode.TagNotLens,
-        details: {
-          slug: RuleSlug.create('bare'),
-          tag: 'vibes',
-        },
-        path: PRINCIPLES,
-      },
-      {
-        code: RulesCode.TagNotLens,
-        details: {
-          slug: RuleSlug.create('b'),
-          tag: 'types',
         },
         path: PRINCIPLES,
       },
@@ -179,7 +159,6 @@ describe('rulesCheck', () => {
     files[I18N] = `# i18n\n\n${rule({
       tightens: parent,
       slug: 'i18n-plurals-by-cldr',
-      tags: '[ux]',
     })}`;
 
     const input = checkInputOf(files);

@@ -52,7 +52,6 @@ describe('createJsonManifestParser', () => {
         status: ReadStatus.Parsed,
         value: {
           name: 'constitution',
-          repository: undefined,
           skills: expected,
         },
       });
@@ -101,14 +100,10 @@ describe('createJsonManifestParser', () => {
           {
             name: 'local',
             path: '',
-            ref: undefined,
-            repo: undefined,
           },
           {
             name: 'remote',
             path: '',
-            ref: undefined,
-            repo: undefined,
           },
           {
             name: 'subdir',
@@ -119,8 +114,6 @@ describe('createJsonManifestParser', () => {
           {
             name: 'bare',
             path: '',
-            ref: undefined,
-            repo: undefined,
           },
           {
             name: 'dotgithub',

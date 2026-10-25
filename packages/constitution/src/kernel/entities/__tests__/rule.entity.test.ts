@@ -17,7 +17,6 @@ const ruleOf = (fields: Partial<Rule>): Rule =>
     slug: RuleSlug.create('a'),
     statement: 'A.',
     why: 'it keeps the code honest.',
-    writtenLenses: [],
     ...fields,
   });
 
@@ -44,9 +43,6 @@ describe('Rule', () => {
       statement: 'A.',
       tightens: RuleSlug.create('b'),
       why: 'it keeps the code honest.',
-      writtenLenses: [
-        'ux',
-      ],
     };
 
     // Act
@@ -67,7 +63,6 @@ describe('Rule', () => {
       slug: RuleSlug.create('a'),
       statement: 'A.',
       why: 'it keeps the code honest.',
-      writtenLenses: [],
     };
 
     // Act

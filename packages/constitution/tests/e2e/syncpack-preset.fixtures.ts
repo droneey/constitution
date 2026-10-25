@@ -54,40 +54,42 @@ const workspace = (packages: readonly Manifest[]): Readonly<Record<string, Manif
 const versionIssues = (packages: readonly Manifest[]): readonly string[] => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-syncpack-'));
 
-  for (const [path, manifest] of Object.entries(workspace(packages))) {
-    mkdirSync(dirname(join(folder, path)), {
+  try {
+    for (const [path, manifest] of Object.entries(workspace(packages))) {
+      mkdirSync(dirname(join(folder, path)), {
+        recursive: true,
+      });
+      writeFileSync(join(folder, path), JSON.stringify(manifest));
+    }
+
+    mkdirSync(join(folder, '.droneey'));
+    symlinkSync(repository, join(folder, '.droneey', 'constitution'));
+    writeFileSync(join(folder, '.syncpackrc.mjs'), CONFIG);
+
+    const linting = spawnSync(
+      syncpack,
+      [
+        'lint',
+      ],
+      {
+        cwd: folder,
+        encoding: 'utf8',
+      },
+    );
+
+    return [
+      ...new Set(
+        [
+          ...`${linting.stdout}${linting.stderr}`.matchAll(/✘ [^(]*\((\w+)\)/g),
+        ].map(([, kind]) => kind ?? ''),
+      ),
+    ];
+  } finally {
+    rmSync(folder, {
+      force: true,
       recursive: true,
     });
-    writeFileSync(join(folder, path), JSON.stringify(manifest));
   }
-
-  mkdirSync(join(folder, '.droneey'));
-  symlinkSync(repository, join(folder, '.droneey', 'constitution'));
-  writeFileSync(join(folder, '.syncpackrc.mjs'), CONFIG);
-
-  const linting = spawnSync(
-    syncpack,
-    [
-      'lint',
-    ],
-    {
-      cwd: folder,
-      encoding: 'utf8',
-    },
-  );
-
-  rmSync(folder, {
-    force: true,
-    recursive: true,
-  });
-
-  return [
-    ...new Set(
-      [
-        ...`${linting.stdout}${linting.stderr}`.matchAll(/✘ [^(]*\((\w+)\)/g),
-      ].map(([, kind]) => kind ?? ''),
-    ),
-  ];
 };
 
 export { versionIssues };

@@ -6,7 +6,7 @@ import { render as renderToInk } from 'ink';
 import { render } from 'ink-testing-library';
 
 import type { Output } from '#/libs/ui';
-import { ColourLevel, OutputMode, ThemeMode } from '#/libs/ui';
+import { ColourLevel, ConfirmWords, OutputMode, ThemeMode } from '#/libs/ui';
 
 import { ThemeProvider } from '../components';
 
@@ -19,6 +19,12 @@ enum Key {
   Interrupt = '\u0003',
   CtrlA = '\u0001',
 }
+
+const englishWords = ConfirmWords.create({
+  locale: 'en',
+  no: 'no',
+  yes: 'yes',
+});
 
 const createPlainOutput = (overrides: Partial<Output> = {}): Output => ({
   colourLevel: ColourLevel.None,
@@ -71,14 +77,28 @@ const createTerminalOutput = (): TerminalOutput => {
   });
 };
 
-const createTerminalInput = (): PassThrough =>
-  Object.assign(new PassThrough(), {
+interface TerminalInput extends PassThrough {
+  /** whether the keys reach the program one by one, as Ink sets it while it reads them */
+  isRaw: boolean;
+}
+
+const createTerminalInput = (): TerminalInput => {
+  const input = Object.assign(new PassThrough(), {
+    isRaw: false,
     // biome-ignore lint/style/useNamingConvention: Node.js names the property
     isTTY: true,
     ref: (): void => undefined,
-    setRawMode: (): void => undefined,
     unref: (): void => undefined,
   });
+
+  return Object.assign(input, {
+    setRawMode: (isRaw: boolean): TerminalInput => {
+      input.isRaw = isRaw;
+
+      return input;
+    },
+  });
+};
 
 const screenReaderOutputOf = (tree: ReactElement): string => {
   const output = createTerminalOutput();
@@ -132,6 +152,7 @@ export {
   createPlainOutput,
   createTerminalInput,
   createTerminalOutput,
+  englishWords,
   frameOnceShown,
   Key,
   pressKeys,

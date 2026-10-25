@@ -4,8 +4,10 @@ import { join } from 'node:path';
 
 import brand from '../../../brand.tokens.json' with { type: 'json' };
 import packageJson from '../package.json' with { type: 'json' };
+import { readTextWithin } from './libs/bounded-input';
 import { pluginFingerprintOf } from './libs/claude-plugin';
-import { createProgram, ExitCode, TODAY_VARIABLE } from './root';
+import { createProgram, TODAY_VARIABLE } from './root';
+import { ExitCode } from './shared/cli';
 
 // The fingerprint of the plugin's files the build embeds; a run from the sources has none and takes
 // its working tree's.
@@ -27,8 +29,16 @@ const environmentOf = (names: readonly string[]): Readonly<Record<string, string
     }),
   );
 
+// A hook's event is a few kilobytes, a file an agent wrote among them at most; an input past this
+// is refused unread, and reads as no event.
+const MAX_INPUT_BYTES = 67_108_864;
+
 const io = {
-  readInput: async (): Promise<string> => await Bun.stdin.text(),
+  readInput: async (): Promise<string> =>
+    (await readTextWithin({
+      maxBytes: MAX_INPUT_BYTES,
+      stream: Bun.stdin.stream(),
+    })) ?? '',
   write: (text: string): void => {
     process.stdout.write(text);
   },
@@ -38,6 +48,7 @@ const io = {
 };
 
 const today = process.env[TODAY_VARIABLE];
+const projectDir = process.env['CLAUDE_PROJECT_DIR'];
 
 const program = createProgram({
   accent: brand,
@@ -57,7 +68,14 @@ const program = createProgram({
       'TERM',
     ]),
     pluginRoot: process.env['CLAUDE_PLUGIN_ROOT'],
-    sessions: `/tmp/droneey-constitution-${String(process.getuid?.() ?? 0)}`,
+    sessions: {
+      environment: environmentOf([
+        'HOME',
+        'XDG_STATE_HOME',
+      ]),
+      formerFolder: `/tmp/droneey-constitution-${String(process.getuid?.() ?? 0)}`,
+      owner: process.geteuid?.(),
+    },
     ...(today === undefined
       ? {}
       : {
@@ -69,7 +87,11 @@ const program = createProgram({
   isTerminal: process.stdout.isTTY && process.stderr.isTTY,
   places: {
     cwd: process.cwd(),
-    projectDir: process.env['CLAUDE_PROJECT_DIR'] ?? '',
+    ...(projectDir === undefined || projectDir === ''
+      ? {}
+      : {
+          projectDir,
+        }),
   },
   pluginFingerprint: (): string | undefined =>
     typeof CONSTITUTION_PLUGIN_FINGERPRINT === 'string'
@@ -112,12 +134,10 @@ for (const [signal, code] of [
   });
 }
 
+// A closed pipe ends the run with its code; any other failure of standard output goes to the
+// handler of last resort, which writes it and gives its code.
 process.stdout.on('error', (error: NodeJS.ErrnoException): void => {
-  if (error.code === 'EPIPE') {
-    process.exit(ExitCode.ClosedPipe);
-  }
-
-  throw error;
+  process.exit(error.code === 'EPIPE' ? ExitCode.ClosedPipe : program.fail(error));
 });
 
 process.exitCode = await program.run(process.argv.slice(2));

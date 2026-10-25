@@ -2,58 +2,37 @@ import { describe, expect, it } from 'bun:test';
 
 import { createFakeWorkingTree } from '#/__tests__/working-tree.fake';
 
-import { checksumOf, fingerprintOf } from '../checksum.utils';
-
-const encoder = new TextEncoder();
-
-describe('checksumOf', () => {
-  it.each([
-    {
-      checksum: '4294967295',
-      condition: 'the bytes are none',
-      text: '',
-    },
-    {
-      checksum: '3287646509',
-      condition: 'the bytes are a word',
-      text: 'hello',
-    },
-    {
-      checksum: '1664553091',
-      condition: 'their length takes two bytes',
-      text: 'a'.repeat(300),
-    },
-    {
-      checksum: '573700510',
-      condition: 'their length takes three bytes',
-      text: 'b'.repeat(70_000),
-    },
-  ])('should give what POSIX cksum prints when $condition', ({ checksum, text }) => {
-    // Arrange
-    const bytes = encoder.encode(text);
-
-    // Act
-    const given = checksumOf(bytes);
-
-    // Assert
-    expect(given).toBe(checksum);
-  });
-});
+import { fingerprintOf } from '../checksum.utils';
 
 describe('fingerprintOf', () => {
   it.each([
     {
+      checksum: '4294967295',
+      condition: 'the state holds no bytes',
+      state: '',
+    },
+    {
       checksum: '3287646509',
-      condition: 'git reports the state of the tree',
+      condition: 'the state is a word',
       state: 'hello',
     },
     {
+      checksum: '1664553091',
+      condition: 'its length takes two bytes',
+      state: 'a'.repeat(300),
+    },
+    {
+      checksum: '573700510',
+      condition: 'its length takes three bytes',
+      state: 'b'.repeat(70_000),
+    },
+    {
       checksum: '4294967295',
-      condition: 'git cannot report it',
+      condition: 'git cannot report it, which reads as no bytes',
       state: new Error('git failed'),
     },
   ])(
-    'should give the checksum of the state, or of no bytes, when $condition',
+    'should give what POSIX cksum prints of the state of the tree when $condition',
     ({ checksum, state }) => {
       // Arrange
       const workingTree = createFakeWorkingTree({

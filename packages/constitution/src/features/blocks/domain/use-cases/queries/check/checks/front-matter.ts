@@ -3,9 +3,8 @@ import type { FindingOf } from '#/kernel/types';
 import { BlockId } from '#/kernel/value-objects';
 
 import type { Block, BlockGraph, FrontMatter } from '../../../../entities';
-import { FrontMatterField } from '../../../../entities';
+import { FrontMatterField, requirableBy } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
-import { requirableBy } from '../shared/layers';
 
 enum FrontMatterCode {
   IdMismatch = 'id-mismatches-folder',
@@ -15,12 +14,15 @@ enum FrontMatterCode {
   UnderscoreNotAbstract = 'underscore-id-not-abstract',
 }
 
-/** a field of the front matter that only some layers fill */
-type LayerField =
-  | FrontMatterField.Requires
-  | FrontMatterField.Extends
-  | FrontMatterField.Abstract
-  | FrontMatterField.Languages;
+// The fields of the front matter that only some layers fill.
+const LAYER_FIELDS = [
+  FrontMatterField.Requires,
+  FrontMatterField.Extends,
+  FrontMatterField.Abstract,
+  FrontMatterField.Languages,
+] as const;
+
+type LayerField = (typeof LAYER_FIELDS)[number];
 
 interface FrontMatterDetails {
   readonly [FrontMatterCode.IdMismatch]: {
@@ -39,13 +41,6 @@ interface FrontMatterDetails {
 }
 
 type FrontMatterFinding = FindingOf<FrontMatterDetails>;
-
-const LAYER_FIELDS: readonly LayerField[] = [
-  FrontMatterField.Requires,
-  FrontMatterField.Extends,
-  FrontMatterField.Abstract,
-  FrontMatterField.Languages,
-] as const;
 
 const builtOn: readonly Layer[] = LAYERS.filter((layer) => layer !== Layer.Core);
 

@@ -8,7 +8,7 @@ Each skill is a `SKILL.md` of the plugin, called by its slash command. `/constit
 |---|---|---|
 | [`/constitution:ratify`](#constitutionratify) | you only | `constitution.yaml`, `PROJECT.md`, `DECISIONS.md`, draft blocks of a pack, the tools' configurations |
 | [`/constitution:amend [rule]`](#constitutionamend) | you only | `constitution.yaml` |
-| [`/constitution:check [all\|edits] [lens]`](#constitutioncheck) | you or the agent | nothing; the agent fixes the findings |
+| [`/constitution:check [all\|edits]`](#constitutioncheck) | you or the agent | nothing; the agent fixes the findings |
 
 ## /constitution:ratify
 
@@ -48,6 +48,5 @@ Runs the project's check, then has the reviewer judge the files against the rule
 |---|---|
 | `edits`, the default | the files that differ from `HEAD`, new files included |
 | `all` | every file of the repository, a block at a time |
-| a lens, one of [the tags](block-format.md#a-rule): `a11y`, `data`, `errors`, `performance`, `security`, `testing`, `ux` | only the rules with that tag |
 
 A failing check is fixed before the review starts. [The reviewer](plugin.md#the-reviewer) returns one finding per line; a finding against a rule the repository does not want is a case for `/constitution:amend`.

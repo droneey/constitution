@@ -15,7 +15,7 @@ interface SeamPlace {
 }
 
 // A block of the Constitution or of a pack as a project reads it, its chapters and seams in the
-// order the blocks are read; a card without front matter leaves its fields empty.
+// order the blocks are read; a card without front matter leaves its fields empty or absent.
 interface CatalogueBlock {
   readonly chapters: readonly ChapterPlace[];
   readonly extends?: BlockId;
@@ -26,7 +26,7 @@ interface CatalogueBlock {
   readonly requires: readonly BlockId[];
   readonly seams: readonly SeamPlace[];
   readonly source: BlockSource;
-  readonly summary: string;
+  readonly summary?: string;
 }
 
 const CatalogueBlock = {
@@ -44,7 +44,11 @@ const CatalogueBlock = {
     requires: input.requires,
     seams: input.seams,
     source: input.source,
-    summary: input.summary,
+    ...(input.summary === undefined
+      ? {}
+      : {
+          summary: input.summary,
+        }),
   }),
 } as const;
 

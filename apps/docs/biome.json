@@ -3,6 +3,8 @@
   "root": true,
   "extends": [
     "./.droneey/constitution/presets/common/biome/foundation/self.jsonc",
+    "./.droneey/constitution/presets/common/biome/foundation/git.jsonc",
+    "./.droneey/constitution/presets/common/biome/foundation/mise.jsonc",
     "./.droneey/constitution/presets/css/biome/foundation/self.jsonc",
     "./.droneey/constitution/presets/css/biome/foundation/css.jsonc",
     "./.droneey/constitution/presets/css/biome/foundation/design-system.jsonc",
@@ -23,14 +25,10 @@
     "./.droneey/constitution/presets/typescript/biome/foundation/zod.jsonc",
     "./.droneey/constitution/presets/typescript/biome/architecture/core.jsonc",
     "./.droneey/constitution/presets/typescript/biome/architecture/typescript.jsonc",
-    "./.droneey/constitution/presets/typescript/biome/architecture/ui.jsonc"
+    "./.droneey/constitution/presets/typescript/biome/architecture/ui.jsonc",
+    "./.droneey/constitution/presets/typescript/biome/architecture/bun.jsonc",
+    "./.droneey/constitution/presets/yaml/biome/foundation/self.jsonc"
   ],
-  "vcs": {
-    "enabled": true,
-    "clientKind": "git",
-    "useIgnoreFile": true,
-    "root": "."
-  },
   "files": {
     "includes": [
       "!**/*.gen.*"

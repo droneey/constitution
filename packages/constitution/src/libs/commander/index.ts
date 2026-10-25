@@ -1,2 +1,2 @@
-export type { ExamplesOf } from './help.utils';
-export { createHelpLayout } from './help.utils';
+export type { HelpExamples } from './help.utils';
+export { configureHelpLayout } from './help.utils';

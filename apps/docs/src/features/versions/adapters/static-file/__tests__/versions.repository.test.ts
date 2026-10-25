@@ -1,106 +1,151 @@
 import { describe, expect, it } from 'bun:test';
 
-import { ZodError } from 'zod';
-
-import { VersionError } from '../../../domain/errors';
-import { createVersion } from '../../../domain/value-objects';
+import { VersionsFailure } from '../../../domain/errors';
+import { Version } from '../../../domain/value-objects';
 import { createStaticFileVersionsRepository } from '../versions.repository';
-import { transportServing, versionsFileOf } from './versions.repository.fixtures';
+import {
+  failureOf,
+  transportFailing,
+  transportServing,
+  transportSilent,
+  versionsFileOf,
+} from './versions.repository.fixtures';
+
+const servingFile = (file: unknown): ReturnType<typeof transportServing> =>
+  transportServing({
+    '/versions.json': {
+      body: file,
+      status: 200,
+    },
+  });
 
 describe('createStaticFileVersionsRepository', () => {
-  it('should read the releases when the file lists them', async () => {
-    // Arrange
-    const repository = createStaticFileVersionsRepository(
-      '/versions.json',
-      transportServing({
-        '/versions.json': {
-          body: versionsFileOf(),
-          status: 200,
-        },
+  it.each([
+    {
+      condition: 'the file lists them',
+      file: versionsFileOf(),
+      latest: '0.70.0',
+      versions: [
+        '0.70.0',
+        '0.69.2',
+        '0.9.10',
+      ],
+    },
+    {
+      condition: 'every part holds several digits',
+      file: versionsFileOf({
+        latest: '10.20.30',
+        versions: [
+          '10.20.30',
+        ],
       }),
-    );
+      latest: '10.20.30',
+      versions: [
+        '10.20.30',
+      ],
+    },
+    {
+      condition: 'the file holds a key a later release added',
+      file: versionsFileOf({
+        channel: 'stable',
+      }),
+      latest: '0.70.0',
+      versions: [
+        '0.70.0',
+        '0.69.2',
+        '0.9.10',
+      ],
+    },
+  ])('should read the releases when $condition', async ({ file, latest, versions }) => {
+    // Arrange
+    const repository = createStaticFileVersionsRepository({
+      address: '/versions.json',
+      transport: servingFile(file),
+    });
 
     // Act
-    const versions = await repository.read(new AbortController().signal);
+    const read = await repository.read(new AbortController().signal);
 
     // Assert
-    expect(versions).toStrictEqual({
-      latest: createVersion('0.70.0'),
-      versions: [
-        createVersion('0.70.0'),
-        createVersion('0.69.2'),
-        createVersion('0.9.10'),
-      ],
+    expect(read).toStrictEqual({
+      latest: Version.create(latest),
+      versions: versions.map(Version.create),
     });
   });
 
-  it('should read the releases when every part holds several digits', async () => {
+  it('should fail as unanswered, with the status, when the site answers no file', async () => {
     // Arrange
-    const repository = createStaticFileVersionsRepository(
-      '/versions.json',
-      transportServing({
-        '/versions.json': {
-          body: versionsFileOf({
-            latest: '10.20.30',
-            versions: [
-              '10.20.30',
-            ],
-          }),
-          status: 200,
-        },
-      }),
-    );
-
-    // Act
-    const versions = await repository.read(new AbortController().signal);
-
-    // Assert
-    expect(versions).toStrictEqual({
-      latest: createVersion('10.20.30'),
-      versions: [
-        createVersion('10.20.30'),
-      ],
-    });
-  });
-
-  it('should fail with the status when the site answers no file', async () => {
-    // Arrange
-    const repository = createStaticFileVersionsRepository(
-      '/versions.json',
-      transportServing({
+    const repository = createStaticFileVersionsRepository({
+      address: '/versions.json',
+      transport: transportServing({
         '/other.json': {
           body: versionsFileOf(),
           status: 200,
         },
       }),
-    );
+    });
 
     // Act
-    const read = repository.read(new AbortController().signal);
+    const failure = await failureOf(repository.read(new AbortController().signal));
 
     // Assert
-    await expect(read).rejects.toThrow(new Error('/versions.json answered 404'));
+    expect(failure).toStrictEqual({
+      cause: undefined,
+      code: VersionsFailure.Unanswered,
+      details: {
+        address: '/versions.json',
+        status: 404,
+      },
+    });
   });
 
-  it('should fail when the caller has aborted the read', async () => {
-    // Arrange
-    const repository = createStaticFileVersionsRepository(
-      '/versions.json',
-      transportServing({
-        '/versions.json': {
-          body: versionsFileOf(),
-          status: 200,
-        },
+  it.each([
+    {
+      cause: 'TypeError',
+      condition: 'the network fails',
+      repository: createStaticFileVersionsRepository({
+        address: '/versions.json',
+        transport: transportFailing(new TypeError('Failed to fetch')),
       }),
-    );
-    const controller = new AbortController();
-    controller.abort(new Error('left the page'));
-
+    },
+    {
+      cause: 'TimeoutError',
+      condition: 'the site gives no answer in time',
+      repository: createStaticFileVersionsRepository({
+        address: '/versions.json',
+        timeoutMs: 0,
+        transport: transportSilent,
+      }),
+    },
+  ])('should fail as unreachable when $condition', async ({ cause, repository }) => {
     // Act
-    const read = repository.read(controller.signal);
+    const failure = await failureOf(repository.read(new AbortController().signal));
 
     // Assert
-    await expect(read).rejects.toThrow(new Error('left the page'));
+    expect(failure).toStrictEqual({
+      cause,
+      code: VersionsFailure.Unreachable,
+      details: {
+        address: '/versions.json',
+      },
+    });
+  });
+
+  it('should fail with the caller’s reason when the caller has aborted the read', async () => {
+    // Arrange
+    const repository = createStaticFileVersionsRepository({
+      address: '/versions.json',
+      transport: servingFile(versionsFileOf()),
+    });
+    const controller = new AbortController();
+
+    controller.abort();
+
+    // Act
+    const failure = await failureOf(repository.read(controller.signal));
+
+    // Assert
+    expect(failure).toBe(controller.signal.reason);
   });
 
   it.each([
@@ -109,63 +154,64 @@ describe('createStaticFileVersionsRepository', () => {
       file: versionsFileOf({
         latest: 'v0.70.0',
       }),
+      problems: [
+        'latest',
+      ],
     },
     {
       condition: 'a release is no release version',
       file: versionsFileOf({
         versions: [
+          '0.70.0',
           '0.69.2.1',
         ],
       }),
-    },
-  ])('should refuse the file with the version when $condition', async ({ file }) => {
-    // Arrange
-    const repository = createStaticFileVersionsRepository(
-      '/versions.json',
-      transportServing({
-        '/versions.json': {
-          body: file,
-          status: 200,
-        },
-      }),
-    );
-
-    // Act
-    const read = repository.read(new AbortController().signal);
-
-    // Assert
-    await expect(read).rejects.toBeInstanceOf(VersionError);
-  });
-
-  it.each([
-    {
-      condition: 'the latest is missing',
-      file: versionsFileOf({
-        latest: undefined,
-      }),
+      problems: [
+        'versions.1',
+      ],
     },
     {
-      condition: 'the releases are not a list',
+      condition: 'the latest is a list that holds a release version',
       file: versionsFileOf({
+        latest: [
+          '0.70.0',
+        ],
+      }),
+      problems: [
+        'latest',
+      ],
+    },
+    {
+      condition: 'the latest is missing and the releases are not a list',
+      file: {
         versions: '0.69.2',
-      }),
+      },
+      problems: [
+        'latest',
+        'versions',
+      ],
     },
-  ])('should refuse the file when $condition', async ({ file }) => {
-    // Arrange
-    const repository = createStaticFileVersionsRepository(
-      '/versions.json',
-      transportServing({
-        '/versions.json': {
-          body: file,
-          status: 200,
+  ])(
+    'should fail as malformed, naming each problem’s place, when $condition',
+    async ({ file, problems }) => {
+      // Arrange
+      const repository = createStaticFileVersionsRepository({
+        address: '/versions.json',
+        transport: servingFile(file),
+      });
+
+      // Act
+      const failure = await failureOf(repository.read(new AbortController().signal));
+
+      // Assert
+      expect(failure).toStrictEqual({
+        cause: 'ZodError',
+        code: VersionsFailure.Malformed,
+        details: {
+          address: '/versions.json',
+          problems,
         },
-      }),
-    );
-
-    // Act
-    const read = repository.read(new AbortController().signal);
-
-    // Assert
-    await expect(read).rejects.toBeInstanceOf(ZodError);
-  });
+      });
+    },
+  );
 });

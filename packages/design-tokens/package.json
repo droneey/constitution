@@ -19,7 +19,6 @@
     "design-tokens": "./src/entrypoints/design-build/main.ts"
   },
   "exports": {
-    ".": "./src/index.ts",
     "./tokens/*": "./tokens/*"
   },
   "imports": {
@@ -36,18 +35,20 @@
     "unused:check": "knip --no-config-hints && knip --strict --no-config-hints",
     "markdown:check": "rumdl check . && rumdl fmt --check .",
     "markdown:fix": "rumdl check --fix",
-    "yaml:check": "yamllint --strict ."
+    "yaml:check": "yamllint --strict .",
+    "toml:check": "tombi format --check && tombi lint",
+    "toml:fix": "tombi format"
   },
   "dependencies": {
     "style-dictionary": "^5.7.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.15",
+    "@biomejs/biome": "2.6.2",
     "@droneey/mutation-check": "workspace:*",
     "@stryker-mutator/core": "10.0.0",
     "@types/bun": "1.4.3",
     "colorjs.io": "0.7.1",
-    "dependency-cruiser": "18.6.0",
+    "dependency-cruiser": "18.7.0",
     "knip": "6.41.0",
     "typescript": "7.0.2"
   }

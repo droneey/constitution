@@ -1,5 +1,4 @@
-import type { ProjectFiles } from '#/kernel/contracts';
-import type { ProjectPlace, Release } from '#/kernel/entities';
+import type { Release } from '#/kernel/entities';
 import {
   FileRead,
   FileReadStatus,
@@ -11,6 +10,7 @@ import { ProjectError, ProjectFailure } from '#/kernel/errors';
 import { Version } from '#/kernel/value-objects';
 
 import { joinPath } from '../shared/project-paths';
+import type { ReleaseReadInput } from '../shared/release-read';
 
 const MANIFEST = 'package.json';
 // As sed reads a line of the manifest: the last match on the first line that matches.
@@ -29,7 +29,7 @@ const firstMatchOf = (input: { pattern: RegExp; text: string }): string | undefi
  *
  * @throws {@link ProjectError} when the manifest cannot be read or names no release version
  */
-const readRelease = (input: { files: ProjectFiles; place: ProjectPlace }): Release => {
+const readRelease = (input: ReleaseReadInput): Release => {
   const { files } = input;
   const { releaseFolder } = input.place;
   const manifest = joinPath({

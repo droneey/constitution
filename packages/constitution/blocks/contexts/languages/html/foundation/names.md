@@ -8,6 +8,6 @@
 
 An `id` appears once in its document.
 
-| Why | Tags |
-|---|---|
-| `for`, `aria-labelledby`, `aria-describedby` and a fragment link resolve to the first element with the id, so a second one is never labelled, described or reached. | [a11y] |
+| Why |
+|---|
+| `for`, `aria-labelledby`, `aria-describedby` and a fragment link resolve to the first element with the id, so a second one is never labelled, described or reached. |

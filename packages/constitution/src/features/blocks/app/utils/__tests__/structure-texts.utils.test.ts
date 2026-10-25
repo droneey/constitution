@@ -305,11 +305,8 @@ describe('structureTexts', () => {
       text: 'takes the id of the block ui; a file named after a block belongs in with/',
     },
   ])('should say $problem.code as the report words it', ({ problem, text }) => {
-    // Arrange
-    const reported = problem;
-
     // Act
-    const said = textOf(structureTexts, reported.code, reported.details);
+    const said = textOf(structureTexts, problem.code, problem.details);
 
     // Assert
     expect(said).toBe(text);

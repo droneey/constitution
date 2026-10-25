@@ -1,8 +1,9 @@
-import { KIND_OF_LAYER } from '#/kernel/constants';
 import type { Rule } from '#/kernel/entities';
 
-import type { BlockGraph, Constitution, SimilarRules } from '../../../../../entities';
+import { KIND_OF_LAYER } from '../../../../../constants';
+import type { BlockGraph, SimilarRules } from '../../../../../entities';
 import { Block } from '../../../../../entities';
+import type { CheckInput } from '../../check.types';
 
 const WORD = /[a-z]{3,}/g;
 const SIMILAR = 0.5;
@@ -40,10 +41,7 @@ const areSiblings = (input: { graph: BlockGraph; left: Rule; right: Rule }): boo
 // Advice only: two blocks of one layer — one kind, so a platform and a language
 // are siblings — saying nearly the same thing may share a rule that belongs one
 // layer up; a person decides.
-const adviseConstitution = (input: {
-  graph: BlockGraph;
-  constitution: Constitution;
-}): readonly SimilarRules[] => {
+const adviseConstitution = (input: CheckInput): readonly SimilarRules[] => {
   const { rules } = input.constitution;
   const words = rules.map((rule) => wordsOf(rule.statement));
 

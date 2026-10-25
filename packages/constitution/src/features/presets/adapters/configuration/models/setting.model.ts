@@ -20,5 +20,4 @@ const settingModel: z.ZodType<SettingWire> = z.lazy(() =>
   ]),
 );
 
-export type { SettingWire };
 export { settingModel };

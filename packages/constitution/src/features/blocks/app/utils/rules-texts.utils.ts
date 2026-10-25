@@ -10,8 +10,6 @@ const rulesTexts: TextsOf<RulesDetails> = {
     `rule "${slug}" opens with "no-"; a slug says what holds`,
   [RulesCode.WithoutStatement]: ({ slug }) => `rule "${slug}" has no statement`,
   [RulesCode.WithoutWhy]: ({ slug }) => `rule "${slug}" has no Why`,
-  [RulesCode.TagNotLens]: ({ slug, tag }) =>
-    `rule "${slug}" has the tag "${tag}", which is not a lens`,
   [RulesCode.DefinedTwice]: ({ firstFile, slug }) =>
     `rule "${slug}" is also defined in ${firstFile}`,
   [RulesCode.ParentNotRule]: ({ parent, slug }) =>

@@ -1,12 +1,16 @@
 import { TEMPLATES_FOLDER } from '../constants';
+import type { Brand } from '../types';
 import { fieldsOf, isPathSegment } from '../utils';
 
 /** A template: templates/project/<scope>/<tool>/<writes>, the path it writes from the folder it serves. */
-interface TemplatePath {
-  readonly scope: string;
-  readonly tool: string;
-  readonly writes: string;
-}
+type TemplatePath = Brand<
+  {
+    readonly scope: string;
+    readonly tool: string;
+    readonly writes: string;
+  },
+  'TemplatePath'
+>;
 
 const SEPARATOR = '/';
 const templatesPrefix = `${TEMPLATES_FOLDER}${SEPARATOR}`;

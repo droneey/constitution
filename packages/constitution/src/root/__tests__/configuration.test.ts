@@ -68,12 +68,9 @@ describe('clockOf', () => {
       condition: 'it writes the year with a sign',
       today: '+002026-06-15',
     },
-  ])('should refuse to be read when the fixed day $condition', ({ today }) => {
-    // Arrange
-    const clock = clockOf(today);
-
+  ])('should fail at once when the fixed day $condition', ({ today }) => {
     // Act
-    const failure = failureOf(() => clock.today());
+    const failure = failureOf(() => clockOf(today));
 
     // Assert
     expect(failure).toStrictEqual({

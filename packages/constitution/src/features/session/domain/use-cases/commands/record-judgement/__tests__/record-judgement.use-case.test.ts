@@ -2,19 +2,37 @@ import { describe, expect, it } from 'bun:test';
 
 import { BlockId } from '#/kernel/value-objects';
 
-import { keptSession } from '../../../../../__tests__/session.fixtures';
+import { heldSessionsOf, keptSession } from '../../../../../__tests__/session.fixtures';
 import { createFakeSessionCommandRepository } from '../../../../../__tests__/session-command-repository.fake';
 import type { StopJudgement } from '../../../../entities';
 import { SessionMark, StopVerdict } from '../../../../entities';
 import { recordJudgement } from '../record-judgement.use-case';
 
 const NOW = '3287646509';
+const EARLIER = '1';
+
+// The tree was last reviewed, and the gate last blocked, on an earlier tree.
+const heldBefore = {
+  marks: [
+    {
+      mark: SessionMark.Reviewed,
+      value: EARLIER,
+    },
+    {
+      mark: SessionMark.Blocked,
+      value: EARLIER,
+    },
+  ],
+};
 
 describe('recordJudgement', () => {
   it.each<{
     condition: string;
     judgement: StopJudgement;
-    mark: SessionMark;
+    marks: {
+      blocked: string;
+      reviewed: string;
+    };
   }>([
     {
       condition: 'the reviewer finished',
@@ -22,7 +40,10 @@ describe('recordJudgement', () => {
         fingerprint: NOW,
         verdict: StopVerdict.Reviewed,
       },
-      mark: SessionMark.Reviewed,
+      marks: {
+        blocked: EARLIER,
+        reviewed: NOW,
+      },
     },
     {
       condition: 'the gate blocked the hand-back',
@@ -31,32 +52,32 @@ describe('recordJudgement', () => {
         fingerprint: NOW,
         verdict: StopVerdict.Blocked,
       },
-      mark: SessionMark.Blocked,
+      marks: {
+        blocked: NOW,
+        reviewed: EARLIER,
+      },
     },
-  ])('should record the tree judged when $condition', ({ judgement, mark }) => {
+  ])('should record the tree judged when $condition', ({ judgement, marks }) => {
     // Arrange
-    const store = createFakeSessionCommandRepository();
+    const store = heldSessionsOf(heldBefore);
 
     // Act
     recordJudgement({
       judgement,
       session: keptSession,
-      sessions: store.sessions,
+      sessions: createFakeSessionCommandRepository(store),
     });
 
     // Assert
-    expect(store.writes.recorded).toStrictEqual([
-      {
-        mark,
-        session: keptSession,
-        value: NOW,
-      },
-    ]);
+    expect({
+      blocked: store.get(keptSession)?.marks.get(SessionMark.Blocked),
+      reviewed: store.get(keptSession)?.marks.get(SessionMark.Reviewed),
+    }).toStrictEqual(marks);
   });
 
   it('should record nothing when the gate asked for a review', () => {
     // Arrange
-    const store = createFakeSessionCommandRepository();
+    const store = heldSessionsOf(heldBefore);
 
     // Act
     recordJudgement({
@@ -67,10 +88,16 @@ describe('recordJudgement', () => {
         verdict: StopVerdict.Review,
       },
       session: keptSession,
-      sessions: store.sessions,
+      sessions: createFakeSessionCommandRepository(store),
     });
 
     // Assert
-    expect(store.writes.recorded).toStrictEqual([]);
+    expect({
+      blocked: store.get(keptSession)?.marks.get(SessionMark.Blocked),
+      reviewed: store.get(keptSession)?.marks.get(SessionMark.Reviewed),
+    }).toStrictEqual({
+      blocked: EARLIER,
+      reviewed: EARLIER,
+    });
   });
 });

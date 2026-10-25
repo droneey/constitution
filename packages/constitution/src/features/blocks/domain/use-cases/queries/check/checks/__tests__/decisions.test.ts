@@ -155,7 +155,7 @@ describe('decisionsCheck', () => {
           path: LOG,
         },
       ],
-      line: '**Date:** 2026-09-25 · **Status:** Superseded by ADR-0002',
+      line: '**Date:** 2026-09-25 · **Status:** Superseded by ADR-2',
     },
     {
       expected: [
@@ -233,6 +233,10 @@ describe('decisionsCheck', () => {
     {
       expected: [],
       line: '**Date:** 2028-02-29 · **Status:** Accepted',
+    },
+    {
+      expected: [],
+      line: '**Date:** 2026-09-25 · **Status:** Superseded by ADR-0002',
     },
   ])('should report the entry when the line under the heading is $line', ({ expected, line }) => {
     // Arrange

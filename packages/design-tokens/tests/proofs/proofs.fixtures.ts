@@ -1,17 +1,15 @@
-import { fileURLToPath } from 'node:url';
-
 import type { PlainColorObject } from 'colorjs.io/fn';
 import { contrastWCAG21, mix, OKLCH, sRGB_Linear, to, toGamut } from 'colorjs.io/fn';
 import StyleDictionary from 'style-dictionary';
 
-enum ThemeMode {
-  Light = 'light',
-  Dark = 'dark',
-}
+import type { ThemeModeFiles } from '#/libs/resolver';
+import { themeModesOf } from '#/libs/resolver';
+
+import resolver from '../../tokens/design.resolver.json' with { type: 'json' };
 
 type DesignTokens = ReadonlyMap<string, unknown>;
 
-const tokensPath = fileURLToPath(new URL('../../tokens/', import.meta.url));
+const resolverUrl = new URL('../../tokens/design.resolver.json', import.meta.url).href;
 
 const READ_PLATFORM = 'tokens';
 
@@ -199,15 +197,13 @@ const PAIRS = [
   ],
 ] as const;
 
-const readMode = async (mode: ThemeMode): Promise<DesignTokens> => {
+const readMode = async ({ own, shared }: ThemeModeFiles): Promise<DesignTokens> => {
   const dictionary = new StyleDictionary(
     {
       source: [
-        'color.tokens.json',
-        'size.tokens.json',
-        'motion.tokens.json',
-        `theme/${mode}.tokens.json`,
-      ].map((set) => `${tokensPath}${set}`),
+        ...shared,
+        ...own,
+      ],
       log: {
         verbosity: 'silent',
       },
@@ -232,29 +228,61 @@ const readMode = async (mode: ThemeMode): Promise<DesignTokens> => {
   );
 };
 
-const modes: Readonly<Record<ThemeMode, DesignTokens>> = {
-  [ThemeMode.Light]: await readMode(ThemeMode.Light),
-  [ThemeMode.Dark]: await readMode(ThemeMode.Dark),
+const themeModes = themeModesOf(resolver, resolverUrl);
+
+const modes: ReadonlyMap<string, DesignTokens> = new Map(
+  await Promise.all(
+    themeModes.map(
+      async (mode) =>
+        [
+          mode.name,
+          await readMode(mode),
+        ] as const,
+    ),
+  ),
+);
+
+const tokensOf = (mode: string | undefined): DesignTokens => {
+  const tokens = mode === undefined ? undefined : modes.get(mode);
+
+  if (tokens === undefined) {
+    throw new Error(`the resolver names no mode ${mode}`);
+  }
+
+  return tokens;
 };
+
+const defaultTokens = tokensOf(themeModes.find(({ isDefault }) => isDefault)?.name);
 
 const isRecord = (raw: unknown): raw is Readonly<Record<string, unknown>> =>
   typeof raw === 'object' && raw !== null && !Array.isArray(raw);
+
+const isComponents = (
+  raw: unknown,
+): raw is readonly [
+  number,
+  number,
+  number,
+] =>
+  Array.isArray(raw) && raw.length === 3 && raw.every((component) => typeof component === 'number');
 
 /** a role's colour in linear sRGB, laid over the base surface at its opacity */
 const colourOf = (tokens: DesignTokens, path: string): PlainColorObject => {
   const reference = tokens.get(path);
   const colour = typeof reference === 'string' ? tokens.get(reference.slice(1, -1)) : reference;
-  const alpha = isRecord(colour) && typeof colour['alpha'] === 'number' ? colour['alpha'] : 1;
-  const components =
-    isRecord(colour) && Array.isArray(colour['components']) ? colour['components'] : [];
+  const components = isRecord(colour) ? colour['components'] : undefined;
+
+  if (!(isRecord(colour) && isComponents(components))) {
+    throw new Error(`the tokens hold no colour for ${path}`);
+  }
+
+  const alpha = typeof colour['alpha'] === 'number' ? colour['alpha'] : 1;
   const own = toGamut(
     to(
       {
         space: OKLCH,
         coords: [
-          components[0] ?? 0,
-          components[1] ?? 0,
-          components[2] ?? 0,
+          ...components,
         ],
         alpha: 1,
       },
@@ -272,14 +300,20 @@ const colourOf = (tokens: DesignTokens, path: string): PlainColorObject => {
       });
 };
 
-const contrastOf = (pair: { background: string; foreground: string; mode: ThemeMode }): number =>
+interface ContrastPair {
+  readonly background: string;
+  readonly foreground: string;
+  readonly mode: string;
+}
+
+const contrastOf = (pair: ContrastPair): number =>
   contrastWCAG21(
-    colourOf(modes[pair.mode], `color.${pair.foreground}`),
-    colourOf(modes[pair.mode], `color.${pair.background}`),
+    colourOf(tokensOf(pair.mode), `color.${pair.foreground}`),
+    colourOf(tokensOf(pair.mode), `color.${pair.background}`),
   );
 
 const pixelsOf = (path: string): number => {
-  const measure = modes[ThemeMode.Light].get(path);
+  const measure = defaultTokens.get(path);
 
   if (typeof measure === 'string') {
     return pixelsOf(measure.slice(1, -1));
@@ -288,7 +322,7 @@ const pixelsOf = (path: string): number => {
   return isRecord(measure) && typeof measure['value'] === 'number' ? measure['value'] : Number.NaN;
 };
 
-const contrastCases = Object.values(ThemeMode).flatMap((mode) =>
+const contrastCases = themeModes.flatMap(({ name: mode }) =>
   PAIRS.map(([foreground, background, minimum]) => ({
     background,
     foreground,
@@ -298,7 +332,7 @@ const contrastCases = Object.values(ThemeMode).flatMap((mode) =>
 );
 
 const sizePaths: readonly string[] = [
-  ...modes[ThemeMode.Light].keys(),
+  ...defaultTokens.keys(),
 ].filter((path) => GRID_GROUPS.some((group) => path.startsWith(group)));
 
 export { contrastCases, contrastOf, GRID, pixelsOf, sizePaths };

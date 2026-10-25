@@ -6,9 +6,8 @@ import type { RuleSlug } from '#/kernel/value-objects';
 import { BlockId, PartAddress, PresetFileKind, PresetPartPath } from '#/kernel/value-objects';
 
 import type { Binding, PresetFile } from '../../../../entities';
-import { BlockGraph } from '../../../../entities';
+import { BlockGraph, mayReachAxis } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
-import { mayReachAxis } from '../shared/axes';
 
 enum BindingsCode {
   NotRule = 'binding-names-no-rule',

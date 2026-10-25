@@ -132,6 +132,44 @@ describe('createManifestWorkspace', () => {
       ],
     },
     {
+      condition: 'braces hold globs of their own folders',
+      files: {
+        ...typescriptUnits,
+        'package.json': '{"workspaces": ["{apps/docs,packages/*}"]}\n',
+      },
+      members: [
+        'apps/docs',
+        'packages/ui',
+      ],
+    },
+    {
+      condition: 'braces stand within braces, beside a comma outside them',
+      files: {
+        ...typescriptUnits,
+        'package.json':
+          '{"workspaces": ["packages/{ui,mixed/languages/{python,typescript}}", "apps/docs,old"]}\n',
+        'apps/docs,old/package.json': '{}\n',
+      },
+      members: [
+        'apps/docs,old',
+        'packages/mixed/languages/typescript',
+        'packages/ui',
+      ],
+    },
+    {
+      condition: 'a glob escapes its braces and closes one it never opened',
+      files: {
+        ...typescriptUnits,
+        'package.json': '{"workspaces": ["packages/\\\\{ui,kit}", "apps/}{docs}"]}\n',
+        'apps/}docs/package.json': '{}\n',
+        'packages/{ui,kit}/package.json': '{}\n',
+      },
+      members: [
+        'apps/}docs',
+        'packages/{ui,kit}',
+      ],
+    },
+    {
       condition: 'globs name two single characters and a dot to match as it is',
       files: {
         ...typescriptUnits,
@@ -197,6 +235,7 @@ describe('createManifestWorkspace', () => {
       // Act
       const found = createManifestWorkspace({
         maxFolders: 100,
+        maxGlobs: 100,
       }).membersOf(project);
 
       // Assert
@@ -255,6 +294,7 @@ describe('createManifestWorkspace', () => {
     // Act
     const found = createManifestWorkspace({
       maxFolders: 100,
+      maxGlobs: 100,
     }).membersOf(project);
 
     // Assert
@@ -271,6 +311,7 @@ describe('createManifestWorkspace', () => {
     // Act
     const found = createManifestWorkspace({
       maxFolders: 1,
+      maxGlobs: 100,
     }).membersOf(project);
 
     // Assert
@@ -289,11 +330,33 @@ describe('createManifestWorkspace', () => {
     // Act
     const found = createManifestWorkspace({
       maxFolders: 1,
+      maxGlobs: 100,
     }).membersOf(project);
 
     // Assert
     expect<readonly string[]>(found).toStrictEqual([
       'apps/docs',
+    ]);
+  });
+
+  it('should spell out the braces of each glob no further than its bound', () => {
+    // Arrange
+    writeAll({
+      ...typescriptUnits,
+      'package.json':
+        '{"workspaces": ["{apps/docs,packages/ui}", "packages/{mixed/languages/typescript}"]}\n',
+    });
+
+    // Act
+    const found = createManifestWorkspace({
+      maxFolders: 100,
+      maxGlobs: 2,
+    }).membersOf(project);
+
+    // Assert
+    expect<readonly string[]>(found).toStrictEqual([
+      'apps/docs',
+      'packages/mixed/languages/typescript',
     ]);
   });
 });

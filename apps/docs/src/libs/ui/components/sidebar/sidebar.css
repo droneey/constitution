@@ -8,7 +8,7 @@
 
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-sidebar :has(> [data-id$='-viewport']:focus-visible) {
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-control-base);
     outline: var(--ring-focus-width) solid var(--color-fd-ring);
     outline-offset: calc(-1 * var(--ring-focus-width));
   }
@@ -21,10 +21,10 @@
     padding-inline: var(--spacing-sm);
 
     & > a:first-child {
-      height: var(--spacing-control-md);
+      height: var(--size-control-md);
       padding-inline-start: var(--spacing-xs);
       gap: var(--spacing-xs);
-      border-radius: var(--radius-lg);
+      border-radius: var(--radius-control-base);
       font-size: var(--text-base);
     }
 
@@ -49,15 +49,15 @@
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-sidebar [data-id$='-viewport'] :is(a, button):not([data-sidebar-field]) {
     gap: var(--spacing-xs);
-    min-height: var(--spacing-control-md);
+    min-height: var(--size-control-md);
     padding: 0 var(--spacing-xs);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-control-base);
     transition-duration: var(--duration-fast);
     transition-timing-function: var(--ease-standard);
 
     & > svg {
-      width: var(--spacing-icon-md);
-      height: var(--spacing-icon-md);
+      width: var(--size-icon-md);
+      height: var(--size-icon-md);
     }
 
     & > [data-icon] {
@@ -87,7 +87,7 @@
   #nd-sidebar [data-id$='-viewport'] > div > [aria-hidden]:first-child {
     padding: 0;
     border: 0;
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-control-base);
     background-color: var(--color-fd-accent);
     background-clip: content-box;
   }

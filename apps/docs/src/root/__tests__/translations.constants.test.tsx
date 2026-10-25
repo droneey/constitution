@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, test } from 'bun:test';
+import { afterEach, describe, expect, it } from 'bun:test';
 
 import { cleanup, render, screen } from '@testing-library/react';
 import { FrameworkProvider } from 'fumadocs-core/framework';
@@ -26,7 +26,7 @@ const staticRouter = (): {
 });
 
 describe('translations', () => {
-  test.each(Object.entries(TRANSLATIONS))(
+  it.each(Object.entries(TRANSLATIONS))(
     'should give the label %p in sentence case',
     (key, label) => {
       // Arrange
@@ -40,7 +40,7 @@ describe('translations', () => {
     },
   );
 
-  test('should relabel the library pieces when the root provides them', () => {
+  it('should relabel the library pieces when the root provides them', () => {
     // Arrange
     const i18n = {
       translations: TRANSLATIONS,

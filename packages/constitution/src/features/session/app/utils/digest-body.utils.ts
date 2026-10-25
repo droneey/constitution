@@ -1,9 +1,10 @@
+import { splitFrontMatter } from '#/kernel/utils';
+
 // The digest's budgets count bytes: the room after its header, the warnings' share of it, and the
 // room kept for the note of the block list's lines left out.
 const BUDGET_BYTES = 9400;
 const WARNING_BUDGET_BYTES = 1000;
 const LEFT_OUT_NOTE_BYTES = 200;
-const DELIMITER = '---';
 const encoder = new TextEncoder();
 
 const bytesOf = (line: string): number => encoder.encode(line).length + 1;
@@ -66,11 +67,12 @@ const putWarnings = (input: { body: Body; isStartup: boolean; lines: readonly st
 
 // Core's text without its front matter, its blank lines at the start and the end, as one section.
 const putCore = (input: { body: Body; core: string }): void => {
-  const lines = input.core
-    .split('\n')
-    .map((line) => (line.endsWith('\r') ? line.slice(0, -1) : line));
-  const end = lines[0] === DELIMITER ? lines.indexOf(DELIMITER, 1) : -1;
-  const text = lines.slice(lines[0] === DELIMITER && end === -1 ? lines.length : end + 1);
+  const text = splitFrontMatter(
+    input.core
+      .split('\n')
+      .map((line) => (line.endsWith('\r') ? line.slice(0, -1) : line))
+      .join('\n'),
+  ).body.split('\n');
   const first = text.findIndex((line) => line !== '');
 
   if (first === -1) {
@@ -82,6 +84,22 @@ const putCore = (input: { body: Body; core: string }): void => {
   openSection(input.body);
 
   for (const line of text.slice(first, last + 1)) {
+    put({
+      body: input.body,
+      line,
+    });
+  }
+};
+
+// The overrides whole, as their own section: a rule the project lowered is never cut from the digest.
+const putOverrides = (input: { body: Body; lines: readonly string[] }): void => {
+  if (input.lines.length === 0) {
+    return;
+  }
+
+  openSection(input.body);
+
+  for (const line of input.lines) {
     put({
       body: input.body,
       line,
@@ -151,13 +169,19 @@ const coreBodyOf = (core: string): readonly string[] => {
   return body.lines;
 };
 
-/** The warnings' lines, core's text and the block list, each within its share of the budget. */
-const budgetedBodyOf = (input: {
-  blockList: readonly string[];
-  core: string;
-  isStartup: boolean;
-  warnings: readonly string[];
-}): readonly string[] => {
+interface BudgetedBodyInput {
+  readonly blockList: readonly string[];
+  readonly core: string;
+  readonly isStartup: boolean;
+  readonly overrides: readonly string[];
+  readonly warnings: readonly string[];
+}
+
+/**
+ * The warnings' lines, core's text, the overrides and the block list: the warnings within their
+ * share of the budget, the block list within what the rest leaves, core and the overrides whole.
+ */
+const budgetedBodyOf = (input: BudgetedBodyInput): readonly string[] => {
   const body: Body = {
     lines: [],
     used: 0,
@@ -171,6 +195,10 @@ const budgetedBodyOf = (input: {
   putCore({
     body,
     core: input.core,
+  });
+  putOverrides({
+    body,
+    lines: input.overrides,
   });
   putBlockList({
     body,

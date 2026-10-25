@@ -7,7 +7,4 @@ const releasesModel = z.array(
   }),
 );
 
-type ReleasesWire = z.infer<typeof releasesModel>;
-
-export type { ReleasesWire };
 export { releasesModel };

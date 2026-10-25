@@ -55,6 +55,7 @@ enum WarningKind {
   FolderKeepsConfig = 'folder-keeps-config',
   ToolWiredNowhere = 'tool-wired-nowhere',
   FileMiswired = 'file-miswired',
+  WiringFileUnreadable = 'wiring-file-unreadable',
   SkipOfNoMember = 'skip-of-no-member',
   MemberNotSkipped = 'member-not-skipped',
   WiringUnchecked = 'wiring-unchecked',
@@ -199,6 +200,7 @@ interface WarningDetails {
   readonly [WarningKind.FileMiswired]: FileNamed & {
     readonly problems: readonly WiringProblem[];
   };
+  readonly [WarningKind.WiringFileUnreadable]: FileNamed;
   readonly [WarningKind.SkipOfNoMember]: {
     readonly folder: string;
     /** the file that skips it */
@@ -270,6 +272,7 @@ const codeOfKind: {
   [WarningKind.ReleaseLinkLoops]: WarningCode.Installation,
   [WarningKind.ToolWiredNowhere]: WarningCode.Wiring,
   [WarningKind.FileMiswired]: WarningCode.Wiring,
+  [WarningKind.WiringFileUnreadable]: WarningCode.Wiring,
   [WarningKind.SkipOfNoMember]: WarningCode.Wiring,
   [WarningKind.MemberNotSkipped]: WarningCode.Wiring,
   [WarningKind.WiringUnchecked]: WarningCode.Wiring,

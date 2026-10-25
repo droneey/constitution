@@ -56,11 +56,8 @@ describe('baseFlagsOf and outputFlagsOf', () => {
       },
     },
   ])('should give the flags when $condition', ({ expected, flagsOf, opts }) => {
-    // Arrange
-    const given = opts;
-
     // Act
-    const flags = flagsOf(given);
+    const flags = flagsOf(opts);
 
     // Assert
     expect(flags).toStrictEqual(expected);
@@ -86,11 +83,8 @@ describe('baseFlagsOf and outputFlagsOf', () => {
   ])(
     'should refuse the options with a usage error naming the option when $condition',
     ({ flagsOf, opts, option }) => {
-      // Arrange
-      const given: unknown = opts;
-
       // Act
-      const refusal = refusalOf(() => flagsOf(given));
+      const refusal = refusalOf(() => flagsOf(opts));
 
       // Assert
       expect(refusal).toStrictEqual({

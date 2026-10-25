@@ -1,7 +1,7 @@
 @layer overrides {
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-toc {
-    --fd-toc-width: var(--spacing-layout-sidebar);
+    --fd-toc-width: var(--size-layout-sidebar);
 
     padding-block: var(--spacing-sm);
 
@@ -17,7 +17,7 @@
     & > h3 {
       flex-shrink: 0;
       gap: var(--spacing-xs);
-      height: var(--spacing-control-md);
+      height: var(--size-control-md);
     }
 
     & > :has(> [data-toc-list]) {

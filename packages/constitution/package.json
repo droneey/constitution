@@ -18,26 +18,42 @@
   "bin": {
     "constitution": "./src/main.ts"
   },
+  "exports": {
+    ".": "./src/index.ts",
+    "./blocks/*": "./blocks/*",
+    "./package.json": "./package.json"
+  },
   "imports": {
     "#/*": "./src/*"
   },
   "scripts": {
     "lint:check": "biome check --error-on-warnings",
     "lint:fix": "biome check --write",
+    "pretype:check": "bun run --filter '@droneey/constitution^...' build",
     "type:check": "tsc -b",
+    "pretest:unit": "bun run --filter '@droneey/constitution^...' build",
     "test:unit": "CI=1 bun test",
+    "pretest:integration": "bun run --filter '@droneey/constitution^...' build",
+    "test:integration": "CI=1 bun --config=./bunfig.integration.toml test",
+    "pretest:e2e": "bun run --filter '@droneey/constitution^...' build",
     "test:e2e": "CI=1 bun --config=./bunfig.e2e.toml test --parallel --timeout=30000",
+    "pretest:program": "bun run --filter '@droneey/constitution^...' build",
     "test:program": "CI=1 bun --config=./bunfig.e2e.toml test --parallel --timeout=30000 tests/e2e/hooks tests/e2e/cli.e2e.test.ts",
-    "test": "bun run test:unit && bun run test:e2e",
+    "test": "bun run test:unit && bun run test:integration && bun run test:e2e",
+    "preblocks:check": "bun run --filter '@droneey/constitution^...' build",
     "blocks:check": "bun run ./src/main.ts check",
+    "premutation:check": "bun run --filter '@droneey/constitution^...' build",
     "mutation:check": "mutation-check",
+    "premutation:all": "bun run --filter '@droneey/constitution^...' build",
     "mutation:all": "mutation-check all",
     "architecture:check": "depcruise src tests --config .dependency-cruiser.mjs",
     "unused:check": "knip --no-config-hints && knip --strict --no-config-hints",
     "shell:check": "shellcheck hooks/*.sh && shfmt -d hooks",
     "markdown:check": "rumdl check . && rumdl fmt --check .",
     "markdown:fix": "rumdl check --fix",
-    "yaml:check": "yamllint --strict ."
+    "yaml:check": "yamllint --strict .",
+    "toml:check": "tombi format --check && tombi lint",
+    "toml:fix": "tombi format"
   },
   "dependencies": {
     "@droneey/design-cli": "workspace:*",
@@ -49,7 +65,7 @@
   },
   "devDependencies": {
     "@babel/core": "8.0.7",
-    "@biomejs/biome": "2.5.15",
+    "@biomejs/biome": "2.6.2",
     "@droneey/mutation-check": "workspace:*",
     "@stryker-mutator/core": "10.0.0",
     "@swc/core": "1.16.18",
@@ -58,7 +74,7 @@
     "@types/react": "19.3.0",
     "babel-plugin-react-compiler": "1.0.0",
     "dclint": "3.1.0",
-    "dependency-cruiser": "18.6.0",
+    "dependency-cruiser": "18.7.0",
     "ink-testing-library": "4.0.0",
     "knip": "6.41.0",
     "syncpack": "15.3.3",

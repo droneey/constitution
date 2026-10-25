@@ -11,8 +11,8 @@ interface DocsPageEntry {
     components?: typeof mdxComponents;
   }>;
   description: string;
+  /** the same promise on every call, which React's `use` reads at once when it has settled */
   load: () => Promise<DocsPageBody>;
-  loaded: () => DocsPageBody | undefined;
   title: string;
 }
 

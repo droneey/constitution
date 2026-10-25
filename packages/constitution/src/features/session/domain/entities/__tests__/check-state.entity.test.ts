@@ -20,11 +20,8 @@ describe('CheckState', () => {
       },
     },
   ])('should hold the check when $condition', ({ command, expected }) => {
-    // Arrange
-    const named = command;
-
     // Act
-    const check = CheckState.create(named);
+    const check = CheckState.create(command);
 
     // Assert
     expect(check).toStrictEqual(expected);
@@ -47,11 +44,8 @@ describe('CheckState', () => {
       condition: 'constitution.yaml does not parse',
     },
   ])('should give the command $command when $condition', ({ check, command }) => {
-    // Arrange
-    const state = check;
-
     // Act
-    const given = CheckState.commandOf(state);
+    const given = CheckState.commandOf(check);
 
     // Assert
     expect(given).toBe(command);

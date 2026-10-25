@@ -4,10 +4,10 @@ import { ColourLevel, OutputMode, StepStatus, ThemeMode, Tone } from '@droneey/d
 import { ThemeProvider } from '@droneey/design-cli/ink';
 import { render } from 'ink-testing-library';
 
-import { noteSection, pairsSection, stepsSection } from '#/shared/cli';
+import { noteSection, SectionKind, stepsSection } from '#/shared/cli';
 
 import { SectionView } from '../section-view';
-import type { DrawnSection } from '../section-view.types';
+import type { SectionViewProps } from '../section-view.types';
 
 const outputStream = {
   colourLevel: ColourLevel.None,
@@ -20,7 +20,7 @@ describe('SectionView', () => {
   it.each<{
     condition: string;
     frame: string[];
-    section: DrawnSection;
+    section: SectionViewProps['section'];
   }>([
     {
       condition: 'steps',
@@ -41,12 +41,15 @@ describe('SectionView', () => {
       frame: [
         'plugin  0.81.0',
       ],
-      section: pairsSection([
-        [
-          'plugin',
-          '0.81.0',
+      section: {
+        kind: SectionKind.Pairs,
+        pairs: [
+          [
+            'plugin',
+            '0.81.0',
+          ],
         ],
-      ]),
+      },
     },
     {
       condition: 'a note',

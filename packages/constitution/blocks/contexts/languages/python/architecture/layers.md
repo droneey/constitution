@@ -8,6 +8,6 @@
 
 An import inside `if TYPE_CHECKING:` is held to the layer matrix like any other.
 
-| Why | Tags |
-|---|---|
-| a type a layer names is a dependency whether or not it loads at run time, and the layer changes when that type does. | [] |
+| Why |
+|---|
+| a type a layer names is a dependency whether or not it loads at run time, and the layer changes when that type does. |

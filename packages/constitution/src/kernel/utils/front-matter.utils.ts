@@ -2,7 +2,7 @@ const DELIMITER = '---';
 
 interface MarkdownDocument {
   readonly body: string;
-  readonly frontMatter: string | undefined;
+  readonly frontMatter?: string;
 }
 
 const splitFrontMatter = (text: string): MarkdownDocument => {
@@ -12,7 +12,6 @@ const splitFrontMatter = (text: string): MarkdownDocument => {
   if (end === -1) {
     return {
       body: text,
-      frontMatter: undefined,
     };
   }
 
@@ -22,5 +21,4 @@ const splitFrontMatter = (text: string): MarkdownDocument => {
   };
 };
 
-export type { MarkdownDocument };
 export { splitFrontMatter };

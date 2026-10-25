@@ -1,25 +1,45 @@
 import { describe, expect, it, mock } from 'bun:test';
 
+import { ConfirmWords } from '#/libs/ui';
+
 import {
+  englishWords,
   Key,
   pressKeys,
   renderWithTheme,
   screenReaderOutputOf,
-  settle,
 } from '../../../__tests__/ink.fixtures';
 import { Confirm } from '../confirm';
+
+const ukrainian = ConfirmWords.create({
+  locale: 'uk',
+  no: 'ні',
+  yes: 'Так',
+});
 
 describe('Confirm', () => {
   it.each([
     {
       defaultAnswer: true,
       frame: 'Overwrite? (Y/n)',
+      words: englishWords,
     },
     {
       defaultAnswer: false,
       frame: 'Overwrite? (y/N)',
+      words: englishWords,
     },
-  ])('should show the default in capitals: $frame', ({ defaultAnswer, frame }) => {
+    {
+      defaultAnswer: true,
+      frame: 'Overwrite? (Т/н)',
+      words: ukrainian,
+    },
+    {
+      defaultAnswer: false,
+      frame: 'Overwrite? (т/Н)',
+      words: ukrainian,
+    },
+  ])('should show the keys, the default in capitals: $frame', ({ defaultAnswer, frame, words }) => {
     // Arrange
     const tree = (
       <Confirm
@@ -27,6 +47,7 @@ describe('Confirm', () => {
         message='Overwrite?'
         onInterrupt={mock()}
         onSubmit={mock()}
+        words={words}
       />
     );
 
@@ -39,26 +60,41 @@ describe('Confirm', () => {
 
   it.each([
     {
+      answer: true,
       key: 'y',
-      answer: true,
+      words: englishWords,
     },
     {
+      answer: true,
       key: 'Y',
-      answer: true,
+      words: englishWords,
     },
     {
+      answer: false,
       key: 'n',
-      answer: false,
+      words: englishWords,
     },
     {
+      answer: false,
       key: 'N',
-      answer: false,
+      words: englishWords,
     },
     {
-      key: Key.Enter,
       answer: false,
+      key: Key.Enter,
+      words: englishWords,
     },
-  ])('should answer $answer when $key is pressed', async ({ answer, key }) => {
+    {
+      answer: true,
+      key: 'т',
+      words: ukrainian,
+    },
+    {
+      answer: false,
+      key: 'Н',
+      words: ukrainian,
+    },
+  ])('should answer $answer when $key is pressed', async ({ answer, key, words }) => {
     // Arrange
     const onSubmit = mock();
     const { stdin } = renderWithTheme(
@@ -67,12 +103,14 @@ describe('Confirm', () => {
         message='Overwrite?'
         onInterrupt={mock()}
         onSubmit={onSubmit}
+        words={words}
       />,
     );
 
     // Act
-    stdin.write(key);
-    await settle();
+    await pressKeys(stdin, [
+      key,
+    ]);
 
     // Assert
     expect(onSubmit.mock.calls).toStrictEqual([
@@ -82,7 +120,23 @@ describe('Confirm', () => {
     ]);
   });
 
-  it('should neither answer nor interrupt when another key is pressed', async () => {
+  it.each([
+    {
+      keys: [
+        'x',
+        'c',
+        Key.CtrlA,
+      ],
+      words: englishWords,
+    },
+    {
+      keys: [
+        'y',
+        'n',
+      ],
+      words: ukrainian,
+    },
+  ])('should neither answer nor interrupt when $keys are pressed', async ({ keys, words }) => {
     // Arrange
     const onSubmit = mock();
     const onInterrupt = mock();
@@ -92,15 +146,12 @@ describe('Confirm', () => {
         message='Overwrite?'
         onInterrupt={onInterrupt}
         onSubmit={onSubmit}
+        words={words}
       />,
     );
 
     // Act
-    await pressKeys(stdin, [
-      'x',
-      'c',
-      Key.CtrlA,
-    ]);
+    await pressKeys(stdin, keys);
 
     // Assert
     expect(onSubmit).not.toHaveBeenCalled();
@@ -116,18 +167,31 @@ describe('Confirm', () => {
         message='Overwrite?'
         onInterrupt={onInterrupt}
         onSubmit={mock()}
+        words={englishWords}
       />,
     );
 
     // Act
-    stdin.write(Key.Interrupt);
-    await settle();
+    await pressKeys(stdin, [
+      Key.Interrupt,
+    ]);
 
     // Assert
     expect(onInterrupt).toHaveBeenCalledTimes(1);
   });
 
-  it('should read out the question and that it takes yes or no', () => {
+  it.each([
+    {
+      condition: 'its words are English',
+      spoken: 'Overwrite?, yes or no',
+      words: englishWords,
+    },
+    {
+      condition: 'its words are Ukrainian',
+      spoken: 'Overwrite?, Так або ні',
+      words: ukrainian,
+    },
+  ])('should read out the question and its two answers when $condition', ({ spoken, words }) => {
     // Arrange
     const tree = (
       <Confirm
@@ -135,14 +199,14 @@ describe('Confirm', () => {
         message='Overwrite?'
         onInterrupt={mock()}
         onSubmit={mock()}
+        words={words}
       />
     );
 
     // Act
-    const spoken = screenReaderOutputOf(tree);
+    const read = screenReaderOutputOf(tree);
 
     // Assert
-    // biome-ignore lint/plugin/case-pins-meaning-never-wording: the one golden of what the prompt says to a screen reader
-    expect(spoken).toBe('Overwrite?, yes or no');
+    expect(read).toBe(spoken);
   });
 });

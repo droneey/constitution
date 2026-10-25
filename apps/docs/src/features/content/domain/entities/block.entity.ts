@@ -1,11 +1,12 @@
-const AXIS_FOLDERS: readonly string[] = [
-  'foundation',
-  'architecture',
-  'workflow',
-] as const;
+/** the axes a block's rules sit on, in their reading order */
+enum Axis {
+  Foundation = 'foundation',
+  Architecture = 'architecture',
+  Workflow = 'workflow',
+}
 
 interface Block {
-  readonly extends: string | undefined;
+  readonly extends?: string;
   readonly id: string;
 }
 
@@ -15,7 +16,11 @@ interface ChapterListGaps {
   readonly unknown: readonly string[];
 }
 
+const axes: readonly string[] = Object.values(Axis);
+
 const ABSTRACT_MARK = '_';
+
+const isAxis = (segment: string): segment is Axis => axes.includes(segment);
 
 const groupOf = (block: Block): string => {
   const name = block.extends ?? block.id;
@@ -36,10 +41,12 @@ const readingOrderOf = (blocks: readonly Block[]): readonly string[] =>
     .toSorted()
     .map((key) => key.slice(key.indexOf(KEY_SEPARATOR) + KEY_SEPARATOR.length));
 
-const chapterListGapsOf = (input: {
-  chapters: readonly string[];
-  listed: readonly string[];
-}): ChapterListGaps => ({
+interface ChapterListGapsInput {
+  readonly chapters: readonly string[];
+  readonly listed: readonly string[];
+}
+
+const chapterListGapsOf = (input: ChapterListGapsInput): ChapterListGaps => ({
   missing: input.chapters.filter((chapter) => !input.listed.includes(chapter)),
   repeated: [
     ...new Set(input.listed.filter((entry, index) => input.listed.indexOf(entry) !== index)),
@@ -47,5 +54,11 @@ const chapterListGapsOf = (input: {
   unknown: input.listed.filter((entry) => !input.chapters.includes(entry)),
 });
 
-export type { Block, ChapterListGaps };
-export { AXIS_FOLDERS, chapterListGapsOf, readingOrderOf };
+const Block = {
+  chapterListGapsOf,
+  isAxis,
+  readingOrderOf,
+} as const;
+
+export type { ChapterListGaps };
+export { Axis, Block };

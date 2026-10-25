@@ -8,17 +8,17 @@
 
 A list answer is paged, with a default page size and a maximum the caller cannot raise; a larger page asked for is cut to the maximum or refused.
 
-| Why | Tags |
-|---|---|
-| one request for every row otherwise exhausts the program's memory and its store for every other caller. | [performance, security] |
+| Why |
+|---|
+| one request for every row otherwise exhausts the program's memory and its store for every other caller. |
 
 ### list-paged-by-an-opaque-cursor · MUST
 
 A list is paged by an opaque cursor over an order whose last key is unique; the server issues one with each page and accepts it back only with the filter and the order it was issued for, and the last page carries none.
 
-| Why | Tags |
-|---|---|
-| an offset skips or repeats rows added between pages and grows slower with depth, an order with ties returns tied rows in another order on each page, and an opaque cursor can change its form without breaking callers. | [performance, data] |
+| Why |
+|---|
+| an offset skips or repeats rows added between pages and grows slower with depth, an order with ties returns tied rows in another order on each page, and an opaque cursor can change its form without breaking callers. |
 
 ## Filters
 
@@ -26,9 +26,9 @@ A list is paged by an opaque cursor over an order whose last key is unique; the 
 
 A list is filtered and sorted only by the fields its operation declares for it, and a request naming another field is refused.
 
-| Why | Tags |
-|---|---|
-| a sort by any field is both an oracle on hidden fields and a full scan the store has no index for. | [security, performance] |
+| Why |
+|---|
+| a sort by any field is both an oracle on hidden fields and a full scan the store has no index for. |
 
 ## Batches
 
@@ -36,6 +36,6 @@ A list is filtered and sorted only by the fields its operation declares for it, 
 
 A batch operation declares whether it is atomic: an atomic one succeeds or fails whole, and any other answers the outcome of each item — its result or its problem — in the order of the request.
 
-| Why | Tags |
-|---|---|
-| a caller of a half-applied batch otherwise cannot tell which items to retry. | [data] |
+| Why |
+|---|
+| a caller of a half-applied batch otherwise cannot tell which items to retry. |

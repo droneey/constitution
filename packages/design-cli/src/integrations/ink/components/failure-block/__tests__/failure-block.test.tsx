@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { renderWithTheme } from '../../../__tests__/ink.fixtures';
+import { renderWithTheme, screenReaderOutputOf } from '../../../__tests__/ink.fixtures';
 import { FailureBlock } from '../failure-block';
 
 describe('FailureBlock', () => {
@@ -33,5 +33,19 @@ describe('FailureBlock', () => {
 
     // Assert
     expect(lastFrame()).toBe('✗ Interrupted');
+  });
+
+  it('should read out that the failure is an error, and what happened', () => {
+    // Arrange
+    const failure = {
+      details: [],
+      title: 'no-project',
+    };
+
+    // Act
+    const spoken = screenReaderOutputOf(<FailureBlock failure={failure} />);
+
+    // Assert
+    expect(spoken).toBe('error no-project');
   });
 });

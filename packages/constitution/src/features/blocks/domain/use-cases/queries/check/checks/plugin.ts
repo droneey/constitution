@@ -1,12 +1,13 @@
-import { RELATIVE_PREFIX, SKILL_FILE } from '#/kernel/constants';
 import type { FindingOf } from '#/kernel/types';
 
+import { RELATIVE_PREFIX, SKILL_FILE } from '../../../../constants';
 import type {
   Agent,
   Constitution,
   HooksManifest,
   ManifestRead,
   MarketplaceManifest,
+  PluginManifest,
   Skill,
 } from '../../../../entities';
 import { DocumentPath, ReadStatus, SkillField } from '../../../../entities';
@@ -316,13 +317,13 @@ const templateFindings = (paths: ReadonlySet<string>): readonly PluginFinding[] 
       }),
     );
 
-const checkPlugin = (
-  constitution: Constitution,
-): {
+interface PluginChecked {
   readonly findings: readonly PluginFinding[];
-  readonly name: string | undefined;
-  readonly repository: string | undefined;
-} => {
+  /** absent when the manifest is, or does not parse */
+  readonly manifest?: PluginManifest;
+}
+
+const checkPlugin = (constitution: Constitution): PluginChecked => {
   const read = constitution.documents.plugin;
 
   if (read === undefined) {
@@ -334,29 +335,26 @@ const checkPlugin = (
           path: DocumentPath.Plugin,
         },
       ],
-      name: undefined,
-      repository: undefined,
     };
   }
 
-  return read.status === ReadStatus.Parsed
-    ? {
-        findings: skillFindings({
-          declared: read.value.skills.map((directory) => directory.slice(RELATIVE_PREFIX.length)),
-          paths: constitution.paths,
-          skills: constitution.documents.skills,
-        }),
-        name: read.value.name,
-        repository: read.value.repository,
-      }
-    : {
-        findings: readFindings({
-          path: DocumentPath.Plugin,
-          read,
-        }),
-        name: undefined,
-        repository: undefined,
-      };
+  if (read.status !== ReadStatus.Parsed) {
+    return {
+      findings: readFindings({
+        path: DocumentPath.Plugin,
+        read,
+      }),
+    };
+  }
+
+  return {
+    findings: skillFindings({
+      declared: read.value.skills.map((directory) => directory.slice(RELATIVE_PREFIX.length)),
+      paths: constitution.paths,
+      skills: constitution.documents.skills,
+    }),
+    manifest: read.value,
+  };
 };
 
 const checkMarketplace = (input: {
@@ -460,9 +458,9 @@ const pluginCheck: Check<PluginFinding> = ({
   return [
     ...plugin.findings,
     ...checkMarketplace({
-      pluginName: plugin.name,
+      pluginName: plugin.manifest?.name,
       read: constitution.documents.marketplace,
-      repository: plugin.repository,
+      repository: plugin.manifest?.repository,
       repositoryPaths: constitution.repositoryPaths,
     }),
     ...checkHooks({

@@ -3,11 +3,15 @@ language js
 or {
   TsIndexedAccessType(object_type=$object, index_type=$index) as $set where {
     $object <: or {
-      TsParenthesizedType(ty=TsTypeofType()),
-      TsTypeofType()
+      TsParenthesizedType(ty=TsTypeofType(expression_name=$name)),
+      TsTypeofType(expression_name=$name)
     },
     $index <: or {
-      TsNumberType(),
+      TsNumberType() where {
+        $program <: not contains `const $name = [$members] as const` where {
+          $members <: every JsStaticMemberExpression()
+        }
+      },
       TsTypeOperatorType()
     },
     register_diagnostic(span=$set, message="[closed-name-set-is-a-string-enum] A closed set of named values is a string enum, not a type taken from an as-const array", severity="error")

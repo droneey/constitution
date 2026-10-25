@@ -2,7 +2,9 @@ import { spawnSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
+import { BLOCKS_FOLDER } from '#/kernel/constants';
 import { compareText, recognisedFailure } from '#/kernel/utils';
+import type { ChildProcessSettings } from '#/libs/child-process';
 import { isSystemError } from '#/libs/system-error';
 
 import type { FileTree, FileTrees } from '../../domain/contracts';
@@ -55,14 +57,9 @@ const readListed = (path: string): string => {
   }
 };
 
-interface Git {
-  readonly env: Readonly<Record<string, string>>;
-  readonly timeoutMs: number;
-}
-
 // What git prints in the folder; a git that fails, or answers past its time, fails the tree.
 const runGit = (
-  input: Git & {
+  input: ChildProcessSettings & {
     args: readonly string[];
     folder: string;
   },
@@ -98,7 +95,7 @@ const runGit = (
 // One adapter for the one system: the tree reads what git holds — an ignored
 // file is no part of the Constitution, and CI sees only committed files.
 const createGitTree = (
-  input: Git & {
+  input: ChildProcessSettings & {
     root: string;
   },
 ): FileTree => ({
@@ -117,27 +114,67 @@ const createGitTree = (
   read: (path: string): string => readListed(join(input.root, path)),
 });
 
+interface FolderTreeInput {
+  readonly maxFiles: number;
+  readonly root: string;
+}
+
+// What lies below the blocks folder, a link listed and not followed, from the root; a folder
+// that holds more than the limit fails the tree once the walk passes it.
+const pathsBelow = (input: FolderTreeInput): readonly string[] => {
+  const paths: string[] = [];
+  const folders = [
+    BLOCKS_FOLDER,
+  ];
+
+  for (let folder = folders.pop(); folder !== undefined; folder = folders.pop()) {
+    for (const entry of readdirSync(join(input.root, folder), {
+      withFileTypes: true,
+    })) {
+      const path = `${folder}/${entry.name}`;
+
+      if (entry.isDirectory()) {
+        folders.push(path);
+      } else {
+        paths.push(path);
+      }
+    }
+
+    if (paths.length > input.maxFiles) {
+      throw new TreeError({
+        code: TreeFailure.TooLarge,
+        details: {
+          path: input.root,
+        },
+      });
+    }
+  }
+
+  return paths;
+};
+
 // The installed Constitution a pack extends, as mise unpacks it: no repository
 // of its own, so its blocks are read from their folder.
-const BASE_FOLDER = 'blocks';
-
-const createFolderTree = (input: { root: string }): FileTree => ({
+const createFolderTree = (input: FolderTreeInput): FileTree => ({
   list: (): readonly string[] =>
-    existsSync(join(input.root, BASE_FOLDER))
-      ? readdirSync(join(input.root, BASE_FOLDER), {
-          recursive: true,
-        })
-          .map((path) => `${BASE_FOLDER}/${path}`)
+    existsSync(join(input.root, BLOCKS_FOLDER))
+      ? pathsBelow(input)
           .filter((path) => isFile(join(input.root, path)))
           .toSorted(compareText)
       : [],
   read: (path: string): string => readListed(join(input.root, path)),
 });
 
+interface GitFileTreesInput extends ChildProcessSettings {
+  /** the files an installed Constitution's blocks folder may hold */
+  readonly maxFiles: number;
+}
+
 /** timeoutMs bounds each run of git. */
-const createGitFileTrees = (git: Git): FileTrees => ({
+const createGitFileTrees = (git: GitFileTreesInput): FileTrees => ({
   installed: (folder: string): FileTree =>
     createFolderTree({
+      maxFiles: git.maxFiles,
       root: folder,
     }),
   repository: (folder: string): FileTree =>

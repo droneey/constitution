@@ -1,10 +1,15 @@
-import type { Resolver } from '@droneey/design-tokens';
-import { themeModesOf } from '@droneey/design-tokens';
 import { formats, transforms } from 'style-dictionary/enums';
 import type { Config, Hooks, TransformedToken } from 'style-dictionary/types';
 import { usesReferences } from 'style-dictionary/utils';
 
+import type { ThemeMode } from '../types';
 import { tailwindTheme } from './tailwind.utils';
+
+const TAILWIND_THEME_FORMAT = 'tailwind/theme';
+
+/** writes every duration as none, for those who ask for reduced motion */
+// Stryker disable next-line StringLiteral: the name only joins the transform to the platform that runs it, so any name serves
+const DURATION_NONE_TRANSFORM = 'duration/none';
 
 /** the tokens Tailwind's theme takes besides the roles */
 const tailwindTypes: ReadonlySet<string | undefined> = new Set([
@@ -14,109 +19,101 @@ const tailwindTypes: ReadonlySet<string | undefined> = new Set([
 ]);
 
 /**
- * A configuration for each mode of the resolver's `theme` modifier, writing in `buildPath`: the
- * default mode writes every token on the root, the durations of reduced motion and Tailwind's
- * theme; another mode writes only its own tokens, under its class.
+ * The configuration of a mode, writing in `buildPath`: the default mode writes every token on the
+ * root, the durations of reduced motion and Tailwind's theme; another mode writes only its own
+ * tokens, under its class.
  */
-const configsOf = (resolver: Resolver, resolverUrl: string, buildPath: string): Config[] => {
+const configOf = ({ name: mode, isDefault }: ThemeMode, buildPath: string): Config => {
   const hooks: Hooks = {
     formats: {
-      'tailwind/theme': tailwindTheme,
+      [TAILWIND_THEME_FORMAT]: tailwindTheme,
     },
     transforms: {
-      'duration/none': {
+      [DURATION_NONE_TRANSFORM]: {
         type: 'value',
         transform: (): string => '0s',
       },
     },
   };
 
-  return themeModesOf(resolver, resolverUrl).map(({ name: mode, isDefault, shared, own }) => {
-    const modeFile = {
-      destination: `${mode}.gen.css`,
-      format: formats.cssVariables,
-    };
+  const modeFile = {
+    destination: `${mode}.gen.css`,
+    format: formats.cssVariables,
+  };
 
-    return {
-      include: [
-        ...shared,
-      ],
-      source: [
-        ...own,
-      ],
-      // another mode's roles refer to the steps the default mode declares, which its filter leaves out
-      // Stryker disable ObjectLiteral,ConditionalExpression,StringLiteral: the log only quiets the build
-      log: {
-        warnings: isDefault ? 'warn' : 'disabled',
+  return {
+    // another mode's roles refer to the steps the default mode declares, which its filter leaves out
+    // Stryker disable ObjectLiteral,ConditionalExpression,StringLiteral: the log only quiets the build
+    log: {
+      warnings: isDefault ? 'warn' : 'disabled',
+    },
+    // Stryker restore ObjectLiteral,ConditionalExpression,StringLiteral
+    platforms: {
+      css: {
+        transforms: [
+          transforms.nameKebab,
+          transforms.colorOklch,
+          transforms.sizePxToRem,
+          transforms.timeSeconds,
+          transforms.cubicBezierCss,
+          transforms.shadowCssShorthand,
+        ],
+        buildPath,
+        files: isDefault
+          ? [
+              {
+                ...modeFile,
+                options: {
+                  outputReferences: true,
+                },
+              },
+              {
+                destination: 'tailwind.gen.css',
+                format: TAILWIND_THEME_FORMAT,
+                filter: (token: TransformedToken) =>
+                  usesReferences(token.original.$value) || tailwindTypes.has(token.$type),
+              },
+            ]
+          : [
+              {
+                ...modeFile,
+                filter: (token: TransformedToken) => token.isSource,
+                options: {
+                  selector: `.${mode}`,
+                  outputReferences: true,
+                },
+              },
+            ],
       },
-      // Stryker restore ObjectLiteral,ConditionalExpression,StringLiteral
-      platforms: {
-        css: {
-          transforms: [
-            transforms.nameKebab,
-            transforms.colorOklch,
-            transforms.sizePxToRem,
-            transforms.timeSeconds,
-            transforms.cubicBezierCss,
-            transforms.shadowCssShorthand,
-          ],
-          buildPath,
-          files: isDefault
-            ? [
+      ...(isDefault
+        ? {
+            'reduced-motion': {
+              transforms: [
+                transforms.nameKebab,
+                DURATION_NONE_TRANSFORM,
+              ],
+              buildPath,
+              files: [
                 {
-                  ...modeFile,
-                  options: {
-                    outputReferences: true,
+                  destination: 'reduced-motion.gen.css',
+                  format: formats.cssVariables,
+                  filter: {
+                    $type: 'duration',
                   },
-                },
-                {
-                  destination: 'tailwind.gen.css',
-                  format: 'tailwind/theme',
-                  filter: (token: TransformedToken) =>
-                    usesReferences(token.original.$value) || tailwindTypes.has(token.$type),
-                },
-              ]
-            : [
-                {
-                  ...modeFile,
-                  filter: (token: TransformedToken) => token.isSource,
                   options: {
-                    selector: `.${mode}`,
-                    outputReferences: true,
+                    selector: [
+                      '@media (prefers-reduced-motion: reduce)',
+                      ':root',
+                    ],
                   },
                 },
               ],
-        },
-        ...(isDefault
-          ? {
-              'reduced-motion': {
-                transforms: [
-                  transforms.nameKebab,
-                  'duration/none',
-                ],
-                buildPath,
-                files: [
-                  {
-                    destination: 'reduced-motion.gen.css',
-                    format: formats.cssVariables,
-                    filter: {
-                      $type: 'duration',
-                    },
-                    options: {
-                      selector: [
-                        '@media (prefers-reduced-motion: reduce)',
-                        ':root',
-                      ],
-                    },
-                  },
-                ],
-              },
-            }
-          : {}),
-      },
-      hooks,
-    };
-  });
+            },
+          }
+        : {}),
+    },
+    hooks,
+  };
 };
 
-export { configsOf };
+export { configOf };

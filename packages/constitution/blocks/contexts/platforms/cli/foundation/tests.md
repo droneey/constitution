@@ -8,9 +8,9 @@
 
 A command's spec runs the program on an argument list, with its terminal, prompts and clock replaced, and checks standard output, standard error and the exit code.
 
-| Why | Tags |
-|---|---|
-| the command line is the command's boundary, so the spec proves what its user sees, without a real terminal or a real clock. | [testing] |
+| Why |
+|---|
+| the command line is the command's boundary, so the spec proves what its user sees, without a real terminal or a real clock. |
 
 ## Requirements for implementation
 
@@ -18,6 +18,6 @@ A command's spec runs the program on an argument list, with its terminal, prompt
 
 The framework's terminal, prompts, clock and process hooks can be replaced in a spec.
 
-| Why | Tags |
-|---|---|
-| without it, a command's spec reaches the real process and breaks the test sandbox. | [testing] |
+| Why |
+|---|
+| without it, a command's spec reaches the real process and breaks the test sandbox. |

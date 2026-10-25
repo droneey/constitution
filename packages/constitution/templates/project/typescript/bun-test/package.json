@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "test": "CI=1 bun test"
+    "test": "CI=1 bun test && CI=1 bun --config=./bunfig.integration.toml test"
   },
   "devDependencies": {
     "@types/bun": "1.4.3"

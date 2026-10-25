@@ -8,9 +8,9 @@
 
 A port is an `interface`, or a type of functions, holding no implementation, so an adapter conforms to it by its shape and never extends a class to implement it.
 
-| Why | Tags |
-|---|---|
-| the inner layer then owns only a description, and an adapter that shares no base class can change, or give way to a fake, without touching the code that depends on the port. | [] |
+| Why |
+|---|
+| the inner layer then owns only a description, and an adapter that shares no base class can change, or give way to a fake, without touching the code that depends on the port. |
 
 ## Adapters
 
@@ -18,6 +18,6 @@ A port is an `interface`, or a type of functions, holding no implementation, so 
 
 A `null` of an outside format lives only in wire types and in the adapters that read and write them, which map it to and from `undefined`.
 
-| Why | Tags |
-|---|---|
-| a `null` that travels inward brings a second absence into code that checks only for `undefined`. | [] |
+| Why |
+|---|
+| a `null` that travels inward brings a second absence into code that checks only for `undefined`. |

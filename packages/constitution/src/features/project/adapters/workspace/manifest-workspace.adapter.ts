@@ -15,6 +15,7 @@ import { packageManifestModel, pyprojectModel } from './models';
 // read them, and uv's members in pyproject.toml. A glob's folder is a member only when it holds
 // the manifest of its kind, as Bun and uv pass over the others; "!" before a glob, or uv's exclude,
 // leaves its folders out, and a glob that reaches the project itself or above it reaches nothing.
+// Braces are spelled out before a glob is split into folders, as "/" may stand inside them.
 
 const PACKAGE_MANIFEST = 'package.json';
 const PYPROJECT = 'pyproject.toml';
@@ -25,7 +26,10 @@ const SKIPPED = 'node_modules';
 const HIDDEN = '.';
 const PARENT = '..';
 const WILDCARDS = /[*?[{]/u;
-const SPECIAL = /[.+^$|()\\]/gu;
+const ESCAPE = '\\';
+const GROUP_OPEN = '{';
+const GROUP_CLOSE = '}';
+const ALTERNATIVE = ',';
 
 interface Declared {
   // the globs of the members, a "!" before those left out
@@ -41,7 +45,8 @@ const readModel = <T>(input: {
   path: string;
 }): T | undefined => {
   const parsed = attempted<unknown>({
-    effect: () => input.parse(readFileSync(input.path).toString()),
+    // Stryker disable next-line StringLiteral: without an encoding Bun gives the bytes, which both parsers read as UTF-8 too
+    effect: () => input.parse(readFileSync(input.path, 'utf8')),
     // Stryker disable next-line ConditionalExpression: reading a file fails only by the system and parsing it only by its syntax, so no other failure reaches here
     isRecognised: (error: unknown): boolean => isSystemError(error) || isSyntaxError(error),
   });
@@ -86,23 +91,91 @@ const declaredOf = (project: string): readonly Declared[] => {
   ];
 };
 
-// A segment of a glob as a pattern: "*" any name, "?" one character, "{a,b}" either, "[ab]" one of.
-const segmentPatternOf = (segment: string): RegExp =>
-  new RegExp(
-    `^${segment
-      .replace(SPECIAL, '\\$&')
-      .replaceAll('*', '[^/]*')
-      .replaceAll('?', '[^/]')
-      .replaceAll('{', '(?:')
-      .replaceAll('}', ')')
-      .replaceAll(',', '|')}$`,
-    'u',
-  );
+interface BraceGroup {
+  readonly alternatives: readonly string[];
+  /** where the "}" that closes it stands */
+  readonly end: number;
+  /** where "{" stands */
+  readonly start: number;
+}
+
+// The first group of braces to close, so the innermost first, or undefined where none closes; a
+// character after "\" is taken as it is.
+const firstGroupOf = (glob: string): BraceGroup | undefined => {
+  let open:
+    | {
+        readonly alternatives: string[];
+        readonly start: number;
+      }
+    | undefined;
+  let from = 0;
+
+  // Stryker disable next-line EqualityOperator: no character stands past the end, so one more turn finds none
+  for (let index = 0; index < glob.length; index += 1) {
+    const character = glob[index];
+
+    if (character === ESCAPE) {
+      index += 1;
+    } else if (character === GROUP_OPEN) {
+      open = {
+        alternatives: [],
+        start: index,
+      };
+      from = index + GROUP_OPEN.length;
+    } else if (character === ALTERNATIVE) {
+      open?.alternatives.push(glob.slice(from, index));
+      from = index + ALTERNATIVE.length;
+    } else if (character === GROUP_CLOSE && open !== undefined) {
+      return {
+        alternatives: [
+          ...open.alternatives,
+          glob.slice(from, index),
+        ],
+        end: index,
+        start: open.start,
+      };
+    }
+  }
+
+  return undefined;
+};
+
+// The globs a glob's braces spell out, "{a,b}" as either, in their order. Each glob spelled out, in
+// part or in whole, counts toward the bound, so braces upon braces stop there.
+function* bracesExpanded(input: { glob: string; maxGlobs: number }): Generator<string> {
+  const pending = [
+    input.glob,
+  ];
+
+  for (let spelled = 0; spelled < input.maxGlobs; spelled += 1) {
+    const glob = pending.pop();
+
+    if (glob === undefined) {
+      return;
+    }
+
+    const group = firstGroupOf(glob);
+
+    if (group === undefined) {
+      yield glob;
+
+      continue;
+    }
+
+    for (const alternative of group.alternatives.toReversed()) {
+      pending.push(
+        `${glob.slice(0, group.start)}${alternative}${glob.slice(group.end + GROUP_CLOSE.length)}`,
+      );
+    }
+  }
+}
 
 interface Walk {
   // the folders listed so far, across the walk, and the most it lists
   listed: number;
   readonly maxFolders: number;
+  // the most globs one glob's braces are spelled out into, the partial ones counted
+  readonly maxGlobs: number;
   readonly project: string;
 }
 
@@ -175,10 +248,12 @@ const expand = (input: {
     });
   }
 
-  const pattern = segmentPatternOf(segment);
+  // "*" is any name, "?" one character, "{a,b}" either, "[ab]" one of; Bun's glob matches in linear
+  // time, where a pattern built from a manifest's glob could backtrack.
+  const glob = new Bun.Glob(segment);
 
   return childrenOf(input)
-    .filter((child) => pattern.test(child.slice(child.lastIndexOf(SEPARATOR) + 1)))
+    .filter((child) => glob.match(child.slice(child.lastIndexOf(SEPARATOR) + 1)))
     .flatMap((child) =>
       expand({
         ...input,
@@ -194,15 +269,23 @@ const isWithin = (glob: string): boolean => !normalizePath(glob).startsWith(PARE
 
 const pathsOf = (input: { globs: readonly string[]; walk: Walk }): ReadonlySet<string> =>
   new Set(
-    input.globs.filter(isWithin).flatMap((glob) =>
-      expand({
-        folder: '',
-        segments: normalizePath(glob)
-          .split(SEPARATOR)
-          .filter((segment) => segment !== ''),
-        walk: input.walk,
-      }),
-    ),
+    input.globs
+      .flatMap((glob) => [
+        ...bracesExpanded({
+          glob,
+          maxGlobs: input.walk.maxGlobs,
+        }),
+      ])
+      .filter(isWithin)
+      .flatMap((glob) =>
+        expand({
+          folder: '',
+          segments: normalizePath(glob)
+            .split(SEPARATOR)
+            .filter((segment) => segment !== ''),
+          walk: input.walk,
+        }),
+      ),
   );
 
 const isFile = (path: string): boolean =>
@@ -211,14 +294,19 @@ const isFile = (path: string): boolean =>
     isRecognised: isSystemError,
   }) === true;
 
-/**
- * maxFolders bounds the folders the globs of one look list, so a glob over a vast tree stops there.
- */
-const createManifestWorkspace = (input: { maxFolders: number }): Workspace => ({
+interface ManifestWorkspaceInput {
+  /** bounds the folders the globs of one look list, so a glob over a vast tree stops there */
+  readonly maxFolders: number;
+  /** bounds the globs one glob's braces are spelled out into, the partial ones counted */
+  readonly maxGlobs: number;
+}
+
+const createManifestWorkspace = (input: ManifestWorkspaceInput): Workspace => ({
   membersOf: (project: string): readonly UnitPath[] => {
     const walk: Walk = {
       listed: 0,
       maxFolders: input.maxFolders,
+      maxGlobs: input.maxGlobs,
       project,
     };
     const members = declaredOf(project).flatMap((declared) => {

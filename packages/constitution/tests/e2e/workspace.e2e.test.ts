@@ -7,6 +7,7 @@ import { configFromTemplate } from './dependency-cruiser-preset.fixtures';
 import { isFoundIn } from './python-template.fixtures';
 import { uvBinary } from './uv.fixtures';
 import {
+  bunfigMutation,
   commitBase,
   createWorkspace,
   cruiserOf,
@@ -106,14 +107,14 @@ describe('a workspace on the presets', () => {
     });
   });
 
-  it('should hold the coverage gate when a unit calls only part of a unit it imports', () => {
+  it("should hold the coverage gate when a unit's test script runs and the unit calls only part of a unit it imports", () => {
     // Arrange
     const folder = workspace();
 
     // Act
     const { passed } = runTool(folder, {
       args: [
-        '--config=./bunfig.integration.toml',
+        'run',
         'test',
       ],
       folder: 'apps/web',
@@ -122,6 +123,31 @@ describe('a workspace on the presets', () => {
 
     // Assert
     expect(passed).toBe(true);
+  });
+
+  it("should fail a unit's test script when a file a spec loads holds a function no spec calls", () => {
+    // Arrange
+    const folder = workspace({
+      'apps/web/src/features/labels/app/label.ts': `import { describeOrder, type OrderId } from '@shop/orders';
+
+export const label = (id: OrderId): string => \`Order \${describeOrder({ id, total: 0 })}\`;
+
+export const shortLabel = (id: OrderId): string => \`#\${id}\`;
+`,
+    });
+
+    // Act
+    const { passed } = runTool(folder, {
+      args: [
+        'run',
+        'test',
+      ],
+      folder: 'apps/web',
+      program: 'bun',
+    });
+
+    // Assert
+    expect(passed).toBe(false);
   });
 
   it('should pass the specs when a unit holds only types', () => {
@@ -244,14 +270,14 @@ describe('a workspace on the presets', () => {
     expect(output).toContain('units-imported-by-name');
   });
 
-  it('should report no violation when each package is cruised from its folder by its own parts', () => {
-    // Arrange
-    const folder = workspace(cruisers);
+  it.each(Object.values(UNITS))(
+    'should report no violation when %s is cruised from its folder by its own parts',
+    (unit) => {
+      // Arrange
+      const folder = workspace(cruisers);
 
-    // Act
-    const runs = Object.values(UNITS).map((unit) => ({
-      unit,
-      ...runTool(folder, {
+      // Act
+      const { passed } = runTool(folder, {
         args: [
           'src',
           '--config',
@@ -259,12 +285,12 @@ describe('a workspace on the presets', () => {
         ],
         folder: unit,
         program: 'depcruise',
-      }),
-    }));
+      });
 
-    // Assert
-    expect(runs.filter(({ passed }) => !passed)).toStrictEqual([]);
-  });
+      // Assert
+      expect(passed).toBe(true);
+    },
+  );
 
   it('should report not-in-allowed when a binding unit imports a package built into its dist/ and cruised from its folder', () => {
     // Arrange
@@ -296,24 +322,23 @@ describe('a workspace on the presets', () => {
     expect(output).toContain('not-in-allowed: src/features/labels/app/fetch-label.ts');
   });
 
-  it('should find nothing when python-check reads each Python package from its folder', () => {
+  it.each([
+    ...PYTHON_PACKAGES,
+  ])('should find nothing when python-check reads %s from its folder', (unit) => {
     // Arrange
     const folder = workspace();
 
     // Act
-    const runs = PYTHON_PACKAGES.map((unit) => ({
-      unit,
-      ...runTool(folder, {
-        args: [
-          'src',
-        ],
-        folder: unit,
-        program: uvBinary('python-check'),
-      }),
-    }));
+    const { passed } = runTool(folder, {
+      args: [
+        'src',
+      ],
+      folder: unit,
+      program: uvBinary('python-check'),
+    });
 
     // Assert
-    expect(runs.filter(({ passed }) => !passed)).toStrictEqual([]);
+    expect(passed).toBe(true);
   });
 
   it('should report the home a part gives when an adapter of a Python package imports structlog', () => {
@@ -349,8 +374,7 @@ describe('a workspace on the presets', () => {
   it('should mutate the changed line of a unit when the mutation check runs from its folder', () => {
     // Arrange
     const folder = workspace({
-      'apps/web/bunfig.mutation.toml':
-        '[test]\nroot = "./src"\npathIgnorePatterns = ["**/main.test.*"]\ncoverage = false\n',
+      'apps/web/bunfig.mutation.toml': bunfigMutation,
       'apps/web/stryker.config.mjs': stryker,
     });
 

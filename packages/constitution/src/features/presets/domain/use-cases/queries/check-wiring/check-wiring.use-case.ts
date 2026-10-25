@@ -7,11 +7,11 @@ import { checkWiringOf } from './steps/check-configurations';
 import { releaseLoopsOf } from './steps/find-release-loops';
 import { unitSkipsOf } from './steps/find-unit-skips';
 
-const checkWiring = (
-  input: WiringInput & {
-    parser: ConfigurationParser;
-  },
-): readonly ProjectWarning[] => {
+interface CheckWiringInput extends WiringInput {
+  readonly parser: ConfigurationParser;
+}
+
+const checkWiring = (input: CheckWiringInput): readonly ProjectWarning[] => {
   const context = contextOf(input);
   const reads = readsOf(input);
 

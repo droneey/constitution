@@ -1,5 +1,5 @@
 import type { ConfigItem } from '../../domain/entities';
-import { ConfigOverride } from '../../domain/entities';
+import { ConfigKey, ConfigOverride } from '../../domain/entities';
 import { GrammarRefusal } from './errors';
 import { closingBracketOf, flowItemsOf, scalarOf, trimBlanks } from './scalars.utils';
 
@@ -49,7 +49,6 @@ const fieldNames: ReadonlySet<string> = new Set([
   'reason',
   'until',
 ]);
-const OVERRIDES = 'overrides';
 const ITEM = /^-( |$)/;
 const LOWER_KEY = /^[a-z]+:/;
 const AFTER_KEY = /^[ \t]/;
@@ -76,11 +75,15 @@ const createReaderState = (): ReaderState => ({
   pending: undefined,
 });
 
+interface KeyedInput {
+  readonly pattern: RegExp;
+  readonly text: string;
+}
+
 // "<key>:" and what follows it, which is empty or opens with a blank.
-const keyedOf = (input: {
-  pattern: RegExp;
-  text: string;
-}): {
+const keyedOf = (
+  input: KeyedInput,
+): {
   key: string;
   rest: string;
 } => {
@@ -99,7 +102,13 @@ const keyedOf = (input: {
   };
 };
 
-const flowList = (input: { key: string; state: ReaderState; text: string }): void => {
+interface FlowListInput {
+  readonly key: string;
+  readonly state: ReaderState;
+  readonly text: string;
+}
+
+const flowList = (input: FlowListInput): void => {
   for (const text of flowItemsOf(input.text)) {
     input.state.items.push({
       key: input.key,
@@ -108,7 +117,13 @@ const flowList = (input: { key: string; state: ReaderState; text: string }): voi
   }
 };
 
-const openList = (input: { key: string; rest: string; state: ReaderState }): void => {
+interface OpenListInput {
+  readonly key: string;
+  readonly rest: string;
+  readonly state: ReaderState;
+}
+
+const openList = (input: OpenListInput): void => {
   const { key, rest, state } = input;
   const { level } = state;
 
@@ -142,10 +157,15 @@ const openList = (input: { key: string; rest: string; state: ReaderState }): voi
   });
 };
 
-const openOverrides = (input: { rest: string; state: ReaderState }): void => {
+interface OpenOverridesInput {
+  readonly rest: string;
+  readonly state: ReaderState;
+}
+
+const openOverrides = (input: OpenOverridesInput): void => {
   const { level } = input.state;
 
-  level.key = OVERRIDES;
+  level.key = ConfigKey.Overrides;
   level.hasItems = false;
 
   // "[]" leaves the level closed: it holds no override
@@ -193,7 +213,13 @@ const readField = (input: { open: OpenOverride; text: string }): void => {
   input.open.fields.set(key, scalarOf(rest));
 };
 
-const readOverride = (input: { indent: number; state: ReaderState; text: string }): void => {
+interface ReadLineInput {
+  readonly indent: number;
+  readonly state: ReaderState;
+  readonly text: string;
+}
+
+const readOverride = (input: ReadLineInput): void => {
   const { state } = input;
 
   if (!ITEM.test(input.text)) {
@@ -231,7 +257,7 @@ const readOverride = (input: { indent: number; state: ReaderState; text: string 
 };
 
 // A line inside a list or overrides; any other line leaves the grammar.
-const readBody = (input: { indent: number; state: ReaderState; text: string }): void => {
+const readBody = (input: ReadLineInput): void => {
   const { state, text } = input;
   const { level } = state;
 

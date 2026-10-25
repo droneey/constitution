@@ -17,12 +17,6 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
-    "src/**/__tests__/*.json",
     "style-dictionary.config.ts"
-  ],
-  "references": [
-    {
-      "path": "../design-tokens"
-    }
   ]
 }

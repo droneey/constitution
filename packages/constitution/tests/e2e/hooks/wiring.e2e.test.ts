@@ -2,7 +2,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 
 import { mentionedOf, warningLinesOf } from '../hook.fixtures';
 import { removePluginRoots } from '../plugin-root.fixtures';
-import { ConfigKey, removeProjects } from '../project.fixtures';
+import { ConfigKey, removeProjects, workspaceOf } from '../project.fixtures';
 import {
   biomeJson,
   biomeParts,
@@ -21,7 +21,6 @@ import {
   vultureCopy,
   wiredConfig,
   wiredMember,
-  wiredWorkspace,
   wiringListOf,
   wiringOf,
 } from '../wiring.fixtures';
@@ -366,7 +365,7 @@ describe('the wiring of a project', () => {
     // Arrange
     const project = createWiredProject({
       files: {
-        ...wiredWorkspace({
+        ...workspaceOf({
           'apps/web': member ?? wiredMember([], WEB_ONLY),
         }),
         ...files,
@@ -387,7 +386,7 @@ describe('the wiring of a project', () => {
     // Arrange
     const project = createWiredProject({
       files: {
-        ...wiredWorkspace({
+        ...workspaceOf({
           'apps/web': wiredMember([], {
             [ConfigKey.Implementations]: '[hadolint]',
             [ConfigKey.Languages]: '[dockerfile]',
@@ -558,7 +557,7 @@ describe('the wiring ratify writes', () => {
     // Arrange
     const project = createWiredProject({
       files: {
-        ...wiredWorkspace({
+        ...workspaceOf({
           'packages/kit': wiredMember(),
         }),
         'packages/kit/.dependency-cruiser.mjs': packageCruiser,
@@ -662,8 +661,10 @@ describe("the wiring of a pack's parts and templates", () => {
     });
 
     // Assert
-    expect(listed.filter((line) => expected.includes(line)).toSorted()).toStrictEqual(
-      expected.toSorted(),
-    );
+    expect(
+      listed
+        .filter((line) => expected.includes(line))
+        .toSorted((left, right) => left.localeCompare(right)),
+    ).toStrictEqual(expected.toSorted((left, right) => left.localeCompare(right)));
   });
 });

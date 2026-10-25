@@ -2,7 +2,7 @@
 
 ## Reporting a vulnerability
 
-Report a vulnerability privately through GitHub: on the repository's **Security** tab, choose **Report a vulnerability**. Do not open a public issue for it.
+Report a vulnerability privately through GitHub: on the repository's **Security** tab, choose **Report a vulnerability**. Do not open a public issue for it. A report gets its first answer within seven days.
 
 ## Supported versions
 

@@ -8,9 +8,14 @@ type Setting =
       readonly [key: string]: Setting;
     };
 
-interface ConfigurationParser {
-  /** the settings of a JSON, JSONC, TOML or YAML text; undefined when it does not parse, or its format is none of those */
-  readonly parse: (input: { path: string; text: string }) => Setting | undefined;
+interface ConfigurationText {
+  readonly path: string;
+  readonly text: string;
 }
 
-export type { ConfigurationParser, Setting };
+interface ConfigurationParser {
+  /** the settings of a JSON, JSONC, TOML or YAML text; undefined when it does not parse, or its format is none of those */
+  readonly parse: (input: ConfigurationText) => Setting | undefined;
+}
+
+export type { ConfigurationParser, ConfigurationText, Setting };

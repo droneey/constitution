@@ -1,0 +1,8 @@
+self:
+  formatters-share-one-indent-and-width:
+    - indent-width
+    - line-width
+  tombi-is-the-formatter:
+    - table-keys-order
+  toml-written-in-1-0-until-every-reader-reads-1-1:
+    - toml-version

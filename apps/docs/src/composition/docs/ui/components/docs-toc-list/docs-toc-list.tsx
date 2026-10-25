@@ -19,6 +19,7 @@ export function DocsTocList({ onSelect }: DocsTocListProps): ReactElement {
     <Toc.ScrollArea>
       <div
         className='relative flex flex-col'
+        data-testid='toc-list'
         data-toc-list=''
       >
         {headings.map((heading) => (

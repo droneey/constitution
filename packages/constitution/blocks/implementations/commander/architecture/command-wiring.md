@@ -8,14 +8,14 @@
 
 A command's factory returns a `Command` with its description, options and action, and the root adds it to the program.
 
-| Why | Tags |
-|---|---|
-| the command then carries everything commander needs of it, and the program lists what the root added, nothing else. | [] |
+| Why |
+|---|
+| the command then carries everything commander needs of it, and the program lists what the root added, nothing else. |
 
 ### commander-imported-by-commands → command-parser-imported-by-the-command-files · MUST
 
 commander is the command-line parser, imported in the command files, `<op>.cli.ts`.
 
-| Why | Tags |
-|---|---|
-| the setting that holds the parser's home names its package. | [] |
+| Why |
+|---|
+| the setting that holds the parser's home names its package. |

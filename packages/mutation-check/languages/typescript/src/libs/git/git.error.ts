@@ -1,6 +1,7 @@
 enum GitFailure {
   NotRun = 'git-not-run',
   Failed = 'git-failed',
+  TimedOut = 'git-timed-out',
 }
 
 interface GitFailureDetails {

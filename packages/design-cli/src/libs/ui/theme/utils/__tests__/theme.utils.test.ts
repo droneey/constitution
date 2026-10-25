@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import { ColourLevel, Space, ThemeMode, Tone } from '../../constants';
+import { MissingTokenError } from '../../errors';
 import { createPlainTheme, createTokens, GOLD } from './theme.fixtures';
 
 describe('createTheme', () => {
@@ -123,51 +124,34 @@ describe('createTheme', () => {
 
   it.each([
     {
-      name: 'a role',
+      name: 'a colour for a role',
       tokens: createTokens({
         colour: {},
       }),
-      tone: Tone.Success,
-      refusal: 'the design tokens hold no colour for text.success',
+      token: 'text.success',
     },
     {
-      name: 'a step',
+      name: 'a colour for a step',
       tokens: createTokens({
         brand: {},
       }),
-      tone: Tone.Accent,
-      refusal: 'the design tokens hold no colour for accent.text',
+      token: 'accent.text',
     },
-  ])(
-    'should refuse to draw a tone when the build holds no colour for $name',
-    ({ refusal, tokens, tone }) => {
-      // Arrange
-      const theme = createPlainTheme({}, tokens);
-
-      // Act
-      const paint = (): string => theme.paint(tone, 'x');
-
-      // Assert
-      expect(paint).toThrow(new Error(refusal));
-    },
-  );
-
-  it.each([
     {
       name: 'its pace',
       tokens: createTokens({
         duration: {},
       }),
-      refusal: 'the design tokens hold no fast',
+      token: 'fast',
     },
     {
       name: 'a space',
       tokens: createTokens({
         spacing: {},
       }),
-      refusal: 'the design tokens hold no xs',
+      token: 'xs',
     },
-  ])('should refuse the build when it holds no $name', ({ refusal, tokens }) => {
+  ])('should refuse the build when it holds no $name', ({ token, tokens }) => {
     // Arrange
     const input = {};
 
@@ -175,7 +159,7 @@ describe('createTheme', () => {
     const build = (): unknown => createPlainTheme(input, tokens);
 
     // Assert
-    expect(build).toThrow(new Error(refusal));
+    expect(build).toThrow(new MissingTokenError(token));
   });
 
   it('should set the text apart in bold when the run shows styles', () => {

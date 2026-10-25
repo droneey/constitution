@@ -1,0 +1,9 @@
+language js
+
+`$query($...)` as $call where {
+  $query <: or {
+    r".*\.querySelector",
+    r".*\.querySelectorAll"
+  },
+  register_diagnostic(span=$call, message="[spec-never-selects-from-the-document] Find an element as a person does, by role, label or text, and one no person perceives by its data-testid", severity="error")
+}

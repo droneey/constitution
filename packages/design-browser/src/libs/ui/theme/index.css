@@ -1,0 +1,2 @@
+/* biome-ignore lint/nursery/useLayeredStyles: the theme declares its own layers */
+@import './theme.css';

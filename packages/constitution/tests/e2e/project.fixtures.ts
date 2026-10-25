@@ -102,7 +102,12 @@ const workspaceOf = (members: Readonly<Record<string, string>>): Files => ({
   ),
 });
 
-const lineNumberOf = (input: { at: string; config: string }): number =>
+interface LineNumberInput {
+  readonly at: string;
+  readonly config: string;
+}
+
+const lineNumberOf = (input: LineNumberInput): number =>
   input.config.slice(0, input.config.indexOf(input.at)).split('\n').length;
 
 const write = (input: { path: string; text: string }): void => {
@@ -230,15 +235,20 @@ const packCard = (input: {
 const OWN_PACK = 'constitution';
 const IMPLEMENTATIONS = 'implementations';
 
-const packPath = (input: { folder?: string; id: string }): string =>
+interface PackBlockPlace {
+  readonly folder?: string;
+  readonly id: string;
+}
+
+const packPath = (input: PackBlockPlace): string =>
   `${OWN_PACK}/blocks/${input.folder ?? IMPLEMENTATIONS}/${input.id}/${input.id}.md`;
 
-const packBlockFiles = (input: {
-  fields?: Readonly<Record<string, string>>;
-  folder?: string;
-  headings?: readonly string[];
-  id: string;
-}): Files => ({
+interface PackBlockInput extends PackBlockPlace {
+  readonly fields?: Readonly<Record<string, string>>;
+  readonly headings?: readonly string[];
+}
+
+const packBlockFiles = (input: PackBlockInput): Files => ({
   [packPath(input)]: packCard({
     fields: {
       id: input.id,

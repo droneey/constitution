@@ -2,7 +2,11 @@ import { describe, expect, it } from 'bun:test';
 
 import { createFakeWorkingTree } from '#/__tests__/working-tree.fake';
 
-import { keptSession, sessionStateOf } from '../../../../../__tests__/session.fixtures';
+import {
+  heldSessionsOf,
+  keptSession,
+  sessionStateOf,
+} from '../../../../../__tests__/session.fixtures';
 import { createFakeSessionCommandRepository } from '../../../../../__tests__/session-command-repository.fake';
 import { CheckState, SessionMark } from '../../../../entities';
 import { SessionId } from '../../../../value-objects';
@@ -15,124 +19,97 @@ const FINGERPRINT = '3287646509';
 describe('recordCheck', () => {
   it.each([
     {
+      checked: FINGERPRINT,
       command: 'bun run check',
       condition: 'the command is the check',
-      fingerprints: [
-        FINGERPRINT,
-      ],
     },
     {
+      checked: FINGERPRINT,
       command: 'bun run check --verbose',
       condition: 'the check opens the command and a blank ends it',
-      fingerprints: [
-        FINGERPRINT,
-      ],
     },
     {
+      checked: FINGERPRINT,
       command: 'bun run check; echo done',
       condition: 'the check opens the command and a semicolon ends it',
-      fingerprints: [
-        FINGERPRINT,
-      ],
     },
     {
+      checked: FINGERPRINT,
       command: 'cd app && bun run check',
       condition: 'the check ends the command after &&',
-      fingerprints: [
-        FINGERPRINT,
-      ],
     },
     {
+      checked: FINGERPRINT,
       command: 'cd app && bun run check | tee log',
       condition: 'the check follows && and a blank ends it',
-      fingerprints: [
-        FINGERPRINT,
-      ],
     },
     {
+      checked: FINGERPRINT,
       command: 'cd app && bun run check; echo done',
       condition: 'the check follows && and a semicolon ends it',
-      fingerprints: [
-        FINGERPRINT,
-      ],
     },
     {
+      checked: FINGERPRINT,
       command: 'cd app; bun run check',
       condition: 'the check ends the command after a semicolon',
-      fingerprints: [
-        FINGERPRINT,
-      ],
     },
     {
+      checked: FINGERPRINT,
       command: 'cd app; bun run check | tee log',
       condition: 'the check follows a semicolon and a blank ends it',
-      fingerprints: [
-        FINGERPRINT,
-      ],
     },
     {
+      checked: FINGERPRINT,
       command: 'cd app; bun run check;',
       condition: 'the check follows a semicolon and a semicolon ends it',
-      fingerprints: [
-        FINGERPRINT,
-      ],
     },
     {
+      checked: undefined,
       command: 'bun run checkout',
       condition: 'the command only starts with the check',
-      fingerprints: [],
     },
     {
+      checked: undefined,
       command: 'echo bun run check',
       condition: 'the check follows a blank',
-      fingerprints: [],
     },
     {
+      checked: undefined,
       command: 'cd app && bun run checkout',
       condition: 'a longer command follows &&',
-      fingerprints: [],
     },
     {
+      checked: undefined,
       command: 'cd app; bun run checkout',
       condition: 'a longer command follows a semicolon',
-      fingerprints: [],
     },
     {
+      checked: undefined,
       command: 'cd app &&bun run check',
       condition: 'no blank follows &&',
-      fingerprints: [],
     },
     {
+      checked: undefined,
       command: '',
       condition: 'the command is empty',
-      fingerprints: [],
     },
-  ])(
-    'should record the fingerprints $fingerprint as checked when $condition',
-    ({ command, fingerprints }) => {
-      // Arrange
-      const store = createFakeSessionCommandRepository();
+  ])('should leave $checked as the tree checked when $condition', ({ checked, command }) => {
+    // Arrange
+    const store = heldSessionsOf();
 
-      // Act
-      recordCheck({
-        command,
-        session: keptSession,
-        sessions: store.sessions,
-        workingTree: createFakeWorkingTree({
-          state: TREE,
-        }),
-      });
+    // Act
+    recordCheck({
+      command,
+      session: keptSession,
+      sessions: createFakeSessionCommandRepository(store),
+      workingTree: createFakeWorkingTree({
+        state: TREE,
+      }),
+    });
 
-      // Assert
-      expect(store.writes.recorded).toStrictEqual(
-        fingerprints.map((fingerprint) => ({
-          mark: SessionMark.Checked,
-          session: keptSession,
-          value: fingerprint,
-        })),
-      );
-    },
-  );
+    // Assert
+    expect(store.get(keptSession)?.marks.get(SessionMark.Checked)).toBe(checked);
+  });
 
   it.each([
     {
@@ -167,7 +144,7 @@ describe('recordCheck', () => {
     },
   ])('should record nothing when $condition', ({ command, session, state }) => {
     // Arrange
-    const store = createFakeSessionCommandRepository({
+    const store = heldSessionsOf({
       state,
     });
 
@@ -175,13 +152,13 @@ describe('recordCheck', () => {
     recordCheck({
       command,
       session,
-      sessions: store.sessions,
+      sessions: createFakeSessionCommandRepository(store),
       workingTree: createFakeWorkingTree({
         state: TREE,
       }),
     });
 
     // Assert
-    expect(store.writes.recorded).toStrictEqual([]);
+    expect(store.get(session)?.marks.get(SessionMark.Checked)).toBeUndefined();
   });
 });

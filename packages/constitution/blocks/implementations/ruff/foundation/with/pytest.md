@@ -10,6 +10,6 @@ Ruff's part for pytest extends its part for Python with pytest's style (`PT`) an
 
 The project's `extend-per-file-ignores` lifts only `S101`, `INP001` and `PLR2004` in `tests/**`: a case asserts with `assert`, `tests/` is no package, and a case's literals are its data.
 
-| Why | Tags |
-|---|---|
-| each other rule holds for the specs as for the program; a spec is code a reader must trust. | [testing] |
+| Why |
+|---|
+| each other rule holds for the specs as for the program; a spec is code a reader must trust. |

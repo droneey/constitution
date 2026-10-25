@@ -1,9 +1,9 @@
 import { fileURLToPath } from 'node:url';
 
-import type { Resolver, Source, ThemeMode } from '../types';
+import type { Resolver, Source, ThemeModeFiles } from '../types';
 
 /** Each mode of the resolver's `theme` modifier, its files resolved from `resolverUrl`. */
-const themeModesOf = (resolver: Resolver, resolverUrl: string): ThemeMode[] => {
+const themeModesOf = (resolver: Resolver, resolverUrl: string): ThemeModeFiles[] => {
   const pathsOf = (sources: readonly Source[]): string[] =>
     sources.map(({ $ref }) => fileURLToPath(new URL($ref, resolverUrl)));
 

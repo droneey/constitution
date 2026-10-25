@@ -8,6 +8,6 @@
 
 `routeTree.gen.ts` is committed, and only the router's generator changes it.
 
-| Why | Tags |
-|---|---|
-| the router's own guidance counts it as part of the application's runtime, not a build artefact. | [] |
+| Why |
+|---|
+| the router's own guidance counts it as part of the application's runtime, not a build artefact. |

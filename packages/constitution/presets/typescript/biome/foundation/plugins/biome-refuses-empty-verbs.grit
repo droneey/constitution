@@ -1,10 +1,12 @@
 language js
 
 or {
-  `function $name($_): $_ { $_ }`,
-  `function $name($_) { $_ }`,
-  `const $name = ($_): $_ => $_`,
-  `const $name = ($_) => $_`,
+  JsFunctionDeclaration(id=$name),
+  JsFunctionExportDefaultDeclaration(id=$name),
+  JsVariableDeclarator(id=$name, initializer=JsInitializerClause(expression=or {
+    JsArrowFunctionExpression(),
+    JsFunctionExpression()
+  })),
   JsMethodClassMember(name=$name),
   JsMethodObjectMember(name=$name)
 } as $function where {

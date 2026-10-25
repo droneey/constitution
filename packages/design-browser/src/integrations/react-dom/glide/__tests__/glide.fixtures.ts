@@ -226,7 +226,7 @@ const layOut = (
 const blockOf = (list: Element): HTMLElement | undefined =>
   list.querySelector<HTMLElement>(':scope > [data-glide]') ?? undefined;
 
-// biome-ignore lint/plugin/queries-by-role-label-text: the glide is a decoration hidden from assistive technology, which CSS finds by its attribute
+// biome-ignore lint/plugin/spec-never-selects-from-the-document: the glide is a decoration hidden from assistive technology, which CSS finds by its attribute
 const blocksOf = (list: Element): number => list.querySelectorAll(':scope > [data-glide]').length;
 
 const styleOf = (block: HTMLElement | undefined): BlockStyle | undefined =>

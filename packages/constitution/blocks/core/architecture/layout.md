@@ -65,57 +65,57 @@ The language fixes the spelling. Each block names its own folders and suffixes, 
 
 Every module, at any depth — the source of a package others import, a feature, a module of composition, a lib, a module of a shared layer or of a role folder — is a folder with a surface, the layers or role folders it needs and modules of this same form.
 
-| Why | Tags |
-|---|---|
-| a reader who knows one module knows them all, and a role folder means the same thing wherever it appears. | [] |
+| Why |
+|---|
+| a reader who knows one module knows them all, and a role folder means the same thing wherever it appears. |
 
 ### behaviour-lives-in-a-feature · SHOULD
 
 Behaviour — what a package does — lives in a feature with its layers; vocabulary — types, constants, kinds — lives in the kernel and in role folders, and utils hold only pure helpers with no meaning of the product.
 
-| Why | Tags |
-|---|---|
-| behaviour found only in features is found with its domain, its adapters and its binding units around it. | [] |
+| Why |
+|---|
+| behaviour found only in features is found with its domain, its adapters and its binding units around it. |
 
 ### package-laid-out-by-the-tree · SHOULD
 
 A package’s root holds its manifest, its source, the suites that drive the built package and, where the language's runner expects one, the tree of specs that mirrors the source, the writing for readers outside the code, one folder per kind of content it ships as is, and the files tools look up there; its source holds only the folders of the tree and role folders.
 
-| Why | Tags |
-|---|---|
-| a reader who knows one repository finds the way in every other, and a file has one obvious place. | [] |
+| Why |
+|---|
+| a reader who knows one repository finds the way in every other, and a file has one obvious place. |
 
 ### code-in-several-languages-holds-a-package-per-language · SHOULD
 
 Code that serves one purpose in several languages holds `languages/<language>/`, one package for each language with the tree in its `src/`, and beside it `shared/`, what the languages need written in none of them, laid out by meaning — `schema/`, `conformance/`; **`languages/`** appears with the second language and `shared/` with its first file, and until then the code is the package itself.
 
-| Why | Tags |
-|---|---|
-| the code is found in one folder whatever its languages, `languages/` says at a glance that its children serve one purpose written several times, and what no language owns is written once beside the packages that read it. | [] |
+| Why |
+|---|
+| the code is found in one folder whatever its languages, `languages/` says at a glance that its children serve one purpose written several times, and what no language owns is written once beside the packages that read it. |
 
 ### feature-laid-out-by-its-tree · SHOULD
 
 A feature, and a module of composition, holds its layers, its specs and its surface and nothing else, and its domain holds only the role folders of the tree.
 
-| Why | Tags |
-|---|---|
-| a use case, a port or an adapter is found in the same place in every feature, and a loose file belongs to no layer the rules see. | [] |
+| Why |
+|---|
+| a use case, a port or an adapter is found in the same place in every feature, and a loose file belongs to no layer the rules see. |
 
 ### failures-live-with-their-contract · SHOULD
 
 Failures every feature shares, and the base error every error the application declares extends, live in the kernel’s errors, and a feature’s own, each a **domain error**, in its domain’s errors.
 
-| Why | Tags |
-|---|---|
-| a failure declared where its contract lives is found with it. | [] |
+| Why |
+|---|
+| a failure declared where its contract lives is found with it. |
 
 ### pipeline-stages-live-under-steps · SHOULD
 
 A pipeline’s stages live in its steps folder, in the order the use case calls them.
 
-| Why | Tags |
-|---|---|
-| the use case reads as the pipeline, and a stage is added, removed or tested alone. | [] |
+| Why |
+|---|
+| the use case reads as the pipeline, and a stage is added, removed or tested alone. |
 
 ## Surfaces
 
@@ -123,49 +123,49 @@ A pipeline’s stages live in its steps folder, in the order the use case calls 
 
 A module, and any other folder with a surface, is reached from outside only through that surface, which offers what a caller may couple to and nothing else; the composition root, and the surface of a package that offers it, reach a feature's adapter through that adapter's own surface.
 
-| Why | Tags |
-|---|---|
-| whatever a module exposes, a caller eventually depends on. | [] |
+| Why |
+|---|
+| whatever a module exposes, a caller eventually depends on. |
 
 ### module-files-import-each-other-directly · MUST
 
 Inside a module, a file imports a file of its own folder directly and anything else of the module through the surface of the role folder or module that holds it, and never the surface of its own module.
 
-| Why | Tags |
-|---|---|
-| a file that imports its own surface imports itself, and that is where cycles begin. | [] |
+| Why |
+|---|
+| a file that imports its own surface imports itself, and that is where cycles begin. |
 
 ### surface-only-re-exports · MUST
 
 A surface re-exports by name what callers may use: no declaration, no logic, no re-export of everything.
 
-| Why | Tags |
-|---|---|
-| a surface that declares or computes becomes a room of its own, and a wildcard offers internals nobody chose to offer. | [] |
+| Why |
+|---|
+| a surface that declares or computes becomes a room of its own, and a wildcard offers internals nobody chose to offer. |
 
 ### further-entry-sits-beside-the-surface · SHOULD
 
 A package others import offers each further entry that serves no host framework — `testing`, the helpers its consumers test with — as a file beside its surface, named after what it offers, which re-exports by name from the tree and declares nothing.
 
-| Why | Tags |
-|---|---|
-| a consumer finds every door of the package at the top of its source, as `@angular/core/testing` and `hono/testing` show, and an entry that declares nothing never becomes a second home for logic. | [] |
+| Why |
+|---|
+| a consumer finds every door of the package at the top of its source, as `@angular/core/testing` and `hono/testing` show, and an entry that declares nothing never becomes a second home for logic. |
 
 ### surface-offers-operations-not-mechanisms · SHOULD
 
 A feature’s surface offers its operations and their presentation — use cases, binding units, entities — and, as types, the contracts it asks another feature to answer, which composition implements; never its mechanisms: its adapters, mappers, wire models.
 
-| Why | Tags |
-|---|---|
-| a caller that reaches a mechanism depends on how the feature works rather than on what it does. | [] |
+| Why |
+|---|
+| a caller that reaches a mechanism depends on how the feature works rather than on what it does. |
 
 ### surface-only-on-a-module-or-one-kind · MUST
 
 A module has a surface, its door, and so does a **role folder**, whose members are of one kind; a **layer folder**, whose members lie on different sides of the boundaries the imports hold, has none and is never an import target — save `root/`, whose surface the entry files import — and neither has the source of an application, whose members are of different kinds. The source of a package others import is a module, and only its consumers import its surface.
 
-| Why | Tags |
-|---|---|
-| every import then names the side of each boundary it reaches, and no surface couples a caller to members it never uses. | [] |
+| Why |
+|---|
+| every import then names the side of each boundary it reaches, and no surface couples a caller to members it never uses. |
 
 ## Names
 
@@ -173,22 +173,22 @@ A module has a surface, its door, and so does a **role folder**, whose members a
 
 A folder whose purpose a layer or a role of the active vocabulary names takes that name; layer names are fixed words, whatever their grammatical number.
 
-| Why | Tags |
-|---|---|
-| a folder named by the vocabulary tells its place in the tree before it is opened. | [] |
+| Why |
+|---|
+| a folder named by the vocabulary tells its place in the tree before it is opened. |
 
 ### file-carries-its-role-suffix · MUST
 
 A **role file**, a file of a role, carries its **role suffix**, whatever its folder; a surface, an entry, a name a tool fixes, a unit named after its own folder, a member of a set whose role has no suffix, a registry and a binding unit named after its operation carry none. A spec keeps the suffix of the file it proves.
 
-| Why | Tags |
-|---|---|
-| the name tells the role before the file is opened, and a tool can check it. | [] |
+| Why |
+|---|
+| the name tells the role before the file is opened, and a tool can check it. |
 
 ### data-port-named-by-entity-and-side · SHOULD
 
 A data port is named after its entity and its side: `<Entity>QueryRepository` for reads, `<Entity>CommandRepository` for writes.
 
-| Why | Tags |
-|---|---|
-| the name alone tells two ports of one entity apart, wherever they are imported. | [] |
+| Why |
+|---|
+| the name alone tells two ports of one entity apart, wherever they are imported. |

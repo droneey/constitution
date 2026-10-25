@@ -1,3 +1,4 @@
+import { AXES, BLOCKS_FOLDER, LAYER_FOLDER, LAYERS, Layer } from '#/kernel/constants';
 import type { TextsOf } from '#/shared/cli';
 
 import type { LoadFindingDetails } from '../../domain/use-cases/queries/check';
@@ -8,11 +9,16 @@ import {
   LoadCode,
   PlaceCode,
 } from '../../domain/use-cases/queries/check';
+import { fieldOf, listOf } from './wording.utils';
 
-const ROOT = '<root>';
-
-/** a field path of a schema's issue, where an empty path is the whole document */
-const fieldOf = (field: string): string => (field === '' ? ROOT : field);
+const layerFolders = listOf({
+  conjunction: 'or',
+  names: LAYERS.filter((layer) => layer !== Layer.Core).map((layer) => LAYER_FOLDER[layer]),
+});
+const axisFolders = listOf({
+  conjunction: 'and',
+  names: AXES.map((axis) => `${axis}/`),
+});
 
 const loadTexts: TextsOf<LoadFindingDetails> = {
   [BindingsFileCode.NotYaml]: ({ reason }) => `is not valid YAML: ${reason}`,
@@ -54,9 +60,9 @@ const loadTexts: TextsOf<LoadFindingDetails> = {
   [LoadCode.IdShared]: ({ id, others }) =>
     `shares the id "${id}" with ${others.join(', ')}; an id names one block`,
   [PlaceCode.OutsideBlockFolder]: () =>
-    'is not inside a block folder; a block is blocks/core, or a folder <id>/ in domains, contexts/platforms, contexts/languages or implementations',
+    `is not inside a block folder; a block is ${BLOCKS_FOLDER}/${LAYER_FOLDER[Layer.Core]}, or a folder <id>/ in ${layerFolders}`,
   [PlaceCode.StrayBlockFile]: () =>
-    'is not a block file; a block holds at its root its passport <id>.md, and in foundation/, architecture/ and workflow/ its chapters <name>.md and its seams with/<block>.md',
+    `is not a block file; a block holds at its root its passport <id>.md, and in ${axisFolders} its chapters <name>.md and its seams with/<block>.md`,
   [PlaceCode.ChapterNamedAfterBlock]: () =>
     "is named after its block; an axis holds named chapters and seams, and the block's id names only its passport <id>.md",
 };

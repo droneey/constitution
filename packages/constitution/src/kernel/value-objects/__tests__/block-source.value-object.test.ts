@@ -21,11 +21,8 @@ describe('BlockSource', () => {
       pack: PackPath.create('./rules'),
     },
   ])('should name where a block is read from when $condition', ({ expected, pack }) => {
-    // Arrange
-    const path = pack;
-
     // Act
-    const source = BlockSource.create(path);
+    const source = BlockSource.create(pack);
 
     // Assert
     expect(source).toStrictEqual(expected);
@@ -109,11 +106,8 @@ describe('BlockSource', () => {
       isSource: false,
     },
   ])('should say $isSource when $condition', ({ candidate, isSource }) => {
-    // Arrange
-    const given: unknown = candidate;
-
     // Act
-    const answer = BlockSource.is(given);
+    const answer = BlockSource.is(candidate);
 
     // Assert
     expect(answer).toBe(isSource);

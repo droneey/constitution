@@ -111,18 +111,17 @@ A term's owner is the block of the file that defines it, and its axis that file'
 
 Every data view shows loading, error and content, and the empty or not-found state its data can have.
 
-| Why | Tags |
-|---|---|
-| an empty screen cannot otherwise be told from a slow one. | [ux, a11y] |
+| Why |
+|---|
+| an empty screen cannot otherwise be told from a slow one. |
 ```
 
 - **The heading** is a third-level heading: the slug, unique in the Constitution, and the level. A second-level heading opens a section that groups rules and is no rule.
 - **The level** means what [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) gives it, in capitals: `MUST` where a breach is plainly wrong and answered yes or no, most often by a tool; `SHOULD` where it takes judgement or has reasonable exceptions; `MAY` for a permitted choice.
 - **The statement** says what holds, opening with the thing it governs.
 - **The Why** says what goes wrong without it.
-- **The Tags** are lenses, `a11y`, `data`, `errors`, `performance`, `security`, `testing`, `ux`, or `[]`.
 
-A rule that tightens another names it after an arrow: `### query-result-returned-as-status-union → data-result-is-union-by-status · MUST`. It tightens one rule of another block, never looser than it, and takes its tags.
+A rule that tightens another names it after an arrow: `### query-result-returned-as-status-union → data-result-is-union-by-status · MUST`. It tightens one rule of another block, never looser than it.
 
 ## Requirements
 
@@ -146,7 +145,7 @@ A domain, a platform or core may list, in a chapter under a heading `Requirement
 - a link or a slug that names another block anywhere but the front matter, a `with/` name or a heading's arrow;
 - an abstract block without an heir, or one that names its heirs;
 - a term defined twice; a term of the architecture or of the workflow used in a chapter or a seam of another axis — a passport speaks of the whole block, every axis at once; a term used in a file whose block cannot reach its owner — core's terms are every block's; a folder or a suffix written in backticks without its `/` or its `.`, where its owner is in reach; and bold that is neither plain words nor one code span;
-- a rule without a statement, a Why or a known tag, a slug used twice, and a heading or a table that misses the format;
+- a rule without a statement or a Why, a slug used twice, and a heading or a table that misses the format;
 - a rule that tightens a rule of its own block, or of an axis it may not reach, at a level looser than that rule's or equal to it;
 - a seam named after its own block, after no block or after core, after a block of a layer its block may not pair with, or after a block along a dependency — one its block requires or extends, or one that requires or extends its block, directly or through another — and a seam titled otherwise than the other block's passport;
 - a chapter or a seam that does not open with its title and its Governs line, holds no rule, keeps a rule outside a `##` section, names a section like its title, or puts a section before `General` or after `Requirements for implementation`;

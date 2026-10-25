@@ -13,3 +13,6 @@ node_modules/
 
 # stryker
 .stryker-tmp/
+
+# the theme, generated from the tokens by bun run build
+/src/libs/ui/theme/constants/*.gen.*

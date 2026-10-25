@@ -1,9 +1,9 @@
 import { BLOCKS_FOLDER, LAYER_FOLDER, Layer } from '#/kernel/constants';
-import type { ProjectFiles } from '#/kernel/contracts';
-import type { ProjectPlace } from '#/kernel/entities';
 import { FileRead, FileReadStatus } from '#/kernel/entities';
 import { ProjectError, ProjectFailure } from '#/kernel/errors';
 import { coreBlockId } from '#/kernel/value-objects';
+
+import type { ReleaseReadInput } from '../shared/release-read';
 
 const corePassport = `${BLOCKS_FOLDER}/${LAYER_FOLDER[Layer.Core]}/${coreBlockId}.md`;
 
@@ -12,7 +12,7 @@ const corePassport = `${BLOCKS_FOLDER}/${LAYER_FOLDER[Layer.Core]}/${coreBlockId
  *
  * @throws {@link ProjectError} when the file cannot be read
  */
-const readCore = (input: { files: ProjectFiles; place: ProjectPlace }): string => {
+const readCore = (input: ReleaseReadInput): string => {
   const path = `${input.place.releaseFolder}/${corePassport}`;
   const read = input.files.read(path);
 

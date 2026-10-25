@@ -2,12 +2,17 @@ import { describe, expect, it } from 'bun:test';
 
 import { Text } from 'ink';
 
+import { ConfirmWords } from '#/libs/ui';
+
+import { TextInput } from '../components';
 import { AnswerKind, askConfirm, askSelect, askText, openTerminalView } from '../terminal';
 import {
   createPlainOutput,
   createTerminalInput,
   createTerminalOutput,
+  englishWords,
   Key,
+  pressKeys,
   settle,
 } from './ink.fixtures';
 
@@ -17,7 +22,7 @@ const createStreams = () => ({
 });
 
 describe('openTerminalView', () => {
-  it('should draw what it is shown and restore the terminal when it closes', async () => {
+  it('should leave the last tree it was shown on the terminal when it closes', async () => {
     // Arrange
     const streams = createStreams();
     const view = openTerminalView({
@@ -25,13 +30,45 @@ describe('openTerminalView', () => {
       output: createPlainOutput(),
     });
 
-    // Act
     view.show(<Text>checking</Text>);
 
+    // Act
     await view.close();
 
     // Assert
     expect(streams.stdout.written.join('')).toContain('checking');
+  });
+
+  it('should give the keyboard back when it closes', async () => {
+    // Arrange
+    const streams = createStreams();
+    const view = openTerminalView({
+      streams,
+      output: createPlainOutput(),
+    });
+
+    view.show(
+      <TextInput
+        message='Name?'
+        onInterrupt={(): void => undefined}
+        onSubmit={(): void => undefined}
+        placeholder='my-project'
+      />,
+    );
+
+    await settle();
+
+    // Act
+    await view.close();
+
+    // Assert
+    expect({
+      isRaw: streams.stdin.isRaw,
+      readers: streams.stdin.listenerCount('readable'),
+    }).toStrictEqual({
+      isRaw: false,
+      readers: 0,
+    });
   });
 });
 
@@ -55,11 +92,13 @@ describe('askSelect', () => {
       output: createPlainOutput(),
     });
 
+    await settle();
+
     // Act
-    await settle();
-    streams.stdin.write(Key.Down);
-    await settle();
-    streams.stdin.write(Key.Enter);
+    await pressKeys(streams.stdin, [
+      Key.Down,
+      Key.Enter,
+    ]);
 
     // Assert
     expect(await asked).toStrictEqual({
@@ -83,8 +122,9 @@ describe('askSelect', () => {
       output: createPlainOutput(),
     });
 
-    // Act
     await settle();
+
+    // Act
     streams.stdin.write(Key.Interrupt);
 
     // Assert
@@ -103,20 +143,39 @@ describe('ask', () => {
       message: 'Overwrite?',
       output: createPlainOutput(),
       streams,
+      words: englishWords,
     });
 
-    // Act
     await settle();
+
+    // Act
     streams.stdin.write(Key.Enter);
-    await asked;
 
     // Assert
+    await asked;
     expect(streams.stdin.listenerCount('readable')).toBe(0);
   });
 });
 
 describe('askConfirm', () => {
-  it('should give the default when Enter is pressed', async () => {
+  it.each([
+    {
+      condition: 'Enter is pressed',
+      answer: true,
+      key: Key.Enter,
+      words: englishWords,
+    },
+    {
+      condition: 'the key of its words for no is pressed',
+      answer: false,
+      key: 'н',
+      words: ConfirmWords.create({
+        locale: 'uk',
+        no: 'ні',
+        yes: 'так',
+      }),
+    },
+  ])('should give the answer when $condition', async ({ answer, key, words }) => {
     // Arrange
     const streams = createStreams();
     const asked = askConfirm({
@@ -124,16 +183,18 @@ describe('askConfirm', () => {
       message: 'Overwrite?',
       streams,
       output: createPlainOutput(),
+      words,
     });
 
-    // Act
     await settle();
-    streams.stdin.write(Key.Enter);
+
+    // Act
+    streams.stdin.write(key);
 
     // Assert
     expect(await asked).toStrictEqual({
       kind: AnswerKind.Given,
-      value: true,
+      value: answer,
     });
   });
 });
@@ -149,11 +210,13 @@ describe('askText', () => {
       output: createPlainOutput(),
     });
 
+    await settle();
+
     // Act
-    await settle();
-    streams.stdin.write('x');
-    await settle();
-    streams.stdin.write(Key.Enter);
+    await pressKeys(streams.stdin, [
+      'x',
+      Key.Enter,
+    ]);
 
     // Assert
     expect(await asked).toStrictEqual({

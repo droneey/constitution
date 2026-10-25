@@ -9,5 +9,7 @@ self:
   collection-written-in-block-style:
     - braces
     - brackets
+  formatters-share-one-indent-and-width:
+    - indentation
   mapping-key-unique:
     - key-duplicates

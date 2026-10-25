@@ -25,12 +25,13 @@ export function DocsTocDropdown(): ReactElement {
       </Popover.Trigger>
       <Popover.Panel
         align='start'
-        // Stryker disable ObjectLiteral,StringLiteral: the popup stays on its trigger's edge and side only when it would overflow the viewport, which a document without layout never reports
+        // Stryker disable next-line ObjectLiteral: the popup stays on its trigger's edge and side only when it would overflow the viewport, which a document without layout never reports
         collisionAvoidance={{
+          // Stryker disable next-line StringLiteral: as above
           align: 'none',
+          // Stryker disable next-line StringLiteral: as above
           fallbackAxisSide: 'none',
         }}
-        // Stryker restore ObjectLiteral,StringLiteral
         data-toc-dropdown=''
         positionMethod='fixed'
         sideOffset={POPOVER_OFFSET_PX}

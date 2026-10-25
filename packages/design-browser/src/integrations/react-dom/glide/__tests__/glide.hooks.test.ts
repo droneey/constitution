@@ -99,6 +99,7 @@ describe('useGlide', () => {
       blocksOf(toc),
       blockOf(versions)?.getAttribute('aria-hidden'),
       blockOf(versions)?.getAttribute('data-glide'),
+      blockOf(versions)?.getAttribute('data-testid'),
       versions.style.position,
       versions.style.isolation,
       toc.style.position,
@@ -107,6 +108,7 @@ describe('useGlide', () => {
       1,
       'true',
       '',
+      'glide',
       'absolute',
       'isolate',
       '',
@@ -703,7 +705,7 @@ describe('useGlide', () => {
     renderHook(() => useGlide(GLIDE_LISTS_FIXTURE));
 
     // Assert
-    // biome-ignore lint/plugin/queries-by-role-label-text: the glide is a decoration hidden from assistive technology, which CSS finds by its attribute
+    // biome-ignore lint/plugin/spec-never-selects-from-the-document: the glide is a decoration hidden from assistive technology, which CSS finds by its attribute
     expect(picture.querySelectorAll('[data-glide]').length).toBe(0);
   });
 

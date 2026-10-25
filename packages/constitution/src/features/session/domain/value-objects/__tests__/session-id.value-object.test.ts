@@ -38,11 +38,8 @@ describe('SessionId', () => {
       isId: false,
     },
   ])('should say $isId when $condition', ({ given, isId }) => {
-    // Arrange
-    const candidate: unknown = given;
-
     // Act
-    const answer = SessionId.is(candidate);
+    const answer = SessionId.is(given);
 
     // Assert
     expect(answer).toBe(isId);

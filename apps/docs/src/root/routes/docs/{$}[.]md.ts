@@ -1,23 +1,22 @@
-// Stryker disable all: the handler runs only in the server the build starts, over the content fumadocs-mdx's bundler plugin compiles, which no spec can run; the built site proves it
 import { createFileRoute, notFound } from '@tanstack/react-router';
 
 import { slugsOfMarkdownAddress } from '#/features/content';
 
+// Stryker disable next-line StringLiteral: the router takes the route's address from its file; the string only types it
 export const Route = createFileRoute('/docs/{$}.md')({
   server: {
     handlers: {
       // biome-ignore lint/style/useNamingConvention: TanStack Start keys a route's server handlers by their HTTP method
-      GET: async ({ params }) => {
-        const { contentLlms, contentSource } = await import('#/features/content/adapters/fumadocs');
-        const page = contentSource().getPage([
-          ...slugsOfMarkdownAddress(params._splat?.split('/') ?? []),
-        ]);
+      GET: async ({ context, params }) => {
+        const markdown = await context.getPageMarkdown(
+          slugsOfMarkdownAddress(params._splat?.split('/') ?? []),
+        );
 
-        if (!page) {
+        if (markdown === undefined) {
           throw notFound();
         }
 
-        return new Response(await contentLlms().page(page), {
+        return new Response(markdown, {
           headers: {
             'Content-Type': 'text/markdown',
           },

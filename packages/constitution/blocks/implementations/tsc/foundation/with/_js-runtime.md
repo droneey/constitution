@@ -8,6 +8,6 @@
 
 `paths` in `tsconfig.json` repeats the aliases of `imports` word for word, and only them.
 
-| Why | Tags |
-|---|---|
-| the compiler does not resolve a folder's `index.ts` through `imports`, so it needs the mirror; an alias only `paths` declares resolves in the editor and fails at run time under Node.js. | [] |
+| Why |
+|---|
+| the compiler does not resolve a folder's `index.ts` through `imports`, so it needs the mirror; an alias only `paths` declares resolves in the editor and fails at run time under Node.js. |

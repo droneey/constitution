@@ -35,7 +35,7 @@ const analyseYaml = (text: string): Analysis => {
     exitCode: run.status ?? undefined,
     rules: [
       ...new Set(run.stdout.split('\n').flatMap((line) => RULE_AT_END.exec(line)?.slice(1) ?? [])),
-    ].toSorted(),
+    ].toSorted((left, right) => left.localeCompare(right)),
   };
 };
 

@@ -25,9 +25,9 @@ export {
   Sidebar,
   Toc,
   useSidebar,
-  useStaticSearch,
   useTocItems,
   useTocSelector,
 } from './components';
-export { useFumadocsLoader } from './hooks';
-export { keepOneLayout } from './utils';
+export type { SearchHit, SearchState } from './hooks';
+export { useFumadocsLoader, useSearch } from './hooks';
+export { keepOneLayout, trackedForUse } from './utils';

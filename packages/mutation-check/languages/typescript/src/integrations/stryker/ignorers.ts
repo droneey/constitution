@@ -1,5 +1,10 @@
+import type { PartialStrykerOptions } from '@stryker-mutator/api/core';
 import type { Ignorer, NodePath } from '@stryker-mutator/api/ignore';
-import { declareValuePlugin, PluginKind } from '@stryker-mutator/api/plugin';
+import type { FactoryPlugin } from '@stryker-mutator/api/plugin';
+import { commonTokens, PluginKind, tokens } from '@stryker-mutator/api/plugin';
+
+// The ignorer's own key in the Stryker configuration, a table each part of a configuration may add to.
+const OPTIONS_KEY = 'diagnosticsTextArguments';
 
 const logLevels: ReadonlySet<unknown> = new Set([
   'trace',
@@ -61,19 +66,68 @@ const isErrorText = (path: NodePath): boolean => {
   );
 };
 
-// Leaves out the mutants no caller relies on: inside a log call and the text an error is built with.
-const diagnostics: Ignorer = {
-  shouldIgnore: (path: NodePath): string | undefined => {
-    if (isLogCall(fieldOf(path, 'node'))) {
-      return 'A log call: no caller relies on it';
-    }
+// By a method's name, the index of its argument that is text only a person reads.
+type TextArguments = ReadonlyMap<unknown, unknown>;
 
-    return isErrorText(path) ? 'The text of a diagnostic: no caller relies on it' : undefined;
-  },
+const textArgumentsOf = (options: PartialStrykerOptions): TextArguments => {
+  const given = fieldOf(options, OPTIONS_KEY);
+
+  return new Map(given instanceof Object ? Object.entries(given) : []);
 };
 
+const isPersonText = (path: NodePath, textArguments: TextArguments): boolean => {
+  const parent = fieldOf(fieldOf(path, 'parentPath'), 'node');
+
+  // A call's one list is its arguments, so an index as the path's key names one of them.
+  return (
+    isOfType(parent, 'CallExpression') &&
+    textArguments.get(propertyOf(fieldOf(parent, 'callee'))) === fieldOf(path, 'key')
+  );
+};
+
+/**
+ * Leaves out the mutants no caller relies on: inside a log call, the text an error is built with,
+ * and the argument of a method that the configuration's `diagnosticsTextArguments` names as text
+ * only a person reads.
+ */
+const createDiagnostics = (options: PartialStrykerOptions): Ignorer => {
+  const textArguments = textArgumentsOf(options);
+
+  return {
+    shouldIgnore: (path: NodePath): string | undefined => {
+      if (isLogCall(fieldOf(path, 'node'))) {
+        return 'A log call: no caller relies on it';
+      }
+
+      if (isPersonText(path, textArguments)) {
+        return 'Text only a person reads: no caller relies on it';
+      }
+
+      return isErrorText(path) ? 'The text of a diagnostic: no caller relies on it' : undefined;
+    },
+  };
+};
+
+createDiagnostics.inject = tokens(commonTokens.options);
+
+// Stryker warns of a key no plugin declares; the key's value is read as unknown, so it takes no shape.
+const STRYKER_VALIDATION_SCHEMA = {
+  properties: {
+    [OPTIONS_KEY]: {},
+  },
+} as const;
+
 const STRYKER_PLUGINS = [
-  declareValuePlugin(PluginKind.Ignore, 'diagnostics', diagnostics),
+  {
+    factory: createDiagnostics,
+    kind: PluginKind.Ignore,
+    name: 'diagnostics',
+  } satisfies FactoryPlugin<
+    PluginKind.Ignore,
+    [
+      typeof commonTokens.options,
+    ]
+  >,
 ] as const;
 
-export { STRYKER_PLUGINS as strykerPlugins };
+export { STRYKER_PLUGINS as strykerPlugins, STRYKER_VALIDATION_SCHEMA as strykerValidationSchema };

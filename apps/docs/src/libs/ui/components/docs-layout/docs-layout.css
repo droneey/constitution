@@ -5,7 +5,7 @@
   /* the page, taller than the window, would show only the sides of its ring; its panel draws it */
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-page-panel [role='main']:focus-visible {
-    outline: none;
+    outline-color: transparent;
   }
 
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
@@ -19,9 +19,9 @@
      under the edge. */
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #fd-spacious-layout {
-    --fd-page-width: var(--spacing-layout-page);
-    --fd-sidebar-width: var(--spacing-layout-sidebar);
-    --fd-toc-width: var(--spacing-layout-sidebar);
+    --fd-page-width: var(--size-layout-page);
+    --fd-sidebar-width: var(--size-layout-sidebar);
+    --fd-toc-width: var(--size-layout-sidebar);
   }
 
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
@@ -77,9 +77,9 @@
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-page-panel > :is(header, :has(> article)) {
     --nd-gutter: var(--spacing-sm);
-    --nd-overhang: calc((var(--spacing-control-md) - var(--spacing-icon-md)) / 2);
+    --nd-overhang: calc((var(--size-control-md) - var(--size-icon-md)) / 2);
     --nd-bar-padding: var(--spacing-sm);
-    --fd-header-height: calc(2 * var(--nd-bar-padding) + var(--spacing-control-md));
+    --fd-header-height: calc(2 * var(--nd-bar-padding) + var(--size-control-md));
 
     @container (width >= 40rem) {
       --nd-gutter: var(--spacing-lg);
@@ -155,22 +155,22 @@
 
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   :is(#nd-page-panel > header, #nd-sidebar > div > div:first-child)
-  :is(a, button):has(> svg:only-child) {
-    width: var(--spacing-control-md);
-    height: var(--spacing-control-md);
+    :is(a, button):has(> svg:only-child) {
+    width: var(--size-control-md);
+    height: var(--size-control-md);
     padding: 0;
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-control-base);
 
     & > svg {
-      width: var(--spacing-icon-md);
-      height: var(--spacing-icon-md);
+      width: var(--size-icon-md);
+      height: var(--size-icon-md);
     }
   }
 
   /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-page-panel > header button[aria-haspopup='dialog'] {
     gap: var(--spacing-xs);
-    height: var(--spacing-control-md);
+    height: var(--size-control-md);
     padding-inline: var(--nd-overhang);
   }
 }
@@ -178,7 +178,7 @@
 @layer overrides {
   [role='menu'] {
     padding: 0;
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-surface-raised);
     font-size: var(--text-sm);
     font-weight: var(--font-weight-ui);
 
@@ -188,9 +188,9 @@
 
     & :is([role='menuitem'], [role='menuitemradio']):not([role='group'] *) {
       gap: var(--spacing-xs);
-      min-height: var(--spacing-control-md);
+      min-height: var(--size-control-md);
       padding: 0 var(--spacing-xs);
-      border-radius: var(--radius-lg);
+      border-radius: var(--radius-control-base);
     }
 
     & > div > div:has([role='group']) {
@@ -204,7 +204,7 @@
   [data-theme-toggle] {
     display: inline-flex;
     gap: var(--spacing-2xs);
-    height: var(--spacing-control-md);
+    height: var(--size-control-md);
     padding: var(--spacing-2xs);
     border: 0;
     border-radius: var(--radius-xl);
@@ -215,7 +215,7 @@
       width: var(--spacing-lg);
       height: var(--spacing-lg);
       padding: var(--spacing-xs);
-      border-radius: var(--radius-lg);
+      border-radius: var(--radius-control-base);
     }
   }
 
@@ -230,9 +230,9 @@
     & > span[aria-hidden] {
       top: 0;
       inset-inline-start: 0;
-      width: var(--spacing-control-md);
-      height: var(--spacing-control-md);
-      translate: calc(var(--index) * var(--spacing-control-md)) 0;
+      width: var(--size-control-md);
+      height: var(--size-control-md);
+      translate: calc(var(--index) * var(--size-control-md)) 0;
       border-radius: var(--radius-xl);
       background-color: var(--color-fd-accent);
       box-shadow: none;
@@ -242,8 +242,8 @@
 
     & > [role='menuitemradio'] {
       cursor: pointer;
-      width: var(--spacing-control-md);
-      height: var(--spacing-control-md);
+      width: var(--size-control-md);
+      height: var(--size-control-md);
       border-radius: var(--radius-xl);
       color: var(--color-text-primary);
 
@@ -260,8 +260,8 @@
       }
 
       & > svg {
-        width: var(--spacing-icon-md);
-        height: var(--spacing-icon-md);
+        width: var(--size-icon-md);
+        height: var(--size-icon-md);
       }
     }
 
@@ -272,7 +272,7 @@
   }
 
   [data-side] > [role='menu'][data-side] {
-    min-width: var(--spacing-popup-min);
+    min-width: var(--size-popup-min);
   }
 }
 

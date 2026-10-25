@@ -5,13 +5,17 @@ interface Versions {
   readonly versions: readonly Version[];
 }
 
-const RELEASE_SITE_PREFIX = /^\/v\d+\.\d+\.\d+(?=\/|$)/;
+interface PageAddressInput {
+  /** the page's address as the router reads it, without the base of the site it is served from */
+  readonly path: string;
+  readonly version: Version;
+}
 
-const releaseSiteOf = (version: Version, latest: Version): string =>
-  version === latest ? '' : `/v${version}`;
+/** every release's site is served under `/v<version>/`, the latest's included */
+const pageAddressIn = (input: PageAddressInput): string => `/v${input.version}${input.path}`;
 
-const pageAddressIn = (input: { latest: Version; path: string; version: Version }): string =>
-  `${releaseSiteOf(input.version, input.latest)}${input.path.replace(RELEASE_SITE_PREFIX, '') || '/'}`;
+const Versions = {
+  pageAddressIn,
+} as const;
 
-export type { Versions };
-export { pageAddressIn };
+export { Versions };

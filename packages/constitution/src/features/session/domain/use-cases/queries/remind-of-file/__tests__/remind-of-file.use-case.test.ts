@@ -5,6 +5,7 @@ import { BlockId } from '#/kernel/value-objects';
 
 import {
   activeBlockOf,
+  heldSessionsOf,
   keptSession,
   mustOf,
   sessionStateOf,
@@ -94,9 +95,11 @@ describe('remindOfFile', () => {
     'should name every block that governs the file, with its MUST rules, when $condition',
     ({ path }) => {
       // Arrange
-      const sessions = createFakeSessionQueryRepository({
-        state: savedState,
-      });
+      const sessions = createFakeSessionQueryRepository(
+        heldSessionsOf({
+          state: savedState,
+        }),
+      );
 
       // Act
       const reminder = remindOfFile({
@@ -146,22 +149,24 @@ describe('remindOfFile', () => {
     'should leave out the blocks already named to the session or its agent when $condition',
     ({ asker, blocks }) => {
       // Arrange
-      const sessions = createFakeSessionQueryRepository({
-        reminded: [
-          {
-            ids: [
-              'ui',
-            ],
-          },
-          {
-            agent: keptAgent,
-            ids: [
-              'typescript',
-            ],
-          },
-        ],
-        state: savedState,
-      });
+      const sessions = createFakeSessionQueryRepository(
+        heldSessionsOf({
+          reminded: [
+            {
+              ids: [
+                'ui',
+              ],
+            },
+            {
+              agent: keptAgent,
+              ids: [
+                'typescript',
+              ],
+            },
+          ],
+          state: savedState,
+        }),
+      );
 
       // Act
       const reminder = remindOfFile({
@@ -192,9 +197,11 @@ describe('remindOfFile', () => {
     },
   ])('should name no block when $condition', ({ path, state }) => {
     // Arrange
-    const sessions = createFakeSessionQueryRepository({
-      state,
-    });
+    const sessions = createFakeSessionQueryRepository(
+      heldSessionsOf({
+        state,
+      }),
+    );
 
     // Act
     const reminder = remindOfFile({
@@ -229,9 +236,11 @@ describe('remindOfFile', () => {
     },
   ])('should give no reminder when $condition', ({ path, session }) => {
     // Arrange
-    const sessions = createFakeSessionQueryRepository({
-      state: savedState,
-    });
+    const sessions = createFakeSessionQueryRepository(
+      heldSessionsOf({
+        state: savedState,
+      }),
+    );
 
     // Act
     const reminder = remindOfFile({

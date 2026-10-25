@@ -1,4 +1,5 @@
 import { attempted, isSyntaxError } from '#/kernel/utils';
+import { isNestedWithin } from '#/libs/bounded-input';
 
 import { HookEventName, SessionOrigin } from '../../domain/entities';
 import { SessionId } from '../../domain/value-objects';
@@ -6,7 +7,8 @@ import { SessionId } from '../../domain/value-objects';
 // A hook's event is Claude Code's JSON on standard input. A field is read wherever it sits, as the
 // first value of its kind under its name, so `command` is found inside `tool_input`; a text field
 // that is absent, empty, of another kind, or in an event that is no JSON reads as absent, and a
-// flag as false.
+// flag as false. An event nested deeper than any Claude Code writes is refused unparsed, as no JSON.
+const MAX_EVENT_DEPTH = 64;
 
 interface HookEvent {
   readonly field: (name: string) => string | undefined;
@@ -88,10 +90,15 @@ const firstOf = <TField>(input: {
 
 // An event that is no JSON leaves every field ''.
 const parsedOf = (text: string): unknown =>
-  attempted<unknown>({
-    effect: () => JSON.parse(text),
-    isRecognised: isSyntaxError,
-  });
+  isNestedWithin({
+    maxDepth: MAX_EVENT_DEPTH,
+    text,
+  })
+    ? attempted<unknown>({
+        effect: () => JSON.parse(text),
+        isRecognised: isSyntaxError,
+      })
+    : undefined;
 
 const isString = (field: unknown): field is string => typeof field === 'string';
 
@@ -134,5 +141,4 @@ const sessionIdOf = (event: HookEvent): SessionId | undefined => {
   return SessionId.is(text) ? text : undefined;
 };
 
-export type { HookEvent };
 export { HOOK_EVENT_TEXT, hookEventNameOf, hookEventOf, sessionIdOf, sessionOriginOf };

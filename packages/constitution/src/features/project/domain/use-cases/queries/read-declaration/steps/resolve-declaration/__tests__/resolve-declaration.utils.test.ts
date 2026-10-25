@@ -1952,6 +1952,43 @@ describe('resolveDeclaration', () => {
     );
   });
 
+  it('should list a block without a summary when its card gives none', () => {
+    // Arrange
+    const config = configOf({
+      domains: 'domains: [ui]',
+    });
+
+    // Act
+    const resolution = resolveDeclaration({
+      config,
+      parser: parsers().cardParser,
+      sources: [
+        sourceOf({
+          blocks: [
+            {
+              id: 'ui',
+              summary: '',
+            },
+          ],
+        }),
+      ],
+      today,
+    });
+
+    // Assert
+    expect(resolution.listing).toStrictEqual(
+      listingOf({
+        repository: [
+          listedOf({
+            id: 'ui',
+            layer: Layer.Domain,
+            summary: undefined,
+          }),
+        ],
+      }),
+    );
+  });
+
   it('should give each active block its files and the globs of every block that needs it when blocks need others', () => {
     // Arrange
     const config = configOf(

@@ -2,35 +2,28 @@
 import { pathToFileURL } from 'node:url';
 
 import { confinedPathOf } from '#/libs/paths';
-import { buildAll, isConfigList, staleFilesOf } from '#/libs/style-dictionary';
+import { themeModesOf } from '#/libs/resolver';
+import { buildAll, configsOf, isConfigOfMode } from '#/libs/style-dictionary';
 
-enum DesignCommand {
-  Build = 'build',
-  Check = 'check',
-}
+import resolver from '../../../tokens/design.resolver.json' with { type: 'json' };
 
-/** a run's exit code: a stale file fails it as any failure does */
+const resolverUrl = import.meta.resolve('../../../tokens/design.resolver.json');
+
+const BUILD_COMMAND = 'build';
+
 enum ExitCode {
   Success = 0,
   Failure = 1,
-}
-
-/** the module a platform hands the runner, its configurations its default export */
-interface ConfigModule {
-  readonly default: unknown;
 }
 
 const writeError = (text: string): void => {
   process.stderr.write(text);
 };
 
-/** Builds the configurations a module of the working folder exports, or checks that what they write is current. */
+/** Builds each mode of the tokens with the configuration a module of the working folder exports. */
 const runDesignCommand = async ([command, configPath]: readonly string[]): Promise<ExitCode> => {
-  if (
-    configPath === undefined ||
-    (command !== DesignCommand.Build && command !== DesignCommand.Check)
-  ) {
-    writeError('usage: design-tokens build|check <config>\n');
+  if (configPath === undefined || command !== BUILD_COMMAND) {
+    writeError('usage: design-tokens build <config>\n');
 
     return ExitCode.Failure;
   }
@@ -43,28 +36,23 @@ const runDesignCommand = async ([command, configPath]: readonly string[]): Promi
     return ExitCode.Failure;
   }
 
-  const configModule: ConfigModule = await import(pathToFileURL(path).href);
-  const configs = configModule.default;
+  const configModule: unknown = await import(pathToFileURL(path).href);
+  const configOf =
+    typeof configModule === 'object' && configModule !== null && 'default' in configModule
+      ? configModule.default
+      : undefined;
 
-  if (!isConfigList(configs)) {
-    writeError(`design-tokens: ${configPath} exports no list of Style Dictionary configurations\n`);
-
-    return ExitCode.Failure;
-  }
-
-  if (command === DesignCommand.Build) {
-    await buildAll(configs);
-
-    return ExitCode.Success;
-  }
-
-  const stale = await staleFilesOf(configs);
-
-  if (stale.length > 0) {
-    writeError(`stale, run bun run design:build: ${stale.join(', ')}\n`);
+  if (!isConfigOfMode(configOf)) {
+    writeError(
+      `design-tokens: ${configPath} exports no function from a mode to its configuration\n`,
+    );
 
     return ExitCode.Failure;
   }
+
+  const configs = configsOf(configOf, themeModesOf(resolver, resolverUrl));
+
+  await buildAll(configs);
 
   return ExitCode.Success;
 };

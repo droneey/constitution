@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import { Axis } from '#/kernel/constants';
+import { TermKind } from '#/kernel/entities';
 import type { FindingOf } from '#/kernel/types';
 import { BlockId, coreBlockId } from '#/kernel/value-objects';
 
@@ -12,7 +13,6 @@ import {
   textOf,
 } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
-import { TermKind } from '../../shared/terms';
 import type { TermsDetails } from '../terms';
 import { TermsCode, termsCheck } from '../terms';
 

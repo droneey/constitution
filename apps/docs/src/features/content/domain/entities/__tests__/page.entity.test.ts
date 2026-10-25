@@ -109,11 +109,8 @@ describe('pageSlugsOf', () => {
       ],
     },
   ])('should name the page when $condition', ({ path, slugs }) => {
-    // Arrange
-    const file = path;
-
     // Act
-    const page = pageSlugsOf(file);
+    const page = pageSlugsOf(path);
 
     // Assert
     expect(page).toStrictEqual(slugs);
@@ -194,11 +191,8 @@ describe('slugsOfMarkdownAddress', () => {
       ],
     },
   ])('should read the slugs when $condition', ({ segments, slugs }) => {
-    // Arrange
-    const address = segments;
-
     // Act
-    const page = slugsOfMarkdownAddress(address);
+    const page = slugsOfMarkdownAddress(segments);
 
     // Assert
     expect(page).toStrictEqual(slugs);

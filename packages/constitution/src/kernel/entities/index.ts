@@ -18,18 +18,15 @@ export type { WarningDetails } from './project-warning.entity';
 export { ProjectWarning, WarningCode, WarningKind } from './project-warning.entity';
 export type { Release } from './release.entity';
 export { NEWEST_FORMAT, OLDEST_FORMAT, ReleaseStatus } from './release.entity';
-export type {
-  AnswerSource,
-  RequirementsParsed,
-  RequirementsTableDetails,
-} from './requirement-answer.entity';
+export type { RequirementsParsed, RequirementsTableDetails } from './requirement-answer.entity';
 export { Met, RequirementAnswer, RequirementsTableCode } from './requirement-answer.entity';
-export type { ResolvedBlock } from './resolution.entity';
 export { Resolution } from './resolution.entity';
-export type { RulePlace, RuleText } from './rule.entity';
 export { Rule } from './rule.entity';
+export { RuleHeading } from './rule-heading.entity';
 export type { RuleFormDetails, RuleSource, RulesParsed } from './stated-rule.entity';
 export { RuleFormCode, StatedRule } from './stated-rule.entity';
+export type { Bold } from './term.entity';
+export { Term, TermKind } from './term.entity';
 export type { ValueFindingDetails } from './value-finding.entity';
 export { ValueSite } from './value-finding.entity';
 export type { WiringProblem } from './wiring-problem.entity';

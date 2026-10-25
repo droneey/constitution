@@ -1,4 +1,5 @@
 import { Placeholder, RELEASE_FOLDER, WORKSPACE_PART } from '#/kernel/constants';
+import { FileRead, FileReadStatus } from '#/kernel/entities';
 import { compareText } from '#/kernel/utils';
 import type { BlockSource, PresetFolder } from '#/kernel/value-objects';
 import {
@@ -37,25 +38,30 @@ interface Fragment {
 interface Skip {
   readonly path: string;
   readonly template: SourceFile;
+  readonly text: string;
   readonly tool: string;
 }
 
 /** Its maps are keyed by the companion alone; a caller asks through it. */
 interface Parts {
   readonly chainTools: ReadonlySet<string>;
-  readonly filesByAddress: ReadonlyMap<string, SourceFile>;
   readonly filesByPath: ReadonlyMap<string, SourceFile>;
   readonly fragments: ReadonlyMap<string, readonly Fragment[]>;
   readonly gives: ReadonlySet<string>;
   readonly links: ReadonlyMap<string, string>;
-  readonly names: ReadonlyMap<string, ReadonlySet<string>>;
+  /** per folder of presets, its parts by name, in the order their names were first found */
+  readonly partsIn: ReadonlyMap<string, ReadonlyMap<string, PresetPart>>;
   /** the paths templates write, in order */
   readonly paths: readonly string[];
   readonly skips: readonly Skip[];
   readonly takes: ReadonlyMap<string, Takes>;
+  /** the text of each part a template copies or chains, by its path from its source */
+  readonly textsByPath: ReadonlyMap<string, string>;
   readonly toolScopes: ReadonlyMap<string, ReadonlySet<string>>;
   readonly tools: ReadonlySet<string>;
   readonly toolsAt: ReadonlyMap<string, ReadonlySet<string>>;
+  /** the templates and parts there that cannot be read, each by its path from the repository */
+  readonly unreadable: readonly string[];
   readonly workspaceTools: ReadonlySet<string>;
 }
 
@@ -97,12 +103,12 @@ const takesOf = (text: string): Takes => {
   return found;
 };
 
-interface FoundPart {
+interface PresetPart {
   readonly address: PartAddress;
   readonly file: SourceFile;
 }
 
-const partsFound = (presets: readonly SourceFile[]): readonly FoundPart[] =>
+const partsFound = (presets: readonly SourceFile[]): readonly PresetPart[] =>
   presets.flatMap((file) => {
     const path = PresetPartPath.parse(file.path);
 
@@ -116,21 +122,20 @@ const partsFound = (presets: readonly SourceFile[]): readonly FoundPart[] =>
       : [];
   });
 
-// The part each chained part extends, by the last "extends" line of its file.
-const linksOf = (input: {
-  chainTools: ReadonlySet<string>;
-  found: readonly FoundPart[];
-  read: (file: SourceFile) => string;
-}): ReadonlyMap<string, string> => {
+interface PartText {
+  readonly part: PresetPart;
+  readonly text: string;
+}
+
+// The part each part read extends, by the last "extends" line of its file; only a chained tool's
+// are asked for.
+const linksOf = (chained: readonly PartText[]): ReadonlyMap<string, string> => {
   const links = new Map<string, string>();
 
-  for (const { address, file } of input.found) {
-    // Stryker disable next-line ConditionalExpression,BlockStatement: only a chained tool's links are followed, so skipping the rest only spares their reads
-    if (!input.chainTools.has(address.tool)) {
-      continue;
-    }
+  for (const { part, text } of chained) {
+    const { address } = part;
 
-    for (const line of input.read(file).split('\n')) {
+    for (const line of text.split('\n')) {
       if (EXTENDS.test(line)) {
         // Stryker disable next-line StringLiteral: split always yields a first part
         const target = line.slice(line.indexOf('"') + 1).split('"')[0] ?? '';
@@ -153,10 +158,11 @@ interface TemplatesRead {
   readonly skips: readonly Skip[];
   readonly takes: ReadonlyMap<string, Takes>;
   readonly toolsAt: ReadonlyMap<string, ReadonlySet<string>>;
+  readonly unreadable: readonly string[];
 }
 
 const readTemplates = (input: {
-  read: (file: SourceFile) => string;
+  read: (file: SourceFile) => FileRead;
   templates: readonly SourceFile[];
   tools: ReadonlySet<string>;
 }): TemplatesRead => {
@@ -167,6 +173,7 @@ const readTemplates = (input: {
   const paths = new Set<string>();
   // Stryker disable next-line ArrayDeclaration: an entry that is no template names no tool the root follows
   const skips: Skip[] = [];
+  const unreadable: string[] = [];
 
   for (const template of input.templates) {
     const place = TemplatePath.parse(template.path);
@@ -176,14 +183,21 @@ const readTemplates = (input: {
     }
 
     const { scope, tool, writes: path } = place;
-    const text = input.read(template);
-    const taken = input.tools.has(keyOf(scope, tool)) ? takesOf(text) : Takes.Nothing;
+    const read = input.read(template);
+    const text = FileRead.textOf(read);
+    const taken =
+      text !== undefined && input.tools.has(keyOf(scope, tool)) ? takesOf(text) : Takes.Nothing;
+
+    if (read.status === FileReadStatus.Unreadable) {
+      unreadable.push(releasePathOf(template));
+    }
 
     // Stryker disable next-line ConditionalExpression: a template without the placeholder holds no list to find, so this only spares its parse
-    if (text.includes(Placeholder.UnitFolders)) {
+    if (text?.includes(Placeholder.UnitFolders) === true) {
       skips.push({
         path,
         template,
+        text,
         tool,
       });
     }
@@ -225,13 +239,33 @@ const readTemplates = (input: {
     skips,
     takes,
     toolsAt,
+    unreadable,
   };
 };
 
-/** read gives a file's text, to find what a template takes and what a chained part extends. */
+// The tools whose template, at some path, takes their parts as given.
+const toolsTaking = (input: {
+  found: readonly PresetPart[];
+  taken: Takes;
+  templates: TemplatesRead;
+}): ReadonlySet<string> =>
+  new Set(
+    input.found
+      .map(({ address }) => address.tool)
+      .filter((tool) =>
+        input.templates.paths.some(
+          (path) => input.templates.takes.get(keyOf(path, tool)) === input.taken,
+        ),
+      ),
+  );
+
+/**
+ * read gives a file, to find what a template takes, what a chained part extends and what a copied
+ * part holds; each file is read once.
+ */
 const create = (input: {
   presets: readonly SourceFile[];
-  read: (file: SourceFile) => string;
+  read: (file: SourceFile) => FileRead;
   templates: readonly SourceFile[];
 }): Parts => {
   const found = partsFound(input.presets);
@@ -241,22 +275,41 @@ const create = (input: {
     templates: input.templates,
     tools,
   });
-  const chainTools = new Set(
-    found
-      .map(({ address }) => address.tool)
-      .filter((tool) =>
-        templates.paths.some((path) => templates.takes.get(keyOf(path, tool)) === Takes.Chains),
-      ),
+  const chainTools = toolsTaking({
+    found,
+    taken: Takes.Chains,
+    templates,
+  });
+  const copyTools = toolsTaking({
+    found,
+    taken: Takes.Copies,
+    templates,
+  });
+  const reads = found
+    .filter(({ address }) => chainTools.has(address.tool) || copyTools.has(address.tool))
+    .map((part) => ({
+      part,
+      read: input.read(part.file),
+    }));
+  const texts = reads.flatMap(({ part, read }) =>
+    read.status === FileReadStatus.Read
+      ? [
+          {
+            part,
+            text: read.text,
+          },
+        ]
+      : [],
   );
-  const names = new Map<string, ReadonlySet<string>>();
+  const partsIn = new Map<string, Map<string, PresetPart>>();
   const toolScopes = new Map<string, ReadonlySet<string>>();
 
-  for (const { address } of found) {
-    added({
-      item: address.name,
-      key: folderKey(address),
-      map: names,
-    });
+  // A part found again at its place, in a later source, replaces the first and keeps its turn.
+  for (const part of found) {
+    const { address } = part;
+    const inFolder = partsIn.get(folderKey(address)) ?? new Map<string, PresetPart>();
+
+    partsIn.set(folderKey(address), inFolder.set(address.name, part));
     added({
       item: address.scope,
       key: address.tool,
@@ -267,26 +320,28 @@ const create = (input: {
   return {
     ...templates,
     chainTools,
-    filesByAddress: new Map(
-      found.map(({ address, file }) => [
-        addressKey(address),
-        file,
-      ]),
-    ),
     filesByPath: new Map(
       found.map(({ file }) => [
         file.path,
         file,
       ]),
     ),
-    links: linksOf({
-      chainTools,
-      found,
-      read: input.read,
-    }),
-    names,
+    links: linksOf(texts),
+    partsIn,
+    textsByPath: new Map(
+      texts.map(({ part, text }) => [
+        part.file.path,
+        text,
+      ]),
+    ),
     toolScopes,
     tools,
+    unreadable: [
+      ...templates.unreadable,
+      ...reads
+        .filter(({ read }) => read.status === FileReadStatus.Unreadable)
+        .map(({ part }) => releasePathOf(part.file)),
+    ],
     workspaceTools: new Set(
       found
         .filter(({ address }) => address.name === WORKSPACE_PART)
@@ -307,8 +362,6 @@ interface ToolPath {
 
 const Parts = {
   create,
-  fileOf: (parts: Parts, address: PartAddress): SourceFile | undefined =>
-    parts.filesByAddress.get(addressKey(address)),
   /** the part whose file sits at a path from its source */
   fileAt: (parts: Parts, path: string): SourceFile | undefined => parts.filesByPath.get(path),
   fragmentsOf: (parts: Parts, at: ToolScope): readonly Fragment[] =>
@@ -322,13 +375,15 @@ const Parts = {
   /** the name of the part a chained part extends */
   linkOf: (parts: Parts, address: PartAddress): string | undefined =>
     parts.links.get(addressKey(address)),
-  /** the names of the tool's parts on an axis, in the order they were found */
-  namesOf: (parts: Parts, folder: PresetFolder): readonly string[] => [
-    ...(parts.names.get(folderKey(folder)) ?? []),
+  /** the tool's parts on an axis, in the order their names were found */
+  partsOf: (parts: Parts, folder: PresetFolder): readonly PresetPart[] => [
+    ...(parts.partsIn.get(folderKey(folder))?.values() ?? []),
   ],
   scopesOf: (parts: Parts, tool: string): readonly string[] => [
     ...(parts.toolScopes.get(tool) ?? []),
   ],
+  /** the text of a part a template copies or chains, by its path from its source; none when unread */
+  textAt: (parts: Parts, path: string): string | undefined => parts.textsByPath.get(path),
   takesAt: (parts: Parts, at: ToolPath): Takes =>
     parts.takes.get(keyOf(at.path, at.tool)) ?? Takes.Nothing,
   /** the tools whose template takes parts at the path, in the order found */
@@ -337,5 +392,5 @@ const Parts = {
   ],
 } as const;
 
-export type { Fragment, Skip, SourceFile };
+export type { PresetPart, Skip, SourceFile };
 export { Parts, Takes };

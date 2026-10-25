@@ -26,30 +26,33 @@ const allowlist = readFileSync(
 // would fetch from deps.dev; that stop shows the list was accepted.
 const verdictOn = (licences: readonly string[]): Verdict => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-osv-scanner-'));
-  const scanning = spawnSync(
-    osvScanner,
-    [
-      'scan',
-      'source',
-      '--offline',
-      `--licenses=${licences.join(',')}`,
-      '.',
-    ],
-    {
-      cwd: folder,
-      encoding: 'utf8',
-    },
-  );
 
-  rmSync(folder, {
-    force: true,
-    recursive: true,
-  });
+  try {
+    const scanning = spawnSync(
+      osvScanner,
+      [
+        'scan',
+        'source',
+        '--offline',
+        `--licenses=${licences.join(',')}`,
+        '.',
+      ],
+      {
+        cwd: folder,
+        encoding: 'utf8',
+      },
+    );
 
-  return {
-    accepted: scanning.stderr.includes(ACCEPTED),
-    refused: REFUSED.exec(scanning.stderr)?.groups?.ids?.split(',') ?? [],
-  };
+    return {
+      accepted: scanning.stderr.includes(ACCEPTED),
+      refused: REFUSED.exec(scanning.stderr)?.groups?.ids?.split(',') ?? [],
+    };
+  } finally {
+    rmSync(folder, {
+      force: true,
+      recursive: true,
+    });
+  }
 };
 
 export { allowlist, verdictOn };

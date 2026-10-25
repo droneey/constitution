@@ -1,1 +1,1 @@
-export { checksumOf, fingerprintOf } from './checksum.utils';
+export { fingerprintOf } from './checksum.utils';

@@ -7,24 +7,38 @@ import type { ProjectConfig } from '../../../../../../../entities';
 import { AppliedOverrides, ConfigOverride, ProjectModel } from '../../../../../../../entities';
 import type { WarningLog } from '../../shared/warning-log';
 
-// The override as it holds in its unit, or undefined, with the warning that says why, when it does
-// not.
-const liveOf = (input: {
-  log: WarningLog;
+enum OverrideStatus {
+  Live = 'live',
+  Refused = 'refused',
+}
+
+type OverrideCheck =
+  | {
+      readonly override: ListedOverride;
+      readonly status: OverrideStatus.Live;
+    }
+  | {
+      readonly status: OverrideStatus.Refused;
+      readonly warning: ProjectWarning;
+    };
+
+const refused = (warning: ProjectWarning): OverrideCheck => ({
+  status: OverrideStatus.Refused,
+  warning,
+});
+
+// The override as it holds in its unit, or the warning that says why it does not.
+const checkOverride = (input: {
   model: ProjectModel;
   override: ConfigOverride;
   today: Temporal.PlainDate;
   unit: UnitPath;
-}): ListedOverride | undefined => {
+}): OverrideCheck => {
   const { override } = input;
   const { level: written, reason, rule: named, until: writtenUntil } = override;
 
-  const warn = (warning: ProjectWarning): undefined => {
-    input.log.add(warning);
-  };
-
   if (named === undefined || written === undefined || reason === undefined) {
-    return warn({
+    return refused({
       details: {
         line: override.line,
         missing: ConfigOverride.missingFieldsOf(override),
@@ -36,7 +50,7 @@ const liveOf = (input: {
   const level = LOWERED_LEVELS.find((lowered) => lowered === written);
 
   if (level === undefined) {
-    return warn({
+    return refused({
       details: {
         level: written,
         rule: named,
@@ -50,7 +64,7 @@ const liveOf = (input: {
     writtenUntil === undefined ? undefined : ConfigOverride.expiryOf(writtenUntil);
 
   if (writtenUntil !== undefined && until === undefined) {
-    return warn({
+    return refused({
       details: {
         rule: named,
         until: writtenUntil,
@@ -62,7 +76,7 @@ const liveOf = (input: {
   const rule = ProjectModel.ruleNamed(input.model, named);
 
   if (rule === undefined) {
-    return warn({
+    return refused({
       details: {
         rule: named,
       },
@@ -71,7 +85,7 @@ const liveOf = (input: {
   }
 
   if (until !== undefined && Temporal.PlainDate.compare(until, input.today) < 0) {
-    return warn({
+    return refused({
       details: {
         rule: named,
         until: until.toString(),
@@ -81,14 +95,17 @@ const liveOf = (input: {
   }
 
   return {
-    level,
-    rule: rule.slug,
-    unit: input.unit,
-    ...(until === undefined
-      ? {}
-      : {
-          until,
-        }),
+    override: {
+      level,
+      rule: rule.slug,
+      unit: input.unit,
+      ...(until === undefined
+        ? {}
+        : {
+            until,
+          }),
+    },
+    status: OverrideStatus.Live,
   };
 };
 
@@ -143,32 +160,36 @@ const loweredBy = (input: {
   ];
 };
 
+interface ApplyOverridesInput {
+  readonly config: ProjectConfig;
+  readonly log: WarningLog;
+  readonly model: ProjectModel;
+  readonly today: Temporal.PlainDate;
+}
+
 // An override lowers its rule and, through the chain of arrows, every rule that takes its level
 // from it, in the unit whose constitution.yaml lists it alone.
-const applyOverrides = (input: {
-  config: ProjectConfig;
-  log: WarningLog;
-  model: ProjectModel;
-  today: Temporal.PlainDate;
-}): AppliedOverrides => {
+const applyOverrides = (input: ApplyOverridesInput): AppliedOverrides => {
   const loweredIn = new Map<UnitPath, Set<RuleSlug>>();
   const lowerings = new Map<RuleSlug, Lowering[]>();
   const live: ListedOverride[] = [];
 
   for (const unit of input.config.units) {
     for (const override of unit.config.overrides) {
-      const liveOverride = liveOf({
-        log: input.log,
+      const checked = checkOverride({
         model: input.model,
         override,
         today: input.today,
         unit: unit.path,
       });
 
-      if (liveOverride === undefined) {
+      if (checked.status === OverrideStatus.Refused) {
+        input.log.add(checked.warning);
+
         continue;
       }
 
+      const liveOverride = checked.override;
       const lowered = loweredIn.get(unit.path) ?? new Set<RuleSlug>();
 
       loweredIn.set(unit.path, lowered);

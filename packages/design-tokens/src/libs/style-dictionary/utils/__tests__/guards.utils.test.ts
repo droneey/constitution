@@ -1,58 +1,36 @@
 import { describe, expect, it } from 'bun:test';
 
-import { isConfigList } from '../guards.utils';
+import { isConfigOfMode } from '../guards.utils';
 
-describe('isConfigList', () => {
+describe('isConfigOfMode', () => {
   it.each([
     {
+      name: 'a function',
+      raw: () => ({}),
+      isOne: true,
+    },
+    {
+      name: 'a list of configurations',
       raw: [
-        {
-          source: [
-            'tokens.json',
-          ],
-        },
         {},
       ],
-      isOne: true,
+      isOne: false,
     },
     {
-      raw: [],
-      isOne: true,
-    },
-    {
+      name: 'a configuration',
       raw: {
-        source: [
-          'tokens.json',
-        ],
+        platforms: {},
       },
       isOne: false,
     },
     {
-      raw: [
-        {},
-        [],
-      ],
+      name: 'no default export',
+      raw: undefined,
       isOne: false,
     },
-    {
-      // a default export left empty, as a module can
-      raw: [
-        JSON.parse('null'),
-      ],
-      isOne: false,
-    },
-    {
-      raw: [
-        'style-dictionary.config.ts',
-      ],
-      isOne: false,
-    },
-  ])('should tell whether $raw is a list of configurations: $isOne', ({ isOne, raw }) => {
-    // Arrange
-    const value: unknown = raw;
-
+  ])('should tell whether $name is a configuration of a mode: $isOne', ({ isOne, raw }) => {
     // Act
-    const answer = isConfigList(value);
+    const answer = isConfigOfMode(raw);
 
     // Assert
     expect(answer).toBe(isOne);

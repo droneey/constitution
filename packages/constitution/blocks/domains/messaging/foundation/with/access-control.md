@@ -8,6 +8,6 @@
 
 A message that triggers work for a person or a tenant carries the identity it acts for, and its consumer checks access and scopes every read and write by that identity, never by the wider rights of its own service identity alone.
 
-| Why | Tags |
-|---|---|
-| the consumer's own identity can reach every tenant, so work done with it alone runs with rights the person who caused it never had. | [security] |
+| Why |
+|---|
+| the consumer's own identity can reach every tenant, so work done with it alone runs with rights the person who caused it never had. |

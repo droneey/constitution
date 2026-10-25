@@ -8,6 +8,6 @@
 
 The native projects are a build output, generated from `app.config.ts` and config plugins: never committed, never edited by hand.
 
-| Why | Tags |
-|---|---|
-| a native project kept in the history drifts from the configuration, and a hand edit to it is lost on the next generation. | [] |
+| Why |
+|---|
+| a native project kept in the history drifts from the configuration, and a hand edit to it is lost on the next generation. |

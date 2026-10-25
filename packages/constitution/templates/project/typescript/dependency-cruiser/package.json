@@ -3,6 +3,6 @@
     "architecture:check": "depcruise src --config .dependency-cruiser.mjs"
   },
   "devDependencies": {
-    "dependency-cruiser": "18.6.0"
+    "dependency-cruiser": "18.7.0"
   }
 }

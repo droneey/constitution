@@ -1,4 +1,4 @@
-import { Level } from '#/kernel/constants';
+import { Layer, Level } from '#/kernel/constants';
 import { Met, WarningKind } from '#/kernel/entities';
 
 import type { CatalogueAnswer } from '../../../../../../../entities';
@@ -6,12 +6,14 @@ import { AppliedOverrides, ProjectModel, ResolvedUnit } from '../../../../../../
 import { keyOfLayer } from '../../shared/layer-keys';
 import type { WarningLog } from '../../shared/warning-log';
 
+interface WarnOfRequiresInput {
+  readonly log: WarningLog;
+  readonly model: ProjectModel;
+  readonly unit: ResolvedUnit;
+}
+
 // Each unit warns of what its own blocks need and it does not list.
-const warnOfRequires = (input: {
-  log: WarningLog;
-  model: ProjectModel;
-  unit: ResolvedUnit;
-}): void => {
+const warnOfRequires = (input: WarnOfRequiresInput): void => {
   const { log, model, unit } = input;
 
   for (const block of model.blocks) {
@@ -22,7 +24,12 @@ const warnOfRequires = (input: {
     for (const required of block.requires) {
       const need = model.byId.get(required);
 
-      if (ResolvedUnit.isActive(unit, required) || need === undefined) {
+      if (
+        need === undefined ||
+        // Stryker disable next-line ConditionalExpression: core is active in every unit, so the test after it passes it by too
+        need.layer === Layer.Core ||
+        ResolvedUnit.isActive(unit, required)
+      ) {
         continue;
       }
 
@@ -67,14 +74,16 @@ const isUnmet = (input: {
   );
 };
 
+interface WarnOfAnswersInput {
+  readonly answers: readonly CatalogueAnswer[];
+  readonly applied: AppliedOverrides;
+  readonly log: WarningLog;
+  readonly model: ProjectModel;
+  readonly unit: ResolvedUnit;
+}
+
 // Each unit warns of the requirements its own blocks leave unmet.
-const warnOfAnswers = (input: {
-  answers: readonly CatalogueAnswer[];
-  applied: AppliedOverrides;
-  log: WarningLog;
-  model: ProjectModel;
-  unit: ResolvedUnit;
-}): void => {
+const warnOfAnswers = (input: WarnOfAnswersInput): void => {
   for (const answer of input.answers) {
     if (
       !isUnmet({

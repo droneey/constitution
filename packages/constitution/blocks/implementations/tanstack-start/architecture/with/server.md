@@ -8,6 +8,6 @@
 
 Start's server holds no server function, server route or data access, save the one server function that serves the public projection of the configuration and, where the API takes bearer tokens, the session proxy its parent allows.
 
-| Why | Tags |
-|---|---|
-| a server tier with logic of its own is a second backend nobody designed. | [security] |
+| Why |
+|---|
+| a server tier with logic of its own is a second backend nobody designed. |

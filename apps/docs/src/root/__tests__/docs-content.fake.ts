@@ -1,57 +1,66 @@
 import { notFound } from '@tanstack/react-router';
 
-import type { DocsPageEntry } from '#/composition/docs';
+import type { SerializedPageTree } from 'fumadocs-core/source/client';
 
-import type { DocsPageData, RouterContext } from '../wiring';
+import type { Page, PageLocation, PageSlugs } from '#/features/content';
+import type { PageBody } from '#/features/content/adapters/fumadocs-browser';
+import { trackedForUse } from '#/libs/ui';
+
+import type { RouterContext } from '../wiring';
 
 type DocsContent = RouterContext['docs'];
 
-type DocsPageRef = Parameters<DocsContent['pageOf']>[0];
+type Loaded = Awaited<ReturnType<PageBody['load']>>;
 
-const pageDataFixture = (overrides: Partial<DocsPageData> = {}): DocsPageData => ({
+const pageFixture = (overrides: Partial<Page> = {}): Page => ({
+  collection: 'guide',
   description: 'How a project adds blocks of its own.',
-  pageTree: {
-    // biome-ignore lint/style/useNamingConvention: Fumadocs marks a serialized page tree by this key
-    $fumadocs_loader: 'page-tree',
-    data: {
-      children: [
-        {
-          name: 'Overview',
-          type: 'page',
-          url: '/docs',
-        },
-        {
-          name: 'Write a pack',
-          type: 'page',
-          url: '/docs/guides/write-a-pack',
-        },
-      ],
-      name: 'Constitution',
-    },
-  },
   path: 'guides/write-a-pack.md',
   title: 'Write a pack',
-  type: 'guide',
   ...overrides,
 });
 
-const loadedBody = Promise.resolve({
-  toc: [],
+/** made anew for each fake, since rendering the tree turns its names into elements in place */
+const navigationFixture = (): SerializedPageTree => ({
+  // biome-ignore lint/style/useNamingConvention: Fumadocs marks a serialized page tree by this key
+  $fumadocs_loader: 'page-tree',
+  data: {
+    children: [
+      {
+        name: 'Overview',
+        type: 'page',
+        url: '/docs',
+      },
+      {
+        name: 'Write a pack',
+        type: 'page',
+        url: '/docs/guides/write-a-pack',
+      },
+    ],
+    name: 'Constitution',
+  },
 });
 
 interface DocsContentFake {
   docs: DocsContent;
   /** oldest first */
-  loads: string[][];
+  loads: PageSlugs[];
   /** by collection and path */
   preloads: string[];
 }
 
-/** one guide, and one page the server lists after its body left its collection */
+/**
+ * One guide, one page the server lists after its body left its collection, and the tree; the guide's
+ * body and the tree are kept once read, where React's `use` reads them, as the wiring keeps them
+ */
 const docsContentFake = (): DocsContentFake => {
-  const loads: string[][] = [];
+  const loads: PageSlugs[] = [];
+  const kept: {
+    body?: Promise<Loaded>;
+    navigation?: Promise<SerializedPageTree>;
+  } = {};
   const preloads: string[] = [];
-  const guide = pageDataFixture();
+  const guide = pageFixture();
   const pages = new Map([
     [
       'guides/write-a-pack',
@@ -59,7 +68,7 @@ const docsContentFake = (): DocsContentFake => {
     ],
     [
       'guides/moved',
-      pageDataFixture({
+      pageFixture({
         path: 'guides/moved.md',
         title: 'Moved',
       }),
@@ -68,7 +77,7 @@ const docsContentFake = (): DocsContentFake => {
 
   return {
     docs: {
-      loadPage: (slugs: string[]): Promise<DocsPageData> => {
+      getPage: (slugs: PageSlugs): Promise<Page> => {
         loads.push(slugs);
 
         const page = pages.get(slugs.join('/'));
@@ -79,27 +88,26 @@ const docsContentFake = (): DocsContentFake => {
 
         return Promise.resolve(page);
       },
-      pageOf: ({ description, path, title, type }: DocsPageRef) => {
-        if (type !== guide.type || path !== guide.path) {
-          throw notFound();
-        }
+      getPageBody: ({ collection, path }: PageLocation): PageBody | undefined =>
+        collection === guide.collection && path === guide.path
+          ? {
+              body: (): undefined => undefined,
+              load: () => {
+                preloads.push(`${collection}:${path}`);
+                kept.body ??= trackedForUse(
+                  Promise.resolve({
+                    toc: [],
+                  }),
+                );
 
-        const entry: DocsPageEntry = {
-          body: (): undefined => undefined,
-          description,
-          load: () => loadedBody,
-          loaded: (): undefined => undefined,
-          title,
-        };
+                return kept.body;
+              },
+            }
+          : undefined,
+      loadNavigation: () => {
+        kept.navigation ??= trackedForUse(Promise.resolve(navigationFixture()));
 
-        return {
-          ...entry,
-          preload: (): Promise<void> => {
-            preloads.push(`${type}:${path}`);
-
-            return Promise.resolve();
-          },
-        };
+        return kept.navigation;
       },
     },
     loads,
@@ -108,4 +116,4 @@ const docsContentFake = (): DocsContentFake => {
 };
 
 export type { DocsContentFake };
-export { docsContentFake };
+export { docsContentFake, navigationFixture };

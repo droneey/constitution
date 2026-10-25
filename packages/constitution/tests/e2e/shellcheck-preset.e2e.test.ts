@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { analyseScript } from './shellcheck-preset.fixtures';
+import { analyseScript, templateTasks } from './shellcheck-preset.fixtures';
 
 describe('the ShellCheck preset', () => {
   it('should accept a script that quotes, checks and stops on every failure', () => {
@@ -52,6 +52,21 @@ describe('the ShellCheck preset', () => {
         2312,
       ],
       exitCode: 1,
+    });
+  });
+});
+
+describe("the commands of the templates' mise tasks", () => {
+  it.each([
+    ...templateTasks(),
+  ])('should pass ShellCheck for $task of the $template template', ({ run }) => {
+    // Act
+    const analysis = analyseScript(run);
+
+    // Assert
+    expect(analysis).toStrictEqual({
+      codes: [],
+      exitCode: 0,
     });
   });
 });

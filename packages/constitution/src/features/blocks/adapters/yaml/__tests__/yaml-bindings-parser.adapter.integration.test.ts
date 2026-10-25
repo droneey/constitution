@@ -38,6 +38,20 @@ describe('createYamlBindingsParser', () => {
     });
   });
 
+  it('should return the reason when the file names an alias without its anchor', () => {
+    // Arrange
+    const parser = createYamlBindingsParser();
+
+    // Act
+    const read = parser.parse('core:\n  no-empty-verbs: *verbs\n');
+
+    // Assert
+    expect(read).toStrictEqual({
+      reason: 'an alias names an anchor the file does not set before it',
+      status: ReadStatus.NotYaml,
+    });
+  });
+
   it('should return every issue at its field when a part lists its settings without a rule and a setting is not text', () => {
     // Arrange
     const parser = createYamlBindingsParser();

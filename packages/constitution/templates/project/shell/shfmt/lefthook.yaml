@@ -3,4 +3,4 @@ pre-commit:
   jobs:
     - name: shfmt
       exclude:
-        - "<unit folders>/**"
+        - '<unit folders>/**'

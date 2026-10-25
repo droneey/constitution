@@ -81,11 +81,8 @@ describe('ConfigOverride', () => {
       },
     },
   ])('should hold only the fields it gives when $condition', ({ expected, fields }) => {
-    // Arrange
-    const given = fields;
-
     // Act
-    const override = overrideOf(given);
+    const override = overrideOf(fields);
 
     // Assert
     expect(override).toStrictEqual(expected);
@@ -180,11 +177,8 @@ describe('ConfigOverride', () => {
       until: 'soon',
     },
   ])('should give none when until is $name', ({ until }) => {
-    // Arrange
-    const written = until;
-
     // Act
-    const expiry = ConfigOverride.expiryOf(written);
+    const expiry = ConfigOverride.expiryOf(until);
 
     // Assert
     expect(expiry).toBeUndefined();

@@ -1,6 +1,9 @@
 # The context is the repository's root: the app reads the Markdown and the blocks of the whole
 # repository, and installs as a member of its Bun workspace. Production serves the prerendered pages
-# as files, as the static host does.
+# as files, as the static host does, beside the sites of the last releases.
+#   --build-arg KEPT_RELEASES=<n>                how many releases to keep; 0 serves the current build alone
+#   --secret id=github_token,env=GITHUB_TOKEN    lifts the GitHub API's limit of 60 requests an hour
+#   --no-cache-filter releases                   reads the releases again, as one promoted since the last build
 
 FROM oven/bun:1.4.3-alpine@sha256:629e17411f1f129dbec3af78d5af9c9f2a937435c80349437206c6b0b7422373 AS base
 
@@ -17,6 +20,9 @@ FROM base AS packages-source
 COPY --chown=1000:1000 package.json bun.lock ./
 COPY --chown=1000:1000 apps/docs/package.json apps/docs/
 COPY --chown=1000:1000 packages/constitution/package.json packages/constitution/
+COPY --chown=1000:1000 packages/design-browser/package.json packages/design-browser/
+COPY --chown=1000:1000 packages/design-cli/package.json packages/design-cli/
+COPY --chown=1000:1000 packages/design-tokens/package.json packages/design-tokens/
 COPY --chown=1000:1000 packages/mutation-check/languages/typescript/package.json packages/mutation-check/languages/typescript/
 
 FROM packages-source AS install-dependencies
@@ -30,10 +36,13 @@ FROM install-dependencies AS builder
 
 COPY --chown=1000:1000 ./ ./
 
-# the release's presets, linked as mise links them on a developer's machine
-RUN mkdir -p .droneey && \
+# Bun links no bin whose file is missing, and the first install ran before the sources came: this
+# one links the design-tokens bin each platform package's build runs. The release's presets are
+# linked as mise links them on a developer's machine.
+RUN bun install --frozen-lockfile --ignore-scripts && \
+  mkdir -p .droneey && \
   ln -sfn ../packages/constitution .droneey/constitution && \
-  bun run --cwd apps/docs build
+  bun run --cwd apps/docs build:release
 
 FROM install-dependencies AS development
 
@@ -44,11 +53,29 @@ COPY --chown=1000:1000 ./ ./
 ENTRYPOINT ["dumb-init", "--"]
 CMD ["bun", "run", "--cwd", "apps/docs", "dev", "--host"]
 
+FROM base AS releases
+
+USER 0
+
+RUN apk add --no-cache jq=1.8.2-r0
+
+USER 1000
+
+ARG KEPT_RELEASES=10
+
+COPY --chown=1000:1000 apps/docs/scripts/fetch-releases.sh packages/constitution/package.json ./
+COPY --chown=1000:1000 --from=builder /usr/src/app/apps/docs/.output/public ./current
+
+RUN --mount=type=secret,id=github_token,uid=1000 \
+  KEPT_RELEASES="$KEPT_RELEASES" ./fetch-releases.sh ./current "$(jq -r .version package.json)" ./site ./server.toml
+
 FROM base AS production
 
 COPY --from=joseluisq/static-web-server:2.44.1@sha256:94618e3d17802265a21926217e6f9e7832b311b6fbf5933684001739fafed06a /static-web-server /usr/local/bin/static-web-server
-COPY --chown=1000:1000 --from=builder /usr/src/app/apps/docs/.output/public ./public
+COPY --chown=1000:1000 --from=releases /usr/src/app/site ./public
+COPY --chown=1000:1000 --from=releases /usr/src/app/server.toml ./
 
 ENTRYPOINT ["dumb-init", "--"]
-# an address with no page gets the app shell, which shows its own not-found page
-CMD ["static-web-server", "--port", "3000", "--root", "/usr/src/app/public", "--page404", "_shell.html", "--compression", "true", "--security-headers", "true", "--redirect-trailing-slash", "true", "--health", "true"]
+# an address with no page gets the shell of the release it names, which shows its own not-found page;
+# the configuration file redirects every address with no release to the latest's
+CMD ["static-web-server", "--port", "3000", "--root", "/usr/src/app/public", "--page404", "404.html", "--compression", "true", "--security-headers", "true", "--redirect-trailing-slash", "true", "--health", "true", "--config-file", "/usr/src/app/server.toml"]

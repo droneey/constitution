@@ -22,7 +22,7 @@ import { budgetTexts } from '../budget-texts.utils';
 import { decisionsTexts } from '../decisions-texts.utils';
 import { findingTextOf } from '../finding-text.utils';
 import { loadTexts } from '../load-texts.utils';
-import { presetsTexts } from '../presets-texts.utils';
+import { pluginTexts } from '../plugin-texts.utils';
 import { referencesTexts } from '../references-texts.utils';
 import { requirementsTexts } from '../requirements-texts.utils';
 import { requiresTexts } from '../requires-texts.utils';
@@ -131,7 +131,7 @@ describe('findingTextOf', () => {
     },
     {
       finding: manifestMissing,
-      text: textOf(presetsTexts, manifestMissing.code, manifestMissing.details),
+      text: textOf(pluginTexts, manifestMissing.code, manifestMissing.details),
     },
     {
       finding: missingTarget,
@@ -168,11 +168,8 @@ describe('findingTextOf', () => {
   ])(
     'should say a finding of $finding.code as the table of its check words it',
     ({ finding, text }) => {
-      // Arrange
-      const reported = finding;
-
       // Act
-      const said = findingTextOf(reported);
+      const said = findingTextOf(finding);
 
       // Assert
       expect(said).toBe(text);

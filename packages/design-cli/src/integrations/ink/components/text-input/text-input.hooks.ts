@@ -2,20 +2,19 @@ import { useState } from 'react';
 
 import { useInput } from 'ink';
 
+import { useInterrupt } from '../../hooks';
+
 interface TextInputInput {
   readonly onInterrupt: () => void;
   readonly onSubmit: (answer: string) => void;
 }
 
-const INTERRUPT_KEY = 'c';
-
 const useTextInput = ({ onInterrupt, onSubmit }: TextInputInput): string => {
   const [typed, setTyped] = useState('');
 
+  useInterrupt(onInterrupt);
   useInput((input, key) => {
-    if (key.ctrl && input === INTERRUPT_KEY) {
-      onInterrupt();
-    } else if (key.return) {
+    if (key.return) {
       onSubmit(typed);
     } else if (key.backspace || key.delete) {
       setTyped((current) => current.slice(0, -1));

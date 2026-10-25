@@ -33,11 +33,8 @@ describe('Glob', () => {
       isGlob: false,
     },
   ])('should say $isGlob when $condition', ({ given, isGlob }) => {
-    // Arrange
-    const candidate: unknown = given;
-
     // Act
-    const answer = Glob.is(candidate);
+    const answer = Glob.is(given);
 
     // Assert
     expect(answer).toBe(isGlob);

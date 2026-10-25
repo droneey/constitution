@@ -40,11 +40,8 @@ describe('inlineCodeSpans', () => {
   ])(
     'should return the trimmed contents of every span when the text holds $name',
     ({ expected, text }) => {
-      // Arrange
-      const input = text;
-
       // Act
-      const spans = inlineCodeSpans(input);
+      const spans = inlineCodeSpans(text);
 
       // Assert
       expect(spans).toStrictEqual(expected);

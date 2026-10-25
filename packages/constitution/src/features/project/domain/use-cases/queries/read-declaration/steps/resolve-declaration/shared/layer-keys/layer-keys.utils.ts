@@ -1,18 +1,19 @@
-import type { Layer } from '#/kernel/constants';
+import { LAYERS, Layer } from '#/kernel/constants';
 
+import type { ConfigKey } from '../../../../../../../entities';
+import type { ListedLayer } from './layer-keys.constants';
 import { LAYER_KEYS } from './layer-keys.constants';
 
-const keyByLayer: ReadonlyMap<Layer, string> = new Map(
-  LAYER_KEYS.map(([key, layer]) => [
+const layerByKey: ReadonlyMap<string, ListedLayer> = new Map(
+  // Stryker disable next-line ConditionalExpression,MethodExpression: core's key would be undefined, which no key of a file is
+  LAYERS.filter((layer): layer is ListedLayer => layer !== Layer.Core).map((layer) => [
+    LAYER_KEYS[layer],
     layer,
-    key,
   ]),
 );
-const layerByKey: ReadonlyMap<string, Layer> = new Map(LAYER_KEYS);
 
-// Stryker disable next-line StringLiteral: core, the one layer no key lists, is always active, so no warning names its key
-const keyOfLayer = (layer: Layer): string => keyByLayer.get(layer) ?? '';
+const keyOfLayer = (layer: ListedLayer): ConfigKey => LAYER_KEYS[layer];
 
-const layerOfKey = (key: string): Layer | undefined => layerByKey.get(key);
+const layerOfKey = (key: string): ListedLayer | undefined => layerByKey.get(key);
 
 export { keyOfLayer, layerOfKey };

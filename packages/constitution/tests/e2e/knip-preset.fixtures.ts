@@ -62,59 +62,62 @@ const knip = join(repository, 'node_modules', '.bin', 'knip');
 
 const unusedCode = (project: Project): Unused => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-knip-'));
-  const files = {
-    ...project.files,
-    'knip.config.ts': configOf(project.parts ?? []),
-    'package.json': JSON.stringify({
-      name: 'fixture',
-      scripts: {
-        test: 'bun test',
-        ...project.scripts,
-      },
-      type: 'module',
-    }),
-  };
 
-  for (const [path, text] of Object.entries(files)) {
-    mkdirSync(dirname(join(folder, path)), {
+  try {
+    const files = {
+      ...project.files,
+      'knip.config.ts': configOf(project.parts ?? []),
+      'package.json': JSON.stringify({
+        name: 'fixture',
+        scripts: {
+          test: 'bun test',
+          ...project.scripts,
+        },
+        type: 'module',
+      }),
+    };
+
+    for (const [path, text] of Object.entries(files)) {
+      mkdirSync(dirname(join(folder, path)), {
+        recursive: true,
+      });
+      writeFileSync(join(folder, path), text);
+    }
+
+    mkdirSync(join(folder, '.droneey'));
+    symlinkSync(repository, join(folder, '.droneey', 'constitution'));
+
+    const running = spawnSync(
+      knip,
+      [
+        '--reporter',
+        'json',
+        '--no-config-hints',
+        ...(project.production
+          ? [
+              '--production',
+            ]
+          : []),
+      ],
+      {
+        cwd: folder,
+        encoding: 'utf8',
+      },
+    );
+
+    const { issues } = report.parse(JSON.parse(running.stdout));
+
+    return {
+      binaries: issues.flatMap(({ binaries }) => binaries.map(({ name }) => name)),
+      exports: issues.flatMap(({ exports }) => exports.map(({ name }) => name)),
+      files: issues.filter(({ files: unused }) => unused.length > 0).map(({ file }) => file),
+    };
+  } finally {
+    rmSync(folder, {
+      force: true,
       recursive: true,
     });
-    writeFileSync(join(folder, path), text);
   }
-
-  mkdirSync(join(folder, '.droneey'));
-  symlinkSync(repository, join(folder, '.droneey', 'constitution'));
-
-  const running = spawnSync(
-    knip,
-    [
-      '--reporter',
-      'json',
-      '--no-config-hints',
-      ...(project.production
-        ? [
-            '--production',
-          ]
-        : []),
-    ],
-    {
-      cwd: folder,
-      encoding: 'utf8',
-    },
-  );
-
-  rmSync(folder, {
-    force: true,
-    recursive: true,
-  });
-
-  const { issues } = report.parse(JSON.parse(running.stdout));
-
-  return {
-    binaries: issues.flatMap(({ binaries }) => binaries.map(({ name }) => name)),
-    exports: issues.flatMap(({ exports }) => exports.map(({ name }) => name)),
-    files: issues.filter(({ files: unused }) => unused.length > 0).map(({ file }) => file),
-  };
 };
 
 export { unusedCode };

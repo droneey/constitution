@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import { StepStatus } from '@droneey/design-cli';
 
-import { createFakeContext, runCommand } from '#/__tests__/command-line.fake';
+import { createFakeContext, runCommand } from '#/__tests__/command-context.fake';
 import type { Validation } from '#/features/blocks';
 import type { ProjectWarning } from '#/kernel/entities';
 import { ValueSite, WarningKind } from '#/kernel/entities';

@@ -1,4 +1,8 @@
-import type { DocsFrame } from '../app/providers';
+import type { DocumentFrame } from '../domain/contracts';
+
+interface FrameFakeInput {
+  readonly narrow?: boolean;
+}
 
 export enum FrameMark {
   Collapsed = 'collapsed',
@@ -6,12 +10,12 @@ export enum FrameMark {
 }
 
 export interface FrameFake {
-  frame: DocsFrame;
+  frame: DocumentFrame;
   /** oldest first */
   marks: FrameMark[];
 }
 
-export const frameFake = ({ narrow = false }: { narrow?: boolean } = {}): FrameFake => {
+export const frameFake = ({ narrow = false }: FrameFakeInput = {}): FrameFake => {
   const marks: FrameMark[] = [];
 
   return {

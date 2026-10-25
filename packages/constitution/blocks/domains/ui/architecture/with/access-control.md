@@ -8,17 +8,17 @@
 
 A screen's guards and redirects live in the screen's registration in the root and use the surface of the feature that owns sessions.
 
-| Why | Tags |
-|---|---|
-| access is decided before the screen renders, in one place, and no feature reaches into the session's internals. | [security] |
+| Why |
+|---|
+| access is decided before the screen renders, in one place, and no feature reaches into the session's internals. |
 
 ### feature-ui-adapts-to-permissions-passed-down · SHOULD
 
 A feature's widgets and components adapt to the permissions composition passes them, never reaching into the session's internals.
 
-| Why | Tags |
-|---|---|
-| no feature then knows how sessions work, and a change of the session's model never reaches a feature's interface. | [security] |
+| Why |
+|---|
+| no feature then knows how sessions work, and a change of the session's model never reaches a feature's interface. |
 
 ## Session state
 
@@ -26,6 +26,6 @@ A feature's widgets and components adapt to the permissions composition passes t
 
 Whether a session exists is one of the global concerns the client owns, in a small store the root builds; what the session carries — the user, their rights — keeps the home of the data it is.
 
-| Why | Tags |
-|---|---|
-| every screen asks one place whether someone is signed in, and the user's details are not copied into a store beside their real home. | [data] |
+| Why |
+|---|
+| every screen asks one place whether someone is signed in, and the user's details are not copied into a store beside their real home. |

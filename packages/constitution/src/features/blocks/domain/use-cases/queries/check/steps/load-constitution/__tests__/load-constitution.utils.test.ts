@@ -20,7 +20,6 @@ import {
   textOf,
 } from '../../../../../../../__tests__/constitution.fixtures';
 import { packFiles } from '../../../../../../../__tests__/pack-files.fixtures';
-import { paraglideCard } from '../../../../../../../__tests__/templates.fixtures';
 import { validFiles } from '../../../../../../../__tests__/valid-files.fixtures';
 import { Binding, Block, BlockFile, ReadStatus } from '../../../../../../entities';
 import type { ConstitutionLoaded } from '../load-constitution.utils';
@@ -52,11 +51,6 @@ describe('loadConstitution', () => {
         blocks: [],
         documents: {
           agents: [],
-          decisions: undefined,
-          hooks: undefined,
-          marketplace: undefined,
-          plugin: undefined,
-          readme: undefined,
           skills: [],
         },
         paths: new Set([
@@ -139,7 +133,6 @@ describe('loadConstitution', () => {
     expect(loaded.constitution.documents.skills).toStrictEqual([
       {
         directory: 'skills/',
-        frontMatter: undefined,
         path: 'skills/amend/SKILL.md',
       },
       {
@@ -191,39 +184,9 @@ describe('loadConstitution', () => {
       },
       {
         file: 'scribe',
-        frontMatter: undefined,
         path: 'agents/scribe.md',
       },
     ]);
-  });
-
-  it('should load a block written from templates/block/ without a finding when its placeholders are filled and its rules sit in foundation', () => {
-    // Arrange
-    const files = paraglideCard();
-
-    // Act
-    const loaded = loadedOf(files);
-
-    // Assert
-    expect({
-      answers: loaded.constitution.requirementAnswers.map(
-        (answer) => `${answer.requirement} ${answer.writtenMet}`,
-      ),
-      blocks: loaded.constitution.blocks.map((block) => `${block.layer} ${block.id}`),
-      findings: loaded.findings,
-      rules: loaded.constitution.rules.map((parsed) => `${parsed.slug} ${parsed.level}`),
-    }).toStrictEqual({
-      answers: [
-        'i18n-plurals-by-cldr yes',
-      ],
-      blocks: [
-        'implementation paraglide',
-      ],
-      findings: [],
-      rules: [
-        'paraglide-messages-by-function MUST',
-      ],
-    });
   });
 
   it('should load every block without a finding, ordered by layer and then by id, when a platform id sorts after a language id', () => {
@@ -424,11 +387,8 @@ describe('loadConstitution', () => {
   ])(
     'should report the malformed name where it is read, and bind nothing by it, when $condition',
     ({ files, finding }) => {
-      // Arrange
-      const tree = files;
-
       // Act
-      const loaded = loadedOf(tree);
+      const loaded = loadedOf(files);
 
       // Assert
       expect({
@@ -550,11 +510,8 @@ describe('loadConstitution', () => {
   ])(
     'should report $finding.code when a file breaks the layout of its block',
     ({ files, finding }) => {
-      // Arrange
-      const tree = files;
-
       // Act
-      const loaded = loadedOf(tree);
+      const loaded = loadedOf(files);
 
       // Assert
       expect(loaded.findings).toStrictEqual([
@@ -593,11 +550,8 @@ describe('loadConstitution', () => {
       name: 'its passport has no front matter',
     },
   ])('should load no block and report why when $name', ({ files, finding }) => {
-    // Arrange
-    const tree = files;
-
     // Act
-    const loaded = loadedOf(tree);
+    const loaded = loadedOf(files);
 
     // Assert
     expect({

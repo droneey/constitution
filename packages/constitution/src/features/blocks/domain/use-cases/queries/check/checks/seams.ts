@@ -1,12 +1,11 @@
-import { Layer } from '#/kernel/constants';
+import { Layer, MARKDOWN_EXTENSION } from '#/kernel/constants';
 import type { FindingOf, ProblemOf } from '#/kernel/types';
 import { stemOf } from '#/kernel/utils';
 import { BlockId } from '#/kernel/value-objects';
 
 import type { Block } from '../../../../entities';
-import { BlockFile, BlockFileRole, BlockGraph } from '../../../../entities';
+import { BlockFile, BlockFileRole, BlockGraph, pairableBy } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
-import { pairableBy } from '../shared/layers';
 
 enum SeamsCode {
   NamedAfterOwnBlock = 'seam-named-after-own-block',
@@ -51,8 +50,6 @@ interface Subject {
   readonly block: Block;
   readonly graph: BlockGraph;
 }
-
-const MARKDOWN_EXTENSION = '.md';
 
 const TITLE = '# ';
 

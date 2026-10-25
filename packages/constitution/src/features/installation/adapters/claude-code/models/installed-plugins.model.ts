@@ -1,17 +1,17 @@
 import { z } from 'zod';
 
+// The plugins are keyed by names from outside the program, so they are read into a Map.
 const installedPluginsModel = z.looseObject({
-  plugins: z.record(
-    z.string(),
-    z.array(
-      z.looseObject({
-        installPath: z.string(),
-      }),
-    ),
-  ),
+  plugins: z
+    .record(
+      z.string(),
+      z.array(
+        z.looseObject({
+          installPath: z.string(),
+        }),
+      ),
+    )
+    .transform((plugins) => new Map(Object.entries(plugins))),
 });
 
-type InstalledPluginsWire = z.infer<typeof installedPluginsModel>;
-
-export type { InstalledPluginsWire };
 export { installedPluginsModel };

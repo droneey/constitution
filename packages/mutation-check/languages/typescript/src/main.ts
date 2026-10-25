@@ -1,97 +1,51 @@
-#!/usr/bin/env bun
-import { spawnSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
-import { pathToFileURL } from 'node:url';
+#!/usr/bin/env -S bun --no-env-file
+import { GitError } from '#/libs/git';
+import { ConfigurationError, ExitCode, runMutationCheck } from '#/root';
 
-import { mutateTargets } from '#/features/targets';
-import { branchIn } from '#/libs/git';
-import { loaderOf } from '#/libs/imports';
-
-const CONFIG_FILES = [
-  'stryker.config.mjs',
-  'stryker.config.js',
-  'stryker.config.json',
+// What git and Stryker need of the environment; no other variable reaches them.
+const CHILD_VARIABLES = [
+  'HOME',
+  'PATH',
+  'TMPDIR',
 ] as const;
 
-// A change that only reformats leaves the transpiled code as it was, so it gives no mutant.
-const codeChanged = (input: { baseText: (path: string) => string; path: string }): boolean => {
-  const loader = loaderOf(input.path);
+const env = Object.fromEntries(
+  CHILD_VARIABLES.flatMap((name) => {
+    const setting = process.env[name];
 
-  if (loader === undefined) {
-    return true;
+    return setting === undefined
+      ? []
+      : [
+          [
+            name,
+            setting,
+          ],
+        ];
+  }),
+);
+
+const failureOf = (error: unknown): string => {
+  if (error instanceof GitError) {
+    return `${error.message}; fetch origin/main, and run the check inside the repository`;
   }
 
-  const transpiler = new Bun.Transpiler({
-    loader,
-  });
-
-  return (
-    transpiler.transformSync(input.baseText(input.path)) !==
-    transpiler.transformSync(readFileSync(input.path, 'utf8'))
-  );
-};
-
-const mutatePatterns = (config: unknown): readonly string[] => {
-  const mutate =
-    typeof config === 'object' && config !== null && 'mutate' in config ? config.mutate : undefined;
-
-  return Array.isArray(mutate) && mutate.every((pattern) => typeof pattern === 'string')
-    ? mutate
-    : [];
-};
-
-const loadConfig = async (): Promise<unknown> => {
-  const file = CONFIG_FILES.find((name) => existsSync(name));
-
-  if (file === undefined) {
-    throw new Error(`mutation-check: no Stryker configuration (${CONFIG_FILES.join(', ')})`);
+  if (error instanceof ConfigurationError) {
+    return error.message;
   }
 
-  if (file.endsWith('.json')) {
-    return JSON.parse(readFileSync(file, 'utf8'));
-  }
-
-  const module: unknown = await import(pathToFileURL(resolve(file)).href);
-
-  return typeof module === 'object' && module !== null && 'default' in module
-    ? module.default
-    : undefined;
+  return `the check stopped on an error of its own, ${String(error)}; report it`;
 };
 
-const runStryker = (args: readonly string[]): number =>
-  spawnSync(
-    'stryker',
-    [
-      'run',
-      ...args,
-    ],
-    {
-      stdio: 'inherit',
+try {
+  process.exitCode = await runMutationCheck({
+    args: process.argv.slice(2),
+    env,
+    folder: process.cwd(),
+    write: (text) => {
+      process.stdout.write(text);
     },
-  ).status ?? 1;
-
-if (process.argv.includes('all')) {
-  process.exitCode = runStryker([]);
-} else {
-  const branch = branchIn(process.cwd());
-  const targets = mutateTargets({
-    codeChanged: (path) =>
-      codeChanged({
-        baseText: branch.baseText,
-        path,
-      }),
-    diff: branch.diff,
-    mutate: mutatePatterns(await loadConfig()),
-    untracked: branch.untracked,
   });
-
-  if (targets.length === 0) {
-    process.stdout.write('mutation: no line to mutate changed\n');
-  } else {
-    process.exitCode = runStryker([
-      '--mutate',
-      targets.join(','),
-    ]);
-  }
+} catch (error) {
+  process.stderr.write(`mutation: ${failureOf(error)}\n`);
+  process.exitCode = ExitCode.Stopped;
 }

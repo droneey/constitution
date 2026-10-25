@@ -8,49 +8,49 @@
 
 A tool's definition says what it does, when to call it and what it returns, and each of its parameters says what it holds, in what format and unit.
 
-| Why | Tags |
-|---|---|
-| a model chooses a tool and fills its arguments from its definition alone. | [] |
+| Why |
+|---|
+| a model chooses a tool and fills its arguments from its definition alone. |
 
 ### tool-declares-its-effects · MUST
 
 A tool declares `readOnlyHint`, `destructiveHint`, `idempotentHint` and `openWorldHint` explicitly, and none of them makes the tool look safer than it is.
 
-| Why | Tags |
-|---|---|
-| clients decide from these hints which calls a person confirms: a missing one falls back to a cautious default, a wrong one lets a destructive call run unconfirmed. | [security] |
+| Why |
+|---|
+| clients decide from these hints which calls a person confirms: a missing one falls back to a cautious default, a wrong one lets a destructive call run unconfirmed. |
 
 ### tool-name-opens-with-its-area · SHOULD
 
 A tool's name opens with the area it belongs to — `accounting_search_articles` — and is unique on its server.
 
-| Why | Tags |
-|---|---|
-| a client that holds tools from several servers tells them apart by the prefix. | [] |
+| Why |
+|---|
+| a client that holds tools from several servers tells them apart by the prefix. |
 
 ### tool-input-schema-closed → request-binds-only-declared-fields · MUST
 
 A tool's `inputSchema` is closed and bounds each argument: it refuses an argument it does not declare — `additionalProperties: false`, or `unevaluatedProperties: false` where the schema composes others — and bounds each one it declares by its type, its range or values, and its length.
 
-| Why | Tags |
-|---|---|
-| a model invents arguments and fills an unbounded one with whatever it imagines: an open schema that drops an invented filter lets the model believe the filter was applied, and an unbounded argument lets the server spend what the model chose. | [security] |
+| Why |
+|---|
+| a model invents arguments and fills an unbounded one with whatever it imagines: an open schema that drops an invented filter lets the model believe the filter was applied, and an unbounded argument lets the server spend what the model chose. |
 
 ### model-reached-data-served-as-a-tool · SHOULD
 
 What a model must reach on its own is a tool, or a resource a tool's answer links to; a resource or a prompt alone serves what the application or the user chooses.
 
-| Why | Tags |
-|---|---|
-| the host application attaches resources and the user picks prompts, so a model whose client loads only tools never sees them. | [] |
+| Why |
+|---|
+| the host application attaches resources and the user picks prompts, so a model whose client loads only tools never sees them. |
 
 ### tool-list-stable-in-order · SHOULD
 
 The list of tools is the same, in the same order, while the server's code and the caller's grants are unchanged.
 
-| Why | Tags |
-|---|---|
-| clients cache the list, and a reordered list misses the model's prompt cache on every call. | [performance] |
+| Why |
+|---|
+| clients cache the list, and a reordered list misses the model's prompt cache on every call. |
 
 ## Change
 
@@ -58,17 +58,17 @@ The list of tools is the same, in the same order, while the server's code and th
 
 A tool's name, description, schemas and annotations, and the server's instructions, come from the program's code and change only with a release; none is built from stored data, a caller's input or anything fetched at run time.
 
-| Why | Tags |
-|---|---|
-| a model obeys what a description says, so a description built from data lets that data steer the model, and lets a definition change after it was approved. | [security] |
+| Why |
+|---|
+| a model obeys what a description says, so a description built from data lets that data steer the model, and lets a definition change after it was approved. |
 
 ### changed-tool-ships-under-a-new-name → published-contract-changed-only-by-addition · MUST
 
 A tool whose contract changes incompatibly ships under a new name beside the old one, which is then retired as the contract's rules say, since a tool server serves no two versions of one name.
 
-| Why | Tags |
-|---|---|
-| a client cannot ask for a tool's older version, so a change made in place breaks every model prompted for the old one. | [] |
+| Why |
+|---|
+| a client cannot ask for a tool's older version, so a change made in place breaks every model prompted for the old one. |
 
 ## Proof
 
@@ -76,6 +76,6 @@ A tool whose contract changes incompatibly ships under a new name beside the old
 
 The contract of a tool server is what it lists — the tools' names, descriptions, schemas and annotations — pinned by a spec, so a change to what models read shows as a diff in review.
 
-| Why | Tags |
-|---|---|
-| a description is the prompt every client sends, and a change to it changes how every model calls the tool. | [testing] |
+| Why |
+|---|
+| a description is the prompt every client sends, and a change to it changes how every model calls the tool. |

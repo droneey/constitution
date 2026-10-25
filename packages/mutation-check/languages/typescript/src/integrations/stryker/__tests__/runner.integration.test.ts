@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
-import { describe, expect, test } from 'bun:test';
+import { describe, expect, it } from 'bun:test';
 
 import type { DryRunOptions, MutantRunResult, TestRunner } from '@stryker-mutator/api/test-runner';
 import { DryRunStatus, MutantRunStatus, TestStatus } from '@stryker-mutator/api/test-runner';
@@ -99,14 +99,25 @@ const mutantRun = (input: {
   });
 
 describe('the specs runner', () => {
-  test('should ask for a new process for each run', () => {
-    expect(plugin.factory().capabilities()).toStrictEqual({
+  it('should ask for a new process for each run', () => {
+    // Arrange
+    const runner = plugin.factory();
+
+    // Act
+    const capabilities = runner.capabilities();
+
+    // Assert
+    expect(capabilities).toStrictEqual({
       reloadEnvironment: true,
     });
   });
 
-  test('should complete the dry run when every spec passes', async () => {
-    expect(await inProject(PROJECT, (runner) => runner.dryRun(DRY_RUN))).toStrictEqual({
+  it('should complete the dry run when every spec passes', async () => {
+    // Act
+    const run = await inProject(PROJECT, (runner) => runner.dryRun(DRY_RUN));
+
+    // Assert
+    expect(run).toStrictEqual({
       status: DryRunStatus.Complete,
       tests: [
         {
@@ -119,33 +130,37 @@ describe('the specs runner', () => {
     });
   });
 
-  test('should report the failure when a spec fails in the dry run', async () => {
-    expect(
-      await inProject(
-        {
-          ...PROJECT,
-          'src/__tests__/total.test.ts':
-            "import { test } from 'bun:test';\n\ntest('should fail', () => {\n  throw new Error('broken');\n});\n",
-        },
-        (runner) => runner.dryRun(DRY_RUN),
-      ),
-    ).toStrictEqual({
+  it('should report the failure when a spec fails in the dry run', async () => {
+    // Arrange
+    const project: Files = {
+      ...PROJECT,
+      'src/__tests__/total.test.ts':
+        "import { test } from 'bun:test';\n\ntest('should fail', () => {\n  throw new Error('broken');\n});\n",
+    };
+
+    // Act
+    const run = await inProject(project, (runner) => runner.dryRun(DRY_RUN));
+
+    // Assert
+    expect(run).toStrictEqual({
       errorMessage: expect.stringContaining('broken'),
       status: DryRunStatus.Error,
     });
   });
 
-  test('should kill a mutant when a spec that loads its file fails', async () => {
-    expect(
-      await inProject(PROJECT, (runner, folder) =>
-        mutantRun({
-          file: 'src/rate.ts',
-          folder,
-          id: '1',
-          runner,
-        }),
-      ),
-    ).toStrictEqual({
+  it('should kill a mutant when a spec that loads its file fails', async () => {
+    // Act
+    const run = await inProject(PROJECT, (runner, folder) =>
+      mutantRun({
+        file: 'src/rate.ts',
+        folder,
+        id: '1',
+        runner,
+      }),
+    );
+
+    // Assert
+    expect(run).toStrictEqual({
       failureMessage: expect.stringContaining('should add the rate'),
       killedBy: [
         'src/__tests__/total.test.ts',
@@ -155,58 +170,76 @@ describe('the specs runner', () => {
     });
   });
 
-  test('should let a mutant survive when the specs that load its file pass, whatever the others do', async () => {
-    expect(
-      await inProject(PROJECT, (runner, folder) =>
-        mutantRun({
-          file: 'src/rate.ts',
-          folder,
-          id: '2',
-          runner,
-        }),
-      ),
-    ).toStrictEqual({
+  it('should let a mutant survive when the specs that load its file pass, whatever the others do', async () => {
+    // Act
+    const run = await inProject(PROJECT, (runner, folder) =>
+      mutantRun({
+        file: 'src/rate.ts',
+        folder,
+        id: '2',
+        runner,
+      }),
+    );
+
+    // Assert
+    expect(run).toStrictEqual({
       nrOfTests: 1,
       status: MutantRunStatus.Survived,
     });
   });
 
-  test('should let a mutant survive when no spec loads its file', async () => {
-    expect(
-      await inProject(PROJECT, (runner, folder) =>
-        mutantRun({
-          file: 'src/lonely.ts',
-          folder,
-          id: '1',
-          runner,
-        }),
-      ),
-    ).toStrictEqual({
+  it('should let a mutant survive when no spec loads its file', async () => {
+    // Act
+    const run = await inProject(PROJECT, (runner, folder) =>
+      mutantRun({
+        file: 'src/lonely.ts',
+        folder,
+        id: '1',
+        runner,
+      }),
+    );
+
+    // Assert
+    expect(run).toStrictEqual({
       nrOfTests: 0,
       status: MutantRunStatus.Survived,
     });
   });
 
-  test('should take the specs from the project root when the configuration names none', async () => {
-    expect(
-      await inProject(
-        {
-          ...PROJECT,
-          'bunfig.mutation.toml': '[run]\nbun = true\n',
-        },
-        (runner, folder) =>
-          mutantRun({
-            file: 'src/total.ts',
-            folder,
-            id: '2',
-            runner,
-          }),
-      ),
-    ).toHaveProperty('status', MutantRunStatus.Killed);
+  it('should take the specs from the project root when the configuration names none', async () => {
+    // Arrange
+    const project: Files = {
+      ...PROJECT,
+      'bunfig.mutation.toml': '[run]\nbun = true\n',
+    };
+
+    // Act
+    const run = await inProject(project, (runner, folder) =>
+      mutantRun({
+        file: 'src/total.ts',
+        folder,
+        id: '2',
+        runner,
+      }),
+    );
+
+    // Assert
+    expect(run).toStrictEqual({
+      failureMessage: expect.stringContaining('should add the rate'),
+      killedBy: [
+        'src/__tests__/total.test.ts',
+        'tests/e2e/total.e2e.test.ts',
+      ],
+      nrOfTests: 2,
+      status: MutantRunStatus.Killed,
+    });
   });
 
-  test('should stop the running specs when Stryker disposes of the runner', async () => {
+  it('should stop the running specs when Stryker disposes of the runner', async () => {
+    // Arrange
     const started = performance.now();
+
+    // Act
     const stopped = await inProject(PROJECT, (runner, folder) => {
       const running = mutantRun({
         file: 'src/wait.ts',
@@ -218,7 +251,20 @@ describe('the specs runner', () => {
       return (runner.dispose?.() ?? Promise.resolve()).then(() => running);
     });
 
-    expect(stopped.status).toBe(MutantRunStatus.Killed);
-    expect(performance.now() - started).toBeLessThan(10_000);
+    // Assert
+    expect({
+      run: stopped,
+      stoppedSoon: performance.now() - started < 10_000,
+    }).toStrictEqual({
+      run: {
+        failureMessage: expect.any(String),
+        killedBy: [
+          'src/__tests__/wait.test.ts',
+        ],
+        nrOfTests: 1,
+        status: MutantRunStatus.Killed,
+      },
+      stoppedSoon: true,
+    });
   });
 });

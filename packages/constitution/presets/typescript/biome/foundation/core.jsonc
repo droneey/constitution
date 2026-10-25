@@ -10,6 +10,8 @@
         "noDebugger": "error",
         "noDeprecatedImports": "error",
         "noParametersOnlyUsedInRecursion": "error",
+        "noConditionalExpect": "error",
+        "useExpect": "error",
       },
       "style": {
         "useFilenamingConvention": {
@@ -69,8 +71,6 @@
         },
       },
       "nursery": {
-        "noConditionalExpect": "error",
-        "useExpect": "error",
         "usePromiseRejectErrors": "error",
       },
     },
@@ -88,6 +88,14 @@
     },
     {
       "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/case-holds-no-logic.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/case-split-by-arrange-act-assert-comments.grit",
       "includes": [
         "**/__tests__/**",
         "**/*.test.ts",

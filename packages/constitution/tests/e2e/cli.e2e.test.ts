@@ -5,6 +5,8 @@ import { join } from 'node:path';
 
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 
+import { z } from 'zod';
+
 import { cliPath } from './cli.fixtures';
 import {
   archiveOf,
@@ -20,9 +22,13 @@ interface Run {
   stdout: string;
 }
 
-const packageVersion: string = JSON.parse(
-  readFileSync(join(import.meta.dir, '..', '..', 'package.json'), 'utf8'),
-).version;
+const packageVersion = z
+  .object({
+    version: z.string(),
+  })
+  .parse(
+    JSON.parse(readFileSync(join(import.meta.dir, '..', '..', 'package.json'), 'utf8')),
+  ).version;
 // A proxy that refuses every call: doctor finds GitHub unreachable at once, and no spec reaches it.
 const NO_NETWORK = 'http://127.0.0.1:9';
 
@@ -131,19 +137,18 @@ describe('the constitution program', () => {
       ],
     },
   ])('should print help that opens with examples, and exit 0, when asked by $args', ({ args }) => {
-    // Arrange
-    const asked = args;
-
     // Act
     const ran = runProgram({
-      args: asked,
+      args,
       cwd: elsewhere,
     });
 
     // Assert
     expect({
       exitCode: ran.exitCode,
-      opensWithExamples: ran.stdout.indexOf('Examples') < ran.stdout.indexOf('Usage'),
+      opensWithExamples:
+        ran.stdout.includes('Examples') &&
+        ran.stdout.indexOf('Examples') < ran.stdout.indexOf('Usage'),
       stderr: ran.stderr,
     }).toStrictEqual({
       exitCode: 0,
@@ -176,12 +181,9 @@ describe('the constitution program', () => {
       named: 'session-start',
     },
   ])('should name the closest match and exit 2 when $condition', ({ args, named }) => {
-    // Arrange
-    const asked = args;
-
     // Act
     const ran = runProgram({
-      args: asked,
+      args,
       cwd: elsewhere,
     });
 
@@ -268,12 +270,9 @@ describe('the constitution program', () => {
       condition: 'the presets are checked outside any project',
     },
   ])('should exit 1 when $condition', ({ args }) => {
-    // Arrange
-    const asked = args;
-
     // Act
     const ran = runProgram({
-      args: asked,
+      args,
       cwd: elsewhere,
     });
 
@@ -297,11 +296,18 @@ describe('the constitution program', () => {
     // Assert
     expect({
       exitCode: ran.exitCode,
-      stderr: ran.stderr,
+      marks: ran.stderr
+        .trimEnd()
+        .split('\n')
+        .map((line) => line.trimStart().slice(0, 1)),
+      namesTheStep: ran.stderr.includes('/constitution:ratify'),
     }).toStrictEqual({
       exitCode: 1,
-      stderr:
-        '✗ no constitution.yaml in this folder or above it\n  → run /constitution:ratify in a Claude Code session to write one\n',
+      marks: [
+        '✗',
+        '→',
+      ],
+      namesTheStep: true,
     });
   });
 

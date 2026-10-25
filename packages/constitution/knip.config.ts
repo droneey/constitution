@@ -5,6 +5,7 @@ import rumdl from '../../.droneey/constitution/presets/typescript/knip/foundatio
 import shellcheck from '../../.droneey/constitution/presets/typescript/knip/foundation/shellcheck.mjs';
 import shfmt from '../../.droneey/constitution/presets/typescript/knip/foundation/shfmt.mjs';
 import stryker from '../../.droneey/constitution/presets/typescript/knip/foundation/stryker.mjs';
+import tombi from '../../.droneey/constitution/presets/typescript/knip/foundation/tombi.mjs';
 import yamllint from '../../.droneey/constitution/presets/typescript/knip/foundation/yamllint.mjs';
 
 // knip has no extends, so the parts are joined.
@@ -14,6 +15,7 @@ export default join(
   shellcheck,
   shfmt,
   stryker,
+  tombi,
   yamllint,
   architectureCore,
   // the project's own settings, joined after the parts

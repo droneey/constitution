@@ -1,6 +1,6 @@
-import { afterEach, describe, expect, test } from 'bun:test';
+import { afterEach, describe, expect, it } from 'bun:test';
 
-import { cleanup, screen, waitFor } from '@testing-library/react';
+import { cleanup, screen, waitFor, within } from '@testing-library/react';
 
 import { screenViolationsIn } from '../../../../__tests__/axe.fixtures';
 import { renderInDocs } from '../../../../__tests__/docs.fixtures';
@@ -12,7 +12,7 @@ afterEach(() => {
 });
 
 describe('DocsNotFoundScreen', () => {
-  test('should head the page 404 and lead the reader back home', () => {
+  it('should head the page 404 and lead the reader back home', () => {
     // Arrange
     const screenUnderTest = <DocsNotFoundScreen />;
 
@@ -35,7 +35,7 @@ describe('DocsNotFoundScreen', () => {
     ]);
   });
 
-  test('should make its main region the target of the skip link', () => {
+  it('should make its main region the target of the skip link', () => {
     // Arrange
     const screenUnderTest = <DocsNotFoundScreen />;
 
@@ -54,7 +54,7 @@ describe('DocsNotFoundScreen', () => {
     ]);
   });
 
-  test('should name the site and link its repository', () => {
+  it('should name the site and link its repository', () => {
     // Arrange
     const screenUnderTest = <DocsNotFoundScreen />;
 
@@ -79,7 +79,7 @@ describe('DocsNotFoundScreen', () => {
     ]);
   });
 
-  test('should open the repository in a new tab from an icon named GitHub', () => {
+  it('should open the repository in a new tab from an icon named GitHub', () => {
     // Arrange
     const screenUnderTest = <DocsNotFoundScreen />;
 
@@ -102,7 +102,7 @@ describe('DocsNotFoundScreen', () => {
     ]);
   });
 
-  test('should slide a block under the items of a menu that opens on it', async () => {
+  it('should slide a block under the items of a menu that opens on it', async () => {
     // Arrange
     renderInDocs(<DocsNotFoundScreen />);
 
@@ -119,11 +119,10 @@ describe('DocsNotFoundScreen', () => {
     document.body.append(menu);
 
     // Assert
-    // biome-ignore lint/plugin/queries-by-role-label-text: the glide is a decoration hidden from assistive technology, which CSS finds by its attribute
-    await waitFor(() => expect(menu.querySelectorAll('[data-glide]').length).toBe(1));
+    await waitFor(() => expect(within(menu).getAllByTestId('glide').length).toBe(1));
   });
 
-  test('should pass the WCAG 2.2 A and AA scan', async () => {
+  it('should pass the WCAG 2.2 A and AA scan', async () => {
     // Arrange
     renderInDocs(<DocsNotFoundScreen />);
 

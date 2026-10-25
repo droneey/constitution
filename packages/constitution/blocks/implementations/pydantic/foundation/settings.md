@@ -8,6 +8,6 @@
 
 A `BaseSettings` sets an `env_prefix` and `extra='forbid'`.
 
-| Why | Tags |
-|---|---|
-| the prefix keeps the program's variables apart from those of every other tool in the process's environment, and a key of the local environment file that the model does not know fails instead of being dropped. | [] |
+| Why |
+|---|
+| the prefix keeps the program's variables apart from those of every other tool in the process's environment, and a key of the local environment file that the model does not know fails instead of being dropped. |
