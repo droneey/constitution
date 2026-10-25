@@ -21,13 +21,13 @@ const diffOf = (files: Readonly<Record<string, readonly string[]>>): string =>
     .join('\n');
 
 const targetsOf = (input: {
-  codeChanged?: (path: string) => boolean;
+  codeChanged?: (paths: readonly string[]) => ReadonlySet<string>;
   diff: string;
   mutate?: readonly string[];
   untracked?: readonly string[];
-}): readonly string[] =>
+}): ReturnType<typeof mutateTargets> =>
   mutateTargets({
-    codeChanged: input.codeChanged ?? (() => true),
+    codeChanged: input.codeChanged ?? ((paths) => new Set(paths)),
     diff: input.diff,
     mutate: input.mutate ?? MUTATE,
     untracked: input.untracked ?? [],
@@ -43,7 +43,13 @@ describe('mutation targets', () => {
         ],
       }),
       targets: [
-        'src/order.utils.ts:3-5',
+        {
+          lines: {
+            end: 5,
+            start: 3,
+          },
+          path: 'src/order.utils.ts',
+        },
       ],
     },
     {
@@ -54,7 +60,13 @@ describe('mutation targets', () => {
         ],
       }),
       targets: [
-        'src/order.utils.ts:7-7',
+        {
+          lines: {
+            end: 7,
+            start: 7,
+          },
+          path: 'src/order.utils.ts',
+        },
       ],
     },
     {
@@ -65,7 +77,13 @@ describe('mutation targets', () => {
         ],
       }),
       targets: [
-        'src/order.utils.ts:12-22',
+        {
+          lines: {
+            end: 22,
+            start: 12,
+          },
+          path: 'src/order.utils.ts',
+        },
       ],
     },
     {
@@ -80,8 +98,20 @@ describe('mutation targets', () => {
         ],
       }),
       targets: [
-        'src/order.utils.ts:1-1',
-        'src/order.utils.ts:5-5',
+        {
+          lines: {
+            end: 1,
+            start: 1,
+          },
+          path: 'src/order.utils.ts',
+        },
+        {
+          lines: {
+            end: 5,
+            start: 5,
+          },
+          path: 'src/order.utils.ts',
+        },
       ],
     },
     {
@@ -108,7 +138,7 @@ describe('mutation targets', () => {
       }),
       targets: [],
     },
-  ])('should mutate $targets when $condition', ({ diff, targets }) => {
+  ])('should mutate the lines a hunk adds when $condition', ({ diff, targets }) => {
     // Arrange
     const changes = {
       diff,
@@ -136,7 +166,9 @@ describe('mutation targets', () => {
 
     // Assert
     expect(found).toStrictEqual([
-      'src/order.utils.ts',
+      {
+        path: 'src/order.utils.ts',
+      },
     ]);
   });
 
@@ -158,14 +190,20 @@ describe('mutation targets', () => {
 
     // Assert
     expect(found).toStrictEqual([
-      'src/order.utils.ts:1-1',
+      {
+        lines: {
+          end: 1,
+          start: 1,
+        },
+        path: 'src/order.utils.ts',
+      },
     ]);
   });
 
   it('should mutate nothing when a change only reformats a mutated file', () => {
     // Arrange
     const changes = {
-      codeChanged: () => false,
+      codeChanged: () => new Set<string>(),
       diff: diffOf({
         'src/order.utils.ts': [
           '@@ -1,3 +1 @@',

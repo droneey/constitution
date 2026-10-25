@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { mutateTargets } from '#/features/targets';
 import { branchIn } from '#/libs/git';
 import { codeChanged } from '#/libs/imports';
+import { mutateArgumentsOf } from '#/libs/stryker';
 
 import { strykerConfigurationIn } from './configuration.ts';
 import { ExitCode } from './exit-codes.ts';
@@ -53,12 +54,19 @@ const runMutationCheck = async (input: MutationCheckInput): Promise<number> => {
     timeoutMs: GIT_TIMEOUT_MS,
   });
   const targets = mutateTargets({
-    codeChanged: (path) =>
-      codeChanged({
-        after: readFileSync(join(input.folder, path), 'utf8'),
-        before: branch.baseText(path),
-        path,
-      }),
+    codeChanged: (paths) => {
+      const before = branch.baseTexts(paths);
+
+      return new Set(
+        paths.filter((path) =>
+          codeChanged({
+            after: readFileSync(join(input.folder, path), 'utf8'),
+            before: before.get(path) ?? '',
+            path,
+          }),
+        ),
+      );
+    },
     diff: branch.diff,
     mutate,
     untracked: branch.untracked,
@@ -70,10 +78,7 @@ const runMutationCheck = async (input: MutationCheckInput): Promise<number> => {
     return ExitCode.Success;
   }
 
-  return runStryker([
-    '--mutate',
-    targets.join(','),
-  ]);
+  return runStryker(mutateArgumentsOf(targets));
 };
 
 export type { MutationCheckInput };
