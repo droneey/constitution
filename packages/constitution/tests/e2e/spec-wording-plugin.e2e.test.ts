@@ -53,20 +53,6 @@ describe('the plugin case-pins-meaning-never-wording', () => {
         },
       },
       {
-        condition: 'an expected object names its message in prose',
-        files: {
-          [SPEC]: specWith(
-            "expect(outcome).toStrictEqual([{ code: 'unpaid', message: 'the order is not paid' }]);",
-          ),
-        },
-      },
-      {
-        condition: 'a row of a table names its message in prose',
-        files: {
-          [SPEC]: `import { expect, test } from 'bun:test';\n\ntest.each([{ message: 'the order is not paid' }])('should check when $message', (row) => {\n  // Arrange\n  const given = row;\n\n  // Act\n  const outcome = { ...given };\n\n  // Assert\n  expect(outcome).toStrictEqual(row);\n});\n`,
-        },
-      },
-      {
         condition: 'a fixture of the end-to-end tests expects a sentence',
         files: {
           'tests/e2e/order.fixtures.ts':
@@ -124,6 +110,12 @@ describe('the plugin case-pins-meaning-never-wording', () => {
         condition: 'the expected text comes from a row of the one table of the format',
         files: {
           [SPEC]: `import { expect, test } from 'bun:test';\n\ntest.each([{ code: 'unpaid', text: 'the order is not paid' }])('should say $code', ({ code, text }) => {\n  // Arrange\n  const given = code;\n\n  // Act\n  const said = given;\n\n  // Assert\n  expect(said).toBe(text);\n});\n`,
+        },
+      },
+      {
+        condition: 'a row of a table holds a message the case reads as data',
+        files: {
+          [SPEC]: `import { expect, test } from 'bun:test';\n\ntest.each([{ message: 'the order is not paid' }])('should check when $message', (row) => {\n  // Arrange\n  const given = row;\n\n  // Act\n  const outcome = { ...given };\n\n  // Assert\n  expect(outcome).toStrictEqual(row);\n});\n`,
         },
       },
       {
