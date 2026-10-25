@@ -17,13 +17,13 @@ interface CommandPlaces {
 }
 
 interface CommandContext {
+  /** the examples of a command's common use, as the text its help opens with, given to `addHelpText` */
+  readonly helpExamples: (examples: readonly string[]) => () => string;
   readonly io: CommandIo;
   readonly places: CommandPlaces;
   readonly renderer: Renderer;
   /** ends the run with the code of a failure the user can act on, once the command is done */
   readonly setFailed: () => void;
-  /** the examples of the command's common use, which its help opens with */
-  readonly withExamples: <TCommand>(command: TCommand, examples: readonly string[]) => TCommand;
 }
 
 export type { CommandContext, CommandIo, CommandPlaces };

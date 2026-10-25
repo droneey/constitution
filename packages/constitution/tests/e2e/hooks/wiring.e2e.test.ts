@@ -661,8 +661,10 @@ describe("the wiring of a pack's parts and templates", () => {
     });
 
     // Assert
-    expect(listed.filter((line) => expected.includes(line)).toSorted()).toStrictEqual(
-      expected.toSorted(),
-    );
+    expect(
+      listed
+        .filter((line) => expected.includes(line))
+        .toSorted((left, right) => left.localeCompare(right)),
+    ).toStrictEqual(expected.toSorted((left, right) => left.localeCompare(right)));
   });
 });

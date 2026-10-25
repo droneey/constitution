@@ -8,6 +8,6 @@
 
 Native modules are at the versions the SDK supports.
 
-| Why | Tags |
-|---|---|
-| a native module at another version builds and then crashes on a device. | [] |
+| Why |
+|---|
+| a native module at another version builds and then crashes on a device. |

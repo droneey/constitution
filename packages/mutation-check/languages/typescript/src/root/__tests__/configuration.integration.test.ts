@@ -2,7 +2,7 @@ import { mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
+import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
 import { ConfigurationError, ConfigurationFailure } from '../configuration.error.ts';
 import { strykerConfigurationIn } from '../configuration.ts';
@@ -39,7 +39,7 @@ const failureOf = async (read: () => Promise<unknown>): Promise<unknown> => {
 };
 
 describe('strykerConfigurationIn', () => {
-  test.each([
+  it.each([
     {
       file: 'stryker.config.mjs',
       text: "export default { mutate: ['src/**/*.ts', '!src/**/__tests__/**'] };\n",
@@ -68,7 +68,7 @@ describe('strykerConfigurationIn', () => {
     });
   });
 
-  test.each([
+  it.each([
     {
       condition: 'names no patterns',
       text: 'export default {};\n',
@@ -103,7 +103,7 @@ describe('strykerConfigurationIn', () => {
     });
   });
 
-  test('should stop the start when the folder holds no configuration', async () => {
+  it('should stop the start when the folder holds no configuration', async () => {
     // Act
     const failure = await failureOf(() => strykerConfigurationIn(folder));
 

@@ -7,7 +7,7 @@
     /* the input holds the caret across the whole row, so the row draws the input's ring */
     & > div:has(> [data-fd-search-dialog-input]) {
       gap: var(--spacing-xs);
-      height: var(--spacing-header);
+      height: var(--size-header);
       padding: 0 calc(var(--spacing-sm) - 1px);
 
       &:has(> [data-fd-search-dialog-input]:focus-visible) {
@@ -18,14 +18,14 @@
 
       & > svg {
         flex-shrink: 0;
-        width: var(--spacing-icon-md);
-        height: var(--spacing-icon-md);
+        width: var(--size-icon-md);
+        height: var(--size-icon-md);
       }
 
       & > button {
         flex-shrink: 0;
-        min-width: var(--spacing-control-xs);
-        height: var(--spacing-control-xs);
+        min-width: var(--size-control-xs);
+        height: var(--size-control-xs);
         padding: 0 var(--spacing-2xs);
         border-radius: var(--radius-sm);
         font-family: var(--font-sans);
@@ -62,7 +62,7 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      min-height: var(--spacing-control-md);
+      min-height: var(--size-control-md);
       padding: var(--spacing-xs);
       overflow: visible;
       border-radius: var(--radius-control-base);
@@ -87,8 +87,8 @@
         margin-bottom: var(--spacing-2xs);
 
         & > svg {
-          width: var(--spacing-icon-md);
-          height: var(--spacing-icon-md);
+          width: var(--size-icon-md);
+          height: var(--size-icon-md);
         }
       }
 
@@ -107,12 +107,10 @@
       }
     }
 
-    /* biome-ignore lint/style/noDescendingSpecificity: the linter reads the nested selector without its parent; the two rules never style the same element */
     & [role='option']:not(:has(> [role='none'])) + [role='option'] > [role='none'] {
       top: var(--spacing-2xs);
     }
 
-    /* biome-ignore lint/style/noDescendingSpecificity: the linter reads the nested selector without its parent; the two rules never style the same element */
     & [role='option']:not(:has(+ [role='option'] > [role='none'])) > [role='none'] {
       bottom: var(--spacing-2xs);
     }
@@ -122,13 +120,13 @@
       & > svg {
         inset-inline-start: var(--spacing-xs);
         top: 50%;
-        width: var(--spacing-icon-md);
-        height: var(--spacing-icon-md);
+        width: var(--size-icon-md);
+        height: var(--size-icon-md);
         translate: 0 -50%;
       }
 
       & > div:last-child {
-        padding-inline-start: calc(var(--spacing-icon-md) + var(--spacing-xs));
+        padding-inline-start: calc(var(--size-icon-md) + var(--spacing-xs));
       }
     }
 

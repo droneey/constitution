@@ -8,6 +8,6 @@
 
 A further entry is an `exports` subpath named after what it offers, `./testing`, mapped to its file beside `src/index.ts`.
 
-| Why | Tags |
-|---|---|
-| the specifier `@<scope>/<name>/testing` then names the door, and its file is found beside the surface it stands next to. | [] |
+| Why |
+|---|
+| the specifier `@<scope>/<name>/testing` then names the door, and its file is found beside the surface it stands next to. |

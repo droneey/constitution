@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, test } from 'bun:test';
+import { afterEach, describe, expect, it } from 'bun:test';
 
 import type { ReactElement } from 'react';
 
@@ -11,7 +11,7 @@ import {
   RouterProvider,
 } from '@tanstack/react-router';
 
-import { cleanup, render, screen } from '@testing-library/react';
+import { act, cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { DocsBuiltVersionContext, DocsNotFoundScreen } from '#/composition/docs';
@@ -21,7 +21,7 @@ import { RootProvider } from '#/libs/ui';
 import { Route } from '../routes/docs/$';
 import type { RouterContext } from '../wiring';
 import type { DocsContentFake } from './docs-content.fake';
-import { docsContentFake } from './docs-content.fake';
+import { docsContentFake, navigationFixture } from './docs-content.fake';
 
 afterEach(cleanup);
 
@@ -64,7 +64,7 @@ const routerAt = (address: string, content: DocsContentFake) => {
 const lastMatchOf = (router: ReturnType<typeof routerAt>) => router.state.matches.at(-1);
 
 describe('docs route', () => {
-  test('should read the page the address names', async () => {
+  it('should read the page the address names', async () => {
     // Arrange
     const content = docsContentFake();
     const router = routerAt('/docs/guides/write-a-pack', content);
@@ -81,7 +81,7 @@ describe('docs route', () => {
     ]);
   });
 
-  test("should read an abstract block's page, whose id opens with its mark", async () => {
+  it("should read an abstract block's page, whose id opens with its mark", async () => {
     // Arrange
     const content = docsContentFake();
     const router = routerAt('/docs/domains/_api', content);
@@ -98,7 +98,7 @@ describe('docs route', () => {
     ]);
   });
 
-  test('should read the overview when the address names no page', async () => {
+  it('should read the overview when the address names no page', async () => {
     // Arrange
     const content = docsContentFake();
     const router = routerAt('/docs', content);
@@ -112,7 +112,7 @@ describe('docs route', () => {
     ]);
   });
 
-  test.each([
+  it.each([
     {
       address: '/docs/guides/Write-a-pack',
       condition: 'a segment holds a capital',
@@ -151,7 +151,7 @@ describe('docs route', () => {
     ]);
   });
 
-  test('should load the page body before the page renders', async () => {
+  it('should load the page body before the page renders', async () => {
     // Arrange
     const content = docsContentFake();
     const router = routerAt('/docs/guides/write-a-pack', content);
@@ -165,7 +165,39 @@ describe('docs route', () => {
     ]);
   });
 
-  test('should title the tab with the page and the site', async () => {
+  it('should read the tree of the sidebar with the page, before the page renders', async () => {
+    // Arrange
+    const content = docsContentFake();
+    const router = routerAt('/docs/guides/write-a-pack', content);
+
+    // Act
+    await router.load();
+
+    // Assert
+    expect(Reflect.get(content.docs.loadNavigation(), 'value')).toStrictEqual(navigationFixture());
+  });
+
+  it('should show the sidebar in its first render when the tree was read before', async () => {
+    // Arrange
+    const router = routerAt('/docs/guides/write-a-pack', docsContentFake());
+
+    await router.load();
+
+    // Act
+    render(<RouterProvider router={router} />);
+
+    const firstRender = screen.queryByRole('link', {
+      name: 'Overview',
+    });
+
+    // the scroll area of the sidebar measures itself after it mounts
+    await act(() => Promise.resolve());
+
+    // Assert
+    expect(firstRender?.getAttribute('href')).toBe('/docs');
+  });
+
+  it('should title the tab with the page and the site', async () => {
     // Arrange
     const router = routerAt('/docs/guides/write-a-pack', docsContentFake());
 
@@ -180,7 +212,7 @@ describe('docs route', () => {
     ]);
   });
 
-  test('should title the tab with the site alone when the address names no page', async () => {
+  it('should title the tab with the site alone when the address names no page', async () => {
     // Arrange
     const router = routerAt('/docs/guides/Write-a-pack', docsContentFake());
 
@@ -195,7 +227,7 @@ describe('docs route', () => {
     ]);
   });
 
-  test('should hand the screen the page and the tree of the sidebar', async () => {
+  it('should hand the screen the page and the tree of the sidebar', async () => {
     // Arrange
     const router = routerAt('/docs/guides/write-a-pack', docsContentFake());
 
@@ -220,7 +252,7 @@ describe('docs route', () => {
     ]);
   });
 
-  test('should hand the screen the address the browser shows', async () => {
+  it('should hand the screen the address the browser shows', async () => {
     // Arrange
     const router = routerAt('/docs/guides/write-a-pack', docsContentFake());
 
@@ -240,10 +272,10 @@ describe('docs route', () => {
           name: /^v/,
         })
       ).getAttribute('href'),
-    ).toBe('/docs/guides/write-a-pack');
+    ).toBe('/v0.70.0/docs/guides/write-a-pack');
   });
 
-  test('should show not found when the page body has left its collection', async () => {
+  it('should show not found when the page body has left its collection', async () => {
     // Arrange
     const router = routerAt('/docs/guides/moved', docsContentFake());
 

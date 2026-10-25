@@ -5,6 +5,7 @@ import type { DigestContents, DigestRelease } from '../../domain/entities';
 import { DigestKind } from '../../domain/entities';
 import { blockListLines } from './block-list.utils';
 import { budgetedBodyOf, coreBodyOf } from './digest-body.utils';
+import { overrideListLines } from './override-list.utils';
 
 /** The digest's text: the lines before the rules, and the rules. */
 interface Digest {
@@ -39,6 +40,7 @@ const resolvedDigestOf = (
     blockList: blockListLines(contents.listing),
     core: contents.core,
     isStartup: contents.isStartup,
+    overrides: overrideListLines(contents.listing.overrides),
     warnings: contents.warnings.map(
       (warning) => `- ${ProjectWarning.codeOf(warning)}: ${warningTextOf(warning)}`,
     ),

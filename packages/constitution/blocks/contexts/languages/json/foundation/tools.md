@@ -8,6 +8,6 @@
 
 A configuration written in JSON names its schema in `$schema` wherever its reader publishes one and accepts the key.
 
-| Why | Tags |
-|---|---|
-| an editor then checks and completes every key as it is written, so a misspelt or misplaced key shows before the tool ignores it. | [] |
+| Why |
+|---|
+| an editor then checks and completes every key as it is written, so a misspelt or misplaced key shows before the tool ignores it. |

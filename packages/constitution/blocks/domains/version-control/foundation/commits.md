@@ -8,17 +8,17 @@
 
 A commit holds one logical change, which can be reviewed, reverted and found in the history on its own.
 
-| Why | Tags |
-|---|---|
-| a commit that mixes two changes cannot revert one without the other, and the history names neither. | [] |
+| Why |
+|---|
+| a commit that mixes two changes cannot revert one without the other, and the history names neither. |
 
 ### commit-holds-only-its-task-files → change-limited-to-its-task · MUST
 
 A commit holds only the files of its task, never whatever else lies in the working copy.
 
-| Why | Tags |
-|---|---|
-| a commit of whatever lies around carries a scratch file, a key or a build output into the history. | [security] |
+| Why |
+|---|
+| a commit of whatever lies around carries a scratch file, a key or a build output into the history. |
 
 ## What it says
 
@@ -26,17 +26,17 @@ A commit holds only the files of its task, never whatever else lies in the worki
 
 A commit's subject says what the change does, never which files it touched and never a placeholder such as “update”, “wip” or “fix stuff”.
 
-| Why | Tags |
-|---|---|
-| the diff already lists the files, so the subject is the only place in the history that says what the change means. | [] |
+| Why |
+|---|
+| the diff already lists the files, so the subject is the only place in the history that says what the change means. |
 
 ### reason-for-change-recorded · SHOULD
 
 The reason for a change is written down beside the change, where the project's workflow puts it — a change request, an issue — never only in a conversation.
 
-| Why | Tags |
-|---|---|
-| the next person who reads the change needs its reason, and a chat is not where they will look. | [] |
+| Why |
+|---|
+| the next person who reads the change needs its reason, and a chat is not where they will look. |
 
 ## Main line
 
@@ -44,6 +44,6 @@ The reason for a change is written down beside the change, where the project's w
 
 Every commit of the main line passes the repository's check.
 
-| Why | Tags |
-|---|---|
-| a commit of the main line that fails the check breaks every bisect and every revert that lands on it. | [testing] |
+| Why |
+|---|
+| a commit of the main line that fails the check breaks every bisect and every revert that lands on it. |

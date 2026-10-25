@@ -24,8 +24,6 @@ const env = Object.fromEntries(
   }),
 );
 
-// The handler of last resort: a failure the check foresees says what to do, any other asks for a
-// report.
 const failureOf = (error: unknown): string => {
   if (error instanceof GitError) {
     return `${error.message}; fetch origin/main, and run the check inside the repository`;

@@ -80,7 +80,6 @@ const upperFiles = (): Files => ({
         'Plurals',
         rule({
           slug: 'i18n-plurals-by-cldr',
-          tags: '[ux]',
         }),
       ),
     },
@@ -94,7 +93,6 @@ const upperFiles = (): Files => ({
         'Reads',
         rule({
           slug: 'reads-are-cancellable',
-          tags: '[data]',
         }),
       ),
     },
@@ -109,14 +107,12 @@ const upperFiles = (): Files => ({
         rule({
           tightens: 'reads-are-cancellable',
           slug: 'optimistic-writes-roll-back',
-          tags: '[ux]',
         }),
       ),
       'screens.md': chapterFile(
         'Screens',
         rule({
           slug: 'four-data-states',
-          tags: '[ux, a11y]',
         }),
       ),
     },
@@ -132,7 +128,6 @@ const upperFiles = (): Files => ({
         'Secrets',
         rule({
           slug: 'secret-never-held-by-the-client',
-          tags: '[security]',
         }),
       ),
     },

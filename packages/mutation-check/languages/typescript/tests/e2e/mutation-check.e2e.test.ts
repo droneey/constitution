@@ -11,7 +11,7 @@ import {
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 
-import { afterAll, describe, expect, test } from 'bun:test';
+import { afterAll, describe, expect, it } from 'bun:test';
 
 interface Check {
   changes: Readonly<Record<string, string>>;
@@ -220,7 +220,7 @@ const runCheck = (check: Check): Outcome => {
 };
 
 describe('mutation-check', () => {
-  test('should mutate the changed line and the new file when a change touches both', () => {
+  it('should mutate the changed line and the new file when a change touches both', () => {
     // Arrange
     const check = {
       changes: {
@@ -236,7 +236,7 @@ describe('mutation-check', () => {
     expect(strykerArguments).toBe('run --mutate src/line.utils.ts,src/order.utils.ts:2-2');
   });
 
-  test("should mutate only the branch's lines when the main line moved on after the branch began", () => {
+  it("should mutate only the branch's lines when the main line moved on after the branch began", () => {
     // Arrange
     const check = {
       changes: CHANGE,
@@ -252,7 +252,7 @@ describe('mutation-check', () => {
     expect(strykerArguments).toBe('run --mutate src/order.utils.ts:2-2');
   });
 
-  test('should mutate the changed line when the configuration is JSON', () => {
+  it('should mutate the changed line when the configuration is JSON', () => {
     // Arrange
     const check = {
       changes: CHANGE,
@@ -268,7 +268,7 @@ describe('mutation-check', () => {
     expect(strykerArguments).toBe('run --mutate src/order.utils.ts:2-2');
   });
 
-  test.each([
+  it.each([
     {
       condition: 'names no patterns',
       config: 'export default {};\n',
@@ -303,7 +303,7 @@ describe('mutation-check', () => {
     });
   });
 
-  test('should run no mutant when a change only reformats a mutated file', () => {
+  it('should run no mutant when a change only reformats a mutated file', () => {
     // Arrange
     const check = {
       changes: {
@@ -318,7 +318,7 @@ describe('mutation-check', () => {
     expect(strykerArguments).toBeUndefined();
   });
 
-  test('should run no mutant when no mutated line changed', () => {
+  it('should run no mutant when no mutated line changed', () => {
     // Arrange
     const check = {
       changes: {
@@ -337,7 +337,7 @@ describe('mutation-check', () => {
     });
   });
 
-  test("should mutate the unit's changed line when the check runs from a unit of a workspace", () => {
+  it("should mutate the unit's changed line when the check runs from a unit of a workspace", () => {
     // Arrange
     const check = {
       changes: {
@@ -357,7 +357,7 @@ describe('mutation-check', () => {
     expect(strykerArguments).toBe('run --mutate src/order.utils.ts:2-2');
   });
 
-  test('should run no mutant when a change only reformats a file of the unit the check runs from', () => {
+  it('should run no mutant when a change only reformats a file of the unit the check runs from', () => {
     // Arrange
     const check = {
       changes: {
@@ -379,7 +379,7 @@ describe('mutation-check', () => {
     });
   });
 
-  test('should mutate everything the configuration names when the check runs in all mode', () => {
+  it('should mutate everything the configuration names when the check runs in all mode', () => {
     // Arrange
     const check = {
       changes: {},

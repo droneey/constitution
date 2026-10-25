@@ -8,6 +8,6 @@
 
 A handle is checked against the caller on every request.
 
-| Why | Tags |
-|---|---|
-| a leaked handle otherwise acts in another caller's name. | [security] |
+| Why |
+|---|
+| a leaked handle otherwise acts in another caller's name. |

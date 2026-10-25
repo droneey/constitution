@@ -38,7 +38,6 @@ interface Fragment {
 interface Skip {
   readonly path: string;
   readonly template: SourceFile;
-  /** the template's text */
   readonly text: string;
   readonly tool: string;
 }
@@ -104,7 +103,6 @@ const takesOf = (text: string): Takes => {
   return found;
 };
 
-/** A part of a tool's presets with its file. */
 interface PresetPart {
   readonly address: PartAddress;
   readonly file: SourceFile;

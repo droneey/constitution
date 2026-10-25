@@ -1,9 +1,11 @@
 {
   "linter": {
     "rules": {
-      "nursery": {
-        "noReactNativeDeepImports": "error",
+      "style": {
         "noReactNativeLiteralColors": "error",
+      },
+      "suspicious": {
+        "noReactNativeDeepImports": "error",
       },
     },
   },

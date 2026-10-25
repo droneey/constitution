@@ -12,6 +12,7 @@ python = "3.14.8"
 rumdl = "0.2.79"
 shellcheck = "0.11.0"
 shfmt = "3.14.1"
+tombi = "1.9.0"
 uv = "0.13.0"
 yamllint = "1.38.0"
 
@@ -33,5 +34,7 @@ minimum_release_age = "3d"
 [tool_config]
 locked = true
 
+# --no-ignore: osv-scanner reads a checkout nested in a folder another repository ignores, an agent's worktree,
+# as ignored and finds no lockfile
 [tasks."audit:check"]
-run = 'scripts/audit.sh .droneey/constitution/presets/common/osv-scanner/foundation/core.txt'
+run = 'licenses="$(cat .droneey/constitution/presets/common/osv-scanner/foundation/core.txt | paste -sd, -)" && osv-scanner scan source --licenses="$licenses" --no-ignore .'

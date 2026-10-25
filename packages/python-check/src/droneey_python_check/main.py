@@ -1,10 +1,15 @@
 import sys
 from typing import Final
 
-from droneey_python_check.check import ExitStatus
+from droneey_python_check.features.code import (
+  ExitStatus,
+  Expected,
+  Misuse,
+  Problem,
+  SettingsError,
+  UsageError,
+)
 from droneey_python_check.root.wiring import run
-from droneey_python_check.settings import Expected, Problem, SettingsError
-from droneey_python_check.usage_error import Misuse, UsageError
 
 USAGE: Final = 'usage: python-check <path>...'
 MISUSES: Final = {

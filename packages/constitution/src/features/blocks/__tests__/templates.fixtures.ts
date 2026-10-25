@@ -68,10 +68,6 @@ const PARAGLIDE: ReadonlyArray<
     '<the reason>',
     'the compiler checks a function call, and a key is only a string.',
   ],
-  [
-    '[<lens>, <lens>]',
-    '[errors]',
-  ],
 ] as const;
 
 const paraglideFromTemplate = (path: string): string => {

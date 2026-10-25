@@ -10,7 +10,6 @@ interface Branch {
 }
 
 interface BranchInput {
-  // the environment git runs with, built for it
   readonly env: Readonly<Record<string, string>>;
   readonly folder: string;
   readonly timeoutMs: number;

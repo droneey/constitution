@@ -46,7 +46,6 @@ interface RuleFixture {
   level?: string;
   slug: string;
   statement?: string;
-  tags?: string;
   tightens?: string;
   why?: string;
 }
@@ -99,9 +98,9 @@ const rule = (input: RuleFixture): string =>
     headingOf(input),
     input.statement ?? `The ${input.slug} rule holds.`,
     '',
-    '| Why | Tags |',
-    '|---|---|',
-    `| ${input.why ?? 'it keeps the code honest.'} | ${input.tags ?? '[]'} |`,
+    '| Why |',
+    '|---|',
+    `| ${input.why ?? 'it keeps the code honest.'} |`,
     '',
   ].join('\n');
 

@@ -1,10 +1,11 @@
 import type { ReactElement } from 'react';
 
+import { useSearchPages } from '#/features/content';
 import type { SearchDialogSlotProps } from '#/libs/ui';
-import { SearchDialog, useStaticSearch } from '#/libs/ui';
+import { SearchDialog } from '#/libs/ui';
 
 export function DocsSearchWidget(props: SearchDialogSlotProps): ReactElement {
-  const search = useStaticSearch({});
+  const search = useSearchPages();
 
   return (
     <SearchDialog

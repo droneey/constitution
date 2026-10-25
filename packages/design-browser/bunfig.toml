@@ -10,8 +10,6 @@ coveragePathIgnorePatterns = [
   "**/__tests__/**",
   "**/main.*",
   "**/*.gen.*",
-  # Another unit of the workspace, which its own specs cover.
-  "../design-tokens/**",
 ]
 
 [run]

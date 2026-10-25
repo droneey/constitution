@@ -1,14 +1,15 @@
 import { describe, expect, it } from 'bun:test';
 
-import { Layer } from '#/kernel/constants';
+import { Layer, Level } from '#/kernel/constants';
 import type { ProjectWarning } from '#/kernel/entities';
 import { WarningKind } from '#/kernel/entities';
-import { BlockId, BlockSource, Version } from '#/kernel/value-objects';
+import { BlockId, BlockSource, RuleSlug, repositoryUnit, Version } from '#/kernel/value-objects';
 import { warningTextOf } from '#/shared/cli';
 
 import { DigestKind } from '../../../domain/entities';
 import { blockListLines } from '../block-list.utils';
 import { digestOf } from '../digest.utils';
+import { overrideListLines } from '../override-list.utils';
 
 const RELEASE_FOLDER = '/work/project/.droneey/constitution';
 const releaseFiles = {
@@ -36,7 +37,7 @@ describe('digestOf', () => {
       counted: 'constitution.yaml makes 2 blocks active.',
     },
   ])(
-    'should give the release and the count, then the warnings, core and the block list, when $condition',
+    'should give the release and the count, then the warnings, core, the overrides and the block list, when $condition',
     ({ count, counted }) => {
       // Arrange
       const warning: ProjectWarning = {
@@ -53,6 +54,13 @@ describe('digestOf', () => {
         kind: DigestKind.Resolved,
         listing: {
           ...emptyListing,
+          overrides: [
+            {
+              level: Level.May,
+              rule: RuleSlug.create('inputs-are-labelled'),
+              unit: repositoryUnit,
+            },
+          ],
           repository: [
             {
               files: [],
@@ -79,6 +87,8 @@ describe('digestOf', () => {
           `- config: ${warningTextOf(warning)}`,
           '',
           '# Core',
+          '',
+          ...overrideListLines(contents.listing.overrides),
           '',
           ...blockListLines(contents.listing),
         ],

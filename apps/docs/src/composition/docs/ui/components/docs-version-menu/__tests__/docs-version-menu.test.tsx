@@ -1,6 +1,6 @@
-import { afterEach, describe, expect, test } from 'bun:test';
+import { afterEach, describe, expect, it } from 'bun:test';
 
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import type { VersionsState } from '#/features/versions';
@@ -27,7 +27,7 @@ const linkTo = (version: string): HTMLElement =>
   });
 
 describe('DocsVersionMenu', () => {
-  test.each([
+  it.each([
     {
       condition: 'the releases are loading',
       versionsState: {
@@ -64,7 +64,7 @@ describe('DocsVersionMenu', () => {
     },
   );
 
-  test('should name no release the latest when this site belongs to an older one', () => {
+  it('should name no release the latest when this site belongs to an older one', () => {
     // Arrange
     const currentVersion = Version.create('0.69.2');
 
@@ -72,7 +72,7 @@ describe('DocsVersionMenu', () => {
     render(
       <DocsVersionMenu
         currentVersion={currentVersion}
-        pageHref='/v0.69.2/docs/guides/write-a-pack'
+        pageHref='/docs/guides/write-a-pack'
         versionsState={loaded}
       />,
     );
@@ -81,7 +81,7 @@ describe('DocsVersionMenu', () => {
     expect(screen.getByRole('button').textContent).toBe('v0.69.2');
   });
 
-  test.each([
+  it.each([
     {
       condition: 'the releases are loading',
       notice: 'Loading versions…',
@@ -122,13 +122,13 @@ describe('DocsVersionMenu', () => {
           name: 'Versions',
         }).textContent,
       ]).toStrictEqual([
-        '/docs/guides/write-a-pack',
+        '/v0.70.0/docs/guides/write-a-pack',
         `v0.70.0${notice}`,
       ]);
     },
   );
 
-  test('should link every release to the same page in its site when the releases have loaded', async () => {
+  it("should link every release to the same page in its site, the latest's included, when the releases have loaded", async () => {
     // Arrange
     render(
       <DocsVersionMenu
@@ -143,12 +143,12 @@ describe('DocsVersionMenu', () => {
 
     // Assert
     expect(screen.getAllByRole('link').map((link) => link.getAttribute('href'))).toStrictEqual([
-      '/docs/guides/write-a-pack',
+      '/v0.70.0/docs/guides/write-a-pack',
       '/v0.69.2/docs/guides/write-a-pack',
     ]);
   });
 
-  test('should list the releases with no notice when they have loaded', async () => {
+  it('should list the releases with no notice when they have loaded', async () => {
     // Arrange
     render(
       <DocsVersionMenu
@@ -169,12 +169,12 @@ describe('DocsVersionMenu', () => {
     ).toBe('v0.70.0latestv0.69.2');
   });
 
-  test('should mark the latest release among the releases when they have loaded', async () => {
+  it('should mark the latest release among the releases when they have loaded', async () => {
     // Arrange
     render(
       <DocsVersionMenu
         currentVersion={Version.create('0.69.2')}
-        pageHref='/v0.69.2/docs/guides/write-a-pack'
+        pageHref='/docs/guides/write-a-pack'
         versionsState={loaded}
       />,
     );
@@ -189,12 +189,12 @@ describe('DocsVersionMenu', () => {
     ]);
   });
 
-  test('should mark this release as the current page when the reader opens the menu', async () => {
+  it('should mark this release as the current page when the reader opens the menu', async () => {
     // Arrange
     render(
       <DocsVersionMenu
         currentVersion={Version.create('0.69.2')}
-        pageHref='/v0.69.2/docs/guides/write-a-pack'
+        pageHref='/docs/guides/write-a-pack'
         versionsState={loaded}
       />,
     );
@@ -212,12 +212,12 @@ describe('DocsVersionMenu', () => {
     ]);
   });
 
-  test('should tick only this release when the reader opens the menu', async () => {
+  it('should tick only this release when the reader opens the menu', async () => {
     // Arrange
     render(
       <DocsVersionMenu
         currentVersion={Version.create('0.69.2')}
-        pageHref='/v0.69.2/docs/guides/write-a-pack'
+        pageHref='/docs/guides/write-a-pack'
         versionsState={loaded}
       />,
     );
@@ -227,22 +227,20 @@ describe('DocsVersionMenu', () => {
 
     // Assert
     expect([
-      // biome-ignore lint/plugin/queries-by-role-label-text: the release's mark is an icon hidden from assistive technology, which no role, label or text names
-      linkTo('0.70.0').querySelector('svg') === null,
-      // biome-ignore lint/plugin/queries-by-role-label-text: the release's mark is an icon hidden from assistive technology, which no role, label or text names
-      linkTo('0.69.2').querySelector('svg') === null,
+      within(linkTo('0.70.0')).queryByTestId('selected') === null,
+      within(linkTo('0.69.2')).queryByTestId('selected') === null,
     ]).toStrictEqual([
       true,
       false,
     ]);
   });
 
-  test('should pass the WCAG 2.2 A and AA scan when the reader opens the menu', async () => {
+  it('should pass the WCAG 2.2 A and AA scan when the reader opens the menu', async () => {
     // Arrange
     render(
       <DocsVersionMenu
         currentVersion={Version.create('0.69.2')}
-        pageHref='/v0.69.2/docs/guides/write-a-pack'
+        pageHref='/docs/guides/write-a-pack'
         versionsState={loaded}
       />,
     );

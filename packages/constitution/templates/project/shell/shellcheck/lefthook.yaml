@@ -3,4 +3,4 @@ pre-commit:
   jobs:
     - name: shellcheck
       exclude:
-        - "<unit folders>/**"
+        - '<unit folders>/**'

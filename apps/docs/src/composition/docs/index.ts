@@ -1,4 +1,8 @@
-export { DocsBuiltVersionContext, DocsFrameContext } from './app/providers';
+export { DocsBuiltVersionContext } from './app/providers';
+export { IsScreenNarrowContext, MarkSidebarContext } from './app/use-cases';
+export type { DocumentFrame } from './domain/contracts';
+export type { IsScreenNarrow, MarkSidebar } from './domain/use-cases';
+export { createIsScreenNarrow, createMarkSidebar } from './domain/use-cases';
 export { PAGE_SCROLLER_SELECTOR } from './ui/constants';
 export { DocsErrorScreen } from './ui/screens/docs-error';
 export { DocsNotFoundScreen } from './ui/screens/docs-not-found';

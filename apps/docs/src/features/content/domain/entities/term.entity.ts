@@ -1,7 +1,7 @@
 import { InvalidValueError, ValueFailure } from '../errors';
 import { Axis, Block } from './block.entity';
 
-/** the grammar the Constitution's check reads a definition by */
+/** what a term names, as the Constitution's grammar reads a definition */
 enum TermKind {
   Concept = 'concept',
   Brand = 'brand',
@@ -22,59 +22,8 @@ interface Term {
   readonly sentence: string;
 }
 
-interface TermName {
-  readonly kind: TermKind;
-  readonly name: string;
-}
-
-const CONCEPT = /^[a-z]+(?:[ -][a-z]+)*$/;
-const LEAD_IN_END = /[.:]$/;
-const FILE_NAME = /^[\w-]+(?:\.[\w-]+)+$/;
-const FOLDER_END = '/';
-const SUFFIX_START = '.';
 const PATH_SEPARATOR = '/';
 const SENTENCE_BREAK = /(?<=[.!?])\s+(?=[A-Z*`[(])/g;
-const WHITESPACE = /\s+/g;
-
-const codeKindOf = (name: string): TermKind => {
-  if (name.endsWith(FOLDER_END)) {
-    return TermKind.Folder;
-  }
-
-  if (name.startsWith(SUFFIX_START)) {
-    return TermKind.Suffix;
-  }
-
-  return FILE_NAME.test(name) ? TermKind.File : TermKind.Api;
-};
-
-// A lead-in closes on "." or ":" and opens its sentence, so a capital that opens it is the
-// sentence's, not the term's.
-const plainNameOf = (text: string): TermName => {
-  const words = text.replaceAll(WHITESPACE, ' ');
-  const isLeadIn = LEAD_IN_END.test(words);
-  const name = isLeadIn ? words.slice(0, -1) : words;
-  const lowered = isLeadIn ? `${name.charAt(0).toLowerCase()}${name.slice(1)}` : name;
-
-  return CONCEPT.test(lowered)
-    ? {
-        kind: TermKind.Concept,
-        name: lowered,
-      }
-    : {
-        kind: TermKind.Brand,
-        name,
-      };
-};
-
-/** the term a bold span defines: one code span, or plain words */
-const nameOf = (bold: { isCode: boolean; text: string }): TermName =>
-  bold.isCode
-    ? {
-        kind: codeKindOf(bold.text),
-        name: bold.text,
-      }
-    : plainNameOf(bold.text);
 
 /** a passport's axis is foundation's, and a seam's is the folder it sits in */
 const axisOf = (path: string): Axis =>
@@ -152,7 +101,6 @@ const Term = {
   create,
   equals,
   is,
-  nameOf,
   sentenceAround,
 } as const;
 

@@ -29,7 +29,7 @@ describe('ruleFormTexts', () => {
           slug: RuleSlug.create('a'),
         },
       },
-      text: 'rule "a" has no table "| Why | Tags |"',
+      text: 'rule "a" has no table "| Why |"',
     },
     {
       problem: {
@@ -48,7 +48,7 @@ describe('ruleFormTexts', () => {
           slug: RuleSlug.create('a'),
         },
       },
-      text: 'rule "a" has a table whose header is not "| Why | Tags |"',
+      text: 'rule "a" has a table whose header is not "| Why |"',
     },
     {
       problem: {
@@ -64,21 +64,11 @@ describe('ruleFormTexts', () => {
       problem: {
         code: RuleFormCode.CellsMiscounted,
         details: {
-          count: 1,
+          count: 2,
           slug: RuleSlug.create('a'),
         },
       },
-      text: `rule "a" has a row of 1 cells; a rule's table has 2`,
-    },
-    {
-      problem: {
-        code: RuleFormCode.TagsNotList,
-        details: {
-          slug: RuleSlug.create('a'),
-          tags: 'ux, data',
-        },
-      },
-      text: 'rule "a" has the Tags "ux, data"; Tags is a list, such as [security, ux] or []',
+      text: `rule "a" has a row of 2 cells; a rule's table has 1`,
     },
     {
       problem: {
@@ -88,7 +78,7 @@ describe('ruleFormTexts', () => {
           slug: RuleSlug.create('a'),
         },
       },
-      text: 'rule "a" has the label "Why"; a rule states Why and Tags in its table and holds no label but Example',
+      text: 'rule "a" has the label "Why"; a rule states its Why in its table and holds no label but Example',
     },
     {
       problem: {

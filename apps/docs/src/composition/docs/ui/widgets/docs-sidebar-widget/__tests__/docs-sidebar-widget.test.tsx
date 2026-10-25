@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, test } from 'bun:test';
+import { afterEach, describe, expect, it } from 'bun:test';
 
 import type { ReactElement } from 'react';
 
@@ -57,7 +57,7 @@ const toggle = (): HTMLElement =>
   });
 
 describe('DocsSidebarWidget', () => {
-  test('should keep the sidebar open and tell the frame so when the site opens on a wide screen', () => {
+  it('should tell the frame the sidebar is open when the site opens', () => {
     // Arrange
     const { frame, marks } = frameFake();
 
@@ -76,72 +76,7 @@ describe('DocsSidebarWidget', () => {
     ]);
   });
 
-  test('should collapse the sidebar and tell the frame so when the site opens on a narrow screen', () => {
-    // Arrange
-    const { frame, marks } = frameFake({
-      narrow: true,
-    });
-
-    // Act
-    renderInDocs(layoutOn('index.md'), {
-      frame,
-    });
-
-    // Assert
-    expect([
-      toggle().getAttribute('aria-expanded'),
-      marks.at(-1),
-    ]).toStrictEqual([
-      'false',
-      FrameMark.Collapsed,
-    ]);
-  });
-
-  test('should collapse the sidebar again when the reader opens another page on a narrow screen', async () => {
-    // Arrange
-    const { frame, marks } = frameFake({
-      narrow: true,
-    });
-    const { rerender } = renderInDocs(layoutOn('index.md'), {
-      frame,
-    });
-
-    await userEvent.click(toggle());
-
-    // Act
-    rerender(layoutOn('guides/write-a-pack.md'));
-
-    // Assert
-    expect([
-      toggle().getAttribute('aria-expanded'),
-      marks.at(-1),
-    ]).toStrictEqual([
-      'false',
-      FrameMark.Collapsed,
-    ]);
-  });
-
-  test('should keep the sidebar open when the reader opens another page on a wide screen', () => {
-    // Arrange
-    const { frame, marks } = frameFake();
-    const { rerender } = renderInDocs(layoutOn('index.md'), {
-      frame,
-    });
-
-    // Act
-    rerender(layoutOn('guides/write-a-pack.md'));
-
-    // Assert
-    expect([
-      toggle().getAttribute('aria-expanded'),
-      marks.at(-1),
-    ]).toStrictEqual([
-      'true',
-      FrameMark.Open,
-    ]);
-  });
-
-  test('should tell the frame when the reader collapses the sidebar', async () => {
+  it('should tell the frame when the reader collapses the sidebar', async () => {
     // Arrange
     const { frame, marks } = frameFake();
 
@@ -156,7 +91,7 @@ describe('DocsSidebarWidget', () => {
     expect(marks.at(-1)).toBe(FrameMark.Collapsed);
   });
 
-  test('should show the page tree when the root gives no frame', () => {
+  it('should show the page tree when the root gives no frame', () => {
     // Arrange
     const path = 'index.md';
 
@@ -173,7 +108,7 @@ describe('DocsSidebarWidget', () => {
     ).toBe('/docs/guides/write-a-pack');
   });
 
-  test('should pass the WCAG 2.2 A and AA scan', async () => {
+  it('should pass the WCAG 2.2 A and AA scan', async () => {
     // Arrange
     renderInDocs(layoutOn('index.md'), {
       frame: frameFake().frame,

@@ -87,6 +87,7 @@ function followPointerAndFocus(
 function glide(area: HTMLElement, { rows, marked, filled }: GlideList): () => void {
   const block = document.createElement('div');
   block.dataset.glide = '';
+  block.dataset.testid = 'glide';
   block.setAttribute('aria-hidden', 'true');
 
   if (getComputedStyle(area).position === 'static') {

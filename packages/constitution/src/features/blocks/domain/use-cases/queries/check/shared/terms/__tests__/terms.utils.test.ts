@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'bun:test';
 
-import type { Term } from '../../../../../../entities';
-import { TermKind } from '../../../../../../entities';
+import type { Term } from '#/kernel/entities';
+import { TermKind } from '#/kernel/entities';
+
 import type { TermsRead } from '../terms.utils';
 import { otherSpellingOf, termMatcher, termsIn } from '../terms.utils';
 

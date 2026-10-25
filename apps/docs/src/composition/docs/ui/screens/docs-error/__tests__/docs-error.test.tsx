@@ -1,6 +1,6 @@
-import { afterEach, describe, expect, test } from 'bun:test';
+import { afterEach, describe, expect, it } from 'bun:test';
 
-import { cleanup, screen, waitFor } from '@testing-library/react';
+import { cleanup, screen, waitFor, within } from '@testing-library/react';
 
 import { screenViolationsIn } from '../../../../__tests__/axe.fixtures';
 import { renderInDocs } from '../../../../__tests__/docs.fixtures';
@@ -12,7 +12,7 @@ afterEach(() => {
 });
 
 describe('DocsErrorScreen', () => {
-  test('should say the page could not be shown and lead the reader back home', () => {
+  it('should say the page could not be shown and lead the reader back home', () => {
     // Act
     renderInDocs(<DocsErrorScreen />);
 
@@ -32,7 +32,7 @@ describe('DocsErrorScreen', () => {
     ]);
   });
 
-  test('should make its main region the target of the skip link', () => {
+  it('should make its main region the target of the skip link', () => {
     // Act
     renderInDocs(<DocsErrorScreen />);
 
@@ -48,7 +48,7 @@ describe('DocsErrorScreen', () => {
     ]);
   });
 
-  test('should name the site and link its repository', () => {
+  it('should name the site and link its repository', () => {
     // Act
     renderInDocs(<DocsErrorScreen />);
 
@@ -64,7 +64,7 @@ describe('DocsErrorScreen', () => {
     ]);
   });
 
-  test('should slide a block under the items of a menu that opens on it', async () => {
+  it('should slide a block under the items of a menu that opens on it', async () => {
     // Arrange
     renderInDocs(<DocsErrorScreen />);
 
@@ -81,11 +81,10 @@ describe('DocsErrorScreen', () => {
     document.body.append(menu);
 
     // Assert
-    // biome-ignore lint/plugin/queries-by-role-label-text: the glide is a decoration hidden from assistive technology, which CSS finds by its attribute
-    await waitFor(() => expect(menu.querySelectorAll('[data-glide]').length).toBe(1));
+    await waitFor(() => expect(within(menu).getAllByTestId('glide').length).toBe(1));
   });
 
-  test('should pass the WCAG 2.2 A and AA scan', async () => {
+  it('should pass the WCAG 2.2 A and AA scan', async () => {
     // Arrange
     renderInDocs(<DocsErrorScreen />);
 

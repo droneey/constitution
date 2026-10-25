@@ -5,7 +5,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 
 import { coreText } from '../constitution.fixtures';
 import { browserAppContext, everyCodeContext, unparsedContext } from '../digests.fixtures';
-import type { Cut, HookRun, Warning } from '../hook.fixtures';
+import type { Cut, HookRun, ListedOverride, Warning } from '../hook.fixtures';
 import {
   BUDGET,
   bytesAfterHeader,
@@ -21,6 +21,7 @@ import {
   mustsOf,
   newSession,
   outputOf,
+  overridesOf,
   pluginAtEdge,
   removeSessions,
   runHook,
@@ -1657,8 +1658,6 @@ describe('session-start hook', () => {
         'browser [contexts/platforms] (architecture: render)',
         '_react [implementations] (hooks)',
         'react-dom [implementations] (architecture: portals)',
-        '## Overrides',
-        'four-data-states',
       ],
       layout: library,
       project: 'a library whose package is an application with its override',
@@ -1952,6 +1951,61 @@ describe('session-start hook', () => {
 
     // Assert
     expect(listCutOf(context)).toStrictEqual<Cut>(cut);
+  });
+
+  it("should list every override, the repository's and its member's, when the block list does not fit at all", () => {
+    // Arrange
+    const layout = {
+      config: configOf({
+        domains: '[ui]',
+        overrides: fourDataStatesOverride('    level: MAY\n    reason: "a prototype"'),
+      }),
+      files: workspaceOf({
+        web: memberConfigOf({
+          domains: '[ui]',
+          overrides: fourDataStatesOverride('    level: SHOULD\n    reason: "the kit decides"'),
+        }),
+      }),
+    };
+    const plugin = pluginAtEdge({
+      context: contextOf(
+        runHook({
+          event: HookEvent.Startup,
+          project: createProject(layout),
+          root,
+        }),
+      ),
+      edge: Edge.Heading,
+      past: 1,
+    });
+    const project = createProject(layout);
+
+    // Act
+    const context = contextOf(
+      runHook({
+        event: HookEvent.Startup,
+        project,
+        root: plugin,
+      }),
+    );
+
+    // Assert
+    expect({
+      kept: listCutOf(context).kept,
+      overrides: overridesOf(context),
+    }).toStrictEqual({
+      kept: 0,
+      overrides: [
+        [
+          'four-data-states',
+          'MAY',
+        ],
+        [
+          'four-data-states',
+          'SHOULD',
+        ],
+      ] satisfies ListedOverride[],
+    });
   });
 
   it('should fill the budget to its last byte when the last line of the block list ends on it', () => {

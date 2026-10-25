@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, test } from 'bun:test';
+import { afterEach, describe, expect, it } from 'bun:test';
 
 import { documentFrame } from '../document-frame.adapter';
 
@@ -24,7 +24,7 @@ afterEach(() => {
 });
 
 describe('documentFrame', () => {
-  test.each([
+  it.each([
     {
       narrow: true,
       width: 767,
@@ -44,7 +44,7 @@ describe('documentFrame', () => {
     expect(isNarrow).toBe(narrow);
   });
 
-  test('should set the document data-sidebar to collapsed when it marks the sidebar collapsed', () => {
+  it('should set the document data-sidebar to collapsed when it marks the sidebar collapsed', () => {
     // Arrange
     const root = document.documentElement;
 
@@ -55,7 +55,7 @@ describe('documentFrame', () => {
     expect(root.dataset.sidebar).toBe('collapsed');
   });
 
-  test('should set the document data-sidebar to open when it marks the sidebar open', () => {
+  it('should set the document data-sidebar to open when it marks the sidebar open', () => {
     // Arrange
     const root = document.documentElement;
 

@@ -6,15 +6,19 @@
       ],
       "linter": {
         "rules": {
-          "nursery": {
+          "correctness": {
+            "noPlaywrightMissingAwait": "error",
+          },
+          "style": {
             "noPlaywrightElementHandle": "error",
             "noPlaywrightEval": "error",
+            "noPlaywrightWaitForSelector": "error",
+          },
+          "suspicious": {
             "noPlaywrightForceOption": "error",
-            "noPlaywrightMissingAwait": "error",
             "noPlaywrightNetworkidle": "error",
             "noPlaywrightPagePause": "error",
             "noPlaywrightWaitForNavigation": "error",
-            "noPlaywrightWaitForSelector": "error",
             "noPlaywrightWaitForTimeout": "error",
           },
         },

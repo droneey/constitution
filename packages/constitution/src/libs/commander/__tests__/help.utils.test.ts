@@ -3,7 +3,8 @@ import { describe, expect, it } from 'bun:test';
 import { ColourLevel, createTheme, ThemeMode } from '@droneey/design-cli';
 import { Command } from 'commander';
 
-import { createHelpLayout } from '../help.utils';
+import type { HelpExamples } from '../help.utils';
+import { configureHelpLayout } from '../help.utils';
 
 const theme = createTheme({
   colourLevel: ColourLevel.None,
@@ -11,35 +12,61 @@ const theme = createTheme({
   mode: ThemeMode.Dark,
 });
 
-const createProgram = (): Command => {
+// A program laid out, its help written to a buffer, and the text of examples for its commands.
+const createProgram = (): {
+  readonly help: () => readonly string[];
+  readonly helpExamples: HelpExamples;
+  readonly program: Command;
+} => {
+  let written = '';
   const program = new Command('constitution')
     .description('The rules a repository is built by.')
     .option('--plain', 'print plain text')
-    .option('-q, --quiet', 'print only failures');
+    .option('-q, --quiet', 'print only failures')
+    .configureOutput({
+      writeOut: (text: string): void => {
+        written += text;
+      },
+    });
+  const helpExamples = configureHelpLayout(program, () => theme);
 
-  program.command('check').description('Check the blocks and the project.');
-  program.command('wiring').description('List the parts each configuration takes.');
+  for (const [name, description] of [
+    [
+      'check',
+      'Check the blocks and the project.',
+    ],
+    [
+      'wiring',
+      'List the parts each configuration takes.',
+    ],
+  ] as const) {
+    program.command(name).description(description);
+  }
 
-  return program;
+  return {
+    help: () => written.split('\n'),
+    helpExamples,
+    program,
+  };
 };
 
-describe('createHelpLayout', () => {
+describe('configureHelpLayout', () => {
   it('should lay out what the program does and its examples before its usage, commands and options', () => {
     // Arrange
-    const program = createProgram().configureHelp(
-      createHelpLayout({
-        examplesOf: () => [
-          'constitution check',
-        ],
-        theme,
-      }),
+    const { help, helpExamples, program } = createProgram();
+
+    program.addHelpText(
+      'before',
+      helpExamples([
+        'constitution check',
+      ]),
     );
 
     // Act
-    const help = program.helpInformation();
+    program.outputHelp();
 
     // Assert
-    expect(help.split('\n')).toStrictEqual([
+    expect(help()).toStrictEqual([
       'The rules a repository is built by.',
       '',
       'Examples',
@@ -61,52 +88,42 @@ describe('createHelpLayout', () => {
     ]);
   });
 
-  it('should leave out the examples and the arguments when a command has none', () => {
+  it('should open with the usage, and list the arguments, when the command says nothing of what it does', () => {
     // Arrange
-    const command = new Command('wiring')
-      .description('List the parts.')
+    const { help, program } = createProgram();
+    const command = program
+      .command('list')
       .argument('<unit>', 'the unit to list')
-      .helpOption(false)
-      .configureHelp(
-        createHelpLayout({
-          examplesOf: () => [],
-          theme,
-        }),
-      );
+      .helpOption(false);
 
     // Act
-    const help = command.helpInformation();
+    command.outputHelp();
 
     // Assert
-    expect(help.split('\n')).toStrictEqual([
-      'List the parts.',
-      '',
+    expect(help()).toStrictEqual([
       'Usage',
-      '  wiring <unit>',
+      '  constitution list <unit>',
       '',
       'Arguments',
       '  unit  the unit to list',
       '',
+      'Global options',
+      '  --plain      print plain text',
+      '  -q, --quiet  print only failures',
+      '',
     ]);
   });
 
-  it('should list the options of the program after those of a command when it shows them', () => {
+  it('should leave out the examples, and list the options of the program after its own, when the command has none', () => {
     // Arrange
-    const check = createProgram()
-      .commands.find((command) => command.name() === 'check')
-      ?.configureHelp({
-        ...createHelpLayout({
-          examplesOf: () => [],
-          theme,
-        }),
-        showGlobalOptions: true,
-      });
+    const { help, program } = createProgram();
+    const check = program.commands.find((command) => command.name() === 'check');
 
     // Act
-    const help = check?.helpInformation() ?? '';
+    check?.outputHelp();
 
     // Assert
-    expect(help.split('\n')).toStrictEqual([
+    expect(help()).toStrictEqual([
       'Check the blocks and the project.',
       '',
       'Usage',

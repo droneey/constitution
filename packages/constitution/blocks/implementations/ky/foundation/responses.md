@@ -8,6 +8,6 @@
 
 A response body is read by `.json()` with no type argument and parsed by a schema; `.json<T>()` is forbidden.
 
-| Why | Tags |
-|---|---|
-| `.json<T>()` only names a type and checks nothing. | [security] |
+| Why |
+|---|
+| `.json<T>()` only names a type and checks nothing. |

@@ -8,6 +8,6 @@
 
 A release tag is annotated.
 
-| Why | Tags |
-|---|---|
-| an annotated tag records who tagged the release and when. | [] |
+| Why |
+|---|
+| an annotated tag records who tagged the release and when. |

@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'bun:test';
+import { describe, expect, it } from 'bun:test';
 
 import { specsByFile } from '../specs-by-file.utils.ts';
 
@@ -25,7 +25,7 @@ const IMPORTS: Readonly<Record<string, readonly string[]>> = {
 const importsOf = (path: string): readonly string[] => IMPORTS[path] ?? [];
 
 describe('the specs of each file', () => {
-  test('should list every spec whose imports reach the file, the nearest first', () => {
+  it('should list every spec whose imports reach the file, the nearest first', () => {
     // Act
     const specs = specsByFile({
       importsOf,

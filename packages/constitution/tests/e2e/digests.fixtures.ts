@@ -16,6 +16,7 @@ const firstLine = (root: string): string =>
 const contextWith = (input: {
   body?: readonly string[];
   facts: readonly string[];
+  overrides?: readonly string[];
   root: string;
   warnings?: readonly string[];
 }): string =>
@@ -30,6 +31,11 @@ const contextWith = (input: {
           input.warnings.join('\n'),
         ]),
     coreText.trimEnd(),
+    ...(input.overrides === undefined
+      ? []
+      : [
+          input.overrides.join('\n'),
+        ]),
     ...(input.body === undefined
       ? []
       : [
@@ -78,11 +84,13 @@ const browserAppContext = (root: string): string =>
       '- react-dom (architecture: portals)',
       '- tanstack-query (architecture: queries)',
       '- paraglide [constitution]',
-      '## Overrides',
-      '- analytics-consent-first: SHOULD until 2999-12-31',
     ],
     facts: [
       'constitution.yaml makes 19 blocks active.',
+    ],
+    overrides: [
+      '## Overrides',
+      '- analytics-consent-first: SHOULD until 2999-12-31',
     ],
     root,
   });

@@ -8,7 +8,7 @@ import {
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { dirname, join, normalize } from 'node:path';
 
 import { z } from 'zod';
 
@@ -43,6 +43,7 @@ const preset = z.object({
         z.string(),
         z.object({
           includes: z.array(z.string()),
+          path: z.string(),
         }),
       ]),
     )
@@ -381,9 +382,16 @@ const presetFiles = (): readonly string[] =>
 
 const presetText = (path: string): string => readFileSync(join(presetsFolder, path), 'utf8');
 
+const presetPlugins = (): readonly NonNullable<z.infer<typeof preset>['plugins']>[number][] =>
+  presetFiles().flatMap((path) => preset.parse(Bun.JSONC.parse(presetText(path))).plugins ?? []);
+
+// Biome 2.6 runs every entry of one path over the union of their includes, so an entry that
+// narrows another narrows nothing.
+const presetPluginPaths = (): readonly string[] =>
+  presetPlugins().map((plugin) => normalize(typeof plugin === 'string' ? plugin : plugin.path));
+
 const presetWords = (): readonly string[] => {
-  const segments = presetFiles()
-    .flatMap((path) => preset.parse(Bun.JSONC.parse(presetText(path))).plugins ?? [])
+  const segments = presetPlugins()
     .flatMap((plugin) => (typeof plugin === 'string' ? [] : plugin.includes))
     .flatMap((glob) => glob.replace(/^!/, '').split('/'))
     .filter((segment) => segment !== '**')
@@ -413,6 +421,7 @@ export {
   createLintBatch,
   formattedText,
   presetFiles,
+  presetPluginPaths,
   presetText,
   presetWords,
 };

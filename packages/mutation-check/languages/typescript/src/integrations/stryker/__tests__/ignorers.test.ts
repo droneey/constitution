@@ -2,12 +2,23 @@ import { describe, expect, it } from 'bun:test';
 
 import { PluginKind } from '@stryker-mutator/api/plugin';
 
-import { strykerPlugins } from '../ignorers.ts';
+import { strykerPlugins, strykerValidationSchema } from '../ignorers.ts';
 
 const [plugin] = strykerPlugins;
 
 const LOG_CALL = 'A log call: no caller relies on it';
 const ERROR_TEXT = 'The text of a diagnostic: no caller relies on it';
+const PERSON_TEXT = 'Text only a person reads: no caller relies on it';
+
+const TEXT_ARGUMENTS = {
+  description: 0,
+  option: 1,
+} as const;
+
+const ignorerOf = (textArguments: object = TEXT_ARGUMENTS) =>
+  plugin.factory({
+    diagnosticsTextArguments: textArguments,
+  });
 
 const identifier = (name: string) => ({
   name,
@@ -75,7 +86,7 @@ describe('the diagnostics ignorer', () => {
     const path = callOn(identifier('logger'), level);
 
     // Act
-    const reason = plugin.value.shouldIgnore(path);
+    const reason = ignorerOf().shouldIgnore(path);
 
     // Assert
     expect(reason).toBe(LOG_CALL);
@@ -108,7 +119,7 @@ describe('the diagnostics ignorer', () => {
     const path = callOn(receiver);
 
     // Act
-    const reason = plugin.value.shouldIgnore(path);
+    const reason = ignorerOf().shouldIgnore(path);
 
     // Assert
     expect(reason).toBe(LOG_CALL);
@@ -181,7 +192,7 @@ describe('the diagnostics ignorer', () => {
     },
   ])('should keep the mutants when $condition', ({ path }) => {
     // Arrange
-    const ignorer = plugin.value;
+    const ignorer = ignorerOf();
 
     // Act
     const reason = ignorer.shouldIgnore(path);
@@ -212,7 +223,7 @@ describe('the diagnostics ignorer', () => {
     },
   ])('should leave out the text an error is built with when it is $condition', ({ path }) => {
     // Arrange
-    const ignorer = plugin.value;
+    const ignorer = ignorerOf();
 
     // Act
     const reason = ignorer.shouldIgnore(path);
@@ -277,13 +288,121 @@ describe('the diagnostics ignorer', () => {
     },
   ])('should keep the mutants when $condition', ({ path }) => {
     // Arrange
-    const ignorer = plugin.value;
+    const ignorer = ignorerOf();
 
     // Act
     const reason = ignorer.shouldIgnore(path);
 
     // Assert
     expect(reason).toBeUndefined();
+  });
+
+  // The path of an argument of `<receiver>.<method>(...)`.
+  const methodArgumentOf = (input: { key?: number | string; method: string; parent?: string }) => ({
+    key: input.key ?? 0,
+    node: {
+      type: 'CallExpression',
+    },
+    parentPath: {
+      node: {
+        callee: member({
+          object: identifier('command'),
+          property: identifier(input.method),
+        }),
+        type: input.parent ?? 'CallExpression',
+      },
+    },
+  });
+
+  it.each([
+    {
+      condition: 'the first argument of a method that takes it first',
+      path: methodArgumentOf({
+        method: 'description',
+      }),
+    },
+    {
+      condition: 'the second argument of a method that takes it second',
+      path: methodArgumentOf({
+        key: 1,
+        method: 'option',
+      }),
+    },
+  ])('should leave out the text only a person reads when it is $condition', ({ path }) => {
+    // Arrange
+    const ignorer = ignorerOf();
+
+    // Act
+    const reason = ignorer.shouldIgnore(path);
+
+    // Assert
+    expect(reason).toBe(PERSON_TEXT);
+  });
+
+  it.each([
+    {
+      condition: 'the argument is not the one the configuration names',
+      path: methodArgumentOf({
+        method: 'option',
+      }),
+    },
+    {
+      condition: 'the method is not named',
+      path: methodArgumentOf({
+        method: 'action',
+      }),
+    },
+    {
+      condition: 'the method is built, not called',
+      path: methodArgumentOf({
+        method: 'description',
+        parent: 'NewExpression',
+      }),
+    },
+    {
+      condition: 'the node is the callee, not an argument',
+      path: methodArgumentOf({
+        key: 'callee',
+        method: 'description',
+      }),
+    },
+  ])('should keep the mutants when $condition', ({ path }) => {
+    // Arrange
+    const ignorer = ignorerOf();
+
+    // Act
+    const reason = ignorer.shouldIgnore(path);
+
+    // Assert
+    expect(reason).toBeUndefined();
+  });
+
+  it('should keep the text of a method when the configuration names none', () => {
+    // Arrange
+    const ignorer = plugin.factory({});
+
+    // Act
+    const reason = ignorer.shouldIgnore(
+      methodArgumentOf({
+        method: 'description',
+      }),
+    );
+
+    // Assert
+    expect(reason).toBeUndefined();
+  });
+
+  it('should declare its key, so Stryker does not warn of it', () => {
+    // Arrange
+    const schema = strykerValidationSchema;
+
+    // Act
+    const declared = Object.keys(schema.properties);
+
+    // Assert
+    expect(declared).toStrictEqual([
+      'diagnosticsTextArguments',
+    ]);
   });
 
   it('should declare the ignorer the configuration names', () => {

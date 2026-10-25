@@ -15,7 +15,6 @@ const STRYKER_TIMEOUT_MS = 10_800_000;
 
 interface MutationCheckInput {
   readonly args: readonly string[];
-  // the environment git and Stryker run with, built for them
   readonly env: Readonly<Record<string, string>>;
   readonly folder: string;
   readonly write: (text: string) => void;

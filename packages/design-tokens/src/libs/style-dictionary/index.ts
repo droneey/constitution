@@ -1,1 +1,1 @@
-export { buildAll, isConfigList, staleFilesOf } from './utils';
+export { buildAll, configsOf, isConfigOfMode } from './utils';

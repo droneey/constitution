@@ -1,6 +1,7 @@
 export type {
   AccentTokens,
   Column,
+  ConfirmWordsInput,
   FailureContent,
   KeyValue,
   NoteContent,
@@ -18,6 +19,7 @@ export type {
 export {
   ColourLevel,
   ColumnAlign,
+  ConfirmWords,
   chooseOutput,
   createTheme,
   formatFailure,
@@ -36,5 +38,6 @@ export {
   StepStatus,
   ThemeMode,
   Tone,
+  UnusableConfirmWordsError,
   widthOf,
 } from './libs/ui';

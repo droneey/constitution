@@ -8,6 +8,6 @@
 
 <The rule, in one or two sentences.>
 
-| Why | Tags |
-|---|---|
-| <the reason> | [<lens>, <lens>] |
+| Why |
+|---|
+| <the reason> |

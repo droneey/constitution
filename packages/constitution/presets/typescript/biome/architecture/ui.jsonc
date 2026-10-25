@@ -1,5 +1,5 @@
 {
-  // Biome 2.5.15 refuses a global by path only in an override, and a later override of the same rule
+  // Biome 2.6.2 refuses a global by path only in an override, and a later override of the same rule
   // over the same files replaces its denied globals: this list repeats core's, where shared/ meets components/.
   "overrides": [
     {

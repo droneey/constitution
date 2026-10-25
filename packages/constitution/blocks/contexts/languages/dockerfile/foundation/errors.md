@@ -8,6 +8,6 @@
 
 A `RUN` that pipes sets `-o pipefail` through `SHELL`.
 
-| Why | Tags |
-|---|---|
-| without it a failing command before a pipe leaves a broken layer that the build reports as built. | [errors] |
+| Why |
+|---|
+| without it a failing command before a pipe leaves a broken layer that the build reports as built. |

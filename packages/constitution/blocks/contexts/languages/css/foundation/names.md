@@ -8,9 +8,9 @@
 
 A class the project declares names what its element is — `.order-summary` — never how it looks: `.red`, `.mt-4`.
 
-| Why | Tags |
-|---|---|
-| a name that says what an element is stays true when its look changes; one that says how it looks lies after the first redesign. | [] |
+| Why |
+|---|
+| a name that says what an element is stays true when its look changes; one that says how it looks lies after the first redesign. |
 
 ## Form
 
@@ -18,6 +18,6 @@ A class the project declares names what its element is — `.order-summary` — 
 
 A class the project declares is written in kebab-case: `.order-summary`, `.order-summary-title`.
 
-| Why | Tags |
-|---|---|
-| one case leaves no class spelled two ways, and a search for a name finds every use of it. | [] |
+| Why |
+|---|
+| one case leaves no class spelled two ways, and a search for a name finds every use of it. |

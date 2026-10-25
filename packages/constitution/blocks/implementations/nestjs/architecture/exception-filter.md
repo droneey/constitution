@@ -8,6 +8,6 @@
 
 The handler is one exception filter whose `@Catch()` names no class, registered globally by the root; no controller or method binds a filter of its own with `@UseFilters`.
 
-| Why | Tags |
-|---|---|
-| a filter that names no class receives every exception, the `NotFoundException` of an unknown route and the `BadRequestException` of a malformed body included, while a filter bound to one controller answers its failures in a second shape. | [errors, security] |
+| Why |
+|---|
+| a filter that names no class receives every exception, the `NotFoundException` of an unknown route and the `BadRequestException` of a malformed body included, while a filter bound to one controller answers its failures in a second shape. |

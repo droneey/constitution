@@ -6,7 +6,6 @@ import type { SessionId } from '../domain/value-objects';
 import type { HeldSessions } from './session.fixtures';
 import { heldSessionsOf } from './session.fixtures';
 
-// What a session's hooks read of the sessions held.
 const createFakeSessionQueryRepository = (
   sessions: HeldSessions = heldSessionsOf(),
 ): SessionQueryRepository => ({

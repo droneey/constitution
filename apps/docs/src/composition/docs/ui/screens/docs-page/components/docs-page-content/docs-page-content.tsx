@@ -3,9 +3,10 @@ import { use } from 'react';
 
 import { useGlide } from '@droneey/design-browser/react-dom';
 
-import { DocsPage, mdxComponents } from '#/libs/ui';
+import { DocsPage, mdxComponents, useSidebar } from '#/libs/ui';
 import { MAIN_CONTENT_ID } from '#/shared/constants';
 
+import { useCollapsedOnNarrowScreen } from '../../../../../app/use-cases';
 import { GLIDE_LISTS } from '../../../../constants';
 import type { DocsPageEntry } from '../../docs-page.types';
 import { pageSlots } from './docs-page-content.constants';
@@ -23,11 +24,19 @@ const focusOnAttach: RefCallback<HTMLHeadingElement> = (heading) =>
   });
 
 export function DocsPageContent({ hasNavigated, page, path }: DocsPageContentProps): ReactElement {
-  const { toc } = page.loaded() ?? use(page.load());
+  const { toc } = use(page.load());
   const Body = page.body;
+
+  const { setCollapsed } = useSidebar();
 
   // here, not in the root: the lists are on the page only once this content, which waits for its body, is hydrated
   useGlide(GLIDE_LISTS);
+  // here, not in the sidebar: collapsed before this content hydrates, its header would no longer
+  // match the server's, rendered beside an open sidebar
+  useCollapsedOnNarrowScreen({
+    collapse: () => setCollapsed(true),
+    path,
+  });
 
   // keyed by the path, the panel and the TOC's observer remount on each page, or it watches the old
   // headings; the page is a stop of the keyboard, as the sidebar's list is, so the arrows scroll it

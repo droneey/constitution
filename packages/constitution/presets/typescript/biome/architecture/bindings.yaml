@@ -1,4 +1,6 @@
 core:
+  biome-refuses-empty-names:
+    - biome-refuses-empty-names.grit
   effects-held-only-by-the-edge:
     - effects-held-only-by-the-edge.grit
     - noRestrictedGlobals
@@ -20,9 +22,13 @@ tanstack-query:
 typescript:
   business-types-readonly:
     - business-types-readonly.grit
+  closed-name-set-is-a-string-enum:
+    - closed-name-set-is-a-string-enum.grit
   process-env-read-only-under-root:
     - noProcessEnv
   surface-only-re-exports:
     - surface-only-re-exports.grit
   timer-set-only-by-the-edge-and-binding-units:
     - timer-set-only-by-the-edge-and-binding-units.grit
+  undefined-is-the-only-absence:
+    - undefined-is-the-only-absence.grit

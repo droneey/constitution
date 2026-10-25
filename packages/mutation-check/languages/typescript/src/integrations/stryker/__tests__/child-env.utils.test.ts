@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'bun:test';
+import { describe, expect, it } from 'bun:test';
 
 import { childEnvOf } from '../child-env.utils.ts';
 
@@ -12,7 +12,7 @@ const variables = (
 ): Readonly<Record<string, string>> => Object.fromEntries(entries);
 
 describe('childEnvOf', () => {
-  test.each([
+  it.each([
     {
       condition: 'the environment holds each of them',
       env: variables([

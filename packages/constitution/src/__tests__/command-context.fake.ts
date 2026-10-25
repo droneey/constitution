@@ -9,9 +9,8 @@ interface Ran {
 }
 
 // What a command did through its context: what it wrote to each stream, the steps it ran, the
-// reports it printed, the examples it gave its help, and whether it ended the run as failed.
+// reports it printed, and whether it ended the run as failed.
 interface CommandRecord {
-  readonly examples: readonly string[];
   readonly failures: number;
   readonly printed: readonly Report[];
   readonly ran: readonly Ran[];
@@ -31,7 +30,6 @@ const createFakeContext = (
   readonly context: CommandContext;
   readonly record: () => CommandRecord;
 } => {
-  const examples: string[] = [];
   const printed: Report[] = [];
   const ran: Ran[] = [];
   let stderr = '';
@@ -72,14 +70,12 @@ const createFakeContext = (
       setFailed: (): void => {
         failures += 1;
       },
-      withExamples: <TCommand>(command: TCommand, given: readonly string[]): TCommand => {
-        examples.push(...given);
-
-        return command;
-      },
+      helpExamples:
+        (examples: readonly string[]): (() => string) =>
+        (): string =>
+          examples.join('\n'),
     },
     record: (): CommandRecord => ({
-      examples,
       failures,
       printed,
       ran,

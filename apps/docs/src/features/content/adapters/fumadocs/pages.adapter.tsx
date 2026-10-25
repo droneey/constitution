@@ -1,3 +1,6 @@
+import type { ReactNode } from 'react';
+import { isValidElement } from 'react';
+
 import { Icon, IconName } from '@droneey/design-browser/react-dom';
 import type { Item } from 'fumadocs-core/page-tree';
 import type { LoaderPlugin } from 'fumadocs-core/source';
@@ -86,10 +89,42 @@ const crossLinks: LoaderPlugin = {
   },
 };
 
+/** a link the sidebar writes by its address, which the loader leaves off the base it serves its pages under */
+const linksUnder = (siteBase: string): LoaderPlugin => ({
+  // Stryker disable next-line StringLiteral: the name only labels the plugin in fumadocs' diagnostics
+  name: 'links-under-site-base',
+  transformPageTree: {
+    file: (node) =>
+      node.url.startsWith(DOCS_ROUTE)
+        ? {
+            ...node,
+            url: `${siteBase}${node.url.slice(1)}`,
+          }
+        : node,
+  },
+});
+
+/** the text a reader sees of an entry's name, which a cross link wraps with its arrow */
+const textOfName = (name: ReactNode): string => {
+  if (typeof name === 'string') {
+    return name;
+  }
+
+  if (Array.isArray(name)) {
+    return name.map(textOfName).join('');
+  }
+
+  return isValidElement<{
+    children?: ReactNode;
+  }>(name)
+    ? textOfName(name.props.children)
+    : '';
+};
+
 const markdownOfPage = async (
   page: MarkdownPage,
 ): Promise<string> => `# ${page.data.title} (${page.url})
 
 ${await page.data.getText('processed')}`;
 
-export { createSitePaths, crossLinks, markdownOfPage, passportAsIndex };
+export { createSitePaths, crossLinks, linksUnder, markdownOfPage, passportAsIndex, textOfName };

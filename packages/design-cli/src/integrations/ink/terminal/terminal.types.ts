@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import type { AccentTokens, Output } from '#/libs/ui';
+import type { AccentTokens, ConfirmWords, Output } from '#/libs/ui';
 
 import type { Choice } from '../components';
 import type { AnswerKind } from './terminal.constants';
@@ -26,6 +26,7 @@ interface AskSelectInput<T> extends TerminalInput {
 interface AskConfirmInput extends TerminalInput {
   readonly defaultAnswer: boolean;
   readonly message: string;
+  readonly words: ConfirmWords;
 }
 
 interface AskTextInput extends TerminalInput {

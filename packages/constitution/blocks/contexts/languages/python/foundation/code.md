@@ -8,6 +8,6 @@
 
 A file-system path is a `pathlib.Path`, joined with `/` and read through its methods, never a string built with `os.path`.
 
-| Why | Tags |
-|---|---|
-| one object joins, resolves and reads a path, where a string path is joined by hand and a separator or a `..` slips through. | [] |
+| Why |
+|---|
+| one object joins, resolves and reads a path, where a string path is joined by hand and a separator or a `..` slips through. |

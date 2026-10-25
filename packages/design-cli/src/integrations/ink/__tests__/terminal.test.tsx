@@ -2,12 +2,15 @@ import { describe, expect, it } from 'bun:test';
 
 import { Text } from 'ink';
 
+import { ConfirmWords } from '#/libs/ui';
+
 import { TextInput } from '../components';
 import { AnswerKind, askConfirm, askSelect, askText, openTerminalView } from '../terminal';
 import {
   createPlainOutput,
   createTerminalInput,
   createTerminalOutput,
+  englishWords,
   Key,
   pressKeys,
   settle,
@@ -140,6 +143,7 @@ describe('ask', () => {
       message: 'Overwrite?',
       output: createPlainOutput(),
       streams,
+      words: englishWords,
     });
 
     await settle();
@@ -154,7 +158,24 @@ describe('ask', () => {
 });
 
 describe('askConfirm', () => {
-  it('should give the default when Enter is pressed', async () => {
+  it.each([
+    {
+      condition: 'Enter is pressed',
+      answer: true,
+      key: Key.Enter,
+      words: englishWords,
+    },
+    {
+      condition: 'the key of its words for no is pressed',
+      answer: false,
+      key: 'н',
+      words: ConfirmWords.create({
+        locale: 'uk',
+        no: 'ні',
+        yes: 'так',
+      }),
+    },
+  ])('should give the answer when $condition', async ({ answer, key, words }) => {
     // Arrange
     const streams = createStreams();
     const asked = askConfirm({
@@ -162,17 +183,18 @@ describe('askConfirm', () => {
       message: 'Overwrite?',
       streams,
       output: createPlainOutput(),
+      words,
     });
 
     await settle();
 
     // Act
-    streams.stdin.write(Key.Enter);
+    streams.stdin.write(key);
 
     // Assert
     expect(await asked).toStrictEqual({
       kind: AnswerKind.Given,
-      value: true,
+      value: answer,
     });
   });
 });

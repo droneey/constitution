@@ -8,49 +8,49 @@
 
 A contract is declared by the inner layer that needs it, in that layer’s words, and implemented by the outer one; both depend on the contract, never the inner layer on the implementation.
 
-| Why | Tags |
-|---|---|
-| the business rules choose what they need, and a vendor or an engine is replaced without touching them. | [] |
+| Why |
+|---|
+| the business rules choose what they need, and a vendor or an engine is replaced without touching them. |
 
 ### port-justified-by-its-boundary · SHOULD
 
 A port at a boundary with something outside — a vendor, an engine, a transport, a format, the clock — is justified by the boundary alone: a port with one adapter is complete, not premature.
 
-| Why | Tags |
-|---|---|
-| the seam at a real boundary is where change arrives, whether or not a second implementation ever does. | [] |
+| Why |
+|---|
+| the seam at a real boundary is where change arrives, whether or not a second implementation ever does. |
 
 ### contract-knows-no-vendor · MUST
 
 A contract — a port, its parameters and results — imports no vendor, no adapter, no other feature and no other contract’s internals; it speaks only the domain's and the kernel's types and the values of the language's standard library that hold no effect.
 
-| Why | Tags |
-|---|---|
-| a contract that knows a vendor ties every implementation, and the domain that declares it, to that vendor. | [] |
+| Why |
+|---|
+| a contract that knows a vendor ties every implementation, and the domain that declares it, to that vendor. |
 
 ### feature-asks-another-through-its-own-contract · MUST
 
 A feature that needs an answer from another declares a contract in its own words and receives an input built for it; composition implements the contract through the other feature’s surface.
 
-| Why | Tags |
-|---|---|
-| the feature stays blind to the other, and the other can change its model without breaking it. | [] |
+| Why |
+|---|
+| the feature stays blind to the other, and the other can change its model without breaking it. |
 
 ### feature-reacts-to-another-only-through-composition · MUST
 
 A feature publishes its own events and never subscribes to another feature's; the reaction to another feature's event lives in a composition module, which calls the reacting feature's operation.
 
-| Why | Tags |
-|---|---|
-| a feature that listens to another depends on its events as much as on an import, and the chain of reactions is read in composition instead of hidden in subscribers spread through the features. | [] |
+| Why |
+|---|
+| a feature that listens to another depends on its events as much as on an import, and the chain of reactions is read in composition instead of hidden in subscribers spread through the features. |
 
 ### data-port-one-per-entity-and-side · SHOULD
 
 A data port is a repository per side — one for reads, one for writes — for each entity a caller loads or changes on its own, each declaring its operations’ parameters and results; a shape both sides use is an entity.
 
-| Why | Tags |
-|---|---|
-| reads and writes change apart, and a caller that only reads cannot reach a write. | [] |
+| Why |
+|---|
+| reads and writes change apart, and a caller that only reads cannot reach a write. |
 
 ## Adapters
 
@@ -58,30 +58,30 @@ A data port is a repository per side — one for reads, one for writes — for e
 
 An outside shape, a **wire model** — a response, a row, a message, a file format — is mapped to the inner model in the adapter, in both directions, its spellings of absence included; a wire shape never travels inward.
 
-| Why | Tags |
-|---|---|
-| a vendor’s shape inside the domain turns every change of the vendor into a change of the business rules. | [data] |
+| Why |
+|---|
+| a vendor’s shape inside the domain turns every change of the vendor into a change of the business rules. |
 
 ### adapter-imports-only-its-owners-domain-and-shared-layers · MUST
 
 An adapter imports the domain of the owner whose ports it implements — its contracts, entities, value objects and errors — the kernel, shared and libs, never an application layer, a composition module or another adapter; what two adapters share lives in libs, which takes what it needs of the program as parameters, or in shared when it knows the program and holds no effect.
 
-| Why | Tags |
-|---|---|
-| adapters that know each other or their callers form a hidden second program beside the domain. | [] |
+| Why |
+|---|
+| adapters that know each other or their callers form a hidden second program beside the domain. |
 
 ### adapter-one-per-system-and-owner · SHOULD
 
 An adapter implements, over one outside system, every contract of its owner that system serves, and lives beside that owner; there is never one per method.
 
-| Why | Tags |
-|---|---|
-| one system’s knowledge — its client, its errors, its wire shapes — is then in one place. | [] |
+| Why |
+|---|
+| one system’s knowledge — its client, its errors, its wire shapes — is then in one place. |
 
 ### adapter-built-by-factory-object-or-class · SHOULD
 
 An adapter is a factory, a module object for one with no dependency and no state, or a class whose constructor takes its dependencies; never an instance with a client or a connection built when its module loads.
 
-| Why | Tags |
-|---|---|
-| each form builds the adapter in one signature that names what it takes. | [] |
+| Why |
+|---|
+| each form builds the adapter in one signature that names what it takes. |

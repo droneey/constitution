@@ -8,17 +8,17 @@
 
 Methods and statuses mean what HTTP registers; a `DELETE` of something already gone answers `204`, as the first one did, so a repeat after a lost answer reads as done.
 
-| Why | Tags |
-|---|---|
-| clients, proxies, caches and retrying libraries act on the method and the status alone: they repeat a `PUT` or a `DELETE` on their own, and a failure sent as `200` is cached, counted as a success and never retried. | [errors, data] |
+| Why |
+|---|
+| clients, proxies, caches and retrying libraries act on the method and the status alone: they repeat a `PUT` or a `DELETE` on their own, and a failure sent as `200` is cached, counted as a success and never retried. |
 
 ### failure-answered-as-a-problem-document → failure-answered-by-its-code · MUST
 
 A failure of a REST operation carries the status its code or kind maps to — `500` for an internal one — and a body of RFC 9457, `application/problem+json`, whose `type` names its code and which carries the code as a member of its own and, where it names its occurrence, names it in its `instance`; a refused input lists each field it refused by its JSON Pointer.
 
-| Why | Tags |
-|---|---|
-| every failure arrives in one standard shape a client parses once, pointing at the field to fix. | [errors] |
+| Why |
+|---|
+| every failure arrives in one standard shape a client parses once, pointing at the field to fix. |
 
 ## Concurrency
 
@@ -26,9 +26,9 @@ A failure of a REST operation carries the status its code or kind maps to — `5
 
 A REST resource several callers may change answers with an `ETag`, and a `PUT`, `PATCH` or `DELETE` of it honours `If-Match`, answering `412` when the tag no longer matches and `428` when the request carries none.
 
-| Why | Tags |
-|---|---|
-| a write made on a stale read otherwise overwrites the change between, and the tag is how HTTP carries the version read. | [data] |
+| Why |
+|---|
+| a write made on a stale read otherwise overwrites the change between, and the tag is how HTTP carries the version read. |
 
 ## Long work
 
@@ -36,9 +36,9 @@ A REST resource several callers may change answers with an `ETag`, and a `PUT`, 
 
 A long REST operation answers `202` with the `Location` of a status resource, which shows its state — running, succeeded, failed — then its result or its problem document, and carries `Retry-After` while it runs.
 
-| Why | Tags |
-|---|---|
-| a request held open for long work is cut by a proxy, and its caller can neither learn the outcome nor retry safely. | [] |
+| Why |
+|---|
+| a request held open for long work is cut by a proxy, and its caller can neither learn the outcome nor retry safely. |
 
 ## Bodies
 
@@ -46,6 +46,6 @@ A long REST operation answers `202` with the `Location` of a status resource, wh
 
 A REST answer's body is a JSON object at its top level, a collection's items in one of its fields, never a bare array or value.
 
-| Why | Tags |
-|---|---|
-| a bare array can never gain a cursor or a count without breaking every caller. | [] |
+| Why |
+|---|
+| a bare array can never gain a cursor or a count without breaking every caller. |

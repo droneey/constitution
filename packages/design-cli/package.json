@@ -23,31 +23,38 @@
     "#/*": "./src/*"
   },
   "scripts": {
+    "build": "design-tokens build style-dictionary.config.ts",
     "lint:check": "biome check --error-on-warnings",
     "lint:fix": "biome check --write",
+    "pretype:check": "bun run build",
     "type:check": "tsc -b",
-    "design:build": "design-tokens build style-dictionary.config.ts",
-    "design:check": "design-tokens check style-dictionary.config.ts",
+    "pretest": "bun run build",
     "test": "CI=1 bun test",
+    "premutation:check": "bun run build",
     "mutation:check": "mutation-check",
+    "premutation:all": "bun run build",
     "mutation:all": "mutation-check all",
+    "prearchitecture:check": "bun run build",
     "architecture:check": "depcruise src --config .dependency-cruiser.mjs",
+    "preunused:check": "bun run build",
     "unused:check": "knip --no-config-hints && knip --strict --no-config-hints",
     "markdown:check": "rumdl check . && rumdl fmt --check .",
     "markdown:fix": "rumdl check --fix",
-    "yaml:check": "yamllint --strict ."
+    "yaml:check": "yamllint --strict .",
+    "toml:check": "tombi format --check && tombi lint",
+    "toml:fix": "tombi format"
   },
   "dependencies": {
     "ansis": "^4.4.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.15",
+    "@biomejs/biome": "2.6.2",
     "@droneey/design-tokens": "workspace:*",
     "@droneey/mutation-check": "workspace:*",
     "@stryker-mutator/core": "10.0.0",
     "@types/bun": "1.4.3",
     "@types/react": "19.3.0",
-    "dependency-cruiser": "18.6.0",
+    "dependency-cruiser": "18.7.0",
     "ink": "8.0.0",
     "ink-testing-library": "4.0.0",
     "knip": "6.41.0",

@@ -8,6 +8,6 @@
 
 The domain and the application layers return codes and values, and the presentation turns them into text; no message library reaches the domain.
 
-| Why | Tags |
-|---|---|
-| the domain stays free of any language, and one code is worded differently per screen and locale. | [] |
+| Why |
+|---|
+| the domain stays free of any language, and one code is worded differently per screen and locale. |

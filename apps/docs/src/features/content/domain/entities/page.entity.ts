@@ -3,6 +3,22 @@ import { Axis } from './block.entity';
 /** the segments of a page's address under the site's base */
 type PageSlugs = readonly string[];
 
+/** where a page's compiled body is found: its collection, and its path in that collection */
+interface PageLocation {
+  readonly collection: string;
+  readonly path: string;
+}
+
+interface Page extends PageLocation {
+  readonly description: string;
+  readonly title: string;
+}
+
+/** every page by its slugs joined with `/`, as the site exports them for the browser */
+type PageCatalog = Readonly<Record<string, Page>>;
+
+const catalogKeyOf = (slugs: PageSlugs): string => slugs.join('/');
+
 const MARKDOWN_EXTENSION = '.md';
 
 const INDEX = 'index';
@@ -47,8 +63,9 @@ const slugsOfMarkdownAddress = (segments: readonly string[]): PageSlugs => {
   return slugs.length === 1 && slugs[0] === INDEX ? [] : slugs;
 };
 
-export type { PageSlugs };
+export type { Page, PageCatalog, PageLocation, PageSlugs };
 export {
+  catalogKeyOf,
   isPassportPath,
   MARKDOWN_EXTENSION,
   pageSlugsOf,

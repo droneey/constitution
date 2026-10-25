@@ -1,25 +1,33 @@
 import type { ReactElement, ReactNode } from 'react';
 
 import type { RenderResult } from '@testing-library/react';
-import { render } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 import { FrameworkProvider } from 'fumadocs-core/framework';
 import { RootProvider } from 'fumadocs-ui/provider/base';
+import { renderToString } from 'react-dom/server';
 
 import { createFakeGetVersions } from '#/__tests__/get-versions.fake';
+import { createFakePageSearch } from '#/__tests__/page-search.fake';
+import type { SearchPages } from '#/features/content';
+import { createSearchPages, SearchPagesContext } from '#/features/content';
 import type { GetVersions, Versions } from '#/features/versions';
 import { GetVersionsContext, Version } from '#/features/versions';
 import type { mdxComponents, PageTreeRoot, TocHeading } from '#/libs/ui';
+import { trackedForUse } from '#/libs/ui';
 
-import type { DocsFrame } from '../app/providers';
-import { DocsBuiltVersionContext, DocsFrameContext } from '../app/providers';
+import { DocsBuiltVersionContext } from '../app/providers';
+import { IsScreenNarrowContext, MarkSidebarContext } from '../app/use-cases';
+import type { DocumentFrame } from '../domain/contracts';
+import { createIsScreenNarrow, createMarkSidebar } from '../domain/use-cases';
 import type { DocsPageEntry } from '../ui/screens/docs-page';
 import { DocsSearchWidget } from '../ui/widgets/docs-search-widget';
 
 interface DocsProviders {
-  frame?: DocsFrame;
+  frame?: DocumentFrame;
   getVersions?: GetVersions;
   pathname?: string;
   release?: Version | undefined;
+  searchPages?: SearchPages;
 }
 
 const noParams = (): Record<string, string> => ({});
@@ -75,6 +83,19 @@ const tocFixture = (): TocHeading[] => [
   },
 ];
 
+/** loads a body with no headings whose loading has ended where React's `use` reads it, as a route's loader leaves it */
+const settledLoad = async (): Promise<DocsPageEntry['load']> => {
+  const body = trackedForUse(
+    Promise.resolve({
+      toc: [],
+    }),
+  );
+
+  await body;
+
+  return () => body;
+};
+
 /** its contents already loaded */
 const pageEntryFixture = (overrides: Partial<DocsPageEntry> = {}): DocsPageEntry => {
   const loaded = Promise.resolve({
@@ -93,7 +114,6 @@ const pageEntryFixture = (overrides: Partial<DocsPageEntry> = {}): DocsPageEntry
     },
     description: 'The rules a repository is built by.',
     load: () => loaded,
-    loaded: (): undefined => undefined,
     title: 'Overview',
     ...overrides,
   };
@@ -102,22 +122,24 @@ const pageEntryFixture = (overrides: Partial<DocsPageEntry> = {}): DocsPageEntry
 const releaseOf = (providers: DocsProviders): Version | undefined =>
   'release' in providers ? providers.release : Version.create('0.70.0');
 
-/** the release is 0.70.0 unless the providers name one, or `undefined` for none */
-const renderInDocs = (ui: ReactElement, providers: DocsProviders = {}): RenderResult => {
+const docsWrapperOf = (
+  providers: DocsProviders,
+): ((props: { children: ReactNode }) => ReactElement) => {
   const {
     frame,
     getVersions = createFakeGetVersions().getVersions,
     pathname = '/docs',
+    searchPages = createSearchPages(createFakePageSearch([])),
   } = providers;
   const release = releaseOf(providers);
 
-  return render(ui, {
-    wrapper: ({ children }: { children: ReactNode }): ReactElement => (
-      <FrameworkProvider
-        useParams={noParams}
-        usePathname={(): string => pathname}
-        useRouter={staticRouter}
-      >
+  return ({ children }: { children: ReactNode }): ReactElement => (
+    <FrameworkProvider
+      useParams={noParams}
+      usePathname={(): string => pathname}
+      useRouter={staticRouter}
+    >
+      <SearchPagesContext value={searchPages}>
         <RootProvider
           search={{
             // biome-ignore lint/plugin/compound-parts-share-the-root-context: Fumadocs' root provider names the search dialog's slot SearchDialog
@@ -129,13 +151,80 @@ const renderInDocs = (ui: ReactElement, providers: DocsProviders = {}): RenderRe
         >
           <GetVersionsContext value={getVersions}>
             <DocsBuiltVersionContext value={release}>
-              <DocsFrameContext value={frame}>{children}</DocsFrameContext>
+              <IsScreenNarrowContext
+                value={frame === undefined ? undefined : createIsScreenNarrow(frame)}
+              >
+                <MarkSidebarContext
+                  value={frame === undefined ? undefined : createMarkSidebar(frame)}
+                >
+                  {children}
+                </MarkSidebarContext>
+              </IsScreenNarrowContext>
             </DocsBuiltVersionContext>
           </GetVersionsContext>
         </RootProvider>
-      </FrameworkProvider>
-    ),
-  });
+      </SearchPagesContext>
+    </FrameworkProvider>
+  );
 };
 
-export { pageEntryFixture, pageTreeFixture, renderInDocs, tocFixture, versionsFixture };
+/** the release is 0.70.0 unless the providers name one, or `undefined` for none */
+const renderInDocs = (ui: ReactElement, providers: DocsProviders = {}): RenderResult =>
+  render(ui, {
+    wrapper: docsWrapperOf(providers),
+  });
+
+interface HydrationTrees {
+  readonly client: ReactElement;
+  readonly server: ReactElement;
+}
+
+interface HydratedInDocs {
+  /** the errors React recovered from by rendering the client's tree over the server's */
+  readonly recovered: unknown[];
+}
+
+/**
+ * hydrates the client's tree over the HTML the server renders of its own, as a prerendered page
+ * loads; the release is as in `renderInDocs`
+ */
+const hydrateInDocs = async (
+  { client, server }: HydrationTrees,
+  providers: DocsProviders = {},
+): Promise<HydratedInDocs> => {
+  const Wrapper = docsWrapperOf(providers);
+  const container = document.createElement('div');
+  const recovered: unknown[] = [];
+
+  // biome-ignore lint/plugin/raw-html-never-reaches-the-dom: the server's own rendering, which hydration takes as markup
+  container.innerHTML = renderToString(<Wrapper>{server}</Wrapper>);
+  document.body.append(container);
+
+  // awaited, as a tree that suspends while it hydrates asks
+  await act(() =>
+    Promise.resolve(
+      render(client, {
+        container,
+        hydrate: true,
+        onRecoverableError: (error) => {
+          recovered.push(error);
+        },
+        wrapper: Wrapper,
+      }),
+    ),
+  );
+
+  return {
+    recovered,
+  };
+};
+
+export {
+  hydrateInDocs,
+  pageEntryFixture,
+  pageTreeFixture,
+  renderInDocs,
+  settledLoad,
+  tocFixture,
+  versionsFixture,
+};

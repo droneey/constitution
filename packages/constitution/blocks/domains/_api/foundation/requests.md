@@ -8,17 +8,17 @@
 
 A handle that relates one request to the next — one an operation minted, a task's — is unguessable, and never authenticates the caller by itself.
 
-| Why | Tags |
-|---|---|
-| a handle that can be guessed, or that stands in for a credential, lets anyone act as the caller who got it. | [security] |
+| Why |
+|---|
+| a handle that can be guessed, or that stands in for a credential, lets anyone act as the caller who got it. |
 
 ### unknown-or-expired-handle-answered-as-such · MUST
 
 An expired or unknown handle is answered as an expected failure that says so.
 
-| Why | Tags |
-|---|---|
-| a caller recovers from an expired handle only if the answer says it expired. | [errors] |
+| Why |
+|---|
+| a caller recovers from an expired handle only if the answer says it expired. |
 
 ## Cancellation
 
@@ -26,9 +26,9 @@ An expired or unknown handle is answered as an expected failure that says so.
 
 A request its caller cancels or abandons — by a cancel message or a closed connection — stops its work and the calls it made, and sends nothing more.
 
-| Why | Tags |
-|---|---|
-| work for a caller who left spends capacity and the quota of the systems it calls. | [performance] |
+| Why |
+|---|
+| work for a caller who left spends capacity and the quota of the systems it calls. |
 
 ## Long work
 
@@ -36,6 +36,6 @@ A request its caller cancels or abandons — by a cancel message or a closed con
 
 An operation that may outlast a request answers at once with a handle the caller follows for its state and its result, never holding the request open until it ends.
 
-| Why | Tags |
-|---|---|
-| a request held open for long work is cut by a proxy or a timeout, and its caller can neither learn the outcome nor retry safely. | [] |
+| Why |
+|---|
+| a request held open for long work is cut by a proxy or a timeout, and its caller can neither learn the outcome nor retry safely. |

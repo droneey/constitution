@@ -1,7 +1,6 @@
-import { readFileSync } from 'node:fs';
-
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 
+import constitutionManifest from '@droneey/constitution/package.json' with { type: 'json' };
 import babel from '@rolldown/plugin-babel';
 import tailwindcss from '@tailwindcss/vite';
 import react, { reactCompilerPreset } from '@vitejs/plugin-react';
@@ -10,17 +9,17 @@ import { nitro } from 'nitro/vite';
 import { defineConfig } from 'vite';
 import { z } from 'zod';
 
-const constitutionManifest = new URL('../../packages/constitution/package.json', import.meta.url);
-
 const manifestShape = z.object({
   version: z.string().regex(/^\d+\.\d+\.\d+$/),
 });
 
-const { version: constitutionVersion } = manifestShape.parse(
-  JSON.parse(readFileSync(constitutionManifest, 'utf8')),
-);
+const { version: constitutionVersion } = manifestShape.parse(constitutionManifest);
 
-export default defineConfig({
+/** a release's site is served beside the others, under its version, when built in this mode */
+const RELEASE_MODE = 'release';
+
+export default defineConfig(({ mode }) => ({
+  base: mode === RELEASE_MODE ? `/v${constitutionVersion}/` : '/',
   server: {
     port: 3000,
     watch: {
@@ -40,6 +39,10 @@ export default defineConfig({
     fumadocsMdx(),
     tailwindcss(),
     tanstackStart({
+      // the wiring declares Start's request middleware, so it is the start entry
+      start: {
+        entry: 'root/wiring.ts',
+      },
       router: {
         entry: 'root/router.tsx',
         generatedRouteTree: 'root/routeTree.gen.ts',
@@ -58,6 +61,12 @@ export default defineConfig({
         },
         {
           path: '/docs',
+        },
+        {
+          path: '/api/navigation',
+        },
+        {
+          path: '/api/pages',
         },
         {
           path: '/api/search',
@@ -83,4 +92,4 @@ export default defineConfig({
       tslib: 'tslib/tslib.es6.js',
     },
   },
-});
+}));

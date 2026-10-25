@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'bun:test';
 
 import { Axis } from '#/kernel/constants';
+import { TermKind } from '#/kernel/entities';
 import type { ProblemOf } from '#/kernel/types';
 import { BlockId } from '#/kernel/value-objects';
 import { textOf } from '#/shared/cli';
 
-import { TermKind } from '../../../domain/entities';
 import type { TermsDetails } from '../../../domain/use-cases/queries/check';
 import { TermsCode } from '../../../domain/use-cases/queries/check';
 import { termsTexts } from '../terms-texts.utils';

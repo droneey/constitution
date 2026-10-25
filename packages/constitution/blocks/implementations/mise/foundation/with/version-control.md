@@ -8,6 +8,6 @@
 
 Version control ignores `mise.local.toml`.
 
-| Why | Tags |
-|---|---|
-| a person's overrides stay on their machine and never change the toolchain of the others. | [] |
+| Why |
+|---|
+| a person's overrides stay on their machine and never change the toolchain of the others. |

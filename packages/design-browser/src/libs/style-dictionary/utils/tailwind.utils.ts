@@ -20,32 +20,34 @@ const TAILWIND_RADII: Readonly<Record<string, number>> = {
   '4xl': 32,
 } as const;
 
-const tailwindNamesOf = ({ name, path: [first] }: TransformedToken): string[] => [
-  name,
-  ...Object.entries(tailwindAliases).flatMap(([group, alias]) =>
+const declarationOf = (name: string, source: string): string => `  --${name}: var(--${source});`;
+
+const aliasesOf = ({ name, path: [first] }: TransformedToken): string[] =>
+  Object.entries(tailwindAliases).flatMap(([group, alias]) =>
     group === first
       ? [
-          alias(name.slice(group.length + 1)),
+          declarationOf(alias(name.slice(group.length + 1)), name),
         ]
       : [],
-  ),
-];
+  );
 
 /**
- * Style Dictionary has no format for Tailwind's `@theme`, which reads each custom property by its
- * own name, so a utility follows the mode.
+ * Style Dictionary has no format for Tailwind's `@theme`, whose `inline` utilities read each
+ * custom property of the theme by its own name, so a utility follows the mode. A token's own name
+ * is `reference`, never written out: on the root, `--x: var(--x)` would be a cycle that voids the
+ * theme's value. An alias is written on the root once a stylesheet reads it, as a library's
+ * stylesheet reads Tailwind's names.
  */
 const tailwindTheme: FormatFn = async ({ dictionary }) => {
-  const lines = [
-    ...dictionary.allTokens.flatMap((token) =>
-      tailwindNamesOf(token).map((name) => `  --${name}: var(--${token.name});`),
-    ),
-    ...Object.entries(TAILWIND_RADII).map(
-      ([name, pixels]) => `  --radius-${name}: var(--radius-${pixels});`,
+  const own = dictionary.allTokens.map(({ name }) => declarationOf(name, name));
+  const aliases = [
+    ...dictionary.allTokens.flatMap(aliasesOf),
+    ...Object.entries(TAILWIND_RADII).map(([name, pixels]) =>
+      declarationOf(`radius-${name}`, `radius-${pixels}`),
     ),
   ];
 
-  return `${await fileHeader({})}@theme inline reference {\n${lines.join('\n')}\n}\n`;
+  return `${await fileHeader({})}@theme inline reference {\n${own.join('\n')}\n}\n\n@theme inline {\n${aliases.join('\n')}\n}\n`;
 };
 
 export { tailwindTheme };

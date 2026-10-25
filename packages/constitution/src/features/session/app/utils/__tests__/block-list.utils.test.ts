@@ -1,16 +1,9 @@
 import { describe, expect, it } from 'bun:test';
 
-import { Axis, Layer, Level } from '#/kernel/constants';
+import { Axis, Layer } from '#/kernel/constants';
 import type { ListedBlock, ListedFiles } from '#/kernel/entities';
 import { UnitEntryKind } from '#/kernel/entities';
-import {
-  BlockId,
-  BlockSource,
-  PackPath,
-  RuleSlug,
-  repositoryUnit,
-  UnitPath,
-} from '#/kernel/value-objects';
+import { BlockId, BlockSource, PackPath, UnitPath } from '#/kernel/value-objects';
 
 import { blockListLines } from '../block-list.utils';
 
@@ -31,22 +24,10 @@ const listedOf = (input: {
 });
 
 describe('blockListLines', () => {
-  it('should list the repository blocks by layer, what each member adds and leaves out, then the overrides', () => {
+  it('should list the repository blocks by layer, what each member adds and leaves out', () => {
     // Arrange
     const listing = {
-      overrides: [
-        {
-          level: Level.Should,
-          rule: RuleSlug.create('inputs-are-labelled'),
-          unit: repositoryUnit,
-          until: Temporal.PlainDate.from('2026-07-01'),
-        },
-        {
-          level: Level.May,
-          rule: RuleSlug.create('themes-are-tokens'),
-          unit: UnitPath.create('apps/web'),
-        },
-      ],
+      overrides: [],
       repository: [
         listedOf({
           files: [
@@ -186,9 +167,6 @@ describe('blockListLines', () => {
       '- redux [implementations]',
       '## apps/api',
       '- leaves out: ui, browser, typescript, react, lint, the architecture axis',
-      '## Overrides',
-      '- inputs-are-labelled: SHOULD until 2026-07-01',
-      '- themes-are-tokens: MAY in apps/web',
     ]);
   });
 
@@ -218,7 +196,7 @@ describe('blockListLines', () => {
     ]);
   });
 
-  it('should give no line when no block, member or override is listed', () => {
+  it('should give no line when no block or member is listed', () => {
     // Arrange
     const listing = {
       overrides: [],

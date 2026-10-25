@@ -1,7 +1,7 @@
 import { Axis, BLOCKS_FOLDER, LAYER_FOLDER, Layer, SEAM_FOLDER } from '#/kernel/constants';
 import type { BlockListing, ListedBlock, ListedFiles, UnitListing } from '#/kernel/entities';
 import { UnitEntryKind } from '#/kernel/entities';
-import { SourceKind, UnitPath } from '#/kernel/value-objects';
+import { SourceKind } from '#/kernel/value-objects';
 
 const TITLES = [
   [
@@ -93,23 +93,9 @@ const unitLines = (unit: UnitListing): readonly string[] => {
       ];
 };
 
-const overrideLines = (listing: BlockListing): readonly string[] =>
-  listing.overrides.length === 0
-    ? []
-    : [
-        '## Overrides',
-        ...listing.overrides.map(
-          (override) =>
-            `- ${override.rule}: ${override.level}${UnitPath.isRepository(override.unit) ? '' : ` in ${override.unit}`}${
-              override.until === undefined ? '' : ` until ${override.until.toString()}`
-            }`,
-        ),
-      ];
-
 const blockListLines = (listing: BlockListing): readonly string[] => [
   ...repositoryLines(listing.repository),
   ...listing.units.flatMap(unitLines),
-  ...overrideLines(listing),
 ];
 
 export { blockListLines };

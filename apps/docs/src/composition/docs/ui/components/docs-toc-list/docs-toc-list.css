@@ -4,7 +4,7 @@
     position: relative;
     display: flex;
     align-items: center;
-    height: var(--spacing-control-md);
+    height: var(--size-control-md);
     padding-inline: var(--spacing-xs);
     border-radius: var(--radius-control-base);
     font-size: var(--text-sm);

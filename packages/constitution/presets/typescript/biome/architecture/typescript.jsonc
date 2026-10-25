@@ -38,6 +38,8 @@
       "includes": [
         "**/index.ts",
         "**/index.tsx",
+        // a surface is an index.ts; an index.tsx under the root is a route its framework registers
+        "!**/src/root/**/index.tsx",
       ],
     },
     {

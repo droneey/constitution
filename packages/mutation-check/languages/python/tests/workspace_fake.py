@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from droneey_mutation_check.gate import Completed
+from droneey_mutation_check.features.mutation.domain.contracts import Completed
 
 if TYPE_CHECKING:
   from collections.abc import Mapping, Sequence

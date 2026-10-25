@@ -5,7 +5,6 @@ import type { FindingOf, ProblemOf } from '#/kernel/types';
 import type { RuleSlug } from '#/kernel/value-objects';
 import { BlockId } from '#/kernel/value-objects';
 
-import { Lens } from '../../../../constants';
 import { BlockGraph, mayReachAxis } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
 
@@ -13,7 +12,6 @@ enum RulesCode {
   SlugOpensWithNo = 'slug-opens-with-no',
   WithoutStatement = 'rule-without-statement',
   WithoutWhy = 'rule-without-why',
-  TagNotLens = 'tag-not-a-lens',
   DefinedTwice = 'rule-defined-twice',
   ParentNotRule = 'parent-not-a-rule',
   ParentChainCycle = 'parent-chain-cycle',
@@ -35,10 +33,6 @@ interface RulesDetails {
   };
   readonly [RulesCode.WithoutWhy]: {
     readonly slug: RuleSlug;
-  };
-  readonly [RulesCode.TagNotLens]: {
-    readonly slug: RuleSlug;
-    readonly tag: string;
   };
   readonly [RulesCode.DefinedTwice]: {
     /** the file of the rule's first definition */
@@ -99,8 +93,6 @@ type RulesFinding = FindingOf<RulesDetails>;
 
 type RulesProblem = ProblemOf<RulesDetails>;
 
-const lenses: readonly string[] = Object.values(Lens);
-
 const fieldProblems = (rule: Rule): readonly (RulesProblem | undefined)[] => {
   const { slug } = rule;
 
@@ -129,17 +121,6 @@ const fieldProblems = (rule: Rule): readonly (RulesProblem | undefined)[] => {
           },
         }
       : undefined,
-    ...rule.writtenLenses
-      .filter((lens) => !lenses.includes(lens))
-      .map(
-        (tag): RulesProblem => ({
-          code: RulesCode.TagNotLens,
-          details: {
-            slug,
-            tag,
-          },
-        }),
-      ),
   ];
 };
 

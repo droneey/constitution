@@ -3,7 +3,7 @@ import { chmodSync, mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync 
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
-import { afterAll, describe, expect, test } from 'bun:test';
+import { afterAll, describe, expect, it } from 'bun:test';
 
 import { branchIn } from '../branch.ts';
 import { GitError, GitFailure } from '../git.error.ts';
@@ -201,7 +201,7 @@ afterAll(() => {
 });
 
 describe('branchIn', () => {
-  test("should diff only the unit's files against the main line, by paths from the unit", () => {
+  it("should diff only the unit's files against the main line, by paths from the unit", () => {
     // Arrange
     const unit = join(workspace, UNIT);
 
@@ -215,7 +215,7 @@ describe('branchIn', () => {
     ]);
   });
 
-  test("should list only the unit's new files, by paths from the unit", () => {
+  it("should list only the unit's new files, by paths from the unit", () => {
     // Arrange
     const unit = join(workspace, UNIT);
 
@@ -228,7 +228,7 @@ describe('branchIn', () => {
     ]);
   });
 
-  test('should read the text a file of the unit had where the branch left the main line', () => {
+  it('should read the text a file of the unit had where the branch left the main line', () => {
     // Arrange
     const { baseText } = branchOf(join(workspace, UNIT));
 
@@ -239,7 +239,7 @@ describe('branchIn', () => {
     expect(text).toBe(BASE_ORDER);
   });
 
-  test('should read the text a file had where the branch left the main line when run from the root', () => {
+  it('should read the text a file had where the branch left the main line when run from the root', () => {
     // Arrange
     const { baseText } = branchOf(workspace);
 
@@ -250,7 +250,7 @@ describe('branchIn', () => {
     expect(text).toBe(BASE_ORDER);
   });
 
-  test('should read no text for a file the main line never had', () => {
+  it('should read no text for a file the main line never had', () => {
     // Arrange
     const { baseText } = branchOf(join(workspace, UNIT));
 
@@ -261,7 +261,7 @@ describe('branchIn', () => {
     expect(text).toBe('');
   });
 
-  test("should fail with git's reason when the repository has no main line", () => {
+  it("should fail with git's reason when the repository has no main line", () => {
     // Arrange
     const folder = lone;
 
@@ -284,7 +284,7 @@ describe('branchIn', () => {
     });
   });
 
-  test('should fail when git cannot run in the folder', () => {
+  it('should fail when git cannot run in the folder', () => {
     // Arrange
     const missing = join(workspace, 'missing');
 
@@ -306,7 +306,7 @@ describe('branchIn', () => {
     });
   });
 
-  test('should fail with its own code when git answers past its time', () => {
+  it('should fail with its own code when git answers past its time', () => {
     // Arrange
     const bin = join(home, 'slow-bin');
 

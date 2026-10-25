@@ -5,6 +5,11 @@ import type { CompiledMDXProperties } from 'fumadocs-mdx';
 import { createClientLoader } from 'fumadocs-mdx/runtime/browser';
 import type { MDXComponents } from 'mdx/types';
 
+import { trackedForUse } from '#/libs/ui';
+
+import type { PageBodiesQueryRepository } from '../../domain/contracts';
+import type { PageLocation } from '../../domain/entities';
+
 interface Loaded {
   toc: TOCItemType[];
 }
@@ -15,8 +20,8 @@ interface BodyProps {
 
 interface PageBody {
   body: FC<BodyProps>;
+  /** the same promise on every call, which React's `use` reads at once when it has settled */
   load: () => Promise<Loaded>;
-  loaded: () => Loaded | undefined;
 }
 
 /** a collection's compiled files by their path, `./<path>`, as fumadocs-mdx's browser collections hold them */
@@ -24,16 +29,14 @@ interface BodyCollection {
   readonly raw: Readonly<Record<string, () => Promise<CompiledMDXProperties>>>;
 }
 
-interface PageBodies {
-  readonly pageBodyOf: (type: string, path: string) => PageBody | undefined;
-}
-
 const render = ({ default: Body }: CompiledMDXProperties, props: BodyProps): ReactNode => (
   <Body {...props} />
 );
 
 /** the bodies of the pages, each loaded once and kept, as React's `use` needs */
-const createPageBodies = (collections: Readonly<Record<string, BodyCollection>>): PageBodies => {
+const createPageBodies = (
+  collections: Readonly<Record<string, BodyCollection>>,
+): PageBodiesQueryRepository<PageBody> => {
   const loaders = new Map(
     Object.entries(collections).map(([type, collection]) => [
       type,
@@ -46,30 +49,22 @@ const createPageBodies = (collections: Readonly<Record<string, BodyCollection>>)
       },
     ]),
   );
+  /**
+   * Read at once when settled, as the library's own renderer does: a page whose route loaded its body
+   * renders whole in its first commit, so the router finds a heading the address names.
+   */
   const loadings = new Map<string, Promise<Loaded>>();
 
-  /**
-   * Read at once, as the library's own renderer does: a page whose route loaded its body renders whole
-   * in its first commit, so the router finds a heading the address names.
-   */
-  const loadedBodies = new Map<string, Loaded>();
-
-  const pageBodyOf = (type: string, path: string): PageBody | undefined => {
-    const bodies = loaders.get(type);
-    const key = `${type}:${path}`;
+  const find = ({ collection, path }: PageLocation): PageBody | undefined => {
+    const bodies = loaders.get(collection);
+    const key = `${collection}:${path}`;
 
     if (bodies === undefined || !Object.hasOwn(bodies.raw, `./${path}`)) {
       return undefined;
     }
 
     const load = (): Promise<Loaded> => {
-      const started =
-        loadings.get(key) ??
-        bodies.loader.preload(path).then((loaded) => {
-          loadedBodies.set(key, loaded);
-
-          return loaded;
-        });
+      const started = loadings.get(key) ?? trackedForUse(bodies.loader.preload(path));
 
       loadings.set(key, started);
 
@@ -79,13 +74,13 @@ const createPageBodies = (collections: Readonly<Record<string, BodyCollection>>)
     return {
       body: bodies.loader.getComponent(path),
       load,
-      loaded: () => loadedBodies.get(key),
     };
   };
 
   return {
-    pageBodyOf,
+    find,
   };
 };
 
+export type { PageBody };
 export { createPageBodies };

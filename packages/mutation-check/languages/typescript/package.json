@@ -37,17 +37,19 @@
     "mutation:all": "bun --no-env-file src/main.ts all",
     "architecture:check": "depcruise src --config .dependency-cruiser.mjs",
     "unused:check": "knip --no-config-hints && knip --strict --no-config-hints",
-    "yaml:check": "yamllint --strict ."
+    "yaml:check": "yamllint --strict .",
+    "toml:check": "tombi format --check && tombi lint",
+    "toml:fix": "tombi format"
   },
   "dependencies": {
     "@stryker-mutator/api": "^10.0.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.15",
+    "@biomejs/biome": "2.6.2",
     "@stryker-mutator/core": "10.0.0",
     "@types/bun": "1.4.3",
     "@types/node": "26.6.5",
-    "dependency-cruiser": "18.6.0",
+    "dependency-cruiser": "18.7.0",
     "knip": "6.41.0",
     "typescript": "7.0.2"
   }

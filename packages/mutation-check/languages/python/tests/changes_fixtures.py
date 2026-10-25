@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from droneey_mutation_check.targets import Changes
+from droneey_mutation_check.features.mutation.domain.entities import Changes
 
 if TYPE_CHECKING:
   from collections.abc import Mapping

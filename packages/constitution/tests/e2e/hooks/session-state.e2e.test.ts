@@ -165,6 +165,38 @@ describe('the session state the session-start hook saves', () => {
     ]);
   });
 
+  it('should give the digest, keep nothing and warn in one line when no folder can keep the session', () => {
+    // Arrange
+    const project = createProject({
+      config: configOf({}),
+    });
+    const session = newSession();
+
+    // Act
+    const run = runHook({
+      event: HookEvent.Startup,
+      project,
+      root,
+      session,
+      stateHomeUnset: true,
+    });
+
+    // Assert
+    expect({
+      digest: contextOf(run) !== '',
+      exitCode: run.exitCode,
+      lines: run.stderr.trimEnd().split('\n').length,
+      opensAsTheHook: run.stderr.startsWith('constitution hook: '),
+      saved: existsSync(stateFolderOf(session)),
+    }).toStrictEqual({
+      digest: true,
+      exitCode: 0,
+      lines: 1,
+      opensAsTheHook: true,
+      saved: false,
+    });
+  });
+
   it.each([
     {
       event: HookEvent.Resume,

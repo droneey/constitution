@@ -8,6 +8,6 @@
 
 Every rule the part turns on is an error.
 
-| Why | Tags |
-|---|---|
-| yamllint passes on a warning, and its defaults leave some rules at one, so a rule left there is a rule nobody holds. | [] |
+| Why |
+|---|
+| yamllint passes on a warning, and its defaults leave some rules at one, so a rule left there is a rule nobody holds. |

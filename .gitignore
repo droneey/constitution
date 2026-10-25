@@ -10,14 +10,14 @@
 mise.local.toml
 
 # core: runtime
-pids
-*.pid
-*.seed
-*.pid.lock
+/pids
+/*.pid
+/*.seed
+/*.pid.lock
 
 # core: temporary
-.temp/
-.tmp/
+/.temp/
+/.tmp/
 
 # core: backups
 *.bak
@@ -25,13 +25,13 @@ pids
 *~
 
 # core: logs
-**/logs/
-*.log
+/logs/
+/*.log
 
 # core: build
-**/dist/
-**/build/
-**/coverage/
+/dist/
+/build/
+/coverage/
 
 # core: IDE
 .vscode/*
@@ -39,18 +39,18 @@ pids
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-.idea/
+/.idea/
 .claude/settings.local.json
 .claude/worktrees/
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
+/.project
+/.classpath
+/.c9/
+/*.launch
+/.settings/
+/*.sublime-workspace
 
 # core: diagnostic
-report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+/report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # core: keys and credentials
 ssl/
@@ -70,35 +70,35 @@ id_rsa
 /local/
 
 # typescript: dependencies
-**/node_modules/
+/node_modules/
 
 # typescript: logs
-npm-debug.log*
-pnpm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
+/npm-debug.log*
+/pnpm-debug.log*
+/yarn-debug.log*
+/yarn-error.log*
+/lerna-debug.log*
 
 # typescript: build
-*.tgz
-*.lcov
+/*.tgz
+/*.lcov
 
 # typescript: auth
 .npmrc
 
 # typescript: caches
-.eslintcache
-.cache
-*.tsbuildinfo
+/.eslintcache
+/.cache
+/*.tsbuildinfo
 
 # python: environments
-.venv/
+/.venv/
 
 # ruff
-.ruff_cache/
+/.ruff_cache/
 
 # complexipy
-.complexipy_cache/
+/.complexipy_cache/
 
 # rumdl
-.rumdl_cache/
+/.rumdl_cache/

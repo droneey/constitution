@@ -6,6 +6,7 @@ import {
   createLintBatch,
   formattedText,
   presetFiles,
+  presetPluginPaths,
   presetText,
   presetWords,
 } from './biome-preset.fixtures';
@@ -498,6 +499,13 @@ describe('the Biome preset', () => {
         },
       },
       {
+        condition: "a subset's type is taken from an as-const array of an enum's members",
+        files: {
+          'src/features/orders/domain/order-status.ts':
+            "export enum OrderStatus {\n  Open = 'open',\n  Paid = 'paid',\n  Closed = 'closed',\n}\n\nexport const SETTLED = [OrderStatus.Paid, OrderStatus.Closed] as const;\n\nexport type Settled = (typeof SETTLED)[number];\n",
+        },
+      },
+      {
         condition: 'a case reads should without a condition',
         files: {
           'src/__tests__/order.test.ts':
@@ -581,23 +589,15 @@ describe('the Biome preset', () => {
     expect(plugins).toStrictEqual([]);
   });
 
-  const adapterOnTheBase = lintCase({
-    files: {
-      'src/features/orders/adapters/api/order.adapter.ts':
-        'export const toCancelledAt = (raw: string | null): string | undefined =>\n  raw === null ? undefined : raw;\n',
-    },
-    parts: baseParts,
-  });
-
-  it('should report a plugin finding when an adapter maps null from the wire and a project extends only the self, core and typescript parts of the base', () => {
+  it('should declare each plugin in one entry of one part when the parts are read together', () => {
     // Arrange
-    const project = adapterOnTheBase;
+    const paths = presetPluginPaths();
 
     // Act
-    const { plugins } = lintFindings(project);
+    const repeated = paths.filter((path, index) => paths.indexOf(path) !== index);
 
     // Assert
-    expect(plugins).toContain('undefined-is-the-only-absence');
+    expect(repeated).toStrictEqual([]);
   });
 
   it('should name only folders, files and suffixes the blocks write when the preset scopes its rules', () => {
@@ -1484,6 +1484,11 @@ describe("the parts of Biome's base", () => {
             'src/panel.tsx':
               "import { useState } from 'react';\n\nexport const useMode = (): unknown => useState<'idle' | 'busy'>('idle');\n",
           },
+          parts: [
+            ...baseParts,
+            'typescript/_react',
+            'typescript/architecture/typescript',
+          ],
         },
       ],
       {
@@ -2781,20 +2786,12 @@ describe('the Biome framework parts', () => {
           plugin: 'field-declares-its-autocomplete',
         },
         {
-          condition: 'a spec finds an element by its test id',
-          files: {
-            'src/__tests__/panel.test.tsx':
-              "import { screen } from '@testing-library/react';\n\nexport const panel = (): HTMLElement => screen.getByTestId('panel');\n",
-          },
-          plugin: 'queries-by-role-label-text',
-        },
-        {
           condition: 'a spec finds an element by a selector',
           files: {
             'src/__tests__/panel.test.tsx':
               "export const panel = (container: HTMLElement): Element | null =>\n  container.querySelector('.panel');\n",
           },
-          plugin: 'queries-by-role-label-text',
+          plugin: 'spec-never-selects-from-the-document',
         },
         {
           condition: 'a class list sizes with h-screen',
@@ -2972,6 +2969,13 @@ describe('the Biome framework parts', () => {
           files: {
             'src/__tests__/panel.test.tsx':
               "import { screen } from '@testing-library/react';\n\nexport const panel = (): HTMLElement => screen.getByRole('region');\n",
+          },
+        },
+        {
+          condition: 'a spec finds an element no role, label or text names by its test id',
+          files: {
+            'src/__tests__/panel.test.tsx':
+              "import { screen } from '@testing-library/react';\n\nexport const glide = (): HTMLElement => screen.getByTestId('glide');\n",
           },
         },
       ],
@@ -3339,6 +3343,48 @@ describe('the Biome architecture parts', () => {
     ),
   )(
     'should report a declaring surface $isReported when a project extends $parts',
+    ({ files, isReported, parts }) => {
+      // Arrange
+      const project = {
+        files,
+        parts,
+      };
+
+      // Act
+      const { plugins } = lintFindings(project);
+
+      // Assert
+      expect(plugins.includes('surface-only-re-exports')).toBe(isReported);
+    },
+  );
+
+  it.each(
+    lintCases(
+      [
+        {
+          files: {
+            'src/root/routes/index.tsx': 'export const Route = 1;\n',
+          },
+          isReported: false,
+          place: 'a route the framework registers under the root',
+        },
+        {
+          files: {
+            'src/root/index.ts': "export const ROOT = 'root';\n",
+          },
+          isReported: true,
+          place: "the root's surface",
+        },
+      ],
+      {
+        parts: [
+          ...baseParts,
+          'typescript/architecture/typescript',
+        ],
+      },
+    ),
+  )(
+    "should report a declaring index $isReported in $place when a project extends the language's architecture part",
     ({ files, isReported, parts }) => {
       // Arrange
       const project = {

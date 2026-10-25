@@ -98,7 +98,6 @@ const sourceReaderOf =
       `${file.source.kind === SourceKind.Release ? wiring.releaseFolder : `${wiring.project}/${withoutDotSlash(file.source.pack)}`}/${file.path}`,
     );
 
-// A file of the project, read once.
 const projectReaderOf = (wiring: WiringInput): ((path: string) => FileRead) => {
   const contents = new Map<string, FileRead>();
 

@@ -1,12 +1,12 @@
 ---
 name: check
-description: Run the project's check command, then review the changed files — or the whole project — against the rules of the active blocks that govern them, with the reviewer agent. Use before handing work back, when the hand-back reminder names changed blocks, or when the owner asks for a review by a lens such as security or a11y.
-argument-hint: "[all|edits] [lens]"
+description: Run the project's check command, then review the changed files — or the whole project — against the rules of the active blocks that govern them, with the reviewer agent. Use before handing work back, when the hand-back reminder names changed blocks, or when the owner asks for a review.
+argument-hint: "[all|edits]"
 ---
 
 # Check the work against the rules
 
-Arguments: $ARGUMENTS — a scope, `edits` (the default) or `all`, and an optional lens, one of the tags: `a11y`, `data`, `errors`, `performance`, `security`, `testing`, `ux`.
+Arguments: $ARGUMENTS — a scope, `edits` (the default) or `all`.
 
 The session's state, saved at session start:
 
@@ -40,7 +40,6 @@ Dispatch the `constitution:reviewer` agent once, through the Agent tool, with:
 - the project root;
 - the files, each with the blocks that govern it;
 - the rule files to read: core's files and, for each block named, its files from the `active` lines — paths under the project's `.droneey/constitution/`, the release it pins, but for a pack's block, which start with the pack's folder;
-- the lens, when given: it reviews only the rules tagged with it;
 - the overrides from the digest, so a lowered rule is judged at its lowered level.
 
 It returns findings, one per line: `<path>:<line> — <slug> — <what is wrong> — <the fix>`, and `no findings` when there are none.

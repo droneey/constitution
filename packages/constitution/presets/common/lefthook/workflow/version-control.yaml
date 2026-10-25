@@ -43,7 +43,8 @@ commit-msg:
         fi
 
         case "$(printf '%s' "$SUBJECT" | tr '[:upper:]' '[:lower:]')" in
-          update|updates|changes|change|misc|wip|fix|fixes|"fix stuff"|stuff|"minor changes"|"small fix"|tmp|test)
+          update | updates | changes | change | misc | wip | fix | fixes | "fix stuff" | stuff | \
+            "minor changes" | "small fix" | tmp | test)
             echo "Subject '$SUBJECT' says nothing; say what changed"
             exit 1
             ;;

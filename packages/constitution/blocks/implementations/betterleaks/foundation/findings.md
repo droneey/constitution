@@ -8,6 +8,6 @@
 
 Every scan passes `--redact`.
 
-| Why | Tags |
-|---|---|
-| a finding a scan prints stays in the terminal and in any log that captures it, the CI's included. | [] |
+| Why |
+|---|
+| a finding a scan prints stays in the terminal and in any log that captures it, the CI's included. |

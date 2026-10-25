@@ -8,6 +8,6 @@
 
 `setTimeout`, `setInterval` and `setImmediate` are called only at the edge and in a binding unit that schedules its own work.
 
-| Why | Tags |
-|---|---|
-| a timer reads the clock, so code that sets one outside them waits on time no spec can hand in. | [] |
+| Why |
+|---|
+| a timer reads the clock, so code that sets one outside them waits on time no spec can hand in. |

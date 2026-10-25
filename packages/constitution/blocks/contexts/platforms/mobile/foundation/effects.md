@@ -8,6 +8,6 @@
 
 Work that must finish after the app leaves the foreground — an upload, a sync, a queued write — is handed to the system's scheduler of background work, never left to a timer or a task of the app it suspends.
 
-| Why | Tags |
-|---|---|
-| the system suspends and ends an app in the background without warning, and work no scheduler holds stops with it, half done. | [data, errors] |
+| Why |
+|---|
+| the system suspends and ends an app in the background without warning, and work no scheduler holds stops with it, half done. |

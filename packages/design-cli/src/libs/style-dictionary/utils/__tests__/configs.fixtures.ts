@@ -1,34 +1,44 @@
-import type { Resolver } from '@droneey/design-tokens';
+import { fileURLToPath } from 'node:url';
+
 import StyleDictionary from 'style-dictionary';
 
-import { configsOf } from '../configs.utils';
-import resolver from './design.fixtures.resolver.json' with { type: 'json' };
-
-const resolverPath = new URL('./design.fixtures.resolver.json', import.meta.url).href;
+import type { ThemeMode } from '../../types';
+import { configOf } from '../configs.utils';
 
 const BUILD_PATH = 'theme/';
 
 const HEADER = '/**\n * Do not edit directly, this file was auto-generated.\n */\n\n';
 
-/** the fixture resolver with one more file every mode takes */
-const resolverWith = (file: string): Resolver => ({
-  ...resolver,
-  sets: {
-    ...resolver.sets,
-    extra: {
-      sources: [
-        {
-          $ref: file,
-        },
-      ],
-    },
+const fixtureModes: readonly ThemeMode[] = [
+  {
+    name: 'light',
+    isDefault: true,
   },
-});
+  {
+    name: 'dark',
+    isDefault: false,
+  },
+];
 
-/** what each mode's build writes from the fixture resolver, by file */
-const outputsOf = async (designResolver: Resolver = resolver): Promise<Record<string, unknown>[]> =>
+const fixturePathOf = (file: string): string => fileURLToPath(new URL(file, import.meta.url));
+
+/**
+ * What each mode's build writes from the fixture tokens and `extra`, more files every mode takes,
+ * by file, read as the runner of design-tokens reads a resolver's.
+ */
+const outputsOf = async (extra: readonly string[] = []): Promise<Record<string, unknown>[]> =>
   Promise.all(
-    configsOf(designResolver, resolverPath, BUILD_PATH).map(async (config) => {
+    fixtureModes.map(async (mode) => {
+      const config = {
+        ...configOf(mode, BUILD_PATH),
+        include: [
+          'base.fixtures.tokens.json',
+          ...extra,
+        ].map(fixturePathOf),
+        source: [
+          fixturePathOf(`${mode.name}.fixtures.tokens.json`),
+        ],
+      };
       const dictionary = new StyleDictionary(config, {
         verbosity: 'silent',
       });
@@ -45,4 +55,4 @@ const outputsOf = async (designResolver: Resolver = resolver): Promise<Record<st
     }),
   );
 
-export { HEADER, outputsOf, resolverWith };
+export { HEADER, outputsOf };

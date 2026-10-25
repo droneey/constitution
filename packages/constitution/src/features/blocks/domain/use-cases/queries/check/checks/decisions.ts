@@ -39,7 +39,7 @@ interface Entry {
 
 const ENTRY = /^## ADR-(\d{4})\b/;
 const DATE_LINE =
-  /^\*\*Date:\*\* ((\d{4})-(\d{2})-(\d{2})) · \*\*Status:\*\* (?:Accepted|Proposed)$/;
+  /^\*\*Date:\*\* ((\d{4})-(\d{2})-(\d{2})) · \*\*Status:\*\* (?:Accepted|Proposed|Superseded by ADR-\d{4})$/;
 const MONTHS = 12;
 
 const entriesOf = (text: string): readonly Entry[] => {

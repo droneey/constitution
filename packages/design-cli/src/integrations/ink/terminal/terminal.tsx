@@ -96,6 +96,7 @@ const askConfirm = (input: AskConfirmInput): Promise<Answer<boolean>> =>
         message={input.message}
         onInterrupt={interrupt}
         onSubmit={answer}
+        words={input.words}
       />
     ),
   });

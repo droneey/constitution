@@ -7,6 +7,7 @@ import osvScanner from './.droneey/constitution/presets/typescript/knip/foundati
 import rumdl from './.droneey/constitution/presets/typescript/knip/foundation/rumdl.mjs';
 import shellcheck from './.droneey/constitution/presets/typescript/knip/foundation/shellcheck.mjs';
 import shfmt from './.droneey/constitution/presets/typescript/knip/foundation/shfmt.mjs';
+import tombi from './.droneey/constitution/presets/typescript/knip/foundation/tombi.mjs';
 import uv from './.droneey/constitution/presets/typescript/knip/foundation/uv.mjs';
 import yamllint from './.droneey/constitution/presets/typescript/knip/foundation/yamllint.mjs';
 import workflowLefthook from './.droneey/constitution/presets/typescript/knip/workflow/lefthook.mjs';
@@ -20,6 +21,7 @@ export default join(
   rumdl,
   shellcheck,
   shfmt,
+  tombi,
   uv,
   yamllint,
   architectureCore,

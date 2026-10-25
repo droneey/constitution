@@ -48,11 +48,10 @@ The Droneey Constitution: the engineering rules every Droneey repository is buil
 - **Chapter** — a file of an axis of a block, `<axis>/<name>.md`, of one subject and named for it in its block's own terms, never after its block; a language's or a platform's chapter that refines one of core's takes its name. It opens with its title and a `> Governs …` line and holds its rules in sections.
 - **Section** — a `##` part of a chapter or a seam that names a part of its subject: `General`, first, for the rules about the whole subject, and `Requirements for implementation`, last.
 - **Seam** — a `with/<other>.md` file: the rules that hold only when two blocks meet.
-- **Rule** — a heading with a slug and a level, a statement, its Why and its tags.
+- **Rule** — a heading with a slug and a level, a statement and its Why.
 - **Slug** — a rule's kebab-case name, one across the Constitution and its packs: bindings, overrides and other rules name a rule by it.
 - **Tightens** — a rule's `→ <rule>` link: it narrows that rule for its block's case, never looser, and takes its level when it states none.
 - **Level** — `MUST`, `SHOULD` or `MAY`: how hard a rule binds.
-- **Lens** — a tag on a rule, for a review of one concern across every block.
 - **Requirement** — a rule of a `Requirements for implementation` section: what a tool of that kind must offer; an implementation's passport answers each with how and whether it is met.
 - **Active set** — the blocks a project follows: core, the blocks it lists, and the bases they extend.
 - **Unit** — the repository, or a member of its workspace, whose files follow the blocks of its own `constitution.yaml`.

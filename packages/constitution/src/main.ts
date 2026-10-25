@@ -68,7 +68,14 @@ const program = createProgram({
       'TERM',
     ]),
     pluginRoot: process.env['CLAUDE_PLUGIN_ROOT'],
-    sessions: `/tmp/droneey-constitution-${String(process.getuid?.() ?? 0)}`,
+    sessions: {
+      environment: environmentOf([
+        'HOME',
+        'XDG_STATE_HOME',
+      ]),
+      formerFolder: `/tmp/droneey-constitution-${String(process.getuid?.() ?? 0)}`,
+      owner: process.geteuid?.(),
+    },
     ...(today === undefined
       ? {}
       : {

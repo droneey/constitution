@@ -8,6 +8,6 @@
 
 The composition root registers one handler on each server framework it mounts, and that handler answers every failure of every request the framework serves; no operation catches a failure to answer it itself.
 
-| Why | Tags |
-|---|---|
-| every failure leaves in one shape and is masked in one place, and a failure the framework raises before any operation runs is answered like the rest. | [errors, security] |
+| Why |
+|---|
+| every failure leaves in one shape and is masked in one place, and a failure the framework raises before any operation runs is answered like the rest. |

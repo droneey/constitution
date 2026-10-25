@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, test } from 'bun:test';
+import { afterEach, describe, expect, it } from 'bun:test';
 
 import { useGlide } from '@droneey/design-browser/react-dom';
 import { cleanup, renderHook, screen, within } from '@testing-library/react';
@@ -20,7 +20,7 @@ afterEach(() => {
 });
 
 describe('glideLists', () => {
-  test.each([
+  it.each([
     {
       list: 'the versions',
       markup: versionsMarkup(),
@@ -64,7 +64,7 @@ describe('glideLists', () => {
     },
   );
 
-  test.each([
+  it.each([
     {
       list: 'the search results',
       markup: searchMarkup('Layers'),

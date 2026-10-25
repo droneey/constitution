@@ -10,14 +10,6 @@ export default {
           'npm-no-pkg',
           'npm-unknown',
         ],
-        // dependency-cruiser types a package that `peerDependenciesMeta` names npm-no-pkg too,
-        // beside the field that declares it.
-        dependencyTypesNot: [
-          'npm',
-          'npm-dev',
-          'npm-peer',
-          'npm-optional',
-        ],
       },
     },
     {

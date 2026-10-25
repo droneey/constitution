@@ -71,6 +71,7 @@ const fingerprintOf = (root: string): string | undefined => {
       )
       .filter(isInside),
   );
+  // biome-ignore lint/suspicious/useArraySortCompare: paths in UTF-16 order, the default, are the order every copy shares
   const files = [
     ...new Set(
       [

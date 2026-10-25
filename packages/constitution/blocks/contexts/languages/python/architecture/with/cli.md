@@ -8,6 +8,6 @@
 
 A command's module is named `<op>_cli.py`, after the operation it runs.
 
-| Why | Tags |
-|---|---|
-| the suffix tells a command of the command line from a `commands/` folder of the domain, the write side of its use cases. | [] |
+| Why |
+|---|
+| the suffix tells a command of the command line from a `commands/` folder of the domain, the write side of its use cases. |

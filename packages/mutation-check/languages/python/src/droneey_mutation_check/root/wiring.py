@@ -3,12 +3,13 @@ import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
-from droneey_mutation_check.adapters.local import WorkspaceAdapter
-from droneey_mutation_check.gate import check
-from droneey_mutation_check.outcome import ExitStatus, exit_status, render
+from droneey_mutation_check.features.mutation import check_mutants, exit_status, render
+from droneey_mutation_check.features.mutation.adapters.local import WorkspaceAdapter
 
 if TYPE_CHECKING:
   from collections.abc import Sequence
+
+  from droneey_mutation_check.features.mutation import ExitStatus
 
 # What git and mutmut need of the environment: mutmut's type check finds the project's packages by
 # VIRTUAL_ENV, as it runs from mutants/, where no .venv is.
@@ -23,7 +24,7 @@ def run(arguments: Sequence[str]) -> ExitStatus:
     environment={name: os.environ[name] for name in CHILD_VARIABLES if name in os.environ},
     timeout_seconds=COMMAND_SECONDS,
   )
-  outcome = check(arguments, workspace=workspace)
+  outcome = check_mutants(arguments, workspace=workspace)
   sys.stdout.write(render(outcome))
 
   return exit_status(outcome)

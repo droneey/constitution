@@ -1,11 +1,11 @@
-import { describe, expect, test } from 'bun:test';
+import { describe, expect, it } from 'bun:test';
 
 import { codeChanged } from '../code-changed.ts';
 
 const BEFORE = 'export const total = 1;\nexport const count = 2;\n';
 
 describe('codeChanged', () => {
-  test.each([
+  it.each([
     {
       after: 'export const total = 1;\nexport const count = 3;\n',
       before: BEFORE,

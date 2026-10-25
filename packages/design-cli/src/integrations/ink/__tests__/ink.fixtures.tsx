@@ -6,7 +6,7 @@ import { render as renderToInk } from 'ink';
 import { render } from 'ink-testing-library';
 
 import type { Output } from '#/libs/ui';
-import { ColourLevel, OutputMode, ThemeMode } from '#/libs/ui';
+import { ColourLevel, ConfirmWords, OutputMode, ThemeMode } from '#/libs/ui';
 
 import { ThemeProvider } from '../components';
 
@@ -19,6 +19,12 @@ enum Key {
   Interrupt = '\u0003',
   CtrlA = '\u0001',
 }
+
+const englishWords = ConfirmWords.create({
+  locale: 'en',
+  no: 'no',
+  yes: 'yes',
+});
 
 const createPlainOutput = (overrides: Partial<Output> = {}): Output => ({
   colourLevel: ColourLevel.None,
@@ -146,6 +152,7 @@ export {
   createPlainOutput,
   createTerminalInput,
   createTerminalOutput,
+  englishWords,
   frameOnceShown,
   Key,
   pressKeys,

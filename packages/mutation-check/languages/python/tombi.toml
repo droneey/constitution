@@ -1,0 +1,13 @@
+# tombi — the Constitution's parts, copied, each between its two lines, since tombi reads no other file
+# from .droneey/constitution/presets/toml/tombi/foundation/self.toml
+toml-version = "v1.0.0"
+
+[format.rules]
+indent-width = 2
+line-width = 100
+trailing-comment-space-width = 1
+
+[schema.format.rules]
+table-keys-order.enabled = false
+array-values-order.enabled = false
+# end .droneey/constitution/presets/toml/tombi/foundation/self.toml

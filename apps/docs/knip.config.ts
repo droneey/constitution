@@ -10,6 +10,7 @@ import shellcheck from '../../.droneey/constitution/presets/typescript/knip/foun
 import shfmt from '../../.droneey/constitution/presets/typescript/knip/foundation/shfmt.mjs';
 import stryker from '../../.droneey/constitution/presets/typescript/knip/foundation/stryker.mjs';
 import tanstackStart from '../../.droneey/constitution/presets/typescript/knip/foundation/tanstack-start.mjs';
+import tombi from '../../.droneey/constitution/presets/typescript/knip/foundation/tombi.mjs';
 import yamllint from '../../.droneey/constitution/presets/typescript/knip/foundation/yamllint.mjs';
 
 // knip has no extends, so the parts are joined.
@@ -22,6 +23,7 @@ export default join(
   shfmt,
   stryker,
   tanstackStart,
+  tombi,
   yamllint,
   architectureCore,
   architectureTanstackRouter,

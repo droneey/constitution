@@ -20,10 +20,8 @@ const ruleFormTexts: TextsOf<RequirementsTableDetails & RuleFormDetails> = {
     `rule "${slug}" has ${count} rows in its table; a rule's table has one`,
   [RuleFormCode.CellsMiscounted]: ({ count, slug }) =>
     `rule "${slug}" has a row of ${count} cells; a rule's table has ${RULE_TABLE_CELLS}`,
-  [RuleFormCode.TagsNotList]: ({ slug, tags }) =>
-    `rule "${slug}" has the Tags "${tags}"; Tags is a list, such as [security, ux] or []`,
   [RuleFormCode.HoldsLabel]: ({ label, slug }) =>
-    `rule "${slug}" has the label "${label}"; a rule states Why and Tags in its table and holds no label but Example`,
+    `rule "${slug}" has the label "${label}"; a rule states its Why in its table and holds no label but Example`,
   [RequirementsTableCode.HeaderMisshapen]: ({ row }) =>
     `has the header "${row}" in its Requirements; it is "${REQUIREMENTS_TABLE_HEADER}"`,
   [RequirementsTableCode.RowMisshapen]: ({ row }) =>

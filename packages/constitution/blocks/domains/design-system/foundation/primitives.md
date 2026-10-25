@@ -8,9 +8,9 @@
 
 A primitive accepts its element's own props and reference, and merges its own props and handlers with the caller's.
 
-| Why | Tags |
-|---|---|
-| without it every consumer wraps or forks the primitive for one attribute. | [ux] |
+| Why |
+|---|
+| without it every consumer wraps or forks the primitive for one attribute. |
 
 ## Proof
 
@@ -18,9 +18,9 @@ A primitive accepts its element's own props and reference, and merges its own pr
 
 Each primitive of the design system is shown in each of its variants and states, in every mode, in one place that people and screenshot specs both see.
 
-| Why | Tags |
-|---|---|
-| a variant nobody renders breaks unseen, and one showcase is what a review and a screenshot compare. | [ux, testing] |
+| Why |
+|---|
+| a variant nobody renders breaks unseen, and one showcase is what a review and a screenshot compare. |
 
 ## Requirements for implementation
 
@@ -28,6 +28,6 @@ Each primitive of the design system is shown in each of its variants and states,
 
 The library's primitives carry no look of their own.
 
-| Why | Tags |
-|---|---|
-| the look comes from the design system's tokens, and a primitive's own styles fight them. | [ux] |
+| Why |
+|---|
+| the look comes from the design system's tokens, and a primitive's own styles fight them. |

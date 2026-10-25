@@ -8,6 +8,6 @@
 
 A worktree holds one branch, and no folder of it is a link into another checkout.
 
-| Why | Tags |
-|---|---|
-| a linked folder escapes the ignore pattern and gets committed, and two worktrees on one branch overwrite each other. | [] |
+| Why |
+|---|
+| a linked folder escapes the ignore pattern and gets committed, and two worktrees on one branch overwrite each other. |

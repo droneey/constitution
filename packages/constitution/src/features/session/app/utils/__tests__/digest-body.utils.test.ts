@@ -15,6 +15,11 @@ const m390 = `- wiring: ${'w'.repeat(390)}`;
 const m690 = `- wiring: ${'w'.repeat(690)}`;
 const m10 = `- wiring: ${'w'.repeat(10)}`;
 
+const overrideSection = [
+  '## Overrides',
+  '- inputs-are-labelled: SHOULD',
+];
+
 // Core of one line that, with its line break, takes 9000 bytes of the digest's 9400.
 const largeCore = 'c'.repeat(8999);
 
@@ -123,6 +128,7 @@ describe('budgetedBodyOf', () => {
         blockList,
         core,
         isStartup,
+        overrides: [],
         warnings,
       };
 
@@ -184,6 +190,7 @@ describe('budgetedBodyOf', () => {
         blockList: [],
         core: '',
         isStartup: false,
+        overrides: [],
         warnings,
       };
 
@@ -257,6 +264,69 @@ describe('budgetedBodyOf', () => {
         blockList,
         core,
         isStartup: false,
+        overrides: [],
+        warnings: [],
+      };
+
+      // Act
+      const given = budgetedBodyOf(contents);
+
+      // Assert
+      expect(given).toStrictEqual(body);
+    },
+  );
+
+  it.each([
+    {
+      body: [
+        '# Core',
+        '',
+        ...overrideSection,
+        '',
+        '- ui: the screens.',
+      ],
+      condition: 'core comes before them and the block list after',
+      core: '# Core\n',
+      blockList: [
+        '- ui: the screens.',
+      ],
+      overrides: overrideSection,
+    },
+    {
+      body: overrideSection,
+      condition: 'nothing comes before them',
+      core: '',
+      blockList: [],
+      overrides: overrideSection,
+    },
+    {
+      body: [
+        largeCore,
+        '',
+        '## Overrides',
+        `- ${'o'.repeat(400)}: MAY`,
+        '',
+        NOTE_OF_ONE,
+      ],
+      condition: 'they and core leave the block list no room',
+      core: largeCore,
+      blockList: [
+        '- ui: the screens.',
+      ],
+      overrides: [
+        '## Overrides',
+        `- ${'o'.repeat(400)}: MAY`,
+      ],
+    },
+  ])(
+    'should give the overrides whole, after core and before the block list, when $condition',
+    ({ blockList, body, core, overrides }) => {
+      // Arrange
+      const contents = {
+        blockList,
+        core,
+        isStartup: false,
+        overrides,
         warnings: [],
       };
 

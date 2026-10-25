@@ -276,7 +276,6 @@ describe('createGitFileTrees: installed', () => {
   });
 });
 
-// The files a tree holds, written into the temporary root.
 const writeAll = (files: Readonly<Record<string, string>>): void => {
   for (const [path, text] of Object.entries(files)) {
     write({

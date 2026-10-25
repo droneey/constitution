@@ -8,6 +8,6 @@
 
 The config file's first line is `# yaml-language-server: $schema=<published schema URL>`.
 
-| Why | Tags |
-|---|---|
-| editors then check and complete the config file against the program's own schema. | [] |
+| Why |
+|---|
+| editors then check and complete the config file against the program's own schema. |

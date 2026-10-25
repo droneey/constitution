@@ -8,6 +8,6 @@
 
 rumdl formats every Markdown document, by the fixes of the rules it runs.
 
-| Why | Tags |
-|---|---|
-| one formatter for Markdown ends every argument about its layout. | [] |
+| Why |
+|---|
+| one formatter for Markdown ends every argument about its layout. |

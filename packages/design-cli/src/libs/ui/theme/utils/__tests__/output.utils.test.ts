@@ -123,6 +123,24 @@ describe('chooseOutput', () => {
       isMotionReduced: false,
     },
     {
+      name: 'NO_COLOR over FORCE_COLOR',
+      env: envOf(
+        [
+          'NO_COLOR',
+          '1',
+        ],
+        [
+          'FORCE_COLOR',
+          '3',
+        ],
+      ),
+      flags: {},
+      isTerminal: false,
+      mode: OutputMode.Plain,
+      colourLevel: ColourLevel.None,
+      isMotionReduced: true,
+    },
+    {
       name: '--color with FORCE_COLOR=3',
       env: envOf(TERM, [
         'FORCE_COLOR',
@@ -171,7 +189,7 @@ describe('chooseOutput', () => {
       flags: {},
       isTerminal: false,
       mode: OutputMode.Plain,
-      colourLevel: ColourLevel.Basic,
+      colourLevel: ColourLevel.None,
       isMotionReduced: true,
     },
     {
@@ -199,52 +217,52 @@ describe('chooseOutput', () => {
       isMotionReduced: true,
     },
     {
-      name: 'FORCE_COLOR=false',
-      env: envOf(TERM, [
+      name: 'FORCE_COLOR=false in a pipe',
+      env: envOf([
         'FORCE_COLOR',
         'false',
       ]),
       flags: {},
-      isTerminal: true,
-      mode: OutputMode.Pretty,
-      colourLevel: ColourLevel.None,
+      isTerminal: false,
+      mode: OutputMode.Plain,
+      colourLevel: ColourLevel.Basic,
       isMotionReduced: true,
     },
     {
-      name: 'FORCE_COLOR=0',
-      env: envOf(TERM, [
+      name: 'FORCE_COLOR=0 in a pipe',
+      env: envOf([
         'FORCE_COLOR',
         '0',
       ]),
       flags: {},
-      isTerminal: true,
-      mode: OutputMode.Pretty,
-      colourLevel: ColourLevel.None,
+      isTerminal: false,
+      mode: OutputMode.Plain,
+      colourLevel: ColourLevel.Basic,
       isMotionReduced: true,
     },
     {
-      name: 'an unknown FORCE_COLOR',
-      env: envOf(TERM, [
+      name: 'an unknown FORCE_COLOR in a pipe',
+      env: envOf([
         'FORCE_COLOR',
         'always',
       ]),
       flags: {},
-      isTerminal: true,
-      mode: OutputMode.Pretty,
+      isTerminal: false,
+      mode: OutputMode.Plain,
       colourLevel: ColourLevel.Basic,
-      isMotionReduced: false,
+      isMotionReduced: true,
     },
     {
-      name: 'a FORCE_COLOR named like a member every object has',
-      env: envOf(TERM, [
+      name: 'a FORCE_COLOR named like a member every object has in a pipe',
+      env: envOf([
         'FORCE_COLOR',
         'constructor',
       ]),
       flags: {},
-      isTerminal: true,
-      mode: OutputMode.Pretty,
+      isTerminal: false,
+      mode: OutputMode.Plain,
       colourLevel: ColourLevel.Basic,
-      isMotionReduced: false,
+      isMotionReduced: true,
     },
     {
       name: 'a 256-colour terminal',

@@ -1,11 +1,17 @@
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
 import { buildAll } from '../build.utils';
-import { configOf, FILE, OUTPUT } from './style-dictionary.fixtures';
+import {
+  configOf,
+  FILE,
+  OUTPUT,
+  platformlessConfig,
+  textlessConfigOf,
+} from './style-dictionary.fixtures';
 
 let root = '';
 
@@ -39,5 +45,31 @@ describe('buildAll', () => {
       OUTPUT,
       OUTPUT,
     ]);
+  });
+
+  it('should write no file for a format that gives no text', async () => {
+    // Arrange
+    const configs = [
+      textlessConfigOf(`${root}/`),
+    ];
+
+    // Act
+    await buildAll(configs);
+
+    // Assert
+    expect(existsSync(join(root, FILE))).toBe(false);
+  });
+
+  it('should build a configuration with no platform', async () => {
+    // Arrange
+    const configs = [
+      platformlessConfig,
+    ];
+
+    // Act
+    const built = buildAll(configs);
+
+    // Assert
+    await expect(built).resolves.toBeUndefined();
   });
 });

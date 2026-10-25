@@ -86,7 +86,7 @@ interface LayerFolder {
 }
 
 const SEPARATOR = '/';
-const MARKDOWN = /^[^.].*\.md$/;
+const HIDDEN = '.';
 const layerFolders: readonly LayerFolder[] = LAYERS.map((layer) => ({
   layer,
   prefix: `${BLOCKS_FOLDER}/${LAYER_FOLDER[layer]}/`,
@@ -104,6 +104,9 @@ const ROLE_RANK = {
 const STRAY = {
   kind: BlockFileKind.Stray,
 } as const satisfies FileInBlock;
+
+const isMarkdown = (name: string): boolean =>
+  !name.startsWith(HIDDEN) && name.endsWith(MARKDOWN_EXTENSION);
 
 // <id>.md, <axis>/<name>.md or <axis>/with/<block>.md below the block's folder.
 const fileOf = (input: { id: BlockId; segments: readonly string[] }): FileInBlock => {
@@ -124,7 +127,7 @@ const fileOf = (input: { id: BlockId; segments: readonly string[] }): FileInBloc
   }
 
   if (seam === undefined) {
-    if (!MARKDOWN.test(name)) {
+    if (!isMarkdown(name)) {
       return STRAY;
     }
 
@@ -139,7 +142,7 @@ const fileOf = (input: { id: BlockId; segments: readonly string[] }): FileInBloc
         };
   }
 
-  if (name !== SEAM_FOLDER || !MARKDOWN.test(seam)) {
+  if (name !== SEAM_FOLDER || !isMarkdown(seam)) {
     return STRAY;
   }
 

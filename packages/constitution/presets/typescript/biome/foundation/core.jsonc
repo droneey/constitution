@@ -10,6 +10,8 @@
         "noDebugger": "error",
         "noDeprecatedImports": "error",
         "noParametersOnlyUsedInRecursion": "error",
+        "noConditionalExpect": "error",
+        "useExpect": "error",
       },
       "style": {
         "useFilenamingConvention": {
@@ -69,8 +71,6 @@
         },
       },
       "nursery": {
-        "noConditionalExpect": "error",
-        "useExpect": "error",
         "usePromiseRejectErrors": "error",
       },
     },

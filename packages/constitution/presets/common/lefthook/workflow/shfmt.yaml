@@ -2,6 +2,6 @@ pre-commit:
   parallel: true
   jobs:
     - name: shfmt
-      glob: "*.{sh,bash}"
+      glob: '*.{sh,bash}'
       stage_fixed: true
       run: shfmt -w {staged_files}

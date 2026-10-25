@@ -1,13 +1,22 @@
 import { afterEach, describe, expect, it } from 'bun:test';
 
+import type { ReactElement } from 'react';
+import { Suspense, use } from 'react';
+
 import { cleanup, render, screen } from '@testing-library/react';
 import type { CompiledMDXProperties } from 'fumadocs-mdx';
 
+import type { PageBody } from '../bodies.adapter';
 import { createPageBodies } from '../bodies.adapter';
 
-type PageBodies = ReturnType<typeof createPageBodies>;
-
 afterEach(cleanup);
+
+const neverLoads = (): Promise<never> => new Promise(() => undefined);
+
+/** the first heading the body's table of contents lists */
+function FirstHeading({ load }: { load: PageBody['load'] }): ReactElement {
+  return <p>{use(load()).toc[0]?.title}</p>;
+}
 
 const compiledPage = (title: string): CompiledMDXProperties => ({
   default: () => <h1>{title}</h1>,
@@ -34,8 +43,18 @@ const collections = {
   },
 };
 
-const pageAt = (path: string): NonNullable<ReturnType<PageBodies['pageBodyOf']>> => {
-  const page = createPageBodies(collections).pageBodyOf('blocks', path);
+const blocksAt = (
+  path: string,
+): {
+  collection: string;
+  path: string;
+} => ({
+  collection: 'blocks',
+  path,
+});
+
+const pageAt = (path: string): PageBody => {
+  const page = createPageBodies(collections).find(blocksAt(path));
 
   if (page === undefined) {
     throw new Error(`the collection has no page at ${path}`);
@@ -47,48 +66,63 @@ const pageAt = (path: string): NonNullable<ReturnType<PageBodies['pageBodyOf']>>
 describe('createPageBodies', () => {
   it.each([
     {
+      collection: 'guide',
       condition: 'the collection is unknown',
       path: 'core/core.md',
-      type: 'guide',
     },
     {
+      collection: 'blocks',
       condition: 'the collection has no file at the path',
       path: 'core/names.md',
-      type: 'blocks',
     },
-  ])('should find no body when $condition', ({ path, type }) => {
+  ])('should find no body when $condition', ({ collection, path }) => {
     // Arrange
     const bodies = createPageBodies(collections);
 
     // Act
-    const body = bodies.pageBodyOf(type, path);
+    const body = bodies.find({
+      collection,
+      path,
+    });
 
     // Assert
     expect(body).toBeUndefined();
   });
 
-  it('should keep a body loaded once its loading ends, and no other page’s', async () => {
+  it('should hand React a body it reads in the same render once its loading has ended', async () => {
     // Arrange
-    const bodies = createPageBodies(collections);
-    const core = bodies.pageBodyOf('blocks', 'core/core.md');
+    const core = createPageBodies(collections).find(blocksAt('core/core.md'));
 
-    // Act
     await core?.load();
 
+    // Act
+    render(
+      <Suspense>
+        <FirstHeading load={core?.load ?? neverLoads} />
+      </Suspense>,
+    );
+
     // Assert
-    expect({
-      core: core?.loaded()?.toc,
-      ui: bodies.pageBodyOf('blocks', 'domains/ui/ui.md')?.loaded(),
-    }).toStrictEqual({
-      core: [
-        {
-          depth: 2,
-          title: 'Core',
-          url: '#core',
-        },
-      ],
-      ui: undefined,
-    });
+    expect(screen.queryByText('Core')?.textContent).toBe('Core');
+  });
+
+  it('should keep each page’s body apart from the one loaded before it', async () => {
+    // Arrange
+    const bodies = createPageBodies(collections);
+
+    await bodies.find(blocksAt('core/core.md'))?.load();
+
+    // Act
+    const ui = await bodies.find(blocksAt('domains/ui/ui.md'))?.load();
+
+    // Assert
+    expect(ui?.toc).toStrictEqual([
+      {
+        depth: 2,
+        title: 'Ui',
+        url: '#ui',
+      },
+    ]);
   });
 
   it('should start a body’s loading once however often it is asked', () => {
@@ -97,8 +131,8 @@ describe('createPageBodies', () => {
 
     // Act
     const loadings = [
-      bodies.pageBodyOf('blocks', 'core/core.md')?.load(),
-      bodies.pageBodyOf('blocks', 'core/core.md')?.load(),
+      bodies.find(blocksAt('core/core.md'))?.load(),
+      bodies.find(blocksAt('core/core.md'))?.load(),
     ];
 
     // Assert

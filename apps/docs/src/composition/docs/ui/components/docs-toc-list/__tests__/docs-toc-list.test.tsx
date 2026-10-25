@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
+import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
 import { cleanup, screen } from '@testing-library/react';
 
@@ -21,7 +21,7 @@ afterEach(() => {
 });
 
 describe('DocsTocList', () => {
-  test('should set sections at level 0 and the entries under them at level 1', () => {
+  it('should set sections at level 0 and the entries under them at level 1', () => {
     // Arrange
     const toc = tocFixture();
 
@@ -36,7 +36,7 @@ describe('DocsTocList', () => {
     ]);
   });
 
-  test('should pass the WCAG 2.2 A and AA scan', async () => {
+  it('should pass the WCAG 2.2 A and AA scan', async () => {
     // Arrange
     renderOnPage(<DocsTocList />);
 

@@ -98,9 +98,9 @@ const ruleOf = (input: RuleFixture): string => {
     '',
     'A rule.',
     '',
-    '| Why | Tags |',
-    '|---|---|',
-    '| a reason. | [] |',
+    '| Why |',
+    '|---|',
+    '| a reason. |',
     '',
   ].join('\n');
 };

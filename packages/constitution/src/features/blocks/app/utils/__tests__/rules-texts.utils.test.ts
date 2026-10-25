@@ -43,16 +43,6 @@ describe('rulesTexts', () => {
     },
     {
       problem: {
-        code: RulesCode.TagNotLens,
-        details: {
-          slug: RuleSlug.create('bare'),
-          tag: 'vibes',
-        },
-      },
-      text: 'rule "bare" has the tag "vibes", which is not a lens',
-    },
-    {
-      problem: {
         code: RulesCode.DefinedTwice,
         details: {
           firstFile: 'blocks/core/foundation/principles.md',

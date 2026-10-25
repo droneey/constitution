@@ -8,17 +8,17 @@
 
 A file with one export is named after it — `order-status.ts` exports `OrderStatus` — and a file with several exports after the unit they form, save a name a framework or a tool reads by its spelling, which its block names.
 
-| Why | Tags |
-|---|---|
-| a reader who knows the name of a thing knows the name of its file. | [] |
+| Why |
+|---|
+| a reader who knows the name of a thing knows the name of its file. |
 
 ### test-folder-files-in-test-forms → file-named-for-its-kind · MUST
 
 A `.ts` or `.tsx` file in `__tests__/` or `tests/` is a `.test`, `.<kind>.test`, `.fake`, `.suite` or `.fixtures` file.
 
-| Why | Tags |
-|---|---|
-| a spec named otherwise would never run, and a helper named like a spec would run as one. | [testing] |
+| Why |
+|---|
+| a spec named otherwise would never run, and a helper named like a spec would run as one. |
 
 ## Names
 
@@ -26,14 +26,14 @@ A `.ts` or `.tsx` file in `__tests__/` or `tests/` is a `.test`, `.<kind>.test`,
 
 A source file is a kebab-case **`.ts`** or **`.tsx`** file, save a name a framework or a tool reads by its spelling, which its block names.
 
-| Why | Tags |
-|---|---|
-| one spelling of every kind of file lets the reader find a file by its name. | [] |
+| Why |
+|---|
+| one spelling of every kind of file lets the reader find a file by its name. |
 
 ### tsx-only-where-markup-is-written · MUST
 
 A file is `.tsx` only where it writes markup.
 
-| Why | Tags |
-|---|---|
-| the extension then says which files render, and a plain module is never parsed for markup. | [] |
+| Why |
+|---|
+| the extension then says which files render, and a plain module is never parsed for markup. |

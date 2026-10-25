@@ -69,7 +69,6 @@ export function DocsVersionMenu({
                   aria-current={version === currentVersion ? 'page' : undefined}
                   className='flex h-control-md items-center gap-xs rounded-lg px-xs'
                   href={Versions.pageAddressIn({
-                    latest: latest ?? currentVersion,
                     path: pageHref,
                     version,
                   })}
@@ -81,6 +80,7 @@ export function DocsVersionMenu({
                   {version === currentVersion && (
                     <Icon
                       className='ms-auto text-fd-primary'
+                      data-testid='selected'
                       name={IconName.Selected}
                     />
                   )}

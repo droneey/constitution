@@ -8,9 +8,9 @@
 
 A tool server that authorises callers by token accepts only a token whose audience is the server's own canonical URI, and refuses any other.
 
-| Why | Tags |
-|---|---|
-| a token issued for another service and accepted here lets whoever holds it reach this server too. | [security] |
+| Why |
+|---|
+| a token issued for another service and accepted here lets whoever holds it reach this server too. |
 
 ## Proxies
 
@@ -18,9 +18,9 @@ A tool server that authorises callers by token accepts only a token whose audien
 
 A tool server that reaches a third party's API under one client id of its own obtains the user's consent for each client registered with it before it forwards to the third party's authorization, matches each `redirect_uri` exactly and uses each `state` once.
 
-| Why | Tags |
-|---|---|
-| the third party's consent cookie otherwise sends an authorization code to an attacker's registered redirect. | [security] |
+| Why |
+|---|
+| the third party's consent cookie otherwise sends an authorization code to an attacker's registered redirect. |
 
 ## Caching
 
@@ -28,6 +28,6 @@ A tool server that reaches a third party's API under one client id of its own ob
 
 A result shaped by its caller's rights — a list of tools, a resource read — sets its `cacheScope` to `private`, never `public`.
 
-| Why | Tags |
-|---|---|
-| a gateway that caches a public result hands one caller's tools and data to the next. | [security] |
+| Why |
+|---|
+| a gateway that caches a public result hands one caller's tools and data to the next. |

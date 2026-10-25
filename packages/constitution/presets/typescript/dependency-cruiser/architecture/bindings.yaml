@@ -15,7 +15,8 @@ _react:
     - react-imported-by-the-ui-and-binding-units
 core:
   layer-imports-dependencies-by-its-role:
-    - 'layer-imports-dependencies-by-its-role: what is no package of a registry, the forbidden rules hold'
+    - 'layer-imports-dependencies-by-its-role: what is no package of a registry, the forbidden
+      rules hold'
     - 'layer-imports-dependencies-by-its-role: the edge and the specs import any package'
   integration-never-imported:
     - integration-never-imported

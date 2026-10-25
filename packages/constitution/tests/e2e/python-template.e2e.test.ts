@@ -642,6 +642,17 @@ describe('the python template', () => {
         ],
         task: 'mutation:check',
       },
+      {
+        condition: "an integration spec fails, which each mutant's run collects",
+        changes: {
+          'src/shop/orders.py': reorderedOrders,
+          'tests/integration/test_engine.py': failingIntegrationSpec,
+        },
+        finding: [
+          'tests/integration/test_engine.py',
+        ],
+        task: 'mutation:check',
+      },
     ]),
   )('should fail $task when $condition', ({ changes, finding, task }) => {
     // Act
@@ -665,14 +676,6 @@ describe('the python template', () => {
 
   it.each(
     taskCases([
-      {
-        condition: "an integration spec fails, which each mutant's run leaves out",
-        changes: {
-          'src/shop/orders.py': reorderedOrders,
-          'tests/integration/test_engine.py': failingIntegrationSpec,
-        },
-        task: 'mutation:check',
-      },
       {
         condition: '__main__.py calls main() of main.py',
         changes: {

@@ -6,25 +6,27 @@ extends:
   - .droneey/constitution/presets/common/lefthook/workflow/rumdl.yaml
   - .droneey/constitution/presets/common/lefthook/workflow/shellcheck.yaml
   - .droneey/constitution/presets/common/lefthook/workflow/shfmt.yaml
+  - .droneey/constitution/presets/common/lefthook/workflow/tombi.yaml
 
-# ruff finds no configuration of this repository over a template's Python, and its defaults would rewrite it
+# ruff finds no configuration of this repository over a template's Python, and its defaults would
+# rewrite it
 pre-commit:
   jobs:
     - name: ruff
       exclude:
-        - "packages/constitution/templates/**"
+        - 'packages/constitution/templates/**'
 
-    # The root's Biome and rumdl jobs skip the units, as the root's configurations do; shellcheck and
-    # shfmt read no list of folders to skip, so their jobs name the workspace's. Each unit runs its own
-    # lint:fix, markdown:fix and shell:check in its folder.
+    # The root's Biome, rumdl and tombi jobs skip the units, as the root's configurations do;
+    # shellcheck and shfmt read no list of folders to skip, so their jobs name the workspace's. The
+    # jobs below run in each unit's own folder.
     - name: shellcheck
       exclude:
-        - "apps/**"
-        - "packages/**"
+        - 'apps/**'
+        - 'packages/**'
     - name: shfmt
       exclude:
-        - "apps/**"
-        - "packages/**"
+        - 'apps/**'
+        - 'packages/**'
     - name: biome apps/docs
       root: apps/docs/
       stage_fixed: true
@@ -49,36 +51,89 @@ pre-commit:
       root: packages/mutation-check/languages/typescript/
       stage_fixed: true
       run: *unit-lint
+    - name: biome packages/mutation-check/languages/python
+      root: packages/mutation-check/languages/python/
+      stage_fixed: true
+      run: &python-unit-lint bunx --bun biome check --write --no-errors-on-unmatched {staged_files}
+    - name: biome packages/python-check
+      root: packages/python-check/
+      stage_fixed: true
+      run: *python-unit-lint
     - name: rumdl apps/docs
       root: apps/docs/
-      glob: "*.md"
+      glob: '*.md'
       stage_fixed: true
       run: &unit-markdown bun run markdown:fix {staged_files}
     - name: rumdl packages/constitution
       root: packages/constitution/
-      glob: "*.md"
+      glob: '*.md'
       stage_fixed: true
       run: *unit-markdown
     - name: rumdl packages/design-cli
       root: packages/design-cli/
-      glob: "*.md"
+      glob: '*.md'
       stage_fixed: true
       run: *unit-markdown
     - name: rumdl packages/design-tokens
       root: packages/design-tokens/
-      glob: "*.md"
+      glob: '*.md'
       stage_fixed: true
       run: *unit-markdown
     - name: rumdl packages/design-browser
       root: packages/design-browser/
-      glob: "*.md"
+      glob: '*.md'
       stage_fixed: true
       run: *unit-markdown
     - name: shell apps/docs
       root: apps/docs/
-      glob: "*.{sh,bash}"
+      glob: '*.{sh,bash}'
       run: &unit-shell bun run shell:check
     - name: shell packages/constitution
       root: packages/constitution/
-      glob: "*.{sh,bash}"
+      glob: '*.{sh,bash}'
       run: *unit-shell
+    - name: tombi apps/docs
+      root: apps/docs/
+      glob: '*.toml'
+      stage_fixed: true
+      # lefthook hands a job with a root its files as ./path, and tombi skips a file its tombi.toml
+      # excludes only when named without the ./
+      run: &unit-toml |
+        set -- {staged_files}
+        for file; do shift; set -- "$@" "${file#./}"; done
+        tombi format "$@"
+    - name: tombi packages/constitution
+      root: packages/constitution/
+      glob: '*.toml'
+      stage_fixed: true
+      run: *unit-toml
+    - name: tombi packages/design-cli
+      root: packages/design-cli/
+      glob: '*.toml'
+      stage_fixed: true
+      run: *unit-toml
+    - name: tombi packages/design-tokens
+      root: packages/design-tokens/
+      glob: '*.toml'
+      stage_fixed: true
+      run: *unit-toml
+    - name: tombi packages/design-browser
+      root: packages/design-browser/
+      glob: '*.toml'
+      stage_fixed: true
+      run: *unit-toml
+    - name: tombi packages/mutation-check/languages/typescript
+      root: packages/mutation-check/languages/typescript/
+      glob: '*.toml'
+      stage_fixed: true
+      run: *unit-toml
+    - name: tombi packages/mutation-check/languages/python
+      root: packages/mutation-check/languages/python/
+      glob: '*.toml'
+      stage_fixed: true
+      run: *unit-toml
+    - name: tombi packages/python-check
+      root: packages/python-check/
+      glob: '*.toml'
+      stage_fixed: true
+      run: *unit-toml

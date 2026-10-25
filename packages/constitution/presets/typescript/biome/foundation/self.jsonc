@@ -67,6 +67,8 @@
         "noShadow": "error",
         "noUnnecessaryConditions": "error",
         "useArraySortCompare": "error",
+        "noEmptyObjectKeys": "error",
+        "noLoopFunc": "error",
       },
       "style": {
         "noParameterAssign": "error",
@@ -128,6 +130,8 @@
         "noUselessReturn": "error",
         "noRedundantDefaultExport": "error",
         "useArrayFind": "error",
+        "useArraySome": "error",
+        "useRegexpTest": "error",
       },
       "correctness": {
         "noGlobalDirnameFilename": "error",
@@ -142,14 +146,10 @@
         "noDynamicNamespaceImportAccess": "error",
       },
       "nursery": {
-        "useArraySome": "error",
         "useAwaitThenable": "error",
         "useStringStartsEndsWith": "error",
-        "useRegexpTest": "error",
         "noUselessTypeConversion": "error",
-        "noEmptyObjectKeys": "error",
         "noExtendNative": "error",
-        "noLoopFunc": "error",
         "noNegationInEqualityCheck": "error",
         "noThisOutsideOfClass": "error",
         "useIncludes": "error",
@@ -170,7 +170,7 @@
           "complexity": {
             "noStaticOnlyClass": "off",
           },
-          "nursery": {
+          "suspicious": {
             "noIdenticalTestTitle": "error",
           },
         },
@@ -179,11 +179,5 @@
   ],
   "plugins": [
     "./.droneey/constitution/presets/typescript/biome/foundation/plugins/biome-refuses-empty-verbs.grit",
-    {
-      "path": "./.droneey/constitution/presets/typescript/biome/foundation/plugins/biome-refuses-empty-names.grit",
-      "includes": [
-        "**",
-      ],
-    },
   ],
 }

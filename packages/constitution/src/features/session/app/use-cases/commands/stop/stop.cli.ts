@@ -7,13 +7,6 @@ import { StopVerdict } from '../../../../domain/entities';
 import type { SessionId } from '../../../../domain/value-objects';
 import { hookEventNameOf, hookEventOf, jsonTextOf, sessionIdOf } from '../../../utils';
 
-// Stryker disable ArrayDeclaration,StringLiteral: help text commander prints; no caller relies on it
-const DESCRIPTION = 'Hold the hand-back until the check passed on the tree, and ask for a review.';
-const EXAMPLES: readonly string[] = [
-  `printf '{"session_id":"s1","hook_event_name":"Stop"}' | constitution hook stop`,
-] as const;
-// Stryker restore ArrayDeclaration,StringLiteral
-
 interface StopContext extends CommandContext {
   readonly judgeStop: (event: StopEvent) => StopJudgement | undefined;
   readonly recordJudgement: (input: { judgement: StopJudgement; session: SessionId }) => void;
@@ -35,8 +28,15 @@ const answerOf = (judgement: StopJudgement): string | undefined => {
 
 /** Stop and SubagentStop: the hand-back gate, the tree it judged recorded. */
 const createStopCommand = (context: StopContext): Command =>
-  context.withExamples(
-    new Command('stop').description(DESCRIPTION).action(async (): Promise<void> => {
+  new Command('stop')
+    .description('Hold the hand-back until the check passed on the tree, and ask for a review.')
+    .addHelpText(
+      'before',
+      context.helpExamples([
+        `printf '{"session_id":"s1","hook_event_name":"Stop"}' | constitution hook stop`,
+      ]),
+    )
+    .action(async (): Promise<void> => {
       const event = hookEventOf(await context.io.readInput());
       const session = sessionIdOf(event);
       const agentName = event.field('agent_name');
@@ -76,8 +76,6 @@ const createStopCommand = (context: StopContext): Command =>
       if (answer !== undefined) {
         context.io.write(answer);
       }
-    }),
-    EXAMPLES,
-  );
+    });
 
 export { createStopCommand };

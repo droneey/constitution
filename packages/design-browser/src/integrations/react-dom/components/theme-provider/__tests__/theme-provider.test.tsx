@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it } from 'bun:test';
 
 import { cleanup, render, screen } from '@testing-library/react';
 
+import { componentViolationsIn } from '../../../__tests__/axe.fixtures';
 import { removeStylesheets, rootPropertyOf } from '../../../__tests__/styles.fixtures';
 import { ThemeProvider } from '../theme-provider';
 
@@ -80,5 +81,22 @@ describe('ThemeProvider', () => {
 
     // Assert
     expect(rootPropertyOf('--color-brand-600')).toBe('');
+  });
+
+  // React keeps one stylesheet of a name for the document, so only the first case of the file
+  // that gives an accent sees it drawn: this one gives none.
+  it('should break no rule of WCAG A and AA around what it holds', async () => {
+    // Arrange
+    render(
+      <ThemeProvider>
+        <p>Rules</p>
+      </ThemeProvider>,
+    );
+
+    // Act
+    const violations = await componentViolationsIn();
+
+    // Assert
+    expect(violations).toStrictEqual([]);
   });
 });

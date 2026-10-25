@@ -1,8 +1,8 @@
-import { afterEach, describe, expect, test } from 'bun:test';
+import { afterEach, describe, expect, it } from 'bun:test';
 
 import type { ReactElement } from 'react';
 
-import { cleanup, screen, waitFor } from '@testing-library/react';
+import { cleanup, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { createFakeGetVersions } from '#/__tests__/get-versions.fake';
@@ -18,17 +18,26 @@ afterEach(cleanup);
 
 const olderRelease = Version.create('0.69.2');
 
-/** on an older release's site */
+/** on an older release's site, at the address the router reads, without the site's base */
 const onGuidePage = (): ReactElement => (
   <DocsLocationContext
     value={{
-      href: '/v0.69.2/docs/guides/write-a-pack',
+      href: '/docs/guides/write-a-pack',
       path: 'guides/write-a-pack.md',
     }}
   >
     <DocsVersionWidget />
   </DocsLocationContext>
 );
+
+const versionLinks = (): (string | undefined)[] =>
+  within(
+    screen.getByRole('navigation', {
+      name: 'Versions',
+    }),
+  )
+    .getAllByRole('link')
+    .map((link) => link.getAttribute('href') ?? undefined);
 
 const renderWidget = (getVersions: GetVersions): void => {
   renderInDocs(onGuidePage(), {
@@ -38,7 +47,7 @@ const renderWidget = (getVersions: GetVersions): void => {
 };
 
 describe('DocsVersionWidget', () => {
-  test('should name the release the site was built from', () => {
+  it('should name the release the site was built from', () => {
     // Arrange
     const getVersions = createFakeGetVersions(versionsFixture()).getVersions;
 
@@ -49,7 +58,7 @@ describe('DocsVersionWidget', () => {
     expect(screen.getByRole('button').textContent).toBe('v0.69.2');
   });
 
-  test('should link every release to the page the reader is on when the releases have loaded', async () => {
+  it('should link every release to the page the reader is on when the releases have loaded', async () => {
     // Arrange
     renderWidget(createFakeGetVersions(versionsFixture()).getVersions);
 
@@ -58,14 +67,14 @@ describe('DocsVersionWidget', () => {
 
     // Assert
     await waitFor(() =>
-      expect(screen.getAllByRole('link').map((link) => link.getAttribute('href'))).toStrictEqual([
-        '/docs/guides/write-a-pack',
+      expect(versionLinks()).toStrictEqual([
+        '/v0.70.0/docs/guides/write-a-pack',
         '/v0.69.2/docs/guides/write-a-pack',
       ]),
     );
   });
 
-  test('should link every release to the root of its site when no page holds the menu', async () => {
+  it('should link every release to the root of its site when no page holds the menu', async () => {
     // Arrange
     renderInDocs(<DocsVersionWidget />, {
       getVersions: createFakeGetVersions(versionsFixture()).getVersions,
@@ -77,14 +86,75 @@ describe('DocsVersionWidget', () => {
 
     // Assert
     await waitFor(() =>
-      expect(screen.getAllByRole('link').map((link) => link.getAttribute('href'))).toStrictEqual([
-        '/',
+      expect(versionLinks()).toStrictEqual([
+        '/v0.70.0/',
         '/v0.69.2/',
       ]),
     );
   });
 
-  test('should show no menu when the root names no release', () => {
+  it.each([
+    {
+      condition: 'this site belongs to an older release',
+      expected: [
+        '/docs/guides/write-a-pack',
+        '/v0.70.0/docs/guides/write-a-pack',
+        '/v0.69.2/docs/guides/write-a-pack',
+      ],
+      getVersions: createFakeGetVersions(versionsFixture()).getVersions,
+      release: olderRelease,
+    },
+    {
+      condition: 'the releases cannot be read, so the latest is unknown',
+      expected: [
+        '/v0.69.2/docs/guides/write-a-pack',
+      ],
+      getVersions: createFakeGetVersions(
+        new VersionsError({
+          code: VersionsFailure.Unreachable,
+          details: {
+            address: '/versions.json',
+          },
+        }),
+      ).getVersions,
+      release: olderRelease,
+    },
+    {
+      condition: 'this site belongs to the latest release',
+      expected: [
+        '/v0.70.0/docs/guides/write-a-pack',
+        '/v0.69.2/docs/guides/write-a-pack',
+      ],
+      getVersions: createFakeGetVersions(versionsFixture()).getVersions,
+      release: Version.create('0.70.0'),
+    },
+  ] satisfies {
+    condition: string;
+    expected: string[];
+    getVersions: GetVersions;
+    release: Version;
+  }[])(
+    "should lead beside the menu to the page's address with no release, which the host gives the latest's, only when $condition",
+    async ({ expected, getVersions, release }) => {
+      // Arrange
+      renderInDocs(onGuidePage(), {
+        getVersions,
+        release,
+      });
+
+      // Act
+      await userEvent.click(screen.getByRole('button'));
+
+      // Assert
+      await waitFor(() =>
+        expect(screen.getAllByRole('link').map((link) => link.getAttribute('href'))).toStrictEqual(
+          expected,
+        ),
+      );
+    },
+  );
+
+  it('should show no menu when the root names no release', () => {
     // Arrange
     const getVersions = createFakeGetVersions(versionsFixture()).getVersions;
 
@@ -98,7 +168,7 @@ describe('DocsVersionWidget', () => {
     expect(screen.queryByRole('button')).toBeNull();
   });
 
-  test('should say the releases are unavailable when they cannot be read', async () => {
+  it('should say the releases are unavailable when they cannot be read', async () => {
     // Arrange
     renderWidget(
       createFakeGetVersions(
@@ -120,7 +190,7 @@ describe('DocsVersionWidget', () => {
     );
   });
 
-  test('should pass the WCAG 2.2 A and AA scan when the reader opens the menu', async () => {
+  it('should pass the WCAG 2.2 A and AA scan when the reader opens the menu', async () => {
     // Arrange
     renderWidget(createFakeGetVersions(versionsFixture()).getVersions);
     await userEvent.click(screen.getByRole('button'));

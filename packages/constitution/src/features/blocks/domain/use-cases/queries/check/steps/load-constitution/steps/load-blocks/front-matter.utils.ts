@@ -24,7 +24,13 @@ enum FrontMatterReadCode {
   EntryRepeated = 'entry-repeated',
 }
 
-type ListField = FrontMatterField.Requires | FrontMatterField.Languages | FrontMatterField.Governs;
+const LIST_FIELDS = [
+  FrontMatterField.Requires,
+  FrontMatterField.Languages,
+  FrontMatterField.Governs,
+] as const;
+
+type ListField = (typeof LIST_FIELDS)[number];
 
 /** a field that names blocks by their ids */
 type IdField = FrontMatterField.Requires | FrontMatterField.Languages | FrontMatterField.Extends;
@@ -87,11 +93,6 @@ interface FrontMatterLoaded {
 }
 
 const fieldOrder: readonly FrontMatterField[] = Object.values(FrontMatterField);
-const LIST_FIELDS: readonly ListField[] = [
-  FrontMatterField.Requires,
-  FrontMatterField.Languages,
-  FrontMatterField.Governs,
-] as const;
 const ONE_SENTENCE = /^[^\n\r\t]+\.$/;
 const TOP_LEVEL_KEY = /^([A-Za-z_][\w-]*)\s*:/;
 const WHITESPACE = /\s/;

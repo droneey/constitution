@@ -91,6 +91,22 @@ const putCore = (input: { body: Body; core: string }): void => {
   }
 };
 
+// The overrides whole, as their own section: a rule the project lowered is never cut from the digest.
+const putOverrides = (input: { body: Body; lines: readonly string[] }): void => {
+  if (input.lines.length === 0) {
+    return;
+  }
+
+  openSection(input.body);
+
+  for (const line of input.lines) {
+    put({
+      body: input.body,
+      line,
+    });
+  }
+};
+
 const fits = (input: { body: Body; bytes: number }): boolean =>
   input.body.used + input.bytes + LEFT_OUT_NOTE_BYTES <= BUDGET_BYTES;
 
@@ -157,10 +173,14 @@ interface BudgetedBodyInput {
   readonly blockList: readonly string[];
   readonly core: string;
   readonly isStartup: boolean;
+  readonly overrides: readonly string[];
   readonly warnings: readonly string[];
 }
 
-/** The warnings' lines, core's text and the block list, each within its share of the budget. */
+/**
+ * The warnings' lines, core's text, the overrides and the block list: the warnings within their
+ * share of the budget, the block list within what the rest leaves, core and the overrides whole.
+ */
 const budgetedBodyOf = (input: BudgetedBodyInput): readonly string[] => {
   const body: Body = {
     lines: [],
@@ -175,6 +195,10 @@ const budgetedBodyOf = (input: BudgetedBodyInput): readonly string[] => {
   putCore({
     body,
     core: input.core,
+  });
+  putOverrides({
+    body,
+    lines: input.overrides,
   });
   putBlockList({
     body,

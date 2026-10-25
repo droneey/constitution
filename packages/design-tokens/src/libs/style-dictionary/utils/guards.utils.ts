@@ -1,8 +1,6 @@
-const isRecord = (raw: unknown): raw is Readonly<Record<string, unknown>> =>
-  typeof raw === 'object' && raw !== null && !Array.isArray(raw);
+import type { ConfigOfMode } from '../types';
 
-/** Tells whether a module's export is a list of objects; Style Dictionary reads each as a configuration and checks its fields. */
-const isConfigList = (raw: unknown): raw is readonly Readonly<Record<string, unknown>>[] =>
-  Array.isArray(raw) && raw.every(isRecord);
+/** Tells whether a module's export is a function; its parameters cannot be read, and Style Dictionary checks each configuration it returns. */
+const isConfigOfMode = (raw: unknown): raw is ConfigOfMode => typeof raw === 'function';
 
-export { isConfigList };
+export { isConfigOfMode };

@@ -22,8 +22,11 @@ export type { RequirementsParsed, RequirementsTableDetails } from './requirement
 export { Met, RequirementAnswer, RequirementsTableCode } from './requirement-answer.entity';
 export { Resolution } from './resolution.entity';
 export { Rule } from './rule.entity';
+export { RuleHeading } from './rule-heading.entity';
 export type { RuleFormDetails, RuleSource, RulesParsed } from './stated-rule.entity';
 export { RuleFormCode, StatedRule } from './stated-rule.entity';
+export type { Bold } from './term.entity';
+export { Term, TermKind } from './term.entity';
 export type { ValueFindingDetails } from './value-finding.entity';
 export { ValueSite } from './value-finding.entity';
 export type { WiringProblem } from './wiring-problem.entity';

@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
+import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
 import { cleanup, screen } from '@testing-library/react';
 
@@ -23,7 +23,7 @@ afterEach(() => {
 });
 
 describe('DocsToc', () => {
-  test('should show no column when the page has no headings', () => {
+  it('should show no column when the page has no headings', () => {
     // Arrange
     const toc: TocHeading[] = [];
 
@@ -38,7 +38,7 @@ describe('DocsToc', () => {
     ).toBeNull();
   });
 
-  test('should list the page headings under On this page when the page has headings', () => {
+  it('should list the page headings under On this page when the page has headings', () => {
     // Arrange
     const toc = tocFixture();
 
@@ -59,7 +59,7 @@ describe('DocsToc', () => {
     ]);
   });
 
-  test('should pass the WCAG 2.2 A and AA scan', async () => {
+  it('should pass the WCAG 2.2 A and AA scan', async () => {
     // Arrange
     renderOnPage(<DocsToc />);
 

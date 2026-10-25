@@ -8,6 +8,6 @@
 
 Validate, render, plan and apply are separate use cases.
 
-| Why | Tags |
-|---|---|
-| each stage is then tested on its own. | [] |
+| Why |
+|---|
+| each stage is then tested on its own. |

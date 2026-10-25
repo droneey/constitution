@@ -8,25 +8,25 @@
 
 A comment states what the code cannot show — a constraint, a workaround, a decision — or is one another rule asks for; any other comment is removed.
 
-| Why | Tags |
-|---|---|
-| the code already says what it does, and a narrating comment repeats it and drifts from it. | [] |
+| Why |
+|---|
+| the code already says what it does, and a narrating comment repeats it and drifts from it. |
 
 ### export-documented-only-where-not-obvious · SHOULD
 
 The documentation of an exported declaration states only what its names and types cannot — a precondition, a unit, a failure, an effect, a bound — and never restates them.
 
-| Why | Tags |
-|---|---|
-| documentation that repeats a signature adds reading and drifts. | [] |
+| Why |
+|---|
+| documentation that repeats a signature adds reading and drifts. |
 
 ### todo-names-its-issue · SHOULD
 
 A to-do comment names its issue; one without an issue is done, filed or removed.
 
-| Why | Tags |
-|---|---|
-| an issue has an owner and a place in the plan, and a bare to-do is forgotten where it stands. | [] |
+| Why |
+|---|
+| an issue has an owner and a place in the plan, and a bare to-do is forgotten where it stands. |
 
 ## Deprecation
 
@@ -34,6 +34,6 @@ A to-do comment names its issue; one without an issue is done, filed or removed.
 
 Code kept only for its old callers is marked deprecated where it is declared, naming what replaces it.
 
-| Why | Tags |
-|---|---|
-| the mark stops new callers where they use it, and the replacement it names is the way off. | [] |
+| Why |
+|---|
+| the mark stops new callers where they use it, and the replacement it names is the way off. |

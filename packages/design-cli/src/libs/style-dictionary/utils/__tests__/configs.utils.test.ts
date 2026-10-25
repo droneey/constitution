@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import { MalformedTokenError } from '../../errors';
-import { HEADER, outputsOf, resolverWith } from './configs.fixtures';
+import { HEADER, outputsOf } from './configs.fixtures';
 
 describe('configsOf', () => {
   it("should write each mode's module: the accent's roles as steps, the opaque roles, the accent's scale and the motion and spacing in hex and numbers", async () => {
@@ -83,7 +83,9 @@ export { tokens };
     },
   ])('should refuse $name', async ({ file, token }) => {
     // Arrange
-    const malformed = resolverWith(file);
+    const malformed = [
+      file,
+    ];
 
     // Act
     const build = outputsOf(malformed);

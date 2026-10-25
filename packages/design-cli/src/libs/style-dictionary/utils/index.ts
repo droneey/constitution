@@ -1,1 +1,1 @@
-export { configsOf } from './configs.utils';
+export { configOf } from './configs.utils';

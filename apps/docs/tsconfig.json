@@ -27,6 +27,9 @@
   ],
   "references": [
     {
+      "path": "../../packages/constitution"
+    },
+    {
       "path": "../../packages/design-browser"
     }
   ]

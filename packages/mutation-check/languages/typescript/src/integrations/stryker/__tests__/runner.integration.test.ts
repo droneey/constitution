@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
-import { describe, expect, test } from 'bun:test';
+import { describe, expect, it } from 'bun:test';
 
 import type { DryRunOptions, MutantRunResult, TestRunner } from '@stryker-mutator/api/test-runner';
 import { DryRunStatus, MutantRunStatus, TestStatus } from '@stryker-mutator/api/test-runner';
@@ -99,7 +99,7 @@ const mutantRun = (input: {
   });
 
 describe('the specs runner', () => {
-  test('should ask for a new process for each run', () => {
+  it('should ask for a new process for each run', () => {
     // Arrange
     const runner = plugin.factory();
 
@@ -112,7 +112,7 @@ describe('the specs runner', () => {
     });
   });
 
-  test('should complete the dry run when every spec passes', async () => {
+  it('should complete the dry run when every spec passes', async () => {
     // Act
     const run = await inProject(PROJECT, (runner) => runner.dryRun(DRY_RUN));
 
@@ -130,7 +130,7 @@ describe('the specs runner', () => {
     });
   });
 
-  test('should report the failure when a spec fails in the dry run', async () => {
+  it('should report the failure when a spec fails in the dry run', async () => {
     // Arrange
     const project: Files = {
       ...PROJECT,
@@ -148,7 +148,7 @@ describe('the specs runner', () => {
     });
   });
 
-  test('should kill a mutant when a spec that loads its file fails', async () => {
+  it('should kill a mutant when a spec that loads its file fails', async () => {
     // Act
     const run = await inProject(PROJECT, (runner, folder) =>
       mutantRun({
@@ -170,7 +170,7 @@ describe('the specs runner', () => {
     });
   });
 
-  test('should let a mutant survive when the specs that load its file pass, whatever the others do', async () => {
+  it('should let a mutant survive when the specs that load its file pass, whatever the others do', async () => {
     // Act
     const run = await inProject(PROJECT, (runner, folder) =>
       mutantRun({
@@ -188,7 +188,7 @@ describe('the specs runner', () => {
     });
   });
 
-  test('should let a mutant survive when no spec loads its file', async () => {
+  it('should let a mutant survive when no spec loads its file', async () => {
     // Act
     const run = await inProject(PROJECT, (runner, folder) =>
       mutantRun({
@@ -206,7 +206,7 @@ describe('the specs runner', () => {
     });
   });
 
-  test('should take the specs from the project root when the configuration names none', async () => {
+  it('should take the specs from the project root when the configuration names none', async () => {
     // Arrange
     const project: Files = {
       ...PROJECT,
@@ -235,7 +235,7 @@ describe('the specs runner', () => {
     });
   });
 
-  test('should stop the running specs when Stryker disposes of the runner', async () => {
+  it('should stop the running specs when Stryker disposes of the runner', async () => {
     // Arrange
     const started = performance.now();
 

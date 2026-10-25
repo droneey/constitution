@@ -54,10 +54,13 @@ services:
     environment:
       NODE_ENV: development
 
+  # the working tree's build alone, unless DOCS_KEPT_RELEASES keeps the releases' sites beside it
   docs-production:
     build:
       <<: *docs-build
       target: production
+      args:
+        KEPT_RELEASES: ${DOCS_KEPT_RELEASES:-0}
     container_name: droneey-constitution-docs-production
     extends:
       service: _docs

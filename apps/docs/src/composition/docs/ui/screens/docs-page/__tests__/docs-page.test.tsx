@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, mock, spyOn, test } from 'bun:test';
+import { afterEach, describe, expect, it, mock, spyOn } from 'bun:test';
 
 import type { ReactElement } from 'react';
 
@@ -10,14 +10,17 @@ import { createFakeGetVersions } from '#/__tests__/get-versions.fake';
 
 import { screenViolationsIn } from '../../../../__tests__/axe.fixtures';
 import {
+  hydrateInDocs,
   pageEntryFixture,
   pageTreeFixture,
   renderInDocs,
+  settledLoad,
   versionsFixture,
 } from '../../../../__tests__/docs.fixtures';
 import { FrameMark, frameFake } from '../../../../__tests__/docs-frame.fake';
 import { PAGE_SCROLLER_SELECTOR } from '../../../constants';
 import { DocsPageScreen } from '../docs-page';
+import type { DocsPageEntry } from '../docs-page.types';
 
 afterEach(() => {
   cleanup();
@@ -74,7 +77,7 @@ const versionMenu = (): Promise<HTMLElement> =>
   });
 
 describe('DocsPageScreen', () => {
-  test('should show the page heading, summary and body when its contents have loaded', async () => {
+  it('should show the page heading, summary and body when its contents have loaded', async () => {
     // Arrange
     const page = overviewPage();
 
@@ -97,15 +100,14 @@ describe('DocsPageScreen', () => {
     ]);
   });
 
-  test('should show the page in its first render when its route has loaded the body, so the router finds the heading an address names', () => {
+  it('should show the page in its first render when its route has loaded the body, so the router finds the heading an address names', async () => {
     // Arrange
+    const load = await settledLoad();
     const page = (
       <DocsPageScreen
         href='/docs'
         page={pageEntryFixture({
-          loaded: () => ({
-            toc: [],
-          }),
+          load,
         })}
         pageTree={pageTreeFixture()}
         path='index.md'
@@ -124,7 +126,7 @@ describe('DocsPageScreen', () => {
     ).toBe('Overview');
   });
 
-  test('should make the page the main region the skip link targets and the keyboard stops on', async () => {
+  it('should make the page the main region the skip link targets and the keyboard stops on', async () => {
     // Arrange
     renderInDocs(overviewPage());
 
@@ -143,7 +145,7 @@ describe('DocsPageScreen', () => {
     ]);
   });
 
-  test('should name the element the page scrolls in, which the router brings back to the top', async () => {
+  it('should name the element the page scrolls in, which the router brings back to the top', async () => {
     // Arrange
     renderInDocs(overviewPage());
 
@@ -151,13 +153,13 @@ describe('DocsPageScreen', () => {
     await headingOf('Overview');
 
     // Assert
-    // biome-ignore lint/plugin/queries-by-role-label-text: the page's scroller is a layout element of Fumadocs, which no role, label or text names
-    expect(document.querySelector(PAGE_SCROLLER_SELECTOR)?.contains(screen.getByRole('main'))).toBe(
-      true,
+    // biome-ignore lint/plugin/spec-never-selects-from-the-document: the router is configured with this selector for Fumadocs' scroller, which no role, label or text names, and this one case proves it names the main article's parent
+    expect(document.querySelector(PAGE_SCROLLER_SELECTOR)).toBe(
+      screen.getByRole('main').parentElement,
     );
   });
 
-  test('should name the site and link its repository from an icon named GitHub', async () => {
+  it('should name the site and link its repository from an icon named GitHub', async () => {
     // Arrange
     renderInDocs(overviewPage());
 
@@ -174,7 +176,7 @@ describe('DocsPageScreen', () => {
     ).toContain('https://github.com/droneey/constitution');
   });
 
-  test('should keep the heading out of the tab order', async () => {
+  it('should keep the heading out of the tab order', async () => {
     // Arrange
     renderInDocs(overviewPage());
 
@@ -185,7 +187,7 @@ describe('DocsPageScreen', () => {
     expect(heading.tabIndex).toBe(-1);
   });
 
-  test('should leave focus where it is when the site opens on the page', async () => {
+  it('should leave focus where it is when the site opens on the page', async () => {
     // Arrange
     renderInDocs(overviewPage());
 
@@ -196,7 +198,7 @@ describe('DocsPageScreen', () => {
     expect(document.activeElement).toBe(document.body);
   });
 
-  test('should move focus to the heading when the reader opens another page', async () => {
+  it('should move focus to the heading when the reader opens another page', async () => {
     // Arrange
     const rendered = renderInDocs(overviewPage());
 
@@ -209,7 +211,7 @@ describe('DocsPageScreen', () => {
     expect(document.activeElement).toBe(await headingOf('Write a pack'));
   });
 
-  test('should leave the scroll to the router when the heading takes focus', async () => {
+  it('should leave the scroll to the router when the heading takes focus', async () => {
     // Arrange
     const rendered = renderInDocs(overviewPage());
 
@@ -230,7 +232,7 @@ describe('DocsPageScreen', () => {
     ]);
   });
 
-  test('should list the page contents beside it and in its header', async () => {
+  it('should list the page contents beside it and in its header', async () => {
     // Arrange
     renderInDocs(overviewPage());
 
@@ -249,7 +251,7 @@ describe('DocsPageScreen', () => {
     ]);
   });
 
-  test('should slide a block under the page contents once they have loaded', async () => {
+  it('should slide a block under the page contents once they have loaded', async () => {
     // Arrange
     renderInDocs(overviewPage());
 
@@ -257,11 +259,10 @@ describe('DocsPageScreen', () => {
     await headingOf('Overview');
 
     // Assert
-    // biome-ignore lint/plugin/queries-by-role-label-text: the glide is a decoration hidden from assistive technology, which CSS finds by its attribute
-    expect(document.querySelectorAll('[data-toc-list] > [data-glide]').length).toBe(1);
+    expect(within(screen.getByTestId('toc-list')).getAllByTestId('glide').length).toBe(1);
   });
 
-  test('should offer the version menu above the search field in the sidebar', async () => {
+  it('should offer the version menu above the search field in the sidebar', async () => {
     // Arrange
     renderInDocs(overviewPage(), {
       getVersions: createFakeGetVersions(versionsFixture()).getVersions,
@@ -282,7 +283,7 @@ describe('DocsPageScreen', () => {
     ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
   });
 
-  test('should link the releases to the page the reader is on', async () => {
+  it('should link the releases to the page the reader is on', async () => {
     // Arrange
     renderInDocs(guidePage(), {
       getVersions: createFakeGetVersions(versionsFixture()).getVersions,
@@ -302,7 +303,7 @@ describe('DocsPageScreen', () => {
     ).toBe('/v0.69.2/docs/guides/write-a-pack');
   });
 
-  test('should keep the sidebar on the frame when the site opens on a wide screen', async () => {
+  it('should keep the sidebar on the frame when the site opens on a wide screen', async () => {
     // Arrange
     const { frame, marks } = frameFake();
 
@@ -316,7 +317,78 @@ describe('DocsPageScreen', () => {
     expect(marks.at(-1)).toBe(FrameMark.Open);
   });
 
-  test('should collapse the sidebar again when the reader opens another page on a narrow screen', async () => {
+  it('should collapse the sidebar when the site opens on a narrow screen', async () => {
+    // Arrange
+    const { frame, marks } = frameFake({
+      narrow: true,
+    });
+
+    // Act
+    renderInDocs(overviewPage(), {
+      frame,
+    });
+
+    // Assert
+    await headingOf('Overview');
+    expect(marks.at(-1)).toBe(FrameMark.Collapsed);
+  });
+
+  it('should hydrate the page the server rendered when the site opens on a narrow screen before the body has loaded', async () => {
+    // Arrange
+    const body = Promise.withResolvers<{
+      toc: [];
+    }>();
+    const serverLoad = await settledLoad();
+    const { frame, marks } = frameFake({
+      narrow: true,
+    });
+
+    const pageWith = (page: DocsPageEntry): ReactElement => (
+      <DocsPageScreen
+        href='/docs'
+        page={page}
+        pageTree={pageTreeFixture()}
+        path='index.md'
+      />
+    );
+
+    const { recovered } = await hydrateInDocs(
+      {
+        client: pageWith(
+          pageEntryFixture({
+            load: () => body.promise,
+          }),
+        ),
+        server: pageWith(
+          pageEntryFixture({
+            load: serverLoad,
+          }),
+        ),
+      },
+      {
+        frame,
+      },
+    );
+
+    // Act
+    await act(async () => {
+      body.resolve({
+        toc: [],
+      });
+      await body.promise;
+    });
+
+    // Assert
+    expect([
+      recovered,
+      marks.at(-1),
+    ]).toStrictEqual([
+      [],
+      FrameMark.Collapsed,
+    ]);
+  });
+
+  it('should collapse the sidebar again when the reader opens another page on a narrow screen', async () => {
     // Arrange
     const { frame, marks } = frameFake({
       narrow: true,
@@ -342,7 +414,7 @@ describe('DocsPageScreen', () => {
     expect(marks.at(-1)).toBe(FrameMark.Collapsed);
   });
 
-  test('should pass the WCAG 2.2 A and AA scan when its contents have loaded', async () => {
+  it('should pass the WCAG 2.2 A and AA scan when its contents have loaded', async () => {
     // Arrange
     renderInDocs(overviewPage(), {
       getVersions: createFakeGetVersions(versionsFixture()).getVersions,

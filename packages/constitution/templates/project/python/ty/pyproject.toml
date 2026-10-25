@@ -10,4 +10,11 @@ dev = [
 
 # ty: mutmut's type check, run from mutants/, so the part's path climbs out of it
 [tool.mutmut]
-type_check_command = ["ty", "check", "--output-format", "gitlab", "--config-file", "../.droneey/constitution/presets/python/ty/foundation/self.toml"]
+type_check_command = [
+  "ty",
+  "check",
+  "--output-format",
+  "gitlab",
+  "--config-file",
+  "../.droneey/constitution/presets/python/ty/foundation/self.toml"
+]

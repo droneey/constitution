@@ -168,8 +168,6 @@ react-dom:
   language-declared-by-lang:
     - useHtmlLang
 self:
-  biome-refuses-empty-names:
-    - biome-refuses-empty-names.grit
   biome-refuses-empty-verbs:
     - biome-refuses-empty-verbs.grit
 react-native:
@@ -199,9 +197,9 @@ tanstack-router:
     - links-name-typed-targets.grit
 testing-library:
   spec-never-selects-from-the-document:
-    - queries-by-role-label-text.grit
+    - spec-never-selects-from-the-document.grit
   queries-by-role-label-text:
-    - queries-by-role-label-text.grit
+    - spec-never-selects-from-the-document.grit
 typescript:
   async-work-awaited-or-held-by-a-scope:
     - noFloatingPromises
@@ -237,7 +235,6 @@ typescript:
   enum-never-declared-const:
     - noConstEnum
   closed-name-set-is-a-string-enum:
-    - closed-name-set-is-a-string-enum.grit
     - useEnumInitializers
   exhaustive-branching-over-unions:
     - useExhaustiveSwitchCases
@@ -263,7 +260,6 @@ typescript:
     - type-names-undecorated.grit
   undefined-is-the-only-absence:
     - noUselessUndefined
-    - undefined-is-the-only-absence.grit
 zod:
   schema-never-brands:
     - schema-never-brands.grit

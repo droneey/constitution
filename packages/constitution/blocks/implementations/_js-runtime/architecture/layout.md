@@ -8,6 +8,6 @@
 
 An import that leaves its module is written from `#/`, and an import inside its module by a relative path.
 
-| Why | Tags |
-|---|---|
-| the specifier then shows at a glance whether an import crosses a module's border. | [] |
+| Why |
+|---|
+| the specifier then shows at a glance whether an import crosses a module's border. |

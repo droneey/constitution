@@ -1,4 +1,4 @@
-import type { DocsFrame } from '../app/providers';
+import type { DocumentFrame } from '../domain/contracts';
 
 interface FrameFakeInput {
   readonly narrow?: boolean;
@@ -10,7 +10,7 @@ export enum FrameMark {
 }
 
 export interface FrameFake {
-  frame: DocsFrame;
+  frame: DocumentFrame;
   /** oldest first */
   marks: FrameMark[];
 }

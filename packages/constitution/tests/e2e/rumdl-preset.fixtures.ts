@@ -68,7 +68,7 @@ const lintDocuments = (files: Readonly<Record<string, string>>): Lint =>
       return {
         codes: [
           ...new Set(rumdlReport.parse(JSON.parse(run.stdout)).map(({ rule }) => rule)),
-        ].toSorted(),
+        ].toSorted((left, right) => left.localeCompare(right)),
         exitCode: run.status ?? undefined,
       };
     },

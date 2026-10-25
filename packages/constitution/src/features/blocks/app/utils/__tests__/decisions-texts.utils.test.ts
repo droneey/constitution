@@ -36,7 +36,7 @@ describe('decisionsTexts', () => {
           entry: 1,
         },
       },
-      text: 'entry ADR-0001 has no line "**Date:** YYYY-MM-DD · **Status:** Accepted|Proposed" under its heading',
+      text: 'entry ADR-0001 has no line "**Date:** YYYY-MM-DD · **Status:** Accepted|Proposed|Superseded by ADR-NNNN" under its heading',
     },
     {
       problem: {

@@ -51,9 +51,9 @@ const rule = (input: RuleFixture): string =>
     headingOf(input),
     input.statement,
     '',
-    '| Why | Tags |',
-    '|---|---|',
-    '| it keeps the fixture honest. | [] |',
+    '| Why |',
+    '|---|',
+    '| it keeps the fixture honest. |',
     '',
   ].join('\n');
 

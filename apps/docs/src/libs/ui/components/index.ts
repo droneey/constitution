@@ -7,7 +7,7 @@ export { HomeLayout } from './home-layout';
 export { mdxComponents } from './mdx-components';
 export { RootProvider } from './root-provider';
 export type { SearchDialogProps, SearchDialogSlotProps } from './search-dialog';
-export { SearchDialog, useStaticSearch } from './search-dialog';
+export { SearchDialog } from './search-dialog';
 export type { FullSearchTriggerProps } from './search-trigger';
 export { FullSearchTrigger, SearchTrigger } from './search-trigger';
 export type { SidebarProps } from './sidebar';

@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { existsSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, realpathSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -31,6 +31,8 @@ interface HookCall {
   session?: string | undefined;
   // the process starts outside the project, so only the event names cwd
   spawnOutside?: boolean | undefined;
+  // neither XDG_STATE_HOME nor HOME is set, so no folder keeps the session
+  stateHomeUnset?: boolean | undefined;
   // no archive is linked into the project
   unlinked?: boolean | undefined;
 }
@@ -59,6 +61,18 @@ const TIMEOUT_MS = 20_000;
 const HOOK_TODAY = '2026-06-15';
 const TODAY_VARIABLE = 'CONSTITUTION_TODAY';
 const HOOK = 'hook.sh';
+const STATE_HOME_VARIABLE = 'XDG_STATE_HOME';
+
+// The state home of every hook the specs run, so none writes into the user's: a folder of this
+// process's own, removed when it exits.
+const stateHome = realpathSync(mkdtempSync(join(tmpdir(), 'constitution-state-')));
+
+process.once('exit', () => {
+  rmSync(stateHome, {
+    force: true,
+    recursive: true,
+  });
+});
 
 // Claude Code names the event's fields in snake case.
 const eventOf = (input: {
@@ -161,6 +175,14 @@ const runHook = (call: HookCall): HookRun => {
           TODAY_VARIABLE,
           HOOK_TODAY,
         ],
+        ...(call.stateHomeUnset === true
+          ? []
+          : [
+              [
+                STATE_HOME_VARIABLE,
+                stateHome,
+              ],
+            ]),
         ...(call.pluginRootUnset === true
           ? []
           : [
@@ -284,6 +306,36 @@ const blockListOf = (context: string): readonly string[] => {
   const [first = ''] = list;
 
   return first.startsWith(HEADING) || (list.length === 1 && NOTE.test(first)) ? list : [];
+};
+
+const OVERRIDES = '## Overrides';
+
+// An override the digest lists: the rule it names, then the level it lowers the rule to.
+type ListedOverride = readonly [
+  string,
+  string,
+];
+
+// The overrides section, wherever it stands, each item read as its rule and its level; the
+// member and the end that may follow are wording.
+const overridesOf = (context: string): readonly ListedOverride[] => {
+  const lines = linesOf(context);
+  const start = lines.indexOf(OVERRIDES);
+
+  if (start === -1) {
+    return [];
+  }
+
+  const end = lines.indexOf('', start);
+
+  return lines.slice(start + 1, end === -1 ? undefined : end).map((line) => {
+    const [rule = '', rest = ''] = line.slice(ITEM.length).split(': ');
+
+    return [
+      rule,
+      rest.split(' ')[0] ?? '',
+    ];
+  });
 };
 
 // The mark of an application's item that adds files to a block the repository lists.
@@ -511,6 +563,10 @@ const runScript = (call: ScriptCall): HookRun => {
           HOOK_TODAY,
         ],
         [
+          STATE_HOME_VARIABLE,
+          stateHome,
+        ],
+        [
           'PATH',
           `${cliFolder}:${process.env['PATH'] ?? ''}`,
         ],
@@ -528,7 +584,7 @@ const runScript = (call: ScriptCall): HookRun => {
 
 const sessions: string[] = [];
 
-// A spec isolates its state by a session id of its own: the hooks' folder is fixed.
+// A spec isolates its state by a session id of its own: the state home is shared by the process.
 const newSession = (): string => {
   const session = `spec-${randomUUID()}`;
 
@@ -538,7 +594,7 @@ const newSession = (): string => {
 };
 
 const stateFolderOf = (session: string): string =>
-  join('/tmp', `droneey-constitution-${String(process.getuid?.() ?? 0)}`, session);
+  join(stateHome, 'droneey-constitution', 'sessions', session);
 
 const mustsOf = (session: string): readonly string[] =>
   readFileSync(join(stateFolderOf(session), 'active.tsv'), 'utf8')
@@ -556,7 +612,7 @@ const removeSessions = (): void => {
   }
 };
 
-export type { Cut, HookRun, Warning };
+export type { Cut, HookRun, ListedOverride, Warning };
 export {
   BUDGET,
   bytesAfterHeader,
@@ -573,6 +629,7 @@ export {
   mustsOf,
   newSession,
   outputOf,
+  overridesOf,
   pluginAtEdge,
   remindedOf,
   removeSessions,

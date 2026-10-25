@@ -8,6 +8,6 @@
 
 A unit is the distribution `<scope>-<name>`, imported as `<scope>_<name>`.
 
-| Why | Tags |
-|---|---|
-| the folder, the distribution and the import then say one name, each in the spelling its form allows, and every unit is a top-level package of its own. | [] |
+| Why |
+|---|
+| the folder, the distribution and the import then say one name, each in the spelling its form allows, and every unit is a top-level package of its own. |

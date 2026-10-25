@@ -43,9 +43,9 @@
     font-weight: var(--font-weight-normal);
   }
 
-  /* biome-ignore lint/nursery/useBaseline: the linter misses the @supports guard */
+  /* biome-ignore lint/suspicious/useBaseline: the linter misses the @supports guard */
   @supports selector(::selection) {
-    /* biome-ignore lint/nursery/useBaseline: the linter misses the @supports guard */
+    /* biome-ignore lint/suspicious/useBaseline: the linter misses the @supports guard */
     ::selection {
       background-color: var(--color-selection-base);
     }

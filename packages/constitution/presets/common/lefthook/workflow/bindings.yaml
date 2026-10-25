@@ -24,6 +24,6 @@ ruff:
 shfmt:
   hook-rewrites-only-staged-files:
     - stage_fixed
-yamlfmt:
+tombi:
   hook-rewrites-only-staged-files:
     - stage_fixed

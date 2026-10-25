@@ -8,14 +8,14 @@
 
 A change shown before the remote system confirms it is made where the write can roll it back, and is rolled back alone when the system refuses it, leaving every other pending write's change shown; folding a stream's data as it arrives is no such change.
 
-| Why | Tags |
-|---|---|
-| an optimistic change without a rollback leaves the screen showing what the remote system refused. | [data] |
+| Why |
+|---|
+| an optimistic change without a rollback leaves the screen showing what the remote system refused. |
 
 ### overlapping-writes-keep-each-others-results · MUST
 
 Writes that overlap never undo each other's results: a read already in flight never overwrites a change shown ahead of confirmation, and an item waiting for the identifier the remote system assigns keeps its place on the screen.
 
-| Why | Tags |
-|---|---|
-| a snapshot-and-restore recipe breaks as soon as two writes overlap: a late read erases the shown change, or a new item jumps once the remote system names it. | [data] |
+| Why |
+|---|
+| a snapshot-and-restore recipe breaks as soon as two writes overlap: a late read erases the shown change, or a new item jumps once the remote system names it. |

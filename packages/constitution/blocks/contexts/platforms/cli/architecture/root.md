@@ -8,6 +8,6 @@
 
 Each command file exports a factory named after its command in the language's spelling, which builds the command from the context it is handed; the root builds the context, calls each factory and registers the command it returns.
 
-| Why | Tags |
-|---|---|
-| a command receives what it needs from the root, the root lists every command the program answers, and a spec builds a command with fakes. | [] |
+| Why |
+|---|
+| a command receives what it needs from the root, the root lists every command the program answers, and a spec builds a command with fakes. |

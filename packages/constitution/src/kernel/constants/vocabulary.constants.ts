@@ -47,7 +47,6 @@ const LAYER_FOLDER = {
 const BLOCKS_FOLDER = 'blocks';
 // The folder of an axis that holds its seams, <axis>/with/<block>.md.
 const SEAM_FOLDER = 'with';
-// The extension of every file of a block.
 const MARKDOWN_EXTENSION = '.md';
 
 enum Level {
@@ -62,16 +61,16 @@ const LEVELS = [
   Level.May,
 ] as const;
 // An override lowers a rule, so it sets one of these, never MUST.
-type LoweredLevel = Level.Should | Level.May;
-
-const LOWERED_LEVELS: readonly LoweredLevel[] = [
+const LOWERED_LEVELS = [
   Level.Should,
   Level.May,
 ] as const;
 
-// A rule states its Why and Tags in one table of this header and one row of as many cells.
-const RULE_TABLE_HEADER = '| Why | Tags |';
-const RULE_TABLE_CELLS = 2;
+type LoweredLevel = (typeof LOWERED_LEVELS)[number];
+
+// A rule states its Why in one table of this header and one row of as many cells.
+const RULE_TABLE_HEADER = '| Why |';
+const RULE_TABLE_CELLS = 1;
 
 // An implementation answers the requirements of the blocks above it in its passport, under this
 // heading, in a table of this header.

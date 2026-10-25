@@ -6,8 +6,8 @@
 
 ### biome-configuration-in-the-unit → unit-configuration-kept-in-its-folder · MUST
 
-A package with parts of its own keeps its configuration in its folder: a `biome.json` with `"root": false` that extends the shared parts and its own through `.droneey/constitution`, a committed relative link to the root's; the root's `biome.json` extends the shared parts alone.
+A package with parts of its own keeps its configuration in its folder and is checked by a run there: a `biome.json` with `"root": true` that extends the shared parts and its own through `.droneey/constitution`, a committed relative link to the root's; the root's `biome.json` extends the shared parts alone and skips the folders the packages lie in.
 
-| Why | Tags |
-|---|---|
-| Biome reads a plugin's path from the configuration that extends it and checks each file by the nearest configuration, so one run from the root holds each package to its own parts, and a package moved to a repository of its own takes the list of its parts with it. | [] |
+| Why |
+|---|
+| a run under a nested configuration starts from the root and loads every `biome.json` below it, past what a package skips or its ignore files leave out, so the root would have to name each package's templates and sandboxes, while a package that is its own root keeps them to itself. |

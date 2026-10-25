@@ -1,20 +1,9 @@
 import { ColourLevel, OutputMode, ThemeMode } from '../constants';
 import type { Output, OutputInput } from '../types';
 
-/** as Node.js and the colour libraries read `FORCE_COLOR`; an unset one forces nothing */
-const forcedLevels: ReadonlyMap<string | undefined, ColourLevel> = new Map([
-  [
-    '',
-    ColourLevel.Basic,
-  ],
-  [
-    '0',
-    ColourLevel.None,
-  ],
-  [
-    '1',
-    ColourLevel.Basic,
-  ],
+// Any non-empty FORCE_COLOR forces colour, as force-color.org and CPython read it; the levels
+// Node.js names by 2 and 3 choose a deeper palette.
+const deeperLevels: ReadonlyMap<string, ColourLevel> = new Map([
   [
     '2',
     ColourLevel.Ansi256,
@@ -22,14 +11,6 @@ const forcedLevels: ReadonlyMap<string | undefined, ColourLevel> = new Map([
   [
     '3',
     ColourLevel.TrueColour,
-  ],
-  [
-    'false',
-    ColourLevel.None,
-  ],
-  [
-    'true',
-    ColourLevel.Basic,
   ],
 ]);
 
@@ -40,6 +21,14 @@ const LIGHT_BACKGROUNDS: readonly string[] = [
 ] as const;
 
 const isSet = (variable: string | undefined): boolean => variable !== undefined && variable !== '';
+
+const forcedLevelOf = (variable: string | undefined): ColourLevel | undefined => {
+  if (variable === undefined || variable === '') {
+    return;
+  }
+
+  return deeperLevels.get(variable) ?? ColourLevel.Basic;
+};
 
 const terminalLevelOf = (env: OutputInput['env']): ColourLevel => {
   if (env['COLORTERM'] === 'truecolor' || env['COLORTERM'] === '24bit') {
@@ -55,7 +44,7 @@ const colourLevelOf = (
   },
 ): ColourLevel => {
   const { env, flags } = input;
-  const forced = forcedLevels.get(env['FORCE_COLOR']);
+  const forced = forcedLevelOf(env['FORCE_COLOR']);
 
   if (flags.colour === false) {
     return ColourLevel.None;

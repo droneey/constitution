@@ -22,5 +22,3 @@ export { mayReachAxis, pairableBy, requirableBy } from './reach.entity';
 export type { SimilarRules } from './similar-rules.entity';
 export type { Agent, Skill, SkillFrontMatterRead } from './skill.entity';
 export { SkillField } from './skill.entity';
-export type { Term } from './term.entity';
-export { TermKind } from './term.entity';

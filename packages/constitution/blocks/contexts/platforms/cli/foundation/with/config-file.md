@@ -8,6 +8,6 @@
 
 An `init` command writes one config file from a template, at the path the program reads by default.
 
-| Why | Tags |
-|---|---|
-| a user starts from a valid config file at the place the program looks, not from a blank page. | [ux] |
+| Why |
+|---|
+| a user starts from a valid config file at the place the program looks, not from a blank page. |

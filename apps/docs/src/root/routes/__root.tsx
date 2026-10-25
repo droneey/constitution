@@ -4,7 +4,13 @@ import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from '@tanst
 
 import { ThemeProvider } from '@droneey/design-browser/react-dom';
 
-import { DocsBuiltVersionContext, DocsFrameContext, DocsSearchWidget } from '#/composition/docs';
+import {
+  DocsBuiltVersionContext,
+  DocsSearchWidget,
+  IsScreenNarrowContext,
+  MarkSidebarContext,
+} from '#/composition/docs';
+import { SearchPagesContext } from '#/features/content';
 import { GetVersionsContext } from '#/features/versions';
 import { RootProvider } from '#/libs/ui';
 import { APP_NAME, MAIN_CONTENT_ID } from '#/shared/constants';
@@ -36,26 +42,30 @@ function RootComponent(): ReactElement {
           Skip to content
         </a>
         <ThemeProvider accent={brand}>
-          <RootProvider
-            i18n={{
-              translations: TRANSLATIONS,
-            }}
-            search={{
-              // biome-ignore lint/plugin/compound-parts-share-the-root-context: Fumadocs' root provider names the search dialog's slot SearchDialog
-              SearchDialog: DocsSearchWidget,
-            }}
-            theme={{
-              hotKey: isThemeHotKey,
-            }}
-          >
-            <GetVersionsContext value={rootProviders.getVersions}>
-              <DocsBuiltVersionContext value={rootProviders.builtVersion}>
-                <DocsFrameContext value={rootProviders.frame}>
-                  <Outlet />
-                </DocsFrameContext>
-              </DocsBuiltVersionContext>
-            </GetVersionsContext>
-          </RootProvider>
+          <SearchPagesContext value={rootProviders.searchPages}>
+            <RootProvider
+              i18n={{
+                translations: TRANSLATIONS,
+              }}
+              search={{
+                // biome-ignore lint/plugin/compound-parts-share-the-root-context: Fumadocs' root provider names the search dialog's slot SearchDialog
+                SearchDialog: DocsSearchWidget,
+              }}
+              theme={{
+                hotKey: isThemeHotKey,
+              }}
+            >
+              <GetVersionsContext value={rootProviders.getVersions}>
+                <DocsBuiltVersionContext value={rootProviders.builtVersion}>
+                  <IsScreenNarrowContext value={rootProviders.isScreenNarrow}>
+                    <MarkSidebarContext value={rootProviders.markSidebar}>
+                      <Outlet />
+                    </MarkSidebarContext>
+                  </IsScreenNarrowContext>
+                </DocsBuiltVersionContext>
+              </GetVersionsContext>
+            </RootProvider>
+          </SearchPagesContext>
         </ThemeProvider>
         <Scripts />
       </body>
