@@ -46,7 +46,10 @@ enum Tool {
 const release = join(import.meta.dir, '..', '..');
 const workspace = join(release, '..', '..');
 
-const bin = (tool: string): string => join(workspace, 'node_modules', '.bin', tool);
+// A tool of the package's own development dependencies, as its install links it.
+const bin = (tool: string): string => join(release, 'node_modules', '.bin', tool);
+
+const SCOPE = '@';
 
 // The folders whose packages a unit's imports resolve from, the workspace's own first.
 const moduleFolders = [
@@ -55,12 +58,20 @@ const moduleFolders = [
     'packages',
     'apps',
   ].flatMap((group) =>
-    readdirSync(join(workspace, group)).map((unit) => join(workspace, group, unit, 'node_modules')),
+    readdirSync(join(workspace, group)).flatMap((folder) =>
+      // a group folder holds units, each with its own install
+      folder.startsWith(SCOPE)
+        ? readdirSync(join(workspace, group, folder)).map((unit) =>
+            join(workspace, group, folder, unit, 'node_modules'),
+          )
+        : [
+            join(workspace, group, folder, 'node_modules'),
+          ],
+    ),
   ),
 ];
 const IMPORT = /^import (?:[^'"]+ from )?'([^.'][^']*)'/gm;
 const NODE_PREFIX = 'node:';
-const SCOPE = '@';
 const SOURCE_FILE = /\.(?:ts|tsx)$/;
 
 // The units of the deployment, so that blocks that exclude each other, the platforms above all, sit
