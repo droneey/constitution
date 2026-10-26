@@ -10,8 +10,6 @@ on:
 permissions: {}
 
 jobs:
-  # The organisation's workflow puts the issue on the board and moves it to In
-  # progress when its branch is created; it signs in as the organisation's App.
   board:
     name: board
     # yamllint disable-line rule:line-length
