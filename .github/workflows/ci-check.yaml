@@ -4,9 +4,12 @@ on:
   pull_request:
     branches:
       - main
+  merge_group:
+    types:
+      - checks_requested
 
 concurrency:
-  group: check-${{ github.ref }}
+  group: check-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -15,7 +18,8 @@ permissions:
 jobs:
   # The project's one check, the same command an agent runs before it hands a
   # change back.
-  check:
+  units:
+    name: units
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -76,3 +80,21 @@ jobs:
         env:
           HOOK_SHELL: /bin/bash
         run: bun run --cwd packages/constitution executable:test
+
+  # The ruleset requires this one name, whatever the platform matrix holds.
+  check:
+    name: check
+    needs:
+      - units
+      - executable
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      - name: Fail unless every job succeeded
+        if: >-
+          contains(needs.*.result, 'failure')
+          || contains(needs.*.result, 'cancelled')
+          || contains(needs.*.result, 'skipped')
+        run: exit 1
