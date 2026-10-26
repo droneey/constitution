@@ -12,7 +12,8 @@ import { dirname, join, normalize } from 'node:path';
 
 import { z } from 'zod';
 
-import { appliedUnit } from './applied-unit.fixtures';
+import type { UnitFixture } from './applied-unit.fixtures';
+import { appliedUnit, applyUnits } from './applied-unit.fixtures';
 import { createBatch } from './batch.fixtures';
 
 interface BiomeUnit {
@@ -81,27 +82,23 @@ const listed: Readonly<Record<string, string>> = {
   _react: 'react-dom',
 };
 
-const appliedConfig = (unit: BiomeUnit): string =>
-  readFileSync(
-    join(
-      appliedUnit({
-        ...(unit.axes === undefined
-          ? {}
-          : {
-              axes: unit.axes,
-            }),
-        blocks: unit.blocks,
-        implementations: [
-          'biome',
-        ],
-        languages: [
-          'typescript',
-        ],
+const unitFixtureOf = (unit: BiomeUnit): UnitFixture => ({
+  ...(unit.axes === undefined
+    ? {}
+    : {
+        axes: unit.axes,
       }),
-      CONFIG,
-    ),
-    'utf8',
-  );
+  blocks: unit.blocks,
+  implementations: [
+    'biome',
+  ],
+  languages: [
+    'typescript',
+  ],
+});
+
+const appliedConfig = (unit: BiomeUnit): string =>
+  readFileSync(join(appliedUnit(unitFixtureOf(unit)), CONFIG), 'utf8');
 
 const configOf = (unit: BiomeUnit): unknown => Bun.JSONC.parse(appliedConfig(unit));
 
@@ -319,6 +316,8 @@ const lintGroup = async (
 // project of its root configuration; a few run at a time.
 const lintAll = (entries: readonly Entry[]): Promise<ReadonlyMap<string, Findings>> =>
   inRoot(async (root) => {
+    await applyUnits(entries.map(([, project]) => unitFixtureOf(project.unit ?? defaultUnit)));
+
     const queue = writeGroups(root, entries).values();
 
     const lintNext = async (): Promise<
