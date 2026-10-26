@@ -181,6 +181,30 @@ const failureOf = (read: () => unknown): Failure | undefined => {
   return undefined;
 };
 
+// What the run gives with TMPDIR set to the folder, or unset, as on a runner that sets none; TMPDIR
+// is then as it was, unset where it was, since assigning undefined would set the text "undefined".
+const withTemporaryFolder = <TResult>(folder: string | undefined, run: () => TResult): TResult => {
+  const before = process.env['TMPDIR'];
+
+  const setTemporaryFolder = (value: string | undefined): void => {
+    if (value === undefined) {
+      delete process.env['TMPDIR'];
+
+      return;
+    }
+
+    process.env['TMPDIR'] = value;
+  };
+
+  setTemporaryFolder(folder);
+
+  try {
+    return run();
+  } finally {
+    setTemporaryFolder(before);
+  }
+};
+
 const workspace = realpathSync(mkdtempSync(join(tmpdir(), 'mutation-check-branch-')));
 
 workspaceOf(workspace);
@@ -503,19 +527,23 @@ describe('branchIn', () => {
   it('should leave no scratch folder behind', () => {
     // Arrange
     const scratch = realpathSync(mkdtempSync(join(tmpdir(), 'mutation-check-scratch-')));
-    const before = process.env['TMPDIR'];
-
-    process.env['TMPDIR'] = scratch;
 
     // Act
-    try {
-      branchOf(join(workspace, UNIT));
-    } finally {
-      process.env['TMPDIR'] = before;
-    }
+    withTemporaryFolder(scratch, () => branchOf(join(workspace, UNIT)));
 
     // Assert
     expect(readdirSync(scratch)).toStrictEqual([]);
+  });
+
+  it("should diff the branch when the system names no temporary folder, in the platform's own", () => {
+    // Act
+    const { diff } = withTemporaryFolder(undefined, () => branchOf(join(workspace, UNIT)));
+
+    // Assert
+    expect(diff.match(HEADERS)).toStrictEqual([
+      '+++ b/src/order.utils.ts',
+      '@@ -1 +1 @@',
+    ]);
   });
 
   it("should fail with git's reason when the repository has no main line", () => {
