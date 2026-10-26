@@ -137,7 +137,7 @@ const upperFiles = (): Files => ({
 
 const contextFiles = (): Files => ({
   ...blockFiles({
-    body: '# TypeScript\n\n**TypeScript** files end in **`.ts`**, and a package opens at **`index.ts`**.\n',
+    body: '# TypeScript\n\n**TypeScript** files end in **`.ts`**{#typescript-source}, and a package opens at **`index.ts`**.\n',
     dir: 'blocks/contexts/languages/typescript',
     files: {
       'types.md': chapterFile(

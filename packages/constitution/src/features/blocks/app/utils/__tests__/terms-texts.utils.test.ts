@@ -68,6 +68,37 @@ describe('termsTexts', () => {
       },
       text: 'writes `adapters`, which core defines as `adapters/`; a folder keeps one spelling',
     },
+    {
+      problem: {
+        code: TermsCode.WithoutId,
+        details: {
+          term: 'adapters/',
+        },
+      },
+      text: 'defines "adapters/" with no id after it; a folder or a suffix carries {#<id>}',
+    },
+    {
+      problem: {
+        code: TermsCode.IdRepeated,
+        details: {
+          firstFile: 'blocks/core/architecture/layout.md',
+          firstTerm: 'utils/',
+          id: 'helper',
+          term: '.utils',
+        },
+      },
+      text: 'gives ".utils" the id "helper", which blocks/core/architecture/layout.md gives "utils/" already; an id names one term',
+    },
+    {
+      problem: {
+        code: TermsCode.IdMisshapen,
+        details: {
+          id: 'Gateway',
+          term: 'adapters/',
+        },
+      },
+      text: 'gives "adapters/" the id "Gateway"; an id is lower-case words and digits joined by hyphens, opening with a letter',
+    },
   ])('should say $problem.code as the report words it', ({ problem, text }) => {
     // Act
     const said = textOf(termsTexts, problem.code, problem.details);

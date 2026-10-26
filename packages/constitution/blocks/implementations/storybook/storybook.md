@@ -10,6 +10,6 @@ governs: ["**/*.stories.tsx", ".storybook/**"]
 
 # Storybook
 
-> **Storybook**, a catalogue of the UI kit, set up in **`.storybook/`**.
+> **Storybook**, a catalogue of the UI kit, set up in **`.storybook/`**{#storybook-setup}.
 
-A story file ends in **`.stories`**.
+A story file ends in **`.stories`**{#story}.

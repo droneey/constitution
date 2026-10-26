@@ -7,7 +7,7 @@ import {
   TermKind as DefinedTermKind,
   RuleHeading,
 } from '@droneey/constitution';
-import type { Heading, PhrasingContent, RootContent, Strong, Text } from 'mdast';
+import type { Heading, Parent, PhrasingContent, RootContent, Strong, Text } from 'mdast';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { toString as mdastTextOf } from 'mdast-util-to-string';
 import { visit } from 'unist-util-visit';
@@ -86,16 +86,25 @@ const ruleAt = (input: { index: number; nodes: readonly RootContent[] }): string
     : undefined;
 };
 
+// A term with an id is linked to its own anchor, which the page gives its bold.
+const idOf = (input: { index: number | undefined; parent: Parent }): string | undefined => {
+  // Stryker disable next-line ConditionalExpression: bold always has an index, so the check only narrows its type
+  const next = input.index === undefined ? undefined : input.parent.children[input.index + 1];
+
+  return next?.type === 'text' ? DefinedTerm.idAfter(next.value) : undefined;
+};
+
 const termsUnder = (input: {
-  address: string;
   block: string;
   body: string;
   node: RootContent;
+  page: string;
   path: string;
+  rule: string | undefined;
 }): readonly Term[] => {
   const terms: Term[] = [];
 
-  visit(input.node, 'strong', (strong, _index, parent) => {
+  visit(input.node, 'strong', (strong, index, parent) => {
     const bold = boldOf(strong);
 
     // Stryker disable next-line ConditionalExpression: bold always has a parent, so the check only narrows its type
@@ -105,11 +114,16 @@ const termsUnder = (input: {
 
     // Stryker disable next-line OptionalChaining: the parser places every node it reads
     const start = parent.position?.start.offset ?? 0;
+    const anchor =
+      idOf({
+        index,
+        parent,
+      }) ?? input.rule;
 
     terms.push(
       Term.create({
         ...nameOf(bold),
-        address: input.address,
+        address: anchor === undefined ? input.page : `${input.page}#${anchor}`,
         axis: Term.axisOf(input.path),
         block: input.block,
         sentence: Term.sentenceAround({
@@ -140,20 +154,19 @@ const termsIn = (input: { baseUrl: string; markdown: string; path: string }): re
   ].join('/');
   const nodes = fromMarkdown(body).children;
 
-  return nodes.flatMap((node, index) => {
-    const rule = ruleAt({
-      index,
-      nodes,
-    });
-
-    return termsUnder({
-      address: rule === undefined ? page : `${page}#${rule}`,
+  return nodes.flatMap((node, index) =>
+    termsUnder({
       block,
       body,
       node,
+      page,
       path: input.path,
-    });
-  });
+      rule: ruleAt({
+        index,
+        nodes,
+      }),
+    }),
+  );
 };
 
 /** every term the blocks define, by name */

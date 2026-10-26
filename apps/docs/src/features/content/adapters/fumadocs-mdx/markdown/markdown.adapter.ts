@@ -2,7 +2,16 @@ import type { Heading, RootContent } from 'mdast';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { toString as mdastTextOf } from 'mdast-util-to-string';
 
-const plainTextOf = (markdown: string): string => mdastTextOf(fromMarkdown(markdown));
+import { takeTermIds } from './term-ids.adapter';
+
+/** the words of Markdown, without the ids of its terms */
+const plainTextOf = (markdown: string): string => {
+  const tree = fromMarkdown(markdown);
+
+  takeTermIds(tree);
+
+  return mdastTextOf(tree);
+};
 
 /** without the HTML a heading holds, such as the README's marks */
 const headingTextOf = (heading: Heading): string =>

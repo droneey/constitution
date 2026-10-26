@@ -174,6 +174,32 @@ describe('Term.allIn', () => {
       expected: {
         misshapen: [],
         terms: [
+          {
+            id: 'gateway',
+            kind: TermKind.Folder,
+            term: 'adapters/',
+          },
+          {
+            id: '',
+            kind: TermKind.Suffix,
+            term: '.port',
+          },
+          termOf(TermKind.Concept, 'binding unit'),
+          termOf(TermKind.Folder, 'ports/'),
+          {
+            id: 'Entry_File',
+            kind: TermKind.File,
+            term: 'index.ts',
+          },
+        ],
+      },
+      name: 'ids right after the bold, and braces apart from it or broken by a line',
+      text: '**`adapters/`**{#gateway}, **`.port`**{#}, **binding unit** {#unit}, **`ports/`**{#por\nt} and **`index.ts`**{#Entry_File}.',
+    },
+    {
+      expected: {
+        misshapen: [],
+        terms: [
           termOf(TermKind.Concept, 'composition root'),
         ],
       },

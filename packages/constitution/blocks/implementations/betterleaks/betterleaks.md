@@ -12,6 +12,6 @@ governs: [".betterleaks.toml", ".betterleaksignore"]
 
 > **Betterleaks** finds secrets in changes and history.
 
-The **`betterleaks`** command reads its settings from **`.betterleaks.toml`**.
+The **`betterleaks`** command reads its settings from **`.betterleaks.toml`**{#betterleaks-settings}.
 
 Its default rules — cloud keys, forge tokens, private keys, JWTs, credentials in connection strings — hold every active rule on committed secrets.

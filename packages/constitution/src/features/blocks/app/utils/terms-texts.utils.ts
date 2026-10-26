@@ -14,6 +14,12 @@ const termsTexts: TextsOf<TermsDetails> = {
     `uses "${term}", which ${owner} defines; only ${owner} and the blocks that build on it may`,
   [TermsCode.Misspelled]: ({ kind, owner, term, written }) =>
     `writes \`${written}\`, which ${owner} defines as \`${term}\`; a ${kind} keeps one spelling`,
+  [TermsCode.WithoutId]: ({ term }) =>
+    `defines "${term}" with no id after it; a folder or a suffix carries {#<id>}`,
+  [TermsCode.IdRepeated]: ({ firstFile, firstTerm, id, term }) =>
+    `gives "${term}" the id "${id}", which ${firstFile} gives "${firstTerm}" already; an id names one term`,
+  [TermsCode.IdMisshapen]: ({ id, term }) =>
+    `gives "${term}" the id "${id}"; an id is lower-case words and digits joined by hyphens, opening with a letter`,
 };
 
 export { termsTexts };

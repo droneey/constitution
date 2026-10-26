@@ -126,7 +126,7 @@ describe('BlockModel.reachOf', () => {
 });
 
 describe('BlockModel.rolesIn', () => {
-  it('should give each folder and suffix by its first definition, in the order the files are read, when the files define other terms and one folder twice', () => {
+  it('should give each folder and suffix by its first definition, with the id it carries, in the order the files are read, when the files define other terms and one folder twice', () => {
     // Arrange
     const texts = [
       {
@@ -135,7 +135,7 @@ describe('BlockModel.rolesIn', () => {
       },
       {
         block: BlockId.create('ui'),
-        body: 'A screen sits in **`screens/`**, named **`.screen`**, beside **`kernel/`**.',
+        body: 'A screen sits in **`screens/`**{#screen}, named **`.screen`**, beside **`kernel/`**{#shared-domain}.',
       },
     ];
 
@@ -151,6 +151,7 @@ describe('BlockModel.rolesIn', () => {
       },
       {
         block: BlockId.create('ui'),
+        id: 'screen',
         kind: TermKind.Folder,
         term: 'screens/',
       },

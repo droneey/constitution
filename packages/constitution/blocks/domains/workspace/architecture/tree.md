@@ -6,7 +6,7 @@
 
 ### workspace-units-placed-by-how-they-leave · SHOULD
 
-A workspace holds its units in two places at its root, **`apps/`** and **`packages/`**: `apps/<name>/`, what the repository deploys and runs itself and nobody adds as a dependency — a site, a service, a mobile app; and `packages/<name>/`, every other unit — what its apps share, and the libraries, tools and configurations it releases.
+A workspace holds its units in two places at its root, **`apps/`**{#deployed-unit} and **`packages/`**{#dependency-unit}: `apps/<name>/`, what the repository deploys and runs itself and nobody adds as a dependency — a site, a service, a mobile app; and `packages/<name>/`, every other unit — what its apps share, and the libraries, tools and configurations it releases.
 
 | Why |
 |---|

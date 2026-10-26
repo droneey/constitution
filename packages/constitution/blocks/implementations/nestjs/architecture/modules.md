@@ -2,7 +2,7 @@
 
 > Governs the suffixes of Nest's files and their place in the tree, what a feature's module imports and takes from the root, global modules, and where NestJS is imported.
 
-A module's file ends in **`.module.ts`** and a controller's in **`.controller.ts`**; a token bound to its implementation by `useClass` or `useFactory` ends in **`.provider.ts`**, and the framework's providers of a request in **`.filter.ts`**, **`.pipe.ts`**, **`.guard.ts`** and **`.interceptor.ts`**.
+A module's file ends in **`.module.ts`**{#nest-module} and a controller's in **`.controller.ts`**{#nest-controller}; a token bound to its implementation by `useClass` or `useFactory` ends in **`.provider.ts`**{#nest-provider}, and the framework's providers of a request in **`.filter.ts`**{#nest-filter}, **`.pipe.ts`**{#nest-pipe}, **`.guard.ts`**{#nest-guard} and **`.interceptor.ts`**{#nest-interceptor}.
 
 ## General
 

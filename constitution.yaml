@@ -30,6 +30,7 @@ implementations:
   - uv
   - shellcheck
   - shfmt
+  - editorconfig
   - rumdl
   - yamllint
   - tombi

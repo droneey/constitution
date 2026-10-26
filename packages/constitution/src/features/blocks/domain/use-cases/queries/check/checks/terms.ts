@@ -15,6 +15,9 @@ enum TermsCode {
   OffAxis = 'term-off-axis',
   OutOfReach = 'term-out-of-reach',
   Misspelled = 'term-misspelled',
+  WithoutId = 'term-without-id',
+  IdRepeated = 'term-id-repeated',
+  IdMisshapen = 'term-id-misshapen',
 }
 
 interface TermsDetails {
@@ -46,6 +49,19 @@ interface TermsDetails {
     /** the other spelling the file writes */
     readonly written: string;
   };
+  readonly [TermsCode.WithoutId]: {
+    readonly term: string;
+  };
+  readonly [TermsCode.IdRepeated]: {
+    readonly firstFile: string;
+    readonly firstTerm: string;
+    readonly id: string;
+    readonly term: string;
+  };
+  readonly [TermsCode.IdMisshapen]: {
+    readonly id: string;
+    readonly term: string;
+  };
 }
 
 type TermsFinding = FindingOf<TermsDetails>;
@@ -66,6 +82,11 @@ interface Placed {
   readonly file: BlockFile;
 }
 
+interface IdOwner {
+  readonly path: string;
+  readonly term: string;
+}
+
 interface Glossary {
   readonly defined: readonly Defined[];
   readonly findings: readonly TermsFinding[];
@@ -79,8 +100,66 @@ const placedFiles = (blocks: readonly Block[]): readonly Placed[] =>
     })),
   );
 
+const TERM_ID_SHAPE = /^[a-z][a-z0-9-]*$/;
+
+// A role is named by its id wherever its spelling may change, so each folder and suffix carries one,
+// well-formed and its own; any other term may.
+const idFinding = (input: {
+  owners: Map<string, IdOwner>;
+  path: string;
+  term: Term;
+}): TermsFinding | undefined => {
+  const { id, kind, term } = input.term;
+
+  if (id === undefined) {
+    return Term.isRoleKind(kind)
+      ? {
+          code: TermsCode.WithoutId,
+          details: {
+            term,
+          },
+          path: input.path,
+        }
+      : undefined;
+  }
+
+  if (!TERM_ID_SHAPE.test(id)) {
+    return {
+      code: TermsCode.IdMisshapen,
+      details: {
+        id,
+        term,
+      },
+      path: input.path,
+    };
+  }
+
+  const owner = input.owners.get(id);
+
+  if (owner === undefined) {
+    input.owners.set(id, {
+      path: input.path,
+      term,
+    });
+
+    return undefined;
+  }
+
+  return {
+    code: TermsCode.IdRepeated,
+    details: {
+      firstFile: owner.path,
+      firstTerm: owner.term,
+      id,
+      term,
+    },
+    path: input.path,
+  };
+};
+
 const glossaryOf = (files: readonly Placed[]): Glossary => {
   const first = new Map<string, Definition>();
+  const owners = new Map<string, IdOwner>();
   const findings: TermsFinding[] = [];
 
   for (const { block, file } of files) {
@@ -100,6 +179,15 @@ const glossaryOf = (files: readonly Placed[]): Glossary => {
 
     for (const term of read.terms) {
       const earlier = first.get(term.term);
+      const idProblem = idFinding({
+        owners,
+        path: file.path,
+        term,
+      });
+
+      if (idProblem !== undefined) {
+        findings.push(idProblem);
+      }
 
       if (earlier === undefined) {
         first.set(term.term, {

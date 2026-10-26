@@ -12,7 +12,7 @@ enum TermKind {
 }
 
 interface Term {
-  /** the page that defines it, and the anchor of its rule when a rule does */
+  /** the page that defines it, with the anchor of its id, else of its rule when a rule defines it */
   readonly address: string;
   readonly axis: Axis;
   readonly block: string;

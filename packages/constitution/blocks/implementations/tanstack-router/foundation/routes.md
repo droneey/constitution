@@ -2,6 +2,8 @@
 
 > Governs a route: its loader, its code splitting, its file and layout, what it shows when it fails or no route matches, and the head it claims.
 
+The file routes live in **`routes/`**{#file-routes}.
+
 ## Loading
 
 ### screen-reads-start-in-the-loader · SHOULD

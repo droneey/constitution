@@ -5,9 +5,9 @@ import type { Heading, RootContent } from 'mdast';
 import { headingTextOf, isHeading, plainTextOf } from '../markdown.adapter';
 
 describe('plainTextOf', () => {
-  it('should read the text without its marks when a line has some', () => {
+  it('should read the text without its marks or the ids of its terms when a line has some', () => {
     // Arrange
-    const markdown = '**names**, `code`, [links](docs/links.md).';
+    const markdown = '**names**{#name}, `code`, [links](docs/links.md).';
 
     // Act
     const text = plainTextOf(markdown);

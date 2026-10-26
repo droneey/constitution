@@ -22,7 +22,7 @@ const bun = Term.create({
   block: 'bun',
   kind: TermKind.Brand,
   name: 'Bun',
-  sentence: '**Bun** runs the program, as [its docs](https://bun.sh) say.',
+  sentence: '**Bun**{#runtime} runs the program, as [its docs](https://bun.sh) say.',
 });
 
 const widgets = Term.create({
@@ -44,7 +44,7 @@ const bindingUnit = Term.create({
 });
 
 describe('remarkTerms', () => {
-  it('should set the table of terms where a page holds the block of terms, and leave other code', () => {
+  it('should set the table of terms where a page holds the block of terms, their sentences without links or ids, and leave other code', () => {
     // Arrange
     const tree = treeOf('# Terms\n\n```terms\nThe table.\n```\n\n```ts\nconst terms = 1;\n```\n');
 

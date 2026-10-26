@@ -41,7 +41,7 @@ Besides the configurations of the tools, the fragments give a project these:
 
 | Block | File | Holds |
 |---|---|---|
-| core | `.editorconfig` | two spaces, LF, UTF-8, and shfmt's options |
+| editorconfig | `.editorconfig` | two spaces, LF and UTF-8 for every file |
 | core | `.gitignore` | `/.droneey`, the system's files, `.env` files but the example, logs |
 | python | `pyproject.toml` | the project |
 | uv | `pyproject.toml` | uv's install settings and the build backend |
@@ -55,4 +55,5 @@ Besides the configurations of the tools, the fragments give a project these:
 | nestjs | `.swcrc` | the decorator metadata Nest's injector reads |
 | nestjs | `tsconfig.json` | the decorator options, in its own `compilerOptions`, since Bun applies them only from there, not through `extends` |
 | react-dom | `src/__tests__/dom.fixtures.ts` | the DOM globals of happy-dom for specs |
+| shfmt | `.editorconfig` | the branches of a `case` indented |
 | ts-reset | `src/reset.d.ts` | ts-reset, so parsed JSON is `unknown` |

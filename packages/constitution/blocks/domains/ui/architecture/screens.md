@@ -42,11 +42,11 @@ Pieces and binding units private to one screen live beside it, private to it.
 
 ### ui-never-touches-navigation · MUST
 
-No screen, widget or component imports a navigation or route-parameter primitive or knows an address.
+Only the root imports the navigation library: no screen, widget or component imports a navigation or route-parameter primitive or knows an address.
 
 | Why |
 |---|
-| addresses are then known in the root alone, so a change of the navigation library or of a path never reaches a screen, and a piece that navigates by itself cannot hide its behaviour from what composes it. |
+| addresses are then known in the root alone, so a change of the navigation library or of a path never reaches a screen, and a piece that navigates by itself can neither hide its behaviour from what composes it nor render without the router. |
 
 ### navigation-passed-by-slot · SHOULD
 

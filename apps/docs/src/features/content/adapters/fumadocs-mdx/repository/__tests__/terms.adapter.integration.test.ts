@@ -16,7 +16,7 @@ afterEach(() => {
 });
 
 describe('termsOf', () => {
-  it('should read each term with its owner, its axis, its sentence and the rule that defines it, by name', () => {
+  it('should read each term with its owner, its axis, its sentence and its id or the rule that defines it, by name', () => {
     // Arrange
     repository.leave = enterRepository({
       files: {
@@ -31,9 +31,11 @@ describe('termsOf', () => {
           '',
           'The **composition root** chooses every implementation.  It wires the program, its **graph**.',
           '',
+          'Its **`cache/`**`{#cache}` sits beside **`store/`**',
+          '',
           '#### An example',
           '',
-          'It registers each **delivery  unit**.',
+          'It registers each **delivery  unit** in **`root/`**{#composition-root}.',
           '',
           '## Notes',
           '',
@@ -102,6 +104,14 @@ describe('termsOf', () => {
         address: '/docs/core/architecture/root#composition-root-wires-everything',
         axis: Axis.Architecture,
         block: 'core',
+        kind: TermKind.Folder,
+        name: 'cache/',
+        sentence: 'Its **`cache/`**`{#cache}` sits beside **`store/`**',
+      },
+      {
+        address: '/docs/core/architecture/root#composition-root-wires-everything',
+        axis: Axis.Architecture,
+        block: 'core',
         kind: TermKind.Concept,
         name: 'composition root',
         sentence: 'The **composition root** chooses every implementation.',
@@ -112,7 +122,7 @@ describe('termsOf', () => {
         block: 'core',
         kind: TermKind.Concept,
         name: 'delivery unit',
-        sentence: 'It registers each **delivery  unit**.',
+        sentence: 'It registers each **delivery  unit** in **`root/`**{#composition-root}.',
       },
       {
         address: '/docs/implementations/bun/foundation/runtime',
@@ -139,12 +149,28 @@ describe('termsOf', () => {
         sentence: 'A **note** below a heading that is no rule.',
       },
       {
+        address: '/docs/core/architecture/root#composition-root',
+        axis: Axis.Architecture,
+        block: 'core',
+        kind: TermKind.Folder,
+        name: 'root/',
+        sentence: 'It registers each **delivery  unit** in **`root/`**{#composition-root}.',
+      },
+      {
         address: '/docs/implementations/bun/foundation/runtime',
         axis: Axis.Foundation,
         block: 'bun',
         kind: TermKind.Concept,
         name: 'section',
         sentence: 'A **section** term, below a heading above the rules.',
+      },
+      {
+        address: '/docs/core/architecture/root#composition-root-wires-everything',
+        axis: Axis.Architecture,
+        block: 'core',
+        kind: TermKind.Folder,
+        name: 'store/',
+        sentence: 'Its **`cache/`**`{#cache}` sits beside **`store/`**',
       },
       {
         address: '/docs/implementations/bun/foundation/runtime',
