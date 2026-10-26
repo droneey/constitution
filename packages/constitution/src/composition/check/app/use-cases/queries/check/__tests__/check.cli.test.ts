@@ -1,12 +1,14 @@
 import { describe, expect, it } from 'bun:test';
 
-import { StepStatus } from '@droneey/design-cli';
+import { StepStatus, Tone } from '@droneey/design-cli';
 
 import { createFakeContext, runCommand } from '#/__tests__/command-context.fake';
 import type { Validation } from '#/features/blocks';
-import type { ProjectWarning } from '#/kernel/entities';
-import { ValueSite, WarningKind } from '#/kernel/entities';
+import type { BlockModel } from '#/kernel/entities';
+import { ValueSite } from '#/kernel/entities';
 import { ValueFailure } from '#/kernel/errors';
+import type { StepReport } from '#/shared/cli';
+import { noteSection } from '#/shared/cli';
 
 import { createCheckCommand } from '../check.cli';
 
@@ -18,17 +20,54 @@ const finding: Validation['findings'][number] = {
   },
   path: 'blocks/domains/ui/ui.md',
 };
-const warning: ProjectWarning = {
-  details: {
-    name: 'nope',
-  },
-  kind: WarningKind.NameUnknown,
+const model: BlockModel = {
+  blocks: [],
+  roles: [],
+  rules: [],
 };
+const sound: Validation = {
+  advice: [],
+  findings: [],
+  model,
+};
+
+const reportOf = (input: { isFailed: boolean; status: StepStatus }): StepReport => ({
+  isFailed: input.isFailed,
+  outcome: {
+    detail: input.status,
+    status: input.status,
+  },
+  sections: input.isFailed
+    ? [
+        noteSection({
+          lines: [
+            'found',
+          ],
+          title: 'found',
+          tone: Tone.Error,
+        }),
+      ]
+    : [],
+});
+
+const skipped = reportOf({
+  isFailed: false,
+  status: StepStatus.Skipped,
+});
+const done = reportOf({
+  isFailed: false,
+  status: StepStatus.Done,
+});
+const failed = reportOf({
+  isFailed: true,
+  status: StepStatus.Failed,
+});
 
 const runOf = async (input: {
   args?: readonly string[];
+  catalogues?: StepReport;
+  presets?: StepReport;
   validation: Validation | undefined;
-  warnings: readonly ProjectWarning[] | undefined;
 }) => {
   const asked: unknown[] = [];
   const { context, record } = createFakeContext();
@@ -42,10 +81,15 @@ const runOf = async (input: {
 
         return input.validation;
       },
+      checkCatalogues: (checked) => {
+        asked.push(checked);
+
+        return input.catalogues ?? done;
+      },
       checkPresets: (start: string) => {
         asked.push(start);
 
-        return input.warnings;
+        return input.presets ?? done;
       },
     }),
   });
@@ -68,7 +112,8 @@ describe('createCheckCommand', () => {
     const command = createCheckCommand({
       ...context,
       checkBlocks: () => undefined,
-      checkPresets: () => [],
+      checkCatalogues: () => skipped,
+      checkPresets: () => skipped,
     });
 
     // Act
@@ -89,18 +134,14 @@ describe('createCheckCommand', () => {
     });
   });
 
-  it('should check the blocks of the folder, against the base named, then the project around it', async () => {
+  it("should check the blocks of the folder against the base named, the pack's catalogues against their model, then the project around it", async () => {
     // Arrange
     const asked = {
       args: [
         '--base',
         '../base',
       ],
-      validation: {
-        advice: [],
-        findings: [],
-      },
-      warnings: [],
+      validation: sound,
     };
 
     // Act
@@ -113,6 +154,11 @@ describe('createCheckCommand', () => {
           base: '../base',
           folder: '/work/project/package',
         },
+        {
+          folder: '/work/project/package',
+          isRelease: false,
+          model,
+        },
         '/work/project/package',
       ],
       failures: 0,
@@ -123,10 +169,31 @@ describe('createCheckCommand', () => {
           StepStatus.Done,
         ],
         [
+          'Catalogues',
+          StepStatus.Done,
+        ],
+        [
           'Presets',
           StepStatus.Done,
         ],
       ],
+    });
+  });
+
+  it("should ask for the release's catalogues, with no model, when no base is named and no blocks load", async () => {
+    // Arrange
+    const asked = {
+      validation: undefined,
+    };
+
+    // Act
+    const run = await runOf(asked);
+
+    // Assert
+    expect(run.asked[1]).toStrictEqual({
+      folder: '/work/project/package',
+      isRelease: true,
+      model: undefined,
     });
   });
 
@@ -140,38 +207,34 @@ describe('createCheckCommand', () => {
           finding,
         ],
       },
-      warnings: undefined,
+    },
+    {
+      catalogues: failed,
+      condition: 'the catalogues have findings',
+      printed: 1,
+      validation: sound,
     },
     {
       condition: 'the project has warnings',
+      presets: failed,
       printed: 1,
       validation: undefined,
-      warnings: [
-        warning,
-      ],
     },
     {
-      condition: 'both have some',
-      printed: 2,
+      catalogues: failed,
+      condition: 'every step found something',
+      presets: failed,
+      printed: 3,
       validation: {
         advice: [],
         findings: [
           finding,
         ],
       },
-      warnings: [
-        warning,
-      ],
     },
   ])(
     'should print what it found and end the run as failed when $condition',
-    async ({ printed, validation, warnings }) => {
-      // Arrange
-      const asked = {
-        validation,
-        warnings,
-      };
-
+    async ({ condition: _condition, printed, ...asked }) => {
       // Act
       const run = await runOf(asked);
 
@@ -186,11 +249,12 @@ describe('createCheckCommand', () => {
     },
   );
 
-  it('should pass, both steps skipped, when the folder holds no blocks and no project lies around it', async () => {
+  it('should pass, every step skipped, when the folder holds no blocks and no project lies around it', async () => {
     // Arrange
     const asked = {
+      catalogues: skipped,
+      presets: skipped,
       validation: undefined,
-      warnings: undefined,
     };
 
     // Act
@@ -205,6 +269,10 @@ describe('createCheckCommand', () => {
       steps: [
         [
           'Blocks',
+          StepStatus.Skipped,
+        ],
+        [
+          'Catalogues',
           StepStatus.Skipped,
         ],
         [

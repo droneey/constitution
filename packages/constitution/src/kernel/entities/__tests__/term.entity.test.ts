@@ -327,3 +327,34 @@ describe('Term.otherSpellingOf', () => {
     expect(other).toBe(expected);
   });
 });
+
+describe('Term.roleNameOf', () => {
+  it.each<{
+    expected: string;
+    role: {
+      kind: TermKind.Folder | TermKind.Suffix;
+      term: string;
+    };
+  }>([
+    {
+      expected: 'adapters',
+      role: {
+        kind: TermKind.Folder,
+        term: 'adapters/',
+      },
+    },
+    {
+      expected: 'adapter',
+      role: {
+        kind: TermKind.Suffix,
+        term: '.adapter',
+      },
+    },
+  ])('should name $role.kind $role.term in a path as $expected', ({ expected, role }) => {
+    // Act
+    const name = Term.roleNameOf(role);
+
+    // Assert
+    expect(name).toBe(expected);
+  });
+});

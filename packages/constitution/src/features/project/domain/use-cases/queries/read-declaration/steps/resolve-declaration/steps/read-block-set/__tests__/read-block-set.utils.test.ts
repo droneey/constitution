@@ -176,16 +176,19 @@ describe('readBlockSet', () => {
       ],
       roles: [
         {
+          axis: Axis.Foundation,
           block: BlockId.create('core'),
           kind: TermKind.Folder,
           term: 'kernel/',
         },
         {
+          axis: Axis.Foundation,
           block: BlockId.create('ui'),
           kind: TermKind.Folder,
           term: 'screens/',
         },
         {
+          axis: Axis.Foundation,
           block: BlockId.create('ui'),
           kind: TermKind.Suffix,
           term: '.screen',

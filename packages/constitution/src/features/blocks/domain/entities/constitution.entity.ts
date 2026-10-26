@@ -1,7 +1,8 @@
 import type { RequirementAnswer, Rule } from '#/kernel/entities';
+import { BlockModel } from '#/kernel/entities';
 
 import type { Binding } from './binding.entity';
-import type { Block } from './block.entity';
+import { Block } from './block.entity';
 import type {
   HooksManifest,
   ManifestRead,
@@ -35,6 +36,47 @@ interface Constitution {
   readonly templates: readonly PresetFile[];
 }
 
+/** The model of its blocks, a pack's base among them, that a check of its presets reads. */
+const modelOf = (constitution: Constitution): BlockModel =>
+  BlockModel.create({
+    blocks: constitution.blocks.map(({ frontMatter, id, layer }) => ({
+      ...(frontMatter.extends === undefined
+        ? {}
+        : {
+            extends: frontMatter.extends,
+          }),
+      governs: frontMatter.governs,
+      id,
+      languages: frontMatter.languages,
+      layer,
+      requires: frontMatter.requires,
+    })),
+    roles: BlockModel.rolesIn(
+      constitution.blocks.flatMap((block) =>
+        Block.filesOf(block).map((file) => ({
+          axis: file.axis,
+          block: block.id,
+          body: file.body,
+        })),
+      ),
+    ),
+    rules: constitution.rules.map((rule) => ({
+      axis: rule.axis,
+      block: rule.block,
+      level: rule.level,
+      ...(rule.seam === undefined
+        ? {}
+        : {
+            seam: rule.seam,
+          }),
+      slug: rule.slug,
+    })),
+  });
+
+const Constitution = {
+  modelOf,
+} as const;
+
 enum DocumentPath {
   Decisions = 'DECISIONS.md',
   Hooks = 'hooks/hooks.json',
@@ -43,5 +85,5 @@ enum DocumentPath {
   Readme = 'README.md',
 }
 
-export type { Constitution, Documents };
-export { DocumentPath };
+export type { Documents };
+export { Constitution, DocumentPath };

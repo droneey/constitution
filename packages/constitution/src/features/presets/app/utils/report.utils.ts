@@ -1,7 +1,7 @@
 import { StepStatus, Tone } from '@droneey/design-cli';
 
 import { ProjectWarning } from '#/kernel/entities';
-import type { Section, TaskOutcome } from '#/shared/cli';
+import type { Section, StepReport, TaskOutcome } from '#/shared/cli';
 import { countOf, noteSection, warningTextOf } from '#/shared/cli';
 
 const WARNING = 'warning';
@@ -48,4 +48,11 @@ const presetsSectionsOf = (warnings: readonly ProjectWarning[] | undefined): rea
         }),
       ];
 
-export { presetsOutcomeOf, presetsSectionsOf };
+/** The project's step as the check presents it, failed where it has warnings. */
+const presetsStepOf = (warnings: readonly ProjectWarning[] | undefined): StepReport => ({
+  isFailed: (warnings?.length ?? 0) > 0,
+  outcome: presetsOutcomeOf(warnings),
+  sections: presetsSectionsOf(warnings),
+});
+
+export { presetsOutcomeOf, presetsSectionsOf, presetsStepOf };

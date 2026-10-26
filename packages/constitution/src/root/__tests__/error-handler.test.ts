@@ -4,6 +4,7 @@ import { ColourLevel, createTheme, ThemeMode } from '@droneey/design-cli';
 import { CommanderError } from 'commander';
 
 import { TreeError, TreeFailure } from '#/features/blocks';
+import { ApplyError, ApplyFailure } from '#/features/presets';
 import { ProjectError, ProjectFailure } from '#/kernel/errors';
 import { ExitCode, outputFlagsOf } from '#/shared/cli';
 
@@ -309,6 +310,33 @@ describe('createErrorHandler', () => {
       exit: ExitCode.Failure,
       written:
         '✗ cannot read /work/constitution/blocks/core/core.md\n  → make the file readable, or remove it from the tree\n',
+    });
+  });
+
+  it('should name the file an apply could not write, with what to do, and end with the failure code', () => {
+    // Arrange
+    const handler = handlerOf({
+      isHook: false,
+    });
+
+    // Act
+    const exit = handler.errors.codeOf(
+      new ApplyError({
+        code: ApplyFailure.NotWritten,
+        details: {
+          path: '/work/project/biome.json',
+        },
+      }),
+    );
+
+    // Assert
+    expect({
+      exit,
+      written: handler.written(),
+    }).toStrictEqual({
+      exit: ExitCode.Failure,
+      written:
+        '✗ cannot write /work/project/biome.json, so the apply wrote nothing\n  → make the file writable, then run constitution presets apply again\n',
     });
   });
 

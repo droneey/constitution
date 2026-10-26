@@ -1441,6 +1441,9 @@ describe('resolveDeclaration', () => {
             id: 'store',
           },
           {
+            governs: [
+              '**/*.tsx',
+            ],
             id: 'ui',
           },
           {
@@ -1449,11 +1452,17 @@ describe('resolveDeclaration', () => {
           },
           {
             extends: 'cache',
+            governs: [
+              '**/*.cache.ts',
+            ],
             id: 'redis',
             layer: Layer.Implementation,
           },
           {
             extends: 'store',
+            governs: [
+              '**/*.store.ts',
+            ],
             id: 'redux',
             layer: Layer.Implementation,
           },
@@ -2538,6 +2547,7 @@ describe('resolveDeclaration', () => {
         ],
         roles: [
           {
+            axis: Axis.Foundation,
             block: BlockId.create('ui'),
             kind: TermKind.Folder,
             term: 'screens/',

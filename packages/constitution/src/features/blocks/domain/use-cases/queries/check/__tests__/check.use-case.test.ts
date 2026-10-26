@@ -113,6 +113,7 @@ describe('checkBlocks', () => {
           path: PRINCIPLES,
         },
       ],
+      model: expect.any(Object),
     });
   });
 
@@ -147,6 +148,7 @@ describe('checkBlocks', () => {
         },
       ],
       findings: [],
+      model: expect.any(Object),
     });
   });
 
@@ -164,6 +166,7 @@ describe('checkBlocks', () => {
     expect(validation).toStrictEqual({
       advice: [],
       findings: [],
+      model: expect.any(Object),
     });
   });
 
@@ -197,6 +200,7 @@ describe('checkBlocks', () => {
           path: ACME,
         },
       ],
+      model: expect.any(Object),
     });
   });
 

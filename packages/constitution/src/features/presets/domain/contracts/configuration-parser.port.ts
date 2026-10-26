@@ -1,12 +1,4 @@
-/** A configuration's settings as its format holds them, a date as its text and no null. */
-type Setting =
-  | boolean
-  | number
-  | string
-  | readonly Setting[]
-  | {
-      readonly [key: string]: Setting;
-    };
+import type { Setting } from '../entities';
 
 interface ConfigurationText {
   readonly path: string;
@@ -18,4 +10,4 @@ interface ConfigurationParser {
   readonly parse: (input: ConfigurationText) => Setting | undefined;
 }
 
-export type { ConfigurationParser, ConfigurationText, Setting };
+export type { ConfigurationParser, ConfigurationText };

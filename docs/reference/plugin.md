@@ -57,10 +57,11 @@ The resolved set of blocks is kept outside the project, in `/tmp/droneey-constit
 
 `constitution` is the same program outside a session:
 
-- `constitution check` runs the two checks below in turn: the blocks of the folder it runs in, when it holds a Constitution or a pack, then the project around it. `--base <folder>` names the Constitution a pack extends.
+- `constitution check` runs the checks below in turn: the blocks of the folder it runs in, when it holds a Constitution or a pack; the catalogues under its `presets/`, against those blocks; then the project around it. `--base <folder>` names the Constitution a pack extends.
 - `constitution blocks check` checks the blocks of the folder it runs in alone, the pack's against `--base <folder>`.
 - `constitution presets check` gives the warnings of the project's `constitution.yaml`, of each member's and of the wiring, the ones the digest gives; a member of the workspace that keeps no `constitution.yaml` is one of them.
 - `constitution presets plan` prints the configuration files the project's tools read, each with the units it serves, its template and the parts it takes, which `/constitution:ratify` writes.
+- `constitution presets apply` writes into each unit's configuration files what the catalogues of the release and of the packs it follows give its blocks, beside the settings the files keep of their own, and records what it wrote in the unit's `constitution.lock`, so the next run removes what the blocks no longer give. A value the user changed stays as it is and is reported; a default is written once, and stays deleted once the user deletes it.
 - `constitution doctor` says how the installation stands, and changes nothing: the plugin, which differs from this program only when its own files — its manifest, hooks, skills and agents — differ from those the program was built with, compared by a hash of their content, its version then saying which is older; the latest release, which it skips without a network; the program on `PATH`; the project's `.droneey/constitution` link and the release behind it; and lefthook's git hooks. Each part that is not sound comes with what to do.
 - `constitution hook <event>` is what the hooks run.
 

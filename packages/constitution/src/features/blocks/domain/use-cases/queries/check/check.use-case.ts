@@ -1,5 +1,6 @@
 import { BLOCKS_FOLDER } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
+import type { BlockModel } from '#/kernel/entities';
 
 import type {
   BindingsParser,
@@ -9,7 +10,7 @@ import type {
   ManifestParser,
 } from '../../../contracts';
 import type { SimilarRules } from '../../../entities';
-import { Block, BlockGraph } from '../../../entities';
+import { Block, BlockGraph, Constitution } from '../../../entities';
 import type { BlockFinding } from './block-finding.types';
 import type { Check } from './check.types';
 import {
@@ -65,6 +66,8 @@ const checks: readonly Check<BlockFinding>[] = [
 interface Validation {
   readonly advice: readonly SimilarRules[];
   readonly findings: readonly BlockFinding[];
+  /** the model of the blocks, a pack's base among them; absent when they do not load */
+  readonly model?: BlockModel;
 }
 
 interface Parsers {
@@ -110,6 +113,7 @@ const validate = (
           graph,
           constitution,
         }),
+    model: Constitution.modelOf(constitution),
     findings: orderFindings(
       ownOf(
         (pack ? checks.filter((check) => check !== pluginCheck) : checks).flatMap((check) =>

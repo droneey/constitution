@@ -1,4 +1,3 @@
-import type { AccentTokens, OutputFlags } from '@droneey/design-cli';
 import { Command } from 'commander';
 
 import { createNodeProjectFiles } from '#/adapters/file-system';
@@ -20,14 +19,33 @@ import { createClaudePluginRegistry } from '#/features/installation/adapters/cla
 import { createGitHubReleaseFeed } from '#/features/installation/adapters/github';
 import { createLefthookGitHooks } from '#/features/installation/adapters/lefthook';
 import { createPathProgram } from '#/features/installation/adapters/path';
-import type { ConfigurationParser, WiringPlan } from '#/features/presets';
+import type {
+  ApplyReport,
+  CatalogueParser,
+  ConfigurationFormat,
+  ConfigurationParser,
+  WiringPlan,
+} from '#/features/presets';
 import {
+  applyPresets,
+  cataloguesStepOf,
+  checkCatalogues,
   checkPresets,
+  createPresetsApplyCommand,
   createPresetsCheckCommand,
   createPresetsPlanCommand,
   planPresets,
+  presetsStepOf,
 } from '#/features/presets';
-import { createConfigurationParser } from '#/features/presets/adapters/configuration';
+import {
+  createConfigurationFormat,
+  createConfigurationParser,
+} from '#/features/presets/adapters/configuration';
+import {
+  createFileAppliedFilesRepository,
+  createFileLockRepository,
+} from '#/features/presets/adapters/file-system';
+import { createYamlCatalogueParser } from '#/features/presets/adapters/yaml';
 import { createConfigFileParser } from '#/features/project/adapters/config-file';
 import { createManifestWorkspace } from '#/features/project/adapters/workspace';
 import { createYamlBlockCardParser } from '#/features/project/adapters/yaml';
@@ -57,55 +75,22 @@ import {
   recordReminders,
   remindOfFile,
 } from '#/features/session';
-import type { SessionsPlace } from '#/features/session/adapters/session-store';
 import { createXdgSessionRepository } from '#/features/session/adapters/session-store';
 import { PROGRAM_NAME } from '#/kernel/constants';
 import type { ProjectFiles, ProjectSource, WorkingTree } from '#/kernel/contracts';
-import type { ProjectWarning } from '#/kernel/entities';
+import type { BlockModel, ProjectWarning } from '#/kernel/entities';
 import { Version } from '#/kernel/value-objects';
 import { configureHelpLayout } from '#/libs/commander';
-import type { CommandContext, CommandIo, CommandPlaces } from '#/shared/cli';
-import { ExitCode, OUTPUT_FLAGS, outputFlagsOf } from '#/shared/cli';
+import type { CommandContext, StepReport } from '#/shared/cli';
+import { ExitCode, OUTPUT_FLAGS } from '#/shared/cli';
 
+import { adopt, flagsOf, groupOf } from './command-tree.utils';
 import { clockOf } from './configuration';
 import type { ErrorHandler } from './error-handler';
 import { createErrorHandler } from './error-handler';
-import type { Streams } from './presentation';
 import { createPresentation } from './presentation';
+import type { Program, ProgramInput } from './program.types';
 import { stateFolderWarningText } from './state-folder-warning';
-
-interface ProgramInput {
-  readonly accent: AccentTokens;
-  readonly environment: {
-    /** the folder Claude Code keeps its own files in */
-    readonly claudeConfig: string;
-    /** the environment git, lefthook and the programs on PATH run in */
-    readonly commands: Readonly<Record<string, string>>;
-    /** what the environment says of colour, motion and the terminal */
-    readonly output: Readonly<Record<string, string | undefined>>;
-    /** the plugin's folder, when Claude Code runs a hook from it */
-    readonly pluginRoot: string | undefined;
-    readonly sessions: SessionsPlace;
-    /** the day the specs fix the clock at, YYYY-MM-DD; absent for the system's clock */
-    readonly today?: string;
-  };
-  readonly fetch: (url: string, init: RequestInit) => Promise<Response>;
-  readonly io: CommandIo;
-  readonly isTerminal: boolean;
-  readonly places: CommandPlaces;
-  /** the fingerprint of the plugin's files this program was built with, read when doctor asks */
-  readonly pluginFingerprint: () => string | undefined;
-  readonly streams: Streams;
-  readonly version: string;
-}
-
-interface Program {
-  /** the handler of last resort for a failure outside a run: writes it and gives its code */
-  readonly fail: (error: unknown) => ExitCode;
-  readonly run: (args: readonly string[]) => Promise<ExitCode>;
-  /** ends whatever is still drawn, as an interrupt asks */
-  readonly stop: () => Promise<void>;
-}
 
 const HOOK = 'hook';
 // The time each outside call may take: a run of git, of a program on PATH, of lefthook, and the
@@ -121,8 +106,10 @@ const WORKSPACE_FOLDERS = 10_000;
 const WORKSPACE_GLOBS = 1000;
 
 interface Ports {
+  readonly catalogues: CatalogueParser;
   readonly configurations: ConfigurationParser;
   readonly files: ProjectFiles;
+  readonly formats: ConfigurationFormat;
   readonly sessions: SessionCommandRepository & SessionQueryRepository;
   readonly source: ProjectSource;
   readonly wiring: WiringCheck;
@@ -140,8 +127,10 @@ const portsOf = (input: ProgramInput): Ports => {
   });
 
   return {
+    catalogues: createYamlCatalogueParser(),
     configurations,
     files,
+    formats: createConfigurationFormat(),
     sessions: createXdgSessionRepository({
       ...input.environment.sessions,
       maxSessions: FOLDER_FILES,
@@ -166,50 +155,6 @@ const portsOf = (input: ProgramInput): Ports => {
     workingTree,
   };
 };
-
-const flagsOf = (opts: unknown): OutputFlags => {
-  const { color, motion, plain } = outputFlagsOf(opts);
-
-  return {
-    ...(color === undefined
-      ? {}
-      : {
-          colour: color,
-        }),
-    ...(motion === undefined
-      ? {}
-      : {
-          motion,
-        }),
-    ...(plain === undefined
-      ? {}
-      : {
-          plain,
-        }),
-  };
-};
-
-// A command added to a parent takes the program's settings first: its output, exits and help.
-const adopt = (parent: Command, children: readonly Command[]): Command => {
-  for (const child of children) {
-    child.copyInheritedSettings(parent);
-    parent.addCommand(child);
-  }
-
-  return parent;
-};
-
-const groupOf = (input: {
-  context: CommandContext;
-  description: string;
-  examples: readonly string[];
-  name: string;
-  parent: Command;
-}): Command =>
-  new Command(input.name)
-    .description(input.description)
-    .addHelpText('before', input.context.helpExamples(input.examples))
-    .copyInheritedSettings(input.parent);
 
 interface Registration {
   readonly context: CommandContext;
@@ -322,6 +267,63 @@ const doctorCommandOf = ({ context, ports, programInput }: Registration): Comman
       }),
   });
 
+const presetsWarningsOf = (input: {
+  ports: Ports;
+  start: string;
+}): readonly ProjectWarning[] | undefined =>
+  checkPresets({
+    ...input.ports,
+    parser: input.ports.configurations,
+    start: input.start,
+  });
+
+const presetsCommandsOf = ({ context, ports, program }: Registration): Command =>
+  adopt(
+    groupOf({
+      context,
+      description:
+        "Check, plan and apply the configurations the project's tools take from the presets.",
+      examples: [
+        'constitution presets check',
+        'constitution presets plan',
+        'constitution presets apply',
+      ],
+      name: 'presets',
+      parent: program,
+    }),
+    [
+      createPresetsCheckCommand({
+        ...context,
+        checkPresets: (start: string): readonly ProjectWarning[] | undefined =>
+          presetsWarningsOf({
+            ports,
+            start,
+          }),
+      }),
+      createPresetsPlanCommand({
+        ...context,
+        planPresets: (start: string): WiringPlan =>
+          planPresets({
+            ...ports,
+            start,
+          }),
+      }),
+      createPresetsApplyCommand({
+        ...context,
+        applyPresets: (start: string): ApplyReport | undefined =>
+          applyPresets({
+            files: ports.files,
+            formats: ports.formats,
+            locks: createFileLockRepository(),
+            parser: ports.catalogues,
+            source: ports.source,
+            start,
+            writes: createFileAppliedFilesRepository(),
+          }),
+      }),
+    ],
+  );
+
 const registerCommands = (registration: Registration): void => {
   const { context, ports, program, programInput } = registration;
 
@@ -347,18 +349,32 @@ const registerCommands = (registration: Registration): void => {
       }),
     });
 
-  const checkPresetsAt = (start: string): readonly ProjectWarning[] | undefined =>
-    checkPresets({
-      ...ports,
-      parser: ports.configurations,
-      start,
-    });
-
   adopt(program, [
     createCheckCommand({
       ...context,
       checkBlocks: checkBlocksIn,
-      checkPresets: checkPresetsAt,
+      checkCatalogues: (asked: {
+        folder: string;
+        isRelease: boolean;
+        model: BlockModel | undefined;
+      }): StepReport =>
+        cataloguesStepOf(
+          asked.model === undefined
+            ? undefined
+            : checkCatalogues({
+                ...asked,
+                files: ports.files,
+                model: asked.model,
+                parser: ports.catalogues,
+              }),
+        ),
+      checkPresets: (start: string): StepReport =>
+        presetsStepOf(
+          presetsWarningsOf({
+            ports,
+            start,
+          }),
+        ),
     }),
     adopt(
       groupOf({
@@ -377,32 +393,7 @@ const registerCommands = (registration: Registration): void => {
         }),
       ],
     ),
-    adopt(
-      groupOf({
-        context,
-        description: "Check and plan the configurations the project's tools take from the presets.",
-        examples: [
-          'constitution presets check',
-          'constitution presets plan',
-        ],
-        name: 'presets',
-        parent: program,
-      }),
-      [
-        createPresetsCheckCommand({
-          ...context,
-          checkPresets: checkPresetsAt,
-        }),
-        createPresetsPlanCommand({
-          ...context,
-          planPresets: (start: string): WiringPlan =>
-            planPresets({
-              ...ports,
-              start,
-            }),
-        }),
-      ],
-    ),
+    presetsCommandsOf(registration),
     hookCommandsOf(registration),
     doctorCommandOf(registration),
   ]);

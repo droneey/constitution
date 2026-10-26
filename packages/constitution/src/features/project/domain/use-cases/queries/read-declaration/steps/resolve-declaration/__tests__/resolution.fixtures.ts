@@ -206,6 +206,7 @@ const unitOf = (input: UnitFixture = {}): ProjectUnit =>
 
 interface ModelBlockFixture {
   readonly extends?: string;
+  readonly governs?: readonly string[];
   readonly id: string;
   readonly languages?: readonly string[];
   // a domain unless the case says
@@ -236,6 +237,7 @@ const modelOf = (input: ModelFixture = {}): BlockModel => ({
       : {
           extends: BlockId.create(block.extends),
         }),
+    governs: (block.governs ?? []).map(Glob.create),
     id: BlockId.create(block.id),
     languages: (block.languages ?? []).map(BlockId.create),
     layer: block.layer ?? Layer.Domain,

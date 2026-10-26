@@ -2,8 +2,8 @@ import { Placeholder } from '#/kernel/constants';
 import type { ProjectWarning } from '#/kernel/entities';
 import { FileReadStatus, ProjectUnit, WarningKind } from '#/kernel/entities';
 
-import type { ConfigurationParser, Setting } from '../../../../../contracts';
-import type { Skip } from '../../../../../entities';
+import type { ConfigurationParser } from '../../../../../contracts';
+import type { Setting, Skip } from '../../../../../entities';
 import { WiringContext } from '../../../../../entities';
 import type { WiringReads } from '../../../shared/wiring';
 import { holdsBlock, isBeneath } from '../../../shared/wiring';

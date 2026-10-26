@@ -7,7 +7,7 @@ import { WarningKind } from '#/kernel/entities';
 import type { TaskOutcome } from '#/shared/cli';
 import { noteSection, warningTextOf } from '#/shared/cli';
 
-import { presetsOutcomeOf, presetsSectionsOf } from '../report.utils';
+import { presetsOutcomeOf, presetsSectionsOf, presetsStepOf } from '../report.utils';
 
 const warning: ProjectWarning = {
   details: {
@@ -110,4 +110,51 @@ describe('presetsSectionsOf', () => {
     // Assert
     expect(sections).toStrictEqual([]);
   });
+});
+
+describe('presetsStepOf', () => {
+  it.each<{
+    condition: string;
+    given: readonly ProjectWarning[] | undefined;
+    isFailed: boolean;
+    status: StepStatus;
+  }>([
+    {
+      condition: 'nothing was checked',
+      given: undefined,
+      isFailed: false,
+      status: StepStatus.Skipped,
+    },
+    {
+      condition: 'nothing was found',
+      given: [],
+      isFailed: false,
+      status: StepStatus.Done,
+    },
+    {
+      condition: 'something was found',
+      given: [
+        warning,
+      ],
+      isFailed: true,
+      status: StepStatus.Warned,
+    },
+  ])(
+    'should present the step as its outcome and sections say when $condition',
+    ({ given, isFailed, status }) => {
+      // Act
+      const step = presetsStepOf(given);
+
+      // Assert
+      expect({
+        isFailed: step.isFailed,
+        sections: step.sections.length,
+        status: step.outcome.status,
+      }).toStrictEqual({
+        isFailed,
+        sections: isFailed ? 1 : 0,
+        status,
+      });
+    },
+  );
 });

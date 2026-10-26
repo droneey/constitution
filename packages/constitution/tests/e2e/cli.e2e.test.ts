@@ -220,6 +220,7 @@ describe('the constitution program', () => {
       exitCode: 0,
       steps: [
         '• Blocks',
+        '• Catalogues',
         '✓ Presets',
         '',
       ],

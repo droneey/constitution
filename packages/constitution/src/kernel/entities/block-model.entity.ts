@@ -1,11 +1,13 @@
 import type { Axis, Layer, Level } from '../constants';
-import type { BlockId, RuleSlug } from '../value-objects';
+import type { BlockId, Glob, RuleSlug } from '../value-objects';
 import { coreBlockId } from '../value-objects';
 import type { RoleKind } from './term.entity';
 import { Term } from './term.entity';
 
 interface ModelBlock {
   readonly extends?: BlockId;
+  /** the files it governs, as its card lists them */
+  readonly governs: readonly Glob[];
   readonly id: BlockId;
   /** the languages an implementation serves, as its card lists them */
   readonly languages: readonly BlockId[];
@@ -24,6 +26,8 @@ interface ModelRule {
 
 /** A folder or a suffix a block defines, by the spelling and the id its definition gives. */
 interface RoleTerm {
+  /** the axis of the file that defines it */
+  readonly axis: Axis;
   readonly block: BlockId;
   /** none where the definition gives none, which the blocks' check refuses */
   readonly id?: string;
@@ -33,6 +37,7 @@ interface RoleTerm {
 
 /** The text of a block's file, its front matter left out. */
 interface BlockText {
+  readonly axis: Axis;
   readonly block: BlockId;
   readonly body: string;
 }
@@ -54,10 +59,11 @@ const create = (input: BlockModel): BlockModel => ({
 const rolesIn = (texts: readonly BlockText[]): readonly RoleTerm[] => {
   const roles = new Map<string, RoleTerm>();
 
-  for (const { block, body } of texts) {
+  for (const { axis, block, body } of texts) {
     for (const { id, kind, term } of Term.allIn(body).terms) {
       if (Term.isRoleKind(kind) && !roles.has(term)) {
         roles.set(term, {
+          axis,
           block,
           ...(id === undefined
             ? {}

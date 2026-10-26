@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { Layer } from '../../constants';
+import { Axis, Layer } from '../../constants';
 import { BlockId, coreBlockId } from '../../value-objects';
 import type { ModelBlock } from '../block-model.entity';
 import { BlockModel } from '../block-model.entity';
@@ -18,6 +18,7 @@ const blockOf = (input: BlockFixture): ModelBlock => ({
     : {
         extends: BlockId.create(input.extends),
       }),
+  governs: [],
   id: BlockId.create(input.id),
   languages: [],
   layer: Layer.Implementation,
@@ -28,6 +29,7 @@ const modelOf = (blocks: readonly BlockFixture[]): BlockModel =>
   BlockModel.create({
     blocks: [
       {
+        governs: [],
         id: coreBlockId,
         languages: [],
         layer: Layer.Core,
@@ -130,10 +132,12 @@ describe('BlockModel.rolesIn', () => {
     // Arrange
     const texts = [
       {
+        axis: Axis.Foundation,
         block: coreBlockId,
         body: 'The **`kernel/`** opens at **`index.ts`**, a **surface**.',
       },
       {
+        axis: Axis.Architecture,
         block: BlockId.create('ui'),
         body: 'A screen sits in **`screens/`**{#screen}, named **`.screen`**, beside **`kernel/`**{#shared-domain}.',
       },
@@ -145,17 +149,20 @@ describe('BlockModel.rolesIn', () => {
     // Assert
     expect(roles).toStrictEqual([
       {
+        axis: Axis.Foundation,
         block: coreBlockId,
         kind: TermKind.Folder,
         term: 'kernel/',
       },
       {
+        axis: Axis.Architecture,
         block: BlockId.create('ui'),
         id: 'screen',
         kind: TermKind.Folder,
         term: 'screens/',
       },
       {
+        axis: Axis.Architecture,
         block: BlockId.create('ui'),
         kind: TermKind.Suffix,
         term: '.screen',

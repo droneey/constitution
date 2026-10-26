@@ -2,7 +2,8 @@ import { parseDocument } from 'yaml';
 
 import { attempted, isSyntaxError } from '#/kernel/utils';
 
-import type { ConfigurationParser, ConfigurationText, Setting } from '../../domain/contracts';
+import type { ConfigurationParser, ConfigurationText } from '../../domain/contracts';
+import type { Setting } from '../../domain/entities';
 import { settingModel } from './models';
 
 const EXTENSION = '.';

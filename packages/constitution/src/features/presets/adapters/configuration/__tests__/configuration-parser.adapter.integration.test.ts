@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import type { Setting } from '../../../domain/contracts';
+import type { Setting } from '../../../domain/entities';
 import { createConfigurationParser } from '../configuration-parser.adapter';
 
 describe('createConfigurationParser', () => {

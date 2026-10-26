@@ -118,6 +118,7 @@ const readRules = (
   }
 
   state.texts.push({
+    axis: input.axis,
     block: input.draft.id,
     body: read.text,
   });

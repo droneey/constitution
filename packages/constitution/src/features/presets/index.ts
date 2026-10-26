@@ -1,8 +1,13 @@
+export { createPresetsApplyCommand } from './app/use-cases/commands/apply';
 export { createPresetsCheckCommand } from './app/use-cases/queries/check';
 export { createPresetsPlanCommand } from './app/use-cases/queries/plan';
-export { presetsOutcomeOf, presetsSectionsOf } from './app/utils';
-export type { ConfigurationParser } from './domain/contracts';
-export type { WiringPlan } from './domain/entities';
+export { cataloguesStepOf, presetsStepOf } from './app/utils';
+export type { CatalogueParser, ConfigurationFormat, ConfigurationParser } from './domain/contracts';
+export type { ApplyReport, PresetsFinding, WiringPlan } from './domain/entities';
+export { PresetsCode } from './domain/entities';
+export { ApplyError, ApplyFailure, isApplyError } from './domain/errors';
+export { applyPresets } from './domain/use-cases/commands/apply-presets';
 export { checkPresets } from './domain/use-cases/queries/check';
+export { checkCatalogues } from './domain/use-cases/queries/check-catalogues';
 export { checkWiring } from './domain/use-cases/queries/check-wiring';
 export { planPresets } from './domain/use-cases/queries/plan';

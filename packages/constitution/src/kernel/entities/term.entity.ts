@@ -195,6 +195,12 @@ const otherSpellingOf = (term: Term): string | undefined => {
   }
 };
 
+/** The name a folder or a suffix gives a path: its term without the "/", or without the ".". */
+const roleNameOf = (role: { readonly kind: RoleKind; readonly term: string }): string =>
+  role.kind === TermKind.Folder
+    ? role.term.slice(0, -FOLDER_END.length)
+    : role.term.slice(SUFFIX_START.length);
+
 const Term = {
   allIn,
   idAfter,
@@ -202,6 +208,7 @@ const Term = {
   matcherOf,
   of,
   otherSpellingOf,
+  roleNameOf,
 } as const;
 
 export type { Bold, RoleKind, TermsRead };

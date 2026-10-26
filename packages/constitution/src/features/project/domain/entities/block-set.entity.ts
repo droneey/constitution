@@ -119,6 +119,7 @@ const modelOf = (blockSet: BlockSet): BlockModel =>
         : {
             extends: block.extends,
           }),
+      governs: block.governs,
       id: block.id,
       languages: block.languages,
       layer: block.layer,

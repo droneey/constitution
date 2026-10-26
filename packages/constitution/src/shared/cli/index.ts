@@ -7,6 +7,7 @@ export type {
   Renderer,
   Report,
   Section,
+  StepReport,
   Task,
   TaskOutcome,
   TextsOf,

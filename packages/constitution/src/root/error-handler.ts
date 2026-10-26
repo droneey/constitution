@@ -4,6 +4,8 @@ import { CommanderError } from 'commander';
 
 import type { TreeError } from '#/features/blocks';
 import { isTreeError, TreeFailure } from '#/features/blocks';
+import type { ApplyError } from '#/features/presets';
+import { ApplyFailure, isApplyError } from '#/features/presets';
 import type { ProjectError } from '#/kernel/errors';
 import { isProjectError, ProjectFailure } from '#/kernel/errors';
 import { ExitCode, isUsageError } from '#/shared/cli';
@@ -67,6 +69,14 @@ const treeHintOf = (failure: TreeFailure): string => {
   };
 
   return hints[failure];
+};
+
+const applyMessageOf = (error: ApplyError): string => {
+  const messages: Readonly<Record<ApplyFailure, string>> = {
+    [ApplyFailure.NotWritten]: `cannot write ${error.details.path}, so the apply wrote nothing`,
+  };
+
+  return messages[error.code];
 };
 
 const configurationMessageOf = (error: ConfigurationError): string => {
@@ -139,6 +149,17 @@ const createErrorHandler = (input: ErrorHandlerInput): ErrorHandler => {
           hint: treeHintOf(error.code),
           line: treeMessageOf(error),
           title: treeMessageOf(error),
+        });
+
+        return ExitCode.Failure;
+      }
+
+      if (isApplyError(error)) {
+        write({
+          details: [],
+          hint: 'make the file writable, then run constitution presets apply again',
+          line: applyMessageOf(error),
+          title: applyMessageOf(error),
         });
 
         return ExitCode.Failure;
