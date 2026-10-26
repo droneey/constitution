@@ -6,8 +6,8 @@ import type { RuleSlug } from '#/kernel/value-objects';
 import { PackPath, SourceKind, UnitPath } from '#/kernel/value-objects';
 
 import { EVERY } from '../../../../../constants';
-import type { PresetEntry } from '../../../../../entities';
-import { Fact, FactKind } from '../../../../../value-objects';
+import { PresetEntry } from '../../../../../entities';
+import { Fact, FactKind, TargetFile } from '../../../../../value-objects';
 
 interface Candidate {
   readonly entries: readonly PresetEntry[];
@@ -101,12 +101,20 @@ const fileOf = (input: {
   model: BlockModel;
   unit: ProjectUnit;
 }): string | undefined => {
+  if (TargetFile.isRun(input.entry.file)) {
+    return UnitPath.pathOf(input.unit.path, TargetFile.runPath);
+  }
+
   const path = Fact.resolvedIn({
     text: input.entry.file.path,
     valueOf: (fact) => {
       const term =
         fact.kind === FactKind.Role
-          ? input.model.roles.find((role) => role.id === fact.role)
+          ? PresetEntry.roleOf({
+              entry: input.entry,
+              id: fact.role,
+              model: input.model,
+            })
           : undefined;
 
       return term === undefined ? undefined : Term.roleNameOf(term);

@@ -1,0 +1,9 @@
+# The workspace installs python-check, which runs in place of the archive's build.
+python-check:
+  '*':
+    python:
+      pyproject.toml:
+        tool:
+          poe:
+            tasks:
+              check:code: !replace python-check ${role.source} ${role.package-suites}

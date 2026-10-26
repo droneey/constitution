@@ -2,7 +2,7 @@ import type { ConfigReadStatus } from '#/kernel/entities';
 import { attempted, isRangeError } from '#/kernel/utils';
 import { PackPath, UnitPath } from '#/kernel/value-objects';
 
-/** The keys of constitution.yaml but its check, whose key the kernel names for the warnings too. */
+/** The keys of constitution.yaml. */
 enum ConfigKey {
   Name = 'name',
   Axes = 'axes',
@@ -96,8 +96,6 @@ const ConfigOverride = {
 // One constitution.yaml as the fixed subset of YAML its grammar allows reads it, in the order it is
 // written.
 interface UnitConfig {
-  // the value of check, absent when it is left out or empty
-  readonly check?: string;
   // the keys of the lists left empty
   readonly empties: readonly string[];
   readonly items: readonly ConfigItem[];

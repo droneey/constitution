@@ -23,15 +23,15 @@ describe('presetsFindingTextOf', () => {
   }>([
     {
       finding: {
-        code: PresetsCode.CatalogueMisplaced,
+        code: PresetsCode.PresetFileMisplaced,
         details: {},
         path: 'presets/biome.yaml',
       },
-      text: 'is not a catalogue: presets/<reader>/<axis>.yaml, presets/<reader>/<axis>/with/<block>.yaml or presets/<reader>/<axis>/with/<block>/with/<partner>.yaml',
+      text: 'is not a preset file: presets/<reader>/<axis>.yaml, presets/<reader>/<axis>/with/<block>.yaml or presets/<reader>/<axis>/with/<block>/with/<partner>.yaml',
     },
     {
       finding: {
-        code: PresetsCode.CatalogueUnparsed,
+        code: PresetsCode.PresetFileUnparsed,
         details: {
           line: 3,
         },
@@ -41,7 +41,7 @@ describe('presetsFindingTextOf', () => {
     },
     {
       finding: {
-        code: PresetsCode.CatalogueUnparsed,
+        code: PresetsCode.PresetFileUnparsed,
         details: {},
         path: 'presets/biome/foundation.yaml',
       },
@@ -78,7 +78,7 @@ describe('presetsFindingTextOf', () => {
         },
         path: 'presets/gone/foundation.yaml',
       },
-      text: 'is the catalogue of gone, which is no block',
+      text: 'is the preset file of gone, which is no block',
     },
     {
       finding: {
@@ -140,7 +140,7 @@ describe('presetsFindingTextOf', () => {
         },
         path: 'presets/biome/foundation.yaml',
       },
-      text: "biome → file-within-500-lines: file-within-500-lines is a rule of architecture, an axis this catalogue's does not stand on",
+      text: "biome → file-within-500-lines: file-within-500-lines is a rule of architecture, an axis this preset file's does not stand on",
     },
     {
       finding: {
@@ -189,18 +189,6 @@ describe('presetsFindingTextOf', () => {
     },
     {
       finding: {
-        code: PresetsCode.RoleOffItsAxis,
-        details: {
-          ...named,
-          role: 'gateway',
-          termAxis: Axis.Architecture,
-        },
-        path: 'presets/biome/foundation.yaml',
-      },
-      text: 'biome → file-within-500-lines: ${role.gateway} is a term of architecture, the axis of another catalogue',
-    },
-    {
-      finding: {
         code: PresetsCode.MembersOutsideList,
         details: named,
         path: 'presets/biome/foundation.yaml',
@@ -211,12 +199,11 @@ describe('presetsFindingTextOf', () => {
       finding: {
         code: PresetsCode.MissingReleaseFile,
         details: {
-          ...named,
           file: 'presets/biome/plugins/typescript/gone.grit',
         },
         path: 'presets/biome/foundation.yaml',
       },
-      text: 'biome → file-within-500-lines: presets/biome/plugins/typescript/gone.grit is no file of the release',
+      text: 'names presets/biome/plugins/typescript/gone.grit, which is no file of the release',
     },
     {
       finding: {
@@ -305,7 +292,7 @@ describe('presetsFindingTextOf', () => {
         },
         path: 'biome.json',
       },
-      text: 'holds formatter.width otherwise than the catalogues, which give 100',
+      text: 'holds formatter.width otherwise than the presets, which give 100',
     },
     {
       finding: {
@@ -316,7 +303,7 @@ describe('presetsFindingTextOf', () => {
         },
         path: 'biome.json',
       },
-      text: 'holds its settings otherwise than the catalogues, which give {"width":100}',
+      text: 'holds its settings otherwise than the presets, which give {"width":100}',
     },
     {
       finding: {
@@ -333,6 +320,66 @@ describe('presetsFindingTextOf', () => {
         path: 'constitution.lock',
       },
       text: 'does not parse, so the apply wrote it again from the files',
+    },
+    {
+      finding: {
+        code: PresetsCode.RunMisshapen,
+        details: {},
+        path: 'constitution.yaml',
+      },
+      text: 'gets what the program runs as other than lists of commands by their names',
+    },
+    {
+      finding: {
+        code: PresetsCode.ToolWithoutRunner,
+        details: {
+          block: 'biome',
+        },
+        path: 'constitution.yaml',
+      },
+      text: 'follows biome, whose commands no runner it follows gives; add the block that runs them',
+    },
+    {
+      finding: {
+        code: PresetsCode.Missing,
+        details: {
+          settings: [
+            'a',
+            'b',
+            'c',
+          ],
+        },
+        path: 'biome.json',
+      },
+      text: 'lacks a, b, c, as the presets give them — run constitution presets apply',
+    },
+    {
+      finding: {
+        code: PresetsCode.Unsorted,
+        details: {
+          settings: [
+            'scripts',
+          ],
+        },
+        path: 'package.json',
+      },
+      text: 'orders the keys of scripts otherwise than as texts, which the presets keep — run constitution presets apply',
+    },
+    {
+      finding: {
+        code: PresetsCode.Stale,
+        details: {
+          settings: [
+            'a',
+            'b',
+            'c',
+            'd',
+            'e',
+          ],
+        },
+        path: 'biome.json',
+      },
+      text: 'still holds a, b, c and 2 more, which no entry gives any longer — run constitution presets apply',
     },
   ])('should say $finding.code as the report words it', ({ finding, text }) => {
     // Act

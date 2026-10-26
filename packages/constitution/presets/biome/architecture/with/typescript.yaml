@@ -1,0 +1,74 @@
+typescript:
+  process-env-read-only-under-root:
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            style:
+              noProcessEnv: error
+        overrides:
+          - includes:
+              - '**/${role.composition-root}/**'
+              - '**/main.*'
+              - '**/${role.extra-entry}/*/main.*'
+              - '**/${role.colocated-specs}/**'
+              - '**/*.test.ts'
+              - '**/*.test.tsx'
+              - '**/${role.package-suites}/**'
+            linter:
+              rules:
+                style:
+                  noProcessEnv: 'off'
+  undefined-is-the-only-absence:
+    typescript:
+      biome.json:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/undefined-is-the-only-absence.grit]:
+          includes:
+            - '**'
+            - '!**/${role.gateway}/**'
+            - '!**/${role.wire-model}/**'
+            - '!**/*.tsx'
+  closed-name-set-is-a-string-enum:
+    typescript:
+      biome.json:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/closed-name-set-is-a-string-enum.grit]:
+          includes:
+            - '**/*.ts'
+            - '**/*.tsx'
+            - '!**/${role.gateway}/**'
+            - '!**/${role.wire-model}/**'
+  business-types-readonly:
+    typescript:
+      biome.json:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/business-types-readonly.grit]:
+          includes:
+            - '**/${role.pure-layer}/**'
+            - '**/${role.shared-domain}/**'
+            - '!**/${role.colocated-specs}/**'
+  timer-set-only-by-the-edge-and-binding-units:
+    typescript:
+      biome.json:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/timer-set-only-by-the-edge-and-binding-units.grit]:
+          includes:
+            - '**/${role.source}/**'
+            - '!**/${role.source}/${role.gateway}/**'
+            - '!**/${role.source}/${role.bounded-context}/*/${role.gateway}/**'
+            - '!**/${role.source}/${role.composition-module}/*/${role.gateway}/**'
+            - '!**/${role.source}/${role.generic-library}/**'
+            - '!**/${role.source}/${role.composition-root}/**'
+            - '!**/${role.source}/*.ts'
+            - '!**/${role.source}/*.tsx'
+            - '!**/${role.source}/${role.extra-entry}/**'
+            - '!**/${role.source}/${role.host-integration}/**'
+            - '!**/${role.source}/${role.bounded-context}/*/${role.application-layer}/**'
+            - '!**/${role.source}/${role.composition-module}/*/${role.application-layer}/**'
+            - '!**/${role.colocated-specs}/**'
+core:
+  surface-only-re-exports:
+    typescript:
+      biome.json:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/surface-only-re-exports.grit]:
+          includes:
+            - '**/index.ts'
+            - '**/index.tsx'
+            - '!**/${role.source}/${role.composition-root}/**/index.tsx'

@@ -1,0 +1,8 @@
+git:
+  '*':
+    '*':
+      biome.json:
+        vcs:
+          enabled: true
+          clientKind: git
+          useIgnoreFile: true

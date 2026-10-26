@@ -1,0 +1,13 @@
+core:
+  every-mutant-killed:
+    typescript:
+      stryker.config.json:
+        mutate:
+          - '!${role.source}/router.{ts,tsx}'
+          - '!${role.source}/client.{ts,tsx}'
+tanstack-start:
+  '*':
+    typescript:
+      stryker.config.json:
+        ignorePatterns:
+          - .output

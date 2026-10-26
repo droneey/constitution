@@ -152,6 +152,22 @@ describe('checkBlocks', () => {
     });
   });
 
+  it("should check the repository's own files when the folder is its source", () => {
+    // Arrange
+    const files = Object.fromEntries(
+      Object.entries(validFiles()).filter(([path]) => path !== 'DECISIONS.md'),
+    );
+    const source = checkSourceOf({
+      files,
+    });
+
+    // Act
+    const validation = checkBlocks(source);
+
+    // Assert
+    expect(validation?.findings.map(({ path }) => path)).toContain('DECISIONS.md');
+  });
+
   it('should find nothing and give no advice when a pack carries out the rules of its base', () => {
     // Arrange
     const source = checkSourceOf({

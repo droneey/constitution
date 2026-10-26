@@ -31,7 +31,6 @@ interface Pending {
 }
 
 interface ReaderState {
-  check: string | undefined;
   readonly empties: string[];
   readonly items: ConfigItem[];
   readonly keys: string[];
@@ -64,7 +63,6 @@ const closedLevel = (): Level => ({
 // Stryker restore BooleanLiteral,ObjectLiteral,StringLiteral
 
 const createReaderState = (): ReaderState => ({
-  check: undefined,
   empties: [],
   items: [],
   keys: [],

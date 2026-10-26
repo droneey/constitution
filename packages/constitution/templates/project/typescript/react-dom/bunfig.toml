@@ -1,5 +1,0 @@
-[test]
-preload = [
-  # react-dom: the DOM of happy-dom
-  "./src/__tests__/dom.fixtures.ts",
-]

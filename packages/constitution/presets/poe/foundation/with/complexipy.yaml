@@ -1,0 +1,8 @@
+complexipy:
+  '*':
+    python:
+      pyproject.toml:
+        tool:
+          poe:
+            tasks:
+              check:complexity: complexipy ${role.source} ${role.package-suites}

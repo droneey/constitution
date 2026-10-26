@@ -1,11 +1,8 @@
-import { join } from 'node:path';
-
 import { describe, expect, it } from 'bun:test';
 
 import { strykerPlugins } from '@droneey/mutation-check/runner';
 
-import bunTest from '../../presets/typescript/stryker/foundation/bun-test.mjs';
-import { mutationOf } from './stryker-preset.fixtures';
+import { appliedConfig, mutationOf } from './stryker-preset.fixtures';
 
 // Each case runs a whole Stryker process, which takes several seconds on a CI
 // runner.
@@ -26,7 +23,9 @@ describe('the Stryker preset', () => {
       });
 
       // Act
-      const mutation = mutationOf(spec);
+      const mutation = mutationOf({
+        spec,
+      });
 
       // Assert
       expect(mutation).toStrictEqual({
@@ -48,7 +47,9 @@ describe('the Stryker preset', () => {
       });
 
       // Act
-      const mutation = mutationOf(spec);
+      const mutation = mutationOf({
+        spec,
+      });
 
       // Assert
       expect(mutation).toStrictEqual({
@@ -59,21 +60,41 @@ describe('the Stryker preset', () => {
     STRYKER_RUN_MS,
   );
 
-  it(
-    'should pass the run when only a log call and the text of an error go unproved',
-    () => {
-      // Arrange
-      const source = `const logger = { info: (message: string, fields: object): void => {} };\n\nexport const total = (price: number, tax: number): number => {\n  if (price < 0) {\n    throw new Error('A price is never negative');\n  }\n  logger.info('Totalled', { price });\n  return price + tax;\n};\n`;
-      const spec = `import { expect, test } from 'bun:test';\n\nimport { total } from '../order.utils';\n\ntest('should add the tax when both are set', () => {\n  expect(total(10, 2)).toBe(12);\n});\n\ntest('should refuse a negative price', () => {\n  expect(() => total(-1, 2)).toThrow();\n});\n\ntest('should take a zero price', () => {\n  expect(total(0, 2)).toBe(2);\n});\n`;
+  // The specs prove the call, by the count the logger keeps, and never its text.
+  const Logged = `export const counts = { logged: 0 };\n\nconst logger = { info: (message: string): void => {\n  counts.logged += 1;\n} };\n\nexport const total = (price: number, tax: number): number => {\n  if (price < 0) {\n    throw new Error('A price is never negative');\n  }\n  logger.info('Totalled');\n  return price + tax;\n};\n`;
+  const LoggedSpec = `import { expect, test } from 'bun:test';\n\nimport { counts, total } from '../order.utils';\n\ntest('should add the tax when both are set', () => {\n  expect(total(10, 2)).toBe(12);\n});\n\ntest('should refuse a negative price', () => {\n  expect(() => total(-1, 2)).toThrow();\n});\n\ntest('should take a zero price', () => {\n  expect(total(0, 2)).toBe(2);\n});\n\ntest('should log once when it totals', () => {\n  const before = counts.logged;\n  total(10, 2);\n  expect(counts.logged - before).toBe(1);\n});\n`;
 
-      // Act
-      const mutation = mutationOf(spec, source);
-
-      // Assert
-      expect(mutation).toStrictEqual({
+  it.each([
+    {
+      blocks: [
+        'pino',
+      ],
+      condition: 'the unit follows a logging library',
+      mutation: {
         passed: true,
         survivors: 0,
+      },
+    },
+    {
+      blocks: [],
+      condition: 'the unit follows no logging library, whose levels its calls take',
+      mutation: {
+        passed: false,
+        survivors: 1,
+      },
+    },
+  ])(
+    "should leave out the text of an error, and of a log call only by its library's entry, when $condition",
+    ({ blocks, mutation }) => {
+      // Act
+      const run = mutationOf({
+        blocks,
+        source: Logged,
+        spec: LoggedSpec,
       });
+
+      // Assert
+      expect(run).toStrictEqual(mutation);
     },
     STRYKER_RUN_MS,
   );
@@ -85,21 +106,21 @@ describe("the Stryker preset's runner", () => {
     const [plugin] = strykerPlugins;
 
     // Act
-    const runner = bunTest.testRunner;
+    const runner = appliedConfig().testRunner;
 
     // Assert
     expect(runner).toBe(plugin.name);
   });
 
-  // Stryker resolves a relative plugin from the folder it runs in, which a unit of a workspace
-  // changes.
-  it("should name the runner by the path of the archive's build beside the preset when Stryker loads it", () => {
+  // Stryker resolves a relative plugin from the folder it runs in, the unit's.
+  it("should name the runner and the ignorer by the paths of the archive's build from the unit when Stryker loads them", () => {
     // Act
-    const { plugins } = bunTest;
+    const { plugins } = appliedConfig();
 
     // Assert
     expect(plugins).toStrictEqual([
-      join(import.meta.dirname, '..', '..', 'tools', 'mutation-check', 'dist', 'runner.js'),
+      './.droneey/constitution/tools/mutation-check/dist/ignorers.js',
+      './.droneey/constitution/tools/mutation-check/dist/runner.js',
     ]);
   });
 });

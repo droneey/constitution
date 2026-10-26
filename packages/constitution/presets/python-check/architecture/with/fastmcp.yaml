@@ -1,0 +1,10 @@
+fastmcp:
+  fastmcp-imported-by-delivery-units:
+    python:
+      pyproject.toml:
+        tool:
+          python-check:
+            homes:
+              fastmcp:
+                - edge
+                - ${role.application-layer}

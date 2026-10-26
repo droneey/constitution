@@ -1,0 +1,18 @@
+storybook:
+  '*':
+    typescript:
+      .dependency-cruiser.json:
+        allowedSeverity: error
+  stories-import-what-they-render-with:
+    typescript:
+      .dependency-cruiser.json:
+        allowed[comment=stories-import-what-they-render-with]:
+          from:
+            path: \.stories\.[^/]+$
+          to:
+            dependencyTypes:
+              - npm
+              - npm-dev
+              - npm-peer
+              - npm-optional
+              - npm-bundled

@@ -6,6 +6,9 @@ import { cruise as cruiseModules } from 'dependency-cruiser';
 import extractDepcruiseConfig from 'dependency-cruiser/config-utl/extract-depcruise-config';
 import { z } from 'zod';
 
+import type { UnitFixture } from './applied-unit.fixtures';
+import { appliedUnit } from './applied-unit.fixtures';
+
 enum Declaration {
   Production = 'production',
   Development = 'development',
@@ -20,12 +23,15 @@ interface Installed {
 }
 
 interface Project {
+  /** the optional axes the unit follows; architecture and workflow where it names none */
+  axes?: readonly string[];
+  /** the blocks of the unit beside its language's and dependency-cruiser */
+  blocks?: readonly string[];
   files: Readonly<Record<string, string>>;
   // A link's path, then the folder it points to, as a package manager links a workspace's units.
   links?: Readonly<Record<string, string>>;
-  // The project's own settings, joined after the parts.
-  own?: Readonly<Record<string, unknown>>;
-  parts?: readonly string[];
+  /** the text of the unit's own preset file of dependency-cruiser, in a pack of its own */
+  own?: string;
   roots?: readonly string[];
   workspaces?: readonly string[];
 }
@@ -48,16 +54,7 @@ const report = z.object({
   }),
 });
 
-const repository = join(import.meta.dir, '..', '..');
-
-const baseParts = [
-  'typescript/self',
-  'typescript/core',
-  'typescript/typescript',
-];
-
-// The packages the blocks' rules name, and those the parts of the base tell
-// apart: `kit` declared, `devtool` a development dependency, `ghost` installed
+// The packages the blocks' rules name, and those the base's rules tell apart: `kit` declared, `devtool` a development dependency, `ghost` installed
 // but never declared, `legacy` deprecated.
 const INSTALLED: Readonly<Record<string, Installed>> = {
   '@bunli/core': {
@@ -143,56 +140,42 @@ const declared = (declarations: readonly Declaration[]): Readonly<Record<string,
       ]),
   );
 
-const template = readFileSync(
-  join(
-    repository,
-    'templates',
-    'project',
-    'typescript',
+const CONFIG = '.dependency-cruiser.json';
+const OWN_PACK = 'pack';
+
+const unitOf = (project: Project): UnitFixture => ({
+  ...(project.axes === undefined
+    ? {}
+    : {
+        axes: project.axes,
+      }),
+  blocks: project.blocks ?? [],
+  implementations: [
     'dependency-cruiser',
-    '.dependency-cruiser.mjs',
-  ),
-  'utf8',
-);
+  ],
+  languages: [
+    'typescript',
+  ],
+  ...(project.own === undefined
+    ? {}
+    : {
+        files: {
+          [`${OWN_PACK}/presets/dependency-cruiser/foundation.yaml`]: project.own,
+        },
+        packs: [
+          OWN_PACK,
+        ],
+      }),
+});
 
-// The template written for the parts at these paths, as /constitution:ratify writes it: one
-// namespace import to a part, and the parts joined in their order by the release's join.
-const configFromTemplate = (
-  paths: readonly string[],
-  presets = './.droneey/constitution/presets',
-): string => {
-  const names = paths.map((_, index) => `part${String(index)}`);
-
-  return template
-    .replace('<presets>', presets)
-    .replace(
-      "import * as part from '<parts>';",
-      paths.map((path, index) => `import * as ${names[index] ?? ''} from '${path}';`).join('\n'),
-    )
-    .replace('  part,\n', names.map((name) => `  ${name},\n`).join(''));
-};
-
-const configOf = (parts: readonly string[], own: Readonly<Record<string, unknown>> = {}): string =>
-  configFromTemplate(
-    [
-      ...baseParts,
-      ...parts,
-    ].map(
-      (part) =>
-        `./.droneey/constitution/presets/${part.replace('/', '/dependency-cruiser/').replace(/\/dependency-cruiser\/(?!architecture\/|workflow\/)/, '/dependency-cruiser/foundation/')}.mjs`,
-    ),
-  ).replace('  {},\n', `  ${JSON.stringify(own)},\n`);
+const configOf = (project: Project): string =>
+  readFileSync(join(appliedUnit(unitOf(project)), CONFIG), 'utf8');
 
 const writeProject = (folder: string, project: Project): void => {
   const files = {
     ...installedFiles(),
     ...project.files,
-    '.dependency-cruiser.mjs': configOf(
-      project.parts ?? [
-        'typescript/architecture/core',
-      ],
-      project.own,
-    ),
+    [CONFIG]: configOf(project),
     'package.json': JSON.stringify({
       dependencies: declared([
         Declaration.Production,
@@ -225,9 +208,6 @@ const writeProject = (folder: string, project: Project): void => {
     });
     symlinkSync(join(folder, target), join(folder, path));
   }
-
-  mkdirSync(join(folder, '.droneey'));
-  symlinkSync(repository, join(folder, '.droneey', 'constitution'));
 };
 
 // The json reporter's output is the text of the result.
@@ -260,7 +240,7 @@ const cruise = async (project: Project): Promise<Cruise> => {
       ],
       {
         outputType: 'json',
-        ruleSet: await extractDepcruiseConfig('./.dependency-cruiser.mjs'),
+        ruleSet: await extractDepcruiseConfig(`./${CONFIG}`),
         validate: true,
       },
       {},
@@ -280,4 +260,4 @@ const cruise = async (project: Project): Promise<Cruise> => {
   }
 };
 
-export { configFromTemplate, cruise };
+export { cruise };

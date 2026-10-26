@@ -180,7 +180,7 @@ const presetOf = (given: PresetValue, facts: FileFacts): Outcome<PresetValue> =>
 
     return setting.kind === OutcomeKind.Resolved
       ? resolved({
-          kind: given.kind,
+          ...given,
           setting: setting.value,
         })
       : setting;
@@ -198,7 +198,7 @@ const presetOf = (given: PresetValue, facts: FileFacts): Outcome<PresetValue> =>
 
   return pairs.kind === OutcomeKind.Resolved
     ? resolved({
-        kind: ValueKind.Map,
+        ...given,
         pairs: pairs.value.map(([key, held]) => ({
           key,
           value: held,
@@ -210,14 +210,17 @@ const presetOf = (given: PresetValue, facts: FileFacts): Outcome<PresetValue> =>
 const guardHolds = (guard: Guard | undefined, facts: FileFacts): boolean =>
   guard === undefined || booleanOf(guard.fact, facts) === !guard.isNegated;
 
-const nameOf = (file: string): string => file.slice(file.lastIndexOf(SEPARATOR) + 1);
-
-const isTopOf = (candidate: Candidate, candidates: readonly Candidate[]): boolean =>
-  !candidates.some(
+// Top among the units that get the same entry: a unit above that gets it holds the file instead.
+const isTopOf = (input: {
+  candidate: Candidate;
+  candidates: readonly Candidate[];
+  entry: PresetEntry;
+}): boolean =>
+  !input.candidates.some(
     (other) =>
-      nameOf(other.file) === nameOf(candidate.file) &&
-      !UnitPath.equals(other.unit.path, candidate.unit.path) &&
-      UnitPath.holds(other.unit.path, candidate.unit.path),
+      other.entries.includes(input.entry) &&
+      !UnitPath.equals(other.unit.path, input.candidate.unit.path) &&
+      UnitPath.holds(other.unit.path, input.candidate.unit.path),
   );
 
 const membersOf = (unit: ProjectUnit, units: readonly ProjectUnit[]): readonly string[] =>
@@ -228,11 +231,16 @@ const membersOf = (unit: ProjectUnit, units: readonly ProjectUnit[]): readonly s
     .map((other) => UnitPath.pathFrom(unit.path, other.path))
     .toSorted(compareText);
 
-const constitutionPathOf = (input: {
-  file: string;
-  files: ProjectFiles;
-  project: string;
-}): string | undefined => {
+interface ConstitutionPathInput {
+  /** from the repository */
+  readonly file: string;
+  readonly files: ProjectFiles;
+  /** absolute */
+  readonly project: string;
+}
+
+/** The release's path from the file's folder, by the nearest link to it at or above the folder. */
+const constitutionPathOf = (input: ConstitutionPathInput): string | undefined => {
   const folders = input.file.split(SEPARATOR).slice(0, -1);
 
   for (let depth = folders.length; depth >= 0; depth -= 1) {
@@ -269,6 +277,7 @@ interface ResolveFactsInput {
 const factsOf = (
   input: ResolveFactsInput & {
     candidate: Candidate;
+    entry: PresetEntry;
     missing: Set<PresetsCode.MissingConstitution | PresetsCode.MissingName>;
   },
 ): FileFacts => {
@@ -277,11 +286,15 @@ const factsOf = (
 
   return {
     isRoot: members.length > 0,
-    isTop: isTopOf(candidate, input.candidates),
+    isTop: isTopOf(input),
     members,
     valueOf: (fact: Fact): string | undefined => {
       if (fact.kind === FactKind.Role) {
-        const term = input.model.roles.find((role) => role.id === fact.role);
+        const term = PresetEntry.roleOf({
+          entry: input.entry,
+          id: fact.role,
+          model: input.model,
+        });
 
         return term === undefined ? undefined : Term.roleNameOf(term);
       }
@@ -336,18 +349,25 @@ const resolveFacts = (input: ResolveFactsInput): FilesResolved => {
   const findings: PresetsFinding[] = [];
   const files = input.candidates.flatMap((candidate) => {
     const missing = new Set<PresetsCode.MissingConstitution | PresetsCode.MissingName>();
-    const facts = factsOf({
-      ...input,
-      candidate,
-      missing,
-    });
-    const entries = candidate.entries.filter((entry) => guardHolds(entry.file.guard, facts));
+
+    const factsFor = (entry: PresetEntry): FileFacts =>
+      factsOf({
+        ...input,
+        candidate,
+        entry,
+        missing,
+      });
+
+    const entries = candidate.entries.filter((entry) =>
+      guardHolds(entry.file.guard, factsFor(entry)),
+    );
     const contributions = entries.flatMap((entry) => {
-      const outcome = presetOf(entry.value, facts);
+      const outcome = presetOf(entry.value, factsFor(entry));
 
       return outcome.kind === OutcomeKind.Resolved
         ? [
             {
+              group: PresetEntry.groupOf(entry),
               source: PresetEntry.sourceOf(entry),
               value: outcome.value,
             },

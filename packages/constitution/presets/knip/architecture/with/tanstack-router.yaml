@@ -1,0 +1,6 @@
+core:
+  dead-code-deleted:
+    typescript:
+      knip.jsonc:
+        entry:
+          - ${role.source}/${role.composition-root}/${role.file-routes}/**/*.{ts,tsx}!

@@ -1,0 +1,13 @@
+python:
+  '*':
+    python:
+      pyproject.toml ? !${workspace.isRoot}:
+        project:
+          name: !default ${package.name}
+          version: !default 0.0.0
+          dependencies: !default []
+  requires-python-at-the-pinned-minor:
+    python:
+      pyproject.toml ? !${workspace.isRoot}:
+        project:
+          requires-python: '>=3.14'

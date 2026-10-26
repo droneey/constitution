@@ -1,7 +1,7 @@
 import type { Config } from 'style-dictionary/types';
 
-import type { ThemeMode } from '#/libs/style-dictionary';
-import { configOf } from '#/libs/style-dictionary';
+import type { ThemeMode } from './scripts/style-dictionary';
+import { configOf } from './scripts/style-dictionary';
 
 const BUILD_PATH = 'src/libs/ui/theme/';
 

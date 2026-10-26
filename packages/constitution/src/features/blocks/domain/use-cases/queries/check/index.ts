@@ -4,7 +4,6 @@ export type { CheckBlocksInput, Validation } from './check.use-case';
 export { checkBlocks } from './check.use-case';
 export type {
   AbstractBlocksDetails,
-  BindingsDetails,
   BlockFormDetails,
   BudgetDetails,
   ConfigurationLanguagesDetails,
@@ -15,18 +14,15 @@ export type {
   FrontMatterDetails,
   LinksDetails,
   PluginDetails,
-  PresetsDetails,
   ReferencesDetails,
   RequirementsDetails,
   RequiresDetails,
   RulesDetails,
   SeamsDetails,
-  TemplatesDetails,
   TermsDetails,
 } from './checks';
 export {
   AbstractBlocksCode,
-  BindingsCode,
   BlockFormCode,
   BudgetCode,
   ConfigurationLanguagesCode,
@@ -37,18 +33,15 @@ export {
   FrontMatterCode,
   LinksCode,
   PluginCode,
-  PresetsCode,
   ReferencesCode,
   RequirementsCode,
   RequiresCode,
   RulesCode,
   SeamsCode,
-  TemplatesCode,
   TermsCode,
 } from './checks';
 export type { LoadFindingDetails } from './steps/load-constitution';
 export {
-  BindingsFileCode,
   BlockLoadCode,
   FrontMatterReadCode,
   LoadCode,

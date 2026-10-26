@@ -1,0 +1,20 @@
+workspace:
+  apps-blind-to-each-other:
+    typescript:
+      .dependency-cruiser.json:
+        forbidden[name=apps-blind-to-each-other]:
+          severity: error
+          from:
+            path: ^${role.deployed-unit}/([^/]+)/
+          to:
+            path: ^${role.deployed-unit}/
+            pathNot: ^${role.deployed-unit}/$1/
+  packages-never-import-apps:
+    typescript:
+      .dependency-cruiser.json:
+        forbidden[name=packages-know-no-app]:
+          severity: error
+          from:
+            path: ^${role.dependency-unit}/
+          to:
+            path: ^${role.deployed-unit}/

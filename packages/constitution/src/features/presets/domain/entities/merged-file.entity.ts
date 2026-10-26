@@ -6,6 +6,8 @@ import { PresetsCode } from './presets-finding.entity';
 import { Setting } from './setting.entity';
 
 interface Contribution {
+  /** the name of what the entry gives a file of lines */
+  readonly group: string;
   readonly source: string;
   readonly value: PresetValue;
 }
@@ -19,6 +21,8 @@ interface DefaultSetting {
 interface MergedFile {
   readonly defaults: readonly DefaultSetting[];
   readonly problems: readonly MergeProblem[];
+  /** the paths of the maps whose keys the file keeps sorted */
+  readonly sorted?: readonly (readonly string[])[];
   /** what the entries write; absent where they write only defaults */
   readonly value?: Setting;
   /** the file as a default, written while it is absent: a text, or its lines or keys added */
@@ -52,6 +56,8 @@ interface MergeState {
   readonly parts: Map<Part, Setting>;
   readonly problems: MergeProblem[];
   readonly replacers: Map<string, Replacer>;
+  /** the paths of the maps an entry marks sorted */
+  readonly sorted: Map<string, readonly string[]>;
 }
 
 interface PlaceInput {
@@ -70,7 +76,7 @@ const wholeOwner = Part.Whole;
 
 const keyOf = (path: readonly string[]): string => JSON.stringify(path);
 
-// A key here is the catalogue's own, an address among them: the merge never reads one through a list.
+// A key here is the preset file's own, an address among them: the merge never reads one through a list.
 const heldAt = (setting: Setting | undefined, path: readonly string[]): Setting | undefined =>
   path.reduce<Setting | undefined>(
     (held, key) => (Setting.isMap(held) ? held[key] : undefined),
@@ -244,10 +250,15 @@ const placeSetting = (input: SettingInput): void => {
 
 const placeMap = (
   input: PlaceInput & {
+    isSorted: boolean;
     pairs: readonly PresetPair[];
   },
 ): void => {
   const current = heldAt(writtenOf(input.state), input.path);
+
+  if (input.isSorted) {
+    input.state.sorted.set(keyOf(input.path), input.path);
+  }
 
   if (input.pairs.length === 0) {
     input.state.empties.add(keyOf(input.path));
@@ -309,6 +320,7 @@ const place = (
   if (given.kind === ValueKind.Map) {
     placeMap({
       ...input,
+      isSorted: given.isSorted === true,
       pairs: given.pairs,
     });
   } else {
@@ -432,6 +444,7 @@ const merge = (contributions: readonly Contribution[]): MergedFile => {
     parts: new Map(),
     problems: [],
     replacers: new Map(),
+    sorted: new Map(),
   };
 
   for (const contribution of contributions) {
@@ -463,6 +476,13 @@ const merge = (contributions: readonly Contribution[]): MergedFile => {
             path: [],
             setting: merged,
           }),
+        }),
+    ...(state.sorted.size === 0
+      ? {}
+      : {
+          sorted: [
+            ...state.sorted.values(),
+          ],
         }),
     ...(whole === undefined
       ? {}

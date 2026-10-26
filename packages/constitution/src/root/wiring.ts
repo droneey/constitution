@@ -3,16 +3,13 @@ import { Command } from 'commander';
 import { createNodeProjectFiles } from '#/adapters/file-system';
 import { createGitWorkingTree } from '#/adapters/git';
 import { createCheckCommand } from '#/composition/check';
-import { createPresetsWiringCheck } from '#/composition/digest/adapters/presets';
+import { createProjectConfigurationsCheck } from '#/composition/digest/adapters/configurations';
 import { createProjectSource } from '#/composition/project-source/adapters/project';
 import type { Validation } from '#/features/blocks';
 import { checkBlocks, createBlocksCheckCommand } from '#/features/blocks';
 import { createGitFileTrees } from '#/features/blocks/adapters/git';
 import { createJsonManifestParser } from '#/features/blocks/adapters/json';
-import {
-  createYamlBindingsParser,
-  createYamlFrontMatterParser,
-} from '#/features/blocks/adapters/yaml';
+import { createYamlFrontMatterParser } from '#/features/blocks/adapters/yaml';
 import type { PartDiagnosis } from '#/features/installation';
 import { createDoctorCommand, diagnoseInstallation } from '#/features/installation';
 import { createClaudePluginRegistry } from '#/features/installation/adapters/claude-code';
@@ -21,44 +18,42 @@ import { createLefthookGitHooks } from '#/features/installation/adapters/lefthoo
 import { createPathProgram } from '#/features/installation/adapters/path';
 import type {
   ApplyReport,
-  CatalogueParser,
-  ConfigurationFormat,
-  ConfigurationParser,
-  WiringPlan,
+  ConfigurationsCheck,
+  PresetsPlan,
+  RunAsked,
+  RunPlan,
 } from '#/features/presets';
 import {
   applyPresets,
-  cataloguesStepOf,
-  checkCatalogues,
+  checkConfigurations,
   checkPresets,
+  configurationsStepOf,
   createPresetsApplyCommand,
   createPresetsCheckCommand,
   createPresetsPlanCommand,
+  createRunCommand,
   planPresets,
+  planRun,
   presetsStepOf,
 } from '#/features/presets';
-import {
-  createConfigurationFormat,
-  createConfigurationParser,
-} from '#/features/presets/adapters/configuration';
+import { createConfigurationFormat } from '#/features/presets/adapters/configuration';
 import {
   createFileAppliedFilesRepository,
   createFileLockRepository,
+  createManifestReleaseBuilds,
 } from '#/features/presets/adapters/file-system';
-import { createYamlCatalogueParser } from '#/features/presets/adapters/yaml';
+import { createShellCommandRunner } from '#/features/presets/adapters/process';
+import { createYamlPresetFileParser } from '#/features/presets/adapters/yaml';
 import { createConfigFileParser } from '#/features/project/adapters/config-file';
 import { createManifestWorkspace } from '#/features/project/adapters/workspace';
 import { createYamlBlockCardParser } from '#/features/project/adapters/yaml';
 import type {
   Reminder,
-  SessionCommandRepository,
   SessionDigest,
   SessionId,
-  SessionQueryRepository,
   SessionStart,
   StopEvent,
   StopJudgement,
-  WiringCheck,
 } from '#/features/session';
 import {
   createPostToolUseCommand,
@@ -77,11 +72,10 @@ import {
 } from '#/features/session';
 import { createXdgSessionRepository } from '#/features/session/adapters/session-store';
 import { PROGRAM_NAME } from '#/kernel/constants';
-import type { ProjectFiles, ProjectSource, WorkingTree } from '#/kernel/contracts';
-import type { BlockModel, ProjectWarning } from '#/kernel/entities';
+import type { BlockModel } from '#/kernel/entities';
 import { Version } from '#/kernel/value-objects';
 import { configureHelpLayout } from '#/libs/commander';
-import type { CommandContext, StepReport } from '#/shared/cli';
+import type { StepReport } from '#/shared/cli';
 import { ExitCode, OUTPUT_FLAGS } from '#/shared/cli';
 
 import { adopt, flagsOf, groupOf } from './command-tree.utils';
@@ -90,6 +84,7 @@ import type { ErrorHandler } from './error-handler';
 import { createErrorHandler } from './error-handler';
 import { createPresentation } from './presentation';
 import type { Program, ProgramInput } from './program.types';
+import type { Ports, Registration } from './registration.types';
 import { stateFolderWarningText } from './state-folder-warning';
 
 const HOOK = 'hook';
@@ -105,32 +100,22 @@ const FOLDER_FILES = 10_000;
 const WORKSPACE_FOLDERS = 10_000;
 const WORKSPACE_GLOBS = 1000;
 
-interface Ports {
-  readonly catalogues: CatalogueParser;
-  readonly configurations: ConfigurationParser;
-  readonly files: ProjectFiles;
-  readonly formats: ConfigurationFormat;
-  readonly sessions: SessionCommandRepository & SessionQueryRepository;
-  readonly source: ProjectSource;
-  readonly wiring: WiringCheck;
-  readonly workingTree: WorkingTree;
-}
-
 const portsOf = (input: ProgramInput): Ports => {
-  const configurations = createConfigurationParser();
   const files = createNodeProjectFiles({
     maxFiles: FOLDER_FILES,
   });
-  const workingTree = createGitWorkingTree({
-    env: input.environment.commands,
-    timeoutMs: GIT_TIMEOUT_MS,
+  const presetFiles = createYamlPresetFileParser();
+  const builds = createManifestReleaseBuilds({
+    manifest: 'package.json',
   });
+  const formats = createConfigurationFormat();
 
   return {
-    catalogues: createYamlCatalogueParser(),
-    configurations,
+    builds,
+    commands: createShellCommandRunner(),
+    presetFiles,
     files,
-    formats: createConfigurationFormat(),
+    formats,
     sessions: createXdgSessionRepository({
       ...input.environment.sessions,
       maxSessions: FOLDER_FILES,
@@ -147,21 +132,19 @@ const portsOf = (input: ProgramInput): Ports => {
         maxGlobs: WORKSPACE_GLOBS,
       }),
     }),
-    wiring: createPresetsWiringCheck({
+    configurations: createProjectConfigurationsCheck({
       files,
-      parser: configurations,
-      workingTree,
+      formats,
+      builds,
+      lockOf: createFileLockRepository().read,
+      parser: presetFiles,
     }),
-    workingTree,
+    workingTree: createGitWorkingTree({
+      env: input.environment.commands,
+      timeoutMs: GIT_TIMEOUT_MS,
+    }),
   };
 };
-
-interface Registration {
-  readonly context: CommandContext;
-  readonly ports: Ports;
-  readonly program: Command;
-  readonly programInput: ProgramInput;
-}
 
 const hookCommandsOf = ({ context, ports, program }: Registration): Command =>
   adopt(
@@ -267,15 +250,30 @@ const doctorCommandOf = ({ context, ports, programInput }: Registration): Comman
       }),
   });
 
-const presetsWarningsOf = (input: {
+const configurationsCheckOf = (input: {
   ports: Ports;
   start: string;
-}): readonly ProjectWarning[] | undefined =>
-  checkPresets({
-    ...input.ports,
-    parser: input.ports.configurations,
+}): ConfigurationsCheck | undefined =>
+  checkConfigurations({
+    files: input.ports.files,
+    formats: input.ports.formats,
+    locks: createFileLockRepository(),
+    builds: input.ports.builds,
+    parser: input.ports.presetFiles,
+    source: input.ports.source,
     start: input.start,
   });
+
+const planRunOf =
+  (ports: Ports) =>
+  (asked: RunAsked): RunPlan =>
+    planRun({
+      ...asked,
+      builds: ports.builds,
+      files: ports.files,
+      parser: ports.presetFiles,
+      source: ports.source,
+    });
 
 const presetsCommandsOf = ({ context, ports, program }: Registration): Command =>
   adopt(
@@ -294,28 +292,34 @@ const presetsCommandsOf = ({ context, ports, program }: Registration): Command =
     [
       createPresetsCheckCommand({
         ...context,
-        checkPresets: (start: string): readonly ProjectWarning[] | undefined =>
-          presetsWarningsOf({
+        checkConfigurations: (start: string): ConfigurationsCheck | undefined =>
+          configurationsCheckOf({
             ports,
             start,
           }),
       }),
       createPresetsPlanCommand({
         ...context,
-        planPresets: (start: string): WiringPlan =>
+        planPresets: (start: string): PresetsPlan =>
           planPresets({
-            ...ports,
+            files: ports.files,
+            builds: ports.builds,
+            parser: ports.presetFiles,
+            source: ports.source,
             start,
           }),
       }),
       createPresetsApplyCommand({
         ...context,
+        planRun: planRunOf(ports),
+        runCommand: ports.commands.run,
         applyPresets: (start: string): ApplyReport | undefined =>
           applyPresets({
             files: ports.files,
             formats: ports.formats,
             locks: createFileLockRepository(),
-            parser: ports.catalogues,
+            builds: ports.builds,
+            parser: ports.presetFiles,
             source: ports.source,
             start,
             writes: createFileAppliedFilesRepository(),
@@ -337,7 +341,6 @@ const registerCommands = (registration: Registration): void => {
         : {
             base: asked.base,
           }),
-      bindingsParser: createYamlBindingsParser(),
       files: ports.files,
       folder: asked.folder,
       frontMatterParser: createYamlFrontMatterParser(),
@@ -353,24 +356,25 @@ const registerCommands = (registration: Registration): void => {
     createCheckCommand({
       ...context,
       checkBlocks: checkBlocksIn,
-      checkCatalogues: (asked: {
+      checkPresets: (asked: {
         folder: string;
         isRelease: boolean;
         model: BlockModel | undefined;
       }): StepReport =>
-        cataloguesStepOf(
+        presetsStepOf(
           asked.model === undefined
             ? undefined
-            : checkCatalogues({
+            : checkPresets({
                 ...asked,
                 files: ports.files,
                 model: asked.model,
-                parser: ports.catalogues,
+                builds: ports.builds,
+                parser: ports.presetFiles,
               }),
         ),
-      checkPresets: (start: string): StepReport =>
-        presetsStepOf(
-          presetsWarningsOf({
+      checkConfigurations: (start: string): StepReport =>
+        configurationsStepOf(
+          configurationsCheckOf({
             ports,
             start,
           }),
@@ -394,6 +398,11 @@ const registerCommands = (registration: Registration): void => {
       ],
     ),
     presetsCommandsOf(registration),
+    createRunCommand({
+      ...context,
+      planRun: planRunOf(ports),
+      runCommand: ports.commands.run,
+    }),
     hookCommandsOf(registration),
     doctorCommandOf(registration),
   ]);

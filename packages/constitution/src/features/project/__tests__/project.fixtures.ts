@@ -11,7 +11,7 @@ import type { BlockCardParser, ConfigParser } from '../domain/contracts';
 const configPath = `${PROJECT}/constitution.yaml`;
 const manifest = `${releaseFolderPath}/package.json`;
 const VERSION = '1.0.0';
-const FORMAT = 3;
+const FORMAT = 4;
 
 enum Folder {
   Domain = 'domains',

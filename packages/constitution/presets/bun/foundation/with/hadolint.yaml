@@ -1,0 +1,28 @@
+hadolint:
+  '*':
+    dockerfile:
+      package.json:
+        scripts:
+          check:dockerfile: hadolint Dockerfile
+bun:
+  '*':
+    dockerfile:
+      package.json:
+        scripts: !sorted {}
+  script-group-run-by-its-prefix:
+    dockerfile:
+      package.json:
+        scripts:
+          check: !words
+            - bun run --sequential
+            - slot: checks
+            - slot: tests
+            - slot: mutations
+          check@checks:
+            - "'check:*'"
+_task-runner:
+  unit-run-through-its-action-tasks:
+    dockerfile:
+      ${constitution.run}:
+        check:
+          - bun run check

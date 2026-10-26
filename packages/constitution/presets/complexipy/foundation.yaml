@@ -1,0 +1,7 @@
+core:
+  function-within-its-limits:
+    python:
+      pyproject.toml:
+        tool:
+          complexipy:
+            max-complexity-allowed: 15

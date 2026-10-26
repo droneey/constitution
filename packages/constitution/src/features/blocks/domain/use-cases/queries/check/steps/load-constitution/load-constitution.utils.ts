@@ -1,4 +1,4 @@
-import { LAYERS, PRESETS_FOLDER, TEMPLATES_FOLDER } from '#/kernel/constants';
+import { LAYERS } from '#/kernel/constants';
 import type {
   RequirementsTableDetails,
   RuleFormDetails,
@@ -8,19 +8,12 @@ import type { FindingOf } from '#/kernel/types';
 import { compareText, normalizePath } from '#/kernel/utils';
 import type { BlockId } from '#/kernel/value-objects';
 
-import type {
-  BindingsParser,
-  FileTree,
-  FrontMatterParser,
-  ManifestParser,
-} from '../../../../../contracts';
-import type { Constitution, PresetFile } from '../../../../../entities';
+import type { FileTree, FrontMatterParser, ManifestParser } from '../../../../../contracts';
+import type { Constitution } from '../../../../../entities';
 import { Block } from '../../../../../entities';
 import type { BlockLoadDetails, FrontMatterReadDetails, PlaceDetails } from './steps/load-blocks';
 import { loadBlocks } from './steps/load-blocks';
 import { parseBlockRules } from './steps/parse-rules';
-import type { BindingsFileDetails } from './steps/read-bindings';
-import { readBindings } from './steps/read-bindings';
 import { readDocuments } from './steps/read-documents';
 
 enum LoadCode {
@@ -38,11 +31,7 @@ interface LoadDetails {
 }
 
 /** What each code of the load steps' own findings names. */
-type LoadFindingDetails = BindingsFileDetails &
-  BlockLoadDetails &
-  FrontMatterReadDetails &
-  LoadDetails &
-  PlaceDetails;
+type LoadFindingDetails = BlockLoadDetails & FrontMatterReadDetails & LoadDetails & PlaceDetails;
 
 /** A finding of loading the Constitution, its rules' parse included. */
 type LoadFinding = FindingOf<
@@ -60,9 +49,6 @@ interface ConstitutionLoaded {
   readonly constitution: Constitution;
   readonly findings: readonly LoadFinding[];
 }
-
-const presetsPrefix = `${PRESETS_FOLDER}/`;
-const templatesPrefix = `${TEMPLATES_FOLDER}/`;
 
 const byLayerThenId = (left: Block, right: Block): number =>
   LAYERS.indexOf(left.layer) - LAYERS.indexOf(right.layer) || compareText(left.id, right.id);
@@ -95,7 +81,6 @@ const folderOf = (base: Base): string =>
 
 interface LoadConstitutionInput {
   readonly base?: Base;
-  readonly bindingsParser: BindingsParser;
   readonly frontMatterParser: FrontMatterParser;
   readonly manifestParser: ManifestParser;
   readonly repository: FileTree;
@@ -131,23 +116,8 @@ const loadConstitution = (input: LoadConstitutionInput): ConstitutionLoaded => {
   ].toSorted(byLayerThenId);
   const parsed = parseBlockRules(blocks);
 
-  const filesUnder = (folder: string): readonly PresetFile[] =>
-    listed
-      .filter((path) => path.startsWith(folder))
-      .map((path) => ({
-        path,
-        text: input.tree.read(path),
-      }));
-
-  const presets = filesUnder(presetsPrefix);
-  const bindings = readBindings({
-    parser: input.bindingsParser,
-    presets,
-  });
-
   return {
     constitution: {
-      bindings: bindings.bindings,
       blocks,
       documents: readDocuments({
         frontMatterParser: input.frontMatterParser,
@@ -159,11 +129,9 @@ const loadConstitution = (input: LoadConstitutionInput): ConstitutionLoaded => {
         tree: input.tree,
       }),
       paths,
-      presets,
       repositoryPaths,
       requirementAnswers: parsed.answers,
       rules: parsed.rules,
-      templates: filesUnder(templatesPrefix),
     },
     findings: [
       ...own.findings,
@@ -178,7 +146,6 @@ const loadConstitution = (input: LoadConstitutionInput): ConstitutionLoaded => {
         : []),
       ...duplicateIdFindings(blocks),
       ...parsed.findings,
-      ...bindings.findings,
     ],
   };
 };

@@ -1,4 +1,4 @@
-import type { Setting } from '../entities';
+import type { LinesLayout, Setting } from '../entities';
 
 enum SettingShape {
   List = 'list',
@@ -13,7 +13,11 @@ interface ConfigurationFile {
 }
 
 interface ConfigurationWrite extends ConfigurationFile {
+  /** the groups of a file of lines, each opened by a comment naming it */
+  readonly layout?: LinesLayout | undefined;
   readonly settings: Setting;
+  /** the paths of the maps whose keys stand in their order as texts, JSON's and YAML's */
+  readonly sorted?: readonly (readonly string[])[];
 }
 
 interface ConfigurationFormat {

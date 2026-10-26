@@ -1,6 +1,0 @@
-# shellcheck: the root's job skips the members, each checked in its own run
-pre-commit:
-  jobs:
-    - name: shellcheck
-      exclude:
-        - '<unit folders>/**'

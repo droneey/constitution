@@ -1,8 +1,15 @@
 export { applyOutcomeOf, applySectionsOf } from './apply-report.utils';
 export {
-  cataloguesOutcomeOf,
-  cataloguesSectionsOf,
-  cataloguesStepOf,
-} from './catalogues-report.utils';
+  configurationsOutcomeOf,
+  configurationsSectionsOf,
+  configurationsStepOf,
+} from './configurations-report.utils';
 export { planLinesOf } from './plan-text.utils';
-export { presetsOutcomeOf, presetsSectionsOf, presetsStepOf } from './report.utils';
+export { presetsFindingTextOf } from './presets-finding-texts.utils';
+export {
+  presetsOutcomeOf,
+  presetsSectionsOf,
+  presetsStepOf,
+} from './presets-report.utils';
+export type { RunStepsContext } from './run-steps.utils';
+export { runSteps } from './run-steps.utils';

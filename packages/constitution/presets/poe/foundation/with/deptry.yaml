@@ -1,0 +1,8 @@
+deptry:
+  '*':
+    python:
+      pyproject.toml:
+        tool:
+          poe:
+            tasks:
+              check:dependencies: deptry ${role.source}

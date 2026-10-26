@@ -4,7 +4,7 @@ import type { BlockModel, ProjectUnit } from '#/kernel/entities';
 import { compareText } from '#/kernel/utils';
 import { BlockSource, PackPath } from '#/kernel/value-objects';
 
-import type { CatalogueParser } from '../../../contracts';
+import type { PresetFileParser, ReleaseBuilds } from '../../../contracts';
 import type { PresetsFinding, PresetsPlan } from '../../../entities';
 import { PresetEntry } from '../../../entities';
 import { checkPresetSets } from '../check-preset-sets';
@@ -12,13 +12,15 @@ import { loadPresetSets } from '../load-preset-sets';
 import { mergeEntries } from './steps/merge-entries';
 import { resolveFacts } from './steps/resolve-facts';
 import { selectEntries } from './steps/select-entries';
+import { splitRuns } from './steps/split-runs';
 
 interface ComputePresetsInput {
+  readonly builds: ReleaseBuilds;
   readonly files: ProjectFiles;
   readonly model: BlockModel;
   /** each from the repository */
   readonly packs: readonly PackPath[];
-  readonly parser: CatalogueParser;
+  readonly parser: PresetFileParser;
   /** absolute */
   readonly project: string;
   /** absolute */
@@ -59,24 +61,37 @@ const computePresets = (input: ComputePresetsInput): PresetsPlan => {
     ),
   ];
   const entries = loaded.flatMap((one) => one.entries).toSorted(PresetEntry.orderOf(input.model));
+  const candidates = selectEntries({
+    entries,
+    model: input.model,
+    units: input.units,
+  });
   const resolved = resolveFacts({
     ...input,
-    candidates: selectEntries({
-      entries,
-      model: input.model,
-      units: input.units,
-    }),
+    candidates,
   });
-  const merged = mergeEntries(resolved.files);
+  const merged = mergeEntries({
+    entries,
+    resolved: resolved.files,
+  });
+  const split = splitRuns({
+    candidates,
+    entries,
+    files: merged.files.toSorted((left, right) => compareText(left.file, right.file)),
+    units: input.units,
+  });
 
   return {
-    files: merged.files.toSorted((left, right) => compareText(left.file, right.file)),
+    files: split.files,
+    runs: split.runs,
     findings: eachOnce([
       ...loaded.flatMap((one) => one.findings),
       ...checkPresetSets({
         entries,
+        isOwnPacks: true,
         model: input.model,
         release: {
+          builds: input.builds.sourcesOf(input.releaseFolder),
           files,
           folder: input.releaseFolder,
           where: RELEASE_FOLDER,
@@ -84,6 +99,7 @@ const computePresets = (input: ComputePresetsInput): PresetsPlan => {
       }),
       ...resolved.findings,
       ...merged.findings,
+      ...split.findings,
     ]),
   };
 };

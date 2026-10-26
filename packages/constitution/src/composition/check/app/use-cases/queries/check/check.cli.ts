@@ -11,13 +11,13 @@ interface CheckContext extends CommandContext {
     base: string | undefined;
     folder: string;
   }) => Validation | undefined;
-  /** the catalogues beside the blocks, checked against their model where they load */
-  readonly checkCatalogues: (input: {
+  readonly checkConfigurations: (start: string) => StepReport;
+  /** the presets beside the blocks, checked against their model where they load */
+  readonly checkPresets: (input: {
     folder: string;
     isRelease: boolean;
     model: BlockModel | undefined;
   }) => StepReport;
-  readonly checkPresets: (start: string) => StepReport;
 }
 
 const outcomeOf = (report: StepReport): StepReport['outcome'] => report.outcome;
@@ -26,7 +26,7 @@ const createCheckCommand = (context: CheckContext): Command =>
   new Command('check')
     .summary('Check the blocks in this folder, then the project around it.')
     .description(
-      "Check the blocks of the Constitution or the pack in this folder and its presets' catalogues, then the project's constitution.yaml and its tools' configurations.",
+      "Check the blocks of the Constitution or the pack in this folder and its presets, then the project's constitution.yaml and its tools' configurations.",
     )
     .addHelpText(
       'before',
@@ -48,29 +48,29 @@ const createCheckCommand = (context: CheckContext): Command =>
             folder: places.cwd,
           }),
       });
-      const catalogues = await renderer.run({
-        label: 'Catalogues',
+      const presets = await renderer.run({
+        label: 'Presets',
         outcomeOf,
         run: () =>
-          context.checkCatalogues({
+          context.checkPresets({
             folder: places.cwd,
             isRelease: base === undefined,
             model: validation?.model,
           }),
       });
-      const presets = await renderer.run({
-        label: 'Presets',
+      const configurations = await renderer.run({
+        label: 'Configurations',
         outcomeOf,
-        run: () => context.checkPresets(places.cwd),
+        run: () => context.checkConfigurations(places.cwd),
       });
 
       await renderer.print([
         ...blocksSectionsOf(validation),
-        ...catalogues.sections,
         ...presets.sections,
+        ...configurations.sections,
       ]);
 
-      if ((validation?.findings.length ?? 0) > 0 || catalogues.isFailed || presets.isFailed) {
+      if ((validation?.findings.length ?? 0) > 0 || presets.isFailed || configurations.isFailed) {
         context.setFailed();
       }
     });

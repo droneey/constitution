@@ -1,0 +1,9 @@
+bun:
+  '*':
+    typescript:
+      .dependency-cruiser.json:
+        options:
+          builtInModules:
+            add:
+              - bun
+              - bun:test

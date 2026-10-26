@@ -1,0 +1,7 @@
+bun:
+  '*':
+    typescript:
+      tsconfig.json:
+        compilerOptions:
+          types:
+            - bun

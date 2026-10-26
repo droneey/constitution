@@ -1,0 +1,15 @@
+react-native:
+  '*':
+    typescript:
+      .dependency-cruiser.json:
+        allowedSeverity: error
+  react-native-imported-by-the-ui:
+    typescript:
+      .dependency-cruiser.json:
+        allowed[comment=react-native-imported-by-the-ui]:
+          from:
+            path:
+              - /${role.presentation-layer}/
+              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.application-layer}/
+          to:
+            path: node_modules/react-native/

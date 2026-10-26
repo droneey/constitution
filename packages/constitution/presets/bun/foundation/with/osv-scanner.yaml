@@ -1,0 +1,33 @@
+osv-scanner:
+  every-lockfile-scanned-for-vulnerabilities:
+    '*':
+      package.json ? ${file.isTop}:
+        scripts:
+          # --no-ignore: a checkout nested in a folder another repository ignores, an agent's
+          # worktree, is otherwise read as ignored, and no lockfile is found.
+          check:audit: >-
+            osv-scanner scan source
+            --licenses="0BSD,Apache-2.0,BlueOak-1.0.0,BSD-2-Clause,BSD-3-Clause,CC-BY-4.0,CC0-1.0,ISC,MIT,MIT-0,MPL-2.0,OFL-1.1,PSF-2.0,Python-2.0,Unlicense,Zlib"
+            --no-ignore .
+_task-runner:
+  unit-run-through-its-action-tasks:
+    '*':
+      ${constitution.run} ? ${file.isTop}:
+        check:
+          - bun run check
+bun:
+  '*':
+    '*':
+      package.json ? ${file.isTop}:
+        scripts: !sorted {}
+  script-group-run-by-its-prefix:
+    '*':
+      package.json ? ${file.isTop}:
+        scripts:
+          check: !words
+            - bun run --sequential
+            - slot: checks
+            - slot: tests
+            - slot: mutations
+          check@checks:
+            - "'check:*'"

@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'bun:test';
 
-import { Axis } from '#/kernel/constants';
-import { BlockSource, PackPath, SourceKind } from '#/kernel/value-objects';
+import { Axis, Layer } from '#/kernel/constants';
+import { BlockModel, TermKind } from '#/kernel/entities';
+import { BlockId, BlockSource, coreBlockId, PackPath, SourceKind } from '#/kernel/value-objects';
 
 import { presetsModel } from '../../../__tests__/presets.fixtures';
 import { TargetFile } from '../../value-objects';
@@ -27,12 +28,76 @@ const entryOf = (input: { index: number; pack?: string }): Entry => ({
   value: PresetValue.plain(input.index),
 });
 
-// An entry by its source and its place in its catalogue.
+// Core spells the folder one way, and Python, which import-linter requires, its own.
+const spelledModel = BlockModel.create({
+  blocks: [
+    ...presetsModel.blocks,
+    {
+      governs: [],
+      id: BlockId.create('python'),
+      languages: [],
+      layer: Layer.Language,
+      requires: [],
+    },
+    {
+      governs: [],
+      id: BlockId.create('import-linter'),
+      languages: [],
+      layer: Layer.Implementation,
+      requires: [
+        BlockId.create('python'),
+      ],
+    },
+  ],
+  roles: [
+    {
+      axis: Axis.Architecture,
+      block: coreBlockId,
+      id: 'use-case',
+      kind: TermKind.Folder,
+      term: 'use-cases/',
+    },
+    {
+      axis: Axis.Architecture,
+      block: BlockId.create('python'),
+      id: 'use-case',
+      kind: TermKind.Folder,
+      term: 'use_cases/',
+    },
+  ],
+  rules: [],
+});
+
+const keyedOf = (input: {
+  block: string;
+  language: string;
+  reader: string;
+  withs: readonly string[];
+}): Entry => {
+  const entry = entryOf({
+    index: 0,
+  });
+
+  return {
+    ...entry,
+    block: input.block,
+    language: input.language,
+    set: {
+      ...entry.set,
+      path: {
+        ...entry.set.path,
+        reader: input.reader,
+        withs: input.withs,
+      },
+    },
+  };
+};
+
 const placeOf = (entry: Entry): string =>
   `${entry.set.source.kind === SourceKind.Pack ? entry.set.source.pack : 'release'}#${String(entry.index)}`;
 
 describe('PresetEntry', () => {
-  it("should order the entries of one block and catalogue by their source, the release's first, then by their places", () => {
+  it("should order the entries of one block and preset file by their source, the release's first, then by their places", () => {
     // Arrange
     const entries = [
       entryOf({
@@ -61,5 +126,118 @@ describe('PresetEntry', () => {
       'Packs/zeta#0',
       'packs/acme#0',
     ]);
+  });
+
+  it.each([
+    {
+      condition: 'its language spells the folder its own way',
+      expected: 'use_cases/',
+      key: {
+        block: 'core',
+        language: 'python',
+        reader: 'biome',
+        withs: [],
+      },
+    },
+    {
+      condition: 'its language spells it as core does',
+      expected: 'use-cases/',
+      key: {
+        block: 'core',
+        language: 'typescript',
+        reader: 'import-linter',
+        withs: [],
+      },
+    },
+    {
+      condition: 'it is of every language and its block reaches the language',
+      expected: 'use_cases/',
+      key: {
+        block: 'import-linter',
+        language: '*',
+        reader: 'biome',
+        withs: [],
+      },
+    },
+    {
+      condition: 'it is of every language and its reader reaches the language',
+      expected: 'use_cases/',
+      key: {
+        block: 'core',
+        language: '*',
+        reader: 'import-linter',
+        withs: [],
+      },
+    },
+    {
+      condition: 'it is of every language and a block its preset file needs reaches the language',
+      expected: 'use_cases/',
+      key: {
+        block: 'core',
+        language: '*',
+        reader: 'biome',
+        withs: [
+          'import-linter',
+        ],
+      },
+    },
+  ])(
+    'should name the folder of a role as the entry reads it when $condition',
+    ({ expected, key }) => {
+      // Act
+      const role = PresetEntry.roleOf({
+        entry: keyedOf(key),
+        id: 'use-case',
+        model: spelledModel,
+      });
+
+      // Assert
+      expect(role?.term).toBe(expected);
+    },
+  );
+
+  it.each([
+    {
+      condition: 'its preset file is written with blocks',
+      group: 'tsc with workspace',
+      rule: 'gitignore-covers-output',
+      withs: [
+        'tsc',
+        'workspace',
+      ],
+    },
+    {
+      condition: 'it holds a rule',
+      group: 'gitignore covers output',
+      rule: 'gitignore-covers-output',
+      withs: [],
+    },
+    {
+      condition: 'it holds no rule',
+      group: 'biome',
+      rule: '*',
+      withs: [],
+    },
+  ])('should name what an entry gives when $condition', ({ group, rule, withs }) => {
+    // Arrange
+    const entry = entryOf({
+      index: 0,
+    });
+
+    // Act
+    const named = PresetEntry.groupOf({
+      ...entry,
+      rule,
+      set: {
+        ...entry.set,
+        path: {
+          ...entry.set.path,
+          withs,
+        },
+      },
+    });
+
+    // Assert
+    expect(named).toBe(group);
   });
 });

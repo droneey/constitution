@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Runs a poethepoet task in every Python package of the workspace, each by its own pyproject.toml,
-# in the environment of the root's uv workspace: scripts/poe-each.sh lint:check
+# in the environment of the root's uv workspace: scripts/poe-each.sh mutate:all
 set -euo pipefail
 if ((BASH_VERSINFO[0] * 100 + BASH_VERSINFO[1] >= 404)); then
   shopt -s inherit_errexit

@@ -54,26 +54,6 @@ describe('valueTexts', () => {
     },
     {
       problem: {
-        code: ValueFailure.PartAddress,
-        details: {
-          site: ValueSite.BoundPart,
-          written: 'a/b',
-        },
-      },
-      text: 'binds the part "a/b", which is not a file name: it is empty or holds a "/"',
-    },
-    {
-      problem: {
-        code: ValueFailure.RuleSlug,
-        details: {
-          site: ValueSite.BoundRule,
-          written: 'Not_A_Slug',
-        },
-      },
-      text: 'binds "Not_A_Slug", which is not a kebab-case slug',
-    },
-    {
-      problem: {
         code: ValueFailure.RuleSlug,
         details: {
           site: ValueSite.RuleHeading,

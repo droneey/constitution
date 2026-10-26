@@ -21,7 +21,7 @@ const CORE_TEXT = '# core\n';
 const files = createFakeProjectFiles({
   files: {
     [corePassport]: CORE_TEXT,
-    [`${releaseFolderPath}/package.json`]: '{"constitutionFormat": 3, "version": "1.0.0"}\n',
+    [`${releaseFolderPath}/package.json`]: '{"constitutionFormat": 4, "version": "1.0.0"}\n',
     [`${PROJECT}/.git/HEAD`]: 'ref: refs/heads/main\n',
     [`${PROJECT}/constitution.yaml`]: 'axes: []\n',
   },

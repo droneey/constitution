@@ -1,29 +1,27 @@
-import { unitText } from '#/shared/cli';
+import type { PresetsPlan, UnitRun } from '../../domain/entities';
+import { PresetEntry } from '../../domain/entities';
+import { findingLinesOf } from './presets-findings-report.utils';
 
-import type { PlannedFile, PlannedTool, UntemplatedTool, WiringPlan } from '../../domain/entities';
+const INDENT = '  ';
 
-const SCOPE_INDENT = '  ';
-const PART_INDENT = '    ';
+const runLinesOf = (run: UnitRun): readonly string[] => {
+  const folder = String(run.unit);
 
-const toolLines = (tool: PlannedTool): readonly string[] => [
-  `${SCOPE_INDENT}${tool.tool} ${tool.template}${tool.isAdded ? ' (the folder adds it)' : ''}`,
-  ...tool.parts.map((part) => `${PART_INDENT}${part}`),
-];
+  return [
+    ...run.commands,
+  ].flatMap(([name, commands]) => [
+    `${folder === '' ? '' : `${folder}: `}run ${name}`,
+    ...commands.map((command) => `${INDENT}${command}`),
+  ]);
+};
 
-const fileLines = (file: PlannedFile): readonly string[] => [
-  `${file.file}${file.isNew ? ' (new)' : ''} for ${file.units.map(unitText).join(', ')}${
-    file.lowers === undefined ? '' : ` (its overrides lower ${file.lowers})`
-  }`,
-  ...file.scopes.flatMap((scope) => scope.tools.flatMap(toolLines)),
-];
-
-const untemplatedLine = ({ scope, tool }: UntemplatedTool): string =>
-  `no template: ${scope}/${tool} — wire presets/${scope}/${tool}/ from what the tool reads`;
-
-/** The lines presets plan prints: each file under its heading, then the tools without a template. */
-const planLinesOf = (plan: WiringPlan): readonly string[] => [
-  ...plan.files.flatMap(fileLines),
-  ...plan.untemplated.map(untemplatedLine),
+const planLinesOf = (plan: PresetsPlan): readonly string[] => [
+  ...plan.files.flatMap((file) => [
+    file.file,
+    ...file.entries.map((entry) => `${INDENT}${PresetEntry.sourceOf(entry)}`),
+  ]),
+  ...plan.runs.flatMap(runLinesOf),
+  ...findingLinesOf(plan.findings),
 ];
 
 export { planLinesOf };

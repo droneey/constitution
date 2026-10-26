@@ -1,15 +1,19 @@
 import type { SpawnSyncReturns } from 'node:child_process';
 import { spawnSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
+import { stringify } from 'smol-toml';
 import { z } from 'zod';
 
+import { appliedUnit } from './applied-unit.fixtures';
 import type { Files } from './python-project.fixtures';
 import { inPythonProject } from './python-project.fixtures';
 import { uvBinary } from './uv.fixtures';
 
 interface Project {
-  // the part the project extends, the last of the chain it takes
-  part: string;
+  /** the blocks of the unit beside its language's and ruff */
+  blocks: readonly string[];
   source: string;
 }
 
@@ -23,9 +27,41 @@ const ruff = uvBinary('ruff');
 const MODULE = 'src/shop/orders.py';
 const FAILED = 2;
 
+const pyproject = z.object({
+  tool: z.object({
+    ruff: z.record(z.string(), z.unknown()),
+  }),
+});
+const PROJECT = '[project]\nname = "shop"\nversion = "0.0.0"\nrequires-python = ">=3.14"\n';
+
+const ruffTable = (blocks: readonly string[]): string =>
+  stringify({
+    tool: {
+      ruff: pyproject.parse(
+        Bun.TOML.parse(
+          readFileSync(
+            join(
+              appliedUnit({
+                implementations: [
+                  'ruff',
+                  ...blocks,
+                ],
+                languages: [
+                  'python',
+                ],
+              }),
+              'pyproject.toml',
+            ),
+            'utf8',
+          ),
+        ),
+      ).tool.ruff,
+    },
+  });
+
 const filesOf = (project: Project): Files => ({
   [MODULE]: project.source,
-  'pyproject.toml': `[project]\nname = "shop"\nversion = "0.0.0"\nrequires-python = ">=3.14"\n\n[tool.ruff]\nextend = ".droneey/constitution/presets/python/ruff/${project.part.includes('/') ? project.part : `foundation/${project.part}`}.toml"\n`,
+  'pyproject.toml': `${PROJECT}\n${ruffTable(project.blocks)}\n`,
 });
 
 const ruffRun = (input: { args: readonly string[]; project: Project }): SpawnSyncReturns<string> =>

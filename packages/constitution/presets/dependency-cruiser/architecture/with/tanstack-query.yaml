@@ -1,0 +1,31 @@
+tanstack-query:
+  '*':
+    typescript:
+      .dependency-cruiser.json:
+        allowedSeverity: error
+  query-library-home-is-the-binding-units:
+    typescript:
+      .dependency-cruiser.json:
+        allowed[comment=query-library-home-is-the-binding-units]:
+          from:
+            path:
+              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.application-layer}/
+              - ^${role.source}/(?!index\.)[^/]+\.[^/]+$
+              - ^${role.source}/${role.extra-entry}/[^/]+/main\.[^/]+$
+              - ^${role.source}/${role.composition-root}/
+              - (^|/)__tests__/
+              - ^${role.package-suites}/
+          to:
+            path: node_modules/@tanstack/react-query/
+        forbidden[name=query-library-only-in-its-home]:
+          severity: error
+          from:
+            pathNot:
+              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.application-layer}/
+              - ^${role.source}/(?!index\.)[^/]+\.[^/]+$
+              - ^${role.source}/${role.extra-entry}/[^/]+/main\.[^/]+$
+              - ^${role.source}/${role.composition-root}/
+              - (^|/)__tests__/
+              - ^${role.package-suites}/
+          to:
+            path: node_modules/@tanstack/react-query/

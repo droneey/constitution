@@ -1,0 +1,26 @@
+dockerfile:
+  commands-in-exec-form:
+    dockerfile:
+      .hadolint.yaml:
+        failure-threshold: style
+  files-copied-never-added:
+    dockerfile:
+      .hadolint.yaml:
+        failure-threshold: style
+  images-pinned-by-version-and-digest:
+    dockerfile:
+      .hadolint.yaml:
+        failure-threshold: style
+  shell-steps-fail-on-any-error:
+    dockerfile:
+      .hadolint.yaml:
+        failure-threshold: style
+  system-packages-pinned-and-lean:
+    dockerfile:
+      .hadolint.yaml:
+        failure-threshold: style
+  '*':
+    dockerfile:
+      .hadolint.yaml:
+        ignored:
+          - DL3010

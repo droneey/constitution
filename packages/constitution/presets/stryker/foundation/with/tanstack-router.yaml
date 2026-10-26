@@ -1,0 +1,6 @@
+tanstack-router:
+  '*':
+    typescript:
+      stryker.config.json:
+        ignorePatterns:
+          - .tanstack

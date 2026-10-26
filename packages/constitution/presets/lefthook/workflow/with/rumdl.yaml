@@ -1,0 +1,16 @@
+rumdl:
+  '*':
+    '*':
+      lefthook.yaml:
+        pre-commit:
+          parallel: true
+          jobs[name=rumdl]:
+            glob: '*.md'
+            run: rumdl check --fix {staged_files}
+lefthook:
+  hook-rewrites-only-staged-files:
+    '*':
+      lefthook.yaml:
+        pre-commit:
+          jobs[name=rumdl]:
+            stage_fixed: true

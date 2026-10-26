@@ -1,0 +1,10 @@
+expo:
+  expo-router-only-in-the-root:
+    typescript:
+      .dependency-cruiser.json:
+        forbidden[name=ui-imports-no-expo-router]:
+          severity: error
+          from:
+            path: /${role.presentation-layer}/
+          to:
+            path: node_modules/expo-router/

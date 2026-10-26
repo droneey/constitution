@@ -62,11 +62,11 @@ describe('the plugin case-pins-meaning-never-wording', () => {
         },
       },
     ]),
-  )('should refuse the wording when $condition', ({ files, parts }) => {
+  )('should refuse the wording when $condition', ({ files, unit }) => {
     // Arrange
     const project = {
       files,
-      parts,
+      unit,
     };
 
     // Act
@@ -136,11 +136,11 @@ describe('the plugin case-pins-meaning-never-wording', () => {
         },
       },
     ]),
-  )('should accept the case when $condition', ({ files, parts }) => {
+  )('should accept the case when $condition', ({ files, unit }) => {
     // Arrange
     const project = {
       files,
-      parts,
+      unit,
     };
 
     // Act

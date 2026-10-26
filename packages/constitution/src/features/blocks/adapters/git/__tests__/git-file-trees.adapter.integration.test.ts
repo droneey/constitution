@@ -191,7 +191,7 @@ describe('createGitFileTrees: installed', () => {
       text: '# Core\n',
     });
     write({
-      path: 'presets/common/biome/foundation/self.jsonc',
+      path: 'presets/biome/foundation.yaml',
       text: '{}\n',
     });
     write({

@@ -1,0 +1,7 @@
+workspace:
+  unit-checked-by-its-own-tools:
+    toml:
+      tombi.toml:
+        files:
+          exclude:
+            - ${workspace.members}/**

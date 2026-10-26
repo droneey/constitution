@@ -1,0 +1,64 @@
+_js-runtime:
+  tools-pinned-in-dev-dependencies:
+    json:
+      .syncpackrc.yaml:
+        semverGroups[label=Pin the tools exactly]:
+          range: ''
+          dependencyTypes:
+            - dev
+core:
+  dependency-installed-only-from-a-registry:
+    json:
+      .syncpackrc.yaml:
+        versionGroups[label=A dependency comes only from a registry]:
+          dependencyTypes:
+            - dev
+            - prod
+            - peer
+          specifierTypes:
+            - git
+            - url
+          isBanned: true
+syncpack:
+  '*':
+    json:
+      .syncpackrc.yaml:
+        formatBugs: false
+        formatRepository: false
+        sortAz:
+          - bin
+          - contributors
+          - dependencies
+          - devDependencies
+          - keywords
+          - peerDependencies
+          - resolutions
+  syncpack-holds-versions-and-field-order:
+    json:
+      .syncpackrc.yaml:
+        sortFirst:
+          - name
+          - version
+          - private
+          - description
+          - keywords
+          - homepage
+          - bugs
+          - license
+          - author
+          - repository
+          - type
+          - packageManager
+          - bin
+          - main
+          - module
+          - types
+          - exports
+          - imports
+          - files
+          - scripts
+          - workspaces
+          - dependencies
+          - devDependencies
+          - peerDependencies
+          - peerDependenciesMeta

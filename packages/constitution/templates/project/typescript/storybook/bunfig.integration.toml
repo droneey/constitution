@@ -1,5 +1,0 @@
-[test]
-coveragePathIgnorePatterns = [
-  # storybook: its stories, which a spec may load to render them
-  "**/*.stories.*",
-]

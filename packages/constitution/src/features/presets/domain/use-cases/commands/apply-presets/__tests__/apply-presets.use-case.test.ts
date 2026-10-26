@@ -7,13 +7,14 @@ import { createFakeConfigurationFormat } from '../../../../../__tests__/configur
 import { createFakeLockRepository } from '../../../../../__tests__/lock-repository.fake';
 import type { Files } from '../../../../../__tests__/presets.fixtures';
 import {
-  catalogueParser,
   PROJECT,
+  presetFileParser,
   projectFiles,
   projectOf,
   releasePresets,
   unitOf,
 } from '../../../../../__tests__/presets.fixtures';
+import { createFakeReleaseBuilds } from '../../../../../__tests__/release-builds.fake';
 import type { ApplyReport, Lock, LockRead, Setting } from '../../../../entities';
 import { LockReadStatus, PresetsCode } from '../../../../entities';
 import { applyPresets } from '../apply-presets.use-case';
@@ -58,10 +59,11 @@ const applyOnce = (step: Step): Applied => {
   });
   const writes = createFakeAppliedFilesRepository();
   const report = applyPresets({
+    builds: createFakeReleaseBuilds(),
     files,
     formats: format,
     locks: createFakeLockRepository(step.locks),
-    parser: catalogueParser,
+    parser: presetFileParser,
     source,
     start: PROJECT,
     writes: writes.repository,
@@ -115,7 +117,7 @@ const readOf = (locks: Readonly<Record<string, Lock>>): Readonly<Record<string, 
     ]),
   );
 
-const biomeCatalogue = [
+const biomePresetFile = [
   'biome:',
   "  '*':",
   "    '*':",
@@ -147,10 +149,11 @@ describe('applyPresets', () => {
 
     // Act
     const report = applyPresets({
+      builds: createFakeReleaseBuilds(),
       files,
       formats: createFakeConfigurationFormat(),
       locks: createFakeLockRepository(),
-      parser: catalogueParser,
+      parser: presetFileParser,
       source,
       start: '/work/elsewhere',
       writes: writes.repository,
@@ -166,7 +169,7 @@ describe('applyPresets', () => {
     });
   });
 
-  it('should write what the catalogues compute beside the files’ own settings, then nothing again, then follow the release and keep a default the user deleted', () => {
+  it('should write what the presets compute beside the files’ own settings, then nothing again, then follow the release and keep a default the user deleted', () => {
     // Arrange
     const before: Files = {
       'biome.json': JSON.stringify({
@@ -184,7 +187,7 @@ describe('applyPresets', () => {
     const first = applyOnce({
       files: before,
       presets: {
-        'biome/foundation.yaml': biomeCatalogue,
+        'biome/foundation.yaml': biomePresetFile,
       },
     });
 
@@ -239,6 +242,9 @@ describe('applyPresets', () => {
           },
         ],
         removed: [],
+        units: [
+          '',
+        ],
         written: [
           '.gitignore',
           'biome.json',
@@ -256,7 +262,7 @@ describe('applyPresets', () => {
       },
       locks: readOf(first.locks),
       presets: {
-        'biome/foundation.yaml': biomeCatalogue,
+        'biome/foundation.yaml': biomePresetFile,
       },
     });
 
@@ -297,7 +303,7 @@ describe('applyPresets', () => {
       },
       locks: readOf(first.locks),
       presets: {
-        'biome/foundation.yaml': biomeCatalogue
+        'biome/foundation.yaml': biomePresetFile
           .replace('width: 100', 'width: 120')
           .replace("          - '**'\n", ''),
       },
@@ -348,6 +354,9 @@ describe('applyPresets', () => {
             file: 'biome.json',
             setting: 'formatter.width',
           },
+        ],
+        units: [
+          '',
         ],
         written: [
           'biome.json',
@@ -538,14 +547,14 @@ describe('applyPresets', () => {
   });
 
   it.each<{
-    catalogue: string;
+    presetFile: string;
     condition: string;
     file: string;
     files: Files;
     unreadable?: readonly string[];
   }>([
     {
-      catalogue: 'width: 100',
+      presetFile: 'width: 100',
       condition: 'the file does not parse',
       file: 'biome.json',
       files: {
@@ -553,7 +562,7 @@ describe('applyPresets', () => {
       },
     },
     {
-      catalogue: 'width: 100',
+      presetFile: 'width: 100',
       condition: 'the file cannot be read',
       file: 'biome.json',
       files: {
@@ -564,14 +573,14 @@ describe('applyPresets', () => {
       ],
     },
     {
-      catalogue: 'width: 100',
+      presetFile: 'width: 100',
       condition: 'its format holds no settings',
       file: 'types.ts',
       files: {},
     },
   ])(
     'should find the file and leave it and its lock as they are when $condition',
-    ({ catalogue, file, files, unreadable }) => {
+    ({ file, files, presetFile, unreadable }) => {
       // Arrange
       const writes = createFakeAppliedFilesRepository();
       const project = projectOf({
@@ -582,7 +591,7 @@ describe('applyPresets', () => {
               "  '*':",
               "    '*':",
               `      ${file}:`,
-              `        ${catalogue}`,
+              `        ${presetFile}`,
             ].join('\n'),
           }),
           ...projectFiles(files),
@@ -599,6 +608,7 @@ describe('applyPresets', () => {
 
       // Act
       const report = applyPresets({
+        builds: createFakeReleaseBuilds(),
         ...project,
         formats: format,
         locks: createFakeLockRepository({
@@ -616,7 +626,7 @@ describe('applyPresets', () => {
             status: LockReadStatus.Read,
           },
         }),
-        parser: catalogueParser,
+        parser: presetFileParser,
         start: PROJECT,
         writes: writes.repository,
       });
@@ -699,6 +709,7 @@ describe('applyPresets', () => {
           },
         ],
         removed: [],
+        units: [],
         written: [
           'constitution.lock',
         ],
@@ -753,6 +764,50 @@ describe('applyPresets', () => {
       locks: {
         [PROJECT]: {},
       },
+    });
+  });
+
+  it('should write the files of a tool no runner of the unit runs, and leave that finding to the check', () => {
+    // Arrange
+    const step = {
+      files: {},
+      presets: {
+        'biome/foundation.yaml': [
+          'biome:',
+          "  '*':",
+          "    '*':",
+          '      biome.json:',
+          '        width: 100',
+          '      package.json:',
+          '        name: ${package.name}',
+        ].join('\n'),
+        'bun/foundation/with/biome.yaml': [
+          'bun:',
+          "  '*':",
+          "    '*':",
+          '      ${constitution.run}:',
+          '        check:',
+          '          - bun run check',
+        ].join('\n'),
+      },
+    };
+
+    // Act
+    const applied = applyOnce(step);
+
+    // Assert
+    expect({
+      files: applied.files,
+      findings: applied.report?.findings.map(({ code }) => code),
+    }).toStrictEqual({
+      files: {
+        'biome.json': {
+          width: 100,
+        },
+      },
+      findings: [
+        PresetsCode.MissingName,
+      ],
     });
   });
 
@@ -819,10 +874,11 @@ describe('applyPresets', () => {
     // Act
     const apply = (): unknown =>
       applyPresets({
+        builds: createFakeReleaseBuilds(),
         ...project,
         formats: format,
         locks: createFakeLockRepository(),
-        parser: catalogueParser,
+        parser: presetFileParser,
         start: PROJECT,
         writes: writes.repository,
       });
@@ -949,6 +1005,9 @@ describe('applyPresets', () => {
           },
         ],
         removed: [],
+        units: [
+          '',
+        ],
         written: [
           '.gitignore',
           'biome.json',

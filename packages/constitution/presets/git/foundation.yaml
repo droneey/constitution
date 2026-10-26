@@ -1,0 +1,42 @@
+version-control:
+  machine-local-files-ignored:
+    '*':
+      .gitignore ? ${file.isTop}:
+        - /.droneey
+      .gitignore:
+        - .claude/settings.local.json
+        - .claude/worktrees/
+git:
+  gitignore-covers-dependencies-output-and-caches:
+    '*':
+      .gitignore:
+        - .DS_Store
+        - .vscode/*
+        - '!.vscode/settings.json'
+        - '!.vscode/tasks.json'
+        - '!.vscode/launch.json'
+        - '!.vscode/extensions.json'
+        - .idea/
+        - '*.log'
+        - '**/logs/'
+        - .temp/
+        - .tmp/
+        - '*.bak'
+        - '*.orig'
+        - '*~'
+  gitignore-covers-environment-files:
+    '*':
+      .gitignore:
+        - .env*
+        - '!.env.example'
+  gitignore-covers-key-files:
+    '*':
+      .gitignore:
+        - '*.pem'
+        - '*.key'
+        - '*.p12'
+        - '*.pfx'
+        - '*.jks'
+        - credentials.json
+        - id_rsa
+        - '*.secrets'

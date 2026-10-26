@@ -3,22 +3,14 @@ import { describe, expect, it } from 'bun:test';
 import { StepStatus } from '@droneey/design-cli';
 
 import { createFakeContext, runCommand } from '#/__tests__/command-context.fake';
-import type { ProjectWarning } from '#/kernel/entities';
 import { WarningKind } from '#/kernel/entities';
-import { UnitPath } from '#/kernel/value-objects';
 
+import type { ConfigurationsCheck } from '../../../../../domain/entities';
+import { PresetsCode } from '../../../../../domain/entities';
 import { createPresetsCheckCommand } from '../check.cli';
 
-const wiredNowhere: ProjectWarning = {
-  details: {
-    tool: 'biome',
-    unit: UnitPath.create(''),
-  },
-  kind: WarningKind.ToolWiredNowhere,
-};
-
 const runOf = async (
-  warnings: readonly ProjectWarning[] | undefined,
+  checked: ConfigurationsCheck | undefined,
 ): Promise<{
   asked: string[];
   failures: number;
@@ -32,10 +24,10 @@ const runOf = async (
     args: [],
     command: createPresetsCheckCommand({
       ...context,
-      checkPresets: (start: string) => {
+      checkConfigurations: (start: string) => {
         asked.push(start);
 
-        return warnings;
+        return checked;
       },
     }),
     group: 'presets',
@@ -52,30 +44,60 @@ const runOf = async (
 describe('createPresetsCheckCommand', () => {
   it.each([
     {
+      checked: {
+        findings: [],
+        warnings: [],
+      },
       condition: 'the project is sound',
       failures: 0,
       status: StepStatus.Done,
-      warnings: [],
     },
     {
+      checked: {
+        findings: [],
+        warnings: [
+          {
+            details: {
+              name: 'nope',
+            },
+            kind: WarningKind.NameUnknown,
+          },
+        ],
+      },
       condition: 'the project has warnings',
       failures: 1,
       status: StepStatus.Warned,
-      warnings: [
-        wiredNowhere,
-      ],
     },
     {
+      checked: {
+        findings: [
+          {
+            code: PresetsCode.Missing,
+            details: {
+              settings: [
+                'width',
+              ],
+            },
+            path: 'biome.json',
+          },
+        ],
+        warnings: [],
+      },
+      condition: 'its presets find something',
+      failures: 1,
+      status: StepStatus.Warned,
+    },
+    {
+      checked: undefined,
       condition: 'no project lies around the folder',
       failures: 1,
       status: StepStatus.Failed,
-      warnings: undefined,
     },
   ])(
     'should check the project around the folder it runs in when $condition',
-    async ({ failures, status, warnings }) => {
+    async ({ checked, failures, status }) => {
       // Act
-      const run = await runOf(warnings);
+      const run = await runOf(checked);
 
       // Assert
       expect(run).toStrictEqual({

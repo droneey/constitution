@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import { Layer } from '#/kernel/constants';
 import type { ProjectWarning } from '#/kernel/entities';
-import { WarningKind, WiringProblemKind } from '#/kernel/entities';
+import { WarningKind } from '#/kernel/entities';
 import { BlockId, PackPath, RuleSlug, SourceKind, UnitPath } from '#/kernel/value-objects';
 
 import { warningTextOf } from '../warning-text.utils';
@@ -60,16 +60,6 @@ describe('warningTextOf', () => {
       },
     },
     {
-      text: 'constitution.yaml has no check key — add check: <the command that runs every check, or null>',
-      warning: {
-        details: {
-          file: 'constitution.yaml',
-          key: 'check',
-        },
-        kind: WarningKind.KeyMissing,
-      },
-    },
-    {
       text: 'constitution.yaml has no overrides key — add overrides: []',
       warning: {
         details: {
@@ -110,10 +100,10 @@ describe('warningTextOf', () => {
       },
     },
     {
-      text: "apps/web/constitution.yaml names a check, which only the repository's constitution.yaml names — remove it",
+      text: 'constitution.yaml names a check, which the runner blocks give now — remove it, and run constitution run check',
       warning: {
         details: {
-          file: 'apps/web/constitution.yaml',
+          file: 'constitution.yaml',
           key: 'check',
         },
         kind: WarningKind.KeyUnknown,
@@ -135,16 +125,6 @@ describe('warningTextOf', () => {
         details: {
           file: 'constitution.yaml',
           key: 'axes',
-        },
-        kind: WarningKind.KeyEmpty,
-      },
-    },
-    {
-      text: 'constitution.yaml leaves check empty — name the command that runs every check, or write check: null',
-      warning: {
-        details: {
-          file: 'constitution.yaml',
-          key: 'check',
         },
         kind: WarningKind.KeyEmpty,
       },
@@ -536,166 +516,21 @@ describe('warningTextOf', () => {
       },
     },
     {
-      text: 'apps/web keeps its own biome.json — declare the folder a member, with a constitution.yaml of its own',
+      text: 'biome.json: lacks formatter.lineWidth, as the presets give them [missing]',
       warning: {
         details: {
-          folder: 'apps/web',
-          path: 'biome.json',
-        },
-        kind: WarningKind.FolderKeepsConfig,
-      },
-    },
-    {
-      text: 'biome is wired nowhere for . — run /constitution:ratify',
-      warning: {
-        details: {
-          tool: 'biome',
-          unit: UnitPath.create(''),
-        },
-        kind: WarningKind.ToolWiredNowhere,
-      },
-    },
-    {
-      text: 'biome is wired nowhere for apps/web — run /constitution:ratify',
-      warning: {
-        details: {
-          tool: 'biome',
-          unit: UnitPath.create('apps/web'),
-        },
-        kind: WarningKind.ToolWiredNowhere,
-      },
-    },
-    {
-      text: 'biome.json lacks typescript/foundation/core; names a/foundation/one, a/foundation/two, a/foundation/three and 2 more, which it does not take — run /constitution:ratify',
-      warning: {
-        details: {
+          code: 'missing',
           file: 'biome.json',
-          problems: [
-            {
-              kind: WiringProblemKind.Lacks,
-              parts: [
-                'typescript/foundation/core',
-              ],
-            },
-            {
-              kind: WiringProblemKind.NamesBeyond,
-              parts: [
-                'a/foundation/one',
-                'a/foundation/two',
-                'a/foundation/three',
-                'a/foundation/four',
-                'a/foundation/five',
-              ],
-            },
-          ],
+          says: 'lacks formatter.lineWidth, as the presets give them',
         },
-        kind: WarningKind.FileMiswired,
+        kind: WarningKind.ConfigurationFinding,
       },
     },
     {
-      text: 'pyproject.toml lacks a/foundation/one, a/foundation/two, a/foundation/three — run /constitution:ratify',
-      warning: {
-        details: {
-          file: 'pyproject.toml',
-          problems: [
-            {
-              kind: WiringProblemKind.Lacks,
-              parts: [
-                'a/foundation/one',
-                'a/foundation/two',
-                'a/foundation/three',
-              ],
-            },
-          ],
-        },
-        kind: WarningKind.FileMiswired,
-      },
-    },
-    {
-      text: "pyproject.toml a marker of ruff says more than its path; its marker of ruff lists the links out of order; it extends a link of ruff short of the chain's end — run /constitution:ratify",
-      warning: {
-        details: {
-          file: 'pyproject.toml',
-          problems: [
-            {
-              kind: WiringProblemKind.MarkerSaysMore,
-              tool: 'ruff',
-            },
-            {
-              kind: WiringProblemKind.MarkerOutOfOrder,
-              tool: 'ruff',
-            },
-            {
-              kind: WiringProblemKind.ExtendsShortOfEnd,
-              tool: 'ruff',
-            },
-          ],
-        },
-        kind: WarningKind.FileMiswired,
-      },
-    },
-    {
-      text: 'pyproject.toml holds a copy of python/foundation/core the release no longer has; copies python/foundation/core, which it does not take; the copy of python/foundation/core has no end line; the copy of python/foundation/core is edited inside — run /constitution:ratify',
-      warning: {
-        details: {
-          file: 'pyproject.toml',
-          problems: [
-            {
-              kind: WiringProblemKind.CopyOfRemovedPart,
-              part: 'python/foundation/core',
-            },
-            {
-              kind: WiringProblemKind.CopyNotTaken,
-              part: 'python/foundation/core',
-            },
-            {
-              kind: WiringProblemKind.CopyWithoutEnd,
-              part: 'python/foundation/core',
-            },
-            {
-              kind: WiringProblemKind.CopyEdited,
-              part: 'python/foundation/core',
-            },
-          ],
-        },
-        kind: WarningKind.FileMiswired,
-      },
-    },
-    {
-      text: 'biome.json cannot be read, so the wiring it holds is left unchecked — make it readable',
-      warning: {
-        details: {
-          file: 'biome.json',
-        },
-        kind: WarningKind.WiringFileUnreadable,
-      },
-    },
-    {
-      text: 'biome.json skips docs, which holds no member of the workspace — run /constitution:ratify',
-      warning: {
-        details: {
-          folder: 'docs',
-          path: 'biome.json',
-        },
-        kind: WarningKind.SkipOfNoMember,
-      },
-    },
-    {
-      text: 'biome.json does not skip apps/web, a member of the workspace that biome would reach into from the root — run /constitution:ratify',
-      warning: {
-        details: {
-          member: 'apps/web',
-          path: 'biome.json',
-          tool: 'biome',
-        },
-        kind: WarningKind.MemberNotSkipped,
-      },
-    },
-    {
-      text: 'cannot check the wiring',
+      text: 'cannot check the configurations',
       warning: {
         details: {},
-        kind: WarningKind.WiringUnchecked,
+        kind: WarningKind.ConfigurationsUnchecked,
       },
     },
     {

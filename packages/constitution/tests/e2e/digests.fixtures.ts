@@ -83,7 +83,7 @@ const browserAppContext = (root: string): string =>
       '- matomo (tracking)',
       '- react-dom (architecture: portals)',
       '- tanstack-query (architecture: queries)',
-      '- paraglide [constitution]',
+      '- paraglide [pack]',
     ],
     facts: [
       'constitution.yaml makes 19 blocks active.',

@@ -1,3 +1,0 @@
-# fastmcp: the edge, and the delivery units of app/ that declare its tools
-[homes]
-fastmcp = ["edge", "app"]

@@ -11,6 +11,8 @@ coveragePathIgnorePatterns = [
   "**/__tests__/**",
   "**/main.*",
   "**/root/wiring.*",
+  "**/*.gen.*",
+  "../**"
 ]
 
 [run]

@@ -1,0 +1,21 @@
+nestjs:
+  '*':
+    typescript:
+      tsconfig.json:
+        compilerOptions:
+          allowImportingTsExtensions: !replace false
+          declaration: true
+          incremental: true
+          emitDecoratorMetadata: true
+          experimentalDecorators: true
+  nestjs-keeps-decorator-metadata:
+    typescript:
+      tsconfig.json:
+        compilerOptions:
+          emitDecoratorMetadata: true
+          experimentalDecorators: true
+  framework-filled-fields-marked-definite:
+    typescript:
+      tsconfig.json:
+        compilerOptions:
+          strictPropertyInitialization: true

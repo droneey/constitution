@@ -1,0 +1,15 @@
+yaml-js:
+  yaml-home-is-the-parsing-adapter-and-lib:
+    typescript:
+      .dependency-cruiser.json:
+        forbidden[name=yaml-home-is-the-parsing-adapter-and-lib]:
+          severity: error
+          from:
+            pathNot:
+              - ^${role.source}/${role.gateway}/
+              - ^${role.source}/(?:${role.bounded-context}|${role.composition-module})/[^/]+/${role.gateway}/
+              - ^${role.source}/${role.generic-library}/
+              - (^|/)__tests__/
+              - ^${role.package-suites}/
+          to:
+            path: node_modules/yaml/

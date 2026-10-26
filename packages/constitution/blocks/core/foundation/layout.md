@@ -2,7 +2,7 @@
 
 > Governs a file or a folder: its kind, name, size and purpose; readmes.
 
-A package keeps its source in **`src/`**{#source}; a spec sits beside the code it proves in **`__tests__/`**{#colocated-specs}, or apart from the source in **`tests/`**{#package-suites}, and an end-to-end spec in **`e2e/`**{#end-to-end-suite} inside `tests/`.
+A package keeps its source, what it ships, in **`src/`**{#source}, and the code that only builds it — a build program, a generator's configuration — in **`scripts/`**{#build-code}; a spec sits beside the code it proves in **`__tests__/`**{#colocated-specs}, or apart from the source in **`tests/`**{#package-suites}, and an end-to-end spec in **`e2e/`**{#end-to-end-suite} inside `tests/`.
 
 ## Kinds
 
@@ -57,6 +57,14 @@ A format has one extension across the repository, the one its own specification 
 | one spelling of a format lets every glob, tool and reader find all of its files. |
 
 ## Folders
+
+### build-code-kept-out-of-the-source · MUST
+
+Code that only builds or generates a package, and never ships with it, sits in `scripts/`, never in `src/`.
+
+| Why |
+|---|
+| `src/` then holds exactly what a consumer runs, so the rules on shipped code — the dependencies it may import above all — hold there with no exception for build code. |
 
 ### folder-has-one-purpose-and-is-named-for-it · SHOULD
 

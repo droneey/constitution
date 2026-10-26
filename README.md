@@ -13,7 +13,7 @@ The Constitution is one set of engineering rules — how code is named, layered,
 
 - **One standard for every repository.** A rule is written once, in the block that gives it meaning, and every project that takes the block follows it.
 - **Rules at the moment they matter.** The agent gets a digest when it starts, a reminder on each file it touches and a review when it asks for one.
-- **Held by tools where a tool can hold them.** Biome, dependency-cruiser, knip, Ruff and the rest extend the presets, so a broken rule fails the check.
+- **Held by tools where a tool can hold them.** The program writes the presets' settings into Biome's, dependency-cruiser's, knip's, Ruff's and the rest's configurations, so a broken rule fails the check.
 - **Pinned.** A project follows the release it names; a new release changes nothing until the project moves its pin.
 
 ## <img src=".brand/diamond.svg" width="18" height="18" alt=""> Quick start
@@ -53,7 +53,7 @@ You need Claude Code and [mise](https://mise.jdx.dev).
 
    `constitution doctor` then says whether the plugin, the program on `PATH`, the link and the git hooks are in place, and what to do about each that is not.
 
-3. In a Claude Code session in the project, run [`/constitution:ratify`](docs/reference/skills.md#constitutionratify). It proposes the blocks from what the repository holds, finds its check command, asks you about the product, and writes `constitution.yaml`, `PROJECT.md` and `DECISIONS.md` once you agree.
+3. In a Claude Code session in the project, run [`/constitution:ratify`](docs/reference/skills.md#constitutionratify). It proposes the blocks from what the repository holds, asks you about the product, and writes `constitution.yaml`, `PROJECT.md` and `DECISIONS.md` once you agree.
 
 4. Start a new session. The agent now works by the rules, and `/constitution:check` reviews a change against them.
 
@@ -76,7 +76,7 @@ You need Claude Code and [mise](https://mise.jdx.dev).
 
 - [`constitution.yaml`](docs/reference/constitution-yaml.md) — every key
 - [Presets](docs/reference/presets.md) — what each tool's presets configure
-- [Templates](docs/reference/templates.md) — the files a release starts a project from
+- [Templates](docs/reference/templates.md) — the files ratify starts a project from
 - [Skills](docs/reference/skills.md) — what `/constitution:ratify`, `amend` and `check` do and write
 - [The plugin](docs/reference/plugin.md) — skills, the reviewer and the hooks
 - [Block format](docs/reference/block-format.md) — how a block and its rules are written

@@ -1,0 +1,11 @@
+ruff:
+  '*':
+    python:
+      pyproject.toml:
+        tool:
+          poe:
+            tasks:
+              check:format: ruff format --check
+              check:lint: ruff check
+              fix:format: ruff format
+              fix:lint: ruff check --fix

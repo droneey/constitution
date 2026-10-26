@@ -26,19 +26,23 @@
   },
   "scripts": {
     "build": "design-tokens build style-dictionary.config.ts",
-    "lint:check": "biome check --error-on-warnings",
-    "lint:fix": "biome check --write",
-    "type:check": "tsc -b",
-    "test": "CI=1 bun test",
-    "mutation:check": "mutation-check",
-    "mutation:all": "mutation-check all",
-    "architecture:check": "depcruise src --config .dependency-cruiser.mjs",
-    "unused:check": "knip --no-config-hints && knip --strict --no-config-hints",
-    "markdown:check": "rumdl check . && rumdl fmt --check .",
-    "markdown:fix": "rumdl check --fix",
-    "yaml:check": "yamllint --strict .",
-    "toml:check": "tombi format --check && tombi lint",
-    "toml:fix": "tombi format"
+    "check": "bun run --sequential 'check:*' test mutate:branch",
+    "check:architecture": "depcruise src scripts --config .dependency-cruiser.json",
+    "check:lint": "biome check --error-on-warnings",
+    "check:markdown": "rumdl check . && rumdl fmt --check .",
+    "check:toml": "tombi format --check && tombi lint",
+    "check:types": "tsc -b",
+    "check:unused": "knip --no-config-hints && knip --strict --no-config-hints",
+    "check:yaml": "yamllint --strict .",
+    "fix": "bun run --sequential 'fix:*'",
+    "fix:lint": "biome check --write",
+    "fix:markdown": "rumdl check --fix",
+    "fix:toml": "tombi format",
+    "mutate:all": "mutation-check all",
+    "mutate:branch": "mutation-check",
+    "test": "bun run --parallel 'test:*'",
+    "test:integration": "CI=1 bun --config=./bunfig.integration.toml test",
+    "test:unit": "CI=1 bun test"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
@@ -80,5 +84,6 @@
     "tailwindcss": {
       "optional": true
     }
-  }
+  },
+  "trustedDependencies": []
 }

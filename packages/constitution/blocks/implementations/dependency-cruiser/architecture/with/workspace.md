@@ -6,7 +6,7 @@
 
 ### imports-between-units-held-at-the-root → packages-never-import-apps · MUST
 
-The root's configuration takes the `workspace` part of this axis, which holds the imports between the units of `apps/` and `packages/`.
+The root's configuration holds the settings of this seam, which hold the imports between the units of `apps/` and `packages/`.
 
 | Why |
 |---|

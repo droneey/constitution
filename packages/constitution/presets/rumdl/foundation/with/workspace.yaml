@@ -1,0 +1,7 @@
+workspace:
+  unit-checked-by-its-own-tools:
+    markdown:
+      .rumdl.toml:
+        global:
+          exclude:
+            - ${workspace.members}/**

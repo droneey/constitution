@@ -1,0 +1,7 @@
+core:
+  dead-code-deleted:
+    typescript:
+      knip.jsonc:
+        entry:
+          - ${role.source}/router.{ts,tsx}!
+          - ${role.source}/client.{ts,tsx}!

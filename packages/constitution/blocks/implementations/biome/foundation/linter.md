@@ -6,7 +6,7 @@
 
 ### biome-refuses-empty-names → name-never-an-empty-word · SHOULD
 
-A variable, a parameter or a destructured field named only `data`, `result`, `temp`, `info`, `item`, `value`, `obj`, `arr`, `stuff` or `thing` fails the lint wherever its part reaches.
+A variable, a parameter or a destructured field named only `data`, `result`, `temp`, `info`, `item`, `value`, `obj`, `arr`, `stuff` or `thing` fails the lint wherever its setting reaches.
 
 | Why |
 |---|
@@ -24,7 +24,7 @@ A function or a method named only `handle`, `process`, `manage`, `do`, `run`, `e
 
 ### biome-rules-set-as-errors → rule-held-by-a-tool-where-one-can · MUST
 
-Every rule the parts turn on is an error: no part sets a rule to `warn` or `info`, and a recommended rule whose default severity is lower is set to `error`.
+Every rule the presets turn on is an error: none sets a rule to `warn` or `info`, and a recommended rule whose default severity is lower is set to `error`.
 
 | Why |
 |---|

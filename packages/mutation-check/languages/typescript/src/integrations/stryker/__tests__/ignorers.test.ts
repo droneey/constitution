@@ -6,13 +6,17 @@ import { strykerPlugins, strykerValidationSchema } from '../ignorers.ts';
 
 const [plugin] = strykerPlugins;
 
-const LOG_CALL = 'A log call: no caller relies on it';
-const ERROR_TEXT = 'The text of a diagnostic: no caller relies on it';
 const PERSON_TEXT = 'Text only a person reads: no caller relies on it';
 
 const TEXT_ARGUMENTS = {
   description: 0,
+  info: [
+    0,
+    1,
+  ],
+  'new *Error': 0,
   option: 1,
+  t: 0,
 } as const;
 
 const ignorerOf = (textArguments: object = TEXT_ARGUMENTS) =>
@@ -32,30 +36,17 @@ const member = (input: { computed?: boolean; object: object; property: object })
   type: 'MemberExpression',
 });
 
-// The path of `<receiver>.<level>(...)` written as a statement, as Babel hands it to Stryker.
-const statementOf = (input: { callee: object; type?: string }) => ({
-  node: {
-    expression: {
-      arguments: [],
-      callee: input.callee,
-      type: input.type ?? 'CallExpression',
-    },
-    type: 'ExpressionStatement',
-  },
-});
-
-const callOn = (receiver: object, level = 'info') =>
-  statementOf({
-    callee: member({
-      object: receiver,
-      property: identifier(level),
-    }),
+const method = (name: string, computed = false) =>
+  member({
+    computed,
+    object: identifier('command'),
+    property: identifier(name),
   });
 
-// The path of an argument of `new <callee>(...)`.
+// The path of an argument of a call, `<callee>(...)` or `new <callee>(...)`, as Babel hands it to Stryker.
 const argumentOf = (input: {
   callee: object;
-  key?: number;
+  key?: number | string;
   listKey?: string;
   parent?: string;
   type?: string;
@@ -68,212 +59,170 @@ const argumentOf = (input: {
   parentPath: {
     node: {
       callee: input.callee,
-      type: input.parent ?? 'NewExpression',
+      type: input.parent ?? 'CallExpression',
     },
   },
 });
 
 describe('the diagnostics ignorer', () => {
   it.each([
-    'trace',
-    'debug',
-    'info',
-    'warn',
-    'error',
-    'fatal',
-  ])('should leave out a %s call on the logger', (level) => {
-    // Arrange
-    const path = callOn(identifier('logger'), level);
-
-    // Act
-    const reason = ignorerOf().shouldIgnore(path);
-
-    // Assert
-    expect(reason).toBe(LOG_CALL);
-  });
-
-  it.each([
     {
-      name: 'log',
-      receiver: identifier('log'),
-    },
-    {
-      name: 'Logger',
-      receiver: identifier('Logger'),
-    },
-    {
-      name: 'auditLogger',
-      receiver: identifier('auditLogger'),
-    },
-    {
-      name: 'this.logger',
-      receiver: member({
-        object: {
-          type: 'ThisExpression',
-        },
-        property: identifier('logger'),
-      }),
-    },
-  ])('should leave out a log call when the receiver is $name', ({ receiver }) => {
-    // Arrange
-    const path = callOn(receiver);
-
-    // Act
-    const reason = ignorerOf().shouldIgnore(path);
-
-    // Assert
-    expect(reason).toBe(LOG_CALL);
-  });
-
-  it.each([
-    {
-      condition: 'the receiver is not a logger',
-      path: callOn(identifier('panel')),
-    },
-    {
-      condition: "the receiver's name only ends in log",
-      path: callOn(identifier('dialog')),
-    },
-    {
-      condition: "the receiver's name only starts with log",
-      path: callOn(identifier('logs')),
-    },
-    {
-      condition: "the receiver's name only holds Logger",
-      path: callOn(identifier('auditLoggers')),
-    },
-    {
-      condition: 'the receiver is read by a computed key',
-      path: callOn(
-        member({
-          computed: true,
-          object: {
-            type: 'ThisExpression',
-          },
-          property: identifier('logger'),
-        }),
-      ),
-    },
-    {
-      condition: 'the method is no level',
-      path: callOn(identifier('logger'), 'child'),
-    },
-    {
-      condition: 'the level is read by a computed key',
-      path: statementOf({
-        callee: member({
-          computed: true,
-          object: identifier('logger'),
-          property: identifier('info'),
-        }),
-      }),
-    },
-    {
-      condition: 'the statement awaits the call',
-      path: statementOf({
-        callee: member({
-          object: identifier('logger'),
-          property: identifier('info'),
-        }),
-        type: 'AwaitExpression',
-      }),
-    },
-    {
-      condition: 'the call is no statement',
-      path: {
-        node: {
-          callee: member({
-            object: identifier('logger'),
-            property: identifier('info'),
-          }),
-          type: 'CallExpression',
-        },
-      },
-    },
-  ])('should keep the mutants when $condition', ({ path }) => {
-    // Arrange
-    const ignorer = ignorerOf();
-
-    // Act
-    const reason = ignorer.shouldIgnore(path);
-
-    // Assert
-    expect(reason).toBeUndefined();
-  });
-
-  it.each([
-    {
-      condition: 'a string',
+      condition: "a method's text at the index its shape names",
       path: argumentOf({
-        callee: identifier('Error'),
-      }),
-    },
-    {
-      condition: 'a template',
-      path: argumentOf({
-        callee: identifier('Error'),
-        type: 'TemplateLiteral',
-      }),
-    },
-    {
-      condition: "a subclass's text",
-      path: argumentOf({
-        callee: identifier('NotFoundError'),
-      }),
-    },
-  ])('should leave out the text an error is built with when it is $condition', ({ path }) => {
-    // Arrange
-    const ignorer = ignorerOf();
-
-    // Act
-    const reason = ignorer.shouldIgnore(path);
-
-    // Assert
-    expect(reason).toBe(ERROR_TEXT);
-  });
-
-  it.each([
-    {
-      condition: 'the argument is no text',
-      path: argumentOf({
-        callee: identifier('Error'),
-        type: 'NumericLiteral',
-      }),
-    },
-    {
-      condition: 'the text is not the first argument',
-      path: argumentOf({
-        callee: identifier('Error'),
+        callee: method('option'),
         key: 1,
       }),
     },
     {
-      condition: 'the text is no argument',
+      condition: 'a template at that index',
       path: argumentOf({
-        callee: identifier('Error'),
-        listKey: 'typeArguments',
+        callee: method('description'),
+        type: 'TemplateLiteral',
       }),
     },
     {
-      condition: 'the error is called, not built',
+      condition: 'the text at any of the indexes its shape names',
       path: argumentOf({
-        callee: identifier('Error'),
-        parent: 'CallExpression',
+        callee: method('info'),
+        key: 1,
       }),
     },
     {
-      condition: 'the built value is no error',
+      condition: 'the call that builds the text at that index',
       path: argumentOf({
-        callee: identifier('ErrorPage'),
+        callee: method('description'),
+        type: 'CallExpression',
       }),
     },
     {
-      condition: 'the constructor is read from a namespace',
+      condition: "a function's text",
+      path: argumentOf({
+        callee: identifier('t'),
+      }),
+    },
+    {
+      condition: 'the text a constructor its shape names builds with',
+      path: argumentOf({
+        callee: identifier('NotFoundError'),
+        parent: 'NewExpression',
+      }),
+    },
+    {
+      condition: 'the text of a constructor read from a namespace',
       path: argumentOf({
         callee: member({
           object: identifier('errors'),
           property: identifier('Error'),
         }),
+        parent: 'NewExpression',
+      }),
+    },
+  ])('should leave out $condition', ({ path }) => {
+    // Arrange
+    const ignorer = ignorerOf();
+
+    // Act
+    const reason = ignorer.shouldIgnore(path);
+
+    // Assert
+    expect(reason).toBe(PERSON_TEXT);
+  });
+
+  it.each([
+    {
+      condition: 'the argument is an object',
+      path: argumentOf({
+        callee: method('description'),
+        type: 'ObjectExpression',
+      }),
+    },
+    {
+      condition: 'the argument is a list',
+      path: argumentOf({
+        callee: method('description'),
+        type: 'ArrayExpression',
+      }),
+    },
+    {
+      condition: 'the argument is not at an index its shape names',
+      path: argumentOf({
+        callee: method('option'),
+      }),
+    },
+    {
+      condition: 'no shape names the method',
+      path: argumentOf({
+        callee: method('action'),
+      }),
+    },
+    {
+      condition: "a shape names only part of the method's name",
+      path: argumentOf({
+        callee: method('options'),
+        key: 1,
+      }),
+    },
+    {
+      condition: 'the method is read by a computed key',
+      path: argumentOf({
+        callee: method('description', true),
+      }),
+    },
+    {
+      condition: 'the call has no callee',
+      path: {
+        key: 0,
+        listKey: 'arguments',
+        node: {
+          type: 'StringLiteral',
+        },
+        parentPath: {
+          node: {
+            type: 'CallExpression',
+          },
+        },
+      },
+    },
+    {
+      condition: 'a method its shape names is built, not called',
+      path: argumentOf({
+        callee: identifier('description'),
+        parent: 'NewExpression',
+      }),
+    },
+    {
+      condition: 'a constructor its shape names is called, not built',
+      path: argumentOf({
+        callee: identifier('Error'),
+      }),
+    },
+    {
+      condition: "the constructor's name only begins as the shape's ends",
+      path: argumentOf({
+        callee: identifier('ErrorPage'),
+        parent: 'NewExpression',
+      }),
+    },
+    {
+      condition: 'the text is no argument',
+      path: argumentOf({
+        callee: method('description'),
+        listKey: 'typeArguments',
+      }),
+    },
+    {
+      condition: 'the node is the callee',
+      path: argumentOf({
+        callee: method('description'),
+        key: 'callee',
+        listKey: 'callee',
+      }),
+    },
+    {
+      condition: 'the text lies in no call',
+      path: argumentOf({
+        callee: method('description'),
+        parent: 'ArrayExpression',
       }),
     },
     {
@@ -297,94 +246,48 @@ describe('the diagnostics ignorer', () => {
     expect(reason).toBeUndefined();
   });
 
-  // The path of an argument of `<receiver>.<method>(...)`.
-  const methodArgumentOf = (input: { key?: number | string; method: string; parent?: string }) => ({
-    key: input.key ?? 0,
-    node: {
-      type: 'CallExpression',
-    },
-    parentPath: {
-      node: {
-        callee: member({
-          object: identifier('command'),
-          property: identifier(input.method),
-        }),
-        type: input.parent ?? 'CallExpression',
-      },
-    },
-  });
-
-  it.each([
-    {
-      condition: 'the first argument of a method that takes it first',
-      path: methodArgumentOf({
-        method: 'description',
-      }),
-    },
-    {
-      condition: 'the second argument of a method that takes it second',
-      path: methodArgumentOf({
-        key: 1,
-        method: 'option',
-      }),
-    },
-  ])('should leave out the text only a person reads when it is $condition', ({ path }) => {
-    // Arrange
-    const ignorer = ignorerOf();
-
-    // Act
-    const reason = ignorer.shouldIgnore(path);
-
-    // Assert
-    expect(reason).toBe(PERSON_TEXT);
-  });
-
-  it.each([
-    {
-      condition: 'the argument is not the one the configuration names',
-      path: methodArgumentOf({
-        method: 'option',
-      }),
-    },
-    {
-      condition: 'the method is not named',
-      path: methodArgumentOf({
-        method: 'action',
-      }),
-    },
-    {
-      condition: 'the method is built, not called',
-      path: methodArgumentOf({
-        method: 'description',
-        parent: 'NewExpression',
-      }),
-    },
-    {
-      condition: 'the node is the callee, not an argument',
-      path: methodArgumentOf({
-        key: 'callee',
-        method: 'description',
-      }),
-    },
-  ])('should keep the mutants when $condition', ({ path }) => {
-    // Arrange
-    const ignorer = ignorerOf();
-
-    // Act
-    const reason = ignorer.shouldIgnore(path);
-
-    // Assert
-    expect(reason).toBeUndefined();
-  });
-
-  it('should keep the text of a method when the configuration names none', () => {
+  it('should keep the text of a method when the configuration names no shape', () => {
     // Arrange
     const ignorer = plugin.factory({});
 
     // Act
     const reason = ignorer.shouldIgnore(
-      methodArgumentOf({
-        method: 'description',
+      argumentOf({
+        callee: method('description'),
+      }),
+    );
+
+    // Assert
+    expect(reason).toBeUndefined();
+  });
+
+  it('should keep the mutants when a shape names any call and the call reads its method by a computed key', () => {
+    // Arrange
+    const ignorer = ignorerOf({
+      '*': 0,
+    });
+
+    // Act
+    const reason = ignorer.shouldIgnore(
+      argumentOf({
+        callee: method('description', true),
+      }),
+    );
+
+    // Assert
+    expect(reason).toBeUndefined();
+  });
+
+  it('should take a shape for its letters alone when it holds a character a pattern reads', () => {
+    // Arrange
+    const ignorer = ignorerOf({
+      'log.info': 0,
+    });
+
+    // Act
+    const reason = ignorer.shouldIgnore(
+      argumentOf({
+        callee: identifier('logXinfo'),
       }),
     );
 

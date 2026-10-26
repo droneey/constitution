@@ -24,25 +24,26 @@
   },
   "scripts": {
     "build": "design-tokens build style-dictionary.config.ts",
-    "lint:check": "biome check --error-on-warnings",
-    "lint:fix": "biome check --write",
-    "pretype:check": "bun run build",
-    "type:check": "tsc -b",
+    "check": "bun run --sequential 'check:*' test mutate:branch",
+    "check:architecture": "depcruise src scripts --config .dependency-cruiser.json",
+    "check:lint": "biome check --error-on-warnings",
+    "check:markdown": "rumdl check . && rumdl fmt --check .",
+    "check:toml": "tombi format --check && tombi lint",
+    "check:types": "tsc -b",
+    "check:unused": "knip --no-config-hints && knip --strict --no-config-hints",
+    "check:yaml": "yamllint --strict .",
+    "fix": "bun run --sequential 'fix:*'",
+    "fix:lint": "biome check --write",
+    "fix:markdown": "rumdl check --fix",
+    "fix:toml": "tombi format",
+    "mutate:all": "mutation-check all",
+    "mutate:branch": "mutation-check",
+    "precheck": "bun run build",
+    "premutate:all": "bun run build",
     "pretest": "bun run build",
-    "test": "CI=1 bun test",
-    "premutation:check": "bun run build",
-    "mutation:check": "mutation-check",
-    "premutation:all": "bun run build",
-    "mutation:all": "mutation-check all",
-    "prearchitecture:check": "bun run build",
-    "architecture:check": "depcruise src --config .dependency-cruiser.mjs",
-    "preunused:check": "bun run build",
-    "unused:check": "knip --no-config-hints && knip --strict --no-config-hints",
-    "markdown:check": "rumdl check . && rumdl fmt --check .",
-    "markdown:fix": "rumdl check --fix",
-    "yaml:check": "yamllint --strict .",
-    "toml:check": "tombi format --check && tombi lint",
-    "toml:fix": "tombi format"
+    "test": "bun run --parallel 'test:*'",
+    "test:integration": "CI=1 bun --config=./bunfig.integration.toml test",
+    "test:unit": "CI=1 bun test"
   },
   "dependencies": {
     "ansis": "^4.4.0"
@@ -73,5 +74,6 @@
     "react": {
       "optional": true
     }
-  }
+  },
+  "trustedDependencies": []
 }

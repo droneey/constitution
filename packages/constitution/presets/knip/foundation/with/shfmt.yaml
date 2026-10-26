@@ -1,0 +1,6 @@
+shfmt:
+  '*':
+    typescript:
+      knip.jsonc:
+        ignoreBinaries:
+          - shfmt

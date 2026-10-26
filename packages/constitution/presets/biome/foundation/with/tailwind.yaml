@@ -1,0 +1,59 @@
+tailwind:
+  '*':
+    css:
+      biome.json:
+        css:
+          parser:
+            tailwindDirectives: true
+        linter:
+          rules:
+            nursery:
+              noUndeclaredCustomProperties: !replace 'off'
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            nursery:
+              noUndeclaredClasses: !replace 'off'
+  utilities-only-from-tokens:
+    css:
+      biome.json:
+        plugins[path=./${constitution.path}/presets/biome/plugins/css/utilities-only-from-tokens.grit]:
+          includes:
+            - '**/*.css'
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            nursery:
+              noTailwindArbitraryValue: error
+  transition-all-never-used:
+    css:
+      biome.json:
+        plugins[path=./${constitution.path}/presets/biome/plugins/css/transition-all-never-used.grit]:
+          includes:
+            - '**/*.css'
+    typescript:
+      biome.json:
+        plugins:
+          - ./${constitution.path}/presets/biome/plugins/typescript/transition-all-never-used.${role.grit-rule}
+  screen-sized-classes-never-used:
+    typescript:
+      biome.json:
+        plugins:
+          - ./${constitution.path}/presets/biome/plugins/typescript/screen-sized-classes-never-used.${role.grit-rule}
+  mobile-first-breakpoints:
+    typescript:
+      biome.json:
+        plugins:
+          - ./${constitution.path}/presets/biome/plugins/typescript/mobile-first-breakpoints.${role.grit-rule}
+  focus-shown-by-focusable-utility:
+    typescript:
+      biome.json:
+        plugins:
+          - ./${constitution.path}/presets/biome/plugins/typescript/focus-shown-by-focusable-utility.${role.grit-rule}
+  important-modifier-never-in-a-class-list:
+    typescript:
+      biome.json:
+        plugins:
+          - ./${constitution.path}/presets/biome/plugins/typescript/important-modifier-never-in-a-class-list.${role.grit-rule}

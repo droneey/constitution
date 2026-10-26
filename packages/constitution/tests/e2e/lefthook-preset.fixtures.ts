@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -7,6 +7,7 @@ import { YAML } from 'bun';
 
 import { z } from 'zod';
 
+import { appliedUnit } from './applied-unit.fixtures';
 import { miseBinary } from './mise.fixtures';
 
 enum Hook {
@@ -19,65 +20,80 @@ interface HookRun {
   output: string;
 }
 
-const preset = z.record(
+const hooks = z.record(
   z.string(),
-  z.object({
-    jobs: z.array(
-      z.object({
-        name: z.string(),
-        run: z.string(),
-      }),
-    ),
-  }),
+  z.unknown().transform((hook) =>
+    z
+      .object({
+        jobs: z.array(
+          z.object({
+            name: z.string(),
+            run: z.string(),
+          }),
+        ),
+      })
+      .safeParse(hook),
+  ),
 );
 
-interface PartJob {
+interface UnitJob {
   hook: string;
   job: string;
-  part: string;
   run: string;
 }
 
-const repository = join(import.meta.dir, '..', '..');
-const presetsFolder = join(repository, 'presets', 'common', 'lefthook', 'workflow');
-const shellcheckRc = join(
-  repository,
-  'presets',
-  'shell',
-  'shellcheck',
-  'foundation',
-  'self.shellcheckrc',
-);
-const shellcheck = miseBinary('shellcheck');
+// A unit of every block whose preset file gives lefthook a job.
+const hooksUnit = (): string =>
+  appliedUnit({
+    domains: [
+      'version-control',
+    ],
+    implementations: [
+      'lefthook',
+      'biome',
+      'betterleaks',
+      'rumdl',
+      'ruff',
+      'shellcheck',
+      'shfmt',
+      'editorconfig',
+      'tombi',
+    ],
+    languages: [
+      'json',
+      'markdown',
+      'python',
+      'shell',
+      'toml',
+      'typescript',
+      'yaml',
+    ],
+  });
 
-const presetConfig = (part: string): unknown =>
-  YAML.parse(readFileSync(join(presetsFolder, `${part}.yaml`), 'utf8'));
+const unitJobs = (): readonly UnitJob[] =>
+  Object.entries(
+    hooks.parse(YAML.parse(readFileSync(join(hooksUnit(), 'lefthook.yaml'), 'utf8'))),
+  ).flatMap(([hook, parsed]) =>
+    parsed.success
+      ? parsed.data.jobs.map(({ name, run }) => ({
+          hook,
+          job: name,
+          run,
+        }))
+      : [],
+  );
+
+const shellcheckRc = (): string => join(hooksUnit(), '.shellcheckrc');
+
+const shellcheck = miseBinary('shellcheck');
 
 interface JobRunInput {
   readonly hook: Hook;
   readonly job: string;
-  readonly part: string;
 }
 
 const jobRun = (input: JobRunInput): string =>
-  preset.parse(presetConfig(input.part))[input.hook]?.jobs.find(({ name }) => name === input.job)
-    ?.run ?? 'exit 99';
-
-const partJobs = (): readonly PartJob[] =>
-  readdirSync(presetsFolder)
-    .filter((file) => file.endsWith('.yaml') && file !== 'bindings.yaml')
-    .flatMap((file) => {
-      const part = file.slice(0, -'.yaml'.length);
-
-      return Object.entries(preset.parse(presetConfig(part))).flatMap(([hook, { jobs }]) =>
-        jobs.map(({ name, run }) => ({
-          hook,
-          job: name,
-          part,
-          run,
-        })),
-      );
-    });
+  unitJobs().find(({ hook, job }) => hook === input.hook && job === input.job)?.run ?? 'exit 99';
 
 // lefthook runs a job under sh with its files in place of {staged_files} and
 // the message file in place of {1}; ShellCheck reads the command as such a script.
@@ -86,7 +102,7 @@ const shellCheckRun = (run: string): HookRun => {
     shellcheck,
     [
       '--rcfile',
-      shellcheckRc,
+      shellcheckRc(),
       '--shell=sh',
       '--format=gcc',
       '-',
@@ -159,7 +175,6 @@ const checkBranch = (branch: string | undefined): HookRun => {
         jobRun({
           hook: Hook.PreCommit,
           job: 'validate-branch',
-          part: 'version-control',
         }),
       ],
       {
@@ -196,7 +211,6 @@ const checkCommitMessage = (message: string): HookRun => {
         jobRun({
           hook: Hook.CommitMessage,
           job: 'commit-message',
-          part: 'version-control',
         }).replaceAll('{1}', file),
       ],
       {
@@ -216,4 +230,4 @@ const checkCommitMessage = (message: string): HookRun => {
   }
 };
 
-export { checkBranch, checkCommitMessage, Hook, jobRun, partJobs, shellCheckRun };
+export { checkBranch, checkCommitMessage, Hook, jobRun, shellCheckRun, unitJobs };

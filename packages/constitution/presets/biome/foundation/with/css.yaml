@@ -1,0 +1,75 @@
+css:
+  declaration-never-important:
+    css:
+      biome.json:
+        linter:
+          rules:
+            complexity:
+              noImportantStyles: error
+  selector-classes-within-the-limit:
+    css:
+      biome.json:
+        linter:
+          rules:
+            complexity:
+              noExcessiveSelectorClasses:
+                level: error
+                options:
+                  maxClasses: 3
+  custom-property-read-where-defined:
+    css:
+      biome.json:
+        linter:
+          rules:
+            correctness:
+              noMissingVarFunction: error
+            nursery:
+              noUndeclaredCustomProperties: error
+  selector-specificity-never-descends:
+    css:
+      biome.json:
+        linter:
+          rules:
+            style:
+              noDescendingSpecificity: error
+  '*':
+    css:
+      biome.json:
+        linter:
+          rules:
+            suspicious:
+              noDuplicateSelectors: error
+  style-rule-in-a-named-layer:
+    css:
+      biome.json:
+        linter:
+          rules:
+            nursery:
+              useLayeredStyles: error
+              useNamedLayer: error
+  animated-custom-property-registered:
+    css:
+      biome.json:
+        linter:
+          rules:
+            nursery:
+              noInvalidPropertyInitValue: error
+  class-declared-is-used:
+    css:
+      biome.json:
+        linter:
+          rules:
+            nursery:
+              noUnusedClasses: error
+  selector-never-targets-an-id:
+    css:
+      biome.json:
+        plugins[path=./${constitution.path}/presets/biome/plugins/css/selector-never-targets-an-id.grit]:
+          includes:
+            - '**/*.css'
+  transition-names-its-properties:
+    css:
+      biome.json:
+        plugins[path=./${constitution.path}/presets/biome/plugins/css/transition-names-its-properties.grit]:
+          includes:
+            - '**/*.css'

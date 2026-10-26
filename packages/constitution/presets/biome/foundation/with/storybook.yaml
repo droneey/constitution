@@ -1,0 +1,12 @@
+storybook:
+  '*':
+    typescript:
+      biome.json:
+        overrides:
+          - includes:
+              - '**/*.${role.story}.ts'
+              - '**/*.${role.story}.tsx'
+            linter:
+              rules:
+                style:
+                  noDefaultExport: 'off'

@@ -1,26 +1,35 @@
-import type { WiringPlan } from '../../../entities';
-import type { PresetsPorts } from '../shared/presets-ports';
-import { contextOf } from '../shared/wiring';
-import { planWiringOf } from './steps/plan-wiring';
+import type { ProjectFiles, ProjectSource } from '#/kernel/contracts';
 
-interface PlanPresetsInput extends PresetsPorts {
+import type { PresetFileParser, ReleaseBuilds } from '../../../contracts';
+import type { PresetsPlan } from '../../../entities';
+import { computePresets } from '../../shared/compute-presets';
+
+interface PlanPresetsInput {
+  readonly builds: ReleaseBuilds;
+  readonly files: ProjectFiles;
+  readonly parser: PresetFileParser;
+  readonly source: ProjectSource;
   readonly start: string;
 }
 
 /**
- * The configuration files the project's tools read, each with the units it serves, its template
- * and the parts it takes, as /ratify writes them.
- *
  * @throws {@link ProjectError} when no project is found, its release is not installed, or its
  * constitution.yaml or its blocks cannot be read
  */
-const planPresets = (input: PlanPresetsInput): WiringPlan =>
-  planWiringOf(
-    contextOf({
-      ...input.source.open(input.start),
-      files: input.files,
-      workingTree: input.workingTree,
-    }),
-  );
+const planPresets = (input: PlanPresetsInput): PresetsPlan => {
+  const opened = input.source.open(input.start);
 
+  return computePresets({
+    builds: input.builds,
+    files: input.files,
+    model: opened.resolution.model,
+    packs: opened.packs,
+    parser: input.parser,
+    project: opened.project,
+    releaseFolder: opened.releaseFolder,
+    units: opened.resolution.units,
+  });
+};
+
+export type { PlanPresetsInput };
 export { planPresets };

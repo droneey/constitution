@@ -57,14 +57,11 @@ const KEYS: Readonly<Record<string, string>> = {
   languages: 'languages: []',
   implementations: 'implementations: []',
   packs: 'packs: []',
-  check: 'check: null',
   overrides: 'overrides: []',
 } as const;
 
-// Every key a member's constitution.yaml needs: the repository's but the check.
-const memberKeyLines: Readonly<Record<string, string>> = Object.fromEntries(
-  Object.entries(KEYS).filter(([key]) => key !== 'check'),
-);
+// Every key a member's constitution.yaml needs, as the repository's.
+const memberKeyLines: Readonly<Record<string, string>> = KEYS;
 
 const writtenOf = (keys: Readonly<Record<string, string>>): string =>
   `${Object.values(keys).join('\n')}\n`;

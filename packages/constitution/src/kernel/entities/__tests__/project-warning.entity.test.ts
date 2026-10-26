@@ -53,17 +53,7 @@ describe('ProjectWarning.codeOf', () => {
         kind: WarningKind.OverrideExpired,
       },
     },
-    {
-      code: WarningCode.Workspace,
-      subject: "the workspace's members",
-      warning: {
-        details: {
-          folder: 'tools',
-          path: 'biome.json',
-        },
-        kind: WarningKind.FolderKeepsConfig,
-      },
-    },
+
     {
       code: WarningCode.Installation,
       subject: 'what mise installs',
@@ -75,11 +65,11 @@ describe('ProjectWarning.codeOf', () => {
       },
     },
     {
-      code: WarningCode.Wiring,
+      code: WarningCode.Configurations,
       subject: "the tools' configurations",
       warning: {
         details: {},
-        kind: WarningKind.WiringUnchecked,
+        kind: WarningKind.ConfigurationsUnchecked,
       },
     },
     {

@@ -1,0 +1,7 @@
+storybook:
+  '*':
+    typescript:
+      bunfig.integration.toml:
+        test:
+          coveragePathIgnorePatterns:
+            - '**/*.${role.story}.*'

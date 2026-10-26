@@ -4,9 +4,9 @@
 
 ## General
 
-### hooks-from-the-shared-preset → configuration-takes-every-part-of-its-blocks · MUST
+### hooks-from-the-shared-preset → configuration-holds-what-its-blocks-compute · MUST
 
-The hooks come from the shared configuration's parts, never from scripts copied into the repository.
+The hooks are the jobs the presets give, written into the configuration, never scripts copied into the repository.
 
 | Why |
 |---|

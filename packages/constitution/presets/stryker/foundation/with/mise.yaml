@@ -1,0 +1,6 @@
+mise:
+  '*':
+    typescript:
+      stryker.config.json:
+        ignorePatterns:
+          - /.droneey

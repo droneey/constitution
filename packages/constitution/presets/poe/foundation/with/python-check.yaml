@@ -1,0 +1,10 @@
+python-check:
+  '*':
+    python:
+      pyproject.toml:
+        tool:
+          poe:
+            tasks:
+              check:code: >-
+                python ${constitution.path}/tools/python-check/dist/python-check.pyz
+                ${role.source} ${role.package-suites}

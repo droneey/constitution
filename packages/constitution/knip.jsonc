@@ -1,0 +1,32 @@
+{
+  "entry": [
+    "src/main.{ts,tsx}!",
+    "scripts/*/main.ts",
+    "src/entrypoints/*/main.{ts,tsx}!",
+    "src/**/index.{ts,tsx}!",
+  ],
+  "project": [
+    "src/**/*.{ts,tsx}!",
+    "!src/**/__tests__/**!",
+    "tests/**/*.{ts,tsx}",
+    "scripts/**/*.ts",
+  ],
+  "ignoreBinaries": [
+    "rumdl",
+    "shellcheck",
+    "shfmt",
+    "tombi",
+    "yamllint",
+    "mkfifo",
+    "lefthook",
+    "mise",
+  ],
+  "ignoreDependencies": [
+    "@stryker-mutator/bun-specs-runner",
+    "@biomejs/biome",
+    "@stryker-mutator/core",
+    "@swc/core",
+    "dclint",
+    "syncpack",
+  ],
+}

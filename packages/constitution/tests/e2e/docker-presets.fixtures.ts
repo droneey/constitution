@@ -5,6 +5,7 @@ import { join } from 'node:path';
 
 import { z } from 'zod';
 
+import { appliedUnit } from './applied-unit.fixtures';
 import { miseBinary } from './mise.fixtures';
 
 interface Lint {
@@ -29,8 +30,21 @@ const dclintReport = z.array(
 );
 
 const repository = join(import.meta.dir, '..', '..');
-const presets = join(repository, 'presets');
 const dclint = join(repository, 'node_modules', '.bin', 'dclint');
+
+const dockerUnit = (): string =>
+  appliedUnit({
+    implementations: [
+      'compose',
+      'dclint',
+      'hadolint',
+    ],
+    languages: [
+      'dockerfile',
+      'yaml',
+    ],
+  });
+
 const hadolint = miseBinary('hadolint');
 
 const inFolder = <TResult>(input: {
@@ -63,7 +77,7 @@ const lintDockerfile = (text: string): Lint =>
           '--format',
           'json',
           '--config',
-          join(presets, 'dockerfile', 'hadolint', 'foundation', 'dockerfile.yaml'),
+          join(dockerUnit(), '.hadolint.yaml'),
           path,
         ],
         {
@@ -89,7 +103,7 @@ const lintCompose = (text: string): Lint =>
           '--formatter',
           'json',
           '--config',
-          join(presets, 'yaml', 'dclint', 'foundation', 'compose.yaml'),
+          join(dockerUnit(), '.dclintrc.yaml'),
           path,
         ],
         {

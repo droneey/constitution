@@ -1,3 +1,0 @@
-[tool.vulture]
-paths = ["src"]
-min_confidence = 60

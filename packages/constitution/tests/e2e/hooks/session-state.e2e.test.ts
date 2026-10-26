@@ -10,7 +10,6 @@ import {
   removeSessions,
   runHook,
   stateFolderOf,
-  warningsOf,
 } from '../hook.fixtures';
 import { createPluginRoot, removePluginRoots } from '../plugin-root.fixtures';
 import { configOf, createProject, removeProjects } from '../project.fixtures';
@@ -76,7 +75,7 @@ describe('the session state the session-start hook saves', () => {
       check: [
         [
           'check',
-          'bun run check',
+          'constitution run check',
         ],
       ],
       files: true,
@@ -88,44 +87,6 @@ describe('the session state the session-start hook saves', () => {
         ],
       ],
       reminded: '',
-    });
-  });
-
-  it('should save no check command and warn of none when check is null', () => {
-    // Arrange
-    const project = createProject({
-      config: configOf({
-        check: 'null',
-      }),
-    });
-    const session = newSession();
-
-    // Act
-    const run = runHook({
-      event: HookEvent.Startup,
-      project,
-      root,
-      session,
-    });
-
-    // Assert
-    expect({
-      check: recordsOf({
-        kind: 'check',
-        session,
-      }),
-      warnings: warningsOf({
-        context: contextOf(run),
-        like: [],
-      }),
-    }).toStrictEqual({
-      check: [
-        [
-          'check',
-          '',
-        ],
-      ],
-      warnings: [],
     });
   });
 

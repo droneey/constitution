@@ -1,0 +1,32 @@
+shellcheck:
+  '*':
+    shell:
+      package.json:
+        scripts:
+          # The unit's script skips its members, each checked in its own run.
+          check:shell: !words
+            - git ls-files -z --cached --others --exclude-standard -- '*.sh' '*.bash'
+            - "':(exclude)${workspace.members}'"
+            - '| xargs -0 -r shellcheck'
+bun:
+  '*':
+    shell:
+      package.json:
+        scripts: !sorted {}
+  script-group-run-by-its-prefix:
+    shell:
+      package.json:
+        scripts:
+          check: !words
+            - bun run --sequential
+            - slot: checks
+            - slot: tests
+            - slot: mutations
+          check@checks:
+            - "'check:*'"
+_task-runner:
+  unit-run-through-its-action-tasks:
+    shell:
+      ${constitution.run}:
+        check:
+          - bun run check

@@ -1,0 +1,14 @@
+betterleaks:
+  scan-redacted:
+    '*':
+      lefthook.yaml:
+        pre-commit:
+          jobs[name=secrets]:
+            run: betterleaks git --pre-commit --staged --redact --no-banner
+lefthook:
+  staged-changes-scanned-before-commit:
+    '*':
+      lefthook.yaml:
+        pre-commit:
+          jobs[name=secrets]:
+            run: betterleaks git --pre-commit --staged --redact --no-banner

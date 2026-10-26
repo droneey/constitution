@@ -1,6 +1,6 @@
 # constitution.yaml
 
-> The file at a project's root, and in each member of its workspace, that names its package, its blocks, its packs, its overrides and, at the root, its check.
+> The file at a project's root, and in each member of its workspace, that names its package, its blocks, its packs and its overrides.
 
 ```yaml
 name: '@acme/web'
@@ -27,12 +27,11 @@ implementations:
   - bun
   - git
 packs:
-  - constitution
-check: bun run check
+  - pack
 overrides: []
 ```
 
-Every key but `name` is required; a missing or an unknown key is a warning in the digest. `/constitution:ratify` writes them all, `name` included, in this order. A member of a workspace keeps a file of its own, of every key but `check`: [members of a workspace](#members-of-a-workspace).
+Every key but `name` is required; a missing or an unknown key is a warning in the digest. `/constitution:ratify` writes them all, `name` included, in this order. A member of a workspace keeps a file of its own, of the same keys: [members of a workspace](#members-of-a-workspace). The check is no key: the runner blocks give it, and `constitution run check` runs it.
 
 ## Keys
 
@@ -45,7 +44,6 @@ Every key but `name` is required; a missing or an unknown key is a warning in th
 | `languages` | the ids of its language blocks | `[]` |
 | `implementations` | the ids of its library, tool and service blocks | `[]` |
 | `packs` | the folders of blocks it follows beside the Constitution's, relative to the file's folder | `[]` |
-| `check` | the command that runs every check; at the root alone | `null` |
 | `overrides` | the rules it lowers | `[]` |
 
 Core is never listed: it is always active. An abstract block, whose id starts with `_`, is never listed either; the blocks that extend it are.
@@ -103,7 +101,7 @@ overrides:
 
 ## Members of a workspace
 
-Each member of the workspace keeps a `constitution.yaml` in its own folder, with every key of the root's but `check`, its own `name` among them:
+Each member of the workspace keeps a `constitution.yaml` in its own folder, with the keys of the root's, its own `name` among them:
 
 ```yaml
 name: '@acme/admin'

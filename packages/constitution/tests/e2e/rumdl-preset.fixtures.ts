@@ -1,10 +1,11 @@
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
 import { z } from 'zod';
 
+import { appliedUnit } from './applied-unit.fixtures';
 import { miseBinary } from './mise.fixtures';
 
 interface Lint {
@@ -18,8 +19,6 @@ const rumdlReport = z.array(
   }),
 );
 
-const repository = join(import.meta.dir, '..', '..');
-const preset = join(repository, 'presets', 'markdown', 'rumdl', 'foundation', 'core.toml');
 const rumdl = miseBinary('rumdl');
 
 const inProject = <TResult>(input: {
@@ -29,7 +28,20 @@ const inProject = <TResult>(input: {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-rumdl-'));
 
   try {
-    writeFileSync(join(folder, '.rumdl.toml'), `extends = ${JSON.stringify(preset)}\n`);
+    copyFileSync(
+      join(
+        appliedUnit({
+          implementations: [
+            'rumdl',
+          ],
+          languages: [
+            'markdown',
+          ],
+        }),
+        '.rumdl.toml',
+      ),
+      join(folder, '.rumdl.toml'),
+    );
 
     for (const [path, text] of Object.entries(input.files)) {
       mkdirSync(dirname(join(folder, path)), {

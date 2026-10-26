@@ -1,0 +1,27 @@
+uv:
+  exclude-newer-sets-the-cooldown:
+    python:
+      pyproject.toml ? ${file.isTop}:
+        tool:
+          uv:
+            exclude-newer: 3 days
+  sdists-never-built:
+    python:
+      pyproject.toml ? ${file.isTop}:
+        tool:
+          uv:
+            no-build: true
+  python-never-downloaded-by-uv:
+    python:
+      pyproject.toml ? ${file.isTop}:
+        tool:
+          uv:
+            python-downloads: never
+            python-preference: only-system
+  uv-build-backend-capped:
+    python:
+      pyproject.toml ? !${workspace.isRoot}:
+        build-system:
+          requires:
+            - uv_build>=0.13,<0.14
+          build-backend: uv_build

@@ -1,0 +1,7 @@
+biome:
+  biome-configuration-in-the-unit:
+    '*':
+      biome.json:
+        files:
+          includes:
+            - '!!${workspace.members}'

@@ -1,0 +1,8 @@
+# This repository runs mutation-check from the workspace's source, never from the archive's build.
+stryker:
+  '*':
+    typescript:
+      package.json:
+        scripts:
+          mutate:branch: !replace mutation-check
+          mutate:all: !replace mutation-check all

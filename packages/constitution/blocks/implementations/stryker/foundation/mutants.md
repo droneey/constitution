@@ -6,11 +6,11 @@
 
 ### diagnostic-mutants-left-out-by-the-ignorer → every-mutant-killed · MUST
 
-`ignorers` holds the archive's `diagnostics`, which leaves out the mutants inside a log call — a `trace` to `fatal` call on a receiver named `log`, `logger` or `…Logger` — inside the text an error is built with, the first argument of `new …Error`, and inside the argument a library's method takes as text only a person reads, such as its help, which `diagnosticsTextArguments` names by the method and the argument's index in the part of the library's block; no other mutant is left out by the configuration.
+`ignorers` holds the archive's `diagnostics`, which leaves out the mutants of one kind alone: the text a call takes that only a person reads. `diagnosticsTextArguments` names each such call by its shape — the function, the method or the constructor it calls, `*` standing for any letters — and the indexes of its text arguments, and the block whose rule makes that text a person's gives the entry: a logging library its levels' messages, a library of commands its help, core the message an error is built with; no other mutant is left out by the configuration.
 
 | Why |
 |---|
-| these are the mutants no caller relies on that a tool can tell by their form or by the library's own contract; a case written to kill one proves no plausible bug, and a mutant left out beyond them would hide a missing case. |
+| a caller relies on no text only a person reads, so a case written to kill such a mutant proves no plausible bug; a block's contract tells the calls, never a name the ignorer guesses, and a call no block names keeps its mutants, so a missing entry shows in the run instead of hiding a case. |
 
 ### equivalent-mutant-marked-on-its-line → suppression-silences-one-finding · MUST
 

@@ -1,0 +1,8 @@
+tailwind:
+  class-names-only-semantic-colors:
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            nursery:
+              noTailwindRawColors: error

@@ -23,6 +23,7 @@ const quiet: ApplyReport = {
   added: [],
   findings: [],
   removed: [],
+  units: [],
   written: [],
 };
 
@@ -98,6 +99,9 @@ describe('applySectionsOf', () => {
           file: '.gitignore',
           setting: '"dist/"',
         },
+      ],
+      units: [
+        '',
       ],
       written: [
         'biome.json',

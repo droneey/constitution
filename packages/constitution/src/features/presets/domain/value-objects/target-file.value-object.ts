@@ -46,8 +46,15 @@ const of = (key: string): TargetFile => {
 const staysInItsUnit = (file: TargetFile): boolean =>
   !(file.path.startsWith(SEPARATOR) || file.path.split(SEPARATOR).includes(PARENT));
 
+// The target of the entries the program runs, which no file is: a path names no fact but a role's.
+const runPath = Fact.textOf(Fact.of('constitution.run'));
+
+const isRun = (file: TargetFile): boolean => file.path === runPath;
+
 const TargetFile = {
+  isRun,
   of,
+  runPath,
   staysInItsUnit,
 } as const;
 

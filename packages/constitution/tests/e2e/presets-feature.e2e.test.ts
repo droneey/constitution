@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'bun:test';
 
 // The presets are data: the program that applies them names no tool it configures, no file a tool
-// reads and no key of one, so a new tool is a catalogue and never a change of the program.
+// reads and no key of one, so a new tool is a preset file and never a change of the program.
 
 // Read beside the e2e specs, which mutation testing leaves out: it rewrites the sources it tests.
 const packageFolder = join(import.meta.dir, '..', '..');
@@ -35,17 +35,12 @@ const toolWords: readonly string[] = [
 const IMPORT = /^import .* from '[^']+';$/gm;
 const MUTATION_DIRECTIVE = /\/\/ Stryker (?:disable|restore) .*$/gm;
 
-// The parser of the wiring check, which the switch to catalogues removes with the check.
-const WIRING_PARSER = 'adapters/configuration/configuration-parser.adapter.ts';
-
 const filesOf = (folder: string): readonly string[] =>
   readdirSync(folder, {
     recursive: true,
   })
     .map(String)
-    .filter(
-      (path) => path.endsWith('.ts') && !path.includes('__tests__') && path !== WIRING_PARSER,
-    );
+    .filter((path) => path.endsWith('.ts') && !path.includes('__tests__'));
 
 const wordsIn = (path: string): readonly string[] => {
   const text = readFileSync(join(featureFolder, path), 'utf8')

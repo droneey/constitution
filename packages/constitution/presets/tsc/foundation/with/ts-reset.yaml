@@ -1,0 +1,5 @@
+ts-reset:
+  '*':
+    typescript:
+      ${role.source}/reset.d.ts: !default |
+        import '@total-typescript/ts-reset';

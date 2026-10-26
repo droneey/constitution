@@ -1,0 +1,42 @@
+{
+  "entry": [
+    "src/main.{ts,tsx}!",
+    "scripts/*/main.ts",
+    "src/router.{ts,tsx}!",
+    "src/client.{ts,tsx}!",
+    "src/entrypoints/*/main.{ts,tsx}!",
+    "src/**/index.{ts,tsx}!",
+    "src/root/routes/**/*.{ts,tsx}!",
+    "src/root/router.{ts,tsx}!",
+    "source.config.ts!",
+  ],
+  "fumadocs": false,
+  "ignore": [
+    "src/root/routeTree.gen.ts",
+  ],
+  "ignoreDependencies": [
+    "@stryker-mutator/bun-specs-runner",
+    "@fontsource-variable/geist",
+    "@fontsource-variable/geist-mono",
+    "tailwindcss",
+    "@stryker-mutator/core",
+    "@swc/core",
+  ],
+  "project": [
+    "src/**/*.{ts,tsx}!",
+    "!src/**/__tests__/**!",
+    "tests/**/*.{ts,tsx}",
+    "scripts/**/*.ts",
+  ],
+  "ignoreBinaries": [
+    "dclint",
+    "hadolint",
+    "mise",
+    "osv-scanner",
+    "rumdl",
+    "shellcheck",
+    "shfmt",
+    "tombi",
+    "yamllint",
+  ],
+}

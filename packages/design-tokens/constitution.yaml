@@ -26,5 +26,6 @@ implementations:
   - tombi
   - bun-test
   - stryker
-packs: []
+packs:
+  - pack
 overrides: []

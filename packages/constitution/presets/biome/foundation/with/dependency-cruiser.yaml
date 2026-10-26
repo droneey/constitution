@@ -1,0 +1,21 @@
+dependency-cruiser:
+  '*':
+    typescript:
+      biome.json:
+        overrides:
+          - includes:
+              - '**/.dependency-cruiser.js'
+              - '**/.dependency-cruiser.mjs'
+              - '**/.dependency-cruiser.cjs'
+            linter:
+              rules:
+                style:
+                  noDefaultExport: 'off'
+          - includes:
+              - '**/.dependency-cruiser.js'
+              - '**/.dependency-cruiser.mjs'
+              - '**/.dependency-cruiser.cjs'
+            linter:
+              rules:
+                security:
+                  noSecrets: 'off'

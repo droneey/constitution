@@ -1,0 +1,6 @@
+tailwind:
+  logical-utilities-for-direction:
+    typescript:
+      biome.json:
+        plugins:
+          - ./${constitution.path}/presets/biome/plugins/typescript/logical-utilities-for-direction.${role.grit-rule}

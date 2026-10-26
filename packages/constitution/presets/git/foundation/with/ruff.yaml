@@ -1,0 +1,5 @@
+git:
+  gitignore-covers-dependencies-output-and-caches:
+    python:
+      .gitignore:
+        - ${role.ruff-cache}/

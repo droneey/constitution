@@ -76,7 +76,11 @@ The hook reads a fixed subset of YAML, so keep this form exactly:
 - `overrides: []` becomes `overrides:` with the entries below it; when the last override of the file goes, write `overrides: []` again;
 - change nothing else in the file.
 
-### 8. Check it
+### 8. Apply the presets
+
+Run `constitution presets apply` from the repository root. A rule an override lowers takes its settings out of the unit's configurations, and one whose override goes puts them back; show the owner what left or joined each file, then run the check command when the repository has one.
+
+### 9. Check it
 
 Run the hook as a session start would, from the repository root:
 

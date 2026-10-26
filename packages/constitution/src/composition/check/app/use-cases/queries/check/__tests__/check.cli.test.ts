@@ -65,7 +65,7 @@ const failed = reportOf({
 
 const runOf = async (input: {
   args?: readonly string[];
-  catalogues?: StepReport;
+  configurations?: StepReport;
   presets?: StepReport;
   validation: Validation | undefined;
 }) => {
@@ -81,15 +81,15 @@ const runOf = async (input: {
 
         return input.validation;
       },
-      checkCatalogues: (checked) => {
+      checkPresets: (checked) => {
         asked.push(checked);
 
-        return input.catalogues ?? done;
+        return input.presets ?? done;
       },
-      checkPresets: (start: string) => {
+      checkConfigurations: (start: string) => {
         asked.push(start);
 
-        return input.presets ?? done;
+        return input.configurations ?? done;
       },
     }),
   });
@@ -112,8 +112,8 @@ describe('createCheckCommand', () => {
     const command = createCheckCommand({
       ...context,
       checkBlocks: () => undefined,
-      checkCatalogues: () => skipped,
       checkPresets: () => skipped,
+      checkConfigurations: () => skipped,
     });
 
     // Act
@@ -134,7 +134,7 @@ describe('createCheckCommand', () => {
     });
   });
 
-  it("should check the blocks of the folder against the base named, the pack's catalogues against their model, then the project around it", async () => {
+  it("should check the blocks of the folder against the base named, the pack's presets against their model, then the project around it", async () => {
     // Arrange
     const asked = {
       args: [
@@ -169,18 +169,18 @@ describe('createCheckCommand', () => {
           StepStatus.Done,
         ],
         [
-          'Catalogues',
+          'Presets',
           StepStatus.Done,
         ],
         [
-          'Presets',
+          'Configurations',
           StepStatus.Done,
         ],
       ],
     });
   });
 
-  it("should ask for the release's catalogues, with no model, when no base is named and no blocks load", async () => {
+  it("should ask for the release's presets, with no model, when no base is named and no blocks load", async () => {
     // Arrange
     const asked = {
       validation: undefined,
@@ -209,20 +209,20 @@ describe('createCheckCommand', () => {
       },
     },
     {
-      catalogues: failed,
-      condition: 'the catalogues have findings',
+      condition: 'the presets have findings',
+      presets: failed,
       printed: 1,
       validation: sound,
     },
     {
       condition: 'the project has warnings',
-      presets: failed,
+      configurations: failed,
       printed: 1,
       validation: undefined,
     },
     {
-      catalogues: failed,
       condition: 'every step found something',
+      configurations: failed,
       presets: failed,
       printed: 3,
       validation: {
@@ -252,7 +252,7 @@ describe('createCheckCommand', () => {
   it('should pass, every step skipped, when the folder holds no blocks and no project lies around it', async () => {
     // Arrange
     const asked = {
-      catalogues: skipped,
+      configurations: skipped,
       presets: skipped,
       validation: undefined,
     };
@@ -272,11 +272,11 @@ describe('createCheckCommand', () => {
           StepStatus.Skipped,
         ],
         [
-          'Catalogues',
+          'Presets',
           StepStatus.Skipped,
         ],
         [
-          'Presets',
+          'Configurations',
           StepStatus.Skipped,
         ],
       ],

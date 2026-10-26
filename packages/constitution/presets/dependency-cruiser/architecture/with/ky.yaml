@@ -1,0 +1,26 @@
+ky:
+  '*':
+    typescript:
+      .dependency-cruiser.json:
+        allowedSeverity: error
+  ky-home-is-the-adapters-libs-root-and-its-failure-mapper:
+    typescript:
+      .dependency-cruiser.json:
+        allowed[comment=ky-home-is-the-adapters-libs-root-and-its-failure-mapper]:
+          from:
+            path: ^${role.source}/${role.shared-code}/
+          to:
+            path: node_modules/ky/
+        forbidden[name=ky-home-is-the-adapters-libs-root-and-its-failure-mapper]:
+          severity: error
+          from:
+            pathNot:
+              - ^${role.source}/${role.gateway}/
+              - ^${role.source}/(?:${role.bounded-context}|${role.composition-module})/[^/]+/${role.gateway}/
+              - ^${role.source}/${role.generic-library}/
+              - ^${role.source}/${role.shared-code}/
+              - ^${role.source}/${role.composition-root}/
+              - (^|/)${role.colocated-specs}/
+              - ^${role.package-suites}/
+          to:
+            path: node_modules/ky/

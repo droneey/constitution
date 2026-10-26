@@ -21,7 +21,6 @@ describe('createConfigFileParser', () => {
       condition:
         'the file holds every kind of key, comments, the document marker and a packages key it skips',
       expected: parsedConfigOf({
-        check: 'bun run check',
         items: [
           {
             key: 'axes',
@@ -191,7 +190,7 @@ describe('createConfigFileParser', () => {
     {
       condition: 'flow lists run on over the lines below their keys',
       expected: parsedConfigOf({
-        check: 'x',
+        name: 'x',
         items: [
           {
             key: 'axes',
@@ -212,7 +211,7 @@ describe('createConfigFileParser', () => {
         ],
         keys: [
           'axes',
-          'check',
+          'name',
           'packs',
         ],
         lists: [
@@ -220,7 +219,7 @@ describe('createConfigFileParser', () => {
           'packs',
         ],
       }),
-      text: 'axes: [a, # first\n  "b,\n  c", ]\ncheck: x\npacks: [d,\n         e]\n',
+      text: 'axes: [a, # first\n  "b,\n  c", ]\nname: x\npacks: [d,\n         e]\n',
     },
     {
       condition: 'name names a package in quotes, a comment after it',
@@ -251,66 +250,33 @@ describe('createConfigFileParser', () => {
       text: 'name: null\n',
     },
     {
-      condition: 'check is left empty',
+      condition: 'name is a tilde',
       expected: parsedConfigOf({
-        empties: [
-          'check',
-        ],
         keys: [
-          'check',
+          'name',
         ],
       }),
-      text: 'check:\n',
+      text: 'name: ~\n',
     },
     {
-      condition: 'check is an empty quoted scalar',
+      condition: 'name holds tabs and a "#" after no blank',
       expected: parsedConfigOf({
-        empties: [
-          'check',
-        ],
+        name: 'bun\ttest#all',
         keys: [
-          'check',
+          'name',
         ],
       }),
-      text: 'check: "" # none\n',
+      text: 'name:\tbun\ttest#all\t\n',
     },
     {
-      condition: 'check is null',
+      condition: 'name ends with several blanks',
       expected: parsedConfigOf({
+        name: 'bun run check',
         keys: [
-          'check',
+          'name',
         ],
       }),
-      text: 'check: null\n',
-    },
-    {
-      condition: 'check is a tilde',
-      expected: parsedConfigOf({
-        keys: [
-          'check',
-        ],
-      }),
-      text: 'check: ~\n',
-    },
-    {
-      condition: 'check holds tabs and a "#" after no blank',
-      expected: parsedConfigOf({
-        check: 'bun\ttest#all',
-        keys: [
-          'check',
-        ],
-      }),
-      text: 'check:\tbun\ttest#all\t\n',
-    },
-    {
-      condition: 'check ends with several blanks',
-      expected: parsedConfigOf({
-        check: 'bun run check',
-        keys: [
-          'check',
-        ],
-      }),
-      text: 'check: bun run check \t \t \t\n',
+      text: 'name: bun run check \t \t \t\n',
     },
     {
       condition: 'a run-on line of a flow list opens with a quoted item that holds " #"',
@@ -335,34 +301,34 @@ describe('createConfigFileParser', () => {
       text: 'domains: [a,\n  "b # c"]\n',
     },
     {
-      condition: 'check holds a quote after a plain character',
+      condition: 'name holds a quote after a plain character',
       expected: parsedConfigOf({
-        check: 'a"b',
+        name: 'a"b',
         keys: [
-          'check',
+          'name',
         ],
       }),
-      text: 'check: a"b # c"\n',
+      text: 'name: a"b # c"\n',
     },
     {
-      condition: 'check holds an escaped quote before a "#"',
+      condition: 'name holds an escaped quote before a "#"',
       expected: parsedConfigOf({
-        check: 'a" # b',
+        name: 'a" # b',
         keys: [
-          'check',
+          'name',
         ],
       }),
-      text: 'check: "a\\" # b" # c\n',
+      text: 'name: "a\\" # b" # c\n',
     },
     {
-      condition: 'check holds a backslash in single quotes before a comment',
+      condition: 'name holds a backslash in single quotes before a comment',
       expected: parsedConfigOf({
-        check: 'a\\',
+        name: 'a\\',
         keys: [
-          'check',
+          'name',
         ],
       }),
-      text: "check: 'a\\' # b'\n",
+      text: "name: 'a\\' # b'\n",
     },
     {
       condition: 'overrides hold nothing',
@@ -437,7 +403,7 @@ describe('createConfigFileParser', () => {
     {
       condition: 'lines end with CRLF and the last has no newline',
       expected: parsedConfigOf({
-        check: 'x',
+        name: 'x',
         items: [
           {
             key: 'axes',
@@ -446,13 +412,13 @@ describe('createConfigFileParser', () => {
         ],
         keys: [
           'axes',
-          'check',
+          'name',
         ],
         lists: [
           'axes',
         ],
       }),
-      text: 'axes:\r\n  - a\r\ncheck: x\r',
+      text: 'axes:\r\n  - a\r\nname: x\r',
     },
   ])('should read every key, list and override when $condition', ({ expected, text }) => {
     // Arrange
@@ -524,7 +490,7 @@ describe('createConfigFileParser', () => {
     {
       condition: 'an item has no list above it',
       line: 2,
-      text: 'check: x\n- a\n',
+      text: 'name: x\n- a\n',
     },
     {
       condition: 'a block item is empty',
@@ -534,12 +500,12 @@ describe('createConfigFileParser', () => {
     {
       condition: 'a list is a plain scalar',
       line: 1,
-      text: 'axes: a\ncheck: x\n',
+      text: 'axes: a\nname: x\n',
     },
     {
       condition: 'a flow list never closes',
       line: 2,
-      text: 'check: x\naxes: [a,\n  b\n',
+      text: 'name: x\naxes: [a,\n  b\n',
     },
     {
       condition: 'a run-on line is not indented past its key',
@@ -579,42 +545,42 @@ describe('createConfigFileParser', () => {
     {
       condition: 'a plain scalar opens with an anchor',
       line: 1,
-      text: 'check: &a\n',
+      text: 'name: &a\n',
     },
     {
       condition: 'a plain scalar opens a block scalar',
       line: 1,
-      text: 'check: |\n',
+      text: 'name: |\n',
     },
     {
       condition: 'a plain scalar opens a flow list',
       line: 1,
-      text: 'check: [a]\n',
+      text: 'name: [a]\n',
     },
     {
       condition: 'a plain scalar opens with a directive',
       line: 1,
-      text: 'check: %a\n',
+      text: 'name: %a\n',
     },
     {
       condition: 'a double-quoted scalar never closes',
       line: 1,
-      text: 'check: "a\n',
+      text: 'name: "a\n',
     },
     {
       condition: 'a scalar is a lone quote',
       line: 1,
-      text: 'check: "\n',
+      text: 'name: "\n',
     },
     {
       condition: 'a double-quoted scalar holds a bare quote',
       line: 1,
-      text: 'check: "a"b"\n',
+      text: 'name: "a"b"\n',
     },
     {
       condition: 'a single-quoted scalar holds a lone quote',
       line: 1,
-      text: "check: 'a''b'c'\n",
+      text: "name: 'a''b'c'\n",
     },
     {
       condition: 'overrides hold two flow lists',

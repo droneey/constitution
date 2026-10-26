@@ -1,0 +1,12 @@
+httpx2:
+  httpx2-home-is-the-adapters-libs-root-and-its-failure-mapper:
+    python:
+      pyproject.toml:
+        tool:
+          python-check:
+            homes:
+              httpx2:
+                - ${role.gateway}
+                - ${role.generic-library}
+                - ${role.shared-code}
+                - ${role.composition-root}

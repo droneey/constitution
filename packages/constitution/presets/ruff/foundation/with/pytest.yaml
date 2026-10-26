@@ -1,0 +1,63 @@
+pytest:
+  '*':
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - PT
+              flake8-pytest-style:
+                fixture-parentheses: false
+                mark-parentheses: false
+  failed-test-never-retried-by-a-plugin:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              flake8-tidy-imports:
+                extend-banned-api:
+                  pytest.mark.flaky:
+                    msg: a flaky case is fixed or deleted, never run again
+  async-specs-by-anyio:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              flake8-tidy-imports:
+                extend-banned-api:
+                  pytest_asyncio:
+                    msg: async specs run on anyio's plugin
+  module-never-patched-in-a-spec:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              flake8-tidy-imports:
+                extend-banned-api:
+                  unittest.mock:
+                    msg: an effect is replaced by the fake of its contract
+core:
+  test-never-skipped-or-empty:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              flake8-tidy-imports:
+                extend-banned-api:
+                  pytest.importorskip:
+                    msg: a spec runs whole, or is deleted
+                  pytest.mark.skip:
+                    msg: a spec runs whole, or is deleted
+                  pytest.mark.skipif:
+                    msg: a spec runs whole, or is deleted
+                  pytest.mark.xfail:
+                    msg: a spec runs whole, or is deleted
+                  pytest.skip:
+                    msg: a spec runs whole, or is deleted
+                  pytest.xfail:
+                    msg: a spec runs whole, or is deleted

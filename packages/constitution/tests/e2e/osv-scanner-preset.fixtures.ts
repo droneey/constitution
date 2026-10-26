@@ -3,9 +3,11 @@ import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
+import { z } from 'zod';
+
+import { appliedUnit } from './applied-unit.fixtures';
 import { miseBinary } from './mise.fixtures';
 
-const repository = join(import.meta.dir, '..', '..');
 const osvScanner = miseBinary('osv-scanner');
 const REFUSED = /not recognized as spdx: (?<ids>.+)$/m;
 const ACCEPTED = 'cannot retrieve licenses locally';
@@ -15,12 +17,34 @@ interface Verdict {
   refused: readonly string[];
 }
 
-const allowlist = readFileSync(
-  join(repository, 'presets', 'common', 'osv-scanner', 'foundation', 'core.txt'),
-  'utf8',
-)
-  .trim()
-  .split('\n');
+const LICENCES = /--licenses="([^"]+)"/;
+const manifest = z.object({
+  scripts: z.record(z.string(), z.string()),
+});
+
+const allowlist = (
+  LICENCES.exec(
+    manifest.parse(
+      JSON.parse(
+        readFileSync(
+          join(
+            appliedUnit({
+              implementations: [
+                'bun',
+                'osv-scanner',
+              ],
+              languages: [
+                'typescript',
+              ],
+            }),
+            'package.json',
+          ),
+          'utf8',
+        ),
+      ),
+    ).scripts['check:audit'] ?? '',
+  )?.[1] ?? ''
+).split(',');
 
 // Offline, osv-scanner still validates the list, then stops at the licences it
 // would fetch from deps.dev; that stop shows the list was accepted.

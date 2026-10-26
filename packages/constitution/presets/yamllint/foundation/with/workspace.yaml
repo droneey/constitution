@@ -1,0 +1,6 @@
+workspace:
+  unit-checked-by-its-own-tools:
+    yaml:
+      .yamllint.yaml:
+        ignore:
+          - /${workspace.members}/**

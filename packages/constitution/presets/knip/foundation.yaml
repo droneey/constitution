@@ -1,0 +1,12 @@
+core:
+  dead-code-deleted:
+    typescript:
+      knip.jsonc:
+        entry:
+          - ${role.source}/main.{ts,tsx}!
+          - ${role.build-code}/*/main.ts
+        project:
+          - ${role.source}/**/*.{ts,tsx}!
+          - '!${role.source}/**/${role.colocated-specs}/**!'
+          - ${role.package-suites}/**/*.{ts,tsx}
+          - ${role.build-code}/**/*.ts

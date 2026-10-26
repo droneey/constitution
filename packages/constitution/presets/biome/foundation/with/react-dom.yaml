@@ -1,0 +1,113 @@
+react-dom:
+  aria-attributes-as-the-dom-spells-them:
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            suspicious:
+              noUnknownAttribute: error
+  ids-from-use-id:
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            correctness:
+              useUniqueElementIds: error
+        plugins:
+          - ./${constitution.path}/presets/biome/plugins/typescript/labels-bound-with-use-id.${role.grit-rule}
+  jsx-images-declare-their-size:
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            correctness:
+              useImageSize: error
+  dangerously-set-inner-html-never-used:
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            security:
+              noDangerouslySetInnerHtml: error
+  '*':
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            security:
+              noDangerouslySetInnerHtmlWithChildren: error
+              noBlankTarget: error
+            a11y:
+              useButtonType: error
+              useHeadingContent: error
+              noAutofocus: error
+              useKeyWithClickEvents: error
+              noRedundantAlt: error
+            nursery:
+              noInvalidFileInputAccept: error
+  known-fields-declare-autocomplete:
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            a11y:
+              useValidAutocomplete: error
+        plugins:
+          - ./${constitution.path}/presets/biome/plugins/typescript/field-declares-its-autocomplete.${role.grit-rule}
+  jsx-controls-named:
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            a11y:
+              useAnchorContent: error
+              useAltText: error
+              noLabelWithoutControl: error
+              useIframeTitle: error
+              noSvgWithoutTitle: error
+            nursery:
+              useControlLabel: error
+  handlers-and-links-on-native-elements:
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            a11y:
+              useValidAnchor: error
+              useSemanticElements: error
+              noStaticElementInteractions: error
+  jsx-roles-and-aria-valid:
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            a11y:
+              useAriaPropsForRole: error
+              noRedundantRoles: error
+              noInteractiveElementToNoninteractiveRole: error
+              useValidAriaValues: error
+              useValidAriaProps: error
+              useValidAriaRole: error
+              useFocusableInteractive: error
+              noNoninteractiveElementInteractions: error
+              noNoninteractiveElementToInteractiveRole: error
+  jsx-viewport-never-blocks-zoom:
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            nursery:
+              noNonScalableViewport: error
+  inline-style-only-custom-properties-and-geometry:
+    typescript:
+      biome.json:
+        plugins:
+          - ./${constitution.path}/presets/biome/plugins/typescript/inline-style-only-custom-properties-and-geometry.${role.grit-rule}
+core:
+  deprecated-form-never-used:
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            nursery:
+              noObsoleteTags: error

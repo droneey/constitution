@@ -41,7 +41,6 @@ describe('openProject', () => {
     // Arrange
     const text = yamlOf({
       axes: 'axes: [workflow]',
-      check: 'check: bun run check',
       domains: 'domains: [ui]',
     });
     const web = memberYamlOf({
@@ -102,7 +101,6 @@ describe('openProject', () => {
           blockSetEntryOf('core', Layer.Core),
           blockSetEntryOf('ui', Layer.Domain),
         ],
-        check: 'bun run check',
         listing: listingOf({
           repository: [
             listedOf({

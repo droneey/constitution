@@ -21,7 +21,6 @@ enum ConfigKey {
   Languages = 'languages',
   Implementations = 'implementations',
   Packs = 'packs',
-  Check = 'check',
   Overrides = 'overrides',
 }
 
@@ -52,7 +51,6 @@ const CONFIG = 'constitution.yaml';
 
 const DEFAULTS: Readonly<Record<ConfigKey, string>> = {
   axes: '[architecture, workflow]',
-  check: 'bun run check',
   domains: '[]',
   implementations: '[]',
   languages: '[]',
@@ -75,12 +73,7 @@ const configOf = (config: Config): string =>
     .join('\n')
     .concat('\n');
 
-// A member's constitution.yaml: every key of the repository's but check.
-const memberConfigOf = (config: Config): string =>
-  configOf({
-    ...config,
-    omit: ConfigKey.Check,
-  });
+const memberConfigOf = (config: Config): string => configOf(config);
 
 // A workspace of the members given, each by its path with its constitution.yaml: the root's
 // package.json declares them, and each holds a package.json of its own.
@@ -232,7 +225,7 @@ const packCard = (input: {
   ].join('\n');
 
 // The project's own pack, the folder /ratify writes its blocks to.
-const OWN_PACK = 'constitution';
+const OWN_PACK = 'pack';
 const IMPLEMENTATIONS = 'implementations';
 
 interface PackBlockPlace {
@@ -283,7 +276,6 @@ const browserApp: ProjectLayout = {
     'implementations: [react-dom, tanstack-query, matomo, biome, git, lefthook,',
     '                  betterleaks, paraglide]',
     `packs: [${OWN_PACK}]`,
-    'check: bun run check',
     'overrides:',
     '  - rule: analytics-consent-first',
     '    level: SHOULD',
@@ -306,7 +298,6 @@ const cli: ProjectLayout = {
     'languages: [typescript]',
     'implementations: [bun, biome, git, betterleaks]',
     'packs: []',
-    'check: bun run check',
     'overrides: []',
     '',
   ].join('\n'),
@@ -321,7 +312,6 @@ const library: ProjectLayout = {
     'languages: [typescript]',
     'implementations: [biome, git, lefthook, betterleaks]',
     'packs: []',
-    'check: bun run check',
     'overrides: []',
     '',
   ].join('\n'),
@@ -344,7 +334,6 @@ const library: ProjectLayout = {
 
 const htmlSite: ProjectLayout = {
   config: configOf({
-    check: 'npx html-validate .',
     domains: '[ui, untrusted-client, unreliable-network, version-control]',
     implementations: '[git]',
     platforms: '[browser]',
@@ -362,7 +351,6 @@ const packProject: ProjectLayout = {
     'languages: [typescript]',
     'implementations: [react-dom, betterleaks, git, git-flow, lint-kit]',
     `packs: [${OWN_PACK}]`,
-    'check: bun run check',
     'overrides: []',
     '',
   ].join('\n'),
@@ -456,10 +444,6 @@ const ratified: ProjectLayout = {
         'packs: []',
         `packs: [${OWN_PACK}]`,
       ],
-      [
-        '<check command>',
-        'bun run check',
-      ],
     ],
     name: 'constitution.yaml',
   }),
@@ -507,7 +491,6 @@ const realWebApp: ProjectLayout = {
     '                  matomo, lingui, bun, tsc, biome, dependency-cruiser, knip,',
     '                  syncpack, stryker, git, lefthook, betterleaks, osv-scanner, renovate, mise]',
     'packs: []',
-    'check: bun run check',
     'overrides: []',
     '',
   ].join('\n'),
@@ -524,7 +507,6 @@ const realCli: ProjectLayout = {
     '                  knip, syncpack, stryker, mise, git, lefthook, betterleaks,',
     '                  osv-scanner, renovate]',
     'packs: []',
-    'check: bun run check',
     'overrides: []',
     '',
   ].join('\n'),

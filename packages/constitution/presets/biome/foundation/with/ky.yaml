@@ -1,0 +1,6 @@
+ky:
+  ky-body-parsed-by-schema:
+    typescript:
+      biome.json:
+        plugins:
+          - ./${constitution.path}/presets/biome/plugins/typescript/ky-body-parsed-by-schema.${role.grit-rule}

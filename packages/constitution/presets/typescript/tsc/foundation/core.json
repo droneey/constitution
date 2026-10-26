@@ -1,6 +1,0 @@
-{
-  "compilerOptions": {
-    "allowUnreachableCode": false,
-    "allowUnusedLabels": false
-  }
-}

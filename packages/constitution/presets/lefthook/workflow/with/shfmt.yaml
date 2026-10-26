@@ -1,0 +1,23 @@
+shfmt:
+  '*':
+    '*':
+      lefthook.yaml:
+        pre-commit:
+          parallel: true
+          jobs[name=shfmt]:
+            glob: '*.{sh,bash}'
+            run: shfmt -w {staged_files}
+    shell:
+      lefthook.yaml:
+        pre-commit:
+          # The root's job skips the members, each checked in its own run.
+          jobs[name=shfmt]:
+            exclude:
+              - ${workspace.members}/**
+lefthook:
+  hook-rewrites-only-staged-files:
+    '*':
+      lefthook.yaml:
+        pre-commit:
+          jobs[name=shfmt]:
+            stage_fixed: true

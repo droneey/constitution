@@ -1,0 +1,6 @@
+editorconfig:
+  '*':
+    '*':
+      biome.json:
+        formatter:
+          useEditorconfig: true

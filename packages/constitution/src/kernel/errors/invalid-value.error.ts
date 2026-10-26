@@ -9,7 +9,6 @@ enum ValueFailure {
   PackPath = 'pack-path-empty',
   Version = 'version-not-semantic',
   Glob = 'glob-holds-whitespace',
-  PartAddress = 'part-address-not-path-segments',
 }
 
 interface RefusedText {

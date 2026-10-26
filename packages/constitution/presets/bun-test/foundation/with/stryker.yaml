@@ -1,0 +1,17 @@
+stryker:
+  '*':
+    typescript:
+      bunfig.mutation.toml:
+        test:
+          root: .
+          pathIgnorePatterns:
+            - ${role.package-suites}/**
+          coverage: false
+bun-test:
+  '*':
+    typescript:
+      bunfig.mutation.toml:
+        test:
+          preload:
+            - slot: fixtures
+            - ./${role.source}/${role.colocated-specs}/sandbox.fixtures.ts

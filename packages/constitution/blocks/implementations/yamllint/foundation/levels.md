@@ -6,7 +6,7 @@
 
 ### yamllint-rules-set-as-errors → rule-held-by-a-tool-where-one-can · MUST
 
-Every rule the part turns on is an error.
+Every rule the presets turn on is an error.
 
 | Why |
 |---|

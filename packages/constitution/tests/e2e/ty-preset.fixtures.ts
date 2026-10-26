@@ -1,5 +1,11 @@
 import { spawnSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
+import { stringify } from 'smol-toml';
+import { z } from 'zod';
+
+import { appliedUnit } from './applied-unit.fixtures';
 import { inPythonProject } from './python-project.fixtures';
 import { uvBinary, uvEnvironment } from './uv.fixtures';
 
@@ -9,19 +15,52 @@ interface CheckOutcome {
 }
 
 const ty = uvBinary('ty');
-const PART = '.droneey/constitution/presets/python/ty/foundation/self.toml';
 const FAILED = 2;
 const FINDING = /^[^:\n]+:\d+:\d+: (?:error|warning)\[(?<rule>[a-z-]+)\]/gm;
 
-// A project with no [tool.ty] of its own takes its version from
-// requires-python, as a project under the part's --config-file does, and
-// resolves its imports in the repository's environment, which holds pydantic.
+// A project takes the [tool.ty] the presets give a unit of Python, its version from
+// requires-python, and resolves its imports in the repository's environment, which holds pydantic.
 const PYPROJECT = '[project]\nname = "shop"\nversion = "0.0.0"\nrequires-python = ">=3.14"\n';
+
+const pyproject = z.object({
+  tool: z
+    .object({
+      ty: z.record(z.string(), z.unknown()).optional(),
+    })
+    .optional(),
+});
+
+const tyTable = (): string => {
+  const applied = pyproject.parse(
+    Bun.TOML.parse(
+      readFileSync(
+        join(
+          appliedUnit({
+            implementations: [
+              'ty',
+            ],
+            languages: [
+              'python',
+            ],
+          }),
+          'pyproject.toml',
+        ),
+        'utf8',
+      ),
+    ),
+  );
+
+  return stringify({
+    tool: {
+      ty: applied.tool?.ty ?? {},
+    },
+  });
+};
 
 const typeCheck = (source: string): CheckOutcome =>
   inPythonProject({
     files: {
-      'pyproject.toml': PYPROJECT,
+      'pyproject.toml': `${PYPROJECT}\n${tyTable()}\n`,
       'src/shop/orders.py': source,
     },
     run: (folder) => {
@@ -29,8 +68,6 @@ const typeCheck = (source: string): CheckOutcome =>
         ty,
         [
           'check',
-          '--config-file',
-          PART,
           '--python',
           uvEnvironment,
           '--output-format',

@@ -9,7 +9,12 @@ import { PackPath, repositoryUnit, Version } from '#/kernel/value-objects';
 
 import { CheckState, DigestKind, HookEventName, SessionOrigin } from '../../../../entities';
 import { digestSession } from '../digest-session.use-case';
-import { quiet, sessionPortsOf, uncheckedWiring, wiringOf } from './digest-session.fixtures';
+import {
+  configurationsOf,
+  quiet,
+  sessionPortsOf,
+  uncheckedConfigurations,
+} from './digest-session.fixtures';
 
 const releaseFiles = {
   folder: releaseFolderPath,
@@ -17,7 +22,7 @@ const releaseFiles = {
 };
 const kept = {
   active: [],
-  check: CheckState.create('bun run check'),
+  check: CheckState.create('constitution run check'),
   musts: [],
   project: PROJECT,
   units: [
@@ -26,7 +31,7 @@ const kept = {
 };
 const unchecked: ProjectWarning = {
   details: {},
-  kind: WarningKind.WiringUnchecked,
+  kind: WarningKind.ConfigurationsUnchecked,
 };
 
 // The code and the path of the ProjectError an act throws; undefined when it throws none.
@@ -68,11 +73,11 @@ describe('digestSession', () => {
       origin: SessionOrigin.Startup,
     },
   ])(
-    'should warn of a wiring it cannot check, and give the state to keep, when $condition',
+    'should warn of presets it cannot check, and give the state to keep, when $condition',
     ({ event, isStartup, origin }) => {
       // Arrange
       const ports = sessionPortsOf({
-        wiring: uncheckedWiring,
+        configurations: uncheckedConfigurations,
       });
 
       // Act
@@ -101,7 +106,7 @@ describe('digestSession', () => {
     },
   );
 
-  it('should give the warnings of constitution.yaml before those of the wiring when both warn', () => {
+  it('should give the warnings of constitution.yaml before those of the presets when both warn', () => {
     // Arrange
     const unknown: ProjectWarning = {
       details: {
@@ -124,14 +129,14 @@ describe('digestSession', () => {
           status: ConfigReadStatus.Parsed,
         },
       },
-      wiring: wiringOf((opened) => [
+      configurations: configurationsOf((opened) => [
         {
           details: {
-            member: opened.project,
-            path: opened.releaseFolder,
-            tool: opened.packs.join(', '),
+            code: opened.packs.join(', '),
+            file: opened.releaseFolder,
+            says: opened.project,
           },
-          kind: WarningKind.MemberNotSkipped,
+          kind: WarningKind.ConfigurationFinding,
         },
       ]),
     });
@@ -156,11 +161,11 @@ describe('digestSession', () => {
         unknown,
         {
           details: {
-            member: PROJECT,
-            path: releaseFolderPath,
-            tool: 'packs/acme',
+            code: 'packs/acme',
+            file: releaseFolderPath,
+            says: PROJECT,
           },
-          kind: WarningKind.MemberNotSkipped,
+          kind: WarningKind.ConfigurationFinding,
         },
       ],
     });

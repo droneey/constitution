@@ -1,0 +1,99 @@
+bun-test:
+  '*':
+    typescript:
+      bunfig.integration.toml:
+        test:
+          preload:
+            - slot: fixtures
+      bunfig.toml:
+        test:
+          preload:
+            - slot: fixtures
+  test-order-randomized:
+    typescript:
+      bunfig.integration.toml:
+        test:
+          randomize: true
+      bunfig.toml:
+        test:
+          randomize: true
+  integration-specs-ignored-by-bunfig:
+    typescript:
+      bunfig.integration.toml:
+        test:
+          pathIgnorePatterns:
+            - ${role.package-suites}/**
+      bunfig.toml:
+        test:
+          pathIgnorePatterns:
+            - ${role.package-suites}/**
+            - '**/*.integration.test.*'
+  coverage-gate-on-loaded-files:
+    typescript:
+      bunfig.integration.toml:
+        test:
+          coverage: true
+          coverageReporter:
+            - text
+          coverageSkipTestFiles: true
+          coverageThreshold:
+            functions: 1
+            lines: 1
+          coveragePathIgnorePatterns:
+            - '**/${role.colocated-specs}/**'
+            - '**/main.*'
+            - '**/${role.composition-root}/wiring.*'
+            - '**/*.gen.*'
+      bunfig.toml:
+        test:
+          coverage: false
+  network-refused-by-the-test-preload:
+    typescript:
+      bunfig.toml:
+        test:
+          preload:
+            - ./${role.source}/${role.colocated-specs}/sandbox.fixtures.ts
+      ${role.source}/${role.colocated-specs}/sandbox.fixtures.ts: !default |
+        import http from 'node:http';
+        import https from 'node:https';
+        import net from 'node:net';
+        import tls from 'node:tls';
+
+        // A declaration, not an arrow, so that `new WebSocket()` and `new Bun.SQL()` throw this
+        // error too.
+        function refuseNetwork(): never {
+          throw new Error('A spec reached the network: give it the fake of its transport');
+        }
+
+        for (const [owner, name] of [
+          [
+            globalThis,
+            'fetch',
+          ],
+          [
+            globalThis,
+            'WebSocket',
+          ],
+          [
+            Bun,
+            'SQL',
+          ],
+        ] as const) {
+          Object.defineProperty(owner, name, {
+            value: refuseNetwork,
+          });
+        }
+
+        Bun.connect = refuseNetwork;
+        net.Socket.prototype.connect = refuseNetwork;
+        net.connect = refuseNetwork;
+        net.createConnection = refuseNetwork;
+        tls.connect = refuseNetwork;
+
+        for (const client of [
+          http,
+          https,
+        ]) {
+          client.request = refuseNetwork;
+          client.get = refuseNetwork;
+        }

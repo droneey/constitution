@@ -6,8 +6,8 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 import { removePluginRoots } from './plugin-root.fixtures';
 import {
   applyIn,
-  createCataloguedPluginRoot,
   createLinkedProject,
+  createPluginRootWithPresets,
   linesOf,
   MEMBER,
   memberPackFiles,
@@ -38,7 +38,7 @@ const followed = {
 let root = '';
 
 beforeAll(() => {
-  root = createCataloguedPluginRoot();
+  root = createPluginRootWithPresets();
 });
 
 afterEach(() => {
@@ -59,7 +59,7 @@ const projectOf = (files: Readonly<Record<string, string>> = {}): string =>
   });
 
 describe('constitution presets apply', () => {
-  it("should write the catalogues' settings beside the file's own and its comment, then nothing on the next run", () => {
+  it("should write the preset files' settings beside the file's own and its comment, then nothing on the next run", () => {
     // Arrange
     const project = projectOf({
       [MARKDOWNLINT]: linesOf('{', `  ${USER_COMMENT}`, '  "firstLine": false', '}'),
@@ -213,7 +213,7 @@ describe('constitution presets apply', () => {
           ...workspaceOf({
             [MEMBER]: memberConfigOf({
               [ConfigKey.Implementations]: '[own-tool]',
-              [ConfigKey.Packs]: '[constitution]',
+              [ConfigKey.Packs]: '[pack]',
             }),
           }),
           ...memberPackFiles,

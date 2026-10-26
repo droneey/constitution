@@ -169,13 +169,15 @@ const longCall = (width: number): string => {
   return python(`${head}[${items.slice(0, width - head.length - tail.length - 2)}]${tail}`);
 };
 
-describe('the ruff preset', () => {
+describe('the ruff preset file', () => {
   it.each([
     'fastapi',
-  ])('should pass a well-formed module when a project extends %s', (part) => {
+  ])('should pass a well-formed module when a unit follows %s', (block) => {
     // Arrange
     const project = {
-      part,
+      blocks: [
+        block,
+      ],
       source: wellFormed,
     };
 
@@ -190,165 +192,120 @@ describe('the ruff preset', () => {
     {
       code: 'F401',
       condition: 'an import is never used',
-      part: 'core',
+      blocks: [],
       source: unusedImport,
     },
     {
       code: 'B904',
       condition: 'an exception is raised in an except clause without its cause',
-      part: 'core',
+      blocks: [],
       source: causeDropped,
     },
     {
       code: 'ARG001',
       condition: 'a parameter is never read',
-      part: 'core',
+      blocks: [],
       source: unusedArgument,
     },
     {
       code: 'T201',
       condition: 'shipped code prints',
-      part: 'core',
+      blocks: [],
       source: debugPrint,
     },
     {
       code: 'T100',
       condition: 'shipped code stops at a breakpoint',
-      part: 'core',
+      blocks: [],
       source: breakpoint,
     },
     {
       code: 'PLR0917',
       condition: 'a function takes four positional parameters',
-      part: 'core',
+      blocks: [],
       source: fourPositional,
     },
     {
       code: 'PLR2004',
       condition: 'a comparison names a bare number',
-      part: 'core',
+      blocks: [],
       source: bareNumber,
     },
     {
       code: 'ANN001',
       condition: 'a parameter is not annotated',
-      part: 'python',
+      blocks: [],
       source: unannotated,
     },
     {
       code: 'DTZ005',
       condition: 'a datetime is made without its time zone',
-      part: 'python',
+      blocks: [],
       source: naiveNow,
     },
     {
       code: 'TID251',
       condition: 'code changes sys.path',
-      part: 'python',
+      blocks: [],
       source: sysPath,
     },
     {
       code: 'S110',
       condition: 'an except body only passes',
-      part: 'python',
+      blocks: [],
       source: exceptPass,
     },
     {
       code: 'UP046',
       condition: 'a generic class is declared through TypeVar and Generic',
-      part: 'python',
+      blocks: [],
       source: typeVarClass,
     },
     {
       code: 'PGH004',
       condition: 'a noqa names no code',
-      part: 'self',
+      blocks: [],
       source: blanketNoqa,
     },
     {
       code: 'RUF100',
       condition: 'a noqa silences nothing',
-      part: 'self',
+      blocks: [],
       source: unusedNoqa,
     },
-  ])(
-    'should report $code when $condition and a project extends $part',
-    ({ code, part, source }) => {
-      // Arrange
-      const project = {
-        part,
-        source,
-      };
+  ])('should report $code when $condition in a unit of Python', ({ blocks, code, source }) => {
+    // Arrange
+    const project = {
+      blocks,
+      source,
+    };
 
-      // Act
-      const codes = lintCodes(project);
+    // Act
+    const codes = lintCodes(project);
 
-      // Assert
-      expect(codes).toContain(code);
-    },
-  );
+    // Assert
+    expect(codes).toContain(code);
+  });
 
   it.each([
     {
-      code: 'T201',
-      condition: 'shipped code prints',
-      part: 'self',
-      source: debugPrint,
-    },
-    {
-      code: 'PLR0917',
-      condition: 'a function takes four positional parameters',
-      part: 'self',
-      source: fourPositional,
-    },
-    {
-      code: 'ARG001',
-      condition: 'a parameter is never read',
-      part: 'self',
-      source: unusedArgument,
-    },
-    {
-      code: 'ANN001',
-      condition: 'a parameter is not annotated',
-      part: 'core',
-      source: unannotated,
-    },
-    {
-      code: 'DTZ005',
-      condition: 'a datetime is made without its time zone',
-      part: 'core',
-      source: naiveNow,
-    },
-    {
-      code: 'TID251',
-      condition: 'code changes sys.path',
-      part: 'core',
-      source: sysPath,
-    },
-    {
-      code: 'S110',
-      condition: 'the except body of a named exception only passes',
-      part: 'core',
-      source: exceptPass,
-    },
-    {
       code: 'TID251',
       condition: 'a spec is marked to be skipped',
-      part: 'python',
+      blocks: [],
       source: skipMark,
     },
     {
       code: 'PT011',
       condition: 'a spec expects a broad exception without a match',
-      part: 'python',
+      blocks: [],
       source: broadRaises,
     },
   ])(
-    'should leave $code to a later part when $condition and a project extends only $part',
-    ({ code, part, source }) => {
+    'should leave $code to pytest when $condition and the unit follows no pytest',
+    ({ code, blocks, source }) => {
       // Arrange
       const project = {
-        part,
+        blocks,
         source,
       };
 
@@ -360,10 +317,10 @@ describe('the ruff preset', () => {
     },
   );
 
-  it('should accept a to-do that names its issue when a project extends python', () => {
+  it('should accept a to-do that names its issue in a unit of Python', () => {
     // Arrange
     const project = {
-      part: 'python',
+      blocks: [],
       source: todoWithIssue,
     };
 
@@ -375,7 +332,7 @@ describe('the ruff preset', () => {
   });
 });
 
-describe("the ruff preset's part of pytest", () => {
+describe('the ruff preset file of pytest', () => {
   it.each([
     {
       condition: 'a spec is marked to be skipped',
@@ -414,13 +371,15 @@ describe("the ruff preset's part of pytest", () => {
       source: pytestAsyncio,
     },
     {
-      condition: "code changes sys.path, a ban of the python part's",
+      condition: 'code changes sys.path, a ban of the python block',
       source: sysPath,
     },
   ])('should report TID251 when $condition', ({ source }) => {
     // Arrange
     const project = {
-      part: 'pytest',
+      blocks: [
+        'pytest',
+      ],
       source,
     };
 
@@ -434,7 +393,9 @@ describe("the ruff preset's part of pytest", () => {
   it('should report PT011 when a spec expects a broad exception without a match', () => {
     // Arrange
     const project = {
-      part: 'pytest',
+      blocks: [
+        'pytest',
+      ],
       source: broadRaises,
     };
 
@@ -448,11 +409,13 @@ describe("the ruff preset's part of pytest", () => {
   });
 });
 
-describe("the ruff preset's part of FastAPI", () => {
+describe('the ruff preset file of FastAPI', () => {
   it('should pass a route that declares its parameters in Annotated and reads its path', () => {
     // Arrange
     const project = {
-      part: 'fastapi',
+      blocks: [
+        'fastapi',
+      ],
       source: annotatedRoute,
     };
 
@@ -486,18 +449,20 @@ describe("the ruff preset's part of FastAPI", () => {
     },
     {
       code: 'TID251',
-      condition: 'a spec patches with unittest.mock, which the part bans again',
+      condition: 'a spec patches with unittest.mock, which the FastAPI preset file bans too',
       source: mock,
     },
     {
       code: 'TID251',
-      condition: 'a spec is marked to be skipped, which the part bans again',
+      condition: 'a spec is marked to be skipped, which the FastAPI preset file bans too',
       source: skipMark,
     },
   ])('should report $code when $condition', ({ code, source }) => {
     // Arrange
     const project = {
-      part: 'fastapi',
+      blocks: [
+        'fastapi',
+      ],
       source,
     };
 
@@ -518,11 +483,13 @@ describe("the ruff preset's part of FastAPI", () => {
       source: httpException,
     },
   ])(
-    'should leave $code to the FastAPI part when a project extends only pytest',
+    'should leave $code to the FastAPI preset file when a unit follows only pytest',
     ({ code, source }) => {
       // Arrange
       const project = {
-        part: 'pytest',
+        blocks: [
+          'pytest',
+        ],
         source,
       };
 
@@ -562,10 +529,10 @@ describe('the ruff formatter', () => {
       isAccepted: false,
       source: fourSpaces,
     },
-  ])('should hold the layout of self when $condition', ({ isAccepted, source }) => {
+  ])('should hold its layout when $condition', ({ isAccepted, source }) => {
     // Arrange
     const project = {
-      part: 'self',
+      blocks: [],
       source,
     };
 

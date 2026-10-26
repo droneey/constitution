@@ -178,7 +178,7 @@ describe('BlockFilePlace.parse', () => {
     {
       expected: undefined,
       name: 'a file outside the blocks',
-      path: 'presets/common/biome/foundation/self.jsonc',
+      path: 'presets/biome/foundation.yaml',
     },
   ])('should place $name apart from any block when the path is $path', ({ expected, path }) => {
     // Act

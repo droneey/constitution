@@ -1,0 +1,88 @@
+pytest:
+  '*':
+    python:
+      pyproject.toml:
+        tool:
+          pytest:
+            minversion: '9.1'
+            testpaths:
+              - ${role.package-suites}
+            pythonpath:
+              - ${role.package-suites}
+            addopts:
+              - -ra
+            timeout: '10'
+          coverage:
+            run:
+              source:
+                - ${role.source}
+            report:
+              show_missing: true
+              skip_covered: true
+              exclude_also:
+                - 'if TYPE_CHECKING:'
+                - '@overload'
+                - assert_never\(
+  pytest-runs-strict:
+    python:
+      pyproject.toml:
+        tool:
+          pytest:
+            strict: true
+            addopts:
+              - --import-mode=importlib
+            filterwarnings:
+              - error
+  integration-folders-not-collected:
+    python:
+      pyproject.toml:
+        tool:
+          pytest:
+            norecursedirs:
+              - .*
+              - integration
+              - ${role.end-to-end-suite}
+  async-specs-by-anyio:
+    python:
+      pyproject.toml:
+        tool:
+          pytest:
+            anyio_mode: auto
+  coverage-gate-with-branches:
+    python:
+      pyproject.toml:
+        tool:
+          coverage:
+            run:
+              branch: true
+              omit:
+                - '**/main.py'
+                - '**/__main__.py'
+                - '**/${role.composition-root}/wiring.py'
+                - '**/*_gen.py'
+                - '**/*_gen/**'
+            report:
+              fail_under: 100
+  network-refused-by-the-conftest:
+    python:
+      # The module's own text, whose formatter puts two blank lines around a top-level definition.
+      # yamllint disable rule:empty-lines
+      ${role.package-suites}/conftest.py: !default |
+        # pytest: no unit spec reaches the network; tests/integration/conftest.py
+        # overrides network_refused for the integration run
+        import socket
+
+        import pytest
+
+
+        def _refuse_network(*_args: object, **_kwargs: object) -> None:
+          message = 'a spec reached the network: give it the fake of its transport'
+          raise ConnectionRefusedError(message)
+
+
+        @pytest.fixture(autouse=True)
+        def network_refused(monkeypatch: pytest.MonkeyPatch) -> None:
+          monkeypatch.setattr(socket, 'getaddrinfo', _refuse_network)
+          monkeypatch.setattr(socket.socket, 'connect', _refuse_network)
+          monkeypatch.setattr(socket.socket, 'connect_ex', _refuse_network)
+      # yamllint enable rule:empty-lines

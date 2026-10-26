@@ -1,0 +1,14 @@
+distribution:
+  '*':
+    typescript:
+      tsconfig.json:
+        compilerOptions:
+          allowJs: !replace false
+          checkJs: !replace false
+          declaration: true
+typescript:
+  package-export-typed-explicitly:
+    typescript:
+      tsconfig.json:
+        compilerOptions:
+          isolatedDeclarations: true

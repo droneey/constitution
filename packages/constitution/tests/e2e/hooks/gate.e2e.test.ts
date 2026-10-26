@@ -27,7 +27,7 @@ interface Session {
   project: string;
 }
 
-const CHECK = 'bun run check';
+const CHECK = 'constitution run check';
 // What the gate says: its decision, or a review asked for in a system message,
 // then the names it gives, the check to run or the blocks the changes fall under.
 const NOTHING: readonly string[] = [] as const;
@@ -313,8 +313,8 @@ describe('the hand-back gate', () => {
   });
 
   it.each([
-    'bun run checkout',
-    'echo bun run check',
+    'constitution run checkout',
+    'echo constitution run check',
   ])('should block when the command run was %s, not the check', (command) => {
     // Arrange
     const session = startSession(configOf({}));
@@ -338,35 +338,10 @@ describe('the hand-back gate', () => {
     expect(output).toStrictEqual(BLOCKED);
   });
 
-  it('should only ask for a review when check is null', () => {
-    // Arrange
-    const session = startSession(
-      configOf({
-        check: 'null',
-        domains: '[ui]',
-      }),
-    );
-
-    prompt(session);
-    write({
-      path: 'src/features/orders/ui/order-card.tsx',
-      project: session.project,
-    });
-
-    // Act
-    const output = stop({
-      session,
-    });
-
-    // Assert
-    expect(output).toStrictEqual(REVIEW);
-  });
-
   it('should say nothing about a review when no active block governs the changed files', () => {
     // Arrange
     const session = startSession(
       configOf({
-        check: 'null',
         domains: '[ui]',
       }),
     );
@@ -375,6 +350,10 @@ describe('the hand-back gate', () => {
     write({
       path: 'src/main.ts',
       project: session.project,
+    });
+    ran({
+      command: CHECK,
+      session,
     });
 
     // Act

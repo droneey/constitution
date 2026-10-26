@@ -253,7 +253,6 @@
     margin-bottom: 0;
   }
 
-  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-page-panel article > nav:last-child {
     margin-top: var(--spacing-xl);
   }

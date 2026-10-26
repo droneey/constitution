@@ -1,19 +1,19 @@
 import { StepStatus } from '@droneey/design-cli';
 import { Command } from 'commander';
 
-import type { ProjectWarning } from '#/kernel/entities';
 import type { CommandContext } from '#/shared/cli';
 
-import { presetsOutcomeOf, presetsSectionsOf } from '../../../utils';
+import type { ConfigurationsCheck } from '../../../../domain/entities';
+import { configurationsOutcomeOf, configurationsSectionsOf } from '../../../utils';
 
-interface PresetsCheckContext extends CommandContext {
-  readonly checkPresets: (start: string) => readonly ProjectWarning[] | undefined;
+interface ConfigurationsCheckContext extends CommandContext {
+  readonly checkConfigurations: (start: string) => ConfigurationsCheck | undefined;
 }
 
-const createPresetsCheckCommand = (context: PresetsCheckContext): Command =>
+const createPresetsCheckCommand = (context: ConfigurationsCheckContext): Command =>
   new Command('check')
     .description(
-      "Check the project's constitution.yaml, and that its tools' configurations take every part of its blocks' presets.",
+      "Check the project's constitution.yaml, its preset files, and that its tools' configurations hold what the presets compute.",
     )
     .addHelpText(
       'before',
@@ -22,16 +22,16 @@ const createPresetsCheckCommand = (context: PresetsCheckContext): Command =>
       ]),
     )
     .action(async (): Promise<void> => {
-      const warnings = await context.renderer.run({
+      const check = await context.renderer.run({
         label: 'Presets',
-        outcomeOf: (checked: readonly ProjectWarning[] | undefined) =>
-          presetsOutcomeOf(checked, StepStatus.Failed),
-        run: () => context.checkPresets(context.places.cwd),
+        outcomeOf: (checked: ConfigurationsCheck | undefined) =>
+          configurationsOutcomeOf(checked, StepStatus.Failed),
+        run: () => context.checkConfigurations(context.places.cwd),
       });
 
-      await context.renderer.print(presetsSectionsOf(warnings));
+      await context.renderer.print(configurationsSectionsOf(check));
 
-      if (warnings === undefined || warnings.length > 0) {
+      if (check === undefined || check.warnings.length + check.findings.length > 0) {
         context.setFailed();
       }
     });

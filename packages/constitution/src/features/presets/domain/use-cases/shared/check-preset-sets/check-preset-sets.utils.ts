@@ -1,14 +1,20 @@
 import type { BlockModel, RoleTerm } from '#/kernel/entities';
+import { SourceKind } from '#/kernel/value-objects';
 
 import type { PresetEntry, PresetSet, PresetsFinding, PresetsProblem } from '../../../entities';
 import { namingProblems } from './naming-checks.utils';
 import { entryProblems, indexOf, setProblems } from './placement-checks.utils';
 import type { ReleaseFiles } from './release-checks.utils';
 import { releaseFindings } from './release-checks.utils';
-import { roleNamesOf } from './role-names.utils';
+import { noRoleNames, roleNamesOf } from './role-names.utils';
 
 interface CheckPresetSetsInput {
   readonly entries: readonly PresetEntry[];
+  /**
+   * whether the packs are the project's own, whose preset files may write its folders by their names;
+   * the release's preset files always name a role by its id
+   */
+  readonly isOwnPacks?: boolean;
   readonly model: BlockModel;
   /** the release whose files and plugins its entries name; absent where no release is checked */
   readonly release?: ReleaseFiles;
@@ -75,7 +81,10 @@ const checkPresetSets = (input: CheckPresetSetsInput): readonly PresetsFinding[]
         }),
         ...namingProblems({
           entry,
-          names,
+          names:
+            input.isOwnPacks === true && entry.set.source.kind === SourceKind.Pack
+              ? noRoleNames
+              : names,
           roles,
         }),
       ].map(at(entry.set)),
@@ -84,8 +93,8 @@ const checkPresetSets = (input: CheckPresetSetsInput): readonly PresetsFinding[]
       ? []
       : releaseFindings({
           entries: input.entries,
+          model: input.model,
           release: input.release,
-          roles,
           rules: new Set(index.rules.keys()),
         })),
   ]);

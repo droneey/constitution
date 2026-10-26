@@ -33,8 +33,3 @@ minimum_release_age = "3d"
 
 [tool_config]
 locked = true
-
-# --no-ignore: osv-scanner reads a checkout nested in a folder another repository ignores, an agent's worktree,
-# as ignored and finds no lockfile
-[tasks."audit:check"]
-run = 'licenses="$(cat .droneey/constitution/presets/common/osv-scanner/foundation/core.txt | paste -sd, -)" && osv-scanner scan source --licenses="$licenses" --no-ignore .'

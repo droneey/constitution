@@ -1,4 +1,5 @@
 import type { Axis, Layer, Level } from '../constants';
+import { LAYER_RANK } from '../constants';
 import type { BlockId, Glob, RuleSlug } from '../value-objects';
 import { coreBlockId } from '../value-objects';
 import type { RoleKind } from './term.entity';
@@ -122,9 +123,38 @@ const reachOf = (model: BlockModel, reader: BlockId): ReadonlySet<BlockId> => {
   return reached;
 };
 
+/**
+ * The term of a role id for readers: of the blocks they reach that define it, the most specific, as a
+ * language spells a folder its own way; the first defined where they reach none.
+ */
+const roleOf = (
+  model: BlockModel,
+  input: {
+    id: string;
+    /** the ids of the blocks that read it; one the model does not know reaches nothing */
+    readers: readonly string[];
+  },
+): RoleTerm | undefined => {
+  const defining = model.roles.filter((role) => role.id === input.id);
+  const reached = new Set(
+    model.blocks
+      .filter((block) => input.readers.includes(block.id))
+      .flatMap((block) => [
+        ...reachOf(model, block.id),
+      ]),
+  );
+  const [specific] = model.blocks
+    .filter((block) => reached.has(block.id))
+    .toSorted((left, right) => LAYER_RANK[right.layer] - LAYER_RANK[left.layer])
+    .flatMap((block) => defining.filter((role) => role.block === block.id));
+
+  return specific ?? defining[0];
+};
+
 const BlockModel = {
   create,
   reachOf,
+  roleOf,
   rolesIn,
 } as const;
 

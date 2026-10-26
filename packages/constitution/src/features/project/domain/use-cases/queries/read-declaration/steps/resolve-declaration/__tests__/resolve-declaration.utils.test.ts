@@ -198,13 +198,6 @@ describe('resolveDeclaration', () => {
         {
           details: {
             file: 'constitution.yaml',
-            key: 'check',
-          },
-          kind: WarningKind.KeyMissing,
-        },
-        {
-          details: {
-            file: 'constitution.yaml',
             key: 'overrides',
           },
           kind: WarningKind.KeyMissing,
@@ -221,7 +214,7 @@ describe('resolveDeclaration', () => {
     {
       condition: 'every key is left empty',
       members: {},
-      text: 'axes:\ndomains:\nplatforms:\nlanguages:\nimplementations:\npacks:\ncheck:\noverrides:\n',
+      text: 'axes:\ndomains:\nplatforms:\nlanguages:\nimplementations:\npacks:\noverrides:\n',
       unread: [],
       warnings: [
         {
@@ -263,13 +256,6 @@ describe('resolveDeclaration', () => {
           details: {
             file: 'constitution.yaml',
             key: 'packs',
-          },
-          kind: WarningKind.KeyEmpty,
-        },
-        {
-          details: {
-            file: 'constitution.yaml',
-            key: 'check',
           },
           kind: WarningKind.KeyEmpty,
         },
@@ -951,7 +937,7 @@ describe('resolveDeclaration', () => {
       warnings: [
         {
           details: {
-            line: 9,
+            line: 8,
             missing: [
               'level',
               'reason',
@@ -961,7 +947,7 @@ describe('resolveDeclaration', () => {
         },
         {
           details: {
-            line: 10,
+            line: 9,
             missing: [
               'rule',
               'reason',
@@ -971,7 +957,7 @@ describe('resolveDeclaration', () => {
         },
         {
           details: {
-            line: 11,
+            line: 10,
             missing: [
               'rule',
               'level',
@@ -987,7 +973,7 @@ describe('resolveDeclaration', () => {
       warnings: [
         {
           details: {
-            line: 9,
+            line: 8,
             missing: [
               'rule',
             ],
@@ -1002,7 +988,7 @@ describe('resolveDeclaration', () => {
       warnings: [
         {
           details: {
-            line: 9,
+            line: 8,
             missing: [
               'level',
             ],
@@ -1017,7 +1003,7 @@ describe('resolveDeclaration', () => {
       warnings: [
         {
           details: {
-            line: 9,
+            line: 8,
             missing: [
               'reason',
             ],
@@ -1222,7 +1208,6 @@ describe('resolveDeclaration', () => {
     // Arrange
     const config = configOf(
       {
-        check: 'check: bun run check',
         domains: 'domains: [ui]',
       },
       {
@@ -1360,7 +1345,6 @@ describe('resolveDeclaration', () => {
         blockSetEntryOf('redux', Layer.Implementation),
         blockSetEntryOf('zustand', Layer.Implementation),
       ],
-      check: 'bun run check',
       listing: listingOf({
         repository: [
           listedOf({
@@ -2407,47 +2391,6 @@ describe('resolveDeclaration', () => {
       ],
       warnings: [],
     });
-  });
-
-  it.each([
-    {
-      check: 'check: bun run check',
-      condition: 'it names a command',
-      expected: 'bun run check',
-    },
-    {
-      check: 'check: null',
-      condition: 'it is null',
-      expected: undefined,
-    },
-    {
-      check: 'check: ~',
-      condition: 'it is YAML’s other null',
-      expected: undefined,
-    },
-    {
-      check: 'check:',
-      condition: 'it is left empty',
-      expected: undefined,
-    },
-  ])('should give the check constitution.yaml names when $condition', ({ check, expected }) => {
-    // Arrange
-    const config = configOf({
-      check,
-    });
-
-    // Act
-    const resolution = resolveDeclaration({
-      config,
-      parser: parsers().cardParser,
-      sources: [
-        sourceOf(),
-      ],
-      today,
-    });
-
-    // Assert
-    expect(resolution.check).toBe(expected);
   });
 
   it('should give each unit its name, its packs and its languages, and the model of every block at every level, when units name themselves and list packs', () => {

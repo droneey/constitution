@@ -12,11 +12,11 @@ import {
 } from '#/kernel/entities';
 import { coreBlockId, repositoryUnit } from '#/kernel/value-objects';
 
-import type { WiringCheck } from '../../../../contracts';
-import { WiringCheckStatus } from '../../../../contracts';
+import type { ProjectConfigurationsCheck } from '../../../../contracts';
+import { ConfigurationsCheckStatus } from '../../../../contracts';
 import type { DigestSessionPorts } from '../digest-session.use-case';
 
-// What a constitution.yaml that lists no block beyond core and names its check resolves to.
+// What a constitution.yaml that lists no block beyond core resolves to.
 const quiet = Resolution.create({
   active: [],
   blocks: [
@@ -25,7 +25,6 @@ const quiet = Resolution.create({
       layer: Layer.Core,
     },
   ],
-  check: 'bun run check',
   listing: BlockListing.create({
     overrides: [],
     repository: [],
@@ -52,31 +51,31 @@ const quiet = Resolution.create({
   warnings: [],
 });
 
-// A check of the wiring that warns as given of the project it is asked about.
-const wiringOf = (
+// A check of the configurations that warns as given of the project it is asked about.
+const configurationsOf = (
   warningsOf: (project: OpenedProject) => readonly ProjectWarning[] = () => [],
-): WiringCheck => ({
+): ProjectConfigurationsCheck => ({
   check: (project) => ({
-    status: WiringCheckStatus.Checked,
+    status: ConfigurationsCheckStatus.Checked,
     warnings: warningsOf(project),
   }),
 });
 
-// A check of the wiring that fails as one that cannot read the presets.
-const uncheckedWiring: WiringCheck = {
+// A check of the configurations that fails as one that cannot read them.
+const uncheckedConfigurations: ProjectConfigurationsCheck = {
   check: () => ({
     cause: new Error('cannot list the presets'),
-    status: WiringCheckStatus.Unchecked,
+    status: ConfigurationsCheckStatus.Unchecked,
   }),
 };
 
 interface SessionPortsInput {
+  readonly configurations?: ProjectConfigurationsCheck;
   readonly project?: FakeProject;
-  readonly wiring?: WiringCheck;
 }
 
 // The ports a session's start reads through: the project around the start, quiet by default, and
-// the wiring check given.
+// the configurations check given.
 const sessionPortsOf = (input: SessionPortsInput = {}): DigestSessionPorts => ({
   source: createFakeProjectSource({
     declaration: {
@@ -87,7 +86,7 @@ const sessionPortsOf = (input: SessionPortsInput = {}): DigestSessionPorts => ({
     place: projectPlace,
     ...input.project,
   }),
-  wiring: input.wiring ?? wiringOf(),
+  configurations: input.configurations ?? configurationsOf(),
 });
 
-export { quiet, sessionPortsOf, uncheckedWiring, wiringOf };
+export { configurationsOf, quiet, sessionPortsOf, uncheckedConfigurations };

@@ -2,13 +2,8 @@ import { createFakeProjectFiles } from '#/__tests__/project-files.fake';
 import { AXES, Axis } from '#/kernel/constants';
 
 import { createJsonManifestParser } from '../adapters/json';
-import { createYamlBindingsParser, createYamlFrontMatterParser } from '../adapters/yaml';
-import type {
-  BindingsParser,
-  FileTree,
-  FrontMatterParser,
-  ManifestParser,
-} from '../domain/contracts';
+import { createYamlFrontMatterParser } from '../adapters/yaml';
+import type { FileTree, FrontMatterParser, ManifestParser } from '../domain/contracts';
 import { BlockGraph } from '../domain/entities';
 import type { CheckBlocksInput, CheckInput } from '../domain/use-cases/queries/check';
 import type {
@@ -108,7 +103,6 @@ const chapterFile = (title: string, ...rules: readonly string[]): string =>
   `# ${title}\n\n> Governs ${title.toLowerCase()}.\n\n## General\n\n${rules.join('\n')}`;
 
 interface Source {
-  bindingsParser: BindingsParser;
   frontMatterParser: FrontMatterParser;
   manifestParser: ManifestParser;
   repository: FileTree;
@@ -116,7 +110,6 @@ interface Source {
 }
 
 const sourceOf = (files: Readonly<Files>, repositoryFiles: Readonly<Files> = files): Source => ({
-  bindingsParser: createYamlBindingsParser(),
   frontMatterParser: createYamlFrontMatterParser(),
   manifestParser: createJsonManifestParser(),
   repository: createFakeFileTree(repositoryFiles),

@@ -1,0 +1,19 @@
+react-dom:
+  '*':
+    typescript:
+      bunfig.integration.toml:
+        test:
+          preload@fixtures:
+            - ./${role.source}/${role.colocated-specs}/dom.fixtures.ts
+      bunfig.toml:
+        test:
+          preload@fixtures:
+            - ./${role.source}/${role.colocated-specs}/dom.fixtures.ts
+      bunfig.mutation.toml:
+        test:
+          preload@fixtures:
+            - ./${role.source}/${role.colocated-specs}/dom.fixtures.ts
+      ${role.source}/${role.colocated-specs}/dom.fixtures.ts: !default |
+        import { GlobalRegistrator } from '@happy-dom/global-registrator';
+
+        GlobalRegistrator.register();

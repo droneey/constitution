@@ -1,0 +1,9 @@
+structlog:
+  only-the-root-imports-structlog:
+    python:
+      pyproject.toml:
+        tool:
+          python-check:
+            homes:
+              structlog:
+                - ${role.composition-root}

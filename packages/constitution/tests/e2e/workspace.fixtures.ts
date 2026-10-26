@@ -4,7 +4,6 @@ import {
   mkdirSync,
   mkdtempSync,
   readdirSync,
-  readFileSync,
   realpathSync,
   rmSync,
   symlinkSync,
@@ -12,10 +11,13 @@ import {
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { z } from 'zod';
 
-import { configFromTemplate } from './dependency-cruiser-preset.fixtures';
+import type { UnitFixture } from './applied-unit.fixtures';
+import { constitutionOf } from './applied-unit.fixtures';
+import { cliPath } from './cli.fixtures';
 
 interface Run {
   output: string;
@@ -34,24 +36,6 @@ const EXECUTABLE = 0o755;
 
 const repository = join(import.meta.dir, '..', '..');
 const bin = join(repository, 'node_modules', '.bin');
-const PRESETS = '.droneey/constitution/presets/typescript';
-
-/** a part with no axis folder is foundation's */
-const inAxis = (part: string): string => (part.includes('/') ? part : `foundation/${part}`);
-
-const templates = join(repository, 'templates', 'project');
-
-// The specs as bun-test's template runs them: the unit run, then the run that holds the gate.
-const testScript = z
-  .object({
-    scripts: z.object({
-      test: z.string(),
-    }),
-  })
-  .parse(
-    JSON.parse(readFileSync(join(templates, 'typescript', 'bun-test', 'package.json'), 'utf8')),
-  ).scripts.test;
-
 // Each TypeScript package's folder, by the name that follows its unit's folder.
 const UNITS: Readonly<Record<string, string>> = {
   '@shop/api': 'apps/api',
@@ -78,30 +62,19 @@ const LINKS: Readonly<Record<string, string>> = {
 
 const jsonFileOf = (fields: unknown): string => `${JSON.stringify(fields, undefined, 2)}\n`;
 
-const tsconfigOf = (input: {
-  exclude?: readonly string[];
-  extra?: Readonly<Record<string, unknown>>;
-  include?: readonly string[];
-  parts: readonly string[];
-  references: readonly string[];
-  root?: string;
-}): string =>
+// A unit's own compiler settings: what apply writes joins them.
+const tsconfigOf = (input: { references: readonly string[] }): string =>
   jsonFileOf({
-    extends: input.parts.map(
-      (part) => `${input.root ?? '../..'}/${PRESETS}/tsc/${inAxis(part)}.json`,
-    ),
     compilerOptions: {
-      ...input.extra,
       paths: {
         '#/*': [
           './src/*',
         ],
       },
     },
-    include: input.include ?? [
+    include: [
       'src',
     ],
-    exclude: input.exclude,
     references: input.references.map((path) => ({
       path,
     })),
@@ -114,6 +87,14 @@ interface ManifestInput {
   readonly name: string;
 }
 
+// The packages of the tools the scripts apply writes run, which a unit declares for development.
+const toolPackages: Readonly<Record<string, string>> = {
+  '@biomejs/biome': '1.0.0',
+  'dependency-cruiser': '1.0.0',
+  knip: '1.0.0',
+  typescript: '1.0.0',
+};
+
 const manifestOf = (input: ManifestInput): string =>
   jsonFileOf({
     name: input.name,
@@ -123,9 +104,6 @@ const manifestOf = (input: ManifestInput): string =>
     imports: {
       '#/*': './src/*',
     },
-    scripts: {
-      test: testScript,
-    },
     dependencies: Object.fromEntries(
       (input.dependencies ?? []).map((name) => [
         name,
@@ -133,6 +111,10 @@ const manifestOf = (input: ManifestInput): string =>
       ]),
     ),
     ...input.fields,
+    devDependencies: {
+      ...toolPackages,
+      ...z.record(z.string(), z.string()).optional().parse(input.fields?.['devDependencies']),
+    },
   });
 
 const pyprojectOf = (input: { lines?: readonly string[]; name: string }): string =>
@@ -150,24 +132,6 @@ const pyprojectOf = (input: { lines?: readonly string[]; name: string }): string
     'build-backend = "uv_build"',
     '',
   ].join('\n');
-
-// bun's fragment and bun-test's, assembled as ratify does
-const bunfig = [
-  readFileSync(join(templates, 'typescript', 'bun', 'bunfig.toml'), 'utf8'),
-  readFileSync(join(templates, 'typescript', 'bun-test', 'bunfig.toml'), 'utf8'),
-].join('\n');
-const bunfigMutation = readFileSync(
-  join(templates, 'typescript', 'stryker', 'bunfig.mutation.toml'),
-  'utf8',
-);
-const bunfigIntegration = readFileSync(
-  join(templates, 'typescript', 'bun-test', 'bunfig.integration.toml'),
-  'utf8',
-).replace('coveragePathIgnorePatterns = [\n', 'coveragePathIgnorePatterns = [\n  "../**",\n');
-const sandbox = readFileSync(
-  join(templates, 'typescript', 'bun-test', 'src', '__tests__', 'sandbox.fixtures.ts'),
-  'utf8',
-);
 
 // A package an application must not import outside the edge, built into its
 // dist/ as a registry's package is, and the framework eros integrates with.
@@ -197,9 +161,6 @@ const installed: Files = {
 const eros: Files = {
   'packages/eros/shared/conformance/cases.yaml': '- code: validation.email\n  status: 422\n',
   'packages/eros/shared/schema/kinds.yaml': '- validation\n- not-found\n',
-  'packages/eros/languages/typescript/bunfig.toml': bunfig,
-  'packages/eros/languages/typescript/bunfig.integration.toml': bunfigIntegration,
-  'packages/eros/languages/typescript/src/__tests__/sandbox.fixtures.ts': sandbox,
   'packages/eros/languages/typescript/package.json': manifestOf({
     exports: {
       '.': './src/index.ts',
@@ -309,14 +270,7 @@ const isKinds = (value: unknown): value is readonly string[] =>
 export const KINDS: readonly string[] = isKinds(kinds) ? kinds : [];
 `,
   'packages/eros/languages/typescript/tsconfig.json': tsconfigOf({
-    parts: [
-      'self',
-      'core',
-      'bun',
-      'workspace',
-    ],
     references: [],
-    root: '../../../..',
   }),
   'packages/eros/languages/python/pyproject.toml': pyprojectOf({
     lines: [
@@ -381,9 +335,6 @@ const reports: Files = {
       '',
       '[tool.uv.sources]',
       'shop-tabula = { workspace = true }',
-      '',
-      '[tool.python-check]',
-      `extend = ["../../${PRESETS.replace('typescript', 'python')}/python-check/architecture/structlog.toml"]`,
     ],
     name: 'shop-reports',
   }),
@@ -401,15 +352,12 @@ const reports: Files = {
 
 // A browser application whose specs are checked by a configuration of their own.
 const web: Files = {
-  'apps/web/bunfig.toml': bunfig,
-  'apps/web/bunfig.integration.toml': bunfigIntegration,
   'apps/web/package.json': manifestOf({
     dependencies: [
       '@shop/orders',
     ],
     name: '@shop/web',
   }),
-  'apps/web/src/__tests__/sandbox.fixtures.ts': sandbox,
   'apps/web/src/features/labels/app/__tests__/label.test.ts': `import { expect, it } from 'bun:test';
 
 import type { OrderId } from '@shop/orders';
@@ -431,48 +379,9 @@ export const label = (id: OrderId): string => \`Order \${describeOrder({ id, tot
   'apps/web/src/features/labels/index.ts': "export { label } from './app/label';\n",
   'apps/web/src/main.ts':
     "import { label } from '#/features/labels';\n\nexport const main = label;\n",
-  'apps/web/tsconfig.json': jsonFileOf({
-    extends: './tsconfig.src.json',
-    files: [],
-    include: [],
-    references: [
-      {
-        path: './tsconfig.src.json',
-      },
-      {
-        path: './tsconfig.test.json',
-      },
-    ],
-  }),
-  'apps/web/tsconfig.src.json': tsconfigOf({
-    exclude: [
-      'src/**/__tests__',
-    ],
-    parts: [
-      'self',
-      'core',
-      'browser',
-      'workspace',
-    ],
+  'apps/web/tsconfig.json': tsconfigOf({
     references: [
       '../../packages/orders',
-    ],
-  }),
-  'apps/web/tsconfig.test.json': jsonFileOf({
-    extends: './tsconfig.src.json',
-    compilerOptions: {
-      types: [
-        'bun',
-      ],
-    },
-    include: [
-      'src/**/__tests__',
-    ],
-    exclude: [],
-    references: [
-      {
-        path: './tsconfig.src.json',
-      },
     ],
   }),
 };
@@ -493,15 +402,8 @@ const apiAndShared: Files = {
     "export type { Cents } from './domain/value-objects';\n",
   'packages/money/src/index.ts': "export type { Cents } from './features/currency';\n",
   'packages/money/tsconfig.json': tsconfigOf({
-    parts: [
-      'self',
-      'core',
-      'workspace',
-    ],
     references: [],
   }),
-  'apps/api/bunfig.toml': bunfig,
-  'apps/api/bunfig.integration.toml': bunfigIntegration,
   'apps/api/package.json': manifestOf({
     dependencies: [
       '@shop/money',
@@ -509,7 +411,6 @@ const apiAndShared: Files = {
     ],
     name: '@shop/api',
   }),
-  'apps/api/src/__tests__/sandbox.fixtures.ts': sandbox,
   'apps/api/src/features/totals/app/__tests__/total-line.test.ts': `import { expect, it } from 'bun:test';
 
 import type { Cents } from '@shop/money';
@@ -546,27 +447,17 @@ export const totalLine = (order: Totalled): string => \`\${describeOrder(order)}
   'apps/api/src/main.ts':
     "import { totalLine } from './features/totals';\n\nexport const main = totalLine;\n",
   'apps/api/tsconfig.json': tsconfigOf({
-    parts: [
-      'self',
-      'core',
-      'bun',
-      'nestjs',
-      'workspace',
-    ],
     references: [
       '../../packages/money',
       '../../packages/orders',
     ],
   }),
-  'packages/orders/bunfig.toml': bunfig,
-  'packages/orders/bunfig.integration.toml': bunfigIntegration,
   'packages/orders/package.json': manifestOf({
     exports: {
       '.': './src/index.ts',
     },
     name: '@shop/orders',
   }),
-  'packages/orders/src/__tests__/sandbox.fixtures.ts': sandbox,
   'packages/orders/src/features/orders/domain/entities/__tests__/order.entity.test.ts': `import { expect, it } from 'bun:test';
 
 import { describeOrder, type OrderId, refundLine } from '../order.entity.ts';
@@ -611,88 +502,184 @@ export const refundLine = (id: OrderId): string => \`refund of \${ORDER_PREFIX}:
   'packages/orders/src/kernel/constants/order.constants.ts':
     "export const ORDER_PREFIX = 'order';\n",
   'packages/orders/tsconfig.json': tsconfigOf({
-    parts: [
-      'self',
-      'core',
-      'bun',
-      'workspace',
-    ],
     references: [],
   }),
 };
 
-// A package's knip, its parts joined, every list after the lists before it,
-// written as Biome formats it.
-const knipOf = (input: { depth: number; own: readonly string[] }): string => {
-  const archive = `${'../'.repeat(input.depth)}${PRESETS}/knip`;
+const typescriptTools: readonly string[] = [
+  'bun',
+  'bun-test',
+  'tsc',
+  'biome',
+  'knip',
+  'dependency-cruiser',
+  'git',
+];
 
-  return [
-    `import architecture from '${archive}/architecture/core.mjs';`,
-    `import core from '${archive}/foundation/core.mjs';`,
-    '',
-    'export default {',
-    '  entry: [',
-    '    ...core.entry,',
-    '    ...architecture.entry,',
-    '  ],',
-    '  project: core.project,',
-    ...input.own,
-    '};',
-    '',
-  ].join('\n');
+// The workspace's own pack in the web application: its mutation check runs mutation-check from
+// this repository's sources, as the archive's build is not made for a spec.
+const OWN_PACK = 'pack';
+const strykerPack = `stryker:
+  stryker-runs-the-archive-runner:
+    typescript:
+      stryker.config.json:
+        plugins: !replace
+          - ${fileURLToPath(import.meta.resolve('@droneey/mutation-check/runner'))}
+          - ${fileURLToPath(import.meta.resolve('@droneey/mutation-check/ignorers'))}
+`;
+
+const unitBlocks: Readonly<Record<string, UnitFixture>> = {
+  '.': {
+    domains: [
+      'workspace',
+    ],
+    implementations: [
+      'bun',
+      'tsc',
+      'biome',
+      'knip',
+      'dependency-cruiser',
+      'git',
+      'uv',
+    ],
+    languages: [
+      'typescript',
+      'python',
+    ],
+    name: 'shop',
+  },
+  'apps/api': {
+    domains: [
+      'workspace',
+    ],
+    implementations: [
+      ...typescriptTools,
+      'nestjs',
+    ],
+    languages: [
+      'typescript',
+    ],
+    name: '@shop/api',
+  },
+  'apps/reports': {
+    domains: [
+      'workspace',
+    ],
+    implementations: [
+      'uv',
+      'python-check',
+      'structlog',
+    ],
+    languages: [
+      'python',
+    ],
+    name: 'shop-reports',
+  },
+  'apps/web': {
+    domains: [
+      'workspace',
+    ],
+    implementations: [
+      ...typescriptTools,
+      'stryker',
+    ],
+    languages: [
+      'typescript',
+    ],
+    name: '@shop/web',
+    packs: [
+      OWN_PACK,
+    ],
+    platforms: [
+      'browser',
+    ],
+  },
+  'packages/eros/languages/python': {
+    domains: [
+      'workspace',
+    ],
+    implementations: [
+      'uv',
+      'python-check',
+      'fastapi',
+      'fastmcp',
+    ],
+    languages: [
+      'python',
+    ],
+    name: 'shop-eros',
+  },
+  'packages/eros/languages/typescript': {
+    domains: [
+      'workspace',
+    ],
+    implementations: typescriptTools,
+    languages: [
+      'typescript',
+    ],
+    name: '@shop/eros',
+  },
+  'packages/money': {
+    domains: [
+      'workspace',
+    ],
+    implementations: typescriptTools.filter((block) => block !== 'bun-test'),
+    languages: [
+      'typescript',
+    ],
+    name: '@shop/money',
+  },
+  'packages/orders': {
+    domains: [
+      'workspace',
+    ],
+    implementations: typescriptTools,
+    languages: [
+      'typescript',
+    ],
+    name: '@shop/orders',
+  },
+  'packages/tabula': {
+    domains: [
+      'workspace',
+    ],
+    implementations: [
+      'uv',
+      'python-check',
+    ],
+    languages: [
+      'python',
+    ],
+    name: 'shop-tabula',
+  },
 };
 
-// The workspace's root: one workspace for each language, the parts each tool
-// joins, and the configuration of each package checked by its own parts.
+// apply writes the tools' configurations around the settings the units hold of their own.
 const workspaceFiles: Files = {
   ...installed,
   ...eros,
   ...reports,
   ...web,
   ...apiAndShared,
-  '.gitignore': [
-    readFileSync(join(templates, 'common', 'core', '.gitignore'), 'utf8'),
-    readFileSync(join(templates, 'typescript', 'typescript', '.gitignore'), 'utf8'),
-    readFileSync(join(templates, 'typescript', 'tsc', '.gitignore'), 'utf8'),
-  ].join('\n'),
-  'apps/api/biome.json': jsonFileOf({
-    root: false,
-    extends: [
-      './.droneey/constitution/presets/common/biome/foundation/self.jsonc',
-      './.droneey/constitution/presets/common/biome/foundation/git.jsonc',
-      './.droneey/constitution/presets/typescript/biome/foundation/self.jsonc',
-    ],
-  }),
-  'biome.json': jsonFileOf({
-    extends: [
-      './.droneey/constitution/presets/common/biome/foundation/self.jsonc',
-      './.droneey/constitution/presets/common/biome/foundation/git.jsonc',
-    ],
-  }),
-  // The root's knip reads its own scripts, each package's runs by the configuration in its folder.
-  'knip.config.mjs': `export default {
-  entry: ['scripts/*.ts!'],
-  project: ['scripts/**/*.ts!'],
-  ignoreWorkspaces: ${JSON.stringify(Object.values(UNITS))},
-};
-`,
   ...Object.fromEntries(
-    Object.values(UNITS).map((path) => [
-      `${path}/knip.config.mjs`,
-      knipOf({
-        depth: path.split('/').length,
-        own:
-          path === 'packages/eros/languages/typescript'
-            ? [
-                '  ignoreDependencies: [',
-                "    '@nestjs/common!',",
-                '  ],',
-              ]
-            : [],
-      }),
+    Object.entries(unitBlocks).map(([folder, unit]) => [
+      join(folder, 'constitution.yaml'),
+      constitutionOf(unit),
     ]),
   ),
+  [`apps/web/${OWN_PACK}/presets/stryker/foundation/with/bun-test.yaml`]: strykerPack,
+  // The root's knip reads its own scripts, each package's runs by the configuration in its folder.
+  'knip.jsonc': jsonFileOf({
+    entry: [
+      'scripts/*.ts!',
+    ],
+    ignoreWorkspaces: Object.values(UNITS),
+    project: [
+      'scripts/**/*.ts!',
+    ],
+  }),
   'package.json': jsonFileOf({
+    devDependencies: toolPackages,
     name: 'shop',
     private: true,
     type: 'module',
@@ -701,6 +688,11 @@ const workspaceFiles: Files = {
       'apps/*/languages/typescript',
       'packages/*',
       'packages/*/languages/typescript',
+    ],
+  }),
+  'packages/eros/languages/typescript/knip.jsonc': jsonFileOf({
+    ignoreDependencies: [
+      '@nestjs/common!',
     ],
   }),
   'pyproject.toml': [
@@ -716,20 +708,6 @@ const workspaceFiles: Files = {
     })),
   }),
 };
-
-interface CruiserInput {
-  readonly depth: number;
-  readonly parts: readonly string[];
-}
-
-// Each package's own parts of dependency-cruiser, from its folder, written in the template.
-const cruiserOf = (input: CruiserInput): string =>
-  configFromTemplate(
-    input.parts.map(
-      (part) => `${'../'.repeat(input.depth)}${PRESETS}/dependency-cruiser/${inAxis(part)}.mjs`,
-    ),
-    `${'../'.repeat(input.depth)}.droneey/constitution/presets`,
-  );
 
 interface WriteInput {
   readonly files: Files;
@@ -772,11 +750,6 @@ const link = (folder: string): void => {
 
   mkdirSync(join(folder, '.droneey'));
   symlinkSync(repository, join(folder, '.droneey', 'constitution'));
-  mkdirSync(join(folder, 'apps', 'api', '.droneey'));
-  symlinkSync(
-    '../../../.droneey/constitution',
-    join(folder, 'apps', 'api', '.droneey', 'constitution'),
-  );
   mkdirSync(join(folder, '.shims'));
   writeFileSync(join(folder, '.shims', 'node'), '#!/bin/sh\nexec bun "$@"\n');
   chmodSync(join(folder, '.shims', 'node'), EXECUTABLE);
@@ -786,6 +759,33 @@ const git = (input: { args: readonly string[]; folder: string }): void => {
   spawnSync('git', input.args, {
     cwd: input.folder,
   });
+};
+
+/** @throws Error when the apply fails. */
+const apply = (folder: string): void => {
+  const run = spawnSync(
+    cliPath,
+    [
+      'presets',
+      'apply',
+      '--no-fix',
+      '--plain',
+    ],
+    {
+      cwd: folder,
+      encoding: 'utf8',
+      env: Object.fromEntries([
+        [
+          'PATH',
+          process.env['PATH'],
+        ],
+      ]),
+    },
+  );
+
+  if (run.status !== 0) {
+    throw new Error(`presets apply failed in ${folder}: ${run.stdout}${run.stderr}`);
+  }
 };
 
 // The real path, since the compiler matches a referenced unit's files by it.
@@ -800,6 +800,7 @@ const createWorkspace = (changes: Files = {}): string => {
     folder,
   });
   link(folder);
+  apply(folder);
   git({
     args: [
       'init',
@@ -874,13 +875,9 @@ const removeWorkspace = (workspace: string): void => {
 };
 
 export {
-  bunfigMutation,
   commitBase,
   createWorkspace,
-  cruiserOf,
-  inAxis,
   manifestOf,
-  PRESETS,
   PYTHON_PACKAGES,
   removeWorkspace,
   repository,

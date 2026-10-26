@@ -106,8 +106,6 @@ const resolveDeclaration = (input: ResolveDeclarationInput): Resolution => {
     unread: input.config.unread,
   });
 
-  const { check } = input.config.units[0].config;
-
   return Resolution.create({
     active: activeBlocksOf({
       model,
@@ -117,7 +115,6 @@ const resolveDeclaration = (input: ResolveDeclarationInput): Resolution => {
       id: block.id,
       layer: block.layer,
     })),
-    check,
     listing: listBlocks({
       applied,
       model,

@@ -1,8 +1,8 @@
 ---
 id: poe
-summary: Poe the Poet runs a Python project's tasks and its one check.
+summary: Poe the Poet, the task runner of a Python project.
 requires: [python, toml]
-extends: null
+extends: _task-runner
 abstract: false
 languages: []
 governs: ["pyproject.toml"]
@@ -10,6 +10,6 @@ governs: ["pyproject.toml"]
 
 # Poe the Poet
 
-> Runs the tasks a Python project declares in `pyproject.toml`, each in the environment the package manager entered, and the check that runs the tests and every gate.
+> Runs the tasks a Python project declares in `pyproject.toml`, each in the environment the package manager entered, and the tasks that run every task of one action: `check`, `test`, `fix`.
 
-**Poe the Poet**, the package **`poethepoet`**, is pinned in the `dev` group. Its settings are `[tool.poe]` of the root `pyproject.toml`, which starts from Poe the Poet's template of `pyproject.toml` in the Constitution's release archive: the executor `simple`, and a task `check` whose sequence holds `test` and every `*:check` task the tools' fragments give, in order.
+**Poe the Poet**, the package **`poethepoet`**, is pinned in the `dev` group. Its settings are `[tool.poe]` of the root `pyproject.toml`, into which the program writes the executor `simple`, the tasks each tool's block gives and those that run them by their action.

@@ -2,14 +2,15 @@ import type { ConfigurationFile, ConfigurationFormat } from '../../domain/contra
 import { SettingShape } from '../../domain/contracts';
 import type { Setting } from '../../domain/entities';
 import { readIni, writeIni } from './ini-text.utils';
-import { readJson, writeJson } from './json-text.utils';
+import { readJson, writeJson, writeJsonc } from './json-text.utils';
 import { readLines, writeLines } from './lines-text.utils';
+import type { SettingsText } from './settings-text.types';
 import { readToml, writeToml } from './toml-text.utils';
 import { readYaml, writeYaml } from './yaml-text.utils';
 
 interface Format {
   readonly read: (text: string) => Setting | undefined;
-  readonly write: (input: { settings: Setting; text: string }) => string;
+  readonly write: (input: SettingsText) => string;
 }
 
 const SEPARATOR = '/';
@@ -25,7 +26,7 @@ const formats: Readonly<Record<string, Format>> = {
   },
   '.jsonc': {
     read: readJson,
-    write: writeJson,
+    write: writeJsonc,
   },
   '.toml': {
     read: readToml,
@@ -78,7 +79,9 @@ const createConfigurationFormat = (): ConfigurationFormat => ({
   read: (file: ConfigurationFile): Setting | undefined => formatOf(file)?.read(file.text),
   write: (file): string =>
     formatOf(file)?.write({
+      layout: file.layout,
       settings: file.settings,
+      sorted: file.sorted ?? [],
       text: file.text,
     }) ?? file.text,
 });

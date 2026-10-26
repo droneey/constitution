@@ -2,7 +2,7 @@
 id: _js-runtime
 summary: A JavaScript runtime and the package manifest it reads.
 requires: [typescript, json]
-extends: null
+extends: _task-runner
 abstract: true
 languages: []
 governs: ["package.json"]

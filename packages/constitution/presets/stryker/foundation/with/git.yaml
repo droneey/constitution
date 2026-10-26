@@ -1,0 +1,6 @@
+git:
+  '*':
+    typescript:
+      stryker.config.json:
+        ignorePatterns:
+          - '*/worktrees'

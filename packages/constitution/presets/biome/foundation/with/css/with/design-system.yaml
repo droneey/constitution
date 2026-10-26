@@ -1,0 +1,8 @@
+css:
+  theme-colour-written-in-oklch:
+    css:
+      biome.json:
+        linter:
+          rules:
+            style:
+              noHexColors: error

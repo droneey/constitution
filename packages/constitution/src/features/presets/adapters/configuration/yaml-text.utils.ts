@@ -1,7 +1,7 @@
-import type { Document, Node, YAMLMap } from 'yaml';
+import type { Document, Node, Pair, YAMLMap } from 'yaml';
 import { isMap, isNode, isScalar, isSeq, parseDocument } from 'yaml';
 
-import { attempted, isDeepEqual } from '#/kernel/utils';
+import { attempted, compareText, isDeepEqual } from '#/kernel/utils';
 
 import type { Setting } from '../../domain/entities';
 import { Setting as Settings } from '../../domain/entities';
@@ -15,6 +15,10 @@ const OPTIONS = {
 const MAX_ALIASES = 1000;
 // A word YAML 1.1 reads as a boolean is quoted, so a reader of YAML 1.1 reads it as a string too.
 const YAML_11_BOOLEAN = /^(?:y|yes|n|no|on|off|true|false)$/i;
+// The width the formatters keep.
+const LINE_WIDTH = 100;
+const LONG_TEXT = 80;
+const NEWLINE = '\n';
 
 const documentOf = (text: string): Document | undefined => {
   const document = parseDocument(text, OPTIONS);
@@ -47,8 +51,8 @@ const readYaml = (text: string): Setting | undefined => {
   return document === undefined ? undefined : settingOfDocument(document);
 };
 
-// A node the file did not hold is written as a catalogue writes it: a word YAML 1.1 reads as a truth
-// quoted, a text of lines as a literal block, which the parser's writer gives it by itself.
+// A node the file did not hold is written as a preset file writes it; the parser's writer gives a
+// text of lines its literal block by itself.
 const styled = (node: unknown): void => {
   if (isMap(node)) {
     for (const pair of node.items) {
@@ -67,9 +71,17 @@ const styled = (node: unknown): void => {
     return;
   }
 
-  // Stryker disable next-line ConditionalExpression,LogicalOperator: a scalar of no text takes no quotes, whatever its type says
-  if (isScalar(node) && typeof node.value === 'string' && YAML_11_BOOLEAN.test(node.value)) {
+  // Stryker disable next-line ConditionalExpression,LogicalOperator,BlockStatement: a node of no text is left unstyled either way
+  if (!(isScalar(node) && typeof node.value === 'string')) {
+    return;
+  }
+
+  if (YAML_11_BOOLEAN.test(node.value)) {
     node.type = 'QUOTE_SINGLE';
+  }
+
+  if (node.value.length > LONG_TEXT && !node.value.includes(NEWLINE)) {
+    node.type = 'BLOCK_FOLDED';
   }
 };
 
@@ -81,8 +93,9 @@ const nodeOf = (document: Document, setting: Setting): Node => {
   return node;
 };
 
-const keysOf = (node: YAMLMap): readonly unknown[] =>
-  node.items.map((pair) => (isScalar(pair.key) ? pair.key.value : pair.key));
+const keyOfPair = (pair: Pair): unknown => (isScalar(pair.key) ? pair.key.value : pair.key);
+
+const keysOf = (node: YAMLMap): readonly unknown[] => node.items.map(keyOfPair);
 
 // The settings laid on the document: only what changed is touched, so the file's comments stay; a
 // list keeps the nodes of the items it keeps, and a value the settings cannot hold is left alone.
@@ -162,9 +175,21 @@ const writeYaml = (input: SettingsText): string => {
     path: [],
   });
 
+  // a map kept sorted keeps its pairs' nodes and comments
+  for (const path of input.sorted) {
+    const node = document.getIn(path);
+
+    if (isMap(node)) {
+      node.items = node.items.toSorted((left, right) =>
+        compareText(String(keyOfPair(left)), String(keyOfPair(right))),
+      );
+    }
+  }
+
+  // As the formatter writes YAML.
   return document.toString({
-    // A width of 0 folds no line.
-    lineWidth: 0,
+    lineWidth: LINE_WIDTH,
+    singleQuote: true,
   });
 };
 

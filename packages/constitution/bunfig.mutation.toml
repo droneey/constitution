@@ -1,7 +1,8 @@
 [test]
 root = "."
-pathIgnorePatterns = ["tests/e2e/**"]
+pathIgnorePatterns = ["tests/**", "tests/e2e/**"]
 coverage = false
+preload = ["./src/__tests__/sandbox.fixtures.ts"]
 
 [run]
 bun = true

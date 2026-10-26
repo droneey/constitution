@@ -18,10 +18,14 @@ interface PresetPair {
 
 type PresetValue =
   | {
+      /** `!words`: a list the file holds as one text, its items joined by spaces */
+      readonly isWords?: boolean;
       readonly kind: ValueKind.Default | ValueKind.Plain | ValueKind.Replace;
       readonly setting: Setting;
     }
   | {
+      /** `!sorted`: the file keeps the map's keys, its own among them, in their order as texts */
+      readonly isSorted?: boolean;
       readonly kind: ValueKind.Map;
       readonly pairs: readonly PresetPair[];
     };
@@ -80,7 +84,19 @@ const plain = (setting: Setting): PresetValue => ({
   setting,
 });
 
+const wordsOf = (words: readonly Setting[]): PresetValue => ({
+  isWords: true,
+  kind: ValueKind.Plain,
+  setting: words,
+});
+
 const mapOf = (pairs: readonly PresetPair[]): PresetValue => ({
+  kind: ValueKind.Map,
+  pairs,
+});
+
+const sortedMapOf = (pairs: readonly PresetPair[]): PresetValue => ({
+  isSorted: true,
   kind: ValueKind.Map,
   pairs,
 });
@@ -92,6 +108,8 @@ const PresetValue = {
   plain,
   settingOf,
   slotOf,
+  sortedMapOf,
+  wordsOf,
 } as const;
 
 export type { PresetPair };

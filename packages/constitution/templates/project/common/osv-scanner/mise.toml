@@ -1,8 +1,0 @@
-# osv-scanner: pinned by mise
-[tools]
-osv-scanner = "2.7.0"
-
-# osv-scanner: the lockfiles, their licences held to the parts' allowlist; --no-ignore, since it reads a checkout
-# nested in a folder another repository ignores, an agent's worktree, as ignored and finds no lockfile
-[tasks."audit:check"]
-run = 'licenses="$(cat <parts> | paste -sd, -)" && osv-scanner scan source --licenses="$licenses" --no-ignore .'

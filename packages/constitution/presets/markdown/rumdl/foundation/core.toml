@@ -1,6 +1,0 @@
-extends = "self.toml"
-
-[global]
-extend-enable = [
-  "MD087",
-]

@@ -1,7 +1,6 @@
 import type { RequirementAnswer, Rule } from '#/kernel/entities';
 import { BlockModel } from '#/kernel/entities';
 
-import type { Binding } from './binding.entity';
 import { Block } from './block.entity';
 import type {
   HooksManifest,
@@ -9,7 +8,6 @@ import type {
   MarketplaceManifest,
   PluginManifest,
 } from './manifest.entity';
-import type { PresetFile } from './preset-file.entity';
 import type { Agent, Skill } from './skill.entity';
 
 /** Each document is absent when its file is. */
@@ -24,16 +22,13 @@ interface Documents {
 }
 
 interface Constitution {
-  readonly bindings: readonly Binding[];
   readonly blocks: readonly Block[];
   readonly documents: Documents;
   readonly paths: ReadonlySet<string>;
-  readonly presets: readonly PresetFile[];
   /** the files of the repository that holds the Constitution, which its README and decision log link to */
   readonly repositoryPaths: ReadonlySet<string>;
   readonly requirementAnswers: readonly RequirementAnswer[];
   readonly rules: readonly Rule[];
-  readonly templates: readonly PresetFile[];
 }
 
 /** The model of its blocks, a pack's base among them, that a check of its presets reads. */

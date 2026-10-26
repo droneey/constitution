@@ -58,7 +58,7 @@ describe('readRelease', () => {
         version: Version.create('1.0.0'),
       },
       files: {
-        [manifest]: '{\n  "constitutionFormat": 3,\n  "version": "1.0.0"\n}\n',
+        [manifest]: '{\n  "constitutionFormat": 4,\n  "version": "1.0.0"\n}\n',
       },
     },
     {
@@ -69,7 +69,7 @@ describe('readRelease', () => {
       },
       files: {
         [manifest]:
-          '{"constitutionFormat": 2, "constitutionFormat"\t:\t3,\n"version" :"2.0.0-rc.1", "x": "y",\n"constitutionFormat": 4, "version": "9.9.9"}\n',
+          '{"constitutionFormat": 2, "constitutionFormat"\t:\t4,\n"version" :"2.0.0-rc.1", "x": "y",\n"constitutionFormat": 5, "version": "9.9.9"}\n',
       },
     },
   ])('should give the release the project pins when $condition', ({ expected, files }) => {
@@ -112,7 +112,7 @@ describe('readRelease', () => {
       code: ProjectFailure.VersionMissing,
       condition: 'its manifest names no version',
       files: {
-        [manifest]: '{"constitutionFormat": 3}\n',
+        [manifest]: '{"constitutionFormat": 4}\n',
       },
       unreadable: [],
     },
@@ -121,7 +121,7 @@ describe('readRelease', () => {
       code: ProjectFailure.VersionMissing,
       condition: 'its manifest names an empty version',
       files: {
-        [manifest]: '{"constitutionFormat": 3, "version": ""}\n',
+        [manifest]: '{"constitutionFormat": 4, "version": ""}\n',
       },
       unreadable: [],
     },
@@ -130,7 +130,7 @@ describe('readRelease', () => {
       code: ProjectFailure.VersionMissing,
       condition: 'its manifest names a version that is no release version',
       files: {
-        [manifest]: '{"constitutionFormat": 3, "version": "next"}\n',
+        [manifest]: '{"constitutionFormat": 4, "version": "next"}\n',
       },
       unreadable: [],
     },

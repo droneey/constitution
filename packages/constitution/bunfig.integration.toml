@@ -11,8 +11,8 @@ coveragePathIgnorePatterns = [
   "**/__tests__/**",
   "**/main.*",
   "**/root/wiring.*",
-  # the other units of the workspace, which their own specs cover
-  "../**",
+  "**/*.gen.*",
+  "../**"
 ]
 
 [run]

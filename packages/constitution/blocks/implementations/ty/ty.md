@@ -1,15 +1,15 @@
 ---
 id: ty
 summary: ty checks the types of Python.
-requires: [python]
+requires: [python, toml, _task-runner]
 extends: null
 abstract: false
 languages: [python]
-governs: []
+governs: ["pyproject.toml"]
 ---
 
 # ty
 
 > The type checker, **`ty`**, checks the types of the program and its specs.
 
-ty takes its configuration file on the command line, beside which it reads no `[tool.ty]` of `pyproject.toml`, so the part is taken whole. ty is in beta: a release may add rules, and the part makes each an error at once.
+ty reads `[tool.ty]` of `pyproject.toml`, into which the program writes its settings. ty is in beta: a release may add rules, and the settings make each an error at once.

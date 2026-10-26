@@ -7,7 +7,6 @@ import { textOf } from '#/shared/cli';
 import { FrontMatterField } from '../../../domain/entities';
 import type { LoadFindingDetails } from '../../../domain/use-cases/queries/check';
 import {
-  BindingsFileCode,
   BlockLoadCode,
   FrontMatterReadCode,
   LoadCode,
@@ -20,35 +19,6 @@ describe('loadTexts', () => {
     problem: ProblemOf<LoadFindingDetails>;
     text: string;
   }>([
-    {
-      problem: {
-        code: BindingsFileCode.NotYaml,
-        details: {
-          reason: 'Unexpected flow-seq-end token',
-        },
-      },
-      text: 'is not valid YAML: Unexpected flow-seq-end token',
-    },
-    {
-      problem: {
-        code: BindingsFileCode.OffSchema,
-        details: {
-          field: 'core.any-never-typed',
-          reason: 'Too small',
-        },
-      },
-      text: 'does not match its schema: core.any-never-typed: Too small',
-    },
-    {
-      problem: {
-        code: BindingsFileCode.OffSchema,
-        details: {
-          field: '',
-          reason: 'Invalid input',
-        },
-      },
-      text: 'does not match its schema: <root>: Invalid input',
-    },
     {
       problem: {
         code: BlockLoadCode.SecondaryFrontMatter,

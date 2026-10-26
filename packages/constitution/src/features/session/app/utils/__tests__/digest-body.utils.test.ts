@@ -31,7 +31,7 @@ describe('budgetedBodyOf', () => {
       body: [
         '⚠️ Warnings — tell the user at the start of the session',
         '- unknown: nope is not a block',
-        '- wiring: cannot check the wiring',
+        '- configurations: cannot check the configurations',
         '',
         '# Core',
         '',
@@ -47,7 +47,7 @@ describe('budgetedBodyOf', () => {
       isStartup: true,
       warnings: [
         '- unknown: nope is not a block',
-        '- wiring: cannot check the wiring',
+        '- configurations: cannot check the configurations',
       ],
     },
     {

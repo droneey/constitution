@@ -1,8 +1,0 @@
-[analysis]
-respect-type-ignore-comments = false
-
-[rules]
-all = "error"
-
-[terminal]
-error-on-warning = true

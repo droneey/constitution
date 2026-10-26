@@ -1,36 +1,65 @@
-extends:
-  - .droneey/constitution/presets/common/lefthook/workflow/version-control.yaml
-  - .droneey/constitution/presets/common/lefthook/workflow/betterleaks.yaml
-  - .droneey/constitution/presets/common/lefthook/workflow/biome.yaml
-  - .droneey/constitution/presets/common/lefthook/workflow/ruff.yaml
-  - .droneey/constitution/presets/common/lefthook/workflow/rumdl.yaml
-  - .droneey/constitution/presets/common/lefthook/workflow/shellcheck.yaml
-  - .droneey/constitution/presets/common/lefthook/workflow/shfmt.yaml
-  - .droneey/constitution/presets/common/lefthook/workflow/tombi.yaml
-
-# ruff finds no configuration of this repository over a template's Python, and its defaults would
-# rewrite it
 pre-commit:
   jobs:
+    - name: validate-branch
+      run: |
+        BRANCH="$(git branch --show-current)"
+        if [ -z "$BRANCH" ]; then
+          exit 0
+        fi
+        PATTERN='^(feature|fix|hotfix)'
+        PATTERN="$PATTERN/[0-9]+-[a-z0-9]+(-[a-z0-9]+)*\$"
+        if ! echo "$BRANCH" | grep -qE "$PATTERN"; then
+          echo "Branch '$BRANCH' must match: (feature|fix|hotfix)/{id}-{name}"
+          exit 1
+        fi
+    - name: secrets
+      run: betterleaks git --pre-commit --staged --redact --no-banner
+    - name: biome
+      run: bunx --bun biome check --write --no-errors-on-unmatched {staged_files}
+      stage_fixed: true
     - name: ruff
-      exclude:
-        - 'packages/constitution/templates/**'
-
-    # The root's Biome, rumdl and tombi jobs skip the units, as the root's configurations do;
-    # shellcheck and shfmt read no list of folders to skip, so their jobs name the workspace's. The
-    # jobs below run in each unit's own folder.
-    - name: shellcheck
-      exclude:
-        - 'apps/**'
-        - 'packages/**'
+      stage_fixed: true
+      glob: '*.{py,pyi}'
+      run: >-
+        uv run --locked ruff check --fix --force-exclude {staged_files} && uv run --locked ruff
+        format --force-exclude {staged_files}
+    - name: rumdl
+      stage_fixed: true
+      glob: '*.md'
+      run: rumdl check --fix {staged_files}
     - name: shfmt
+      stage_fixed: true
+      glob: '*.{sh,bash}'
+      run: shfmt -w {staged_files}
       exclude:
-        - 'apps/**'
-        - 'packages/**'
+        - apps/docs/**
+        - packages/constitution/**
+        - packages/design-browser/**
+        - packages/design-cli/**
+        - packages/design-tokens/**
+        - packages/mutation-check/languages/python/**
+        - packages/mutation-check/languages/typescript/**
+        - packages/python-check/**
+    - name: tombi
+      stage_fixed: true
+      glob: '*.toml'
+      run: tombi format {staged_files}
+    - name: shellcheck
+      glob: '*.{sh,bash}'
+      run: shellcheck {staged_files}
+      exclude:
+        - apps/docs/**
+        - packages/constitution/**
+        - packages/design-browser/**
+        - packages/design-cli/**
+        - packages/design-tokens/**
+        - packages/mutation-check/languages/python/**
+        - packages/mutation-check/languages/typescript/**
+        - packages/python-check/**
     - name: biome apps/docs
       root: apps/docs/
       stage_fixed: true
-      run: &unit-lint bun run lint:fix --no-errors-on-unmatched {staged_files}
+      run: &unit-lint bun run fix:lint --no-errors-on-unmatched {staged_files}
     - name: biome packages/constitution
       root: packages/constitution/
       stage_fixed: true
@@ -63,7 +92,7 @@ pre-commit:
       root: apps/docs/
       glob: '*.md'
       stage_fixed: true
-      run: &unit-markdown bun run markdown:fix {staged_files}
+      run: &unit-markdown bun run fix:markdown {staged_files}
     - name: rumdl packages/constitution
       root: packages/constitution/
       glob: '*.md'
@@ -87,7 +116,7 @@ pre-commit:
     - name: shell apps/docs
       root: apps/docs/
       glob: '*.{sh,bash}'
-      run: &unit-shell bun run shell:check
+      run: &unit-shell bun run check:shell
     - name: shell packages/constitution
       root: packages/constitution/
       glob: '*.{sh,bash}'
@@ -137,3 +166,49 @@ pre-commit:
       glob: '*.toml'
       stage_fixed: true
       run: *unit-toml
+  parallel: true
+commit-msg:
+  jobs:
+    - name: commit-message
+      run: |
+        MSG="$(head -1 {1})"
+
+        if [ "${#MSG}" -gt 100 ]; then
+          echo "Header must be 100 characters or less (got ${#MSG})"
+          exit 1
+        fi
+
+        TYPE="$(printf '%s\n' "$MSG" | sed -n 's/^\([a-z]*\)!\{0,1\}: .*/\1/p')"
+        SUBJECT="$(printf '%s\n' "$MSG" | sed -n 's/^[a-z]*!\{0,1\}: \(.*\)/\1/p')"
+
+        if [ -z "$TYPE" ] || [ -z "$SUBJECT" ]; then
+          echo "Commit must match format: type: Subject," \
+            "or type!: Subject for a breaking change"
+          exit 1
+        fi
+
+        case "$TYPE" in
+          feat|fix|refactor|chore) ;;
+          *) echo "Invalid type '$TYPE'. Allowed: feat, fix, refactor, chore"; exit 1 ;;
+        esac
+
+        FIRST_CHAR="$(printf '%s' "$SUBJECT" | cut -c1)"
+        if ! printf '%s' "$FIRST_CHAR" | grep -q '[A-Z]'; then
+          echo "Subject must start with an uppercase letter (sentence-case)"
+          exit 1
+        fi
+
+        case "$(printf '%s' "$SUBJECT" | tr '[:upper:]' '[:lower:]')" in
+          update | updates | changes | change | misc | wip | fix | fixes | \
+            "fix stuff" | stuff | \
+            "minor changes" | "small fix" | tmp | test)
+            echo "Subject '$SUBJECT' says nothing; say what changed"
+            exit 1
+            ;;
+        esac
+
+        BODY="$(sed '1d;/^#/d;/^$/d' {1} | grep -vE '^[A-Za-z][A-Za-z-]*: .+$' || true)"
+        if [ -n "$BODY" ]; then
+          echo "Body must be empty; a footer holds only trailers"
+          exit 1
+        fi

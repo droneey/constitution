@@ -1,3 +1,0 @@
-# FastAPI: the edge, and the delivery units of app/ that declare its routers
-[homes]
-fastapi = ["edge", "app"]

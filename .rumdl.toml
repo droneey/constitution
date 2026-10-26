@@ -1,14 +1,17 @@
-# rumdl: the Constitution's parts, each extending the one before; rumdl extends the last
-# from .droneey/constitution/presets/markdown/rumdl/foundation/self.toml, .droneey/constitution/presets/markdown/rumdl/foundation/core.toml
-extends = ".droneey/constitution/presets/markdown/rumdl/foundation/core.toml"
-
-# rumdl: the members, each checked by its own configuration in its own run
 [global]
-exclude = [
-  "apps/**",
-  "packages/**",
-]
 force_exclude = true
+extend-enable = ["MD087", "MD001", "MD025", "MD036", "MD040", "MD045", "MD051", "MD057", "MD059"]
+exclude = [
+  "apps/docs/**",
+  "packages/constitution/**",
+  "packages/design-browser/**",
+  "packages/design-cli/**",
+  "packages/design-tokens/**",
+  "packages/mutation-check/languages/python/**",
+  "packages/mutation-check/languages/typescript/**",
+  "packages/python-check/**"
+]
+disable = ["MD013", "MD041"]
 
 # The archive's entries, repeated since this table replaces its own.
 [per-file-ignores]
@@ -17,3 +20,15 @@ force_exclude = true
 "**/SKILL.md" = ["MD033"]
 # The brand's banner switches with the reader's theme and its badges sit centred, which Markdown cannot write.
 "README.md" = ["MD033"]
+
+[MD046]
+style = "fenced"
+
+[MD057]
+absolute-links = "relative_to_roots"
+
+[MD033]
+allowed-elements = ["details", "summary", "kbd", "img"]
+
+[MD024]
+siblings-only = true

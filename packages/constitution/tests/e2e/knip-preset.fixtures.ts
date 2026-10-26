@@ -1,13 +1,16 @@
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
 import { z } from 'zod';
 
+import { appliedUnit } from './applied-unit.fixtures';
+
 interface Project {
+  /** the blocks of the unit beside its language's and knip */
+  blocks?: readonly string[];
   files: Readonly<Record<string, string>>;
-  parts?: readonly string[];
   production?: boolean;
   scripts?: Readonly<Record<string, string>>;
 }
@@ -37,25 +40,22 @@ const report = z.object({
   ),
 });
 
-const configOf = (parts: readonly string[]): string => {
-  const names = parts.map((_, index) => `part${index}`);
-
-  return `import architecture from './.droneey/constitution/presets/typescript/knip/architecture/core.mjs';
-import core from './.droneey/constitution/presets/typescript/knip/foundation/core.mjs';
-${parts
-  .map(
-    (part, index) =>
-      `import ${names[index]} from './.droneey/constitution/presets/${part.replace('/', '/knip/').replace(/\/knip\/(?!architecture\/|workflow\/)/, '/knip/foundation/')}.mjs';`,
-  )
-  .join('\n')}
-
-export default {
-  entry: [...core.entry, ...architecture.entry],
-  project: core.project,
-  ignoreBinaries: [${names.map((name) => `...${name}.ignoreBinaries`).join(', ')}],
-};
-`;
-};
+const configOf = (blocks: readonly string[]): string =>
+  readFileSync(
+    join(
+      appliedUnit({
+        implementations: [
+          'knip',
+          ...blocks,
+        ],
+        languages: [
+          'typescript',
+        ],
+      }),
+      'knip.jsonc',
+    ),
+    'utf8',
+  );
 
 const repository = join(import.meta.dir, '..', '..');
 const knip = join(repository, 'node_modules', '.bin', 'knip');
@@ -66,7 +66,7 @@ const unusedCode = (project: Project): Unused => {
   try {
     const files = {
       ...project.files,
-      'knip.config.ts': configOf(project.parts ?? []),
+      'knip.jsonc': configOf(project.blocks ?? []),
       'package.json': JSON.stringify({
         name: 'fixture',
         scripts: {
@@ -83,9 +83,6 @@ const unusedCode = (project: Project): Unused => {
       });
       writeFileSync(join(folder, path), text);
     }
-
-    mkdirSync(join(folder, '.droneey'));
-    symlinkSync(repository, join(folder, '.droneey', 'constitution'));
 
     const running = spawnSync(
       knip,

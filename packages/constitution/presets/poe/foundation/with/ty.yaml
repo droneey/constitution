@@ -1,0 +1,8 @@
+ty:
+  '*':
+    python:
+      pyproject.toml:
+        tool:
+          poe:
+            tasks:
+              check:types: ty check

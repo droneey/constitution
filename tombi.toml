@@ -1,5 +1,3 @@
-# tombi — the Constitution's parts, copied, each between its two lines, since tombi reads no other file
-# from .droneey/constitution/presets/toml/tombi/foundation/self.toml
 toml-version = "v1.0.0"
 
 [format.rules]
@@ -7,22 +5,30 @@ indent-width = 2
 line-width = 100
 trailing-comment-space-width = 1
 
-[schema.format.rules]
-table-keys-order.enabled = false
-array-values-order.enabled = false
+[schema.format.rules.array-values-order]
+enabled = false
 
-# end .droneey/constitution/presets/toml/tombi/foundation/self.toml
-# from .droneey/constitution/presets/toml/tombi/foundation/mise.toml
-# mise writes the lockfiles of the tools it installs from npm and PyPI
-[[overrides]]
-files.include = [".mise/locks/**"]
-format.enabled = false
-lint.enabled = false
-# end .droneey/constitution/presets/toml/tombi/foundation/mise.toml
+[schema.format.rules.table-keys-order]
+enabled = false
 
-# tombi — the members, each checked by its own configuration in its own run
 [files]
 exclude = [
-  "apps/**",
-  "packages/**",
+  "apps/docs/**",
+  "packages/constitution/**",
+  "packages/design-browser/**",
+  "packages/design-cli/**",
+  "packages/design-tokens/**",
+  "packages/mutation-check/languages/python/**",
+  "packages/mutation-check/languages/typescript/**",
+  "packages/python-check/**"
 ]
+
+[[overrides]]
+[overrides.files]
+include = [".mise/locks/**"]
+
+[overrides.format]
+enabled = false
+
+[overrides.lint]
+enabled = false

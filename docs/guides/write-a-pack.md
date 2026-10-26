@@ -7,18 +7,17 @@
 A pack has no manifest and nothing generated:
 
 ```text
-constitution/               the pack, in any folder
+pack/                       the pack, in any folder
 ├── blocks/
 │   └── implementations/
 │       └── posthog/
 │           ├── posthog.md  the block's passport
 │           └── foundation/
 │               └── consent.md  a chapter of its rules
-├── presets/                when a tool holds its rules
-└── templates/              when it starts a project's files
+└── presets/                when a tool holds its rules, laid out as the release's presets
 ```
 
-`/constitution:ratify` offers a draft block in `constitution/` for every library it finds without one. To start one by hand, copy `.droneey/constitution/templates/block/` into the pack as `blocks/implementations/<id>/`, rename the passport `block.md` to `<id>.md` and `foundation/chapter.md` to the subject of its rules, and follow [the block format](../reference/block-format.md).
+`/constitution:ratify` offers a draft block in `pack/` for every library it finds without one. To start one by hand, copy `.droneey/constitution/templates/block/` into the pack as `blocks/implementations/<id>/`, rename the passport `block.md` to `<id>.md` and `foundation/chapter.md` to the subject of its rules, and follow [the block format](../reference/block-format.md).
 
 ## List it
 
@@ -29,7 +28,7 @@ implementations:
   - react-dom
   - posthog
 packs:
-  - constitution
+  - pack
 ```
 
 A pack shared between projects is linked as the release is, by mise, for example into `.droneey/constitution-extra`, and listed by that path.
@@ -38,7 +37,7 @@ A pack shared between projects is linked as the release is, by mise, for example
 
 - It tightens: a pack's rules add to the Constitution's and never replace or loosen them.
 - Its blocks are read like the Constitution's: the digest lists them with their pack, and the reminders name their files.
-- Its presets are extended by path, as the Constitution's are.
+- Its presets join the Constitution's in every unit that lists the pack, as the release's do; a package's own pack, in `<package>/pack/`, holds the settings that package alone needs.
 - A pack that is not installed, an id that is already taken and a rule that tightens an unknown rule are warnings in the digest.
 
 ## Check it

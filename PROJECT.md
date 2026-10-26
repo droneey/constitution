@@ -16,7 +16,7 @@ The Droneey Constitution: the engineering rules every Droneey repository is buil
 
 - **Blocks** — the rules, split by layer — core, domains, contexts, implementations — and inside each block by axis, a folder each of one form: `foundation`, always followed, and the optional `architecture` and `workflow`.
 - **Validation** — the checks that keep every block sound and consistent with the others.
-- **Presets** — the tool configurations that hold the tool-checked rules, split into parts by scope, tool and axis, with the bindings that say which setting holds which rule.
+- **Presets** — the settings that hold the tool-checked rules, each keyed by the rule it holds, which the program writes into a project's configurations.
 - **Delivery** — the release archive `constitution.tar.gz`, which a project pins through mise and which carries the blocks, the digests generated from them, the presets and the templates; the `constitution` program of the same release, compiled for each platform, which checks a project and does the hooks' work; and the plugin, the engine installed from its release tag: the session-start hook that reads the project's digests, the skills that write a project's files, and the reviewer agent.
 
 ## Core entities and relationships
@@ -58,11 +58,11 @@ The Droneey Constitution: the engineering rules every Droneey repository is buil
 - **Override** — a project's recorded lowering of one rule, with the user's consent and a reason.
 - **Pack** — a folder of blocks beside the Constitution's, shaped like it, that a project lists under `packs:`.
 - **Release** — a tagged version of the Constitution, installed by mise into `.droneey/constitution/`.
-- **Preset** — the configuration of one tool that holds rules, split into parts.
-- **Preset scope** — the language a preset's tool serves, or `common` for a tool every project runs: the first folder under `presets/` and `templates/project/`.
-- **Part** — one file of a preset, named after the block its settings need.
-- **Binding** — an entry of `bindings.yaml`: which setting of which part holds which rule.
-- **Template** — a file a project starts from: `templates/project/<scope>/<block>/` holds the files that wire a block's presets in, beside the starting `constitution.yaml`, `PROJECT.md`, `DECISIONS.md` and a new block's skeleton.
+- **Preset set** — every preset of one pack, the Constitution's or a project's.
+- **Preset file** — the settings one tool reads on one axis, `presets/<reader>/<axis>.yaml`, with those that need a block beyond its reach under `with/`.
+- **Entry** — one setting of a preset file, for one rule of a block or the tool's own under `*`, for one language and one file.
+- **Lock** — `constitution.lock`, beside a unit's `constitution.yaml`: what the program last wrote into the unit's files.
+- **Template** — a file a project starts from: the starting `constitution.yaml`, `PROJECT.md`, `DECISIONS.md` and a new block's skeleton.
 - **Digest** — what the plugin gives an agent at the start of a session: the release, the warnings and the active blocks.
 - **Check** — the one command that runs every tool, named by `check:`.
 - **Owned word** — a brand, a language or a file name that only its block and the blocks that depend on it may write.

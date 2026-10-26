@@ -1,0 +1,9 @@
+tsc:
+  unit-built-as-a-composite-project:
+    typescript:
+      tsconfig.json:
+        compilerOptions:
+          composite: true
+          noEmit: !replace false
+          emitDeclarationOnly: true
+          outDir: ${configDir}/${role.declaration-cache}

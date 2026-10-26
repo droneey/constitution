@@ -30,8 +30,49 @@ const CLOSERS = /[\]}]/g;
 const BLANK_RUN = /\n{3,}/g;
 // smol-toml writes a value alone only under a key; the key it is given here goes with its prefix.
 const VALUE_PREFIX = 'value = ';
+// The width the formatters keep.
+const LINE_WIDTH = 100;
+const ITEM_INDENT = '  ';
+const ARRAY_OPEN = '= [';
+const ARRAY_CLOSE = ']';
+const NOT_FOUND = -1;
+// smol-toml pads an array's brackets with spaces, which the formatter takes out; a string keeps its own.
+const paddedBracket = new RegExp(`(${STRINGS.source})|\\[ | \\]`, 'g');
+const itemPattern = new RegExp(`(?:${STRINGS.source}|[^,"'])+`, 'g');
+// An array that holds a table or an array stays as written.
+const NESTED = /[[\]{}]/;
 
 const isTomlError = (error: unknown): boolean => error instanceof TomlError;
+
+// As the formatter writes it, an array past the width breaks to one item a line.
+const styledLine = (line: string): string => {
+  const unpadded = line.replace(paddedBracket, (match, text?: string) => text ?? match.trim());
+  const open = unpadded.indexOf(ARRAY_OPEN);
+  const key = unpadded.slice(0, open + ARRAY_OPEN.length);
+  const items = unpadded.slice(key.length, -ARRAY_CLOSE.length);
+  const isFlatArray =
+    open !== NOT_FOUND &&
+    unpadded.endsWith(ARRAY_CLOSE) &&
+    // Stryker disable next-line StringLiteral: what stands for a string only has to hold no bracket
+    !NESTED.test(items.replace(STRINGS, ''));
+
+  if (unpadded.length <= LINE_WIDTH || !isFlatArray) {
+    return unpadded;
+  }
+
+  const indent = ' '.repeat(key.length - key.trimStart().length);
+
+  return [
+    key,
+    // Stryker disable next-line ArrayDeclaration: a line past the width holds items
+    (items.match(itemPattern) ?? [])
+      .map((listed) => `${indent}${ITEM_INDENT}${listed.trim()}`)
+      .join(`,${NEWLINE}`),
+    `${indent}${ARRAY_CLOSE}`,
+  ].join(NEWLINE);
+};
+
+const styled = (text: string): string => text.split(NEWLINE).map(styledLine).join(NEWLINE);
 
 const readToml = (text: string): Setting | undefined =>
   settingOfWire(
@@ -96,10 +137,6 @@ const rootOf = (setting: Setting | undefined): SettingMap =>
 const keyText = (key: string): string => (BARE_KEY.test(key) ? key : JSON.stringify(key));
 
 const inlineOf = (setting: Setting): string => {
-  if (Settings.isList(setting)) {
-    return `[${setting.map(inlineOf).join(', ')}]`;
-  }
-
   if (Settings.isMap(setting)) {
     return `{ ${Object.entries(setting)
       .map(([key, held]) => `${keyText(key)} = ${inlineOf(held)}`)
@@ -396,7 +433,7 @@ const writeToml = (input: SettingsText): string => {
   // keys the file dots, at the root or under a header of no section, are no plain keys to splice:
   // the file is written again whole
   if (root === undefined || blocks.sections.some(isLoose(sections))) {
-    return `${stringify(settings).trim()}${NEWLINE}`;
+    return `${styled(stringify(settings).trim())}${NEWLINE}`;
   }
 
   const rewrite: Rewrite = {
@@ -437,14 +474,16 @@ const writeToml = (input: SettingsText): string => {
       '',
     ]);
 
-  return `${[
-    ...root,
-    ...lines,
-    ...appended,
-  ]
-    .join(NEWLINE)
-    .replace(BLANK_RUN, `${NEWLINE}${NEWLINE}`)
-    .trim()}${NEWLINE}`;
+  return `${styled(
+    [
+      ...root,
+      ...lines,
+      ...appended,
+    ]
+      .join(NEWLINE)
+      .replace(BLANK_RUN, `${NEWLINE}${NEWLINE}`)
+      .trim(),
+  )}${NEWLINE}`;
 };
 
 export { readToml, writeToml };

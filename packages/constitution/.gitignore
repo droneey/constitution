@@ -1,18 +1,62 @@
-# core: build
-dist/
-coverage/
+# The tools the release build makes
+/tools/
 
-# typescript: dependencies
-node_modules/
+# machine local files ignored
+.claude/settings.local.json
+.claude/worktrees/
 
-# typescript: caches
-*.tsbuildinfo
+# working notes stay out of history
+/local/
 
-# tsc: the declarations and build info of a unit's project
-.tsc-cache/
+# gitignore covers dependencies output and caches
+.DS_Store
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.log
+**/logs/
+.temp/
+.tmp/
+*.bak
+*.orig
+*~
+
+# gitignore covers environment files
+.env*
+!.env.example
+
+# gitignore covers key files
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+credentials.json
+id_rsa
+*.secrets
+
+# _js-runtime
+**/node_modules/
+*.tgz
+
+# bun-test
+**/coverage/
+
+# bun
+.npmrc
+
+# rumdl
+.rumdl_cache/
 
 # stryker
 .stryker-tmp/
+reports/mutation/
 
-# the archive's built tools, assembled by bun run build
-/tools/
+# tsc
+*.tsbuildinfo
+
+# tsc with workspace
+.tsc-cache/

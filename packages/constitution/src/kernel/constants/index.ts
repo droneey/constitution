@@ -1,11 +1,4 @@
-export {
-  COMMON_SCOPE,
-  Placeholder,
-  PRESETS_FOLDER,
-  SELF_PART,
-  TEMPLATES_FOLDER,
-  WORKSPACE_PART,
-} from './preset.constants';
+export { PRESETS_FOLDER } from './preset.constants';
 export { PROGRAM_NAME } from './program.constants';
 export { CHECK_KEY, CONFIG_FILE, RELEASE_FOLDER } from './project.constants';
 export type { LoweredLevel } from './vocabulary.constants';

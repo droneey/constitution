@@ -40,7 +40,6 @@ describe('Resolution.activeCountOf', () => {
           layer: Layer.Implementation,
         },
       ],
-      check: undefined,
       listing: BlockListing.create({
         overrides: [],
         repository: [],

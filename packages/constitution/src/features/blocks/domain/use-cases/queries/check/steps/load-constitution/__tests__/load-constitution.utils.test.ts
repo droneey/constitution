@@ -8,7 +8,7 @@ import {
   ValueSite,
 } from '#/kernel/entities';
 import { ValueFailure } from '#/kernel/errors';
-import { BlockId, PartAddress, RuleSlug } from '#/kernel/value-objects';
+import { BlockId, RuleSlug } from '#/kernel/value-objects';
 
 import type { Files } from '../../../../../../../__tests__/constitution.fixtures';
 import {
@@ -21,11 +21,10 @@ import {
 } from '../../../../../../../__tests__/constitution.fixtures';
 import { packFiles } from '../../../../../../../__tests__/pack-files.fixtures';
 import { validFiles } from '../../../../../../../__tests__/valid-files.fixtures';
-import { Binding, Block, BlockFile, ReadStatus } from '../../../../../../entities';
+import { Block, BlockFile, ReadStatus } from '../../../../../../entities';
 import type { ConstitutionLoaded } from '../load-constitution.utils';
 import { LoadCode, loadConstitution } from '../load-constitution.utils';
 import { BlockLoadCode, FrontMatterReadCode, PlaceCode } from '../steps/load-blocks';
-import { BindingsFileCode } from '../steps/read-bindings';
 
 type LoadFinding = ConstitutionLoaded['findings'][number];
 
@@ -47,7 +46,6 @@ describe('loadConstitution', () => {
     // Assert
     expect(loaded).toStrictEqual({
       constitution: {
-        bindings: [],
         blocks: [],
         documents: {
           agents: [],
@@ -56,13 +54,11 @@ describe('loadConstitution', () => {
         paths: new Set([
           'LICENSE.md',
         ]),
-        presets: [],
         repositoryPaths: new Set([
           'LICENSE.md',
         ]),
         requirementAnswers: [],
         rules: [],
-        templates: [],
       },
       findings: [],
     });
@@ -338,70 +334,15 @@ describe('loadConstitution', () => {
         path: 'blocks/domains/ui/foundation/forms.md',
       },
     },
-    {
-      condition: 'bindings.yaml binds a key that is no kebab-case slug',
-      files: {
-        'presets/typescript/biome/foundation/bindings.yaml': 'core:\n  Rule_Name: [useAwait]\n',
-        'presets/typescript/biome/foundation/core.jsonc': '{}\n',
-      },
-      finding: {
-        code: ValueFailure.RuleSlug,
-        details: {
-          site: ValueSite.BoundRule,
-          written: 'Rule_Name',
-        },
-        path: 'presets/typescript/biome/foundation/bindings.yaml',
-      },
-    },
-    {
-      condition: 'bindings.yaml binds a part whose name holds a "/"',
-      files: {
-        'presets/typescript/biome/foundation/bindings.yaml':
-          'react/dom:\n  sample-rule: [useAwait]\n',
-        'presets/typescript/biome/foundation/core.jsonc': '{}\n',
-      },
-      finding: {
-        code: ValueFailure.PartAddress,
-        details: {
-          site: ValueSite.BoundPart,
-          written: 'react/dom',
-        },
-        path: 'presets/typescript/biome/foundation/bindings.yaml',
-      },
-    },
-    {
-      condition: 'bindings.yaml binds a part with no name',
-      files: {
-        'presets/typescript/biome/foundation/bindings.yaml': '"":\n  sample-rule: [useAwait]\n',
-        'presets/typescript/biome/foundation/core.jsonc': '{}\n',
-      },
-      finding: {
-        code: ValueFailure.PartAddress,
-        details: {
-          site: ValueSite.BoundPart,
-          written: '',
-        },
-        path: 'presets/typescript/biome/foundation/bindings.yaml',
-      },
-    },
-  ])(
-    'should report the malformed name where it is read, and bind nothing by it, when $condition',
-    ({ files, finding }) => {
-      // Act
-      const loaded = loadedOf(files);
+  ])('should report the malformed name where it is read when $condition', ({ files, finding }) => {
+    // Act
+    const loaded = loadedOf(files);
 
-      // Assert
-      expect({
-        bindings: loaded.constitution.bindings,
-        findings: loaded.findings,
-      }).toStrictEqual({
-        bindings: [],
-        findings: [
-          finding,
-        ],
-      });
-    },
-  );
+    // Assert
+    expect(loaded.findings).toStrictEqual([
+      finding,
+    ]);
+  });
 
   it('should load the passport, the chapters by axis, then the seams by axis, when the tree lists them otherwise', () => {
     // Arrange
@@ -722,140 +663,6 @@ describe('loadConstitution', () => {
           'react-dom',
           'provider-at-the-root',
         ],
-      ],
-    });
-  });
-
-  it('should flatten the bindings of a tool by part and rule, on the axis of the folder that holds them, and keep every preset file with its text when bindings.yaml sits beside the parts', () => {
-    // Arrange
-    const files: Files = {
-      ...validFiles(),
-      'presets/typescript/biome/foundation/bindings.yaml': [
-        '_react:',
-        '  hooks-at-top-level: [useHookAtTopLevel, useExhaustiveDependencies]',
-        '',
-      ].join('\n'),
-      'presets/typescript/biome/foundation/_react.jsonc': '{}\n',
-      'presets/typescript/biome/architecture/bindings.yaml': [
-        'core:',
-        '  reads-are-cancellable: [surface.grit]',
-        '',
-      ].join('\n'),
-      'presets/typescript/biome/notes/bindings.yaml': 'core: {}\n',
-    };
-
-    // Act
-    const loaded = loadedOf(files);
-
-    // Assert
-    expect({
-      bindings: loaded.constitution.bindings,
-      findings: loaded.findings,
-      presets: loaded.constitution.presets.map((preset) => preset.path),
-    }).toStrictEqual({
-      bindings: [
-        Binding.create({
-          file: 'presets/typescript/biome/architecture/bindings.yaml',
-          part: PartAddress.create({
-            axis: Axis.Architecture,
-            name: 'core',
-            scope: 'typescript',
-            tool: 'biome',
-          }),
-          rule: RuleSlug.create('reads-are-cancellable'),
-          setting: 'surface.grit',
-        }),
-        Binding.create({
-          file: 'presets/typescript/biome/foundation/bindings.yaml',
-          part: PartAddress.create({
-            axis: Axis.Foundation,
-            name: '_react',
-            scope: 'typescript',
-            tool: 'biome',
-          }),
-          rule: RuleSlug.create('hooks-at-top-level'),
-          setting: 'useHookAtTopLevel',
-        }),
-        Binding.create({
-          file: 'presets/typescript/biome/foundation/bindings.yaml',
-          part: PartAddress.create({
-            axis: Axis.Foundation,
-            name: '_react',
-            scope: 'typescript',
-            tool: 'biome',
-          }),
-          rule: RuleSlug.create('hooks-at-top-level'),
-          setting: 'useExhaustiveDependencies',
-        }),
-      ],
-      findings: [],
-      presets: [
-        'presets/typescript/biome/architecture/bindings.yaml',
-        'presets/typescript/biome/foundation/_react.jsonc',
-        'presets/typescript/biome/foundation/bindings.yaml',
-        'presets/typescript/biome/notes/bindings.yaml',
-      ],
-    });
-  });
-
-  it.each<{
-    finding: LoadFinding;
-    name: string;
-    text: string;
-  }>([
-    {
-      finding: {
-        code: BindingsFileCode.NotYaml,
-        details: {
-          reason: 'Unexpected flow-seq-end token in YAML stream: "]"',
-        },
-        path: 'presets/typescript/biome/foundation/bindings.yaml',
-      },
-      name: 'the file is not YAML',
-      text: 'core: ]\n',
-    },
-    {
-      finding: {
-        code: BindingsFileCode.OffSchema,
-        details: {
-          field: '',
-          reason: 'Invalid input: expected record, received array',
-        },
-        path: 'presets/typescript/biome/foundation/bindings.yaml',
-      },
-      name: 'the file is a list',
-      text: '- core\n',
-    },
-    {
-      finding: {
-        code: BindingsFileCode.OffSchema,
-        details: {
-          field: 'core.any-never-typed',
-          reason: 'Too small: expected array to have >=1 items',
-        },
-        path: 'presets/typescript/biome/foundation/bindings.yaml',
-      },
-      name: 'a rule lists no setting',
-      text: 'core:\n  any-never-typed: []\n',
-    },
-  ])('should report the bindings and load none when $name', ({ finding, text }) => {
-    // Arrange
-    const files: Files = {
-      ...validFiles(),
-      'presets/typescript/biome/foundation/bindings.yaml': text,
-    };
-
-    // Act
-    const loaded = loadedOf(files);
-
-    // Assert
-    expect({
-      bindings: loaded.constitution.bindings,
-      findings: loaded.findings,
-    }).toStrictEqual({
-      bindings: [],
-      findings: [
-        finding,
       ],
     });
   });

@@ -1,0 +1,15 @@
+_react:
+  '*':
+    typescript:
+      .dependency-cruiser.json:
+        allowedSeverity: error
+  react-imported-by-the-ui-and-binding-units:
+    typescript:
+      .dependency-cruiser.json:
+        allowed[comment=react-imported-by-the-ui-and-binding-units]:
+          from:
+            path:
+              - /${role.presentation-layer}/
+              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.application-layer}/
+          to:
+            path: node_modules/react/

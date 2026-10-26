@@ -1,0 +1,9 @@
+biome:
+  '*':
+    python:
+      pyproject.toml:
+        tool:
+          poe:
+            tasks:
+              check:biome: bunx --bun biome check --error-on-warnings
+              fix:biome: bunx --bun biome check --write

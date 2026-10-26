@@ -1,7 +1,13 @@
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
+
+import { YAML } from 'bun';
+
+import { z } from 'zod';
+
+import { appliedUnit } from './applied-unit.fixtures';
 
 interface Manifest {
   dependencies?: Readonly<Record<string, string>>;
@@ -14,25 +20,24 @@ interface Manifest {
 const repository = join(import.meta.dir, '..', '..');
 const syncpack = join(repository, 'node_modules', '.bin', 'syncpack');
 
-const CONFIG = `import jsRuntime from './.droneey/constitution/presets/json/syncpack/foundation/_js-runtime.mjs';
-import bun from './.droneey/constitution/presets/json/syncpack/foundation/bun.mjs';
-import core from './.droneey/constitution/presets/json/syncpack/foundation/core.mjs';
-import distribution from './.droneey/constitution/presets/json/syncpack/foundation/distribution.mjs';
-import self from './.droneey/constitution/presets/json/syncpack/foundation/self.mjs';
+// A workspace's root of every block whose preset file gives syncpack a group.
+const syncpackUnit = (): string =>
+  appliedUnit({
+    domains: [
+      'distribution',
+      'workspace',
+    ],
+    implementations: [
+      'bun',
+      'syncpack',
+    ],
+    languages: [
+      'json',
+      'typescript',
+    ],
+  });
 
-export default {
-  ...self,
-  semverGroups: [
-    ...jsRuntime.semverGroups,
-    ...distribution.semverGroups,
-  ],
-  versionGroups: [
-    ...core.versionGroups,
-    ...bun.versionGroups,
-    ...distribution.versionGroups,
-  ],
-};
-`;
+const CONFIG = '.syncpackrc.yaml';
 
 const workspace = (packages: readonly Manifest[]): Readonly<Record<string, Manifest | object>> => ({
   'package.json': {
@@ -62,9 +67,7 @@ const versionIssues = (packages: readonly Manifest[]): readonly string[] => {
       writeFileSync(join(folder, path), JSON.stringify(manifest));
     }
 
-    mkdirSync(join(folder, '.droneey'));
-    symlinkSync(repository, join(folder, '.droneey', 'constitution'));
-    writeFileSync(join(folder, '.syncpackrc.mjs'), CONFIG);
+    copyFileSync(join(syncpackUnit(), CONFIG), join(folder, CONFIG));
 
     const linting = spawnSync(
       syncpack,
@@ -92,4 +95,11 @@ const versionIssues = (packages: readonly Manifest[]): readonly string[] => {
   }
 };
 
-export { versionIssues };
+const sortedFields = (): readonly string[] =>
+  z
+    .object({
+      sortAz: z.array(z.string()),
+    })
+    .parse(YAML.parse(readFileSync(join(syncpackUnit(), CONFIG), 'utf8'))).sortAz;
+
+export { sortedFields, versionIssues };

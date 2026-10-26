@@ -1,45 +1,70 @@
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, readdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
+import { z } from 'zod';
+
+import type { UnitFixture } from './applied-unit.fixtures';
+import { appliedUnit } from './applied-unit.fixtures';
 import type { Entries } from './batch.fixtures';
 import { createBatch } from './batch.fixtures';
 
 interface Project {
+  /** the blocks of the unit beside its language's and tsc */
+  blocks: readonly string[];
   main: string;
-  parts: readonly string[];
 }
 
 const repository = join(import.meta.dir, '..', '..');
 const tsc = join(repository, 'node_modules', '.bin', 'tsc');
-const presetsFolder = join(repository, 'presets', 'typescript', 'tsc', 'foundation');
+const pairedFolder = join(repository, 'presets', 'tsc', 'foundation', 'with');
+const tsconfig = z.looseObject({
+  compilerOptions: z.looseObject({}),
+});
 
-const presetParts = (): readonly string[] =>
-  readdirSync(presetsFolder)
-    .filter((name) => name.endsWith('.json'))
-    .map((name) => name.replace(/\.json$/, ''))
+const pairedBlocks = (): readonly string[] =>
+  readdirSync(pairedFolder)
+    .map((name) => name.replace(/\.yaml$/, ''))
     .toSorted((left, right) => left.localeCompare(right));
 
 const keyOf = (project: Project): string =>
   JSON.stringify([
-    project.parts,
+    project.blocks,
     project.main,
   ]);
 
-// The project's types resolve from this repository's node_modules.
+// _react is listed through the renderer that needs it.
+const listed: Readonly<Record<string, string>> = {
+  _react: 'react-dom',
+};
+
+const unitOf = (blocks: readonly string[]): UnitFixture => ({
+  blocks: blocks.map((block) => listed[block] ?? block),
+  implementations: [
+    'tsc',
+  ],
+  languages: [
+    'typescript',
+  ],
+});
+
+// The applied tsconfig.json checks the two files beside it; its types resolve from this
+// repository's node_modules.
 const writeProject = (folder: string, project: Project): void => {
-  mkdirSync(join(folder, '.droneey'), {
+  const applied = tsconfig.parse(
+    JSON.parse(readFileSync(join(appliedUnit(unitOf(project.blocks)), 'tsconfig.json'), 'utf8')),
+  );
+
+  mkdirSync(folder, {
     recursive: true,
   });
-  symlinkSync(repository, join(folder, '.droneey', 'constitution'));
   writeFileSync(
     join(folder, 'tsconfig.json'),
     JSON.stringify({
-      extends: project.parts.map(
-        (part) => `./.droneey/constitution/presets/typescript/tsc/foundation/${part}.json`,
-      ),
+      ...applied,
       compilerOptions: {
+        ...applied.compilerOptions,
         typeRoots: [
           join(repository, 'node_modules', '@types'),
         ],
@@ -146,4 +171,4 @@ const createTypeCheckBatch = (): TscBatch => {
   };
 };
 
-export { createTypeCheckBatch, presetParts };
+export { createTypeCheckBatch, pairedBlocks };

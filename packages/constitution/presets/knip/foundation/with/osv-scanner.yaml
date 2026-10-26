@@ -1,0 +1,6 @@
+osv-scanner:
+  '*':
+    typescript:
+      knip.jsonc:
+        ignoreBinaries:
+          - osv-scanner

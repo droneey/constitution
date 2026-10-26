@@ -31,5 +31,3 @@ export type { Bold, TermsRead } from './term.entity';
 export { Term, TermKind } from './term.entity';
 export type { ValueFindingDetails } from './value-finding.entity';
 export { ValueSite } from './value-finding.entity';
-export type { WiringProblem } from './wiring-problem.entity';
-export { WiringProblemKind } from './wiring-problem.entity';

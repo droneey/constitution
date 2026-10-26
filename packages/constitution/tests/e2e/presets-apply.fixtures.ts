@@ -23,9 +23,9 @@ interface ApplyInput {
 
 const linesOf = (...lines: readonly string[]): string => `${lines.join('\n')}\n`;
 
-// The release's catalogues: markdownlint's own settings and ignore file, and a setting the ui
+// The release's preset files: markdownlint's own settings and ignore file, and a setting the ui
 // domain's rule adds where a unit follows both.
-const releaseCatalogues: Files = {
+const releasePresetFiles: Files = {
   'presets/markdownlint/foundation.yaml': linesOf(
     'markdownlint:',
     "  '*':",
@@ -48,9 +48,9 @@ const releaseCatalogues: Files = {
 
 const MEMBER = 'packages/lib';
 
-// A member's own pack: a tool no release block names, and the catalogue that writes its file.
+// A member's own pack: a tool no release block names, and the preset file that writes its file.
 const memberPackFiles: Files = {
-  [`${MEMBER}/constitution/blocks/implementations/own-tool/own-tool.md`]: linesOf(
+  [`${MEMBER}/pack/blocks/implementations/own-tool/own-tool.md`]: linesOf(
     '---',
     'id: own-tool',
     "summary: The package's own tool.",
@@ -63,7 +63,7 @@ const memberPackFiles: Files = {
     '',
     '# own-tool',
   ),
-  [`${MEMBER}/constitution/presets/own-tool/foundation.yaml`]: linesOf(
+  [`${MEMBER}/pack/presets/own-tool/foundation.yaml`]: linesOf(
     'own-tool:',
     "  '*':",
     "    '*':",
@@ -86,12 +86,11 @@ const writeFiles = (input: FilesPlace): void => {
   }
 };
 
-// A plugin root whose archive ships the catalogues beside the synthetic blocks.
-const createCataloguedPluginRoot = (): string => {
+const createPluginRootWithPresets = (): string => {
   const root = createPluginRoot();
 
   writeFiles({
-    files: releaseCatalogues,
+    files: releasePresetFiles,
     folder: archiveOf(root),
   });
 
@@ -152,8 +151,8 @@ const settingsOf = (text: string | undefined): unknown => parse(text ?? '');
 
 export {
   applyIn,
-  createCataloguedPluginRoot,
   createLinkedProject,
+  createPluginRootWithPresets,
   linesOf,
   MEMBER,
   memberPackFiles,

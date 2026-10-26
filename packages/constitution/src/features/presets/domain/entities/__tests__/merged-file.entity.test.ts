@@ -22,6 +22,7 @@ const markedOf = (kind: ValueKind.Default | ValueKind.Replace, setting: Setting)
 });
 
 const from = (source: string, given: PresetValue): Contribution => ({
+  group: source,
   source,
   value: given,
 });
@@ -82,6 +83,54 @@ describe('MergedFile.merge', () => {
         },
         linter: {
           enabled: true,
+        },
+      },
+    });
+  });
+
+  it('should keep the path of each map an entry marks sorted, once', () => {
+    // Arrange
+    const contributions = [
+      from(
+        'a',
+        map({
+          scripts: PresetValue.sortedMapOf([
+            {
+              key: 'lint',
+              value: plain('biome'),
+            },
+          ]),
+        }),
+      ),
+      from(
+        'b',
+        map({
+          scripts: PresetValue.sortedMapOf([
+            {
+              key: 'check',
+              value: plain('all'),
+            },
+          ]),
+        }),
+      ),
+    ];
+
+    // Act
+    const merged = MergedFile.merge(contributions);
+
+    // Assert
+    expect(merged).toStrictEqual({
+      defaults: [],
+      problems: [],
+      sorted: [
+        [
+          'scripts',
+        ],
+      ],
+      value: {
+        scripts: {
+          check: 'all',
+          lint: 'biome',
         },
       },
     });

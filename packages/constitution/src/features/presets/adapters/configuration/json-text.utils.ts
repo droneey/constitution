@@ -1,7 +1,7 @@
 import type { JSONPath, ParseError } from 'jsonc-parser';
-import { applyEdits, modify, parse } from 'jsonc-parser';
+import { applyEdits, modify, parse, visit } from 'jsonc-parser';
 
-import { isDeepEqual } from '#/kernel/utils';
+import { compareText, isDeepEqual } from '#/kernel/utils';
 
 import type { Setting } from '../../domain/entities';
 import { Setting as Settings } from '../../domain/entities';
@@ -170,19 +170,114 @@ const edited = (input: {
       });
 };
 
+// The values the settings cannot hold are sorted with the rest.
+const sortedIn = (text: string, path: readonly string[]): string => {
+  const held = path.reduce<unknown>(
+    (wire, key) => (isWireObject(wire) ? wire[key] : undefined),
+    wireOf(text),
+  );
+
+  if (!isWireObject(held)) {
+    return text;
+  }
+
+  const entries = Object.entries(held);
+  const sorted = entries.toSorted(([left], [right]) => compareText(left, right));
+
+  return isDeepEqual(entries, sorted)
+    ? text
+    : applyEdits(
+        text,
+        modify(
+          text,
+          [
+            ...path,
+          ],
+          Object.fromEntries(sorted),
+          FORMATTING,
+        ),
+      );
+};
+
 /** A new file is written whole, laid out as the edits lay it. */
 const writeJson = (input: SettingsText): string => {
   const { settings, text } = input;
   const wire = wireOf(text);
-  const written = edited({
-    after: settings,
-    before: settingOfWire(wire),
-    path: [],
-    text,
-    wire,
-  });
+  const written = input.sorted.reduce(
+    sortedIn,
+    edited({
+      after: settings,
+      before: settingOfWire(wire),
+      path: [],
+      text,
+      wire,
+    }),
+  );
 
   return written.endsWith(NEWLINE) ? written : `${written}${NEWLINE}`;
 };
 
-export { readJson, writeJson };
+interface Container {
+  /** where the value read last ends, while no separator follows it */
+  lastEnd?: number | undefined;
+}
+
+const missingCommasOf = (text: string): readonly number[] => {
+  const containers: Container[] = [];
+  const missing: number[] = [];
+
+  const valueEnds = (end: number): void => {
+    const container = containers.at(-1);
+
+    if (container !== undefined) {
+      container.lastEnd = end;
+    }
+  };
+
+  const opened = (): void => {
+    containers.push({});
+  };
+
+  const closed = (offset: number, length: number): void => {
+    // Stryker disable next-line OptionalChaining: a close always follows its open
+    const lastEnd = containers.pop()?.lastEnd;
+
+    if (lastEnd !== undefined && text.slice(lastEnd, offset).includes(NEWLINE)) {
+      missing.push(lastEnd);
+    }
+
+    valueEnds(offset + length);
+  };
+
+  visit(text, {
+    onArrayBegin: opened,
+    onArrayEnd: closed,
+    onLiteralValue: (_value: unknown, offset: number, length: number) => {
+      valueEnds(offset + length);
+    },
+    onObjectBegin: opened,
+    onObjectEnd: closed,
+    // a comma ends the value before it, and a colon follows a key, which no value precedes
+    onSeparator: () => {
+      const container = containers.at(-1);
+
+      // Stryker disable next-line ConditionalExpression: a separator stands only inside a list or an object
+      if (container !== undefined) {
+        container.lastEnd = undefined;
+      }
+    },
+  });
+
+  return missing;
+};
+
+/** As the formatter writes JSONC: a comma after the last item of a list broken over lines. */
+const writeJsonc = (input: SettingsText): string => {
+  const written = writeJson(input);
+
+  return missingCommasOf(written)
+    .toSorted((left, right) => right - left)
+    .reduce((text, at) => `${text.slice(0, at)},${text.slice(at)}`, written);
+};
+
+export { readJson, writeJson, writeJsonc };

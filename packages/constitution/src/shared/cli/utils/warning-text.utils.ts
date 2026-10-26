@@ -1,6 +1,6 @@
 import { CHECK_KEY, CONFIG_FILE, RELEASE_FOLDER } from '#/kernel/constants';
-import type { ProjectWarning, WarningDetails, WiringProblem } from '#/kernel/entities';
-import { WarningKind, WiringProblemKind } from '#/kernel/entities';
+import type { ProjectWarning, WarningDetails } from '#/kernel/entities';
+import { WarningKind } from '#/kernel/entities';
 import type { BlockId } from '#/kernel/value-objects';
 import { UnitPath } from '#/kernel/value-objects';
 
@@ -9,18 +9,14 @@ import type { TextsOf } from '../types';
 import { textOf } from './texts.utils';
 import { unitText } from './unit-text.utils';
 
-const RATIFY = ' — run /constitution:ratify';
 const PACKAGES_KEY = 'packages';
-const SHOWN = 3;
 const ADD: Readonly<Record<string, string>> = {
   axes: 'axes: [architecture, workflow]',
-  check: 'check: <the command that runs every check, or null>',
   overrides: 'overrides: []',
   packs: 'packs: []',
 } as const;
 const FILL: Readonly<Record<string, string>> = {
   axes: 'write axes: [architecture, workflow], or axes: [] for neither',
-  check: 'name the command that runs every check, or write check: null',
   overrides: 'write overrides: []',
   packs: 'write packs: []',
 } as const;
@@ -46,38 +42,13 @@ const whereText = (unit: UnitPath): string => (UnitPath.isRepository(unit) ? '' 
 const atLineText = (line: number | undefined): string =>
   line === undefined ? '' : ` at line ${String(line)}`;
 
-const partsText = (parts: readonly string[]): string =>
-  `${parts.slice(0, SHOWN).join(', ')}${parts.length > SHOWN ? ` and ${parts.length - SHOWN} more` : ''}`;
-
-const problemTexts: {
-  readonly [TKind in WiringProblemKind]: (problem: WiringProblem<TKind>) => string;
-} = {
-  [WiringProblemKind.Lacks]: ({ parts }) => `lacks ${partsText(parts)}`,
-  [WiringProblemKind.NamesBeyond]: ({ parts }) =>
-    `names ${partsText(parts)}, which it does not take`,
-  [WiringProblemKind.MarkerSaysMore]: ({ tool }) => `a marker of ${tool} says more than its path`,
-  [WiringProblemKind.CopyOfRemovedPart]: ({ part }) =>
-    `holds a copy of ${part} the release no longer has`,
-  [WiringProblemKind.CopyNotTaken]: ({ part }) => `copies ${part}, which it does not take`,
-  [WiringProblemKind.CopyWithoutEnd]: ({ part }) => `the copy of ${part} has no end line`,
-  [WiringProblemKind.CopyEdited]: ({ part }) => `the copy of ${part} is edited inside`,
-  [WiringProblemKind.MarkerOutOfOrder]: ({ tool }) =>
-    `its marker of ${tool} lists the links out of order`,
-  [WiringProblemKind.ExtendsShortOfEnd]: ({ tool }) =>
-    `it extends a link of ${tool} short of the chain's end`,
-};
-
-const problemTextOf = <TKind extends WiringProblemKind>(problem: WiringProblem<TKind>): string =>
-  problemTexts[problem.kind](problem);
-
 const unknownKeyText = ({ file, key }: WarningDetails[WarningKind.KeyUnknown]): string => {
   if (key === PACKAGES_KEY) {
     return `${file} lists packages — write each package's blocks in a constitution.yaml of its own, and remove the key`;
   }
 
-  // the repository's check is known, so a check that reaches here is a member's
   return key === CHECK_KEY
-    ? `${file} names a check, which only the repository's ${CONFIG_FILE} names — remove it`
+    ? `${file} names a check, which the runner blocks give now — remove it, and run constitution run check`
     : `${file} has the unknown key ${key} — remove it`;
 };
 
@@ -141,19 +112,8 @@ const warningTexts: TextsOf<WarningDetails> = {
   [WarningKind.OverrideNamesNoRule]: ({ rule }) => `${rule} names no rule — check the slug`,
   [WarningKind.OverrideExpired]: ({ rule, until }) =>
     `${rule} expired on ${until} — renew or remove it`,
-  [WarningKind.FolderKeepsConfig]: ({ folder, path }) =>
-    `${folder} keeps its own ${path} — declare the folder a member, with a ${CONFIG_FILE} of its own`,
-  [WarningKind.ToolWiredNowhere]: ({ tool, unit }) =>
-    `${tool} is wired nowhere for ${unitText(unit)}${RATIFY}`,
-  [WarningKind.FileMiswired]: ({ file, problems }) =>
-    `${file} ${problems.map(problemTextOf).join('; ')}${RATIFY}`,
-  [WarningKind.WiringFileUnreadable]: ({ file }) =>
-    `${file} cannot be read, so the wiring it holds is left unchecked — make it readable`,
-  [WarningKind.SkipOfNoMember]: ({ folder, path }) =>
-    `${path} skips ${folder}, which holds no member of the workspace${RATIFY}`,
-  [WarningKind.MemberNotSkipped]: ({ member, path, tool }) =>
-    `${path} does not skip ${member}, a member of the workspace that ${tool} would reach into from the root${RATIFY}`,
-  [WarningKind.WiringUnchecked]: () => 'cannot check the wiring',
+  [WarningKind.ConfigurationFinding]: ({ code, file, says }) => `${file}: ${says} [${code}]`,
+  [WarningKind.ConfigurationsUnchecked]: () => 'cannot check the configurations',
   [WarningKind.ReleaseLinkLoops]: ({ unit }) =>
     `${unitText(unit)}/${RELEASE_FOLDER} leads back into a folder that holds it — link it to the release outside the unit`,
 };

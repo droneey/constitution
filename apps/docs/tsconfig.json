@@ -1,12 +1,4 @@
 {
-  "extends": [
-    "../../.droneey/constitution/presets/typescript/tsc/foundation/self.json",
-    "../../.droneey/constitution/presets/typescript/tsc/foundation/core.json",
-    "../../.droneey/constitution/presets/typescript/tsc/foundation/workspace.json",
-    "../../.droneey/constitution/presets/typescript/tsc/foundation/browser.json",
-    "../../.droneey/constitution/presets/typescript/tsc/foundation/_react.json",
-    "../../.droneey/constitution/presets/typescript/tsc/foundation/bun.json"
-  ],
   "compilerOptions": {
     "paths": {
       "#/*": [
@@ -16,11 +8,45 @@
     "types": [
       "bun",
       "vite/client"
-    ]
+    ],
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "composite": true,
+    "emitDeclarationOnly": true,
+    "outDir": "${configDir}/.tsc-cache",
+    "lib": [
+      "ESNext",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "strict": true,
+    "noImplicitOverride": true,
+    "exactOptionalPropertyTypes": true,
+    "verbatimModuleSyntax": true,
+    "jsx": "react-jsx",
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "moduleDetection": "force",
+    "noEmit": false,
+    "allowJs": true,
+    "checkJs": true,
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "noUncheckedSideEffectImports": true,
+    "skipLibCheck": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true
   },
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
+    "scripts/**/*.ts",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
     "vite.config.ts",
     "source.config.ts",
     ".source/*.ts"

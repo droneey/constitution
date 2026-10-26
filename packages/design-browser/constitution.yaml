@@ -33,5 +33,6 @@ implementations:
   - react-dom
   - tailwind
   - testing-library
-packs: []
+packs:
+  - pack
 overrides: []

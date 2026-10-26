@@ -146,5 +146,14 @@ const handTypedIn = (roles: RoleNames, text: string): readonly NamedRole[] => {
   ];
 };
 
+// The names of no role: what a project's own pack writes, which may spell its folders.
+// Stryker disable next-line ObjectLiteral: with no pattern, no map is read
+const noRoleNames: RoleNames = {
+  folderByName: new Map(),
+  folders: undefined,
+  suffixByName: new Map(),
+  suffixes: undefined,
+};
+
 export type { RoleNames };
-export { handTypedIn, roleNamesOf };
+export { handTypedIn, noRoleNames, roleNamesOf };

@@ -1,0 +1,16 @@
+shellcheck:
+  '*':
+    '*':
+      lefthook.yaml:
+        pre-commit:
+          parallel: true
+          jobs[name=shellcheck]:
+            glob: '*.{sh,bash}'
+            run: shellcheck {staged_files}
+    shell:
+      lefthook.yaml:
+        pre-commit:
+          # The root's job skips the members, each checked in its own run.
+          jobs[name=shellcheck]:
+            exclude:
+              - ${workspace.members}/**

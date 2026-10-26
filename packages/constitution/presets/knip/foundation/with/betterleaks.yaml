@@ -1,0 +1,6 @@
+betterleaks:
+  '*':
+    typescript:
+      knip.jsonc:
+        ignoreBinaries:
+          - betterleaks

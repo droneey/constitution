@@ -1,9 +1,8 @@
 import { describe, expect, it } from 'bun:test';
 
-import self from '../../presets/json/syncpack/foundation/self.mjs';
-import { versionIssues } from './syncpack-preset.fixtures';
+import { sortedFields, versionIssues } from './syncpack-preset.fixtures';
 
-describe('the syncpack typescript part', () => {
+describe("the syncpack preset file's groups", () => {
   it.each([
     {
       condition: 'a tool takes a caret range',
@@ -144,20 +143,20 @@ describe('the syncpack core part', () => {
   });
 });
 
-describe('the syncpack self part', () => {
+describe("the syncpack preset file's formatting", () => {
   it('should leave the scripts in the order the author chose when a manifest is formatted', () => {
     // Arrange
     const field = 'scripts';
 
     // Act
-    const sorted = self.sortAz;
+    const sorted = sortedFields();
 
     // Assert
     expect(sorted).not.toContain(field);
   });
 });
 
-describe('the syncpack parts of a workspace', () => {
+describe("the syncpack preset file's groups of a workspace", () => {
   it("should report DiffersToPin when a unit takes the repository's own unit from the registry", () => {
     // Arrange
     const repository = [

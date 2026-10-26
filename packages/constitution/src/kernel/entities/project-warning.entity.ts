@@ -1,7 +1,6 @@
 import type { Layer } from '../constants';
 import type { BlockId, PackPath, RuleSlug, UnitPath } from '../value-objects';
 import { SourceKind } from '../value-objects';
-import type { WiringProblem } from './wiring-problem.entity';
 
 // The codes of a project's warnings, one for each subject a reader fixes, in the order a
 // declaration's warnings are grouped.
@@ -12,7 +11,7 @@ enum WarningCode {
   Overrides = 'overrides',
   Workspace = 'workspace',
   Installation = 'installation',
-  Wiring = 'wiring',
+  Configurations = 'configurations',
   Packs = 'packs',
   Constitution = 'constitution',
 }
@@ -52,13 +51,8 @@ enum WarningKind {
   RequirementNotMet = 'requirement-not-met',
   OverrideNamesNoRule = 'override-names-no-rule',
   OverrideExpired = 'override-expired',
-  FolderKeepsConfig = 'folder-keeps-config',
-  ToolWiredNowhere = 'tool-wired-nowhere',
-  FileMiswired = 'file-miswired',
-  WiringFileUnreadable = 'wiring-file-unreadable',
-  SkipOfNoMember = 'skip-of-no-member',
-  MemberNotSkipped = 'member-not-skipped',
-  WiringUnchecked = 'wiring-unchecked',
+  ConfigurationFinding = 'configuration-finding',
+  ConfigurationsUnchecked = 'configurations-unchecked',
   ReleaseLinkLoops = 'release-link-loops',
 }
 
@@ -188,31 +182,13 @@ interface WarningDetails {
     /** the day it lapsed, written YYYY-MM-DD */
     readonly until: string;
   };
-  readonly [WarningKind.FolderKeepsConfig]: {
-    readonly folder: string;
-    /** the configuration file, from the folder */
-    readonly path: string;
+  readonly [WarningKind.ConfigurationFinding]: FileNamed & {
+    /** the finding's code, which its preset file's or its file's fix names */
+    readonly code: string;
+    /** what the finding says, as the presets word it */
+    readonly says: string;
   };
-  readonly [WarningKind.ToolWiredNowhere]: {
-    readonly tool: string;
-    readonly unit: UnitPath;
-  };
-  readonly [WarningKind.FileMiswired]: FileNamed & {
-    readonly problems: readonly WiringProblem[];
-  };
-  readonly [WarningKind.WiringFileUnreadable]: FileNamed;
-  readonly [WarningKind.SkipOfNoMember]: {
-    readonly folder: string;
-    /** the file that skips it */
-    readonly path: string;
-  };
-  readonly [WarningKind.MemberNotSkipped]: {
-    readonly member: string;
-    /** the file that leaves it in */
-    readonly path: string;
-    readonly tool: string;
-  };
-  readonly [WarningKind.WiringUnchecked]: object;
+  readonly [WarningKind.ConfigurationsUnchecked]: object;
   readonly [WarningKind.ReleaseLinkLoops]: {
     readonly unit: UnitPath;
   };
@@ -267,15 +243,10 @@ const codeOfKind: {
   [WarningKind.OverrideNamesNoRule]: WarningCode.Overrides,
   [WarningKind.OverrideExpired]: WarningCode.Overrides,
   [WarningKind.MemberWithoutConfig]: WarningCode.Workspace,
-  [WarningKind.FolderKeepsConfig]: WarningCode.Workspace,
   [WarningKind.PackNotInstalled]: WarningCode.Installation,
   [WarningKind.ReleaseLinkLoops]: WarningCode.Installation,
-  [WarningKind.ToolWiredNowhere]: WarningCode.Wiring,
-  [WarningKind.FileMiswired]: WarningCode.Wiring,
-  [WarningKind.WiringFileUnreadable]: WarningCode.Wiring,
-  [WarningKind.SkipOfNoMember]: WarningCode.Wiring,
-  [WarningKind.MemberNotSkipped]: WarningCode.Wiring,
-  [WarningKind.WiringUnchecked]: WarningCode.Wiring,
+  [WarningKind.ConfigurationFinding]: WarningCode.Configurations,
+  [WarningKind.ConfigurationsUnchecked]: WarningCode.Configurations,
 };
 
 const codeOfSource: {

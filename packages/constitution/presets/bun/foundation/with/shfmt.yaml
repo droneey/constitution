@@ -1,0 +1,39 @@
+shfmt:
+  '*':
+    shell:
+      package.json:
+        scripts:
+          # The unit's script skips its members, each checked in its own run.
+          check:shell-format: !words
+            - git ls-files -z --cached --others --exclude-standard -- '*.sh' '*.bash'
+            - "':(exclude)${workspace.members}'"
+            - '| xargs -0 -r shfmt -d'
+          fix:shell-format: !words
+            - git ls-files -z --cached --others --exclude-standard -- '*.sh' '*.bash'
+            - "':(exclude)${workspace.members}'"
+            - '| xargs -0 -r shfmt -w'
+bun:
+  '*':
+    shell:
+      package.json:
+        scripts: !sorted {}
+  script-group-run-by-its-prefix:
+    shell:
+      package.json:
+        scripts:
+          check: !words
+            - bun run --sequential
+            - slot: checks
+            - slot: tests
+            - slot: mutations
+          check@checks:
+            - "'check:*'"
+          fix: bun run --sequential 'fix:*'
+_task-runner:
+  unit-run-through-its-action-tasks:
+    shell:
+      ${constitution.run}:
+        check:
+          - bun run check
+        fix:
+          - bun run fix

@@ -1,7 +1,7 @@
 ---
 id: yamllint
 summary: yamllint holds the style of YAML files.
-requires: [yaml]
+requires: [yaml, _task-runner]
 extends: null
 abstract: false
 languages: [yaml]

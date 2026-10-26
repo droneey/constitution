@@ -214,7 +214,7 @@ const everyCode: ProjectLayout = {
   }),
 };
 const unparsedConfig = configOf({
-  check: '&check bun run check',
+  domains: '&listed [ui]',
 });
 // The block list of one domain is three lines: its layer's heading, the key, the domain.
 const oneDomain: ProjectLayout = {
@@ -466,10 +466,10 @@ describe('session-start hook', () => {
 
   it.each<UnparsedCase>([
     {
-      at: '&check',
+      at: '&listed',
       condition: 'a value is an anchor',
       config: configOf({
-        check: '&check bun run check',
+        domains: '&listed [ui]',
       }),
     },
     {
@@ -493,16 +493,16 @@ describe('session-start hook', () => {
       config: 'domains: [ui,\n  remote-data\n',
     },
     {
-      at: 'check: |',
+      at: 'domains: |',
       condition: 'a value is a block scalar',
       config: configOf({
-        check: '|\n  bun run check',
+        domains: '|\n  ui',
       }),
     },
     {
       at: '---',
       condition: 'a second document follows',
-      config: `${configOf({})}---\ncheck: bun run check\n`,
+      config: `${configOf({})}---\ndomains: [ui]\n`,
     },
     {
       at: 'domains: [ui]',
@@ -517,10 +517,10 @@ describe('session-start hook', () => {
       }),
     },
     {
-      at: '!!str',
+      at: '!!seq',
       condition: 'a value carries a tag',
       config: configOf({
-        check: '!!str bun run check',
+        domains: '!!seq [ui]',
       }),
     },
     {
@@ -548,11 +548,11 @@ describe('session-start hook', () => {
       config: 'domains: [ui,\nremote-data]\n',
     },
     {
-      at: 'check:bun',
+      at: 'domains:[ui]',
       condition: 'a key has no space after its colon',
       config: `${configOf({
-        omit: ConfigKey.Check,
-      })}check:bun run check\n`,
+        omit: ConfigKey.Domains,
+      })}domains:[ui]\n`,
     },
     {
       at: 'level: SHOULD',
@@ -723,7 +723,7 @@ describe('session-start hook', () => {
         '## Implementations',
         'betterleaks',
         'git (workflow: tags)',
-        'paraglide [constitution] (messages)',
+        'paraglide [pack] (messages)',
       ],
       warnings: [],
     });
@@ -887,20 +887,6 @@ describe('session-start hook', () => {
           'blocks',
           'core',
           'domains',
-        ],
-      ],
-    },
-    {
-      condition: 'check is empty',
-      layout: {
-        config: configOf({
-          check: '""',
-        }),
-      },
-      warnings: [
-        [
-          'config',
-          'check',
         ],
       ],
     },
@@ -1594,7 +1580,7 @@ describe('session-start hook', () => {
       context: (archive): string =>
         unparsedContext({
           line: lineNumberOf({
-            at: '&check',
+            at: '&listed',
             config: unparsedConfig,
           }),
           root: archive,
@@ -1679,8 +1665,8 @@ describe('session-start hook', () => {
         'betterleaks',
         'git (workflow: tags)',
         'react-dom (architecture: portals)',
-        'git-flow [constitution]',
-        'lint-kit [constitution]',
+        'git-flow [pack]',
+        'lint-kit [pack]',
         '## packages/web',
         'i18n [domains] (plurals)',
         'paraglide [implementations]',

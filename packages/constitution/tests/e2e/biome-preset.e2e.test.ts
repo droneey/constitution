@@ -1,14 +1,12 @@
 import { beforeAll, describe, expect, it } from 'bun:test';
 
 import {
-  baseParts,
   blockCode,
   createLintBatch,
   formattedText,
-  presetFiles,
   presetPluginPaths,
-  presetText,
   presetWords,
+  widestConfigText,
 } from './biome-preset.fixtures';
 
 const { lintCase, lintCases, lintFindings, lintRegistered } = createLintBatch();
@@ -30,11 +28,6 @@ export function useRoom(label: string): void {
 }
 `;
 
-const testParts = [
-  ...baseParts,
-  'typescript/bun-test',
-];
-
 const signInSpec = (step: string): string =>
   `import { expect, test } from '@playwright/test';\n\ntest('should sign in when the password is right', async ({ page }) => {\n  ${step}\n  await expect(page.getByRole('heading')).toBeVisible();\n});\n`;
 
@@ -49,15 +42,6 @@ const manifest = JSON.stringify({
     tailwindcss: '4.2.0',
   },
 });
-
-const webParts = [
-  ...baseParts,
-  'typescript/_react',
-  'typescript/react-dom',
-  'typescript/browser',
-  'typescript/tailwind',
-  'typescript/testing-library',
-];
 
 const indexes = (count: number): readonly number[] => [
   ...new Array<undefined>(count).keys(),
@@ -426,19 +410,18 @@ describe('the Biome preset', () => {
         },
       ],
       {
-        parts: [
-          ...baseParts,
-          'typescript/architecture/core',
-        ],
+        unit: {
+          blocks: [],
+        },
       },
     ),
   )(
-    'should report no plugin finding when $condition and a project extends only the self, core and typescript parts of the base and architecture core',
-    ({ files, parts }) => {
+    'should report no plugin finding when $condition and a unit follows only its language and the architecture axis',
+    ({ files, unit }) => {
       // Arrange
       const project = {
         files,
-        parts,
+        unit,
       };
 
       // Act
@@ -589,7 +572,7 @@ describe('the Biome preset', () => {
     expect(plugins).toStrictEqual([]);
   });
 
-  it('should declare each plugin in one entry of one part when the parts are read together', () => {
+  it('should declare each plugin in one entry when a unit follows every block Biome is configured for', () => {
     // Arrange
     const paths = presetPluginPaths();
 
@@ -614,13 +597,16 @@ describe('the Biome preset', () => {
   });
 });
 
-describe("the parts of Biome's base", () => {
+describe("the base of Biome's preset files", () => {
   const probeBesideThePresets = lintCase({
     files: {
       '.droneey/constitution/probe.ts': 'export const data = null;\n',
       'src/order.ts': "export const ORDER_KIND = 'order';\n",
     },
-    parts: baseParts,
+    unit: {
+      axes: [],
+      blocks: [],
+    },
   });
 
   it('should leave .droneey/constitution alone when a project lints its whole tree', () => {
@@ -659,28 +645,15 @@ describe("the parts of Biome's base", () => {
     expect(text).toBe(wrappedLine);
   });
 
-  it.each([
-    'common/biome/foundation/git.jsonc',
-  ])('should parse when a project extends %s', (path) => {
+  it('should hold no rule at warn in a unit of every block Biome is configured for', () => {
     // Arrange
-    const text = presetText(path);
+    const text = widestConfigText();
 
     // Act
-    const config: unknown = Bun.JSONC.parse(text);
+    const isWarned = /"warn"/.test(text);
 
     // Assert
-    expect(config).toBeObject();
-  });
-
-  it('should hold no rule at warn when a project extends any part', () => {
-    // Arrange
-    const texts = presetFiles().map(presetText);
-
-    // Act
-    const warnings = texts.filter((text) => /"warn"/.test(text));
-
-    // Assert
-    expect(warnings).toStrictEqual([]);
+    expect(isWarned).toBeFalse();
   });
 
   it.each(
@@ -891,14 +864,19 @@ describe("the parts of Biome's base", () => {
         },
       ],
       {
-        parts: testParts,
+        unit: {
+          axes: [],
+          blocks: [
+            'bun-test',
+          ],
+        },
       },
     ),
-  )('should report $rule when $condition', ({ files, parts, rule }) => {
+  )('should report $rule when $condition', ({ files, rule, unit }) => {
     // Arrange
     const project = {
       files,
-      parts,
+      unit,
     };
 
     // Act
@@ -913,7 +891,12 @@ describe("the parts of Biome's base", () => {
       'src/__tests__/order.test.ts':
         "import { expect, test } from 'bun:test';\n\ntest('should load orders when the cache is fresh', () => {\n  // Act\n  const options = { queries: { retry: false } };\n\n  // Assert\n  expect(options).toStrictEqual({ queries: { retry: false } });\n});\n",
     },
-    parts: testParts,
+    unit: {
+      axes: [],
+      blocks: [
+        'bun-test',
+      ],
+    },
   });
 
   it('should report no plugin finding when a case configures a client that retries nothing', () => {
@@ -988,14 +971,19 @@ describe("the parts of Biome's base", () => {
         },
       ],
       {
-        parts: testParts,
+        unit: {
+          axes: [],
+          blocks: [
+            'bun-test',
+          ],
+        },
       },
     ),
-  )('should not report $rule when $condition', ({ files, parts, rule }) => {
+  )('should not report $rule when $condition', ({ files, rule, unit }) => {
     // Arrange
     const project = {
       files,
-      parts,
+      unit,
     };
 
     // Act
@@ -1172,14 +1160,19 @@ describe("the parts of Biome's base", () => {
         },
       ],
       {
-        parts: testParts,
+        unit: {
+          axes: [],
+          blocks: [
+            'bun-test',
+          ],
+        },
       },
     ),
-  )('should report a plugin finding when $condition', ({ files, parts, plugin }) => {
+  )('should report a plugin finding when $condition', ({ files, plugin, unit }) => {
     // Arrange
     const project = {
       files,
-      parts,
+      unit,
     };
 
     // Act
@@ -1208,19 +1201,21 @@ describe("the parts of Biome's base", () => {
         },
       ],
       {
-        parts: [
-          ...baseParts,
-          'typescript/zod',
-        ],
+        unit: {
+          axes: [],
+          blocks: [
+            'zod',
+          ],
+        },
       },
     ),
   )(
-    'should report a plugin finding when a schema brands a value by $condition and a project extends the zod part',
-    ({ files, parts }) => {
+    'should report a plugin finding when a schema brands a value by $condition and a unit follows zod',
+    ({ files, unit }) => {
       // Arrange
       const project = {
         files,
-        parts,
+        unit,
       };
 
       // Act
@@ -1266,19 +1261,21 @@ describe("the parts of Biome's base", () => {
         },
       ],
       {
-        parts: [
-          ...baseParts,
-          'typescript/i18n',
-        ],
+        unit: {
+          axes: [],
+          blocks: [
+            'i18n',
+          ],
+        },
       },
     ),
   )(
-    'should report a plugin finding when $condition and a project extends the i18n part',
-    ({ files, parts, plugin }) => {
+    'should report a plugin finding when $condition and a unit follows i18n',
+    ({ files, plugin, unit }) => {
       // Arrange
       const project = {
         files,
-        parts,
+        unit,
       };
 
       // Act
@@ -1326,19 +1323,21 @@ describe("the parts of Biome's base", () => {
         },
       ],
       {
-        parts: [
-          ...baseParts,
-          'typescript/playwright',
-        ],
+        unit: {
+          axes: [],
+          blocks: [
+            'playwright',
+          ],
+        },
       },
     ),
   )(
-    'should report $rule when $condition and a project extends the playwright part',
-    ({ files, parts, rule }) => {
+    'should report $rule when $condition and a unit follows playwright',
+    ({ files, rule, unit }) => {
       // Arrange
       const project = {
         files,
-        parts,
+        unit,
       };
 
       // Act
@@ -1429,17 +1428,19 @@ describe("the parts of Biome's base", () => {
         },
       ],
       {
-        parts: [
-          ...baseParts,
-          'typescript/_react',
-        ],
+        unit: {
+          axes: [],
+          blocks: [
+            'react-dom',
+          ],
+        },
       },
     ),
-  )('should report no plugin finding when $condition', ({ files, parts }) => {
+  )('should report no plugin finding when $condition', ({ files, unit }) => {
     // Arrange
     const project = {
       files,
-      parts,
+      unit,
     };
 
     // Act
@@ -1484,25 +1485,27 @@ describe("the parts of Biome's base", () => {
             'src/panel.tsx':
               "import { useState } from 'react';\n\nexport const useMode = (): unknown => useState<'idle' | 'busy'>('idle');\n",
           },
-          parts: [
-            ...baseParts,
-            'typescript/_react',
-            'typescript/architecture/typescript',
-          ],
+          unit: {
+            blocks: [
+              'react-dom',
+            ],
+          },
         },
       ],
       {
-        parts: [
-          ...baseParts,
-          'typescript/_react',
-        ],
+        unit: {
+          axes: [],
+          blocks: [
+            'react-dom',
+          ],
+        },
       },
     ),
-  )('should report a plugin finding when $condition', ({ files, parts, plugin }) => {
+  )('should report a plugin finding when $condition', ({ files, plugin, unit }) => {
     // Arrange
     const project = {
       files,
-      parts,
+      unit,
     };
 
     // Act
@@ -1517,14 +1520,19 @@ describe("the parts of Biome's base", () => {
       [
         {
           isReported: true,
-          parts: baseParts,
+          unit: {
+            axes: [],
+            blocks: [],
+          },
         },
         {
           isReported: false,
-          parts: [
-            ...baseParts,
-            'typescript/storybook',
-          ],
+          unit: {
+            axes: [],
+            blocks: [
+              'storybook',
+            ],
+          },
         },
       ],
       {
@@ -1534,12 +1542,12 @@ describe("the parts of Biome's base", () => {
       },
     ),
   )(
-    'should report noDefaultExport $isReported when a story exports its meta by default and a project extends $parts',
-    ({ files, isReported, parts }) => {
+    'should report noDefaultExport $isReported when a story exports its meta by default and a unit follows $unit.blocks',
+    ({ files, isReported, unit }) => {
       // Arrange
       const project = {
         files,
-        parts,
+        unit,
       };
 
       // Act
@@ -1569,17 +1577,19 @@ describe("the parts of Biome's base", () => {
         },
       ],
       {
-        parts: [
-          ...baseParts,
-          'typescript/tailwind',
-        ],
+        unit: {
+          axes: [],
+          blocks: [
+            'tailwind',
+          ],
+        },
       },
     ),
-  )('should report no important-modifier finding when $condition', ({ files, parts }) => {
+  )('should report no important-modifier finding when $condition', ({ files, unit }) => {
     // Arrange
     const project = {
       files,
-      parts,
+      unit,
     };
 
     // Act
@@ -1593,13 +1603,15 @@ describe("the parts of Biome's base", () => {
     files: {
       'src/panel.tsx': "export const label = (at: Date): string => at.toLocaleDateString('uk');\n",
     },
-    parts: [
-      ...baseParts,
-      'typescript/i18n',
-    ],
+    unit: {
+      axes: [],
+      blocks: [
+        'i18n',
+      ],
+    },
   });
 
-  it('should report no plugin finding when formatting takes a locale and a project extends the i18n part', () => {
+  it('should report no plugin finding when formatting takes a locale and a unit follows i18n', () => {
     // Arrange
     const project = formattingWithLocale;
 
@@ -1615,13 +1627,15 @@ describe("the parts of Biome's base", () => {
       'src/features/orders/order.ts':
         'interface Order {\n  id: string;\n}\n\nexport const read = (response: Response): Promise<Order> =>\n  response.json<Order>();\n',
     },
-    parts: [
-      ...baseParts,
-      'typescript/ky',
-    ],
+    unit: {
+      axes: [],
+      blocks: [
+        'ky',
+      ],
+    },
   });
 
-  it('should report a plugin finding when a response body is cast with .json<T>() and a project extends the ky part', () => {
+  it('should report a plugin finding when a response body is cast with .json<T>() and a unit follows ky', () => {
     // Arrange
     const project = bodyCastByJson;
 
@@ -1641,10 +1655,12 @@ describe("the parts of Biome's base", () => {
             "export const target = (id: string): { to: string } => ({ to: '/orders/' + id });\n",
         },
         plugin: 'links-name-typed-targets',
-        parts: [
-          ...baseParts,
-          'typescript/tanstack-router',
-        ],
+        unit: {
+          axes: [],
+          blocks: [
+            'tanstack-router',
+          ],
+        },
       },
       {
         condition: 'a hook writes its read inline',
@@ -1653,10 +1669,11 @@ describe("the parts of Biome's base", () => {
             "export const options = { queryKey: ['orders'], queryFn: (): number => 1 };\n",
         },
         plugin: 'read-declared-once-as-query-options',
-        parts: [
-          ...baseParts,
-          'typescript/architecture/tanstack-query',
-        ],
+        unit: {
+          blocks: [
+            'tanstack-query',
+          ],
+        },
       },
       {
         condition: 'a module builds the query client at its top level',
@@ -1665,19 +1682,20 @@ describe("the parts of Biome's base", () => {
             "import { QueryClient } from '@tanstack/react-query';\n\nexport const client = new QueryClient();\n",
         },
         plugin: 'query-client-built-by-the-root',
-        parts: [
-          ...baseParts,
-          'typescript/architecture/tanstack-query',
-        ],
+        unit: {
+          blocks: [
+            'tanstack-query',
+          ],
+        },
       },
     ]),
   )(
-    'should report a plugin finding when $condition and a project extends its part',
-    ({ files, parts, plugin }) => {
+    'should report a plugin finding when $condition and a unit follows its block',
+    ({ files, plugin, unit }) => {
       // Arrange
       const project = {
         files,
-        parts,
+        unit,
       };
 
       // Act
@@ -1696,10 +1714,12 @@ describe("the parts of Biome's base", () => {
           'src/features/orders/ui/widgets/order-link.ts':
             "export const target = { to: '/orders/$orderId' };\n",
         },
-        parts: [
-          ...baseParts,
-          'typescript/tanstack-router',
-        ],
+        unit: {
+          axes: [],
+          blocks: [
+            'tanstack-router',
+          ],
+        },
       },
       {
         condition: 'the cache utilities declare a read and the root builds the client',
@@ -1709,19 +1729,20 @@ describe("the parts of Biome's base", () => {
           'src/root/query-client.ts':
             "import { QueryClient } from '@tanstack/react-query';\n\nexport const client = new QueryClient();\n",
         },
-        parts: [
-          ...baseParts,
-          'typescript/architecture/tanstack-query',
-        ],
+        unit: {
+          blocks: [
+            'tanstack-query',
+          ],
+        },
       },
     ]),
   )(
-    'should report no plugin finding when $condition and a project extends its part',
-    ({ files, parts }) => {
+    'should report no plugin finding when $condition and a unit follows its block',
+    ({ files, unit }) => {
       // Arrange
       const project = {
         files,
-        parts,
+        unit,
       };
 
       // Act
@@ -1736,7 +1757,7 @@ describe("the parts of Biome's base", () => {
 const ERROR_WITHOUT_CAUSE =
   "export const readOrder = (text: string): unknown => {\n  try {\n    return JSON.parse(text);\n  } catch (error) {\n    throw new Error('unreadable order');\n  }\n};\n";
 
-describe('the Biome parts of the libraries', () => {
+describe('the Biome preset files of the libraries', () => {
   it.each(
     lintCases([
       {
@@ -1746,10 +1767,12 @@ describe('the Biome parts of the libraries', () => {
             "import { t } from '@lingui/core/macro';\n\nexport const online = t`Online`;\n",
         },
         plugin: 'module-level-messages-are-descriptors',
-        parts: [
-          ...baseParts,
-          'typescript/lingui',
-        ],
+        unit: {
+          axes: [],
+          blocks: [
+            'lingui',
+          ],
+        },
       },
       {
         condition: 'a schema chains a format on z.string()',
@@ -1758,19 +1781,21 @@ describe('the Biome parts of the libraries', () => {
             "import { z } from 'zod';\n\nexport const userModel = z.strictObject({ email: z.string().email() });\n",
         },
         plugin: 'zod-four-forms-only',
-        parts: [
-          ...baseParts,
-          'typescript/zod',
-        ],
+        unit: {
+          axes: [],
+          blocks: [
+            'zod',
+          ],
+        },
       },
     ]),
   )(
-    'should report a plugin finding when $condition and a project extends the part that holds it',
-    ({ files, parts, plugin }) => {
+    'should report a plugin finding when $condition and a unit follows the block that holds it',
+    ({ files, plugin, unit }) => {
       // Arrange
       const project = {
         files,
-        parts,
+        unit,
       };
 
       // Act
@@ -1789,10 +1814,12 @@ describe('the Biome parts of the libraries', () => {
           'src/features/chat/ui/status.ts':
             "import { msg, t } from '@lingui/core/macro';\n\nexport const online = msg`Online`;\nexport const label = (): string => t`Away`;\n",
         },
-        parts: [
-          ...baseParts,
-          'typescript/lingui',
-        ],
+        unit: {
+          axes: [],
+          blocks: [
+            'lingui',
+          ],
+        },
       },
       {
         condition: 'a schema takes a format on its own and merges by extend',
@@ -1800,10 +1827,12 @@ describe('the Biome parts of the libraries', () => {
           'src/features/chat/adapters/api/models/user.model.ts':
             "import { z } from 'zod';\n\nconst baseSchema = z.strictObject({ id: z.string() });\n\nexport const userModel = baseSchema.extend({ email: z.email() });\n",
         },
-        parts: [
-          ...baseParts,
-          'typescript/zod',
-        ],
+        unit: {
+          axes: [],
+          blocks: [
+            'zod',
+          ],
+        },
       },
       {
         condition: "an entity's fields are readonly",
@@ -1811,19 +1840,18 @@ describe('the Biome parts of the libraries', () => {
           'src/features/chat/domain/entities/chat.entity.ts':
             'export interface Chat {\n  readonly title: string;\n  rename(title: string): Chat;\n}\n',
         },
-        parts: [
-          ...baseParts,
-          'typescript/architecture/typescript',
-        ],
+        unit: {
+          blocks: [],
+        },
       },
     ]),
   )(
-    'should report no plugin finding when $condition and a project extends the part that holds it',
-    ({ files, parts }) => {
+    'should report no plugin finding when $condition and a unit follows the block that holds it',
+    ({ files, unit }) => {
       // Arrange
       const project = {
         files,
-        parts,
+        unit,
       };
 
       // Act
@@ -1837,7 +1865,7 @@ describe('the Biome parts of the libraries', () => {
 
 const UNTYPED_RETURN = 'export const next = (count: number) => count + 1;\n';
 
-describe('the Biome part that needs each setting', () => {
+describe('the Biome block that needs each setting', () => {
   it.each(
     lintCases([
       {
@@ -1845,21 +1873,11 @@ describe('the Biome part that needs each setting', () => {
         files: {
           'src/main.ts': UNTYPED_RETURN,
         },
-        isReported: false,
-        parts: [
-          'common/self',
-          'typescript/self',
-          'typescript/core',
-        ],
-        rule: 'useExplicitReturnType',
-      },
-      {
-        condition: 'a function leaves its return type unwritten',
-        files: {
-          'src/main.ts': UNTYPED_RETURN,
-        },
         isReported: true,
-        parts: baseParts,
+        unit: {
+          axes: [],
+          blocks: [],
+        },
         rule: 'useExplicitReturnType',
       },
       {
@@ -1867,24 +1885,11 @@ describe('the Biome part that needs each setting', () => {
         files: {
           'src/main.ts': ERROR_WITHOUT_CAUSE,
         },
-        isReported: false,
-        parts: [
-          'common/self',
-          'typescript/self',
-        ],
-        rule: 'useErrorCause',
-      },
-      {
-        condition: 'a catch block throws a new error without its cause',
-        files: {
-          'src/main.ts': ERROR_WITHOUT_CAUSE,
-        },
         isReported: true,
-        parts: [
-          'common/self',
-          'typescript/self',
-          'typescript/core',
-        ],
+        unit: {
+          axes: [],
+          blocks: [],
+        },
         rule: 'useErrorCause',
       },
       {
@@ -1893,7 +1898,10 @@ describe('the Biome part that needs each setting', () => {
           '.dependency-cruiser.mjs': 'export default {};\n',
         },
         isReported: true,
-        parts: baseParts,
+        unit: {
+          axes: [],
+          blocks: [],
+        },
         rule: 'noDefaultExport',
       },
       {
@@ -1902,10 +1910,12 @@ describe('the Biome part that needs each setting', () => {
           '.dependency-cruiser.mjs': 'export default {};\n',
         },
         isReported: false,
-        parts: [
-          ...baseParts,
-          'typescript/dependency-cruiser',
-        ],
+        unit: {
+          axes: [],
+          blocks: [
+            'dependency-cruiser',
+          ],
+        },
         rule: 'noDefaultExport',
       },
       {
@@ -1914,7 +1924,10 @@ describe('the Biome part that needs each setting', () => {
           'src/main.ts': 'export const total = (count: number): bigint => 1n + count;\n',
         },
         isReported: true,
-        parts: baseParts,
+        unit: {
+          axes: [],
+          blocks: [],
+        },
         rule: 'noUnsafePlusOperands',
       },
       {
@@ -1923,7 +1936,10 @@ describe('the Biome part that needs each setting', () => {
           'src/main.ts': 'export const rank = (isFirst: boolean): number => (isFirst ? 0 : 1);\n',
         },
         isReported: true,
-        parts: baseParts,
+        unit: {
+          axes: [],
+          blocks: [],
+        },
         rule: 'noMisleadingReturnType',
       },
       {
@@ -1932,7 +1948,10 @@ describe('the Biome part that needs each setting', () => {
           'src/main.ts': "export const fail = (): never => {\n  throw 'broken';\n};\n",
         },
         isReported: true,
-        parts: baseParts,
+        unit: {
+          axes: [],
+          blocks: [],
+        },
         rule: 'useThrowOnlyError',
       },
       {
@@ -1942,10 +1961,9 @@ describe('the Biome part that needs each setting', () => {
             "export const region = (): string => process.env['REGION'] ?? 'eu';\n",
         },
         isReported: true,
-        parts: [
-          ...baseParts,
-          'typescript/architecture/typescript',
-        ],
+        unit: {
+          blocks: [],
+        },
         rule: 'noProcessEnv',
       },
       {
@@ -1955,10 +1973,9 @@ describe('the Biome part that needs each setting', () => {
             "export const region = (): string => process.env['REGION'] ?? 'eu';\n",
         },
         isReported: false,
-        parts: [
-          ...baseParts,
-          'typescript/architecture/typescript',
-        ],
+        unit: {
+          blocks: [],
+        },
         rule: 'noProcessEnv',
       },
       {
@@ -1968,10 +1985,11 @@ describe('the Biome part that needs each setting', () => {
             "export const load = (): Promise<Response> => fetch('/orders');\n",
         },
         isReported: true,
-        parts: [
-          ...baseParts,
-          'typescript/architecture/ui',
-        ],
+        unit: {
+          blocks: [
+            'ui',
+          ],
+        },
         rule: 'noRestrictedGlobals',
       },
       {
@@ -1981,10 +1999,11 @@ describe('the Biome part that needs each setting', () => {
             "export const load = (): Promise<Response> => fetch('/orders');\n",
         },
         isReported: false,
-        parts: [
-          ...baseParts,
-          'typescript/architecture/ui',
-        ],
+        unit: {
+          blocks: [
+            'ui',
+          ],
+        },
         rule: 'noRestrictedGlobals',
       },
       {
@@ -1993,10 +2012,12 @@ describe('the Biome part that needs each setting', () => {
           'src/panel.tsx': component('<div></div>'),
         },
         isReported: true,
-        parts: [
-          ...baseParts,
-          'typescript/_react',
-        ],
+        unit: {
+          axes: [],
+          blocks: [
+            'react-dom',
+          ],
+        },
         rule: 'useSelfClosingElements',
       },
       {
@@ -2006,7 +2027,10 @@ describe('the Biome part that needs each setting', () => {
             'export const depth = (level: number, label: string): number =>\n  level > 0 ? depth(level - 1, label) : 0;\n',
         },
         isReported: true,
-        parts: baseParts,
+        unit: {
+          axes: [],
+          blocks: [],
+        },
         rule: 'noParametersOnlyUsedInRecursion',
       },
       {
@@ -2015,7 +2039,10 @@ describe('the Biome part that needs each setting', () => {
           'src/main.ts': "export const fail = (): Promise<never> => Promise.reject('broken');\n",
         },
         isReported: true,
-        parts: baseParts,
+        unit: {
+          axes: [],
+          blocks: [],
+        },
         rule: 'usePromiseRejectErrors',
       },
       {
@@ -2024,10 +2051,12 @@ describe('the Biome part that needs each setting', () => {
           'src/panel.tsx': component('<center>Orders</center>'),
         },
         isReported: true,
-        parts: [
-          ...baseParts,
-          'typescript/react-dom',
-        ],
+        unit: {
+          axes: [],
+          blocks: [
+            'react-dom',
+          ],
+        },
         rule: 'noObsoleteTags',
       },
       {
@@ -2036,10 +2065,13 @@ describe('the Biome part that needs each setting', () => {
           'src/panel.tsx': component("<p className='text-pink-500'>Orders</p>"),
         },
         isReported: true,
-        parts: [
-          ...baseParts,
-          'typescript/tailwind',
-        ],
+        unit: {
+          axes: [],
+          blocks: [
+            'tailwind',
+            'design-system',
+          ],
+        },
         rule: 'noTailwindRawColors',
       },
       {
@@ -2048,10 +2080,12 @@ describe('the Biome part that needs each setting', () => {
           'tests/e2e/sign-in.e2e.test.ts': signInSpec('await page.pause();'),
         },
         isReported: true,
-        parts: [
-          ...baseParts,
-          'typescript/playwright',
-        ],
+        unit: {
+          axes: [],
+          blocks: [
+            'playwright',
+          ],
+        },
         rule: 'noPlaywrightPagePause',
       },
       {
@@ -2060,10 +2094,12 @@ describe('the Biome part that needs each setting', () => {
           'tests/e2e/sign-in.e2e.test.ts': signInSpec("await page.$('h1');"),
         },
         isReported: true,
-        parts: [
-          ...baseParts,
-          'typescript/playwright',
-        ],
+        unit: {
+          axes: [],
+          blocks: [
+            'playwright',
+          ],
+        },
         rule: 'noPlaywrightElementHandle',
       },
       {
@@ -2074,20 +2110,22 @@ describe('the Biome part that needs each setting', () => {
           ),
         },
         isReported: true,
-        parts: [
-          ...baseParts,
-          'typescript/playwright',
-        ],
+        unit: {
+          axes: [],
+          blocks: [
+            'playwright',
+          ],
+        },
         rule: 'noPlaywrightEval',
       },
     ]),
   )(
-    'should report $rule $isReported when $condition and a project extends $parts',
-    ({ files, isReported, parts, rule }) => {
+    'should report $rule $isReported when $condition and a unit follows $unit.blocks',
+    ({ files, isReported, rule, unit }) => {
       // Arrange
       const project = {
         files,
-        parts,
+        unit,
       };
 
       // Act
@@ -2102,7 +2140,7 @@ describe('the Biome part that needs each setting', () => {
 const LAYERED =
   '@layer base, components;\n\n@layer base {\n  :root {\n    --color-text: oklch(20% 0 0);\n  }\n}\n\n';
 
-describe('the Biome css part', () => {
+describe('the Biome preset file of css', () => {
   it.each(
     lintCases(
       [
@@ -2147,17 +2185,19 @@ describe('the Biome css part', () => {
           'src/panel.tsx':
             "import './theme.css';\n\nexport function Panel(): React.ReactElement {\n  return <div className='card title label icon' />;\n}\n",
         },
-        parts: [
-          ...baseParts,
-          'css/css',
-        ],
+        unit: {
+          axes: [],
+          blocks: [
+            'css',
+          ],
+        },
       },
     ),
-  )('should report $rule when $condition', ({ files, parts, rule }) => {
+  )('should report $rule when $condition', ({ files, rule, unit }) => {
     // Arrange
     const project = {
       files,
-      parts,
+      unit,
     };
 
     // Act
@@ -2178,20 +2218,22 @@ describe('the Biome css part', () => {
         },
       ],
       {
-        parts: [
-          ...baseParts,
-          'css/css',
-          'css/browser',
-        ],
+        unit: {
+          axes: [],
+          blocks: [
+            'css',
+            'browser',
+          ],
+        },
       },
     ),
   )(
-    'should report useBaseline when $condition in a project that extends the browser part',
-    ({ files, parts }) => {
+    'should report useBaseline when $condition in a unit that follows browser',
+    ({ files, unit }) => {
       // Arrange
       const project = {
         files,
-        parts,
+        unit,
       };
 
       // Act
@@ -2229,43 +2271,44 @@ describe('the Biome css part', () => {
         },
       ],
       {
-        parts: [
-          ...baseParts,
-          'css/css',
-          'css/tailwind',
-        ],
+        unit: {
+          axes: [],
+          blocks: [
+            'css',
+            'tailwind',
+          ],
+        },
       },
     ),
-  )(
-    'should report a plugin finding $isReported when $condition',
-    ({ files, isReported, parts }) => {
-      // Arrange
-      const project = {
-        files,
-        parts,
-      };
+  )('should report a plugin finding $isReported when $condition', ({ files, isReported, unit }) => {
+    // Arrange
+    const project = {
+      files,
+      unit,
+    };
 
-      // Act
-      const { plugins } = lintFindings(project);
+    // Act
+    const { plugins } = lintFindings(project);
 
-      // Assert
-      expect(plugins.includes('utilities-only-from-tokens')).toBe(isReported);
-    },
-  );
+    // Assert
+    expect(plugins.includes('utilities-only-from-tokens')).toBe(isReported);
+  });
 
   const propertyDeclaredByTheTheme = lintCase({
     files: {
       'src/theme.css':
         '@theme {\n  --color-text: oklch(20% 0 0);\n}\n\n@layer components {\n  .card {\n    color: var(--color-text);\n  }\n}\n',
     },
-    parts: [
-      ...baseParts,
-      'css/css',
-      'css/tailwind',
-    ],
+    unit: {
+      axes: [],
+      blocks: [
+        'css',
+        'tailwind',
+      ],
+    },
   });
 
-  it('should report no undeclared custom property when a project extends the tailwind part', () => {
+  it('should report no undeclared custom property when a unit follows tailwind', () => {
     // Arrange
     const project = propertyDeclaredByTheTheme;
 
@@ -2280,10 +2323,12 @@ describe('the Biome css part', () => {
     files: {
       'src/theme.css': `${LAYERED}@layer components {\n  #main {\n    color: var(--color-text);\n  }\n}\n`,
     },
-    parts: [
-      ...baseParts,
-      'css/css',
-    ],
+    unit: {
+      axes: [],
+      blocks: [
+        'css',
+      ],
+    },
   });
 
   it('should report a plugin finding when a stylesheet styles an element by its id', () => {
@@ -2302,20 +2347,24 @@ describe('the Biome css part', () => {
       [
         {
           isReported: true,
-          parts: [
-            ...baseParts,
-            'css/css',
-            'typescript/css',
-          ],
+          unit: {
+            axes: [],
+            blocks: [
+              'css',
+              'html',
+            ],
+          },
         },
         {
           isReported: false,
-          parts: [
-            ...baseParts,
-            'css/css',
-            'typescript/css',
-            'typescript/tailwind',
-          ],
+          unit: {
+            axes: [],
+            blocks: [
+              'css',
+              'html',
+              'tailwind',
+            ],
+          },
         },
       ],
       {
@@ -2327,12 +2376,12 @@ describe('the Biome css part', () => {
       },
     ),
   )(
-    'should report a utility class as undeclared $isReported when a project extends $parts',
-    ({ files, isReported, parts }) => {
+    'should report a utility class as undeclared $isReported when a unit follows $unit.blocks',
+    ({ files, isReported, unit }) => {
       // Arrange
       const project = {
         files,
-        parts,
+        unit,
       };
 
       // Act
@@ -2344,7 +2393,7 @@ describe('the Biome css part', () => {
   );
 });
 
-describe('the Biome browser part', () => {
+describe('the Biome preset file of browser', () => {
   it.each(
     lintCases(
       [
@@ -2406,17 +2455,19 @@ describe('the Biome browser part', () => {
         },
       ],
       {
-        parts: [
-          ...baseParts,
-          'typescript/browser',
-        ],
+        unit: {
+          axes: [],
+          blocks: [
+            'browser',
+          ],
+        },
       },
     ),
-  )('should report raw HTML when $condition', ({ files, parts }) => {
+  )('should report raw HTML when $condition', ({ files, unit }) => {
     // Arrange
     const project = {
       files,
-      parts,
+      unit,
     };
 
     // Act
@@ -2431,10 +2482,12 @@ describe('the Biome browser part', () => {
       'src/features/orders/ui/show.ts':
         'export const show = (panel: Element, label: string): void => {\n  panel.textContent = label;\n};\n',
     },
-    parts: [
-      ...baseParts,
-      'typescript/browser',
-    ],
+    unit: {
+      axes: [],
+      blocks: [
+        'browser',
+      ],
+    },
   });
 
   it('should report no plugin finding when text is set through the element interfaces', () => {
@@ -2449,24 +2502,28 @@ describe('the Biome browser part', () => {
   });
 });
 
-describe('the Biome design-system part', () => {
+describe('the Biome preset file of design-system', () => {
   it.each(
     lintCases(
       [
         {
           isReported: true,
-          parts: [
-            ...baseParts,
-            'css/css',
-            'css/design-system',
-          ],
+          unit: {
+            axes: [],
+            blocks: [
+              'css',
+              'design-system',
+            ],
+          },
         },
         {
           isReported: false,
-          parts: [
-            ...baseParts,
-            'css/css',
-          ],
+          unit: {
+            axes: [],
+            blocks: [
+              'css',
+            ],
+          },
         },
       ],
       {
@@ -2477,12 +2534,12 @@ describe('the Biome design-system part', () => {
       },
     ),
   )(
-    'should report noHexColors $isReported when a theme writes a hexadecimal colour and a project extends $parts',
-    ({ files, isReported, parts }) => {
+    'should report noHexColors $isReported when a theme writes a hexadecimal colour and a unit follows $unit.blocks',
+    ({ files, isReported, unit }) => {
       // Arrange
       const project = {
         files,
-        parts,
+        unit,
       };
 
       // Act
@@ -2494,7 +2551,7 @@ describe('the Biome design-system part', () => {
   );
 });
 
-describe('the Biome framework parts', () => {
+describe('the Biome preset files of the frameworks', () => {
   it.each(
     lintCases(
       [
@@ -2587,14 +2644,22 @@ describe('the Biome framework parts', () => {
         files: {
           'package.json': manifest,
         },
-        parts: webParts,
+        unit: {
+          axes: [],
+          blocks: [
+            'react-dom',
+            'browser',
+            'tailwind',
+            'testing-library',
+          ],
+        },
       },
     ),
-  )('should report $rule when $condition', ({ files, parts, rule }) => {
+  )('should report $rule when $condition', ({ files, rule, unit }) => {
     // Arrange
     const project = {
       files,
-      parts,
+      unit,
     };
 
     // Act
@@ -2612,10 +2677,12 @@ describe('the Biome framework parts', () => {
           files: {
             'src/panel.tsx': component('<li onClick={() => undefined}>item</li>'),
           },
-          parts: [
-            ...baseParts,
-            'typescript/react-dom',
-          ],
+          unit: {
+            axes: [],
+            blocks: [
+              'react-dom',
+            ],
+          },
           rule: 'noNoninteractiveElementInteractions',
         },
         {
@@ -2627,10 +2694,12 @@ describe('the Biome framework parts', () => {
             'src/order.hooks.ts':
               "import { useState } from 'react';\n\nexport function useOrder(open: boolean): number {\n  if (open) {\n    const [count] = useState(0);\n    return count;\n  }\n  return 0;\n}\n",
           },
-          parts: [
-            ...baseParts,
-            'typescript/_react',
-          ],
+          unit: {
+            axes: [],
+            blocks: [
+              'react-dom',
+            ],
+          },
           rule: 'useHookAtTopLevel',
         },
         {
@@ -2646,11 +2715,13 @@ describe('the Biome framework parts', () => {
             'src/panel.tsx':
               "import { View } from 'react-native';\n\nexport function Panel(): React.ReactElement {\n  return <View style={{ backgroundColor: 'red' }} />;\n}\n",
           },
-          parts: [
-            ...baseParts,
-            'typescript/_react',
-            'typescript/react-native',
-          ],
+          unit: {
+            axes: [],
+            blocks: [
+              'react-dom',
+              'react-native',
+            ],
+          },
           rule: 'noReactNativeLiteralColors',
         },
         {
@@ -2658,10 +2729,12 @@ describe('the Biome framework parts', () => {
           files: {
             'src/Panel.tsx': component('<div />'),
           },
-          parts: [
-            ...baseParts,
-            'typescript/_react',
-          ],
+          unit: {
+            axes: [],
+            blocks: [
+              'react-dom',
+            ],
+          },
           rule: 'useFilenamingConvention',
         },
       ],
@@ -2672,12 +2745,12 @@ describe('the Biome framework parts', () => {
       },
     ),
   )(
-    'should report $rule when $condition and a project extends $parts',
-    ({ files, parts, rule }) => {
+    'should report $rule when $condition and a unit follows $unit.blocks',
+    ({ files, rule, unit }) => {
       // Arrange
       const project = {
         files,
-        parts,
+        unit,
       };
 
       // Act
@@ -2717,16 +2790,19 @@ describe('the Biome framework parts', () => {
         files: {
           'package.json': manifest,
         },
-        parts: baseParts,
+        unit: {
+          axes: [],
+          blocks: [],
+        },
       },
     ),
   )(
-    'should not report $rule when $condition and a project extends only the self, core and typescript parts of the base',
-    ({ files, parts, rule }) => {
+    'should not report $rule when $condition and a unit follows only its language',
+    ({ files, rule, unit }) => {
       // Arrange
       const project = {
         files,
-        parts,
+        unit,
       };
 
       // Act
@@ -2814,6 +2890,16 @@ describe('the Biome framework parts', () => {
             'src/panel.tsx': component("<div className='ml-4' />"),
           },
           plugin: 'logical-utilities-for-direction',
+          unit: {
+            axes: [],
+            blocks: [
+              'react-dom',
+              'browser',
+              'tailwind',
+              'testing-library',
+              'i18n',
+            ],
+          },
         },
         {
           condition: 'a class list aligns text to the left',
@@ -2821,6 +2907,16 @@ describe('the Biome framework parts', () => {
             'src/panel.tsx': component("<div className='md:text-left' />"),
           },
           plugin: 'logical-utilities-for-direction',
+          unit: {
+            axes: [],
+            blocks: [
+              'react-dom',
+              'browser',
+              'tailwind',
+              'testing-library',
+              'i18n',
+            ],
+          },
         },
         {
           condition: 'a class list marks a utility important after it',
@@ -2900,14 +2996,22 @@ describe('the Biome framework parts', () => {
         files: {
           'package.json': manifest,
         },
-        parts: webParts,
+        unit: {
+          axes: [],
+          blocks: [
+            'react-dom',
+            'browser',
+            'tailwind',
+            'testing-library',
+          ],
+        },
       },
     ),
-  )('should report a plugin finding when $condition', ({ files, parts, plugin }) => {
+  )('should report a plugin finding when $condition', ({ files, plugin, unit }) => {
     // Arrange
     const project = {
       files,
-      parts,
+      unit,
     };
 
     // Act
@@ -2983,14 +3087,22 @@ describe('the Biome framework parts', () => {
         files: {
           'package.json': manifest,
         },
-        parts: webParts,
+        unit: {
+          axes: [],
+          blocks: [
+            'react-dom',
+            'browser',
+            'tailwind',
+            'testing-library',
+          ],
+        },
       },
     ),
-  )('should report no plugin finding when $condition', ({ files, parts }) => {
+  )('should report no plugin finding when $condition', ({ files, unit }) => {
     // Arrange
     const project = {
       files,
-      parts,
+      unit,
     };
 
     // Act
@@ -3010,7 +3122,15 @@ describe('the Biome framework parts', () => {
         '((): void => {',
       ).replace(', useEffectEvent', ''),
     },
-    parts: webParts,
+    unit: {
+      axes: [],
+      blocks: [
+        'react-dom',
+        'browser',
+        'tailwind',
+        'testing-library',
+      ],
+    },
   });
 
   it('should report a missing dependency when an effect calls a plain function in a hooks file of a project whose manifest names no React', () => {
@@ -3033,7 +3153,7 @@ const CLOCK_ONLY_IN_THE_CONSTRUCTOR =
   "import { Clock } from './clock';\n\nexport class Orders {\n  public constructor(private readonly clock: Clock) {}\n}\n";
 const TIMER = 'export const later = (run: () => void): void => {\n  setTimeout(run, 10);\n};\n';
 
-describe('the Biome architecture parts', () => {
+describe('the Biome preset files of the architecture axis', () => {
   it.each(
     lintCases(
       [
@@ -3111,19 +3231,18 @@ describe('the Biome architecture parts', () => {
         },
       ],
       {
-        parts: [
-          ...baseParts,
-          'typescript/architecture/core',
-        ],
+        unit: {
+          blocks: [],
+        },
       },
     ),
   )(
-    'should report an effect reached through a global $isReported in $file when a project extends the core part',
-    ({ files, isReported, parts }) => {
+    'should report an effect reached through a global $isReported in $file in any unit of the architecture axis',
+    ({ files, isReported, unit }) => {
       // Arrange
       const project = {
         files,
-        parts,
+        unit,
       };
 
       // Act
@@ -3163,20 +3282,20 @@ describe('the Biome architecture parts', () => {
         },
       ],
       {
-        parts: [
-          ...baseParts,
-          'typescript/architecture/core',
-          'typescript/architecture/bun',
-        ],
+        unit: {
+          blocks: [
+            'bun',
+          ],
+        },
       },
     ),
   )(
-    'should report an effect reached through a global $isReported in $file when a project extends the bun part after core',
-    ({ files, isReported, parts }) => {
+    'should report an effect reached through a global $isReported in $file when a unit follows bun after core',
+    ({ files, isReported, unit }) => {
       // Arrange
       const project = {
         files,
-        parts,
+        unit,
       };
 
       // Act
@@ -3206,20 +3325,18 @@ describe('the Biome architecture parts', () => {
         },
       ],
       {
-        parts: [
-          ...baseParts,
-          'typescript/architecture/typescript',
-          'typescript/architecture/core',
-        ],
+        unit: {
+          blocks: [],
+        },
       },
     ),
   )(
-    'should report a random value drawn $isReported in $file when a project extends the core part',
-    ({ files, isReported, parts }) => {
+    'should report a random value drawn $isReported in $file in any unit of the architecture axis',
+    ({ files, isReported, unit }) => {
       // Arrange
       const project = {
         files,
-        parts,
+        unit,
       };
 
       // Act
@@ -3263,19 +3380,18 @@ describe('the Biome architecture parts', () => {
         },
       ],
       {
-        parts: [
-          ...baseParts,
-          'typescript/architecture/typescript',
-        ],
+        unit: {
+          blocks: [],
+        },
       },
     ),
   )(
-    'should report a timer $isReported in $file when a project extends the typescript part',
-    ({ files, isReported, parts }) => {
+    'should report a timer $isReported in $file in any unit of the language',
+    ({ files, isReported, unit }) => {
       // Arrange
       const project = {
         files,
-        parts,
+        unit,
       };
 
       // Act
@@ -3293,20 +3409,19 @@ describe('the Biome architecture parts', () => {
         files: {
           'src/features/orders/index.ts': "export * from './app';\n",
         },
-        parts: [
-          ...baseParts,
-          'typescript/architecture/core',
-        ],
+        unit: {
+          blocks: [],
+        },
         rule: 'noReExportAll',
       },
     ]),
   )(
-    'should report $rule when $condition and a project extends $parts',
-    ({ files, parts, rule }) => {
+    'should report $rule when $condition and a unit follows $unit.blocks',
+    ({ files, rule, unit }) => {
       // Arrange
       const project = {
         files,
-        parts,
+        unit,
       };
 
       // Act
@@ -3321,18 +3436,10 @@ describe('the Biome architecture parts', () => {
     lintCases(
       [
         {
-          isReported: false,
-          parts: [
-            ...baseParts,
-            'typescript/architecture/core',
-          ],
-        },
-        {
           isReported: true,
-          parts: [
-            ...baseParts,
-            'typescript/architecture/typescript',
-          ],
+          unit: {
+            blocks: [],
+          },
         },
       ],
       {
@@ -3342,12 +3449,12 @@ describe('the Biome architecture parts', () => {
       },
     ),
   )(
-    'should report a declaring surface $isReported when a project extends $parts',
-    ({ files, isReported, parts }) => {
+    'should report a declaring surface $isReported when a unit follows $unit.blocks',
+    ({ files, isReported, unit }) => {
       // Arrange
       const project = {
         files,
-        parts,
+        unit,
       };
 
       // Act
@@ -3377,19 +3484,18 @@ describe('the Biome architecture parts', () => {
         },
       ],
       {
-        parts: [
-          ...baseParts,
-          'typescript/architecture/typescript',
-        ],
+        unit: {
+          blocks: [],
+        },
       },
     ),
   )(
-    "should report a declaring index $isReported in $place when a project extends the language's architecture part",
-    ({ files, isReported, parts }) => {
+    'should report a declaring index $isReported in $place when a unit follows the architecture axis',
+    ({ files, isReported, unit }) => {
       // Arrange
       const project = {
         files,
-        parts,
+        unit,
       };
 
       // Act
@@ -3405,14 +3511,19 @@ describe('the Biome architecture parts', () => {
       [
         {
           isReported: true,
-          parts: baseParts,
+          unit: {
+            axes: [],
+            blocks: [],
+          },
         },
         {
           isReported: false,
-          parts: [
-            ...baseParts,
-            'typescript/nestjs',
-          ],
+          unit: {
+            axes: [],
+            blocks: [
+              'nestjs',
+            ],
+          },
         },
       ],
       {
@@ -3423,12 +3534,12 @@ describe('the Biome architecture parts', () => {
       },
     ),
   )(
-    'should report noParameterProperties $isReported when a provider takes its dependencies through its constructor and a project extends $parts',
-    ({ files, isReported, parts }) => {
+    'should report noParameterProperties $isReported when a provider takes its dependencies through its constructor and a unit follows $unit.blocks',
+    ({ files, isReported, unit }) => {
       // Arrange
       const project = {
         files,
-        parts,
+        unit,
       };
 
       // Act
@@ -3443,7 +3554,10 @@ describe('the Biome architecture parts', () => {
     lintCases([
       {
         isReported: true,
-        parts: baseParts,
+        unit: {
+          axes: [],
+          blocks: [],
+        },
         path: 'src/orders.controller.ts',
         files: {
           'src/orders.controller.ts': FOUR_DEPENDENCIES,
@@ -3451,10 +3565,12 @@ describe('the Biome architecture parts', () => {
       },
       {
         isReported: false,
-        parts: [
-          ...baseParts,
-          'typescript/nestjs',
-        ],
+        unit: {
+          axes: [],
+          blocks: [
+            'nestjs',
+          ],
+        },
         path: 'src/orders.controller.ts',
         files: {
           'src/orders.controller.ts': FOUR_DEPENDENCIES,
@@ -3462,11 +3578,11 @@ describe('the Biome architecture parts', () => {
       },
       {
         isReported: false,
-        parts: [
-          ...baseParts,
-          'typescript/nestjs',
-          'typescript/architecture/nestjs',
-        ],
+        unit: {
+          blocks: [
+            'nestjs',
+          ],
+        },
         path: 'src/place-order.use-case.ts',
         files: {
           'src/place-order.use-case.ts': FOUR_DEPENDENCIES,
@@ -3474,11 +3590,11 @@ describe('the Biome architecture parts', () => {
       },
       {
         isReported: true,
-        parts: [
-          ...baseParts,
-          'typescript/nestjs',
-          'typescript/architecture/nestjs',
-        ],
+        unit: {
+          blocks: [
+            'nestjs',
+          ],
+        },
         path: 'src/orders.ts',
         files: {
           'src/orders.ts': FOUR_DEPENDENCIES,
@@ -3486,12 +3602,12 @@ describe('the Biome architecture parts', () => {
       },
     ]),
   )(
-    'should report useMaxParams $isReported when $path holds a constructor of four dependencies and a project extends $parts',
-    ({ files, isReported, parts }) => {
+    'should report useMaxParams $isReported when $path holds a constructor of four dependencies and a unit follows $unit.blocks',
+    ({ files, isReported, unit }) => {
       // Arrange
       const project = {
         files,
-        parts,
+        unit,
       };
 
       // Act
@@ -3507,10 +3623,12 @@ describe('the Biome architecture parts', () => {
       [
         {
           isReported: false,
-          parts: [
-            ...baseParts,
-            'typescript/nestjs',
-          ],
+          unit: {
+            axes: [],
+            blocks: [
+              'nestjs',
+            ],
+          },
           path: 'src/orders.controller.ts',
           files: {
             'src/orders.controller.ts': CLOCK_ONLY_IN_THE_CONSTRUCTOR,
@@ -3518,11 +3636,11 @@ describe('the Biome architecture parts', () => {
         },
         {
           isReported: false,
-          parts: [
-            ...baseParts,
-            'typescript/nestjs',
-            'typescript/architecture/nestjs',
-          ],
+          unit: {
+            blocks: [
+              'nestjs',
+            ],
+          },
           path: 'src/orders.adapter.ts',
           files: {
             'src/orders.adapter.ts': CLOCK_ONLY_IN_THE_CONSTRUCTOR,
@@ -3530,11 +3648,11 @@ describe('the Biome architecture parts', () => {
         },
         {
           isReported: true,
-          parts: [
-            ...baseParts,
-            'typescript/nestjs',
-            'typescript/architecture/nestjs',
-          ],
+          unit: {
+            blocks: [
+              'nestjs',
+            ],
+          },
           path: 'src/place-order.use-case.ts',
           files: {
             'src/place-order.use-case.ts': CLOCK_ONLY_IN_THE_CONSTRUCTOR,
@@ -3548,12 +3666,12 @@ describe('the Biome architecture parts', () => {
       },
     ),
   )(
-    'should report useImportType $isReported when $path imports a class only its constructor names and a project extends $parts',
-    ({ files, isReported, parts }) => {
+    'should report useImportType $isReported when $path imports a class only its constructor names and a unit follows $unit.blocks',
+    ({ files, isReported, unit }) => {
       // Arrange
       const project = {
         files,
-        parts,
+        unit,
       };
 
       // Act
@@ -3594,17 +3712,19 @@ describe('the Biome base where a rule allows what a setting caught', () => {
         },
       ],
       {
-        parts: [
-          ...baseParts,
-          'typescript/tanstack-router',
-        ],
+        unit: {
+          axes: [],
+          blocks: [
+            'tanstack-router',
+          ],
+        },
       },
     ),
-  )('should report no $rule when $condition', ({ files, parts, rule }) => {
+  )('should report no $rule when $condition', ({ files, rule, unit }) => {
     // Arrange
     const project = {
       files,
-      parts,
+      unit,
     };
 
     // Act

@@ -1,0 +1,15 @@
+zod:
+  '*':
+    typescript:
+      .dependency-cruiser.json:
+        allowedSeverity: error
+  zod-home-is-the-edge-and-shared-parsing:
+    typescript:
+      .dependency-cruiser.json:
+        allowed[comment=zod-home-is-the-edge-and-shared-parsing]:
+          from:
+            path:
+              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.application-layer}/
+              - ^${role.source}/${role.shared-code}/
+          to:
+            path: node_modules/zod/

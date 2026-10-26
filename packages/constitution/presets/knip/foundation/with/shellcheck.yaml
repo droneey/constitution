@@ -1,0 +1,6 @@
+shellcheck:
+  '*':
+    typescript:
+      knip.jsonc:
+        ignoreBinaries:
+          - shellcheck

@@ -1,0 +1,29 @@
+html:
+  language-declared-by-lang:
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            a11y:
+              useHtmlLang: error
+  tabindex-only-zero-or-minus-one:
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            a11y:
+              noPositiveTabindex: error
+  focusable-element-never-aria-hidden:
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            a11y:
+              noAriaHiddenOnFocusable: error
+  native-html-elements-first:
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            nursery:
+              noMisplacedListElements: error

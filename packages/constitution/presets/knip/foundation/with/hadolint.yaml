@@ -1,0 +1,6 @@
+hadolint:
+  '*':
+    typescript:
+      knip.jsonc:
+        ignoreBinaries:
+          - hadolint

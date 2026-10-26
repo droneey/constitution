@@ -1,4 +1,3 @@
-/* biome-ignore lint/plugin/utilities-only-from-tokens: Fumadocs needs Tailwind's default scales */
 @theme {
   /* The library switches to its phone layout below its medium breakpoint; the site keeps one
      layout at every width. */

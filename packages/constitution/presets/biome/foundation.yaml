@@ -1,0 +1,535 @@
+biome:
+  '*':
+    '*':
+      biome.json:
+        files:
+          ignoreUnknown: true
+          includes:
+            - '**'
+            - '!!**/.droneey'
+        markdown:
+          linter:
+            enabled: false
+        linter:
+          rules:
+            preset: recommended
+            complexity:
+              noAdjacentSpacesInRegex: error
+              noArguments: error
+              noBannedTypes: error
+              noCommaOperator: error
+              noEmptyTypeParameters: error
+              noExtraBooleanCast: error
+              noFlatMapIdentity: error
+              noImportantStyles: error
+              noStaticOnlyClass: error
+              noThisInStatic: error
+              noUselessCatch: error
+              noUselessConstructor: error
+              noUselessContinue: error
+              noUselessEmptyExport: error
+              noUselessEscapeInRegex: error
+              noUselessFragments: error
+              noUselessLabel: error
+              noUselessLoneBlockStatements: error
+              noUselessRename: error
+              noUselessStringRaw: error
+              noUselessSwitchCase: error
+              noUselessTernary: error
+              noUselessThisAlias: error
+              noUselessTypeConstraint: error
+              noUselessUndefinedInitialization: error
+              useArrowFunction: error
+              useDateNow: error
+              useFlatMap: error
+              useIndexOf: error
+              useLiteralKeys: error
+              useMathMinMax: error
+              useNumericLiterals: error
+              useOptionalChain: error
+              useRegexLiterals: error
+              useSimpleNumberKeys: error
+            correctness:
+              useParseIntRadix: error
+            performance:
+              noAccumulatingSpread: error
+              noDynamicNamespaceImportAccess: error
+              useDomNodeTextContent: error
+            style:
+              noDescendingSpecificity: error
+              noNonNullAssertion: error
+              useArrayLiterals: error
+              useConst: error
+              useDeprecatedReason: error
+              useExponentiationOperator: error
+              useExportType: error
+              useImportType: error
+              useLiteralEnumMembers: error
+              useNodejsImportProtocol: error
+              useShorthandFunctionType: error
+              useTemplate: error
+            suspicious:
+              noApproximativeNumericConstant: error
+              noCatchAssign: error
+              noConfusingLabels: error
+              noConfusingVoidType: error
+              noConstEnum: error
+              noDeprecatedMediaType: error
+              noDocumentCookie: error
+              noDuplicateEnumValues: error
+              noDuplicateFields: error
+              noEmptyBlock: error
+              noExplicitAny: error
+              noExtraNonNullAssertion: error
+              noGlobalIsFinite: error
+              noGlobalIsNan: error
+              noIrregularWhitespace: error
+              noOctalEscape: error
+              noProto: error
+              noPrototypeBuiltins: error
+              noQuickfixBiome: error
+              noRedundantUseStrict: error
+              noSuspiciousSemicolonInJsx: error
+              noTemplateCurlyInString: error
+              noTsIgnore: error
+              noUselessEscapeInString: error
+              noUselessRegexBackrefs: error
+              useAdjacentOverloadSignatures: error
+              useBiomeIgnoreFolder: error
+              useDefaultSwitchClauseLast: error
+              useGoogleFontDisplay: error
+              useIsArray: error
+        $schema: !default ./node_modules/@biomejs/biome/configuration_schema.json
+    css:
+      biome.json:
+        css:
+          formatter:
+            quoteStyle: single
+    typescript:
+      biome.json:
+        javascript:
+          formatter:
+            semicolons: always
+            quoteStyle: single
+            jsxQuoteStyle: single
+            trailingCommas: all
+            arrowParentheses: always
+            bracketSpacing: true
+            bracketSameLine: false
+            attributePosition: multiline
+        assist:
+          actions:
+            source:
+              organizeImports:
+                level: 'on'
+                options:
+                  identifierOrder: natural
+                  groups:
+                    - ':URL:'
+                    - ':BLANK_LINE:'
+                    - ':NODE:'
+                    - ':BLANK_LINE:'
+                    - ':BUN:'
+                    - ':BLANK_LINE:'
+                    - slot: frameworks
+                    - ':PACKAGE:'
+                    - ':BLANK_LINE:'
+                    - ':ALIAS:'
+                    - ':BLANK_LINE:'
+                    - ':PATH:'
+        linter:
+          rules:
+            suspicious:
+              noUnusedExpressions: error
+              useAwait: error
+              useErrorMessage: error
+              useNumberToFixedDigitsArgument: error
+              noConstantBinaryExpressions: error
+              noMisplacedAssertion: error
+              noUnassignedVariables: error
+              noVar: error
+              noReturnAssign: error
+              noProto: error
+              noForIn: error
+              noNestedPromises: error
+              noShadow: error
+              noUnnecessaryConditions: error
+              useArraySortCompare: error
+              noEmptyObjectKeys: error
+              noLoopFunc: error
+            style:
+              noParameterAssign: error
+              useNumberNamespace: error
+              useBlockStatements: error
+              noUselessElse: error
+              useCollapsedElseIf: error
+              noNegationElse: error
+              useConsistentBuiltinInstantiation: error
+              useShorthandAssign: error
+              noYodaExpression: error
+              useExplicitLengthCheck: error
+              useAtIndex: error
+              useTrimStartEnd: error
+              noSubstr: error
+              noDoneCallback: error
+              noExportedImports: error
+              useNumericSeparators: error
+              useObjectSpread: error
+              useSingleVarDeclarator: error
+              useSymbolDescription: error
+              useThrowNewError: error
+              useNodeAssertStrict: error
+              useExportsLast: error
+              useForOf: error
+              useGroupedAccessorPairs: error
+              useDefaultParameterLast: error
+              useDefaultSwitchClause: error
+              useCollapsedIf: error
+              useConsistentArrowReturn: error
+              useTemplate: error
+              useArrayLiterals: error
+              useExponentiationOperator: error
+              noShoutyConstants: error
+              noUnusedTemplateLiteral: error
+              noMultiAssign: error
+              noExcessiveClassesPerFile: error
+              useGlobalThis: error
+              noMultilineString: error
+              useSpreadOverApply: error
+              useNodejsImportProtocol: error
+            complexity:
+              noUselessConstructor: error
+              useFlatMap: error
+              noUselessRename: error
+              noUselessEmptyExport: error
+              noUselessSwitchCase: error
+              useLiteralKeys: !replace 'off'
+              noUselessTernary: error
+              noUselessLoneBlockStatements: error
+              noUselessLabel: error
+              noExtraBooleanCast: error
+              noUselessStringConcat: error
+              noImplicitCoercions: error
+              noForEach: error
+              useSimplifiedLogicExpression: error
+              useWhile: error
+              noUselessReturn: error
+              noRedundantDefaultExport: error
+              useArrayFind: error
+              useArraySome: error
+              useRegexpTest: error
+            correctness:
+              noGlobalDirnameFilename: error
+              noUndeclaredDependencies: error
+              useJsonImportAttributes: error
+              noUnusedInstantiation: error
+            performance:
+              noDelete: error
+              noAccumulatingSpread: error
+              noAwaitInLoops: error
+              noDynamicNamespaceImportAccess: error
+            nursery:
+              useAwaitThenable: error
+              useStringStartsEndsWith: error
+              noUselessTypeConversion: error
+              noExtendNative: error
+              noNegationInEqualityCheck: error
+              noThisOutsideOfClass: error
+              useIncludes: error
+              useModernMathApis: error
+              useFlatMathMinMax: error
+        overrides:
+          - includes:
+              - '**/${role.colocated-specs}/**'
+              - '**/*.test.ts'
+              - '**/*.test.tsx'
+            linter:
+              rules:
+                complexity:
+                  noStaticOnlyClass: 'off'
+          - includes:
+              - '**/${role.colocated-specs}/**'
+              - '**/*.test.ts'
+              - '**/*.test.tsx'
+            linter:
+              rules:
+                suspicious:
+                  noIdenticalTestTitle: error
+    yaml:
+      biome.json:
+        yaml:
+          formatter:
+            quoteStyle: single
+  biome-formats-every-file-it-reads:
+    '*':
+      biome.json:
+        formatter:
+          lineWidth: 100
+          indentStyle: space
+          indentWidth: 2
+          lineEnding: lf
+          attributePosition: multiline
+          expand: always
+        markdown:
+          formatter:
+            enabled: false
+        overrides:
+          - includes:
+              - '**/*.jsonc'
+            json:
+              formatter:
+                trailingCommas: all
+  biome-refuses-empty-verbs:
+    typescript:
+      biome.json:
+        plugins:
+          - ./${constitution.path}/presets/biome/plugins/typescript/biome-refuses-empty-verbs.${role.grit-rule}
+core:
+  formatters-share-one-indent-and-width:
+    '*':
+      biome.json:
+        formatter:
+          lineWidth: 100
+          indentStyle: space
+          indentWidth: 2
+  catch-handles-only-what-it-recognises:
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            suspicious:
+              noEmptyBlockStatements: error
+        plugins:
+          - ./${constitution.path}/presets/biome/plugins/typescript/catch-handles-only-what-it-recognises.${role.grit-rule}
+        overrides:
+          - includes:
+              - '**/${role.colocated-specs}/**'
+              - '**/*.test.ts'
+              - '**/*.test.tsx'
+              - '**/${role.package-suites}/**'
+            linter:
+              rules:
+                suspicious:
+                  noEmptyBlockStatements: 'off'
+  diagnostics-written-through-a-logger:
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            suspicious:
+              noAlert: error
+              noConsole: error
+              noDebugger: error
+  test-never-skipped-or-empty:
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            suspicious:
+              noSkippedTests: error
+              noFocusedTests: error
+              noConditionalExpect: error
+              useExpect: error
+  deprecated-form-never-used:
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            suspicious:
+              noDeprecatedImports: error
+  dead-code-deleted:
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            suspicious:
+              noParametersOnlyUsedInRecursion: error
+            correctness:
+              noUnreachable: error
+              noUnusedFunctionParameters: error
+              noUnusedImports: error
+              noUnusedLabels: error
+              noUnusedPrivateClassMembers: error
+              noUnusedVariables: error
+  file-name-in-its-owners-case:
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            style:
+              useFilenamingConvention:
+                level: error
+                options:
+                  strictCase: true
+                  filenameCases:
+                    - kebab-case
+  file-within-500-lines:
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            style:
+              noExcessiveLinesPerFile:
+                level: error
+                options:
+                  maxLines: 500
+        overrides:
+          - includes:
+              - '**/*.gen.*'
+              - '**/*.gen/**'
+            linter:
+              rules:
+                style:
+                  noExcessiveLinesPerFile: 'off'
+          - includes:
+              - '**/${role.colocated-specs}/**'
+              - '**/*.test.ts'
+              - '**/*.test.tsx'
+              - '**/${role.package-suites}/**'
+            linter:
+              rules:
+                style:
+                  noExcessiveLinesPerFile: 'off'
+  error-keeps-its-cause:
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            style:
+              useErrorCause: error
+  thrown-value-is-an-error:
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            style:
+              useThrowOnlyError: error
+            nursery:
+              usePromiseRejectErrors: error
+  code-reads-plainly:
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            style:
+              noNestedTernary: error
+  literal-with-a-meaning-is-named:
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            style:
+              noMagicNumbers: error
+        overrides:
+          - includes:
+              - '**/${role.colocated-specs}/**'
+              - '**/*.test.ts'
+              - '**/*.test.tsx'
+              - '**/${role.package-suites}/**'
+            linter:
+              rules:
+                style:
+                  noMagicNumbers: 'off'
+  function-within-its-limits:
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            complexity:
+              noExcessiveCognitiveComplexity:
+                level: error
+                options:
+                  maxAllowedComplexity: 15
+              noExcessiveLinesPerFunction:
+                level: error
+                options:
+                  maxLines: 100
+        overrides:
+          - includes:
+              - '**/*.gen.*'
+              - '**/*.gen/**'
+            linter:
+              rules:
+                complexity:
+                  noExcessiveLinesPerFunction: 'off'
+          - includes:
+              - '**/${role.colocated-specs}/**'
+              - '**/*.test.ts'
+              - '**/*.test.tsx'
+              - '**/${role.package-suites}/**'
+            linter:
+              rules:
+                complexity:
+                  noExcessiveLinesPerFunction: 'off'
+  function-takes-at-most-three-positions:
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            complexity:
+              useMaxParams:
+                level: error
+                options:
+                  max: 3
+  secret-never-in-the-repository:
+    typescript:
+      biome.json:
+        linter:
+          rules:
+            security:
+              noSecrets:
+                level: error
+                options:
+                  entropyThreshold: 60
+        overrides:
+          - includes:
+              - '**/*.config.ts'
+              - '**/*.config.js'
+              - '**/*.config.mjs'
+              - '**/*.config.cjs'
+              - '**/.*rc.ts'
+              - '**/.*rc.js'
+              - '**/.*rc.mjs'
+              - '**/.*rc.cjs'
+            linter:
+              rules:
+                security:
+                  noSecrets: 'off'
+  statements-grouped-by-blank-lines:
+    typescript:
+      biome.json:
+        plugins:
+          - ./${constitution.path}/presets/biome/plugins/typescript/statements-grouped-by-blank-lines.${role.grit-rule}
+  case-named-should-when:
+    typescript:
+      biome.json:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/case-named-should-when.grit]:
+          includes:
+            - '**/${role.colocated-specs}/**'
+            - '**/*.test.ts'
+            - '**/*.test.tsx'
+  case-holds-no-logic:
+    typescript:
+      biome.json:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/case-holds-no-logic.grit]:
+          includes:
+            - '**/${role.colocated-specs}/**'
+            - '**/*.test.ts'
+            - '**/*.test.tsx'
+  case-split-by-arrange-act-assert-comments:
+    typescript:
+      biome.json:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/case-split-by-arrange-act-assert-comments.grit]:
+          includes:
+            - '**/${role.colocated-specs}/**'
+            - '**/*.test.ts'
+            - '**/*.test.tsx'
+  case-pins-meaning-never-wording:
+    typescript:
+      biome.json:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/case-pins-meaning-never-wording.grit]:
+          includes:
+            - '**/${role.colocated-specs}/**'
+            - '**/*.test.ts'
+            - '**/*.test.tsx'
+            - '**/${role.package-suites}/**'

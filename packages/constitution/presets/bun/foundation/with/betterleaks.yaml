@@ -1,0 +1,31 @@
+betterleaks:
+  '*':
+    '*':
+      package.json ? ${file.isTop}:
+        scripts:
+          check:secrets: >-
+            betterleaks git . --redact --no-banner
+            && betterleaks git . --pre-commit --redact --no-banner
+            && betterleaks git . --pre-commit --staged --redact --no-banner
+bun:
+  '*':
+    '*':
+      package.json ? ${file.isTop}:
+        scripts: !sorted {}
+  script-group-run-by-its-prefix:
+    '*':
+      package.json ? ${file.isTop}:
+        scripts:
+          check: !words
+            - bun run --sequential
+            - slot: checks
+            - slot: tests
+            - slot: mutations
+          check@checks:
+            - "'check:*'"
+_task-runner:
+  unit-run-through-its-action-tasks:
+    '*':
+      ${constitution.run} ? ${file.isTop}:
+        check:
+          - bun run check

@@ -1,0 +1,15 @@
+bun:
+  release-age-set-for-installs:
+    typescript:
+      bunfig.toml ? ${file.isTop}:
+        install:
+          minimumReleaseAge: 259200
+  every-tool-runs-on-bun:
+    typescript:
+      bunfig.toml:
+        run:
+          bun: true
+  trusted-dependencies-listed-by-name:
+    typescript:
+      package.json:
+        trustedDependencies: []

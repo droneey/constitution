@@ -1,0 +1,31 @@
+lingui:
+  lingui-only-where-text-is-rendered:
+    typescript:
+      .dependency-cruiser.json:
+        allowed[comment=lingui-only-where-text-is-rendered]:
+          from:
+            path:
+              - ^${role.source}/(?!${role.generic-library}/).*/${role.presentation-layer}/
+              - ^${role.source}/(?!index\.)[^/]+\.[^/]+$
+              - ^${role.source}/${role.extra-entry}/[^/]+/main\.[^/]+$
+              - ^${role.source}/${role.composition-root}/
+              - /locales/
+              - (^|/)__tests__/
+              - ^${role.package-suites}/
+          to:
+            path: node_modules/@lingui/
+        forbidden[name=lingui-only-in-its-home]:
+          severity: error
+          from:
+            pathNot:
+              - ^${role.source}/(?!${role.generic-library}/).*/${role.presentation-layer}/
+              - ^${role.source}/(?!index\.)[^/]+\.[^/]+$
+              - ^${role.source}/${role.extra-entry}/[^/]+/main\.[^/]+$
+              - ^${role.source}/${role.composition-root}/
+              - /locales/
+              - (^|/)__tests__/
+              - ^${role.package-suites}/
+          to:
+            path:
+              - node_modules/@lingui/
+              - /locales/

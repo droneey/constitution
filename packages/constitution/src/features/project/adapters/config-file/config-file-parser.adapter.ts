@@ -1,4 +1,3 @@
-import { CHECK_KEY } from '#/kernel/constants';
 import { ConfigReadStatus } from '#/kernel/entities';
 import { recognisedFailure } from '#/kernel/utils';
 
@@ -35,7 +34,7 @@ interface Reader {
   readonly state: ReaderState;
 }
 
-// check: null, or YAML's other null, names no check, and name: null no name.
+// name: null, or YAML's other null, names no name.
 const yamlNulls: ReadonlySet<string> = new Set([
   'null',
   '~',
@@ -44,17 +43,7 @@ const yamlNulls: ReadonlySet<string> = new Set([
 const openTopValue = (input: { key: string; rest: string; state: ReaderState }): void => {
   const { key, rest, state } = input;
 
-  if (key === CHECK_KEY) {
-    const check = scalarOf(rest);
-
-    state.level.kind = Kind.Scalar;
-
-    if (check === '') {
-      state.empties.push(CHECK_KEY);
-    } else if (!yamlNulls.has(check)) {
-      state.check = check;
-    }
-  } else if (key === ConfigKey.Name) {
+  if (key === ConfigKey.Name) {
     const name = scalarOf(rest);
 
     state.level.kind = Kind.Scalar;
@@ -215,11 +204,6 @@ const parse = (text: string): ConfigRead => {
 
   return {
     config: {
-      ...(state.check === undefined
-        ? {}
-        : {
-            check: state.check,
-          }),
       empties: state.empties,
       items: state.items,
       keys: state.keys,

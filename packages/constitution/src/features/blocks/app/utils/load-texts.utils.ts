@@ -3,7 +3,6 @@ import type { TextsOf } from '#/shared/cli';
 
 import type { LoadFindingDetails } from '../../domain/use-cases/queries/check';
 import {
-  BindingsFileCode,
   BlockLoadCode,
   FrontMatterReadCode,
   LoadCode,
@@ -21,9 +20,6 @@ const axisFolders = listOf({
 });
 
 const loadTexts: TextsOf<LoadFindingDetails> = {
-  [BindingsFileCode.NotYaml]: ({ reason }) => `is not valid YAML: ${reason}`,
-  [BindingsFileCode.OffSchema]: ({ field, reason }) =>
-    `does not match its schema: ${fieldOf(field)}: ${reason}`,
   [BlockLoadCode.SecondaryFrontMatter]: () =>
     'has front matter; only the passport of a block carries it',
   [BlockLoadCode.WithoutPassport]: ({ id }) => `has no passport ${id}.md`,

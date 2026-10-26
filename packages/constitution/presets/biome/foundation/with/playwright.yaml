@@ -1,0 +1,76 @@
+playwright:
+  web-first-assertions-awaited:
+    typescript:
+      biome.json:
+        overrides:
+          - includes:
+              - ${role.package-suites}/${role.end-to-end-suite}/**
+            linter:
+              rules:
+                correctness:
+                  noPlaywrightMissingAwait: error
+  locators-by-role-label-text:
+    typescript:
+      biome.json:
+        overrides:
+          - includes:
+              - ${role.package-suites}/${role.end-to-end-suite}/**
+            linter:
+              rules:
+                style:
+                  noPlaywrightElementHandle: error
+          - includes:
+              - ${role.package-suites}/${role.end-to-end-suite}/**
+            linter:
+              rules:
+                style:
+                  noPlaywrightEval: error
+  waits-through-locators-and-assertions:
+    typescript:
+      biome.json:
+        overrides:
+          - includes:
+              - ${role.package-suites}/${role.end-to-end-suite}/**
+            linter:
+              rules:
+                style:
+                  noPlaywrightWaitForSelector: error
+          - includes:
+              - ${role.package-suites}/${role.end-to-end-suite}/**
+            linter:
+              rules:
+                suspicious:
+                  noPlaywrightNetworkidle: error
+          - includes:
+              - ${role.package-suites}/${role.end-to-end-suite}/**
+            linter:
+              rules:
+                suspicious:
+                  noPlaywrightWaitForNavigation: error
+          - includes:
+              - ${role.package-suites}/${role.end-to-end-suite}/**
+            linter:
+              rules:
+                suspicious:
+                  noPlaywrightWaitForTimeout: error
+  actions-never-forced:
+    typescript:
+      biome.json:
+        overrides:
+          - includes:
+              - ${role.package-suites}/${role.end-to-end-suite}/**
+            linter:
+              rules:
+                suspicious:
+                  noPlaywrightForceOption: error
+core:
+  diagnostics-written-through-a-logger:
+    typescript:
+      biome.json:
+        overrides:
+          - includes:
+              - ${role.package-suites}/${role.end-to-end-suite}/**
+            linter:
+              rules:
+                suspicious:
+                  noPlaywrightPagePause: error

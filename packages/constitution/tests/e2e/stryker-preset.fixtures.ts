@@ -4,6 +4,10 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { z } from 'zod';
+
+import { appliedUnit } from './applied-unit.fixtures';
+
 interface Mutation {
   passed: boolean;
   survivors: number;
@@ -12,44 +16,72 @@ interface Mutation {
 const repository = join(import.meta.dir, '..', '..');
 const stryker = join(repository, 'node_modules', '.bin', 'stryker');
 
-// The sources of the runner and the ignorer stand in for the archive's build, which the check makes later.
-const config = `import bunTest from './.droneey/constitution/presets/typescript/stryker/foundation/bun-test.mjs';
-import core from './.droneey/constitution/presets/typescript/stryker/foundation/core.mjs';
-import mise from './.droneey/constitution/presets/typescript/stryker/foundation/mise.mjs';
-import self from './.droneey/constitution/presets/typescript/stryker/foundation/self.mjs';
+const strykerUnit = (blocks: readonly string[] = []): string =>
+  appliedUnit({
+    blocks,
+    implementations: [
+      'bun',
+      'bun-test',
+      'stryker',
+    ],
+    languages: [
+      'typescript',
+    ],
+  });
 
-export default {
-  ...self,
-  ...mise,
-  ...bunTest,
-  ...core,
-  plugins: [
-    '${fileURLToPath(import.meta.resolve('@droneey/mutation-check/runner'))}',
-    '${fileURLToPath(import.meta.resolve('@droneey/mutation-check/ignorers'))}',
-  ],
-};
-`;
+const strykerConfig = z.looseObject({
+  plugins: z.array(z.string()),
+  testRunner: z.string(),
+});
 
+const appliedConfig = (blocks: readonly string[] = []): z.infer<typeof strykerConfig> =>
+  strykerConfig.parse(
+    JSON.parse(readFileSync(join(strykerUnit(blocks), 'stryker.config.json'), 'utf8')),
+  );
+
+// The sources of the runner and the ignorer stand in for the archive's build, which this
+// repository never makes.
+const config = (blocks: readonly string[]): string =>
+  JSON.stringify({
+    ...appliedConfig(blocks),
+    plugins: [
+      fileURLToPath(import.meta.resolve('@droneey/mutation-check/runner')),
+      fileURLToPath(import.meta.resolve('@droneey/mutation-check/ignorers')),
+    ],
+  });
+
+// The fixture the specs' preload names, which the presets write once beside the specs.
+const SANDBOX = 'src/__tests__/sandbox.fixtures.ts';
 const SURVIVED = /\[Survived\]/g;
 
 const TOTAL = 'export const total = (price: number, tax: number): number => price + tax;\n';
 
-const mutationOf = (spec: string, source = TOTAL): Mutation => {
+interface MutationInput {
+  /** the blocks of the unit beside its language's, Bun's and Stryker's */
+  readonly blocks?: readonly string[];
+  readonly source?: string;
+  readonly spec: string;
+}
+
+const mutationOf = (input: MutationInput): Mutation => {
+  const blocks = input.blocks ?? [];
+
   const folder = mkdtempSync(join(tmpdir(), 'constitution-stryker-'));
 
   try {
     const files = {
       'bunfig.mutation.toml': readFileSync(
-        join(repository, 'templates', 'project', 'typescript', 'stryker', 'bunfig.mutation.toml'),
+        join(strykerUnit(blocks), 'bunfig.mutation.toml'),
         'utf8',
       ),
       'package.json': JSON.stringify({
         name: 'fixture',
         type: 'module',
       }),
-      'src/__tests__/order.utils.test.ts': spec,
-      'src/order.utils.ts': source,
-      'stryker.config.mjs': config,
+      'src/__tests__/order.utils.test.ts': input.spec,
+      [SANDBOX]: readFileSync(join(strykerUnit(blocks), SANDBOX), 'utf8'),
+      'src/order.utils.ts': input.source ?? TOTAL,
+      'stryker.config.json': config(blocks),
     };
 
     for (const [path, text] of Object.entries(files)) {
@@ -59,8 +91,6 @@ const mutationOf = (spec: string, source = TOTAL): Mutation => {
       writeFileSync(join(folder, path), text);
     }
 
-    mkdirSync(join(folder, '.droneey'));
-    symlinkSync(repository, join(folder, '.droneey', 'constitution'));
     // Stryker's plugins and the specs' runner resolve from this package's node_modules.
     symlinkSync(join(repository, 'node_modules'), join(folder, 'node_modules'));
 
@@ -91,4 +121,4 @@ const mutationOf = (spec: string, source = TOTAL): Mutation => {
   }
 };
 
-export { mutationOf };
+export { appliedConfig, mutationOf };

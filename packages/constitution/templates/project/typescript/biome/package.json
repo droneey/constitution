@@ -1,9 +1,0 @@
-{
-  "scripts": {
-    "lint:check": "biome check --error-on-warnings",
-    "lint:fix": "biome check --write"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "2.6.2"
-  }
-}

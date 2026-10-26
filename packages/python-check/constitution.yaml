@@ -26,5 +26,6 @@ implementations:
   - vulture
   - complexipy
   - python-check
-packs: []
+packs:
+  - pack
 overrides: []

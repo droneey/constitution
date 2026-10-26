@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import { SettingShape } from '../../../domain/contracts';
-import type { Setting } from '../../../domain/entities';
+import type { LinesLayout, Setting } from '../../../domain/entities';
 import { createConfigurationFormat } from '../configuration-format.adapter';
 
 const format = createConfigurationFormat();
@@ -38,9 +38,11 @@ interface ReadRow {
 
 interface WriteRow {
   readonly condition: string;
+  readonly layout?: LinesLayout;
   readonly path: string;
   readonly settings: Setting;
   readonly shape?: SettingShape;
+  readonly sorted?: readonly (readonly string[])[];
   readonly text: string;
   readonly written: string;
 }
@@ -58,12 +60,18 @@ const readOf = (row: ReadRow): Setting | undefined =>
 
 const writeOf = (row: WriteRow): string =>
   format.write({
+    layout: row.layout,
     path: row.path,
     settings: row.settings,
     ...(row.shape === undefined
       ? {}
       : {
           shape: row.shape,
+        }),
+    ...(row.sorted === undefined
+      ? {}
+      : {
+          sorted: row.sorted,
         }),
     text: row.text,
   });
@@ -317,6 +325,88 @@ describe('createConfigurationFormat', () => {
       written: '{\n  // kept\n  "kept": {\n    "width": 120\n  },\n  "added": true\n}\n',
     },
     {
+      condition:
+        'a map kept sorted gains a key and is written again with its keys sorted, a null among them',
+      path: 'package.json',
+      settings: {
+        name: 'kit',
+        scripts: {
+          check: 'c',
+          'check:lint': 'l',
+          test: 't',
+        },
+      },
+      sorted: [
+        [
+          'scripts',
+        ],
+        [
+          'name',
+        ],
+        [
+          'absent',
+        ],
+      ],
+      text: '{\n  "name": "kit",\n  "scripts": {\n    "test": "t",\n    "check:lint": "l",\n    "gone": null\n  }\n}\n',
+      written:
+        '{\n  "name": "kit",\n  "scripts": {\n    "check": "c",\n    "check:lint": "l",\n    "gone": null,\n    "test": "t"\n  }\n}\n',
+    },
+    {
+      condition: 'a map kept sorted already stands sorted',
+      path: 'package.json',
+      settings: {
+        scripts: {
+          check: 'c',
+          test: 't',
+        },
+      },
+      sorted: [
+        [
+          'scripts',
+        ],
+      ],
+      text: '{\n  "scripts": { "check": "c", "test": "t" }\n}\n',
+      written: '{\n  "scripts": { "check": "c", "test": "t" }\n}\n',
+    },
+    {
+      condition: 'a JSONC file is new, its lists and objects broken over lines',
+      path: 'knip.jsonc',
+      settings: {
+        entry: [
+          'src',
+        ],
+        rules: {
+          files: 'error',
+        },
+      },
+      text: '',
+      written: '{\n  "entry": [\n    "src",\n  ],\n  "rules": {\n    "files": "error",\n  },\n}\n',
+    },
+    {
+      condition:
+        'a JSONC file gains a comma before the comment after its last item, and none in a list on one line',
+      path: 'knip.jsonc',
+      settings: {
+        entry: [
+          'src',
+        ],
+        project: [],
+      },
+      text: '{\n  "entry": ["src"],\n  "project": [] // none\n}\n',
+      written: '{\n  "entry": ["src"],\n  "project": [], // none\n}\n',
+    },
+    {
+      condition: 'a JSONC file already writes its commas after the last items',
+      path: 'knip.jsonc',
+      settings: {
+        entry: [
+          'a',
+        ],
+      },
+      text: '{\n  "entry": [\n    "a",\n  ],\n}\n',
+      written: '{\n  "entry": [\n    "a",\n  ],\n}\n',
+    },
+    {
       condition: 'a list loses an item and gains two in their places',
       path: 'knip.jsonc',
       settings: {
@@ -329,7 +419,7 @@ describe('createConfigurationFormat', () => {
       },
       text: '{ "entry": ["kept", /* why */ "gone", "last"] }\n',
       written:
-        '{\n  "entry": [\n    "first",\n    "kept",\n    "middle", /* why */\n    "last"\n  ]\n}\n',
+        '{\n  "entry": [\n    "first",\n    "kept",\n    "middle", /* why */\n    "last",\n  ],\n}\n',
     },
     {
       condition: 'a list keeps its items in another order',
@@ -341,7 +431,7 @@ describe('createConfigurationFormat', () => {
         ],
       },
       text: '{ "entry": ["a", "b"] }\n',
-      written: '{ "entry": [\n    "b",\n    "a"\n  ] }\n',
+      written: '{ "entry": [\n    "b",\n    "a",\n  ] }\n',
     },
     {
       condition: 'a list holds a null the settings cannot hold',
@@ -353,7 +443,7 @@ describe('createConfigurationFormat', () => {
         ],
       },
       text: '{ "entry": ["a", null] }\n',
-      written: '{ "entry": [\n    "a",\n    "b"\n  ] }\n',
+      written: '{ "entry": [\n    "a",\n    "b",\n  ] }\n',
     },
     {
       condition: 'a value spelled otherwise stays as the file spells it',
@@ -418,7 +508,119 @@ describe('createConfigurationFormat', () => {
         },
       },
       text: '',
-      written: 'smol = true\n\n[test]\npreload = [ "a.ts" ]\n',
+      written: 'smol = true\n\n[test]\npreload = ["a.ts"]\n',
+    },
+    {
+      condition:
+        'an array runs past the width, a text holds brackets and an array holds tables of its own',
+      path: 'bunfig.toml',
+      settings: {
+        test: {
+          marks: [
+            '[ x ]',
+          ],
+          preload: [
+            './src/__tests__/first-of-the-fixtures.ts',
+            './src/__tests__/second-of-the-fixtures.ts',
+            './src/__tests__/third.ts',
+          ],
+          rows: [
+            [
+              'a',
+            ],
+          ],
+        },
+      },
+      text: '',
+      written:
+        '[test]\nmarks = ["[ x ]"]\npreload = [\n  "./src/__tests__/first-of-the-fixtures.ts",\n  "./src/__tests__/second-of-the-fixtures.ts",\n  "./src/__tests__/third.ts"\n]\nrows = [["a"]]\n',
+    },
+    {
+      condition:
+        'an array as long as the width, a long text and an array of arrays stay on their lines',
+      path: 'bunfig.toml',
+      settings: {
+        rows: [
+          [
+            'a'.repeat(50),
+          ],
+          [
+            'b'.repeat(50),
+          ],
+        ],
+        tags: [
+          'a'.repeat(42),
+          'b'.repeat(43),
+        ],
+        title: 't'.repeat(110),
+      },
+      text: '',
+      written: `rows = [["${'a'.repeat(50)}"], ["${'b'.repeat(50)}"]]\ntags = ["${'a'.repeat(42)}", "${'b'.repeat(43)}"]\ntitle = "${'t'.repeat(110)}"\n`,
+    },
+    {
+      condition:
+        "a file's own indented array runs past the width and a literal string holds brackets",
+      path: 'bunfig.toml',
+      settings: {
+        test: {
+          preload: [
+            'a, b'.repeat(15),
+            'c'.repeat(40),
+          ],
+          title: '[ a ]',
+        },
+      },
+      text: `[test]\n  preload = ['${'a, b'.repeat(15)}', '${'c'.repeat(40)}']\n  title = '[ a ]'\n`,
+      written: `[test]\n  preload = [\n    '${'a, b'.repeat(15)}',\n    '${'c'.repeat(40)}'\n  ]\n  title = '[ a ]'\n`,
+    },
+    {
+      condition:
+        'a table names a header longer than the width, and a list mixes a table and a text',
+      path: 'bunfig.toml',
+      settings: {
+        ['k'.repeat(100)]: {
+          a: 1,
+        },
+        mixed: [
+          {
+            a: 1,
+          },
+          'x',
+        ],
+      },
+      text: '',
+      written: `mixed = [{ a = 1 }, "x"]\n\n[${'k'.repeat(100)}]\na = 1\n`,
+    },
+    {
+      condition: 'a key of a plain table becomes an inline table of two keys',
+      path: 'bunfig.toml',
+      settings: {
+        test: {
+          cover: {
+            functions: 1,
+            lines: 1,
+          },
+          x: 1,
+        },
+      },
+      text: '[test]\nx = 1\ncover = { functions = 1 }\n',
+      written: '[test]\nx = 1\ncover = { functions = 1, lines = 1 }\n',
+    },
+    {
+      condition: 'one of two tables dots its keys',
+      path: 'bunfig.toml',
+      settings: {
+        a: {
+          x: {
+            y: 2,
+          },
+        },
+        b: {
+          z: 1,
+        },
+      },
+      text: '[a]\nx.y = 1\n\n[b]\nz = 1\n',
+      written: '[a.x]\ny = 2\n\n[b]\nz = 1\n',
     },
     {
       condition: 'a plain table changes a key, gains one and keeps its comments',
@@ -911,7 +1113,18 @@ describe('createConfigurationFormat', () => {
       written: "jobs:\n  - run: |-\n      line one\n      line two\n'on': 'yes'\n",
     },
     {
-      condition: 'a key goes, a key comes, a value changes and the comments stay',
+      condition: 'a new text that needs quotes takes single ones',
+      path: 'lefthook.yaml',
+      settings: {
+        glob: '*.md',
+        range: '',
+      },
+      text: '',
+      written: "glob: '*.md'\nrange: ''\n",
+    },
+    {
+      condition:
+        'a key goes, a key comes before the key that follows it, a value changes and the comments stay',
       path: 'lefthook.yaml',
       settings: {
         added: true,
@@ -922,6 +1135,27 @@ describe('createConfigurationFormat', () => {
       },
       text: '# top\nname: kit\nkept:\n  width: 100 # why\nremoved: 1\nskip: ~\n',
       written: '# top\nname: kit\nkept:\n  width: 120 # why\nskip: ~\nadded: true\n',
+    },
+    {
+      condition: 'a map kept sorted keeps its comments, and a path of no map is passed by',
+      path: 'lefthook.yaml',
+      settings: {
+        jobs: {
+          a: 1,
+          b: 2,
+        },
+        name: 'kit',
+      },
+      sorted: [
+        [
+          'jobs',
+        ],
+        [
+          'name',
+        ],
+      ],
+      text: 'name: kit\njobs:\n  b: 2 # why\n  a: 1\n',
+      written: 'name: kit\njobs:\n  a: 1\n  b: 2 # why\n',
     },
     {
       condition: 'a list keeps the nodes of the items it keeps',
@@ -985,13 +1219,31 @@ describe('createConfigurationFormat', () => {
       written: 'exclude:\n  - x # keep\n  - y\n  - z\n',
     },
     {
-      condition: 'a long text is never folded',
+      condition: 'a long text is folded as a block at the width every formatter keeps',
       path: 'lefthook.yaml',
       settings: {
         run: 'word '.repeat(30).trim(),
       },
       text: '',
-      written: `run: ${'word '.repeat(30).trim()}\n`,
+      written: `run: >-\n  ${'word '.repeat(19).trim()}\n  ${'word '.repeat(11).trim()}\n`,
+    },
+    {
+      condition: 'a long text of lines stays a literal block',
+      path: 'lefthook.yaml',
+      settings: {
+        run: `${'word '.repeat(19).trim()}\nnext`,
+      },
+      text: '',
+      written: `run: |-\n  ${'word '.repeat(19).trim()}\n  next\n`,
+    },
+    {
+      condition: 'a text of 80 characters stays on its line',
+      path: 'lefthook.yaml',
+      settings: {
+        run: 'a'.repeat(80),
+      },
+      text: '',
+      written: `run: ${'a'.repeat(80)}\n`,
     },
     {
       condition: 'the file is a map that turns into a list',
@@ -1051,6 +1303,90 @@ describe('createConfigurationFormat', () => {
       ],
       text: 'a\n\nb\n',
       written: 'a\n\nb\n',
+    },
+    {
+      condition:
+        'a file of lines keeps its own lines and comments, then each group under its name, a gone group and a blank between what went aside',
+      layout: {
+        groups: [
+          {
+            lines: [
+              'dist/',
+              'build/',
+            ],
+            name: 'vite',
+          },
+          {
+            lines: [
+              '.env',
+            ],
+            name: 'environment files',
+          },
+        ],
+        names: [
+          'environment files',
+          'tsc',
+          'vite',
+        ],
+      },
+      path: '.gitignore',
+      settings: [
+        'dist/',
+        'build/',
+        '.env',
+        '.source/',
+        'local.txt',
+        'added.txt',
+      ],
+      text: '# generated content\n.source/\ndist/\n\n  # tsc\n*.tsbuildinfo\n  \n  local.txt\n\n\n# vite\nbuild/\n',
+      written:
+        '# generated content\n.source/\n\n  local.txt\nadded.txt\n\n# vite\ndist/\nbuild/\n\n# environment files\n.env\n',
+    },
+    {
+      condition: 'a file of lines laid out in groups is laid out again as it is',
+      layout: {
+        groups: [
+          {
+            lines: [
+              'dist/',
+            ],
+            name: 'vite',
+          },
+        ],
+        names: [
+          'vite',
+        ],
+      },
+      path: '.gitignore',
+      settings: [
+        'dist/',
+        'own/',
+        'more/',
+      ],
+      text: '# mine\nown/\n\n\nmore/\n\n# vite\ndist/\n',
+      written: '# mine\nown/\n\n\nmore/\n\n# vite\ndist/\n',
+    },
+    {
+      condition: 'a file of lines of no own line opens with its first group',
+      layout: {
+        groups: [
+          {
+            lines: [
+              'dist/',
+            ],
+            name: 'vite',
+          },
+        ],
+        names: [
+          'vite',
+        ],
+      },
+      path: '.gitignore',
+      settings: [
+        'dist/',
+      ],
+      text: '',
+      written: '# vite\ndist/\n',
     },
     {
       condition: 'a file of lines is new',

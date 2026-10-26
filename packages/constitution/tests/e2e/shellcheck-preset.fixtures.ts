@@ -1,9 +1,10 @@
 import { spawnSync } from 'node:child_process';
-import { readdirSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { z } from 'zod';
 
+import { appliedUnit } from './applied-unit.fixtures';
 import { miseBinary } from './mise.fixtures';
 
 interface Analysis {
@@ -11,10 +12,9 @@ interface Analysis {
   exitCode: number | undefined;
 }
 
-interface TemplateTask {
+interface UnitTask {
   readonly run: string;
   readonly task: string;
-  readonly template: string;
 }
 
 const shellcheckReport = z.array(
@@ -23,36 +23,41 @@ const shellcheckReport = z.array(
   }),
 );
 
-const repository = join(import.meta.dir, '..', '..');
-const shellcheckRc = join(
-  repository,
-  'presets',
-  'shell',
-  'shellcheck',
-  'foundation',
-  'self.shellcheckrc',
-);
 const shellcheck = miseBinary('shellcheck');
-const templates = join(repository, 'templates', 'project');
 
-const miseTasks = z.object({
-  tasks: z
-    .record(
-      z.string(),
-      z.object({
-        run: z.string(),
-      }),
-    )
-    .optional(),
+// A unit run by Bun of every tool whose script runs a shell command, beside ShellCheck's own settings.
+const tasksUnit = (): string =>
+  appliedUnit({
+    implementations: [
+      'betterleaks',
+      'bun',
+      'mise',
+      'osv-scanner',
+      'rumdl',
+      'shellcheck',
+      'shfmt',
+      'tombi',
+      'yamllint',
+    ],
+    languages: [
+      'markdown',
+      'shell',
+      'toml',
+      'typescript',
+      'yaml',
+    ],
+  });
+
+const manifest = z.object({
+  scripts: z.record(z.string(), z.string()),
 });
 
-// The project copies the archive's rc to .shellcheckrc; the spec points at it.
 const analyseScript = (text: string): Analysis => {
   const run = spawnSync(
     shellcheck,
     [
       '--rcfile',
-      shellcheckRc,
+      join(tasksUnit(), '.shellcheckrc'),
       '--format=json',
       '-',
     ],
@@ -70,23 +75,13 @@ const analyseScript = (text: string): Analysis => {
   };
 };
 
-// The task of every template's mise.toml, whose command mise runs under sh: a project fills each
-// placeholder, <parts> and the like, with paths, so a placeholder stands for one word here.
-const templateTasks = (): readonly TemplateTask[] =>
-  readdirSync(templates, {
-    recursive: true,
-  })
-    .map(String)
-    .filter((path) => path.endsWith('/mise.toml'))
-    .toSorted((left, right) => left.localeCompare(right))
-    .flatMap((path) =>
-      Object.entries(
-        miseTasks.parse(Bun.TOML.parse(readFileSync(join(templates, path), 'utf8'))).tasks ?? {},
-      ).map(([task, { run }]) => ({
-        run: `#!/bin/sh\n${run.replaceAll(/<[^<>]+>/g, 'part')}\n`,
-        task,
-        template: path.slice(0, -'/mise.toml'.length),
-      })),
-    );
+// Each script of the package.json the presets give a unit, whose command runs under sh.
+const unitTasks = (): readonly UnitTask[] =>
+  Object.entries(
+    manifest.parse(JSON.parse(readFileSync(join(tasksUnit(), 'package.json'), 'utf8'))).scripts,
+  ).map(([task, run]) => ({
+    run: `#!/bin/sh\n${run}\n`,
+    task,
+  }));
 
-export { analyseScript, templateTasks };
+export { analyseScript, unitTasks };

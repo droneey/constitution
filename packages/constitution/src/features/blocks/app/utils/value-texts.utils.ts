@@ -19,8 +19,6 @@ const blockIdText = (details: ValueFindingDetails[ValueFailure.BlockId]): string
 
 const ruleSlugText = (details: ValueFindingDetails[ValueFailure.RuleSlug]): string => {
   switch (details.site) {
-    case ValueSite.BoundRule:
-      return `binds "${details.written}", which is not a kebab-case slug`;
     case ValueSite.RuleHeading:
       return `rule "${details.written}" is not a kebab-case slug`;
     case ValueSite.TightenedRule:
@@ -35,8 +33,6 @@ const valueTexts: TextsOf<ValueFindingDetails> = {
   [ValueFailure.BlockId]: blockIdText,
   [ValueFailure.Glob]: ({ written }) =>
     `front matter: governs lists ${JSON.stringify(written)}, which holds whitespace; the index separates globs with spaces`,
-  [ValueFailure.PartAddress]: ({ written }) =>
-    `binds the part "${written}", which is not a file name: it is empty or holds a "/"`,
   [ValueFailure.RuleSlug]: ruleSlugText,
 };
 

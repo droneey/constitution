@@ -1,38 +1,17 @@
 import { describe, expect, it } from 'bun:test';
 
 import { createFakeContext, runCommand } from '#/__tests__/command-context.fake';
-import { UnitPath } from '#/kernel/value-objects';
 import type { CommandPlaces } from '#/shared/cli';
 import { linesSection } from '#/shared/cli';
 
-import type { WiringPlan } from '../../../../../domain/entities';
+import type { PresetsPlan } from '../../../../../domain/entities';
 import { planLinesOf } from '../../../../utils';
 import { createPresetsPlanCommand } from '../plan.cli';
 
-const plan: WiringPlan = {
-  files: [
-    {
-      file: 'biome.json',
-      isNew: false,
-      scopes: [
-        {
-          scope: 'typescript',
-          tools: [
-            {
-              isAdded: false,
-              parts: [],
-              template: '.droneey/constitution/templates/project/typescript/biome/biome.json',
-              tool: 'biome',
-            },
-          ],
-        },
-      ],
-      units: [
-        UnitPath.create(''),
-      ],
-    },
-  ],
-  untemplated: [],
+const plan: PresetsPlan = {
+  files: [],
+  findings: [],
+  runs: [],
 };
 
 describe('createPresetsPlanCommand', () => {
@@ -66,7 +45,7 @@ describe('createPresetsPlanCommand', () => {
       });
       const command = createPresetsPlanCommand({
         ...context,
-        planPresets: (from: string): WiringPlan => {
+        planPresets: (from: string): PresetsPlan => {
           asked.push(from);
 
           return plan;

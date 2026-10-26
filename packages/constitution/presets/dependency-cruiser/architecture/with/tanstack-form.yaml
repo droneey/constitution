@@ -1,0 +1,14 @@
+tanstack-form:
+  '*':
+    typescript:
+      .dependency-cruiser.json:
+        allowedSeverity: error
+  form-library-imported-by-the-ui:
+    typescript:
+      .dependency-cruiser.json:
+        allowed[comment=form-library-imported-by-the-ui]:
+          from:
+            path:
+              - /${role.presentation-layer}/
+          to:
+            path: node_modules/@tanstack/react-form/

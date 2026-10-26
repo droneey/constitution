@@ -1,0 +1,49 @@
+ty:
+  ty-ignore-names-its-rule:
+    python:
+      pyproject.toml:
+        tool:
+          ty:
+            analysis:
+              respect-type-ignore-comments: false
+            rules:
+              all: error
+  deprecated-calls-fail-the-types:
+    python:
+      pyproject.toml:
+        tool:
+          ty:
+            rules:
+              all: error
+  ty-is-the-type-gate:
+    python:
+      pyproject.toml:
+        tool:
+          ty:
+            rules:
+              all: error
+            terminal:
+              error-on-warning: true
+core:
+  async-work-awaited-or-held-by-a-scope:
+    python:
+      pyproject.toml:
+        tool:
+          ty:
+            rules:
+              all: error
+python:
+  typing-any-never-written:
+    python:
+      pyproject.toml:
+        tool:
+          ty:
+            rules:
+              all: error
+  overrides-marked-by-decorator:
+    python:
+      pyproject.toml:
+        tool:
+          ty:
+            rules:
+              all: error

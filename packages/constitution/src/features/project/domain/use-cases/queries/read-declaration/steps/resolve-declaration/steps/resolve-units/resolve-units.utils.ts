@@ -1,4 +1,4 @@
-import { Axis, CHECK_KEY, CONFIG_FILE, Layer } from '#/kernel/constants';
+import { Axis, CONFIG_FILE, Layer } from '#/kernel/constants';
 import { WarningKind } from '#/kernel/entities';
 import type { BlockId } from '#/kernel/value-objects';
 import { coreBlockId, SourceKind, UnitPath } from '#/kernel/value-objects';
@@ -17,7 +17,6 @@ import type { WarningLog } from '../../shared/warning-log';
 
 const configKeys: readonly string[] = [
   ...LIST_KEYS,
-  CHECK_KEY,
   ConfigKey.Overrides,
 ];
 
@@ -28,15 +27,11 @@ const optionalKeys: readonly string[] = [
 
 const fileOf = (unit: DeclaredUnit): string => UnitPath.pathOf(unit.path, CONFIG_FILE);
 
-// A member names no check: the repository's is the one check of the whole tree.
-const keysOf = (unit: DeclaredUnit): readonly string[] =>
-  UnitPath.isRepository(unit.path) ? configKeys : configKeys.filter((key) => key !== CHECK_KEY);
-
 const warnOfUnitKeys = (input: { log: WarningLog; unit: DeclaredUnit }): void => {
   const { log, unit } = input;
   const { config } = unit;
   const file = fileOf(unit);
-  const known = keysOf(unit);
+  const known = configKeys;
 
   for (const key of known) {
     if (!config.keys.includes(key)) {

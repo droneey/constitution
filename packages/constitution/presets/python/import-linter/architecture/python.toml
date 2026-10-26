@@ -1,6 +1,0 @@
-[[tool.importlinter.contracts]]
-name = "domain-imports-no-logging"
-type = "forbidden"
-source_modules = ["*.composition.*.domain", "*.features.*.domain"]
-forbidden_modules = ["logging"]
-allow_indirect_imports = true

@@ -1,15 +1,56 @@
-# core: build
-dist/
-coverage/
+# machine local files ignored
+.claude/settings.local.json
+.claude/worktrees/
 
-# typescript: dependencies
-node_modules/
+# working notes stay out of history
+/local/
 
-# typescript: caches
-*.tsbuildinfo
+# gitignore covers dependencies output and caches
+.DS_Store
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.log
+**/logs/
+.temp/
+.tmp/
+*.bak
+*.orig
+*~
 
-# tsc: the declarations and build info of a unit's project
-.tsc-cache/
+# gitignore covers environment files
+.env*
+!.env.example
+
+# gitignore covers key files
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+credentials.json
+id_rsa
+*.secrets
+
+# _js-runtime
+**/node_modules/
+*.tgz
+
+# bun-test
+**/coverage/
+
+# bun
+.npmrc
 
 # stryker
 .stryker-tmp/
+reports/mutation/
+
+# tsc
+*.tsbuildinfo
+
+# tsc with workspace
+.tsc-cache/

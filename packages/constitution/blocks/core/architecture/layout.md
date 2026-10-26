@@ -10,6 +10,7 @@ A package keeps each folder below only when it has a file to hold. A delivery un
 <package>/
 ├── <manifest>             the manifest, the lockfile, and the files tools look up at the root
 ├── src/                   the source: the module tree below
+├── scripts/               the code that only builds the package: a build program, a generator's configuration
 ├── tests/<kind>/          suites that drive the built package, one folder per kind: tests/e2e/
 ├── docs/                  writing for readers outside the code
 └── <kind>/<member>/       content the package ships as it is, one folder per kind, members of one shape

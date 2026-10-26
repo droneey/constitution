@@ -6,8 +6,8 @@ import { PackPath } from '#/kernel/value-objects';
 
 import type { Files } from '../../../../../__tests__/presets.fixtures';
 import {
-  catalogueParser,
   PROJECT,
+  presetFileParser,
   presetsModel,
   projectFiles,
   projectOf,
@@ -15,6 +15,7 @@ import {
   releasePresets,
   unitOf,
 } from '../../../../../__tests__/presets.fixtures';
+import { createFakeReleaseBuilds } from '../../../../../__tests__/release-builds.fake';
 import type { PresetsPlan } from '../../../../entities';
 import { PresetsCode } from '../../../../entities';
 import { computePresets } from '../compute-presets.utils';
@@ -27,10 +28,11 @@ const planOf = (input: {
   const { files } = projectOf(input);
 
   return computePresets({
+    builds: createFakeReleaseBuilds(),
     files,
     model: presetsModel,
     packs: (input.packs ?? []).map(PackPath.create),
-    parser: catalogueParser,
+    parser: presetFileParser,
     project: PROJECT,
     releaseFolder: releaseFolderPath,
     units: input.units,
@@ -255,7 +257,102 @@ describe('computePresets', () => {
     expect(writtenOf(plan)).toStrictEqual([]);
   });
 
-  it('should merge the entries of a file in the order of their blocks, axes, sources and catalogues', () => {
+  it('should write a list marked as words as one text, the items inserted at its slots among them', () => {
+    // Arrange
+    const asked = {
+      files: releasePresets({
+        'biome/foundation.yaml': [
+          'biome:',
+          "  '*':",
+          "    '*':",
+          '      biome.json:',
+          '        command: !words',
+          '          - biome ${package.name}',
+          '          - slot: paths',
+          '        command@paths:',
+          '          - src',
+        ].join('\n'),
+      }),
+      units: [
+        unitOf({
+          blocks: [
+            'core',
+            'biome',
+          ],
+          name: 'kit',
+        }),
+      ],
+    };
+
+    // Act
+    const plan = planOf(asked);
+
+    // Assert
+    expect(plan.files.map(({ merged }) => merged.value)).toStrictEqual([
+      {
+        command: 'biome kit src',
+      },
+    ]);
+  });
+
+  it('should lay out a file of lines in the groups its entries give, and no file of another shape', () => {
+    // Arrange
+    const asked = {
+      files: releasePresets({
+        'biome/foundation.yaml': [
+          'biome:',
+          "  '*':",
+          "    '*':",
+          '      .gitignore:',
+          '        - dist/',
+          '      biome.json:',
+          '        width: 100',
+        ].join('\n'),
+      }),
+      units: [
+        unitOf({
+          blocks: [
+            'core',
+            'biome',
+          ],
+        }),
+      ],
+    };
+
+    // Act
+    const plan = planOf(asked);
+
+    // Assert
+    expect(
+      plan.files.map((one) =>
+        Object.fromEntries(
+          Object.entries(one).filter(([key]) => key === 'file' || key === 'layout'),
+        ),
+      ),
+    ).toStrictEqual([
+      {
+        file: '.gitignore',
+        layout: {
+          groups: [
+            {
+              lines: [
+                'dist/',
+              ],
+              name: 'biome',
+            },
+          ],
+          names: [
+            'biome',
+          ],
+        },
+      },
+      {
+        file: 'biome.json',
+      },
+    ]);
+  });
+
+  it('should merge the entries of a file in the order of their blocks, axes, sources and preset files', () => {
     // Arrange
     const asked = {
       files: {
@@ -574,7 +671,7 @@ describe('computePresets', () => {
     });
   });
 
-  it('should tell a file at the top where no unit above it takes a file of its name', () => {
+  it('should tell a file at the top where no unit above it gets the same entry', () => {
     // Arrange
     const asked = {
       files: releasePresets({
@@ -639,6 +736,283 @@ describe('computePresets', () => {
         },
       },
     ]);
+  });
+
+  it.each([
+    {
+      condition: 'the unit above takes the file from another block alone',
+      expected: [
+        'packages/app/pyproject.toml',
+      ],
+      rootBlocks: [
+        'core',
+        'python',
+      ],
+    },
+    {
+      condition: 'the unit above gets the same entry',
+      expected: [
+        'pyproject.toml',
+      ],
+      rootBlocks: [
+        'core',
+        'python',
+        'uv',
+      ],
+    },
+  ])(
+    'should guard an entry by the units above that get it when $condition',
+    ({ expected, rootBlocks }) => {
+      // Arrange
+      const asked = {
+        files: releasePresets({
+          'python/foundation.yaml': [
+            'python:',
+            "  '*':",
+            "    '*':",
+            '      pyproject.toml:',
+            '        project: {}',
+          ].join('\n'),
+          'uv/foundation.yaml': [
+            'uv:',
+            "  '*':",
+            "    '*':",
+            '      pyproject.toml ? ${file.isTop}:',
+            '        tool:',
+            '          uv: {}',
+          ].join('\n'),
+        }),
+        units: [
+          unitOf({
+            blocks: rootBlocks,
+          }),
+          unitOf({
+            blocks: [
+              'core',
+              'uv',
+            ],
+            path: 'packages/app',
+          }),
+        ],
+      };
+
+      // Act
+      const plan = planOf(asked);
+
+      // Assert
+      expect(
+        writtenOf(plan)
+          .filter(({ merged }) => JSON.stringify(merged.value).includes('"uv"'))
+          .map(({ file }) => file),
+      ).toStrictEqual([
+        ...expected,
+      ]);
+    },
+  );
+
+  it('should give what the program runs apart from the files, each list in the slots its runner places, and find a tool no runner of a unit runs and a run of another shape', () => {
+    // Arrange
+    const asked = {
+      files: releasePresets({
+        'bun/foundation.yaml': [
+          'bun:',
+          "  '*':",
+          "    '*':",
+          '      ${constitution.run}:',
+          '        check:',
+          '          - slot: checks',
+          '          - slot: tests',
+        ].join('\n'),
+        'bun/foundation/with/biome.yaml': [
+          'biome:',
+          "  '*':",
+          "    '*':",
+          '      package.json:',
+          '        scripts:',
+          '          check:lint: biome check',
+          'bun:',
+          "  '*':",
+          "    '*':",
+          '      ${constitution.run}:',
+          '        check@tests:',
+          '          - bun run test',
+          '        check@checks:',
+          '          - bun run check',
+          '        fix:',
+          '          - bun run fix',
+        ].join('\n'),
+        'lefthook/foundation.yaml': [
+          'lefthook:',
+          "  '*':",
+          "    '*':",
+          '      ${constitution.run}:',
+          '        check: bun run check',
+        ].join('\n'),
+        'lefthook/foundation/with/json.yaml': [
+          'json:',
+          "  '*':",
+          "    '*':",
+          '      lefthook.yaml:',
+          '        json: true',
+        ].join('\n'),
+        'biome/foundation/with/css.yaml': [
+          'css:',
+          "  '*':",
+          "    '*':",
+          '      biome.json:',
+          '        css: true',
+        ].join('\n'),
+      }),
+      units: [
+        unitOf({
+          blocks: [
+            'core',
+            'biome',
+            'bun',
+            'json',
+          ],
+        }),
+        unitOf({
+          blocks: [
+            'core',
+            'biome',
+          ],
+          path: 'packages/kit',
+        }),
+        unitOf({
+          blocks: [
+            'core',
+            'json',
+            'lefthook',
+          ],
+          path: 'packages/hooks',
+        }),
+        unitOf({
+          blocks: [
+            'core',
+            'css',
+          ],
+          path: 'packages/style',
+        }),
+      ],
+    };
+
+    // Act
+    const plan = planOf(asked);
+
+    // Assert
+    expect({
+      files: writtenOf(plan).map(({ file }) => file),
+      findings: plan.findings,
+      runs: plan.runs.map(({ commands, unit }) => ({
+        commands: Object.fromEntries(commands),
+        unit: String(unit),
+      })),
+    }).toStrictEqual({
+      files: [
+        'package.json',
+        'packages/hooks/lefthook.yaml',
+      ],
+      findings: [
+        {
+          code: PresetsCode.RunMisshapen,
+          details: {},
+          path: 'packages/hooks/constitution.yaml',
+        },
+        {
+          code: PresetsCode.ToolWithoutRunner,
+          details: {
+            block: 'json',
+          },
+          path: 'constitution.yaml',
+        },
+        {
+          code: PresetsCode.ToolWithoutRunner,
+          details: {
+            block: 'biome',
+          },
+          path: 'packages/kit/constitution.yaml',
+        },
+      ],
+      runs: [
+        {
+          commands: {
+            check: [
+              'bun run check',
+              'bun run test',
+            ],
+            fix: [
+              'bun run fix',
+            ],
+          },
+          unit: '',
+        },
+      ],
+    });
+  });
+
+  it.each([
+    {
+      condition: 'an entry point is a command, not a list, beside one that is a list',
+      lines: [
+        '        check: bun run check',
+        '        fix:',
+        '          - bun run fix',
+      ],
+    },
+    {
+      condition: 'a list holds what is no command beside a command',
+      lines: [
+        '        check:',
+        '          - bun run check',
+        '          - 1',
+      ],
+    },
+    {
+      condition: 'the run is no map of entry points',
+      lines: [
+        '        - bun run check',
+      ],
+    },
+  ])('should find a run of another shape and run nothing when $condition', ({ lines }) => {
+    // Arrange
+    const asked = {
+      files: releasePresets({
+        'lefthook/foundation.yaml': [
+          'lefthook:',
+          "  '*':",
+          "    '*':",
+          '      ${constitution.run}:',
+          ...lines,
+        ].join('\n'),
+      }),
+      units: [
+        unitOf({
+          blocks: [
+            'core',
+            'lefthook',
+          ],
+        }),
+      ],
+    };
+
+    // Act
+    const plan = planOf(asked);
+
+    // Assert
+    expect({
+      findings: plan.findings,
+      runs: plan.runs,
+    }).toStrictEqual({
+      findings: [
+        {
+          code: PresetsCode.RunMisshapen,
+          details: {},
+          path: 'constitution.yaml',
+        },
+      ],
+      runs: [],
+    });
   });
 
   it('should leave out what the members empty, an entry that only inserts where no entry places its list, and an entry whose facts the file cannot be given, and keep what is empty as written', () => {
@@ -789,6 +1163,8 @@ describe('computePresets', () => {
           '      other.json:',
           '        path: ${constitution.path}',
           '        name: ${package.name}',
+          '      plain.json:',
+          '        width: 1',
         ].join('\n'),
       }),
       packs: [
@@ -825,7 +1201,7 @@ describe('computePresets', () => {
     ]);
   });
 
-  it('should find what is wrong with the catalogues, the release’s files, the facts and the merge, each once', () => {
+  it('should find what is wrong with the preset files, the release’s files, the facts and the merge, each once', () => {
     // Arrange
     const asked = {
       files: {
@@ -888,7 +1264,7 @@ describe('computePresets', () => {
     // Assert
     expect(plan.findings).toStrictEqual([
       {
-        code: PresetsCode.CatalogueUnparsed,
+        code: PresetsCode.PresetFileUnparsed,
         details: {
           line: 1,
         },
@@ -905,9 +1281,7 @@ describe('computePresets', () => {
       {
         code: PresetsCode.MissingReleaseFile,
         details: {
-          block: 'biome',
           file: 'src/gone',
-          rule: '*',
         },
         path: '.droneey/constitution/presets/biome/foundation.yaml',
       },
@@ -934,6 +1308,107 @@ describe('computePresets', () => {
         },
         path: 'biome.json',
       },
+    ]);
+  });
+
+  it("should hold the release's entries to the terms' ids, and let the project's own pack spell its folders", () => {
+    // Arrange
+    const typed = [
+      'biome:',
+      "  '*':",
+      "    '*':",
+      '      biome.json:',
+      '        files: src/**',
+    ].join('\n');
+    const asked = {
+      files: {
+        ...releasePresets({
+          'biome/foundation.yaml': typed,
+        }),
+        ...projectFiles({
+          'packs/acme/presets/biome/foundation.yaml': typed,
+        }),
+      },
+      packs: [
+        'packs/acme',
+      ],
+      units: [
+        unitOf({
+          blocks: [
+            'core',
+            'biome',
+          ],
+          packs: [
+            'packs/acme',
+          ],
+        }),
+      ],
+    };
+
+    // Act
+    const plan = planOf(asked);
+
+    // Assert
+    expect(
+      plan.findings.map(({ code, path }) => [
+        code,
+        path,
+      ]),
+    ).toStrictEqual([
+      [
+        PresetsCode.HandTypedRole,
+        '.droneey/constitution/presets/biome/foundation.yaml',
+      ],
+    ]);
+  });
+
+  it("should hold a release's plugin unreferenced though a pack's entry names it", () => {
+    // Arrange
+    const asked = {
+      files: {
+        ...releasePresets({
+          'biome/foundation.yaml': [
+            'biome:',
+            "  '*':",
+            "    '*':",
+            '      biome.json:',
+            '        width: 100',
+          ].join('\n'),
+          'biome/plugins/typescript/unchecked-type-never-used.grit': 'language js',
+        }),
+        ...projectFiles({
+          'packs/acme/presets/biome/foundation.yaml': [
+            'biome:',
+            "  '*':",
+            "    '*':",
+            '      biome.json:',
+            '        plugins:',
+            '          - ${constitution.path}/presets/biome/plugins/typescript/unchecked-type-never-used.grit',
+          ].join('\n'),
+        }),
+      },
+      packs: [
+        'packs/acme',
+      ],
+      units: [
+        unitOf({
+          blocks: [
+            'core',
+            'biome',
+          ],
+          packs: [
+            'packs/acme',
+          ],
+        }),
+      ],
+    };
+
+    // Act
+    const plan = planOf(asked);
+
+    // Assert
+    expect(plan.findings.map(({ code }) => code)).toStrictEqual([
+      PresetsCode.PluginUnreferenced,
     ]);
   });
 });

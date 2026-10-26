@@ -2,8 +2,9 @@ import type { ProjectSource } from '#/kernel/contracts';
 import type { ProjectWarning } from '#/kernel/entities';
 import { ConfigReadStatus, ReleaseStatus, Resolution, WarningKind } from '#/kernel/entities';
 
-import type { WiringCheck, WiringReport } from '../../../contracts';
-import { WiringCheckStatus } from '../../../contracts';
+import { PROJECT_CHECK } from '../../../constants';
+import type { ConfigurationsReport, ProjectConfigurationsCheck } from '../../../contracts';
+import { ConfigurationsCheckStatus } from '../../../contracts';
 import type { SessionDigest, SessionStart } from '../../../entities';
 import {
   CheckState,
@@ -14,21 +15,21 @@ import {
 } from '../../../entities';
 
 interface DigestSessionPorts {
+  readonly configurations: ProjectConfigurationsCheck;
   readonly source: ProjectSource;
-  readonly wiring: WiringCheck;
 }
 
-const uncheckedWiring: ProjectWarning = {
+const uncheckedConfigurations: ProjectWarning = {
   details: {},
-  kind: WarningKind.WiringUnchecked,
+  kind: WarningKind.ConfigurationsUnchecked,
 };
 
-// A wiring that cannot be checked costs its warnings, never the digest.
-const wiringWarningsOf = (report: WiringReport): readonly ProjectWarning[] =>
-  report.status === WiringCheckStatus.Checked
+// Presets that cannot be checked cost their warnings, never the digest.
+const presetsWarningsOf = (report: ConfigurationsReport): readonly ProjectWarning[] =>
+  report.status === ConfigurationsCheckStatus.Checked
     ? report.warnings
     : [
-        uncheckedWiring,
+        uncheckedConfigurations,
       ];
 
 /**
@@ -96,8 +97,8 @@ const digestSession = (input: DigestSessionPorts & SessionStart): SessionDigest 
       release: digestRelease,
       warnings: [
         ...resolution.warnings,
-        ...wiringWarningsOf(
-          input.wiring.check({
+        ...presetsWarningsOf(
+          input.configurations.check({
             packs,
             project,
             releaseFolder,
@@ -108,7 +109,7 @@ const digestSession = (input: DigestSessionPorts & SessionStart): SessionDigest 
     },
     state: SessionState.create({
       active: resolution.active,
-      check: CheckState.create(resolution.check),
+      check: CheckState.create(PROJECT_CHECK),
       musts: resolution.musts,
       project,
       units: resolution.units.map((unit) => unit.path),

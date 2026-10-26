@@ -2,8 +2,8 @@ import type { Axis } from '#/kernel/constants';
 import type { FindingOf, ProblemOf } from '#/kernel/types';
 
 enum PresetsCode {
-  CatalogueMisplaced = 'catalogue-misplaced',
-  CatalogueUnparsed = 'catalogue-unparsed',
+  PresetFileMisplaced = 'preset-file-misplaced',
+  PresetFileUnparsed = 'preset-file-unparsed',
   EntryMisshapen = 'entry-misshapen',
   UnknownReader = 'unknown-reader',
   UnknownBlock = 'unknown-block',
@@ -16,7 +16,6 @@ enum PresetsCode {
   UnknownFact = 'unknown-fact',
   UnknownRole = 'unknown-role',
   HandTypedRole = 'hand-typed-role',
-  RoleOffItsAxis = 'role-off-its-axis',
   MembersOutsideList = 'members-outside-a-list',
   MissingReleaseFile = 'missing-release-file',
   PluginUnreferenced = 'plugin-unreferenced',
@@ -28,8 +27,13 @@ enum PresetsCode {
   MissingName = 'missing-name',
   MissingConstitution = 'missing-constitution',
   Loosened = 'loosened',
+  Missing = 'missing',
+  Stale = 'stale',
+  Unsorted = 'unsorted',
   FileUnparsed = 'file-unparsed',
   LockUnparsed = 'lock-unparsed',
+  RunMisshapen = 'run-misshapen',
+  ToolWithoutRunner = 'tool-without-runner',
 }
 
 interface EntryNamed {
@@ -42,6 +46,11 @@ interface SettingNamed {
   readonly setting: string;
 }
 
+interface SettingsNamed {
+  /** each as a report names it: its keys joined by dots, and an item's value after them */
+  readonly settings: readonly string[];
+}
+
 interface SourcesNamed extends SettingNamed {
   readonly sources: readonly string[];
 }
@@ -51,8 +60,8 @@ interface SlotNamed extends SettingNamed {
 }
 
 interface PresetsDetails {
-  readonly [PresetsCode.CatalogueMisplaced]: object;
-  readonly [PresetsCode.CatalogueUnparsed]: {
+  readonly [PresetsCode.PresetFileMisplaced]: object;
+  readonly [PresetsCode.PresetFileUnparsed]: {
     /** from 1; absent when the parser names none */
     readonly line?: number;
   };
@@ -74,7 +83,7 @@ interface PresetsDetails {
     readonly owner: string;
   };
   readonly [PresetsCode.EntryMisplaced]: EntryNamed & {
-    /** the catalogue's path under presets/ */
+    /** the preset file's path under presets/ */
     readonly belongs: string;
   };
   readonly [PresetsCode.EntryOffItsAxis]: EntryNamed & {
@@ -93,12 +102,8 @@ interface PresetsDetails {
     readonly role: string;
     readonly term: string;
   };
-  readonly [PresetsCode.RoleOffItsAxis]: EntryNamed & {
-    readonly role: string;
-    readonly termAxis: Axis;
-  };
   readonly [PresetsCode.MembersOutsideList]: EntryNamed;
-  readonly [PresetsCode.MissingReleaseFile]: EntryNamed & {
+  readonly [PresetsCode.MissingReleaseFile]: {
     /** the file's path from the release */
     readonly file: string;
   };
@@ -113,11 +118,18 @@ interface PresetsDetails {
   readonly [PresetsCode.MissingName]: object;
   readonly [PresetsCode.MissingConstitution]: object;
   readonly [PresetsCode.Loosened]: SettingNamed & {
-    /** the value the catalogues give the setting, as JSON writes it */
+    /** the value the presets give the setting, as JSON writes it */
     readonly wanted: string;
   };
+  readonly [PresetsCode.Missing]: SettingsNamed;
+  readonly [PresetsCode.Stale]: SettingsNamed;
+  readonly [PresetsCode.Unsorted]: SettingsNamed;
   readonly [PresetsCode.FileUnparsed]: object;
   readonly [PresetsCode.LockUnparsed]: object;
+  readonly [PresetsCode.RunMisshapen]: object;
+  readonly [PresetsCode.ToolWithoutRunner]: {
+    readonly block: string;
+  };
 }
 
 type PresetsFinding = FindingOf<PresetsDetails>;

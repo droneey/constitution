@@ -1,0 +1,23 @@
+{
+  "ignoreDependencies": [
+    "@stryker-mutator/bun-specs-runner",
+    "@stryker-mutator/core",
+  ],
+  "entry": [
+    "src/main.{ts,tsx}!",
+    "scripts/*/main.ts",
+    "src/entrypoints/*/main.{ts,tsx}!",
+    "src/**/index.{ts,tsx}!",
+  ],
+  "project": [
+    "src/**/*.{ts,tsx}!",
+    "!src/**/__tests__/**!",
+    "tests/**/*.{ts,tsx}",
+    "scripts/**/*.ts",
+  ],
+  "ignoreBinaries": [
+    "rumdl",
+    "tombi",
+    "yamllint",
+  ],
+}

@@ -1,0 +1,12 @@
+tanstack-query:
+  '*':
+    typescript:
+      biome.json:
+        assist:
+          actions:
+            source:
+              organizeImports:
+                options:
+                  groups@frameworks:
+                    - '@tanstack/**'
+                    - ':BLANK_LINE:'

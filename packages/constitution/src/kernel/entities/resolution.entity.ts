@@ -16,7 +16,6 @@ interface Resolution {
   readonly active: readonly ActiveBlock[];
   /** every block of the block set */
   readonly blocks: readonly ResolvedBlock[];
-  readonly check?: string;
   readonly listing: BlockListing;
   readonly model: BlockModel;
   /** the MUST rules of the active blocks, core's aside */
@@ -30,19 +29,9 @@ const Resolution = {
   activeCountOf: (resolution: Resolution): number =>
     resolution.blocks.filter((block) => resolution.units.some((unit) => unit.blocks.has(block.id)))
       .length,
-  /** check is undefined when the project names none */
-  create: (
-    input: Omit<Resolution, 'check'> & {
-      readonly check: string | undefined;
-    },
-  ): Resolution => ({
+  create: (input: Resolution): Resolution => ({
     active: input.active,
     blocks: input.blocks,
-    ...(input.check === undefined
-      ? {}
-      : {
-          check: input.check,
-        }),
     listing: input.listing,
     model: input.model,
     musts: input.musts,

@@ -1,0 +1,6 @@
+tombi:
+  '*':
+    typescript:
+      knip.jsonc:
+        ignoreBinaries:
+          - tombi

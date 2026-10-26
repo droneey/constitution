@@ -1,0 +1,7 @@
+nestjs:
+  '*':
+    typescript:
+      bunfig.integration.toml:
+        test:
+          coveragePathIgnorePatterns:
+            - '**/${role.composition-root}/root.module.*'

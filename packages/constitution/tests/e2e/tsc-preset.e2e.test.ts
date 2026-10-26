@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from 'bun:test';
 
-import { createTypeCheckBatch, presetParts } from './tsc-preset.fixtures';
+import { createTypeCheckBatch, pairedBlocks } from './tsc-preset.fixtures';
 
 const { typeCheckCases, typeCheckCodes, typeCheckRegistered } = createTypeCheckBatch();
 
@@ -42,22 +42,19 @@ beforeAll(typeCheckRegistered, CHECK_TIMEOUT);
 describe('the tsconfig preset', () => {
   it.each(
     typeCheckCases(
-      presetParts().map((part) => ({
-        main: EMPTY,
-        part,
-        parts: [
-          ...new Set([
-            'self',
-            part,
-          ]),
+      pairedBlocks().map((block) => ({
+        block,
+        blocks: [
+          block,
         ],
+        main: EMPTY,
       })),
     ),
-  )('should resolve and check an empty project when a project extends $part', ({ main, parts }) => {
+  )('should resolve and check an empty project when a unit follows $block', ({ blocks, main }) => {
     // Arrange
     const project = {
+      blocks,
       main,
-      parts,
     };
 
     // Act
@@ -75,9 +72,7 @@ describe('the tsconfig preset', () => {
           'TS1484',
         ],
         main: TYPE_IMPORTED_AS_VALUE,
-        parts: [
-          'self',
-          'core',
+        blocks: [
           'bun',
         ],
       },
@@ -87,9 +82,7 @@ describe('the tsconfig preset', () => {
           'TS7027',
         ],
         main: UNREACHABLE_CODE,
-        parts: [
-          'self',
-          'core',
+        blocks: [
           'bun',
         ],
       },
@@ -99,9 +92,7 @@ describe('the tsconfig preset', () => {
           'TS2564',
         ],
         main: FIELD_WITHOUT_INITIALIZER,
-        parts: [
-          'self',
-          'core',
+        blocks: [
           'bun',
         ],
       },
@@ -111,9 +102,7 @@ describe('the tsconfig preset', () => {
           'TS1484',
         ],
         main: TYPE_IMPORTED_AS_VALUE,
-        parts: [
-          'self',
-          'core',
+        blocks: [
           'bun',
           'nestjs',
         ],
@@ -124,9 +113,7 @@ describe('the tsconfig preset', () => {
           'TS2564',
         ],
         main: FIELD_WITHOUT_INITIALIZER,
-        parts: [
-          'self',
-          'core',
+        blocks: [
           'bun',
           'nestjs',
         ],
@@ -137,9 +124,7 @@ describe('the tsconfig preset', () => {
           'TS5097',
         ],
         main: IMPORT_WITH_TS_EXTENSION,
-        parts: [
-          'self',
-          'core',
+        blocks: [
           'bun',
           'nestjs',
         ],
@@ -150,9 +135,7 @@ describe('the tsconfig preset', () => {
           'TS2584',
         ],
         main: READS_THE_DOCUMENT,
-        parts: [
-          'self',
-          'core',
+        blocks: [
           'bun',
         ],
       },
@@ -162,9 +145,7 @@ describe('the tsconfig preset', () => {
           'TS2375',
         ],
         main: OPTIONAL_SET_TO_UNDEFINED,
-        parts: [
-          'self',
-          'core',
+        blocks: [
           'bun',
         ],
       },
@@ -174,9 +155,7 @@ describe('the tsconfig preset', () => {
           'TS2322',
         ],
         main: INDEX_READ_AS_PRESENT,
-        parts: [
-          'self',
-          'core',
+        blocks: [
           'bun',
         ],
       },
@@ -186,9 +165,7 @@ describe('the tsconfig preset', () => {
           'TS6133',
         ],
         main: UNUSED_LOCAL,
-        parts: [
-          'self',
-          'core',
+        blocks: [
           'bun',
         ],
       },
@@ -198,9 +175,7 @@ describe('the tsconfig preset', () => {
           'TS6133',
         ],
         main: UNUSED_PARAMETER,
-        parts: [
-          'self',
-          'core',
+        blocks: [
           'bun',
         ],
       },
@@ -210,9 +185,7 @@ describe('the tsconfig preset', () => {
           'TS4114',
         ],
         main: OVERRIDE_UNMARKED,
-        parts: [
-          'self',
-          'core',
+        blocks: [
           'bun',
         ],
       },
@@ -222,9 +195,7 @@ describe('the tsconfig preset', () => {
           'TS7030',
         ],
         main: PATH_WITHOUT_RETURN,
-        parts: [
-          'self',
-          'core',
+        blocks: [
           'bun',
         ],
       },
@@ -234,9 +205,7 @@ describe('the tsconfig preset', () => {
           'TS7029',
         ],
         main: CASE_FALLS_THROUGH,
-        parts: [
-          'self',
-          'core',
+        blocks: [
           'bun',
         ],
       },
@@ -246,9 +215,7 @@ describe('the tsconfig preset', () => {
           'TS7006',
         ],
         main: IMPLICIT_ANY,
-        parts: [
-          'self',
-          'core',
+        blocks: [
           'bun',
         ],
       },
@@ -258,9 +225,7 @@ describe('the tsconfig preset', () => {
           'TS7028',
         ],
         main: UNUSED_LABEL,
-        parts: [
-          'self',
-          'core',
+        blocks: [
           'bun',
         ],
       },
@@ -270,9 +235,7 @@ describe('the tsconfig preset', () => {
           'TS1206',
         ],
         main: PARAMETER_DECORATOR,
-        parts: [
-          'self',
-          'core',
+        blocks: [
           'bun',
         ],
       },
@@ -282,18 +245,16 @@ describe('the tsconfig preset', () => {
           'TS9013',
         ],
         main: EXPORT_UNTYPED,
-        parts: [
-          'self',
-          'core',
+        blocks: [
           'distribution',
         ],
       },
     ]),
-  )('should fail the type check of $parts when $condition', ({ codes, main, parts }) => {
+  )('should fail the type check of $blocks when $condition', ({ blocks, codes, main }) => {
     // Arrange
     const project = {
+      blocks,
       main,
-      parts,
     };
 
     // Act
@@ -306,28 +267,16 @@ describe('the tsconfig preset', () => {
   it.each(
     typeCheckCases([
       {
-        condition: 'code follows a return, as only the core part refuses it',
-        main: UNREACHABLE_CODE,
-        parts: [
-          'self',
-          'bun',
-        ],
-      },
-      {
         condition: 'an import names its .ts extension',
         main: IMPORT_WITH_TS_EXTENSION,
-        parts: [
-          'self',
-          'core',
+        blocks: [
           'bun',
         ],
       },
       {
         condition: 'browser code reads the document',
         main: READS_THE_DOCUMENT,
-        parts: [
-          'self',
-          'core',
+        blocks: [
           'browser',
           '_react',
         ],
@@ -335,18 +284,14 @@ describe('the tsconfig preset', () => {
       {
         condition: 'code on Bun reads Bun',
         main: READS_BUN,
-        parts: [
-          'self',
-          'core',
+        blocks: [
           'bun',
         ],
       },
       {
         condition: 'a constructor parameter takes a decorator the injector reads',
         main: PARAMETER_DECORATOR,
-        parts: [
-          'self',
-          'core',
+        blocks: [
           'bun',
           'nestjs',
         ],
@@ -354,18 +299,16 @@ describe('the tsconfig preset', () => {
       {
         condition: "a distributed package's export writes its type",
         main: EXPORT_TYPED,
-        parts: [
-          'self',
-          'core',
+        blocks: [
           'distribution',
         ],
       },
     ]),
-  )('should pass the type check of $parts when $condition', ({ main, parts }) => {
+  )('should pass the type check of $blocks when $condition', ({ blocks, main }) => {
     // Arrange
     const project = {
+      blocks,
       main,
-      parts,
     };
 
     // Act

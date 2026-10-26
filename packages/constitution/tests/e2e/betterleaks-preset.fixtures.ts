@@ -1,9 +1,10 @@
 import { spawnSync } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
-import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
+import { appliedUnit } from './applied-unit.fixtures';
 import { Hook, jobRun } from './lefthook-preset.fixtures';
 import { miseBinary } from './mise.fixtures';
 
@@ -16,7 +17,17 @@ interface Scan {
   output: string;
 }
 
-const repository = join(import.meta.dir, '..', '..');
+const secretsUnit = (): string =>
+  appliedUnit({
+    domains: [
+      'version-control',
+    ],
+    implementations: [
+      'betterleaks',
+      'lefthook',
+    ],
+  });
+
 const betterleaks = miseBinary('betterleaks');
 
 // A token of GitHub's shape, drawn at random on each run: no source file holds
@@ -56,12 +67,7 @@ const scanStaged = (project: Project): Scan => {
       '--quiet',
     ]);
 
-    mkdirSync(join(folder, '.droneey'));
-    symlinkSync(repository, join(folder, '.droneey', 'constitution'));
-    writeFileSync(
-      join(folder, '.betterleaks.toml'),
-      '[extend]\npath = ".droneey/constitution/presets/common/betterleaks/foundation/core.toml"\n',
-    );
+    copyFileSync(join(secretsUnit(), '.betterleaks.toml'), join(folder, '.betterleaks.toml'));
 
     for (const [path, text] of Object.entries(project.files)) {
       writeFileSync(join(folder, path), text);
@@ -79,7 +85,6 @@ const scanStaged = (project: Project): Scan => {
         jobRun({
           hook: Hook.PreCommit,
           job: 'secrets',
-          part: 'betterleaks',
         }).replace(/^betterleaks /, `"${betterleaks}" `),
       ],
       {

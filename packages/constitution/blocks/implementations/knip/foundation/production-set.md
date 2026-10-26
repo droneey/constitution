@@ -6,7 +6,7 @@
 
 ### production-set-marked-in-the-entries → dead-code-deleted · MUST
 
-The parts mark the program's entries and source files with `!`, the production set, and leave `__tests__/` and `tests/` out of it, so code and dependencies that only specs reach are unused in production mode.
+The settings mark the program's entries and source files with `!`, the production set, and leave `__tests__/` and `tests/` out of it, so code and dependencies that only specs reach are unused in production mode.
 
 | Why |
 |---|

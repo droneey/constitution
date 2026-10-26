@@ -1,0 +1,84 @@
+core:
+  suppression-silences-one-finding:
+    markdown:
+      .rumdl.toml:
+        global:
+          extend-enable:
+            - MD087
+rumdl:
+  '*':
+    markdown:
+      .rumdl.toml:
+        global:
+          disable:
+            - MD013
+            - MD041
+markdown:
+  heading-level-never-skipped:
+    markdown:
+      .rumdl.toml:
+        global:
+          extend-enable:
+            - MD001
+  document-has-one-title-heading:
+    markdown:
+      .rumdl.toml:
+        global:
+          extend-enable:
+            - MD025
+  heading-never-faked-by-emphasis:
+    markdown:
+      .rumdl.toml:
+        global:
+          extend-enable:
+            - MD036
+  code-block-names-its-language:
+    markdown:
+      .rumdl.toml:
+        global:
+          extend-enable:
+            - MD040
+        MD046:
+          style: fenced
+  image-has-alt-text:
+    markdown:
+      .rumdl.toml:
+        global:
+          extend-enable:
+            - MD045
+  repository-link-resolves:
+    markdown:
+      .rumdl.toml:
+        global:
+          extend-enable:
+            - MD051
+            - MD057
+        MD057:
+          absolute-links: relative_to_roots
+  link-text-names-its-target:
+    markdown:
+      .rumdl.toml:
+        global:
+          extend-enable:
+            - MD059
+  raw-html-only-where-markdown-has-no-form:
+    markdown:
+      .rumdl.toml:
+        per-file-ignores:
+          '**/AGENTS.md':
+            - MD033
+          '**/CLAUDE.md':
+            - MD033
+          '**/SKILL.md':
+            - MD033
+        MD033:
+          allowed-elements:
+            - details
+            - summary
+            - kbd
+            - img
+  heading-unique-among-its-siblings:
+    markdown:
+      .rumdl.toml:
+        MD024:
+          siblings-only: true

@@ -23,7 +23,6 @@ interface FakeProject {
 const empty = Resolution.create({
   active: [],
   blocks: [],
-  check: '',
   listing: BlockListing.create({
     overrides: [],
     repository: [],

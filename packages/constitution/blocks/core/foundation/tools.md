@@ -12,13 +12,21 @@ A rule a tool can hold, at a cost its gain repays, is held by one, configured to
 |---|
 | a rule held only by prose is broken as soon as nobody reads it, and a tool never tires. |
 
-### configuration-takes-every-part-of-its-blocks · MUST
+### configuration-holds-what-its-blocks-compute · MUST
 
-A tool's configuration names, by its path, every part of the shared configuration that the blocks active in the units it serves give the tool, on the axes those units follow, and no other part. A part the tool cannot name where it reads its settings is copied between two lines that name its path.
+A tool's configuration in a unit holds every setting the presets of the release and of the unit's packs give for the rules in force there, on the axes the unit follows, as the program computes and writes them, and a lock beside it records what was written; the unit's own settings sit in the same files.
 
 | Why |
 |---|
-| the configuration then changes with the blocks: a part missing, or one kept after its block is gone, shows by its path, and a copy that drifts from its part shows by its text. |
+| the configuration then changes with the blocks: a setting missing, loosened or left behind after its rule is gone shows as a finding of the check, and no copy of a shared file drifts unseen. |
+
+### own-settings-only-add · MUST
+
+A unit's own settings, written in its files or in its own pack, add to what its blocks compute: a further setting, a stricter value, or a value that names the same thing for this unit, such as its own path to the same program or its own files a rule's term covers or leaves out. A setting that holds a rule is removed, or made to reach less than the rule asks, only by an override that lowers that rule.
+
+| Why |
+|---|
+| a rule then holds in every unit that has it in force, and the one way to weaken it is the override, which names the rule and its reason. |
 
 ### one-formatter-per-language · MUST
 

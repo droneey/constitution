@@ -1,0 +1,5 @@
+version-control:
+  machine-local-files-ignored:
+    '*':
+      .gitignore:
+        - mise.local.toml

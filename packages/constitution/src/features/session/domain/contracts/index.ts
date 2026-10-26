@@ -1,2 +1,2 @@
-export type { WiringCheck, WiringReport } from './wiring-check.port';
-export { WiringCheckStatus } from './wiring-check.port';
+export type { ConfigurationsReport, ProjectConfigurationsCheck } from './configurations-check.port';
+export { ConfigurationsCheckStatus } from './configurations-check.port';

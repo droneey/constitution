@@ -12,11 +12,18 @@ import { dirname, join, normalize } from 'node:path';
 
 import { z } from 'zod';
 
+import { appliedUnit } from './applied-unit.fixtures';
 import { createBatch } from './batch.fixtures';
+
+interface BiomeUnit {
+  /** the optional axes it follows; architecture and workflow where it names none */
+  readonly axes?: readonly string[];
+  readonly blocks: readonly string[];
+}
 
 interface Project {
   readonly files: Readonly<Record<string, string>>;
-  readonly parts?: readonly string[];
+  readonly unit?: BiomeUnit;
 }
 
 interface Findings {
@@ -53,22 +60,70 @@ const preset = z.object({
 const repository = join(import.meta.dir, '..', '..');
 const biome = join(repository, 'node_modules', '.bin', 'biome');
 const presetsFolder = join(repository, 'presets');
+const presetFiles = join(presetsFolder, 'biome');
 const blocks = join(repository, 'blocks');
+const CONFIG = 'biome.json';
 
-const baseParts = [
-  'common/self',
-  'typescript/self',
-  'typescript/core',
-  'typescript/typescript',
+const baseUnit: BiomeUnit = {
+  axes: [],
+  blocks: [],
+};
+
+const defaultUnit: BiomeUnit = {
+  blocks: [
+    'bun-test',
+    'react-dom',
+  ],
+};
+
+// _react is listed through the renderer that needs it.
+const listed: Readonly<Record<string, string>> = {
+  _react: 'react-dom',
+};
+
+const appliedConfig = (unit: BiomeUnit): string =>
+  readFileSync(
+    join(
+      appliedUnit({
+        ...(unit.axes === undefined
+          ? {}
+          : {
+              axes: unit.axes,
+            }),
+        blocks: unit.blocks,
+        implementations: [
+          'biome',
+        ],
+        languages: [
+          'typescript',
+        ],
+      }),
+      CONFIG,
+    ),
+    'utf8',
+  );
+
+const configOf = (unit: BiomeUnit): unknown => Bun.JSONC.parse(appliedConfig(unit));
+
+const pairedBlocks = (): readonly string[] => [
+  ...new Set(
+    readdirSync(presetFiles, {
+      recursive: true,
+    })
+      .map(String)
+      .flatMap((path) =>
+        path
+          .replace(/\.yaml$/, '')
+          .split('/')
+          .filter((_, index, segments) => segments[index - 1] === 'with'),
+      )
+      .map((block) => listed[block] ?? block),
+  ),
 ];
 
-const PARTS: readonly string[] = [
-  ...baseParts,
-  'typescript/bun-test',
-  'typescript/_react',
-  'typescript/architecture/core',
-  'typescript/architecture/typescript',
-] as const;
+const widestUnit = (): BiomeUnit => ({
+  blocks: pairedBlocks(),
+});
 
 // A plugin opens its message with the slug of its rule in brackets.
 const PLUGIN_SLUG = /^\[([a-z0-9-]+)\]/;
@@ -83,9 +138,6 @@ const writeFiles = (folder: string, files: Readonly<Record<string, string>>): vo
 };
 
 const MANIFEST = 'package.json';
-
-const partFile = (part: string): string =>
-  `${part.replace('/', '/biome/').replace(/\/biome\/(?!architecture\/|workflow\/)/, '/biome/foundation/')}.jsonc`;
 
 const includesOf = (configuration: unknown): readonly string[] => {
   if (Array.isArray(configuration)) {
@@ -102,11 +154,8 @@ const includesOf = (configuration: unknown): readonly string[] => {
 };
 
 // A glob not opened by ** matches only from the folder of its configuration.
-const anchoredGlobs = (parts: readonly string[]): readonly Bun.Glob[] =>
-  parts
-    .flatMap((part) =>
-      includesOf(Bun.JSONC.parse(readFileSync(join(presetsFolder, partFile(part)), 'utf8'))),
-    )
+const anchoredGlobs = (unit: BiomeUnit): readonly Bun.Glob[] =>
+  includesOf(configOf(unit))
     .filter((glob) => !/^!{0,2}\*\*/.test(glob))
     .map((glob) => new Bun.Glob(glob.replace(/^!+/, '')));
 
@@ -115,22 +164,22 @@ const manifestOf = (project: Project): string | undefined =>
 
 const keyOf = (project: Project): string =>
   JSON.stringify([
-    project.parts ?? PARTS,
+    project.unit ?? defaultUnit,
     Object.entries(project.files).toSorted(([left], [right]) => left.localeCompare(right)),
   ]);
 
-// Projects of the same parts and manifest share one configuration and one run, each in a folder
+// Projects of the same unit and manifest share one configuration and one run, each in a folder
 // of its own beneath it; a project with a file an anchored glob matches keeps a configuration of
 // its own.
 const groupKeyOf = (key: string, project: Project): string => {
-  const parts = project.parts ?? PARTS;
-  const anchored = anchoredGlobs(parts);
+  const unit = project.unit ?? defaultUnit;
+  const anchored = anchoredGlobs(unit);
   const isAnchored = Object.keys(project.files).some((path) =>
     anchored.some((glob) => glob.match(path)),
   );
 
   return JSON.stringify([
-    parts,
+    unit,
     manifestOf(project) ?? '',
     isAnchored ? key : '',
   ]);
@@ -154,18 +203,19 @@ type Entry = readonly [
 
 const RUNS_AT_ONCE = 4;
 
-// Plugin paths resolve from the configuration's folder, so .droneey/constitution is linked
-// into each, where a case can put a file beside the presets.
+const appliedSettings = z.looseObject({});
+
+// The configuration apply writes for the project's unit, outside a repository. Plugin paths
+// resolve from its folder, so the presets are linked into each, where a case can put a file
+// beside them.
 const writeConfiguration = (folder: string, project: Project): void => {
   mkdirSync(join(folder, '.droneey', 'constitution'), {
     recursive: true,
   });
   symlinkSync(presetsFolder, join(folder, '.droneey', 'constitution', 'presets'));
   writeFiles(folder, {
-    'biome.json': JSON.stringify({
-      extends: (project.parts ?? PARTS).map(
-        (part) => `./.droneey/constitution/presets/${partFile(part)}`,
-      ),
+    [CONFIG]: JSON.stringify({
+      ...appliedSettings.parse(configOf(project.unit ?? defaultUnit)),
       vcs: {
         enabled: false,
       },
@@ -316,7 +366,7 @@ const createLintBatch = (): LintBatch => {
     runAll: lintAll,
   });
 
-  // A row names the files its case adds to the table's and, where they differ, its parts.
+  // A row names the files its case adds to the table's and, where they differ, its unit.
   const lintCases = <TRow extends Partial<Project>>(
     rows: readonly TRow[],
     base: Partial<Project> = {},
@@ -328,7 +378,7 @@ const createLintBatch = (): LintBatch => {
           ...base.files,
           ...row.files,
         },
-        parts: row.parts ?? base.parts ?? PARTS,
+        unit: row.unit ?? base.unit ?? defaultUnit,
       }),
     );
 
@@ -350,7 +400,7 @@ const formattedText = (source: string): Promise<string> =>
           files: {
             'src/order.ts': source,
           },
-          parts: baseParts,
+          unit: baseUnit,
         },
       ],
     ]);
@@ -372,18 +422,10 @@ const formattedText = (source: string): Promise<string> =>
     return readFileSync(join(folder, 'src', 'order.ts'), 'utf8');
   });
 
-const presetFiles = (): readonly string[] =>
-  readdirSync(presetsFolder, {
-    recursive: true,
-  })
-    .map(String)
-    .filter((path) => path.split('/')[1] === 'biome' && path.endsWith('.jsonc'))
-    .toSorted((left, right) => left.localeCompare(right));
-
-const presetText = (path: string): string => readFileSync(join(presetsFolder, path), 'utf8');
+const widestConfigText = (): string => appliedConfig(widestUnit());
 
 const presetPlugins = (): readonly NonNullable<z.infer<typeof preset>['plugins']>[number][] =>
-  presetFiles().flatMap((path) => preset.parse(Bun.JSONC.parse(presetText(path))).plugins ?? []);
+  preset.parse(configOf(widestUnit())).plugins ?? [];
 
 // Biome 2.6 runs every entry of one path over the union of their includes, so an entry that
 // narrows another narrows nothing.
@@ -416,12 +458,10 @@ const blockCode = (): readonly string[] =>
     .map(([, code, quoted]) => code ?? quoted ?? '');
 
 export {
-  baseParts,
   blockCode,
   createLintBatch,
   formattedText,
-  presetFiles,
   presetPluginPaths,
-  presetText,
   presetWords,
+  widestConfigText,
 };

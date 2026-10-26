@@ -1,0 +1,7 @@
+mise:
+  '*':
+    '*':
+      biome.json:
+        files:
+          includes:
+            - '!!**/.mise/locks'

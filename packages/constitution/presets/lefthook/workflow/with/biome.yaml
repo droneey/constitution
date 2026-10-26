@@ -1,0 +1,16 @@
+biome:
+  '*':
+    '*':
+      lefthook.yaml:
+        pre-commit:
+          parallel: true
+          jobs[name=biome]:
+            run: >-
+              bunx --bun biome check --write --no-errors-on-unmatched {staged_files}
+lefthook:
+  hook-rewrites-only-staged-files:
+    '*':
+      lefthook.yaml:
+        pre-commit:
+          jobs[name=biome]:
+            stage_fixed: true

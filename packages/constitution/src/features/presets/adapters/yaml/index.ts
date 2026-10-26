@@ -1,1 +1,1 @@
-export { createYamlCatalogueParser } from './yaml-catalogue-parser.adapter';
+export { createYamlPresetFileParser } from './yaml-preset-file-parser.adapter';

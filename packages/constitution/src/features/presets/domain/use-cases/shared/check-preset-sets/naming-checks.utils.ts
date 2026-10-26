@@ -1,4 +1,3 @@
-import { Axis } from '#/kernel/constants';
 import type { RoleTerm } from '#/kernel/entities';
 
 import type { EntryNamed, PresetEntry, PresetsProblem } from '../../../entities';
@@ -24,31 +23,17 @@ const roleProblems = (
 ): readonly PresetsProblem[] => {
   const term = input.roles.get(input.role);
 
-  if (term === undefined) {
-    return [
-      {
-        code: PresetsCode.UnknownRole,
-        details: {
-          ...input.named,
-          role: input.role,
-        },
-      },
-    ];
-  }
-
-  // foundation's terms are every axis's
-  return term.axis === Axis.Foundation || term.axis === input.entry.set.path.axis
-    ? []
-    : [
+  return term === undefined
+    ? [
         {
-          code: PresetsCode.RoleOffItsAxis,
+          code: PresetsCode.UnknownRole,
           details: {
             ...input.named,
             role: input.role,
-            termAxis: term.axis,
           },
         },
-      ];
+      ]
+    : [];
 };
 
 // A fact the program computes stands where its kind may: a list of members only as a list item, a
@@ -150,10 +135,14 @@ const namingProblems = (input: NamingInput): readonly PresetsProblem[] => {
     rule: entry.rule,
   };
   const texts = [
-    {
-      place: TextPlace.Path,
-      text: entry.file.path,
-    },
+    ...(TargetFile.isRun(entry.file)
+      ? []
+      : [
+          {
+            place: TextPlace.Path,
+            text: entry.file.path,
+          },
+        ]),
     ...textsOf(entry.value),
   ];
 

@@ -5,7 +5,7 @@ import { BlockModel as Model } from '#/kernel/entities';
 import { EVERY } from '../../../constants';
 import type { PresetEntry, PresetSet, PresetsProblem } from '../../../entities';
 import { PresetsCode } from '../../../entities';
-import { CataloguePath } from '../../../value-objects';
+import { PresetFilePath } from '../../../value-objects';
 
 interface ModelIndex {
   readonly blocks: ReadonlyMap<string, ModelBlock>;
@@ -191,7 +191,7 @@ const entryProblems = (input: EntryProblemsInput): readonly PresetsProblem[] => 
             code: PresetsCode.EntryMisplaced,
             details: {
               ...named,
-              belongs: CataloguePath.textOf({
+              belongs: PresetFilePath.textOf({
                 ...entry.set.path,
                 withs: needed,
               }),

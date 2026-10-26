@@ -16,7 +16,7 @@ claude --plugin-dir packages/constitution   # a session on the working tree's ho
 
 ## Check
 
-`bun run check` is the one check, and it passes before a change is handed back; a pull request runs the same, and runs the built program's specs, `bun run test:program`, on each platform the release ships. `bun run test` runs the unit and end-to-end specs alone, and `bun run build:cli` builds the program for this machine into `dist/cli/constitution`.
+`bun run constitution run check` is the one check, the program from its source running every unit's checks, and it passes before a change is handed back; a pull request runs the same, and runs the built program's specs, `bun run program:test`, on each platform the release ships. `bun run constitution run test` runs the specs alone, and `bun run build:cli` builds the program for this machine into `dist/cli/constitution`.
 
 ## Change a rule
 
@@ -25,6 +25,8 @@ claude --plugin-dir packages/constitution   # a session on the working tree's ho
 3. A choice between real alternatives about a rule gets its entry in [`DECISIONS.md`](DECISIONS.md), naming what was rejected and why.
 
 [How it works](docs/how-it-works.md) maps the blocks, the presets, the templates and the program that checks them.
+
+A change to a preset file touches the `constitution.lock` of every unit it reaches: run `bun run ./packages/constitution/src/main.ts presets apply` from the root and commit what it writes, and resolve a conflict between locks by running it again on the merged tree.
 
 ## Release
 

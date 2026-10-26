@@ -6,17 +6,16 @@ import { commonTokens, PluginKind, tokens } from '@stryker-mutator/api/plugin';
 // The ignorer's own key in the Stryker configuration, a table each part of a configuration may add to.
 const OPTIONS_KEY = 'diagnosticsTextArguments';
 
-const logLevels: ReadonlySet<unknown> = new Set([
-  'trace',
-  'debug',
-  'info',
-  'warn',
-  'error',
-  'fatal',
-]);
+// A shape opened by this word is a constructor's, as in `new *Error`; `*` stands for any letters.
+const CONSTRUCTOR = 'new ';
+const ANY = '*';
 
-// The logger is known by its name alone, the receiver's or its property's, as in `this.logger`.
-const LOGGER_NAME = /^(?:log|logger|\w*Logger)$/;
+// The calls whose arguments, at the indexes given, are text only a person reads.
+interface CallShape {
+  readonly indexes: ReadonlySet<unknown>;
+  readonly isConstructor: boolean;
+  readonly name: RegExp;
+}
 
 // Stryker hands Babel's paths over as an opaque NodePath, so their fields are read as unknown.
 const fieldOf = (holder: unknown, key: string): unknown =>
@@ -32,79 +31,86 @@ const propertyOf = (node: unknown): unknown =>
     ? nameOf(fieldOf(node, 'property'))
     : undefined;
 
-const isLogger = (node: unknown): boolean => {
-  const name = nameOf(node) ?? propertyOf(node);
+// An argument at a text's index is the text, or what builds it, unless it is an object or a list,
+// which carries data a caller reads.
+const isText = (node: unknown): boolean =>
+  !(isOfType(node, 'ObjectExpression') || isOfType(node, 'ArrayExpression'));
 
-  // Stryker disable next-line ConditionalExpression: the guard narrows the type; a name Babel leaves undefined reads "undefined", which no logger's name is
-  return typeof name === 'string' && LOGGER_NAME.test(name);
+const patternOf = (glob: string): RegExp =>
+  new RegExp(`^${glob.split(ANY).map(RegExp.escape).join('.*')}$`);
+
+const shapeOf = ([shape, indexes]: readonly [
+  string,
+  unknown,
+]): CallShape => {
+  const isConstructor = shape.startsWith(CONSTRUCTOR);
+
+  return {
+    indexes: new Set(
+      Array.isArray(indexes)
+        ? indexes
+        : [
+            indexes,
+          ],
+    ),
+    isConstructor,
+    name: patternOf(isConstructor ? shape.slice(CONSTRUCTOR.length) : shape),
+  };
 };
 
-const isLogCall = (node: unknown): boolean => {
-  const call = fieldOf(node, 'expression');
-  const callee = fieldOf(call, 'callee');
-
-  return (
-    isOfType(node, 'ExpressionStatement') &&
-    isOfType(call, 'CallExpression') &&
-    logLevels.has(propertyOf(callee)) &&
-    isLogger(fieldOf(callee, 'object'))
-  );
-};
-
-const isErrorText = (path: NodePath): boolean => {
-  const node = fieldOf(path, 'node');
-  const parent = fieldOf(fieldOf(path, 'parentPath'), 'node');
-  const built = nameOf(fieldOf(parent, 'callee'));
-
-  return (
-    (isOfType(node, 'StringLiteral') || isOfType(node, 'TemplateLiteral')) &&
-    isOfType(parent, 'NewExpression') &&
-    fieldOf(path, 'listKey') === 'arguments' &&
-    fieldOf(path, 'key') === 0 &&
-    typeof built === 'string' &&
-    built.endsWith('Error')
-  );
-};
-
-// By a method's name, the index of its argument that is text only a person reads.
-type TextArguments = ReadonlyMap<unknown, unknown>;
-
-const textArgumentsOf = (options: PartialStrykerOptions): TextArguments => {
+const shapesOf = (options: PartialStrykerOptions): readonly CallShape[] => {
   const given = fieldOf(options, OPTIONS_KEY);
 
-  return new Map(given instanceof Object ? Object.entries(given) : []);
+  return Object.entries(given instanceof Object ? given : {}).map(shapeOf);
 };
 
-const isPersonText = (path: NodePath, textArguments: TextArguments): boolean => {
-  const parent = fieldOf(fieldOf(path, 'parentPath'), 'node');
+const calleeNameOf = (call: unknown): unknown => {
+  const callee = fieldOf(call, 'callee');
 
-  // A call's one list is its arguments, so an index as the path's key names one of them.
+  return nameOf(callee) ?? propertyOf(callee);
+};
+
+interface ArgumentInput {
+  readonly path: NodePath;
+  readonly shapes: readonly CallShape[];
+}
+
+const isTextArgument = (input: ArgumentInput): boolean => {
+  const { path } = input;
+  const call = fieldOf(fieldOf(path, 'parentPath'), 'node');
+  const isConstructor = isOfType(call, 'NewExpression');
+  const name = calleeNameOf(call);
+
   return (
-    isOfType(parent, 'CallExpression') &&
-    textArguments.get(propertyOf(fieldOf(parent, 'callee'))) === fieldOf(path, 'key')
+    isText(fieldOf(path, 'node')) &&
+    fieldOf(path, 'listKey') === 'arguments' &&
+    (isConstructor || isOfType(call, 'CallExpression')) &&
+    typeof name === 'string' &&
+    input.shapes.some(
+      (shape) =>
+        shape.isConstructor === isConstructor &&
+        shape.indexes.has(fieldOf(path, 'key')) &&
+        shape.name.test(name),
+    )
   );
 };
 
 /**
- * Leaves out the mutants no caller relies on: inside a log call, the text an error is built with,
- * and the argument of a method that the configuration's `diagnosticsTextArguments` names as text
- * only a person reads.
+ * Leaves out the mutants of the text a call takes that only a person reads: the argument at an
+ * index the configuration's `diagnosticsTextArguments` gives the call's shape, a function's or a
+ * method's name, or a constructor's after `new `, each with `*` for any letters.
  */
 const createDiagnostics = (options: PartialStrykerOptions): Ignorer => {
-  const textArguments = textArgumentsOf(options);
+  const shapes = shapesOf(options);
 
   return {
-    shouldIgnore: (path: NodePath): string | undefined => {
-      if (isLogCall(fieldOf(path, 'node'))) {
-        return 'A log call: no caller relies on it';
-      }
-
-      if (isPersonText(path, textArguments)) {
-        return 'Text only a person reads: no caller relies on it';
-      }
-
-      return isErrorText(path) ? 'The text of a diagnostic: no caller relies on it' : undefined;
-    },
+    shouldIgnore: (path: NodePath): string | undefined =>
+      isTextArgument({
+        path,
+        shapes,
+      })
+        ? 'Text only a person reads: no caller relies on it'
+        : undefined,
   };
 };
 

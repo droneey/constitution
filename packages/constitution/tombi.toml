@@ -1,5 +1,3 @@
-# tombi — the Constitution's parts, copied, each between its two lines, since tombi reads no other file
-# from .droneey/constitution/presets/toml/tombi/foundation/self.toml
 toml-version = "v1.0.0"
 
 [format.rules]
@@ -7,26 +5,8 @@ indent-width = 2
 line-width = 100
 trailing-comment-space-width = 1
 
-[schema.format.rules]
-table-keys-order.enabled = false
-array-values-order.enabled = false
-# end .droneey/constitution/presets/toml/tombi/foundation/self.toml
+[schema.format.rules.array-values-order]
+enabled = false
 
-# a template that copies parts holds their placeholder, which is no TOML until the parts replace it
-[files]
-exclude = [
-  "templates/project/python/complexipy/pyproject.toml",
-  "templates/project/python/deptry/pyproject.toml",
-  "templates/project/python/import-linter/pyproject.toml",
-  "templates/project/python/vulture/pyproject.toml",
-  "templates/project/toml/tombi/tombi.toml",
-]
-
-# a template's placeholders and a part named after the tool it serves fail the schema tombi takes
-# from the file's name
-[[overrides]]
-files.include = [
-  "presets/toml/tombi/foundation/mise.toml",
-  "templates/project/python/python/pyproject.toml",
-]
-lint.enabled = false
+[schema.format.rules.table-keys-order]
+enabled = false

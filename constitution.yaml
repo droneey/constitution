@@ -34,8 +34,8 @@ implementations:
   - rumdl
   - yamllint
   - tombi
-packs: []
-check: bun run check
+packs:
+  - pack
 overrides:
   - rule: agent-file-restates-no-rule
     level: MAY

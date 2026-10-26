@@ -3,8 +3,8 @@ import { describe, expect, it } from 'bun:test';
 import {
   checkBranch,
   checkCommitMessage,
-  partJobs,
   shellCheckRun,
+  unitJobs,
 } from './lefthook-preset.fixtures';
 
 describe('the commit message hook', () => {
@@ -136,10 +136,10 @@ describe('the branch name hook', () => {
   });
 });
 
-describe('the commands of the hook parts', () => {
+describe('the commands of the hooks the presets give', () => {
   it.each([
-    ...partJobs(),
-  ])('should pass ShellCheck for $job of the $part part', ({ run }) => {
+    ...unitJobs(),
+  ])('should pass ShellCheck for the job $job of $hook', ({ run }) => {
     // Act
     const check = shellCheckRun(run);
 

@@ -1,0 +1,21 @@
+mutmut:
+  '*':
+    python:
+      pyproject.toml:
+        tool:
+          poe:
+            tasks:
+              mutate:branch: >-
+                python ${constitution.path}/tools/mutmut-check/dist/mutmut-check.pyz
+              mutate:all: >-
+                python ${constitution.path}/tools/mutmut-check/dist/mutmut-check.pyz all
+poe:
+  task-group-walks-poes-own-list:
+    python:
+      pyproject.toml:
+        tool:
+          poe:
+            tasks:
+              check:
+                shell@mutations:
+                  - '&& poe mutate:branch'

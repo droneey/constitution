@@ -2,6 +2,17 @@ import { describe, expect, it } from 'bun:test';
 
 import { cruise } from './dependency-cruiser-preset.fixtures';
 
+// A unit's own preset file that names a build tool's folder development code.
+const OWN_DEVELOPMENT_FILES = `core:
+  production-code-imports-no-tool:
+    typescript:
+      .dependency-cruiser.json:
+        forbidden[name=no-development-dependency-in-production]:
+          from:
+            pathNot:
+              - ^src/entrypoints/build/
+`;
+
 const exported = (name: string): string => `export const ${name} = 1;\n`;
 
 const importing = (input: { from: string; name: string }): string =>
@@ -64,7 +75,7 @@ const wellFormed = {
 
 // A workspace of six units, one of them a library whose TypeScript package
 // sits beside its data in no language, each package linked by its name as a
-// package manager links it, with the workspace's parts.
+// package manager links it, with the workspace's preset files.
 const UNITS: Readonly<Record<string, string>> = {
   admin: 'apps/admin',
   eros: 'packages/eros/languages/typescript',
@@ -103,9 +114,8 @@ const workspaceProject = (files: Readonly<Record<string, string>>) => ({
       folder,
     ]),
   ),
-  parts: [
-    'typescript/workspace',
-    'typescript/architecture/workspace',
+  blocks: [
+    'workspace',
   ],
   roots: [
     'apps',
@@ -624,10 +634,8 @@ describe('the dependency-cruiser layer set', () => {
         'src/libs/db/index.ts':
           "import { Database } from 'bun:sqlite';\nexport const open = Database;\n",
       },
-      parts: [
-        'typescript/bun',
-        'typescript/architecture/bun',
-        'typescript/architecture/core',
+      blocks: [
+        'bun',
       ],
       rule: 'bun-effects-reached-only-from-the-edge',
     },
@@ -637,10 +645,8 @@ describe('the dependency-cruiser layer set', () => {
         'src/features/orders/app/use-cases/queries/list-orders/list-orders.use-case.ts':
           "import { Database } from 'bun:sqlite';\nexport const listOrders = Database;\n",
       },
-      parts: [
-        'typescript/bun',
-        'typescript/architecture/bun',
-        'typescript/architecture/core',
+      blocks: [
+        'bun',
       ],
       rule: 'bun-effects-reached-only-from-the-edge',
     },
@@ -650,10 +656,8 @@ describe('the dependency-cruiser layer set', () => {
         'src/features/orders/app/use-cases/queries/list-orders/list-orders.use-case.ts':
           "import { spawn } from 'bun';\nexport const listOrders = spawn;\n",
       },
-      parts: [
-        'typescript/bun',
-        'typescript/architecture/bun',
-        'typescript/architecture/core',
+      blocks: [
+        'bun',
       ],
       rule: 'bun-effects-reached-only-from-the-edge',
     },
@@ -666,9 +670,8 @@ describe('the dependency-cruiser layer set', () => {
           name: 'fetchOrders',
         }),
       },
-      parts: [
-        'typescript/architecture/ui',
-        'typescript/architecture/core',
+      blocks: [
+        'ui',
       ],
       rule: 'components-take-data-and-callbacks',
     },
@@ -681,9 +684,8 @@ describe('the dependency-cruiser layer set', () => {
           name: 'charge',
         }),
       },
-      parts: [
-        'typescript/architecture/core',
-      ],
+      axes: [],
+      blocks: [],
       rule: 'feature-adapters-blind-to-each-other',
     },
     {
@@ -695,9 +697,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
         'src/root/routes/orders.tsx': exported('route'),
       },
-      parts: [
-        'typescript/architecture/tanstack-router',
-        'typescript/architecture/core',
+      blocks: [
+        'tanstack-router',
       ],
       rule: 'adapters-know-no-caller',
     },
@@ -709,9 +710,8 @@ describe('the dependency-cruiser layer set', () => {
           name: 'value',
         }),
       },
-      parts: [
-        'typescript/architecture/expo',
-        'typescript/architecture/core',
+      blocks: [
+        'expo',
       ],
       rule: 'ui-imports-no-expo-router',
     },
@@ -723,9 +723,8 @@ describe('the dependency-cruiser layer set', () => {
           name: 'value',
         }),
       },
-      parts: [
-        'typescript/architecture/bunli',
-        'typescript/architecture/core',
+      blocks: [
+        'bunli',
       ],
       rule: 'not-in-allowed',
     },
@@ -737,9 +736,8 @@ describe('the dependency-cruiser layer set', () => {
           name: 'value',
         }),
       },
-      parts: [
-        'typescript/architecture/_react',
-        'typescript/architecture/core',
+      blocks: [
+        'react-dom',
       ],
       rule: 'not-in-allowed',
     },
@@ -751,9 +749,8 @@ describe('the dependency-cruiser layer set', () => {
           name: 'value',
         }),
       },
-      parts: [
-        'typescript/architecture/_react',
-        'typescript/architecture/core',
+      blocks: [
+        'react-dom',
       ],
       rule: 'not-in-allowed',
     },
@@ -765,9 +762,8 @@ describe('the dependency-cruiser layer set', () => {
           name: 'value',
         }),
       },
-      parts: [
-        'typescript/architecture/core',
-      ],
+      axes: [],
+      blocks: [],
       rule: 'not-in-allowed',
     },
     {
@@ -779,9 +775,8 @@ describe('the dependency-cruiser layer set', () => {
           name: 'value',
         }),
       },
-      parts: [
-        'typescript/architecture/core',
-      ],
+      axes: [],
+      blocks: [],
       rule: 'not-in-allowed',
     },
     {
@@ -792,9 +787,8 @@ describe('the dependency-cruiser layer set', () => {
           name: 'value',
         }),
       },
-      parts: [
-        'typescript/architecture/core',
-      ],
+      axes: [],
+      blocks: [],
       rule: 'not-in-allowed',
     },
     {
@@ -806,9 +800,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
         'src/integrations/nestjs/eros.module.ts': exported('erosModule'),
       },
-      parts: [
-        'typescript/architecture/core',
-      ],
+      axes: [],
+      blocks: [],
       rule: 'integration-never-imported',
     },
     {
@@ -820,9 +813,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
         'src/integrations/nestjs/eros.module.ts': exported('erosModule'),
       },
-      parts: [
-        'typescript/architecture/core',
-      ],
+      axes: [],
+      blocks: [],
       rule: 'integrations-blind-to-each-other',
     },
     {
@@ -833,9 +825,8 @@ describe('the dependency-cruiser layer set', () => {
           name: 'value',
         }),
       },
-      parts: [
-        'typescript/architecture/tanstack-query',
-        'typescript/architecture/core',
+      blocks: [
+        'tanstack-query',
       ],
       rule: 'query-library-only-in-its-home',
     },
@@ -848,9 +839,8 @@ describe('the dependency-cruiser layer set', () => {
           name: 'fetchOrders',
         }),
       },
-      parts: [
-        'typescript/architecture/ui',
-        'typescript/architecture/core',
+      blocks: [
+        'ui',
       ],
       rule: 'ui-reaches-no-mechanism',
     },
@@ -862,9 +852,9 @@ describe('the dependency-cruiser layer set', () => {
           name: 'value',
         }),
       },
-      parts: [
-        'typescript/architecture/lingui',
-        'typescript/architecture/core',
+      blocks: [
+        'lingui',
+        'ui',
       ],
       rule: 'lingui-only-in-its-home',
     },
@@ -876,9 +866,8 @@ describe('the dependency-cruiser layer set', () => {
           name: 'value',
         }),
       },
-      parts: [
-        'typescript/architecture/tanstack-router',
-        'typescript/architecture/core',
+      blocks: [
+        'tanstack-router',
       ],
       rule: 'router-only-in-its-home',
     },
@@ -890,9 +879,8 @@ describe('the dependency-cruiser layer set', () => {
           name: 'value',
         }),
       },
-      parts: [
-        'typescript/architecture/tanstack-router',
-        'typescript/architecture/core',
+      blocks: [
+        'tanstack-router',
       ],
       rule: 'router-only-in-its-home',
     },
@@ -905,9 +893,8 @@ describe('the dependency-cruiser layer set', () => {
         }),
         'src/shared/sinks/index.ts': exported('track'),
       },
-      parts: [
-        'typescript/architecture/analytics',
-        'typescript/architecture/core',
+      blocks: [
+        'analytics',
       ],
       rule: 'features-never-track',
     },
@@ -919,9 +906,9 @@ describe('the dependency-cruiser layer set', () => {
           name: 'value',
         }),
       },
-      parts: [
-        'typescript/architecture/lingui',
-        'typescript/architecture/core',
+      blocks: [
+        'lingui',
+        'ui',
       ],
       rule: 'lingui-only-in-its-home',
     },
@@ -934,9 +921,8 @@ describe('the dependency-cruiser layer set', () => {
           name: 'primary',
         }),
       },
-      parts: [
-        'typescript/storybook',
-        'typescript/architecture/core',
+      blocks: [
+        'storybook',
       ],
       rule: 'stories-unreachable-from-production',
     },
@@ -948,9 +934,8 @@ describe('the dependency-cruiser layer set', () => {
           name: 'value',
         }),
       },
-      parts: [
-        'typescript/architecture/yaml-js',
-        'typescript/architecture/core',
+      blocks: [
+        'yaml-js',
       ],
       rule: 'yaml-home-is-the-parsing-adapter-and-lib',
     },
@@ -962,9 +947,8 @@ describe('the dependency-cruiser layer set', () => {
           name: 'value',
         }),
       },
-      parts: [
-        'typescript/architecture/pino',
-        'typescript/architecture/core',
+      blocks: [
+        'pino',
       ],
       rule: 'only-the-root-imports-pino',
     },
@@ -976,9 +960,8 @@ describe('the dependency-cruiser layer set', () => {
           name: 'value',
         }),
       },
-      parts: [
-        'typescript/architecture/ky',
-        'typescript/architecture/core',
+      blocks: [
+        'ky',
       ],
       rule: 'ky-home-is-the-adapters-libs-root-and-its-failure-mapper',
     },
@@ -991,9 +974,8 @@ describe('the dependency-cruiser layer set', () => {
           name: 'ordersWidget',
         }),
       },
-      parts: [
-        'typescript/architecture/ui',
-        'typescript/architecture/core',
+      blocks: [
+        'ui',
       ],
       rule: 'components-never-import-widgets',
     },
@@ -1006,9 +988,8 @@ describe('the dependency-cruiser layer set', () => {
           name: 'ordersAdapter',
         }),
       },
-      parts: [
-        'typescript/architecture/ui',
-        'typescript/architecture/core',
+      blocks: [
+        'ui',
       ],
       rule: 'binding-units-reach-no-adapter-or-ui',
     },
@@ -1021,9 +1002,8 @@ describe('the dependency-cruiser layer set', () => {
           name: 'orderCard',
         }),
       },
-      parts: [
-        'typescript/architecture/ui',
-        'typescript/architecture/core',
+      blocks: [
+        'ui',
       ],
       rule: 'binding-units-reach-no-adapter-or-ui',
     },
@@ -1035,9 +1015,8 @@ describe('the dependency-cruiser layer set', () => {
           name: 'value',
         }),
       },
-      parts: [
-        'typescript/architecture/tanstack-query',
-        'typescript/architecture/core',
+      blocks: [
+        'tanstack-query',
       ],
       rule: 'query-library-only-in-its-home',
     },
@@ -1049,9 +1028,8 @@ describe('the dependency-cruiser layer set', () => {
           name: 'value',
         }),
       },
-      parts: [
-        'typescript/architecture/tanstack-query',
-        'typescript/architecture/core',
+      blocks: [
+        'tanstack-query',
       ],
       rule: 'query-library-only-in-its-home',
     },
@@ -1063,9 +1041,8 @@ describe('the dependency-cruiser layer set', () => {
           name: 'value',
         }),
       },
-      parts: [
-        'typescript/architecture/tanstack-router',
-        'typescript/architecture/core',
+      blocks: [
+        'tanstack-router',
       ],
       rule: 'router-only-in-its-home',
     },
@@ -1078,19 +1055,18 @@ describe('the dependency-cruiser layer set', () => {
         }),
         'src/root/routes/orders.tsx': exported('route'),
       },
-      parts: [
-        'typescript/architecture/tanstack-router',
-        'typescript/architecture/core',
+      blocks: [
+        'tanstack-router',
       ],
       rule: 'root-reached-only-from-entries',
     },
   ])(
-    'should report $rule when $condition and a project extends that part',
-    async ({ files, parts, rule }) => {
+    'should report $rule when $condition and the unit follows that block',
+    async ({ blocks, files, rule }) => {
       // Arrange
       const project = {
+        blocks,
         files,
-        parts,
       };
 
       // Act
@@ -1111,9 +1087,8 @@ describe('the dependency-cruiser layer set', () => {
           "export { ordersWidget } from './orders-widget';\n",
         'src/features/orders/ui/widgets/orders-widget/orders-widget.tsx': exported('ordersWidget'),
       },
-      parts: [
-        'typescript/architecture/ui',
-        'typescript/architecture/core',
+      blocks: [
+        'ui',
       ],
     };
 
@@ -1135,9 +1110,8 @@ describe('the dependency-cruiser layer set', () => {
           name: 'OrderStatus',
         }),
       },
-      parts: [
-        'typescript/architecture/ui',
-        'typescript/architecture/core',
+      blocks: [
+        'ui',
       ],
     };
 
@@ -1148,7 +1122,7 @@ describe('the dependency-cruiser layer set', () => {
     expect(violations).toStrictEqual([]);
   });
 
-  it('should report no violation when an application follows the rules of every part', async () => {
+  it('should report no violation when an application follows the rules of every block', async () => {
     // Arrange
     const project = {
       files: {
@@ -1214,20 +1188,18 @@ describe('the dependency-cruiser layer set', () => {
         'src/root/routes/orders/index.tsx':
           "import { value } from '@tanstack/react-router';\nimport { value as kit } from 'kit';\nexport const route = [value, kit];\n",
       },
-      parts: [
-        'typescript/architecture/ui',
-        'typescript/architecture/_react',
-        'typescript/architecture/bunli',
-        'typescript/architecture/tanstack-router',
-        'typescript/architecture/analytics',
-        'typescript/architecture/lingui',
-        'typescript/architecture/tanstack-query',
-        'typescript/storybook',
-        'typescript/architecture/storybook',
-        'typescript/architecture/yaml-js',
-        'typescript/architecture/ky',
-        'typescript/architecture/zod',
-        'typescript/architecture/core',
+      blocks: [
+        'ui',
+        'react-dom',
+        'bunli',
+        'tanstack-router',
+        'analytics',
+        'lingui',
+        'tanstack-query',
+        'storybook',
+        'yaml-js',
+        'ky',
+        'zod',
       ],
     };
 
@@ -1341,7 +1313,7 @@ describe('the dependency-cruiser layer set', () => {
   });
 });
 
-describe('the development files the parts name', () => {
+describe('the development files the presets name', () => {
   it.each([
     {
       condition: 'a story renders with a development dependency',
@@ -1361,8 +1333,8 @@ describe('the development files the parts name', () => {
         files: {
           [file]: "import { devtool } from 'devtool';\nexport const shown = devtool;\n",
         },
-        parts: [
-          'typescript/storybook',
+        blocks: [
+          'storybook',
         ],
       };
 
@@ -1386,19 +1358,15 @@ describe('the development files the parts name', () => {
       reported: true,
     },
   ])(
-    "should report no-development-dependency-in-production only for production code when $condition by the project's own settings",
+    "should report no-development-dependency-in-production only for production code when $condition by the unit's own pack",
     async ({ file, reported }) => {
       // Arrange
       const project = {
         files: {
           [file]: "import { devtool } from 'devtool';\nexport const shown = devtool;\n",
         },
-        own: {
-          developmentFiles: [
-            '^src/entrypoints/build/',
-          ],
-        },
-        parts: [],
+        own: OWN_DEVELOPMENT_FILES,
+        axes: [],
       };
 
       // Act
@@ -1410,7 +1378,7 @@ describe('the development files the parts name', () => {
   );
 });
 
-describe("the parts of dependency-cruiser's base", () => {
+describe("the base of dependency-cruiser's preset files", () => {
   it.each([
     {
       condition: 'two modules import each other',
@@ -1484,7 +1452,7 @@ describe("the parts of dependency-cruiser's base", () => {
     // Arrange
     const project = {
       files,
-      parts: [],
+      axes: [],
       roots: [
         '.',
       ],
@@ -1547,7 +1515,7 @@ describe("the parts of dependency-cruiser's base", () => {
     // Arrange
     const project = {
       files,
-      parts: [],
+      axes: [],
       roots: [
         '.',
       ],

@@ -1,0 +1,27 @@
+tanstack-router:
+  '*':
+    typescript:
+      biome.json:
+        overrides:
+          - includes:
+              - '**/${role.source}/${role.composition-root}/${role.file-routes}/**'
+              - '**/${role.source}/${role.composition-root}/routeTree.gen.ts'
+            linter:
+              rules:
+                style:
+                  useFilenamingConvention: 'off'
+        assist:
+          actions:
+            source:
+              organizeImports:
+                options:
+                  groups@frameworks:
+                    - '@tanstack/**'
+                    - ':BLANK_LINE:'
+  links-name-typed-targets:
+    typescript:
+      biome.json:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/links-name-typed-targets.grit]:
+          includes:
+            - '**/*.ts'
+            - '**/*.tsx'

@@ -25,8 +25,8 @@ type Release =
       readonly status: ReleaseStatus.Newer;
     };
 
-const NEWEST_FORMAT = 3;
-const OLDEST_FORMAT = 3;
+const NEWEST_FORMAT = 4;
+const OLDEST_FORMAT = 4;
 
 export type { Release };
 export { NEWEST_FORMAT, OLDEST_FORMAT, ReleaseStatus };

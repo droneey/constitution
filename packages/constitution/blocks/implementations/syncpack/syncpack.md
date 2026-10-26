@@ -1,15 +1,15 @@
 ---
 id: syncpack
 summary: Holds dependency versions and the shape of every manifest.
-requires: [_js-runtime]
+requires: [_js-runtime, yaml]
 extends: null
 abstract: false
 languages: [json]
-governs: [".syncpackrc.mjs"]
+governs: [".syncpackrc.yaml"]
 ---
 
 # Syncpack
 
 > Holds the manifests.
 
-**Syncpack**, the **`syncpack`** command, has no `extends`, so **`.syncpackrc.mjs`**{#syncpack-settings} joins the parts, each list after the lists of the parts before it, and a dependency takes the first group it matches. A `file:` or `link:` path is left to review, which keeps it inside the repository; syncpack's default holds one version of each dependency across manifests. What is in the lockfile is out of its reach.
+**Syncpack**, the **`syncpack`** command, reads **`.syncpackrc.yaml`**{#syncpack-settings}, into which the program writes the groups of every block in the blocks' order, and a dependency takes the first group it matches. A `file:` or `link:` path is left to review, which keeps it inside the repository; syncpack's default holds one version of each dependency across manifests. What is in the lockfile is out of its reach.

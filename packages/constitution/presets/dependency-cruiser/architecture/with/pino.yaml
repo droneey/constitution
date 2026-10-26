@@ -1,0 +1,15 @@
+pino:
+  only-the-root-imports-pino:
+    typescript:
+      .dependency-cruiser.json:
+        forbidden[name=only-the-root-imports-pino]:
+          severity: error
+          from:
+            pathNot:
+              - ^${role.source}/(?!index\.)[^/]+\.[^/]+$
+              - ^${role.source}/${role.extra-entry}/[^/]+/main\.[^/]+$
+              - ^${role.source}/${role.composition-root}/
+              - (^|/)${role.colocated-specs}/
+              - ^${role.package-suites}/
+          to:
+            path: node_modules/pino/

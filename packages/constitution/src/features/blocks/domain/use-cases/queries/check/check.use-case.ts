@@ -2,20 +2,13 @@ import { BLOCKS_FOLDER } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
 import type { BlockModel } from '#/kernel/entities';
 
-import type {
-  BindingsParser,
-  FileTree,
-  FileTrees,
-  FrontMatterParser,
-  ManifestParser,
-} from '../../../contracts';
+import type { FileTree, FileTrees, FrontMatterParser, ManifestParser } from '../../../contracts';
 import type { SimilarRules } from '../../../entities';
 import { Block, BlockGraph, Constitution } from '../../../entities';
 import type { BlockFinding } from './block-finding.types';
 import type { Check } from './check.types';
 import {
   abstractBlocksCheck,
-  bindingsCheck,
   blockFormCheck,
   budgetCheck,
   configurationLanguagesCheck,
@@ -26,13 +19,11 @@ import {
   frontMatterCheck,
   linksCheck,
   pluginCheck,
-  presetsCheck,
   referencesCheck,
   requirementsCheck,
   requiresCheck,
   rulesCheck,
   seamsCheck,
-  templatesCheck,
   termsCheck,
 } from './checks';
 import { adviseConstitution } from './steps/advise-constitution';
@@ -50,9 +41,6 @@ const checks: readonly Check<BlockFinding>[] = [
   termsCheck,
   rulesCheck,
   requirementsCheck,
-  presetsCheck,
-  bindingsCheck,
-  templatesCheck,
   referencesCheck,
   budgetCheck,
   linksCheck,
@@ -71,7 +59,6 @@ interface Validation {
 }
 
 interface Parsers {
-  readonly bindingsParser: BindingsParser;
   readonly frontMatterParser: FrontMatterParser;
   readonly manifestParser: ManifestParser;
 }
@@ -148,7 +135,6 @@ const checkBlocks = (input: CheckBlocksInput): Validation | undefined => {
   }
 
   return validate({
-    bindingsParser: input.bindingsParser,
     frontMatterParser: input.frontMatterParser,
     manifestParser: input.manifestParser,
     ...(input.base === undefined

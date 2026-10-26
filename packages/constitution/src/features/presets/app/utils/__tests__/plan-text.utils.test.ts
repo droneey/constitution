@@ -1,115 +1,99 @@
 import { describe, expect, it } from 'bun:test';
 
-import { RuleSlug, UnitPath } from '#/kernel/value-objects';
+import { Axis } from '#/kernel/constants';
+import { BlockSource, UnitPath } from '#/kernel/value-objects';
 
-import type { WiringPlan } from '../../../domain/entities';
+import type { PresetEntry, PresetsFinding, PresetsPlan } from '../../../domain/entities';
+import { PresetEntry as Entry, PresetsCode, PresetValue } from '../../../domain/entities';
+import { TargetFile } from '../../../domain/value-objects';
 import { planLinesOf } from '../plan-text.utils';
+import { findingLinesOf } from '../presets-findings-report.utils';
+
+const entry: PresetEntry = {
+  block: 'biome',
+  file: TargetFile.of('biome.json'),
+  index: 0,
+  language: '*',
+  rule: '*',
+  set: {
+    file: 'presets/biome/foundation.yaml',
+    path: {
+      axis: Axis.Foundation,
+      reader: 'biome',
+      withs: [],
+    },
+    source: BlockSource.create(),
+  },
+  value: PresetValue.plain(true),
+};
+const finding: PresetsFinding = {
+  code: PresetsCode.FileUnparsed,
+  details: {},
+  path: 'biome.json',
+};
 
 describe('planLinesOf', () => {
-  it.each<{
-    condition: string;
-    lines: string[];
-    plan: WiringPlan;
-  }>([
-    {
-      condition:
-        'a new file serves two units with the tools of two scopes, and a tool has no template',
-      lines: [
-        'biome.json (new) for ., apps/web',
-        '  biome .droneey/constitution/templates/project/common/biome/biome.json',
-        '    .droneey/constitution/presets/common/biome/foundation/self.jsonc',
-        '  biome .droneey/constitution/templates/project/typescript/biome/biome.json',
-        '    .droneey/constitution/presets/typescript/biome/foundation/self.jsonc',
-        '    .droneey/constitution/presets/typescript/biome/foundation/core.jsonc',
-        'no template: typescript/knip — wire presets/typescript/knip/ from what the tool reads',
+  it('should give each file, then the entries it takes under it, then what each unit runs, then the findings', () => {
+    // Arrange
+    const plan: PresetsPlan = {
+      files: [
+        {
+          entries: [
+            entry,
+          ],
+          file: 'biome.json',
+          merged: {
+            defaults: [],
+            problems: [],
+          },
+          unit: UnitPath.create(''),
+        },
       ],
-      plan: {
-        files: [
-          {
-            file: 'biome.json',
-            isNew: true,
-            scopes: [
-              {
-                scope: 'common',
-                tools: [
-                  {
-                    isAdded: false,
-                    parts: [
-                      '.droneey/constitution/presets/common/biome/foundation/self.jsonc',
-                    ],
-                    template: '.droneey/constitution/templates/project/common/biome/biome.json',
-                    tool: 'biome',
-                  },
-                ],
-              },
-              {
-                scope: 'typescript',
-                tools: [
-                  {
-                    isAdded: false,
-                    parts: [
-                      '.droneey/constitution/presets/typescript/biome/foundation/self.jsonc',
-                      '.droneey/constitution/presets/typescript/biome/foundation/core.jsonc',
-                    ],
-                    template: '.droneey/constitution/templates/project/typescript/biome/biome.json',
-                    tool: 'biome',
-                  },
-                ],
-              },
-            ],
-            units: [
-              UnitPath.create(''),
-              UnitPath.create('apps/web'),
-            ],
-          },
-        ],
-        untemplated: [
-          {
-            scope: 'typescript',
-            tool: 'knip',
-          },
-        ],
-      },
-    },
-    {
-      condition:
-        "a kept file's owner lowers the rule and its folder adds a tool that takes no part",
-      lines: [
-        'apps/web/mise.toml for apps/web (its overrides lower configuration-takes-every-part-of-its-blocks)',
-        '  lefthook .droneey/constitution/templates/project/common/lefthook/mise.toml (the folder adds it)',
+      findings: [
+        finding,
       ],
-      plan: {
-        files: [
-          {
-            file: 'apps/web/mise.toml',
-            isNew: false,
-            lowers: RuleSlug.create('configuration-takes-every-part-of-its-blocks'),
-            scopes: [
-              {
-                scope: 'common',
-                tools: [
-                  {
-                    isAdded: true,
-                    parts: [],
-                    template: '.droneey/constitution/templates/project/common/lefthook/mise.toml',
-                    tool: 'lefthook',
-                  },
-                ],
-              },
+      runs: [
+        {
+          commands: new Map([
+            [
+              'check',
+              [
+                'bun run check',
+              ],
             ],
-            units: [
-              UnitPath.create('apps/web'),
+          ]),
+          unit: UnitPath.create(''),
+        },
+        {
+          commands: new Map([
+            [
+              'fix',
+              [
+                'bun run fix',
+                'uv run --locked poe fix',
+              ],
             ],
-          },
-        ],
-        untemplated: [],
-      },
-    },
-  ])('should word the plan as presets plan prints it when $condition', ({ lines, plan }) => {
+          ]),
+          unit: UnitPath.create('packages/kit'),
+        },
+      ],
+    };
+
     // Act
-    const printed = planLinesOf(plan);
+    const lines = planLinesOf(plan);
 
     // Assert
-    expect(printed).toStrictEqual(lines);
+    expect(lines).toStrictEqual([
+      'biome.json',
+      `  ${Entry.sourceOf(entry)}`,
+      'run check',
+      '  bun run check',
+      'packages/kit: run fix',
+      '  bun run fix',
+      '  uv run --locked poe fix',
+      ...findingLinesOf([
+        finding,
+      ]),
+    ]);
   });
 });

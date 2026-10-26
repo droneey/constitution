@@ -1,0 +1,22 @@
+nestjs:
+  '*':
+    typescript:
+      biome.json:
+        overrides:
+          - includes:
+              - '**/*.${role.use-case-file}.ts'
+              - '**/*.${role.gateway-file}.ts'
+              - '**/*.${role.data-port-file}.ts'
+              - '**/*.${role.analytics-sink-file}.ts'
+            linter:
+              rules:
+                complexity:
+                  useMaxParams: 'off'
+          - includes:
+              - '**/*.${role.gateway-file}.ts'
+              - '**/*.${role.data-port-file}.ts'
+              - '**/*.${role.analytics-sink-file}.ts'
+            linter:
+              rules:
+                style:
+                  useImportType: 'off'

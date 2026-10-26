@@ -4,7 +4,7 @@ import { PROJECT, projectPlace, releaseFolderPath } from '#/__tests__/project-pl
 import { createFakeProjectSource } from '#/__tests__/project-source.fake';
 import { Axis, Layer, Level } from '#/kernel/constants';
 import type { ProjectFiles, ProjectSource } from '#/kernel/contracts';
-import type { ModelBlock, ModelRule, RoleTerm } from '#/kernel/entities';
+import type { ModelBlock, ModelRule, ProjectWarning, RoleTerm } from '#/kernel/entities';
 import {
   BlockListing,
   BlockModel,
@@ -15,9 +15,9 @@ import {
 } from '#/kernel/entities';
 import { BlockId, Glob, PackPath, RuleSlug, UnitPath } from '#/kernel/value-objects';
 
-import { createYamlCatalogueParser } from '../adapters/yaml';
+import { createYamlPresetFileParser } from '../adapters/yaml';
 
-// The blocks the presets' specs hold their catalogues against: core, the languages, a domain, and
+// The blocks the presets' specs hold their preset files against: core, the languages, a domain, and
 // the tools that read the files, each with the rules and the role terms the cases name.
 
 interface BlockFixture {
@@ -268,7 +268,7 @@ const unitOf = (input: UnitFixture = {}): ProjectUnit =>
 
 type Files = Readonly<Record<string, string>>;
 
-/** The release's catalogues and data, by their paths under its presets/, as absolute files. */
+/** The release's preset files and data, by their paths under its presets/, as absolute files. */
 const releasePresets = (presets: Files): Files =>
   Object.fromEntries(
     Object.entries(presets).map(([path, text]) => [
@@ -292,6 +292,7 @@ interface ProjectFixture {
   readonly packs?: readonly string[];
   readonly units: readonly ProjectUnit[];
   readonly unreadable?: readonly string[];
+  readonly warnings?: readonly ProjectWarning[];
 }
 
 /** A project of these units around the release, its files read through the fake. */
@@ -320,7 +321,6 @@ const projectOf = (
       resolution: Resolution.create({
         active: [],
         blocks: [],
-        check: undefined,
         listing: BlockListing.create({
           overrides: [],
           repository: [],
@@ -329,7 +329,7 @@ const projectOf = (
         model: presetsModel,
         musts: [],
         units: input.units,
-        warnings: [],
+        warnings: input.warnings ?? [],
       }),
       status: ConfigReadStatus.Parsed,
     },
@@ -337,9 +337,9 @@ const projectOf = (
   }),
 });
 
-const catalogueParser = createYamlCatalogueParser();
+const presetFileParser = createYamlPresetFileParser();
 
 export { PROJECT, releaseFolderPath } from '#/__tests__/project-place.fixtures';
 
 export type { Files };
-export { catalogueParser, presetsModel, projectFiles, projectOf, releasePresets, unitOf };
+export { presetFileParser, presetsModel, projectFiles, projectOf, releasePresets, unitOf };

@@ -12,6 +12,8 @@ interface ApplyReport {
   readonly findings: readonly PresetsFinding[];
   /** what an earlier apply wrote and no entry gives any longer */
   readonly removed: readonly SettingPlace[];
+  /** the units it wrote a file of, by their paths from the repository */
+  readonly units: readonly string[];
   /** each from the repository, the units' locks among them */
   readonly written: readonly string[];
 }

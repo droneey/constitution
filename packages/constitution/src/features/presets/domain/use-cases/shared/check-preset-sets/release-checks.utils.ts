@@ -1,17 +1,19 @@
 import { PRESETS_FOLDER } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
-import type { RoleTerm } from '#/kernel/entities';
+import type { BlockModel } from '#/kernel/entities';
 import { Term } from '#/kernel/entities';
 import { compareText } from '#/kernel/utils';
 import { SourceKind } from '#/kernel/value-objects';
 
 import { PLUGINS_FOLDER } from '../../../constants';
-import type { PresetEntry, PresetsFinding } from '../../../entities';
-import { PresetsCode } from '../../../entities';
+import type { PresetsFinding } from '../../../entities';
+import { PresetEntry, PresetsCode } from '../../../entities';
 import { Fact, FactKind } from '../../../value-objects';
 import { TextPlace, textsOf } from './entry-texts.utils';
 
 interface ReleaseFiles {
+  /** each file its build makes, to its source, both from its folder */
+  readonly builds: ReadonlyMap<string, string>;
   readonly files: ProjectFiles;
   /** absolute */
   readonly folder: string;
@@ -28,8 +30,8 @@ const pluginPath = new RegExp(`^[^/]+/${PLUGINS_FOLDER}/[^/]+/([^/]+)\\.[^./]+$`
 
 interface ReleaseFindingsInput {
   readonly entries: readonly PresetEntry[];
+  readonly model: BlockModel;
   readonly release: ReleaseFiles;
-  readonly roles: ReadonlyMap<string, RoleTerm>;
   readonly rules: ReadonlySet<string>;
 }
 
@@ -38,7 +40,8 @@ const whereOf = (release: ReleaseFiles, path: string): string =>
 
 // The files of the release a text names, from the release, its roles written as their terms are.
 const releaseFilesIn = (input: {
-  roles: ReadonlyMap<string, RoleTerm>;
+  entry: PresetEntry;
+  model: BlockModel;
   text: string;
 }): readonly string[] => {
   // a role no term defines leaves the text unread, as its own finding says
@@ -49,7 +52,11 @@ const releaseFilesIn = (input: {
         return Fact.textOf(fact);
       }
 
-      const term = input.roles.get(fact.role);
+      const term = PresetEntry.roleOf({
+        entry: input.entry,
+        id: fact.role,
+        model: input.model,
+      });
 
       return term === undefined ? undefined : Term.roleNameOf(term);
     },
@@ -62,45 +69,58 @@ const releaseFilesIn = (input: {
       ].map((match) => String(match[1]).replace(TRAILING_SEPARATOR, ''));
 };
 
-const namedFilesOf = (input: {
-  entry: PresetEntry;
-  roles: ReadonlyMap<string, RoleTerm>;
-}): readonly string[] =>
-  input.entry.set.source.kind === SourceKind.Release
-    ? textsOf(input.entry.value)
-        .filter((text) => text.place !== TextPlace.File)
-        .flatMap((text) =>
-          releaseFilesIn({
-            roles: input.roles,
-            text: text.text,
-          }),
-        )
-    : [];
+const namedFilesOf = (input: { entry: PresetEntry; model: BlockModel }): readonly string[] =>
+  textsOf(input.entry.value)
+    .filter((text) => text.place !== TextPlace.File)
+    .flatMap((text) =>
+      releaseFilesIn({
+        ...input,
+        text: text.text,
+      }),
+    );
+
+// A file the release lacks is sound where its build makes it from a source the release holds.
+const isSound = (input: { file: string; release: ReleaseFiles }): boolean => {
+  const { builds, files, folder } = input.release;
+  const source = builds.get(input.file);
+
+  return (
+    files.exists(`${folder}${SEPARATOR}${input.file}`) ||
+    // Stryker disable next-line ConditionalExpression: a source of no build names no file the folder holds
+    (source !== undefined && files.exists(`${folder}${SEPARATOR}${source}`))
+  );
+};
 
 const releaseFindings = (input: ReleaseFindingsInput): readonly PresetsFinding[] => {
   const { release } = input;
-  const named = new Set<string>();
-  const missing = input.entries.flatMap((entry) =>
-    namedFilesOf({
-      entry,
-      roles: input.roles,
-    }).flatMap((file) => {
-      named.add(file);
-
-      return release.files.exists(`${release.folder}${SEPARATOR}${file}`)
-        ? []
-        : [
-            {
-              code: PresetsCode.MissingReleaseFile,
-              details: {
-                block: entry.block,
-                file,
-                rule: entry.rule,
-              },
-              path: entry.set.file,
-            } satisfies PresetsFinding,
-          ];
-    }),
+  // A pack's entries name the release's files as the project's, never as the release's own.
+  const named = input.entries
+    .filter((entry) => entry.set.source.kind === SourceKind.Release)
+    .flatMap((entry) =>
+      namedFilesOf({
+        entry,
+        model: input.model,
+      }).map((file) => ({
+        file,
+        path: entry.set.file,
+      })),
+    );
+  const namedFiles = new Set(named.map(({ file }) => file));
+  const missing = named.flatMap(({ file, path }) =>
+    isSound({
+      file,
+      release,
+    })
+      ? []
+      : [
+          {
+            code: PresetsCode.MissingReleaseFile,
+            details: {
+              file,
+            },
+            path,
+          } satisfies PresetsFinding,
+        ],
   );
   // Stryker disable next-line ArrayDeclaration: a path that is no plugin's gives no finding
   const plugins = (release.files.listFiles(`${release.folder}${SEPARATOR}${PRESETS_FOLDER}`) ?? [])
@@ -123,7 +143,7 @@ const releaseFindings = (input: ReleaseFindingsInput): readonly PresetsFinding[]
                     path: whereOf(release, file),
                   } satisfies PresetsFinding,
                 ]),
-            ...(named.has(file)
+            ...(namedFiles.has(file)
               ? []
               : [
                   {

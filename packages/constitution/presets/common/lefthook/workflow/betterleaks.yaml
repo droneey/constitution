@@ -1,4 +1,0 @@
-pre-commit:
-  jobs:
-    - name: secrets
-      run: betterleaks git --pre-commit --staged --redact --no-banner

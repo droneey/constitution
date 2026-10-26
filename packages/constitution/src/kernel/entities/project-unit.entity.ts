@@ -36,11 +36,8 @@ const createUnit = (
 
 const isRepositoryUnit = (unit: ProjectUnit): boolean => UnitPath.isRepository(unit.path);
 
-const isLoweredIn = (unit: ProjectUnit, rule: RuleSlug): boolean => unit.loweredRules.has(rule);
-
 const ProjectUnit = {
   create: createUnit,
-  isLowered: isLoweredIn,
   isRepository: isRepositoryUnit,
 } as const;
 

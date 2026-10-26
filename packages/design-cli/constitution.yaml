@@ -28,5 +28,6 @@ implementations:
   - bun-test
   - stryker
   - ink
-packs: []
+packs:
+  - pack
 overrides: []

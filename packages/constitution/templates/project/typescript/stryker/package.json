@@ -1,9 +1,0 @@
-{
-  "scripts": {
-    "mutation:check": "bun --no-env-file .droneey/constitution/tools/mutation-check/dist/main.js",
-    "mutation:all": "bun --no-env-file .droneey/constitution/tools/mutation-check/dist/main.js all"
-  },
-  "devDependencies": {
-    "@stryker-mutator/core": "10.0.0"
-  }
-}

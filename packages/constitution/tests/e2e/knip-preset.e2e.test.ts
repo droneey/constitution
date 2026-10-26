@@ -92,52 +92,52 @@ describe('the knip preset', () => {
   it.each([
     {
       binary: 'betterleaks',
-      part: 'typescript/betterleaks',
+      block: 'betterleaks',
     },
     {
       binary: 'mise',
-      part: 'typescript/mise',
+      block: 'mise',
     },
     {
       binary: 'osv-scanner',
-      part: 'typescript/osv-scanner',
+      block: 'osv-scanner',
     },
     {
       binary: 'rumdl',
-      part: 'typescript/rumdl',
+      block: 'rumdl',
     },
     {
       binary: 'shellcheck',
-      part: 'typescript/shellcheck',
+      block: 'shellcheck',
     },
     {
       binary: 'shfmt',
-      part: 'typescript/shfmt',
+      block: 'shfmt',
     },
     {
       binary: 'tombi',
-      part: 'typescript/tombi',
+      block: 'tombi',
     },
     {
       binary: 'uv',
-      part: 'typescript/uv',
+      block: 'uv',
     },
     {
       binary: 'yamllint',
-      part: 'typescript/yamllint',
+      block: 'yamllint',
     },
     {
       binary: 'lefthook',
-      part: 'typescript/workflow/lefthook',
+      block: 'lefthook',
     },
   ])(
-    'should report no missing binary when a script runs $binary and the project joins $part',
-    ({ binary, part }) => {
+    'should report no missing binary when a script runs $binary and the project follows $block',
+    ({ binary, block }) => {
       // Arrange
       const project = {
         files: wired,
-        parts: [
-          part,
+        blocks: [
+          block,
         ],
         scripts: {
           tool: binary,
@@ -152,7 +152,7 @@ describe('the knip preset', () => {
     },
   );
 
-  it('should report a missing binary when a script runs a tool whose part the project does not join', () => {
+  it('should report a missing binary when a script runs a tool whose block the unit does not follow', () => {
     // Arrange
     const project = {
       files: wired,

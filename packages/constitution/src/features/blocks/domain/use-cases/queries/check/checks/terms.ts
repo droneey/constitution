@@ -83,8 +83,17 @@ interface Placed {
 }
 
 interface IdOwner {
+  readonly block: BlockId;
+  /** whether the owner's block builds on another */
+  readonly isReached: (owned: Owned) => boolean;
+  readonly layer: Layer;
   readonly path: string;
   readonly term: string;
+}
+
+interface Owned {
+  readonly block: BlockId;
+  readonly layer: Layer;
 }
 
 interface Glossary {
@@ -103,12 +112,15 @@ const placedFiles = (blocks: readonly Block[]): readonly Placed[] =>
 const TERM_ID_SHAPE = /^[a-z][a-z0-9-]*$/;
 
 // A role is named by its id wherever its spelling may change, so each folder and suffix carries one,
-// well-formed and its own; any other term may.
+// well-formed and its own; any other term may. Of two blocks one builds on, the more specific may
+// spell the id its own way, as a language spells a folder, whichever is read first.
 const idFinding = (input: {
+  isReached: (owner: Owned) => boolean;
   owners: Map<string, IdOwner>;
-  path: string;
+  placed: Placed;
   term: Term;
 }): TermsFinding | undefined => {
+  const { block, file } = input.placed;
   const { id, kind, term } = input.term;
 
   if (id === undefined) {
@@ -118,7 +130,7 @@ const idFinding = (input: {
           details: {
             term,
           },
-          path: input.path,
+          path: file.path,
         }
       : undefined;
   }
@@ -130,7 +142,7 @@ const idFinding = (input: {
         id,
         term,
       },
-      path: input.path,
+      path: file.path,
     };
   }
 
@@ -138,10 +150,24 @@ const idFinding = (input: {
 
   if (owner === undefined) {
     input.owners.set(id, {
-      path: input.path,
+      block: block.id,
+      isReached: input.isReached,
+      layer: block.layer,
+      path: file.path,
       term,
     });
 
+    return undefined;
+  }
+
+  const builtOn =
+    input.isReached(owner) ||
+    owner.isReached({
+      block: block.id,
+      layer: block.layer,
+    });
+
+  if (owner.block !== block.id && builtOn) {
     return undefined;
   }
 
@@ -153,17 +179,32 @@ const idFinding = (input: {
       id,
       term,
     },
-    path: input.path,
+    path: file.path,
   };
 };
 
-const glossaryOf = (files: readonly Placed[]): Glossary => {
+// Every block builds on core, so core's terms are everyone's.
+const reaches = (input: { graph: BlockGraph; placed: Placed }): ((owned: Owned) => boolean) => {
+  const allowed = BlockGraph.reachableFrom(
+    input.graph,
+    Block.placeOf(input.placed.block, input.placed.file),
+  );
+
+  return (owned: Owned): boolean => owned.layer === Layer.Core || allowed.has(owned.block);
+};
+
+const glossaryOf = (input: { files: readonly Placed[]; graph: BlockGraph }): Glossary => {
   const first = new Map<string, Definition>();
   const owners = new Map<string, IdOwner>();
   const findings: TermsFinding[] = [];
 
-  for (const { block, file } of files) {
+  for (const placed of input.files) {
+    const { block, file } = placed;
     const read = Term.allIn(file.body);
+    const isReached = reaches({
+      graph: input.graph,
+      placed,
+    });
 
     findings.push(
       ...read.misshapen.map(
@@ -180,8 +221,9 @@ const glossaryOf = (files: readonly Placed[]): Glossary => {
     for (const term of read.terms) {
       const earlier = first.get(term.term);
       const idProblem = idFinding({
+        isReached,
         owners,
-        path: file.path,
+        placed,
         term,
       });
 
@@ -264,16 +306,6 @@ const reachProseOf = ({ block, file }: Placed): string => {
   );
 };
 
-// Every block builds on core, so core's terms are everyone's.
-const reaches = (input: { graph: BlockGraph; placed: Placed }): ((term: Defined) => boolean) => {
-  const allowed = BlockGraph.reachableFrom(
-    input.graph,
-    Block.placeOf(input.placed.block, input.placed.file),
-  );
-
-  return (term: Defined): boolean => term.layer === Layer.Core || allowed.has(term.block);
-};
-
 const reachFindings = (input: {
   graph: BlockGraph;
   defined: readonly Defined[];
@@ -337,7 +369,10 @@ const termsCheck: Check<TermsFinding> = ({
   constitution,
 }: CheckInput): readonly TermsFinding[] => {
   const files = placedFiles(constitution.blocks);
-  const { defined, findings } = glossaryOf(files);
+  const { defined, findings } = glossaryOf({
+    files,
+    graph,
+  });
 
   return [
     ...findings,

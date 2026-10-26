@@ -6,7 +6,7 @@
 
 ### gitignore-covers-key-files → secret-never-in-the-repository · MUST
 
-`.gitignore` covers key and credential files — `*.pem`, `*.key`, `*.p12`, `*.pfx`, `*.jks`, `credentials.json`, `id_rsa`, `*.secrets`, `.htpasswd` — in nested ignore files too.
+`.gitignore` covers key and credential files — `*.pem`, `*.key`, `*.p12`, `*.pfx`, `*.jks`, `credentials.json`, `id_rsa`, `*.secrets` — in nested ignore files too.
 
 | Why |
 |---|

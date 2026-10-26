@@ -1,6 +1,6 @@
 # Placement
 
-> Governs where a rule goes — its layer, its axis, its file and its section — and what it may refer to.
+> Governs where a rule goes — its layer, its axis, its file and its section — what it may refer to, and where the settings that hold it go.
 
 ## Layer
 
@@ -91,3 +91,21 @@ A rule never refers to a rule of its own block. It may tighten a rule of core, o
 | Why |
 |---|
 | a rule that reaches a block its own does not follow binds a project to that block, and one between the optional axes breaks when a project leaves either out. |
+
+## Presets
+
+### setting-placed-by-its-reader-and-key-rule · MUST
+
+A setting a tool reads sits in that tool's preset file of the axis of the rule it holds, or of one that axis stands on, keyed by that rule, or by `*` when the tool needs it and no rule asks for it; one that needs a block beyond the tool's reach sits in the tool's `with/` file of that block, and one that needs a second block in that file's `with/` file of the second, so its path names exactly the blocks it needs. A plugin of a tool sits in the tool's `plugins/` folder of its language, named by the rule it holds.
+
+| Why |
+|---|
+| the program finds every setting of a rule by its key, a setting leaves with the last block it needs, an override that lowers a rule takes out exactly the settings that hold it, and a plugin is found by the rule that needs it. |
+
+### setting-names-folders-by-their-terms · MUST
+
+A folder or a suffix a setting names is written by its term's id, never by its spelling, in whatever form the setting writes it — a path, a pattern or a module's dotted name. A block that spells a term of a block it builds on its own way defines its spelling under the same id, and a setting takes the spelling of the most specific block its language reaches.
+
+| Why |
+|---|
+| a folder renamed in its term then changes every tool's settings at once, and a language's own spelling is kept in one place, beside the rule that names it. |

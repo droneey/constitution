@@ -1,0 +1,43 @@
+ui:
+  presentational-component-performs-no-io:
+    typescript:
+      .dependency-cruiser.json:
+        forbidden[name=components-take-data-and-callbacks]:
+          severity: error
+          from:
+            path: /${role.presentation-layer}/${role.component}/
+          to:
+            path:
+              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/(${role.application-layer}|${role.gateway})/
+              - ^${role.source}/(${role.shared-domain}/${role.port}|${role.gateway})/
+  ui-layer-imports-only-what-its-feature-offers:
+    typescript:
+      .dependency-cruiser.json:
+        forbidden[name=ui-reaches-no-mechanism]:
+          severity: error
+          from:
+            path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/([^/]+)/${role.presentation-layer}/
+          to:
+            path:
+              - ^${role.source}/$1/$2/(${role.gateway}|${role.pure-layer}/${role.port}|${role.pure-layer}/${role.use-case})/
+              - ^${role.source}/(${role.shared-domain}/${role.port}|${role.gateway})/
+  component-never-imports-a-widget:
+    typescript:
+      .dependency-cruiser.json:
+        forbidden[name=components-never-import-widgets]:
+          severity: error
+          from:
+            path: /${role.presentation-layer}/${role.component}/
+          to:
+            path: /${role.presentation-layer}/${role.widget}/
+  binding-unit-composes-its-operation:
+    typescript:
+      .dependency-cruiser.json:
+        forbidden[name=binding-units-reach-no-adapter-or-ui]:
+          severity: error
+          from:
+            path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.application-layer}/${role.use-case}/
+          to:
+            path:
+              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/(${role.gateway}|${role.presentation-layer})/
+              - ^${role.source}/${role.gateway}/

@@ -4,8 +4,8 @@ import { FileReadStatus } from '#/kernel/entities';
 import { compareText } from '#/kernel/utils';
 import type { BlockSource } from '#/kernel/value-objects';
 
-import type { CatalogueParser, CatalogueRead } from '../../../contracts';
-import { CatalogueReadStatus } from '../../../contracts';
+import type { PresetFileParser, PresetFileRead } from '../../../contracts';
+import { PresetFileReadStatus } from '../../../contracts';
 import type {
   PresetEntry,
   PresetPair,
@@ -14,13 +14,13 @@ import type {
   PresetValue,
 } from '../../../entities';
 import { PresetsCode, ValueKind } from '../../../entities';
-import { CataloguePath, PathKind, TargetFile } from '../../../value-objects';
+import { PathKind, PresetFilePath, TargetFile } from '../../../value-objects';
 
 interface LoadPresetSetsInput {
   readonly files: ProjectFiles;
-  /** the absolute folder whose presets/ holds the catalogues */
+  /** the absolute folder whose presets/ holds the preset files */
   readonly folder: string;
-  readonly parser: CatalogueParser;
+  readonly parser: PresetFileParser;
   readonly source: BlockSource;
   /** the folder as findings name it; empty for the folder checked itself */
   readonly where: string;
@@ -42,7 +42,7 @@ const fileOf = (input: { path: string; where: string }): string =>
     .filter((part) => part !== '')
     .join(SEPARATOR);
 
-// The entries of a catalogue's value, block → rule → language → file, in the order it writes them;
+// The entries of a preset file's value, block → rule → language → file, in the order it writes them;
 // a value that is no map where the next key is due is a finding that names the keys down to it.
 const entriesIn = (input: { set: PresetSet; value: PresetValue }): PresetSetsLoaded => {
   const { set } = input;
@@ -104,16 +104,16 @@ const loadedFrom = (
   },
 ): PresetSetsLoaded => {
   const file = fileOf(input);
-  const place = CataloguePath.readOf(input.path);
+  const place = PresetFilePath.readOf(input.path);
 
-  if (place.kind !== PathKind.Catalogue) {
+  if (place.kind !== PathKind.PresetFile) {
     return {
       entries: [],
       findings:
         place.kind === PathKind.Misplaced
           ? [
               {
-                code: PresetsCode.CatalogueMisplaced,
+                code: PresetsCode.PresetFileMisplaced,
                 details: {},
                 path: file,
               },
@@ -123,19 +123,19 @@ const loadedFrom = (
   }
 
   const read = input.files.read(`${input.folder}/${PRESETS_FOLDER}/${input.path}`);
-  const parsed: CatalogueRead =
+  const parsed: PresetFileRead =
     read.status === FileReadStatus.Read
       ? input.parser.parse(read.text)
       : {
-          status: CatalogueReadStatus.Unparsed,
+          status: PresetFileReadStatus.Unparsed,
         };
 
-  if (parsed.status === CatalogueReadStatus.Unparsed) {
+  if (parsed.status === PresetFileReadStatus.Unparsed) {
     return {
       entries: [],
       findings: [
         {
-          code: PresetsCode.CatalogueUnparsed,
+          code: PresetsCode.PresetFileUnparsed,
           details:
             parsed.line === undefined
               ? {}
@@ -151,7 +151,7 @@ const loadedFrom = (
   return entriesIn({
     set: {
       file,
-      path: place.catalogue,
+      path: place.presetFile,
       source: input.source,
     },
     value: parsed.value,
@@ -160,7 +160,7 @@ const loadedFrom = (
 
 /** In the order of their paths. */
 const loadPresetSets = (input: LoadPresetSetsInput): PresetSetsLoaded => {
-  // Stryker disable next-line ArrayDeclaration: a path that names no catalogue is data
+  // Stryker disable next-line ArrayDeclaration: a path that names no preset file is data
   const paths = (input.files.listFiles(`${input.folder}/${PRESETS_FOLDER}`) ?? []).toSorted(
     compareText,
   );

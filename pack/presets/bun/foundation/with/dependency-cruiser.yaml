@@ -1,0 +1,13 @@
+# The root's cruise follows the imports between the units, which no unit's own sees.
+dependency-cruiser:
+  '*':
+    typescript:
+      package.json:
+        scripts:
+          check:architecture: !replace >-
+            depcruise
+            ${role.deployed-unit}/*/${role.source}
+            ${role.dependency-unit}/*/${role.source}
+            ${role.dependency-unit}/*/${role.package-suites}
+            ${role.dependency-unit}/*/${role.language-package}/typescript/${role.source}
+            --config .dependency-cruiser.json

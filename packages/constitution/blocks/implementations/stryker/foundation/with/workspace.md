@@ -6,7 +6,7 @@
 
 ### stryker-configuration-per-unit → unit-configuration-kept-in-its-folder · MUST
 
-In a workspace, each package with code its specs run has its own `stryker.config.mjs` in its folder.
+In a workspace, each package with code its specs run has its own `stryker.config.json` in its folder.
 
 | Why |
 |---|

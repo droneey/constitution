@@ -181,4 +181,4 @@ const inPythonProjectAsync = async <TResult>(
 };
 
 export type { BuiltTool, Files };
-export { buildTools, inPythonProject, inPythonProjectAsync, python, repository, writeFiles };
+export { buildTools, inPythonProject, inPythonProjectAsync, python, writeFiles };
