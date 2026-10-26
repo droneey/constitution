@@ -1,11 +1,11 @@
 ky:
   '*':
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         allowedSeverity: error
   ky-home-is-the-adapters-libs-root-and-its-failure-mapper:
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         allowed[comment=ky-home-is-the-adapters-libs-root-and-its-failure-mapper]:
           from:
             path: ^${role.source}/${role.shared-code}/

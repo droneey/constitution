@@ -15,7 +15,7 @@ const toolWords: readonly string[] = [
   '.dependency-cruiser',
   '.editorconfig',
   '.gitignore',
-  'biome.json',
+  'biome.jsonc',
   'bunfig',
   'forbidden',
   'jobs',

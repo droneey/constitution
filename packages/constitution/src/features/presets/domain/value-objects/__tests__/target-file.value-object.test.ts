@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import { FactKind, FactName } from '../fact.value-object';
-import { TargetFile } from '../target-file.value-object';
+import { FileFormat, TargetFile } from '../target-file.value-object';
 
 describe('TargetFile', () => {
   it.each([
@@ -67,6 +67,74 @@ describe('TargetFile', () => {
         path: 'notes ? ${home}',
       },
       key: 'notes ? ${home}',
+    },
+    {
+      condition: 'a mark names its format',
+      file: {
+        format: FileFormat.Jsonc,
+        path: 'tsconfig.json',
+      },
+      key: 'tsconfig.json !jsonc',
+    },
+    {
+      condition: 'a mark names no format constitution knows',
+      file: {
+        path: 'notes.json !yaml',
+      },
+      key: 'notes.json !yaml',
+    },
+    {
+      condition: 'a mark and a guard follow its path',
+      file: {
+        format: FileFormat.Jsonc,
+        guard: {
+          fact: {
+            kind: FactKind.Named,
+            name: FactName.FileIsTop,
+          },
+          isNegated: false,
+        },
+        path: 'tsconfig.json',
+      },
+      key: 'tsconfig.json !jsonc ? ${file.isTop}',
+    },
+    {
+      condition: 'its guard compares a fact with a text',
+      file: {
+        guard: {
+          equals: '${role.deployed-unit}',
+          fact: {
+            kind: FactKind.Named,
+            name: FactName.UnitParent,
+          },
+          isNegated: true,
+        },
+        path: '.dependency-cruiser.jsonc',
+      },
+      key: '.dependency-cruiser.jsonc ? !${unit.parent} = ${role.deployed-unit}',
+    },
+    {
+      condition: 'spaces stand around its mark and its equals sign',
+      file: {
+        format: FileFormat.Jsonc,
+        guard: {
+          equals: 'apps',
+          fact: {
+            kind: FactKind.Named,
+            name: FactName.UnitParent,
+          },
+          isNegated: false,
+        },
+        path: 'tsconfig.json',
+      },
+      key: 'tsconfig.json  !jsonc ? ${unit.parent}  =  apps',
+    },
+    {
+      condition: 'more text follows its mark',
+      file: {
+        path: 'tsconfig.json !jsonc later',
+      },
+      key: 'tsconfig.json !jsonc later',
     },
   ])('should read the file and its guard when $condition', ({ file, key }) => {
     // Act

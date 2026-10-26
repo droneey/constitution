@@ -1,7 +1,7 @@
 distribution:
   '*':
     typescript:
-      tsconfig.json:
+      tsconfig.json !jsonc:
         compilerOptions:
           allowJs: !replace false
           checkJs: !replace false
@@ -9,6 +9,6 @@ distribution:
 typescript:
   package-export-typed-explicitly:
     typescript:
-      tsconfig.json:
+      tsconfig.json !jsonc:
         compilerOptions:
           isolatedDeclarations: true

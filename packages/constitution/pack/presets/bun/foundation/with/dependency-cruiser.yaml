@@ -5,4 +5,4 @@ dependency-cruiser:
         scripts:
           check:architecture: !replace >-
             depcruise ${role.source} ${role.build-code} ${role.package-suites} --config
-            .dependency-cruiser.json
+            .dependency-cruiser.jsonc

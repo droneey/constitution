@@ -21,32 +21,43 @@ jobs:
         with:
           version: 2026.10.9
 
-      # Not --production: the program's build needs the React Compiler.
+      # Not --production: the executable's build needs the React Compiler.
       - name: Install dependencies
         run: bun install --frozen-lockfile --ignore-scripts
 
-      - name: Pack the Constitution
+      # One distribution for each platform: the content, then that platform's executable in bin/.
+      - name: Pack the distribution
         run: |
-          bun run build
-          tar -czf constitution.tar.gz -C packages/constitution \
-            package.json blocks presets templates tools
-          sha256sum constitution.tar.gz > constitution.tar.gz.sha256
-
-      - name: Build the program for each platform
-        run: |
+          (
+            cd packages/constitution
+            for package in $(jq -r '[.[].package] | unique[]' distribution.json); do
+              if [ -f "$package/package.json" ]; then
+                bun run --cwd "$package" build
+              else
+                (cd "$package" && uv run --locked poe build)
+              fi
+            done
+            jq -r 'to_entries[] | "\(.key) \(.value.package)/\(.value.file)"' distribution.json |
+              while read -r target source; do
+                mkdir -p "$(dirname "$target")"
+                cp "$source" "$target"
+              done
+          )
           for platform in linux-x64:linux-x64 linux-arm64:linux-arm64 \
             darwin-x64:macos-x64 darwin-arm64:macos-arm64; do
             target="${platform%%:*}"
-            archive="${platform##*:}"
-            bun run build:cli --target "bun-${target}" \
-              --outfile "dist/cli/${archive}/bin/constitution"
-            tar -czf "constitution-${archive}.tar.gz" -C "dist/cli/${archive}" bin
+            name="${platform##*:}"
+            bun run --cwd packages/constitution build --target "bun-${target}" \
+              --outfile "$PWD/dist/cli/${name}/bin/constitution"
+            tar -czf "constitution-${name}.tar.gz" -C packages/constitution \
+              package.json blocks presets templates tools -C "$PWD/dist/cli/${name}" bin
+            sha256sum "constitution-${name}.tar.gz" > "constitution-${name}.tar.gz.sha256"
           done
 
       # The site under its release's address, which the docs image serves beside the others'
       - name: Build the site
         run: |
-          bun run --cwd apps/docs build:release
+          bun run --cwd apps/docs build
           tar -czf constitution-docs.tar.gz -C apps/docs/.output/public .
           sha256sum constitution-docs.tar.gz > constitution-docs.tar.gz.sha256
 
@@ -55,10 +66,8 @@ jobs:
         with:
           name: release-assets
           path: |
-            constitution.tar.gz
-            constitution.tar.gz.sha256
             constitution-*.tar.gz
-            constitution-docs.tar.gz.sha256
+            constitution-*.tar.gz.sha256
           if-no-files-found: error
 
   pre-release:
@@ -72,7 +81,8 @@ jobs:
       prerelease: true
       assets-artifact: release-assets
       assets: >-
-        constitution.tar.gz constitution.tar.gz.sha256
-        constitution-linux-x64.tar.gz constitution-linux-arm64.tar.gz
-        constitution-macos-x64.tar.gz constitution-macos-arm64.tar.gz
+        constitution-linux-x64.tar.gz constitution-linux-x64.tar.gz.sha256
+        constitution-linux-arm64.tar.gz constitution-linux-arm64.tar.gz.sha256
+        constitution-macos-x64.tar.gz constitution-macos-x64.tar.gz.sha256
+        constitution-macos-arm64.tar.gz constitution-macos-arm64.tar.gz.sha256
         constitution-docs.tar.gz constitution-docs.tar.gz.sha256

@@ -9,7 +9,7 @@ enum Health {
 
 /** In the order doctor reports them. */
 enum InstallationPart {
-  Program = 'program',
+  Executable = 'executable',
   Plugin = 'plugin',
   Release = 'release',
   Path = 'path',
@@ -18,7 +18,7 @@ enum InstallationPart {
 }
 
 enum Diagnosis {
-  ProgramRuns = 'program-runs',
+  ExecutableRuns = 'executable-runs',
   PluginMissing = 'plugin-missing',
   PluginMatches = 'plugin-matches',
   PluginDiffersAtItsVersion = 'plugin-differs-at-its-version',
@@ -27,7 +27,7 @@ enum Diagnosis {
   LatestUnknown = 'latest-unknown',
   LatestAhead = 'latest-ahead',
   LatestHeld = 'latest-held',
-  ProgramNotOnPath = 'program-not-on-path',
+  ExecutableNotOnPath = 'executable-not-on-path',
   PathMatches = 'path-matches',
   PathSilent = 'path-silent',
   PathDiffers = 'path-differs',
@@ -47,8 +47,8 @@ enum Diagnosis {
 }
 
 interface PluginVersions {
+  readonly executable: Version;
   readonly plugin: Version;
-  readonly program: Version;
 }
 
 /** Both as paths from the project. */
@@ -58,25 +58,25 @@ interface ReleaseLink {
 }
 
 interface DiagnosisDetails {
-  readonly [Diagnosis.ProgramRuns]: {
-    readonly program: Version;
+  readonly [Diagnosis.ExecutableRuns]: {
+    readonly executable: Version;
   };
   readonly [Diagnosis.PluginMissing]: object;
   readonly [Diagnosis.PluginMatches]: PluginVersions;
   readonly [Diagnosis.PluginDiffersAtItsVersion]: {
-    readonly program: Version;
+    readonly executable: Version;
   };
   readonly [Diagnosis.PluginOlder]: PluginVersions;
   readonly [Diagnosis.PluginNewer]: PluginVersions;
   readonly [Diagnosis.LatestUnknown]: object;
   readonly [Diagnosis.LatestAhead]: {
+    readonly executable: Version;
     readonly latest: Version;
-    readonly program: Version;
   };
   readonly [Diagnosis.LatestHeld]: {
     readonly latest: Version;
   };
-  readonly [Diagnosis.ProgramNotOnPath]: object;
+  readonly [Diagnosis.ExecutableNotOnPath]: object;
   readonly [Diagnosis.PathMatches]: {
     readonly path: string;
   };
@@ -85,8 +85,8 @@ interface DiagnosisDetails {
   };
   readonly [Diagnosis.PathDiffers]: {
     readonly answered: string;
+    readonly executable: Version;
     readonly path: string;
-    readonly program: Version;
   };
   readonly [Diagnosis.LinkWithoutProject]: object;
   readonly [Diagnosis.ManifestUnreadable]: {
@@ -106,8 +106,8 @@ interface DiagnosisDetails {
     readonly link: ReleaseLink;
   };
   readonly [Diagnosis.LinkDiffers]: {
+    readonly executable: Version;
     readonly link: ReleaseLink;
-    readonly program: Version;
     readonly release: Version;
   };
   readonly [Diagnosis.HooksWithoutProject]: object;
@@ -124,7 +124,7 @@ type PartDiagnosis<TKind extends Diagnosis = Diagnosis> = {
 }[TKind];
 
 const PART_OF = {
-  [Diagnosis.ProgramRuns]: InstallationPart.Program,
+  [Diagnosis.ExecutableRuns]: InstallationPart.Executable,
   [Diagnosis.PluginMissing]: InstallationPart.Plugin,
   [Diagnosis.PluginMatches]: InstallationPart.Plugin,
   [Diagnosis.PluginDiffersAtItsVersion]: InstallationPart.Plugin,
@@ -133,7 +133,7 @@ const PART_OF = {
   [Diagnosis.LatestUnknown]: InstallationPart.Release,
   [Diagnosis.LatestAhead]: InstallationPart.Release,
   [Diagnosis.LatestHeld]: InstallationPart.Release,
-  [Diagnosis.ProgramNotOnPath]: InstallationPart.Path,
+  [Diagnosis.ExecutableNotOnPath]: InstallationPart.Path,
   [Diagnosis.PathMatches]: InstallationPart.Path,
   [Diagnosis.PathSilent]: InstallationPart.Path,
   [Diagnosis.PathDiffers]: InstallationPart.Path,
@@ -153,7 +153,7 @@ const PART_OF = {
 } as const satisfies Readonly<Record<Diagnosis, InstallationPart>>;
 
 const HEALTH_OF = {
-  [Diagnosis.ProgramRuns]: Health.Sound,
+  [Diagnosis.ExecutableRuns]: Health.Sound,
   [Diagnosis.PluginMissing]: Health.Warned,
   [Diagnosis.PluginMatches]: Health.Sound,
   [Diagnosis.PluginDiffersAtItsVersion]: Health.Warned,
@@ -162,7 +162,7 @@ const HEALTH_OF = {
   [Diagnosis.LatestUnknown]: Health.Skipped,
   [Diagnosis.LatestAhead]: Health.Warned,
   [Diagnosis.LatestHeld]: Health.Sound,
-  [Diagnosis.ProgramNotOnPath]: Health.Broken,
+  [Diagnosis.ExecutableNotOnPath]: Health.Broken,
   [Diagnosis.PathMatches]: Health.Sound,
   [Diagnosis.PathSilent]: Health.Warned,
   [Diagnosis.PathDiffers]: Health.Warned,

@@ -16,8 +16,8 @@ import { dirname, join } from 'node:path';
 import type { Files } from './constitution.fixtures';
 import { constitutionFiles } from './constitution.fixtures';
 
-// A file the plugin root or the archive is built without, or a field the
-// archive's package.json is written without.
+// A file the plugin root or the distribution is built without, or a field the
+// distribution's package.json is written without.
 enum Breakage {
   Core = 'blocks/core/core.md',
   Format = 'constitutionFormat',
@@ -28,7 +28,7 @@ enum Breakage {
 interface PluginRootOptions {
   breakage?: Breakage;
   coreBody?: string;
-  // the archive's constitutionFormat, a number unless a case writes it as text
+  // the distribution's constitutionFormat, a number unless a case writes it as text
   format?: number | string;
 }
 
@@ -65,12 +65,12 @@ const copyHook = (root: string): void => {
 };
 
 const PLUGIN = 'plugin';
-const ARCHIVE = 'archive';
+const DISTRIBUTION = 'distribution';
 const LINK = '.droneey/constitution';
 
-// The archive a plugin root's hooks are tested with: the release a project pins,
+// The distribution a plugin root's hooks are tested with: the release a project pins,
 // which mise unpacks and links into the project.
-const archiveOf = (root: string): string => join(dirname(root), ARCHIVE);
+const distributionOf = (root: string): string => join(dirname(root), DISTRIBUTION);
 
 const writeManifest = (input: {
   folder: string;
@@ -100,13 +100,13 @@ const writeManifest = (input: {
   );
 };
 
-// The plugin brings the hooks; the archive beside it, the blocks and the
+// The plugin brings the hooks; the distribution beside it, the blocks and the
 // manifest that names their format, as a release packs them.
 const createPluginRoot = (options: PluginRootOptions = {}): string => {
   const { breakage, coreBody, format = releaseFormat } = options;
   const folder = mkdtempSync(join(tmpdir(), 'constitution-plugin-'));
   const root = join(folder, PLUGIN);
-  const archive = join(folder, ARCHIVE);
+  const distribution = join(folder, DISTRIBUTION);
 
   created.push(folder);
   copyHook(root);
@@ -117,51 +117,51 @@ const createPluginRoot = (options: PluginRootOptions = {}): string => {
   });
   writeFiles({
     files: constitutionFiles(coreBody),
-    root: archive,
+    root: distribution,
   });
 
   if (breakage !== Breakage.Manifest) {
     writeManifest({
-      folder: archive,
+      folder: distribution,
       format: breakage === Breakage.Format ? undefined : format,
       version: breakage !== Breakage.Version,
     });
   }
 
   if (breakage === Breakage.Core) {
-    rmSync(join(archive, breakage));
+    rmSync(join(distribution, breakage));
   }
 
   return root;
 };
 
 // The plugin root a release of this repository ships, as far as the hook reads
-// it, and the archive beside it: the real blocks and the manifest.
+// it, and the distribution beside it: the real blocks and the manifest.
 const createRealPluginRoot = (): string => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-plugin-'));
   const root = join(folder, PLUGIN);
-  const archive = join(folder, ARCHIVE);
+  const distribution = join(folder, DISTRIBUTION);
 
   created.push(folder);
   copyHook(root);
   copyFileSync(join(repository, 'package.json'), join(root, 'package.json'));
-  cpSync(join(repository, 'blocks'), join(archive, 'blocks'), {
+  cpSync(join(repository, 'blocks'), join(distribution, 'blocks'), {
     recursive: true,
   });
-  copyFileSync(join(repository, 'package.json'), join(archive, 'package.json'));
+  copyFileSync(join(repository, 'package.json'), join(distribution, 'package.json'));
 
   return root;
 };
 
-interface ArchiveLink {
-  readonly archive: string;
+interface DistributionLink {
+  readonly distribution: string;
   readonly project: string;
 }
 
-// Links the archive into a project as mise's postinstall does, unless the
+// Links the distribution into a project as mise's postinstall does, unless the
 // project holds something there already; the project's git ignores the link,
 // as a project's .gitignore does.
-const linkArchive = (input: ArchiveLink): void => {
+const linkDistribution = (input: DistributionLink): void => {
   const link = join(input.project, LINK);
 
   if (
@@ -176,7 +176,7 @@ const linkArchive = (input: ArchiveLink): void => {
     recursive: true,
   });
   writeFileSync(join(dirname(link), '.gitignore'), '*\n');
-  symlinkSync(input.archive, link);
+  symlinkSync(input.distribution, link);
 };
 
 const removeFolder = (path: string): void => {
@@ -217,14 +217,14 @@ const removePluginRoots = (): void => {
 
 export type { PluginRootOptions };
 export {
-  archiveOf,
   Breakage,
   coreBodyOfBytes,
   createPluginRoot,
   createRealPluginRoot,
+  distributionOf,
   INSTALLED,
   LINK,
-  linkArchive,
+  linkDistribution,
   releaseFormat,
   removeFolder,
   removePluginRoots,

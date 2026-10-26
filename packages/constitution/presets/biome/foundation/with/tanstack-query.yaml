@@ -1,7 +1,7 @@
 tanstack-query:
   '*':
     typescript:
-      biome.json:
+      biome.jsonc:
         assist:
           actions:
             source:

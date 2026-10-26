@@ -1,7 +1,7 @@
 dependency-cruiser:
   '*':
     typescript:
-      biome.json:
+      biome.jsonc:
         overrides:
           - includes:
               - '**/.dependency-cruiser.js'

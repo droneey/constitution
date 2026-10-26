@@ -4,6 +4,8 @@ ignore: |
   .ruff_cache/
   .complexipy_cache/
   mutants/
+
+# yamllint
 rules:
   indentation:
     spaces: 2

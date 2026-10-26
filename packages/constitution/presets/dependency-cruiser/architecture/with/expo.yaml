@@ -1,7 +1,7 @@
 expo:
   expo-router-only-in-the-root:
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         forbidden[name=ui-imports-no-expo-router]:
           severity: error
           from:

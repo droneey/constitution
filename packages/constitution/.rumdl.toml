@@ -1,3 +1,4 @@
+# rumdl
 [global]
 extend-enable = ["MD087", "MD001", "MD025", "MD036", "MD040", "MD045", "MD051", "MD057", "MD059"]
 disable = ["MD013", "MD041"]

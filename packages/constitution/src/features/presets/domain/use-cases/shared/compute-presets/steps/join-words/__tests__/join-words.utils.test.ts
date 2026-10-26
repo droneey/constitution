@@ -5,7 +5,7 @@ import { PresetValue } from '../../../../../../entities';
 import { joinWords } from '../join-words.utils';
 
 const from = (given: Value): Contribution => ({
-  group: 'bun',
+  block: 'bun',
   source: 'bun',
   value: given,
 });

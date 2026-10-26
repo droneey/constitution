@@ -9,6 +9,7 @@ import { planLinesOf } from '../../../../utils';
 import { createPresetsPlanCommand } from '../plan.cli';
 
 const plan: PresetsPlan = {
+  blocks: new Map(),
   files: [],
   findings: [],
   runs: [],

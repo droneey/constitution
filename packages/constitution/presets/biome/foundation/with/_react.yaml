@@ -1,7 +1,7 @@
 _react:
   hooks-at-top-level:
     typescript:
-      biome.json:
+      biome.jsonc:
         overrides:
           - includes:
               - '**/*.ts'
@@ -27,7 +27,7 @@ _react:
                   useHookAtTopLevel: error
   '*':
     typescript:
-      biome.json:
+      biome.jsonc:
         overrides:
           - includes:
               - '**/*.ts'
@@ -274,7 +274,7 @@ _react:
                     - ':BLANK_LINE:'
   list-keys-from-identity:
     typescript:
-      biome.json:
+      biome.jsonc:
         overrides:
           - includes:
               - '**/*.tsx'
@@ -310,7 +310,7 @@ _react:
                   noArrayIndexKey: error
   component-never-defined-inside-a-component:
     typescript:
-      biome.json:
+      biome.jsonc:
         overrides:
           - includes:
               - '**/*.tsx'
@@ -346,7 +346,7 @@ _react:
                   noComponentHookFactories: error
   render-is-pure:
     typescript:
-      biome.json:
+      biome.jsonc:
         overrides:
           - includes:
               - '**/*.tsx'
@@ -366,7 +366,7 @@ _react:
                   noReactPropAssignments: error
   modern-react-api-only:
     typescript:
-      biome.json:
+      biome.jsonc:
         overrides:
           - includes:
               - '**/*.tsx'
@@ -404,7 +404,7 @@ _react:
           - ./${constitution.path}/presets/biome/plugins/typescript/modern-react-api-only.${role.grit-rule}
   function-components-only:
     typescript:
-      biome.json:
+      biome.jsonc:
         overrides:
           - includes:
               - '**/*.tsx'
@@ -424,7 +424,7 @@ _react:
                   useReactFunctionComponents: error
   components-named-in-pascal-case:
     typescript:
-      biome.json:
+      biome.jsonc:
         overrides:
           - includes:
               - '**/*.tsx'
@@ -464,19 +464,19 @@ _react:
                             - PascalCase
   nothing-rendered-as-null:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/nothing-rendered-as-null.grit]:
           includes:
             - '**/*.tsx'
   compound-parts-share-the-root-context:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/compound-parts-share-the-root-context.grit]:
           includes:
             - '**/*.tsx'
   react-compiler-on:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/react-compiler-on.grit]:
           includes:
             - '**/*.ts'
@@ -484,7 +484,7 @@ _react:
 core:
   file-is-one-semantic-unit:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/file-is-one-semantic-unit.grit]:
           includes:
             - '**/*.tsx'

@@ -1,8 +1,0 @@
-[test]
-root = "."
-pathIgnorePatterns = ["tests/**"]
-coverage = false
-preload = ["./src/__tests__/sandbox.fixtures.ts"]
-
-[run]
-bun = true

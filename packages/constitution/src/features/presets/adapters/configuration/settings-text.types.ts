@@ -1,8 +1,8 @@
-import type { LinesLayout, Setting } from '../../domain/entities';
+import type { BlockMarks, Setting } from '../../domain/entities';
 
 /** The text parses in its format. */
 interface SettingsText {
-  readonly layout?: LinesLayout | undefined;
+  readonly marks?: BlockMarks | undefined;
   readonly settings: Setting;
   /** the paths of the maps whose keys stand in their order as texts */
   readonly sorted: readonly (readonly string[])[];

@@ -1,11 +1,11 @@
 tanstack-query:
   '*':
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         allowedSeverity: error
   query-library-home-is-the-binding-units:
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         allowed[comment=query-library-home-is-the-binding-units]:
           from:
             path:

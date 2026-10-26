@@ -1,7 +1,7 @@
 tsc:
   unit-built-as-a-composite-project:
     typescript:
-      tsconfig.json:
+      tsconfig.json !jsonc:
         compilerOptions:
           composite: true
           noEmit: !replace false

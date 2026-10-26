@@ -98,11 +98,11 @@ No dependency, development ones included, has a known vulnerability of any sever
 
 ### dependency-licence-on-the-allowlist · MUST
 
-Every dependency the program ships or loads at run time has a licence on the project’s allowlist; a tool that only builds, tests or checks it may stay off the list, named with its reason.
+Every dependency the program ships or loads at run time has a licence on the project’s allowlist; a tool that only builds, tests or checks it may stay off the list, named with its reason, and the system the program runs on — an operating system, an image's base and its system packages — is not held to the list.
 
 | Why |
 |---|
-| a licence the project cannot honour is an obligation it took on without knowing. |
+| a licence the project cannot honour is an obligation it took on without knowing, while the system it runs on comes under that system's own licences, which govern what runs on it. |
 
 ### deprecated-dependency-replaced · SHOULD
 

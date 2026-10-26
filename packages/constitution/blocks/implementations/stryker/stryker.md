@@ -12,6 +12,6 @@ governs: ["stryker.config.json"]
 
 > Mutation testing.
 
-**Stryker** reads **`stryker.config.json`**, into which the program writes the settings of every block.
+**Stryker** reads **`stryker.config.json`**, into which `constitution` writes the settings of every block.
 
 `incremental` stays at Stryker's default, off: with no spec reported per mutant a cached result can hide a survivor.

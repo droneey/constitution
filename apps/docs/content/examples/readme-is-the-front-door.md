@@ -9,7 +9,7 @@ Issues the shop's invoices and sends them to customers.
 
 ## Run
 
-    npm run dev
+    npm run run:dev
 
 ## Change
 

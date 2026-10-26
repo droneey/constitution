@@ -4,6 +4,8 @@ interface LockRecord {
   readonly addresses: readonly string[];
   /** the defaults written or found present, which a user who deletes one deletes for good */
   readonly defaults: readonly string[];
+  /** whether an apply wrote the file where none was, so the apply deletes it once nothing is left */
+  readonly isCreated: boolean;
   /** whether the file was written whole, as a default, once */
   readonly isWhole: boolean;
   /** the leaves the apply wrote, which a later apply removes once no entry gives them */
@@ -31,6 +33,7 @@ type LockRead =
 const emptyRecord: LockRecord = {
   addresses: [],
   defaults: [],
+  isCreated: false,
   isWhole: false,
   leaves: [],
 };

@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'bun:test';
 
 import { SettingShape } from '../../../domain/contracts';
-import type { LinesLayout, Setting } from '../../../domain/entities';
+import type { BlockMarks, Setting } from '../../../domain/entities';
+import { FileFormat } from '../../../domain/value-objects';
 import { createConfigurationFormat } from '../configuration-format.adapter';
 
 const format = createConfigurationFormat();
@@ -38,7 +39,8 @@ interface ReadRow {
 
 interface WriteRow {
   readonly condition: string;
-  readonly layout?: LinesLayout;
+  readonly format?: FileFormat;
+  readonly marks?: BlockMarks;
   readonly path: string;
   readonly settings: Setting;
   readonly shape?: SettingShape;
@@ -58,9 +60,27 @@ const readOf = (row: ReadRow): Setting | undefined =>
     text: row.text,
   });
 
+const linesMarked = (input: {
+  blocks: readonly string[];
+  groups: Readonly<Record<string, readonly string[]>>;
+}): BlockMarks => ({
+  blocks: input.blocks,
+  marks: Object.entries(input.groups).flatMap(([block, lines]) =>
+    lines.map((line) => ({
+      block,
+      path: [
+        {
+          item: line,
+        },
+      ],
+    })),
+  ),
+});
+
 const writeOf = (row: WriteRow): string =>
   format.write({
-    layout: row.layout,
+    format: row.format,
+    marks: row.marks,
     path: row.path,
     settings: row.settings,
     ...(row.shape === undefined
@@ -1307,28 +1327,22 @@ describe('createConfigurationFormat', () => {
     {
       condition:
         'a file of lines keeps its own lines and comments, then each group under its name, a gone group and a blank between what went aside',
-      layout: {
-        groups: [
-          {
-            lines: [
-              'dist/',
-              'build/',
-            ],
-            name: 'vite',
-          },
-          {
-            lines: [
-              '.env',
-            ],
-            name: 'environment files',
-          },
-        ],
-        names: [
-          'environment files',
+      marks: linesMarked({
+        blocks: [
+          'git',
           'tsc',
           'vite',
         ],
-      },
+        groups: {
+          vite: [
+            'dist/',
+            'build/',
+          ],
+          git: [
+            '.env',
+          ],
+        },
+      }),
       path: '.gitignore',
       settings: [
         'dist/',
@@ -1340,23 +1354,20 @@ describe('createConfigurationFormat', () => {
       ],
       text: '# generated content\n.source/\ndist/\n\n  # tsc\n*.tsbuildinfo\n  \n  local.txt\n\n\n# vite\nbuild/\n',
       written:
-        '# generated content\n.source/\n\n  local.txt\nadded.txt\n\n# vite\ndist/\nbuild/\n\n# environment files\n.env\n',
+        '# generated content\n.source/\n\n  local.txt\nadded.txt\n\n# vite\ndist/\nbuild/\n\n# git\n.env\n',
     },
     {
       condition: 'a file of lines laid out in groups is laid out again as it is',
-      layout: {
-        groups: [
-          {
-            lines: [
-              'dist/',
-            ],
-            name: 'vite',
-          },
-        ],
-        names: [
+      marks: linesMarked({
+        blocks: [
           'vite',
         ],
-      },
+        groups: {
+          vite: [
+            'dist/',
+          ],
+        },
+      }),
       path: '.gitignore',
       settings: [
         'dist/',
@@ -1368,19 +1379,16 @@ describe('createConfigurationFormat', () => {
     },
     {
       condition: 'a file of lines of no own line opens with its first group',
-      layout: {
-        groups: [
-          {
-            lines: [
-              'dist/',
-            ],
-            name: 'vite',
-          },
-        ],
-        names: [
+      marks: linesMarked({
+        blocks: [
           'vite',
         ],
-      },
+        groups: {
+          vite: [
+            'dist/',
+          ],
+        },
+      }),
       path: '.gitignore',
       settings: [
         'dist/',
@@ -1545,6 +1553,712 @@ describe('createConfigurationFormat', () => {
   ])('should write a file of lines or of sections when $condition', (row) => {
     // Act
     const written = writeOf(row);
+
+    // Assert
+    expect(written).toBe(row.written);
+  });
+
+  const markedRows: readonly WriteRow[] = [
+    {
+      condition:
+        'a TOML file takes them above tables, keys, items and tables of an array, each a paragraph over the comments of what it names, and drops the old',
+      marks: {
+        blocks: [
+          'gone',
+          'poe',
+          'pytest',
+          'python',
+          'ruff',
+        ],
+        marks: [
+          {
+            block: 'poe',
+            path: [
+              'title',
+            ],
+          },
+          {
+            block: 'poe',
+            path: [
+              'subtitle',
+            ],
+          },
+          {
+            block: 'python',
+            path: [
+              'project',
+              'requires-python',
+            ],
+          },
+          {
+            block: 'gone',
+            path: [
+              'tool',
+              'notes',
+              'x',
+            ],
+          },
+          {
+            block: 'ruff',
+            path: [
+              'tool',
+              'ruff',
+              'line-length',
+            ],
+          },
+          ...[
+            'A',
+            'B',
+          ].map((listed) => ({
+            block: 'ruff',
+            path: [
+              'tool',
+              'ruff',
+              'lint',
+              'select',
+              {
+                item: listed,
+              },
+            ],
+          })),
+          ...[
+            'C',
+            'D',
+          ].map((listed) => ({
+            block: 'pytest',
+            path: [
+              'tool',
+              'ruff',
+              'lint',
+              'select',
+              {
+                item: listed,
+              },
+            ],
+          })),
+          {
+            block: 'poe',
+            path: [
+              'tool',
+              'poe',
+              'executor',
+            ],
+          },
+          {
+            block: 'poe',
+            path: [
+              'tool',
+              'poe',
+              'after',
+            ],
+          },
+          {
+            block: 'poe',
+            path: [
+              'tool',
+              'poe',
+              'tasks',
+            ],
+          },
+          {
+            block: 'poe',
+            path: [
+              'tool',
+              'x',
+              'y',
+            ],
+          },
+          {
+            block: 'pytest',
+            path: [
+              'jobs',
+              {
+                field: 'name',
+                value: 'b',
+              },
+              'name',
+            ],
+          },
+        ],
+      },
+      path: 'pyproject.toml',
+      settings: {
+        jobs: [
+          {
+            name: 'a',
+          },
+          {
+            name: 'b',
+          },
+        ],
+        project: {
+          name: 'x',
+          'requires-python': '>=3.14',
+        },
+        subtitle: 'y',
+        title: 'x',
+        tool: {
+          notes: {
+            text: '# ruff\n# ruff """\nx = 1\n',
+          },
+          poe: {
+            after: 1,
+            executor: 'simple',
+            mine: [
+              1,
+              2,
+            ],
+            tasks: {
+              a: 'x',
+            },
+          },
+          ruff: {
+            'line-length': 100,
+            lint: {
+              select: [
+                'A',
+                'B',
+                'C',
+                'E',
+                'D',
+              ],
+            },
+          },
+          x: {
+            y: {
+              z: 1,
+            },
+          },
+        },
+      },
+      text: `# mine's "note
+title="x"
+# mine = own
+subtitle = "y"
+
+[project]
+name = "x"
+# gone
+
+[tool.notes]
+text = '''
+# ruff
+# ruff """
+x = 1
+'''
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+  "A", # its own
+  # note
+  "B",
+  "C", "E",
+  "D",
+  # ruff
+]
+
+[tool.poe]
+executor = "simple"
+mine=[1, 2]
+after = 1
+
+[tool.poe.tasks]
+a = "x"
+   
+[tool.x.y]
+z = 1
+
+[[jobs]]
+name = "a"
+
+  [[jobs]]
+  name = "b"
+`,
+      written: `# poe
+# mine's "note
+title="x"
+# mine = own
+subtitle = "y"
+
+[project]
+name = "x"
+
+# python
+requires-python = ">=3.14"
+
+[tool.notes]
+text = '''
+# ruff
+# ruff """
+x = 1
+'''
+
+[tool.ruff]
+# ruff
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+  # ruff
+  "A", # its own
+  # note
+  "B",
+  "C", "E",
+
+  # pytest
+  "D",
+]
+
+[tool.poe]
+# poe
+executor = "simple"
+mine=[1, 2]
+
+# poe
+after = 1
+
+[tool.poe.tasks]
+a = "x"
+   
+# poe
+[tool.x.y]
+z = 1
+
+[[jobs]]
+name = "a"
+
+  [[jobs]]
+  # pytest
+  name = "b"
+`,
+    },
+    {
+      condition:
+        'a YAML file takes them above keys and items, never inside a literal block nor a line of flow',
+      marks: {
+        blocks: [
+          'biome',
+          'lefthook',
+        ],
+        marks: [
+          {
+            block: 'lefthook',
+            path: [
+              'pre-commit',
+              'parallel',
+            ],
+          },
+          {
+            block: 'biome',
+            path: [
+              'pre-commit',
+              'jobs',
+              {
+                field: 'name',
+                value: 'b',
+              },
+            ],
+          },
+          {
+            block: 'biome',
+            path: [
+              'pre-commit',
+              'flow',
+              {
+                item: 1,
+              },
+            ],
+          },
+          {
+            block: 'biome',
+            path: [
+              'deep',
+              'x',
+              'w',
+            ],
+          },
+          ...[
+            [
+              'deep',
+              'x',
+              'z',
+            ],
+            [
+              'deep',
+              'y',
+            ],
+          ].map((path) => ({
+            block: 'lefthook',
+            path,
+          })),
+          ...[
+            'a',
+            'b',
+          ].map((listed) => ({
+            block: 'lefthook',
+            path: [
+              'list',
+              {
+                item: listed,
+              },
+            ],
+          })),
+        ],
+      },
+      path: 'lefthook.yaml',
+      settings: {
+        deep: {
+          x: {
+            w: 2,
+            z: 1,
+          },
+          y: 1,
+        },
+        list: [
+          'a',
+          'b',
+        ],
+        mine: 1,
+        'pre-commit': {
+          flow: [
+            1,
+            2,
+          ],
+          jobs: [
+            {
+              name: 'a',
+              run: '# biome\necho\n\n# note\n',
+            },
+            {
+              name: 'b',
+            },
+          ],
+          folded: 'one\n# two\n',
+          parallel: true,
+        },
+      },
+      text: `# top
+pre-commit:
+  flow: [ 1, 2 ]
+  jobs:
+    - name: a
+      run: |
+        # biome
+        echo
+
+        # note
+    # biome
+    - name: b
+  folded: >
+    one
+
+    # two
+  # biome
+  parallel: true # biome
+mine: 1
+deep:
+  x:
+    w: 2
+    # why
+    z: 1
+  y: 1
+list:
+  - a
+  - null
+  - b
+`,
+      written: `# top
+pre-commit:
+  flow: [ 1, 2 ]
+  jobs:
+    - name: a
+      run: |
+        # biome
+        echo
+
+        # note
+
+    # biome
+    - name: b
+  folded: >
+    one
+
+    # two
+
+  # lefthook
+  parallel: true # biome
+mine: 1
+deep:
+  x:
+    # biome
+    w: 2
+
+    # lefthook
+    # why
+    z: 1
+
+  # lefthook
+  y: 1
+list:
+  # lefthook
+  - a
+  - null
+  - b
+`,
+    },
+    {
+      condition: 'a JSONC file takes them above keys and items, its block comments and texts kept',
+      marks: {
+        blocks: [
+          'knip',
+          'uv',
+        ],
+        marks: [
+          {
+            block: 'knip',
+            path: [
+              'entry',
+            ],
+          },
+          ...[
+            'b',
+            'c',
+          ].map((listed) => ({
+            block: 'uv',
+            path: [
+              'ignore',
+              {
+                item: listed,
+              },
+            ],
+          })),
+          {
+            block: 'knip',
+            path: [
+              'map',
+            ],
+          },
+          {
+            block: 'knip',
+            path: [
+              'inline',
+              {
+                item: 'd',
+              },
+            ],
+          },
+        ],
+      },
+      path: 'knip.jsonc',
+      settings: {
+        entry: [
+          'a',
+        ],
+        ignore: [
+          'b',
+          'c',
+        ],
+        inline: [
+          'd',
+        ],
+        map: {
+          a: 1,
+        },
+        x: '// knip',
+        z: 'w',
+      },
+      text: `{
+  // uv
+  "entry": ["a"],
+  /* knip */
+  "x": "// knip", // knip
+  "inline": ["d"],
+  "ignore": [
+    "b",
+    null,
+    "c",
+  ],
+  "z":"w",
+  "map": {
+    "a": 1,
+  },
+}
+`,
+      written: `{
+  // knip
+  "entry": ["a"],
+  /* knip */
+  "x": "// knip", // knip
+  "inline": ["d"],
+  "ignore": [
+    // uv
+    "b",
+    null,
+    "c",
+  ],
+  "z":"w",
+
+  // knip
+  "map": {
+    "a": 1,
+  },
+}
+`,
+    },
+    {
+      condition: 'a file of sections takes them above its top keys, its sections and their keys',
+      marks: {
+        blocks: [
+          'editorconfig',
+          'shfmt',
+        ],
+        marks: [
+          {
+            block: 'editorconfig',
+            path: [
+              '',
+            ],
+          },
+          {
+            block: 'editorconfig',
+            path: [
+              '*',
+              'indent',
+            ],
+          },
+          {
+            block: 'shfmt',
+            path: [
+              '*.sh',
+            ],
+          },
+        ],
+      },
+      path: '.editorconfig',
+      settings: {
+        '': {
+          root: true,
+        },
+        '*': {
+          indent: 2,
+          own: 'a;b',
+        },
+        '*.sh': {
+          binary: true,
+        },
+      },
+      shape: SettingShape.Map,
+      text: '# mine\n\nroot = true\n\n[*]\nown = a;b\nindent = 2\n\n[*.sh]\nbinary = true\n',
+      written: `# mine
+
+# editorconfig
+root = true
+
+[*]
+own = a;b
+
+# editorconfig
+indent = 2
+
+# shfmt
+[*.sh]
+binary = true
+`,
+    },
+  ];
+
+  it.each<WriteRow>([
+    ...markedRows,
+    {
+      condition:
+        'a JSON file its mark writes with comments holds them, its commas as plain JSON has them',
+      format: FileFormat.Jsonc,
+      marks: {
+        blocks: [
+          'tsc',
+          'workspace',
+        ],
+        marks: [
+          {
+            block: 'tsc',
+            path: [
+              'compilerOptions',
+              'strict',
+            ],
+          },
+          {
+            block: 'workspace',
+            path: [
+              'compilerOptions',
+              'composite',
+            ],
+          },
+        ],
+      },
+      path: 'tsconfig.json',
+      settings: {
+        compilerOptions: {
+          composite: true,
+          list: [
+            'a',
+          ],
+          strict: true,
+        },
+      },
+      text: '{\n  // workspace\n  "compilerOptions": {}\n}\n',
+      written: `{
+  "compilerOptions": {
+    // workspace
+    "composite": true,
+    "list": [
+      "a"
+    ],
+
+    // tsc
+    "strict": true
+  }
+}
+`,
+    },
+    {
+      condition: 'a JSON file holds no comment',
+      marks: {
+        blocks: [
+          'biome',
+        ],
+        marks: [
+          {
+            block: 'biome',
+            path: [
+              'a',
+            ],
+          },
+        ],
+      },
+      path: 'biome.json',
+      settings: {
+        a: 1,
+      },
+      text: '{}\n',
+      written: '{\n  "a": 1\n}\n',
+    },
+  ])('should name the block above what it alone gives when $condition', (row) => {
+    // Act
+    const written = writeOf(row);
+
+    // Assert
+    expect(written).toBe(row.written);
+  });
+
+  it.each(markedRows)('should write its own text again unchanged when $condition', (row) => {
+    // Act
+    const written = writeOf({
+      ...row,
+      text: row.written,
+    });
 
     // Assert
     expect(written).toBe(row.written);

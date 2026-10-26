@@ -6,7 +6,7 @@
 
 ### cruiser-configuration-per-unit → unit-configuration-kept-in-its-folder · MUST
 
-In a workspace, each package has a configuration of its own, in its folder.
+In a workspace, each package has a configuration of its own, in its folder, which holds the imports the package makes into the other units.
 
 | Why |
 |---|

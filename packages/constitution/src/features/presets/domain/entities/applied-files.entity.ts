@@ -13,6 +13,8 @@ interface UnitLock {
 }
 
 interface AppliedFiles {
+  /** by their absolute paths */
+  readonly deleted: readonly string[];
   readonly files: readonly FileText[];
   readonly locks: readonly UnitLock[];
 }

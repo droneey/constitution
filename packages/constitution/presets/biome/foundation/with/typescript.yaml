@@ -1,7 +1,7 @@
 typescript:
   '*':
     typescript:
-      biome.json:
+      biome.jsonc:
         assist:
           actions:
             source:
@@ -61,7 +61,7 @@ typescript:
                   useExplicitReturnType: 'off'
   equality-never-loose:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             suspicious:
@@ -71,35 +71,35 @@ typescript:
                   ignoreNull: false
   any-never-written:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             suspicious:
               noExplicitAny: error
   type-error-suppressed-by-ts-expect-error:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             suspicious:
               noTsIgnore: error
   enum-never-declared-const:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             suspicious:
               noConstEnum: error
   finally-never-leaves-by-a-jump:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             correctness:
               noUnsafeFinally: error
   identifier-case-by-kind:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             style:
@@ -125,7 +125,7 @@ typescript:
                   useNamingConvention: 'off'
   type-assertion-never-written:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             style:
@@ -134,14 +134,14 @@ typescript:
               noUnsafeTypeAssertion: error
   closed-name-set-is-a-string-enum:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             style:
               useEnumInitializers: error
   date-and-time-are-temporal-values:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             style:
@@ -162,7 +162,7 @@ typescript:
                       message: 'Use Temporal: date libraries wrap the Date it replaces'
   type-only-import-written-as-import-type:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             style:
@@ -176,14 +176,14 @@ typescript:
                   style: separatedType
   namespace-never-written:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             style:
               noNamespace: error
   module-exports-by-name:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             style:
@@ -210,21 +210,21 @@ typescript:
                   noDefaultExport: 'off'
   package-is-an-es-module:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             style:
               noCommonJs: error
   undefined-is-the-only-absence:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             complexity:
               noUselessUndefined: error
   promise-awaited-returned-or-handed-to-a-scope:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             complexity:
@@ -234,7 +234,7 @@ typescript:
               noMisusedPromises: error
   code-never-run-from-a-string:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             security:
@@ -243,47 +243,47 @@ typescript:
               noImpliedEval: error
   exhaustive-branching-over-unions:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             nursery:
               useExhaustiveSwitchCases: error
   nullish-operators-for-absence:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             nursery:
               useNullishCoalescing: error
   scoped-resource-held-by-using:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             nursery:
               useDisposables: error
   value-made-text-by-a-named-form:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             nursery:
               noUnsafePlusOperands: error
   return-type-no-wider-than-returned:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             nursery:
               noMisleadingReturnType: error
   type-names-undecorated:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins:
           - ./${constitution.path}/presets/biome/plugins/typescript/type-names-undecorated.${role.grit-rule}
   module-level-value-never-changed:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/module-level-value-never-changed.grit]:
           includes:
             - '**'
@@ -291,14 +291,14 @@ typescript:
             - '!**/*.test.tsx'
   parameter-object-has-a-named-type:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/parameter-object-has-a-named-type.grit]:
           includes:
             - '**/*.ts'
             - '**/*.tsx'
   test-folder-files-in-test-forms:
     typescript:
-      biome.json:
+      biome.jsonc:
         overrides:
           - includes:
               - '**/${role.colocated-specs}/**'
@@ -315,7 +315,7 @@ typescript:
 core:
   async-work-awaited-or-held-by-a-scope:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             nursery:

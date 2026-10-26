@@ -1,4 +1,5 @@
-import type { LinesLayout, Setting } from '../entities';
+import type { BlockMarks, Setting } from '../entities';
+import type { FileFormat } from '../value-objects';
 
 enum SettingShape {
   List = 'list',
@@ -6,6 +7,8 @@ enum SettingShape {
 }
 
 interface ConfigurationFile {
+  /** the format of its text, where its name does not tell it */
+  readonly format?: FileFormat | undefined;
   readonly path: string;
   /** for a file of no format of its own; read from its text where absent */
   readonly shape?: SettingShape;
@@ -13,8 +16,8 @@ interface ConfigurationFile {
 }
 
 interface ConfigurationWrite extends ConfigurationFile {
-  /** the groups of a file of lines, each opened by a comment naming it */
-  readonly layout?: LinesLayout | undefined;
+  /** what each block gives, for the comments naming it, where the format holds comments */
+  readonly marks?: BlockMarks | undefined;
   readonly settings: Setting;
   /** the paths of the maps whose keys stand in their order as texts, JSON's and YAML's */
   readonly sorted?: readonly (readonly string[])[];
@@ -25,7 +28,8 @@ interface ConfigurationFormat {
   readonly read: (file: ConfigurationFile) => Setting | undefined;
   /**
    * The text holding these settings, with all the format allows of the text kept where the
-   * settings leave it: its comments, its layout and the values the settings cannot hold.
+   * settings leave it: its comments, its layout and the values the settings cannot hold; where the
+   * format holds comments, one names the block above what it alone gives.
    */
   readonly write: (file: ConfigurationWrite) => string;
 }

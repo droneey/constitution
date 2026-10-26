@@ -43,13 +43,14 @@ const presetsFindingTexts: TextsOf<PresetsDetails> = {
   [PresetsCode.FileOutsideItsUnit]: (named) =>
     `${entryOf(named)}: ${named.file} leaves the folder of its unit`,
   [PresetsCode.UnknownFact]: (named) =>
-    `${entryOf(named)}: ${named.fact} is no fact the program computes where it stands`,
+    `${entryOf(named)}: ${named.fact} is no fact constitution computes where it stands`,
   [PresetsCode.UnknownRole]: (named) => `${entryOf(named)}: no term carries the id ${named.role}`,
   [PresetsCode.HandTypedRole]: (named) =>
     `${entryOf(named)}: types ${named.term} by hand; write \${role.${named.role}}`,
   [PresetsCode.MembersOutsideList]: (named) =>
     `${entryOf(named)}: \${workspace.members} stands only in an item of a list`,
-  [PresetsCode.MissingReleaseFile]: ({ file }) => `names ${file}, which is no file of the release`,
+  [PresetsCode.MissingDistributionFile]: ({ file }) =>
+    `names ${file}, which is no file of the release`,
   [PresetsCode.PluginUnreferenced]: () => 'is a plugin no entry names',
   [PresetsCode.PluginNamesNoRule]: ({ rule }) =>
     `is named "${rule}", which is no rule; a plugin is named after the rule it holds`,
@@ -77,7 +78,7 @@ const presetsFindingTexts: TextsOf<PresetsDetails> = {
     'cannot be read or does not parse, so nothing was applied to it',
   [PresetsCode.LockUnparsed]: () => 'does not parse, so the apply wrote it again from the files',
   [PresetsCode.RunMisshapen]: () =>
-    'gets what the program runs as other than lists of commands by their names',
+    'gets what constitution runs as other than lists of commands by their names',
   [PresetsCode.ToolWithoutRunner]: ({ block }) =>
     `follows ${block}, whose commands no runner it follows gives; add the block that runs them`,
 };

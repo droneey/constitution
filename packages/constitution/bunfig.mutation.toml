@@ -1,3 +1,4 @@
+# stryker
 [test]
 root = "."
 pathIgnorePatterns = ["tests/**", "tests/e2e/**"]

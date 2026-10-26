@@ -4,7 +4,7 @@
 
 ## One-liner
 
-The Droneey Constitution: the engineering rules every Droneey repository is built by, delivered as a release archive each project pins, which a Claude Code plugin reads.
+The Droneey Constitution: the engineering rules every Droneey repository is built by, delivered as a distribution each project pins, which a Claude Code plugin reads.
 
 ## Context and users
 
@@ -16,8 +16,8 @@ The Droneey Constitution: the engineering rules every Droneey repository is buil
 
 - **Blocks** — the rules, split by layer — core, domains, contexts, implementations — and inside each block by axis, a folder each of one form: `foundation`, always followed, and the optional `architecture` and `workflow`.
 - **Validation** — the checks that keep every block sound and consistent with the others.
-- **Presets** — the settings that hold the tool-checked rules, each keyed by the rule it holds, which the program writes into a project's configurations.
-- **Delivery** — the release archive `constitution.tar.gz`, which a project pins through mise and which carries the blocks, the digests generated from them, the presets and the templates; the `constitution` program of the same release, compiled for each platform, which checks a project and does the hooks' work; and the plugin, the engine installed from its release tag: the session-start hook that reads the project's digests, the skills that write a project's files, and the reviewer agent.
+- **Presets** — the settings that hold the tool-checked rules, each keyed by the rule it holds, which the executable writes into a project's configurations.
+- **Delivery** — the release's distribution, one for each platform, `constitution-<platform>.tar.gz`, which a project pins through mise and which carries the blocks, the digests generated from them, the presets, the templates, the tools and the `constitution` executable compiled for that platform, which checks a project and does the hooks' work; and the plugin, the engine installed from its release tag: the session-start hook that reads the project's digests, the skills that write a project's files, and the reviewer agent.
 
 ## Core entities and relationships
 
@@ -36,7 +36,7 @@ The Droneey Constitution: the engineering rules every Droneey repository is buil
 
 ## Boundaries — what it does not do
 
-- It installs nothing into a project: no code, no configuration, no generated file. A project extends the presets of its release archive from its own configuration.
+- It installs nothing into a project: no code, no configuration, no generated file. A project extends the presets of its release's distribution from its own configuration.
 - It does not run a project's checks; the project's own check command does.
 
 ## Glossary
@@ -61,7 +61,7 @@ The Droneey Constitution: the engineering rules every Droneey repository is buil
 - **Preset set** — every preset of one pack, the Constitution's or a project's.
 - **Preset file** — the settings one tool reads on one axis, `presets/<reader>/<axis>.yaml`, with those that need a block beyond its reach under `with/`.
 - **Entry** — one setting of a preset file, for one rule of a block or the tool's own under `*`, for one language and one file.
-- **Lock** — `constitution.lock`, beside a unit's `constitution.yaml`: what the program last wrote into the unit's files.
+- **Lock** — `constitution.lock`, beside a unit's `constitution.yaml`: what the executable last wrote into the unit's files.
 - **Template** — a file a project starts from: the starting `constitution.yaml`, `PROJECT.md`, `DECISIONS.md` and a new block's skeleton.
 - **Digest** — what the plugin gives an agent at the start of a session: the release, the warnings and the active blocks.
 - **Check** — the one command that runs every tool, named by `check:`.
@@ -69,6 +69,6 @@ The Droneey Constitution: the engineering rules every Droneey repository is buil
 
 ## Non-functional notes
 
-- The hooks run the `constitution` program, compiled for each platform and installed by mise, through a wrapper bash 3.2 runs; a project needs no other runtime, on macOS and Linux.
+- The hooks run the `constitution` executable, compiled for each platform and installed by mise, through a wrapper bash 3.2 runs; a project needs no other runtime, on macOS and Linux.
 - The digest stays within 9,400 bytes after its header; core's part within 3,500.
 - The repository is public: no private project is named in a committed file.

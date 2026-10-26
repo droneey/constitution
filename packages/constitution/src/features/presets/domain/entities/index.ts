@@ -1,5 +1,7 @@
 export type { AppliedFiles, FileText, UnitLock } from './applied-files.entity';
 export type { ApplyReport, SettingPlace } from './apply-report.entity';
+export type { BlockMark, HeldStep, MarkStep } from './block-marks.entity';
+export { BlockMarks } from './block-marks.entity';
 export type { ConfigurationsCheck } from './configurations-check.entity';
 export { Leaf } from './leaf.entity';
 export type { LockRead, LockRecord } from './lock.entity';
@@ -18,13 +20,7 @@ export type {
   PresetsProblem,
 } from './presets-finding.entity';
 export { PresetsCode } from './presets-finding.entity';
-export type {
-  FilePlan,
-  LineGroup,
-  LinesLayout,
-  PresetsPlan,
-  UnitRun,
-} from './presets-plan.entity';
+export type { FilePlan, PresetsPlan, UnitRun } from './presets-plan.entity';
 export type { RunAsked, RunPlan, RunStep } from './run-plan.entity';
 export type { Addressed, SettingMap } from './setting.entity';
 export { Setting } from './setting.entity';

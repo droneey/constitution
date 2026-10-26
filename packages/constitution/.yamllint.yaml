@@ -1,4 +1,6 @@
 ignore-from-file: .gitignore
+
+# yamllint
 rules:
   indentation:
     spaces: 2

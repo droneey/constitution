@@ -13,26 +13,27 @@ import {
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-// The program a release ships, built once for the specs of a run as the release builds it: a hook
-// finds it on its PATH, as mise puts it there.
-const workspace = join(import.meta.dir, '..', '..', '..', '..');
-const PROGRAM = 'constitution';
+// The executable a release ships, built once for the specs of a run as the release builds it: a
+// hook finds it on its PATH, as mise puts it there.
+const packageFolder = join(import.meta.dir, '..', '..');
+const EXECUTABLE = 'constitution';
 const FAILED = 'failed';
 const BUILD_WAIT_MS = 300_000;
+const BUILD_SCRIPT = 'build';
 
-/** @throws Error when the program does not build. */
+/** @throws Error when the executable does not build. */
 const buildInto = (folder: string): void => {
-  const pending = join(folder, `${PROGRAM}.${String(process.pid)}.tmp`);
+  const pending = join(folder, `${EXECUTABLE}.${String(process.pid)}.tmp`);
   const run = spawnSync(
     'bun',
     [
       'run',
-      'build:cli',
+      BUILD_SCRIPT,
       '--outfile',
       pending,
     ],
     {
-      cwd: workspace,
+      cwd: packageFolder,
       encoding: 'utf8',
     },
   );
@@ -40,10 +41,10 @@ const buildInto = (folder: string): void => {
   if (run.status !== 0) {
     writeFileSync(join(folder, FAILED), run.stderr);
 
-    throw new Error(`The program does not build: ${run.stderr}`);
+    throw new Error(`The executable does not build: ${run.stderr}`);
   }
 
-  renameSync(pending, join(folder, PROGRAM));
+  renameSync(pending, join(folder, EXECUTABLE));
 };
 
 // The workers of one --parallel run share a folder named by their coordinator, its process id and
@@ -71,22 +72,22 @@ const sharedFolder = (): string | undefined => {
     : join(tmpdir(), `constitution-cli-${String(process.ppid)}-${Bun.hash(started).toString(36)}`);
 };
 
-/** @throws Error when the worker that builds the program has failed. */
+/** @throws Error when the worker that builds the executable has failed. */
 const isBuilt = (folder: string): boolean => {
-  if (existsSync(join(folder, PROGRAM))) {
+  if (existsSync(join(folder, EXECUTABLE))) {
     return true;
   }
 
   if (existsSync(join(folder, FAILED))) {
-    throw new Error(`The program does not build: ${readFileSync(join(folder, FAILED), 'utf8')}`);
+    throw new Error(`The executable does not build: ${readFileSync(join(folder, FAILED), 'utf8')}`);
   }
 
   return false;
 };
 
 // The folder is watched before it is first looked at, so a build that ends between the two is
-// still seen; the building worker renames the program into it, or writes the failure there.
-/** Rejects when the worker that builds the program fails or takes past the deadline. */
+// still seen; the building worker renames the executable into it, or writes the failure there.
+/** Rejects when the worker that builds the executable fails or takes past the deadline. */
 const awaitBuild = (folder: string): Promise<void> =>
   new Promise((resolve, reject) => {
     const watcher = watch(folder);
@@ -113,7 +114,7 @@ const awaitBuild = (folder: string): Promise<void> =>
     };
 
     const deadline = setTimeout(() => {
-      settle(new Error(`No worker built the program into ${folder}`));
+      settle(new Error(`No worker built the executable into ${folder}`));
     }, BUILD_WAIT_MS);
 
     watcher.on('change', look);
@@ -195,6 +196,6 @@ const build = async (): Promise<string> => {
 };
 
 const cliFolder = await build();
-const cliPath = join(cliFolder, PROGRAM);
+const cliPath = join(cliFolder, EXECUTABLE);
 
 export { cliFolder, cliPath };

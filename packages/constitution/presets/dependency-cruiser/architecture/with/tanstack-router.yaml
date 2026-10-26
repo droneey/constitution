@@ -1,11 +1,11 @@
 tanstack-router:
   '*':
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         allowedSeverity: error
   router-primitives-only-in-the-root:
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         allowed[comment=router-primitives-only-in-the-root]:
           from:
             path:

@@ -1,11 +1,11 @@
 commander:
   '*':
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         allowedSeverity: error
   commander-imported-by-commands:
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         allowed[comment=commander-imported-by-commands]:
           from:
             path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.application-layer}/.*\.${role.command-binding}\.[^/]+$

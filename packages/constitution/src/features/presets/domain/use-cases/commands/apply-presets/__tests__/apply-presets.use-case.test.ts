@@ -4,6 +4,7 @@ import type { ProjectUnit } from '#/kernel/entities';
 
 import { createFakeAppliedFilesRepository } from '../../../../../__tests__/applied-files-repository.fake';
 import { createFakeConfigurationFormat } from '../../../../../__tests__/configuration-format.fake';
+import { createFakeDistributionSources } from '../../../../../__tests__/distribution-sources.fake';
 import { createFakeLockRepository } from '../../../../../__tests__/lock-repository.fake';
 import type { Files } from '../../../../../__tests__/presets.fixtures';
 import {
@@ -14,7 +15,7 @@ import {
   releasePresets,
   unitOf,
 } from '../../../../../__tests__/presets.fixtures';
-import { createFakeReleaseBuilds } from '../../../../../__tests__/release-builds.fake';
+import type { ConfigurationFormat, ConfigurationWrite } from '../../../../contracts';
 import type { ApplyReport, Lock, LockRead, Setting } from '../../../../entities';
 import { LockReadStatus, PresetsCode } from '../../../../entities';
 import { applyPresets } from '../apply-presets.use-case';
@@ -22,14 +23,19 @@ import { applyPresets } from '../apply-presets.use-case';
 interface Step {
   /** the project's own files, by their paths from it */
   readonly files: Files;
+  readonly formats?: ConfigurationFormat;
   readonly locks?: Readonly<Record<string, LockRead>>;
   readonly presets: Files;
   readonly units?: readonly ProjectUnit[];
 }
 
 interface Applied {
+  /** the files deleted, by their paths from the project */
+  readonly deleted: readonly string[];
   /** the files written, by their paths from the project, each as its format reads it back */
   readonly files: Readonly<Record<string, Setting | undefined>>;
+  /** the files the locks it wrote name, by their paths from their units */
+  readonly lockedFiles: readonly string[];
   readonly locks: Readonly<Record<string, Lock>>;
   readonly report: ApplyReport | undefined;
   /** the texts written, by their paths from the project */
@@ -59,9 +65,9 @@ const applyOnce = (step: Step): Applied => {
   });
   const writes = createFakeAppliedFilesRepository();
   const report = applyPresets({
-    builds: createFakeReleaseBuilds(),
+    distribution: createFakeDistributionSources(),
     files,
-    formats: format,
+    formats: step.formats ?? format,
     locks: createFakeLockRepository(step.locks),
     parser: presetFileParser,
     source,
@@ -77,6 +83,7 @@ const applyOnce = (step: Step): Applied => {
   );
 
   return {
+    deleted: (applied?.deleted ?? []).map((path) => path.slice(PROJECT.length + 1)),
     files: Object.fromEntries(
       Object.entries(texts).map(([path, text]) => [
         path,
@@ -86,6 +93,7 @@ const applyOnce = (step: Step): Applied => {
         }) ?? text,
       ]),
     ),
+    lockedFiles: (applied?.locks ?? []).flatMap((lock) => Object.keys(lock.lock)),
     locks: Object.fromEntries(
       (applied?.locks ?? []).map((lock) => [
         lock.folder,
@@ -139,7 +147,218 @@ const biomePresetFile = [
   '        export {};',
 ].join('\n');
 
+// biome's preset file writing each file given, which a later apply may write no longer.
+const presetsWith = (files: readonly string[]): Files => ({
+  'biome/foundation.yaml': [
+    'biome:',
+    "  '*':",
+    "    '*':",
+    ...files.flatMap((file) => [
+      `      ${file}:`,
+      '        width: 100',
+    ]),
+  ].join('\n'),
+});
+
 describe('applyPresets', () => {
+  it('should delete a file it created once no entry writes it, keep a file of the user, then write nothing', () => {
+    // Arrange
+    const own = {
+      'mine.json': jsonTextOf({
+        mine: true,
+      }),
+    };
+    const first = applyOnce({
+      files: own,
+      presets: presetsWith([
+        'kept.json',
+        'made.json',
+        'mine.json',
+      ]),
+    });
+
+    // Act
+    const second = applyOnce({
+      files: {
+        ...first.texts,
+      },
+      locks: readOf(first.locks),
+      presets: presetsWith([
+        'kept.json',
+      ]),
+    });
+    const third = applyOnce({
+      files: {
+        'kept.json': jsonTextOf({
+          width: 100,
+        }),
+        'mine.json': jsonTextOf({
+          mine: true,
+        }),
+      },
+      locks: readOf(second.locks),
+      presets: presetsWith([
+        'kept.json',
+      ]),
+    });
+
+    // Assert
+    expect({
+      deleted: second.deleted,
+      files: second.files,
+      reported: second.report?.deleted,
+      third: third.texts,
+      unlocked: second.lockedFiles,
+    }).toStrictEqual({
+      deleted: [
+        'made.json',
+      ],
+      files: {
+        'mine.json': {
+          mine: true,
+        },
+      },
+      reported: [
+        'made.json',
+      ],
+      third: {},
+      unlocked: [
+        'kept.json',
+      ],
+    });
+  });
+
+  it('should keep a file of the user that held nothing before an apply, once no entry writes it', () => {
+    // Arrange
+    const first = applyOnce({
+      files: {
+        'mine.json': jsonTextOf({}),
+      },
+      presets: presetsWith([
+        'mine.json',
+      ]),
+    });
+
+    // Act
+    const second = applyOnce({
+      files: first.texts,
+      locks: readOf(first.locks),
+      presets: presetsWith([]),
+    });
+
+    // Assert
+    expect({
+      deleted: second.deleted,
+      files: second.files,
+    }).toStrictEqual({
+      deleted: [],
+      files: {
+        'mine.json': {},
+      },
+    });
+  });
+
+  it('should delete nothing and forget a file it created once the user deleted it and no entry writes it', () => {
+    // Arrange
+    const first = applyOnce({
+      files: {},
+      presets: presetsWith([
+        'kept.json',
+        'made.json',
+      ]),
+    });
+    const { 'made.json': deleted, ...kept } = first.texts;
+
+    // Act
+    const second = applyOnce({
+      files: kept,
+      locks: readOf(first.locks),
+      presets: presetsWith([
+        'kept.json',
+      ]),
+    });
+
+    // Assert
+    expect({
+      deleted: second.deleted,
+      reported: second.report?.deleted,
+      unlocked: second.lockedFiles,
+    }).toStrictEqual({
+      deleted: [],
+      reported: [],
+      unlocked: [
+        'kept.json',
+      ],
+    });
+  });
+
+  it('should name to the format the blocks whose entries write a file the unit takes from none of them, or none, and mark none', () => {
+    // Arrange
+    const writes: {
+      marks: ConfigurationWrite['marks'];
+      path: string;
+      sorted: ConfigurationWrite['sorted'];
+    }[] = [];
+    const watched: ConfigurationFormat = {
+      read: format.read,
+      write: (file) => {
+        writes.push({
+          marks: file.marks,
+          path: file.path,
+          sorted: file.sorted,
+        });
+
+        return format.write(file);
+      },
+    };
+    const first = applyOnce({
+      files: {},
+      presets: presetsWith([
+        'gone.json',
+        'mine.json',
+      ]),
+    });
+    const presets = {
+      'knip/foundation.yaml': [
+        'knip:',
+        "  '*':",
+        "    '*':",
+        '      mine.json:',
+        '        width: 100',
+      ].join('\n'),
+    };
+
+    // Act
+    applyOnce({
+      files: first.texts,
+      formats: watched,
+      locks: readOf(first.locks),
+      presets,
+    });
+
+    // Assert
+    expect(writes).toStrictEqual([
+      {
+        marks: {
+          blocks: [],
+          marks: [],
+        },
+        path: 'gone.json',
+        sorted: [],
+      },
+      {
+        marks: {
+          blocks: [
+            'knip',
+          ],
+          marks: [],
+        },
+        path: 'mine.json',
+        sorted: [],
+      },
+    ]);
+  });
+
   it('should write nothing and give nothing when no project lies around the start', () => {
     // Arrange
     const writes = createFakeAppliedFilesRepository();
@@ -149,7 +368,7 @@ describe('applyPresets', () => {
 
     // Act
     const report = applyPresets({
-      builds: createFakeReleaseBuilds(),
+      distribution: createFakeDistributionSources(),
       files,
       formats: createFakeConfigurationFormat(),
       locks: createFakeLockRepository(),
@@ -231,6 +450,7 @@ describe('applyPresets', () => {
             setting: 'test.randomize',
           },
         ],
+        deleted: [],
         findings: [
           {
             code: PresetsCode.Loosened,
@@ -335,6 +555,7 @@ describe('applyPresets', () => {
       },
       report: {
         added: [],
+        deleted: [],
         findings: [
           {
             code: PresetsCode.Loosened,
@@ -396,6 +617,7 @@ describe('applyPresets', () => {
     expect({
       first: first.files,
       second: second.files,
+      secondLocks: second.locks,
     }).toStrictEqual({
       first: {
         '.gitignore': [
@@ -408,6 +630,7 @@ describe('applyPresets', () => {
         },
       },
       second: {},
+      secondLocks: {},
     });
   });
 
@@ -608,7 +831,7 @@ describe('applyPresets', () => {
 
       // Act
       const report = applyPresets({
-        builds: createFakeReleaseBuilds(),
+        distribution: createFakeDistributionSources(),
         ...project,
         formats: format,
         locks: createFakeLockRepository({
@@ -617,6 +840,7 @@ describe('applyPresets', () => {
               [file]: {
                 addresses: [],
                 defaults: [],
+                isCreated: false,
                 isWhole: false,
                 leaves: [
                   'kept',
@@ -645,6 +869,7 @@ describe('applyPresets', () => {
         ],
         written: [
           {
+            deleted: [],
             files: [],
             locks: [],
           },
@@ -694,6 +919,7 @@ describe('applyPresets', () => {
           'src/sandbox.ts': {
             addresses: [],
             defaults: [],
+            isCreated: false,
             isWhole: true,
             leaves: [],
           },
@@ -701,6 +927,7 @@ describe('applyPresets', () => {
       },
       report: {
         added: [],
+        deleted: [],
         findings: [
           {
             code: PresetsCode.LockUnparsed,
@@ -874,7 +1101,7 @@ describe('applyPresets', () => {
     // Act
     const apply = (): unknown =>
       applyPresets({
-        builds: createFakeReleaseBuilds(),
+        distribution: createFakeDistributionSources(),
         ...project,
         formats: format,
         locks: createFakeLockRepository(),
@@ -986,6 +1213,7 @@ describe('applyPresets', () => {
             setting: 'scripts.test',
           },
         ],
+        deleted: [],
         findings: [
           {
             code: PresetsCode.Loosened,

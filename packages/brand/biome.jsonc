@@ -1,0 +1,801 @@
+{
+  // biome
+  "formatter": {
+    "lineWidth": 100,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "attributePosition": "multiline",
+    "expand": "always",
+  },
+  "files": {
+    "ignoreUnknown": true,
+    "includes": [
+      "**",
+      "!!**/.droneey",
+    ],
+  },
+  "markdown": {
+    "linter": {
+      "enabled": false,
+    },
+    "formatter": {
+      "enabled": false,
+    },
+  },
+  "linter": {
+    "rules": {
+      // biome
+      "preset": "recommended",
+      "complexity": {
+        // biome
+        "noAdjacentSpacesInRegex": "error",
+        "noArguments": "error",
+        "noBannedTypes": "error",
+        "noCommaOperator": "error",
+        "noEmptyTypeParameters": "error",
+        "noExtraBooleanCast": "error",
+        "noFlatMapIdentity": "error",
+        "noImportantStyles": "error",
+        "noStaticOnlyClass": "error",
+        "noThisInStatic": "error",
+        "noUselessCatch": "error",
+        "noUselessConstructor": "error",
+        "noUselessContinue": "error",
+        "noUselessEmptyExport": "error",
+        "noUselessEscapeInRegex": "error",
+        "noUselessFragments": "error",
+        "noUselessLabel": "error",
+        "noUselessLoneBlockStatements": "error",
+        "noUselessRename": "error",
+        "noUselessStringRaw": "error",
+        "noUselessSwitchCase": "error",
+        "noUselessTernary": "error",
+        "noUselessThisAlias": "error",
+        "noUselessTypeConstraint": "error",
+        "noUselessUndefinedInitialization": "error",
+        "useArrowFunction": "error",
+        "useDateNow": "error",
+        "useFlatMap": "error",
+        "useIndexOf": "error",
+        "useLiteralKeys": "off",
+        "useMathMinMax": "error",
+        "useNumericLiterals": "error",
+        "useOptionalChain": "error",
+        "useRegexLiterals": "error",
+        "useSimpleNumberKeys": "error",
+        "noExcessiveCognitiveComplexity": {
+          "level": "error",
+          "options": {
+            "maxAllowedComplexity": 15,
+          },
+        },
+        "noExcessiveLinesPerFunction": {
+          "level": "error",
+          "options": {
+            "maxLines": 100,
+          },
+        },
+        "useMaxParams": {
+          "level": "error",
+          "options": {
+            "max": 3,
+          },
+        },
+
+        // typescript
+        "noUselessUndefined": "error",
+        "noVoid": "error",
+
+        // biome
+        "noUselessStringConcat": "error",
+        "noImplicitCoercions": "error",
+        "noForEach": "error",
+        "useSimplifiedLogicExpression": "error",
+        "useWhile": "error",
+        "noUselessReturn": "error",
+        "noRedundantDefaultExport": "error",
+        "useArrayFind": "error",
+        "useArraySome": "error",
+        "useRegexpTest": "error",
+      },
+      "correctness": {
+        // biome
+        "useParseIntRadix": "error",
+        "noUnreachable": "error",
+        "noUnusedFunctionParameters": "error",
+        "noUnusedImports": "error",
+        "noUnusedLabels": "error",
+        "noUnusedPrivateClassMembers": "error",
+        "noUnusedVariables": "error",
+
+        // typescript
+        "noUnsafeFinally": "error",
+
+        // biome
+        "noGlobalDirnameFilename": "error",
+        "noUndeclaredDependencies": "error",
+        "useJsonImportAttributes": "error",
+        "noUnusedInstantiation": "error",
+      },
+
+      // biome
+      "performance": {
+        "noAccumulatingSpread": "error",
+        "noDynamicNamespaceImportAccess": "error",
+        "useDomNodeTextContent": "error",
+        "noDelete": "error",
+        "noAwaitInLoops": "error",
+      },
+      "style": {
+        // biome
+        "noDescendingSpecificity": "error",
+
+        // typescript
+        "noNonNullAssertion": "error",
+
+        // biome
+        "useArrayLiterals": "error",
+        "useConst": "error",
+        "useDeprecatedReason": "error",
+        "useExponentiationOperator": "error",
+
+        // typescript
+        "useExportType": {
+          "level": "error",
+          "options": {
+            "style": "separatedType",
+          },
+        },
+        "useImportType": {
+          "level": "error",
+          "options": {
+            "style": "separatedType",
+          },
+        },
+
+        // biome
+        "useLiteralEnumMembers": "error",
+        "useNodejsImportProtocol": "error",
+        "useShorthandFunctionType": "error",
+        "useTemplate": "error",
+        "useFilenamingConvention": {
+          "level": "error",
+          "options": {
+            "strictCase": true,
+            "filenameCases": [
+              "kebab-case",
+            ],
+          },
+        },
+        "noExcessiveLinesPerFile": {
+          "level": "error",
+          "options": {
+            "maxLines": 500,
+          },
+        },
+        "useErrorCause": "error",
+        "useThrowOnlyError": "error",
+        "noNestedTernary": "error",
+        "noMagicNumbers": "error",
+
+        // typescript
+        "noParameterProperties": "error",
+        "useConsistentMemberAccessibility": {
+          "level": "error",
+          "options": {
+            "accessibility": "explicit",
+          },
+        },
+        "useReadonlyClassProperties": "error",
+        "useUnifiedTypeSignatures": "error",
+        "useAsConstAssertion": "error",
+        "useConsistentArrayType": "error",
+        "useConsistentTypeDefinitions": "error",
+        "useConsistentEnumValueType": "error",
+        "useConsistentMethodSignatures": "error",
+        "useNamingConvention": {
+          "level": "error",
+          "options": {
+            "conventions": [
+              {
+                "selector": {
+                  "kind": "typeParameter",
+                },
+                "match": "T([A-Z].*)?",
+                "formats": [
+                  "PascalCase",
+                ],
+              },
+            ],
+          },
+        },
+        "useEnumInitializers": "error",
+        "noRestrictedImports": {
+          "level": "error",
+          "options": {
+            "paths": {
+              "moment": "Use Temporal: date libraries wrap the Date it replaces",
+              "dayjs": "Use Temporal: date libraries wrap the Date it replaces",
+              "date-fns": "Use Temporal: date libraries wrap the Date it replaces",
+              "luxon": "Use Temporal: date libraries wrap the Date it replaces",
+            },
+            "patterns": [
+              {
+                "group": [
+                  "moment/**",
+                  "dayjs/**",
+                  "date-fns/**",
+                  "luxon/**",
+                ],
+                "message": "Use Temporal: date libraries wrap the Date it replaces",
+              },
+            ],
+          },
+        },
+        "noNamespace": "error",
+        "noDefaultExport": "error",
+        "noCommonJs": "error",
+
+        // biome
+        "noParameterAssign": "error",
+        "useNumberNamespace": "error",
+        "useBlockStatements": "error",
+        "noUselessElse": "error",
+        "useCollapsedElseIf": "error",
+        "noNegationElse": "error",
+        "useConsistentBuiltinInstantiation": "error",
+        "useShorthandAssign": "error",
+        "noYodaExpression": "error",
+        "useExplicitLengthCheck": "error",
+        "useAtIndex": "error",
+        "useTrimStartEnd": "error",
+        "noSubstr": "error",
+        "noDoneCallback": "error",
+        "noExportedImports": "error",
+        "useNumericSeparators": "error",
+        "useObjectSpread": "error",
+        "useSingleVarDeclarator": "error",
+        "useSymbolDescription": "error",
+        "useThrowNewError": "error",
+        "useNodeAssertStrict": "error",
+        "useExportsLast": "error",
+        "useForOf": "error",
+        "useGroupedAccessorPairs": "error",
+        "useDefaultParameterLast": "error",
+        "useDefaultSwitchClause": "error",
+        "useCollapsedIf": "error",
+        "useConsistentArrowReturn": "error",
+        "noShoutyConstants": "error",
+        "noUnusedTemplateLiteral": "error",
+        "noMultiAssign": "error",
+        "noExcessiveClassesPerFile": "error",
+        "useGlobalThis": "error",
+        "noMultilineString": "error",
+        "useSpreadOverApply": "error",
+      },
+      "suspicious": {
+        // biome
+        "noApproximativeNumericConstant": "error",
+        "noCatchAssign": "error",
+        "noConfusingLabels": "error",
+        "noConfusingVoidType": "error",
+
+        // typescript
+        "noConstEnum": "error",
+
+        // biome
+        "noDeprecatedMediaType": "error",
+        "noDocumentCookie": "error",
+
+        // typescript
+        "noDuplicateEnumValues": "error",
+
+        // biome
+        "noDuplicateFields": "error",
+        "noEmptyBlock": "error",
+
+        // typescript
+        "noExplicitAny": "error",
+
+        // biome
+        "noExtraNonNullAssertion": "error",
+        "noGlobalIsFinite": "error",
+        "noGlobalIsNan": "error",
+        "noIrregularWhitespace": "error",
+        "noOctalEscape": "error",
+        "noProto": "error",
+        "noPrototypeBuiltins": "error",
+        "noQuickfixBiome": "error",
+        "noRedundantUseStrict": "error",
+        "noSuspiciousSemicolonInJsx": "error",
+        "noTemplateCurlyInString": "error",
+
+        // typescript
+        "noTsIgnore": "error",
+
+        // biome
+        "noUselessEscapeInString": "error",
+        "noUselessRegexBackrefs": "error",
+        "useAdjacentOverloadSignatures": "error",
+        "useBiomeIgnoreFolder": "error",
+        "useDefaultSwitchClauseLast": "error",
+        "useGoogleFontDisplay": "error",
+        "useIsArray": "error",
+        "noEmptyBlockStatements": "error",
+        "noAlert": "error",
+        "noConsole": "error",
+        "noDebugger": "error",
+        "noSkippedTests": "error",
+        "noFocusedTests": "error",
+        "noConditionalExpect": "error",
+        "useExpect": "error",
+        "noDeprecatedImports": "error",
+        "noParametersOnlyUsedInRecursion": "error",
+
+        // typescript
+        "noEvolvingTypes": "error",
+        "noDoubleEquals": {
+          "level": "error",
+          "options": {
+            "ignoreNull": false,
+          },
+        },
+
+        // biome
+        "noUnusedExpressions": "error",
+        "useAwait": "error",
+        "useErrorMessage": "error",
+        "useNumberToFixedDigitsArgument": "error",
+        "noConstantBinaryExpressions": "error",
+        "noMisplacedAssertion": "error",
+        "noUnassignedVariables": "error",
+        "noVar": "error",
+        "noReturnAssign": "error",
+        "noForIn": "error",
+        "noNestedPromises": "error",
+        "noShadow": "error",
+        "noUnnecessaryConditions": "error",
+        "useArraySortCompare": "error",
+        "noEmptyObjectKeys": "error",
+        "noLoopFunc": "error",
+      },
+      "nursery": {
+        // biome
+        "usePromiseRejectErrors": "error",
+
+        // typescript
+        "noFloatingPromises": "error",
+        "noMisusedPromises": "error",
+        "useExplicitReturnType": "error",
+        "noBaseToString": "off",
+        "noUnsafeTypeAssertion": "error",
+        "noImpliedEval": "error",
+        "useExhaustiveSwitchCases": "error",
+        "useNullishCoalescing": "error",
+        "useDisposables": "error",
+        "noUnsafePlusOperands": "error",
+        "noMisleadingReturnType": "error",
+
+        // biome
+        "useAwaitThenable": "error",
+        "useStringStartsEndsWith": "error",
+        "noUselessTypeConversion": "error",
+        "noExtendNative": "error",
+        "noNegationInEqualityCheck": "error",
+        "noThisOutsideOfClass": "error",
+        "useIncludes": "error",
+        "useModernMathApis": "error",
+        "useFlatMathMinMax": "error",
+      },
+      "security": {
+        // biome
+        "noSecrets": {
+          "level": "error",
+          "options": {
+            "entropyThreshold": 60,
+          },
+        },
+
+        // typescript
+        "noGlobalEval": "error",
+      },
+    },
+  },
+  "overrides": [
+    // biome
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/tests/**",
+      ],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noEmptyBlockStatements": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.gen.*",
+        "**/*.gen/**",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noExcessiveLinesPerFile": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/tests/**",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noExcessiveLinesPerFile": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/tests/**",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noMagicNumbers": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.gen.*",
+        "**/*.gen/**",
+      ],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveLinesPerFunction": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/tests/**",
+      ],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveLinesPerFunction": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.config.ts",
+        "**/*.config.js",
+        "**/*.config.mjs",
+        "**/*.config.cjs",
+        "**/.*rc.ts",
+        "**/.*rc.js",
+        "**/.*rc.mjs",
+        "**/.*rc.cjs",
+      ],
+      "linter": {
+        "rules": {
+          "security": {
+            "noSecrets": "off",
+          },
+        },
+      },
+    },
+
+    // typescript
+    {
+      "includes": [
+        "**/*.config.ts",
+        "**/.*rc.ts",
+      ],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "useExplicitReturnType": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.d.ts",
+      ],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnusedVariables": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "useConsistentMemberAccessibility": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "useExplicitReturnType": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.d.ts",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "useNamingConvention": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.config.ts",
+        "**/*.config.js",
+        "**/*.config.mjs",
+        "**/*.config.cjs",
+        "**/.*rc.ts",
+        "**/.*rc.js",
+        "**/.*rc.mjs",
+        "**/.*rc.cjs",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noDefaultExport": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.d.ts",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noDefaultExport": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/tests/**",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "useFilenamingConvention": {
+              "level": "error",
+              "options": {
+                "filenameCases": [
+                  "kebab-case",
+                ],
+                "match": "([^.]+)[.]((?:[^.]+[.])?(?:integration[.]|e2e[.])?(?:test|fake|suite|fixtures)[.]tsx?)",
+              },
+            },
+          },
+        },
+      },
+    },
+
+    // biome
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noStaticOnlyClass": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noIdenticalTestTitle": "error",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.jsonc",
+      ],
+      "json": {
+        "formatter": {
+          "trailingCommas": "all",
+        },
+      },
+    },
+  ],
+
+  // git
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true,
+  },
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "plugins": [
+    // biome
+    {
+      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/case-named-should-when.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+    },
+    {
+      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/case-holds-no-logic.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+    },
+    {
+      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/case-split-by-arrange-act-assert-comments.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+    },
+    {
+      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/case-pins-meaning-never-wording.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/tests/**",
+      ],
+    },
+
+    // typescript
+    {
+      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/identifier-case-by-kind.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+    {
+      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/module-level-value-never-changed.grit",
+      "includes": [
+        "**",
+        "!**/*.test.ts",
+        "!**/*.test.tsx",
+      ],
+    },
+    {
+      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/parameter-object-has-a-named-type.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+
+    // biome
+    "./../../.droneey/constitution/presets/biome/plugins/typescript/catch-handles-only-what-it-recognises.grit",
+    "./../../.droneey/constitution/presets/biome/plugins/typescript/statements-grouped-by-blank-lines.grit",
+
+    // typescript
+    "./../../.droneey/constitution/presets/biome/plugins/typescript/type-names-undecorated.grit",
+
+    // biome
+    "./../../.droneey/constitution/presets/biome/plugins/typescript/biome-refuses-empty-verbs.grit",
+  ],
+  "assist": {
+    "actions": {
+      "source": {
+        // typescript
+        "useSortedInterfaceMembers": {
+          "level": "on",
+          "options": {},
+        },
+
+        // biome
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "identifierOrder": "natural",
+            "groups": [
+              ":URL:",
+              ":BLANK_LINE:",
+              ":NODE:",
+              ":BLANK_LINE:",
+              ":BUN:",
+              ":BLANK_LINE:",
+              ":PACKAGE:",
+              ":BLANK_LINE:",
+              ":ALIAS:",
+              ":BLANK_LINE:",
+              ":PATH:",
+            ],
+          },
+        },
+      },
+    },
+  },
+
+  // biome
+  "javascript": {
+    "formatter": {
+      "semicolons": "always",
+      "quoteStyle": "single",
+      "jsxQuoteStyle": "single",
+      "trailingCommas": "all",
+      "arrowParentheses": "always",
+      "bracketSpacing": true,
+      "bracketSameLine": false,
+      "attributePosition": "multiline",
+    },
+  },
+  "yaml": {
+    "formatter": {
+      "quoteStyle": "single",
+    },
+  },
+}

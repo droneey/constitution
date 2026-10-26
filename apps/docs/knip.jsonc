@@ -1,12 +1,21 @@
 {
   "entry": [
+    // knip
     "src/main.{ts,tsx}!",
     "scripts/*/main.ts",
+
+    // tanstack-start
     "src/router.{ts,tsx}!",
     "src/client.{ts,tsx}!",
+
+    // knip
     "src/entrypoints/*/main.{ts,tsx}!",
     "src/**/index.{ts,tsx}!",
+
+    // tanstack-router
     "src/root/routes/**/*.{ts,tsx}!",
+
+    // tanstack-start
     "src/root/router.{ts,tsx}!",
     "source.config.ts!",
   ],
@@ -14,6 +23,8 @@
   "ignore": [
     "src/root/routeTree.gen.ts",
   ],
+
+  // stryker
   "ignoreDependencies": [
     "@stryker-mutator/bun-specs-runner",
     "@fontsource-variable/geist",
@@ -22,6 +33,8 @@
     "@stryker-mutator/core",
     "@swc/core",
   ],
+
+  // knip
   "project": [
     "src/**/*.{ts,tsx}!",
     "!src/**/__tests__/**!",
@@ -29,14 +42,31 @@
     "scripts/**/*.ts",
   ],
   "ignoreBinaries": [
+    // dclint
     "dclint",
+
+    // hadolint
     "hadolint",
+
+    // mise
     "mise",
+
+    // osv-scanner
     "osv-scanner",
+
+    // rumdl
     "rumdl",
+
+    // shellcheck
     "shellcheck",
+
+    // shfmt
     "shfmt",
+
+    // tombi
     "tombi",
+
+    // yamllint
     "yamllint",
   ],
 }

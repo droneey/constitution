@@ -1,0 +1,60 @@
+{
+  "name": "@droneey/design-tokens",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The tokens every droneey interface is drawn with, in the W3C Design Tokens format, the resolver of their modes, and the runner that builds each platform's theme from them.",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "author": {
+    "name": "Dmytro Kurovskyi",
+    "email": "me@kurovskyi.dev",
+    "url": "https://kurovskyi.dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/droneey/constitution.git",
+    "directory": "packages/@design/tokens"
+  },
+  "type": "module",
+  "bin": {
+    "design-tokens": "./src/entrypoints/design-generate/main.ts"
+  },
+  "exports": {
+    "./tokens/*": "./tokens/*"
+  },
+  "imports": {
+    "#/*": "./src/*"
+  },
+  "scripts": {
+    "check": "bun run --sequential 'check:*' test mutate:branch",
+    "check:architecture": "depcruise src tests --config .dependency-cruiser.jsonc",
+    "check:lint": "biome check --error-on-warnings",
+    "check:markdown": "rumdl check . && rumdl fmt --check .",
+    "check:toml": "tombi format --check && tombi lint",
+    "check:types": "tsc -b",
+    "check:unused": "knip --no-config-hints && knip --strict --no-config-hints",
+    "check:yaml": "yamllint --strict .",
+    "fix": "bun run --sequential 'fix:*'",
+    "fix:lint": "biome check --write",
+    "fix:markdown": "rumdl check --fix",
+    "fix:toml": "tombi format",
+    "mutate:all": "mutation-check all",
+    "mutate:branch": "mutation-check",
+    "test": "bun run --parallel 'test:*'",
+    "test:integration": "CI=1 bun --config=./bunfig.integration.toml test",
+    "test:unit": "CI=1 bun test"
+  },
+  "dependencies": {
+    "style-dictionary": "^5.7.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.2",
+    "@droneey/mutation-check-typescript": "workspace:*",
+    "@stryker-mutator/core": "10.0.0",
+    "@types/bun": "1.4.3",
+    "colorjs.io": "0.7.1",
+    "dependency-cruiser": "18.7.0",
+    "knip": "6.41.0",
+    "typescript": "7.0.2"
+  },
+  "trustedDependencies": []
+}

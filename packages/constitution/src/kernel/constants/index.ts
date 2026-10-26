@@ -1,5 +1,5 @@
+export { EXECUTABLE_NAME } from './executable.constants';
 export { PRESETS_FOLDER } from './preset.constants';
-export { PROGRAM_NAME } from './program.constants';
 export { CHECK_KEY, CONFIG_FILE, RELEASE_FOLDER } from './project.constants';
 export type { LoweredLevel } from './vocabulary.constants';
 export {

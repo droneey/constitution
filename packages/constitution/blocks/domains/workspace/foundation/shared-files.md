@@ -6,7 +6,7 @@
 
 ### file-lives-once-across-units → fact-has-one-source · MUST
 
-A file several packages need lives once in the repository; a package that needs it at run time takes it from there in its build, and no copy of it is committed.
+A file several packages need lives once, in a package of its own; a package that needs it at run time takes it by that package's name, bundled by its build or installed beside it as a dependency, and no copy of it is committed.
 
 | Why |
 |---|

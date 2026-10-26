@@ -5,12 +5,12 @@ requires: [json, _task-runner]
 extends: null
 abstract: false
 languages: [typescript, css, json, yaml]
-governs: ["biome.json", "**/*.grit"]
+governs: ["biome.jsonc", "**/*.grit"]
 ---
 
 # Biome
 
-> **Biome** formats and lints, by its settings in **`biome.json`**, with rules of our own in **GritQL**.
+> **Biome** formats and lints, by its settings in **`biome.jsonc`**, with rules of our own in **GritQL**.
 
 The limits are errors, with both line limits off under `**/__tests__/**`; `useMaxParams` counts positional parameters, while whether values make one whole is reviewed.
 

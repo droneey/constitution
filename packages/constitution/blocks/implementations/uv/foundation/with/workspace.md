@@ -28,10 +28,10 @@ The root's `[tool.uv.workspace]` lists every Python package of the repository in
 |---|
 | uv resolves the workspace as one whole, so a second version of a dependency cannot enter while every manifest is listed in it. |
 
-### shared-data-linked-into-the-import-package → file-lives-once-across-units · MUST
+### shared-data-read-through-its-package → file-lives-once-across-units · MUST
 
-A Python package takes the data it needs at run time from a file outside its project by a committed file symlink inside its import package, pointing at the single source, and a spec of the package reads the data through the package's resources and parses it.
+A Python package takes the data it needs at run time from the package of its group that holds the data its languages share, by naming it in its dependencies, `{ workspace = true }` in `[tool.uv.sources]`. That package holds the data alone, as a namespace package under its root: `module-root = ""` and `namespace = true` under `[tool.uv.build-backend]`, its `schema/` and `conformance/` inside the folder of its import package's name.
 
 | Why |
 |---|
-| uv_build 0.13 refuses a path outside the project in `source-include` and in `data`, ignores an absolute one, and follows a file symlink, writing the file's content into the sdist and the wheel, so the sdist builds alone; a checkout without symbolic links holds the link's path as text, which the spec then fails to parse. |
+| uv_build 0.13 refuses a path outside the project, so the data cannot enter the package's wheel and ships as the wheel of a package of its own, installed beside it; a namespace package needs no `__init__.py`, so that package holds no Python, and its wheel holds the folder of the data alone, whatever else its root holds. |

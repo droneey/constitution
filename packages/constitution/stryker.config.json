@@ -40,8 +40,8 @@
     "*/worktrees"
   ],
   "plugins": [
-    "../mutation-check/languages/typescript/src/integrations/stryker/runner.ts",
-    "../mutation-check/languages/typescript/src/integrations/stryker/ignorers.ts"
+    "../@mutation-check/typescript/src/integrations/stryker/runner.ts",
+    "../@mutation-check/typescript/src/integrations/stryker/ignorers.ts"
   ],
   "ignorers": [
     "diagnostics"

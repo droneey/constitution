@@ -42,7 +42,7 @@ A pack shared between projects is linked as the release is, by mise, for example
 
 ## Check it
 
-The `constitution` program the project installs with the release is the Constitution's own check. Run it in the pack:
+The `constitution` executable the project installs with the release is the Constitution's own check. Run it in the pack:
 
 ```bash
 constitution blocks check --base .droneey/constitution

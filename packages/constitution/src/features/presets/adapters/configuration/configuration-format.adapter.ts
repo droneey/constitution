@@ -1,11 +1,13 @@
 import type { ConfigurationFile, ConfigurationFormat } from '../../domain/contracts';
 import { SettingShape } from '../../domain/contracts';
 import type { Setting } from '../../domain/entities';
+import { FileFormat } from '../../domain/value-objects';
 import { readIni, writeIni } from './ini-text.utils';
-import { readJson, writeJson, writeJsonc } from './json-text.utils';
+import { readJson, writeCommentedJson, writeJson, writeJsonc } from './json-text.utils';
 import { readLines, writeLines } from './lines-text.utils';
 import type { SettingsText } from './settings-text.types';
-import { readToml, writeToml } from './toml-text.utils';
+import { readToml } from './toml-lines.utils';
+import { writeToml } from './toml-text.utils';
 import { readYaml, writeYaml } from './yaml-text.utils';
 
 interface Format {
@@ -42,6 +44,13 @@ const formats: Readonly<Record<string, Format>> = {
   },
 };
 
+const marked: Readonly<Record<FileFormat, Format>> = {
+  [FileFormat.Jsonc]: {
+    read: readJson,
+    write: writeCommentedJson,
+  },
+};
+
 const linesFormat: Format = {
   read: readLines,
   write: writeLines,
@@ -55,6 +64,10 @@ const iniFormat: Format = {
 // A file of no format of its own takes the shape its settings are given, or the one its text shows:
 // sections of keys, else lines.
 const formatOf = (file: ConfigurationFile): Format | undefined => {
+  if (file.format !== undefined) {
+    return marked[file.format];
+  }
+
   const name = file.path.slice(file.path.lastIndexOf(SEPARATOR) + 1);
   const dot = name.lastIndexOf(DOT);
   const extension = dot <= 0 ? '' : name.slice(dot);
@@ -79,7 +92,7 @@ const createConfigurationFormat = (): ConfigurationFormat => ({
   read: (file: ConfigurationFile): Setting | undefined => formatOf(file)?.read(file.text),
   write: (file): string =>
     formatOf(file)?.write({
-      layout: file.layout,
+      marks: file.marks,
       settings: file.settings,
       sorted: file.sorted ?? [],
       text: file.text,

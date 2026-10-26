@@ -1,0 +1,35 @@
+osv-scanner:
+  images-scanned-in-the-check:
+    dockerfile:
+      package.json:
+        scripts:
+          # The image's own system is no dependency the project ships, so its scan checks no
+          # licence; --config only where the unit keeps an osv-scanner.toml, which an image's scan
+          # finds in no other way.
+          check:audit-image: >-
+            docker build --quiet --target base --tag audit-image:base --file Dockerfile .
+            && { osv-scanner scan image
+            $(test -f osv-scanner.toml && echo --config osv-scanner.toml) audit-image:base;
+            status=$?; docker rmi audit-image:base > /dev/null; exit $status; }
+bun:
+  '*':
+    dockerfile:
+      package.json:
+        scripts: !sorted {}
+  script-group-run-by-its-prefix:
+    dockerfile:
+      package.json:
+        scripts:
+          check: !words
+            - bun run --sequential
+            - slot: checks
+            - slot: tests
+            - slot: mutations
+          check@checks:
+            - "'check:*'"
+_task-runner:
+  unit-run-through-its-action-tasks:
+    dockerfile:
+      ${constitution.run}:
+        check:
+          - bun run check

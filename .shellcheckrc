@@ -1,10 +1,7 @@
-# the scripts' sources, found beside the script that sources them
 source-path=SCRIPTDIR
 external-sources=true
 
-# expansion double quoted
+# shellcheck
 enable=quote-safe-variables
-
-# script stops on a failed command
 enable=check-set-e-suppressed
 enable=check-extra-masked-returns

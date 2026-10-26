@@ -1,3 +1,4 @@
+import { symlinkSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { afterEach, describe, expect, it } from 'bun:test';
@@ -32,7 +33,7 @@ afterEach(() => {
   }
 });
 
-const CRUISER = '.dependency-cruiser.json';
+const CRUISER = '.dependency-cruiser.jsonc';
 
 describe('a workspace on the presets', () => {
   it('should check the types of every unit when tsc builds the units as projects from the root', () => {
@@ -154,7 +155,7 @@ export const shortLabel = (id: OrderId): string => \`#\${id}\`;
         '--strict',
         '--no-config-hints',
       ],
-      folder: 'packages/eros/languages/typescript',
+      folder: 'packages/@eros/typescript',
       program: 'knip',
     });
 
@@ -200,7 +201,7 @@ export const shortLabel = (id: OrderId): string => \`#\${id}\`;
     });
   });
 
-  it('should report units-imported-by-name when a package imports another by a path into its folder', () => {
+  it('should report other-unit-reached-by-its-name when a package imports another by a path into its folder', () => {
     // Arrange
     const folder = workspace({
       'packages/money/src/kernel/constants/index.ts': 'export const ZERO = 0;\n',
@@ -211,17 +212,114 @@ export const shortLabel = (id: OrderId): string => \`#\${id}\`;
     // Act
     const { output } = runTool(folder, {
       args: [
-        'apps',
-        'packages',
+        'src',
         '--config',
         CRUISER,
       ],
+      folder: 'packages/orders',
       program: 'depcruise',
     });
 
     // Assert
-    expect(output).toContain('units-imported-by-name');
+    expect(output).toContain('other-unit-reached-by-its-name');
   });
+
+  it.each([
+    {
+      folder: 'apps/web',
+      reported: true,
+    },
+    {
+      folder: 'packages/orders',
+      reported: false,
+    },
+  ])(
+    'should report apps-blind-to-each-other only in an app when $folder reaches a unit beside it',
+    ({ folder: unit, reported }) => {
+      // Arrange
+      const folder = workspace({
+        'apps/web/src/kernel/constants/total.constants.ts':
+          "import { totalLine } from '../../../../api/src/features/totals/index.ts';\n\nexport const total = totalLine;\n",
+        'packages/money/src/kernel/constants/index.ts': 'export const ZERO = 0;\n',
+        'packages/orders/src/kernel/constants/zero.constants.ts':
+          "import { ZERO } from '../../../../money/src/kernel/constants/index.ts';\n\nexport const zero = ZERO;\n",
+      });
+
+      // Act
+      const { output } = runTool(folder, {
+        args: [
+          'src',
+          '--config',
+          CRUISER,
+        ],
+        folder: unit,
+        program: 'depcruise',
+      });
+
+      // Assert
+      expect({
+        isApps: output.includes('apps-blind-to-each-other'),
+        isOther: output.includes('other-unit-reached-by-its-name'),
+      }).toStrictEqual({
+        isApps: reported,
+        isOther: true,
+      });
+    },
+  );
+
+  it.each([
+    {
+      condition: 'an app outside its group by its name',
+      reached: "import { main } from '@shop/web/src/main.ts';\n\nexport const reached = main;\n",
+      reported: true,
+    },
+    {
+      condition: 'an app of its own group by its name',
+      reached: "import { main } from '@shop/desk-admin';\n\nexport const reached = main;\n",
+      reported: true,
+    },
+    {
+      condition: 'the package of the data its group shares by its name',
+      reached:
+        "import queues from '@shop/desk-shared/schema/queues.yaml';\n\nexport const reached: unknown = queues;\n",
+      reported: false,
+    },
+  ])(
+    'should report apps-blind-to-each-other only when an app of a group imports $condition',
+    ({ reached, reported }) => {
+      // Arrange
+      const folder = workspace({
+        'apps/@desk/admin/package.json': manifestOf({
+          exports: {
+            '.': './src/main.ts',
+          },
+          name: '@shop/desk-admin',
+        }),
+        'apps/@desk/admin/src/main.ts': 'export const main = (): number => 1;\n',
+        'apps/@desk/web/src/kernel/constants/reached.constants.ts': reached,
+      });
+
+      // A second app of the group, linked by its name as an install links it.
+      symlinkSync(
+        join(folder, 'apps', '@desk', 'admin'),
+        join(folder, 'node_modules', '@shop', 'desk-admin'),
+      );
+
+      // Act
+      const { output } = runTool(folder, {
+        args: [
+          'src',
+          '--config',
+          CRUISER,
+        ],
+        folder: 'apps/@desk/web',
+        program: 'depcruise',
+      });
+
+      // Assert
+      expect(output.includes('apps-blind-to-each-other')).toBe(reported);
+    },
+  );
 
   it.each(Object.values(UNITS))(
     'should report no violation when %s is cruised from its folder by its own configuration',

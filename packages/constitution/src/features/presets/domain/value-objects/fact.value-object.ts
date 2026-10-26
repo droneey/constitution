@@ -1,4 +1,4 @@
-/** A value the program computes for the file an entry writes, written `${<object>.<property>}`. */
+/** A value constitution computes for the file an entry writes, written `${<object>.<property>}`. */
 enum FactName {
   /** the path from the file's folder to the nearest installed Constitution at or above it */
   ConstitutionPath = 'constitution.path',
@@ -6,6 +6,10 @@ enum FactName {
   PackageName = 'package.name',
   /** whether no unit above the file's writes a file of the same name */
   FileIsTop = 'file.isTop',
+  /** the folder at the repository's root that holds the file's unit; none for a unit at the root */
+  UnitParent = 'unit.parent',
+  /** how many folders the file's unit lies below `unit.parent`; none where that is none */
+  UnitDepth = 'unit.depth',
   /** whether units lie below the file's unit */
   WorkspaceIsRoot = 'workspace.isRoot',
   /** the units below the file's unit, by their paths from it: a list item names it whole */

@@ -39,14 +39,14 @@ const appliedConfig = (blocks: readonly string[] = []): z.infer<typeof strykerCo
     JSON.parse(readFileSync(join(strykerUnit(blocks), 'stryker.config.json'), 'utf8')),
   );
 
-// The sources of the runner and the ignorer stand in for the archive's build, which this
+// The sources of the runner and the ignorer stand in for the distribution's build, which this
 // repository never makes.
 const config = (blocks: readonly string[]): string =>
   JSON.stringify({
     ...appliedConfig(blocks),
     plugins: [
-      fileURLToPath(import.meta.resolve('@droneey/mutation-check/runner')),
-      fileURLToPath(import.meta.resolve('@droneey/mutation-check/ignorers')),
+      fileURLToPath(import.meta.resolve('@droneey/mutation-check-typescript/runner')),
+      fileURLToPath(import.meta.resolve('@droneey/mutation-check-typescript/ignorers')),
     ],
   });
 

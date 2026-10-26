@@ -1,0 +1,31 @@
+name: droneey-mutation-check-python
+axes:
+  - architecture
+  - workflow
+domains:
+  - version-control
+  - workspace
+platforms: []
+languages:
+  - python
+  - json
+  - toml
+  - yaml
+implementations:
+  - uv
+  - git
+  - biome
+  - yamllint
+  - tombi
+  - poe
+  - ruff
+  - ty
+  - pytest
+  - mutmut
+  - deptry
+  - vulture
+  - complexipy
+  - python-check
+packs:
+  - pack
+overrides: []

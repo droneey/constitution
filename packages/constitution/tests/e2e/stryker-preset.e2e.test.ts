@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { strykerPlugins } from '@droneey/mutation-check/runner';
+import { strykerPlugins } from '@droneey/mutation-check-typescript/runner';
 
 import { appliedConfig, mutationOf } from './stryker-preset.fixtures';
 
@@ -113,7 +113,7 @@ describe("the Stryker preset's runner", () => {
   });
 
   // Stryker resolves a relative plugin from the folder it runs in, the unit's.
-  it("should name the runner and the ignorer by the paths of the archive's build from the unit when Stryker loads them", () => {
+  it("should name the runner and the ignorer by the paths of the distribution's build from the unit when Stryker loads them", () => {
     // Act
     const { plugins } = appliedConfig();
 

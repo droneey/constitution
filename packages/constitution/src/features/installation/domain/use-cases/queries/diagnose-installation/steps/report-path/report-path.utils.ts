@@ -1,21 +1,21 @@
-import { PROGRAM_NAME } from '#/kernel/constants';
+import { EXECUTABLE_NAME } from '#/kernel/constants';
 import type { Version } from '#/kernel/value-objects';
 
-import type { ProgramPath } from '../../../../../contracts';
+import type { ExecutablePath } from '../../../../../contracts';
 import type { PartDiagnosis } from '../../../../../entities';
 import { Diagnosis } from '../../../../../entities';
 
 interface PathReportInput {
-  readonly path: ProgramPath;
-  readonly program: Version;
+  readonly executable: Version;
+  readonly path: ExecutablePath;
 }
 
 const pathReport = (input: PathReportInput): PartDiagnosis => {
-  const found = input.path.find(PROGRAM_NAME);
+  const found = input.path.find(EXECUTABLE_NAME);
 
   if (found === undefined) {
     return {
-      kind: Diagnosis.ProgramNotOnPath,
+      kind: Diagnosis.ExecutableNotOnPath,
     };
   }
 
@@ -28,16 +28,16 @@ const pathReport = (input: PathReportInput): PartDiagnosis => {
     };
   }
 
-  return answered === input.program
+  return answered === input.executable
     ? {
         kind: Diagnosis.PathMatches,
         path: found,
       }
     : {
         answered,
+        executable: input.executable,
         kind: Diagnosis.PathDiffers,
         path: found,
-        program: input.program,
       };
 };
 

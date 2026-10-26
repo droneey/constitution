@@ -57,18 +57,11 @@ const orderOf = (model: BlockModel): ((left: PresetEntry, right: PresetEntry) =>
 const sourceOf = (entry: PresetEntry): string =>
   `${entry.set.file}: ${entry.block} → ${entry.rule}`;
 
-const WITH = ' with ';
-const SLUG_SEPARATOR = /-/g;
-
-const groupOf = (entry: PresetEntry): string => {
-  const { withs } = entry.set.path;
-
-  if (withs.length > 0) {
-    return withs.join(WITH);
-  }
-
-  return entry.rule === EVERY ? entry.block : entry.rule.replace(SLUG_SEPARATOR, ' ');
-};
+/**
+ * The block that brings the entry into a file: the first block its preset file's path names beyond
+ * the reader, or the reader.
+ */
+const blockOf = (entry: PresetEntry): string => entry.set.path.withs[0] ?? entry.set.path.reader;
 
 /**
  * The term an entry's `${role.<id>}` names: as its language spells it, or, for an entry of every
@@ -97,7 +90,7 @@ const roleOf = (input: {
 };
 
 const PresetEntry = {
-  groupOf,
+  blockOf,
   orderOf,
   roleOf,
   sourceOf,

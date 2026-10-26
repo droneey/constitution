@@ -1,14 +1,14 @@
 core:
   surface-only-re-exports:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             performance:
               noReExportAll: error
   effects-held-only-by-the-edge:
     typescript:
-      biome.json:
+      biome.jsonc:
         overrides:
           - includes:
               - '**/${role.source}/**'
@@ -75,7 +75,7 @@ core:
 biome:
   biome-refuses-empty-names:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/biome-refuses-empty-names.grit]:
           includes:
             - '**'

@@ -62,7 +62,7 @@ const biome = join(repository, 'node_modules', '.bin', 'biome');
 const presetsFolder = join(repository, 'presets');
 const presetFiles = join(presetsFolder, 'biome');
 const blocks = join(repository, 'blocks');
-const CONFIG = 'biome.json';
+const CONFIG = 'biome.jsonc';
 
 const baseUnit: BiomeUnit = {
   axes: [],

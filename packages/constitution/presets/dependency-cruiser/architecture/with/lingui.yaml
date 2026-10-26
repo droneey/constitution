@@ -1,5 +1,5 @@
 lingui:
   '*':
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         allowedSeverity: error

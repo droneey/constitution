@@ -2,7 +2,7 @@ import type { ProjectFiles } from '#/kernel/contracts';
 import type { BlockModel } from '#/kernel/entities';
 import { BlockSource, PackPath } from '#/kernel/value-objects';
 
-import type { PresetFileParser, ReleaseBuilds } from '../../../contracts';
+import type { DistributionSources, PresetFileParser } from '../../../contracts';
 import type { PresetsFinding } from '../../../entities';
 import { PresetEntry } from '../../../entities';
 import { checkPresetSets } from '../../shared/check-preset-sets';
@@ -11,7 +11,7 @@ import { mergeEveryEntry } from './steps/merge-every-entry';
 
 interface CheckPresetsInput {
   /** what the folder's build makes, which its source tree need not hold */
-  readonly builds: ReleaseBuilds;
+  readonly distribution: DistributionSources;
   readonly files: ProjectFiles;
   /** absolute */
   readonly folder: string;
@@ -43,7 +43,7 @@ const checkPresets = (input: CheckPresetsInput): readonly PresetsFinding[] => {
       ...(input.isRelease
         ? {
             release: {
-              builds: input.builds.sourcesOf(input.folder),
+              distributed: input.distribution.packagesOf(input.folder),
               files: input.files,
               folder: input.folder,
               where: '',

@@ -12,4 +12,4 @@ governs: ["pyproject.toml"]
 
 > The type checker, **`ty`**, checks the types of the program and its specs.
 
-ty reads `[tool.ty]` of `pyproject.toml`, into which the program writes its settings. ty is in beta: a release may add rules, and the settings make each an error at once.
+ty reads `[tool.ty]` of `pyproject.toml`, into which `constitution` writes its settings. ty is in beta: a release may add rules, and the settings make each an error at once.

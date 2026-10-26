@@ -33,12 +33,12 @@ import {
 } from '../hook.fixtures';
 import type { PluginRootOptions } from '../plugin-root.fixtures';
 import {
-  archiveOf,
   Breakage,
   createPluginRoot,
   createRealPluginRoot,
+  distributionOf,
   LINK,
-  linkArchive,
+  linkDistribution,
   releaseFormat,
   removePluginRoots,
 } from '../plugin-root.fixtures';
@@ -115,7 +115,7 @@ interface HeadingCase {
 }
 
 interface GoldenCase {
-  context: (archive: string) => string;
+  context: (distribution: string) => string;
   layout: ProjectLayout;
   project: string;
 }
@@ -160,10 +160,10 @@ interface NoticeCase {
   condition: string;
   // what the case links into the project before the hook runs, which then links nothing over it
   link: (project: string) => void;
-  // what the notice names: the archive and the command to run
-  names: (archive: string) => readonly string[];
+  // what the notice names: the distribution and the command to run
+  names: (distribution: string) => readonly string[];
   plugin: PluginRootOptions;
-  // no archive is linked into the project
+  // no distribution is linked into the project
   unlinked?: boolean | undefined;
 }
 
@@ -171,7 +171,7 @@ interface FailureCase {
   condition: string;
   layout: ProjectLayout;
   // the file the line names, from the paths of the run; empty for a failure that names no file
-  named: (paths: { archive: string; project: string }) => string;
+  named: (paths: { distribution: string; project: string }) => string;
   plugin: PluginRootOptions;
 }
 
@@ -285,9 +285,9 @@ const axesMemberOf = (axes: string): ProjectLayout['files'] =>
     }),
   });
 
-const archiveIn = (project: string): string => join(project, LINK);
+const distributionIn = (project: string): string => join(project, LINK);
 
-// runHook links the release's archive into a project that holds no link of its own.
+// runHook links the release's distribution into a project that holds no link of its own.
 const linkNothing = (): void => undefined;
 
 let root = '';
@@ -670,8 +670,8 @@ describe('session-start hook', () => {
       },
     });
 
-    linkArchive({
-      archive: archiveOf(root),
+    linkDistribution({
+      distribution: distributionOf(root),
       project: join(project, 'sub'),
     });
 
@@ -1577,13 +1577,13 @@ describe('session-start hook', () => {
       project: 'one that sets off a warning of every code',
     },
     {
-      context: (archive): string =>
+      context: (distribution): string =>
         unparsedContext({
           line: lineNumberOf({
             at: '&listed',
             config: unparsedConfig,
           }),
-          root: archive,
+          root: distribution,
         }),
       layout: {
         config: unparsedConfig,
@@ -1604,7 +1604,7 @@ describe('session-start hook', () => {
     );
 
     // Assert
-    expect(printed).toBe(context(archiveIn(project)));
+    expect(printed).toBe(context(distributionIn(project)));
   });
 
   it.each<IndexCase>([
@@ -2049,16 +2049,16 @@ describe('session-start hook', () => {
   it.each<NoticeCase>(
     [
       {
-        condition: 'the project holds no archive',
+        condition: 'the project holds no distribution',
         link: linkNothing,
         plugin: {},
         unlinked: true,
       },
       {
-        condition: "the project's archive link points nowhere",
+        condition: "the project's distribution link points nowhere",
         link: (project: string): void => {
-          linkArchive({
-            archive: join(project, 'gone'),
+          linkDistribution({
+            distribution: join(project, 'gone'),
             project,
           });
         },
@@ -2066,7 +2066,7 @@ describe('session-start hook', () => {
       },
       {
         condition:
-          'the archive is a release from before block format 2, whose package.json names none',
+          'the distribution is a release from before block format 2, whose package.json names none',
         link: linkNothing,
         plugin: {
           breakage: Breakage.Format,
@@ -2095,9 +2095,9 @@ describe('session-start hook', () => {
       },
     ].map((notice: Omit<NoticeCase, 'names'>) => ({
       ...notice,
-      // the one line names the archive and the command that says what is wrong
-      names: (archive: string): readonly string[] => [
-        archive,
+      // the one line names the distribution and the command that says what is wrong
+      names: (distribution: string): readonly string[] => [
+        distribution,
         DOCTOR,
       ],
     })),
@@ -2126,7 +2126,7 @@ describe('session-start hook', () => {
       expect({
         exitCode: run.exitCode,
         mentioned: mentionedOf({
-          names: names(archiveIn(project)),
+          names: names(distributionIn(project)),
           text: context,
         }),
         rules: context.includes(coreText),
@@ -2134,7 +2134,7 @@ describe('session-start hook', () => {
         stderr: run.stderr,
       }).toStrictEqual({
         exitCode: 0,
-        mentioned: names(archiveIn(project)),
+        mentioned: names(distributionIn(project)),
         rules: false,
         saved: false,
         stderr: '',
@@ -2166,15 +2166,15 @@ describe('session-start hook', () => {
 
   it.each<FailureCase>([
     {
-      condition: 'the archive lacks package.json',
+      condition: 'the distribution lacks package.json',
       layout: cli,
-      named: ({ archive }): string => `${archive}/package.json`,
+      named: ({ distribution }): string => `${distribution}/package.json`,
       plugin: {
         breakage: Breakage.Manifest,
       },
     },
     {
-      condition: "the archive lacks core's card",
+      condition: "the distribution lacks core's card",
       layout: cli,
       named: (): string => '',
       plugin: {
@@ -2182,9 +2182,9 @@ describe('session-start hook', () => {
       },
     },
     {
-      condition: "the archive's package.json has no version",
+      condition: "the distribution's package.json has no version",
       layout: cli,
-      named: ({ archive }): string => `${archive}/package.json`,
+      named: ({ distribution }): string => `${distribution}/package.json`,
       plugin: {
         breakage: Breakage.Version,
       },
@@ -2207,7 +2207,7 @@ describe('session-start hook', () => {
       const pluginRoot = createPluginRoot(plugin);
       const project = createProject(layout);
       const file = named({
-        archive: archiveIn(project),
+        distribution: distributionIn(project),
         project,
       });
 
@@ -2235,7 +2235,7 @@ describe('session-start hook', () => {
     },
   );
 
-  it('should write the line of the hook word for word when the archive lacks package.json', () => {
+  it('should write the line of the hook word for word when the distribution lacks package.json', () => {
     // Arrange
     const plugin = createPluginRoot({
       breakage: Breakage.Manifest,
@@ -2252,7 +2252,7 @@ describe('session-start hook', () => {
     // Assert
     expect(run).toStrictEqual<HookRun>({
       exitCode: 1,
-      stderr: `constitution hook: cannot read ${archiveIn(project)}/package.json\n`,
+      stderr: `constitution hook: cannot read ${distributionIn(project)}/package.json\n`,
       stdout: '',
     });
   });

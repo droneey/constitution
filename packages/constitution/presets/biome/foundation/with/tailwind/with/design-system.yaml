@@ -1,7 +1,7 @@
 tailwind:
   class-names-only-semantic-colors:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             nursery:

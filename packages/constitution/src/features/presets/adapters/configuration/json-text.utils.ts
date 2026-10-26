@@ -1,10 +1,12 @@
-import type { JSONPath, ParseError } from 'jsonc-parser';
-import { applyEdits, modify, parse, visit } from 'jsonc-parser';
+import type { JSONPath, Node, ParseError } from 'jsonc-parser';
+import { applyEdits, getNodeValue, modify, parse, parseTree, visit } from 'jsonc-parser';
 
 import { compareText, isDeepEqual } from '#/kernel/utils';
 
-import type { Setting } from '../../domain/entities';
+import type { HeldStep, Setting } from '../../domain/entities';
 import { Setting as Settings } from '../../domain/entities';
+import type { Anchor, Commenting } from './block-comments.utils';
+import { anchorAt, noTextLines, withBlockComments } from './block-comments.utils';
 import type { SettingsText } from './settings-text.types';
 import { settingOfWire } from './wire-setting.utils';
 
@@ -17,6 +19,7 @@ const FORMATTING = {
   },
 } as const;
 const NEWLINE = '\n';
+const INDENT_ONLY = /^\s*$/;
 
 const wireOf = (text: string): unknown => {
   const errors: ParseError[] = [];
@@ -271,8 +274,79 @@ const missingCommasOf = (text: string): readonly number[] => {
   return missing;
 };
 
+interface Child {
+  readonly held: Node | undefined;
+  /** the node that begins the key or the item */
+  readonly start: Node;
+  readonly step: HeldStep;
+}
+
+const childrenOf = (node: Node | undefined): readonly Child[] => {
+  // Stryker disable next-line OptionalChaining: no node is missing, the written root nor a value
+  const isObject = node?.type === 'object';
+
+  // Stryker disable next-line OptionalChaining,ArrayDeclaration: no node is missing, and a scalar's children are none either way
+  return (node?.children ?? []).flatMap((child): readonly Child[] => {
+    const setting = settingOfWire(getNodeValue(child));
+
+    if (isObject) {
+      return [
+        {
+          // Stryker disable next-line OptionalChaining: a parsed property always holds its key and its value
+          held: child.children?.[1],
+          start: child,
+          step: {
+            // Stryker disable next-line OptionalChaining: a parsed property always holds its key
+            key: String(child.children?.[0]?.value),
+          },
+        },
+      ];
+    }
+
+    return setting === undefined
+      ? []
+      : [
+          {
+            held: child,
+            start: child,
+            step: {
+              item: setting,
+            },
+          },
+        ];
+  });
+};
+
+const jsoncAnchorsOf = (text: string): readonly Anchor[] => {
+  const walk = (node: Node | undefined, path: readonly HeldStep[]): readonly Anchor[] =>
+    childrenOf(node).flatMap((child) => {
+      const at = [
+        ...path,
+        child.step,
+      ];
+
+      return [
+        ...anchorAt({
+          lineStart: INDENT_ONLY,
+          offset: child.start.offset,
+          path: at,
+          text,
+        }),
+        ...walk(child.held, at),
+      ];
+    });
+
+  return walk(parseTree(text), []);
+};
+
+const jsoncCommenting: Commenting = {
+  anchorsOf: jsoncAnchorsOf,
+  prefix: '//',
+  textLinesOf: noTextLines,
+};
+
 /** As the formatter writes JSONC: a comma after the last item of a list broken over lines. */
-const writeJsonc = (input: SettingsText): string => {
+const writeCommas = (input: SettingsText): string => {
   const written = writeJson(input);
 
   return missingCommasOf(written)
@@ -280,4 +354,15 @@ const writeJsonc = (input: SettingsText): string => {
     .reduce((text, at) => `${text.slice(0, at)},${text.slice(at)}`, written);
 };
 
-export { readJson, writeJson, writeJsonc };
+const writeJsonc = withBlockComments({
+  commenting: jsoncCommenting,
+  write: writeCommas,
+});
+
+/** JSON with comments under a `.json` name, its commas as a formatter writes plain JSON. */
+const writeCommentedJson = withBlockComments({
+  commenting: jsoncCommenting,
+  write: writeJson,
+});
+
+export { readJson, writeCommentedJson, writeJson, writeJsonc };

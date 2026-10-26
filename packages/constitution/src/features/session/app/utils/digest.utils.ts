@@ -55,7 +55,7 @@ const resolvedDigestOf = (
 const doctorNoticeOf = (releaseFolder: string): Digest => ({
   body: [],
   head: [
-    `The Droneey Constitution gives no rules here: ${releaseFolder} is missing or holds a release this program cannot read. Tell the user to run constitution doctor.`,
+    `The Droneey Constitution gives no rules here: ${releaseFolder} is missing or holds a release this executable cannot read. Tell the user to run constitution doctor.`,
   ],
 });
 

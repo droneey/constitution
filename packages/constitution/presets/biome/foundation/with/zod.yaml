@@ -1,14 +1,14 @@
 zod:
   zod-four-forms-only:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/zod-four-forms-only.grit]:
           includes:
             - '**/*.ts'
             - '**/*.tsx'
   schema-never-brands:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/schema-never-brands.grit]:
           includes:
             - '**/*.ts'

@@ -6,7 +6,7 @@ import { cruise } from './dependency-cruiser-preset.fixtures';
 const OWN_DEVELOPMENT_FILES = `core:
   production-code-imports-no-tool:
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         forbidden[name=no-development-dependency-in-production]:
           from:
             pathNot:
@@ -73,19 +73,20 @@ const wellFormed = {
   }),
 };
 
-// A workspace of six units, one of them a library whose TypeScript package
-// sits beside its data in no language, each package linked by its name as a
+// A workspace of seven units, one of them a library whose TypeScript package
+// sits beside the package of its data in no language, each linked by its name as a
 // package manager links it, with the workspace's preset files.
 const UNITS: Readonly<Record<string, string>> = {
   admin: 'apps/admin',
-  eros: 'packages/eros/languages/typescript',
+  'eros-typescript': 'packages/@eros/typescript',
+  'eros-shared': 'packages/@eros/shared',
   messages: 'packages/messages',
   money: 'packages/money',
   smtp: 'packages/smtp',
   web: 'apps/web',
 } as const;
 
-const workspaceProject = (files: Readonly<Record<string, string>>) => ({
+const workspaceProject = (input: { files: Readonly<Record<string, string>>; unit: string }) => ({
   files: {
     ...Object.fromEntries(
       Object.entries(UNITS).flatMap(([name, folder]) => [
@@ -105,8 +106,7 @@ const workspaceProject = (files: Readonly<Record<string, string>>) => ({
         ],
       ]),
     ),
-    'scripts/build.ts': exported('build'),
-    ...files,
+    ...input.files,
   },
   links: Object.fromEntries(
     Object.entries(UNITS).map(([name, folder]) => [
@@ -117,15 +117,11 @@ const workspaceProject = (files: Readonly<Record<string, string>>) => ({
   blocks: [
     'workspace',
   ],
-  roots: [
-    'apps',
-    'packages',
-    'scripts',
-  ],
+  unit: input.unit,
   workspaces: [
     'apps/*',
     'packages/*',
-    'packages/*/languages/typescript',
+    'packages/@eros/*',
   ],
 });
 
@@ -1212,16 +1208,6 @@ describe('the dependency-cruiser layer set', () => {
 
   it.each([
     {
-      condition: 'an app imports another by its name',
-      files: {
-        'apps/web/src/orders.ts': importing({
-          from: '@shop/admin',
-          name: 'unit',
-        }),
-      },
-      rule: 'apps-blind-to-each-other',
-    },
-    {
       condition: 'a package imports an app by its name',
       files: {
         'packages/messages/src/messages.ts': importing({
@@ -1230,6 +1216,7 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       rule: 'packages-know-no-app',
+      unit: 'packages/messages',
     },
     {
       condition: 'an app imports a unit by a path into its folder',
@@ -1239,7 +1226,8 @@ describe('the dependency-cruiser layer set', () => {
           name: 'unit',
         }),
       },
-      rule: 'units-imported-by-name',
+      rule: 'other-unit-reached-by-its-name',
+      unit: 'apps/web',
     },
     {
       condition: 'a package imports another by a path into its folder',
@@ -1249,31 +1237,40 @@ describe('the dependency-cruiser layer set', () => {
           name: 'unit',
         }),
       },
-      rule: 'units-imported-by-name',
+      rule: 'other-unit-reached-by-its-name',
+      unit: 'packages/messages',
     },
     {
       condition: 'the package of a library in several languages imports another unit by a path',
       files: {
-        'packages/eros/languages/typescript/src/filter.ts': importing({
-          from: '../../../../smtp/src/index',
+        'packages/@eros/typescript/src/filter.ts': importing({
+          from: '../../../smtp/src/index',
           name: 'unit',
         }),
       },
-      rule: 'units-imported-by-name',
+      rule: 'other-unit-reached-by-its-name',
+      unit: 'packages/@eros/typescript',
     },
     {
-      condition: 'a script of the root imports a unit by a path into its folder',
+      condition: 'the package of a library takes data from the package beside it by a path',
       files: {
-        'scripts/release.ts': importing({
-          from: '../apps/web/src/index',
+        'packages/@eros/shared/schema/kinds.yaml': '- validation\n',
+        'packages/@eros/typescript/src/kinds.ts':
+          "import kinds from '../../shared/schema/kinds.yaml';\nexport const KINDS: unknown = kinds;\n",
+        'packages/@eros/typescript/src/send.ts': importing({
+          from: '@shop/smtp',
           name: 'unit',
         }),
       },
-      rule: 'root-imports-units-by-name',
+      rule: 'other-unit-reached-by-its-name',
+      unit: 'packages/@eros/typescript',
     },
-  ])('should report $rule when $condition in a workspace', async ({ files, rule }) => {
+  ])('should report $rule when $condition in a workspace', async ({ files, rule, unit }) => {
     // Arrange
-    const project = workspaceProject(files);
+    const project = workspaceProject({
+      files,
+      unit,
+    });
 
     // Act
     const { violations } = await cruise(project);
@@ -1282,27 +1279,46 @@ describe('the dependency-cruiser layer set', () => {
     expect(violations).toContain(rule);
   });
 
-  it('should report no violation when the units of a workspace import downward by name', async () => {
+  it.each([
+    {
+      condition: 'an app imports packages by their names',
+      files: {
+        'apps/web/src/orders.ts':
+          "import { unit } from '@shop/messages';\nimport { unit as smtp } from '@shop/smtp';\nexport const uses = [unit, smtp];\n",
+      },
+      unit: 'apps/web',
+    },
+    {
+      condition: 'a package imports another by its name',
+      files: {
+        'packages/messages/src/messages.ts': importing({
+          from: '@shop/money',
+          name: 'unit',
+        }),
+      },
+      unit: 'packages/messages',
+    },
+    {
+      condition: 'the package of a library takes data from the package beside it by its name',
+      files: {
+        'packages/@eros/shared/package.json': JSON.stringify({
+          exports: {
+            './schema/*': './schema/*',
+          },
+          name: '@shop/eros-shared',
+          type: 'module',
+        }),
+        'packages/@eros/shared/schema/kinds.yaml': '- validation\n',
+        'packages/@eros/typescript/src/kinds.ts':
+          "import kinds from '@shop/eros-shared/schema/kinds.yaml';\nexport const KINDS: unknown = kinds;\n",
+      },
+      unit: 'packages/@eros/typescript',
+    },
+  ])('should report no violation when $condition in a workspace', async ({ files, unit }) => {
     // Arrange
     const project = workspaceProject({
-      'packages/eros/shared/schema/kinds.yaml': '- validation\n',
-      'packages/eros/languages/typescript/src/kinds.ts':
-        "import kinds from '../../../shared/schema/kinds.yaml';\nexport const KINDS: unknown = kinds;\n",
-      'apps/web/src/orders.ts':
-        "import { unit } from '@shop/messages';\nimport { unit as smtp } from '@shop/smtp';\nimport { line } from './line';\nexport const uses = [unit, smtp, line];\n",
-      'apps/web/src/line.ts': exported('line'),
-      'packages/eros/languages/typescript/src/send.ts': importing({
-        from: '@shop/smtp',
-        name: 'unit',
-      }),
-      'scripts/release.ts': importing({
-        from: '@shop/web',
-        name: 'unit',
-      }),
-      'packages/messages/src/messages.ts': importing({
-        from: '@shop/money',
-        name: 'unit',
-      }),
+      files,
+      unit,
     });
 
     // Act

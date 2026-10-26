@@ -1,7 +1,7 @@
 tanstack-query:
   keys-only-from-the-key-factory:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/keys-only-from-the-key-factory.grit]:
           includes:
             - '**/*.ts'
@@ -9,7 +9,7 @@ tanstack-query:
             - '!**/cache.${role.helper-file}.ts'
   query-client-built-by-the-root:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/query-client-built-by-the-root.grit]:
           includes:
             - '**/*.ts'
@@ -22,7 +22,7 @@ tanstack-query:
             - '!**/*.test.tsx'
   read-declared-once-as-query-options:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/read-declared-once-as-query-options.grit]:
           includes:
             - '**/*.ts'

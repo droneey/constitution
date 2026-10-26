@@ -24,7 +24,7 @@ interface ProgramInput {
   readonly io: CommandIo;
   readonly isTerminal: boolean;
   readonly places: CommandPlaces;
-  /** the fingerprint of the plugin's files this program was built with, read when doctor asks */
+  /** the fingerprint of the plugin's files this executable was built with, read when doctor asks */
   readonly pluginFingerprint: () => string | undefined;
   readonly streams: Streams;
   readonly version: string;

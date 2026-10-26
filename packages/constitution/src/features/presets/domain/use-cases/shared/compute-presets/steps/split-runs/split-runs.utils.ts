@@ -67,7 +67,7 @@ const isRun = (outcome: UnitRun | PresetsFinding): outcome is UnitRun => 'comman
 
 const isFinding = (outcome: UnitRun | PresetsFinding): outcome is PresetsFinding => !isRun(outcome);
 
-// A runner is the reader of a preset file that gives what the program runs; a tool is a block its
+// A runner is the reader of a preset file that gives what constitution runs; a tool is a block its
 // preset files pair with a runner, in whatever language.
 const runnersOf = (entries: readonly PresetEntry[]): ReadonlySet<string> =>
   new Set(

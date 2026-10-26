@@ -12,4 +12,4 @@ governs: ["pyproject.toml"]
 
 > Runs the tasks a Python project declares in `pyproject.toml`, each in the environment the package manager entered, and the tasks that run every task of one action: `check`, `test`, `fix`.
 
-**Poe the Poet**, the package **`poethepoet`**, is pinned in the `dev` group. Its settings are `[tool.poe]` of the root `pyproject.toml`, into which the program writes the executor `simple`, the tasks each tool's block gives and those that run them by their action.
+**Poe the Poet**, the package **`poethepoet`**, is pinned in the `dev` group. Its settings are `[tool.poe]` of the root `pyproject.toml`, into which `constitution` writes the executor `simple`, the tasks each tool's block gives and those that run them by their action.

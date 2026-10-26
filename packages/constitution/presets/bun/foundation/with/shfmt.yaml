@@ -3,14 +3,19 @@ shfmt:
     shell:
       package.json:
         scripts:
-          # The unit's script skips its members, each checked in its own run.
+          # The unit's script skips its members, each checked in its own run, and a file deleted
+          # but not yet committed, which git still lists.
           check:shell-format: !words
             - git ls-files -z --cached --others --exclude-standard -- '*.sh' '*.bash'
             - "':(exclude)${workspace.members}'"
+            - '| xargs -0 -r sh -c "for file do if [ -e \"\$file\" ];'
+            - 'then printf ''%s\0'' \"\$file\"; fi; done" sh'
             - '| xargs -0 -r shfmt -d'
           fix:shell-format: !words
             - git ls-files -z --cached --others --exclude-standard -- '*.sh' '*.bash'
             - "':(exclude)${workspace.members}'"
+            - '| xargs -0 -r sh -c "for file do if [ -e \"\$file\" ];'
+            - 'then printf ''%s\0'' \"\$file\"; fi; done" sh'
             - '| xargs -0 -r shfmt -w'
 bun:
   '*':

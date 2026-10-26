@@ -12,4 +12,4 @@ governs: [".editorconfig"]
 
 > **EditorConfig**, set by **`.editorconfig`**{#editor-settings}, gives every editor and every formatter that reads it the indent, the line ending and the charset.
 
-The program writes two spaces, LF and UTF-8 for every file into it, and `root = true`, so no file above the repository applies.
+`constitution` writes two spaces, LF and UTF-8 for every file into it, and `root = true`, so no file above the repository applies.

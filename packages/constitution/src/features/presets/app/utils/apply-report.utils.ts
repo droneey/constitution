@@ -64,6 +64,14 @@ const applySectionsOf = (report: ApplyReport | undefined): readonly Section[] =>
           tone: Tone.Info,
         }),
         ...noteOf({
+          lines: report.deleted,
+          title: `${countOf({
+            count: report.deleted.length,
+            noun: FILE,
+          })} deleted, which the apply created and nothing holds any longer`,
+          tone: Tone.Info,
+        }),
+        ...noteOf({
           lines: report.removed.map(placeLine),
           title: `${countOf({
             count: report.removed.length,

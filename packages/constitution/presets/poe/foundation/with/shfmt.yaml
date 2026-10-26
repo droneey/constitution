@@ -9,9 +9,13 @@ shfmt:
                 shell: !words
                   - git ls-files -z --cached --others --exclude-standard -- '*.sh' '*.bash'
                   - "':(exclude)${workspace.members}'"
+                  - '| xargs -0 -r sh -c "for file do if [ -e \"\$file\" ];'
+                  - 'then printf ''%s\0'' \"\$file\"; fi; done" sh'
                   - '| xargs -0 -r shfmt -d'
               fix:shell-format:
                 shell: !words
                   - git ls-files -z --cached --others --exclude-standard -- '*.sh' '*.bash'
                   - "':(exclude)${workspace.members}'"
+                  - '| xargs -0 -r sh -c "for file do if [ -e \"\$file\" ];'
+                  - 'then printf ''%s\0'' \"\$file\"; fi; done" sh'
                   - '| xargs -0 -r shfmt -w'

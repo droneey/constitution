@@ -96,7 +96,7 @@ describe('the syncpack core part', () => {
 
   it.each([
     {
-      specifier: 'file:./.droneey/kit/eros/languages/typescript',
+      specifier: 'file:./.droneey/kit/eros/typescript',
     },
     {
       specifier: 'link:./vendor/library',

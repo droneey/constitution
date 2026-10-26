@@ -1,7 +1,7 @@
 biome:
   '*':
     '*':
-      biome.json:
+      biome.jsonc:
         files:
           ignoreUnknown: true
           includes:
@@ -101,12 +101,12 @@ biome:
               useIsArray: error
         $schema: !default ./node_modules/@biomejs/biome/configuration_schema.json
     css:
-      biome.json:
+      biome.jsonc:
         css:
           formatter:
             quoteStyle: single
     typescript:
-      biome.json:
+      biome.jsonc:
         javascript:
           formatter:
             semicolons: always
@@ -256,13 +256,13 @@ biome:
                 suspicious:
                   noIdenticalTestTitle: error
     yaml:
-      biome.json:
+      biome.jsonc:
         yaml:
           formatter:
             quoteStyle: single
   biome-formats-every-file-it-reads:
     '*':
-      biome.json:
+      biome.jsonc:
         formatter:
           lineWidth: 100
           indentStyle: space
@@ -281,20 +281,20 @@ biome:
                 trailingCommas: all
   biome-refuses-empty-verbs:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins:
           - ./${constitution.path}/presets/biome/plugins/typescript/biome-refuses-empty-verbs.${role.grit-rule}
 core:
   formatters-share-one-indent-and-width:
     '*':
-      biome.json:
+      biome.jsonc:
         formatter:
           lineWidth: 100
           indentStyle: space
           indentWidth: 2
   catch-handles-only-what-it-recognises:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             suspicious:
@@ -313,7 +313,7 @@ core:
                   noEmptyBlockStatements: 'off'
   diagnostics-written-through-a-logger:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             suspicious:
@@ -322,7 +322,7 @@ core:
               noDebugger: error
   test-never-skipped-or-empty:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             suspicious:
@@ -332,14 +332,14 @@ core:
               useExpect: error
   deprecated-form-never-used:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             suspicious:
               noDeprecatedImports: error
   dead-code-deleted:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             suspicious:
@@ -353,7 +353,7 @@ core:
               noUnusedVariables: error
   file-name-in-its-owners-case:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             style:
@@ -365,7 +365,7 @@ core:
                     - kebab-case
   file-within-500-lines:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             style:
@@ -392,14 +392,14 @@ core:
                   noExcessiveLinesPerFile: 'off'
   error-keeps-its-cause:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             style:
               useErrorCause: error
   thrown-value-is-an-error:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             style:
@@ -408,14 +408,14 @@ core:
               usePromiseRejectErrors: error
   code-reads-plainly:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             style:
               noNestedTernary: error
   literal-with-a-meaning-is-named:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             style:
@@ -432,7 +432,7 @@ core:
                   noMagicNumbers: 'off'
   function-within-its-limits:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             complexity:
@@ -463,7 +463,7 @@ core:
                   noExcessiveLinesPerFunction: 'off'
   function-takes-at-most-three-positions:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             complexity:
@@ -473,7 +473,7 @@ core:
                   max: 3
   secret-never-in-the-repository:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             security:
@@ -497,12 +497,12 @@ core:
                   noSecrets: 'off'
   statements-grouped-by-blank-lines:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins:
           - ./${constitution.path}/presets/biome/plugins/typescript/statements-grouped-by-blank-lines.${role.grit-rule}
   case-named-should-when:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/case-named-should-when.grit]:
           includes:
             - '**/${role.colocated-specs}/**'
@@ -510,7 +510,7 @@ core:
             - '**/*.test.tsx'
   case-holds-no-logic:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/case-holds-no-logic.grit]:
           includes:
             - '**/${role.colocated-specs}/**'
@@ -518,7 +518,7 @@ core:
             - '**/*.test.tsx'
   case-split-by-arrange-act-assert-comments:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/case-split-by-arrange-act-assert-comments.grit]:
           includes:
             - '**/${role.colocated-specs}/**'
@@ -526,7 +526,7 @@ core:
             - '**/*.test.tsx'
   case-pins-meaning-never-wording:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/case-pins-meaning-never-wording.grit]:
           includes:
             - '**/${role.colocated-specs}/**'

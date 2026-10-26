@@ -1,7 +1,7 @@
 browser:
   '*':
     typescript:
-      tsconfig.json:
+      tsconfig.json !jsonc:
         compilerOptions:
           lib:
             - ESNext

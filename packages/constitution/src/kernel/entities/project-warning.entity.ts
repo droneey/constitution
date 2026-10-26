@@ -183,7 +183,7 @@ interface WarningDetails {
     readonly until: string;
   };
   readonly [WarningKind.ConfigurationFinding]: FileNamed & {
-    /** the finding's code, which its preset file's or its file's fix names */
+    /** the presets' code of the finding, such as `missing` */
     readonly code: string;
     /** what the finding says, as the presets word it */
     readonly says: string;

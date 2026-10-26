@@ -12,7 +12,7 @@ const mergeEveryEntry = (entries: readonly PresetEntry[]): readonly PresetsFindi
       ? []
       : MergedFile.merge(
           written.map((entry) => ({
-            group: PresetEntry.groupOf(entry),
+            block: PresetEntry.blockOf(entry),
             source: PresetEntry.sourceOf(entry),
             value: entry.value,
           })),

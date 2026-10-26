@@ -1,7 +1,0 @@
-dependency-cruiser:
-  '*':
-    typescript:
-      package.json:
-        scripts:
-          check:architecture: !replace >-
-            depcruise ${role.source} ${role.build-code} --config .dependency-cruiser.json

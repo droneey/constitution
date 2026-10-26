@@ -37,6 +37,7 @@ describe('recordOf', () => {
           'name',
         ],
         heldBefore: new Set(heldBefore),
+        isCreated: false,
         lock: Lock.emptyRecord,
         ours,
       });

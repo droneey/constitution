@@ -1,7 +1,7 @@
 lingui:
   module-level-messages-are-descriptors:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/module-level-messages-are-descriptors.grit]:
           includes:
             - '**/*.ts'

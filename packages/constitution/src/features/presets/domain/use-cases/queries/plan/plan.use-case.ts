@@ -1,11 +1,11 @@
 import type { ProjectFiles, ProjectSource } from '#/kernel/contracts';
 
-import type { PresetFileParser, ReleaseBuilds } from '../../../contracts';
+import type { DistributionSources, PresetFileParser } from '../../../contracts';
 import type { PresetsPlan } from '../../../entities';
 import { computePresets } from '../../shared/compute-presets';
 
 interface PlanPresetsInput {
-  readonly builds: ReleaseBuilds;
+  readonly distribution: DistributionSources;
   readonly files: ProjectFiles;
   readonly parser: PresetFileParser;
   readonly source: ProjectSource;
@@ -20,7 +20,7 @@ const planPresets = (input: PlanPresetsInput): PresetsPlan => {
   const opened = input.source.open(input.start);
 
   return computePresets({
-    builds: input.builds,
+    distribution: input.distribution,
     files: input.files,
     model: opened.resolution.model,
     packs: opened.packs,

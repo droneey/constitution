@@ -22,7 +22,7 @@ A unit of the repository is required at `workspace:*`, by another unit or by the
 
 ### shared-data-bundled-by-the-build → file-lives-once-across-units · MUST
 
-A TypeScript package imports the data it needs at run time from its single source, by a relative path, and ships what `bun build` writes from it, never the source that imports the file.
+A TypeScript package imports the data it needs at run time from its single source, through the entry of the unit that holds it, and ships what `bun build` writes from it, never the source that imports the file.
 
 | Why |
 |---|

@@ -6,7 +6,7 @@ import { parse } from 'jsonc-parser';
 
 import { cliPath } from './cli.fixtures';
 import type { Files } from './constitution.fixtures';
-import { archiveOf, createPluginRoot, linkArchive } from './plugin-root.fixtures';
+import { createPluginRoot, distributionOf, linkDistribution } from './plugin-root.fixtures';
 import type { ProjectLayout } from './project.fixtures';
 import { createProject } from './project.fixtures';
 
@@ -91,7 +91,7 @@ const createPluginRootWithPresets = (): string => {
 
   writeFiles({
     files: releasePresetFiles,
-    folder: archiveOf(root),
+    folder: distributionOf(root),
   });
 
   return root;
@@ -99,22 +99,22 @@ const createPluginRootWithPresets = (): string => {
 
 interface LinkedProjectInput {
   readonly layout: ProjectLayout;
-  /** the plugin root whose archive the project links */
+  /** the plugin root whose distribution the project links */
   readonly root: string;
 }
 
 const createLinkedProject = (input: LinkedProjectInput): string => {
   const project = createProject(input.layout);
 
-  linkArchive({
-    archive: archiveOf(input.root),
+  linkDistribution({
+    distribution: distributionOf(input.root),
     project,
   });
 
   return project;
 };
 
-// A run as a pipeline runs the program, from the project's folder with a clean environment.
+// A run as a pipeline runs the executable, from the project's folder with a clean environment.
 const applyIn = (input: ApplyInput): Applied => {
   const ran = spawnSync(
     cliPath,

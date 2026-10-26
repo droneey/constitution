@@ -1,7 +1,7 @@
 nestjs:
   '*':
     typescript:
-      biome.json:
+      biome.jsonc:
         overrides:
           - includes:
               - '**/*.${role.use-case-file}.ts'

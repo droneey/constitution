@@ -13,7 +13,7 @@ const createDoctorCommand = (context: DoctorContext): Command =>
   new Command('doctor')
     .summary('Check the installation; it changes nothing.')
     .description(
-      'Check the installation: this program, the Claude Code plugin, the latest release, PATH, the release link and the git hooks. It changes nothing.',
+      'Check the installation: this executable, the Claude Code plugin, the latest release, PATH, the release link and the git hooks. It changes nothing.',
     )
     .addHelpText(
       'before',

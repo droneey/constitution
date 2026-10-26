@@ -1,0 +1,2092 @@
+{
+  "$schema": "../../../node_modules/@biomejs/biome/configuration_schema.json",
+  "root": true,
+
+  // biome
+  "files": {
+    "includes": [
+      "**",
+      "!!**/.droneey",
+      "!**/*.gen.*",
+    ],
+    "ignoreUnknown": true,
+  },
+  "formatter": {
+    "lineWidth": 100,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "attributePosition": "multiline",
+    "expand": "always",
+  },
+  "linter": {
+    "rules": {
+      "suspicious": {
+        // biome
+        "noEmptyBlockStatements": "error",
+        "noAlert": "error",
+        "noConsole": "error",
+        "noDebugger": "error",
+        "noSkippedTests": "error",
+        "noFocusedTests": "error",
+        "noConditionalExpect": "error",
+        "useExpect": "error",
+        "noDeprecatedImports": "error",
+        "noParametersOnlyUsedInRecursion": "error",
+
+        // css
+        "noDuplicateSelectors": "error",
+        "useBaseline": "error",
+
+        // typescript
+        "noEvolvingTypes": "error",
+        "noDuplicateEnumValues": "error",
+        "noDoubleEquals": {
+          "level": "error",
+          "options": {
+            "ignoreNull": false,
+          },
+        },
+        "noExplicitAny": "error",
+        "noTsIgnore": "error",
+        "noConstEnum": "error",
+
+        // biome
+        "noApproximativeNumericConstant": "error",
+        "noCatchAssign": "error",
+        "noConfusingLabels": "error",
+        "noConfusingVoidType": "error",
+        "noDeprecatedMediaType": "error",
+        "noDocumentCookie": "error",
+        "noDuplicateFields": "error",
+        "noEmptyBlock": "error",
+        "noExtraNonNullAssertion": "error",
+        "noGlobalIsFinite": "error",
+        "noGlobalIsNan": "error",
+        "noIrregularWhitespace": "error",
+        "noOctalEscape": "error",
+        "noProto": "error",
+        "noPrototypeBuiltins": "error",
+        "noQuickfixBiome": "error",
+        "noRedundantUseStrict": "error",
+        "noSuspiciousSemicolonInJsx": "error",
+        "noTemplateCurlyInString": "error",
+        "noUselessEscapeInString": "error",
+        "noUselessRegexBackrefs": "error",
+        "useAdjacentOverloadSignatures": "error",
+        "useBiomeIgnoreFolder": "error",
+        "useDefaultSwitchClauseLast": "error",
+        "useGoogleFontDisplay": "error",
+        "useIsArray": "error",
+        "noUnusedExpressions": "error",
+        "useAwait": "error",
+        "useErrorMessage": "error",
+        "useNumberToFixedDigitsArgument": "error",
+        "noConstantBinaryExpressions": "error",
+        "noMisplacedAssertion": "error",
+        "noUnassignedVariables": "error",
+        "noVar": "error",
+        "noReturnAssign": "error",
+        "noForIn": "error",
+        "noNestedPromises": "error",
+        "noShadow": "error",
+        "noUnnecessaryConditions": "error",
+        "useArraySortCompare": "error",
+        "noEmptyObjectKeys": "error",
+        "noLoopFunc": "error",
+
+        // react-dom
+        "noUnknownAttribute": "error",
+      },
+      "correctness": {
+        // biome
+        "noUnreachable": "error",
+        "noUnusedFunctionParameters": "error",
+        "noUnusedImports": "error",
+        "noUnusedLabels": "error",
+        "noUnusedPrivateClassMembers": "error",
+        "noUnusedVariables": "error",
+
+        // css
+        "noMissingVarFunction": "error",
+
+        // typescript
+        "noUnsafeFinally": "error",
+
+        // biome
+        "useParseIntRadix": "error",
+        "noGlobalDirnameFilename": "error",
+        "noUndeclaredDependencies": "error",
+        "useJsonImportAttributes": "error",
+        "noUnusedInstantiation": "error",
+
+        // react-dom
+        "useUniqueElementIds": "error",
+        "useImageSize": "error",
+      },
+      "style": {
+        // biome
+        "useFilenamingConvention": {
+          "level": "error",
+          "options": {
+            "strictCase": true,
+            "filenameCases": [
+              "kebab-case",
+            ],
+          },
+        },
+        "noExcessiveLinesPerFile": {
+          "level": "error",
+          "options": {
+            "maxLines": 500,
+          },
+        },
+        "useErrorCause": "error",
+        "useThrowOnlyError": "error",
+        "noNestedTernary": "error",
+        "noMagicNumbers": "error",
+
+        // css
+        "noDescendingSpecificity": "error",
+        "noHexColors": "error",
+
+        // typescript
+        "noParameterProperties": "error",
+        "useConsistentMemberAccessibility": {
+          "level": "error",
+          "options": {
+            "accessibility": "explicit",
+          },
+        },
+        "useReadonlyClassProperties": "error",
+        "useUnifiedTypeSignatures": "error",
+        "useAsConstAssertion": "error",
+        "useConsistentArrayType": "error",
+        "useConsistentTypeDefinitions": "error",
+        "useConsistentEnumValueType": "error",
+        "useConsistentMethodSignatures": "error",
+        "useNamingConvention": {
+          "level": "error",
+          "options": {
+            "conventions": [
+              {
+                "selector": {
+                  "kind": "typeParameter",
+                },
+                "match": "T([A-Z].*)?",
+                "formats": [
+                  "PascalCase",
+                ],
+              },
+            ],
+          },
+        },
+        "noNonNullAssertion": "error",
+        "useEnumInitializers": "error",
+        "noRestrictedImports": {
+          "level": "error",
+          "options": {
+            "paths": {
+              "moment": "Use Temporal: date libraries wrap the Date it replaces",
+              "dayjs": "Use Temporal: date libraries wrap the Date it replaces",
+              "date-fns": "Use Temporal: date libraries wrap the Date it replaces",
+              "luxon": "Use Temporal: date libraries wrap the Date it replaces",
+            },
+            "patterns": [
+              {
+                "group": [
+                  "moment/**",
+                  "dayjs/**",
+                  "date-fns/**",
+                  "luxon/**",
+                ],
+                "message": "Use Temporal: date libraries wrap the Date it replaces",
+              },
+            ],
+          },
+        },
+        "noNamespace": "error",
+        "noDefaultExport": "error",
+        "noCommonJs": "error",
+        "noProcessEnv": "error",
+
+        // biome
+        "useArrayLiterals": "error",
+        "useConst": "error",
+        "useDeprecatedReason": "error",
+        "useExponentiationOperator": "error",
+
+        // typescript
+        "useExportType": {
+          "level": "error",
+          "options": {
+            "style": "separatedType",
+          },
+        },
+        "useImportType": {
+          "level": "error",
+          "options": {
+            "style": "separatedType",
+          },
+        },
+
+        // biome
+        "useLiteralEnumMembers": "error",
+        "useNodejsImportProtocol": "error",
+        "useShorthandFunctionType": "error",
+        "useTemplate": "error",
+        "noParameterAssign": "error",
+        "useNumberNamespace": "error",
+        "useBlockStatements": "error",
+        "noUselessElse": "error",
+        "useCollapsedElseIf": "error",
+        "noNegationElse": "error",
+        "useConsistentBuiltinInstantiation": "error",
+        "useShorthandAssign": "error",
+        "noYodaExpression": "error",
+        "useExplicitLengthCheck": "error",
+        "useAtIndex": "error",
+        "useTrimStartEnd": "error",
+        "noSubstr": "error",
+        "noDoneCallback": "error",
+        "noExportedImports": "error",
+        "useNumericSeparators": "error",
+        "useObjectSpread": "error",
+        "useSingleVarDeclarator": "error",
+        "useSymbolDescription": "error",
+        "useThrowNewError": "error",
+        "useNodeAssertStrict": "error",
+        "useExportsLast": "error",
+        "useForOf": "error",
+        "useGroupedAccessorPairs": "error",
+        "useDefaultParameterLast": "error",
+        "useDefaultSwitchClause": "error",
+        "useCollapsedIf": "error",
+        "useConsistentArrowReturn": "error",
+        "noShoutyConstants": "error",
+        "noUnusedTemplateLiteral": "error",
+        "noMultiAssign": "error",
+        "noExcessiveClassesPerFile": "error",
+        "useGlobalThis": "error",
+        "noMultilineString": "error",
+        "useSpreadOverApply": "error",
+      },
+      "nursery": {
+        // biome
+        "usePromiseRejectErrors": "error",
+
+        // react-dom
+        "noObsoleteTags": "error",
+
+        // typescript
+        "noFloatingPromises": "error",
+        "noMisusedPromises": "error",
+
+        // tailwind
+        "noUndeclaredCustomProperties": "off",
+
+        // css
+        "useLayeredStyles": "error",
+        "useNamedLayer": "error",
+        "noInvalidPropertyInitValue": "error",
+        "noUnusedClasses": "error",
+
+        // tailwind
+        "noUndeclaredClasses": "off",
+
+        // html
+        "noMisplacedListElements": "error",
+
+        // typescript
+        "useExplicitReturnType": "error",
+        "noBaseToString": "off",
+        "noUnsafeTypeAssertion": "error",
+        "noImpliedEval": "error",
+        "useExhaustiveSwitchCases": "error",
+        "useNullishCoalescing": "error",
+        "useDisposables": "error",
+        "noUnsafePlusOperands": "error",
+        "noMisleadingReturnType": "error",
+
+        // biome
+        "useAwaitThenable": "error",
+        "useStringStartsEndsWith": "error",
+        "noUselessTypeConversion": "error",
+        "noExtendNative": "error",
+        "noNegationInEqualityCheck": "error",
+        "noThisOutsideOfClass": "error",
+        "useIncludes": "error",
+        "useModernMathApis": "error",
+        "useFlatMathMinMax": "error",
+
+        // react-dom
+        "noInvalidFileInputAccept": "error",
+        "useControlLabel": "error",
+        "noNonScalableViewport": "error",
+
+        // tailwind
+        "noTailwindArbitraryValue": "error",
+        "noTailwindRawColors": "error",
+      },
+      "complexity": {
+        // biome
+        "noExcessiveCognitiveComplexity": {
+          "level": "error",
+          "options": {
+            "maxAllowedComplexity": 15,
+          },
+        },
+        "noExcessiveLinesPerFunction": {
+          "level": "error",
+          "options": {
+            "maxLines": 100,
+          },
+        },
+        "useMaxParams": {
+          "level": "error",
+          "options": {
+            "max": 3,
+          },
+        },
+
+        // css
+        "noImportantStyles": "error",
+        "noExcessiveSelectorClasses": {
+          "level": "error",
+          "options": {
+            "maxClasses": 3,
+          },
+        },
+
+        // typescript
+        "noUselessUndefined": "error",
+        "noVoid": "error",
+
+        // biome
+        "noAdjacentSpacesInRegex": "error",
+        "noArguments": "error",
+        "noBannedTypes": "error",
+        "noCommaOperator": "error",
+        "noEmptyTypeParameters": "error",
+        "noExtraBooleanCast": "error",
+        "noFlatMapIdentity": "error",
+        "noStaticOnlyClass": "error",
+        "noThisInStatic": "error",
+        "noUselessCatch": "error",
+        "noUselessConstructor": "error",
+        "noUselessContinue": "error",
+        "noUselessEmptyExport": "error",
+        "noUselessEscapeInRegex": "error",
+        "noUselessFragments": "error",
+        "noUselessLabel": "error",
+        "noUselessLoneBlockStatements": "error",
+        "noUselessRename": "error",
+        "noUselessStringRaw": "error",
+        "noUselessSwitchCase": "error",
+        "noUselessTernary": "error",
+        "noUselessThisAlias": "error",
+        "noUselessTypeConstraint": "error",
+        "noUselessUndefinedInitialization": "error",
+        "useArrowFunction": "error",
+        "useDateNow": "error",
+        "useFlatMap": "error",
+        "useIndexOf": "error",
+        "useLiteralKeys": "off",
+        "useMathMinMax": "error",
+        "useNumericLiterals": "error",
+        "useOptionalChain": "error",
+        "useRegexLiterals": "error",
+        "useSimpleNumberKeys": "error",
+        "noUselessStringConcat": "error",
+        "noImplicitCoercions": "error",
+        "noForEach": "error",
+        "useSimplifiedLogicExpression": "error",
+        "useWhile": "error",
+        "noUselessReturn": "error",
+        "noRedundantDefaultExport": "error",
+        "useArrayFind": "error",
+        "useArraySome": "error",
+        "useRegexpTest": "error",
+      },
+      "security": {
+        // biome
+        "noSecrets": {
+          "level": "error",
+          "options": {
+            "entropyThreshold": 60,
+          },
+        },
+
+        // typescript
+        "noGlobalEval": "error",
+
+        // react-dom
+        "noDangerouslySetInnerHtml": "error",
+        "noDangerouslySetInnerHtmlWithChildren": "error",
+        "noBlankTarget": "error",
+      },
+
+      // biome
+      "performance": {
+        "noReExportAll": "error",
+        "noAccumulatingSpread": "error",
+        "noDynamicNamespaceImportAccess": "error",
+        "useDomNodeTextContent": "error",
+        "noDelete": "error",
+        "noAwaitInLoops": "error",
+      },
+      "a11y": {
+        // html
+        "useHtmlLang": "error",
+        "noPositiveTabindex": "error",
+        "noAriaHiddenOnFocusable": "error",
+
+        // react-dom
+        "useButtonType": "error",
+        "useHeadingContent": "error",
+        "noAutofocus": "error",
+        "useKeyWithClickEvents": "error",
+        "noRedundantAlt": "error",
+        "useValidAutocomplete": "error",
+        "useAnchorContent": "error",
+        "useAltText": "error",
+        "noLabelWithoutControl": "error",
+        "useIframeTitle": "error",
+        "noSvgWithoutTitle": "error",
+        "useValidAnchor": "error",
+        "useSemanticElements": "error",
+        "noStaticElementInteractions": "error",
+        "useAriaPropsForRole": "error",
+        "noRedundantRoles": "error",
+        "noInteractiveElementToNoninteractiveRole": "error",
+        "useValidAriaValues": "error",
+        "useValidAriaProps": "error",
+        "useValidAriaRole": "error",
+        "useFocusableInteractive": "error",
+        "noNoninteractiveElementInteractions": "error",
+        "noNoninteractiveElementToInteractiveRole": "error",
+      },
+
+      // biome
+      "preset": "recommended",
+    },
+  },
+  "plugins": [
+    // biome
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/case-named-should-when.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/case-holds-no-logic.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/case-split-by-arrange-act-assert-comments.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/case-pins-meaning-never-wording.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/tests/**",
+      ],
+    },
+
+    // _react
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/file-is-one-semantic-unit.grit",
+      "includes": [
+        "**/*.tsx",
+      ],
+    },
+
+    // bun-test
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/test-never-skipped-or-empty.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+    },
+
+    // biome
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/effects-held-only-by-the-edge.grit",
+      "includes": [
+        "**/src/**",
+        "!**/src/adapters/**",
+        "!**/src/features/*/adapters/**",
+        "!**/src/composition/*/adapters/**",
+        "!**/src/libs/**",
+        "!**/src/root/**",
+        "!**/src/*.ts",
+        "!**/src/*.tsx",
+        "!**/src/entrypoints/**",
+        "!**/src/integrations/**",
+        "!**/__tests__/**",
+      ],
+    },
+
+    // typescript
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/surface-only-re-exports.grit",
+      "includes": [
+        "**/index.ts",
+        "**/index.tsx",
+        "!**/src/root/**/index.tsx",
+      ],
+    },
+
+    // css
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/css/selector-never-targets-an-id.grit",
+      "includes": [
+        "**/*.css",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/css/transition-names-its-properties.grit",
+      "includes": [
+        "**/*.css",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/css/web-font-served-as-woff2.grit",
+      "includes": [
+        "**/*.css",
+      ],
+    },
+
+    // typescript
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/identifier-case-by-kind.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/module-level-value-never-changed.grit",
+      "includes": [
+        "**",
+        "!**/*.test.ts",
+        "!**/*.test.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/parameter-object-has-a-named-type.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/undefined-is-the-only-absence.grit",
+      "includes": [
+        "**",
+        "!**/adapters/**",
+        "!**/models/**",
+        "!**/*.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/closed-name-set-is-a-string-enum.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+        "!**/adapters/**",
+        "!**/models/**",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/business-types-readonly.grit",
+      "includes": [
+        "**/domain/**",
+        "**/kernel/**",
+        "!**/__tests__/**",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/timer-set-only-by-the-edge-and-binding-units.grit",
+      "includes": [
+        "**/src/**",
+        "!**/src/adapters/**",
+        "!**/src/features/*/adapters/**",
+        "!**/src/composition/*/adapters/**",
+        "!**/src/libs/**",
+        "!**/src/root/**",
+        "!**/src/*.ts",
+        "!**/src/*.tsx",
+        "!**/src/entrypoints/**",
+        "!**/src/integrations/**",
+        "!**/src/features/*/app/**",
+        "!**/src/composition/*/app/**",
+        "!**/__tests__/**",
+      ],
+    },
+
+    // _react
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/nothing-rendered-as-null.grit",
+      "includes": [
+        "**/*.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/compound-parts-share-the-root-context.grit",
+      "includes": [
+        "**/*.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/react-compiler-on.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+
+    // biome
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/biome-refuses-empty-names.grit",
+      "includes": [
+        "**",
+        "!**/libs/**",
+      ],
+    },
+
+    // bun-test
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/module-never-mocked-in-a-spec.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/strict-matcher-only.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/failed-test-never-retried.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/spec-never-sleeps.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+    },
+
+    // tailwind
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/css/utilities-only-from-tokens.grit",
+      "includes": [
+        "**/*.css",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/css/transition-all-never-used.grit",
+      "includes": [
+        "**/*.css",
+      ],
+    },
+
+    // testing-library
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/spec-never-selects-from-the-document.grit",
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+    },
+
+    // biome
+    "./.droneey/constitution/presets/biome/plugins/typescript/catch-handles-only-what-it-recognises.grit",
+    "./.droneey/constitution/presets/biome/plugins/typescript/statements-grouped-by-blank-lines.grit",
+
+    // browser
+    "./.droneey/constitution/presets/biome/plugins/typescript/raw-html-never-reaches-the-dom.grit",
+
+    // typescript
+    "./.droneey/constitution/presets/biome/plugins/typescript/type-names-undecorated.grit",
+
+    // _react
+    "./.droneey/constitution/presets/biome/plugins/typescript/modern-react-api-only.grit",
+
+    // biome
+    "./.droneey/constitution/presets/biome/plugins/typescript/biome-refuses-empty-verbs.grit",
+
+    // react-dom
+    "./.droneey/constitution/presets/biome/plugins/typescript/labels-bound-with-use-id.grit",
+    "./.droneey/constitution/presets/biome/plugins/typescript/field-declares-its-autocomplete.grit",
+    "./.droneey/constitution/presets/biome/plugins/typescript/inline-style-only-custom-properties-and-geometry.grit",
+
+    // tailwind
+    "./.droneey/constitution/presets/biome/plugins/typescript/transition-all-never-used.grit",
+    "./.droneey/constitution/presets/biome/plugins/typescript/screen-sized-classes-never-used.grit",
+    "./.droneey/constitution/presets/biome/plugins/typescript/mobile-first-breakpoints.grit",
+    "./.droneey/constitution/presets/biome/plugins/typescript/focus-shown-by-focusable-utility.grit",
+    "./.droneey/constitution/presets/biome/plugins/typescript/important-modifier-never-in-a-class-list.grit",
+  ],
+  "overrides": [
+    // biome
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/tests/**",
+      ],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noEmptyBlockStatements": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.gen.*",
+        "**/*.gen/**",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noExcessiveLinesPerFile": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/tests/**",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noExcessiveLinesPerFile": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/tests/**",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noMagicNumbers": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.gen.*",
+        "**/*.gen/**",
+      ],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveLinesPerFunction": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/tests/**",
+      ],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveLinesPerFunction": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.config.ts",
+        "**/*.config.js",
+        "**/*.config.mjs",
+        "**/*.config.cjs",
+        "**/.*rc.ts",
+        "**/.*rc.js",
+        "**/.*rc.mjs",
+        "**/.*rc.cjs",
+      ],
+      "linter": {
+        "rules": {
+          "security": {
+            "noSecrets": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/src/**",
+        "!**/src/adapters/**",
+        "!**/src/features/*/adapters/**",
+        "!**/src/composition/*/adapters/**",
+        "!**/src/libs/**",
+        "!**/src/root/**",
+        "!**/src/*.ts",
+        "!**/src/*.tsx",
+        "!**/src/entrypoints/**",
+        "!**/src/integrations/**",
+        "!**/__tests__/**",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedGlobals": {
+              "level": "error",
+              "options": {
+                "deniedGlobals": {
+                  "EventSource": "Outside the edge, the network reaches this code through a port.",
+                  "WebSocket": "Outside the edge, the network reaches this code through a port.",
+                  "XMLHttpRequest": "Outside the edge, the network reaches this code through a port.",
+                  "fetch": "Outside the edge, the network reaches this code through a port.",
+                  "indexedDB": "Outside the edge, storage reaches this code through a port.",
+                  "localStorage": "Outside the edge, storage reaches this code through a port.",
+                  "performance": "Outside the edge, the clock reaches this code through a port.",
+                  "process": "Outside the edge, the process, its streams and its arguments reach this code through a port.",
+                  "caches": "Outside the edge, input and output reach this code through a port.",
+                  "cookieStore": "Outside the edge, input and output reach this code through a port.",
+                  "document": "Outside the edge, input and output reach this code through a port.",
+                  "globalThis": "Outside the edge, input and output reach this code through a port.",
+                  "navigator": "Outside the edge, input and output reach this code through a port.",
+                  "self": "Outside the edge, input and output reach this code through a port.",
+                  "window": "Outside the edge, input and output reach this code through a port.",
+                  "sessionStorage": "Outside the edge, storage reaches this code through a port.",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+
+    // bun
+    {
+      "includes": [
+        "**/src/**",
+        "!**/src/adapters/**",
+        "!**/src/features/*/adapters/**",
+        "!**/src/composition/*/adapters/**",
+        "!**/src/libs/**",
+        "!**/src/root/**",
+        "!**/src/*.ts",
+        "!**/src/*.tsx",
+        "!**/src/entrypoints/**",
+        "!**/src/integrations/**",
+        "!**/__tests__/**",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedGlobals": {
+              "level": "error",
+              "options": {
+                "deniedGlobals": {
+                  "EventSource": "Outside the edge, the network reaches this code through a port.",
+                  "WebSocket": "Outside the edge, the network reaches this code through a port.",
+                  "XMLHttpRequest": "Outside the edge, the network reaches this code through a port.",
+                  "fetch": "Outside the edge, the network reaches this code through a port.",
+                  "indexedDB": "Outside the edge, storage reaches this code through a port.",
+                  "localStorage": "Outside the edge, storage reaches this code through a port.",
+                  "performance": "Outside the edge, the clock reaches this code through a port.",
+                  "process": "Outside the edge, the process, its streams and its arguments reach this code through a port.",
+                  "caches": "Outside the edge, input and output reach this code through a port.",
+                  "cookieStore": "Outside the edge, input and output reach this code through a port.",
+                  "document": "Outside the edge, input and output reach this code through a port.",
+                  "globalThis": "Outside the edge, input and output reach this code through a port.",
+                  "navigator": "Outside the edge, input and output reach this code through a port.",
+                  "self": "Outside the edge, input and output reach this code through a port.",
+                  "window": "Outside the edge, input and output reach this code through a port.",
+                  "sessionStorage": "Outside the edge, storage reaches this code through a port.",
+                  "Bun": "Outside the edge, Bun's files, processes, environment and network reach this code through a port.",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+
+    // typescript
+    {
+      "includes": [
+        "**/*.config.ts",
+        "**/.*rc.ts",
+      ],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "useExplicitReturnType": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.d.ts",
+      ],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnusedVariables": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "useConsistentMemberAccessibility": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "useExplicitReturnType": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.d.ts",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "useNamingConvention": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.config.ts",
+        "**/*.config.js",
+        "**/*.config.mjs",
+        "**/*.config.cjs",
+        "**/.*rc.ts",
+        "**/.*rc.js",
+        "**/.*rc.mjs",
+        "**/.*rc.cjs",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noDefaultExport": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.d.ts",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noDefaultExport": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/tests/**",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "useFilenamingConvention": {
+              "level": "error",
+              "options": {
+                "filenameCases": [
+                  "kebab-case",
+                ],
+                "match": "([^.]+)[.]((?:[^.]+[.])?(?:integration[.]|e2e[.])?(?:test|fake|suite|fixtures)[.]tsx?)",
+              },
+            },
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/root/**",
+        "**/main.*",
+        "**/entrypoints/*/main.*",
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/tests/**",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noProcessEnv": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/components/**",
+        "!**/__tests__/**",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedGlobals": {
+              "level": "error",
+              "options": {
+                "deniedGlobals": {
+                  "EventSource": "A component takes its data and callbacks as props; input and output go through binding units.",
+                  "WebSocket": "A component takes its data and callbacks as props; input and output go through binding units.",
+                  "XMLHttpRequest": "A component takes its data and callbacks as props; input and output go through binding units.",
+                  "fetch": "A component takes its data and callbacks as props; input and output go through binding units.",
+                  "indexedDB": "A component takes its data and callbacks as props; input and output go through binding units.",
+                  "localStorage": "A component takes its data and callbacks as props; input and output go through binding units.",
+                  "performance": "A component takes its data and callbacks as props; input and output go through binding units.",
+                  "process": "A component takes its data and callbacks as props; input and output go through binding units.",
+                  "caches": "A component takes its data and callbacks as props; input and output go through binding units.",
+                  "cookieStore": "A component takes its data and callbacks as props; input and output go through binding units.",
+                  "document": "A component takes its data and callbacks as props; input and output go through binding units.",
+                  "globalThis": "A component takes its data and callbacks as props; input and output go through binding units.",
+                  "navigator": "A component takes its data and callbacks as props; input and output go through binding units.",
+                  "self": "A component takes its data and callbacks as props; input and output go through binding units.",
+                  "window": "A component takes its data and callbacks as props; input and output go through binding units.",
+                  "sessionStorage": "A component takes its data and callbacks as props; input and output go through binding units.",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+
+    // _react
+    {
+      "includes": [
+        "**/*.ts",
+      ],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "useHookAtTopLevel": "error",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.tsx",
+        "**/*.jsx",
+      ],
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedAttributes": {
+              "level": "on",
+              "options": {},
+            },
+            "noDuplicateClasses": {
+              "level": "on",
+              "options": {},
+            },
+          },
+        },
+      },
+      "linter": {
+        "rules": {
+          "correctness": {
+            "useHookAtTopLevel": "error",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.ts",
+      ],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "useExhaustiveDependencies": "error",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.tsx",
+        "**/*.jsx",
+      ],
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedAttributes": {
+              "level": "on",
+              "options": {},
+            },
+            "noDuplicateClasses": {
+              "level": "on",
+              "options": {},
+            },
+          },
+        },
+      },
+      "linter": {
+        "rules": {
+          "correctness": {
+            "useExhaustiveDependencies": "error",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.tsx",
+        "**/*.jsx",
+      ],
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedAttributes": {
+              "level": "on",
+              "options": {},
+            },
+            "noDuplicateClasses": {
+              "level": "on",
+              "options": {},
+            },
+          },
+        },
+      },
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noChildrenProp": "error",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.tsx",
+        "**/*.jsx",
+      ],
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedAttributes": {
+              "level": "on",
+              "options": {},
+            },
+            "noDuplicateClasses": {
+              "level": "on",
+              "options": {},
+            },
+          },
+        },
+      },
+      "linter": {
+        "rules": {
+          "nursery": {
+            "useReactCompiler": "error",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.tsx",
+        "**/*.jsx",
+      ],
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedAttributes": {
+              "level": "on",
+              "options": {},
+            },
+            "noDuplicateClasses": {
+              "level": "on",
+              "options": {},
+            },
+          },
+        },
+      },
+      "linter": {
+        "rules": {
+          "nursery": {
+            "useReactNamingConvention": "error",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.tsx",
+        "**/*.jsx",
+      ],
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedAttributes": {
+              "level": "on",
+              "options": {},
+            },
+            "noDuplicateClasses": {
+              "level": "on",
+              "options": {},
+            },
+          },
+        },
+      },
+      "linter": {
+        "rules": {
+          "nursery": {
+            "useReactFunctionComponentDefinition": {
+              "level": "error",
+              "options": {
+                "namedComponents": "functionDeclaration",
+              },
+            },
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.tsx",
+        "**/*.jsx",
+      ],
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedAttributes": {
+              "level": "on",
+              "options": {},
+            },
+            "noDuplicateClasses": {
+              "level": "on",
+              "options": {},
+            },
+          },
+        },
+      },
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noLeakedRender": "error",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.tsx",
+        "**/*.jsx",
+      ],
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedAttributes": {
+              "level": "on",
+              "options": {},
+            },
+            "noDuplicateClasses": {
+              "level": "on",
+              "options": {},
+            },
+          },
+        },
+      },
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noDuplicateJsxProps": "error",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.tsx",
+        "**/*.jsx",
+      ],
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedAttributes": {
+              "level": "on",
+              "options": {},
+            },
+            "noDuplicateClasses": {
+              "level": "on",
+              "options": {},
+            },
+          },
+        },
+      },
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noDuplicatedSpreadProps": "error",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.tsx",
+        "**/*.jsx",
+      ],
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedAttributes": {
+              "level": "on",
+              "options": {},
+            },
+            "noDuplicateClasses": {
+              "level": "on",
+              "options": {},
+            },
+          },
+        },
+      },
+      "linter": {
+        "rules": {
+          "style": {
+            "useFragmentSyntax": "error",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.tsx",
+        "**/*.jsx",
+      ],
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedAttributes": {
+              "level": "on",
+              "options": {},
+            },
+            "noDuplicateClasses": {
+              "level": "on",
+              "options": {},
+            },
+          },
+        },
+      },
+      "linter": {
+        "rules": {
+          "style": {
+            "useComponentExportOnlyModules": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.tsx",
+        "**/*.jsx",
+      ],
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedAttributes": {
+              "level": "on",
+              "options": {},
+            },
+            "noDuplicateClasses": {
+              "level": "on",
+              "options": {},
+            },
+          },
+        },
+      },
+      "linter": {
+        "rules": {
+          "style": {
+            "useConsistentCurlyBraces": "error",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.tsx",
+        "**/*.jsx",
+      ],
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedAttributes": {
+              "level": "on",
+              "options": {},
+            },
+            "noDuplicateClasses": {
+              "level": "on",
+              "options": {},
+            },
+          },
+        },
+      },
+      "linter": {
+        "rules": {
+          "style": {
+            "useSelfClosingElements": "error",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.tsx",
+        "**/*.jsx",
+      ],
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedAttributes": {
+              "level": "on",
+              "options": {},
+            },
+            "noDuplicateClasses": {
+              "level": "on",
+              "options": {},
+            },
+          },
+        },
+      },
+      "linter": {
+        "rules": {
+          "performance": {
+            "noJsxPropsBind": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.tsx",
+        "**/*.jsx",
+      ],
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedAttributes": {
+              "level": "on",
+              "options": {},
+            },
+            "noDuplicateClasses": {
+              "level": "on",
+              "options": {},
+            },
+          },
+        },
+      },
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noUselessFragments": "error",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.tsx",
+        "**/*.jsx",
+      ],
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedAttributes": {
+              "level": "on",
+              "options": {},
+            },
+            "noDuplicateClasses": {
+              "level": "on",
+              "options": {},
+            },
+          },
+        },
+      },
+      "linter": {
+        "rules": {
+          "correctness": {
+            "useJsxKeyInIterable": "error",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.tsx",
+        "**/*.jsx",
+      ],
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedAttributes": {
+              "level": "on",
+              "options": {},
+            },
+            "noDuplicateClasses": {
+              "level": "on",
+              "options": {},
+            },
+          },
+        },
+      },
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noArrayIndexKey": "error",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.tsx",
+        "**/*.jsx",
+      ],
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedAttributes": {
+              "level": "on",
+              "options": {},
+            },
+            "noDuplicateClasses": {
+              "level": "on",
+              "options": {},
+            },
+          },
+        },
+      },
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noNestedComponentDefinitions": "error",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.tsx",
+        "**/*.jsx",
+      ],
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedAttributes": {
+              "level": "on",
+              "options": {},
+            },
+            "noDuplicateClasses": {
+              "level": "on",
+              "options": {},
+            },
+          },
+        },
+      },
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noComponentHookFactories": "error",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.tsx",
+        "**/*.jsx",
+      ],
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedAttributes": {
+              "level": "on",
+              "options": {},
+            },
+            "noDuplicateClasses": {
+              "level": "on",
+              "options": {},
+            },
+          },
+        },
+      },
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noReactPropAssignments": "error",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.tsx",
+        "**/*.jsx",
+      ],
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedAttributes": {
+              "level": "on",
+              "options": {},
+            },
+            "noDuplicateClasses": {
+              "level": "on",
+              "options": {},
+            },
+          },
+        },
+      },
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noReactForwardRef": "error",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.tsx",
+        "**/*.jsx",
+      ],
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedAttributes": {
+              "level": "on",
+              "options": {},
+            },
+            "noDuplicateClasses": {
+              "level": "on",
+              "options": {},
+            },
+          },
+        },
+      },
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noReactStringRefs": "error",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.tsx",
+        "**/*.jsx",
+      ],
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedAttributes": {
+              "level": "on",
+              "options": {},
+            },
+            "noDuplicateClasses": {
+              "level": "on",
+              "options": {},
+            },
+          },
+        },
+      },
+      "linter": {
+        "rules": {
+          "style": {
+            "useReactFunctionComponents": "error",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.tsx",
+        "**/*.jsx",
+      ],
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedAttributes": {
+              "level": "on",
+              "options": {},
+            },
+            "noDuplicateClasses": {
+              "level": "on",
+              "options": {},
+            },
+          },
+        },
+      },
+      "linter": {
+        "rules": {
+          "style": {
+            "useNamingConvention": {
+              "level": "error",
+              "options": {
+                "conventions": [
+                  {
+                    "selector": {
+                      "kind": "typeParameter",
+                    },
+                    "match": "T([A-Z].*)?",
+                    "formats": [
+                      "PascalCase",
+                    ],
+                  },
+                  {
+                    "selector": {
+                      "kind": "objectLiteralProperty",
+                    },
+                    "match": "[_$]*([^_$].*?)[_$]*",
+                    "formats": [
+                      "camelCase",
+                      "PascalCase",
+                    ],
+                  },
+                  {
+                    "selector": {
+                      "kind": "typeProperty",
+                    },
+                    "match": "[_$]*([^_$].*?)[_$]*",
+                    "formats": [
+                      "camelCase",
+                      "PascalCase",
+                    ],
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+    },
+
+    // biome
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noStaticOnlyClass": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noIdenticalTestTitle": "error",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.jsonc",
+      ],
+      "json": {
+        "formatter": {
+          "trailingCommas": "all",
+        },
+      },
+    },
+
+    // bun-test
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+      "linter": {
+        "domains": {
+          "test": "all",
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveNestedTestSuites": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "useConsistentTestIt": "error",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "useTestHooksInOrder": "error",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "useTestHooksOnTop": "error",
+          },
+        },
+      },
+    },
+
+    // dependency-cruiser
+    {
+      "includes": [
+        "**/.dependency-cruiser.js",
+        "**/.dependency-cruiser.mjs",
+        "**/.dependency-cruiser.cjs",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noDefaultExport": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/.dependency-cruiser.js",
+        "**/.dependency-cruiser.mjs",
+        "**/.dependency-cruiser.cjs",
+      ],
+      "linter": {
+        "rules": {
+          "security": {
+            "noSecrets": "off",
+          },
+        },
+      },
+    },
+  ],
+  "assist": {
+    "actions": {
+      "source": {
+        // typescript
+        "useSortedInterfaceMembers": {
+          "level": "on",
+          "options": {},
+        },
+        "organizeImports": {
+          "options": {
+            // biome
+            "identifierOrder": "natural",
+            "groups": [
+              // biome
+              ":URL:",
+
+              // _react
+              ":BLANK_LINE:",
+
+              // biome
+              ":NODE:",
+
+              // _react
+              ":BLANK_LINE:",
+
+              // biome
+              ":BUN:",
+
+              // _react
+              ":BLANK_LINE:",
+              [
+                "react",
+                "react/**",
+                "react-*",
+              ],
+              ":BLANK_LINE:",
+
+              // biome
+              ":PACKAGE:",
+
+              // _react
+              ":BLANK_LINE:",
+
+              // biome
+              ":ALIAS:",
+
+              // _react
+              ":BLANK_LINE:",
+
+              // biome
+              ":PATH:",
+            ],
+          },
+
+          // biome
+          "level": "on",
+        },
+      },
+    },
+  },
+
+  // biome
+  "markdown": {
+    "linter": {
+      "enabled": false,
+    },
+    "formatter": {
+      "enabled": false,
+    },
+  },
+  "css": {
+    // biome
+    "formatter": {
+      "quoteStyle": "single",
+    },
+
+    // tailwind
+    "parser": {
+      "tailwindDirectives": true,
+    },
+  },
+
+  // biome
+  "javascript": {
+    "formatter": {
+      "semicolons": "always",
+      "quoteStyle": "single",
+      "jsxQuoteStyle": "single",
+      "trailingCommas": "all",
+      "arrowParentheses": "always",
+      "bracketSpacing": true,
+      "bracketSameLine": false,
+      "attributePosition": "multiline",
+    },
+  },
+  "yaml": {
+    "formatter": {
+      "quoteStyle": "single",
+    },
+  },
+
+  // git
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true,
+  },
+}

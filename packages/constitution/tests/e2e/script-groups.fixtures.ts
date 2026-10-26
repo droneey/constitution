@@ -137,7 +137,7 @@ const shellFilesOf = (unit: string): readonly string[] => {
   return listed.stdout.split('\n').filter((line) => line !== '');
 };
 
-// The units whose check the program runs from the root, by a stand-in Bun that marks its folder.
+// The units whose check the executable runs from the root, by a stand-in Bun that marks its folder.
 const checkedUnits = (): readonly string[] => {
   const root = workspace();
   const stand = join(root, '.stand');

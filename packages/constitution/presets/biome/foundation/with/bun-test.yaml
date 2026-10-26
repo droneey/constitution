@@ -1,7 +1,7 @@
 bun-test:
   '*':
     typescript:
-      biome.json:
+      biome.jsonc:
         overrides:
           - includes:
               - '**/${role.colocated-specs}/**'
@@ -44,7 +44,7 @@ bun-test:
                   useTestHooksOnTop: error
   module-never-mocked-in-a-spec:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/module-never-mocked-in-a-spec.grit]:
           includes:
             - '**/${role.colocated-specs}/**'
@@ -52,7 +52,7 @@ bun-test:
             - '**/*.test.tsx'
   strict-matcher-only:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/strict-matcher-only.grit]:
           includes:
             - '**/${role.colocated-specs}/**'
@@ -60,7 +60,7 @@ bun-test:
             - '**/*.test.tsx'
   failed-test-never-retried:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/failed-test-never-retried.grit]:
           includes:
             - '**/${role.colocated-specs}/**'
@@ -68,7 +68,7 @@ bun-test:
             - '**/*.test.tsx'
   spec-never-sleeps:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/spec-never-sleeps.grit]:
           includes:
             - '**/${role.colocated-specs}/**'
@@ -77,7 +77,7 @@ bun-test:
 core:
   test-never-skipped-or-empty:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/test-never-skipped-or-empty.grit]:
           includes:
             - '**/${role.colocated-specs}/**'

@@ -1,11 +1,11 @@
 ink:
   '*':
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         allowedSeverity: error
   ink-imported-by-the-ui:
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         allowed[comment=ink-imported-by-the-ui]:
           from:
             path: /${role.presentation-layer}/

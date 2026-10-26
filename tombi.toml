@@ -1,3 +1,4 @@
+# tombi
 toml-version = "v1.0.0"
 
 [format.rules]
@@ -11,18 +12,21 @@ enabled = false
 [schema.format.rules.table-keys-order]
 enabled = false
 
+# workspace
 [files]
 exclude = [
   "apps/docs/**",
+  "packages/@design/browser/**",
+  "packages/@design/cli/**",
+  "packages/@design/tokens/**",
+  "packages/@mutation-check/python/**",
+  "packages/@mutation-check/typescript/**",
+  "packages/brand/**",
   "packages/constitution/**",
-  "packages/design-browser/**",
-  "packages/design-cli/**",
-  "packages/design-tokens/**",
-  "packages/mutation-check/languages/python/**",
-  "packages/mutation-check/languages/typescript/**",
   "packages/python-check/**"
 ]
 
+# mise
 [[overrides]]
 [overrides.files]
 include = [".mise/locks/**"]

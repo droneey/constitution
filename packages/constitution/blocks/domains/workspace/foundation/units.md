@@ -6,11 +6,11 @@
 
 ### unit-named-after-its-folder · SHOULD
 
-A unit is named after its folder under the repository's scope, in each of its languages, and no two units of the repository share a name.
+A unit is named after its folder under the repository's scope, a unit in a group folder after the group and its folder, `<group>-<folder>`, and no two units of the repository share a name.
 
 | Why |
 |---|
-| an import then names the folder it reaches, and a package manager refuses two members of one name. |
+| an import then names the folder it reaches, a package manager refuses two members of one name, and the same folder in two groups would otherwise give one. |
 
 ### unit-checked-by-its-own-tools → rule-held-by-a-tool-where-one-can · MUST
 

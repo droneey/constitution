@@ -6,8 +6,7 @@ import { PresetsCode } from './presets-finding.entity';
 import { Setting } from './setting.entity';
 
 interface Contribution {
-  /** the name of what the entry gives a file of lines */
-  readonly group: string;
+  readonly block: string;
   readonly source: string;
   readonly value: PresetValue;
 }

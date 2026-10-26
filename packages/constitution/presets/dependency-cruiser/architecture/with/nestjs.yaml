@@ -1,11 +1,11 @@
 nestjs:
   '*':
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         allowedSeverity: error
   nestjs-imported-by-modules-and-providers:
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         allowed[comment=nestjs-imported-by-modules-and-providers]:
           from:
             path:

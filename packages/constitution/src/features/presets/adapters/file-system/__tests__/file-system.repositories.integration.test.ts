@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -46,6 +46,7 @@ const lock: Lock = {
     defaults: [
       'def',
     ],
+    isCreated: false,
     isWhole: true,
     leaves: [],
   },
@@ -54,6 +55,7 @@ const lock: Lock = {
       'name',
     ],
     defaults: [],
+    isCreated: true,
     isWhole: false,
     leaves: [
       'abc',
@@ -62,7 +64,7 @@ const lock: Lock = {
 };
 
 const LOCK_TEXT =
-  '{\n  "biome.json": {"leaves":["abc"],"addresses":["name"]},\n  "src/sandbox.ts": {"defaults":["def"],"whole":true}\n}\n';
+  '{\n  "biome.json": {"leaves":["abc"],"addresses":["name"],"created":true},\n  "src/sandbox.ts": {"defaults":["def"],"whole":true}\n}\n';
 
 beforeEach(() => {
   folder = mkdtempSync(join(tmpdir(), 'presets-files-'));
@@ -142,12 +144,16 @@ describe('createFileLockRepository', () => {
 });
 
 describe('createFileAppliedFilesRepository', () => {
-  it('should write every file, the folders it needs and each lock, one file of the lock to a line', () => {
+  it('should delete its files and write every file, the folders it needs and each lock, one file of the lock to a line', () => {
     // Arrange
     writeFileSync(at('biome.json'), 'old\n');
+    writeFileSync(at('gone.json'), 'old\n');
 
     // Act
     createFileAppliedFilesRepository().write({
+      deleted: [
+        at('gone.json'),
+      ],
       files: [
         {
           path: at('biome.json'),
@@ -172,11 +178,13 @@ describe('createFileAppliedFilesRepository', () => {
 
     // Assert
     expect([
+      existsSync(at('gone.json')),
       textOf('biome.json'),
       textOf('src/sandbox.ts'),
       textOf('constitution.lock'),
       textOf('src/constitution.lock'),
     ]).toStrictEqual([
+      false,
       'new\n',
       'export {};\n',
       LOCK_TEXT,
@@ -187,6 +195,7 @@ describe('createFileAppliedFilesRepository', () => {
   it('should put back what it wrote, and fail naming the file, when a file cannot be written', () => {
     // Arrange
     writeFileSync(at('biome.json'), 'old\n');
+    writeFileSync(at('gone.json'), 'kept\n');
     mkdirSync(at('locked'), {
       mode: LOCKED,
     });
@@ -194,6 +203,9 @@ describe('createFileAppliedFilesRepository', () => {
     // Act
     const failure = failureOf(() => {
       createFileAppliedFilesRepository().write({
+        deleted: [
+          at('gone.json'),
+        ],
         files: [
           {
             path: at('biome.json'),
@@ -220,9 +232,11 @@ describe('createFileAppliedFilesRepository', () => {
     });
     expect([
       textOf('biome.json'),
+      textOf('gone.json'),
       Bun.file(at('new/file.txt')).size,
     ]).toStrictEqual([
       'old\n',
+      'kept\n',
       0,
     ]);
   });

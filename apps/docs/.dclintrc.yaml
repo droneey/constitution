@@ -1,3 +1,4 @@
+# dclint
 rules:
   require-quotes-in-ports:
     - 2

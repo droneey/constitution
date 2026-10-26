@@ -1,7 +1,7 @@
 storybook:
   stories-unreachable-from-production:
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         forbidden[name=stories-unreachable-from-production]:
           severity: error
           from:
@@ -13,7 +13,7 @@ storybook:
 core:
   production-code-imports-no-tool:
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         forbidden[name=no-development-dependency-in-production]:
           from:
             pathNot:

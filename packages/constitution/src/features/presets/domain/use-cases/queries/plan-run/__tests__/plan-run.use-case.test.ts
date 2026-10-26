@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
+import { createFakeDistributionSources } from '../../../../../__tests__/distribution-sources.fake';
 import {
   PROJECT,
   presetFileParser,
@@ -7,7 +8,6 @@ import {
   releasePresets,
   unitOf,
 } from '../../../../../__tests__/presets.fixtures';
-import { createFakeReleaseBuilds } from '../../../../../__tests__/release-builds.fake';
 import { PresetsCode } from '../../../../entities';
 import { planRun } from '../plan-run.use-case';
 
@@ -80,7 +80,7 @@ interface Planned {
 
 const stepsOf = (input: { name: string; start: string; units?: readonly string[] }): Planned => {
   const plan = planRun({
-    builds: createFakeReleaseBuilds(),
+    distribution: createFakeDistributionSources(),
     files: project.files,
     parser: presetFileParser,
     source: project.source,

@@ -25,6 +25,8 @@ interface FileComputed {
   /** its path from the repository */
   readonly file: string;
   readonly findings: readonly PresetsFinding[];
+  /** a file it created, which no entry writes and nothing is left in */
+  readonly isDeleted: boolean;
   /** the settings of ours the file lacks or holds as an earlier release gave them, defaults aside */
   readonly missing: readonly SettingPlace[];
   /** absent where the file leaves the lock */
@@ -49,6 +51,8 @@ interface UnitComputed {
 }
 
 interface ComputeFilesInput {
+  /** the blocks whose entries write each file, by its path from its unit, whatever the unit takes */
+  readonly blocks: ReadonlyMap<string, readonly string[]>;
   readonly files: ProjectFiles;
   readonly formats: ConfigurationFormat;
   /** by the unit's absolute folder */
@@ -64,6 +68,7 @@ const SEPARATOR = '/';
 const NOTHING = {
   added: [],
   findings: [],
+  isDeleted: false,
   missing: [],
   removed: [],
   stale: [],
@@ -94,6 +99,7 @@ const isBelow = (path: readonly string[], prefix: readonly string[]): boolean =>
   prefix.every((key, at) => path[at] === key);
 
 interface FileInput {
+  readonly blocks: readonly string[];
   readonly file: string;
   readonly formats: ConfigurationFormat;
   readonly plan: FilePlan | undefined;
@@ -152,6 +158,56 @@ const unsortedOf = (input: {
       setting: path.join('.'),
     }));
 
+// A file no entry writes keeps no comment naming a block: its blocks are named, and none marked.
+const writtenOf = (
+  input: FileInput & {
+    settings: Setting;
+    shape: SettingShape | undefined;
+    text: string;
+  },
+): string => {
+  const { plan, shape } = input;
+
+  // Stryker disable ConditionalExpression: a shape given as undefined reads as none given
+  return input.formats.write({
+    format: plan?.format,
+    marks: plan?.marks ?? {
+      blocks: input.blocks,
+      marks: [],
+    },
+    path: input.file,
+    settings: input.settings,
+    sorted: plan?.merged.sorted ?? [],
+    ...(shape === undefined
+      ? {}
+      : {
+          shape,
+        }),
+    text: input.text,
+  });
+  // Stryker restore ConditionalExpression
+};
+
+// A file the apply created goes with its record once no entry writes it and nothing is left in it.
+const endOf = (
+  input: FileInput & {
+    setting: Setting;
+  },
+): {
+  readonly isCreated: boolean;
+  readonly isDeleted: boolean;
+  readonly isLeft: boolean;
+} => {
+  const isCreated = input.record.isCreated || input.read.status === FileReadStatus.Missing;
+  const isLeft = input.plan === undefined && isCreated && isEmpty(input.setting);
+
+  return {
+    isCreated,
+    isDeleted: isLeft && input.read.status === FileReadStatus.Read,
+    isLeft,
+  };
+};
+
 const computeSettings = (
   input: FileInput & {
     text: string;
@@ -161,6 +217,7 @@ const computeSettings = (
   const shape = shapeOf(plan?.merged.value ?? plan?.merged.whole);
   // Stryker disable ConditionalExpression: a shape given as undefined reads as none given
   const parsed = input.formats.read({
+    format: plan?.format,
     path: file,
     ...(shape === undefined
       ? {}
@@ -211,20 +268,15 @@ const computeSettings = (
     setting: overlaid.value,
   });
   const sorted = plan?.merged.sorted ?? [];
-  // Stryker disable ConditionalExpression: a shape given as undefined reads as none given
-  const written = input.formats.write({
-    layout: plan?.layout,
-    path: file,
-    settings: defaults.setting,
-    sorted,
-    ...(shape === undefined
-      ? {}
-      : {
-          shape,
-        }),
-    text,
+  const { isCreated, isDeleted, isLeft } = endOf({
+    ...input,
+    setting: defaults.setting,
   });
-  // Stryker restore ConditionalExpression
+  const written = writtenOf({
+    ...input,
+    settings: defaults.setting,
+    shape,
+  });
 
   return {
     added: input.read.status === FileReadStatus.Read ? placesOf(file, defaults.added) : [],
@@ -237,6 +289,7 @@ const computeSettings = (
       },
       path: file,
     })),
+    isDeleted,
     missing: placesOf(
       file,
       Leaf.leavesOf(ours).filter(
@@ -247,19 +300,25 @@ const computeSettings = (
           ),
       ),
     ),
-    record: recordOf({
-      defaults: defaults.met,
-      fields,
-      heldBefore,
-      lock: record,
-      ours,
-    }),
+    ...(isLeft
+      ? {}
+      : {
+          record: recordOf({
+            defaults: defaults.met,
+            fields,
+            heldBefore,
+            isCreated,
+            lock: record,
+            ours,
+          }),
+        }),
     removed: placesOf(file, stale.removed),
     stale: placesOf(
       file,
       stale.removed.filter((leaf) => leaf.isItem || Setting.at(ours, leaf.path) === undefined),
     ),
-    ...((input.read.status === FileReadStatus.Read ? written === text : isEmpty(defaults.setting))
+    ...(isLeft ||
+    (input.read.status === FileReadStatus.Read ? written === text : isEmpty(defaults.setting))
       ? {}
       : {
           text: written,
@@ -321,6 +380,7 @@ const computeUnit = (
     const file = UnitPath.pathOf(unit.path, local);
 
     return computeFile({
+      blocks: input.blocks.get(local) ?? [],
       file,
       formats: input.formats,
       plan: plans.find((plan) => plan.file === file),

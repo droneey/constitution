@@ -1,4 +1,4 @@
-# The workspace installs mutmut-check, which runs in place of the archive's build.
+# The workspace installs mutmut-check, which runs in place of the distribution's build.
 mutmut:
   '*':
     python:

@@ -54,9 +54,9 @@ const unreadDiagnosisOf = (input: {
 };
 
 interface LinkReportInput {
+  readonly executable: Version;
   readonly files: ProjectFiles;
   readonly place: ProjectPlace | undefined;
-  readonly program: Version;
   readonly source: ProjectSource;
 }
 
@@ -100,15 +100,15 @@ const linkReport = (input: LinkReportInput): PartDiagnosis => {
     target: fromProject(input.files.realFolder(releaseFolder) ?? releaseFolder),
   };
 
-  return release.version === input.program
+  return release.version === input.executable
     ? {
         kind: Diagnosis.LinkMatches,
         link,
       }
     : {
+        executable: input.executable,
         kind: Diagnosis.LinkDiffers,
         link,
-        program: input.program,
         release: release.version,
       };
 };

@@ -1,7 +1,7 @@
 analytics:
   event-sent-only-by-delivery-units:
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         forbidden[name=features-never-track]:
           severity: error
           from:

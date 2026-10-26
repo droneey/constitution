@@ -207,8 +207,26 @@ const presetOf = (given: PresetValue, facts: FileFacts): Outcome<PresetValue> =>
     : pairs;
 };
 
-const guardHolds = (guard: Guard | undefined, facts: FileFacts): boolean =>
-  guard === undefined || booleanOf(guard.fact, facts) === !guard.isNegated;
+// A guard of a fact and a text holds where both resolve and are the same text.
+const guardHolds = (guard: Guard | undefined, facts: FileFacts): boolean => {
+  if (guard === undefined) {
+    return true;
+  }
+
+  const { equals } = guard;
+  const fact = facts.valueOf(guard.fact);
+  const holds =
+    equals === undefined
+      ? booleanOf(guard.fact, facts)
+      : fact !== undefined &&
+        fact ===
+          Fact.resolvedIn({
+            text: equals,
+            valueOf: facts.valueOf,
+          });
+
+  return holds === !guard.isNegated;
+};
 
 // Top among the units that get the same entry: a unit above that gets it holds the file instead.
 const isTopOf = (input: {
@@ -266,6 +284,19 @@ const constitutionPathOf = (input: ConstitutionPathInput): string | undefined =>
   return undefined;
 };
 
+const placeOf = (input: {
+  name: FactName.UnitDepth | FactName.UnitParent;
+  path: string;
+}): string | undefined => {
+  const [top, ...below] = input.path.split(SEPARATOR);
+
+  if (below.length === 0) {
+    return undefined;
+  }
+
+  return input.name === FactName.UnitParent ? top : String(below.length);
+};
+
 interface ResolveFactsInput {
   readonly candidates: readonly Candidate[];
   readonly files: ProjectFiles;
@@ -284,6 +315,39 @@ const factsOf = (
   const { candidate, missing } = input;
   const members = membersOf(candidate.unit, input.units);
 
+  // A text fact, and the finding of what the unit lacks for it.
+  const namedOf = (name: FactName): string | undefined => {
+    if (name === FactName.UnitParent || name === FactName.UnitDepth) {
+      return placeOf({
+        name,
+        path: String(candidate.unit.path),
+      });
+    }
+
+    if (name === FactName.PackageName) {
+      if (candidate.unit.name === undefined) {
+        missing.add(PresetsCode.MissingName);
+      }
+
+      return candidate.unit.name;
+    }
+
+    if (name !== FactName.ConstitutionPath) {
+      return undefined;
+    }
+
+    const path = constitutionPathOf({
+      ...input,
+      file: candidate.file,
+    });
+
+    if (path === undefined) {
+      missing.add(PresetsCode.MissingConstitution);
+    }
+
+    return path;
+  };
+
   return {
     isRoot: members.length > 0,
     isTop: isTopOf(input),
@@ -299,28 +363,8 @@ const factsOf = (
         return term === undefined ? undefined : Term.roleNameOf(term);
       }
 
-      if (Fact.isNamed(fact, FactName.PackageName)) {
-        if (candidate.unit.name === undefined) {
-          missing.add(PresetsCode.MissingName);
-        }
-
-        return candidate.unit.name;
-      }
-
-      if (!Fact.isNamed(fact, FactName.ConstitutionPath)) {
-        return undefined;
-      }
-
-      const path = constitutionPathOf({
-        ...input,
-        file: candidate.file,
-      });
-
-      if (path === undefined) {
-        missing.add(PresetsCode.MissingConstitution);
-      }
-
-      return path;
+      // Stryker disable next-line ConditionalExpression: an unknown fact names no fact namedOf knows
+      return fact.kind === FactKind.Named ? namedOf(fact.name) : undefined;
     },
   };
 };
@@ -367,7 +411,7 @@ const resolveFacts = (input: ResolveFactsInput): FilesResolved => {
       return outcome.kind === OutcomeKind.Resolved
         ? [
             {
-              group: PresetEntry.groupOf(entry),
+              block: PresetEntry.blockOf(entry),
               source: PresetEntry.sourceOf(entry),
               value: outcome.value,
             },

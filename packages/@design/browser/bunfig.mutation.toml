@@ -1,0 +1,12 @@
+[test]
+# stryker
+root = "."
+preload = ["./src/__tests__/dom.fixtures.ts", "./src/__tests__/sandbox.fixtures.ts"]
+
+# stryker
+coverage = false
+pathIgnorePatterns = ["tests/**"]
+
+# stryker
+[run]
+bun = true

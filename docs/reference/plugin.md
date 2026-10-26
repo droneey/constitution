@@ -1,6 +1,6 @@
 # The plugin
 
-> The engine of the Constitution in Claude Code: three skills, a reviewer and the hooks. The rules themselves come from the project's release, and the hooks' work from the `constitution` program the project installs with it.
+> The engine of the Constitution in Claude Code: three skills, a reviewer and the hooks. The rules themselves come from the project's release, and the hooks' work from the `constitution` executable the project installs with it.
 
 ## Skills
 
@@ -45,17 +45,17 @@ It stays under Claude Code's limit of 10,000 characters and holds:
 5. every active block by layer — a domain or a context with its summary, an implementation by its library's name — with its chapters and seams, foundation's first, then axis by axis, on the axes the project follows, and its pack in square brackets; then, for each member of the workspace, what its own `constitution.yaml` adds to the repository's and what it leaves out;
 6. the overrides.
 
-A repository without `constitution.yaml` gets nothing. When `.droneey/constitution/` is missing, or holds a release of a block format this program cannot read, the digest is one line that names it and points to `constitution doctor`.
+A repository without `constitution.yaml` gets nothing. When `.droneey/constitution/` is missing, or holds a release of a block format this executable cannot read, the digest is one line that names it and points to `constitution doctor`.
 
 ### What the hooks need
 
-bash and the `constitution` program on `PATH`, which mise installs from the release the project pins ([the quick start](../../README.md#-quick-start)); nothing else in the project, so a project in any language can follow the Constitution. Each hook of `hooks.json` runs `hooks/hook.sh <event>`, which hands Claude Code's event on standard input to `constitution hook <event>`: `session-start`, `post-tool-use`, `record-check`, `user-prompt-submit` or `stop`. Without the program a hook prints one line that says to install it, and never fails the session.
+bash and the `constitution` executable on `PATH`, which mise installs from the release the project pins ([the quick start](../../README.md#-quick-start)); nothing else in the project, so a project in any language can follow the Constitution. Each hook of `hooks.json` runs `hooks/hook.sh <event>`, which hands Claude Code's event on standard input to `constitution hook <event>`: `session-start`, `post-tool-use`, `record-check`, `user-prompt-submit` or `stop`. Without the executable a hook prints one line that says to install it, and never fails the session.
 
 The resolved set of blocks is kept outside the project, in `/tmp/droneey-constitution-<uid>/<session>/`, for the later hooks and the skills.
 
-### The program
+### The executable
 
-`constitution` is the same program outside a session:
+`constitution` is the same executable outside a session:
 
 - `constitution check` runs the checks below in turn: the blocks of the folder it runs in, when it holds a Constitution or a pack; the presets under its `presets/`, against those blocks; then the project around it. `--base <folder>` names the Constitution a pack extends.
 - `constitution blocks check` checks the blocks of the folder it runs in alone, the pack's against `--base <folder>`.
@@ -63,7 +63,7 @@ The resolved set of blocks is kept outside the project, in `/tmp/droneey-constit
 - `constitution presets plan` prints the configuration files `apply` would write, each with the preset entries that write into it, what each unit's runners give `constitution run`, and what is wrong in the presets.
 - `constitution presets apply` writes into each unit's configuration files what the presets of the release and of the packs it follows give its blocks, beside the settings the files keep of their own, and records what it wrote in the unit's `constitution.lock`, so the next run removes what the blocks no longer give. A value the user changed stays as it is and is reported; a default is written once, and stays deleted once the user deletes it. It ends by running the `fix` of each unit it wrote a file of, as `constitution run fix` would; `--no-fix` leaves the files as written.
 - `constitution run <check|test|fix>` runs what the runner blocks of the unit around the folder give for that entry point — every unit's, the root's first, from the repository's root — each command printed before it runs, and stops at the first that fails.
-- `constitution doctor` says how the installation stands, and changes nothing: the plugin, which differs from this program only when its own files — its manifest, hooks, skills and agents — differ from those the program was built with, compared by a hash of their content, its version then saying which is older; the latest release, which it skips without a network; the program on `PATH`; the project's `.droneey/constitution` link and the release behind it; and lefthook's git hooks. Each part that is not sound comes with what to do.
+- `constitution doctor` says how the installation stands, and changes nothing: the plugin, which differs from this executable only when its own files — its manifest, hooks, skills and agents — differ from those the executable was built with, compared by a hash of their content, its version then saying which is older; the latest release, which it skips without a network; the executable on `PATH`; the project's `.droneey/constitution` link and the release behind it; and lefthook's git hooks. Each part that is not sound comes with what to do.
 - `constitution hook <event>` is what the hooks run.
 
 Each command opens its help, `-h` or `--help`, with examples. On a terminal a check draws a spinner on standard error while each step runs, and its result in colour; in a pipe, in CI, under `NO_COLOR` or with `--plain` it prints the same as plain text, each step's line on standard error and the result on standard output; `--no-color` and `--no-motion` take away only the colour or the motion. A command exits 0 when all is sound, 1 on a finding, a warning or a part to look at, 2 on a command line typed wrong, 70 on a defect of its own, and 130 when interrupted.

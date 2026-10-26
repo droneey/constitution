@@ -1,18 +1,16 @@
 workspace:
   unit-reached-only-through-its-entries:
     typescript:
-      .dependency-cruiser.json:
-        forbidden[name=units-imported-by-name]:
+      .dependency-cruiser.jsonc:
+        forbidden[name=other-unit-reached-by-its-name]:
           severity: error
           from:
-            path: ^((?:${role.deployed-unit}|${role.dependency-unit})/[^/]+)/
+            pathNot: ^\.\./
           to:
-            path: ^(?:${role.deployed-unit}|${role.dependency-unit})/
-            pathNot: ^$1/
+            path: ^\.\./
             dependencyTypes:
               - local
-            dependencyTypesNot:
-              - aliased-workspace
+      .dependency-cruiser.jsonc ? ${workspace.isRoot}:
         forbidden[name=root-imports-units-by-name]:
           severity: error
           from:
@@ -21,5 +19,3 @@ workspace:
             path: ^(?:${role.deployed-unit}|${role.dependency-unit})/
             dependencyTypes:
               - local
-            dependencyTypesNot:
-              - aliased-workspace

@@ -15,45 +15,35 @@
   },
   "type": "module",
   "scripts": {
-    "build": "bun packages/constitution/scripts/release-build/main.ts",
-    "build:cli": "bun packages/constitution/scripts/cli-build/main.ts",
     "check": "bun run --sequential 'check:*'",
-    "check:architecture": "depcruise apps/*/src packages/*/src packages/*/tests packages/*/languages/typescript/src --config .dependency-cruiser.json",
     "check:audit": "osv-scanner scan source --licenses=\"0BSD,Apache-2.0,BlueOak-1.0.0,BSD-2-Clause,BSD-3-Clause,CC-BY-4.0,CC0-1.0,ISC,MIT,MIT-0,MPL-2.0,OFL-1.1,PSF-2.0,Python-2.0,Unlicense,Zlib\" --no-ignore .",
     "check:lint": "biome check --error-on-warnings",
     "check:markdown": "rumdl check . && rumdl fmt --check .",
     "check:packages": "syncpack lint && syncpack format --check",
     "check:renovate": "renovate-config-validator --strict",
     "check:secrets": "betterleaks git . --redact --no-banner && betterleaks git . --pre-commit --redact --no-banner && betterleaks git . --pre-commit --staged --redact --no-banner",
-    "check:shell": "git ls-files -z --cached --others --exclude-standard -- '*.sh' '*.bash' ':(exclude)apps/docs' ':(exclude)packages/constitution' ':(exclude)packages/design-browser' ':(exclude)packages/design-cli' ':(exclude)packages/design-tokens' ':(exclude)packages/mutation-check/languages/python' ':(exclude)packages/mutation-check/languages/typescript' ':(exclude)packages/python-check' | xargs -0 -r shellcheck",
-    "check:shell-format": "git ls-files -z --cached --others --exclude-standard -- '*.sh' '*.bash' ':(exclude)apps/docs' ':(exclude)packages/constitution' ':(exclude)packages/design-browser' ':(exclude)packages/design-cli' ':(exclude)packages/design-tokens' ':(exclude)packages/mutation-check/languages/python' ':(exclude)packages/mutation-check/languages/typescript' ':(exclude)packages/python-check' | xargs -0 -r shfmt -d",
+    "check:shell": "git ls-files -z --cached --others --exclude-standard -- '*.sh' '*.bash' ':(exclude)apps/docs' ':(exclude)packages/@design/browser' ':(exclude)packages/@design/cli' ':(exclude)packages/@design/tokens' ':(exclude)packages/@mutation-check/python' ':(exclude)packages/@mutation-check/typescript' ':(exclude)packages/brand' ':(exclude)packages/constitution' ':(exclude)packages/python-check' | xargs -0 -r sh -c \"for file do if [ -e \\\"\\$file\\\" ]; then printf '%s\\0' \\\"\\$file\\\"; fi; done\" sh | xargs -0 -r shellcheck",
+    "check:shell-format": "git ls-files -z --cached --others --exclude-standard -- '*.sh' '*.bash' ':(exclude)apps/docs' ':(exclude)packages/@design/browser' ':(exclude)packages/@design/cli' ':(exclude)packages/@design/tokens' ':(exclude)packages/@mutation-check/python' ':(exclude)packages/@mutation-check/typescript' ':(exclude)packages/brand' ':(exclude)packages/constitution' ':(exclude)packages/python-check' | xargs -0 -r sh -c \"for file do if [ -e \\\"\\$file\\\" ]; then printf '%s\\0' \\\"\\$file\\\"; fi; done\" sh | xargs -0 -r shfmt -d",
     "check:toml": "tombi format --check && tombi lint",
-    "check:types": "tsc -b",
-    "check:unused": "knip --no-config-hints && knip --strict --no-config-hints",
     "check:workflows": "actionlint",
     "check:yaml": "yamllint --strict .",
-    "constitution": "bun packages/constitution/src/main.ts",
+    "constitution": "bun run --filter '@droneey/constitution^...' generate && bun packages/constitution/src/main.ts",
     "fix": "bun run --sequential 'fix:*'",
     "fix:lint": "biome check --write",
     "fix:markdown": "rumdl check --fix",
     "fix:packages": "syncpack fix && syncpack format",
-    "fix:shell-format": "git ls-files -z --cached --others --exclude-standard -- '*.sh' '*.bash' ':(exclude)apps/docs' ':(exclude)packages/constitution' ':(exclude)packages/design-browser' ':(exclude)packages/design-cli' ':(exclude)packages/design-tokens' ':(exclude)packages/mutation-check/languages/python' ':(exclude)packages/mutation-check/languages/typescript' ':(exclude)packages/python-check' | xargs -0 -r shfmt -w",
-    "fix:toml": "tombi format",
-    "mutate:all": "bun run --filter '*' --sequential --bun mutate:all && scripts/poe-each.sh mutate:all",
-    "prebuild:cli": "bun run --filter '@droneey/constitution^...' build",
-    "program:test": "bun --cwd=packages/constitution run program:test"
+    "fix:shell-format": "git ls-files -z --cached --others --exclude-standard -- '*.sh' '*.bash' ':(exclude)apps/docs' ':(exclude)packages/@design/browser' ':(exclude)packages/@design/cli' ':(exclude)packages/@design/tokens' ':(exclude)packages/@mutation-check/python' ':(exclude)packages/@mutation-check/typescript' ':(exclude)packages/brand' ':(exclude)packages/constitution' ':(exclude)packages/python-check' | xargs -0 -r sh -c \"for file do if [ -e \\\"\\$file\\\" ]; then printf '%s\\0' \\\"\\$file\\\"; fi; done\" sh | xargs -0 -r shfmt -w",
+    "fix:toml": "tombi format"
   },
   "workspaces": [
     "apps/*",
     "packages/*",
-    "packages/*/languages/typescript"
+    "packages/@design/*",
+    "packages/@mutation-check/*"
   ],
   "devDependencies": {
     "@biomejs/biome": "2.6.2",
-    "dependency-cruiser": "18.7.0",
-    "knip": "6.41.0",
-    "syncpack": "15.3.3",
-    "typescript": "7.0.2"
+    "syncpack": "15.3.3"
   },
   "resolutions": {
     "fast-uri": "3.1.9",

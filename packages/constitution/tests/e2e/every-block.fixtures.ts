@@ -527,7 +527,7 @@ const commandsOf: Readonly<Record<Tool, readonly (readonly string[])[]>> = {
       bin('depcruise'),
       'src/unit.ts',
       '--config',
-      '.dependency-cruiser.json',
+      '.dependency-cruiser.jsonc',
     ],
   ],
   [Tool.Hadolint]: [

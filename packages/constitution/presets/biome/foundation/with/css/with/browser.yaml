@@ -1,14 +1,14 @@
 css:
   stylesheet-feature-beyond-the-target-behind-supports:
     css:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             suspicious:
               useBaseline: error
   web-font-served-as-woff2:
     css:
-      biome.json:
+      biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/css/web-font-served-as-woff2.grit]:
           includes:
             - '**/*.css'

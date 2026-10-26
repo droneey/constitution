@@ -1,19 +1,22 @@
+# python
 [project]
 name = "droneey-python-check"
 version = "0.0.0"
 requires-python = ">=3.14"
 authors = [{ name = "Dmytro Kurovskyi", email = "me@kurovskyi.dev" }]
-# it ships only inside the Constitution's release archive
+# it ships only inside the Constitution's distribution
 classifiers = ["Private :: Do Not Upload"]
 dependencies = []
 
 [project.scripts]
 python-check = "droneey_python_check.main:main"
 
+# uv
 [build-system]
 requires = ["uv_build>=0.13,<0.14"]
 build-backend = "uv_build"
 
+# pytest
 [tool.pytest]
 minversion = "9.1"
 strict = true
@@ -38,35 +41,43 @@ skip_covered = true
 exclude_also = ["if TYPE_CHECKING:", "@overload", "assert_never\\("]
 
 [tool.mutmut]
+# mutmut
 source_paths = ["src"]
 do_not_mutate = ["*/main.py", "*/root/wiring.py", "*_gen.py", "*_gen/*"]
 # a log call's text and level are no behaviour a caller relies on
 do_not_mutate_patterns = ['^\s*logger\.(debug|info|warning|error|exception|critical)\(']
 # each mutant's run collects the integration specs too, as the coverage gate's run does
 pytest_add_cli_args = ["-p", "no:randomly", "-o", "norecursedirs=.* e2e"]
-# mutmut runs the type check from mutants/, so the part's path climbs out of it
+
+# ty
 type_check_command = ["ty", "check", "--output-format", "gitlab"]
 
+# vulture
 [tool.vulture]
 ignore_names = [
-  "main", # the entry of the zipapp in the archive and of the console script
+  "main", # the entry of the zipapp in the distribution and of the console script
 ]
 paths = ["src"]
 min_confidence = 60
 
+# complexipy
 [tool.complexipy]
 max-complexity-allowed = 15
 
+# deptry
 [tool.deptry]
 ignore = []
 
 [tool.ruff]
 target-version = "py314"
+
+# ruff
 indent-width = 2
 line-length = 100
 
 [tool.ruff.lint]
 extend-select = [
+  # ruff
   "ARG",
   "F401",
   "F841",
@@ -114,8 +125,12 @@ extend-select = [
   "UP040",
   "UP046",
   "UP047",
+
+  # pytest
   "PT"
 ]
+
+# ruff
 extend-ignore = ["D1"]
 ignore = ["PLR09"]
 select = [
@@ -153,6 +168,7 @@ select = [
 [tool.ruff.lint.pylint]
 max-positional-args = 3
 
+# pytest
 [tool.ruff.lint.flake8-tidy-imports.extend-banned-api."pytest.importorskip"]
 msg = "a spec runs whole, or is deleted"
 
@@ -180,56 +196,86 @@ msg = "async specs run on anyio's plugin"
 [tool.ruff.lint.flake8-tidy-imports.extend-banned-api."unittest.mock"]
 msg = "an effect is replaced by the fake of its contract"
 
+# ruff
 [tool.ruff.lint.flake8-tidy-imports.banned-api."sys.path"]
 msg = "a module is imported as a member of an installed package"
 
+# ruff
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
 [tool.ruff.lint.flake8-bandit]
 check-typed-exception = true
 
+# pytest
 [tool.ruff.lint.flake8-pytest-style]
 fixture-parentheses = false
 mark-parentheses = false
 
+# ruff
 [tool.ruff.format]
 docstring-code-format = true
 quote-style = "single"
 
 [tool.poe]
+# poe
 executor = "simple"
 
 [tool.poe.tasks]
+# biome
 "check:biome" = "bunx --bun biome check --error-on-warnings"
 "fix:biome" = "bunx --bun biome check --write"
+
+# complexipy
 "check:complexity" = "complexipy src tests"
+
+# deptry
 "check:dependencies" = "deptry src"
+
+# pytest
 "test:specs" = "pytest --cov -o \"norecursedirs=.* e2e\""
+
+# python-check
 "check:code" = "python-check src tests"
+
+# ruff
 "check:format" = "ruff format --check"
 "check:lint" = "ruff check"
 "fix:format" = "ruff format"
 "fix:lint" = "ruff check --fix"
+
+# ty
 "check:types" = "ty check"
+
+# vulture
 "check:unused" = "vulture"
+
+# tombi
 "fix:toml" = "tombi format"
+
+# yamllint
 "check:yaml" = "yamllint --strict ."
+
+# mutmut
 "mutate:branch" = "mutmut-check"
 "mutate:all" = "mutmut-check all"
 
+# poe
 [tool.poe.tasks.test]
 shell = "for task in $(poe _list_tasks | tr ' ' '\\n' | sort); do case \"$task\" in test:*) poe \"$task\" || exit 1;; esac; done"
 
 [tool.poe.tasks.fix]
 shell = "for task in $(poe _list_tasks | tr ' ' '\\n' | sort); do case \"$task\" in fix:*) poe \"$task\" || exit 1;; esac; done"
 
+# tombi
 [tool.poe.tasks."check:toml"]
 shell = "tombi format --check && tombi lint"
 
+# poe
 [tool.poe.tasks.check]
 shell = "for task in $(poe _list_tasks | tr ' ' '\\n' | sort); do case \"$task\" in check:*) poe \"$task\" || exit 1;; esac; done && poe test && poe mutate:branch"
 
+# ty
 [tool.ty.rules]
 all = "error"
 
@@ -238,3 +284,6 @@ respect-type-ignore-comments = false
 
 [tool.ty.terminal]
 error-on-warning = true
+
+[tool.poe.tasks.build]
+shell = "mkdir -p dist && python -m zipapp src -m droneey_python_check.main:main -o dist/python-check.pyz"

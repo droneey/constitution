@@ -1,19 +1,27 @@
 [global]
 force_exclude = true
+
+# rumdl
 extend-enable = ["MD087", "MD001", "MD025", "MD036", "MD040", "MD045", "MD051", "MD057", "MD059"]
+
+# workspace
 exclude = [
   "apps/docs/**",
+  "packages/@design/browser/**",
+  "packages/@design/cli/**",
+  "packages/@design/tokens/**",
+  "packages/@mutation-check/python/**",
+  "packages/@mutation-check/typescript/**",
+  "packages/brand/**",
   "packages/constitution/**",
-  "packages/design-browser/**",
-  "packages/design-cli/**",
-  "packages/design-tokens/**",
-  "packages/mutation-check/languages/python/**",
-  "packages/mutation-check/languages/typescript/**",
   "packages/python-check/**"
 ]
+
+# rumdl
 disable = ["MD013", "MD041"]
 
-# The archive's entries, repeated since this table replaces its own.
+# rumdl
+# The distribution's entries, repeated since this table replaces its own.
 [per-file-ignores]
 "**/AGENTS.md" = ["MD033"]
 "**/CLAUDE.md" = ["MD033"]

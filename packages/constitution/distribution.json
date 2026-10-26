@@ -1,0 +1,22 @@
+{
+  "tools/mutation-check/dist/main.js": {
+    "file": "dist/main.js",
+    "package": "../@mutation-check/typescript"
+  },
+  "tools/mutation-check/dist/runner.js": {
+    "file": "dist/runner.js",
+    "package": "../@mutation-check/typescript"
+  },
+  "tools/mutation-check/dist/ignorers.js": {
+    "file": "dist/ignorers.js",
+    "package": "../@mutation-check/typescript"
+  },
+  "tools/python-check/dist/python-check.pyz": {
+    "file": "dist/python-check.pyz",
+    "package": "../python-check"
+  },
+  "tools/mutmut-check/dist/mutmut-check.pyz": {
+    "file": "dist/mutmut-check.pyz",
+    "package": "../@mutation-check/python"
+  }
+}

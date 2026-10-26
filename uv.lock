@@ -8,7 +8,7 @@ exclude-newer-span = "P3D"
 
 [manifest]
 members = [
-    "droneey-mutation-check",
+    "droneey-mutation-check-python",
     "droneey-python-check",
 ]
 
@@ -17,7 +17,7 @@ dev = [
     { name = "anyio", specifier = "==4.15.1" },
     { name = "complexipy", specifier = "==8.0.1" },
     { name = "deptry", specifier = "==0.25.1" },
-    { name = "droneey-mutation-check", editable = "packages/mutation-check/languages/python" },
+    { name = "droneey-mutation-check-python", editable = "packages/@mutation-check/python" },
     { name = "droneey-python-check", editable = "packages/python-check" },
     { name = "hypothesis", specifier = "==6.169.0" },
     { name = "import-linter", specifier = "==2.15" },
@@ -198,9 +198,9 @@ wheels = [
 ]
 
 [[package]]
-name = "droneey-mutation-check"
+name = "droneey-mutation-check-python"
 version = "0.0.0"
-source = { editable = "packages/mutation-check/languages/python" }
+source = { editable = "packages/@mutation-check/python" }
 
 [[package]]
 name = "droneey-python-check"

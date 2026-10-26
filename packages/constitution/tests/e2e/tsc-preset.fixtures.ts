@@ -53,7 +53,9 @@ const unitOf = (blocks: readonly string[]): UnitFixture => ({
 // repository's node_modules.
 const writeProject = (folder: string, project: Project): void => {
   const applied = tsconfig.parse(
-    JSON.parse(readFileSync(join(appliedUnit(unitOf(project.blocks)), 'tsconfig.json'), 'utf8')),
+    Bun.JSONC.parse(
+      readFileSync(join(appliedUnit(unitOf(project.blocks)), 'tsconfig.json'), 'utf8'),
+    ),
   );
 
   mkdirSync(folder, {

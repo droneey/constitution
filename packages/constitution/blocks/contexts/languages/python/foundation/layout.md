@@ -42,7 +42,7 @@ A package's code sits in `src/<import name>/`, its import package, and no module
 
 ### source-folder-is-a-regular-package · MUST
 
-Every folder of the import package holds an **`__init__.py`**; the import tree has no namespace package.
+Every folder of an import package that holds modules holds an **`__init__.py`**, and its import tree has no namespace package; a package of data alone, which holds no module, is a namespace package.
 
 | Why |
 |---|

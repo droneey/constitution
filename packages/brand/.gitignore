@@ -1,0 +1,34 @@
+# git
+.claude/settings.local.json
+.claude/worktrees/
+.DS_Store
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.log
+**/logs/
+.temp/
+.tmp/
+*.bak
+*.orig
+*~
+.env*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+credentials.json
+id_rsa
+*.secrets
+
+# _js-runtime
+**/node_modules/
+*.tgz
+
+# bun
+.npmrc

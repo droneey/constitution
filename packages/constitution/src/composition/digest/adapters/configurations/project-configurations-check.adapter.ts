@@ -1,8 +1,8 @@
 import type {
   ConfigurationFormat,
+  DistributionSources,
   LockRead,
   PresetFileParser,
-  ReleaseBuilds,
 } from '#/features/presets';
 import { checkProject, presetsFindingTextOf } from '#/features/presets';
 import type { ConfigurationsReport, ProjectConfigurationsCheck } from '#/features/session';
@@ -12,7 +12,7 @@ import type { OpenedProject, ProjectWarning } from '#/kernel/entities';
 import { WarningKind } from '#/kernel/entities';
 
 interface ProjectConfigurationsCheckInput {
-  readonly builds: ReleaseBuilds;
+  readonly distribution: DistributionSources;
   readonly files: ProjectFiles;
   readonly formats: ConfigurationFormat;
   /** by the unit's absolute folder */

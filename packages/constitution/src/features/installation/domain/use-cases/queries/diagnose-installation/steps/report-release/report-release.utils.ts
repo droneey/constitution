@@ -4,12 +4,12 @@ import type { LatestRelease, PartDiagnosis } from '../../../../../entities';
 import { Diagnosis, ReleaseLookup } from '../../../../../entities';
 
 interface ReleaseReportInput {
+  readonly executable: Version;
   readonly latest: LatestRelease;
-  readonly program: Version;
 }
 
 const releaseReport = (input: ReleaseReportInput): PartDiagnosis => {
-  const { latest, program } = input;
+  const { executable, latest } = input;
 
   if (latest.lookup === ReleaseLookup.Unreachable) {
     return {
@@ -17,11 +17,11 @@ const releaseReport = (input: ReleaseReportInput): PartDiagnosis => {
     };
   }
 
-  return Version.compare(program, latest.version) < 0
+  return Version.compare(executable, latest.version) < 0
     ? {
+        executable,
         kind: Diagnosis.LatestAhead,
         latest: latest.version,
-        program,
       }
     : {
         kind: Diagnosis.LatestHeld,

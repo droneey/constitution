@@ -44,6 +44,7 @@ interface RecordInput {
   readonly fields: readonly string[];
   /** the keys of our leaves the file held before the apply */
   readonly heldBefore: ReadonlySet<string>;
+  readonly isCreated: boolean;
   readonly lock: LockRecord;
   readonly ours: Setting;
 }
@@ -62,6 +63,7 @@ const recordOf = (input: RecordInput): LockRecord => {
     ...Lock.emptyRecord,
     addresses: leaves.length === 0 ? [] : input.fields,
     defaults: input.defaults,
+    isCreated: input.isCreated,
     leaves,
   };
 };

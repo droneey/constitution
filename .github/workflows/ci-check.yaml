@@ -38,12 +38,12 @@ jobs:
         run: bun run constitution run check
 
       - name: Build
-        run: bun run build
+        run: bun run --cwd packages/constitution build
 
-  # check proves the logic once; a program the release ships can still break on
+  # check proves the logic once; an executable the release ships can still break on
   # its own platform, so each is built and run on its own runner.
-  program:
-    name: program (${{ matrix.target }})
+  executable:
+    name: executable (${{ matrix.target }})
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 15
     permissions:
@@ -72,7 +72,7 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Run the program's specs
+      - name: Run the executable's specs
         env:
           HOOK_SHELL: /bin/bash
-        run: bun run program:test
+        run: bun run --cwd packages/constitution executable:test

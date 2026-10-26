@@ -8,6 +8,8 @@ ignore: |
   .tsc-cache/
   .stryker-tmp/
   coverage/
+
+# yamllint
 rules:
   indentation:
     spaces: 2

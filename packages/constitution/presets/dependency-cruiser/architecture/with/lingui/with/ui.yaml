@@ -1,7 +1,7 @@
 lingui:
   lingui-only-where-text-is-rendered:
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         allowed[comment=lingui-only-where-text-is-rendered]:
           from:
             path:

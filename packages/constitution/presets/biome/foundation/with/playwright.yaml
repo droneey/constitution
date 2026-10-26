@@ -1,7 +1,7 @@
 playwright:
   web-first-assertions-awaited:
     typescript:
-      biome.json:
+      biome.jsonc:
         overrides:
           - includes:
               - ${role.package-suites}/${role.end-to-end-suite}/**
@@ -11,7 +11,7 @@ playwright:
                   noPlaywrightMissingAwait: error
   locators-by-role-label-text:
     typescript:
-      biome.json:
+      biome.jsonc:
         overrides:
           - includes:
               - ${role.package-suites}/${role.end-to-end-suite}/**
@@ -27,7 +27,7 @@ playwright:
                   noPlaywrightEval: error
   waits-through-locators-and-assertions:
     typescript:
-      biome.json:
+      biome.jsonc:
         overrides:
           - includes:
               - ${role.package-suites}/${role.end-to-end-suite}/**
@@ -55,7 +55,7 @@ playwright:
                   noPlaywrightWaitForTimeout: error
   actions-never-forced:
     typescript:
-      biome.json:
+      biome.jsonc:
         overrides:
           - includes:
               - ${role.package-suites}/${role.end-to-end-suite}/**
@@ -66,7 +66,7 @@ playwright:
 core:
   diagnostics-written-through-a-logger:
     typescript:
-      biome.json:
+      biome.jsonc:
         overrides:
           - includes:
               - ${role.package-suites}/${role.end-to-end-suite}/**

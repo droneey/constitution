@@ -1,8 +1,0 @@
-# This repository runs mutation-check from the workspace's source, never from the archive's build.
-stryker:
-  stryker-runs-the-archive-runner:
-    typescript:
-      stryker.config.json:
-        plugins: !replace
-          - ../mutation-check/languages/typescript/${role.source}/integrations/stryker/runner.ts
-          - ../mutation-check/languages/typescript/${role.source}/integrations/stryker/ignorers.ts

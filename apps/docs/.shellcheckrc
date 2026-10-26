@@ -1,6 +1,4 @@
-# expansion double quoted
+# shellcheck
 enable=quote-safe-variables
-
-# script stops on a failed command
 enable=check-set-e-suppressed
 enable=check-extra-masked-returns

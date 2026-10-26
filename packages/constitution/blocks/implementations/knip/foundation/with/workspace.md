@@ -6,7 +6,7 @@
 
 ### knip-configuration-per-unit → unit-configuration-kept-in-its-folder · MUST
 
-In a workspace, each package runs knip by a `knip.jsonc` in its folder, and the root's configuration holds the root's own files and leaves the packages to theirs through `ignoreWorkspaces`.
+In a workspace, each package runs knip by a `knip.jsonc` in its folder; a root that runs knip over its own files leaves the packages to theirs through `ignoreWorkspaces`.
 
 | Why |
 |---|

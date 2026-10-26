@@ -84,6 +84,13 @@ describe('the scripts the presets give a unit run by Bun', () => {
     });
 
     // Assert
-    expect(ran.exitCode).toBe(1);
+    // Bun stops the scripts beside a failing one and gives back the code of whichever ends last.
+    expect({
+      isFailed: ran.exitCode !== 0,
+      reportsSpecScript: /^test:(?:unit|integration) +\| /m.test(ran.output),
+    }).toStrictEqual({
+      isFailed: true,
+      reportsSpecScript: true,
+    });
   });
 });

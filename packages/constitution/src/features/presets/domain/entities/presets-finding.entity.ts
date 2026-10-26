@@ -17,7 +17,7 @@ enum PresetsCode {
   UnknownRole = 'unknown-role',
   HandTypedRole = 'hand-typed-role',
   MembersOutsideList = 'members-outside-a-list',
-  MissingReleaseFile = 'missing-release-file',
+  MissingDistributionFile = 'missing-distribution-file',
   PluginUnreferenced = 'plugin-unreferenced',
   PluginNamesNoRule = 'plugin-names-no-rule',
   Clash = 'clash',
@@ -103,7 +103,7 @@ interface PresetsDetails {
     readonly term: string;
   };
   readonly [PresetsCode.MembersOutsideList]: EntryNamed;
-  readonly [PresetsCode.MissingReleaseFile]: {
+  readonly [PresetsCode.MissingDistributionFile]: {
     /** the file's path from the release */
     readonly file: string;
   };

@@ -1,7 +1,7 @@
 core:
   module-imports-form-no-cycle:
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         forbidden[name=no-circular]:
           severity: error
           from: {}
@@ -9,7 +9,7 @@ core:
             circular: true
   test-code-never-reached-from-production:
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         forbidden[name=no-test-code-in-production]:
           severity: error
           from:
@@ -22,7 +22,7 @@ core:
               - ^${role.package-suites}/
   production-code-imports-no-tool:
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         forbidden[name=no-development-dependency-in-production]:
           from:
             pathNot:
@@ -40,7 +40,7 @@ core:
 dependency-cruiser:
   '*':
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         forbidden[name=no-undeclared-dependency]:
           severity: error
           from: {}

@@ -1,7 +1,7 @@
 core:
   effects-held-only-by-the-edge:
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         forbidden[name=bun-effects-reached-only-from-the-edge]:
           severity: error
           from:

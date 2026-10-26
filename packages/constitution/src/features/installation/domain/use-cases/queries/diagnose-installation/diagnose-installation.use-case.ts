@@ -1,28 +1,28 @@
 import type { ProjectFiles, ProjectSource } from '#/kernel/contracts';
 import type { Version } from '#/kernel/value-objects';
 
-import type { GitHooks, PluginRegistry, ProgramPath, ReleaseFeed } from '../../../contracts';
+import type { ExecutablePath, GitHooks, PluginRegistry, ReleaseFeed } from '../../../contracts';
 import type { PartDiagnosis } from '../../../entities';
+import { executableReport } from './steps/report-executable';
 import { hooksReport } from './steps/report-hooks';
 import { linkReport } from './steps/report-link';
 import { pathReport } from './steps/report-path';
 import { pluginReport } from './steps/report-plugin';
-import { programReport } from './steps/report-program';
 import { releaseReport } from './steps/report-release';
 
 interface DiagnoseInstallationPorts {
   readonly files: ProjectFiles;
   readonly hooks: GitHooks;
-  readonly path: ProgramPath;
+  readonly path: ExecutablePath;
   readonly plugins: PluginRegistry;
   readonly releases: ReleaseFeed;
   readonly source: ProjectSource;
 }
 
 interface DiagnoseInstallationInput extends DiagnoseInstallationPorts {
-  /** the fingerprint of the plugin's files this program was built with, if it can be read */
+  readonly executable: Version;
+  /** the fingerprint of the plugin's files this executable was built with, if it can be read */
   readonly fingerprint: string | undefined;
-  readonly program: Version;
   readonly start: string;
 }
 
@@ -30,29 +30,29 @@ interface DiagnoseInstallationInput extends DiagnoseInstallationPorts {
 const diagnoseInstallation = async (
   input: DiagnoseInstallationInput,
 ): Promise<readonly PartDiagnosis[]> => {
-  const { program } = input;
+  const { executable } = input;
   const latest = await input.releases.latest();
   const place = input.source.find(input.start);
 
   return [
-    programReport(program),
+    executableReport(executable),
     pluginReport({
+      executable,
       fingerprint: input.fingerprint,
       plugin: input.plugins.installed(),
-      program,
     }),
     releaseReport({
+      executable,
       latest,
-      program,
     }),
     pathReport({
+      executable,
       path: input.path,
-      program,
     }),
     linkReport({
+      executable,
       files: input.files,
       place,
-      program,
       source: input.source,
     }),
     hooksReport({

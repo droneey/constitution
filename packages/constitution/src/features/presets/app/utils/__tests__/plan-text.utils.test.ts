@@ -36,6 +36,7 @@ describe('planLinesOf', () => {
   it('should give each file, then the entries it takes under it, then what each unit runs, then the findings', () => {
     // Arrange
     const plan: PresetsPlan = {
+      blocks: new Map(),
       files: [
         {
           entries: [

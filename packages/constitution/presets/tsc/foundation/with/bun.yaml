@@ -1,7 +1,7 @@
 bun:
   '*':
     typescript:
-      tsconfig.json:
+      tsconfig.json !jsonc:
         compilerOptions:
           types:
             - bun

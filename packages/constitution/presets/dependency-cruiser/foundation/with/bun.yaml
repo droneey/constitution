@@ -1,7 +1,7 @@
 bun:
   '*':
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         options:
           builtInModules:
             add:

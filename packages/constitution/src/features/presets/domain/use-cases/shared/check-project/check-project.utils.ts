@@ -1,7 +1,11 @@
 import type { ProjectFiles } from '#/kernel/contracts';
 import type { OpenedProject } from '#/kernel/entities';
 
-import type { ConfigurationFormat, PresetFileParser, ReleaseBuilds } from '../../../contracts';
+import type {
+  ConfigurationFormat,
+  DistributionSources,
+  PresetFileParser,
+} from '../../../contracts';
 import type { ConfigurationsCheck, LockRead, PresetsFinding } from '../../../entities';
 import { PresetsCode } from '../../../entities';
 import type { FileComputed } from '../compute-files';
@@ -10,7 +14,7 @@ import { computePresets } from '../compute-presets';
 import { releaseLoopsOf } from './steps/find-release-loops';
 
 interface CheckProjectInput {
-  readonly builds: ReleaseBuilds;
+  readonly distribution: DistributionSources;
   readonly files: ProjectFiles;
   readonly formats: ConfigurationFormat;
   /** by the unit's absolute folder */
@@ -59,7 +63,7 @@ const driftOf = (file: FileComputed): readonly PresetsFinding[] => [
 const checkProject = (input: CheckProjectInput): ConfigurationsCheck => {
   const { project } = input;
   const plan = computePresets({
-    builds: input.builds,
+    distribution: input.distribution,
     files: input.files,
     model: project.resolution.model,
     packs: project.packs,
@@ -69,6 +73,7 @@ const checkProject = (input: CheckProjectInput): ConfigurationsCheck => {
     units: project.resolution.units,
   });
   const units = computeFiles({
+    blocks: plan.blocks,
     files: input.files,
     formats: input.formats,
     lockOf: input.lockOf,

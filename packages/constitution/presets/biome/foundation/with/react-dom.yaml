@@ -1,14 +1,14 @@
 react-dom:
   aria-attributes-as-the-dom-spells-them:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             suspicious:
               noUnknownAttribute: error
   ids-from-use-id:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             correctness:
@@ -17,21 +17,21 @@ react-dom:
           - ./${constitution.path}/presets/biome/plugins/typescript/labels-bound-with-use-id.${role.grit-rule}
   jsx-images-declare-their-size:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             correctness:
               useImageSize: error
   dangerously-set-inner-html-never-used:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             security:
               noDangerouslySetInnerHtml: error
   '*':
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             security:
@@ -47,7 +47,7 @@ react-dom:
               noInvalidFileInputAccept: error
   known-fields-declare-autocomplete:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             a11y:
@@ -56,7 +56,7 @@ react-dom:
           - ./${constitution.path}/presets/biome/plugins/typescript/field-declares-its-autocomplete.${role.grit-rule}
   jsx-controls-named:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             a11y:
@@ -69,7 +69,7 @@ react-dom:
               useControlLabel: error
   handlers-and-links-on-native-elements:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             a11y:
@@ -78,7 +78,7 @@ react-dom:
               noStaticElementInteractions: error
   jsx-roles-and-aria-valid:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             a11y:
@@ -93,20 +93,20 @@ react-dom:
               noNoninteractiveElementToInteractiveRole: error
   jsx-viewport-never-blocks-zoom:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             nursery:
               noNonScalableViewport: error
   inline-style-only-custom-properties-and-geometry:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins:
           - ./${constitution.path}/presets/biome/plugins/typescript/inline-style-only-custom-properties-and-geometry.${role.grit-rule}
 core:
   deprecated-form-never-used:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             nursery:

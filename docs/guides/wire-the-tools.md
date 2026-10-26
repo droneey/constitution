@@ -1,10 +1,10 @@
 # Wire the tools
 
-> The program writes into each tool's configuration the settings of the project's active blocks, so the tool holds their rules.
+> The executable writes into each tool's configuration the settings of the project's active blocks, so the tool holds their rules.
 
 ## Apply the presets
 
-Run the `constitution` program the project installs with the release, from the repository root:
+Run the `constitution` executable the project installs with the release, from the repository root:
 
 ```bash
 constitution presets apply
@@ -22,7 +22,7 @@ When a block is added or dropped, a rule lowered, or the release changed, the ne
 
 ## Keep your own settings beside them
 
-A project adds what is its own in the same files: its paths, its entry points, a rule the presets leave off. A setting it needs in a form the presets give — a folder of its own build tools among the development files, say — goes into the unit's own pack, `pack/presets/<reader>/…`, listed under `packs:`, so the program writes it and the check reads it. A setting that holds a rule is never loosened to make the check pass (`check-never-weakened-to-pass`), and the check reports one that is; [an override](override-a-rule.md) lowers the rule itself, with its reason, and the next `apply` takes its settings out.
+A project adds what is its own in the same files: its paths, its entry points, a rule the presets leave off. A setting it needs in a form the presets give — a folder of its own build tools among the development files, say — goes into the unit's own pack, `pack/presets/<reader>/…`, listed under `packs:`, so the executable writes it and the check reads it. A setting that holds a rule is never loosened to make the check pass (`check-never-weakened-to-pass`), and the check reports one that is; [an override](override-a-rule.md) lowers the rule itself, with its reason, and the next `apply` takes its settings out.
 
 ## Know which setting holds which rule
 

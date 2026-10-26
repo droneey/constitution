@@ -27,8 +27,8 @@
     ".output"
   ],
   "plugins": [
-    "../../packages/mutation-check/languages/typescript/src/integrations/stryker/runner.ts",
-    "../../packages/mutation-check/languages/typescript/src/integrations/stryker/ignorers.ts"
+    "../../packages/@mutation-check/typescript/src/integrations/stryker/runner.ts",
+    "../../packages/@mutation-check/typescript/src/integrations/stryker/ignorers.ts"
   ],
   "ignorers": [
     "diagnostics"

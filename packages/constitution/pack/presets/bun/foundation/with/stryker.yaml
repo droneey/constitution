@@ -1,4 +1,4 @@
-# This repository runs mutation-check from the workspace's source, never from the archive's build.
+# This repository runs mutation-check from its workspace's source, never the distribution's build.
 stryker:
   '*':
     typescript:

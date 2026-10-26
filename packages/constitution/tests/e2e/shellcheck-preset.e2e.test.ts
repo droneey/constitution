@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { analyseScript, unitTasks } from './shellcheck-preset.fixtures';
+import { analyseScript, exitCodeBesideDeletedFile, unitTasks } from './shellcheck-preset.fixtures';
 
 describe('the ShellCheck preset', () => {
   it('should accept a script that quotes, checks and stops on every failure', () => {
@@ -68,5 +68,16 @@ describe('the commands of the scripts the presets give', () => {
       codes: [],
       exitCode: 0,
     });
+  });
+
+  it.each([
+    'check:shell',
+    'check:shell-format',
+  ])('should pass %s when a tracked shell file is deleted before the check', (task) => {
+    // Act
+    const exitCode = exitCodeBesideDeletedFile(task);
+
+    // Assert
+    expect(exitCode).toBe(0);
   });
 });

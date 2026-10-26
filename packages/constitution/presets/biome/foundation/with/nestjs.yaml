@@ -1,7 +1,7 @@
 nestjs:
   '*':
     typescript:
-      biome.json:
+      biome.jsonc:
         javascript:
           parser:
             unsafeParameterDecoratorsEnabled: true

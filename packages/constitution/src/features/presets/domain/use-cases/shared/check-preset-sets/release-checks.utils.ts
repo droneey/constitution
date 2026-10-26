@@ -12,8 +12,8 @@ import { Fact, FactKind } from '../../../value-objects';
 import { TextPlace, textsOf } from './entry-texts.utils';
 
 interface ReleaseFiles {
-  /** each file its build makes, to its source, both from its folder */
-  readonly builds: ReadonlyMap<string, string>;
+  /** each file the distribution packs, by its path in it, to the package whose build makes it */
+  readonly distributed: ReadonlyMap<string, string>;
   readonly files: ProjectFiles;
   /** absolute */
   readonly folder: string;
@@ -79,16 +79,11 @@ const namedFilesOf = (input: { entry: PresetEntry; model: BlockModel }): readonl
       }),
     );
 
-// A file the release lacks is sound where its build makes it from a source the release holds.
+// A file the release lacks is sound where the distribution packs it from a package that builds it.
 const isSound = (input: { file: string; release: ReleaseFiles }): boolean => {
-  const { builds, files, folder } = input.release;
-  const source = builds.get(input.file);
+  const { distributed, files, folder } = input.release;
 
-  return (
-    files.exists(`${folder}${SEPARATOR}${input.file}`) ||
-    // Stryker disable next-line ConditionalExpression: a source of no build names no file the folder holds
-    (source !== undefined && files.exists(`${folder}${SEPARATOR}${source}`))
-  );
+  return files.exists(`${folder}${SEPARATOR}${input.file}`) || distributed.has(input.file);
 };
 
 const releaseFindings = (input: ReleaseFindingsInput): readonly PresetsFinding[] => {
@@ -114,7 +109,7 @@ const releaseFindings = (input: ReleaseFindingsInput): readonly PresetsFinding[]
       ? []
       : [
           {
-            code: PresetsCode.MissingReleaseFile,
+            code: PresetsCode.MissingDistributionFile,
             details: {
               file,
             },

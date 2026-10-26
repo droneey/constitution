@@ -2,6 +2,7 @@ import type { ReactElement } from 'react';
 
 import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from '@tanstack/react-router';
 
+import brand from '@droneey/constitution-brand' with { type: 'json' };
 import { ThemeProvider } from '@droneey/design-browser/react-dom';
 
 import {
@@ -15,7 +16,6 @@ import { GetVersionsContext } from '#/features/versions';
 import { RootProvider } from '#/libs/ui';
 import { APP_NAME, MAIN_CONTENT_ID } from '#/shared/constants';
 
-import brand from '../../../../../brand.tokens.json' with { type: 'json' };
 import appCss from '../app.css?url';
 import { TRANSLATIONS } from '../constants';
 import type { RouterContext } from '../wiring';

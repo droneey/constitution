@@ -22,6 +22,14 @@ A generated file is never edited by hand: a change goes to its source, and the f
 |---|
 | a hand edit to a generated file is lost at the next generation. |
 
+### generated-file-made-by-its-own-step · SHOULD
+
+A generated file is made by a step of its own, run before whatever reads it, never by the build that makes what the code ships.
+
+| Why |
+|---|
+| a build that also generates mixes what the code ships with what reads it, and whatever needs the generated file runs the whole build first. |
+
 ### file-is-one-semantic-unit · SHOULD
 
 A file holds one semantic unit and is named after it; an unrelated export goes to its own file.

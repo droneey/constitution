@@ -21,6 +21,7 @@ const loosened: PresetsFinding = {
 
 const quiet: ApplyReport = {
   added: [],
+  deleted: [],
   findings: [],
   removed: [],
   units: [],
@@ -78,7 +79,7 @@ describe('applyOutcomeOf', () => {
 });
 
 describe('applySectionsOf', () => {
-  it('should give what it wrote, removed and added, then what it found', () => {
+  it('should give what it wrote, deleted, removed and added, then what it found', () => {
     // Arrange
     const report: ApplyReport = {
       added: [
@@ -86,6 +87,9 @@ describe('applySectionsOf', () => {
           file: 'biome.json',
           setting: 'test.randomize',
         },
+      ],
+      deleted: [
+        'notes.json',
       ],
       findings: [
         loosened,
@@ -120,6 +124,13 @@ describe('applySectionsOf', () => {
           'constitution.lock',
         ],
         title: '2 files written',
+        tone: Tone.Info,
+      }),
+      noteSection({
+        lines: [
+          'notes.json',
+        ],
+        title: '1 file deleted, which the apply created and nothing holds any longer',
         tone: Tone.Info,
       }),
       noteSection({

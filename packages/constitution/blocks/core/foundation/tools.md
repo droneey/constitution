@@ -14,7 +14,7 @@ A rule a tool can hold, at a cost its gain repays, is held by one, configured to
 
 ### configuration-holds-what-its-blocks-compute · MUST
 
-A tool's configuration in a unit holds every setting the presets of the release and of the unit's packs give for the rules in force there, on the axes the unit follows, as the program computes and writes them, and a lock beside it records what was written; the unit's own settings sit in the same files.
+A tool's configuration in a unit holds every setting the presets of the release and of the unit's packs give for the rules in force there, on the axes the unit follows, as `constitution` computes and writes them, and a lock beside it records what was written; the unit's own settings sit in the same files.
 
 | Why |
 |---|

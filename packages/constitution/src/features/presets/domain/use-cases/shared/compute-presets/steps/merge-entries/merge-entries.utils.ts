@@ -1,7 +1,7 @@
 import type { FilePlan, PresetEntry, PresetsFinding } from '../../../../../entities';
 import { MergedFile, PresetValue } from '../../../../../entities';
 import { joinWords } from '../join-words';
-import { layOutLines } from '../lay-out-lines';
+import { markBlocks } from '../mark-blocks';
 import type { ResolvedFile } from '../resolve-facts';
 
 interface FilesMerged {
@@ -36,21 +36,28 @@ const mergeEntries = (input: MergeEntriesInput): FilesMerged => {
               merged: written.value,
             }),
           };
-    const layout = layOutLines({
+    const marks = markBlocks({
       contributions: file.contributions,
       entries: input.entries,
       merged: merged.value,
       written: file.entries,
     });
 
+    const format = file.entries.find((entry) => entry.file.format !== undefined)?.file.format;
+
     return [
       {
         entries: file.entries,
         file: file.file,
-        ...(layout === undefined
+        ...(format === undefined
           ? {}
           : {
-              layout,
+              format,
+            }),
+        ...(marks === undefined
+          ? {}
+          : {
+              marks,
             }),
         merged,
         unit: file.unit.path,

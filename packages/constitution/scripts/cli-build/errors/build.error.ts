@@ -12,7 +12,7 @@ interface BuildInput {
   readonly given: string;
 }
 
-/** The program cannot be built from what the build was given. */
+/** The executable cannot be built from what the build was given. */
 class BuildError extends ProgramError<BuildFailure, BuildInput> {
   public constructor(input: ProgramErrorInput<BuildFailure, BuildInput>) {
     super(input);

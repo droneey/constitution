@@ -1,5 +1,6 @@
 pre-commit:
   jobs:
+    # lefthook
     - name: validate-branch
       run: |
         BRANCH="$(git branch --show-current)"
@@ -12,49 +13,65 @@ pre-commit:
           echo "Branch '$BRANCH' must match: (feature|fix|hotfix)/{id}-{name}"
           exit 1
         fi
+
+    # betterleaks
     - name: secrets
       run: betterleaks git --pre-commit --staged --redact --no-banner
+
+    # biome
     - name: biome
       run: bunx --bun biome check --write --no-errors-on-unmatched {staged_files}
       stage_fixed: true
+
+    # ruff
     - name: ruff
       stage_fixed: true
       glob: '*.{py,pyi}'
       run: >-
         uv run --locked ruff check --fix --force-exclude {staged_files} && uv run --locked ruff
         format --force-exclude {staged_files}
+
+    # rumdl
     - name: rumdl
       stage_fixed: true
       glob: '*.md'
       run: rumdl check --fix {staged_files}
+
+    # shfmt
     - name: shfmt
       stage_fixed: true
       glob: '*.{sh,bash}'
       run: shfmt -w {staged_files}
       exclude:
         - apps/docs/**
+        - packages/@design/browser/**
+        - packages/@design/cli/**
+        - packages/@design/tokens/**
+        - packages/@mutation-check/python/**
+        - packages/@mutation-check/typescript/**
+        - packages/brand/**
         - packages/constitution/**
-        - packages/design-browser/**
-        - packages/design-cli/**
-        - packages/design-tokens/**
-        - packages/mutation-check/languages/python/**
-        - packages/mutation-check/languages/typescript/**
         - packages/python-check/**
+
+    # tombi
     - name: tombi
       stage_fixed: true
       glob: '*.toml'
       run: tombi format {staged_files}
+
+    # shellcheck
     - name: shellcheck
       glob: '*.{sh,bash}'
       run: shellcheck {staged_files}
       exclude:
         - apps/docs/**
+        - packages/@design/browser/**
+        - packages/@design/cli/**
+        - packages/@design/tokens/**
+        - packages/@mutation-check/python/**
+        - packages/@mutation-check/typescript/**
+        - packages/brand/**
         - packages/constitution/**
-        - packages/design-browser/**
-        - packages/design-cli/**
-        - packages/design-tokens/**
-        - packages/mutation-check/languages/python/**
-        - packages/mutation-check/languages/typescript/**
         - packages/python-check/**
     - name: biome apps/docs
       root: apps/docs/
@@ -64,24 +81,28 @@ pre-commit:
       root: packages/constitution/
       stage_fixed: true
       run: *unit-lint
-    - name: biome packages/design-cli
-      root: packages/design-cli/
+    - name: biome packages/@design/cli
+      root: packages/@design/cli/
       stage_fixed: true
       run: *unit-lint
-    - name: biome packages/design-tokens
-      root: packages/design-tokens/
+    - name: biome packages/@design/tokens
+      root: packages/@design/tokens/
       stage_fixed: true
       run: *unit-lint
-    - name: biome packages/design-browser
-      root: packages/design-browser/
+    - name: biome packages/@design/browser
+      root: packages/@design/browser/
       stage_fixed: true
       run: *unit-lint
-    - name: biome packages/mutation-check/languages/typescript
-      root: packages/mutation-check/languages/typescript/
+    - name: biome packages/brand
+      root: packages/brand/
       stage_fixed: true
       run: *unit-lint
-    - name: biome packages/mutation-check/languages/python
-      root: packages/mutation-check/languages/python/
+    - name: biome packages/@mutation-check/typescript
+      root: packages/@mutation-check/typescript/
+      stage_fixed: true
+      run: *unit-lint
+    - name: biome packages/@mutation-check/python
+      root: packages/@mutation-check/python/
       stage_fixed: true
       run: &python-unit-lint bunx --bun biome check --write --no-errors-on-unmatched {staged_files}
     - name: biome packages/python-check
@@ -98,18 +119,18 @@ pre-commit:
       glob: '*.md'
       stage_fixed: true
       run: *unit-markdown
-    - name: rumdl packages/design-cli
-      root: packages/design-cli/
+    - name: rumdl packages/@design/cli
+      root: packages/@design/cli/
       glob: '*.md'
       stage_fixed: true
       run: *unit-markdown
-    - name: rumdl packages/design-tokens
-      root: packages/design-tokens/
+    - name: rumdl packages/@design/tokens
+      root: packages/@design/tokens/
       glob: '*.md'
       stage_fixed: true
       run: *unit-markdown
-    - name: rumdl packages/design-browser
-      root: packages/design-browser/
+    - name: rumdl packages/@design/browser
+      root: packages/@design/browser/
       glob: '*.md'
       stage_fixed: true
       run: *unit-markdown
@@ -136,28 +157,28 @@ pre-commit:
       glob: '*.toml'
       stage_fixed: true
       run: *unit-toml
-    - name: tombi packages/design-cli
-      root: packages/design-cli/
+    - name: tombi packages/@design/cli
+      root: packages/@design/cli/
       glob: '*.toml'
       stage_fixed: true
       run: *unit-toml
-    - name: tombi packages/design-tokens
-      root: packages/design-tokens/
+    - name: tombi packages/@design/tokens
+      root: packages/@design/tokens/
       glob: '*.toml'
       stage_fixed: true
       run: *unit-toml
-    - name: tombi packages/design-browser
-      root: packages/design-browser/
+    - name: tombi packages/@design/browser
+      root: packages/@design/browser/
       glob: '*.toml'
       stage_fixed: true
       run: *unit-toml
-    - name: tombi packages/mutation-check/languages/typescript
-      root: packages/mutation-check/languages/typescript/
+    - name: tombi packages/@mutation-check/typescript
+      root: packages/@mutation-check/typescript/
       glob: '*.toml'
       stage_fixed: true
       run: *unit-toml
-    - name: tombi packages/mutation-check/languages/python
-      root: packages/mutation-check/languages/python/
+    - name: tombi packages/@mutation-check/python
+      root: packages/@mutation-check/python/
       glob: '*.toml'
       stage_fixed: true
       run: *unit-toml
@@ -166,7 +187,11 @@ pre-commit:
       glob: '*.toml'
       stage_fixed: true
       run: *unit-toml
+
+  # lefthook
   parallel: true
+
+# lefthook
 commit-msg:
   jobs:
     - name: commit-message

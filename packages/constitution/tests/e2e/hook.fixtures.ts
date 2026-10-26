@@ -6,7 +6,12 @@ import { join } from 'node:path';
 
 import { cliFolder } from './cli.fixtures';
 import { coreText } from './constitution.fixtures';
-import { archiveOf, coreBodyOfBytes, createPluginRoot, linkArchive } from './plugin-root.fixtures';
+import {
+  coreBodyOfBytes,
+  createPluginRoot,
+  distributionOf,
+  linkDistribution,
+} from './plugin-root.fixtures';
 
 enum HookEvent {
   Startup = 'startup',
@@ -18,9 +23,9 @@ enum HookEvent {
 
 // Folders are relative to the project root.
 interface HookCall {
-  // the archive linked into the project, the plugin root's by default
-  archive?: string | undefined;
   cwd?: string | undefined;
+  // the distribution linked into the project, the plugin root's by default
+  distribution?: string | undefined;
   event: HookEvent;
   nonUtf8Byte?: boolean | undefined;
   // CLAUDE_PLUGIN_ROOT is unset, though the command still names the root
@@ -33,7 +38,7 @@ interface HookCall {
   spawnOutside?: boolean | undefined;
   // neither XDG_STATE_HOME nor HOME is set, so no folder keeps the session
   stateHomeUnset?: boolean | undefined;
-  // no archive is linked into the project
+  // no distribution is linked into the project
   unlinked?: boolean | undefined;
 }
 
@@ -142,8 +147,8 @@ const runHook = (call: HookCall): HookRun => {
   const cwd = join(call.project, call.cwd ?? '');
 
   if (call.unlinked !== true) {
-    linkArchive({
-      archive: call.archive ?? archiveOf(call.root),
+    linkDistribution({
+      distribution: call.distribution ?? distributionOf(call.root),
       project: call.project,
     });
   }

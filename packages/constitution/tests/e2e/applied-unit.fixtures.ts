@@ -22,7 +22,7 @@ interface UnitFixture {
   readonly platforms?: readonly string[];
 }
 
-// This repository's package, the release a unit links as a project links the archive.
+// This repository's package, the release a unit links as a project links the distribution.
 const release = join(import.meta.dir, '..', '..');
 const LINK = '.droneey/constitution';
 const created: string[] = [];
@@ -91,7 +91,7 @@ const writeFiles = (input: { files: Readonly<Record<string, string>>; folder: st
 };
 
 /**
- * Written once for each unit asked, by the program's own `presets apply`.
+ * Written once for each unit asked, by the executable's own `presets apply`.
  *
  * @throws Error when the apply fails.
  */

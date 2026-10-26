@@ -1,13 +1,13 @@
 import type { ProjectFiles, ProjectSource } from '#/kernel/contracts';
 import { UnitPath } from '#/kernel/value-objects';
 
-import type { PresetFileParser, ReleaseBuilds } from '../../../contracts';
+import type { DistributionSources, PresetFileParser } from '../../../contracts';
 import type { RunAsked, RunPlan, UnitRun } from '../../../entities';
 import { PresetsCode } from '../../../entities';
 import { computePresets } from '../../shared/compute-presets';
 
 interface PlanRunInput extends RunAsked {
-  readonly builds: ReleaseBuilds;
+  readonly distribution: DistributionSources;
   readonly files: ProjectFiles;
   readonly parser: PresetFileParser;
   readonly source: ProjectSource;
@@ -56,7 +56,7 @@ const unitsToRun = (input: {
 const planRun = (input: PlanRunInput): RunPlan => {
   const opened = input.source.open(input.start);
   const plan = computePresets({
-    builds: input.builds,
+    distribution: input.distribution,
     files: input.files,
     model: opened.resolution.model,
     packs: opened.packs,

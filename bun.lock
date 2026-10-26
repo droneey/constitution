@@ -6,10 +6,7 @@
       "name": "@droneey/constitution-workspace",
       "devDependencies": {
         "@biomejs/biome": "2.6.2",
-        "dependency-cruiser": "18.7.0",
-        "knip": "6.41.0",
         "syncpack": "15.3.3",
-        "typescript": "7.0.2",
       },
     },
     "apps/docs": {
@@ -17,6 +14,7 @@
       "version": "0.0.0",
       "dependencies": {
         "@droneey/constitution": "workspace:*",
+        "@droneey/constitution-brand": "workspace:*",
         "@droneey/design-browser": "workspace:*",
         "@fontsource-variable/geist": "^5.3.0",
         "@fontsource-variable/geist-mono": "^5.3.0",
@@ -40,7 +38,7 @@
       "devDependencies": {
         "@babel/core": "8.0.7",
         "@biomejs/biome": "2.6.2",
-        "@droneey/mutation-check": "workspace:*",
+        "@droneey/mutation-check-typescript": "workspace:*",
         "@happy-dom/global-registrator": "21.0.3",
         "@rolldown/plugin-babel": "0.2.4",
         "@stryker-mutator/core": "10.0.0",
@@ -69,41 +67,7 @@
         "vite": "8.3.4",
       },
     },
-    "packages/constitution": {
-      "name": "@droneey/constitution",
-      "version": "0.86.0",
-      "bin": {
-        "constitution": "./src/main.ts",
-      },
-      "dependencies": {
-        "@droneey/design-cli": "workspace:*",
-        "commander": "^15.0.0",
-        "ink": "^8.0.0",
-        "jsonc-parser": "^3.3.1",
-        "react": "^19.3.1",
-        "smol-toml": "^1.9.1",
-        "yaml": "^2.9.1",
-        "zod": "^4.6.7",
-      },
-      "devDependencies": {
-        "@babel/core": "8.0.7",
-        "@biomejs/biome": "2.6.2",
-        "@droneey/mutation-check": "workspace:*",
-        "@stryker-mutator/core": "10.0.0",
-        "@swc/core": "1.16.18",
-        "@types/bun": "1.4.3",
-        "@types/node": "26.6.5",
-        "@types/react": "19.3.0",
-        "babel-plugin-react-compiler": "1.0.0",
-        "dclint": "3.1.0",
-        "dependency-cruiser": "18.7.0",
-        "ink-testing-library": "4.0.0",
-        "knip": "6.41.0",
-        "syncpack": "15.3.3",
-        "typescript": "7.0.2",
-      },
-    },
-    "packages/design-browser": {
+    "packages/@design/browser": {
       "name": "@droneey/design-browser",
       "version": "0.0.0",
       "dependencies": {
@@ -113,7 +77,7 @@
       "devDependencies": {
         "@biomejs/biome": "2.6.2",
         "@droneey/design-tokens": "workspace:*",
-        "@droneey/mutation-check": "workspace:*",
+        "@droneey/mutation-check-typescript": "workspace:*",
         "@happy-dom/global-registrator": "21.0.3",
         "@stryker-mutator/core": "10.0.0",
         "@testing-library/dom": "10.4.2",
@@ -142,7 +106,7 @@
         "tailwindcss",
       ],
     },
-    "packages/design-cli": {
+    "packages/@design/cli": {
       "name": "@droneey/design-cli",
       "version": "0.0.0",
       "dependencies": {
@@ -151,7 +115,7 @@
       "devDependencies": {
         "@biomejs/biome": "2.6.2",
         "@droneey/design-tokens": "workspace:*",
-        "@droneey/mutation-check": "workspace:*",
+        "@droneey/mutation-check-typescript": "workspace:*",
         "@stryker-mutator/core": "10.0.0",
         "@types/bun": "1.4.3",
         "@types/react": "19.3.0",
@@ -172,18 +136,18 @@
         "react",
       ],
     },
-    "packages/design-tokens": {
+    "packages/@design/tokens": {
       "name": "@droneey/design-tokens",
       "version": "0.0.0",
       "bin": {
-        "design-tokens": "./src/entrypoints/design-build/main.ts",
+        "design-tokens": "./src/entrypoints/design-generate/main.ts",
       },
       "dependencies": {
         "style-dictionary": "^5.7.0",
       },
       "devDependencies": {
         "@biomejs/biome": "2.6.2",
-        "@droneey/mutation-check": "workspace:*",
+        "@droneey/mutation-check-typescript": "workspace:*",
         "@stryker-mutator/core": "10.0.0",
         "@types/bun": "1.4.3",
         "colorjs.io": "0.7.1",
@@ -192,8 +156,8 @@
         "typescript": "7.0.2",
       },
     },
-    "packages/mutation-check/languages/typescript": {
-      "name": "@droneey/mutation-check",
+    "packages/@mutation-check/typescript": {
+      "name": "@droneey/mutation-check-typescript",
       "version": "0.0.0",
       "bin": {
         "mutation-check": "./src/main.ts",
@@ -208,6 +172,48 @@
         "@types/node": "26.6.5",
         "dependency-cruiser": "18.7.0",
         "knip": "6.41.0",
+        "typescript": "7.0.2",
+      },
+    },
+    "packages/brand": {
+      "name": "@droneey/constitution-brand",
+      "version": "0.0.0",
+      "devDependencies": {
+        "@biomejs/biome": "2.6.2",
+      },
+    },
+    "packages/constitution": {
+      "name": "@droneey/constitution",
+      "version": "0.86.0",
+      "bin": {
+        "constitution": "./src/main.ts",
+      },
+      "dependencies": {
+        "@droneey/constitution-brand": "workspace:*",
+        "@droneey/design-cli": "workspace:*",
+        "commander": "^15.0.0",
+        "ink": "^8.0.0",
+        "jsonc-parser": "^3.3.1",
+        "react": "^19.3.1",
+        "smol-toml": "^1.9.1",
+        "yaml": "^2.9.1",
+        "zod": "^4.6.7",
+      },
+      "devDependencies": {
+        "@babel/core": "8.0.7",
+        "@biomejs/biome": "2.6.2",
+        "@droneey/mutation-check-typescript": "workspace:*",
+        "@stryker-mutator/core": "10.0.0",
+        "@swc/core": "1.16.18",
+        "@types/bun": "1.4.3",
+        "@types/node": "26.6.5",
+        "@types/react": "19.3.0",
+        "babel-plugin-react-compiler": "1.0.0",
+        "dclint": "3.1.0",
+        "dependency-cruiser": "18.7.0",
+        "ink-testing-library": "4.0.0",
+        "knip": "6.41.0",
+        "syncpack": "15.3.3",
         "typescript": "7.0.2",
       },
     },
@@ -329,15 +335,17 @@
 
     "@droneey/constitution": ["@droneey/constitution@workspace:packages/constitution"],
 
-    "@droneey/design-browser": ["@droneey/design-browser@workspace:packages/design-browser"],
+    "@droneey/constitution-brand": ["@droneey/constitution-brand@workspace:packages/brand"],
 
-    "@droneey/design-cli": ["@droneey/design-cli@workspace:packages/design-cli"],
+    "@droneey/design-browser": ["@droneey/design-browser@workspace:packages/@design/browser"],
 
-    "@droneey/design-tokens": ["@droneey/design-tokens@workspace:packages/design-tokens"],
+    "@droneey/design-cli": ["@droneey/design-cli@workspace:packages/@design/cli"],
+
+    "@droneey/design-tokens": ["@droneey/design-tokens@workspace:packages/@design/tokens"],
 
     "@droneey/docs": ["@droneey/docs@workspace:apps/docs"],
 
-    "@droneey/mutation-check": ["@droneey/mutation-check@workspace:packages/mutation-check/languages/typescript"],
+    "@droneey/mutation-check-typescript": ["@droneey/mutation-check-typescript@workspace:packages/@mutation-check/typescript"],
 
     "@emnapi/core": ["@emnapi/core@1.11.2", "", { "dependencies": { "@emnapi/wasi-threads": "1.2.2", "tslib": "^2.4.0" } }, "sha512-TC8MkTuZUtcTSiFeuC0ksCh9QIJ5+F21MvZ4Wn4ORfYaFJ/0dsiudv5tVkejgwZlwQ39jL9WWDe2lz8x0WglOA=="],
 

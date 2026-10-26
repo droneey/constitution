@@ -7,9 +7,9 @@ export type {
   CommandRunner,
   CommandToRun,
   ConfigurationFormat,
+  DistributionSources,
   PresetFileParser,
   PresetFileRead,
-  ReleaseBuilds,
 } from './domain/contracts';
 export { PresetFileReadStatus } from './domain/contracts';
 export type {

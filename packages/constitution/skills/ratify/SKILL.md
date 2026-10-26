@@ -28,7 +28,7 @@ The project folder holds:
 - **`PROJECT.md`** beside it: what the product is, for whom, the domains of its business, its entities, its boundaries, its critical scenarios and its glossary. It gives any agent the context of the whole, so a change fits the product and not just the task.
 - **`DECISIONS.md`** beside them, from the template, when the repository has none: the log where every later choice between real alternatives is recorded with what was rejected and why. Any choice the owner names during the interview — a store, a framework, a boundary — goes in as its first entries.
 - **A block of the project's own pack** for each library the owner wants rules for that the plugin has no block for: a folder of blocks shaped like the Constitution — `pack/` unless the owner names another — listed under `packs:`.
-- **Each tool's configuration**, which the program writes with `constitution presets apply` from the presets of the release and of the unit's packs, into the files the project keeps, beside the settings of its own, and records in each unit's `constitution.lock`. The session-start hook warns of a setting a file lacks, keeps after its rule is gone or loosens, so a project whose blocks or release changed runs `constitution presets apply` again; with `constitution.yaml` already in place, offer to go straight to step 9.
+- **Each tool's configuration**, which the executable writes with `constitution presets apply` from the presets of the release and of the unit's packs, into the files the project keeps, beside the settings of its own, and records in each unit's `constitution.lock`. The session-start hook warns of a setting a file lacks, keeps after its rule is gone or loosens, so a project whose blocks or release changed runs `constitution presets apply` again; with `constitution.yaml` already in place, offer to go straight to step 9.
 
 The repository root is the folder, going up from the project folder, that holds `.git`. Core is always active and is never listed.
 
@@ -38,21 +38,19 @@ Work in this order, and keep the owner in the loop: propose, let them confirm or
 
 ### 1. Check what is there
 
-If the release above reads `(not installed)`, or the block list does, the project has no Constitution to read yet. Propose to install it first: in `mise.toml`, the tool `github:droneey/constitution` with the release's archive and, for each platform, its `constitution` program, which the hooks run, and the `postinstall` hooks that link the release, with the installed plugin's version above:
+If the release above reads `(not installed)`, or the block list does, the project has no Constitution to read yet. Propose to install it first: in `mise.toml`, the tool `github:droneey/constitution` with the release's distribution for each platform, which holds the rules and the `constitution` executable the hooks run, and the `postinstall` hooks that link the release, with the installed plugin's version above:
 
 ```toml
 [tools."github:droneey/constitution"]
 version = "<plugin version>"
-asset_pattern = "constitution.tar.gz"
 strip_components = 0
 bin_path = "bin"
 
 [tools."github:droneey/constitution".platforms]
-linux-x64 = { additional_asset_patterns = ["constitution-linux-x64.tar.gz"] }
-linux-arm64 = { additional_asset_patterns = ["constitution-linux-arm64.tar.gz"] }
-macos-x64 = { additional_asset_patterns = ["constitution-macos-x64.tar.gz"] }
-macos-arm64 = { additional_asset_patterns = ["constitution-macos-arm64.tar.gz"] }
-windows-x64 = { additional_asset_patterns = ["constitution-windows-x64.tar.gz"] }
+linux-x64 = { asset_pattern = "constitution-linux-x64.tar.gz" }
+linux-arm64 = { asset_pattern = "constitution-linux-arm64.tar.gz" }
+macos-x64 = { asset_pattern = "constitution-macos-x64.tar.gz" }
+macos-arm64 = { asset_pattern = "constitution-macos-arm64.tar.gz" }
 
 [hooks]
 postinstall = [

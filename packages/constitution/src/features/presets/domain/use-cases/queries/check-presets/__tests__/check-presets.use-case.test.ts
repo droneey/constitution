@@ -3,9 +3,9 @@ import { describe, expect, it } from 'bun:test';
 import { createFakeProjectFiles } from '#/__tests__/project-files.fake';
 import { Axis } from '#/kernel/constants';
 
+import { createFakeDistributionSources } from '../../../../../__tests__/distribution-sources.fake';
 import type { Files } from '../../../../../__tests__/presets.fixtures';
 import { presetFileParser, presetsModel } from '../../../../../__tests__/presets.fixtures';
-import { createFakeReleaseBuilds } from '../../../../../__tests__/release-builds.fake';
 import type { PresetsFinding } from '../../../../entities';
 import { PresetsCode } from '../../../../entities';
 import { checkPresets } from '../check-presets.use-case';
@@ -14,7 +14,7 @@ const FOLDER = '/work/constitution';
 const FOUNDATION = 'presets/biome/foundation.yaml';
 
 const findingsOf = (input: {
-  builds?: Readonly<Record<string, string>>;
+  distributed?: Readonly<Record<string, string>>;
   isRelease?: boolean;
   presets: Files;
   unreadable?: readonly string[];
@@ -30,7 +30,7 @@ const findingsOf = (input: {
       unreadable: (input.unreadable ?? []).map((path) => `${FOLDER}/presets/${path}`),
     }),
     folder: FOLDER,
-    builds: createFakeReleaseBuilds(input.builds),
+    distribution: createFakeDistributionSources(input.distributed),
     isRelease: input.isRelease ?? true,
     model: presetsModel,
     parser: presetFileParser,
@@ -84,6 +84,10 @@ describe('checkPresets', () => {
         "    '*':",
         '      bunfig.toml ? !${workspace.isRoot}:',
         '        top: ${file.isTop}',
+        '      apps.json !jsonc ? ${unit.parent} = ${role.source}:',
+        '        parent: ${unit.parent}',
+        '      top.json ? ${unit.parent} = ${file.isTop}:',
+        '        top: true',
         '        flags:',
         '          - ${workspace.isRoot}',
         '        preload:',
@@ -544,6 +548,66 @@ describe('checkPresets', () => {
       },
     },
     {
+      condition: 'its guard compares a truth with a text',
+      entry: entryOf({
+        file: 'biome.json ? ${file.isTop} = yes',
+      }),
+      finding: {
+        code: PresetsCode.UnknownFact,
+        details: {
+          block: 'biome',
+          fact: '${file.isTop}',
+          rule: '*',
+        },
+        path: FOUNDATION,
+      },
+    },
+    {
+      condition: 'its guard compares the members with a text',
+      entry: entryOf({
+        file: 'biome.json ? ${workspace.members} = apps',
+      }),
+      finding: {
+        code: PresetsCode.UnknownFact,
+        details: {
+          block: 'biome',
+          fact: '${workspace.members}',
+          rule: '*',
+        },
+        path: FOUNDATION,
+      },
+    },
+    {
+      condition: 'its guard compares a fact no one computes',
+      entry: entryOf({
+        file: 'biome.json ? ${home.dir} = apps',
+      }),
+      finding: {
+        code: PresetsCode.UnknownFact,
+        details: {
+          block: 'biome',
+          fact: '${home.dir}',
+          rule: '*',
+        },
+        path: FOUNDATION,
+      },
+    },
+    {
+      condition: 'its guard compares a fact with a role no term carries',
+      entry: entryOf({
+        file: 'biome.json ? ${unit.parent} = ${role.gone}',
+      }),
+      finding: {
+        code: PresetsCode.UnknownRole,
+        details: {
+          block: 'biome',
+          role: 'gone',
+          rule: '*',
+        },
+        path: FOUNDATION,
+      },
+    },
+    {
       condition: 'its whole file’s text names a fact no one computes',
       entry: entryOf({
         file: '.gitignore',
@@ -767,7 +831,7 @@ describe('checkPresets', () => {
         path: FOUNDATION,
       },
       {
-        code: PresetsCode.MissingReleaseFile,
+        code: PresetsCode.MissingDistributionFile,
         details: {
           file: 'presets/biome/plugins/typescript/gone.grit',
         },
@@ -795,49 +859,43 @@ describe('checkPresets', () => {
 
   it.each([
     {
-      builds: {},
-      condition: 'its build lists none',
+      distributed: {},
+      condition: 'the distribution packs none',
       expected: [
         'tools/gone.js',
       ],
     },
     {
-      builds: {
-        'tools/gone.js': 'source/gone.ts',
+      distributed: {
+        'tools/gone.js': '../gone',
       },
-      condition: 'its build makes it from a source the release lacks',
-      expected: [
-        'tools/gone.js',
-      ],
-    },
-    {
-      builds: {
-        'tools/gone.js': 'presets/biome/foundation.yaml',
-      },
-      condition: 'its build makes it from a source the release holds',
+      condition: 'the distribution packs it from a package that builds it',
       expected: [],
     },
-  ])('should find a file of the release it lacks only when $condition', ({ builds, expected }) => {
-    // Arrange
-    const presets = {
-      'biome/foundation.yaml': entryOf({
-        value: "plugins: ['${constitution.path}/tools/gone.js']",
-      }),
-    };
+  ])(
+    'should find a file of the release it lacks only when $condition',
+    ({ distributed, expected }) => {
+      // Arrange
+      const presets = {
+        'biome/foundation.yaml': entryOf({
+          value: "plugins: ['${constitution.path}/tools/gone.js']",
+        }),
+      };
 
-    // Act
-    const found = findingsOf({
-      builds,
-      presets,
-    });
+      // Act
+      const found = findingsOf({
+        distributed,
+        presets,
+      });
 
-    // Assert
-    expect(found.map(({ details }) => details)).toStrictEqual(
-      expected.map((file) => ({
-        file,
-      })),
-    );
-  });
+      // Assert
+      expect(found.map(({ details }) => details)).toStrictEqual(
+        expected.map((file) => ({
+          file,
+        })),
+      );
+    },
+  );
 
   it('should read a role in the path of a release file, a folder by its name, and no whole file a default writes', () => {
     // Arrange
@@ -861,7 +919,7 @@ describe('checkPresets', () => {
     // Assert
     expect(found).toStrictEqual([
       {
-        code: PresetsCode.MissingReleaseFile,
+        code: PresetsCode.MissingDistributionFile,
         details: {
           file: 'src/gone.js',
         },

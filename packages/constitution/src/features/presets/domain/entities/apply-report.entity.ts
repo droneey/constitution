@@ -9,6 +9,8 @@ interface SettingPlace {
 interface ApplyReport {
   /** the defaults added to files that were there already */
   readonly added: readonly SettingPlace[];
+  /** files it created that no entry writes any longer and that hold nothing else, from the repository */
+  readonly deleted: readonly string[];
   readonly findings: readonly PresetsFinding[];
   /** what an earlier apply wrote and no entry gives any longer */
   readonly removed: readonly SettingPlace[];

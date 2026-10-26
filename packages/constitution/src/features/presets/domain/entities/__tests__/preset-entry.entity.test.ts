@@ -198,36 +198,28 @@ describe('PresetEntry', () => {
 
   it.each([
     {
+      block: 'tsc',
       condition: 'its preset file is written with blocks',
-      group: 'tsc with workspace',
-      rule: 'gitignore-covers-output',
       withs: [
         'tsc',
         'workspace',
       ],
     },
     {
-      condition: 'it holds a rule',
-      group: 'gitignore covers output',
-      rule: 'gitignore-covers-output',
+      block: 'biome',
+      condition: 'its preset file names the reader alone',
       withs: [],
     },
-    {
-      condition: 'it holds no rule',
-      group: 'biome',
-      rule: '*',
-      withs: [],
-    },
-  ])('should name what an entry gives when $condition', ({ group, rule, withs }) => {
+  ])('should name $block as the block that brings an entry when $condition', ({ block, withs }) => {
     // Arrange
     const entry = entryOf({
       index: 0,
     });
 
     // Act
-    const named = PresetEntry.groupOf({
+    const named = PresetEntry.blockOf({
       ...entry,
-      rule,
+      block: 'core',
       set: {
         ...entry.set,
         path: {
@@ -238,6 +230,6 @@ describe('PresetEntry', () => {
     });
 
     // Assert
-    expect(named).toBe(group);
+    expect(named).toBe(block);
   });
 });

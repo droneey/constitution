@@ -1,7 +1,7 @@
 tanstack-router:
   '*':
     typescript:
-      biome.json:
+      biome.jsonc:
         overrides:
           - includes:
               - '**/${role.source}/${role.composition-root}/${role.file-routes}/**'
@@ -20,7 +20,7 @@ tanstack-router:
                     - ':BLANK_LINE:'
   links-name-typed-targets:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/links-name-typed-targets.grit]:
           includes:
             - '**/*.ts'

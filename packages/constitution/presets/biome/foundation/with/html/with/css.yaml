@@ -1,7 +1,7 @@
 html:
   class-used-is-declared:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             nursery:

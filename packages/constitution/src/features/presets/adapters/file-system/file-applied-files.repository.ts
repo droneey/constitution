@@ -71,12 +71,27 @@ const write = (applied: AppliedFiles): void => {
     })),
   ];
   const written: Before[] = [];
+  // The deletions first, so a write that fails puts back a file deleted before it.
+  const steps = [
+    ...applied.deleted.map((path) => ({
+      path,
+      run: (): void => {
+        rmSync(path);
+      },
+    })),
+    ...files.map((file) => ({
+      path: file.path,
+      run: (): void => {
+        writeWhole(file);
+      },
+    })),
+  ];
 
-  for (const file of files) {
+  for (const step of steps) {
     try {
-      const before = beforeOf(file.path);
+      const before = beforeOf(step.path);
 
-      writeWhole(file);
+      step.run();
       written.push(before);
     } catch (error) {
       recognisedFailure({
@@ -89,7 +104,7 @@ const write = (applied: AppliedFiles): void => {
         {
           code: ApplyFailure.NotWritten,
           details: {
-            path: file.path,
+            path: step.path,
           },
         },
         {

@@ -1,12 +1,16 @@
 import type { ProjectFiles, ProjectSource } from '#/kernel/contracts';
 
-import type { ConfigurationFormat, PresetFileParser, ReleaseBuilds } from '../../../contracts';
+import type {
+  ConfigurationFormat,
+  DistributionSources,
+  PresetFileParser,
+} from '../../../contracts';
 import type { LockQueryRepository } from '../../../contracts/repositories/queries';
 import type { ConfigurationsCheck } from '../../../entities';
 import { checkProject } from '../../shared/check-project';
 
 interface CheckConfigurationsInput {
-  readonly builds: ReleaseBuilds;
+  readonly distribution: DistributionSources;
   readonly files: ProjectFiles;
   readonly formats: ConfigurationFormat;
   readonly locks: LockQueryRepository;
@@ -28,7 +32,7 @@ const checkConfigurations = (input: CheckConfigurationsInput): ConfigurationsChe
 
   const project = input.source.open(input.start);
   const check = checkProject({
-    builds: input.builds,
+    distribution: input.distribution,
     files: input.files,
     formats: input.formats,
     lockOf: input.locks.read,

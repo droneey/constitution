@@ -22,7 +22,7 @@ const markedOf = (kind: ValueKind.Default | ValueKind.Replace, setting: Setting)
 });
 
 const from = (source: string, given: PresetValue): Contribution => ({
-  group: source,
+  block: source,
   source,
   value: given,
 });

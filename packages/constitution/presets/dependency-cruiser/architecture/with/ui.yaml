@@ -1,7 +1,7 @@
 ui:
   presentational-component-performs-no-io:
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         forbidden[name=components-take-data-and-callbacks]:
           severity: error
           from:
@@ -12,7 +12,7 @@ ui:
               - ^${role.source}/(${role.shared-domain}/${role.port}|${role.gateway})/
   ui-layer-imports-only-what-its-feature-offers:
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         forbidden[name=ui-reaches-no-mechanism]:
           severity: error
           from:
@@ -23,7 +23,7 @@ ui:
               - ^${role.source}/(${role.shared-domain}/${role.port}|${role.gateway})/
   component-never-imports-a-widget:
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         forbidden[name=components-never-import-widgets]:
           severity: error
           from:
@@ -32,7 +32,7 @@ ui:
             path: /${role.presentation-layer}/${role.widget}/
   binding-unit-composes-its-operation:
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         forbidden[name=binding-units-reach-no-adapter-or-ui]:
           severity: error
           from:

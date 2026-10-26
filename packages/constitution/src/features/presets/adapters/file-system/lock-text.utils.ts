@@ -9,6 +9,7 @@ const INDENT = '  ';
 const recordOfWire = (wire: LockRecordWire): LockRecord => ({
   addresses: wire.addresses ?? [],
   defaults: wire.defaults ?? [],
+  isCreated: wire.created === true,
   isWhole: wire.whole === true,
   leaves: wire.leaves ?? [],
 });
@@ -46,6 +47,11 @@ const wireOfRecord = (record: LockRecord): LockRecordWire => ({
   ...(record.isWhole
     ? {
         whole: true,
+      }
+    : {}),
+  ...(record.isCreated
+    ? {
+        created: true,
       }
     : {}),
 });

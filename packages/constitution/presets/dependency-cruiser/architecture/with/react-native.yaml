@@ -1,11 +1,11 @@
 react-native:
   '*':
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         allowedSeverity: error
   react-native-imported-by-the-ui:
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         allowed[comment=react-native-imported-by-the-ui]:
           from:
             path:

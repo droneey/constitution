@@ -61,7 +61,7 @@ const unparsedOptionsFailure = ((): unknown => {
 describe('createErrorHandler', () => {
   it.each([
     {
-      condition: 'the archive is missing',
+      condition: 'the distribution is missing',
       failure: {
         code: ProjectFailure.ReleaseMissing,
         details: {
@@ -75,10 +75,10 @@ describe('createErrorHandler', () => {
       failure: {
         code: ProjectFailure.BlocksUnlisted,
         details: {
-          path: '/archive/blocks',
+          path: '/distribution/blocks',
         },
       },
-      line: 'constitution hook: cannot list the blocks of /archive/blocks\n',
+      line: 'constitution hook: cannot list the blocks of /distribution/blocks\n',
     },
     {
       condition: 'constitution.yaml does not parse at a line',
@@ -116,7 +116,7 @@ describe('createErrorHandler', () => {
       failure: {
         code: ProjectFailure.CoreUnreadable,
         details: {
-          path: '/archive/blocks/core/core.md',
+          path: '/distribution/blocks/core/core.md',
         },
       },
       line: 'constitution hook: cannot build the digest\n',
@@ -126,10 +126,10 @@ describe('createErrorHandler', () => {
       failure: {
         code: ProjectFailure.ManifestUnreadable,
         details: {
-          path: '/archive/package.json',
+          path: '/distribution/package.json',
         },
       },
-      line: 'constitution hook: cannot read /archive/package.json\n',
+      line: 'constitution hook: cannot read /distribution/package.json\n',
     },
     {
       condition: 'no project is found',
@@ -146,10 +146,10 @@ describe('createErrorHandler', () => {
       failure: {
         code: ProjectFailure.VersionMissing,
         details: {
-          path: '/archive/package.json',
+          path: '/distribution/package.json',
         },
       },
-      line: 'constitution hook: /archive/package.json has no version\n',
+      line: 'constitution hook: /distribution/package.json has no version\n',
     },
   ])(
     'should write its one line and end with the failure code when a hook fails as $condition',

@@ -9,9 +9,9 @@ import { z } from 'zod';
 import { cliPath } from '../cli.fixtures';
 import { contextOf, HookEvent, runHook, warningLinesOf } from '../hook.fixtures';
 import {
-  archiveOf,
   createRealPluginRoot,
-  linkArchive,
+  distributionOf,
+  linkDistribution,
   removePluginRoots,
 } from '../plugin-root.fixtures';
 import { ConfigKey, configOf, createProject, removeProjects } from '../project.fixtures';
@@ -21,7 +21,7 @@ const CONFIGURATIONS = '- configurations: ';
 
 let root = '';
 
-// A project of TypeScript checked by Biome and run by Bun, whose biome.json holds the files given.
+// A project of TypeScript checked by Biome and run by Bun, whose biome.jsonc holds the files given.
 const projectOf = (files: Readonly<Record<string, string>>): string =>
   createProject({
     config: configOf({
@@ -44,8 +44,8 @@ const configurationLinesOf = (project: string): readonly string[] =>
 
 /** @throws Error when the apply fails. */
 const apply = (project: string): void => {
-  linkArchive({
-    archive: archiveOf(root),
+  linkDistribution({
+    distribution: distributionOf(root),
     project,
   });
 
@@ -74,27 +74,25 @@ const apply = (project: string): void => {
   }
 };
 
-const manifest = z.looseObject({
-  release: z.record(z.string(), z.unknown()),
-});
+const distributionMap = z.record(z.string(), z.unknown());
 
-// The release's archive holds the presets beside the blocks, and the files its build makes, which
-// stand empty here.
+// The release's distribution holds the presets beside the blocks, and the files its map packs,
+// which stand empty here.
 beforeAll(() => {
   root = createRealPluginRoot();
-  cpSync(join(repository, 'presets'), join(archiveOf(root), 'presets'), {
+  cpSync(join(repository, 'presets'), join(distributionOf(root), 'presets'), {
     recursive: true,
   });
 
-  const { release } = manifest.parse(
-    JSON.parse(readFileSync(join(repository, 'package.json'), 'utf8')),
+  const distributed = distributionMap.parse(
+    JSON.parse(readFileSync(join(repository, 'distribution.json'), 'utf8')),
   );
 
-  for (const file of Object.keys(release)) {
-    mkdirSync(dirname(join(archiveOf(root), file)), {
+  for (const file of Object.keys(distributed)) {
+    mkdirSync(dirname(join(distributionOf(root), file)), {
       recursive: true,
     });
-    writeFileSync(join(archiveOf(root), file), '');
+    writeFileSync(join(distributionOf(root), file), '');
   }
 });
 
@@ -110,25 +108,25 @@ describe('the configurations of a project at session start', () => {
   it.each([
     {
       code: '[missing]',
-      condition: 'its biome.json lacks the settings the presets give',
+      condition: 'its biome.jsonc lacks the settings the presets give',
       text: '{}\n',
     },
     {
       code: '[file-unparsed]',
-      condition: 'its biome.json does not parse',
+      condition: 'its biome.jsonc does not parse',
       text: '{',
     },
-  ])('should warn of biome.json by $code when $condition', ({ code, text }) => {
+  ])('should warn of biome.jsonc by $code when $condition', ({ code, text }) => {
     // Arrange
     const project = projectOf({
-      'biome.json': text,
+      'biome.jsonc': text,
     });
 
     // Act
     const lines = configurationLinesOf(project);
 
     // Assert
-    expect(lines.some((line) => line.includes('biome.json') && line.endsWith(code))).toBeTrue();
+    expect(lines.some((line) => line.includes('biome.jsonc') && line.endsWith(code))).toBeTrue();
   });
 
   it('should warn of nothing in the presets when apply has written what the presets give', () => {

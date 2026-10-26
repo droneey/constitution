@@ -12,4 +12,4 @@ governs: ["pyproject.toml"]
 
 > **`complexipy`** measures each function's cognitive complexity, which the linter does not: it measures only the cyclomatic one, which counts branches and not how deep they nest.
 
-It reads only its table of `pyproject.toml`, into which the program writes its settings. complexipy keeps a cache in **`.complexipy_cache/`**{#complexipy-cache}, which is ignored.
+It reads only its table of `pyproject.toml`, into which `constitution` writes its settings. complexipy keeps a cache in **`.complexipy_cache/`**{#complexipy-cache}, which is ignored.

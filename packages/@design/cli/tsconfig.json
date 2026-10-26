@@ -1,0 +1,67 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "#/*": [
+        "./src/*"
+      ]
+    },
+
+    // tsc
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+
+    // workspace
+    "composite": true,
+    "emitDeclarationOnly": true,
+    "outDir": "${configDir}/.tsc-cache",
+
+    // tsc
+    "strict": true,
+    "noImplicitOverride": true,
+    "exactOptionalPropertyTypes": true,
+    "verbatimModuleSyntax": true,
+
+    // _react
+    "jsx": "react-jsx",
+
+    // bun
+    "types": [
+      "bun"
+    ],
+
+    // tsc
+    "lib": [
+      "ESNext"
+    ],
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "moduleDetection": "force",
+
+    // workspace
+    "noEmit": false,
+
+    // tsc
+    "allowJs": true,
+    "checkJs": true,
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "noUncheckedSideEffectImports": true,
+    "skipLibCheck": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true
+  },
+
+  // tsc
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "scripts/**/*.ts",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
+    "style-dictionary.config.ts"
+  ]
+}

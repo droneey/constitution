@@ -1,7 +1,7 @@
 import type { Setting } from '../../domain/entities';
 import { settingModel } from './models';
 
-// A null leaves its map or list, as the program spells no absence by it.
+// A null leaves its map or list, as constitution spells no absence by it.
 const withoutNull = (_key: string, held: unknown): unknown => {
   if (Array.isArray(held)) {
     return held.filter((entry) => entry !== null);

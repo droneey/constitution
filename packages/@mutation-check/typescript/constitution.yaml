@@ -1,0 +1,27 @@
+name: '@droneey/mutation-check-typescript'
+axes:
+  - architecture
+  - workflow
+domains:
+  - version-control
+  - workspace
+platforms: []
+languages:
+  - typescript
+  - json
+  - toml
+  - yaml
+implementations:
+  - bun
+  - tsc
+  - biome
+  - dependency-cruiser
+  - git
+  - knip
+  - yamllint
+  - tombi
+  - bun-test
+  - stryker
+packs:
+  - pack
+overrides: []

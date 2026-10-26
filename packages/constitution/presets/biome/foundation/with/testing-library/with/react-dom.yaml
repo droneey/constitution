@@ -1,7 +1,7 @@
 testing-library:
   spec-never-selects-from-the-document:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/spec-never-selects-from-the-document.grit]:
           includes:
             - '**/${role.colocated-specs}/**'

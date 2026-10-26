@@ -1,6 +1,6 @@
 _react:
   '*':
     typescript:
-      tsconfig.json:
+      tsconfig.json !jsonc:
         compilerOptions:
           jsx: react-jsx

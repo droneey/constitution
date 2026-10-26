@@ -2,7 +2,8 @@
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
-import brand from '../../../brand.tokens.json' with { type: 'json' };
+import brand from '@droneey/constitution-brand' with { type: 'json' };
+
 import packageJson from '../package.json' with { type: 'json' };
 import { readTextWithin } from './libs/bounded-input';
 import { pluginFingerprintOf } from './libs/claude-plugin';

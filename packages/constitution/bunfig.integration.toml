@@ -1,5 +1,7 @@
 [test]
 root = "."
+
+# bun-test
 pathIgnorePatterns = ["tests/**"]
 preload = []
 randomize = true
@@ -8,10 +10,13 @@ coverageReporter = ["text"]
 coverageSkipTestFiles = true
 coverageThreshold = { functions = 1.0, lines = 1.0 }
 coveragePathIgnorePatterns = [
+  # bun-test
   "**/__tests__/**",
   "**/main.*",
   "**/root/wiring.*",
   "**/*.gen.*",
+
+  # workspace
   "../**"
 ]
 

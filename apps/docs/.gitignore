@@ -1,17 +1,10 @@
 # fumadocs-mdx's generated content
 .source/
 
-# machine local files ignored
+# git
 .claude/settings.local.json
 .claude/worktrees/
-
-# mise
-mise.local.toml
-
-# working notes stay out of history
 /local/
-
-# gitignore covers dependencies output and caches
 .DS_Store
 .vscode/*
 !.vscode/settings.json
@@ -26,12 +19,8 @@ mise.local.toml
 *.bak
 *.orig
 *~
-
-# gitignore covers environment files
 .env*
 !.env.example
-
-# gitignore covers key files
 *.pem
 *.key
 *.p12
@@ -40,6 +29,9 @@ mise.local.toml
 credentials.json
 id_rsa
 *.secrets
+
+# mise
+mise.local.toml
 
 # _js-runtime
 **/node_modules/
@@ -67,8 +59,6 @@ reports/mutation/
 
 # tsc
 *.tsbuildinfo
-
-# tsc with workspace
 .tsc-cache/
 
 # vite

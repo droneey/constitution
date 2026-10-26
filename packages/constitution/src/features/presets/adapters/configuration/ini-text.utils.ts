@@ -1,5 +1,7 @@
 import type { Setting, SettingMap } from '../../domain/entities';
 import { Setting as Settings } from '../../domain/entities';
+import type { Anchor, Commenting } from './block-comments.utils';
+import { noTextLines, withBlockComments } from './block-comments.utils';
 import type { SettingsText } from './settings-text.types';
 
 const NEWLINE = '\n';
@@ -114,7 +116,7 @@ const headerAt = (lines: string[], name: string): number => {
   return lines.length - 1;
 };
 
-const writeIni = (input: SettingsText): string => {
+const writeSettings = (input: SettingsText): string => {
   const settings = Settings.isMap(input.settings) ? input.settings : {};
   const lines = keptOf({
     lines: linesOf(input.text),
@@ -136,5 +138,56 @@ const writeIni = (input: SettingsText): string => {
 
   return `${lines.join(NEWLINE)}${NEWLINE}`;
 };
+
+const iniAnchorsOf = (text: string): readonly Anchor[] => {
+  let section = TOP;
+
+  return text
+    .split(NEWLINE)
+    .map((line, at) => {
+      const header = SECTION.exec(line)?.[1];
+      const keys =
+        header === undefined
+          ? [
+              section,
+              KEY.exec(line)?.[1],
+            ]
+          : [
+              header,
+            ];
+
+      section = header ?? section;
+
+      return {
+        at,
+        keys,
+      };
+    })
+    .filter(
+      (
+        opened,
+      ): opened is {
+        at: number;
+        keys: string[];
+      } => opened.keys.every((key) => key !== undefined),
+    )
+    .map(({ at, keys }) => ({
+      line: at,
+      path: keys.map((key) => ({
+        key,
+      })),
+    }));
+};
+
+const iniCommenting: Commenting = {
+  anchorsOf: iniAnchorsOf,
+  prefix: '#',
+  textLinesOf: noTextLines,
+};
+
+const writeIni = withBlockComments({
+  commenting: iniCommenting,
+  write: writeSettings,
+});
 
 export { readIni, writeIni };

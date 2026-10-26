@@ -4,7 +4,7 @@ import { ProgramError } from './program.error';
 /** Why a project's Constitution cannot be read, each failure naming the path it stopped at. */
 enum ProjectFailure {
   NoProject = 'no-project',
-  ReleaseMissing = 'archive-missing',
+  ReleaseMissing = 'distribution-missing',
   ManifestUnreadable = 'manifest-unreadable',
   VersionMissing = 'version-missing',
   ConfigUnreadable = 'config-unreadable',

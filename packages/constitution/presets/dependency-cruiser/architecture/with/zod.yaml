@@ -1,11 +1,11 @@
 zod:
   '*':
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         allowedSeverity: error
   zod-home-is-the-edge-and-shared-parsing:
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         allowed[comment=zod-home-is-the-edge-and-shared-parsing]:
           from:
             path:

@@ -1,7 +1,7 @@
 typescript:
   process-env-read-only-under-root:
     typescript:
-      biome.json:
+      biome.jsonc:
         linter:
           rules:
             style:
@@ -21,7 +21,7 @@ typescript:
                   noProcessEnv: 'off'
   undefined-is-the-only-absence:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/undefined-is-the-only-absence.grit]:
           includes:
             - '**'
@@ -30,7 +30,7 @@ typescript:
             - '!**/*.tsx'
   closed-name-set-is-a-string-enum:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/closed-name-set-is-a-string-enum.grit]:
           includes:
             - '**/*.ts'
@@ -39,7 +39,7 @@ typescript:
             - '!**/${role.wire-model}/**'
   business-types-readonly:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/business-types-readonly.grit]:
           includes:
             - '**/${role.pure-layer}/**'
@@ -47,7 +47,7 @@ typescript:
             - '!**/${role.colocated-specs}/**'
   timer-set-only-by-the-edge-and-binding-units:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/timer-set-only-by-the-edge-and-binding-units.grit]:
           includes:
             - '**/${role.source}/**'
@@ -66,7 +66,7 @@ typescript:
 core:
   surface-only-re-exports:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/surface-only-re-exports.grit]:
           includes:
             - '**/index.ts'

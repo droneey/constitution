@@ -15,7 +15,7 @@ import { createDoctorCommand, diagnoseInstallation } from '#/features/installati
 import { createClaudePluginRegistry } from '#/features/installation/adapters/claude-code';
 import { createGitHubReleaseFeed } from '#/features/installation/adapters/github';
 import { createLefthookGitHooks } from '#/features/installation/adapters/lefthook';
-import { createPathProgram } from '#/features/installation/adapters/path';
+import { createPathExecutable } from '#/features/installation/adapters/path';
 import type {
   ApplyReport,
   ConfigurationsCheck,
@@ -38,9 +38,9 @@ import {
 } from '#/features/presets';
 import { createConfigurationFormat } from '#/features/presets/adapters/configuration';
 import {
+  createDistributionMapSources,
   createFileAppliedFilesRepository,
   createFileLockRepository,
-  createManifestReleaseBuilds,
 } from '#/features/presets/adapters/file-system';
 import { createShellCommandRunner } from '#/features/presets/adapters/process';
 import { createYamlPresetFileParser } from '#/features/presets/adapters/yaml';
@@ -71,7 +71,7 @@ import {
   remindOfFile,
 } from '#/features/session';
 import { createXdgSessionRepository } from '#/features/session/adapters/session-store';
-import { PROGRAM_NAME } from '#/kernel/constants';
+import { EXECUTABLE_NAME } from '#/kernel/constants';
 import type { BlockModel } from '#/kernel/entities';
 import { Version } from '#/kernel/value-objects';
 import { configureHelpLayout } from '#/libs/commander';
@@ -80,6 +80,7 @@ import { ExitCode, OUTPUT_FLAGS } from '#/shared/cli';
 
 import { adopt, flagsOf, groupOf } from './command-tree.utils';
 import { clockOf } from './configuration';
+import { DISTRIBUTION_MAP, PACKAGE_BUILDS } from './distribution.constants';
 import type { ErrorHandler } from './error-handler';
 import { createErrorHandler } from './error-handler';
 import { createPresentation } from './presentation';
@@ -88,10 +89,10 @@ import type { Ports, Registration } from './registration.types';
 import { stateFolderWarningText } from './state-folder-warning';
 
 const HOOK = 'hook';
-// The time each outside call may take: a run of git, of a program on PATH, of lefthook, and the
-// call that asks GitHub for the latest release.
+// The time each outside call may take: a run of git, of the executable on PATH, of lefthook, and
+// the call that asks GitHub for the latest release.
 const GIT_TIMEOUT_MS = 30_000;
-const PROGRAM_TIMEOUT_MS = 5000;
+const EXECUTABLE_TIMEOUT_MS = 5000;
 const LEFTHOOK_TIMEOUT_MS = 10_000;
 const RELEASE_TIMEOUT_MS = 3000;
 // The files a folder of a release or a pack lists at most, the workspace's folders in one look, and
@@ -105,13 +106,14 @@ const portsOf = (input: ProgramInput): Ports => {
     maxFiles: FOLDER_FILES,
   });
   const presetFiles = createYamlPresetFileParser();
-  const builds = createManifestReleaseBuilds({
-    manifest: 'package.json',
+  const distribution = createDistributionMapSources({
+    builds: PACKAGE_BUILDS,
+    map: DISTRIBUTION_MAP,
   });
   const formats = createConfigurationFormat();
 
   return {
-    builds,
+    distribution,
     commands: createShellCommandRunner(),
     presetFiles,
     files,
@@ -135,7 +137,7 @@ const portsOf = (input: ProgramInput): Ports => {
     configurations: createProjectConfigurationsCheck({
       files,
       formats,
-      builds,
+      distribution,
       lockOf: createFileLockRepository().read,
       parser: presetFiles,
     }),
@@ -226,15 +228,16 @@ const doctorCommandOf = ({ context, ports, programInput }: Registration): Comman
     ...context,
     diagnoseInstallation: async (start: string): Promise<readonly PartDiagnosis[]> =>
       await diagnoseInstallation({
+        executable: Version.create(programInput.version),
         files: ports.files,
         fingerprint: programInput.pluginFingerprint(),
         hooks: createLefthookGitHooks({
           env: programInput.environment.commands,
           timeoutMs: LEFTHOOK_TIMEOUT_MS,
         }),
-        path: createPathProgram({
+        path: createPathExecutable({
           env: programInput.environment.commands,
-          timeoutMs: PROGRAM_TIMEOUT_MS,
+          timeoutMs: EXECUTABLE_TIMEOUT_MS,
         }),
         plugins: createClaudePluginRegistry({
           configFolder: programInput.environment.claudeConfig,
@@ -246,7 +249,6 @@ const doctorCommandOf = ({ context, ports, programInput }: Registration): Comman
         }),
         source: ports.source,
         start,
-        program: Version.create(programInput.version),
       }),
   });
 
@@ -258,7 +260,7 @@ const configurationsCheckOf = (input: {
     files: input.ports.files,
     formats: input.ports.formats,
     locks: createFileLockRepository(),
-    builds: input.ports.builds,
+    distribution: input.ports.distribution,
     parser: input.ports.presetFiles,
     source: input.ports.source,
     start: input.start,
@@ -269,7 +271,7 @@ const planRunOf =
   (asked: RunAsked): RunPlan =>
     planRun({
       ...asked,
-      builds: ports.builds,
+      distribution: ports.distribution,
       files: ports.files,
       parser: ports.presetFiles,
       source: ports.source,
@@ -303,7 +305,7 @@ const presetsCommandsOf = ({ context, ports, program }: Registration): Command =
         planPresets: (start: string): PresetsPlan =>
           planPresets({
             files: ports.files,
-            builds: ports.builds,
+            distribution: ports.distribution,
             parser: ports.presetFiles,
             source: ports.source,
             start,
@@ -318,7 +320,7 @@ const presetsCommandsOf = ({ context, ports, program }: Registration): Command =
             files: ports.files,
             formats: ports.formats,
             locks: createFileLockRepository(),
-            builds: ports.builds,
+            distribution: ports.distribution,
             parser: ports.presetFiles,
             source: ports.source,
             start,
@@ -368,7 +370,7 @@ const registerCommands = (registration: Registration): void => {
                 ...asked,
                 files: ports.files,
                 model: asked.model,
-                builds: ports.builds,
+                distribution: ports.distribution,
                 parser: ports.presetFiles,
               }),
         ),
@@ -409,7 +411,7 @@ const registerCommands = (registration: Registration): void => {
 };
 
 const createProgram = (input: ProgramInput): Program => {
-  const program = new Command(PROGRAM_NAME);
+  const program = new Command(EXECUTABLE_NAME);
   let running: Command | undefined;
   let isFailed = false;
   const presentation = createPresentation({

@@ -1,11 +1,7 @@
-# machine local files ignored
+# git
 .claude/settings.local.json
 .claude/worktrees/
-
-# working notes stay out of history
 /local/
-
-# gitignore covers dependencies output and caches
 .DS_Store
 .vscode/*
 !.vscode/settings.json
@@ -20,12 +16,8 @@
 *.bak
 *.orig
 *~
-
-# gitignore covers environment files
 .env*
 !.env.example
-
-# gitignore covers key files
 *.pem
 *.key
 *.p12

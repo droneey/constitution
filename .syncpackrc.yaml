@@ -1,3 +1,4 @@
+# syncpack
 formatBugs: false
 formatRepository: false
 sortAz:
@@ -35,6 +36,7 @@ sortFirst:
   - peerDependencies
   - peerDependenciesMeta
 versionGroups:
+  # syncpack
   - label: A dependency comes only from a registry
     dependencyTypes:
       - dev
@@ -44,6 +46,8 @@ versionGroups:
       - git
       - url
     isBanned: true
+
+  # bun
   - label: The repository's own units use the workspace protocol
     dependencies:
       - $LOCAL
@@ -51,6 +55,8 @@ versionGroups:
       - dev
       - prod
     pinVersion: workspace:*
+
+# syncpack
 semverGroups:
   - label: Pin the tools exactly
     range: ''

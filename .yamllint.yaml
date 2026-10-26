@@ -1,13 +1,15 @@
+# workspace
 # the members, each checked by its own configuration in its own run; then .gitignore's paths, the
 # environment uv builds and the lockfiles mise writes
 ignore:
   - /apps/docs/**
+  - /packages/@design/browser/**
+  - /packages/@design/cli/**
+  - /packages/@design/tokens/**
+  - /packages/@mutation-check/python/**
+  - /packages/@mutation-check/typescript/**
+  - /packages/brand/**
   - /packages/constitution/**
-  - /packages/design-browser/**
-  - /packages/design-cli/**
-  - /packages/design-tokens/**
-  - /packages/mutation-check/languages/python/**
-  - /packages/mutation-check/languages/typescript/**
   - /packages/python-check/**
   - /.droneey/
   - /.mise/locks/
@@ -15,6 +17,8 @@ ignore:
   - /local/
   - node_modules/
   - dist/
+
+# yamllint
 rules:
   indentation:
     spaces: 2

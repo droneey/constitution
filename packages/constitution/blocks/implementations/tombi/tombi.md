@@ -12,4 +12,4 @@ governs: ["tombi.toml"]
 
 > **`tombi`** formats TOML and lints it against the schema of each file it knows.
 
-tombi reads no other file from **`tombi.toml`**, and only the one in the folder it runs in or above it, so the program writes the settings into the file of each unit a run starts from.
+tombi reads no other file from **`tombi.toml`**, and only the one in the folder it runs in or above it, so `constitution` writes the settings into the file of each unit a run starts from.

@@ -4,7 +4,7 @@ import type { BlockModel, ProjectUnit } from '#/kernel/entities';
 import { compareText } from '#/kernel/utils';
 import { BlockSource, PackPath } from '#/kernel/value-objects';
 
-import type { PresetFileParser, ReleaseBuilds } from '../../../contracts';
+import type { DistributionSources, PresetFileParser } from '../../../contracts';
 import type { PresetsFinding, PresetsPlan } from '../../../entities';
 import { PresetEntry } from '../../../entities';
 import { checkPresetSets } from '../check-preset-sets';
@@ -15,7 +15,7 @@ import { selectEntries } from './steps/select-entries';
 import { splitRuns } from './steps/split-runs';
 
 interface ComputePresetsInput {
-  readonly builds: ReleaseBuilds;
+  readonly distribution: DistributionSources;
   readonly files: ProjectFiles;
   readonly model: BlockModel;
   /** each from the repository */
@@ -82,6 +82,16 @@ const computePresets = (input: ComputePresetsInput): PresetsPlan => {
   });
 
   return {
+    blocks: new Map(
+      [
+        ...Map.groupBy(entries, (entry) => entry.file.path),
+      ].map(([path, written]) => [
+        path,
+        [
+          ...new Set(written.map(PresetEntry.blockOf)),
+        ],
+      ]),
+    ),
     files: split.files,
     runs: split.runs,
     findings: eachOnce([
@@ -91,7 +101,7 @@ const computePresets = (input: ComputePresetsInput): PresetsPlan => {
         isOwnPacks: true,
         model: input.model,
         release: {
-          builds: input.builds.sourcesOf(input.releaseFolder),
+          distributed: input.distribution.packagesOf(input.releaseFolder),
           files,
           folder: input.releaseFolder,
           where: RELEASE_FOLDER,

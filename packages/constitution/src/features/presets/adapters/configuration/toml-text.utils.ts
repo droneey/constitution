@@ -1,11 +1,13 @@
-import { parse, stringify, TomlError } from 'smol-toml';
+import { stringify } from 'smol-toml';
 
-import { attempted, isDeepEqual } from '#/kernel/utils';
+import { isDeepEqual } from '#/kernel/utils';
 
 import type { Setting, SettingMap } from '../../domain/entities';
 import { Setting as Settings } from '../../domain/entities';
+import { withBlockComments } from './block-comments.utils';
 import type { SettingsText } from './settings-text.types';
-import { settingOfWire } from './wire-setting.utils';
+import { tomlCommenting } from './toml-comments.utils';
+import { depthOf, headerOf, readToml, STRINGS, unquotedOf } from './toml-lines.utils';
 
 interface Block {
   readonly lines: string[];
@@ -17,16 +19,9 @@ const NEWLINE = '\n';
 // A section is a table by its key, or a table of a table that holds only tables, the two keys
 // joined by a character no key holds.
 const SEPARATOR = '\u001F';
-const HEADER = /^\s*\[\[?\s*([^\]]+?)\s*\]\]?\s*(?:#.*)?$/;
-const HEADER_PART = /"[^"]*"|'[^']*'|[^.\s]+/g;
-const QUOTES = /^["']|["']$/g;
 const BARE_KEY = /^[A-Za-z0-9_-]+$/;
 const KEY_LINE = /^\s*("[^"]+"|'[^']+'|[A-Za-z0-9_-]+)\s*=/;
 const DOTTED_KEY_LINE = /^\s*[A-Za-z0-9_"'-]+\s*\.\s*[A-Za-z0-9_"'-]/;
-const STRINGS = /"(?:[^"\\]|\\.)*"|'[^']*'/g;
-const COMMENT = /#.*/;
-const OPENERS = /[[{]/g;
-const CLOSERS = /[\]}]/g;
 const BLANK_RUN = /\n{3,}/g;
 // smol-toml writes a value alone only under a key; the key it is given here goes with its prefix.
 const VALUE_PREFIX = 'value = ';
@@ -41,8 +36,6 @@ const paddedBracket = new RegExp(`(${STRINGS.source})|\\[ | \\]`, 'g');
 const itemPattern = new RegExp(`(?:${STRINGS.source}|[^,"'])+`, 'g');
 // An array that holds a table or an array stays as written.
 const NESTED = /[[\]{}]/;
-
-const isTomlError = (error: unknown): boolean => error instanceof TomlError;
 
 // As the formatter writes it, an array past the width breaks to one item a line.
 const styledLine = (line: string): string => {
@@ -73,25 +66,6 @@ const styledLine = (line: string): string => {
 };
 
 const styled = (text: string): string => text.split(NEWLINE).map(styledLine).join(NEWLINE);
-
-const readToml = (text: string): Setting | undefined =>
-  settingOfWire(
-    attempted({
-      effect: () => parse(text),
-      isRecognised: isTomlError,
-    }),
-  );
-
-const headerOf = (line: string): readonly string[] | undefined => {
-  const match = HEADER.exec(line);
-
-  if (match === null) {
-    return undefined;
-  }
-
-  // Stryker disable next-line ArrayDeclaration: a header names at least one part
-  return (String(match[1]).match(HEADER_PART) ?? []).map((part) => part.replace(QUOTES, ''));
-};
 
 // A table or an array of tables goes under a header of its own, never among the root's keys.
 const isTable = (setting: Setting | undefined): boolean =>
@@ -150,14 +124,6 @@ const inlineOf = (setting: Setting): string => {
     .slice(VALUE_PREFIX.length);
 };
 
-// How far a key's value runs: the brackets it opens, strings and comments aside.
-const depthOf = (line: string): number => {
-  // Stryker disable next-line StringLiteral: what stands for a string or a comment only has to hold no bracket
-  const bare = line.replace(STRINGS, '').replace(COMMENT, '');
-
-  return (bare.match(OPENERS)?.length ?? 0) - (bare.match(CLOSERS)?.length ?? 0);
-};
-
 const spansOf = (
   lines: readonly string[],
   start: number,
@@ -196,7 +162,7 @@ const spansOf = (
         depth += depthOf(String(lines[end]));
       }
 
-      spans.set(key.replace(QUOTES, ''), [
+      spans.set(unquotedOf(key), [
         at,
         end,
       ]);
@@ -407,7 +373,7 @@ const changedLinesOf = (
  * Only the sections whose value changed are written again, and of a plain table only its changed
  * keys, so every other line and comment stays; a section whose table is gone goes with its lines.
  */
-const writeToml = (input: SettingsText): string => {
+const writeSettings = (input: SettingsText): string => {
   const { settings, text } = input;
   const before = readToml(text) ?? {};
   const sections: Sections = {
@@ -486,4 +452,9 @@ const writeToml = (input: SettingsText): string => {
   )}${NEWLINE}`;
 };
 
-export { readToml, writeToml };
+const writeToml = withBlockComments({
+  commenting: tomlCommenting,
+  write: writeSettings,
+});
+
+export { writeToml };

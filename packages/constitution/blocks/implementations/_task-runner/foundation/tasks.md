@@ -1,6 +1,6 @@
 # Tasks
 
-> Governs the names of the tasks, the tasks that run the others, and what the program runs.
+> Governs the names of the tasks, the tasks that run the others, and what `constitution run` runs.
 
 ## General
 
@@ -10,11 +10,11 @@ A task is named by its action first — `check:<what>`, `test:<what>`, `fix:<wha
 
 | Why |
 |---|
-| a task added under an action's prefix then runs with the others with no edit to the task that runs them; one task proves the unit, with the program or without it; and a part or a helper never runs twice or on its own by accident. |
+| a task added under an action's prefix then runs with the others with no edit to the task that runs them; one task proves the unit, with `constitution` or without it; and a part or a helper never runs twice or on its own by accident. |
 
 ### unit-run-through-its-action-tasks → one-check-runs-every-tool · MUST
 
-The runner gives the program the commands that run a unit's `check`, `test` and `fix` tasks, so `constitution run` runs the same tasks in every unit.
+The runner gives `constitution run` the commands that run a unit's `check`, `test` and `fix` tasks, so `constitution run` runs the same tasks in every unit.
 
 | Why |
 |---|

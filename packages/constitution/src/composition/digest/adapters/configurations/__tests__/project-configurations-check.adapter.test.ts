@@ -111,8 +111,8 @@ const failingFiles: ProjectFiles = {
 };
 
 const portsOf = (projectFiles: ProjectFiles) => ({
-  builds: {
-    sourcesOf: () => new Map<string, string>(),
+  distribution: {
+    packagesOf: () => new Map<string, string>(),
   },
   files: projectFiles,
   formats: {

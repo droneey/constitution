@@ -22,8 +22,9 @@ const manifest = z.object({
   scripts: z.record(z.string(), z.string()),
 });
 
-const allowlist = (
-  LICENCES.exec(
+/** None where the script passes no list. */
+const licencesOf = (input: { languages: readonly string[]; script: string }): readonly string[] => {
+  const listed = LICENCES.exec(
     manifest.parse(
       JSON.parse(
         readFileSync(
@@ -33,18 +34,32 @@ const allowlist = (
                 'bun',
                 'osv-scanner',
               ],
-              languages: [
-                'typescript',
-              ],
+              languages: input.languages,
             }),
             'package.json',
           ),
           'utf8',
         ),
       ),
-    ).scripts['check:audit'] ?? '',
-  )?.[1] ?? ''
-).split(',');
+    ).scripts[input.script] ?? '',
+  )?.[1];
+
+  return listed === undefined ? [] : listed.split(',');
+};
+
+const allowlist = licencesOf({
+  languages: [
+    'typescript',
+  ],
+  script: 'check:audit',
+});
+
+const imageLicences = licencesOf({
+  languages: [
+    'dockerfile',
+  ],
+  script: 'check:audit-image',
+});
 
 // Offline, osv-scanner still validates the list, then stops at the licences it
 // would fetch from deps.dev; that stop shows the list was accepted.
@@ -79,4 +94,4 @@ const verdictOn = (licences: readonly string[]): Verdict => {
   }
 };
 
-export { allowlist, verdictOn };
+export { allowlist, imageLicences, verdictOn };

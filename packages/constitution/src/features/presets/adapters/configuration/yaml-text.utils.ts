@@ -1,10 +1,12 @@
 import type { Document, Node, Pair, YAMLMap } from 'yaml';
-import { isMap, isNode, isScalar, isSeq, parseDocument } from 'yaml';
+import { isMap, isNode, isScalar, isSeq, parseDocument, visit } from 'yaml';
 
 import { attempted, compareText, isDeepEqual } from '#/kernel/utils';
 
-import type { Setting } from '../../domain/entities';
+import type { HeldStep, Setting } from '../../domain/entities';
 import { Setting as Settings } from '../../domain/entities';
+import type { Anchor, Commenting } from './block-comments.utils';
+import { anchorAt, lineAt, withBlockComments } from './block-comments.utils';
 import type { SettingsText } from './settings-text.types';
 import { settingOfWire } from './wire-setting.utils';
 
@@ -19,6 +21,8 @@ const YAML_11_BOOLEAN = /^(?:y|yes|n|no|on|off|true|false)$/i;
 const LINE_WIDTH = 100;
 const LONG_TEXT = 80;
 const NEWLINE = '\n';
+// Indent, and the dashes of sequences that open on the same line.
+const LINE_START = /^\s*(?:- )*$/;
 
 const documentOf = (text: string): Document | undefined => {
   const document = parseDocument(text, OPTIONS);
@@ -165,7 +169,122 @@ const lay = (input: {
   document.setIn(path, nodeOf(document, after));
 };
 
-const writeYaml = (input: SettingsText): string => {
+interface Child {
+  readonly held: unknown;
+  /** where the key or the item begins */
+  readonly offset: number;
+  readonly step: HeldStep;
+}
+
+// Stryker disable next-line ConditionalExpression,OptionalChaining,LogicalOperator: a parsed key or item is a node with its range
+const startOf = (node: unknown): number => (isNode(node) ? (node.range?.[0] ?? 0) : 0);
+
+const childrenOf = (node: unknown, document: Document): readonly Child[] => {
+  if (isMap(node)) {
+    return node.items.map((pair) => ({
+      held: pair.value,
+      offset: startOf(pair.key),
+      step: {
+        key: String(keyOfPair(pair)),
+      },
+    }));
+  }
+
+  return isSeq(node)
+    ? node.items.flatMap((listed): readonly Child[] => {
+        // Stryker disable next-line ConditionalExpression: an item of a parsed sequence is a node; the test only narrows the type
+        const setting = settingOfWire(isNode(listed) ? listed.toJS(document) : listed);
+
+        return setting === undefined
+          ? []
+          : [
+              {
+                held: listed,
+                offset: startOf(listed),
+                step: {
+                  item: setting,
+                },
+              },
+            ];
+      })
+    : [];
+};
+
+const yamlAnchorsOf = (text: string): readonly Anchor[] => {
+  const document = parseDocument(text, OPTIONS);
+
+  const walk = (node: unknown, path: readonly HeldStep[]): readonly Anchor[] =>
+    childrenOf(node, document).flatMap((child) => {
+      const at = [
+        ...path,
+        child.step,
+      ];
+
+      return [
+        ...anchorAt({
+          lineStart: LINE_START,
+          offset: child.offset,
+          path: at,
+          text,
+        }),
+        ...walk(child.held, at),
+      ];
+    });
+
+  return walk(document.contents, []);
+};
+
+const indentOf = (line: string): number => line.length - line.trimStart().length;
+
+// A literal or folded block runs on over the lines indented deeper than the one it opens on, its
+// blank lines among them.
+const blockEndOf = (lines: readonly string[], first: number): number => {
+  let last = first;
+
+  // past the last line String() gives a word, which ends the run
+  while (
+    // Stryker disable next-line MethodExpression: the writer writes a block's blank line bare
+    String(lines[last + 1]).trim() === '' ||
+    indentOf(String(lines[last + 1])) > indentOf(String(lines[first]))
+  ) {
+    last += 1;
+  }
+
+  return last;
+};
+
+const yamlTextLinesOf = (text: string): ReadonlySet<number> => {
+  const lines = text.split(NEWLINE);
+  const texts = new Set<number>();
+
+  visit(parseDocument(text, OPTIONS), (_key, node) => {
+    if (!isScalar(node)) {
+      return;
+    }
+
+    // Stryker disable next-line ArrayDeclaration,LogicalOperator: a parsed scalar holds its range
+    const [start = 0, end = 0] = node.range ?? [];
+    const first = lineAt(text, start);
+    const last =
+      node.type === 'BLOCK_LITERAL' || node.type === 'BLOCK_FOLDED'
+        ? blockEndOf(lines, first)
+        : lineAt(text, end);
+
+    for (let line = first; line <= last; line += 1) {
+      texts.add(line);
+    }
+  });
+
+  return texts;
+};
+
+const yamlCommenting: Commenting = {
+  anchorsOf: yamlAnchorsOf,
+  prefix: '#',
+  textLinesOf: yamlTextLinesOf,
+};
+
+const writeSettings = (input: SettingsText): string => {
   const document = parseDocument(input.text, OPTIONS);
 
   lay({
@@ -192,5 +311,10 @@ const writeYaml = (input: SettingsText): string => {
     singleQuote: true,
   });
 };
+
+const writeYaml = withBlockComments({
+  commenting: yamlCommenting,
+  write: writeSettings,
+});
 
 export { readYaml, writeYaml };

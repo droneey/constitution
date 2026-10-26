@@ -1,7 +1,7 @@
 zod:
   zod-imported-by-forms:
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         allowed[comment=zod-imported-by-forms]:
           from:
             path: /${role.presentation-layer}/

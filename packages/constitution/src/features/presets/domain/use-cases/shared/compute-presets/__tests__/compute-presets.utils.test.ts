@@ -4,6 +4,7 @@ import { Axis } from '#/kernel/constants';
 import type { ProjectUnit } from '#/kernel/entities';
 import { PackPath } from '#/kernel/value-objects';
 
+import { createFakeDistributionSources } from '../../../../../__tests__/distribution-sources.fake';
 import type { Files } from '../../../../../__tests__/presets.fixtures';
 import {
   PROJECT,
@@ -15,9 +16,9 @@ import {
   releasePresets,
   unitOf,
 } from '../../../../../__tests__/presets.fixtures';
-import { createFakeReleaseBuilds } from '../../../../../__tests__/release-builds.fake';
 import type { PresetsPlan } from '../../../../entities';
 import { PresetsCode } from '../../../../entities';
+import { FileFormat } from '../../../../value-objects';
 import { computePresets } from '../compute-presets.utils';
 
 const planOf = (input: {
@@ -28,7 +29,7 @@ const planOf = (input: {
   const { files } = projectOf(input);
 
   return computePresets({
-    builds: createFakeReleaseBuilds(),
+    distribution: createFakeDistributionSources(),
     files,
     model: presetsModel,
     packs: (input.packs ?? []).map(PackPath.create),
@@ -295,7 +296,7 @@ describe('computePresets', () => {
     ]);
   });
 
-  it('should lay out a file of lines in the groups its entries give, and no file of another shape', () => {
+  it('should mark what the block gives each file of whatever shape, and nothing a default gives', () => {
     // Arrange
     const asked = {
       files: releasePresets({
@@ -306,6 +307,8 @@ describe('computePresets', () => {
           '      .gitignore:',
           '        - dist/',
           '      biome.json:',
+          '        width: 100',
+          '      tombi.toml: !default',
           '        width: 100',
         ].join('\n'),
       }),
@@ -326,28 +329,46 @@ describe('computePresets', () => {
     expect(
       plan.files.map((one) =>
         Object.fromEntries(
-          Object.entries(one).filter(([key]) => key === 'file' || key === 'layout'),
+          Object.entries(one).filter(([key]) => key === 'file' || key === 'marks'),
         ),
       ),
     ).toStrictEqual([
       {
         file: '.gitignore',
-        layout: {
-          groups: [
-            {
-              lines: [
-                'dist/',
-              ],
-              name: 'biome',
-            },
-          ],
-          names: [
+        marks: {
+          blocks: [
             'biome',
+          ],
+          marks: [
+            {
+              block: 'biome',
+              path: [
+                {
+                  item: 'dist/',
+                },
+              ],
+            },
           ],
         },
       },
       {
         file: 'biome.json',
+        marks: {
+          blocks: [
+            'biome',
+          ],
+          marks: [
+            {
+              block: 'biome',
+              path: [
+                'width',
+              ],
+            },
+          ],
+        },
+      },
+      {
+        file: 'tombi.toml',
       },
     ]);
   });
@@ -496,6 +517,177 @@ describe('computePresets', () => {
     expect(writtenOf(plan).map(({ file }) => file)).toStrictEqual([
       'packages/kit/biome.json',
     ]);
+  });
+
+  it("should take an entry where its unit's folder equals the guard's text, and keep a file's format mark", () => {
+    // Arrange
+    const asked = {
+      files: releasePresets({
+        'bun/foundation.yaml': [
+          'bun:',
+          "  '*':",
+          "    '*':",
+          '      apps.json ? ${unit.parent} = apps:',
+          '        depth: ${unit.depth}',
+          '        parent: ${unit.parent}',
+          '      other.json ? !${unit.parent} = apps:',
+          '        other: true',
+          '      never.json ? ${unit.parent} = ${role.source}:',
+          '        never: true',
+          '      same.json ? ${unit.parent} = ${unit.parent}:',
+          '        same: true',
+          '      odd.json:',
+          '        odd: x${file.isTop}',
+          '      config.json:',
+          '        depth: 1',
+          '      config.json !jsonc:',
+          '        width: 100',
+        ].join('\n'),
+      }),
+      units: [
+        unitOf({
+          blocks: [
+            'core',
+            'bun',
+          ],
+        }),
+        unitOf({
+          blocks: [
+            'core',
+            'bun',
+          ],
+          path: 'apps/web',
+        }),
+        unitOf({
+          blocks: [
+            'core',
+            'bun',
+          ],
+          path: 'apps/eros/languages/ts',
+        }),
+      ],
+    };
+
+    // Act
+    const plan = planOf(asked);
+
+    // Assert
+    expect({
+      files: plan.files.map((one) =>
+        Object.fromEntries(
+          Object.entries(one).filter(([key]) =>
+            [
+              'file',
+              'format',
+              'merged',
+            ].includes(key),
+          ),
+        ),
+      ),
+      findings: plan.findings,
+    }).toStrictEqual({
+      files: [
+        {
+          file: 'apps/eros/languages/ts/apps.json',
+          merged: {
+            defaults: [],
+            problems: [],
+            value: {
+              depth: '3',
+              parent: 'apps',
+            },
+          },
+        },
+        {
+          file: 'apps/eros/languages/ts/config.json',
+          format: FileFormat.Jsonc,
+          merged: {
+            defaults: [],
+            problems: [],
+            value: {
+              depth: 1,
+              width: 100,
+            },
+          },
+        },
+        {
+          file: 'apps/eros/languages/ts/same.json',
+          merged: {
+            defaults: [],
+            problems: [],
+            value: {
+              same: true,
+            },
+          },
+        },
+        {
+          file: 'apps/web/apps.json',
+          merged: {
+            defaults: [],
+            problems: [],
+            value: {
+              depth: '1',
+              parent: 'apps',
+            },
+          },
+        },
+        {
+          file: 'apps/web/config.json',
+          format: FileFormat.Jsonc,
+          merged: {
+            defaults: [],
+            problems: [],
+            value: {
+              depth: 1,
+              width: 100,
+            },
+          },
+        },
+        {
+          file: 'apps/web/same.json',
+          merged: {
+            defaults: [],
+            problems: [],
+            value: {
+              same: true,
+            },
+          },
+        },
+        {
+          file: 'config.json',
+          format: FileFormat.Jsonc,
+          merged: {
+            defaults: [],
+            problems: [],
+            value: {
+              depth: 1,
+              width: 100,
+            },
+          },
+        },
+        {
+          file: 'other.json',
+          merged: {
+            defaults: [],
+            problems: [],
+            value: {
+              other: true,
+            },
+          },
+        },
+      ],
+      findings: [
+        {
+          code: PresetsCode.UnknownFact,
+          details: {
+            block: 'bun',
+            fact: '${file.isTop}',
+            rule: '*',
+          },
+          path: '.droneey/constitution/presets/bun/foundation.yaml',
+        },
+      ],
+    });
   });
 
   it('should give each file its facts: the path to the Constitution, its roles, its truths, its guards and its members', () => {
@@ -810,7 +1002,7 @@ describe('computePresets', () => {
     },
   );
 
-  it('should give what the program runs apart from the files, each list in the slots its runner places, and find a tool no runner of a unit runs and a run of another shape', () => {
+  it('should give what constitution runs apart from the files, each list in the slots its runner places, and find a tool no runner of a unit runs and a run of another shape', () => {
     // Arrange
     const asked = {
       files: releasePresets({
@@ -1279,7 +1471,7 @@ describe('computePresets', () => {
         path: 'packs/acme/presets/biome/foundation.yaml',
       },
       {
-        code: PresetsCode.MissingReleaseFile,
+        code: PresetsCode.MissingDistributionFile,
         details: {
           file: 'src/gone',
         },

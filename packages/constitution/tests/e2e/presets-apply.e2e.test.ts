@@ -178,6 +178,58 @@ describe('constitution presets apply', () => {
     });
   });
 
+  it.each([
+    {
+      before: {},
+      condition: 'it created',
+      left: undefined,
+    },
+    {
+      before: {
+        [MARKDOWNLINT]: linesOf('{', `  ${USER_COMMENT}`, '  "firstLine": false', '}'),
+      },
+      condition: 'the user had',
+      left: linesOf('{', `  ${USER_COMMENT}`, '  "firstLine": false,', '}'),
+    },
+  ])(
+    'should take its comments out of a file $condition once no entry writes it, then write nothing',
+    ({ before, left }) => {
+      // Arrange
+      const project = projectOf(before);
+
+      applyIn({
+        project,
+        read: [],
+      });
+      writeFileSync(
+        join(project, 'constitution.yaml'),
+        configOf({
+          ...followed,
+          [ConfigKey.Implementations]: '[]',
+        }),
+      );
+
+      // Act
+      const applied = applyIn({
+        project,
+        read: readFiles,
+      });
+      const again = applyIn({
+        project,
+        read: readFiles,
+      });
+
+      // Assert
+      expect({
+        again: again.files,
+        file: applied.files[MARKDOWNLINT],
+      }).toStrictEqual({
+        again: applied.files,
+        file: left,
+      });
+    },
+  );
+
   it('should leave out a default the user deleted', () => {
     // Arrange
     const project = projectOf();

@@ -36,7 +36,7 @@ const roleProblems = (
     : [];
 };
 
-// A fact the program computes stands where its kind may: a list of members only as a list item, a
+// A fact constitution computes stands where its kind may: a list of members only as a list item, a
 // truth only alone in a value or an item, and none in the path of a file, which names only roles.
 const namedProblems = (input: {
   named: EntryNamed;
@@ -109,23 +109,60 @@ const referenceProblems = (
   }
 };
 
-const guardProblems = (input: {
-  entry: PresetEntry;
-  named: EntryNamed;
-}): readonly PresetsProblem[] => {
+const guardTextProblems = (
+  input: NamingInput & {
+    equals: string;
+    named: EntryNamed;
+  },
+): readonly PresetsProblem[] =>
+  Fact.referencesIn(input.equals).flatMap((reference) =>
+    referenceProblems({
+      ...input,
+      reference,
+      text: {
+        place: TextPlace.Value,
+        text: input.equals,
+      },
+    }),
+  );
+
+// A guard's facts are checked as a value's are.
+const guardProblems = (
+  input: NamingInput & {
+    named: EntryNamed;
+  },
+): readonly PresetsProblem[] => {
   const { guard } = input.entry.file;
 
-  return guard === undefined || Fact.isBoolean(guard.fact)
-    ? []
-    : [
-        {
-          code: PresetsCode.UnknownFact,
-          details: {
-            ...input.named,
-            fact: Fact.textOf(guard.fact),
-          },
-        },
-      ];
+  if (guard === undefined) {
+    return [];
+  }
+
+  const isText =
+    guard.fact.kind !== FactKind.Unknown &&
+    !Fact.isBoolean(guard.fact) &&
+    !Fact.isNamed(guard.fact, FactName.WorkspaceMembers);
+  const fits = guard.equals === undefined ? Fact.isBoolean(guard.fact) : isText;
+
+  return [
+    ...(fits
+      ? []
+      : [
+          {
+            code: PresetsCode.UnknownFact,
+            details: {
+              ...input.named,
+              fact: Fact.textOf(guard.fact),
+            },
+          } satisfies PresetsProblem,
+        ]),
+    ...(guard.equals === undefined
+      ? []
+      : guardTextProblems({
+          ...input,
+          equals: guard.equals,
+        })),
+  ];
 };
 
 const namingProblems = (input: NamingInput): readonly PresetsProblem[] => {
@@ -159,7 +196,7 @@ const namingProblems = (input: NamingInput): readonly PresetsProblem[] => {
           } satisfies PresetsProblem,
         ]),
     ...guardProblems({
-      entry,
+      ...input,
       named,
     }),
     ...texts.flatMap((text) => [

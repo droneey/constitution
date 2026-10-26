@@ -162,7 +162,7 @@ describe('presetsFindingTextOf', () => {
         },
         path: 'presets/biome/foundation.yaml',
       },
-      text: 'biome → file-within-500-lines: ${file.name} is no fact the program computes where it stands',
+      text: 'biome → file-within-500-lines: ${file.name} is no fact constitution computes where it stands',
     },
     {
       finding: {
@@ -197,7 +197,7 @@ describe('presetsFindingTextOf', () => {
     },
     {
       finding: {
-        code: PresetsCode.MissingReleaseFile,
+        code: PresetsCode.MissingDistributionFile,
         details: {
           file: 'presets/biome/plugins/typescript/gone.grit',
         },
@@ -327,7 +327,7 @@ describe('presetsFindingTextOf', () => {
         details: {},
         path: 'constitution.yaml',
       },
-      text: 'gets what the program runs as other than lists of commands by their names',
+      text: 'gets what constitution runs as other than lists of commands by their names',
     },
     {
       finding: {

@@ -1063,6 +1063,7 @@
 - **Decision.** In a workspace, each unit's files are held by the parts of its own blocks, and no unit's parts reach another's (`unit-checked-by-its-own-parts`, a rule of `workspace`, which it means nothing without). Each tool's seam with `workspace` gives the form: Biome as ADR-0213 has it, dependency-cruiser a configuration per unit (`cruiser-configuration-per-unit`) beside the root's, which holds the imports between units (`imports-between-units-held-at-the-root`), and knip a configuration per unit since ADR-0213. Bun's coverage gate leaves out `../**`, the files of the units a unit imports, which their own specs hold (`coverage-gate-on-the-unit-alone`). Each unit with code its specs run has its own `stryker.config.mjs` (`stryker-configuration-per-unit`), and Stryker's part loads the archive's runner by its path from the preset's own file, which finds it from any folder. Each was verified on a workspace of the presets in `tests/e2e/workspace.e2e.test.ts`.
 - **Rejected.** One run from the root with every unit's parts joined, which applies a framework's names or layers to the units that do not use it; overrides per path in one configuration, which only some tools have and which then differ from tool to tool; a coverage ignore that names each imported unit, which changes with every new dependency; a `plugins` path written into each unit's `stryker.config.mjs`, which every unit would write again.
 - **Why.** A unit's blocks are the rules it is held to; a part applied beyond it changes another unit's rules, and one written for `src/` that runs from the root holds nothing at all.
+- **Superseded in part.** The root's configuration holding the imports between units (`imports-between-units-held-at-the-root`), by ADR-0245: each unit's own holds the imports it makes into the others.
 
 ## ADR-0152 — A semantic alias is a type exported by its module
 
@@ -2198,6 +2199,7 @@
   - A reference that resolves to the sources here and to the build in a project, through `--conditions` or `imports`: Stryker's workers drop the flag, Bun ignores `NODE_OPTIONS` for it, and a project's file cannot reach the archive by such a specifier.
   - A list of the build's outputs kept by hand beside the build script: it drifts from the build, where one list that drives it cannot.
 - **Why.** One rule holds every release path on every change, and the list that proves a built file is the one that builds it.
+- **Superseded in part.** The build list under `release` in the pack's `package.json` and the repository's build of it, by ADR-0249: each package builds itself, the archive's map names the packages' outputs, and the finding is `missing-archive-file`.
 
 ## ADR-0238 — A file is at the top among the units that get the same entry
 
@@ -2313,3 +2315,119 @@
   - Biome's `useSortedPackageJson`: it orders the manifest's fields by its own convention and puts a `pre` script before its script, not in the order of texts.
   - The action scripts closing the list, with each new script placed before them: the order depended on what apply added when, and needed a rule of its own for every map.
 - **Why.** One order that needs no memory of past applies; the mark is the preset's, so the tool that writes the file keeps it.
+
+## ADR-0245 — Each unit holds the imports it makes into the other units; the root cruises none
+
+**Date:** 2026-10-26 · **Status:** Accepted
+
+- **Decision.**
+  - The root knows that `apps/` and `packages/` hold units, never what lies inside them. It runs no import check over the units' files, so the root's cross-unit cruise, its script and its pack's entry go, and a root with no code of its own leaves `dependency-cruiser` out.
+  - Each unit's own `.dependency-cruiser.jsonc` holds the imports the unit makes into the others (`cruiser-configuration-per-unit`, which now says so, replaces `imports-between-units-held-at-the-root`). From the unit's own run an import shows where it lands, relative to the unit, so `unit-reached-only-through-its-entries` is held by `other-unit-reached-by-its-name`: a relative import that lands outside the unit is refused, and an import by name passes, which resolution takes only through the entries the manifest's `exports` publish. The rule knows no exception: data several units share lives in a unit of its own and is taken by that unit's name through its entry, as `file-lives-once-across-units` and Bun's `shared-data-bundled-by-the-build` now say — this repository's `brand.tokens.json` moved from the root into `packages/brand`, `@droneey/constitution-brand`. `packages-never-import-apps` is held by `packages-know-no-app`: an import that lands under `apps/` from a unit's run is one only a package can make. `apps-blind-to-each-other` is held in each app's own run, its entry guarded by the folder that holds the unit (ADR-0248). Both look at the unit's own files only, never at the modules of another unit a run follows into; a root with scripts of its own that runs the tool keeps `root-imports-units-by-name`, which knows only that `apps/` and `packages/` hold units.
+  - This repository's own rules between the design packages move from the root into those packages' configurations.
+  - Likewise the root type-checks no unit and runs no workspace-wide knip: each unit runs its own `tsc -b` and knip, so this repository's root leaves `tsc` and `knip` out, with their project references and workspace configuration.
+- **Rejected.**
+  - The root's run over every unit's `src/`: the root then reads inside the units and holds rules they do not list.
+  - A rule by the module's name: dependency-cruiser's rules see the path an import resolves to, not the name it is written with, and a workspace link resolves to the unit's folder (verified on dependency-cruiser 18.7.0, whose type for it is `undetermined`).
+- **Why.** A unit checks what it imports from its own folder, as every other rule of its imports is checked, and a unit moved to a repository of its own takes its checks with it.
+
+## ADR-0246 — A comment names the block that brings each setting
+
+**Date:** 2026-10-26 · **Status:** Accepted
+
+- **Decision.**
+  - In every file whose format holds comments — TOML, YAML, JSONC, a file of sections and a file of lines, never strict JSON — apply writes a comment naming the block that brings a setting above each key, table or item one block alone brings, everything inside it included, once for a run of them back to back; a key or an item several blocks fill takes none, and its own keys and items are named in turn. The block is the first one the entry's preset file is named with, else its reader: `git` for the base list of `.gitignore`, `tsc` for `presets/git/foundation/with/tsc/with/workspace.yaml`.
+  - The comment opens a paragraph of its own — a blank line before it, unless it opens the file or follows the line that opens what holds it — and the project's own comments right above what it names stay under it, so an explanation stands directly above the value it explains.
+  - A file of lines groups its lines by that block, so the base list of `.gitignore` is one `# git` group.
+  - The comment is the program's: a full-line comment that is exactly the name of a block an entry of the file names is taken out before each write and laid again, so it moves and goes with what it names, and a second apply writes nothing. A default, once written, is the project's own and is named by no block. The check compares values, never comments.
+- **Rejected.**
+  - The group's name from the preset file's `with/` chain or from the rule in words, as before: two names for one block's lines, and a header that read as prose.
+  - The block keyed in the entry, the rule's own block: a setting of Vulture keyed to a rule of core would read `# core`.
+  - A comment above the first key each block gives in each map it writes into: a key several blocks fill, such as lefthook's `pre-commit`, would carry one comment per block.
+  - The block that first writes a key: a key several blocks fill would read as the first one's.
+  - A comment on every setting: one block's table would repeat its name on each line.
+- **Why.** A reader of a configuration sees which block brought each setting, and so which block to read or lower, without the comments becoming a second copy of the presets.
+
+## ADR-0247 — A configuration the tool reads with comments is written as JSONC
+
+**Date:** 2026-10-26 · **Status:** Accepted
+
+- **Decision.**
+  - A configuration in JSON whose tool reads comments takes the name that tells the program so: Biome's `biome.jsonc`, which Biome finds by itself, and dependency-cruiser's `.dependency-cruiser.jsonc`, which its script names and dependency-cruiser 18.7.0 reads as JSON5 whatever the extension. The comments naming the blocks (ADR-0246) then stand in them too.
+  - Strict JSON stays where the tool reads none: `package.json`, and `stryker.config.json`, which Stryker 10.0.0 reads by `JSON.parse` and finds only under a `.json` name.
+  - A tool that reads comments in a file it finds only under a `.json` name, tsc's `tsconfig.json`, takes the format mark `!jsonc` on its preset files' key (ADR-0248): JSON with comments under that name, its commas as plain JSON has them.
+- **Rejected.**
+  - Every configuration kept as `.json`: the comments naming the blocks would be left out of the files that need them most.
+  - A `.jsonc` name for a tool that finds only `.json`, such as Stryker: the tool would no longer find its configuration.
+- **Why.** The program writes comments only where the file's name says the format holds them, and the tool reads the file it always did.
+
+## ADR-0248 — Facts name the folder that holds a unit and its depth there; a guard compares; a mark names a file's format
+
+**Date:** 2026-10-26 · **Status:** Accepted
+
+- **Decision.**
+  - `${unit.parent}` is the folder at the repository's root that holds the file's unit — `apps` or `packages`, however deep the unit lies in it — and nothing for the repository's own unit.
+  - A guard may compare a fact of a text with a text whose facts are resolved: `<file> ? ${unit.parent} = ${role.deployed-unit}` takes the entry where both resolve and are the same, `!` before the fact for the opposite. So `apps-blind-to-each-other` is given only to the units of `apps/`.
+  - `${unit.depth}` is how many folders the unit lies below that folder, 2 for `apps/<group>/web`: a unit's own run sees every other app within as many folders up, `^(?:\.\./){1,${unit.depth}}[^./]`, so `apps/<group>/web` is refused `apps/<group>/api` and `apps/web` alike, while a package, one folder further up under `packages/`, passes.
+  - A mark after a file's path names the format of its text where its name does not tell it: `!jsonc` writes JSON with comments, its commas as plain JSON has them. tsc's entries key `tsconfig.json !jsonc`.
+- **Rejected.**
+  - A truth per folder, such as `${unit.isApp}`: the program would name a folder the terms already name, and a new folder would need a new fact.
+  - A guard on any inner key: a second condition grammar, as ADR-0234 rejected.
+  - A fact of the unit's group folder: a unit's run sees the paths of the others from its own folder, never their group's name, so the rule needs how far up `apps/` lies, which that name does not give.
+  - Another app reached one folder up alone, as the rule had it: it missed an app of another group, and an app outside any group seen from inside one.
+  - A list of `.json` names the program writes with comments: the generator would name tools.
+- **Why.** One fact and one comparison hold every rule that depends on where a unit lies, and a format mark keeps the knowledge of a tool's file with the tool's preset files.
+
+## ADR-0249 — Each package builds itself, generation is not a build, and packing one distribution for each platform is delivery
+
+**Date:** 2026-10-26 · **Status:** Accepted
+
+- **Decision.**
+  - `build` means one thing in every package: build this package. `packages/@mutation-check/typescript` builds its `dist/` (`main.js`, `runner.js`, `ignorers.js`), `packages/python-check` and `packages/@mutation-check/python` each their `.pyz` through Poe's `build` task, and `packages/constitution` the `constitution` executable, its platform target an argument. It never runs in another package's pre-steps.
+  - A step that writes sources other packages compile against — the design packages' themes, `*.gen.ts` and their stylesheets — is `generate`, which the tokens' command names too (`design-tokens generate <config>`); the design packages have no `build`, nothing of theirs being shipped but their sources. A package that reads them runs `bun run --filter '<self>^...' generate` before its scripts, where ADR-0229 ran `build`, so the site generates the theme and builds no executable.
+  - What a release ships is its **distribution**, one for each platform, `constitution-<platform>.tar.gz`: the content — `package.json`, the blocks, the presets, the templates and the tools — with that platform's `constitution` executable in `bin/`. A project's mise names one asset for each platform, `asset_pattern` under `platforms.<os>-<arch>`, and `bin_path = "bin"`. The word is never shortened: `dist` stays the name of a build's output folder.
+  - Packing the distribution is delivery: the CD workflow's step "Pack the distribution" builds each package the distribution takes and lays their outputs into it, then each platform's executable beside them. What it packs is data, `packages/constitution/distribution.json`: each file by its path in the distribution, to the package whose build makes it and the file of that build's output. The CD step reads it, and so does the check of the presets: a `${constitution.path}/…` path is sound if the file is there, or if the map names it and its package declares a `build` (`missing-distribution-file`).
+  - "Release" names the delivery itself — the CD workflow, the version and its tag, the installed release — and nothing of building; the compiled `constitution` is the executable, not the program.
+- **Rejected.**
+  - One package building the others' outputs, as `release-build` did: a package's build then depended on how another builds, and a package that imports `packages/constitution` ran the distribution's build before its own checks.
+  - A `build:release` script: a second meaning of build, and packing kept as a package's script when it is a step of delivery.
+  - One `build` for both the sources dependents compile against and a package's product: a dependent's pre-step then built every product it depends on, the executable among them for the site.
+  - A content tarball for every platform beside an executable for each, as releases shipped until now: two assets for one install, mise's `additional_asset_patterns` joining them, and two words for what a project pins.
+  - Other names for what a release ships: *build* is the step that makes a package's output; *artifact* is what a CI job hands the next, as `upload-artifact` does; *archive* is the tar format, whatever it holds; *bundle* is what a bundler writes, as `bun build` does; *package* is a unit with a manifest, and what a registry installs.
+- **Why.** Every package is built by the one script of the one name, its dependents build exactly what they import, a project pins one asset that holds everything its platform runs, and what the distribution holds is data the delivery and the check share.
+
+## ADR-0250 — Code in several languages is a group folder of packages, each reached by its name
+
+**Date:** 2026-10-26 · **Status:** Accepted
+
+- **Decision.**
+  - Code that serves one purpose in several languages is a group folder, which is no unit — no manifest, no `constitution.yaml`: a package for each language, `<group>/<language>/`, and, once the languages share something, `<group>/shared/`, a package of data and schemas, never code. Each is named after the group and its folder, `@droneey/eros-typescript`, `@droneey/eros-shared`, `droneey-eros-python`, so the names stay unique, and each takes another only by its name, never by a path: `other-unit-reached-by-its-name` keeps no exception. A generator of a language's types from the shared schemas runs in that language's package, in its `generate`.
+  - An app is what is deployed, `apps/<name>/` or `apps/<group>/<name>/`; apps never import each other, in a group or outside it, and what they share lives in `packages/<group>/shared/` and is taken by its name.
+  - The `shared/` package has a manifest for each ecosystem that reads it, and gives its files through it: Bun's `exports` for TypeScript; for Python, a uv package whose import package is a namespace package at its root, `module-root = ""` and `namespace = true`, which a Python package names in its dependencies, `{ workspace = true }`, imports and reads through `importlib.resources.files()`. `shared-data-read-through-its-package` replaces `shared-data-linked-into-the-import-package`, and ADR-0159's link of the file into the Python package goes.
+  - `code-in-several-languages-holds-a-package-per-language` moves from core's layout to the workspace's tree, where ADR-0199 had kept it in core while such code was one unit: its packages are now several units. Python reads the shared data by importing the shared package and reading through `importlib.resources.files()` of it (`shared-data-read-through-its-import-package`), and its `source-folder-is-a-regular-package` leaves a package of data alone a namespace package. Generation is a step of its own (`generated-file-made-by-its-own-step`, in core), and a unit runs the generation of what it imports, never its build (`unit-generates-what-its-dependents-read`).
+  - Bun's workspaces take a group's units by `<top>/<group>/*`, uv's members by `packages/*/python` and the path of every other Python package. This repository names its group folders with a leading `@`, `packages/@design/{tokens,browser,cli}`, which no rule asks; `packages/@mutation-check/{typescript,python}` follows the layout.
+- **Rejected.**
+  - A library unit with `languages/` packages and a `shared/` they read by a path, as core had it: a package published for one language cannot carry a file outside its folder.
+  - A flat `packages/<group>-<language>`: the group is invisible in the tree.
+  - A `shared/` whose manifests each consumer decides: kept only as a manifest for each ecosystem that reads it, through its name.
+  - The file linked into the Python package, as ADR-0159 had it: a path by another name, and a link a checkout without symbolic links holds as text.
+  - The data read by the name of its package in a string, `files('<package>')`: a checker of the declared dependencies then reports the dependency unused.
+- **Why.** Every package ships alone with all it holds, a product's packages sit together in one folder of the tree, and data several languages read is reached as every other unit is, by its name through its entry.
+
+## ADR-0251 — Every unit with a Dockerfile scans its image's base stage for vulnerabilities
+
+**Date:** 2026-10-26 · **Status:** Accepted
+
+- **Decision.**
+  - OSV-Scanner paired with the dockerfile block gives each unit with a Dockerfile the task `check:audit-image`, through its runner: Bun's script, Poe's task. It builds the stage the rule names `base` — the base image and the system packages, which the shipped stage builds on — from the conventional `Dockerfile` with the unit's folder as context, and scans it. A unit whose Dockerfile or context lies elsewhere replaces the script in its own pack, as `apps/docs` does. The mise task that ran the scan in `apps/docs` goes: mise pins tools, and commands live in the manifest.
+  - The image scan checks vulnerabilities only. Core's `dependency-licence-on-the-allowlist` now leaves the system the program runs on — an operating system, an image's base and its system packages — off the list, as that system's own licences govern what runs on it, and `licences-checked-against-the-shared-allowlist` names the dependencies a lockfile names. `apps/docs/osv-scanner.toml`, whose only entry ignored the Alpine packages' licences, goes.
+  - The script passes `--config osv-scanner.toml` only where the unit keeps one, as an image's scan finds it in no other way, so a unit without one scans with OSV-Scanner's defaults rather than failing.
+  - The built image is tagged `audit-image:base`, since `osv-scanner scan image` takes a tag and not an image ID, and the tag is removed after the scan, whatever its result.
+- **Rejected.**
+  - A replaceable slot for the Dockerfile's path in a `!words` list: the merge ignores `!replace` on an item a slot inserts, so the unit's path would join the release's and give two `--file` flags.
+  - A `docker-bake.json` default naming the file, context and target: a new file convention, with buildx as a dependency.
+  - Scanning the shipped stage, with no `--target`: it builds the whole program, and for the site fetches the releases, so the check would take minutes.
+  - The `base` convention in the dockerfile language block: it would bind projects that scan no image.
+  - The image's licences against the allowlist, with each system's packages ignored in `osv-scanner.toml`: every Alpine or Debian base fails on its GPL packages, and the ignore would only restate that the system is not shipped.
+  - A default `osv-scanner.toml` written into each unit: the source scan reads the configuration nearest to each lockfile, so an empty file in a unit would hide the root's entries from that unit's lockfiles.
+  - A tag per unit: no fact gives a valid image reference, `@droneey/docs` being none, and the tag lives only for the scan.
+- **Why.** A known vulnerability in the system an image runs on is found like one in a lockfile, by the check every unit already runs, while what the project ships stays the only thing held to its licences.

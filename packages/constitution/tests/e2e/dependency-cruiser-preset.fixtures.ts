@@ -33,6 +33,8 @@ interface Project {
   /** the text of the unit's own preset file of dependency-cruiser, in a pack of its own */
   own?: string;
   roots?: readonly string[];
+  /** cruised from its own folder by its own configuration; the project's root where absent */
+  unit?: string;
   workspaces?: readonly string[];
 }
 
@@ -140,7 +142,7 @@ const declared = (declarations: readonly Declaration[]): Readonly<Record<string,
       ]),
   );
 
-const CONFIG = '.dependency-cruiser.json';
+const CONFIG = '.dependency-cruiser.jsonc';
 const OWN_PACK = 'pack';
 
 const unitOf = (project: Project): UnitFixture => ({
@@ -175,7 +177,7 @@ const writeProject = (folder: string, project: Project): void => {
   const files = {
     ...installedFiles(),
     ...project.files,
-    [CONFIG]: configOf(project),
+    [join(project.unit ?? '', CONFIG)]: configOf(project),
     'package.json': JSON.stringify({
       dependencies: declared([
         Declaration.Production,
@@ -230,7 +232,7 @@ const cruise = async (project: Project): Promise<Cruise> => {
 
   try {
     writeProject(folder, project);
-    process.chdir(folder);
+    process.chdir(join(folder, project.unit ?? ''));
 
     const cruising = await cruiseModules(
       [

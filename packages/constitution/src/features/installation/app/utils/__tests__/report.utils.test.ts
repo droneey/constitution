@@ -18,7 +18,7 @@ const UPDATE_PLUGIN =
   'run claude plugin marketplace update droneey, then claude plugin update constitution@droneey';
 const NO_PROJECT = 'no constitution.yaml in this folder or above it';
 
-const program = Version.create('1.0.0');
+const executable = Version.create('1.0.0');
 const older = Version.create('0.9.0');
 const newer = Version.create('1.1.0');
 const LINK = {
@@ -27,8 +27,8 @@ const LINK = {
 } as const;
 
 const SOUND: PartDiagnosis = {
-  kind: Diagnosis.ProgramRuns,
-  program,
+  executable,
+  kind: Diagnosis.ExecutableRuns,
 } as const;
 const WARNED: PartDiagnosis = {
   kind: Diagnosis.HooksMissing,
@@ -103,7 +103,7 @@ describe('installationSectionsOf', () => {
       stepsSection([
         {
           detail: 'constitution 1.0.0',
-          label: 'Program',
+          label: 'Executable',
           status: StepStatus.Done,
         },
         {
@@ -138,9 +138,9 @@ describe('installationSectionsOf', () => {
     const diagnoses: readonly PartDiagnosis[] = [
       SOUND,
       {
+        executable,
         kind: Diagnosis.PluginMatches,
-        plugin: program,
-        program,
+        plugin: executable,
       },
       {
         kind: Diagnosis.PathMatches,
@@ -156,7 +156,7 @@ describe('installationSectionsOf', () => {
       stepsSection([
         {
           detail: 'constitution 1.0.0',
-          label: 'Program',
+          label: 'Executable',
           status: StepStatus.Done,
         },
         {
@@ -182,15 +182,15 @@ describe('installationSectionsOf', () => {
     {
       detail: 'constitution 1.0.0',
       diagnosis: SOUND,
-      label: 'Program',
+      label: 'Executable',
       status: StepStatus.Done,
     },
     {
-      detail: '0.9.0, whose files are those of this program 1.0.0',
+      detail: '0.9.0, whose files are those of this executable 1.0.0',
       diagnosis: {
+        executable,
         kind: Diagnosis.PluginMatches,
         plugin: older,
-        program,
       },
       label: 'Claude Code plugin',
       status: StepStatus.Done,
@@ -301,43 +301,43 @@ describe('installationSectionsOf', () => {
       status: StepStatus.Warned,
     },
     {
-      detail: "the plugin's files differ from this program's, both 1.0.0",
+      detail: "the plugin's files differ from constitution's, both 1.0.0",
       diagnosis: {
+        executable,
         kind: Diagnosis.PluginDiffersAtItsVersion,
-        program,
       },
-      hint: 'install the plugin from the tree this program runs from, whose plugin files changed since that release',
+      hint: 'install the plugin from the tree constitution runs from, whose plugin files changed since that release',
       label: 'Claude Code plugin',
       status: StepStatus.Warned,
     },
     {
-      detail: 'the plugin 0.9.0 is older than this program 1.0.0, and its files differ',
+      detail: 'the plugin 0.9.0 is older than this executable 1.0.0, and its files differ',
       diagnosis: {
+        executable,
         kind: Diagnosis.PluginOlder,
         plugin: older,
-        program,
       },
       hint: UPDATE_PLUGIN,
       label: 'Claude Code plugin',
       status: StepStatus.Warned,
     },
     {
-      detail: 'the plugin 1.1.0 is newer than this program 1.0.0, and its files differ',
+      detail: 'the plugin 1.1.0 is newer than this executable 1.0.0, and its files differ',
       diagnosis: {
+        executable,
         kind: Diagnosis.PluginNewer,
         plugin: newer,
-        program,
       },
       hint: RAISE_PIN,
       label: 'Claude Code plugin',
       status: StepStatus.Warned,
     },
     {
-      detail: '1.1.0 is out; this program is 1.0.0',
+      detail: '1.1.0 is out; this executable is 1.0.0',
       diagnosis: {
+        executable,
         kind: Diagnosis.LatestAhead,
         latest: newer,
-        program,
       },
       hint: RAISE_PIN,
       label: 'Latest release',
@@ -346,7 +346,7 @@ describe('installationSectionsOf', () => {
     {
       detail: 'constitution is not on PATH, so the hooks cannot run',
       diagnosis: {
-        kind: Diagnosis.ProgramNotOnPath,
+        kind: Diagnosis.ExecutableNotOnPath,
       },
       hint: 'pin github:droneey/constitution in mise.toml as the README shows, then run mise install',
       label: 'constitution on PATH',
@@ -363,12 +363,12 @@ describe('installationSectionsOf', () => {
       status: StepStatus.Warned,
     },
     {
-      detail: `${ON_PATH} is 0.9.0, this program 1.0.0`,
+      detail: `${ON_PATH} is 0.9.0, this executable 1.0.0`,
       diagnosis: {
         answered: '0.9.0',
+        executable,
         kind: Diagnosis.PathDiffers,
         path: ON_PATH,
-        program,
       },
       hint: `${MISE_INSTALL}, so PATH serves the release the project pins`,
       label: 'constitution on PATH',
@@ -405,7 +405,7 @@ describe('installationSectionsOf', () => {
       status: StepStatus.Failed,
     },
     {
-      detail: 'the release has block format 9, newer than this program reads',
+      detail: 'the release has block format 9, newer than this executable reads',
       diagnosis: {
         format: 9,
         kind: Diagnosis.ReleaseFormatNewer,
@@ -415,7 +415,7 @@ describe('installationSectionsOf', () => {
       status: StepStatus.Failed,
     },
     {
-      detail: 'the release is older than block format 4, the oldest this program reads',
+      detail: 'the release is older than block format 4, the oldest this executable reads',
       diagnosis: {
         kind: Diagnosis.ReleaseFormatOlder,
       },
@@ -424,14 +424,14 @@ describe('installationSectionsOf', () => {
       status: StepStatus.Failed,
     },
     {
-      detail: '.droneey/constitution → /releases/1.0.0 holds 0.9.0, this program is 1.0.0',
+      detail: '.droneey/constitution → /releases/1.0.0 holds 0.9.0, this executable is 1.0.0',
       diagnosis: {
+        executable,
         kind: Diagnosis.LinkDiffers,
         link: LINK,
-        program,
         release: older,
       },
-      hint: `${MISE_INSTALL}, so the link and this program are one release`,
+      hint: `${MISE_INSTALL}, so the link and this executable are one release`,
       label: 'Release link',
       status: StepStatus.Warned,
     },

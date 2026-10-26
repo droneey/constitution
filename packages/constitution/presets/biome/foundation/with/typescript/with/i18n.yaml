@@ -1,6 +1,6 @@
 typescript:
   locale-passed-to-every-intl-call:
     typescript:
-      biome.json:
+      biome.jsonc:
         plugins:
           - ./${constitution.path}/presets/biome/plugins/typescript/locale-passed-to-every-intl-call.${role.grit-rule}

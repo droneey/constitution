@@ -1,4 +1,0 @@
-[[PackageOverrides]]
-ecosystem = "Alpine"
-license.ignore = true
-reason = "the system packages of the image's Alpine base, GPL among them, come with the operating system the site is served from and are never linked into the site, which ships as prerendered files"

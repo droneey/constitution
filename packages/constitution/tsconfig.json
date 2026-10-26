@@ -5,21 +5,33 @@
         "./src/*"
       ]
     },
+
+    // tsc
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+
+    // workspace
     "composite": true,
     "emitDeclarationOnly": true,
     "outDir": "${configDir}/.tsc-cache",
+
+    // tsc
     "strict": true,
     "noImplicitOverride": true,
     "exactOptionalPropertyTypes": true,
     "verbatimModuleSyntax": true,
+
+    // _react
     "jsx": "react-jsx",
+
+    // bun
     "types": [
       "bun"
     ],
+
+    // tsc
     "lib": [
       "ESNext"
     ],
@@ -27,7 +39,11 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "moduleDetection": "force",
+
+    // workspace
     "noEmit": false,
+
+    // tsc
     "allowJs": true,
     "checkJs": true,
     "resolveJsonModule": true,
@@ -38,6 +54,8 @@
     "noImplicitReturns": true,
     "noUncheckedIndexedAccess": true
   },
+
+  // tsc
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
@@ -51,10 +69,10 @@
   ],
   "references": [
     {
-      "path": "../mutation-check/languages/typescript"
+      "path": "../@mutation-check/typescript"
     },
     {
-      "path": "../design-cli"
+      "path": "../@design/cli"
     }
   ]
 }

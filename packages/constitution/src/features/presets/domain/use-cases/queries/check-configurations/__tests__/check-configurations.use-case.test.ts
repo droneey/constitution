@@ -5,6 +5,7 @@ import { WarningKind } from '#/kernel/entities';
 import { UnitPath } from '#/kernel/value-objects';
 
 import { createFakeConfigurationFormat } from '../../../../../__tests__/configuration-format.fake';
+import { createFakeDistributionSources } from '../../../../../__tests__/distribution-sources.fake';
 import { createFakeLockRepository } from '../../../../../__tests__/lock-repository.fake';
 import type { Files } from '../../../../../__tests__/presets.fixtures';
 import {
@@ -15,7 +16,6 @@ import {
   releasePresets,
   unitOf,
 } from '../../../../../__tests__/presets.fixtures';
-import { createFakeReleaseBuilds } from '../../../../../__tests__/release-builds.fake';
 import type { LockRead } from '../../../../entities';
 import { Leaf, LockReadStatus, PresetsCode } from '../../../../entities';
 import { checkConfigurations } from '../check-configurations.use-case';
@@ -84,7 +84,7 @@ const checkedOf = (input: {
   });
 
   return checkConfigurations({
-    builds: createFakeReleaseBuilds(),
+    distribution: createFakeDistributionSources(),
     files: project.files,
     formats: createFakeConfigurationFormat(),
     locks: createFakeLockRepository(input.locks),
@@ -103,7 +103,7 @@ describe('checkConfigurations', () => {
 
     // Act
     const checked = checkConfigurations({
-      builds: createFakeReleaseBuilds(),
+      distribution: createFakeDistributionSources(),
       files: project.files,
       formats: createFakeConfigurationFormat(),
       locks: createFakeLockRepository(),
@@ -155,6 +155,7 @@ describe('checkConfigurations', () => {
             'biome.json': {
               addresses: [],
               defaults: [],
+              isCreated: false,
               isWhole: false,
               leaves: [
                 Leaf.keyOf({
@@ -299,7 +300,7 @@ describe('checkConfigurations', () => {
 
     // Act
     const checked = checkConfigurations({
-      builds: createFakeReleaseBuilds(),
+      distribution: createFakeDistributionSources(),
       files: project.files,
       formats: createFakeConfigurationFormat(),
       locks: createFakeLockRepository(),
@@ -355,6 +356,7 @@ describe('checkConfigurations', () => {
             'old.json': {
               addresses: [],
               defaults: [],
+              isCreated: false,
               isWhole: false,
               leaves: [
                 Leaf.keyOf({

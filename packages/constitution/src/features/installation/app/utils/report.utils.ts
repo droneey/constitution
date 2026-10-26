@@ -1,6 +1,6 @@
 import { StepStatus, Tone } from '@droneey/design-cli';
 
-import { PROGRAM_NAME } from '#/kernel/constants';
+import { EXECUTABLE_NAME } from '#/kernel/constants';
 import { OLDEST_FORMAT } from '#/kernel/entities';
 import { Version } from '#/kernel/value-objects';
 import type { Section, TaskOutcome } from '#/shared/cli';
@@ -15,7 +15,7 @@ const UPDATE_PLUGIN =
 const NO_PROJECT = 'no constitution.yaml in this folder or above it';
 
 const LABELS = {
-  [InstallationPart.Program]: 'Program',
+  [InstallationPart.Executable]: 'Executable',
   [InstallationPart.Plugin]: 'Claude Code plugin',
   [InstallationPart.Release]: 'Latest release',
   [InstallationPart.Path]: 'constitution on PATH',
@@ -40,43 +40,43 @@ const pinnedHint = `${MISE_INSTALL}, so PATH serves the release the project pins
 const sayings: {
   readonly [TKind in Diagnosis]: (diagnosis: PartDiagnosis<TKind>) => Said;
 } = {
-  [Diagnosis.ProgramRuns]: ({ program }) => ({
-    summary: `${PROGRAM_NAME} ${program}`,
+  [Diagnosis.ExecutableRuns]: ({ executable }) => ({
+    summary: `${EXECUTABLE_NAME} ${executable}`,
   }),
   [Diagnosis.PluginMissing]: () => ({
     hint: 'run claude plugin marketplace add droneey/constitution, then claude plugin install constitution@droneey',
     summary: 'the Claude Code plugin is not installed',
   }),
-  [Diagnosis.PluginMatches]: ({ plugin, program }) => ({
-    summary: Version.equals(plugin, program)
+  [Diagnosis.PluginMatches]: ({ executable, plugin }) => ({
+    summary: Version.equals(plugin, executable)
       ? plugin
-      : `${plugin}, whose files are those of this program ${program}`,
+      : `${plugin}, whose files are those of this executable ${executable}`,
   }),
-  [Diagnosis.PluginDiffersAtItsVersion]: ({ program }) => ({
-    hint: 'install the plugin from the tree this program runs from, whose plugin files changed since that release',
-    summary: `the plugin's files differ from this program's, both ${program}`,
+  [Diagnosis.PluginDiffersAtItsVersion]: ({ executable }) => ({
+    hint: 'install the plugin from the tree constitution runs from, whose plugin files changed since that release',
+    summary: `the plugin's files differ from constitution's, both ${executable}`,
   }),
-  [Diagnosis.PluginOlder]: ({ plugin, program }) => ({
+  [Diagnosis.PluginOlder]: ({ executable, plugin }) => ({
     hint: UPDATE_PLUGIN,
-    summary: `the plugin ${plugin} is older than this program ${program}, and its files differ`,
+    summary: `the plugin ${plugin} is older than this executable ${executable}, and its files differ`,
   }),
-  [Diagnosis.PluginNewer]: ({ plugin, program }) => ({
+  [Diagnosis.PluginNewer]: ({ executable, plugin }) => ({
     hint: RAISE_PIN,
-    summary: `the plugin ${plugin} is newer than this program ${program}, and its files differ`,
+    summary: `the plugin ${plugin} is newer than this executable ${executable}, and its files differ`,
   }),
   [Diagnosis.LatestUnknown]: () => ({
     summary: 'GitHub could not be reached, so the latest release is unknown',
   }),
-  [Diagnosis.LatestAhead]: ({ latest, program }) => ({
+  [Diagnosis.LatestAhead]: ({ executable, latest }) => ({
     hint: RAISE_PIN,
-    summary: `${latest} is out; this program is ${program}`,
+    summary: `${latest} is out; this executable is ${executable}`,
   }),
   [Diagnosis.LatestHeld]: ({ latest }) => ({
     summary: `${latest} is the latest`,
   }),
-  [Diagnosis.ProgramNotOnPath]: () => ({
+  [Diagnosis.ExecutableNotOnPath]: () => ({
     hint: 'pin github:droneey/constitution in mise.toml as the README shows, then run mise install',
-    summary: `${PROGRAM_NAME} is not on PATH, so the hooks cannot run`,
+    summary: `${EXECUTABLE_NAME} is not on PATH, so the hooks cannot run`,
   }),
   [Diagnosis.PathMatches]: ({ path }) => ({
     summary: path,
@@ -85,9 +85,9 @@ const sayings: {
     hint: pinnedHint,
     summary: `${path} does not answer --version`,
   }),
-  [Diagnosis.PathDiffers]: ({ answered, path, program }) => ({
+  [Diagnosis.PathDiffers]: ({ answered, executable, path }) => ({
     hint: pinnedHint,
-    summary: `${path} is ${answered}, this program ${program}`,
+    summary: `${path} is ${answered}, this executable ${executable}`,
   }),
   [Diagnosis.LinkWithoutProject]: () => ({
     summary: NO_PROJECT,
@@ -106,18 +106,18 @@ const sayings: {
   }),
   [Diagnosis.ReleaseFormatNewer]: ({ format }) => ({
     hint: UPDATE_PLUGIN,
-    summary: `the release has block format ${format}, newer than this program reads`,
+    summary: `the release has block format ${format}, newer than this executable reads`,
   }),
   [Diagnosis.ReleaseFormatOlder]: () => ({
     hint: RAISE_PIN,
-    summary: `the release is older than block format ${OLDEST_FORMAT}, the oldest this program reads`,
+    summary: `the release is older than block format ${OLDEST_FORMAT}, the oldest this executable reads`,
   }),
   [Diagnosis.LinkMatches]: ({ link }) => ({
     summary: `${link.folder} → ${link.target}`,
   }),
-  [Diagnosis.LinkDiffers]: ({ link, program, release }) => ({
-    hint: `${MISE_INSTALL}, so the link and this program are one release`,
-    summary: `${link.folder} → ${link.target} holds ${release}, this program is ${program}`,
+  [Diagnosis.LinkDiffers]: ({ executable, link, release }) => ({
+    hint: `${MISE_INSTALL}, so the link and this executable are one release`,
+    summary: `${link.folder} → ${link.target} holds ${release}, this executable is ${executable}`,
   }),
   [Diagnosis.HooksWithoutProject]: () => ({
     summary: NO_PROJECT,

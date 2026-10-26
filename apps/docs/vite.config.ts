@@ -15,11 +15,9 @@ const manifestShape = z.object({
 
 const { version: constitutionVersion } = manifestShape.parse(constitutionManifest);
 
-/** a release's site is served beside the others, under its version, when built in this mode */
-const RELEASE_MODE = 'release';
-
-export default defineConfig(({ mode }) => ({
-  base: mode === RELEASE_MODE ? `/v${constitutionVersion}/` : '/',
+export default defineConfig({
+  // the site lives under its version beside the other releases', in the dev server too
+  base: `/v${constitutionVersion}/`,
   server: {
     port: 3000,
     watch: {
@@ -92,4 +90,4 @@ export default defineConfig(({ mode }) => ({
       tslib: 'tslib/tslib.es6.js',
     },
   },
-}));
+});

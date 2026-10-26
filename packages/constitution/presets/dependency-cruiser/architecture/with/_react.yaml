@@ -1,11 +1,11 @@
 _react:
   '*':
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         allowedSeverity: error
   react-imported-by-the-ui-and-binding-units:
     typescript:
-      .dependency-cruiser.json:
+      .dependency-cruiser.jsonc:
         allowed[comment=react-imported-by-the-ui-and-binding-units]:
           from:
             path:

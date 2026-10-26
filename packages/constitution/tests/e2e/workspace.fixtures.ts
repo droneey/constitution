@@ -36,10 +36,12 @@ const EXECUTABLE = 0o755;
 
 const repository = join(import.meta.dir, '..', '..');
 const bin = join(repository, 'node_modules', '.bin');
-// Each TypeScript package's folder, by the name that follows its unit's folder.
+// Each TypeScript package's folder, by the name that follows its folder, and its group's where a
+// group folder holds it.
 const UNITS: Readonly<Record<string, string>> = {
   '@shop/api': 'apps/api',
-  '@shop/eros': 'packages/eros/languages/typescript',
+  '@shop/desk-web': 'apps/@desk/web',
+  '@shop/eros-typescript': 'packages/@eros/typescript',
   '@shop/money': 'packages/money',
   '@shop/orders': 'packages/orders',
   '@shop/web': 'apps/web',
@@ -48,16 +50,16 @@ const UNITS: Readonly<Record<string, string>> = {
 // Each Python package's folder: a library the workspace releases, in two
 // languages, an application and the library of packages/ it uses.
 const PYTHON_PACKAGES: readonly string[] = [
-  'packages/eros/languages/python',
+  'packages/@eros/python',
   'apps/reports',
   'packages/tabula',
 ] as const;
 
-// A file symlink inside a package, then the file it points to: data a package
-// takes at run time from its unit's single source.
-const LINKS: Readonly<Record<string, string>> = {
-  'packages/eros/languages/python/src/shop_eros/kernel/constants/kinds.yaml':
-    '../../../../../../shared/schema/kinds.yaml',
+// Each package of data in no language, by its name: the packages of its group
+// read it through its entry.
+const SHARED_PACKAGES: Readonly<Record<string, string>> = {
+  '@shop/desk-shared': 'packages/@desk/shared',
+  '@shop/eros-shared': 'packages/@eros/shared',
 } as const;
 
 const jsonFileOf = (fields: unknown): string => `${JSON.stringify(fields, undefined, 2)}\n`;
@@ -155,13 +157,35 @@ const installed: Files = {
   }),
 };
 
-// eros, a library the workspace releases, in two languages: its data in no
-// language once, in shared/, and a package for each language laid out by
-// layers, with its integrations into host frameworks as entries of their own.
+// eros, a library the workspace releases, in two languages: a group folder of a
+// package for each language, laid out by layers with its integrations into host
+// frameworks as entries of their own, and the package of the data they share.
 const eros: Files = {
-  'packages/eros/shared/conformance/cases.yaml': '- code: validation.email\n  status: 422\n',
-  'packages/eros/shared/schema/kinds.yaml': '- validation\n- not-found\n',
-  'packages/eros/languages/typescript/package.json': manifestOf({
+  'packages/@eros/shared/package.json': jsonFileOf({
+    name: '@shop/eros-shared',
+    private: true,
+    type: 'module',
+    exports: {
+      './conformance/*': './shop_eros_shared/conformance/*',
+      './schema/*': './shop_eros_shared/schema/*',
+    },
+  }),
+  'packages/@eros/shared/pyproject.toml': [
+    pyprojectOf({
+      name: 'shop-eros-shared',
+    }),
+    '[tool.uv.build-backend]',
+    'module-root = ""',
+    'namespace = true',
+    '',
+  ].join('\n'),
+  'packages/@eros/shared/shop_eros_shared/conformance/cases.yaml':
+    '- code: validation.email\n  status: 422\n',
+  'packages/@eros/shared/shop_eros_shared/schema/kinds.yaml': '- validation\n- not-found\n',
+  'packages/@eros/typescript/package.json': manifestOf({
+    dependencies: [
+      '@shop/eros-shared',
+    ],
     exports: {
       '.': './src/index.ts',
       './nestjs': './src/integrations/nestjs/index.ts',
@@ -179,9 +203,9 @@ const eros: Files = {
         },
       },
     },
-    name: '@shop/eros',
+    name: '@shop/eros-typescript',
   }),
-  'packages/eros/languages/typescript/src/features/errors/domain/errors/eros.error.ts': `import type { ErrorCode } from '../value-objects';
+  'packages/@eros/typescript/src/features/errors/domain/errors/eros.error.ts': `import type { ErrorCode } from '../value-objects';
 
 export class ErosError extends Error {
   readonly code: ErrorCode;
@@ -192,28 +216,28 @@ export class ErosError extends Error {
   }
 }
 `,
-  'packages/eros/languages/typescript/src/features/errors/domain/errors/index.ts':
+  'packages/@eros/typescript/src/features/errors/domain/errors/index.ts':
     "export { ErosError } from './eros.error';\n",
-  'packages/eros/languages/typescript/src/features/errors/domain/value-objects/error-code.value-object.ts': `export type ErrorCode = string & { readonly __brand: 'ErrorCode' };
+  'packages/@eros/typescript/src/features/errors/domain/value-objects/error-code.value-object.ts': `export type ErrorCode = string & { readonly __brand: 'ErrorCode' };
 
 export const isErrorCode = (text: string): text is ErrorCode => /^[a-z-]+\\.[a-z-]+$/u.test(text);
 `,
-  'packages/eros/languages/typescript/src/features/errors/domain/value-objects/index.ts':
+  'packages/@eros/typescript/src/features/errors/domain/value-objects/index.ts':
     "export { type ErrorCode, isErrorCode } from './error-code.value-object';\n",
-  'packages/eros/languages/typescript/src/features/errors/index.ts':
+  'packages/@eros/typescript/src/features/errors/index.ts':
     "export { ErosError } from './domain/errors';\nexport { type ErrorCode, isErrorCode } from './domain/value-objects';\n",
-  'packages/eros/languages/typescript/src/features/mapping/domain/use-cases/queries/kind-of/index.ts':
+  'packages/@eros/typescript/src/features/mapping/domain/use-cases/queries/kind-of/index.ts':
     "export { kindOf } from './kind-of.use-case';\n",
-  'packages/eros/languages/typescript/src/features/mapping/domain/use-cases/queries/kind-of/kind-of.use-case.ts': `import { KINDS } from '#/kernel/constants';
+  'packages/@eros/typescript/src/features/mapping/domain/use-cases/queries/kind-of/kind-of.use-case.ts': `import { KINDS } from '#/kernel/constants';
 
 export const kindOf = (code: string): string | undefined =>
   KINDS.find((kind) => code.startsWith(\`\${kind}.\`));
 `,
-  'packages/eros/languages/typescript/src/features/mapping/index.ts':
+  'packages/@eros/typescript/src/features/mapping/index.ts':
     "export { kindOf } from './domain/use-cases/queries/kind-of';\n",
-  'packages/eros/languages/typescript/src/features/problem/adapters/problem/index.ts':
+  'packages/@eros/typescript/src/features/problem/adapters/problem/index.ts':
     "export { problemOf } from './problem.adapter';\n",
-  'packages/eros/languages/typescript/src/features/problem/adapters/problem/problem.adapter.ts': `import type { Problem } from '../../domain/entities';
+  'packages/@eros/typescript/src/features/problem/adapters/problem/problem.adapter.ts': `import type { Problem } from '../../domain/entities';
 
 // The wire shape of RFC 9457.
 interface ProblemDocument {
@@ -228,40 +252,40 @@ export const problemOf = (problem: Problem): ProblemDocument => ({
   type: 'about:blank',
 });
 `,
-  'packages/eros/languages/typescript/src/features/problem/domain/entities/index.ts':
+  'packages/@eros/typescript/src/features/problem/domain/entities/index.ts':
     "export type { Problem } from './problem.entity';\n",
-  'packages/eros/languages/typescript/src/features/problem/domain/entities/problem.entity.ts':
+  'packages/@eros/typescript/src/features/problem/domain/entities/problem.entity.ts':
     'export interface Problem {\n  readonly code: string;\n  readonly status: number;\n}\n',
-  'packages/eros/languages/typescript/src/features/problem/index.ts':
+  'packages/@eros/typescript/src/features/problem/index.ts':
     "export type { Problem } from './domain/entities';\n",
-  'packages/eros/languages/typescript/src/features/records/domain/entities/error-record.entity.ts':
+  'packages/@eros/typescript/src/features/records/domain/entities/error-record.entity.ts':
     'export interface ErrorRecord {\n  readonly code: string;\n  readonly kind: string;\n}\n',
-  'packages/eros/languages/typescript/src/features/records/domain/entities/index.ts':
+  'packages/@eros/typescript/src/features/records/domain/entities/index.ts':
     "export type { ErrorRecord } from './error-record.entity';\n",
-  'packages/eros/languages/typescript/src/features/records/domain/use-cases/queries/to-record/index.ts':
+  'packages/@eros/typescript/src/features/records/domain/use-cases/queries/to-record/index.ts':
     "export { toRecord } from './to-record.use-case';\n",
-  'packages/eros/languages/typescript/src/features/records/domain/use-cases/queries/to-record/to-record.use-case.ts': `import type { ErrorRecord } from '../../../entities';
+  'packages/@eros/typescript/src/features/records/domain/use-cases/queries/to-record/to-record.use-case.ts': `import type { ErrorRecord } from '../../../entities';
 
 export const toRecord = (input: ErrorRecord): ErrorRecord => ({ code: input.code, kind: input.kind });
 `,
-  'packages/eros/languages/typescript/src/features/records/index.ts':
+  'packages/@eros/typescript/src/features/records/index.ts':
     "export type { ErrorRecord } from './domain/entities';\nexport { toRecord } from './domain/use-cases/queries/to-record';\n",
-  'packages/eros/languages/typescript/src/index.ts': `export { ErosError, type ErrorCode, isErrorCode } from './features/errors';
+  'packages/@eros/typescript/src/index.ts': `export { ErosError, type ErrorCode, isErrorCode } from './features/errors';
 export { kindOf } from './features/mapping';
 export type { Problem } from './features/problem';
 export { problemOf } from './features/problem/adapters/problem';
 export { type ErrorRecord, toRecord } from './features/records';
 export { KINDS } from './kernel/constants';
 `,
-  'packages/eros/languages/typescript/src/integrations/nestjs/index.ts': `import { Module } from '@nestjs/common';
+  'packages/@eros/typescript/src/integrations/nestjs/index.ts': `import { Module } from '@nestjs/common';
 
 import { KINDS } from '#/kernel/constants';
 
 export const erosModule = Module({ providers: [{ provide: 'EROS_KINDS', useValue: KINDS }] });
 `,
-  'packages/eros/languages/typescript/src/kernel/constants/index.ts':
+  'packages/@eros/typescript/src/kernel/constants/index.ts':
     "export { KINDS } from './kinds.constants';\n",
-  'packages/eros/languages/typescript/src/kernel/constants/kinds.constants.ts': `import kinds from '../../../../../shared/schema/kinds.yaml';
+  'packages/@eros/typescript/src/kernel/constants/kinds.constants.ts': `import kinds from '@shop/eros-shared/schema/kinds.yaml';
 
 const isKinds = (value: unknown): value is readonly string[] =>
   Array.isArray(value) && value.every((kind) => typeof kind === 'string');
@@ -269,48 +293,53 @@ const isKinds = (value: unknown): value is readonly string[] =>
 // The build writes the parsed file into the bundle; a source of another shape is no kind.
 export const KINDS: readonly string[] = isKinds(kinds) ? kinds : [];
 `,
-  'packages/eros/languages/typescript/tsconfig.json': tsconfigOf({
+  'packages/@eros/typescript/tsconfig.json': tsconfigOf({
     references: [],
   }),
-  'packages/eros/languages/python/pyproject.toml': pyprojectOf({
+  'packages/@eros/python/pyproject.toml': pyprojectOf({
     lines: [
-      'dependencies = []',
+      'dependencies = ["shop-eros-shared"]',
       '',
       '[project.optional-dependencies]',
       'fastapi = ["fastapi>=0.115"]',
       'fastmcp = ["fastmcp>=2.14"]',
+      '',
+      '[tool.uv.sources]',
+      'shop-eros-shared = { workspace = true }',
     ],
-    name: 'shop-eros',
+    name: 'shop-eros-python',
   }),
-  'packages/eros/languages/python/src/shop_eros/__init__.py':
-    "from shop_eros.kernel.constants import KINDS\n\n__all__ = ['KINDS']\n",
-  'packages/eros/languages/python/src/shop_eros/features/__init__.py': '',
-  'packages/eros/languages/python/src/shop_eros/features/errors/__init__.py': '',
-  'packages/eros/languages/python/src/shop_eros/features/errors/domain/__init__.py': '',
-  'packages/eros/languages/python/src/shop_eros/features/errors/domain/errors/__init__.py': '',
-  'packages/eros/languages/python/src/shop_eros/features/errors/domain/errors/eros_error.py':
+  'packages/@eros/python/src/shop_eros_python/__init__.py':
+    "from shop_eros_python.kernel.constants import KINDS\n\n__all__ = ['KINDS']\n",
+  'packages/@eros/python/src/shop_eros_python/features/__init__.py': '',
+  'packages/@eros/python/src/shop_eros_python/features/errors/__init__.py': '',
+  'packages/@eros/python/src/shop_eros_python/features/errors/domain/__init__.py': '',
+  'packages/@eros/python/src/shop_eros_python/features/errors/domain/errors/__init__.py': '',
+  'packages/@eros/python/src/shop_eros_python/features/errors/domain/errors/eros_error.py':
     'class ErosError(Exception):\n  pass\n',
-  'packages/eros/languages/python/src/shop_eros/features/problem/__init__.py': '',
-  'packages/eros/languages/python/src/shop_eros/features/problem/adapters/__init__.py': '',
-  'packages/eros/languages/python/src/shop_eros/features/problem/adapters/problem/__init__.py': '',
-  'packages/eros/languages/python/src/shop_eros/features/problem/adapters/problem/problem_adapter.py':
+  'packages/@eros/python/src/shop_eros_python/features/problem/__init__.py': '',
+  'packages/@eros/python/src/shop_eros_python/features/problem/adapters/__init__.py': '',
+  'packages/@eros/python/src/shop_eros_python/features/problem/adapters/problem/__init__.py': '',
+  'packages/@eros/python/src/shop_eros_python/features/problem/adapters/problem/problem_adapter.py':
     "def problem_of(code: str) -> dict[str, str]:\n  return {'code': code, 'type': 'about:blank'}\n",
-  'packages/eros/languages/python/src/shop_eros/integrations/__init__.py': '',
-  'packages/eros/languages/python/src/shop_eros/integrations/fastapi/__init__.py':
+  'packages/@eros/python/src/shop_eros_python/integrations/__init__.py': '',
+  'packages/@eros/python/src/shop_eros_python/integrations/fastapi/__init__.py':
     'from fastapi import APIRouter\n\nrouter = APIRouter()\n',
-  'packages/eros/languages/python/src/shop_eros/integrations/fastmcp/__init__.py':
+  'packages/@eros/python/src/shop_eros_python/integrations/fastmcp/__init__.py':
     "from fastmcp import FastMCP\n\nserver = FastMCP('eros')\n",
-  'packages/eros/languages/python/src/shop_eros/kernel/__init__.py': '',
-  'packages/eros/languages/python/src/shop_eros/kernel/constants/__init__.py':
+  'packages/@eros/python/src/shop_eros_python/kernel/__init__.py': '',
+  'packages/@eros/python/src/shop_eros_python/kernel/constants/__init__.py':
     "from .kinds_constants import KINDS\n\n__all__ = ['KINDS']\n",
-  'packages/eros/languages/python/src/shop_eros/kernel/constants/kinds_constants.py': `from importlib.resources import files
+  'packages/@eros/python/src/shop_eros_python/kernel/constants/kinds_constants.py': `from importlib.resources import files
+
+import shop_eros_shared
 
 KINDS = tuple(
   line.removeprefix('- ')
-  for line in files(__package__ or '').joinpath('kinds.yaml').read_text(encoding='utf-8').splitlines()
+  for line in files(shop_eros_shared).joinpath('schema', 'kinds.yaml').read_text(encoding='utf-8').splitlines()
 )
 `,
-  'packages/eros/languages/python/src/shop_eros/py.typed': '',
+  'packages/@eros/python/src/shop_eros_python/py.typed': '',
 };
 
 // An application in Python alone, and the library of packages/ it takes from the workspace.
@@ -348,6 +377,38 @@ const reports: Files = {
   'apps/reports/src/shop_reports/root/__init__.py': '',
   'apps/reports/src/shop_reports/root/wiring.py':
     "import structlog\n\n\ndef run() -> None:\n  structlog.get_logger().info('reports')\n",
+};
+
+// An application of a group, which reads the data its group shares by the name of their package.
+const desk: Files = {
+  'packages/@desk/shared/package.json': jsonFileOf({
+    name: '@shop/desk-shared',
+    private: true,
+    type: 'module',
+    exports: {
+      './schema/*': './schema/*',
+    },
+  }),
+  'packages/@desk/shared/schema/queues.yaml': '- billing\n- returns\n',
+  'apps/@desk/web/package.json': manifestOf({
+    dependencies: [
+      '@shop/desk-shared',
+    ],
+    name: '@shop/desk-web',
+  }),
+  'apps/@desk/web/src/kernel/constants/index.ts': "export { QUEUES } from './queues.constants';\n",
+  'apps/@desk/web/src/kernel/constants/queues.constants.ts': `import queues from '@shop/desk-shared/schema/queues.yaml';
+
+const isQueues = (value: unknown): value is readonly string[] =>
+  Array.isArray(value) && value.every((queue) => typeof queue === 'string');
+
+export const QUEUES: readonly string[] = isQueues(queues) ? queues : [];
+`,
+  'apps/@desk/web/src/main.ts':
+    "import { QUEUES } from '#/kernel/constants';\n\nexport const main = (): readonly string[] => QUEUES;\n",
+  'apps/@desk/web/tsconfig.json': tsconfigOf({
+    references: [],
+  }),
 };
 
 // A browser application whose specs are checked by a configuration of their own.
@@ -517,15 +578,15 @@ const typescriptTools: readonly string[] = [
 ];
 
 // The workspace's own pack in the web application: its mutation check runs mutation-check from
-// this repository's sources, as the archive's build is not made for a spec.
+// this repository's sources, as the distribution's build is not made for a spec.
 const OWN_PACK = 'pack';
 const strykerPack = `stryker:
-  stryker-runs-the-archive-runner:
+  stryker-runs-the-distribution-runner:
     typescript:
       stryker.config.json:
         plugins: !replace
-          - ${fileURLToPath(import.meta.resolve('@droneey/mutation-check/runner'))}
-          - ${fileURLToPath(import.meta.resolve('@droneey/mutation-check/ignorers'))}
+          - ${fileURLToPath(import.meta.resolve('@droneey/mutation-check-typescript/runner'))}
+          - ${fileURLToPath(import.meta.resolve('@droneey/mutation-check-typescript/ignorers'))}
 `;
 
 const unitBlocks: Readonly<Record<string, UnitFixture>> = {
@@ -561,6 +622,16 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
     ],
     name: '@shop/api',
   },
+  'apps/@desk/web': {
+    domains: [
+      'workspace',
+    ],
+    implementations: typescriptTools,
+    languages: [
+      'typescript',
+    ],
+    name: '@shop/desk-web',
+  },
   'apps/reports': {
     domains: [
       'workspace',
@@ -594,7 +665,16 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
       'browser',
     ],
   },
-  'packages/eros/languages/python': {
+  'packages/@desk/shared': {
+    domains: [
+      'workspace',
+    ],
+    languages: [
+      'yaml',
+    ],
+    name: '@shop/desk-shared',
+  },
+  'packages/@eros/python': {
     domains: [
       'workspace',
     ],
@@ -607,9 +687,18 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
     languages: [
       'python',
     ],
-    name: 'shop-eros',
+    name: 'shop-eros-python',
   },
-  'packages/eros/languages/typescript': {
+  'packages/@eros/shared': {
+    domains: [
+      'workspace',
+    ],
+    languages: [
+      'yaml',
+    ],
+    name: '@shop/eros-shared',
+  },
+  'packages/@eros/typescript': {
     domains: [
       'workspace',
     ],
@@ -617,7 +706,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
     languages: [
       'typescript',
     ],
-    name: '@shop/eros',
+    name: '@shop/eros-typescript',
   },
   'packages/money': {
     domains: [
@@ -658,6 +747,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
 const workspaceFiles: Files = {
   ...installed,
   ...eros,
+  ...desk,
   ...reports,
   ...web,
   ...apiAndShared,
@@ -685,19 +775,20 @@ const workspaceFiles: Files = {
     type: 'module',
     workspaces: [
       'apps/*',
-      'apps/*/languages/typescript',
+      'apps/@desk/*',
       'packages/*',
-      'packages/*/languages/typescript',
+      'packages/@desk/*',
+      'packages/@eros/*',
     ],
   }),
-  'packages/eros/languages/typescript/knip.jsonc': jsonFileOf({
+  'packages/@eros/typescript/knip.jsonc': jsonFileOf({
     ignoreDependencies: [
       '@nestjs/common!',
     ],
   }),
   'pyproject.toml': [
     '[tool.uv.workspace]',
-    'members = ["apps/reports", "packages/*/languages/python", "packages/tabula"]',
+    'members = ["apps/reports", "packages/*/python", "packages/@eros/shared", "packages/tabula"]',
     '',
   ].join('\n'),
   'scripts/release.ts': "export const release = (): string => 'release';\n",
@@ -740,12 +831,11 @@ const link = (folder: string): void => {
     symlinkSync(join(repository, 'node_modules', entry), join(folder, 'node_modules', entry));
   }
 
-  for (const [name, path] of Object.entries(UNITS)) {
+  for (const [name, path] of Object.entries({
+    ...UNITS,
+    ...SHARED_PACKAGES,
+  })) {
     symlinkSync(join(folder, path), join(folder, 'node_modules', name));
-  }
-
-  for (const [path, target] of Object.entries(LINKS)) {
-    symlinkSync(target, join(folder, path));
   }
 
   mkdirSync(join(folder, '.droneey'));

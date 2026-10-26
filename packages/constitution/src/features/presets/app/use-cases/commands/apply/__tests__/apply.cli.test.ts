@@ -13,6 +13,7 @@ import { createPresetsApplyCommand } from '../apply.cli';
 
 const written: ApplyReport = {
   added: [],
+  deleted: [],
   findings: [],
   removed: [],
   units: [

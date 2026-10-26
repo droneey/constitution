@@ -12,4 +12,4 @@ governs: [".rumdl.toml"]
 
 > **`rumdl`** lints and formats Markdown.
 
-rumdl reads one configuration for the whole repository, into which the program writes the settings of every block, and ignores a nested **`.rumdl.toml`**{#rumdl-settings}. It fails on a finding of any severity.
+rumdl reads one configuration for the whole repository, into which `constitution` writes the settings of every block, and ignores a nested **`.rumdl.toml`**{#rumdl-settings}. It fails on a finding of any severity.

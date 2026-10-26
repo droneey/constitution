@@ -12,4 +12,4 @@ governs: ["pyproject.toml", "ruff.toml"]
 
 > **Ruff**, the **`ruff`** command, formats and lints, by its settings in `pyproject.toml` or **`ruff.toml`**, and keeps a cache in **`.ruff_cache/`**{#ruff-cache}, which is ignored.
 
-The program writes the settings of every block into `[tool.ruff]` of `pyproject.toml`, with no `extend` chain, and a project adds its own codes, bans and ignores beside them in the same tables.
+`constitution` writes the settings of every block into `[tool.ruff]` of `pyproject.toml`, with no `extend` chain, and a project adds its own codes, bans and ignores beside them in the same tables.

@@ -1,0 +1,24 @@
+[test]
+preload = ["./src/__tests__/dom.fixtures.ts"]
+
+# bun-test
+randomize = true
+pathIgnorePatterns = ["tests/**"]
+coverage = true
+coverageReporter = ["text"]
+coverageSkipTestFiles = true
+coveragePathIgnorePatterns = [
+  # bun-test
+  "**/__tests__/**",
+  "**/main.*",
+  "**/root/wiring.*",
+  "**/*.gen.*",
+
+  # workspace
+  "../**"
+]
+
+# bun-test
+[test.coverageThreshold]
+functions = 1
+lines = 1

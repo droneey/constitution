@@ -3,8 +3,8 @@ import type { Command } from 'commander';
 import type {
   CommandRunner,
   ConfigurationFormat,
+  DistributionSources,
   PresetFileParser,
-  ReleaseBuilds,
 } from '#/features/presets';
 import type {
   ProjectConfigurationsCheck,
@@ -17,9 +17,9 @@ import type { CommandContext } from '#/shared/cli';
 import type { ProgramInput } from './program.types';
 
 interface Ports {
-  readonly builds: ReleaseBuilds;
   readonly commands: CommandRunner;
   readonly configurations: ProjectConfigurationsCheck;
+  readonly distribution: DistributionSources;
   readonly files: ProjectFiles;
   readonly formats: ConfigurationFormat;
   readonly presetFiles: PresetFileParser;

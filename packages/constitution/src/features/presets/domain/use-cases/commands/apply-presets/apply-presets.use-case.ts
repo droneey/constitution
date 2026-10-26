@@ -1,6 +1,10 @@
 import type { ProjectFiles, ProjectSource } from '#/kernel/contracts';
 
-import type { ConfigurationFormat, PresetFileParser, ReleaseBuilds } from '../../../contracts';
+import type {
+  ConfigurationFormat,
+  DistributionSources,
+  PresetFileParser,
+} from '../../../contracts';
 import type {
   AppliedFilesCommandRepository,
   LockCommandRepository,
@@ -11,7 +15,7 @@ import { computeFiles } from '../../shared/compute-files';
 import { computePresets } from '../../shared/compute-presets';
 
 interface ApplyPresetsInput {
-  readonly builds: ReleaseBuilds;
+  readonly distribution: DistributionSources;
   readonly files: ProjectFiles;
   readonly formats: ConfigurationFormat;
   readonly locks: LockCommandRepository;
@@ -38,7 +42,7 @@ const applyPresets = (input: ApplyPresetsInput): ApplyReport | undefined => {
 
   const opened = input.source.open(input.start);
   const plan = computePresets({
-    builds: input.builds,
+    distribution: input.distribution,
     files: input.files,
     model: opened.resolution.model,
     packs: opened.packs,
@@ -48,6 +52,7 @@ const applyPresets = (input: ApplyPresetsInput): ApplyReport | undefined => {
     units: opened.resolution.units,
   });
   const units = computeFiles({
+    blocks: plan.blocks,
     files: input.files,
     formats: input.formats,
     lockOf: input.locks.read,
@@ -74,17 +79,21 @@ const applyPresets = (input: ApplyPresetsInput): ApplyReport | undefined => {
         ],
   );
 
+  const deleted = files.filter((file) => file.isDeleted).map((file) => file.file);
+
   const wroteIn = (at: number): boolean =>
     // Stryker disable next-line OptionalChaining: the files are computed for each unit, in its order
-    units[at]?.files.some((file) => file.text !== undefined) === true;
+    units[at]?.files.some((file) => file.text !== undefined || file.isDeleted) === true;
 
   input.writes.write({
+    deleted: deleted.map((file) => `${opened.project}${SEPARATOR}${file}`),
     files: texts,
     locks: locks.map((lock) => lock.next),
   });
 
   return {
     added: files.flatMap((file) => file.added),
+    deleted,
     findings: [
       // A tool no runner runs is the check's to report: the files are written all the same.
       ...plan.findings.filter((finding) => finding.code !== PresetsCode.ToolWithoutRunner),
