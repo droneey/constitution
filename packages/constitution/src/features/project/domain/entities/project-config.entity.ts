@@ -4,6 +4,7 @@ import { PackPath, UnitPath } from '#/kernel/value-objects';
 
 /** The keys of constitution.yaml but its check, whose key the kernel names for the warnings too. */
 enum ConfigKey {
+  Name = 'name',
   Axes = 'axes',
   Domains = 'domains',
   Platforms = 'platforms',
@@ -104,6 +105,8 @@ interface UnitConfig {
   readonly keys: readonly string[];
   // the keys written as lists
   readonly lists: readonly string[];
+  // the value of name, absent when it is left out or empty
+  readonly name?: string;
   readonly overrides: readonly ConfigOverride[];
 }
 
@@ -148,7 +151,7 @@ type ConfigRead =
       readonly status: ConfigReadStatus.Unparsed;
     };
 
-// The packs a unit lists, each by its path from the repository, which the catalogue reads it at:
+// The packs a unit lists, each by its path from the repository, which the block set reads it at:
 // as the repository writes it, a member's from the member's folder.
 const packsListedBy = (unit: DeclaredUnit): readonly PackPath[] =>
   unit.config.items
@@ -159,19 +162,20 @@ const packsListedBy = (unit: DeclaredUnit): readonly PackPath[] =>
       return UnitPath.isRepository(unit.path) ? pack : PackPath.fromFolder(pack, unit.path);
     });
 
+const eachOnce = (packs: readonly PackPath[]): readonly PackPath[] =>
+  packs.filter((pack, index) => packs.findIndex((first) => PackPath.equals(first, pack)) === index);
+
 // The packs the units list, each once, in the order they are first listed.
 const packsOf = (config: ProjectConfig): readonly PackPath[] =>
-  config.units
-    .flatMap(packsListedBy)
-    .filter(
-      (pack, index, packs) => packs.findIndex((first) => PackPath.equals(first, pack)) === index,
-    );
+  eachOnce(config.units.flatMap(packsListedBy));
 
 const listsPack = (unit: DeclaredUnit, pack: PackPath): boolean =>
   packsListedBy(unit).some((listed) => PackPath.equals(listed, pack));
 
 const DeclaredUnit = {
   listsPack,
+  /** the packs the unit lists, each once, in the order it lists them */
+  packsOf: (unit: DeclaredUnit): readonly PackPath[] => eachOnce(packsListedBy(unit)),
 } as const;
 
 const ProjectConfig = {

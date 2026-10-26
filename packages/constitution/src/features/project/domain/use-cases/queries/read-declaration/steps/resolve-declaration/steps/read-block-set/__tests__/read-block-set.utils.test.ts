@@ -1,25 +1,25 @@
 import { describe, expect, it } from 'bun:test';
 
 import { Axis, Layer, Level } from '#/kernel/constants';
-import { Met, WarningKind } from '#/kernel/entities';
+import { Met, TermKind, WarningKind } from '#/kernel/entities';
 import { BlockId, BlockSource, PackPath, RuleSlug, SourceKind } from '#/kernel/value-objects';
 
 import { passportOf, ruleOf } from '../../../../../../../../../__tests__/project.fixtures';
-import type { CatalogueSource } from '../../../../../../../../entities';
+import type { BlockSetSource } from '../../../../../../../../entities';
 import {
   ancestorsOf,
-  catalogueAnswerOf,
-  catalogueBlockOf,
-  catalogueOf,
-  catalogueRuleOf,
+  blockSetAnswerOf,
+  blockSetBlockOf,
+  blockSetOf,
+  blockSetRuleOf,
   packOf,
   sourceOf,
-} from './catalogue.fixtures';
+} from './block-set.fixtures';
 
 const PLAIN = '# A file\n';
 
-describe('readCatalogue', () => {
-  it('should read every block, chapter, seam, rule and answer in catalogue order, leaving out a glob that holds whitespace, when the release and a pack are whole', () => {
+describe('readBlockSet', () => {
+  it('should read every block, chapter, seam, rule, answer and role term in block set order, leaving out a glob that holds whitespace, when the release and a pack are whole', () => {
     // Arrange
     const sources = [
       sourceOf({
@@ -34,7 +34,10 @@ describe('readCatalogue', () => {
           }),
           'blocks/domains/ui/ui.md': passportOf({
             body: [
+              'A **binding unit** lives in **`screens/`**, named **`.screen`**, beside **`index.ts`**.',
+              '',
               '```markdown',
+              '**`fenced/`**',
               '### fenced-example · MUST',
               '```',
               '',
@@ -66,10 +69,14 @@ describe('readCatalogue', () => {
             abstract: true,
             id: 'api',
           }),
-          'blocks/core/foundation/code.md': ruleOf({
-            level: 'SHOULD',
-            slug: 'small-functions',
-          }),
+          'blocks/core/foundation/code.md': [
+            'The **`kernel/`** holds the shared domain.',
+            '',
+            ruleOf({
+              level: 'SHOULD',
+              slug: 'small-functions',
+            }),
+          ].join('\n'),
           'blocks/core/core.md': passportOf({
             body: ruleOf({
               level: 'MUST',
@@ -83,12 +90,20 @@ describe('readCatalogue', () => {
       packOf({
         files: {
           'blocks/implementations/kit/kit.md': passportOf({
-            body: ruleOf({
-              tightens: 'ui-review',
-              slug: 'kit-rule',
-            }),
+            body: [
+              'Its screens sit in **`screens/`** too.',
+              '',
+              ruleOf({
+                tightens: 'ui-review',
+                slug: 'kit-rule',
+              }),
+            ].join('\n'),
             extends: 'api',
             id: 'kit',
+            languages: [
+              'python',
+              'Not An Id',
+            ],
           }),
         },
         source: 'rules',
@@ -96,10 +111,10 @@ describe('readCatalogue', () => {
     ];
 
     // Act
-    const catalogue = catalogueOf(sources);
+    const blockSet = blockSetOf(sources);
 
     // Assert
-    expect(catalogue).toStrictEqual({
+    expect(blockSet).toStrictEqual({
       ancestors: ancestorsOf({
         api: [],
         kit: [
@@ -107,14 +122,14 @@ describe('readCatalogue', () => {
         ],
       }),
       answers: [
-        catalogueAnswerOf({
+        blockSetAnswerOf({
           block: 'ui',
           met: Met.Yes,
           requirement: 'formatter',
         }),
       ],
       blocks: [
-        catalogueBlockOf({
+        blockSetBlockOf({
           chapters: [
             'foundation/code.md',
           ],
@@ -122,11 +137,11 @@ describe('readCatalogue', () => {
           layer: Layer.Core,
           summary: 'What holds.',
         }),
-        catalogueBlockOf({
+        blockSetBlockOf({
           id: 'api',
           isAbstract: true,
         }),
-        catalogueBlockOf({
+        blockSetBlockOf({
           chapters: [
             'workflow/review.md',
           ],
@@ -141,38 +156,58 @@ describe('readCatalogue', () => {
             'architecture/api',
           ],
         }),
-        catalogueBlockOf({
+        blockSetBlockOf({
           id: 'web',
           layer: Layer.Platform,
         }),
-        catalogueBlockOf({
+        blockSetBlockOf({
           id: 'python',
           layer: Layer.Language,
         }),
-        catalogueBlockOf({
+        blockSetBlockOf({
           extends: 'api',
           id: 'kit',
+          languages: [
+            'python',
+          ],
           layer: Layer.Implementation,
           source: 'rules',
         }),
       ],
+      roles: [
+        {
+          block: BlockId.create('core'),
+          kind: TermKind.Folder,
+          term: 'kernel/',
+        },
+        {
+          block: BlockId.create('ui'),
+          kind: TermKind.Folder,
+          term: 'screens/',
+        },
+        {
+          block: BlockId.create('ui'),
+          kind: TermKind.Suffix,
+          term: '.screen',
+        },
+      ],
       rules: [
-        catalogueRuleOf({
+        blockSetRuleOf({
           block: 'core',
           slug: 'core-rule',
         }),
-        catalogueRuleOf({
+        blockSetRuleOf({
           block: 'core',
           level: Level.Should,
           slug: 'small-functions',
         }),
-        catalogueRuleOf({
+        blockSetRuleOf({
           axis: Axis.Workflow,
           block: 'ui',
           level: Level.May,
           slug: 'ui-review',
         }),
-        catalogueRuleOf({
+        blockSetRuleOf({
           axis: Axis.Architecture,
           block: 'ui',
           isLevelStated: false,
@@ -180,7 +215,7 @@ describe('readCatalogue', () => {
           slug: 'ui-calls-api',
           seam: 'api',
         }),
-        catalogueRuleOf({
+        blockSetRuleOf({
           block: 'kit',
           isLevelStated: false,
           level: Level.May,
@@ -234,10 +269,10 @@ describe('readCatalogue', () => {
     ];
 
     // Act
-    const catalogue = catalogueOf(sources);
+    const blockSet = blockSetOf(sources);
 
     // Assert
-    expect(catalogue).toStrictEqual({
+    expect(blockSet).toStrictEqual({
       ancestors: ancestorsOf({
         a: [],
         b: [
@@ -261,39 +296,40 @@ describe('readCatalogue', () => {
       }),
       answers: [],
       blocks: [
-        catalogueBlockOf({
+        blockSetBlockOf({
           id: 'a',
           isAbstract: true,
         }),
-        catalogueBlockOf({
+        blockSetBlockOf({
           extends: 'a',
           id: 'b',
           isAbstract: true,
         }),
-        catalogueBlockOf({
+        blockSetBlockOf({
           extends: 'b',
           id: 'c',
         }),
-        catalogueBlockOf({
+        blockSetBlockOf({
           extends: 'ghost',
           id: 'd',
           isAbstract: true,
         }),
-        catalogueBlockOf({
+        blockSetBlockOf({
           extends: 'd',
           id: 'e',
         }),
-        catalogueBlockOf({
+        blockSetBlockOf({
           extends: 'y',
           id: 'x',
           isAbstract: true,
         }),
-        catalogueBlockOf({
+        blockSetBlockOf({
           extends: 'x',
           id: 'y',
           isAbstract: true,
         }),
       ],
+      roles: [],
       rules: [],
       warnings: [
         {
@@ -310,8 +346,8 @@ describe('readCatalogue', () => {
 
   it.each<{
     condition: string;
-    expected: ReturnType<typeof catalogueOf>;
-    sources: readonly CatalogueSource[];
+    expected: ReturnType<typeof blockSetOf>;
+    sources: readonly BlockSetSource[];
   }>([
     {
       condition: 'a pack is not installed',
@@ -319,12 +355,13 @@ describe('readCatalogue', () => {
         ancestors: ancestorsOf({}),
         answers: [],
         blocks: [
-          catalogueBlockOf({
+          blockSetBlockOf({
             id: 'kit',
             layer: Layer.Implementation,
             source: 'more',
           }),
         ],
+        roles: [],
         rules: [],
         warnings: [
           {
@@ -357,6 +394,7 @@ describe('readCatalogue', () => {
         ancestors: ancestorsOf({}),
         answers: [],
         blocks: [],
+        roles: [],
         rules: [],
         warnings: [
           {
@@ -382,6 +420,7 @@ describe('readCatalogue', () => {
         ancestors: ancestorsOf({}),
         answers: [],
         blocks: [],
+        roles: [],
         rules: [],
         warnings: [
           {
@@ -410,11 +449,12 @@ describe('readCatalogue', () => {
         ancestors: ancestorsOf({}),
         answers: [],
         blocks: [
-          catalogueBlockOf({
+          blockSetBlockOf({
             id: 'ui',
             summary: undefined,
           }),
         ],
+        roles: [],
         rules: [],
         warnings: [
           {
@@ -440,7 +480,7 @@ describe('readCatalogue', () => {
         ancestors: ancestorsOf({}),
         answers: [],
         blocks: [
-          catalogueBlockOf({
+          blockSetBlockOf({
             chapters: [
               'foundation/screens.md',
             ],
@@ -448,6 +488,7 @@ describe('readCatalogue', () => {
             source: 'rules',
           }),
         ],
+        roles: [],
         rules: [],
         warnings: [
           {
@@ -479,10 +520,11 @@ describe('readCatalogue', () => {
         ancestors: ancestorsOf({}),
         answers: [],
         blocks: [
-          catalogueBlockOf({
+          blockSetBlockOf({
             id: 'ui',
           }),
         ],
+        roles: [],
         rules: [],
         warnings: [
           {
@@ -521,13 +563,14 @@ describe('readCatalogue', () => {
         ancestors: ancestorsOf({}),
         answers: [],
         blocks: [
-          catalogueBlockOf({
+          blockSetBlockOf({
             id: 'ui',
             summary: undefined,
           }),
         ],
+        roles: [],
         rules: [
-          catalogueRuleOf({
+          blockSetRuleOf({
             block: 'ui',
             level: Level.Should,
             slug: 'bare',
@@ -560,10 +603,11 @@ describe('readCatalogue', () => {
         ancestors: ancestorsOf({}),
         answers: [],
         blocks: [
-          catalogueBlockOf({
+          blockSetBlockOf({
             id: 'ui',
           }),
         ],
+        roles: [],
         rules: [],
         warnings: [
           {
@@ -648,15 +692,16 @@ describe('readCatalogue', () => {
         ancestors: ancestorsOf({}),
         answers: [],
         blocks: [
-          catalogueBlockOf({
+          blockSetBlockOf({
             id: 'ui',
           }),
-          catalogueBlockOf({
+          blockSetBlockOf({
             id: 'kit',
             layer: Layer.Implementation,
             source: 'rules',
           }),
         ],
+        roles: [],
         rules: [],
         warnings: [
           {
@@ -716,15 +761,16 @@ describe('readCatalogue', () => {
         ancestors: ancestorsOf({}),
         answers: [],
         blocks: [
-          catalogueBlockOf({
+          blockSetBlockOf({
             chapters: [
               'foundation/screens.md',
             ],
             id: 'ui',
           }),
         ],
+        roles: [],
         rules: [
-          catalogueRuleOf({
+          blockSetRuleOf({
             block: 'ui',
             slug: 'one',
           }),
@@ -764,10 +810,10 @@ describe('readCatalogue', () => {
         ancestors: ancestorsOf({}),
         answers: [],
         blocks: [
-          catalogueBlockOf({
+          blockSetBlockOf({
             id: 'api',
           }),
-          catalogueBlockOf({
+          blockSetBlockOf({
             id: 'ui',
             requires: [
               'api',
@@ -775,6 +821,7 @@ describe('readCatalogue', () => {
             ],
           }),
         ],
+        roles: [],
         rules: [],
         warnings: [
           {
@@ -819,13 +866,14 @@ describe('readCatalogue', () => {
         ancestors: ancestorsOf({}),
         answers: [],
         blocks: [
-          catalogueBlockOf({
+          blockSetBlockOf({
             extends: 'ghost',
             id: 'kit',
             layer: Layer.Implementation,
             source: 'rules',
           }),
         ],
+        roles: [],
         rules: [],
         warnings: [
           {
@@ -861,14 +909,15 @@ describe('readCatalogue', () => {
         }),
         answers: [],
         blocks: [
-          catalogueBlockOf({
+          blockSetBlockOf({
             id: 'api',
           }),
-          catalogueBlockOf({
+          blockSetBlockOf({
             extends: 'api',
             id: 'ui',
           }),
         ],
+        roles: [],
         rules: [],
         warnings: [
           {
@@ -901,18 +950,19 @@ describe('readCatalogue', () => {
         ancestors: ancestorsOf({}),
         answers: [],
         blocks: [
-          catalogueBlockOf({
+          blockSetBlockOf({
             id: 'kit',
             layer: Layer.Implementation,
           }),
-          catalogueBlockOf({
+          blockSetBlockOf({
             id: 'lint',
             layer: Layer.Implementation,
             source: 'rules',
           }),
         ],
+        roles: [],
         rules: [
-          catalogueRuleOf({
+          blockSetRuleOf({
             block: 'kit',
             isLevelStated: false,
             tightens: 'ghost',
@@ -954,9 +1004,9 @@ describe('readCatalogue', () => {
     },
   ])('should warn and read what it can when $condition', ({ expected, sources }) => {
     // Act
-    const catalogue = catalogueOf(sources);
+    const blockSet = blockSetOf(sources);
 
     // Assert
-    expect(catalogue).toStrictEqual(expected);
+    expect(blockSet).toStrictEqual(expected);
   });
 });

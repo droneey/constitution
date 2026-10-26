@@ -1,3 +1,4 @@
+name: '@droneey/design-cli'
 axes:
   - architecture
   - workflow

@@ -1,3 +1,4 @@
+name: droneey-mutation-check
 axes:
   - architecture
   - workflow

@@ -1,7 +1,7 @@
 import { Layer, Level } from '#/kernel/constants';
 import { Met, WarningKind } from '#/kernel/entities';
 
-import type { CatalogueAnswer } from '../../../../../../../entities';
+import type { BlockSetAnswer } from '../../../../../../../entities';
 import { AppliedOverrides, ProjectModel, ResolvedUnit } from '../../../../../../../entities';
 import { keyOfLayer } from '../../shared/layer-keys';
 import type { WarningLog } from '../../shared/warning-log';
@@ -53,7 +53,7 @@ const warnOfRequires = (input: WarnOfRequiresInput): void => {
 
 // A requirement a library does not meet matters where the MUST rule it names is active and kept.
 const isUnmet = (input: {
-  answer: CatalogueAnswer;
+  answer: BlockSetAnswer;
   applied: AppliedOverrides;
   model: ProjectModel;
   unit: ResolvedUnit;
@@ -75,7 +75,7 @@ const isUnmet = (input: {
 };
 
 interface WarnOfAnswersInput {
-  readonly answers: readonly CatalogueAnswer[];
+  readonly answers: readonly BlockSetAnswer[];
   readonly applied: AppliedOverrides;
   readonly log: WarningLog;
   readonly model: ProjectModel;

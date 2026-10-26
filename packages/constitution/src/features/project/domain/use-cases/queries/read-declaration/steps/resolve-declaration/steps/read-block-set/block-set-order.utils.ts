@@ -5,7 +5,7 @@ import { BlockFilePlace } from '#/kernel/value-objects';
  * The files of a source in the order a project reads them, the one the Constitution's check loads
  * its blocks in; a file in no block's folder comes last.
  */
-const inCatalogueOrder = <
+const inBlockSetOrder = <
   TFile extends {
     readonly path: string;
   },
@@ -29,4 +29,4 @@ const inCatalogueOrder = <
     })
     .map(({ file }) => file);
 
-export { inCatalogueOrder };
+export { inBlockSetOrder };

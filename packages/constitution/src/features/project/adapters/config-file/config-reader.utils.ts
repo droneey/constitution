@@ -38,6 +38,7 @@ interface ReaderState {
   readonly level: Level;
   line: number;
   readonly lists: string[];
+  name: string | undefined;
   open: OpenOverride | undefined;
   readonly overrides: ConfigOverride[];
   pending: Pending | undefined;
@@ -70,6 +71,7 @@ const createReaderState = (): ReaderState => ({
   level: closedLevel(),
   line: 0,
   lists: [],
+  name: undefined,
   open: undefined,
   overrides: [],
   pending: undefined,

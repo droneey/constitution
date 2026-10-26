@@ -3,10 +3,10 @@ import type { Met, ProjectWarning } from '#/kernel/entities';
 import { BlockId, BlockSource, Glob, PackPath, RuleSlug } from '#/kernel/value-objects';
 
 import { parsers } from '../../../../../../../../../__tests__/project.fixtures';
-import type { CatalogueSource } from '../../../../../../../../entities';
-import { CatalogueAnswer, CatalogueBlock, CatalogueRule } from '../../../../../../../../entities';
+import type { BlockSetSource } from '../../../../../../../../entities';
+import { BlockSetAnswer, BlockSetBlock, BlockSetRule } from '../../../../../../../../entities';
 import { createWarningLog } from '../../../shared/warning-log';
-import { readCatalogue } from '../read-catalogue.utils';
+import { readBlockSet } from '../read-block-set.utils';
 
 // The folders a warning names the files of the release and of a pack under.
 const RELEASE = '/release';
@@ -20,7 +20,7 @@ interface SourceFixture {
 }
 
 // A source whose files are given by their path from its folder, the unreadable ones without text.
-const sourceOf = (input: SourceFixture): CatalogueSource => ({
+const sourceOf = (input: SourceFixture): BlockSetSource => ({
   files: [
     ...Object.entries(input.files ?? {}).map(([path, text]) => ({
       path,
@@ -43,7 +43,7 @@ interface PackFixture {
 }
 
 // A pack listed as source, under the project's folder.
-const packOf = (input: PackFixture): CatalogueSource =>
+const packOf = (input: PackFixture): BlockSetSource =>
   sourceOf({
     ...input,
     where: `${PROJECT}/${input.source}`,
@@ -59,12 +59,13 @@ const axisOf = (place: string): Axis => {
   return axis;
 };
 
-interface CatalogueBlockFixture {
+interface BlockSetBlockFixture {
   readonly chapters?: readonly string[];
   readonly extends?: string;
   readonly governs?: readonly string[];
   readonly id: string;
   readonly isAbstract?: boolean;
+  readonly languages?: readonly string[];
   readonly layer?: Layer;
   readonly requires?: readonly string[];
   readonly seams?: readonly string[];
@@ -73,12 +74,12 @@ interface CatalogueBlockFixture {
   readonly summary?: string | undefined;
 }
 
-// A block as the catalogue reads it, the release's domain unless the case says; a chapter as
+// A block as the block set reads it, the release's domain unless the case says; a chapter as
 // "<axis>/<name>.md", a seam as "<axis>/<other block>".
-const catalogueBlockOf = (block: CatalogueBlockFixture): CatalogueBlock => {
+const blockSetBlockOf = (block: BlockSetBlockFixture): BlockSetBlock => {
   const summary = 'summary' in block ? block.summary : `The ${block.id} block.`;
 
-  return CatalogueBlock.create({
+  return BlockSetBlock.create({
     chapters: (block.chapters ?? []).map((chapter) => ({
       axis: axisOf(chapter),
       name: chapter.slice(chapter.indexOf('/') + 1, -'.md'.length),
@@ -91,6 +92,7 @@ const catalogueBlockOf = (block: CatalogueBlockFixture): CatalogueBlock => {
     governs: (block.governs ?? []).map(Glob.create),
     id: BlockId.create(block.id),
     isAbstract: block.isAbstract ?? false,
+    languages: (block.languages ?? []).map(BlockId.create),
     layer: block.layer ?? Layer.Domain,
     requires: (block.requires ?? []).map(BlockId.create),
     seams: (block.seams ?? []).map((seam) => ({
@@ -108,7 +110,7 @@ const catalogueBlockOf = (block: CatalogueBlockFixture): CatalogueBlock => {
   });
 };
 
-interface CatalogueRuleFixture {
+interface BlockSetRuleFixture {
   readonly axis?: Axis;
   readonly block: string;
   readonly isLevelStated?: boolean;
@@ -118,9 +120,9 @@ interface CatalogueRuleFixture {
   readonly tightens?: string;
 }
 
-// A rule as the catalogue reads it: a MUST it states on foundation unless the case says.
-const catalogueRuleOf = (rule: CatalogueRuleFixture): CatalogueRule =>
-  CatalogueRule.create({
+// A rule as the block set reads it: a MUST it states on foundation unless the case says.
+const blockSetRuleOf = (rule: BlockSetRuleFixture): BlockSetRule =>
+  BlockSetRule.create({
     axis: rule.axis ?? Axis.Foundation,
     block: BlockId.create(rule.block),
     isLevelStated: rule.isLevelStated ?? true,
@@ -149,14 +151,14 @@ const ancestorsOf = (
     ]),
   );
 
-interface CatalogueAnswerFixture {
+interface BlockSetAnswerFixture {
   readonly block: string;
   readonly met?: Met;
   readonly requirement: string;
 }
 
-const catalogueAnswerOf = (answer: CatalogueAnswerFixture): CatalogueAnswer =>
-  CatalogueAnswer.create({
+const blockSetAnswerOf = (answer: BlockSetAnswerFixture): BlockSetAnswer =>
+  BlockSetAnswer.create({
     block: BlockId.create(answer.block),
     ...(answer.met === undefined
       ? {}
@@ -166,31 +168,31 @@ const catalogueAnswerOf = (answer: CatalogueAnswerFixture): CatalogueAnswer =>
     requirement: RuleSlug.create(answer.requirement),
   });
 
-// The catalogue the sources read as, with the warnings given while reading it.
-const catalogueOf = (
-  sources: readonly CatalogueSource[],
-): ReturnType<typeof readCatalogue> & {
+// The block set the sources read as, with the warnings given while reading it.
+const blockSetOf = (
+  sources: readonly BlockSetSource[],
+): ReturnType<typeof readBlockSet> & {
   warnings: readonly ProjectWarning[];
 } => {
   const log = createWarningLog();
-  const catalogue = readCatalogue({
+  const blockSet = readBlockSet({
     log,
     parser: parsers().cardParser,
     sources,
   });
 
   return {
-    ...catalogue,
+    ...blockSet,
     warnings: log.list(),
   };
 };
 
 export {
   ancestorsOf,
-  catalogueAnswerOf,
-  catalogueBlockOf,
-  catalogueOf,
-  catalogueRuleOf,
+  blockSetAnswerOf,
+  blockSetBlockOf,
+  blockSetOf,
+  blockSetRuleOf,
   packOf,
   sourceOf,
 };

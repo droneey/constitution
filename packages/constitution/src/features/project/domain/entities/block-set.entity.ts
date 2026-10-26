@@ -1,5 +1,6 @@
 import type { Axis, Layer, Level } from '#/kernel/constants';
-import type { Met } from '#/kernel/entities';
+import type { Met, RoleTerm } from '#/kernel/entities';
+import { BlockModel } from '#/kernel/entities';
 import type { BlockId, BlockSource, Glob, RuleSlug } from '#/kernel/value-objects';
 
 // A chapter of a block, <axis>/<name>.md.
@@ -16,12 +17,13 @@ interface SeamPlace {
 
 // A block of the Constitution or of a pack as a project reads it, its chapters and seams in the
 // order the blocks are read; a card without front matter leaves its fields empty or absent.
-interface CatalogueBlock {
+interface BlockSetBlock {
   readonly chapters: readonly ChapterPlace[];
   readonly extends?: BlockId;
   readonly governs: readonly Glob[];
   readonly id: BlockId;
   readonly isAbstract: boolean;
+  readonly languages: readonly BlockId[];
   readonly layer: Layer;
   readonly requires: readonly BlockId[];
   readonly seams: readonly SeamPlace[];
@@ -29,8 +31,8 @@ interface CatalogueBlock {
   readonly summary?: string;
 }
 
-const CatalogueBlock = {
-  create: (input: CatalogueBlock): CatalogueBlock => ({
+const BlockSetBlock = {
+  create: (input: BlockSetBlock): BlockSetBlock => ({
     chapters: input.chapters,
     ...(input.extends === undefined
       ? {}
@@ -40,6 +42,7 @@ const CatalogueBlock = {
     governs: input.governs,
     id: input.id,
     isAbstract: input.isAbstract,
+    languages: input.languages,
     layer: input.layer,
     requires: input.requires,
     seams: input.seams,
@@ -52,7 +55,7 @@ const CatalogueBlock = {
   }),
 } as const;
 
-interface CatalogueRule {
+interface BlockSetRule {
   readonly axis: Axis;
   readonly block: BlockId;
   readonly isLevelStated: boolean;
@@ -62,8 +65,8 @@ interface CatalogueRule {
   readonly tightens?: RuleSlug;
 }
 
-const CatalogueRule = {
-  create: (input: CatalogueRule): CatalogueRule => ({
+const BlockSetRule = {
+  create: (input: BlockSetRule): BlockSetRule => ({
     axis: input.axis,
     block: input.block,
     isLevelStated: input.isLevelStated,
@@ -82,14 +85,14 @@ const CatalogueRule = {
   }),
 } as const;
 
-interface CatalogueAnswer {
+interface BlockSetAnswer {
   readonly block: BlockId;
   readonly met?: Met;
   readonly requirement: RuleSlug;
 }
 
-const CatalogueAnswer = {
-  create: (input: CatalogueAnswer): CatalogueAnswer => ({
+const BlockSetAnswer = {
+  create: (input: BlockSetAnswer): BlockSetAnswer => ({
     block: input.block,
     ...(input.met === undefined
       ? {}
@@ -100,11 +103,44 @@ const CatalogueAnswer = {
   }),
 } as const;
 
-interface Catalogue {
-  readonly answers: readonly CatalogueAnswer[];
-  readonly blocks: readonly CatalogueBlock[];
-  readonly rules: readonly CatalogueRule[];
+interface BlockSet {
+  readonly answers: readonly BlockSetAnswer[];
+  readonly blocks: readonly BlockSetBlock[];
+  // the folders and suffixes the blocks define, each by its first definition
+  readonly roles: readonly RoleTerm[];
+  readonly rules: readonly BlockSetRule[];
 }
+
+const modelOf = (blockSet: BlockSet): BlockModel =>
+  BlockModel.create({
+    blocks: blockSet.blocks.map((block) => ({
+      ...(block.extends === undefined
+        ? {}
+        : {
+            extends: block.extends,
+          }),
+      id: block.id,
+      languages: block.languages,
+      layer: block.layer,
+      requires: block.requires,
+    })),
+    roles: blockSet.roles,
+    rules: blockSet.rules.map((rule) => ({
+      axis: rule.axis,
+      block: rule.block,
+      level: rule.level,
+      ...(rule.seam === undefined
+        ? {}
+        : {
+            seam: rule.seam,
+          }),
+      slug: rule.slug,
+    })),
+  });
+
+const BlockSet = {
+  modelOf,
+} as const;
 
 // A file of a source, its path from the source's folder: blocks/domains/ui/ui.md.
 interface SourceFile {
@@ -113,7 +149,7 @@ interface SourceFile {
   readonly text?: string;
 }
 
-interface CatalogueSource {
+interface BlockSetSource {
   // undefined when the pack is not installed
   readonly files?: readonly SourceFile[];
   readonly source: BlockSource;
@@ -121,5 +157,5 @@ interface CatalogueSource {
   readonly where: string;
 }
 
-export type { Catalogue, CatalogueSource, ChapterPlace, SeamPlace, SourceFile };
-export { CatalogueAnswer, CatalogueBlock, CatalogueRule };
+export type { BlockSetSource, ChapterPlace, SeamPlace, SourceFile };
+export { BlockSet, BlockSetAnswer, BlockSetBlock, BlockSetRule };

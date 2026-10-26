@@ -1,11 +1,11 @@
 import { Layer } from '#/kernel/constants';
 import { Met, RequirementAnswer, Rule } from '#/kernel/entities';
 import type { FindingOf, ProblemOf } from '#/kernel/types';
+import { inlineCodeSpans } from '#/kernel/utils';
 import { BlockId, RuleSlug } from '#/kernel/value-objects';
 
 import { BlockGraph } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
-import { inlineCodeSpans } from '../shared/markdown';
 
 enum RequirementsCode {
   OutsideImplementation = 'requirements-outside-implementation',

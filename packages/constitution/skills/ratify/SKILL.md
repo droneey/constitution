@@ -116,6 +116,7 @@ A block of the project's own pack is a draft until a person reviews it; say so.
 When the repository is a workspace — apps, the packages they share or the repository releases, a server beside a web client — each member its manifests declare keeps a `constitution.yaml` of its own in its folder: the members are the folders that `workspaces` of the root's `package.json` and `members` of uv's workspace in the root's `pyproject.toml` name. Nothing passes from the root's file to a member's: ask which blocks, axes and packs each member follows, propose for each the root's blocks that hold its files too, and write them in its own file. A member's file takes every key of the root's but `check`, which only the root names, and lists a pack by its path from the member's folder:
 
 ```yaml
+name: '@acme/web'
 axes:
   - architecture
   - workflow
@@ -135,6 +136,8 @@ implementations:
 packs: []
 overrides: []
 ```
+
+Every file, the root's and each member's, names its unit's package in `name`, as the unit's manifest gives it: `name` of its `package.json`, or `name` under `[project]` of its `pyproject.toml`. Propose each from there, and ask the owner for the name of a unit whose manifest gives none.
 
 A member with no `constitution.yaml`, and a folder that keeps a tool's configuration of its own but is no member, are warnings of the digest.
 
@@ -171,7 +174,7 @@ Then list every `partly` and `no` row of the Requirements tables of the blocks y
 
 Write only after the owner's yes, and only the files the owner agreed to.
 
-- **`constitution.yaml`** is `.droneey/constitution/templates/constitution.yaml` with `<check command>` replaced by the check command, and each `[]` replaced where there is something to list; a member's is the same without its `check` line. Keep every key, in the template's order. Write every list as a block list, an item to a line, `[]` only when it is empty, as yamllint's preset asks. The hook reads a fixed subset of YAML: a block list, or a flow list `[a, b]`; a value holding `:` or `#` is quoted, in single quotes unless it holds one; there are no anchors, tags or multi-line strings.
+- **`constitution.yaml`** is `.droneey/constitution/templates/constitution.yaml` with `<name>` replaced by the unit's name, `<check command>` by the check command, and each `[]` where there is something to list; a member's is the same without its `check` line. Keep every key, in the template's order. Write every list as a block list, an item to a line, `[]` only when it is empty, as yamllint's preset asks. The hook reads a fixed subset of YAML: a block list, or a flow list `[a, b]`; a value holding `:` or `#`, or opening with `@`, is quoted, in single quotes unless it holds one; there are no anchors, tags or multi-line strings.
 - **`PROJECT.md`** keeps the template's title and blockquote as they are, then the sections that have content, without the template's `<!-- -->` guidance.
 - **`DECISIONS.md`** is `.droneey/constitution/templates/DECISIONS.md`, keeping its title, its blockquote and the `<!-- -->` entry format later entries copy, with the owner's choices as its entries; written only when the repository has none.
 

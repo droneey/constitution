@@ -1,10 +1,12 @@
-import type { Layer, LoweredLevel } from '#/kernel/constants';
-import { Axis } from '#/kernel/constants';
+import type { LoweredLevel } from '#/kernel/constants';
+import { Axis, Layer, Level } from '#/kernel/constants';
 import type {
   BlockListing,
+  BlockModel,
   ListedBlock,
   ListedFiles,
   ListedOverride,
+  RoleTerm,
   UnitEntry,
   UnitListing,
 } from '#/kernel/entities';
@@ -32,7 +34,7 @@ import {
 import type { BlockFixture } from '../../../../../../../__tests__/project.fixtures';
 import { blockFilesOf, parsers } from '../../../../../../../__tests__/project.fixtures';
 import type {
-  CatalogueSource,
+  BlockSetSource,
   DeclaredUnit,
   ProjectConfig,
   UnreadMember,
@@ -128,7 +130,7 @@ const configOf = (
   );
 
 // The files of blocks, by their path from the source's folder.
-const filesOf = (blocks: readonly BlockFixture[]): NonNullable<CatalogueSource['files']> =>
+const filesOf = (blocks: readonly BlockFixture[]): NonNullable<BlockSetSource['files']> =>
   Object.entries(
     blockFilesOf({
       blocks,
@@ -147,7 +149,7 @@ interface SourceFixture {
 }
 
 // A source of the blocks given: the Constitution's by default, with core, or a pack's.
-const sourceOf = (input: SourceFixture = {}): CatalogueSource => {
+const sourceOf = (input: SourceFixture = {}): BlockSetSource => {
   const pack = input.source;
   // core is written as a domain, then moved to its own folder
   const core = filesOf([
@@ -173,7 +175,10 @@ const sourceOf = (input: SourceFixture = {}): CatalogueSource => {
 interface UnitFixture {
   readonly axes?: readonly Axis[];
   readonly blocks?: readonly string[];
+  readonly languages?: readonly string[];
   readonly loweredRules?: readonly string[];
+  readonly name?: string;
+  readonly packs?: readonly string[];
   readonly path?: string;
 }
 
@@ -192,9 +197,63 @@ const unitOf = (input: UnitFixture = {}): ProjectUnit =>
         ]
       ).map(BlockId.create),
     ),
+    languages: new Set((input.languages ?? []).map(BlockId.create)),
     loweredRules: new Set((input.loweredRules ?? []).map(RuleSlug.create)),
+    name: input.name,
+    packs: (input.packs ?? []).map(PackPath.create),
     path: UnitPath.create(input.path ?? ''),
   });
+
+interface ModelBlockFixture {
+  readonly extends?: string;
+  readonly id: string;
+  readonly languages?: readonly string[];
+  // a domain unless the case says
+  readonly layer?: Layer;
+  readonly requires?: readonly string[];
+}
+
+interface ModelRuleFixture {
+  readonly axis?: Axis;
+  readonly block: string;
+  readonly level?: Level;
+  readonly seam?: string;
+  readonly slug: string;
+}
+
+interface ModelFixture {
+  readonly blocks?: readonly ModelBlockFixture[];
+  readonly roles?: readonly RoleTerm[];
+  // MUSTs on foundation unless the case says
+  readonly rules?: readonly ModelRuleFixture[];
+}
+
+// The model of the blocks a resolution gives, by the ids a case writes.
+const modelOf = (input: ModelFixture = {}): BlockModel => ({
+  blocks: (input.blocks ?? []).map((block) => ({
+    ...(block.extends === undefined
+      ? {}
+      : {
+          extends: BlockId.create(block.extends),
+        }),
+    id: BlockId.create(block.id),
+    languages: (block.languages ?? []).map(BlockId.create),
+    layer: block.layer ?? Layer.Domain,
+    requires: (block.requires ?? []).map(BlockId.create),
+  })),
+  roles: input.roles ?? [],
+  rules: (input.rules ?? []).map((rule) => ({
+    axis: rule.axis ?? Axis.Foundation,
+    block: BlockId.create(rule.block),
+    level: rule.level ?? Level.Must,
+    ...(rule.seam === undefined
+      ? {}
+      : {
+          seam: BlockId.create(rule.seam),
+        }),
+    slug: RuleSlug.create(rule.slug),
+  })),
+});
 
 interface ActiveBlockFixture {
   readonly files: readonly string[];
@@ -244,8 +303,8 @@ const mustOf = (input: MustRuleFixture): MustRule =>
     slug: RuleSlug.create(input.slug),
   });
 
-// A block of the catalogue as a resolution names it.
-const catalogueEntryOf = (
+// A block of the block set as a resolution names it.
+const blockSetEntryOf = (
   id: string,
   layer: Layer,
 ): {
@@ -395,7 +454,7 @@ const failureOf = (act: () => unknown): Failure | undefined => {
 export {
   activeOf,
   addedEntryOf,
-  catalogueEntryOf,
+  blockSetEntryOf,
   configOf,
   failureOf,
   filesOn,
@@ -404,6 +463,7 @@ export {
   listingOf,
   loweringOf,
   memberYamlOf,
+  modelOf,
   mustOf,
   ownEntryOf,
   parsedOf,

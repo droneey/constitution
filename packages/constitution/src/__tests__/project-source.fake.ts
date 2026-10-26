@@ -1,6 +1,12 @@
 import type { ProjectSource } from '#/kernel/contracts';
 import type { Declaration, OpenedProject, ProjectPlace, Release } from '#/kernel/entities';
-import { BlockListing, ConfigReadStatus, ReleaseStatus, Resolution } from '#/kernel/entities';
+import {
+  BlockListing,
+  BlockModel,
+  ConfigReadStatus,
+  ReleaseStatus,
+  Resolution,
+} from '#/kernel/entities';
 import { ProjectError, ProjectFailure } from '#/kernel/errors';
 import { Version } from '#/kernel/value-objects';
 
@@ -22,6 +28,11 @@ const empty = Resolution.create({
     overrides: [],
     repository: [],
     units: [],
+  }),
+  model: BlockModel.create({
+    blocks: [],
+    roles: [],
+    rules: [],
   }),
   musts: [],
   units: [],

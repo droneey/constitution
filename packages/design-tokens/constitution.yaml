@@ -1,3 +1,4 @@
+name: '@droneey/design-tokens'
 axes:
   - architecture
   - workflow

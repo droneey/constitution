@@ -23,12 +23,13 @@ import { createFakeWorkspace } from '../../../../../__tests__/workspace.fake';
 import { readDeclaration } from '../read-declaration.use-case';
 import {
   activeOf,
-  catalogueEntryOf,
+  blockSetEntryOf,
   failureOf,
   filesOn,
   listedOf,
   listingOf,
   memberYamlOf,
+  modelOf,
   mustOf,
   today,
   unitOf,
@@ -130,9 +131,9 @@ describe('readDeclaration', () => {
           }),
         ],
         blocks: [
-          catalogueEntryOf('core', Layer.Core),
-          catalogueEntryOf('ui', Layer.Domain),
-          catalogueEntryOf('lint', Layer.Implementation),
+          blockSetEntryOf('core', Layer.Core),
+          blockSetEntryOf('ui', Layer.Domain),
+          blockSetEntryOf('lint', Layer.Implementation),
         ],
         listing: listingOf({
           repository: [
@@ -163,6 +164,27 @@ describe('readDeclaration', () => {
             }),
           ],
         }),
+        model: modelOf({
+          blocks: [
+            {
+              id: 'core',
+              layer: Layer.Core,
+            },
+            {
+              id: 'ui',
+            },
+            {
+              id: 'lint',
+              layer: Layer.Implementation,
+            },
+          ],
+          rules: [
+            {
+              block: 'ui',
+              slug: 'inputs-are-labelled',
+            },
+          ],
+        }),
         musts: [
           mustOf({
             block: 'ui',
@@ -175,6 +197,10 @@ describe('readDeclaration', () => {
               'core',
               'ui',
               'lint',
+            ],
+            packs: [
+              './rules',
+              'extra',
             ],
           }),
         ],
@@ -288,6 +314,45 @@ describe('readDeclaration', () => {
     });
   });
 
+  it('should take a pack that holds presets alone as installed when another pack holds nothing', () => {
+    // Arrange
+    const files = createFakeProjectFiles({
+      ...projectTreeOf({
+        config: yamlOf({
+          packs: 'packs: [shared, empty]',
+        }),
+        files: {
+          [`${PROJECT}/shared/presets/biome/foundation.yaml`]: 'biome: {}\n',
+        },
+      }),
+      folders: [
+        `${PROJECT}/empty`,
+      ],
+    });
+
+    // Act
+    const declaration = readDeclaration({
+      ...parsers(),
+      clock: createFakeClock(today),
+      files,
+      place: projectPlace,
+      workspace: createFakeWorkspace(),
+    });
+
+    // Assert
+    expect(membersReadOf(declaration)).toStrictEqual({
+      active: [],
+      packs: [
+        'shared',
+        'empty',
+      ],
+      warnings: [
+        WarningCode.Installation,
+        WarningCode.Constitution,
+      ],
+    });
+  });
+
   it('should give the line the read stops at when constitution.yaml does not parse', () => {
     // Arrange
     const files = createFakeProjectFiles(
@@ -347,6 +412,19 @@ describe('readDeclaration', () => {
       tree: {
         [configPath]: 'domains: [ui\n',
         [manifest]: manifestOf(),
+      },
+      unreadable: [],
+    },
+    {
+      cause: undefined,
+      code: ProjectFailure.BlocksUnlisted,
+      condition: 'the release holds presets and no blocks folder',
+      folders: [],
+      path: releaseFolderPath,
+      tree: {
+        [configPath]: yamlOf(),
+        [manifest]: manifestOf(),
+        [`${releaseFolderPath}/presets/biome/foundation.yaml`]: 'biome: {}\n',
       },
       unreadable: [],
     },

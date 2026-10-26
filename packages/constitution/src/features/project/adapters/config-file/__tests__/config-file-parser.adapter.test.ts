@@ -223,6 +223,34 @@ describe('createConfigFileParser', () => {
       text: 'axes: [a, # first\n  "b,\n  c", ]\ncheck: x\npacks: [d,\n         e]\n',
     },
     {
+      condition: 'name names a package in quotes, a comment after it',
+      expected: parsedConfigOf({
+        keys: [
+          'name',
+        ],
+        name: '@acme/web',
+      }),
+      text: "name: '@acme/web' # the package\n",
+    },
+    {
+      condition: 'name is left empty',
+      expected: parsedConfigOf({
+        keys: [
+          'name',
+        ],
+      }),
+      text: 'name:\n',
+    },
+    {
+      condition: 'name is null',
+      expected: parsedConfigOf({
+        keys: [
+          'name',
+        ],
+      }),
+      text: 'name: null\n',
+    },
+    {
       condition: 'check is left empty',
       expected: parsedConfigOf({
         empties: [
@@ -542,6 +570,11 @@ describe('createConfigFileParser', () => {
       condition: 'text follows the closing bracket',
       line: 1,
       text: 'axes: [a] b\n',
+    },
+    {
+      condition: 'name runs on to an indented line',
+      line: 2,
+      text: 'name: web\n  app\n',
     },
     {
       condition: 'a plain scalar opens with an anchor',

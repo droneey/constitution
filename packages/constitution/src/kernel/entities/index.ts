@@ -7,6 +7,8 @@ export type {
   UnitListing,
 } from './block-listing.entity';
 export { BlockListing, UnitEntryKind } from './block-listing.entity';
+export type { BlockText, ModelBlock, ModelRule, RoleTerm } from './block-model.entity';
+export { BlockModel } from './block-model.entity';
 export { FileRead, FileReadStatus } from './file-read.entity';
 export { Lowering } from './lowering.entity';
 export { MustRule } from './must-rule.entity';
@@ -25,7 +27,7 @@ export { Rule } from './rule.entity';
 export { RuleHeading } from './rule-heading.entity';
 export type { RuleFormDetails, RuleSource, RulesParsed } from './stated-rule.entity';
 export { RuleFormCode, StatedRule } from './stated-rule.entity';
-export type { Bold } from './term.entity';
+export type { Bold, TermsRead } from './term.entity';
 export { Term, TermKind } from './term.entity';
 export type { ValueFindingDetails } from './value-finding.entity';
 export { ValueSite } from './value-finding.entity';

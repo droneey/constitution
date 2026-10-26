@@ -21,6 +21,11 @@ const configKeys: readonly string[] = [
   ConfigKey.Overrides,
 ];
 
+// name is known to every unit and asked of none (ADR-0231).
+const optionalKeys: readonly string[] = [
+  ConfigKey.Name,
+];
+
 const fileOf = (unit: DeclaredUnit): string => UnitPath.pathOf(unit.path, CONFIG_FILE);
 
 // A member names no check: the repository's is the one check of the whole tree.
@@ -46,7 +51,7 @@ const warnOfUnitKeys = (input: { log: WarningLog; unit: DeclaredUnit }): void =>
   }
 
   for (const key of config.keys) {
-    if (!known.includes(key)) {
+    if (!(known.includes(key) || optionalKeys.includes(key))) {
       log.add({
         details: {
           file,
@@ -215,7 +220,7 @@ const declaredOf = (input: {
 const isDeclared = (entry: ConfigItem): boolean =>
   entry.key !== ConfigKey.Axes && entry.key !== ConfigKey.Packs;
 
-// A unit's blocks start from core, in the catalogue's order; then each block its unit lists joins
+// A unit's blocks start from core, in the block set's order; then each block its unit lists joins
 // them, with its bases.
 const blocksOf = (input: {
   log: WarningLog;
@@ -271,6 +276,8 @@ const resolveUnits = (input: ResolveUnitsInput): ResolvedUnits => {
         model: input.model,
         unit: declared.unit,
       }),
+      name: declared.unit.config.name,
+      packs: DeclaredUnit.packsOf(declared.unit),
       path: declared.unit.path,
     });
 

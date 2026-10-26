@@ -1,8 +1,9 @@
 # constitution.yaml
 
-> The file at a project's root, and in each member of its workspace, that names its blocks, its packs, its overrides and, at the root, its check.
+> The file at a project's root, and in each member of its workspace, that names its package, its blocks, its packs, its overrides and, at the root, its check.
 
 ```yaml
+name: '@acme/web'
 axes:
   - architecture
   - workflow
@@ -31,12 +32,13 @@ check: bun run check
 overrides: []
 ```
 
-Every key is required; a missing or an unknown key is a warning in the digest. `/constitution:ratify` writes them in this order. A member of a workspace keeps a file of its own, of every key but `check`: [members of a workspace](#members-of-a-workspace).
+Every key but `name` is required; a missing or an unknown key is a warning in the digest. `/constitution:ratify` writes them all, `name` included, in this order. A member of a workspace keeps a file of its own, of every key but `check`: [members of a workspace](#members-of-a-workspace).
 
 ## Keys
 
 | Key | Holds | Empty |
 |---|---|---|
+| `name` | the name of its package, as its manifest gives it | left out |
 | `axes` | the optional axes it follows: `architecture`, `workflow`; `foundation` is always followed | `[]`, `foundation` alone |
 | `domains` | the ids of its domain blocks | `[]` |
 | `platforms` | the ids of its platform blocks | `[]` |
@@ -47,6 +49,10 @@ Every key is required; a missing or an unknown key is a warning in the digest. `
 | `overrides` | the rules it lowers | `[]` |
 
 Core is never listed: it is always active. An abstract block, whose id starts with `_`, is never listed either; the blocks that extend it are.
+
+## name
+
+The name of the unit's package, as its `package.json` or `pyproject.toml` gives it, read verbatim; a name that opens with `@` is quoted, `name: '@acme/web'`. It is the one key a file may leave out without a warning.
 
 ## axes
 
@@ -97,9 +103,10 @@ overrides:
 
 ## Members of a workspace
 
-Each member of the workspace keeps a `constitution.yaml` in its own folder, with every key of the root's but `check`:
+Each member of the workspace keeps a `constitution.yaml` in its own folder, with every key of the root's but `check`, its own `name` among them:
 
 ```yaml
+name: '@acme/admin'
 axes:
   - architecture
 domains:

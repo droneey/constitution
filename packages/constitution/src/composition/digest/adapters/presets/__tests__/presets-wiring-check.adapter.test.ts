@@ -7,7 +7,7 @@ import { WiringCheckStatus } from '#/features/session';
 import { Axis, Layer } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
 import type { OpenedProject } from '#/kernel/entities';
-import { BlockListing, ProjectUnit, Resolution, WarningKind } from '#/kernel/entities';
+import { BlockListing, BlockModel, ProjectUnit, Resolution, WarningKind } from '#/kernel/entities';
 import { BlockId, coreBlockId, repositoryUnit } from '#/kernel/value-objects';
 
 import { createPresetsWiringCheck } from '../presets-wiring-check.adapter';
@@ -47,6 +47,11 @@ const project: OpenedProject = {
       repository: [],
       units: [],
     }),
+    model: BlockModel.create({
+      blocks: [],
+      roles: [],
+      rules: [],
+    }),
     musts: [],
     units: [
       ProjectUnit.create({
@@ -60,7 +65,9 @@ const project: OpenedProject = {
           BlockId.create('typescript'),
           BlockId.create('biome'),
         ]),
+        languages: new Set(),
         loweredRules: new Set(),
+        packs: [],
         path: repositoryUnit,
       }),
     ],

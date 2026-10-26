@@ -437,6 +437,10 @@ const ratified: ProjectLayout = {
   config: fromTemplate({
     fills: [
       [
+        '<name>',
+        'ratified-app',
+      ],
+      [
         'domains: []',
         'domains: [i18n, version-control]',
       ],

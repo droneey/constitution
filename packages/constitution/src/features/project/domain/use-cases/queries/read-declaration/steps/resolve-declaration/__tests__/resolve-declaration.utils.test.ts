@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import { Axis, Layer, Level } from '#/kernel/constants';
 import type { ProjectWarning } from '#/kernel/entities';
-import { WarningKind } from '#/kernel/entities';
+import { TermKind, WarningKind } from '#/kernel/entities';
 import {
   BlockId,
   BlockSource,
@@ -20,7 +20,7 @@ import { resolveDeclaration } from '../resolve-declaration.utils';
 import {
   activeOf,
   addedEntryOf,
-  catalogueEntryOf,
+  blockSetEntryOf,
   configOf,
   filesOn,
   listedOf,
@@ -28,6 +28,7 @@ import {
   listingOf,
   loweringOf,
   memberYamlOf,
+  modelOf,
   mustOf,
   ownEntryOf,
   parsedOf,
@@ -123,7 +124,7 @@ const vite: BlockFixture = {
     'ui',
   ],
 };
-const catalogue = sourceOf({
+const blockSet = sourceOf({
   blocks: [
     ui,
     BASE,
@@ -367,6 +368,20 @@ describe('resolveDeclaration', () => {
       ],
     },
     {
+      condition: 'one unit names its package and another leaves its name out',
+      members: {
+        'apps/api': memberYamlOf(),
+        'apps/web': memberYamlOf({
+          name: 'name: web',
+        }),
+      },
+      text: yamlOf({
+        name: "name: '@acme/workspace'",
+      }),
+      unread: [],
+      warnings: [],
+    },
+    {
       condition: "the repository still lists its packages' blocks",
       members: {},
       text: yamlOf({
@@ -477,7 +492,7 @@ describe('resolveDeclaration', () => {
         config,
         parser: parsers().cardParser,
         sources: [
-          catalogue,
+          blockSet,
         ],
         today,
       });
@@ -645,7 +660,7 @@ describe('resolveDeclaration', () => {
       config,
       parser: parsers().cardParser,
       sources: [
-        catalogue,
+        blockSet,
       ],
       today,
     });
@@ -918,7 +933,7 @@ describe('resolveDeclaration', () => {
         config,
         parser: parsers().cardParser,
         sources: [
-          catalogue,
+          blockSet,
         ],
         today,
       });
@@ -1105,7 +1120,7 @@ describe('resolveDeclaration', () => {
       config,
       parser: parsers().cardParser,
       sources: [
-        catalogue,
+        blockSet,
       ],
       today,
     });
@@ -1335,15 +1350,15 @@ describe('resolveDeclaration', () => {
         }),
       ],
       blocks: [
-        catalogueEntryOf('core', Layer.Core),
-        catalogueEntryOf('base', Layer.Domain),
-        catalogueEntryOf('cache', Layer.Domain),
-        catalogueEntryOf('store', Layer.Domain),
-        catalogueEntryOf('ui', Layer.Domain),
-        catalogueEntryOf('web', Layer.Platform),
-        catalogueEntryOf('redis', Layer.Implementation),
-        catalogueEntryOf('redux', Layer.Implementation),
-        catalogueEntryOf('zustand', Layer.Implementation),
+        blockSetEntryOf('core', Layer.Core),
+        blockSetEntryOf('base', Layer.Domain),
+        blockSetEntryOf('cache', Layer.Domain),
+        blockSetEntryOf('store', Layer.Domain),
+        blockSetEntryOf('ui', Layer.Domain),
+        blockSetEntryOf('web', Layer.Platform),
+        blockSetEntryOf('redis', Layer.Implementation),
+        blockSetEntryOf('redux', Layer.Implementation),
+        blockSetEntryOf('zustand', Layer.Implementation),
       ],
       check: 'bun run check',
       listing: listingOf({
@@ -1406,6 +1421,47 @@ describe('resolveDeclaration', () => {
             ],
             unit: 'apps/api',
           }),
+        ],
+      }),
+      model: modelOf({
+        blocks: [
+          {
+            id: 'core',
+            layer: Layer.Core,
+          },
+          {
+            id: 'base',
+          },
+          {
+            extends: 'gone',
+            id: 'cache',
+          },
+          {
+            extends: 'base',
+            id: 'store',
+          },
+          {
+            id: 'ui',
+          },
+          {
+            id: 'web',
+            layer: Layer.Platform,
+          },
+          {
+            extends: 'cache',
+            id: 'redis',
+            layer: Layer.Implementation,
+          },
+          {
+            extends: 'store',
+            id: 'redux',
+            layer: Layer.Implementation,
+          },
+          {
+            extends: 'store',
+            id: 'zustand',
+            layer: Layer.Implementation,
+          },
         ],
       }),
       musts: [],
@@ -1545,8 +1601,8 @@ describe('resolveDeclaration', () => {
         }),
       ],
       blocks: [
-        catalogueEntryOf('core', Layer.Core),
-        catalogueEntryOf('forms', Layer.Domain),
+        blockSetEntryOf('core', Layer.Core),
+        blockSetEntryOf('forms', Layer.Domain),
       ],
       listing: listingOf({
         overrides: [
@@ -1578,6 +1634,47 @@ describe('resolveDeclaration', () => {
           unitListingOf({
             unit: 'apps/api',
           }),
+        ],
+      }),
+      model: modelOf({
+        blocks: [
+          {
+            id: 'core',
+            layer: Layer.Core,
+          },
+          {
+            id: 'forms',
+          },
+        ],
+        rules: [
+          {
+            block: 'core',
+            slug: 'names-say-what',
+          },
+          {
+            block: 'forms',
+            slug: 'inputs-are-labelled',
+          },
+          {
+            block: 'forms',
+            slug: 'labels-are-visible',
+          },
+          {
+            block: 'forms',
+            slug: 'labels-are-above',
+          },
+          {
+            block: 'forms',
+            slug: 'labels-are-translated',
+          },
+          {
+            block: 'forms',
+            slug: 'loops-back',
+          },
+          {
+            block: 'forms',
+            slug: 'loops-ahead',
+          },
         ],
       }),
       musts: [
@@ -2288,6 +2385,7 @@ describe('resolveDeclaration', () => {
           }),
         ],
       }),
+      model: modelOf(),
       musts: [],
       units: [
         unitOf({
@@ -2341,5 +2439,153 @@ describe('resolveDeclaration', () => {
 
     // Assert
     expect(resolution.check).toBe(expected);
+  });
+
+  it('should give each unit its name, its packs and its languages, and the model of every block at every level, when units name themselves and list packs', () => {
+    // Arrange
+    const config = configOf(
+      {
+        implementations: 'implementations: [kit]',
+        languages: 'languages: [typescript]',
+        name: "name: '@acme/workspace'",
+        packs: 'packs: [rules]',
+      },
+      {
+        'apps/web': {
+          domains: 'domains: [ui]',
+          packs: 'packs: [../../rules, own]',
+        },
+      },
+    );
+
+    // Act
+    const resolution = resolveDeclaration({
+      config,
+      parser: parsers().cardParser,
+      sources: [
+        sourceOf({
+          blocks: [
+            {
+              body: 'Screens sit in **`screens/`**.',
+              files: {
+                'architecture/with/kit.md': ruleOf({
+                  level: 'MAY',
+                  slug: 'screens-use-the-kit',
+                }),
+              },
+              id: 'ui',
+            },
+            TYPESCRIPT,
+            {
+              abstract: true,
+              folder: Folder.Implementation,
+              id: '_runtime',
+            },
+            {
+              body: ruleOf({
+                level: 'SHOULD',
+                slug: 'kit-pinned',
+              }),
+              extends: '_runtime',
+              folder: Folder.Implementation,
+              id: 'kit',
+              languages: [
+                'typescript',
+              ],
+              requires: [
+                'typescript',
+              ],
+            },
+          ],
+        }),
+      ],
+      today,
+    });
+
+    // Assert
+    expect({
+      model: resolution.model,
+      units: resolution.units,
+    }).toStrictEqual({
+      model: modelOf({
+        blocks: [
+          {
+            id: 'core',
+            layer: Layer.Core,
+          },
+          {
+            id: 'ui',
+          },
+          {
+            id: 'typescript',
+            layer: Layer.Language,
+          },
+          {
+            id: '_runtime',
+            layer: Layer.Implementation,
+          },
+          {
+            extends: '_runtime',
+            id: 'kit',
+            languages: [
+              'typescript',
+            ],
+            layer: Layer.Implementation,
+            requires: [
+              'typescript',
+            ],
+          },
+        ],
+        roles: [
+          {
+            block: BlockId.create('ui'),
+            kind: TermKind.Folder,
+            term: 'screens/',
+          },
+        ],
+        rules: [
+          {
+            axis: Axis.Architecture,
+            block: 'ui',
+            level: Level.May,
+            seam: 'kit',
+            slug: 'screens-use-the-kit',
+          },
+          {
+            block: 'kit',
+            level: Level.Should,
+            slug: 'kit-pinned',
+          },
+        ],
+      }),
+      units: [
+        unitOf({
+          blocks: [
+            'core',
+            'typescript',
+            'kit',
+            '_runtime',
+          ],
+          languages: [
+            'typescript',
+          ],
+          name: '@acme/workspace',
+          packs: [
+            'rules',
+          ],
+        }),
+        unitOf({
+          blocks: [
+            'core',
+            'ui',
+          ],
+          packs: [
+            'rules',
+            'apps/web/own',
+          ],
+          path: 'apps/web',
+        }),
+      ],
+    });
   });
 });

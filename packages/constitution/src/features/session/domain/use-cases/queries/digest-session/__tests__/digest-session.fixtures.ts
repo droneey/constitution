@@ -3,7 +3,13 @@ import type { FakeProject } from '#/__tests__/project-source.fake';
 import { createFakeProjectSource } from '#/__tests__/project-source.fake';
 import { Layer } from '#/kernel/constants';
 import type { OpenedProject, ProjectWarning } from '#/kernel/entities';
-import { BlockListing, ConfigReadStatus, ProjectUnit, Resolution } from '#/kernel/entities';
+import {
+  BlockListing,
+  BlockModel,
+  ConfigReadStatus,
+  ProjectUnit,
+  Resolution,
+} from '#/kernel/entities';
 import { coreBlockId, repositoryUnit } from '#/kernel/value-objects';
 
 import type { WiringCheck } from '../../../../contracts';
@@ -25,6 +31,11 @@ const quiet = Resolution.create({
     repository: [],
     units: [],
   }),
+  model: BlockModel.create({
+    blocks: [],
+    roles: [],
+    rules: [],
+  }),
   musts: [],
   units: [
     ProjectUnit.create({
@@ -32,7 +43,9 @@ const quiet = Resolution.create({
       blocks: new Set([
         coreBlockId,
       ]),
+      languages: new Set(),
       loweredRules: new Set(),
+      packs: [],
       path: repositoryUnit,
     }),
   ],

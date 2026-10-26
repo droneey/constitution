@@ -48,7 +48,7 @@ interface ListedOverride {
   readonly until?: Temporal.PlainDate;
 }
 
-/** The blocks a session's digest lists, each list in the catalogue's order; the overrides print before them. */
+/** The blocks a session's digest lists, each list in the block set's order; the overrides print before them. */
 interface BlockListing {
   readonly overrides: readonly ListedOverride[];
   readonly repository: readonly ListedBlock[];
