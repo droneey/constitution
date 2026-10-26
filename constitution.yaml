@@ -1,3 +1,4 @@
+name: '@droneey/constitution-workspace'
 axes:
   - architecture
   - workflow

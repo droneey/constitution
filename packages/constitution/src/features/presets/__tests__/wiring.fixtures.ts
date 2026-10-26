@@ -6,6 +6,7 @@ import { Axis, Layer } from '#/kernel/constants';
 import type { ProjectWarning, WarningDetails } from '#/kernel/entities';
 import {
   BlockListing,
+  BlockModel,
   ConfigReadStatus,
   ProjectUnit,
   Resolution,
@@ -234,7 +235,9 @@ const unitOf = (input: { blocks: readonly BlockOf[]; unit: UnitFixture }): Proje
     blocks: new Set(
       (input.unit.blocks ?? input.blocks.map((block) => block.id)).map(BlockId.create),
     ),
+    languages: new Set(),
     loweredRules: new Set((input.unit.lowered ?? []).map(RuleSlug.create)),
+    packs: [],
     path: UnitPath.create(input.unit.path ?? ''),
   });
 
@@ -253,6 +256,11 @@ const resolutionOf = (input: {
       overrides: [],
       repository: [],
       units: [],
+    }),
+    model: BlockModel.create({
+      blocks: [],
+      roles: [],
+      rules: [],
     }),
     musts: [],
     units: input.units.map((unit) =>

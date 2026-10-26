@@ -4,14 +4,14 @@ import { BlockListing, UnitEntryKind } from '#/kernel/entities';
 
 import type {
   AppliedOverrides,
-  CatalogueBlock,
+  BlockSetBlock,
   ProjectModel,
   ResolvedUnits,
 } from '../../../../../../../entities';
 import { ResolvedUnit } from '../../../../../../../entities';
 
 interface ListInput {
-  readonly block: CatalogueBlock;
+  readonly block: BlockSetBlock;
   readonly repository: ResolvedUnit;
   readonly unit: ResolvedUnit;
 }

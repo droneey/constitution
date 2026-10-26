@@ -1,16 +1,16 @@
 import { MARKDOWN_EXTENSION } from '#/kernel/constants';
 import type { ProjectWarning } from '#/kernel/entities';
-import { StatedRule, WarningKind } from '#/kernel/entities';
+import { BlockModel, StatedRule, WarningKind } from '#/kernel/entities';
 import type { RuleSlug } from '#/kernel/value-objects';
 import { BlockId, Glob } from '#/kernel/value-objects';
 
 import type { BlockCardParser } from '../../../../../../../contracts';
-import type { Catalogue, CatalogueSource } from '../../../../../../../entities';
-import { CatalogueBlock, CatalogueRule } from '../../../../../../../entities';
+import type { BlockSet, BlockSetSource } from '../../../../../../../entities';
+import { BlockSetBlock, BlockSetRule } from '../../../../../../../entities';
 import type { WarningLog } from '../../shared/warning-log';
-import type { BlockDraft, ReadState } from './catalogue.utils';
-import { readFile } from './catalogue.utils';
-import { inCatalogueOrder } from './catalogue-order.utils';
+import type { BlockDraft, ReadState } from './block-set.utils';
+import { readFile } from './block-set.utils';
+import { inBlockSetOrder } from './block-set-order.utils';
 
 const draftNamed = (input: {
   drafts: ReadonlyMap<BlockId, BlockDraft>;
@@ -163,10 +163,10 @@ const checkTightened = (input: {
   }
 };
 
-const blockOf = (draft: BlockDraft): CatalogueBlock => {
+const blockOf = (draft: BlockDraft): BlockSetBlock => {
   const base = draft.card.extends;
 
-  return CatalogueBlock.create({
+  return BlockSetBlock.create({
     chapters: draft.chapters,
     ...(BlockId.is(base)
       ? {
@@ -176,6 +176,7 @@ const blockOf = (draft: BlockDraft): CatalogueBlock => {
     governs: draft.card.governs.filter(Glob.is),
     id: draft.id,
     isAbstract: draft.card.isAbstract,
+    languages: draft.card.languages.filter(BlockId.is),
     layer: draft.layer,
     requires: draft.card.requires.filter(BlockId.is),
     seams: draft.seams,
@@ -189,17 +190,17 @@ const blockOf = (draft: BlockDraft): CatalogueBlock => {
   });
 };
 
-interface ReadCatalogueInput {
+interface ReadBlockSetInput {
   readonly log: WarningLog;
   readonly parser: BlockCardParser;
-  readonly sources: readonly CatalogueSource[];
+  readonly sources: readonly BlockSetSource[];
 }
 
 // Reads the blocks of the Constitution, then of each pack in the order constitution.yaml lists
 // them; a block read first keeps its id, and a rule read first its slug.
-const readCatalogue = (
-  input: ReadCatalogueInput,
-): Catalogue & {
+const readBlockSet = (
+  input: ReadBlockSetInput,
+): BlockSet & {
   readonly ancestors: ReadonlyMap<BlockId, readonly BlockId[]>;
 } => {
   const state: ReadState = {
@@ -211,6 +212,7 @@ const readCatalogue = (
     // Stryker disable next-line ArrayDeclaration: an entry with no id matches no block
     skipped: [],
     slugs: new Set(),
+    texts: [],
   };
 
   for (const source of input.sources) {
@@ -225,7 +227,7 @@ const readCatalogue = (
       continue;
     }
 
-    for (const file of inCatalogueOrder(
+    for (const file of inBlockSetOrder(
       source.files.filter((listed) => listed.path.endsWith(MARKDOWN_EXTENSION)),
     )) {
       readFile({
@@ -255,8 +257,9 @@ const readCatalogue = (
     blocks: [
       ...state.drafts.values(),
     ].map(blockOf),
-    rules: StatedRule.inheritLevels(state.rules).map((rule) => CatalogueRule.create(rule)),
+    roles: BlockModel.rolesIn(state.texts),
+    rules: StatedRule.inheritLevels(state.rules).map((rule) => BlockSetRule.create(rule)),
   };
 };
 
-export { readCatalogue };
+export { readBlockSet };

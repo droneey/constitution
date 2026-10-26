@@ -1,30 +1,31 @@
+import { Layer } from '#/kernel/constants';
 import { BlockId, RuleSlug } from '#/kernel/value-objects';
 
-import type { Catalogue, CatalogueBlock, CatalogueRule } from './catalogue.entity';
+import type { BlockSet, BlockSetBlock, BlockSetRule } from './block-set.entity';
 
-// The catalogue as the resolution looks it up, with each block's bases, nearest first.
+// The block set as the resolution looks it up, with each block's bases, nearest first.
 interface ProjectModel {
   readonly ancestors: ReadonlyMap<BlockId, readonly BlockId[]>;
-  readonly blocks: readonly CatalogueBlock[];
-  readonly byId: ReadonlyMap<BlockId, CatalogueBlock>;
-  readonly rules: ReadonlyMap<RuleSlug, CatalogueRule>;
+  readonly blocks: readonly BlockSetBlock[];
+  readonly byId: ReadonlyMap<BlockId, BlockSetBlock>;
+  readonly rules: ReadonlyMap<RuleSlug, BlockSetRule>;
 }
 
 const create = (
-  catalogue: Catalogue & {
+  blockSet: BlockSet & {
     ancestors: ReadonlyMap<BlockId, readonly BlockId[]>;
   },
 ): ProjectModel => ({
-  ancestors: catalogue.ancestors,
-  blocks: catalogue.blocks,
+  ancestors: blockSet.ancestors,
+  blocks: blockSet.blocks,
   byId: new Map(
-    catalogue.blocks.map((block) => [
+    blockSet.blocks.map((block) => [
       block.id,
       block,
     ]),
   ),
   rules: new Map(
-    catalogue.rules.map((rule) => [
+    blockSet.rules.map((rule) => [
       rule.slug,
       rule,
     ]),
@@ -34,7 +35,7 @@ const create = (
 const basesOf = (model: ProjectModel, id: BlockId): readonly BlockId[] =>
   model.ancestors.get(id) ?? [];
 
-const extendsBlock = (block: CatalogueBlock, id: BlockId): boolean =>
+const extendsBlock = (block: BlockSetBlock, id: BlockId): boolean =>
   // Stryker disable next-line ConditionalExpression,LogicalOperator: the test only narrows the type; an absent base equals none
   block.extends !== undefined && BlockId.equals(block.extends, id);
 
@@ -54,10 +55,18 @@ const inheritorsOf = (model: ProjectModel, slug: RuleSlug): readonly RuleSlug[] 
     )
     .map((rule) => rule.slug);
 
-const blockNamed = (model: ProjectModel, name: string): CatalogueBlock | undefined =>
+/** The language blocks among a unit's blocks, in the order they were read. */
+const languagesOf = (model: ProjectModel, blocks: ReadonlySet<BlockId>): ReadonlySet<BlockId> =>
+  new Set(
+    model.blocks
+      .filter((block) => block.layer === Layer.Language && blocks.has(block.id))
+      .map((block) => block.id),
+  );
+
+const blockNamed = (model: ProjectModel, name: string): BlockSetBlock | undefined =>
   BlockId.is(name) ? model.byId.get(name) : undefined;
 
-const ruleNamed = (model: ProjectModel, slug: string): CatalogueRule | undefined =>
+const ruleNamed = (model: ProjectModel, slug: string): BlockSetRule | undefined =>
   RuleSlug.is(slug) ? model.rules.get(slug) : undefined;
 
 const ProjectModel = {
@@ -66,6 +75,7 @@ const ProjectModel = {
   create,
   heirsOf,
   inheritorsOf,
+  languagesOf,
   ruleNamed,
 } as const;
 

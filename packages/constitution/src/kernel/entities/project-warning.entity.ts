@@ -82,7 +82,7 @@ interface OverrideNamed {
   readonly rule: string;
 }
 
-/** The block set a catalogue's warning is in: the Constitution's release or one of the packs. */
+/** The block set whose own files a warning is about: the Constitution's release or a pack. */
 interface SourceNamed {
   readonly source: SourceKind;
 }
@@ -230,7 +230,7 @@ type ProjectWarning<TKind extends WarningKind = WarningKind> = {
 }[TKind];
 
 // The kinds a block set's own files give, whose code is the set's.
-type CatalogueKind =
+type BlockSetKind =
   | WarningKind.FileUnreadable
   | WarningKind.RuleRepeated
   | WarningKind.FrontMatterMissing
@@ -244,7 +244,7 @@ type CatalogueKind =
   | WarningKind.TightensUnknownRule;
 
 const codeOfKind: {
-  readonly [TKind in Exclude<WarningKind, CatalogueKind>]: WarningCode;
+  readonly [TKind in Exclude<WarningKind, BlockSetKind>]: WarningCode;
 } = {
   [WarningKind.KeyMissing]: WarningCode.Config,
   [WarningKind.KeyUnknown]: WarningCode.Config,
@@ -285,12 +285,12 @@ const codeOfSource: {
   [SourceKind.Pack]: WarningCode.Packs,
 };
 
-const isOfCatalogue = (warning: ProjectWarning): warning is ProjectWarning<CatalogueKind> =>
+const isOfBlockSet = (warning: ProjectWarning): warning is ProjectWarning<BlockSetKind> =>
   !Object.hasOwn(codeOfKind, warning.kind);
 
 /** The code of a warning, the subject a reader fixes and scripts against. */
 const codeOf = (warning: ProjectWarning): WarningCode =>
-  isOfCatalogue(warning) ? codeOfSource[warning.details.source] : codeOfKind[warning.kind];
+  isOfBlockSet(warning) ? codeOfSource[warning.details.source] : codeOfKind[warning.kind];
 
 const ProjectWarning = {
   codeOf,

@@ -8,16 +8,12 @@ import {
 import { ActiveBlock, MustRule } from '#/kernel/entities';
 import { BlockId, coreBlockId, SourceKind } from '#/kernel/value-objects';
 
-import type {
-  AppliedOverrides,
-  CatalogueBlock,
-  CatalogueRule,
-} from '../../../../../../../entities';
+import type { AppliedOverrides, BlockSetBlock, BlockSetRule } from '../../../../../../../entities';
 import { ProjectModel, ResolvedUnit } from '../../../../../../../entities';
 
 interface MustRulesInput {
   readonly applied: AppliedOverrides;
-  readonly rules: readonly CatalogueRule[];
+  readonly rules: readonly BlockSetRule[];
   readonly units: readonly ResolvedUnit[];
 }
 
@@ -42,7 +38,7 @@ const mustRulesOf = (input: MustRulesInput): readonly MustRule[] =>
 // What a block needs in a unit: what it requires, its bases, and the blocks its seams name on the
 // axes the unit follows.
 const neededOf = (input: {
-  block: CatalogueBlock;
+  block: BlockSetBlock;
   model: ProjectModel;
   unit: ResolvedUnit;
 }): readonly BlockId[] => [
@@ -56,8 +52,8 @@ const neededOf = (input: {
 // The block and every active block it needs, directly or through others; active holds the unit's
 // active blocks, core aside.
 const reachedFrom = (input: {
-  active: ReadonlyMap<BlockId, CatalogueBlock>;
-  from: CatalogueBlock;
+  active: ReadonlyMap<BlockId, BlockSetBlock>;
+  from: BlockSetBlock;
   model: ProjectModel;
   unit: ResolvedUnit;
 }): ReadonlySet<BlockId> => {
@@ -85,7 +81,7 @@ const reachedFrom = (input: {
 
 // The files of a block a unit reads: its passport, its chapters on the axes the unit follows, and
 // its seams with the blocks active there; a pack's from the pack's folder.
-const filesOf = (input: { block: CatalogueBlock; unit: ResolvedUnit }): readonly string[] => {
+const filesOf = (input: { block: BlockSetBlock; unit: ResolvedUnit }): readonly string[] => {
   const { block, unit } = input;
   const source = block.source.kind === SourceKind.Pack ? `${block.source.pack}/` : '';
   const folder = `${source}${BLOCKS_FOLDER}/${LAYER_FOLDER[block.layer]}/${block.id}/`;

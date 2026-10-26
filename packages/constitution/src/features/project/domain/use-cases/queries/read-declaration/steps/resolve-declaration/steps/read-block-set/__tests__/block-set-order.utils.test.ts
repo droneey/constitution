@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'bun:test';
 
-import { inCatalogueOrder } from '../catalogue-order.utils';
+import { inBlockSetOrder } from '../block-set-order.utils';
 
-describe('inCatalogueOrder', () => {
+describe('inBlockSetOrder', () => {
   it('should order by layer, id, folder, then passport, chapters, seams and other files by axis and path, and files in no block last, when the files are shuffled', () => {
     // Arrange
     const files = [
@@ -36,7 +36,7 @@ describe('inCatalogueOrder', () => {
     }));
 
     // Act
-    const ordered = inCatalogueOrder(files);
+    const ordered = inBlockSetOrder(files);
 
     // Assert
     expect(ordered).toStrictEqual(

@@ -1,6 +1,5 @@
-import { withoutCodeFences } from '#/kernel/utils';
+import { withoutCodeFences, withoutInlineCode } from '#/kernel/utils';
 
-import { withoutInlineCode } from './inline-code.utils';
 import { localLinkTargets } from './links.utils';
 
 const ROOT = '/';

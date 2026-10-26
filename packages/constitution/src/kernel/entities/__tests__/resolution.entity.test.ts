@@ -3,6 +3,7 @@ import { describe, expect, it } from 'bun:test';
 import { Layer } from '../../constants';
 import { BlockId, coreBlockId, repositoryUnit, UnitPath } from '../../value-objects';
 import { BlockListing } from '../block-listing.entity';
+import { BlockModel } from '../block-model.entity';
 import { ProjectUnit } from '../project-unit.entity';
 import { Resolution } from '../resolution.entity';
 
@@ -14,7 +15,9 @@ const unitOf = (input: { blocks: readonly BlockId[]; path: UnitPath }): ProjectU
   ProjectUnit.create({
     axes: [],
     blocks: new Set(input.blocks),
+    languages: new Set(),
     loweredRules: new Set(),
+    packs: [],
     path: input.path,
   });
 
@@ -42,6 +45,11 @@ describe('Resolution.activeCountOf', () => {
         overrides: [],
         repository: [],
         units: [],
+      }),
+      model: BlockModel.create({
+        blocks: [],
+        roles: [],
+        rules: [],
       }),
       musts: [],
       units: [

@@ -1,4 +1,5 @@
 import { Axis, Layer } from '#/kernel/constants';
+import type { BlockText } from '#/kernel/entities';
 import { RequirementAnswer, StatedRule, WarningKind } from '#/kernel/entities';
 import { splitFrontMatter, withoutCodeFences } from '#/kernel/utils';
 import type { FileInBlock, RuleSlug } from '#/kernel/value-objects';
@@ -14,12 +15,12 @@ import {
 import type { BlockCard, BlockCardParser } from '../../../../../../../contracts';
 import { EMPTY_CARD } from '../../../../../../../contracts';
 import type {
-  CatalogueSource,
+  BlockSetSource,
   ChapterPlace,
   SeamPlace,
   SourceFile,
 } from '../../../../../../../entities';
-import { CatalogueAnswer } from '../../../../../../../entities';
+import { BlockSetAnswer } from '../../../../../../../entities';
 import type { WarningLog } from '../../shared/warning-log';
 
 interface BlockDraft {
@@ -38,22 +39,23 @@ interface SkippedBlock {
 }
 
 interface ReadState {
-  readonly answers: CatalogueAnswer[];
+  readonly answers: BlockSetAnswer[];
   readonly drafts: Map<BlockId, BlockDraft>;
   readonly log: WarningLog;
   readonly parser: BlockCardParser;
   readonly rules: StatedRule[];
   readonly skipped: SkippedBlock[];
   readonly slugs: Set<RuleSlug>;
+  readonly texts: BlockText[];
 }
 
 interface FileInput {
-  readonly source: CatalogueSource;
+  readonly source: BlockSetSource;
   readonly sourceFile: SourceFile;
   readonly state: ReadState;
 }
 
-const whereOf = (input: { path: string; source: CatalogueSource }): string =>
+const whereOf = (input: { path: string; source: BlockSetSource }): string =>
   `${input.source.where}/${input.path}`;
 
 // The text a rule or a requirement is read from: no front matter, no code sample.
@@ -115,11 +117,15 @@ const readRules = (
     }
   }
 
+  state.texts.push({
+    block: input.draft.id,
+    body: read.text,
+  });
   state.answers.push(
     ...RequirementAnswer.parse(read).answers.map((answer) => {
       const met = RequirementAnswer.metOf(answer);
 
-      return CatalogueAnswer.create({
+      return BlockSetAnswer.create({
         block: answer.block,
         // Stryker disable next-line ConditionalExpression: create leaves an absent met out
         ...(met === undefined

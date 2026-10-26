@@ -46,6 +46,7 @@ const card = (yaml: string): BlockCard => {
         }),
     governs: listOf(parsed['governs']),
     isAbstract: parsed['abstract'] === true || parsed['abstract'] === 'true',
+    languages: listOf(parsed['languages']),
     requires: listOf(parsed['requires']),
     ...(summary === ''
       ? {}

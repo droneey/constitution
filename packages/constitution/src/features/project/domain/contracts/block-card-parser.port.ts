@@ -6,6 +6,7 @@ interface BlockCard {
   readonly extends?: string;
   readonly governs: readonly string[];
   readonly isAbstract: boolean;
+  readonly languages: readonly string[];
   readonly requires: readonly string[];
   readonly summary?: string;
 }
@@ -14,6 +15,7 @@ interface BlockCard {
 const EMPTY_CARD = {
   governs: [],
   isAbstract: false,
+  languages: [],
   requires: [],
 } as const satisfies BlockCard;
 

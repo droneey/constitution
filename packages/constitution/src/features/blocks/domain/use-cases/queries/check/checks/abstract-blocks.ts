@@ -1,9 +1,9 @@
 import type { FindingOf } from '#/kernel/types';
+import { containsId } from '#/kernel/utils';
 import { BlockId } from '#/kernel/value-objects';
 
 import { Block, BlockFile, BlockFileRole } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
-import { containsId } from '../shared/tokens';
 
 enum AbstractBlocksCode {
   WithoutHeir = 'abstract-block-without-heir',

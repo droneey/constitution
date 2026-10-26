@@ -29,6 +29,7 @@ interface BlockFixture {
   readonly folder?: Folder;
   readonly governs?: readonly string[];
   readonly id: string;
+  readonly languages?: readonly string[];
   readonly requires?: readonly string[];
   readonly summary?: string;
 }
@@ -44,7 +45,7 @@ const passportOf = (block: BlockFixture): string =>
     `requires: ${listOf(block.requires)}`,
     `extends: ${block.extends ?? 'null'}`,
     `abstract: ${String(block.abstract ?? false)}`,
-    'languages: []',
+    `languages: ${listOf(block.languages)}`,
     `governs: ${listOf(block.governs)}`,
     '---',
     '',

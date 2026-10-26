@@ -1,12 +1,12 @@
 import { Rule } from '#/kernel/entities';
 import type { FindingOf } from '#/kernel/types';
-import { directoryOf, withoutCodeFences } from '#/kernel/utils';
+import { directoryOf, inlineCodeSpans, withoutCodeFences } from '#/kernel/utils';
 import { BlockId, RuleSlug } from '#/kernel/value-objects';
 
 import type { BlockFile } from '../../../../entities';
 import { Block } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
-import { inlineCodeSpans, linkTargetsOf, resolveLink } from '../shared/markdown';
+import { linkTargetsOf, resolveLink } from '../shared/markdown';
 
 enum ReferencesCode {
   LinkIntoOtherBlock = 'link-into-other-block',

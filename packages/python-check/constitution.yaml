@@ -1,3 +1,4 @@
+name: droneey-python-check
 axes:
   - architecture
   - workflow

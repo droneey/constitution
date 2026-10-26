@@ -1,12 +1,6 @@
 export { AppliedOverrides } from './applied-overrides.entity';
-export type {
-  Catalogue,
-  CatalogueSource,
-  ChapterPlace,
-  SeamPlace,
-  SourceFile,
-} from './catalogue.entity';
-export { CatalogueAnswer, CatalogueBlock, CatalogueRule } from './catalogue.entity';
+export type { BlockSetSource, ChapterPlace, SeamPlace, SourceFile } from './block-set.entity';
+export { BlockSet, BlockSetAnswer, BlockSetBlock, BlockSetRule } from './block-set.entity';
 export type { ConfigItem, ConfigRead, UnreadMember } from './project-config.entity';
 export {
   ConfigKey,

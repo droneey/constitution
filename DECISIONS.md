@@ -10,7 +10,7 @@
 |---|---|
 | Scope | ADR-0001 |
 | Blocks and layers | ADR-0002 – ADR-0005, ADR-0007 |
-| Project files | ADR-0009, ADR-0010, ADR-0102, ADR-0208 |
+| Project files | ADR-0009, ADR-0010, ADR-0102, ADR-0208, ADR-0231 |
 | Rules and roles | ADR-0013 – ADR-0016, ADR-0144, ADR-0219, ADR-0226 |
 | Overrides and precedence | ADR-0020 |
 | Delivery | ADR-0026 |
@@ -1767,6 +1767,7 @@
   - `version` in `constitution.yaml` alone: mise installs and links the release, so it reads its pin from `mise.toml`.
   - `packs` as the one optional key: a reader of the file could not tell a project with no packs from one that forgot them.
 - **Why.** One pin, where the release is installed from, leaves nothing to drift; and a file whose every key is written reads the same in every project (owner).
+- **Superseded in part.** Every key a warning when it is missing, by ADR-0231: `name` is written in every file, and leaving it out is no warning.
 
 ## ADR-0209 — Placement lists core's chapters as links, in the order they are read
 
@@ -2092,3 +2093,16 @@
   - Each tool's rule tightening the core rule instead of `one-formatter-per-language`: what each keeps — its languages, its quotes, its order of keys — tightens which formatter a language has and how it writes, not the indent or the width, and a rule has one parent.
   - `max_line_length = 100` under `# core` in `.editorconfig`: Biome's own `lineWidth` wins over it, Ruff and tombi read no `.editorconfig`, rumdl's `MD013` that would read it is off, and an editor that wraps by it would break the Markdown lines no formatter breaks.
 - **Why.** A choice every formatter shares is one rule of the layer that owns formatters, written once, and each tool states only what is its own.
+
+## ADR-0231 — A unit names its package in `constitution.yaml`
+
+**Date:** 2026-10-26 · **Status:** Accepted
+
+- **Decision.**
+  - `constitution.yaml` takes `name`, the name of the unit's package as its manifest gives it — `name` of its `package.json`, or `name` under `[project]` of its `pyproject.toml` — read verbatim, so a name that opens with `@` is quoted, for the presets to write where a tool's configuration names its package.
+  - `/constitution:ratify` writes it in every file, the root's and each member's, from the template's `name: <name>`. A file that leaves it out, or writes it empty or `null`, names no package and is no warning; only an entry that needs the name reports a unit without one.
+- **Rejected.**
+  - Reading the name from the unit's manifest: the program would then read `package.json`, `pyproject.toml` and the manifest of every language a block brings, a folder holding two packages would have two names, and what a configuration is given would sit in a file `constitution.yaml` does not show.
+  - The folder's name when `name` is missing: a configuration would carry a name no manifest gives, and nothing would tell the owner.
+  - `name` required as every other key is, a warning when it is missing: every project ratified before would warn of a key no setting it takes needs.
+- **Why.** The unit's name is declared where the unit is, read as written, and asked for only where a setting needs it (owner).

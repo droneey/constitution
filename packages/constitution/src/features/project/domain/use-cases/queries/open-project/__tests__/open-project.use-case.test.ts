@@ -17,11 +17,12 @@ import {
 import { createFakeWorkspace } from '../../../../../__tests__/workspace.fake';
 import {
   activeOf,
-  catalogueEntryOf,
+  blockSetEntryOf,
   failureOf,
   listedOf,
   listingOf,
   memberYamlOf,
+  modelOf,
   mustOf,
   today,
   unitListingOf,
@@ -98,8 +99,8 @@ describe('openProject', () => {
           }),
         ],
         blocks: [
-          catalogueEntryOf('core', Layer.Core),
-          catalogueEntryOf('ui', Layer.Domain),
+          blockSetEntryOf('core', Layer.Core),
+          blockSetEntryOf('ui', Layer.Domain),
         ],
         check: 'bun run check',
         listing: listingOf({
@@ -113,6 +114,23 @@ describe('openProject', () => {
             unitListingOf({
               unit: 'apps/web',
             }),
+          ],
+        }),
+        model: modelOf({
+          blocks: [
+            {
+              id: 'core',
+              layer: Layer.Core,
+            },
+            {
+              id: 'ui',
+            },
+          ],
+          rules: [
+            {
+              block: 'ui',
+              slug: 'inputs-are-labelled',
+            },
           ],
         }),
         musts: [

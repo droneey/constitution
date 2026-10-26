@@ -1,15 +1,13 @@
 import { Axis, Layer } from '#/kernel/constants';
-import type { Term, TermKind } from '#/kernel/entities';
+import type { TermKind } from '#/kernel/entities';
+import { Term } from '#/kernel/entities';
 import type { FindingOf } from '#/kernel/types';
-import { isHeading, withoutCodeFences } from '#/kernel/utils';
+import { collapseWhitespace, inlineCodeSpans, isHeading, withoutCodeFences } from '#/kernel/utils';
 import type { BlockId } from '#/kernel/value-objects';
 
 import type { BlockFile } from '../../../../entities';
 import { Block, BlockFileRole, BlockGraph } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
-import { inlineCodeSpans } from '../shared/markdown';
-import { otherSpellingOf, termMatcher, termsIn } from '../shared/terms';
-import { collapseWhitespace } from '../shared/tokens';
 
 enum TermsCode {
   Misshapen = 'term-misshapen',
@@ -86,7 +84,7 @@ const glossaryOf = (files: readonly Placed[]): Glossary => {
   const findings: TermsFinding[] = [];
 
   for (const { block, file } of files) {
-    const read = termsIn(file.body);
+    const read = Term.allIn(file.body);
 
     findings.push(
       ...read.misshapen.map(
@@ -130,7 +128,7 @@ const glossaryOf = (files: readonly Placed[]): Glossary => {
       ...first.values(),
     ].map((definition) => ({
       ...definition,
-      matches: termMatcher(definition),
+      matches: Term.matcherOf(definition),
     })),
     findings,
   };
@@ -226,7 +224,7 @@ const spellingFindings = (input: {
     const spans = new Set(inlineCodeSpans(withoutCodeFences(placed.file.body)));
 
     return input.defined.flatMap((term) => {
-      const other = otherSpellingOf(term);
+      const other = Term.otherSpellingOf(term);
 
       // Stryker disable next-line ConditionalExpression: no span is undefined, so the check only narrows its type
       return other !== undefined && spans.has(other) && isReached(term)

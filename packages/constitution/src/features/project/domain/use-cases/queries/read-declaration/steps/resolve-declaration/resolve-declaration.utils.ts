@@ -2,15 +2,15 @@ import type { ProjectWarning } from '#/kernel/entities';
 import { ProjectUnit, Resolution, WarningKind } from '#/kernel/entities';
 
 import type { BlockCardParser } from '../../../../../contracts';
-import type { CatalogueSource, ProjectConfig, UnreadMember } from '../../../../../entities';
-import { MemberProblem, ProjectModel } from '../../../../../entities';
+import type { BlockSetSource, ProjectConfig, UnreadMember } from '../../../../../entities';
+import { BlockSet, MemberProblem, ProjectModel } from '../../../../../entities';
 import type { WarningLog } from './shared/warning-log';
 import { createWarningLog } from './shared/warning-log';
 import { activeBlocksOf, mustRulesOf } from './steps/activate-blocks';
 import { applyOverrides } from './steps/apply-overrides';
 import { warnOfAnswers, warnOfRequires } from './steps/check-needs';
 import { listBlocks } from './steps/list-blocks';
-import { readCatalogue } from './steps/read-catalogue';
+import { readBlockSet } from './steps/read-block-set';
 import { resolveUnits, warnOfKeys } from './steps/resolve-units';
 
 const memberWarnings: {
@@ -51,7 +51,7 @@ const warnOfMembers = (input: { log: WarningLog; unread: readonly UnreadMember[]
 interface ResolveDeclarationInput {
   readonly config: ProjectConfig;
   readonly parser: BlockCardParser;
-  readonly sources: readonly CatalogueSource[];
+  readonly sources: readonly BlockSetSource[];
   readonly today: Temporal.PlainDate;
 }
 
@@ -59,7 +59,7 @@ interface ResolveDeclarationInput {
 // wrong with them, and what the digest and the later hooks give of them.
 const resolveDeclaration = (input: ResolveDeclarationInput): Resolution => {
   const log = createWarningLog();
-  const catalogue = readCatalogue({
+  const blockSet = readBlockSet({
     log,
     parser: input.parser,
     sources: input.sources,
@@ -70,7 +70,7 @@ const resolveDeclaration = (input: ResolveDeclarationInput): Resolution => {
     log,
   });
 
-  const model = ProjectModel.create(catalogue);
+  const model = ProjectModel.create(blockSet);
   const units = resolveUnits({
     config: input.config,
     log,
@@ -93,7 +93,7 @@ const resolveDeclaration = (input: ResolveDeclarationInput): Resolution => {
 
   for (const unit of units) {
     warnOfAnswers({
-      answers: catalogue.answers,
+      answers: blockSet.answers,
       applied,
       log,
       model,
@@ -113,7 +113,7 @@ const resolveDeclaration = (input: ResolveDeclarationInput): Resolution => {
       model,
       units,
     }),
-    blocks: catalogue.blocks.map((block) => ({
+    blocks: blockSet.blocks.map((block) => ({
       id: block.id,
       layer: block.layer,
     })),
@@ -123,9 +123,10 @@ const resolveDeclaration = (input: ResolveDeclarationInput): Resolution => {
       model,
       units,
     }),
+    model: BlockSet.modelOf(blockSet),
     musts: mustRulesOf({
       applied,
-      rules: catalogue.rules,
+      rules: blockSet.rules,
       units,
     }),
     units: units.map((unit) =>
@@ -134,7 +135,10 @@ const resolveDeclaration = (input: ResolveDeclarationInput): Resolution => {
           ...unit.axes,
         ],
         blocks: unit.blocks,
+        languages: ProjectModel.languagesOf(model, unit.blocks),
         loweredRules: applied.loweredIn.get(unit.path) ?? new Set(),
+        name: unit.name,
+        packs: unit.packs,
         path: unit.path,
       }),
     ),

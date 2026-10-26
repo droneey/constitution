@@ -35,7 +35,7 @@ interface Reader {
   readonly state: ReaderState;
 }
 
-// check: null, or YAML's other null, names no check.
+// check: null, or YAML's other null, names no check, and name: null no name.
 const yamlNulls: ReadonlySet<string> = new Set([
   'null',
   '~',
@@ -53,6 +53,15 @@ const openTopValue = (input: { key: string; rest: string; state: ReaderState }):
       state.empties.push(CHECK_KEY);
     } else if (!yamlNulls.has(check)) {
       state.check = check;
+    }
+  } else if (key === ConfigKey.Name) {
+    const name = scalarOf(rest);
+
+    state.level.kind = Kind.Scalar;
+
+    // an empty name names no package, as one left out does
+    if (name !== '' && !yamlNulls.has(name)) {
+      state.name = name;
     }
   } else if (listKeys.has(key)) {
     openList({
@@ -215,6 +224,11 @@ const parse = (text: string): ConfigRead => {
       items: state.items,
       keys: state.keys,
       lists: state.lists,
+      ...(state.name === undefined
+        ? {}
+        : {
+            name: state.name,
+          }),
       overrides: state.overrides,
     },
     status: ConfigReadStatus.Parsed,

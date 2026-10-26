@@ -3,11 +3,11 @@ import { describe, expect, it } from 'bun:test';
 import { Axis, Layer, Level } from '#/kernel/constants';
 import { BlockId, BlockSource, RuleSlug } from '#/kernel/value-objects';
 
-import { CatalogueBlock, CatalogueRule } from '../catalogue.entity';
+import { BlockSetBlock, BlockSetRule } from '../block-set.entity';
 import { ProjectModel } from '../project-model.entity';
 
-const blockOf = (input: { base?: string; id: string }): CatalogueBlock =>
-  CatalogueBlock.create({
+const blockOf = (input: { base?: string; id: string; layer?: Layer }): BlockSetBlock =>
+  BlockSetBlock.create({
     chapters: [],
     ...(input.base === undefined
       ? {}
@@ -17,19 +17,16 @@ const blockOf = (input: { base?: string; id: string }): CatalogueBlock =>
     governs: [],
     id: BlockId.create(input.id),
     isAbstract: false,
-    layer: Layer.Domain,
+    languages: [],
+    layer: input.layer ?? Layer.Domain,
     requires: [],
     seams: [],
     source: BlockSource.create(),
     summary: input.id,
   });
 
-const ruleOf = (input: {
-  isLevelStated: boolean;
-  slug: string;
-  tightens?: string;
-}): CatalogueRule =>
-  CatalogueRule.create({
+const ruleOf = (input: { isLevelStated: boolean; slug: string; tightens?: string }): BlockSetRule =>
+  BlockSetRule.create({
     axis: Axis.Foundation,
     block: BlockId.create('ui'),
     isLevelStated: input.isLevelStated,
@@ -43,13 +40,14 @@ const ruleOf = (input: {
   });
 
 const modelOf = (input: {
-  blocks?: readonly CatalogueBlock[];
-  rules?: readonly CatalogueRule[];
+  blocks?: readonly BlockSetBlock[];
+  rules?: readonly BlockSetRule[];
 }): ProjectModel =>
   ProjectModel.create({
     ancestors: new Map(),
     answers: [],
     blocks: input.blocks ?? [],
+    roles: [],
     rules: input.rules ?? [],
   });
 
@@ -124,6 +122,47 @@ describe('ProjectModel', () => {
     expect(inheritors).toStrictEqual([
       RuleSlug.create('labels-translated'),
       RuleSlug.create('labels-visible'),
+    ]);
+  });
+
+  it('should name the language blocks among the blocks of a unit in the order they were read when the unit holds other blocks and the block set other languages', () => {
+    // Arrange
+    const model = modelOf({
+      blocks: [
+        blockOf({
+          id: 'typescript',
+          layer: Layer.Language,
+        }),
+        blockOf({
+          id: 'ui',
+        }),
+        blockOf({
+          id: 'css',
+          layer: Layer.Language,
+        }),
+        blockOf({
+          id: 'python',
+          layer: Layer.Language,
+        }),
+      ],
+    });
+
+    // Act
+    const languages = ProjectModel.languagesOf(
+      model,
+      new Set([
+        BlockId.create('css'),
+        BlockId.create('ui'),
+        BlockId.create('typescript'),
+      ]),
+    );
+
+    // Assert
+    expect([
+      ...languages,
+    ]).toStrictEqual([
+      BlockId.create('typescript'),
+      BlockId.create('css'),
     ]);
   });
 });

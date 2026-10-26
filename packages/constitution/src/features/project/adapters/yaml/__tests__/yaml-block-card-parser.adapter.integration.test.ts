@@ -12,13 +12,17 @@ describe('createYamlBlockCardParser', () => {
           '**/web/**',
         ],
         isAbstract: true,
+        languages: [
+          'typescript',
+          'css',
+        ],
         requires: [
           'ui',
         ],
         summary: 'Screens.',
       },
       condition: 'every field is given in its own form',
-      yaml: 'summary: Screens.\nextends: web\nabstract: true\nrequires: [ui]\ngoverns: ["**/ui/**", "**/web/**"]',
+      yaml: 'summary: Screens.\nextends: web\nabstract: true\nrequires: [ui]\nlanguages: [typescript, css]\ngoverns: ["**/ui/**", "**/web/**"]',
     },
     {
       card: {
@@ -27,6 +31,9 @@ describe('createYamlBlockCardParser', () => {
           '**/api/**',
         ],
         isAbstract: true,
+        languages: [
+          'python',
+        ],
         requires: [
           '3',
           'true',
@@ -34,12 +41,13 @@ describe('createYamlBlockCardParser', () => {
         summary: '12',
       },
       condition: 'scalars stand for text and a single pattern for a list',
-      yaml: 'summary: 12\nextends: 7\nabstract: "true"\nrequires: [3, true, "", null, {a: b}, [c]]\ngoverns: "**/api/**"',
+      yaml: 'summary: 12\nextends: 7\nabstract: "true"\nrequires: [3, true, "", null, {a: b}, [c]]\nlanguages: python\ngoverns: "**/api/**"',
     },
     {
       card: {
         governs: [],
         isAbstract: false,
+        languages: [],
         requires: [],
       },
       condition: 'the fields are of another form or empty',
@@ -49,6 +57,7 @@ describe('createYamlBlockCardParser', () => {
       card: {
         governs: [],
         isAbstract: false,
+        languages: [],
         requires: [],
       },
       condition: 'the fields are left out',
@@ -58,6 +67,7 @@ describe('createYamlBlockCardParser', () => {
       card: {
         governs: [],
         isAbstract: false,
+        languages: [],
         requires: [],
       },
       condition: 'the front matter is no YAML',
@@ -67,6 +77,7 @@ describe('createYamlBlockCardParser', () => {
       card: {
         governs: [],
         isAbstract: false,
+        languages: [],
         requires: [],
       },
       condition: 'the front matter is a list',
@@ -76,6 +87,7 @@ describe('createYamlBlockCardParser', () => {
       card: {
         governs: [],
         isAbstract: false,
+        languages: [],
         requires: [],
       },
       condition: 'the front matter is null',
