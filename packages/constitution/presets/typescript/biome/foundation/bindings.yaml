@@ -176,7 +176,7 @@ react-native:
   style-colour-read-from-tokens:
     - noReactNativeLiteralColors
 tailwind:
-  component-reads-only-semantic-and-common-tokens:
+  class-names-only-semantic-colors:
     - noTailwindRawColors
   screen-sized-classes-never-used:
     - screen-sized-classes-never-used.grit

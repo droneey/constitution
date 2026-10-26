@@ -32,7 +32,7 @@ Every rule the parts turn on is an error: no part sets a rule to `warn` or `info
 
 ### project-grit-rules-scoped · SHOULD
 
-A project's own GritQL rule lives in `biome/<name>.grit`, a file ending in **`.grit`**, scoped by an override, until the Constitution's presets carry it.
+A project's own GritQL rule lives in `biome/<name>.grit`, a file ending in **`.grit`**{#grit-rule}, scoped by an override, until the Constitution's presets carry it.
 
 | Why |
 |---|

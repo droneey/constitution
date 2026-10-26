@@ -1,0 +1,3 @@
+# shfmt
+[*.{sh,bash}]
+switch_case_indent = true

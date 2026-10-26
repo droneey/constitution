@@ -22,7 +22,7 @@ Every service the providers build — the use cases, the cache client, analytics
 
 ### router-primitives-only-in-the-root → ui-never-touches-navigation · MUST
 
-The router's home is `root/` — its routes, the router's file and the navigation the root hands down; no screen, widget, component, adapter or code of `libs/` imports it.
+`@tanstack/react-router` is imported in `root/` alone — by its routes, the router's file and the navigation the root hands down — and never by an adapter or code of `libs/`.
 
 | Why |
 |---|

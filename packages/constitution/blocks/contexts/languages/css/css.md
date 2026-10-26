@@ -12,4 +12,4 @@ governs: ["**/*.css"]
 
 > The language of a program's stylesheets, whatever writes their classes: plain stylesheets, scoped ones or a utility library.
 
-A stylesheet is a **`.css`** file. Cascade layers, which **`@layer`** declares, and selectors decide which rule wins, custom properties, which **`@property`** registers, carry the values, and classes tie the styles to the markup.
+A stylesheet is a **`.css`**{#stylesheet} file. Cascade layers, which **`@layer`** declares, and selectors decide which rule wins, custom properties, which **`@property`** registers, carry the values, and classes tie the styles to the markup.

@@ -2,6 +2,8 @@
 
 > Governs a file or a folder: its kind, name, size and purpose; readmes.
 
+A package keeps its source in **`src/`**{#source}; a spec sits beside the code it proves in **`__tests__/`**{#colocated-specs}, or apart from the source in **`tests/`**{#package-suites}, and an end-to-end spec in **`e2e/`**{#end-to-end-suite} inside `tests/`.
+
 ## Kinds
 
 ### file-named-for-its-kind · MUST

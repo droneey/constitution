@@ -11,7 +11,7 @@
 | Scope | ADR-0001 |
 | Blocks and layers | ADR-0002 – ADR-0005, ADR-0007 |
 | Project files | ADR-0009, ADR-0010, ADR-0102, ADR-0208, ADR-0231 |
-| Rules and roles | ADR-0013 – ADR-0016, ADR-0144, ADR-0219, ADR-0226 |
+| Rules and roles | ADR-0013 – ADR-0016, ADR-0144, ADR-0219, ADR-0226, ADR-0232 |
 | Overrides and precedence | ADR-0020 |
 | Delivery | ADR-0026 |
 | The anatomy | ADR-0029, ADR-0032, ADR-0033, ADR-0035, ADR-0036, ADR-0141, ADR-0143, ADR-0157, ADR-0158 |
@@ -19,7 +19,7 @@
 | Testing | ADR-0046 – ADR-0049, ADR-0220 – ADR-0222 |
 | Code | ADR-0050, ADR-0052 |
 | Core | ADR-0053 – ADR-0055, ADR-0057, ADR-0058, ADR-0060, ADR-0062, ADR-0063 |
-| Blocks | ADR-0064, ADR-0066 – ADR-0076, ADR-0092, ADR-0095, ADR-0206, ADR-0209, ADR-0210, ADR-0211, ADR-0214 – ADR-0216 |
+| Blocks | ADR-0064, ADR-0066 – ADR-0076, ADR-0092, ADR-0095, ADR-0206, ADR-0209, ADR-0210, ADR-0211, ADR-0214 – ADR-0216, ADR-0233 |
 | Tools and tests | ADR-0077 – ADR-0084, ADR-0086, ADR-0096, ADR-0097, ADR-0099, ADR-0101, ADR-0103, ADR-0105, ADR-0138 |
 | Axes | ADR-0088 – ADR-0091, ADR-0093, ADR-0094, ADR-0098 |
 | The 2026 audits | ADR-0104, ADR-0106 – ADR-0110, ADR-0113 – ADR-0115 |
@@ -1924,6 +1924,7 @@
   - A `dictionary` of brands, APIs and file names in each passport's front matter: a list that named a word without saying what it is, beside prose that said it again.
   - A glossary file, or a glossary section per block: a third place for a meaning the rule already states, and one more list to keep in step with it.
 - **Why.** The rule that says what a word means is where a reader looks for it, and one bold span there gives the check its owner, its axis and its spelling with nothing kept beside it.
+- **Superseded in part.** The form of a folder's and a suffix's definition, by ADR-0232: it carries an id after its bold.
 
 ## ADR-0220 — A change mutates only its changed lines and its new files
 
@@ -2106,3 +2107,33 @@
   - The folder's name when `name` is missing: a configuration would carry a name no manifest gives, and nothing would tell the owner.
   - `name` required as every other key is, a warning when it is missing: every project ratified before would warn of a key no setting it takes needs.
 - **Why.** The unit's name is declared where the unit is, read as written, and asked for only where a setting needs it (owner).
+
+## ADR-0232 — A folder or a suffix carries a stable id, and the paths rules give are terms
+
+**Date:** 2026-10-26 · **Status:** Accepted
+
+- **Decision.**
+  - Every folder and suffix term carries an id right after its bold, ``**`adapters/`**{#gateway}``. The id names what the folder holds — `port`, `use-case`, `helper` — and a suffix whose file is a member of a folder of that meaning takes the folder's id followed by `-file`: `.adapter` is `gateway-file`, `.utils` is `helper-file`. It is lower-case words and digits joined by hyphens, opening with a letter, unique across every term, and never changed: a folder renamed edits only its definition, and whatever names the role by its id follows. The owner chose the ids of the blocks' folders and suffixes once, in one table.
+  - The kernel reads the id with the term, and the model of the blocks gives each role its id. `blocks:check` refuses a folder or a suffix without an id (`term-without-id`), an id of another form (`term-id-misshapen`) and an id two terms carry (`term-id-repeated`).
+  - The names rules give as paths are terms: core's `foundation/layout` defines `src/`, `__tests__/`, `tests/` and `e2e/`, and TanStack Router's `foundation/routes` defines `routes/`. They sit on the foundation axis, since settings of the foundation axis name them — the production set, the exclusions of the specs, the fixtures a runner preloads — and a term is used on its own axis or one that stands on it. A block that names one of them without its `/` writes it with it, and Expo's routes, which cannot reach TanStack Router's term, name their folder by the router's own setting.
+  - The site makes each id the anchor of its bold, and the Terms page links a folder or a suffix to it; no page, description, search record or text for language models shows the braces.
+- **Rejected.**
+  - The id as the term's spelling on the day it was defined, `adapters`, `adapter`: an id with no choice in it, but one that misleads once the folder is renamed, and a folder and a suffix spelt alike would still need two.
+  - One key for a folder and its suffix, as the first prototype had it: a setting that names a file must tell the folder from the file.
+  - The id in an HTML comment after the bold, ``**`adapters/`**<!-- #gateway -->``: the site compiles the blocks as Markdown, not MDX, so the braces break no build, and rumdl and the check accept them.
+  - `src/`, `tests/` and `e2e/` on the architecture axis, beside the tree that draws them: the foundation settings that name them would then name a term of an axis a project may leave out.
+  - `__tests__/` in TypeScript's block, whose rule names it: Biome, which does not reach TypeScript's block, names it in its exclusions too.
+  - `routes/` in the `ui` domain, which both routers reach: a screen needs no file router, and a CLI's interface has no routes.
+- **Why.** A role named by its spelling is renamed in every place that names it; one named by an id chosen for its meaning is renamed in one line, and the check keeps every role named.
+
+## ADR-0233 — `.editorconfig` is the editorconfig block's file, listed explicitly
+
+**Date:** 2026-10-26 · **Status:** Accepted
+
+- **Decision.**
+  - `editorconfig` is an implementation of no language that requires nothing and governs `.editorconfig`; its passport says what the file sets, and it holds no rule of its own. Its template gives every file two spaces, LF and UTF-8, and `root = true`; shfmt's fragment adds the indent of a `case`'s branches.
+  - shfmt requires it, since shfmt reads its options only from that file, so a project that lists shfmt lists `editorconfig`, as this repository's units do.
+- **Rejected.**
+  - Core's template writing `.editorconfig` for every project, as it did: a file no rule asks for written silently, beside a section for shfmt in a block that cannot name shfmt.
+  - A rule of the block for the indent: core's `formatters-share-one-indent-and-width` already holds it, and the file is one more place that setting is written.
+- **Why.** A file a tool reads is the block's that governs it, and a project sees in its `constitution.yaml` every block that writes into it.

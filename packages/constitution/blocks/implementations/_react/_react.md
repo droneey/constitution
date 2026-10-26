@@ -14,4 +14,4 @@ governs: ["**/*.tsx", "**/*.hooks.ts", "**/*.context.ts"]
 
 A project lists the renderer's block, which brings this one.
 
-Components are written in **JSX**, and the build runs the **React Compiler** over them. A compound's or provider's context lives in a file ending in **`.context`**.
+Components are written in **JSX**, and the build runs the **React Compiler** over them. A compound's or provider's context lives in a file ending in **`.context`**{#component-context}.

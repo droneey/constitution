@@ -26,6 +26,7 @@ import {
   remarkRelease,
   remarkRepoLinks,
   remarkSections,
+  remarkTermIds,
   remarkTerms,
   sectionSummaryOf,
   sidebarOf,
@@ -246,6 +247,8 @@ const blocks = defineDocs({
       return await applyMdxPreset({
         rehypeCodeOptions: CODE_OPTIONS,
         remarkPlugins: (plugins) => [
+          // first, so the ids leave the summary the next step drops, whose source the page's Markdown keeps
+          remarkTermIds,
           [
             remarkBlocks,
             options,

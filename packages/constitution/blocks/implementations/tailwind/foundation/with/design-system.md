@@ -35,3 +35,11 @@ A primitive merges its class with the caller's through `cn()`, the caller's last
 | Why |
 |---|
 | the merge keeps the last of two classes of one group, so the caller's utility replaces the primitive's instead of fighting it by its order in the stylesheet. |
+
+### class-names-only-semantic-colors → component-reads-only-semantic-and-common-tokens · MUST
+
+A class list names a colour only through the design system's semantic and common tokens, never through Tailwind's own palette.
+
+| Why |
+|---|
+| a palette class reaches past the tokens, so a component that writes one escapes the theme and its modes. |

@@ -9,6 +9,7 @@ export {
   remarkRelease,
   remarkRepoLinks,
   remarkSections,
+  remarkTermIds,
   remarkTerms,
 } from './remark';
 export type { SiteLayout } from './repository';

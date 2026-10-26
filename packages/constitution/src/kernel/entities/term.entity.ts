@@ -19,7 +19,11 @@ enum TermKind {
   Api = 'api',
 }
 
+type RoleKind = TermKind.Folder | TermKind.Suffix;
+
 interface Term {
+  /** the stable name its definition gives right after the bold, `{#<id>}` */
+  readonly id?: string;
   readonly kind: TermKind;
   readonly term: string;
 }
@@ -44,6 +48,8 @@ const PLAIN = /^[^`[\]]+$/;
 const CONCEPT = /^[a-z]+(?:[ -][a-z]+)*$/;
 const LEAD_IN_END = /[.:]$/;
 const FILE_NAME = /^[\w-]+(?:\.[\w-]+)+$/;
+// What `{#` and `}` enclose is taken whole, so a misshapen id is read and the check can name it.
+const TERM_ID = /^\{#([^}\n]*)\}/;
 const FOLDER_END = '/';
 const SUFFIX_START = '.';
 
@@ -104,6 +110,23 @@ const matcherOfKind: Readonly<Record<TermKind, (word: string) => (text: string) 
   [TermKind.Suffix]: wordMatcherOf(WordKind.Suffix),
 };
 
+/** The id written at the start of `text`, the text that follows a bold term. */
+const idAfter = (text: string): string | undefined => TERM_ID.exec(text)?.[1];
+
+const withIdAfter = (input: { term: Term; text: string }): Term => {
+  const id = idAfter(input.text);
+
+  return id === undefined
+    ? input.term
+    : {
+        ...input.term,
+        id,
+      };
+};
+
+const isRoleKind = (kind: TermKind): kind is RoleKind =>
+  kind === TermKind.Folder || kind === TermKind.Suffix;
+
 const isOneCodeSpan = (text: string): boolean =>
   inlineCodeSpans(text).length === 1 && withoutInlineCode(text).trim() === '';
 
@@ -114,23 +137,31 @@ const allIn = (body: string): TermsRead => {
   const misshapen: string[] = [];
 
   for (const match of maskInlineCode(prose).matchAll(BOLD)) {
+    const end = match.index + match[0].length;
     const text = collapseWhitespace(
-      prose.slice(match.index + BOLD_MARK.length, match.index + match[0].length - BOLD_MARK.length),
+      prose.slice(match.index + BOLD_MARK.length, end - BOLD_MARK.length),
     );
     const name = isOneCodeSpan(text) ? inlineCodeSpans(text)[0] : undefined;
+    const after = prose.slice(end);
 
     if (name !== undefined) {
       terms.push(
-        of({
-          isCode: true,
-          text: name,
+        withIdAfter({
+          term: of({
+            isCode: true,
+            text: name,
+          }),
+          text: after,
         }),
       );
     } else if (PLAIN.test(text)) {
       terms.push(
-        of({
-          isCode: false,
-          text,
+        withIdAfter({
+          term: of({
+            isCode: false,
+            text,
+          }),
+          text: after,
         }),
       );
     } else {
@@ -166,10 +197,12 @@ const otherSpellingOf = (term: Term): string | undefined => {
 
 const Term = {
   allIn,
+  idAfter,
+  isRoleKind,
   matcherOf,
   of,
   otherSpellingOf,
 } as const;
 
-export type { Bold, TermsRead };
+export type { Bold, RoleKind, TermsRead };
 export { Term, TermKind };

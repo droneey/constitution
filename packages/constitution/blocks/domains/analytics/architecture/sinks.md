@@ -14,7 +14,7 @@ No domain, use case or adapter of a feature sends an event; a screen, a widget o
 
 ### sinks-behind-one-contract → new-kind-added-as-a-member · MUST
 
-Each analytics service is one sink, one **`.sink`** file in **`sinks/`**, under one contract beside the folder; the composition root chooses the active sinks and hands them to the one that sends.
+Each analytics service is one sink, one **`.sink`**{#analytics-sink-file} file in **`sinks/`**{#analytics-sink}, under one contract beside the folder; the composition root chooses the active sinks and hands them to the one that sends.
 
 | Why |
 |---|

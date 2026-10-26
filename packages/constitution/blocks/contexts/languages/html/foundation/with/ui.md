@@ -18,7 +18,7 @@ A content image offers its widths by `srcset` and `sizes`, so the browser fetche
 
 | Why |
 |---|
-| a single `src` gives the browser one file for every screen, and only `srcset` with `sizes` lets it pick by density and box before the layout is known. |
+| an `<img src>` alone gives the browser one file for every screen, and only `srcset` with `sizes` lets it pick by density and box before the layout is known. |
 
 ## Components
 

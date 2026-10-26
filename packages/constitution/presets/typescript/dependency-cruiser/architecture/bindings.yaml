@@ -77,7 +77,7 @@ core:
   shared-imports-no-feature-adapter-contract-or-root:
     - shared-knows-no-feature-adapter-contract-or-root
 expo:
-  ui-never-touches-navigation:
+  expo-router-only-in-the-root:
     - ui-imports-no-expo-router
 ink:
   ink-imported-by-the-ui:

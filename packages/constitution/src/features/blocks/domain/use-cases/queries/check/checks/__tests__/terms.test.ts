@@ -28,8 +28,8 @@ const LINGUI = 'blocks/implementations/lingui/lingui.md';
 const withCoreTerms = (files: Files): Files => ({
   ...files,
   [PORTS]:
-    '# Ports\n\nA **port** names a need; a **binding unit** binds it, in **`adapters/`**, in a file **`.port`**.\n',
-  [WORKFLOW]: `# Workflow\n\nA **squash merge** lands **\`feature/\`** branches.\n\n## General\n\n${rule(
+    '# Ports\n\nA **port** names a need; a **binding unit** binds it, in **`adapters/`**{#gateway}, in a file **`.port`**{#port-file}.\n',
+  [WORKFLOW]: `# Workflow\n\nA **squash merge** lands **\`feature/\`**{#feature-branch} branches.\n\n## General\n\n${rule(
     {
       slug: 'rules-bind',
     },
@@ -212,7 +212,7 @@ describe('termsCheck', () => {
       ],
       name: 'a workflow chapter uses a term of the architecture',
       path: WORKFLOW,
-      text: '# Workflow\n\nA **squash merge** lands **`feature/`** and touches one port.\n',
+      text: '# Workflow\n\nA **squash merge** lands **`feature/`**{#feature-branch} and touches one port.\n',
     },
   ])('should report each term off its axis when $name', ({ expected, path, text }) => {
     // Act
@@ -301,7 +301,7 @@ describe('termsCheck', () => {
     // Act
     const findings = checked({
       path: PORTS,
-      text: '# Ports\n\nA **port** names a need; a **binding unit** binds it, in **`adapters/`** — not `adapters` — in a file **`.port`**, not `port`; see `adapters/http`.\n',
+      text: '# Ports\n\nA **port** names a need; a **binding unit** binds it, in **`adapters/`**{#gateway} — not `adapters` — in a file **`.port`**{#port-file}, not `port`; see `adapters/http`.\n',
     });
 
     // Assert
@@ -327,6 +327,88 @@ describe('termsCheck', () => {
         path: PORTS,
       },
     ]);
+  });
+
+  it.each<{
+    expected: readonly TermsFinding[];
+    name: string;
+    text: string;
+  }>([
+    {
+      expected: [
+        {
+          code: TermsCode.WithoutId,
+          details: {
+            term: 'specs/',
+          },
+          path: PRINCIPLES,
+        },
+        {
+          code: TermsCode.WithoutId,
+          details: {
+            term: '.spec',
+          },
+          path: PRINCIPLES,
+        },
+      ],
+      name: 'a folder and a suffix carry none, nor a concept or a file, which need none',
+      text: '# Principles\n\nA **spec** in **`specs/`** {#spec-folder} ends in **`.spec`**, beside **`spec.json`**.\n',
+    },
+    {
+      expected: [
+        {
+          code: TermsCode.IdMisshapen,
+          details: {
+            id: 'Specs',
+            term: 'specs/',
+          },
+          path: PRINCIPLES,
+        },
+        {
+          code: TermsCode.IdMisshapen,
+          details: {
+            id: 'spec_file',
+            term: '.spec',
+          },
+          path: PRINCIPLES,
+        },
+        {
+          code: TermsCode.IdMisshapen,
+          details: {
+            id: '',
+            term: 'fakes/',
+          },
+          path: PRINCIPLES,
+        },
+      ],
+      name: 'an id opens with a capital, holds an underscore or is empty',
+      text: '# Principles\n\nSpecs sit in **`specs/`**{#Specs}, end in **`.spec`**{#spec_file}, fakes in **`fakes/`**{#}.\n',
+    },
+    {
+      expected: [
+        {
+          code: TermsCode.IdRepeated,
+          details: {
+            firstFile: PRINCIPLES,
+            firstTerm: 'specs/',
+            id: 'spec',
+            term: '.spec',
+          },
+          path: PRINCIPLES,
+        },
+      ],
+      name: 'a folder and a suffix spelt alike share an id',
+      text: '# Principles\n\nSpecs sit in **`specs/`**{#spec} and end in **`.spec`**{#spec}; a **suite**{#suite} runs them.\n',
+    },
+  ])('should report the ids of terms when $name', ({ expected, text }) => {
+    // Act
+    const findings = checked({
+      path: PRINCIPLES,
+      text,
+    });
+
+    // Assert
+    expect(findings).toStrictEqual(expected);
   });
 
   it.each([

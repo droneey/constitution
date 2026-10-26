@@ -1,7 +1,8 @@
 import type { Axis, Layer, Level } from '../constants';
 import type { BlockId, RuleSlug } from '../value-objects';
 import { coreBlockId } from '../value-objects';
-import { Term, TermKind } from './term.entity';
+import type { RoleKind } from './term.entity';
+import { Term } from './term.entity';
 
 interface ModelBlock {
   readonly extends?: BlockId;
@@ -21,10 +22,12 @@ interface ModelRule {
   readonly slug: RuleSlug;
 }
 
-/** A folder or a suffix a block defines, by the spelling its definition gives. */
+/** A folder or a suffix a block defines, by the spelling and the id its definition gives. */
 interface RoleTerm {
   readonly block: BlockId;
-  readonly kind: TermKind.Folder | TermKind.Suffix;
+  /** none where the definition gives none, which the blocks' check refuses */
+  readonly id?: string;
+  readonly kind: RoleKind;
   readonly term: string;
 }
 
@@ -47,18 +50,20 @@ const create = (input: BlockModel): BlockModel => ({
   rules: input.rules,
 });
 
-const isRoleKind = (kind: TermKind): kind is RoleTerm['kind'] =>
-  kind === TermKind.Folder || kind === TermKind.Suffix;
-
 /** The folders and suffixes block files define; a spelling defined twice keeps its first. */
 const rolesIn = (texts: readonly BlockText[]): readonly RoleTerm[] => {
   const roles = new Map<string, RoleTerm>();
 
   for (const { block, body } of texts) {
-    for (const { kind, term } of Term.allIn(body).terms) {
-      if (isRoleKind(kind) && !roles.has(term)) {
+    for (const { id, kind, term } of Term.allIn(body).terms) {
+      if (Term.isRoleKind(kind) && !roles.has(term)) {
         roles.set(term, {
           block,
+          ...(id === undefined
+            ? {}
+            : {
+                id,
+              }),
           kind,
           term,
         });

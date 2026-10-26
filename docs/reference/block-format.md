@@ -102,6 +102,8 @@ A term is defined once, in bold, in the rule or the passport that says what it i
 | ``**`renovate.json`**`` | `renovate.json` | a file, a name with an extension |
 | ``**`createServerFn`**`` | `createServerFn` | an API, a command or a package, any other code span |
 
+A folder or a suffix carries an id right after its bold, ``**`adapters/`**{#gateway}``: the role's stable name, which a tool's settings can name it by while its spelling changes. The id names what the folder holds, or, for a suffix whose file is a member of such a folder, that folder's id followed by `-file` — `.adapter` is `gateway-file`; it is lower-case words and digits joined by hyphens, opening with a letter, unique across every term, and never changed, so a folder renamed changes only its definition. Any other term may carry one too. The site makes the id the term's anchor and shows no braces.
+
 A term's owner is the block of the file that defines it, and its axis that file's axis: a passport and `foundation/` are foundation's, and a seam takes the axis of its folder. A brand the block is named after, and the files, commands and APIs of its tool, are defined in its passport, in the line of what it is or the setup after it; a concept, a folder or a suffix in the rule, or the opening paragraph of the chapter, that says what it is. [Terms](terms.md) lists every one.
 
 ## A rule
@@ -144,7 +146,7 @@ A domain, a platform or core may list, in a chapter under a heading `Requirement
 - a block that governs a file of a language it does not require, directly or through the blocks it requires or extends;
 - a link or a slug that names another block anywhere but the front matter, a `with/` name or a heading's arrow;
 - an abstract block without an heir, or one that names its heirs;
-- a term defined twice; a term of the architecture or of the workflow used in a chapter or a seam of another axis — a passport speaks of the whole block, every axis at once; a term used in a file whose block cannot reach its owner — core's terms are every block's; a folder or a suffix written in backticks without its `/` or its `.`, where its owner is in reach; and bold that is neither plain words nor one code span;
+- a term defined twice; a term of the architecture or of the workflow used in a chapter or a seam of another axis — a passport speaks of the whole block, every axis at once; a term used in a file whose block cannot reach its owner — core's terms are every block's; a folder or a suffix written in backticks without its `/` or its `.`, where its owner is in reach; a folder or a suffix without an id, an id of another form, and an id two terms carry; and bold that is neither plain words nor one code span;
 - a rule without a statement or a Why, a slug used twice, and a heading or a table that misses the format;
 - a rule that tightens a rule of its own block, or of an axis it may not reach, at a level looser than that rule's or equal to it;
 - a seam named after its own block, after no block or after core, after a block of a layer its block may not pair with, or after a block along a dependency — one its block requires or extends, or one that requires or extends its block, directly or through another — and a seam titled otherwise than the other block's passport;

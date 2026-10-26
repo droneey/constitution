@@ -4,6 +4,7 @@ import { visit } from 'unist-util-visit';
 
 import type { Term } from '../../../domain/entities';
 import { TermKind } from '../../../domain/entities';
+import { takeTermIds } from '../markdown';
 import { TERMS_HEADER, TERMS_LANGUAGE } from './remark-terms.constants';
 
 interface TermsOptions {
@@ -25,9 +26,13 @@ const rowOf = (cells: TableCell[]): TableRow => ({
   type: 'tableRow',
 });
 
-// A link of the sentence leads from its block's file, not from this page, so it keeps only its words.
+// A link of the sentence leads from its block's file, not from this page, so it keeps only its words;
+// a term's id is the anchor of its own page, so the sentence drops it.
 const definitionOf = (sentence: string): PhrasingContent[] => {
-  const [paragraph] = fromMarkdown(sentence).children;
+  const tree = fromMarkdown(sentence);
+  const [paragraph] = tree.children;
+
+  takeTermIds(tree);
 
   return (
     paragraph?.type === 'paragraph'

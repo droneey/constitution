@@ -13,7 +13,6 @@
     "lineEnding": "lf",
     "attributePosition": "multiline",
     "expand": "always",
-    "useEditorconfig": true,
   },
   "markdown": {
     "formatter": {

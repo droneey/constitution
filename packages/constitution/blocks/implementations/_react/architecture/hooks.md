@@ -2,13 +2,13 @@
 
 > Governs the hooks that hold a component's effects and a binding unit, where React is imported, and the form of an adapter.
 
-**`hooks/`** holds a set of reusable hooks.
+**`hooks/`**{#reusable-hook} holds a set of reusable hooks.
 
 ## State and effects
 
 ### component-effects-in-its-hooks-file → effects-held-only-by-the-edge · MUST
 
-A component file calls no effect hook: its effects live in hooks in a file ending in **`.hooks`**, `<name>.hooks.ts`, beside it, and input or output goes only through binding units.
+A component file calls no effect hook: its effects live in hooks in a file ending in **`.hooks`**{#component-effects}, `<name>.hooks.ts`, beside it, and input or output goes only through binding units.
 
 | Why |
 |---|
