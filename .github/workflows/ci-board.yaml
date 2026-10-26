@@ -1,0 +1,17 @@
+name: 🗂️ Board
+
+on:
+  issues:
+    types:
+      - opened
+      - reopened
+  create:
+
+permissions: {}
+
+jobs:
+  board:
+    name: board
+    # yamllint disable-line rule:line-length
+    uses: droneey/.github/.github/workflows/ci-board.yaml@95685e4bc5b1d94f67431e96a130ee90207f533d # v2.11.0
+    secrets: inherit
