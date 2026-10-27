@@ -12,14 +12,6 @@ A change does what its task asks and nothing else — no unrelated refactor, ref
 |---|
 | a change that does one thing is reviewed, reverted and understood as one thing. |
 
-### change-corrects-the-documents-it-falsifies · SHOULD
-
-A change that makes a document false — a readme, `PROJECT.md`, an example of the environment, a comment, a guide — corrects it in the same change.
-
-| Why |
-|---|
-| a document corrected later is not corrected, and a reader trusts the stale one until it costs them. |
-
 ### change-moves-a-file-never-rewrites-it · MUST
 
 A change that moves a file moves it, never deletes it and writes it anew.
@@ -52,9 +44,19 @@ A change to a format that is stored or that others read — a schema, a file, a 
 |---|
 | data written before the change and readers deployed before it outlive the change, and a format switched in one step breaks them. |
 
+## What it carries
+
+### change-corrects-the-documents-it-falsifies · SHOULD
+
+A change that makes a document false — a readme, `PROJECT.md`, an example of the environment, a comment, a guide — corrects it in the same change.
+
+| Why |
+|---|
+| a document corrected later is not corrected, and a reader trusts the stale one until it costs them. |
+
 ### choice-between-alternatives-recorded · MUST
 
-A choice between real alternatives that a later reader could propose again — a store, a framework, a protocol, a boundary, a design turned down — is recorded in the project's `DECISIONS.md` by the change that makes it: what was chosen, what was rejected and why, and its date; a choice the code, a rule or the commit already explains — a version bump, a fix, a rename, a tool's default kept — is not.
+A choice the repository's history cannot show — a store, a framework, a protocol, a boundary, a design turned down — is recorded in the project's `DECISIONS.md` by the change that makes it, with its date, the alternatives a later reader could propose again, and what was rejected and why. A change the history or a rule already explains in full — a version bump, a fix, a rename, a tool's default kept — is not.
 
 | Why |
 |---|

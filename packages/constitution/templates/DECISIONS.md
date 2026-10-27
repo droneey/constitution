@@ -1,6 +1,6 @@
 # Decisions
 
-> The choices between real alternatives that a later reader could propose again — a store, a framework, a protocol, a boundary, a design turned down — each with what was rejected and why. A choice the code, a rule or the commit already explains — a version bump, a fix, a rename, a tool's default kept — has no entry.
+> The choices the repository's history cannot show — a store, a framework, a protocol, a boundary, a design turned down — each with the alternatives a later reader could propose again, what was rejected and why. A change the history or a rule already explains in full — a version bump, a fix, a rename, a tool's default kept — has no entry.
 
 <!-- One entry per decision, newest last, numbered once and never renumbered:
 
