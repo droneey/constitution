@@ -44,4 +44,4 @@ Hold it to the rules of the project's domains and language and their requirement
 `constitution.yaml` sits at the root and in each package, each read alone: `axes`, the optional axes it follows; the blocks by layer; `packs`, the folders of blocks it follows beside the Constitution's, its own among them; `overrides`; the root's alone `check`, the one check. At the root also:
 
 - `PROJECT.md`: the product and its users, entities, boundaries, critical scenarios and glossary.
-- `DECISIONS.md`: the choices between real alternatives, each with what was rejected and why.
+- `DECISIONS.md`: the project's decisions.

@@ -28,7 +28,7 @@ Inside a section the config file declares, every field the program manages is st
 
 | Why |
 |---|
-| a field the program fills in by default is a decision the user never saw, and stating every field makes the config file the whole truth. |
+| a field the program fills in by default is a choice the user never saw, and stating every field makes the config file the whole truth. |
 
 ### absent-section-left-untouched · MUST
 

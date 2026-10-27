@@ -48,7 +48,7 @@ A package a package manager installs, a transitive one included, comes only from
 
 ### new-dependency-vetted · SHOULD
 
-A new dependency is a decision: it needs a reason it cannot be a few lines of the project’s own, its name is confirmed in the registry as the intended project rather than taken from generated code, and it is checked against the signs of a malicious package — a name one typo from a popular one, a recent first release or change of owner, few downloads, no source repository, obfuscated code.
+A new dependency is a choice: it needs a reason it cannot be a few lines of the project’s own, its name is confirmed in the registry as the intended project rather than taken from generated code, and it is checked against the signs of a malicious package — a name one typo from a popular one, a recent first release or change of owner, few downloads, no source repository, obfuscated code.
 
 | Why |
 |---|
@@ -94,7 +94,7 @@ No dependency, development ones included, has a known vulnerability of any sever
 
 | Why |
 |---|
-| a vulnerability found before release is fixed before release, and one that cannot be is a decision someone signed and will revisit. |
+| a vulnerability found before release is fixed before release, and one that cannot be is a choice someone signed and will revisit. |
 
 ### dependency-licence-on-the-allowlist · MUST
 

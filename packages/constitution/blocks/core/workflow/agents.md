@@ -28,7 +28,7 @@ Only a person decides what of an agent’s work is committed, shared or shipped;
 
 | Why |
 |---|
-| committing, sharing and shipping a change are decisions made under the person’s name, and a sub-agent acts where the person does not watch. |
+| committing, sharing and shipping a change are choices made under the person’s name, and a sub-agent acts where the person does not watch. |
 
 ### submitted-change-read-by-its-person · MUST
 

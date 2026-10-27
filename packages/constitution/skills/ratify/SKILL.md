@@ -26,7 +26,7 @@ The project folder holds:
 
 - **`constitution.yaml`** at the repository root: the blocks the repository follows, the one command that runs its checks, and its overrides; and in a workspace one in each member's folder, with the blocks that member follows. The session-start hook reads them and gives every agent the rules of those blocks, so a block listed by mistake costs every session, and a block left out leaves its rules unenforced.
 - **`PROJECT.md`** beside it: what the product is, for whom, the domains of its business, its entities, its boundaries, its critical scenarios and its glossary. It gives any agent the context of the whole, so a change fits the product and not just the task.
-- **`DECISIONS.md`** beside them, from the template, when the repository has none: the log where every later choice between real alternatives is recorded with what was rejected and why. Any choice the owner names during the interview — a store, a framework, a boundary — goes in as its first entries.
+- **`DECISIONS.md`** beside them, from the template, when the repository has none: the project's decisions, as `.droneey/constitution/blocks/core/foundation/changes.md` defines them. Any decision the owner names during the interview goes in as its first entries.
 - **A block of the project's own pack** for each library the owner wants rules for that the plugin has no block for: a folder of blocks shaped like the Constitution — `constitution/` unless the owner names another — listed under `packs:`.
 - **Each tool's configuration**, wired with the parts of the presets its unit's blocks take, from the fragments the active blocks keep in `.droneey/constitution/templates/project/`. The session-start hook warns of a configuration that lacks a part or keeps one its blocks no longer take, so a project whose blocks or release changed runs this skill again to bring them up to date; with `constitution.yaml` already in place, offer to go straight to step 9.
 
@@ -153,7 +153,7 @@ Ask one or two questions at a time, in the order of the sections of `.droneey/co
 - **Critical scenarios.** Which journeys must never break — the ones a user would leave over? Each one gets an end-to-end test.
 - **Glossary.** Which words does the business use, and what does each mean here?
 - **Non-functional notes.** Any hard constraint on scale, offline use, devices, compliance, performance or the systems it depends on?
-- **Decisions.** Which choices between real alternatives has the project already made — a store, a framework, a boundary — what was turned down, and why? These become the first entries of `DECISIONS.md`, not part of `PROJECT.md`.
+- **Decisions.** Which decisions has the project already made, such as its store, what did it turn down, and why? These become the first entries of `DECISIONS.md`, not part of `PROJECT.md`.
 
 Use the owner's own words: the glossary seeds the language of the code. Keep it high-level — when an answer drifts into how a feature works or how to build it, keep its essence and steer back. What stays unanswered is left out: drop the section, and never write `TODO` or a promise about the future. A short file that is true beats a complete one that is not.
 

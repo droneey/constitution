@@ -6,7 +6,7 @@
 
 ### rule-held-by-a-tool-where-one-can · MUST
 
-A rule a tool can hold, at a cost its gain repays, is held by one, configured to fail on a violation; prose carries what no tool can express and what a check would cost more to keep than the review it replaces, which a decision records.
+A rule a tool can hold, at a cost its gain repays, is held by one, configured to fail on a violation; prose carries what no tool can express and what a check would cost more to keep than the review it replaces, and choosing that is a decision.
 
 | Why |
 |---|

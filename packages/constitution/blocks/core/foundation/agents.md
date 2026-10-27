@@ -58,7 +58,7 @@ An agent reports outcomes as they are, with their evidence: a failing test with 
 
 | Why |
 |---|
-| a person decides on the report, and a report better than the truth makes the decision wrong. |
+| a person decides on the report, and a report better than the truth makes the choice wrong. |
 
 ## Trust
 

@@ -22,7 +22,7 @@ claude --plugin-dir packages/constitution   # a session on the working tree's ho
 
 1. Place each rule a change adds or moves by the three questions of [placement](packages/constitution/blocks/core/foundation/placement.md), and write it in [the block format](docs/reference/block-format.md).
 2. The `rule-placement` agent reviews every change to `blocks/` or `presets/`; its table goes into the pull request, and each of its findings is fixed or answered there.
-3. A choice between real alternatives about a rule gets its entry in [`DECISIONS.md`](DECISIONS.md), naming what was rejected and why.
+3. A [decision](packages/constitution/blocks/core/foundation/changes.md#choice-between-alternatives-recorded) about a rule gets its entry in [`DECISIONS.md`](DECISIONS.md).
 
 [How it works](docs/how-it-works.md) maps the blocks, the presets, the templates and the program that checks them.
 

@@ -18,7 +18,7 @@
 
 | Why |
 |---|
-| an install script runs with the developer's rights; listing each package keeps that a decision, not a default. |
+| an install script runs with the developer's rights; listing each package keeps that a choice, not a default. |
 
 ### release-age-set-for-installs → new-release-adopted-after-a-cooldown · MUST
 

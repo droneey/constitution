@@ -46,7 +46,7 @@ A file or a folder takes the case its owner fixes — the language for its sourc
 
 | Why |
 |---|
-| one case removes a decision from every new file and keeps names portable across file systems. |
+| one case removes a choice from every new file and keeps names portable across file systems. |
 
 ### format-has-one-extension · SHOULD
 

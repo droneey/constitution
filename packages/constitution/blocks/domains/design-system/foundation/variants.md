@@ -18,7 +18,7 @@ A variant that restyles descendants — a themed subtree, a look set by a parent
 
 | Why |
 |---|
-| a prop drilled for looks couples every component in between to a decision only the ancestor and the leaves care about. |
+| a prop drilled for looks couples every component in between to a choice only the ancestor and the leaves care about. |
 
 ### variant-values-from-shared-scales · SHOULD
 

@@ -28,7 +28,7 @@ A distributed package declares each dependency with a `>=` floor, and caps it wi
 
 | Why |
 |---|
-| a floor lets the consumer's resolver take any later release the other packages accept, so a cap is a decision, and one with no reason blocks every later fix. |
+| a floor lets the consumer's resolver take any later release the other packages accept, so a cap is a choice, and one with no reason blocks every later fix. |
 
 ### requires-python-floor-in-the-support-window → runtime-floor-within-the-ecosystems-support-window · SHOULD
 
