@@ -2137,3 +2137,11 @@
   - Core's template writing `.editorconfig` for every project, as it did: a file no rule asks for written silently, beside a section for shfmt in a block that cannot name shfmt.
   - A rule of the block for the indent: core's `formatters-share-one-indent-and-width` already holds it, and the file is one more place that setting is written.
 - **Why.** A file a tool reads is the block's that governs it, and a project sees in its `constitution.yaml` every block that writes into it.
+
+## ADR-0253 — A comment never stands in for what the code could say
+
+**Date:** 2026-10-27 · **Status:** Accepted
+
+- **Decision.** `comment-explains-why` is a MUST: the code first says all it can by a name, a type or an extracted function, and a comment states only what is left; a comment standing in for a name, a type or a function the code could carry is replaced by it. Its neighbours in the chapter stay SHOULD.
+- **Rejected.** Keeping it a SHOULD, whose stated-reason exception adds no case the rule's own "could carry" and "what another rule asks for" do not already cover, and leaves the opening through which a plain value explained by a comment passed review.
+- **Why.** The rule's own wording already exempts what the code cannot carry, so an exception with a reason has nothing left to admit; a MUST without a tool is held by the reviewer by its meaning, as the placement rules are.
