@@ -27,7 +27,7 @@ The Droneey Constitution: the engineering rules every Droneey repository is buil
 - **Digest** — built by the hook from a project's `constitution.yaml` and the blocks of its release.
 - **Preset part** — belongs to one tool's preset, and is named after one block.
 - **Binding** — ties settings of one part to one rule.
-- **Decision** — core's [term](packages/constitution/blocks/core/foundation/changes.md#choice-between-alternatives-recorded), logged in `DECISIONS.md`.
+- **Decision** — [core's term](packages/constitution/blocks/core/foundation/changes.md#choice-between-alternatives-recorded).
 
 ## Critical scenarios
 
