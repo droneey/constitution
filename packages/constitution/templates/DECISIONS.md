@@ -1,6 +1,6 @@
 # Decisions
 
-> The choices the repository's history cannot show — a store, a framework, a protocol, a boundary, a design turned down — each with the alternatives a later reader could propose again, what was rejected and why. A change the history or a rule already explains in full — a version bump, a fix, a rename, a tool's default kept — has no entry.
+> The project's decisions, each recorded as the Constitution's rule `choice-between-alternatives-recorded` asks.
 
 <!-- One entry per decision, newest last, numbered once and never renumbered:
 

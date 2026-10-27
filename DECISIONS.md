@@ -2,7 +2,7 @@
 
 > A journal of the decisions behind the constitution and the reasoning behind them. **Not a rulebook** — the blocks say *how things are*; this log records *why it was decided and what was rejected*.
 >
-> **Conventions:** one entry per choice the repository's history cannot show — the alternatives a later reader could propose again, what was rejected and why; a rule placed by the constitution's own instructions needs no entry. Entries are numbered and kept. A new decision is a new entry; the entry it replaces takes the status `Superseded by ADR-NNNN`, and one it changes in part keeps its status and names the part and the new entry in a line **Superseded in part.** Statuses: `Accepted` · `Proposed` · `Superseded by ADR-NNNN`.
+> **Conventions:** one entry per [decision](packages/constitution/blocks/core/foundation/changes.md#choice-between-alternatives-recorded); a rule placed by the constitution's own instructions needs no entry. Entries are numbered and kept. A new decision is a new entry; the entry it replaces takes the status `Superseded by ADR-NNNN`, and one it changes in part keeps its status and names the part and the new entry in a line **Superseded in part.** Statuses: `Accepted` · `Proposed` · `Superseded by ADR-NNNN`.
 >
 > Its entries record the decisions of the constitution 1.0 in number order, each with the date it was taken.
 

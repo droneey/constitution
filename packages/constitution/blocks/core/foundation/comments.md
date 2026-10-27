@@ -6,7 +6,7 @@
 
 ### comment-explains-why · MUST
 
-The code first says all it can — by a name, a type, an extracted function — and a comment states only what is still left, such as a constraint, a workaround or a decision, or what another rule asks for. A comment that stands in for a name, a type or a function the code could carry is replaced by it, and one that states nothing still left is removed.
+The code first says all it can — by a name, a type, an extracted function — and a comment states only what is still left, such as a constraint, a workaround or an alternative the code turned down, or what another rule asks for. A comment that stands in for a name, a type or a function the code could carry is replaced by it, and one that states nothing still left is removed.
 
 | Why |
 |---|

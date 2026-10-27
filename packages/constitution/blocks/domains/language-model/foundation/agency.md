@@ -24,7 +24,7 @@ A tool of another server is offered to a model only as the definition last revie
 
 ### tool-acts-with-the-persons-rights → credential-has-least-privilege · MUST
 
-A tool a model calls acts with the rights of the person the model acts for, or in a run with no person present with a service identity scoped to that run's task, checked by the system it reaches, never with a credential that can do more; whether an action is allowed is never the model's decision.
+A tool a model calls acts with the rights of the person the model acts for, or in a run with no person present with a service identity scoped to that run's task, checked by the system it reaches, never with a credential that can do more; whether an action is allowed is never the model's to decide.
 
 | Why |
 |---|

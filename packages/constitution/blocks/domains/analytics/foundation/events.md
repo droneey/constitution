@@ -42,7 +42,7 @@ The outcome of every critical scenario of `PROJECT.md` — completed, abandoned,
 
 | Why |
 |---|
-| the measures that matter are the ones the product exists for, and one nobody tracks is a decision made without its data. |
+| the measures that matter are the ones the product exists for, and one nobody tracks is a choice made without its data. |
 
 ## Data
 

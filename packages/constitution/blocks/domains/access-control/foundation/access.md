@@ -2,7 +2,7 @@
 
 > Governs what a caller may do and see.
 
-## Decisions
+## General
 
 ### access-denied-unless-granted · MUST
 
@@ -11,6 +11,8 @@ Access is denied unless a rule grants it.
 | Why |
 |---|
 | access open by default is open wherever someone forgot a rule. |
+
+## Operations
 
 ### operation-access-checked-on-every-call · MUST
 

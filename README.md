@@ -87,7 +87,7 @@ You need Claude Code and [mise](https://mise.jdx.dev).
 
 - [Where a rule goes](packages/constitution/blocks/core/foundation/placement.md) — its layer, its axis and its chapter
 - [Which rule wins](packages/constitution/blocks/core/core.md#precedence) — overrides and the order of the layers
-- [Decisions](DECISIONS.md) — every choice the history cannot show, with what was rejected and why
+- [Decisions](DECISIONS.md) — the log of the [decisions](packages/constitution/blocks/core/foundation/changes.md#choice-between-alternatives-recorded) behind the rules
 
 ### Blocks
 

@@ -59,7 +59,7 @@ flowchart TD
 - **`constitution.yaml`** names the release, the blocks, the check command and the overrides; a member of a workspace keeps one of its own. [Every key](reference/constitution-yaml.md).
 - **The release**, which mise installs and links as `.droneey/constitution/`, holds the blocks, the [presets](reference/presets.md), the [templates](reference/templates.md) and the tools the presets run; mise also puts its [`constitution` program](reference/plugin.md#the-program) on `PATH`, which checks the project and does the hooks' work.
 - **The plugin** is the engine: the hooks, the skills and the reviewer. Its hooks run the release's program, which reads the rules from the release, so every repository follows exactly the release it pins.
-- **`PROJECT.md`** describes the product, and **`DECISIONS.md`** keeps the choices the repository's history cannot show, with what was rejected and why.
+- **`PROJECT.md`** describes the product, and **`DECISIONS.md`** logs its [decisions](../packages/constitution/blocks/core/foundation/changes.md#choice-between-alternatives-recorded).
 
 ## A session
 

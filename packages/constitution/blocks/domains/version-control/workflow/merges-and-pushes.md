@@ -10,7 +10,7 @@ An agent never merges a change request; the person who answers for it does.
 
 | Why |
 |---|
-| merging is the decision that ships a change, and it belongs to the person who answers for it. |
+| merging is the choice that ships a change, and it belongs to the person who answers for it. |
 
 ### agent-never-pushes-to-the-main-line → person-decides-what-is-committed-or-shipped · MUST
 

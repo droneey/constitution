@@ -56,7 +56,7 @@ A change that makes a document false — a readme, `PROJECT.md`, an example of t
 
 ### choice-between-alternatives-recorded · MUST
 
-A choice the repository's history cannot show — a store, a framework, a protocol, a boundary, a design turned down — is recorded in the project's `DECISIONS.md` by the change that makes it, with its date, the alternatives a later reader could propose again, and what was rejected and why. A change the history or a rule already explains in full — a version bump, a fix, a rename, a tool's default kept — is not.
+A **decision**, a choice among alternatives a later reader could propose again, one the repository's history cannot show — a store, a framework, a protocol, a boundary, a design turned down — is recorded in the project's `DECISIONS.md` by the change that makes it, with its date, what was rejected and why; a change the history or a rule already explains in full — a version bump, a fix, a rename, a tool's default kept — is no decision.
 
 | Why |
 |---|
