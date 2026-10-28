@@ -334,11 +334,14 @@ describe('chooseOutput', () => {
       const output = chooseOutput(input);
 
       // Assert
-      expect(output).toStrictEqual({
+      expect({
+        colourLevel: output.colourLevel,
+        isMotionReduced: output.isMotionReduced,
+        mode: output.mode,
+      }).toStrictEqual({
         colourLevel,
         isMotionReduced,
         mode,
-        themeMode: ThemeMode.Dark,
       });
     },
   );

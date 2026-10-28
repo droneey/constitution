@@ -20,7 +20,7 @@ export function DocsToc(): ReactElement | undefined {
       className='invisible sticky top-0 flex h-full w-0 shrink-0 flex-col overflow-clip ps-0 @5xl:visible @5xl:w-(--fd-toc-width)'
       id='nd-toc'
     >
-      <h3 className='inline-flex items-center text-sm text-fd-muted-foreground'>
+      <h3 className='inline-flex items-center font-label text-fd-muted-foreground text-label-sm'>
         <Icon name={IconName.Page} />
         {ON_THIS_PAGE_LABEL}
       </h3>

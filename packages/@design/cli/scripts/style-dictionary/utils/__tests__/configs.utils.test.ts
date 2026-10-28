@@ -1,61 +1,22 @@
 import { describe, expect, it } from 'bun:test';
 
+import { goldenFileText } from '#/__tests__/golden.fixtures';
+
 import { MalformedTokenError } from '../../errors';
-import { HEADER, outputsOf } from './configs.fixtures';
+import { outputsOf } from './configs.fixtures';
 
-describe('configsOf', () => {
-  it("should write each mode's module: the accent's roles as steps, the opaque roles, the accent's scale and the motion and spacing in hex and numbers", async () => {
-    // Arrange
-    const build = outputsOf();
-
+describe('configOf', () => {
+  it("should write each mode's module: the accent's roles as steps, the opaque roles, the accent's scale and the motion and spacing in hex and numbers, as the golden files show them", async () => {
     // Act
-    const modules = await build;
+    const modules = await outputsOf();
 
     // Assert
     expect(modules).toStrictEqual([
       {
-        'theme/light.gen.ts': `${HEADER}const tokens = {
-  "accent": {
-    "accent.solid": "600"
-  },
-  "brand": {
-    "600": "#a239be"
-  },
-  "colour": {
-    "surface.base": "#ffffff"
-  },
-  "duration": {
-    "fast": 100
-  },
-  "spacing": {
-    "sm": 16
-  }
-};
-
-export { tokens };
-`,
+        'theme/light.gen.ts': await goldenFileText(new URL('light.golden.txt', import.meta.url)),
       },
       {
-        'theme/dark.gen.ts': `${HEADER}const tokens = {
-  "accent": {
-    "accent.solid": "600"
-  },
-  "brand": {
-    "600": "#a239be"
-  },
-  "colour": {
-    "surface.base": "#131316"
-  },
-  "duration": {
-    "fast": 100
-  },
-  "spacing": {
-    "sm": 16
-  }
-};
-
-export { tokens };
-`,
+        'theme/dark.gen.ts': await goldenFileText(new URL('dark.golden.txt', import.meta.url)),
       },
     ]);
   });

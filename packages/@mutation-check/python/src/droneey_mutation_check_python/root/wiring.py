@@ -3,8 +3,11 @@ import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
-from droneey_mutation_check_python.features.mutation import check_mutants, exit_status, render
-from droneey_mutation_check_python.features.mutation.adapters.local import WorkspaceAdapter
+from droneey_mutation_check_python.features.mutation import check_mutants, run_check_mutants
+from droneey_mutation_check_python.features.mutation.adapters.local import (
+  ProcessSettings,
+  WorkspaceAdapter,
+)
 
 if TYPE_CHECKING:
   from collections.abc import Sequence
@@ -13,18 +16,25 @@ if TYPE_CHECKING:
 
 # What git and mutmut need of the environment: mutmut's type check finds the project's packages by
 # VIRTUAL_ENV, as it runs from mutants/, where no .venv is.
-CHILD_VARIABLES: Final = ('HOME', 'LANG', 'LC_ALL', 'PATH', 'TMPDIR', 'VIRTUAL_ENV')
+CHILD_VARIABLE_NAMES: Final = ('HOME', 'LANG', 'LC_ALL', 'PATH', 'TMPDIR', 'VIRTUAL_ENV')
 # A whole mutation run is one command, so the bound is the longest run a project may take.
-COMMAND_SECONDS: Final = 3 * 60 * 60
+COMMAND_TIMEOUT_SECONDS: Final = 3 * 60 * 60
 
 
 def run(arguments: Sequence[str]) -> ExitStatus:
   workspace = WorkspaceAdapter(
-    folder=Path.cwd(),
-    environment={name: os.environ[name] for name in CHILD_VARIABLES if name in os.environ},
-    timeout_seconds=COMMAND_SECONDS,
+    process=ProcessSettings(
+      folder_path=Path.cwd(),
+      whole_environment={
+        name: os.environ[name] for name in CHILD_VARIABLE_NAMES if name in os.environ
+      },
+      timeout_seconds=COMMAND_TIMEOUT_SECONDS,
+    ),
+    python_path=sys.executable,
   )
-  outcome = check_mutants(arguments, workspace=workspace)
-  sys.stdout.write(render(outcome))
 
-  return exit_status(outcome)
+  return run_check_mutants(
+    arguments=arguments,
+    check_mutants=lambda scope: check_mutants(scope, workspace=workspace),
+    write=sys.stdout.write,
+  )

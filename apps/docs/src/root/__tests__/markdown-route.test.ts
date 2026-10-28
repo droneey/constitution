@@ -54,9 +54,18 @@ describe('markdown route', () => {
     },
   );
 
-  it('should answer not found when no page has the address', async () => {
+  it.each([
+    {
+      condition: 'no page has the address',
+      splat: 'guides/moved',
+    },
+    {
+      condition: 'no page can have the address',
+      splat: 'guides/Moved',
+    },
+  ])('should answer not found when $condition', async ({ splat }) => {
     // Act
-    const answer = await markdownAt('guides/moved').catch((error: unknown) => error);
+    const answer = await markdownAt(splat).catch((error: unknown) => error);
 
     // Assert
     expect(isNotFound(answer)).toBe(true);

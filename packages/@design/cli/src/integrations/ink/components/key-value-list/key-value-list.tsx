@@ -2,24 +2,19 @@ import type { ReactElement } from 'react';
 
 import { Box, Text } from 'ink';
 
-import { columnWidthsOf, Space, Tone } from '#/libs/ui';
+import type { KeyValue } from '#/libs/ui';
+import { keyWidthOf, Space, Tone } from '#/libs/ui';
 
-import { useTheme } from '../../hooks';
-import type { KeyValueListProps } from './key-value-list.types';
+import { useTheme } from '../../theme';
+
+interface KeyValueListProps {
+  /** the pairs, each named by its own key */
+  readonly pairs: readonly KeyValue[];
+}
 
 function KeyValueList({ pairs }: KeyValueListProps): ReactElement {
   const theme = useTheme();
-  const [keyWidth] = columnWidthsOf({
-    columns: [
-      {
-        key: 'key',
-        title: '',
-      },
-    ],
-    rows: pairs.map(([key]) => ({
-      key,
-    })),
-  });
+  const keyWidth = keyWidthOf(pairs);
 
   return (
     <Box flexDirection='column'>
@@ -38,4 +33,5 @@ function KeyValueList({ pairs }: KeyValueListProps): ReactElement {
   );
 }
 
+export type { KeyValueListProps };
 export { KeyValueList };

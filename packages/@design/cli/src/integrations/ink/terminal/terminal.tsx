@@ -3,60 +3,107 @@ import { StrictMode } from 'react';
 
 import { render } from 'ink';
 
-import { Confirm, Select, TextInput, ThemeProvider } from '../components';
-import { AnswerKind } from './terminal.constants';
-import type {
-  Answer,
-  AskConfirmInput,
-  AskSelectInput,
-  AskTextInput,
-  TerminalInput,
-  TerminalView,
-} from './terminal.types';
+import type { AccentScale, ConfirmWords, Output } from '#/libs/ui';
+import { createTheme } from '#/libs/ui';
 
-/** Ctrl-C reaches the tree as a key, never as Ink's own exit, so a question can end the run as interrupted. */
-const openTerminalView = ({ accent, output, streams }: TerminalInput): TerminalView => {
+import type { SelectProps } from '../components';
+import { Confirm, Select, TextInput } from '../components';
+import { ThemeContext } from '../theme';
+import { AnswerKind } from './terminal.constants';
+
+interface TerminalStreams {
+  /** the stream the view is drawn on: standard error for progress and questions, standard output for a result */
+  readonly screen: NodeJS.WritableStream;
+  readonly stdin: NodeJS.ReadableStream;
+}
+
+interface TerminalInput {
+  /** the app's accent; the default theme's where none is given */
+  readonly accent?: AccentScale;
+  readonly output: Output;
+  readonly streams: TerminalStreams;
+}
+
+interface AskSelectInput<T> extends TerminalInput {
+  readonly choices: SelectProps<T>['choices'];
+  readonly message: string;
+}
+
+interface AskConfirmInput extends TerminalInput {
+  readonly isYesDefault: boolean;
+  readonly message: string;
+  readonly words: ConfirmWords;
+}
+
+interface AskTextInput extends TerminalInput {
+  readonly message: string;
+  readonly placeholder: string;
+}
+
+/** a tree drawn on a terminal, redrawn by each `show`, and gone, the terminal restored, once closed */
+interface TerminalView {
+  readonly close: () => Promise<void>;
+  readonly show: (tree: ReactNode) => void;
+}
+
+type Answer<T> =
+  | {
+      readonly kind: AnswerKind.Given;
+      readonly value: T;
+    }
+  | {
+      readonly kind: AnswerKind.Interrupted;
+    };
+
+/**
+ * Ctrl-C reaches the tree as a key, never as Ink's own exit, so a question can end the run as interrupted.
+ * The theme is made before Ink draws, since a failure inside Ink's render leaves a question unanswered.
+ */
+const openTerminalView = ({ output, streams, ...accentInput }: TerminalInput): TerminalView => {
+  const theme = createTheme({
+    ...accentInput,
+    colourLevel: output.colourLevel,
+    isMotionReduced: output.isMotionReduced,
+    mode: output.themeMode,
+  });
+
   const framed = (tree: ReactNode): ReactElement => (
     <StrictMode>
-      <ThemeProvider
-        accent={accent}
-        output={output}
-      >
-        {tree}
-      </ThemeProvider>
+      <ThemeContext value={theme}>{tree}</ThemeContext>
     </StrictMode>
   );
 
-  const instance = render(framed(undefined), {
+  const inkInstance = render(framed(undefined), {
     exitOnCtrlC: false,
     // Stryker disable next-line BooleanLiteral: the program writes nothing to the console while a view is open
     patchConsole: false,
     stdin: streams.stdin,
-    stdout: streams.stdout,
+    stdout: streams.screen,
   });
 
   return {
     close: async (): Promise<void> => {
-      instance.unmount();
-      await instance.waitUntilExit();
+      inkInstance.unmount();
+      await inkInstance.waitUntilExit();
     },
     show: (tree: ReactNode): void => {
-      instance.rerender(framed(tree));
+      inkInstance.rerender(framed(tree));
     },
   };
 };
 
-const ask = async <T,>(
-  input: TerminalInput & {
-    question: (answer: (given: T) => void, interrupt: () => void) => ReactElement;
-  },
-): Promise<Answer<T>> => {
-  const view = openTerminalView(input);
+const ask = async <T,>({
+  question,
+  ...terminalInput
+}: TerminalInput & {
+  readonly question: (answer: (given: T) => void, interrupt: () => void) => ReactElement;
+}): Promise<Answer<T>> => {
+  const view = openTerminalView(terminalInput);
 
   try {
     return await new Promise<Answer<T>>((resolve) => {
       view.show(
-        input.question(
+        question(
           (given) =>
             resolve({
               kind: AnswerKind.Given,
@@ -74,44 +121,66 @@ const ask = async <T,>(
   }
 };
 
-const askSelect = <T,>(input: AskSelectInput<T>): Promise<Answer<T>> =>
+const askSelect = <T,>({
+  choices,
+  message,
+  ...terminalInput
+}: AskSelectInput<T>): Promise<Answer<T>> =>
   ask<T>({
-    ...input,
+    ...terminalInput,
     question: (answer, interrupt) => (
       <Select
-        choices={input.choices}
-        message={input.message}
+        choices={choices}
+        message={message}
         onInterrupt={interrupt}
         onSubmit={answer}
       />
     ),
   });
 
-const askConfirm = (input: AskConfirmInput): Promise<Answer<boolean>> =>
+const askConfirm = ({
+  isYesDefault,
+  message,
+  words,
+  ...terminalInput
+}: AskConfirmInput): Promise<Answer<boolean>> =>
   ask<boolean>({
-    ...input,
+    ...terminalInput,
     question: (answer, interrupt) => (
       <Confirm
-        defaultAnswer={input.defaultAnswer}
-        message={input.message}
+        isYesDefault={isYesDefault}
+        message={message}
         onInterrupt={interrupt}
         onSubmit={answer}
-        words={input.words}
+        words={words}
       />
     ),
   });
 
-const askText = (input: AskTextInput): Promise<Answer<string>> =>
+const askText = ({
+  message,
+  placeholder,
+  ...terminalInput
+}: AskTextInput): Promise<Answer<string>> =>
   ask<string>({
-    ...input,
+    ...terminalInput,
     question: (answer, interrupt) => (
       <TextInput
-        message={input.message}
+        message={message}
         onInterrupt={interrupt}
         onSubmit={answer}
-        placeholder={input.placeholder}
+        placeholder={placeholder}
       />
     ),
   });
 
+export type {
+  Answer,
+  AskConfirmInput,
+  AskSelectInput,
+  AskTextInput,
+  TerminalInput,
+  TerminalStreams,
+  TerminalView,
+};
 export { askConfirm, askSelect, askText, openTerminalView };

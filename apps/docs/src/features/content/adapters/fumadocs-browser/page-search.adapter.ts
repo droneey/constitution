@@ -7,8 +7,7 @@ import { SearchResultKind } from '../../domain/entities';
 import { SearchError } from '../../domain/errors';
 
 interface StaticPageSearchInput {
-  /** where the site serves the index its server exported */
-  readonly address: string;
+  readonly indexAddress: string;
 }
 
 const kinds: Readonly<Record<SortedResult['type'], SearchResultKind>> = {
@@ -31,22 +30,36 @@ const resultOf = (hit: SortedResult): SearchResult => ({
 });
 
 /**
+ * Fetch rejects with a TypeError when the network fails, the index's read with a SyntaxError when it
+ * holds no JSON, and Fumadocs with an Error of no class and no code of its own when the site answers
+ * no index, where the search engine's own errors carry a code
+ */
+const isUnavailableIndex = (error: unknown): boolean =>
+  error instanceof TypeError ||
+  error instanceof SyntaxError ||
+  // Stryker disable next-line ConditionalExpression: only an error has a class to compare, so the check only narrows its type
+  (error instanceof Error && error.constructor === Error && !('code' in error));
+
+/**
  * Searches in the browser the index the site's server exported, downloaded once on the first search;
  * Fumadocs keeps it for the page's life, by its address.
  */
-export const createStaticPageSearch = ({ address }: StaticPageSearchInput): PageSearch => {
+export const createStaticPageSearch = ({ indexAddress }: StaticPageSearchInput): PageSearch => {
   const client = staticClient({
-    from: address,
+    from: indexAddress,
   });
 
   return {
     search: async (query): Promise<readonly SearchResult[]> => {
       const hits = await Promise.resolve(client.search(query)).catch((error: unknown) => {
+        if (!isUnavailableIndex(error)) {
+          throw error;
+        }
+
         throw new SearchError(
           {
-            address,
+            address: indexAddress,
           },
-          // Stryker disable next-line ObjectLiteral: the cause only explains the failure in a trace
           {
             cause: error,
           },

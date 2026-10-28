@@ -1,0 +1,22 @@
+{
+  "font": {
+    "body": {
+      "$type": "typography",
+      "sm": {
+        "$value": {
+          "fontFamily": "monospace",
+          "fontSize": {
+            "unit": "px",
+            "value": 14
+          },
+          "fontWeight": 400,
+          "letterSpacing": {
+            "unit": "px",
+            "value": 0
+          },
+          "lineHeight": 1.5
+        }
+      }
+    }
+  }
+}

@@ -1,4 +1,4 @@
-import { VersionsError } from '../../../domain/errors';
+import { ProgramError } from '#/kernel/errors';
 
 type Served = Readonly<
   Record<
@@ -40,12 +40,12 @@ export const transportSilent = (_address: string, init: TransportInit): Promise<
 
 export const transportFailing = (error: Error) => (): Promise<Response> => Promise.reject(error);
 
-/** the code and the details a read failed with and the name of its cause, or the error itself when it is none of the feature's */
+/** the code and the details a read failed with and the name of its cause, or the error itself when it is none of the program's */
 export const failureOf = (read: Promise<unknown>): Promise<unknown> =>
   read.then(
     () => undefined,
     (error: unknown) =>
-      error instanceof VersionsError
+      error instanceof ProgramError
         ? {
             cause: error.cause instanceof Error ? error.cause.name : error.cause,
             code: error.code,

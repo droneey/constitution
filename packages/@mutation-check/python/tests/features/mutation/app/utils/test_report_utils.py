@@ -1,75 +1,64 @@
-import pytest
+from pathlib import Path
+from typing import Final
 
-from droneey_mutation_check_python.features.mutation.app.constants import ExitStatus
-from droneey_mutation_check_python.features.mutation.app.utils import exit_status, render
+from droneey_mutation_check_python.features.mutation.app.errors import Misuse, UsageError
+from droneey_mutation_check_python.features.mutation.app.utils import render, render_error
 from droneey_mutation_check_python.features.mutation.domain.entities import (
   Broken,
   Mutant,
-  Outcome,
-  Pass,
+  MutantName,
+  MutantStatus,
   Passed,
+  PassReason,
   Survived,
 )
+from droneey_mutation_check_python.features.mutation.domain.errors import (
+  CommandFailedError,
+  CommandUnfinishedError,
+  Failure,
+  InvalidValueError,
+  MutantsKeptError,
+  ValueFailure,
+)
 
+REPORT_GOLDEN_PATH: Final = Path(__file__).with_name('report.golden.txt')
+ERRORS_GOLDEN_PATH: Final = Path(__file__).with_name('errors.golden.txt')
 SURVIVED = Survived(
   mutants=(
-    Mutant(name='shop.orders.x_total__mutmut_1', status='survived'),
-    Mutant(name='shop.orders.x_total__mutmut_2', status='no tests'),
+    Mutant(name=MutantName('shop.orders.x_total__mutmut_1'), status=MutantStatus.SURVIVED),
+    Mutant(name=MutantName('shop.orders.x_total__mutmut_2'), status=MutantStatus.NO_TESTS),
   ),
 )
-
-
-# The one table of the gate's report: its wording is pinned here alone.
-@pytest.mark.parametrize(
-  ('outcome', 'report'),
-  [
-    pytest.param(
-      Passed(why=Pass.UNCHANGED),
-      'mutation: unchanged: no function to mutate changed\n',
-      id='no function changed',
-    ),
-    pytest.param(
-      Passed(why=Pass.KILLED), 'mutation: killed: every mutant killed\n', id='every mutant killed'
-    ),
-    pytest.param(
-      Passed(why=Pass.EMPTY),
-      'mutation: empty: the functions hold nothing to mutate\n',
-      id='nothing to mutate',
-    ),
-    pytest.param(
-      SURVIVED,
-      (
-        'mutation: not-killed: shop.orders.x_total__mutmut_1: survived\n'
-        'mutation: not-killed: shop.orders.x_total__mutmut_2: no tests\n'
-      ),
-      id='mutants not killed',
-    ),
-    pytest.param(
-      Broken(output='failed to run the clean tests\n'),
-      'failed to run the clean tests\n',
-      id='mutmut failed',
-    ),
-  ],
+EVERY_OUTCOME: Final = (
+  Passed(reason=PassReason.UNCHANGED),
+  Passed(reason=PassReason.KILLED),
+  Passed(reason=PassReason.NOTHING_TO_MUTATE),
+  SURVIVED,
+  Broken(output='failed to run the clean tests\nAssertionError: assert False\n'),
 )
-def test_should_report_the_outcome(outcome: Outcome, report: str) -> None:
+EVERY_ERROR: Final = (
+  CommandFailedError(command=('git', 'diff'), output='fatal: bad revision origin/main\n'),
+  CommandUnfinishedError(code=Failure.COMMAND_NOT_RUN, command=('python', '-m', 'mutmut', 'run')),
+  CommandUnfinishedError(code=Failure.COMMAND_TIMED_OUT, command=('python', '-m', 'mutmut', 'run')),
+  MutantsKeptError(reason="[Errno 13] Permission denied: 'mutants/src'"),
+  InvalidValueError(code=ValueFailure.ABSOLUTE_PATH, text='/repository/src/shop/orders.py'),
+  InvalidValueError(code=ValueFailure.PATH_OUT_OF_UNIT, text='../outside/orders.py'),
+  UsageError(code=Misuse.UNKNOWN_ARGUMENTS, arguments=('al',)),
+  RuntimeError('boom'),
+)
+
+
+def test_should_report_the_outcomes_as_the_golden_file_shows_them() -> None:
   # Act
-  shown = render(outcome)
+  report = ''.join(map(render, EVERY_OUTCOME))
 
   # Assert
-  assert shown == report
+  assert report == REPORT_GOLDEN_PATH.read_text(encoding='utf-8')
 
 
-@pytest.mark.parametrize(
-  ('outcome', 'status'),
-  [
-    pytest.param(Passed(why=Pass.KILLED), ExitStatus.PASSED, id='a pass'),
-    pytest.param(SURVIVED, ExitStatus.FAILED, id='mutants not killed'),
-    pytest.param(Broken(output=''), ExitStatus.FAILED, id='mutmut failed'),
-  ],
-)
-def test_should_end_with_the_status_of_the_outcome(outcome: Outcome, status: ExitStatus) -> None:
+def test_should_report_the_errors_as_the_golden_file_shows_them() -> None:
   # Act
-  ended = exit_status(outcome)
+  report = ''.join(map(render_error, EVERY_ERROR))
 
   # Assert
-  assert ended == status
+  assert report == ERRORS_GOLDEN_PATH.read_text(encoding='utf-8')

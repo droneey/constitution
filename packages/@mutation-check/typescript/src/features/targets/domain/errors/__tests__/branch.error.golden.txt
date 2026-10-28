@@ -1,0 +1,4 @@
+git diff --merge-base origin/main in /work/packages/order could not start; install git, and run the check inside the repository
+git diff --merge-base origin/main in /work/packages/order failed: fatal: bad revision 'origin/main'; fetch origin/main, and run the check inside the repository
+git diff --merge-base origin/main in /work/packages/order did not answer in time; run the check again
+git diff --merge-base origin/main in /work/packages/order answered past the size the check reads; mutate the branch in smaller changes

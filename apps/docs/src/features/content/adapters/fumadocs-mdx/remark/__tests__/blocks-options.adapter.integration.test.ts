@@ -1,15 +1,20 @@
+import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
-import { enterRepository } from '../../repository/__tests__/repository.fixtures';
+import { BlockLayer } from '../../../../domain/entities';
+import { SourceFailure } from '../../../../domain/errors';
+import { AbsolutePath } from '../../../../domain/value-objects';
+import { enterRepository, failureOf } from '../../repository/__tests__/repository.fixtures';
 import { blocksOptionsOf } from '../blocks-options.adapter';
 
 const BLOCK_FILES = {
   'blocks/core/core.md': '# Core\n\n### core-rule · MUST\n',
   'blocks/core/deep/notes.txt': '### not-markdown · MUST\n',
   'blocks/core/deep/rules.md': '### deep-rule → core-rule · SHOULD\n#### not-a-rule · MUST\n',
-  'blocks/core/names.md': '# Names\n\n### name-says-what · MUST\n\n### name-is-short · MAY\n',
+  'blocks/core/names.md':
+    '# Names\n\n### name-says-what · MUST\n\n```md\n### fenced-rule · MUST\n```\n\n### name-is-short · MAY\n',
   'blocks/domains/ui/ui.md': '### ui-rule · MUST\n',
 } as const;
 
@@ -40,10 +45,10 @@ describe('blocksOptionsOf', () => {
     // Arrange
     const input = {
       baseUrl: '/docs',
-      blocks: join(repository.root, 'blocks'),
-      examples: join(repository.root, 'examples'),
-      folders: [
-        'core',
+      blocksFolderPath: AbsolutePath.create(join(repository.root, 'blocks')),
+      examplesFolderPath: AbsolutePath.create(join(repository.root, 'examples')),
+      layers: [
+        BlockLayer.Core,
       ],
     };
 
@@ -52,7 +57,7 @@ describe('blocksOptionsOf', () => {
 
     // Assert
     expect(options).toStrictEqual({
-      addresses: new Map([
+      addressesBySlug: new Map([
         [
           'core-rule',
           '/docs/core#core-rule',
@@ -70,7 +75,7 @@ describe('blocksOptionsOf', () => {
           '/docs/core/names#name-is-short',
         ],
       ]),
-      examples: new Map([
+      examplesBySlug: new Map([
         [
           'core-rule',
           '```ts title="Avoid"\nlet a;\n```\n',
@@ -79,21 +84,35 @@ describe('blocksOptionsOf', () => {
     });
   });
 
-  it('should fail when an example names no rule of the folders', () => {
+  it('should fail, naming each example that names no rule of the folders', () => {
     // Arrange
+    writeFileSync(
+      join(repository.root, 'examples/ui-only.md'),
+      '```ts title="Prefer"\nconst a = 1;\n```\n',
+    );
+
     const input = {
       baseUrl: '/docs',
-      blocks: join(repository.root, 'blocks'),
-      examples: join(repository.root, 'examples'),
-      folders: [
-        'domains',
+      blocksFolderPath: AbsolutePath.create(join(repository.root, 'blocks')),
+      examplesFolderPath: AbsolutePath.create(join(repository.root, 'examples')),
+      layers: [
+        BlockLayer.Domain,
       ],
     };
 
     // Act
-    const read = (): unknown => blocksOptionsOf(input);
+    const failure = failureOf(() => blocksOptionsOf(input));
 
     // Assert
-    expect(read).toThrow(new Error('examples name no rule: core-rule'));
+    expect(failure).toStrictEqual({
+      cause: undefined,
+      code: SourceFailure.ExampleRuleUnknown,
+      details: {
+        slugs: [
+          'core-rule',
+          'ui-only',
+        ],
+      },
+    });
   });
 });

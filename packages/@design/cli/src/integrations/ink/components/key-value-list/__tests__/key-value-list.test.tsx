@@ -1,39 +1,43 @@
 import { describe, expect, it } from 'bun:test';
 
-import { ColourLevel } from '#/libs/ui';
+import { goldenFileText, goldenOf } from '#/__tests__/golden.fixtures';
+import { createMarkingTheme, markedSpansOf } from '#/__tests__/theme.fixtures';
 
-import { createPlainOutput, renderWithTheme } from '../../../__tests__/ink.fixtures';
+import { frameOf } from '../../../__tests__/ink.fixtures';
 import { KeyValueList } from '../key-value-list';
 
 describe('KeyValueList', () => {
-  it('should line up the values after the widest key', () => {
-    // Arrange
-    const pairs = [
-      [
-        'version',
-        '0.80.0',
-      ],
-      [
-        'blocks',
-        '18',
-      ],
-    ] as const;
-
+  it('should line up the values after the widest key, as the golden file shows them', async () => {
     // Act
-    const { lastFrame } = renderWithTheme(<KeyValueList pairs={pairs} />);
-
-    // Assert
-    expect(lastFrame()).toBe('version  0.80.0\nblocks   18');
-  });
-
-  it("should draw the keys in the muted tone's colour when the run shows colour", () => {
-    // Arrange
-    const output = createPlainOutput({
-      colourLevel: ColourLevel.Basic,
+    const golden = goldenOf({
+      'keys of two widths': frameOf(
+        <KeyValueList
+          pairs={[
+            [
+              'version',
+              '0.80.0',
+            ],
+            [
+              'blocks',
+              '18',
+            ],
+          ]}
+        />,
+      ),
     });
 
+    // Assert
+    expect(golden).toBe(
+      await goldenFileText(new URL('key-value-list.golden.txt', import.meta.url)),
+    );
+  });
+
+  it('should draw the keys in the muted tone', () => {
+    // Arrange
+    const theme = createMarkingTheme();
+
     // Act
-    const { lastFrame } = renderWithTheme(
+    const frame = frameOf(
       <KeyValueList
         pairs={[
           [
@@ -42,10 +46,15 @@ describe('KeyValueList', () => {
           ],
         ]}
       />,
-      output,
+      theme,
     );
 
     // Assert
-    expect(lastFrame()).toBe('\u001B[37mversion\u001B[39m  1');
+    expect(markedSpansOf(frame)).toStrictEqual([
+      [
+        'muted',
+        'version',
+      ],
+    ]);
   });
 });

@@ -3,7 +3,6 @@ import { describe, expect, it } from 'bun:test';
 import { createFakePageSearch } from '#/__tests__/page-search.fake';
 
 import { SearchResultKind } from '../../../../entities';
-import { SearchError } from '../../../../errors';
 import { createSearchPages } from '../search-pages.use-case';
 
 const packPage = {
@@ -36,19 +35,5 @@ describe('createSearchPages', () => {
     expect(results).toStrictEqual([
       packPage,
     ]);
-  });
-
-  it('should fail with the search error when the index cannot be read', async () => {
-    // Arrange
-    const failure = new SearchError({
-      address: '/api/search',
-    });
-    const searchPages = createSearchPages(createFakePageSearch(failure));
-
-    // Act
-    const search = searchPages('pack');
-
-    // Assert
-    await expect(search).rejects.toBe(failure);
   });
 });

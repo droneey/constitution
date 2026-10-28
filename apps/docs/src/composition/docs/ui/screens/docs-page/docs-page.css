@@ -6,7 +6,7 @@
   [data-docs-body] [data-rule-card] {
     margin-block: var(--spacing-lg);
     padding: var(--spacing-sm);
-    border: 1px solid var(--color-border-base);
+    border: var(--border-width-thin) solid var(--color-border-base);
     background-color: var(--color-surface-level-1);
     border-radius: var(--radius-3xl);
   }
@@ -91,26 +91,34 @@
     }
   }
 
-  [data-docs-body] pre code {
-    font-size: var(--text-xs);
-    line-height: var(--leading-xs);
+  /* a search result is prose too, and its code keeps the result's size; :where() keeps the rules
+     of a rule's own code above this one */
+  [data-docs-body] :where(:not(pre)) > code:where(:not(#fd-search-list *)) {
+    font: var(--font-code-sm);
+    letter-spacing: var(--font-code-sm--letter-spacing);
   }
 
-  [data-docs-body] [data-rule] code {
+  [data-docs-body] pre code {
+    font: var(--font-code-xs);
+    letter-spacing: var(--font-code-xs--letter-spacing);
+  }
+
+  [data-docs-body] :is([data-rule], [data-rule-parent]) code {
     padding: 0;
     border: 0;
     background: none;
-    font-size: var(--text-base);
-    font-weight: var(--font-weight-semibold);
+  }
+
+  [data-docs-body] [data-rule] code {
+    font: var(--font-code-md);
+    letter-spacing: var(--font-code-md--letter-spacing);
   }
 
   [data-docs-body] [data-rule-card] > [data-rule-parent] {
     margin: var(--spacing-xs) 0 0;
     color: var(--color-text-muted);
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-    font-style: normal;
-    font-weight: var(--font-weight-normal);
+    font: var(--font-body-sm);
+    letter-spacing: var(--font-body-sm--letter-spacing);
   }
 
   [data-docs-body] [data-rule-parent] a {
@@ -124,49 +132,22 @@
   }
 
   [data-docs-body] [data-rule-parent] code {
-    padding: 0;
-    border: 0;
-    background: none;
     color: inherit;
-    font-size: var(--text-sm);
-    font-weight: var(--font-weight-normal);
-  }
-
-  [data-rule-level] {
-    display: inline-flex;
-    align-items: center;
-    height: var(--size-control-xs);
-    padding-inline: var(--spacing-xs);
-    border: 1px solid var(--color-accent-solid);
-    border-radius: var(--radius-control-base);
-    color: var(--color-accent-text);
-    font-family: var(--font-mono);
-    font-size: var(--text-xs);
-    font-style: normal;
-    font-weight: var(--font-weight-semibold);
-    letter-spacing: 0.04em;
-  }
-
-  [data-rule-level='must'] {
-    background: var(--color-accent-solid);
-    color: var(--color-accent-on-solid);
-  }
-
-  [data-rule-level='should'] {
-    border-color: transparent;
-    background: var(--color-accent-muted);
+    font: var(--font-code-sm);
+    letter-spacing: var(--font-code-sm--letter-spacing);
   }
 
   [data-docs-body] [data-rule-why] {
     color: var(--color-text-muted);
-    font-size: var(--text-sm);
+    font: var(--font-body-sm);
+    letter-spacing: var(--font-body-sm--letter-spacing);
   }
 
   [data-docs-body] [data-rule-why-label] {
     margin-inline-end: var(--spacing-xs);
     color: var(--color-text-primary);
-    font-style: normal;
-    font-weight: var(--font-weight-semibold);
+    font: var(--font-heading-xs);
+    letter-spacing: var(--font-heading-xs--letter-spacing);
   }
 
   [data-docs-body] [data-rule-example] {
@@ -190,18 +171,20 @@
     margin: 0 0 var(--spacing-xs);
   }
 
-  [data-docs-body] [data-rule-example-column] figure {
+  [data-docs-body] [data-rule-card] [data-rule-example-column] figure {
     margin: 0;
-    border-top-width: 2px;
+    border-top-width: var(--border-width-thick);
+    border-top-color: var(--rule-example-border);
+    background:
+      linear-gradient(var(--rule-example-fill), var(--rule-example-fill)), var(--color-surface-base);
   }
 
   [data-docs-body] [data-rule-example-label] {
     display: inline-flex;
     align-items: center;
     gap: var(--spacing-xs);
-    font-size: var(--text-sm);
-    font-style: normal;
-    font-weight: var(--font-weight-semibold);
+    font: var(--font-heading-xs);
+    letter-spacing: var(--font-heading-xs--letter-spacing);
   }
 
   /* without masks the label stands alone */
@@ -217,31 +200,20 @@
 
   [data-docs-body] [data-rule-example-column='avoid'] {
     --rule-example-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 6 6 18'/%3E%3Cpath d='m6 6 12 12'/%3E%3C/svg%3E");
+    --rule-example-text: var(--color-text-danger);
+    --rule-example-border: var(--color-border-danger);
+    --rule-example-fill: var(--color-fill-danger);
   }
 
   [data-docs-body] [data-rule-example-column='prefer'] {
     --rule-example-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+    --rule-example-text: var(--color-text-success);
+    --rule-example-border: var(--color-border-success);
+    --rule-example-fill: var(--color-fill-success);
   }
 
-  [data-docs-body] [data-rule-example-column='avoid'] [data-rule-example-label] {
-    color: var(--color-text-danger);
-  }
-
-  [data-docs-body] [data-rule-example-column='avoid'] figure {
-    border-top-color: var(--color-border-danger);
-    background:
-      linear-gradient(var(--color-fill-danger), var(--color-fill-danger)), var(--color-surface-base);
-  }
-
-  [data-docs-body] [data-rule-example-column='prefer'] [data-rule-example-label] {
-    color: var(--color-text-success);
-  }
-
-  [data-docs-body] [data-rule-example-column='prefer'] figure {
-    border-top-color: var(--color-border-success);
-    background:
-      linear-gradient(var(--color-fill-success), var(--color-fill-success)),
-      var(--color-surface-base);
+  [data-docs-body] [data-rule-example-column] [data-rule-example-label] {
+    color: var(--rule-example-text);
   }
 
   [data-docs-body] > :first-child {
@@ -266,34 +238,25 @@
     margin-bottom: var(--spacing-sm);
   }
 
-  /* on the type scale, where the library's prose sets them in ems */
-  [role='main'] > h1 {
-    font-size: var(--text-2xl);
-    line-height: var(--leading-2xl);
-  }
-
-  [data-docs-body] :is(h2, h3, h4) {
-    line-height: var(--leading-xl);
-  }
-
   [data-docs-body] h2 {
-    font-size: var(--text-xl);
+    font: var(--font-heading-lg);
+    letter-spacing: var(--font-heading-lg--letter-spacing);
   }
 
   [data-docs-body] h3 {
-    font-size: var(--text-lg);
-    line-height: var(--leading-lg);
+    font: var(--font-heading-md);
+    letter-spacing: var(--font-heading-md--letter-spacing);
   }
 
   [data-docs-body] h4 {
-    font-size: var(--text-base);
-    line-height: var(--leading-base);
+    font: var(--font-heading-sm);
+    letter-spacing: var(--font-heading-sm--letter-spacing);
   }
 
   [data-docs-body] > h2:not(:first-child) {
     margin-top: var(--spacing-lg);
     padding-top: var(--spacing-lg);
-    border-top: 1px solid var(--color-border-base);
+    border-top: var(--border-width-thin) solid var(--color-border-base);
   }
 
   [data-docs-body] :where(h3:not([data-rule])) {
@@ -316,39 +279,46 @@
   [data-docs-description] {
     margin-bottom: var(--spacing-sm);
     padding-bottom: var(--spacing-lg);
-    border-bottom: 1px solid var(--color-border-base);
+    border-bottom: var(--border-width-thin) solid var(--color-border-base);
   }
 
-  /* outside the page, in the contents and the search, a rule's level is one letter, filled, tinted
-     or outlined as its badge is */
+  [data-rule-level] {
+    height: var(--size-control-xs);
+    padding-inline: var(--spacing-xs);
+    border-radius: var(--radius-control-base);
+  }
+
+  /* a rule's level is a badge in the page and one letter outside it, in the contents and the
+     search, both filled, tinted or outlined alike */
+  :is([data-rule-level], [data-rule-mark]:not([data-docs-body] *)) {
+    display: inline-flex;
+    align-items: center;
+    border: var(--border-width-thin) solid var(--color-accent-solid);
+    color: var(--color-accent-text);
+    font: var(--font-overline-xs);
+    letter-spacing: var(--font-overline-xs--letter-spacing);
+  }
+
+  :is([data-rule-level='must'], [data-rule-mark='must']:not([data-docs-body] *)) {
+    background-color: var(--color-accent-solid);
+    color: var(--color-accent-on-solid);
+  }
+
+  :is([data-rule-level='should'], [data-rule-mark='should']:not([data-docs-body] *)) {
+    border-color: transparent;
+    background-color: var(--color-accent-muted);
+  }
+
   [data-rule-level]:not([data-docs-body] *) {
     display: none;
   }
 
   [data-rule-mark]:not([data-docs-body] *) {
-    display: inline-flex;
     flex-shrink: 0;
-    align-items: center;
     justify-content: center;
     width: var(--size-icon-md);
     height: var(--size-icon-md);
-    border: 1px solid var(--color-accent-solid);
     border-radius: var(--radius-sm);
-    color: var(--color-accent-text);
-    font-family: var(--font-mono);
-    font-size: var(--text-xs);
-    font-weight: var(--font-weight-semibold);
-    line-height: 1;
-  }
-
-  [data-rule-mark='must']:not([data-docs-body] *) {
-    background-color: var(--color-accent-solid);
-    color: var(--color-accent-on-solid);
-  }
-
-  [data-rule-mark='should']:not([data-docs-body] *) {
-    border-color: transparent;
-    background-color: var(--color-accent-muted);
   }
 
   @media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {

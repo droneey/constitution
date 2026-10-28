@@ -44,24 +44,51 @@ const navigationFixture = (): SerializedPageTree => ({
 interface DocsContentFake {
   docs: DocsContent;
   /** oldest first */
-  loads: PageSlugs[];
+  loads: (readonly string[])[];
   /** by collection and path */
   preloads: string[];
 }
 
 /**
- * One guide, one page the server lists after its body left its collection, and the tree; the guide's
- * body and the tree are kept once read, where React's `use` reads them, as the wiring keeps them
+ * The overview, the quick start, one guide and one page the server lists after its body left its
+ * collection, and the tree; each body and the tree are kept once read, where React's `use` reads
+ * them, as the wiring keeps them
  */
 const docsContentFake = (): DocsContentFake => {
-  const loads: PageSlugs[] = [];
+  const loads: (readonly string[])[] = [];
+  const keptBodies = new Map<string, Promise<Loaded>>();
   const kept: {
-    body?: Promise<Loaded>;
     navigation?: Promise<SerializedPageTree>;
   } = {};
   const preloads: string[] = [];
+  // both of the README, as the site's collections hold them
+  const overview = pageFixture({
+    collection: 'overview',
+    description: 'The rules a repository is built by.',
+    path: 'README.md',
+    title: 'Overview',
+  });
+  const quickStart = pageFixture({
+    collection: 'quickStart',
+    description: 'Adopt the Constitution in a project.',
+    path: 'README.md',
+    title: 'Quick start',
+  });
   const guide = pageFixture();
+  const withBodies = [
+    overview,
+    quickStart,
+    guide,
+  ];
   const pages = new Map([
+    [
+      '',
+      overview,
+    ],
+    [
+      'quick-start',
+      quickStart,
+    ],
     [
       'guides/write-a-pack',
       guide,
@@ -89,18 +116,23 @@ const docsContentFake = (): DocsContentFake => {
         return Promise.resolve(page);
       },
       getPageBody: ({ collection, path }: PageLocation): PageBody | undefined =>
-        collection === guide.collection && path === guide.path
+        withBodies.some((page) => page.collection === collection && page.path === path)
           ? {
               body: (): undefined => undefined,
               load: () => {
-                preloads.push(`${collection}:${path}`);
-                kept.body ??= trackedForUse(
-                  Promise.resolve({
-                    toc: [],
-                  }),
-                );
+                const key = `${collection}:${path}`;
+                const body =
+                  keptBodies.get(key) ??
+                  trackedForUse(
+                    Promise.resolve({
+                      toc: [],
+                    }),
+                  );
 
-                return kept.body;
+                preloads.push(key);
+                keptBodies.set(key, body);
+
+                return body;
               },
             }
           : undefined,

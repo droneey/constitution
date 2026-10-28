@@ -1,5 +1,8 @@
 import { afterEach, describe, expect, it } from 'bun:test';
 
+import { keepOneLayout } from '#/libs/ui';
+
+import { SidebarState } from '../../../domain/entities';
 import { documentFrame } from '../document-frame.adapter';
 
 declare global {
@@ -10,7 +13,8 @@ declare global {
 
 const wideWidth = globalThis.innerWidth;
 
-/** in CSS pixels */
+const pageMatchMedia = globalThis.matchMedia;
+
 const viewportOf = (width: number): void => {
   globalThis.happyDOM.setViewport({
     width,
@@ -19,6 +23,8 @@ const viewportOf = (width: number): void => {
 
 afterEach(() => {
   viewportOf(wideWidth);
+
+  globalThis.matchMedia = pageMatchMedia;
 
   delete document.documentElement.dataset.sidebar;
 });
@@ -33,36 +39,26 @@ describe('documentFrame', () => {
       narrow: false,
       width: 768,
     },
-  ])('should call a $width px screen narrow: $narrow', ({ narrow, width }) => {
-    // Arrange
-    viewportOf(width);
+  ])(
+    'should call a $width px screen narrow: $narrow, while the site keeps one layout',
+    ({ narrow, width }) => {
+      // Arrange
+      viewportOf(width);
+      keepOneLayout();
 
+      // Act
+      const isNarrow = documentFrame.isNarrow();
+
+      // Assert
+      expect(isNarrow).toBe(narrow);
+    },
+  );
+
+  it('should set the document data-sidebar to the state it marks the sidebar with', () => {
     // Act
-    const isNarrow = documentFrame.isNarrow();
+    documentFrame.markSidebar(SidebarState.Collapsed);
 
     // Assert
-    expect(isNarrow).toBe(narrow);
-  });
-
-  it('should set the document data-sidebar to collapsed when it marks the sidebar collapsed', () => {
-    // Arrange
-    const root = document.documentElement;
-
-    // Act
-    documentFrame.markSidebarCollapsed();
-
-    // Assert
-    expect(root.dataset.sidebar).toBe('collapsed');
-  });
-
-  it('should set the document data-sidebar to open when it marks the sidebar open', () => {
-    // Arrange
-    const root = document.documentElement;
-
-    // Act
-    documentFrame.markSidebarOpen();
-
-    // Assert
-    expect(root.dataset.sidebar).toBe('open');
+    expect(document.documentElement.dataset.sidebar).toBe('collapsed');
   });
 });

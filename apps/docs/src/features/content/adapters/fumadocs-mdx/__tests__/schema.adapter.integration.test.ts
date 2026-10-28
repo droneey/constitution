@@ -14,7 +14,8 @@ beforeEach(() => {
   const entered = enterRepository({
     files: {
       'bare.md': 'Only a body.\n',
-      'names.md': '# Names\n\n> Governs **names** and `code`.\n> And more.\n\nBody.\n',
+      'fenced.md': '```md\n# In code\n\n> In code.\n```\n\n# Names\n\n> Governs names.\n',
+      'names.md': '# Names\n\n> Governs **names**{#name} and `code`.\n> And more.\n\nBody.\n',
     },
   });
 
@@ -40,6 +41,22 @@ describe('markdownSchema', () => {
     expect(page).toStrictEqual({
       description: 'Governs names and code.',
       icon: 'Tag',
+      title: 'Names',
+    });
+  });
+
+  it('should read the title and the summary outside a fence when a fence holds lines like them', () => {
+    // Arrange
+    const schema = markdownSchema(() => undefined)({
+      path: join(repository.root, 'fenced.md'),
+    });
+
+    // Act
+    const page: Readonly<Record<string, unknown>> = schema.parse({});
+
+    // Assert
+    expect(page).toStrictEqual({
+      description: 'Governs names.',
       title: 'Names',
     });
   });

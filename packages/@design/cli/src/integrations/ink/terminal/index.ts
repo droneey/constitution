@@ -1,5 +1,3 @@
-export { askConfirm, askSelect, askText, openTerminalView } from './terminal';
-export { AnswerKind } from './terminal.constants';
 export type {
   Answer,
   AskConfirmInput,
@@ -8,4 +6,6 @@ export type {
   TerminalInput,
   TerminalStreams,
   TerminalView,
-} from './terminal.types';
+} from './terminal';
+export { askConfirm, askSelect, askText, openTerminalView } from './terminal';
+export { AnswerKind } from './terminal.constants';

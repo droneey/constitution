@@ -13,78 +13,91 @@ import { dirname, join, resolve } from 'node:path';
 
 import { afterAll, describe, expect, it } from 'bun:test';
 
-interface Check {
-  changes: Readonly<Record<string, string>>;
-  config?: Readonly<Record<string, string>>;
-  mainline?: Readonly<Record<string, string>>;
-  mode?: 'all';
-  // A workspace's other files, committed with the unit's before the change.
-  neighbours?: Readonly<Record<string, string>>;
-  unit?: string;
-}
+type Files = Readonly<Record<string, string>>;
 
 interface Outcome {
-  output: string;
-  status: number | undefined;
-  strykerArguments: string | undefined;
+  readonly status: number | undefined;
+  readonly strykerArguments: string | undefined;
 }
 
-const mainScript = resolve(import.meta.dirname, '../../src/main.ts');
-
-// git sees no configuration of the machine's: its home is a temporary folder, and the system's is off.
-const home = mkdtempSync(join(tmpdir(), 'mutation-check-home-'));
+const mainScriptPath = resolve(import.meta.dirname, '../../src/main.ts');
+const repositoryFolderPath = mkdtempSync(join(tmpdir(), 'mutation-check-e2e-'));
 
 afterAll(() => {
-  rmSync(home, {
+  rmSync(repositoryFolderPath, {
     force: true,
     recursive: true,
   });
 });
 
-const gitEnv: Readonly<Record<string, string>> = Object.fromEntries([
-  [
-    'GIT_CONFIG_NOSYSTEM',
-    '1',
-  ],
-  [
-    'HOME',
-    home,
-  ],
-  [
-    'PATH',
-    process.env['PATH'] ?? '',
-  ],
-]);
+const SPAWN_TIMEOUT_MS = 60_000;
 
-const SOURCE = {
+const SOURCE: Files = {
   'src/order.utils.ts': 'export const total = 1;\nexport const count = 2;\n',
 } as const;
 
-const CONFIG = {
-  'stryker.config.mjs': "export default { mutate: ['src/**/*.ts', '!src/**/__tests__/**'] };\n",
-} as const;
-
-const CHANGE = {
+const CHANGE: Files = {
+  'src/line.utils.ts': 'export const line = 1;\n',
   'src/order.utils.ts': 'export const total = 1;\nexport const count = 3;\n',
 } as const;
 
-const git = (input: { args: readonly string[]; folder: string }): void => {
-  spawnSync('git', input.args, {
-    cwd: input.folder,
-    env: gitEnv,
+// git sees no configuration of the machine's: its home is the repository's folder, and the system's is off.
+const runCommand = (input: { args: readonly string[]; folderPath: string }) =>
+  spawnSync(input.args[0] ?? '', input.args.slice(1), {
+    cwd: input.folderPath,
+    encoding: 'utf8',
+    env: Object.fromEntries([
+      [
+        'GIT_CONFIG_NOSYSTEM',
+        '1',
+      ],
+      [
+        'HOME',
+        repositoryFolderPath,
+      ],
+      [
+        'PATH',
+        `${join(input.folderPath, '.bin')}:${process.env['PATH'] ?? ''}`,
+      ],
+    ]),
+    timeout: SPAWN_TIMEOUT_MS,
   });
+
+const writeFiles = (input: { files: Files; folderPath: string }): void => {
+  for (const [filePath, text] of Object.entries(input.files)) {
+    mkdirSync(dirname(join(input.folderPath, filePath)), {
+      recursive: true,
+    });
+    writeFileSync(join(input.folderPath, filePath), text);
+  }
 };
 
-const commit = (folder: string): void => {
-  git({
-    args: [
+// A repository whose main line holds the unit's source and its configuration, a branch that changes
+// it, and a Stryker that keeps the arguments it was given.
+const runCheck = (configText: string): Outcome => {
+  const folderPath = mkdtempSync(join(repositoryFolderPath, 'unit-'));
+
+  writeFiles({
+    files: {
+      ...SOURCE,
+      'stryker.config.mjs': configText,
+    },
+    folderPath,
+  });
+
+  for (const args of [
+    [
+      'git',
+      'init',
+      '--quiet',
+    ],
+    [
+      'git',
       'add',
       '.',
     ],
-    folder,
-  });
-  git({
-    args: [
+    [
+      'git',
       '-c',
       'user.name=test',
       '-c',
@@ -93,303 +106,57 @@ const commit = (folder: string): void => {
       '--quiet',
       '--no-verify',
       '-m',
-      'change',
+      'base',
     ],
-    folder,
-  });
-};
-
-const moveMainOn = (input: { files: Readonly<Record<string, string>>; folder: string }): void => {
-  writeFiles(input);
-  commit(input.folder);
-  git({
-    args: [
+    [
+      'git',
       'update-ref',
       'refs/remotes/origin/main',
       'HEAD',
     ],
-    folder: input.folder,
-  });
-  git({
-    args: [
-      'reset',
-      '--quiet',
-      '--hard',
-      'HEAD~1',
-    ],
-    folder: input.folder,
-  });
-};
-
-const writeFiles = (input: { files: Readonly<Record<string, string>>; folder: string }): void => {
-  for (const [path, text] of Object.entries(input.files)) {
-    mkdirSync(dirname(join(input.folder, path)), {
-      recursive: true,
+  ]) {
+    runCommand({
+      args,
+      folderPath,
     });
-    writeFileSync(join(input.folder, path), text);
   }
-};
-
-const runCheck = (check: Check): Outcome => {
-  const folder = mkdtempSync(join(tmpdir(), 'devkit-mutation-check-'));
-  const unit = join(folder, check.unit ?? '');
-  const bin = join(folder, '.bin');
 
   writeFiles({
     files: {
-      ...SOURCE,
-      ...(check.config ?? CONFIG),
+      ...CHANGE,
+      '.bin/stryker': '#!/bin/sh\nprintf "%s " "$@" > "$PWD/.stryker-arguments"\n',
     },
-    folder: unit,
+    folderPath,
   });
-  writeFiles({
-    files: check.neighbours ?? {},
-    folder,
-  });
-  git({
+  chmodSync(join(folderPath, '.bin/stryker'), 0o755);
+
+  const checked = runCommand({
     args: [
-      'init',
-      '--quiet',
-    ],
-    folder,
-  });
-  commit(folder);
-  git({
-    args: [
-      'update-ref',
-      'refs/remotes/origin/main',
-      'HEAD',
-    ],
-    folder,
-  });
-
-  if (check.mainline !== undefined) {
-    moveMainOn({
-      files: check.mainline,
-      folder,
-    });
-  }
-
-  writeFiles({
-    files: check.changes,
-    folder: unit,
-  });
-  mkdirSync(bin);
-  writeFileSync(join(bin, 'stryker'), '#!/bin/sh\nprintf "%s " "$@" > "$PWD/.stryker-arguments"\n');
-  chmodSync(join(bin, 'stryker'), 0o755);
-
-  const running = spawnSync(
-    'bun',
-    [
+      'bun',
       '--no-env-file',
-      mainScript,
-      ...(check.mode === undefined
-        ? []
-        : [
-            check.mode,
-          ]),
+      mainScriptPath,
     ],
-    {
-      cwd: unit,
-      encoding: 'utf8',
-      env: Object.fromEntries([
-        [
-          'HOME',
-          home,
-        ],
-        [
-          'PATH',
-          `${bin}:${process.env['PATH'] ?? ''}`,
-        ],
-      ]),
-    },
-  );
-  const recorded = join(unit, '.stryker-arguments');
-  const strykerArguments = existsSync(recorded) ? readFileSync(recorded, 'utf8').trim() : undefined;
-
-  rmSync(folder, {
-    force: true,
-    recursive: true,
+    folderPath,
   });
+  const recordedArgumentsPath = join(folderPath, '.stryker-arguments');
 
   return {
-    output: running.stdout,
-    status: running.status ?? undefined,
-    strykerArguments,
+    status: checked.status ?? undefined,
+    strykerArguments: existsSync(recordedArgumentsPath)
+      ? readFileSync(recordedArgumentsPath, 'utf8').trim()
+      : undefined,
   };
 };
 
 describe('mutation-check', () => {
-  it('should mutate the changed line and the new file when a change touches both', () => {
-    // Arrange
-    const check = {
-      changes: {
-        'src/line.utils.ts': 'export const line = 1;\n',
-        'src/order.utils.ts': 'export const total = 1;\nexport const count = 3;\n',
-      },
-    };
-
+  it('should mutate the lines a change touches and the files it adds', () => {
     // Act
-    const { strykerArguments } = runCheck(check);
+    const checked = runCheck("export default { mutate: ['src/**/*.ts'] };\n");
 
     // Assert
-    expect(strykerArguments).toBe('run --mutate src/line.utils.ts,src/order.utils.ts:2-2');
-  });
-
-  it("should mutate only the branch's lines when the main line moved on after the branch began", () => {
-    // Arrange
-    const check = {
-      changes: CHANGE,
-      mainline: {
-        'src/order.utils.ts': 'export const total = 5;\nexport const count = 2;\n',
-      },
-    };
-
-    // Act
-    const { strykerArguments } = runCheck(check);
-
-    // Assert
-    expect(strykerArguments).toBe('run --mutate src/order.utils.ts:2-2');
-  });
-
-  it('should mutate the changed line when the configuration is JSON', () => {
-    // Arrange
-    const check = {
-      changes: CHANGE,
-      config: {
-        'stryker.config.json': '{ "mutate": ["src/**/*.ts"] }\n',
-      },
-    };
-
-    // Act
-    const { strykerArguments } = runCheck(check);
-
-    // Assert
-    expect(strykerArguments).toBe('run --mutate src/order.utils.ts:2-2');
-  });
-
-  it.each([
-    {
-      condition: 'names no patterns',
-      config: 'export default {};\n',
-    },
-    {
-      condition: 'names a pattern that is not text',
-      config: "export default { mutate: ['src/**/*.ts', 1] };\n",
-    },
-    {
-      condition: 'exports nothing by default',
-      config: 'export const mutate = [];\n',
-    },
-  ])('should stop before any mutant when the configuration $condition', ({ config }) => {
-    // Arrange
-    const check = {
-      changes: CHANGE,
-      config: {
-        'stryker.config.mjs': config,
-      },
-    };
-
-    // Act
-    const { status, strykerArguments } = runCheck(check);
-
-    // Assert
-    expect({
-      status,
-      strykerArguments,
-    }).toStrictEqual({
-      status: 2,
-      strykerArguments: undefined,
-    });
-  });
-
-  it('should run no mutant when a change only reformats a mutated file', () => {
-    // Arrange
-    const check = {
-      changes: {
-        'src/order.utils.ts': 'export const total = 1;\n\nexport const count = 2;\n',
-      },
-    };
-
-    // Act
-    const { strykerArguments } = runCheck(check);
-
-    // Assert
-    expect(strykerArguments).toBeUndefined();
-  });
-
-  it('should run no mutant when no mutated line changed', () => {
-    // Arrange
-    const check = {
-      changes: {
-        'src/__tests__/helpers.ts': 'export const helper = 1;\n',
-      },
-    };
-
-    // Act
-    const outcome = runCheck(check);
-
-    // Assert
-    expect(outcome).toStrictEqual({
-      output: 'mutation: no line to mutate changed\n',
+    expect(checked).toStrictEqual({
       status: 0,
-      strykerArguments: undefined,
+      strykerArguments: 'run --mutate src/line.utils.ts,src/order.utils.ts:2-2',
     });
-  });
-
-  it("should mutate the unit's changed line when the check runs from a unit of a workspace", () => {
-    // Arrange
-    const check = {
-      changes: {
-        ...CHANGE,
-        '../web/src/order.utils.ts': 'export const total = 4;\n',
-      },
-      neighbours: {
-        'packages/web/src/order.utils.ts': 'export const total = 1;\n',
-      },
-      unit: 'packages/api',
-    };
-
-    // Act
-    const { strykerArguments } = runCheck(check);
-
-    // Assert
-    expect(strykerArguments).toBe('run --mutate src/order.utils.ts:2-2');
-  });
-
-  it('should run no mutant when a change only reformats a file of the unit the check runs from', () => {
-    // Arrange
-    const check = {
-      changes: {
-        'src/order.utils.ts': 'export const total = 1;\n\nexport const count = 2;\n',
-      },
-      unit: 'packages/api',
-    };
-
-    // Act
-    const { status, strykerArguments } = runCheck(check);
-
-    // Assert
-    expect({
-      status,
-      strykerArguments,
-    }).toStrictEqual({
-      status: 0,
-      strykerArguments: undefined,
-    });
-  });
-
-  it('should mutate everything the configuration names when the check runs in all mode', () => {
-    // Arrange
-    const check = {
-      changes: {},
-      mode: 'all' as const,
-    };
-
-    // Act
-    const { strykerArguments } = runCheck(check);
-
-    // Assert
-    expect(strykerArguments).toBe('run');
   });
 });

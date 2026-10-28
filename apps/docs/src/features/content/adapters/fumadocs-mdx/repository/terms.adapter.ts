@@ -7,16 +7,17 @@ import {
   TermKind as DefinedTermKind,
   RuleHeading,
 } from '@droneey/constitution';
-import type { Heading, Parent, PhrasingContent, RootContent, Strong, Text } from 'mdast';
+import type { Parent, PhrasingContent, RootContent, Strong, Text } from 'mdast';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { toString as mdastTextOf } from 'mdast-util-to-string';
 import { visit } from 'unist-util-visit';
 
-import { MARKDOWN_EXTENSION, pageSlugsOf, Term, TermKind } from '../../../domain/entities';
-import { headingTextOf, SUBSECTION_HEADING_DEPTH } from '../markdown';
+import { Page, Term, TermKind } from '../../../domain/entities';
+import { BlockPath } from '../../../domain/value-objects';
+import { headingTextOf, isSectionHeading, SUBSECTION_HEADING_DEPTH } from '../markdown';
 import { FRONT_MATTER } from './blocks.constants';
 import { inRepository } from './repository.adapter';
-import { BLOCKS_FOLDER } from './repository.constants';
+import { blocksFolderPath } from './repository.constants';
 
 interface TermName {
   readonly kind: TermKind;
@@ -73,12 +74,11 @@ const boldOf = (strong: Strong): Bold | undefined => {
     : undefined;
 };
 
-const isSectionHeading = (node: RootContent): node is Heading =>
-  // Stryker disable next-line ConditionalExpression: only a heading has a depth, so checking its type only narrows it
-  node.type === 'heading' && node.depth <= SUBSECTION_HEADING_DEPTH;
-
 // A rule's section runs from its heading to the next heading of its depth or above.
-const ruleAt = (input: { index: number; nodes: readonly RootContent[] }): string | undefined => {
+const ruleSlugAt = (input: {
+  index: number;
+  nodes: readonly RootContent[];
+}): string | undefined => {
   const heading = input.nodes.slice(0, input.index + 1).findLast(isSectionHeading);
 
   return heading?.depth === SUBSECTION_HEADING_DEPTH
@@ -95,12 +95,12 @@ const idOf = (input: { index: number | undefined; parent: Parent }): string | un
 };
 
 const termsUnder = (input: {
-  block: string;
+  blockId: string;
+  blockPath: BlockPath;
   body: string;
   node: RootContent;
-  page: string;
-  path: string;
-  rule: string | undefined;
+  pageAddress: string;
+  ruleSlug: string | undefined;
 }): readonly Term[] => {
   const terms: Term[] = [];
 
@@ -113,24 +113,24 @@ const termsUnder = (input: {
     }
 
     // Stryker disable next-line OptionalChaining: the parser places every node it reads
-    const start = parent.position?.start.offset ?? 0;
+    const parentStartOffset = parent.position?.start.offset ?? 0;
     const anchor =
       idOf({
         index,
         parent,
-      }) ?? input.rule;
+      }) ?? input.ruleSlug;
 
     terms.push(
       Term.create({
         ...nameOf(bold),
-        address: anchor === undefined ? input.page : `${input.page}#${anchor}`,
-        axis: Term.axisOf(input.path),
-        block: input.block,
+        address: anchor === undefined ? input.pageAddress : `${input.pageAddress}#${anchor}`,
+        axis: Term.axisOf(input.blockPath),
+        blockId: input.blockId,
         sentence: Term.sentenceAround({
           // Stryker disable next-line OptionalChaining: the parser places every node it reads
-          offset: (strong.position?.start.offset ?? 0) - start,
+          offset: (strong.position?.start.offset ?? 0) - parentStartOffset,
           // Stryker disable next-line OptionalChaining: the parser places every node it reads
-          text: input.body.slice(start, parent.position?.end.offset),
+          text: input.body.slice(parentStartOffset, parent.position?.end.offset),
         }),
       }),
     );
@@ -139,29 +139,29 @@ const termsUnder = (input: {
   return terms;
 };
 
-/** the terms one block file defines, `path` below the blocks folder; a file of no block defines none */
-const termsIn = (input: { baseUrl: string; markdown: string; path: string }): readonly Term[] => {
-  const block = Term.blockOf(input.path);
+const termsIn = (input: {
+  baseUrl: string;
+  blockPath: BlockPath;
+  markdown: string;
+}): readonly Term[] => {
+  const blockId = Term.blockIdOf(input.blockPath);
 
-  if (block === undefined) {
+  if (blockId === undefined) {
     return [];
   }
 
   const body = input.markdown.slice(FRONT_MATTER.exec(input.markdown)?.[0].length);
-  const page = [
-    input.baseUrl,
-    ...pageSlugsOf(input.path),
-  ].join('/');
+  const pageAddress = Page.addressOf(input.baseUrl, input.blockPath);
   const nodes = fromMarkdown(body).children;
 
   return nodes.flatMap((node, index) =>
     termsUnder({
-      block,
+      blockId,
+      blockPath: input.blockPath,
       body,
       node,
-      page,
-      path: input.path,
-      rule: ruleAt({
+      pageAddress,
+      ruleSlug: ruleSlugAt({
         index,
         nodes,
       }),
@@ -171,18 +171,18 @@ const termsIn = (input: { baseUrl: string; markdown: string; path: string }): re
 
 /** every term the blocks define, by name */
 const termsOf = (baseUrl: string): readonly Term[] => {
-  const blocks = inRepository(BLOCKS_FOLDER);
+  const blocksFolderAbsolutePath = inRepository(blocksFolderPath);
 
-  return readdirSync(blocks, {
+  return readdirSync(blocksFolderAbsolutePath, {
     recursive: true,
   })
     .map(String)
-    .filter((path) => path.endsWith(MARKDOWN_EXTENSION))
-    .flatMap((path) =>
+    .filter(BlockPath.is)
+    .flatMap((blockPath) =>
       termsIn({
         baseUrl,
-        markdown: readFileSync(join(blocks, path), 'utf8'),
-        path,
+        blockPath,
+        markdown: readFileSync(join(blocksFolderAbsolutePath, blockPath), 'utf8'),
       }),
     )
     .toSorted(Term.compare);

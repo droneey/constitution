@@ -81,16 +81,66 @@
       }
     }
   },
-  "text": {
-    "$type": "dimension",
-    "sm": {
-      "$value": "{dimension.16}"
-    }
-  },
-  "leading": {
-    "$type": "dimension",
-    "sm": {
-      "$value": "{dimension.8}"
+  "font": {
+    "size": {
+      "$type": "dimension",
+      "sm": {
+        "$value": {
+          "unit": "px",
+          "value": 14
+        }
+      }
+    },
+    "leading": {
+      "$type": "number",
+      "sm": {
+        "$value": 1.5
+      }
+    },
+    "family": {
+      "$type": "fontFamily",
+      "mono": {
+        "$value": [
+          "Geist Mono Variable",
+          "monospace"
+        ]
+      }
+    },
+    "tracking": {
+      "$type": "dimension",
+      "normal": {
+        "$value": {
+          "unit": "px",
+          "value": 0
+        }
+      }
+    },
+    "code": {
+      "$type": "typography",
+      "sm": {
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.sm}",
+          "fontWeight": "{font.weight.normal}",
+          "letterSpacing": "{font.tracking.normal}",
+          "lineHeight": "{font.leading.sm}"
+        }
+      },
+      "md": {
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.sm}",
+          "fontWeight": "{font.weight.normal}",
+          "letterSpacing": "{font.tracking.normal}",
+          "lineHeight": "{font.leading.sm}"
+        }
+      }
+    },
+    "ratio": {
+      "$type": "number",
+      "type": {
+        "$value": 1.25
+      }
     }
   },
   "radius": {

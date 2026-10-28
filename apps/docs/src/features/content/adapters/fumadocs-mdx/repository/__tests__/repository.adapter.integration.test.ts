@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
-import { addressOf, blockLayerOf, inRepository, repositoryPathOf } from '../repository.adapter';
+import { RepositoryPath } from '../../../../domain/value-objects';
+import { addressOf, blockLayerOf, inRepository, linkTargetOf } from '../repository.adapter';
 import { enterRepository } from './repository.fixtures';
 
 const GITHUB = 'https://github.com/droneey/constitution';
@@ -175,16 +176,17 @@ describe('addressOf', () => {
   ])('should give the address when $condition', ({ address, hash, path }) => {
     // Arrange
     const baseUrl = '/docs';
+    const repositoryPath = RepositoryPath.create(path);
 
     // Act
-    const found = addressOf(baseUrl, path, hash);
+    const found = addressOf(baseUrl, repositoryPath, hash);
 
     // Assert
     expect(found).toBe(address);
   });
 });
 
-describe('repositoryPathOf', () => {
+describe('linkTargetOf', () => {
   it.each([
     {
       condition: 'a guide links to a sibling',
@@ -233,13 +235,17 @@ describe('repositoryPathOf', () => {
     },
   ])('should read the path when $condition', ({ from, target, url }) => {
     // Arrange
-    const file = inRepository(from);
+    const fromFilePath = inRepository(RepositoryPath.create(from));
+    const expected = {
+      hash: target.hash,
+      path: RepositoryPath.create(target.path),
+    };
 
     // Act
-    const found = repositoryPathOf(file, url);
+    const found = linkTargetOf(fromFilePath, url);
 
     // Assert
-    expect(found).toStrictEqual(target);
+    expect(found).toStrictEqual(expected);
   });
 
   it.each([
@@ -261,10 +267,10 @@ describe('repositoryPathOf', () => {
     },
   ])('should read no path when $condition', ({ url }) => {
     // Arrange
-    const file = inRepository('README.md');
+    const fromFilePath = inRepository(RepositoryPath.create('README.md'));
 
     // Act
-    const found = repositoryPathOf(file, url);
+    const found = linkTargetOf(fromFilePath, url);
 
     // Assert
     expect(found).toBeUndefined();
@@ -294,8 +300,11 @@ describe('blockLayerOf', () => {
       path: 'packages/constitution/blocks/contexts/platforms',
     },
   ])('should give $folder as the sidebar folder of $path', ({ folder, path }) => {
+    // Arrange
+    const repositoryPath = RepositoryPath.create(path);
+
     // Act
-    const layer = blockLayerOf(path);
+    const layer = blockLayerOf(repositoryPath);
 
     // Assert
     expect(layer).toBe(folder);

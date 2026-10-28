@@ -17,6 +17,7 @@ export {
   ColumnAlign,
   columnWidthsOf,
   DETAIL_SEPARATOR,
+  ELLIPSIS,
   formatFailure,
   formatHeading,
   formatKeyValues,
@@ -26,6 +27,7 @@ export {
   formatTable,
   formatTaskList,
   formatWaiting,
+  keyWidthOf,
   padTo,
   STEP_LOOKS,
   StepStatus,
@@ -34,7 +36,6 @@ export {
   widthOf,
 } from './text';
 export type {
-  AccentTokens,
   Output,
   OutputFlags,
   OutputInput,
@@ -43,10 +44,12 @@ export type {
   ThemeInput,
 } from './theme';
 export {
+  AccentScale,
   ColourLevel,
   chooseOutput,
   createTheme,
   Glyph,
+  MalformedAccentError,
   OutputMode,
   Space,
   ThemeMode,

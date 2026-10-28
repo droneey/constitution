@@ -5,6 +5,7 @@ import pytest
 
 def _refuse_network(*_args: object, **_kwargs: object) -> None:
   message = 'a spec reached the network: give it the fake of its transport'
+
   raise ConnectionRefusedError(message)
 
 

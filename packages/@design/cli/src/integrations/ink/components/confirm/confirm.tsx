@@ -2,51 +2,66 @@ import type { ReactElement } from 'react';
 
 import { Box, Text } from 'ink';
 
-import { ConfirmWords, Space, Tone } from '#/libs/ui';
+import type { ConfirmWords } from '#/libs/ui';
+import { Space, Tone } from '#/libs/ui';
 
-import { useTheme } from '../../hooks';
+import { useTheme } from '../../theme';
 import { useConfirm } from './confirm.hooks';
-import type { ConfirmProps } from './confirm.types';
+
+interface ConfirmProps {
+  readonly isYesDefault: boolean;
+  readonly message: string;
+  readonly onInterrupt: () => void;
+  readonly onSubmit: (answer: boolean) => void;
+  readonly words: ConfirmWords;
+}
 
 function Confirm({
-  defaultAnswer,
+  isYesDefault,
   message,
   onInterrupt,
   onSubmit,
   words,
 }: ConfirmProps): ReactElement {
   const theme = useTheme();
-  const keys = ConfirmWords.keysOf(words);
-  const answers = new Intl.ListFormat(words.locale, {
-    type: 'disjunction',
-  }).format([
-    words.yes,
-    words.no,
-  ]);
+  const { keys } = words;
 
   useConfirm({
-    defaultAnswer,
+    isYesDefault,
     keys,
     onInterrupt,
     onSubmit,
   });
 
+  // An answer is read out as its word, and the default, which Enter gives, as checked.
+  const answerOf = (word: string, key: string, isDefault: boolean): ReactElement => (
+    <Box
+      aria-label={word}
+      aria-role='radio'
+      aria-state={{
+        checked: isDefault,
+      }}
+    >
+      <Text>{theme.paint(Tone.Muted, isDefault ? key.toUpperCase() : key)}</Text>
+    </Box>
+  );
+
   return (
     <Box
-      aria-label={`${message}, ${answers}`}
+      aria-role='radiogroup'
       gap={theme.space[Space.Xs]}
     >
       <Text>{theme.strong(message)}</Text>
-      <Text>
-        {theme.paint(
-          Tone.Muted,
-          defaultAnswer
-            ? `(${keys.yes.toUpperCase()}/${keys.no})`
-            : `(${keys.yes}/${keys.no.toUpperCase()})`,
-        )}
-      </Text>
+      <Box>
+        <Text aria-hidden>{theme.paint(Tone.Muted, '(')}</Text>
+        {answerOf(words.yes, keys.yes, isYesDefault)}
+        <Text aria-hidden>{theme.paint(Tone.Muted, '/')}</Text>
+        {answerOf(words.no, keys.no, !isYesDefault)}
+        <Text aria-hidden>{theme.paint(Tone.Muted, ')')}</Text>
+      </Box>
     </Box>
   );
 }
 
+export type { ConfirmProps };
 export { Confirm };

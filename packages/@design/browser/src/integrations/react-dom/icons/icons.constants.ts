@@ -1,3 +1,4 @@
+import type { LucideIcon } from 'lucide-react';
 import {
   ArrowRight,
   Check,
@@ -7,8 +8,6 @@ import {
   Tag,
   TextIcon,
 } from 'lucide-react';
-
-import type { IconGlyph } from './icons.types';
 
 enum IconName {
   Expand = 'expand',
@@ -28,6 +27,6 @@ const iconGlyphs = {
   [IconName.Selected]: Check,
   [IconName.Switch]: ChevronsUpDown,
   [IconName.Version]: Tag,
-} satisfies Record<IconName, IconGlyph>;
+} satisfies Record<IconName, LucideIcon>;
 
 export { IconName, iconGlyphs };

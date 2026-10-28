@@ -1,48 +1,39 @@
-/** the same folders in blocks/ and on the site */
-const BLOCK_LAYERS: readonly string[] = [
-  // Stryker disable next-line StringLiteral: read only by the site's loader and build
-  'core',
-  // Stryker disable next-line StringLiteral: read only by the site's loader and build
-  'domains',
-  // Stryker disable next-line StringLiteral: read only by the site's loader and build
-  'contexts/platforms',
-  // Stryker disable next-line StringLiteral: read only by the site's loader and build
-  'contexts/languages',
-  // Stryker disable next-line StringLiteral: read only by the site's loader and build
-  'implementations',
-] as const;
+import { BlockLayer } from '../../../domain/entities';
+import { RepositoryPath } from '../../../domain/value-objects';
 
-const BLOCKS_FOLDER = 'packages/constitution/blocks/';
+const blockLayers: readonly string[] = Object.values(BlockLayer);
 
-const DOCS_FOLDER = 'docs/';
+const blocksFolderPath = RepositoryPath.create('packages/constitution/blocks');
 
-const README_FILE = 'README.md';
+const docsFolderPath = RepositoryPath.create('docs');
 
-const PROJECT_FILE = 'PROJECT.md';
+const readmeFilePath = RepositoryPath.create('README.md');
+
+const projectFilePath = RepositoryPath.create('PROJECT.md');
 
 const QUICK_START = 'quick-start';
 
 /** the page made of PROJECT.md's glossary, and that section's anchor */
 const GLOSSARY = 'glossary';
 
-const SITE_DOCUMENTS: Readonly<Record<string, string>> = {
+const siteDocuments: Readonly<Record<string, string>> = {
   'CONTRIBUTING.md': 'contributing',
   'DECISIONS.md': 'decisions',
-} as const;
+};
 
 /** contexts/ holds two layers, and the sidebar one folder for them */
 const siteLayers: readonly string[] = [
-  ...new Set(BLOCK_LAYERS.map((layer) => layer.replace(/\/.*/, ''))),
+  ...new Set(blockLayers.map((layer) => layer.replace(/\/.*/, ''))),
 ];
 
 export {
-  BLOCK_LAYERS,
-  BLOCKS_FOLDER,
-  DOCS_FOLDER,
+  blockLayers,
+  blocksFolderPath,
+  docsFolderPath,
   GLOSSARY,
-  PROJECT_FILE,
+  projectFilePath,
   QUICK_START,
-  README_FILE,
-  SITE_DOCUMENTS,
+  readmeFilePath,
+  siteDocuments,
   siteLayers,
 };

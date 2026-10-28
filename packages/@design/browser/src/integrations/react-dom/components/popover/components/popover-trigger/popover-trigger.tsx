@@ -1,11 +1,12 @@
-import type { ReactElement } from 'react';
+import type { ComponentPropsWithRef, ReactElement } from 'react';
 
 import { Popover as BasePopover } from '@base-ui/react/popover';
 
-import type { PopoverTriggerProps } from './popover-trigger.types';
+type PopoverTriggerProps = ComponentPropsWithRef<'button'>;
 
 function PopoverTrigger(props: PopoverTriggerProps): ReactElement {
   return <BasePopover.Trigger {...props} />;
 }
 
+export type { PopoverTriggerProps };
 export { PopoverTrigger };

@@ -1,4 +1,10 @@
 @layer components {
+  /* a list keeps the position its own styles give it, and is positioned only where none do */
+  :where(:has(> [data-glide])) {
+    position: relative;
+    isolation: isolate;
+  }
+
   [data-glide] {
     --glide-inset: 0px;
     position: absolute;
@@ -13,12 +19,19 @@
     background-clip: content-box;
     opacity: 0;
     pointer-events: none;
-    transition-property: translate, width, height, opacity, scale;
+    transition-property: opacity;
     transition-duration: var(--duration-base);
     transition-timing-function: var(--ease-out);
+  }
 
-    @media (prefers-reduced-motion: reduce) {
-      transition-property: opacity;
+  [data-glide][data-visible] {
+    opacity: 1;
+  }
+
+  /* a block that enters fades in where its row is, and only then slides from row to row */
+  @media (prefers-reduced-motion: no-preference) {
+    [data-glide]:not([data-entering]) {
+      transition-property: translate, width, height, opacity, scale;
     }
   }
 }

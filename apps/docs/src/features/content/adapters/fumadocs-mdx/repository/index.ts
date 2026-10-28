@@ -2,18 +2,16 @@ export { axisFoldersOf, coreChaptersOf, layerBlocksOf, seamHoldersOf } from './b
 export { SEAMS_FOLDER } from './blocks.constants';
 export { taglineOf } from './brand.adapter';
 export { blockFoldersOf, metaFile, siteLayoutOf } from './folders.adapter';
-export type { SiteLayout } from './folders.types';
 export { documentIconOf, guideIconOf, sectionSummaryOf, sidebarOf } from './navigation.adapter';
 export { DOCUMENTATION_SECTION } from './navigation.constants';
 export { ICONS_BY_ADDRESS } from './navigation-icons.constants';
 export { releaseOf } from './release.adapter';
-export { addressOf, inRepository, repositoryPathOf } from './repository.adapter';
+export { addressOf, inRepository, linkTargetOf } from './repository.adapter';
 export {
-  BLOCK_LAYERS,
-  BLOCKS_FOLDER,
+  blocksFolderPath,
   GLOSSARY,
   QUICK_START,
-  SITE_DOCUMENTS,
+  siteDocuments,
   siteLayers,
 } from './repository.constants';
 export { termsOf } from './terms.adapter';

@@ -1,46 +1,40 @@
 import { describe, expect, it } from 'bun:test';
 
+import { goldenFileText, goldenOf } from '#/__tests__/golden.fixtures';
 import { Tone } from '#/libs/ui';
 
-import { renderWithTheme, screenReaderOutputOf } from '../../../__tests__/ink.fixtures';
+import { frameOf, screenReaderOutputOf } from '../../../__tests__/ink.fixtures';
 import { Note } from '../note';
 
 describe('Note', () => {
-  it('should draw a box with the tone, the title and the lines', () => {
-    // Arrange
-    const note = {
-      lines: [
-        'one',
-      ],
-      title: 'Heads up',
-      tone: Tone.Warning,
-    };
-
+  it('should draw a box with the tone, the title and the lines, and read out the label of its tone and its title, as the golden file shows them', async () => {
     // Act
-    const { lastFrame } = renderWithTheme(<Note note={note} />);
+    const golden = goldenOf({
+      'a warning': frameOf(
+        <Note
+          note={{
+            lines: [
+              'one',
+            ],
+            title: 'Heads up',
+            tone: Tone.Warning,
+          }}
+          toneLabel='warning'
+        />,
+      ),
+      'read out': screenReaderOutputOf(
+        <Note
+          note={{
+            lines: [],
+            title: 'Heads up',
+            tone: Tone.Warning,
+          }}
+          toneLabel='careful'
+        />,
+      ),
+    });
 
     // Assert
-    expect(lastFrame()?.split('\n')).toStrictEqual([
-      `╭${'─'.repeat(98)}╮`,
-      `│ ⚠ Heads up${' '.repeat(87)}│`,
-      `│ one${' '.repeat(94)}│`,
-      `╰${'─'.repeat(98)}╯`,
-    ]);
-  });
-
-  it('should read out its tone and its title', () => {
-    // Arrange
-    const note = {
-      lines: [],
-      title: 'Heads up',
-      tone: Tone.Warning,
-    };
-
-    // Act
-    const spoken = screenReaderOutputOf(<Note note={note} />);
-
-    // Assert
-    // biome-ignore lint/plugin/case-pins-meaning-never-wording: the one golden of what the note says to a screen reader
-    expect(spoken).toBe('warning Heads up');
+    expect(golden).toBe(await goldenFileText(new URL('note.golden.txt', import.meta.url)));
   });
 });

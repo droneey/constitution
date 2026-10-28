@@ -3,33 +3,37 @@ import { useState } from 'react';
 import { useInput } from 'ink';
 
 import { useInterrupt } from '../../hooks';
-import type { Choice } from './select.types';
+import type { SelectProps } from './select.types';
 
 interface SelectInput<T> {
-  readonly choices: readonly Choice<T>[];
+  readonly choices: SelectProps<T>['choices'];
   readonly onInterrupt: () => void;
   readonly onSubmit: (answer: T) => void;
 }
 
 const useSelect = <T>({ choices, onInterrupt, onSubmit }: SelectInput<T>): number => {
-  const [pointed, setPointed] = useState(0);
+  const [movedIndex, setMovedIndex] = useState(0);
+
+  const clampedIndexOf = (index: number): number => Math.min(index, choices.length - 1);
+
+  const pointedIndex = clampedIndexOf(movedIndex);
 
   useInterrupt(onInterrupt);
   useInput((_input, key) => {
     if (key.upArrow) {
-      setPointed((current) => (current - 1 + choices.length) % choices.length);
+      setMovedIndex((index) => (clampedIndexOf(index) - 1 + choices.length) % choices.length);
     } else if (key.downArrow) {
-      setPointed((current) => (current + 1) % choices.length);
+      setMovedIndex((index) => (clampedIndexOf(index) + 1) % choices.length);
     } else if (key.return) {
-      const choice = choices[pointed];
-
-      if (choice !== undefined) {
-        onSubmit(choice.value);
-      }
+      // A reduce over a non-empty list always gives an answer, so no index lookup can miss.
+      onSubmit(
+        choices.reduce((pointed, choice, index) => (index === pointedIndex ? choice : pointed))
+          .value,
+      );
     }
   });
 
-  return pointed;
+  return pointedIndex;
 };
 
 export { useSelect };

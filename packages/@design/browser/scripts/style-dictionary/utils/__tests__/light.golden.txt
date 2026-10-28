@@ -1,0 +1,41 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+:root {
+  --color-neutral-0: oklch(1.0000 0.0000 286.00);
+  --color-neutral-900: oklch(0.1900 0.0050 286.00);
+  --color-brand-600: oklch(0.5500 0.2100 318.00);
+  --color-overlay-neutral-900-6: oklch(0.1900 0.0050 286.00 / 0.06);
+  --dimension-8: 0.5rem;
+  --dimension-16: 1rem;
+  --font-size-sm: 0.875rem;
+  --font-leading-sm: 1.5;
+  --font-family-mono: 'Geist Mono Variable', monospace;
+  --font-tracking-normal: 0;
+  --font-code-sm: var(--font-weight-normal) var(--font-size-sm)/var(--font-leading-sm) var(--font-family-mono);
+  --font-code-sm--letter-spacing: var(--font-tracking-normal);
+  --font-code-md: var(--font-weight-normal) var(--font-size-sm)/var(--font-leading-sm) var(--font-family-mono);
+  --font-code-md--letter-spacing: var(--font-tracking-normal);
+  --font-ratio-type: 1.25;
+  --font-weight-normal: 400;
+  --radius-4: 0.25rem;
+  --radius-8: 0.5rem;
+  --radius-12: 0.75rem;
+  --radius-16: 1rem;
+  --radius-24: 1.5rem;
+  --radius-32: 2rem;
+  --shadow-drop-sm: 0px 4px 6px -4px oklch(0% 0 0 / 0.1);
+  --duration-fast: 0.1s;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --layer-50: 50;
+  --stroke-icon: 2.25;
+  --color-surface-base: var(--color-neutral-0);
+  --color-accent-solid: var(--color-brand-600);
+  --color-fill-hover: var(--color-overlay-neutral-900-6);
+  --spacing-sm: var(--dimension-16);
+  --size-icon-md: var(--dimension-16);
+  --radius-surface-raised: var(--radius-8);
+  --shadow-surface-raised: var(--shadow-drop-sm);
+  --layer-surface-raised: var(--layer-50);
+}

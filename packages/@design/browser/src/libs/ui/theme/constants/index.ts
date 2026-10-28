@@ -1,1 +1,1 @@
-export { ACCENT_SCALE } from './theme.constants';
+export { ACCENT_TOKEN_PATH, accentPropertyPrefix } from './theme.constants';

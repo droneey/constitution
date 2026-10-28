@@ -22,7 +22,10 @@ describe('Icon', () => {
     const tree = (
       <p>
         Rules
-        <Icon name={name} />
+        <Icon
+          data-testid='icon'
+          name={name}
+        />
       </p>
     );
 
@@ -30,7 +33,7 @@ describe('Icon', () => {
     render(tree);
 
     // Assert
-    expect(screen.getByText('Rules').lastElementChild?.getAttribute('aria-hidden')).toBe('true');
+    expect(screen.getByTestId('icon').getAttribute('aria-hidden')).toBe('true');
   });
 
   it('should name what it means to assistive technology when it has a label', () => {
@@ -49,10 +52,36 @@ describe('Icon', () => {
     expect(screen.getByRole('img').getAttribute('aria-label')).toBe('Current version');
   });
 
-  it("should take its size and stroke from the theme's tokens and keep the caller's own class", async () => {
+  it("should take its size and stroke from the theme's tokens", async () => {
     // Arrange
     await applyStylesheet(new URL('../icon.css', import.meta.url));
 
+    const tree = (
+      <Icon
+        label='Expand'
+        name={IconName.Expand}
+      />
+    );
+
+    // Act
+    render(tree);
+
+    // Assert
+    const style = getComputedStyle(screen.getByRole('img'));
+
+    expect({
+      height: style.height,
+      strokeWidth: style.getPropertyValue('stroke-width'),
+      width: style.width,
+    }).toStrictEqual({
+      height: TOKEN_VALUES['--size-icon-md'],
+      strokeWidth: TOKEN_VALUES['--stroke-icon'],
+      width: TOKEN_VALUES['--size-icon-md'],
+    });
+  });
+
+  it("should keep the caller's own class", () => {
+    // Arrange
     const tree = (
       <Icon
         className='spins'
@@ -65,20 +94,7 @@ describe('Icon', () => {
     render(tree);
 
     // Assert
-    const icon = screen.getByRole('img');
-    const style = getComputedStyle(icon);
-
-    expect({
-      hasOwnClass: icon.classList.contains('spins'),
-      height: style.height,
-      strokeWidth: style.getPropertyValue('stroke-width'),
-      width: style.width,
-    }).toStrictEqual({
-      hasOwnClass: true,
-      height: TOKEN_VALUES['--size-icon-md'],
-      strokeWidth: TOKEN_VALUES['--stroke-icon'],
-      width: TOKEN_VALUES['--size-icon-md'],
-    });
+    expect(screen.getByRole('img').classList.contains('spins')).toBe(true);
   });
 
   it.each([

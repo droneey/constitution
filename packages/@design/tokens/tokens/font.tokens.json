@@ -1,0 +1,262 @@
+{
+  "font": {
+    "$description": "The type: a primitive scale for each property of text, and the styles of text, each one typography composite named by its kind — body, label, heading, code or overline — that reads them. The weights differ by mode and live in the mode files.",
+    "size": {
+      "$type": "dimension",
+      "$description": "The type scale: a major third, 1.25, rounded to the 4-pixel grid, with 14 for interface text. Tailwind reads each step as its text-* size, so the library's classes take it too.",
+      "xs": {
+        "$value": {
+          "unit": "px",
+          "value": 12
+        }
+      },
+      "sm": {
+        "$value": {
+          "unit": "px",
+          "value": 14
+        }
+      },
+      "base": {
+        "$value": {
+          "unit": "px",
+          "value": 16
+        }
+      },
+      "lg": {
+        "$value": {
+          "unit": "px",
+          "value": 20
+        }
+      },
+      "xl": {
+        "$value": {
+          "unit": "px",
+          "value": 24
+        }
+      },
+      "2xl": {
+        "$value": {
+          "unit": "px",
+          "value": 32
+        }
+      },
+      "3xl": {
+        "$value": {
+          "unit": "px",
+          "value": 40
+        }
+      }
+    },
+    "leading": {
+      "$type": "number",
+      "$description": "The line height of each step of the type scale, a multiple of that step's size that gives whole pixels: 20, 20, 28, 28, 32, 40 and 48; a step with a suffix is another line for the same size, such as running text's 22 at sm.",
+      "xs": {
+        "$value": 1.6666666666666667
+      },
+      "sm": {
+        "$value": 1.4285714285714286
+      },
+      "sm-relaxed": {
+        "$value": 1.5714285714285714,
+        "$description": "The line of running text at sm, 22 pixels: looser than the 20 of interface text, so a paragraph reads."
+      },
+      "base": {
+        "$value": 1.75
+      },
+      "lg": {
+        "$value": 1.4
+      },
+      "xl": {
+        "$value": 1.3333333333333333
+      },
+      "2xl": {
+        "$value": 1.25
+      },
+      "3xl": {
+        "$value": 1.2
+      }
+    },
+    "family": {
+      "$type": "fontFamily",
+      "sans": {
+        "$value": [
+          "Geist Variable",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "Roboto",
+          "sans-serif"
+        ]
+      },
+      "mono": {
+        "$value": [
+          "Geist Mono Variable",
+          "ui-monospace",
+          "SF Mono",
+          "Menlo",
+          "monospace"
+        ]
+      }
+    },
+    "tracking": {
+      "$type": "dimension",
+      "normal": {
+        "$value": {
+          "unit": "px",
+          "value": 0
+        }
+      },
+      "wide": {
+        "$value": {
+          "unit": "px",
+          "value": 0.48
+        },
+        "$description": "Letters 0.04 of the 12-pixel size apart."
+      }
+    },
+    "body": {
+      "$type": "typography",
+      "$description": "Running text.",
+      "xs": {
+        "$value": {
+          "fontFamily": "{font.family.sans}",
+          "fontSize": "{font.size.xs}",
+          "fontWeight": "{font.weight.normal}",
+          "letterSpacing": "{font.tracking.normal}",
+          "lineHeight": "{font.leading.xs}"
+        }
+      },
+      "sm": {
+        "$value": {
+          "fontFamily": "{font.family.sans}",
+          "fontSize": "{font.size.sm}",
+          "fontWeight": "{font.weight.normal}",
+          "letterSpacing": "{font.tracking.normal}",
+          "lineHeight": "{font.leading.sm-relaxed}"
+        }
+      },
+      "md": {
+        "$value": {
+          "fontFamily": "{font.family.sans}",
+          "fontSize": "{font.size.base}",
+          "fontWeight": "{font.weight.normal}",
+          "letterSpacing": "{font.tracking.normal}",
+          "lineHeight": "{font.leading.base}"
+        }
+      }
+    },
+    "label": {
+      "$type": "typography",
+      "$description": "Interface text: the words of controls, menus and navigation.",
+      "xs": {
+        "$value": {
+          "fontFamily": "{font.family.sans}",
+          "fontSize": "{font.size.xs}",
+          "fontWeight": "{font.weight.ui}",
+          "letterSpacing": "{font.tracking.normal}",
+          "lineHeight": "{font.leading.xs}"
+        }
+      },
+      "sm": {
+        "$value": {
+          "fontFamily": "{font.family.sans}",
+          "fontSize": "{font.size.sm}",
+          "fontWeight": "{font.weight.ui}",
+          "letterSpacing": "{font.tracking.normal}",
+          "lineHeight": "{font.leading.sm}"
+        }
+      }
+    },
+    "heading": {
+      "$type": "typography",
+      "xs": {
+        "$value": {
+          "fontFamily": "{font.family.sans}",
+          "fontSize": "{font.size.sm}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": "{font.tracking.normal}",
+          "lineHeight": "{font.leading.sm}"
+        }
+      },
+      "sm": {
+        "$value": {
+          "fontFamily": "{font.family.sans}",
+          "fontSize": "{font.size.base}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": "{font.tracking.normal}",
+          "lineHeight": "{font.leading.base}"
+        }
+      },
+      "md": {
+        "$value": {
+          "fontFamily": "{font.family.sans}",
+          "fontSize": "{font.size.lg}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": "{font.tracking.normal}",
+          "lineHeight": "{font.leading.lg}"
+        }
+      },
+      "lg": {
+        "$value": {
+          "fontFamily": "{font.family.sans}",
+          "fontSize": "{font.size.xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": "{font.tracking.normal}",
+          "lineHeight": "{font.leading.xl}"
+        }
+      },
+      "xl": {
+        "$value": {
+          "fontFamily": "{font.family.sans}",
+          "fontSize": "{font.size.2xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": "{font.tracking.normal}",
+          "lineHeight": "{font.leading.2xl}"
+        }
+      }
+    },
+    "code": {
+      "$type": "typography",
+      "xs": {
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.xs}",
+          "fontWeight": "{font.weight.normal}",
+          "letterSpacing": "{font.tracking.normal}",
+          "lineHeight": "{font.leading.xs}"
+        }
+      },
+      "sm": {
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.sm}",
+          "fontWeight": "{font.weight.normal}",
+          "letterSpacing": "{font.tracking.normal}",
+          "lineHeight": "{font.leading.sm}"
+        }
+      },
+      "md": {
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.base}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": "{font.tracking.normal}",
+          "lineHeight": "{font.leading.base}"
+        }
+      }
+    },
+    "overline": {
+      "$type": "typography",
+      "$description": "A short word in capitals set apart from the text it marks.",
+      "xs": {
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.xs}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": "{font.tracking.wide}",
+          "lineHeight": "{font.leading.xs}"
+        }
+      }
+    }
+  }
+}

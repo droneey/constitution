@@ -42,7 +42,9 @@ remove_dependency_volumes() {
 refresh_dependency_volumes() {
   local lock_hash volume_hash
   lock_hash="$(shasum -a 256 ../../bun.lock | cut -d' ' -f1)"
-  volume_hash="$(docker compose --profile development run --rm --no-deps --entrypoint cat "$DEVELOPMENT_SERVICE" node_modules/.bun-lock-hash 2>/dev/null || true)"
+  # Called directly, not through `compose`: a function on the left of `||` runs with errexit off.
+  # A volume with no hash yet makes the command fail, which is the same as a stale one.
+  volume_hash="$(docker compose --profile development run --rm --no-deps --entrypoint cat "$DEVELOPMENT_SERVICE" node_modules/.bun-lock-hash 2>/dev/null)" || volume_hash=''
 
   if [[ "$volume_hash" == "$lock_hash" ]]; then
     log 'bun.lock unchanged: the dependency volumes are kept.'

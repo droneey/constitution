@@ -4,13 +4,12 @@ const MALFORMED_TOKEN = 'malformed-token';
 /** A token's value is not the shape its type gives it: a defect of the token files, never of a build. */
 class MalformedTokenError extends Error {
   public readonly code = MALFORMED_TOKEN;
-  /** the token's name, as the build writes it */
-  public readonly token: string;
+  /** as the build writes it */
+  public readonly tokenName: string;
 
-  public constructor(token: string) {
-    // Stryker disable next-line StringLiteral: the text of a diagnostic, which no caller reads
-    super(`${MALFORMED_TOKEN}: ${token}`);
-    this.token = token;
+  public constructor(tokenName: string) {
+    super(`${MALFORMED_TOKEN}: ${tokenName}`);
+    this.tokenName = tokenName;
   }
 }
 

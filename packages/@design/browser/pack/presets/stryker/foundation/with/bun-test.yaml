@@ -4,5 +4,5 @@ stryker:
     typescript:
       stryker.config.json:
         plugins: !replace
-          - ../../@mutation-check/typescript/${role.source}/integrations/stryker/runner.ts
+          - ../../@mutation-check/typescript/${role.source}/integrations/stryker/index.ts
           - ../../@mutation-check/typescript/${role.source}/integrations/stryker/ignorers.ts

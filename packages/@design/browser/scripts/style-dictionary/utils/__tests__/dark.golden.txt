@@ -1,0 +1,15 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+.dark {
+  --font-code-sm: var(--font-weight-normal) var(--font-size-sm)/var(--font-leading-sm) var(--font-family-mono);
+  --font-code-sm--letter-spacing: var(--font-tracking-normal);
+  --font-code-md: var(--font-weight-normal) var(--font-size-sm)/var(--font-leading-sm) var(--font-family-mono);
+  --font-code-md--letter-spacing: var(--font-tracking-normal);
+  --font-weight-normal: 370;
+  --stroke-icon: 1.75;
+  --color-surface-base: var(--color-neutral-900);
+  --color-accent-solid: var(--color-brand-600);
+  --color-fill-hover: var(--color-overlay-neutral-900-6);
+}

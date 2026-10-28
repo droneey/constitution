@@ -1,13 +1,11 @@
 import { fileURLToPath } from 'node:url';
 
+import type { ThemeMode } from '@droneey/design-tokens';
 import StyleDictionary from 'style-dictionary';
 
-import type { ThemeMode } from '../../types';
 import { configOf } from '../configs.utils';
 
 const BUILD_PATH = 'theme/';
-
-const HEADER = '/**\n * Do not edit directly, this file was auto-generated.\n */\n\n';
 
 const fixtureModes: readonly ThemeMode[] = [
   {
@@ -55,4 +53,4 @@ const outputsOf = async (extra: readonly string[] = []): Promise<Record<string, 
     }),
   );
 
-export { HEADER, outputsOf };
+export { outputsOf };

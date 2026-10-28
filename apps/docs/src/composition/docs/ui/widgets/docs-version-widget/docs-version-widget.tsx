@@ -4,8 +4,7 @@ import { use } from 'react';
 import { useGetVersions, VersionsStatus } from '#/features/versions';
 
 import { DocsBuiltVersionContext, DocsLocationContext } from '../../../app/providers';
-import { DocsVersionMenu } from '../../components/docs-version-menu';
-import { DocsVersionNotice } from '../../components/docs-version-notice';
+import { DocsVersionMenu, DocsVersionNotice } from '../../components';
 
 export function DocsVersionWidget(): ReactElement | null {
   const { href } = use(DocsLocationContext);
@@ -26,7 +25,7 @@ export function DocsVersionWidget(): ReactElement | null {
       {versionsState.status === VersionsStatus.Loaded &&
         versionsState.latest !== currentVersion && (
           <DocsVersionNotice
-            latest={versionsState.latest}
+            latestVersion={versionsState.latest}
             pageHref={href}
           />
         )}

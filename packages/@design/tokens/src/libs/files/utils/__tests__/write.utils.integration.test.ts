@@ -1,43 +1,35 @@
-import { mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 
-import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
+import { describe, expect, it } from 'bun:test';
+
+import { failureOf } from '#/__tests__/failure.fixtures';
+import { temporaryFolder } from '#/__tests__/temporary-folder.fixtures';
 
 import { writeWholeWhenChanged } from '../write.utils';
+import { unrenamablePathIn } from './write.fixtures';
 
-const TEXT = ':root {}\n';
+const CSS_TEXT = ':root {}\n';
 
-let folder = '';
-
-beforeEach(() => {
-  folder = mkdtempSync(join(tmpdir(), 'design-tokens-'));
-});
-
-afterEach(() => {
-  rmSync(folder, {
-    force: true,
-    recursive: true,
-  });
-});
+const sandboxPath = temporaryFolder();
 
 describe('writeWholeWhenChanged', () => {
   it('should write the text in a folder that does not exist yet, leaving no other file', () => {
     // Arrange
-    const path = join(folder, 'theme', 'constants', 'light.gen.ts');
+    const filePath = join(sandboxPath(), 'theme', 'constants', 'light.gen.ts');
 
     // Act
     writeWholeWhenChanged({
-      path,
-      text: TEXT,
+      path: filePath,
+      text: CSS_TEXT,
     });
 
     // Assert
     expect([
-      readFileSync(path, 'utf8'),
-      readdirSync(join(folder, 'theme', 'constants')),
+      readFileSync(filePath, 'utf8'),
+      readdirSync(join(sandboxPath(), 'theme', 'constants')),
     ]).toStrictEqual([
-      TEXT,
+      CSS_TEXT,
       [
         'light.gen.ts',
       ],
@@ -46,35 +38,67 @@ describe('writeWholeWhenChanged', () => {
 
   it('should replace a file that holds another text', () => {
     // Arrange
-    const path = join(folder, 'light.gen.css');
+    const filePath = join(sandboxPath(), 'light.gen.css');
 
-    writeFileSync(path, `${TEXT}\n`);
+    writeFileSync(filePath, `${CSS_TEXT}\n`);
 
     // Act
     writeWholeWhenChanged({
-      path,
-      text: TEXT,
+      path: filePath,
+      text: CSS_TEXT,
     });
 
     // Assert
-    expect(readFileSync(path, 'utf8')).toBe(TEXT);
+    expect(readFileSync(filePath, 'utf8')).toBe(CSS_TEXT);
+  });
+
+  it('should throw when the rename fails', () => {
+    // Arrange
+    const filePath = unrenamablePathIn(sandboxPath());
+
+    // Act
+    const failure = failureOf(() =>
+      writeWholeWhenChanged({
+        path: filePath,
+        text: CSS_TEXT,
+      }),
+    );
+
+    // Assert
+    expect(failure).toBeInstanceOf(Error);
+  });
+
+  it('should leave no pending file behind when the rename fails', () => {
+    // Arrange
+    const filePath = unrenamablePathIn(sandboxPath());
+
+    // Act
+    failureOf(() =>
+      writeWholeWhenChanged({
+        path: filePath,
+        text: CSS_TEXT,
+      }),
+    );
+
+    // Assert
+    expect(readdirSync(dirname(filePath))).toStrictEqual([]);
   });
 
   it('should leave the very file in place when it already holds the text', () => {
     // Arrange
-    const path = join(folder, 'light.gen.css');
+    const filePath = join(sandboxPath(), 'light.gen.css');
 
-    writeFileSync(path, TEXT);
+    writeFileSync(filePath, CSS_TEXT);
 
-    const before = statSync(path).ino;
+    const inodeBefore = statSync(filePath).ino;
 
     // Act
     writeWholeWhenChanged({
-      path,
-      text: TEXT,
+      path: filePath,
+      text: CSS_TEXT,
     });
 
     // Assert
-    expect(statSync(path).ino).toBe(before);
+    expect(statSync(filePath).ino).toBe(inodeBefore);
   });
 });

@@ -2,10 +2,14 @@ import type { ReactElement } from 'react';
 
 import { Box, Text } from 'ink';
 
-import { Glyph, Space, Tone } from '#/libs/ui';
+import { ELLIPSIS, Glyph, Space, Tone } from '#/libs/ui';
 
-import { useSpinnerFrame, useTheme } from '../../hooks';
-import type { SpinnerProps } from './spinner.types';
+import { useSpinnerFrame } from '../../hooks';
+import { useTheme } from '../../theme';
+
+interface SpinnerProps {
+  readonly label: string;
+}
 
 function Spinner({ label }: SpinnerProps): ReactElement {
   const theme = useTheme();
@@ -20,9 +24,10 @@ function Spinner({ label }: SpinnerProps): ReactElement {
       gap={theme.space[Space.Xs]}
     >
       <Text aria-hidden>{theme.paint(Tone.Accent, frame ?? theme.glyphs[Glyph.Step])}</Text>
-      <Text>{`${label}…`}</Text>
+      <Text>{`${label}${ELLIPSIS}`}</Text>
     </Box>
   );
 }
 
+export type { SpinnerProps };
 export { Spinner };

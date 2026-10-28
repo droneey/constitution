@@ -2,8 +2,9 @@ import { Ansis } from 'ansis';
 
 import type { ThemeMode } from '../constants';
 import {
+  ACCENT_TONE_ROLE,
   DESIGN_TOKENS,
-  FRAME_DURATION,
+  FRAME_DURATION_TOKEN,
   GLYPHS,
   PIXELS_PER_CELL,
   SPINNER_FRAMES,
@@ -11,63 +12,22 @@ import {
   TONE_ROLES,
   Tone,
 } from '../constants';
-import { MissingTokenError } from '../errors';
-import type { AccentTokens, TerminalTokens, Theme, ThemeInput } from '../types';
-import { isRecord } from './guards.utils';
+import type { TerminalTokens, Theme, ThemeInput } from '../types';
 
-/** a step without an sRGB fallback keeps the default's */
-const scaleOf = (accent: AccentTokens): Readonly<Record<string, string>> =>
-  Object.fromEntries(
-    Object.entries(accent.color.brand).flatMap(([step, token]) => {
-      const colour = isRecord(token) ? token['$value'] : undefined;
-      const hex = isRecord(colour) ? colour['hex'] : undefined;
-
-      return typeof hex === 'string'
-        ? [
-            [
-              step,
-              hex,
-            ],
-          ]
-        : [];
-    }),
-  );
-
-const amountOf = (measures: Readonly<Record<string, number>>, name: string): number => {
-  const amount = measures[name];
-
-  if (amount === undefined) {
-    throw new MissingTokenError(name);
-  }
-
-  return amount;
-};
-
-/** @throws {@link MissingTokenError} when the tokens hold no colour for a tone's role, or no duration or space */
 const createTheme = (
   { accent, colourLevel, isMotionReduced, mode }: ThemeInput,
-  modes: Readonly<Record<ThemeMode, TerminalTokens>> = DESIGN_TOKENS,
+  tokensByMode: Readonly<Record<ThemeMode, TerminalTokens>> = DESIGN_TOKENS,
 ): Theme => {
   const ansis = new Ansis(colourLevel);
-  const tokens = modes[mode];
-  const scale = {
-    ...tokens.brand,
-    ...(accent === undefined ? {} : scaleOf(accent)),
-  };
+  const modeTokens = tokensByMode[mode];
+  const accentStep = modeTokens.accent[ACCENT_TONE_ROLE];
 
-  const hexOf = (tone: Tone): string => {
-    const role = TONE_ROLES[tone];
-    const step = tokens.accent[role];
-    const hex = step === undefined ? tokens.colour[role] : scale[step];
+  const hexOf = (tone: Tone): string =>
+    tone === Tone.Accent
+      ? (accent?.[accentStep] ?? modeTokens.brand[accentStep])
+      : modeTokens.colour[TONE_ROLES[tone]];
 
-    if (hex === undefined) {
-      throw new MissingTokenError(role);
-    }
-
-    return hex;
-  };
-
-  const hexes: Readonly<Record<Tone, string>> = {
+  const toneHexes: Readonly<Record<Tone, string>> = {
     [Tone.Accent]: hexOf(Tone.Accent),
     [Tone.Success]: hexOf(Tone.Success),
     [Tone.Error]: hexOf(Tone.Error),
@@ -77,12 +37,12 @@ const createTheme = (
   };
 
   const cellsOf = (space: Space): number =>
-    Math.round(amountOf(tokens.spacing, space) / PIXELS_PER_CELL);
+    Math.round(modeTokens.spacingsPx[space] / PIXELS_PER_CELL);
 
   return {
     glyphs: GLYPHS,
     isMotionReduced,
-    paint: (tone: Tone, text: string): string => ansis.hex(hexes[tone])(text),
+    paint: (tone: Tone, text: string): string => ansis.hex(toneHexes[tone])(text),
     space: {
       [Space.Xs]: cellsOf(Space.Xs),
       [Space.Sm]: cellsOf(Space.Sm),
@@ -90,7 +50,7 @@ const createTheme = (
     },
     spinner: {
       frames: SPINNER_FRAMES,
-      intervalMs: amountOf(tokens.duration, FRAME_DURATION),
+      intervalMs: modeTokens.durationsMs[FRAME_DURATION_TOKEN],
     },
     strong: (text: string): string => ansis.bold(text),
   };

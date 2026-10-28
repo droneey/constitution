@@ -1,0 +1,2 @@
+mutation: a text
+mutation: the check stopped on an error of its own, TypeError: x is not a function; report it

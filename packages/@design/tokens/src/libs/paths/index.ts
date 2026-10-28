@@ -1,1 +1,1 @@
-export { confinedPathOf } from './utils';
+export { confinedPathOf, isMissingPathError } from './utils';

@@ -1,27 +1,30 @@
+import { within } from '@testing-library/react';
+
+import { GLIDE_TEST_ID } from '../glide.constants';
 import type { GlideLists } from '../glide.types';
 
-const GLIDE_LISTS_FIXTURE: GlideLists = {
+const GLIDE_LISTS_FIXTURE = {
   "nav[aria-label='Versions']": {
-    rows: 'a',
-    filled: "[aria-current='page']",
+    rowSelector: 'a',
+    filledRowSelector: "[aria-current='page']",
   },
   '[data-toc-list]': {
-    rows: 'a',
+    rowSelector: 'a',
   },
   '#search-list': {
-    rows: "[role='option']",
-    marked: 'aria-selected',
+    rowSelector: "[role='option']",
+    markAttribute: 'aria-selected',
   },
   "[role='menu']": {
-    rows: ":is([role='menuitem'], [role='menuitemradio']):not([role='group'] *)",
-    marked: 'data-highlighted',
+    rowSelector: ":is([role='menuitem'], [role='menuitemradio']):not([role='group'] *)",
+    markAttribute: 'data-highlighted',
   },
   "[role='group']:has(> [role='menuitemradio'])": {
-    rows: "[role='menuitemradio']",
-    marked: 'data-highlighted',
-    filled: "[aria-checked='true']",
+    rowSelector: "[role='menuitemradio']",
+    markAttribute: 'data-highlighted',
+    filledRowSelector: "[aria-checked='true']",
   },
-} as const;
+} as const satisfies GlideLists;
 
 interface ElementSpec {
   readonly attributes?: Readonly<Record<string, string>>;
@@ -39,20 +42,24 @@ interface ElementLayout {
   readonly width?: number;
 }
 
-/** read from the block's inline style */
-interface BlockStyle {
+interface BlockPlacement {
   readonly height: string;
-  readonly opacity: string;
-  readonly transitionProperty: string;
   readonly translate: string;
   readonly width: string;
 }
 
+interface BlockPhase {
+  readonly isEntering: boolean;
+  readonly isVisible: boolean;
+}
+
+type BlockStyle = BlockPlacement & BlockPhase;
+
 const buildElement = ({ tag, attributes = {}, text, children = [] }: ElementSpec): HTMLElement => {
   const element = document.createElement(tag);
 
-  for (const [name, attribute] of Object.entries(attributes)) {
-    element.setAttribute(name, attribute);
+  for (const [attributeName, attributeValue] of Object.entries(attributes)) {
+    element.setAttribute(attributeName, attributeValue);
   }
 
   if (text !== undefined) {
@@ -223,39 +230,82 @@ const layOut = (
   });
 };
 
-const blockOf = (list: Element): HTMLElement | undefined =>
-  list.querySelector<HTMLElement>(':scope > [data-glide]') ?? undefined;
+const ownBlocksIn = (list: HTMLElement): HTMLElement[] =>
+  within(list)
+    .queryAllByTestId(GLIDE_TEST_ID)
+    .filter((block) => block.parentElement === list);
 
-// biome-ignore lint/plugin/spec-never-selects-from-the-document: the glide is a decoration hidden from assistive technology, which CSS finds by its attribute
-const blocksOf = (list: Element): number => list.querySelectorAll(':scope > [data-glide]').length;
+/** the list's own block; like a `getBy` query, it fails when the list holds none */
+const blockOf = (list: HTMLElement): HTMLElement => {
+  const [block] = ownBlocksIn(list);
 
-const styleOf = (block: HTMLElement | undefined): BlockStyle | undefined =>
-  block === undefined
-    ? undefined
-    : {
-        translate: block.style.translate,
-        width: block.style.width,
-        height: block.style.height,
-        opacity: block.style.opacity,
-        transitionProperty: block.style.transitionProperty,
-      };
+  if (block === undefined) {
+    throw new Error('the list holds no block of its own');
+  }
+
+  return block;
+};
+
+const blockCountOf = (list: HTMLElement): number => ownBlocksIn(list).length;
+
+const placementOf = (block: HTMLElement): BlockPlacement => ({
+  translate: block.style.translate,
+  width: block.style.width,
+  height: block.style.height,
+});
+
+/** whether the block is entering, which fades it in, and whether it is drawn */
+const phaseOf = (block: HTMLElement): BlockPhase => ({
+  isVisible: block.hasAttribute('data-visible'),
+  isEntering: block.hasAttribute('data-entering'),
+});
+
+const styleOf = (block: HTMLElement): BlockStyle => ({
+  ...placementOf(block),
+  ...phaseOf(block),
+});
 
 const createBlockStyle = (overrides: Partial<BlockStyle> = {}): BlockStyle => ({
   translate: '',
   width: '',
   height: '',
-  opacity: '',
-  transitionProperty: '',
+  isVisible: false,
+  isEntering: false,
   ...overrides,
 });
 
-const pointAt = (target: Node, pointerType = 'mouse'): void => {
-  target.dispatchEvent(
+/** a pointer over a row's text, which userEvent never sends: it always targets an element */
+const pointOverTextOf = (row: HTMLElement): void => {
+  const [text] = row.childNodes;
+
+  if (text === undefined) {
+    throw new Error('the row holds no text');
+  }
+
+  text.dispatchEvent(
     new PointerEvent('pointerover', {
       bubbles: true,
-      pointerType,
+      pointerType: 'mouse',
     }),
   );
+};
+
+/** a focus that arrives unshown, as a click's does, which userEvent never gives: the simulated page shows every focus as the keyboard's */
+const focusUnshown = (element: HTMLElement): void => {
+  element.dispatchEvent(
+    new FocusEvent('focusin', {
+      bubbles: true,
+    }),
+  );
+};
+
+/** the element answers `:hover` as one under the pointer does, which the simulated page never tracks */
+const holdPointerOver = (element: HTMLElement): void => {
+  const matches = element.matches.bind(element);
+
+  Object.defineProperty(element, 'matches', {
+    value: (selector: string): boolean => selector === ':hover' || matches(selector),
+  });
 };
 
 /** settles once the page has changed and every watcher of the page, the hook's among them, has heard of it */
@@ -273,17 +323,21 @@ const nextMutation = (): Promise<void> =>
   });
 
 export {
+  blockCountOf,
   blockOf,
-  blocksOf,
   buildElement,
   createBlockStyle,
+  focusUnshown,
   GLIDE_LISTS_FIXTURE,
+  holdPointerOver,
   layOut,
   linkSpec,
   menuSpec,
   mountElement,
   nextMutation,
-  pointAt,
+  phaseOf,
+  placementOf,
+  pointOverTextOf,
   searchSpec,
   styleOf,
   tocSpec,

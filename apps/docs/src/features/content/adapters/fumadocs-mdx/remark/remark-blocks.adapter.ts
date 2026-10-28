@@ -14,15 +14,17 @@ import type {
   Table,
 } from 'mdast';
 import { fromMarkdown } from 'mdast-util-from-markdown';
+import { toString as mdastTextOf } from 'mdast-util-to-string';
 import { visit } from 'unist-util-visit';
 
-import { isHeading, SUBSECTION_HEADING_DEPTH } from '../markdown';
-import { exampleTones, LEVEL_LETTERS } from './remark-blocks.constants';
+import { isHeading, isSectionHeading, SUBSECTION_HEADING_DEPTH, textNode } from '../markdown';
+import { ExampleTone, exampleTonesByTitle, LEVEL_LETTERS } from './remark-blocks.constants';
 import { dropTitle } from './remark-drop-title.adapter';
 
 interface BlocksOptions {
-  addresses: ReadonlyMap<string, string>;
-  examples: ReadonlyMap<string, string>;
+  addressesBySlug: ReadonlyMap<string, string>;
+  /** in Markdown */
+  examplesBySlug: ReadonlyMap<string, string>;
 }
 
 interface Box extends Parent {
@@ -54,17 +56,6 @@ interface RuleSection {
 
 type Properties = Readonly<Record<string, string | string[]>>;
 
-const textOf = (parent: Parent): string =>
-  parent.children
-    .map((child) => {
-      if ('value' in child) {
-        return child.value;
-      }
-
-      return 'children' in child ? textOf(child) : '';
-    })
-    .join('');
-
 const linkTo = (address: string, child: PhrasingContent): Link => ({
   children: [
     child,
@@ -73,8 +64,8 @@ const linkTo = (address: string, child: PhrasingContent): Link => ({
   url: address,
 });
 
-const part = (name: string, attribute = ''): Properties => ({
-  [`data-${name}`]: attribute,
+const part = (partName: string, partValue = ''): Properties => ({
+  [`data-${partName}`]: partValue,
 });
 
 const span = (properties: Properties, children: PhrasingContent[]): PhrasingContent => ({
@@ -85,12 +76,18 @@ const span = (properties: Properties, children: PhrasingContent[]): PhrasingCont
       ...properties,
     },
   },
+  // Stryker disable next-line StringLiteral: mdast-util-to-hast renders a node by its data and children whatever its type, so the page is the same
   type: 'emphasis',
 });
 
-const text = (words: string): PhrasingContent => ({
-  type: 'text',
-  value: words,
+const paragraph = (properties: Properties, children: PhrasingContent[]): Paragraph => ({
+  children,
+  data: {
+    hProperties: {
+      ...properties,
+    },
+  },
+  type: 'paragraph',
 });
 
 const code = (slug: string): InlineCode => ({
@@ -106,6 +103,7 @@ const box = (properties: Properties, children: RootContent[]): Box => ({
       ...properties,
     },
   },
+  // Stryker disable next-line StringLiteral: mdast-util-to-hast renders a node by its data and children whatever its type, so the page is the same
   type: 'box',
 });
 
@@ -125,7 +123,11 @@ const ruleSectionOf = (node: RootContent): RuleSection | undefined => {
     return undefined;
   }
 
-  const rule = levelledRuleOf(textOf(node));
+  const rule = levelledRuleOf(
+    mdastTextOf(node, {
+      includeImageAlt: false,
+    }),
+  );
 
   return rule === undefined
     ? undefined
@@ -135,16 +137,13 @@ const ruleSectionOf = (node: RootContent): RuleSection | undefined => {
       };
 };
 
-const sectionEnd = (children: readonly RootContent[], from: number): number => {
-  const next = children.findIndex(
+const sectionEndOf = (children: readonly RootContent[], headingIndex: number): number => {
+  const nextIndex = children.findIndex(
     (child, index) =>
-      index > from &&
-      // Stryker disable next-line ConditionalExpression: only a heading has a depth, so checking its type only narrows it
-      ((child.type === 'heading' && child.depth <= SUBSECTION_HEADING_DEPTH) ||
-        child.type === 'ruleCard'),
+      index > headingIndex && (isSectionHeading(child) || child.type === 'ruleCard'),
   );
 
-  return next === -1 ? children.length : next;
+  return nextIndex === -1 ? children.length : nextIndex;
 };
 
 const capitalised = (children: PhrasingContent[]): PhrasingContent[] => {
@@ -152,30 +151,26 @@ const capitalised = (children: PhrasingContent[]): PhrasingContent[] => {
 
   return first?.type === 'text'
     ? [
-        text(first.value.charAt(0).toUpperCase() + first.value.slice(1)),
+        textNode(first.value.charAt(0).toUpperCase() + first.value.slice(1)),
         ...rest,
       ]
     : children;
 };
 
-const whyOf = (table: Table): Paragraph => ({
-  children: [
+const whyOf = (table: Table): Paragraph => {
+  const cell = table.children[1]?.children[0];
+
+  return paragraph(part('rule-why'), [
     span(part('rule-why-label'), [
-      text('Why'),
+      textNode('Why'),
     ]),
-    ...capitalised(table.children[1]?.children[0]?.children ?? []),
-  ],
-  data: {
-    hProperties: {
-      ...part('rule-why'),
-    },
-  },
-  type: 'paragraph',
-});
+    ...capitalised(cell?.children ?? []),
+  ]);
+};
 
 interface Column {
-  column: RootContent;
-  tone: string | undefined;
+  node: RootContent;
+  tone: ExampleTone | undefined;
 }
 
 const columnOf = (node: Code): Column => {
@@ -183,17 +178,17 @@ const columnOf = (node: Code): Column => {
   const meta = node.meta ?? '';
   // Stryker disable next-line StringLiteral: a code block without a title matches no tone either way
   const title = /title="([^"]+)"/.exec(meta)?.[1] ?? '';
-  const tone = exampleTones.get(title);
+  const tone = exampleTonesByTitle.get(title);
 
   return {
-    column:
+    node:
       tone === undefined
         ? node
         : box(part('rule-example-column', tone), [
             {
               children: [
                 span(part('rule-example-label'), [
-                  text(title),
+                  textNode(title),
                 ]),
               ],
               type: 'paragraph',
@@ -214,15 +209,18 @@ const exampleOf = (markdown: string): Box => {
       node.type === 'code'
         ? columnOf(node)
         : {
-            column: node,
+            node,
             tone: undefined,
           },
   );
   const tones = new Set(columns.map(({ tone }) => tone));
 
   return box(
-    part('rule-example', tones.has('avoid') && tones.has('prefer') ? 'pair' : ''),
-    columns.map(({ column }) => column),
+    part(
+      'rule-example',
+      tones.has(ExampleTone.Avoid) && tones.has(ExampleTone.Prefer) ? 'pair' : '',
+    ),
+    columns.map(({ node }) => node),
   );
 };
 
@@ -231,44 +229,58 @@ const tightenedRuleLineOf = (tightens: string | undefined): Paragraph[] =>
   tightens === undefined
     ? []
     : [
-        {
-          children: [
-            text('→ '),
-            code(tightens),
-          ],
-          data: {
-            hProperties: {
-              ...part('rule-parent'),
-            },
-          },
-          type: 'paragraph',
-        },
+        paragraph(part('rule-parent'), [
+          textNode('→ '),
+          code(tightens),
+        ]),
       ];
 
+const ruleHeadingOf = ({ heading, rule }: RuleSection): Heading => ({
+  ...heading,
+  children: [
+    span(part('rule-mark', rule.level.toLowerCase()), [
+      span(part('rule-mark-letter'), [
+        textNode(LEVEL_LETTERS[rule.level]),
+      ]),
+      span(
+        {
+          className: [
+            'sr-only',
+          ],
+        },
+        [
+          textNode(rule.level),
+        ],
+      ),
+    ]),
+    code(rule.slug),
+    textNode(` [#${rule.slug}]`),
+  ],
+  data: {
+    ...heading.data,
+    hProperties: {
+      ...heading.data?.hProperties,
+      ...part('rule'),
+    },
+  },
+});
+
 const cardOf = (
-  { heading, rule }: RuleSection,
+  ruleSection: RuleSection,
   body: RootContent[],
   options: BlocksOptions,
 ): RuleCard => {
-  const example = options.examples.get(rule.slug);
-  const meta: Paragraph = {
-    children: [
-      span(part('rule-level', rule.level.toLowerCase()), [
-        text(rule.level),
-      ]),
-    ],
-    data: {
-      hProperties: {
-        ...part('rule-meta'),
-      },
-    },
-    type: 'paragraph',
-  };
+  const { rule } = ruleSection;
+  const example = options.examplesBySlug.get(rule.slug);
 
   return {
     children: [
-      meta,
-      heading,
+      paragraph(part('rule-meta'), [
+        span(part('rule-level', rule.level.toLowerCase()), [
+          textNode(rule.level),
+        ]),
+      ]),
+      ruleHeadingOf(ruleSection),
       ...tightenedRuleLineOf(rule.tightens),
       ...body.map((node) => (node.type === 'table' ? whyOf(node) : node)),
       ...(example === undefined
@@ -295,52 +307,17 @@ const wrapRules = (tree: Root, options: BlocksOptions): void => {
     const ruleSection = ruleSectionOf(node);
 
     if (ruleSection !== undefined) {
-      const end = sectionEnd(tree.children, index);
-      const body = tree.children.slice(index + 1, end);
+      const endIndex = sectionEndOf(tree.children, index);
+      const body = tree.children.slice(index + 1, endIndex);
 
-      tree.children.splice(index, end - index, cardOf(ruleSection, body, options));
+      tree.children.splice(index, endIndex - index, cardOf(ruleSection, body, options));
     }
   }
 };
 
-const ruleHeading = (heading: Heading): void => {
-  const rule = levelledRuleOf(textOf(heading));
-
-  if (rule === undefined) {
-    return;
-  }
-
-  heading.data = {
-    ...heading.data,
-    hProperties: {
-      ...heading.data?.hProperties,
-      ...part('rule'),
-    },
-  };
-  heading.children = [
-    span(part('rule-mark', rule.level.toLowerCase()), [
-      span(part('rule-mark-letter'), [
-        text(LEVEL_LETTERS[rule.level]),
-      ]),
-      span(
-        {
-          className: [
-            'sr-only',
-          ],
-        },
-        [
-          text(rule.level),
-        ],
-      ),
-    ]),
-    code(rule.slug),
-    text(` [#${rule.slug}]`),
-  ];
-};
-
 const linkSlugs = (tree: Root, options: BlocksOptions): void => {
   visit(tree, 'inlineCode', (node, index, parent) => {
-    const address = options.addresses.get(node.value);
+    const address = options.addressesBySlug.get(node.value);
 
     if (
       address === undefined ||
@@ -364,12 +341,6 @@ const remarkBlocks =
     dropTitle(tree);
     wrapRules(tree, options);
     linkSlugs(tree, options);
-    // Stryker disable next-line StringLiteral: only a heading has a depth, so visiting every node finds the same ones
-    visit(tree, 'heading', (heading) => {
-      if (heading.depth === SUBSECTION_HEADING_DEPTH) {
-        ruleHeading(heading);
-      }
-    });
   };
 
 export type { BlocksOptions };

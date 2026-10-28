@@ -4,8 +4,11 @@ import { Text } from 'ink';
 
 import { formatHeading } from '#/libs/ui';
 
-import { useTheme } from '../../hooks';
-import type { HeadingProps } from './heading.types';
+import { useTheme } from '../../theme';
+
+interface HeadingProps {
+  readonly title: string;
+}
 
 function Heading({ title }: HeadingProps): ReactElement {
   const theme = useTheme();
@@ -13,4 +16,5 @@ function Heading({ title }: HeadingProps): ReactElement {
   return <Text>{formatHeading(theme, title)}</Text>;
 }
 
+export type { HeadingProps };
 export { Heading };

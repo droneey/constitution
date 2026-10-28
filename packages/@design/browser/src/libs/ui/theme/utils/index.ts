@@ -1,1 +1,1 @@
-export { accentStylesheetOf } from './accent.utils';
+export { accentStylesheetOf } from './accent-stylesheet.utils';

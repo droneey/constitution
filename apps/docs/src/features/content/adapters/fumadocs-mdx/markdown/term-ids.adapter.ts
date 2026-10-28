@@ -9,12 +9,11 @@ interface TermId {
   readonly text: Text;
 }
 
-/** what the source writes for an id, `{#<id>}` */
 const idMarkOf = (id: string): string => `{#${id}}`;
 
 /** Takes the id written right after each bold term off the text, and gives each id with its bold. */
 const takeTermIds = (tree: Nodes): readonly TermId[] => {
-  const taken: TermId[] = [];
+  const termIds: TermId[] = [];
 
   visit(tree, 'strong', (strong, index, parent) => {
     // Stryker disable next-line ConditionalExpression,OptionalChaining: bold always has a parent and an index, so the checks only narrow their types
@@ -28,7 +27,7 @@ const takeTermIds = (tree: Nodes): readonly TermId[] => {
 
     if (id !== undefined) {
       text.value = text.value.slice(idMarkOf(id).length);
-      taken.push({
+      termIds.push({
         id,
         strong,
         text,
@@ -36,7 +35,7 @@ const takeTermIds = (tree: Nodes): readonly TermId[] => {
     }
   });
 
-  return taken;
+  return termIds;
 };
 
 export { idMarkOf, takeTermIds };

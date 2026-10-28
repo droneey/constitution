@@ -1,20 +1,27 @@
 import { Level } from '@droneey/constitution';
 
-const LEVEL_LETTERS: Readonly<Record<Level, string>> = {
+const LEVEL_LETTERS = {
   [Level.May]: 'Y',
   [Level.Must]: 'M',
   [Level.Should]: 'S',
-} as const;
+} as const satisfies Readonly<Record<Level, string>>;
 
-const exampleTones: ReadonlyMap<string, string> = new Map([
+/** the part a block of an example's code plays beside the others */
+enum ExampleTone {
+  Avoid = 'avoid',
+  Prefer = 'prefer',
+}
+
+/** by the title the example gives its code */
+const exampleTonesByTitle: ReadonlyMap<string, ExampleTone> = new Map([
   [
     'Avoid',
-    'avoid',
+    ExampleTone.Avoid,
   ],
   [
     'Prefer',
-    'prefer',
+    ExampleTone.Prefer,
   ],
 ]);
 
-export { exampleTones, LEVEL_LETTERS };
+export { ExampleTone, exampleTonesByTitle, LEVEL_LETTERS };

@@ -1,53 +1,75 @@
-import sys
 from dataclasses import dataclass, field
-from pathlib import Path
-from typing import TYPE_CHECKING
+from pathlib import PurePosixPath
+from typing import TYPE_CHECKING, override
 
-from droneey_mutation_check_python.features.mutation.domain.contracts import Completed
+from droneey_mutation_check_python.features.mutation.domain.contracts import Workspace
+from droneey_mutation_check_python.features.mutation.domain.entities import (
+  Changes,
+  MutationTargets,
+  Stopped,
+)
+from droneey_mutation_check_python.features.mutation.domain.value_objects import UnitRelativePath
 
 if TYPE_CHECKING:
-  from collections.abc import Mapping, Sequence
+  from collections.abc import Mapping
 
-MUTMUT: tuple[str, ...] = (sys.executable, '-m', 'mutmut')
-DIFF: tuple[str, ...] = (
-  'git',
-  'diff',
-  '-U0',
-  '--no-color',
-  '--find-renames',
-  '--diff-filter=ACMR',
-  '--merge-base',
-  'origin/main',
-)
-PREFIX: tuple[str, ...] = ('git', 'rev-parse', '--show-prefix')
-UNTRACKED: tuple[str, ...] = ('git', 'ls-files', '--others', '--exclude-standard')
+  from droneey_mutation_check_python.features.mutation.domain.entities import (
+    FileChange,
+    MutationRun,
+  )
+  from droneey_mutation_check_python.features.mutation.domain.errors import (
+    CommandFailedError,
+    CommandUnfinishedError,
+    MutantsKeptError,
+  )
 
 
+# Declared a Workspace, so the type checker holds it to the port where it is defined.
 @dataclass(kw_only=True)
-class WorkspaceFake:
-  # what each command answers; a command it does not know succeeds silently
-  answers: Mapping[tuple[str, ...], Completed]
-  files: Mapping[str, str]
-  commands: list[tuple[str, ...]] = field(default_factory=list[tuple[str, ...]])
-  # the paths each command run with them indexed as files to add was given
-  indexed: list[tuple[str, ...]] = field(default_factory=list[tuple[str, ...]])
-  cleared: int = 0
+class WorkspaceFake(Workspace):
+  texts_by_path: Mapping[str, str]
+  files: tuple[FileChange, ...] = ()
+  # what mutmut answers for a unit whose sources hold no function
+  run: MutationRun = field(default_factory=lambda: Stopped(mutants=()))
+  mutated_targets: list[MutationTargets] = field(default_factory=list[MutationTargets])
+  mutants_removal_count: int = 0
+  read_changes_error: CommandFailedError | None = None
+  remove_mutants_error: MutantsKeptError | None = None
+  mutate_error: CommandUnfinishedError | None = None
 
-  def run(self, command: Sequence[str]) -> Completed:
-    self.commands.append(tuple(command))
+  @override
+  def read_changes(self) -> Changes:
+    if self.read_changes_error is not None:
+      raise self.read_changes_error
 
-    return self.answers.get(tuple(command), Completed(status=0, output=''))
+    return Changes(
+      files=self.files,
+      python_source_paths=tuple(
+        UnitRelativePath(path=path)
+        for path in sorted(
+          PurePosixPath(text)
+          for text in self.texts_by_path
+          if text.startswith('src/') and text.endswith('.py')
+        )
+      ),
+    )
 
-  def run_with_files_to_add(self, command: Sequence[str], paths: Sequence[str]) -> Completed:
-    self.indexed.append(tuple(paths))
+  @override
+  def read_text(self, path: UnitRelativePath) -> str:
+    return self.texts_by_path[path.path.as_posix()]
 
-    return self.run(command)
+  @override
+  def remove_mutants(self) -> None:
+    if self.remove_mutants_error is not None:
+      raise self.remove_mutants_error
 
-  def read(self, path: Path) -> str:
-    return self.files[str(path)]
+    self.mutants_removal_count += 1
 
-  def sources(self) -> tuple[Path, ...]:
-    return tuple(Path(path) for path in self.files if path.startswith('src/'))
+  @override
+  def mutate(self, targets: MutationTargets) -> MutationRun:
+    self.mutated_targets.append(targets)
 
-  def clear(self) -> None:
-    self.cleared += 1
+    if self.mutate_error is not None:
+      raise self.mutate_error
+
+    return self.run

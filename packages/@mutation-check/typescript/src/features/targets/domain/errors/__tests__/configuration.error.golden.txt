@@ -1,0 +1,3 @@
+no configuration of the mutation tool (stryker.config.mjs, stryker.config.json); write one
+stryker.config.mjs could not be read; fix it
+stryker.config.json holds default.mutate, default.mutate.1 not of the shape the mutation tool reads; name the files to mutate as a list of patterns

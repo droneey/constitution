@@ -2,8 +2,11 @@ import { describe, expect, it } from 'bun:test';
 
 import type { SerializedPageTree } from 'fumadocs-core/source/client';
 
+import { ProgramError } from '#/kernel/errors';
+
 import type { Page } from '../../../domain/entities';
-import { ExportError, ExportFailure } from '../../../domain/errors';
+import { ExportFailure } from '../../../domain/errors';
+import { PageSlugs } from '../../../domain/value-objects';
 import { createStaticExports } from '../static-exports.adapter';
 
 const CATALOG_ADDRESS = '/v0.83.0/api/pages';
@@ -70,12 +73,12 @@ const exportsServing = (
     transport: serving(answers),
   });
 
-/** the code, the details and the name of the cause a read failed with, or the error itself when it is none of the feature's */
+/** the code, the details and the name of the cause a read failed with, or the error itself when it is none of the program's */
 const failureOf = (read: Promise<unknown>): Promise<unknown> =>
   read.then(
     () => undefined,
     (error: unknown) =>
-      error instanceof ExportError
+      error instanceof ProgramError
         ? {
             cause: error.cause instanceof Error ? error.cause.name : error.cause,
             code: error.code,
@@ -84,11 +87,29 @@ const failureOf = (read: Promise<unknown>): Promise<unknown> =>
         : error,
   );
 
-const unavailableAt = (address: string, cause?: string): unknown => ({
+const unreachableAt = (address: string, cause: string): unknown => ({
   cause,
-  code: ExportFailure.Unavailable,
+  code: ExportFailure.Unreachable,
   details: {
     address,
+  },
+});
+
+const malformedAt = (address: string, cause: string, problems: readonly string[]): unknown => ({
+  cause,
+  code: ExportFailure.Malformed,
+  details: {
+    address,
+    problems,
+  },
+});
+
+const noFileAt = (address: string, status: number): unknown => ({
+  cause: undefined,
+  code: ExportFailure.NoFile,
+  details: {
+    address,
+    status,
   },
 });
 
@@ -116,18 +137,16 @@ describe('createStaticExports', () => {
           status: 500,
         },
         condition: 'the site answers no file',
+        failure: noFileAt(NAVIGATION_ADDRESS, 500),
       },
       {
         answer: {
           body: '<!doctype html>',
         },
         condition: 'the file holds no JSON',
-      },
-      {
-        answer: {
-          body: null,
-        },
-        condition: 'the file holds JSON with no tree',
+        failure: malformedAt(NAVIGATION_ADDRESS, 'SyntaxError', [
+          '',
+        ]),
       },
       {
         answer: {
@@ -138,24 +157,9 @@ describe('createStaticExports', () => {
           },
         },
         condition: 'the file holds a value of another loader',
-      },
-      {
-        answer: {
-          body: {
-            // biome-ignore lint/style/useNamingConvention: Fumadocs marks a serialized page tree by this key
-            $fumadocs_loader: 'page-tree',
-          },
-        },
-        condition: 'the file holds the mark alone',
-      },
-      {
-        answer: {
-          body: {
-            ...treeFixture(),
-            data: null,
-          },
-        },
-        condition: 'the tree is empty',
+        failure: malformedAt(NAVIGATION_ADDRESS, 'ZodError', [
+          '$fumadocs_loader',
+        ]),
       },
       {
         answer: {
@@ -165,33 +169,119 @@ describe('createStaticExports', () => {
           },
         },
         condition: 'the tree is no object',
+        failure: malformedAt(NAVIGATION_ADDRESS, 'ZodError', [
+          'data',
+        ]),
       },
-    ])('should fail as unavailable, with the address, when $condition', async ({ answer }) => {
+    ])('should fail, naming the address, when $condition', async ({ answer, failure }) => {
       // Arrange
       const exports = exportsServing({
         [NAVIGATION_ADDRESS]: answer,
       });
 
       // Act
-      const failure = await failureOf(exports.readNavigation());
+      const read = await failureOf(exports.readNavigation());
 
       // Assert
-      expect(failure).toStrictEqual(unavailableAt(NAVIGATION_ADDRESS));
+      expect(read).toStrictEqual(failure);
     });
 
-    it('should fail as unavailable, keeping the cause, when the network fails', async () => {
+    it.each([
+      {
+        condition: 'the network fails',
+        failure: new TypeError('Failed to fetch'),
+      },
+      {
+        condition: 'the site answers too slowly',
+        failure: new DOMException('The operation timed out.', 'TimeoutError'),
+      },
+    ])('should fail as unreachable, keeping the cause, when $condition', async ({ failure }) => {
       // Arrange
       const exports = createStaticExports({
         catalogAddress: CATALOG_ADDRESS,
         navigationAddress: NAVIGATION_ADDRESS,
-        transport: () => Promise.reject(new TypeError('Failed to fetch')),
+        transport: () => Promise.reject(failure),
+      });
+
+      // Act
+      const read = await failureOf(exports.readNavigation());
+
+      // Assert
+      expect(read).toStrictEqual(unreachableAt(NAVIGATION_ADDRESS, failure.name));
+    });
+
+    it.each([
+      {
+        condition: 'it is of another class',
+        refusal: new RangeError('no such address'),
+      },
+      {
+        condition: 'the reader stopped it',
+        refusal: new DOMException('The operation was aborted.', 'AbortError'),
+      },
+    ])(
+      'should let a failure of the transport it does not know through as it is when $condition',
+      async ({ refusal }) => {
+        // Arrange
+        const exports = createStaticExports({
+          catalogAddress: CATALOG_ADDRESS,
+          navigationAddress: NAVIGATION_ADDRESS,
+          transport: () => Promise.reject(refusal),
+        });
+
+        // Act
+        const failure = await failureOf(exports.readNavigation());
+
+        // Assert
+        expect(failure).toBe(refusal);
+      },
+    );
+
+    it('should let a failure of the body it does not know through as it is', async () => {
+      // Arrange
+      const unreadable = new RangeError('unreadable');
+      const exports = createStaticExports({
+        catalogAddress: CATALOG_ADDRESS,
+        navigationAddress: NAVIGATION_ADDRESS,
+        transport: () =>
+          Promise.resolve(
+            Object.assign(new Response('{}'), {
+              json: () => Promise.reject(unreadable),
+            }),
+          ),
       });
 
       // Act
       const failure = await failureOf(exports.readNavigation());
 
       // Assert
-      expect(failure).toStrictEqual(unavailableAt(NAVIGATION_ADDRESS, 'TypeError'));
+      expect(failure).toBe(unreadable);
+    });
+
+    it('should hand the transport a signal that bounds the read', async () => {
+      // Arrange
+      const signals: AbortSignal[] = [];
+      const exports = createStaticExports({
+        catalogAddress: CATALOG_ADDRESS,
+        navigationAddress: NAVIGATION_ADDRESS,
+        transport: (address, { signal }) => {
+          signals.push(signal);
+
+          return serving({
+            [NAVIGATION_ADDRESS]: {
+              body: treeFixture(),
+            },
+          })(address);
+        },
+      });
+
+      // Act
+      await exports.readNavigation();
+
+      // Assert
+      expect(signals.map((signal) => signal.aborted)).toStrictEqual([
+        false,
+      ]);
     });
   });
 
@@ -200,25 +290,25 @@ describe('createStaticExports', () => {
       {
         condition: 'the list holds the slugs',
         expected: guideFixture(),
-        slugs: [
+        slugs: PageSlugs.create([
           'guides',
           'write-a-pack',
-        ],
+        ]),
       },
       {
         condition: 'the list holds no page at the slugs',
         expected: undefined,
-        slugs: [
+        slugs: PageSlugs.create([
           'guides',
           'moved',
-        ],
+        ]),
       },
       {
         condition: 'the slugs name a key every object inherits',
         expected: undefined,
-        slugs: [
+        slugs: PageSlugs.create([
           'constructor',
-        ],
+        ]),
       },
     ])('should find the page when $condition', async ({ expected, slugs }) => {
       // Arrange
@@ -252,15 +342,20 @@ describe('createStaticExports', () => {
         },
       });
 
+      await exports.find(
+        PageSlugs.create([
+          'guides',
+          'write-a-pack',
+        ]),
+      );
+
       // Act
-      await exports.find([
-        'guides',
-        'write-a-pack',
-      ]);
-      await exports.find([
-        'guides',
-        'moved',
-      ]);
+      await exports.find(
+        PageSlugs.create([
+          'guides',
+          'moved',
+        ]),
+      );
 
       // Assert
       expect(reads).toStrictEqual([
@@ -268,16 +363,10 @@ describe('createStaticExports', () => {
       ]);
     });
 
-    it.each([
-      {
-        answer: {
-          body: catalogFixture(),
-          status: 404,
-        },
-        condition: 'the site answers no file',
-      },
-      {
-        answer: {
+    it('should fail, naming the address, when a page in the list lacks a title it can show', async () => {
+      // Arrange
+      const exports = exportsServing({
+        [CATALOG_ADDRESS]: {
           body: {
             'guides/write-a-pack': {
               ...guideFixture(),
@@ -285,19 +374,17 @@ describe('createStaticExports', () => {
             },
           },
         },
-        condition: 'a page in the list lacks a title it can show',
-      },
-    ])('should fail as unavailable, with the address, when $condition', async ({ answer }) => {
-      // Arrange
-      const exports = exportsServing({
-        [CATALOG_ADDRESS]: answer,
       });
 
       // Act
-      const failure = await failureOf(exports.find([]));
+      const read = await failureOf(exports.find(PageSlugs.create([])));
 
       // Assert
-      expect(failure).toStrictEqual(unavailableAt(CATALOG_ADDRESS));
+      expect(read).toStrictEqual(
+        malformedAt(CATALOG_ADDRESS, 'ZodError', [
+          'guides/write-a-pack.title',
+        ]),
+      );
     });
 
     it('should read the list again after a read that failed', async () => {
@@ -323,17 +410,21 @@ describe('createStaticExports', () => {
       });
 
       await failureOf(
-        exports.find([
+        exports.find(
+          PageSlugs.create([
+            'guides',
+            'write-a-pack',
+          ]),
+        ),
+      );
+
+      // Act
+      const page = await exports.find(
+        PageSlugs.create([
           'guides',
           'write-a-pack',
         ]),
       );
-
-      // Act
-      const page = await exports.find([
-        'guides',
-        'write-a-pack',
-      ]);
 
       // Assert
       expect(page).toStrictEqual(guideFixture());

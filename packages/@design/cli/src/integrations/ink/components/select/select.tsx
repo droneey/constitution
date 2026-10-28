@@ -2,15 +2,15 @@ import type { ReactElement } from 'react';
 
 import { Box, Text } from 'ink';
 
-import { Glyph, Space, Tone } from '#/libs/ui';
+import { Glyph, Space, Tone, widthOf } from '#/libs/ui';
 
-import { useTheme } from '../../hooks';
+import { useTheme } from '../../theme';
 import { useSelect } from './select.hooks';
 import type { SelectProps } from './select.types';
 
 function Select<T>({ choices, message, onInterrupt, onSubmit }: SelectProps<T>): ReactElement {
   const theme = useTheme();
-  const pointed = useSelect({
+  const pointedIndex = useSelect({
     choices,
     onInterrupt,
     onSubmit,
@@ -26,15 +26,19 @@ function Select<T>({ choices, message, onInterrupt, onSubmit }: SelectProps<T>):
         <Box
           aria-role='option'
           aria-state={{
-            selected: index === pointed,
+            selected: index === pointedIndex,
           }}
           gap={theme.space[Space.Xs]}
           key={choice.label}
         >
-          <Text aria-hidden>
-            {index === pointed ? theme.paint(Tone.Accent, theme.glyphs[Glyph.Pointer]) : ' '}
+          <Box width={widthOf(theme.glyphs[Glyph.Pointer])}>
+            {index === pointedIndex && (
+              <Text aria-hidden>{theme.paint(Tone.Accent, theme.glyphs[Glyph.Pointer])}</Text>
+            )}
+          </Box>
+          <Text>
+            {index === pointedIndex ? theme.paint(Tone.Accent, choice.label) : choice.label}
           </Text>
-          <Text>{index === pointed ? theme.paint(Tone.Accent, choice.label) : choice.label}</Text>
         </Box>
       ))}
     </Box>

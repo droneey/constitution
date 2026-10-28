@@ -1,7 +1,7 @@
 @layer overrides {
   nav[aria-label='Versions'] {
-    font-size: var(--text-sm);
-    font-weight: var(--font-weight-ui);
+    font: var(--font-label-sm);
+    letter-spacing: var(--font-label-sm--letter-spacing);
 
     & a[aria-current='page'] {
       background-color: var(--color-fd-accent);

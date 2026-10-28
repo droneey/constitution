@@ -1,0 +1,7 @@
+# The check starts Stryker by a name it keeps in a constant, which knip does not read as a binary.
+stryker:
+  '*':
+    typescript:
+      knip.jsonc:
+        ignoreDependencies:
+          - '@stryker-mutator/core'

@@ -1,4 +1,10 @@
-/** the custom properties of the scale an app's own brand.tokens.json replaces, by step */
-const ACCENT_SCALE = '--color-brand';
+/** where an app's brand.tokens.json holds the scale that replaces the default's */
+const ACCENT_TOKEN_PATH = [
+  'color',
+  'brand',
+] as const;
 
-export { ACCENT_SCALE };
+/** the custom properties of that scale's steps, named as the build names a token by its path */
+const accentPropertyPrefix = `--${ACCENT_TOKEN_PATH.join('-')}`;
+
+export { ACCENT_TOKEN_PATH, accentPropertyPrefix };

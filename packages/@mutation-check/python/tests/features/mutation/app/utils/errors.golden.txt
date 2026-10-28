@@ -1,0 +1,8 @@
+mutation: git diff failed: fatal: bad revision origin/main
+mutation: python -m mutmut run did not start; put it on PATH
+mutation: python -m mutmut run ran past its time
+mutation: the mutants/ folder of an earlier run could not be removed, [Errno 13] Permission denied: 'mutants/src'; remove it and run again
+mutation: /repository/src/shop/orders.py is absolute where a path from the unit belongs; report it
+mutation: ../outside/orders.py climbs out of the unit where a path from it belongs; report it
+mutation: al is no argument the check takes; run it with none to mutate the changed functions, or with all to mutate all of them
+mutation: the check stopped on an error of its own, RuntimeError('boom'); report it

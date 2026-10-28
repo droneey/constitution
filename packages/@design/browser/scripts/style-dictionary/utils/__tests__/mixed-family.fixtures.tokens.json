@@ -1,0 +1,25 @@
+{
+  "font": {
+    "family": {
+      "$type": "fontFamily",
+      "sans": {
+        "$value": [
+          "Geist Variable",
+          "sans-serif"
+        ]
+      }
+    },
+    "code": {
+      "$type": "typography",
+      "xs": {
+        "$value": {
+          "fontFamily": "{font.family.sans}",
+          "fontSize": "{font.size.sm}",
+          "fontWeight": "{font.weight.normal}",
+          "letterSpacing": "{font.tracking.normal}",
+          "lineHeight": "{font.leading.sm}"
+        }
+      }
+    }
+  }
+}

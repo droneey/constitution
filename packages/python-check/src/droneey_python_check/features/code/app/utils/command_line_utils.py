@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from ...domain.errors import Misuse, UsageError
+from ..errors import Misuse, UsageError
 
 if TYPE_CHECKING:
   from collections.abc import Sequence

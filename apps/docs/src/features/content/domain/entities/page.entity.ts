@@ -1,7 +1,8 @@
+import { MARKDOWN_EXTENSION, PATH_SEPARATOR } from '../constants';
+import { withoutMarkdownExtension } from '../utils';
+import type { BlockPath } from '../value-objects';
+import { PageSlugs } from '../value-objects';
 import { Axis } from './block.entity';
-
-/** the segments of a page's address under the site's base */
-type PageSlugs = readonly string[];
 
 /** where a page's compiled body is found: its collection, and its path in that collection */
 interface PageLocation {
@@ -17,60 +18,41 @@ interface Page extends PageLocation {
 /** every page by its slugs joined with `/`, as the site exports them for the browser */
 type PageCatalog = Readonly<Record<string, Page>>;
 
-const catalogKeyOf = (slugs: PageSlugs): string => slugs.join('/');
+const catalogKeyOf = (slugs: readonly string[]): string => slugs.join(PATH_SEPARATOR);
 
-const MARKDOWN_EXTENSION = '.md';
-
-const INDEX = 'index';
-
-const withoutMarkdownExtension = (path: string): string =>
-  path.endsWith(MARKDOWN_EXTENSION) ? path.slice(0, -MARKDOWN_EXTENSION.length) : path;
-
-const linesOf = (markdown: string): readonly string[] => markdown.split('\n');
-
-const titleOf = (markdown: string): string | undefined =>
-  linesOf(markdown)
-    .find((line) => line.startsWith('# '))
-    ?.slice('# '.length);
-
-/** still in Markdown */
-const summaryLineOf = (markdown: string): string | undefined =>
-  linesOf(markdown)
-    .find((line) => line.startsWith('> '))
-    ?.slice('> '.length);
+/** one page apart from every other, though two collections hold the README under one path */
+const keyOf = ({ collection, path }: PageLocation): string => `${collection}:${path}`;
 
 /** a passport is `<id>/<id>.md`; an axis folder has none */
-const isPassportPath = (path: string): boolean => {
-  const [name, folder] = path.split('/').toReversed();
+const isPassportPath = (blockPath: BlockPath): boolean => {
+  const [fileName, folderName] = blockPath.split(PATH_SEPARATOR).toReversed();
 
   return (
-    !Object.values(Axis).some((axis) => axis === folder) &&
-    name === `${folder}${MARKDOWN_EXTENSION}`
+    !Object.values(Axis).some((axis) => axis === folderName) &&
+    fileName === `${folderName}${MARKDOWN_EXTENSION}`
   );
 };
 
-const pageSlugsOf = (path: string): PageSlugs => {
-  const parts = withoutMarkdownExtension(path).split('/');
+/** @throws {@link InvalidValueError} when no page can have the block's address */
+const slugsOf = (blockPath: BlockPath): PageSlugs => {
+  const segments = withoutMarkdownExtension(blockPath).split(PATH_SEPARATOR);
 
-  return isPassportPath(path) ? parts.slice(0, -1) : parts;
+  return PageSlugs.create(isPassportPath(blockPath) ? segments.slice(0, -1) : segments);
 };
 
-const slugsOfMarkdownAddress = (segments: readonly string[]): PageSlugs => {
-  const slugs = segments.map((segment, index) =>
-    index === segments.length - 1 ? withoutMarkdownExtension(segment) : segment,
-  );
+const addressOf = (baseUrl: string, blockPath: BlockPath): string =>
+  [
+    baseUrl,
+    ...slugsOf(blockPath),
+  ].join(PATH_SEPARATOR);
 
-  return slugs.length === 1 && slugs[0] === INDEX ? [] : slugs;
-};
-
-export type { Page, PageCatalog, PageLocation, PageSlugs };
-export {
+const Page = {
+  addressOf,
   catalogKeyOf,
   isPassportPath,
-  MARKDOWN_EXTENSION,
-  pageSlugsOf,
-  slugsOfMarkdownAddress,
-  summaryLineOf,
-  titleOf,
-  withoutMarkdownExtension,
-};
+  keyOf,
+  slugsOf,
+} as const;
+
+export type { PageCatalog, PageLocation };
+export { Page };

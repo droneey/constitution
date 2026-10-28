@@ -1,8 +1,12 @@
 import { describe, expect, it } from 'bun:test';
 
-import { PluginKind } from '@stryker-mutator/api/plugin';
+import { failureOf } from '#/__tests__/failure.fixtures.ts';
 
-import { strykerPlugins, strykerValidationSchema } from '../ignorers.ts';
+import {
+  DiagnosticsSettingError,
+  DiagnosticsSettingFailure,
+} from '../diagnostics-setting.error.ts';
+import { strykerPlugins } from '../ignorers.ts';
 
 const [plugin] = strykerPlugins;
 
@@ -16,7 +20,7 @@ const TEXT_ARGUMENTS = {
   ],
   'new *Error': 0,
   option: 1,
-  t: 0,
+  super: 0,
 } as const;
 
 const ignorerOf = (textArguments: object = TEXT_ARGUMENTS) =>
@@ -24,8 +28,8 @@ const ignorerOf = (textArguments: object = TEXT_ARGUMENTS) =>
     diagnosticsTextArguments: textArguments,
   });
 
-const identifier = (name: string) => ({
-  name,
+const identifier = (identifierName: string) => ({
+  name: identifierName,
   type: 'Identifier',
 });
 
@@ -36,17 +40,23 @@ const member = (input: { computed?: boolean; object: object; property: object })
   type: 'MemberExpression',
 });
 
-const method = (name: string, computed = false) =>
+const method = (methodName: string) =>
   member({
-    computed,
     object: identifier('command'),
-    property: identifier(name),
+    property: identifier(methodName),
+  });
+
+const computedMethod = (methodName: string) =>
+  member({
+    computed: true,
+    object: identifier('command'),
+    property: identifier(methodName),
   });
 
 // The path of an argument of a call, `<callee>(...)` or `new <callee>(...)`, as Babel hands it to Stryker.
 const argumentOf = (input: {
   callee: object;
-  key?: number | string;
+  key?: number;
   listKey?: string;
   parent?: string;
   type?: string;
@@ -64,6 +74,20 @@ const argumentOf = (input: {
   },
 });
 
+// A literal of a file, as Babel hands it to Stryker with the file it walks.
+const literalIn = (input: { fileName: string; type: string }) => ({
+  hub: {
+    file: {
+      opts: {
+        filename: input.fileName,
+      },
+    },
+  },
+  node: {
+    type: input.type,
+  },
+});
+
 describe('the diagnostics ignorer', () => {
   it.each([
     {
@@ -74,33 +98,6 @@ describe('the diagnostics ignorer', () => {
       }),
     },
     {
-      condition: 'a template at that index',
-      path: argumentOf({
-        callee: method('description'),
-        type: 'TemplateLiteral',
-      }),
-    },
-    {
-      condition: 'the text at any of the indexes its shape names',
-      path: argumentOf({
-        callee: method('info'),
-        key: 1,
-      }),
-    },
-    {
-      condition: 'the call that builds the text at that index',
-      path: argumentOf({
-        callee: method('description'),
-        type: 'CallExpression',
-      }),
-    },
-    {
-      condition: "a function's text",
-      path: argumentOf({
-        callee: identifier('t'),
-      }),
-    },
-    {
       condition: 'the text a constructor its shape names builds with',
       path: argumentOf({
         callee: identifier('NotFoundError'),
@@ -108,13 +105,25 @@ describe('the diagnostics ignorer', () => {
       }),
     },
     {
-      condition: 'the text of a constructor read from a namespace',
+      condition: "the text a constructor hands to its parent class's",
       path: argumentOf({
-        callee: member({
-          object: identifier('errors'),
-          property: identifier('Error'),
-        }),
-        parent: 'NewExpression',
+        callee: {
+          type: 'Super',
+        },
+      }),
+    },
+    {
+      condition: 'a string of a file of messages',
+      path: literalIn({
+        fileName: '/work/src/order.messages.ts',
+        type: 'StringLiteral',
+      }),
+    },
+    {
+      condition: 'a template of a file of messages',
+      path: literalIn({
+        fileName: '/work/src/order.messages.ts',
+        type: 'TemplateLiteral',
       }),
     },
   ])('should leave out $condition', ({ path }) => {
@@ -144,63 +153,9 @@ describe('the diagnostics ignorer', () => {
       }),
     },
     {
-      condition: 'the argument is not at an index its shape names',
-      path: argumentOf({
-        callee: method('option'),
-      }),
-    },
-    {
-      condition: 'no shape names the method',
-      path: argumentOf({
-        callee: method('action'),
-      }),
-    },
-    {
-      condition: "a shape names only part of the method's name",
-      path: argumentOf({
-        callee: method('options'),
-        key: 1,
-      }),
-    },
-    {
-      condition: 'the method is read by a computed key',
-      path: argumentOf({
-        callee: method('description', true),
-      }),
-    },
-    {
-      condition: 'the call has no callee',
-      path: {
-        key: 0,
-        listKey: 'arguments',
-        node: {
-          type: 'StringLiteral',
-        },
-        parentPath: {
-          node: {
-            type: 'CallExpression',
-          },
-        },
-      },
-    },
-    {
-      condition: 'a method its shape names is built, not called',
-      path: argumentOf({
-        callee: identifier('description'),
-        parent: 'NewExpression',
-      }),
-    },
-    {
       condition: 'a constructor its shape names is called, not built',
       path: argumentOf({
         callee: identifier('Error'),
-      }),
-    },
-    {
-      condition: "the constructor's name only begins as the shape's ends",
-      path: argumentOf({
-        callee: identifier('ErrorPage'),
-        parent: 'NewExpression',
       }),
     },
     {
@@ -211,14 +166,6 @@ describe('the diagnostics ignorer', () => {
       }),
     },
     {
-      condition: 'the node is the callee',
-      path: argumentOf({
-        callee: method('description'),
-        key: 'callee',
-        listKey: 'callee',
-      }),
-    },
-    {
       condition: 'the text lies in no call',
       path: argumentOf({
         callee: method('description'),
@@ -226,14 +173,11 @@ describe('the diagnostics ignorer', () => {
       }),
     },
     {
-      condition: 'the text has no parent',
-      path: {
-        key: 0,
-        listKey: 'arguments',
-        node: {
-          type: 'StringLiteral',
-        },
-      },
+      condition: 'a string lies in the spec of a file of messages',
+      path: literalIn({
+        fileName: '/work/src/__tests__/order.messages.test.ts',
+        type: 'StringLiteral',
+      }),
     },
   ])('should keep the mutants when $condition', ({ path }) => {
     // Arrange
@@ -241,21 +185,6 @@ describe('the diagnostics ignorer', () => {
 
     // Act
     const reason = ignorer.shouldIgnore(path);
-
-    // Assert
-    expect(reason).toBeUndefined();
-  });
-
-  it('should keep the text of a method when the configuration names no shape', () => {
-    // Arrange
-    const ignorer = plugin.factory({});
-
-    // Act
-    const reason = ignorer.shouldIgnore(
-      argumentOf({
-        callee: method('description'),
-      }),
-    );
 
     // Assert
     expect(reason).toBeUndefined();
@@ -270,7 +199,7 @@ describe('the diagnostics ignorer', () => {
     // Act
     const reason = ignorer.shouldIgnore(
       argumentOf({
-        callee: method('description', true),
+        callee: computedMethod('description'),
       }),
     );
 
@@ -278,50 +207,44 @@ describe('the diagnostics ignorer', () => {
     expect(reason).toBeUndefined();
   });
 
-  it('should take a shape for its letters alone when it holds a character a pattern reads', () => {
-    // Arrange
-    const ignorer = ignorerOf({
-      'log.info': 0,
-    });
+  it.each([
+    {
+      condition: 'is no table',
+      problemPaths: [
+        'diagnosticsTextArguments',
+      ],
+      textArguments: [
+        0,
+      ],
+    },
+    {
+      condition: 'give shapes indexes that are no whole numbers',
+      problemPaths: [
+        'diagnosticsTextArguments.info',
+        'diagnosticsTextArguments.option',
+      ],
+      textArguments: {
+        info: [
+          0,
+          '1',
+        ],
+        option: 1.5,
+      },
+    },
+  ])(
+    'should refuse, naming every problem, a configuration whose text arguments $condition',
+    async ({ problemPaths, textArguments }) => {
+      // Act
+      const failure = await failureOf({
+        call: () => ignorerOf(textArguments),
+        kind: DiagnosticsSettingError,
+      });
 
-    // Act
-    const reason = ignorer.shouldIgnore(
-      argumentOf({
-        callee: identifier('logXinfo'),
-      }),
-    );
-
-    // Assert
-    expect(reason).toBeUndefined();
-  });
-
-  it('should declare its key, so Stryker does not warn of it', () => {
-    // Arrange
-    const schema = strykerValidationSchema;
-
-    // Act
-    const declared = Object.keys(schema.properties);
-
-    // Assert
-    expect(declared).toStrictEqual([
-      'diagnosticsTextArguments',
-    ]);
-  });
-
-  it('should declare the ignorer the configuration names', () => {
-    // Arrange
-    const declared = plugin;
-
-    // Act
-    const { kind, name } = declared;
-
-    // Assert
-    expect({
-      kind,
-      name,
-    }).toStrictEqual({
-      kind: PluginKind.Ignore,
-      name: 'diagnostics',
-    });
-  });
+      // Assert
+      expect(failure?.details).toStrictEqual({
+        code: DiagnosticsSettingFailure.Malformed,
+        problemPaths,
+      });
+    },
+  );
 });

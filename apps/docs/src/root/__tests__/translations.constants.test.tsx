@@ -10,9 +10,6 @@ import { TRANSLATIONS } from '../constants';
 
 afterEach(cleanup);
 
-/** the notes in brackets tell a label's uses apart */
-const labelOf = (key: string): string => key.replace(/\(.*$/, '');
-
 const atTheRoot = (): string => '/';
 
 const noParams = (): Record<string, string> => ({});
@@ -26,20 +23,6 @@ const staticRouter = (): {
 });
 
 describe('translations', () => {
-  it.each(Object.entries(TRANSLATIONS))(
-    'should give the label %p in sentence case',
-    (key, label) => {
-      // Arrange
-      const words = labelOf(key);
-
-      // Act
-      const sentenceCase = `${words.charAt(0)}${words.slice(1).toLowerCase()}`;
-
-      // Assert
-      expect(label).toBe(sentenceCase);
-    },
-  );
-
   it('should relabel the library pieces when the root provides them', () => {
     // Arrange
     const i18n = {

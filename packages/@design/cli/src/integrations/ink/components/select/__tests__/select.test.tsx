@@ -1,9 +1,10 @@
 import { describe, expect, it, mock } from 'bun:test';
 
-import { ColourLevel } from '#/libs/ui';
+import { goldenFileText, goldenOf } from '#/__tests__/golden.fixtures';
+import { createMarkingTheme, markedSpansOf } from '#/__tests__/theme.fixtures';
 
 import {
-  createPlainOutput,
+  frameOf,
   Key,
   pressKeys,
   renderWithTheme,
@@ -38,26 +39,34 @@ const CHOICES = [
 ] as const;
 
 describe('Select', () => {
-  it('should point at the first answer when it opens', () => {
-    // Arrange
-    const tree = (
-      <Select
-        choices={CHOICES}
-        message='Runtime?'
-        onInterrupt={mock()}
-        onSubmit={mock()}
-      />
-    );
-
+  it('should point at the first answer when it opens, and read out the question, its answers and the one selected, as the golden file shows them', async () => {
     // Act
-    const { lastFrame } = renderWithTheme(tree);
+    const golden = goldenOf({
+      opened: frameOf(
+        <Select
+          choices={CHOICES}
+          message='Runtime?'
+          onInterrupt={mock()}
+          onSubmit={mock()}
+        />,
+      ),
+      'read out': screenReaderOutputOf(
+        <Select
+          choices={CHOICES}
+          message='Runtime?'
+          onInterrupt={mock()}
+          onSubmit={mock()}
+        />,
+      ),
+    });
 
     // Assert
-    expect(lastFrame()).toBe('Runtime?\n› Bun\n  Node.js');
+    expect(golden).toBe(await goldenFileText(new URL('select.golden.txt', import.meta.url)));
   });
 
   it.each([
     {
+      condition: 'Down moves to the next answer',
       keys: [
         Key.Down,
         Key.Enter,
@@ -65,13 +74,7 @@ describe('Select', () => {
       answer: 'node',
     },
     {
-      keys: [
-        Key.Up,
-        Key.Enter,
-      ],
-      answer: 'node',
-    },
-    {
+      condition: 'Down past the last answer wraps to the first',
       keys: [
         Key.Down,
         Key.Down,
@@ -79,31 +82,28 @@ describe('Select', () => {
       ],
       answer: 'bun',
     },
-  ])(
-    'should give the answer the pointer is on when Enter follows $keys',
-    async ({ answer, keys }) => {
-      // Arrange
-      const onSubmit = mock();
-      const { stdin } = renderWithTheme(
-        <Select
-          choices={CHOICES}
-          message='Runtime?'
-          onInterrupt={mock()}
-          onSubmit={onSubmit}
-        />,
-      );
+  ])('should give the answer the pointer is on when $condition', async ({ answer, keys }) => {
+    // Arrange
+    const onSubmit = mock();
+    const { stdin } = renderWithTheme(
+      <Select
+        choices={CHOICES}
+        message='Runtime?'
+        onInterrupt={mock()}
+        onSubmit={onSubmit}
+      />,
+    );
 
-      // Act
-      await pressKeys(stdin, keys);
+    // Act
+    await pressKeys(stdin, keys);
 
-      // Assert
-      expect(onSubmit.mock.calls).toStrictEqual([
-        [
-          answer,
-        ],
-      ]);
-    },
-  );
+    // Assert
+    expect(onSubmit.mock.calls).toStrictEqual([
+      [
+        answer,
+      ],
+    ]);
+  });
 
   it('should wrap from the first answer to the last when Up is pressed', async () => {
     // Arrange
@@ -131,6 +131,68 @@ describe('Select', () => {
     ]);
   });
 
+  it.each([
+    {
+      condition: 'Enter falls on the last answer',
+      keys: [
+        Key.Enter,
+      ],
+      answer: 'node',
+    },
+    {
+      condition: 'Down from the last answer wraps to the first',
+      keys: [
+        Key.Down,
+        Key.Enter,
+      ],
+      answer: 'bun',
+    },
+    {
+      condition: 'Up from the last answer moves to the one before',
+      keys: [
+        Key.Up,
+        Key.Enter,
+      ],
+      answer: 'bun',
+    },
+  ])(
+    'should keep the pointer on the list when the answers shrink below it and $condition',
+    async ({ answer, keys }) => {
+      // Arrange
+      const onSubmit = mock();
+      const { rerender, stdin } = renderWithTheme(
+        <Select
+          choices={THREE_CHOICES}
+          message='Runtime?'
+          onInterrupt={mock()}
+          onSubmit={onSubmit}
+        />,
+      );
+
+      await pressKeys(stdin, [
+        Key.Up,
+      ]);
+      rerender(
+        <Select
+          choices={CHOICES}
+          message='Runtime?'
+          onInterrupt={mock()}
+          onSubmit={onSubmit}
+        />,
+      );
+
+      // Act
+      await pressKeys(stdin, keys);
+
+      // Assert
+      expect(onSubmit.mock.calls).toStrictEqual([
+        [
+          answer,
+        ],
+      ]);
+    },
+  );
+
   it('should neither answer nor interrupt when another key, Ctrl with it or not, is pressed', async () => {
     // Arrange
     const onSubmit = mock();
@@ -155,50 +217,36 @@ describe('Select', () => {
     expect(onInterrupt).not.toHaveBeenCalled();
   });
 
-  it("should draw the answer the pointer is on in the accent's colour when the run shows colour", () => {
+  it('should draw the question in bold and the answer the pointer is on in the accent', () => {
     // Arrange
-    const output = createPlainOutput({
-      colourLevel: ColourLevel.Basic,
-    });
+    const theme = createMarkingTheme();
 
     // Act
-    const { lastFrame } = renderWithTheme(
+    const frame = frameOf(
       <Select
         choices={CHOICES}
         message='Runtime?'
         onInterrupt={mock()}
         onSubmit={mock()}
       />,
-      output,
+      theme,
     );
 
     // Assert
-    expect(lastFrame()?.split('\n').slice(1)).toStrictEqual([
-      // biome-ignore lint/security/noSecrets: the escape codes of a terminal's colours, no secret
-      '\u001B[97m›\u001B[39m \u001B[97mBun\u001B[39m',
-      '  Node.js',
+    expect(markedSpansOf(frame)).toStrictEqual([
+      [
+        'strong',
+        'Runtime?',
+      ],
+      [
+        'accent',
+        '›',
+      ],
+      [
+        'accent',
+        'Bun',
+      ],
     ]);
-  });
-
-  it('should give nothing when Enter falls on no answer', async () => {
-    // Arrange
-    const onSubmit = mock();
-    const { stdin } = renderWithTheme(
-      <Select
-        choices={[]}
-        message='Runtime?'
-        onInterrupt={mock()}
-        onSubmit={onSubmit}
-      />,
-    );
-
-    // Act
-    await pressKeys(stdin, [
-      Key.Enter,
-    ]);
-
-    // Assert
-    expect(onSubmit).not.toHaveBeenCalled();
   });
 
   it('should interrupt when Ctrl-C is pressed', async () => {
@@ -220,23 +268,5 @@ describe('Select', () => {
 
     // Assert
     expect(onInterrupt).toHaveBeenCalledTimes(1);
-  });
-
-  it('should read out the question, its answers and the one selected', () => {
-    // Arrange
-    const tree = (
-      <Select
-        choices={CHOICES}
-        message='Runtime?'
-        onInterrupt={mock()}
-        onSubmit={mock()}
-      />
-    );
-
-    // Act
-    const spoken = screenReaderOutputOf(tree);
-
-    // Assert
-    expect(spoken).toBe('listbox: Runtime?\noption: (selected) Bun\noption: Node.js');
   });
 });

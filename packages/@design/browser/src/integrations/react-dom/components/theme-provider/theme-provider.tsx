@@ -1,9 +1,15 @@
-import type { ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 
+import type { AccentScale } from '#/libs/ui';
 import { accentStylesheetOf } from '#/libs/ui';
 
 import { ACCENT_STYLESHEET } from './theme-provider.constants';
-import type { ThemeProviderProps } from './theme-provider.types';
+
+interface ThemeProviderProps {
+  /** the app's accent; the default theme's stays where none is given */
+  readonly accent?: AccentScale;
+  readonly children: ReactNode;
+}
 
 /** puts the app's accent in place of the default theme's, for the whole document */
 function ThemeProvider({ accent, children }: ThemeProviderProps): ReactElement {
@@ -23,4 +29,5 @@ function ThemeProvider({ accent, children }: ThemeProviderProps): ReactElement {
   );
 }
 
+export type { ThemeProviderProps };
 export { ThemeProvider };

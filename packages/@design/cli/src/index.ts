@@ -1,5 +1,4 @@
 export type {
-  AccentTokens,
   Column,
   ConfirmWordsInput,
   FailureContent,
@@ -17,6 +16,7 @@ export type {
   ThemeInput,
 } from './libs/ui';
 export {
+  AccentScale,
   ColourLevel,
   ColumnAlign,
   ConfirmWords,
@@ -32,6 +32,7 @@ export {
   formatTaskList,
   formatWaiting,
   Glyph,
+  MalformedAccentError,
   OutputMode,
   padTo,
   Space,

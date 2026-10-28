@@ -1,17 +1,30 @@
-import type { ColourLevel, Glyph, OutputMode, Space, ThemeMode, Tone } from '../constants';
-import type { AccentTokens } from './accent.types';
+import type {
+  ACCENT_TONE_ROLE,
+  ColourLevel,
+  ColourRole,
+  DESIGN_TOKENS,
+  FRAME_DURATION_TOKEN,
+  Glyph,
+  OutputMode,
+  Space,
+  ThemeMode,
+  Tone,
+} from '../constants';
+import type { AccentScale } from '../value-objects';
 
-/** a mode's default theme, as the tokens' generation writes it for a command line */
+/** a step of the accent's scale, as the tokens' generation writes it */
+type AccentStep = keyof (typeof DESIGN_TOKENS)[ThemeMode]['brand'];
+
+/** what the theme reads of a mode's default theme, as the tokens' generation writes it for a command line */
 interface TerminalTokens {
-  /** the step of the accent's scale each accent role reads */
-  readonly accent: Readonly<Record<string, string>>;
+  /** the step of the accent's scale the accent's role reads */
+  readonly accent: Readonly<Record<typeof ACCENT_TONE_ROLE, AccentStep>>;
   /** the default accent's scale in hex */
-  readonly brand: Readonly<Record<string, string>>;
+  readonly brand: Readonly<Record<AccentStep, string>>;
   /** every other role in hex */
-  readonly colour: Readonly<Record<string, string>>;
-  readonly duration: Readonly<Record<string, number>>;
-  /** in pixels */
-  readonly spacing: Readonly<Record<string, number>>;
+  readonly colour: Readonly<Record<ColourRole, string>>;
+  readonly durationsMs: Readonly<Record<typeof FRAME_DURATION_TOKEN, number>>;
+  readonly spacingsPx: Readonly<Record<Space, number>>;
 }
 
 interface Spinner {
@@ -31,7 +44,7 @@ interface Theme {
 
 interface ThemeInput {
   /** the default accent where none is given */
-  readonly accent?: AccentTokens | undefined;
+  readonly accent?: AccentScale;
   readonly colourLevel: ColourLevel;
   readonly isMotionReduced: boolean;
   readonly mode: ThemeMode;

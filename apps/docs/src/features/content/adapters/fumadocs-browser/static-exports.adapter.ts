@@ -1,30 +1,35 @@
 import type { SerializedPageTree } from 'fumadocs-core/source/client';
+import type { z } from 'zod';
+
+import { once } from '#/libs/once';
+import { isNoJson, isUnreachable, problemPathsOf, WHOLE_FILE_PATH } from '#/libs/served-json';
 
 import type { NavigationQueryRepository, PageLookup } from '../../domain/contracts';
-import type { Page, PageCatalog } from '../../domain/entities';
-import { catalogKeyOf } from '../../domain/entities';
-import { ExportError } from '../../domain/errors';
-import { pageCatalogModel } from './models';
+import type { PageCatalog } from '../../domain/entities';
+import { Page } from '../../domain/entities';
+import { ExportError, ExportFailure } from '../../domain/errors';
+import { pageCatalogModel, pageTreeModel } from './models';
 
-type Transport = (address: string) => Promise<Response>;
+type Transport = (
+  address: string,
+  init: {
+    signal: AbortSignal;
+  },
+) => Promise<Response>;
 
 interface StaticExportsInput {
-  /** where the site serves the list of its pages its server exported */
   readonly catalogAddress: string;
-  /** where the site serves the tree of its pages its server exported */
   readonly navigationAddress: string;
   readonly transport?: Transport;
 }
 
-/** the mark Fumadocs' loader gives a tree it serialized, which `useFumadocsLoader` turns back */
-const isSerializedPageTree = (file: unknown): file is SerializedPageTree =>
-  typeof file === 'object' &&
-  file !== null &&
-  '$fumadocs_loader' in file &&
-  file.$fumadocs_loader === 'page-tree' &&
-  'data' in file &&
-  typeof file.data === 'object' &&
-  file.data !== null;
+const READ_TIMEOUT_MS = 10_000;
+
+const rethrownAs =
+  (isRecognised: (error: unknown) => boolean, errorOf: (cause: unknown) => Error) =>
+  (error: unknown): never => {
+    throw isRecognised(error) ? errorOf(error) : error;
+  };
 
 /**
  * Reads what the site's server exported as plain files, which any static host serves: the tree of
@@ -35,62 +40,91 @@ export const createStaticExports = ({
   navigationAddress,
   transport = fetch,
 }: StaticExportsInput): NavigationQueryRepository<SerializedPageTree> & PageLookup => {
-  /** undefined when the site answers no file, or one that holds no JSON */
-  const readFile = async (address: string): Promise<unknown> => {
-    const response = await transport(address).catch((error: unknown) => {
-      throw new ExportError(
-        {
-          address,
-        },
-        {
-          cause: error,
-        },
-      );
-    });
+  /**
+   * @throws {@link ExportError} when the site gives no answer in time, answers no file, or a file
+   * that holds no JSON or no value the model takes
+   */
+  const readFile = async <TValue>(address: string, model: z.ZodType<TValue>): Promise<TValue> => {
+    const response = await transport(address, {
+      signal: AbortSignal.timeout(READ_TIMEOUT_MS),
+    }).catch(
+      rethrownAs(
+        isUnreachable,
+        (cause) =>
+          new ExportError(
+            {
+              code: ExportFailure.Unreachable,
+              details: {
+                address,
+              },
+            },
+            {
+              cause,
+            },
+          ),
+      ),
+    );
 
-    return response.ok ? await response.json().catch(() => undefined) : undefined;
-  };
-
-  const readCatalog = async (): Promise<PageCatalog> => {
-    const file = pageCatalogModel.safeParse(await readFile(catalogAddress));
-
-    if (!file.success) {
+    if (!response.ok) {
       throw new ExportError({
-        address: catalogAddress,
+        code: ExportFailure.NoFile,
+        details: {
+          address,
+          status: response.status,
+        },
       });
     }
 
-    return file.data;
+    const file: unknown = await response.json().catch(
+      rethrownAs(
+        isNoJson,
+        (cause) =>
+          new ExportError(
+            {
+              code: ExportFailure.Malformed,
+              details: {
+                address,
+                problems: [
+                  WHOLE_FILE_PATH,
+                ],
+              },
+            },
+            {
+              cause,
+            },
+          ),
+      ),
+    );
+    const parsedFile = model.safeParse(file);
+
+    if (!parsedFile.success) {
+      throw new ExportError(
+        {
+          code: ExportFailure.Malformed,
+          details: {
+            address,
+            problems: problemPathsOf(parsedFile.error.issues),
+          },
+        },
+        {
+          cause: parsedFile.error,
+        },
+      );
+    }
+
+    return parsedFile.data;
   };
 
-  const kept: {
-    catalog?: Promise<PageCatalog> | undefined;
-  } = {};
+  // a read that failed is forgotten, so the next page the reader opens reads the list again
+  const keptCatalog = once((): Promise<PageCatalog> => readFile(catalogAddress, pageCatalogModel));
 
   return {
     find: async (slugs): Promise<Page | undefined> => {
-      // a read that failed is forgotten, so the next page the reader opens reads the list again
-      kept.catalog ??= readCatalog().catch((error: unknown) => {
-        kept.catalog = undefined;
-
-        throw error;
-      });
-
-      const catalog = await kept.catalog;
-      const key = catalogKeyOf(slugs);
+      const catalog = await keptCatalog();
+      const key = Page.catalogKeyOf(slugs);
 
       return Object.hasOwn(catalog, key) ? catalog[key] : undefined;
     },
-    readNavigation: async (): Promise<SerializedPageTree> => {
-      const file = await readFile(navigationAddress);
-
-      if (!isSerializedPageTree(file)) {
-        throw new ExportError({
-          address: navigationAddress,
-        });
-      }
-
-      return file;
-    },
+    readNavigation: (): Promise<SerializedPageTree> => readFile(navigationAddress, pageTreeModel),
   };
 };

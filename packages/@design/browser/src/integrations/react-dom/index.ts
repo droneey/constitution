@@ -1,4 +1,4 @@
-export type { AccentTokens } from '#/libs/ui';
+export { AccentScale, MalformedAccentError } from '#/libs/ui';
 
 export type {
   IconProps,

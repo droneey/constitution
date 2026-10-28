@@ -1,25 +1,33 @@
 import { describe, expect, it } from 'bun:test';
 
+import { createPlainTheme, GOLD } from '#/__tests__/theme.fixtures';
+
 import { ColourLevel, Space, ThemeMode, Tone } from '../../constants';
-import { MissingTokenError } from '../../errors';
-import { createPlainTheme, createTokens, GOLD } from './theme.fixtures';
+import type { Theme } from '../../types';
+import { AccentScale } from '../../value-objects';
+import { createTokens, defaultBrand } from './tokens.fixtures';
 
 describe('createTheme', () => {
-  it('should draw the text as it is when the run shows no colour', () => {
+  it.each([
+    {
+      condition: 'a tone',
+      draw: (theme: Theme): string => theme.paint(Tone.Success, 'built'),
+      drawn: 'built',
+    },
+    {
+      condition: 'bold text',
+      draw: (theme: Theme): string => theme.strong('Checks'),
+      drawn: 'Checks',
+    },
+  ])('should draw $condition as it is when the run shows no colour', ({ draw, drawn }) => {
     // Arrange
     const theme = createPlainTheme();
 
     // Act
-    const drawn = [
-      theme.paint(Tone.Success, 'built'),
-      theme.strong('Checks'),
-    ];
+    const text = draw(theme);
 
     // Assert
-    expect(drawn).toStrictEqual([
-      'built',
-      'Checks',
-    ]);
+    expect(text).toBe(drawn);
   });
 
   it.each([
@@ -66,100 +74,85 @@ describe('createTheme', () => {
     },
   ])("should draw the accent on the app's own scale in the $mode mode", ({ drawn, mode }) => {
     // Arrange
-    const accent = GOLD;
-
-    // Act
     const theme = createPlainTheme({
-      accent,
+      accent: AccentScale.create(GOLD),
       colourLevel: ColourLevel.TrueColour,
       mode,
     });
 
+    // Act
+    const painted = theme.paint(Tone.Accent, 'go');
+
     // Assert
-    expect(theme.paint(Tone.Accent, 'go')).toBe(drawn);
+    expect(painted).toBe(drawn);
   });
 
   it("should keep the default's step where the app's scale gives that step no sRGB colour", () => {
     // Arrange
-    const tokens = createTokens({
-      accent: {
-        'accent.text': '700',
-      },
-      brand: {
-        '700': '#123456',
-      },
-    });
-
-    // Act
     const theme = createPlainTheme(
       {
-        accent: GOLD,
+        accent: AccentScale.create(GOLD),
         colourLevel: ColourLevel.TrueColour,
       },
-      tokens,
+      createTokens({
+        accent: {
+          'accent.text': '700',
+        },
+        brand: {
+          ...defaultBrand,
+          '700': '#123456',
+        },
+      }),
     );
 
+    // Act
+    const painted = theme.paint(Tone.Accent, 'go');
+
     // Assert
-    expect(theme.paint(Tone.Accent, 'go')).toBe('\u001B[38;2;18;52;86mgo\u001B[39m');
+    expect(painted).toBe('\u001B[38;2;18;52;86mgo\u001B[39m');
   });
 
-  it('should take the build it is given, its pace and its roles', () => {
+  it("should draw the accent on the step the build's accent role reads", () => {
+    // Arrange
+    const theme = createPlainTheme(
+      {
+        colourLevel: ColourLevel.TrueColour,
+      },
+      createTokens(),
+    );
+
+    // Act
+    const painted = theme.paint(Tone.Accent, 'go');
+
+    // Assert
+    expect(painted).toBe('\u001B[38;2;0;0;255mgo\u001B[39m');
+  });
+
+  it('should draw every other tone in its role of the build', () => {
+    // Arrange
+    const theme = createPlainTheme(
+      {
+        colourLevel: ColourLevel.TrueColour,
+      },
+      createTokens(),
+    );
+
+    // Act
+    const painted = theme.paint(Tone.Error, 'no');
+
+    // Assert
+    expect(painted).toBe('\u001B[38;2;255;0;0mno\u001B[39m');
+  });
+
+  it("should move the spinner at the build's pace", () => {
     // Arrange
     const tokens = createTokens();
 
     // Act
-    const theme = createPlainTheme(
-      {
-        colourLevel: ColourLevel.TrueColour,
-        mode: ThemeMode.Light,
-      },
-      tokens,
-    );
+    const theme = createPlainTheme({}, tokens);
 
     // Assert
-    expect(theme.paint(Tone.Accent, 'go')).toBe('\u001B[38;2;0;0;255mgo\u001B[39m');
-    expect(theme.paint(Tone.Error, 'no')).toBe('\u001B[38;2;255;0;0mno\u001B[39m');
     expect(theme.spinner.intervalMs).toBe(50);
-  });
-
-  it.each([
-    {
-      name: 'a colour for a role',
-      tokens: createTokens({
-        colour: {},
-      }),
-      token: 'text.success',
-    },
-    {
-      name: 'a colour for a step',
-      tokens: createTokens({
-        brand: {},
-      }),
-      token: 'accent.text',
-    },
-    {
-      name: 'its pace',
-      tokens: createTokens({
-        duration: {},
-      }),
-      token: 'fast',
-    },
-    {
-      name: 'a space',
-      tokens: createTokens({
-        spacing: {},
-      }),
-      token: 'xs',
-    },
-  ])('should refuse the build when it holds no $name', ({ token, tokens }) => {
-    // Arrange
-    const input = {};
-
-    // Act
-    const build = (): unknown => createPlainTheme(input, tokens);
-
-    // Assert
-    expect(build).toThrow(new MissingTokenError(token));
   });
 
   it('should set the text apart in bold when the run shows styles', () => {
@@ -175,14 +168,9 @@ describe('createTheme', () => {
     expect(strong).toBe('\u001B[1mChecks\u001B[22m');
   });
 
-  it("should give the spaces in cells and the spinner at the tokens' fast pace", () => {
-    // Arrange
-    const isMotionReduced = false;
-
+  it('should give the spaces in cells', () => {
     // Act
-    const theme = createPlainTheme({
-      isMotionReduced,
-    });
+    const theme = createPlainTheme();
 
     // Assert
     expect(theme.space).toStrictEqual({
@@ -190,19 +178,15 @@ describe('createTheme', () => {
       [Space.Sm]: 2,
       [Space.Md]: 3,
     });
-    expect(theme.spinner.intervalMs).toBe(100);
-    expect(theme.spinner.frames).toStrictEqual([
-      '⠋',
-      '⠙',
-      '⠹',
-      '⠸',
-      '⠼',
-      '⠴',
-      '⠦',
-      '⠧',
-      '⠇',
-      '⠏',
-    ]);
+  });
+
+  it('should move when the run allows motion', () => {
+    // Act
+    const theme = createPlainTheme({
+      isMotionReduced: false,
+    });
+
+    // Assert
     expect(theme.isMotionReduced).toBe(false);
   });
 });

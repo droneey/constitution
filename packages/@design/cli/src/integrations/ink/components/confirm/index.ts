@@ -1,2 +1,2 @@
+export type { ConfirmProps } from './confirm';
 export { Confirm } from './confirm';
-export type { ConfirmProps } from './confirm.types';

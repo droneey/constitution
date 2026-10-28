@@ -4,18 +4,24 @@ import { Box, Text } from 'ink';
 
 import { Glyph, Space, Tone } from '#/libs/ui';
 
-import { useTheme } from '../../hooks';
+import { useTheme } from '../../theme';
 import { useTextInput } from './text-input.hooks';
-import type { TextInputProps } from './text-input.types';
+
+interface TextInputProps {
+  readonly message: string;
+  readonly onInterrupt: () => void;
+  readonly onSubmit: (answer: string) => void;
+  readonly placeholder: string;
+}
 
 function TextInput({ message, onInterrupt, onSubmit, placeholder }: TextInputProps): ReactElement {
   const theme = useTheme();
-  const typed = useTextInput({
+  const typedText = useTextInput({
     onInterrupt,
     onSubmit,
   });
 
-  const shown = typed === '' ? theme.paint(Tone.Muted, placeholder) : typed;
+  const shownText = typedText === '' ? theme.paint(Tone.Muted, placeholder) : typedText;
 
   return (
     <Box
@@ -24,9 +30,10 @@ function TextInput({ message, onInterrupt, onSubmit, placeholder }: TextInputPro
     >
       <Text>{theme.strong(message)}</Text>
       <Text aria-hidden>{theme.paint(Tone.Accent, theme.glyphs[Glyph.Pointer])}</Text>
-      <Text>{shown}</Text>
+      <Text>{shownText}</Text>
     </Box>
   );
 }
 
+export type { TextInputProps };
 export { TextInput };

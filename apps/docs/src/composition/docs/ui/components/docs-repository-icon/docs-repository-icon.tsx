@@ -7,6 +7,7 @@ export function DocsRepositoryIcon(): ReactElement {
   return (
     <svg
       aria-hidden
+      data-testid='repository-mark'
       fill='currentColor'
       viewBox='0 0 24 24'
     >

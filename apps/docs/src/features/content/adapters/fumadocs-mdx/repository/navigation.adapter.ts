@@ -5,7 +5,9 @@ import type { ListItem, RootContent } from 'mdast';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { toString as textOf } from 'mdast-util-to-string';
 
-import { withoutMarkdownExtension } from '../../../domain/entities';
+import { SourceError, SourceFailure } from '../../../domain/errors';
+import { withoutMarkdownExtension } from '../../../domain/utils';
+import type { AbsolutePath } from '../../../domain/value-objects';
 import {
   headingTextOf,
   isHeading,
@@ -14,12 +16,12 @@ import {
 } from '../markdown';
 import { DOCUMENTATION_SECTION } from './navigation.constants';
 import { ICONS_BY_ADDRESS } from './navigation-icons.constants';
-import { addressOf, blockLayerOf, inRepository, repositoryPathOf } from './repository.adapter';
+import { addressOf, blockLayerOf, inRepository, linkTargetOf } from './repository.adapter';
 import {
-  DOCS_FOLDER,
+  docsFolderPath,
   QUICK_START,
-  README_FILE,
-  SITE_DOCUMENTS,
+  readmeFilePath,
+  siteDocuments,
   siteLayers,
 } from './repository.constants';
 
@@ -32,19 +34,19 @@ interface Entry {
 
 interface Group {
   entries: Entry[];
-  group: string;
+  title: string;
 }
 
 interface Place {
-  fromBase: string;
-  page: string | undefined;
+  addressFromBase: string;
+  pagePath: string | undefined;
 }
 
 const sentenceOf = (note: string): string =>
   note === '' ? '' : `${note.charAt(0).toUpperCase()}${note.slice(1)}.`;
 
-const entryOf = (baseUrl: string, listed: ListItem): Entry | undefined => {
-  const [paragraph] = listed.children;
+const entryOf = (baseUrl: string, listItem: ListItem): Entry | undefined => {
+  const [paragraph] = listItem.children;
 
   if (paragraph?.type !== 'paragraph') {
     return undefined;
@@ -56,7 +58,7 @@ const entryOf = (baseUrl: string, listed: ListItem): Entry | undefined => {
     return undefined;
   }
 
-  const target = repositoryPathOf(inRepository(README_FILE), link.url);
+  const target = linkTargetOf(inRepository(readmeFilePath), link.url);
 
   if (target === undefined) {
     return undefined;
@@ -72,13 +74,14 @@ const entryOf = (baseUrl: string, listed: ListItem): Entry | undefined => {
 
 const readmeNodes = (): RootContent[] =>
   // Stryker disable next-line StringLiteral: the parser reads a buffer as UTF-8 too
-  fromMarkdown(readFileSync(inRepository(README_FILE), 'utf8')).children;
+  fromMarkdown(readFileSync(inRepository(readmeFilePath), 'utf8')).children;
 
 const sectionStartOf = (nodes: readonly RootContent[], title: string): number =>
   nodes.findIndex(
     (node) => isHeading(node, SECTION_HEADING_DEPTH) && headingTextOf(node) === title,
   );
 
+/** @throws {@link SourceError} when the README has no Documentation section */
 const documentationOf = (baseUrl: string): Group[] => {
   const nodes = readmeNodes();
   const start = sectionStartOf(nodes, DOCUMENTATION_SECTION);
@@ -88,21 +91,27 @@ const documentationOf = (baseUrl: string): Group[] => {
   const groups: Group[] = [];
 
   if (start === -1) {
-    throw new Error(`${README_FILE} has no section ${DOCUMENTATION_SECTION}`);
+    throw new SourceError({
+      code: SourceFailure.ReadmeSectionMissing,
+      details: {
+        path: readmeFilePath,
+        section: DOCUMENTATION_SECTION,
+      },
+    });
   }
 
   for (const node of nodes.slice(start + 1, end === -1 ? undefined : end)) {
     if (isHeading(node, SUBSECTION_HEADING_DEPTH)) {
       groups.push({
         entries: [],
-        group: headingTextOf(node),
+        title: headingTextOf(node),
       });
     }
 
     if (node.type === 'list') {
       groups
         .at(-1)
-        ?.entries.push(...node.children.flatMap((listed) => entryOf(baseUrl, listed) ?? []));
+        ?.entries.push(...node.children.flatMap((listItem) => entryOf(baseUrl, listItem) ?? []));
     }
   }
 
@@ -110,36 +119,40 @@ const documentationOf = (baseUrl: string): Group[] => {
 };
 
 const placeOf = (baseUrl: string, address: string): Place => {
-  const fromBase = address.startsWith(baseUrl) ? address.slice(baseUrl.length) : address;
+  const addressFromBase = address.startsWith(baseUrl) ? address.slice(baseUrl.length) : address;
 
   return {
-    fromBase,
-    page: /^\/[a-z0-9/-]+$/.test(fromBase) ? fromBase.slice(1) : undefined,
+    addressFromBase,
+    pagePath: /^\/[a-z0-9/-]+$/.test(addressFromBase) ? addressFromBase.slice(1) : undefined,
   };
 };
 
-const linkEntryOf = ({ address, title }: Entry, fromBase: string): string => {
-  const icon = ICONS_BY_ADDRESS[fromBase];
+const linkEntryOf = ({ address, title }: Entry, addressFromBase: string): string => {
+  const icon = ICONS_BY_ADDRESS[addressFromBase];
 
   return `${icon === undefined ? '' : `[${icon}]`}[${title}](${address})`;
 };
 
-const sidebarEntryOf = (entry: Entry, { fromBase, page }: Place): string => {
+const sidebarEntryOf = (entry: Entry, { addressFromBase, pagePath }: Place): string => {
   if (entry.layer !== undefined) {
     return entry.layer;
   }
 
-  if (page === undefined || siteLayers.some((folder) => page.startsWith(`${folder}/`))) {
-    return linkEntryOf(entry, fromBase);
+  if (
+    pagePath === undefined ||
+    siteLayers.some((siteLayer) => pagePath.startsWith(`${siteLayer}/`))
+  ) {
+    return linkEntryOf(entry, addressFromBase);
   }
 
-  if (siteLayers.includes(page)) {
-    return page;
+  if (siteLayers.includes(pagePath)) {
+    return pagePath;
   }
 
-  return `./${page}`;
+  return `./${pagePath}`;
 };
 
+/** @throws {@link SourceError} when the README has no Documentation section */
 const sidebarOf = (
   baseUrl: string,
 ): {
@@ -149,9 +162,9 @@ const sidebarOf = (
   const pages: string[] = [];
   const descriptions = new Map<string, string>();
 
-  documentationOf(baseUrl).forEach(({ group, entries }, index) => {
+  documentationOf(baseUrl).forEach(({ entries, title }, index) => {
     pages.push(
-      `---${group}---`,
+      `---${title}---`,
       ...(index === 0
         ? [
             'index',
@@ -163,7 +176,7 @@ const sidebarOf = (
     for (const entry of entries) {
       const place = placeOf(baseUrl, entry.address);
 
-      descriptions.set(place.page ?? place.fromBase, entry.description);
+      descriptions.set(place.pagePath ?? place.addressFromBase, entry.description);
       pages.push(sidebarEntryOf(entry, place));
     }
   });
@@ -188,10 +201,12 @@ const sectionSummaryOf = (title: string): string | undefined => {
   return summary?.type === 'paragraph' ? textOf(summary) : undefined;
 };
 
-const guideIconOf = (path: string): string | undefined =>
-  ICONS_BY_ADDRESS[`/${withoutMarkdownExtension(relative(inRepository(DOCS_FOLDER), path))}`];
+const guideIconOf = (filePath: AbsolutePath): string | undefined =>
+  ICONS_BY_ADDRESS[
+    `/${withoutMarkdownExtension(relative(inRepository(docsFolderPath), filePath))}`
+  ];
 
-const documentIconOf = (path: string): string | undefined =>
-  ICONS_BY_ADDRESS[`/${SITE_DOCUMENTS[basename(path)]}`];
+const documentIconOf = (filePath: AbsolutePath): string | undefined =>
+  ICONS_BY_ADDRESS[`/${siteDocuments[basename(filePath)]}`];
 
 export { documentIconOf, guideIconOf, sectionSummaryOf, sidebarOf };

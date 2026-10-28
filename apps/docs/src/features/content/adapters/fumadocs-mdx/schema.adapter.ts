@@ -3,8 +3,8 @@ import { readFileSync } from 'node:fs';
 import { pageSchema } from 'fumadocs-core/source/schema';
 import { z } from 'zod';
 
-import { summaryLineOf, titleOf } from '../../domain/entities';
-import { plainTextOf } from './markdown';
+import { AbsolutePath } from '../../domain/value-objects';
+import { summaryOf, titleOf } from './markdown';
 
 interface MarkdownFields {
   description: z.ZodDefault<z.ZodString>;
@@ -14,16 +14,19 @@ interface MarkdownFields {
 
 type MarkdownSchema = ReturnType<typeof pageSchema.extend<MarkdownFields>>;
 
+/** @throws {@link InvalidValueError} when the file's path is relative */
 const markdownSchema =
-  (iconOf: (path: string) => string | undefined) =>
+  (iconOf: (filePath: AbsolutePath) => string | undefined) =>
   (context: { path: string }): MarkdownSchema => {
-    const text = readFileSync(context.path, 'utf8');
-    const icon = iconOf(context.path);
+    const filePath = AbsolutePath.create(context.path);
+    // Stryker disable next-line StringLiteral: Bun reads text whatever the encoding names
+    const markdown = readFileSync(filePath, 'utf8');
+    const icon = iconOf(filePath);
 
     return pageSchema.extend({
-      description: z.string().default(plainTextOf(summaryLineOf(text) ?? '')),
+      description: z.string().default(summaryOf(markdown) ?? ''),
       icon: icon === undefined ? z.string().optional() : z.string().default(icon),
-      title: z.string().default(titleOf(text) ?? context.path),
+      title: z.string().default(titleOf(markdown) ?? filePath),
     });
   };
 

@@ -1,1 +1,1 @@
-export { MissingTokenError } from './missing-token.error';
+export { MalformedAccentError } from './malformed-accent.error';

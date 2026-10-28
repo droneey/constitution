@@ -1,51 +1,47 @@
 import { describe, expect, it } from 'bun:test';
 
-import { renderWithTheme, screenReaderOutputOf } from '../../../__tests__/ink.fixtures';
+import { goldenFileText, goldenOf } from '#/__tests__/golden.fixtures';
+
+import { frameOf, screenReaderOutputOf } from '../../../__tests__/ink.fixtures';
 import { FailureBlock } from '../failure-block';
 
 describe('FailureBlock', () => {
-  it('should draw what happened, what is known and what to do next', () => {
-    // Arrange
-    const failure = {
-      details: [
-        'constitution.yaml',
-      ],
-      hint: 'init',
-      title: 'no-project',
-    };
-
+  it('should draw what happened, what is known and what to do next, and read out that it is an error, as the golden file shows them', async () => {
     // Act
-    const { lastFrame } = renderWithTheme(<FailureBlock failure={failure} />);
+    const golden = goldenOf({
+      'a failure that names a next step': frameOf(
+        <FailureBlock
+          errorLabel='error'
+          failure={{
+            details: [
+              'constitution.yaml',
+            ],
+            hint: 'init',
+            title: 'no-project',
+          }}
+        />,
+      ),
+      'a failure that names none': frameOf(
+        <FailureBlock
+          errorLabel='error'
+          failure={{
+            details: [],
+            title: 'Interrupted',
+          }}
+        />,
+      ),
+      'read out': screenReaderOutputOf(
+        <FailureBlock
+          errorLabel='error'
+          failure={{
+            details: [],
+            title: 'no-project',
+          }}
+        />,
+      ),
+    });
 
     // Assert
-    expect(lastFrame()).toBe('✗ no-project\n  constitution.yaml\n  → init');
-  });
-
-  it('should leave the next step out when the failure names none', () => {
-    // Arrange
-    const failure = {
-      details: [],
-      title: 'Interrupted',
-    };
-
-    // Act
-    const { lastFrame } = renderWithTheme(<FailureBlock failure={failure} />);
-
-    // Assert
-    expect(lastFrame()).toBe('✗ Interrupted');
-  });
-
-  it('should read out that the failure is an error, and what happened', () => {
-    // Arrange
-    const failure = {
-      details: [],
-      title: 'no-project',
-    };
-
-    // Act
-    const spoken = screenReaderOutputOf(<FailureBlock failure={failure} />);
-
-    // Assert
-    expect(spoken).toBe('error no-project');
+    expect(golden).toBe(await goldenFileText(new URL('failure-block.golden.txt', import.meta.url)));
   });
 });

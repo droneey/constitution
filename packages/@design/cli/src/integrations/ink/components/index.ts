@@ -23,4 +23,4 @@ export { TaskList } from './task-list';
 export type { TextInputProps } from './text-input';
 export { TextInput } from './text-input';
 export type { ThemeProviderProps } from './theme-provider';
-export { ThemeContext, ThemeProvider } from './theme-provider';
+export { ThemeProvider } from './theme-provider';

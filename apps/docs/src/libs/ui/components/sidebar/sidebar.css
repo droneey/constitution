@@ -22,7 +22,8 @@
       padding-inline-start: var(--spacing-xs);
       gap: var(--spacing-xs);
       border-radius: var(--radius-control-base);
-      font-size: var(--text-base);
+      font: var(--font-heading-sm);
+      letter-spacing: var(--font-heading-sm--letter-spacing);
     }
 
     & > button:last-child {
@@ -37,8 +38,8 @@
 
   #nd-sidebar [data-id$='-viewport'] {
     padding-inline: var(--spacing-sm);
-    font-size: var(--text-sm);
-    font-weight: var(--font-weight-ui);
+    font: var(--font-label-sm);
+    letter-spacing: var(--font-label-sm--letter-spacing);
   }
 
   #nd-sidebar [data-id$='-viewport'] :is(a, button):not([data-sidebar-field]) {

@@ -14,40 +14,16 @@
         "value": 8
       }
     },
-    "12": {
-      "$value": {
-        "unit": "px",
-        "value": 12
-      }
-    },
-    "14": {
-      "$value": {
-        "unit": "px",
-        "value": 14
-      }
-    },
     "16": {
       "$value": {
         "unit": "px",
         "value": 16
       }
     },
-    "20": {
-      "$value": {
-        "unit": "px",
-        "value": 20
-      }
-    },
     "24": {
       "$value": {
         "unit": "px",
         "value": 24
-      }
-    },
-    "28": {
-      "$value": {
-        "unit": "px",
-        "value": 28
       }
     },
     "32": {
@@ -221,56 +197,6 @@
     },
     "$type": "dimension"
   },
-  "text": {
-    "$type": "dimension",
-    "$description": "The type scale: a major third, 1.25, rounded to the 4-pixel grid, with 14 for interface text. Tailwind reads each step as its text-* size, so the library's classes take it too.",
-    "xs": {
-      "$value": "{dimension.12}"
-    },
-    "sm": {
-      "$value": "{dimension.14}"
-    },
-    "base": {
-      "$value": "{dimension.16}"
-    },
-    "lg": {
-      "$value": "{dimension.20}"
-    },
-    "xl": {
-      "$value": "{dimension.24}"
-    },
-    "2xl": {
-      "$value": "{dimension.32}"
-    },
-    "3xl": {
-      "$value": "{dimension.40}"
-    }
-  },
-  "leading": {
-    "$type": "dimension",
-    "$description": "The line height of each step of the type scale.",
-    "xs": {
-      "$value": "{dimension.20}"
-    },
-    "sm": {
-      "$value": "{dimension.20}"
-    },
-    "base": {
-      "$value": "{dimension.28}"
-    },
-    "lg": {
-      "$value": "{dimension.28}"
-    },
-    "xl": {
-      "$value": "{dimension.32}"
-    },
-    "2xl": {
-      "$value": "{dimension.40}"
-    },
-    "3xl": {
-      "$value": "{dimension.48}"
-    }
-  },
   "ring": {
     "$type": "dimension",
     "$description": "The focus ring, a line off the 8-pixel grid: the primitive, and the roles that read it.",
@@ -288,6 +214,32 @@
       "offset": {
         "$value": "{ring.2}",
         "$description": "The gap between the focus ring and the edge of what it marks."
+      }
+    }
+  },
+  "border": {
+    "$type": "dimension",
+    "$description": "The width of a border, a line off the 8-pixel grid: the primitives, and the roles that read them.",
+    "1": {
+      "$value": {
+        "unit": "px",
+        "value": 1
+      }
+    },
+    "2": {
+      "$value": {
+        "unit": "px",
+        "value": 2
+      }
+    },
+    "width": {
+      "thin": {
+        "$value": "{border.1}",
+        "$description": "The line around a surface or a field, and between sections."
+      },
+      "thick": {
+        "$value": "{border.2}",
+        "$description": "An edge that marks what it bounds, such as the top of an example to avoid or to prefer."
       }
     }
   }

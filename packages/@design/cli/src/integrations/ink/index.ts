@@ -29,7 +29,6 @@ export {
   TextInput,
   ThemeProvider,
 } from './components';
-export { useTheme } from './hooks';
 export type {
   Answer,
   AskConfirmInput,
@@ -46,3 +45,4 @@ export {
   askText,
   openTerminalView,
 } from './terminal';
+export { useTheme } from './theme';

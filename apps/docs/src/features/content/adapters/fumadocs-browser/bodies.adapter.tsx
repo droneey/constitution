@@ -9,6 +9,7 @@ import { trackedForUse } from '#/libs/ui';
 
 import type { PageBodiesQueryRepository } from '../../domain/contracts';
 import type { PageLocation } from '../../domain/entities';
+import { Page } from '../../domain/entities';
 
 interface Loaded {
   toc: TOCItemType[];
@@ -37,13 +38,13 @@ const render = ({ default: Body }: CompiledMDXProperties, props: BodyProps): Rea
 const createPageBodies = (
   collections: Readonly<Record<string, BodyCollection>>,
 ): PageBodiesQueryRepository<PageBody> => {
-  const loaders = new Map(
-    Object.entries(collections).map(([type, collection]) => [
-      type,
+  const loadersByCollection = new Map(
+    Object.entries(collections).map(([collectionName, collection]) => [
+      collectionName,
       {
         loader: createClientLoader(collection.raw, {
           component: render,
-          id: type,
+          id: collectionName,
         }),
         raw: collection.raw,
       },
@@ -55,24 +56,25 @@ const createPageBodies = (
    */
   const loadings = new Map<string, Promise<Loaded>>();
 
-  const find = ({ collection, path }: PageLocation): PageBody | undefined => {
-    const bodies = loaders.get(collection);
-    const key = `${collection}:${path}`;
+  const find = (page: PageLocation): PageBody | undefined => {
+    const { collection, path } = page;
+    const collectionLoader = loadersByCollection.get(collection);
 
-    if (bodies === undefined || !Object.hasOwn(bodies.raw, `./${path}`)) {
+    if (collectionLoader === undefined || !Object.hasOwn(collectionLoader.raw, `./${path}`)) {
       return undefined;
     }
 
     const load = (): Promise<Loaded> => {
-      const started = loadings.get(key) ?? trackedForUse(bodies.loader.preload(path));
+      const started =
+        loadings.get(Page.keyOf(page)) ?? trackedForUse(collectionLoader.loader.preload(path));
 
-      loadings.set(key, started);
+      loadings.set(Page.keyOf(page), started);
 
       return started;
     };
 
     return {
-      body: bodies.loader.getComponent(path),
+      body: collectionLoader.loader.getComponent(path),
       load,
     };
   };

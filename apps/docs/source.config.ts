@@ -1,13 +1,13 @@
 import { createRequire } from 'node:module';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 
 import type { RehypeCodeOptions } from 'fumadocs-core/mdx-plugins';
 import { applyMdxPreset, defineConfig, defineDocs } from 'fumadocs-mdx/config';
 import type { PluggableList } from 'unified';
 import { z } from 'zod';
 
+import { AbsolutePath, BlockLayer } from '#/features/content';
 import {
-  BLOCK_LAYERS,
   blocksOptionsOf,
   DOCUMENTATION_SECTION,
   documentIconOf,
@@ -35,9 +35,11 @@ import {
 } from '#/features/content/adapters/fumadocs-mdx';
 import { DOCS_ROUTE } from '#/shared/constants';
 
-const constitutionBlocks = join(
-  dirname(createRequire(import.meta.url).resolve('@droneey/constitution/package.json')),
-  'blocks',
+const constitutionBlocksPath = AbsolutePath.create(
+  join(
+    dirname(createRequire(import.meta.url).resolve('@droneey/constitution/package.json')),
+    'blocks',
+  ),
 );
 
 const QUICK_START_SECTION = 'Quick start';
@@ -226,7 +228,7 @@ const documents = defineDocs({
 });
 
 const blocks = defineDocs({
-  dir: constitutionBlocks,
+  dir: constitutionBlocksPath,
   docs: {
     async: true,
     files: [
@@ -239,9 +241,9 @@ const blocks = defineDocs({
     mdxOptions: async (environment) => {
       const options = blocksOptionsOf({
         baseUrl: DOCS_ROUTE,
-        blocks: constitutionBlocks,
-        examples: 'content/examples',
-        folders: BLOCK_LAYERS,
+        blocksFolderPath: constitutionBlocksPath,
+        examplesFolderPath: AbsolutePath.create(resolve('content/examples')),
+        layers: Object.values(BlockLayer),
       });
 
       return await applyMdxPreset({

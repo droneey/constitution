@@ -1,9 +1,19 @@
-import type { ReactElement } from 'react';
+import type { ComponentPropsWithRef, ReactElement } from 'react';
 
+import type { PopoverPositionerProps } from '@base-ui/react/popover';
 import { Popover as BasePopover } from '@base-ui/react/popover';
 
 import { PopoverWidth } from '../../popover.constants';
-import type { PopoverPanelProps } from './popover-panel.types';
+
+interface PopoverPanelProps extends ComponentPropsWithRef<'div'> {
+  readonly align?: PopoverPositionerProps['align'];
+  readonly collisionAvoidance?: PopoverPositionerProps['collisionAvoidance'];
+  readonly positionMethod?: PopoverPositionerProps['positionMethod'];
+  /** in pixels, between the trigger's edge and the panel */
+  readonly sideOffset?: number;
+  /** the content's own by default; the trigger's, or as wide as the room between the popup's least and greatest */
+  readonly width?: PopoverWidth;
+}
 
 function PopoverPanel({
   align,
@@ -32,4 +42,5 @@ function PopoverPanel({
   );
 }
 
+export type { PopoverPanelProps };
 export { PopoverPanel };

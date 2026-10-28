@@ -1,88 +1,55 @@
 from pathlib import Path
+from typing import Final
 
 import pytest
 
-from droneey_python_check.features.code.app.constants import ExitStatus
-from droneey_python_check.features.code.app.utils import exit_status, render
-from droneey_python_check.features.code.domain.entities import Finding, Rule
-
-ORDERS = Path('src/shop/orders.py')
-
-
-# The one table of the findings' wording: each rule's line is pinned here alone.
-@pytest.mark.parametrize(
-  ('rule', 'values', 'line'),
-  [
-    pytest.param(Rule.SYNTAX, ('invalid syntax',), 'the file does not parse: invalid syntax'),
-    pytest.param(Rule.FILE_LINES, ('501', '500'), 'the file holds 501 lines, more than 500'),
-    pytest.param(
-      Rule.FUNCTION_LINES, ('tally', '101', '100'), 'tally holds 101 lines, more than 100'
-    ),
-    pytest.param(Rule.IMPORT_CLIMBS_OUT, (), 'a relative import climbs out of the import package'),
-    pytest.param(
-      Rule.IMPORT_LEAVES_MODULE,
-      ('kernel',),
-      'a relative import leaves its module, kernel; import it by its absolute path',
-    ),
-    pytest.param(
-      Rule.IMPORT_OF_ITSELF,
-      ('shop.kernel',),
-      'a module imports itself by its absolute path, shop.kernel; import it relatively',
-    ),
-    pytest.param(
-      Rule.PACKAGE_IN_PURE, ('kernel', 'attrs'), 'kernel imports no package, and attrs is one'
-    ),
-    pytest.param(
-      Rule.PACKAGE_WITHOUT_HOME,
-      ('httpx', 'utils'),
-      'httpx has no home in utils; a package without one is imported at the edge',
-    ),
-    pytest.param(
-      Rule.PACKAGE_OUTSIDE_HOME,
-      ('fastapi', 'api', 'edge, app'),
-      'fastapi is imported in api, outside its home: edge, app',
-    ),
-    pytest.param(
-      Rule.EFFECT_OUTSIDE_EDGE,
-      ('kernel', 'time'),
-      'kernel holds no effect, and time is one; it reaches it through a port',
-    ),
-    pytest.param(
-      Rule.ENVIRONMENT_OUTSIDE_ROOT,
-      ('adapters/mail', 'os.environ'),
-      'adapters/mail reads the environment through os.environ; only the root reads it',
-    ),
-  ],
+from droneey_python_check.features.code import ExitStatus, error_status, render_error
+from droneey_python_check.features.code.app.errors import Misuse, UsageError
+from droneey_python_check.features.code.domain.errors import (
+  Expected,
+  MalformedFile,
+  MissingPart,
+  MissingPathsError,
+  SettingsError,
+  UnknownKey,
+  WrongShape,
 )
-def test_should_render_a_finding_as_its_path_line_and_message(
-  rule: Rule, values: tuple[str, ...], line: str
-) -> None:
-  # Arrange
-  finding = Finding(path=ORDERS, line=3, rule=rule, values=values)
 
+ERRORS_GOLDEN_PATH: Final = Path(__file__).with_name('errors.golden.txt')
+USAGE_ERROR: Final = UsageError(code=Misuse.NO_PATH)
+MISSING_PATHS_ERROR: Final = MissingPathsError((Path('scr'), Path('test')))
+SETTINGS_ERROR: Final = SettingsError(
+  (
+    WrongShape(file_path='pyproject.toml', dotted_key='tool.uv', expected=Expected.TABLE),
+    WrongShape(file_path='parts/a.toml', dotted_key='homes.httpx', expected=Expected.LIST_OF_TEXT),
+    UnknownKey(file_path='pyproject.toml', dotted_key='tool.python-check.home'),
+    MissingPart(file_path='parts/b.toml'),
+    MalformedFile(file_path='parts/c.toml', parser_message="Expected ']' (at line 1, column 7)"),
+  )
+)
+OWN_ERROR: Final = RuntimeError('boom')
+
+
+def test_should_report_the_errors_as_the_golden_file_shows_them() -> None:
   # Act
-  rendered = render(finding)
+  report = ''.join(map(render_error, (USAGE_ERROR, MISSING_PATHS_ERROR, SETTINGS_ERROR, OWN_ERROR)))
 
   # Assert
-  assert rendered == f'src/shop/orders.py:3: {line}'
+  assert report == ERRORS_GOLDEN_PATH.read_text(encoding='utf-8')
 
 
 @pytest.mark.parametrize(
-  ('findings', 'status'),
+  ('error', 'status'),
   [
-    pytest.param((), ExitStatus.PASSED, id='no finding'),
-    pytest.param(
-      (Finding(path=Path('src/shop/orders.py'), line=1, rule=Rule.IMPORT_CLIMBS_OUT),),
-      ExitStatus.FAILED,
-      id='a finding',
-    ),
+    pytest.param(USAGE_ERROR, ExitStatus.USAGE, id='a command line that names no path'),
+    pytest.param(MISSING_PATHS_ERROR, ExitStatus.USAGE, id='a path that names nothing'),
+    pytest.param(SETTINGS_ERROR, ExitStatus.SETTINGS, id='settings of the wrong shape'),
+    pytest.param(OWN_ERROR, ExitStatus.DEFECT, id='an error of its own'),
   ],
 )
-def test_should_end_with_the_status_of_the_findings(
-  findings: tuple[Finding, ...], status: ExitStatus
-) -> None:
+def test_should_end_with_the_status_of_the_error(error: Exception, status: ExitStatus) -> None:
   # Act
-  ended = exit_status(findings)
+  ended = error_status(error)
 
   # Assert
   assert ended == status

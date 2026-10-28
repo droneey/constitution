@@ -1,0 +1,20 @@
+# a settled step with a detail
+✓ format — 3 files
+
+# a running step while the theme moves
+⠋ test
+
+# a running step while the theme holds still
+▸ test
+
+# a settled step while the theme moves
+✓ lint
+
+# a running step with no theme
+▸ test
+
+# read out, a settled step
+listitem: finished lint
+
+# read out, a running step
+listitem: (busy) working test

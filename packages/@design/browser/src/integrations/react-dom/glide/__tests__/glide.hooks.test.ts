@@ -1,20 +1,28 @@
 import { afterEach, describe, expect, it } from 'bun:test';
 
 import { cleanup, renderHook, screen, waitFor, within } from '@testing-library/react';
+import type { UserEvent } from '@testing-library/user-event';
+import userEvent from '@testing-library/user-event';
 
+import { applyStylesheet, removeStylesheets } from '../../__tests__/styles.fixtures';
+import { GLIDE_TEST_ID } from '../glide.constants';
 import { useGlide } from '../glide.hooks';
 import {
+  blockCountOf,
   blockOf,
-  blocksOf,
   buildElement,
   createBlockStyle,
+  focusUnshown,
   GLIDE_LISTS_FIXTURE,
+  holdPointerOver,
   layOut,
   linkSpec,
   menuSpec,
   mountElement,
   nextMutation,
-  pointAt,
+  phaseOf,
+  placementOf,
+  pointOverTextOf,
   searchSpec,
   styleOf,
   tocSpec,
@@ -23,6 +31,7 @@ import {
 
 afterEach(() => {
   cleanup();
+  removeStylesheets();
   document.body.replaceChildren();
 });
 
@@ -76,18 +85,33 @@ const mountVersions = (style = ''): HTMLElement => {
   return nav;
 };
 
-const blockStyleUnderV2 = createBlockStyle({
+const mountTocBeforeSearch = (): HTMLElement => {
+  const toc = mountElement(tocSpec());
+
+  mountElement({
+    tag: 'button',
+    text: 'Search',
+  });
+
+  return toc;
+};
+
+const placementUnderV2 = {
   translate: '4px 36px',
   width: 'calc(100px - 2 * var(--glide-inset))',
   height: 'calc(32px - 2 * var(--glide-inset))',
-  opacity: '1',
-  transitionProperty: 'opacity',
+};
+
+const blockStyleUnderV2 = createBlockStyle({
+  ...placementUnderV2,
+  isVisible: true,
+  isEntering: true,
 });
 
 describe('useGlide', () => {
-  it('should give every list on the page one hidden block, keeping a list that is already positioned', () => {
+  it('should give every list on the page one block, hidden from assistive technology', () => {
     // Arrange
-    const versions = mountVersions('position: absolute');
+    const versions = mountVersions();
     const toc = mountElement(tocSpec());
 
     // Act
@@ -95,74 +119,151 @@ describe('useGlide', () => {
 
     // Assert
     expect([
-      blocksOf(versions),
-      blocksOf(toc),
-      blockOf(versions)?.getAttribute('aria-hidden'),
-      blockOf(versions)?.getAttribute('data-glide'),
-      blockOf(versions)?.getAttribute('data-testid'),
-      versions.style.position,
-      versions.style.isolation,
-      toc.style.position,
+      blockCountOf(versions),
+      blockCountOf(toc),
+      blockOf(versions).getAttribute('aria-hidden'),
     ]).toStrictEqual([
       1,
       1,
       'true',
-      '',
-      'glide',
-      'absolute',
-      'isolate',
-      '',
     ]);
   });
 
-  it('should position a static list, so the block sits inside it', () => {
+  it.each([
+    {
+      condition: 'its own styles leave it in the flow',
+      style: '',
+      position: 'relative',
+    },
+    {
+      condition: 'its own styles position it',
+      style: 'position: absolute',
+      position: 'absolute',
+    },
+  ])(
+    'should hold the block inside its list, in a stacking context of its own, when $condition',
+    async ({ style, position }) => {
+      // Arrange
+      await applyStylesheet(new URL('../glide.css', import.meta.url));
+
+      const versions = mountVersions(style);
+
+      // Act
+      renderHook(() => useGlide(GLIDE_LISTS_FIXTURE));
+
+      // Assert
+      expect({
+        isolation: getComputedStyle(versions).isolation,
+        position: getComputedStyle(versions).position,
+      }).toStrictEqual({
+        isolation: 'isolate',
+        position,
+      });
+    },
+  );
+
+  it('should fade the block in where it enters, and slide it from row to row after', async () => {
     // Arrange
-    const versions = mountVersions('position: static');
+    await applyStylesheet(new URL('../glide.css', import.meta.url));
 
-    // Act
-    renderHook(() => useGlide(GLIDE_LISTS_FIXTURE));
-
-    // Assert
-    expect(versions.style.position).toBe('relative');
-  });
-
-  it('should slide the block under the row the mouse is over', () => {
-    // Arrange
     const versions = mountVersions();
+    const user = userEvent.setup();
 
     renderHook(() => useGlide(GLIDE_LISTS_FIXTURE));
 
     // Act
-    pointAt(
+    await user.hover(
       screen.getByRole('link', {
         name: 'v2',
       }),
     );
 
     // Assert
-    expect(styleOf(blockOf(versions))).toStrictEqual(blockStyleUnderV2);
+    expect(getComputedStyle(within(versions).getByTestId(GLIDE_TEST_ID)).transitionProperty).toBe(
+      'opacity',
+    );
+
+    // Act
+    await user.hover(
+      screen.getByRole('link', {
+        name: 'v3',
+      }),
+    );
+
+    // Assert
+    expect(getComputedStyle(within(versions).getByTestId(GLIDE_TEST_ID)).transitionProperty).toBe(
+      'translate, width, height, opacity, scale',
+    );
   });
 
-  it('should add up the offsets of every element between the row and the list', () => {
+  it.each([
+    {
+      condition: 'a row',
+      linkName: 'v2',
+      opacity: '1',
+    },
+    {
+      condition: 'a row that shows a fill of its own',
+      linkName: 'v1',
+      opacity: '0',
+    },
+  ])(
+    'should draw the block at the opacity its stylesheet gives it when the mouse is over $condition',
+    async ({ linkName, opacity }) => {
+      // Arrange
+      await applyStylesheet(new URL('../glide.css', import.meta.url));
+
+      const versions = mountVersions();
+      const user = userEvent.setup();
+
+      renderHook(() => useGlide(GLIDE_LISTS_FIXTURE));
+
+      // Act
+      await user.hover(
+        screen.getByRole('link', {
+          name: linkName,
+        }),
+      );
+
+      // Assert
+      expect(getComputedStyle(within(versions).getByTestId(GLIDE_TEST_ID)).opacity).toBe(opacity);
+    },
+  );
+
+  it('should slide the block under the row the mouse is over', async () => {
+    // Arrange
+    const versions = mountVersions();
+    const user = userEvent.setup();
+
+    renderHook(() => useGlide(GLIDE_LISTS_FIXTURE));
+
+    // Act
+    await user.hover(
+      screen.getByRole('link', {
+        name: 'v2',
+      }),
+    );
+
+    // Assert
+    expect(placementOf(blockOf(versions))).toStrictEqual(placementUnderV2);
+  });
+
+  it('should add up the offsets of every element between the row and the list', async () => {
     // Arrange
     const toc = mountElement({
       tag: 'div',
       attributes: {
         'data-toc-list': '',
       },
-      children: [
-        {
-          tag: 'span',
-          children: [
-            linkSpec('Layers'),
-          ],
-        },
-      ],
     });
-    const link = screen.getByRole('link', {
-      name: 'Layers',
-    });
-    const entry = link.parentElement ?? toc;
+    const entry = mountElement(
+      {
+        tag: 'span',
+      },
+      toc,
+    );
+    const link = mountElement(linkSpec('Layers'), entry);
+    const user = userEvent.setup();
 
     layOut(entry, {
       left: 8,
@@ -179,81 +280,66 @@ describe('useGlide', () => {
     renderHook(() => useGlide(GLIDE_LISTS_FIXTURE));
 
     // Act
-    pointAt(link);
+    await user.hover(link);
 
     // Assert
-    expect(styleOf(blockOf(toc))).toStrictEqual(
-      createBlockStyle({
-        translate: '10px 103px',
-        width: 'calc(50px - 2 * var(--glide-inset))',
-        height: 'calc(20px - 2 * var(--glide-inset))',
-        opacity: '1',
-        transitionProperty: 'opacity',
-      }),
-    );
-  });
-
-  it('should fade the block out over a row that shows a fill of its own', () => {
-    // Arrange
-    const versions = mountVersions();
-
-    renderHook(() => useGlide(GLIDE_LISTS_FIXTURE));
-
-    // Act
-    pointAt(
-      screen.getByRole('link', {
-        name: 'v1',
-      }),
-    );
-
-    // Assert
-    expect(styleOf(blockOf(versions))).toStrictEqual(
-      createBlockStyle({
-        translate: '4px 4px',
-        width: 'calc(120px - 2 * var(--glide-inset))',
-        height: 'calc(32px - 2 * var(--glide-inset))',
-        opacity: '0',
-        transitionProperty: 'opacity',
-      }),
-    );
+    expect(placementOf(blockOf(toc)).translate).toBe('10px 103px');
   });
 
   it.each([
     {
-      name: 'the pointer is a touch',
-      target: (): Node =>
-        screen.getByRole('link', {
-          name: 'v2',
-        }),
-      pointerType: 'touch',
+      name: 'a touch moves over a row',
+      act: (user: UserEvent): Promise<void> =>
+        user.pointer([
+          {
+            keys: '[TouchA>]',
+            target: screen.getByText('Versions of the Constitution'),
+          },
+          {
+            pointerName: 'TouchA',
+            target: screen.getByRole('link', {
+              name: 'v2',
+            }),
+          },
+        ]),
     },
     {
       name: 'the pointer is over no row',
-      target: (): Node => screen.getByText('Versions of the Constitution'),
-      pointerType: 'mouse',
+      act: (user: UserEvent): Promise<void> =>
+        user.hover(screen.getByText('Versions of the Constitution')),
     },
-    {
-      name: 'the pointer is over the text of a row',
-      target: (): Node =>
-        screen.getByRole('link', {
-          name: 'v2',
-        }).firstChild ?? document,
-      pointerType: 'mouse',
-    },
-  ])('should leave the block where it is when $name', ({ target, pointerType }) => {
+  ])('should leave the block where it is when $name', async ({ act }) => {
     // Arrange
     const versions = mountVersions();
+    const user = userEvent.setup();
 
     renderHook(() => useGlide(GLIDE_LISTS_FIXTURE));
 
     // Act
-    pointAt(target(), pointerType);
+    await act(user);
 
     // Assert
     expect(styleOf(blockOf(versions))).toStrictEqual(createBlockStyle());
   });
 
-  it('should ignore a row outside the list that holds it', () => {
+  it('should leave the block where it is when the pointer event targets the text of a row', () => {
+    // Arrange
+    const versions = mountVersions();
+
+    renderHook(() => useGlide(GLIDE_LISTS_FIXTURE));
+
+    // Act
+    pointOverTextOf(
+      screen.getByRole('link', {
+        name: 'v2',
+      }),
+    );
+
+    // Assert
+    expect(styleOf(blockOf(versions))).toStrictEqual(createBlockStyle());
+  });
+
+  it('should ignore a row outside the list that holds it', async () => {
     // Arrange
     const outer = mountElement({
       tag: 'a',
@@ -262,19 +348,21 @@ describe('useGlide', () => {
       },
     });
     const versions = mountElement(versionsSpec(), outer);
+    const user = userEvent.setup();
 
     renderHook(() => useGlide(GLIDE_LISTS_FIXTURE));
 
     // Act
-    pointAt(within(versions).getByText('Versions of the Constitution'));
+    await user.hover(within(versions).getByText('Versions of the Constitution'));
 
     // Assert
     expect(styleOf(blockOf(versions))).toStrictEqual(createBlockStyle());
   });
 
-  it('should fade in on the first row, slide between rows, fade out when the pointer leaves, and fade in again', () => {
+  it('should fade in on the first row, slide between rows, fade out when the pointer leaves, and fade in again', async () => {
     // Arrange
     const versions = mountVersions();
+    const user = userEvent.setup();
 
     renderHook(() => useGlide(GLIDE_LISTS_FIXTURE));
 
@@ -283,51 +371,50 @@ describe('useGlide', () => {
     });
 
     // Act
-    pointAt(second);
+    await user.hover(second);
 
     // Assert
-    expect(styleOf(blockOf(versions))).toStrictEqual(blockStyleUnderV2);
+    expect(phaseOf(blockOf(versions))).toStrictEqual({
+      isEntering: true,
+      isVisible: true,
+    });
 
     // Act
-    pointAt(
+    await user.hover(
       screen.getByRole('link', {
         name: 'v3',
       }),
     );
 
     // Assert
-    expect(styleOf(blockOf(versions))).toStrictEqual(
-      createBlockStyle({
-        translate: '4px 68px',
-        width: 'calc(80px - 2 * var(--glide-inset))',
-        height: 'calc(32px - 2 * var(--glide-inset))',
-        opacity: '1',
-      }),
-    );
+    expect(phaseOf(blockOf(versions))).toStrictEqual({
+      isEntering: false,
+      isVisible: true,
+    });
 
     // Act
-    versions.dispatchEvent(new PointerEvent('pointerleave'));
+    await user.unhover(versions);
 
     // Assert
-    expect(styleOf(blockOf(versions))).toStrictEqual(
-      createBlockStyle({
-        translate: '4px 68px',
-        width: 'calc(80px - 2 * var(--glide-inset))',
-        height: 'calc(32px - 2 * var(--glide-inset))',
-        opacity: '0',
-      }),
-    );
+    expect(phaseOf(blockOf(versions))).toStrictEqual({
+      isEntering: false,
+      isVisible: false,
+    });
 
     // Act
-    pointAt(second);
+    await user.hover(second);
 
     // Assert
-    expect(styleOf(blockOf(versions))).toStrictEqual(blockStyleUnderV2);
+    expect(phaseOf(blockOf(versions))).toStrictEqual({
+      isEntering: true,
+      isVisible: true,
+    });
   });
 
-  it('should place the block again when the pointer comes back over the same row', () => {
+  it('should place the block again when the pointer comes back over the same row', async () => {
     // Arrange
     const versions = mountVersions();
+    const user = userEvent.setup();
 
     renderHook(() => useGlide(GLIDE_LISTS_FIXTURE));
 
@@ -335,7 +422,7 @@ describe('useGlide', () => {
       name: 'v2',
     });
 
-    pointAt(second);
+    await user.hover(second);
     layOut(second, {
       left: 6,
       top: 40,
@@ -343,73 +430,60 @@ describe('useGlide', () => {
       height: 32,
       offsetParent: versions,
     });
+    await user.hover(screen.getByText('Versions of the Constitution'));
 
     // Act
-    pointAt(second);
+    await user.hover(second);
 
     // Assert
-    expect(styleOf(blockOf(versions))).toStrictEqual(
-      createBlockStyle({
-        ...blockStyleUnderV2,
-        translate: '6px 40px',
-      }),
-    );
+    expect(placementOf(blockOf(versions)).translate).toBe('6px 40px');
   });
 
-  it('should leave a hidden block alone when the pointer leaves a list it never entered', () => {
+  it('should leave a hidden block alone when the pointer leaves the list from no row', async () => {
     // Arrange
     const versions = mountVersions();
+    const user = userEvent.setup();
 
     renderHook(() => useGlide(GLIDE_LISTS_FIXTURE));
+    await user.hover(screen.getByText('Versions of the Constitution'));
 
     // Act
-    versions.dispatchEvent(new PointerEvent('pointerleave'));
+    await user.unhover(versions);
 
     // Assert
     expect(styleOf(blockOf(versions))).toStrictEqual(createBlockStyle());
   });
 
-  it('should slide the block under the row the keyboard focuses', () => {
+  it('should slide the block under the row the keyboard focuses', async () => {
     // Arrange
     const versions = mountVersions();
+    const user = userEvent.setup();
 
     renderHook(() => useGlide(GLIDE_LISTS_FIXTURE));
+    await user.tab();
 
     // Act
-    screen
-      .getByRole('link', {
-        name: 'v2',
-      })
-      .focus();
+    await user.tab();
 
     // Assert
-    expect(styleOf(blockOf(versions))).toStrictEqual(blockStyleUnderV2);
+    expect(placementOf(blockOf(versions))).toStrictEqual(placementUnderV2);
   });
 
-  it('should hide the block when the keyboard focuses an element of the list that is no row', () => {
+  it('should hide the block when the keyboard focuses an element of the list that is no row', async () => {
     // Arrange
     const versions = mountVersions();
+    const user = userEvent.setup();
 
     renderHook(() => useGlide(GLIDE_LISTS_FIXTURE));
-    screen
-      .getByRole('link', {
-        name: 'v2',
-      })
-      .focus();
+    await user.tab();
+    await user.tab();
+    await user.tab();
 
     // Act
-    screen
-      .getByRole('button', {
-        name: 'More versions',
-      })
-      .focus();
+    await user.tab();
 
     // Assert
-    expect(styleOf(blockOf(versions))).toStrictEqual({
-      ...blockStyleUnderV2,
-      opacity: '0',
-      transitionProperty: '',
-    });
+    expect(styleOf(blockOf(versions)).isVisible).toBe(false);
   });
 
   it('should leave the block when focus arrives without being shown', () => {
@@ -419,63 +493,45 @@ describe('useGlide', () => {
     renderHook(() => useGlide(GLIDE_LISTS_FIXTURE));
 
     // Act
-    screen
-      .getByRole('link', {
+    focusUnshown(
+      screen.getByRole('link', {
         name: 'v2',
-      })
-      .dispatchEvent(
-        new FocusEvent('focusin', {
-          bubbles: true,
-        }),
-      );
+      }),
+    );
 
     // Assert
     expect(styleOf(blockOf(versions))).toStrictEqual(createBlockStyle());
   });
 
-  it('should hide the block when focus leaves the list and the pointer is not over it', () => {
+  it('should hide the block when focus leaves the list and the pointer is not over it', async () => {
     // Arrange
-    const versions = mountVersions();
+    const toc = mountTocBeforeSearch();
+    const user = userEvent.setup();
 
     renderHook(() => useGlide(GLIDE_LISTS_FIXTURE));
-
-    const second = screen.getByRole('link', {
-      name: 'v2',
-    });
-    second.focus();
+    await user.tab();
 
     // Act
-    second.blur();
+    await user.tab();
 
     // Assert
-    expect(styleOf(blockOf(versions))).toStrictEqual({
-      ...blockStyleUnderV2,
-      opacity: '0',
-      transitionProperty: '',
-    });
+    expect(styleOf(blockOf(toc)).isVisible).toBe(false);
   });
 
-  it('should keep the block when focus leaves the list while the pointer is over it', () => {
+  it('should keep the block when focus leaves the list while the pointer is over it', async () => {
     // Arrange
-    const versions = mountVersions();
-    // The simulated page tracks no pointer, so the list answers :hover as a page under the pointer would.
-    const matches = versions.matches.bind(versions);
+    const toc = mountTocBeforeSearch();
+    const user = userEvent.setup();
 
-    Object.defineProperty(versions, 'matches', {
-      value: (selector: string): boolean => selector === ':hover' || matches(selector),
-    });
+    holdPointerOver(toc);
     renderHook(() => useGlide(GLIDE_LISTS_FIXTURE));
-
-    const second = screen.getByRole('link', {
-      name: 'v2',
-    });
-    second.focus();
+    await user.tab();
 
     // Act
-    second.blur();
+    await user.tab();
 
     // Assert
-    expect(styleOf(blockOf(versions))).toStrictEqual(blockStyleUnderV2);
+    expect(styleOf(blockOf(toc)).isVisible).toBe(true);
   });
 
   it('should place the block under the row a list marks when the list opens', () => {
@@ -499,15 +555,11 @@ describe('useGlide', () => {
     renderHook(() => useGlide(GLIDE_LISTS_FIXTURE));
 
     // Assert
-    expect(styleOf(blockOf(results))).toStrictEqual(
-      createBlockStyle({
-        translate: '0px 40px',
-        width: 'calc(300px - 2 * var(--glide-inset))',
-        height: 'calc(40px - 2 * var(--glide-inset))',
-        opacity: '1',
-        transitionProperty: 'opacity',
-      }),
-    );
+    expect(placementOf(blockOf(results))).toStrictEqual({
+      translate: '0px 40px',
+      width: 'calc(300px - 2 * var(--glide-inset))',
+      height: 'calc(40px - 2 * var(--glide-inset))',
+    });
   });
 
   it('should follow the mark from row to row, and hide the block when no row is marked', async () => {
@@ -525,41 +577,29 @@ describe('useGlide', () => {
       offsetParent: results,
     });
     renderHook(() => useGlide(GLIDE_LISTS_FIXTURE));
-
-    // Act
     screen
       .getByRole('option', {
         name: 'Layers',
       })
       .setAttribute('aria-selected', 'false');
+
+    // Act
     first.setAttribute('aria-selected', 'true');
 
     // Assert
     await waitFor(() =>
-      expect(styleOf(blockOf(results))).toStrictEqual(
-        createBlockStyle({
-          translate: '0px 0px',
-          width: 'calc(300px - 2 * var(--glide-inset))',
-          height: 'calc(40px - 2 * var(--glide-inset))',
-          opacity: '1',
-        }),
-      ),
+      expect(placementOf(blockOf(results))).toStrictEqual({
+        translate: '0px 0px',
+        width: 'calc(300px - 2 * var(--glide-inset))',
+        height: 'calc(40px - 2 * var(--glide-inset))',
+      }),
     );
 
     // Act
     first.setAttribute('aria-selected', 'false');
 
     // Assert
-    await waitFor(() =>
-      expect(styleOf(blockOf(results))).toStrictEqual(
-        createBlockStyle({
-          translate: '0px 0px',
-          width: 'calc(300px - 2 * var(--glide-inset))',
-          height: 'calc(40px - 2 * var(--glide-inset))',
-          opacity: '0',
-        }),
-      ),
-    );
+    await waitFor(() => expect(styleOf(blockOf(results)).isVisible).toBe(false));
   });
 
   it('should hide the block when the marked row leaves the list', async () => {
@@ -576,7 +616,7 @@ describe('useGlide', () => {
       .remove();
 
     // Assert
-    await waitFor(() => expect(styleOf(blockOf(results))?.opacity).toBe('0'));
+    await waitFor(() => expect(styleOf(blockOf(results)).isVisible).toBe(false));
   });
 
   it('should fade the block of a group of radios out over the checked radio it highlights', () => {
@@ -594,63 +634,58 @@ describe('useGlide', () => {
             name: 'Modes',
           }),
         ),
-      )?.opacity,
-    ).toBe('0');
+      ).isVisible,
+    ).toBe(false);
   });
 
-  it('should show the block under the item a menu highlights', () => {
-    // Arrange
-    const menu = mountElement(menuSpec('System'));
-
-    // Act
-    renderHook(() => useGlide(GLIDE_LISTS_FIXTURE));
-
-    // Assert
-    expect(styleOf(blockOf(menu))?.opacity).toBe('1');
-  });
-
-  it('should give a list that opens later its block, alone, inside another element or deep in the page', async () => {
-    // Arrange
-    const page = mountElement({
-      tag: 'main',
-      children: [
-        {
-          tag: 'section',
-        },
-      ],
-    });
-
-    renderHook(() => useGlide(GLIDE_LISTS_FIXTURE));
-
-    // Act
-    const versions = mountVersions();
-    const panel = mountElement({
-      tag: 'aside',
-      children: [
-        tocSpec(),
-      ],
-    });
-    const results = mountElement(searchSpec(), page.firstElementChild ?? page);
-
-    // Assert
-    await waitFor(() =>
-      expect([
-        blocksOf(versions),
-        blocksOf(
-          within(panel).getByRole('list', {
-            name: 'On this page',
+  it.each([
+    {
+      condition: 'alone',
+      mount: (): HTMLElement => mountVersions(),
+    },
+    {
+      condition: 'inside another element',
+      mount: (): HTMLElement =>
+        within(
+          mountElement({
+            tag: 'aside',
+            children: [
+              tocSpec(),
+            ],
           }),
+        ).getByRole('list', {
+          name: 'On this page',
+        }),
+    },
+    {
+      condition: 'deep in the page',
+      mount: (): HTMLElement =>
+        mountElement(
+          searchSpec(),
+          mountElement(
+            {
+              tag: 'section',
+            },
+            screen.getByRole('main'),
+          ),
         ),
-        blocksOf(panel),
-        blocksOf(results),
-      ]).toStrictEqual([
-        1,
-        1,
-        0,
-        1,
-      ]),
-    );
-  });
+    },
+  ])(
+    'should give a list that opens later its block when it opens $condition',
+    async ({ mount }) => {
+      // Arrange
+      mountElement({
+        tag: 'main',
+      });
+      renderHook(() => useGlide(GLIDE_LISTS_FIXTURE));
+
+      // Act
+      const list = mount();
+
+      // Assert
+      await waitFor(() => expect(blockCountOf(list)).toBe(1));
+    },
+  );
 
   it('should pass over text that opens beside a list', async () => {
     // Arrange
@@ -662,7 +697,7 @@ describe('useGlide', () => {
     document.body.append('Loose text', toc);
 
     // Assert
-    await waitFor(() => expect(blocksOf(toc)).toBe(1));
+    await waitFor(() => expect(blockCountOf(toc)).toBe(1));
   });
 
   it('should give a list one block when it is put on the page again', async () => {
@@ -678,7 +713,7 @@ describe('useGlide', () => {
 
     // Assert
     await mutated;
-    expect(blocksOf(versions)).toBe(1);
+    expect(blockCountOf(versions)).toBe(1);
   });
 
   it('should give a list one block when the page that uses it mounts again', () => {
@@ -691,70 +726,83 @@ describe('useGlide', () => {
     renderHook(() => useGlide(GLIDE_LISTS_FIXTURE));
 
     // Assert
-    expect(blocksOf(versions)).toBe(1);
+    expect(blockCountOf(versions)).toBe(1);
   });
 
   it('should give no block to a list drawn as a picture', () => {
     // Arrange
+    const figure = mountElement({
+      tag: 'figure',
+    });
     const picture = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+
     picture.setAttribute('role', 'menu');
 
-    document.body.append(picture);
+    figure.append(picture);
 
     // Act
     renderHook(() => useGlide(GLIDE_LISTS_FIXTURE));
 
     // Assert
-    // biome-ignore lint/plugin/spec-never-selects-from-the-document: the glide is a decoration hidden from assistive technology, which CSS finds by its attribute
-    expect(picture.querySelectorAll('[data-glide]').length).toBe(0);
+    expect(within(figure).queryAllByTestId(GLIDE_TEST_ID)).toStrictEqual([]);
+  });
+
+  it("should give a block no block of its own when a list's selector matches it too", async () => {
+    // Arrange
+    renderHook(() =>
+      useGlide({
+        div: {
+          rowSelector: 'a',
+        },
+      }),
+    );
+
+    const mutated = nextMutation();
+
+    // Act
+    const list = mountElement({
+      tag: 'div',
+    });
+
+    // Assert
+    await mutated;
+    expect(blockCountOf(blockOf(list))).toBe(0);
   });
 
   it.each([
     {
-      act: (versions: HTMLElement): void => {
-        pointAt(
-          within(versions).getByRole('link', {
+      act: (user: UserEvent): Promise<void> =>
+        user.hover(
+          screen.getByRole('link', {
             name: 'v3',
           }),
-        );
-      },
+        ),
       event: 'the pointer moves over a row',
     },
     {
-      act: (versions: HTMLElement): void => {
-        versions.dispatchEvent(new PointerEvent('pointerleave'));
-      },
+      act: (user: UserEvent): Promise<void> => user.unhover(screen.getByRole('navigation')),
       event: 'the pointer leaves',
     },
     {
-      act: (versions: HTMLElement): void => {
-        within(versions)
-          .getByRole('link', {
-            name: 'v3',
-          })
-          .focus();
-      },
+      act: (user: UserEvent): Promise<void> => user.tab(),
       event: 'the keyboard focuses a row',
     },
     {
-      act: (versions: HTMLElement): void => {
-        const second = within(versions).getByRole('link', {
-          name: 'v2',
-        });
-
-        second.focus();
-        second.blur();
+      act: async (user: UserEvent): Promise<void> => {
+        await user.tab();
+        await user.click(document.body);
       },
       event: 'focus leaves',
     },
   ])(
     'should take the block off a list, and leave it as it was when $event, once the page that used it is gone',
-    ({ act }) => {
+    async ({ act }) => {
       // Arrange
       const versions = mountVersions();
+      const user = userEvent.setup();
       const { unmount } = renderHook(() => useGlide(GLIDE_LISTS_FIXTURE));
 
-      pointAt(
+      await user.hover(
         screen.getByRole('link', {
           name: 'v2',
         }),
@@ -765,11 +813,11 @@ describe('useGlide', () => {
       unmount();
 
       // Act
-      act(versions);
+      await act(user);
 
       // Assert
       expect({
-        blocks: blocksOf(versions),
+        blocks: blockCountOf(versions),
         style: styleOf(block),
       }).toStrictEqual({
         blocks: 0,
@@ -798,11 +846,11 @@ describe('useGlide', () => {
     // Assert
     await mutated;
     expect({
-      blocks: blocksOf(results),
-      opacity: styleOf(block)?.opacity,
+      blocks: blockCountOf(results),
+      isVisible: styleOf(block).isVisible,
     }).toStrictEqual({
       blocks: 0,
-      opacity: '1',
+      isVisible: true,
     });
   });
 
@@ -818,7 +866,23 @@ describe('useGlide', () => {
     unmount();
 
     // Assert
-    expect(blocksOf(toc)).toBe(0);
+    expect(blockCountOf(toc)).toBe(0);
+  });
+
+  it('should take the block off a list that leaves the page', async () => {
+    // Arrange
+    const versions = mountVersions();
+
+    renderHook(() => useGlide(GLIDE_LISTS_FIXTURE));
+
+    const mutated = nextMutation();
+
+    // Act
+    versions.remove();
+
+    // Assert
+    await mutated;
+    expect(blockCountOf(versions)).toBe(0);
   });
 
   it('should stop giving blocks once the page that used it is gone', async () => {
@@ -834,6 +898,6 @@ describe('useGlide', () => {
 
     // Assert
     await mutated;
-    expect(blocksOf(versions)).toBe(0);
+    expect(blockCountOf(versions)).toBe(0);
   });
 });

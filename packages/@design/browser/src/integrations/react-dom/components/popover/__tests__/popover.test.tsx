@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, mock } from 'bun:test';
 
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { componentViolationsIn } from '../../../__tests__/axe.fixtures';
@@ -20,6 +20,8 @@ afterEach(() => {
 describe('Popover', () => {
   it('should open its panel, as wide as its content, from its trigger', async () => {
     // Arrange
+    const user = userEvent.setup();
+
     render(
       <Popover>
         <Popover.Trigger>Versions</Popover.Trigger>
@@ -28,7 +30,7 @@ describe('Popover', () => {
     );
 
     // Act
-    fireEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: 'Versions',
       }),
@@ -46,8 +48,9 @@ describe('Popover', () => {
     });
   });
 
-  it('should tell its owner when it opens', () => {
+  it('should tell its owner when it opens', async () => {
     // Arrange
+    const user = userEvent.setup();
     const onOpenChange = mock((_open: boolean): void => undefined);
 
     render(
@@ -61,7 +64,7 @@ describe('Popover', () => {
     );
 
     // Act
-    fireEvent.click(
+    await user.click(
       screen.getByRole('button', {
         name: 'Versions',
       }),

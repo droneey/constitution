@@ -1,12 +1,15 @@
 import type { ReactElement } from 'react';
 
 import type { SidebarProps } from '#/libs/ui';
-import { Sidebar } from '#/libs/ui';
+import { Sidebar, useSidebar } from '#/libs/ui';
 
-import { useSidebarOnFrame } from './docs-sidebar-widget.hooks';
+import { useMarkSidebar } from '../../../app/use-cases';
+import { SidebarState } from '../../../domain/entities';
 
 export function DocsSidebarWidget(props: SidebarProps): ReactElement {
-  useSidebarOnFrame();
+  const { collapsed } = useSidebar();
+
+  useMarkSidebar(collapsed ? SidebarState.Collapsed : SidebarState.Open);
 
   return <Sidebar {...props} />;
 }

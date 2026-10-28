@@ -1,3 +1,3 @@
-export type { ConfirmKeys, ConfirmWordsInput } from './confirm.types';
-export { ConfirmWords } from './confirm-words.value-object';
-export { UnusableConfirmWordsError } from './unusable-confirm-words.error';
+export { UnusableConfirmWordsError } from './errors';
+export type { ConfirmKeys, ConfirmWordsInput } from './types';
+export { ConfirmWords } from './value-objects';

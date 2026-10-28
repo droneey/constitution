@@ -1,6 +1,6 @@
 from .app.constants import ExitStatus
-from .app.utils import MESSAGES, exit_status, render
-from .domain.errors import CheckError
+from .app.use_cases import run_check_mutants
+from .app.utils import render_error
 from .domain.use_cases import check_mutants
 
-__all__ = ['MESSAGES', 'CheckError', 'ExitStatus', 'check_mutants', 'exit_status', 'render']
+__all__ = ['ExitStatus', 'check_mutants', 'render_error', 'run_check_mutants']

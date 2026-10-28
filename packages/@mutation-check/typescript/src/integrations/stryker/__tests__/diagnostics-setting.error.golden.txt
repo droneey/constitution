@@ -1,0 +1,1 @@
+diagnosticsTextArguments.info, diagnosticsTextArguments.option must each map a call shape to the index, or the list of indexes, of its text arguments

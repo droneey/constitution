@@ -1,4 +1,3 @@
-export type { AccentTokens } from './accent.types';
 export type {
   Output,
   OutputFlags,

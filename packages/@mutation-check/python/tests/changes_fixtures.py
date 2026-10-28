@@ -1,7 +1,8 @@
-from pathlib import Path
-from typing import TYPE_CHECKING
+from pathlib import PurePosixPath
+from typing import TYPE_CHECKING, Final
 
-from droneey_mutation_check_python.features.mutation.domain.entities import Changes
+from droneey_mutation_check_python.features.mutation.domain.entities import ChangedFile, NewFile
+from droneey_mutation_check_python.features.mutation.domain.value_objects import UnitRelativePath
 
 if TYPE_CHECKING:
   from collections.abc import Mapping
@@ -12,7 +13,7 @@ def python(*lines: str) -> str:
 
 
 # A package of two modules and a class, laid out under src/ as mutmut reads it.
-FILES: Mapping[str, str] = {
+TEXTS: Final[Mapping[str, str]] = {
   'src/shop/__init__.py': python('def version() -> str:', "  return '1'"),
   'src/shop/orders.py': python(
     'LIMIT = 10',
@@ -38,14 +39,13 @@ FILES: Mapping[str, str] = {
 }
 
 
-def changes_of(
-  *,
-  lines: Mapping[str, tuple[range, ...]] | None = None,
-  untracked: tuple[str, ...] = (),
-) -> Changes:
-  return Changes(
-    lines={Path(path): ranges for path, ranges in (lines or {}).items()},
-    untracked=tuple(Path(path) for path in untracked),
-    sources=tuple(Path(path) for path in FILES),
-    read=lambda path: FILES[str(path)],
-  )
+def unit_relative_path(text: str) -> UnitRelativePath:
+  return UnitRelativePath(path=PurePosixPath(text))
+
+
+def changed(path: str, *line_ranges: range) -> ChangedFile:
+  return ChangedFile(path=unit_relative_path(path), line_ranges=line_ranges)
+
+
+def new(path: str) -> NewFile:
+  return NewFile(path=unit_relative_path(path))

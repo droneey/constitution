@@ -1,4 +1,6 @@
-from pathlib import Path
+from pathlib import PurePosixPath
 from typing import Final
 
-SOURCE_ROOT: Final = Path('src')
+from ..value_objects import UnitRelativePath
+
+SOURCE_ROOT_PATH: Final = UnitRelativePath(path=PurePosixPath('src'))

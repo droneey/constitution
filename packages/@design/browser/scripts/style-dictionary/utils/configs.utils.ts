@@ -1,32 +1,35 @@
+import type { ThemeMode } from '@droneey/design-tokens';
 import { formats, transforms } from 'style-dictionary/enums';
 import type { Config, Hooks, TransformedToken } from 'style-dictionary/types';
 import { usesReferences } from 'style-dictionary/utils';
 
-import type { ThemeMode } from '../types';
-import { tailwindTheme } from './tailwind.utils';
+import { modeVariables } from './mode-variables.utils';
+import { tailwindTheme } from './tailwind-theme.utils';
 
 const TAILWIND_THEME_FORMAT = 'tailwind/theme';
+const MODE_VARIABLES_FORMAT = 'css/mode-variables';
 
 /** writes every duration as none, for those who ask for reduced motion */
 // Stryker disable next-line StringLiteral: the name only joins the transform to the platform that runs it, so any name serves
 const DURATION_NONE_TRANSFORM = 'duration/none';
 
-/** the tokens Tailwind's theme takes besides the roles */
-const tailwindTypes: ReadonlySet<string | undefined> = new Set([
+/** the groups whose primitives Tailwind's theme takes besides the roles */
+const tailwindGroupNames: ReadonlySet<string | undefined> = new Set([
   'duration',
-  'cubicBezier',
-  'fontWeight',
+  'ease',
+  'font',
 ]);
 
 /**
  * The configuration of a mode, writing in `buildPath`: the default mode writes every token on the
- * root, the durations of reduced motion and Tailwind's theme; another mode writes only its own
- * tokens, under its class.
+ * root, the durations of reduced motion and Tailwind's theme; another mode writes, under its class,
+ * its own tokens and those that read them.
  */
-const configOf = ({ name: mode, isDefault }: ThemeMode, buildPath: string): Config => {
+const configOf = ({ name: modeName, isDefault }: ThemeMode, buildPath: string): Config => {
   const hooks: Hooks = {
     formats: {
       [TAILWIND_THEME_FORMAT]: tailwindTheme,
+      [MODE_VARIABLES_FORMAT]: modeVariables,
     },
     transforms: {
       [DURATION_NONE_TRANSFORM]: {
@@ -37,12 +40,12 @@ const configOf = ({ name: mode, isDefault }: ThemeMode, buildPath: string): Conf
   };
 
   const modeFile = {
-    destination: `${mode}.gen.css`,
-    format: formats.cssVariables,
+    destination: `${modeName}.gen.css`,
+    format: MODE_VARIABLES_FORMAT,
   };
 
   return {
-    // another mode's roles refer to the steps the default mode declares, which its filter leaves out
+    // another mode's roles refer to the steps the default mode declares, which it does not write
     // Stryker disable ObjectLiteral,ConditionalExpression,StringLiteral: the log only quiets the build
     log: {
       warnings: isDefault ? 'warn' : 'disabled',
@@ -57,6 +60,7 @@ const configOf = ({ name: mode, isDefault }: ThemeMode, buildPath: string): Conf
           transforms.timeSeconds,
           transforms.cubicBezierCss,
           transforms.shadowCssShorthand,
+          transforms.fontFamilyCss,
         ],
         buildPath,
         files: isDefault
@@ -71,16 +75,16 @@ const configOf = ({ name: mode, isDefault }: ThemeMode, buildPath: string): Conf
                 destination: 'tailwind.gen.css',
                 format: TAILWIND_THEME_FORMAT,
                 filter: (token: TransformedToken) =>
-                  usesReferences(token.original.$value) || tailwindTypes.has(token.$type),
+                  usesReferences(token.original.$value) || tailwindGroupNames.has(token.path[0]),
               },
             ]
           : [
               {
                 ...modeFile,
-                filter: (token: TransformedToken) => token.isSource,
                 options: {
-                  selector: `.${mode}`,
+                  selector: `.${modeName}`,
                   outputReferences: true,
+                  modeTokensOnly: true,
                 },
               },
             ],

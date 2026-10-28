@@ -1,2 +1,1 @@
-export type { AccentTokens } from './theme';
-export { accentStylesheetOf } from './theme';
+export { AccentScale, accentStylesheetOf, MalformedAccentError } from './theme';

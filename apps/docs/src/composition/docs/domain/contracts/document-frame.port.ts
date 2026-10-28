@@ -1,7 +1,7 @@
-/** the document the pages render in, whose frame the sidebar and the screen's width shape */
+import type { SidebarState } from '../entities';
+
 export interface DocumentFrame {
-  /** below this width the open sidebar pushes the page out of view */
+  /** whether the open sidebar would push the page out of view */
   readonly isNarrow: () => boolean;
-  readonly markSidebarCollapsed: () => void;
-  readonly markSidebarOpen: () => void;
+  readonly markSidebar: (state: SidebarState) => void;
 }

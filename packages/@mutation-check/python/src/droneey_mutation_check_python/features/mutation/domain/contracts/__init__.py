@@ -1,3 +1,3 @@
-from .workspace_port import Completed, Workspace
+from .workspace_port import Workspace
 
-__all__ = ['Completed', 'Workspace']
+__all__ = ['Workspace']

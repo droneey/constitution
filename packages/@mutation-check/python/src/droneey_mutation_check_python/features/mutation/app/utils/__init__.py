@@ -1,3 +1,3 @@
-from .report_utils import MESSAGES, exit_status, render
+from .report_utils import exit_status, render, render_error
 
-__all__ = ['MESSAGES', 'exit_status', 'render']
+__all__ = ['exit_status', 'render', 'render_error']

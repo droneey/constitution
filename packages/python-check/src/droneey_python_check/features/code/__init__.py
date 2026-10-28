@@ -1,17 +1,6 @@
 from .app.constants import ExitStatus
-from .app.utils import exit_status, paths_of, render
-from .domain.errors import Expected, Misuse, Problem, SettingsError, UsageError
+from .app.use_cases import run_check_code
+from .app.utils import error_status, render_error
 from .domain.use_cases import check_code
 
-__all__ = [
-  'ExitStatus',
-  'Expected',
-  'Misuse',
-  'Problem',
-  'SettingsError',
-  'UsageError',
-  'check_code',
-  'exit_status',
-  'paths_of',
-  'render',
-]
+__all__ = ['ExitStatus', 'check_code', 'error_status', 'render_error', 'run_check_code']

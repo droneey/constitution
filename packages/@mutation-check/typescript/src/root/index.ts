@@ -1,4 +1,4 @@
-export { ConfigurationError, ConfigurationFailure } from './configuration.error.ts';
-export { ExitCode } from './exit-codes.ts';
-export type { MutationCheckInput } from './wiring.ts';
-export { runMutationCheck } from './wiring.ts';
+export { ExitCode } from '#/features/targets';
+
+export { failureReportOf } from './failure-report.utils.ts';
+export { runMutationCheck, runSpecsIn } from './wiring.ts';

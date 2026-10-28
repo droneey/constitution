@@ -1,6 +1,6 @@
 export { ColourLevel, Glyph, OutputMode, Space, ThemeMode, Tone } from './constants';
+export { MalformedAccentError } from './errors';
 export type {
-  AccentTokens,
   Output,
   OutputFlags,
   OutputInput,
@@ -9,3 +9,4 @@ export type {
   ThemeInput,
 } from './types';
 export { chooseOutput, createTheme } from './utils';
+export { AccentScale } from './value-objects';

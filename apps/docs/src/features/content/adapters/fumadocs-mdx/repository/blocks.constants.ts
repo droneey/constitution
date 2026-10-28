@@ -1,6 +1,6 @@
-import { MARKDOWN_EXTENSION } from '../../../domain/entities';
+import { MARKDOWN_EXTENSION } from '../../../domain/constants';
 
-const corePassport = `core${MARKDOWN_EXTENSION}`;
+const corePassportFileName = `core${MARKDOWN_EXTENSION}`;
 
 const AXIS_ITEM = /^- `[a-z]+\/`:/;
 
@@ -9,4 +9,4 @@ const FRONT_MATTER = /^---\n([\s\S]*?)\n---\n/;
 
 const SEAMS_FOLDER = 'with';
 
-export { AXIS_ITEM, corePassport, FRONT_MATTER, SEAMS_FOLDER };
+export { AXIS_ITEM, corePassportFileName, FRONT_MATTER, SEAMS_FOLDER };

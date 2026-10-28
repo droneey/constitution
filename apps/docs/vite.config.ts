@@ -42,7 +42,7 @@ export default defineConfig({
         entry: 'root/wiring.ts',
       },
       router: {
-        entry: 'root/router.tsx',
+        entry: 'root/router.ts',
         generatedRouteTree: 'root/routeTree.gen.ts',
         routesDirectory: 'root/routes',
       },

@@ -6,11 +6,12 @@ import { MalformedTokenError } from '../errors';
 const JSON_INDENT = 2;
 
 /** the scale an app's own brand.tokens.json replaces */
-const ACCENT_SCALE = 'brand';
+const ACCENT_SCALE_NAME = 'brand';
 
-const nameOf = ({ path: [, ...name] }: TransformedToken): string => name.join('.');
+const nameOf = ({ path: [, ...nameSegments] }: TransformedToken): string => nameSegments.join('.');
 
-const isOnAccentScale = ({ path: [, scale] }: TransformedToken): boolean => scale === ACCENT_SCALE;
+const isOnAccentScale = ({ path: [, scaleName] }: TransformedToken): boolean =>
+  scaleName === ACCENT_SCALE_NAME;
 
 /**
  * A colour without an alpha, which a terminal can draw as it is.
@@ -44,19 +45,19 @@ const amountOf = ({ $value, name }: TransformedToken): number => {
  * durations in milliseconds and the spacings in pixels.
  */
 const terminalModule: FormatFn = async ({ dictionary }) => {
-  const tokensOf = (group: string): TransformedToken[] =>
-    dictionary.allTokens.filter(({ path: [first] }) => first === group);
+  const tokensOf = (groupName: string): TransformedToken[] =>
+    dictionary.allTokens.filter(({ path: [tokenGroupName] }) => tokenGroupName === groupName);
 
-  const colours = tokensOf('color');
-  const roles = colours.flatMap((role) =>
+  const colourTokens = tokensOf('color');
+  const roleSteps = colourTokens.flatMap((role) =>
     getReferences(role.original.$value, dictionary.tokens).map((step) => ({
       role,
       step,
     })),
   );
-  const tokens = {
+  const terminalTokens = {
     accent: Object.fromEntries(
-      roles
+      roleSteps
         .filter(({ step }) => isOnAccentScale(step))
         .map(({ role, step }) => [
           nameOf(role),
@@ -64,27 +65,27 @@ const terminalModule: FormatFn = async ({ dictionary }) => {
         ]),
     ),
     brand: Object.fromEntries(
-      colours.filter(isOnAccentScale).map((step) => [
+      colourTokens.filter(isOnAccentScale).map((step) => [
         step.path.at(-1),
         step.$value,
       ]),
     ),
     // a terminal cannot lay a colour over another
     colour: Object.fromEntries(
-      roles
+      roleSteps
         .filter(({ step }) => !isOnAccentScale(step) && isOpaque(step))
         .map(({ role }) => [
           nameOf(role),
           role.$value,
         ]),
     ),
-    duration: Object.fromEntries(
+    durationsMs: Object.fromEntries(
       tokensOf('duration').map((token) => [
         nameOf(token),
         amountOf(token),
       ]),
     ),
-    spacing: Object.fromEntries(
+    spacingsPx: Object.fromEntries(
       tokensOf('spacing').map((token) => [
         nameOf(token),
         amountOf(token),
@@ -92,7 +93,7 @@ const terminalModule: FormatFn = async ({ dictionary }) => {
     ),
   };
 
-  return `${await fileHeader({})}const tokens = ${JSON.stringify(tokens, undefined, JSON_INDENT)};\n\nexport { tokens };\n`;
+  return `${await fileHeader({})}const tokens = ${JSON.stringify(terminalTokens, undefined, JSON_INDENT)} as const;\n\nexport { tokens };\n`;
 };
 
 export { terminalModule };

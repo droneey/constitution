@@ -6,9 +6,8 @@ export type {
   PagesQueryRepository,
   SearchIndex,
 } from './domain/contracts';
-export type { Page, PageCatalog, PageLocation, PageSlugs, SearchResult } from './domain/entities';
-export { SearchResultKind, slugsOfMarkdownAddress } from './domain/entities';
-export { SearchError, SearchFailure } from './domain/errors';
+export type { PageCatalog, PageLocation, SearchResult } from './domain/entities';
+export { BlockLayer, Page, SearchResultKind } from './domain/entities';
 export type {
   GetFullText,
   GetNavigation,
@@ -31,3 +30,4 @@ export {
   createGetSearchIndex,
   createSearchPages,
 } from './domain/use-cases';
+export { AbsolutePath, PageSlugs, SiteBasePath } from './domain/value-objects';

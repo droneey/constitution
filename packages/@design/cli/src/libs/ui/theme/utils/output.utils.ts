@@ -3,7 +3,7 @@ import type { Output, OutputInput } from '../types';
 
 // Any non-empty FORCE_COLOR forces colour, as force-color.org and CPython read it; the levels
 // Node.js names by 2 and 3 choose a deeper palette.
-const deeperLevels: ReadonlyMap<string, ColourLevel> = new Map([
+const deeperColourLevels: ReadonlyMap<string, ColourLevel> = new Map([
   [
     '2',
     ColourLevel.Ansi256,
@@ -20,14 +20,15 @@ const LIGHT_BACKGROUNDS: readonly string[] = [
   '15',
 ] as const;
 
-const isSet = (variable: string | undefined): boolean => variable !== undefined && variable !== '';
+const isSet = (variableValue: string | undefined): variableValue is string =>
+  variableValue !== undefined && variableValue !== '';
 
-const forcedLevelOf = (variable: string | undefined): ColourLevel | undefined => {
-  if (variable === undefined || variable === '') {
+const forcedLevelOf = (variableValue: string | undefined): ColourLevel | undefined => {
+  if (!isSet(variableValue)) {
     return;
   }
 
-  return deeperLevels.get(variable) ?? ColourLevel.Basic;
+  return deeperColourLevels.get(variableValue) ?? ColourLevel.Basic;
 };
 
 const terminalLevelOf = (env: OutputInput['env']): ColourLevel => {
@@ -44,22 +45,22 @@ const colourLevelOf = (
   },
 ): ColourLevel => {
   const { env, flags } = input;
-  const forced = forcedLevelOf(env['FORCE_COLOR']);
+  const forcedLevel = forcedLevelOf(env['FORCE_COLOR']);
 
   if (flags.colour === false) {
     return ColourLevel.None;
   }
 
   if (flags.colour === true) {
-    return Math.max(forced ?? ColourLevel.None, terminalLevelOf(env));
+    return Math.max(forcedLevel ?? ColourLevel.None, terminalLevelOf(env));
   }
 
   if (isSet(env['NO_COLOR'])) {
     return ColourLevel.None;
   }
 
-  if (forced !== undefined) {
-    return forced;
+  if (forcedLevel !== undefined) {
+    return forcedLevel;
   }
 
   return input.isPlain ? ColourLevel.None : terminalLevelOf(env);
@@ -73,13 +74,13 @@ const chooseOutput = (input: OutputInput): Output => {
     ...input,
     isPlain,
   });
-  const background = env['COLORFGBG']?.split(';').at(-1);
+  const backgroundColour = env['COLORFGBG']?.split(';').at(-1);
 
   return {
     colourLevel,
     isMotionReduced: isPlain || colourLevel === ColourLevel.None || flags.motion === false,
     mode: isPlain ? OutputMode.Plain : OutputMode.Pretty,
-    themeMode: LIGHT_BACKGROUNDS.some((light) => light === background)
+    themeMode: LIGHT_BACKGROUNDS.some((lightBackground) => lightBackground === backgroundColour)
       ? ThemeMode.Light
       : ThemeMode.Dark,
   };

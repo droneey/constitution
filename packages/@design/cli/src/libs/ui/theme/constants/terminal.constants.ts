@@ -62,23 +62,36 @@ const SPINNER_FRAMES: readonly string[] = [
   '⠏',
 ] as const;
 
-const TONE_ROLES: Readonly<Record<Tone, string>> = {
-  [Tone.Accent]: 'accent.text',
-  [Tone.Success]: 'text.success',
-  [Tone.Error]: 'text.danger',
-  [Tone.Warning]: 'text.warning',
-  [Tone.Info]: 'text.info',
-  [Tone.Muted]: 'text.muted',
+/** the role the accent's tone is drawn in, which reads a step of the accent's scale */
+const ACCENT_TONE_ROLE = 'accent.text';
+
+/** a role of the tokens a tone other than the accent's is drawn in */
+enum ColourRole {
+  Success = 'text.success',
+  Danger = 'text.danger',
+  Warning = 'text.warning',
+  Info = 'text.info',
+  Muted = 'text.muted',
+}
+
+const TONE_ROLES: Readonly<Record<Exclude<Tone, Tone.Accent>, ColourRole>> = {
+  [Tone.Success]: ColourRole.Success,
+  [Tone.Error]: ColourRole.Danger,
+  [Tone.Warning]: ColourRole.Warning,
+  [Tone.Info]: ColourRole.Info,
+  [Tone.Muted]: ColourRole.Muted,
 } as const;
 
-const FRAME_DURATION = 'fast';
+const FRAME_DURATION_TOKEN = 'fast';
 
 /** a terminal cell stands for one step of the design system's 8-pixel grid */
 const PIXELS_PER_CELL = 8;
 
 export {
+  ACCENT_TONE_ROLE,
   ColourLevel,
-  FRAME_DURATION,
+  ColourRole,
+  FRAME_DURATION_TOKEN,
   GLYPHS,
   Glyph,
   OutputMode,

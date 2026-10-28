@@ -8,7 +8,6 @@ interface RefusedText {
   readonly text: string;
 }
 
-/** a version that is no release's `<major>.<minor>.<patch>` */
 class VersionError extends ProgramError<VersionFailure, RefusedText> {
   public constructor(details: RefusedText) {
     super({

@@ -1,7 +1,6 @@
 import type { PagesQueryRepository } from '../../../contracts';
-import type { PageSlugs } from '../../../entities';
+import type { PageSlugs } from '../../../value-objects';
 
-/** undefined when no page has these slugs */
 export type GetPageMarkdown = (slugs: PageSlugs) => Promise<string | undefined>;
 
 export const createGetPageMarkdown =

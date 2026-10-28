@@ -5,23 +5,23 @@ import type { ConfirmKeys } from '#/libs/ui';
 import { useInterrupt } from '../../hooks';
 
 interface ConfirmInput {
-  readonly defaultAnswer: boolean;
+  readonly isYesDefault: boolean;
   readonly keys: ConfirmKeys;
   readonly onInterrupt: () => void;
   readonly onSubmit: (answer: boolean) => void;
 }
 
-const useConfirm = ({ defaultAnswer, keys, onInterrupt, onSubmit }: ConfirmInput): void => {
+const useConfirm = ({ isYesDefault, keys, onInterrupt, onSubmit }: ConfirmInput): void => {
   useInterrupt(onInterrupt);
   useInput((input, key) => {
-    const pressed = input.toLowerCase();
+    const pressedKey = input.toLowerCase();
 
-    if (pressed === keys.yes) {
+    if (pressedKey === keys.yes) {
       onSubmit(true);
-    } else if (pressed === keys.no) {
+    } else if (pressedKey === keys.no) {
       onSubmit(false);
     } else if (key.return) {
-      onSubmit(defaultAnswer);
+      onSubmit(isYesDefault);
     }
   });
 };

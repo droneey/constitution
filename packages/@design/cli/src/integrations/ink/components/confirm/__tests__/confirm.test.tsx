@@ -1,9 +1,11 @@
 import { describe, expect, it, mock } from 'bun:test';
 
+import { goldenFileText, goldenOf } from '#/__tests__/golden.fixtures';
 import { ConfirmWords } from '#/libs/ui';
 
 import {
   englishWords,
+  frameOf,
   Key,
   pressKeys,
   renderWithTheme,
@@ -12,94 +14,123 @@ import {
 import { Confirm } from '../confirm';
 
 const ukrainian = ConfirmWords.create({
-  locale: 'uk',
   no: 'ні',
   yes: 'Так',
 });
 
 describe('Confirm', () => {
-  it.each([
-    {
-      defaultAnswer: true,
-      frame: 'Overwrite? (Y/n)',
-      words: englishWords,
-    },
-    {
-      defaultAnswer: false,
-      frame: 'Overwrite? (y/N)',
-      words: englishWords,
-    },
-    {
-      defaultAnswer: true,
-      frame: 'Overwrite? (Т/н)',
-      words: ukrainian,
-    },
-    {
-      defaultAnswer: false,
-      frame: 'Overwrite? (т/Н)',
-      words: ukrainian,
-    },
-  ])('should show the keys, the default in capitals: $frame', ({ defaultAnswer, frame, words }) => {
-    // Arrange
-    const tree = (
-      <Confirm
-        defaultAnswer={defaultAnswer}
-        message='Overwrite?'
-        onInterrupt={mock()}
-        onSubmit={mock()}
-        words={words}
-      />
-    );
-
+  it('should draw and read out the question and its answers, the default in capitals and read out as checked, as the golden file shows them', async () => {
     // Act
-    const { lastFrame } = renderWithTheme(tree);
+    const golden = goldenOf({
+      'yes by default': frameOf(
+        <Confirm
+          isYesDefault
+          message='Overwrite?'
+          onInterrupt={mock()}
+          onSubmit={mock()}
+          words={englishWords}
+        />,
+      ),
+      'no by default': frameOf(
+        <Confirm
+          isYesDefault={false}
+          message='Overwrite?'
+          onInterrupt={mock()}
+          onSubmit={mock()}
+          words={englishWords}
+        />,
+      ),
+      'yes by default, in Ukrainian': frameOf(
+        <Confirm
+          isYesDefault
+          message='Overwrite?'
+          onInterrupt={mock()}
+          onSubmit={mock()}
+          words={ukrainian}
+        />,
+      ),
+      'no by default, in Ukrainian': frameOf(
+        <Confirm
+          isYesDefault={false}
+          message='Overwrite?'
+          onInterrupt={mock()}
+          onSubmit={mock()}
+          words={ukrainian}
+        />,
+      ),
+      'read out': screenReaderOutputOf(
+        <Confirm
+          isYesDefault
+          message='Overwrite?'
+          onInterrupt={mock()}
+          onSubmit={mock()}
+          words={englishWords}
+        />,
+      ),
+      'read out, no by default, in Ukrainian': screenReaderOutputOf(
+        <Confirm
+          isYesDefault={false}
+          message='Overwrite?'
+          onInterrupt={mock()}
+          onSubmit={mock()}
+          words={ukrainian}
+        />,
+      ),
+    });
 
     // Assert
-    expect(lastFrame()).toBe(frame);
+    expect(golden).toBe(await goldenFileText(new URL('confirm.golden.txt', import.meta.url)));
   });
 
   it.each([
     {
+      condition: 'the key of yes',
       answer: true,
       key: 'y',
       words: englishWords,
     },
     {
+      condition: 'the key of yes in capitals',
       answer: true,
       key: 'Y',
       words: englishWords,
     },
     {
+      condition: 'the key of no',
       answer: false,
       key: 'n',
       words: englishWords,
     },
     {
+      condition: 'the key of no in capitals',
       answer: false,
       key: 'N',
       words: englishWords,
     },
     {
+      condition: 'Enter, no being the default',
       answer: false,
       key: Key.Enter,
       words: englishWords,
     },
     {
+      condition: 'the key of yes in Ukrainian',
       answer: true,
       key: 'т',
       words: ukrainian,
     },
     {
+      condition: 'the key of no in Ukrainian, in capitals',
       answer: false,
       key: 'Н',
       words: ukrainian,
     },
-  ])('should answer $answer when $key is pressed', async ({ answer, key, words }) => {
+  ])('should answer $answer when $condition is pressed', async ({ answer, key, words }) => {
     // Arrange
     const onSubmit = mock();
     const { stdin } = renderWithTheme(
       <Confirm
-        defaultAnswer={false}
+        isYesDefault={false}
         message='Overwrite?'
         onInterrupt={mock()}
         onSubmit={onSubmit}
@@ -122,6 +153,7 @@ describe('Confirm', () => {
 
   it.each([
     {
+      condition: 'keys that are no answer, Ctrl with them or not, are pressed',
       keys: [
         'x',
         'c',
@@ -130,19 +162,20 @@ describe('Confirm', () => {
       words: englishWords,
     },
     {
+      condition: 'the English keys are pressed for Ukrainian words',
       keys: [
         'y',
         'n',
       ],
       words: ukrainian,
     },
-  ])('should neither answer nor interrupt when $keys are pressed', async ({ keys, words }) => {
+  ])('should neither answer nor interrupt when $condition', async ({ keys, words }) => {
     // Arrange
     const onSubmit = mock();
     const onInterrupt = mock();
     const { stdin } = renderWithTheme(
       <Confirm
-        defaultAnswer
+        isYesDefault
         message='Overwrite?'
         onInterrupt={onInterrupt}
         onSubmit={onSubmit}
@@ -154,8 +187,13 @@ describe('Confirm', () => {
     await pressKeys(stdin, keys);
 
     // Assert
-    expect(onSubmit).not.toHaveBeenCalled();
-    expect(onInterrupt).not.toHaveBeenCalled();
+    expect({
+      interrupts: onInterrupt.mock.calls,
+      submitted: onSubmit.mock.calls,
+    }).toStrictEqual({
+      interrupts: [],
+      submitted: [],
+    });
   });
 
   it('should interrupt when Ctrl-C is pressed', async () => {
@@ -163,7 +201,7 @@ describe('Confirm', () => {
     const onInterrupt = mock();
     const { stdin } = renderWithTheme(
       <Confirm
-        defaultAnswer
+        isYesDefault
         message='Overwrite?'
         onInterrupt={onInterrupt}
         onSubmit={mock()}
@@ -178,35 +216,5 @@ describe('Confirm', () => {
 
     // Assert
     expect(onInterrupt).toHaveBeenCalledTimes(1);
-  });
-
-  it.each([
-    {
-      condition: 'its words are English',
-      spoken: 'Overwrite?, yes or no',
-      words: englishWords,
-    },
-    {
-      condition: 'its words are Ukrainian',
-      spoken: 'Overwrite?, Так або ні',
-      words: ukrainian,
-    },
-  ])('should read out the question and its two answers when $condition', ({ spoken, words }) => {
-    // Arrange
-    const tree = (
-      <Confirm
-        defaultAnswer
-        message='Overwrite?'
-        onInterrupt={mock()}
-        onSubmit={mock()}
-        words={words}
-      />
-    );
-
-    // Act
-    const read = screenReaderOutputOf(tree);
-
-    // Assert
-    expect(read).toBe(spoken);
   });
 });

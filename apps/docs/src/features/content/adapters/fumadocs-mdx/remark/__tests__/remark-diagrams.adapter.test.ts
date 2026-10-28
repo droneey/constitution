@@ -1,40 +1,32 @@
 import { describe, expect, it } from 'bun:test';
 
+import { goldenText } from '#/__tests__/golden.fixtures';
+
 import { remarkDiagrams } from '../remark-diagrams.adapter';
+import type { MarkdownVariant } from './html.fixtures';
+import { htmlOfVariants } from './html.fixtures';
 import { treeOf } from './mdast.fixtures';
-import { goldenFlowchart } from './remark-diagrams.adapter.fixtures';
 
 describe('remarkDiagrams', () => {
-  it('should draw a Mermaid block as a figure of its SVG when a page holds one', () => {
+  it('should draw a Mermaid block as the figure of its SVG the golden file shows', async () => {
     // Arrange
-    const tree = treeOf('> ```mermaid\n> flowchart LR\n>   A[Rule] --> B[Block]\n> ```');
+    const variants = {
+      'a flowchart in a quote': {
+        markdown: '> ```mermaid\n> flowchart LR\n>   A[Rule] --> B[Block]\n> ```',
+        plugins: [
+          remarkDiagrams,
+        ],
+      },
+    } satisfies Readonly<Record<string, MarkdownVariant>>;
 
     // Act
-    remarkDiagrams()(tree);
+    const html = htmlOfVariants(variants);
 
     // Assert
-    expect<unknown>(tree).toStrictEqual({
-      children: [
-        {
-          children: [
-            {
-              data: {
-                hChildren: goldenFlowchart(),
-                hName: 'figure',
-                hProperties: {
-                  'aria-label': 'Diagram: Rule, Block',
-                  'data-diagram': '',
-                  role: 'img',
-                },
-              },
-              type: 'diagram',
-            },
-          ],
-          type: 'blockquote',
-        },
-      ],
-      type: 'root',
-    });
+    // in a text file, as Biome lints HTML and the SVG beautiful-mermaid draws trips its rules
+    expect(html).toBe(
+      await goldenText(new URL('remark-diagrams.adapter.golden.txt', import.meta.url), html),
+    );
   });
 
   it('should leave a block of code when it is not Mermaid', () => {

@@ -1,6 +1,8 @@
 export {
+  ACCENT_TONE_ROLE,
   ColourLevel,
-  FRAME_DURATION,
+  ColourRole,
+  FRAME_DURATION_TOKEN,
   GLYPHS,
   Glyph,
   OutputMode,

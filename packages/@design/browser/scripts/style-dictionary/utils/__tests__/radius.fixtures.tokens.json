@@ -1,0 +1,35 @@
+{
+  "radius": {
+    "$type": "dimension",
+    "4": {
+      "$value": {
+        "unit": "px",
+        "value": 4
+      }
+    },
+    "12": {
+      "$value": {
+        "unit": "px",
+        "value": 12
+      }
+    },
+    "16": {
+      "$value": {
+        "unit": "px",
+        "value": 16
+      }
+    },
+    "24": {
+      "$value": {
+        "unit": "px",
+        "value": 24
+      }
+    },
+    "32": {
+      "$value": {
+        "unit": "px",
+        "value": 32
+      }
+    }
+  }
+}

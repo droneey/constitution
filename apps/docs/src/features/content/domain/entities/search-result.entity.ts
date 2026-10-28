@@ -1,4 +1,3 @@
-/** what a result of a search points at */
 enum SearchResultKind {
   Page = 'page',
   Heading = 'heading',

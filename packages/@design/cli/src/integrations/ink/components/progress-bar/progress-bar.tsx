@@ -2,10 +2,14 @@ import type { ReactElement } from 'react';
 
 import { Box, Text } from 'ink';
 
+import type { ProgressContent } from '#/libs/ui';
 import { BAR_CELLS, BAR_FILLED, BAR_LEFT, Space, shareOf, Tone } from '#/libs/ui';
 
-import { useTheme } from '../../hooks';
-import type { ProgressBarProps } from './progress-bar.types';
+import { useTheme } from '../../theme';
+
+interface ProgressBarProps {
+  readonly progress: ProgressContent;
+}
 
 function ProgressBar({ progress }: ProgressBarProps): ReactElement {
   const theme = useTheme();
@@ -27,4 +31,5 @@ function ProgressBar({ progress }: ProgressBarProps): ReactElement {
   );
 }
 
+export type { ProgressBarProps };
 export { ProgressBar };

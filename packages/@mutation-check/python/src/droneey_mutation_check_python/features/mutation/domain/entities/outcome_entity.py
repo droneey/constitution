@@ -1,24 +1,21 @@
 from dataclasses import dataclass
 from enum import StrEnum, unique
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+  from .mutant_entity import Mutant
 
 
 @unique
-class Pass(StrEnum):
+class PassReason(StrEnum):
   UNCHANGED = 'unchanged'
   KILLED = 'killed'
-  # mutmut stopped before running: the changed functions hold no mutant
-  EMPTY = 'empty'
-
-
-@dataclass(frozen=True, slots=True, kw_only=True)
-class Mutant:
-  name: str
-  status: str
+  NOTHING_TO_MUTATE = 'nothing-to-mutate'
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class Passed:
-  why: Pass
+  reason: PassReason
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -26,9 +23,10 @@ class Survived:
   mutants: tuple[Mutant, ...]
 
 
-# mutmut failed before it ran the mutants, with what it printed.
 @dataclass(frozen=True, slots=True, kw_only=True)
 class Broken:
+  """mutmut failed before it ran the mutants, with what it printed."""
+
   output: str
 
 

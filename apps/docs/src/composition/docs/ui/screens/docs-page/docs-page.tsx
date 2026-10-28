@@ -5,9 +5,7 @@ import type { PageTreeRoot } from '#/libs/ui';
 import { DocsLayout } from '#/libs/ui';
 
 import { DocsLocationContext } from '../../../app/providers';
-import { DocsNavTitle } from '../../components/docs-nav-title';
-import { DocsRepositoryIcon } from '../../components/docs-repository-icon';
-import { REPOSITORY_LINK } from '../../constants';
+import { DocsNavTitle, repositoryLink } from '../../components';
 import { DocsPageContent } from './components';
 import { searchTrigger, sidebar } from './docs-page.constants';
 import { useHasNavigated } from './docs-page.hooks';
@@ -16,26 +14,28 @@ import type { DocsPageEntry } from './docs-page.types';
 interface DocsPageScreenProps {
   href: string;
   page: DocsPageEntry;
+  /** tells one page from the next, which the address's path alone does not */
+  pageKey: string;
   pageTree: PageTreeRoot;
-  path: string;
 }
 
-export function DocsPageScreen({ href, page, pageTree, path }: DocsPageScreenProps): ReactElement {
-  const hasNavigated = useHasNavigated(path);
+export function DocsPageScreen({
+  href,
+  page,
+  pageKey,
+  pageTree,
+}: DocsPageScreenProps): ReactElement {
+  const hasNavigated = useHasNavigated(pageKey);
 
   return (
     <DocsLocationContext
       value={{
         href,
-        path,
       }}
     >
       <DocsLayout
         links={[
-          {
-            ...REPOSITORY_LINK,
-            icon: <DocsRepositoryIcon />,
-          },
+          repositoryLink,
         ]}
         nav={{
           title: <DocsNavTitle />,
@@ -50,7 +50,7 @@ export function DocsPageScreen({ href, page, pageTree, path }: DocsPageScreenPro
           <DocsPageContent
             hasNavigated={hasNavigated}
             page={page}
-            path={path}
+            pageKey={pageKey}
           />
         </Suspense>
       </DocsLayout>

@@ -1,0 +1,5 @@
+# a quarter done
+Files █████░░░░░░░░░░░░░░░ 1/4 (25%)
+
+# read out
+progressbar: Files 1/4 (25%)

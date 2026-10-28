@@ -1,25 +1,16 @@
 import { describe, expect, it } from 'bun:test';
 
-import type { PhrasingContent, TableCell, TableRow } from 'mdast';
+import { goldenText } from '#/__tests__/golden.fixtures';
 
 import { Axis, Term, TermKind } from '../../../../domain/entities';
 import { remarkTerms } from '../remark-terms.adapter';
-import { inlineCode, link, text, treeOf, withoutPositions } from './mdast.fixtures';
-
-const cell = (children: PhrasingContent[]): TableCell => ({
-  children,
-  type: 'tableCell',
-});
-
-const row = (cells: PhrasingContent[][]): TableRow => ({
-  children: cells.map(cell),
-  type: 'tableRow',
-});
+import type { MarkdownVariant } from './html.fixtures';
+import { htmlOfVariants } from './html.fixtures';
 
 const bun = Term.create({
   address: '/docs/implementations/bun',
   axis: Axis.Foundation,
-  block: 'bun',
+  blockId: 'bun',
   kind: TermKind.Brand,
   name: 'Bun',
   sentence: '**Bun**{#runtime} runs the program, as [its docs](https://bun.sh) say.',
@@ -28,136 +19,58 @@ const bun = Term.create({
 const widgets = Term.create({
   address: '/docs/domains/ui/architecture/components',
   axis: Axis.Architecture,
-  block: 'ui',
+  blockId: 'ui',
   kind: TermKind.Folder,
   name: 'widgets/',
-  sentence: '',
+  sentence: '### The **widgets/** folder',
 });
 
 const bindingUnit = Term.create({
   address: '/docs/core/architecture/layout',
   axis: Axis.Architecture,
-  block: 'core',
+  blockId: 'core',
   kind: TermKind.Concept,
   name: 'binding unit',
   sentence: 'A binding unit binds.',
 });
 
+const viewSuffix = Term.create({
+  address: '/docs/domains/ui/architecture/screens',
+  axis: Axis.Architecture,
+  blockId: 'ui',
+  kind: TermKind.Suffix,
+  name: '.view',
+  sentence: '',
+});
+
 describe('remarkTerms', () => {
-  it('should set the table of terms where a page holds the block of terms, their sentences without links or ids, and leave other code', () => {
+  it('should set the table of terms the golden file shows where a page holds the block of terms, and leave other code', async () => {
     // Arrange
-    const tree = treeOf('# Terms\n\n```terms\nThe table.\n```\n\n```ts\nconst terms = 1;\n```\n');
+    const variants = {
+      'terms defined in prose, in a heading and nowhere, beside other code': {
+        markdown: '# Terms\n\n```terms\nThe table.\n```\n\n```ts\nconst terms = 1;\n```\n',
+        plugins: [
+          [
+            remarkTerms,
+            {
+              terms: [
+                bun,
+                widgets,
+                bindingUnit,
+                viewSuffix,
+              ],
+            },
+          ],
+        ],
+      },
+    } satisfies Readonly<Record<string, MarkdownVariant>>;
 
     // Act
-    remarkTerms({
-      terms: [
-        bun,
-        widgets,
-        bindingUnit,
-      ],
-    })(tree);
+    const html = htmlOfVariants(variants);
 
     // Assert
-    expect(withoutPositions(tree)).toStrictEqual({
-      children: [
-        ...treeOf('# Terms').children,
-        {
-          align: [
-            null,
-            null,
-            null,
-            null,
-            null,
-          ],
-          children: [
-            row([
-              [
-                text('Term'),
-              ],
-              [
-                text('Kind'),
-              ],
-              [
-                text('Block'),
-              ],
-              [
-                text('Axis'),
-              ],
-              [
-                text('Definition'),
-              ],
-            ]),
-            row([
-              [
-                link(bun.address, [
-                  text('Bun'),
-                ]),
-              ],
-              [
-                text('brand'),
-              ],
-              [
-                text('bun'),
-              ],
-              [
-                text('foundation'),
-              ],
-              [
-                {
-                  children: [
-                    text('Bun'),
-                  ],
-                  type: 'strong',
-                },
-                text(' runs the program, as '),
-                text('its docs'),
-                text(' say.'),
-              ],
-            ]),
-            row([
-              [
-                link(widgets.address, [
-                  inlineCode('widgets/'),
-                ]),
-              ],
-              [
-                text('folder'),
-              ],
-              [
-                text('ui'),
-              ],
-              [
-                text('architecture'),
-              ],
-              [
-                text(''),
-              ],
-            ]),
-            row([
-              [
-                link(bindingUnit.address, [
-                  text('binding unit'),
-                ]),
-              ],
-              [
-                text('concept'),
-              ],
-              [
-                text('core'),
-              ],
-              [
-                text('architecture'),
-              ],
-              [
-                text('A binding unit binds.'),
-              ],
-            ]),
-          ],
-          type: 'table',
-        },
-        ...treeOf('```ts\nconst terms = 1;\n```').children,
-      ],
-      type: 'root',
-    });
+    expect(html).toBe(
+      await goldenText(new URL('remark-terms.adapter.golden.html', import.meta.url), html),
+    );
   });
 });

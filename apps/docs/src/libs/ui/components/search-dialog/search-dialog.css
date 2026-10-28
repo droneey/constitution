@@ -27,8 +27,8 @@
         height: var(--size-control-xs);
         padding: 0 var(--spacing-2xs);
         border-radius: var(--radius-sm);
-        font-family: var(--font-sans);
-        font-size: var(--text-xs);
+        font: var(--font-label-xs);
+        letter-spacing: var(--font-label-xs--letter-spacing);
         cursor: pointer;
         transition: background-color var(--duration-fast) var(--ease-standard);
 
@@ -41,7 +41,8 @@
 
   /* its row draws its ring; forced colours paint this one in the system's colour */
   [data-fd-search-dialog-input] {
-    font-size: var(--text-base);
+    font: var(--font-body-md);
+    letter-spacing: var(--font-body-md--letter-spacing);
 
     &:focus-visible {
       outline-color: transparent;
@@ -64,8 +65,8 @@
       padding: var(--spacing-xs);
       overflow: visible;
       border-radius: var(--radius-control-base);
-      font-size: var(--text-sm);
-      font-weight: var(--font-weight-ui);
+      font: var(--font-label-sm);
+      letter-spacing: var(--font-label-sm--letter-spacing);
       cursor: pointer;
 
       &[aria-selected='true'] {

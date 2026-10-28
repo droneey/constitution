@@ -3,13 +3,15 @@ import { afterEach, describe, expect, it, mock, spyOn } from 'bun:test';
 import type { ReactElement } from 'react';
 
 import type { RenderResult } from '@testing-library/react';
-import { act, cleanup, screen, within } from '@testing-library/react';
+import { act, cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { createFakeGetVersions } from '#/__tests__/get-versions.fake';
+import { Page } from '#/features/content';
 
 import { screenViolationsIn } from '../../../../__tests__/axe.fixtures';
 import {
+  docsWrapperOf,
   hydrateInDocs,
   pageEntryFixture,
   pageTreeFixture,
@@ -17,7 +19,8 @@ import {
   settledLoad,
   versionsFixture,
 } from '../../../../__tests__/docs.fixtures';
-import { FrameMark, frameFake } from '../../../../__tests__/docs-frame.fake';
+import { frameFake } from '../../../../__tests__/docs-frame.fake';
+import { SidebarState } from '../../../../domain/entities';
 import { PAGE_SCROLLER_SELECTOR } from '../../../constants';
 import { DocsPageScreen } from '../docs-page';
 import type { DocsPageEntry } from '../docs-page.types';
@@ -25,6 +28,11 @@ import type { DocsPageEntry } from '../docs-page.types';
 afterEach(() => {
   cleanup();
   mock.restore();
+});
+
+const overviewKey = Page.keyOf({
+  collection: 'overview',
+  path: 'README.md',
 });
 
 const overview = pageEntryFixture();
@@ -37,8 +45,8 @@ const overviewPage = (): ReactElement => (
   <DocsPageScreen
     href='/docs'
     page={overview}
+    pageKey={overviewKey}
     pageTree={pageTreeFixture()}
-    path='index.md'
   />
 );
 
@@ -46,13 +54,16 @@ const guidePage = (): ReactElement => (
   <DocsPageScreen
     href='/docs/guides/write-a-pack'
     page={guide}
+    pageKey={Page.keyOf({
+      collection: 'guide',
+      path: 'guides/write-a-pack.md',
+    })}
     pageTree={pageTreeFixture()}
-    path='guides/write-a-pack.md'
   />
 );
 
-const headingOf = (title: string): Promise<HTMLElement> =>
-  screen.findByRole('heading', {
+const headingOf = (title: string): HTMLElement =>
+  screen.getByRole('heading', {
     level: 1,
     name: title,
   });
@@ -60,6 +71,21 @@ const headingOf = (title: string): Promise<HTMLElement> =>
 /** the next page's contents load before it shows */
 const navigate = (rendered: RenderResult, page: ReactElement): Promise<void> =>
   act(() => Promise.resolve(rendered.rerender(page)));
+
+/** the page's heading as its first commit shows it, read before the sidebar's scroll area measures itself */
+const firstCommitHeadingOf = async (page: ReactElement): Promise<string | undefined> => {
+  render(page, {
+    wrapper: docsWrapperOf({}),
+  });
+
+  const heading = screen.queryByRole('heading', {
+    level: 1,
+  })?.textContent;
+
+  await act(() => Promise.resolve());
+
+  return heading ?? undefined;
+};
 
 const lastOf = (elements: HTMLElement[]): HTMLElement => {
   const [last] = elements.slice(-1);
@@ -82,11 +108,11 @@ describe('DocsPageScreen', () => {
     const page = overviewPage();
 
     // Act
-    renderInDocs(page);
+    await renderInDocs(page);
 
     // Assert
     expect([
-      (await headingOf('Overview')).textContent,
+      headingOf('Overview').textContent,
       screen.getByText('The rules a repository is built by.').textContent,
       screen
         .getByRole('link', {
@@ -109,29 +135,21 @@ describe('DocsPageScreen', () => {
         page={pageEntryFixture({
           load,
         })}
+        pageKey={overviewKey}
         pageTree={pageTreeFixture()}
-        path='index.md'
       />
     );
 
     // Act
-    renderInDocs(page);
+    const heading = await firstCommitHeadingOf(page);
 
     // Assert
-    expect(
-      screen.getByRole('heading', {
-        level: 1,
-        name: 'Overview',
-      }).textContent,
-    ).toBe('Overview');
+    expect(heading).toBe('Overview');
   });
 
   it('should make the page the main region the skip link targets and the keyboard stops on', async () => {
-    // Arrange
-    renderInDocs(overviewPage());
-
     // Act
-    await headingOf('Overview');
+    await renderInDocs(overviewPage());
 
     // Assert
     const main = screen.getByRole('main');
@@ -146,11 +164,8 @@ describe('DocsPageScreen', () => {
   });
 
   it('should name the element the page scrolls in, which the router brings back to the top', async () => {
-    // Arrange
-    renderInDocs(overviewPage());
-
     // Act
-    await headingOf('Overview');
+    await renderInDocs(overviewPage());
 
     // Assert
     // biome-ignore lint/plugin/spec-never-selects-from-the-document: the router is configured with this selector for Fumadocs' scroller, which no role, label or text names, and this one case proves it names the main article's parent
@@ -160,11 +175,8 @@ describe('DocsPageScreen', () => {
   });
 
   it('should name the site and link its repository from an icon named GitHub', async () => {
-    // Arrange
-    renderInDocs(overviewPage());
-
     // Act
-    await headingOf('Overview');
+    await renderInDocs(overviewPage());
 
     // Assert
     expect(
@@ -177,22 +189,16 @@ describe('DocsPageScreen', () => {
   });
 
   it('should keep the heading out of the tab order', async () => {
-    // Arrange
-    renderInDocs(overviewPage());
-
     // Act
-    const heading = await headingOf('Overview');
+    await renderInDocs(overviewPage());
 
     // Assert
-    expect(heading.tabIndex).toBe(-1);
+    expect(headingOf('Overview').tabIndex).toBe(-1);
   });
 
   it('should leave focus where it is when the site opens on the page', async () => {
-    // Arrange
-    renderInDocs(overviewPage());
-
     // Act
-    await headingOf('Overview');
+    await renderInDocs(overviewPage());
 
     // Assert
     expect(document.activeElement).toBe(document.body);
@@ -200,22 +206,18 @@ describe('DocsPageScreen', () => {
 
   it('should move focus to the heading when the reader opens another page', async () => {
     // Arrange
-    const rendered = renderInDocs(overviewPage());
-
-    await headingOf('Overview');
+    const rendered = await renderInDocs(overviewPage());
 
     // Act
     await navigate(rendered, guidePage());
 
     // Assert
-    expect(document.activeElement).toBe(await headingOf('Write a pack'));
+    expect(document.activeElement).toBe(headingOf('Write a pack'));
   });
 
   it('should leave the scroll to the router when the heading takes focus', async () => {
     // Arrange
-    const rendered = renderInDocs(overviewPage());
-
-    await headingOf('Overview');
+    const rendered = await renderInDocs(overviewPage());
 
     const focus = spyOn(HTMLElement.prototype, 'focus');
 
@@ -233,11 +235,8 @@ describe('DocsPageScreen', () => {
   });
 
   it('should list the page contents beside it and in its header', async () => {
-    // Arrange
-    renderInDocs(overviewPage());
-
     // Act
-    await headingOf('Overview');
+    await renderInDocs(overviewPage());
 
     // Assert
     expect([
@@ -252,24 +251,18 @@ describe('DocsPageScreen', () => {
   });
 
   it('should slide a block under the page contents once they have loaded', async () => {
-    // Arrange
-    renderInDocs(overviewPage());
-
     // Act
-    await headingOf('Overview');
+    await renderInDocs(overviewPage());
 
     // Assert
     expect(within(screen.getByTestId('toc-list')).getAllByTestId('glide').length).toBe(1);
   });
 
   it('should offer the version menu above the search field in the sidebar', async () => {
-    // Arrange
-    renderInDocs(overviewPage(), {
+    // Act
+    await renderInDocs(overviewPage(), {
       getVersions: createFakeGetVersions(versionsFixture()).getVersions,
     });
-
-    // Act
-    await headingOf('Overview');
 
     // Assert
     const sidebar = within(screen.getByRole('complementary'));
@@ -285,10 +278,9 @@ describe('DocsPageScreen', () => {
 
   it('should link the releases to the page the reader is on', async () => {
     // Arrange
-    renderInDocs(guidePage(), {
+    await renderInDocs(guidePage(), {
       getVersions: createFakeGetVersions(versionsFixture()).getVersions,
     });
-    await headingOf('Write a pack');
 
     // Act
     await userEvent.click(await versionMenu());
@@ -308,13 +300,12 @@ describe('DocsPageScreen', () => {
     const { frame, marks } = frameFake();
 
     // Act
-    renderInDocs(overviewPage(), {
+    await renderInDocs(overviewPage(), {
       frame,
     });
 
     // Assert
-    await headingOf('Overview');
-    expect(marks.at(-1)).toBe(FrameMark.Open);
+    expect(marks.at(-1)).toBe(SidebarState.Open);
   });
 
   it('should collapse the sidebar when the site opens on a narrow screen', async () => {
@@ -324,13 +315,12 @@ describe('DocsPageScreen', () => {
     });
 
     // Act
-    renderInDocs(overviewPage(), {
+    await renderInDocs(overviewPage(), {
       frame,
     });
 
     // Assert
-    await headingOf('Overview');
-    expect(marks.at(-1)).toBe(FrameMark.Collapsed);
+    expect(marks.at(-1)).toBe(SidebarState.Collapsed);
   });
 
   it('should hydrate the page the server rendered when the site opens on a narrow screen before the body has loaded', async () => {
@@ -347,8 +337,8 @@ describe('DocsPageScreen', () => {
       <DocsPageScreen
         href='/docs'
         page={page}
+        pageKey={overviewKey}
         pageTree={pageTreeFixture()}
-        path='index.md'
       />
     );
 
@@ -384,7 +374,7 @@ describe('DocsPageScreen', () => {
       marks.at(-1),
     ]).toStrictEqual([
       [],
-      FrameMark.Collapsed,
+      SidebarState.Collapsed,
     ]);
   });
 
@@ -393,11 +383,10 @@ describe('DocsPageScreen', () => {
     const { frame, marks } = frameFake({
       narrow: true,
     });
-    const rendered = renderInDocs(overviewPage(), {
+    const rendered = await renderInDocs(overviewPage(), {
       frame,
     });
 
-    await headingOf('Overview');
     // the collapsed sidebar is out of reach, so the reader opens it from the page's header, last in the document
     await userEvent.click(
       lastOf(
@@ -411,15 +400,14 @@ describe('DocsPageScreen', () => {
     await navigate(rendered, guidePage());
 
     // Assert
-    expect(marks.at(-1)).toBe(FrameMark.Collapsed);
+    expect(marks.at(-1)).toBe(SidebarState.Collapsed);
   });
 
   it('should pass the WCAG 2.2 A and AA scan when its contents have loaded', async () => {
     // Arrange
-    renderInDocs(overviewPage(), {
+    await renderInDocs(overviewPage(), {
       getVersions: createFakeGetVersions(versionsFixture()).getVersions,
     });
-    await headingOf('Overview');
 
     // Act
     const violations = await screenViolationsIn();

@@ -1,7 +1,14 @@
-import type { ReactElement } from 'react';
+import type { ComponentPropsWithRef, ReactElement } from 'react';
 
+import type { IconName } from '../../icons';
 import { iconGlyphs } from '../../icons';
-import type { IconProps } from './icon.types';
+
+interface IconProps
+  extends Omit<ComponentPropsWithRef<'svg'>, 'aria-hidden' | 'aria-label' | 'children' | 'role'> {
+  /** names what the icon means where nothing beside it does; without it the icon is hidden from assistive technology */
+  readonly label?: string;
+  readonly name: IconName;
+}
 
 function Icon({ label, name, ...props }: IconProps): ReactElement {
   const Glyph = iconGlyphs[name];
@@ -23,4 +30,5 @@ function Icon({ label, name, ...props }: IconProps): ReactElement {
   );
 }
 
+export type { IconProps };
 export { Icon };

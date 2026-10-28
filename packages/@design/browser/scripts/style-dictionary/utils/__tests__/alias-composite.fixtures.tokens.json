@@ -1,0 +1,10 @@
+{
+  "font": {
+    "body": {
+      "$type": "typography",
+      "sm": {
+        "$value": "{font.code.sm}"
+      }
+    }
+  }
+}

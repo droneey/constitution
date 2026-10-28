@@ -3,6 +3,7 @@ const TOKEN_VALUES = {
   '--stroke-icon': '2.25',
   '--size-popup-min': '240px',
   '--spacing-2xs': '4px',
+  '--border-width-thin': '1px',
   '--color-border-base': 'rgb(228, 228, 232)',
   '--radius-surface-raised': '12px',
   '--color-surface-level-1': 'rgb(246, 246, 249)',

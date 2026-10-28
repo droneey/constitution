@@ -10,20 +10,20 @@ interface TextInputInput {
 }
 
 const useTextInput = ({ onInterrupt, onSubmit }: TextInputInput): string => {
-  const [typed, setTyped] = useState('');
+  const [typedText, setTypedText] = useState('');
 
   useInterrupt(onInterrupt);
   useInput((input, key) => {
     if (key.return) {
-      onSubmit(typed);
+      onSubmit(typedText);
     } else if (key.backspace || key.delete) {
-      setTyped((current) => current.slice(0, -1));
+      setTypedText((current) => Array.from(current).slice(0, -1).join(''));
     } else if (!(key.ctrl || key.meta)) {
-      setTyped((current) => `${current}${input}`);
+      setTypedText((current) => `${current}${input}`);
     }
   });
 
-  return typed;
+  return typedText;
 };
 
 export { useTextInput };

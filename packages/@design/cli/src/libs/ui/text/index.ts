@@ -1,14 +1,14 @@
-export { columnWidthsOf, padTo, shareOf, widthOf } from './layout.utils';
 export {
   BAR_CELLS,
   BAR_FILLED,
   BAR_LEFT,
   ColumnAlign,
   DETAIL_SEPARATOR,
+  ELLIPSIS,
   STEP_LOOKS,
   StepStatus,
   TONE_GLYPHS,
-} from './text.constants';
+} from './constants';
 export type {
   Column,
   FailureContent,
@@ -18,8 +18,9 @@ export type {
   StepContent,
   TableContent,
   TableRow,
-} from './text.types';
+} from './types';
 export {
+  columnWidthsOf,
   formatFailure,
   formatHeading,
   formatKeyValues,
@@ -29,4 +30,8 @@ export {
   formatTable,
   formatTaskList,
   formatWaiting,
-} from './text.utils';
+  keyWidthOf,
+  padTo,
+  shareOf,
+  widthOf,
+} from './utils';

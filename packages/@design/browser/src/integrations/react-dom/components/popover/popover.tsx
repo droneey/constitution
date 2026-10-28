@@ -1,9 +1,15 @@
-import type { ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 
 import { Popover as BasePopover } from '@base-ui/react/popover';
 
 import { PopoverPanel, PopoverTrigger } from './components';
-import type { PopoverProps } from './popover.types';
+
+interface PopoverProps {
+  readonly children: ReactNode;
+  readonly defaultOpen?: boolean;
+  readonly onOpenChange?: (open: boolean) => void;
+  readonly open?: boolean;
+}
 
 function PopoverRoot({ children, defaultOpen, onOpenChange, open }: PopoverProps): ReactElement {
   return (
@@ -25,4 +31,5 @@ const Popover: typeof PopoverRoot & {
   Trigger: PopoverTrigger,
 });
 
+export type { PopoverProps };
 export { Popover };

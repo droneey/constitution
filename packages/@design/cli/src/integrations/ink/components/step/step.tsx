@@ -2,12 +2,19 @@ import type { ReactElement } from 'react';
 
 import { Box, Text } from 'ink';
 
+import type { StepContent } from '#/libs/ui';
 import { DETAIL_SEPARATOR, Space, STEP_LOOKS, StepStatus, Tone } from '#/libs/ui';
 
-import { useSpinnerFrame, useTheme } from '../../hooks';
-import type { StepProps } from './step.types';
+import { useSpinnerFrame } from '../../hooks';
+import { useTheme } from '../../theme';
 
-function Step({ step }: StepProps): ReactElement {
+interface StepProps {
+  /** what a screen reader says for the step's status, in the run's language */
+  readonly statusLabel: string;
+  readonly step: StepContent;
+}
+
+function Step({ statusLabel, step }: StepProps): ReactElement {
   const theme = useTheme();
   const frame = useSpinnerFrame();
   const { glyph, tone } = STEP_LOOKS[step.status];
@@ -22,13 +29,17 @@ function Step({ step }: StepProps): ReactElement {
       }}
       gap={theme.space[Space.Xs]}
     >
-      <Text aria-label={step.status}>{theme.paint(tone, symbol)}</Text>
+      <Text aria-label={statusLabel}>{theme.paint(tone, symbol)}</Text>
       <Text>{step.label}</Text>
       {step.detail !== undefined && (
-        <Text>{theme.paint(Tone.Muted, `${DETAIL_SEPARATOR.trim()} ${step.detail}`)}</Text>
+        <>
+          <Text>{theme.paint(Tone.Muted, DETAIL_SEPARATOR.trim())}</Text>
+          <Text>{theme.paint(Tone.Muted, step.detail)}</Text>
+        </>
       )}
     </Box>
   );
 }
 
+export type { StepProps };
 export { Step };
