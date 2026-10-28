@@ -2,10 +2,12 @@ import type { Stats } from 'node:fs';
 import { existsSync, lstatSync, readdirSync, readFileSync, readlinkSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
+import { PATH_SEPARATOR } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
 import type { FileRead } from '#/kernel/entities';
 import { FileReadStatus } from '#/kernel/entities';
 import { attempted, recognisedFailure } from '#/kernel/utils';
+import { AbsolutePath } from '#/kernel/value-objects';
 import { isSystemError } from '#/libs/system-error';
 
 // What the file system cannot do for a path reads as undefined, as a shell's test reads it: the
@@ -44,7 +46,7 @@ const read = (path: string): FileRead => {
 };
 
 interface WalkInput {
-  readonly folder: string;
+  readonly folderPath: string;
   /** the files found so far, in the order find lists them */
   readonly found: string[];
   readonly maxFiles: number;
@@ -54,7 +56,7 @@ interface WalkInput {
 // The regular files below a folder, from it, as `find -type f` lists them: a link is neither
 // listed nor followed. The walk stops, and says so, once it finds more files than the limit.
 const isWalkedWithin = (input: WalkInput): boolean => {
-  for (const entry of readdirSync(join(input.folder, input.under), {
+  for (const entry of readdirSync(join(input.folderPath, input.under), {
     withFileTypes: true,
   })) {
     const path = join(input.under, entry.name);
@@ -88,12 +90,12 @@ const isWalkedWithin = (input: WalkInput): boolean => {
 // separator.
 const LINK_HOPS = 40;
 
-const realFolder = (path: string): string | undefined => {
-  if (statOf(path)?.isDirectory() !== true) {
+const realFolder = (folderPath: AbsolutePath): AbsolutePath | undefined => {
+  if (statOf(folderPath)?.isDirectory() !== true) {
     return undefined;
   }
 
-  const pending = path.split('/');
+  const pending = folderPath.split(PATH_SEPARATOR);
   let resolved = '';
   // The stat above bounds the walk by the system's own limit of links; the count bounds it should a
   // link change while it walks.
@@ -110,12 +112,12 @@ const realFolder = (path: string): string | undefined => {
     }
 
     if (part === '..') {
-      resolved = resolved.slice(0, resolved.lastIndexOf('/'));
+      resolved = resolved.slice(0, resolved.lastIndexOf(PATH_SEPARATOR));
 
       continue;
     }
 
-    const next = `${resolved}/${part}`;
+    const next = `${resolved}${PATH_SEPARATOR}${part}`;
 
     // every part exists, as the stat above found the folder through them
     if (!lstatSync(next).isSymbolicLink()) {
@@ -129,14 +131,14 @@ const realFolder = (path: string): string | undefined => {
 
     const target = readlinkSync(next);
 
-    resolved = target.startsWith('/') ? '' : resolved;
-    pending.unshift(...target.split('/'));
+    resolved = target.startsWith(PATH_SEPARATOR) ? '' : resolved;
+    pending.unshift(...target.split(PATH_SEPARATOR));
   }
 
-  const real = resolved === '' ? '/' : resolved;
+  const real = resolved === '' ? PATH_SEPARATOR : resolved;
 
   // Stryker disable next-line ConditionalExpression,EqualityOperator: a link changed during the walk only
-  return hops > LINK_HOPS ? undefined : real;
+  return hops > LINK_HOPS ? undefined : AbsolutePath.create(real);
 };
 
 interface NodeProjectFilesInput {
@@ -146,15 +148,15 @@ interface NodeProjectFilesInput {
 
 /** The files as a shell sees them through its links. */
 const createNodeProjectFiles = (input: NodeProjectFilesInput): ProjectFiles => ({
-  exists: (path: string): boolean => existsSync(path),
-  isFile: (path: string): boolean => statOf(path)?.isFile() === true,
-  isFolder: (path: string): boolean => statOf(path)?.isDirectory() === true,
+  exists: (entryPath: AbsolutePath): boolean => existsSync(entryPath),
+  isFile: (filePath: AbsolutePath): boolean => statOf(filePath)?.isFile() === true,
+  isFolder: (folderPath: AbsolutePath): boolean => statOf(folderPath)?.isDirectory() === true,
   // No folder, or a folder below it that cannot be read, which fails find too, lists nothing.
-  listFiles: (folder: string): readonly string[] | undefined => {
+  listFiles: (folderPath: AbsolutePath): readonly string[] | undefined => {
     const found: string[] = [];
     const isWithin = attempt(() =>
       isWalkedWithin({
-        folder,
+        folderPath,
         found,
         maxFiles: input.maxFiles,
         under: '',

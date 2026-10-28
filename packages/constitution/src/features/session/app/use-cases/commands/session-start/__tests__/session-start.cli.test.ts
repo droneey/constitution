@@ -3,7 +3,7 @@ import { describe, expect, it } from 'bun:test';
 import { z } from 'zod';
 
 import { createFakeContext, runCommand } from '#/__tests__/command-context.fake';
-import { Version } from '#/kernel/value-objects';
+import { AbsolutePath, Version } from '#/kernel/value-objects';
 
 import { sessionStateOf } from '../../../../../__tests__/session.fixtures';
 import type { SessionDigest, SessionStart, SessionState } from '../../../../../domain/entities';
@@ -30,7 +30,7 @@ const keptState = sessionStateOf();
 const noRelease: SessionDigest = {
   contents: {
     kind: DigestKind.NoRelease,
-    releaseFolder: '/work/project/.droneey/constitution',
+    releaseFolderPath: AbsolutePath.create('/work/project/.droneey/constitution'),
   },
   state: keptState,
 };
@@ -38,9 +38,11 @@ const noReleaseLines = digestOf(noRelease.contents).head;
 const UNPARSED = {
   core: '# The "droneey" core\n',
   kind: DigestKind.Unparsed,
-  line: 2,
+  lines: [
+    2,
+  ],
   release: {
-    folder: '/work/project/.droneey/constitution',
+    folderPath: AbsolutePath.create('/work/project/.droneey/constitution'),
     version: Version.create('1.0.0'),
   },
 } as const;
@@ -135,6 +137,14 @@ describe('createSessionStartCommand', () => {
       },
       searchFrom: '/work/event',
     },
+    {
+      condition: 'Claude Code names the project by a path that does not open with "/"',
+      places: {
+        cwd: '/work/package',
+        projectDir: 'app',
+      },
+      searchFrom: '/work/package/app',
+    },
   ])(
     'should start the session from $searchFrom, and keep nothing, when $condition and no project is there',
     async ({ places, searchFrom }) => {
@@ -154,7 +164,7 @@ describe('createSessionStartCommand', () => {
           {
             event: HookEventName.SubagentStart,
             origin: SessionOrigin.Startup,
-            searchFrom,
+            searchFrom: AbsolutePath.create(searchFrom),
           },
         ],
         kept: [],
@@ -177,7 +187,7 @@ describe('createSessionStartCommand', () => {
     const run = await runOf(asked);
 
     // Assert
-    expect(run.asked[0]?.searchFrom).toBe('/work/package');
+    expect(run.asked[0]?.searchFrom).toBe(AbsolutePath.create('/work/package'));
   });
 
   it.each([
@@ -263,7 +273,7 @@ describe('createSessionStartCommand', () => {
           {
             event: HookEventName.SessionStart,
             origin: SessionOrigin.Resume,
-            searchFrom: '/work/project/package',
+            searchFrom: AbsolutePath.create('/work/project/package'),
           },
         ],
         kept: [
@@ -312,6 +322,24 @@ describe('createSessionStartCommand', () => {
         lines: noReleaseLines,
       },
       kept: [],
+    });
+  });
+
+  it('should ask for no digest, and write nothing, when the event is one Claude Code takes no answer for', async () => {
+    // Arrange
+    const asked = {
+      digest: noRelease,
+      stdin: '{"session_id":"session-1","hook_event_name":"Notification","source":"startup"}',
+    };
+
+    // Act
+    const run = await runOf(asked);
+
+    // Assert
+    expect(run).toStrictEqual({
+      asked: [],
+      kept: [],
+      stdout: '',
     });
   });
 });

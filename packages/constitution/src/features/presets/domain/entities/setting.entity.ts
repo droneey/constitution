@@ -10,6 +10,8 @@ interface SettingMap {
   readonly [key: string]: Setting;
 }
 
+const KEY_SEPARATOR = '.';
+
 const isMap = (setting: Setting | undefined): setting is SettingMap =>
   typeof setting === 'object' && !Array.isArray(setting);
 
@@ -59,8 +61,8 @@ const childOf = (holder: Setting | undefined, key: string): Setting | undefined 
   return isMap(holder) ? holder[key] : undefined;
 };
 
-const at = (setting: Setting | undefined, path: readonly string[]): Setting | undefined =>
-  path.reduce<Setting | undefined>(childOf, setting);
+const at = (setting: Setting | undefined, keyPath: readonly string[]): Setting | undefined =>
+  keyPath.reduce<Setting | undefined>(childOf, setting);
 
 /**
  * The setting with the path holding the value: the maps and lists on the way made where absent, an
@@ -68,11 +70,11 @@ const at = (setting: Setting | undefined, path: readonly string[]): Setting | un
  * the element there.
  */
 const withAt = (input: {
-  path: readonly string[];
+  keyPath: readonly string[];
   setting: Setting | undefined;
   value: Setting;
 }): Setting => {
-  const [key, ...rest] = input.path;
+  const [key, ...rest] = input.keyPath;
 
   if (key === undefined) {
     return input.value;
@@ -85,7 +87,7 @@ const withAt = (input: {
     return {
       ...holder,
       [key]: withAt({
-        path: rest,
+        keyPath: rest,
         setting: holder[key],
         value: input.value,
       }),
@@ -105,7 +107,7 @@ const withAt = (input: {
           ...input.value,
         }
       : withAt({
-          path: rest,
+          keyPath: rest,
           setting: base,
           value: input.value,
         });
@@ -138,6 +140,8 @@ const canonicalTextOf = (setting: Setting): string => {
   return JSON.stringify(setting);
 };
 
+const pathTextOf = (keyPath: readonly string[]): string => keyPath.join(KEY_SEPARATOR);
+
 const Setting = {
   addressedIn,
   at,
@@ -145,6 +149,7 @@ const Setting = {
   isList,
   isMap,
   isScalar,
+  pathTextOf,
   same,
   withAt,
 } as const;

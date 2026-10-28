@@ -1,11 +1,12 @@
 import { Layer } from '#/kernel/constants';
 import { Met, RequirementAnswer, Rule } from '#/kernel/entities';
 import type { FindingOf, ProblemOf } from '#/kernel/types';
-import { inlineCodeSpans } from '#/kernel/utils';
+import { firstBy, inlineCodeSpans } from '#/kernel/utils';
 import { BlockId, RuleSlug } from '#/kernel/value-objects';
 
 import { BlockGraph } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
+import { findingsAt } from '../utils';
 
 enum RequirementsCode {
   OutsideImplementation = 'requirements-outside-implementation',
@@ -155,20 +156,17 @@ const formProblems = (input: {
   ];
 };
 
+const answerKeyOf = (answer: RequirementAnswer): string => `${answer.block} ${answer.requirement}`;
+
 const answerFindings = (input: {
   answers: readonly RequirementAnswer[];
   graph: BlockGraph;
   rules: readonly Rule[];
 }): readonly RequirementsFinding[] => {
   const slugs = Rule.bySlug(input.rules);
-  const seen = new Set<string>();
+  const firsts = firstBy(input.answers, answerKeyOf);
 
   return input.answers.flatMap((answer) => {
-    const key = `${answer.block} ${answer.requirement}`;
-    const isRepeated = seen.has(key);
-
-    seen.add(key);
-
     const problems: readonly (RequirementsProblem | undefined)[] = [
       targetProblem({
         answer,
@@ -177,7 +175,7 @@ const answerFindings = (input: {
       }),
       ...formProblems({
         answer,
-        isRepeated,
+        isRepeated: firsts.get(answerKeyOf(answer)) !== answer,
         ownSlugs: new Set(
           input.rules
             .filter((rule) => BlockId.equals(rule.block, answer.block))
@@ -186,16 +184,7 @@ const answerFindings = (input: {
       }),
     ];
 
-    return problems.flatMap((problem) =>
-      problem === undefined
-        ? []
-        : [
-            {
-              ...problem,
-              path: answer.file,
-            },
-          ],
-    );
+    return findingsAt(answer.file, problems);
   });
 };
 

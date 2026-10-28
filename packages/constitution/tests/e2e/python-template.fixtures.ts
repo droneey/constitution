@@ -1,12 +1,13 @@
 import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
-import { delimiter, join } from 'node:path';
+import { join } from 'node:path';
 
 import { stringify } from 'smol-toml';
 import { z } from 'zod';
 
 import { appliedUnit } from './applied-unit.fixtures';
 import { createBatch } from './batch.fixtures';
+import { searchPathWith, toolEnvironment } from './package.fixtures';
 import type { BuiltTool, Files } from './python-project.fixtures';
 import { buildTools, inPythonProjectAsync, python, writeFiles } from './python-project.fixtures';
 import { uvEnvironment } from './uv.fixtures';
@@ -159,6 +160,7 @@ const git = (folder: string, args: readonly string[]): void => {
     {
       cwd: folder,
       encoding: 'utf8',
+      env: toolEnvironment(),
     },
   );
 
@@ -203,24 +205,24 @@ const runInTemplate = (input: {
       ]);
       writeFiles(folder, input.changes);
 
-      const environment = Object.fromEntries([
-        ...Object.entries(process.env).filter(([name]) => name !== 'CI'),
-        [
-          'PATH',
-          `${join(uvEnvironment, 'bin')}${delimiter}${process.env['PATH'] ?? ''}`,
-        ],
-        [
-          'PYTHONPATH',
-          'src',
-        ],
-      ]);
       const running = Bun.spawn(
         [
           ...input.command,
         ],
         {
           cwd: folder,
-          env: environment,
+          env: toolEnvironment(
+            new Map([
+              [
+                'PATH',
+                searchPathWith(join(uvEnvironment, 'bin')),
+              ],
+              [
+                'PYTHONPATH',
+                'src',
+              ],
+            ]),
+          ),
           stderr: 'pipe',
           stdout: 'pipe',
         },

@@ -3,37 +3,36 @@ import { readFileSync } from 'node:fs';
 import { parse, TomlError } from 'smol-toml';
 
 import { attempted, isSyntaxError } from '#/kernel/utils';
+import { AbsolutePath } from '#/kernel/value-objects';
 import { isSystemError } from '#/libs/system-error';
 
 import type { DistributionSources } from '../../domain/contracts';
 import { distributionMapModel } from './models';
 
-/** Where a package declares its build: a manifest by its name, and the keys to the build in it. */
 interface BuildDeclaration {
   readonly keys: readonly string[];
-  readonly manifest: string;
+  readonly manifestName: string;
 }
 
 interface DistributionMapSourcesInput {
   readonly builds: readonly BuildDeclaration[];
-  /** the name of the distribution's map in its folder */
-  readonly map: string;
+  /** in the release's folder */
+  readonly mapName: string;
 }
 
-const SEPARATOR = '/';
 const TOML_EXTENSION = '.toml';
 
 // A file that is missing, unreadable or does not parse reads as nothing; a manifest of TOML is read
 // as TOML, any other as JSON.
-const readOf = (path: string): unknown =>
-  attempted<unknown>({
-    effect: () => {
+const readOf = (filePath: AbsolutePath): unknown =>
+  attempted({
+    effect: (): unknown => {
       // Stryker disable next-line StringLiteral: a parser reads the bytes of a file as its text
-      const text = readFileSync(path, 'utf8');
+      const text = readFileSync(filePath, 'utf8');
 
-      return path.endsWith(TOML_EXTENSION) ? parse(text) : JSON.parse(text);
+      return filePath.endsWith(TOML_EXTENSION) ? parse(text) : JSON.parse(text);
     },
-    isRecognised: (error: unknown): boolean =>
+    isRecognised: (error: unknown): error is NodeJS.ErrnoException | SyntaxError | TomlError =>
       // Stryker disable next-line ConditionalExpression,LogicalOperator: reading a file and parsing its text throw no other error
       isSystemError(error) || isSyntaxError(error) || error instanceof TomlError,
   });
@@ -48,29 +47,32 @@ const heldAt = (read: unknown, keys: readonly string[]): unknown =>
     read,
   );
 
-const isBuilt = (input: { builds: readonly BuildDeclaration[]; folder: string }): boolean =>
+const isBuilt = (input: {
+  builds: readonly BuildDeclaration[];
+  packageFolderPath: AbsolutePath;
+}): boolean =>
   input.builds.some(
     (build) =>
-      heldAt(readOf(`${input.folder}${SEPARATOR}${build.manifest}`), build.keys) !== undefined,
+      heldAt(readOf(AbsolutePath.join(input.packageFolderPath, build.manifestName)), build.keys) !==
+      undefined,
   );
 
 /** A map that is missing, unreadable or of another shape packs nothing. */
 const createDistributionMapSources = (input: DistributionMapSourcesInput): DistributionSources => ({
-  packagesOf: (folder: string): ReadonlyMap<string, string> => {
-    const read = distributionMapModel.safeParse(readOf(`${folder}${SEPARATOR}${input.map}`));
+  builtFilesOf: (releaseFolderPath: AbsolutePath): ReadonlySet<string> => {
+    const read = distributionMapModel.safeParse(
+      readOf(AbsolutePath.join(releaseFolderPath, input.mapName)),
+    );
 
-    return new Map(
+    return new Set(
       Object.entries(read.success ? read.data : {})
         .filter(([, entry]) =>
           isBuilt({
             builds: input.builds,
-            folder: `${folder}${SEPARATOR}${entry.package}`,
+            packageFolderPath: AbsolutePath.join(releaseFolderPath, entry.package),
           }),
         )
-        .map(([file, entry]) => [
-          file,
-          entry.package,
-        ]),
+        .map(([file]) => file),
     );
   },
 });

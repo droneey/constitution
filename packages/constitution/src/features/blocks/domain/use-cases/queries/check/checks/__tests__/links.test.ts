@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'bun:test';
 
-import { checkInputOf, without } from '../../../../../../__tests__/constitution.fixtures';
+import { without } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
+import { checkInputOf } from '../../__tests__/check.fixtures';
 import { LinksCode, linksCheck } from '../links';
 
 const PRINCIPLES = 'blocks/core/foundation/principles.md';

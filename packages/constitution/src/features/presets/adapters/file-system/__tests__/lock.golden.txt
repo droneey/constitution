@@ -1,0 +1,11 @@
+# a lock of three files
+{
+  "biome.json": {"leaves":["abc"],"addresses":["name"],"defaults":["def"],"created":true},
+  "src/sandbox.ts": {"whole":true},
+  "tsconfig.json": {"created":true}
+}
+
+
+# an empty lock
+{}
+

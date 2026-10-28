@@ -3,16 +3,17 @@ import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync 
 import { dirname } from 'node:path';
 
 import { recognisedFailure } from '#/kernel/utils';
+import { AbsolutePath } from '#/kernel/value-objects';
 import { isSystemError } from '#/libs/system-error';
 
-import { LOCK_FILE } from '../../domain/constants';
+import { LOCK_FILE_NAME } from '../../domain/constants';
 import type { AppliedFilesCommandRepository } from '../../domain/contracts/repositories/commands';
 import type { AppliedFiles, FileText } from '../../domain/entities';
 import { ApplyError, ApplyFailure } from '../../domain/errors';
 import { textOfLock } from './lock-text.utils';
 
 interface Before {
-  readonly path: string;
+  readonly filePath: AbsolutePath;
   readonly text?: string;
 }
 
@@ -21,9 +22,9 @@ const ENCODING = 'utf8';
 
 // A file lands whole: written beside it under a fresh name no file holds yet, then renamed over it.
 const writeWhole = (file: FileText): void => {
-  const pending = `${file.path}.${randomUUID()}.tmp`;
+  const pending = `${file.filePath}.${randomUUID()}.tmp`;
 
-  mkdirSync(dirname(file.path), {
+  mkdirSync(dirname(file.filePath), {
     recursive: true,
   });
   // Stryker disable next-line ObjectLiteral: the default options write UTF-8 to a name no file holds yet
@@ -32,30 +33,30 @@ const writeWhole = (file: FileText): void => {
     // Stryker disable next-line StringLiteral: a fresh pending name never trips the exclusive flag
     flag: 'wx',
   });
-  renameSync(pending, file.path);
+  renameSync(pending, file.filePath);
 };
 
-const beforeOf = (path: string): Before =>
-  existsSync(path)
+const beforeOf = (filePath: AbsolutePath): Before =>
+  existsSync(filePath)
     ? {
-        path,
-        text: readFileSync(path, ENCODING),
+        filePath,
+        text: readFileSync(filePath, ENCODING),
       }
     : {
-        path,
+        filePath,
       };
 
 const restore = (written: readonly Before[]): void => {
   for (const before of written.toReversed()) {
     if (before.text === undefined) {
       // Stryker disable next-line ObjectLiteral: the file was just written
-      rmSync(before.path, {
+      rmSync(before.filePath, {
         // Stryker disable next-line BooleanLiteral: the file was just written
         force: true,
       });
     } else {
       writeWhole({
-        path: before.path,
+        filePath: before.filePath,
         text: before.text,
       });
     }
@@ -66,21 +67,21 @@ const write = (applied: AppliedFiles): void => {
   const files: readonly FileText[] = [
     ...applied.files,
     ...applied.locks.map((lock) => ({
-      path: `${lock.folder}/${LOCK_FILE}`,
+      filePath: AbsolutePath.join(lock.unitFolderPath, LOCK_FILE_NAME),
       text: textOfLock(lock.lock),
     })),
   ];
   const written: Before[] = [];
   // The deletions first, so a write that fails puts back a file deleted before it.
   const steps = [
-    ...applied.deleted.map((path) => ({
-      path,
+    ...applied.deletedFilePaths.map((filePath) => ({
+      filePath,
       run: (): void => {
-        rmSync(path);
+        rmSync(filePath);
       },
     })),
     ...files.map((file) => ({
-      path: file.path,
+      filePath: file.filePath,
       run: (): void => {
         writeWhole(file);
       },
@@ -89,7 +90,7 @@ const write = (applied: AppliedFiles): void => {
 
   for (const step of steps) {
     try {
-      const before = beforeOf(step.path);
+      const before = beforeOf(step.filePath);
 
       step.run();
       written.push(before);
@@ -104,7 +105,7 @@ const write = (applied: AppliedFiles): void => {
         {
           code: ApplyFailure.NotWritten,
           details: {
-            path: step.path,
+            filePath: step.filePath,
           },
         },
         {

@@ -6,21 +6,22 @@ import { heldSessionsOf, keptSession } from '../../../../../__tests__/session.fi
 import { createFakeSessionCommandRepository } from '../../../../../__tests__/session-command-repository.fake';
 import type { StopJudgement } from '../../../../entities';
 import { SessionMark, StopVerdict } from '../../../../entities';
+import { TreeFingerprint } from '../../../../value-objects';
 import { recordJudgement } from '../record-judgement.use-case';
 
-const NOW = '3287646509';
-const EARLIER = '1';
+const treeNow = TreeFingerprint.create('tree-now');
+const treeBefore = TreeFingerprint.create('tree-before');
 
 // The tree was last reviewed, and the gate last blocked, on an earlier tree.
 const heldBefore = {
   marks: [
     {
       mark: SessionMark.Reviewed,
-      value: EARLIER,
+      value: treeBefore,
     },
     {
       mark: SessionMark.Blocked,
-      value: EARLIER,
+      value: treeBefore,
     },
   ],
 };
@@ -32,32 +33,46 @@ describe('recordJudgement', () => {
     marks: {
       blocked: string;
       reviewed: string;
+      unjudged: string | undefined;
     };
   }>([
     {
       condition: 'the reviewer finished',
       judgement: {
-        fingerprint: NOW,
+        fingerprint: treeNow,
         verdict: StopVerdict.Reviewed,
       },
       marks: {
-        blocked: EARLIER,
-        reviewed: NOW,
+        blocked: treeBefore,
+        reviewed: treeNow,
+        unjudged: undefined,
       },
     },
     {
       condition: 'the gate blocked the hand-back',
       judgement: {
-        check: 'bun run check',
-        fingerprint: NOW,
+        fingerprint: treeNow,
         verdict: StopVerdict.Blocked,
       },
       marks: {
-        blocked: NOW,
-        reviewed: EARLIER,
+        blocked: treeNow,
+        reviewed: treeBefore,
+        unjudged: undefined,
       },
     },
-  ])('should record the tree judged when $condition', ({ judgement, marks }) => {
+    {
+      condition: 'git failed to report the tree',
+      judgement: {
+        reason: 'fatal: bad config',
+        verdict: StopVerdict.Unjudged,
+      },
+      marks: {
+        blocked: treeBefore,
+        reviewed: treeBefore,
+        unjudged: 'fatal: bad config',
+      },
+    },
+  ])('should record what the gate judged when $condition', ({ judgement, marks }) => {
     // Arrange
     const store = heldSessionsOf(heldBefore);
 
@@ -72,6 +87,7 @@ describe('recordJudgement', () => {
     expect({
       blocked: store.get(keptSession)?.marks.get(SessionMark.Blocked),
       reviewed: store.get(keptSession)?.marks.get(SessionMark.Reviewed),
+      unjudged: store.get(keptSession)?.marks.get(SessionMark.Unjudged),
     }).toStrictEqual(marks);
   });
 
@@ -92,12 +108,9 @@ describe('recordJudgement', () => {
     });
 
     // Assert
-    expect({
-      blocked: store.get(keptSession)?.marks.get(SessionMark.Blocked),
-      reviewed: store.get(keptSession)?.marks.get(SessionMark.Reviewed),
-    }).toStrictEqual({
-      blocked: EARLIER,
-      reviewed: EARLIER,
+    expect(Object.fromEntries(store.get(keptSession)?.marks ?? [])).toStrictEqual({
+      [SessionMark.Reviewed]: treeBefore,
+      [SessionMark.Blocked]: treeBefore,
     });
   });
 });

@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'bun:test';
 
+import type { FakeTree } from '#/__tests__/project-files.fake';
 import { createFakeProjectFiles } from '#/__tests__/project-files.fake';
 import { PROJECT, releaseFolderPath } from '#/__tests__/project-place.fixtures';
 import { Axis, Layer } from '#/kernel/constants';
 import { WarningKind } from '#/kernel/entities';
-import { ProjectFailure } from '#/kernel/errors';
-import { SourceKind } from '#/kernel/value-objects';
+import { AbsolutePath, SourceKind } from '#/kernel/value-objects';
 
 import { createFakeClock } from '../../../../../__tests__/clock.fake';
 import {
@@ -14,21 +14,20 @@ import {
   projectTreeOf,
   ruleOf,
 } from '../../../../../__tests__/project.fixtures';
-import { createFakeWorkspace } from '../../../../../__tests__/workspace.fake';
 import {
   activeOf,
-  blockSetEntryOf,
-  failureOf,
   listedOf,
   listingOf,
-  memberYamlOf,
   modelOf,
   mustOf,
   today,
   unitListingOf,
   unitOf,
   yamlOf,
-} from '../../read-declaration/steps/resolve-declaration/__tests__/resolution.fixtures';
+} from '../../../../../__tests__/resolution.fixtures';
+import { createFakeWorkspace } from '../../../../../__tests__/workspace.fake';
+import type { ProjectOpening } from '../../../../entities';
+import { OpeningStatus } from '../../../../entities';
 import { openProject } from '../open-project.use-case';
 
 const uiRules = ruleOf({
@@ -43,7 +42,7 @@ describe('openProject', () => {
       axes: 'axes: [workflow]',
       domains: 'domains: [ui]',
     });
-    const web = memberYamlOf({
+    const web = yamlOf({
       axes: 'axes: [workflow]',
       domains: 'domains: [ui]',
     });
@@ -68,117 +67,122 @@ describe('openProject', () => {
       ...parsers(),
       clock: createFakeClock(today),
       files,
-      start: `${PROJECT}/apps/web/src`,
+      startFolderPath: AbsolutePath.create(`${PROJECT}/apps/web/src`),
       workspace: createFakeWorkspace([
         'apps/web',
       ]),
     });
 
     // Assert
-    expect(opened).toStrictEqual({
-      releaseFolder: releaseFolderPath,
-      packs: [],
-      project: PROJECT,
-      resolution: {
-        active: [
-          activeOf({
-            files: [
-              'blocks/domains/ui/ui.md',
-            ],
-            governs: [],
-            id: 'ui',
-          }),
-          activeOf({
-            files: [
-              'blocks/domains/ui/ui.md',
-            ],
-            governs: [],
-            id: 'ui',
-            unit: 'apps/web',
-          }),
-        ],
-        blocks: [
-          blockSetEntryOf('core', Layer.Core),
-          blockSetEntryOf('ui', Layer.Domain),
-        ],
-        listing: listingOf({
-          repository: [
-            listedOf({
+    expect<object>(opened).toStrictEqual({
+      project: {
+        packs: [],
+        releaseFolderPath,
+        repositoryFolderPath: PROJECT,
+        resolution: {
+          active: [
+            activeOf({
+              files: [
+                'blocks/domains/ui/ui.md',
+              ],
+              governs: [],
               id: 'ui',
-              layer: Layer.Domain,
             }),
-          ],
-          units: [
-            unitListingOf({
+            activeOf({
+              files: [
+                'blocks/domains/ui/ui.md',
+              ],
+              governs: [],
+              id: 'ui',
               unit: 'apps/web',
             }),
           ],
-        }),
-        model: modelOf({
-          blocks: [
-            {
-              id: 'core',
-              layer: Layer.Core,
-            },
-            {
-              id: 'ui',
-            },
-          ],
-          rules: [
-            {
+          listing: listingOf({
+            repository: [
+              listedOf({
+                id: 'ui',
+                layer: Layer.Domain,
+              }),
+            ],
+            units: [
+              unitListingOf({
+                unit: 'apps/web',
+              }),
+            ],
+          }),
+          model: modelOf({
+            blocks: [
+              {
+                id: 'core',
+                layer: Layer.Core,
+                summary: undefined,
+              },
+              {
+                id: 'ui',
+              },
+            ],
+            rules: [
+              {
+                block: 'ui',
+                slug: 'inputs-are-labelled',
+              },
+            ],
+          }),
+          musts: [
+            mustOf({
               block: 'ui',
               slug: 'inputs-are-labelled',
+            }),
+          ],
+          units: [
+            unitOf({
+              axes: [
+                Axis.Foundation,
+                Axis.Workflow,
+              ],
+              blocks: [
+                'core',
+                'ui',
+              ],
+            }),
+            unitOf({
+              axes: [
+                Axis.Foundation,
+                Axis.Workflow,
+              ],
+              blocks: [
+                'core',
+                'ui',
+              ],
+              path: 'apps/web',
+            }),
+          ],
+          warnings: [
+            {
+              details: {
+                file: '/work/project/.droneey/constitution/blocks/core/core.md',
+                source: SourceKind.Release,
+              },
+              kind: WarningKind.FrontMatterMissing,
             },
           ],
-        }),
-        musts: [
-          mustOf({
-            block: 'ui',
-            slug: 'inputs-are-labelled',
-          }),
-        ],
-        units: [
-          unitOf({
-            axes: [
-              Axis.Foundation,
-              Axis.Workflow,
-            ],
-            blocks: [
-              'core',
-              'ui',
-            ],
-          }),
-          unitOf({
-            axes: [
-              Axis.Foundation,
-              Axis.Workflow,
-            ],
-            blocks: [
-              'core',
-              'ui',
-            ],
-            path: 'apps/web',
-          }),
-        ],
-        warnings: [
-          {
-            details: {
-              file: '/work/project/.droneey/constitution/blocks/core/core.md',
-              source: SourceKind.Release,
-            },
-            kind: WarningKind.FrontMatterMissing,
-          },
-        ],
+        },
       },
+      status: OpeningStatus.Opened,
     });
   });
 
-  it.each([
+  it.each<{
+    condition: string;
+    expected: ProjectOpening;
+    start: string;
+    tree: FakeTree;
+  }>([
     {
-      code: ProjectFailure.NoProject,
       condition: 'no folder around the start holds constitution.yaml',
-      line: undefined,
-      path: '/work/elsewhere',
+      expected: {
+        status: OpeningStatus.NoProject,
+      },
       start: '/work/elsewhere',
       tree: {
         files: {
@@ -187,10 +191,11 @@ describe('openProject', () => {
       },
     },
     {
-      code: ProjectFailure.ReleaseMissing,
       condition: 'the project has no release installed',
-      line: undefined,
-      path: releaseFolderPath,
+      expected: {
+        releaseFolderPath: AbsolutePath.create(releaseFolderPath),
+        status: OpeningStatus.ReleaseMissing,
+      },
       start: PROJECT,
       tree: {
         files: {
@@ -200,36 +205,32 @@ describe('openProject', () => {
       },
     },
     {
-      code: ProjectFailure.ConfigUnparsed,
       condition: 'constitution.yaml does not parse',
-      line: 3,
-      path: configPath,
+      expected: {
+        lines: [
+          3,
+        ],
+        status: OpeningStatus.ConfigUnparsed,
+      },
       start: PROJECT,
       tree: projectTreeOf({
         config: 'axes: []\ndomains: []\n  - ui\n',
       }),
     },
-  ])('should fail with $code when $condition', ({ code, line, path, start, tree }) => {
+  ])('should tell why it cannot open the project when $condition', ({ expected, start, tree }) => {
     // Arrange
     const files = createFakeProjectFiles(tree);
 
     // Act
-    const failure = failureOf(() =>
-      openProject({
-        ...parsers(),
-        clock: createFakeClock(today),
-        files,
-        start,
-        workspace: createFakeWorkspace(),
-      }),
-    );
+    const opening = openProject({
+      ...parsers(),
+      clock: createFakeClock(today),
+      files,
+      startFolderPath: AbsolutePath.create(start),
+      workspace: createFakeWorkspace(),
+    });
 
     // Assert
-    expect(failure).toStrictEqual({
-      cause: undefined,
-      code,
-      line,
-      path,
-    });
+    expect(opening).toStrictEqual(expected);
   });
 });

@@ -7,12 +7,4 @@ interface MustRule {
   readonly slug: RuleSlug;
 }
 
-const MustRule = {
-  create: (input: MustRule): MustRule => ({
-    block: input.block,
-    lowerings: input.lowerings,
-    slug: input.slug,
-  }),
-} as const;
-
-export { MustRule };
+export type { MustRule };

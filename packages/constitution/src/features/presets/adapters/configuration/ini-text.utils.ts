@@ -1,18 +1,23 @@
+import type { ConfigurationWrite } from '../../domain/contracts';
 import type { Setting, SettingMap } from '../../domain/entities';
 import { Setting as Settings } from '../../domain/entities';
 import type { Anchor, Commenting } from './block-comments.utils';
 import { noTextLines, withBlockComments } from './block-comments.utils';
-import type { SettingsText } from './settings-text.types';
+import { ownFieldOf } from './own-field.utils';
+import { NEWLINE } from './text.constants';
 
-const NEWLINE = '\n';
 const SECTION = /^\s*\[(.+)\]\s*$/;
 const PAIR = /^\s*([^#;=\s][^=]*?)\s*=\s*(.*?)\s*$/;
 const KEY = /^\s*([^#;=\s][^=]*?)\s*=/;
+const COMMENT = /^\s*[#;]/;
 const BOOLEAN = /^(?:true|false)$/;
 const WHOLE_NUMBER = /^\d+$/;
 const TRAILING_NEWLINE = /\n$/;
 // The pairs before the first header, a file's top keys, are the section without a name.
 const TOP = '';
+// The section of every file, which a later section narrows, so it is written before the others: the
+// rule of the one tool whose ini file the presets give sections.
+const ANY_FILE = '*';
 
 const scalarOf = (raw: string): Setting => {
   if (BOOLEAN.test(raw)) {
@@ -22,8 +27,10 @@ const scalarOf = (raw: string): Setting => {
   return WHOLE_NUMBER.test(raw) ? Number(raw) : raw;
 };
 
+/** An ini text's settings: a map of each section's pairs, the top keys under the empty name. */
 const readIni = (text: string): Setting => {
-  const sections: Record<string, Record<string, Setting>> = {};
+  // A map, so a section named as a field every object holds, such as valueOf, is a section too.
+  const sections = new Map<string, SettingMap>();
   let section = TOP;
 
   for (const line of text.split(NEWLINE)) {
@@ -32,16 +39,16 @@ const readIni = (text: string): Setting => {
 
     if (header !== undefined) {
       section = header;
-      sections[section] ??= {};
+      sections.set(section, sections.get(section) ?? {});
     } else if (pair !== null) {
-      sections[section] = {
-        ...sections[section],
+      sections.set(section, {
+        ...sections.get(section),
         [String(pair[1])]: scalarOf(String(pair[2])),
-      };
+      });
     }
   }
 
-  return sections;
+  return Object.fromEntries(sections);
 };
 
 const linesOf = (text: string): string[] =>
@@ -57,11 +64,19 @@ const keptOf = (input: { lines: readonly string[]; settings: SettingMap }): stri
 
     section = header ?? section;
 
-    const held = input.settings[section];
+    const held = ownFieldOf(input.settings, section);
 
-    return header !== undefined || key === undefined || (Settings.isMap(held) && key in held);
+    return (
+      header !== undefined ||
+      key === undefined ||
+      (Settings.isMap(held) && Object.hasOwn(held, key))
+    );
   });
 };
+
+// The comments right above a header are its own, so what comes before the header comes before them.
+const openingOf = (lines: readonly string[], header: number): number =>
+  lines.slice(0, header).findLastIndex((line) => !COMMENT.test(line)) + 1;
 
 const endOf = (lines: readonly string[], header: number): number => {
   let end = header + 1;
@@ -90,7 +105,7 @@ const placePair = (input: {
     return;
   }
 
-  let place = end;
+  let place = end < lines.length ? openingOf(lines, end) : end;
 
   while (lines[place - 1]?.trim() === '') {
     place -= 1;
@@ -106,6 +121,16 @@ const headerAt = (lines: string[], name: string): number => {
     return at;
   }
 
+  const first = lines.findIndex((line) => SECTION.test(line));
+
+  if (name === ANY_FILE && first >= 0) {
+    const opening = openingOf(lines, first);
+
+    lines.splice(opening, 0, `[${name}]`, '');
+
+    return opening;
+  }
+
   if (lines.length > 0 && lines.at(-1) !== '') {
     lines.push('');
   }
@@ -116,14 +141,21 @@ const headerAt = (lines: string[], name: string): number => {
   return lines.length - 1;
 };
 
-const writeSettings = (input: SettingsText): string => {
+// The top pairs first, as they stand above every header; headerAt puts the section of every file
+// before the others.
+const rankOf = (name: string): number => Number(name !== TOP);
+
+const writeSettings = (input: ConfigurationWrite): string => {
   const settings = Settings.isMap(input.settings) ? input.settings : {};
   const lines = keptOf({
     lines: linesOf(input.text),
     settings,
   });
+  const sections = Object.entries(settings).toSorted(
+    ([left], [right]) => rankOf(left) - rankOf(right),
+  );
 
-  for (const [name, pairs] of Object.entries(settings)) {
+  for (const [name, pairs] of sections) {
     const header = name === TOP ? -1 : headerAt(lines, name);
 
     for (const [key, held] of Object.entries(Settings.isMap(pairs) ? pairs : {})) {
@@ -173,7 +205,7 @@ const iniAnchorsOf = (text: string): readonly Anchor[] => {
     )
     .map(({ at, keys }) => ({
       line: at,
-      path: keys.map((key) => ({
+      keyPath: keys.map((key) => ({
         key,
       })),
     }));

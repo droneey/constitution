@@ -1,9 +1,8 @@
-import type { WorkingTree } from '#/kernel/contracts';
-
+import type { WorkingTree } from '../../../contracts';
 import type { SessionCommandRepository } from '../../../contracts/repositories/commands';
 import { SessionMark } from '../../../entities';
 import type { SessionId } from '../../../value-objects';
-import { fingerprintOf } from '../../shared/checksum';
+import { recordTree } from '../shared/record-tree';
 
 interface MarkTurnInput {
   readonly session: SessionId;
@@ -13,22 +12,12 @@ interface MarkTurnInput {
 
 /**
  * Records the fingerprint of the tree as the turn begins, so the gate knows what the turn changed;
- * records nothing when the session keeps no state.
+ * records nothing when the session keeps no rules or git cannot report the tree.
  */
 const markTurn = (input: MarkTurnInput): void => {
-  const state = input.sessions.state(input.session);
-
-  if (state === undefined) {
-    return;
-  }
-
-  input.sessions.recordMark({
+  recordTree({
+    ...input,
     mark: SessionMark.Turn,
-    session: input.session,
-    value: fingerprintOf({
-      project: state.project,
-      workingTree: input.workingTree,
-    }),
   });
 };
 

@@ -1,63 +1,101 @@
 import { Command } from 'commander';
+import { z } from 'zod';
 
+import { AbsolutePath } from '#/kernel/value-objects';
+import type { OptionDeclaration } from '#/libs/commander';
+import { withOption } from '#/libs/commander';
 import type { CommandContext } from '#/shared/cli';
+import { flagsOf, folderPathOf } from '#/shared/cli';
 
-import type { ApplyReport, RunAsked, RunPlan } from '../../../../domain/entities';
+import type {
+  AppliedFiles,
+  ApplyPlan,
+  ProjectRead,
+  RunAsked,
+  RunPlan,
+} from '../../../../domain/entities';
+import { ApplyPlanKind, EntryPoint, ProjectReadStatus } from '../../../../domain/entities';
 import type { RunStepsContext } from '../../../utils';
 import { applyOutcomeOf, applySectionsOf, runSteps } from '../../../utils';
 
 interface PresetsApplyContext extends CommandContext, RunStepsContext {
-  readonly applyPresets: (start: string) => ApplyReport | undefined;
-  readonly planRun: (input: RunAsked) => RunPlan;
+  readonly applyChanges: (changes: AppliedFiles) => void;
+  readonly planApply: (startFolderPath: AbsolutePath) => ProjectRead<ApplyPlan>;
+  readonly planRun: (input: RunAsked) => ProjectRead<RunPlan>;
 }
 
-interface ApplyOptions {
-  readonly fix: boolean;
-}
+const NO_FIX_FLAG = {
+  // Stryker disable next-line StringLiteral: help text commander prints; no caller relies on it
+  description: 'leave the files as written, running no fix',
+  flags: '--no-fix',
+} as const satisfies OptionDeclaration;
 
-const FIX = 'fix';
+const applyFlagsSchema = z.strictObject({
+  fix: z.boolean(),
+});
 
 /** Claude Code's project, else the folder the run starts in: /constitution:ratify runs it there. */
 const createPresetsApplyCommand = (context: PresetsApplyContext): Command =>
-  new Command('apply')
-    .description(
-      "Write what the presets compute for the project's blocks into its tools' configurations, beside its own settings, and keep each unit's constitution.lock; then run the fix of each unit it wrote a file of.",
-    )
-    .option('--no-fix', 'leave the files as written, running no fix')
-    .addHelpText(
-      'before',
-      context.helpExamples([
-        'constitution presets apply',
-        'constitution presets apply --no-fix',
-      ]),
-    )
-    .action(async (options: ApplyOptions): Promise<void> => {
+  withOption({
+    command: new Command('apply')
+      .description(
+        "Write what the presets compute for the project's blocks into its tools' configurations, beside its own settings, and keep each unit's constitution.lock; then run the fix of each unit it wrote a file of.",
+      )
+      .addHelpText(
+        'before',
+        context.helpExamples([
+          'constitution presets apply',
+          'constitution presets apply --no-fix',
+        ]),
+      ),
+    option: NO_FIX_FLAG,
+    parse: (opts) =>
+      flagsOf({
+        opts,
+        schema: applyFlagsSchema,
+      }),
+    run: async ({ fix }): Promise<void> => {
       const { places } = context;
-      const start = places.projectDir ?? places.cwd;
-      const report = await context.renderer.run({
+      const startFolderPath = folderPathOf({
+        from: AbsolutePath.create(places.cwd),
+        given: places.projectDir ?? places.cwd,
+      });
+      const read = await context.renderer.run({
         label: 'Presets',
         outcomeOf: applyOutcomeOf,
-        run: () => context.applyPresets(start),
+        run: () => {
+          const planned = context.planApply(startFolderPath);
+
+          if (
+            planned.status === ProjectReadStatus.Opened &&
+            planned.answer.kind === ApplyPlanKind.Ready
+          ) {
+            context.applyChanges(planned.answer.changes);
+          }
+
+          return planned;
+        },
       });
 
-      await context.renderer.print(applySectionsOf(report));
+      await context.renderer.print(applySectionsOf(read));
 
-      if (report === undefined || report.findings.length > 0) {
+      if (read.status !== ProjectReadStatus.Opened || read.answer.kind === ApplyPlanKind.Held) {
         context.setFailed();
 
         return;
       }
 
-      if (options.fix && report.units.length > 0) {
-        runSteps(
+      if (fix && read.answer.report.unitPaths.length > 0) {
+        await runSteps(
           context,
           context.planRun({
-            name: FIX,
-            start,
-            units: report.units,
+            entryPoint: EntryPoint.Fix,
+            startFolderPath,
+            unitPaths: read.answer.report.unitPaths,
           }),
         );
       }
-    });
+    },
+  });
 
 export { createPresetsApplyCommand };

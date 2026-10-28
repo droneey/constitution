@@ -1,105 +1,35 @@
-import { spawnSync } from 'node:child_process';
-import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { nodeBinary } from './package.fixtures';
+import { loadOf } from './preset-load.fixtures';
 
-import { YAML } from 'bun';
-
-import { z } from 'zod';
-
-import { appliedUnit } from './applied-unit.fixtures';
-
-interface Manifest {
-  dependencies?: Readonly<Record<string, string>>;
-  devDependencies?: Readonly<Record<string, string>>;
-  name: string;
-  peerDependencies?: Readonly<Record<string, string>>;
-  version: string;
+interface SyncpackInput {
+  readonly args: readonly string[];
+  readonly files: Readonly<Record<string, string>>;
 }
 
-const repository = join(import.meta.dir, '..', '..');
-const syncpack = join(repository, 'node_modules', '.bin', 'syncpack');
+interface Issues {
+  /** the codes of the issues syncpack names, in the order it names them */
+  readonly issues: readonly string[];
+  readonly status: number;
+}
 
-// A workspace's root of every block whose preset file gives syncpack a group.
-const syncpackUnit = (): string =>
-  appliedUnit({
-    domains: [
-      'distribution',
-      'workspace',
+// syncpack names each issue by a code of capitalised words joined, beside the dependency or the
+// property it finds it in.
+const ISSUE_CODE = /\b(?:[A-Z][a-z]+){2,}\b/g;
+
+/** syncpack's run in the widest unit, which holds the files given. */
+const syncpackIssues = async (input: SyncpackInput): Promise<Issues> => {
+  const { output, status } = await loadOf('syncpack', {
+    command: [
+      nodeBinary('syncpack'),
+      ...input.args,
     ],
-    implementations: [
-      'bun',
-      'syncpack',
-    ],
-    languages: [
-      'json',
-      'typescript',
-    ],
+    files: input.files,
   });
 
-const CONFIG = '.syncpackrc.yaml';
-
-const workspace = (packages: readonly Manifest[]): Readonly<Record<string, Manifest | object>> => ({
-  'package.json': {
-    name: 'root',
-    private: true,
-    version: '1.0.0',
-    workspaces: [
-      'packages/*',
-    ],
-  },
-  ...Object.fromEntries(
-    packages.map((manifest) => [
-      `packages/${manifest.name}/package.json`,
-      manifest,
-    ]),
-  ),
-});
-
-const versionIssues = (packages: readonly Manifest[]): readonly string[] => {
-  const folder = mkdtempSync(join(tmpdir(), 'constitution-syncpack-'));
-
-  try {
-    for (const [path, manifest] of Object.entries(workspace(packages))) {
-      mkdirSync(dirname(join(folder, path)), {
-        recursive: true,
-      });
-      writeFileSync(join(folder, path), JSON.stringify(manifest));
-    }
-
-    copyFileSync(join(syncpackUnit(), CONFIG), join(folder, CONFIG));
-
-    const linting = spawnSync(
-      syncpack,
-      [
-        'lint',
-      ],
-      {
-        cwd: folder,
-        encoding: 'utf8',
-      },
-    );
-
-    return [
-      ...new Set(
-        [
-          ...`${linting.stdout}${linting.stderr}`.matchAll(/✘ [^(]*\((\w+)\)/g),
-        ].map(([, kind]) => kind ?? ''),
-      ),
-    ];
-  } finally {
-    rmSync(folder, {
-      force: true,
-      recursive: true,
-    });
-  }
+  return {
+    issues: output.flatMap((line) => line.match(ISSUE_CODE) ?? []),
+    status,
+  };
 };
 
-const sortedFields = (): readonly string[] =>
-  z
-    .object({
-      sortAz: z.array(z.string()),
-    })
-    .parse(YAML.parse(readFileSync(join(syncpackUnit(), CONFIG), 'utf8'))).sortAz;
-
-export { sortedFields, versionIssues };
+export { syncpackIssues };

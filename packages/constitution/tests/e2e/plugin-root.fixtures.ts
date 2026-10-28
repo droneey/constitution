@@ -16,20 +16,13 @@ import { dirname, join } from 'node:path';
 import type { Files } from './constitution.fixtures';
 import { constitutionFiles } from './constitution.fixtures';
 
-// A file the plugin root or the distribution is built without, or a field the
-// distribution's package.json is written without.
+// A file the distribution is built without.
 enum Breakage {
-  Core = 'blocks/core/core.md',
-  Format = 'constitutionFormat',
   Manifest = 'package.json',
-  Version = 'version',
 }
 
 interface PluginRootOptions {
   breakage?: Breakage;
-  coreBody?: string;
-  // the distribution's constitutionFormat, a number unless a case writes it as text
-  format?: number | string;
 }
 
 const INSTALLED = '1.0.0';
@@ -72,22 +65,14 @@ const LINK = '.droneey/constitution';
 // which mise unpacks and links into the project.
 const distributionOf = (root: string): string => join(dirname(root), DISTRIBUTION);
 
-const writeManifest = (input: {
-  folder: string;
-  format: number | string | undefined;
-  version: boolean;
-}): void => {
+const writeManifest = (input: { folder: string; format: number | undefined }): void => {
   writeFileSync(
     join(input.folder, 'package.json'),
     `${JSON.stringify(
       {
         name: '@droneey/constitution',
         private: true,
-        ...(input.version
-          ? {
-              version: INSTALLED,
-            }
-          : {}),
+        version: INSTALLED,
         ...(input.format === undefined
           ? {}
           : {
@@ -103,7 +88,7 @@ const writeManifest = (input: {
 // The plugin brings the hooks; the distribution beside it, the blocks and the
 // manifest that names their format, as a release packs them.
 const createPluginRoot = (options: PluginRootOptions = {}): string => {
-  const { breakage, coreBody, format = releaseFormat } = options;
+  const { breakage } = options;
   const folder = mkdtempSync(join(tmpdir(), 'constitution-plugin-'));
   const root = join(folder, PLUGIN);
   const distribution = join(folder, DISTRIBUTION);
@@ -113,23 +98,17 @@ const createPluginRoot = (options: PluginRootOptions = {}): string => {
   writeManifest({
     folder: root,
     format: undefined,
-    version: true,
   });
   writeFiles({
-    files: constitutionFiles(coreBody),
+    files: constitutionFiles(),
     root: distribution,
   });
 
   if (breakage !== Breakage.Manifest) {
     writeManifest({
       folder: distribution,
-      format: breakage === Breakage.Format ? undefined : format,
-      version: breakage !== Breakage.Version,
+      format: releaseFormat,
     });
-  }
-
-  if (breakage === Breakage.Core) {
-    rmSync(join(distribution, breakage));
   }
 
   return root;
@@ -186,46 +165,20 @@ const removeFolder = (path: string): void => {
   });
 };
 
-const LINE_BYTES = 100;
-
-// A body of core's card of exactly `bytes` bytes, in lines of at most 100 with
-// their newline and never empty, since the digest drops a blank last line, to put
-// the budget's edge where a case needs it.
-const coreBodyOfBytes = (bytes: number): string => {
-  const lines = Math.ceil(bytes / LINE_BYTES);
-  const last = bytes - (lines - 1) * LINE_BYTES;
-  const sizes = Array.from(
-    {
-      length: lines,
-    },
-    (_, index) => (index < lines - 1 ? LINE_BYTES : last),
-  );
-
-  if (last === 1 && lines > 1) {
-    sizes[lines - 2] = LINE_BYTES - 1;
-    sizes[lines - 1] = 2;
-  }
-
-  return sizes.map((size) => `${'x'.repeat(size - 1)}\n`).join('');
-};
-
 const removePluginRoots = (): void => {
   for (const root of created.splice(0)) {
     removeFolder(root);
   }
 };
 
-export type { PluginRootOptions };
 export {
   Breakage,
-  coreBodyOfBytes,
   createPluginRoot,
   createRealPluginRoot,
   distributionOf,
   INSTALLED,
   LINK,
   linkDistribution,
-  releaseFormat,
   removeFolder,
   removePluginRoots,
 };

@@ -1,12 +1,13 @@
-import { BLOCKS_FOLDER } from '#/kernel/constants';
+import { BLOCKS_FOLDER_NAME } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
 import type { BlockModel } from '#/kernel/entities';
+import { AbsolutePath } from '#/kernel/value-objects';
 
 import type { FileTree, FileTrees, FrontMatterParser, ManifestParser } from '../../../contracts';
 import type { SimilarRules } from '../../../entities';
 import { Block, BlockGraph, Constitution } from '../../../entities';
 import type { BlockFinding } from './block-finding.types';
-import type { Check } from './check.types';
+import type { Check, CheckInput } from './check.types';
 import {
   abstractBlocksCheck,
   blockFormCheck,
@@ -17,7 +18,9 @@ import {
   cyclesCheck,
   decisionsCheck,
   frontMatterCheck,
+  hooksCheck,
   linksCheck,
+  marketplaceCheck,
   pluginCheck,
   referencesCheck,
   requirementsCheck,
@@ -27,11 +30,11 @@ import {
   termsCheck,
 } from './checks';
 import { adviseConstitution } from './steps/advise-constitution';
-import type { Base } from './steps/load-constitution';
+import type { BaseTree } from './steps/load-constitution';
 import { loadConstitution } from './steps/load-constitution';
-import { orderFindings } from './steps/order-findings';
 
-const checks: readonly Check<BlockFinding>[] = [
+// The checks a pack's blocks run: a pack ships no plugin, marketplace or hooks.
+const packChecks: readonly Check<BlockFinding>[] = [
   frontMatterCheck,
   requiresCheck,
   configurationLanguagesCheck,
@@ -44,19 +47,38 @@ const checks: readonly Check<BlockFinding>[] = [
   referencesCheck,
   budgetCheck,
   linksCheck,
-  pluginCheck,
   decisionsCheck,
   corePartCheck,
   coreChaptersCheck,
   blockFormCheck,
 ];
 
-interface Validation {
-  readonly advice: readonly SimilarRules[];
-  readonly findings: readonly BlockFinding[];
-  /** the model of the blocks, a pack's base among them; absent when they do not load */
-  readonly model?: BlockModel;
+const releaseChecks: readonly Check<BlockFinding>[] = [
+  ...packChecks,
+  pluginCheck,
+  marketplaceCheck,
+  hooksCheck,
+];
+
+enum ValidationStage {
+  /** a block did not load, so no check ran */
+  Unloaded = 'unloaded',
+  Checked = 'checked',
 }
+
+type Validation =
+  | {
+      readonly findings: readonly BlockFinding[];
+      readonly stage: ValidationStage.Unloaded;
+    }
+  | {
+      /** none for a pack */
+      readonly advice: readonly SimilarRules[];
+      readonly findings: readonly BlockFinding[];
+      /** the model of the blocks, a pack's base among them */
+      readonly model: BlockModel;
+      readonly stage: ValidationStage.Checked;
+    };
 
 interface Parsers {
   readonly frontMatterParser: FrontMatterParser;
@@ -67,15 +89,18 @@ interface Parsers {
 // otherwise be reported as missing by every check that names it.
 const validate = (
   input: Parsers & {
-    base?: Base;
+    base?: BaseTree;
     repository: FileTree;
     tree: FileTree;
   },
 ): Validation => {
   const { constitution, findings } = loadConstitution(input);
-  const graph = BlockGraph.create(constitution.blocks);
-  // A pack ships no plugin, and what its base holds is the base's to report.
-  const pack = input.base !== undefined;
+  const checked: CheckInput = {
+    constitution,
+    graph: BlockGraph.create(constitution.blocks),
+    model: Constitution.modelOf(constitution),
+  };
+  // What a pack's base holds is the base's to report.
   const baseFiles = new Set(
     constitution.blocks
       .filter(Block.isBase)
@@ -88,49 +113,51 @@ const validate = (
 
   if (findings.length > 0) {
     return {
+      findings: ownOf(findings),
+      stage: ValidationStage.Unloaded,
+    };
+  }
+
+  if (input.base !== undefined) {
+    return {
       advice: [],
-      findings: orderFindings(ownOf(findings)),
+      findings: ownOf(packChecks.flatMap((check) => check(checked))),
+      model: checked.model,
+      stage: ValidationStage.Checked,
     };
   }
 
   return {
-    advice: pack
-      ? []
-      : adviseConstitution({
-          graph,
-          constitution,
-        }),
-    model: Constitution.modelOf(constitution),
-    findings: orderFindings(
-      ownOf(
-        (pack ? checks.filter((check) => check !== pluginCheck) : checks).flatMap((check) =>
-          check({
-            graph,
-            constitution,
-          }),
-        ),
-      ),
-    ),
+    advice: adviseConstitution(checked),
+    findings: releaseChecks.flatMap((check) => check(checked)),
+    model: checked.model,
+    stage: ValidationStage.Checked,
   };
 };
 
-interface CheckBlocksInput extends Parsers {
-  /** the installed Constitution a pack extends */
-  readonly base?: string;
-  readonly files: ProjectFiles;
+/** The installed Constitution a pack extends, as the check is pointed to it. */
+interface PackBase {
+  /** as the check was given it, which the paths of its files start from */
   readonly folder: string;
+  readonly folderPath: AbsolutePath;
+}
+
+interface CheckBlocksInput extends Parsers {
+  readonly base?: PackBase;
+  readonly files: ProjectFiles;
+  readonly folderPath: AbsolutePath;
   readonly trees: FileTrees;
 }
 
 /**
- * undefined when the folder holds no blocks.
+ * The blocks' validation, or undefined when the folder holds no blocks.
  *
  * @throws {@link TreeError} when git cannot list the files of a tree, or a file it lists cannot be read
  */
 const checkBlocks = (input: CheckBlocksInput): Validation | undefined => {
-  const { folder, trees } = input;
+  const { folderPath, trees } = input;
 
-  if (!input.files.isFolder(`${folder}/${BLOCKS_FOLDER}`)) {
+  if (!input.files.isFolder(AbsolutePath.join(folderPath, BLOCKS_FOLDER_NAME))) {
     return undefined;
   }
 
@@ -141,14 +168,14 @@ const checkBlocks = (input: CheckBlocksInput): Validation | undefined => {
       ? {}
       : {
           base: {
-            folder: input.base,
-            tree: trees.installed(input.base),
+            folder: input.base.folder,
+            tree: trees.installed(input.base.folderPath),
           },
         }),
-    repository: trees.repository(folder),
-    tree: trees.tracked(folder),
+    repository: trees.repository(folderPath),
+    tree: trees.tracked(folderPath),
   });
 };
 
-export type { CheckBlocksInput, Validation };
-export { checkBlocks };
+export type { CheckBlocksInput, PackBase, Validation };
+export { checkBlocks, ValidationStage };

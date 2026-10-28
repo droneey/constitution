@@ -1,0 +1,65 @@
+# a file of lines keeps its comments and its own lines, loses a line and gains one
+# mine
+kept/
+node_modules/
+dist/
+
+
+# a file of lines drops the blanks that open it, and keeps its blank and indented lines
+a
+  
+  dist
+
+
+# a file of lines keeps a blank line between its own
+a
+
+b
+
+
+# a file of lines is new
+node_modules/
+
+
+# a file of lines is given settings that are no list, which leave it empty
+
+
+# a file of lines keeps its own lines and comments, then each group under its name, a gone group and a blank between what went aside
+# generated content
+.source/
+
+  local.txt
+added.txt
+
+# vite
+dist/
+build/
+
+# git
+.env
+
+
+# a file of lines laid out in groups is laid out again as it is
+# mine
+own/
+
+
+more/
+
+# vite
+dist/
+
+
+# a file of lines of no own line opens with its first group
+# vite
+dist/
+
+
+# a source file keeps its own lines and gains a group under a comment of its language
+// mine
+  // indented
+import './own'; // kept
+
+// ts-reset
+import '@total-typescript/ts-reset';
+

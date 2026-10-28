@@ -1,7 +1,7 @@
 import type { BlockId } from '#/kernel/value-objects';
 
-import type { SessionMark, SessionState } from '../../../entities';
-import type { AgentId, SessionId } from '../../../value-objects';
+import type { FingerprintMark, SessionState } from '../../../entities';
+import type { AgentId, SessionId, TreeFingerprint } from '../../../value-objects';
 
 interface AddRemindedInput {
   /** undefined for the session's own agent */
@@ -10,10 +10,16 @@ interface AddRemindedInput {
   readonly session: SessionId;
 }
 
-interface RecordMarkInput {
-  readonly mark: SessionMark;
+interface RecordFingerprintInput {
+  readonly fingerprint: TreeFingerprint;
+  readonly mark: FingerprintMark;
   readonly session: SessionId;
-  readonly value: string;
+}
+
+interface RecordUnjudgedInput {
+  /** why git could not report the tree */
+  readonly reason: string;
+  readonly session: SessionId;
 }
 
 interface SaveStateInput {
@@ -29,9 +35,16 @@ interface SaveStateInput {
  */
 interface SessionCommandRepository {
   readonly addReminded: (input: AddRemindedInput) => void;
-  readonly recordMark: (input: RecordMarkInput) => void;
+  readonly recordFingerprint: (input: RecordFingerprintInput) => void;
+  readonly recordUnjudged: (input: RecordUnjudgedInput) => void;
   readonly saveState: (input: SaveStateInput) => void;
   readonly state: (session: SessionId) => SessionState | undefined;
 }
 
-export type { AddRemindedInput, RecordMarkInput, SaveStateInput, SessionCommandRepository };
+export type {
+  AddRemindedInput,
+  RecordFingerprintInput,
+  RecordUnjudgedInput,
+  SaveStateInput,
+  SessionCommandRepository,
+};

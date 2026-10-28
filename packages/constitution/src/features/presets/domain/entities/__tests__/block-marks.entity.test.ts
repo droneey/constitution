@@ -1,18 +1,20 @@
 import { describe, expect, it } from 'bun:test';
 
+import { BlockId } from '#/kernel/value-objects';
+
 import type { HeldStep } from '../block-marks.entity';
 import { BlockMarks } from '../block-marks.entity';
 
 const marked: BlockMarks = {
   blocks: [
-    'biome',
-    'git',
-    'lefthook',
+    BlockId.create('biome'),
+    BlockId.create('git'),
+    BlockId.create('lefthook'),
   ],
   marks: [
     {
-      block: 'biome',
-      path: [
+      block: BlockId.create('biome'),
+      keyPath: [
         'jobs',
         {
           field: 'port',
@@ -21,8 +23,8 @@ const marked: BlockMarks = {
       ],
     },
     {
-      block: 'git',
-      path: [
+      block: BlockId.create('git'),
+      keyPath: [
         'ignore',
         {
           item: 'dist/',
@@ -30,8 +32,8 @@ const marked: BlockMarks = {
       ],
     },
     {
-      block: 'lefthook',
-      path: [
+      block: BlockId.create('lefthook'),
+      keyPath: [
         'parallel',
       ],
     },
@@ -41,18 +43,18 @@ const marked: BlockMarks = {
 describe('BlockMarks.blockAt', () => {
   it.each([
     {
-      block: 'lefthook',
+      block: BlockId.create('lefthook'),
       condition: 'a key',
-      path: [
+      keyPath: [
         {
           key: 'parallel',
         },
       ],
     },
     {
-      block: 'git',
+      block: BlockId.create('git'),
       condition: 'an item by its value',
-      path: [
+      keyPath: [
         {
           key: 'ignore',
         },
@@ -62,9 +64,9 @@ describe('BlockMarks.blockAt', () => {
       ],
     },
     {
-      block: 'biome',
+      block: BlockId.create('biome'),
       condition: 'an element by the text of its field',
-      path: [
+      keyPath: [
         {
           key: 'jobs',
         },
@@ -76,9 +78,9 @@ describe('BlockMarks.blockAt', () => {
         },
       ],
     },
-  ])('should name $block for $condition it marks', ({ block, path }) => {
+  ])('should name $block for $condition it marks', ({ block, keyPath }) => {
     // Act
-    const named = BlockMarks.blockAt(marked, path);
+    const named = BlockMarks.blockAt(marked, keyPath);
 
     // Assert
     expect(named).toBe(block);
@@ -86,11 +88,11 @@ describe('BlockMarks.blockAt', () => {
 
   it.each<{
     condition: string;
-    path: readonly HeldStep[];
+    keyPath: readonly HeldStep[];
   }>([
     {
       condition: 'an item where a key is marked',
-      path: [
+      keyPath: [
         {
           item: 'parallel',
         },
@@ -98,7 +100,7 @@ describe('BlockMarks.blockAt', () => {
     },
     {
       condition: 'a key where an item is marked',
-      path: [
+      keyPath: [
         {
           key: 'ignore',
         },
@@ -109,7 +111,7 @@ describe('BlockMarks.blockAt', () => {
     },
     {
       condition: 'another item',
-      path: [
+      keyPath: [
         {
           key: 'ignore',
         },
@@ -120,7 +122,7 @@ describe('BlockMarks.blockAt', () => {
     },
     {
       condition: 'an element whose field holds a map',
-      path: [
+      keyPath: [
         {
           key: 'jobs',
         },
@@ -135,7 +137,7 @@ describe('BlockMarks.blockAt', () => {
     },
     {
       condition: 'an element whose field holds another text',
-      path: [
+      keyPath: [
         {
           key: 'jobs',
         },
@@ -148,7 +150,7 @@ describe('BlockMarks.blockAt', () => {
     },
     {
       condition: 'a scalar where an element is marked',
-      path: [
+      keyPath: [
         {
           key: 'jobs',
         },
@@ -159,7 +161,7 @@ describe('BlockMarks.blockAt', () => {
     },
     {
       condition: 'the map holding a mark',
-      path: [
+      keyPath: [
         {
           key: 'ignore',
         },
@@ -167,7 +169,7 @@ describe('BlockMarks.blockAt', () => {
     },
     {
       condition: 'a key inside a mark',
-      path: [
+      keyPath: [
         {
           key: 'parallel',
         },
@@ -176,9 +178,9 @@ describe('BlockMarks.blockAt', () => {
         },
       ],
     },
-  ])('should name no block for $condition', ({ path }) => {
+  ])('should name no block for $condition', ({ keyPath }) => {
     // Act
-    const named = BlockMarks.blockAt(marked, path);
+    const named = BlockMarks.blockAt(marked, keyPath);
 
     // Assert
     expect(named).toBeUndefined();

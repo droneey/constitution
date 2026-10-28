@@ -1,2 +1,2 @@
-export type { RunsSplit } from './split-runs.utils';
-export { splitRuns } from './split-runs.utils';
+export type { RunsSplit } from './split-runs';
+export { splitRuns } from './split-runs';

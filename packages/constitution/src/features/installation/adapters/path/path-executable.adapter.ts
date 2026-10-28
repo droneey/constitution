@@ -1,5 +1,6 @@
 import { spawnSync } from 'node:child_process';
 
+import { AbsolutePath } from '#/kernel/value-objects';
 import type { ChildProcessSettings } from '#/libs/child-process';
 
 import type { ExecutablePath } from '../../domain/contracts';
@@ -8,8 +9,12 @@ const OUTPUT_LIMIT_BYTES = 65_536;
 
 /** env's PATH is searched; an executable that does not answer within timeoutMs answers nothing. */
 const createPathExecutable = (input: ChildProcessSettings): ExecutablePath => ({
-  find: (name: string): string | undefined => Bun.which(name, input.env) ?? undefined,
-  versionOf: (path: string): string | undefined => {
+  find: (name: string): AbsolutePath | undefined => {
+    const found = Bun.which(name, input.env);
+
+    return found === null ? undefined : AbsolutePath.create(found);
+  },
+  versionOf: (path: AbsolutePath): string | undefined => {
     const run = spawnSync(
       path,
       [

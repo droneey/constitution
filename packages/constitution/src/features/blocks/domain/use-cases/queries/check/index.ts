@@ -1,7 +1,7 @@
 export type { BlockFinding, BlockFindingCode, BlockFindingDetails } from './block-finding.types';
 export type { CheckInput } from './check.types';
-export type { CheckBlocksInput, Validation } from './check.use-case';
-export { checkBlocks } from './check.use-case';
+export type { CheckBlocksInput, PackBase, Validation } from './check.use-case';
+export { checkBlocks, ValidationStage } from './check.use-case';
 export type {
   AbstractBlocksDetails,
   BlockFormDetails,
@@ -12,7 +12,9 @@ export type {
   CyclesDetails,
   DecisionsDetails,
   FrontMatterDetails,
+  HooksDetails,
   LinksDetails,
+  MarketplaceDetails,
   PluginDetails,
   ReferencesDetails,
   RequirementsDetails,
@@ -31,7 +33,9 @@ export {
   CyclesCode,
   DecisionsCode,
   FrontMatterCode,
+  HooksCode,
   LinksCode,
+  MarketplaceCode,
   PluginCode,
   ReferencesCode,
   RequirementsCode,
@@ -41,9 +45,6 @@ export {
   TermsCode,
 } from './checks';
 export type { LoadFindingDetails } from './steps/load-constitution';
-export {
-  BlockLoadCode,
-  FrontMatterReadCode,
-  LoadCode,
-  PlaceCode,
-} from './steps/load-constitution';
+export { BlockLoadCode, LoadCode, PlaceCode } from './steps/load-constitution';
+export type { ManifestReadDetails } from './utils';
+export { ManifestReadCode } from './utils';

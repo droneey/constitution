@@ -2,25 +2,33 @@ import { describe, expect, it } from 'bun:test';
 
 import { Axis, Layer } from '#/kernel/constants';
 import { BlockModel, TermKind } from '#/kernel/entities';
-import { BlockId, BlockSource, coreBlockId, PackPath, SourceKind } from '#/kernel/value-objects';
+import {
+  BlockId,
+  BlockSource,
+  coreBlockId,
+  PackPath,
+  RepositoryRelativePath,
+  SourceKind,
+} from '#/kernel/value-objects';
 
 import { presetsModel } from '../../../__tests__/presets.fixtures';
-import { TargetFile } from '../../value-objects';
-import type { PresetEntry as Entry } from '../preset-entry.entity';
+import { EVERY } from '../../constants';
+import { EntryTarget } from '../../value-objects';
+import type { PresetEntry as Entry, LanguageKey } from '../preset-entry.entity';
 import { PresetEntry } from '../preset-entry.entity';
 import { PresetValue } from '../preset-value.entity';
 
-const entryOf = (input: { index: number; pack?: string }): Entry => ({
-  block: 'biome',
-  file: TargetFile.of('biome.json'),
+const entryOf = (input: { index: number; key?: string; pack?: string }): Entry => ({
+  ...EntryTarget.of(input.key ?? 'biome.json'),
+  block: BlockId.create('biome'),
   index: input.index,
-  language: '*',
-  rule: '*',
+  language: EVERY,
+  rule: EVERY,
   set: {
-    file: 'presets/biome/foundation.yaml',
-    path: {
+    filePath: RepositoryRelativePath.create('presets/biome/foundation.yaml'),
+    placeInPresets: {
       axis: Axis.Foundation,
-      reader: 'biome',
+      reader: BlockId.create('biome'),
       withs: [],
     },
     source: BlockSource.create(input.pack === undefined ? undefined : PackPath.create(input.pack)),
@@ -35,6 +43,7 @@ const spelledModel = BlockModel.create({
     {
       governs: [],
       id: BlockId.create('python'),
+      isAbstract: false,
       languages: [],
       layer: Layer.Language,
       requires: [],
@@ -42,6 +51,7 @@ const spelledModel = BlockModel.create({
     {
       governs: [],
       id: BlockId.create('import-linter'),
+      isAbstract: false,
       languages: [],
       layer: Layer.Implementation,
       requires: [
@@ -69,10 +79,10 @@ const spelledModel = BlockModel.create({
 });
 
 const keyedOf = (input: {
-  block: string;
-  language: string;
-  reader: string;
-  withs: readonly string[];
+  block: BlockId;
+  language: LanguageKey;
+  reader: BlockId;
+  withs: readonly BlockId[];
 }): Entry => {
   const entry = entryOf({
     index: 0,
@@ -84,14 +94,24 @@ const keyedOf = (input: {
     language: input.language,
     set: {
       ...entry.set,
-      path: {
-        ...entry.set.path,
+      placeInPresets: {
+        ...entry.set.placeInPresets,
         reader: input.reader,
         withs: input.withs,
       },
     },
   };
 };
+
+const keyedEntryOf = (input: { key: string; pattern: string }): Entry => ({
+  ...entryOf({
+    index: 0,
+    key: input.key,
+  }),
+  value: PresetValue.plain([
+    input.pattern,
+  ]),
+});
 
 const placeOf = (entry: Entry): string =>
   `${entry.set.source.kind === SourceKind.Pack ? entry.set.source.pack : 'release'}#${String(entry.index)}`;
@@ -131,53 +151,53 @@ describe('PresetEntry', () => {
   it.each([
     {
       condition: 'its language spells the folder its own way',
-      expected: 'use_cases/',
+      expected: 'use_cases',
       key: {
-        block: 'core',
-        language: 'python',
-        reader: 'biome',
+        block: BlockId.create('core'),
+        language: BlockId.create('python'),
+        reader: BlockId.create('biome'),
         withs: [],
       },
     },
     {
       condition: 'its language spells it as core does',
-      expected: 'use-cases/',
+      expected: 'use-cases',
       key: {
-        block: 'core',
-        language: 'typescript',
-        reader: 'import-linter',
+        block: BlockId.create('core'),
+        language: BlockId.create('typescript'),
+        reader: BlockId.create('import-linter'),
         withs: [],
       },
     },
     {
       condition: 'it is of every language and its block reaches the language',
-      expected: 'use_cases/',
+      expected: 'use_cases',
       key: {
-        block: 'import-linter',
-        language: '*',
-        reader: 'biome',
+        block: BlockId.create('import-linter'),
+        language: EVERY,
+        reader: BlockId.create('biome'),
         withs: [],
       },
     },
     {
       condition: 'it is of every language and its reader reaches the language',
-      expected: 'use_cases/',
+      expected: 'use_cases',
       key: {
-        block: 'core',
-        language: '*',
-        reader: 'import-linter',
+        block: BlockId.create('core'),
+        language: EVERY,
+        reader: BlockId.create('import-linter'),
         withs: [],
       },
     },
     {
       condition: 'it is of every language and a block its preset file needs reaches the language',
-      expected: 'use_cases/',
+      expected: 'use_cases',
       key: {
-        block: 'core',
-        language: '*',
-        reader: 'biome',
+        block: BlockId.create('core'),
+        language: EVERY,
+        reader: BlockId.create('biome'),
         withs: [
-          'import-linter',
+          BlockId.create('import-linter'),
         ],
       },
     },
@@ -185,28 +205,28 @@ describe('PresetEntry', () => {
     'should name the folder of a role as the entry reads it when $condition',
     ({ expected, key }) => {
       // Act
-      const role = PresetEntry.roleOf({
+      const name = PresetEntry.roleNameOf({
         entry: keyedOf(key),
         id: 'use-case',
         model: spelledModel,
       });
 
       // Assert
-      expect(role?.term).toBe(expected);
+      expect(name).toBe(expected);
     },
   );
 
   it.each([
     {
-      block: 'tsc',
+      block: BlockId.create('tsc'),
       condition: 'its preset file is written with blocks',
       withs: [
-        'tsc',
-        'workspace',
+        BlockId.create('tsc'),
+        BlockId.create('workspace'),
       ],
     },
     {
-      block: 'biome',
+      block: BlockId.create('biome'),
       condition: 'its preset file names the reader alone',
       withs: [],
     },
@@ -219,11 +239,11 @@ describe('PresetEntry', () => {
     // Act
     const named = PresetEntry.blockOf({
       ...entry,
-      block: 'core',
+      block: coreBlockId,
       set: {
         ...entry.set,
-        path: {
-          ...entry.set.path,
+        placeInPresets: {
+          ...entry.set.placeInPresets,
           withs,
         },
       },
@@ -232,4 +252,50 @@ describe('PresetEntry', () => {
     // Assert
     expect(named).toBe(block);
   });
+});
+
+describe('PresetEntry.roleIdsOf', () => {
+  it.each([
+    {
+      condition: 'its path, its guard and its value name roles beside other facts',
+      expected: [
+        'source',
+        'gateway',
+        'gateway-file',
+      ],
+      key: '${role.source}/biome.json ? ${unit.parent} = ${role.gateway}',
+      pattern: '**/*${role.gateway-file}.${unit.name}',
+    },
+    {
+      condition: 'its guard tests a role and its value names none',
+      expected: [
+        'ignore-file',
+      ],
+      key: 'biome.json ? ${role.ignore-file} = .gitignore',
+      pattern: '${unit.name}',
+    },
+    {
+      condition: 'it is a run, which writes no file, and its value names a role',
+      expected: [
+        'source',
+      ],
+      key: '${constitution.run}',
+      pattern: '${role.source}',
+    },
+  ])(
+    'should give the ids of the roles it names, in their order, when $condition',
+    ({ expected, key, pattern }) => {
+      // Arrange
+      const entry = keyedEntryOf({
+        key,
+        pattern,
+      });
+
+      // Act
+      const ids = PresetEntry.roleIdsOf(entry);
+
+      // Assert
+      expect(ids).toStrictEqual(expected);
+    },
+  );
 });

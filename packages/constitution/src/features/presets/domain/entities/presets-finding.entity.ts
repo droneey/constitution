@@ -1,5 +1,8 @@
 import type { Axis } from '#/kernel/constants';
 import type { FindingOf, ProblemOf } from '#/kernel/types';
+import type { BlockId } from '#/kernel/value-objects';
+
+import type { PresetFilePath } from '../value-objects';
 
 enum PresetsCode {
   PresetFileMisplaced = 'preset-file-misplaced',
@@ -11,12 +14,14 @@ enum PresetsCode {
   UnknownLanguage = 'unknown-language',
   RuleOfAnotherBlock = 'rule-of-another-block',
   EntryMisplaced = 'entry-misplaced',
+  EntryNeedsTooManyBlocks = 'entry-needs-too-many-blocks',
   EntryOffItsAxis = 'entry-off-its-axis',
   FileOutsideItsUnit = 'file-outside-its-unit',
   UnknownFact = 'unknown-fact',
   UnknownRole = 'unknown-role',
   HandTypedRole = 'hand-typed-role',
   MembersOutsideList = 'members-outside-a-list',
+  SortedInUnsortableFile = 'sorted-in-unsortable-file',
   MissingDistributionFile = 'missing-distribution-file',
   PluginUnreferenced = 'plugin-unreferenced',
   PluginNamesNoRule = 'plugin-names-no-rule',
@@ -37,8 +42,17 @@ enum PresetsCode {
 }
 
 interface EntryNamed {
-  readonly block: string;
+  readonly block: BlockId;
   readonly rule: string;
+}
+
+interface UnreachedRole {
+  /**
+   * the blocks of the role's first definition, whose spelling the apply falls back to: its block
+   * and, in a seam, the seam's other block
+   */
+  readonly definers: readonly BlockId[];
+  readonly role: string;
 }
 
 interface SettingNamed {
@@ -70,9 +84,10 @@ interface PresetsDetails {
     readonly keys: readonly string[];
   };
   readonly [PresetsCode.UnknownReader]: {
-    readonly reader: string;
+    readonly reader: BlockId;
   };
   readonly [PresetsCode.UnknownBlock]: {
+    /** as the preset file spells it, which may be no block id at all */
     readonly block: string;
   };
   readonly [PresetsCode.UnknownRule]: EntryNamed;
@@ -80,11 +95,18 @@ interface PresetsDetails {
     readonly language: string;
   };
   readonly [PresetsCode.RuleOfAnotherBlock]: EntryNamed & {
-    readonly owner: string;
+    readonly owner: BlockId;
   };
   readonly [PresetsCode.EntryMisplaced]: EntryNamed & {
-    /** the preset file's path under presets/ */
-    readonly belongs: string;
+    readonly belongs: PresetFilePath;
+    /** the blocks its path names that it does not need */
+    readonly unneededBlocks: readonly BlockId[];
+    /** the roles it names that its path leaves out of reach, the reason it belongs elsewhere */
+    readonly unreachedRoles: readonly UnreachedRole[];
+  };
+  readonly [PresetsCode.EntryNeedsTooManyBlocks]: EntryNamed & {
+    /** the blocks beyond its reader's reach that its path would name, more than any path names */
+    readonly needed: readonly BlockId[];
   };
   readonly [PresetsCode.EntryOffItsAxis]: EntryNamed & {
     readonly ruleAxis: Axis;
@@ -103,6 +125,10 @@ interface PresetsDetails {
     readonly term: string;
   };
   readonly [PresetsCode.MembersOutsideList]: EntryNamed;
+  readonly [PresetsCode.SortedInUnsortableFile]: EntryNamed &
+    SettingNamed & {
+      readonly file: string;
+    };
   readonly [PresetsCode.MissingDistributionFile]: {
     /** the file's path from the release */
     readonly file: string;
@@ -128,11 +154,25 @@ interface PresetsDetails {
   readonly [PresetsCode.LockUnparsed]: object;
   readonly [PresetsCode.RunMisshapen]: object;
   readonly [PresetsCode.ToolWithoutRunner]: {
-    readonly block: string;
+    readonly block: BlockId;
   };
 }
 
 type PresetsFinding = FindingOf<PresetsDetails>;
+
+// Each finding once, though several entries or files find the one thing wrong.
+const eachOnce = (findings: readonly PresetsFinding[]): readonly PresetsFinding[] => [
+  ...new Map(
+    findings.map((finding) => [
+      JSON.stringify(finding),
+      finding,
+    ]),
+  ).values(),
+];
+
+const PresetsFinding = {
+  eachOnce,
+} as const;
 
 type PresetsProblem = ProblemOf<PresetsDetails>;
 
@@ -147,5 +187,5 @@ type MergeProblem = Extract<
   }
 >;
 
-export type { EntryNamed, MergeProblem, PresetsDetails, PresetsFinding, PresetsProblem };
-export { PresetsCode };
+export type { EntryNamed, MergeProblem, PresetsDetails, PresetsProblem, UnreachedRole };
+export { PresetsCode, PresetsFinding };

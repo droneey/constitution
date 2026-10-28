@@ -1,0 +1,48 @@
+apps/web is a member of the workspace with no constitution.yaml — write one that lists the blocks it follows
+apps/web/constitution.yaml does not parse at line 3 — fix it, as its blocks are left out
+apps/web/constitution.yaml does not parse at lines 3, 7 — fix it, as its blocks are left out
+cannot read apps/web/constitution.yaml — make it readable, as its blocks are left out
+constitution.yaml has no axes key — add axes: [architecture, workflow]
+apps/web/constitution.yaml lists packages — write each package's blocks in a constitution.yaml of its own, and remove the key
+constitution.yaml names a check, which the runner blocks give now — remove it, and run constitution run check
+constitution.yaml has the unknown key apps — remove it
+constitution.yaml leaves axes empty — write axes: [architecture, workflow], or axes: [] for neither
+constitution.yaml lists foundation in axes — foundation is always followed, remove it
+axes names delivery — write architecture or workflow
+the override on line 12 has no level, reason — complete it or remove it
+the override of four-data-states sets the level MUST — write SHOULD or MAY
+the override of four-data-states has until soon — write a date as YYYY-MM-DD
+rules/acme is a path — put the block in a pack listed under packs: and name it by its id
+eslint is not a block — check the name
+core is always active — remove it from domains
+biome is an implementation — move it from domains to implementations
+typescript is a language — move it from implementations to languages
+_store cannot be listed — list one of its heirs
+_store cannot be listed — list redux
+_store cannot be listed — list redux or zustand
+_store cannot be listed — list jotai, redux or zustand
+acme comes from packs/acme, which apps/web/constitution.yaml does not list — add it to packs
+packs/acme is not installed — run mise install, or check the path
+packs/acme/blocks/domains/acme/acme.md cannot be read — its rules are left out
+.droneey/constitution/blocks/domains/ui/foundation/screens.md repeats the rule four-data-states — the first is used
+packs/acme/blocks/domains/acme/acme.md has no front matter — the block is read without it
+packs/acme/blocks/domains/acme/notes.md is not a block file — move or remove it
+packs/acme/blocks/domains/ui/ui.md repeats the block ui — the one read first is used
+packs/acme/blocks/core/core.md is not inside a block folder of a domain, a context or an implementation
+packs/acme/blocks/domains/Acme/acme.md is in a block folder whose name is not a kebab-case block id — rename the folder
+acme extends eslint, which is not a block — fix its front matter
+acme extends ui, a concrete block; a block extends only an abstract base — require it instead
+acme requires webgl, which is not a block — fix its front matter
+acme-rule → no-rule: no-rule is an unknown rule — check the slug
+tanstack-query needs remote-data — add remote-data to domains
+ui in apps/web needs _store — add redux or zustand to implementations
+tailwind does not meet tokens-only — see its Requirements table
+tailwind in apps/web does not meet tokens-only — see its Requirements table
+no-rule names no rule — check the slug
+four-data-states expired on 2026-01-31 — renew or remove it
+biome.json: lacks formatter.lineWidth, as the presets give them [missing]
+cannot check the configurations: EACCES: permission denied
+cannot check the configurations
+./.droneey/constitution leads back into a folder that holds it — link it to the release outside the unit
+apps/web/.droneey/constitution leads back into a folder that holds it — link it to the release outside the unit
+the project lies in no git repository, so no gate holds the hand-back — run git init to have one

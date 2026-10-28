@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
+import { AbsolutePath } from '#/kernel/value-objects';
+
 import { ApplyError, ApplyFailure, isApplyError } from '../apply.error';
 
 describe('ApplyError', () => {
@@ -9,7 +11,7 @@ describe('ApplyError', () => {
     const failure = {
       code: ApplyFailure.NotWritten,
       details: {
-        path: '/work/project/biome.json',
+        filePath: AbsolutePath.create('/work/project/biome.json'),
       },
     };
 
@@ -28,7 +30,7 @@ describe('ApplyError', () => {
       cause,
       code: ApplyFailure.NotWritten,
       details: {
-        path: '/work/project/biome.json',
+        filePath: AbsolutePath.create('/work/project/biome.json'),
       },
       name: 'ApplyError',
     });
@@ -40,7 +42,7 @@ describe('ApplyError', () => {
       error: new ApplyError({
         code: ApplyFailure.NotWritten,
         details: {
-          path: '/work/project/biome.json',
+          filePath: AbsolutePath.create('/work/project/biome.json'),
         },
       }),
       isApply: true,

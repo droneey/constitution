@@ -1,20 +1,11 @@
 import type { Clock } from '#/features/project';
 import { createFixedClock, createSystemClock } from '#/features/project/adapters/clock';
-import { attempted, isRangeError } from '#/kernel/utils';
+import { dayOf } from '#/kernel/utils';
 
 import { ConfigurationError, ConfigurationFailure } from './configuration.error';
 
 /** The environment variable the specs fix the day by; no user sets it. */
 const TODAY_VARIABLE = 'CONSTITUTION_TODAY';
-const DAY_FORM = /^\d{4}-\d{2}-\d{2}$/;
-
-const dayOf = (text: string): Temporal.PlainDate | undefined =>
-  DAY_FORM.test(text)
-    ? attempted({
-        effect: () => Temporal.PlainDate.from(text),
-        isRecognised: isRangeError,
-      })
-    : undefined;
 
 /**
  * The clock the program reads the day from: a fixed day when the environment names one, the

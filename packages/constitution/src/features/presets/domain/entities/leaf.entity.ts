@@ -9,11 +9,9 @@ import { Setting } from './setting.entity';
  */
 interface Leaf {
   readonly isItem: boolean;
-  readonly path: readonly string[];
+  readonly keyPath: readonly string[];
   readonly value: Setting;
 }
-
-const DOT = '.';
 
 // cyrb53, a 53-bit hash: a lock names each leaf by it, so the hash never changes once released.
 const SEED_LEFT = 0xde_ad_be_ef;
@@ -51,41 +49,41 @@ const keyOf = (leaf: Leaf): string =>
   hashOf(
     Setting.canonicalTextOf([
       [
-        ...leaf.path,
+        ...leaf.keyPath,
       ],
       leaf.value,
       leaf.isItem,
     ]),
   );
 
-const scalarLeaf = (path: readonly string[], setting: Setting): Leaf => ({
+const scalarLeaf = (keyPath: readonly string[], setting: Setting): Leaf => ({
   isItem: false,
-  path,
+  keyPath,
   value: setting,
 });
 
-const itemLeaves = (path: readonly string[], list: readonly Setting[]): readonly Leaf[] =>
+const itemLeaves = (keyPath: readonly string[], list: readonly Setting[]): readonly Leaf[] =>
   list.map((listed) => ({
     isItem: true,
-    path,
+    keyPath,
     value: listed,
   }));
 
-const leavesOf = (setting: Setting, path: readonly string[] = []): readonly Leaf[] => {
+const leavesOf = (setting: Setting, keyPath: readonly string[] = []): readonly Leaf[] => {
   if (Setting.isList(setting)) {
-    return itemLeaves(path, setting);
+    return itemLeaves(keyPath, setting);
   }
 
   if (!Setting.isMap(setting)) {
     return [
-      scalarLeaf(path, setting),
+      scalarLeaf(keyPath, setting),
     ];
   }
 
   return Object.entries(setting).flatMap(([key, held]) => {
     const address = SettingKey.addressOf(key);
     const at = [
-      ...path,
+      ...keyPath,
       key,
     ];
 
@@ -111,7 +109,7 @@ const elementLeaves = (input: {
   element: SettingMap;
   fields: readonly string[];
   key: string;
-  path: readonly string[];
+  keyPath: readonly string[];
 }): readonly Leaf[] =>
   input.fields.flatMap((field) => {
     const named = input.element[field];
@@ -121,7 +119,7 @@ const elementLeaves = (input: {
     }
 
     const at = [
-      ...input.path,
+      ...input.keyPath,
       SettingKey.addressText({
         field,
         list: input.key,
@@ -145,15 +143,15 @@ const elementLeaves = (input: {
 const fileLeavesOf = (
   setting: Setting,
   fields: readonly string[],
-  path: readonly string[] = [],
+  keyPath: readonly string[] = [],
 ): readonly Leaf[] => {
   if (!Setting.isMap(setting)) {
-    return leavesOf(setting, path);
+    return leavesOf(setting, keyPath);
   }
 
   return Object.entries(setting).flatMap(([key, held]) => {
     const at = [
-      ...path,
+      ...keyPath,
       key,
     ];
 
@@ -165,7 +163,7 @@ const fileLeavesOf = (
               element,
               fields,
               key,
-              path,
+              keyPath,
             }),
           ),
         ]
@@ -174,7 +172,7 @@ const fileLeavesOf = (
 };
 
 const isHeldBy = (setting: Setting | undefined, leaf: Leaf): boolean => {
-  const held = Setting.at(setting, leaf.path);
+  const held = Setting.at(setting, leaf.keyPath);
 
   return leaf.isItem
     ? Setting.isList(held) && held.some((listed) => Setting.same(listed, leaf.value))
@@ -318,7 +316,7 @@ const removedIn = (node: Setting, keys: readonly string[], leaf: Leaf): Removal 
  * it; undefined when the setting does not hold the leaf.
  */
 const removedFrom = (setting: Setting, leaf: Leaf): Setting | undefined => {
-  const removal = removedIn(setting, leaf.path, leaf);
+  const removal = removedIn(setting, leaf.keyPath, leaf);
 
   if (!removal.isRemoved) {
     return undefined;
@@ -328,7 +326,7 @@ const removedFrom = (setting: Setting, leaf: Leaf): Setting | undefined => {
 };
 
 const textOf = (leaf: Leaf): string => {
-  const keys = leaf.path.join(DOT);
+  const keys = Setting.pathTextOf(leaf.keyPath);
 
   return leaf.isItem
     ? [

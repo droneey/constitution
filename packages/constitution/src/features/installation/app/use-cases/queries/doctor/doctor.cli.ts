@@ -1,12 +1,15 @@
 import { Command } from 'commander';
 
+import { AbsolutePath } from '#/kernel/value-objects';
 import type { CommandContext } from '#/shared/cli';
 
 import { PartDiagnosis } from '../../../../domain/entities';
 import { installationOutcomeOf, installationSectionsOf } from '../../../utils';
 
 interface DoctorContext extends CommandContext {
-  readonly diagnoseInstallation: (start: string) => Promise<readonly PartDiagnosis[]>;
+  readonly diagnoseInstallation: (
+    startFolderPath: AbsolutePath,
+  ) => Promise<readonly PartDiagnosis[]>;
 }
 
 const createDoctorCommand = (context: DoctorContext): Command =>
@@ -26,7 +29,8 @@ const createDoctorCommand = (context: DoctorContext): Command =>
       const diagnoses = await context.renderer.run({
         label: 'Installation',
         outcomeOf: installationOutcomeOf,
-        run: async () => await context.diagnoseInstallation(context.places.cwd),
+        run: async () =>
+          await context.diagnoseInstallation(AbsolutePath.create(context.places.cwd)),
       });
 
       await context.renderer.print(installationSectionsOf(diagnoses));

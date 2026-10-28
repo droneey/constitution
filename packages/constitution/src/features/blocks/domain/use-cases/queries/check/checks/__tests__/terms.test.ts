@@ -6,13 +6,9 @@ import type { FindingOf } from '#/kernel/types';
 import { BlockId, coreBlockId } from '#/kernel/value-objects';
 
 import type { Files } from '../../../../../../__tests__/constitution.fixtures';
-import {
-  checkInputOf,
-  passportFile,
-  rule,
-  textOf,
-} from '../../../../../../__tests__/constitution.fixtures';
+import { passportFile, rule, textOf } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
+import { checkInputOf } from '../../__tests__/check.fixtures';
 import type { TermsDetails } from '../terms';
 import { TermsCode, termsCheck } from '../terms';
 

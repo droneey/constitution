@@ -4,6 +4,8 @@ import { join } from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
+import { AbsolutePath } from '#/kernel/value-objects';
+
 import { createShellCommandRunner } from '../shell-command-runner.adapter';
 
 let folder = '';
@@ -24,7 +26,7 @@ describe('createShellCommandRunner', () => {
     // Act
     const code = createShellCommandRunner().run({
       command: 'pwd > where.txt && exit 3',
-      folder,
+      folderPath: AbsolutePath.create(folder),
     });
 
     // Assert
@@ -43,7 +45,7 @@ describe('createShellCommandRunner', () => {
     // Act
     const code = createShellCommandRunner().run({
       command: 'kill -TERM $$',
-      folder,
+      folderPath: AbsolutePath.create(folder),
     });
 
     // Assert

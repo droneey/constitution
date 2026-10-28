@@ -1,13 +1,8 @@
+import type { AbsolutePath } from '../value-objects';
+
 interface ProjectPlace {
-  readonly project: string;
-  readonly releaseFolder: string;
+  readonly releaseFolderPath: AbsolutePath;
+  readonly repositoryFolderPath: AbsolutePath;
 }
 
-const ProjectPlace = {
-  create: (input: ProjectPlace): ProjectPlace => ({
-    project: input.project,
-    releaseFolder: input.releaseFolder,
-  }),
-} as const;
-
-export { ProjectPlace };
+export type { ProjectPlace };

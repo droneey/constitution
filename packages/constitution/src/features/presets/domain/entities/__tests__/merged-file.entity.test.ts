@@ -1,10 +1,14 @@
 import { describe, expect, it } from 'bun:test';
 
+import { BlockId } from '#/kernel/value-objects';
+
 import type { Contribution } from '../merged-file.entity';
 import { MergedFile } from '../merged-file.entity';
 import { PresetValue, ValueKind } from '../preset-value.entity';
 import { PresetsCode } from '../presets-finding.entity';
 import type { Setting } from '../setting.entity';
+import type { WholeDefault } from '../whole-default.entity';
+import { WholeKind } from '../whole-default.entity';
 
 const map = (pairs: Readonly<Record<string, PresetValue>>): PresetValue =>
   PresetValue.mapOf(
@@ -17,12 +21,13 @@ const map = (pairs: Readonly<Record<string, PresetValue>>): PresetValue =>
 const plain = (setting: Setting): PresetValue => PresetValue.plain(setting);
 
 const markedOf = (kind: ValueKind.Default | ValueKind.Replace, setting: Setting): PresetValue => ({
+  isWords: false,
   kind,
   setting,
 });
 
 const from = (source: string, given: PresetValue): Contribution => ({
-  block: source,
+  block: BlockId.create(source),
   source,
   value: given,
 });
@@ -368,7 +373,35 @@ describe('MergedFile.merge', () => {
     ]);
   });
 
-  it('should give a replaced path its replacer, whatever clashed there, and find two replacers that differ', () => {
+  it("should keep the setting a map clashes with, and place none of the map's pairs", () => {
+    // Arrange
+    const contributions = [
+      from(
+        'first',
+        map({
+          a: plain('x'),
+        }),
+      ),
+      from(
+        'second',
+        map({
+          a: map({
+            y: plain(1),
+          }),
+        }),
+      ),
+    ];
+
+    // Act
+    const merged = MergedFile.merge(contributions);
+
+    // Assert
+    expect(merged.value).toStrictEqual({
+      a: 'x',
+    });
+  });
+
+  it('should give a replaced path its replacer, whatever clashed there, and find two replacers that differ and a clash no replacer settles', () => {
     // Arrange
     const contributions = [
       from(
@@ -376,6 +409,7 @@ describe('MergedFile.merge', () => {
         map({
           rules: plain(1),
           level: markedOf(ValueKind.Replace, 'warn'),
+          width: plain(1),
         }),
       ),
       from(
@@ -383,6 +417,7 @@ describe('MergedFile.merge', () => {
         map({
           rules: plain(2),
           level: markedOf(ValueKind.Replace, 'error'),
+          width: plain(2),
         }),
       ),
       from(
@@ -404,6 +439,16 @@ describe('MergedFile.merge', () => {
       defaults: [],
       problems: [
         {
+          code: PresetsCode.Clash,
+          details: {
+            setting: 'width',
+            sources: [
+              'a',
+              'b',
+            ],
+          },
+        },
+        {
           code: PresetsCode.TwoReplacers,
           details: {
             setting: 'level',
@@ -419,7 +464,24 @@ describe('MergedFile.merge', () => {
         rules: {
           all: true,
         },
+        width: 1,
       },
+    });
+  });
+
+  it('should make no file of a whole-file default that is a number', () => {
+    // Arrange
+    const contributions = [
+      from('a', markedOf(ValueKind.Default, 1)),
+    ];
+
+    // Act
+    const merged = MergedFile.merge(contributions);
+
+    // Assert
+    expect(merged).toStrictEqual({
+      defaults: [],
+      problems: [],
     });
   });
 
@@ -485,14 +547,14 @@ describe('MergedFile.merge', () => {
     expect(merged).toStrictEqual({
       defaults: [
         {
-          path: [
+          keyPath: [
             'test',
             'randomize',
           ],
           value: true,
         },
         {
-          path: [
+          keyPath: [
             'test',
             'randomize',
           ],
@@ -532,7 +594,7 @@ describe('MergedFile.merge', () => {
     condition: string;
     first: Setting;
     second: Setting;
-    whole: Setting;
+    whole: WholeDefault;
   }>([
     {
       condition: 'two give lines',
@@ -544,11 +606,14 @@ describe('MergedFile.merge', () => {
         'dist/',
         '.cache/',
       ],
-      whole: [
-        'node_modules/',
-        'dist/',
-        '.cache/',
-      ],
+      whole: {
+        kind: WholeKind.Added,
+        setting: [
+          'node_modules/',
+          'dist/',
+          '.cache/',
+        ],
+      },
     },
     {
       condition: 'two give keys',
@@ -561,16 +626,22 @@ describe('MergedFile.merge', () => {
         c: 3,
       },
       whole: {
-        a: 1,
-        b: 2,
-        c: 3,
+        kind: WholeKind.Added,
+        setting: {
+          a: 1,
+          b: 2,
+          c: 3,
+        },
       },
     },
     {
       condition: 'two give the same text',
       first: 'text\n',
       second: 'text\n',
-      whole: 'text\n',
+      whole: {
+        kind: WholeKind.Text,
+        text: 'text\n',
+      },
     },
   ])('should unite the whole-file defaults when $condition', ({ first, second, whole }) => {
     // Arrange

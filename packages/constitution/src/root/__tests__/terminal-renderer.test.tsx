@@ -2,7 +2,14 @@ import { PassThrough } from 'node:stream';
 
 import { describe, expect, it } from 'bun:test';
 
-import { ColourLevel, OutputMode, StepStatus, ThemeMode, Tone } from '@droneey/design-cli';
+import {
+  AccentScale,
+  ColourLevel,
+  OutputMode,
+  StepStatus,
+  ThemeMode,
+  Tone,
+} from '@droneey/design-cli';
 import { ThemeProvider } from '@droneey/design-cli/ink';
 import { render } from 'ink-testing-library';
 
@@ -52,11 +59,11 @@ const terminalOf = (): {
   return {
     drawn,
     renderer: createTerminalRenderer({
-      accent: {
+      accent: AccentScale.create({
         color: {
           brand: {},
         },
-      },
+      }),
       output: outputStream,
       streams,
       write: (text: string): void => {

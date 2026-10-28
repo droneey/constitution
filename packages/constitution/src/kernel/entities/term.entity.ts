@@ -1,3 +1,4 @@
+import { PATH_SEPARATOR } from '../constants';
 import {
   collapseWhitespace,
   inlineCodeSpans,
@@ -50,11 +51,10 @@ const LEAD_IN_END = /[.:]$/;
 const FILE_NAME = /^[\w-]+(?:\.[\w-]+)+$/;
 // What `{#` and `}` enclose is taken whole, so a misshapen id is read and the check can name it.
 const TERM_ID = /^\{#([^}\n]*)\}/;
-const FOLDER_END = '/';
 const SUFFIX_START = '.';
 
 const codeKindOf = (name: string): TermKind => {
-  if (name.endsWith(FOLDER_END)) {
+  if (name.endsWith(PATH_SEPARATOR)) {
     return TermKind.Folder;
   }
 
@@ -177,29 +177,23 @@ const allIn = (body: string): TermsRead => {
 
 const matcherOf = (term: Term): ((text: string) => boolean) => matcherOfKind[term.kind](term.term);
 
-/** the spelling of a folder without its "/", or of a suffix without its "." */
-const otherSpellingOf = (term: Term): string | undefined => {
-  switch (term.kind) {
-    case TermKind.Folder:
-      return term.term.slice(0, -FOLDER_END.length);
-    case TermKind.Suffix:
-      return term.term.slice(SUFFIX_START.length);
-    case TermKind.Api:
-    case TermKind.Brand:
-    case TermKind.Concept:
-    case TermKind.File:
-      return undefined;
-    // Stryker disable next-line ConditionalExpression: no kind reaches the default, which only the compiler reads
-    default:
-      return term.kind satisfies never;
-  }
-};
-
 /** The name a folder or a suffix gives a path: its term without the "/", or without the ".". */
 const roleNameOf = (role: { readonly kind: RoleKind; readonly term: string }): string =>
   role.kind === TermKind.Folder
-    ? role.term.slice(0, -FOLDER_END.length)
+    ? role.term.slice(0, -PATH_SEPARATOR.length)
     : role.term.slice(SUFFIX_START.length);
+
+/** The spelling of a folder without its "/", or of a suffix without its ".". */
+const otherSpellingOf = (term: Term): string | undefined => {
+  const { kind } = term;
+
+  return isRoleKind(kind)
+    ? roleNameOf({
+        kind,
+        term: term.term,
+      })
+    : undefined;
+};
 
 const Term = {
   allIn,

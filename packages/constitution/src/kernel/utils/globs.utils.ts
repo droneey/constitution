@@ -1,10 +1,11 @@
+import { PATH_SEPARATOR } from '../constants';
 import type { Piece } from './glob-pieces.utils';
-import { globPiecesOf, PieceKind, SEPARATOR } from './glob-pieces.utils';
+import { globPiecesOf, PieceKind } from './glob-pieces.utils';
 
-// A block's globs, as they match a path from the folder of its unit. A glob comes from a block
-// file, a project's own among them, so it is never made a regular expression: it becomes an
-// automaton whose states are all walked at once, in time linear in the path's length; a glob whose
-// braces do not pair, or nest too deep, matches nothing.
+// A glob as it matches a path. A glob comes from a block file, a project's own among them, so it
+// is never made a regular expression: it becomes an automaton whose states are all walked at once,
+// in time linear in the path's length; a glob whose braces do not pair, or nest too deep, matches
+// nothing.
 
 enum NodeKind {
   /** takes one character it accepts, then goes on to next */
@@ -28,11 +29,11 @@ type GlobNode =
       readonly kind: NodeKind.Accept;
     };
 
-const isInFolder = (character: string): boolean => character !== SEPARATOR;
+const isInFolder = (character: string): boolean => character !== PATH_SEPARATOR;
 
 const isAny = (): boolean => true;
 
-const isSeparator = (character: string): boolean => character === SEPARATOR;
+const isSeparator = (character: string): boolean => character === PATH_SEPARATOR;
 
 const PENDING = {
   kind: NodeKind.Accept,
@@ -47,7 +48,6 @@ interface LoopInput {
   readonly nodes: GlobNode[];
 }
 
-// Any number of the characters it accepts, then next.
 const loopOf = (input: LoopInput): number => {
   const { nodes } = input;
   const loop = added({
@@ -79,7 +79,6 @@ interface NodeInput {
   readonly nodes: GlobNode[];
 }
 
-// No folder, or any characters that end with a separator, then next.
 const anyFoldersOf = (input: NodeInput): number => {
   const { nodes } = input;
   const inside = added({
@@ -123,7 +122,6 @@ const anyFoldersOf = (input: NodeInput): number => {
   });
 };
 
-// The first node of the pieces, each built before the one it leads to, so the last leads to next.
 const compiled = (
   input: NodeInput & {
     readonly pieces: readonly Piece[];
@@ -202,7 +200,6 @@ const nodeOf = (
   }
 };
 
-// The states the given ones reach without taking a character.
 const closureOf = (input: {
   nodes: readonly GlobNode[];
   starts: readonly number[];
@@ -230,7 +227,12 @@ const closureOf = (input: {
   return reached;
 };
 
-const matches = (input: { glob: string; path: string }): boolean => {
+interface GlobMatchInput {
+  readonly glob: string;
+  readonly path: string;
+}
+
+const globMatches = (input: GlobMatchInput): boolean => {
   const pieces = globPiecesOf(input.glob);
 
   if (pieces === undefined) {
@@ -276,17 +278,4 @@ const matches = (input: { glob: string; path: string }): boolean => {
   return states.has(0);
 };
 
-interface GovernedPathInput {
-  readonly globs: readonly string[];
-  readonly path: string;
-}
-
-const isGoverned = (input: GovernedPathInput): boolean =>
-  input.globs.some((glob) =>
-    matches({
-      glob,
-      path: input.path,
-    }),
-  );
-
-export { isGoverned };
+export { globMatches };

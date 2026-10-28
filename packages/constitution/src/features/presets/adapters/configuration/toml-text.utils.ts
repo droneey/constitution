@@ -2,10 +2,12 @@ import { stringify } from 'smol-toml';
 
 import { isDeepEqual } from '#/kernel/utils';
 
+import type { ConfigurationWrite } from '../../domain/contracts';
 import type { Setting, SettingMap } from '../../domain/entities';
 import { Setting as Settings } from '../../domain/entities';
 import { withBlockComments } from './block-comments.utils';
-import type { SettingsText } from './settings-text.types';
+import { ownFieldOf } from './own-field.utils';
+import { LINE_WIDTH, NEWLINE } from './text.constants';
 import { tomlCommenting } from './toml-comments.utils';
 import { depthOf, headerOf, readToml, STRINGS, unquotedOf } from './toml-lines.utils';
 
@@ -15,7 +17,6 @@ interface Block {
   readonly section: string;
 }
 
-const NEWLINE = '\n';
 // A section is a table by its key, or a table of a table that holds only tables, the two keys
 // joined by a character no key holds.
 const SEPARATOR = '\u001F';
@@ -25,8 +26,6 @@ const DOTTED_KEY_LINE = /^\s*[A-Za-z0-9_"'-]+\s*\.\s*[A-Za-z0-9_"'-]/;
 const BLANK_RUN = /\n{3,}/g;
 // smol-toml writes a value alone only under a key; the key it is given here goes with its prefix.
 const VALUE_PREFIX = 'value = ';
-// The width the formatters keep.
-const LINE_WIDTH = 100;
 const ITEM_INDENT = '  ';
 const ARRAY_OPEN = '= [';
 const ARRAY_CLOSE = ']';
@@ -196,9 +195,12 @@ const splicedKeys = (input: {
       ...Object.keys(before),
       ...Object.keys(after),
     ]),
-  ].filter((key) => !isDeepEqual(before[key], after[key]));
+  ].filter((key) => !isDeepEqual(ownFieldOf(before, key), ownFieldOf(after, key)));
 
-  if (spans === undefined || changed.some((key) => before[key] !== undefined && !spans.has(key))) {
+  if (
+    spans === undefined ||
+    changed.some((key) => ownFieldOf(before, key) !== undefined && !spans.has(key))
+  ) {
     return undefined;
   }
 
@@ -208,7 +210,7 @@ const splicedKeys = (input: {
     ...input.lines,
   ];
   const added = changed.flatMap((key) => {
-    const held = after[key];
+    const held = ownFieldOf(after, key);
 
     // Stryker disable next-line ConditionalExpression: a gone key the spans lack sent the table to be written again above
     return spans.has(key) || held === undefined
@@ -234,7 +236,7 @@ const splicedKeys = (input: {
   ]
     .filter(([name]) => changed.includes(name))
     .toSorted(([, left], [, right]) => right[0] - left[0])) {
-    const held = after[key];
+    const held = ownFieldOf(after, key);
 
     lines.splice(
       first,
@@ -254,7 +256,7 @@ const splicedKeys = (input: {
 const sectionText = (input: { merged: Setting; section: string }): string => {
   // Stryker disable next-line StringLiteral: a split gives its first part always
   const [table = '', child] = input.section.split(SEPARATOR);
-  const held = mapOf(input.merged)[table];
+  const held = ownFieldOf(mapOf(input.merged), table);
 
   // Stryker disable next-line MethodExpression: the blanks around a section collapse to one when the text is joined
   return stringify({
@@ -262,7 +264,7 @@ const sectionText = (input: { merged: Setting; section: string }): string => {
       child === undefined
         ? held
         : {
-            [child]: mapOf(held)[child],
+            [child]: ownFieldOf(mapOf(held), child),
           },
   }).trim();
 };
@@ -347,7 +349,9 @@ const changedLinesOf = (
   const isOneBlock = input.blocks.filter((other) => other.section === block.section).length === 1;
 
   const tableOf = (setting: Setting): Setting | undefined =>
-    child === undefined ? mapOf(setting)[table] : mapOf(mapOf(setting)[table])[child];
+    child === undefined
+      ? ownFieldOf(mapOf(setting), table)
+      : ownFieldOf(mapOf(ownFieldOf(mapOf(setting), table)), child);
 
   const spliced = isOneBlock
     ? splicedKeys({
@@ -373,7 +377,7 @@ const changedLinesOf = (
  * Only the sections whose value changed are written again, and of a plain table only its changed
  * keys, so every other line and comment stays; a section whose table is gone goes with its lines.
  */
-const writeSettings = (input: SettingsText): string => {
+const writeSettings = (input: ConfigurationWrite): string => {
   const { settings, text } = input;
   const before = readToml(text) ?? {};
   const sections: Sections = {

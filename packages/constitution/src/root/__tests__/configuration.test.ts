@@ -56,18 +56,6 @@ describe('clockOf', () => {
       condition: 'it is not written YYYY-MM-DD',
       today: '2026-6-15',
     },
-    {
-      condition: 'it is a date and a time',
-      today: '2026-06-15T10:00',
-    },
-    {
-      condition: 'it names no day of the calendar',
-      today: '2026-02-30',
-    },
-    {
-      condition: 'it writes the year with a sign',
-      today: '+002026-06-15',
-    },
   ])('should fail at once when the fixed day $condition', ({ today }) => {
     // Act
     const failure = failureOf(() => clockOf(today));

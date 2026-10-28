@@ -2,6 +2,7 @@ import { spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
+import type { AbsolutePath } from '#/kernel/value-objects';
 import type { ChildProcessSettings } from '#/libs/child-process';
 
 import type { GitHooks } from '../../domain/contracts';
@@ -23,8 +24,8 @@ const configFiles: readonly string[] = [
 
 /** A lefthook that cannot start, or does not answer within timeoutMs, is unavailable. */
 const createLefthookGitHooks = (input: ChildProcessSettings): GitHooks => ({
-  stateOf: (project: string): HooksState => {
-    if (!configFiles.some((name) => existsSync(join(project, name)))) {
+  stateOf: (repositoryFolderPath: AbsolutePath): HooksState => {
+    if (!configFiles.some((name) => existsSync(join(repositoryFolderPath, name)))) {
       return HooksState.Unconfigured;
     }
 
@@ -34,7 +35,7 @@ const createLefthookGitHooks = (input: ChildProcessSettings): GitHooks => ({
         'check-install',
       ],
       {
-        cwd: project,
+        cwd: repositoryFolderPath,
         env: input.env,
         timeout: input.timeoutMs,
       },

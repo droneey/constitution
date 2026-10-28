@@ -1,9 +1,16 @@
 import { describe, expect, it } from 'bun:test';
 
-import { Layer, Level } from '#/kernel/constants';
+import { ConfigKey, Layer, Level } from '#/kernel/constants';
 import type { ProjectWarning } from '#/kernel/entities';
 import { WarningKind } from '#/kernel/entities';
-import { BlockId, BlockSource, RuleSlug, repositoryUnit, Version } from '#/kernel/value-objects';
+import {
+  AbsolutePath,
+  BlockId,
+  BlockSource,
+  RuleSlug,
+  repositoryUnit,
+  Version,
+} from '#/kernel/value-objects';
 import { warningTextOf } from '#/shared/cli';
 
 import { DigestKind } from '../../../domain/entities';
@@ -11,9 +18,9 @@ import { blockListLines } from '../block-list.utils';
 import { digestOf } from '../digest.utils';
 import { overrideListLines } from '../override-list.utils';
 
-const RELEASE_FOLDER = '/work/project/.droneey/constitution';
+const RELEASE_FOLDER_PATH = '/work/project/.droneey/constitution';
 const releaseFiles = {
-  folder: RELEASE_FOLDER,
+  folderPath: AbsolutePath.create(RELEASE_FOLDER_PATH),
   version: Version.create('1.0.0'),
 };
 const RELEASE_LINE =
@@ -43,7 +50,7 @@ describe('digestOf', () => {
       const warning: ProjectWarning = {
         details: {
           file: 'constitution.yaml',
-          key: 'check',
+          key: ConfigKey.Packs,
         },
         kind: WarningKind.KeyMissing,
       };
@@ -105,7 +112,9 @@ describe('digestOf', () => {
     const contents = {
       core: '---\nid: core\n---\n\n# Core\n',
       kind: DigestKind.Unparsed,
-      line: 4,
+      lines: [
+        4,
+      ],
       release: releaseFiles,
     } as const;
 
@@ -128,7 +137,7 @@ describe('digestOf', () => {
     // Arrange
     const contents = {
       kind: DigestKind.NoRelease,
-      releaseFolder: RELEASE_FOLDER,
+      releaseFolderPath: AbsolutePath.create(RELEASE_FOLDER_PATH),
     } as const;
 
     // Act
@@ -139,7 +148,7 @@ describe('digestOf', () => {
       body: digest.body,
       lines: digest.head.length,
       names: [
-        RELEASE_FOLDER,
+        RELEASE_FOLDER_PATH,
         'constitution doctor',
       ].map((name) => digest.head[0]?.includes(name)),
     }).toStrictEqual({

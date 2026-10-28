@@ -14,6 +14,7 @@ import { z } from 'zod';
 
 import { appliedUnit, constitutionOf } from './applied-unit.fixtures';
 import { cliPath } from './cli.fixtures';
+import { environmentOf, searchPathWith, toolEnvironment } from './package.fixtures';
 
 interface Ran {
   readonly exitCode: number | undefined;
@@ -113,6 +114,7 @@ const shellFilesOf = (unit: string): readonly string[] => {
     ],
     {
       cwd: root,
+      env: toolEnvironment(),
     },
   );
 
@@ -125,12 +127,14 @@ const shellFilesOf = (unit: string): readonly string[] => {
     {
       cwd: folder,
       encoding: 'utf8',
-      env: Object.fromEntries([
-        [
-          'PATH',
-          `${stand}:${String(process.env['PATH'])}`,
-        ],
-      ]),
+      env: environmentOf(
+        new Map([
+          [
+            'PATH',
+            searchPathWith(stand),
+          ],
+        ]),
+      ),
     },
   );
 
@@ -159,12 +163,14 @@ const checkedUnits = (): readonly string[] => {
     {
       cwd: root,
       encoding: 'utf8',
-      env: Object.fromEntries([
-        [
-          'PATH',
-          `${stand}:${String(process.env['PATH'])}`,
-        ],
-      ]),
+      env: environmentOf(
+        new Map([
+          [
+            'PATH',
+            searchPathWith(stand),
+          ],
+        ]),
+      ),
     },
   );
 
@@ -204,12 +210,14 @@ const testsRun = (files: Readonly<Record<string, string>>): Ran => {
     {
       cwd: folder,
       encoding: 'utf8',
-      env: Object.fromEntries([
-        [
-          'PATH',
-          String(process.env['PATH']),
-        ],
-      ]),
+      env: environmentOf(
+        new Map([
+          [
+            'PATH',
+            searchPathWith(),
+          ],
+        ]),
+      ),
     },
   );
 

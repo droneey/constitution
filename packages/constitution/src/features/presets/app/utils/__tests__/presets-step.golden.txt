@@ -1,0 +1,14 @@
+# outcome when no blocks load
+no blocks to check the presets against
+
+# outcome when the presets have findings
+3 findings
+
+# outcome when the presets are sound
+every preset file is sound
+
+# sections
+3 findings in the presets
+  presets/a.yaml: cannot be read [preset-file-unparsed]
+  presets/a.yaml: is the preset file of gone, which is no block [unknown-reader]
+  presets/b.yaml: is not a preset file: presets/<reader>/<axis>.yaml, presets/<reader>/<axis>/with/<block>.yaml or presets/<reader>/<axis>/with/<first>/with/<second>.yaml [preset-file-misplaced]

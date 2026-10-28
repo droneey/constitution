@@ -18,6 +18,8 @@ import { z } from 'zod';
 import type { UnitFixture } from './applied-unit.fixtures';
 import { constitutionOf } from './applied-unit.fixtures';
 import { cliPath } from './cli.fixtures';
+import { searchPathWith, toolEnvironment } from './package.fixtures';
+import { OWN_PACK } from './project.fixtures';
 
 interface Run {
   output: string;
@@ -577,9 +579,6 @@ const typescriptTools: readonly string[] = [
   'git',
 ];
 
-// The workspace's own pack in the web application: its mutation check runs mutation-check from
-// this repository's sources, as the distribution's build is not made for a spec.
-const OWN_PACK = 'pack';
 const strykerPack = `stryker:
   stryker-runs-the-distribution-runner:
     typescript:
@@ -848,6 +847,7 @@ const link = (folder: string): void => {
 const git = (input: { args: readonly string[]; folder: string }): void => {
   spawnSync('git', input.args, {
     cwd: input.folder,
+    env: toolEnvironment(),
   });
 };
 
@@ -864,12 +864,7 @@ const apply = (folder: string): void => {
     {
       cwd: folder,
       encoding: 'utf8',
-      env: Object.fromEntries([
-        [
-          'PATH',
-          process.env['PATH'],
-        ],
-      ]),
+      env: toolEnvironment(),
     },
   );
 
@@ -907,17 +902,18 @@ const runTool = (workspace: string, command: Command): Run => {
   const running = spawnSync(command.program, command.args, {
     cwd: join(workspace, command.folder ?? '.'),
     encoding: 'utf8',
-    env: Object.fromEntries([
-      ...Object.entries(process.env),
-      [
-        'CI',
-        '1',
-      ],
-      [
-        'PATH',
-        `${join(workspace, '.shims')}:${bin}:${process.env['PATH'] ?? ''}`,
-      ],
-    ]),
+    env: toolEnvironment(
+      new Map([
+        [
+          'CI',
+          '1',
+        ],
+        [
+          'PATH',
+          searchPathWith(join(workspace, '.shims'), bin),
+        ],
+      ]),
+    ),
   });
 
   return {

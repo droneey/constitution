@@ -1,20 +1,23 @@
 import { spawnSync } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
-import { copyFileSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { appliedUnit } from './applied-unit.fixtures';
 import { Hook, jobRun } from './lefthook-preset.fixtures';
 import { miseBinary } from './mise.fixtures';
+import { gitIn, toolEnvironment, writeFiles } from './package.fixtures';
+import type { Load } from './preset-load.fixtures';
+import { loadOf } from './preset-load.fixtures';
 
 interface Project {
-  files: Readonly<Record<string, string>>;
+  readonly files: Readonly<Record<string, string>>;
 }
 
 interface Scan {
-  exitCode: number | undefined;
-  output: string;
+  readonly exitCode: number | undefined;
+  readonly output: string;
 }
 
 const secretsUnit = (): string =>
@@ -46,34 +49,43 @@ const passwordPackage = [
   'password',
 ].join('/');
 
+const SCANNED = 'scanned';
+
+/** betterleaks over a folder of no secret, by the configuration of the widest unit, its warnings shown. */
+const configuredScan = (): Promise<Load> =>
+  loadOf('betterleaks', {
+    command: [
+      betterleaks,
+      'dir',
+      SCANNED,
+      '--config',
+      '.betterleaks.toml',
+      '--no-banner',
+      '--log-level',
+      'warn',
+    ],
+    files: {
+      [`${SCANNED}/order.ts`]: "export const ORDER_KIND = 'order';\n",
+    },
+  });
+
 const scanStaged = (project: Project): Scan => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-betterleaks-'));
 
   try {
-    const git = (args: readonly string[]): void => {
-      spawnSync(
-        'git',
-        [
-          ...args,
-        ],
-        {
-          cwd: folder,
-        },
-      );
-    };
-
-    git([
+    gitIn(folder, [
       'init',
       '--quiet',
     ]);
 
     copyFileSync(join(secretsUnit(), '.betterleaks.toml'), join(folder, '.betterleaks.toml'));
 
-    for (const [path, text] of Object.entries(project.files)) {
-      writeFileSync(join(folder, path), text);
-    }
+    writeFiles({
+      files: project.files,
+      folder,
+    });
 
-    git([
+    gitIn(folder, [
       'add',
       '.',
     ]);
@@ -90,6 +102,7 @@ const scanStaged = (project: Project): Scan => {
       {
         cwd: folder,
         encoding: 'utf8',
+        env: toolEnvironment(),
       },
     );
 
@@ -105,4 +118,4 @@ const scanStaged = (project: Project): Scan => {
   }
 };
 
-export { passwordPackage, scanStaged, token };
+export { configuredScan, passwordPackage, scanStaged, token };

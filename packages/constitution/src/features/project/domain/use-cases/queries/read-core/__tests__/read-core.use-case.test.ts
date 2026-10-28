@@ -2,9 +2,9 @@ import { describe, expect, it } from 'bun:test';
 
 import { createFakeProjectFiles } from '#/__tests__/project-files.fake';
 import { corePassport, projectPlace } from '#/__tests__/project-place.fixtures';
-import { ProjectFailure } from '#/kernel/errors';
 
-import { failureOf } from '../../read-declaration/steps/resolve-declaration/__tests__/resolution.fixtures';
+import { failureOf } from '../../../../../__tests__/project.fixtures';
+import { UnreadableFileFailure } from '../../../../errors';
 import { readCore } from '../read-core.use-case';
 
 const CORE_TEXT = '---\nid: core\n---\n\n# core\n';
@@ -65,9 +65,10 @@ describe('readCore', () => {
       // Assert
       expect(failure).toStrictEqual({
         cause,
-        code: ProjectFailure.CoreUnreadable,
-        line: undefined,
-        path: corePassport,
+        code: UnreadableFileFailure.Core,
+        details: {
+          path: corePassport,
+        },
       });
     },
   );

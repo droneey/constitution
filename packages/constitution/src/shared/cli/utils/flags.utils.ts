@@ -1,10 +1,15 @@
-import type { ZodType } from 'zod';
+import type { ZodType, z } from 'zod';
 
 import { baseFlagsSchema, outputFlagsSchema } from '../constants';
 import { UsageError, UsageFailure } from '../errors';
 
+interface FlagsInput<TFlags> {
+  readonly opts: unknown;
+  readonly schema: ZodType<TFlags>;
+}
+
 /** @throws {@link UsageError} when the options do not parse */
-const flagsOf = <TFlags>(input: { opts: unknown; schema: ZodType<TFlags> }): TFlags => {
+const flagsOf = <TFlags>(input: FlagsInput<TFlags>): TFlags => {
   const parsed = input.schema.safeParse(input.opts);
 
   if (!parsed.success) {
@@ -20,27 +25,17 @@ const flagsOf = <TFlags>(input: { opts: unknown; schema: ZodType<TFlags> }): TFl
 };
 
 /** @throws {@link UsageError} when the options do not parse */
-const baseFlagsOf = (
-  opts: unknown,
-): {
-  readonly base?: string | undefined;
-} =>
+const baseFlagsOf = (opts: unknown): z.output<typeof baseFlagsSchema> =>
   flagsOf({
     opts,
     schema: baseFlagsSchema,
   });
 
 /** @throws {@link UsageError} when the options do not parse */
-const outputFlagsOf = (
-  opts: unknown,
-): {
-  readonly color?: boolean | undefined;
-  readonly motion?: boolean | undefined;
-  readonly plain?: boolean | undefined;
-} =>
+const outputFlagsOf = (opts: unknown): z.output<typeof outputFlagsSchema> =>
   flagsOf({
     opts,
     schema: outputFlagsSchema,
   });
 
-export { baseFlagsOf, outputFlagsOf };
+export { baseFlagsOf, flagsOf, outputFlagsOf };

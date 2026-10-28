@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
+import { ConfigKey } from '../../constants';
 import { BlockId, RuleSlug, SourceKind, UnitPath } from '../../value-objects';
 import { ProjectWarning, WarningCode, WarningKind } from '../project-warning.entity';
 
@@ -15,7 +16,7 @@ describe('ProjectWarning.codeOf', () => {
       warning: {
         details: {
           file: 'constitution.yaml',
-          key: 'axes',
+          key: ConfigKey.Axes,
         },
         kind: WarningKind.KeyMissing,
       },
@@ -68,7 +69,9 @@ describe('ProjectWarning.codeOf', () => {
       code: WarningCode.Configurations,
       subject: "the tools' configurations",
       warning: {
-        details: {},
+        details: {
+          reason: 'EACCES: permission denied',
+        },
         kind: WarningKind.ConfigurationsUnchecked,
       },
     },

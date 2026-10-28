@@ -4,8 +4,9 @@ import { Met } from '#/kernel/entities';
 import type { FindingOf } from '#/kernel/types';
 import { BlockId, RuleSlug } from '#/kernel/value-objects';
 
-import { checkInputOf, rule, textOf } from '../../../../../../__tests__/constitution.fixtures';
+import { rule, textOf } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
+import { checkInputOf } from '../../__tests__/check.fixtures';
 import type { CheckInput } from '../../check.types';
 import type { RequirementsDetails } from '../requirements';
 import { RequirementsCode, requirementsCheck } from '../requirements';

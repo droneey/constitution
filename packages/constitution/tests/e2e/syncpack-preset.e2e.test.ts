@@ -1,208 +1,116 @@
 import { describe, expect, it } from 'bun:test';
 
-import { sortedFields, versionIssues } from './syncpack-preset.fixtures';
+import { syncpackIssues } from './syncpack-preset.fixtures';
 
-describe("the syncpack preset file's groups", () => {
+const NESTED = 'nested/package.json';
+
+const manifestOf = (fields: Readonly<Record<string, unknown>>): string =>
+  `${JSON.stringify(
+    {
+      name: 'unit',
+      version: '1.0.0',
+      ...fields,
+    },
+    null,
+    2,
+  )}\n`;
+
+describe("the configuration syncpack's presets write", () => {
+  it('should load in syncpack with no key or policy it does not know when a unit follows every block syncpack is configured for', async () => {
+    // Act
+    const lint = await syncpackIssues({
+      args: [
+        'lint',
+      ],
+      files: {
+        'package.json': manifestOf({}),
+      },
+    });
+
+    // Assert
+    expect(lint).toStrictEqual({
+      issues: [],
+      status: 0,
+    });
+  });
+
+  // syncpack takes a range it does not know, and a field to sort it never finds, without a word, so
+  // each the presets set has a manifest it must judge otherwise than syncpack does by default.
   it.each([
     {
-      condition: 'a tool takes a caret range',
-      manifest: {
+      condition: 'a tool takes a caret range, where the tools are pinned exactly',
+      fields: {
         devDependencies: {
           tool: '^1.0.0',
         },
-        name: 'a',
-        version: '1.0.0',
       },
     },
     {
-      condition: 'a dependency of the program is pinned exactly',
-      manifest: {
+      condition:
+        "a dependency of the program is pinned exactly, where the program's take caret ranges",
+      fields: {
         dependencies: {
           library: '1.0.0',
         },
-        name: 'a',
-        version: '1.0.0',
       },
     },
-  ])('should report SemverRangeMismatch when $condition', ({ manifest }) => {
-    // Arrange
-    const repository = [
-      manifest,
-    ];
-
+  ])('should report a range that breaks its group when $condition', async ({ fields }) => {
     // Act
-    const found = versionIssues(repository);
-
-    // Assert
-    expect(found).toStrictEqual([
-      'SemverRangeMismatch',
-    ]);
-  });
-
-  it("should report nothing when the tools are pinned exactly and the program's dependencies take caret ranges", () => {
-    // Arrange
-    const repository = [
-      {
-        dependencies: {
-          library: '^1.0.0',
-        },
-        devDependencies: {
-          tool: '1.0.0',
-        },
-        name: 'a',
-        version: '1.0.0',
+    const lint = await syncpackIssues({
+      args: [
+        'lint',
+      ],
+      files: {
+        'package.json': manifestOf(fields),
       },
-    ];
-
-    // Act
-    const found = versionIssues(repository);
+    });
 
     // Assert
-    expect(found).toStrictEqual([]);
-  });
-});
-
-describe('the syncpack core part', () => {
-  it.each([
-    {
-      specifier: 'github:owner/library',
-    },
-    {
-      specifier: 'git+https://github.com/owner/library.git',
-    },
-    {
-      specifier: 'https://example.com/library-1.0.0.tgz',
-    },
-  ])('should report IsBanned when a dependency comes from $specifier', ({ specifier }) => {
-    // Arrange
-    const repository = [
-      {
-        dependencies: {
-          library: specifier,
-        },
-        name: 'a',
-        version: '1.0.0',
-      },
-    ];
-
-    // Act
-    const found = versionIssues(repository);
-
-    // Assert
-    expect(found).toStrictEqual([
-      'IsBanned',
-    ]);
+    expect(lint).toStrictEqual({
+      issues: [
+        'SemverRangeMismatch',
+      ],
+      status: 1,
+    });
   });
 
   it.each([
     {
-      specifier: 'file:./.droneey/kit/eros/typescript',
+      condition: 'its scripts are out of order, which the presets leave to apply',
+      issues: [],
+      manifest:
+        '{\n  "name": "nested",\n  "version": "1.0.0",\n  "scripts": {\n    "zeta": "true",\n    "alpha": "true"\n  }\n}\n',
+      status: 0,
     },
     {
-      specifier: 'link:./vendor/library',
+      condition: 'its description precedes its version, which the presets set first',
+      issues: [
+        'PackagePropertiesAreNotSorted',
+      ],
+      manifest: '{\n  "name": "nested",\n  "description": "A unit.",\n  "version": "1.0.0"\n}\n',
+      status: 1,
     },
   ])(
-    'should report nothing when a dependency comes from $specifier inside the repository',
-    ({ specifier }) => {
-      // Arrange
-      const repository = [
-        {
-          dependencies: {
-            library: specifier,
-          },
-          name: 'a',
-          version: '1.0.0',
-        },
-      ];
-
+    'should report $issues in the format check when $condition',
+    async ({ issues, manifest, status }) => {
       // Act
-      const found = versionIssues(repository);
+      const format = await syncpackIssues({
+        args: [
+          'format',
+          '--check',
+          '--source',
+          NESTED,
+        ],
+        files: {
+          [NESTED]: manifest,
+        },
+      });
 
       // Assert
-      expect(found).toStrictEqual([]);
+      expect(format).toStrictEqual({
+        issues,
+        status,
+      });
     },
   );
-
-  it('should report nothing when a dependency comes from the registry under an alias', () => {
-    // Arrange
-    const repository = [
-      {
-        dependencies: {
-          library: 'npm:zod@^4.1.0',
-        },
-        name: 'a',
-        version: '1.0.0',
-      },
-    ];
-
-    // Act
-    const found = versionIssues(repository);
-
-    // Assert
-    expect(found).toStrictEqual([]);
-  });
-});
-
-describe("the syncpack preset file's formatting", () => {
-  it('should leave the scripts in the order the author chose when a manifest is formatted', () => {
-    // Arrange
-    const field = 'scripts';
-
-    // Act
-    const sorted = sortedFields();
-
-    // Assert
-    expect(sorted).not.toContain(field);
-  });
-});
-
-describe("the syncpack preset file's groups of a workspace", () => {
-  it("should report DiffersToPin when a unit takes the repository's own unit from the registry", () => {
-    // Arrange
-    const repository = [
-      {
-        name: 'a',
-        version: '1.0.0',
-      },
-      {
-        devDependencies: {
-          a: '^1.0.0',
-        },
-        name: 'b',
-        version: '1.0.0',
-      },
-    ];
-
-    // Act
-    const found = versionIssues(repository);
-
-    // Assert
-    expect(found).toContain('DiffersToPin');
-  });
-
-  it('should report nothing when the units link each other and keep wide peer ranges', () => {
-    // Arrange
-    const repository = [
-      {
-        name: 'a',
-        version: '1.0.0',
-      },
-      {
-        devDependencies: {
-          a: 'workspace:*',
-        },
-        name: 'b',
-        peerDependencies: {
-          a: '>=1.0.0',
-        },
-        version: '1.0.0',
-      },
-    ];
-
-    // Act
-    const found = versionIssues(repository);
-
-    // Assert
-    expect(found).toStrictEqual([]);
-  });
 });

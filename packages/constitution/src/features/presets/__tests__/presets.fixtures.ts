@@ -1,21 +1,24 @@
 import type { FakeTree } from '#/__tests__/project-files.fake';
 import { createFakeProjectFiles } from '#/__tests__/project-files.fake';
 import { PROJECT, projectPlace, releaseFolderPath } from '#/__tests__/project-place.fixtures';
-import { createFakeProjectSource } from '#/__tests__/project-source.fake';
 import { Axis, Layer, Level } from '#/kernel/constants';
-import type { ProjectFiles, ProjectSource } from '#/kernel/contracts';
+import type { ProjectFiles } from '#/kernel/contracts';
 import type { ModelBlock, ModelRule, ProjectWarning, RoleTerm } from '#/kernel/entities';
+import { BlockModel, ProjectUnit, TermKind } from '#/kernel/entities';
+import type { AbsolutePath } from '#/kernel/value-objects';
 import {
-  BlockListing,
-  BlockModel,
-  ConfigReadStatus,
-  ProjectUnit,
-  Resolution,
-  TermKind,
-} from '#/kernel/entities';
-import { BlockId, Glob, PackPath, RuleSlug, UnitPath } from '#/kernel/value-objects';
+  BlockId,
+  Glob,
+  PackPath,
+  RuleSlug,
+  UnitPath,
+  UnitRelativePath,
+} from '#/kernel/value-objects';
 
 import { createYamlPresetFileParser } from '../adapters/yaml';
+import type { ProjectReader } from '../domain/contracts';
+import type { Lock, LockRecord, PresetsProject } from '../domain/entities';
+import { ProjectRead, ProjectReadStatus } from '../domain/entities';
 
 // The blocks the presets' specs hold their preset files against: core, the languages, a domain, and
 // the tools that read the files, each with the rules and the role terms the cases name.
@@ -40,6 +43,7 @@ interface RoleFixture {
   readonly block: string;
   readonly id?: string;
   readonly kind?: TermKind.Folder | TermKind.Suffix;
+  readonly seam?: string;
   readonly term: string;
 }
 
@@ -112,6 +116,25 @@ const blockFixtures: readonly BlockFixture[] = [
     id: 'lefthook',
     layer: Layer.Implementation,
   },
+  {
+    id: 'nestjs',
+    layer: Layer.Implementation,
+    requires: [
+      'typescript',
+    ],
+  },
+  {
+    id: 'nx',
+    layer: Layer.Implementation,
+    requires: [
+      'typescript',
+      'workspace',
+    ],
+  },
+  {
+    id: 'docker',
+    layer: Layer.Implementation,
+  },
 ];
 
 const ruleFixtures: readonly RuleFixture[] = [
@@ -152,6 +175,11 @@ const ruleFixtures: readonly RuleFixture[] = [
     seam: 'workspace',
     slug: 'install-settings-only-in-the-root',
   },
+  {
+    block: 'git',
+    seam: 'bun',
+    slug: 'lock-file-committed',
+  },
 ];
 
 const roleFixtures: readonly RoleFixture[] = [
@@ -186,6 +214,24 @@ const roleFixtures: readonly RoleFixture[] = [
     term: '.gitignore',
   },
   {
+    block: 'typescript',
+    id: 'declaration-cache',
+    seam: 'workspace',
+    term: '.declarations/',
+  },
+  {
+    block: 'nestjs',
+    id: 'nest-module',
+    kind: TermKind.Suffix,
+    term: '.module',
+  },
+  {
+    block: 'docker',
+    id: 'ignore-file',
+    kind: TermKind.Suffix,
+    term: '.dockerignore',
+  },
+  {
     block: 'core',
     term: 'docs/',
   },
@@ -199,6 +245,7 @@ const modelBlockOf = (block: BlockFixture): ModelBlock => ({
       }),
   governs: (block.governs ?? []).map(Glob.create),
   id: BlockId.create(block.id),
+  isAbstract: false,
   languages: [],
   layer: block.layer,
   requires: (block.requires ?? []).map(BlockId.create),
@@ -225,6 +272,11 @@ const roleOf = (role: RoleFixture): RoleTerm => ({
         id: role.id,
       }),
   kind: role.kind ?? TermKind.Folder,
+  ...(role.seam === undefined
+    ? {}
+    : {
+        seam: BlockId.create(role.seam),
+      }),
   term: role.term,
 });
 
@@ -300,46 +352,74 @@ const projectOf = (
   input: ProjectFixture,
 ): {
   readonly files: ProjectFiles;
-  readonly source: ProjectSource;
-} => ({
-  files: createFakeProjectFiles({
-    files: input.files ?? {},
-    ...(input.links === undefined
-      ? {}
-      : {
-          links: input.links,
-        }),
-    ...(input.unreadable === undefined
-      ? {}
-      : {
-          unreadable: input.unreadable,
-        }),
-  }),
-  source: createFakeProjectSource({
-    declaration: {
-      packs: (input.packs ?? []).map(PackPath.create),
-      resolution: Resolution.create({
-        active: [],
-        blocks: [],
-        listing: BlockListing.create({
-          overrides: [],
-          repository: [],
-          units: [],
-        }),
-        model: presetsModel,
-        musts: [],
-        units: input.units,
-        warnings: input.warnings ?? [],
-      }),
-      status: ConfigReadStatus.Parsed,
+  readonly project: PresetsProject;
+  readonly reader: ProjectReader;
+} => {
+  const project: PresetsProject = {
+    ...projectPlace,
+    model: presetsModel,
+    packs: (input.packs ?? []).map(PackPath.create),
+    units: input.units,
+    warnings: input.warnings ?? [],
+  };
+
+  return {
+    files: createFakeProjectFiles({
+      files: input.files ?? {},
+      ...(input.links === undefined
+        ? {}
+        : {
+            links: input.links,
+          }),
+      ...(input.unreadable === undefined
+        ? {}
+        : {
+            unreadable: input.unreadable,
+          }),
+    }),
+    project,
+    reader: {
+      // the project holds its own folder and every folder below it
+      open: (startFolderPath: AbsolutePath): ProjectRead<PresetsProject> =>
+        startFolderPath === projectPlace.repositoryFolderPath ||
+        startFolderPath.startsWith(`${projectPlace.repositoryFolderPath}/`)
+          ? ProjectRead.opened(project)
+          : {
+              status: ProjectReadStatus.NoProject,
+            },
     },
-    place: projectPlace,
-  }),
-});
+  };
+};
+
+/** The answer of a read the case expects to open the project. */
+const answerOf = <TAnswer>(read: ProjectRead<TAnswer>): TAnswer => {
+  if (read.status !== ProjectReadStatus.Opened) {
+    throw new Error(`the project did not open: ${read.status}`);
+  }
+
+  return read.answer;
+};
 
 const presetFileParser = createYamlPresetFileParser();
 
-export { PROJECT, releaseFolderPath } from '#/__tests__/project-place.fixtures';
+const lockOf = (records: Readonly<Record<string, LockRecord>>): Lock =>
+  Object.fromEntries(
+    Object.entries(records).map(([filePath, record]) => [
+      UnitRelativePath.create(filePath),
+      record,
+    ]),
+  );
+
+export { PROJECT } from '#/__tests__/project-place.fixtures';
 
 export type { Files };
-export { presetFileParser, presetsModel, projectFiles, projectOf, releasePresets, unitOf };
+export {
+  answerOf,
+  lockOf,
+  presetFileParser,
+  presetsModel,
+  projectFiles,
+  projectOf,
+  releasePresets,
+  unitOf,
+};

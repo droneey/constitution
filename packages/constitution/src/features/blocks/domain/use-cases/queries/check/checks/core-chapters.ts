@@ -3,8 +3,9 @@ import { withoutCodeFences } from '#/kernel/utils';
 import { coreBlockId } from '#/kernel/value-objects';
 
 import type { Block } from '../../../../entities';
+import { repeatsOf } from '../../../../utils';
 import type { Check, CheckInput } from '../check.types';
-import { localLinkTargets, resolveLink } from '../shared/markdown';
+import { localLinkTargets, resolveLink } from '../utils';
 
 enum CoreChaptersCode {
   ChapterUnlisted = 'core-chapter-unlisted',
@@ -26,7 +27,7 @@ interface CoreChaptersDetails {
 
 type CoreChaptersFinding = FindingOf<CoreChaptersDetails>;
 
-/** an item of the passport's list of core's chapters, which opens with its axis folder: "- `foundation/`: …" */
+/** An item of the passport's list of core's chapters, which opens with its axis folder: "- `foundation/`: …". */
 const AXIS_ITEM = /^- `[a-z]+\/`:/;
 
 const listedIn = (core: Block): readonly string[] =>
@@ -70,9 +71,7 @@ const coreFindings = (core: Block): readonly CoreChaptersFinding[] => {
           path,
         }),
       ),
-    ...[
-      ...new Set(listed.filter((entry, index) => listed.indexOf(entry) !== index)),
-    ].map(
+    ...repeatsOf(listed).map(
       (entry): CoreChaptersFinding => ({
         code: CoreChaptersCode.ListedTwice,
         details: {
@@ -84,7 +83,7 @@ const coreFindings = (core: Block): readonly CoreChaptersFinding[] => {
   ];
 };
 
-// Core's passport lists its chapters in the order they are read, which the site follows.
+/** Core's passport lists its chapters in the order they are read, which the site follows. */
 const coreChaptersCheck: Check<CoreChaptersFinding> = ({
   graph,
 }: CheckInput): readonly CoreChaptersFinding[] => {

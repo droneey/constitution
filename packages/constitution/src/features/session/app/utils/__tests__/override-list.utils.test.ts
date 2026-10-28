@@ -1,15 +1,15 @@
 import { describe, expect, it } from 'bun:test';
 
 import { Level } from '#/kernel/constants';
-import type { ListedOverride } from '#/kernel/entities';
 import { RuleSlug, repositoryUnit, UnitPath } from '#/kernel/value-objects';
 
+import type { DigestOverride } from '../../../domain/entities';
 import { overrideListLines } from '../override-list.utils';
 
 describe('overrideListLines', () => {
   it("should list each override's rule, level, member and end under one heading", () => {
     // Arrange
-    const overrides: readonly ListedOverride[] = [
+    const overrides: readonly DigestOverride[] = [
       {
         level: Level.Should,
         rule: RuleSlug.create('inputs-are-labelled'),

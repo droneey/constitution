@@ -3,6 +3,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSyn
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
+import { toolEnvironment } from './package.fixtures';
 import { uvEnvironment } from './uv.fixtures';
 
 type Files = Readonly<Record<string, string>>;
@@ -38,6 +39,7 @@ const sourceOf = (module: string): string =>
     ],
     {
       encoding: 'utf8',
+      env: toolEnvironment(),
     },
   ).stdout.trim();
 
@@ -75,6 +77,7 @@ const builtTool = (input: { module: string; tool: string }): BuiltTool => {
       ],
       {
         encoding: 'utf8',
+        env: toolEnvironment(),
       },
     );
 
@@ -148,21 +151,6 @@ interface PythonProjectRun<TResult> {
   readonly tools?: readonly BuiltTool[];
 }
 
-const inPythonProject = <TResult>(input: PythonProjectRun<TResult>): TResult => {
-  const folder = mkdtempSync(join(tmpdir(), 'constitution-python-'));
-
-  try {
-    fillPythonProject(folder, input);
-
-    return input.run(folder);
-  } finally {
-    rmSync(folder, {
-      force: true,
-      recursive: true,
-    });
-  }
-};
-
 const inPythonProjectAsync = async <TResult>(
   input: PythonProjectRun<Promise<TResult>>,
 ): Promise<TResult> => {
@@ -181,4 +169,4 @@ const inPythonProjectAsync = async <TResult>(
 };
 
 export type { BuiltTool, Files };
-export { buildTools, inPythonProject, inPythonProjectAsync, python, writeFiles };
+export { buildTools, inPythonProjectAsync, python, writeFiles };

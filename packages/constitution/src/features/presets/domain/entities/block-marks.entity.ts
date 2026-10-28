@@ -1,3 +1,5 @@
+import type { BlockId } from '#/kernel/value-objects';
+
 import { Setting } from './setting.entity';
 
 /**
@@ -16,8 +18,8 @@ type MarkStep =
 
 /** A key or an item one block alone gives, everything below it included. */
 interface BlockMark {
-  readonly block: string;
-  readonly path: readonly MarkStep[];
+  readonly block: BlockId;
+  readonly keyPath: readonly MarkStep[];
 }
 
 /**
@@ -25,7 +27,7 @@ interface BlockMark {
  * block an entry of the file's path names, whose comment naming it is constitution's own.
  */
 interface BlockMarks {
-  readonly blocks: readonly string[];
+  readonly blocks: readonly BlockId[];
   readonly marks: readonly BlockMark[];
 }
 
@@ -55,9 +57,9 @@ const isStepOf = (step: MarkStep, held: HeldStep): boolean => {
   return Setting.isScalar(named) && String(named) === step.value;
 };
 
-const isPathOf = (steps: readonly MarkStep[], path: readonly HeldStep[]): boolean => {
+const isPathOf = (steps: readonly MarkStep[], keyPath: readonly HeldStep[]): boolean => {
   const [step, ...rest] = steps;
-  const [held, ...others] = path;
+  const [held, ...others] = keyPath;
 
   if (step === undefined || held === undefined) {
     return step === held;
@@ -66,8 +68,8 @@ const isPathOf = (steps: readonly MarkStep[], path: readonly HeldStep[]): boolea
   return isStepOf(step, held) && isPathOf(rest, others);
 };
 
-const blockAt = (marks: BlockMarks, path: readonly HeldStep[]): string | undefined =>
-  marks.marks.find((mark) => isPathOf(mark.path, path))?.block;
+const blockAt = (marks: BlockMarks, keyPath: readonly HeldStep[]): BlockId | undefined =>
+  marks.marks.find((mark) => isPathOf(mark.keyPath, keyPath))?.block;
 
 const BlockMarks = {
   blockAt,

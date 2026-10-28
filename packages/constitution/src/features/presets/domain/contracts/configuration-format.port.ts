@@ -1,3 +1,5 @@
+import type { RepositoryRelativePath } from '#/kernel/value-objects';
+
 import type { BlockMarks, Setting } from '../entities';
 import type { FileFormat } from '../value-objects';
 
@@ -6,24 +8,34 @@ enum SettingShape {
   Map = 'map',
 }
 
+/** A file as an entry names it: the path it writes and the format its key marks. */
+interface ConfigurationTarget {
+  readonly format?: FileFormat;
+  /** from its unit's folder, as its entry spells it */
+  readonly writtenPath: string;
+}
+
 interface ConfigurationFile {
+  readonly filePath: RepositoryRelativePath;
   /** the format of its text, where its name does not tell it */
-  readonly format?: FileFormat | undefined;
-  readonly path: string;
+  readonly format?: FileFormat;
   /** for a file of no format of its own; read from its text where absent */
   readonly shape?: SettingShape;
   readonly text: string;
 }
 
+/** The text parses in its format. */
 interface ConfigurationWrite extends ConfigurationFile {
   /** what each block gives, for the comments naming it, where the format holds comments */
-  readonly marks?: BlockMarks | undefined;
+  readonly marks: BlockMarks;
   readonly settings: Setting;
   /** the paths of the maps whose keys stand in their order as texts, JSON's and YAML's */
-  readonly sorted?: readonly (readonly string[])[];
+  readonly sorted: readonly (readonly string[])[];
 }
 
 interface ConfigurationFormat {
+  /** whether its writer keeps a map's keys in their order as texts, as JSON's and YAML's do */
+  readonly canSortKeys: (target: ConfigurationTarget) => boolean;
   /** undefined when the text does not parse, or no format is the file's */
   readonly read: (file: ConfigurationFile) => Setting | undefined;
   /**
@@ -34,5 +46,5 @@ interface ConfigurationFormat {
   readonly write: (file: ConfigurationWrite) => string;
 }
 
-export type { ConfigurationFile, ConfigurationFormat, ConfigurationWrite };
+export type { ConfigurationFile, ConfigurationFormat, ConfigurationTarget, ConfigurationWrite };
 export { SettingShape };

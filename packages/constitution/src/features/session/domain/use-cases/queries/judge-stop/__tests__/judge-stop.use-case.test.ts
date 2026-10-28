@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
-import { createFakeWorkingTree } from '#/__tests__/working-tree.fake';
-import { BlockId } from '#/kernel/value-objects';
+import { ConfigReadStatus } from '#/kernel/entities';
+import { AbsolutePath, BlockId } from '#/kernel/value-objects';
 
 import {
   activeBlockOf,
@@ -10,15 +10,16 @@ import {
   sessionStateOf,
 } from '../../../../../__tests__/session.fixtures';
 import { createFakeSessionQueryRepository } from '../../../../../__tests__/session-query-repository.fake';
+import { createFakeWorkingTree } from '../../../../../__tests__/working-tree.fake';
+import { TreeStateStatus } from '../../../../contracts';
 import type { StopEvent } from '../../../../entities';
-import { CheckState, HookEventName, SessionMark, StopVerdict } from '../../../../entities';
-import { SessionId } from '../../../../value-objects';
+import { HookEventName, SessionMark, StopVerdict } from '../../../../entities';
+import { SessionId, TreeFingerprint } from '../../../../value-objects';
 import { judgeStop } from '../judge-stop.use-case';
 
-// The tree's state reads "hello", whose POSIX cksum is 3287646509.
-const TREE = 'hello';
-const NOW = '3287646509';
-const EARLIER = '4294967295';
+// The tree's fingerprint now, and that of a tree before it.
+const treeNow = TreeFingerprint.create('tree-now');
+const treeBefore = TreeFingerprint.create('tree-before');
 
 const savedState = sessionStateOf({
   active: [
@@ -36,6 +37,13 @@ const savedState = sessionStateOf({
     }),
   ],
 });
+type SubagentStopEvent = Extract<
+  StopEvent,
+  {
+    readonly event: HookEventName.SubagentStop;
+  }
+>;
+
 const changedFiles = [
   'src/b.ts',
   'src/ui/a.ts',
@@ -44,7 +52,7 @@ const changedFiles = [
 
 describe('judgeStop', () => {
   it.each<{
-    agent: Pick<StopEvent, 'agentName' | 'agentType'>;
+    agent: Pick<SubagentStopEvent, 'agentName' | 'agentType'>;
     condition: string;
     isHookActive: boolean;
   }>([
@@ -80,19 +88,18 @@ describe('judgeStop', () => {
       sessions,
       workingTree: createFakeWorkingTree({
         changed: changedFiles,
-        state: TREE,
+        state: treeNow,
       }),
     });
 
     // Assert
     expect(judgement).toStrictEqual({
-      fingerprint: NOW,
+      fingerprint: treeNow,
       verdict: StopVerdict.Reviewed,
     });
   });
 
   it.each<{
-    agent: Pick<StopEvent, 'agentType'>;
     condition: string;
     event: HookEventName;
     marks: readonly {
@@ -101,64 +108,55 @@ describe('judgeStop', () => {
     }[];
   }>([
     {
-      agent: {
-        agentType: 'constitution:reviewer',
-      },
-      condition: 'the reviewer is named at the end of the main session',
+      condition: 'the main session ends on a tree the check never passed',
       event: HookEventName.Stop,
       marks: [],
     },
     {
-      agent: {},
       condition: 'the check last passed, and the gate last blocked, on another tree',
       event: HookEventName.SubagentStop,
       marks: [
         {
           mark: SessionMark.Checked,
-          value: EARLIER,
+          value: treeBefore,
         },
         {
           mark: SessionMark.Blocked,
-          value: EARLIER,
+          value: treeBefore,
         },
         {
           mark: SessionMark.Turn,
-          value: EARLIER,
+          value: treeBefore,
         },
       ],
     },
-  ])(
-    'should block the hand-back until the check passes when $condition',
-    ({ agent, event, marks }) => {
-      // Arrange
-      const sessions = createFakeSessionQueryRepository(
-        heldSessionsOf({
-          marks,
-          state: savedState,
-        }),
-      );
+  ])('should block the hand-back until the check passes when $condition', ({ event, marks }) => {
+    // Arrange
+    const sessions = createFakeSessionQueryRepository(
+      heldSessionsOf({
+        marks,
+        state: savedState,
+      }),
+    );
 
-      // Act
-      const judgement = judgeStop({
-        ...agent,
-        event,
-        isHookActive: false,
-        session: keptSession,
-        sessions,
-        workingTree: createFakeWorkingTree({
-          changed: changedFiles,
-          state: TREE,
-        }),
-      });
+    // Act
+    const judgement = judgeStop({
+      event,
+      isHookActive: false,
+      session: keptSession,
+      sessions,
+      workingTree: createFakeWorkingTree({
+        changed: changedFiles,
+        state: treeNow,
+      }),
+    });
 
-      // Assert
-      expect(judgement).toStrictEqual({
-        check: 'bun run check',
-        fingerprint: NOW,
-        verdict: StopVerdict.Blocked,
-      });
-    },
-  );
+    // Assert
+    expect(judgement).toStrictEqual({
+      fingerprint: treeNow,
+      verdict: StopVerdict.Blocked,
+    });
+  });
 
   it.each([
     {
@@ -166,49 +164,31 @@ describe('judgeStop', () => {
       marks: [
         {
           mark: SessionMark.Checked,
-          value: NOW,
+          value: treeNow,
         },
       ],
-      state: savedState,
     },
     {
       condition: 'the gate blocked the tree before',
       marks: [
         {
           mark: SessionMark.Blocked,
-          value: NOW,
+          value: treeNow,
         },
         {
           mark: SessionMark.Reviewed,
-          value: EARLIER,
+          value: treeBefore,
         },
       ],
-      state: savedState,
-    },
-    {
-      condition: 'the project names no check',
-      marks: [],
-      state: sessionStateOf({
-        ...savedState,
-        check: CheckState.create(),
-      }),
-    },
-    {
-      condition: 'constitution.yaml did not parse',
-      marks: [],
-      state: sessionStateOf({
-        ...savedState,
-        check: CheckState.unparsed(),
-      }),
     },
   ])(
     'should ask for a review of the blocks the changed files fall under when $condition',
-    ({ marks, state }) => {
+    ({ marks }) => {
       // Arrange
       const sessions = createFakeSessionQueryRepository(
         heldSessionsOf({
           marks,
-          state,
+          state: savedState,
         }),
       );
 
@@ -220,7 +200,7 @@ describe('judgeStop', () => {
         sessions,
         workingTree: createFakeWorkingTree({
           changed: changedFiles,
-          state: TREE,
+          state: treeNow,
         }),
       });
 
@@ -251,7 +231,7 @@ describe('judgeStop', () => {
       marks: [
         {
           mark: SessionMark.Turn,
-          value: NOW,
+          value: treeNow,
         },
       ],
     },
@@ -263,11 +243,11 @@ describe('judgeStop', () => {
       marks: [
         {
           mark: SessionMark.Checked,
-          value: NOW,
+          value: treeNow,
         },
         {
           mark: SessionMark.Reviewed,
-          value: NOW,
+          value: treeNow,
         },
       ],
     },
@@ -279,7 +259,7 @@ describe('judgeStop', () => {
       marks: [
         {
           mark: SessionMark.Checked,
-          value: NOW,
+          value: treeNow,
         },
       ],
     },
@@ -293,7 +273,7 @@ describe('judgeStop', () => {
       marks: [
         {
           mark: SessionMark.Checked,
-          value: NOW,
+          value: treeNow,
         },
       ],
     },
@@ -314,7 +294,7 @@ describe('judgeStop', () => {
       sessions,
       workingTree: createFakeWorkingTree({
         changed,
-        state: TREE,
+        state: treeNow,
       }),
     });
 
@@ -322,11 +302,164 @@ describe('judgeStop', () => {
     expect(judgement).toBeUndefined();
   });
 
-  it('should judge nothing when the session kept no state', () => {
+  it('should tell the gate cannot judge the tree when git fails for a reason not yet told', () => {
     // Arrange
     const sessions = createFakeSessionQueryRepository(
       heldSessionsOf({
+        marks: [
+          {
+            mark: SessionMark.Unjudged,
+            value: 'fatal: an older failure',
+          },
+        ],
         state: savedState,
+      }),
+    );
+
+    // Act
+    const judgement = judgeStop({
+      event: HookEventName.Stop,
+      isHookActive: false,
+      session: keptSession,
+      sessions,
+      workingTree: createFakeWorkingTree({
+        changed: changedFiles,
+        state: {
+          reason: 'fatal: bad config',
+          status: TreeStateStatus.Failed,
+        },
+      }),
+    });
+
+    // Assert
+    expect(judgement).toStrictEqual({
+      reason: 'fatal: bad config',
+      verdict: StopVerdict.Unjudged,
+    });
+  });
+
+  it.each<{
+    condition: string;
+    event: StopEvent;
+    marks: readonly {
+      mark: SessionMark;
+      value: string;
+    }[];
+    tree: Parameters<typeof createFakeWorkingTree>[0];
+  }>([
+    {
+      condition: 'the project lies in no repository',
+      event: {
+        event: HookEventName.Stop,
+        isHookActive: false,
+        session: keptSession,
+      },
+      marks: [
+        {
+          mark: SessionMark.Turn,
+          value: treeBefore,
+        },
+        {
+          mark: SessionMark.Checked,
+          value: treeBefore,
+        },
+        {
+          mark: SessionMark.Blocked,
+          value: treeBefore,
+        },
+      ],
+      tree: {
+        repositoryFolderPath: '/work/elsewhere',
+      },
+    },
+    {
+      condition: 'git fails for the reason told before',
+      event: {
+        event: HookEventName.Stop,
+        isHookActive: false,
+        session: keptSession,
+      },
+      marks: [
+        {
+          mark: SessionMark.Unjudged,
+          value: 'fatal: bad config',
+        },
+      ],
+      tree: {
+        state: {
+          reason: 'fatal: bad config',
+          status: TreeStateStatus.Failed,
+        },
+      },
+    },
+    {
+      condition: 'the reviewer stops while git fails',
+      event: {
+        agentType: 'constitution:reviewer',
+        event: HookEventName.SubagentStop,
+        isHookActive: false,
+        session: keptSession,
+      },
+      marks: [],
+      tree: {
+        state: {
+          reason: 'fatal: bad config',
+          status: TreeStateStatus.Failed,
+        },
+      },
+    },
+    {
+      condition: 'a stop hook is already active while git fails',
+      event: {
+        event: HookEventName.Stop,
+        isHookActive: true,
+        session: keptSession,
+      },
+      marks: [],
+      tree: {
+        state: {
+          reason: 'fatal: bad config',
+          status: TreeStateStatus.Failed,
+        },
+      },
+    },
+  ])('should say nothing of the tree when $condition', ({ event, marks, tree }) => {
+    // Arrange
+    const sessions = createFakeSessionQueryRepository(
+      heldSessionsOf({
+        marks,
+        state: savedState,
+      }),
+    );
+
+    // Act
+    const judgement = judgeStop({
+      ...event,
+      sessions,
+      workingTree: createFakeWorkingTree(tree),
+    });
+
+    // Assert
+    expect(judgement).toBeUndefined();
+  });
+
+  it.each([
+    {
+      condition: 'the session kept no state',
+      session: SessionId.create('session-2'),
+    },
+    {
+      condition: 'the session started where constitution.yaml did not parse',
+      session: keptSession,
+    },
+  ])('should judge nothing when $condition', ({ session }) => {
+    // Arrange
+    const sessions = createFakeSessionQueryRepository(
+      heldSessionsOf({
+        state: {
+          repositoryFolderPath: AbsolutePath.create('/work/project'),
+          status: ConfigReadStatus.Unparsed,
+        },
       }),
     );
 
@@ -335,11 +468,11 @@ describe('judgeStop', () => {
       agentType: 'constitution:reviewer',
       event: HookEventName.SubagentStop,
       isHookActive: false,
-      session: SessionId.create('session-2'),
+      session,
       sessions,
       workingTree: createFakeWorkingTree({
         changed: changedFiles,
-        state: TREE,
+        state: treeNow,
       }),
     });
 

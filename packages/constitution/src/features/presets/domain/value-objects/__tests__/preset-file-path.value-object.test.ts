@@ -1,9 +1,42 @@
 import { describe, expect, it } from 'bun:test';
 
+import fc from 'fast-check';
+
 import { Axis } from '#/kernel/constants';
+import { BlockId } from '#/kernel/value-objects';
 
 import type { PathRead } from '../preset-file-path.value-object';
 import { PathKind, PresetFilePath } from '../preset-file-path.value-object';
+
+// Paths of the segments a preset file's path is made of, and of any text.
+const pathsInPresets = fc.oneof(
+  fc
+    .array(
+      fc.constantFrom(
+        'biome',
+        'Biome',
+        'foundation',
+        'workflow',
+        'with',
+        'css',
+        'foundation.yaml',
+        'css.yaml',
+        '',
+      ),
+      {
+        maxLength: 7,
+      },
+    )
+    .map((segments) => segments.join('/')),
+  fc.string(),
+);
+
+// The invariant: a preset file's place, written again, is the path it was read from.
+const isReadBack = (path: string): boolean => {
+  const read = PresetFilePath.readOf(path);
+
+  return read.kind !== PathKind.PresetFile || PresetFilePath.textOf(read.presetFile) === path;
+};
 
 describe('PresetFilePath', () => {
   it.each<{
@@ -17,7 +50,7 @@ describe('PresetFilePath', () => {
       read: {
         presetFile: {
           axis: Axis.Foundation,
-          reader: 'biome',
+          reader: BlockId.create('biome'),
           withs: [],
         },
         kind: PathKind.PresetFile,
@@ -29,9 +62,9 @@ describe('PresetFilePath', () => {
       read: {
         presetFile: {
           axis: Axis.Architecture,
-          reader: 'biome',
+          reader: BlockId.create('biome'),
           withs: [
-            'typescript',
+            BlockId.create('typescript'),
           ],
         },
         kind: PathKind.PresetFile,
@@ -43,10 +76,10 @@ describe('PresetFilePath', () => {
       read: {
         presetFile: {
           axis: Axis.Workflow,
-          reader: 'biome',
+          reader: BlockId.create('biome'),
           withs: [
-            'css',
-            'browser',
+            BlockId.create('css'),
+            BlockId.create('browser'),
           ],
         },
         kind: PathKind.PresetFile,
@@ -95,6 +128,20 @@ describe('PresetFilePath', () => {
       },
     },
     {
+      condition: 'its reader is spelled as no block is',
+      path: 'Biome/foundation.yaml',
+      read: {
+        kind: PathKind.Misplaced,
+      },
+    },
+    {
+      condition: 'a block it names beyond its reader is spelled as no block is',
+      path: 'biome/foundation/with/css/with/Browser.yaml',
+      read: {
+        kind: PathKind.Misplaced,
+      },
+    },
+    {
       condition: "it lies in a reader's folder that is no axis",
       path: 'biome/plugins/settings.yaml',
       read: {
@@ -123,14 +170,22 @@ describe('PresetFilePath', () => {
     expect(found).toStrictEqual(read);
   });
 
+  it('should read any path as data, misplaced, or a preset file it writes back', () => {
+    // Act
+    const run = fc.check(fc.property(pathsInPresets, isReadBack));
+
+    // Assert
+    expect(run.counterexample).toBeNull();
+  });
+
   it('should write the path of a preset file under presets/', () => {
     // Arrange
     const presetFile = {
       axis: Axis.Foundation,
-      reader: 'biome',
+      reader: BlockId.create('biome'),
       withs: [
-        'css',
-        'browser',
+        BlockId.create('css'),
+        BlockId.create('browser'),
       ],
     };
 

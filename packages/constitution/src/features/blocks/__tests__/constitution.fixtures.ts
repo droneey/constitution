@@ -1,16 +1,11 @@
 import { createFakeProjectFiles } from '#/__tests__/project-files.fake';
 import { AXES, Axis } from '#/kernel/constants';
+import { AbsolutePath } from '#/kernel/value-objects';
 
 import { createJsonManifestParser } from '../adapters/json';
 import { createYamlFrontMatterParser } from '../adapters/yaml';
 import type { FileTree, FrontMatterParser, ManifestParser } from '../domain/contracts';
-import { BlockGraph } from '../domain/entities';
-import type { CheckBlocksInput, CheckInput } from '../domain/use-cases/queries/check';
-import type {
-  Base,
-  ConstitutionLoaded,
-} from '../domain/use-cases/queries/check/steps/load-constitution';
-import { loadConstitution } from '../domain/use-cases/queries/check/steps/load-constitution';
+import type { CheckBlocksInput } from '../domain/use-cases/queries/check';
 import { createFakeFileTree } from './file-tree.fake';
 
 type Files = Record<string, string>;
@@ -116,32 +111,15 @@ const sourceOf = (files: Readonly<Files>, repositoryFiles: Readonly<Files> = fil
   tree: createFakeFileTree(files),
 });
 
-interface PackSourceInput {
-  readonly base: Readonly<Files>;
-  readonly folder?: string;
-  readonly pack: Readonly<Files>;
-}
-
-// A pack beside the base it extends, installed where a project keeps it unless the case says otherwise.
-const packSourceOf = (
-  input: PackSourceInput,
-): Source & {
-  base: Base;
-} => ({
-  ...sourceOf(input.pack),
-  base: {
-    folder: input.folder ?? '.droneey/constitution',
-    tree: createFakeFileTree(input.base),
-  },
-});
-
 // The blocks of a folder as their check reads them: the files git holds there, those of its
 // repository, and those of the installed Constitution a pack extends.
 const FOLDER = '/work/constitution';
-const BASE = '/work/base';
+const BASE_FOLDER = '.droneey/constitution';
+const basePath = `${FOLDER}/${BASE_FOLDER}`;
 
 interface CheckSourceInput {
   readonly base?: Readonly<Files>;
+  readonly baseFolder?: string;
   readonly files: Readonly<Files>;
 }
 
@@ -150,7 +128,13 @@ const checkSourceOf = (input: CheckSourceInput): CheckBlocksInput => ({
   ...(input.base === undefined
     ? {}
     : {
-        base: BASE,
+        base: {
+          folder: input.baseFolder ?? BASE_FOLDER,
+          folderPath: AbsolutePath.join(
+            AbsolutePath.create(FOLDER),
+            input.baseFolder ?? BASE_FOLDER,
+          ),
+        },
       }),
   files: createFakeProjectFiles({
     files: Object.fromEntries(
@@ -160,36 +144,14 @@ const checkSourceOf = (input: CheckSourceInput): CheckBlocksInput => ({
       ]),
     ),
   }),
-  folder: FOLDER,
+  folderPath: AbsolutePath.create(FOLDER),
   trees: {
-    installed: (): FileTree => createFakeFileTree(input.base ?? {}),
+    installed: (folderPath: AbsolutePath): FileTree =>
+      createFakeFileTree(folderPath === basePath ? (input.base ?? {}) : {}),
     repository: (): FileTree => createFakeFileTree(input.files),
     tracked: (): FileTree => createFakeFileTree(input.files),
   },
 });
-
-const loadedOf = (
-  files: Readonly<Files>,
-  repositoryFiles: Readonly<Files> = files,
-): ConstitutionLoaded => loadConstitution(sourceOf(files, repositoryFiles));
-
-const checkInputOf = (
-  files: Readonly<Files>,
-  repositoryFiles: Readonly<Files> = files,
-): CheckInput => {
-  const { constitution, findings } = loadedOf(files, repositoryFiles);
-
-  if (findings.length > 0) {
-    throw new Error(
-      `The fixture does not load: ${findings.map((finding) => `${finding.path}: ${finding.code} ${JSON.stringify(finding.details)}`).join('; ')}`,
-    );
-  }
-
-  return {
-    graph: BlockGraph.create(constitution.blocks),
-    constitution,
-  };
-};
 
 interface FixtureFileInput {
   readonly files: Readonly<Files>;
@@ -209,16 +171,5 @@ const textOf = (input: FixtureFileInput): string => {
 const without = (input: FixtureFileInput): Files =>
   Object.fromEntries(Object.entries(input.files).filter(([candidate]) => candidate !== input.path));
 
-export type { BlockFixture, Files, RuleFixture };
-export {
-  blockFiles,
-  chapterFile,
-  checkInputOf,
-  checkSourceOf,
-  loadedOf,
-  packSourceOf,
-  passportFile,
-  rule,
-  textOf,
-  without,
-};
+export type { BlockFixture, Files, RuleFixture, Source };
+export { blockFiles, chapterFile, checkSourceOf, passportFile, rule, sourceOf, textOf, without };

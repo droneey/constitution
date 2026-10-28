@@ -4,8 +4,9 @@ import { Axis, Level } from '#/kernel/constants';
 import type { FindingOf } from '#/kernel/types';
 import { BlockId, RuleSlug } from '#/kernel/value-objects';
 
-import { checkInputOf, rule } from '../../../../../../__tests__/constitution.fixtures';
+import { rule } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
+import { checkInputOf } from '../../__tests__/check.fixtures';
 import type { RulesDetails } from '../rules';
 import { RulesCode, rulesCheck } from '../rules';
 

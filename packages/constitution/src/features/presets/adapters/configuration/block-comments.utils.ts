@@ -1,13 +1,14 @@
 import { isDeepEqual } from '#/kernel/utils';
 
+import type { ConfigurationWrite } from '../../domain/contracts';
 import type { BlockMarks, HeldStep } from '../../domain/entities';
 import { BlockMarks as Marks } from '../../domain/entities';
-import type { SettingsText } from './settings-text.types';
+import { NEWLINE } from './text.constants';
 
 /** The line that begins a key or an item of the file, by the path to it from the file's top. */
 interface Anchor {
+  readonly keyPath: readonly HeldStep[];
   readonly line: number;
-  readonly path: readonly HeldStep[];
 }
 
 interface Commenting {
@@ -19,16 +20,16 @@ interface Commenting {
 }
 
 interface AnchorAtInput {
+  readonly keyPath: readonly HeldStep[];
   /** what may stand before the key or the item on a line it opens */
   readonly lineStart: RegExp;
   readonly offset: number;
-  readonly path: readonly HeldStep[];
   readonly text: string;
 }
 
 interface BlockCommentsInput {
   readonly commenting: Commenting;
-  readonly write: (written: SettingsText) => string;
+  readonly write: (written: ConfigurationWrite) => string;
 }
 
 interface Marked {
@@ -38,11 +39,10 @@ interface Marked {
 }
 
 interface Seen {
+  readonly keyPath: readonly HeldStep[];
   readonly marked: Marked | undefined;
-  readonly path: readonly HeldStep[];
 }
 
-const NEWLINE = '\n';
 const OPENERS = [
   '{',
   '[',
@@ -60,7 +60,7 @@ const anchorAt = (input: AnchorAtInput): readonly Anchor[] => {
     ? [
         {
           line: lineAt(input.text, input.offset),
-          path: input.path,
+          keyPath: input.keyPath,
         },
       ]
     : [];
@@ -68,9 +68,9 @@ const anchorAt = (input: AnchorAtInput): readonly Anchor[] => {
 
 const noTextLines = (): ReadonlySet<number> => new Set();
 
-const markedOf = (marks: BlockMarks, path: readonly HeldStep[]): Marked | undefined => {
-  for (let depth = 1; depth <= path.length; depth += 1) {
-    const block = Marks.blockAt(marks, path.slice(0, depth));
+const markedOf = (marks: BlockMarks, keyPath: readonly HeldStep[]): Marked | undefined => {
+  for (let depth = 1; depth <= keyPath.length; depth += 1) {
+    const block = Marks.blockAt(marks, keyPath.slice(0, depth));
 
     if (block !== undefined) {
       return {
@@ -86,7 +86,7 @@ const markedOf = (marks: BlockMarks, path: readonly HeldStep[]): Marked | undefi
 // A run goes on while the key or the item before is a sibling the same block gives.
 const isRunOf = (input: {
   marked: Marked;
-  path: readonly HeldStep[];
+  keyPath: readonly HeldStep[];
   previous: Seen | undefined;
 }): boolean => {
   const { marked, previous } = input;
@@ -94,7 +94,10 @@ const isRunOf = (input: {
   return (
     previous?.marked?.block === marked.block &&
     previous.marked.depth === marked.depth &&
-    isDeepEqual(previous.path.slice(0, marked.depth - 1), input.path.slice(0, marked.depth - 1))
+    isDeepEqual(
+      previous.keyPath.slice(0, marked.depth - 1),
+      input.keyPath.slice(0, marked.depth - 1),
+    )
   );
 };
 
@@ -140,13 +143,13 @@ const markedLines = (input: {
   let previous: Seen | undefined;
 
   for (const anchor of input.commenting.anchorsOf(input.text)) {
-    const marked = markedOf(input.marks, anchor.path);
+    const marked = markedOf(input.marks, anchor.keyPath);
 
     if (
       marked !== undefined &&
       !isRunOf({
         marked,
-        path: anchor.path,
+        keyPath: anchor.keyPath,
         previous,
       })
     ) {
@@ -155,7 +158,7 @@ const markedLines = (input: {
 
     previous = {
       marked,
-      path: anchor.path,
+      keyPath: anchor.keyPath,
     };
   }
 
@@ -223,13 +226,9 @@ const commented = (input: { commenting: Commenting; marks: BlockMarks; text: str
  * and laid again on what it wrote; the file's own comments stay where the writer keeps them.
  */
 const withBlockComments =
-  (input: BlockCommentsInput): ((written: SettingsText) => string) =>
-  (written: SettingsText): string => {
+  (input: BlockCommentsInput): ((written: ConfigurationWrite) => string) =>
+  (written: ConfigurationWrite): string => {
     const { marks } = written;
-
-    if (marks === undefined) {
-      return input.write(written);
-    }
 
     return commented({
       commenting: input.commenting,

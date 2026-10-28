@@ -1,10 +1,12 @@
 import type { Layer } from '#/kernel/constants';
+import { BlockModel } from '#/kernel/entities';
 import type { FindingOf, ProblemOf } from '#/kernel/types';
 import { BlockId, coreBlockId } from '#/kernel/value-objects';
 
-import type { BlockGraph } from '../../../../entities';
-import { Block, requirableBy } from '../../../../entities';
+import type { Block } from '../../../../entities';
+import { requirableBy } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
+import { findingsAt } from '../utils';
 
 enum RequiresCode {
   RequiresCore = 'requires-core',
@@ -49,7 +51,7 @@ type RequiresProblem = ProblemOf<RequiresDetails>;
 
 interface Subject {
   readonly block: Block;
-  readonly graph: BlockGraph;
+  readonly model: BlockModel;
 }
 
 const requireProblem = (
@@ -58,7 +60,7 @@ const requireProblem = (
     id: BlockId;
   },
 ): RequiresProblem | undefined => {
-  const target = input.graph.get(input.id);
+  const target = BlockModel.blockOf(input.model, input.id);
 
   if (BlockId.equals(input.id, coreBlockId)) {
     return {
@@ -76,7 +78,7 @@ const requireProblem = (
     };
   }
 
-  if (Block.sameAs(target, input.block)) {
+  if (BlockId.equals(target.id, input.block.id)) {
     return {
       code: RequiresCode.RequiresItself,
       details: {},
@@ -103,7 +105,7 @@ const extendsProblem = (subject: Subject): RequiresProblem | undefined => {
     return undefined;
   }
 
-  const target = subject.graph.get(base);
+  const target = BlockModel.blockOf(subject.model, base);
 
   if (target === undefined) {
     return {
@@ -114,7 +116,7 @@ const extendsProblem = (subject: Subject): RequiresProblem | undefined => {
     };
   }
 
-  if (Block.sameAs(target, subject.block)) {
+  if (BlockId.equals(target.id, subject.block.id)) {
     return {
       code: RequiresCode.ExtendsItself,
       details: {},
@@ -131,7 +133,7 @@ const extendsProblem = (subject: Subject): RequiresProblem | undefined => {
     };
   }
 
-  return target.frontMatter.abstract
+  return BlockModel.isExtensible(subject.model, base)
     ? undefined
     : {
         code: RequiresCode.ExtendsConcrete,
@@ -158,26 +160,17 @@ const blockFindings = (subject: Subject): readonly RequiresFinding[] => {
     extendsProblem(subject),
   ];
 
-  return problems.flatMap((problem) =>
-    problem === undefined
-      ? []
-      : [
-          {
-            ...problem,
-            path: subject.block.passport.path,
-          },
-        ],
-  );
+  return findingsAt(subject.block.passport.path, problems);
 };
 
 const requiresCheck: Check<RequiresFinding> = ({
-  graph,
   constitution,
+  model,
 }: CheckInput): readonly RequiresFinding[] =>
   constitution.blocks.flatMap((block) =>
     blockFindings({
       block,
-      graph,
+      model,
     }),
   );
 

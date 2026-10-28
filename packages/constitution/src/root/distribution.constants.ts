@@ -1,6 +1,6 @@
-// Stryker disable all: read only by the wiring, which mutation testing leaves out
 /** The distribution's map, in the folder of the package that delivers it. */
-const DISTRIBUTION_MAP = 'distribution.json';
+// Stryker disable next-line StringLiteral: read only by the wiring, which mutation testing leaves out
+const DISTRIBUTION_MAP_NAME = 'distribution.json';
 
 /** Where a package the distribution packs declares its build. */
 const PACKAGE_BUILDS = [
@@ -9,7 +9,7 @@ const PACKAGE_BUILDS = [
       'scripts',
       'build',
     ],
-    manifest: 'package.json',
+    manifestName: 'package.json',
   },
   {
     keys: [
@@ -18,8 +18,8 @@ const PACKAGE_BUILDS = [
       'tasks',
       'build',
     ],
-    manifest: 'pyproject.toml',
+    manifestName: 'pyproject.toml',
   },
 ] as const;
 
-export { DISTRIBUTION_MAP, PACKAGE_BUILDS };
+export { DISTRIBUTION_MAP_NAME, PACKAGE_BUILDS };

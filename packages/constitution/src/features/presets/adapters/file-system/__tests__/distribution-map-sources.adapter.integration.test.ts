@@ -4,6 +4,9 @@ import { join } from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
+import { AbsolutePath } from '#/kernel/value-objects';
+
+import { runDistributionSourcesSuite } from '../../../__tests__/distribution-sources.suite';
 import { createDistributionMapSources } from '../distribution-map-sources.adapter';
 
 let folder = '';
@@ -33,26 +36,30 @@ const mapOf = (packages: readonly string[]): string =>
     ),
   );
 
-const packagesOf = (): readonly (readonly string[])[] => [
-  ...createDistributionMapSources({
-    builds: [
-      {
-        keys: [
-          'tasks',
-          'build',
-        ],
-        manifest: 'tasks.json',
-      },
-      {
-        keys: [
-          'tool',
-          'build',
-        ],
-        manifest: 'tasks.toml',
-      },
-    ],
-    map: MAP,
-  }).packagesOf(join(folder, 'distribution')),
+const sources = createDistributionMapSources({
+  builds: [
+    {
+      keys: [
+        'tasks',
+        'build',
+      ],
+      manifestName: 'tasks.json',
+    },
+    {
+      keys: [
+        'tool',
+        'build',
+      ],
+      manifestName: 'tasks.toml',
+    },
+  ],
+  mapName: MAP,
+});
+
+const releaseFolderPath = (): AbsolutePath => AbsolutePath.create(join(folder, 'distribution'));
+
+const builtFilesOf = (): readonly string[] => [
+  ...sources.builtFilesOf(releaseFolderPath()),
 ];
 
 beforeEach(() => {
@@ -93,18 +100,12 @@ describe('createDistributionMapSources', () => {
     });
 
     // Act
-    const packages = packagesOf();
+    const built = builtFilesOf();
 
     // Assert
-    expect(packages).toStrictEqual([
-      [
-        'tools/scripted/dist/scripted.js',
-        '../scripted',
-      ],
-      [
-        'tools/tasked/dist/tasked.js',
-        '../tasked',
-      ],
+    expect(built).toStrictEqual([
+      'tools/scripted/dist/scripted.js',
+      'tools/tasked/dist/tasked.js',
     ]);
   });
 
@@ -129,14 +130,53 @@ describe('createDistributionMapSources', () => {
         }),
       },
     },
-  ])('should give no package when $condition', ({ files }) => {
+  ])('should give no file when $condition', ({ files }) => {
     // Arrange
     writeFolder(files);
 
     // Act
-    const packages = packagesOf();
+    const built = builtFilesOf();
 
     // Assert
-    expect(packages).toStrictEqual([]);
+    expect(built).toStrictEqual([]);
   });
+});
+
+runDistributionSourcesSuite({
+  name: 'createDistributionMapSources',
+  sourcesOf: (world) => {
+    const packed = [
+      ...world.built,
+      ...world.unbuilt,
+    ];
+
+    writeFolder({
+      [`distribution/${MAP}`]: JSON.stringify(
+        Object.fromEntries(
+          packed.map((file, at) => [
+            file,
+            {
+              file,
+              package: `../package-${at}`,
+            },
+          ]),
+        ),
+      ),
+      ...Object.fromEntries(
+        world.built.map((_file, at) => [
+          `package-${at}/tasks.json`,
+          JSON.stringify({
+            tasks: {
+              build: 'make',
+            },
+          }),
+        ]),
+      ),
+    });
+
+    return {
+      releaseFolderPath: releaseFolderPath(),
+      sources,
+    };
+  },
 });

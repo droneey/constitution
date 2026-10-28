@@ -1,12 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import {
-  attempted,
-  isRangeError,
-  isSyntaxError,
-  recognisedFailure,
-  syntaxErrorOf,
-} from '../failures.utils';
+import { attempted, isRangeError, isSyntaxError, recognisedFailure } from '../failures.utils';
 
 const syntaxError = new SyntaxError('Unexpected token');
 const defect = new TypeError('undefined is not a function');
@@ -129,29 +123,5 @@ describe('isRangeError', () => {
 
     // Assert
     expect(answer).toBe(isRange);
-  });
-});
-
-describe('syntaxErrorOf', () => {
-  it('should give back a syntax error when a parse failed with one', () => {
-    // Arrange
-    const thrown: unknown = syntaxError;
-
-    // Act
-    const failure = syntaxErrorOf(thrown);
-
-    // Assert
-    expect(failure).toBe(syntaxError);
-  });
-
-  it('should rethrow any other failure when a parse failed with it', async () => {
-    // Arrange
-    const thrown: unknown = defect;
-
-    // Act
-    const outcome = Promise.try(() => syntaxErrorOf(thrown));
-
-    // Assert
-    await expect(outcome).rejects.toBe(defect);
   });
 });

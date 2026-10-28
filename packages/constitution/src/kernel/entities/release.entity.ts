@@ -1,4 +1,4 @@
-import type { Version } from '../value-objects';
+import type { AbsolutePath, Version } from '../value-objects';
 
 enum ReleaseStatus {
   Installed = 'installed',
@@ -7,6 +7,14 @@ enum ReleaseStatus {
   Older = 'older',
   /** its block format is newer than the newest this program reads */
   Newer = 'newer',
+  /** its manifest is missing or cannot be read */
+  ManifestUnreadable = 'manifest-unreadable',
+  /** its manifest is no JSON object */
+  ManifestNotObject = 'manifest-not-object',
+  /** its manifest gives fields of another form */
+  ManifestMalformed = 'manifest-malformed',
+  /** its manifest names a block format this program reads, and no version */
+  VersionMissing = 'version-missing',
 }
 
 type Release =
@@ -23,6 +31,19 @@ type Release =
   | {
       readonly format: number;
       readonly status: ReleaseStatus.Newer;
+    }
+  | {
+      readonly manifest: AbsolutePath;
+      readonly status:
+        | ReleaseStatus.ManifestUnreadable
+        | ReleaseStatus.ManifestNotObject
+        | ReleaseStatus.VersionMissing;
+    }
+  | {
+      /** the fields of another form, each by its path, at least one */
+      readonly fields: readonly string[];
+      readonly manifest: AbsolutePath;
+      readonly status: ReleaseStatus.ManifestMalformed;
     };
 
 const NEWEST_FORMAT = 4;

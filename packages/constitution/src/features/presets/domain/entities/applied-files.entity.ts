@@ -1,20 +1,19 @@
+import type { AbsolutePath } from '#/kernel/value-objects';
+
 import type { Lock } from './lock.entity';
 
-/** A file's new text, by its absolute path. */
 interface FileText {
-  readonly path: string;
+  readonly filePath: AbsolutePath;
   readonly text: string;
 }
 
-/** A unit's new lock, by the unit's absolute folder. */
 interface UnitLock {
-  readonly folder: string;
   readonly lock: Lock;
+  readonly unitFolderPath: AbsolutePath;
 }
 
 interface AppliedFiles {
-  /** by their absolute paths */
-  readonly deleted: readonly string[];
+  readonly deletedFilePaths: readonly AbsolutePath[];
   readonly files: readonly FileText[];
   readonly locks: readonly UnitLock[];
 }

@@ -1,4 +1,4 @@
-import type { AccentTokens } from '@droneey/design-cli';
+import type { AccentScale } from '@droneey/design-cli';
 
 import type { SessionsPlace } from '#/features/session/adapters/session-store';
 import type { CommandIo, CommandPlaces, ExitCode } from '#/shared/cli';
@@ -6,7 +6,7 @@ import type { CommandIo, CommandPlaces, ExitCode } from '#/shared/cli';
 import type { Streams } from './presentation';
 
 interface ProgramInput {
-  readonly accent: AccentTokens;
+  readonly accent: AccentScale;
   readonly environment: {
     /** the folder Claude Code keeps its own files in */
     readonly claudeConfig: string;

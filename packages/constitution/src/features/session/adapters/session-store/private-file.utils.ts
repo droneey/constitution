@@ -33,7 +33,9 @@ interface FileText {
 
 type OpenedWrite = FileText & OpenInput;
 
-/** undefined for no file, or for a link in its place, which is never followed */
+/**
+ * The file's text, or undefined for no file or for a link in its place, which is never followed.
+ */
 const readUnfollowed = (path: string): string | undefined =>
   attempted({
     effect: () =>

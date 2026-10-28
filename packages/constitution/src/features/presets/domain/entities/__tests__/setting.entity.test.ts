@@ -24,17 +24,17 @@ describe('Setting', () => {
   it.each<{
     condition: string;
     held: Setting | undefined;
-    path: readonly string[];
+    keyPath: readonly string[];
   }>([
     {
       condition: 'the path is empty',
       held: rules,
-      path: [],
+      keyPath: [],
     },
     {
       condition: 'keys lead to it',
       held: 3,
-      path: [
+      keyPath: [
         'options',
         'depth',
       ],
@@ -42,14 +42,14 @@ describe('Setting', () => {
     {
       condition: 'an address names a field only a text of the list holds',
       held: undefined,
-      path: [
+      keyPath: [
         'forbidden[length=5]',
       ],
     },
     {
       condition: 'an address names an element',
       held: 'error',
-      path: [
+      keyPath: [
         'forbidden[name=no-cycles]',
         'severity',
       ],
@@ -57,7 +57,7 @@ describe('Setting', () => {
     {
       condition: 'an address names a number as its text',
       held: 'by-number',
-      path: [
+      keyPath: [
         'forbidden[id=7]',
         'name',
       ],
@@ -65,29 +65,29 @@ describe('Setting', () => {
     {
       condition: 'an address names no element',
       held: undefined,
-      path: [
+      keyPath: [
         'forbidden[name=gone]',
       ],
     },
     {
       condition: 'an address names no list',
       held: undefined,
-      path: [
+      keyPath: [
         'options[name=depth]',
       ],
     },
     {
       condition: 'a key passes through a scalar',
       held: undefined,
-      path: [
+      keyPath: [
         'options',
         'depth',
         'more',
       ],
     },
-  ])('should give what a path holds when $condition', ({ held, path }) => {
+  ])('should give what a path holds when $condition', ({ held, keyPath }) => {
     // Act
-    const found = Settings.at(rules, path);
+    const found = Settings.at(rules, keyPath);
 
     // Assert
     expect(found).toStrictEqual(held);
@@ -95,14 +95,14 @@ describe('Setting', () => {
 
   it.each<{
     condition: string;
-    path: readonly string[];
+    keyPath: readonly string[];
     placed: Setting;
     setting: Setting | undefined;
     written: Setting;
   }>([
     {
       condition: 'the path is empty',
-      path: [],
+      keyPath: [],
       setting: {
         kept: true,
       },
@@ -111,7 +111,7 @@ describe('Setting', () => {
     },
     {
       condition: 'its maps are absent, or a scalar stands in their place',
-      path: [
+      keyPath: [
         'a',
         'b',
       ],
@@ -129,7 +129,7 @@ describe('Setting', () => {
     },
     {
       condition: 'an address names an element that a map is laid into',
-      path: [
+      keyPath: [
         'forbidden[name=no-cycles]',
       ],
       setting: rules,
@@ -155,7 +155,7 @@ describe('Setting', () => {
     },
     {
       condition: 'an address names an element no list holds, below which the path goes on',
-      path: [
+      keyPath: [
         'jobs[name=lint]',
         'run',
       ],
@@ -174,7 +174,7 @@ describe('Setting', () => {
     },
     {
       condition: 'a map is placed below an addressed element',
-      path: [
+      keyPath: [
         'jobs[name=lint]',
         'options',
       ],
@@ -201,7 +201,7 @@ describe('Setting', () => {
     },
     {
       condition: 'an address names a new element of a list',
-      path: [
+      keyPath: [
         'jobs[name=fix]',
       ],
       setting: {
@@ -221,10 +221,10 @@ describe('Setting', () => {
         ],
       },
     },
-  ])('should write a value at a path when $condition', ({ path, placed, setting, written }) => {
+  ])('should write a value at a path when $condition', ({ keyPath, placed, setting, written }) => {
     // Act
     const withValue = Settings.withAt({
-      path,
+      keyPath,
       setting,
       value: placed,
     });

@@ -6,6 +6,7 @@ import { parse } from 'jsonc-parser';
 
 import { cliPath } from './cli.fixtures';
 import type { Files } from './constitution.fixtures';
+import { environmentOf } from './package.fixtures';
 import { createPluginRoot, distributionOf, linkDistribution } from './plugin-root.fixtures';
 import type { ProjectLayout } from './project.fixtures';
 import { createProject } from './project.fixtures';
@@ -125,12 +126,14 @@ const applyIn = (input: ApplyInput): Applied => {
     {
       cwd: input.project,
       encoding: 'utf8',
-      env: Object.fromEntries([
-        [
-          'PATH',
-          '/usr/bin:/bin',
-        ],
-      ]),
+      env: environmentOf(
+        new Map([
+          [
+            'PATH',
+            '/usr/bin:/bin',
+          ],
+        ]),
+      ),
     },
   );
 

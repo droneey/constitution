@@ -1,0 +1,147 @@
+# an ini-like file changes a pair, gains a pair and a section, and keeps its comments
+root = true
+
+# all
+[*]
+indent = 2
+style = space
+
+[*.md]
+trim = false
+
+
+# an ini-like file keeps a header holding "=", finds an indented header, and places a pair before the blanks that close its section
+[a=b]
+# c = d
+k = 2
+q = 5
+  [c]  
+x = 1
+y = 3
+z = 4
+  
+[d]
+
+
+# an ini-like file gains a top pair above the blanks that open it
+top = 1
+
+[a]
+b = 1
+
+
+# an ini-like file is new and its settings give its top pairs after its sections
+top = 1
+
+[a]
+b = 1
+
+[c]
+d = 2
+
+
+# an ini-like file of top pairs alone gains the section of every file
+root = true
+
+[*]
+indent = 2
+
+
+# an ini-like file that ends in a blank gains a section
+k = 1
+j = 2
+
+[c]
+d = 2
+
+
+# an ini-like file is new and opens with a section
+[a]
+b = 1
+
+
+# an ini-like file gains a section after a pair
+[a]
+b = 1
+
+[c]
+d = 2
+
+
+# an ini-like file is new
+shell = bash
+
+
+# an ini-like file is given settings that are no map
+[a]
+
+
+# an ini-like section is given a value that is no map
+[*]
+
+
+# an ini-like file loses a pair named as a field every object holds
+[a]
+b = 2
+
+
+# an ini-like file is new and its settings give a section that narrows every file first
+root = true
+
+[*]
+indent = 2
+trim = true
+
+[*.golden.*]
+trim = false
+
+
+# an ini-like file holds only a section that narrows every file
+root = true
+
+[*]
+indent = 2
+
+[*.md]
+trim = false
+
+
+# an ini-like file gains the section of every file above the comment that opens its first section
+root = true
+
+[*]
+indent = 2
+
+# markdown files keep trailing spaces
+[*.md]
+trim = false
+
+
+# an ini-like section gains a pair above the comment that opens the next section, and the last a pair below the comment that closes the file
+[a]
+b = 1
+url = http://x#y
+x = 2
+  ; about c
+[c]
+d = 1
+# end
+y = 2
+
+
+# a file of sections takes them above its top keys, its sections and their keys
+# mine
+
+# editorconfig
+root = true
+
+[*]
+own = a;b
+
+# editorconfig
+indent = 2
+
+# shfmt
+[*.sh]
+binary = true
+

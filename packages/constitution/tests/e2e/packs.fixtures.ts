@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
 import { cliPath } from './cli.fixtures';
+import { toolEnvironment } from './package.fixtures';
 
 type Files = Readonly<Record<string, string>>;
 
@@ -75,11 +76,17 @@ const createPack = (parent = 'dependency-reached-through-its-public-entry'): str
   const folder = realpathSync(mkdtempSync(join(tmpdir(), 'constitution-pack-')));
 
   created.push(folder);
-  spawnSync('git', [
-    'init',
-    '--quiet',
-    folder,
-  ]);
+  spawnSync(
+    'git',
+    [
+      'init',
+      '--quiet',
+      folder,
+    ],
+    {
+      env: toolEnvironment(),
+    },
+  );
 
   for (const [path, text] of Object.entries(packFilesOf(parent))) {
     mkdirSync(dirname(join(folder, path)), {
@@ -104,6 +111,7 @@ const checkPack = (pack: string): Run => {
     {
       cwd: pack,
       encoding: 'utf8',
+      env: toolEnvironment(),
     },
   );
 

@@ -1,13 +1,5 @@
-import type { Scalar, YAMLMap, YAMLSeq } from 'yaml';
-import {
-  isAlias,
-  isMap,
-  isScalar,
-  isSeq,
-  LineCounter,
-  parseDocument,
-  parse as parseText,
-} from 'yaml';
+import type { Scalar, ScalarTag, YAMLMap, YAMLSeq } from 'yaml';
+import { isAlias, isMap, isScalar, isSeq, LineCounter, parseDocument, Schema } from 'yaml';
 
 import { recognisedFailure } from '#/kernel/utils';
 
@@ -28,6 +20,19 @@ const SORTED = '!sorted';
 const WORDS = '!words';
 const CORE_TAG = 'tag:yaml.org,2002:';
 const PLAIN_SCALAR = 'PLAIN';
+// Stryker disable next-line ObjectLiteral: a schema named by no option is the core schema
+const coreSchema = new Schema({
+  // Stryker disable next-line StringLiteral: a schema named by an empty text is the core schema
+  schema: 'core',
+});
+// The core schema's tags that tell a plain scalar's type by its text, as the parser picks them.
+const plainTags = coreSchema.tags.filter(
+  (
+    tag,
+  ): tag is ScalarTag & {
+    readonly test: RegExp;
+  } => tag.test !== undefined,
+);
 
 const refusalAt = (offset: number): PresetFileRefusal =>
   new Refusal({
@@ -56,10 +61,21 @@ const markOf = (node: ValueNode): ValueKind.Default | ValueKind.Replace | undefi
   // Stryker disable next-line ConditionalExpression: no mark is keyed by an absent tag
   node.tag === undefined ? undefined : marks[node.tag];
 
+// A plain scalar's text read by the core schema, as an untagged one is: a text no tag tests is a
+// string, and a tag resolves to a value or to a scalar holding it. The core schema's tags report no
+// error, so the message sink is String, which drops it; a function of our own would never run.
+const plainValueOf = (text: string): unknown => {
+  const resolved = plainTags.find((one) => one.test.test(text))?.resolve(text, String, {});
+
+  return isScalar(resolved) ? resolved.value : (resolved ?? text);
+};
+
 // A scalar a mark tags is left unresolved by the parser, so its text is read by the core schema.
 const scalarOf = (node: Scalar): Setting => {
   const read: unknown =
-    isCoreTagged(node) || node.type !== PLAIN_SCALAR ? node.value : parseText(String(node.value));
+    isCoreTagged(node) || node.type !== PLAIN_SCALAR
+      ? node.value
+      : plainValueOf(String(node.value));
 
   if (typeof read === 'string' || typeof read === 'number' || typeof read === 'boolean') {
     return read;
@@ -114,6 +130,7 @@ const presetOf = (node: ValueNode): PresetValue => {
 
   if (mark !== undefined) {
     return {
+      isWords: false,
       kind: mark,
       setting: contentOf(node),
     };
@@ -173,14 +190,13 @@ const parse = (text: string): PresetFileRead => {
       value: document.contents === null ? Value.mapOf([]) : presetOf(nodeOf(document.contents, 0)),
     };
   } catch (failure) {
-    recognisedFailure({
-      error: failure,
-      isRecognised: isPresetFileRefusal,
-    });
-
     return {
-      // Stryker disable next-line ConditionalExpression: any other failure was rethrown above
-      line: lineCounter.linePos(isPresetFileRefusal(failure) ? failure.details.offset : 0).line,
+      line: lineCounter.linePos(
+        recognisedFailure({
+          error: failure,
+          isRecognised: isPresetFileRefusal,
+        }).details.offset,
+      ).line,
       status: PresetFileReadStatus.Unparsed,
     };
   }

@@ -1,19 +1,24 @@
-import type { ProjectFiles, ProjectSource } from '#/kernel/contracts';
-import { UnitPath } from '#/kernel/value-objects';
+import type { ProjectFiles } from '#/kernel/contracts';
+import { AbsolutePath, RepositoryRelativePath, UnitPath } from '#/kernel/value-objects';
 
-import type { DistributionSources, PresetFileParser } from '../../../contracts';
-import type { RunAsked, RunPlan, UnitRun } from '../../../entities';
-import { PresetsCode } from '../../../entities';
+import type {
+  ConfigurationFormat,
+  DistributionSources,
+  PresetFileParser,
+  ProjectReader,
+} from '../../../contracts';
+import type { PresetsProject, RunAsked, RunPlan, UnitRun } from '../../../entities';
+import { PresetsCode, ProjectRead } from '../../../entities';
 import { computePresets } from '../../shared/compute-presets';
 
 interface PlanRunInput extends RunAsked {
   readonly distribution: DistributionSources;
   readonly files: ProjectFiles;
+  readonly formats: ConfigurationFormat;
   readonly parser: PresetFileParser;
-  readonly source: ProjectSource;
+  readonly reader: ProjectReader;
 }
 
-const SEPARATOR = '/';
 // The findings that bear on what runs; the files' own are the check's and the apply's.
 const runCodes: ReadonlySet<PresetsCode> = new Set([
   PresetsCode.Clash,
@@ -24,75 +29,80 @@ const runCodes: ReadonlySet<PresetsCode> = new Set([
   PresetsCode.TwoReplacers,
 ]);
 
-const folderOf = (project: string, unit: UnitPath): string =>
-  UnitPath.isRepository(unit) ? project : `${project}${SEPARATOR}${unit}`;
-
 // The unit whose folder holds the start most closely; the repository's runs every unit, its own
 // first, as its check covers what no member's does.
 const unitsToRun = (input: {
-  project: string;
-  start: string;
-  units: readonly UnitPath[];
+  repositoryFolderPath: AbsolutePath;
+  startFolderPath: AbsolutePath;
+  unitPaths: readonly UnitPath[];
 }): readonly UnitPath[] => {
-  const start = input.start.slice(input.project.length + 1);
-  const [closest] = input.units
-    .filter((unit) => UnitPath.holds(unit, start))
+  const startPathFromRepository = RepositoryRelativePath.fromAbsolute(
+    input.repositoryFolderPath,
+    input.startFolderPath,
+  );
+
+  // Stryker disable next-line ConditionalExpression,BlockStatement: without the return, only the repository's unit holds a start outside, which runs every unit as well
+  if (startPathFromRepository === undefined) {
+    return input.unitPaths;
+  }
+
+  const [closest] = input.unitPaths
+    .filter((unitPath) => UnitPath.holds(unitPath, startPathFromRepository))
     .toSorted((left, right) => right.length - left.length);
 
   // Stryker disable next-line ConditionalExpression: the repository's unit holds every start in the project
   return closest === undefined || UnitPath.isRepository(closest)
-    ? input.units
+    ? input.unitPaths
     : [
         closest,
       ];
 };
 
-/**
- * Each unit's commands in the order its runners' entries give them.
- *
- * @throws {@link ProjectError} when no project is found, its release is not installed, or its
- * constitution.yaml or its blocks cannot be read
- */
-const planRun = (input: PlanRunInput): RunPlan => {
-  const opened = input.source.open(input.start);
-  const plan = computePresets({
-    distribution: input.distribution,
-    files: input.files,
-    model: opened.resolution.model,
-    packs: opened.packs,
-    parser: input.parser,
-    project: opened.project,
-    releaseFolder: opened.releaseFolder,
-    units: opened.resolution.units,
-  });
-  const runs = new Map<string, UnitRun>(
+const planOf = (
+  input: PlanRunInput & {
+    project: PresetsProject;
+  },
+): RunPlan => {
+  const { project } = input;
+  const { repositoryFolderPath } = project;
+  const plan = computePresets(input);
+  const runs = new Map<UnitPath, UnitRun>(
     plan.runs.map((run) => [
-      String(run.unit),
+      run.unitPath,
       run,
     ]),
   );
-  const all = opened.resolution.units.map((unit) => unit.path);
-  const asked = input.units;
-  const units =
-    asked === undefined
+  const allUnitPaths = project.units.map((unit) => unit.path);
+  const askedUnitPaths = input.unitPaths;
+  const unitPaths =
+    askedUnitPaths === undefined
       ? unitsToRun({
-          project: opened.project,
-          start: input.start,
-          units: all,
+          repositoryFolderPath,
+          startFolderPath: input.startFolderPath,
+          unitPaths: allUnitPaths,
         })
-      : all.filter((unit) => asked.includes(String(unit)));
+      : allUnitPaths.filter((unitPath) => askedUnitPaths.includes(unitPath));
 
   return {
     findings: plan.findings.filter((finding) => runCodes.has(finding.code)),
-    steps: units.flatMap((unit) =>
-      (runs.get(String(unit))?.commands.get(input.name) ?? []).map((command) => ({
+    steps: unitPaths.flatMap((unitPath) =>
+      (runs.get(unitPath)?.commands.get(input.entryPoint) ?? []).map((command) => ({
         command,
-        folder: folderOf(opened.project, unit),
-        unit,
+        unitFolderPath: AbsolutePath.join(repositoryFolderPath, unitPath),
+        unitPath,
       })),
     ),
   };
 };
+
+/** Each unit's commands in the order its runners' entries give them. */
+const planRun = (input: PlanRunInput): ProjectRead<RunPlan> =>
+  ProjectRead.map(input.reader.open(input.startFolderPath), (project) =>
+    planOf({
+      ...input,
+      project,
+    }),
+  );
 
 export type { PlanRunInput };
 export { planRun };

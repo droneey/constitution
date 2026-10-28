@@ -3,20 +3,36 @@ import { describe, expect, it } from 'bun:test';
 import { StepStatus } from '@droneey/design-cli';
 
 import { createFakeContext, runCommand } from '#/__tests__/command-context.fake';
+import type { ProjectWarning } from '#/kernel/entities';
 import { WarningKind } from '#/kernel/entities';
+import type { AbsolutePath } from '#/kernel/value-objects';
 
 import type { ConfigurationsCheck } from '../../../../../domain/entities';
-import { PresetsCode } from '../../../../../domain/entities';
+import { PresetsCode, ProjectRead, ProjectReadStatus } from '../../../../../domain/entities';
+import { configurationsStepOf } from '../../../../utils';
 import { createPresetsCheckCommand } from '../check.cli';
 
-const runOf = async (
-  checked: ConfigurationsCheck | undefined,
-): Promise<{
-  asked: string[];
-  failures: number;
-  label: string | undefined;
-  status: StepStatus | undefined;
-}> => {
+const warning: ProjectWarning = {
+  details: {
+    name: 'nope',
+  },
+  kind: WarningKind.NameUnknown,
+};
+const sound: ConfigurationsCheck = {
+  findings: [],
+  warnings: [],
+};
+const warned: ConfigurationsCheck = {
+  findings: [],
+  warnings: [
+    warning,
+  ],
+};
+
+// A step's label names it: any text but an empty one.
+const NAMED = /\S/;
+
+const runOf = async (checked: ProjectRead<ConfigurationsCheck>) => {
   const asked: string[] = [];
   const { context, record } = createFakeContext();
 
@@ -24,8 +40,8 @@ const runOf = async (
     args: [],
     command: createPresetsCheckCommand({
       ...context,
-      checkConfigurations: (start: string) => {
-        asked.push(start);
+      checkConfigurations: (startFolderPath: AbsolutePath) => {
+        asked.push(startFolderPath);
 
         return checked;
       },
@@ -36,40 +52,55 @@ const runOf = async (
   return {
     asked,
     failures: record().failures,
-    label: record().ran[0]?.label,
-    status: record().ran[0]?.outcome.status,
+    printed: record().printed,
+    steps: record().ran.map((ran) => [
+      ran.label,
+      ran.outcome.status,
+    ]),
   };
 };
 
 describe('createPresetsCheckCommand', () => {
-  it.each([
+  it('should check the project around the folder it runs in', async () => {
+    // Act
+    const run = await runOf(ProjectRead.opened(sound));
+
+    // Assert
+    expect(run.asked).toStrictEqual([
+      '/work/project/package',
+    ]);
+  });
+
+  it('should print what the check found', async () => {
+    // Act
+    const run = await runOf(ProjectRead.opened(warned));
+
+    // Assert
+    expect(run.printed).toStrictEqual([
+      configurationsStepOf(ProjectRead.opened(warned)).sections,
+    ]);
+  });
+
+  it.each<{
+    checked: ProjectRead<ConfigurationsCheck>;
+    condition: string;
+    failures: number;
+    status: StepStatus;
+  }>([
     {
-      checked: {
-        findings: [],
-        warnings: [],
-      },
+      checked: ProjectRead.opened(sound),
       condition: 'the project is sound',
       failures: 0,
       status: StepStatus.Done,
     },
     {
-      checked: {
-        findings: [],
-        warnings: [
-          {
-            details: {
-              name: 'nope',
-            },
-            kind: WarningKind.NameUnknown,
-          },
-        ],
-      },
+      checked: ProjectRead.opened(warned),
       condition: 'the project has warnings',
       failures: 1,
       status: StepStatus.Warned,
     },
     {
-      checked: {
+      checked: ProjectRead.opened({
         findings: [
           {
             code: PresetsCode.Missing,
@@ -82,31 +113,37 @@ describe('createPresetsCheckCommand', () => {
           },
         ],
         warnings: [],
-      },
+      }),
       condition: 'its presets find something',
       failures: 1,
       status: StepStatus.Warned,
     },
     {
-      checked: undefined,
+      checked: {
+        status: ProjectReadStatus.NoProject,
+      },
       condition: 'no project lies around the folder',
       failures: 1,
       status: StepStatus.Failed,
     },
   ])(
-    'should check the project around the folder it runs in when $condition',
+    'should end the step as $status and fail the run $failures times when $condition',
     async ({ checked, failures, status }) => {
       // Act
       const run = await runOf(checked);
 
       // Assert
-      expect(run).toStrictEqual({
-        asked: [
-          '/work/project/package',
-        ],
+      expect({
+        failures: run.failures,
+        steps: run.steps,
+      }).toStrictEqual({
         failures,
-        label: 'Presets',
-        status,
+        steps: [
+          [
+            expect.stringMatching(NAMED),
+            status,
+          ],
+        ],
       });
     },
   );

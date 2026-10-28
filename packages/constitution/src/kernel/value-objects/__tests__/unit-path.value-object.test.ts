@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'bun:test';
 
 import { InvalidValueError, ValueFailure } from '../../errors';
+import { RepositoryRelativePath } from '../repository-relative-path.value-object';
 import { UnitPath } from '../unit-path.value-object';
+import { UnitRelativePath } from '../unit-relative-path.value-object';
 
 describe('UnitPath', () => {
   it.each([
@@ -142,7 +144,7 @@ describe('UnitPath', () => {
       const folder = UnitPath.create(unit);
 
       // Act
-      const isHeld = UnitPath.holds(folder, path);
+      const isHeld = UnitPath.holds(folder, RepositoryRelativePath.create(path));
 
       // Assert
       expect(isHeld).toBe(holds);
@@ -169,12 +171,31 @@ describe('UnitPath', () => {
       const folder = UnitPath.create(unit);
 
       // Act
-      const inner = UnitPath.pathFrom(folder, path);
+      const inner = UnitPath.pathFrom(folder, RepositoryRelativePath.create(path));
 
       // Assert
-      expect(inner).toBe(expected);
+      expect<string>(inner).toBe(expected);
     },
   );
+
+  it('should refuse a path from the repository that lies outside the unit', () => {
+    // Arrange
+    const folder = UnitPath.create('apps/web');
+    const path = RepositoryRelativePath.create('apps/api/a.ts');
+
+    // Act
+    const inner = (): UnitRelativePath => UnitPath.pathFrom(folder, path);
+
+    // Assert
+    expect(inner).toThrow(
+      new InvalidValueError({
+        code: ValueFailure.PathOutsideUnit,
+        details: {
+          text: path,
+        },
+      }),
+    );
+  });
 
   it.each([
     {
@@ -196,10 +217,37 @@ describe('UnitPath', () => {
       const folder = UnitPath.create(unit);
 
       // Act
-      const outer = UnitPath.pathOf(folder, path);
+      const outer = UnitPath.pathOf(folder, UnitRelativePath.create(path));
 
       // Assert
-      expect(outer).toBe(expected);
+      expect<string>(outer).toBe(expected);
+    },
+  );
+
+  it.each([
+    {
+      condition: 'the unit is the repository',
+      expected: 'biome.json',
+      unit: '',
+      writtenPath: './biome.json',
+    },
+    {
+      condition: 'the path leads up out of a member',
+      expected: 'apps/biome.json',
+      unit: 'apps/web',
+      writtenPath: '../biome.json',
+    },
+  ])(
+    'should write a path from the unit one way as a path from the repository when $condition',
+    ({ expected, unit, writtenPath }) => {
+      // Arrange
+      const folder = UnitPath.create(unit);
+
+      // Act
+      const outer = UnitPath.resolve(folder, writtenPath);
+
+      // Assert
+      expect<string>(outer).toBe(expected);
     },
   );
 });

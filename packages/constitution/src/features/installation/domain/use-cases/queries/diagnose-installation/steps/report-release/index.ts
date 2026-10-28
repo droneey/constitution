@@ -1,1 +1,1 @@
-export { releaseReport } from './report-release.utils';
+export { reportRelease } from './report-release';

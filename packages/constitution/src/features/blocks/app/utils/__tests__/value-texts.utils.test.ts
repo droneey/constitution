@@ -47,10 +47,10 @@ describe('valueTexts', () => {
         code: ValueFailure.Glob,
         details: {
           site: ValueSite.Governs,
-          written: 'src/**/*.ts lib',
+          written: 'src/**/*.{ts',
         },
       },
-      text: 'front matter: governs lists "src/**/*.ts lib", which holds whitespace; the index separates globs with spaces',
+      text: 'front matter: governs lists "src/**/*.{ts", whose braces do not pair or nest too deep',
     },
     {
       problem: {

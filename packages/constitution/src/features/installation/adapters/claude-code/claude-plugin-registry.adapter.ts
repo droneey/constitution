@@ -1,32 +1,15 @@
-import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import type { ZodType } from 'zod';
-
-import { attempted, isSyntaxError } from '#/kernel/utils';
 import { pluginFingerprintOf } from '#/libs/claude-plugin';
-import { isSystemError } from '#/libs/system-error';
+import { readModelFile } from '#/libs/model-file';
 
 import type { PluginRegistry } from '../../domain/contracts';
 import type { InstalledPlugin } from '../../domain/entities';
 import { installedPluginsModel, packageModel } from './models';
 
 const PLUGIN = 'constitution@droneey';
-const MANIFEST = 'package.json';
+const MANIFEST_NAME = 'package.json';
 const installedFile = join('plugins', 'installed_plugins.json');
-
-// A file that is missing, unreadable or no JSON of the shape reads as undefined.
-const readJson = <T>(input: { model: ZodType<T>; path: string }): T | undefined => {
-  const parsed = attempted<unknown>({
-    // Stryker disable next-line StringLiteral: an encoding left empty is UTF-8 as well; the rule asks that it be named
-    effect: () => JSON.parse(readFileSync(input.path, 'utf8')),
-    // Stryker disable next-line ConditionalExpression: reading a file fails only by the system and parsing it only by its syntax, so no other failure reaches here
-    isRecognised: (error: unknown): boolean => isSystemError(error) || isSyntaxError(error),
-  });
-  const read = input.model.safeParse(parsed);
-
-  return read.success ? read.data : undefined;
-};
 
 interface ClaudePluginRegistryInput {
   readonly configFolder: string;
@@ -41,16 +24,18 @@ const createClaudePluginRegistry = (input: ClaudePluginRegistryInput): PluginReg
   installed: (): InstalledPlugin | undefined => {
     const root =
       input.pluginRoot ??
-      readJson({
+      readModelFile({
         model: installedPluginsModel,
+        parse: JSON.parse,
         path: join(input.configFolder, installedFile),
       })?.plugins.get(PLUGIN)?.[0]?.installPath;
     const version =
       root === undefined
         ? undefined
-        : readJson({
+        : readModelFile({
             model: packageModel,
-            path: join(root, MANIFEST),
+            parse: JSON.parse,
+            path: join(root, MANIFEST_NAME),
           })?.version;
 
     // Stryker disable next-line ConditionalExpression: with no root no manifest is read either, which reads as no plugin

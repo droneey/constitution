@@ -1,1 +1,1 @@
-export { releaseLoopsOf } from './release-links.utils';
+export { findReleaseLoops } from './find-release-loops';

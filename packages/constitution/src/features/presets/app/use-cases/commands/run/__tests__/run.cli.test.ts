@@ -1,18 +1,27 @@
 import { describe, expect, it } from 'bun:test';
 
+import { StepStatus } from '@droneey/design-cli';
+
 import { createFakeContext, runCommand } from '#/__tests__/command-context.fake';
-import { UnitPath } from '#/kernel/value-objects';
+import { goldenFileText, goldenOf } from '#/__tests__/golden.fixtures';
+import { AbsolutePath, BlockId, UnitPath } from '#/kernel/value-objects';
 
 import type { RunAsked, RunPlan } from '../../../../../domain/entities';
-import { PresetsCode } from '../../../../../domain/entities';
+import {
+  EntryPoint,
+  PresetsCode,
+  ProjectRead,
+  ProjectReadStatus,
+} from '../../../../../domain/entities';
 import { createRunCommand } from '../run.cli';
 
+// Two commands of the root and one of a member, with a finding of the plan.
 const plan: RunPlan = {
   findings: [
     {
       code: PresetsCode.ToolWithoutRunner,
       details: {
-        block: 'biome',
+        block: BlockId.create('biome'),
       },
       path: 'packages/py/constitution.yaml',
     },
@@ -20,23 +29,27 @@ const plan: RunPlan = {
   steps: [
     {
       command: 'bun run check',
-      folder: '/work/project',
-      unit: UnitPath.create(''),
+      unitFolderPath: AbsolutePath.create('/work/project'),
+      unitPath: UnitPath.create(''),
     },
     {
       command: 'bun run test',
-      folder: '/work/project',
-      unit: UnitPath.create(''),
+      unitFolderPath: AbsolutePath.create('/work/project'),
+      unitPath: UnitPath.create(''),
     },
     {
       command: 'uv run --locked poe check',
-      folder: '/work/project/packages/py',
-      unit: UnitPath.create('packages/py'),
+      unitFolderPath: AbsolutePath.create('/work/project/packages/py'),
+      unitPath: UnitPath.create('packages/py'),
     },
   ],
 };
 
-const runOf = async (input: { args: readonly string[]; codes?: readonly number[] }) => {
+const runOf = async (input: {
+  args: readonly string[];
+  codes?: readonly number[];
+  read?: ProjectRead<RunPlan>;
+}) => {
   const planned: RunAsked[] = [];
   const commands: string[] = [];
   const codes = [
@@ -55,7 +68,7 @@ const runOf = async (input: { args: readonly string[]; codes?: readonly number[]
       planRun: (asking) => {
         planned.push(asking);
 
-        return plan;
+        return input.read ?? ProjectRead.opened(plan);
       },
       runCommand: ({ command }) => {
         commands.push(command);
@@ -69,13 +82,36 @@ const runOf = async (input: { args: readonly string[]; codes?: readonly number[]
     commands,
     failures: record().failures,
     planned,
+    steps: record().ran.map((ran) => ran.outcome.status),
     stderr: record().stderr,
     stdout: record().stdout,
   };
 };
 
 describe('createRunCommand', () => {
-  it('should run each command of the entry point from the folder, writing each before it runs and its unit outside the root', async () => {
+  it('should write each command, its unit outside the root, the findings and the failure as the golden file shows them', async () => {
+    // Act
+    const run = await runOf({
+      args: [
+        'check',
+      ],
+      codes: [
+        0,
+        0,
+        3,
+      ],
+    });
+
+    const said = goldenOf({
+      stderr: run.stderr,
+      stdout: run.stdout,
+    });
+
+    // Assert
+    expect(said).toBe(await goldenFileText(new URL('run-steps.golden.txt', import.meta.url), said));
+  });
+
+  it('should run each command the plan of the entry point gives, from the folder, in order', async () => {
     // Act
     const run = await runOf({
       args: [
@@ -85,8 +121,9 @@ describe('createRunCommand', () => {
 
     // Assert
     expect({
-      ...run,
-      stderr: run.stderr.includes(`[${PresetsCode.ToolWithoutRunner}]`),
+      commands: run.commands,
+      failures: run.failures,
+      planned: run.planned,
     }).toStrictEqual({
       commands: [
         'bun run check',
@@ -96,12 +133,10 @@ describe('createRunCommand', () => {
       failures: 0,
       planned: [
         {
-          name: 'check',
-          start: '/work/project',
+          entryPoint: EntryPoint.Check,
+          startFolderPath: AbsolutePath.create('/work/project'),
         },
       ],
-      stderr: true,
-      stdout: '$ bun run check\n$ bun run test\n$ (packages/py) uv run --locked poe check\n',
     });
   });
 
@@ -121,14 +156,37 @@ describe('createRunCommand', () => {
     expect({
       commands: run.commands,
       failures: run.failures,
-      named: run.stderr.includes('bun run test'),
     }).toStrictEqual({
       commands: [
         'bun run check',
         'bun run test',
       ],
       failures: 1,
-      named: true,
+    });
+  });
+
+  it('should fail its step, run nothing and end the run as failed when no project holds the folder', async () => {
+    // Act
+    const run = await runOf({
+      args: [
+        'check',
+      ],
+      read: {
+        status: ProjectReadStatus.NoProject,
+      },
+    });
+
+    // Assert
+    expect({
+      commands: run.commands,
+      failures: run.failures,
+      steps: run.steps,
+    }).toStrictEqual({
+      commands: [],
+      failures: 1,
+      steps: [
+        StepStatus.Failed,
+      ],
     });
   });
 

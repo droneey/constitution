@@ -1,18 +1,19 @@
 import type { Axis } from '#/kernel/constants';
-import { AXES, SEAM_FOLDER } from '#/kernel/constants';
+import { AXES, PATH_SEPARATOR, SEAM_FOLDER_NAME } from '#/kernel/constants';
+import { BlockId } from '#/kernel/value-objects';
 
 import { MAX_WITHS, PRESET_FILE_EXTENSION } from '../constants';
 
 /**
  * Where a preset file lies under `presets/`: `<reader>/<axis>.yaml`, or below its axis's folder
- * `with/<block>.yaml` and `with/<block>/with/<partner>.yaml`. The ids are as the path spells them,
- * which the checks hold against the blocks.
+ * `with/<block>.yaml` and `with/<first>/with/<second>.yaml`, each id spelled as a block's is; the
+ * checks hold the ids against the blocks.
  */
 interface PresetFilePath {
   readonly axis: Axis;
-  readonly reader: string;
+  readonly reader: BlockId;
   /** the blocks the path names after its reader, outermost first */
-  readonly withs: readonly string[];
+  readonly withs: readonly BlockId[];
 }
 
 enum PathKind {
@@ -31,9 +32,7 @@ type PathRead =
       readonly kind: PathKind.Data | PathKind.Misplaced;
     };
 
-const SEPARATOR = '/';
-
-const axisOf = (name: string): Axis | undefined => AXES.find((axis) => axis === name);
+const axisOf = (axisName: string): Axis | undefined => AXES.find((axis) => axis === axisName);
 
 const dataPath: PathRead = {
   kind: PathKind.Data,
@@ -43,39 +42,49 @@ const misplacedPath: PathRead = {
   kind: PathKind.Misplaced,
 };
 
-const stemOf = (name: string): string => name.slice(0, -PRESET_FILE_EXTENSION.length);
+const stemOf = (fileName: string): string => fileName.slice(0, -PRESET_FILE_EXTENSION.length);
 
 // with/<block>, repeated, the last ending in the extension.
-const withsOf = (segments: readonly string[]): readonly string[] | undefined => {
-  const withs: string[] = [];
+const withsOf = (segments: readonly string[]): readonly BlockId[] | undefined => {
+  const withs: BlockId[] = [];
 
-  for (let at = 0; at < segments.length; at += 2) {
-    // the last segment ends in the extension, so a with/ folder is always followed by its block
-    const block = String(segments[at + 1]);
+  for (const [index, segment] of segments.entries()) {
+    if (index % 2 === 0) {
+      if (segment !== SEAM_FOLDER_NAME) {
+        return undefined;
+      }
 
-    if (segments[at] !== SEAM_FOLDER) {
+      continue;
+    }
+
+    const block = index === segments.length - 1 ? stemOf(segment) : segment;
+
+    if (!BlockId.is(block)) {
       return undefined;
     }
 
-    withs.push(at + 2 === segments.length ? stemOf(block) : block);
+    withs.push(block);
   }
 
   return withs.length > MAX_WITHS ? undefined : withs;
 };
 
-/** A file of no YAML is data. */
-const readOf = (path: string): PathRead => {
+/** A file of no YAML is data, and so is one in a folder of a reader's that is no axis. */
+const readOf = (pathInPresets: string): PathRead => {
   // Stryker disable next-line StringLiteral: neither default is ever read as a reader or an axis
-  const [reader = '', head = '', ...rest] = path.split(SEPARATOR);
+  const [reader = '', head = '', ...rest] = pathInPresets.split(PATH_SEPARATOR);
 
-  if (!path.endsWith(PRESET_FILE_EXTENSION) || (rest.length > 0 && axisOf(head) === undefined)) {
+  if (
+    !pathInPresets.endsWith(PRESET_FILE_EXTENSION) ||
+    (rest.length > 0 && axisOf(head) === undefined)
+  ) {
     return dataPath;
   }
 
   const axis = axisOf(rest.length === 0 ? stemOf(head) : head);
   const withs = withsOf(rest);
 
-  return axis === undefined || withs === undefined
+  return axis === undefined || withs === undefined || !BlockId.is(reader)
     ? misplacedPath
     : {
         presetFile: {
@@ -92,10 +101,10 @@ const textOf = (presetFile: PresetFilePath): string =>
     presetFile.reader,
     presetFile.axis,
     ...presetFile.withs.flatMap((block) => [
-      SEAM_FOLDER,
+      SEAM_FOLDER_NAME,
       block,
     ]),
-  ].join(SEPARATOR) + PRESET_FILE_EXTENSION;
+  ].join(PATH_SEPARATOR) + PRESET_FILE_EXTENSION;
 
 const PresetFilePath = {
   readOf,

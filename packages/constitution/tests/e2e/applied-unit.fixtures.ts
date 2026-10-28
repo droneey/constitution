@@ -1,9 +1,10 @@
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { join } from 'node:path';
 
 import { cliPath } from './cli.fixtures';
+import { linkRelease, release, toolEnvironment, writeFiles } from './package.fixtures';
 
 interface UnitFixture {
   /** the optional axes it follows; architecture and workflow where it names none */
@@ -15,6 +16,8 @@ interface UnitFixture {
   readonly files?: Readonly<Record<string, string>>;
   readonly implementations?: readonly string[];
   readonly languages?: readonly string[];
+  /** the rules an override in its constitution.yaml lowers to SHOULD */
+  readonly lowered?: readonly string[];
   /** unit where it names none */
   readonly name?: string;
   /** the folders of its own packs, among its files */
@@ -22,9 +25,6 @@ interface UnitFixture {
   readonly platforms?: readonly string[];
 }
 
-// This repository's package, the release a unit links as a project links the distribution.
-const release = join(import.meta.dir, '..', '..');
-const LINK = '.droneey/constitution';
 const created: string[] = [];
 const applied = new Map<string, string>();
 
@@ -77,18 +77,11 @@ const constitutionOf = (unit: UnitFixture): string =>
     `languages: ${listOf(unit, Layer.Languages)}`,
     `implementations: ${listOf(unit, Layer.Implementations)}`,
     `packs: [${(unit.packs ?? []).join(', ')}]`,
-    'overrides: []',
+    `overrides: [${(unit.lowered ?? [])
+      .map((rule) => `{ rule: ${rule}, level: SHOULD, reason: "lowered by the case" }`)
+      .join(', ')}]`,
     '',
   ].join('\n');
-
-const writeFiles = (input: { files: Readonly<Record<string, string>>; folder: string }): void => {
-  for (const [path, text] of Object.entries(input.files)) {
-    mkdirSync(dirname(join(input.folder, path)), {
-      recursive: true,
-    });
-    writeFileSync(join(input.folder, path), text);
-  }
-};
 
 const APPLY = [
   'presets',
@@ -97,22 +90,18 @@ const APPLY = [
   '--plain',
 ] as const;
 
-// How many applies run at once when a batch asks for several units.
-const APPLIES_AT_ONCE = 4;
-
-const applyEnvironment = (): Record<string, string | undefined> =>
-  Object.fromEntries([
-    [
-      'PATH',
-      process.env['PATH'],
-    ],
-  ]);
-
-// The unit's folder, its files and its link to this release written, not yet applied.
-const unitFolderOf = (unit: UnitFixture): string => {
+const createdFolder = (): string => {
   const folder = mkdtempSync(join(tmpdir(), 'applied-unit-'));
 
   created.push(folder);
+
+  return folder;
+};
+
+// The unit's folder, its files and its link to this release written, not yet applied.
+const unitFolderOf = (unit: UnitFixture): string => {
+  const folder = createdFolder();
+
   writeFiles({
     files: {
       ...unit.files,
@@ -120,16 +109,25 @@ const unitFolderOf = (unit: UnitFixture): string => {
     },
     folder,
   });
-  mkdirSync(join(folder, dirname(LINK)), {
-    recursive: true,
-  });
-  symlinkSync(release, join(folder, LINK));
+  linkRelease(folder);
 
   return folder;
 };
 
+// A copy of its own for each caller, so what a tool writes in it reaches no other case.
+const copyOf = (folder: string): string => {
+  const copy = createdFolder();
+
+  cpSync(folder, copy, {
+    recursive: true,
+    verbatimSymlinks: true,
+  });
+
+  return copy;
+};
+
 /**
- * Written once for each unit asked, by the program's own `presets apply`.
+ * Applied once for each unit asked, by the program's own `presets apply`, and copied for each call.
  *
  * @throws Error when the apply fails.
  */
@@ -138,14 +136,14 @@ const appliedUnit = (unit: UnitFixture): string => {
   const known = applied.get(key);
 
   if (known !== undefined) {
-    return known;
+    return copyOf(known);
   }
 
   const folder = unitFolderOf(unit);
   const run = spawnSync(cliPath, APPLY, {
     cwd: folder,
     encoding: 'utf8',
-    env: applyEnvironment(),
+    env: toolEnvironment(),
   });
 
   if (run.status !== 0) {
@@ -154,70 +152,7 @@ const appliedUnit = (unit: UnitFixture): string => {
 
   applied.set(key, folder);
 
-  return folder;
-};
-
-/**
- * Applies the units not applied yet, a few at once, so a batch that needs many waits for the
- * slowest of each few rather than for all of them in turn; each is then found as appliedUnit finds it.
- *
- * @throws Error when an apply fails.
- */
-const applyUnits = async (units: readonly UnitFixture[]): Promise<void> => {
-  const queue = [
-    ...new Map(
-      units.map((unit) => [
-        JSON.stringify(unit),
-        unit,
-      ]),
-    ),
-  ]
-    .filter(([key]) => !applied.has(key))
-    .values();
-
-  const applyNext = async (): Promise<void> => {
-    const next = queue.next();
-
-    if (next.done === true) {
-      return;
-    }
-
-    const [key, unit] = next.value;
-    const folder = unitFolderOf(unit);
-    const running = Bun.spawn(
-      [
-        cliPath,
-        ...APPLY,
-      ],
-      {
-        cwd: folder,
-        env: applyEnvironment(),
-        stderr: 'pipe',
-        stdout: 'pipe',
-      },
-    );
-    const [stdout, stderr, status] = await Promise.all([
-      new Response(running.stdout).text(),
-      new Response(running.stderr).text(),
-      running.exited,
-    ]);
-
-    if (status !== 0) {
-      throw new Error(`presets apply failed in ${folder}: ${stdout}${stderr}`);
-    }
-
-    applied.set(key, folder);
-    await applyNext();
-  };
-
-  await Promise.all(
-    Array.from(
-      {
-        length: APPLIES_AT_ONCE,
-      },
-      applyNext,
-    ),
-  );
+  return copyOf(folder);
 };
 
 process.once('exit', () => {
@@ -230,4 +165,4 @@ process.once('exit', () => {
 });
 
 export type { UnitFixture };
-export { appliedUnit, applyUnits, constitutionOf };
+export { appliedUnit, constitutionOf };

@@ -1,6 +1,8 @@
 import { spawnSync } from 'node:child_process';
 import { join } from 'node:path';
 
+import { toolEnvironment } from './package.fixtures';
+
 const repository = join(import.meta.dir, '..', '..');
 
 // mise pins the tool for this repository; its shim does not resolve in a
@@ -15,6 +17,7 @@ const miseBinary = (tool: string): string => {
     {
       cwd: repository,
       encoding: 'utf8',
+      env: toolEnvironment(),
     },
   ).stdout.trim();
 

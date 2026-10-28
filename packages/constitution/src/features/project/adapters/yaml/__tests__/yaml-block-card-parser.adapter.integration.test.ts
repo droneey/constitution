@@ -59,9 +59,10 @@ describe('createYamlBlockCardParser', () => {
         isAbstract: false,
         languages: [],
         requires: [],
+        summary: 'Screens.',
       },
-      condition: 'the fields are left out',
-      yaml: 'id: ui',
+      condition: 'every field but the summary is left out',
+      yaml: 'id: ui\nsummary: Screens.',
     },
     {
       card: {
@@ -92,6 +93,26 @@ describe('createYamlBlockCardParser', () => {
       },
       condition: 'the front matter is null',
       yaml: '~',
+    },
+    {
+      card: {
+        governs: [],
+        isAbstract: false,
+        languages: [],
+        requires: [],
+      },
+      condition: 'the front matter holds an alias',
+      yaml: 'summary: &s Screens.\nextends: *s',
+    },
+    {
+      card: {
+        governs: [],
+        isAbstract: false,
+        languages: [],
+        requires: [],
+      },
+      condition: 'the front matter holds an alias without its anchor',
+      yaml: 'requires: [*ui]',
     },
   ])('should read the card a project can read when $condition', ({ card, yaml }) => {
     // Arrange

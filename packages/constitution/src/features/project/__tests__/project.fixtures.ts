@@ -1,9 +1,11 @@
 import type { FakeTree } from '#/__tests__/project-files.fake';
 import { corePassport, PROJECT, releaseFolderPath } from '#/__tests__/project-place.fixtures';
 
-import { createConfigFileParser } from '../adapters/config-file';
-import { createYamlBlockCardParser } from '../adapters/yaml';
-import type { BlockCardParser, ConfigParser } from '../domain/contracts';
+import { createJsonReleaseManifestParser } from '../adapters/json';
+import { createYamlBlockCardParser, createYamlConfigFileParser } from '../adapters/yaml';
+import type { BlockCardParser, ConfigParser, ReleaseManifestParser } from '../domain/contracts';
+import type { ProjectError } from '../domain/errors';
+import { isProjectError } from '../domain/errors';
 
 // A project and the release it links, as the project reads them: its constitution.yaml, and the
 // release folder, .droneey/constitution, with its blocks.
@@ -145,16 +147,45 @@ const projectTreeOf = (input: ProjectTreeFixture): FakeTree => ({
 const parsers = (): {
   configParser: ConfigParser;
   cardParser: BlockCardParser;
+  manifestParser: ReleaseManifestParser;
 } => ({
-  configParser: createConfigFileParser(),
+  configParser: createYamlConfigFileParser(),
   cardParser: createYamlBlockCardParser(),
+  manifestParser: createJsonReleaseManifestParser(),
 });
+
+interface Failure {
+  // the failure of the read it stopped at, where one was
+  readonly cause: unknown;
+  readonly code: ProjectError['code'];
+  readonly details: unknown;
+}
+
+// The failure of a project an act throws, as its fields; undefined when it throws none.
+const failureOf = (act: () => unknown): Failure | undefined => {
+  try {
+    act();
+
+    return undefined;
+  } catch (error) {
+    if (!isProjectError(error)) {
+      throw error;
+    }
+
+    return {
+      cause: error.cause,
+      code: error.code,
+      details: error.details,
+    };
+  }
+};
 
 export type { BlockFixture };
 export {
   blockFilesOf,
   configPath,
   Folder,
+  failureOf,
   manifest,
   manifestOf,
   parsers,

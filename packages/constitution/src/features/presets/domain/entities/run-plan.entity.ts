@@ -1,20 +1,31 @@
-import type { UnitPath } from '#/kernel/value-objects';
+import type { AbsolutePath, UnitPath } from '#/kernel/value-objects';
 
 import type { PresetsFinding } from './presets-finding.entity';
 
+/** What a run is asked to do: the name of the list of commands a runner gives for it. */
+enum EntryPoint {
+  Check = 'check',
+  Test = 'test',
+  Fix = 'fix',
+}
+
 interface RunAsked {
-  /** the entry point: check, test or fix */
-  readonly name: string;
-  readonly start: string;
-  /** the units to run in, by their paths from the repository; the unit of the start where none */
-  readonly units?: readonly string[];
+  readonly entryPoint: EntryPoint;
+  /** the folder the run starts in */
+  readonly startFolderPath: AbsolutePath;
+  /** the units to run in; the unit of the start where none */
+  readonly unitPaths?: readonly UnitPath[];
+}
+
+interface CommandToRun {
+  readonly command: string;
+  readonly folderPath: AbsolutePath;
 }
 
 interface RunStep {
   readonly command: string;
-  /** absolute */
-  readonly folder: string;
-  readonly unit: UnitPath;
+  readonly unitFolderPath: AbsolutePath;
+  readonly unitPath: UnitPath;
 }
 
 interface RunPlan {
@@ -23,4 +34,5 @@ interface RunPlan {
   readonly steps: readonly RunStep[];
 }
 
-export type { RunAsked, RunPlan, RunStep };
+export type { CommandToRun, RunAsked, RunPlan, RunStep };
+export { EntryPoint };

@@ -1,1 +1,1 @@
-export { adviseConstitution } from './advise-constitution.utils';
+export { adviseConstitution } from './advise-constitution';

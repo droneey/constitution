@@ -1,8 +1,10 @@
+import type { AbsolutePath } from '#/kernel/value-objects';
+
 import type { LockRead } from '../../../entities';
 
 interface LockQueryRepository {
-  /** folder is absolute; an empty lock where none is */
-  readonly read: (folder: string) => LockRead;
+  /** an empty lock where none is */
+  readonly read: (unitFolderPath: AbsolutePath) => LockRead;
 }
 
 export type { LockQueryRepository };

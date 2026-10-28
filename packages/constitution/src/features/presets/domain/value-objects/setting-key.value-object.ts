@@ -20,7 +20,7 @@ type SettingKey =
     }
   | {
       readonly kind: KeyKind.Plain;
-      readonly name: string;
+      readonly text: string;
     };
 
 type AddressKey = Extract<
@@ -50,7 +50,7 @@ const of = (text: string): SettingKey => {
   return insert === null
     ? {
         kind: KeyKind.Plain,
-        name: text,
+        text,
       }
     : {
         kind: KeyKind.Insert,

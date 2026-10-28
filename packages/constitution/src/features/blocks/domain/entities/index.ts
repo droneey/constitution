@@ -7,7 +7,18 @@ export type { Documents } from './constitution.entity';
 export { Constitution, DocumentPath } from './constitution.entity';
 export type { FieldIssue } from './document-read.entity';
 export { ReadStatus } from './document-read.entity';
-export { FrontMatter, FrontMatterField } from './front-matter.entity';
+export type {
+  FrontMatterFields,
+  FrontMatterProblem,
+  FrontMatterRead,
+  FrontMatterReadDetails,
+} from './front-matter.entity';
+export {
+  FrontMatter,
+  FrontMatterField,
+  FrontMatterReadCode,
+  FrontMatterStatus,
+} from './front-matter.entity';
 export type {
   HooksManifest,
   ManifestRead,

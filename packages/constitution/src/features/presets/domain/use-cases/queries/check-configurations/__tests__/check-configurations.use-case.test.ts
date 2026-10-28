@@ -2,13 +2,15 @@ import { describe, expect, it } from 'bun:test';
 
 import type { ProjectWarning } from '#/kernel/entities';
 import { WarningKind } from '#/kernel/entities';
-import { UnitPath } from '#/kernel/value-objects';
+import { AbsolutePath, UnitPath } from '#/kernel/value-objects';
 
 import { createFakeConfigurationFormat } from '../../../../../__tests__/configuration-format.fake';
 import { createFakeDistributionSources } from '../../../../../__tests__/distribution-sources.fake';
 import { createFakeLockRepository } from '../../../../../__tests__/lock-repository.fake';
 import type { Files } from '../../../../../__tests__/presets.fixtures';
 import {
+  answerOf,
+  lockOf,
   PROJECT,
   presetFileParser,
   projectFiles,
@@ -17,7 +19,13 @@ import {
   unitOf,
 } from '../../../../../__tests__/presets.fixtures';
 import type { LockRead } from '../../../../entities';
-import { Leaf, LockReadStatus, PresetsCode } from '../../../../entities';
+import {
+  Leaf,
+  LockReadStatus,
+  PresetsCode,
+  ProjectReadStatus,
+  RecordKind,
+} from '../../../../entities';
 import { checkConfigurations } from '../check-configurations.use-case';
 
 const unknownBlock: ProjectWarning = {
@@ -83,19 +91,21 @@ const checkedOf = (input: {
         }),
   });
 
-  return checkConfigurations({
-    distribution: createFakeDistributionSources(),
-    files: project.files,
-    formats: createFakeConfigurationFormat(),
-    locks: createFakeLockRepository(input.locks),
-    parser: presetFileParser,
-    source: project.source,
-    start: PROJECT,
-  });
+  return answerOf(
+    checkConfigurations({
+      distribution: createFakeDistributionSources(),
+      files: project.files,
+      formats: createFakeConfigurationFormat(),
+      locks: createFakeLockRepository(input.locks),
+      parser: presetFileParser,
+      reader: project.reader,
+      startFolderPath: AbsolutePath.create(PROJECT),
+    }),
+  );
 };
 
 describe('checkConfigurations', () => {
-  it('should give nothing when no project lies around the start folder', () => {
+  it('should tell that no project is there when none lies around the start folder', () => {
     // Arrange
     const project = projectOf({
       units: [],
@@ -108,12 +118,14 @@ describe('checkConfigurations', () => {
       formats: createFakeConfigurationFormat(),
       locks: createFakeLockRepository(),
       parser: presetFileParser,
-      source: project.source,
-      start: '/work/elsewhere',
+      reader: project.reader,
+      startFolderPath: AbsolutePath.create('/work/elsewhere'),
     });
 
     // Assert
-    expect(checked).toBeUndefined();
+    expect(checked).toStrictEqual({
+      status: ProjectReadStatus.NoProject,
+    });
   });
 
   it('should give nothing beyond the declaration when the files hold what the presets give, a default left out', () => {
@@ -151,37 +163,37 @@ describe('checkConfigurations', () => {
       },
       locks: {
         [PROJECT]: {
-          lock: {
+          lock: lockOf({
             'biome.json': {
               addresses: [],
               defaults: [],
               isCreated: false,
-              isWhole: false,
+              kind: RecordKind.Settings,
               leaves: [
                 Leaf.keyOf({
                   isItem: false,
-                  path: [
+                  keyPath: [
                     'gone',
                   ],
                   value: true,
                 }),
                 Leaf.keyOf({
                   isItem: false,
-                  path: [
+                  keyPath: [
                     'width',
                   ],
                   value: 80,
                 }),
               ],
             },
-          },
+          }),
           status: LockReadStatus.Read,
         },
       },
     });
 
     // Assert
-    expect(checked?.findings).toStrictEqual([
+    expect(checked.findings).toStrictEqual([
       {
         code: PresetsCode.Loosened,
         details: {
@@ -265,7 +277,7 @@ describe('checkConfigurations', () => {
     });
 
     // Assert
-    expect(checked?.findings).toStrictEqual(findings);
+    expect(checked.findings).toStrictEqual(findings);
   });
 
   it('should find missing only the settings below no setting the file loosens', () => {
@@ -299,19 +311,21 @@ describe('checkConfigurations', () => {
     });
 
     // Act
-    const checked = checkConfigurations({
-      distribution: createFakeDistributionSources(),
-      files: project.files,
-      formats: createFakeConfigurationFormat(),
-      locks: createFakeLockRepository(),
-      parser: presetFileParser,
-      source: project.source,
-      start: PROJECT,
-    });
+    const checked = answerOf(
+      checkConfigurations({
+        distribution: createFakeDistributionSources(),
+        files: project.files,
+        formats: createFakeConfigurationFormat(),
+        locks: createFakeLockRepository(),
+        parser: presetFileParser,
+        reader: project.reader,
+        startFolderPath: AbsolutePath.create(PROJECT),
+      }),
+    );
 
     // Assert
     expect(
-      checked?.findings.map(({ code, details }) => [
+      checked.findings.map(({ code, details }) => [
         code,
         details,
       ]),
@@ -352,30 +366,30 @@ describe('checkConfigurations', () => {
       },
       locks: {
         [PROJECT]: {
-          lock: {
+          lock: lockOf({
             'old.json': {
               addresses: [],
               defaults: [],
               isCreated: false,
-              isWhole: false,
+              kind: RecordKind.Settings,
               leaves: [
                 Leaf.keyOf({
                   isItem: false,
-                  path: [
+                  keyPath: [
                     'gone',
                   ],
                   value: true,
                 }),
               ],
             },
-          },
+          }),
           status: LockReadStatus.Read,
         },
       },
     });
 
     // Assert
-    expect(checked?.findings).toStrictEqual([]);
+    expect(checked.findings).toStrictEqual([]);
   });
 
   it.each([
@@ -425,6 +439,6 @@ describe('checkConfigurations', () => {
     });
 
     // Assert
-    expect(checked?.warnings).toStrictEqual(warned);
+    expect(checked.warnings).toStrictEqual(warned);
   });
 });

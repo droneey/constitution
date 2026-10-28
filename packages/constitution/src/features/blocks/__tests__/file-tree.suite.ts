@@ -2,6 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import type { FileTree } from '../domain/contracts';
 import { isTreeError, TreeFailure } from '../domain/errors';
+import { TreePath } from '../domain/value-objects';
 
 interface FileTreeSuiteInput {
   readonly name: string;
@@ -36,7 +37,7 @@ const runFileTreeSuite = (input: FileTreeSuiteInput): void => {
       const listed = tree.list();
 
       // Assert
-      expect(listed).toStrictEqual([
+      expect<readonly string[]>(listed).toStrictEqual([
         'blocks/core/core.md',
         'blocks/domains/ui/ui.md',
       ]);
@@ -49,7 +50,7 @@ const runFileTreeSuite = (input: FileTreeSuiteInput): void => {
       });
 
       // Act
-      const text = tree.read('blocks/core/core.md');
+      const text = tree.read(TreePath.create('blocks/core/core.md'));
 
       // Assert
       expect(text).toBe('# Core\n');
@@ -62,7 +63,7 @@ const runFileTreeSuite = (input: FileTreeSuiteInput): void => {
       });
 
       // Act
-      const code = failureCodeOf(() => tree.read('blocks/core/gone.md'));
+      const code = failureCodeOf(() => tree.read(TreePath.create('blocks/core/gone.md')));
 
       // Assert
       expect(code).toBe(TreeFailure.Unreadable);

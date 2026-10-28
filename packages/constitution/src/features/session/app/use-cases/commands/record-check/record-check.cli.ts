@@ -1,9 +1,11 @@
 import { Command } from 'commander';
 
+import { projectCheck } from '#/kernel/constants';
 import type { CommandContext } from '#/shared/cli';
 
 import type { SessionId } from '../../../../domain/value-objects';
-import { hookEventOf, sessionIdOf } from '../../../utils';
+import { HookField, recordCheckEventSchema } from '../../../constants';
+import { hookEventOf } from '../../../utils';
 
 interface RecordCheckContext extends CommandContext {
   readonly recordCheck: (input: { command: string; session: SessionId }) => void;
@@ -19,13 +21,16 @@ const createRecordCheckCommand = (context: RecordCheckContext): Command =>
     .addHelpText(
       'before',
       context.helpExamples([
-        `printf '{"session_id":"s1","tool_input":{"command":"bun run check"}}' | constitution hook record-check`,
+        `printf '{"session_id":"s1","tool_input":{"command":"${projectCheck}"}}' | constitution hook record-check`,
       ]),
     )
     .action(async (): Promise<void> => {
-      const event = hookEventOf(await context.io.readInput());
-      const session = sessionIdOf(event);
-      const command = event.field('command');
+      const event = hookEventOf({
+        schema: recordCheckEventSchema,
+        text: await context.io.readInput(),
+      });
+      const session = event[HookField.SessionId];
+      const command = event[HookField.ToolInput][HookField.Command];
 
       if (session !== undefined && command !== undefined) {
         context.recordCheck({

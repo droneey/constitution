@@ -48,4 +48,4 @@ It returns findings, one per line: `<path>:<line> — <slug> — <what is wrong>
 
 When the reviewer finishes, a hook records the review, so the hand-back reminder goes quiet until the tree changes again.
 
-Report the findings to the owner as the agent returned them, grouped by file, and fix what they ask for. A finding against a rule the owner does not want in this repository is a case for `/amend`, never for a silent exception.
+Report the findings to the owner as the agent returned them, grouped by file, and fix what they ask for. The fixes are reviewed by running this skill again, for as many rounds as `agent-review-stops-after-three-rounds` allows. A finding against a rule the owner does not want in this repository is a case for `/amend`, never for a silent exception.

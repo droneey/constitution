@@ -4,6 +4,8 @@ import { join } from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
+import { AbsolutePath } from '#/kernel/value-objects';
+
 import { HooksState } from '../../../domain/entities';
 import { createLefthookGitHooks } from '../lefthook-git-hooks.adapter';
 
@@ -95,7 +97,7 @@ describe('createLefthookGitHooks', () => {
     });
 
     // Act
-    const found = hooks.stateOf(project);
+    const found = hooks.stateOf(AbsolutePath.create(project));
 
     // Assert
     expect(found).toBe(state);
@@ -112,7 +114,7 @@ describe('createLefthookGitHooks', () => {
     });
 
     // Act
-    const found = hooks.stateOf(project);
+    const found = hooks.stateOf(AbsolutePath.create(project));
 
     // Assert
     expect(found).toBe(HooksState.Unconfigured);
@@ -142,7 +144,7 @@ describe('createLefthookGitHooks', () => {
     });
 
     // Act
-    const found = hooks.stateOf(project);
+    const found = hooks.stateOf(AbsolutePath.create(project));
 
     // Assert
     expect(found).toBe(HooksState.Unavailable);

@@ -1,11 +1,12 @@
 import { spawnSync } from 'node:child_process';
 import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { delimiter, join } from 'node:path';
+import { join } from 'node:path';
 
 import { afterEach, describe, expect, it } from 'bun:test';
 
 import { appliedUnit } from './applied-unit.fixtures';
+import { searchPathWith, toolEnvironment } from './package.fixtures';
 import { uvBinary, uvEnvironment } from './uv.fixtures';
 
 const MARKS = 'ran.txt';
@@ -57,13 +58,14 @@ const poeIn = (folder: string, task: string) =>
     {
       cwd: folder,
       encoding: 'utf8',
-      env: Object.fromEntries([
-        ...Object.entries(process.env),
-        [
-          'PATH',
-          `${join(uvEnvironment, 'bin')}${delimiter}${process.env['PATH'] ?? ''}`,
-        ],
-      ]),
+      env: toolEnvironment(
+        new Map([
+          [
+            'PATH',
+            searchPathWith(join(uvEnvironment, 'bin')),
+          ],
+        ]),
+      ),
     },
   );
 

@@ -1,1 +1,1 @@
-export { mergeEveryEntry } from './merge-every-entry.utils';
+export { mergeEveryEntry } from './merge-every-entry';

@@ -1,6 +1,7 @@
 export type {
   AddRemindedInput,
-  RecordMarkInput,
+  RecordFingerprintInput,
+  RecordUnjudgedInput,
   SaveStateInput,
   SessionCommandRepository,
 } from './session.repository';

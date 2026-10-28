@@ -1,11 +1,11 @@
-import type { AccentTokens, Output, StepContent } from '@droneey/design-cli';
+import type { AccentScale, Output, StepContent } from '@droneey/design-cli';
 import { StepStatus } from '@droneey/design-cli';
 import type { TerminalStreams, TerminalView } from '@droneey/design-cli/ink';
 import { openTerminalView, TaskList } from '@droneey/design-cli/ink';
 
 import type { Renderer, Report, Task } from '#/shared/cli';
 import { SectionKind } from '#/shared/cli';
-import { SectionView } from '#/shared/ui';
+import { SectionView, STEP_STATUS_LABELS } from '#/shared/ui';
 
 interface Streams {
   readonly stderr: NodeJS.WritableStream;
@@ -26,7 +26,7 @@ const nextTurn = async (): Promise<void> => {
 };
 
 interface TerminalRendererInput {
-  readonly accent: AccentTokens;
+  readonly accent: AccentScale;
   readonly output: Output;
   readonly streams: Streams;
   readonly write: (text: string) => void;
@@ -40,13 +40,13 @@ const createTerminalRenderer = (input: TerminalRendererInput): TerminalRenderer 
   const settled: StepContent[] = [];
   let progress: TerminalView | undefined;
 
-  const viewOn = (stdout: TerminalStreams['stdout']): TerminalView =>
+  const viewOn = (screen: TerminalStreams['screen']): TerminalView =>
     openTerminalView({
       accent: input.accent,
       output: input.output,
       streams: {
+        screen,
         stdin: input.streams.stdin,
-        stdout,
       },
     });
 
@@ -88,6 +88,7 @@ const createTerminalRenderer = (input: TerminalRendererInput): TerminalRenderer 
       progress = view;
       view.show(
         <TaskList
+          statusLabels={STEP_STATUS_LABELS}
           // Stryker disable next-line ArrayDeclaration: Ink writes no frame but its last in CI, where the specs run, so the running step is seen only on a terminal
           steps={[
             ...settled,
@@ -108,6 +109,7 @@ const createTerminalRenderer = (input: TerminalRendererInput): TerminalRenderer 
       });
       view.show(
         <TaskList
+          statusLabels={STEP_STATUS_LABELS}
           // Stryker disable next-line ArrayDeclaration: Ink writes no frame but its last in CI, where the specs run, so the running step is seen only on a terminal
           steps={[
             ...settled,

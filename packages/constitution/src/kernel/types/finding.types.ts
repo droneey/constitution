@@ -8,7 +8,7 @@ interface Finding<TCode extends string = string, TDetails = object> {
   readonly path: string;
 }
 
-/** a finding before the file it is reported at is known */
+/** A finding before the file it is reported at is known. */
 type Problem<TCode extends string = string, TDetails = object> = Omit<
   Finding<TCode, TDetails>,
   'path'

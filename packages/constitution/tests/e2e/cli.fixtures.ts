@@ -13,6 +13,8 @@ import {
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
+import { toolEnvironment } from './package.fixtures';
+
 // The executable a release ships, built once for the specs of a run as the release builds it: a
 // hook finds it on its PATH, as mise puts it there.
 const packageFolder = join(import.meta.dir, '..', '..');
@@ -35,6 +37,7 @@ const buildInto = (folder: string): void => {
     {
       cwd: packageFolder,
       encoding: 'utf8',
+      env: toolEnvironment(),
     },
   );
 
@@ -64,6 +67,7 @@ const sharedFolder = (): string | undefined => {
     ],
     {
       encoding: 'utf8',
+      env: toolEnvironment(),
     },
   ).stdout.trim();
 

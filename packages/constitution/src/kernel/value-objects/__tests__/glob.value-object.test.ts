@@ -6,8 +6,13 @@ import { Glob } from '../glob.value-object';
 describe('Glob', () => {
   it.each([
     {
-      condition: 'it is one token',
-      given: 'src/**/*.ts',
+      condition: 'its braces pair',
+      given: 'src/**/*.{ts,tsx}',
+      isGlob: true,
+    },
+    {
+      condition: 'it holds a blank',
+      given: 'src/**/my file.ts',
       isGlob: true,
     },
     {
@@ -16,13 +21,13 @@ describe('Glob', () => {
       isGlob: false,
     },
     {
-      condition: 'it holds a blank',
-      given: 'src/**/my file.ts',
+      condition: 'a brace is left open',
+      given: 'src/*.{ts,tsx',
       isGlob: false,
     },
     {
-      condition: 'it holds a tab',
-      given: 'src/\t*.ts',
+      condition: 'a brace closes none',
+      given: 'src/*.ts}',
       isGlob: false,
     },
     {
@@ -40,9 +45,9 @@ describe('Glob', () => {
     expect(answer).toBe(isGlob);
   });
 
-  it('should make the glob a token gives', () => {
+  it('should make the glob a text gives when its braces pair', () => {
     // Arrange
-    const text = '**/*.md';
+    const text = '**/*.{md,mdx}';
 
     // Act
     const glob = Glob.create(text);
@@ -51,9 +56,9 @@ describe('Glob', () => {
     expect<string>(glob).toBe(text);
   });
 
-  it('should refuse a text that holds whitespace', () => {
+  it('should refuse a text whose braces do not pair', () => {
     // Arrange
-    const text = 'my file.ts';
+    const text = '**/*.{md';
 
     // Act
     const create = (): Glob => Glob.create(text);
@@ -71,26 +76,34 @@ describe('Glob', () => {
 
   it.each([
     {
-      condition: 'both are one glob',
-      isEqual: true,
-      right: '**/*.md',
+      condition: 'the first glob matches the path',
+      isMatch: true,
+      path: 'a.md',
     },
     {
-      condition: 'they differ',
-      isEqual: false,
-      right: '**/*.ts',
+      condition: 'a later glob matches the path',
+      isMatch: true,
+      path: 'a.ts',
     },
-  ])('should say $isEqual when $condition', ({ isEqual, right }) => {
+    {
+      condition: 'no glob matches the path',
+      isMatch: false,
+      path: 'a.css',
+    },
+  ])('should say $isMatch when $condition', ({ isMatch, path }) => {
     // Arrange
     const globs = [
-      Glob.create('**/*.md'),
-      Glob.create(right),
-    ] as const;
+      Glob.create('*.md'),
+      Glob.create('*.ts'),
+    ];
 
     // Act
-    const isSame = Glob.equals(...globs);
+    const matches = Glob.matchesAny({
+      globs,
+      path,
+    });
 
     // Assert
-    expect(isSame).toBe(isEqual);
+    expect(matches).toBe(isMatch);
   });
 });

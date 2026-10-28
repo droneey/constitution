@@ -1,32 +1,32 @@
-import type { WorkingTree } from '#/kernel/contracts';
+import { projectCheck } from '#/kernel/constants';
 
+import type { WorkingTree } from '../../../contracts';
 import type { SessionCommandRepository } from '../../../contracts/repositories/commands';
-import { CheckState, SessionMark } from '../../../entities';
+import { SessionMark } from '../../../entities';
 import type { SessionId } from '../../../value-objects';
-import { fingerprintOf } from '../../shared/checksum';
+import { recordTree } from '../shared/record-tree';
 
-const SEPARATORS: readonly string[] = [
-  '&& ',
-  '; ',
+const COMMAND_SEPARATOR = /&&|;/;
+const RUNNERS: readonly string[] = [
+  'bun run ',
+  'bunx ',
+  'npx ',
+  'mise exec -- ',
 ] as const;
 
-// Whether a shell command runs the check: alone, first, or after && or ;, and ended by the line, a
-// blank or a ;.
-const runsCheck = (input: { check: string; command: string }): boolean => {
-  const { check, command } = input;
+const withoutRunner = (step: string): string => {
+  const runner = RUNNERS.find((prefix) => step.startsWith(prefix));
 
-  return (
-    command === check ||
-    command.startsWith(`${check} `) ||
-    command.startsWith(`${check};`) ||
-    SEPARATORS.some(
-      (separator) =>
-        command.endsWith(`${separator}${check}`) ||
-        command.includes(`${separator}${check} `) ||
-        command.includes(`${separator}${check};`),
-    )
-  );
+  return runner === undefined ? step : step.slice(runner.length);
 };
+
+// Whether one of the commands a shell line runs in turn is the check, alone or with its options.
+const runsCheck = (command: string): boolean =>
+  command.split(COMMAND_SEPARATOR).some((part) => {
+    const step = withoutRunner(part.trim());
+
+    return step === projectCheck || step.startsWith(`${projectCheck} `);
+  });
 
 interface RecordCheckInput {
   readonly command: string;
@@ -37,34 +37,16 @@ interface RecordCheckInput {
 
 /**
  * Records the fingerprint of the tree as checked when a command the agent ran is the project's
- * check; records nothing when it is not, or the session keeps no state or names no check.
+ * check; records nothing when it is not, the session keeps no rules, or git cannot report the tree.
  */
 const recordCheck = (input: RecordCheckInput): void => {
-  const state = input.sessions.state(input.session);
-
-  if (state === undefined) {
+  if (!runsCheck(input.command)) {
     return;
   }
 
-  const check = CheckState.commandOf(state.check);
-
-  if (
-    check === undefined ||
-    !runsCheck({
-      check,
-      command: input.command,
-    })
-  ) {
-    return;
-  }
-
-  input.sessions.recordMark({
+  recordTree({
+    ...input,
     mark: SessionMark.Checked,
-    session: input.session,
-    value: fingerprintOf({
-      project: state.project,
-      workingTree: input.workingTree,
-    }),
   });
 };
 

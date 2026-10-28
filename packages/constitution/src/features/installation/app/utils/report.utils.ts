@@ -4,15 +4,21 @@ import { EXECUTABLE_NAME } from '#/kernel/constants';
 import { OLDEST_FORMAT } from '#/kernel/entities';
 import { Version } from '#/kernel/value-objects';
 import type { Section, TaskOutcome } from '#/shared/cli';
-import { countOf, noteSection, stepsSection } from '#/shared/cli';
+import { countOf, LIST_SEPARATOR, NO_PROJECT, noteSection, stepsSection } from '#/shared/cli';
 
 import { Diagnosis, Health, InstallationPart, PartDiagnosis } from '../../domain/entities';
+import {
+  latestRefusedMessage,
+  latestUnansweredMessage,
+  latestUnreadableMessage,
+  manifestFieldsMessage,
+  manifestNotObjectMessage,
+} from './report.messages';
 
 const MISE_INSTALL = 'run mise install';
 const RAISE_PIN = 'raise the Constitution pin in mise.toml, then run mise install';
 const UPDATE_PLUGIN =
   'run claude plugin marketplace update droneey, then claude plugin update constitution@droneey';
-const NO_PROJECT = 'no constitution.yaml in this folder or above it';
 
 const LABELS = {
   [InstallationPart.Executable]: 'Executable',
@@ -64,8 +70,14 @@ const sayings: {
     hint: RAISE_PIN,
     summary: `the plugin ${plugin} is newer than this executable ${executable}, and its files differ`,
   }),
-  [Diagnosis.LatestUnknown]: () => ({
-    summary: 'GitHub could not be reached, so the latest release is unknown',
+  [Diagnosis.LatestUnanswered]: ({ reason }) => ({
+    summary: latestUnansweredMessage(reason),
+  }),
+  [Diagnosis.LatestRefused]: ({ status }) => ({
+    summary: latestRefusedMessage(String(status)),
+  }),
+  [Diagnosis.LatestUnreadable]: () => ({
+    summary: latestUnreadableMessage(),
   }),
   [Diagnosis.LatestAhead]: ({ executable, latest }) => ({
     hint: RAISE_PIN,
@@ -96,13 +108,24 @@ const sayings: {
     hint: MISE_INSTALL,
     summary: `cannot read ${manifest}`,
   }),
+  [Diagnosis.ManifestNotObject]: ({ manifest }) => ({
+    hint: MISE_INSTALL,
+    summary: manifestNotObjectMessage(manifest),
+  }),
+  [Diagnosis.ManifestMalformed]: ({ fields, manifest }) => ({
+    hint: MISE_INSTALL,
+    summary: manifestFieldsMessage({
+      fields: fields.join(LIST_SEPARATOR),
+      manifest,
+    }),
+  }),
   [Diagnosis.ManifestWithoutVersion]: ({ manifest }) => ({
     hint: MISE_INSTALL,
     summary: `${manifest} names no version`,
   }),
-  [Diagnosis.ReleaseMissing]: ({ releaseFolder }) => ({
+  [Diagnosis.ReleaseMissing]: ({ releaseFolderPath }) => ({
     hint: `${MISE_INSTALL}, which installs the release mise.toml pins and links it there`,
-    summary: `${releaseFolder} does not exist`,
+    summary: `${releaseFolderPath} does not exist`,
   }),
   [Diagnosis.ReleaseFormatNewer]: ({ format }) => ({
     hint: UPDATE_PLUGIN,
@@ -113,11 +136,11 @@ const sayings: {
     summary: `the release is older than block format ${OLDEST_FORMAT}, the oldest this executable reads`,
   }),
   [Diagnosis.LinkMatches]: ({ link }) => ({
-    summary: `${link.folder} → ${link.target}`,
+    summary: `${link.linkPath} → ${link.targetPath}`,
   }),
   [Diagnosis.LinkDiffers]: ({ executable, link, release }) => ({
     hint: `${MISE_INSTALL}, so the link and this executable are one release`,
-    summary: `${link.folder} → ${link.target} holds ${release}, this executable is ${executable}`,
+    summary: `${link.linkPath} → ${link.targetPath} holds ${release}, this executable is ${executable}`,
   }),
   [Diagnosis.HooksWithoutProject]: () => ({
     summary: NO_PROJECT,

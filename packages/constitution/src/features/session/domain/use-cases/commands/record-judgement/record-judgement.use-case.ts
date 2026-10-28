@@ -11,19 +11,29 @@ interface RecordJudgementInput {
 
 /**
  * Records the tree the gate judged: as reviewed when the reviewer finished, as blocked when the
- * agent was sent to run the check; records nothing for a review asked for.
+ * agent was sent to run the check; records why git failed to report the tree, so the gate tells a
+ * reason once a session; records nothing for a review asked for.
  */
 const recordJudgement = (input: RecordJudgementInput): void => {
-  const { judgement } = input;
+  const { judgement, session } = input;
 
   if (judgement.verdict === StopVerdict.Review) {
     return;
   }
 
-  input.sessions.recordMark({
+  if (judgement.verdict === StopVerdict.Unjudged) {
+    input.sessions.recordUnjudged({
+      reason: judgement.reason,
+      session,
+    });
+
+    return;
+  }
+
+  input.sessions.recordFingerprint({
+    fingerprint: judgement.fingerprint,
     mark: judgement.verdict === StopVerdict.Reviewed ? SessionMark.Reviewed : SessionMark.Blocked,
-    session: input.session,
-    value: judgement.fingerprint,
+    session,
   });
 };
 

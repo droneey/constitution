@@ -4,6 +4,8 @@ import { dirname, join } from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
+import { AbsolutePath } from '#/kernel/value-objects';
+
 import { createManifestWorkspace } from '../manifest-workspace.adapter';
 
 let parent = '';
@@ -235,7 +237,7 @@ describe('createManifestWorkspace', () => {
       const found = createManifestWorkspace({
         maxFolders: 100,
         maxGlobs: 100,
-      }).membersOf(project);
+      }).membersOf(AbsolutePath.create(project));
 
       // Assert
       expect<readonly string[]>(found).toStrictEqual(members);
@@ -294,7 +296,7 @@ describe('createManifestWorkspace', () => {
     const found = createManifestWorkspace({
       maxFolders: 100,
       maxGlobs: 100,
-    }).membersOf(project);
+    }).membersOf(AbsolutePath.create(project));
 
     // Assert
     expect(found).toStrictEqual([]);
@@ -311,7 +313,7 @@ describe('createManifestWorkspace', () => {
     const found = createManifestWorkspace({
       maxFolders: 1,
       maxGlobs: 100,
-    }).membersOf(project);
+    }).membersOf(AbsolutePath.create(project));
 
     // Assert
     expect<readonly string[]>(found).toStrictEqual([
@@ -330,7 +332,7 @@ describe('createManifestWorkspace', () => {
     const found = createManifestWorkspace({
       maxFolders: 1,
       maxGlobs: 100,
-    }).membersOf(project);
+    }).membersOf(AbsolutePath.create(project));
 
     // Assert
     expect<readonly string[]>(found).toStrictEqual([
@@ -350,7 +352,7 @@ describe('createManifestWorkspace', () => {
     const found = createManifestWorkspace({
       maxFolders: 100,
       maxGlobs: 2,
-    }).membersOf(project);
+    }).membersOf(AbsolutePath.create(project));
 
     // Assert
     expect<readonly string[]>(found).toStrictEqual([

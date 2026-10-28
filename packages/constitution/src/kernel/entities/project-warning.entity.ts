@@ -1,9 +1,11 @@
-import type { Layer } from '../constants';
+import type { ConfigKey, Layer, RequiredConfigKey } from '../constants';
 import type { BlockId, PackPath, RuleSlug, UnitPath } from '../value-objects';
 import { SourceKind } from '../value-objects';
 
-// The codes of a project's warnings, one for each subject a reader fixes, in the order a
-// declaration's warnings are grouped.
+/**
+ * The codes of a project's warnings, one for each subject a reader fixes, in the order a
+ * declaration's warnings are grouped.
+ */
 enum WarningCode {
   Config = 'config',
   Blocks = 'blocks',
@@ -54,6 +56,7 @@ enum WarningKind {
   ConfigurationFinding = 'configuration-finding',
   ConfigurationsUnchecked = 'configurations-unchecked',
   ReleaseLinkLoops = 'release-link-loops',
+  NoRepository = 'no-repository',
 }
 
 /** A file named by its path from the repository. */
@@ -61,9 +64,9 @@ interface FileNamed {
   readonly file: string;
 }
 
-/** A key of a constitution.yaml, in the file that holds it. */
+/** A key a constitution.yaml must give, in the file that holds it. */
 interface KeyNamed extends FileNamed {
-  readonly key: string;
+  readonly key: RequiredConfigKey;
 }
 
 /** A name a list of a constitution.yaml gives, as it is written. */
@@ -86,15 +89,18 @@ interface WarningDetails {
     readonly member: UnitPath;
   };
   readonly [WarningKind.MemberConfigUnparsed]: {
-    /** the line, from 1, the grammar stops at, when it says */
-    readonly line?: number;
+    /** every line, from 1, the file fails at, in order */
+    readonly lines: readonly number[];
     readonly member: UnitPath;
   };
   readonly [WarningKind.MemberConfigUnreadable]: {
     readonly member: UnitPath;
   };
   readonly [WarningKind.KeyMissing]: KeyNamed;
-  readonly [WarningKind.KeyUnknown]: KeyNamed;
+  readonly [WarningKind.KeyUnknown]: FileNamed & {
+    /** the key as the file writes it */
+    readonly key: string;
+  };
   readonly [WarningKind.KeyEmpty]: KeyNamed;
   readonly [WarningKind.FoundationListed]: FileNamed;
   readonly [WarningKind.AxisUnknown]: {
@@ -114,13 +120,13 @@ interface WarningDetails {
   readonly [WarningKind.NameIsPath]: NameGiven;
   readonly [WarningKind.NameUnknown]: NameGiven;
   readonly [WarningKind.CoreListed]: {
-    readonly key: string;
+    readonly key: ConfigKey;
   };
   readonly [WarningKind.BlockUnderWrongKey]: NameGiven & {
-    readonly key: string;
+    readonly key: ConfigKey;
     readonly layer: Layer;
     /** the key that lists blocks of its layer */
-    readonly toKey: string;
+    readonly toKey: ConfigKey;
   };
   readonly [WarningKind.AbstractListed]: NameGiven & {
     /** the blocks that extend it, which a unit lists in its place */
@@ -168,7 +174,7 @@ interface WarningDetails {
     /** for an abstract block, the blocks that extend it, one of which is listed in its place */
     readonly heirs?: readonly BlockId[];
     /** the key that lists the needed block */
-    readonly key: string;
+    readonly key: ConfigKey;
     readonly required: BlockId;
     readonly unit: UnitPath;
   };
@@ -188,10 +194,14 @@ interface WarningDetails {
     /** what the finding says, as the presets word it */
     readonly says: string;
   };
-  readonly [WarningKind.ConfigurationsUnchecked]: object;
+  readonly [WarningKind.ConfigurationsUnchecked]: {
+    /** what the check failed with, as its error words it; absent when it threw no error */
+    readonly reason?: string;
+  };
   readonly [WarningKind.ReleaseLinkLoops]: {
     readonly unit: UnitPath;
   };
+  readonly [WarningKind.NoRepository]: object;
 }
 
 /**
@@ -245,6 +255,7 @@ const codeOfKind: {
   [WarningKind.MemberWithoutConfig]: WarningCode.Workspace,
   [WarningKind.PackNotInstalled]: WarningCode.Installation,
   [WarningKind.ReleaseLinkLoops]: WarningCode.Installation,
+  [WarningKind.NoRepository]: WarningCode.Installation,
   [WarningKind.ConfigurationFinding]: WarningCode.Configurations,
   [WarningKind.ConfigurationsUnchecked]: WarningCode.Configurations,
 };

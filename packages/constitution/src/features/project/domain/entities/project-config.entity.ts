@@ -1,48 +1,51 @@
-import type { ConfigReadStatus } from '#/kernel/entities';
-import { attempted, isRangeError } from '#/kernel/utils';
+import type { ListKey, RequiredConfigKey } from '#/kernel/constants';
+import { ConfigKey, LAYERS, Layer } from '#/kernel/constants';
+import type { ConfigReadStatus, ProjectWarning } from '#/kernel/entities';
+import { WarningKind } from '#/kernel/entities';
 import { PackPath, UnitPath } from '#/kernel/value-objects';
 
-/** The keys of constitution.yaml. */
-enum ConfigKey {
-  Name = 'name',
-  Axes = 'axes',
-  Domains = 'domains',
-  Platforms = 'platforms',
-  Languages = 'languages',
-  Implementations = 'implementations',
-  Packs = 'packs',
-  Overrides = 'overrides',
-}
+// The layers constitution.yaml lists blocks of; core, always active, is listed under no key.
+type ListedLayer = Exclude<Layer, Layer.Core>;
 
-// The keys whose value is a list, in the order a file writes them.
-const LIST_KEYS = [
-  ConfigKey.Axes,
-  ConfigKey.Domains,
-  ConfigKey.Platforms,
-  ConfigKey.Languages,
-  ConfigKey.Implementations,
-  ConfigKey.Packs,
-] as const satisfies readonly ConfigKey[];
+// Stryker disable next-line ConditionalExpression: the guard only types the layers; core has no key, so no key finds it either way
+const isListedLayer = (layer: Layer): layer is ListedLayer => layer !== Layer.Core;
+
+// Stryker disable next-line MethodExpression: the filter only types the layers; core has no key, so no key finds it either way
+const listedLayers = LAYERS.filter(isListedLayer);
+
+const LAYER_KEYS = {
+  [Layer.Domain]: ConfigKey.Domains,
+  [Layer.Implementation]: ConfigKey.Implementations,
+  [Layer.Language]: ConfigKey.Languages,
+  [Layer.Platform]: ConfigKey.Platforms,
+} as const satisfies Readonly<Record<ListedLayer, ConfigKey>>;
 
 interface ConfigItem {
-  readonly key: string;
+  readonly key: ListKey;
   readonly text: string;
 }
 
-interface ConfigOverride {
-  readonly level?: string;
-  readonly line: number;
-  readonly reason?: string;
-  readonly rule?: string;
-  readonly until?: string;
+/** The fields an override of constitution.yaml writes, in the order it writes them. */
+enum OverrideField {
+  Rule = 'rule',
+  Level = 'level',
+  Reason = 'reason',
+  Until = 'until',
 }
 
-const UNTIL_FORM = /^\d{4}-\d{2}-\d{2}$/;
+interface ConfigOverride {
+  readonly line: number;
+  readonly [OverrideField.Level]?: string;
+  readonly [OverrideField.Reason]?: string;
+  readonly [OverrideField.Rule]?: string;
+  readonly [OverrideField.Until]?: string;
+}
+
 const REQUIRED_FIELDS = [
-  'rule',
-  'level',
-  'reason',
-] as const satisfies readonly (keyof ConfigOverride)[];
+  OverrideField.Rule,
+  OverrideField.Level,
+  OverrideField.Reason,
+] as const satisfies readonly OverrideField[];
 
 const createOverride = (input: {
   readonly level: string | undefined;
@@ -78,32 +81,19 @@ const createOverride = (input: {
 const missingFieldsOf = (override: ConfigOverride): readonly string[] =>
   REQUIRED_FIELDS.filter((field) => override[field] === undefined);
 
-/** The calendar date until names, or undefined when it is no date written YYYY-MM-DD. */
-const expiryOf = (until: string): Temporal.PlainDate | undefined =>
-  UNTIL_FORM.test(until)
-    ? attempted({
-        effect: () => Temporal.PlainDate.from(until),
-        isRecognised: isRangeError,
-      })
-    : undefined;
-
 const ConfigOverride = {
   create: createOverride,
-  expiryOf,
   missingFieldsOf,
 } as const;
 
-// One constitution.yaml as the fixed subset of YAML its grammar allows reads it, in the order it is
-// written.
+// One constitution.yaml, in the order it is written.
 interface UnitConfig {
-  // the keys of the lists left empty
-  readonly empties: readonly string[];
+  /** the keys of the lists and the overrides given no value */
+  readonly empties: readonly RequiredConfigKey[];
   readonly items: readonly ConfigItem[];
-  // every top-level key, those the grammar does not know included
+  /** every top-level key, those the program does not know included */
   readonly keys: readonly string[];
-  // the keys written as lists
-  readonly lists: readonly string[];
-  // the value of name, absent when it is left out or empty
+  /** absent when it is left out or given no value */
   readonly name?: string;
   readonly overrides: readonly ConfigOverride[];
 }
@@ -113,28 +103,73 @@ interface DeclaredUnit {
   readonly path: UnitPath;
 }
 
-// Why a member of the workspace declares nothing.
+/** Where a constitution.yaml that does not parse fails. */
+interface ParseFailure {
+  /** every line, from 1, the file fails at, in order */
+  readonly lines: readonly number[];
+}
+
+/** Why a member of the workspace declares nothing. */
 enum MemberProblem {
   Missing = 'missing',
   Unreadable = 'unreadable',
   Unparsed = 'unparsed',
 }
 
-interface UnreadMember {
-  // the line, from 1, the grammar stops at, for a file that does not parse
-  readonly line?: number;
-  readonly path: UnitPath;
-  readonly problem: MemberProblem;
-}
+type UnreadMember =
+  | {
+      readonly path: UnitPath;
+      readonly problem: MemberProblem.Missing | MemberProblem.Unreadable;
+    }
+  | (ParseFailure & {
+      readonly path: UnitPath;
+      readonly problem: MemberProblem.Unparsed;
+    });
 
-// What a project declares: the repository's constitution.yaml, then each member's of its workspace
-// in the order of their paths; nothing passes from one to another.
+const warningOf = (member: UnreadMember): ProjectWarning => {
+  switch (member.problem) {
+    case MemberProblem.Missing:
+      return {
+        details: {
+          member: member.path,
+        },
+        kind: WarningKind.MemberWithoutConfig,
+      };
+    case MemberProblem.Unparsed:
+      return {
+        details: {
+          lines: member.lines,
+          member: member.path,
+        },
+        kind: WarningKind.MemberConfigUnparsed,
+      };
+    case MemberProblem.Unreadable:
+      return {
+        details: {
+          member: member.path,
+        },
+        kind: WarningKind.MemberConfigUnreadable,
+      };
+    // Stryker disable next-line ConditionalExpression: no problem reaches the default, which only the compiler reads
+    default:
+      return member satisfies never;
+  }
+};
+
+const UnreadMember = {
+  warningOf,
+} as const;
+
+/**
+ * What a project declares: the repository's constitution.yaml, then each member's of its workspace
+ * in the order of their paths; nothing passes from one to another.
+ */
 interface ProjectConfig {
   readonly units: readonly [
     DeclaredUnit,
     ...DeclaredUnit[],
   ];
-  // the members whose constitution.yaml is missing or cannot be read
+  /** the members whose constitution.yaml is missing, cannot be read or does not parse */
   readonly unread: readonly UnreadMember[];
 }
 
@@ -143,11 +178,9 @@ type ConfigRead =
       readonly config: UnitConfig;
       readonly status: ConfigReadStatus.Parsed;
     }
-  | {
-      // the line, from 1, the grammar stops at
-      readonly line: number;
+  | (ParseFailure & {
       readonly status: ConfigReadStatus.Unparsed;
-    };
+    });
 
 // The packs a unit lists, each by its path from the repository, which the block set reads it at:
 // as the repository writes it, a member's from the member's folder.
@@ -170,15 +203,30 @@ const packsOf = (config: ProjectConfig): readonly PackPath[] =>
 const listsPack = (unit: DeclaredUnit, pack: PackPath): boolean =>
   packsListedBy(unit).some((listed) => PackPath.equals(listed, pack));
 
+/** The packs the unit lists, each once, in the order it lists them. */
+const unitPacksOf = (unit: DeclaredUnit): readonly PackPath[] => eachOnce(packsListedBy(unit));
+
 const DeclaredUnit = {
   listsPack,
-  /** the packs the unit lists, each once, in the order it lists them */
-  packsOf: (unit: DeclaredUnit): readonly PackPath[] => eachOnce(packsListedBy(unit)),
+  packsOf: unitPacksOf,
 } as const;
+
+/** The layer whose blocks a key lists, or undefined for a key that lists none. */
+const layerOfKey = (key: ListKey): ListedLayer | undefined =>
+  listedLayers.find((layer) => LAYER_KEYS[layer] === key);
 
 const ProjectConfig = {
   packsOf,
 } as const;
 
-export type { ConfigItem, ConfigRead, UnreadMember };
-export { ConfigKey, ConfigOverride, DeclaredUnit, LIST_KEYS, MemberProblem, ProjectConfig };
+export type { ConfigItem, ConfigRead, ParseFailure };
+export {
+  ConfigOverride,
+  DeclaredUnit,
+  LAYER_KEYS,
+  layerOfKey,
+  MemberProblem,
+  OverrideField,
+  ProjectConfig,
+  UnreadMember,
+};

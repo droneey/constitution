@@ -10,6 +10,8 @@ interface ModelBlock {
   /** the files it governs, as its card lists them */
   readonly governs: readonly Glob[];
   readonly id: BlockId;
+  /** whether other blocks may extend it, and only they may be listed */
+  readonly isAbstract: boolean;
   /** the languages an implementation serves, as its card lists them */
   readonly languages: readonly BlockId[];
   readonly layer: Layer;
@@ -33,6 +35,8 @@ interface RoleTerm {
   /** none where the definition gives none, which the blocks' check refuses */
   readonly id?: string;
   readonly kind: RoleKind;
+  /** the other block of the seam that defines it, which its definition needs as well */
+  readonly seam?: BlockId;
   readonly term: string;
 }
 
@@ -41,6 +45,8 @@ interface BlockText {
   readonly axis: Axis;
   readonly block: BlockId;
   readonly body: string;
+  /** the other block, where the file is a seam */
+  readonly seam?: BlockId;
 }
 
 /** The blocks of a release and its packs, their rules at every level and their role terms. */
@@ -60,7 +66,7 @@ const create = (input: BlockModel): BlockModel => ({
 const rolesIn = (texts: readonly BlockText[]): readonly RoleTerm[] => {
   const roles = new Map<string, RoleTerm>();
 
-  for (const { axis, block, body } of texts) {
+  for (const { axis, block, body, seam } of texts) {
     for (const { id, kind, term } of Term.allIn(body).terms) {
       if (Term.isRoleKind(kind) && !roles.has(term)) {
         roles.set(term, {
@@ -72,6 +78,11 @@ const rolesIn = (texts: readonly BlockText[]): readonly RoleTerm[] => {
                 id,
               }),
           kind,
+          ...(seam === undefined
+            ? {}
+            : {
+                seam,
+              }),
           term,
         });
       }
@@ -123,19 +134,29 @@ const reachOf = (model: BlockModel, reader: BlockId): ReadonlySet<BlockId> => {
   return reached;
 };
 
+/** The blocks a role's definition needs: its block and, where a seam defines it, the seam's other block. */
+const definersOf = (role: RoleTerm): readonly BlockId[] =>
+  role.seam === undefined
+    ? [
+        role.block,
+      ]
+    : [
+        role.block,
+        role.seam,
+      ];
+
+interface RoleAsked {
+  readonly id: string;
+  /** the blocks that read it; one the model does not know reaches nothing */
+  readonly readers: readonly BlockId[];
+}
+
 /**
  * The term of a role id for readers: of the blocks they reach that define it, the most specific, as a
- * language spells a folder its own way; the first defined where they reach none.
+ * language spells a folder its own way; none where they reach none. A role a seam defines is reached
+ * only with the seam's other block.
  */
-const roleOf = (
-  model: BlockModel,
-  input: {
-    id: string;
-    /** the ids of the blocks that read it; one the model does not know reaches nothing */
-    readers: readonly string[];
-  },
-): RoleTerm | undefined => {
-  const defining = model.roles.filter((role) => role.id === input.id);
+const reachedRoleOf = (model: BlockModel, input: RoleAsked): RoleTerm | undefined => {
   const reached = new Set(
     model.blocks
       .filter((block) => input.readers.includes(block.id))
@@ -144,15 +165,40 @@ const roleOf = (
       ]),
   );
   const [specific] = model.blocks
-    .filter((block) => reached.has(block.id))
     .toSorted((left, right) => LAYER_RANK[right.layer] - LAYER_RANK[left.layer])
-    .flatMap((block) => defining.filter((role) => role.block === block.id));
+    .flatMap((block) =>
+      model.roles.filter(
+        (role) =>
+          role.id === input.id &&
+          role.block === block.id &&
+          definersOf(role).every((definer) => reached.has(definer)),
+      ),
+    );
 
-  return specific ?? defining[0];
+  return specific;
 };
 
+/** The first definition of a role id; none where no block gives one. */
+const definitionOf = (model: BlockModel, id: string): RoleTerm | undefined =>
+  model.roles.find((role) => role.id === id);
+
+/** The term of a role id for readers, as they reach it; the first defined where they reach none. */
+const roleOf = (model: BlockModel, input: RoleAsked): RoleTerm | undefined =>
+  reachedRoleOf(model, input) ?? definitionOf(model, input.id);
+
+const blockOf = (model: BlockModel, id: string): ModelBlock | undefined =>
+  model.blocks.find((block) => block.id === id);
+
+const isExtensible = (model: BlockModel, id: string): boolean =>
+  blockOf(model, id)?.isAbstract === true;
+
 const BlockModel = {
+  blockOf,
   create,
+  definersOf,
+  definitionOf,
+  isExtensible,
+  reachedRoleOf,
   reachOf,
   roleOf,
   rolesIn,

@@ -4,14 +4,9 @@ import type { ProblemOf } from '#/kernel/types';
 import { BlockId } from '#/kernel/value-objects';
 import { textOf } from '#/shared/cli';
 
-import { FrontMatterField } from '../../../domain/entities';
+import { FrontMatterField, FrontMatterReadCode } from '../../../domain/entities';
 import type { LoadFindingDetails } from '../../../domain/use-cases/queries/check';
-import {
-  BlockLoadCode,
-  FrontMatterReadCode,
-  LoadCode,
-  PlaceCode,
-} from '../../../domain/use-cases/queries/check';
+import { BlockLoadCode, LoadCode, PlaceCode } from '../../../domain/use-cases/queries/check';
 import { loadTexts } from '../load-texts.utils';
 
 describe('loadTexts', () => {

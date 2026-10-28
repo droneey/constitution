@@ -4,9 +4,12 @@ import { StepStatus, Tone } from '@droneey/design-cli';
 
 import { createFakeContext, runCommand } from '#/__tests__/command-context.fake';
 import type { Validation } from '#/features/blocks';
+import { ValidationStage } from '#/features/blocks';
 import type { BlockModel } from '#/kernel/entities';
 import { ValueSite } from '#/kernel/entities';
 import { ValueFailure } from '#/kernel/errors';
+import type { AbsolutePath } from '#/kernel/value-objects';
+import { BlockSource, PackPath } from '#/kernel/value-objects';
 import type { StepReport } from '#/shared/cli';
 import { noteSection } from '#/shared/cli';
 
@@ -29,6 +32,7 @@ const sound: Validation = {
   advice: [],
   findings: [],
   model,
+  stage: ValidationStage.Checked,
 };
 
 const reportOf = (input: { isFailed: boolean; status: StepStatus }): StepReport => ({
@@ -86,8 +90,9 @@ const runOf = async (input: {
 
         return input.presets ?? done;
       },
-      checkConfigurations: (start: string) => {
-        asked.push(start);
+      presetsSkipped: skipped,
+      checkConfigurations: (startFolderPath: AbsolutePath) => {
+        asked.push(startFolderPath);
 
         return input.configurations ?? done;
       },
@@ -114,6 +119,7 @@ describe('createCheckCommand', () => {
       checkBlocks: () => undefined,
       checkPresets: () => skipped,
       checkConfigurations: () => skipped,
+      presetsSkipped: skipped,
     });
 
     // Act
@@ -151,13 +157,16 @@ describe('createCheckCommand', () => {
     expect(run).toStrictEqual({
       asked: [
         {
-          base: '../base',
-          folder: '/work/project/package',
+          base: {
+            folder: '../base',
+            folderPath: '/work/project/package/../base',
+          },
+          folderPath: '/work/project/package',
         },
         {
-          folder: '/work/project/package',
-          isRelease: false,
           model,
+          source: BlockSource.create(PackPath.create('.')),
+          sourceFolderPath: '/work/project/package',
         },
         '/work/project/package',
       ],
@@ -180,7 +189,7 @@ describe('createCheckCommand', () => {
     });
   });
 
-  it("should ask for the release's presets, with no model, when no base is named and no blocks load", async () => {
+  it('should skip the presets, asking for none, when no blocks load', async () => {
     // Arrange
     const asked = {
       validation: undefined,
@@ -190,10 +199,38 @@ describe('createCheckCommand', () => {
     const run = await runOf(asked);
 
     // Assert
+    expect({
+      asked: run.asked,
+      presets: run.steps[1],
+    }).toStrictEqual({
+      asked: [
+        {
+          base: undefined,
+          folderPath: '/work/project/package',
+        },
+        '/work/project/package',
+      ],
+      presets: [
+        'Presets',
+        StepStatus.Skipped,
+      ],
+    });
+  });
+
+  it("should check the release's presets when no base is named and the blocks load", async () => {
+    // Arrange
+    const asked = {
+      validation: sound,
+    };
+
+    // Act
+    const run = await runOf(asked);
+
+    // Assert
     expect(run.asked[1]).toStrictEqual({
-      folder: '/work/project/package',
-      isRelease: true,
-      model: undefined,
+      model,
+      source: BlockSource.create(),
+      sourceFolderPath: '/work/project/package',
     });
   });
 
@@ -202,10 +239,10 @@ describe('createCheckCommand', () => {
       condition: 'the blocks have findings',
       printed: 1,
       validation: {
-        advice: [],
         findings: [
           finding,
         ],
+        stage: ValidationStage.Unloaded,
       },
     },
     {
@@ -226,7 +263,7 @@ describe('createCheckCommand', () => {
       presets: failed,
       printed: 3,
       validation: {
-        advice: [],
+        ...sound,
         findings: [
           finding,
         ],

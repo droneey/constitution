@@ -147,40 +147,4 @@ describe('ConfigOverride', () => {
     // Assert
     expect(missingFields).toStrictEqual(missing);
   });
-
-  it('should give the calendar date when until is written YYYY-MM-DD', () => {
-    // Arrange
-    const until = '2026-07-01';
-
-    // Act
-    const expiry = ConfigOverride.expiryOf(until);
-
-    // Assert
-    expect(expiry).toStrictEqual(Temporal.PlainDate.from('2026-07-01'));
-  });
-
-  it.each([
-    {
-      name: 'a date with a time',
-      until: '2026-07-01T10:00',
-    },
-    {
-      name: 'a date with an expanded year',
-      until: '+002026-07-01',
-    },
-    {
-      name: 'a day the month does not have',
-      until: '2026-02-30',
-    },
-    {
-      name: 'a word',
-      until: 'soon',
-    },
-  ])('should give none when until is $name', ({ until }) => {
-    // Act
-    const expiry = ConfigOverride.expiryOf(until);
-
-    // Assert
-    expect(expiry).toBeUndefined();
-  });
 });

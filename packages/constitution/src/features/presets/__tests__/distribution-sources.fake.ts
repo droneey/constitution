@@ -1,10 +1,10 @@
 import type { DistributionSources } from '../domain/contracts';
 
-/** The same packages for whatever folder is asked. */
+/** The same built files for whatever folder is asked. */
 const createFakeDistributionSources = (
-  packages: Readonly<Record<string, string>> = {},
+  builtFiles: readonly string[] = [],
 ): DistributionSources => ({
-  packagesOf: (): ReadonlyMap<string, string> => new Map(Object.entries(packages)),
+  builtFilesOf: (): ReadonlySet<string> => new Set(builtFiles),
 });
 
 export { createFakeDistributionSources };

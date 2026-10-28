@@ -42,7 +42,7 @@ The settings are those the file holds, in its own shape: a table of JSON, TOML o
 | `!replace` | replaces what the entries before gave, a list or a value, instead of joining it |
 | `!default` | written once, while the file lacks it, and never checked again: a starter file the project owns, on whose content no rule depends |
 | `!words` | on a list: written as one text, its items joined by spaces |
-| `!sorted` | on a map of a JSON or YAML file: its keys, the project's own among them, stand in their order as texts, as Bun's `scripts` do, each action's script heading its group |
+| `!sorted` | on a map of a JSON or YAML file: its keys, the project's own among them, stand in their order as texts, as Bun's `scripts` do, each action's script heading its group; in a file of another format, whose writer keeps no order of its keys, the check of the presets reports it (`sorted-in-unsortable-file`) |
 
 Within a value, a fact stands for what `constitution` knows of the unit:
 

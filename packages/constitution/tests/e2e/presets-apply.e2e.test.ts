@@ -13,13 +13,7 @@ import {
   memberPackFiles,
   settingsOf,
 } from './presets-apply.fixtures';
-import {
-  ConfigKey,
-  configOf,
-  memberConfigOf,
-  removeProjects,
-  workspaceOf,
-} from './project.fixtures';
+import { ConfigKey, configOf, removeProjects, workspaceOf } from './project.fixtures';
 
 const MARKDOWNLINT = '.markdownlint.jsonc';
 const IGNORE = '.markdownlintignore';
@@ -103,7 +97,37 @@ describe('constitution presets apply', () => {
     });
   });
 
-  it('should keep a value the user changed and end the run as failed', () => {
+  it('should write again from the files a lock that does not parse, leave the files as they are and end the run as passed', () => {
+    // Arrange
+    const project = projectOf();
+    const first = applyIn({
+      project,
+      read: readFiles,
+    });
+
+    writeFileSync(join(project, LOCK), linesOf('<<<<<<< ours', '{}', '>>>>>>> theirs'));
+
+    // Act
+    const applied = applyIn({
+      project,
+      read: readFiles,
+    });
+
+    // Assert
+    expect({
+      exitCode: applied.exitCode,
+      ignored: applied.files[IGNORE],
+      lock: JSON.parse(applied.files[LOCK] ?? ''),
+      settings: applied.files[MARKDOWNLINT],
+    }).toStrictEqual({
+      exitCode: 0,
+      ignored: first.files[IGNORE],
+      lock: expect.any(Object),
+      settings: first.files[MARKDOWNLINT],
+    });
+  });
+
+  it('should keep a value the user changed, write nothing and end the run as failed', () => {
     // Arrange
     const project = projectOf({
       [MARKDOWNLINT]: linesOf('{ "heading": { "style": "setext" } }'),
@@ -122,11 +146,9 @@ describe('constitution presets apply', () => {
     }).toStrictEqual({
       exitCode: 1,
       settings: {
-        default: true,
         heading: {
           style: 'setext',
         },
-        html: false,
       },
     });
   });
@@ -263,7 +285,7 @@ describe('constitution presets apply', () => {
         config: configOf({}),
         files: {
           ...workspaceOf({
-            [MEMBER]: memberConfigOf({
+            [MEMBER]: configOf({
               [ConfigKey.Implementations]: '[own-tool]',
               [ConfigKey.Packs]: '[pack]',
             }),

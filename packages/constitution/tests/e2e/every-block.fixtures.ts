@@ -12,6 +12,7 @@ import { dirname, join } from 'node:path';
 import type { UnitFixture } from './applied-unit.fixtures';
 import { appliedUnit } from './applied-unit.fixtures';
 import { miseBinary } from './mise.fixtures';
+import { toolEnvironment } from './package.fixtures';
 import { uvBinary } from './uv.fixtures';
 
 interface DeployedUnit {
@@ -29,6 +30,7 @@ enum Tool {
   Biome = 'biome',
   Tsc = 'tsc',
   Knip = 'knip',
+  Jscpd = 'jscpd',
   DependencyCruiser = 'dependency-cruiser',
   Syncpack = 'syncpack',
   Yamllint = 'yamllint',
@@ -83,6 +85,7 @@ const deployedUnits: readonly DeployedUnit[] = [
       Tool.Biome,
       Tool.Tsc,
       Tool.Knip,
+      Tool.Jscpd,
       Tool.DependencyCruiser,
       Tool.Syncpack,
       Tool.Yamllint,
@@ -107,6 +110,7 @@ const deployedUnits: readonly DeployedUnit[] = [
         'version-control',
       ],
       implementations: [
+        'actionlint',
         'betterleaks',
         'biome',
         'bun',
@@ -114,6 +118,7 @@ const deployedUnits: readonly DeployedUnit[] = [
         'dependency-cruiser',
         'editorconfig',
         'git',
+        'jscpd',
         'knip',
         'ky',
         'lefthook',
@@ -428,6 +433,7 @@ const initRepository = (folder: string): void => {
     ],
     {
       cwd: folder,
+      env: toolEnvironment(),
     },
   );
 };
@@ -547,6 +553,11 @@ const commandsOf: Readonly<Record<Tool, readonly (readonly string[])[]>> = {
       'Dockerfile',
     ],
   ],
+  [Tool.Jscpd]: [
+    [
+      bin('jscpd'),
+    ],
+  ],
   [Tool.Knip]: [
     [
       bin('knip'),
@@ -642,13 +653,7 @@ const failuresOfRun = async (input: {
     ],
     {
       cwd: input.folder,
-      env: Object.fromEntries([
-        ...Object.entries(process.env),
-        [
-          'NO_COLOR',
-          '1',
-        ],
-      ]),
+      env: toolEnvironment(),
       stderr: 'pipe',
       stdout: 'pipe',
     },

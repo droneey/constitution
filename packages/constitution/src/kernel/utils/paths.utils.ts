@@ -1,15 +1,8 @@
-const SEPARATOR = '/';
-const CURRENT = '.';
-const PARENT = '..';
+import { CURRENT_SEGMENT, PARENT_SEGMENT, PATH_SEPARATOR } from '../constants';
+
 const DOT_SLASH = './';
 
-const directoryOf = (path: string): string => {
-  const end = path.lastIndexOf(SEPARATOR);
-
-  return end === -1 ? CURRENT : path.slice(0, end);
-};
-
-const fileNameOf = (path: string): string => path.slice(path.lastIndexOf(SEPARATOR) + 1);
+const fileNameOf = (path: string): string => path.slice(path.lastIndexOf(PATH_SEPARATOR) + 1);
 
 interface StemInput {
   readonly extension: string;
@@ -25,30 +18,31 @@ const stemOf = (input: StemInput): string => {
 const normalizePath = (path: string): string => {
   const segments: string[] = [];
 
-  for (const segment of path.split(SEPARATOR)) {
-    if (segment === PARENT && segments.length > 0 && segments.at(-1) !== PARENT) {
+  for (const segment of path.split(PATH_SEPARATOR)) {
+    if (segment === PARENT_SEGMENT && segments.length > 0 && segments.at(-1) !== PARENT_SEGMENT) {
       segments.pop();
-    } else if (segment !== '' && segment !== CURRENT) {
+    } else if (segment !== '' && segment !== CURRENT_SEGMENT) {
       segments.push(segment);
     }
   }
 
-  const body = segments.join(SEPARATOR);
+  const body = segments.join(PATH_SEPARATOR);
 
   if (body === '') {
-    return CURRENT;
+    return CURRENT_SEGMENT;
   }
 
-  return path.endsWith(SEPARATOR) ? `${body}${SEPARATOR}` : body;
+  return path.endsWith(PATH_SEPARATOR) ? `${body}${PATH_SEPARATOR}` : body;
 };
+
+/** Whether a path from a folder is written one way and stays inside it; an empty one is the folder. */
+const isInnerPath = (path: string): boolean =>
+  path === '' ||
+  (normalizePath(path) === path &&
+    path !== PARENT_SEGMENT &&
+    !path.startsWith(`${PARENT_SEGMENT}${PATH_SEPARATOR}`));
 
 const withoutDotSlash = (path: string): string =>
   path.startsWith(DOT_SLASH) ? path.slice(DOT_SLASH.length) : path;
 
-const joinPaths = (paths: readonly string[]): string => normalizePath(paths.join(SEPARATOR));
-
-/** Whether a candidate is one segment of a path: text, not empty, without a "/". */
-const isPathSegment = (candidate: unknown): candidate is string =>
-  typeof candidate === 'string' && candidate !== '' && !candidate.includes(SEPARATOR);
-
-export { directoryOf, isPathSegment, joinPaths, normalizePath, stemOf, withoutDotSlash };
+export { isInnerPath, normalizePath, stemOf, withoutDotSlash };

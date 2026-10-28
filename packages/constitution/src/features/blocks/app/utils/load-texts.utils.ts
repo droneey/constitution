@@ -1,22 +1,25 @@
-import { AXES, BLOCKS_FOLDER, LAYER_FOLDER, LAYERS, Layer } from '#/kernel/constants';
+import {
+  AXES,
+  BLOCKS_FOLDER_NAME,
+  LAYER_FOLDER_NAME,
+  LAYERS,
+  Layer,
+  PATH_SEPARATOR,
+} from '#/kernel/constants';
 import type { TextsOf } from '#/shared/cli';
 
+import { FrontMatterReadCode } from '../../domain/entities';
 import type { LoadFindingDetails } from '../../domain/use-cases/queries/check';
-import {
-  BlockLoadCode,
-  FrontMatterReadCode,
-  LoadCode,
-  PlaceCode,
-} from '../../domain/use-cases/queries/check';
+import { BlockLoadCode, LoadCode, PlaceCode } from '../../domain/use-cases/queries/check';
 import { fieldOf, listOf } from './wording.utils';
 
 const layerFolders = listOf({
   conjunction: 'or',
-  names: LAYERS.filter((layer) => layer !== Layer.Core).map((layer) => LAYER_FOLDER[layer]),
+  names: LAYERS.filter((layer) => layer !== Layer.Core).map((layer) => LAYER_FOLDER_NAME[layer]),
 });
 const axisFolders = listOf({
   conjunction: 'and',
-  names: AXES.map((axis) => `${axis}/`),
+  names: AXES.map((axis) => `${axis}${PATH_SEPARATOR}`),
 });
 
 const loadTexts: TextsOf<LoadFindingDetails> = {
@@ -56,7 +59,7 @@ const loadTexts: TextsOf<LoadFindingDetails> = {
   [LoadCode.IdShared]: ({ id, others }) =>
     `shares the id "${id}" with ${others.join(', ')}; an id names one block`,
   [PlaceCode.OutsideBlockFolder]: () =>
-    `is not inside a block folder; a block is ${BLOCKS_FOLDER}/${LAYER_FOLDER[Layer.Core]}, or a folder <id>/ in ${layerFolders}`,
+    `is not inside a block folder; a block is ${BLOCKS_FOLDER_NAME}${PATH_SEPARATOR}${LAYER_FOLDER_NAME[Layer.Core]}, or a folder <id>/ in ${layerFolders}`,
   [PlaceCode.StrayBlockFile]: () =>
     `is not a block file; a block holds at its root its passport <id>.md, and in ${axisFolders} its chapters <name>.md and its seams with/<block>.md`,
   [PlaceCode.ChapterNamedAfterBlock]: () =>

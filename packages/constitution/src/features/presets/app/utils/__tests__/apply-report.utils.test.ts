@@ -2,14 +2,32 @@ import { describe, expect, it } from 'bun:test';
 
 import { StepStatus, Tone } from '@droneey/design-cli';
 
-import type { TaskOutcome } from '#/shared/cli';
+import { goldenFileText, goldenOf } from '#/__tests__/golden.fixtures';
+import { notesTextOf } from '#/__tests__/notes-text.fixtures';
+import { RepositoryRelativePath, UnitPath } from '#/kernel/value-objects';
 import { noteSection } from '#/shared/cli';
 
-import type { ApplyReport, PresetsFinding } from '../../../domain/entities';
-import { PresetsCode } from '../../../domain/entities';
+import type {
+  ApplyPlan,
+  ApplyReport,
+  PresetsFinding,
+  SettingPlace,
+} from '../../../domain/entities';
+import {
+  ApplyPlanKind,
+  PresetsCode,
+  ProjectRead,
+  ProjectReadStatus,
+} from '../../../domain/entities';
+import { placeMessage } from '../apply-report.messages';
 import { applyOutcomeOf, applySectionsOf } from '../apply-report.utils';
-import { presetsFindingTextOf } from '../presets-finding-texts.utils';
+import { findingLinesOf } from '../finding-lines.utils';
 
+const lockUnparsed: PresetsFinding = {
+  code: PresetsCode.LockUnparsed,
+  details: {},
+  path: 'constitution.lock',
+};
 const loosened: PresetsFinding = {
   code: PresetsCode.Loosened,
   details: {
@@ -18,103 +36,143 @@ const loosened: PresetsFinding = {
   },
   path: 'biome.json',
 };
-
-const quiet: ApplyReport = {
-  added: [],
-  deleted: [],
-  findings: [],
-  removed: [],
-  units: [],
-  written: [],
+const added: SettingPlace = {
+  filePath: RepositoryRelativePath.create('biome.json'),
+  setting: 'test.randomize',
 };
+const removedFromBiome: SettingPlace = {
+  filePath: RepositoryRelativePath.create('biome.json'),
+  setting: 'files "dist"',
+};
+const removedFromIgnore: SettingPlace = {
+  filePath: RepositoryRelativePath.create('.gitignore'),
+  setting: '"dist/"',
+};
+
+const quietReport: ApplyReport = {
+  added: [],
+  deletedFilePaths: [],
+  removed: [],
+  unitPaths: [],
+  writtenFilePaths: [],
+};
+const writtenReport: ApplyReport = {
+  ...quietReport,
+  unitPaths: [
+    UnitPath.create(''),
+  ],
+  writtenFilePaths: [
+    RepositoryRelativePath.create('biome.json'),
+  ],
+};
+// Each part of a report that writes.
+const fullReport: ApplyReport = {
+  added: [
+    added,
+  ],
+  deletedFilePaths: [
+    RepositoryRelativePath.create('notes.json'),
+  ],
+  removed: [
+    removedFromBiome,
+    removedFromIgnore,
+  ],
+  unitPaths: [
+    UnitPath.create(''),
+  ],
+  writtenFilePaths: [
+    RepositoryRelativePath.create('biome.json'),
+    RepositoryRelativePath.create('constitution.lock'),
+  ],
+};
+
+// The changes a ready plan writes play no part in its report.
+const readyOf = (report: ApplyReport, notes: readonly PresetsFinding[] = []): ApplyPlan => ({
+  changes: {
+    deletedFilePaths: [],
+    files: [],
+    locks: [],
+  },
+  kind: ApplyPlanKind.Ready,
+  notes,
+  report,
+});
+
+const quiet = readyOf(quietReport);
+const written = readyOf(writtenReport);
+const full = readyOf(fullReport);
+const noted = readyOf(writtenReport, [
+  lockUnparsed,
+]);
+const found: ApplyPlan = {
+  findings: [
+    loosened,
+  ],
+  kind: ApplyPlanKind.Held,
+};
+
+const noProject: ProjectRead<never> = {
+  status: ProjectReadStatus.NoProject,
+};
+
+describe('applyOutcomeOf and applySectionsOf', () => {
+  it('should word the step and the report as the golden file shows them', async () => {
+    // Act
+    const golden = goldenOf({
+      'outcome when found': applyOutcomeOf(ProjectRead.opened(found)).detail,
+      'outcome when no project': applyOutcomeOf(noProject).detail,
+      'outcome when written': applyOutcomeOf(ProjectRead.opened(written)).detail,
+      sections: notesTextOf(applySectionsOf(ProjectRead.opened(full))),
+      'sections when found': notesTextOf(applySectionsOf(ProjectRead.opened(found))),
+      'sections when noted': notesTextOf(applySectionsOf(ProjectRead.opened(noted))),
+    });
+
+    // Assert
+    expect(golden).toBe(
+      await goldenFileText(new URL('apply-report.golden.txt', import.meta.url), golden),
+    );
+  });
+});
 
 describe('applyOutcomeOf', () => {
   it.each<{
     condition: string;
-    outcome: TaskOutcome;
-    report: ApplyReport | undefined;
+    report: ProjectRead<ApplyPlan>;
+    status: StepStatus;
   }>([
     {
       condition: 'no project lies around the folder',
-      outcome: {
-        detail: 'no constitution.yaml in this folder or above it',
-        status: StepStatus.Failed,
-      },
-      report: undefined,
+      report: noProject,
+      status: StepStatus.Failed,
     },
     {
       condition: 'it wrote a file and found nothing wrong',
-      outcome: {
-        detail: '1 file written',
-        status: StepStatus.Done,
-      },
-      report: {
-        ...quiet,
-        written: [
-          'biome.json',
-        ],
-      },
+      report: ProjectRead.opened(written),
+      status: StepStatus.Done,
+    },
+    {
+      condition: 'it wrote a file and noted what it wrote despite',
+      report: ProjectRead.opened(noted),
+      status: StepStatus.Done,
     },
     {
       condition: 'it found something wrong',
-      outcome: {
-        detail: '0 files written, 2 findings',
-        status: StepStatus.Failed,
-      },
-      report: {
-        ...quiet,
-        findings: [
-          loosened,
-          loosened,
-        ],
-      },
+      report: ProjectRead.opened(found),
+      status: StepStatus.Failed,
     },
-  ])('should end the step as $outcome.status when $condition', ({ outcome, report }) => {
+  ])('should end the step as $status when $condition', ({ report, status }) => {
     // Act
-    const given = applyOutcomeOf(report);
+    const outcome = applyOutcomeOf(report);
 
     // Assert
-    expect(given).toStrictEqual(outcome);
+    expect(outcome.status).toBe(status);
   });
 });
 
 describe('applySectionsOf', () => {
-  it('should give what it wrote, deleted, removed and added, then what it found', () => {
-    // Arrange
-    const report: ApplyReport = {
-      added: [
-        {
-          file: 'biome.json',
-          setting: 'test.randomize',
-        },
-      ],
-      deleted: [
-        'notes.json',
-      ],
-      findings: [
-        loosened,
-      ],
-      removed: [
-        {
-          file: 'biome.json',
-          setting: 'files "dist"',
-        },
-        {
-          file: '.gitignore',
-          setting: '"dist/"',
-        },
-      ],
-      units: [
-        '',
-      ],
-      written: [
-        'biome.json',
-        'constitution.lock',
-      ],
-    };
-
+  it('should give what it wrote, deleted, removed and added when it found nothing wrong', () => {
     // Act
-    const sections = applySectionsOf(report);
+    const sections = applySectionsOf(ProjectRead.opened(full));
 
     // Assert
     expect(sections).toStrictEqual([
@@ -123,36 +181,68 @@ describe('applySectionsOf', () => {
           'biome.json',
           'constitution.lock',
         ],
-        title: '2 files written',
+        title: expect.any(String),
         tone: Tone.Info,
       }),
       noteSection({
         lines: [
           'notes.json',
         ],
-        title: '1 file deleted, which the apply created and nothing holds any longer',
+        title: expect.any(String),
         tone: Tone.Info,
       }),
       noteSection({
         lines: [
-          'biome.json: files "dist"',
-          '.gitignore: "dist/"',
+          placeMessage(removedFromBiome),
+          placeMessage(removedFromIgnore),
         ],
-        title: '2 settings removed, which no entry gives any longer',
+        title: expect.any(String),
         tone: Tone.Info,
       }),
       noteSection({
         lines: [
-          'biome.json: test.randomize',
+          placeMessage(added),
         ],
-        title: '1 setting added as defaults to files that were there',
+        title: expect.any(String),
         tone: Tone.Info,
+      }),
+    ]);
+  });
+
+  it('should give what it noted before what it wrote', () => {
+    // Act
+    const sections = applySectionsOf(ProjectRead.opened(noted));
+
+    // Assert
+    expect(sections).toStrictEqual([
+      noteSection({
+        lines: findingLinesOf([
+          lockUnparsed,
+        ]),
+        title: expect.any(String),
+        tone: Tone.Warning,
       }),
       noteSection({
         lines: [
-          `biome.json: ${presetsFindingTextOf(loosened)} [loosened]`,
+          'biome.json',
         ],
-        title: '1 finding in the presets',
+        title: expect.any(String),
+        tone: Tone.Info,
+      }),
+    ]);
+  });
+
+  it('should give only the findings when it found something wrong, as it wrote nothing', () => {
+    // Act
+    const sections = applySectionsOf(ProjectRead.opened(found));
+
+    // Assert
+    expect(sections).toStrictEqual([
+      noteSection({
+        lines: findingLinesOf([
+          loosened,
+        ]),
+        title: expect.any(String),
         tone: Tone.Error,
       }),
     ]);
@@ -161,11 +251,11 @@ describe('applySectionsOf', () => {
   it.each([
     {
       condition: 'no project lies around the folder',
-      report: undefined,
+      report: noProject,
     },
     {
       condition: 'it changed nothing and found nothing',
-      report: quiet,
+      report: ProjectRead.opened(quiet),
     },
   ])('should give nothing when $condition', ({ report }) => {
     // Act

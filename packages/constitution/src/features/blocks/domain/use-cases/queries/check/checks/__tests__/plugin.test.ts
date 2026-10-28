@@ -3,51 +3,23 @@ import { describe, expect, it } from 'bun:test';
 import type { FindingOf } from '#/kernel/types';
 
 import type { Files } from '../../../../../../__tests__/constitution.fixtures';
-import { checkInputOf, without } from '../../../../../../__tests__/constitution.fixtures';
+import { without } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { SkillField } from '../../../../../entities';
+import { checkInputOf } from '../../__tests__/check.fixtures';
+import type { ManifestReadDetails } from '../../utils';
+import { ManifestReadCode } from '../../utils';
 import type { PluginDetails } from '../plugin';
 import { PluginCode, pluginCheck } from '../plugin';
 
-type PluginFinding = FindingOf<PluginDetails>;
+type PluginFinding = FindingOf<ManifestReadDetails & PluginDetails>;
 
 const PLUGIN = '.claude-plugin/plugin.json';
-const MARKETPLACE = '.claude-plugin/marketplace.json';
 const SKILL = 'skills/ratify/SKILL.md';
 const AGENT = 'agents/reviewer.md';
-
-const unserved = (
-  overrides: Partial<PluginDetails[PluginCode.MarketplaceOmitsPlugin]> = {},
-): PluginFinding => ({
-  code: PluginCode.MarketplaceOmitsPlugin,
-  details: {
-    plugin: 'constitution',
-    ...overrides,
-  },
-  path: MARKETPLACE,
-});
-
-const listed = (source: unknown): string =>
-  JSON.stringify({
-    name: 'droneey',
-    plugins: [
-      {
-        name: 'constitution',
-        source,
-      },
-    ],
-  });
-
-const github = {
-  repo: 'droneey/constitution',
-  source: 'github',
-};
-const HOOKS = 'hooks/hooks.json';
 const LISTING_SKILLS =
   '{"name":"constitution","repository":"https://github.com/droneey/constitution","skills":["./skills/"]}';
 const RATIFY = '---\nname: ratify\ndescription: Writes constitution.yaml.\n---\n';
-const SESSION_START_HOOK =
-  '{"hooks":{"SessionStart":[{"hooks":[{"type":"command","command":"sh \\"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh\\""}]}]}}';
 
 interface ManifestCase {
   expected: PluginFinding[];
@@ -79,9 +51,9 @@ describe('pluginCheck', () => {
     {
       expected: [
         {
-          code: PluginCode.NotJson,
+          code: ManifestReadCode.NotJson,
           details: {
-            reason: "JSON Parse error: Expected '}'",
+            reason: expect.any(String),
           },
           path: PLUGIN,
         },
@@ -94,10 +66,10 @@ describe('pluginCheck', () => {
     {
       expected: [
         {
-          code: PluginCode.OffSchema,
+          code: ManifestReadCode.OffSchema,
           details: {
             field: '',
-            reason: 'Invalid input: expected object, received array',
+            reason: expect.any(String),
           },
           path: PLUGIN,
         },
@@ -107,26 +79,16 @@ describe('pluginCheck', () => {
       }),
       name: 'not an object',
     },
-  ])(
-    'should report the manifest and the marketplace entry when the plugin manifest is $name',
-    ({ expected, files }) => {
-      // Arrange
-      const input = checkInputOf(files);
+  ])('should report the manifest when it is $name', ({ expected, files }) => {
+    // Arrange
+    const input = checkInputOf(files);
 
-      // Act
-      const findings = pluginCheck(input);
+    // Act
+    const findings = pluginCheck(input);
 
-      // Assert
-      expect(findings).toStrictEqual([
-        ...expected,
-        {
-          code: PluginCode.MarketplaceOmitsPlugin,
-          details: {},
-          path: MARKETPLACE,
-        },
-      ]);
-    },
-  );
+    // Assert
+    expect(findings).toStrictEqual(expected);
+  });
 
   it.each<ManifestCase>([
     {
@@ -245,8 +207,7 @@ describe('pluginCheck', () => {
         {
           code: PluginCode.SkillFrontMatterNotYaml,
           details: {
-            reason:
-              'Flow sequence in block collection must be sufficiently indented and end with a ]',
+            reason: expect.any(String),
           },
           path: SKILL,
         },
@@ -338,8 +299,7 @@ describe('pluginCheck', () => {
         {
           code: PluginCode.AgentFrontMatterNotYaml,
           details: {
-            reason:
-              'Flow sequence in block collection must be sufficiently indented and end with a ]',
+            reason: expect.any(String),
           },
           path: AGENT,
         },
@@ -432,297 +392,5 @@ describe('pluginCheck', () => {
         path,
       },
     ]);
-  });
-
-  it.each([
-    {
-      expected: [],
-      name: 'the folder that holds the plugin manifest',
-      source: {
-        path: 'packages/constitution',
-        url: 'droneey/constitution',
-      },
-    },
-    {
-      expected: [],
-      name: 'the folder that holds the plugin manifest, by the URL of the repository',
-      source: {
-        path: 'packages/constitution',
-        url: 'https://github.com/droneey/constitution.git',
-      },
-    },
-    {
-      expected: [
-        unserved({
-          repo: 'droneey/constitution',
-        }),
-      ],
-      name: 'a folder that holds no plugin manifest',
-      source: {
-        path: 'packages/tools',
-        url: 'droneey/constitution',
-      },
-    },
-    {
-      expected: [
-        unserved({
-          repo: 'droneey/constitution',
-        }),
-      ],
-      name: 'the root of a repository that holds the manifest in a folder',
-      source: {
-        url: 'droneey/constitution',
-      },
-    },
-    {
-      expected: [
-        unserved({
-          repo: 'droneey/constitution',
-        }),
-      ],
-      name: 'a folder of no named repository',
-      source: {
-        path: 'packages/constitution',
-      },
-    },
-  ])(
-    'should check a marketplace in the repository when it serves the plugin from $name',
-    ({ expected, source }) => {
-      // Arrange
-      const input = checkInputOf(
-        without({
-          files: validFiles(),
-          path: MARKETPLACE,
-        }),
-        {
-          [MARKETPLACE]: listed({
-            ...source,
-            ref: 'v1.0.0',
-            source: 'git-subdir',
-          }),
-          [`packages/constitution/${PLUGIN}`]: LISTING_SKILLS,
-        },
-      );
-
-      // Act
-      const findings = pluginCheck(input);
-
-      // Assert
-      expect(findings).toStrictEqual(expected);
-    },
-  );
-
-  it('should report the marketplace when it serves the plugin from a source of neither GitHub nor a folder of it', () => {
-    // Arrange
-    const files = withFiles({
-      [MARKETPLACE]: listed({
-        ref: 'v1.0.0',
-        source: 'url',
-        url: 'https://github.com/droneey/constitution.git',
-      }),
-    });
-    const input = checkInputOf(files);
-
-    // Act
-    const findings = pluginCheck(input);
-
-    // Assert
-    expect(findings).toStrictEqual([
-      unserved({
-        repo: 'droneey/constitution',
-      }),
-    ]);
-  });
-
-  it.each<ManifestCase>([
-    {
-      expected: [
-        {
-          code: PluginCode.MarketplaceMissing,
-          details: {},
-          path: MARKETPLACE,
-        },
-      ],
-      files: without({
-        files: validFiles(),
-        path: MARKETPLACE,
-      }),
-      name: 'missing',
-    },
-    {
-      expected: [
-        unserved({
-          repo: 'droneey/constitution',
-        }),
-      ],
-      files: withFiles({
-        [MARKETPLACE]: listed('./'),
-      }),
-      name: 'serving the plugin from its own folder',
-    },
-    {
-      expected: [
-        unserved({
-          repo: 'droneey/constitution',
-        }),
-      ],
-      files: withFiles({
-        [MARKETPLACE]: listed({
-          ...github,
-          repo: 'someone/constitution',
-          ref: 'v1.0.0',
-        }),
-      }),
-      name: 'serving the plugin from another repository',
-    },
-    ...[
-      'v1.0.0-rc.1',
-      'release-v1.0.0',
-      undefined,
-    ].map((ref) => ({
-      expected: [
-        unserved({
-          repo: 'droneey/constitution',
-        }),
-      ],
-      files: withFiles({
-        [MARKETPLACE]: listed({
-          ...github,
-          ref,
-        }),
-      }),
-      name: `serving the plugin at ${ref ?? 'no ref'}`,
-    })),
-    {
-      expected: [
-        unserved(),
-      ],
-      files: withFiles({
-        '.claude-plugin/plugin.json': '{"name":"constitution"}',
-        [MARKETPLACE]: listed({
-          ref: 'v1.0.0',
-          source: 'github',
-        }),
-      }),
-      name: 'listed while the plugin manifest names no repository',
-    },
-    {
-      expected: [
-        unserved(),
-      ],
-      files: withFiles({
-        '.claude-plugin/plugin.json':
-          '{"name":"constitution","repository":"https://gitlab.com/droneey/constitution"}',
-        [MARKETPLACE]: listed({
-          ...github,
-          ref: 'v1.0.0',
-        }),
-      }),
-      name: 'listed while the plugin manifest names a repository off GitHub',
-    },
-    {
-      expected: [
-        unserved({
-          repo: 'droneey/constitution',
-        }),
-      ],
-      files: withFiles({
-        [MARKETPLACE]:
-          '{"name":"droneey","plugins":[{"name":"devkit","source":{"source":"github","repo":"droneey/constitution","ref":"v1.0.0"}}]}',
-      }),
-      name: 'serving another plugin from the repository and release tag',
-    },
-    {
-      expected: [
-        {
-          code: PluginCode.OffSchema,
-          details: {
-            field: 'plugins',
-            reason: 'Too small: expected array to have >=1 items',
-          },
-          path: MARKETPLACE,
-        },
-      ],
-      files: withFiles({
-        [MARKETPLACE]: '{"name":"droneey","plugins":[]}',
-      }),
-      name: 'listing no plugin',
-    },
-    {
-      expected: [],
-      files: withFiles({
-        [MARKETPLACE]:
-          '{"name":"droneey","plugins":[{"name":"devkit","source":"./devkit/"},{"name":"constitution","source":{"source":"github","repo":"droneey/constitution","ref":"v10.10.10"}}]}',
-      }),
-      name: 'listing another plugin beside it',
-    },
-  ])('should check the marketplace when it is $name', ({ expected, files }) => {
-    // Arrange
-    const input = checkInputOf(files);
-
-    // Act
-    const findings = pluginCheck(input);
-
-    // Assert
-    expect(findings).toStrictEqual(expected);
-  });
-
-  it.each<ManifestCase>([
-    {
-      expected: [],
-      files: without({
-        files: validFiles(),
-        path: HOOKS,
-      }),
-      name: 'the hooks manifest is absent',
-    },
-    {
-      expected: [
-        {
-          code: PluginCode.HookFileMissing,
-          details: {
-            file: 'hooks/session-start.sh',
-          },
-          path: HOOKS,
-        },
-      ],
-      files: withFiles({
-        [HOOKS]: SESSION_START_HOOK,
-      }),
-      name: 'a hook runs a missing script',
-    },
-    {
-      expected: [],
-      files: withFiles({
-        [HOOKS]: SESSION_START_HOOK,
-        'hooks/session-start.sh': '#!/bin/sh\n',
-      }),
-      name: 'a hook runs a script that exists',
-    },
-    {
-      expected: [
-        {
-          code: PluginCode.OffSchema,
-          details: {
-            field: 'hooks',
-            reason: 'Invalid input: expected record, received string',
-          },
-          path: HOOKS,
-        },
-      ],
-      files: withFiles({
-        [HOOKS]: '{"hooks":"none"}',
-      }),
-      name: 'the hooks manifest has the wrong shape',
-    },
-  ])('should check the hooks manifest when $name', ({ expected, files }) => {
-    // Arrange
-    const input = checkInputOf(files);
-
-    // Act
-    const findings = pluginCheck(input);
-
-    // Assert
-    expect(findings).toStrictEqual(expected);
   });
 });

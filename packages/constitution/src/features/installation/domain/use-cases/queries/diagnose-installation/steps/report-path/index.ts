@@ -1,1 +1,1 @@
-export { pathReport } from './report-path.utils';
+export { reportPath } from './report-path';

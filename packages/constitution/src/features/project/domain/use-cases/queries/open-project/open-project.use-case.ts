@@ -1,43 +1,40 @@
-import { CONFIG_FILE } from '#/kernel/constants';
-import type { OpenedProject } from '#/kernel/entities';
 import { ConfigReadStatus } from '#/kernel/entities';
-import { ProjectError, ProjectFailure } from '#/kernel/errors';
+import type { AbsolutePath } from '#/kernel/value-objects';
 
+import type { ProjectOpening } from '../../../entities';
+import { OpeningStatus } from '../../../entities';
 import { findProject } from '../find-project';
 import type { ProjectPorts } from '../read-declaration';
 import { readDeclaration } from '../read-declaration';
-import { joinPath } from '../shared/project-paths';
 
 interface OpenProjectInput extends ProjectPorts {
-  readonly start: string;
+  readonly startFolderPath: AbsolutePath;
 }
 
 /**
  * The project around the start folder with what it declares resolved, for the commands a person
- * runs in it.
+ * runs in it; or why it cannot be opened: no project holds the start folder, its release is not
+ * installed, or its constitution.yaml does not parse.
  *
- * @throws {@link ProjectError} when no project is found, its release is not installed, or its
- * constitution.yaml or its blocks cannot be read
+ * @throws {@link ReleaseError} when its blocks cannot be listed
+ * @throws {@link UnreadableFileError} when its constitution.yaml cannot be read
  */
-const openProject = (input: OpenProjectInput): OpenedProject => {
+const openProject = (input: OpenProjectInput): ProjectOpening => {
   const place = findProject(input);
 
   if (place === undefined) {
-    throw new ProjectError({
-      code: ProjectFailure.NoProject,
-      details: {
-        path: input.start,
-      },
-    });
+    return {
+      status: OpeningStatus.NoProject,
+    };
   }
 
-  if (!input.files.isFolder(place.releaseFolder)) {
-    throw new ProjectError({
-      code: ProjectFailure.ReleaseMissing,
-      details: {
-        path: place.releaseFolder,
-      },
-    });
+  const { releaseFolderPath } = place;
+
+  if (!input.files.isFolder(releaseFolderPath)) {
+    return {
+      releaseFolderPath,
+      status: OpeningStatus.ReleaseMissing,
+    };
   }
 
   const declaration = readDeclaration({
@@ -46,22 +43,19 @@ const openProject = (input: OpenProjectInput): OpenedProject => {
   });
 
   if (declaration.status === ConfigReadStatus.Unparsed) {
-    throw new ProjectError({
-      code: ProjectFailure.ConfigUnparsed,
-      details: {
-        line: declaration.line,
-        path: joinPath({
-          folder: place.project,
-          name: CONFIG_FILE,
-        }),
-      },
-    });
+    return {
+      lines: declaration.lines,
+      status: OpeningStatus.ConfigUnparsed,
+    };
   }
 
   return {
-    ...place,
-    packs: declaration.packs,
-    resolution: declaration.resolution,
+    project: {
+      ...place,
+      packs: declaration.packs,
+      resolution: declaration.resolution,
+    },
+    status: OpeningStatus.Opened,
   };
 };
 

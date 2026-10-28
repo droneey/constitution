@@ -14,8 +14,9 @@ import {
   runHook,
   runScript,
 } from '../hook.fixtures';
+import { toolEnvironment } from '../package.fixtures';
 import { createPluginRoot, removePluginRoots } from '../plugin-root.fixtures';
-import { configOf, createProject, removeProjects } from '../project.fixtures';
+import { configOf, createProject, Repository, removeProjects } from '../project.fixtures';
 
 enum StopEvent {
   Stop = 'Stop',
@@ -83,6 +84,7 @@ const git = (input: { args: readonly string[]; project: string }): void => {
     ],
     {
       cwd: input.project,
+      env: toolEnvironment(),
     },
   );
 };
@@ -449,5 +451,51 @@ describe('the hand-back gate', () => {
 
     // Assert
     expect(output).toStrictEqual(NOTHING);
+  });
+
+  it('should say nothing at any stop when the project lies in no repository', () => {
+    // Arrange
+    const project = realpathSync(
+      createProject({
+        config: configOf({}),
+        repository: Repository.None,
+      }),
+    );
+    const session = {
+      id: newSession(),
+      project,
+    };
+
+    runHook({
+      event: HookEvent.Startup,
+      project,
+      root,
+      session: session.id,
+    });
+    prompt(session);
+    write({
+      path: 'src/main.ts',
+      project,
+    });
+
+    // Act
+    const subagent = fire({
+      event: StopEvent.Subagent,
+      script: 'stop.sh',
+      session,
+    });
+
+    // Assert
+    expect(subagent.stdout).toBe('');
+
+    // Act
+    const main = fire({
+      event: StopEvent.Stop,
+      script: 'stop.sh',
+      session,
+    });
+
+    // Assert
+    expect(main.stdout).toBe('');
   });
 });

@@ -1,1 +1,1 @@
-export { listBlocks } from './list-blocks.utils';
+export { listBlocks } from './list-blocks';

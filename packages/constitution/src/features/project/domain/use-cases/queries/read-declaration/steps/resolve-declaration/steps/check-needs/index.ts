@@ -1,1 +1,1 @@
-export { warnOfAnswers, warnOfRequires } from './check-needs.utils';
+export { checkNeeds } from './check-needs';

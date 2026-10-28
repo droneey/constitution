@@ -1,0 +1,101 @@
+# preset-file-misplaced
+is not a preset file: presets/<reader>/<axis>.yaml, presets/<reader>/<axis>/with/<block>.yaml or presets/<reader>/<axis>/with/<first>/with/<second>.yaml
+
+# preset-file-unparsed
+does not parse at line 3
+
+# entry-misshapen
+holds no map of the next key under biome → *; an entry is keyed block → rule or * → language or * → file
+
+# unknown-reader
+is the preset file of gone, which is no block
+
+# unknown-block
+names gone, which is no block
+
+# unknown-rule
+biome → file-within-500-lines: file-within-500-lines is no rule
+
+# unknown-language
+biome → file-within-500-lines: gone is no language
+
+# rule-of-another-block
+biome → file-within-500-lines: file-within-500-lines is a rule of core
+
+# entry-misplaced
+biome → file-within-500-lines: belongs in presets/biome/foundation/with/git/with/typescript.yaml, to reach ${role.ignore-file}, defined by git; ${role.typescript-source}, defined by typescript; its path names ui, which it does not need
+
+# entry-needs-too-many-blocks
+biome → file-within-500-lines: needs css, browser, git beyond its reader, and a preset file's path names at most 2; leave out a role that needs a block of its own
+
+# entry-off-its-axis
+biome → file-within-500-lines: file-within-500-lines is a rule of architecture, an axis this preset file does not stand on
+
+# file-outside-its-unit
+biome → file-within-500-lines: ../biome.json leaves the folder of its unit
+
+# unknown-fact
+biome → file-within-500-lines: ${file.name} is no fact constitution computes where it stands
+
+# unknown-role
+biome → file-within-500-lines: no term carries the id gone
+
+# hand-typed-role
+biome → file-within-500-lines: types src/ by hand; write ${role.source}
+
+# members-outside-a-list
+biome → file-within-500-lines: ${workspace.members} stands only in an item of a list
+
+# sorted-in-unsortable-file
+biome → file-within-500-lines: marks tool.poe.tasks !sorted in pyproject.toml, whose format keeps no order of its keys; !sorted holds in JSON and YAML
+
+# missing-distribution-file
+names presets/biome/plugins/typescript/gone.grit, which is no file of the release
+
+# plugin-unreferenced
+is a plugin no entry names
+
+# plugin-names-no-rule
+is named "gone", which is no rule; a plugin is named after the rule it holds
+
+# clash
+gets two values at linter.rules from presets/a.yaml: core → * and presets/b.yaml: biome → *
+
+# two-replacers
+has linter.rules replaced twice, otherwise each time, by presets/a.yaml: core → * and presets/b.yaml: biome → *
+
+# missing-slot
+gets an insert into the slot checks of jobs, which the list does not place
+
+# slot-in-no-list
+gets an insert into the slot checks of jobs, which is no list
+
+# missing-name
+gives no name, which an entry it takes writes as ${package.name}; add name
+
+# missing-constitution
+needs the path to the Constitution, and no .droneey/constitution lies at or above it
+
+# loosened
+holds formatter.width otherwise than the presets, which give 100 — put it back, or lower the rule with an override in constitution.yaml
+
+# missing
+lacks a, b, c, as the presets give them — run constitution presets apply
+
+# stale
+still holds a, b, c and 2 more, which no entry gives any longer — run constitution presets apply
+
+# unsorted
+orders the keys of scripts otherwise than as texts, which the presets keep — run constitution presets apply
+
+# file-unparsed
+cannot be read or does not parse, so nothing was applied to it
+
+# lock-unparsed
+does not parse, so the apply wrote it again from the files
+
+# run-misshapen
+gets what constitution runs as other than lists of commands named check, test, fix
+
+# tool-without-runner
+follows biome, whose commands no runner it follows gives; add the block that runs them

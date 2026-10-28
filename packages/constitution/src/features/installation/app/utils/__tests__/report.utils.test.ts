@@ -2,16 +2,17 @@ import { describe, expect, it } from 'bun:test';
 
 import { StepStatus, Tone } from '@droneey/design-cli';
 
-import { Version } from '#/kernel/value-objects';
+import { AbsolutePath, RepositoryRelativePath, Version } from '#/kernel/value-objects';
 import { noteSection, stepsSection } from '#/shared/cli';
 
 import type { PartDiagnosis } from '../../../domain/entities';
 import { Diagnosis } from '../../../domain/entities';
 import { installationOutcomeOf, installationSectionsOf } from '../report.utils';
 
-const ON_PATH = '/home/me/.local/bin/constitution';
+const onPath = AbsolutePath.create('/home/me/.local/bin/constitution');
 const MANIFEST = '/work/project/.droneey/constitution/package.json';
-const RELEASE_FOLDER = '/work/project/.droneey/constitution';
+const manifest = AbsolutePath.create(MANIFEST);
+const RELEASE_FOLDER_PATH = '/work/project/.droneey/constitution';
 const MISE_INSTALL = 'run mise install';
 const RAISE_PIN = 'raise the Constitution pin in mise.toml, then run mise install';
 const UPDATE_PLUGIN =
@@ -22,8 +23,8 @@ const executable = Version.create('1.0.0');
 const older = Version.create('0.9.0');
 const newer = Version.create('1.1.0');
 const LINK = {
-  folder: '.droneey/constitution',
-  target: '/releases/1.0.0',
+  linkPath: RepositoryRelativePath.create('.droneey/constitution'),
+  targetPath: AbsolutePath.create('/releases/1.0.0'),
 } as const;
 
 const SOUND: PartDiagnosis = {
@@ -35,10 +36,10 @@ const WARNED: PartDiagnosis = {
 } as const;
 const BROKEN: PartDiagnosis = {
   kind: Diagnosis.ReleaseMissing,
-  releaseFolder: RELEASE_FOLDER,
+  releaseFolderPath: AbsolutePath.create(RELEASE_FOLDER_PATH),
 } as const;
 const SKIPPED: PartDiagnosis = {
-  kind: Diagnosis.LatestUnknown,
+  kind: Diagnosis.LatestUnreadable,
 } as const;
 
 describe('installationOutcomeOf', () => {
@@ -107,7 +108,7 @@ describe('installationSectionsOf', () => {
           status: StepStatus.Done,
         },
         {
-          detail: 'GitHub could not be reached, so the latest release is unknown',
+          detail: "GitHub's answer names no release, so the latest release is unknown",
           label: 'Latest release',
           status: StepStatus.Skipped,
         },
@@ -117,7 +118,7 @@ describe('installationSectionsOf', () => {
           status: StepStatus.Warned,
         },
         {
-          detail: `${RELEASE_FOLDER} does not exist`,
+          detail: `${RELEASE_FOLDER_PATH} does not exist`,
           label: 'Release link',
           status: StepStatus.Failed,
         },
@@ -144,7 +145,7 @@ describe('installationSectionsOf', () => {
       },
       {
         kind: Diagnosis.PathMatches,
-        path: ON_PATH,
+        path: onPath,
       },
     ];
 
@@ -165,7 +166,7 @@ describe('installationSectionsOf', () => {
           status: StepStatus.Done,
         },
         {
-          detail: ON_PATH,
+          detail: onPath,
           label: 'constitution on PATH',
           status: StepStatus.Done,
         },
@@ -196,7 +197,25 @@ describe('installationSectionsOf', () => {
       status: StepStatus.Done,
     },
     {
-      detail: 'GitHub could not be reached, so the latest release is unknown',
+      detail: 'GitHub could not be reached, so the latest release is unknown: fetch failed',
+      diagnosis: {
+        kind: Diagnosis.LatestUnanswered,
+        reason: 'fetch failed',
+      },
+      label: 'Latest release',
+      status: StepStatus.Skipped,
+    },
+    {
+      detail: 'GitHub refused the call with status 403, so the latest release is unknown',
+      diagnosis: {
+        kind: Diagnosis.LatestRefused,
+        status: 403,
+      },
+      label: 'Latest release',
+      status: StepStatus.Skipped,
+    },
+    {
+      detail: "GitHub's answer names no release, so the latest release is unknown",
       diagnosis: SKIPPED,
       label: 'Latest release',
       status: StepStatus.Skipped,
@@ -211,10 +230,10 @@ describe('installationSectionsOf', () => {
       status: StepStatus.Done,
     },
     {
-      detail: ON_PATH,
+      detail: onPath,
       diagnosis: {
         kind: Diagnosis.PathMatches,
-        path: ON_PATH,
+        path: onPath,
       },
       label: 'constitution on PATH',
       status: StepStatus.Done,
@@ -353,22 +372,22 @@ describe('installationSectionsOf', () => {
       status: StepStatus.Failed,
     },
     {
-      detail: `${ON_PATH} does not answer --version`,
+      detail: `${onPath} does not answer --version`,
       diagnosis: {
         kind: Diagnosis.PathSilent,
-        path: ON_PATH,
+        path: onPath,
       },
       hint: `${MISE_INSTALL}, so PATH serves the release the project pins`,
       label: 'constitution on PATH',
       status: StepStatus.Warned,
     },
     {
-      detail: `${ON_PATH} is 0.9.0, this executable 1.0.0`,
+      detail: `${onPath} is 0.9.0, this executable 1.0.0`,
       diagnosis: {
         answered: '0.9.0',
         executable,
         kind: Diagnosis.PathDiffers,
-        path: ON_PATH,
+        path: onPath,
       },
       hint: `${MISE_INSTALL}, so PATH serves the release the project pins`,
       label: 'constitution on PATH',
@@ -378,7 +397,31 @@ describe('installationSectionsOf', () => {
       detail: `cannot read ${MANIFEST}`,
       diagnosis: {
         kind: Diagnosis.ManifestUnreadable,
-        manifest: MANIFEST,
+        manifest,
+      },
+      hint: MISE_INSTALL,
+      label: 'Release link',
+      status: StepStatus.Failed,
+    },
+    {
+      detail: `${MANIFEST} is no manifest a release writes — it is no JSON object`,
+      diagnosis: {
+        kind: Diagnosis.ManifestNotObject,
+        manifest,
+      },
+      hint: MISE_INSTALL,
+      label: 'Release link',
+      status: StepStatus.Failed,
+    },
+    {
+      detail: `${MANIFEST} is no manifest a release writes — fields of another form: version, constitutionFormat`,
+      diagnosis: {
+        fields: [
+          'version',
+          'constitutionFormat',
+        ],
+        kind: Diagnosis.ManifestMalformed,
+        manifest,
       },
       hint: MISE_INSTALL,
       label: 'Release link',
@@ -388,17 +431,17 @@ describe('installationSectionsOf', () => {
       detail: `${MANIFEST} names no version`,
       diagnosis: {
         kind: Diagnosis.ManifestWithoutVersion,
-        manifest: MANIFEST,
+        manifest,
       },
       hint: MISE_INSTALL,
       label: 'Release link',
       status: StepStatus.Failed,
     },
     {
-      detail: `${RELEASE_FOLDER} does not exist`,
+      detail: `${RELEASE_FOLDER_PATH} does not exist`,
       diagnosis: {
         kind: Diagnosis.ReleaseMissing,
-        releaseFolder: RELEASE_FOLDER,
+        releaseFolderPath: AbsolutePath.create(RELEASE_FOLDER_PATH),
       },
       hint: `${MISE_INSTALL}, which installs the release mise.toml pins and links it there`,
       label: 'Release link',

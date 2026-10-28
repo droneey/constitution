@@ -3,11 +3,13 @@ import { isMap, isNode, isScalar, isSeq, parseDocument, visit } from 'yaml';
 
 import { attempted, compareText, isDeepEqual } from '#/kernel/utils';
 
+import type { ConfigurationWrite } from '../../domain/contracts';
 import type { HeldStep, Setting } from '../../domain/entities';
 import { Setting as Settings } from '../../domain/entities';
 import type { Anchor, Commenting } from './block-comments.utils';
 import { anchorAt, lineAt, withBlockComments } from './block-comments.utils';
-import type { SettingsText } from './settings-text.types';
+import { ownFieldOf } from './own-field.utils';
+import { LINE_WIDTH, NEWLINE } from './text.constants';
 import { settingOfWire } from './wire-setting.utils';
 
 const OPTIONS = {
@@ -17,12 +19,8 @@ const OPTIONS = {
 const MAX_ALIASES = 1000;
 // A word YAML 1.1 reads as a boolean is quoted, so a reader of YAML 1.1 reads it as a string too.
 const YAML_11_BOOLEAN = /^(?:y|yes|n|no|on|off|true|false)$/i;
-// The width the formatters keep.
-const LINE_WIDTH = 100;
 const LONG_TEXT = 80;
-const NEWLINE = '\n';
-// Indent, and the dashes of sequences that open on the same line.
-const LINE_START = /^\s*(?:- )*$/;
+const INDENT_AND_DASHES = /^\s*(?:- )*$/;
 
 const documentOf = (text: string): Document | undefined => {
   const document = parseDocument(text, OPTIONS);
@@ -107,10 +105,10 @@ const lay = (input: {
   after: Setting;
   before: Setting | undefined;
   document: Document;
-  path: readonly string[];
+  keyPath: readonly string[];
 }): void => {
-  const { after, before, document, path } = input;
-  const node = document.getIn(path, true);
+  const { after, before, document, keyPath } = input;
+  const node = document.getIn(keyPath, true);
 
   // Stryker disable next-line ConditionalExpression,BlockStatement: equal settings laid again change no node
   if (isDeepEqual(before, after)) {
@@ -119,10 +117,10 @@ const lay = (input: {
 
   if (Settings.isMap(before) && Settings.isMap(after) && isMap(node)) {
     for (const key of keysOf(node).filter(
-      (held) => String(held) in before && !(String(held) in after),
+      (held) => Object.hasOwn(before, String(held)) && !Object.hasOwn(after, String(held)),
     )) {
       document.deleteIn([
-        ...path,
+        ...keyPath,
         key,
       ]);
     }
@@ -130,10 +128,10 @@ const lay = (input: {
     for (const [key, held] of Object.entries(after)) {
       lay({
         after: held,
-        before: before[key],
+        before: ownFieldOf(before, key),
         document,
-        path: [
-          ...path,
+        keyPath: [
+          ...keyPath,
           key,
         ],
       });
@@ -166,7 +164,7 @@ const lay = (input: {
     return;
   }
 
-  document.setIn(path, nodeOf(document, after));
+  document.setIn(keyPath, nodeOf(document, after));
 };
 
 interface Child {
@@ -213,18 +211,18 @@ const childrenOf = (node: unknown, document: Document): readonly Child[] => {
 const yamlAnchorsOf = (text: string): readonly Anchor[] => {
   const document = parseDocument(text, OPTIONS);
 
-  const walk = (node: unknown, path: readonly HeldStep[]): readonly Anchor[] =>
+  const walk = (node: unknown, keyPath: readonly HeldStep[]): readonly Anchor[] =>
     childrenOf(node, document).flatMap((child) => {
       const at = [
-        ...path,
+        ...keyPath,
         child.step,
       ];
 
       return [
         ...anchorAt({
-          lineStart: LINE_START,
+          lineStart: INDENT_AND_DASHES,
           offset: child.offset,
-          path: at,
+          keyPath: at,
           text,
         }),
         ...walk(child.held, at),
@@ -284,19 +282,24 @@ const yamlCommenting: Commenting = {
   textLinesOf: yamlTextLinesOf,
 };
 
-const writeSettings = (input: SettingsText): string => {
+const writeSettings = (input: ConfigurationWrite): string => {
   const document = parseDocument(input.text, OPTIONS);
 
-  lay({
-    after: input.settings,
-    before: settingOfDocument(document),
-    document,
-    path: [],
-  });
+  // A document of no node is written as null, which reads as no settings, so it takes them whole.
+  if (document.contents === null) {
+    document.setIn([], nodeOf(document, input.settings));
+  } else {
+    lay({
+      after: input.settings,
+      before: settingOfDocument(document),
+      document,
+      keyPath: [],
+    });
+  }
 
   // a map kept sorted keeps its pairs' nodes and comments
-  for (const path of input.sorted) {
-    const node = document.getIn(path);
+  for (const keyPath of input.sorted) {
+    const node = document.getIn(keyPath);
 
     if (isMap(node)) {
       node.items = node.items.toSorted((left, right) =>

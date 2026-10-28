@@ -15,7 +15,9 @@ import type {
   CyclesDetails,
   DecisionsDetails,
   FrontMatterDetails,
+  HooksDetails,
   LinksDetails,
+  MarketplaceDetails,
   PluginDetails,
   ReferencesDetails,
   RequirementsDetails,
@@ -25,6 +27,7 @@ import type {
   TermsDetails,
 } from './checks';
 import type { LoadFindingDetails } from './steps/load-constitution';
+import type { ManifestReadDetails } from './utils';
 
 /** What each code of the blocks' findings names. */
 type BlockFindingDetails = AbstractBlocksDetails &
@@ -36,8 +39,11 @@ type BlockFindingDetails = AbstractBlocksDetails &
   CyclesDetails &
   DecisionsDetails &
   FrontMatterDetails &
+  HooksDetails &
   LinksDetails &
   LoadFindingDetails &
+  ManifestReadDetails &
+  MarketplaceDetails &
   PluginDetails &
   ReferencesDetails &
   RequirementsDetails &

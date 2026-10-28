@@ -1,13 +1,14 @@
 import { StepStatus } from '@droneey/design-cli';
 import { Command } from 'commander';
 
-import type { CommandContext } from '#/shared/cli';
+import { AbsolutePath } from '#/kernel/value-objects';
+import type { CommandContext, StepReport } from '#/shared/cli';
 
-import type { ConfigurationsCheck } from '../../../../domain/entities';
-import { configurationsOutcomeOf, configurationsSectionsOf } from '../../../utils';
+import type { ConfigurationsCheck, ProjectRead } from '../../../../domain/entities';
+import { configurationsStepOf } from '../../../utils';
 
 interface ConfigurationsCheckContext extends CommandContext {
-  readonly checkConfigurations: (start: string) => ConfigurationsCheck | undefined;
+  readonly checkConfigurations: (startFolderPath: AbsolutePath) => ProjectRead<ConfigurationsCheck>;
 }
 
 const createPresetsCheckCommand = (context: ConfigurationsCheckContext): Command =>
@@ -22,16 +23,19 @@ const createPresetsCheckCommand = (context: ConfigurationsCheckContext): Command
       ]),
     )
     .action(async (): Promise<void> => {
-      const check = await context.renderer.run({
+      const step = await context.renderer.run({
         label: 'Presets',
-        outcomeOf: (checked: ConfigurationsCheck | undefined) =>
-          configurationsOutcomeOf(checked, StepStatus.Failed),
-        run: () => context.checkConfigurations(context.places.cwd),
+        outcomeOf: (checked: StepReport) => checked.outcome,
+        run: () =>
+          configurationsStepOf(
+            context.checkConfigurations(AbsolutePath.create(context.places.cwd)),
+            StepStatus.Failed,
+          ),
       });
 
-      await context.renderer.print(configurationsSectionsOf(check));
+      await context.renderer.print(step.sections);
 
-      if (check === undefined || check.warnings.length + check.findings.length > 0) {
+      if (step.isFailed) {
         context.setFailed();
       }
     });

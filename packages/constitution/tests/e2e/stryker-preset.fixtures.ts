@@ -1,20 +1,21 @@
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { z } from 'zod';
 
 import { appliedUnit } from './applied-unit.fixtures';
+import { installedIn, nodeBinary, toolEnvironment, writeFiles } from './package.fixtures';
+import { linesOf, widestAppliedUnit } from './preset-load.fixtures';
 
 interface Mutation {
-  passed: boolean;
-  survivors: number;
+  readonly passed: boolean;
+  readonly survivors: number;
 }
 
-const repository = join(import.meta.dir, '..', '..');
-const stryker = join(repository, 'node_modules', '.bin', 'stryker');
+const stryker = nodeBinary('stryker');
 
 const strykerUnit = (blocks: readonly string[] = []): string =>
   appliedUnit({
@@ -34,16 +35,17 @@ const strykerConfig = z.looseObject({
   testRunner: z.string(),
 });
 
+const configOf = (unit: string): z.infer<typeof strykerConfig> =>
+  strykerConfig.parse(JSON.parse(readFileSync(join(unit, 'stryker.config.json'), 'utf8')));
+
 const appliedConfig = (blocks: readonly string[] = []): z.infer<typeof strykerConfig> =>
-  strykerConfig.parse(
-    JSON.parse(readFileSync(join(strykerUnit(blocks), 'stryker.config.json'), 'utf8')),
-  );
+  configOf(strykerUnit(blocks));
 
 // The sources of the runner and the ignorer stand in for the distribution's build, which this
 // repository never makes.
-const config = (blocks: readonly string[]): string =>
+const config = (unit: string): string =>
   JSON.stringify({
-    ...appliedConfig(blocks),
+    ...configOf(unit),
     plugins: [
       fileURLToPath(import.meta.resolve('@droneey/mutation-check-typescript/runner')),
       fileURLToPath(import.meta.resolve('@droneey/mutation-check-typescript/ignorers')),
@@ -63,55 +65,51 @@ interface MutationInput {
   readonly spec: string;
 }
 
-const mutationOf = (input: MutationInput): Mutation => {
-  const blocks = input.blocks ?? [];
+interface StrykerRun {
+  readonly status: number | undefined;
+  readonly stdout: string;
+}
 
+// Stryker run over a copy of the unit's configuration, its source and its spec.
+const strykerRunIn = (input: { source?: string; spec: string; unit: string }): StrykerRun => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-stryker-'));
 
   try {
     const files = {
-      'bunfig.mutation.toml': readFileSync(
-        join(strykerUnit(blocks), 'bunfig.mutation.toml'),
-        'utf8',
-      ),
+      'bunfig.mutation.toml': readFileSync(join(input.unit, 'bunfig.mutation.toml'), 'utf8'),
       'package.json': JSON.stringify({
         name: 'fixture',
         type: 'module',
       }),
       'src/__tests__/order.utils.test.ts': input.spec,
-      [SANDBOX]: readFileSync(join(strykerUnit(blocks), SANDBOX), 'utf8'),
+      [SANDBOX]: readFileSync(join(input.unit, SANDBOX), 'utf8'),
       'src/order.utils.ts': input.source ?? TOTAL,
-      'stryker.config.json': config(blocks),
+      'stryker.config.json': config(input.unit),
     };
 
-    for (const [path, text] of Object.entries(files)) {
-      mkdirSync(dirname(join(folder, path)), {
-        recursive: true,
-      });
-      writeFileSync(join(folder, path), text);
-    }
+    writeFiles({
+      files,
+      folder,
+    });
 
-    // Stryker's plugins and the specs' runner resolve from this package's node_modules.
-    symlinkSync(join(repository, 'node_modules'), join(folder, 'node_modules'));
-
+    // Stryker's plugins and the specs' runner resolve from this package's install.
     const running = spawnSync(
-      'bun',
+      process.execPath,
       [
         '--bun',
         stryker,
         'run',
       ],
       {
-        cwd: folder,
+        cwd: installedIn(folder),
         encoding: 'utf8',
+        env: toolEnvironment(),
       },
     );
 
     return {
-      passed: running.status === 0,
-      survivors: [
-        ...running.stdout.matchAll(SURVIVED),
-      ].length,
+      status: running.status ?? undefined,
+      stdout: running.stdout,
     };
   } finally {
     rmSync(folder, {
@@ -121,4 +119,39 @@ const mutationOf = (input: MutationInput): Mutation => {
   }
 };
 
-export { appliedConfig, mutationOf };
+const mutationOf = (input: MutationInput): Mutation => {
+  const run = strykerRunIn({
+    ...input,
+    unit: strykerUnit(input.blocks ?? []),
+  });
+
+  return {
+    passed: run.status === 0,
+    survivors: [
+      ...run.stdout.matchAll(SURVIVED),
+    ].length,
+  };
+};
+
+interface Validation {
+  readonly passed: boolean;
+  /** what Stryker's validation of its options warns of */
+  readonly warnings: readonly string[];
+}
+
+const WARNING = / WARN OptionsValidator\b/;
+
+/** Stryker's warnings on the configuration of the widest unit, where a spec kills every mutant. */
+const widestWarnings = (spec: string): Validation => {
+  const run = strykerRunIn({
+    spec,
+    unit: widestAppliedUnit('stryker'),
+  });
+
+  return {
+    passed: run.status === 0,
+    warnings: linesOf(run.stdout).filter((line) => WARNING.test(line)),
+  };
+};
+
+export { appliedConfig, mutationOf, widestWarnings };

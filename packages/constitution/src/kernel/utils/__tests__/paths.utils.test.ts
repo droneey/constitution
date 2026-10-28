@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { isPathSegment, normalizePath } from '../paths.utils';
+import { normalizePath } from '../paths.utils';
 
 describe('paths', () => {
   it.each([
@@ -50,36 +50,5 @@ describe('paths', () => {
 
     // Assert
     expect(normalised).toBe(expected);
-  });
-});
-
-describe('isPathSegment', () => {
-  it.each([
-    {
-      condition: 'it is a name',
-      isSegment: true,
-      candidate: 'biome',
-    },
-    {
-      condition: 'it is empty',
-      isSegment: false,
-      candidate: '',
-    },
-    {
-      condition: 'it holds a "/"',
-      isSegment: false,
-      candidate: 'bio/me',
-    },
-    {
-      condition: 'it is no text',
-      isSegment: false,
-      candidate: 7,
-    },
-  ])('should say $isSegment when $condition', ({ candidate, isSegment }) => {
-    // Act
-    const answer = isPathSegment(candidate);
-
-    // Assert
-    expect(answer).toBe(isSegment);
   });
 });

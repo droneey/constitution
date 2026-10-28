@@ -3,22 +3,23 @@ import { applyEdits, getNodeValue, modify, parse, parseTree, visit } from 'jsonc
 
 import { compareText, isDeepEqual } from '#/kernel/utils';
 
+import type { ConfigurationWrite } from '../../domain/contracts';
 import type { HeldStep, Setting } from '../../domain/entities';
 import { Setting as Settings } from '../../domain/entities';
 import type { Anchor, Commenting } from './block-comments.utils';
 import { anchorAt, noTextLines, withBlockComments } from './block-comments.utils';
-import type { SettingsText } from './settings-text.types';
+import { ownFieldOf } from './own-field.utils';
+import { NEWLINE } from './text.constants';
 import { settingOfWire } from './wire-setting.utils';
 
 const INDENT = 2;
 const FORMATTING = {
   formattingOptions: {
-    eol: '\n',
+    eol: NEWLINE,
     insertSpaces: true,
     tabSize: INDENT,
   },
 } as const;
-const NEWLINE = '\n';
 const INDENT_ONLY = /^\s*$/;
 
 const wireOf = (text: string): unknown => {
@@ -34,23 +35,22 @@ const wireOf = (text: string): unknown => {
 const readJson = (text: string): Setting | undefined =>
   text.trim() === '' ? {} : settingOfWire(wireOf(text));
 
-// Stryker disable ConditionalExpression,LogicalOperator: the test only narrows the type
 const isWireObject = (wire: unknown): wire is Readonly<Record<string, unknown>> =>
+  // Stryker disable next-line ConditionalExpression,LogicalOperator: the test only narrows the type
   typeof wire === 'object' && wire !== null && !Array.isArray(wire);
-// Stryker restore ConditionalExpression,LogicalOperator
 
-const replaced = (input: { path: JSONPath; text: string; value: Setting | undefined }): string =>
-  applyEdits(input.text, modify(input.text, input.path, input.value, FORMATTING));
+const replaced = (input: { keyPath: JSONPath; text: string; value: Setting | undefined }): string =>
+  applyEdits(input.text, modify(input.text, input.keyPath, input.value, FORMATTING));
 
 // A list is edited item by item while the items it keeps stay in their order; any other change, or
 // a list holding what the settings cannot, is written whole.
 const editedList = (input: {
   after: readonly Setting[];
   before: readonly Setting[];
-  path: JSONPath;
+  keyPath: JSONPath;
   text: string;
 }): string => {
-  const { after, path } = input;
+  const { after, keyPath } = input;
   const wanted = after.map(Settings.canonicalTextOf);
   const current = input.before.map(Settings.canonicalTextOf);
   const gone = current.flatMap((listed, at) =>
@@ -64,8 +64,8 @@ const editedList = (input: {
   let text = gone.toReversed().reduce(
     (written, at) =>
       replaced({
-        path: [
-          ...path,
+        keyPath: [
+          ...keyPath,
           at,
         ],
         text: written,
@@ -81,7 +81,7 @@ const editedList = (input: {
     )
   ) {
     return replaced({
-      path,
+      keyPath,
       text: input.text,
       value: after,
     });
@@ -94,7 +94,7 @@ const editedList = (input: {
         modify(
           text,
           [
-            ...path,
+            ...keyPath,
             at,
           ],
           after[at],
@@ -116,40 +116,51 @@ const editedList = (input: {
 const edited = (input: {
   after: Setting;
   before: Setting | undefined;
-  path: JSONPath;
+  keyPath: JSONPath;
   text: string;
   wire: unknown;
 }): string => {
-  const { after, before, path, wire } = input;
+  const { after, before, keyPath, wire } = input;
 
   if (isDeepEqual(before, after)) {
     return input.text;
   }
 
   if (Settings.isMap(before) && Settings.isMap(after) && isWireObject(wire)) {
-    let text = input.text;
-
-    for (const key of Object.keys(before).filter((held) => !(held in after))) {
-      text = replaced({
-        path: [
-          ...path,
-          key,
-        ],
-        text,
-        value: undefined,
-      });
-    }
+    const keys = Object.keys(before);
+    const gone = keys.filter((key) => !Object.hasOwn(after, key));
+    // jsonc-parser leaves a trailing comma behind when it removes an object's last key, so an object
+    // that loses every key is emptied whole.
+    let text =
+      gone.length > 0 && gone.length === keys.length
+        ? replaced({
+            keyPath,
+            text: input.text,
+            value: {},
+          })
+        : gone.reduce(
+            (written, key) =>
+              replaced({
+                keyPath: [
+                  ...keyPath,
+                  key,
+                ],
+                text: written,
+                value: undefined,
+              }),
+            input.text,
+          );
 
     for (const [key, held] of Object.entries(after)) {
       text = edited({
         after: held,
-        before: before[key],
-        path: [
-          ...path,
+        before: ownFieldOf(before, key),
+        keyPath: [
+          ...keyPath,
           key,
         ],
         text,
-        wire: wire[key],
+        wire: ownFieldOf(wire, key),
       });
     }
 
@@ -163,20 +174,20 @@ const edited = (input: {
     ? editedList({
         after,
         before,
-        path,
+        keyPath,
         text: input.text,
       })
     : replaced({
-        path,
+        keyPath,
         text: input.text,
         value: after,
       });
 };
 
 // The values the settings cannot hold are sorted with the rest.
-const sortedIn = (text: string, path: readonly string[]): string => {
-  const held = path.reduce<unknown>(
-    (wire, key) => (isWireObject(wire) ? wire[key] : undefined),
+const sortedIn = (text: string, keyPath: readonly string[]): string => {
+  const held = keyPath.reduce<unknown>(
+    (wire, key) => (isWireObject(wire) ? ownFieldOf(wire, key) : undefined),
     wireOf(text),
   );
 
@@ -194,7 +205,7 @@ const sortedIn = (text: string, path: readonly string[]): string => {
         modify(
           text,
           [
-            ...path,
+            ...keyPath,
           ],
           Object.fromEntries(sorted),
           FORMATTING,
@@ -203,7 +214,7 @@ const sortedIn = (text: string, path: readonly string[]): string => {
 };
 
 /** A new file is written whole, laid out as the edits lay it. */
-const writeJson = (input: SettingsText): string => {
+const writeJson = (input: ConfigurationWrite): string => {
   const { settings, text } = input;
   const wire = wireOf(text);
   const written = input.sorted.reduce(
@@ -211,7 +222,7 @@ const writeJson = (input: SettingsText): string => {
     edited({
       after: settings,
       before: settingOfWire(wire),
-      path: [],
+      keyPath: [],
       text,
       wire,
     }),
@@ -318,10 +329,10 @@ const childrenOf = (node: Node | undefined): readonly Child[] => {
 };
 
 const jsoncAnchorsOf = (text: string): readonly Anchor[] => {
-  const walk = (node: Node | undefined, path: readonly HeldStep[]): readonly Anchor[] =>
+  const walk = (node: Node | undefined, keyPath: readonly HeldStep[]): readonly Anchor[] =>
     childrenOf(node).flatMap((child) => {
       const at = [
-        ...path,
+        ...keyPath,
         child.step,
       ];
 
@@ -329,7 +340,7 @@ const jsoncAnchorsOf = (text: string): readonly Anchor[] => {
         ...anchorAt({
           lineStart: INDENT_ONLY,
           offset: child.start.offset,
-          path: at,
+          keyPath: at,
           text,
         }),
         ...walk(child.held, at),
@@ -346,7 +357,7 @@ const jsoncCommenting: Commenting = {
 };
 
 /** As the formatter writes JSONC: a comma after the last item of a list broken over lines. */
-const writeCommas = (input: SettingsText): string => {
+const writeCommas = (input: ConfigurationWrite): string => {
   const written = writeJson(input);
 
   return missingCommasOf(written)

@@ -27,7 +27,6 @@ const flagsOf = (opts: unknown): OutputFlags => {
   };
 };
 
-// A command added to a parent takes the program's settings first: its output, exits and help.
 const adopt = (parent: Command, children: readonly Command[]): Command => {
   for (const child of children) {
     child.copyInheritedSettings(parent);

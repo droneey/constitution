@@ -2,144 +2,123 @@ import { describe, expect, it } from 'bun:test';
 
 import { HookEventName, SessionOrigin } from '../../../domain/entities';
 import { SessionId } from '../../../domain/value-objects';
-import { hookEventNameOf, hookEventOf, sessionIdOf, sessionOriginOf } from '../hook-event.utils';
+import {
+  HookField,
+  recordCheckEventSchema,
+  sessionStartEventSchema,
+  stopEventSchema,
+} from '../../constants';
+import { hookEventOf } from '../hook-event.utils';
 
 describe('hookEventOf', () => {
   it.each([
     {
-      condition: 'it sits at the top of the event',
-      expected: 'session-1',
-      name: 'session_id',
-      text: '{"session_id":"session-1","cwd":"/work"}',
+      condition: 'it names every field the hook reads',
+      expected: {
+        [HookField.AgentName]: 'helper',
+        [HookField.AgentType]: 'Explore',
+        [HookField.HookEventName]: HookEventName.SubagentStop,
+        [HookField.SessionId]: SessionId.create('s1'),
+        [HookField.StopHookActive]: true,
+      },
+      text: '{"session_id":"s1","hook_event_name":"SubagentStop","agent_name":"helper","agent_type":"Explore","stop_hook_active":true}',
     },
     {
-      condition: 'it sits inside another field',
-      expected: 'bun run check',
-      name: 'command',
-      text: '{"tool_name":"Bash","tool_input":{"command":"bun run check"}}',
+      condition: 'its fields are empty or of another kind',
+      expected: {
+        [HookField.AgentName]: undefined,
+        [HookField.AgentType]: undefined,
+        [HookField.HookEventName]: HookEventName.Unknown,
+        [HookField.SessionId]: undefined,
+        [HookField.StopHookActive]: false,
+      },
+      text: '{"session_id":"","hook_event_name":7,"agent_name":null,"agent_type":["Explore"],"stop_hook_active":"true"}',
     },
-    {
-      condition: 'it sits in an element of a list',
-      expected: 'b.ts',
-      name: 'file_path',
-      text: '{"edits":[7,{"other":"a.ts"},{"file_path":"b.ts"},{"file_path":"c.ts"}]}',
-    },
-    {
-      condition: 'an earlier field holds it deeper than a later one',
-      expected: 'deep',
-      name: 'file_path',
-      text: '{"tool_input":{"file_path":"deep"},"file_path":"top"}',
-    },
-    {
-      condition: 'a field of its name holds no string but one inside it does',
-      expected: 'inner',
-      name: 'file_path',
-      text: '{"file_path":{"file_path":"inner"},"other":{"file_path":"later"}}',
-    },
-    {
-      condition: 'a field of its name holds a number and a later one a string',
-      expected: 'later',
-      name: 'agent_id',
-      text: '{"agent_id":7,"nested":{"agent_id":"later"}}',
-    },
-    {
-      condition: 'it sits as deep as an event may nest',
-      expected: 'deep',
-      name: 'file_path',
-      text: `${'['.repeat(63)}{"file_path":"deep"}${']'.repeat(63)}`,
-    },
-  ])('should read the first string of the name when $condition', ({ expected, name, text }) => {
-    // Arrange
-    const event = hookEventOf(text);
-
+  ])('should read the fields the hook reads when $condition', ({ expected, text }) => {
     // Act
-    const field = event.field(name);
+    const event = hookEventOf({
+      schema: stopEventSchema,
+      text,
+    });
 
     // Assert
-    expect(field).toBe(expected);
+    expect<object>(event).toStrictEqual(expected);
   });
 
   it.each([
     {
-      condition: 'no field has its name',
-      name: 'agent_id',
-      text: '{"session_id":"session-1","list":[null,true,"agent_id"]}',
+      condition: 'it is no JSON',
+      text: 'session_id: s1',
     },
     {
-      condition: 'the field is an empty text',
-      name: 'agent_id',
-      text: '{"session_id":"session-1","agent_id":""}',
-    },
-    {
-      condition: 'the event is a bare string',
-      name: 'session_id',
+      condition: 'it is a bare string',
       text: '"session_id"',
     },
     {
-      condition: 'the event is no JSON',
-      name: 'session_id',
-      text: 'session_id: session-1',
+      condition: 'it is a list',
+      text: '[{"session_id":"s1"}]',
     },
-    {
-      condition: 'the event nests deeper than an event may',
-      name: 'file_path',
-      text: `${'['.repeat(64)}{"file_path":"deep"}${']'.repeat(64)}`,
-    },
-  ])('should read the field as absent when $condition', ({ name, text }) => {
-    // Arrange
-    const event = hookEventOf(text);
-
+  ])('should read an event that names nothing when $condition', ({ text }) => {
     // Act
-    const field = event.field(name);
+    const event = hookEventOf({
+      schema: stopEventSchema,
+      text,
+    });
 
     // Assert
-    expect(field).toBeUndefined();
+    expect<object>(event).toStrictEqual({
+      [HookField.HookEventName]: HookEventName.Unknown,
+      [HookField.StopHookActive]: false,
+    });
   });
 
   it.each([
     {
-      condition: 'its first boolean is true',
-      expected: true,
-      text: '{"session_id":"s1","stop_hook_active":true}',
+      condition: 'it nests as deep as an event may',
+      depth: 63,
+      expected: SessionId.create('s1'),
     },
     {
-      condition: 'its first boolean is false',
-      expected: false,
-      text: '{"stop_hook_active":false,"nested":{"stop_hook_active":true}}',
+      condition: 'it nests deeper than an event may',
+      depth: 64,
+      expected: undefined,
     },
-    {
-      condition: 'a field of its name holds the text true and a later one the boolean',
-      expected: true,
-      text: '{"stop_hook_active":"true","nested":{"stop_hook_active":true}}',
-    },
-    {
-      condition: 'it holds only the text true',
-      expected: false,
-      text: '{"stop_hook_active":"true"}',
-    },
-    {
-      condition: 'no field has its name',
-      expected: false,
-      text: '{"session_id":"s1"}',
-    },
-    {
-      condition: 'the event is no JSON',
-      expected: false,
-      text: 'stop_hook_active: true',
-    },
-  ])('should read the flag as set only when $condition', ({ expected, text }) => {
+  ])('should read the session as $expected when $condition', ({ depth, expected }) => {
     // Arrange
-    const event = hookEventOf(text);
+    const text = `{"session_id":"s1","deep":${'['.repeat(depth)}${']'.repeat(depth)}}`;
 
     // Act
-    const isActive = event.isTrue('stop_hook_active');
+    const event = hookEventOf({
+      schema: stopEventSchema,
+      text,
+    });
 
     // Assert
-    expect(isActive).toBe(expected);
+    expect(event[HookField.SessionId]).toBe(expected);
   });
-});
 
-describe('hookEventNameOf', () => {
+  it.each([
+    {
+      condition: 'the tool names its input',
+      expected: 'constitution run check',
+      text: '{"tool_input":{"command":"constitution run check"}}',
+    },
+    {
+      condition: 'the tool gives an input of another kind',
+      expected: undefined,
+      text: '{"tool_input":"constitution run check"}',
+    },
+  ])('should read a field of the tool input as $expected when $condition', ({ expected, text }) => {
+    // Act
+    const event = hookEventOf({
+      schema: recordCheckEventSchema,
+      text,
+    });
+
+    // Assert
+    expect(event[HookField.ToolInput][HookField.Command]).toBe(expected);
+  });
+
   it.each([
     {
       expected: HookEventName.SessionStart,
@@ -161,20 +140,19 @@ describe('hookEventNameOf', () => {
       expected: HookEventName.Unknown,
       text: 'Notification',
     },
-    {
-      expected: HookEventName.Unknown,
-      text: undefined,
-    },
   ])('should read $expected when Claude Code names the event $text', ({ expected, text }) => {
     // Act
-    const name = hookEventNameOf(text);
+    const event = hookEventOf({
+      schema: stopEventSchema,
+      text: JSON.stringify({
+        [HookField.HookEventName]: text,
+      }),
+    });
 
     // Assert
-    expect(name).toBe(expected);
+    expect(event[HookField.HookEventName]).toBe(expected);
   });
-});
 
-describe('sessionOriginOf', () => {
   it.each([
     {
       expected: SessionOrigin.Startup,
@@ -198,42 +176,42 @@ describe('sessionOriginOf', () => {
     },
     {
       expected: SessionOrigin.Unknown,
-      text: undefined,
+      text: 7,
     },
   ])('should read $expected when Claude Code names the origin $text', ({ expected, text }) => {
     // Act
-    const origin = sessionOriginOf(text);
+    const event = hookEventOf({
+      schema: sessionStartEventSchema,
+      text: JSON.stringify({
+        [HookField.Source]: text,
+      }),
+    });
 
     // Assert
-    expect(origin).toBe(expected);
+    expect(event[HookField.Source]).toBe(expected);
   });
-});
 
-describe('sessionIdOf', () => {
   it.each([
     {
       condition: 'the id is a plain name',
       expected: SessionId.create('session-1'),
-      text: '{"session_id":"session-1"}',
+      text: 'session-1',
     },
     {
       condition: 'the id is no plain name',
       expected: undefined,
-      text: '{"session_id":"../session"}',
-    },
-    {
-      condition: 'the event names no session',
-      expected: undefined,
-      text: '{"cwd":"/work"}',
+      text: '../session',
     },
   ])('should read the session as $expected when $condition', ({ expected, text }) => {
-    // Arrange
-    const event = hookEventOf(text);
-
     // Act
-    const session = sessionIdOf(event);
+    const event = hookEventOf({
+      schema: stopEventSchema,
+      text: JSON.stringify({
+        [HookField.SessionId]: text,
+      }),
+    });
 
     // Assert
-    expect(session).toBe(expected);
+    expect(event[HookField.SessionId]).toBe(expected);
   });
 });

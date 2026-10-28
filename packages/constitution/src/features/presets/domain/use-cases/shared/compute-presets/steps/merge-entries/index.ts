@@ -1,2 +1,2 @@
-export type { FilesMerged, MergeEntriesInput } from './merge-entries.utils';
-export { mergeEntries } from './merge-entries.utils';
+export type { CandidatesMerged, MergedCandidate, MergeEntriesInput } from './merge-entries';
+export { mergeEntries } from './merge-entries';

@@ -2,12 +2,16 @@ import { describe, expect, it } from 'bun:test';
 
 import { StepStatus, Tone } from '@droneey/design-cli';
 
+import { goldenFileText, goldenOf } from '#/__tests__/golden.fixtures';
+import { notesTextOf } from '#/__tests__/notes-text.fixtures';
+import type { BlockModel } from '#/kernel/entities';
 import { BlockId, RuleSlug } from '#/kernel/value-objects';
 import { noteSection } from '#/shared/cli';
 
 import type { BlockFinding, Validation } from '../../../domain/use-cases/queries/check';
-import { RequiresCode } from '../../../domain/use-cases/queries/check';
+import { RequiresCode, ValidationStage } from '../../../domain/use-cases/queries/check';
 import { findingTextOf } from '../finding-text.utils';
+import { adviceMessage, SOUND } from '../report.messages';
 import { blocksOutcomeOf, blocksSectionsOf } from '../report.utils';
 
 const finding: BlockFinding = {
@@ -15,26 +19,43 @@ const finding: BlockFinding = {
   details: {},
   path: 'blocks/domains/ui/ui.md',
 };
+const model: BlockModel = {
+  blocks: [],
+  roles: [],
+  rules: [],
+};
+const advice = {
+  left: {
+    block: BlockId.create('x'),
+    slug: RuleSlug.create('a'),
+  },
+  right: {
+    block: BlockId.create('y'),
+    slug: RuleSlug.create('b'),
+  },
+};
+const advised = {
+  advice: [
+    advice,
+  ],
+  findings: [
+    finding,
+  ],
+  model,
+  stage: ValidationStage.Checked,
+} satisfies Validation;
 
 describe('blocksOutcomeOf', () => {
   it.each([
     {
-      condition: 'the folder holds no blocks',
-      outcome: {
-        detail: 'no blocks in this folder',
-        status: StepStatus.Skipped,
-      },
-      validation: undefined,
-    },
-    {
       condition: 'every block is sound',
       outcome: {
-        detail: 'every block is sound',
+        detail: SOUND,
         status: StepStatus.Done,
       },
       validation: {
-        advice: [],
         findings: [],
+        stage: ValidationStage.Unloaded,
       },
     },
     {
@@ -44,11 +65,11 @@ describe('blocksOutcomeOf', () => {
         status: StepStatus.Failed,
       },
       validation: {
-        advice: [],
         findings: [
           finding,
           finding,
         ],
+        stage: ValidationStage.Unloaded,
       },
     },
   ])('should end the step as $outcome.status when $condition', ({ outcome, validation }) => {
@@ -61,28 +82,21 @@ describe('blocksOutcomeOf', () => {
 });
 
 describe('blocksSectionsOf', () => {
-  it('should give the findings, each closed by its code, then the advice when both are there', () => {
-    // Arrange
-    const validation = {
-      advice: [
-        {
-          left: {
-            block: BlockId.create('x'),
-            slug: RuleSlug.create('a'),
-          },
-          right: {
-            block: BlockId.create('y'),
-            slug: RuleSlug.create('b'),
-          },
-        },
-      ],
-      findings: [
-        finding,
-      ],
-    };
-
+  it('should word the report as the golden file shows it', async () => {
     // Act
-    const sections = blocksSectionsOf(validation);
+    const golden = goldenOf({
+      sections: notesTextOf(blocksSectionsOf(advised)),
+    });
+
+    // Assert
+    expect(golden).toBe(
+      await goldenFileText(new URL('report.golden.txt', import.meta.url), golden),
+    );
+  });
+
+  it('should give the findings, each closed by its code, then the advice when both are there', () => {
+    // Act
+    const sections = blocksSectionsOf(advised);
 
     // Assert
     expect(sections).toStrictEqual([
@@ -90,14 +104,14 @@ describe('blocksSectionsOf', () => {
         lines: [
           `blocks/domains/ui/ui.md: ${findingTextOf(finding)} [requires-itself]`,
         ],
-        title: '1 finding in the blocks',
+        title: expect.any(String),
         tone: Tone.Error,
       }),
       noteSection({
         lines: [
-          'similar rules: a (x) and b (y)',
+          adviceMessage(advice),
         ],
-        title: 'Advice on the blocks',
+        title: expect.any(String),
         tone: Tone.Info,
       }),
     ]);
@@ -125,13 +139,13 @@ describe('blocksSectionsOf', () => {
       path: 'blocks/domains/ui/ui.md',
     };
     const validation = {
-      advice: [],
       findings: [
         webgl,
         i18n,
         canvas,
         finding,
       ],
+      stage: ValidationStage.Unloaded,
     } satisfies Validation;
 
     // Act
@@ -146,7 +160,7 @@ describe('blocksSectionsOf', () => {
           `blocks/domains/ui/ui.md: ${findingTextOf(canvas)} [requires-no-block]`,
           `blocks/domains/ui/ui.md: ${findingTextOf(webgl)} [requires-no-block]`,
         ],
-        title: '4 findings in the blocks',
+        title: expect.any(String),
         tone: Tone.Error,
       }),
     ]);
@@ -162,6 +176,8 @@ describe('blocksSectionsOf', () => {
       validation: {
         advice: [],
         findings: [],
+        model,
+        stage: ValidationStage.Checked,
       },
     },
   ])('should give nothing when $condition', ({ validation }) => {

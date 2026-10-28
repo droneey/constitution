@@ -23,11 +23,8 @@ const create = (text: string): AgentId => {
   return text;
 };
 
-const equals = (left: AgentId, right: AgentId): boolean => left === right;
-
 const AgentId = {
   create,
-  equals,
   is,
 } as const;
 

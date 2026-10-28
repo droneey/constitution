@@ -8,6 +8,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 import { z } from 'zod';
 
 import { cliPath } from './cli.fixtures';
+import { environmentOf } from './package.fixtures';
 import {
   createPluginRoot,
   distributionOf,
@@ -36,22 +37,24 @@ const NO_NETWORK = 'http://127.0.0.1:9';
 const runExecutable = (input: {
   args: readonly string[];
   cwd: string;
-  env?: Readonly<Record<string, string>>;
+  env?: ReadonlyMap<string, string>;
 }): Run => {
   const ran = spawnSync(cliPath, input.args, {
     cwd: input.cwd,
     encoding: 'utf8',
-    env: Object.fromEntries([
-      [
-        'HTTPS_PROXY',
-        NO_NETWORK,
-      ],
-      [
-        'PATH',
-        '/usr/bin:/bin',
-      ],
-      ...Object.entries(input.env ?? {}),
-    ]),
+    env: environmentOf(
+      new Map([
+        [
+          'HTTPS_PROXY',
+          NO_NETWORK,
+        ],
+        [
+          'PATH',
+          '/usr/bin:/bin',
+        ],
+        ...(input.env ?? new Map()),
+      ]),
+    ),
   });
 
   return {
@@ -281,7 +284,7 @@ describe('the constitution executable', () => {
     expect(ran.exitCode).toBe(1);
   });
 
-  it('should write the failure block, and exit 1, when the plan finds no project', () => {
+  it("should fail the presets' step, and exit 1, when the plan finds no project", () => {
     // Arrange
     const asked = [
       'presets',
@@ -301,14 +304,13 @@ describe('the constitution executable', () => {
         .trimEnd()
         .split('\n')
         .map((line) => line.trimStart().slice(0, 1)),
-      namesTheStep: ran.stderr.includes('/constitution:ratify'),
+      stdout: ran.stdout,
     }).toStrictEqual({
       exitCode: 1,
       marks: [
         '✗',
-        '→',
       ],
-      namesTheStep: true,
+      stdout: '',
     });
   });
 
@@ -322,7 +324,7 @@ describe('the constitution executable', () => {
         'doctor',
       ],
       cwd: project,
-      env: Object.fromEntries([
+      env: new Map([
         [
           'CLAUDE_CONFIG_DIR',
           elsewhere,

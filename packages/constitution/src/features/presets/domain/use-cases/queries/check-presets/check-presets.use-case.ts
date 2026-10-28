@@ -1,11 +1,16 @@
 import type { ProjectFiles } from '#/kernel/contracts';
 import type { BlockModel } from '#/kernel/entities';
-import { BlockSource, PackPath } from '#/kernel/value-objects';
+import type { AbsolutePath, BlockSource } from '#/kernel/value-objects';
+import { RepositoryRelativePath, SourceKind } from '#/kernel/value-objects';
 
-import type { DistributionSources, PresetFileParser } from '../../../contracts';
+import type {
+  ConfigurationFormat,
+  DistributionSources,
+  PresetFileParser,
+} from '../../../contracts';
 import type { PresetsFinding } from '../../../entities';
 import { PresetEntry } from '../../../entities';
-import { checkPresetSets } from '../../shared/check-preset-sets';
+import { checkPresetSets, PackRoleNaming } from '../../shared/check-preset-sets';
 import { loadPresetSets } from '../../shared/load-preset-sets';
 import { mergeEveryEntry } from './steps/merge-every-entry';
 
@@ -13,25 +18,26 @@ interface CheckPresetsInput {
   /** what the folder's build makes, which its source tree need not hold */
   readonly distribution: DistributionSources;
   readonly files: ProjectFiles;
-  /** absolute */
-  readonly folder: string;
-  /** whether the folder is the Constitution's release, whose own files and plugins it checks */
-  readonly isRelease: boolean;
+  readonly formats: ConfigurationFormat;
   /** the model of the folder's blocks, a pack's base among them */
   readonly model: BlockModel;
   readonly parser: PresetFileParser;
+  /** what the folder is: the Constitution's release, whose own files and plugins it checks, or a pack */
+  readonly source: BlockSource;
+  /** the folder of the Constitution or the pack checked */
+  readonly sourceFolderPath: AbsolutePath;
 }
 
-const packHere = PackPath.create('.');
+// The folder checked stands for the repository its findings' paths start from.
+const checkedFolderPathFromRepository = RepositoryRelativePath.create('');
 
-/** Each finding names its preset file by its path from the folder. */
 const checkPresets = (input: CheckPresetsInput): readonly PresetsFinding[] => {
   const loaded = loadPresetSets({
     files: input.files,
-    folder: input.folder,
     parser: input.parser,
-    source: input.isRelease ? BlockSource.create() : BlockSource.create(packHere),
-    where: '',
+    source: input.source,
+    sourceFolderPath: input.sourceFolderPath,
+    sourceFolderPathFromRepository: checkedFolderPathFromRepository,
   });
   const entries = loaded.entries.toSorted(PresetEntry.orderOf(input.model));
 
@@ -39,14 +45,16 @@ const checkPresets = (input: CheckPresetsInput): readonly PresetsFinding[] => {
     ...loaded.findings,
     ...checkPresetSets({
       entries,
+      formats: input.formats,
       model: input.model,
-      ...(input.isRelease
+      packRoleNaming: PackRoleNaming.ById,
+      ...(input.source.kind === SourceKind.Release
         ? {
             release: {
-              distributed: input.distribution.packagesOf(input.folder),
+              distributed: input.distribution.builtFilesOf(input.sourceFolderPath),
               files: input.files,
-              folder: input.folder,
-              where: '',
+              folderPath: input.sourceFolderPath,
+              folderPathFromRepository: checkedFolderPathFromRepository,
             },
           }
         : {}),

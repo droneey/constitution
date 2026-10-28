@@ -17,14 +17,12 @@ import { join } from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
-import { Level } from '#/kernel/constants';
-import { BlockId, repositoryUnit, UnitPath } from '#/kernel/value-objects';
+import { AbsolutePath, BlockId } from '#/kernel/value-objects';
 
-import { activeBlockOf, keptSession, mustOf } from '../../../__tests__/session.fixtures';
+import { activeBlockOf, keptSession, sessionStateOf } from '../../../__tests__/session.fixtures';
 import { runSessionRepositorySuite } from '../../../__tests__/session-repository.suite';
-import type { SessionState } from '../../../domain/entities';
-import { CheckState, SessionMark } from '../../../domain/entities';
-import { AgentId } from '../../../domain/value-objects';
+import { SessionMark } from '../../../domain/entities';
+import { AgentId, TreeFingerprint } from '../../../domain/value-objects';
 import type { StateEnvironment, StateFolderWarning } from '../state-folder.utils';
 import { StateFolderProblem } from '../state-folder.utils';
 import { createXdgSessionRepository } from '../xdg-session.repository';
@@ -87,54 +85,14 @@ const changedBefore = (input: { days: number; path: string; seconds?: number }):
 
 const namesOf = (path: string): readonly string[] => readdirSync(path).toSorted();
 
-// A state whose second unit makes no block active, so the third's blocks keep its place, 2.
-const savedState: SessionState = {
+const savedState = sessionStateOf({
   active: [
     activeBlockOf({
-      files: [
-        'blocks/core/core.md',
-      ],
-      governs: [
-        '**/*.ts',
-        '**/*.md',
-      ],
       id: 'core',
     }),
-    activeBlockOf({
-      files: [],
-      governs: [],
-      id: 'ui',
-      unit: 'web',
-    }),
   ],
-  check: CheckState.create('bun run check'),
-  musts: [
-    mustOf({
-      block: 'core',
-      slug: 'case-named-should-when',
-    }),
-    mustOf({
-      block: 'ui',
-      lowerings: [
-        {
-          level: Level.May,
-          unit: 'web',
-        },
-        {
-          level: Level.Should,
-          via: 'screen-is-read',
-        },
-      ],
-      slug: 'screen-reads-aloud',
-    }),
-  ],
-  project: '/work',
-  units: [
-    repositoryUnit,
-    UnitPath.create('api'),
-    UnitPath.create('web'),
-  ],
-};
+  repositoryFolderPath: AbsolutePath.create('/work'),
+});
 
 const staleSession = (name: string): void => {
   mkdirSync(join(sessionsFolder(), name), {
@@ -172,265 +130,39 @@ afterEach(() => {
 describe('createXdgSessionRepository', () => {
   it.each([
     {
-      condition: 'names a check',
-      state: savedState,
-      text: [
-        'project\t/work',
-        'must\tcore\tcase-named-should-when',
-        'must\tui\tscreen-reads-aloud (MAY in web; SHOULD via screen-is-read)',
-        'check\tbun run check',
-        'active\t0\t\tcore\t**/*.ts **/*.md\tblocks/core/core.md',
-        'active\t2\tweb\tui\t\t',
-        '',
-      ].join('\n'),
+      condition: 'is no JSON',
+      text: '{"repositoryFolderPath":"/work",',
     },
     {
-      condition: 'names no check',
-      state: {
-        ...savedState,
-        active: [],
-        check: CheckState.create(),
-        musts: [],
-      },
-      text: 'project\t/work\ncheck\t\n',
+      condition: 'names no status',
+      text: '{"repositoryFolderPath":"/work"}',
     },
     {
-      condition: 'comes from a constitution.yaml that did not parse',
-      state: {
-        ...savedState,
-        active: [],
-        check: CheckState.unparsed(),
-        musts: [],
-      },
-      text: 'project\t/work\n',
-    },
-  ])(
-    'should write one record to a line, whole, when a state that $condition is saved',
-    ({ state, text }) => {
-      // Arrange
-      const sessions = repositoryOf();
-
-      // Act
-      sessions.saveState({
-        isReminderKept: false,
-        session: keptSession,
-        state,
-      });
-
-      // Assert
-      expect({
-        names: namesOf(sessionFolder()),
-        written: readFileSync(join(sessionFolder(), 'active.tsv'), 'utf8'),
-      }).toStrictEqual({
-        names: [
-          'active.tsv',
-          'reminded',
-        ],
-        written: text,
-      });
-    },
-  );
-
-  it('should read back the state it saved, with the units its active blocks name, when the session asks for it', () => {
-    // Arrange
-    const sessions = repositoryOf();
-
-    sessions.saveState({
-      isReminderKept: false,
-      session: keptSession,
-      state: savedState,
-    });
-
-    // Act
-    const state = sessions.state(keptSession);
-
-    // Assert
-    expect(state).toStrictEqual({
-      ...savedState,
-      units: [
-        repositoryUnit,
-        UnitPath.create('web'),
-      ],
-    });
-  });
-
-  it.each([
-    {
-      condition: 'its fields are left out, so its blocks and its rules name none',
-      expected: {
-        active: [],
-        check: CheckState.create(),
-        musts: [],
-        project: '/work',
-        units: [],
-      },
-      text: 'project\t/work\nmust\ncheck\nactive\n',
+      condition: 'holds a key the state has not',
+      text: '{"repositoryFolderPath":"/work","status":"unparsed","check":"bun run check"}',
     },
     {
-      condition: 'an active block leaves out what it governs and its files',
-      expected: {
-        active: [
-          activeBlockOf({
-            files: [],
-            governs: [],
-            id: 'core',
-          }),
-        ],
-        check: CheckState.create(),
-        musts: [],
-        project: '/work',
-        units: [
-          repositoryUnit,
-        ],
-      },
-      text: 'project\t/work\ncheck\nactive\t0\t\tcore\n',
+      condition: 'names a project by a path that is not absolute',
+      text: '{"repositoryFolderPath":"work","status":"unparsed"}',
     },
     {
-      condition: 'records repeat, words are split by several spaces and a record is unknown',
-      expected: {
-        active: [
-          activeBlockOf({
-            files: [
-              'a.md',
-              'b.md',
-            ],
-            governs: [
-              '**/ui/**',
-              '**/web/**',
-            ],
-            id: 'ui',
-            unit: 'web',
-          }),
-        ],
-        check: CheckState.create('first'),
-        musts: [
-          mustOf({
-            block: 'core',
-            slug: 'one',
-          }),
-        ],
-        project: '/first',
-        units: [
-          UnitPath.create('web'),
-        ],
-      },
-      text: 'project\t/first\nproject\t/second\nnote\tx\ncheck\tfirst\ncheck\tsecond\nmust\tcore\tone\nactive\t2\tweb\tui\t **/ui/**  **/web/** \ta.md  b.md\n',
+      condition: 'names a block by no block id',
+      text: '{"active":[{"files":[],"governs":[],"id":"Bad_Block","unit":""}],"musts":[],"repositoryFolderPath":"/work","status":"parsed"}',
     },
     {
-      condition:
-        'its records name what the program never writes, and its active blocks come out of place order',
-      expected: {
-        active: [
-          activeBlockOf({
-            files: [
-              'ui.md',
-            ],
-            governs: [
-              '**',
-            ],
-            id: 'ui',
-            unit: 'web',
-          }),
-          activeBlockOf({
-            files: [
-              'core.md',
-            ],
-            governs: [
-              '**',
-            ],
-            id: 'core',
-          }),
-          activeBlockOf({
-            files: [
-              'api.md',
-            ],
-            governs: [
-              '**',
-            ],
-            id: 'api',
-            unit: 'api',
-          }),
-        ],
-        check: CheckState.unparsed(),
-        musts: [
-          mustOf({
-            block: 'core',
-            lowerings: [
-              {
-                level: Level.Should,
-                unit: 'web',
-                via: 'rule-c',
-              },
-            ],
-            slug: 'slug-b',
-          }),
-        ],
-        project: '/work',
-        units: [
-          repositoryUnit,
-          UnitPath.create('api'),
-          UnitPath.create('web'),
-        ],
-      },
-      text: [
-        'project\t/work',
-        'active\t2\tweb\tui\t**\tui.md',
-        'active\t0\t\tcore\t**\tcore.md',
-        'active\t1\tapi\tapi\t**\tapi.md',
-        'active\t3\tdocs',
-        'active\t3\t../up\tui',
-        'other\t3\tdocs\tui\t**\tui.md',
-        'must\tcore',
-        'must\tcore\tBad_Slug',
-        'must\tBad_Block\tslug-a',
-        'must\tcore\t slug-a',
-        'must\tcore\tslug-a (MAY) x',
-        'must\tcore\tslug-b (x MAY; SHOULD in ../up; MAY via Bad_Rule; MUST; MAY via rule-c extra; SHOULD in web via rule-c)',
-        '',
-      ].join('\n'),
-    },
-  ])(
-    'should read a record as its fields, a missing one as empty, when $condition',
-    ({ expected, text }) => {
-      // Arrange
-      mkdirSync(sessionFolder(), {
-        recursive: true,
-      });
-      writeFileSync(join(sessionFolder(), 'active.tsv'), text);
-
-      const sessions = repositoryOf();
-
-      // Act
-      const state = sessions.state(keptSession);
-
-      // Assert
-      expect(state).toStrictEqual(expected);
-    },
-  );
-
-  it.each([
-    {
-      condition: 'it holds no record',
-      text: '',
+      condition: 'gives a block a glob whose braces do not pair',
+      text: '{"active":[{"files":[],"governs":["{a,b"],"id":"ui","unit":""}],"musts":[],"repositoryFolderPath":"/work","status":"parsed"}',
     },
     {
-      condition: 'it holds no project record',
-      text: 'check\tbun run check\nactive\t0\t\tcore\t**\tcore.md\n',
+      condition: 'lowers a rule to MUST',
+      text: '{"active":[],"musts":[{"block":"ui","lowerings":[{"level":"MUST","unit":""}],"slug":"screen-reads-aloud"}],"repositoryFolderPath":"/work","status":"parsed"}',
     },
-    {
-      condition: 'its project record leaves the project out',
-      text: 'project\ncheck\tbun run check\n',
-    },
-    {
-      condition: 'its project record names an empty project',
-      text: 'project\t\ncheck\tbun run check\n',
-    },
-  ])('should give no state when the saved file names no project because $condition', ({ text }) => {
+  ])('should give no state when the saved file $condition', ({ text }) => {
     // Arrange
     mkdirSync(sessionFolder(), {
       recursive: true,
     });
-    writeFileSync(join(sessionFolder(), 'active.tsv'), text);
+    writeFileSync(join(sessionFolder(), 'state.json'), text);
 
     const sessions = repositoryOf();
 
@@ -544,9 +276,9 @@ describe('createXdgSessionRepository', () => {
       expected: {
         main: 'core\n',
         names: [
-          'active.tsv',
           'reminded',
           'reminded.agent-7',
+          'state.json',
           'turn',
         ],
       },
@@ -557,8 +289,8 @@ describe('createXdgSessionRepository', () => {
       expected: {
         main: '',
         names: [
-          'active.tsv',
           'reminded',
+          'state.json',
           'turn',
         ],
       },
@@ -587,10 +319,10 @@ describe('createXdgSessionRepository', () => {
       ],
       session: keptSession,
     });
-    sessions.recordMark({
+    sessions.recordFingerprint({
+      fingerprint: TreeFingerprint.create('abc'),
       mark: SessionMark.Turn,
       session: keptSession,
-      value: 'abc',
     });
 
     // Act
@@ -618,10 +350,10 @@ describe('createXdgSessionRepository', () => {
     });
 
     // Act
-    sessions.recordMark({
+    sessions.recordFingerprint({
+      fingerprint: TreeFingerprint.create('f00d'),
       mark: SessionMark.Checked,
       session: keptSession,
-      value: 'f00d',
     });
 
     // Assert
@@ -630,9 +362,9 @@ describe('createXdgSessionRepository', () => {
       written: readFileSync(join(sessionFolder(), 'checked'), 'utf8'),
     }).toStrictEqual({
       names: [
-        'active.tsv',
         'checked',
         'reminded',
+        'state.json',
       ],
       written: 'f00d\n',
     });
@@ -654,24 +386,62 @@ describe('createXdgSessionRepository', () => {
       expected: 'f00d',
       text: 'f00d',
     },
-  ])('should read a mark without its closing line breaks when $condition', ({ expected, text }) => {
-    // Arrange
-    mkdirSync(sessionFolder(), {
-      recursive: true,
-    });
-    writeFileSync(join(sessionFolder(), 'blocked'), text);
+  ])(
+    'should read a reason without its closing line breaks when $condition',
+    ({ expected, text }) => {
+      // Arrange
+      mkdirSync(sessionFolder(), {
+        recursive: true,
+      });
+      writeFileSync(join(sessionFolder(), SessionMark.Unjudged), text);
 
-    const sessions = repositoryOf();
+      const sessions = repositoryOf();
 
-    // Act
-    const mark = sessions.mark({
-      mark: SessionMark.Blocked,
-      session: keptSession,
-    });
+      // Act
+      const reason = sessions.unjudged(keptSession);
 
-    // Assert
-    expect(mark).toBe(expected);
-  });
+      // Assert
+      expect(reason).toBe(expected);
+    },
+  );
+
+  it.each([
+    {
+      condition: 'it ends in a line break',
+      expected: 'f00d',
+      text: 'f00d\n',
+    },
+    {
+      condition: 'it holds a line break inside',
+      expected: undefined,
+      text: 'f0\n0d\n',
+    },
+    {
+      condition: 'it is empty',
+      expected: undefined,
+      text: '',
+    },
+  ])(
+    'should read a fingerprint only when its file holds one line and $condition',
+    ({ expected, text }) => {
+      // Arrange
+      mkdirSync(sessionFolder(), {
+        recursive: true,
+      });
+      writeFileSync(join(sessionFolder(), SessionMark.Blocked), text);
+
+      const sessions = repositoryOf();
+
+      // Act
+      const fingerprint = sessions.fingerprint({
+        mark: SessionMark.Blocked,
+        session: keptSession,
+      });
+
+      // Assert
+      expect<string | undefined>(fingerprint).toBe(expected);
+    },
+  );
 
   it.each([
     {
@@ -687,10 +457,10 @@ describe('createXdgSessionRepository', () => {
     {
       condition: 'a mark is recorded',
       write: (sessions: XdgSessions): void => {
-        sessions.recordMark({
+        sessions.recordFingerprint({
+          fingerprint: TreeFingerprint.create('abc'),
           mark: SessionMark.Turn,
           session: keptSession,
-          value: 'abc',
         });
       },
     },
@@ -798,8 +568,8 @@ describe('createXdgSessionRepository: where the sessions live', () => {
 
       // Assert
       expect(namesOf(join(folder, ...expected, keptSession))).toStrictEqual([
-        'active.tsv',
         'reminded',
+        'state.json',
       ]);
     },
   );
@@ -851,10 +621,10 @@ describe('createXdgSessionRepository: where the sessions live', () => {
       session: keptSession,
       state: savedState,
     });
-    sessions.recordMark({
+    sessions.recordFingerprint({
+      fingerprint: TreeFingerprint.create('abc'),
       mark: SessionMark.Turn,
       session: keptSession,
-      value: 'abc',
     });
 
     // Act
@@ -868,7 +638,7 @@ describe('createXdgSessionRepository: where the sessions live', () => {
 
     // Assert
     expect({
-      active: modeOf(join(session, 'active.tsv')),
+      active: modeOf(join(session, 'state.json')),
       program: modeOf(program),
       reminded: modeOf(join(session, 'reminded')),
       remindedToAgent: modeOf(join(session, 'reminded.agent-7')),
@@ -1012,10 +782,10 @@ describe('createXdgSessionRepository: no folder to keep the sessions in', () => 
       session: keptSession,
       state: savedState,
     });
-    sessions.recordMark({
+    sessions.recordFingerprint({
+      fingerprint: TreeFingerprint.create('abc'),
       mark: SessionMark.Turn,
       session: keptSession,
-      value: 'abc',
     });
     sessions.addReminded({
       agent: undefined,
@@ -1027,7 +797,7 @@ describe('createXdgSessionRepository: no folder to keep the sessions in', () => 
 
     // Act
     const seen = {
-      mark: sessions.mark({
+      mark: sessions.fingerprint({
         mark: SessionMark.Turn,
         session: keptSession,
       }),
@@ -1061,17 +831,17 @@ describe('createXdgSessionRepository: links in place of its files', () => {
   it.each([
     {
       condition: 'the state',
-      name: 'active.tsv',
+      name: 'state.json',
       expected: undefined,
       read: (sessions: XdgSessions): unknown => sessions.state(keptSession),
-      text: 'project\t/elsewhere\n',
+      text: '{"repositoryFolderPath":"/elsewhere","status":"unparsed"}',
     },
     {
       condition: 'a mark',
       expected: undefined,
       name: 'turn',
       read: (sessions: XdgSessions): unknown =>
-        sessions.mark({
+        sessions.fingerprint({
           mark: SessionMark.Turn,
           session: keptSession,
         }),
@@ -1115,10 +885,10 @@ describe('createXdgSessionRepository: links in place of its files', () => {
       condition: 'a mark',
       name: 'turn',
       write: (sessions: XdgSessions): void => {
-        sessions.recordMark({
+        sessions.recordFingerprint({
+          fingerprint: TreeFingerprint.create('abc'),
           mark: SessionMark.Turn,
           session: keptSession,
-          value: 'abc',
         });
       },
     },
@@ -1184,7 +954,10 @@ describe('createXdgSessionRepository: what a start removes', () => {
     mkdirSync(other, {
       recursive: true,
     });
-    writeFileSync(join(other, 'active.tsv'), 'project\t/work\n');
+    writeFileSync(
+      join(other, 'state.json'),
+      '{"repositoryFolderPath":"/work","status":"unparsed"}',
+    );
     changedBefore({
       days,
       path: other,
@@ -1296,10 +1069,10 @@ describe('createXdgSessionRepository: the files it opens', () => {
     {
       condition: 'records a mark',
       use: (sessions: XdgSessions): void => {
-        sessions.recordMark({
+        sessions.recordFingerprint({
+          fingerprint: TreeFingerprint.create('abc'),
           mark: SessionMark.Turn,
           session: keptSession,
-          value: 'abc',
         });
       },
     },

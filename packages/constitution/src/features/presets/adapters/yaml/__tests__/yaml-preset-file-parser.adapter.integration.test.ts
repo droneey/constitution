@@ -1,11 +1,68 @@
 import { describe, expect, it } from 'bun:test';
 
+import fc from 'fast-check';
+
 import type { PresetFileRead } from '../../../domain/contracts';
 import { PresetFileReadStatus } from '../../../domain/contracts';
 import { PresetValue, ValueKind } from '../../../domain/entities';
 import { createYamlPresetFileParser } from '../yaml-preset-file-parser.adapter';
 
 const parser = createYamlPresetFileParser();
+
+// Texts of the pieces a preset file is made of, its marks, tags, anchors and flows among them, and
+// texts of any characters.
+const texts = fc.oneof(
+  fc
+    .array(
+      fc.constantFrom(
+        'a:',
+        ' b',
+        '\n',
+        '  ',
+        '- ',
+        '? ',
+        ': ',
+        '!default ',
+        '!replace ',
+        '!sorted ',
+        '!words ',
+        '!env ',
+        '!!str ',
+        '&x ',
+        '*x',
+        '[',
+        ']',
+        '{',
+        '}',
+        ', ',
+        '~',
+        '1',
+        'true',
+        "'",
+        '"',
+        '# c',
+        '|',
+        '>',
+        '---',
+      ),
+      {
+        maxLength: 24,
+      },
+    )
+    .map((pieces) => pieces.join('')),
+  fc.string({
+    unit: 'binary',
+  }),
+);
+
+// The invariant: any text reads as a value or as unparsed, and never throws.
+const isReadOrUnparsed = (text: string): boolean => {
+  const read = parser.parse(text);
+
+  return (
+    read.status === PresetFileReadStatus.Parsed || read.status === PresetFileReadStatus.Unparsed
+  );
+};
 
 describe('createYamlPresetFileParser', () => {
   it('should read the maps as maps, the marks as marks, and any other value as it is', () => {
@@ -62,6 +119,7 @@ describe('createYamlPresetFileParser', () => {
                         {
                           key: 'rules',
                           value: {
+                            isWords: false,
                             kind: ValueKind.Replace,
                             setting: [
                               'a',
@@ -74,6 +132,7 @@ describe('createYamlPresetFileParser', () => {
                         {
                           key: 'randomize',
                           value: {
+                            isWords: false,
                             kind: ValueKind.Default,
                             setting: true,
                           },
@@ -81,6 +140,7 @@ describe('createYamlPresetFileParser', () => {
                         {
                           key: 'quoted',
                           value: {
+                            isWords: false,
                             kind: ValueKind.Default,
                             setting: 'no',
                           },
@@ -88,6 +148,7 @@ describe('createYamlPresetFileParser', () => {
                         {
                           key: 'layout',
                           value: {
+                            isWords: false,
                             kind: ValueKind.Default,
                             setting: {
                               style: 'space',
@@ -120,6 +181,7 @@ describe('createYamlPresetFileParser', () => {
                             {
                               key: 'check',
                               value: {
+                                isWords: false,
                                 kind: ValueKind.Default,
                                 setting: 'bun run check',
                               },
@@ -140,6 +202,7 @@ describe('createYamlPresetFileParser', () => {
                     {
                       key: '.gitignore',
                       value: {
+                        isWords: false,
                         kind: ValueKind.Default,
                         setting: [
                           'dist/',
@@ -166,6 +229,50 @@ describe('createYamlPresetFileParser', () => {
       value: PresetValue.mapOf([]),
     });
   });
+
+  it.each([
+    {
+      condition: 'it is a number the core schema writes in hexadecimal',
+      setting: 31,
+      text: '0x1f',
+    },
+    {
+      condition: 'it is quoted, though it spells a number',
+      setting: '1',
+      text: "'1'",
+    },
+    {
+      condition: 'it opens as a document ends',
+      setting: '... b',
+      text: '... b',
+    },
+    {
+      condition: 'it opens as a document starts',
+      setting: '--- b',
+      text: '--- b',
+    },
+  ])(
+    'should read a marked text as the core schema types it when $condition',
+    ({ setting, text }) => {
+      // Act
+      const read = parser.parse(`a: !default ${text}`);
+
+      // Assert
+      expect(read).toStrictEqual({
+        status: PresetFileReadStatus.Parsed,
+        value: PresetValue.mapOf([
+          {
+            key: 'a',
+            value: {
+              isWords: false,
+              kind: ValueKind.Default,
+              setting,
+            },
+          },
+        ]),
+      });
+    },
+  );
 
   it.each<{
     condition: string;
@@ -282,5 +389,13 @@ describe('createYamlPresetFileParser', () => {
 
     // Assert
     expect(parsed).toStrictEqual(read);
+  });
+
+  it('should read any text as a value or as unparsed, and never throw', () => {
+    // Act
+    const run = fc.check(fc.property(texts, isReadOrUnparsed));
+
+    // Assert
+    expect(run.counterexample).toBeNull();
   });
 });

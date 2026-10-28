@@ -1,1 +1,1 @@
-export { readBlockSet } from './read-block-set.utils';
+export { readBlockSet } from './read-block-set';

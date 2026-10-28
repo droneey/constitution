@@ -1,10 +1,11 @@
 import { existsSync, readFileSync } from 'node:fs';
 
 import { attempted, isSyntaxError } from '#/kernel/utils';
+import { AbsolutePath } from '#/kernel/value-objects';
 import { isSystemError } from '#/libs/system-error';
 
-import { LOCK_FILE } from '../../domain/constants';
-import type { LockCommandRepository } from '../../domain/contracts/repositories/commands';
+import { LOCK_FILE_NAME } from '../../domain/constants';
+import type { LockQueryRepository } from '../../domain/contracts/repositories/queries';
 import type { LockRead } from '../../domain/entities';
 import { LockReadStatus } from '../../domain/entities';
 import { lockOfWire } from './lock-text.utils';
@@ -16,10 +17,10 @@ const unparsed: LockRead = {
 
 // A lock that is not there is empty; one that cannot be read or does not parse, as a merge's
 // conflict leaves it, is unparsed.
-const read = (folder: string): LockRead => {
-  const path = `${folder}/${LOCK_FILE}`;
+const read = (unitFolderPath: AbsolutePath): LockRead => {
+  const lockFilePath = AbsolutePath.join(unitFolderPath, LOCK_FILE_NAME);
 
-  if (!existsSync(path)) {
+  if (!existsSync(lockFilePath)) {
     return {
       lock: {},
       status: LockReadStatus.Read,
@@ -28,7 +29,7 @@ const read = (folder: string): LockRead => {
 
   const text = attempted({
     // Stryker disable next-line StringLiteral: an encoding left empty is UTF-8 as well
-    effect: () => readFileSync(path, 'utf8'),
+    effect: () => readFileSync(lockFilePath, 'utf8'),
     isRecognised: isSystemError,
   });
   const parsed =
@@ -50,7 +51,7 @@ const read = (folder: string): LockRead => {
     : unparsed;
 };
 
-const createFileLockRepository = (): LockCommandRepository => ({
+const createFileLockRepository = (): LockQueryRepository => ({
   read,
 });
 

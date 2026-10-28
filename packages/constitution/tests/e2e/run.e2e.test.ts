@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 
 import { cliPath } from './cli.fixtures';
+import { environmentOf } from './package.fixtures';
 import { removePluginRoots } from './plugin-root.fixtures';
 import {
   createLinkedProject,
@@ -12,13 +13,7 @@ import {
   linesOf,
   MEMBER,
 } from './presets-apply.fixtures';
-import {
-  ConfigKey,
-  configOf,
-  memberConfigOf,
-  removeProjects,
-  workspaceOf,
-} from './project.fixtures';
+import { ConfigKey, configOf, removeProjects, workspaceOf } from './project.fixtures';
 
 interface Ran {
   readonly exitCode: number | undefined;
@@ -76,7 +71,7 @@ const projectOf = (check = 'echo checked > checked.txt'): string =>
       config: configOf({}),
       files: {
         ...workspaceOf({
-          [MEMBER]: memberConfigOf({
+          [MEMBER]: configOf({
             [ConfigKey.Implementations]: '[own-runner]',
             [ConfigKey.Packs]: '[pack]',
           }),
@@ -97,12 +92,14 @@ const runIn = (input: { args: readonly string[]; folder: string }): Ran => {
     {
       cwd: input.folder,
       encoding: 'utf8',
-      env: Object.fromEntries([
-        [
-          'PATH',
-          '/usr/bin:/bin',
-        ],
-      ]),
+      env: environmentOf(
+        new Map([
+          [
+            'PATH',
+            '/usr/bin:/bin',
+          ],
+        ]),
+      ),
     },
   );
 

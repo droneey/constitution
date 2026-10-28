@@ -3,7 +3,7 @@ import { describe, expect, it } from 'bun:test';
 import { z } from 'zod';
 
 import { createFakeContext, runCommand } from '#/__tests__/command-context.fake';
-import { BlockId } from '#/kernel/value-objects';
+import { BlockId, RepositoryRelativePath } from '#/kernel/value-objects';
 
 import type { Reminder } from '../../../../../domain/entities';
 import { AgentId, SessionId } from '../../../../../domain/value-objects';
@@ -124,7 +124,7 @@ describe('createPostToolUseCommand', () => {
               musts: [],
             },
           ],
-          path: 'src/ui/a.ts',
+          path: RepositoryRelativePath.create('src/ui/a.ts'),
         },
         stdin,
       };
@@ -181,7 +181,7 @@ describe('createPostToolUseCommand', () => {
       ],
       reminder: {
         blocks: [],
-        path: 'README.md',
+        path: RepositoryRelativePath.create('README.md'),
       },
     },
     {

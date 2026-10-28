@@ -456,6 +456,24 @@ describe('StatedRule.parse', () => {
     {
       findings: [
         {
+          code: RuleFormCode.HeaderMisshapen,
+          details: {
+            slug: RuleSlug.create('a'),
+          },
+          path: FILE,
+        },
+      ],
+      lines: [
+        '| Why |',
+        '|---| x |',
+        '| it keeps the code honest. |',
+      ],
+      name: 'a delimiter row whose second cell holds no dashes',
+      rule: {},
+    },
+    {
+      findings: [
+        {
           code: RuleFormCode.HoldsLabel,
           details: {
             label: 'Why',

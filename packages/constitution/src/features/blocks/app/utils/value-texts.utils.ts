@@ -32,7 +32,7 @@ const ruleSlugText = (details: ValueFindingDetails[ValueFailure.RuleSlug]): stri
 const valueTexts: TextsOf<ValueFindingDetails> = {
   [ValueFailure.BlockId]: blockIdText,
   [ValueFailure.Glob]: ({ written }) =>
-    `front matter: governs lists ${JSON.stringify(written)}, which holds whitespace; the index separates globs with spaces`,
+    `front matter: governs lists ${JSON.stringify(written)}, whose braces do not pair or nest too deep`,
   [ValueFailure.RuleSlug]: ruleSlugText,
 };
 

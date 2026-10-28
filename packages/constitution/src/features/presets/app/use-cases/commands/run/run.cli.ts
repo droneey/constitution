@@ -1,20 +1,29 @@
-import { Argument, Command } from 'commander';
+import { Argument, Command, InvalidArgumentError } from 'commander';
 
+import { AbsolutePath } from '#/kernel/value-objects';
 import type { CommandContext } from '#/shared/cli';
 
-import type { RunAsked, RunPlan } from '../../../../domain/entities';
+import type { ProjectRead, RunAsked, RunPlan } from '../../../../domain/entities';
+import { EntryPoint } from '../../../../domain/entities';
 import type { RunStepsContext } from '../../../utils';
 import { runSteps } from '../../../utils';
 
 interface RunContext extends CommandContext, RunStepsContext {
-  readonly planRun: (input: RunAsked) => RunPlan;
+  readonly planRun: (input: RunAsked) => ProjectRead<RunPlan>;
 }
 
-const ENTRIES = [
-  'check',
-  'test',
-  'fix',
-] as const;
+const entryPoints: readonly EntryPoint[] = Object.values(EntryPoint);
+
+/** @throws {@link InvalidArgumentError} when the text names no entry point */
+const entryPointOf = (text: string): EntryPoint => {
+  const entryPoint = entryPoints.find((known) => known === text);
+
+  if (entryPoint === undefined) {
+    throw new InvalidArgumentError(`Allowed choices are ${entryPoints.join(', ')}.`);
+  }
+
+  return entryPoint;
+};
 
 /** Runs from the folder it starts in: a member's own commands there, every unit's from the root. */
 const createRunCommand = (context: RunContext): Command =>
@@ -24,9 +33,9 @@ const createRunCommand = (context: RunContext): Command =>
     )
     .addArgument(
       // Stryker disable next-line StringLiteral: the argument's name and words show only in the help
-      new Argument('<entry>', 'the entry point to run').choices([
-        ...ENTRIES,
-      ]),
+      new Argument('<entry>', 'the entry point to run')
+        .choices(entryPoints)
+        .argParser(entryPointOf),
     )
     .addHelpText(
       'before',
@@ -35,12 +44,12 @@ const createRunCommand = (context: RunContext): Command =>
         'constitution run fix',
       ]),
     )
-    .action((entry: string): void => {
-      runSteps(
+    .action(async (entryPoint: EntryPoint): Promise<void> => {
+      await runSteps(
         context,
         context.planRun({
-          name: entry,
-          start: context.places.cwd,
+          entryPoint,
+          startFolderPath: AbsolutePath.create(context.places.cwd),
         }),
       );
     });

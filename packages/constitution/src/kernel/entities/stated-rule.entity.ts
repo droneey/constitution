@@ -3,7 +3,7 @@ import { Level, RULE_TABLE_CELLS, RULE_TABLE_HEADER } from '../constants';
 import { ValueFailure } from '../errors';
 import type { FindingOf, ProblemOf } from '../types';
 import type { MarkdownSection } from '../utils';
-import { cellsOf, isTableLine, sectionsOf, tablesOf } from '../utils';
+import { cellsOf, isDeepEqual, isTableLine, sectionsOf, tablesOf } from '../utils';
 import type { BlockId } from '../value-objects';
 import { RuleSlug } from '../value-objects';
 import type { RulePlace, RuleText } from './rule.entity';
@@ -35,7 +35,6 @@ interface RuleFormDetails {
     readonly slug: RuleSlug;
   };
   readonly [RuleFormCode.TablesMany]: {
-    /** the tables the rule has */
     readonly count: number;
     readonly slug: RuleSlug;
   };
@@ -43,12 +42,10 @@ interface RuleFormDetails {
     readonly slug: RuleSlug;
   };
   readonly [RuleFormCode.RowsNotOne]: {
-    /** the rows of the rule's table */
     readonly count: number;
     readonly slug: RuleSlug;
   };
   readonly [RuleFormCode.CellsMiscounted]: {
-    /** the cells of the table's row */
     readonly count: number;
     readonly slug: RuleSlug;
   };
@@ -133,7 +130,7 @@ const tableOf = (input: { lines: readonly string[]; slug: RuleSlug }): Table => 
   const [header = '', delimiter = '', ...rows] = tables[0] ?? [];
   const cells = rows.slice(0, 1).flatMap(cellsOf);
   const isHeader =
-    cellsOf(header).join(' | ') === cellsOf(RULE_TABLE_HEADER).join(' | ') &&
+    isDeepEqual(cellsOf(header), cellsOf(RULE_TABLE_HEADER)) &&
     cellsOf(delimiter).every((cell) => DASHES.test(cell));
 
   const problems: readonly (RuleFormProblem | undefined)[] = [

@@ -105,7 +105,7 @@ describe('createYamlFrontMatterParser', () => {
     });
   });
 
-  it('should report the line and the reason without its position when the text is not YAML', () => {
+  it('should report the line, its field and the reason without its position when the text is not YAML', () => {
     // Arrange
     const parser = createYamlFrontMatterParser();
     const yaml = fieldTable.replace('governs: ["**/ui/**"]', 'governs: ["**/ui/**" "**/web/**"]');
@@ -115,13 +115,16 @@ describe('createYamlFrontMatterParser', () => {
 
     // Assert
     expect(read).toStrictEqual({
-      line: 7,
+      at: {
+        key: 'governs',
+        line: 7,
+      },
       reason: 'Missing , or : between flow sequence items',
       status: ReadStatus.NotYaml,
     });
   });
 
-  it('should report the line of an unquoted star when a value reads as an alias', () => {
+  it('should report the line of an unquoted star and the field above it when a value reads as an alias', () => {
     // Arrange
     const parser = createYamlFrontMatterParser();
     const yaml = 'id: ui\ngoverns:\n  - *.tsx\nlanguages: []';
@@ -131,8 +134,58 @@ describe('createYamlFrontMatterParser', () => {
 
     // Assert
     expect(read).toStrictEqual({
-      line: 3,
+      at: {
+        key: 'governs',
+        line: 3,
+      },
       reason: 'an unquoted value starts with "*", which YAML reads as an alias; quote it',
+      status: ReadStatus.NotYaml,
+    });
+  });
+
+  it.each([
+    {
+      at: {
+        key: 'summary',
+        line: 2,
+      },
+      name: 'on the line of a field',
+      yaml: 'id: ui\nsummary: Screens: states.\nrequires: []',
+    },
+    {
+      at: {
+        key: 'summary',
+        line: 2,
+      },
+      name: 'on the line of a field with a space before its colon',
+      yaml: 'id: ui\nsummary : Screens: states.',
+    },
+    {
+      at: {
+        key: 'governs',
+        line: 3,
+      },
+      name: 'on a nested line that names a key of its own',
+      yaml: 'id: ui\ngoverns:\n  - pattern: *.tsx',
+    },
+    {
+      at: {
+        line: 2,
+      },
+      name: 'below no field',
+      yaml: '- id\n- "a',
+    },
+  ])('should place a YAML error $name', ({ at, yaml }) => {
+    // Arrange
+    const parser = createYamlFrontMatterParser();
+
+    // Act
+    const read = parser.parse(yaml);
+
+    // Assert
+    expect(read).toStrictEqual({
+      at,
+      reason: expect.any(String),
       status: ReadStatus.NotYaml,
     });
   });
@@ -208,19 +261,31 @@ describe('createYamlFrontMatterParser', () => {
     });
   });
 
-  it("should report the reason when a skill's front matter names an alias without its anchor", () => {
-    // Arrange
-    const parser = createYamlFrontMatterParser();
+  it.each([
+    {
+      condition: 'without its anchor',
+      yaml: 'name: ratify\ndescription: *bold',
+    },
+    {
+      condition: 'with its anchor',
+      yaml: 'name: &name ratify\ndescription: *name',
+    },
+  ])(
+    "should report the reason when a skill's front matter names an alias $condition",
+    ({ yaml }) => {
+      // Arrange
+      const parser = createYamlFrontMatterParser();
 
-    // Act
-    const read = parser.skill('name: ratify\ndescription: *bold');
+      // Act
+      const read = parser.skill(yaml);
 
-    // Assert
-    expect(read).toStrictEqual({
-      reason: 'an unquoted value starts with "*", which YAML reads as an alias; quote it',
-      status: ReadStatus.NotYaml,
-    });
-  });
+      // Assert
+      expect(read).toStrictEqual({
+        reason: 'an unquoted value starts with "*", which YAML reads as an alias; quote it',
+        status: ReadStatus.NotYaml,
+      });
+    },
+  );
 
   it("should report the reason when a skill's front matter is not YAML", () => {
     // Arrange

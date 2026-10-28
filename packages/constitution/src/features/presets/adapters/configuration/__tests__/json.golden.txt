@@ -1,0 +1,158 @@
+# a JSON file is new
+{
+  "files": [
+    "src"
+  ]
+}
+
+
+# the settings change nothing
+{
+  // the source
+  "files": ["src"], "gone": null
+}
+
+
+# a key goes, a key comes and a value changes
+{
+  // kept
+  "kept": {
+    "width": 120
+  },
+  "added": true
+}
+
+
+# a map kept sorted gains a key and is written again with its keys sorted, a null among them
+{
+  "name": "kit",
+  "scripts": {
+    "check": "c",
+    "check:lint": "l",
+    "gone": null,
+    "test": "t"
+  }
+}
+
+
+# a map kept sorted already stands sorted
+{
+  "scripts": { "check": "c", "test": "t" }
+}
+
+
+# a JSONC file is new, its lists and objects broken over lines
+{
+  "entry": [
+    "src",
+  ],
+  "rules": {
+    "files": "error",
+  },
+}
+
+
+# a JSONC file gains a comma before the comment after its last item, and none in a list on one line
+{
+  "entry": ["src"],
+  "project": [], // none
+}
+
+
+# a JSONC file already writes its commas after the last items
+{
+  "entry": [
+    "a",
+  ],
+}
+
+
+# a list loses an item and gains two in their places
+{
+  "entry": [
+    "first",
+    "kept",
+    "middle", /* why */
+    "last",
+  ],
+}
+
+
+# a list keeps its items in another order
+{ "entry": [
+    "b",
+    "a",
+  ] }
+
+
+# a list holds a null the settings cannot hold
+{ "entry": [
+    "a",
+    "b",
+  ] }
+
+
+# a value spelled otherwise stays as the file spells it
+{"a": 1.0, "b": 3}
+
+
+# a map and a list turn into scalars
+{"a": 2, "c": 3}
+
+
+# a file of blanks is written new
+{
+  "a": 1
+}
+
+
+# a value turns from a scalar into a map
+{ "files": {
+    "includes": [
+      "src"
+    ]
+  } }
+
+
+# a JSONC file takes them above keys and items, its block comments and texts kept
+{
+  // knip
+  "entry": ["a"],
+  /* knip */
+  "x": "// knip", // knip
+  "inline": ["d"],
+  "ignore": [
+    // uv
+    "b",
+    null,
+    "c",
+  ],
+  "z":"w",
+
+  // knip
+  "map": {
+    "a": 1,
+  },
+}
+
+
+# a JSON file its mark writes with comments holds them, its commas as plain JSON has them
+{
+  "compilerOptions": {
+    // workspace
+    "composite": true,
+    "list": [
+      "a"
+    ],
+
+    // tsc
+    "strict": true
+  }
+}
+
+
+# a JSON file holds no comment
+{
+  "a": 1
+}
+

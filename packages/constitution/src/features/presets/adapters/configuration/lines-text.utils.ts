@@ -1,6 +1,7 @@
+import type { ConfigurationWrite } from '../../domain/contracts';
 import type { BlockMarks, Setting } from '../../domain/entities';
 import { BlockMarks as Marks, Setting as Settings } from '../../domain/entities';
-import type { SettingsText } from './settings-text.types';
+import { NEWLINE } from './text.constants';
 
 /** The lines each block gives, under a comment naming it, and every name such a comment holds. */
 interface LinesLayout {
@@ -8,20 +9,34 @@ interface LinesLayout {
   readonly names: readonly string[];
 }
 
-const NEWLINE = '\n';
-const COMMENT = /^\s*[#;]/;
+/** How a file of lines writes a comment, and so the comment naming a block. */
+interface LineComments {
+  readonly mark: string;
+  readonly pattern: RegExp;
+}
+
 const LEADING_BLANKS = /^\n+/;
 const TRAILING_NEWLINE = /\n$/;
-const NAME_MARK = '# ';
 
-const isComment = (line: string): boolean => COMMENT.test(line);
+const plainComments: LineComments = {
+  mark: '# ',
+  pattern: /^\s*[#;]/,
+};
+
+// A source file's lines are code, whose comments it writes as its language does.
+const codeComments: LineComments = {
+  mark: '// ',
+  pattern: /^\s*\/\//,
+};
 
 /** Blank lines and comments are no items. */
-const readLines = (text: string): Setting =>
-  text
-    .split(NEWLINE)
-    .map((line) => line.trim())
-    .filter((line) => line !== '' && !isComment(line));
+const readWith =
+  (comments: LineComments) =>
+  (text: string): Setting =>
+    text
+      .split(NEWLINE)
+      .map((line) => line.trim())
+      .filter((line) => line !== '' && !comments.pattern.test(line));
 
 const isBlank = (line: string | undefined): boolean => line?.trim() === '';
 
@@ -66,12 +81,13 @@ const linesOf = (layout: LinesLayout): ReadonlySet<string> =>
 
 // Our lines and our groups' names go, and a blank that only parted them goes with them.
 const ownLinesOf = (input: {
+  comments: LineComments;
   layout: LinesLayout;
   lines: readonly string[];
   wanted: readonly string[];
 }): readonly string[] => {
   const ours = linesOf(input.layout);
-  const names = new Set(input.layout.names.map((name) => `${NAME_MARK}${name}`));
+  const names = new Set(input.layout.names.map((name) => `${input.comments.mark}${name}`));
   const own: string[] = [];
   // Stryker disable next-line BooleanLiteral: the blanks that open the file go in any case
   let isParted = false;
@@ -79,7 +95,7 @@ const ownLinesOf = (input: {
   for (const line of input.lines) {
     const trimmed = line.trim();
     const isOwn =
-      trimmed === '' || isComment(line)
+      trimmed === '' || input.comments.pattern.test(line)
         ? !names.has(trimmed)
         : !ours.has(trimmed) && input.wanted.includes(trimmed);
 
@@ -99,6 +115,7 @@ const ownLinesOf = (input: {
 };
 
 const groupedText = (input: {
+  comments: LineComments;
   layout: LinesLayout;
   lines: readonly string[];
   wanted: readonly string[];
@@ -115,7 +132,7 @@ const groupedText = (input: {
     ...[
       ...input.layout.groups,
     ].map(([name, lines]) => [
-      `${NAME_MARK}${name}`,
+      `${input.comments.mark}${name}`,
       ...lines,
     ]),
   ]
@@ -124,29 +141,27 @@ const groupedText = (input: {
 };
 
 /** Blanks and comments stay; a file left with no line is empty. */
-const writeLines = (input: SettingsText): string => {
-  const wanted = (Settings.isList(input.settings) ? input.settings : []).map(String);
-  const lines = input.text.replace(TRAILING_NEWLINE, '').split(NEWLINE);
-  const present = new Set(lines.map((line) => line.trim()));
-  const body = (
-    input.marks === undefined
-      ? [
-          ...lines.filter(
-            (line) => line.trim() === '' || isComment(line) || wanted.includes(line.trim()),
-          ),
-          ...wanted.filter((line) => !present.has(line)),
-        ].join(NEWLINE)
-      : groupedText({
-          layout: layoutOf({
-            marks: input.marks,
-            wanted,
-          }),
-          lines,
-          wanted,
-        })
-  ).replace(LEADING_BLANKS, '');
+const writeWith =
+  (comments: LineComments) =>
+  (input: ConfigurationWrite): string => {
+    const wanted = (Settings.isList(input.settings) ? input.settings : []).map(String);
+    const lines = input.text.replace(TRAILING_NEWLINE, '').split(NEWLINE);
+    const body = groupedText({
+      comments,
+      layout: layoutOf({
+        marks: input.marks,
+        wanted,
+      }),
+      lines,
+      wanted,
+    }).replace(LEADING_BLANKS, '');
 
-  return body === '' ? '' : `${body}${NEWLINE}`;
-};
+    return body === '' ? '' : `${body}${NEWLINE}`;
+  };
 
-export { readLines, writeLines };
+const readLines = readWith(plainComments);
+const writeLines = writeWith(plainComments);
+const readCodeLines = readWith(codeComments);
+const writeCodeLines = writeWith(codeComments);
+
+export { readCodeLines, readLines, writeCodeLines, writeLines };

@@ -6,7 +6,8 @@ import type { CommandContext } from '#/shared/cli';
 import type { Reminder } from '../../../../domain/entities';
 import type { SessionId } from '../../../../domain/value-objects';
 import { AgentId } from '../../../../domain/value-objects';
-import { contextOutputOf, hookEventOf, reminderNotesOf, sessionIdOf } from '../../../utils';
+import { HookField, postToolUseEventSchema } from '../../../constants';
+import { contextOutputOf, hookEventOf, reminderNotesOf } from '../../../utils';
 
 const EVENT = 'PostToolUse';
 
@@ -34,10 +35,15 @@ const createPostToolUseCommand = (context: PostToolUseContext): Command =>
       ]),
     )
     .action(async (): Promise<void> => {
-      const event = hookEventOf(await context.io.readInput());
-      const session = sessionIdOf(event);
-      const agent = event.field('agent_id');
-      const path = event.field('file_path') ?? event.field('notebook_path');
+      const event = hookEventOf({
+        schema: postToolUseEventSchema,
+        text: await context.io.readInput(),
+      });
+      const session = event[HookField.SessionId];
+      const agent = event[HookField.AgentId];
+      const path =
+        event[HookField.ToolInput][HookField.FilePath] ??
+        event[HookField.ToolInput][HookField.NotebookPath];
 
       // A subagent's id that is no plain name is refused like the session's own.
       if (

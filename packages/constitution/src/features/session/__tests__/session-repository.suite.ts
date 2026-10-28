@@ -1,12 +1,14 @@
 import { describe, expect, it } from 'bun:test';
 
 import { Level } from '#/kernel/constants';
-import { BlockId, repositoryUnit, UnitPath } from '#/kernel/value-objects';
+import { ConfigReadStatus } from '#/kernel/entities';
+import { AbsolutePath, BlockId } from '#/kernel/value-objects';
 
 import type { SessionCommandRepository } from '../domain/contracts/repositories/commands';
 import type { SessionQueryRepository } from '../domain/contracts/repositories/queries';
-import { CheckState, SessionMark } from '../domain/entities';
-import { AgentId, SessionId } from '../domain/value-objects';
+import type { SessionState } from '../domain/entities';
+import { SessionMark } from '../domain/entities';
+import { AgentId, SessionId, TreeFingerprint } from '../domain/value-objects';
 import { activeBlockOf, mustOf, sessionStateOf } from './session.fixtures';
 
 type SessionRepository = SessionCommandRepository & SessionQueryRepository;
@@ -21,7 +23,7 @@ const session = SessionId.create('session-3');
 const agent = AgentId.create('agent-7');
 const otherAgent = AgentId.create('agent-8');
 
-// A state of every kind of record, its units the ones its active blocks name.
+// A state of every kind of value it holds.
 const savedState = sessionStateOf({
   active: [
     activeBlockOf({
@@ -34,7 +36,6 @@ const savedState = sessionStateOf({
       unit: 'web',
     }),
   ],
-  check: CheckState.create('bun run check'),
   musts: [
     mustOf({
       block: 'ui',
@@ -51,22 +52,13 @@ const savedState = sessionStateOf({
       slug: 'screen-reads-aloud',
     }),
   ],
-  project: '/work',
-  units: [
-    repositoryUnit,
-    UnitPath.create('web'),
-  ],
+  repositoryFolderPath: AbsolutePath.create('/work'),
 });
 
-const laterState = sessionStateOf({
-  active: [
-    activeBlockOf({
-      id: 'core',
-    }),
-  ],
-  check: CheckState.unparsed(),
-  project: '/work/later',
-});
+const laterState: SessionState = {
+  repositoryFolderPath: AbsolutePath.create('/work/later'),
+  status: ConfigReadStatus.Unparsed,
+};
 
 const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => {
   describe(`${input.name}: the session repository contracts`, () => {
@@ -93,7 +85,7 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
 
       // Act
       const seen = {
-        mark: sessions.mark({
+        mark: sessions.fingerprint({
           mark: SessionMark.Turn,
           session,
         }),
@@ -116,10 +108,10 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
       {
         condition: 'a mark is recorded',
         write: (sessions: SessionRepository): void => {
-          sessions.recordMark({
+          sessions.recordFingerprint({
+            fingerprint: TreeFingerprint.create('abc'),
             mark: SessionMark.Turn,
             session,
-            value: 'abc',
           });
         },
       },
@@ -144,7 +136,7 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
 
       // Assert
       expect({
-        mark: sessions.mark({
+        mark: sessions.fingerprint({
           mark: SessionMark.Turn,
           session,
         }),
@@ -167,43 +159,49 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
         session,
         state: savedState,
       });
-      sessions.recordMark({
+      sessions.recordFingerprint({
+        fingerprint: TreeFingerprint.create('abc'),
         mark: SessionMark.Turn,
         session,
-        value: 'abc',
       });
-      sessions.recordMark({
+      sessions.recordFingerprint({
+        fingerprint: TreeFingerprint.create('def'),
         mark: SessionMark.Turn,
         session,
-        value: 'def',
       });
-      sessions.recordMark({
+      sessions.recordFingerprint({
+        fingerprint: TreeFingerprint.create('f00d'),
         mark: SessionMark.Checked,
         session,
-        value: 'f00d',
+      });
+      sessions.recordUnjudged({
+        reason: 'git timed out',
+        session,
       });
 
       // Act
       const seen = {
-        blocked: sessions.mark({
+        blocked: sessions.fingerprint({
           mark: SessionMark.Blocked,
           session,
         }),
-        checked: sessions.mark({
+        checked: sessions.fingerprint({
           mark: SessionMark.Checked,
           session,
         }),
-        turn: sessions.mark({
+        turn: sessions.fingerprint({
           mark: SessionMark.Turn,
           session,
         }),
+        unjudged: sessions.unjudged(session),
       };
 
       // Assert
       expect(seen).toStrictEqual({
         blocked: undefined,
-        checked: 'f00d',
-        turn: 'def',
+        checked: TreeFingerprint.create('f00d'),
+        turn: TreeFingerprint.create('def'),
+        unjudged: 'git timed out',
       });
     });
 
@@ -315,10 +313,10 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
           ],
           session,
         });
-        sessions.recordMark({
+        sessions.recordFingerprint({
+          fingerprint: TreeFingerprint.create('abc'),
           mark: SessionMark.Turn,
           session,
-          value: 'abc',
         });
 
         // Act
@@ -339,14 +337,14 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
             session,
           }),
           state: sessions.state(session),
-          turn: sessions.mark({
+          turn: sessions.fingerprint({
             mark: SessionMark.Turn,
             session,
           }),
         }).toStrictEqual({
           ...reminded,
           state: laterState,
-          turn: 'abc',
+          turn: TreeFingerprint.create('abc'),
         });
       },
     );

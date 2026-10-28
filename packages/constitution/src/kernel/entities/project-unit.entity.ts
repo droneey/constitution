@@ -15,7 +15,7 @@ interface ProjectUnit {
   readonly path: UnitPath;
 }
 
-/** name may be given as undefined, which leaves it out */
+/** A unit, whose name, given as undefined, is left out. */
 const createUnit = (
   input: Omit<ProjectUnit, 'name'> & {
     readonly name?: string | undefined;

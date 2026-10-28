@@ -1,1 +1,1 @@
-export { readMembers } from './read-members.utils';
+export { readMembers } from './read-members';

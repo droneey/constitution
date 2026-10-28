@@ -1,4 +1,6 @@
 import type { Layer } from '#/kernel/constants';
+import { LAYERS, PATH_SEPARATOR } from '#/kernel/constants';
+import { compareText } from '#/kernel/utils';
 import { BlockId } from '#/kernel/value-objects';
 
 import type { PartFile, PassportFile } from './block-file.entity';
@@ -54,8 +56,13 @@ const asBase = (block: Block, folder: string): Block =>
   createBlock({
     ...block,
     origin: BlockOrigin.Base,
-    parts: block.parts.map((file) => BlockFile.withPath(file, `${folder}/${file.path}`)),
-    passport: BlockFile.withPath(block.passport, `${folder}/${block.passport.path}`),
+    parts: block.parts.map((file) =>
+      BlockFile.withPath(file, `${folder}${PATH_SEPARATOR}${file.path}`),
+    ),
+    passport: BlockFile.withPath(
+      block.passport,
+      `${folder}${PATH_SEPARATOR}${block.passport.path}`,
+    ),
   });
 
 const placeOf = (block: Block, file: BlockFile): BlockPlace => {
@@ -71,14 +78,22 @@ const placeOf = (block: Block, file: BlockFile): BlockPlace => {
   };
 };
 
+const compare = (block: Block, other: Block): number =>
+  LAYERS.indexOf(block.layer) - LAYERS.indexOf(other.layer) || compareText(block.id, other.id);
+
+const isBase = (block: Block): boolean => block.origin === BlockOrigin.Base;
+
+const sameAs = (block: Block, other: Block): boolean => BlockId.equals(block.id, other.id);
+
 const Block = {
   asBase,
+  compare,
   create: createBlock,
   filesOf,
-  isBase: (block: Block): boolean => block.origin === BlockOrigin.Base,
+  isBase,
   linksOf,
   placeOf,
-  sameAs: (block: Block, other: Block): boolean => BlockId.equals(block.id, other.id),
+  sameAs,
 } as const;
 
 export type { BlockPlace };

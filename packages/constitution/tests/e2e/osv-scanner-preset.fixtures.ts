@@ -7,6 +7,7 @@ import { z } from 'zod';
 
 import { appliedUnit } from './applied-unit.fixtures';
 import { miseBinary } from './mise.fixtures';
+import { toolEnvironment } from './package.fixtures';
 
 const osvScanner = miseBinary('osv-scanner');
 const REFUSED = /not recognized as spdx: (?<ids>.+)$/m;
@@ -79,6 +80,7 @@ const verdictOn = (licences: readonly string[]): Verdict => {
       {
         cwd: folder,
         encoding: 'utf8',
+        env: toolEnvironment(),
       },
     );
 

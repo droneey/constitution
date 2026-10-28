@@ -20,18 +20,20 @@ describe('PresetFileRefusal', () => {
       name: 'PresetFileRefusal',
     });
   });
+});
 
+describe('isPresetFileRefusal', () => {
   it.each([
     {
-      condition: 'it is a PresetFileRefusal',
+      condition: 'the error is a refusal',
       error: new PresetFileRefusal({
-        offset: 0,
+        offset: 7,
       }),
       isRefusal: true,
     },
     {
-      condition: 'it is another error',
-      error: new Error('an alias'),
+      condition: 'the error is a defect',
+      error: new TypeError('a defect'),
       isRefusal: false,
     },
   ])('should say $isRefusal when $condition', ({ error, isRefusal }) => {

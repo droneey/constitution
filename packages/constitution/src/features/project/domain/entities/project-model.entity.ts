@@ -3,7 +3,7 @@ import { BlockId, RuleSlug } from '#/kernel/value-objects';
 
 import type { BlockSet, BlockSetBlock, BlockSetRule } from './block-set.entity';
 
-// The block set as the resolution looks it up, with each block's bases, nearest first.
+/** The block set as the resolution looks it up, with each block's bases, nearest first. */
 interface ProjectModel {
   readonly ancestors: ReadonlyMap<BlockId, readonly BlockId[]>;
   readonly blocks: readonly BlockSetBlock[];

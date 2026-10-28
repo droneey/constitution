@@ -1,42 +1,47 @@
-import type { ProjectSource } from '#/kernel/contracts';
 import type { ProjectWarning } from '#/kernel/entities';
-import { ConfigReadStatus, ReleaseStatus, Resolution, WarningKind } from '#/kernel/entities';
+import { ConfigReadStatus, WarningKind } from '#/kernel/entities';
 
-import { PROJECT_CHECK } from '../../../constants';
-import type { ConfigurationsReport, ProjectConfigurationsCheck } from '../../../contracts';
-import { ConfigurationsCheckStatus } from '../../../contracts';
+import type { ConfigurationsReport, RulesSource, TreeState, WorkingTree } from '../../../contracts';
+import { ConfigurationsCheckStatus, TreeStateStatus } from '../../../contracts';
 import type { SessionDigest, SessionStart } from '../../../entities';
-import {
-  CheckState,
-  DigestKind,
-  HookEventName,
-  SessionOrigin,
-  SessionState,
-} from '../../../entities';
+import { DigestKind, HookEventName, SessionOrigin } from '../../../entities';
 
 interface DigestSessionPorts {
-  readonly configurations: ProjectConfigurationsCheck;
-  readonly source: ProjectSource;
+  readonly source: RulesSource;
+  readonly workingTree: WorkingTree;
 }
-
-const uncheckedConfigurations: ProjectWarning = {
-  details: {},
-  kind: WarningKind.ConfigurationsUnchecked,
-};
 
 // Presets that cannot be checked cost their warnings, never the digest.
 const presetsWarningsOf = (report: ConfigurationsReport): readonly ProjectWarning[] =>
   report.status === ConfigurationsCheckStatus.Checked
     ? report.warnings
     : [
-        uncheckedConfigurations,
+        {
+          details:
+            report.reason === undefined
+              ? {}
+              : {
+                  reason: report.reason,
+                },
+          kind: WarningKind.ConfigurationsUnchecked,
+        },
       ];
+
+// A project in no repository has no hand-back gate; a failure of git is told by the gate itself.
+const repositoryWarningsOf = (tree: TreeState): readonly ProjectWarning[] =>
+  tree.status === TreeStateStatus.NoRepository
+    ? [
+        {
+          details: {},
+          kind: WarningKind.NoRepository,
+        },
+      ]
+    : [];
 
 /**
  * The digest of the rules a session starts with, and the state its later hooks read; or undefined
- * when no project around the start declares any.
- *
- * @throws {@link ProjectError} when the release, constitution.yaml or core cannot be read
+ * when no project around the start declares any. Lets through the source's failure to read
+ * constitution.yaml, the release's blocks or core.
  */
 const digestSession = (input: DigestSessionPorts & SessionStart): SessionDigest | undefined => {
   const { source } = input;
@@ -46,74 +51,62 @@ const digestSession = (input: DigestSessionPorts & SessionStart): SessionDigest 
     return undefined;
   }
 
-  const { project, releaseFolder } = place;
-  const release = source.readRelease(place);
+  const { releaseFolderPath, repositoryFolderPath } = place;
+  const version = source.versionOf(place);
 
-  if (release.status !== ReleaseStatus.Installed) {
+  if (version === undefined) {
     return {
       contents: {
         kind: DigestKind.NoRelease,
-        releaseFolder,
+        releaseFolderPath,
       },
     };
   }
 
-  const declaration = source.readDeclaration(place);
+  const rules = source.readRules(place);
   const core = source.readCore(place);
 
   const digestRelease = {
-    folder: releaseFolder,
-    version: release.version,
+    folderPath: releaseFolderPath,
+    version,
   };
 
-  if (declaration.status === ConfigReadStatus.Unparsed) {
+  if (rules.status === ConfigReadStatus.Unparsed) {
     return {
       contents: {
         core,
         kind: DigestKind.Unparsed,
-        line: declaration.line,
+        lines: rules.lines,
         release: digestRelease,
       },
-      state: SessionState.create({
-        active: [],
-        check: CheckState.unparsed(),
-        musts: [],
-        project,
-        units: [],
-      }),
+      state: {
+        repositoryFolderPath,
+        status: ConfigReadStatus.Unparsed,
+      },
     };
   }
-
-  const { packs, resolution } = declaration;
 
   return {
     contents: {
       core,
-      count: Resolution.activeCountOf(resolution),
+      count: rules.activeCount,
       isStartup:
         input.event === HookEventName.SessionStart && input.origin === SessionOrigin.Startup,
       kind: DigestKind.Resolved,
-      listing: resolution.listing,
+      listing: rules.listing,
       release: digestRelease,
       warnings: [
-        ...resolution.warnings,
-        ...presetsWarningsOf(
-          input.configurations.check({
-            packs,
-            project,
-            releaseFolder,
-            resolution,
-          }),
-        ),
+        ...rules.warnings,
+        ...repositoryWarningsOf(input.workingTree.stateOf(repositoryFolderPath)),
+        ...presetsWarningsOf(rules.configurations),
       ],
     },
-    state: SessionState.create({
-      active: resolution.active,
-      check: CheckState.create(PROJECT_CHECK),
-      musts: resolution.musts,
-      project,
-      units: resolution.units.map((unit) => unit.path),
-    }),
+    state: {
+      active: rules.active,
+      musts: rules.musts,
+      repositoryFolderPath,
+      status: ConfigReadStatus.Parsed,
+    },
   };
 };
 

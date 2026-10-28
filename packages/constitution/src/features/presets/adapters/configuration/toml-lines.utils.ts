@@ -1,19 +1,18 @@
 import { parse, TomlError } from 'smol-toml';
 
-import { attempted } from '#/kernel/utils';
+import { attempted, fieldsOf } from '#/kernel/utils';
 
 import type { Setting } from '../../domain/entities';
 import { settingOfWire } from './wire-setting.utils';
 
 const HEADER = /^\s*\[\[?\s*([^\]]+?)\s*\]\]?\s*(?:#.*)?$/;
-const HEADER_PART = /"[^"]*"|'[^']*'|[^.\s]+/g;
 const QUOTES = /^["']|["']$/g;
 const STRINGS = /"(?:[^"\\]|\\.)*"|'[^']*'/g;
 const COMMENT = /#.*/;
 const OPENERS = /[[{]/g;
 const CLOSERS = /[\]}]/g;
 
-const isTomlError = (error: unknown): boolean => error instanceof TomlError;
+const isTomlError = (error: unknown): error is TomlError => error instanceof TomlError;
 
 const readToml = (text: string): Setting | undefined =>
   settingOfWire(
@@ -25,9 +24,26 @@ const readToml = (text: string): Setting | undefined =>
 
 const unquotedOf = (key: string): string => key.replace(QUOTES, '');
 
+// The keys down the one path of the tables a dotted key makes, to the value it gives.
+const keyPathOf = (wire: unknown): readonly string[] => {
+  const [step] = fieldsOf(wire);
+
+  return step === undefined
+    ? []
+    : [
+        step[0],
+        ...keyPathOf(step[1]),
+      ];
+};
+
+/** The keys a header or a dotted key names, each unquoted and its escapes read as TOML reads them. */
 const keysOfText = (text: string): readonly string[] =>
-  // Stryker disable next-line ArrayDeclaration: a header or a key names at least one part
-  (text.match(HEADER_PART) ?? []).map(unquotedOf);
+  keyPathOf(
+    attempted({
+      effect: () => parse(`${text} = 0`),
+      isRecognised: isTomlError,
+    }),
+  );
 
 const headerOf = (line: string): readonly string[] | undefined => {
   const match = HEADER.exec(line);

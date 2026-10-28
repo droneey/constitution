@@ -4,7 +4,7 @@ import { BlockId } from '#/kernel/value-objects';
 import type { BlockPlace } from './block.entity';
 import { Block } from './block.entity';
 
-/** the blocks by id, linked by what each requires or extends */
+/** The blocks by id, linked by what each requires or extends. */
 type BlockGraph = ReadonlyMap<BlockId, Block>;
 
 const createGraph = (blocks: readonly Block[]): BlockGraph =>

@@ -5,7 +5,7 @@ import type { Setting } from '../setting.entity';
 
 interface LeafRow {
   readonly isItem: boolean;
-  readonly path: readonly string[];
+  readonly keyPath: readonly string[];
   readonly value: Setting;
 }
 
@@ -38,7 +38,7 @@ describe('Leaf', () => {
       key: '13h6p6w72uk',
       leaf: {
         isItem: false,
-        path: [
+        keyPath: [
           'formatter',
           'lineWidth',
         ],
@@ -49,7 +49,7 @@ describe('Leaf', () => {
       key: '7u67o4x3rl',
       leaf: {
         isItem: true,
-        path: [
+        keyPath: [
           'files',
           'includes',
         ],
@@ -74,7 +74,7 @@ describe('Leaf', () => {
       leaves: [
         {
           isItem: false,
-          path: [
+          keyPath: [
             'forbidden[name=no-cycles]',
             'name',
           ],
@@ -82,7 +82,7 @@ describe('Leaf', () => {
         },
         {
           isItem: false,
-          path: [
+          keyPath: [
             'forbidden[name=no-cycles]',
             'severity',
           ],
@@ -90,14 +90,14 @@ describe('Leaf', () => {
         },
         {
           isItem: true,
-          path: [
+          keyPath: [
             'files',
           ],
           value: 'src',
         },
         {
           isItem: false,
-          path: [
+          keyPath: [
             'depth',
           ],
           value: 3,
@@ -118,7 +118,7 @@ describe('Leaf', () => {
       leaves: [
         {
           isItem: true,
-          path: [],
+          keyPath: [],
           value: 'dist/',
         },
       ],
@@ -131,7 +131,7 @@ describe('Leaf', () => {
       leaves: [
         {
           isItem: false,
-          path: [],
+          keyPath: [],
           value: true,
         },
       ],
@@ -156,7 +156,7 @@ describe('Leaf', () => {
     expect(found).toStrictEqual([
       {
         isItem: true,
-        path: [
+        keyPath: [
           'forbidden',
         ],
         value: {
@@ -166,7 +166,7 @@ describe('Leaf', () => {
       },
       {
         isItem: true,
-        path: [
+        keyPath: [
           'forbidden',
         ],
         value: {
@@ -175,7 +175,7 @@ describe('Leaf', () => {
       },
       {
         isItem: true,
-        path: [
+        keyPath: [
           'forbidden',
         ],
         value: {
@@ -184,14 +184,14 @@ describe('Leaf', () => {
       },
       {
         isItem: true,
-        path: [
+        keyPath: [
           'forbidden',
         ],
         value: 'loose',
       },
       {
         isItem: false,
-        path: [
+        keyPath: [
           'forbidden[name=no-cycles]',
           'name',
         ],
@@ -199,7 +199,7 @@ describe('Leaf', () => {
       },
       {
         isItem: false,
-        path: [
+        keyPath: [
           'forbidden[name=no-cycles]',
           'severity',
         ],
@@ -207,7 +207,7 @@ describe('Leaf', () => {
       },
       {
         isItem: false,
-        path: [
+        keyPath: [
           'forbidden[name=alone]',
           'name',
         ],
@@ -215,7 +215,7 @@ describe('Leaf', () => {
       },
       {
         isItem: false,
-        path: [
+        keyPath: [
           'options',
           'tsConfig',
         ],
@@ -234,7 +234,7 @@ describe('Leaf', () => {
       isHeld: true,
       leaf: {
         isItem: false,
-        path: [
+        keyPath: [
           'forbidden[name=no-cycles]',
           'severity',
         ],
@@ -246,7 +246,7 @@ describe('Leaf', () => {
       isHeld: false,
       leaf: {
         isItem: false,
-        path: [
+        keyPath: [
           'forbidden[name=no-cycles]',
           'severity',
         ],
@@ -258,7 +258,7 @@ describe('Leaf', () => {
       isHeld: true,
       leaf: {
         isItem: true,
-        path: [
+        keyPath: [
           'forbidden',
         ],
         value: 'loose',
@@ -269,7 +269,7 @@ describe('Leaf', () => {
       isHeld: false,
       leaf: {
         isItem: true,
-        path: [
+        keyPath: [
           'forbidden',
         ],
         value: 'tight',
@@ -280,7 +280,7 @@ describe('Leaf', () => {
       isHeld: false,
       leaf: {
         isItem: true,
-        path: [
+        keyPath: [
           'options',
         ],
         value: 'tsconfig.json',
@@ -313,7 +313,7 @@ describe('Leaf', () => {
     expect(found).toStrictEqual([
       {
         isItem: true,
-        path: [
+        keyPath: [
           'nested',
         ],
         value: [
@@ -355,7 +355,7 @@ describe('Leaf', () => {
       condition: 'a scalar goes and its emptied map with it',
       leaf: {
         isItem: false,
-        path: [
+        keyPath: [
           'options',
           'tsConfig',
         ],
@@ -381,7 +381,7 @@ describe('Leaf', () => {
       condition: 'an item goes from its list',
       leaf: {
         isItem: true,
-        path: [
+        keyPath: [
           'forbidden',
         ],
         value: 'loose',
@@ -408,7 +408,7 @@ describe('Leaf', () => {
       condition: 'the last field but its address goes, and its element with it',
       leaf: {
         isItem: false,
-        path: [
+        keyPath: [
           'forbidden[name=no-cycles]',
           'severity',
         ],
@@ -433,7 +433,7 @@ describe('Leaf', () => {
       condition: 'the address of an element that holds nothing else goes',
       leaf: {
         isItem: false,
-        path: [
+        keyPath: [
           'forbidden[name=alone]',
           'name',
         ],
@@ -459,7 +459,7 @@ describe('Leaf', () => {
       condition: 'the address of an element that holds more stays',
       leaf: {
         isItem: false,
-        path: [
+        keyPath: [
           'forbidden[name=no-cycles]',
           'name',
         ],
@@ -471,7 +471,7 @@ describe('Leaf', () => {
       condition: 'the scalar differs',
       leaf: {
         isItem: false,
-        path: [
+        keyPath: [
           'options',
           'tsConfig',
         ],
@@ -483,7 +483,7 @@ describe('Leaf', () => {
       condition: 'the list lacks the item',
       leaf: {
         isItem: true,
-        path: [
+        keyPath: [
           'forbidden',
         ],
         value: 'tight',
@@ -494,7 +494,7 @@ describe('Leaf', () => {
       condition: 'the path holds no list for an item',
       leaf: {
         isItem: true,
-        path: [
+        keyPath: [
           'options',
           'tsConfig',
         ],
@@ -506,7 +506,7 @@ describe('Leaf', () => {
       condition: 'a key passes through a scalar',
       leaf: {
         isItem: false,
-        path: [
+        keyPath: [
           'options',
           'tsConfig',
           'more',
@@ -519,7 +519,7 @@ describe('Leaf', () => {
       condition: 'a key would read a list by its index',
       leaf: {
         isItem: false,
-        path: [
+        keyPath: [
           'forbidden',
           '0',
         ],
@@ -534,7 +534,7 @@ describe('Leaf', () => {
       condition: 'an item would stand at an address field',
       leaf: {
         isItem: true,
-        path: [
+        keyPath: [
           'forbidden[name=alone]',
           'name',
         ],
@@ -546,7 +546,7 @@ describe('Leaf', () => {
       condition: 'a path goes on below an address field',
       leaf: {
         isItem: false,
-        path: [
+        keyPath: [
           'forbidden[name=alone]',
           'name',
           'deeper',
@@ -559,7 +559,7 @@ describe('Leaf', () => {
       condition: 'the key is absent',
       leaf: {
         isItem: false,
-        path: [
+        keyPath: [
           'gone',
         ],
         value: 'x',
@@ -570,7 +570,7 @@ describe('Leaf', () => {
       condition: 'the address names no element',
       leaf: {
         isItem: false,
-        path: [
+        keyPath: [
           'forbidden[name=gone]',
           'severity',
         ],
@@ -582,7 +582,7 @@ describe('Leaf', () => {
       condition: "an addressed element's leaf differs",
       leaf: {
         isItem: false,
-        path: [
+        keyPath: [
           'forbidden[name=no-cycles]',
           'severity',
         ],
@@ -608,7 +608,7 @@ describe('Leaf', () => {
       condition: "the list's last element goes, and the list with it",
       leaf: {
         isItem: false,
-        path: [
+        keyPath: [
           'jobs[name=lint]',
           'run',
         ],
@@ -628,7 +628,7 @@ describe('Leaf', () => {
       condition: 'the last line of a file of lines goes',
       leaf: {
         isItem: true,
-        path: [],
+        keyPath: [],
         value: 'dist/',
       },
       left: [],
@@ -640,7 +640,7 @@ describe('Leaf', () => {
       condition: 'a field of one element goes and the other elements stay',
       leaf: {
         isItem: false,
-        path: [
+        keyPath: [
           'jobs[name=lint]',
           'run',
         ],
@@ -687,7 +687,7 @@ describe('Leaf', () => {
     {
       leaf: {
         isItem: false,
-        path: [
+        keyPath: [
           'formatter',
           'lineWidth',
         ],
@@ -698,7 +698,7 @@ describe('Leaf', () => {
     {
       leaf: {
         isItem: true,
-        path: [
+        keyPath: [
           'files',
           'includes',
         ],
@@ -709,7 +709,7 @@ describe('Leaf', () => {
     {
       leaf: {
         isItem: true,
-        path: [],
+        keyPath: [],
         value: 'dist/',
       },
       text: '"dist/"',

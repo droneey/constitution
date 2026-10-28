@@ -1,29 +1,35 @@
-import type { ProjectFiles, ProjectSource } from '#/kernel/contracts';
-import type { Version } from '#/kernel/value-objects';
+import type { ProjectFiles } from '#/kernel/contracts';
+import type { AbsolutePath, Version } from '#/kernel/value-objects';
 
-import type { ExecutablePath, GitHooks, PluginRegistry, ReleaseFeed } from '../../../contracts';
+import type {
+  ExecutablePath,
+  GitHooks,
+  PinnedRelease,
+  PluginRegistry,
+  ReleaseFeed,
+} from '../../../contracts';
 import type { PartDiagnosis } from '../../../entities';
-import { executableReport } from './steps/report-executable';
-import { hooksReport } from './steps/report-hooks';
-import { linkReport } from './steps/report-link';
-import { pathReport } from './steps/report-path';
-import { pluginReport } from './steps/report-plugin';
-import { releaseReport } from './steps/report-release';
+import { Diagnosis } from '../../../entities';
+import { reportHooks } from './steps/report-hooks';
+import { reportLink } from './steps/report-link';
+import { reportPath } from './steps/report-path';
+import { reportPlugin } from './steps/report-plugin';
+import { reportRelease } from './steps/report-release';
 
 interface DiagnoseInstallationPorts {
   readonly files: ProjectFiles;
   readonly hooks: GitHooks;
   readonly path: ExecutablePath;
+  readonly pinned: PinnedRelease;
   readonly plugins: PluginRegistry;
   readonly releases: ReleaseFeed;
-  readonly source: ProjectSource;
 }
 
 interface DiagnoseInstallationInput extends DiagnoseInstallationPorts {
   readonly executable: Version;
   /** the fingerprint of the plugin's files this executable was built with, if it can be read */
   readonly fingerprint: string | undefined;
-  readonly start: string;
+  readonly startFolderPath: AbsolutePath;
 }
 
 /** It changes nothing; the latest release is skipped where GitHub cannot be reached. */
@@ -32,32 +38,35 @@ const diagnoseInstallation = async (
 ): Promise<readonly PartDiagnosis[]> => {
   const { executable } = input;
   const latest = await input.releases.latest();
-  const place = input.source.find(input.start);
+  const place = input.pinned.find(input.startFolderPath);
 
   return [
-    executableReport(executable),
-    pluginReport({
+    {
+      executable,
+      kind: Diagnosis.ExecutableRuns,
+    },
+    reportPlugin({
       executable,
       fingerprint: input.fingerprint,
       plugin: input.plugins.installed(),
     }),
-    releaseReport({
+    reportRelease({
       executable,
       latest,
     }),
-    pathReport({
+    reportPath({
       executable,
       path: input.path,
     }),
-    linkReport({
+    reportLink({
       executable,
       files: input.files,
+      pinned: input.pinned,
       place,
-      source: input.source,
     }),
-    hooksReport({
+    reportHooks({
       hooks: input.hooks,
-      project: place?.project,
+      repositoryFolderPath: place?.repositoryFolderPath,
     }),
   ];
 };

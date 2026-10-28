@@ -1,5 +1,6 @@
 import type { Axis, Level } from '../constants';
 import { LEVELS } from '../constants';
+import { firstBy } from '../utils';
 import type { BlockId } from '../value-objects';
 import { RuleSlug } from '../value-objects';
 
@@ -57,12 +58,7 @@ const create = (input: Rule): Rule => ({
 
 /** The rules by slug; a slug written twice names the rule read first. */
 const bySlug = <TRule extends RuleText>(rules: readonly TRule[]): ReadonlyMap<RuleSlug, TRule> =>
-  new Map(
-    rules.toReversed().map((rule) => [
-      rule.slug,
-      rule,
-    ]),
-  );
+  firstBy(rules, (rule) => rule.slug);
 
 const sameAs = (rule: RuleText, other: RuleText): boolean => RuleSlug.equals(rule.slug, other.slug);
 

@@ -1,11 +1,15 @@
 import { Command } from 'commander';
 
+import { projectCheck } from '#/kernel/constants';
 import type { CommandContext } from '#/shared/cli';
+import { LIST_SEPARATOR } from '#/shared/cli';
 
 import type { StopEvent, StopJudgement } from '../../../../domain/entities';
-import { StopVerdict } from '../../../../domain/entities';
+import { HookEventName, StopVerdict } from '../../../../domain/entities';
 import type { SessionId } from '../../../../domain/value-objects';
-import { hookEventNameOf, hookEventOf, jsonTextOf, sessionIdOf } from '../../../utils';
+import { HookField, stopEventSchema } from '../../../constants';
+import { hookEventOf, hookOutputOf } from '../../../utils';
+import { blockedMessage, reviewMessage, unjudgedMessage } from './stop.messages';
 
 interface StopContext extends CommandContext {
   readonly judgeStop: (event: StopEvent) => StopJudgement | undefined;
@@ -17,9 +21,18 @@ const answerOf = (judgement: StopJudgement): string | undefined => {
     case StopVerdict.Reviewed:
       return undefined;
     case StopVerdict.Blocked:
-      return `{"decision":"block","reason":"The tree changed since the check last passed. Run the project's check, \`${jsonTextOf(judgement.check)}\`, and hand back only when it passes."}\n`;
+      return hookOutputOf({
+        decision: 'block',
+        reason: blockedMessage(projectCheck),
+      });
     case StopVerdict.Review:
-      return `{"systemMessage":"Changed files fall under ${jsonTextOf(judgement.blocks.join(', '))}; /check edits reviews them against the rules."}\n`;
+      return hookOutputOf({
+        systemMessage: reviewMessage(judgement.blocks.join(LIST_SEPARATOR)),
+      });
+    case StopVerdict.Unjudged:
+      return hookOutputOf({
+        systemMessage: unjudgedMessage(judgement.reason),
+      });
     // Stryker disable next-line ConditionalExpression: no verdict reaches the default, which only the compiler reads
     default:
       return judgement satisfies never;
@@ -37,30 +50,44 @@ const createStopCommand = (context: StopContext): Command =>
       ]),
     )
     .action(async (): Promise<void> => {
-      const event = hookEventOf(await context.io.readInput());
-      const session = sessionIdOf(event);
-      const agentName = event.field('agent_name');
-      const agentType = event.field('agent_type');
+      const event = hookEventOf({
+        schema: stopEventSchema,
+        text: await context.io.readInput(),
+      });
+      const session = event[HookField.SessionId];
+      const agentName = event[HookField.AgentName];
+      const agentType = event[HookField.AgentType];
 
       if (session === undefined) {
         return;
       }
 
-      const judgement = context.judgeStop({
-        ...(agentName === undefined
-          ? {}
-          : {
-              agentName,
-            }),
-        ...(agentType === undefined
-          ? {}
-          : {
-              agentType,
-            }),
-        event: hookEventNameOf(event.field('hook_event_name')),
-        isHookActive: event.isTrue('stop_hook_active'),
+      const stop = {
+        isHookActive: event[HookField.StopHookActive],
         session,
-      });
+      };
+      const eventName = event[HookField.HookEventName];
+      const judgement = context.judgeStop(
+        eventName === HookEventName.SubagentStop
+          ? {
+              ...stop,
+              ...(agentName === undefined
+                ? {}
+                : {
+                    agentName,
+                  }),
+              ...(agentType === undefined
+                ? {}
+                : {
+                    agentType,
+                  }),
+              event: eventName,
+            }
+          : {
+              ...stop,
+              event: eventName,
+            },
+      );
 
       if (judgement === undefined) {
         return;

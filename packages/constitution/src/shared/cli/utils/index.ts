@@ -1,6 +1,12 @@
+export { atLinesText } from './at-lines-text.utils';
 export { countOf } from './count.utils';
-export { baseFlagsOf, outputFlagsOf } from './flags.utils';
-export { linesSection, noteSection, stepsSection } from './sections.utils';
+export { baseFlagsOf, flagsOf, outputFlagsOf } from './flags.utils';
+export { folderPathOf } from './folder-path.utils';
+export { LIST_SEPARATOR } from './list-separator.messages';
+export { NO_PROJECT } from './no-project.messages';
+export { releaseMissingMessage } from './release-missing.messages';
+export { reportLinesOf } from './report-lines.utils';
+export { countedNoteSections, linesSection, noteSection, stepsSection } from './sections.utils';
 export { textOf } from './texts.utils';
 export { unitText } from './unit-text.utils';
 export { warningTextOf } from './warning-text.utils';

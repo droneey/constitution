@@ -14,6 +14,7 @@ import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
 import { FileRead, FileReadStatus } from '#/kernel/entities';
+import { AbsolutePath } from '#/kernel/value-objects';
 
 import { createNodeProjectFiles } from '../node-project-files.adapter';
 
@@ -27,8 +28,19 @@ const limits = {
 };
 const LOCKED = 0o000;
 const OPEN = 0o755;
+// mkfifo needs only the PATH it is found on.
+const pipeEnvironment = Object.fromEntries([
+  [
+    'PATH',
+    process.env['PATH'] ?? '',
+  ],
+]);
 
-const at = (path: string): string => join(made, path);
+const at = (path: string): AbsolutePath => AbsolutePath.create(join(made, path));
+
+// The text a read holds, or undefined where it holds none.
+const textOf = (read: FileRead): string | undefined =>
+  read.status === FileReadStatus.Read ? read.text : undefined;
 
 // The code a system error carries, or undefined for any other failure.
 const systemCodeOf = (cause: unknown): unknown =>
@@ -40,9 +52,15 @@ beforeEach(() => {
   writeFileSync(at('notes.md'), 'notes\n');
   writeFileSync(at('locked.md'), 'locked\n');
   chmodSync(at('locked.md'), LOCKED);
-  execFileSync('mkfifo', [
-    at('pipe'),
-  ]);
+  execFileSync(
+    'mkfifo',
+    [
+      at('pipe'),
+    ],
+    {
+      env: pipeEnvironment,
+    },
+  );
   mkdirSync(at('folder/deep'), {
     recursive: true,
   });
@@ -51,9 +69,15 @@ beforeEach(() => {
   symlinkSync('../notes.md', at('folder/file-link'));
   symlinkSync('deep', at('folder/deep-link'));
   symlinkSync('..', at('folder/deep/up'));
-  execFileSync('mkfifo', [
-    at('folder/pipe'),
-  ]);
+  execFileSync(
+    'mkfifo',
+    [
+      at('folder/pipe'),
+    ],
+    {
+      env: pipeEnvironment,
+    },
+  );
   symlinkSync('notes.md', at('file-link'));
   symlinkSync('folder', at('folder-link'));
   symlinkSync(join(made, 'folder/deep'), at('absolute-link'));
@@ -201,7 +225,7 @@ describe('createNodeProjectFiles', () => {
         isFile: files.isFile(at(path)),
         isFolder: files.isFolder(at(path)),
         status: files.read(at(path)).status,
-        text: FileRead.textOf(files.read(at(path))),
+        text: textOf(files.read(at(path))),
       };
 
       // Assert
@@ -346,10 +370,10 @@ describe('createNodeProjectFiles', () => {
     const files = createNodeProjectFiles(limits);
 
     // Act
-    const resolved = files.realFolder(`${made}/${path}`);
+    const resolved = files.realFolder(AbsolutePath.create(`${made}/${path}`));
 
     // Assert
-    expect(resolved).toBe(`${real}/${expected}`);
+    expect<string | undefined>(resolved).toBe(`${real}/${expected}`);
   });
 
   it.each([
@@ -366,10 +390,10 @@ describe('createNodeProjectFiles', () => {
     const files = createNodeProjectFiles(limits);
 
     // Act
-    const resolved = files.realFolder(path);
+    const resolved = files.realFolder(AbsolutePath.create(path));
 
     // Assert
-    expect(resolved).toBe('/');
+    expect<string | undefined>(resolved).toBe('/');
   });
 
   it.each([
@@ -393,6 +417,6 @@ describe('createNodeProjectFiles', () => {
     const resolved = files.realFolder(at(path));
 
     // Assert
-    expect(resolved).toBe(undefined);
+    expect<string | undefined>(resolved).toBe(undefined);
   });
 });

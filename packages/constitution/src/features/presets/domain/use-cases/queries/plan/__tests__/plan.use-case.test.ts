@@ -1,13 +1,18 @@
 import { describe, expect, it } from 'bun:test';
 
+import { AbsolutePath } from '#/kernel/value-objects';
+
+import { createFakeConfigurationFormat } from '../../../../../__tests__/configuration-format.fake';
 import { createFakeDistributionSources } from '../../../../../__tests__/distribution-sources.fake';
 import {
+  answerOf,
   PROJECT,
   presetFileParser,
   projectOf,
   releasePresets,
   unitOf,
 } from '../../../../../__tests__/presets.fixtures';
+import { ProjectReadStatus } from '../../../../entities';
 import { planPresets } from '../plan.use-case';
 
 describe('planPresets', () => {
@@ -34,21 +39,24 @@ describe('planPresets', () => {
     });
 
     // Act
-    const plan = planPresets({
-      distribution: createFakeDistributionSources(),
-      files: project.files,
-      parser: presetFileParser,
-      source: project.source,
-      start: PROJECT,
-    });
+    const plan = answerOf(
+      planPresets({
+        distribution: createFakeDistributionSources(),
+        formats: createFakeConfigurationFormat(),
+        files: project.files,
+        parser: presetFileParser,
+        reader: project.reader,
+        startFolderPath: AbsolutePath.create(PROJECT),
+      }),
+    );
 
     // Assert
     expect({
-      files: plan.files.map(({ entries, file, merged, unit }) => ({
+      files: plan.files.map(({ entries, filePath, merged, unitPath }) => ({
         entries: entries.length,
-        file,
+        file: String(filePath),
         merged,
-        unit: String(unit),
+        unit: String(unitPath),
       })),
       findings: plan.findings,
     }).toStrictEqual({
@@ -67,6 +75,28 @@ describe('planPresets', () => {
         },
       ],
       findings: [],
+    });
+  });
+
+  it('should tell that no project is there when none holds the start folder', () => {
+    // Arrange
+    const project = projectOf({
+      units: [],
+    });
+
+    // Act
+    const plan = planPresets({
+      distribution: createFakeDistributionSources(),
+      formats: createFakeConfigurationFormat(),
+      files: project.files,
+      parser: presetFileParser,
+      reader: project.reader,
+      startFolderPath: AbsolutePath.create('/elsewhere'),
+    });
+
+    // Assert
+    expect(plan).toStrictEqual({
+      status: ProjectReadStatus.NoProject,
     });
   });
 });

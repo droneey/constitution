@@ -1,14 +1,15 @@
 import { describe, expect, it } from 'bun:test';
 
-import { Axis, Layer, Level } from '#/kernel/constants';
+import { Axis, Layer } from '#/kernel/constants';
 import { TermKind } from '#/kernel/entities';
-import { BlockId, Glob, RuleSlug } from '#/kernel/value-objects';
+import { BlockId, Glob } from '#/kernel/value-objects';
 
-import { blockFiles, chapterFile, loadedOf, rule } from '../../../__tests__/constitution.fixtures';
+import { blockFiles, chapterFile, rule } from '../../../__tests__/constitution.fixtures';
+import { loadedOf } from '../../use-cases/queries/check/__tests__/check.fixtures';
 import { Constitution } from '../constitution.entity';
 
 describe('Constitution.modelOf', () => {
-  it('should give every block with its links, every rule with its axis and seam, and the role terms of every file', () => {
+  it('should give every block with its links, its rules, and the role terms of every file, a seam’s with its other block', () => {
     // Arrange
     const { constitution } = loadedOf({
       ...blockFiles({
@@ -29,6 +30,7 @@ describe('Constitution.modelOf', () => {
           ),
           'foundation/with/kit.md': chapterFile(
             'Kit',
+            'Its parts sit in **`kit-parts/`**{#kit-part}.\n',
             rule({
               slug: 'ui-uses-the-kit',
             }),
@@ -66,6 +68,7 @@ describe('Constitution.modelOf', () => {
         {
           governs: [],
           id: BlockId.create('core'),
+          isAbstract: false,
           languages: [],
           layer: Layer.Core,
           requires: [],
@@ -73,6 +76,7 @@ describe('Constitution.modelOf', () => {
         {
           governs: [],
           id: BlockId.create('ui'),
+          isAbstract: false,
           languages: [],
           layer: Layer.Domain,
           requires: [],
@@ -80,6 +84,7 @@ describe('Constitution.modelOf', () => {
         {
           governs: [],
           id: BlockId.create('_runtime'),
+          isAbstract: true,
           languages: [],
           layer: Layer.Implementation,
           requires: [],
@@ -90,6 +95,7 @@ describe('Constitution.modelOf', () => {
             Glob.create('kit.json'),
           ],
           id: BlockId.create('kit'),
+          isAbstract: false,
           languages: [
             BlockId.create('typescript'),
           ],
@@ -114,22 +120,16 @@ describe('Constitution.modelOf', () => {
           kind: TermKind.Folder,
           term: 'screens/',
         },
-      ],
-      rules: [
-        {
-          axis: Axis.Architecture,
-          block: BlockId.create('ui'),
-          level: Level.Should,
-          slug: RuleSlug.create('screens-stay-thin'),
-        },
         {
           axis: Axis.Foundation,
           block: BlockId.create('ui'),
-          level: Level.Must,
+          id: 'kit-part',
+          kind: TermKind.Folder,
           seam: BlockId.create('kit'),
-          slug: RuleSlug.create('ui-uses-the-kit'),
+          term: 'kit-parts/',
         },
       ],
+      rules: constitution.rules,
     });
   });
 });

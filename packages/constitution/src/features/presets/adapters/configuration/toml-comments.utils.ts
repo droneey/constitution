@@ -1,9 +1,10 @@
 import type { HeldStep, Setting } from '../../domain/entities';
 import { Setting as Settings } from '../../domain/entities';
 import type { Anchor, Commenting } from './block-comments.utils';
+import { ownFieldOf } from './own-field.utils';
+import { NEWLINE } from './text.constants';
 import { depthOf, headerOf, keysOfText, readToml } from './toml-lines.utils';
 
-const NEWLINE = '\n';
 // A key's line: its keys, dotted or quoted, before the first equals sign.
 const KEY_PATH = /^\s*([^\s#=[][^=]*?)\s*=/;
 const MULTILINE_QUOTE = /"{3}|'{3}/g;
@@ -48,7 +49,7 @@ const elementOf = (input: {
   const name = JSON.stringify(input.keys);
   const at = input.counts.get(name) ?? 0;
   const list = input.keys.reduce<Setting | undefined>(
-    (held, key) => (Settings.isMap(held) ? held[key] : undefined),
+    (held, key) => (Settings.isMap(held) ? ownFieldOf(held, key) : undefined),
     input.settings,
   );
 
@@ -96,7 +97,7 @@ const itemAnchorsOf = (input: {
     .filter((listed) => listed !== undefined)
     .map((listed) => ({
       line: input.at,
-      path: [
+      keyPath: [
         ...input.array,
         {
           item: listed,
@@ -139,7 +140,7 @@ const tomlAnchorsOf = (text: string): readonly Anchor[] => {
       });
       anchors.push({
         line: at,
-        path: table,
+        keyPath: table,
       });
     } else if (keys !== undefined) {
       array = [
@@ -149,7 +150,7 @@ const tomlAnchorsOf = (text: string): readonly Anchor[] => {
       depth = depthOf(line);
       anchors.push({
         line: at,
-        path: array,
+        keyPath: array,
       });
     }
   }

@@ -5,7 +5,7 @@ import { DecisionsCode } from '../../domain/use-cases/queries/check';
 
 const DECISION_NUMBER_WIDTH = 4;
 
-/** a decision as the log heads it, such as ADR-0007 */
+/** A decision as the log heads it, such as ADR-0007. */
 const decisionOf = (entry: number): string =>
   `ADR-${String(entry).padStart(DECISION_NUMBER_WIDTH, '0')}`;
 

@@ -1,5 +1,6 @@
 import type { SessionCommandRepository } from '../domain/contracts/repositories/commands';
 import type { SessionState } from '../domain/entities';
+import { SessionMark } from '../domain/entities';
 import type { SessionId } from '../domain/value-objects';
 import type { HeldSessions } from './session.fixtures';
 import { heldSessionsOf } from './session.fixtures';
@@ -23,8 +24,11 @@ const createFakeSessionCommandRepository = (
       ]),
     );
   },
-  recordMark: (recorded): void => {
-    sessions.get(recorded.session)?.marks.set(recorded.mark, recorded.value);
+  recordFingerprint: (recorded): void => {
+    sessions.get(recorded.session)?.marks.set(recorded.mark, recorded.fingerprint);
+  },
+  recordUnjudged: (recorded): void => {
+    sessions.get(recorded.session)?.marks.set(SessionMark.Unjudged, recorded.reason);
   },
   saveState: (saved): void => {
     const kept = sessions.get(saved.session);

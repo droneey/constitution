@@ -1,14 +1,25 @@
-import { CONFIG_FILE } from '#/kernel/constants';
+import { CONFIG_FILE_NAME } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
-import type { Declaration, ProjectPlace } from '#/kernel/entities';
+import type { ProjectPlace } from '#/kernel/entities';
 import { ConfigReadStatus, FileRead, FileReadStatus } from '#/kernel/entities';
-import { ProjectError, ProjectFailure } from '#/kernel/errors';
 import { withoutDotSlash } from '#/kernel/utils';
-import { BlockSource, repositoryUnit } from '#/kernel/value-objects';
+import { AbsolutePath, BlockSource, repositoryUnit } from '#/kernel/value-objects';
 
-import type { BlockCardParser, Clock, ConfigParser, Workspace } from '../../../contracts';
-import { ProjectConfig } from '../../../entities';
-import { joinPath } from '../shared/project-paths';
+import type {
+  BlockCardParser,
+  Clock,
+  ConfigParser,
+  ReleaseManifestParser,
+  Workspace,
+} from '../../../contracts';
+import type { Declaration } from '../../../entities';
+import { ProjectConfig, SourceStatus } from '../../../entities';
+import {
+  ReleaseError,
+  ReleaseFailure,
+  UnreadableFileError,
+  UnreadableFileFailure,
+} from '../../../errors';
 import { readMembers } from './steps/read-members';
 import { readSource } from './steps/read-source';
 import { resolveDeclaration } from './steps/resolve-declaration';
@@ -18,6 +29,7 @@ interface ProjectPorts {
   readonly clock: Clock;
   readonly configParser: ConfigParser;
   readonly files: ProjectFiles;
+  readonly manifestParser: ReleaseManifestParser;
   readonly workspace: Workspace;
 }
 
@@ -29,22 +41,19 @@ interface ReadDeclarationInput extends ProjectPorts {
  * What the constitution.yaml of a project and of each member of its workspace declare, read against
  * the release the project pins and the packs they list.
  *
- * @throws {@link ProjectError} when constitution.yaml cannot be read, or the release's blocks
- * cannot be listed
+ * @throws {@link UnreadableFileError} when constitution.yaml cannot be read
+ * @throws {@link ReleaseError} when the release's blocks cannot be listed
  */
 const readDeclaration = (input: ReadDeclarationInput): Declaration => {
   const { files } = input;
-  const { project, releaseFolder } = input.place;
-  const path = joinPath({
-    folder: project,
-    name: CONFIG_FILE,
-  });
+  const { releaseFolderPath, repositoryFolderPath } = input.place;
+  const path = AbsolutePath.join(repositoryFolderPath, CONFIG_FILE_NAME);
   const written = files.read(path);
 
   if (written.status !== FileReadStatus.Read) {
-    throw new ProjectError(
+    throw new UnreadableFileError(
       {
-        code: ProjectFailure.ConfigUnreadable,
+        code: UnreadableFileFailure.Config,
         details: {
           path,
         },
@@ -58,16 +67,16 @@ const readDeclaration = (input: ReadDeclarationInput): Declaration => {
   const read = input.configParser.parse(written.text);
   const release = readSource({
     files,
-    folder: releaseFolder,
+    folderPath: releaseFolderPath,
+    shownFolderPath: releaseFolderPath,
     source: BlockSource.create(),
-    where: releaseFolder,
   });
 
-  if (release.files === undefined) {
-    throw new ProjectError({
-      code: ProjectFailure.BlocksUnlisted,
+  if (release.status === SourceStatus.Unlisted) {
+    throw new ReleaseError({
+      code: ReleaseFailure.BlocksUnlisted,
       details: {
-        path: releaseFolder,
+        path: releaseFolderPath,
       },
     });
   }
@@ -78,7 +87,7 @@ const readDeclaration = (input: ReadDeclarationInput): Declaration => {
 
   const members = readMembers({
     ...input,
-    project,
+    repositoryFolderPath,
   });
   const config: ProjectConfig = {
     units: [
@@ -102,12 +111,9 @@ const readDeclaration = (input: ReadDeclarationInput): Declaration => {
         ...packs.map((pack) =>
           readSource({
             files,
-            folder: joinPath({
-              folder: project,
-              name: withoutDotSlash(pack),
-            }),
+            folderPath: AbsolutePath.join(repositoryFolderPath, withoutDotSlash(pack)),
+            shownFolderPath: pack,
             source: BlockSource.create(pack),
-            where: pack,
           }),
         ),
       ],

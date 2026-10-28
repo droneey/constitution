@@ -1,5 +1,6 @@
 import type { ProgramErrorInput } from '#/kernel/errors';
 import { ProgramError } from '#/kernel/errors';
+import type { AbsolutePath } from '#/kernel/value-objects';
 
 enum ApplyFailure {
   /** a file or a lock could not be written, and what the apply had written was put back */
@@ -7,7 +8,7 @@ enum ApplyFailure {
 }
 
 interface ApplyFailureDetails {
-  readonly path: string;
+  readonly filePath: AbsolutePath;
 }
 
 class ApplyError extends ProgramError<ApplyFailure, ApplyFailureDetails> {

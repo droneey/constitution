@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-// The plugins are keyed by names from outside the program, so they are read into a Map.
+/** The plugins are keyed by names from outside the program, so they are read into a Map. */
 const installedPluginsModel = z.looseObject({
   plugins: z
     .record(

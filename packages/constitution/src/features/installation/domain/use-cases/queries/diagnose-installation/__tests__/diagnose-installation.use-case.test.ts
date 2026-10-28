@@ -3,11 +3,9 @@ import { describe, expect, it } from 'bun:test';
 import type { FakeTree } from '#/__tests__/project-files.fake';
 import { createFakeProjectFiles } from '#/__tests__/project-files.fake';
 import { PROJECT, projectPlace, releaseFolderPath } from '#/__tests__/project-place.fixtures';
-import { createFakeProjectSource } from '#/__tests__/project-source.fake';
-import type { Release } from '#/kernel/entities';
+import type { ProjectPlace, Release } from '#/kernel/entities';
 import { ReleaseStatus } from '#/kernel/entities';
-import { ProjectError, ProjectFailure } from '#/kernel/errors';
-import { Version } from '#/kernel/value-objects';
+import { AbsolutePath, RepositoryRelativePath, Version } from '#/kernel/value-objects';
 
 import type { InstalledPlugin, LatestRelease } from '../../../../entities';
 import {
@@ -22,13 +20,13 @@ import type { DiagnoseInstallationPorts } from '../diagnose-installation.use-cas
 import { diagnoseInstallation } from '../diagnose-installation.use-case';
 
 const FINGERPRINT = 'f1';
-const ON_PATH = '/home/me/.local/bin/constitution';
+const onPath = AbsolutePath.create('/home/me/.local/bin/constitution');
 const EXECUTABLE_NAME = 'constitution';
-const LINK_FOLDER = '.droneey/constitution';
+const linkFolder = RepositoryRelativePath.create('.droneey/constitution');
 
 const executable = Version.create('1.0.0');
 const older = Version.create('0.9.0');
-const manifest = `${releaseFolderPath}/package.json`;
+const manifest = AbsolutePath.create(`${releaseFolderPath}/package.json`);
 // A project linked to a release of this executable's version.
 const TREE: FakeTree = {
   files: {
@@ -60,8 +58,8 @@ const portsOf = (installation: Installation = {}): DiagnoseInstallationPorts => 
   },
   path: {
     // PATH holds the executable under its own name only
-    find: (name: string): string | undefined =>
-      installation.isOnPath === false || name !== EXECUTABLE_NAME ? undefined : ON_PATH,
+    find: (name: string): AbsolutePath | undefined =>
+      installation.isOnPath === false || name !== EXECUTABLE_NAME ? undefined : onPath,
     versionOf: (): string | undefined =>
       'answered' in installation ? installation.answered : executable,
   },
@@ -83,17 +81,31 @@ const portsOf = (installation: Installation = {}): DiagnoseInstallationPorts => 
         },
       ),
   },
-  source: createFakeProjectSource({
-    place: projectPlace,
-    release: installation.release ?? {
-      status: ReleaseStatus.Installed,
-      version: executable,
+  pinned: {
+    // the project holds its own folder and every folder below it
+    find: (startFolderPath: AbsolutePath): ProjectPlace | undefined =>
+      startFolderPath === PROJECT || startFolderPath.startsWith(`${PROJECT}/`)
+        ? projectPlace
+        : undefined,
+    readRelease: (): Release => {
+      const { release } = installation;
+
+      if (release instanceof Error) {
+        throw release;
+      }
+
+      return (
+        release ?? {
+          status: ReleaseStatus.Installed,
+          version: executable,
+        }
+      );
     },
-  }),
+  },
 });
 
 const diagnosesOf = async (
-  input: { installation?: Installation; start?: string } = {},
+  input: { installation?: Installation; start?: AbsolutePath } = {},
 ): Promise<readonly PartDiagnosis[]> => {
   const installation = input.installation ?? {};
 
@@ -101,14 +113,14 @@ const diagnosesOf = async (
     ...portsOf(installation),
     executable,
     fingerprint: 'fingerprint' in installation ? installation.fingerprint : FINGERPRINT,
-    start: input.start ?? PROJECT,
+    startFolderPath: input.start ?? AbsolutePath.create(PROJECT),
   });
 };
 
 const diagnosisOf = async (input: {
   installation?: Installation;
   part: InstallationPart;
-  start?: string;
+  start?: AbsolutePath;
 }): Promise<PartDiagnosis | undefined> =>
   (await diagnosesOf(input)).find((found) => PartDiagnosis.partOf(found) === input.part);
 
@@ -120,7 +132,7 @@ interface Reading {
 const readingOf = async (input: {
   installation?: Installation;
   part: InstallationPart;
-  start?: string;
+  start?: AbsolutePath;
 }): Promise<Reading> => {
   const diagnosis = await diagnosisOf(input);
 
@@ -160,7 +172,7 @@ describe('diagnoseInstallation', () => {
     {
       expected: {
         kind: Diagnosis.PathMatches,
-        path: ON_PATH,
+        path: onPath,
       },
       part: InstallationPart.Path,
     },
@@ -168,8 +180,8 @@ describe('diagnoseInstallation', () => {
       expected: {
         kind: Diagnosis.LinkMatches,
         link: {
-          folder: LINK_FOLDER,
-          target: LINK_FOLDER,
+          linkPath: linkFolder,
+          targetPath: linkFolder,
         },
       },
       part: InstallationPart.Link,
@@ -202,7 +214,7 @@ describe('diagnoseInstallation', () => {
   it('should diagnose every part, in order', async () => {
     // Arrange
     const asked = {
-      start: PROJECT,
+      start: AbsolutePath.create(PROJECT),
     };
 
     // Act
@@ -364,13 +376,40 @@ describe('diagnoseInstallation', () => {
     {
       condition: 'GitHub cannot be reached',
       expected: {
-        kind: Diagnosis.LatestUnknown,
+        kind: Diagnosis.LatestUnanswered,
+        reason: 'fetch failed',
       },
       health: Health.Skipped,
       installation: {
         latest: {
-          cause: new TypeError('fetch failed'),
-          lookup: ReleaseLookup.Unreachable,
+          lookup: ReleaseLookup.Unanswered,
+          reason: 'fetch failed',
+        },
+      },
+    },
+    {
+      condition: 'GitHub refuses the call',
+      expected: {
+        kind: Diagnosis.LatestRefused,
+        status: 403,
+      },
+      health: Health.Skipped,
+      installation: {
+        latest: {
+          lookup: ReleaseLookup.Refused,
+          status: 403,
+        },
+      },
+    },
+    {
+      condition: "GitHub's answer names no release",
+      expected: {
+        kind: Diagnosis.LatestUnreadable,
+      },
+      health: Health.Skipped,
+      installation: {
+        latest: {
+          lookup: ReleaseLookup.Unreadable,
         },
       },
     },
@@ -390,7 +429,7 @@ describe('diagnoseInstallation', () => {
         answered: '0.9.0',
         executable,
         kind: Diagnosis.PathDiffers,
-        path: ON_PATH,
+        path: onPath,
       },
       health: Health.Warned,
       installation: {
@@ -401,7 +440,7 @@ describe('diagnoseInstallation', () => {
       condition: 'the executable on PATH names no version',
       expected: {
         kind: Diagnosis.PathSilent,
-        path: ON_PATH,
+        path: onPath,
       },
       health: Health.Warned,
       installation: {
@@ -412,7 +451,7 @@ describe('diagnoseInstallation', () => {
       condition: 'no release is linked',
       expected: {
         kind: Diagnosis.ReleaseMissing,
-        releaseFolder: releaseFolderPath,
+        releaseFolderPath: projectPlace.releaseFolderPath,
       },
       health: Health.Broken,
       installation: {
@@ -455,12 +494,10 @@ describe('diagnoseInstallation', () => {
       },
       health: Health.Broken,
       installation: {
-        release: new ProjectError({
-          code: ProjectFailure.VersionMissing,
-          details: {
-            path: manifest,
-          },
-        }),
+        release: {
+          manifest,
+          status: ReleaseStatus.VersionMissing,
+        },
       },
     },
     {
@@ -471,12 +508,44 @@ describe('diagnoseInstallation', () => {
       },
       health: Health.Broken,
       installation: {
-        release: new ProjectError({
-          code: ProjectFailure.ManifestUnreadable,
-          details: {
-            path: manifest,
-          },
-        }),
+        release: {
+          manifest,
+          status: ReleaseStatus.ManifestUnreadable,
+        },
+      },
+    },
+    {
+      condition: "the linked release's manifest is no JSON object",
+      expected: {
+        kind: Diagnosis.ManifestNotObject,
+        manifest,
+      },
+      health: Health.Broken,
+      installation: {
+        release: {
+          manifest,
+          status: ReleaseStatus.ManifestNotObject,
+        },
+      },
+    },
+    {
+      condition: "the linked release's manifest gives a field of another form",
+      expected: {
+        fields: [
+          'version',
+        ],
+        kind: Diagnosis.ManifestMalformed,
+        manifest,
+      },
+      health: Health.Broken,
+      installation: {
+        release: {
+          fields: [
+            'version',
+          ],
+          manifest,
+          status: ReleaseStatus.ManifestMalformed,
+        },
       },
     },
     {
@@ -484,8 +553,8 @@ describe('diagnoseInstallation', () => {
       expected: {
         kind: Diagnosis.LinkDiffers,
         link: {
-          folder: LINK_FOLDER,
-          target: LINK_FOLDER,
+          linkPath: linkFolder,
+          targetPath: linkFolder,
         },
         executable,
         release: older,
@@ -561,7 +630,7 @@ describe('diagnoseInstallation', () => {
     // Arrange
     const asked = {
       part,
-      start: '/elsewhere',
+      start: AbsolutePath.create('/elsewhere'),
     };
 
     // Act
@@ -580,12 +649,12 @@ describe('diagnoseInstallation', () => {
     {
       condition: 'the release lies outside the project',
       release: '/releases/1.0.0',
-      target: '/releases/1.0.0',
+      target: AbsolutePath.create('/releases/1.0.0'),
     },
     {
       condition: 'the release lies in the project',
       release: `${PROJECT}/packages/constitution`,
-      target: 'packages/constitution',
+      target: RepositoryRelativePath.create('packages/constitution'),
     },
   ])(
     'should give the link and the folder it resolves to, from the project, when $condition',
@@ -614,25 +683,25 @@ describe('diagnoseInstallation', () => {
       expect(diagnosis).toStrictEqual({
         kind: Diagnosis.LinkMatches,
         link: {
-          folder: LINK_FOLDER,
-          target,
+          linkPath: linkFolder,
+          targetPath: target,
         },
       });
     },
   );
 
-  it('should let a failure it does not recognise through when the release cannot be read', () => {
+  it('should let a failure of the read through', () => {
     // Arrange
-    const installation = {
-      release: new TypeError('a defect'),
-    };
+    const failure = new TypeError('a defect');
 
     // Act
     const act = diagnosesOf({
-      installation,
+      installation: {
+        release: failure,
+      },
     });
 
     // Assert
-    expect(act).rejects.toThrow(new TypeError('a defect'));
+    expect(act).rejects.toThrow(failure);
   });
 });

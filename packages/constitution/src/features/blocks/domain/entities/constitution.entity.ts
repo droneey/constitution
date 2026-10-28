@@ -1,6 +1,7 @@
 import type { RequirementAnswer, Rule } from '#/kernel/entities';
 import { BlockModel } from '#/kernel/entities';
 
+import type { TreePath } from '../value-objects';
 import { Block } from './block.entity';
 import type {
   HooksManifest,
@@ -24,9 +25,9 @@ interface Documents {
 interface Constitution {
   readonly blocks: readonly Block[];
   readonly documents: Documents;
-  readonly paths: ReadonlySet<string>;
+  readonly paths: ReadonlySet<TreePath>;
   /** the files of the repository that holds the Constitution, which its README and decision log link to */
-  readonly repositoryPaths: ReadonlySet<string>;
+  readonly repositoryPaths: ReadonlySet<TreePath>;
   readonly requirementAnswers: readonly RequirementAnswer[];
   readonly rules: readonly Rule[];
 }
@@ -42,6 +43,7 @@ const modelOf = (constitution: Constitution): BlockModel =>
           }),
       governs: frontMatter.governs,
       id,
+      isAbstract: frontMatter.abstract,
       languages: frontMatter.languages,
       layer,
       requires: frontMatter.requires,
@@ -50,22 +52,12 @@ const modelOf = (constitution: Constitution): BlockModel =>
       constitution.blocks.flatMap((block) =>
         Block.filesOf(block).map((file) => ({
           axis: file.axis,
-          block: block.id,
+          ...Block.placeOf(block, file),
           body: file.body,
         })),
       ),
     ),
-    rules: constitution.rules.map((rule) => ({
-      axis: rule.axis,
-      block: rule.block,
-      level: rule.level,
-      ...(rule.seam === undefined
-        ? {}
-        : {
-            seam: rule.seam,
-          }),
-      slug: rule.slug,
-    })),
+    rules: constitution.rules,
   });
 
 const Constitution = {

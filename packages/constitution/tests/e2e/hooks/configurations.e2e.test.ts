@@ -8,6 +8,7 @@ import { z } from 'zod';
 
 import { cliPath } from '../cli.fixtures';
 import { contextOf, HookEvent, runHook, warningLinesOf } from '../hook.fixtures';
+import { toolEnvironment } from '../package.fixtures';
 import {
   createRealPluginRoot,
   distributionOf,
@@ -60,12 +61,7 @@ const apply = (project: string): void => {
     {
       cwd: project,
       encoding: 'utf8',
-      env: Object.fromEntries([
-        [
-          'PATH',
-          process.env['PATH'],
-        ],
-      ]),
+      env: toolEnvironment(),
     },
   );
 

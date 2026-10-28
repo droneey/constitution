@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import { createFakeProjectFiles } from '#/__tests__/project-files.fake';
+import { AbsolutePath } from '#/kernel/value-objects';
 
 import { findProject } from '../find-project.use-case';
 
@@ -9,8 +10,8 @@ describe('findProject', () => {
     {
       condition: 'the start folder holds constitution.yaml',
       expected: {
-        releaseFolder: '/work/project/.droneey/constitution',
-        project: '/work/project',
+        releaseFolderPath: '/work/project/.droneey/constitution',
+        repositoryFolderPath: '/work/project',
       },
       files: {
         '/work/project/.git/HEAD': 'ref: refs/heads/main\n',
@@ -22,8 +23,8 @@ describe('findProject', () => {
     {
       condition: 'only the root of its repository holds it',
       expected: {
-        releaseFolder: '/work/project/.droneey/constitution',
-        project: '/work/project',
+        releaseFolderPath: '/work/project/.droneey/constitution',
+        repositoryFolderPath: '/work/project',
       },
       files: {
         '/work/project/.git/HEAD': 'ref: refs/heads/main\n',
@@ -36,8 +37,8 @@ describe('findProject', () => {
     {
       condition: 'a member and the root of its repository both hold one',
       expected: {
-        releaseFolder: '/work/project/.droneey/constitution',
-        project: '/work/project',
+        releaseFolderPath: '/work/project/.droneey/constitution',
+        repositoryFolderPath: '/work/project',
       },
       files: {
         '/work/project/.git/HEAD': 'ref: refs/heads/main\n',
@@ -60,8 +61,8 @@ describe('findProject', () => {
     {
       condition: 'no repository holds the start folder, which holds it',
       expected: {
-        releaseFolder: '/work/project/.droneey/constitution',
-        project: '/work/project',
+        releaseFolderPath: '/work/project/.droneey/constitution',
+        repositoryFolderPath: '/work/project',
       },
       files: {
         '/work/project/constitution.yaml': 'axes: []\n',
@@ -82,8 +83,8 @@ describe('findProject', () => {
     {
       condition: 'the start folder is reached through a link',
       expected: {
-        releaseFolder: '/work/project/.droneey/constitution',
-        project: '/work/project',
+        releaseFolderPath: '/work/project/.droneey/constitution',
+        repositoryFolderPath: '/work/project',
       },
       files: {
         '/work/project/.git/HEAD': 'ref: refs/heads/main\n',
@@ -97,8 +98,8 @@ describe('findProject', () => {
     {
       condition: 'the repository is the root folder',
       expected: {
-        releaseFolder: '/.droneey/constitution',
-        project: '/',
+        releaseFolderPath: '/.droneey/constitution',
+        repositoryFolderPath: '/',
       },
       files: {
         '/.git/HEAD': 'ref: refs/heads/main\n',
@@ -129,11 +130,11 @@ describe('findProject', () => {
       // Act
       const place = findProject({
         files: projectFiles,
-        start,
+        startFolderPath: AbsolutePath.create(start),
       });
 
       // Assert
-      expect(place).toStrictEqual(expected);
+      expect<object | undefined>(place).toStrictEqual(expected);
     },
   );
 });

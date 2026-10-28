@@ -1,15 +1,21 @@
 import { z } from 'zod';
 
-// Of each file only the fields that hold something, so the lock stays small.
-const lockRecordModel = z.strictObject({
-  addresses: z.array(z.string()).optional(),
-  created: z.literal(true).optional(),
-  defaults: z.array(z.string()).optional(),
-  leaves: z.array(z.string()).optional(),
-  whole: z.literal(true).optional(),
-});
+import { UnitRelativePath } from '#/kernel/value-objects';
 
-const lockModel = z.record(z.string(), lockRecordModel);
+// Of each file only the fields that hold something, so the lock stays small.
+const lockRecordModel = z.union([
+  z.strictObject({
+    whole: z.literal(true),
+  }),
+  z.strictObject({
+    addresses: z.array(z.string()).optional(),
+    created: z.literal(true).optional(),
+    defaults: z.array(z.string()).optional(),
+    leaves: z.array(z.string()).optional(),
+  }),
+]);
+
+const lockModel = z.record(z.string().refine(UnitRelativePath.is), lockRecordModel);
 
 type LockWire = z.infer<typeof lockModel>;
 

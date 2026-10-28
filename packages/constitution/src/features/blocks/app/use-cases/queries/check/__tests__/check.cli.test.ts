@@ -5,17 +5,22 @@ import { StepStatus } from '@droneey/design-cli';
 import { createFakeContext, runCommand } from '#/__tests__/command-context.fake';
 
 import type { Validation } from '../../../../../domain/use-cases/queries/check';
-import { RequiresCode } from '../../../../../domain/use-cases/queries/check';
-import { blocksOutcomeOf } from '../../../../utils';
+import { RequiresCode, ValidationStage } from '../../../../../domain/use-cases/queries/check';
+import { blocksOutcomeOf, NO_BLOCKS } from '../../../../utils';
 import { createBlocksCheckCommand } from '../check.cli';
 
 const soundValidation: Validation = {
   advice: [],
   findings: [],
+  model: {
+    blocks: [],
+    roles: [],
+    rules: [],
+  },
+  stage: ValidationStage.Checked,
 };
 
 const foundValidation: Validation = {
-  advice: [],
   findings: [
     {
       code: RequiresCode.RequiresItself,
@@ -23,6 +28,7 @@ const foundValidation: Validation = {
       path: 'blocks/domains/ui/ui.md',
     },
   ],
+  stage: ValidationStage.Unloaded,
 };
 
 const runOf = async (input: {
@@ -30,8 +36,13 @@ const runOf = async (input: {
   validation: Validation | undefined;
 }): Promise<{
   asked: {
-    base: string | undefined;
-    folder: string;
+    base:
+      | {
+          folder: string;
+          folderPath: string;
+        }
+      | undefined;
+    folderPath: string;
   }[];
   failures: number;
   printed: number;
@@ -44,8 +55,13 @@ const runOf = async (input: {
   }[];
 }> => {
   const asked: {
-    base: string | undefined;
-    folder: string;
+    base:
+      | {
+          folder: string;
+          folderPath: string;
+        }
+      | undefined;
+    folderPath: string;
   }[] = [];
   const { context, record } = createFakeContext();
 
@@ -82,8 +98,22 @@ describe('createBlocksCheckCommand', () => {
         '--base',
         '.droneey/constitution',
       ],
-      base: '.droneey/constitution',
-      condition: 'the base is named',
+      base: {
+        folder: '.droneey/constitution',
+        folderPath: '/work/project/package/.droneey/constitution',
+      },
+      condition: 'the base is named from the folder',
+    },
+    {
+      args: [
+        '--base',
+        '/opt/constitution',
+      ],
+      base: {
+        folder: '/opt/constitution',
+        folderPath: '/opt/constitution',
+      },
+      condition: 'the base is named whole',
     },
   ])('should check the blocks of the folder it runs in when $condition', async ({ args, base }) => {
     // Arrange
@@ -100,7 +130,7 @@ describe('createBlocksCheckCommand', () => {
       asked: [
         {
           base,
-          folder: '/work/project/package',
+          folderPath: '/work/project/package',
         },
       ],
       failures: 0,
@@ -123,7 +153,7 @@ describe('createBlocksCheckCommand', () => {
     {
       condition: 'the folder holds no blocks',
       outcome: {
-        detail: 'no blocks in this folder',
+        detail: NO_BLOCKS,
         status: StepStatus.Failed,
       },
       validation: undefined,

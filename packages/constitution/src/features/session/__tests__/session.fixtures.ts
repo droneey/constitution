@@ -1,9 +1,9 @@
 import type { LoweredLevel } from '#/kernel/constants';
-import { ActiveBlock, Lowering, MustRule } from '#/kernel/entities';
-import { BlockId, Glob, RuleSlug, repositoryUnit, UnitPath } from '#/kernel/value-objects';
+import type { ActiveBlock, MustRule } from '#/kernel/entities';
+import { ConfigReadStatus } from '#/kernel/entities';
+import { AbsolutePath, BlockId, Glob, RuleSlug, UnitPath } from '#/kernel/value-objects';
 
-import type { SessionMark } from '../domain/entities';
-import { CheckState, SessionState } from '../domain/entities';
+import type { ParsedState, SessionMark, SessionState } from '../domain/entities';
 import type { AgentId } from '../domain/value-objects';
 import { SessionId } from '../domain/value-objects';
 
@@ -19,19 +19,18 @@ interface ActiveBlockFixture {
 
 // A block active in the repository unless the case names a unit, governing every file, with its
 // passport to read.
-const activeBlockOf = (input: ActiveBlockFixture): ActiveBlock =>
-  ActiveBlock.create({
-    files: input.files ?? [
-      `.droneey/constitution/blocks/domains/${input.id}/${input.id}.md`,
-    ],
-    governs: (
-      input.governs ?? [
-        '**',
-      ]
-    ).map(Glob.create),
-    id: BlockId.create(input.id),
-    unit: UnitPath.create(input.unit ?? ''),
-  });
+const activeBlockOf = (input: ActiveBlockFixture): ActiveBlock => ({
+  files: input.files ?? [
+    `.droneey/constitution/blocks/domains/${input.id}/${input.id}.md`,
+  ],
+  governs: (
+    input.governs ?? [
+      '**',
+    ]
+  ).map(Glob.create),
+  id: BlockId.create(input.id),
+  unit: UnitPath.create(input.unit ?? ''),
+});
 
 interface LoweringFixture {
   readonly level: LoweredLevel;
@@ -47,35 +46,29 @@ interface MustRuleFixture {
 
 // A MUST rule of a block, with the overrides that lower it: in the repository unless the case
 // names a unit, directly unless it names the rule lowered through.
-const mustOf = (input: MustRuleFixture): MustRule =>
-  MustRule.create({
-    block: BlockId.create(input.block),
-    lowerings: (input.lowerings ?? []).map((lowering) =>
-      Lowering.create({
-        level: lowering.level,
-        unit: UnitPath.create(lowering.unit ?? ''),
-        ...(lowering.via === undefined
-          ? {}
-          : {
-              via: RuleSlug.create(lowering.via),
-            }),
-      }),
-    ),
-    slug: RuleSlug.create(input.slug),
-  });
+const mustOf = (input: MustRuleFixture): MustRule => ({
+  block: BlockId.create(input.block),
+  lowerings: (input.lowerings ?? []).map((lowering) => ({
+    level: lowering.level,
+    unit: UnitPath.create(lowering.unit ?? ''),
+    ...(lowering.via === undefined
+      ? {}
+      : {
+          via: RuleSlug.create(lowering.via),
+        }),
+  })),
+  slug: RuleSlug.create(input.slug),
+});
 
-// What a session keeps for a project at /work/project of one unit that names a check and no block.
-const sessionStateOf = (overrides: Partial<SessionState> = {}): SessionState =>
-  SessionState.create({
-    active: [],
-    check: CheckState.create('bun run check'),
-    musts: [],
-    project: '/work/project',
-    units: [
-      repositoryUnit,
-    ],
-    ...overrides,
-  });
+// What a session keeps for a project at /work/project whose constitution.yaml parsed and makes no
+// block active.
+const sessionStateOf = (overrides: Partial<ParsedState> = {}): ParsedState => ({
+  active: [],
+  musts: [],
+  repositoryFolderPath: AbsolutePath.create('/work/project'),
+  status: ConfigReadStatus.Parsed,
+  ...overrides,
+});
 
 // What a session's store keeps of one session; the blocks reminded by the agent they were named
 // to, undefined for the session itself.

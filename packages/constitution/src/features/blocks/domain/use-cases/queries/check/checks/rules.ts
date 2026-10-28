@@ -7,6 +7,7 @@ import { BlockId } from '#/kernel/value-objects';
 
 import { BlockGraph, mayReachAxis } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
+import { findingsAt } from '../utils';
 
 enum RulesCode {
   SlugOpensWithNo = 'slug-opens-with-no',
@@ -80,10 +81,8 @@ interface RulesDetails {
     readonly slug: RuleSlug;
   };
   readonly [RulesCode.OutsideParentChapter]: {
-    /** the title of the rule's chapter, if it has one */
     readonly chapter?: string;
     readonly parent: RuleSlug;
-    /** the title of the parent's chapter, if it has one */
     readonly parentChapter?: string;
     readonly slug: RuleSlug;
   };
@@ -324,16 +323,7 @@ const rulesCheck: Check<RulesFinding> = ({
       }),
     ];
 
-    return problems.flatMap((problem) =>
-      problem === undefined
-        ? []
-        : [
-            {
-              ...problem,
-              path: rule.file,
-            },
-          ],
-    );
+    return findingsAt(rule.file, problems);
   });
 };
 

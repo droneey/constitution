@@ -4,14 +4,16 @@ import { join } from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
+import { AbsolutePath } from '#/kernel/value-objects';
+
 import { createPathExecutable } from '../path-executable.adapter';
 
 const PATH = 'PATH';
 
 let folder = '';
 
-const executable = (input: { name: string; script: string }): string => {
-  const path = join(folder, input.name);
+const executable = (input: { name: string; script: string }): AbsolutePath => {
+  const path = AbsolutePath.create(join(folder, input.name));
 
   writeFileSync(path, `#!/bin/sh\n${input.script}\n`);
   chmodSync(path, 0o755);

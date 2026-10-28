@@ -3,17 +3,25 @@ export { createRecordCheckCommand } from './app/use-cases/commands/record-check'
 export { createSessionStartCommand } from './app/use-cases/commands/session-start';
 export { createStopCommand } from './app/use-cases/commands/stop';
 export { createUserPromptSubmitCommand } from './app/use-cases/commands/user-prompt-submit';
-export type { ConfigurationsReport, ProjectConfigurationsCheck } from './domain/contracts';
+export type {
+  ConfigurationsReport,
+  DeclaredRules,
+  RulesSource,
+  WorkingTree,
+} from './domain/contracts';
 export { ConfigurationsCheckStatus } from './domain/contracts';
 export type { SessionCommandRepository } from './domain/contracts/repositories/commands';
 export type { SessionQueryRepository } from './domain/contracts/repositories/queries';
 export type {
+  DigestEntry,
+  DigestListing,
   Reminder,
   SessionDigest,
   SessionStart,
   StopEvent,
   StopJudgement,
 } from './domain/entities';
+export { DigestEntryKind } from './domain/entities';
 export { keepSession } from './domain/use-cases/commands/keep-session';
 export { markTurn } from './domain/use-cases/commands/mark-turn';
 export { recordCheck } from './domain/use-cases/commands/record-check';
