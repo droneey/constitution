@@ -74,7 +74,7 @@ jobs:
     needs: assets
     # Renovate reads the version from the comment after the pinned digest
     # yamllint disable-line rule:line-length
-    uses: droneey/.github/.github/workflows/cd-release.yaml@1b247b5e6f351a996ce828435b1a4cd89f387914 # v2.8.0
+    uses: droneey/.github/.github/workflows/cd-release.yaml@95685e4bc5b1d94f67431e96a130ee90207f533d # v2.11.0
     permissions:
       contents: write
     with:
