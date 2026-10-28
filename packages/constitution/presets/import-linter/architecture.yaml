@@ -1,0 +1,427 @@
+core:
+  kernel-imports-only-itself:
+    python:
+      pyproject.toml:
+        tool:
+          importlinter:
+            contracts[name=kernel-imports-only-itself]:
+              type: forbidden
+              source_modules:
+                - '*.${role.shared-domain}'
+              forbidden_modules:
+                - '*.${role.gateway}'
+                - '*.${role.composition-module}'
+                - '*.${role.extra-entry}'
+                - '*.${role.bounded-context}'
+                - '*.${role.host-integration}'
+                - '*.${role.generic-library}'
+                - '*.${role.composition-root}'
+                - '*.${role.shared-code}'
+  libs-import-no-application-code:
+    python:
+      pyproject.toml:
+        tool:
+          importlinter:
+            contracts[name=libs-import-no-application-code]:
+              type: forbidden
+              source_modules:
+                - '*.${role.generic-library}'
+              forbidden_modules:
+                - '*.${role.gateway}'
+                - '*.${role.composition-module}'
+                - '*.${role.extra-entry}'
+                - '*.${role.bounded-context}'
+                - '*.${role.host-integration}'
+                - '*.${role.shared-domain}'
+                - '*.${role.composition-root}'
+                - '*.${role.shared-code}'
+  shared-imports-no-feature-adapter-contract-or-root:
+    python:
+      pyproject.toml:
+        tool:
+          importlinter:
+            contracts[name=shared-imports-no-feature-adapter-contract-or-root]:
+              type: forbidden
+              source_modules:
+                - '*.${role.shared-code}'
+              forbidden_modules:
+                - '*.${role.gateway}'
+                - '*.${role.composition-module}'
+                - '*.${role.bounded-context}'
+                - '*.${role.host-integration}'
+                - '*.${role.shared-domain}.${role.port}'
+                - '*.${role.composition-root}'
+  domain-imports-only-itself-and-the-kernel:
+    python:
+      pyproject.toml:
+        tool:
+          importlinter:
+            contracts[name=domain-imports-only-itself-and-the-kernel]:
+              type: forbidden
+              source_modules:
+                - '*.${role.bounded-context}.*.${role.pure-layer}'
+              forbidden_modules:
+                - '*.${role.gateway}'
+                - '*.${role.composition-module}'
+                - '*.${role.extra-entry}'
+                - '*.${role.bounded-context}.*.${role.gateway}'
+                - '*.${role.bounded-context}.*.${role.application-layer}'
+                - '*.${role.host-integration}'
+                - '*.${role.generic-library}'
+                - '*.${role.composition-root}'
+                - '*.${role.shared-code}'
+  effects-held-only-by-the-edge:
+    python:
+      pyproject.toml:
+        tool:
+          importlinter:
+            include_external_packages: true
+            contracts[name=effects-held-only-by-the-edge]:
+              type: forbidden
+              source_modules:
+                - '*.${role.composition-module}.*.${role.application-layer}'
+                - '*.${role.composition-module}.*.${role.pure-layer}'
+                - '*.${role.bounded-context}.*.${role.application-layer}'
+                - '*.${role.bounded-context}.*.${role.pure-layer}'
+                - '*.${role.shared-domain}'
+                - '*.${role.shared-code}'
+              forbidden_modules:
+                - ctypes
+                - curses
+                - dbm
+                - fcntl
+                - fileinput
+                - ftplib
+                - getpass
+                - glob
+                - grp
+                - imaplib
+                - mmap
+                - multiprocessing
+                - os
+                - platform
+                - poplib
+                - pty
+                - pwd
+                - random
+                - resource
+                - runpy
+                - secrets
+                - select
+                - selectors
+                - shelve
+                - shutil
+                - signal
+                - smtplib
+                - socket
+                - socketserver
+                - sqlite3
+                - ssl
+                - subprocess
+                - syslog
+                - tempfile
+                - termios
+                - time
+                - tty
+                - webbrowser
+                - wsgiref
+                - xmlrpc
+  feature-never-imports-a-feature:
+    python:
+      pyproject.toml:
+        tool:
+          importlinter:
+            contracts[name=feature-never-imports-a-feature]:
+              type: independence
+              modules:
+                - '*.${role.bounded-context}.*'
+  binding-unit-calls-only-use-cases:
+    python:
+      pyproject.toml:
+        tool:
+          importlinter:
+            contracts[name=binding-unit-calls-only-use-cases]:
+              type: forbidden
+              source_modules:
+                - '*.${role.composition-module}.*.${role.application-layer}'
+                - '*.${role.bounded-context}.*.${role.application-layer}'
+              forbidden_modules:
+                - '*.${role.composition-module}.*.${role.pure-layer}.${role.port}'
+                - '*.${role.bounded-context}.*.${role.pure-layer}.${role.port}'
+              allow_indirect_imports: true
+  composition-module-never-imports-another:
+    python:
+      pyproject.toml:
+        tool:
+          importlinter:
+            contracts[name=composition-module-never-imports-another]:
+              type: independence
+              modules:
+                - '*.${role.composition-module}.*'
+  adapter-imports-only-its-owners-domain-and-shared-layers:
+    python:
+      pyproject.toml:
+        tool:
+          importlinter:
+            contracts[id=adapter-imports-only-its-owners-domain-and-shared-layers.adapters-apart]:
+              name: adapter-imports-only-its-owners-domain-and-shared-layers
+              type: independence
+              modules:
+                - '*.${role.gateway}.*'
+                - '*.${role.composition-module}.*.${role.gateway}.*'
+                - '*.${role.bounded-context}.*.${role.gateway}.*'
+            contracts[id=adapter-imports-only-its-owners-domain-and-shared-layers.outer-layers]:
+              name: adapter-imports-only-its-owners-domain-and-shared-layers
+              type: forbidden
+              source_modules:
+                - '*.${role.gateway}'
+                - '*.${role.bounded-context}.*.${role.gateway}'
+              forbidden_modules:
+                - '*.${role.composition-module}'
+                - '*.${role.extra-entry}'
+                - '*.${role.bounded-context}.*.${role.application-layer}'
+                - '*.${role.composition-root}'
+            contracts[id=adapter-imports-only-its-owners-domain-and-shared-layers.shared-adapters]:
+              name: adapter-imports-only-its-owners-domain-and-shared-layers
+              type: forbidden
+              source_modules:
+                - '*.${role.gateway}'
+              forbidden_modules:
+                - '*.${role.bounded-context}'
+            # composition implements a feature's contract through another feature's surface
+            contracts[id=adapter-imports-only-its-owners-domain-and-shared-layers.composition-adapters]:
+              name: adapter-imports-only-its-owners-domain-and-shared-layers
+              type: forbidden
+              source_modules:
+                - '*.${role.composition-module}.*.${role.gateway}'
+              forbidden_modules:
+                - '*.${role.composition-module}.*.${role.application-layer}'
+                - '*.${role.extra-entry}'
+                - '*.${role.bounded-context}.*.${role.gateway}'
+                - '*.${role.bounded-context}.*.${role.application-layer}'
+                - '*.${role.composition-root}'
+  root-imported-only-by-entries:
+    python:
+      pyproject.toml:
+        tool:
+          importlinter:
+            contracts[name=root-imported-only-by-entries]:
+              type: protected
+              protected_modules:
+                - '*.${role.composition-root}'
+              allowed_importers:
+                - '*.main'
+                - '*.${role.extra-entry}.*.main'
+  adapter-imported-only-by-the-root:
+    python:
+      pyproject.toml:
+        tool:
+          importlinter:
+            contracts[name=adapter-imported-only-by-the-root]:
+              type: protected
+              protected_modules:
+                - '*.${role.gateway}'
+                - '*.${role.gateway}.**'
+                - '*.${role.composition-module}.*.${role.gateway}'
+                - '*.${role.composition-module}.*.${role.gateway}.**'
+                - '*.${role.bounded-context}.*.${role.gateway}'
+                - '*.${role.bounded-context}.*.${role.gateway}.**'
+              allowed_importers:
+                - '*'
+                - '*.${role.composition-root}'
+                - '*.${role.composition-root}.**'
+                - '*.${role.gateway}'
+                - '*.${role.gateway}.**'
+                - '*.${role.composition-module}.*.${role.gateway}'
+                - '*.${role.composition-module}.*.${role.gateway}.**'
+                - '*.${role.bounded-context}.*.${role.gateway}'
+                - '*.${role.bounded-context}.*.${role.gateway}.**'
+              as_packages: false
+  entrypoint-never-imported:
+    python:
+      pyproject.toml:
+        tool:
+          importlinter:
+            contracts[id=entrypoint-never-imported.entrypoints]:
+              name: entrypoint-never-imported
+              type: protected
+              protected_modules:
+                - '*.${role.extra-entry}'
+              allowed_importers: []
+            contracts[id=entrypoint-never-imported.entrypoints-apart]:
+              name: entrypoint-never-imported
+              type: independence
+              modules:
+                - '*.${role.extra-entry}.*'
+            contracts[id=entrypoint-never-imported.dunder-main]:
+              name: entrypoint-never-imported
+              type: protected
+              protected_modules:
+                - '*.__main__'
+              allowed_importers: []
+            contracts[id=entrypoint-never-imported.main]:
+              name: entrypoint-never-imported
+              type: protected
+              protected_modules:
+                - '*.main'
+              allowed_importers:
+                - '*.__main__'
+  integration-never-imported:
+    python:
+      pyproject.toml:
+        tool:
+          importlinter:
+            contracts[id=integration-never-imported.integrations]:
+              name: integration-never-imported
+              type: protected
+              protected_modules:
+                - '*.${role.host-integration}'
+              allowed_importers: []
+            contracts[id=integration-never-imported.integrations-apart]:
+              name: integration-never-imported
+              type: independence
+              modules:
+                - '*.${role.host-integration}.*'
+  import-points-inward:
+    python:
+      pyproject.toml:
+        tool:
+          importlinter:
+            contracts[name=import-points-inward]:
+              type: forbidden
+              source_modules:
+                - '*.${role.gateway}'
+                - '*.${role.bounded-context}'
+                - '*.${role.shared-domain}'
+                - '*.${role.generic-library}'
+                - '*.${role.shared-code}'
+              forbidden_modules:
+                - '*.${role.composition-module}'
+  query-and-command-apart:
+    python:
+      pyproject.toml:
+        tool:
+          importlinter:
+            contracts[id=query-and-command-apart.queries]:
+              name: query-and-command-apart
+              type: forbidden
+              source_modules:
+                - '**.${role.data-port}.${role.read-operation}'
+                - '**.${role.use-case}.${role.read-operation}'
+              forbidden_modules:
+                - '**.${role.data-port}.${role.write-operation}'
+                - '**.${role.use-case}.${role.write-operation}'
+            contracts[id=query-and-command-apart.commands]:
+              name: query-and-command-apart
+              type: forbidden
+              source_modules:
+                - '**.${role.data-port}.${role.write-operation}'
+                - '**.${role.use-case}.${role.write-operation}'
+              forbidden_modules:
+                - '**.${role.data-port}.${role.read-operation}'
+                - '**.${role.use-case}.${role.read-operation}'
+  surface-only-on-a-module-or-one-kind:
+    python:
+      pyproject.toml:
+        tool:
+          importlinter:
+            contracts[name=surface-only-on-a-module-or-one-kind]:
+              type: forbidden
+              source_modules:
+                - '**'
+              forbidden_modules:
+                - ${package.name}
+                - '*.${role.gateway}'
+                - '*.${role.composition-module}'
+                - '*.${role.composition-module}.*.${role.gateway}'
+                - '*.${role.composition-module}.*.${role.application-layer}'
+                - '*.${role.composition-module}.*.${role.pure-layer}'
+                - '*.${role.bounded-context}'
+                - '*.${role.bounded-context}.*.${role.gateway}'
+                - '*.${role.bounded-context}.*.${role.application-layer}'
+                - '*.${role.bounded-context}.*.${role.pure-layer}'
+                - '*.${role.host-integration}'
+                - '*.${role.shared-domain}'
+                - '*.${role.generic-library}'
+                - '*.${role.shared-code}'
+              as_packages: false
+              allow_indirect_imports: true
+  module-reached-only-through-its-surface:
+    python:
+      pyproject.toml:
+        tool:
+          importlinter:
+            # a role folder of the kernel and a module of each layer are reached from outside only
+            # through their __init__.py
+            contracts[id=module-reached-only-through-its-surface.kernel]:
+              name: module-reached-only-through-its-surface
+              type: protected
+              protected_modules:
+                - '*.${role.shared-domain}.*.*'
+              allowed_importers:
+                - '*.${role.shared-domain}.*'
+            contracts[id=module-reached-only-through-its-surface.adapters]:
+              name: module-reached-only-through-its-surface
+              type: protected
+              protected_modules:
+                - '*.${role.gateway}.*.*'
+              allowed_importers:
+                - '*.${role.gateway}.*'
+            # the root and the package's surface reach a composition module's adapter through the
+            # adapter's own surface
+            contracts[id=module-reached-only-through-its-surface.composition]:
+              name: module-reached-only-through-its-surface
+              type: protected
+              protected_modules:
+                - '*.${role.composition-module}.*.*'
+              allowed_importers:
+                - '*.${role.composition-module}.*'
+              ignore_imports:
+                - '*.${role.composition-root} -> *.${role.composition-module}.*.${role.gateway}.*'
+                - '*.${role.composition-root}.**
+                  -> *.${role.composition-module}.*.${role.gateway}.*'
+                - '* -> *.${role.composition-module}.*.${role.gateway}.*'
+              unmatched_ignore_imports_alerting: none
+            # the root and the package's surface reach a feature's adapter through the adapter's own
+            # surface
+            contracts[id=module-reached-only-through-its-surface.features]:
+              name: module-reached-only-through-its-surface
+              type: protected
+              protected_modules:
+                - '*.${role.bounded-context}.*.*'
+              allowed_importers:
+                - '*.${role.bounded-context}.*'
+              ignore_imports:
+                - '*.${role.composition-root} -> *.${role.bounded-context}.*.${role.gateway}.*'
+                - '*.${role.composition-root}.** -> *.${role.bounded-context}.*.${role.gateway}.*'
+                - '* -> *.${role.bounded-context}.*.${role.gateway}.*'
+              unmatched_ignore_imports_alerting: none
+            contracts[id=module-reached-only-through-its-surface.libs]:
+              name: module-reached-only-through-its-surface
+              type: protected
+              protected_modules:
+                - '*.${role.generic-library}.*.*'
+              allowed_importers:
+                - '*.${role.generic-library}.*'
+            contracts[id=module-reached-only-through-its-surface.shared]:
+              name: module-reached-only-through-its-surface
+              type: protected
+              protected_modules:
+                - '*.${role.shared-code}.*.*'
+              allowed_importers:
+                - '*.${role.shared-code}.*'
+python:
+  domain-imports-no-logging:
+    python:
+      pyproject.toml:
+        tool:
+          importlinter:
+            include_external_packages: true
+            contracts[name=domain-imports-no-logging]:
+              type: forbidden
+              source_modules:
+                - '*.${role.composition-module}.*.${role.pure-layer}'
+                - '*.${role.bounded-context}.*.${role.pure-layer}'
+              forbidden_modules:
+                - logging
+              allow_indirect_imports: true

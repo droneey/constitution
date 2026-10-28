@@ -1,0 +1,14 @@
+pydantic:
+  pydantic-home-is-the-edge-and-shared-parsing:
+    python:
+      pyproject.toml:
+        tool:
+          python-check:
+            homes:
+              pydantic:
+                - edge
+                - ${role.application-layer}
+                - ${role.shared-code}
+              pydantic_settings:
+                - edge
+                - ${role.shared-code}

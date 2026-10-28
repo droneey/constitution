@@ -1,3 +1,6 @@
+/** the language of the fenced block a diagram replaces */
+const DIAGRAM_LANGUAGE = 'mermaid';
+
 const DIAGRAM_SPACING_PX = 32;
 
 const DIAGRAM_COLOURS = {
@@ -10,4 +13,4 @@ const DIAGRAM_COLOURS = {
   surface: 'color-mix(in oklch, var(--color-accent-solid) 7%, var(--color-surface-level-1))',
 } as const;
 
-export { DIAGRAM_COLOURS, DIAGRAM_SPACING_PX };
+export { DIAGRAM_COLOURS, DIAGRAM_LANGUAGE, DIAGRAM_SPACING_PX };

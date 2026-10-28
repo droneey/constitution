@@ -1,11 +1,21 @@
-export { CheckKind, CheckState } from './check-state.entity';
-export { HookEventName } from './hook-event.entity';
+export type {
+  DigestBlock,
+  DigestEntry,
+  DigestFiles,
+  DigestListing,
+  DigestOverride,
+  DigestUnit,
+} from './digest-listing.entity';
+export { DigestEntryKind } from './digest-listing.entity';
+export { HookEventName } from './hook-event-name.entity';
 export type { RemindedBlock, Reminder } from './reminder.entity';
 export type { DigestContents, DigestRelease, SessionDigest } from './session-digest.entity';
 export { DigestKind } from './session-digest.entity';
+export type { FingerprintMark } from './session-mark.entity';
 export { SessionMark } from './session-mark.entity';
 export type { SessionStart } from './session-start.entity';
 export { SessionOrigin } from './session-start.entity';
+export type { ParsedState } from './session-state.entity';
 export { SessionState } from './session-state.entity';
 export type { StopEvent } from './stop-event.entity';
 export type { StopJudgement } from './stop-judgement.entity';

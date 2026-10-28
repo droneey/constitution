@@ -1,0 +1,8 @@
+# This repository runs mutation-check from its workspace's source, never the distribution's build.
+stryker:
+  stryker-runs-the-distribution-runner:
+    typescript:
+      stryker.config.json:
+        plugins: !replace
+          - ./${role.source}/${role.host-integration}/stryker/index.ts
+          - ./${role.source}/${role.host-integration}/stryker/ignorers.ts

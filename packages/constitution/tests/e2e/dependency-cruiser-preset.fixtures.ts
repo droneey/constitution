@@ -1,10 +1,15 @@
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, symlinkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { basename, dirname, join } from 'node:path';
 
 import { cruise as cruiseModules } from 'dependency-cruiser';
 import extractDepcruiseConfig from 'dependency-cruiser/config-utl/extract-depcruise-config';
 import { z } from 'zod';
+
+import type { UnitFixture } from './applied-unit.fixtures';
+import { appliedUnit, constitutionOf } from './applied-unit.fixtures';
+import { release, writeFiles } from './package.fixtures';
+import { OWN_PACK } from './project.fixtures';
 
 enum Declaration {
   Production = 'production',
@@ -15,24 +20,33 @@ enum Declaration {
 }
 
 interface Installed {
-  declaration: Declaration;
-  deprecated?: string;
+  readonly declaration: Declaration;
+  readonly deprecated?: string;
 }
 
 interface Project {
-  files: Readonly<Record<string, string>>;
-  // A link's path, then the folder it points to, as a package manager links a workspace's units.
-  links?: Readonly<Record<string, string>>;
-  // The project's own settings, joined after the parts.
-  own?: Readonly<Record<string, unknown>>;
-  parts?: readonly string[];
-  roots?: readonly string[];
-  workspaces?: readonly string[];
+  /** the optional axes the unit follows; architecture and workflow where it names none */
+  readonly axes?: readonly string[];
+  /** the blocks of the unit beside its language's and dependency-cruiser */
+  readonly blocks?: readonly string[];
+  readonly files: Readonly<Record<string, string>>;
+  /**
+   * a link's path, then the folder of the unit it points to, as a package manager links a
+   * workspace's units
+   */
+  readonly links?: Readonly<Record<string, string>>;
+  /** the text of the unit's own preset file of dependency-cruiser, in a pack of its own */
+  readonly own?: string;
+  readonly roots?: readonly string[];
+  /** cruised from its own folder by its own configuration; the project's root where absent */
+  readonly unit?: string;
+  readonly workspaces?: readonly string[];
 }
 
 interface Cruise {
-  cruised: number;
-  violations: readonly string[];
+  /** whether it read any module */
+  readonly isCruised: boolean;
+  readonly violations: readonly string[];
 }
 
 const report = z.object({
@@ -48,18 +62,9 @@ const report = z.object({
   }),
 });
 
-const repository = join(import.meta.dir, '..', '..');
-
-const baseParts = [
-  'typescript/self',
-  'typescript/core',
-  'typescript/typescript',
-];
-
-// The packages the blocks' rules name, and those the parts of the base tell
-// apart: `kit` declared, `devtool` a development dependency, `ghost` installed
-// but never declared, `legacy` deprecated.
-const INSTALLED: Readonly<Record<string, Installed>> = {
+// The packages the blocks' rules name, and those the base's rules tell apart: `kit` declared,
+// `devtool` a development dependency, `ghost` installed but never declared, `legacy` deprecated.
+const installedPackages: Readonly<Record<string, Installed>> = {
   '@bunli/core': {
     declaration: Declaration.Production,
   },
@@ -112,11 +117,11 @@ const INSTALLED: Readonly<Record<string, Installed>> = {
   zod: {
     declaration: Declaration.Production,
   },
-} as const;
+};
 
 const installedFiles = (): Readonly<Record<string, string>> =>
   Object.fromEntries(
-    Object.entries(INSTALLED).flatMap(([name, { deprecated }]) => [
+    Object.entries(installedPackages).flatMap(([name, { deprecated }]) => [
       [
         `node_modules/${name}/index.js`,
         'export const value = 1;\n',
@@ -135,7 +140,7 @@ const installedFiles = (): Readonly<Record<string, string>> =>
 
 const declared = (declarations: readonly Declaration[]): Readonly<Record<string, string>> =>
   Object.fromEntries(
-    Object.entries(INSTALLED)
+    Object.entries(installedPackages)
       .filter(([, installed]) => declarations.includes(installed.declaration))
       .map(([name]) => [
         name,
@@ -143,81 +148,111 @@ const declared = (declarations: readonly Declaration[]): Readonly<Record<string,
       ]),
   );
 
-const template = readFileSync(
-  join(
-    repository,
-    'templates',
-    'project',
-    'typescript',
+const CONFIG = '.dependency-cruiser.jsonc';
+const MANIFEST = 'package.json';
+const CONSTITUTION = 'constitution.yaml';
+const presetsFolder = join(release, 'presets', 'dependency-cruiser');
+const RULE_NAME = /forbidden\[name=([^\]]+)\]/g;
+
+const unitOf = (project: Project): UnitFixture => ({
+  ...(project.axes === undefined
+    ? {}
+    : {
+        axes: project.axes,
+      }),
+  blocks: project.blocks ?? [],
+  implementations: [
     'dependency-cruiser',
-    '.dependency-cruiser.mjs',
-  ),
-  'utf8',
-);
+  ],
+  languages: [
+    'typescript',
+  ],
+});
 
-// The template written for the parts at these paths, as /constitution:ratify writes it: one
-// namespace import to a part, and the parts joined in their order by the release's join.
-const configFromTemplate = (
-  paths: readonly string[],
-  presets = './.droneey/constitution/presets',
-): string => {
-  const names = paths.map((_, index) => `part${String(index)}`);
+// A workspace's root lists its units in its manifest, and each unit follows the root's blocks by a
+// constitution.yaml of its own, so the apply writes each unit's configuration.
+const workspaceFilesOf = (project: Project): Readonly<Record<string, string>> =>
+  project.workspaces === undefined
+    ? {}
+    : {
+        [MANIFEST]: JSON.stringify({
+          name: 'fixture',
+          workspaces: project.workspaces,
+        }),
+        ...Object.fromEntries(
+          Object.values(project.links ?? {}).flatMap((folder) => [
+            [
+              join(folder, MANIFEST),
+              project.files[join(folder, MANIFEST)] ?? '{}',
+            ],
+            [
+              join(folder, CONSTITUTION),
+              constitutionOf({
+                ...unitOf(project),
+                name: basename(folder),
+              }),
+            ],
+          ]),
+        ),
+      };
 
-  return template
-    .replace('<presets>', presets)
-    .replace(
-      "import * as part from '<parts>';",
-      paths.map((path, index) => `import * as ${names[index] ?? ''} from '${path}';`).join('\n'),
-    )
-    .replace('  part,\n', names.map((name) => `  ${name},\n`).join(''));
-};
+const appliedFilesOf = (project: Project): Partial<UnitFixture> =>
+  project.own === undefined
+    ? {
+        files: workspaceFilesOf(project),
+      }
+    : {
+        files: {
+          ...workspaceFilesOf(project),
+          [`${OWN_PACK}/presets/dependency-cruiser/foundation.yaml`]: project.own,
+        },
+        packs: [
+          OWN_PACK,
+        ],
+      };
 
-const configOf = (parts: readonly string[], own: Readonly<Record<string, unknown>> = {}): string =>
-  configFromTemplate(
-    [
-      ...baseParts,
-      ...parts,
-    ].map(
-      (part) =>
-        `./.droneey/constitution/presets/${part.replace('/', '/dependency-cruiser/').replace(/\/dependency-cruiser\/(?!architecture\/|workflow\/)/, '/dependency-cruiser/foundation/')}.mjs`,
+const configOf = (project: Project): string =>
+  readFileSync(
+    join(
+      appliedUnit({
+        ...unitOf(project),
+        ...appliedFilesOf(project),
+      }),
+      project.unit ?? '',
+      CONFIG,
     ),
-  ).replace('  {},\n', `  ${JSON.stringify(own)},\n`);
+    'utf8',
+  );
 
 const writeProject = (folder: string, project: Project): void => {
-  const files = {
-    ...installedFiles(),
-    ...project.files,
-    '.dependency-cruiser.mjs': configOf(
-      project.parts ?? [
-        'typescript/architecture/core',
-      ],
-      project.own,
-    ),
-    'package.json': JSON.stringify({
-      dependencies: declared([
-        Declaration.Production,
-        Declaration.Both,
-      ]),
-      devDependencies: declared([
-        Declaration.Development,
-        Declaration.Both,
-        Declaration.PeerAndDevelopment,
-      ]),
-      name: 'fixture',
-      peerDependencies: declared([
-        Declaration.PeerAndDevelopment,
-      ]),
-      type: 'module',
-      workspaces: project.workspaces,
-    }),
-  };
-
-  for (const [path, text] of Object.entries(files)) {
-    mkdirSync(dirname(join(folder, path)), {
-      recursive: true,
-    });
-    writeFileSync(join(folder, path), text);
-  }
+  writeFiles({
+    files: {
+      ...installedFiles(),
+      ...project.files,
+      [join(project.unit ?? '', CONFIG)]: configOf(project),
+      [MANIFEST]: JSON.stringify({
+        dependencies: declared([
+          Declaration.Production,
+          Declaration.Both,
+        ]),
+        devDependencies: declared([
+          Declaration.Development,
+          Declaration.Both,
+          Declaration.PeerAndDevelopment,
+        ]),
+        name: 'fixture',
+        imports: {
+          '#/*': './src/*',
+        },
+        peerDependencies: declared([
+          Declaration.PeerAndDevelopment,
+        ]),
+        type: 'module',
+        workspaces: project.workspaces,
+      }),
+    },
+    folder,
+  });
 
   for (const [path, target] of Object.entries(project.links ?? {})) {
     mkdirSync(dirname(join(folder, path)), {
@@ -225,9 +260,6 @@ const writeProject = (folder: string, project: Project): void => {
     });
     symlinkSync(join(folder, target), join(folder, path));
   }
-
-  mkdirSync(join(folder, '.droneey'));
-  symlinkSync(repository, join(folder, '.droneey', 'constitution'));
 };
 
 // The json reporter's output is the text of the result.
@@ -235,7 +267,7 @@ const cruiseOf = (output: unknown): Cruise => {
   const { summary } = report.parse(JSON.parse(String(output)));
 
   return {
-    cruised: summary.totalCruised,
+    isCruised: summary.totalCruised > 0,
     violations: [
       ...new Set(summary.violations.map(({ rule }) => rule.name)),
     ],
@@ -250,7 +282,7 @@ const cruise = async (project: Project): Promise<Cruise> => {
 
   try {
     writeProject(folder, project);
-    process.chdir(folder);
+    process.chdir(join(folder, project.unit ?? ''));
 
     const cruising = await cruiseModules(
       [
@@ -260,7 +292,7 @@ const cruise = async (project: Project): Promise<Cruise> => {
       ],
       {
         outputType: 'json',
-        ruleSet: await extractDepcruiseConfig('./.dependency-cruiser.mjs'),
+        ruleSet: await extractDepcruiseConfig(`./${CONFIG}`),
         validate: true,
       },
       {},
@@ -280,4 +312,26 @@ const cruise = async (project: Project): Promise<Cruise> => {
   }
 };
 
-export { configFromTemplate, cruise };
+const presetRuleNames = (): readonly string[] => [
+  ...new Set(
+    readdirSync(presetsFolder, {
+      recursive: true,
+    })
+      .map(String)
+      .filter((path) => path.endsWith('.yaml'))
+      .flatMap((path) =>
+        [
+          ...readFileSync(join(presetsFolder, path), 'utf8').matchAll(RULE_NAME),
+        ].map(([, name]) => String(name)),
+      ),
+  ),
+];
+
+/** The forbidden rules of the preset files that no row given names. */
+const rulesNamedByNoRow = (
+  rows: readonly {
+    readonly rule: string;
+  }[],
+): readonly string[] => presetRuleNames().filter((name) => !rows.some(({ rule }) => rule === name));
+
+export { cruise, rulesNamedByNoRow };

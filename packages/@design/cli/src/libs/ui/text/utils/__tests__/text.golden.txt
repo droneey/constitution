@@ -1,0 +1,81 @@
+# heading
+Checks
+
+# a pending step
+• lint
+
+# a running step
+▸ lint
+
+# a done step
+✓ lint
+
+# a failed step
+✗ lint
+
+# a warned step
+⚠ lint
+
+# a skipped step
+• lint
+
+# a step with a detail
+✓ format — 3 files
+
+# a task list
+✓ lint
+▸ test
+
+# the work going on
+▸ lint…
+
+# progress
+Files 3/8 (37%)
+
+# a note of information
+ℹ Heads up
+  one
+  two
+
+# a note of warning
+⚠ Heads up
+  one
+  two
+
+# a note of success
+✓ Heads up
+  one
+  two
+
+# a note of error
+✗ Heads up
+  one
+  two
+
+# a note of the accent
+▸ Heads up
+  one
+  two
+
+# a muted note
+• Heads up
+  one
+  two
+
+# a failure that names a next step
+✗ no-project
+  constitution.yaml: ENOENT
+  → init
+
+# a failure that names none
+✗ Interrupted
+
+# a table, a column of numbers to the end
+Block       Rules
+typescript     42
+ink             9
+gap
+
+# keys and values
+version  0.80.0
+blocks   18

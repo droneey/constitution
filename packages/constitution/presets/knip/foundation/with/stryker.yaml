@@ -1,0 +1,6 @@
+stryker:
+  '*':
+    typescript:
+      knip.jsonc:
+        ignoreDependencies:
+          - '@stryker-mutator/bun-specs-runner'

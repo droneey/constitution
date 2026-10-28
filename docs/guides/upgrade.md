@@ -23,8 +23,8 @@ The plugin reads the form of the blocks its own release writes and the one befor
 
 | Doctor says | Because | Do |
 |---|---|---|
-| raise the Constitution pin in mise.toml | the project's release is older than the program reads, or the plugin newer than the program and its own files differ | raise the pin, as above |
-| `claude plugin marketplace update droneey`, then `claude plugin update constitution@droneey` | the project's release is newer than the program reads, or the plugin older than the program and its own files differ | update the plugin, then start a new session |
+| raise the Constitution pin in mise.toml | the project's release is older than the executable reads, or the plugin newer than the executable and its own files differ | raise the pin, as above |
+| `claude plugin marketplace update droneey`, then `claude plugin update constitution@droneey` | the project's release is newer than the executable reads, or the plugin older than the executable and its own files differ | update the plugin, then start a new session |
 | run `mise install` | `.droneey/constitution/` is missing, as in a fresh clone, or `constitution` on `PATH` is another release | install it |
 
 The marketplace serves only released versions, never unreleased work.

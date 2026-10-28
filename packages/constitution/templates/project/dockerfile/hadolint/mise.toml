@@ -1,7 +1,0 @@
-# hadolint: pinned by mise
-[tools]
-hadolint = "2.15.1"
-
-# hadolint: the Dockerfiles, by the part it takes on the command line
-[tasks."dockerfile:check"]
-run = "hadolint --config <parts> <Dockerfile>"

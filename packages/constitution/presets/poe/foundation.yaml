@@ -1,0 +1,40 @@
+poe:
+  '*':
+    python:
+      pyproject.toml:
+        tool:
+          poe:
+            # Each task runs in the environment `uv run` entered, with no environment of its own.
+            executor: simple
+  task-group-walks-poes-own-list:
+    python:
+      pyproject.toml:
+        tool:
+          poe:
+            # poe runs no task by a pattern, so a group walks poe's own list as Bun's pattern does.
+            tasks:
+              check:
+                shell: !words
+                  - >-
+                    for task in $(poe _list_tasks | tr ' ' '\n' | sort); do case "$task" in
+                    check:*) poe "$task" || exit 1;; esac; done
+                  - slot: tests
+                  - slot: mutations
+              test:
+                shell: >-
+                  for task in $(poe _list_tasks | tr ' ' '\n' | sort); do case "$task" in
+                  test:*) poe "$task" || exit 1;; esac; done
+              fix:
+                shell: >-
+                  for task in $(poe _list_tasks | tr ' ' '\n' | sort); do case "$task" in
+                  fix:*) poe "$task" || exit 1;; esac; done
+_task-runner:
+  unit-run-through-its-action-tasks:
+    python:
+      ${constitution.run}:
+        check:
+          - uv run --locked poe check
+        fix:
+          - uv run --locked poe fix
+        test:
+          - uv run --locked poe test

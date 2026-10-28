@@ -1,3 +1,0 @@
-# rumdl: the Constitution's parts, each extending the one before; rumdl extends the last
-# from .droneey/constitution/presets/markdown/rumdl/foundation/self.toml, .droneey/constitution/presets/markdown/rumdl/foundation/core.toml
-extends = ".droneey/constitution/presets/markdown/rumdl/foundation/core.toml"

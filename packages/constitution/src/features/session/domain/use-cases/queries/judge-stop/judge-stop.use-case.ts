@@ -1,66 +1,72 @@
-import type { WorkingTree } from '#/kernel/contracts';
+import { ConfigReadStatus } from '#/kernel/entities';
 
+import type { WorkingTree } from '../../../contracts';
+import { TreeStateStatus } from '../../../contracts';
 import type { SessionQueryRepository } from '../../../contracts/repositories/queries';
-import type { StopEvent, StopJudgement } from '../../../entities';
-import { CheckState, HookEventName, SessionMark, StopVerdict } from '../../../entities';
-import { fingerprintOf } from '../../shared/checksum';
-import { governingOf } from '../shared/governing';
+import type { FingerprintMark, StopEvent, StopJudgement } from '../../../entities';
+import { HookEventName, SessionMark, SessionState, StopVerdict } from '../../../entities';
+import type { TreeFingerprint } from '../../../value-objects';
 
 const REVIEWER = 'constitution:reviewer';
 
-interface JudgeStopInput extends StopEvent {
+type JudgeStopInput = StopEvent & {
   readonly sessions: SessionQueryRepository;
   readonly workingTree: WorkingTree;
-}
+};
+
+const isReviewerStop = (event: StopEvent): boolean =>
+  // Stryker disable next-line ConditionalExpression: the test only narrows the type; no other event names an agent
+  event.event === HookEventName.SubagentStop &&
+  (event.agentType === REVIEWER || event.agentName === REVIEWER);
 
 /**
  * The hand-back gate: whether the agent, or a subagent, may stop now, and what it is told when it
- * may not; undefined when it may stop, or the session keeps no state.
+ * may not or when git first fails to report the tree for a reason; undefined when it may stop, the
+ * session keeps no rules or the project lies in no repository.
  */
 const judgeStop = (input: JudgeStopInput): StopJudgement | undefined => {
   const { sessions, session } = input;
   const state = sessions.state(session);
 
-  if (state === undefined) {
+  if (state?.status !== ConfigReadStatus.Parsed) {
     return undefined;
   }
 
-  const now = fingerprintOf({
-    project: state.project,
-    workingTree: input.workingTree,
-  });
+  const tree = input.workingTree.stateOf(state.repositoryFolderPath);
 
-  const markOf = (mark: SessionMark): string | undefined =>
-    sessions.mark({
+  const markOf = (mark: FingerprintMark): TreeFingerprint | undefined =>
+    sessions.fingerprint({
       mark,
       session,
     });
 
-  if (
-    input.event === HookEventName.SubagentStop &&
-    (input.agentType === REVIEWER || input.agentName === REVIEWER)
-  ) {
-    return {
-      fingerprint: now,
-      verdict: StopVerdict.Reviewed,
-    };
+  if (isReviewerStop(input)) {
+    return tree.status === TreeStateStatus.Read
+      ? {
+          fingerprint: tree.fingerprint,
+          verdict: StopVerdict.Reviewed,
+        }
+      : undefined;
   }
 
-  const turn = markOf(SessionMark.Turn);
-  const check = CheckState.commandOf(state.check);
-
-  if (input.isHookActive) {
+  if (input.isHookActive || tree.status === TreeStateStatus.NoRepository) {
     return undefined;
   }
 
-  if (
-    check !== undefined &&
-    now !== turn &&
-    now !== markOf(SessionMark.Checked) &&
-    now !== markOf(SessionMark.Blocked)
-  ) {
+  if (tree.status === TreeStateStatus.Failed) {
+    return tree.reason === sessions.unjudged(session)
+      ? undefined
+      : {
+          reason: tree.reason,
+          verdict: StopVerdict.Unjudged,
+        };
+  }
+
+  const now = tree.fingerprint;
+  const turn = markOf(SessionMark.Turn);
+
+  if (now !== turn && now !== markOf(SessionMark.Checked) && now !== markOf(SessionMark.Blocked)) {
     return {
-      check,
       fingerprint: now,
       verdict: StopVerdict.Blocked,
     };
@@ -72,12 +78,9 @@ const judgeStop = (input: JudgeStopInput): StopJudgement | undefined => {
 
   const blocks = [
     ...new Set(
-      input.workingTree.changedFiles(state.project).flatMap((path) =>
-        governingOf({
-          active: state.active,
-          path,
-        }).map((block) => block.id),
-      ),
+      input.workingTree
+        .changedFiles(state.repositoryFolderPath)
+        .flatMap((path) => SessionState.governing(state, path).map((block) => block.id)),
     ),
   ];
 

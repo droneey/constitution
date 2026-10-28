@@ -3,12 +3,9 @@ import { describe, expect, it } from 'bun:test';
 import type { FindingOf } from '#/kernel/types';
 import { RuleSlug } from '#/kernel/value-objects';
 
-import {
-  checkInputOf,
-  passportFile,
-  rule,
-} from '../../../../../../__tests__/constitution.fixtures';
+import { passportFile, rule } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
+import { checkInputOf } from '../../__tests__/check.fixtures';
 import type { BlockFormDetails } from '../block-form';
 import { BlockFormCode, blockFormCheck } from '../block-form';
 

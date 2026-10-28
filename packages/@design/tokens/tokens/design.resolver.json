@@ -1,0 +1,56 @@
+{
+  "name": "droneey design",
+  "version": "2025.10",
+  "description": "The design system every droneey interface shares: the sets every mode takes, and the theme modifier whose contexts name the roles of the light and the dark mode.",
+  "sets": {
+    "base": {
+      "description": "The scales, the overlays, the sizes, the type, the motion, the shadows and the layers: the same in every mode.",
+      "sources": [
+        {
+          "$ref": "color.tokens.json"
+        },
+        {
+          "$ref": "size.tokens.json"
+        },
+        {
+          "$ref": "font.tokens.json"
+        },
+        {
+          "$ref": "motion.tokens.json"
+        },
+        {
+          "$ref": "shadow.tokens.json"
+        },
+        {
+          "$ref": "layer.tokens.json"
+        }
+      ]
+    }
+  },
+  "modifiers": {
+    "theme": {
+      "description": "The mode the interface is drawn in: the same roles, each naming another step.",
+      "contexts": {
+        "light": [
+          {
+            "$ref": "theme/light.tokens.json"
+          }
+        ],
+        "dark": [
+          {
+            "$ref": "theme/dark.tokens.json"
+          }
+        ]
+      },
+      "default": "light"
+    }
+  },
+  "resolutionOrder": [
+    {
+      "$ref": "#/sets/base"
+    },
+    {
+      "$ref": "#/modifiers/theme"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+yamllint:
+  '*':
+    yaml:
+      pyproject.toml:
+        tool:
+          poe:
+            tasks:
+              check:yaml: yamllint --strict .

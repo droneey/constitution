@@ -1,0 +1,20 @@
+css:
+  stylesheet-feature-beyond-the-target-behind-supports:
+    css:
+      biome.jsonc:
+        linter:
+          rules:
+            suspicious:
+              useBaseline: error
+  web-font-served-as-woff2:
+    css:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/css/web-font-served-as-woff2.${role.grit-rule}]:
+          includes:
+            - '**/*.css'
+  viewport-size-in-small-viewport-units:
+    css:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/css/viewport-size-in-small-viewport-units.${role.grit-rule}]:
+          includes:
+            - '**/*.css'

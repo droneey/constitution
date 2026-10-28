@@ -1,7 +1,7 @@
 import type { PageLookup } from '../../../contracts';
-import type { Page, PageSlugs } from '../../../entities';
+import type { Page } from '../../../entities';
+import type { PageSlugs } from '../../../value-objects';
 
-/** undefined when no page has these slugs */
 export type GetPage = (slugs: PageSlugs) => Promise<Page | undefined>;
 
 export const createGetPage =

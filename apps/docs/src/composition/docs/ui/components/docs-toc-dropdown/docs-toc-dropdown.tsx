@@ -15,7 +15,7 @@ export function DocsTocDropdown(): ReactElement {
       onOpenChange={setIsOpen}
       open={isOpen}
     >
-      <Popover.Trigger className='flex min-w-0 items-center rounded-lg text-start text-sm text-fd-muted-foreground transition-colors duration-(--duration-fast) ease-(--ease-standard) hover:bg-fd-accent hover:text-fd-accent-foreground data-popup-open:bg-fd-accent data-popup-open:text-fd-accent-foreground'>
+      <Popover.Trigger className='flex min-w-0 items-center rounded-lg text-start font-label text-fd-muted-foreground text-label-sm transition-colors duration-(--duration-fast) ease-(--ease-standard) hover:bg-fd-accent hover:text-fd-accent-foreground data-popup-open:bg-fd-accent data-popup-open:text-fd-accent-foreground'>
         <DocsTocDropdownProgress />
         <DocsTocDropdownHeading fallback={ON_THIS_PAGE_LABEL} />
         <Icon

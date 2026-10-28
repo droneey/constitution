@@ -6,13 +6,9 @@ import type { FindingOf } from '#/kernel/types';
 import { BlockId, coreBlockId } from '#/kernel/value-objects';
 
 import type { Files } from '../../../../../../__tests__/constitution.fixtures';
-import {
-  checkInputOf,
-  passportFile,
-  rule,
-  textOf,
-} from '../../../../../../__tests__/constitution.fixtures';
+import { passportFile, rule, textOf } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
+import { checkInputOf } from '../../__tests__/check.fixtures';
 import type { TermsDetails } from '../terms';
 import { TermsCode, termsCheck } from '../terms';
 
@@ -409,6 +405,74 @@ describe('termsCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual(expected);
+  });
+
+  it('should let a block that builds on the owner of an id spell its term its own way', () => {
+    // Arrange
+    const files = withCoreTerms(validFiles());
+    const biome = 'blocks/implementations/biome/biome.md';
+
+    files[biome] = textOf({
+      files,
+      path: biome,
+    }).replace('every `.ts` file.', 'every **`.mts`**{#typescript-source} file.');
+
+    // Act
+    const findings = termsCheck(checkInputOf(files));
+
+    // Assert
+    expect(findings).toStrictEqual([]);
+  });
+
+  it('should let a block read before the owner of an id it builds on spell its term its own way', () => {
+    // Arrange
+    const files = withCoreTerms(validFiles());
+    const biome = 'blocks/implementations/biome/biome.md';
+
+    files[biome] = textOf({
+      files,
+      path: biome,
+    })
+      .replace('requires: ["typescript"]', 'requires: ["typescript", "lingui"]')
+      .replace('every `.ts` file.', 'every **`.mts`**{#catalog} file.');
+    files[LINGUI] = textOf({
+      files,
+      path: LINGUI,
+    }).replace('compiles its catalogs.', 'compiles its **`.po`**{#catalog} catalogs.');
+
+    // Act
+    const findings = termsCheck(checkInputOf(files));
+
+    // Assert
+    expect(findings).toStrictEqual([]);
+  });
+
+  it('should report an id a block repeats that it does not build on', () => {
+    // Arrange
+    const files = withCoreTerms(validFiles());
+    const render = 'blocks/contexts/platforms/browser/architecture/render.md';
+
+    files[render] = textOf({
+      files,
+      path: render,
+    }).replace('# Render', '# Render\n\nA module ends in **`.mts`**{#typescript-source}.');
+
+    // Act
+    const findings = termsCheck(checkInputOf(files));
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        code: TermsCode.IdRepeated,
+        details: {
+          firstFile: render,
+          firstTerm: '.mts',
+          id: 'typescript-source',
+          term: '.ts',
+        },
+        path: 'blocks/contexts/languages/typescript/typescript.md',
+      },
+    ]);
   });
 
   it.each([

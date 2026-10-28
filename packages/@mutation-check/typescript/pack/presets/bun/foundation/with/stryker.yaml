@@ -1,0 +1,8 @@
+# The package is mutation-check itself, which runs from its own source.
+stryker:
+  '*':
+    typescript:
+      package.json:
+        scripts:
+          mutate:branch: !replace bun --no-env-file ${role.source}/main.ts
+          mutate:all: !replace bun --no-env-file ${role.source}/main.ts all

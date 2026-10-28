@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
-import { createFakeWorkingTree } from '#/__tests__/working-tree.fake';
+import { ConfigReadStatus } from '#/kernel/entities';
+import { AbsolutePath } from '#/kernel/value-objects';
 
 import {
   heldSessionsOf,
@@ -8,85 +9,75 @@ import {
   sessionStateOf,
 } from '../../../../../__tests__/session.fixtures';
 import { createFakeSessionCommandRepository } from '../../../../../__tests__/session-command-repository.fake';
-import { CheckState, SessionMark } from '../../../../entities';
+import { createFakeWorkingTree } from '../../../../../__tests__/working-tree.fake';
+import { TreeStateStatus } from '../../../../contracts';
+import { SessionMark } from '../../../../entities';
 import { SessionId } from '../../../../value-objects';
 import { recordCheck } from '../record-check.use-case';
 
-// The tree's state reads "hello", whose POSIX cksum is 3287646509.
-const TREE = 'hello';
-const FINGERPRINT = '3287646509';
+const TREE = 'tree-now';
 
 describe('recordCheck', () => {
   it.each([
     {
-      checked: FINGERPRINT,
-      command: 'bun run check',
+      checked: TREE,
+      command: 'constitution run check',
       condition: 'the command is the check',
     },
     {
-      checked: FINGERPRINT,
-      command: 'bun run check --verbose',
-      condition: 'the check opens the command and a blank ends it',
+      checked: TREE,
+      command: 'constitution run check --verbose',
+      condition: 'the check takes its options',
     },
     {
-      checked: FINGERPRINT,
-      command: 'bun run check; echo done',
+      checked: TREE,
+      command: 'constitution run check; echo done',
       condition: 'the check opens the command and a semicolon ends it',
     },
     {
-      checked: FINGERPRINT,
-      command: 'cd app && bun run check',
-      condition: 'the check ends the command after &&',
+      checked: TREE,
+      command: 'cd app && constitution run check | tee log',
+      condition: 'the check follows &&',
     },
     {
-      checked: FINGERPRINT,
-      command: 'cd app && bun run check | tee log',
-      condition: 'the check follows && and a blank ends it',
+      checked: TREE,
+      command: 'cd app;constitution run check',
+      condition: 'the check follows a semicolon with no blank',
     },
     {
-      checked: FINGERPRINT,
-      command: 'cd app && bun run check; echo done',
-      condition: 'the check follows && and a semicolon ends it',
+      checked: TREE,
+      command: 'bun run constitution run check',
+      condition: 'bun run runs the check',
     },
     {
-      checked: FINGERPRINT,
-      command: 'cd app; bun run check',
-      condition: 'the check ends the command after a semicolon',
+      checked: TREE,
+      command: 'bunx constitution run check',
+      condition: 'bunx runs the check',
     },
     {
-      checked: FINGERPRINT,
-      command: 'cd app; bun run check | tee log',
-      condition: 'the check follows a semicolon and a blank ends it',
+      checked: TREE,
+      command: 'npx constitution run check',
+      condition: 'npx runs the check',
     },
     {
-      checked: FINGERPRINT,
-      command: 'cd app; bun run check;',
-      condition: 'the check follows a semicolon and a semicolon ends it',
+      checked: TREE,
+      command: 'cd app && mise exec -- constitution run check',
+      condition: 'mise exec runs the check after &&',
     },
     {
       checked: undefined,
-      command: 'bun run checkout',
+      command: 'constitution run checkout',
       condition: 'the command only starts with the check',
     },
     {
       checked: undefined,
-      command: 'echo bun run check',
+      command: 'echo constitution run check',
       condition: 'the check follows a blank',
     },
     {
       checked: undefined,
-      command: 'cd app && bun run checkout',
-      condition: 'a longer command follows &&',
-    },
-    {
-      checked: undefined,
-      command: 'cd app; bun run checkout',
-      condition: 'a longer command follows a semicolon',
-    },
-    {
-      checked: undefined,
-      command: 'cd app &&bun run check',
-      condition: 'no blank follows &&',
+      command: 'bun run check',
+      condition: "a package's own script is run",
     },
     {
       checked: undefined,
@@ -113,36 +104,30 @@ describe('recordCheck', () => {
 
   it.each([
     {
-      command: 'bun run check; ',
       condition: 'the session kept no state',
       session: SessionId.create('session-2'),
       state: sessionStateOf(),
+      tree: TREE,
     },
     {
-      command: 'bun run check; ',
-      condition: 'the project names no check',
-      session: keptSession,
-      state: sessionStateOf({
-        check: CheckState.create(),
-      }),
-    },
-    {
-      command: 'undefined;',
-      condition: 'the project names no check and the command is the text of its absence',
-      session: keptSession,
-      state: sessionStateOf({
-        check: CheckState.create(),
-      }),
-    },
-    {
-      command: 'bun run check; ',
       condition: 'constitution.yaml did not parse',
       session: keptSession,
-      state: sessionStateOf({
-        check: CheckState.unparsed(),
-      }),
+      state: {
+        repositoryFolderPath: AbsolutePath.create('/work/project'),
+        status: ConfigReadStatus.Unparsed,
+      },
+      tree: TREE,
     },
-  ])('should record nothing when $condition', ({ command, session, state }) => {
+    {
+      condition: 'git cannot report the tree',
+      session: keptSession,
+      state: sessionStateOf(),
+      tree: {
+        reason: 'fatal: bad config',
+        status: TreeStateStatus.Failed,
+      },
+    },
+  ])('should record nothing when $condition', ({ session, state, tree }) => {
     // Arrange
     const store = heldSessionsOf({
       state,
@@ -150,15 +135,17 @@ describe('recordCheck', () => {
 
     // Act
     recordCheck({
-      command,
+      command: 'constitution run check',
       session,
       sessions: createFakeSessionCommandRepository(store),
       workingTree: createFakeWorkingTree({
-        state: TREE,
+        state: tree,
       }),
     });
 
     // Assert
-    expect(store.get(session)?.marks.get(SessionMark.Checked)).toBeUndefined();
+    expect([
+      ...(store.get(session)?.marks.keys() ?? []),
+    ]).toStrictEqual([]);
   });
 });

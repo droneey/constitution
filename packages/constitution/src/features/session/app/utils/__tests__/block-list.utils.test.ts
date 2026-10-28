@@ -1,21 +1,21 @@
 import { describe, expect, it } from 'bun:test';
 
 import { Axis, Layer } from '#/kernel/constants';
-import type { ListedBlock, ListedFiles } from '#/kernel/entities';
-import { UnitEntryKind } from '#/kernel/entities';
 import { BlockId, BlockSource, PackPath, UnitPath } from '#/kernel/value-objects';
 
+import type { DigestBlock, DigestFiles } from '../../../domain/entities';
+import { DigestEntryKind } from '../../../domain/entities';
 import { blockListLines } from '../block-list.utils';
 
 const KEY =
   "In brackets, a block's chapters and seams, named without .md: foundation's first, then <axis>: <file>, ... An implementation is named by its library alone; square brackets name a block's pack or, in an application, its layer.";
 
 const listedOf = (input: {
-  files?: readonly ListedFiles[];
+  files?: readonly DigestFiles[];
   id: string;
   layer: Layer;
   pack?: string;
-}): ListedBlock => ({
+}): DigestBlock => ({
   files: input.files ?? [],
   id: BlockId.create(input.id),
   layer: input.layer,
@@ -92,7 +92,7 @@ describe('blockListLines', () => {
                 },
               ],
               id: BlockId.create('ui'),
-              kind: UnitEntryKind.Added,
+              kind: DigestEntryKind.Added,
               layer: Layer.Domain,
             },
             {
@@ -109,14 +109,14 @@ describe('blockListLines', () => {
                 id: 'web',
                 layer: Layer.Platform,
               }),
-              kind: UnitEntryKind.Own,
+              kind: DigestEntryKind.Own,
             },
             {
               block: listedOf({
                 id: 'redux',
                 layer: Layer.Implementation,
               }),
-              kind: UnitEntryKind.Own,
+              kind: DigestEntryKind.Own,
             },
           ],
           leftOutAxes: [],

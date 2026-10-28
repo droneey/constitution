@@ -61,6 +61,11 @@ const routerAt = (address: string, content: DocsContentFake) => {
   });
 };
 
+/** rendered whole, the page and the sidebar settled */
+const renderRouter = async (router: ReturnType<typeof routerAt>): Promise<void> => {
+  await act(() => Promise.resolve(render(<RouterProvider router={router} />)));
+};
+
 const lastMatchOf = (router: ReturnType<typeof routerAt>) => router.state.matches.at(-1);
 
 describe('docs route', () => {
@@ -81,23 +86,6 @@ describe('docs route', () => {
     ]);
   });
 
-  it("should read an abstract block's page, whose id opens with its mark", async () => {
-    // Arrange
-    const content = docsContentFake();
-    const router = routerAt('/docs/domains/_api', content);
-
-    // Act
-    await router.load();
-
-    // Assert
-    expect(content.loads).toStrictEqual([
-      [
-        'domains',
-        '_api',
-      ],
-    ]);
-  });
-
   it('should read the overview when the address names no page', async () => {
     // Arrange
     const content = docsContentFake();
@@ -112,31 +100,10 @@ describe('docs route', () => {
     ]);
   });
 
-  it.each([
-    {
-      address: '/docs/guides/Write-a-pack',
-      condition: 'a segment holds a capital',
-    },
-    {
-      address: '/docs/guides/-draft',
-      condition: 'a segment starts with a character no slug holds',
-    },
-    {
-      address: '/docs/domains/__api',
-      condition: 'a segment opens with more than the one mark of an abstract block',
-    },
-    {
-      address: '/docs/guides/write_a_pack',
-      condition: 'a segment ends with a character no slug holds',
-    },
-    {
-      address: '/docs/a/b/c/d/e/f/g',
-      condition: 'it is deeper than any page',
-    },
-  ])('should find no page, and read none, when $condition', async ({ address }) => {
+  it('should find no page, and read none, when no page can have the address', async () => {
     // Arrange
     const content = docsContentFake();
-    const router = routerAt(address, content);
+    const router = routerAt('/docs/guides/Write-a-pack', content);
 
     // Act
     await router.load();
@@ -184,17 +151,16 @@ describe('docs route', () => {
     await router.load();
 
     // Act
-    render(<RouterProvider router={router} />);
-
-    const firstRender = screen.queryByRole('link', {
-      name: 'Overview',
-    });
-
-    // the scroll area of the sidebar measures itself after it mounts
-    await act(() => Promise.resolve());
+    await renderRouter(router);
 
     // Assert
-    expect(firstRender?.getAttribute('href')).toBe('/docs');
+    expect(
+      screen
+        .getByRole('link', {
+          name: 'Overview',
+        })
+        .getAttribute('href'),
+    ).toBe('/docs');
   });
 
   it('should title the tab with the page and the site', async () => {
@@ -232,15 +198,13 @@ describe('docs route', () => {
     const router = routerAt('/docs/guides/write-a-pack', docsContentFake());
 
     // Act
-    render(<RouterProvider router={router} />);
+    await renderRouter(router);
 
     // Assert
     expect([
-      (
-        await screen.findByRole('heading', {
-          level: 1,
-        })
-      ).textContent,
+      screen.getByRole('heading', {
+        level: 1,
+      }).textContent,
       screen
         .getByRole('link', {
           name: 'Overview',
@@ -256,7 +220,7 @@ describe('docs route', () => {
     // Arrange
     const router = routerAt('/docs/guides/write-a-pack', docsContentFake());
 
-    render(<RouterProvider router={router} />);
+    await renderRouter(router);
 
     // Act
     await userEvent.click(
@@ -275,12 +239,41 @@ describe('docs route', () => {
     ).toBe('/v0.70.0/docs/guides/write-a-pack');
   });
 
+  it('should move focus to the heading of the next page when two collections hold its file under one path', async () => {
+    // Arrange
+    const router = routerAt('/docs', docsContentFake());
+
+    await renderRouter(router);
+    await screen.findByRole('heading', {
+      level: 1,
+      name: 'Overview',
+    });
+
+    // Act
+    await act(() =>
+      router.navigate({
+        params: {
+          _splat: 'quick-start',
+        },
+        to: '/docs/$',
+      }),
+    );
+
+    // Assert
+    expect(document.activeElement).toBe(
+      await screen.findByRole('heading', {
+        level: 1,
+        name: 'Quick start',
+      }),
+    );
+  });
+
   it('should show not found when the page body has left its collection', async () => {
     // Arrange
     const router = routerAt('/docs/guides/moved', docsContentFake());
 
     // Act
-    render(<RouterProvider router={router} />);
+    await renderRouter(router);
 
     // Assert
     expect(

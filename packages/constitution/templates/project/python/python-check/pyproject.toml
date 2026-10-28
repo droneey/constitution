@@ -1,9 +1,0 @@
-# python-check: its tasks
-[tool.poe.tasks]
-"code:check" = "python .droneey/constitution/tools/python-check/dist/python-check.pyz src tests"
-
-# python-check: the homes the Constitution's parts give each block's package
-[tool.python-check]
-extend = [
-  "<parts>",
-]

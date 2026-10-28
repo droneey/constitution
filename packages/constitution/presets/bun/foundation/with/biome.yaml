@@ -1,0 +1,32 @@
+biome:
+  '*':
+    typescript:
+      package.json:
+        scripts:
+          check:lint: biome check --error-on-warnings
+          fix:lint: biome check --write
+bun:
+  '*':
+    typescript:
+      package.json:
+        scripts: !sorted {}
+  script-group-run-by-its-prefix:
+    typescript:
+      package.json:
+        scripts:
+          check: !words
+            - bun run --sequential
+            - slot: checks
+            - slot: tests
+            - slot: mutations
+          check@checks:
+            - "'check:*'"
+          fix: bun run --sequential 'fix:*'
+_task-runner:
+  unit-run-through-its-action-tasks:
+    typescript:
+      ${constitution.run}:
+        check:
+          - bun run check
+        fix:
+          - bun run fix

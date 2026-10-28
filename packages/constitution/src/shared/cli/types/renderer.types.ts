@@ -1,6 +1,6 @@
 import type { StepStatus } from '@droneey/design-cli';
 
-import type { Report } from './report.types';
+import type { Report, Section } from './report.types';
 
 interface TaskOutcome {
   readonly detail?: string;
@@ -20,4 +20,11 @@ interface Renderer {
   readonly run: <TResult>(task: Task<TResult>) => Promise<TResult>;
 }
 
-export type { Renderer, Task, TaskOutcome };
+/** What one step of a command found, as its report shows it. */
+interface StepReport {
+  readonly isFailed: boolean;
+  readonly outcome: TaskOutcome;
+  readonly sections: readonly Section[];
+}
+
+export type { Renderer, StepReport, Task, TaskOutcome };

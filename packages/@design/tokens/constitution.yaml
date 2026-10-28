@@ -1,0 +1,37 @@
+name: '@droneey/design-tokens'
+axes:
+  - architecture
+  - workflow
+domains:
+  - version-control
+  - workspace
+  - ui
+  - design-system
+platforms: []
+languages:
+  - typescript
+  - json
+  - toml
+  - yaml
+  - markdown
+implementations:
+  - bun
+  - tsc
+  - biome
+  - dependency-cruiser
+  - git
+  - knip
+  - jscpd
+  - rumdl
+  - yamllint
+  - tombi
+  - bun-test
+  - stryker
+packs:
+  - pack
+overrides:
+  - rule: scoped-resource-held-by-using
+    level: SHOULD
+    # constitution reads an override's reason from its one line
+    # yamllint disable-line rule:line-length
+    reason: "dependency-cruiser 18's swc visitor fails on UsingDeclaration and its tsc and acorn parsers drop type-only dependencies, so write.utils.ts, which must pass check:architecture, removes its pending file with try/finally; removed with #186 (parser tsc on TypeScript 7.1)"

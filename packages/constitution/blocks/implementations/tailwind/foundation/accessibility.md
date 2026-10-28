@@ -22,7 +22,7 @@ The motion tokens collapse under reduced motion, in the theme.
 
 ### type-tokens-in-rem → type-sized-in-rem · MUST
 
-Font-size tokens are in `rem`, and line-height tokens are unitless ratios.
+Font-size tokens are in `rem`.
 
 | Why |
 |---|

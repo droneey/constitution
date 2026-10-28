@@ -1,0 +1,32 @@
+rumdl:
+  '*':
+    markdown:
+      package.json:
+        scripts:
+          check:markdown: rumdl check . && rumdl fmt --check .
+          fix:markdown: rumdl check --fix
+bun:
+  '*':
+    markdown:
+      package.json:
+        scripts: !sorted {}
+  script-group-run-by-its-prefix:
+    markdown:
+      package.json:
+        scripts:
+          check: !words
+            - bun run --sequential
+            - slot: checks
+            - slot: tests
+            - slot: mutations
+          check@checks:
+            - "'check:*'"
+          fix: bun run --sequential 'fix:*'
+_task-runner:
+  unit-run-through-its-action-tasks:
+    markdown:
+      ${constitution.run}:
+        check:
+          - bun run check
+        fix:
+          - bun run fix

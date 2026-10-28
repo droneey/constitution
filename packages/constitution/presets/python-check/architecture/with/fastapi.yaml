@@ -1,0 +1,10 @@
+fastapi:
+  fastapi-imported-by-delivery-units:
+    python:
+      pyproject.toml:
+        tool:
+          python-check:
+            homes:
+              fastapi:
+                - edge
+                - ${role.application-layer}

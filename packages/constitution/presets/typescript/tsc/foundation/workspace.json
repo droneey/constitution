@@ -1,8 +1,0 @@
-{
-  "compilerOptions": {
-    "composite": true,
-    "noEmit": false,
-    "emitDeclarationOnly": true,
-    "outDir": "${configDir}/.tsc-cache"
-  }
-}

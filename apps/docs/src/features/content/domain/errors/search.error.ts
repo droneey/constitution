@@ -8,7 +8,6 @@ interface IndexUnavailableDetails {
   readonly address: string;
 }
 
-/** the index of the pages could not be read: the site's server gave none, or none it could read */
 class SearchError extends ProgramError<SearchFailure, IndexUnavailableDetails> {
   public constructor(details: IndexUnavailableDetails, options?: ErrorOptions) {
     super(

@@ -3,17 +3,17 @@ import { stripVTControlCharacters } from 'node:util';
 
 import { describe, expect, it } from 'bun:test';
 
-import { StepStatus } from '@droneey/design-cli';
+import { AccentScale, StepStatus } from '@droneey/design-cli';
 
 import { linesSection } from '#/shared/cli';
 
 import { createPresentation } from '../presentation';
 
-const accentStyle = {
+const accentStyle = AccentScale.create({
   color: {
     brand: {},
   },
-};
+});
 
 interface Written {
   readonly stderr: string;

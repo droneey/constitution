@@ -3,8 +3,9 @@ import { describe, expect, it } from 'bun:test';
 import { BlockId, Glob } from '#/kernel/value-objects';
 
 import type { Files } from '../../../../../../__tests__/constitution.fixtures';
-import { blockFiles, checkInputOf } from '../../../../../../__tests__/constitution.fixtures';
+import { blockFiles } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
+import { checkInputOf } from '../../__tests__/check.fixtures';
 import {
   ConfigurationLanguagesCode,
   configurationLanguagesCheck,

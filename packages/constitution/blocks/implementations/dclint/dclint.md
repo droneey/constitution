@@ -1,7 +1,7 @@
 ---
 id: dclint
 summary: Lints Docker Compose files.
-requires: [compose]
+requires: [compose, _task-runner]
 extends: null
 abstract: false
 languages: [yaml]

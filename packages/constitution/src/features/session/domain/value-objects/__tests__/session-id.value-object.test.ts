@@ -73,29 +73,4 @@ describe('SessionId', () => {
       }),
     );
   });
-
-  it.each([
-    {
-      condition: 'both name one session',
-      isEqual: true,
-      right: 'Session_1-a',
-    },
-    {
-      condition: 'they name two',
-      isEqual: false,
-      right: 'Session_1-ax',
-    },
-  ])('should say $isEqual when $condition', ({ isEqual, right }) => {
-    // Arrange
-    const ids = [
-      SessionId.create('Session_1-a'),
-      SessionId.create(right),
-    ] as const;
-
-    // Act
-    const isSame = SessionId.equals(...ids);
-
-    // Assert
-    expect(isSame).toBe(isEqual);
-  });
 });

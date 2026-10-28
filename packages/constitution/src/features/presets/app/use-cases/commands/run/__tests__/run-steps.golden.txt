@@ -1,0 +1,10 @@
+# stderr
+packages/py/constitution.yaml: follows biome, whose commands no runner it follows gives; add the block that runs them [tool-without-runner]
+uv run --locked poe check ended with code 3
+
+
+# stdout
+$ bun run check
+$ bun run test
+$ (packages/py) uv run --locked poe check
+

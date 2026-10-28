@@ -1,0 +1,11 @@
+language css
+
+// In the font shorthand the line height is what follows the slash.
+or {
+  CssRegularDimension(),
+  CssPercentage()
+} as $height where {
+  $height <: within CssGenericProperty(name=$property),
+  or { $property <: r"(?i)line-height", and { $property <: r"(?i)font", $height <: after "/" } },
+  register_diagnostic(span=$height, message="[line-height-set-as-a-number] Set line-height as a unitless number: a length is inherited as that length", severity="error")
+}

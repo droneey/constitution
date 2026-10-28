@@ -1,0 +1,32 @@
+syncpack:
+  '*':
+    json:
+      package.json:
+        scripts:
+          check:packages: syncpack lint && syncpack format --check
+          fix:packages: syncpack fix && syncpack format
+bun:
+  '*':
+    json:
+      package.json:
+        scripts: !sorted {}
+  script-group-run-by-its-prefix:
+    json:
+      package.json:
+        scripts:
+          check: !words
+            - bun run --sequential
+            - slot: checks
+            - slot: tests
+            - slot: mutations
+          check@checks:
+            - "'check:*'"
+          fix: bun run --sequential 'fix:*'
+_task-runner:
+  unit-run-through-its-action-tasks:
+    json:
+      ${constitution.run}:
+        check:
+          - bun run check
+        fix:
+          - bun run fix

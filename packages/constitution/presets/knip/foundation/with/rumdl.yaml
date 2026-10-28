@@ -1,0 +1,6 @@
+rumdl:
+  '*':
+    typescript:
+      knip.jsonc:
+        ignoreBinaries:
+          - rumdl

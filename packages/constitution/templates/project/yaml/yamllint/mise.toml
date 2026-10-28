@@ -1,3 +1,0 @@
-# yamllint: pinned by mise
-[tools]
-yamllint = "1.38.0"

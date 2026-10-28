@@ -1,0 +1,10 @@
+# a failure that names a next step
+✗ no-project
+  constitution.yaml
+  → init
+
+# a failure that names none
+✗ Interrupted
+
+# read out
+error no-project

@@ -1,0 +1,6 @@
+dclint:
+  '*':
+    typescript:
+      knip.jsonc:
+        ignoreBinaries:
+          - dclint

@@ -2,8 +2,8 @@ import { describe, expect, it } from 'bun:test';
 
 import type { FindingOf } from '#/kernel/types';
 
-import { checkInputOf } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
+import { checkInputOf } from '../../__tests__/check.fixtures';
 import type { BudgetDetails } from '../budget';
 import { BudgetCode, budgetCheck } from '../budget';
 

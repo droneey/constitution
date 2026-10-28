@@ -78,10 +78,11 @@ const cyclesCheck: Check<CyclesFinding> = ({
   graph,
   constitution,
 }: CheckInput): readonly CyclesFinding[] => {
-  const reported = new Set<BlockId>();
+  const findings: CyclesFinding[] = [];
 
-  return constitution.blocks.flatMap((block) => {
-    const cycle = reported.has(block.id)
+  for (const block of constitution.blocks) {
+    const isReported = findings.some(({ details }) => details.cycle.includes(block.id));
+    const cycle = isReported
       ? undefined
       : cycleFrom({
           block,
@@ -93,24 +94,18 @@ const cyclesCheck: Check<CyclesFinding> = ({
           start: block.id,
         });
 
-    if (cycle === undefined) {
-      return [];
-    }
-
-    for (const id of cycle) {
-      reported.add(id);
-    }
-
-    return [
-      {
+    if (cycle !== undefined) {
+      findings.push({
         code: CyclesCode.Cycle,
         details: {
           cycle,
         },
         path: block.passport.path,
-      },
-    ];
-  });
+      });
+    }
+  }
+
+  return findings;
 };
 
 export type { CyclesDetails };

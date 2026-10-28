@@ -19,15 +19,17 @@ import { DocsBuiltVersionContext } from '../app/providers';
 import { IsScreenNarrowContext, MarkSidebarContext } from '../app/use-cases';
 import type { DocumentFrame } from '../domain/contracts';
 import { createIsScreenNarrow, createMarkSidebar } from '../domain/use-cases';
-import type { DocsPageEntry } from '../ui/screens/docs-page';
-import { DocsSearchWidget } from '../ui/widgets/docs-search-widget';
+import type { DocsPageEntry } from '../ui/screens';
+import { DocsSearchWidget } from '../ui/widgets';
 
 interface DocsProviders {
   frame?: DocumentFrame;
-  getVersions?: GetVersions;
+  /** read on every render, as the search is */
+  getVersions?: GetVersions | undefined;
   pathname?: string;
   release?: Version | undefined;
-  searchPages?: SearchPages;
+  /** read on every render, so a rerender takes the one set since */
+  searchPages?: SearchPages | undefined;
 }
 
 const noParams = (): Record<string, string> => ({});
@@ -125,13 +127,10 @@ const releaseOf = (providers: DocsProviders): Version | undefined =>
 const docsWrapperOf = (
   providers: DocsProviders,
 ): ((props: { children: ReactNode }) => ReactElement) => {
-  const {
-    frame,
-    getVersions = createFakeGetVersions().getVersions,
-    pathname = '/docs',
-    searchPages = createSearchPages(createFakePageSearch([])),
-  } = providers;
+  const { frame, pathname = '/docs' } = providers;
   const release = releaseOf(providers);
+  const neverAnswering = createFakeGetVersions().getVersions;
+  const findingNothing = createSearchPages(createFakePageSearch([]));
 
   return ({ children }: { children: ReactNode }): ReactElement => (
     <FrameworkProvider
@@ -139,7 +138,9 @@ const docsWrapperOf = (
       usePathname={(): string => pathname}
       useRouter={staticRouter}
     >
-      <SearchPagesContext value={searchPages}>
+      <SearchPagesContext
+        value={'searchPages' in providers ? providers.searchPages : findingNothing}
+      >
         <RootProvider
           search={{
             // biome-ignore lint/plugin/compound-parts-share-the-root-context: Fumadocs' root provider names the search dialog's slot SearchDialog
@@ -149,7 +150,9 @@ const docsWrapperOf = (
             enabled: false,
           }}
         >
-          <GetVersionsContext value={getVersions}>
+          <GetVersionsContext
+            value={'getVersions' in providers ? providers.getVersions : neverAnswering}
+          >
             <DocsBuiltVersionContext value={release}>
               <IsScreenNarrowContext
                 value={frame === undefined ? undefined : createIsScreenNarrow(frame)}
@@ -168,11 +171,19 @@ const docsWrapperOf = (
   );
 };
 
-/** the release is 0.70.0 unless the providers name one, or `undefined` for none */
-const renderInDocs = (ui: ReactElement, providers: DocsProviders = {}): RenderResult =>
-  render(ui, {
-    wrapper: docsWrapperOf(providers),
-  });
+/**
+ * Rendered whole, a body that suspends included; the release is 0.70.0 unless the providers name
+ * one, or `undefined` for none; likewise the read of the releases never answers and the search
+ * finds nothing
+ */
+const renderInDocs = (ui: ReactElement, providers: DocsProviders = {}): Promise<RenderResult> =>
+  act(() =>
+    Promise.resolve(
+      render(ui, {
+        wrapper: docsWrapperOf(providers),
+      }),
+    ),
+  );
 
 interface HydrationTrees {
   readonly client: ReactElement;
@@ -220,6 +231,7 @@ const hydrateInDocs = async (
 };
 
 export {
+  docsWrapperOf,
   hydrateInDocs,
   pageEntryFixture,
   pageTreeFixture,

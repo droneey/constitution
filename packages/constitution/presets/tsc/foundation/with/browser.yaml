@@ -1,0 +1,9 @@
+browser:
+  '*':
+    typescript:
+      tsconfig.json !jsonc:
+        compilerOptions:
+          lib:
+            - ESNext
+            - DOM
+            - DOM.Iterable

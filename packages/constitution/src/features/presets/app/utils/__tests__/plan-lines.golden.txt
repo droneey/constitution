@@ -1,0 +1,9 @@
+# plan
+biome.json
+  presets/biome/foundation.yaml: biome → *
+run check
+  bun run check
+packages/kit: run fix
+  bun run fix
+  uv run --locked poe fix
+biome.json: cannot be read or does not parse, so nothing was applied to it [file-unparsed]

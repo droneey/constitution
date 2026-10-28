@@ -1,7 +1,5 @@
 import { describe, expect, it } from 'bun:test';
 
-import { z } from 'zod';
-
 import { Version } from '#/kernel/value-objects';
 
 import { ReleaseLookup } from '../../../domain/entities';
@@ -103,7 +101,6 @@ describe('createGitHubReleaseFeed', () => {
             },
           ]),
         ),
-      cause: expect.any(z.ZodError),
       condition: 'the tag is no text',
     },
     {
@@ -116,17 +113,10 @@ describe('createGitHubReleaseFeed', () => {
             },
           ]),
         ),
-      cause: [
-        {
-          // biome-ignore lint/style/useNamingConvention: GitHub names the field tag_name
-          tag_name: 'nightly',
-        },
-      ],
       condition: 'the tag is no release version',
     },
     {
       answer: async (): Promise<Response> => await Promise.resolve(Response.json([])),
-      cause: [],
       condition: 'GitHub lists no release',
     },
     {
@@ -136,56 +126,52 @@ describe('createGitHubReleaseFeed', () => {
             message: 'Not Found',
           }),
         ),
-      cause: expect.any(z.ZodError),
       condition: 'the answer is of another shape',
     },
     {
       answer: async (): Promise<Response> => await Promise.resolve(new Response('<html>')),
-      cause: expect.any(SyntaxError),
       condition: 'the answer is no JSON',
     },
     {
       answer: async (): Promise<Response> => await Promise.resolve(new Response(null)),
-      cause: expect.any(SyntaxError),
       condition: 'the answer has no body',
     },
-  ])(
-    'should say the latest release is unknown, with why, when $condition',
-    async ({ answer, cause }) => {
-      // Arrange
-      const feed = feedOf({
-        answer,
-      });
+  ])('should find the answer unreadable when $condition', async ({ answer }) => {
+    // Arrange
+    const feed = feedOf({
+      answer,
+    });
 
-      // Act
-      const latest = await feed.latest();
+    // Act
+    const latest = await feed.latest();
 
-      // Assert
-      expect(latest).toStrictEqual({
-        cause,
-        lookup: ReleaseLookup.Unreachable,
-      });
-    },
-  );
+    // Assert
+    expect(latest).toStrictEqual({
+      lookup: ReleaseLookup.Unreadable,
+    });
+  });
 
   it.each([
     {
       condition: 'the network is down',
       failure: new TypeError('fetch failed'),
+      reason: 'fetch failed',
     },
     {
       condition: 'GitHub does not answer in time',
       failure: new DOMException('The operation timed out.', 'TimeoutError'),
+      reason: 'The operation timed out.',
     },
     {
       condition: 'a proxy refuses the call',
       failure: Object.assign(new Error('Proxy refused to open a tunnel: 403 Forbidden'), {
         code: 'ERR_PROXY_TUNNEL',
       }),
+      reason: 'Proxy refused to open a tunnel: 403 Forbidden',
     },
   ])(
-    'should say the latest release is unknown, with the failed call, when $condition',
-    async ({ failure }) => {
+    'should find the call unanswered, with what it said, when $condition',
+    async ({ failure, reason }) => {
       // Arrange
       const feed = feedOf({
         answer: async (): Promise<Response> => await Promise.reject(failure),
@@ -196,13 +182,13 @@ describe('createGitHubReleaseFeed', () => {
 
       // Assert
       expect(latest).toStrictEqual({
-        cause: failure,
-        lookup: ReleaseLookup.Unreachable,
+        lookup: ReleaseLookup.Unanswered,
+        reason,
       });
     },
   );
 
-  it('should say the latest release is unknown, with the answer, when GitHub refuses the call', async () => {
+  it('should find the call refused, with its status, when GitHub refuses it', async () => {
     // Arrange
     const refusal = new Response('rate limited', {
       status: 403,
@@ -216,8 +202,8 @@ describe('createGitHubReleaseFeed', () => {
 
     // Assert
     expect(latest).toStrictEqual({
-      cause: refusal,
-      lookup: ReleaseLookup.Unreachable,
+      lookup: ReleaseLookup.Refused,
+      status: 403,
     });
   });
 
@@ -230,25 +216,21 @@ describe('createGitHubReleaseFeed', () => {
       body: `[{"tag_name":"v0.81.0","assets":${'['.repeat(16)}${']'.repeat(16)}}]`,
       condition: 'its answer nests deeper than it reads',
     },
-  ])(
-    'should say the latest release is unknown, with the answer, when $condition',
-    async ({ body }) => {
-      // Arrange
-      const refused = new Response(body);
-      const feed = feedOf({
-        answer: async (): Promise<Response> => await Promise.resolve(refused),
-      });
+  ])('should find the answer unreadable when $condition', async ({ body }) => {
+    // Arrange
+    const refused = new Response(body);
+    const feed = feedOf({
+      answer: async (): Promise<Response> => await Promise.resolve(refused),
+    });
 
-      // Act
-      const latest = await feed.latest();
+    // Act
+    const latest = await feed.latest();
 
-      // Assert
-      expect(latest).toStrictEqual({
-        cause: refused,
-        lookup: ReleaseLookup.Unreachable,
-      });
-    },
-  );
+    // Assert
+    expect(latest).toStrictEqual({
+      lookup: ReleaseLookup.Unreadable,
+    });
+  });
 
   it('should give the release when its answer is as large and as deep as it reads', async () => {
     // Arrange

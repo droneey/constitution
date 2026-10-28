@@ -6,7 +6,7 @@
 
 ### routes-registered-in-the-root → delivery-unit-registered-by-the-root · MUST
 
-Routes are file routes under `root/routes/`, from which the router generates its tree into `root/`, and `root/router.tsx` creates the router. A route file registers one screen of composition and holds only what the router asks of it — its address and its schema, its loader and guard, its head, its pending and error components — and hands the screen its parameters, links and transitions; a layout route hands its screen `<Outlet/>` as a slot.
+Routes are file routes under `root/routes/`, from which the router generates its tree into `root/`, and `root/router.ts`, or `root/router.tsx` where it writes markup, creates the router. A route file registers one screen of composition and holds only what the router asks of it — its address and its schema, its loader and guard, its head, its pending and error components — and hands the screen its parameters, links and transitions; a layout route hands its screen `<Outlet/>` as a slot.
 
 | Why |
 |---|

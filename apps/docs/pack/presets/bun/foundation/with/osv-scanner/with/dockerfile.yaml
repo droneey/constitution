@@ -1,0 +1,12 @@
+# The image builds from the repository's root, which the site reads.
+osv-scanner:
+  images-scanned-in-the-check:
+    dockerfile:
+      package.json:
+        scripts:
+          check:audit-image: !replace >-
+            docker build --quiet --target base --tag audit-image:base
+            --file docker/images/app.Dockerfile ../..
+            && { osv-scanner scan image
+            $(test -f osv-scanner.toml && echo --config osv-scanner.toml) audit-image:base;
+            status=$?; docker rmi audit-image:base > /dev/null; exit $status; }

@@ -1,0 +1,21 @@
+workspace:
+  unit-reached-only-through-its-entries:
+    typescript:
+      .dependency-cruiser.jsonc:
+        forbidden[name=other-unit-reached-by-its-name]:
+          severity: error
+          from:
+            pathNot: ^\.\./
+          to:
+            path: ^\.\./
+            dependencyTypes:
+              - local
+      .dependency-cruiser.jsonc ? ${workspace.isRoot}:
+        forbidden[name=root-imports-units-by-name]:
+          severity: error
+          from:
+            pathNot: ^(?:${role.deployed-unit}|${role.dependency-unit})/
+          to:
+            path: ^(?:${role.deployed-unit}|${role.dependency-unit})/
+            dependencyTypes:
+              - local

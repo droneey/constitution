@@ -1,4 +1,4 @@
-import type { AccentTokens, Output, OutputFlags, Theme } from '@droneey/design-cli';
+import type { AccentScale, Output, OutputFlags, Theme } from '@droneey/design-cli';
 import { chooseOutput, createTheme, OutputMode } from '@droneey/design-cli';
 
 import type { CommandIo, Renderer, Report, Task } from '#/shared/cli';
@@ -13,7 +13,7 @@ interface Presentation {
 }
 
 interface PresentationInput {
-  readonly accent: AccentTokens;
+  readonly accent: AccentScale;
   readonly env: Readonly<Record<string, string | undefined>>;
   readonly flags: () => OutputFlags;
   readonly io: CommandIo;

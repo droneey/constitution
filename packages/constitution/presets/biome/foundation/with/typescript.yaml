@@ -1,0 +1,357 @@
+typescript:
+  '*':
+    typescript:
+      biome.jsonc:
+        assist:
+          actions:
+            source:
+              useSortedInterfaceMembers:
+                level: 'on'
+                options: {}
+        linter:
+          rules:
+            suspicious:
+              noEvolvingTypes: error
+              noDuplicateEnumValues: error
+            style:
+              noParameterProperties: error
+              useConsistentMemberAccessibility:
+                level: error
+                options:
+                  accessibility: explicit
+              useReadonlyClassProperties: error
+              useUnifiedTypeSignatures: error
+              useAsConstAssertion: error
+              useConsistentArrayType: error
+              useConsistentTypeDefinitions: error
+              useConsistentEnumValueType: error
+              useConsistentMethodSignatures: error
+            nursery:
+              useExplicitReturnType: error
+              noBaseToString: 'off'
+        overrides:
+          - includes:
+              - '**/*.config.ts'
+              - '**/.*rc.ts'
+            linter:
+              rules:
+                nursery:
+                  useExplicitReturnType: 'off'
+          - includes:
+              - '**/*.d.ts'
+            linter:
+              rules:
+                correctness:
+                  noUnusedVariables: 'off'
+          - includes:
+              - '**/${role.colocated-specs}/**'
+              - '**/*.test.ts'
+              - '**/*.test.tsx'
+            linter:
+              rules:
+                style:
+                  useConsistentMemberAccessibility: 'off'
+          - includes:
+              - '**/${role.colocated-specs}/**'
+              - '**/*.test.ts'
+              - '**/*.test.tsx'
+            linter:
+              rules:
+                nursery:
+                  useExplicitReturnType: 'off'
+  equality-never-loose:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            suspicious:
+              noDoubleEquals:
+                level: error
+                options:
+                  ignoreNull: false
+  any-never-written:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            suspicious:
+              noExplicitAny: error
+  type-error-suppressed-by-ts-expect-error:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            suspicious:
+              noTsIgnore: error
+  enum-never-declared-const:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            suspicious:
+              noConstEnum: error
+  finally-never-leaves-by-a-jump:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            correctness:
+              noUnsafeFinally: error
+  identifier-case-by-kind:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            style:
+              useNamingConvention:
+                level: error
+                options:
+                  conventions:
+                    - selector:
+                        kind: typeParameter
+                      match: T([A-Z].*)?
+                      formats:
+                        - PascalCase
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/identifier-case-by-kind.${role.grit-rule}]:
+          includes:
+            - '**/*.ts'
+            - '**/*.tsx'
+        overrides:
+          - includes:
+              - '**/*.d.ts'
+            linter:
+              rules:
+                style:
+                  useNamingConvention: 'off'
+  type-assertion-never-written:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            style:
+              noNonNullAssertion: error
+            nursery:
+              noUnsafeTypeAssertion: error
+  closed-name-set-is-a-string-enum:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            style:
+              useEnumInitializers: error
+  date-and-time-are-temporal-values:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            style:
+              noRestrictedImports:
+                level: error
+                options:
+                  paths:
+                    moment: 'Use Temporal: date libraries wrap the Date it replaces'
+                    dayjs: 'Use Temporal: date libraries wrap the Date it replaces'
+                    date-fns: 'Use Temporal: date libraries wrap the Date it replaces'
+                    luxon: 'Use Temporal: date libraries wrap the Date it replaces'
+                  patterns:
+                    - group:
+                        - moment/**
+                        - dayjs/**
+                        - date-fns/**
+                        - luxon/**
+                      message: 'Use Temporal: date libraries wrap the Date it replaces'
+  type-only-import-written-as-import-type:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            style:
+              useImportType: !replace
+                level: error
+                options:
+                  style: separatedType
+              useExportType: !replace
+                level: error
+                options:
+                  style: separatedType
+  namespace-never-written:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            style:
+              noNamespace: error
+  module-exports-by-name:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            style:
+              noDefaultExport: error
+        overrides:
+          - includes:
+              - '**/*.config.ts'
+              - '**/*.config.js'
+              - '**/*.config.mjs'
+              - '**/*.config.cjs'
+              - '**/.*rc.ts'
+              - '**/.*rc.js'
+              - '**/.*rc.mjs'
+              - '**/.*rc.cjs'
+            linter:
+              rules:
+                style:
+                  noDefaultExport: 'off'
+          - includes:
+              - '**/*.d.ts'
+            linter:
+              rules:
+                style:
+                  noDefaultExport: 'off'
+  package-is-an-es-module:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            style:
+              noCommonJs: error
+  undefined-is-the-only-absence:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            complexity:
+              noUselessUndefined: error
+  promise-awaited-returned-or-handed-to-a-scope:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            complexity:
+              noVoid: error
+            nursery:
+              noFloatingPromises: error
+              noMisusedPromises: error
+  code-never-run-from-a-string:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            security:
+              noGlobalEval: error
+            nursery:
+              noImpliedEval: error
+  exhaustive-branching-over-unions:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            nursery:
+              useExhaustiveSwitchCases: error
+  nullish-operators-for-absence:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            nursery:
+              useNullishCoalescing: error
+  scoped-resource-held-by-using:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            nursery:
+              useDisposables: error
+  value-made-text-by-a-named-form:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            nursery:
+              noUnsafePlusOperands: error
+  return-type-no-wider-than-returned:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            nursery:
+              noMisleadingReturnType: error
+  type-names-undecorated:
+    typescript:
+      biome.jsonc:
+        plugins:
+          - ./${constitution.path}/presets/biome/plugins/typescript/type-names-undecorated.${role.grit-rule}
+  module-level-value-never-changed:
+    typescript:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/module-level-value-never-changed.${role.grit-rule}]:
+          includes:
+            - '**'
+            - '!**/*.test.ts'
+            - '!**/*.test.tsx'
+  parameter-object-has-a-named-type:
+    typescript:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/parameter-object-has-a-named-type.${role.grit-rule}]:
+          includes:
+            - '**/*.ts'
+            - '**/*.tsx'
+  test-folder-files-in-test-forms:
+    typescript:
+      biome.jsonc:
+        overrides:
+          - includes:
+              - '**/${role.colocated-specs}/**'
+              - '**/${role.package-suites}/**'
+            linter:
+              rules:
+                style:
+                  useFilenamingConvention:
+                    level: error
+                    options:
+                      filenameCases:
+                        - kebab-case
+                      match: ([^.]+)[.]((?:[^.]+[.])?(?:integration[.]|e2e[.])?(?:test|fake|suite|fixtures)[.]tsx?)
+  tsx-only-where-markup-is-written:
+    typescript:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/tsx-only-where-markup-is-written.${role.grit-rule}]:
+          includes:
+            - '**/*.tsx'
+  child-process-started-without-a-shell:
+    typescript:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/child-process-started-without-a-shell.${role.grit-rule}]:
+          includes:
+            - '**/*.ts'
+            - '**/*.tsx'
+  child-process-given-an-env-of-its-own:
+    typescript:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/child-process-given-an-env-of-its-own.${role.grit-rule}]:
+          includes:
+            - '**/*.ts'
+            - '**/*.tsx'
+  boundary-values-unknown-until-parsed:
+    typescript:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/boundary-values-unknown-until-parsed.${role.grit-rule}]:
+          includes:
+            - '**/*.ts'
+            - '**/*.tsx'
+  duration-measured-by-performance-now:
+    typescript:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/duration-measured-by-performance-now.${role.grit-rule}]:
+          includes:
+            - '**/*.ts'
+            - '**/*.tsx'
+core:
+  async-work-awaited-or-held-by-a-scope:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            nursery:
+              noFloatingPromises: error
+              noMisusedPromises: error

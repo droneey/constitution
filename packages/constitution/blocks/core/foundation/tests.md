@@ -12,11 +12,11 @@
 
 ### spec-proves-one-boundary · SHOULD
 
-A spec proves one boundary — a unit a caller relies on, reached as its callers reach it — and is named after it. What a boundary uses is proven through its spec; a helper gets a spec of its own only when its logic is worth cases of its own. Types, constants, schemas, entry files, generated files and third-party code get none unless a rule asks for one; a constant a reader outside the code relies on — a code users script against, a name another system reads — is proven by one table per contract.
+A spec proves one boundary — a unit a caller relies on, reached as its callers reach it — and is named after it. What a boundary uses is proven through its spec; a helper gets a spec of its own only for a mutant of it that its boundary's spec does not kill, and the boundary's spec then drops the cases the helper's spec holds. Types, constants, schemas, entry files, generated files and third-party code get none unless a rule asks for one; a constant a reader outside the code relies on — a code users script against, a name another system reads — is proven by one table per contract.
 
 | Why |
 |---|
-| a spec per file mirrors the layout, not the behaviour: it breaks when a helper moves while the behaviour stays. |
+| a spec per file mirrors the layout, not the behaviour: it breaks when a helper moves while the behaviour stays, and a behaviour proven at two levels is read, run and updated twice for a bug either catches alone. |
 
 ### case-asserts-what-a-caller-observes · SHOULD
 
@@ -78,15 +78,15 @@ Each contract with a fake has one contract suite, run against the fake and again
 
 ### case-proves-one-intent · SHOULD
 
-A case proves one intent and asserts it with strict equality on the whole outcome — a property case, on the invariant it states; a text, on what it means.
+A case proves one intent and asserts it with strict equality on the part of the outcome the intent is about, the outcome projected to its subject: a property case, on the invariant it states; a text, on what it means.
 
 | Why |
 |---|
-| a failing case then names one broken behaviour, and a partial assertion lets the rest of the outcome change unseen. |
+| a failing case then names one broken behaviour; strict equality lets nothing in its part change unseen, and an assertion on the whole outcome fails on every change to a part another case is about. |
 
 ### case-pins-meaning-never-wording · MUST
 
-A case reads a message, a report or a rendered text by what it means — its code, its subject, the values it names, the part the case is about, taken from the value before it is rendered where the unit gives one — and compares that whole; the wording and the layout of a format are pinned once, by one golden file or one table of cases.
+A case reads a message, a report or a rendered text by what it means — its code, its subject, the values it names, the part the case is about, taken from the value before it is rendered where the unit gives one — and compares that whole; the wording and the layout of a format are pinned once, for each renderer, by the comparison of its generated format.
 
 | Why |
 |---|
@@ -118,11 +118,11 @@ A fixture is a factory that returns a valid value and takes overrides; a case ov
 
 ### snapshot-readable-by-eye · SHOULD
 
-No snapshot holds a structure a reader cannot check by eye; a generated format is compared with a golden file a reader can read.
+No snapshot holds a structure a reader cannot check by eye; a generated format is compared with one golden file a reader can read, never with a table of its wording.
 
 | Why |
 |---|
-| a snapshot nobody reads is accepted whatever it holds. |
+| a snapshot nobody reads is accepted whatever it holds, and a golden file shows the whole format as a reader meets it, which a run rewrites in one file a reviewer reads. |
 
 ### case-named-should-when · SHOULD
 
@@ -274,11 +274,11 @@ Each implementation of a contract over an outside system whose engine can run in
 
 ### critical-scenario-has-an-end-to-end-spec · SHOULD
 
-Each critical scenario of `PROJECT.md` has one end-to-end spec through the built program, the way its users reach it.
+Each critical scenario of `PROJECT.md` has one end-to-end spec through the built program, the way its users reach it, whose cases walk the scenario's steps and never a variant a unit or an integration spec proves.
 
 | Why |
 |---|
-| the scenarios that must never break are proven the way users meet them, and no more end-to-end tests are paid for than that. |
+| the scenarios that must never break are proven the way users meet them, and no more end-to-end tests are paid for than that; a variant proven end to end costs the slowest run for a bug a faster spec already catches. |
 
 ## The gates
 
@@ -300,7 +300,7 @@ Logic — all production code but the entry files, the file that wires the progr
 
 ### every-mutant-killed · MUST
 
-Mutation testing measures the specs, running each mutant against those the coverage gate counts and never the end-to-end specs, and every mutant of the logic a change touches — its changed lines and its new files — is killed; a mutant no behaviour can tell apart, and one in code no caller relies on — a log call, the text of a diagnostic — is left out by the tool's configuration or marked in the code with its reason.
+Mutation testing measures the specs, running each mutant against those the coverage gate counts and never the end-to-end specs, and every mutant of the logic a change touches — its changed lines and its new files — is killed; a mutant no behaviour can tell apart, and one in code no caller relies on — a log call, text only a person reads — is left out by the tool's configuration or marked in the code with its reason.
 
 | Why |
 |---|

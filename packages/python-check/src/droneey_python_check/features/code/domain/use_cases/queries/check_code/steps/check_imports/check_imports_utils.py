@@ -1,7 +1,17 @@
 import ast
-from typing import TYPE_CHECKING
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, assert_never
 
-from ......entities import Finding, Rule, import_root_of, in_feature_form, module_of
+from ......entities import (
+  Finding,
+  ImportClimbingOut,
+  ImportLeavingModule,
+  ImportOfItself,
+  import_root_of,
+  in_feature_form,
+  module_of,
+)
+from ......types import PackagePath
 
 if TYPE_CHECKING:
   from collections.abc import Iterator
@@ -10,101 +20,118 @@ if TYPE_CHECKING:
   from ......entities import ImportRoot
 
 
-def _target_folder(*, root: ImportRoot, target: tuple[str, ...]) -> tuple[str, ...]:
-  return target if root.folder.joinpath(*target) in root.folders else target[:-1]
+@dataclass(frozen=True, slots=True, kw_only=True)
+class _Importer:
+  path: Path
+  root: ImportRoot
+  package_folder_paths: frozenset[Path]
+
+
+@dataclass(frozen=True, slots=True)
+class _ClimbsOut:
+  """The target of a relative import that climbs out of the import package."""
+
+
+# A target that names no folder is a module, whose folder holds it.
+def _target_folder(*, importer: _Importer, target: PackagePath) -> PackagePath:
+  is_folder = importer.root.path.joinpath(*target) in importer.package_folder_paths
+
+  return target if is_folder else PackagePath(target[:-1])
 
 
 def _relative_targets(
-  *,
-  node: ast.ImportFrom,
-  root: ImportRoot,
-) -> Iterator[tuple[str, ...] | None]:
-  climbed = node.level - 1
+  *, node: ast.ImportFrom, root: ImportRoot
+) -> Iterator[PackagePath | _ClimbsOut]:
+  climbed_count = node.level - 1
 
-  if climbed > len(root.package):
-    yield None
+  if climbed_count > len(root.file_folder):
+    yield _ClimbsOut()
+
     return
 
-  base = root.package[: len(root.package) - climbed]
+  base_folder = root.file_folder[: len(root.file_folder) - climbed_count]
 
   if node.module is not None:
-    yield (*base, *node.module.split('.'))
+    yield PackagePath((*base_folder, *node.module.split('.')))
+
     return
 
   for alias in node.names:
-    yield (*base, alias.name)
+    yield PackagePath((*base_folder, alias.name))
 
 
-def _relative_findings(
-  *,
-  node: ast.ImportFrom,
-  path: Path,
-  root: ImportRoot,
-) -> Iterator[Finding]:
-  module = module_of(root.package)
+def _relative_findings(*, node: ast.ImportFrom, importer: _Importer) -> Iterator[Finding]:
+  importer_module = module_of(importer.root.file_folder)
 
-  for target in _relative_targets(node=node, root=root):
-    if target is None:
-      yield Finding(
-        path=path,
-        line=node.lineno,
-        rule=Rule.IMPORT_CLIMBS_OUT,
-      )
-    elif module_of(_target_folder(root=root, target=target)) != module:
-      name = '/'.join(module) or 'the package root'
-      yield Finding(
-        path=path,
-        line=node.lineno,
-        rule=Rule.IMPORT_LEAVES_MODULE,
-        values=(name,),
-      )
-
-
-def _absolute_names(node: ast.Import | ast.ImportFrom) -> tuple[str, ...]:
-  match node:
-    case ast.ImportFrom(module=str(module)):
-      return (module,)
-    case _:
-      return tuple(alias.name for alias in node.names)
+  for target in _relative_targets(node=node, root=importer.root):
+    match target:
+      case _ClimbsOut():
+        yield Finding(path=importer.path, line_number=node.lineno, breach=ImportClimbingOut())
+      case tuple():
+        if module_of(_target_folder(importer=importer, target=target)) != importer_module:
+          yield Finding(
+            path=importer.path,
+            line_number=node.lineno,
+            breach=ImportLeavingModule(importer_module=importer_module),
+          )
+      case _:  # pragma: no mutate -- no target reaches it
+        assert_never(target)  # pragma: no mutate -- no target reaches it
 
 
 def _absolute_findings(
-  *,
-  node: ast.Import | ast.ImportFrom,
-  path: Path,
-  root: ImportRoot,
+  *, imported_names: tuple[str, ...], line_number: int, importer: _Importer
 ) -> Iterator[Finding]:
-  module = module_of(root.package)
+  importer_module = module_of(importer.root.file_folder)
 
-  for name in _absolute_names(node):
-    target = tuple(name.split('.'))
-    inner = target[1:]
+  for imported_name in imported_names:
+    package_name, *inner_names = imported_name.split('.')
 
-    if target[0] != root.folder.name:
+    if package_name != importer.root.path.name:
       continue
 
-    if in_feature_form(module) and module_of(_target_folder(root=root, target=inner)) == module:
+    target_folder = _target_folder(importer=importer, target=PackagePath(tuple(inner_names)))
+
+    if in_feature_form(importer_module) and module_of(target_folder) == importer_module:
       yield Finding(
-        path=path,
-        line=node.lineno,
-        rule=Rule.IMPORT_OF_ITSELF,
-        values=(name,),
+        path=importer.path,
+        line_number=line_number,
+        breach=ImportOfItself(imported_name=imported_name),
       )
 
 
-def check_imports(*, path: Path, tree: ast.Module, folders: frozenset[Path]) -> tuple[Finding, ...]:
-  root = import_root_of(path, folders=folders)
+def _import_findings(
+  *, node: ast.Import | ast.ImportFrom, importer: _Importer
+) -> Iterator[Finding]:
+  match node:
+    case ast.ImportFrom(level=0, module=str(module_name)):
+      return _absolute_findings(
+        imported_names=(module_name,), line_number=node.lineno, importer=importer
+      )
+    case ast.ImportFrom():
+      return _relative_findings(node=node, importer=importer)
+    case ast.Import():
+      return _absolute_findings(
+        imported_names=tuple(alias.name for alias in node.names),
+        line_number=node.lineno,
+        importer=importer,
+      )
+    case _:  # pragma: no mutate -- no import reaches it
+      assert_never(node)  # pragma: no mutate -- no import reaches it
+
+
+def check_imports(
+  *, path: Path, tree: ast.Module, package_folder_paths: frozenset[Path]
+) -> tuple[Finding, ...]:
+  root = import_root_of(path)
 
   if root is None:
     return ()
+
+  importer = _Importer(path=path, root=root, package_folder_paths=package_folder_paths)
 
   return tuple(
     finding
     for node in ast.walk(tree)
     if isinstance(node, ast.Import | ast.ImportFrom)
-    for finding in (
-      _relative_findings(node=node, path=path, root=root)
-      if isinstance(node, ast.ImportFrom) and node.level > 0
-      else _absolute_findings(node=node, path=path, root=root)
-    )
+    for finding in _import_findings(node=node, importer=importer)
   )

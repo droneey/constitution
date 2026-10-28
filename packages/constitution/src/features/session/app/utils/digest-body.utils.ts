@@ -9,164 +9,85 @@ const encoder = new TextEncoder();
 
 const bytesOf = (line: string): number => encoder.encode(line).length + 1;
 
-interface Body {
-  readonly lines: string[];
-  used: number;
-}
+const bytesOfLines = (lines: readonly string[]): number =>
+  lines.reduce((sum, line) => sum + bytesOf(line), 0);
 
-const put = (input: { body: Body; line: string }): void => {
-  input.body.lines.push(input.line);
-  input.body.used += bytesOf(input.line);
-};
+/** The first lines whose bytes, line breaks included, add up to no more than the budget. */
+const linesWithin = (input: { budget: number; lines: readonly string[] }): readonly string[] => {
+  let used = 0;
 
-const openSection = (body: Body): void => {
-  if (body.lines.length > 0) {
-    put({
-      body,
-      line: '',
-    });
-  }
-};
+  for (const [index, line] of input.lines.entries()) {
+    used += bytesOf(line);
 
-const putWarnings = (input: { body: Body; isStartup: boolean; lines: readonly string[] }): void => {
-  const { body, lines } = input;
-
-  if (lines.length === 0) {
-    return;
-  }
-
-  // the warnings open the digest, so no blank line comes before them
-  put({
-    body,
-    line: input.isStartup ? '⚠️ Warnings — tell the user at the start of the session' : '⚠️ Warnings',
-  });
-
-  let given = 0;
-  let bytes = 0;
-
-  for (const line of lines) {
-    if (bytes + bytesOf(line) > WARNING_BUDGET_BYTES) {
-      break;
+    if (used > input.budget) {
+      return input.lines.slice(0, index);
     }
-
-    put({
-      body,
-      line,
-    });
-    bytes += bytesOf(line);
-    given += 1;
   }
 
-  if (given < lines.length) {
-    put({
-      body,
-      line: `and ${lines.length - given} more`,
-    });
-  }
+  return input.lines;
 };
 
-// Core's text without its front matter, its blank lines at the start and the end, as one section.
-const putCore = (input: { body: Body; core: string }): void => {
-  const text = splitFrontMatter(
-    input.core
-      .split('\n')
-      .map((line) => (line.endsWith('\r') ? line.slice(0, -1) : line))
-      .join('\n'),
-  ).body.split('\n');
-  const first = text.findIndex((line) => line !== '');
+/** The sections that hold lines, a blank line between each two. */
+const joinedSections = (sections: readonly (readonly string[])[]): readonly string[] =>
+  sections
+    .filter((section) => section.length > 0)
+    .flatMap((section, index) =>
+      index === 0
+        ? section
+        : [
+            '',
+            ...section,
+          ],
+    );
 
-  if (first === -1) {
-    return;
-  }
-
-  const last = text.findLastIndex((line) => line !== '');
-
-  openSection(input.body);
-
-  for (const line of text.slice(first, last + 1)) {
-    put({
-      body: input.body,
-      line,
-    });
-  }
-};
-
-// The overrides whole, as their own section: a rule the project lowered is never cut from the digest.
-const putOverrides = (input: { body: Body; lines: readonly string[] }): void => {
+const warningSection = (input: {
+  isStartup: boolean;
+  lines: readonly string[];
+}): readonly string[] => {
   if (input.lines.length === 0) {
-    return;
+    return [];
   }
 
-  openSection(input.body);
-
-  for (const line of input.lines) {
-    put({
-      body: input.body,
-      line,
-    });
-  }
-};
-
-const fits = (input: { body: Body; bytes: number }): boolean =>
-  input.body.used + input.bytes + LEFT_OUT_NOTE_BYTES <= BUDGET_BYTES;
-
-// The block list as far as the budget lets it go, and a note of the lines left out.
-const putBlockList = (input: { body: Body; lines: readonly string[] }): void => {
-  const { body, lines } = input;
-  let given = 0;
-
-  for (const line of lines) {
-    const gap = given === 0 && body.lines.length > 0 ? 1 : 0;
-
-    if (
-      !fits({
-        body,
-        bytes: gap + bytesOf(line),
-      })
-    ) {
-      break;
-    }
-
-    if (given === 0) {
-      openSection(body);
-    }
-
-    put({
-      body,
-      line,
-    });
-    given += 1;
-  }
-
-  if (given === lines.length) {
-    return;
-  }
-
-  if (given === 0) {
-    openSection(body);
-  }
-
-  const left = lines.length - given;
-
-  put({
-    body,
-    line: `${left} ${left === 1 ? 'more line' : 'more lines'} of the block list did not fit; constitution.yaml names every block.`,
+  const given = linesWithin({
+    budget: WARNING_BUDGET_BYTES,
+    lines: input.lines,
   });
+  const left = input.lines.length - given.length;
+
+  return [
+    input.isStartup ? '⚠️ Warnings — tell the user at the start of the session' : '⚠️ Warnings',
+    ...given,
+    ...(left > 0
+      ? [
+          `and ${left} more`,
+        ]
+      : []),
+  ];
 };
 
 /** Core's text alone, as the digest gives it when constitution.yaml does not parse. */
 const coreBodyOf = (core: string): readonly string[] => {
-  const body: Body = {
-    lines: [],
-    used: 0,
-  };
+  const text = splitFrontMatter(core).body.split('\n');
+  const first = text.findIndex((line) => line !== '');
+  const last = text.findLastIndex((line) => line !== '');
 
-  putCore({
-    body,
-    core,
+  // With no line of text both ends are -1, and the slice is empty.
+  return text.slice(first, last + 1);
+};
+
+const blockListSection = (input: { lines: readonly string[]; room: number }): readonly string[] => {
+  const given = linesWithin({
+    budget: input.room - LEFT_OUT_NOTE_BYTES,
+    lines: input.lines,
   });
+  const left = input.lines.length - given.length;
 
-  return body.lines;
+  return left === 0
+    ? given
+    : [
+        ...given,
+        `${left} ${left === 1 ? 'more line' : 'more lines'} of the block list did not fit; constitution.yaml names every block.`,
+      ];
 };
 
 interface BudgetedBodyInput {
@@ -179,33 +100,27 @@ interface BudgetedBodyInput {
 
 /**
  * The warnings' lines, core's text, the overrides and the block list: the warnings within their
- * share of the budget, the block list within what the rest leaves, core and the overrides whole.
+ * share of the budget, the block list within what the rest leaves, core and the overrides whole, so
+ * a rule the project lowered is never cut.
  */
 const budgetedBodyOf = (input: BudgetedBodyInput): readonly string[] => {
-  const body: Body = {
-    lines: [],
-    used: 0,
-  };
+  const head = joinedSections([
+    warningSection({
+      isStartup: input.isStartup,
+      lines: input.warnings,
+    }),
+    coreBodyOf(input.core),
+    input.overrides,
+  ]);
+  const blankBeforeList = head.length > 0 ? bytesOf('') : 0;
 
-  putWarnings({
-    body,
-    isStartup: input.isStartup,
-    lines: input.warnings,
-  });
-  putCore({
-    body,
-    core: input.core,
-  });
-  putOverrides({
-    body,
-    lines: input.overrides,
-  });
-  putBlockList({
-    body,
-    lines: input.blockList,
-  });
-
-  return body.lines;
+  return joinedSections([
+    head,
+    blockListSection({
+      lines: input.blockList,
+      room: BUDGET_BYTES - bytesOfLines(head) - blankBeforeList,
+    }),
+  ]);
 };
 
 export { budgetedBodyOf, coreBodyOf };

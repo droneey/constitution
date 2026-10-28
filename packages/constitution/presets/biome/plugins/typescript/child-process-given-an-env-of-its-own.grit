@@ -1,0 +1,123 @@
+language js
+
+pattern child_process_function() {
+  r"^(?:spawn|spawnSync|execFile|execFileSync|exec|execSync|fork)$"
+}
+
+pattern bun_start() { r"^spawn(?:Sync)?$" }
+
+pattern shell_name() { r"^\$$" }
+
+pattern child_process_source() { r"[\"'](?:node:)?child_process[\"']" }
+
+pattern bun_source() { r"[\"']bun[\"']" }
+
+pattern env_key() { r"^[\"']?env[\"']?$" }
+
+// A value the module imports from $source under a name of $imported's, held by $local, renamed or
+// not; a type imported is no value.
+pattern imported_value($local, $source, $imported) {
+  JsImport(import_clause=JsImportNamedClause(source=$source, named_specifiers=JsNamedImportSpecifiers(specifiers=some or {
+    JsShorthandNamedImportSpecifier(local_name=$local) as $specifier where { $local <: $imported },
+    JsNamedImportSpecifier(name=$imported, local_name=$local) as $specifier
+  }))) as $import where {
+    $import <: not r"(?s)import\s+type\b.*",
+    $specifier <: not r"(?s)type\s.*"
+  }
+}
+
+// What starts a child process: a function of child_process or of Bun, held by the name the module
+// imports it by or read from the module imported whole, or Bun's own.
+pattern process_starter() {
+  or {
+    r"Bun\.spawn(?:Sync)?",
+    JsIdentifierExpression() as $function where {
+      $function <: within JsModule(items=some or {
+        imported_value($function, child_process_source(), child_process_function()),
+        imported_value($function, bun_source(), bun_start())
+      })
+    },
+    JsStaticMemberExpression(object=$namespace, member=$name) where {
+      $name <: child_process_function(),
+      $namespace <: within JsModule(items=some or {
+        `import * as $namespace from $source`,
+        `import $namespace from $source`
+      } where { $source <: child_process_source() })
+    }
+  }
+}
+
+pattern environment() {
+  or {
+    `process.env`,
+    `Bun.env`
+  }
+}
+
+// process.env or Bun.env whole: itself, spread into an object, or copied whole; a part picked
+// from it is an env built for the child.
+pattern whole_environment() {
+  or {
+    environment(),
+    JsObjectExpression(members=some JsSpread(argument=environment())),
+    JsCallExpression(callee=`Object.assign`, arguments=JsCallArguments(args=some environment())),
+    `structuredClone($copied)` where { $copied <: environment() },
+    `Object.fromEntries(Object.entries($copied))` where { $copied <: environment() }
+  }
+}
+
+pattern shell_tag() {
+  or {
+    `Bun.$`,
+    JsIdentifierExpression() as $tag where {
+      $tag <: within JsModule(items=some imported_value($tag, bun_source(), shell_name()))
+    }
+  }
+}
+
+// Bun's shell given an env built for it by .env() on itself: the module's commands run with it.
+pattern shell_given_its_env() {
+  JsCallExpression(callee=JsStaticMemberExpression(object=shell_tag(), member=`env`), arguments=JsCallArguments(args=[
+    $given
+  ])) where { $given <: not whole_environment() }
+}
+
+or {
+  JsPropertyObjectMember(name=env_key(), value=whole_environment()) as $hit where {
+    $hit <: within JsCallExpression(callee=process_starter())
+  },
+  // A command of Bun's shell runs with Bun.env unless .env() gives it or the shell one.
+  JsTemplateExpression(tag=shell_tag()) as $hit where {
+    $hit <: not within JsCallExpression(callee=JsStaticMemberExpression(member=`env`)),
+    $hit <: within JsModule() as $module,
+    $module <: not contains shell_given_its_env()
+  },
+  JsCallExpression(callee=JsStaticMemberExpression(object=$command, member=`env`), arguments=JsCallArguments(args=[
+    whole_environment()
+  ])) as $hit where {
+    $command <: or {
+      shell_tag(),
+      contains JsTemplateExpression(tag=shell_tag())
+    }
+  },
+  // Every argument is one that holds no options, or options that name no env and spread none in;
+  // an argument read from a name may hold options, so its start is left to review.
+  JsCallExpression(callee=process_starter(), arguments=JsCallArguments(args=$arguments)) as $hit where {
+    $arguments <: every or {
+      JsStringLiteralExpression(),
+      JsTemplateExpression(),
+      JsArrayExpression(),
+      JsArrowFunctionExpression(),
+      JsFunctionExpression(),
+      JsObjectExpression() as $options where {
+        $options <: not contains or {
+          JsPropertyObjectMember(name=env_key()),
+          JsShorthandPropertyObjectMember(name=`env`),
+          JsSpread()
+        }
+      }
+    }
+  }
+} as $hit where {
+  register_diagnostic(span=$hit, message="[child-process-given-an-env-of-its-own] Build the child's env for it: left out, passed or copied, process.env hands it every secret", severity="error")
+}

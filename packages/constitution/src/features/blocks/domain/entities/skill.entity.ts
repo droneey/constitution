@@ -1,6 +1,6 @@
+import type { TreePath } from '../value-objects';
 import type { ReadStatus } from './document-read.entity';
 
-/** The fields the front matter of a skill or an agent declares. */
 enum SkillField {
   Name = 'name',
   Description = 'description',
@@ -21,14 +21,14 @@ interface Skill {
   readonly directory: string;
   /** absent when the file does not open with a front matter */
   readonly frontMatter?: SkillFrontMatterRead;
-  readonly path: string;
+  readonly path: TreePath;
 }
 
 interface Agent {
   readonly file: string;
   /** absent when the file does not open with a front matter */
   readonly frontMatter?: SkillFrontMatterRead;
-  readonly path: string;
+  readonly path: TreePath;
 }
 
 export type { Agent, Skill, SkillFrontMatterRead };

@@ -1,0 +1,10 @@
+# The package is mutmut-check itself, which runs from the workspace's install.
+mutmut:
+  '*':
+    python:
+      pyproject.toml:
+        tool:
+          poe:
+            tasks:
+              mutate:branch: !replace mutmut-check
+              mutate:all: !replace mutmut-check all

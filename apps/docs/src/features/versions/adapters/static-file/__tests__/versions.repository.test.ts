@@ -73,7 +73,7 @@ describe('createStaticFileVersionsRepository', () => {
     });
   });
 
-  it('should fail as unanswered, with the status, when the site answers no file', async () => {
+  it('should fail, naming the status, when the site answers no file', async () => {
     // Arrange
     const repository = createStaticFileVersionsRepository({
       address: '/versions.json',
@@ -91,7 +91,7 @@ describe('createStaticFileVersionsRepository', () => {
     // Assert
     expect(failure).toStrictEqual({
       cause: undefined,
-      code: VersionsFailure.Unanswered,
+      code: VersionsFailure.NoFile,
       details: {
         address: '/versions.json',
         status: 404,
@@ -146,6 +146,49 @@ describe('createStaticFileVersionsRepository', () => {
 
     // Assert
     expect(failure).toBe(controller.signal.reason);
+  });
+
+  it('should fail as malformed, naming the whole file, when the file holds no JSON', async () => {
+    // Arrange
+    const repository = createStaticFileVersionsRepository({
+      address: '/versions.json',
+      transport: () => Promise.resolve(new Response('<!doctype html>')),
+    });
+
+    // Act
+    const failure = await failureOf(repository.read(new AbortController().signal));
+
+    // Assert
+    expect(failure).toStrictEqual({
+      cause: 'SyntaxError',
+      code: VersionsFailure.Malformed,
+      details: {
+        address: '/versions.json',
+        problems: [
+          '',
+        ],
+      },
+    });
+  });
+
+  it('should let a failure of the body it does not know through as it is', async () => {
+    // Arrange
+    const unreadable = new RangeError('unreadable');
+    const repository = createStaticFileVersionsRepository({
+      address: '/versions.json',
+      transport: () =>
+        Promise.resolve(
+          Object.assign(new Response('{}'), {
+            json: () => Promise.reject(unreadable),
+          }),
+        ),
+    });
+
+    // Act
+    const failure = await failureOf(repository.read(new AbortController().signal));
+
+    // Assert
+    expect(failure).toBe(unreadable);
   });
 
   it.each([

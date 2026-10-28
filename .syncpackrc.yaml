@@ -1,0 +1,64 @@
+# syncpack
+formatBugs: false
+formatRepository: false
+sortAz:
+  - bin
+  - contributors
+  - dependencies
+  - devDependencies
+  - keywords
+  - peerDependencies
+  - resolutions
+sortFirst:
+  - name
+  - version
+  - private
+  - description
+  - keywords
+  - homepage
+  - bugs
+  - license
+  - author
+  - repository
+  - type
+  - packageManager
+  - bin
+  - main
+  - module
+  - types
+  - exports
+  - imports
+  - files
+  - scripts
+  - workspaces
+  - dependencies
+  - devDependencies
+  - peerDependencies
+  - peerDependenciesMeta
+versionGroups:
+  # syncpack
+  - label: A dependency comes only from a registry
+    dependencyTypes:
+      - dev
+      - prod
+      - peer
+    specifierTypes:
+      - git
+      - url
+    isBanned: true
+
+  # bun
+  - label: The repository's own units use the workspace protocol
+    dependencies:
+      - $LOCAL
+    dependencyTypes:
+      - dev
+      - prod
+    pinVersion: workspace:*
+
+# syncpack
+semverGroups:
+  - label: Pin the tools exactly
+    range: ''
+    dependencyTypes:
+      - dev

@@ -1,0 +1,12 @@
+mise:
+  '*':
+    toml:
+      tombi.toml:
+        overrides:
+          - files:
+              include:
+                - .mise/locks/**
+            format:
+              enabled: false
+            lint:
+              enabled: false

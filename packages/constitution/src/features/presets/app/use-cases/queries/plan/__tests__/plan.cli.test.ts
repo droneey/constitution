@@ -1,38 +1,58 @@
 import { describe, expect, it } from 'bun:test';
 
+import { StepStatus } from '@droneey/design-cli';
+
 import { createFakeContext, runCommand } from '#/__tests__/command-context.fake';
-import { UnitPath } from '#/kernel/value-objects';
+import type { AbsolutePath } from '#/kernel/value-objects';
 import type { CommandPlaces } from '#/shared/cli';
 import { linesSection } from '#/shared/cli';
 
-import type { WiringPlan } from '../../../../../domain/entities';
+import type { PresetsPlan } from '../../../../../domain/entities';
+import { PresetsCode, ProjectRead, ProjectReadStatus } from '../../../../../domain/entities';
 import { planLinesOf } from '../../../../utils';
 import { createPresetsPlanCommand } from '../plan.cli';
 
-const plan: WiringPlan = {
-  files: [
+const plan: PresetsPlan = {
+  blockIds: new Map(),
+  files: [],
+  findings: [
     {
-      file: 'biome.json',
-      isNew: false,
-      scopes: [
-        {
-          scope: 'typescript',
-          tools: [
-            {
-              isAdded: false,
-              parts: [],
-              template: '.droneey/constitution/templates/project/typescript/biome/biome.json',
-              tool: 'biome',
-            },
-          ],
-        },
-      ],
-      units: [
-        UnitPath.create(''),
-      ],
+      code: PresetsCode.FileUnparsed,
+      details: {},
+      path: 'biome.json',
     },
   ],
-  untemplated: [],
+  runs: [],
+};
+
+const runOf = async (
+  places: Partial<CommandPlaces>,
+  read: ProjectRead<PresetsPlan> = ProjectRead.opened(plan),
+) => {
+  const asked: string[] = [];
+  const { context, record } = createFakeContext({
+    places,
+  });
+
+  await runCommand({
+    args: [],
+    command: createPresetsPlanCommand({
+      ...context,
+      planPresets: (startFolderPath: AbsolutePath): ProjectRead<PresetsPlan> => {
+        asked.push(startFolderPath);
+
+        return read;
+      },
+    }),
+    group: 'presets',
+  });
+
+  return {
+    asked,
+    failures: record().failures,
+    printed: record().printed,
+    steps: record().ran.map((ran) => ran.outcome.status),
+  };
 };
 
 describe('createPresetsPlanCommand', () => {
@@ -56,44 +76,59 @@ describe('createPresetsPlanCommand', () => {
       },
       start: '/work/project/package',
     },
+    {
+      condition: 'Claude Code names the project by a path that does not open with "/"',
+      places: {
+        cwd: '/work/project/package',
+        projectDir: 'app',
+      },
+      start: '/work/project/package/app',
+    },
   ])(
-    'should print the plan of the project from $start when $condition',
+    'should plan the presets of the project from $start when $condition',
     async ({ places, start }) => {
-      // Arrange
-      const asked: string[] = [];
-      const { context, record } = createFakeContext({
-        places,
-      });
-      const command = createPresetsPlanCommand({
-        ...context,
-        planPresets: (from: string): WiringPlan => {
-          asked.push(from);
-
-          return plan;
-        },
-      });
-
       // Act
-      await runCommand({
-        args: [],
-        command,
-        group: 'presets',
-      });
+      const run = await runOf(places);
 
       // Assert
-      expect({
-        asked,
-        printed: record().printed,
-      }).toStrictEqual({
-        asked: [
-          start,
-        ],
-        printed: [
-          [
-            linesSection(planLinesOf(plan)),
-          ],
-        ],
-      });
+      expect(run.asked).toStrictEqual([
+        start,
+      ]);
     },
   );
+
+  it('should print the lines of the plan', async () => {
+    // Act
+    const run = await runOf({});
+
+    // Assert
+    expect(run.printed).toStrictEqual([
+      [
+        linesSection(planLinesOf(plan)),
+      ],
+    ]);
+  });
+
+  it('should fail its step, print nothing and end the run as failed when the project cannot be read', async () => {
+    // Act
+    const run = await runOf(
+      {},
+      {
+        status: ProjectReadStatus.NoProject,
+      },
+    );
+
+    // Assert
+    expect({
+      failures: run.failures,
+      printed: run.printed,
+      steps: run.steps,
+    }).toStrictEqual({
+      failures: 1,
+      printed: [],
+      steps: [
+        StepStatus.Failed,
+      ],
+    });
+  });
 });

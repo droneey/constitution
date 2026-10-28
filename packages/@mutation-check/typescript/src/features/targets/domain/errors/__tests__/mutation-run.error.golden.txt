@@ -1,0 +1,3 @@
+stryker could not start; install it, and run the check again
+stryker ran past the time the check gives it; mutate fewer files in one run
+stryker was stopped before its end; run the check again

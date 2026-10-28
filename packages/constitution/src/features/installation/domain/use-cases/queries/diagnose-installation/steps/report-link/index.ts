@@ -1,1 +1,1 @@
-export { linkReport } from './report-link.utils';
+export { reportLink } from './report-link';

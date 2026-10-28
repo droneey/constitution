@@ -1,7 +1,15 @@
-import { Axis, BLOCKS_FOLDER, LAYER_FOLDER, Layer, SEAM_FOLDER } from '#/kernel/constants';
-import type { BlockListing, ListedBlock, ListedFiles, UnitListing } from '#/kernel/entities';
-import { UnitEntryKind } from '#/kernel/entities';
+import {
+  Axis,
+  BLOCKS_FOLDER_NAME,
+  LAYER_FOLDER_NAME,
+  Layer,
+  PATH_SEPARATOR,
+  SEAM_FOLDER_NAME,
+} from '#/kernel/constants';
 import { SourceKind } from '#/kernel/value-objects';
+
+import type { DigestBlock, DigestFiles, DigestListing, DigestUnit } from '../../domain/entities';
+import { DigestEntryKind } from '../../domain/entities';
 
 const TITLES = [
   [
@@ -24,31 +32,29 @@ const TITLES = [
 const KEY =
   "In brackets, a block's chapters and seams, named without .md: foundation's first, then <axis>: <file>, ... An implementation is named by its library alone; square brackets name a block's pack or, in an application, its layer.";
 
-// The chapters and seams of a block by axis: foundation's bare, any other's after its axis.
-const filesText = (files: readonly ListedFiles[]): string =>
+const filesText = (files: readonly DigestFiles[]): string =>
   files
     .map(
       (onAxis) =>
         `${onAxis.axis === Axis.Foundation ? '' : `${onAxis.axis}: `}${[
           ...onAxis.chapters,
-          ...onAxis.seams.map((seam) => `${SEAM_FOLDER}/${seam}`),
+          ...onAxis.seams.map((seam) => `${SEAM_FOLDER_NAME}${PATH_SEPARATOR}${seam}`),
         ].join(', ')}`,
     )
     .join('; ');
 
-const alsoOf = (files: readonly ListedFiles[]): string =>
+const alsoOf = (files: readonly DigestFiles[]): string =>
   files.length === 0 ? '' : ` (${filesText(files)})`;
 
 // An implementation is known by its library's name; the digest's budget goes to the blocks a
 // name alone does not explain.
-const summaryOf = (block: ListedBlock): string =>
+const summaryOf = (block: DigestBlock): string =>
   block.layer === Layer.Implementation || block.summary === undefined ? '' : `: ${block.summary}`;
 
-const sourceOf = (block: ListedBlock): string =>
+const sourceOf = (block: DigestBlock): string =>
   block.source.kind === SourceKind.Pack ? ` [${block.source.pack}]` : '';
 
-// The repository's blocks by layer, each layer under its heading; the key follows the first.
-const repositoryLines = (blocks: readonly ListedBlock[]): readonly string[] =>
+const repositoryLines = (blocks: readonly DigestBlock[]): readonly string[] =>
   TITLES.map(([layer, title]) => ({
     layer,
     listed: blocks.filter((block) => block.layer === layer),
@@ -56,7 +62,7 @@ const repositoryLines = (blocks: readonly ListedBlock[]): readonly string[] =>
   }))
     .filter(({ listed }) => listed.length > 0)
     .flatMap(({ layer, listed, title }, index) => [
-      `## ${title} (${BLOCKS_FOLDER}/${LAYER_FOLDER[layer]}/<id>/<id>.md)`,
+      `## ${title} (${BLOCKS_FOLDER_NAME}${PATH_SEPARATOR}${LAYER_FOLDER_NAME[layer]}${PATH_SEPARATOR}<id>/<id>.md)`,
       ...(index === 0
         ? [
             KEY,
@@ -67,7 +73,7 @@ const repositoryLines = (blocks: readonly ListedBlock[]): readonly string[] =>
       ),
     ]);
 
-const unitLines = (unit: UnitListing): readonly string[] => {
+const unitLines = (unit: DigestUnit): readonly string[] => {
   const leftOut = [
     ...unit.leftOutBlocks,
     ...unit.leftOutAxes.map((axis) => `the ${axis} axis`),
@@ -79,9 +85,9 @@ const unitLines = (unit: UnitListing): readonly string[] => {
           `- leaves out: ${leftOut.join(', ')}`,
         ]),
     ...unit.entries.map((entry) =>
-      entry.kind === UnitEntryKind.Own
-        ? `- ${entry.block.id} [${LAYER_FOLDER[entry.block.layer]}]${summaryOf(entry.block)}${alsoOf(entry.block.files)}`
-        : `- ${entry.id} [${LAYER_FOLDER[entry.layer]}]: Also: ${filesText(entry.files)}`,
+      entry.kind === DigestEntryKind.Own
+        ? `- ${entry.block.id} [${LAYER_FOLDER_NAME[entry.block.layer]}]${summaryOf(entry.block)}${alsoOf(entry.block.files)}`
+        : `- ${entry.id} [${LAYER_FOLDER_NAME[entry.layer]}]: Also: ${filesText(entry.files)}`,
     ),
   ];
 
@@ -93,7 +99,7 @@ const unitLines = (unit: UnitListing): readonly string[] => {
       ];
 };
 
-const blockListLines = (listing: BlockListing): readonly string[] => [
+const blockListLines = (listing: DigestListing): readonly string[] => [
   ...repositoryLines(listing.repository),
   ...listing.units.flatMap(unitLines),
 ];

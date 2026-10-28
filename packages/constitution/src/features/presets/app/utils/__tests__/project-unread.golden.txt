@@ -1,0 +1,8 @@
+# constitution.yaml unparsed
+constitution.yaml does not parse at lines 3, 7
+
+# no project
+no constitution.yaml in this folder or above it
+
+# release missing
+/work/project/.droneey/constitution does not exist — run mise install

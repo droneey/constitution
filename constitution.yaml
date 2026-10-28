@@ -16,16 +16,14 @@ languages:
   - shell
   - markdown
 implementations:
+  - actionlint
   - bun
-  - tsc
   - biome
-  - dependency-cruiser
   - syncpack
   - git
   - lefthook
   - betterleaks
   - mise
-  - knip
   - osv-scanner
   - uv
   - shellcheck
@@ -35,10 +33,9 @@ implementations:
   - yamllint
   - tombi
 packs: []
-check: bun run check
 overrides:
   - rule: agent-file-restates-no-rule
     level: MAY
-    # the program reads an override's reason from its one line
+    # constitution reads an override's reason from its one line
     # yamllint disable-line rule:line-length
     reason: "The Constitution's authors read the working-tree blocks they edit, not the installed ones"

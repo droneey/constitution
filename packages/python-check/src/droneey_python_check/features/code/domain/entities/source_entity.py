@@ -8,11 +8,10 @@ if TYPE_CHECKING:
 @dataclass(frozen=True, slots=True, kw_only=True)
 class Source:
   path: Path
-  text: bytes
+  content: bytes
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class Sources:
   files: tuple[Source, ...]
-  # every folder of the import packages the files sit in
-  folders: frozenset[Path]
+  package_folder_paths: frozenset[Path]

@@ -11,37 +11,37 @@
 | Scope | ADR-0001 |
 | Blocks and layers | ADR-0002 – ADR-0005, ADR-0007 |
 | Project files | ADR-0009, ADR-0010, ADR-0102, ADR-0208, ADR-0231 |
-| Rules and roles | ADR-0013 – ADR-0016, ADR-0144, ADR-0219, ADR-0226, ADR-0232 |
+| Rules and roles | ADR-0013 – ADR-0016, ADR-0144, ADR-0219, ADR-0226, ADR-0232, ADR-0240 |
 | Overrides and precedence | ADR-0020 |
 | Delivery | ADR-0026 |
 | The anatomy | ADR-0029, ADR-0032, ADR-0033, ADR-0035, ADR-0036, ADR-0141, ADR-0143, ADR-0157, ADR-0158 |
 | The rest | ADR-0043, ADR-0045 |
-| Testing | ADR-0046 – ADR-0049, ADR-0220 – ADR-0222 |
+| Testing | ADR-0046 – ADR-0049, ADR-0220 – ADR-0222, ADR-0236, ADR-0255 |
 | Code | ADR-0050, ADR-0052 |
 | Core | ADR-0053 – ADR-0055, ADR-0057, ADR-0058, ADR-0060, ADR-0062, ADR-0063 |
-| Blocks | ADR-0064, ADR-0066 – ADR-0076, ADR-0092, ADR-0095, ADR-0206, ADR-0209, ADR-0210, ADR-0211, ADR-0214 – ADR-0216, ADR-0233 |
+| Blocks | ADR-0064, ADR-0066 – ADR-0076, ADR-0092, ADR-0095, ADR-0206, ADR-0209, ADR-0210, ADR-0211, ADR-0214 – ADR-0216, ADR-0233, ADR-0242 |
 | Tools and tests | ADR-0077 – ADR-0084, ADR-0086, ADR-0096, ADR-0097, ADR-0099, ADR-0101, ADR-0103, ADR-0105, ADR-0138 |
 | Axes | ADR-0088 – ADR-0091, ADR-0093, ADR-0094, ADR-0098 |
 | The 2026 audits | ADR-0104, ADR-0106 – ADR-0110, ADR-0113 – ADR-0115 |
 | A real application | ADR-0116, ADR-0118 – ADR-0123 |
 | Delivery of the constitution | ADR-0124 |
-| Workspaces and distribution | ADR-0125, ADR-0139, ADR-0150, ADR-0151, ADR-0159, ADR-0207, ADR-0213, ADR-0217, ADR-0218, ADR-0227, ADR-0228, ADR-0229 |
+| Workspaces and distribution | ADR-0125, ADR-0139, ADR-0150, ADR-0151, ADR-0159, ADR-0207, ADR-0213, ADR-0217, ADR-0218, ADR-0227, ADR-0228, ADR-0229, ADR-0237, ADR-0238, ADR-0245, ADR-0248 – ADR-0250 |
 | Line width and licences | ADR-0126 |
 | Python | ADR-0127 – ADR-0129, ADR-0140, ADR-0142 |
-| TypeScript configuration | ADR-0130, ADR-0131, ADR-0133 |
-| Scripts of the check | ADR-0132 |
-| Dependencies | ADR-0134, ADR-0145 |
+| TypeScript configuration | ADR-0130, ADR-0131, ADR-0133, ADR-0257 |
+| Scripts of the check | ADR-0132, ADR-0241 |
+| Dependencies | ADR-0134, ADR-0145, ADR-0251 |
 | Levels | ADR-0135 |
-| Domains | ADR-0136, ADR-0137 |
+| Domains | ADR-0136, ADR-0137, ADR-0253, ADR-0254 |
 | The expert review of #271 | ADR-0146 – ADR-0149 |
 | The fifth audit | ADR-0152 – ADR-0154 |
-| What a tool holds, not how it runs | ADR-0155 |
+| What a tool holds, not how it runs | ADR-0155, ADR-0234, ADR-0235, ADR-0243, ADR-0244, ADR-0246, ADR-0247 |
 | The sixth audit | ADR-0156 |
 | One home per rule | ADR-0160 – ADR-0186 |
-| The program's tree | ADR-0187 – ADR-0190, ADR-0194, ADR-0195, ADR-0199 |
+| The program's tree | ADR-0187 – ADR-0190, ADR-0194, ADR-0195, ADR-0199, ADR-0239, ADR-0256 |
 | A project's decisions and the cost of its work | ADR-0191 – ADR-0193 |
 | The 2026 expert audit | ADR-0196 – ADR-0198 |
-| What a tool holds and what review holds | ADR-0200 – ADR-0202 |
+| What a tool holds and what review holds | ADR-0200 – ADR-0202, ADR-0258 |
 | The plugin and the project's rules | ADR-0203 – ADR-0205, ADR-0212 |
 | The whole-repository review of #383 | ADR-0223, ADR-0225 |
 | Formatters | ADR-0224, ADR-0230 |
@@ -510,6 +510,7 @@
 - **Decision.** devkit's presets, starter files and `mutation-check` move into the constitution, and its release archive `constitution.tar.gz` is the one way a project takes them, in any language: `presets/`, `templates/project/<block>/`, and `tools/mutation-check/dist/main.js`, built at release. A preset is split into parts, `presets/<scope>/<tool>/<axis>/<block>.*`, the axis `foundation` for the base since ADR-0211: the tool folder is the tool's block, the axis folder the optional axis of the rules the part holds, and the part is named after the block its settings need — the one without which they mean nothing, an abstract block's underscore included: `noTailwindArbitraryValue` sits in `tailwind` though it holds a rule of `ui`. Settings that need no block beyond the tool sit in `core` when they hold a rule of core, and in `self` when they are the tool's own. A GritQL rule is `plugins/<rule-slug>.grit` in the folder of its axis, and an architecture part narrows a foundation part's GritQL rule by listing the same path. mise's `tool-configuration-from-the-kit-archive` becomes `tool-configuration-from-the-constitution-archive`, and osv-scanner's `licences-checked-against-devkit-allowlist` becomes `licences-checked-against-the-shared-allowlist`. The node environment's parts are dropped; Python's configurations stay in devkit until a project needs them.
 - **Rejected.** npm packages for the TypeScript tools beside an archive for the rest, which released the same rule twice — most of devkit's changes came paired with one of the constitution's; naming the tool's own part after the tool, which reads `biome/biome.jsonc`; dropping an abstract block's underscore in its parts, which gives one block two names.
 - **Why.** A rule and the setting that holds it change in one pull request and ship in one version; a project that leaves an axis out leaves out its parts; and every part names the block that owns it, which a check can hold.
+- **Superseded in part.** The parts and the starter files, by ADR-0234: the archive carries the presets the program writes from; `tools/` and the layout by axis stay.
 
 ## ADR-0092 — docker, its two linters, and nestjs get blocks
 
@@ -529,7 +530,7 @@
 
 ## ADR-0094 — Each preset binds its settings to the rules they hold
 
-**Date:** 2026-09-29 · **Status:** Accepted
+**Date:** 2026-09-29 · **Status:** Superseded by ADR-0234
 
 - **Decision.** A preset holds, beside the parts of each axis, a `bindings.yaml` in that axis's folder — `presets/<scope>/<tool>/bindings.yaml` for the base, `…/architecture/bindings.yaml` for architecture: by part and rule, the settings that hold the rule, wholly or in part, each as the part's file spells it. It is the one record of what a tool holds; a rule names no tool and no check (ADR-0160). A binding must be real: its rule exists and sits on the part's axis or on the base, which any axis may carry out; its rule belongs to the part's block, a block above it or a seam with it, never a block below; its part exists; its file spells the setting. Whether a part is the block its settings need is judged by the `rule-placement` agent. A setting that holds no rule is never reported. A preset file is a part named after a block or `self`, a plugin named after a rule of its axis, or `bindings.yaml`. The configuration carries no comment per setting.
 - **Rejected.** A Bindings table in the tool block's chapters, which filled a tool's chapter with other blocks' rules and made a language name the frameworks below it; a check that every setting holds a rule, since a tool's own opinions need none; a comment per setting in the configuration, which nothing checks; dependency-cruiser rules renamed to their slugs, since several of its rules hold one slug and it drops a repeated name across `extends`.
@@ -1062,6 +1063,7 @@
 - **Decision.** In a workspace, each unit's files are held by the parts of its own blocks, and no unit's parts reach another's (`unit-checked-by-its-own-parts`, a rule of `workspace`, which it means nothing without). Each tool's seam with `workspace` gives the form: Biome as ADR-0213 has it, dependency-cruiser a configuration per unit (`cruiser-configuration-per-unit`) beside the root's, which holds the imports between units (`imports-between-units-held-at-the-root`), and knip a configuration per unit since ADR-0213. Bun's coverage gate leaves out `../**`, the files of the units a unit imports, which their own specs hold (`coverage-gate-on-the-unit-alone`). Each unit with code its specs run has its own `stryker.config.mjs` (`stryker-configuration-per-unit`), and Stryker's part loads the archive's runner by its path from the preset's own file, which finds it from any folder. Each was verified on a workspace of the presets in `tests/e2e/workspace.e2e.test.ts`.
 - **Rejected.** One run from the root with every unit's parts joined, which applies a framework's names or layers to the units that do not use it; overrides per path in one configuration, which only some tools have and which then differ from tool to tool; a coverage ignore that names each imported unit, which changes with every new dependency; a `plugins` path written into each unit's `stryker.config.mjs`, which every unit would write again.
 - **Why.** A unit's blocks are the rules it is held to; a part applied beyond it changes another unit's rules, and one written for `src/` that runs from the root holds nothing at all.
+- **Superseded in part.** The root's configuration holding the imports between units (`imports-between-units-held-at-the-root`), by ADR-0245: each unit's own holds the imports it makes into the others.
 
 ## ADR-0152 — A semantic alias is a type exported by its module
 
@@ -1821,7 +1823,7 @@
 
 ## ADR-0212 — Every configuration names its parts, which one computation in the hook lists
 
-**Date:** 2026-10-19 · **Status:** Accepted
+**Date:** 2026-10-19 · **Status:** Superseded by ADR-0234
 
 - **Decision.**
   - A project's configuration of a tool names, by its path in the release, every part its unit takes (`configuration-takes-every-part-of-its-blocks`, a rule of core's tools, which lefthook's `hooks-from-the-shared-preset` now carries out): a unit is the repository or a member of its workspace, each with blocks of its own, and a folder that keeps a tool's configuration of its own and is no unit is an `unlisted` warning, found by the templates' file names in any language. For each unit, scope, active tool with parts in that scope and axis the unit follows, it takes the parts that exist of `self`, `core`, the scope's language and then every other active block in the digest's order, whether or not they bind a rule. At the root of a workspace a tool with a `workspace` part takes only the workspace parts of the axes the root follows, and `self`, since the root runs it only for what crosses the packages: dependency-cruiser's root holding every part refused each import of the packages it cruises, its layer matrix written from a package's `src/`.
@@ -1909,6 +1911,7 @@
   - Which units keep a file of the tool, read as which ones it serves: it depends on files rather than on the declaration, and changes its meaning when a file is missing.
 - **Why.** What serves the units is read from what they follow (owner).
 - **Superseded in part.** `git` among the tools only the root follows, by ADR-0228: each package enables it.
+- **Superseded in part.** The root taking the entries of every unit's blocks, by ADR-0234: the root is a unit and lists only what its own files need; a tool only the root follows still serves the whole repository.
 
 ## ADR-0219 — A term lives in the rule that defines it
 
@@ -2030,6 +2033,7 @@
   - Pinning Biome 2.5: it keeps a behaviour Biome has replaced, and holds back every later fix.
   - A nested `biome.json` in each folder left out: a configuration per folder in every project, which the presets, built of parts, cannot give.
 - **Why.** The ignorer keeps to mutants no caller relies on, now known by the library's own contract as well as by their form, and each library's part says which of its arguments those are; a plugin's files are then read in one entry, so what a part leaves out is what Biome leaves out.
+- **Superseded in part.** The commander part and one plugin per part, by ADR-0234: commander's text arguments are the preset file `stryker/foundation/with/commander`, and a plugin is declared once by its address; the ignorer's names of loggers and errors, by ADR-0236.
 
 ## ADR-0226 — A rule states its Why alone, and a review reads every rule
 
@@ -2137,3 +2141,372 @@
   - Core's template writing `.editorconfig` for every project, as it did: a file no rule asks for written silently, beside a section for shfmt in a block that cannot name shfmt.
   - A rule of the block for the indent: core's `formatters-share-one-indent-and-width` already holds it, and the file is one more place that setting is written.
 - **Why.** A file a tool reads is the block's that governs it, and a project sees in its `constitution.yaml` every block that writes into it.
+
+## ADR-0234 — The presets are entries keyed by the rules they hold, which the program writes into the project's own files
+
+**Date:** 2026-10-26 · **Status:** Accepted
+
+- **Decision.**
+  - A tool's settings live in preset files, `presets/<reader>/<axis>.yaml`, with a setting that needs a block beyond the reader's reach under `with/<block>.yaml` and a second one under that file's `with/<partner>.yaml`. An entry is keyed by its block, the rule it holds or `*`, the reader's language or `*`, and the file it writes, a guard after the file's name where a fact decides it. A list item is addressed by a field, `list[field=value]`, a place in a list by a slot, `list@name`; `!replace` replaces what the blocks before gave, and `!default` is written once, while the setting is missing, and never checked again. The facts are `${constitution.path}`, `${package.name}`, `${role.<id>}` and `${workspace.members}`; the guards `${file.isTop}` and `${workspace.isRoot}`, each with `!`.
+  - `constitution presets apply` computes each unit's files from the release's preset files and those of the unit's packs — a package's own in `<package>/pack/` — and writes them into the project's own files, keeping their comments and the settings the project wrote; one `constitution.lock` per unit records what it wrote, so a setting no entry gives any longer leaves the file. `presets plan` shows the computation, and `presets check`, `constitution check` and the session-start digest report a setting missing, stale, loosened or a file that does not parse.
+  - The rules: core's `configuration-holds-what-its-blocks-compute` and `own-settings-only-add` replace `configuration-takes-every-part-of-its-blocks`; core's placement gains `Presets`, with `setting-placed-by-its-reader-and-key-rule` and `setting-names-folders-by-their-terms`; the workspace's `root-lists-only-what-its-own-files-need` replaces `root-configuration-serves-only-what-crosses-the-packages`, and lefthook's `hooks-from-the-shared-preset` tightens the new rule.
+  - The words: a preset set is every preset of one pack, as a block set is every block; a preset file is one YAML file of it; an entry is one setting. `constitution check` runs three steps, each named by what it checks: `Blocks`, the block set; `Presets`, the preset sets against the blocks; `Configurations`, each unit's files against what the presets compute.
+  - The release's format is 4; the parts, `bindings.yaml`, `join.mjs` and `templates/project/` go, and the hook computes no wiring of its own.
+- **Rejected.**
+  - Parts the project extends or joins: half the tools have no `extends`, so their configurations were programs that joined parts, copies drifted from their parts, and an override could not take out one rule's settings.
+  - Templates ratify assembles: an agent's attention for what a program does the same way every time.
+  - The computation in the hook's awk beside the program: two readers of the same blocks, as ADR-0212 had to keep.
+  - A static check that every setting holds a rule: a tool's own opinion needs none, keyed by `*`.
+  - One lock for the repository: a package moved to a repository of its own takes its lock with it.
+  - Generated files of their own beside the project's: two files of one tool, or a tool that reads only one, and the project's settings no longer beside the rules' settings it reads.
+  - A package's own pack in `constitution/`, as the first draft had it: `packages/constitution/constitution/` read like the Constitution itself (owner). In `.droneey/pack/`: the release's folder is git-ignored whole, so only `.droneey/constitution` would be ignored everywhere, and rules a person writes would hide in a dot folder; `.constitution/`, the same confusion; `rules/`, as the pack holds preset files too; `conventions/`; `packs/own/`, a level more for the one pack most projects keep; `local/`, already ignored as working notes.
+- **Why.** A rule's settings are found by the rule, written by code rather than an agent, leave with the rule's override, and every drift shows as a finding of the check.
+
+## ADR-0235 — A tool configured by JavaScript takes a data file the program writes
+
+**Date:** 2026-10-26 · **Status:** Accepted
+
+- **Decision.** knip reads `knip.jsonc`, dependency-cruiser `.dependency-cruiser.json`, Stryker `stryker.config.json` and syncpack `.syncpackrc.yaml`, each by the name the tool reads by default, and their blocks govern those files; the package scripts name them.
+- **Rejected.**
+  - A JavaScript module the program writes: the program would edit code, and a project's own code in the module could not be kept beside the entries.
+  - A module that imports a data file the program writes: two files for one tool, and a project's settings in the module that the check never reads.
+  - `.syncpackrc.json`: the owner chose YAML, which keeps comments.
+- **Why.** A data file is read and rewritten with its comments kept, and the check compares it with the presets setting by setting.
+
+## ADR-0236 — The diagnostics ignorer knows only the shapes of the calls its configuration names
+
+**Date:** 2026-10-26 · **Status:** Accepted
+
+- **Decision.** `diagnostics` leaves out the mutants of a text argument — the text, or the expression that builds it, an object or a list aside, which carries data — of a call whose shape `diagnosticsTextArguments` names: a function's or a method's name, or a constructor's after `new `, with `*` for any letters, and the index or indexes of its text arguments. The entries come from the blocks whose rules make that text a person's: core's `failure-told-apart-by-code` gives `new *Error` its first argument, pino's preset file its levels' messages, at the first or the second argument, and commander's its help. `diagnostic-mutants-left-out-by-the-ignorer` says so.
+- **Rejected.**
+  - The names of loggers, `log`, `logger` or `…Logger`, and the suffix `Error` written into mutation-check: the ignorer guessed a project's names, left out another call that matched them, and kept the mutants of a logger named otherwise without a word.
+  - The whole log call left out: the ignorer would know logging, which no entry could name or take back.
+- **Why.** What a person alone reads is a fact of a library's or a rule's contract, so the block that owns it gives the entry, and a call no block names keeps its mutants, which the run shows.
+
+## ADR-0237 — A file of the release a preset names is there, or its build list makes it from a source that is
+
+**Date:** 2026-10-26 · **Status:** Accepted
+
+- **Decision.**
+  - A path from the release that an entry names, `${constitution.path}/…`, is sound if the file is there, or if the pack's build list names it and the source it is built from is there. The list is data in the pack's `package.json`, under `release`: each built file, by its path in the archive, to its source and how it is built — Bun's bundle or Python's `zipapp`. The repository's `build` script makes every file from that list, so the list and the build cannot drift.
+  - The check of the presets holds every entry of every block to this, on every pull request, whatever blocks a unit here follows. Nothing tells a source tree from an archive: in a project's installed release the built file is there; in this repository the list and the source are.
+  - The finding is `missing-release-file`, on the preset file that names the path.
+- **Rejected.**
+  - Skipping a folder named `dist`: the program would know one layout of builds.
+  - A port of build outputs answered from the pack's `.gitignore`: the ignore file says what is not committed, not what the build makes.
+  - Checking only the values in force in the units, and every entry at release by unpacking the archive: two mechanisms, and a missing source found only when a release is cut.
+  - Building before the check: the owner keeps builds out of this repository's check.
+  - A reference that resolves to the sources here and to the build in a project, through `--conditions` or `imports`: Stryker's workers drop the flag, Bun ignores `NODE_OPTIONS` for it, and a project's file cannot reach the archive by such a specifier.
+  - A list of the build's outputs kept by hand beside the build script: it drifts from the build, where one list that drives it cannot.
+- **Why.** One rule holds every release path on every change, and the list that proves a built file is the one that builds it.
+- **Superseded in part.** The build list under `release` in the pack's `package.json` and the repository's build of it, by ADR-0249: each package builds itself, the archive's map names the packages' outputs, and the finding is `missing-archive-file`.
+
+## ADR-0238 — A file is at the top among the units that get the same entry
+
+**Date:** 2026-10-26 · **Status:** Accepted
+
+- **Decision.** `${file.isTop}` holds for an entry in a unit when no unit above it gets that same entry. uv reads `[tool.uv]` only from a workspace's root and otherwise takes a package's own whole, the nearest table with no merge; so a uv package below a root that writes `pyproject.toml` for Python alone still gets its `[tool.uv]`, and a member of a uv root does not.
+- **Rejected.**
+  - The top among the units that write a file of the same name, from any entry: a root's `pyproject.toml` of another block took `[tool.uv]` from the package under it, where uv would never read it.
+  - A guard per tool, such as a fact naming uv's workspace: the program would know a tool's reading where one fact over the entries serves every tool that reads the nearest file.
+- **Why.** Whether a unit above holds a setting for a unit below is a fact of the entry, not of the file's name.
+
+## ADR-0239 — Code that only builds a package sits in `scripts/`, beside `src/`
+
+**Date:** 2026-10-26 · **Status:** Accepted
+
+- **Decision.** Core's layout gives the code that builds or generates a package and never ships with it a term of its own, `scripts/`{#build-code}, beside `src/`, and `build-code-kept-out-of-the-source` keeps it out of `src/`. The presets check it as code — the compiler, the linter, knip, mutation testing — while the rules on what shipped code may import read `src/` alone. The Constitution's release build and the design packages' Style Dictionary configuration move there, and the three exceptions their own packs gave dependency-cruiser go.
+- **Rejected.**
+  - The shipped code found by what the published entries reach: it holds for JavaScript alone, needs the entries and the development dependencies computed, an application's entries per framework, and loses the exclusions of peer and type-only imports.
+  - A role folder inside `src/` for build code: the import rules would keep an exception for its path.
+- **Why.** A folder tells shipped code from build code with no computation, so every rule on shipped code reads one folder with no exception.
+
+## ADR-0240 — A language spells a folder its own way by defining the term under the same id
+
+**Date:** 2026-10-26 · **Status:** Accepted
+
+- **Decision.**
+  - A block may define a term with the id of a term of a block it builds on, spelled as it writes it: Python's layout defines `use_cases/` and `value_objects/` under core's `use-case` and `invariant-value`, and only the folders Python spells otherwise. `term-id-repeated` allows that repeat in a block that builds on the other, and refuses it anywhere else.
+  - `${role.<id>}` resolves for an entry to the spelling of the most specific block its language reaches; an entry of every language reads it through the blocks of its key and its preset file's path. The Python presets name their folders by id — import-linter's module patterns, python-check's homes, pytest, poe, vulture and mutmut — and `setting-names-folders-by-their-terms` keeps no exception for a language.
+- **Rejected.**
+  - A `folderCase` field on a language that turns every spelling into its own case: one more mechanism, which would also respell the folders the language writes as core does.
+  - An exception in the rule for a language whose module paths join words by underscores: those settings kept their folders spelled by hand, so a folder renamed in its term left them behind.
+- **Why.** A language's spelling is one more definition of the same role, kept where the language's rules are, and every setting reaches it by the role's one id.
+
+## ADR-0241 — Tools run as scripts named by their action, and the program runs each unit's check
+
+**Date:** 2026-10-26 · **Status:** Accepted
+
+- **Decision.**
+  - A tool's block writes its commands into the unit's manifest, through its pairing with the unit's runner block — `package.json` scripts for Bun, `[tool.poe.tasks]` for Poe — as settings the check holds, not defaults: a drift is reported, and a unit's deviation goes through its own pack. Each is named by its action first, `check:<what>`, `test:<what>`, `fix:<what>`; the runner block holds `check`, `test` and `fix`, each running every script of its prefix in the order of their names — `bun run --sequential 'check:*'`, `bun run --parallel 'test:*'`, and a Poe task that runs each task of its prefix — and a part or a helper is named outside the prefixes, `program:test`. The mutation tool's scripts form their own action with no task of it: `mutate:branch`, the gate on the lines the branch changed, and `mutate:all`, every mutant, run by hand. A unit's `check` is its whole gate — its `check:` group, then its `test`, then `mutate:branch`, each where the unit has it, `bun run --sequential 'check:*' test mutate:branch` — composed from the slots `checks`, `tests` and `mutations` its runner places and its tools' pairings fill, so the unit proves itself without the program and names no script it lacks. `_task-runner`'s `task-group-run-by-its-prefix` says so, which Bun's `script-group-run-by-its-prefix` and Poe's `task-group-walks-poes-own-list` tighten (ADR-0242). A project's own `check:docs` joins the check by its name.
+  - The program's entry points are computed, never written: a runner block gives, as entries of the target `${constitution.run}`, which no path can be, the commands of `check`, `test` and `fix` — the unit's own `bun run check`, Poe's `uv run --locked poe check` — so two runners of one unit both run. The lists are keyed to `_task-runner`'s `unit-run-through-its-action-tasks`, apart from the naming rules, so a unit that lowers a runner's naming rule still runs its check (ADR-0242). A pack's runner block is taken as the release's.
+  - `constitution run <check|test|fix>` runs them: the unit's around the folder, or from the root every unit's, the root's first, each command written before it runs, stopping at the first that fails. `constitution presets apply` ends by running the `fix` of each unit it wrote a file of; `--no-fix` leaves the files as written. A tool's block requires the runner it needs, and a unit whose runners pair with none of its tool's preset files is the finding `tool-without-runner` (ADR-0242).
+  - `constitution.yaml` names no `check`, and the session's check is `constitution run check`.
+- **Rejected.**
+  - A `check:` line the user writes: a second list of the tools beside their blocks, which drifted from them.
+  - A `commands:` field in a block's front matter: a second mechanism without the merge, the clash detection or a pack's override the preset entries have.
+  - The tool commands computed and run by the program, with no script: a second model beside the files, and a command invisible in the manifest a person reads.
+  - The scripts as defaults, written once: a rule's command went unrun where a unit lacked it, as design-tokens' integration specs did.
+  - mise tasks, or `.config/mise/conf.d`: every unit tied to mise.
+  - The program as a full task runner, with the files a fix takes: Bun hands no argument on to the scripts a pattern runs, verified on Bun 1.4.3, so `{files}` would reach none of them.
+  - The chains kept by hand, `bun run test:unit && bun run test:integration`: they drifted — design-tokens' integration specs never ran.
+  - `check` as `'check:*'` alone, the specs and the mutants as separate entries of the program: a unit run alone would skip its specs and its mutation gate.
+  - The mutation gate as `check:mutation`: the fast static run, `'check:*'` by hand, would mutate too.
+- **Why.** The manifest shows every command the check runs, each written by the block whose rule it holds, and the program finds what to run from the same entries, so adding a tool or a check of one's own is a name, not an edit of a list.
+
+## ADR-0242 — An abstract task-runner block holds what every runner does
+
+**Date:** 2026-10-26 · **Status:** Accepted
+
+- **Decision.**
+  - `_task-runner`, an abstract implementation block, holds the two rules every runner keeps:
+    - `task-group-run-by-its-prefix`: tasks are named action first, and the task named by the action runs every task of its prefix.
+    - `unit-run-through-its-action-tasks`: the runner gives the program the commands that run a unit's `check`, `test` and `fix`.
+  - `_js-runtime` extends it, so Bun does through `_js-runtime`; Poe extends it directly. `extends` stays one value.
+  - Bun's `script-group-run-by-its-prefix` and Poe's `task-group-walks-poes-own-list` tighten the first rule. Each keeps only how it runs a group: Bun by its pattern, Poe by walking `poe _list_tasks`.
+  - The `${constitution.run}` entries are keyed to the second rule.
+  - A tool block whose commands a runner writes requires the abstract runner it needs: `_js-runtime` for dependency-cruiser and Stryker, which only a JavaScript runtime runs; `_task-runner` for every other tool. A unit with such a tool and no runner then fails the requirement.
+  - `tool-without-runner` stays for what the requirement cannot see: a runner that pairs with none of a unit's tools. It holds for every runner and language in one way: a runner is a reader whose preset files give `${constitution.run}`, and a tool is a block its preset files pair with a runner.
+- **Rejected.**
+  - The rule in core: it would bind a repository that runs no task runner.
+  - A domain: domains are kinds of product.
+  - A list for `extends`: multiple inheritance needs precedence rules for one case.
+- **Why.** What every runner does is stated once, each runner says only how it does it, and a missing runner is a failed requirement the check already reports.
+
+## ADR-0243 — A preset value that holds a rule is held; `!default` writes only a starter file
+
+**Date:** 2026-10-26 · **Status:** Accepted
+
+- **Decision.**
+  - Every preset value that a rule depends on is written as a held setting. A drift from it is reported, and a deviation goes through the unit's own pack. This covers:
+    - the `.gitignore` lists;
+    - bun-test's coverage gate, order and ignored paths;
+    - Stryker's mutation config;
+    - `trustedDependencies`;
+    - uv's `build-system`;
+    - Python's `requires-python`;
+    - tsc's `include`;
+    - the hadolint and dclint tasks.
+  - `!default` stays only for a starter file or value that the user owns after the first write and on whose content no rule depends:
+    - the test fixtures: sandbox, DOM, lingui;
+    - pytest's `conftest.py` example;
+    - Biome's `$schema`;
+    - a Python unit's `name`, `version` and `dependencies`.
+  - The `.gitignore` lists are re-cut:
+    - a base list every unit takes, keyed to `machine-local-files-ignored` and git's environment and key-file rules;
+    - per-block lists, each keyed to `gitignore-covers-dependencies-output-and-caches` or the key-file rule, where the block runs;
+    - the working-notes line on the workflow axis.
+  - Lines for servers, foreign IDEs and other package managers are dropped. Each unit's own lines are kept.
+- **Rejected.**
+  - `!default` for everything the presets give: a setting a rule depends on went unchecked after its first write. Design-tokens' unit run kept its own coverage, and the units' lists drifted.
+  - One `.gitignore` list for every project: lines for tools a project does not use, and no home for a tool's cache beside its block.
+- **Why.** The check holds what the rules hold, and a file a user is meant to own is written once and left to them.
+- **Amendment, 2026-10-28.** The entry first named ts-reset's `reset.d.ts` and NestJS's `.swcrc` among the `!default` starter files, as whole texts in no format the program reads back. Both left `!default`:
+  - `.swcrc` is written as keyed JSONC (`!jsonc`): the decorator-metadata keys are held under `nestjs-keeps-decorator-metadata`, and the rest under `*`.
+  - `reset.d.ts` is held by its import line, through the lines format with `//` comments, under `reset-loaded-in-applications`.
+
+## ADR-0244 — A map a preset marks `!sorted` keeps its keys in their order as texts
+
+**Date:** 2026-10-26 · **Status:** Accepted
+
+- **Decision.**
+  - A preset marks a map of a JSON or YAML file `!sorted`. The program writes its keys, the project's own among them, in their order as texts, and `presets check` reports one the file orders otherwise (`unsorted`).
+  - Bun's `scripts` are marked, so each action's script heads its group: `check`, `check:lint`, …, `fix`, `fix:lint`, …, `test`, `test:unit`. A new script lands in its group whatever apply added before.
+- **Rejected.**
+  - Biome's `useSortedKeys`: it sorts every object of the file, the manifest's own fields among them, and is scoped by path, not by key.
+  - Biome's `useSortedPackageJson`: it orders the manifest's fields by its own convention and puts a `pre` script before its script, not in the order of texts.
+  - The action scripts closing the list, with each new script placed before them: the order depended on what apply added when, and needed a rule of its own for every map.
+- **Why.** One order that needs no memory of past applies; the mark is the preset's, so the tool that writes the file keeps it.
+
+## ADR-0245 — Each unit holds the imports it makes into the other units; the root cruises none
+
+**Date:** 2026-10-26 · **Status:** Accepted
+
+- **Decision.**
+  - The root knows that `apps/` and `packages/` hold units, never what lies inside them. It runs no import check over the units' files, so the root's cross-unit cruise, its script and its pack's entry go, and a root with no code of its own leaves `dependency-cruiser` out.
+  - Each unit's own `.dependency-cruiser.jsonc` holds the imports the unit makes into the others (`cruiser-configuration-per-unit`, which now says so, replaces `imports-between-units-held-at-the-root`). From the unit's own run an import shows where it lands, relative to the unit, so `unit-reached-only-through-its-entries` is held by `other-unit-reached-by-its-name`: a relative import that lands outside the unit is refused, and an import by name passes, which resolution takes only through the entries the manifest's `exports` publish. The rule knows no exception: data several units share lives in a unit of its own and is taken by that unit's name through its entry, as `file-lives-once-across-units` and Bun's `shared-data-bundled-by-the-build` now say — this repository's `brand.tokens.json` moved from the root into `packages/brand`, `@droneey/constitution-brand`. `packages-never-import-apps` is held by `packages-know-no-app`: an import that lands under `apps/` from a unit's run is one only a package can make. `apps-blind-to-each-other` is held in each app's own run, its entry guarded by the folder that holds the unit (ADR-0248). Both look at the unit's own files only, never at the modules of another unit a run follows into; a root with scripts of its own that runs the tool keeps `root-imports-units-by-name`, which knows only that `apps/` and `packages/` hold units.
+  - This repository's own rules between the design packages move from the root into those packages' configurations.
+  - Likewise the root type-checks no unit and runs no workspace-wide knip: each unit runs its own `tsc -b` and knip, so this repository's root leaves `tsc` and `knip` out, with their project references and workspace configuration.
+- **Rejected.**
+  - The root's run over every unit's `src/`: the root then reads inside the units and holds rules they do not list.
+  - A rule by the module's name: dependency-cruiser's rules see the path an import resolves to, not the name it is written with, and a workspace link resolves to the unit's folder (verified on dependency-cruiser 18.7.0, whose type for it is `undetermined`).
+- **Why.** A unit checks what it imports from its own folder, as every other rule of its imports is checked, and a unit moved to a repository of its own takes its checks with it.
+
+## ADR-0246 — A comment names the block that brings each setting
+
+**Date:** 2026-10-26 · **Status:** Accepted
+
+- **Decision.**
+  - In every file whose format holds comments — TOML, YAML, JSONC, a file of sections and a file of lines, never strict JSON — apply writes a comment naming the block that brings a setting above each key, table or item one block alone brings, everything inside it included, once for a run of them back to back; a key or an item several blocks fill takes none, and its own keys and items are named in turn. The block is the first one the entry's preset file is named with, else its reader: `git` for the base list of `.gitignore`, `tsc` for `presets/git/foundation/with/tsc/with/workspace.yaml`.
+  - The comment opens a paragraph of its own — a blank line before it, unless it opens the file or follows the line that opens what holds it — and the project's own comments right above what it names stay under it, so an explanation stands directly above the value it explains.
+  - A file of lines groups its lines by that block, so the base list of `.gitignore` is one `# git` group.
+  - The comment is the program's: a full-line comment that is exactly the name of a block an entry of the file names is taken out before each write and laid again, so it moves and goes with what it names, and a second apply writes nothing. A default, once written, is the project's own and is named by no block. The check compares values, never comments.
+- **Rejected.**
+  - The group's name from the preset file's `with/` chain or from the rule in words, as before: two names for one block's lines, and a header that read as prose.
+  - The block keyed in the entry, the rule's own block: a setting of Vulture keyed to a rule of core would read `# core`.
+  - A comment above the first key each block gives in each map it writes into: a key several blocks fill, such as lefthook's `pre-commit`, would carry one comment per block.
+  - The block that first writes a key: a key several blocks fill would read as the first one's.
+  - A comment on every setting: one block's table would repeat its name on each line.
+- **Why.** A reader of a configuration sees which block brought each setting, and so which block to read or lower, without the comments becoming a second copy of the presets.
+
+## ADR-0247 — A configuration the tool reads with comments is written as JSONC
+
+**Date:** 2026-10-26 · **Status:** Accepted
+
+- **Decision.**
+  - A configuration in JSON whose tool reads comments takes the name that tells the program so: Biome's `biome.jsonc`, which Biome finds by itself, and dependency-cruiser's `.dependency-cruiser.jsonc`, which its script names and dependency-cruiser 18.7.0 reads as JSON5 whatever the extension. The comments naming the blocks (ADR-0246) then stand in them too.
+  - Strict JSON stays where the tool reads none: `package.json`, and `stryker.config.json`, which Stryker 10.0.0 reads by `JSON.parse` and finds only under a `.json` name.
+  - A tool that reads comments in a file it finds only under a `.json` name, tsc's `tsconfig.json`, takes the format mark `!jsonc` on its preset files' key (ADR-0248): JSON with comments under that name, its commas as plain JSON has them.
+- **Rejected.**
+  - Every configuration kept as `.json`: the comments naming the blocks would be left out of the files that need them most.
+  - A `.jsonc` name for a tool that finds only `.json`, such as Stryker: the tool would no longer find its configuration.
+- **Why.** The program writes comments only where the file's name says the format holds them, and the tool reads the file it always did.
+
+## ADR-0248 — Facts name the folder that holds a unit and its depth there; a guard compares; a mark names a file's format
+
+**Date:** 2026-10-26 · **Status:** Accepted
+
+- **Decision.**
+  - `${unit.parent}` is the folder at the repository's root that holds the file's unit — `apps` or `packages`, however deep the unit lies in it — and nothing for the repository's own unit.
+  - A guard may compare a fact of a text with a text whose facts are resolved: `<file> ? ${unit.parent} = ${role.deployed-unit}` takes the entry where both resolve and are the same, `!` before the fact for the opposite. So `apps-blind-to-each-other` is given only to the units of `apps/`.
+  - `${unit.depth}` is how many folders the unit lies below that folder, 2 for `apps/<group>/web`: a unit's own run sees every other app within as many folders up, `^(?:\.\./){1,${unit.depth}}[^./]`, so `apps/<group>/web` is refused `apps/<group>/api` and `apps/web` alike, while a package, one folder further up under `packages/`, passes.
+  - A mark after a file's path names the format of its text where its name does not tell it: `!jsonc` writes JSON with comments, its commas as plain JSON has them. tsc's entries key `tsconfig.json !jsonc`.
+- **Rejected.**
+  - A truth per folder, such as `${unit.isApp}`: the program would name a folder the terms already name, and a new folder would need a new fact.
+  - A guard on any inner key: a second condition grammar, as ADR-0234 rejected.
+  - A fact of the unit's group folder: a unit's run sees the paths of the others from its own folder, never their group's name, so the rule needs how far up `apps/` lies, which that name does not give.
+  - Another app reached one folder up alone, as the rule had it: it missed an app of another group, and an app outside any group seen from inside one.
+  - A list of `.json` names the program writes with comments: the generator would name tools.
+- **Why.** One fact and one comparison hold every rule that depends on where a unit lies, and a format mark keeps the knowledge of a tool's file with the tool's preset files.
+
+## ADR-0249 — Each package builds itself, generation is not a build, and packing one distribution for each platform is delivery
+
+**Date:** 2026-10-26 · **Status:** Accepted
+
+- **Decision.**
+  - `build` means one thing in every package: build this package. `packages/@mutation-check/typescript` builds its `dist/` (`main.js`, `runner.js`, `ignorers.js`), `packages/python-check` and `packages/@mutation-check/python` each their `.pyz` through Poe's `build` task, and `packages/constitution` the `constitution` executable, its platform target an argument. It never runs in another package's pre-steps.
+  - A step that writes sources other packages compile against — the design packages' themes, `*.gen.ts` and their stylesheets — is `generate`, which the tokens' command names too (`design-tokens generate <config>`); the design packages have no `build`, nothing of theirs being shipped but their sources. A package that reads them runs `bun run --filter '<self>^...' generate` before its scripts, where ADR-0229 ran `build`, so the site generates the theme and builds no executable.
+  - What a release ships is its **distribution**, one for each platform, `constitution-<platform>.tar.gz`: the content — `package.json`, the blocks, the presets, the templates and the tools — with that platform's `constitution` executable in `bin/`. A project's mise names one asset for each platform, `asset_pattern` under `platforms.<os>-<arch>`, and `bin_path = "bin"`. The word is never shortened: `dist` stays the name of a build's output folder.
+  - Packing the distribution is delivery: the CD workflow's step "Pack the distribution" builds each package the distribution takes and lays their outputs into it, then each platform's executable beside them. What it packs is data, `packages/constitution/distribution.json`: each file by its path in the distribution, to the package whose build makes it and the file of that build's output. The CD step reads it, and so does the check of the presets: a `${constitution.path}/…` path is sound if the file is there, or if the map names it and its package declares a `build` (`missing-distribution-file`).
+  - "Release" names the delivery itself — the CD workflow, the version and its tag, the installed release — and nothing of building; the compiled `constitution` is the executable, not the program.
+- **Rejected.**
+  - One package building the others' outputs, as `release-build` did: a package's build then depended on how another builds, and a package that imports `packages/constitution` ran the distribution's build before its own checks.
+  - A `build:release` script: a second meaning of build, and packing kept as a package's script when it is a step of delivery.
+  - One `build` for both the sources dependents compile against and a package's product: a dependent's pre-step then built every product it depends on, the executable among them for the site.
+  - A content tarball for every platform beside an executable for each, as releases shipped until now: two assets for one install, mise's `additional_asset_patterns` joining them, and two words for what a project pins.
+  - Other names for what a release ships: *build* is the step that makes a package's output; *artifact* is what a CI job hands the next, as `upload-artifact` does; *archive* is the tar format, whatever it holds; *bundle* is what a bundler writes, as `bun build` does; *package* is a unit with a manifest, and what a registry installs.
+- **Why.** Every package is built by the one script of the one name, its dependents build exactly what they import, a project pins one asset that holds everything its platform runs, and what the distribution holds is data the delivery and the check share.
+
+## ADR-0250 — Code in several languages is a group folder of packages, each reached by its name
+
+**Date:** 2026-10-26 · **Status:** Accepted
+
+- **Decision.**
+  - Code that serves one purpose in several languages is a group folder, which is no unit — no manifest, no `constitution.yaml`: a package for each language, `<group>/<language>/`, and, once the languages share something, `<group>/shared/`, a package of data and schemas, never code. Each is named after the group and its folder, `@droneey/eros-typescript`, `@droneey/eros-shared`, `droneey-eros-python`, so the names stay unique, and each takes another only by its name, never by a path: `other-unit-reached-by-its-name` keeps no exception. A generator of a language's types from the shared schemas runs in that language's package, in its `generate`.
+  - An app is what is deployed, `apps/<name>/` or `apps/<group>/<name>/`; apps never import each other, in a group or outside it, and what they share lives in `packages/<group>/shared/` and is taken by its name.
+  - The `shared/` package has a manifest for each ecosystem that reads it, and gives its files through it: Bun's `exports` for TypeScript; for Python, a uv package whose import package is a namespace package at its root, `module-root = ""` and `namespace = true`, which a Python package names in its dependencies, `{ workspace = true }`, imports and reads through `importlib.resources.files()`. `shared-data-read-through-its-package` replaces `shared-data-linked-into-the-import-package`, and ADR-0159's link of the file into the Python package goes.
+  - `code-in-several-languages-holds-a-package-per-language` moves from core's layout to the workspace's tree, where ADR-0199 had kept it in core while such code was one unit: its packages are now several units. Python reads the shared data by importing the shared package and reading through `importlib.resources.files()` of it (`shared-data-read-through-its-import-package`), and its `source-folder-is-a-regular-package` leaves a package of data alone a namespace package. Generation is a step of its own (`generated-file-made-by-its-own-step`, in core), and a unit runs the generation of what it imports, never its build (`unit-generates-what-its-dependents-read`).
+  - Bun's workspaces take a group's units by `<top>/<group>/*`, uv's members by `packages/*/python` and the path of every other Python package. This repository names its group folders with a leading `@`, `packages/@design/{tokens,browser,cli}`, which no rule asks; `packages/@mutation-check/{typescript,python}` follows the layout.
+- **Rejected.**
+  - A library unit with `languages/` packages and a `shared/` they read by a path, as core had it: a package published for one language cannot carry a file outside its folder.
+  - A flat `packages/<group>-<language>`: the group is invisible in the tree.
+  - A `shared/` whose manifests each consumer decides: kept only as a manifest for each ecosystem that reads it, through its name.
+  - The file linked into the Python package, as ADR-0159 had it: a path by another name, and a link a checkout without symbolic links holds as text.
+  - The data read by the name of its package in a string, `files('<package>')`: a checker of the declared dependencies then reports the dependency unused.
+- **Why.** Every package ships alone with all it holds, a product's packages sit together in one folder of the tree, and data several languages read is reached as every other unit is, by its name through its entry.
+
+## ADR-0251 — Every unit with a Dockerfile scans its image's base stage for vulnerabilities
+
+**Date:** 2026-10-26 · **Status:** Accepted
+
+- **Decision.**
+  - OSV-Scanner paired with the dockerfile block gives each unit with a Dockerfile the task `check:audit-image`, through its runner: Bun's script, Poe's task. It builds the stage the rule names `base` — the base image and the system packages, which the shipped stage builds on — from the conventional `Dockerfile` with the unit's folder as context, and scans it. A unit whose Dockerfile or context lies elsewhere replaces the script in its own pack, as `apps/docs` does. The mise task that ran the scan in `apps/docs` goes: mise pins tools, and commands live in the manifest.
+  - The image scan checks vulnerabilities only. Core's `dependency-licence-on-the-allowlist` now leaves the system the program runs on — an operating system, an image's base and its system packages — off the list, as that system's own licences govern what runs on it, and `licences-checked-against-the-shared-allowlist` names the dependencies a lockfile names. `apps/docs/osv-scanner.toml`, whose only entry ignored the Alpine packages' licences, goes.
+  - The script passes `--config osv-scanner.toml` only where the unit keeps one, as an image's scan finds it in no other way, so a unit without one scans with OSV-Scanner's defaults rather than failing.
+  - The built image is tagged `audit-image:base`, since `osv-scanner scan image` takes a tag and not an image ID, and the tag is removed after the scan, whatever its result.
+- **Rejected.**
+  - A replaceable slot for the Dockerfile's path in a `!words` list: the merge ignores `!replace` on an item a slot inserts, so the unit's path would join the release's and give two `--file` flags.
+  - A `docker-bake.json` default naming the file, context and target: a new file convention, with buildx as a dependency.
+  - Scanning the shipped stage, with no `--target`: it builds the whole program, and for the site fetches the releases, so the check would take minutes.
+  - The `base` convention in the dockerfile language block: it would bind projects that scan no image.
+  - The image's licences against the allowlist, with each system's packages ignored in `osv-scanner.toml`: every Alpine or Debian base fails on its GPL packages, and the ignore would only restate that the system is not shipped.
+  - A default `osv-scanner.toml` written into each unit: the source scan reads the configuration nearest to each lockfile, so an empty file in a unit would hide the root's entries from that unit's lockfiles.
+  - A tag per unit: no fact gives a valid image reference, `@droneey/docs` being none, and the tag lives only for the scan.
+- **Why.** A known vulnerability in the system an image runs on is found like one in a lockfile, by the check every unit already runs, while what the project ships stays the only thing held to its licences.
+
+## ADR-0253 — A font token names the kind of text, and a style of text is one typography composite
+
+**Date:** 2026-10-27 · **Status:** Accepted
+
+- **Decision.**
+  - `token-name-follows-the-grammar` leaves the concept out of a `font` token, whose category styles nothing but text, and the kind of text takes the role's place, Atlassian's form: `font.body.md`, `font.heading.lg`, `font.code.sm`.
+  - A property of text — size, leading, weight, family, tracking — is the scale of a primitive, never a role: `font.size.<step>`, `font.leading.<step>`, `font.weight.<name>`, `font.family.<name>`, `font.tracking.<step>`.
+  - A semantic `font` token is one composite of the W3C Design Tokens format's `typography` type, whose `fontFamily`, `fontSize`, `fontWeight`, `letterSpacing` and `lineHeight` refer to those primitives (`font-token-is-one-typography-composite`). The line height is a unitless multiple of the font size, the only form the format's `lineHeight` takes.
+- **Rejected.**
+  - `font.text.body.md`, the grammar kept as it stood: `text` would repeat in every name of the category and say nothing.
+  - A property in the role's place, as Primer's `text-body-size-medium` and `text-body-lineHeight-medium` have it, here `font.text.size.md`: a semantic name would hold a raw value, a style of text would be several tokens a component must keep in step, and a theme that changes one would miss the others.
+  - A line height as a length, `24px` or `1.5rem`: the format refuses it, and a fixed length no longer fits once a theme changes the font size.
+- **Why.** Read against Primer, Material 3, Spectrum 2, Carbon, Atlassian, Polaris and the format's 2025.10 release, Atlassian's form alone names a style of text by its kind with no segment every name repeats, and the format's composite is the one unit design tools and every platform's output read as a style.
+
+## ADR-0254 — Tailwind reads the tokens through aliases, and a style of text is its text composite
+
+**Date:** 2026-10-27 · **Status:** Accepted
+
+- **Decision.** The tokens' custom properties keep the tokens' names on the root, and Tailwind's theme is a generated layer of aliases in Tailwind's own namespaces, `@theme inline` (`utilities-only-from-tokens`), with `@theme inline reference` for a name that already is Tailwind's (`theme-aliases-the-token-properties`). A typography token becomes Tailwind's text composite, `--text-body-md` with its line height, letter spacing and weight, so one class, `text-body-md`, sets it, and its family, which the composite lacks, is one alias for each kind of text, `--font-body`, so a component writes `text-body-md font-body` and never a primitive's class (`typography-token-aliased-as-a-text-composite`). One `@theme { --*: initial; }` clears Tailwind's default theme (`utilities-only-from-tokens`).
+- **Rejected.**
+  - An `@utility font-body-md` for each typography token, writing its five properties: a class outside Tailwind's namespaces, which `tailwind-merge` must be taught as a group of its own, and which Tailwind's tooling — the sorting of classes, an editor's completion and preview of a value — does not know as a size of text.
+  - Semantic variables named in Tailwind's namespaces, as rozumchik-web's theme declares them, `--text-body-md` on the root for `font.body.md`: a token's name would differ from its variable, and a search for one would miss the other.
+- **Why.** On Tailwind 4.3.3, variables on the root alone create no utility, the tokens' `--font-*` names inside a plain `@theme` create font-family utilities of nonsense, `@theme inline` writes the token's variable straight into the utility, and `--*: initial` clears every default scale. Aliases alone keep one name for each token and every utility in Tailwind's namespaces.
+
+## ADR-0255 — Text a person reads is a file kind its mutants leave with, and a format is pinned by a golden file
+
+**Date:** 2026-10-27 · **Status:** Accepted
+
+- **Decision.**
+  - Text a unit writes for a person — a message, a command's help, the wording of a report — sits in a `.messages` file (`text-a-person-reads-held-in-a-messages-file`). Stryker's ignorer leaves out that file's string and template mutants, and the text an error hands to `super`; mutmut leaves the module of messages out whole, which a messages file's kind allows by holding no branch, and an exception's text keeps its pragma (`diagnostic-mutants-left-out-by-the-ignorer`, `messages-modules-left-out-by-do-not-mutate`). The gate stays at every mutant killed.
+  - The wording and layout of a format are pinned by one golden file for each renderer, never a table of wording cases (`snapshot-readable-by-eye`).
+- **Rejected.**
+  - Killing text mutants with cases: a case that pins a message proves no bug a caller meets, and fails on every rewording.
+  - Leaving text out by a pattern over names or string literals: a pattern guesses, so it hides logic that looks like text and misses text that does not; a file's kind is declared, and a missing entry shows in the run.
+  - Lowering the gate below every mutant killed: a threshold lets any mutant live, a real one among them, while leaving out one kind keeps every other mutant held.
+  - A table of wording cases for each renderer: it pins each message apart from the layout around it, and a rewording touches the table and every case that reads it, while a golden file shows the whole format as a reader meets it and a run rewrites it.
+- **Why.** Specs then carry the cases a caller's behaviour earns, the text stays free to change in one place, and the format is still pinned once, where a reviewer reads it.
+
+## ADR-0256 — A contract another feature answers stays with each feature that asks; only one an outside system answers lifts to the kernel
+
+**Date:** 2026-10-27 · **Status:** Accepted
+
+- **Context.** The kernel held a port, `ProjectSource`, that composition implemented through the project feature. It carried the project feature's entities and failures into the kernel, and forced an import cycle between the kernel's errors and its value objects.
+- **Decision.**
+  - `contract-lifts-on-its-second-feature` lifts a contract to the kernel only when an outside system answers it, a clock or a mailer, in the same words for the features that ask. A contract another feature answers never lifts: each feature that asks words its own.
+  - `feature-asks-another-through-its-own-contract` has the contract hold the asker's parameters, results and the failures it acts on; composition maps the other's results into the asker's terms and those failures into the asker's own, and lets every other failure pass.
+  - `type-lifts-when-features-share-its-meaning` lifts a business type to the kernel when two or more features use it with one meaning, universal and stable; otherwise the asking feature declares its own and composition translates.
+  - An adapter that answers a feature's contract through another feature lives in the composition module that joins them and imports that feature's surface.
+- **Rejected.**
+  - Keeping a feature-answered contract liftable to the kernel when two features ask in the same words: the kernel then holds a feature's model and failures, and the answering feature can no longer change them alone.
+  - A second kernel folder for the failures that carry values: it removes the cycle but keeps the feature's failures in the kernel.
+  - One shared failure type passed through to every asker: the askers then branch on another feature's codes.
+  - Every type another feature reads lifts to the kernel: the kernel then grows with each reader and holds types no two features read alike.
+- **Why.** What a feature answers is that feature's model, so it stays in the feature, and the kernel holds only what no feature owns.
+
+## ADR-0257 — The unused-code options of the compiler hold dead code, not the type gate
+
+**Date:** 2026-10-28 · **Status:** Accepted
+
+- **Decision.** `noUnusedLocals` and `noUnusedParameters` leave `compiler-is-the-type-gate`; the presets set them under `dead-code-deleted`. Where Biome runs in the same unit, tsc turns off `noUnusedParameters`, `allowUnreachableCode` and `allowUnusedLabels`, since Biome reports unused parameters, unused labels and unreachable code, but keeps `noUnusedLocals`, because Biome's unused-variable rule always lets a local whose name starts with `_` pass, which would loosen `dead-code-deleted`; so unused imports and locals are still reported by both. A unit with tsc alone keeps all of them.
+- **Rejected.**
+  - Keeping them in the type gate: every unused name is reported twice where Biome runs, and a rule of the compiler stops the linter from holding dead code alone.
+  - Turning Biome's unused rules off instead: Biome also lints files outside the compiler's `include`, such as the root config files, which would lose them.
+  - Turning `noUnusedLocals` off where Biome runs: an unused local named with a leading underscore would then pass unreported.
+- **Why.** Dead code is one rule, held under that rule, with one reporter where a tool can hold it fully.
+
+## ADR-0258 — actionlint alone checks the workflows
+
+**Date:** 2026-10-28 · **Status:** Accepted
+
+- **Decision.** The implementation `actionlint` lints a repository's GitHub Actions workflows, and through the ShellCheck it finds on the `PATH`, the command of each `run:` step. Its default checks hold `runner-value-reaches-the-command-through-the-environment`, for the values GitHub marks untrusted, and with ShellCheck pinned `embedded-command-expansion-double-quoted`; the presets write no `.github/actionlint.yaml`, since no setting of it holds a rule. Its runner gives `check:workflows`, `actionlint -pyflakes=`, to the topmost unit that lists it, pyflakes off since no block pins it, as actionlint reads every workflow of the repository from any folder of it. A finding is silenced under the one workflow's key in `.github/actionlint.yaml` (`actionlint-ignore-names-workflow-and-message`).
+- **Rejected.**
+  - zizmor beside it, by the owner's choice, which spares one more pinned tool and its configuration for two rules review already carries: the rules its audits would reach — `outside-change-runs-without-secrets`, `credential-has-least-privilege` — stay with review.
+  - A block for GitHub Actions itself: the rules on a workflow's commands already sit in the YAML language's seam with the shell, and no rule yet loses its meaning without GitHub alone.
+  - The script in every unit that lists the block: each would lint the root's workflows again.
+- **Why.** The rules on a workflow's commands were held by no block's tool, and actionlint holds them with its defaults and one pinned tool.

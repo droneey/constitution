@@ -5,12 +5,11 @@ import { createFileRoute, notFound, useLocation } from '@tanstack/react-router';
 
 import type { DocsPageEntry } from '#/composition/docs';
 import { DocsErrorScreen, DocsPageScreen } from '#/composition/docs';
-import type { Page } from '#/features/content';
+import { Page, PageSlugs } from '#/features/content';
 import type { PageBody } from '#/features/content/adapters/fumadocs-browser';
 import { useFumadocsLoader } from '#/libs/ui';
 import { APP_NAME } from '#/shared/constants';
 
-import { slugsShape } from '../../constants';
 import type { RouterContext } from '../../wiring';
 
 /** throws not found when the page's collection holds no body at its path */
@@ -43,8 +42,8 @@ function DocsRoute(): ReactElement {
     <DocsPageScreen
       href={href}
       page={entry}
+      pageKey={Page.keyOf(page)}
       pageTree={navigation}
-      path={page.path}
     />
   );
 }
@@ -58,17 +57,15 @@ const loadDocsPage = async ({
     _splat?: string;
   };
 }): Promise<Page> => {
-  const slugs = slugsShape.safeParse(
-    // Stryker disable next-line StringLiteral: the router always fills the splat, with the empty string for /docs itself
-    (params._splat ?? '').split('/').filter((segment) => segment !== ''),
-  );
+  // Stryker disable next-line StringLiteral: the router always fills the splat, with the empty string for /docs itself
+  const slugs = PageSlugs.ofAddress(params._splat ?? '');
 
-  if (!slugs.success) {
+  if (slugs === undefined) {
     throw notFound();
   }
 
   const [page] = await Promise.all([
-    context.docs.getPage(slugs.data).then(async (found) => {
+    context.docs.getPage(slugs).then(async (found) => {
       await bodyOf(context, found).load();
 
       return found;

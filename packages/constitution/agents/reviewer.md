@@ -15,6 +15,7 @@ Read every rule file you are given, whole, before you read the code. A rule is a
 ## What to judge
 
 - Every rule of the blocks that govern a file, at its level: a MUST broken is a finding; a SHOULD broken is a finding unless the code shows the reason it was left; a MAY is never one.
+- Excess as well as gaps. A structure that earns nothing under `structure-appears-by-symptom` and a case that earns nothing under `case-earns-its-place` or `spec-proves-one-boundary` are findings whose fix removes the excess; never propose an addition where a removal mends the break.
 - What no tool sees. A configured tool holds a rule wholly or in part, and the project's check passed before you were called; do not repeat its work, and judge what it cannot see.
 - The file as it is. Do not judge what the change does not touch, unless the caller asked for `all`.
 

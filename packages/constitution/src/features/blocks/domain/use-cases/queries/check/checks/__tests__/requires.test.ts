@@ -5,8 +5,9 @@ import type { FindingOf } from '#/kernel/types';
 import { BlockId } from '#/kernel/value-objects';
 
 import type { BlockFixture } from '../../../../../../__tests__/constitution.fixtures';
-import { checkInputOf, passportFile } from '../../../../../../__tests__/constitution.fixtures';
+import { passportFile } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
+import { checkInputOf } from '../../__tests__/check.fixtures';
 import type { RequiresDetails } from '../requires';
 import { RequiresCode, requiresCheck } from '../requires';
 

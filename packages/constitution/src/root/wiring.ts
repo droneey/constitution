@@ -1,46 +1,68 @@
-import type { AccentTokens, OutputFlags } from '@droneey/design-cli';
 import { Command } from 'commander';
 
 import { createNodeProjectFiles } from '#/adapters/file-system';
-import { createGitWorkingTree } from '#/adapters/git';
 import { createCheckCommand } from '#/composition/check';
-import { createPresetsWiringCheck } from '#/composition/digest/adapters/presets';
-import { createProjectSource } from '#/composition/project-source/adapters/project';
-import type { Validation } from '#/features/blocks';
+import {
+  createPinnedRelease,
+  createProjectReader,
+  createRulesSource,
+} from '#/composition/project-source/adapters/project';
+import type { PackBase, Validation } from '#/features/blocks';
 import { checkBlocks, createBlocksCheckCommand } from '#/features/blocks';
 import { createGitFileTrees } from '#/features/blocks/adapters/git';
 import { createJsonManifestParser } from '#/features/blocks/adapters/json';
-import {
-  createYamlBindingsParser,
-  createYamlFrontMatterParser,
-} from '#/features/blocks/adapters/yaml';
+import { createYamlFrontMatterParser } from '#/features/blocks/adapters/yaml';
 import type { PartDiagnosis } from '#/features/installation';
 import { createDoctorCommand, diagnoseInstallation } from '#/features/installation';
 import { createClaudePluginRegistry } from '#/features/installation/adapters/claude-code';
 import { createGitHubReleaseFeed } from '#/features/installation/adapters/github';
 import { createLefthookGitHooks } from '#/features/installation/adapters/lefthook';
-import { createPathProgram } from '#/features/installation/adapters/path';
-import type { ConfigurationParser, WiringPlan } from '#/features/presets';
+import { createPathExecutable } from '#/features/installation/adapters/path';
+import type {
+  AppliedFiles,
+  ApplyPlan,
+  ConfigurationsCheck,
+  PresetsPlan,
+  ProjectRead,
+  RunAsked,
+  RunPlan,
+} from '#/features/presets';
 import {
+  applyChanges,
+  checkConfigurations,
   checkPresets,
+  configurationsStepOf,
+  createPresetsApplyCommand,
   createPresetsCheckCommand,
   createPresetsPlanCommand,
+  createRunCommand,
+  planApply,
   planPresets,
+  planRun,
+  presetsSkippedStep,
+  presetsStepOf,
 } from '#/features/presets';
-import { createConfigurationParser } from '#/features/presets/adapters/configuration';
-import { createConfigFileParser } from '#/features/project/adapters/config-file';
+import { createConfigurationFormat } from '#/features/presets/adapters/configuration';
+import {
+  createDistributionMapSources,
+  createFileAppliedFilesRepository,
+  createFileLockRepository,
+} from '#/features/presets/adapters/file-system';
+import { createShellCommandRunner } from '#/features/presets/adapters/process';
+import { createYamlPresetFileParser } from '#/features/presets/adapters/yaml';
+import { createJsonReleaseManifestParser } from '#/features/project/adapters/json';
 import { createManifestWorkspace } from '#/features/project/adapters/workspace';
-import { createYamlBlockCardParser } from '#/features/project/adapters/yaml';
+import {
+  createYamlBlockCardParser,
+  createYamlConfigFileParser,
+} from '#/features/project/adapters/yaml';
 import type {
   Reminder,
-  SessionCommandRepository,
   SessionDigest,
   SessionId,
-  SessionQueryRepository,
   SessionStart,
   StopEvent,
   StopJudgement,
-  WiringCheck,
 } from '#/features/session';
 import {
   createPostToolUseCommand,
@@ -57,61 +79,30 @@ import {
   recordReminders,
   remindOfFile,
 } from '#/features/session';
-import type { SessionsPlace } from '#/features/session/adapters/session-store';
+import { createGitWorkingTree } from '#/features/session/adapters/git';
 import { createXdgSessionRepository } from '#/features/session/adapters/session-store';
-import { PROGRAM_NAME } from '#/kernel/constants';
-import type { ProjectFiles, ProjectSource, WorkingTree } from '#/kernel/contracts';
-import type { ProjectWarning } from '#/kernel/entities';
+import { EXECUTABLE_NAME } from '#/kernel/constants';
+import type { AbsolutePath } from '#/kernel/value-objects';
 import { Version } from '#/kernel/value-objects';
 import { configureHelpLayout } from '#/libs/commander';
-import type { CommandContext, CommandIo, CommandPlaces } from '#/shared/cli';
-import { ExitCode, OUTPUT_FLAGS, outputFlagsOf } from '#/shared/cli';
+import type { StepReport } from '#/shared/cli';
+import { ExitCode, OUTPUT_FLAGS } from '#/shared/cli';
 
+import { adopt, flagsOf, groupOf } from './command-tree.utils';
 import { clockOf } from './configuration';
+import { DISTRIBUTION_MAP_NAME, PACKAGE_BUILDS } from './distribution.constants';
 import type { ErrorHandler } from './error-handler';
 import { createErrorHandler } from './error-handler';
-import type { Streams } from './presentation';
+import { HOOK_GROUP } from './hook.constants';
 import { createPresentation } from './presentation';
+import type { Program, ProgramInput } from './program.types';
+import type { Ports, PresetsInput, Registration } from './registration.types';
 import { stateFolderWarningText } from './state-folder-warning';
 
-interface ProgramInput {
-  readonly accent: AccentTokens;
-  readonly environment: {
-    /** the folder Claude Code keeps its own files in */
-    readonly claudeConfig: string;
-    /** the environment git, lefthook and the programs on PATH run in */
-    readonly commands: Readonly<Record<string, string>>;
-    /** what the environment says of colour, motion and the terminal */
-    readonly output: Readonly<Record<string, string | undefined>>;
-    /** the plugin's folder, when Claude Code runs a hook from it */
-    readonly pluginRoot: string | undefined;
-    readonly sessions: SessionsPlace;
-    /** the day the specs fix the clock at, YYYY-MM-DD; absent for the system's clock */
-    readonly today?: string;
-  };
-  readonly fetch: (url: string, init: RequestInit) => Promise<Response>;
-  readonly io: CommandIo;
-  readonly isTerminal: boolean;
-  readonly places: CommandPlaces;
-  /** the fingerprint of the plugin's files this program was built with, read when doctor asks */
-  readonly pluginFingerprint: () => string | undefined;
-  readonly streams: Streams;
-  readonly version: string;
-}
-
-interface Program {
-  /** the handler of last resort for a failure outside a run: writes it and gives its code */
-  readonly fail: (error: unknown) => ExitCode;
-  readonly run: (args: readonly string[]) => Promise<ExitCode>;
-  /** ends whatever is still drawn, as an interrupt asks */
-  readonly stop: () => Promise<void>;
-}
-
-const HOOK = 'hook';
-// The time each outside call may take: a run of git, of a program on PATH, of lefthook, and the
-// call that asks GitHub for the latest release.
+// The time each outside call may take: a run of git, of the executable on PATH, of lefthook, and
+// the call that asks GitHub for the latest release.
 const GIT_TIMEOUT_MS = 30_000;
-const PROGRAM_TIMEOUT_MS = 5000;
+const EXECUTABLE_TIMEOUT_MS = 5000;
 const LEFTHOOK_TIMEOUT_MS = 10_000;
 const RELEASE_TIMEOUT_MS = 3000;
 // The files a folder of a release or a pack lists at most, the workspace's folders in one look, and
@@ -120,103 +111,60 @@ const FOLDER_FILES = 10_000;
 const WORKSPACE_FOLDERS = 10_000;
 const WORKSPACE_GLOBS = 1000;
 
-interface Ports {
-  readonly configurations: ConfigurationParser;
-  readonly files: ProjectFiles;
-  readonly sessions: SessionCommandRepository & SessionQueryRepository;
-  readonly source: ProjectSource;
-  readonly wiring: WiringCheck;
-  readonly workingTree: WorkingTree;
-}
-
 const portsOf = (input: ProgramInput): Ports => {
-  const configurations = createConfigurationParser();
   const files = createNodeProjectFiles({
     maxFiles: FOLDER_FILES,
   });
-  const workingTree = createGitWorkingTree({
-    env: input.environment.commands,
-    timeoutMs: GIT_TIMEOUT_MS,
+  const presetFiles = createYamlPresetFileParser();
+  const distribution = createDistributionMapSources({
+    builds: PACKAGE_BUILDS,
+    mapName: DISTRIBUTION_MAP_NAME,
   });
+  const formats = createConfigurationFormat();
+  const locks = createFileLockRepository();
+  const project = {
+    cardParser: createYamlBlockCardParser(),
+    clock: clockOf(input.environment.today),
+    configParser: createYamlConfigFileParser(),
+    files,
+    manifestParser: createJsonReleaseManifestParser(),
+    workspace: createManifestWorkspace({
+      maxFolders: WORKSPACE_FOLDERS,
+      maxGlobs: WORKSPACE_GLOBS,
+    }),
+  };
 
   return {
-    configurations,
+    appliedFiles: createFileAppliedFilesRepository(),
+    commands: createShellCommandRunner(),
+    distribution,
     files,
+    formats,
+    locks,
+    pinned: createPinnedRelease(project),
+    presetFiles,
+    reader: createProjectReader(project),
+    rules: createRulesSource({
+      presets: {
+        distribution,
+        formats,
+        lockOf: locks.read,
+        parser: presetFiles,
+      },
+      project,
+    }),
     sessions: createXdgSessionRepository({
       ...input.environment.sessions,
       maxSessions: FOLDER_FILES,
       now: (): Temporal.Instant => Temporal.Now.instant(),
       warn: (warning): void => input.io.writeError(stateFolderWarningText(warning)),
     }),
-    source: createProjectSource({
-      cardParser: createYamlBlockCardParser(),
-      clock: clockOf(input.environment.today),
-      configParser: createConfigFileParser(),
-      files,
-      workspace: createManifestWorkspace({
-        maxFolders: WORKSPACE_FOLDERS,
-        maxGlobs: WORKSPACE_GLOBS,
-      }),
+    workingTree: createGitWorkingTree({
+      env: input.environment.commands,
+      timeoutMs: GIT_TIMEOUT_MS,
     }),
-    wiring: createPresetsWiringCheck({
-      files,
-      parser: configurations,
-      workingTree,
-    }),
-    workingTree,
   };
 };
-
-const flagsOf = (opts: unknown): OutputFlags => {
-  const { color, motion, plain } = outputFlagsOf(opts);
-
-  return {
-    ...(color === undefined
-      ? {}
-      : {
-          colour: color,
-        }),
-    ...(motion === undefined
-      ? {}
-      : {
-          motion,
-        }),
-    ...(plain === undefined
-      ? {}
-      : {
-          plain,
-        }),
-  };
-};
-
-// A command added to a parent takes the program's settings first: its output, exits and help.
-const adopt = (parent: Command, children: readonly Command[]): Command => {
-  for (const child of children) {
-    child.copyInheritedSettings(parent);
-    parent.addCommand(child);
-  }
-
-  return parent;
-};
-
-const groupOf = (input: {
-  context: CommandContext;
-  description: string;
-  examples: readonly string[];
-  name: string;
-  parent: Command;
-}): Command =>
-  new Command(input.name)
-    .description(input.description)
-    .addHelpText('before', input.context.helpExamples(input.examples))
-    .copyInheritedSettings(input.parent);
-
-interface Registration {
-  readonly context: CommandContext;
-  readonly ports: Ports;
-  readonly program: Command;
-  readonly programInput: ProgramInput;
-}
 
 const hookCommandsOf = ({ context, ports, program }: Registration): Command =>
   adopt(
@@ -226,7 +174,7 @@ const hookCommandsOf = ({ context, ports, program }: Registration): Command =>
       examples: [
         `printf '{"cwd":"%s","hook_event_name":"SessionStart","source":"startup"}' "$PWD" | constitution hook session-start`,
       ],
-      name: HOOK,
+      name: HOOK_GROUP,
       parent: program,
     }),
     [
@@ -234,8 +182,9 @@ const hookCommandsOf = ({ context, ports, program }: Registration): Command =>
         ...context,
         digestSession: (start: SessionStart): SessionDigest | undefined =>
           digestSession({
-            ...ports,
             ...start,
+            source: ports.rules,
+            workingTree: ports.workingTree,
           }),
         keepSession: (kept): void => {
           keepSession({
@@ -296,38 +245,105 @@ const hookCommandsOf = ({ context, ports, program }: Registration): Command =>
 const doctorCommandOf = ({ context, ports, programInput }: Registration): Command =>
   createDoctorCommand({
     ...context,
-    diagnoseInstallation: async (start: string): Promise<readonly PartDiagnosis[]> =>
+    diagnoseInstallation: async (
+      startFolderPath: AbsolutePath,
+    ): Promise<readonly PartDiagnosis[]> =>
       await diagnoseInstallation({
+        executable: Version.create(programInput.version),
         files: ports.files,
         fingerprint: programInput.pluginFingerprint(),
         hooks: createLefthookGitHooks({
           env: programInput.environment.commands,
           timeoutMs: LEFTHOOK_TIMEOUT_MS,
         }),
-        path: createPathProgram({
+        path: createPathExecutable({
           env: programInput.environment.commands,
-          timeoutMs: PROGRAM_TIMEOUT_MS,
+          timeoutMs: EXECUTABLE_TIMEOUT_MS,
         }),
         plugins: createClaudePluginRegistry({
           configFolder: programInput.environment.claudeConfig,
           pluginRoot: programInput.environment.pluginRoot,
         }),
+        pinned: ports.pinned,
         releases: createGitHubReleaseFeed({
           fetch: programInput.fetch,
           timeoutMs: RELEASE_TIMEOUT_MS,
         }),
-        source: ports.source,
-        start,
-        program: Version.create(programInput.version),
+        startFolderPath,
       }),
   });
+
+const presetsInputOf =
+  (ports: Ports) =>
+  (startFolderPath: AbsolutePath): PresetsInput => ({
+    distribution: ports.distribution,
+    files: ports.files,
+    formats: ports.formats,
+    locks: ports.locks,
+    parser: ports.presetFiles,
+    reader: ports.reader,
+    startFolderPath,
+  });
+
+const planRunOf =
+  (ports: Ports) =>
+  (asked: RunAsked): ProjectRead<RunPlan> =>
+    planRun({
+      ...asked,
+      distribution: ports.distribution,
+      files: ports.files,
+      formats: ports.formats,
+      parser: ports.presetFiles,
+      reader: ports.reader,
+    });
+
+const presetsCommandsOf = ({ context, ports, program }: Registration): Command =>
+  adopt(
+    groupOf({
+      context,
+      description:
+        "Check, plan and apply the configurations the project's tools take from the presets.",
+      examples: [
+        'constitution presets check',
+        'constitution presets plan',
+        'constitution presets apply',
+      ],
+      name: 'presets',
+      parent: program,
+    }),
+    [
+      createPresetsCheckCommand({
+        ...context,
+        checkConfigurations: (startFolderPath: AbsolutePath): ProjectRead<ConfigurationsCheck> =>
+          checkConfigurations(presetsInputOf(ports)(startFolderPath)),
+      }),
+      createPresetsPlanCommand({
+        ...context,
+        planPresets: (startFolderPath: AbsolutePath): ProjectRead<PresetsPlan> =>
+          planPresets(presetsInputOf(ports)(startFolderPath)),
+      }),
+      createPresetsApplyCommand({
+        ...context,
+        applyChanges: (changes: AppliedFiles): void => {
+          applyChanges({
+            changes,
+            writes: ports.appliedFiles,
+          });
+        },
+        planApply: (startFolderPath: AbsolutePath): ProjectRead<ApplyPlan> =>
+          planApply(presetsInputOf(ports)(startFolderPath)),
+        planRun: planRunOf(ports),
+        runCommand: ports.commands.run,
+      }),
+    ],
+  );
 
 const registerCommands = (registration: Registration): void => {
   const { context, ports, program, programInput } = registration;
 
   const checkBlocksIn = (asked: {
-    base: string | undefined;
-    folder: string;
+    base: PackBase | undefined;
+    folderPath: AbsolutePath;
   }): Validation | undefined =>
     checkBlocks({
       ...(asked.base === undefined
@@ -335,9 +351,8 @@ const registerCommands = (registration: Registration): void => {
         : {
             base: asked.base,
           }),
-      bindingsParser: createYamlBindingsParser(),
       files: ports.files,
-      folder: asked.folder,
+      folderPath: asked.folderPath,
       frontMatterParser: createYamlFrontMatterParser(),
       manifestParser: createJsonManifestParser(),
       trees: createGitFileTrees({
@@ -347,18 +362,23 @@ const registerCommands = (registration: Registration): void => {
       }),
     });
 
-  const checkPresetsAt = (start: string): readonly ProjectWarning[] | undefined =>
-    checkPresets({
-      ...ports,
-      parser: ports.configurations,
-      start,
-    });
-
   adopt(program, [
     createCheckCommand({
       ...context,
       checkBlocks: checkBlocksIn,
-      checkPresets: checkPresetsAt,
+      checkConfigurations: (startFolderPath: AbsolutePath): StepReport =>
+        configurationsStepOf(checkConfigurations(presetsInputOf(ports)(startFolderPath))),
+      checkPresets: (asked): StepReport =>
+        presetsStepOf(
+          checkPresets({
+            ...asked,
+            distribution: ports.distribution,
+            files: ports.files,
+            formats: ports.formats,
+            parser: ports.presetFiles,
+          }),
+        ),
+      presetsSkipped: presetsSkippedStep,
     }),
     adopt(
       groupOf({
@@ -377,39 +397,19 @@ const registerCommands = (registration: Registration): void => {
         }),
       ],
     ),
-    adopt(
-      groupOf({
-        context,
-        description: "Check and plan the configurations the project's tools take from the presets.",
-        examples: [
-          'constitution presets check',
-          'constitution presets plan',
-        ],
-        name: 'presets',
-        parent: program,
-      }),
-      [
-        createPresetsCheckCommand({
-          ...context,
-          checkPresets: checkPresetsAt,
-        }),
-        createPresetsPlanCommand({
-          ...context,
-          planPresets: (start: string): WiringPlan =>
-            planPresets({
-              ...ports,
-              start,
-            }),
-        }),
-      ],
-    ),
+    presetsCommandsOf(registration),
+    createRunCommand({
+      ...context,
+      planRun: planRunOf(ports),
+      runCommand: ports.commands.run,
+    }),
     hookCommandsOf(registration),
     doctorCommandOf(registration),
   ]);
 };
 
 const createProgram = (input: ProgramInput): Program => {
-  const program = new Command(PROGRAM_NAME);
+  const program = new Command(EXECUTABLE_NAME);
   let running: Command | undefined;
   let isFailed = false;
   const presentation = createPresentation({
@@ -421,7 +421,7 @@ const createProgram = (input: ProgramInput): Program => {
     streams: input.streams,
   });
   const errors: ErrorHandler = createErrorHandler({
-    isHook: () => running?.parent?.name() === HOOK,
+    isHook: () => running?.parent?.name() === HOOK_GROUP,
     theme: presentation.theme,
     writeError: input.io.writeError,
   });
@@ -464,16 +464,16 @@ const createProgram = (input: ProgramInput): Program => {
       try {
         // building the ports parses the configuration: a malformed setting fails the start here
         registerCommands({
-          ports: portsOf(input),
           context: {
+            helpExamples,
             io: input.io,
             places: input.places,
             renderer: presentation.renderer,
             setFailed: (): void => {
               isFailed = true;
             },
-            helpExamples,
           },
+          ports: portsOf(input),
           program,
           programInput: input,
         });

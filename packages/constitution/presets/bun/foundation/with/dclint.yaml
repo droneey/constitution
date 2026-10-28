@@ -1,0 +1,28 @@
+dclint:
+  '*':
+    yaml:
+      package.json:
+        scripts:
+          check:compose: dclint compose.yaml
+bun:
+  '*':
+    yaml:
+      package.json:
+        scripts: !sorted {}
+  script-group-run-by-its-prefix:
+    yaml:
+      package.json:
+        scripts:
+          check: !words
+            - bun run --sequential
+            - slot: checks
+            - slot: tests
+            - slot: mutations
+          check@checks:
+            - "'check:*'"
+_task-runner:
+  unit-run-through-its-action-tasks:
+    yaml:
+      ${constitution.run}:
+        check:
+          - bun run check

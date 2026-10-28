@@ -1,15 +1,54 @@
-# python: bytecode
-__pycache__/
-
-# pytest: caches and coverage
-.pytest_cache/
-.coverage
-
-# ruff
-.ruff_cache/
+# git
+.claude/settings.local.json
+.claude/worktrees/
+/local/
+.DS_Store
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.log
+**/logs/
+.temp/
+.tmp/
+*.bak
+*.orig
+*~
+.env*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+credentials.json
+id_rsa
+*.secrets
 
 # complexipy
 .complexipy_cache/
 
+# hypothesis
+.hypothesis/
+
 # mutmut
 mutants/
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# ruff
+.ruff_cache/
+
+# uv
+.venv/
+**/dist/

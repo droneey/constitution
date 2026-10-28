@@ -1,42 +1,77 @@
 import { spawnSync } from 'node:child_process';
-import { join } from 'node:path';
+import { relative } from 'node:path';
 
 import { miseBinary } from './mise.fixtures';
+import { toolEnvironment } from './package.fixtures';
+import { loadOf, widestAppliedUnit } from './preset-load.fixtures';
 
-interface Analysis {
-  readonly exitCode: number | undefined;
+interface Lint {
+  /** the ids of the rules the file breaks, in the order yamllint reports them */
   readonly rules: readonly string[];
+  readonly status: number;
 }
 
-const repository = join(import.meta.dir, '..', '..');
-const yamllintConfig = join(repository, 'presets', 'yaml', 'yamllint', 'foundation', 'self.yaml');
 const yamllint = miseBinary('yamllint');
-// A parsable line ends with the rule that reported it: `stdin:2:11: [error] … (octal-values)`.
-const RULE_AT_END = /\(([a-z-]+)\)$/;
 
-// The project extends the archive's configuration from .yamllint.yaml; the spec points at it.
-const analyseYaml = (text: string): Analysis => {
-  const run = spawnSync(
+/**
+ * The files yamllint reads in the widest unit that holds the files and follows version control,
+ * whose agents' worktrees git ignores, by their paths from it.
+ */
+const lintedFiles = (files: Readonly<Record<string, string>>): readonly string[] =>
+  spawnSync(
     yamllint,
     [
-      '--format',
-      'parsable',
-      '--config-file',
-      yamllintConfig,
-      '-',
+      '--list-files',
+      '.',
     ],
     {
+      cwd: widestAppliedUnit('yamllint', {
+        blocks: [
+          'version-control',
+        ],
+        files,
+      }),
       encoding: 'utf8',
-      input: text,
+      env: toolEnvironment(),
     },
-  );
+  )
+    .stdout.split('\n')
+    .filter((line) => line !== '')
+    .map((line) => relative('.', line))
+    .toSorted((left, right) => left.localeCompare(right));
+
+interface LintedFile {
+  readonly path: string;
+  /** written into the unit before it is applied; the file the apply writes where absent */
+  readonly text?: string;
+}
+
+// yamllint's parsable format closes each finding with its rule's id in brackets.
+const RULE_ID = /\(([a-z-]+)\)$/;
+
+/** yamllint's strict run over one file of the widest unit, which holds it. */
+const lintFile = async (input: LintedFile): Promise<Lint> => {
+  const { output, status } = await loadOf('yamllint', {
+    command: [
+      yamllint,
+      '--strict',
+      '--format',
+      'parsable',
+      input.path,
+    ],
+    ...(input.text === undefined
+      ? {}
+      : {
+          files: {
+            [input.path]: input.text,
+          },
+        }),
+  });
 
   return {
-    exitCode: run.status ?? undefined,
-    rules: [
-      ...new Set(run.stdout.split('\n').flatMap((line) => RULE_AT_END.exec(line)?.slice(1) ?? [])),
-    ].toSorted((left, right) => left.localeCompare(right)),
+    rules: output.map((line) => RULE_ID.exec(line)?.[1] ?? line),
+    status,
   };
 };
 
-export { analyseYaml };
+export { lintedFiles, lintFile };

@@ -19,12 +19,13 @@ type FileRead =
       readonly status: FileReadStatus.Unreadable;
     };
 
+/** The system's failure, where it refused the read. */
+const causeOf = (read: FileRead): unknown =>
+  // Stryker disable next-line ConditionalExpression: no other status carries a cause
+  read.status === FileReadStatus.Unreadable ? read.cause : undefined;
+
 const FileRead = {
-  /** the system's failure, where it refused the read */
-  causeOf: (read: FileRead): unknown =>
-    read.status === FileReadStatus.Unreadable ? read.cause : undefined,
-  textOf: (read: FileRead): string | undefined =>
-    read.status === FileReadStatus.Read ? read.text : undefined,
+  causeOf,
 } as const;
 
 export { FileRead, FileReadStatus };

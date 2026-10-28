@@ -20,13 +20,13 @@ Each fact — a value, a rule of the business, a piece of state — has one home
 |---|
 | two copies of one fact drift apart, and the program is then wrong in one of them. |
 
-### structure-appears-by-symptom · SHOULD
+### structure-appears-by-symptom · MUST
 
-A structure — an abstraction, a pattern, a shared module, a layer — appears when a present need demands it; code that only looks alike waits for its third occurrence before it is joined; a new member of an open set is registered at once, without waiting.
+A structure — an abstraction, a pattern, a shared module, a layer — appears when a present need demands it: a concept of the business, a boundary or a value that crosses one, a seam that makes a behaviour testable, or a rule that asks for it. A structure that earns one of these needs is kept, since removing it is the same error as adding one that earns none, and one that only forwards, restates or anticipates is removed; a concept or a decision left as a plain string, a flag or a repeated branch is a structure missing. Code that only looks alike waits for its third occurrence before it is joined; a new member of an open set is registered at once.
 
 | Why |
 |---|
-| a structure made in advance guesses its axis, usually wrongly, and must be torn out before it can be fixed. |
+| a structure made in advance guesses its axis and is torn out before it can be fixed, and one removed while its need stands leaves that need checked again wherever it is met: both cost the same. |
 
 ### new-kind-added-as-a-member · MUST
 

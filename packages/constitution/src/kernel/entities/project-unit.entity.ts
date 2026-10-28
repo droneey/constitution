@@ -15,7 +15,7 @@ interface ProjectUnit {
   readonly path: UnitPath;
 }
 
-/** name may be given as undefined, which leaves it out */
+/** A unit, whose name, given as undefined, is left out. */
 const createUnit = (
   input: Omit<ProjectUnit, 'name'> & {
     readonly name?: string | undefined;
@@ -36,11 +36,8 @@ const createUnit = (
 
 const isRepositoryUnit = (unit: ProjectUnit): boolean => UnitPath.isRepository(unit.path);
 
-const isLoweredIn = (unit: ProjectUnit, rule: RuleSlug): boolean => unit.loweredRules.has(rule);
-
 const ProjectUnit = {
   create: createUnit,
-  isLowered: isLoweredIn,
   isRepository: isRepositoryUnit,
 } as const;
 

@@ -6,7 +6,6 @@ import { budgetTexts } from './budget-texts.utils';
 import { decisionsTexts } from './decisions-texts.utils';
 import { loadTexts } from './load-texts.utils';
 import { pluginTexts } from './plugin-texts.utils';
-import { presetsTexts } from './presets-texts.utils';
 import { referencesTexts } from './references-texts.utils';
 import { requirementsTexts } from './requirements-texts.utils';
 import { requiresTexts } from './requires-texts.utils';
@@ -21,7 +20,6 @@ const findingTexts: TextsOf<BlockFindingDetails> = {
   ...decisionsTexts,
   ...loadTexts,
   ...pluginTexts,
-  ...presetsTexts,
   ...referencesTexts,
   ...requirementsTexts,
   ...requiresTexts,

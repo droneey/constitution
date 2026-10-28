@@ -4,11 +4,14 @@ import { llms, loader } from 'fumadocs-core/source';
 import type { SerializedPageTree } from 'fumadocs-core/source/client';
 import { lucideIconsPlugin } from 'fumadocs-core/source/lucide-icons';
 
+import { once } from '#/libs/once';
 import { DOCS_ROUTE } from '#/shared/constants';
+import type { SiteLayout } from '#/shared/types';
 
 import type { PagesQueryRepository, SearchIndex } from '../../domain/contracts';
-import type { Page, PageCatalog, PageSlugs } from '../../domain/entities';
-import { catalogKeyOf } from '../../domain/entities';
+import type { PageCatalog } from '../../domain/entities';
+import { Page } from '../../domain/entities';
+import type { PageSlugs, SiteBasePath } from '../../domain/value-objects';
 import {
   createSitePaths,
   crossLinks,
@@ -30,7 +33,6 @@ type SiteSource = Source<{
   pageData: SitePageData;
 }>;
 
-/** a collection fumadocs-mdx compiled */
 interface SiteCollection {
   readonly toFumadocsSource: () => SiteSource;
 }
@@ -45,45 +47,11 @@ interface SiteCollections {
   readonly quickStart: SiteCollection;
 }
 
-/** a `meta.json` the site adds to the guide's folders, which the repository has no file for */
-interface SiteMetaFile {
-  readonly data: MetaData;
-  readonly path: string;
-  readonly type: 'meta';
-}
-
-/** what the site serves beside the guide's own files, as the repository lays it out */
-interface SiteLayout {
-  /** the site's name of each document of the repository's root, by its file */
-  readonly documents: Readonly<Record<string, string>>;
-  /** the guide's sidebar and every folder of blocks */
-  readonly folders: readonly SiteMetaFile[];
-  readonly glossary: string;
-  readonly quickStart: string;
-}
-
 interface FumadocsContentInput {
   readonly collections: SiteCollections;
   readonly layout: SiteLayout;
-  /** the path the site is served under, ending in a slash; the host's root when left out */
-  readonly siteBase?: string;
+  readonly siteBasePath: SiteBasePath;
 }
-
-const lazily = <TValue>(make: () => TValue): (() => TValue) => {
-  let made:
-    | {
-        kept: TValue;
-      }
-    | undefined;
-
-  return (): TValue => {
-    made ??= {
-      kept: make(),
-    };
-
-    return made.kept;
-  };
-};
 
 /**
  * The pages of the collections fumadocs-mdx compiled, served under the site's base, and the index
@@ -92,9 +60,9 @@ const lazily = <TValue>(make: () => TValue): (() => TValue) => {
 const createFumadocsContent = ({
   collections: { blocks, documents, glossary, guide, overview, quickStart },
   layout,
-  siteBase = '/',
+  siteBasePath,
 }: FumadocsContentInput): PagesQueryRepository<SerializedPageTree> & SearchIndex => {
-  const content = lazily(() => {
+  const content = once(() => {
     const { collectionPathOf, servedUnderSitePaths } = createSitePaths();
     const guideSource: SiteSource = {
       files: [
@@ -107,7 +75,7 @@ const createFumadocsContent = ({
       blocks: servedUnderSitePaths(blocks.toFumadocsSource(), passportAsIndex),
       documents: servedUnderSitePaths(
         documents.toFumadocsSource(),
-        (path) => `${layout.documents[path]}.md`,
+        (collectionPath) => `${layout.documents[collectionPath]}.md`,
       ),
       glossary: servedUnderSitePaths(glossary.toFumadocsSource(), () => `${layout.glossary}.md`),
       guide: guideSource,
@@ -129,16 +97,16 @@ const createFumadocsContent = ({
     // is read as it is, so its addresses carry the base themselves
     const textSource = loader(sources, {
       // Stryker disable next-line MethodExpression: the loader joins a doubled slash, so the addresses are the same
-      baseUrl: `${siteBase}${DOCS_ROUTE.slice(1)}`,
+      baseUrl: `${siteBasePath}${DOCS_ROUTE.slice(1)}`,
       plugins: [
         ...plugins,
-        linksUnder(siteBase),
+        linksUnder(siteBasePath),
       ],
     });
 
     return {
       collectionPathOf,
-      llms: lazily(() =>
+      llms: once(() =>
         llms(textSource, {
           renderName: ({ name }) => textOfName(name),
           renderPage: markdownOfPage,
@@ -187,7 +155,7 @@ const createFumadocsContent = ({
           content()
             .source.getPages()
             .map((page) => [
-              catalogKeyOf(page.slugs),
+              Page.catalogKeyOf(page.slugs),
               pageOf(page),
             ]),
         ),
@@ -198,5 +166,5 @@ const createFumadocsContent = ({
   };
 };
 
-export type { SiteCollections, SiteLayout };
+export type { SiteCollections };
 export { createFumadocsContent };

@@ -1,4 +1,6 @@
+import { PATH_SEPARATOR } from '../constants';
 import { InvalidValueError, ValueFailure } from '../errors';
+import type { BlockPath } from '../value-objects';
 import { Axis, Block } from './block.entity';
 
 /** what a term names, as the Constitution's grammar reads a definition */
@@ -15,29 +17,27 @@ interface Term {
   /** the page that defines it, with the anchor of its id, else of its rule when a rule defines it */
   readonly address: string;
   readonly axis: Axis;
-  readonly block: string;
+  readonly blockId: string;
   readonly kind: TermKind;
   readonly name: string;
   /** in Markdown */
   readonly sentence: string;
 }
 
-const PATH_SEPARATOR = '/';
 const SENTENCE_BREAK = /(?<=[.!?])\s+(?=[A-Z*`[(])/g;
 
 /** a passport's axis is foundation's, and a seam's is the folder it sits in */
-const axisOf = (path: string): Axis =>
-  path.split(PATH_SEPARATOR).find(Block.isAxis) ?? Axis.Foundation;
+const axisOf = (blockPath: BlockPath): Axis =>
+  blockPath.split(PATH_SEPARATOR).find(Block.isAxis) ?? Axis.Foundation;
 
-/** the folder that holds the passport, from a path below the blocks folder */
-const blockOf = (path: string): string | undefined => {
-  const segments = path.split(PATH_SEPARATOR);
-  const axis = segments.findIndex(Block.isAxis);
+/** undefined for a file at the root of the blocks folder */
+const blockIdOf = (blockPath: BlockPath): string | undefined => {
+  const segments = blockPath.split(PATH_SEPARATOR);
+  const axisIndex = segments.findIndex(Block.isAxis);
 
-  return axis === -1 ? segments.at(-2) : segments[axis - 1];
+  return axisIndex === -1 ? segments.at(-2) : segments[axisIndex - 1];
 };
 
-/** the sentence of `text` that holds the character at `offset` */
 const sentenceAround = (input: { offset: number; text: string }): string => {
   const breaks = [
     ...input.text.matchAll(SENTENCE_BREAK),
@@ -67,27 +67,12 @@ const create = (input: Term): Term => {
   return {
     address: input.address,
     axis: input.axis,
-    block: input.block,
+    blockId: input.blockId,
     kind: input.kind,
     name: input.name,
     sentence: input.sentence,
   };
 };
-
-const termKinds: readonly string[] = Object.values(TermKind);
-
-const is = (candidate: unknown): candidate is Term =>
-  candidate instanceof Object &&
-  [
-    'address',
-    'block',
-    'name',
-    'sentence',
-  ].every((field) => typeof Reflect.get(candidate, field) === 'string') &&
-  termKinds.includes(String(Reflect.get(candidate, 'kind'))) &&
-  Block.isAxis(String(Reflect.get(candidate, 'axis')));
-
-const equals = (left: Term, right: Term): boolean => left.name === right.name;
 
 /** by name, whatever its case, and by its case where two names differ only there */
 const compare = (left: Term, right: Term): number =>
@@ -96,11 +81,9 @@ const compare = (left: Term, right: Term): number =>
 
 const Term = {
   axisOf,
-  blockOf,
+  blockIdOf,
   compare,
   create,
-  equals,
-  is,
   sentenceAround,
 } as const;
 

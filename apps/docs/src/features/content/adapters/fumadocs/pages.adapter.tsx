@@ -7,7 +7,9 @@ import type { LoaderPlugin } from 'fumadocs-core/source';
 
 import { DOCS_ROUTE, MAIN_CONTENT_ID } from '#/shared/constants';
 
-import { isPassportPath, pageSlugsOf } from '../../domain/entities';
+import { Page } from '../../domain/entities';
+import type { SiteBasePath } from '../../domain/value-objects';
+import { BlockPath } from '../../domain/value-objects';
 
 interface MarkdownPage {
   data: {
@@ -18,8 +20,7 @@ interface MarkdownPage {
 }
 
 interface SitePaths {
-  /** the path a page has in its collection, from the path the site serves it under */
-  readonly collectionPathOf: (path: string) => string;
+  readonly collectionPathOf: (sitePath: string) => string;
   /** records each file's path in its collection, for `collectionPathOf` */
   readonly servedUnderSitePaths: <
     TSource extends {
@@ -28,8 +29,8 @@ interface SitePaths {
       }[];
     },
   >(
-    from: TSource,
-    sitePathOf: (path: string) => string,
+    source: TSource,
+    sitePathOf: (collectionPath: string) => string,
   ) => TSource;
 }
 
@@ -37,32 +38,36 @@ const createSitePaths = (): SitePaths => {
   const collectionPathsBySitePath = new Map<string, string>();
 
   return {
-    collectionPathOf: (path) => collectionPathsBySitePath.get(path) ?? path,
-    servedUnderSitePaths: (from, sitePathOf) => ({
-      ...from,
-      files: from.files.map((file) => {
-        const path = sitePathOf(file.path);
+    collectionPathOf: (sitePath) => collectionPathsBySitePath.get(sitePath) ?? sitePath,
+    servedUnderSitePaths: (source, sitePathOf) => ({
+      ...source,
+      files: source.files.map((file) => {
+        const sitePath = sitePathOf(file.path);
 
-        collectionPathsBySitePath.set(path, file.path);
+        collectionPathsBySitePath.set(sitePath, file.path);
 
         return {
           ...file,
-          path,
+          path: sitePath,
         };
       }),
     }),
   };
 };
 
-const passportAsIndex = (path: string): string =>
-  `${pageSlugsOf(path).join('/')}${isPassportPath(path) ? '/index' : ''}.md`;
+/** @throws {@link InvalidValueError} when the path names no Markdown file of the blocks folder */
+const passportAsIndex = (collectionPath: string): string => {
+  const blockPath = BlockPath.create(collectionPath);
+
+  return `${Page.slugsOf(blockPath).join('/')}${Page.isPassportPath(blockPath) ? '/index' : ''}.md`;
+};
 
 /**
  * A link to a whole page leads to its main region, since the library places a page, for its
  * breadcrumbs, its neighbours and the open folder, at the first entry of its address.
  */
-const crossLinked = (node: Item, path: string | undefined): Item => {
-  if (path !== undefined || node.external === true || !node.url.startsWith(DOCS_ROUTE)) {
+const crossLinked = (node: Item, filePath: string | undefined): Item => {
+  if (filePath !== undefined || node.external === true || !node.url.startsWith(DOCS_ROUTE)) {
     return node;
   }
 
@@ -90,7 +95,7 @@ const crossLinks: LoaderPlugin = {
 };
 
 /** a link the sidebar writes by its address, which the loader leaves off the base it serves its pages under */
-const linksUnder = (siteBase: string): LoaderPlugin => ({
+const linksUnder = (siteBasePath: SiteBasePath): LoaderPlugin => ({
   // Stryker disable next-line StringLiteral: the name only labels the plugin in fumadocs' diagnostics
   name: 'links-under-site-base',
   transformPageTree: {
@@ -98,7 +103,7 @@ const linksUnder = (siteBase: string): LoaderPlugin => ({
       node.url.startsWith(DOCS_ROUTE)
         ? {
             ...node,
-            url: `${siteBase}${node.url.slice(1)}`,
+            url: `${siteBasePath}${node.url.slice(1)}`,
           }
         : node,
   },

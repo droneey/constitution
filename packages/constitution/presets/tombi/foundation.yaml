@@ -1,0 +1,33 @@
+toml:
+  toml-written-in-1-0-until-every-reader-reads-1-1:
+    toml:
+      tombi.toml:
+        toml-version: v1.0.0
+core:
+  formatters-share-one-indent-and-width:
+    toml:
+      tombi.toml:
+        format:
+          rules:
+            indent-width: 2
+            line-width: 100
+tombi:
+  '*':
+    toml:
+      tombi.toml:
+        format:
+          rules:
+            trailing-comment-space-width: 1
+        schema:
+          format:
+            rules:
+              array-values-order:
+                enabled: false
+  tombi-is-the-formatter:
+    toml:
+      tombi.toml:
+        schema:
+          format:
+            rules:
+              table-keys-order:
+                enabled: false

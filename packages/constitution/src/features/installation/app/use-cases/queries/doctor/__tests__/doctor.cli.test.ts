@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import { createFakeContext, runCommand } from '#/__tests__/command-context.fake';
+import { AbsolutePath } from '#/kernel/value-objects';
 
 import type { PartDiagnosis } from '../../../../../domain/entities';
 import { Diagnosis } from '../../../../../domain/entities';
@@ -34,7 +35,7 @@ describe('createDoctorCommand', () => {
       condition: 'a part is broken',
       diagnosis: {
         kind: Diagnosis.ManifestUnreadable,
-        manifest: '.droneey/constitution/package.json',
+        manifest: AbsolutePath.create('/work/.droneey/constitution/package.json'),
       },
       failures: 1,
     },
@@ -46,8 +47,10 @@ describe('createDoctorCommand', () => {
       const { context, record } = createFakeContext();
       const command = createDoctorCommand({
         ...context,
-        diagnoseInstallation: async (start: string): Promise<readonly PartDiagnosis[]> => {
-          asked.push(start);
+        diagnoseInstallation: async (
+          startFolderPath: AbsolutePath,
+        ): Promise<readonly PartDiagnosis[]> => {
+          asked.push(startFolderPath);
 
           return await Promise.resolve([
             SOUND,

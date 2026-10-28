@@ -1,4 +1,4 @@
-import { recognisedFailure, syntaxErrorOf } from '#/kernel/utils';
+import { attempted, isSyntaxError } from '#/kernel/utils';
 import { Version } from '#/kernel/value-objects';
 import { isNestedWithin, readTextWithin } from '#/libs/bounded-input';
 
@@ -16,14 +16,13 @@ const TAG_PREFIX = /^v/;
 const MAX_ANSWER_BYTES = 1_048_576;
 const MAX_ANSWER_DEPTH = 16;
 
-const unreachable = (cause: unknown): LatestRelease => ({
-  cause,
-  lookup: ReleaseLookup.Unreachable,
-});
+const UNREADABLE = {
+  lookup: ReleaseLookup.Unreadable,
+} as const satisfies LatestRelease;
 
 // What fetch throws when the network is down, a proxy refuses the call, or it ran out of time; Bun
 // gives a refused connection or tunnel its code.
-const isUnreachable = (error: unknown): boolean =>
+const isUnanswered = (error: unknown): error is Error =>
   error instanceof TypeError ||
   error instanceof DOMException ||
   (error instanceof Error && 'code' in error);
@@ -44,12 +43,14 @@ const createGitHubReleaseFeed = (input: GitHubReleaseFeedInput): ReleaseFeed => 
         signal: AbortSignal.timeout(input.timeoutMs),
       });
     } catch (error) {
-      return unreachable(
-        recognisedFailure({
-          error,
-          isRecognised: isUnreachable,
-        }),
-      );
+      if (!isUnanswered(error)) {
+        throw error;
+      }
+
+      return {
+        lookup: ReleaseLookup.Unanswered,
+        reason: error.message,
+      };
     }
   };
 
@@ -62,12 +63,14 @@ const createGitHubReleaseFeed = (input: GitHubReleaseFeedInput): ReleaseFeed => 
       }
 
       if (!answer.ok) {
-        return unreachable(answer);
+        return {
+          lookup: ReleaseLookup.Refused,
+          status: answer.status,
+        };
       }
 
       const text = await readTextWithin({
         maxBytes: MAX_ANSWER_BYTES,
-        // an answer with no body is an empty one
         stream: answer.body ?? [],
       });
 
@@ -78,31 +81,22 @@ const createGitHubReleaseFeed = (input: GitHubReleaseFeedInput): ReleaseFeed => 
           text,
         })
       ) {
-        return unreachable(answer);
+        return UNREADABLE;
       }
 
-      let body: unknown;
-
-      try {
-        body = JSON.parse(text);
-      } catch (error) {
-        return unreachable(syntaxErrorOf(error));
-      }
-
-      const read = releasesModel.safeParse(body);
-
-      if (!read.success) {
-        return unreachable(read.error);
-      }
-
-      const version = read.data[0]?.tag_name.replace(TAG_PREFIX, '');
+      // an answer that is no JSON reads as no list of releases
+      const body = attempted<unknown>({
+        effect: () => JSON.parse(text),
+        isRecognised: isSyntaxError,
+      });
+      const version = releasesModel.safeParse(body).data?.[0]?.tag_name.replace(TAG_PREFIX, '');
 
       return Version.is(version)
         ? {
             lookup: ReleaseLookup.Found,
             version,
           }
-        : unreachable(read.data);
+        : UNREADABLE;
     },
   };
 };

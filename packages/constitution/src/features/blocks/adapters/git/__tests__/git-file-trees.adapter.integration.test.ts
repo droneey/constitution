@@ -5,8 +5,11 @@ import { dirname, join } from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
+import { AbsolutePath } from '#/kernel/value-objects';
+
 import { runFileTreeSuite } from '../../../__tests__/file-tree.suite';
 import { TreeError, TreeFailure } from '../../../domain/errors';
+import { TreePath } from '../../../domain/value-objects';
 import { createGitFileTrees } from '../git-file-trees.adapter';
 
 // git as the program finds it: on the PATH the spec runs with.
@@ -112,13 +115,13 @@ describe('createGitFileTrees: tracked', () => {
       text: '',
     });
 
-    const fileSystem = createGitFileTrees(gitOptions).tracked(root);
+    const fileSystem = createGitFileTrees(gitOptions).tracked(AbsolutePath.create(root));
 
     // Act
     const paths = fileSystem.list();
 
     // Assert
-    expect(paths).toStrictEqual([
+    expect<readonly string[]>(paths).toStrictEqual([
       '.gitignore',
       'blocks/core/core.md',
       'blocks/domains/ui/ui.md',
@@ -132,10 +135,10 @@ describe('createGitFileTrees: tracked', () => {
       text: '﻿---\r\nid: core\r\n---\r\n',
     });
 
-    const fileSystem = createGitFileTrees(gitOptions).tracked(root);
+    const fileSystem = createGitFileTrees(gitOptions).tracked(AbsolutePath.create(root));
 
     // Act
-    const text = fileSystem.read('blocks/core/core.md');
+    const text = fileSystem.read(TreePath.create('blocks/core/core.md'));
 
     // Assert
     expect(text).toBe('---\nid: core\n---\n');
@@ -149,10 +152,10 @@ describe('createGitFileTrees: tracked', () => {
     });
     chmodSync(join(root, 'blocks/core/core.md'), 0o000);
 
-    const fileSystem = createGitFileTrees(gitOptions).tracked(root);
+    const fileSystem = createGitFileTrees(gitOptions).tracked(AbsolutePath.create(root));
 
     // Act
-    const failure = failureOf(() => fileSystem.read('blocks/core/core.md'));
+    const failure = failureOf(() => fileSystem.read(TreePath.create('blocks/core/core.md')));
 
     // Assert
     expect(failure).toStrictEqual({
@@ -173,11 +176,11 @@ describe('createGitFileTrees: repository', () => {
 
     // Act
     const listed = createGitFileTrees(gitOptions)
-      .repository(join(root, 'packages', 'constitution'))
+      .repository(AbsolutePath.create(join(root, 'packages', 'constitution')))
       .list();
 
     // Assert
-    expect(listed).toStrictEqual([
+    expect<readonly string[]>(listed).toStrictEqual([
       'packages/constitution/package.json',
     ]);
   });
@@ -191,7 +194,7 @@ describe('createGitFileTrees: installed', () => {
       text: '# Core\n',
     });
     write({
-      path: 'presets/common/biome/foundation/self.jsonc',
+      path: 'presets/biome/foundation.yaml',
       text: '{}\n',
     });
     write({
@@ -204,13 +207,13 @@ describe('createGitFileTrees: installed', () => {
     });
     symlinkSync('gone.md', join(root, 'blocks/core/dangling.md'));
 
-    const tree = createGitFileTrees(gitOptions).installed(root);
+    const tree = createGitFileTrees(gitOptions).installed(AbsolutePath.create(root));
 
     // Act
     const listed = tree.list();
 
     // Assert
-    expect(listed).toStrictEqual([
+    expect<readonly string[]>(listed).toStrictEqual([
       'blocks/core/architecture/layout.md',
       'blocks/core/core.md',
     ]);
@@ -223,10 +226,10 @@ describe('createGitFileTrees: installed', () => {
       text: '# Core\r\n',
     });
 
-    const tree = createGitFileTrees(gitOptions).installed(root);
+    const tree = createGitFileTrees(gitOptions).installed(AbsolutePath.create(root));
 
     // Act
-    const text = tree.read('blocks/core/core.md');
+    const text = tree.read(TreePath.create('blocks/core/core.md'));
 
     // Assert
     expect(text).toBe('# Core\n');
@@ -251,7 +254,7 @@ describe('createGitFileTrees: installed', () => {
       text: '# API\n',
     });
 
-    const tree = createGitFileTrees(gitOptions).installed(root);
+    const tree = createGitFileTrees(gitOptions).installed(AbsolutePath.create(root));
 
     // Act
     const failure = failureOf(() => tree.list());
@@ -266,13 +269,42 @@ describe('createGitFileTrees: installed', () => {
 
   it('should list nothing when the folder holds no Constitution', () => {
     // Arrange
-    const tree = createGitFileTrees(gitOptions).installed(root);
+    const tree = createGitFileTrees(gitOptions).installed(AbsolutePath.create(root));
 
     // Act
     const listed = tree.list();
 
     // Assert
-    expect(listed).toStrictEqual([]);
+    expect<readonly string[]>(listed).toStrictEqual([]);
+  });
+});
+
+describe('createGitFileTrees: installed, a folder it cannot list', () => {
+  // The folder is made listable again, so the cleanup can remove it.
+  afterEach(() => {
+    chmodSync(join(root, 'blocks/domains'), 0o755);
+  });
+
+  it('should fail the tree with the folder when a folder of its blocks cannot be listed', () => {
+    // Arrange
+    write({
+      path: 'blocks/core/core.md',
+      text: '# Core\n',
+    });
+    mkdirSync(join(root, 'blocks/domains'));
+    chmodSync(join(root, 'blocks/domains'), 0o000);
+
+    const tree = createGitFileTrees(gitOptions).installed(AbsolutePath.create(root));
+
+    // Act
+    const failure = failureOf(() => tree.list());
+
+    // Assert
+    expect(failure).toStrictEqual({
+      causeCode: 'EACCES',
+      code: TreeFailure.Unreadable,
+      path: join(root, 'blocks/domains'),
+    });
   });
 });
 
@@ -290,7 +322,7 @@ runFileTreeSuite({
   treeOf: (files) => {
     writeAll(files);
 
-    return createGitFileTrees(gitOptions).tracked(root);
+    return createGitFileTrees(gitOptions).tracked(AbsolutePath.create(root));
   },
 });
 
@@ -299,7 +331,7 @@ runFileTreeSuite({
   treeOf: (files) => {
     writeAll(files);
 
-    return createGitFileTrees(gitOptions).installed(root);
+    return createGitFileTrees(gitOptions).installed(AbsolutePath.create(root));
   },
 });
 
@@ -323,13 +355,13 @@ describe('createGitFileTrees', () => {
 
     // Act
     const listed = {
-      installed: trees.installed(join(root, 'base')).list(),
-      repository: trees.repository(join(root, 'pack')).list(),
-      tracked: trees.tracked(join(root, 'pack')).list(),
+      installed: trees.installed(AbsolutePath.create(join(root, 'base'))).list(),
+      repository: trees.repository(AbsolutePath.create(join(root, 'pack'))).list(),
+      tracked: trees.tracked(AbsolutePath.create(join(root, 'pack'))).list(),
     };
 
     // Assert
-    expect(listed).toStrictEqual({
+    expect<Readonly<Record<string, readonly string[]>>>(listed).toStrictEqual({
       installed: [
         'blocks/core/core.md',
       ],
@@ -399,7 +431,7 @@ describe('createGitFileTrees: git', () => {
       );
 
       // Act
-      const failure = failureOf(() => trees.tracked(root).list());
+      const failure = failureOf(() => trees.tracked(AbsolutePath.create(root)).list());
 
       // Assert
       expect(failure).toStrictEqual({
@@ -420,14 +452,14 @@ describe('createGitFileTrees: git', () => {
     );
 
     // Act
-    const act = (): unknown => trees.repository(join(root, 'pack'));
+    const act = (): unknown => trees.repository(AbsolutePath.create(join(root, 'pack')));
 
     // Assert
     expect(act).toThrow(
       new TreeError({
         code: TreeFailure.Failed,
         details: {
-          path: join(root, 'pack'),
+          path: AbsolutePath.create(join(root, 'pack')),
         },
       }),
     );

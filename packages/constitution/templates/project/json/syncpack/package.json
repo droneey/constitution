@@ -1,9 +1,0 @@
-{
-  "scripts": {
-    "packages:check": "syncpack lint && syncpack format --check",
-    "packages:fix": "syncpack fix && syncpack format"
-  },
-  "devDependencies": {
-    "syncpack": "15.3.3"
-  }
-}

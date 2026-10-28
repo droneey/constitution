@@ -1,9 +1,9 @@
 import { renderMermaidSVG } from 'beautiful-mermaid';
 import { fromHtml } from 'hast-util-from-html';
 import type { Data, Node, Root } from 'mdast';
-import { visit } from 'unist-util-visit';
 
-import { DIAGRAM_COLOURS, DIAGRAM_SPACING_PX } from './remark-diagrams.constants';
+import { replaceFencedBlocks } from '../markdown';
+import { DIAGRAM_COLOURS, DIAGRAM_LANGUAGE, DIAGRAM_SPACING_PX } from './remark-diagrams.constants';
 
 interface Diagram extends Node {
   data: Data;
@@ -60,6 +60,7 @@ const diagramOf = (chart: string): Diagram => {
         role: 'img',
       },
     },
+    // Stryker disable next-line StringLiteral: mdast-util-to-hast renders a node by its data whatever its type, so the page is the same
     type: 'diagram',
   };
 };
@@ -68,20 +69,7 @@ const diagramOf = (chart: string): Diagram => {
 const remarkDiagrams =
   () =>
   (tree: Root): void => {
-    // Stryker disable next-line StringLiteral: only code has a language, so visiting every node finds the same ones
-    visit(tree, 'code', (node, index, parent) => {
-      if (
-        node.lang !== 'mermaid' ||
-        // Stryker disable next-line ConditionalExpression: a code node always has a parent, so the check only narrows its type
-        parent === undefined ||
-        // Stryker disable next-line ConditionalExpression: a code node always has an index, so the check only narrows its type
-        index === undefined
-      ) {
-        return;
-      }
-
-      parent.children.splice(index, 1, diagramOf(node.value));
-    });
+    replaceFencedBlocks(tree, DIAGRAM_LANGUAGE, (code) => diagramOf(code.value));
   };
 
 export { remarkDiagrams };

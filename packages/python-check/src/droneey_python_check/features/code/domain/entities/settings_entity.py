@@ -1,12 +1,28 @@
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 
-type Homes = Mapping[str, tuple[str, ...]]
+from .layer_entity import Layer
+
+
+@dataclass(frozen=True, slots=True)
+class WholeEdge:
+  """Every folder of the edge, wherever it sits, as one place of a home."""
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class TopLevelFolder:
+  """A top-level folder of the import package that core's tree does not name."""
+
+  name: str
+
+
+# A place a package is imported in: a layer, wherever the tree puts it, a top-level folder of the
+# project's own, or the whole edge.
+type HomePlace = Layer | TopLevelFolder | WholeEdge
+type Homes = Mapping[str, tuple[HomePlace, ...]]
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class Settings:
-  # each package with a home, by its import name, and the folders it is imported in
-  homes: Homes = field(default_factory=dict)
-  # the import names of the workspace's own units, which are the repository's code
-  units: frozenset[str] = frozenset()
+  homes_by_import_name: Homes = field(default_factory=dict)
+  workspace_unit_import_names: frozenset[str] = frozenset()

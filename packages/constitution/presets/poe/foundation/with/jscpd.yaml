@@ -1,0 +1,8 @@
+jscpd:
+  '*':
+    python:
+      pyproject.toml:
+        tool:
+          poe:
+            tasks:
+              check:duplicates: bunx --bun jscpd

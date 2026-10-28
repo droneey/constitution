@@ -20,10 +20,6 @@ interface RuleFixture {
   statement: string;
 }
 
-const SYNTHETIC_BLOCKS = 120;
-const SYNTHETIC_RULES = 3;
-const NUMBER_WIDTH = 3;
-
 const list = (items: readonly string[] | undefined): string => `[${(items ?? []).join(', ')}]`;
 
 const passportFile = (block: BlockFixture): string =>
@@ -110,9 +106,9 @@ const coreLines = [
 // The digest gives core's card without its front matter and the blank lines around it.
 const coreText = `${coreLines.trim()}\n`;
 
-const coreFiles = (body: string): Files =>
+const coreFiles = (): Files =>
   blockFiles({
-    body,
+    body: coreLines,
     dir: 'blocks/core',
     files: {
       'principles.md': section({
@@ -623,44 +619,11 @@ const implementationFiles = (): Files => ({
   }),
 });
 
-const syntheticId = (index: number): string =>
-  `synthetic-${String(index).padStart(NUMBER_WIDTH, '0')}`;
-
-// Summaries of 70 bytes make the budget bite.
-const syntheticFiles = (): Files =>
-  Object.assign(
-    {},
-    ...Array.from(
-      {
-        length: SYNTHETIC_BLOCKS,
-      },
-      (_, index) => {
-        const id = syntheticId(index + 1);
-
-        return domain({
-          id,
-          rules: Array.from(
-            {
-              length: SYNTHETIC_RULES,
-            },
-            (__, position) => ({
-              slug: `${id}-rule-${position + 1}`,
-              statement: `The ${id} rule number ${position + 1} holds for every file.`,
-            }),
-          ),
-          summary: `Block ${id} pads the digest to prove its byte budget holds up.`,
-        });
-      },
-    ),
-  );
-
-// A core body of the case's own sets how much of the budget core's text takes.
-const constitutionFiles = (coreBody: string = coreLines): Files => ({
-  ...coreFiles(coreBody),
+const constitutionFiles = (): Files => ({
+  ...coreFiles(),
   ...domainFiles(),
   ...contextFiles(),
   ...implementationFiles(),
-  ...syntheticFiles(),
 });
 
 export type { Files };

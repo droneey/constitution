@@ -1,0 +1,6 @@
+dclint:
+  '*':
+    yaml:
+      package.json:
+        scripts:
+          check:compose: !replace dclint compose.yaml docker/compose/app.yaml

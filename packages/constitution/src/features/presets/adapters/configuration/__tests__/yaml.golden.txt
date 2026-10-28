@@ -1,0 +1,125 @@
+# a YAML file is new
+jobs:
+  - run: |-
+      line one
+      line two
+'on': 'yes'
+
+
+# a new text that needs quotes takes single ones
+glob: '*.md'
+range: ''
+
+
+# a key goes, a key comes before the key that follows it, a value changes and the comments stay
+# top
+name: kit
+kept:
+  width: 120 # why
+skip: ~
+added: true
+
+
+# a map kept sorted keeps its comments, and a path of no map is passed by
+name: kit
+jobs:
+  a: 1
+  b: 2 # why
+
+
+# a list keeps the nodes of the items it keeps
+exclude:
+  - new
+  - kept # mine
+
+
+# a list holds a null the settings cannot hold
+exclude:
+  - a
+  - b
+
+
+# a map and a list turn into scalars, and a new list holds a text of lines and a word YAML 1.1 reads as a truth
+a: 2
+c: 3
+d:
+  - 'yes'
+  - |-
+    x
+    y
+
+
+# a key the file writes as a number goes
+a: 2
+
+
+# a list keeps the comment of its first item and gains one
+exclude:
+  - x # keep
+  - y
+  - z
+
+
+# a long text is folded as a block at the width every formatter keeps
+run: >-
+  word word word word word word word word word word word word word word word word word word word
+  word word word word word word word word word word word
+
+
+# a long text of lines stays a literal block
+run: |-
+  word word word word word word word word word word word word word word word word word word word
+  next
+
+
+# a text of 80 characters stays on its line
+run: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+
+# the file is a map that turns into a list
+- x
+
+
+# the file is a list that turns into a map
+list: false
+
+
+# a YAML file takes them above keys and items, never inside a literal block nor a line of flow
+# top
+pre-commit:
+  flow: [ 1, 2 ]
+  jobs:
+    - name: a
+      run: |
+        # biome
+        echo
+
+        # note
+
+    # biome
+    - name: b
+  folded: >
+    one
+
+    # two
+
+  # lefthook
+  parallel: true # biome
+mine: 1
+deep:
+  x:
+    # biome
+    w: 2
+
+    # lefthook
+    # why
+    z: 1
+
+  # lefthook
+  y: 1
+list:
+  # lefthook
+  - a
+  - null
+  - b
+

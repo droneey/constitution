@@ -1,0 +1,17 @@
+# yes by default
+Overwrite? (Y/n)
+
+# no by default
+Overwrite? (y/N)
+
+# yes by default, in Ukrainian
+Overwrite? (Т/н)
+
+# no by default, in Ukrainian
+Overwrite? (т/Н)
+
+# read out
+radiogroup: Overwrite? radio: (checked) yes radio: no
+
+# read out, no by default, in Ukrainian
+radiogroup: Overwrite? radio: Так radio: (checked) ні

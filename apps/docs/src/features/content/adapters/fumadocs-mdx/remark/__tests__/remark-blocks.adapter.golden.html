@@ -1,0 +1,175 @@
+<!-- a MUST rule with every part, its why opening with a word -->
+<section data-rule-card="">
+<p data-rule-meta="">
+<span data-rule-level="must">MUST</span>
+</p>
+<h3 data-rule="">
+<span data-rule-mark="must">
+<span data-rule-mark-letter="">M</span>
+<span class="sr-only">MUST</span>
+</span>
+<code>name-says-what</code> [#name-says-what]</h3>
+<p data-rule-parent="">→ <a href="/docs/core/names#name-is-short">
+<code>name-is-short</code>
+</a>
+</p>
+<p>A name says what it holds.</p>
+<p data-rule-why="">
+<span data-rule-why-label="">Why</span>A reader of <code>x</code> then knows.</p>
+<div data-rule-example="">
+<pre>
+<code class="language-ts">const count = 1;
+</code>
+</pre>
+</div>
+</section>
+
+<!-- a MAY rule with only its heading -->
+<section data-rule-card="">
+<p data-rule-meta="">
+<span data-rule-level="may">MAY</span>
+</p>
+<h3 data-rule="">
+<span data-rule-mark="may">
+<span data-rule-mark-letter="">Y</span>
+<span class="sr-only">MAY</span>
+</span>
+<code>name-is-short</code> [#name-is-short]</h3>
+</section>
+
+<!-- a SHOULD rule that tightens a rule with no address -->
+<section data-rule-card="">
+<p data-rule-meta="">
+<span data-rule-level="should">SHOULD</span>
+</p>
+<h3 data-rule="">
+<span data-rule-mark="should">
+<span data-rule-mark-letter="">S</span>
+<span class="sr-only">SHOULD</span>
+</span>
+<code>strict-name</code> [#strict-name]</h3>
+<p data-rule-parent="">→ <code>unknown-rule</code>
+</p>
+</section>
+
+<!-- a why that opens with code -->
+<section data-rule-card="">
+<p data-rule-meta="">
+<span data-rule-level="must">MUST</span>
+</p>
+<h3 data-rule="">
+<span data-rule-mark="must">
+<span data-rule-mark-letter="">M</span>
+<span class="sr-only">MUST</span>
+</span>
+<code>name-says-what</code> [#name-says-what]</h3>
+<p data-rule-why="">
+<span data-rule-why-label="">Why</span>
+<code>x</code> is short.</p>
+</section>
+
+<!-- a why with no row -->
+<section data-rule-card="">
+<p data-rule-meta="">
+<span data-rule-level="must">MUST</span>
+</p>
+<h3 data-rule="">
+<span data-rule-mark="must">
+<span data-rule-mark-letter="">M</span>
+<span class="sr-only">MUST</span>
+</span>
+<code>name-says-what</code> [#name-says-what]</h3>
+<p data-rule-why="">
+<span data-rule-why-label="">Why</span>
+</p>
+</section>
+
+<!-- an example whose code is titled Avoid and Prefer -->
+<section data-rule-card="">
+<p data-rule-meta="">
+<span data-rule-level="must">MUST</span>
+</p>
+<h3 data-rule="">
+<span data-rule-mark="must">
+<span data-rule-mark-letter="">M</span>
+<span class="sr-only">MUST</span>
+</span>
+<code>name-says-what</code> [#name-says-what]</h3>
+<div data-rule-example="pair">
+<div data-rule-example-column="avoid">
+<p>
+<span data-rule-example-label="">Avoid</span>
+</p>
+<pre>
+<code class="language-ts">let x;
+</code>
+</pre>
+</div>
+<div data-rule-example-column="prefer">
+<p>
+<span data-rule-example-label="">Prefer</span>
+</p>
+<pre>
+<code class="language-ts">const x = 1;
+</code>
+</pre>
+</div>
+</div>
+</section>
+
+<!-- an example whose code is no pair -->
+<section data-rule-card="">
+<p data-rule-meta="">
+<span data-rule-level="must">MUST</span>
+</p>
+<h3 data-rule="">
+<span data-rule-mark="must">
+<span data-rule-mark-letter="">M</span>
+<span class="sr-only">MUST</span>
+</span>
+<code>name-says-what</code> [#name-says-what]</h3>
+<div data-rule-example="">
+<div data-rule-example-column="avoid">
+<p>
+<span data-rule-example-label="">Avoid</span>
+</p>
+<pre>
+<code class="language-ts">let x;
+</code>
+</pre>
+</div>
+<p>Then:</p>
+<pre>
+<code class="language-ts">run();
+</code>
+</pre>
+</div>
+</section>
+
+<!-- an example of the better code alone -->
+<section data-rule-card="">
+<p data-rule-meta="">
+<span data-rule-level="must">MUST</span>
+</p>
+<h3 data-rule="">
+<span data-rule-mark="must">
+<span data-rule-mark-letter="">M</span>
+<span class="sr-only">MUST</span>
+</span>
+<code>name-says-what</code> [#name-says-what]</h3>
+<div data-rule-example="">
+<pre>
+<code class="language-ts">setup();
+</code>
+</pre>
+<div data-rule-example-column="prefer">
+<p>
+<span data-rule-example-label="">Prefer</span>
+</p>
+<pre>
+<code class="language-ts">const x = 1;
+</code>
+</pre>
+</div>
+</div>
+</section>

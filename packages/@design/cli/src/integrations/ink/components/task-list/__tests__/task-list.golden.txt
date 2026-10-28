@@ -1,0 +1,30 @@
+# a pending step
+• lint
+• test
+
+# a running step
+• lint
+▸ test
+
+# a done step
+✓ test
+• lint
+
+# a failed step
+✗ test
+• lint
+
+# a warned step
+⚠ test
+• lint
+
+# a skipped step
+• test
+• lint
+
+# read out, a done step
+listitem: finished lint
+list: 
+
+# read out, a running step
+list: listitem: (busy) working lint

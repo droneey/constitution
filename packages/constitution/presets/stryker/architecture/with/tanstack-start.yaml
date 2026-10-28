@@ -1,0 +1,7 @@
+core:
+  every-mutant-killed:
+    typescript:
+      stryker.config.json:
+        mutate:
+          - '!${role.source}/${role.composition-root}/router.{ts,tsx}'
+          - '!${role.source}/${role.composition-root}/${role.file-routes}/__root.{ts,tsx}'

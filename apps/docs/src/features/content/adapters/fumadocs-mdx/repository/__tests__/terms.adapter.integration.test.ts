@@ -87,7 +87,7 @@ describe('termsOf', () => {
       {
         address: '/docs/implementations/bun',
         axis: Axis.Foundation,
-        block: 'bun',
+        blockId: 'bun',
         kind: TermKind.Brand,
         name: 'Bun',
         sentence: '**Bun** runs the program, and **`bunfig.toml`** holds its settings.',
@@ -95,7 +95,7 @@ describe('termsOf', () => {
       {
         address: '/docs/implementations/bun',
         axis: Axis.Foundation,
-        block: 'bun',
+        blockId: 'bun',
         kind: TermKind.File,
         name: 'bunfig.toml',
         sentence: '**Bun** runs the program, and **`bunfig.toml`** holds its settings.',
@@ -103,7 +103,7 @@ describe('termsOf', () => {
       {
         address: '/docs/core/architecture/root#composition-root-wires-everything',
         axis: Axis.Architecture,
-        block: 'core',
+        blockId: 'core',
         kind: TermKind.Folder,
         name: 'cache/',
         sentence: 'Its **`cache/`**`{#cache}` sits beside **`store/`**',
@@ -111,7 +111,7 @@ describe('termsOf', () => {
       {
         address: '/docs/core/architecture/root#composition-root-wires-everything',
         axis: Axis.Architecture,
-        block: 'core',
+        blockId: 'core',
         kind: TermKind.Concept,
         name: 'composition root',
         sentence: 'The **composition root** chooses every implementation.',
@@ -119,7 +119,7 @@ describe('termsOf', () => {
       {
         address: '/docs/core/architecture/root#composition-root-wires-everything',
         axis: Axis.Architecture,
-        block: 'core',
+        blockId: 'core',
         kind: TermKind.Concept,
         name: 'delivery unit',
         sentence: 'It registers each **delivery  unit** in **`root/`**{#composition-root}.',
@@ -127,7 +127,7 @@ describe('termsOf', () => {
       {
         address: '/docs/implementations/bun/foundation/runtime',
         axis: Axis.Foundation,
-        block: 'bun',
+        blockId: 'bun',
         kind: TermKind.Concept,
         name: 'early',
         sentence: 'An **early** term, before any heading.',
@@ -135,7 +135,7 @@ describe('termsOf', () => {
       {
         address: '/docs/core/architecture/root#composition-root-wires-everything',
         axis: Axis.Architecture,
-        block: 'core',
+        blockId: 'core',
         kind: TermKind.Concept,
         name: 'graph',
         sentence: 'It wires the program, its **graph**.',
@@ -143,7 +143,7 @@ describe('termsOf', () => {
       {
         address: '/docs/core/architecture/root',
         axis: Axis.Architecture,
-        block: 'core',
+        blockId: 'core',
         kind: TermKind.Concept,
         name: 'note',
         sentence: 'A **note** below a heading that is no rule.',
@@ -151,7 +151,7 @@ describe('termsOf', () => {
       {
         address: '/docs/core/architecture/root#composition-root',
         axis: Axis.Architecture,
-        block: 'core',
+        blockId: 'core',
         kind: TermKind.Folder,
         name: 'root/',
         sentence: 'It registers each **delivery  unit** in **`root/`**{#composition-root}.',
@@ -159,7 +159,7 @@ describe('termsOf', () => {
       {
         address: '/docs/implementations/bun/foundation/runtime',
         axis: Axis.Foundation,
-        block: 'bun',
+        blockId: 'bun',
         kind: TermKind.Concept,
         name: 'section',
         sentence: 'A **section** term, below a heading above the rules.',
@@ -167,7 +167,7 @@ describe('termsOf', () => {
       {
         address: '/docs/core/architecture/root#composition-root-wires-everything',
         axis: Axis.Architecture,
-        block: 'core',
+        blockId: 'core',
         kind: TermKind.Folder,
         name: 'store/',
         sentence: 'Its **`cache/`**`{#cache}` sits beside **`store/`**',
@@ -175,7 +175,7 @@ describe('termsOf', () => {
       {
         address: '/docs/implementations/bun/foundation/runtime',
         axis: Axis.Foundation,
-        block: 'bun',
+        blockId: 'bun',
         kind: TermKind.Concept,
         name: 'thematic',
         sentence: 'A **thematic** term between two breaks.',
@@ -183,7 +183,7 @@ describe('termsOf', () => {
       {
         address: '/docs/core/architecture/root',
         axis: Axis.Architecture,
-        block: 'core',
+        blockId: 'core',
         kind: TermKind.Concept,
         name: 'wiring file',
         sentence: '**Wiring file.** The one file it writes, beside a [link](layout.md).',

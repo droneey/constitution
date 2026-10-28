@@ -3,9 +3,11 @@ import type { BlockId, PackPath, UnitPath } from '#/kernel/value-objects';
 
 import type { BlockSetRule } from './block-set.entity';
 
-// A unit with the axes it follows and the blocks it makes active, core and the bases of what it
-// lists among them, its name and the packs it lists; the repository's comes first, then its
-// members'.
+/**
+ * A unit with the axes it follows and the blocks it makes active, core and the bases of what it
+ * lists among them, its name and the packs it lists; the repository's comes first, then its
+ * members'.
+ */
 interface ResolvedUnit {
   readonly axes: ReadonlySet<Axis>;
   readonly blocks: ReadonlySet<BlockId>;

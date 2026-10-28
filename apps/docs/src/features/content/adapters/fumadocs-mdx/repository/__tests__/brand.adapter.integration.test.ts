@@ -1,9 +1,8 @@
 import { afterEach, describe, expect, it } from 'bun:test';
 
-import { ZodError } from 'zod';
-
+import { SourceFailure } from '../../../../domain/errors';
 import { taglineOf } from '../brand.adapter';
-import { enterRepository } from './repository.fixtures';
+import { enterRepository, failureOf } from './repository.fixtures';
 
 const repository = {
   leave: (): void => undefined,
@@ -29,18 +28,53 @@ describe('taglineOf', () => {
     expect(tagline).toBe('Rules');
   });
 
-  it('should fail when the brand has no tagline', () => {
+  it.each([
+    {
+      brand: 'version: 1\n',
+      cause: 'ZodError',
+      condition: 'has no tagline',
+    },
+    {
+      brand: 'tagline: [Rules\n',
+      cause: 'YAMLParseError',
+      condition: 'holds no YAML',
+    },
+    {
+      brand: 'tagline: *rules\n',
+      cause: 'ReferenceError',
+      condition: 'names an anchor it never sets',
+    },
+  ])('should fail, naming the file, when the brand $condition', ({ brand, cause }) => {
     // Arrange
     repository.leave = enterRepository({
       files: {
-        'brand.yaml': 'version: 1\n',
+        'brand.yaml': brand,
       },
     }).leave;
 
     // Act
-    const read = (): unknown => taglineOf();
+    const failure = failureOf(taglineOf);
 
     // Assert
-    expect(read).toThrow(ZodError);
+    expect(failure).toStrictEqual({
+      cause,
+      code: SourceFailure.FileMalformed,
+      details: {
+        path: 'brand.yaml',
+      },
+    });
+  });
+
+  it('should let the failure to read a missing brand through as it is', () => {
+    // Arrange
+    repository.leave = enterRepository({}).leave;
+
+    // Act
+    const failure = failureOf(taglineOf);
+
+    // Assert
+    expect(failure).toStrictEqual({
+      code: 'ENOENT',
+    });
   });
 });

@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'bun:test';
 
+import { SourceFailure } from '../../errors';
 import { Block } from '../block.entity';
+import { failureOf } from './entity.fixtures';
 
 describe('Block.readingOrderOf', () => {
   it('should list the blocks by their names, an abstract one right above the blocks that extend it', () => {
@@ -44,8 +46,8 @@ describe('Block.readingOrderOf', () => {
   });
 });
 
-describe('Block.chapterListGapsOf', () => {
-  it('should find no gap when the list names every chapter once', () => {
+describe('Block.listedChaptersOf', () => {
+  it('should give the chapters in the order of the list when it names every chapter once', () => {
     // Arrange
     const chapters = [
       'code',
@@ -53,47 +55,78 @@ describe('Block.chapterListGapsOf', () => {
     ];
 
     // Act
-    const gaps = Block.chapterListGapsOf({
+    const listed = Block.listedChaptersOf({
       chapters,
       listed: chapters.toReversed(),
     });
 
     // Assert
-    expect(gaps).toStrictEqual({
-      missing: [],
-      repeated: [],
-      unknown: [],
-    });
+    expect(listed).toStrictEqual([
+      'architecture/layers',
+      'code',
+    ]);
   });
 
-  it('should name what the list leaves out, repeats and names that is no chapter', () => {
-    // Arrange
-    const chapters = [
-      'code',
-      'names',
-    ];
-
-    // Act
-    const gaps = Block.chapterListGapsOf({
-      chapters,
+  it.each([
+    {
+      condition: 'leaves a chapter out',
+      gaps: {
+        missing: [
+          'names',
+        ],
+        repeated: [],
+        unknown: [],
+      },
       listed: [
         'code',
+      ],
+    },
+    {
+      condition: 'names a chapter twice',
+      gaps: {
+        missing: [],
+        repeated: [
+          'code',
+        ],
+        unknown: [],
+      },
+      listed: [
         'code',
+        'names',
+        'code',
+      ],
+    },
+    {
+      condition: 'names a chapter that is not there',
+      gaps: {
+        missing: [],
+        repeated: [],
+        unknown: [
+          'types',
+        ],
+      },
+      listed: [
+        'code',
+        'names',
         'types',
       ],
-    });
+    },
+  ])('should refuse the list, naming its gaps, when it $condition', ({ gaps, listed }) => {
+    // Act
+    const failure = failureOf(() =>
+      Block.listedChaptersOf({
+        chapters: [
+          'code',
+          'names',
+        ],
+        listed,
+      }),
+    );
 
     // Assert
-    expect(gaps).toStrictEqual({
-      missing: [
-        'names',
-      ],
-      repeated: [
-        'code',
-      ],
-      unknown: [
-        'types',
-      ],
+    expect(failure).toStrictEqual({
+      code: SourceFailure.ChapterListMismatch,
+      details: gaps,
     });
   });
 });

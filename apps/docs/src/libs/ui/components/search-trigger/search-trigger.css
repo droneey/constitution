@@ -6,12 +6,12 @@
     gap: var(--spacing-xs);
     width: 100%;
     height: var(--size-control-lg);
-    padding: 0 calc(var(--spacing-xs) - 1px);
-    border: 1px solid var(--color-fd-border);
+    padding: 0 calc(var(--spacing-xs) - var(--border-width-thin));
+    border: var(--border-width-thin) solid var(--color-fd-border);
     border-radius: var(--radius-xl);
     background-color: var(--color-fill-field);
-    font-size: var(--text-sm);
-    font-weight: var(--font-weight-ui);
+    font: var(--font-label-sm);
+    letter-spacing: var(--font-label-sm--letter-spacing);
     text-align: start;
     transition: background-color var(--duration-fast) var(--ease-standard);
 
@@ -47,8 +47,8 @@
       height: var(--size-control-xs);
       padding-inline: var(--spacing-2xs);
       border-radius: var(--radius-sm);
-      font-family: var(--font-sans);
-      font-size: var(--text-xs);
+      font: var(--font-label-xs);
+      letter-spacing: var(--font-label-xs--letter-spacing);
     }
   }
 }

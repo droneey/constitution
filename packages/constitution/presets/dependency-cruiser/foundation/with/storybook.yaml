@@ -1,0 +1,20 @@
+storybook:
+  stories-unreachable-from-production:
+    typescript:
+      .dependency-cruiser.jsonc:
+        forbidden[name=stories-unreachable-from-production]:
+          severity: error
+          from:
+            pathNot:
+              - \.stories\.[^/]+$
+              - ^\.storybook/
+          to:
+            path: \.stories\.[^/]+$
+core:
+  production-code-imports-no-tool:
+    typescript:
+      .dependency-cruiser.jsonc:
+        forbidden[name=no-development-dependency-in-production]:
+          from:
+            pathNot:
+              - \.stories\.[^/]+$

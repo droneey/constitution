@@ -5,7 +5,7 @@ from source_fixtures import write_files
 
 from droneey_python_check.features.code.adapters.local import python_sources
 from droneey_python_check.features.code.domain.entities import Source, Sources
-from droneey_python_check.features.code.domain.errors import Misuse, UsageError
+from droneey_python_check.features.code.domain.errors import MissingPathsError
 
 if TYPE_CHECKING:
   from pathlib import Path
@@ -31,10 +31,10 @@ def test_should_read_the_python_files_under_a_folder_and_the_folders_of_their_pa
   # Assert
   assert sources == Sources(
     files=(
-      Source(path=tmp_path / 'src/shop/__init__.py', text=b''),
-      Source(path=tmp_path / 'src/shop/kernel/money.py', text=b'LIMIT = 1\n'),
+      Source(path=tmp_path / 'src/shop/__init__.py', content=b''),
+      Source(path=tmp_path / 'src/shop/kernel/money.py', content=b'LIMIT = 1\n'),
     ),
-    folders=frozenset(
+    package_folder_paths=frozenset(
       {
         tmp_path / 'src/shop',
         tmp_path / 'src/shop/kernel',
@@ -53,8 +53,20 @@ def test_should_read_a_file_when_a_path_names_one(tmp_path: Path) -> None:
 
   # Assert
   assert sources == Sources(
-    files=(Source(path=tmp_path / 'tests/test_money.py', text=b''),), folders=frozenset()
+    files=(Source(path=tmp_path / 'tests/test_money.py', content=b''),),
+    package_folder_paths=frozenset(),
   )
+
+
+def test_should_read_nothing_when_a_path_names_a_file_of_another_language(tmp_path: Path) -> None:
+  # Arrange
+  write_files(tmp_path, FILES)
+
+  # Act
+  sources = python_sources([tmp_path / 'src/shop/kernel/data.json'])
+
+  # Assert
+  assert sources == Sources(files=(), package_folder_paths=frozenset())
 
 
 def test_should_refuse_the_paths_when_they_name_no_file_or_folder(tmp_path: Path) -> None:
@@ -62,11 +74,8 @@ def test_should_refuse_the_paths_when_they_name_no_file_or_folder(tmp_path: Path
   write_files(tmp_path, FILES)
 
   # Act
-  with pytest.raises(UsageError) as raised:
+  with pytest.raises(MissingPathsError) as raised:
     python_sources([tmp_path / 'src', tmp_path / 'scr', tmp_path / 'test'])
 
   # Assert
-  assert (raised.value.code, raised.value.paths) == (
-    Misuse.MISSING_PATH,
-    (str(tmp_path / 'scr'), str(tmp_path / 'test')),
-  )
+  assert raised.value.paths == (tmp_path / 'scr', tmp_path / 'test')

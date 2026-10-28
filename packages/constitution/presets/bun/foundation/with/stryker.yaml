@@ -1,0 +1,36 @@
+stryker:
+  '*':
+    typescript:
+      package.json:
+        scripts:
+          mutate:branch: >-
+            bun --no-env-file ${constitution.path}/tools/mutation-check/dist/main.js
+          mutate:all: >-
+            bun --no-env-file ${constitution.path}/tools/mutation-check/dist/main.js all
+bun:
+  '*':
+    typescript:
+      package.json:
+        scripts: !sorted {}
+  every-tool-runs-on-bun:
+    typescript:
+      bunfig.mutation.toml:
+        run:
+          bun: true
+  script-group-run-by-its-prefix:
+    typescript:
+      package.json:
+        scripts:
+          check: !words
+            - bun run --sequential
+            - slot: checks
+            - slot: tests
+            - slot: mutations
+          check@mutations:
+            - mutate:branch
+_task-runner:
+  unit-run-through-its-action-tasks:
+    typescript:
+      ${constitution.run}:
+        check:
+          - bun run check

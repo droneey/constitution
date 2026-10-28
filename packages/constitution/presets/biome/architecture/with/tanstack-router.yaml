@@ -1,0 +1,7 @@
+core:
+  surface-only-re-exports:
+    typescript:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/surface-only-re-exports.${role.grit-rule}]:
+          includes@left-out:
+            - '!**/${role.source}/${role.composition-root}/${role.file-routes}/**/index.ts'

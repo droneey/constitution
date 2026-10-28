@@ -1,24 +1,19 @@
 import { Command } from 'commander';
 
+import { AbsolutePath } from '#/kernel/value-objects';
 import type { CommandContext } from '#/shared/cli';
+import { folderPathOf } from '#/shared/cli';
 
 import type {
+  HookEventName,
   SessionDigest,
   SessionOrigin,
   SessionStart,
   SessionState,
 } from '../../../../domain/entities';
-import { HookEventName } from '../../../../domain/entities';
 import type { SessionId } from '../../../../domain/value-objects';
-import {
-  contextOutputOf,
-  digestOf,
-  HOOK_EVENT_TEXT,
-  hookEventNameOf,
-  hookEventOf,
-  sessionIdOf,
-  sessionOriginOf,
-} from '../../../utils';
+import { HookField, hookEventTexts, sessionStartEventSchema } from '../../../constants';
+import { contextOutputOf, digestOf, hookEventOf } from '../../../utils';
 
 interface SessionStartContext extends CommandContext {
   readonly digestSession: (start: SessionStart) => SessionDigest | undefined;
@@ -44,18 +39,29 @@ const createSessionStartCommand = (context: SessionStartContext): Command =>
       ]),
     )
     .action(async (): Promise<void> => {
-      const event = hookEventOf(await context.io.readInput());
+      const event = hookEventOf({
+        schema: sessionStartEventSchema,
+        text: await context.io.readInput(),
+      });
       const { places } = context;
-      // Claude Code names the event it runs the hook for; one that names none is a session's start.
-      const eventText =
-        event.field('hook_event_name') ?? HOOK_EVENT_TEXT[HookEventName.SessionStart];
+      const name = event[HookField.HookEventName];
+      const answered = hookEventTexts.get(name);
+
+      // Claude Code takes an answer only for an event it names.
+      if (answered === undefined) {
+        return;
+      }
+
       const start: SessionStart = {
-        event: hookEventNameOf(eventText),
-        origin: sessionOriginOf(event.field('source')),
-        searchFrom: places.projectDir ?? event.field('cwd') ?? places.cwd,
+        event: name,
+        origin: event[HookField.Source],
+        searchFrom: folderPathOf({
+          from: AbsolutePath.create(places.cwd),
+          given: places.projectDir ?? event[HookField.Cwd] ?? places.cwd,
+        }),
       };
       const started = context.digestSession(start);
-      const session = sessionIdOf(event);
+      const session = event[HookField.SessionId];
 
       if (started === undefined) {
         return;
@@ -74,7 +80,7 @@ const createSessionStartCommand = (context: SessionStartContext): Command =>
 
       context.io.write(
         contextOutputOf({
-          event: eventText,
+          event: answered,
           text: [
             ...head,
             ...(body.length === 0

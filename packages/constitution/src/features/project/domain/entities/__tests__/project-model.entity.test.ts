@@ -3,41 +3,43 @@ import { describe, expect, it } from 'bun:test';
 import { Axis, Layer, Level } from '#/kernel/constants';
 import { BlockId, BlockSource, RuleSlug } from '#/kernel/value-objects';
 
-import { BlockSetBlock, BlockSetRule } from '../block-set.entity';
+import type { BlockSetBlock, BlockSetRule } from '../block-set.entity';
 import { ProjectModel } from '../project-model.entity';
 
-const blockOf = (input: { base?: string; id: string; layer?: Layer }): BlockSetBlock =>
-  BlockSetBlock.create({
-    chapters: [],
-    ...(input.base === undefined
-      ? {}
-      : {
-          extends: BlockId.create(input.base),
-        }),
-    governs: [],
-    id: BlockId.create(input.id),
-    isAbstract: false,
-    languages: [],
-    layer: input.layer ?? Layer.Domain,
-    requires: [],
-    seams: [],
-    source: BlockSource.create(),
-    summary: input.id,
-  });
+const blockOf = (input: { base?: string; id: string; layer?: Layer }): BlockSetBlock => ({
+  chapters: [],
+  ...(input.base === undefined
+    ? {}
+    : {
+        extends: BlockId.create(input.base),
+      }),
+  governs: [],
+  id: BlockId.create(input.id),
+  isAbstract: false,
+  languages: [],
+  layer: input.layer ?? Layer.Domain,
+  requires: [],
+  seams: [],
+  source: BlockSource.create(),
+  summary: input.id,
+});
 
-const ruleOf = (input: { isLevelStated: boolean; slug: string; tightens?: string }): BlockSetRule =>
-  BlockSetRule.create({
-    axis: Axis.Foundation,
-    block: BlockId.create('ui'),
-    isLevelStated: input.isLevelStated,
-    level: Level.Must,
-    slug: RuleSlug.create(input.slug),
-    ...(input.tightens === undefined
-      ? {}
-      : {
-          tightens: RuleSlug.create(input.tightens),
-        }),
-  });
+const ruleOf = (input: {
+  isLevelStated: boolean;
+  slug: string;
+  tightens?: string;
+}): BlockSetRule => ({
+  axis: Axis.Foundation,
+  block: BlockId.create('ui'),
+  isLevelStated: input.isLevelStated,
+  level: Level.Must,
+  slug: RuleSlug.create(input.slug),
+  ...(input.tightens === undefined
+    ? {}
+    : {
+        tightens: RuleSlug.create(input.tightens),
+      }),
+});
 
 const modelOf = (input: {
   blocks?: readonly BlockSetBlock[];

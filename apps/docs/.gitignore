@@ -1,28 +1,66 @@
-# core: build
-dist/
-coverage/
-
-# typescript: dependencies
-node_modules/
-
-# typescript: caches
-*.tsbuildinfo
-
-# tsc: the declarations and build info of a unit's project
-.tsc-cache/
-
-# stryker
-.stryker-tmp/
-
-# tanstack-router: the generator's temporary files
-.tanstack/
-
-# tanstack-start: the build
-.output/
-.nitro/
-
-# fumadocs-mdx: the collections it generates
+# fumadocs-mdx's generated content
 .source/
+
+# git
+.claude/settings.local.json
+.claude/worktrees/
+/local/
+.DS_Store
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.log
+**/logs/
+.temp/
+.tmp/
+*.bak
+*.orig
+*~
+.env*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+credentials.json
+id_rsa
+*.secrets
 
 # mise
 mise.local.toml
+
+# _js-runtime
+**/node_modules/
+*.tgz
+
+# bun-test
+**/coverage/
+
+# bun
+.npmrc
+
+# rumdl
+.rumdl_cache/
+
+# stryker
+.stryker-tmp/
+reports/mutation/
+
+# tanstack-router
+.tanstack/
+
+# tanstack-start
+.output/
+.nitro/
+
+# tsc
+*.tsbuildinfo
+.tsc-cache/
+
+# vite
+**/dist/
+**/build/

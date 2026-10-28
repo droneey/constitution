@@ -1,0 +1,6 @@
+uv:
+  '*':
+    typescript:
+      stryker.config.json:
+        ignorePatterns:
+          - /.venv

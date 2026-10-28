@@ -1,0 +1,6 @@
+core:
+  every-mutant-killed:
+    typescript:
+      stryker.config.json:
+        mutate:
+          - '!${role.source}/${role.composition-root}/root.${role.nest-module}'

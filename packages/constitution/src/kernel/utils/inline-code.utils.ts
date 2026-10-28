@@ -14,7 +14,9 @@ const withoutInlineCode = (text: string): string => text.replaceAll(CODE_SPAN, '
 
 const MASK = '\u0000';
 
-// Each span becomes a run of NUL as long as it, so an offset in the masked text is one in the text.
+/**
+ * Each span becomes a run of NUL as long as it, so an offset in the masked text is one in the text.
+ */
 const maskInlineCode = (text: string): string =>
   text.replaceAll(CODE_SPAN, (span) => MASK.repeat(span.length));
 

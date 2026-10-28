@@ -1,0 +1,6 @@
+git:
+  '*':
+    yaml:
+      .yamllint.yaml:
+        ignore-from-file:
+          - .gitignore

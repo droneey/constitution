@@ -1,0 +1,6 @@
+yamllint:
+  '*':
+    typescript:
+      knip.jsonc:
+        ignoreBinaries:
+          - yamllint

@@ -8,6 +8,7 @@ import { SearchPagesContext } from '../../../providers';
 
 const hitOf = ({ breadcrumbs, kind, table, ...found }: SearchResult): SearchHit => ({
   ...found,
+  // Stryker disable next-line ConditionalExpression: the dialog shows no breadcrumbs for an empty list as for none
   ...(breadcrumbs.length === 0
     ? {}
     : {
@@ -15,6 +16,7 @@ const hitOf = ({ breadcrumbs, kind, table, ...found }: SearchResult): SearchHit 
           ...breadcrumbs,
         ],
       }),
+  // Stryker disable next-line ConditionalExpression: the dialog gathers no rows under a table that is undefined, as under none
   ...(table === undefined
     ? {}
     : {

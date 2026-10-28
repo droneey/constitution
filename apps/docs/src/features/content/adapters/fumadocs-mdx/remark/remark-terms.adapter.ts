@@ -1,23 +1,18 @@
-import type { PhrasingContent, Root, Table, TableCell, TableRow, Text } from 'mdast';
+import type { PhrasingContent, Root, Table, TableCell, TableRow } from 'mdast';
 import { fromMarkdown } from 'mdast-util-from-markdown';
-import { visit } from 'unist-util-visit';
 
 import type { Term } from '../../../domain/entities';
 import { TermKind } from '../../../domain/entities';
-import { takeTermIds } from '../markdown';
+import { replaceFencedBlocks, takeTermIds, textNode } from '../markdown';
 import { TERMS_HEADER, TERMS_LANGUAGE } from './remark-terms.constants';
 
 interface TermsOptions {
   terms: readonly Term[];
 }
 
-const text = (words: string): Text => ({
-  type: 'text',
-  value: words,
-});
-
 const cellOf = (children: PhrasingContent[]): TableCell => ({
   children,
+  // Stryker disable next-line StringLiteral: mdast-util-to-hast renders each cell of a row as one whatever its type, so the page is the same
   type: 'tableCell',
 });
 
@@ -38,7 +33,7 @@ const definitionOf = (sentence: string): PhrasingContent[] => {
     paragraph?.type === 'paragraph'
       ? paragraph.children
       : [
-          text(sentence),
+          textNode(sentence),
         ]
   ).flatMap((child) =>
     child.type === 'link'
@@ -51,7 +46,7 @@ const definitionOf = (sentence: string): PhrasingContent[] => {
 
 const nameOf = (term: Term): PhrasingContent =>
   term.kind === TermKind.Concept || term.kind === TermKind.Brand
-    ? text(term.name)
+    ? textNode(term.name)
     : {
         type: 'inlineCode',
         value: term.name,
@@ -69,24 +64,23 @@ const termRowOf = (term: Term): TableRow =>
       },
     ]),
     cellOf([
-      text(term.kind),
+      textNode(term.kind),
     ]),
     cellOf([
-      text(term.block),
+      textNode(term.blockId),
     ]),
     cellOf([
-      text(term.axis),
+      textNode(term.axis),
     ]),
     cellOf(definitionOf(term.sentence)),
   ]);
 
 const tableOf = (terms: readonly Term[]): Table => ({
-  align: TERMS_HEADER.map(() => null),
   children: [
     rowOf(
       TERMS_HEADER.map((title) =>
         cellOf([
-          text(title),
+          textNode(title),
         ]),
       ),
     ),
@@ -98,20 +92,7 @@ const tableOf = (terms: readonly Term[]): Table => ({
 const remarkTerms =
   (options: TermsOptions) =>
   (tree: Root): void => {
-    // Stryker disable next-line StringLiteral: only code has a language, so visiting every node finds the same ones
-    visit(tree, 'code', (node, index, parent) => {
-      if (
-        node.lang !== TERMS_LANGUAGE ||
-        // Stryker disable next-line ConditionalExpression: a code node always has a parent, so the check only narrows its type
-        parent === undefined ||
-        // Stryker disable next-line ConditionalExpression: a code node always has an index, so the check only narrows its type
-        index === undefined
-      ) {
-        return;
-      }
-
-      parent.children.splice(index, 1, tableOf(options.terms));
-    });
+    replaceFencedBlocks(tree, TERMS_LANGUAGE, () => tableOf(options.terms));
   };
 
 export { remarkTerms };

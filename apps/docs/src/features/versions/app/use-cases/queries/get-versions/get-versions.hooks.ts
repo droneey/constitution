@@ -1,9 +1,20 @@
 import { use, useEffect, useState } from 'react';
 
+import type { Versions } from '../../../../domain/entities';
 import { VersionsError } from '../../../../domain/errors';
 import { GetVersionsContext } from '../../../providers';
 import { VersionsStatus } from './get-versions.constants';
-import type { VersionsState } from './get-versions.types';
+
+type VersionsState =
+  | {
+      status: VersionsStatus.Loading;
+    }
+  | {
+      status: VersionsStatus.Failed;
+    }
+  | ({
+      status: VersionsStatus.Loaded;
+    } & Versions);
 
 export function useGetVersions(): VersionsState {
   const getVersions = use(GetVersionsContext);
@@ -47,3 +58,5 @@ export function useGetVersions(): VersionsState {
 
   return versionsState;
 }
+
+export type { VersionsState };

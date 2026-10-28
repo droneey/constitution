@@ -1,1 +1,1 @@
-export { readSource } from './read-source.utils';
+export { readSource } from './read-source';

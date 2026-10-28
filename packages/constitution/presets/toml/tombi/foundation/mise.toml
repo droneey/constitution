@@ -1,5 +1,0 @@
-# mise writes the lockfiles of the tools it installs from npm and PyPI
-[[overrides]]
-files.include = [".mise/locks/**"]
-format.enabled = false
-lint.enabled = false

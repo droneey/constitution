@@ -1,0 +1,9 @@
+core:
+  dead-code-deleted:
+    python:
+      pyproject.toml:
+        tool:
+          vulture:
+            paths:
+              - ${role.source}
+            min_confidence: 60

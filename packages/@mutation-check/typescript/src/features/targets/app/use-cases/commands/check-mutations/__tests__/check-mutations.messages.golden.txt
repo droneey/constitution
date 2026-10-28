@@ -1,0 +1,2 @@
+mutation: no line to mutate changed
+mutation: everything is no argument the check takes; run it with none to mutate the branch's changes, or with all to mutate everything

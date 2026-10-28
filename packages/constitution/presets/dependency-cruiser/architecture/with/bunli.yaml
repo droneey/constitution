@@ -1,0 +1,13 @@
+bunli:
+  '*':
+    typescript:
+      .dependency-cruiser.jsonc:
+        allowedSeverity: error
+  bunli-imported-by-commands:
+    typescript:
+      .dependency-cruiser.jsonc:
+        allowed[comment=bunli-imported-by-commands]:
+          from:
+            path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.application-layer}/.*\.${role.command-binding}\.[^/]+$
+          to:
+            path: node_modules/@bunli/

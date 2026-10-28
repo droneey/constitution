@@ -48,7 +48,7 @@ Only the edge holds effects — input and output, the network, storage, the file
 
 ### root-imported-only-by-entries · MUST
 
-The composition root is imported only by entry files and by specs.
+The composition root is imported only by entry files — a file at the top of the source, an entrypoint's main and an integration's main — and by specs.
 
 | Why |
 |---|
@@ -130,15 +130,23 @@ Code that knows nothing of the product and is needed by more than one repository
 
 ### contract-lifts-on-its-second-feature · MUST
 
-A contract belongs to the feature that needs it; when a second feature needs it in the same words — a clock, a mailer — it lifts to the kernel's `contracts/`, never sideways into one of them, and a port each context words its own way stays with each context.
+A contract belongs to the feature that needs it; when a second feature needs it in the same words and an outside system answers it — a clock, a mailer — it lifts to the kernel's `contracts/`, never sideways into one of them, while one each context words its own way stays with each context. A contract another feature answers never lifts: each feature that asks words its own.
 
 | Why |
 |---|
-| a contract owned by one feature and used by another couples the second to the first. |
+| a contract owned by one feature and used by another couples the second to the first, and one lifted while a feature answers it carries that feature's model and failures into the kernel. |
+
+### type-lifts-when-features-share-its-meaning · MUST
+
+A business type — an entity, a value object, an enumeration — belongs to the feature whose model holds it, and lifts to the kernel when two or more features use it with one meaning, universal and stable; otherwise — another meaning, only a sliver of it, or a meaning not yet universal and stable — a feature that needs it declares a type of its own, into which composition translates the other’s.
+
+| Why |
+|---|
+| one meaning has one home every feature reads, and a type a feature reads its own way changes with that feature alone. |
 
 ### composition-lifts-on-its-second-consumer · MUST
 
-Composition across features lives beside the delivery unit that needs it, in that unit's composition module, and lifts into the module's own layers when a second unit needs it; facts derived from several features, and a contract one feature meets through another’s surface, live in a composition module's layers from their first use.
+Composition across features lives beside the delivery unit that needs it, in that unit's composition module, and lifts into the module's own layers when a second unit needs it; facts derived from several features, and the implementation of a contract one feature asks another to answer, live in a composition module's layers from their first use.
 
 | Why |
 |---|

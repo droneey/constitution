@@ -12,7 +12,7 @@ governs: ["nest-cli.json", ".swcrc", "**/root/**", "**/*.module.ts", "**/*.contr
 
 > Builds an HTTP server program from modules whose providers the injector wires by their constructors' types.
 
-**NestJS**, **Nest** for short, ships as the **`@nestjs`** packages, and **`nest-cli.json`** holds its command line's settings. Its parts of the Constitution's release archive and its templates of **`.swcrc`**{#swc-settings} and `tsconfig.json` keep the decorator metadata the injector reads.
+**NestJS**, **Nest** for short, ships as the **`@nestjs`** packages, and **`nest-cli.json`** holds its command line's settings. Its settings, of **`.swcrc`**{#swc-settings} and `tsconfig.json` among them, keep the decorator metadata the injector reads.
 
 ## Requirements
 

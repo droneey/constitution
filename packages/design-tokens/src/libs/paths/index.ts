@@ -1,1 +1,0 @@
-export { confinedPathOf } from './utils';

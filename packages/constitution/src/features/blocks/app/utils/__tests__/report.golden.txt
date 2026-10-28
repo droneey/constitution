@@ -1,0 +1,6 @@
+# sections
+1 finding in the blocks
+  blocks/domains/ui/ui.md: requires itself [requires-itself]
+
+Advice on the blocks
+  similar rules: a (x) and b (y)

@@ -5,7 +5,7 @@ const ROOT = '<root>';
 
 const aBlock = (layer: Layer): string => `${LAYER_ARTICLE[layer]} ${layer} block`;
 
-/** a field path of a schema's issue, where an empty path is the whole document */
+/** A field path of a schema's issue, where an empty path is the whole document. */
 const fieldOf = (field: string): string => (field === '' ? ROOT : field);
 
 interface ListInput {
@@ -13,7 +13,7 @@ interface ListInput {
   readonly names: readonly string[];
 }
 
-/** the names joined as a list whose last two the conjunction joins: a, b or c */
+/** The names joined as a list whose last two the conjunction joins: a, b or c. */
 const listOf = (input: ListInput): string =>
   input.names.length > 1
     ? `${input.names.slice(0, -1).join(', ')} ${input.conjunction} ${input.names.at(-1)}`

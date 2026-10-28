@@ -1,0 +1,64 @@
+{
+  "mutate": [
+    "src/**/*.{ts,tsx}",
+    "!src/**/__tests__/**",
+    "!src/main.{ts,tsx}",
+    "!src/**/*.gen.*",
+    "!src/**/*.d.ts",
+    "scripts/**/*.ts",
+    "!scripts/**/__tests__/**",
+    "!scripts/*/main.ts",
+    "!src/entrypoints/*/main.{ts,tsx}",
+    "!src/integrations/*/main.{ts,tsx}",
+    "!src/root/wiring.{ts,tsx}"
+  ],
+  "thresholds": {
+    "break": 100,
+    "high": 100,
+    "low": 100
+  },
+  "diagnosticsTextArguments": {
+    "addHelpText": 1,
+    "argument": 1,
+    "commandsGroup": 0,
+    "createArgument": 1,
+    "createOption": 1,
+    "default": 1,
+    "description": 0,
+    "helpCommand": 1,
+    "helpGroup": 0,
+    "helpOption": 1,
+    "option": 1,
+    "optionsGroup": 0,
+    "requiredOption": 1,
+    "summary": 0,
+    "usage": 0,
+    "version": 2,
+    "new *Error": 0,
+    "super": 0
+  },
+  "ignorePatterns": [
+    "/.droneey",
+    "*/worktrees"
+  ],
+  "plugins": [
+    "../@mutation-check/typescript/src/integrations/stryker/index.ts",
+    "../@mutation-check/typescript/src/integrations/stryker/ignorers.ts"
+  ],
+  "ignorers": [
+    "diagnostics"
+  ],
+  "reporters": [
+    "clear-text"
+  ],
+  "clearTextReporter": {
+    "allowColor": false,
+    "logTests": false
+  },
+  "tempDirName": ".stryker-tmp",
+  "tsconfigFile": "stryker-has-no-tsconfig.json",
+  "timeoutMS": 30000,
+  "concurrency": "50%",
+  "testRunner": "bun-specs",
+  "coverageAnalysis": "off"
+}

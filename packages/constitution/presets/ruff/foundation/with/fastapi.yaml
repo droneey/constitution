@@ -1,0 +1,31 @@
+fastapi:
+  dependencies-declared-in-annotated:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - FAST
+  path-parameters-read-by-the-handler:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - FAST
+  program-raises-no-http-exception:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              flake8-tidy-imports:
+                extend-banned-api:
+                  fastapi.HTTPException:
+                    msg: >-
+                      the program raises the error kit's errors, which the handlers answer
+                  starlette.exceptions.HTTPException:
+                    msg: >-
+                      the program raises the error kit's errors, which the handlers answer

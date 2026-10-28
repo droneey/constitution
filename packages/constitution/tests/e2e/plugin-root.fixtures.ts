@@ -16,20 +16,13 @@ import { dirname, join } from 'node:path';
 import type { Files } from './constitution.fixtures';
 import { constitutionFiles } from './constitution.fixtures';
 
-// A file the plugin root or the archive is built without, or a field the
-// archive's package.json is written without.
+// A file the distribution is built without.
 enum Breakage {
-  Core = 'blocks/core/core.md',
-  Format = 'constitutionFormat',
   Manifest = 'package.json',
-  Version = 'version',
 }
 
 interface PluginRootOptions {
   breakage?: Breakage;
-  coreBody?: string;
-  // the archive's constitutionFormat, a number unless a case writes it as text
-  format?: number | string;
 }
 
 const INSTALLED = '1.0.0';
@@ -65,29 +58,21 @@ const copyHook = (root: string): void => {
 };
 
 const PLUGIN = 'plugin';
-const ARCHIVE = 'archive';
+const DISTRIBUTION = 'distribution';
 const LINK = '.droneey/constitution';
 
-// The archive a plugin root's hooks are tested with: the release a project pins,
+// The distribution a plugin root's hooks are tested with: the release a project pins,
 // which mise unpacks and links into the project.
-const archiveOf = (root: string): string => join(dirname(root), ARCHIVE);
+const distributionOf = (root: string): string => join(dirname(root), DISTRIBUTION);
 
-const writeManifest = (input: {
-  folder: string;
-  format: number | string | undefined;
-  version: boolean;
-}): void => {
+const writeManifest = (input: { folder: string; format: number | undefined }): void => {
   writeFileSync(
     join(input.folder, 'package.json'),
     `${JSON.stringify(
       {
         name: '@droneey/constitution',
         private: true,
-        ...(input.version
-          ? {
-              version: INSTALLED,
-            }
-          : {}),
+        version: INSTALLED,
         ...(input.format === undefined
           ? {}
           : {
@@ -100,68 +85,62 @@ const writeManifest = (input: {
   );
 };
 
-// The plugin brings the hooks; the archive beside it, the blocks and the
+// The plugin brings the hooks; the distribution beside it, the blocks and the
 // manifest that names their format, as a release packs them.
 const createPluginRoot = (options: PluginRootOptions = {}): string => {
-  const { breakage, coreBody, format = releaseFormat } = options;
+  const { breakage } = options;
   const folder = mkdtempSync(join(tmpdir(), 'constitution-plugin-'));
   const root = join(folder, PLUGIN);
-  const archive = join(folder, ARCHIVE);
+  const distribution = join(folder, DISTRIBUTION);
 
   created.push(folder);
   copyHook(root);
   writeManifest({
     folder: root,
     format: undefined,
-    version: true,
   });
   writeFiles({
-    files: constitutionFiles(coreBody),
-    root: archive,
+    files: constitutionFiles(),
+    root: distribution,
   });
 
   if (breakage !== Breakage.Manifest) {
     writeManifest({
-      folder: archive,
-      format: breakage === Breakage.Format ? undefined : format,
-      version: breakage !== Breakage.Version,
+      folder: distribution,
+      format: releaseFormat,
     });
-  }
-
-  if (breakage === Breakage.Core) {
-    rmSync(join(archive, breakage));
   }
 
   return root;
 };
 
 // The plugin root a release of this repository ships, as far as the hook reads
-// it, and the archive beside it: the real blocks and the manifest.
+// it, and the distribution beside it: the real blocks and the manifest.
 const createRealPluginRoot = (): string => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-plugin-'));
   const root = join(folder, PLUGIN);
-  const archive = join(folder, ARCHIVE);
+  const distribution = join(folder, DISTRIBUTION);
 
   created.push(folder);
   copyHook(root);
   copyFileSync(join(repository, 'package.json'), join(root, 'package.json'));
-  cpSync(join(repository, 'blocks'), join(archive, 'blocks'), {
+  cpSync(join(repository, 'blocks'), join(distribution, 'blocks'), {
     recursive: true,
   });
-  copyFileSync(join(repository, 'package.json'), join(archive, 'package.json'));
+  copyFileSync(join(repository, 'package.json'), join(distribution, 'package.json'));
 
   return root;
 };
 
-interface ArchiveLink {
-  readonly archive: string;
+interface DistributionLink {
+  readonly distribution: string;
   readonly project: string;
 }
 
-// Links the archive into a project as mise's postinstall does, unless the
+// Links the distribution into a project as mise's postinstall does, unless the
 // project holds something there already; the project's git ignores the link,
 // as a project's .gitignore does.
-const linkArchive = (input: ArchiveLink): void => {
+const linkDistribution = (input: DistributionLink): void => {
   const link = join(input.project, LINK);
 
   if (
@@ -176,7 +155,7 @@ const linkArchive = (input: ArchiveLink): void => {
     recursive: true,
   });
   writeFileSync(join(dirname(link), '.gitignore'), '*\n');
-  symlinkSync(input.archive, link);
+  symlinkSync(input.distribution, link);
 };
 
 const removeFolder = (path: string): void => {
@@ -186,46 +165,20 @@ const removeFolder = (path: string): void => {
   });
 };
 
-const LINE_BYTES = 100;
-
-// A body of core's card of exactly `bytes` bytes, in lines of at most 100 with
-// their newline and never empty, since the digest drops a blank last line, to put
-// the budget's edge where a case needs it.
-const coreBodyOfBytes = (bytes: number): string => {
-  const lines = Math.ceil(bytes / LINE_BYTES);
-  const last = bytes - (lines - 1) * LINE_BYTES;
-  const sizes = Array.from(
-    {
-      length: lines,
-    },
-    (_, index) => (index < lines - 1 ? LINE_BYTES : last),
-  );
-
-  if (last === 1 && lines > 1) {
-    sizes[lines - 2] = LINE_BYTES - 1;
-    sizes[lines - 1] = 2;
-  }
-
-  return sizes.map((size) => `${'x'.repeat(size - 1)}\n`).join('');
-};
-
 const removePluginRoots = (): void => {
   for (const root of created.splice(0)) {
     removeFolder(root);
   }
 };
 
-export type { PluginRootOptions };
 export {
-  archiveOf,
   Breakage,
-  coreBodyOfBytes,
   createPluginRoot,
   createRealPluginRoot,
+  distributionOf,
   INSTALLED,
   LINK,
-  linkArchive,
-  releaseFormat,
+  linkDistribution,
   removeFolder,
   removePluginRoots,
 };

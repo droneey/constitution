@@ -1,0 +1,6 @@
+actionlint:
+  '*':
+    typescript:
+      knip.jsonc:
+        ignoreBinaries:
+          - actionlint

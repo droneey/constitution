@@ -1,10 +1,11 @@
-import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
-import type { ZodType } from 'zod';
-
-import { attempted, compareText, isSyntaxError, normalizePath } from '#/kernel/utils';
+import { PARENT_SEGMENT, PATH_SEPARATOR } from '#/kernel/constants';
+import { attempted, compareText, normalizePath } from '#/kernel/utils';
+import type { AbsolutePath } from '#/kernel/value-objects';
 import { UnitPath } from '#/kernel/value-objects';
+import { readModelFile } from '#/libs/model-file';
 import { isSystemError } from '#/libs/system-error';
 
 import type { Workspace } from '../../domain/contracts';
@@ -17,14 +18,12 @@ import { packageManifestModel, pyprojectModel } from './models';
 // leaves its folders out, and a glob that reaches the project itself or above it reaches nothing.
 // Braces are spelled out before a glob is split into folders, as "/" may stand inside them.
 
-const PACKAGE_MANIFEST = 'package.json';
-const PYPROJECT = 'pyproject.toml';
+const PACKAGE_MANIFEST_NAME = 'package.json';
+const PYPROJECT_NAME = 'pyproject.toml';
 const NEGATION = '!';
 const ANY_DEPTH = '**';
-const SEPARATOR = '/';
-const SKIPPED = 'node_modules';
+const SKIPPED_FOLDER_NAME = 'node_modules';
 const HIDDEN = '.';
-const PARENT = '..';
 const WILDCARDS = /[*?[{]/u;
 const ESCAPE = '\\';
 const GROUP_OPEN = '{';
@@ -32,44 +31,27 @@ const GROUP_CLOSE = '}';
 const ALTERNATIVE = ',';
 
 interface Declared {
-  // the globs of the members, a "!" before those left out
+  /** the globs of the members, a "!" before those left out */
   readonly globs: readonly string[];
-  // the manifest a folder holds to be a member
+  /** the manifest a folder holds to be a member */
   readonly manifest: string;
 }
-
-// A manifest that is missing, no JSON or TOML, or not of the shape declares no workspace.
-const readModel = <T>(input: {
-  model: ZodType<T>;
-  parse: (text: string) => unknown;
-  path: string;
-}): T | undefined => {
-  const parsed = attempted<unknown>({
-    // Stryker disable next-line StringLiteral: without an encoding Bun gives the bytes, which both parsers read as UTF-8 too
-    effect: () => input.parse(readFileSync(input.path, 'utf8')),
-    // Stryker disable next-line ConditionalExpression: reading a file fails only by the system and parsing it only by its syntax, so no other failure reaches here
-    isRecognised: (error: unknown): boolean => isSystemError(error) || isSyntaxError(error),
-  });
-  const read = input.model.safeParse(parsed);
-
-  return read.success ? read.data : undefined;
-};
 
 const globsOf = (workspaces: PackageManifestWire['workspaces']): readonly string[] | undefined =>
   Array.isArray(workspaces) ? workspaces : workspaces?.packages;
 
-const declaredOf = (project: string): readonly Declared[] => {
-  const uv = readModel({
+const declaredOf = (repositoryFolderPath: AbsolutePath): readonly Declared[] => {
+  const uv = readModelFile({
     model: pyprojectModel,
     parse: Bun.TOML.parse,
-    path: join(project, PYPROJECT),
+    path: join(repositoryFolderPath, PYPROJECT_NAME),
   })?.tool?.uv?.workspace;
 
   const globs = globsOf(
-    readModel({
+    readModelFile({
       model: packageManifestModel,
       parse: JSON.parse,
-      path: join(project, PACKAGE_MANIFEST),
+      path: join(repositoryFolderPath, PACKAGE_MANIFEST_NAME),
     })?.workspaces,
   );
 
@@ -77,7 +59,7 @@ const declaredOf = (project: string): readonly Declared[] => {
     {
       // Stryker disable next-line ArrayDeclaration: a glob that names no folder declares no member
       globs: globs ?? [],
-      manifest: PACKAGE_MANIFEST,
+      manifest: PACKAGE_MANIFEST_NAME,
     },
     {
       globs: [
@@ -86,7 +68,7 @@ const declaredOf = (project: string): readonly Declared[] => {
         // Stryker disable next-line ArrayDeclaration: a glob that names no folder leaves no member out
         ...(uv?.exclude ?? []).map((glob) => `${NEGATION}${glob}`),
       ],
-      manifest: PYPROJECT,
+      manifest: PYPROJECT_NAME,
     },
   ];
 };
@@ -171,16 +153,17 @@ function* bracesExpanded(input: { glob: string; maxGlobs: number }): Generator<s
 }
 
 interface Walk {
-  // the folders listed so far, across the walk, and the most it lists
+  /** shared and mutable: one bound on the folders listed covers the whole walk, so every step adds to it */
   listed: number;
+  /** the most folders the walk lists */
   readonly maxFolders: number;
-  // the most globs one glob's braces are spelled out into, the partial ones counted
+  /** the most globs one glob's braces are spelled out into, the partial ones counted */
   readonly maxGlobs: number;
-  readonly project: string;
+  readonly repositoryFolderPath: AbsolutePath;
 }
 
 const pathOf = (input: { folder: string; name: string }): string =>
-  input.folder === '' ? input.name : `${input.folder}${SEPARATOR}${input.name}`;
+  input.folder === '' ? input.name : `${input.folder}${PATH_SEPARATOR}${input.name}`;
 
 // What a folder holds that a walk may enter, no package store and nothing hidden among them; a
 // folder past the walk's bound, or that cannot be listed, holds nothing.
@@ -189,7 +172,7 @@ const childrenOf = (input: { folder: string; walk: Walk }): readonly string[] =>
   const names =
     walk.listed < walk.maxFolders
       ? attempted({
-          effect: () => readdirSync(join(walk.project, input.folder)),
+          effect: () => readdirSync(join(walk.repositoryFolderPath, input.folder)),
           isRecognised: isSystemError,
         })
       : undefined;
@@ -198,7 +181,7 @@ const childrenOf = (input: { folder: string; walk: Walk }): readonly string[] =>
 
   // Stryker disable next-line ArrayDeclaration: a name the folder does not hold reaches no member
   return (names ?? [])
-    .filter((name) => name !== SKIPPED && !name.startsWith(HIDDEN))
+    .filter((name) => name !== SKIPPED_FOLDER_NAME && !name.startsWith(HIDDEN))
     .toSorted(compareText)
     .map((name) =>
       pathOf({
@@ -208,7 +191,6 @@ const childrenOf = (input: { folder: string; walk: Walk }): readonly string[] =>
     );
 };
 
-// The paths a glob's segments reach from a folder, from the project's.
 const expand = (input: {
   folder: string;
   segments: readonly string[];
@@ -253,7 +235,7 @@ const expand = (input: {
   const glob = new Bun.Glob(segment);
 
   return childrenOf(input)
-    .filter((child) => glob.match(child.slice(child.lastIndexOf(SEPARATOR) + 1)))
+    .filter((child) => glob.match(child.slice(child.lastIndexOf(PATH_SEPARATOR) + 1)))
     .flatMap((child) =>
       expand({
         ...input,
@@ -265,7 +247,7 @@ const expand = (input: {
 
 // A glob of the project's own folders, none above it; one that names the project itself reaches
 // ".", which no member's path is.
-const isWithin = (glob: string): boolean => !normalizePath(glob).startsWith(PARENT);
+const isWithin = (glob: string): boolean => !normalizePath(glob).startsWith(PARENT_SEGMENT);
 
 const pathsOf = (input: { globs: readonly string[]; walk: Walk }): ReadonlySet<string> =>
   new Set(
@@ -281,7 +263,7 @@ const pathsOf = (input: { globs: readonly string[]; walk: Walk }): ReadonlySet<s
         expand({
           folder: '',
           segments: normalizePath(glob)
-            .split(SEPARATOR)
+            .split(PATH_SEPARATOR)
             .filter((segment) => segment !== ''),
           walk: input.walk,
         }),
@@ -302,14 +284,14 @@ interface ManifestWorkspaceInput {
 }
 
 const createManifestWorkspace = (input: ManifestWorkspaceInput): Workspace => ({
-  membersOf: (project: string): readonly UnitPath[] => {
+  membersOf: (repositoryFolderPath: AbsolutePath): readonly UnitPath[] => {
     const walk: Walk = {
       listed: 0,
       maxFolders: input.maxFolders,
       maxGlobs: input.maxGlobs,
-      project,
+      repositoryFolderPath,
     };
-    const members = declaredOf(project).flatMap((declared) => {
+    const members = declaredOf(repositoryFolderPath).flatMap((declared) => {
       const excluded = pathsOf({
         globs: declared.globs
           .filter((glob) => glob.startsWith(NEGATION))
@@ -323,7 +305,8 @@ const createManifestWorkspace = (input: ManifestWorkspaceInput): Workspace => ({
           walk,
         }),
       ].filter(
-        (folder) => !excluded.has(folder) && isFile(join(project, folder, declared.manifest)),
+        (folder) =>
+          !excluded.has(folder) && isFile(join(repositoryFolderPath, folder, declared.manifest)),
       );
     });
 

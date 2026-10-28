@@ -3,12 +3,17 @@ import { describe, expect, it } from 'bun:test';
 import { createFakeProjectFiles } from '#/__tests__/project-files.fake';
 import { projectPlace, releaseFolderPath } from '#/__tests__/project-place.fixtures';
 import { ReleaseStatus } from '#/kernel/entities';
-import { ProjectFailure } from '#/kernel/errors';
-import { Version } from '#/kernel/value-objects';
+import { AbsolutePath, Version } from '#/kernel/value-objects';
 
-import { configPath, manifest, manifestOf } from '../../../../../__tests__/project.fixtures';
-import { failureOf } from '../../read-declaration/steps/resolve-declaration/__tests__/resolution.fixtures';
+import {
+  configPath,
+  manifest,
+  manifestOf,
+  parsers,
+} from '../../../../../__tests__/project.fixtures';
 import { readRelease } from '../read-release.use-case';
+
+const manifestPath = AbsolutePath.create(manifest);
 
 describe('readRelease', () => {
   it.each([
@@ -58,18 +63,7 @@ describe('readRelease', () => {
         version: Version.create('1.0.0'),
       },
       files: {
-        [manifest]: '{\n  "constitutionFormat": 3,\n  "version": "1.0.0"\n}\n',
-      },
-    },
-    {
-      condition: 'the first line naming the format names it twice and a later line names another',
-      expected: {
-        status: ReleaseStatus.Installed,
-        version: Version.create('2.0.0-rc.1'),
-      },
-      files: {
-        [manifest]:
-          '{"constitutionFormat": 2, "constitutionFormat"\t:\t3,\n"version" :"2.0.0-rc.1", "x": "y",\n"constitutionFormat": 4, "version": "9.9.9"}\n',
+        [manifest]: '{\n  "constitutionFormat": 4,\n  "version": "1.0.0"\n}\n',
       },
     },
   ])('should give the release the project pins when $condition', ({ expected, files }) => {
@@ -81,6 +75,7 @@ describe('readRelease', () => {
     // Act
     const release = readRelease({
       files: projectFiles,
+      manifestParser: parsers().manifestParser,
       place: projectPlace,
     });
 
@@ -90,16 +85,20 @@ describe('readRelease', () => {
 
   it.each([
     {
-      cause: undefined,
-      code: ProjectFailure.ManifestUnreadable,
       condition: 'the release has no manifest',
+      expected: {
+        manifest: manifestPath,
+        status: ReleaseStatus.ManifestUnreadable,
+      },
       files: {},
       unreadable: [],
     },
     {
-      cause: expect.any(Error),
-      code: ProjectFailure.ManifestUnreadable,
       condition: 'its manifest cannot be read',
+      expected: {
+        manifest: manifestPath,
+        status: ReleaseStatus.ManifestUnreadable,
+      },
       files: {
         [manifest]: manifestOf(),
       },
@@ -108,35 +107,44 @@ describe('readRelease', () => {
       ],
     },
     {
-      cause: undefined,
-      code: ProjectFailure.VersionMissing,
+      condition: 'its manifest is no JSON',
+      expected: {
+        manifest: manifestPath,
+        status: ReleaseStatus.ManifestNotObject,
+      },
+      files: {
+        [manifest]: '{"constitutionFormat": 4,\n',
+      },
+      unreadable: [],
+    },
+    {
+      condition: 'its manifest gives its version in another form',
+      expected: {
+        fields: [
+          'version',
+        ],
+        manifest: manifestPath,
+        status: ReleaseStatus.ManifestMalformed,
+      },
+      files: {
+        [manifest]: '{"constitutionFormat": 4, "version": 1}\n',
+      },
+      unreadable: [],
+    },
+    {
       condition: 'its manifest names no version',
-      files: {
-        [manifest]: '{"constitutionFormat": 3}\n',
+      expected: {
+        manifest: manifestPath,
+        status: ReleaseStatus.VersionMissing,
       },
-      unreadable: [],
-    },
-    {
-      cause: undefined,
-      code: ProjectFailure.VersionMissing,
-      condition: 'its manifest names an empty version',
       files: {
-        [manifest]: '{"constitutionFormat": 3, "version": ""}\n',
-      },
-      unreadable: [],
-    },
-    {
-      cause: undefined,
-      code: ProjectFailure.VersionMissing,
-      condition: 'its manifest names a version that is no release version',
-      files: {
-        [manifest]: '{"constitutionFormat": 3, "version": "next"}\n',
+        [manifest]: '{"constitutionFormat": 4}\n',
       },
       unreadable: [],
     },
   ])(
-    'should fail with $code, keeping why the read failed, when $condition',
-    ({ cause, code, files, unreadable }) => {
+    'should give why the release cannot be read when $condition',
+    ({ expected, files, unreadable }) => {
       // Arrange
       const projectFiles = createFakeProjectFiles({
         files: {
@@ -147,20 +155,14 @@ describe('readRelease', () => {
       });
 
       // Act
-      const failure = failureOf(() =>
-        readRelease({
-          files: projectFiles,
-          place: projectPlace,
-        }),
-      );
+      const release = readRelease({
+        files: projectFiles,
+        manifestParser: parsers().manifestParser,
+        place: projectPlace,
+      });
 
       // Assert
-      expect(failure).toStrictEqual({
-        cause,
-        code,
-        line: undefined,
-        path: manifest,
-      });
+      expect(release).toStrictEqual(expected);
     },
   );
 });

@@ -1,0 +1,10 @@
+python-check: no path given
+usage: python-check <path>...
+python-check: neither a file nor a folder: scr, test
+usage: python-check <path>...
+python-check: pyproject.toml: tool.uv is not a table
+python-check: parts/a.toml: homes.httpx is not a list of text
+python-check: pyproject.toml: tool.python-check.home is no key the check reads; remove it
+python-check: parts/b.toml, which extend names, does not exist
+python-check: parts/c.toml: the file does not parse as TOML: Expected ']' (at line 1, column 7)
+python-check: the check stopped on an error of its own, RuntimeError('boom'); report it

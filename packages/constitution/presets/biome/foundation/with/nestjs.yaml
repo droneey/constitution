@@ -1,0 +1,46 @@
+nestjs:
+  '*':
+    typescript:
+      biome.jsonc:
+        javascript:
+          parser:
+            unsafeParameterDecoratorsEnabled: true
+        assist:
+          actions:
+            source:
+              organizeImports:
+                options:
+                  groups@frameworks:
+                    - - '@nest*'
+                      - nest*
+                    - ':BLANK_LINE:'
+  decorated-constructor-takes-every-dependency:
+    typescript:
+      biome.jsonc:
+        overrides:
+          - includes:
+              - '**/*.${role.nest-controller}'
+              - '**/*.${role.nest-provider}'
+              - '**/*.${role.nest-filter}'
+              - '**/*.${role.nest-pipe}'
+              - '**/*.${role.nest-guard}'
+              - '**/*.${role.nest-interceptor}'
+            linter:
+              rules:
+                complexity:
+                  useMaxParams: 'off'
+  injected-classes-imported-as-values:
+    typescript:
+      biome.jsonc:
+        overrides:
+          - includes:
+              - '**/*.${role.nest-controller}'
+              - '**/*.${role.nest-provider}'
+              - '**/*.${role.nest-filter}'
+              - '**/*.${role.nest-pipe}'
+              - '**/*.${role.nest-guard}'
+              - '**/*.${role.nest-interceptor}'
+            linter:
+              rules:
+                style:
+                  useImportType: 'off'

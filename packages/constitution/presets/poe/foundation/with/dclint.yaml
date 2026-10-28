@@ -1,0 +1,8 @@
+dclint:
+  '*':
+    yaml:
+      pyproject.toml:
+        tool:
+          poe:
+            tasks:
+              check:compose: dclint compose.yaml

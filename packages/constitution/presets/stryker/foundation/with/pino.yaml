@@ -1,0 +1,23 @@
+core:
+  every-mutant-killed:
+    typescript:
+      stryker.config.json:
+        diagnosticsTextArguments:
+          trace:
+            - 0
+            - 1
+          debug:
+            - 0
+            - 1
+          info:
+            - 0
+            - 1
+          warn:
+            - 0
+            - 1
+          error:
+            - 0
+            - 1
+          fatal:
+            - 0
+            - 1

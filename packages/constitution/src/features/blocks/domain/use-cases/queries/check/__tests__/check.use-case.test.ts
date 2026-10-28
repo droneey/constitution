@@ -1,18 +1,17 @@
 import { describe, expect, it } from 'bun:test';
 
-import { BlockId, RuleSlug } from '#/kernel/value-objects';
+import { AbsolutePath, BlockId, RuleSlug } from '#/kernel/value-objects';
 
 import { checkSourceOf, rule, textOf } from '../../../../../__tests__/constitution.fixtures';
 import { ACME, packFiles } from '../../../../../__tests__/pack-files.fixtures';
 import { validFiles } from '../../../../../__tests__/valid-files.fixtures';
-import { FrontMatterField } from '../../../../entities';
-import { checkBlocks } from '../check.use-case';
-import { BudgetCode, RulesCode } from '../checks';
-import { FrontMatterReadCode, LoadCode, PlaceCode } from '../steps/load-constitution';
+import { FrontMatterField, FrontMatterReadCode } from '../../../../entities';
+import { checkBlocks, ValidationStage } from '../check.use-case';
+import { RulesCode } from '../checks';
+import { LoadCode, PlaceCode } from '../steps/load-constitution';
 
 const REMOTE_DATA = 'blocks/domains/remote-data/remote-data.md';
 const UI = 'blocks/domains/ui/foundation/screens.md';
-const PRINCIPLES = 'blocks/core/foundation/principles.md';
 
 // A rule of ui that says nearly what a rule of i18n says: the advice names the
 // pair whenever the checks run.
@@ -21,7 +20,7 @@ const similarRule = rule({
 });
 
 describe('checkBlocks', () => {
-  it('should give only the loader findings, sorted, and withhold the advice when a block does not load', () => {
+  it('should give only the loader findings and withhold the advice when a block does not load', () => {
     // Arrange
     const files = validFiles();
 
@@ -44,8 +43,12 @@ describe('checkBlocks', () => {
 
     // Assert
     expect(validation).toStrictEqual({
-      advice: [],
       findings: [
+        {
+          code: PlaceCode.StrayBlockFile,
+          details: {},
+          path: 'blocks/domains/ui/notes.txt',
+        },
         {
           code: FrontMatterReadCode.NotBlockId,
           details: {
@@ -54,65 +57,8 @@ describe('checkBlocks', () => {
           },
           path: REMOTE_DATA,
         },
-        {
-          code: PlaceCode.StrayBlockFile,
-          details: {},
-          path: 'blocks/domains/ui/notes.txt',
-        },
       ],
-    });
-  });
-
-  it('should order the findings of one file by code when the checks emit them in another order', () => {
-    // Arrange
-    const files = validFiles();
-
-    files[PRINCIPLES] = [
-      '# Principles',
-      '',
-      '> Governs how the code depends on itself.',
-      '',
-      '## General',
-      '',
-      rule({
-        slug: 'dependencies-point-inward',
-        why: '',
-      }),
-      ...Array.from(
-        {
-          length: 500,
-        },
-        () => 'Filler.',
-      ),
-    ].join('\n');
-
-    const source = checkSourceOf({
-      files,
-    });
-
-    // Act
-    const validation = checkBlocks(source);
-
-    // Assert
-    expect(validation).toStrictEqual({
-      advice: [],
-      findings: [
-        {
-          code: BudgetCode.FileOverBudget,
-          details: {
-            budget: 500,
-            lines: 513,
-          },
-          path: PRINCIPLES,
-        },
-        {
-          code: RulesCode.WithoutWhy,
-          details: {
-            slug: RuleSlug.create('dependencies-point-inward'),
-          },
-          path: PRINCIPLES,
-        },
-      ],
+      stage: ValidationStage.Unloaded,
     });
   });
 
@@ -147,7 +93,25 @@ describe('checkBlocks', () => {
         },
       ],
       findings: [],
+      model: expect.any(Object),
+      stage: ValidationStage.Checked,
     });
+  });
+
+  it("should check the repository's own files when the folder is its source", () => {
+    // Arrange
+    const files = Object.fromEntries(
+      Object.entries(validFiles()).filter(([path]) => path !== 'DECISIONS.md'),
+    );
+    const source = checkSourceOf({
+      files,
+    });
+
+    // Act
+    const validation = checkBlocks(source);
+
+    // Assert
+    expect(validation?.findings.map(({ path }) => path)).toContain('DECISIONS.md');
   });
 
   it('should find nothing and give no advice when a pack carries out the rules of its base', () => {
@@ -164,6 +128,8 @@ describe('checkBlocks', () => {
     expect(validation).toStrictEqual({
       advice: [],
       findings: [],
+      model: expect.any(Object),
+      stage: ValidationStage.Checked,
     });
   });
 
@@ -197,6 +163,8 @@ describe('checkBlocks', () => {
           path: ACME,
         },
       ],
+      model: expect.any(Object),
+      stage: ValidationStage.Checked,
     });
   });
 
@@ -223,20 +191,37 @@ describe('checkBlocks', () => {
 
     // Assert
     expect(validation).toStrictEqual({
-      advice: [],
       findings: [
         {
           code: LoadCode.IdShared,
           details: {
             id: BlockId.create('i18n'),
             others: [
-              '/work/base/blocks/domains/i18n/i18n.md',
+              '.droneey/constitution/blocks/domains/i18n/i18n.md',
             ],
           },
           path: 'blocks/domains/i18n/i18n.md',
         },
       ],
+      stage: ValidationStage.Unloaded,
     });
+  });
+
+  it('should check the pack against the base its folder names when that folder holds no Constitution', () => {
+    // Arrange
+    const source = checkSourceOf({
+      base: validFiles(),
+      baseFolder: 'elsewhere',
+      files: packFiles(),
+    });
+
+    // Act
+    const validation = checkBlocks(source);
+
+    // Assert
+    expect(validation?.findings.map(({ code }) => code)).toStrictEqual([
+      RulesCode.ParentNotRule,
+    ]);
   });
 
   it('should report the base once when the base it is checked against does not load', () => {
@@ -255,14 +240,14 @@ describe('checkBlocks', () => {
 
     // Assert
     expect(validation).toStrictEqual({
-      advice: [],
       findings: [
         {
           code: LoadCode.BaseDoesNotLoad,
           details: {},
-          path: '/work/base',
+          path: '.droneey/constitution',
         },
       ],
+      stage: ValidationStage.Unloaded,
     });
   });
 
@@ -272,7 +257,7 @@ describe('checkBlocks', () => {
       ...checkSourceOf({
         files: validFiles(),
       }),
-      folder: '/work/elsewhere',
+      folderPath: AbsolutePath.create('/work/elsewhere'),
     };
 
     // Act

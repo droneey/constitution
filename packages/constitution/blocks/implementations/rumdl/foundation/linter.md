@@ -6,11 +6,11 @@
 
 ### rule-lists-extended-never-replaced · MUST
 
-A project adds a rule with `extend-enable` and removes one with `extend-disable`, never with `enable` or `disable`, and a `[per-file-ignores]` of its own repeats the archive's entries.
+A project adds a rule with `extend-enable` and removes one with `extend-disable`, never with `enable` or `disable`, and a `[per-file-ignores]` of its own repeats the entries of the Constitution's distribution.
 
 | Why |
 |---|
-| `disable` and `[per-file-ignores]` replace the archive's and bring back what it lifted, and `enable` turns off every default rule it does not name, so rumdl stops formatting. |
+| `disable` and `[per-file-ignores]` replace those of the Constitution's distribution and bring back what it lifted, and `enable` turns off every default rule it does not name, so rumdl stops formatting. |
 
 ### rumdl-suppression-names-rule-and-reason → suppression-silences-one-finding · MUST
 

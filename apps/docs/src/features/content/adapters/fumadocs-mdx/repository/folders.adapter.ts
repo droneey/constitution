@@ -1,18 +1,21 @@
+import type { MetaFile, SidebarFolder, SiteLayout } from '#/shared/types';
+
+import { PATH_SEPARATOR } from '../../../domain/constants';
+import { BlockLayer } from '../../../domain/entities';
 import { axisFoldersOf, coreChaptersOf, layerBlocksOf, seamHoldersOf } from './blocks.adapter';
 import { SEAMS_FOLDER } from './blocks.constants';
-import { AXIS_SEPARATOR, LAYER_FOLDERS } from './folders.constants';
-import type { MetaFile, SidebarFolder, SiteLayout } from './folders.types';
+import { LAYER_FOLDERS, layerGroupFolders } from './folders.constants';
 import { sidebarOf } from './navigation.adapter';
 import {
-  BLOCK_LAYERS,
+  blockLayers,
   GLOSSARY,
   QUICK_START,
-  SITE_DOCUMENTS,
+  siteDocuments,
   siteLayers,
 } from './repository.constants';
 
-const metaFile = (path: string, folder: SidebarFolder): MetaFile => ({
-  data: folder,
+const metaFile = (path: string, sidebarFolder: SidebarFolder): MetaFile => ({
+  data: sidebarFolder,
   path,
   type: 'meta',
 });
@@ -22,26 +25,26 @@ const titleOfAxis = (axis: string): string => `${axis.charAt(0).toUpperCase()}${
 
 /** In an axis folder, the library's `...` lists its other pages, so its seams come after all else. */
 const blockSubfolders = (): readonly MetaFile[] => {
-  const folders = new Map<string, SidebarFolder>();
+  const sidebarFoldersByPath = new Map<string, SidebarFolder>();
 
-  for (const folder of BLOCK_LAYERS.flatMap(axisFoldersOf)) {
-    const block = folder.slice(0, folder.lastIndexOf('/'));
-    const axis = folder.slice(block.length + 1);
+  for (const axisFolder of Object.values(BlockLayer).flatMap(axisFoldersOf)) {
+    const blockFolder = axisFolder.slice(0, axisFolder.lastIndexOf('/'));
+    const axis = axisFolder.slice(blockFolder.length + 1);
 
-    folders.set(block, {
+    sidebarFoldersByPath.set(blockFolder, {
       pages: [
-        ...(folders.get(block)?.pages ?? []),
+        ...(sidebarFoldersByPath.get(blockFolder)?.pages ?? []),
         axis,
       ],
     });
-    folders.set(folder, {
+    sidebarFoldersByPath.set(axisFolder, {
       title: titleOfAxis(axis),
     });
   }
 
-  for (const folder of BLOCK_LAYERS.flatMap(seamHoldersOf)) {
-    folders.set(folder, {
-      ...folders.get(folder),
+  for (const axisFolder of Object.values(BlockLayer).flatMap(seamHoldersOf)) {
+    sidebarFoldersByPath.set(axisFolder, {
+      ...sidebarFoldersByPath.get(axisFolder),
       pages: [
         '...',
         SEAMS_FOLDER,
@@ -50,33 +53,33 @@ const blockSubfolders = (): readonly MetaFile[] => {
   }
 
   return [
-    ...folders,
-  ].map(([folder, meta]) => metaFile(`${folder}/meta.json`, meta));
+    ...sidebarFoldersByPath,
+  ].map(([folderPath, sidebarFolder]) => metaFile(`${folderPath}/meta.json`, sidebarFolder));
 };
 
 /** the `meta.json` of every folder of blocks the sidebar shows: its title, its icon and the order of its pages */
 const blockFoldersOf = (): readonly MetaFile[] => {
   const chapters = coreChaptersOf();
   const axes = [
-    ...new Set(chapters.map((chapter) => chapter.slice(0, chapter.indexOf(AXIS_SEPARATOR)))),
+    ...new Set(chapters.map((chapter) => chapter.slice(0, chapter.indexOf(PATH_SEPARATOR)))),
   ];
 
   return [
     ...siteLayers
-      .filter((folder) => !BLOCK_LAYERS.includes(folder))
-      .map((folder) =>
-        metaFile(`${folder}/meta.json`, {
-          ...LAYER_FOLDERS[folder],
-          pages: BLOCK_LAYERS.filter((layer) => layer.startsWith(`${folder}/`)).map((layer) =>
-            layer.slice(folder.length + 1),
-          ),
+      .filter((siteLayer) => !blockLayers.includes(siteLayer))
+      .map((siteLayer) =>
+        metaFile(`${siteLayer}/meta.json`, {
+          ...layerGroupFolders[siteLayer],
+          pages: blockLayers
+            .filter((layer) => layer.startsWith(`${siteLayer}/`))
+            .map((layer) => layer.slice(siteLayer.length + 1)),
         }),
       ),
-    ...BLOCK_LAYERS.map((layer) =>
+    ...Object.values(BlockLayer).map((layer) =>
       metaFile(`${layer}/meta.json`, {
         ...LAYER_FOLDERS[layer],
         pages:
-          layer === 'core'
+          layer === BlockLayer.Core
             ? axes
             : [
                 ...layerBlocksOf(layer),
@@ -85,11 +88,11 @@ const blockFoldersOf = (): readonly MetaFile[] => {
     ),
     ...blockSubfolders(),
     ...axes.map((axis) =>
-      metaFile(`core/${axis}/meta.json`, {
+      metaFile(`${BlockLayer.Core}/${axis}/meta.json`, {
         title: titleOfAxis(axis),
         pages: chapters
-          .filter((chapter) => chapter.startsWith(`${axis}${AXIS_SEPARATOR}`))
-          .map((chapter) => chapter.slice(axis.length + AXIS_SEPARATOR.length)),
+          .filter((chapter) => chapter.startsWith(`${axis}${PATH_SEPARATOR}`))
+          .map((chapter) => chapter.slice(axis.length + PATH_SEPARATOR.length)),
       }),
     ),
   ];
@@ -97,7 +100,7 @@ const blockFoldersOf = (): readonly MetaFile[] => {
 
 /** what the site's loader serves beside the guide's own files: the README's sidebar as the guide's folder, and every folder of blocks */
 const siteLayoutOf = (baseUrl: string): SiteLayout => ({
-  documents: SITE_DOCUMENTS,
+  documents: siteDocuments,
   folders: [
     metaFile('meta.json', {
       pages: sidebarOf(baseUrl).pages,

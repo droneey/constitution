@@ -1,3 +1,4 @@
+# editorconfig
 root = true
 
 # core
@@ -9,9 +10,14 @@ trim_trailing_whitespace = true
 indent_style = space
 indent_size = 2
 
+# shfmt
 [*.{sh,bash}]
 switch_case_indent = true
 
 # local
 [*.md]
+trim_trailing_whitespace = false
+
+# editorconfig
+[*.golden.*]
 trim_trailing_whitespace = false

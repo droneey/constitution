@@ -1,11 +1,13 @@
-interface RecognisedFailureInput {
+interface RecognisedFailureInput<TFailure> {
   readonly error: unknown;
-  readonly isRecognised: (error: unknown) => boolean;
+  readonly isRecognised: (error: unknown) => error is TFailure;
 }
 
-// A catch handles only the failures it recognises: this gives back the one it recognises and
-// rethrows any other, so a defect never passes for an expected failure.
-const recognisedFailure = (input: RecognisedFailureInput): unknown => {
+/**
+ * A catch handles only the failures it recognises: this gives back the one it recognises and
+ * rethrows any other, so a defect never passes for an expected failure.
+ */
+const recognisedFailure = <TFailure>(input: RecognisedFailureInput<TFailure>): TFailure => {
   if (input.isRecognised(input.error)) {
     return input.error;
   }
@@ -13,14 +15,18 @@ const recognisedFailure = (input: RecognisedFailureInput): unknown => {
   throw input.error;
 };
 
-interface AttemptInput<TOutcome> {
+interface AttemptInput<TOutcome, TFailure> {
   readonly effect: () => TOutcome;
-  readonly isRecognised: (error: unknown) => boolean;
+  readonly isRecognised: (error: unknown) => error is TFailure;
 }
 
-// The outcome of an effect, or undefined when it fails as the caller expects; any other failure
-// is rethrown.
-const attempted = <TOutcome>(input: AttemptInput<TOutcome>): TOutcome | undefined => {
+/**
+ * The outcome of an effect, or undefined when it fails as the caller expects; any other failure is
+ * rethrown.
+ */
+const attempted = <TOutcome, TFailure = unknown>(
+  input: AttemptInput<TOutcome, TFailure>,
+): TOutcome | undefined => {
   let outcome: TOutcome | undefined;
 
   try {
@@ -35,17 +41,8 @@ const attempted = <TOutcome>(input: AttemptInput<TOutcome>): TOutcome | undefine
   return outcome;
 };
 
-const isSyntaxError = (error: unknown): boolean => error instanceof SyntaxError;
+const isSyntaxError = (error: unknown): error is SyntaxError => error instanceof SyntaxError;
 
-/** The syntax error a parse failed with; any other failure is rethrown. */
-const syntaxErrorOf = (error: unknown): SyntaxError => {
-  if (error instanceof SyntaxError) {
-    return error;
-  }
+const isRangeError = (error: unknown): error is RangeError => error instanceof RangeError;
 
-  throw error;
-};
-
-const isRangeError = (error: unknown): boolean => error instanceof RangeError;
-
-export { attempted, isRangeError, isSyntaxError, recognisedFailure, syntaxErrorOf };
+export { attempted, isRangeError, isSyntaxError, recognisedFailure };

@@ -1,95 +1,35 @@
-import { spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { nodeBinary } from './package.fixtures';
+import { loadOf } from './preset-load.fixtures';
 
-interface Manifest {
-  dependencies?: Readonly<Record<string, string>>;
-  devDependencies?: Readonly<Record<string, string>>;
-  name: string;
-  peerDependencies?: Readonly<Record<string, string>>;
-  version: string;
+interface SyncpackInput {
+  readonly args: readonly string[];
+  readonly files: Readonly<Record<string, string>>;
 }
 
-const repository = join(import.meta.dir, '..', '..');
-const syncpack = join(repository, 'node_modules', '.bin', 'syncpack');
+interface Issues {
+  /** the codes of the issues syncpack names, in the order it names them */
+  readonly issues: readonly string[];
+  readonly status: number;
+}
 
-const CONFIG = `import jsRuntime from './.droneey/constitution/presets/json/syncpack/foundation/_js-runtime.mjs';
-import bun from './.droneey/constitution/presets/json/syncpack/foundation/bun.mjs';
-import core from './.droneey/constitution/presets/json/syncpack/foundation/core.mjs';
-import distribution from './.droneey/constitution/presets/json/syncpack/foundation/distribution.mjs';
-import self from './.droneey/constitution/presets/json/syncpack/foundation/self.mjs';
+// syncpack names each issue by a code of capitalised words joined, beside the dependency or the
+// property it finds it in.
+const ISSUE_CODE = /\b(?:[A-Z][a-z]+){2,}\b/g;
 
-export default {
-  ...self,
-  semverGroups: [
-    ...jsRuntime.semverGroups,
-    ...distribution.semverGroups,
-  ],
-  versionGroups: [
-    ...core.versionGroups,
-    ...bun.versionGroups,
-    ...distribution.versionGroups,
-  ],
-};
-`;
-
-const workspace = (packages: readonly Manifest[]): Readonly<Record<string, Manifest | object>> => ({
-  'package.json': {
-    name: 'root',
-    private: true,
-    version: '1.0.0',
-    workspaces: [
-      'packages/*',
+/** syncpack's run in the widest unit, which holds the files given. */
+const syncpackIssues = async (input: SyncpackInput): Promise<Issues> => {
+  const { output, status } = await loadOf('syncpack', {
+    command: [
+      nodeBinary('syncpack'),
+      ...input.args,
     ],
-  },
-  ...Object.fromEntries(
-    packages.map((manifest) => [
-      `packages/${manifest.name}/package.json`,
-      manifest,
-    ]),
-  ),
-});
+    files: input.files,
+  });
 
-const versionIssues = (packages: readonly Manifest[]): readonly string[] => {
-  const folder = mkdtempSync(join(tmpdir(), 'constitution-syncpack-'));
-
-  try {
-    for (const [path, manifest] of Object.entries(workspace(packages))) {
-      mkdirSync(dirname(join(folder, path)), {
-        recursive: true,
-      });
-      writeFileSync(join(folder, path), JSON.stringify(manifest));
-    }
-
-    mkdirSync(join(folder, '.droneey'));
-    symlinkSync(repository, join(folder, '.droneey', 'constitution'));
-    writeFileSync(join(folder, '.syncpackrc.mjs'), CONFIG);
-
-    const linting = spawnSync(
-      syncpack,
-      [
-        'lint',
-      ],
-      {
-        cwd: folder,
-        encoding: 'utf8',
-      },
-    );
-
-    return [
-      ...new Set(
-        [
-          ...`${linting.stdout}${linting.stderr}`.matchAll(/✘ [^(]*\((\w+)\)/g),
-        ].map(([, kind]) => kind ?? ''),
-      ),
-    ];
-  } finally {
-    rmSync(folder, {
-      force: true,
-      recursive: true,
-    });
-  }
+  return {
+    issues: output.flatMap((line) => line.match(ISSUE_CODE) ?? []),
+    status,
+  };
 };
 
-export { versionIssues };
+export { syncpackIssues };

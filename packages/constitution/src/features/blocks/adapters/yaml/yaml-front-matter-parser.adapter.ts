@@ -1,16 +1,13 @@
 import type { Document } from 'yaml';
 import { isAlias, LineCounter, parseDocument, visit } from 'yaml';
 
-import { attempted } from '#/kernel/utils';
-
-import type { FrontMatterParser, FrontMatterRead } from '../../domain/contracts';
-import type { SkillFrontMatterRead } from '../../domain/entities';
+import type { FrontMatterParser } from '../../domain/contracts';
+import type { FrontMatterRead, SkillFrontMatterRead } from '../../domain/entities';
 import { ReadStatus } from '../../domain/entities';
 import { frontMatterModel, skillFrontMatterModel } from './models';
 
 const ALIAS_REASON = 'an unquoted value starts with "*", which YAML reads as an alias; quote it';
-
-const isReferenceError = (error: unknown): boolean => error instanceof ReferenceError;
+const TOP_LEVEL_KEY = /^([A-Za-z_][\w-]*)\s*:/;
 
 const isMapping = (parsed: unknown): parsed is Record<string, unknown> =>
   typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed);
@@ -30,6 +27,31 @@ const aliasOffset = (document: Document): number | undefined => {
   });
 
   return offset;
+};
+
+// A line of the YAML, counted from 1, with the top-level key at or above it.
+const placeOf = (input: {
+  line: number;
+  yaml: string;
+}): {
+  key?: string;
+  line: number;
+} => {
+  const key = input.yaml
+    .split('\n')
+    .slice(0, input.line)
+    .toReversed()
+    .map((text) => TOP_LEVEL_KEY.exec(text)?.[1])
+    .find((found) => found !== undefined);
+
+  return key === undefined
+    ? {
+        line: input.line,
+      }
+    : {
+        key,
+        line: input.line,
+      };
 };
 
 const mappingOf = (mapping: Record<string, unknown>): FrontMatterRead => {
@@ -52,17 +74,38 @@ const mappingOf = (mapping: Record<string, unknown>): FrontMatterRead => {
       };
 };
 
-const parse = (yaml: string): FrontMatterRead => {
+// The value a front matter holds, or why it is no YAML; an alias counts as none, so no value is
+// expanded from its anchor.
+const writtenOf = (
+  yaml: string,
+):
+  | {
+      readonly at: {
+        readonly key?: string;
+        readonly line: number;
+      };
+      readonly reason: string;
+      readonly status: ReadStatus.NotYaml;
+    }
+  | {
+      readonly status: ReadStatus.Parsed;
+      readonly written: unknown;
+    } => {
   const lineCounter = new LineCounter();
   const document = parseDocument(yaml, {
     lineCounter,
     prettyErrors: false,
+    // Stryker disable next-line StringLiteral: YAML 1.2 reads by the core schema where none is named
+    schema: 'core',
   });
   const [error] = document.errors;
 
   if (error !== undefined) {
     return {
-      line: lineCounter.linePos(error.pos[0]).line,
+      at: placeOf({
+        line: lineCounter.linePos(error.pos[0]).line,
+        yaml,
+      }),
       reason: error.message,
       status: ReadStatus.NotYaml,
     };
@@ -72,16 +115,33 @@ const parse = (yaml: string): FrontMatterRead => {
 
   if (offset !== undefined) {
     return {
-      line: lineCounter.linePos(offset).line,
+      at: placeOf({
+        line: lineCounter.linePos(offset).line,
+        yaml,
+      }),
       reason: ALIAS_REASON,
       status: ReadStatus.NotYaml,
     };
   }
 
-  const parsed: unknown = document.toJS();
+  return {
+    status: ReadStatus.Parsed,
+    // Stryker disable next-line ObjectLiteral: every alias is refused above, so the bound only states it
+    written: document.toJS({
+      maxAliasCount: 0,
+    }),
+  };
+};
 
-  return isMapping(parsed)
-    ? mappingOf(parsed)
+const parse = (yaml: string): FrontMatterRead => {
+  const read = writtenOf(yaml);
+
+  if (read.status === ReadStatus.NotYaml) {
+    return read;
+  }
+
+  return isMapping(read.written)
+    ? mappingOf(read.written)
     : {
         status: ReadStatus.NotMapping,
       };
@@ -90,32 +150,16 @@ const parse = (yaml: string): FrontMatterRead => {
 // A value that is not a mapping, an empty front matter included, has neither
 // field.
 const skill = (yaml: string): SkillFrontMatterRead => {
-  const document = parseDocument(yaml, {
-    prettyErrors: false,
-  });
-  const [error] = document.errors;
+  const read = writtenOf(yaml);
 
-  if (error !== undefined) {
+  if (read.status === ReadStatus.NotYaml) {
     return {
-      reason: error.message,
+      reason: read.reason,
       status: ReadStatus.NotYaml,
     };
   }
 
-  // An alias without its anchor parses without an error and throws only as it resolves.
-  const parsed: unknown = attempted({
-    effect: (): unknown => document.toJS(),
-    isRecognised: isReferenceError,
-  });
-
-  if (parsed === undefined) {
-    return {
-      reason: ALIAS_REASON,
-      status: ReadStatus.NotYaml,
-    };
-  }
-
-  const parsing = skillFrontMatterModel.safeParse(parsed);
+  const parsing = skillFrontMatterModel.safeParse(read.written);
   const { description, name } = parsing.success ? parsing.data : {};
 
   return {

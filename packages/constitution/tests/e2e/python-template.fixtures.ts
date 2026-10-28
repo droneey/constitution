@@ -1,18 +1,15 @@
 import { spawnSync } from 'node:child_process';
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
-import { delimiter, join } from 'node:path';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
+import { stringify } from 'smol-toml';
 import { z } from 'zod';
 
+import { appliedUnit } from './applied-unit.fixtures';
 import { createBatch } from './batch.fixtures';
+import { searchPathWith, toolEnvironment } from './package.fixtures';
 import type { BuiltTool, Files } from './python-project.fixtures';
-import {
-  buildTools,
-  inPythonProjectAsync,
-  python,
-  repository,
-  writeFiles,
-} from './python-project.fixtures';
+import { buildTools, inPythonProjectAsync, python, writeFiles } from './python-project.fixtures';
 import { uvEnvironment } from './uv.fixtures';
 
 interface Run {
@@ -20,15 +17,12 @@ interface Run {
   readonly output: string;
 }
 
-// One area of the check, or the whole of it, over the template with the files a case changes.
+// One area of the check, or the whole of it, over the applied files and those a case changes.
 interface TaskRun {
   readonly changes: Files;
   readonly task: string;
 }
 
-const templates = join(repository, 'templates', 'project', 'python');
-const presets = join(repository, 'presets', 'python');
-const ARCHIVE = '.droneey/constitution';
 const gitIdentity = [
   '-c',
   'user.name=Constitution',
@@ -36,169 +30,73 @@ const gitIdentity = [
   'user.email=constitution@example.com',
 ];
 
-// The blocks of the shop's scope, Python's, in the order the hook reads them:
-// the language, then its tools and libraries by id.
-const blocks = [
-  'python',
-  'complexipy',
-  'deptry',
-  'fastapi',
-  'fastmcp',
-  'httpx2',
-  'hypothesis',
-  'import-linter',
-  'mutmut',
-  'poe',
-  'pydantic',
-  'pytest',
-  'python-check',
-  'ruff',
-  'structlog',
-  'ty',
-  'uv',
-  'vulture',
-];
-const axes = [
-  'foundation',
-  'architecture',
-];
+const NAME = 'shop';
+const APPLIED_FILES = [
+  '.gitignore',
+  'pyproject.toml',
+  'tests/conftest.py',
+] as const;
 
-const listOf = (folder: string): readonly string[] =>
-  existsSync(folder) ? readdirSync(folder).toSorted() : [];
+const unit = appliedUnit({
+  blocks: [
+    'complexipy',
+    'deptry',
+    'fastapi',
+    'fastmcp',
+    'git',
+    'httpx2',
+    'hypothesis',
+    'import-linter',
+    'mutmut',
+    'poe',
+    'pydantic',
+    'pytest',
+    'python-check',
+    'ruff',
+    'structlog',
+    'ty',
+    'uv',
+    'vulture',
+  ],
+  languages: [
+    'python',
+  ],
+  name: NAME,
+});
 
-// A tool's parts as /constitution:ratify computes them: on each axis, self,
-// core and the language's, then the other blocks' in their order.
-const partsOf = (tool: string): readonly string[] =>
-  axes.flatMap((axis) => {
-    const files = listOf(join(presets, tool, axis)).filter(
-      (file) => file.includes('.') && file !== 'bindings.yaml',
-    );
+const appliedText = (path: string): string => readFileSync(join(unit, path), 'utf8');
 
-    const named = (name: string): readonly string[] =>
-      files.filter((file) => file.slice(0, file.indexOf('.')) === name);
+const settingsSchema = z.looseObject({
+  project: z.record(z.string(), z.unknown()),
+});
+const appliedSettings = settingsSchema.parse(Bun.TOML.parse(appliedText('pyproject.toml')));
 
-    return [
-      'self',
-      'core',
-      'python',
-      ...blocks.filter((block) => block !== 'python'),
-    ]
-      .flatMap(named)
-      .map((file) => `presets/python/${tool}/${axis}/${file}`);
-  });
+// The project's own name and its development group, which pins its tools, join the settings
+// apply writes.
+const pyproject = stringify({
+  ...appliedSettings,
+  'dependency-groups': {
+    dev: [
+      'pytest',
+    ],
+  },
+  project: {
+    ...appliedSettings.project,
+    name: NAME,
+  },
+});
 
-const textOf = (part: string): string => readFileSync(join(repository, part), 'utf8');
-
-// The part the others lead to: none of them extends it.
-const chainEndOf = (parts: readonly string[]): string =>
-  parts.find(
-    (candidate) =>
-      !parts.some((other) =>
-        textOf(other).includes(`"${candidate.slice(candidate.lastIndexOf('/') + 1)}"`),
-      ),
-  ) ?? '';
-
-// A fragment with its placeholders filled as /constitution:ratify fills them.
-const filled = (input: { parts: readonly string[]; text: string }): string => {
-  const paths = input.parts.map((part) => `${ARCHIVE}/${part}`);
-  const copies = input.parts
-    .map((part) => `# from ${ARCHIVE}/${part}\n${textOf(part)}# end ${ARCHIVE}/${part}\n`)
-    .join('\n');
-
-  return input.text
-    .replace('# from <parts>\n<copied parts>\n# end <parts>\n', copies)
-    .replace('# from <parts>', `# from ${paths.join(', ')}`)
-    .replace('  "<parts>",\n', paths.map((path) => `  "${path}",\n`).join(''))
-    .replace('<parts>', paths.join(' '))
-    .replace('<chain end>', `${ARCHIVE}/${chainEndOf(input.parts)}`)
-    .replaceAll('<name>', 'shop')
-    .replaceAll('<package>', 'shop');
-};
-
-const mergedTableNames = [
-  '[dependency-groups]',
-  '[tool.mutmut]',
-  '[tool.poe.tasks]',
-];
-
-const tableSchema = z.record(z.string(), z.unknown());
-
-// One table from each fragment that gives it: the keys of every fragment, a
-// list several give holding the entries of each without repeats.
-const mergedTable = (input: { sections: readonly string[]; table: string }): string => {
-  const settings = input.sections
-    .filter((section) => section.startsWith(`${input.table}\n`))
-    .map((section) => tableSchema.parse(Bun.TOML.parse(section.slice(input.table.length + 1))));
-  const keys = [
-    ...new Set(settings.flatMap((setting) => Object.keys(setting))),
-  ];
-  const lines = keys.map((key) => {
-    const given = settings.flatMap((setting) =>
-      Object.hasOwn(setting, key)
-        ? [
-            setting[key],
-          ]
-        : [],
-    );
-    const joined = given.every((entry) => Array.isArray(entry))
-      ? [
-          ...new Set(given.flat()),
-        ]
-      : given.at(-1);
-
-    return `${JSON.stringify(key)} = ${JSON.stringify(joined)}`;
-  });
-
-  return `${input.table}\n${lines.join('\n')}\n`;
-};
-
-// The tables several fragments give, joined into one each, as ratify merges them.
-const mergedTables = (text: string): string => {
-  const sections = text.split(/(?=^\[)/mu);
-  const kept = sections.filter(
-    (section) => !mergedTableNames.some((table) => section.startsWith(`${table}\n`)),
-  );
-
-  return [
-    ...kept,
-    ...mergedTableNames.map((table) =>
-      mergedTable({
-        sections,
-        table,
-      }),
-    ),
-  ].join('\n');
-};
-
-const assembled = (path: string): string => {
-  const text = blocks
-    .flatMap((block) => {
-      const fragment = join(templates, block, path);
-
-      return existsSync(fragment)
-        ? [
-            filled({
-              parts: partsOf(block),
-              text: readFileSync(fragment, 'utf8'),
-            }),
-          ]
-        : [];
-    })
-    .join('\n');
-
-  return path.endsWith('.toml') ? mergedTables(text) : text;
-};
-
-const pyproject = assembled('pyproject.toml');
-
-// The template's files as a project copies them, its package named shop.
-const templateFiles: Files = {
-  '.gitignore': `${assembled('.gitignore')}/.droneey\n`,
+const appliedFiles: Files = {
+  ...Object.fromEntries(
+    APPLIED_FILES.map((path) => [
+      path,
+      appliedText(path),
+    ]),
+  ),
   'pyproject.toml': pyproject,
-  'tests/conftest.py': assembled('tests/conftest.py'),
 };
 
-// A package that keeps every rule of the template: a surface, a module, an
+// A package that keeps every rule of the applied settings: a surface, a module, an
 // async function, and specs that kill each of their mutants.
 const shop: Files = {
   'src/shop/__init__.py': python(
@@ -262,6 +160,7 @@ const git = (folder: string, args: readonly string[]): void => {
     {
       cwd: folder,
       encoding: 'utf8',
+      env: toolEnvironment(),
     },
   );
 
@@ -270,10 +169,10 @@ const git = (folder: string, args: readonly string[]): void => {
   }
 };
 
-// The project's base, the template with the shop package, is committed as
+// The project's base, the applied files with the shop package, is committed as
 // origin/main; the files a case changes are written over it. The package
 // stands in for its install by PYTHONPATH, and the tools are the repository's
-// own, pinned to the template's versions.
+// own, pinned to the versions the presets give.
 const runInTemplate = (input: {
   changes: Files;
   command: readonly string[];
@@ -281,7 +180,7 @@ const runInTemplate = (input: {
 }): Promise<Run> =>
   inPythonProjectAsync({
     files: {
-      ...templateFiles,
+      ...appliedFiles,
       ...shop,
     },
     run: async (folder) => {
@@ -306,24 +205,24 @@ const runInTemplate = (input: {
       ]);
       writeFiles(folder, input.changes);
 
-      const environment = Object.fromEntries([
-        ...Object.entries(process.env).filter(([name]) => name !== 'CI'),
-        [
-          'PATH',
-          `${join(uvEnvironment, 'bin')}${delimiter}${process.env['PATH'] ?? ''}`,
-        ],
-        [
-          'PYTHONPATH',
-          'src',
-        ],
-      ]);
       const running = Bun.spawn(
         [
           ...input.command,
         ],
         {
           cwd: folder,
-          env: environment,
+          env: toolEnvironment(
+            new Map([
+              [
+                'PATH',
+                searchPathWith(join(uvEnvironment, 'bin')),
+              ],
+              [
+                'PYTHONPATH',
+                'src',
+              ],
+            ]),
+          ),
           stderr: 'pipe',
           stdout: 'pipe',
         },
@@ -350,7 +249,7 @@ const poeTasksSchema = z.object({
   }),
 });
 
-// The command of each task the assembled [tool.poe.tasks] declares; `check`, a sequence, is not one.
+// The command of each task the applied [tool.poe.tasks] declares; `check`, a sequence, is not one.
 const tasks: ReadonlyMap<string, string> = new Map(
   Object.entries(poeTasksSchema.parse(Bun.TOML.parse(pyproject)).tool.poe.tasks).flatMap(
     ([task, command]) =>
@@ -365,11 +264,14 @@ const tasks: ReadonlyMap<string, string> = new Map(
   ),
 );
 
-// The tasks a project's check runs: its gates, never a fix or a run over the whole program.
+// The tasks a project's check runs: its gates, its specs and its mutants of the changed lines, never a
+// fix or a run over the whole program.
 const checkCommand = [
   ...tasks,
 ]
-  .filter(([task]) => task === 'test' || task.endsWith(':check'))
+  .filter(
+    ([task]) => task.startsWith('check:') || task.startsWith('test:') || task === 'mutate:branch',
+  )
   .map(([, command]) => command)
   .join(' && ');
 
@@ -383,7 +285,6 @@ const commandOf = (task: string): string => {
   return command;
 };
 
-// One area of the check, or the whole of it, over the template.
 const runTask = (input: { run: TaskRun; tools: readonly BuiltTool[] }): Promise<Run> =>
   runInTemplate({
     changes: input.run.changes,
@@ -475,20 +376,6 @@ const createTaskBatch = (): TaskBatch => {
   };
 };
 
-const settingsSchema = z.object({
-  tool: z.record(z.string(), z.unknown()),
-});
-
-// A tool's table in the assembled pyproject.toml, and in the tool's part,
-// which it carries since the tool reads no file but the project's.
-const templateTable = (tool: string): unknown =>
-  settingsSchema.parse(Bun.TOML.parse(pyproject)).tool[tool];
-
-const partTable = (tool: string): unknown =>
-  settingsSchema.parse(Bun.TOML.parse(textOf(`presets/python/${tool}/foundation/core.toml`))).tool[
-    tool
-  ];
-
 interface FoundInInput {
   readonly finding: readonly string[];
   readonly output: string;
@@ -507,4 +394,4 @@ const mutationCodesOf = (output: string): readonly string[] =>
     ...output.matchAll(MUTATION_CODE),
   ].map((match) => match.groups?.['code'] ?? '');
 
-export { createTaskBatch, isFoundIn, mutationCodesOf, partTable, templateTable };
+export { createTaskBatch, isFoundIn, mutationCodesOf };

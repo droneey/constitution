@@ -1,21 +1,24 @@
+import { CURRENT_SEGMENT, PARENT_SEGMENT, PATH_SEPARATOR } from '../constants';
 import { InvalidValueError, ValueFailure } from '../errors';
 import type { Brand } from '../types';
+import { normalizePath } from '../utils';
+import { RepositoryRelativePath } from './repository-relative-path.value-object';
+import { UnitRelativePath } from './unit-relative-path.value-object';
 
-// A unit's folder from the repository, written one way: the repository's own is '', a member's is
-// its folder's path with no empty, "." or ".." segment.
+/**
+ * A unit's folder from the repository, written one way: the repository's own is '', a member's is
+ * its folder's path with no empty, "." or ".." segment.
+ */
 type UnitPath = Brand<string, 'UnitPath'>;
 
-const SEPARATOR = '/';
-const CURRENT = '.';
-const PARENT = '..';
 const REPOSITORY = '';
 
 const isSegment = (segment: string): boolean =>
-  segment !== '' && segment !== CURRENT && segment !== PARENT;
+  segment !== '' && segment !== CURRENT_SEGMENT && segment !== PARENT_SEGMENT;
 
 const is = (candidate: unknown): candidate is UnitPath =>
   typeof candidate === 'string' &&
-  (candidate === REPOSITORY || candidate.split(SEPARATOR).every(isSegment));
+  (candidate === REPOSITORY || candidate.split(PATH_SEPARATOR).every(isSegment));
 
 /** @throws {@link InvalidValueError} when the text is no folder written one way */
 const create = (text: string): UnitPath => {
@@ -35,17 +38,35 @@ const equals = (left: UnitPath, right: UnitPath): boolean => left === right;
 
 const isRepository = (unit: UnitPath): boolean => unit === REPOSITORY;
 
-/** Whether a path from the repository lies in the unit's folder, the folder itself included. */
-const holds = (unit: UnitPath, path: string): boolean =>
-  isRepository(unit) || `${path}${SEPARATOR}`.startsWith(`${unit}${SEPARATOR}`);
+/** Whether the path lies in the unit's folder, the folder itself included. */
+const holds = (unit: UnitPath, path: RepositoryRelativePath | UnitPath): boolean =>
+  isRepository(unit) || `${path}${PATH_SEPARATOR}`.startsWith(`${unit}${PATH_SEPARATOR}`);
 
-/** A path from the repository as a path from the unit's folder; the path lies in it. */
-const pathFrom = (unit: UnitPath, path: string): string =>
-  isRepository(unit) ? path : path.slice(unit.length + SEPARATOR.length);
+/** @throws {@link InvalidValueError} when the path lies outside the unit's folder */
+const pathFrom = (unit: UnitPath, path: RepositoryRelativePath | UnitPath): UnitRelativePath => {
+  if (!holds(unit, path)) {
+    throw new InvalidValueError({
+      code: ValueFailure.PathOutsideUnit,
+      details: {
+        text: path,
+      },
+    });
+  }
 
-/** A path from the unit's folder as a path from the repository. */
-const pathOf = (unit: UnitPath, path: string): string =>
-  isRepository(unit) ? path : `${unit}${SEPARATOR}${path}`;
+  return UnitRelativePath.create(
+    isRepository(unit) ? path : path.slice(unit.length + PATH_SEPARATOR.length),
+  );
+};
+
+const joined = (unit: UnitPath, text: string): string =>
+  isRepository(unit) ? text : `${unit}${PATH_SEPARATOR}${text}`;
+
+const pathOf = (unit: UnitPath, path: UnitRelativePath): RepositoryRelativePath =>
+  RepositoryRelativePath.create(joined(unit, path));
+
+/** A path a text writes from the unit's folder, "./" and ".." in it or not, written one way. */
+const resolve = (unit: UnitPath, writtenPath: string): RepositoryRelativePath =>
+  RepositoryRelativePath.create(normalizePath(joined(unit, writtenPath)));
 
 const UnitPath = {
   create,
@@ -55,6 +76,7 @@ const UnitPath = {
   isRepository,
   pathFrom,
   pathOf,
+  resolve,
 } as const;
 
 const repositoryUnit = UnitPath.create(REPOSITORY);

@@ -1,172 +1,26 @@
 import { describe, expect, it } from 'bun:test';
 
-import { unusedCode } from './knip-preset.fixtures';
+import { nodeBinary } from './package.fixtures';
+import { loadOf } from './preset-load.fixtures';
 
-const ENTITIES = 'src/features/orders/domain/entities';
-
-const wired = {
-  [`${ENTITIES}/index.ts`]: "export { order, draft } from './order.entity';\n",
-  [`${ENTITIES}/order.entity.ts`]: 'export const order = 1;\nexport const draft = 2;\n',
-  'src/entrypoints/run/main.ts':
-    "import { order } from '../../features/orders';\nconsole.log(order);\n",
-  'src/features/orders/index.ts': "export { draft, order } from './domain/entities';\n",
-};
-
-describe('the knip preset', () => {
-  it('should report a file when nothing imports it', () => {
-    // Arrange
-    const project = {
+describe("the configuration knip's presets write", () => {
+  it('should load in knip with no key it does not know when a unit follows every block knip is configured for', async () => {
+    // Act
+    const load = await loadOf('knip', {
+      command: [
+        nodeBinary('knip'),
+        '--no-config-hints',
+      ],
       files: {
-        ...wired,
-        [`${ENTITIES}/lonely.entity.ts`]: 'export const lonely = 1;\n',
+        'package.json': '{ "name": "unit", "type": "module" }\n',
+        'src/main.ts': "export const ORDER_KIND = 'order';\n",
       },
-    };
-
-    // Act
-    const { files } = unusedCode(project);
-
-    // Assert
-    expect(files).toStrictEqual([
-      `${ENTITIES}/lonely.entity.ts`,
-    ]);
-  });
-
-  it('should report only the unoffered export when a file exports more than its surface offers', () => {
-    // Arrange
-    const project = {
-      files: {
-        ...wired,
-        [`${ENTITIES}/order.entity.ts`]:
-          'export const order = 1;\nexport const draft = 2;\nexport const hidden = 3;\n',
-      },
-    };
-
-    // Act
-    const { exports } = unusedCode(project);
-
-    // Assert
-    expect(exports).toStrictEqual([
-      'hidden',
-    ]);
-  });
-
-  it('should report a file in production when only its specs reach it', () => {
-    // Arrange
-    const project = {
-      files: {
-        ...wired,
-        [`${ENTITIES}/__tests__/order.fixtures.ts`]: 'export const anOrder = 1;\n',
-        [`${ENTITIES}/__tests__/total.utils.test.ts`]:
-          "import { expect, test } from 'bun:test';\nimport { anOrder } from './order.fixtures';\nimport { total } from '../total.utils';\ntest('total', () => {\n  expect(total(anOrder)).toBe(1);\n});\n",
-        [`${ENTITIES}/total.utils.ts`]: 'export const total = (value: number): number => value;\n',
-      },
-      production: true,
-    };
-
-    // Act
-    const { files } = unusedCode(project);
-
-    // Assert
-    expect(files).toStrictEqual([
-      `${ENTITIES}/total.utils.ts`,
-    ]);
-  });
-
-  it('should report nothing when every file and export is used', () => {
-    // Arrange
-    const project = {
-      files: wired,
-    };
-
-    // Act
-    const unused = unusedCode(project);
-
-    // Assert
-    expect(unused).toStrictEqual({
-      binaries: [],
-      exports: [],
-      files: [],
     });
-  });
-
-  it.each([
-    {
-      binary: 'betterleaks',
-      part: 'typescript/betterleaks',
-    },
-    {
-      binary: 'mise',
-      part: 'typescript/mise',
-    },
-    {
-      binary: 'osv-scanner',
-      part: 'typescript/osv-scanner',
-    },
-    {
-      binary: 'rumdl',
-      part: 'typescript/rumdl',
-    },
-    {
-      binary: 'shellcheck',
-      part: 'typescript/shellcheck',
-    },
-    {
-      binary: 'shfmt',
-      part: 'typescript/shfmt',
-    },
-    {
-      binary: 'tombi',
-      part: 'typescript/tombi',
-    },
-    {
-      binary: 'uv',
-      part: 'typescript/uv',
-    },
-    {
-      binary: 'yamllint',
-      part: 'typescript/yamllint',
-    },
-    {
-      binary: 'lefthook',
-      part: 'typescript/workflow/lefthook',
-    },
-  ])(
-    'should report no missing binary when a script runs $binary and the project joins $part',
-    ({ binary, part }) => {
-      // Arrange
-      const project = {
-        files: wired,
-        parts: [
-          part,
-        ],
-        scripts: {
-          tool: binary,
-        },
-      };
-
-      // Act
-      const { binaries } = unusedCode(project);
-
-      // Assert
-      expect(binaries).toStrictEqual([]);
-    },
-  );
-
-  it('should report a missing binary when a script runs a tool whose part the project does not join', () => {
-    // Arrange
-    const project = {
-      files: wired,
-      scripts: {
-        tool: 'osv-scanner',
-      },
-    };
-
-    // Act
-    const { binaries } = unusedCode(project);
 
     // Assert
-    expect(binaries).toStrictEqual([
-      'osv-scanner',
-    ]);
+    expect(load).toStrictEqual({
+      output: [],
+      status: 0,
+    });
   });
 });

@@ -1,7 +1,5 @@
 import type { ZodType } from 'zod';
 
-import { syntaxErrorOf } from '#/kernel/utils';
-
 import type { ManifestParser } from '../../domain/contracts';
 import type {
   HooksManifest,
@@ -13,6 +11,7 @@ import type {
 import { ReadStatus } from '../../domain/entities';
 import type { HooksWire, MarketplaceWire, PluginWire } from './models';
 import { hooksModel, marketplaceModel, pluginModel } from './models';
+import { syntaxErrorOf } from './syntax-error.utils';
 
 const GITHUB = 'github';
 const GIT_SUBDIR = 'git-subdir';

@@ -1,0 +1,9 @@
+# The package is python-check itself, which runs from the workspace's install.
+python-check:
+  '*':
+    python:
+      pyproject.toml:
+        tool:
+          poe:
+            tasks:
+              check:code: !replace python-check ${role.source} ${role.package-suites}

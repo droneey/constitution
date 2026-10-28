@@ -4,12 +4,13 @@ import { IsScreenNarrowContext } from './is-screen-narrow.context';
 
 interface CollapsedOnNarrowScreenInput {
   readonly collapse: () => void;
-  /** the page shown */
-  readonly path: string;
+  readonly pageKey: string;
 }
 
-/** on a narrow screen, where the open sidebar pushes the page out of view, the sidebar closes over each page it opens */
-export function useCollapsedOnNarrowScreen({ collapse, path }: CollapsedOnNarrowScreenInput): void {
+export function useCollapsedOnNarrowScreen({
+  collapse,
+  pageKey,
+}: CollapsedOnNarrowScreenInput): void {
   const isScreenNarrow = use(IsScreenNarrowContext);
   const collapseOnNarrowScreen = useEffectEvent(() => {
     if (isScreenNarrow?.()) {
@@ -21,6 +22,6 @@ export function useCollapsedOnNarrowScreen({ collapse, path }: CollapsedOnNarrow
   useLayoutEffect(() => {
     collapseOnNarrowScreen();
   }, [
-    path,
+    pageKey,
   ]);
 }

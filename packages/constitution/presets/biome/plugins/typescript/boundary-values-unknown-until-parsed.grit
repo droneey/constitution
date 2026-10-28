@@ -1,0 +1,44 @@
+language js
+
+pattern parsed_value() {
+  or {
+    `JSON.parse($...)`,
+    `await $_.json()`,
+    `$_.json()`
+  }
+}
+
+or {
+  TsAsExpression() as $cast where {
+    $cast <: or {
+      `JSON.parse($...) as $type`,
+      `JSON.parse($...) as unknown as $type`,
+      `(await $_.json()) as $type`,
+      `await $_.json() as $type`,
+      `(await $_.json()) as unknown as $type`,
+      `$_.json() as $type`,
+      `$_.json() as unknown as $type`
+    },
+    $type <: not `unknown`,
+    $type <: not `Promise<unknown>`
+  },
+  TsTypeAssertionExpression(ty=$type, expression=parsed_value()) as $cast where {
+    $type <: not `unknown`,
+    $type <: not `Promise<unknown>`
+  },
+  // A parsed value is any, which satisfies every type and stays any.
+  TsSatisfiesExpression(expression=or {
+    parsed_value(),
+    JsParenthesizedExpression(expression=parsed_value())
+  }, ty=$type) as $cast where { $type <: not `unknown`, $type <: not `Promise<unknown>` },
+  JsVariableDeclarator() as $cast where {
+    $cast <: or {
+      `$_: $type = JSON.parse($...)`,
+      `$_: $type = await $_.json()`
+    },
+    $type <: not `unknown`
+  },
+  `$_.json<$type>()` as $cast where { $type <: not `unknown` }
+} where {
+  register_diagnostic(span=$cast, message="[boundary-values-unknown-until-parsed] A parsed outside value is unknown until a schema or a check narrows it; a type here is a cast", severity="error")
+}

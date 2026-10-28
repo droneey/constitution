@@ -1,0 +1,8 @@
+hadolint:
+  '*':
+    dockerfile:
+      pyproject.toml:
+        tool:
+          poe:
+            tasks:
+              check:dockerfile: hadolint Dockerfile

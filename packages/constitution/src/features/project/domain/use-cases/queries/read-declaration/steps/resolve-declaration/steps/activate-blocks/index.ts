@@ -1,1 +1,1 @@
-export { activeBlocksOf, mustRulesOf } from './activate-blocks.utils';
+export { activateBlocks } from './activate-blocks';

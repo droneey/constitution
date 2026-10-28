@@ -1,0 +1,27 @@
+mutmut:
+  messages-modules-left-out-by-do-not-mutate:
+    python:
+      pyproject.toml:
+        tool:
+          mutmut:
+            do_not_mutate:
+              - '*_${role.message-file}.py'
+  '*':
+    python:
+      pyproject.toml:
+        tool:
+          mutmut:
+            source_paths:
+              - ${role.source}
+            do_not_mutate:
+              - '*/main.py'
+              - '*/${role.composition-root}/wiring.py'
+              - '*_gen.py'
+              - '*_gen/*'
+            do_not_mutate_patterns:
+              - ^\s*logger\.(debug|info|warning|error|exception|critical)\(
+            pytest_add_cli_args:
+              - -p
+              - no:randomly
+              - -o
+              - norecursedirs=.* ${role.end-to-end-suite}

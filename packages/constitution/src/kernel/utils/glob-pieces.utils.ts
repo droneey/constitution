@@ -1,7 +1,8 @@
+import { PATH_SEPARATOR } from '../constants';
+
 // A glob read into its pieces: "**/" any folders or none, "**" anything, "*" and "?" within a
 // folder, "{a,b}" either. Braces that do not pair, or nest deeper than the limit, read as no glob.
 const MAX_NESTING = 32;
-const SEPARATOR = '/';
 
 enum PieceKind {
   Literal = 'literal',
@@ -33,7 +34,7 @@ type Piece =
 const ANY_FOLDERS = [
   '*',
   '*',
-  SEPARATOR,
+  PATH_SEPARATOR,
 ] as const;
 const ANYTHING = [
   '*',
@@ -57,7 +58,6 @@ const isAt = (
 ): boolean =>
   input.token.every((character, index) => input.characters[input.at + index] === character);
 
-// The piece a character other than a brace or a comma starts, and where the next one starts.
 const pieceAt = (input: ReadInput): ReadPiece => {
   // Stryker disable next-line StringLiteral: its caller reads only below the glob's length, so a character is always there
   const character = input.characters[input.at] ?? '';
@@ -124,8 +124,6 @@ interface ReadPieces {
   readonly pieces: readonly Piece[];
 }
 
-// The pieces up to the end of the glob or, inside braces, of the alternative, which the comma or
-// the closing brace after it ends; undefined when the braces do not pair or nest too deep.
 const piecesOf = (input: PiecesInput): ReadPieces | undefined => {
   const pieces: Piece[] = [];
   let at = input.at;
@@ -172,7 +170,6 @@ const piecesOf = (input: PiecesInput): ReadPieces | undefined => {
       };
 };
 
-// The alternatives of a brace that opens just before at, up to its closing.
 const eitherOf = (input: PiecesInput): ReadPiece | undefined => {
   const alternatives: (readonly Piece[])[] = [];
   let at = input.at;
@@ -217,4 +214,4 @@ const globPiecesOf = (glob: string): readonly Piece[] | undefined =>
   })?.pieces;
 
 export type { Piece };
-export { globPiecesOf, PieceKind, SEPARATOR };
+export { globPiecesOf, PieceKind };

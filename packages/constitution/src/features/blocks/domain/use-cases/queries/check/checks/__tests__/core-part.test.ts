@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'bun:test';
 
-import { checkInputOf, passportFile } from '../../../../../../__tests__/constitution.fixtures';
+import { passportFile } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
+import { checkInputOf } from '../../__tests__/check.fixtures';
 import { CorePartCode, corePartCheck } from '../core-part';
 
 const CORE = 'blocks/core/core.md';

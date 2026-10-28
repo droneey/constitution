@@ -1,0 +1,6 @@
+knip:
+  production-set-marked-in-the-entries:
+    typescript:
+      knip.jsonc:
+        entry:
+          - ${role.source}/${role.composition-root}/router.{ts,tsx}!

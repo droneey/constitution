@@ -2,6 +2,8 @@ import { execFileSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
+import { toolEnvironment } from './package.fixtures';
+
 // mise's install runs `uv sync --locked`, which puts the dev group of the
 // workspace's pyproject.toml, pinned by uv.lock, into the .venv at the root of
 // the repository.
@@ -15,6 +17,7 @@ const uvEnvironment = join(
     {
       cwd: import.meta.dir,
       encoding: 'utf8',
+      env: toolEnvironment(),
     },
   ).trim(),
   '.venv',

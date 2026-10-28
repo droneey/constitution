@@ -1,0 +1,19 @@
+core:
+  dead-code-deleted:
+    python:
+      pyproject.toml:
+        tool:
+          deptry:
+            ignore: []
+  production-code-imports-no-tool:
+    python:
+      pyproject.toml:
+        tool:
+          deptry:
+            ignore: []
+  test-code-never-reached-from-production:
+    python:
+      pyproject.toml:
+        tool:
+          deptry:
+            ignore: []

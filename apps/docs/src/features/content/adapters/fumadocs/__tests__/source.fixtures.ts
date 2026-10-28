@@ -1,4 +1,6 @@
-import type { SiteCollections, SiteLayout } from '../source.adapter';
+import type { SiteLayout } from '#/shared/types';
+
+import type { SiteCollections } from '../source.adapter';
 
 type SiteSource = ReturnType<SiteCollections['guide']['toFumadocsSource']>;
 
@@ -19,7 +21,7 @@ const sourceOf = (pages: readonly PageInput[]): SiteSource => ({
         : {
             icon,
           }),
-      getText: () => Promise.resolve(text),
+      getText: (kind) => Promise.resolve(kind === 'processed' ? text : ''),
       structuredData: {
         contents: [
           {
@@ -104,6 +106,7 @@ export const siteLayoutFixture = (): SiteLayout => ({
           'quick-start',
           './guides/upgrade',
           '[Glossary](/docs/glossary)',
+          'external:[Names](/docs/core/names)',
           'core',
         ],
         title: 'Constitution',

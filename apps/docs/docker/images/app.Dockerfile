@@ -20,10 +20,10 @@ FROM base AS packages-source
 COPY --chown=1000:1000 package.json bun.lock ./
 COPY --chown=1000:1000 apps/docs/package.json apps/docs/
 COPY --chown=1000:1000 packages/constitution/package.json packages/constitution/
-COPY --chown=1000:1000 packages/design-browser/package.json packages/design-browser/
-COPY --chown=1000:1000 packages/design-cli/package.json packages/design-cli/
-COPY --chown=1000:1000 packages/design-tokens/package.json packages/design-tokens/
-COPY --chown=1000:1000 packages/mutation-check/languages/typescript/package.json packages/mutation-check/languages/typescript/
+COPY --chown=1000:1000 packages/@design/browser/package.json packages/@design/browser/
+COPY --chown=1000:1000 packages/@design/cli/package.json packages/@design/cli/
+COPY --chown=1000:1000 packages/@design/tokens/package.json packages/@design/tokens/
+COPY --chown=1000:1000 packages/@mutation-check/typescript/package.json packages/@mutation-check/typescript/
 
 FROM packages-source AS install-dependencies
 
@@ -37,12 +37,12 @@ FROM install-dependencies AS builder
 COPY --chown=1000:1000 ./ ./
 
 # Bun links no bin whose file is missing, and the first install ran before the sources came: this
-# one links the design-tokens bin each platform package's build runs. The release's presets are
-# linked as mise links them on a developer's machine.
+# one links the design-tokens bin that each platform package's `generate` runs. The release's
+# presets are linked as mise links them on a developer's machine.
 RUN bun install --frozen-lockfile --ignore-scripts && \
   mkdir -p .droneey && \
   ln -sfn ../packages/constitution .droneey/constitution && \
-  bun run --cwd apps/docs build:release
+  bun run --cwd apps/docs build
 
 FROM install-dependencies AS development
 
@@ -51,7 +51,7 @@ ENV NODE_ENV=development
 COPY --chown=1000:1000 ./ ./
 
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["bun", "run", "--cwd", "apps/docs", "dev", "--host"]
+CMD ["bun", "run", "--cwd", "apps/docs", "run:dev", "--host"]
 
 FROM base AS releases
 

@@ -1,3 +1,5 @@
+import { isNoJson, isUnreachable, problemPathsOf, WHOLE_FILE_PATH } from '#/libs/served-json';
+
 import type { VersionsQueryRepository } from '../../domain/contracts';
 import type { Versions } from '../../domain/entities';
 import { VersionsError, VersionsFailure } from '../../domain/errors';
@@ -18,11 +20,24 @@ interface StaticFileVersionsInput {
 
 const READ_TIMEOUT_MS = 10_000;
 
-/** `fetch` rejects with a `TypeError` when the network fails, and the timeout's signal with a `TimeoutError` */
-const isUnreachable = (error: unknown): boolean =>
-  error instanceof TypeError || (error instanceof DOMException && error.name === 'TimeoutError');
+const malformedError = (
+  address: string,
+  problems: readonly string[],
+  cause: Error,
+): VersionsError =>
+  new VersionsError(
+    {
+      code: VersionsFailure.Malformed,
+      details: {
+        address,
+        problems,
+      },
+    },
+    {
+      cause,
+    },
+  );
 
-/** reads the list at the site's root, so an old release's site learns of every later one */
 export const createStaticFileVersionsRepository = ({
   address,
   timeoutMs = READ_TIMEOUT_MS,
@@ -54,7 +69,7 @@ export const createStaticFileVersionsRepository = ({
 
     if (!response.ok) {
       throw new VersionsError({
-        code: VersionsFailure.Unanswered,
+        code: VersionsFailure.NoFile,
         details: {
           address,
           status: response.status,
@@ -62,23 +77,25 @@ export const createStaticFileVersionsRepository = ({
       });
     }
 
-    const file = versionsModel.safeParse(await response.json());
+    const file: unknown = await response.json().catch((error: unknown) => {
+      if (!isNoJson(error)) {
+        throw error;
+      }
 
-    if (!file.success) {
-      throw new VersionsError(
-        {
-          code: VersionsFailure.Malformed,
-          details: {
-            address,
-            problems: file.error.issues.map((issue) => issue.path.map(String).join('.')),
-          },
-        },
-        {
-          cause: file.error,
-        },
+      throw malformedError(
+        address,
+        [
+          WHOLE_FILE_PATH,
+        ],
+        error,
       );
+    });
+    const parsedFile = versionsModel.safeParse(file);
+
+    if (!parsedFile.success) {
+      throw malformedError(address, problemPathsOf(parsedFile.error.issues), parsedFile.error);
     }
 
-    return file.data;
+    return parsedFile.data;
   },
 });

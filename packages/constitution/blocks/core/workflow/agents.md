@@ -6,11 +6,11 @@
 
 ### design-settled-with-its-person-first · SHOULD
 
-A question of design is settled with its person — in the chat, an issue or a review — before code is written for it.
+A question of design is settled with its person — in the chat, an issue or a review — before code is written for it, and comes to them with its cost: the code and specs it adds, the dependencies it brings and any recorded decision it touches. A cost that grows past what was settled while the work runs goes back to the person before more is built.
 
 | Why |
 |---|
-| code written on an unsettled design is rewritten when it is settled. |
+| code written on an unsettled design is rewritten when it is settled, and a person who decides without the cost settles a design other than the one that gets built. |
 
 ### agent-writes-tests-first-from-a-description · SHOULD
 
@@ -21,6 +21,14 @@ When a behaviour is described before it is built, an agent writes its tests from
 | tests written from the description prove what was asked, not what was built. |
 
 ## Acting
+
+### agent-review-stops-after-three-rounds · MUST
+
+An agent's review of one change and the fixes it asks for run at most three rounds; what the third round still finds goes to the person, with the fixes tried, instead of a fourth round.
+
+| Why |
+|---|
+| each round's fixes give the next round something new to find, so a loop between agents grows the change instead of settling it, and what three rounds left open is a decision for the person. |
 
 ### person-decides-what-is-committed-or-shipped · MUST
 

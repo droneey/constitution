@@ -1,0 +1,27 @@
+# Core (/docs/core)
+
+rules
+
+# Code (/docs/core/foundation/code)
+
+read
+
+# Decisions (/docs/decisions)
+
+decided
+
+# Glossary (/docs/glossary)
+
+terms
+
+# Upgrade (/docs/guides/upgrade)
+
+pinned
+
+# Overview (/docs)
+
+overview
+
+# Start (/docs/quick-start)
+
+install

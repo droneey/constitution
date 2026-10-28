@@ -1,0 +1,10 @@
+rumdl:
+  '*':
+    markdown:
+      pyproject.toml:
+        tool:
+          poe:
+            tasks:
+              check:markdown:
+                shell: rumdl check . && rumdl fmt --check .
+              fix:markdown: rumdl check --fix

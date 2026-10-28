@@ -12,7 +12,7 @@ governs: ["pyproject.toml", "uv.lock"]
 
 > Installs the dependencies, resolves one version of each for the whole workspace into **`uv.lock`**, runs the tools of the `dev` group and builds packages with its own backend.
 
-**`uv`** runs a tool of the environment, and **`uvx`** one in an environment of its own. Its settings are `[tool.uv]` of the root `pyproject.toml`, which starts from the template of a Python project's `pyproject.toml` in the Constitution's release archive.
+**`uv`** runs a tool of the environment, and **`uvx`** one in an environment of its own. Its settings are `[tool.uv]` of the root `pyproject.toml`, into which `constitution` writes them.
 
 ## Requirements
 

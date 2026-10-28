@@ -15,16 +15,19 @@ implementations:
   - uv
   - git
   - biome
+  - jscpd
   - yamllint
   - tombi
   - poe
   - ruff
   - ty
   - pytest
+  - hypothesis
   - mutmut
   - deptry
   - vulture
   - complexipy
   - python-check
-packs: []
+packs:
+  - pack
 overrides: []

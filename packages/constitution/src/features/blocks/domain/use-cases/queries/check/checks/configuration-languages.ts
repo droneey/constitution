@@ -1,7 +1,7 @@
 import { Layer } from '#/kernel/constants';
 import type { FindingOf } from '#/kernel/types';
-import { isGoverned } from '#/kernel/utils';
-import type { BlockId, Glob } from '#/kernel/value-objects';
+import type { BlockId } from '#/kernel/value-objects';
+import { Glob } from '#/kernel/value-objects';
 
 import { Block, BlockGraph } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
@@ -32,7 +32,7 @@ const blockFindings = (input: {
       .filter(
         (language) =>
           !(Block.sameAs(language, input.block) || reached.has(language.id)) &&
-          isGoverned({
+          Glob.matchesAny({
             globs: language.frontMatter.governs,
             path: glob,
           }),

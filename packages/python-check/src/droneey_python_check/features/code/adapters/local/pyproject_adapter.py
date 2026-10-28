@@ -3,122 +3,234 @@ import tomllib
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Final, TypeIs
 
-from ...domain.entities import Settings
-from ...domain.errors import Expected, Problem, SettingsError
+from ...domain.constants import WHOLE_EDGE_WORD
+from ...domain.entities import HomePlace, Layer, Settings, TopLevelFolder, WholeEdge
+from ...domain.errors import (
+  Expected,
+  MalformedFile,
+  MissingPart,
+  Problem,
+  SettingsError,
+  UnknownKey,
+  WrongShape,
+)
 
 if TYPE_CHECKING:
-  from collections.abc import Mapping
+  from collections.abc import Callable, Mapping
   from pathlib import Path
 
-PYPROJECT: Final = 'pyproject.toml'
+PYPROJECT_FILE_NAME: Final = 'pyproject.toml'
+TOOL_KEY: Final = 'tool'
+OWN_TABLE_KEY: Final = 'python-check'
+EXTEND_KEY: Final = 'extend'
+HOMES_KEY: Final = 'homes'
+UV_KEY: Final = 'uv'
+SOURCES_KEY: Final = 'sources'
+WORKSPACE_KEY: Final = 'workspace'
+OWN_TABLE_KEYS: Final = frozenset({EXTEND_KEY, HOMES_KEY})
+PART_KEYS: Final = frozenset({HOMES_KEY})
 
 
-def toml_document(path: Path) -> Mapping[str, object] | None:
-  if not path.is_file():
+def _toml_document(*, folder_path: Path, file_path: str) -> Mapping[str, object] | None:
+  absolute_path = folder_path / file_path
+
+  if not absolute_path.is_file():
     return None
 
-  with path.open('rb') as file:
-    return tomllib.load(file)
+  with absolute_path.open('rb') as toml_file:
+    try:
+      return tomllib.load(toml_file)
+    except tomllib.TOMLDecodeError as error:
+      parser_message = str(error)  # pragma: no mutate -- the parser's text only a person reads
+      problem = MalformedFile(file_path=file_path, parser_message=parser_message)
+
+      raise SettingsError((problem,)) from error
 
 
-def _is_table(value: object) -> TypeIs[Mapping[str, object]]:
-  return isinstance(value, dict) and all(isinstance(key, str) for key in value)
+def _is_table(candidate: object) -> TypeIs[Mapping[str, object]]:
+  return isinstance(candidate, dict) and all(isinstance(key, str) for key in candidate)
 
 
-def _is_texts(value: object) -> TypeIs[list[str]]:
-  return isinstance(value, list) and all(isinstance(item, str) for item in value)
+def _is_list_of_text(candidate: object) -> TypeIs[list[str]]:
+  return isinstance(candidate, list) and all(isinstance(entry, str) for entry in candidate)
+
+
+def _dotted_key(*keys: str) -> str:
+  return '.'.join(keys)
+
+
+def _home_place(word: str) -> HomePlace:
+  if word == WHOLE_EDGE_WORD:
+    return WholeEdge()
+
+  return Layer(word) if word in Layer else TopLevelFolder(name=word)
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class _Reader:
-  file: str
-  problems: list[Problem]
+class _Read[T]:
+  value: T
+  problems: tuple[Problem, ...] = ()
 
-  def table(self, document: Mapping[str, object], key: str, *, path: str) -> Mapping[str, object]:
-    value = document.get(key, {})
 
-    if _is_table(value):
-      return value
+@dataclass(frozen=True, slots=True, kw_only=True)
+class _File:
+  path_from_unit: str
 
-    self.problems.append(Problem(file=self.file, key=path, expected=Expected.TABLE))
+  def table(
+    self, parent: Mapping[str, object], *, key: str, dotted_key: str
+  ) -> _Read[Mapping[str, object]]:
+    """The table under the key of the parent, empty when it is absent."""
+    candidate = parent.get(key, {})
 
-    return {}
+    if _is_table(candidate):
+      return _Read(value=candidate)
 
-  def homes(self, table: Mapping[str, object], *, path: str) -> dict[str, tuple[str, ...]]:
-    homes: dict[str, tuple[str, ...]] = {}
+    problem = WrongShape(
+      file_path=self.path_from_unit, dotted_key=dotted_key, expected=Expected.TABLE
+    )
 
-    for package, folders in table.items():
-      if _is_texts(folders):
-        homes[package] = tuple(folders)
-      else:
-        self.problems.append(
-          Problem(file=self.file, key=f'{path}.{package}', expected=Expected.LIST_OF_TEXT)
+    return _Read(value={}, problems=(problem,))
+
+  def unknown_keys(
+    self, table: Mapping[str, object], *, known_keys: frozenset[str], keys_to_table: tuple[str, ...]
+  ) -> tuple[Problem, ...]:
+    return tuple(
+      UnknownKey(file_path=self.path_from_unit, dotted_key=_dotted_key(*keys_to_table, key))
+      for key in table
+      if key not in known_keys
+    )
+
+  def homes(
+    self, parent: Mapping[str, object], *, dotted_key: str
+  ) -> _Read[dict[str, tuple[HomePlace, ...]]]:
+    table = self.table(parent, key=HOMES_KEY, dotted_key=dotted_key)
+    entries = table.value.items()
+
+    return _Read(
+      value={
+        package_name: tuple(_home_place(word) for word in words)
+        for package_name, words in entries
+        if _is_list_of_text(words)
+      },
+      problems=table.problems
+      + tuple(
+        WrongShape(
+          file_path=self.path_from_unit,
+          dotted_key=_dotted_key(dotted_key, package_name),
+          expected=Expected.LIST_OF_TEXT,
         )
-
-    return homes
-
-
-def _own(document: Mapping[str, object]) -> Mapping[str, object]:
-  tool = document.get('tool')
-  own = tool.get('python-check') if _is_table(tool) else {}
-
-  return own if _is_table(own) else {}
-
-
-# The parts `extend` names, which the edge reads for `settings_of`, which reports a malformed one.
-def extends_of(pyproject: Mapping[str, object] | None) -> tuple[str, ...]:
-  extend = _own(pyproject or {}).get('extend')
-
-  return tuple(extend) if _is_texts(extend) else ()
+        for package_name, words in entries
+        if not _is_list_of_text(words)
+      ),
+    )
 
 
 # The build backend names the import package after the distribution.
-def _import_name(distribution: str) -> str:
-  return re.sub(r'[-.]+', '_', distribution).lower()
+def _import_name(distribution_name: str) -> str:
+  return re.sub(r'[-.]+', '_', distribution_name).lower()
 
 
-def _units(sources: Mapping[str, object]) -> frozenset[str]:
+def _unit_import_names(uv_sources: Mapping[str, object]) -> frozenset[str]:
   return frozenset(
-    _import_name(name)
-    for name, source in sources.items()
-    if _is_table(source) and source.get('workspace') is True
+    _import_name(distribution_name)
+    for distribution_name, uv_source in uv_sources.items()
+    if _is_table(uv_source) and uv_source.get(WORKSPACE_KEY) is True
   )
 
 
-def settings_of(
-  *, pyproject: Mapping[str, object] | None, parts: Mapping[str, Mapping[str, object] | None]
+def _part_homes(
+  part_path: str, part: Mapping[str, object] | None
+) -> _Read[dict[str, tuple[HomePlace, ...]]]:
+  if part is None:
+    return _Read(value={}, problems=(MissingPart(file_path=part_path),))
+
+  part_file = _File(path_from_unit=part_path)
+  homes = part_file.homes(part, dotted_key=HOMES_KEY)
+
+  return _Read(
+    value=homes.value,
+    problems=part_file.unknown_keys(part, known_keys=PART_KEYS, keys_to_table=()) + homes.problems,
+  )
+
+
+def _part_paths(own_table: Mapping[str, object]) -> _Read[tuple[str, ...]]:
+  part_paths = own_table.get(EXTEND_KEY, [])
+
+  if _is_list_of_text(part_paths):
+    return _Read(value=tuple(part_paths))
+
+  problem = WrongShape(
+    file_path=PYPROJECT_FILE_NAME,
+    dotted_key=_dotted_key(TOOL_KEY, OWN_TABLE_KEY, EXTEND_KEY),
+    expected=Expected.LIST_OF_TEXT,
+  )
+
+  return _Read(value=(), problems=(problem,))
+
+
+def _settings_of(
+  *,
+  pyproject: Mapping[str, object] | None,
+  read_part: Callable[[str], Mapping[str, object] | None],
 ) -> Settings:
   """Parses the settings of pyproject.toml, absent when None, and of each part it extends.
+
+  Its own table and the parts are read strictly, `[tool.uv]` tolerantly.
+
+  Args:
+    pyproject: the document of pyproject.toml.
+    read_part: the document of a part by its path as `extend` names it, None when it is no file.
 
   Raises:
     SettingsError: with every problem of their shapes, each by its file and key.
   """
-  problems: list[Problem] = []
-  project = _Reader(file=PYPROJECT, problems=problems)
-  tool = project.table(pyproject or {}, 'tool', path='tool')
-  own = project.table(tool, 'python-check', path='tool.python-check')
-  homes: dict[str, tuple[str, ...]] = {}
-
-  if not _is_texts(own.get('extend', [])):
-    problems.append(
-      Problem(file=PYPROJECT, key='tool.python-check.extend', expected=Expected.LIST_OF_TEXT)
-    )
-
-  for name, part in parts.items():
-    reader = _Reader(file=name, problems=problems)
-
-    if part is None:
-      problems.append(Problem(file=name, key='', expected=Expected.FILE))
-    else:
-      homes |= reader.homes(reader.table(part, 'homes', path='homes'), path='homes')
-
-  homes |= project.homes(
-    project.table(own, 'homes', path='tool.python-check.homes'), path='tool.python-check.homes'
+  pyproject_file = _File(path_from_unit=PYPROJECT_FILE_NAME)
+  own_dotted_key = _dotted_key(TOOL_KEY, OWN_TABLE_KEY)
+  tool_table = pyproject_file.table(pyproject or {}, key=TOOL_KEY, dotted_key=TOOL_KEY)
+  own_table = pyproject_file.table(tool_table.value, key=OWN_TABLE_KEY, dotted_key=own_dotted_key)
+  part_paths = _part_paths(own_table.value)
+  part_homes = tuple(_part_homes(part_path, read_part(part_path)) for part_path in part_paths.value)
+  own_homes = pyproject_file.homes(
+    own_table.value, dotted_key=_dotted_key(own_dotted_key, HOMES_KEY)
   )
-  uv = project.table(tool, 'uv', path='tool.uv')
-  units = _units(project.table(uv, 'sources', path='tool.uv.sources'))
+  uv_dotted_key = _dotted_key(TOOL_KEY, UV_KEY)
+  uv_table = pyproject_file.table(tool_table.value, key=UV_KEY, dotted_key=uv_dotted_key)
+  uv_sources = pyproject_file.table(
+    uv_table.value, key=SOURCES_KEY, dotted_key=_dotted_key(uv_dotted_key, SOURCES_KEY)
+  )
+  problems = (
+    tool_table.problems
+    + own_table.problems
+    + pyproject_file.unknown_keys(
+      own_table.value, known_keys=OWN_TABLE_KEYS, keys_to_table=(TOOL_KEY, OWN_TABLE_KEY)
+    )
+    + part_paths.problems
+    + tuple(problem for homes in part_homes for problem in homes.problems)
+    + own_homes.problems
+    + uv_table.problems
+    + uv_sources.problems
+  )
 
   if problems:
-    raise SettingsError(tuple(problems))
+    raise SettingsError(problems)
 
-  return Settings(homes=homes, units=units)
+  return Settings(
+    homes_by_import_name={
+      package_name: home_places
+      for homes in (*part_homes, own_homes)
+      for package_name, home_places in homes.value.items()
+    },
+    workspace_unit_import_names=_unit_import_names(uv_sources.value),
+  )
+
+
+def read_settings(unit_path: Path) -> Settings:
+  """The settings of the unit's pyproject.toml and of each part it extends.
+
+  Raises:
+    SettingsError: with every problem of their shapes, or a file that does not parse as TOML.
+  """
+  return _settings_of(
+    pyproject=_toml_document(folder_path=unit_path, file_path=PYPROJECT_FILE_NAME),
+    read_part=lambda part_path: _toml_document(folder_path=unit_path, file_path=part_path),
+  )

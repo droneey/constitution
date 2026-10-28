@@ -1,0 +1,13 @@
+language css
+
+// A media or container query measures the viewport rather than sizing a box by it.
+CssRegularDimension() as $size where {
+  or { $size <: r"(?i).*\d(?:l?vh)", $size <: r"(?i)100(?:\.0*)?vw" },
+  $size <: not within or {
+    CssQueryFeaturePlain(),
+    CssQueryFeatureRange(),
+    CssQueryFeatureReverseRange(),
+    CssQueryFeatureRangeInterval()
+  },
+  register_diagnostic(span=$size, message="[viewport-size-in-small-viewport-units] Use svh or dvh for a height and 100% for a full width: vh and lvh count the space under the toolbars, 100vw the scrollbar", severity="error")
+}

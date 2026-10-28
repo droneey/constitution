@@ -1,10 +1,7 @@
-# shellcheck: the Constitution's parts, copied, each between its two lines, since shellcheck reads no other file
-# from .droneey/constitution/presets/shell/shellcheck/foundation/self.shellcheckrc
+source-path=SCRIPTDIR
+external-sources=true
+
+# shellcheck
 enable=quote-safe-variables
 enable=check-set-e-suppressed
 enable=check-extra-masked-returns
-# end .droneey/constitution/presets/shell/shellcheck/foundation/self.shellcheckrc
-
-# the scripts' sources, found beside the script that sources them
-source-path=SCRIPTDIR
-external-sources=true

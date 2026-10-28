@@ -1,12 +1,13 @@
+import { PATH_SEPARATOR } from '#/kernel/constants';
 import { Rule } from '#/kernel/entities';
 import type { FindingOf } from '#/kernel/types';
-import { directoryOf, inlineCodeSpans, withoutCodeFences } from '#/kernel/utils';
+import { inlineCodeSpans, withoutCodeFences } from '#/kernel/utils';
 import { BlockId, RuleSlug } from '#/kernel/value-objects';
 
 import type { BlockFile } from '../../../../entities';
 import { Block } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
-import { linkTargetsOf, resolveLink } from '../shared/markdown';
+import { directoryOf, linkTargetsOf, resolveLink } from '../utils';
 
 enum ReferencesCode {
   LinkIntoOtherBlock = 'link-into-other-block',
@@ -35,14 +36,13 @@ interface ReferencesDetails {
 type ReferencesFinding = FindingOf<ReferencesDetails>;
 
 const TABLE_ROW = /^\s*\|/;
-const FOLDER_SEPARATOR = '/';
 const DECISION = /\bADR-\d{4}\b/g;
 
 const ownerOf = (input: { blocks: readonly Block[]; target: string }): Block | undefined =>
   input.blocks.find((block) => {
     const folder = directoryOf(block.passport.path);
 
-    return input.target === folder || input.target.startsWith(`${folder}${FOLDER_SEPARATOR}`);
+    return input.target === folder || input.target.startsWith(`${folder}${PATH_SEPARATOR}`);
   });
 
 const linkFindings = (input: {

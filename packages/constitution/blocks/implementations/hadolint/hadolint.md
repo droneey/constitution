@@ -1,7 +1,7 @@
 ---
 id: hadolint
 summary: Lints Dockerfiles, their shell steps included.
-requires: [dockerfile]
+requires: [dockerfile, _task-runner]
 extends: null
 abstract: false
 languages: [dockerfile]

@@ -1,0 +1,74 @@
+# constitution.yaml unreadable
+constitution hook: cannot read /work/constitution.yaml
+✗ cannot read /work/constitution.yaml
+  → make constitution.yaml readable
+
+
+# blocks unlisted
+constitution hook: the installed release is damaged: cannot list the blocks of /work/.droneey/constitution
+✗ the installed release is damaged: cannot list the blocks of /work/.droneey/constitution
+  → reinstall it: run mise install --force github:droneey/constitution
+
+
+# core unreadable
+constitution hook: the installed release is damaged: cannot read /work/.droneey/constitution/blocks/core/core.md
+✗ the installed release is damaged: cannot read /work/.droneey/constitution/blocks/core/core.md
+  → reinstall it: run mise install --force github:droneey/constitution
+
+
+# tree failed
+constitution hook: git could not list the files of /work/constitution
+✗ git could not list the files of /work/constitution
+  → run git status there, which says what git cannot read
+
+
+# tree timed out
+constitution hook: git did not list the files of /work/constitution in time
+✗ git did not list the files of /work/constitution in time
+  → run git status there, which says what git cannot read
+
+
+# tree file unreadable
+constitution hook: cannot read /work/constitution/blocks/core/core.md
+✗ cannot read /work/constitution/blocks/core/core.md
+  → make the file readable, or remove it from the tree
+
+
+# tree too large
+constitution hook: the blocks of /work/constitution hold more files than a release does
+✗ the blocks of /work/constitution hold more files than a release does
+  → run constitution doctor, which says what is wrong with the installation
+
+
+# apply not written
+constitution hook: cannot write /work/project/biome.json, so the apply wrote nothing
+✗ cannot write /work/project/biome.json, so the apply wrote nothing
+  → make the file writable, then run constitution presets apply again
+
+
+# day malformed
+constitution hook: CONSTITUTION_TODAY is "2026-6-15", which is no date written YYYY-MM-DD
+✗ CONSTITUTION_TODAY is "2026-6-15", which is no date written YYYY-MM-DD
+  → unset CONSTITUTION_TODAY, which only the program's specs set
+
+
+# options unparsed
+constitution hook: the options do not parse
+✗ the options do not parse
+  plain: Invalid input: expected boolean, received string
+
+
+# an error of its own
+constitution hook: the run stopped on an error of its own; report it at https://github.com/droneey/constitution/issues
+✗ the run stopped on an error of its own
+  → report it at https://github.com/droneey/constitution/issues
+
+
+# usage with the prefix of commander
+✗ unknown command 'chek'
+  (Did you mean check?)
+
+
+# usage with no prefix of commander
+✗ too many arguments; error: see help
+

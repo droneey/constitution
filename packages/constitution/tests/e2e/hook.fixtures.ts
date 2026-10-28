@@ -1,12 +1,12 @@
 import { spawnSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { existsSync, mkdtempSync, readFileSync, realpathSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, realpathSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { cliFolder } from './cli.fixtures';
-import { coreText } from './constitution.fixtures';
-import { archiveOf, coreBodyOfBytes, createPluginRoot, linkArchive } from './plugin-root.fixtures';
+import { environmentOf } from './package.fixtures';
+import { distributionOf, linkDistribution } from './plugin-root.fixtures';
 
 enum HookEvent {
   Startup = 'startup',
@@ -18,9 +18,9 @@ enum HookEvent {
 
 // Folders are relative to the project root.
 interface HookCall {
-  // the archive linked into the project, the plugin root's by default
-  archive?: string | undefined;
   cwd?: string | undefined;
+  // the distribution linked into the project, the plugin root's by default
+  distribution?: string | undefined;
   event: HookEvent;
   nonUtf8Byte?: boolean | undefined;
   // CLAUDE_PLUGIN_ROOT is unset, though the command still names the root
@@ -33,7 +33,7 @@ interface HookCall {
   spawnOutside?: boolean | undefined;
   // neither XDG_STATE_HOME nor HOME is set, so no folder keeps the session
   stateHomeUnset?: boolean | undefined;
-  // no archive is linked into the project
+  // no distribution is linked into the project
   unlinked?: boolean | undefined;
 }
 
@@ -142,8 +142,8 @@ const runHook = (call: HookCall): HookRun => {
   const cwd = join(call.project, call.cwd ?? '');
 
   if (call.unlinked !== true) {
-    linkArchive({
-      archive: call.archive ?? archiveOf(call.root),
+    linkDistribution({
+      distribution: call.distribution ?? distributionOf(call.root),
       project: call.project,
     });
   }
@@ -158,48 +158,50 @@ const runHook = (call: HookCall): HookRun => {
       cwd: call.spawnOutside !== true && existsSync(cwd) ? cwd : tmpdir(),
       encoding: 'utf8',
       timeout: TIMEOUT_MS,
-      env: Object.fromEntries([
-        [
-          'PATH',
-          `${cliFolder}:${process.env['PATH'] ?? ''}`,
-        ],
-        [
-          'LANG',
-          LOCALE,
-        ],
-        [
-          'LC_ALL',
-          LOCALE,
-        ],
-        [
-          TODAY_VARIABLE,
-          HOOK_TODAY,
-        ],
-        ...(call.stateHomeUnset === true
-          ? []
-          : [
-              [
-                STATE_HOME_VARIABLE,
-                stateHome,
-              ],
-            ]),
-        ...(call.pluginRootUnset === true
-          ? []
-          : [
-              [
-                'CLAUDE_PLUGIN_ROOT',
-                call.root,
-              ],
-            ]),
-        ...(call.projectDir === undefined
-          ? []
-          : [
-              [
-                'CLAUDE_PROJECT_DIR',
-                join(call.project, call.projectDir),
-              ],
-            ]),
-      ]),
+      env: environmentOf(
+        new Map([
+          [
+            'PATH',
+            `${cliFolder}:${process.env['PATH'] ?? ''}`,
+          ],
+          [
+            'LANG',
+            LOCALE,
+          ],
+          [
+            'LC_ALL',
+            LOCALE,
+          ],
+          [
+            TODAY_VARIABLE,
+            HOOK_TODAY,
+          ],
+          ...(call.stateHomeUnset === true
+            ? []
+            : [
+                [
+                  STATE_HOME_VARIABLE,
+                  stateHome,
+                ] as const,
+              ]),
+          ...(call.pluginRootUnset === true
+            ? []
+            : [
+                [
+                  'CLAUDE_PLUGIN_ROOT',
+                  call.root,
+                ] as const,
+              ]),
+          ...(call.projectDir === undefined
+            ? []
+            : [
+                [
+                  'CLAUDE_PROJECT_DIR',
+                  join(call.project, call.projectDir),
+                ] as const,
+              ]),
+        ]),
+      ),
       input: inputOf({
         cwd,
         event: call.event,
@@ -288,9 +290,6 @@ const mentionedOf = (input: MentionedInput): readonly string[] =>
 
 const numberIn = (line: string): number => Number(/\d+/u.exec(line)?.[0] ?? 0);
 
-const bytesOf = (lines: readonly string[]): number =>
-  lines.reduce((bytes, line) => bytes + Buffer.byteLength(line) + 1, 0);
-
 const headerOf = (context: string): readonly string[] =>
   linesOf(context.slice(0, context.indexOf('\n\n')));
 
@@ -306,36 +305,6 @@ const blockListOf = (context: string): readonly string[] => {
   const [first = ''] = list;
 
   return first.startsWith(HEADING) || (list.length === 1 && NOTE.test(first)) ? list : [];
-};
-
-const OVERRIDES = '## Overrides';
-
-// An override the digest lists: the rule it names, then the level it lowers the rule to.
-type ListedOverride = readonly [
-  string,
-  string,
-];
-
-// The overrides section, wherever it stands, each item read as its rule and its level; the
-// member and the end that may follow are wording.
-const overridesOf = (context: string): readonly ListedOverride[] => {
-  const lines = linesOf(context);
-  const start = lines.indexOf(OVERRIDES);
-
-  if (start === -1) {
-    return [];
-  }
-
-  const end = lines.indexOf('', start);
-
-  return lines.slice(start + 1, end === -1 ? undefined : end).map((line) => {
-    const [rule = '', rest = ''] = line.slice(ITEM.length).split(': ');
-
-    return [
-      rule,
-      rest.split(' ')[0] ?? '',
-    ];
-  });
 };
 
 // The mark of an application's item that adds files to a block the repository lists.
@@ -419,14 +388,6 @@ const warningSectionOf = (context: string): readonly string[] => {
 const warningLinesOf = (context: string): readonly string[] =>
   warningSectionOf(context).filter((line) => line.startsWith(ITEM));
 
-const tellsTheUserOf = (context: string): boolean => {
-  const [heading] = warningSectionOf(context);
-
-  return heading !== undefined && heading !== WARNINGS;
-};
-
-const warningCutOf = (context: string): Cut => cutOf(warningSectionOf(context).slice(1));
-
 // A warning as its code, then the names it gives.
 type Warning = readonly string[];
 
@@ -462,71 +423,8 @@ const remindedOf = (stdout: string): readonly string[] =>
 const bytesAfterHeader = (context: string): number =>
   Buffer.byteLength(context.slice(context.indexOf('\n\n') + 2));
 
-// The hook's budget of the digest after its header, the room it keeps there for
-// the note of the lines left out, and its budget of the warnings.
+// The hook's budget of the digest after its header.
 const BUDGET = 9400;
-const LEFT_OUT_RESERVE = 200;
-const WARNING_BUDGET = 1000;
-
-enum Edge {
-  LastLine = 'its last line',
-  Heading = 'its heading',
-}
-
-interface EdgeOffset {
-  readonly context: string;
-  readonly edge: Edge;
-  readonly past: number;
-}
-
-// The bytes of a core body that put the edge `past` bytes beyond the room the
-// budget leaves, measured on `context`: the digest of a project whose list fits
-// whole, under the plugin root whose core holds coreText.
-const coreBodyAt = (input: EdgeOffset): number => {
-  const list = blockListOf(input.context);
-  const beyond = input.edge === Edge.Heading ? bytesOf(list.slice(1)) : 0;
-  const rest = bytesAfterHeader(input.context) - Buffer.byteLength(coreText) - beyond;
-
-  return BUDGET - LEFT_OUT_RESERVE + input.past - rest;
-};
-
-// A plugin root whose core's body puts the edge of the block list `past` bytes
-// beyond the room the budget leaves; `context` as coreBodyAt measures it.
-const pluginAtEdge = (input: EdgeOffset): string =>
-  createPluginRoot({
-    coreBody: coreBodyOfBytes(coreBodyAt(input)),
-  });
-
-const ID_PREFIX = 'u';
-const ID_NUMBER_WIDTH = 2;
-const PADDING = 'x';
-
-interface UnknownIdsInput {
-  readonly count: number;
-  readonly past: number;
-  readonly probe: string;
-  readonly probeId: string;
-}
-
-// The ids of `count` unknown blocks whose warnings take the warnings' budget and
-// `past` bytes more, newlines included, measured on `probe`: a digest that warns
-// of the one unknown block `probeId`.
-const unknownIdsFilling = (input: UnknownIdsInput): readonly string[] => {
-  const perWarning = bytesOf(warningLinesOf(input.probe)) - input.probeId.length;
-  const room = WARNING_BUDGET + input.past - input.count * perWarning;
-  const length = Math.floor(room / input.count);
-
-  return Array.from(
-    {
-      length: input.count,
-    },
-    (_, index) =>
-      `${ID_PREFIX}${String(index + 1).padStart(ID_NUMBER_WIDTH, '0')}`.padEnd(
-        index === input.count - 1 ? room - length * (input.count - 1) : length,
-        PADDING,
-      ),
-  );
-};
 
 interface ScriptCall {
   readonly event: Readonly<Record<string, unknown>>;
@@ -545,32 +443,34 @@ const runScript = (call: ScriptCall): HookRun => {
       cwd: tmpdir(),
       encoding: 'utf8',
       timeout: TIMEOUT_MS,
-      env: Object.fromEntries([
-        [
-          'CLAUDE_PLUGIN_ROOT',
-          call.root,
-        ],
-        [
-          'LANG',
-          LOCALE,
-        ],
-        [
-          'LC_ALL',
-          LOCALE,
-        ],
-        [
-          TODAY_VARIABLE,
-          HOOK_TODAY,
-        ],
-        [
-          STATE_HOME_VARIABLE,
-          stateHome,
-        ],
-        [
-          'PATH',
-          `${cliFolder}:${process.env['PATH'] ?? ''}`,
-        ],
-      ]),
+      env: environmentOf(
+        new Map([
+          [
+            'CLAUDE_PLUGIN_ROOT',
+            call.root,
+          ],
+          [
+            'LANG',
+            LOCALE,
+          ],
+          [
+            'LC_ALL',
+            LOCALE,
+          ],
+          [
+            TODAY_VARIABLE,
+            HOOK_TODAY,
+          ],
+          [
+            STATE_HOME_VARIABLE,
+            stateHome,
+          ],
+          [
+            'PATH',
+            `${cliFolder}:${process.env['PATH'] ?? ''}`,
+          ],
+        ]),
+      ),
       input: JSON.stringify(call.event),
     },
   );
@@ -596,13 +496,6 @@ const newSession = (): string => {
 const stateFolderOf = (session: string): string =>
   join(stateHome, 'droneey-constitution', 'sessions', session);
 
-const mustsOf = (session: string): readonly string[] =>
-  readFileSync(join(stateFolderOf(session), 'active.tsv'), 'utf8')
-    .split('\n')
-    .map((line) => line.split('\t'))
-    .filter((fields) => fields[0] === 'must')
-    .map((fields) => fields[2] ?? '');
-
 const removeSessions = (): void => {
   for (const session of sessions.splice(0)) {
     rmSync(stateFolderOf(session), {
@@ -612,33 +505,24 @@ const removeSessions = (): void => {
   }
 };
 
-export type { Cut, HookRun, ListedOverride, Warning };
+export type { HookRun };
 export {
   BUDGET,
   bytesAfterHeader,
   contextOf,
-  Edge,
   factNumberOf,
-  HOOK_TODAY,
   HookEvent,
   indexOf,
   isRecord,
-  LEFT_OUT_RESERVE,
   listCutOf,
   mentionedOf,
-  mustsOf,
   newSession,
   outputOf,
-  overridesOf,
-  pluginAtEdge,
   remindedOf,
   removeSessions,
   runHook,
   runScript,
   stateFolderOf,
-  tellsTheUserOf,
-  unknownIdsFilling,
-  warningCutOf,
   warningLinesOf,
   warningsOf,
 };

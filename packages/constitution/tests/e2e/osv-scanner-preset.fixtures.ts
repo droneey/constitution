@@ -3,9 +3,12 @@ import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { miseBinary } from './mise.fixtures';
+import { z } from 'zod';
 
-const repository = join(import.meta.dir, '..', '..');
+import { appliedUnit } from './applied-unit.fixtures';
+import { miseBinary } from './mise.fixtures';
+import { toolEnvironment } from './package.fixtures';
+
 const osvScanner = miseBinary('osv-scanner');
 const REFUSED = /not recognized as spdx: (?<ids>.+)$/m;
 const ACCEPTED = 'cannot retrieve licenses locally';
@@ -15,12 +18,49 @@ interface Verdict {
   refused: readonly string[];
 }
 
-const allowlist = readFileSync(
-  join(repository, 'presets', 'common', 'osv-scanner', 'foundation', 'core.txt'),
-  'utf8',
-)
-  .trim()
-  .split('\n');
+const LICENCES = /--licenses="([^"]+)"/;
+const manifest = z.object({
+  scripts: z.record(z.string(), z.string()),
+});
+
+/** None where the script passes no list. */
+const licencesOf = (input: { languages: readonly string[]; script: string }): readonly string[] => {
+  const listed = LICENCES.exec(
+    manifest.parse(
+      JSON.parse(
+        readFileSync(
+          join(
+            appliedUnit({
+              implementations: [
+                'bun',
+                'osv-scanner',
+              ],
+              languages: input.languages,
+            }),
+            'package.json',
+          ),
+          'utf8',
+        ),
+      ),
+    ).scripts[input.script] ?? '',
+  )?.[1];
+
+  return listed === undefined ? [] : listed.split(',');
+};
+
+const allowlist = licencesOf({
+  languages: [
+    'typescript',
+  ],
+  script: 'check:audit',
+});
+
+const imageLicences = licencesOf({
+  languages: [
+    'dockerfile',
+  ],
+  script: 'check:audit-image',
+});
 
 // Offline, osv-scanner still validates the list, then stops at the licences it
 // would fetch from deps.dev; that stop shows the list was accepted.
@@ -40,6 +80,7 @@ const verdictOn = (licences: readonly string[]): Verdict => {
       {
         cwd: folder,
         encoding: 'utf8',
+        env: toolEnvironment(),
       },
     );
 
@@ -55,4 +96,4 @@ const verdictOn = (licences: readonly string[]): Verdict => {
   }
 };
 
-export { allowlist, verdictOn };
+export { allowlist, imageLicences, verdictOn };

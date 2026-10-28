@@ -1,0 +1,8 @@
+html:
+  class-used-is-declared:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            nursery:
+              noUndeclaredClasses: error

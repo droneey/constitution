@@ -1,8 +1,0 @@
-self:
-  expansion-double-quoted:
-    - quote-safe-variables
-  optional-checks-enabled-by-name:
-    - enable=
-  script-stops-on-a-failed-command:
-    - check-set-e-suppressed
-    - check-extra-masked-returns

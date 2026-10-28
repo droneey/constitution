@@ -1,10 +1,10 @@
 import type { BlockId } from '#/kernel/value-objects';
 
-import type { SessionMark, SessionState } from '../../../entities';
-import type { AgentId, SessionId } from '../../../value-objects';
+import type { FingerprintMark, SessionState } from '../../../entities';
+import type { AgentId, SessionId, TreeFingerprint } from '../../../value-objects';
 
-interface MarkInput {
-  readonly mark: SessionMark;
+interface FingerprintInput {
+  readonly mark: FingerprintMark;
   readonly session: SessionId;
 }
 
@@ -18,10 +18,12 @@ interface RemindedInput {
  * reads as absent.
  */
 interface SessionQueryRepository {
-  readonly mark: (input: MarkInput) => string | undefined;
+  readonly fingerprint: (input: FingerprintInput) => TreeFingerprint | undefined;
   /** the blocks a reminder has named to the session, or, unless agent is undefined, to one of its agents */
   readonly reminded: (input: RemindedInput) => ReadonlySet<BlockId>;
   readonly state: (session: SessionId) => SessionState | undefined;
+  /** why git last could not report the tree */
+  readonly unjudged: (session: SessionId) => string | undefined;
 }
 
 export type { SessionQueryRepository };

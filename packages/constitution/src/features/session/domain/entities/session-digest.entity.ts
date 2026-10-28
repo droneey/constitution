@@ -1,17 +1,18 @@
-import type { BlockListing, ProjectWarning } from '#/kernel/entities';
-import type { Version } from '#/kernel/value-objects';
+import type { ProjectWarning } from '#/kernel/entities';
+import type { AbsolutePath, Version } from '#/kernel/value-objects';
 
+import type { DigestListing } from './digest-listing.entity';
 import type { SessionState } from './session-state.entity';
 
 interface DigestRelease {
-  readonly folder: string;
+  readonly folderPath: AbsolutePath;
   readonly version: Version;
 }
 
 enum DigestKind {
-  // no release is installed, or one this program cannot read
+  /** no release is installed, or one this program cannot read */
   NoRelease = 'no-release',
-  // constitution.yaml does not parse, so only core applies
+  /** constitution.yaml does not parse, so only core applies */
   Unparsed = 'unparsed',
   Resolved = 'resolved',
 }
@@ -19,12 +20,13 @@ enum DigestKind {
 type DigestContents =
   | {
       readonly kind: DigestKind.NoRelease;
-      readonly releaseFolder: string;
+      readonly releaseFolderPath: AbsolutePath;
     }
   | {
       readonly core: string;
       readonly kind: DigestKind.Unparsed;
-      readonly line: number;
+      /** every line constitution.yaml fails at, in order */
+      readonly lines: readonly number[];
       readonly release: DigestRelease;
     }
   | {
@@ -32,7 +34,7 @@ type DigestContents =
       readonly count: number;
       readonly isStartup: boolean;
       readonly kind: DigestKind.Resolved;
-      readonly listing: BlockListing;
+      readonly listing: DigestListing;
       readonly release: DigestRelease;
       readonly warnings: readonly ProjectWarning[];
     };

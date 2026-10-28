@@ -1,6 +1,0 @@
-pre-commit:
-  parallel: true
-  jobs:
-    - name: shellcheck
-      glob: '*.{sh,bash}'
-      run: shellcheck {staged_files}

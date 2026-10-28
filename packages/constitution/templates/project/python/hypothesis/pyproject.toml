@@ -1,5 +1,0 @@
-# hypothesis: pinned in the dev group
-[dependency-groups]
-dev = [
-  "hypothesis==6.169.0",
-]

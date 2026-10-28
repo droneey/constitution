@@ -12,9 +12,7 @@ export {
   remarkTermIds,
   remarkTerms,
 } from './remark';
-export type { SiteLayout } from './repository';
 export {
-  BLOCK_LAYERS,
   DOCUMENTATION_SECTION,
   documentIconOf,
   GLOSSARY,

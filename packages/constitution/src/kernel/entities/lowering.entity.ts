@@ -8,16 +8,4 @@ interface Lowering {
   readonly via?: RuleSlug;
 }
 
-const Lowering = {
-  create: (input: Lowering): Lowering => ({
-    level: input.level,
-    unit: input.unit,
-    ...(input.via === undefined
-      ? {}
-      : {
-          via: input.via,
-        }),
-  }),
-} as const;
-
-export { Lowering };
+export type { Lowering };

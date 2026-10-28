@@ -10,12 +10,12 @@ interface ReleaseOptions {
 const remarkRelease =
   ({ version }: ReleaseOptions): ((tree: Root) => void) =>
   (tree): void => {
-    const named = (node: Code | InlineCode): void => {
+    const fillVersion = (node: Code | InlineCode): void => {
       node.value = node.value.replaceAll(VERSION_PLACEHOLDER, version);
     };
 
-    visit(tree, 'code', named);
-    visit(tree, 'inlineCode', named);
+    visit(tree, 'code', fillVersion);
+    visit(tree, 'inlineCode', fillVersion);
   };
 
 export type { ReleaseOptions };

@@ -2,17 +2,25 @@
 
 > Governs a file or a folder: its kind, name, size and purpose; readmes.
 
-A package keeps its source in **`src/`**{#source}; a spec sits beside the code it proves in **`__tests__/`**{#colocated-specs}, or apart from the source in **`tests/`**{#package-suites}, and an end-to-end spec in **`e2e/`**{#end-to-end-suite} inside `tests/`.
+A package keeps its source, what it ships, in **`src/`**{#source}, and the code that only builds it — a build program, a generator's configuration — in **`scripts/`**{#build-code}; a spec sits beside the code it proves in **`__tests__/`**{#colocated-specs}, or apart from the source in **`tests/`**{#package-suites}, and an end-to-end spec in **`e2e/`**{#end-to-end-suite} inside `tests/`.
 
 ## Kinds
 
 ### file-named-for-its-kind · MUST
 
-A file of a kind this table names carries that name, and the name marks nothing else: a generated file carries `.gen` or sits in a folder `*.gen/`; a spec is `<name>.test`, `<name>.integration.test` or `<name>.e2e.test`; a fake is `<contract>.fake`; a contract suite is `<contract>.suite`; fixtures are `<name>.fixtures`; a golden file is `<name>.golden.<ext>`, and a snapshot is the file its runner names; a repository’s or a module’s readme is `README.md`. The language fixes the spelling of its own files.
+A file of a kind this table names carries that name, and the name marks nothing else: a generated file carries `.gen` or sits in a folder `*.gen/`; a spec is `<name>.test`, `<name>.integration.test` or `<name>.e2e.test`; a fake is `<contract>.fake`; a contract suite is `<contract>.suite`; fixtures are `<name>.fixtures`; a golden file is `<name>.golden.<ext>`, and a snapshot is the file its runner names; a file of the text a person reads and the templates that fill it with values, holding no branch, carries **`.messages`**{#message-file}; a repository’s or a module’s readme is `README.md`. The language fixes the spelling of its own files.
 
 | Why |
 |---|
 | the name tells a reader and a tool what a file is before it is opened. |
+
+### text-a-person-reads-held-in-a-messages-file · SHOULD
+
+The text a unit writes for a person to read — a message, a command's help, the wording of a report — sits in a `.messages` file beside the unit, save the message an error is built with, and the logic that chooses a text — a plural, a variant — sits outside it and names the messages it chooses from.
+
+| Why |
+|---|
+| the text is reworded in one place without touching logic, and the mutation tools leave its mutants out by the file's kind, never by a guess, so a choice left inside it would go unmeasured. |
 
 ### generated-file-never-edited · MUST
 
@@ -21,6 +29,14 @@ A generated file is never edited by hand: a change goes to its source, and the f
 | Why |
 |---|
 | a hand edit to a generated file is lost at the next generation. |
+
+### generated-file-made-by-its-own-step · SHOULD
+
+A generated file is made by a step of its own, run before whatever reads it, never by the build that makes what the code ships.
+
+| Why |
+|---|
+| a build that also generates mixes what the code ships with what reads it, and whatever needs the generated file runs the whole build first. |
 
 ### file-is-one-semantic-unit · SHOULD
 
@@ -57,6 +73,14 @@ A format has one extension across the repository, the one its own specification 
 | one spelling of a format lets every glob, tool and reader find all of its files. |
 
 ## Folders
+
+### build-code-kept-out-of-the-source · MUST
+
+Code that only builds or generates a package, and never ships with it, sits in `scripts/`, never in `src/`.
+
+| Why |
+|---|
+| `src/` then holds exactly what a consumer runs, so the rules on shipped code — the dependencies it may import above all — hold there with no exception for build code. |
 
 ### folder-has-one-purpose-and-is-named-for-it · SHOULD
 

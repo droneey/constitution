@@ -1,19 +1,14 @@
+import { symlinkSync } from 'node:fs';
 import { join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import { afterEach, describe, expect, it } from 'bun:test';
 
-import { configFromTemplate } from './dependency-cruiser-preset.fixtures';
 import { isFoundIn } from './python-template.fixtures';
 import { uvBinary } from './uv.fixtures';
 import {
-  bunfigMutation,
   commitBase,
   createWorkspace,
-  cruiserOf,
-  inAxis,
   manifestOf,
-  PRESETS,
   PYTHON_PACKAGES,
   removeWorkspace,
   repository,
@@ -38,51 +33,7 @@ afterEach(() => {
   }
 });
 
-const dependencyCruiser = configFromTemplate(
-  [
-    'self',
-    'core',
-    'typescript',
-    'workspace',
-    'architecture/workspace',
-  ].map((part) => `./${PRESETS}/dependency-cruiser/${inAxis(part)}.mjs`),
-);
-
-// Each TypeScript package's own parts, from its folder, in the order ratify computes them.
-const cruiserParts = [
-  'self',
-  'core',
-  'typescript',
-  'bun',
-  'architecture/core',
-];
-
-const depthOf = (folder: string): number => folder.split('/').length;
-
-const cruisers = Object.fromEntries(
-  Object.values(UNITS).map((folder) => [
-    `${folder}/.dependency-cruiser.mjs`,
-    cruiserOf({
-      depth: depthOf(folder),
-      parts: cruiserParts,
-    }),
-  ]),
-);
-
-const stryker = `import bunTest from '../../${PRESETS}/stryker/foundation/bun-test.mjs';
-import core from '../../${PRESETS}/stryker/foundation/core.mjs';
-import self from '../../${PRESETS}/stryker/foundation/self.mjs';
-
-export default {
-  ...self,
-  ...bunTest,
-  ...core,
-  plugins: [
-    '${fileURLToPath(import.meta.resolve('@droneey/mutation-check/runner'))}',
-    '${fileURLToPath(import.meta.resolve('@droneey/mutation-check/ignorers'))}',
-  ],
-};
-`;
+const CRUISER = '.dependency-cruiser.jsonc';
 
 describe('a workspace on the presets', () => {
   it('should check the types of every unit when tsc builds the units as projects from the root', () => {
@@ -178,8 +129,6 @@ export const shortLabel = (id: OrderId): string => \`#\${id}\`;
     // Act
     const { output, passed } = runTool(folder, {
       args: [
-        '--config',
-        'knip.config.mjs',
         '--no-config-hints',
       ],
       folder: unit,
@@ -203,12 +152,10 @@ export const shortLabel = (id: OrderId): string => \`#\${id}\`;
     // Act
     const { output, passed } = runTool(folder, {
       args: [
-        '--config',
-        'knip.config.mjs',
         '--strict',
         '--no-config-hints',
       ],
-      folder: 'packages/eros/languages/typescript',
+      folder: 'packages/@eros/typescript',
       program: 'knip',
     });
 
@@ -222,7 +169,7 @@ export const shortLabel = (id: OrderId): string => \`#\${id}\`;
     });
   });
 
-  it("should check a unit by its own configuration, its compiler's declarations left out, when Biome runs from the root", () => {
+  it("should leave the compiler's declarations out when Biome checks a unit by its own configuration", () => {
     // Arrange
     const folder = workspace();
 
@@ -234,22 +181,29 @@ export const shortLabel = (id: OrderId): string => \`#\${id}\`;
     });
 
     // Act
-    const { passed } = runTool(folder, {
+    const { output } = runTool(folder, {
       args: [
         'check',
-        'apps/api',
+        '--max-diagnostics=none',
+        '.',
       ],
+      folder: 'apps/api',
       program: 'biome',
     });
 
     // Assert
-    expect(passed).toBe(true);
+    expect({
+      isChecked: output.includes('Checked'),
+      readsDeclarations: output.includes('.tsc-cache'),
+    }).toStrictEqual({
+      isChecked: true,
+      readsDeclarations: false,
+    });
   });
 
-  it('should report units-imported-by-name when a package imports another by a path into its folder', () => {
+  it('should report other-unit-reached-by-its-name when a package imports another by a path into its folder', () => {
     // Arrange
     const folder = workspace({
-      '.dependency-cruiser.mjs': dependencyCruiser,
       'packages/money/src/kernel/constants/index.ts': 'export const ZERO = 0;\n',
       'packages/orders/src/kernel/constants/price.constants.ts':
         "import { ZERO } from '../../../../../packages/money/src/kernel/constants/index.ts';\n\nexport const price = ZERO;\n",
@@ -258,30 +212,127 @@ export const shortLabel = (id: OrderId): string => \`#\${id}\`;
     // Act
     const { output } = runTool(folder, {
       args: [
-        'apps',
-        'packages',
+        'src',
         '--config',
-        '.dependency-cruiser.mjs',
+        CRUISER,
       ],
+      folder: 'packages/orders',
       program: 'depcruise',
     });
 
     // Assert
-    expect(output).toContain('units-imported-by-name');
+    expect(output).toContain('other-unit-reached-by-its-name');
   });
 
+  it.each([
+    {
+      folder: 'apps/web',
+      reported: true,
+    },
+    {
+      folder: 'packages/orders',
+      reported: false,
+    },
+  ])(
+    'should report apps-blind-to-each-other only in an app when $folder reaches a unit beside it',
+    ({ folder: unit, reported }) => {
+      // Arrange
+      const folder = workspace({
+        'apps/web/src/kernel/constants/total.constants.ts':
+          "import { totalLine } from '../../../../api/src/features/totals/index.ts';\n\nexport const total = totalLine;\n",
+        'packages/money/src/kernel/constants/index.ts': 'export const ZERO = 0;\n',
+        'packages/orders/src/kernel/constants/zero.constants.ts':
+          "import { ZERO } from '../../../../money/src/kernel/constants/index.ts';\n\nexport const zero = ZERO;\n",
+      });
+
+      // Act
+      const { output } = runTool(folder, {
+        args: [
+          'src',
+          '--config',
+          CRUISER,
+        ],
+        folder: unit,
+        program: 'depcruise',
+      });
+
+      // Assert
+      expect({
+        isApps: output.includes('apps-blind-to-each-other'),
+        isOther: output.includes('other-unit-reached-by-its-name'),
+      }).toStrictEqual({
+        isApps: reported,
+        isOther: true,
+      });
+    },
+  );
+
+  it.each([
+    {
+      condition: 'an app outside its group by its name',
+      reached: "import { main } from '@shop/web/src/main.ts';\n\nexport const reached = main;\n",
+      reported: true,
+    },
+    {
+      condition: 'an app of its own group by its name',
+      reached: "import { main } from '@shop/desk-admin';\n\nexport const reached = main;\n",
+      reported: true,
+    },
+    {
+      condition: 'the package of the data its group shares by its name',
+      reached:
+        "import queues from '@shop/desk-shared/schema/queues.yaml';\n\nexport const reached: unknown = queues;\n",
+      reported: false,
+    },
+  ])(
+    'should report apps-blind-to-each-other only when an app of a group imports $condition',
+    ({ reached, reported }) => {
+      // Arrange
+      const folder = workspace({
+        'apps/@desk/admin/package.json': manifestOf({
+          exports: {
+            '.': './src/main.ts',
+          },
+          name: '@shop/desk-admin',
+        }),
+        'apps/@desk/admin/src/main.ts': 'export const main = (): number => 1;\n',
+        'apps/@desk/web/src/kernel/constants/reached.constants.ts': reached,
+      });
+
+      // A second app of the group, linked by its name as an install links it.
+      symlinkSync(
+        join(folder, 'apps', '@desk', 'admin'),
+        join(folder, 'node_modules', '@shop', 'desk-admin'),
+      );
+
+      // Act
+      const { output } = runTool(folder, {
+        args: [
+          'src',
+          '--config',
+          CRUISER,
+        ],
+        folder: 'apps/@desk/web',
+        program: 'depcruise',
+      });
+
+      // Assert
+      expect(output.includes('apps-blind-to-each-other')).toBe(reported);
+    },
+  );
+
   it.each(Object.values(UNITS))(
-    'should report no violation when %s is cruised from its folder by its own parts',
+    'should report no violation when %s is cruised from its folder by its own configuration',
     (unit) => {
       // Arrange
-      const folder = workspace(cruisers);
+      const folder = workspace();
 
       // Act
       const { passed } = runTool(folder, {
         args: [
           'src',
           '--config',
-          '.dependency-cruiser.mjs',
+          CRUISER,
         ],
         folder: unit,
         program: 'depcruise',
@@ -295,7 +346,6 @@ export const shortLabel = (id: OrderId): string => \`#\${id}\`;
   it('should report not-in-allowed when a binding unit imports a package built into its dist/ and cruised from its folder', () => {
     // Arrange
     const folder = workspace({
-      ...cruisers,
       'apps/web/package.json': manifestOf({
         dependencies: [
           '@shop/orders',
@@ -312,7 +362,7 @@ export const shortLabel = (id: OrderId): string => \`#\${id}\`;
       args: [
         'src',
         '--config',
-        '.dependency-cruiser.mjs',
+        CRUISER,
       ],
       folder: 'apps/web',
       program: 'depcruise',
@@ -341,7 +391,7 @@ export const shortLabel = (id: OrderId): string => \`#\${id}\`;
     expect(passed).toBe(true);
   });
 
-  it('should report the home a part gives when an adapter of a Python package imports structlog', () => {
+  it('should report the home a preset file gives when an adapter of a Python package imports structlog', () => {
     // Arrange
     const folder = workspace({
       'apps/reports/src/shop_reports/adapters/__init__.py': '',
@@ -373,10 +423,7 @@ export const shortLabel = (id: OrderId): string => \`#\${id}\`;
 
   it('should mutate the changed line of a unit when the mutation check runs from its folder', () => {
     // Arrange
-    const folder = workspace({
-      'apps/web/bunfig.mutation.toml': bunfigMutation,
-      'apps/web/stryker.config.mjs': stryker,
-    });
+    const folder = workspace();
 
     commitBase(folder);
     write({

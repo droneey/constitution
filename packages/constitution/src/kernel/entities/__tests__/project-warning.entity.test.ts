@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
+import { ConfigKey } from '../../constants';
 import { BlockId, RuleSlug, SourceKind, UnitPath } from '../../value-objects';
 import { ProjectWarning, WarningCode, WarningKind } from '../project-warning.entity';
 
@@ -15,7 +16,7 @@ describe('ProjectWarning.codeOf', () => {
       warning: {
         details: {
           file: 'constitution.yaml',
-          key: 'axes',
+          key: ConfigKey.Axes,
         },
         kind: WarningKind.KeyMissing,
       },
@@ -53,17 +54,7 @@ describe('ProjectWarning.codeOf', () => {
         kind: WarningKind.OverrideExpired,
       },
     },
-    {
-      code: WarningCode.Workspace,
-      subject: "the workspace's members",
-      warning: {
-        details: {
-          folder: 'tools',
-          path: 'biome.json',
-        },
-        kind: WarningKind.FolderKeepsConfig,
-      },
-    },
+
     {
       code: WarningCode.Installation,
       subject: 'what mise installs',
@@ -75,11 +66,13 @@ describe('ProjectWarning.codeOf', () => {
       },
     },
     {
-      code: WarningCode.Wiring,
+      code: WarningCode.Configurations,
       subject: "the tools' configurations",
       warning: {
-        details: {},
-        kind: WarningKind.WiringUnchecked,
+        details: {
+          reason: 'EACCES: permission denied',
+        },
+        kind: WarningKind.ConfigurationsUnchecked,
       },
     },
     {

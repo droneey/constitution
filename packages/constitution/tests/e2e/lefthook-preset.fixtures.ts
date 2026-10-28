@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -7,7 +7,13 @@ import { YAML } from 'bun';
 
 import { z } from 'zod';
 
+import { goldenOf } from '#/__tests__/golden.fixtures';
+
+import type { UnitFixture } from './applied-unit.fixtures';
 import { miseBinary } from './mise.fixtures';
+import { gitIn, toolEnvironment } from './package.fixtures';
+import type { Load } from './preset-load.fixtures';
+import { loadOf, widestAppliedUnit } from './preset-load.fixtures';
 
 enum Hook {
   PreCommit = 'pre-commit',
@@ -15,69 +21,89 @@ enum Hook {
 }
 
 interface HookRun {
-  exitCode: number | undefined;
-  output: string;
+  readonly exitCode: number | undefined;
+  readonly output: string;
 }
 
-const preset = z.record(
+interface HookCheck {
+  readonly exitCode: number | undefined;
+  /** the rules the hook names, each at the head of a line it prints */
+  readonly rules: readonly string[];
+}
+
+const hooks = z.record(
   z.string(),
-  z.object({
-    jobs: z.array(
-      z.object({
-        name: z.string(),
-        run: z.string(),
-      }),
-    ),
-  }),
+  z.unknown().transform((hook) =>
+    z
+      .object({
+        jobs: z.array(
+          z.object({
+            name: z.string(),
+            run: z.string(),
+          }),
+        ),
+      })
+      .safeParse(hook),
+  ),
 );
 
-interface PartJob {
-  hook: string;
-  job: string;
-  part: string;
-  run: string;
+interface UnitJob {
+  readonly hook: string;
+  readonly job: string;
+  readonly run: string;
 }
 
-const repository = join(import.meta.dir, '..', '..');
-const presetsFolder = join(repository, 'presets', 'common', 'lefthook', 'workflow');
-const shellcheckRc = join(
-  repository,
-  'presets',
-  'shell',
-  'shellcheck',
-  'foundation',
-  'self.shellcheckrc',
-);
-const shellcheck = miseBinary('shellcheck');
+const RULE = /^\[([a-z0-9-]+)\]/gm;
 
-const presetConfig = (part: string): unknown =>
-  YAML.parse(readFileSync(join(presetsFolder, `${part}.yaml`), 'utf8'));
+/** lefthook's own validation of the configuration of the widest unit, made a repository. */
+const validation = (): Promise<Load> =>
+  loadOf('lefthook', {
+    command: [
+      'sh',
+      '-c',
+      `git init --quiet && "${miseBinary('lefthook')}" validate`,
+    ],
+  });
+
+/** The jobs of the lefthook.yaml of the widest unit, beside what is given. */
+const unitJobs = (more: Partial<UnitFixture> = {}): readonly UnitJob[] =>
+  Object.entries(
+    hooks.parse(
+      YAML.parse(readFileSync(join(widestAppliedUnit('lefthook', more), 'lefthook.yaml'), 'utf8')),
+    ),
+  ).flatMap(([hook, parsed]) =>
+    parsed.success
+      ? parsed.data.jobs.map(({ name, run }) => ({
+          hook,
+          job: name,
+          run,
+        }))
+      : [],
+  );
+
+const shellcheckRc = (): string => join(widestAppliedUnit('lefthook'), '.shellcheckrc');
+
+const shellcheck = miseBinary('shellcheck');
 
 interface JobRunInput {
   readonly hook: Hook;
   readonly job: string;
-  readonly part: string;
 }
 
-const jobRun = (input: JobRunInput): string =>
-  preset.parse(presetConfig(input.part))[input.hook]?.jobs.find(({ name }) => name === input.job)
-    ?.run ?? 'exit 99';
+/**
+ * The command of a job of the widest unit's lefthook.yaml.
+ *
+ * @throws Error when the hook holds no such job.
+ */
+const jobRun = (input: JobRunInput): string => {
+  const found = unitJobs().find(({ hook, job }) => hook === input.hook && job === input.job);
 
-const partJobs = (): readonly PartJob[] =>
-  readdirSync(presetsFolder)
-    .filter((file) => file.endsWith('.yaml') && file !== 'bindings.yaml')
-    .flatMap((file) => {
-      const part = file.slice(0, -'.yaml'.length);
+  if (found === undefined) {
+    throw new Error(`the ${input.hook} hook of lefthook.yaml holds no job ${input.job}`);
+  }
 
-      return Object.entries(preset.parse(presetConfig(part))).flatMap(([hook, { jobs }]) =>
-        jobs.map(({ name, run }) => ({
-          hook,
-          job: name,
-          part,
-          run,
-        })),
-      );
-    });
+  return found.run;
+};
 
 // lefthook runs a job under sh with its files in place of {staged_files} and
 // the message file in place of {1}; ShellCheck reads the command as such a script.
@@ -86,13 +112,14 @@ const shellCheckRun = (run: string): HookRun => {
     shellcheck,
     [
       '--rcfile',
-      shellcheckRc,
+      shellcheckRc(),
       '--shell=sh',
       '--format=gcc',
       '-',
     ],
     {
       encoding: 'utf8',
+      env: toolEnvironment(),
       input: run.replaceAll('{staged_files}', '"$@"').replaceAll('{1}', '"$1"'),
     },
   );
@@ -103,54 +130,37 @@ const shellCheckRun = (run: string): HookRun => {
   };
 };
 
-const git = (folder: string, args: readonly string[]): void => {
-  spawnSync(
-    'git',
-    [
-      '-c',
-      'user.name=Spec',
-      '-c',
-      'user.email=spec@example.com',
-      ...args,
-    ],
-    {
-      cwd: folder,
-      encoding: 'utf8',
-    },
-  );
-};
+const DETACHED_HEAD = [
+  'checkout',
+  '--quiet',
+  '--detach',
+] as const;
 
-// The branch is checked out in a repository of one commit; undefined detaches HEAD.
-const checkBranch = (branch: string | undefined): HookRun => {
+// -B, as the branch may be the one git starts a repository on.
+const checkoutOf = (branch: string): readonly string[] => [
+  'checkout',
+  '--quiet',
+  '-B',
+  branch,
+];
+
+// The branch job run in a repository of one commit, its HEAD set by the checkout given.
+const headRun = (checkout: readonly string[]): HookRun => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-branch-'));
 
   try {
-    git(folder, [
+    gitIn(folder, [
       'init',
       '--quiet',
     ]);
-    git(folder, [
+    gitIn(folder, [
       'commit',
       '--quiet',
       '--allow-empty',
       '--message',
       'chore: Start',
     ]);
-    git(
-      folder,
-      branch === undefined
-        ? [
-            'checkout',
-            '--quiet',
-            '--detach',
-          ]
-        : [
-            'checkout',
-            '--quiet',
-            '-b',
-            branch,
-          ],
-    );
+    gitIn(folder, checkout);
 
     const hookRun = spawnSync(
       'sh',
@@ -159,12 +169,12 @@ const checkBranch = (branch: string | undefined): HookRun => {
         jobRun({
           hook: Hook.PreCommit,
           job: 'validate-branch',
-          part: 'version-control',
         }),
       ],
       {
         cwd: folder,
         encoding: 'utf8',
+        env: toolEnvironment(),
       },
     );
 
@@ -180,8 +190,9 @@ const checkBranch = (branch: string | undefined): HookRun => {
   }
 };
 
-// lefthook passes the message file as {1} and runs the job under sh.
-const checkCommitMessage = (message: string): HookRun => {
+// lefthook passes the message file as {1} and runs each job of the hook under sh; the hook fails as
+// its first job to fail does.
+const commitMessageRun = (message: string, more: Partial<UnitFixture> = {}): HookRun => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-commit-'));
 
   try {
@@ -189,24 +200,29 @@ const checkCommitMessage = (message: string): HookRun => {
 
     writeFileSync(file, message);
 
-    const hookRun = spawnSync(
-      'sh',
-      [
-        '-c',
-        jobRun({
-          hook: Hook.CommitMessage,
-          job: 'commit-message',
-          part: 'version-control',
-        }).replaceAll('{1}', file),
-      ],
-      {
-        encoding: 'utf8',
-      },
-    );
+    const runs = unitJobs(more)
+      .filter(({ hook }) => hook === Hook.CommitMessage)
+      .map(({ run }) =>
+        spawnSync(
+          'sh',
+          [
+            '-c',
+            run.replaceAll('{1}', file),
+          ],
+          {
+            encoding: 'utf8',
+            env: toolEnvironment(),
+          },
+        ),
+      );
+    const failed = runs.find(({ status }) => status !== 0);
 
     return {
-      exitCode: hookRun.status ?? undefined,
-      output: hookRun.stdout.trim(),
+      exitCode: failed === undefined ? 0 : (failed.status ?? undefined),
+      output: runs
+        .map(({ stdout }) => stdout.trim())
+        .filter((output) => output !== '')
+        .join('\n'),
     };
   } finally {
     rmSync(folder, {
@@ -216,4 +232,60 @@ const checkCommitMessage = (message: string): HookRun => {
   }
 };
 
-export { checkBranch, checkCommitMessage, Hook, jobRun, partJobs, shellCheckRun };
+const checkOf = (run: HookRun): HookCheck => ({
+  exitCode: run.exitCode,
+  rules: [
+    ...run.output.matchAll(RULE),
+  ].map(([, rule]) => String(rule)),
+});
+
+/** The names of the commit message hook's jobs, in a unit whose override lowers the rules given. */
+const commitMessageJobs = (lowered: readonly string[]): readonly string[] =>
+  unitJobs({
+    lowered,
+  })
+    .filter(({ hook }) => hook === Hook.CommitMessage)
+    .map(({ job }) => job);
+
+/** The branch hook's judgement of the branch checked out. */
+const checkBranch = (branch: string): HookCheck => checkOf(headRun(checkoutOf(branch)));
+
+/** The branch hook's judgement of a HEAD on no branch, as in a rebase or a bisect. */
+const checkDetachedHead = (): HookCheck => checkOf(headRun(DETACHED_HEAD));
+
+/** The commit message hook's judgement of the message, in the widest unit beside what is given. */
+const checkCommitMessage = (message: string, more: Partial<UnitFixture> = {}): HookCheck =>
+  checkOf(commitMessageRun(message, more));
+
+interface HookTextsInput {
+  readonly branches: readonly string[];
+  readonly messages: readonly string[];
+}
+
+/** What the hooks print for each message and branch, as a golden file holds it. */
+const hookTexts = (input: HookTextsInput): string =>
+  goldenOf(
+    Object.fromEntries([
+      ...input.messages.map((message) => [
+        `commit-msg ${JSON.stringify(message)}`,
+        commitMessageRun(`${message}\n`).output,
+      ]),
+      ...input.branches.map((branch) => [
+        `pre-commit ${JSON.stringify(branch)}`,
+        headRun(checkoutOf(branch)).output,
+      ]),
+    ]),
+  );
+
+export {
+  checkBranch,
+  checkCommitMessage,
+  checkDetachedHead,
+  commitMessageJobs,
+  Hook,
+  hookTexts,
+  jobRun,
+  shellCheckRun,
+  unitJobs,
+  validation,
+};

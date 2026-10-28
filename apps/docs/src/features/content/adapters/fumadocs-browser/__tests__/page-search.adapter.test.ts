@@ -61,11 +61,12 @@ afterEach(() => {
   });
 });
 
-/** the code and the details a search failed with, or the error itself when it is none of the feature's */
+/** the code, the details and the name of the cause a search failed with, or the error itself when it is none of the feature's */
 const failureOf = (search: Promise<unknown>): Promise<unknown> =>
   search.catch((error: unknown) =>
     error instanceof SearchError
       ? {
+          cause: error.cause instanceof Error ? error.cause.name : error.cause,
           code: error.code,
           details: error.details,
         }
@@ -79,7 +80,7 @@ describe('createStaticPageSearch', () => {
 
     // Act
     const results = await createStaticPageSearch({
-      address: '/api/search',
+      indexAddress: '/api/search',
     }).search('pack');
 
     // Assert
@@ -118,21 +119,78 @@ describe('createStaticPageSearch', () => {
     ]);
   });
 
-  it('should fail with the address when the site serves no index', async () => {
-    // Arrange
-    serveAt('/api/search', () => searchIndex.staticGET());
+  it.each([
+    {
+      answer: (): Promise<Response> =>
+        Promise.resolve(
+          new Response(undefined, {
+            status: 404,
+          }),
+        ),
+      cause: 'Error',
+      condition: 'the site serves no index',
+      indexAddress: '/api/missing',
+    },
+    {
+      answer: (): Promise<Response> => Promise.reject(new TypeError('Failed to fetch')),
+      cause: 'TypeError',
+      condition: 'the network fails',
+      indexAddress: '/api/offline',
+    },
+    {
+      answer: (): Promise<Response> => Promise.resolve(new Response('<!doctype html>')),
+      cause: 'SyntaxError',
+      condition: 'the index holds no JSON',
+      indexAddress: '/api/page',
+    },
+  ])(
+    'should fail with the address, keeping the cause, when $condition',
+    async ({ answer, cause, indexAddress }) => {
+      // Arrange
+      serveAt(indexAddress, answer);
 
-    // Act
-    const search = createStaticPageSearch({
-      address: '/api/missing',
-    }).search('pack');
+      // Act
+      const search = createStaticPageSearch({
+        indexAddress,
+      }).search('pack');
 
-    // Assert
-    expect(await failureOf(search)).toStrictEqual({
-      code: SearchFailure.IndexUnavailable,
-      details: {
-        address: '/api/missing',
-      },
-    });
-  });
+      // Assert
+      expect(await failureOf(search)).toStrictEqual({
+        cause,
+        code: SearchFailure.IndexUnavailable,
+        details: {
+          address: indexAddress,
+        },
+      });
+    },
+  );
+
+  it.each([
+    {
+      condition: 'it is of another class',
+      indexAddress: '/api/refused',
+      refusal: new RangeError('no such address'),
+    },
+    {
+      condition: "it carries a code, as the search engine's own errors do",
+      indexAddress: '/api/engine',
+      refusal: Object.assign(new Error('no such index'), {
+        code: 'IVF_INDEX_REQUIRES_FACTORY',
+      }),
+    },
+  ])(
+    'should let a failure it does not know through as it is when $condition',
+    async ({ indexAddress, refusal }) => {
+      // Arrange
+      serveAt(indexAddress, () => Promise.reject(refusal));
+
+      // Act
+      const search = createStaticPageSearch({
+        indexAddress,
+      }).search('pack');
+
+      // Assert
+      expect(await failureOf(search)).toBe(refusal);
+    },
+  );
 });

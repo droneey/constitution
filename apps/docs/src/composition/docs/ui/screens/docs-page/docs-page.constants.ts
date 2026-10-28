@@ -1,8 +1,7 @@
 import type { BaseSlots } from '#/libs/ui';
 import { SearchTrigger, Sidebar } from '#/libs/ui';
 
-import { DocsSidebarFieldsWidget } from '../../widgets/docs-sidebar-fields-widget';
-import { DocsSidebarWidget } from '../../widgets/docs-sidebar-widget';
+import { DocsSidebarFieldsWidget, DocsSidebarWidget } from '../../widgets';
 
 const searchTrigger: BaseSlots['searchTrigger'] = {
   full: DocsSidebarFieldsWidget,

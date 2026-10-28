@@ -5,9 +5,10 @@ import type { FindingOf } from '#/kernel/types';
 import { BlockId } from '#/kernel/value-objects';
 
 import type { BlockFixture } from '../../../../../../__tests__/constitution.fixtures';
-import { checkInputOf, passportFile } from '../../../../../../__tests__/constitution.fixtures';
+import { passportFile } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { FrontMatterField } from '../../../../../entities';
+import { checkInputOf } from '../../__tests__/check.fixtures';
 import type { FrontMatterDetails } from '../front-matter';
 import { FrontMatterCode, frontMatterCheck } from '../front-matter';
 

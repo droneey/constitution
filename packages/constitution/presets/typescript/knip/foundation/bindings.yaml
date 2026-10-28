@@ -1,7 +1,0 @@
-core:
-  dead-code-deleted:
-    - entry
-    - project
-tanstack-start:
-  dead-code-deleted:
-    - entry

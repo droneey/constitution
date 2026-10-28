@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'bun:test';
 
-import type { Page, PageSlugs } from '../../../domain/entities';
+import { goldenText } from '#/__tests__/golden.fixtures';
+
+import type { Page } from '../../../domain/entities';
+import { PageSlugs, SiteBasePath } from '../../../domain/value-objects';
 import { createFumadocsContent } from '../source.adapter';
 import { siteCollectionsFixture, siteLayoutFixture } from './source.fixtures';
 
@@ -19,6 +22,7 @@ const contentFixture = (): ReturnType<typeof createFumadocsContent> =>
   createFumadocsContent({
     collections: siteCollectionsFixture(),
     layout: siteLayoutFixture(),
+    siteBasePath: SiteBasePath.create('/'),
   });
 
 /** each entry of the tree as `<type> <address or name>`, then its marks, its children indented */
@@ -40,6 +44,17 @@ const outlineOf = (node: OutlineNode, depth = 0): readonly string[] => [
   ...(node.children ?? []).flatMap((child) => outlineOf(child, depth + 1)),
 ];
 
+/** the text of a page's Markdown below the heading that names it */
+const bodyOf = (markdown: string | undefined): string | undefined =>
+  markdown?.split('\n\n').slice(1).join('\n\n');
+
+/** the addresses a text links or names in brackets, in order */
+const addressesIn = (text: string | undefined): readonly string[] =>
+  Array.from(
+    text?.matchAll(/\((?<address>\/[^)]*)\)/gu) ?? [],
+    ({ groups }) => groups?.['address'] ?? '',
+  );
+
 /** the ids of the documents the exported index holds: a page, and each section of its text */
 const indexedIdsOf = (exported: unknown): unknown =>
   JSON.parse(JSON.stringify(exported)).internalDocumentIDStore.internalIdToId;
@@ -58,7 +73,7 @@ describe('createFumadocsContent', () => {
         path: 'README.md',
         title: 'Overview',
       },
-      slugs: [],
+      slugs: PageSlugs.create([]),
     },
     {
       condition: "they name a block's passport, served as its folder's index",
@@ -68,9 +83,9 @@ describe('createFumadocsContent', () => {
         path: 'core/core.md',
         title: 'Core',
       },
-      slugs: [
+      slugs: PageSlugs.create([
         'core',
-      ],
+      ]),
     },
     {
       condition: "they name a block's chapter",
@@ -80,11 +95,11 @@ describe('createFumadocsContent', () => {
         path: 'core/foundation/code.md',
         title: 'Code',
       },
-      slugs: [
+      slugs: PageSlugs.create([
         'core',
         'foundation',
         'code',
-      ],
+      ]),
     },
     {
       condition: 'they name a document by its name on the site',
@@ -94,9 +109,9 @@ describe('createFumadocsContent', () => {
         path: 'DECISIONS.md',
         title: 'Decisions',
       },
-      slugs: [
+      slugs: PageSlugs.create([
         'decisions',
-      ],
+      ]),
     },
     {
       condition: 'they name the glossary',
@@ -106,9 +121,9 @@ describe('createFumadocsContent', () => {
         path: 'PROJECT.md',
         title: 'Glossary',
       },
-      slugs: [
+      slugs: PageSlugs.create([
         'glossary',
-      ],
+      ]),
     },
     {
       condition: 'they name the quick start',
@@ -118,9 +133,9 @@ describe('createFumadocsContent', () => {
         path: 'README.md',
         title: 'Start',
       },
-      slugs: [
+      slugs: PageSlugs.create([
         'quick-start',
-      ],
+      ]),
     },
     {
       condition: 'they name a guide',
@@ -130,18 +145,18 @@ describe('createFumadocsContent', () => {
         path: 'guides/upgrade.md',
         title: 'Upgrade',
       },
-      slugs: [
+      slugs: PageSlugs.create([
         'guides',
         'upgrade',
-      ],
+      ]),
     },
     {
       condition: 'they name no page',
       expected: undefined,
-      slugs: [
+      slugs: PageSlugs.create([
         'guides',
         'moved',
-      ],
+      ]),
     },
   ])('should find the page and where its body is when $condition', async ({ expected, slugs }) => {
     // Arrange
@@ -156,34 +171,31 @@ describe('createFumadocsContent', () => {
 
   it.each([
     {
+      body: 'pinned',
       condition: 'a page has the slugs',
-      expected: '# Upgrade (/docs/guides/upgrade)\n\npinned',
-      slugs: [
+      slugs: PageSlugs.create([
         'guides',
         'upgrade',
-      ],
+      ]),
     },
     {
+      body: undefined,
       condition: 'no page has them',
-      expected: undefined,
-      slugs: [
+      slugs: PageSlugs.create([
         'guides',
         'moved',
-      ],
+      ]),
     },
-  ])(
-    'should read the page in Markdown, headed by its title and address, when $condition',
-    async ({ expected, slugs }) => {
-      // Arrange
-      const content = contentFixture();
+  ])('should read the page in Markdown when $condition', async ({ body, slugs }) => {
+    // Arrange
+    const content = contentFixture();
 
-      // Act
-      const markdown = await content.findMarkdown(slugs);
+    // Act
+    const markdown = await content.findMarkdown(slugs);
 
-      // Assert
-      expect(markdown).toBe(expected);
-    },
-  );
+    // Assert
+    expect(bodyOf(markdown)).toBe(body);
+  });
 
   it('should list every page by its slugs', async () => {
     // Arrange
@@ -215,7 +227,7 @@ describe('createFumadocsContent', () => {
     });
   });
 
-  it('should list every page of the sidebar with its address and summary', async () => {
+  it('should list every page of the sidebar with its address and summary as the golden file shows', async () => {
     // Arrange
     const content = contentFixture();
 
@@ -223,21 +235,10 @@ describe('createFumadocsContent', () => {
     const index = await content.readIndex();
 
     // Assert
-    expect(index.split('\n')).toStrictEqual([
-      '# Constitution',
-      '',
-      '- [Overview](/docs): About Overview',
-      '- [Start](/docs/quick-start): About Start',
-      '- [Upgrade](/docs/guides/upgrade): About Upgrade',
-      '- [Glossary](/docs/glossary#main)',
-      '- Core',
-      '  - [Core](/docs/core): About Core',
-      '  - Foundation',
-      '    - [Code](/docs/core/foundation/code): About Code',
-    ]);
+    expect(index).toBe(await goldenText(new URL('llms-index.golden.txt', import.meta.url), index));
   });
 
-  it('should hold every page in Markdown, each headed by its title and address', async () => {
+  it('should hold every page in Markdown, each headed by its title and address, as the golden file shows', async () => {
     // Arrange
     const content = contentFixture();
 
@@ -245,89 +246,75 @@ describe('createFumadocsContent', () => {
     const text = await content.readFullText();
 
     // Assert
-    expect(text.split('\n\n')).toStrictEqual([
-      '# Core (/docs/core)',
-      'rules',
-      '# Code (/docs/core/foundation/code)',
-      'read',
-      '# Decisions (/docs/decisions)',
-      'decided',
-      '# Glossary (/docs/glossary)',
-      'terms',
-      '# Upgrade (/docs/guides/upgrade)',
-      'pinned',
-      '# Overview (/docs)',
-      'overview',
-      '# Start (/docs/quick-start)',
-      'install',
-    ]);
+    expect(text).toBe(await goldenText(new URL('llms-full.golden.txt', import.meta.url), text));
   });
 
   it.each<{
-    expected: string;
+    addresses: readonly string[];
     read: (content: ReturnType<typeof createFumadocsContent>) => Promise<string | undefined>;
     text: string;
   }>([
     {
-      expected: [
-        '# Constitution',
-        '',
-        '- [Overview](/v0.70.0/docs): About Overview',
-        '- [Start](/v0.70.0/docs/quick-start): About Start',
-        '- [Upgrade](/v0.70.0/docs/guides/upgrade): About Upgrade',
-        '- [Glossary](/v0.70.0/docs/glossary#main)',
-        '- Core',
-        '  - [Core](/v0.70.0/docs/core): About Core',
-        '  - Foundation',
-        '    - [Code](/v0.70.0/docs/core/foundation/code): About Code',
-      ].join('\n'),
+      addresses: [
+        '/v0.70.0/docs',
+        '/v0.70.0/docs/quick-start',
+        '/v0.70.0/docs/guides/upgrade',
+        '/v0.70.0/docs/glossary#main',
+        '/v0.70.0/docs/core/names',
+        '/v0.70.0/docs/core',
+        '/v0.70.0/docs/core/foundation/code',
+      ],
       read: (content) => content.readIndex(),
       text: 'index',
     },
     {
-      expected: '# Upgrade (/v0.70.0/docs/guides/upgrade)\n\npinned',
+      addresses: [
+        '/v0.70.0/docs/guides/upgrade',
+      ],
       read: (content) =>
-        content.findMarkdown([
-          'guides',
-          'upgrade',
-        ]),
+        content.findMarkdown(
+          PageSlugs.create([
+            'guides',
+            'upgrade',
+          ]),
+        ),
       text: "page's Markdown",
     },
   ])(
     "should address the pages under the site's base in the $text when the site is served under one",
-    async ({ expected, read }) => {
+    async ({ addresses, read }) => {
       // Arrange
       const content = createFumadocsContent({
         collections: siteCollectionsFixture(),
         layout: siteLayoutFixture(),
-        siteBase: '/v0.70.0/',
+        siteBasePath: SiteBasePath.create('/v0.70.0/'),
       });
 
       // Act
       const text = await read(content);
 
       // Assert
-      expect(text).toBe(expected);
+      expect(addressesIn(text)).toStrictEqual(addresses);
     },
   );
 
   it.each([
     {
       condition: "the site is served at the host's root",
-      siteBase: '/',
+      siteBasePath: SiteBasePath.create('/'),
     },
     {
       condition: "the site is served under a release's base, which the router adds itself",
-      siteBase: '/v0.70.0/',
+      siteBasePath: SiteBasePath.create('/v0.70.0/'),
     },
   ])(
     "should lay the tree out by the sidebar, with the pages' icons and the cross links marked, when $condition",
-    async ({ siteBase }) => {
+    async ({ siteBasePath }) => {
       // Arrange
       const content = createFumadocsContent({
         collections: siteCollectionsFixture(),
         layout: siteLayoutFixture(),
-        siteBase,
+        siteBasePath,
       });
 
       // Act
@@ -340,6 +327,7 @@ describe('createFumadocsContent', () => {
         '  page /docs/quick-start',
         '  page /docs/guides/upgrade icon',
         '  page /docs/glossary#main cross-link',
+        '  page /docs/core/names',
         '  folder Core',
         '    page /docs/core',
         '    folder Foundation',

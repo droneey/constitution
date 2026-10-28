@@ -1,0 +1,845 @@
+{
+  "options": {
+    // dependency-cruiser
+    "doNotFollow": {
+      "path": [
+        "node_modules",
+        "^\\.\\./",
+      ],
+    },
+
+    // bun
+    "builtInModules": {
+      "add": [
+        "bun",
+        "bun:test",
+      ],
+    },
+
+    // dependency-cruiser
+    "parser": "swc",
+    "skipAnalysisNotInRules": true,
+    "enhancedResolveOptions": {
+      "exportsFields": [
+        "exports",
+      ],
+      "conditionNames": [
+        "import",
+        "require",
+        "node",
+        "default",
+      ],
+    },
+    "exclude": {
+      "path": [
+        "^(?!(?:\\.\\./)*node_modules/)(?:\\.[^./]|.*/\\.[^./]|dist/|.*/dist/)",
+        "\\.gen\\.",
+      ],
+    },
+  },
+
+  // dependency-cruiser
+  "allowedSeverity": "error",
+  "forbidden": [
+    // dependency-cruiser
+    {
+      "name": "no-circular",
+      "severity": "error",
+      "from": {},
+      "to": {
+        "circular": true,
+      },
+    },
+    {
+      "name": "no-test-code-in-production",
+      "severity": "error",
+      "from": {
+        "pathNot": [
+          "(^|/)(__tests__|e2e)/",
+          "^tests/",
+        ],
+      },
+      "to": {
+        "path": [
+          "(^|/)(__tests__|e2e)/",
+          "^tests/",
+        ],
+      },
+    },
+    {
+      "name": "no-development-dependency-in-production",
+      "from": {
+        "pathNot": [
+          "(^|/)(__tests__|e2e)/",
+          "^tests/",
+        ],
+        "path": "^src/",
+      },
+      "severity": "error",
+      "to": {
+        "dependencyTypes": [
+          "npm-dev",
+        ],
+        "dependencyTypesNot": [
+          "type-only",
+          "npm-peer",
+        ],
+        "pathNot": "node_modules/@types/",
+      },
+    },
+    {
+      "name": "no-deprecated-dependency",
+      "severity": "error",
+      "from": {},
+      "to": {
+        "dependencyTypes": [
+          "deprecated",
+        ],
+      },
+    },
+    {
+      "name": "no-deprecated-core",
+      "severity": "error",
+      "from": {},
+      "to": {
+        "dependencyTypes": [
+          "core",
+        ],
+        "path": "^(?:punycode|domain|constants|sys|_linklist|_stream_wrap)$",
+      },
+    },
+    {
+      "name": "integration-never-imported",
+      "severity": "error",
+      "from": {
+        "pathNot": [
+          "^src/integrations/",
+          "(^|/)__tests__/",
+          "^tests/",
+        ],
+      },
+      "to": {
+        "path": "^src/integrations/",
+      },
+    },
+    {
+      "name": "integrations-blind-to-each-other",
+      "severity": "error",
+      "from": {
+        "path": "^src/integrations/([^/]+)/",
+      },
+      "to": {
+        "path": "^src/integrations/",
+        "pathNot": "^src/integrations/$1/",
+      },
+    },
+    {
+      "name": "domain-reaches-only-itself-and-the-kernel",
+      "severity": "error",
+      "from": {
+        "path": "^src/features/([^/]+)/domain/",
+        "pathNot": [
+          "(^|/)__tests__/",
+          "^tests/",
+        ],
+      },
+      "to": {
+        "dependencyTypesNot": [
+          "core",
+        ],
+        "pathNot": [
+          "^src/features/$1/domain/",
+          "^src/kernel/",
+        ],
+      },
+    },
+    {
+      "name": "kernel-reaches-only-itself",
+      "severity": "error",
+      "from": {
+        "path": "^src/kernel/",
+        "pathNot": [
+          "(^|/)__tests__/",
+          "^tests/",
+        ],
+      },
+      "to": {
+        "dependencyTypesNot": [
+          "core",
+        ],
+        "pathNot": [
+          "^src/kernel/",
+          "\\.(?:json|ya?ml)$",
+        ],
+      },
+    },
+    {
+      "name": "libs-know-no-application",
+      "severity": "error",
+      "from": {
+        "path": "^src/libs/",
+      },
+      "to": {
+        "path": [
+          "^src/(features|kernel|shared|adapters|root|composition|integrations|entrypoints)/",
+          "^src/(?!index\\.)[^/]+\\.[^/]+$",
+        ],
+      },
+    },
+    {
+      "name": "shared-knows-no-feature-adapter-contract-or-root",
+      "severity": "error",
+      "from": {
+        "path": "^src/shared/",
+      },
+      "to": {
+        "path": [
+          "^src/(features|adapters|root|composition|integrations|entrypoints)/",
+          "^src/kernel/contracts/",
+          "^src/(?!index\\.)[^/]+\\.[^/]+$",
+        ],
+      },
+    },
+    {
+      "name": "features-know-no-composition",
+      "severity": "error",
+      "from": {
+        "path": "^src/features/",
+      },
+      "to": {
+        "path": "^src/composition/",
+      },
+    },
+    {
+      "name": "adapters-know-no-caller",
+      "severity": "error",
+      "from": {
+        "path": [
+          "^src/adapters/",
+          "^src/(?:features|composition)/[^/]+/adapters/",
+        ],
+      },
+      "to": {
+        "path": [
+          "^src/(features|composition)/[^/]+/app/",
+          "^src/(root|entrypoints)/",
+          "^src/(?!index\\.)[^/]+\\.[^/]+$",
+        ],
+      },
+    },
+    {
+      "name": "root-reached-only-from-entries",
+      "severity": "error",
+      "from": {
+        "pathNot": [
+          "^src/(?!index\\.)[^/]+\\.[^/]+$",
+          "^src/entrypoints/[^/]+/main\\.[^/]+$",
+          "^src/integrations/[^/]+/main\\.[^/]+$",
+          "^src/root/",
+          "(^|/)__tests__/",
+          "^tests/",
+        ],
+      },
+      "to": {
+        "path": "^src/root/",
+      },
+    },
+    {
+      "name": "entry-never-imported",
+      "severity": "error",
+      "from": {},
+      "to": {
+        "path": "^src/(?!index\\.)[^/]+\\.[^/]+$",
+      },
+    },
+    {
+      "name": "entrypoint-reached-only-from-itself",
+      "severity": "error",
+      "from": {
+        "pathNot": "^src/entrypoints/",
+      },
+      "to": {
+        "path": "^src/entrypoints/",
+      },
+    },
+    {
+      "name": "entrypoints-blind-to-each-other",
+      "severity": "error",
+      "from": {
+        "path": "^src/entrypoints/([^/]+)/",
+      },
+      "to": {
+        "path": "^src/entrypoints/",
+        "pathNot": "^src/entrypoints/$1/",
+      },
+    },
+    {
+      "name": "feature-never-imports-a-feature",
+      "severity": "error",
+      "from": {
+        "path": "^src/features/([^/]+)/",
+      },
+      "to": {
+        "path": "^src/features/",
+        "pathNot": "^src/features/$1/",
+      },
+    },
+    {
+      "name": "composition-module-never-imports-another",
+      "severity": "error",
+      "from": {
+        "path": "^src/composition/([^/]+)/",
+      },
+      "to": {
+        "path": "^src/composition/",
+        "pathNot": "^src/composition/$1/",
+      },
+    },
+    {
+      "name": "module-reached-through-its-surface",
+      "severity": "error",
+      "from": {
+        "path": "^(src/(features|adapters|shared|libs|composition|integrations)/[^/]+)/",
+      },
+      "to": {
+        "path": "^src/(features|adapters|shared|libs|composition|integrations)/[^/]+/",
+        "pathNot": [
+          "^$1/",
+          "^src/(features|adapters|shared|libs|composition|integrations)/[^/]+/index\\.[^/]+$",
+        ],
+      },
+    },
+    {
+      "name": "module-reached-through-its-surface-from-outside-modules",
+      "severity": "error",
+      "to": {
+        "path": "^src/(features|adapters|shared|libs|composition|integrations)/[^/]+/",
+        "pathNot": "^src/(features|adapters|shared|libs|composition|integrations)/[^/]+/index\\.[^/]+$",
+      },
+      "from": {
+        "pathNot": [
+          "^src/(features|adapters|shared|libs|composition|integrations)/[^/]+/",
+          "^src/root/",
+          "^src/[^/]+\\.[^/]+$",
+        ],
+      },
+    },
+    {
+      "name": "module-reached-through-its-surface-from-the-root",
+      "severity": "error",
+      "from": {
+        "path": [
+          "^src/root/",
+          "^src/[^/]+\\.[^/]+$",
+        ],
+      },
+      "to": {
+        "path": "^src/(features|adapters|shared|libs|composition|integrations)/[^/]+/",
+        "pathNot": [
+          "^src/(features|adapters|shared|libs|composition|integrations)/[^/]+/index\\.[^/]+$",
+          "^src/(features|composition)/[^/]+/adapters/[^/]+/index\\.[^/]+$",
+        ],
+      },
+    },
+    {
+      "name": "kernel-role-reached-through-its-surface",
+      "severity": "error",
+      "from": {
+        "pathNot": "^src/kernel/",
+      },
+      "to": {
+        "path": "^src/kernel/",
+        "pathNot": "^src/kernel/[^/]+/index\\.[^/]+$",
+      },
+    },
+    {
+      "name": "module-never-imports-its-own-surface",
+      "severity": "error",
+      "from": {
+        "path": "^([^/]+/)([^/]+/|)([^/]+/|)([^/]+/|)([^/]+/|)([^/]+/|)([^/]+/|)([^/]+/|)([^/]+/|)",
+      },
+      "to": {
+        "path": "^(?:$1|$1$2|$1$2$3|$1$2$3$4|$1$2$3$4$5|$1$2$3$4$5$6|$1$2$3$4$5$6$7|$1$2$3$4$5$6$7$8|$1$2$3$4$5$6$7$8$9)index\\.[^/]+$",
+      },
+    },
+    {
+      "name": "role-reached-through-its-surface",
+
+      // dependency-cruiser
+      "severity": "error",
+      "from": {
+        "path": "^src/(features|composition)/([^/]+)/([^/]+/[^/]+(?=/)|)",
+      },
+      "to": {
+        "path": [
+          // dependency-cruiser
+          "^src/$1/$2/(?:domain|app)/[^/]+/",
+
+          // ui
+          "^src/$1/$2/ui/[^/]+/",
+        ],
+
+        // dependency-cruiser
+        "pathNot": [
+          "^src/$1/$2/$3/",
+          "(^|/)__tests__/",
+          "^src/$1/$2/[^/]+/[^/]+/index\\.[^/]+$",
+          "^src/$1/$2/[^/]+/[^/]+/(?:[^/]+/|)(?:queries|commands)/index\\.[^/]+$",
+          "^src/$1/$2/[^/]+/[^/]+/(?:queries|commands|shared)/[^/]+/index\\.[^/]+$",
+        ],
+      },
+    },
+
+    // dependency-cruiser
+    {
+      "name": "integration-role-reached-through-its-surface",
+      "severity": "error",
+      "from": {
+        "path": "^src/integrations/([^/]+)/([^/]+(?=/)|)",
+      },
+      "to": {
+        "path": "^src/integrations/$1/[^/]+/",
+        "pathNot": [
+          "^src/integrations/$1/$2/",
+          "(^|/)__tests__/",
+          "^src/integrations/$1/[^/]+/index\\.[^/]+$",
+        ],
+      },
+    },
+    {
+      "name": "kernel-role-reaches-a-sibling-through-its-surface",
+      "severity": "error",
+      "from": {
+        "path": "^src/kernel/([^/]+)/",
+      },
+      "to": {
+        "path": "^src/kernel/(?!$1/)[^/]+/",
+        "pathNot": "^src/kernel/[^/]+/index\\.[^/]+$",
+      },
+    },
+    {
+      "name": "effects-reached-only-from-the-edge",
+      "severity": "error",
+      "from": {
+        "path": "^src/",
+        "pathNot": [
+          "^src/adapters/",
+          "^src/(?:features|composition)/[^/]+/adapters/",
+          "^src/(?!index\\.)[^/]+\\.[^/]+$",
+          "^src/entrypoints/[^/]+/main\\.[^/]+$",
+          "^src/root/",
+          "^src/(libs|integrations)/",
+          "(^|/)__tests__/",
+          "^tests/",
+          "^src/index\\.[^/]+$",
+        ],
+      },
+      "to": {
+        "path": "^(?:node:)?(?:child_process|cluster|dgram|dns|fs|http|http2|https|inspector|module|net|os|perf_hooks|process|quic|readline|repl|sqlite|tls|trace_events|tty|v8|vm|wasi|worker_threads)(?:/|$)",
+        "reachable": true,
+      },
+    },
+    {
+      "name": "layer-folder-never-a-target",
+      "severity": "error",
+      "from": {},
+      "to": {
+        "path": [
+          "^src/index\\.[^/]+$",
+          "^src/(features|libs|adapters|integrations|kernel|shared|composition)/index\\.[^/]+$",
+          "^src/(features|composition)/[^/]+/(domain|app|adapters)/index\\.[^/]+$",
+        ],
+      },
+    },
+    {
+      "name": "adapters-blind-to-each-other",
+      "severity": "error",
+      "from": {
+        "path": "^src/adapters/([^/]+)/",
+      },
+      "to": {
+        "path": [
+          "^src/adapters/",
+          "^src/(?:features|composition)/[^/]+/adapters/",
+        ],
+        "pathNot": "^src/adapters/$1/",
+      },
+    },
+    {
+      "name": "feature-adapters-blind-to-each-other",
+      "severity": "error",
+      "from": {
+        "path": "^src/(features|composition)/([^/]+)/adapters/([^/]+)/",
+      },
+      "to": {
+        "path": [
+          "^src/adapters/",
+          "^src/(?:features|composition)/[^/]+/adapters/",
+        ],
+        "pathNot": "^src/$1/$2/adapters/$3/",
+      },
+    },
+    {
+      "name": "adapters-outside-composition-know-no-feature-or-composition",
+      "severity": "error",
+      "from": {
+        "path": [
+          "^src/adapters/",
+          "^src/features/[^/]+/adapters/",
+        ],
+      },
+      "to": {
+        "path": [
+          "^src/features/[^/]+/index\\.[^/]+$",
+          "^src/composition/",
+        ],
+      },
+    },
+    {
+      "name": "adapters-reached-only-from-the-root",
+      "severity": "error",
+      "from": {
+        "pathNot": [
+          "^src/adapters/",
+          "^src/(?:features|composition)/[^/]+/adapters/",
+          "^src/root/",
+          "(^|/)__tests__/",
+          "^tests/",
+          "^src/index\\.[^/]+$",
+        ],
+      },
+      "to": {
+        "path": [
+          "^src/adapters/",
+          "^src/(?:features|composition)/[^/]+/adapters/",
+        ],
+      },
+    },
+    {
+      "name": "binding-units-reach-no-port",
+      "severity": "error",
+      "from": {
+        "path": "^src/(features|composition)/([^/]+)/app/",
+        "pathNot": [
+          "(^|/)__tests__/",
+          "^tests/",
+        ],
+      },
+      "to": {
+        "path": "^src/$1/$2/domain/contracts/",
+      },
+    },
+    {
+      "name": "root-wires-without-a-container-library",
+      "severity": "error",
+      "from": {},
+      "to": {
+        "path": "node_modules/(?:inversify|tsyringe|awilix|typedi|typed-inject|brandi)/",
+      },
+    },
+    {
+      "name": "reads-never-reach-writes",
+      "severity": "error",
+      "from": {
+        "path": "/(use-cases|repositories)/queries/",
+      },
+      "to": {
+        "path": "/(use-cases|repositories)/commands/",
+        "reachable": true,
+      },
+    },
+    {
+      "name": "writes-never-reach-reads",
+      "severity": "error",
+      "from": {
+        "path": "/(use-cases|repositories)/commands/",
+      },
+      "to": {
+        "path": "/(use-cases|repositories)/queries/",
+        "reachable": true,
+      },
+    },
+
+    // bun
+    {
+      "name": "bun-effects-reached-only-from-the-edge",
+      "severity": "error",
+      "from": {
+        "path": "^src/",
+        "pathNot": [
+          "^src/adapters/",
+          "^src/(?:features|composition)/[^/]+/adapters/",
+          "^src/(?!index\\.)[^/]+\\.[^/]+$",
+          "^src/entrypoints/[^/]+/main\\.[^/]+$",
+          "^src/root/",
+          "^src/(libs|integrations)/",
+          "(^|/)__tests__/",
+          "^tests/",
+          "^src/index\\.[^/]+$",
+        ],
+      },
+      "to": {
+        "path": "^bun(?::|$)",
+        "reachable": true,
+      },
+    },
+
+    // ui
+    {
+      "name": "components-take-data-and-callbacks",
+      "severity": "error",
+      "from": {
+        "path": "/ui/components/",
+      },
+      "to": {
+        "path": [
+          "^src/(features|composition)/[^/]+/(app|adapters)/",
+          "^src/(kernel/contracts|adapters)/",
+        ],
+      },
+    },
+    {
+      "name": "ui-reaches-no-mechanism",
+      "severity": "error",
+      "from": {
+        "path": "^src/(features|composition)/([^/]+)/ui/",
+      },
+      "to": {
+        "path": [
+          "^src/$1/$2/(adapters|domain/contracts|domain/use-cases)/",
+          "^src/(kernel/contracts|adapters)/",
+        ],
+      },
+    },
+    {
+      "name": "components-never-import-widgets",
+      "severity": "error",
+      "from": {
+        "path": "/ui/components/",
+      },
+      "to": {
+        "path": "/ui/widgets/",
+      },
+    },
+    {
+      "name": "binding-units-reach-no-adapter-or-ui",
+      "severity": "error",
+      "from": {
+        "path": "^src/(features|composition)/[^/]+/app/use-cases/",
+      },
+      "to": {
+        "path": [
+          "^src/(features|composition)/[^/]+/(adapters|ui)/",
+          "^src/adapters/",
+        ],
+      },
+    },
+
+    // workspace
+    {
+      "name": "other-unit-reached-by-its-name",
+      "severity": "error",
+      "from": {
+        "pathNot": "^\\.\\./",
+      },
+      "to": {
+        "path": "^\\.\\./",
+        "dependencyTypes": [
+          "local",
+        ],
+      },
+    },
+    {
+      "name": "packages-know-no-app",
+      "severity": "error",
+      "from": {
+        "pathNot": "^\\.\\./",
+      },
+      "to": {
+        "path": "^(?:\\.\\./)+apps/",
+      },
+    },
+
+    // dependency-cruiser
+    {
+      "name": "relative-import-stays-in-its-module",
+      "severity": "error",
+      "from": {
+        "path": "^(src/(?:features|composition|adapters|shared|libs|integrations|entrypoints)/[^/]+|src/(?:kernel|root)|(?:scripts|tests)/[^/]+)/",
+      },
+      "to": {
+        "path": "^src/",
+        "pathNot": "^$1/",
+        "dependencyTypes": [
+          "local",
+        ],
+        "dependencyTypesNot": [
+          "aliased-subpath-import",
+        ],
+      },
+    },
+    {
+      "name": "hash-import-leaves-its-module",
+      "severity": "error",
+      "from": {
+        "path": "^(src/(?:features|composition|adapters|shared|libs|integrations|entrypoints)/[^/]+|src/(?:kernel|root))/",
+      },
+      "to": {
+        "path": "^$1/",
+        "dependencyTypes": [
+          "aliased-subpath-import",
+        ],
+      },
+    },
+
+    {
+      "name": "no-undeclared-dependency",
+      "severity": "error",
+      "from": {},
+      "to": {
+        "dependencyTypes": [
+          "npm-no-pkg",
+          "npm-unknown",
+        ],
+      },
+    },
+    {
+      "name": "no-unresolvable",
+      "severity": "error",
+      "from": {},
+      "to": {
+        "couldNotResolve": true,
+      },
+    },
+    {
+      "name": "no-duplicate-dep-types",
+      "severity": "error",
+      "from": {},
+      "to": {
+        "moreThanOneDependencyType": true,
+        "dependencyTypesNot": [
+          "type-only",
+          "npm-peer",
+        ],
+      },
+    },
+
+    // yaml-js
+    {
+      "name": "yaml-home-is-the-parsing-adapter-and-lib",
+      "severity": "error",
+      "from": {
+        "pathNot": [
+          "^src/adapters/",
+          "^src/(?:features|composition)/[^/]+/adapters/",
+          "^src/libs/",
+          "(^|/)__tests__/",
+          "^tests/",
+        ],
+      },
+      "to": {
+        "path": "node_modules/yaml/",
+      },
+    },
+  ],
+  "allowed": [
+    // dependency-cruiser
+    {
+      "comment": "layer-imports-dependencies-by-its-role: what is no package of a registry, the forbidden rules hold",
+      "from": {},
+      "to": {
+        "dependencyTypesNot": [
+          "npm",
+          "npm-dev",
+          "npm-peer",
+          "npm-optional",
+          "npm-bundled",
+        ],
+      },
+    },
+    {
+      "comment": "layer-imports-dependencies-by-its-role: the edge and the specs import any package",
+      "from": {
+        "path": [
+          "^src/adapters/",
+          "^src/(?:features|composition)/[^/]+/adapters/",
+          "^src/(?!index\\.)[^/]+\\.[^/]+$",
+          "^src/entrypoints/[^/]+/main\\.[^/]+$",
+          "^src/root/",
+          "^src/(libs|integrations)/",
+          "(^|/)__tests__/",
+          "^tests/",
+          "^scripts/",
+        ],
+      },
+      "to": {
+        "dependencyTypes": [
+          "npm",
+          "npm-dev",
+          "npm-peer",
+          "npm-optional",
+          "npm-bundled",
+        ],
+      },
+    },
+
+    // _react
+    {
+      "comment": "react-imported-by-the-ui-and-binding-units",
+      "from": {
+        "path": [
+          "/ui/",
+          "^src/(features|composition)/[^/]+/app/",
+        ],
+      },
+      "to": {
+        "path": "node_modules/react/",
+      },
+    },
+
+    // commander
+    {
+      "comment": "commander-imported-by-commands",
+      "from": {
+        "path": "^src/(features|composition)/[^/]+/app/.*\\.cli\\.[^/]+$",
+      },
+      "to": {
+        "path": "node_modules/commander/",
+      },
+    },
+
+    // ink
+    {
+      "comment": "ink-imported-by-the-ui",
+      "from": {
+        "path": "/ui/",
+      },
+      "to": {
+        "path": "node_modules/ink/",
+      },
+    },
+
+    // zod
+    {
+      "comment": "zod-home-is-the-edge-and-shared-parsing",
+      "from": {
+        "path": [
+          "^src/(features|composition)/[^/]+/app/",
+          "^src/shared/",
+        ],
+      },
+      "to": {
+        "path": "node_modules/zod/",
+      },
+    },
+    {
+      "comment": "zod-imported-by-forms",
+      "from": {
+        "path": "/ui/",
+      },
+      "to": {
+        "path": "node_modules/zod/",
+      },
+    },
+  ],
+}

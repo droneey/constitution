@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'bun:test';
 
-import { isGoverned } from '../globs.utils';
+import { globMatches } from '../globs.utils';
 
-describe('isGoverned', () => {
+describe('globMatches', () => {
   it.each([
     {
       condition: '"**/" stands for some folders',
@@ -179,35 +179,13 @@ describe('isGoverned', () => {
       path: 'vite.*.config.ts',
     },
   ])('should say $isMatch when $condition', ({ glob, isMatch, path }) => {
-    // Arrange
-    const globs = [
-      glob,
-    ];
-
     // Act
-    const matches = isGoverned({
-      globs,
+    const matches = globMatches({
+      glob,
       path,
     });
 
     // Assert
     expect(matches).toBe(isMatch);
-  });
-
-  it('should say true when a later glob matches the path', () => {
-    // Arrange
-    const globs = [
-      '*.md',
-      '*.ts',
-    ];
-
-    // Act
-    const matches = isGoverned({
-      globs,
-      path: 'a.ts',
-    });
-
-    // Assert
-    expect(matches).toBe(true);
   });
 });

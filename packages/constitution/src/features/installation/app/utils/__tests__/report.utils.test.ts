@@ -2,43 +2,44 @@ import { describe, expect, it } from 'bun:test';
 
 import { StepStatus, Tone } from '@droneey/design-cli';
 
-import { Version } from '#/kernel/value-objects';
+import { AbsolutePath, RepositoryRelativePath, Version } from '#/kernel/value-objects';
 import { noteSection, stepsSection } from '#/shared/cli';
 
 import type { PartDiagnosis } from '../../../domain/entities';
 import { Diagnosis } from '../../../domain/entities';
 import { installationOutcomeOf, installationSectionsOf } from '../report.utils';
 
-const ON_PATH = '/home/me/.local/bin/constitution';
+const onPath = AbsolutePath.create('/home/me/.local/bin/constitution');
 const MANIFEST = '/work/project/.droneey/constitution/package.json';
-const RELEASE_FOLDER = '/work/project/.droneey/constitution';
+const manifest = AbsolutePath.create(MANIFEST);
+const RELEASE_FOLDER_PATH = '/work/project/.droneey/constitution';
 const MISE_INSTALL = 'run mise install';
 const RAISE_PIN = 'raise the Constitution pin in mise.toml, then run mise install';
 const UPDATE_PLUGIN =
   'run claude plugin marketplace update droneey, then claude plugin update constitution@droneey';
 const NO_PROJECT = 'no constitution.yaml in this folder or above it';
 
-const program = Version.create('1.0.0');
+const executable = Version.create('1.0.0');
 const older = Version.create('0.9.0');
 const newer = Version.create('1.1.0');
 const LINK = {
-  folder: '.droneey/constitution',
-  target: '/releases/1.0.0',
+  linkPath: RepositoryRelativePath.create('.droneey/constitution'),
+  targetPath: AbsolutePath.create('/releases/1.0.0'),
 } as const;
 
 const SOUND: PartDiagnosis = {
-  kind: Diagnosis.ProgramRuns,
-  program,
+  executable,
+  kind: Diagnosis.ExecutableRuns,
 } as const;
 const WARNED: PartDiagnosis = {
   kind: Diagnosis.HooksMissing,
 } as const;
 const BROKEN: PartDiagnosis = {
   kind: Diagnosis.ReleaseMissing,
-  releaseFolder: RELEASE_FOLDER,
+  releaseFolderPath: AbsolutePath.create(RELEASE_FOLDER_PATH),
 } as const;
 const SKIPPED: PartDiagnosis = {
-  kind: Diagnosis.LatestUnknown,
+  kind: Diagnosis.LatestUnreadable,
 } as const;
 
 describe('installationOutcomeOf', () => {
@@ -103,11 +104,11 @@ describe('installationSectionsOf', () => {
       stepsSection([
         {
           detail: 'constitution 1.0.0',
-          label: 'Program',
+          label: 'Executable',
           status: StepStatus.Done,
         },
         {
-          detail: 'GitHub could not be reached, so the latest release is unknown',
+          detail: "GitHub's answer names no release, so the latest release is unknown",
           label: 'Latest release',
           status: StepStatus.Skipped,
         },
@@ -117,7 +118,7 @@ describe('installationSectionsOf', () => {
           status: StepStatus.Warned,
         },
         {
-          detail: `${RELEASE_FOLDER} does not exist`,
+          detail: `${RELEASE_FOLDER_PATH} does not exist`,
           label: 'Release link',
           status: StepStatus.Failed,
         },
@@ -138,13 +139,13 @@ describe('installationSectionsOf', () => {
     const diagnoses: readonly PartDiagnosis[] = [
       SOUND,
       {
+        executable,
         kind: Diagnosis.PluginMatches,
-        plugin: program,
-        program,
+        plugin: executable,
       },
       {
         kind: Diagnosis.PathMatches,
-        path: ON_PATH,
+        path: onPath,
       },
     ];
 
@@ -156,7 +157,7 @@ describe('installationSectionsOf', () => {
       stepsSection([
         {
           detail: 'constitution 1.0.0',
-          label: 'Program',
+          label: 'Executable',
           status: StepStatus.Done,
         },
         {
@@ -165,7 +166,7 @@ describe('installationSectionsOf', () => {
           status: StepStatus.Done,
         },
         {
-          detail: ON_PATH,
+          detail: onPath,
           label: 'constitution on PATH',
           status: StepStatus.Done,
         },
@@ -182,21 +183,39 @@ describe('installationSectionsOf', () => {
     {
       detail: 'constitution 1.0.0',
       diagnosis: SOUND,
-      label: 'Program',
+      label: 'Executable',
       status: StepStatus.Done,
     },
     {
-      detail: '0.9.0, whose files are those of this program 1.0.0',
+      detail: '0.9.0, whose files are those of this executable 1.0.0',
       diagnosis: {
+        executable,
         kind: Diagnosis.PluginMatches,
         plugin: older,
-        program,
       },
       label: 'Claude Code plugin',
       status: StepStatus.Done,
     },
     {
-      detail: 'GitHub could not be reached, so the latest release is unknown',
+      detail: 'GitHub could not be reached, so the latest release is unknown: fetch failed',
+      diagnosis: {
+        kind: Diagnosis.LatestUnanswered,
+        reason: 'fetch failed',
+      },
+      label: 'Latest release',
+      status: StepStatus.Skipped,
+    },
+    {
+      detail: 'GitHub refused the call with status 403, so the latest release is unknown',
+      diagnosis: {
+        kind: Diagnosis.LatestRefused,
+        status: 403,
+      },
+      label: 'Latest release',
+      status: StepStatus.Skipped,
+    },
+    {
+      detail: "GitHub's answer names no release, so the latest release is unknown",
       diagnosis: SKIPPED,
       label: 'Latest release',
       status: StepStatus.Skipped,
@@ -211,10 +230,10 @@ describe('installationSectionsOf', () => {
       status: StepStatus.Done,
     },
     {
-      detail: ON_PATH,
+      detail: onPath,
       diagnosis: {
         kind: Diagnosis.PathMatches,
-        path: ON_PATH,
+        path: onPath,
       },
       label: 'constitution on PATH',
       status: StepStatus.Done,
@@ -301,43 +320,43 @@ describe('installationSectionsOf', () => {
       status: StepStatus.Warned,
     },
     {
-      detail: "the plugin's files differ from this program's, both 1.0.0",
+      detail: "the plugin's files differ from constitution's, both 1.0.0",
       diagnosis: {
+        executable,
         kind: Diagnosis.PluginDiffersAtItsVersion,
-        program,
       },
-      hint: 'install the plugin from the tree this program runs from, whose plugin files changed since that release',
+      hint: 'install the plugin from the tree constitution runs from, whose plugin files changed since that release',
       label: 'Claude Code plugin',
       status: StepStatus.Warned,
     },
     {
-      detail: 'the plugin 0.9.0 is older than this program 1.0.0, and its files differ',
+      detail: 'the plugin 0.9.0 is older than this executable 1.0.0, and its files differ',
       diagnosis: {
+        executable,
         kind: Diagnosis.PluginOlder,
         plugin: older,
-        program,
       },
       hint: UPDATE_PLUGIN,
       label: 'Claude Code plugin',
       status: StepStatus.Warned,
     },
     {
-      detail: 'the plugin 1.1.0 is newer than this program 1.0.0, and its files differ',
+      detail: 'the plugin 1.1.0 is newer than this executable 1.0.0, and its files differ',
       diagnosis: {
+        executable,
         kind: Diagnosis.PluginNewer,
         plugin: newer,
-        program,
       },
       hint: RAISE_PIN,
       label: 'Claude Code plugin',
       status: StepStatus.Warned,
     },
     {
-      detail: '1.1.0 is out; this program is 1.0.0',
+      detail: '1.1.0 is out; this executable is 1.0.0',
       diagnosis: {
+        executable,
         kind: Diagnosis.LatestAhead,
         latest: newer,
-        program,
       },
       hint: RAISE_PIN,
       label: 'Latest release',
@@ -346,29 +365,29 @@ describe('installationSectionsOf', () => {
     {
       detail: 'constitution is not on PATH, so the hooks cannot run',
       diagnosis: {
-        kind: Diagnosis.ProgramNotOnPath,
+        kind: Diagnosis.ExecutableNotOnPath,
       },
       hint: 'pin github:droneey/constitution in mise.toml as the README shows, then run mise install',
       label: 'constitution on PATH',
       status: StepStatus.Failed,
     },
     {
-      detail: `${ON_PATH} does not answer --version`,
+      detail: `${onPath} does not answer --version`,
       diagnosis: {
         kind: Diagnosis.PathSilent,
-        path: ON_PATH,
+        path: onPath,
       },
       hint: `${MISE_INSTALL}, so PATH serves the release the project pins`,
       label: 'constitution on PATH',
       status: StepStatus.Warned,
     },
     {
-      detail: `${ON_PATH} is 0.9.0, this program 1.0.0`,
+      detail: `${onPath} is 0.9.0, this executable 1.0.0`,
       diagnosis: {
         answered: '0.9.0',
+        executable,
         kind: Diagnosis.PathDiffers,
-        path: ON_PATH,
-        program,
+        path: onPath,
       },
       hint: `${MISE_INSTALL}, so PATH serves the release the project pins`,
       label: 'constitution on PATH',
@@ -378,7 +397,31 @@ describe('installationSectionsOf', () => {
       detail: `cannot read ${MANIFEST}`,
       diagnosis: {
         kind: Diagnosis.ManifestUnreadable,
-        manifest: MANIFEST,
+        manifest,
+      },
+      hint: MISE_INSTALL,
+      label: 'Release link',
+      status: StepStatus.Failed,
+    },
+    {
+      detail: `${MANIFEST} is no manifest a release writes — it is no JSON object`,
+      diagnosis: {
+        kind: Diagnosis.ManifestNotObject,
+        manifest,
+      },
+      hint: MISE_INSTALL,
+      label: 'Release link',
+      status: StepStatus.Failed,
+    },
+    {
+      detail: `${MANIFEST} is no manifest a release writes — fields of another form: version, constitutionFormat`,
+      diagnosis: {
+        fields: [
+          'version',
+          'constitutionFormat',
+        ],
+        kind: Diagnosis.ManifestMalformed,
+        manifest,
       },
       hint: MISE_INSTALL,
       label: 'Release link',
@@ -388,24 +431,24 @@ describe('installationSectionsOf', () => {
       detail: `${MANIFEST} names no version`,
       diagnosis: {
         kind: Diagnosis.ManifestWithoutVersion,
-        manifest: MANIFEST,
+        manifest,
       },
       hint: MISE_INSTALL,
       label: 'Release link',
       status: StepStatus.Failed,
     },
     {
-      detail: `${RELEASE_FOLDER} does not exist`,
+      detail: `${RELEASE_FOLDER_PATH} does not exist`,
       diagnosis: {
         kind: Diagnosis.ReleaseMissing,
-        releaseFolder: RELEASE_FOLDER,
+        releaseFolderPath: AbsolutePath.create(RELEASE_FOLDER_PATH),
       },
       hint: `${MISE_INSTALL}, which installs the release mise.toml pins and links it there`,
       label: 'Release link',
       status: StepStatus.Failed,
     },
     {
-      detail: 'the release has block format 9, newer than this program reads',
+      detail: 'the release has block format 9, newer than this executable reads',
       diagnosis: {
         format: 9,
         kind: Diagnosis.ReleaseFormatNewer,
@@ -415,7 +458,7 @@ describe('installationSectionsOf', () => {
       status: StepStatus.Failed,
     },
     {
-      detail: 'the release is older than block format 3, the oldest this program reads',
+      detail: 'the release is older than block format 4, the oldest this executable reads',
       diagnosis: {
         kind: Diagnosis.ReleaseFormatOlder,
       },
@@ -424,14 +467,14 @@ describe('installationSectionsOf', () => {
       status: StepStatus.Failed,
     },
     {
-      detail: '.droneey/constitution → /releases/1.0.0 holds 0.9.0, this program is 1.0.0',
+      detail: '.droneey/constitution → /releases/1.0.0 holds 0.9.0, this executable is 1.0.0',
       diagnosis: {
+        executable,
         kind: Diagnosis.LinkDiffers,
         link: LINK,
-        program,
         release: older,
       },
-      hint: `${MISE_INSTALL}, so the link and this program are one release`,
+      hint: `${MISE_INSTALL}, so the link and this executable are one release`,
       label: 'Release link',
       status: StepStatus.Warned,
     },

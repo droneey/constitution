@@ -1,0 +1,6 @@
+mise:
+  '*':
+    typescript:
+      knip.jsonc:
+        ignoreBinaries:
+          - mise

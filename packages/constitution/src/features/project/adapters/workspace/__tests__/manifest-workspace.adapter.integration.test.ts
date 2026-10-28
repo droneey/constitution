@@ -4,6 +4,8 @@ import { dirname, join } from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
+import { AbsolutePath } from '#/kernel/value-objects';
+
 import { createManifestWorkspace } from '../manifest-workspace.adapter';
 
 let parent = '';
@@ -23,8 +25,8 @@ const typescriptUnits = {
   'apps/docs/package.json': '{}\n',
   'apps/notes/README.md': '# Not a package\n',
   'packages/ui/package.json': '{}\n',
-  'packages/mixed/languages/python/pyproject.toml': '[project]\nname = "mixed"\n',
-  'packages/mixed/languages/typescript/package.json': '{}\n',
+  'packages/mixed/python/pyproject.toml': '[project]\nname = "mixed"\n',
+  'packages/mixed/typescript/package.json': '{}\n',
 };
 
 // The project sits beside a package of another repository, which no glob of its own reaches.
@@ -50,12 +52,11 @@ describe('createManifestWorkspace', () => {
       condition: 'package.json lists its globs',
       files: {
         ...typescriptUnits,
-        'package.json':
-          '{"workspaces": ["apps/*", "packages/*", "packages/*/languages/typescript"]}\n',
+        'package.json': '{"workspaces": ["apps/*", "packages/*", "packages/mixed/*"]}\n',
       },
       members: [
         'apps/docs',
-        'packages/mixed/languages/typescript',
+        'packages/mixed/typescript',
         'packages/ui',
       ],
     },
@@ -76,11 +77,11 @@ describe('createManifestWorkspace', () => {
         'packages/check/pyproject.toml': '[project]\nname = "check"\n',
         'packages/old/pyproject.toml': '[project]\nname = "old"\n',
         'pyproject.toml':
-          '[tool.uv.workspace]\nmembers = ["packages/*/languages/python", "packages/*"]\nexclude = ["packages/old"]\n',
+          '[tool.uv.workspace]\nmembers = ["packages/*/python", "packages/*"]\nexclude = ["packages/old"]\n',
       },
       members: [
         'packages/check',
-        'packages/mixed/languages/python',
+        'packages/mixed/python',
       ],
     },
     {
@@ -90,12 +91,12 @@ describe('createManifestWorkspace', () => {
         'node_modules/typescript/package.json': '{}\n',
         'package.json': '{"workspaces": ["**/typescript", "apps/docs", "./apps/docs/"]}\n',
         'packages/.hidden/typescript/package.json': '{}\n',
-        'pyproject.toml': '[tool.uv.workspace]\nmembers = ["packages/mixed/languages/python"]\n',
+        'pyproject.toml': '[tool.uv.workspace]\nmembers = ["packages/mixed/python"]\n',
       },
       members: [
         'apps/docs',
-        'packages/mixed/languages/python',
-        'packages/mixed/languages/typescript',
+        'packages/mixed/python',
+        'packages/mixed/typescript',
       ],
     },
     {
@@ -106,7 +107,7 @@ describe('createManifestWorkspace', () => {
       },
       members: [
         'apps/docs',
-        'packages/mixed/languages/typescript',
+        'packages/mixed/typescript',
         'packages/ui',
       ],
     },
@@ -147,12 +148,12 @@ describe('createManifestWorkspace', () => {
       files: {
         ...typescriptUnits,
         'package.json':
-          '{"workspaces": ["packages/{ui,mixed/languages/{python,typescript}}", "apps/docs,old"]}\n',
+          '{"workspaces": ["packages/{ui,mixed/{python,typescript}}", "apps/docs,old"]}\n',
         'apps/docs,old/package.json': '{}\n',
       },
       members: [
         'apps/docs,old',
-        'packages/mixed/languages/typescript',
+        'packages/mixed/typescript',
         'packages/ui',
       ],
     },
@@ -236,7 +237,7 @@ describe('createManifestWorkspace', () => {
       const found = createManifestWorkspace({
         maxFolders: 100,
         maxGlobs: 100,
-      }).membersOf(project);
+      }).membersOf(AbsolutePath.create(project));
 
       // Assert
       expect<readonly string[]>(found).toStrictEqual(members);
@@ -295,7 +296,7 @@ describe('createManifestWorkspace', () => {
     const found = createManifestWorkspace({
       maxFolders: 100,
       maxGlobs: 100,
-    }).membersOf(project);
+    }).membersOf(AbsolutePath.create(project));
 
     // Assert
     expect(found).toStrictEqual([]);
@@ -312,7 +313,7 @@ describe('createManifestWorkspace', () => {
     const found = createManifestWorkspace({
       maxFolders: 1,
       maxGlobs: 100,
-    }).membersOf(project);
+    }).membersOf(AbsolutePath.create(project));
 
     // Assert
     expect<readonly string[]>(found).toStrictEqual([
@@ -331,7 +332,7 @@ describe('createManifestWorkspace', () => {
     const found = createManifestWorkspace({
       maxFolders: 1,
       maxGlobs: 100,
-    }).membersOf(project);
+    }).membersOf(AbsolutePath.create(project));
 
     // Assert
     expect<readonly string[]>(found).toStrictEqual([
@@ -344,19 +345,19 @@ describe('createManifestWorkspace', () => {
     writeAll({
       ...typescriptUnits,
       'package.json':
-        '{"workspaces": ["{apps/docs,packages/ui}", "packages/{mixed/languages/typescript}"]}\n',
+        '{"workspaces": ["{apps/docs,packages/ui}", "packages/{mixed/typescript}"]}\n',
     });
 
     // Act
     const found = createManifestWorkspace({
       maxFolders: 100,
       maxGlobs: 2,
-    }).membersOf(project);
+    }).membersOf(AbsolutePath.create(project));
 
     // Assert
     expect<readonly string[]>(found).toStrictEqual([
       'apps/docs',
-      'packages/mixed/languages/typescript',
+      'packages/mixed/typescript',
     ]);
   });
 });

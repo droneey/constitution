@@ -3,6 +3,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSyn
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
+import { toolEnvironment } from './package.fixtures';
 import { uvEnvironment } from './uv.fixtures';
 
 type Files = Readonly<Record<string, string>>;
@@ -16,7 +17,7 @@ const SHOP_PACKAGE: Files = {
   'src/shop/__init__.py': '',
 } as const;
 
-// The archive's Python tools, built as the release builds them from the
+// The distribution's Python tools, built as their packages build them, from the
 // sources of their import packages, which the workspace's environment installs.
 const tools = [
   {
@@ -24,7 +25,7 @@ const tools = [
     tool: 'python-check',
   },
   {
-    module: 'droneey_mutation_check',
+    module: 'droneey_mutation_check_python',
     tool: 'mutmut-check',
   },
 ];
@@ -38,6 +39,7 @@ const sourceOf = (module: string): string =>
     ],
     {
       encoding: 'utf8',
+      env: toolEnvironment(),
     },
   ).stdout.trim();
 
@@ -50,16 +52,16 @@ const writeFiles = (folder: string, files: Files): void => {
   }
 };
 
-// A tool as the release builds it, which a project with tools holds.
+// A tool as its package builds it, which a project with tools holds.
 interface BuiltTool {
-  readonly archive: Buffer;
   readonly tool: string;
+  readonly zipapp: Buffer;
 }
 
 /** @throws Error when the tool does not build. */
 const builtTool = (input: { module: string; tool: string }): BuiltTool => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-python-tool-'));
-  const archive = join(folder, `${input.tool}.pyz`);
+  const zipapp = join(folder, `${input.tool}.pyz`);
 
   try {
     const building = spawnSync(
@@ -71,10 +73,11 @@ const builtTool = (input: { module: string; tool: string }): BuiltTool => {
         '-m',
         `${input.module}.main:main`,
         '-o',
-        archive,
+        zipapp,
       ],
       {
         encoding: 'utf8',
+        env: toolEnvironment(),
       },
     );
 
@@ -83,7 +86,7 @@ const builtTool = (input: { module: string; tool: string }): BuiltTool => {
     }
 
     return {
-      archive: readFileSync(archive),
+      zipapp: readFileSync(zipapp),
       tool: input.tool,
     };
   } finally {
@@ -121,7 +124,7 @@ const linkConstitution = (input: { folder: string; tools: readonly BuiltTool[] }
     mkdirSync(dist, {
       recursive: true,
     });
-    writeFileSync(join(dist, `${tool.tool}.pyz`), tool.archive);
+    writeFileSync(join(dist, `${tool.tool}.pyz`), tool.zipapp);
   }
 };
 
@@ -148,21 +151,6 @@ interface PythonProjectRun<TResult> {
   readonly tools?: readonly BuiltTool[];
 }
 
-const inPythonProject = <TResult>(input: PythonProjectRun<TResult>): TResult => {
-  const folder = mkdtempSync(join(tmpdir(), 'constitution-python-'));
-
-  try {
-    fillPythonProject(folder, input);
-
-    return input.run(folder);
-  } finally {
-    rmSync(folder, {
-      force: true,
-      recursive: true,
-    });
-  }
-};
-
 const inPythonProjectAsync = async <TResult>(
   input: PythonProjectRun<Promise<TResult>>,
 ): Promise<TResult> => {
@@ -181,4 +169,4 @@ const inPythonProjectAsync = async <TResult>(
 };
 
 export type { BuiltTool, Files };
-export { buildTools, inPythonProject, inPythonProjectAsync, python, repository, writeFiles };
+export { buildTools, inPythonProjectAsync, python, writeFiles };

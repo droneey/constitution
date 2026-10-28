@@ -1,0 +1,8 @@
+# the placeholder before a key
+Name? › my-project
+
+# what was typed
+Name? › ab
+
+# read out
+textbox: Name? my-project

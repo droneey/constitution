@@ -1,0 +1,6 @@
+browser:
+  raw-html-never-reaches-the-dom:
+    typescript:
+      biome.jsonc:
+        plugins:
+          - ./${constitution.path}/presets/biome/plugins/typescript/raw-html-never-reaches-the-dom.${role.grit-rule}

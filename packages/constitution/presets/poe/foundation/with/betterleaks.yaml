@@ -1,0 +1,12 @@
+betterleaks:
+  '*':
+    '*':
+      pyproject.toml ? ${file.isTop}:
+        tool:
+          poe:
+            tasks:
+              check:secrets:
+                shell: >-
+                  betterleaks git . --redact --no-banner
+                  && betterleaks git . --pre-commit --redact --no-banner
+                  && betterleaks git . --pre-commit --staged --redact --no-banner

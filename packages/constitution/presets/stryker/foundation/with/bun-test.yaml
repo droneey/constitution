@@ -1,0 +1,8 @@
+stryker:
+  stryker-runs-the-distribution-runner:
+    typescript:
+      stryker.config.json:
+        testRunner: bun-specs
+        plugins:
+          - ./${constitution.path}/tools/mutation-check/dist/runner.js
+        coverageAnalysis: 'off'

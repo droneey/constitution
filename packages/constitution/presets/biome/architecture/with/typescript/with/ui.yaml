@@ -1,0 +1,63 @@
+typescript:
+  component-reaches-no-io-global:
+    typescript:
+      biome.jsonc:
+        overrides:
+          - includes:
+              - '**/${role.component}/**'
+              - '!**/${role.colocated-specs}/**'
+            linter:
+              rules:
+                style:
+                  noRestrictedGlobals:
+                    level: error
+                    options:
+                      deniedGlobals:
+                        EventSource: >-
+                          A component takes its data and callbacks as props; input and output go
+                          through binding units.
+                        WebSocket: >-
+                          A component takes its data and callbacks as props; input and output go
+                          through binding units.
+                        XMLHttpRequest: >-
+                          A component takes its data and callbacks as props; input and output go
+                          through binding units.
+                        fetch: >-
+                          A component takes its data and callbacks as props; input and output go
+                          through binding units.
+                        indexedDB: >-
+                          A component takes its data and callbacks as props; input and output go
+                          through binding units.
+                        localStorage: >-
+                          A component takes its data and callbacks as props; input and output go
+                          through binding units.
+                        performance: >-
+                          A component takes its data and callbacks as props; input and output go
+                          through binding units.
+                        process: >-
+                          A component takes its data and callbacks as props; input and output go
+                          through binding units.
+                        caches: >-
+                          A component takes its data and callbacks as props; input and output go
+                          through binding units.
+                        cookieStore: >-
+                          A component takes its data and callbacks as props; input and output go
+                          through binding units.
+                        document: >-
+                          A component takes its data and callbacks as props; input and output go
+                          through binding units.
+                        globalThis: >-
+                          A component takes its data and callbacks as props; input and output go
+                          through binding units.
+                        navigator: >-
+                          A component takes its data and callbacks as props; input and output go
+                          through binding units.
+                        self: >-
+                          A component takes its data and callbacks as props; input and output go
+                          through binding units.
+                        window: >-
+                          A component takes its data and callbacks as props; input and output go
+                          through binding units.
+                        sessionStorage: >-
+                          A component takes its data and callbacks as props; input and output go
+                          through binding units.

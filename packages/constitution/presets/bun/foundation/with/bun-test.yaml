@@ -1,0 +1,32 @@
+bun-test:
+  '*':
+    typescript:
+      package.json:
+        scripts:
+          test:unit: CI=1 bun test
+          test:integration: CI=1 bun --config=./bunfig.integration.toml test
+bun:
+  '*':
+    typescript:
+      package.json:
+        scripts: !sorted {}
+  script-group-run-by-its-prefix:
+    typescript:
+      package.json:
+        scripts:
+          check: !words
+            - bun run --sequential
+            - slot: checks
+            - slot: tests
+            - slot: mutations
+          check@tests:
+            - test
+          test: bun run --parallel 'test:*'
+_task-runner:
+  unit-run-through-its-action-tasks:
+    typescript:
+      ${constitution.run}:
+        check:
+          - bun run check
+        test:
+          - bun run test

@@ -1,0 +1,491 @@
+_react:
+  hooks-at-top-level:
+    typescript:
+      biome.jsonc:
+        overrides:
+          - includes:
+              - '**/*.ts'
+            linter:
+              rules:
+                correctness:
+                  useHookAtTopLevel: error
+          - includes:
+              - '**/*.tsx'
+              - '**/*.jsx'
+            assist:
+              actions:
+                source:
+                  useSortedAttributes:
+                    level: 'on'
+                    options: {}
+                  noDuplicateClasses:
+                    level: 'on'
+                    options: {}
+            linter:
+              rules:
+                correctness:
+                  useHookAtTopLevel: error
+  '*':
+    typescript:
+      biome.jsonc:
+        overrides:
+          - includes:
+              - '**/*.ts'
+            linter:
+              rules:
+                correctness:
+                  useExhaustiveDependencies: error
+          - includes:
+              - '**/*.tsx'
+              - '**/*.jsx'
+            assist:
+              actions:
+                source:
+                  useSortedAttributes:
+                    level: 'on'
+                    options: {}
+                  noDuplicateClasses:
+                    level: 'on'
+                    options: {}
+            linter:
+              rules:
+                correctness:
+                  useExhaustiveDependencies: error
+          - includes:
+              - '**/*.tsx'
+              - '**/*.jsx'
+            assist:
+              actions:
+                source:
+                  useSortedAttributes:
+                    level: 'on'
+                    options: {}
+                  noDuplicateClasses:
+                    level: 'on'
+                    options: {}
+            linter:
+              rules:
+                correctness:
+                  noChildrenProp: error
+          - includes:
+              - '**/*.tsx'
+              - '**/*.jsx'
+            assist:
+              actions:
+                source:
+                  useSortedAttributes:
+                    level: 'on'
+                    options: {}
+                  noDuplicateClasses:
+                    level: 'on'
+                    options: {}
+            linter:
+              rules:
+                nursery:
+                  useReactNamingConvention: error
+          - includes:
+              - '**/*.tsx'
+              - '**/*.jsx'
+            assist:
+              actions:
+                source:
+                  useSortedAttributes:
+                    level: 'on'
+                    options: {}
+                  noDuplicateClasses:
+                    level: 'on'
+                    options: {}
+            linter:
+              rules:
+                nursery:
+                  useReactFunctionComponentDefinition:
+                    level: error
+                    options:
+                      namedComponents: functionDeclaration
+          - includes:
+              - '**/*.tsx'
+              - '**/*.jsx'
+            assist:
+              actions:
+                source:
+                  useSortedAttributes:
+                    level: 'on'
+                    options: {}
+                  noDuplicateClasses:
+                    level: 'on'
+                    options: {}
+            linter:
+              rules:
+                suspicious:
+                  noLeakedRender: error
+          - includes:
+              - '**/*.tsx'
+              - '**/*.jsx'
+            assist:
+              actions:
+                source:
+                  useSortedAttributes:
+                    level: 'on'
+                    options: {}
+                  noDuplicateClasses:
+                    level: 'on'
+                    options: {}
+            linter:
+              rules:
+                suspicious:
+                  noDuplicateJsxProps: error
+          - includes:
+              - '**/*.tsx'
+              - '**/*.jsx'
+            assist:
+              actions:
+                source:
+                  useSortedAttributes:
+                    level: 'on'
+                    options: {}
+                  noDuplicateClasses:
+                    level: 'on'
+                    options: {}
+            linter:
+              rules:
+                suspicious:
+                  noDuplicatedSpreadProps: error
+          - includes:
+              - '**/*.tsx'
+              - '**/*.jsx'
+            assist:
+              actions:
+                source:
+                  useSortedAttributes:
+                    level: 'on'
+                    options: {}
+                  noDuplicateClasses:
+                    level: 'on'
+                    options: {}
+            linter:
+              rules:
+                style:
+                  useFragmentSyntax: error
+          - includes:
+              - '**/*.tsx'
+              - '**/*.jsx'
+            assist:
+              actions:
+                source:
+                  useSortedAttributes:
+                    level: 'on'
+                    options: {}
+                  noDuplicateClasses:
+                    level: 'on'
+                    options: {}
+            linter:
+              rules:
+                style:
+                  useComponentExportOnlyModules: 'off'
+          - includes:
+              - '**/*.tsx'
+              - '**/*.jsx'
+            assist:
+              actions:
+                source:
+                  useSortedAttributes:
+                    level: 'on'
+                    options: {}
+                  noDuplicateClasses:
+                    level: 'on'
+                    options: {}
+            linter:
+              rules:
+                style:
+                  useConsistentCurlyBraces: error
+          - includes:
+              - '**/*.tsx'
+              - '**/*.jsx'
+            assist:
+              actions:
+                source:
+                  useSortedAttributes:
+                    level: 'on'
+                    options: {}
+                  noDuplicateClasses:
+                    level: 'on'
+                    options: {}
+            linter:
+              rules:
+                style:
+                  useSelfClosingElements: error
+          - includes:
+              - '**/*.tsx'
+              - '**/*.jsx'
+            assist:
+              actions:
+                source:
+                  useSortedAttributes:
+                    level: 'on'
+                    options: {}
+                  noDuplicateClasses:
+                    level: 'on'
+                    options: {}
+            linter:
+              rules:
+                performance:
+                  noJsxPropsBind: 'off'
+          - includes:
+              - '**/*.tsx'
+              - '**/*.jsx'
+            assist:
+              actions:
+                source:
+                  useSortedAttributes:
+                    level: 'on'
+                    options: {}
+                  noDuplicateClasses:
+                    level: 'on'
+                    options: {}
+            linter:
+              rules:
+                complexity:
+                  noUselessFragments: error
+        assist:
+          actions:
+            source:
+              organizeImports:
+                options:
+                  groups@frameworks:
+                    - - react
+                      - react/**
+                      - react-*
+                    - ':BLANK_LINE:'
+  list-keys-from-identity:
+    typescript:
+      biome.jsonc:
+        overrides:
+          - includes:
+              - '**/*.tsx'
+              - '**/*.jsx'
+            assist:
+              actions:
+                source:
+                  useSortedAttributes:
+                    level: 'on'
+                    options: {}
+                  noDuplicateClasses:
+                    level: 'on'
+                    options: {}
+            linter:
+              rules:
+                correctness:
+                  useJsxKeyInIterable: error
+          - includes:
+              - '**/*.tsx'
+              - '**/*.jsx'
+            assist:
+              actions:
+                source:
+                  useSortedAttributes:
+                    level: 'on'
+                    options: {}
+                  noDuplicateClasses:
+                    level: 'on'
+                    options: {}
+            linter:
+              rules:
+                suspicious:
+                  noArrayIndexKey: error
+  component-never-defined-inside-a-component:
+    typescript:
+      biome.jsonc:
+        overrides:
+          - includes:
+              - '**/*.tsx'
+              - '**/*.jsx'
+            assist:
+              actions:
+                source:
+                  useSortedAttributes:
+                    level: 'on'
+                    options: {}
+                  noDuplicateClasses:
+                    level: 'on'
+                    options: {}
+            linter:
+              rules:
+                correctness:
+                  noNestedComponentDefinitions: error
+          - includes:
+              - '**/*.tsx'
+              - '**/*.jsx'
+            assist:
+              actions:
+                source:
+                  useSortedAttributes:
+                    level: 'on'
+                    options: {}
+                  noDuplicateClasses:
+                    level: 'on'
+                    options: {}
+            linter:
+              rules:
+                correctness:
+                  noComponentHookFactories: error
+  render-is-pure:
+    typescript:
+      biome.jsonc:
+        overrides:
+          - includes:
+              - '**/*.tsx'
+              - '**/*.jsx'
+            assist:
+              actions:
+                source:
+                  useSortedAttributes:
+                    level: 'on'
+                    options: {}
+                  noDuplicateClasses:
+                    level: 'on'
+                    options: {}
+            linter:
+              rules:
+                correctness:
+                  noReactPropAssignments: error
+  modern-react-api-only:
+    typescript:
+      biome.jsonc:
+        overrides:
+          - includes:
+              - '**/*.tsx'
+              - '**/*.jsx'
+            assist:
+              actions:
+                source:
+                  useSortedAttributes:
+                    level: 'on'
+                    options: {}
+                  noDuplicateClasses:
+                    level: 'on'
+                    options: {}
+            linter:
+              rules:
+                suspicious:
+                  noReactForwardRef: error
+          - includes:
+              - '**/*.tsx'
+              - '**/*.jsx'
+            assist:
+              actions:
+                source:
+                  useSortedAttributes:
+                    level: 'on'
+                    options: {}
+                  noDuplicateClasses:
+                    level: 'on'
+                    options: {}
+            linter:
+              rules:
+                suspicious:
+                  noReactStringRefs: error
+        plugins:
+          - ./${constitution.path}/presets/biome/plugins/typescript/modern-react-api-only.${role.grit-rule}
+  function-components-only:
+    typescript:
+      biome.jsonc:
+        overrides:
+          - includes:
+              - '**/*.tsx'
+              - '**/*.jsx'
+            assist:
+              actions:
+                source:
+                  useSortedAttributes:
+                    level: 'on'
+                    options: {}
+                  noDuplicateClasses:
+                    level: 'on'
+                    options: {}
+            linter:
+              rules:
+                style:
+                  useReactFunctionComponents: error
+  components-named-in-pascal-case:
+    typescript:
+      biome.jsonc:
+        overrides:
+          - includes:
+              - '**/*.tsx'
+              - '**/*.jsx'
+            assist:
+              actions:
+                source:
+                  useSortedAttributes:
+                    level: 'on'
+                    options: {}
+                  noDuplicateClasses:
+                    level: 'on'
+                    options: {}
+            linter:
+              rules:
+                style:
+                  useNamingConvention:
+                    level: error
+                    options:
+                      conventions:
+                        - selector:
+                            kind: typeParameter
+                          match: T([A-Z].*)?
+                          formats:
+                            - PascalCase
+                        - selector:
+                            kind: objectLiteralProperty
+                          match: '[_$]*([^_$].*?)[_$]*'
+                          formats:
+                            - camelCase
+                            - PascalCase
+                        - selector:
+                            kind: typeProperty
+                          match: '[_$]*([^_$].*?)[_$]*'
+                          formats:
+                            - camelCase
+                            - PascalCase
+  nothing-rendered-as-null:
+    typescript:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/nothing-rendered-as-null.${role.grit-rule}]:
+          includes:
+            - '**/*.tsx'
+  compound-parts-share-the-root-context:
+    typescript:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/compound-parts-share-the-root-context.${role.grit-rule}]:
+          includes:
+            - '**/*.tsx'
+  react-compiler-on:
+    typescript:
+      biome.jsonc:
+        overrides:
+          - includes:
+              - '**/*.tsx'
+              - '**/*.jsx'
+            assist:
+              actions:
+                source:
+                  useSortedAttributes:
+                    level: 'on'
+                    options: {}
+                  noDuplicateClasses:
+                    level: 'on'
+                    options: {}
+            linter:
+              rules:
+                nursery:
+                  useReactCompiler: error
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/react-compiler-on.${role.grit-rule}]:
+          includes:
+            - '**/*.ts'
+            - '**/*.tsx'
+core:
+  file-is-one-semantic-unit:
+    typescript:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/file-is-one-semantic-unit.${role.grit-rule}]:
+          includes:
+            - '**/*.tsx'

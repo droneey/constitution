@@ -4,8 +4,9 @@ import { Layer } from '#/kernel/constants';
 import type { FindingOf } from '#/kernel/types';
 import { BlockId } from '#/kernel/value-objects';
 
-import { checkInputOf, passportFile } from '../../../../../../__tests__/constitution.fixtures';
+import { passportFile } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
+import { checkInputOf } from '../../__tests__/check.fixtures';
 import type { SeamsDetails } from '../seams';
 import { SeamsCode, seamsCheck } from '../seams';
 

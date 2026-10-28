@@ -1,0 +1,5 @@
+usage: design-tokens generate <config>
+design-tokens: nothing lies at style-dictionary.config.ts; give the path of the platform's configuration module from the folder the command runs in
+design-tokens: ../style-dictionary.config.ts lies outside the working folder; run the command in the folder that holds the module
+design-tokens: style-dictionary.config.ts exports no function from a mode to its configuration; export one as the module's default
+design-tokens: the configuration of the mode dark is no object; return a Style Dictionary configuration for every mode

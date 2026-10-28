@@ -2,16 +2,21 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { basename, join } from 'node:path';
 
 import { RuleHeading } from '@droneey/constitution';
+import { fromMarkdown } from 'mdast-util-from-markdown';
 
-import { MARKDOWN_EXTENSION, pageSlugsOf } from '../../../domain/entities';
+import { MARKDOWN_EXTENSION } from '../../../domain/constants';
+import type { BlockLayer } from '../../../domain/entities';
+import { Page } from '../../../domain/entities';
+import { SourceError, SourceFailure } from '../../../domain/errors';
+import type { AbsolutePath } from '../../../domain/value-objects';
+import { BlockPath } from '../../../domain/value-objects';
+import { headingTextOf, isHeading, SUBSECTION_HEADING_DEPTH } from '../markdown';
 import type { BlocksOptions } from './remark-blocks.adapter';
 
-const RULE_MARK = '### ';
-
 const ruleSlugsIn = (markdown: string): readonly string[] =>
-  markdown.split('\n').flatMap((line) => {
-    const rule = line.startsWith(RULE_MARK)
-      ? RuleHeading.of(line.slice(RULE_MARK.length))
+  fromMarkdown(markdown).children.flatMap((node) => {
+    const rule = isHeading(node, SUBSECTION_HEADING_DEPTH)
+      ? RuleHeading.of(headingTextOf(node))
       : undefined;
 
     return rule === undefined
@@ -21,50 +26,58 @@ const ruleSlugsIn = (markdown: string): readonly string[] =>
         ];
   });
 
-const markdownFilesOf = (root: string, folder: string): readonly string[] =>
-  readdirSync(join(root, folder), {
+const blockPathsIn = (blocksFolderPath: AbsolutePath, layer: BlockLayer): readonly BlockPath[] =>
+  readdirSync(join(blocksFolderPath, layer), {
     recursive: true,
   })
-    .map(String)
-    .filter((path) => path.endsWith(MARKDOWN_EXTENSION))
-    .map((path) => `${folder}/${path}`);
+    .map((filePath) => `${layer}/${String(filePath)}`)
+    .filter(BlockPath.is);
 
 interface BlocksOptionsInput {
   readonly baseUrl: string;
-  readonly blocks: string;
-  readonly examples: string;
-  readonly folders: readonly string[];
+  readonly blocksFolderPath: AbsolutePath;
+  readonly examplesFolderPath: AbsolutePath;
+  readonly layers: readonly BlockLayer[];
 }
 
+/** @throws {@link SourceError} when an example names no rule of the folders */
 const blocksOptionsOf = (input: BlocksOptionsInput): BlocksOptions => {
-  const addresses = new Map<string, string>();
+  const addressesBySlug = new Map<string, string>();
 
-  for (const path of input.folders.flatMap((folder) => markdownFilesOf(input.blocks, folder))) {
-    const page = [
-      input.baseUrl,
-      ...pageSlugsOf(path),
-    ].join('/');
+  for (const blockPath of input.layers.flatMap((layer) =>
+    blockPathsIn(input.blocksFolderPath, layer),
+  )) {
+    const pageAddress = Page.addressOf(input.baseUrl, blockPath);
 
-    for (const slug of ruleSlugsIn(readFileSync(join(input.blocks, path), 'utf8'))) {
-      addresses.set(slug, `${page}#${slug}`);
+    // Stryker disable next-line StringLiteral: Bun reads text whatever the encoding names
+    for (const slug of ruleSlugsIn(readFileSync(join(input.blocksFolderPath, blockPath), 'utf8'))) {
+      addressesBySlug.set(slug, `${pageAddress}#${slug}`);
     }
   }
 
-  const files = readdirSync(input.examples).filter((name) => name.endsWith(MARKDOWN_EXTENSION));
-  const unknown = files
-    .map((name) => basename(name, MARKDOWN_EXTENSION))
-    .filter((slug) => !addresses.has(slug));
+  const exampleFileNames = readdirSync(input.examplesFolderPath).filter((fileName) =>
+    fileName.endsWith(MARKDOWN_EXTENSION),
+  );
+  const unknownSlugs = exampleFileNames
+    .map((fileName) => basename(fileName, MARKDOWN_EXTENSION))
+    .filter((slug) => !addressesBySlug.has(slug))
+    .toSorted();
 
-  if (unknown.length > 0) {
-    throw new Error(`examples name no rule: ${unknown.join(', ')}`);
+  if (unknownSlugs.length > 0) {
+    throw new SourceError({
+      code: SourceFailure.ExampleRuleUnknown,
+      details: {
+        slugs: unknownSlugs,
+      },
+    });
   }
 
   return {
-    addresses,
-    examples: new Map(
-      files.map((name) => [
-        basename(name, MARKDOWN_EXTENSION),
-        readFileSync(join(input.examples, name), 'utf8'),
+    addressesBySlug,
+    examplesBySlug: new Map(
+      exampleFileNames.map((fileName) => [
+        basename(fileName, MARKDOWN_EXTENSION),
+        readFileSync(join(input.examplesFolderPath, fileName), 'utf8'),
       ]),
     ),
   };

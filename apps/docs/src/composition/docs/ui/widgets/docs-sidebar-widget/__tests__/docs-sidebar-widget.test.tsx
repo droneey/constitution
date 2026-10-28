@@ -9,11 +9,10 @@ import { DocsLayout, Sidebar } from '#/libs/ui';
 
 import { componentViolationsIn } from '../../../../__tests__/axe.fixtures';
 import { pageTreeFixture, renderInDocs } from '../../../../__tests__/docs.fixtures';
-import { FrameMark, frameFake } from '../../../../__tests__/docs-frame.fake';
+import { frameFake } from '../../../../__tests__/docs-frame.fake';
 import { DocsLocationContext } from '../../../../app/providers';
-import { DocsNavTitle } from '../../../components/docs-nav-title';
-import { DocsRepositoryIcon } from '../../../components/docs-repository-icon';
-import { REPOSITORY_LINK } from '../../../constants';
+import { SidebarState } from '../../../../domain/entities';
+import { DocsNavTitle, repositoryLink } from '../../../components';
 import { DocsSidebarWidget } from '../docs-sidebar-widget';
 
 afterEach(cleanup);
@@ -24,19 +23,15 @@ const sidebar = {
   provider: Sidebar.Provider,
 };
 
-const layoutOn = (path: string): ReactElement => (
+const overviewLayout = (): ReactElement => (
   <DocsLocationContext
     value={{
-      href: `/docs/${path}`,
-      path,
+      href: '/docs',
     }}
   >
     <DocsLayout
       links={[
-        {
-          ...REPOSITORY_LINK,
-          icon: <DocsRepositoryIcon />,
-        },
+        repositoryLink,
       ]}
       nav={{
         title: <DocsNavTitle />,
@@ -57,12 +52,12 @@ const toggle = (): HTMLElement =>
   });
 
 describe('DocsSidebarWidget', () => {
-  it('should tell the frame the sidebar is open when the site opens', () => {
+  it('should tell the frame the sidebar is open when the site opens', async () => {
     // Arrange
     const { frame, marks } = frameFake();
 
     // Act
-    renderInDocs(layoutOn('index.md'), {
+    await renderInDocs(overviewLayout(), {
       frame,
     });
 
@@ -72,7 +67,7 @@ describe('DocsSidebarWidget', () => {
       marks.at(-1),
     ]).toStrictEqual([
       'true',
-      FrameMark.Open,
+      SidebarState.Open,
     ]);
   });
 
@@ -80,7 +75,7 @@ describe('DocsSidebarWidget', () => {
     // Arrange
     const { frame, marks } = frameFake();
 
-    renderInDocs(layoutOn('index.md'), {
+    await renderInDocs(overviewLayout(), {
       frame,
     });
 
@@ -88,15 +83,12 @@ describe('DocsSidebarWidget', () => {
     await userEvent.click(toggle());
 
     // Assert
-    expect(marks.at(-1)).toBe(FrameMark.Collapsed);
+    expect(marks.at(-1)).toBe(SidebarState.Collapsed);
   });
 
-  it('should show the page tree when the root gives no frame', () => {
-    // Arrange
-    const path = 'index.md';
-
+  it('should show the page tree when the root gives no frame', async () => {
     // Act
-    renderInDocs(layoutOn(path));
+    await renderInDocs(overviewLayout());
 
     // Assert
     expect(
@@ -110,7 +102,7 @@ describe('DocsSidebarWidget', () => {
 
   it('should pass the WCAG 2.2 A and AA scan', async () => {
     // Arrange
-    renderInDocs(layoutOn('index.md'), {
+    await renderInDocs(overviewLayout(), {
       frame: frameFake().frame,
     });
 

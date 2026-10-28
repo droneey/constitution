@@ -1,18 +1,52 @@
-# core: build
-dist/
-coverage/
+# The tools the distribution packs
+/tools/
 
-# typescript: dependencies
-node_modules/
+# git
+.claude/settings.local.json
+.claude/worktrees/
+/local/
+.DS_Store
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.log
+**/logs/
+.temp/
+.tmp/
+*.bak
+*.orig
+*~
+.env*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+credentials.json
+id_rsa
+*.secrets
 
-# typescript: caches
-*.tsbuildinfo
+# _js-runtime
+**/node_modules/
+*.tgz
 
-# tsc: the declarations and build info of a unit's project
-.tsc-cache/
+# bun-test
+**/coverage/
+
+# bun
+.npmrc
+
+# rumdl
+.rumdl_cache/
 
 # stryker
 .stryker-tmp/
+reports/mutation/
 
-# the archive's built tools, assembled by bun run build
-/tools/
+# tsc
+*.tsbuildinfo
+.tsc-cache/

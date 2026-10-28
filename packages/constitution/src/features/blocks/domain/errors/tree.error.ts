@@ -1,5 +1,6 @@
 import type { ProgramErrorInput } from '#/kernel/errors';
 import { ProgramError } from '#/kernel/errors';
+import type { AbsolutePath } from '#/kernel/value-objects';
 
 enum TreeFailure {
   Failed = 'failed',
@@ -11,7 +12,7 @@ enum TreeFailure {
 
 interface TreeFailureDetails {
   /** the folder of the tree, or the file that cannot be read */
-  readonly path: string;
+  readonly path: AbsolutePath;
 }
 
 /** An expected failure to list or read the files of a tree. */

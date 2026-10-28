@@ -1,0 +1,6 @@
+uv:
+  '*':
+    typescript:
+      knip.jsonc:
+        ignoreBinaries:
+          - uv

@@ -12,6 +12,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
 import type { Files } from './constitution.fixtures';
+import { toolEnvironment } from './package.fixtures';
 import { removeFolder } from './plugin-root.fixtures';
 
 enum ConfigKey {
@@ -21,7 +22,6 @@ enum ConfigKey {
   Languages = 'languages',
   Implementations = 'implementations',
   Packs = 'packs',
-  Check = 'check',
   Overrides = 'overrides',
 }
 
@@ -52,7 +52,6 @@ const CONFIG = 'constitution.yaml';
 
 const DEFAULTS: Readonly<Record<ConfigKey, string>> = {
   axes: '[architecture, workflow]',
-  check: 'bun run check',
   domains: '[]',
   implementations: '[]',
   languages: '[]',
@@ -74,13 +73,6 @@ const configOf = (config: Config): string =>
     })
     .join('\n')
     .concat('\n');
-
-// A member's constitution.yaml: every key of the repository's but check.
-const memberConfigOf = (config: Config): string =>
-  configOf({
-    ...config,
-    omit: ConfigKey.Check,
-  });
 
 // A workspace of the members given, each by its path with its constitution.yaml: the root's
 // package.json declares them, and each holds a package.json of its own.
@@ -136,6 +128,7 @@ const initRepository = (input: { repository: ProjectLayout['repository']; root: 
       ],
       {
         cwd: input.root,
+        env: toolEnvironment(),
       },
     );
   }
@@ -168,9 +161,15 @@ const writeSpecials = (input: { above: string; layout: ProjectLayout; root: stri
   const { above, layout, root } = input;
 
   for (const pipe of layout.namedPipes ?? []) {
-    execFileSync('mkfifo', [
-      join(root, pipe),
-    ]);
+    execFileSync(
+      'mkfifo',
+      [
+        join(root, pipe),
+      ],
+      {
+        env: toolEnvironment(),
+      },
+    );
   }
 
   for (const [link, target] of Object.entries(layout.links ?? {})) {
@@ -213,54 +212,37 @@ const removeProjects = (): void => {
   }
 };
 
-const packCard = (input: {
-  fields: Readonly<Record<string, string>>;
-  headings: readonly string[];
-}): string =>
+const packCard = (fields: Readonly<Record<string, string>>): string =>
   [
     '---',
-    ...Object.entries(input.fields).map(([key, field]) => `${key}: ${field}`),
+    ...Object.entries(fields).map(([key, field]) => `${key}: ${field}`),
     '---',
     '',
     '# A block of the pack',
     '',
-    ...input.headings.flatMap((heading) => [
-      heading,
-      'A rule of the pack.',
-      '',
-    ]),
   ].join('\n');
 
 // The project's own pack, the folder /ratify writes its blocks to.
-const OWN_PACK = 'constitution';
-const IMPLEMENTATIONS = 'implementations';
+const OWN_PACK = 'pack';
 
-interface PackBlockPlace {
-  readonly folder?: string;
+// The passport of a block of the pack, by its id.
+const packPath = (id: string): string => `${OWN_PACK}/blocks/implementations/${id}/${id}.md`;
+
+interface PackBlockInput {
+  readonly fields?: Readonly<Record<string, string>>;
   readonly id: string;
 }
 
-const packPath = (input: PackBlockPlace): string =>
-  `${OWN_PACK}/blocks/${input.folder ?? IMPLEMENTATIONS}/${input.id}/${input.id}.md`;
-
-interface PackBlockInput extends PackBlockPlace {
-  readonly fields?: Readonly<Record<string, string>>;
-  readonly headings?: readonly string[];
-}
-
 const packBlockFiles = (input: PackBlockInput): Files => ({
-  [packPath(input)]: packCard({
-    fields: {
-      id: input.id,
-      summary: `The pack's ${input.id} block.`,
-      requires: '[]',
-      extends: 'null',
-      abstract: 'false',
-      languages: '[]',
-      governs: '[]',
-      ...input.fields,
-    },
-    headings: input.headings ?? [],
+  [packPath(input.id)]: packCard({
+    id: input.id,
+    summary: `The pack's ${input.id} block.`,
+    requires: '[]',
+    extends: 'null',
+    abstract: 'false',
+    languages: '[]',
+    governs: '[]',
+    ...input.fields,
   }),
 });
 
@@ -283,7 +265,6 @@ const browserApp: ProjectLayout = {
     'implementations: [react-dom, tanstack-query, matomo, biome, git, lefthook,',
     '                  betterleaks, paraglide]',
     `packs: [${OWN_PACK}]`,
-    'check: bun run check',
     'overrides:',
     '  - rule: analytics-consent-first',
     '    level: SHOULD',
@@ -306,113 +287,9 @@ const cli: ProjectLayout = {
     'languages: [typescript]',
     'implementations: [bun, biome, git, betterleaks]',
     'packs: []',
-    'check: bun run check',
     'overrides: []',
     '',
   ].join('\n'),
-};
-
-// Modelled on devkit: packages as applications, one with its own override.
-const library: ProjectLayout = {
-  config: [
-    'axes: [architecture, workflow]',
-    'domains: [version-control]',
-    'platforms: []',
-    'languages: [typescript]',
-    'implementations: [biome, git, lefthook, betterleaks]',
-    'packs: []',
-    'check: bun run check',
-    'overrides: []',
-    '',
-  ].join('\n'),
-  files: workspaceOf({
-    'packages/react-kit': [
-      'axes: [architecture, workflow]',
-      'domains: [version-control, ui, untrusted-client, unreliable-network]',
-      'platforms: [browser]',
-      'languages: [typescript]',
-      'implementations: [biome, git, lefthook, betterleaks, react-dom]',
-      'packs: []',
-      'overrides:',
-      '  - rule: four-data-states',
-      '    level: MAY',
-      '    reason: "The kit renders the states its caller passes"',
-      '',
-    ].join('\n'),
-  }),
-};
-
-const htmlSite: ProjectLayout = {
-  config: configOf({
-    check: 'npx html-validate .',
-    domains: '[ui, untrusted-client, unreliable-network, version-control]',
-    implementations: '[git]',
-    platforms: '[browser]',
-  }),
-};
-
-// A pack of blocks of every kind of front matter: CRLF line ends, a quoted
-// summary, block lists, a Constitution host, an abstract Constitution base and
-// one block in an application.
-const packProject: ProjectLayout = {
-  config: [
-    'axes: [architecture, workflow]',
-    'domains: [version-control, ui, untrusted-client, unreliable-network]',
-    'platforms: [browser]',
-    'languages: [typescript]',
-    'implementations: [react-dom, betterleaks, git, git-flow, lint-kit]',
-    `packs: [${OWN_PACK}]`,
-    'check: bun run check',
-    'overrides: []',
-    '',
-  ].join('\n'),
-  files: {
-    ...workspaceOf({
-      'packages/web': [
-        'axes: [architecture, workflow]',
-        'domains: [version-control, ui, untrusted-client, unreliable-network, i18n]',
-        'platforms: [browser]',
-        'languages: [typescript]',
-        'implementations: [react-dom, betterleaks, git, git-flow, lint-kit, paraglide]',
-        `packs: [../../${OWN_PACK}]`,
-        'overrides: []',
-        '',
-      ].join('\n'),
-    }),
-    ...paraglideFiles,
-    [packPath({
-      id: 'git-flow',
-    })]: [
-      '---',
-      'id: git-flow',
-      'summary: "Git flow: a branch per change, a tag per release."',
-      'requires:',
-      '  - version-control',
-      '  - git',
-      'extends: null',
-      'abstract: false',
-      'languages: []',
-      'governs: []',
-      '---',
-      '',
-    ].join('\r\n'),
-    [packPath({
-      id: 'lint-kit',
-    })]: [
-      '---',
-      'id: lint-kit',
-      "summary: 'Lints TypeScript the way this team likes.'",
-      'requires:',
-      '  - typescript',
-      'extends: _lint-base',
-      'abstract: false',
-      'languages:',
-      '  - typescript',
-      'governs: []',
-      '---',
-      '',
-    ].join('\n'),
-  },
 };
 
 const templates = join(import.meta.dir, '..', '..', 'templates');
@@ -456,17 +333,11 @@ const ratified: ProjectLayout = {
         'packs: []',
         `packs: [${OWN_PACK}]`,
       ],
-      [
-        '<check command>',
-        'bun run check',
-      ],
     ],
     name: 'constitution.yaml',
   }),
   files: {
-    [packPath({
-      id: 'paraglide',
-    })]: fromTemplate({
+    [packPath('paraglide')]: fromTemplate({
       fills: [
         [
           '<id>',
@@ -483,9 +354,7 @@ const ratified: ProjectLayout = {
       ],
       name: 'block/block.md',
     }),
-    [packPath({
-      id: 'paraglide',
-    }).replace('/paraglide.md', '/foundation/messages.md')]: fromTemplate({
+    [packPath('paraglide').replace('/paraglide.md', '/foundation/messages.md')]: fromTemplate({
       fills: [],
       name: 'block/foundation/chapter.md',
     }),
@@ -507,7 +376,6 @@ const realWebApp: ProjectLayout = {
     '                  matomo, lingui, bun, tsc, biome, dependency-cruiser, knip,',
     '                  syncpack, stryker, git, lefthook, betterleaks, osv-scanner, renovate, mise]',
     'packs: []',
-    'check: bun run check',
     'overrides: []',
     '',
   ].join('\n'),
@@ -524,7 +392,6 @@ const realCli: ProjectLayout = {
     '                  knip, syncpack, stryker, mise, git, lefthook, betterleaks,',
     '                  osv-scanner, renovate]',
     'packs: []',
-    'check: bun run check',
     'overrides: []',
     '',
   ].join('\n'),
@@ -537,14 +404,8 @@ export {
   cli,
   configOf,
   createProject,
-  htmlSite,
-  library,
   lineNumberOf,
-  memberConfigOf,
   OWN_PACK,
-  packBlockFiles,
-  packPath,
-  packProject,
   Repository,
   ratified,
   realCli,

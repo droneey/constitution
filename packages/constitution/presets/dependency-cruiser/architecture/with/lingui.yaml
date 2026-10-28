@@ -1,0 +1,5 @@
+lingui:
+  '*':
+    typescript:
+      .dependency-cruiser.jsonc:
+        allowedSeverity: error

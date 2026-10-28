@@ -1,79 +1,73 @@
 import { describe, expect, it } from 'bun:test';
 
-import { InvalidValueError, ValueFailure } from '../../errors';
+import { ValueFailure } from '../../errors';
+import { BlockPath } from '../../value-objects';
 import { Axis } from '../block.entity';
 import { Term, TermKind } from '../term.entity';
+import { failureOf } from './entity.fixtures';
 
 const bindingUnit = Term.create({
   address: '/docs/core/architecture/layout',
   axis: Axis.Architecture,
-  block: 'core',
+  blockId: 'core',
   kind: TermKind.Concept,
   name: 'binding unit',
   sentence: 'A **binding unit** binds one operation to the program’s framework.',
 });
 
-/** the code and the details a creation failed with, or the error itself when it is none of the feature's */
-const failureOf = (create: () => Term): unknown => {
-  try {
-    return create();
-  } catch (error) {
-    return error instanceof InvalidValueError
-      ? {
-          code: error.code,
-          details: error.details,
-        }
-      : error;
-  }
-};
-
-describe('Term.axisOf and Term.blockOf', () => {
+describe('Term.axisOf and Term.blockIdOf', () => {
   it.each([
     {
       axis: Axis.Foundation,
-      block: 'core',
+      blockId: 'core',
       path: 'core/core.md',
     },
     {
       axis: Axis.Architecture,
-      block: 'core',
+      blockId: 'core',
       path: 'core/architecture/layout.md',
     },
     {
       axis: Axis.Foundation,
-      block: 'bun',
+      blockId: 'bun',
       path: 'implementations/bun/bun.md',
     },
     {
       axis: Axis.Workflow,
-      block: 'lefthook',
+      blockId: 'lefthook',
       path: 'implementations/lefthook/workflow/with/betterleaks.md',
     },
     {
       axis: Axis.Foundation,
-      block: 'python',
+      blockId: 'python',
       path: 'contexts/languages/python/foundation/types.md',
     },
-  ])('should place $path in $block on $axis', ({ axis, block, path }) => {
+  ])('should place $path in $blockId on $axis', ({ axis, blockId, path }) => {
+    // Arrange
+    const blockPath = BlockPath.create(path);
+
     // Act
     const place = {
-      axis: Term.axisOf(path),
-      block: Term.blockOf(path),
+      axis: Term.axisOf(blockPath),
+      blockId: Term.blockIdOf(blockPath),
     };
 
     // Assert
     expect(place).toStrictEqual({
       axis,
-      block,
+      blockId,
     });
   });
 
   it('should name no block when the path holds no folder', () => {
+    // Arrange
+    const blockPath = BlockPath.create('core.md');
+
     // Act
-    const block = Term.blockOf('core.md');
+    const blockId = Term.blockIdOf(blockPath);
 
     // Assert
-    expect(block).toBeUndefined();
+    expect(blockId).toBeUndefined();
   });
 });
 
@@ -131,69 +125,7 @@ describe('Term.create', () => {
   });
 });
 
-describe('Term.is', () => {
-  it.each([
-    {
-      expected: true,
-      candidate: bindingUnit,
-    },
-    {
-      expected: false,
-      candidate: 'binding unit',
-    },
-    {
-      expected: false,
-      candidate: {
-        ...bindingUnit,
-        sentence: 1,
-      },
-    },
-    {
-      expected: false,
-      candidate: {
-        ...bindingUnit,
-        kind: 'word',
-      },
-    },
-    {
-      expected: false,
-      candidate: {
-        ...bindingUnit,
-        axis: 'delivery',
-      },
-    },
-  ])('should tell a term from $candidate', ({ candidate, expected }) => {
-    // Act
-    const isTerm = Term.is(candidate);
-
-    // Assert
-    expect(isTerm).toBe(expected);
-  });
-});
-
-describe('Term.equals and Term.compare', () => {
-  it('should hold two terms of two names apart', () => {
-    // Act
-    const equal = Term.equals(bindingUnit, {
-      ...bindingUnit,
-      name: 'use case',
-    });
-
-    // Assert
-    expect(equal).toBe(false);
-  });
-
-  it('should hold two terms of one name equal, wherever they are defined', () => {
-    // Act
-    const equal = Term.equals(bindingUnit, {
-      ...bindingUnit,
-      block: 'ui',
-    });
-
-    // Assert
-    expect(equal).toBe(true);
-  });
-
+describe('Term.compare', () => {
   it('should order terms by name whatever its case, then by case', () => {
     // Arrange
     const names = [

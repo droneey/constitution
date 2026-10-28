@@ -1,13 +1,7 @@
 import { beforeAll, describe, expect, it } from 'bun:test';
 
 import { python } from './python-project.fixtures';
-import {
-  createTaskBatch,
-  isFoundIn,
-  mutationCodesOf,
-  partTable,
-  templateTable,
-} from './python-template.fixtures';
+import { createTaskBatch, isFoundIn, mutationCodesOf } from './python-template.fixtures';
 
 const { runOf, runRegistered, taskCase, taskCases } = createTaskBatch();
 
@@ -102,22 +96,7 @@ const spec = (...body: readonly string[]): string =>
 // The runs of every table are run before the first case.
 beforeAll(runRegistered, RUNS_MS);
 
-describe('the python template', () => {
-  it.each([
-    'complexipy',
-    'deptry',
-    'vulture',
-  ])("should carry the settings of %s's part, which reads no file but the project's", (tool) => {
-    // Arrange
-    const part = partTable(tool);
-
-    // Act
-    const template = templateTable(tool);
-
-    // Assert
-    expect(template).toStrictEqual(part);
-  });
-
+describe('the files apply writes for a unit of Python', () => {
   const wholeCheck = taskCase({
     changes: {
       'src/shop/orders.py': reorderedOrders,
@@ -154,7 +133,7 @@ describe('the python template', () => {
         finding: [
           'src/shop/kernel.py',
         ],
-        task: 'format:check',
+        task: 'check:format',
       },
       {
         condition: 'a spec is skipped',
@@ -171,7 +150,7 @@ describe('the python template', () => {
         finding: [
           'TID251',
         ],
-        task: 'lint:check',
+        task: 'check:lint',
       },
       {
         condition: 'a value is of the wrong type',
@@ -181,7 +160,7 @@ describe('the python template', () => {
         finding: [
           'invalid-assignment',
         ],
-        task: 'type:check',
+        task: 'check:types',
       },
       {
         condition: 'a function holds more than 100 lines',
@@ -194,7 +173,7 @@ describe('the python template', () => {
           '103',
           '100',
         ],
-        task: 'code:check',
+        task: 'check:code',
       },
       {
         condition: "a function's cognitive complexity passes 15",
@@ -204,7 +183,7 @@ describe('the python template', () => {
         finding: [
           'FAILED',
         ],
-        task: 'complexity:check',
+        task: 'check:complexity',
       },
       {
         condition: 'a feature imports another',
@@ -216,7 +195,7 @@ describe('the python template', () => {
         finding: [
           'feature-never-imports-a-feature BROKEN',
         ],
-        task: 'architecture:check',
+        task: 'check:architecture',
       },
       {
         condition: 'the kernel imports a feature',
@@ -228,7 +207,7 @@ describe('the python template', () => {
         finding: [
           'kernel-imports-only-itself BROKEN',
         ],
-        task: 'architecture:check',
+        task: 'check:architecture',
       },
       {
         condition: 'two modules import each other',
@@ -240,7 +219,7 @@ describe('the python template', () => {
         finding: [
           'module-imports-form-no-cycle BROKEN',
         ],
-        task: 'architecture:check',
+        task: 'check:architecture',
       },
       {
         condition: "a feature's domain imports pydantic",
@@ -253,7 +232,7 @@ describe('the python template', () => {
           'features/orders/domain',
           'pydantic',
         ],
-        task: 'code:check',
+        task: 'check:code',
       },
       {
         condition: 'the kernel reads its settings through pydantic-settings',
@@ -265,7 +244,7 @@ describe('the python template', () => {
           'kernel',
           'pydantic_settings',
         ],
-        task: 'code:check',
+        task: 'check:code',
       },
       {
         condition: "a feature's domain imports logging",
@@ -277,7 +256,7 @@ describe('the python template', () => {
         finding: [
           'domain-imports-no-logging BROKEN',
         ],
-        task: 'architecture:check',
+        task: 'check:architecture',
       },
       {
         condition: "a feature's application layer runs a process through a lib",
@@ -292,7 +271,7 @@ describe('the python template', () => {
         finding: [
           'effects-held-only-by-the-edge BROKEN',
         ],
-        task: 'architecture:check',
+        task: 'check:architecture',
       },
       {
         condition: 'a feature imports structlog',
@@ -306,7 +285,7 @@ describe('the python template', () => {
           'features/orders/app',
           'root',
         ],
-        task: 'code:check',
+        task: 'check:code',
       },
       {
         condition: "a feature's application layer imports httpx2",
@@ -320,7 +299,7 @@ describe('the python template', () => {
           'features/orders/app',
           'adapters, libs, shared, root',
         ],
-        task: 'code:check',
+        task: 'check:code',
       },
       {
         condition: "a feature's application layer imports a package no block gives a home",
@@ -333,7 +312,7 @@ describe('the python template', () => {
           'arrow',
           'features/orders/app',
         ],
-        task: 'code:check',
+        task: 'check:code',
       },
       {
         condition: 'a shared adapter imports a feature',
@@ -345,7 +324,7 @@ describe('the python template', () => {
         finding: [
           'adapter-imports-only-its-owners-domain-and-shared-layers BROKEN',
         ],
-        task: 'architecture:check',
+        task: 'check:architecture',
       },
       {
         condition: 'a feature imports the entry file',
@@ -358,7 +337,7 @@ describe('the python template', () => {
         finding: [
           'entrypoint-never-imported BROKEN',
         ],
-        task: 'architecture:check',
+        task: 'check:architecture',
       },
       {
         condition: 'a feature imports the integration of a host framework',
@@ -373,7 +352,7 @@ describe('the python template', () => {
         finding: [
           'integration-never-imported BROKEN',
         ],
-        task: 'architecture:check',
+        task: 'check:architecture',
       },
       {
         condition: 'a feature imports the root',
@@ -386,7 +365,7 @@ describe('the python template', () => {
         finding: [
           'root-imported-only-by-entries BROKEN',
         ],
-        task: 'architecture:check',
+        task: 'check:architecture',
       },
       {
         condition: 'a binding unit imports an adapter past its port',
@@ -399,7 +378,7 @@ describe('the python template', () => {
         finding: [
           'adapter-imported-only-by-the-root BROKEN',
         ],
-        task: 'architecture:check',
+        task: 'check:architecture',
       },
       {
         condition: "a feature's surface offers its adapter",
@@ -412,7 +391,7 @@ describe('the python template', () => {
         finding: [
           'adapter-imported-only-by-the-root BROKEN',
         ],
-        task: 'architecture:check',
+        task: 'check:architecture',
       },
       {
         condition: 'a read use-case imports a write one',
@@ -429,7 +408,7 @@ describe('the python template', () => {
         finding: [
           'query-and-command-apart BROKEN',
         ],
-        task: 'architecture:check',
+        task: 'check:architecture',
       },
       {
         condition: 'the root imports a layer folder',
@@ -441,7 +420,7 @@ describe('the python template', () => {
         finding: [
           'surface-only-on-a-module-or-one-kind BROKEN',
         ],
-        task: 'architecture:check',
+        task: 'check:architecture',
       },
       {
         condition: 'the root reaches past the surface of a role folder of the kernel',
@@ -455,7 +434,7 @@ describe('the python template', () => {
         finding: [
           'module-reached-only-through-its-surface BROKEN',
         ],
-        task: 'architecture:check',
+        task: 'check:architecture',
       },
       {
         condition: 'a port the kernel shares imports a vendor client of libs',
@@ -468,7 +447,7 @@ describe('the python template', () => {
         finding: [
           'kernel-imports-only-itself BROKEN',
         ],
-        task: 'architecture:check',
+        task: 'check:architecture',
       },
       {
         condition: 'shared plumbing imports a port the kernel shares',
@@ -481,7 +460,7 @@ describe('the python template', () => {
         finding: [
           'shared-imports-no-feature-adapter-contract-or-root BROKEN',
         ],
-        task: 'architecture:check',
+        task: 'check:architecture',
       },
       {
         condition: "a binding unit imports a port of its feature's domain",
@@ -496,7 +475,7 @@ describe('the python template', () => {
         finding: [
           'binding-unit-calls-only-use-cases BROKEN',
         ],
-        task: 'architecture:check',
+        task: 'check:architecture',
       },
       {
         condition: 'a module of composition imports another',
@@ -509,7 +488,7 @@ describe('the python template', () => {
         finding: [
           'composition-module-never-imports-another BROKEN',
         ],
-        task: 'architecture:check',
+        task: 'check:architecture',
       },
       {
         condition: "a module of composition's domain imports a package",
@@ -523,7 +502,7 @@ describe('the python template', () => {
           'composition/checkout/domain',
           'attrs',
         ],
-        task: 'code:check',
+        task: 'check:code',
       },
       {
         condition: 'a feature imports the composition above it',
@@ -536,7 +515,7 @@ describe('the python template', () => {
         finding: [
           'import-points-inward BROKEN',
         ],
-        task: 'architecture:check',
+        task: 'check:architecture',
       },
       {
         condition: 'the program imports a module of the specs',
@@ -547,7 +526,7 @@ describe('the python template', () => {
         finding: [
           'DEP001',
         ],
-        task: 'dependencies:check',
+        task: 'check:dependencies',
       },
       {
         condition: 'the program imports a tool of the dev group',
@@ -557,7 +536,7 @@ describe('the python template', () => {
         finding: [
           'DEP004',
         ],
-        task: 'dependencies:check',
+        task: 'check:dependencies',
       },
       {
         condition: 'a function is used by nothing in src/',
@@ -567,7 +546,7 @@ describe('the python template', () => {
         finding: [
           "unused function 'stale'",
         ],
-        task: 'unused:check',
+        task: 'check:unused',
       },
       {
         condition: 'a branch is never taken',
@@ -577,7 +556,7 @@ describe('the python template', () => {
         finding: [
           'Required test coverage of 100.0% not reached',
         ],
-        task: 'test',
+        task: 'test:specs',
       },
       {
         condition: 'an integration spec fails',
@@ -588,7 +567,7 @@ describe('the python template', () => {
           'FAILED',
           'tests/integration/test_engine.py',
         ],
-        task: 'test',
+        task: 'test:specs',
       },
       {
         condition: 'a spec warns',
@@ -601,7 +580,7 @@ describe('the python template', () => {
         finding: [
           'DeprecationWarning: old',
         ],
-        task: 'test',
+        task: 'test:specs',
       },
       {
         condition: 'a spec carries an unknown marker',
@@ -615,7 +594,7 @@ describe('the python template', () => {
         finding: [
           "'slow' not found in `markers` configuration option",
         ],
-        task: 'test',
+        task: 'test:specs',
       },
       {
         condition: 'a spec reaches the network',
@@ -628,7 +607,7 @@ describe('the python template', () => {
         finding: [
           'ConnectionRefusedError',
         ],
-        task: 'test',
+        task: 'test:specs',
       },
       {
         condition: 'no spec reaches a new function',
@@ -640,7 +619,7 @@ describe('the python template', () => {
           'shop.orders.x_label__mutmut_1',
           'no tests',
         ],
-        task: 'mutation:check',
+        task: 'mutate:branch',
       },
       {
         condition: "an integration spec fails, which each mutant's run collects",
@@ -651,7 +630,7 @@ describe('the python template', () => {
         finding: [
           'tests/integration/test_engine.py',
         ],
-        task: 'mutation:check',
+        task: 'mutate:branch',
       },
     ]),
   )('should fail $task when $condition', ({ changes, finding, task }) => {
@@ -682,14 +661,14 @@ describe('the python template', () => {
           'src/shop/__main__.py': 'from shop.main import main\n\nmain()\n',
           'src/shop/main.py': 'def main() -> None:\n  pass\n',
         },
-        task: 'architecture:check',
+        task: 'check:architecture',
       },
       {
         condition: 'Hypothesis kept its examples in .hypothesis/',
         changes: {
           '.hypothesis/examples/0a1b2c3d/4e5f6a7b': '',
         },
-        task: 'test',
+        task: 'test:specs',
       },
       {
         condition: 'an adapter parses with pydantic and calls through httpx2',
@@ -702,7 +681,7 @@ describe('the python template', () => {
             'from pydantic import BaseModel',
           ),
         },
-        task: 'code:check',
+        task: 'check:code',
       },
       {
         condition: 'the root configures structlog and reads the settings through pydantic-settings',
@@ -711,7 +690,7 @@ describe('the python template', () => {
           'src/shop/root/logs.py': 'import structlog\n',
           'src/shop/root/settings.py': 'from pydantic_settings import BaseSettings\n',
         },
-        task: 'code:check',
+        task: 'check:code',
       },
       {
         condition: "the root reaches a feature's adapter through the adapter's own surface",
@@ -723,7 +702,7 @@ describe('the python template', () => {
           'src/shop/root/wiring.py':
             'from shop.features.orders.adapters.http import ADAPTER\n\nWIRED = ADAPTER\n',
         },
-        task: 'architecture:check',
+        task: 'check:architecture',
       },
       {
         condition: "the package's surface offers a feature's adapter to its consumers",
@@ -738,7 +717,7 @@ describe('the python template', () => {
           'src/shop/features/orders/adapters/__init__.py': '',
           'src/shop/features/orders/adapters/http/__init__.py': 'ADAPTER = 1\n',
         },
-        task: 'architecture:check',
+        task: 'check:architecture',
       },
       {
         condition:
@@ -753,7 +732,7 @@ describe('the python template', () => {
           'src/shop/features/orders/app/__init__.py': '',
           'src/shop/features/orders/app/orders_api.py': 'from fastapi import APIRouter\n',
         },
-        task: 'code:check',
+        task: 'check:code',
       },
       {
         condition:
@@ -767,7 +746,7 @@ describe('the python template', () => {
           'src/shop/root/wiring.py':
             'from shop.composition.checkout.adapters.mail import ADAPTER\n\nWIRED = ADAPTER\n',
         },
-        task: 'architecture:check',
+        task: 'check:architecture',
       },
       {
         condition: "a changed function's log call is left unmutated",
@@ -787,21 +766,21 @@ describe('the python template', () => {
             '  return [total(basket, discount=0) for basket in baskets]',
           ),
         },
-        task: 'mutation:check',
+        task: 'mutate:branch',
       },
       {
         condition: 'only a spec changes',
         changes: {
           'tests/test_orders.py': specOfOneCase,
         },
-        task: 'mutation:check',
+        task: 'mutate:branch',
       },
       {
         condition: 'the only mutants of a new line are marked equivalent',
         changes: {
           'src/shop/orders.py': ordersWithLabel('  # pragma: no mutate -- a name no spec reads'),
         },
-        task: 'mutation:check',
+        task: 'mutate:branch',
       },
     ]),
   )('should pass $task when $condition', ({ changes, task }) => {

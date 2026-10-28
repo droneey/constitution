@@ -1,45 +1,52 @@
 import { StepStatus } from '@droneey/design-cli';
 import { Command } from 'commander';
 
+import { AbsolutePath } from '#/kernel/value-objects';
+import { withOption } from '#/libs/commander';
 import type { CommandContext } from '#/shared/cli';
 import { BASE_FLAG, baseFlagsOf } from '#/shared/cli';
 
-import type { Validation } from '../../../../domain/use-cases/queries/check';
-import { blocksOutcomeOf, blocksSectionsOf } from '../../../utils';
+import type { PackBase, Validation } from '../../../../domain/use-cases/queries/check';
+import { blocksOutcomeOf, blocksSectionsOf, NO_BLOCKS, packBaseOf } from '../../../utils';
 
 interface BlocksCheckContext extends CommandContext {
   readonly checkBlocks: (input: {
-    base: string | undefined;
-    folder: string;
+    base: PackBase | undefined;
+    folderPath: AbsolutePath;
   }) => Validation | undefined;
 }
 
 const createBlocksCheckCommand = (context: BlocksCheckContext): Command =>
-  new Command('check')
-    .description('Check the blocks of the Constitution or the pack in this folder.')
-    .addHelpText(
-      'before',
-      context.helpExamples([
-        'constitution blocks check',
-        'constitution blocks check --base .droneey/constitution',
-      ]),
-    )
-    .option(BASE_FLAG.flags, BASE_FLAG.description)
-    .action(async (_options: unknown, command: Command): Promise<void> => {
-      const { base } = baseFlagsOf(command.opts());
+  withOption({
+    command: new Command('check')
+      .description('Check the blocks of the Constitution or the pack in this folder.')
+      .addHelpText(
+        'before',
+        context.helpExamples([
+          'constitution blocks check',
+          'constitution blocks check --base .droneey/constitution',
+        ]),
+      ),
+    option: BASE_FLAG,
+    parse: baseFlagsOf,
+    run: async ({ base }): Promise<void> => {
+      const folderPath = AbsolutePath.create(context.places.cwd);
       const validation = await context.renderer.run({
         label: 'Blocks',
         outcomeOf: (checked: Validation | undefined) =>
           checked === undefined
             ? {
-                detail: 'no blocks in this folder',
+                detail: NO_BLOCKS,
                 status: StepStatus.Failed,
               }
             : blocksOutcomeOf(checked),
         run: () =>
           context.checkBlocks({
-            base,
-            folder: context.places.cwd,
+            base: packBaseOf({
+              base,
+              folderPath,
+            }),
+            folderPath,
           }),
       });
 
@@ -48,6 +55,7 @@ const createBlocksCheckCommand = (context: BlocksCheckContext): Command =>
       if (validation === undefined || validation.findings.length > 0) {
         context.setFailed();
       }
-    });
+    },
+  });
 
 export { createBlocksCheckCommand };

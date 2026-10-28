@@ -1,0 +1,17 @@
+shell:
+  expansion-double-quoted:
+    shell:
+      .shellcheckrc:
+        - enable=quote-safe-variables
+  script-stops-on-a-failed-command:
+    shell:
+      .shellcheckrc:
+        - enable=check-set-e-suppressed
+        - enable=check-extra-masked-returns
+shellcheck:
+  optional-checks-enabled-by-name:
+    shell:
+      .shellcheckrc:
+        - enable=quote-safe-variables
+        - enable=check-set-e-suppressed
+        - enable=check-extra-masked-returns

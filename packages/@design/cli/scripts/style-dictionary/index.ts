@@ -1,0 +1,1 @@
+export { configOf } from './utils';

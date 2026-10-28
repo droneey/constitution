@@ -1,0 +1,5 @@
+git:
+  gitignore-covers-dependencies-output-and-caches:
+    markdown:
+      .gitignore:
+        - .rumdl_cache/

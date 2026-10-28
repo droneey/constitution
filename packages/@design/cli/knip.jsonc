@@ -1,0 +1,34 @@
+{
+  // knip
+  "entry": [
+    "src/entrypoints/*/main.{ts,tsx}!",
+    "src/**/index.{ts,tsx}!",
+    "src/main.{ts,tsx}!",
+    "scripts/*/main.ts",
+    "style-dictionary.config.ts",
+  ],
+  "project": [
+    "src/**/*.{ts,tsx}!",
+    "!src/**/__tests__/**!",
+    "tests/**/*.{ts,tsx}",
+    "scripts/**/*.ts",
+  ],
+
+  // stryker
+  "ignoreDependencies": [
+    "@stryker-mutator/bun-specs-runner",
+    "@stryker-mutator/core",
+    "ink!",
+    "react!",
+  ],
+  "ignoreBinaries": [
+    // rumdl
+    "rumdl",
+
+    // tombi
+    "tombi",
+
+    // yamllint
+    "yamllint",
+  ],
+}

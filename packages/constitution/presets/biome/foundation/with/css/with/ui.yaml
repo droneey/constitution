@@ -1,0 +1,7 @@
+css:
+  type-sized-in-rem:
+    css:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/css/type-sized-in-rem.${role.grit-rule}]:
+          includes:
+            - '**/*.css'

@@ -14,8 +14,9 @@ import {
   runHook,
   runScript,
 } from '../hook.fixtures';
+import { toolEnvironment } from '../package.fixtures';
 import { createPluginRoot, removePluginRoots } from '../plugin-root.fixtures';
-import { configOf, createProject, removeProjects } from '../project.fixtures';
+import { configOf, createProject, Repository, removeProjects } from '../project.fixtures';
 
 enum StopEvent {
   Stop = 'Stop',
@@ -27,7 +28,7 @@ interface Session {
   project: string;
 }
 
-const CHECK = 'bun run check';
+const CHECK = 'constitution run check';
 // What the gate says: its decision, or a review asked for in a system message,
 // then the names it gives, the check to run or the blocks the changes fall under.
 const NOTHING: readonly string[] = [] as const;
@@ -83,6 +84,7 @@ const git = (input: { args: readonly string[]; project: string }): void => {
     ],
     {
       cwd: input.project,
+      env: toolEnvironment(),
     },
   );
 };
@@ -313,8 +315,8 @@ describe('the hand-back gate', () => {
   });
 
   it.each([
-    'bun run checkout',
-    'echo bun run check',
+    'constitution run checkout',
+    'echo constitution run check',
   ])('should block when the command run was %s, not the check', (command) => {
     // Arrange
     const session = startSession(configOf({}));
@@ -338,35 +340,10 @@ describe('the hand-back gate', () => {
     expect(output).toStrictEqual(BLOCKED);
   });
 
-  it('should only ask for a review when check is null', () => {
-    // Arrange
-    const session = startSession(
-      configOf({
-        check: 'null',
-        domains: '[ui]',
-      }),
-    );
-
-    prompt(session);
-    write({
-      path: 'src/features/orders/ui/order-card.tsx',
-      project: session.project,
-    });
-
-    // Act
-    const output = stop({
-      session,
-    });
-
-    // Assert
-    expect(output).toStrictEqual(REVIEW);
-  });
-
   it('should say nothing about a review when no active block governs the changed files', () => {
     // Arrange
     const session = startSession(
       configOf({
-        check: 'null',
         domains: '[ui]',
       }),
     );
@@ -375,6 +352,10 @@ describe('the hand-back gate', () => {
     write({
       path: 'src/main.ts',
       project: session.project,
+    });
+    ran({
+      command: CHECK,
+      session,
     });
 
     // Act
@@ -470,5 +451,51 @@ describe('the hand-back gate', () => {
 
     // Assert
     expect(output).toStrictEqual(NOTHING);
+  });
+
+  it('should say nothing at any stop when the project lies in no repository', () => {
+    // Arrange
+    const project = realpathSync(
+      createProject({
+        config: configOf({}),
+        repository: Repository.None,
+      }),
+    );
+    const session = {
+      id: newSession(),
+      project,
+    };
+
+    runHook({
+      event: HookEvent.Startup,
+      project,
+      root,
+      session: session.id,
+    });
+    prompt(session);
+    write({
+      path: 'src/main.ts',
+      project,
+    });
+
+    // Act
+    const subagent = fire({
+      event: StopEvent.Subagent,
+      script: 'stop.sh',
+      session,
+    });
+
+    // Assert
+    expect(subagent.stdout).toBe('');
+
+    // Act
+    const main = fire({
+      event: StopEvent.Stop,
+      script: 'stop.sh',
+      session,
+    });
+
+    // Assert
+    expect(main.stdout).toBe('');
   });
 });

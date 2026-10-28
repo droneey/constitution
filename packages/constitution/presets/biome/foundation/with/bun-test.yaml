@@ -1,0 +1,85 @@
+bun-test:
+  '*':
+    typescript:
+      biome.jsonc:
+        overrides:
+          - includes:
+              - '**/${role.colocated-specs}/**'
+              - '**/*.test.ts'
+              - '**/*.test.tsx'
+            linter:
+              domains:
+                test: all
+          - includes:
+              - '**/${role.colocated-specs}/**'
+              - '**/*.test.ts'
+              - '**/*.test.tsx'
+            linter:
+              rules:
+                complexity:
+                  noExcessiveNestedTestSuites: 'off'
+          - includes:
+              - '**/${role.colocated-specs}/**'
+              - '**/*.test.ts'
+              - '**/*.test.tsx'
+            linter:
+              rules:
+                style:
+                  useConsistentTestIt: error
+          - includes:
+              - '**/${role.colocated-specs}/**'
+              - '**/*.test.ts'
+              - '**/*.test.tsx'
+            linter:
+              rules:
+                style:
+                  useTestHooksInOrder: error
+          - includes:
+              - '**/${role.colocated-specs}/**'
+              - '**/*.test.ts'
+              - '**/*.test.tsx'
+            linter:
+              rules:
+                style:
+                  useTestHooksOnTop: error
+  module-never-mocked-in-a-spec:
+    typescript:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/module-never-mocked-in-a-spec.${role.grit-rule}]:
+          includes:
+            - '**/${role.colocated-specs}/**'
+            - '**/*.test.ts'
+            - '**/*.test.tsx'
+  strict-matcher-only:
+    typescript:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/strict-matcher-only.${role.grit-rule}]:
+          includes:
+            - '**/${role.colocated-specs}/**'
+            - '**/*.test.ts'
+            - '**/*.test.tsx'
+  failed-test-never-retried:
+    typescript:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/failed-test-never-retried.${role.grit-rule}]:
+          includes:
+            - '**/${role.colocated-specs}/**'
+            - '**/*.test.ts'
+            - '**/*.test.tsx'
+  spec-never-sleeps:
+    typescript:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/spec-never-sleeps.${role.grit-rule}]:
+          includes:
+            - '**/${role.colocated-specs}/**'
+            - '**/*.test.ts'
+            - '**/*.test.tsx'
+core:
+  test-never-skipped-or-empty:
+    typescript:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/test-never-skipped-or-empty.${role.grit-rule}]:
+          includes:
+            - '**/${role.colocated-specs}/**'
+            - '**/*.test.ts'
+            - '**/*.test.tsx'

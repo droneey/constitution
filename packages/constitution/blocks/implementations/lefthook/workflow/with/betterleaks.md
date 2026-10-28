@@ -4,7 +4,7 @@
 
 ## General
 
-Lefthook's part of the workflow for Betterleaks runs `betterleaks git --pre-commit --staged --redact`.
+Lefthook's settings for Betterleaks run `betterleaks git --pre-commit --staged --redact`.
 
 ### staged-changes-scanned-before-commit → secret-never-in-the-repository · MUST
 

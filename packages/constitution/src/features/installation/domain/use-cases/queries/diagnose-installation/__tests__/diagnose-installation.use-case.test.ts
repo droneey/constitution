@@ -3,11 +3,9 @@ import { describe, expect, it } from 'bun:test';
 import type { FakeTree } from '#/__tests__/project-files.fake';
 import { createFakeProjectFiles } from '#/__tests__/project-files.fake';
 import { PROJECT, projectPlace, releaseFolderPath } from '#/__tests__/project-place.fixtures';
-import { createFakeProjectSource } from '#/__tests__/project-source.fake';
-import type { Release } from '#/kernel/entities';
+import type { ProjectPlace, Release } from '#/kernel/entities';
 import { ReleaseStatus } from '#/kernel/entities';
-import { ProjectError, ProjectFailure } from '#/kernel/errors';
-import { Version } from '#/kernel/value-objects';
+import { AbsolutePath, RepositoryRelativePath, Version } from '#/kernel/value-objects';
 
 import type { InstalledPlugin, LatestRelease } from '../../../../entities';
 import {
@@ -22,14 +20,14 @@ import type { DiagnoseInstallationPorts } from '../diagnose-installation.use-cas
 import { diagnoseInstallation } from '../diagnose-installation.use-case';
 
 const FINGERPRINT = 'f1';
-const ON_PATH = '/home/me/.local/bin/constitution';
-const PROGRAM_NAME = 'constitution';
-const LINK_FOLDER = '.droneey/constitution';
+const onPath = AbsolutePath.create('/home/me/.local/bin/constitution');
+const EXECUTABLE_NAME = 'constitution';
+const linkFolder = RepositoryRelativePath.create('.droneey/constitution');
 
-const program = Version.create('1.0.0');
+const executable = Version.create('1.0.0');
 const older = Version.create('0.9.0');
-const manifest = `${releaseFolderPath}/package.json`;
-// A project linked to a release of this program's version.
+const manifest = AbsolutePath.create(`${releaseFolderPath}/package.json`);
+// A project linked to a release of this executable's version.
 const TREE: FakeTree = {
   files: {
     [`${PROJECT}/.git/HEAD`]: 'ref: refs/heads/main\n',
@@ -39,9 +37,9 @@ const TREE: FakeTree = {
 } as const;
 
 interface Installation {
-  // the version the program on PATH answers to --version
+  // the version the executable on PATH answers to --version
   readonly answered?: string | undefined;
-  // the fingerprint of the plugin's files this program was built with
+  // the fingerprint of the plugin's files this executable was built with
   readonly fingerprint?: string | undefined;
   readonly hooks?: HooksState;
   readonly isOnPath?: boolean;
@@ -59,11 +57,11 @@ const portsOf = (installation: Installation = {}): DiagnoseInstallationPorts => 
     stateOf: (): HooksState => installation.hooks ?? HooksState.Installed,
   },
   path: {
-    // PATH holds the program under its own name only
-    find: (name: string): string | undefined =>
-      installation.isOnPath === false || name !== PROGRAM_NAME ? undefined : ON_PATH,
+    // PATH holds the executable under its own name only
+    find: (name: string): AbsolutePath | undefined =>
+      installation.isOnPath === false || name !== EXECUTABLE_NAME ? undefined : onPath,
     versionOf: (): string | undefined =>
-      'answered' in installation ? installation.answered : program,
+      'answered' in installation ? installation.answered : executable,
   },
   plugins: {
     installed: (): InstalledPlugin | undefined =>
@@ -71,7 +69,7 @@ const portsOf = (installation: Installation = {}): DiagnoseInstallationPorts => 
         ? installation.plugin
         : {
             fingerprint: FINGERPRINT,
-            version: program,
+            version: executable,
           },
   },
   releases: {
@@ -79,36 +77,50 @@ const portsOf = (installation: Installation = {}): DiagnoseInstallationPorts => 
       await Promise.resolve(
         installation.latest ?? {
           lookup: ReleaseLookup.Found,
-          version: program,
+          version: executable,
         },
       ),
   },
-  source: createFakeProjectSource({
-    place: projectPlace,
-    release: installation.release ?? {
-      status: ReleaseStatus.Installed,
-      version: program,
+  pinned: {
+    // the project holds its own folder and every folder below it
+    find: (startFolderPath: AbsolutePath): ProjectPlace | undefined =>
+      startFolderPath === PROJECT || startFolderPath.startsWith(`${PROJECT}/`)
+        ? projectPlace
+        : undefined,
+    readRelease: (): Release => {
+      const { release } = installation;
+
+      if (release instanceof Error) {
+        throw release;
+      }
+
+      return (
+        release ?? {
+          status: ReleaseStatus.Installed,
+          version: executable,
+        }
+      );
     },
-  }),
+  },
 });
 
 const diagnosesOf = async (
-  input: { installation?: Installation; start?: string } = {},
+  input: { installation?: Installation; start?: AbsolutePath } = {},
 ): Promise<readonly PartDiagnosis[]> => {
   const installation = input.installation ?? {};
 
   return await diagnoseInstallation({
     ...portsOf(installation),
+    executable,
     fingerprint: 'fingerprint' in installation ? installation.fingerprint : FINGERPRINT,
-    program,
-    start: input.start ?? PROJECT,
+    startFolderPath: input.start ?? AbsolutePath.create(PROJECT),
   });
 };
 
 const diagnosisOf = async (input: {
   installation?: Installation;
   part: InstallationPart;
-  start?: string;
+  start?: AbsolutePath;
 }): Promise<PartDiagnosis | undefined> =>
   (await diagnosesOf(input)).find((found) => PartDiagnosis.partOf(found) === input.part);
 
@@ -120,7 +132,7 @@ interface Reading {
 const readingOf = async (input: {
   installation?: Installation;
   part: InstallationPart;
-  start?: string;
+  start?: AbsolutePath;
 }): Promise<Reading> => {
   const diagnosis = await diagnosisOf(input);
 
@@ -137,30 +149,30 @@ describe('diagnoseInstallation', () => {
   }>([
     {
       expected: {
-        kind: Diagnosis.ProgramRuns,
-        program,
+        executable,
+        kind: Diagnosis.ExecutableRuns,
       },
-      part: InstallationPart.Program,
+      part: InstallationPart.Executable,
     },
     {
       expected: {
+        executable,
         kind: Diagnosis.PluginMatches,
-        plugin: program,
-        program,
+        plugin: executable,
       },
       part: InstallationPart.Plugin,
     },
     {
       expected: {
         kind: Diagnosis.LatestHeld,
-        latest: program,
+        latest: executable,
       },
       part: InstallationPart.Release,
     },
     {
       expected: {
         kind: Diagnosis.PathMatches,
-        path: ON_PATH,
+        path: onPath,
       },
       part: InstallationPart.Path,
     },
@@ -168,8 +180,8 @@ describe('diagnoseInstallation', () => {
       expected: {
         kind: Diagnosis.LinkMatches,
         link: {
-          folder: LINK_FOLDER,
-          target: LINK_FOLDER,
+          linkPath: linkFolder,
+          targetPath: linkFolder,
         },
       },
       part: InstallationPart.Link,
@@ -202,7 +214,7 @@ describe('diagnoseInstallation', () => {
   it('should diagnose every part, in order', async () => {
     // Arrange
     const asked = {
-      start: PROJECT,
+      start: AbsolutePath.create(PROJECT),
     };
 
     // Act
@@ -210,7 +222,7 @@ describe('diagnoseInstallation', () => {
 
     // Assert
     expect(diagnoses.map(PartDiagnosis.partOf)).toStrictEqual([
-      InstallationPart.Program,
+      InstallationPart.Executable,
       InstallationPart.Plugin,
       InstallationPart.Release,
       InstallationPart.Path,
@@ -236,11 +248,11 @@ describe('diagnoseInstallation', () => {
       },
     },
     {
-      condition: 'the plugin is older than the program and its files differ',
+      condition: 'the plugin is older than the executable and its files differ',
       expected: {
+        executable,
         kind: Diagnosis.PluginOlder,
         plugin: older,
-        program,
       },
       health: Health.Warned,
       installation: {
@@ -251,11 +263,11 @@ describe('diagnoseInstallation', () => {
       },
     },
     {
-      condition: 'the plugin is newer than the program and its files differ',
+      condition: 'the plugin is newer than the executable and its files differ',
       expected: {
+        executable,
         kind: Diagnosis.PluginNewer,
         plugin: Version.create('1.0.1'),
-        program,
       },
       health: Health.Warned,
       installation: {
@@ -266,11 +278,11 @@ describe('diagnoseInstallation', () => {
       },
     },
     {
-      condition: "the plugin is another release whose files are the program's",
+      condition: "the plugin is another release whose files are the executable's",
       expected: {
+        executable,
         kind: Diagnosis.PluginMatches,
         plugin: older,
-        program,
       },
       health: Health.Sound,
       installation: {
@@ -282,62 +294,62 @@ describe('diagnoseInstallation', () => {
     },
     {
       condition:
-        "the plugin's files differ from the program's at one version, as a working tree's do",
+        "the plugin's files differ from constitution's at one version, as a working tree's do",
       expected: {
+        executable,
         kind: Diagnosis.PluginDiffersAtItsVersion,
-        program,
       },
       health: Health.Warned,
       installation: {
         plugin: {
           fingerprint: 'f0',
-          version: program,
+          version: executable,
         },
       },
     },
     {
-      condition: "the plugin is this program's release with its files",
+      condition: "the plugin is this executable's release with its files",
       expected: {
+        executable,
         kind: Diagnosis.PluginMatches,
-        plugin: program,
-        program,
+        plugin: executable,
       },
       health: Health.Sound,
       installation: {},
     },
     {
-      condition: "neither the plugin's files nor the program's can be read",
+      condition: "neither the plugin's files nor the executable's can be read",
       expected: {
+        executable,
         kind: Diagnosis.PluginDiffersAtItsVersion,
-        program,
       },
       health: Health.Warned,
       installation: {
         fingerprint: undefined,
         plugin: {
-          version: program,
+          version: executable,
         },
       },
     },
     {
       condition: "the plugin's files cannot be read",
       expected: {
+        executable,
         kind: Diagnosis.PluginDiffersAtItsVersion,
-        program,
       },
       health: Health.Warned,
       installation: {
         plugin: {
-          version: program,
+          version: executable,
         },
       },
     },
     {
       condition: 'a newer release is out',
       expected: {
+        executable,
         kind: Diagnosis.LatestAhead,
         latest: Version.create('1.1.0'),
-        program,
       },
       health: Health.Warned,
       installation: {
@@ -348,7 +360,7 @@ describe('diagnoseInstallation', () => {
       },
     },
     {
-      condition: 'the program is ahead of the latest release',
+      condition: 'the executable is ahead of the latest release',
       expected: {
         kind: Diagnosis.LatestHeld,
         latest: Version.create('0.9.9'),
@@ -364,20 +376,47 @@ describe('diagnoseInstallation', () => {
     {
       condition: 'GitHub cannot be reached',
       expected: {
-        kind: Diagnosis.LatestUnknown,
+        kind: Diagnosis.LatestUnanswered,
+        reason: 'fetch failed',
       },
       health: Health.Skipped,
       installation: {
         latest: {
-          cause: new TypeError('fetch failed'),
-          lookup: ReleaseLookup.Unreachable,
+          lookup: ReleaseLookup.Unanswered,
+          reason: 'fetch failed',
         },
       },
     },
     {
-      condition: 'the program is not on PATH',
+      condition: 'GitHub refuses the call',
       expected: {
-        kind: Diagnosis.ProgramNotOnPath,
+        kind: Diagnosis.LatestRefused,
+        status: 403,
+      },
+      health: Health.Skipped,
+      installation: {
+        latest: {
+          lookup: ReleaseLookup.Refused,
+          status: 403,
+        },
+      },
+    },
+    {
+      condition: "GitHub's answer names no release",
+      expected: {
+        kind: Diagnosis.LatestUnreadable,
+      },
+      health: Health.Skipped,
+      installation: {
+        latest: {
+          lookup: ReleaseLookup.Unreadable,
+        },
+      },
+    },
+    {
+      condition: 'the executable is not on PATH',
+      expected: {
+        kind: Diagnosis.ExecutableNotOnPath,
       },
       health: Health.Broken,
       installation: {
@@ -385,12 +424,12 @@ describe('diagnoseInstallation', () => {
       },
     },
     {
-      condition: 'the program on PATH is another release',
+      condition: 'the executable on PATH is another release',
       expected: {
         answered: '0.9.0',
+        executable,
         kind: Diagnosis.PathDiffers,
-        path: ON_PATH,
-        program,
+        path: onPath,
       },
       health: Health.Warned,
       installation: {
@@ -398,10 +437,10 @@ describe('diagnoseInstallation', () => {
       },
     },
     {
-      condition: 'the program on PATH names no version',
+      condition: 'the executable on PATH names no version',
       expected: {
         kind: Diagnosis.PathSilent,
-        path: ON_PATH,
+        path: onPath,
       },
       health: Health.Warned,
       installation: {
@@ -412,7 +451,7 @@ describe('diagnoseInstallation', () => {
       condition: 'no release is linked',
       expected: {
         kind: Diagnosis.ReleaseMissing,
-        releaseFolder: releaseFolderPath,
+        releaseFolderPath: projectPlace.releaseFolderPath,
       },
       health: Health.Broken,
       installation: {
@@ -455,12 +494,10 @@ describe('diagnoseInstallation', () => {
       },
       health: Health.Broken,
       installation: {
-        release: new ProjectError({
-          code: ProjectFailure.VersionMissing,
-          details: {
-            path: manifest,
-          },
-        }),
+        release: {
+          manifest,
+          status: ReleaseStatus.VersionMissing,
+        },
       },
     },
     {
@@ -471,23 +508,55 @@ describe('diagnoseInstallation', () => {
       },
       health: Health.Broken,
       installation: {
-        release: new ProjectError({
-          code: ProjectFailure.ManifestUnreadable,
-          details: {
-            path: manifest,
-          },
-        }),
+        release: {
+          manifest,
+          status: ReleaseStatus.ManifestUnreadable,
+        },
       },
     },
     {
-      condition: 'the linked release is another than the program',
+      condition: "the linked release's manifest is no JSON object",
+      expected: {
+        kind: Diagnosis.ManifestNotObject,
+        manifest,
+      },
+      health: Health.Broken,
+      installation: {
+        release: {
+          manifest,
+          status: ReleaseStatus.ManifestNotObject,
+        },
+      },
+    },
+    {
+      condition: "the linked release's manifest gives a field of another form",
+      expected: {
+        fields: [
+          'version',
+        ],
+        kind: Diagnosis.ManifestMalformed,
+        manifest,
+      },
+      health: Health.Broken,
+      installation: {
+        release: {
+          fields: [
+            'version',
+          ],
+          manifest,
+          status: ReleaseStatus.ManifestMalformed,
+        },
+      },
+    },
+    {
+      condition: 'the linked release is another than the executable',
       expected: {
         kind: Diagnosis.LinkDiffers,
         link: {
-          folder: LINK_FOLDER,
-          target: LINK_FOLDER,
+          linkPath: linkFolder,
+          targetPath: linkFolder,
         },
-        program,
+        executable,
         release: older,
       },
       health: Health.Warned,
@@ -561,7 +630,7 @@ describe('diagnoseInstallation', () => {
     // Arrange
     const asked = {
       part,
-      start: '/elsewhere',
+      start: AbsolutePath.create('/elsewhere'),
     };
 
     // Act
@@ -580,12 +649,12 @@ describe('diagnoseInstallation', () => {
     {
       condition: 'the release lies outside the project',
       release: '/releases/1.0.0',
-      target: '/releases/1.0.0',
+      target: AbsolutePath.create('/releases/1.0.0'),
     },
     {
       condition: 'the release lies in the project',
       release: `${PROJECT}/packages/constitution`,
-      target: 'packages/constitution',
+      target: RepositoryRelativePath.create('packages/constitution'),
     },
   ])(
     'should give the link and the folder it resolves to, from the project, when $condition',
@@ -614,25 +683,25 @@ describe('diagnoseInstallation', () => {
       expect(diagnosis).toStrictEqual({
         kind: Diagnosis.LinkMatches,
         link: {
-          folder: LINK_FOLDER,
-          target,
+          linkPath: linkFolder,
+          targetPath: target,
         },
       });
     },
   );
 
-  it('should let a failure it does not recognise through when the release cannot be read', () => {
+  it('should let a failure of the read through', () => {
     // Arrange
-    const installation = {
-      release: new TypeError('a defect'),
-    };
+    const failure = new TypeError('a defect');
 
     // Act
     const act = diagnosesOf({
-      installation,
+      installation: {
+        release: failure,
+      },
     });
 
     // Assert
-    expect(act).rejects.toThrow(new TypeError('a defect'));
+    expect(act).rejects.toThrow(failure);
   });
 });

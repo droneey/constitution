@@ -1,58 +1,110 @@
-extends:
-  - .droneey/constitution/presets/common/lefthook/workflow/version-control.yaml
-  - .droneey/constitution/presets/common/lefthook/workflow/betterleaks.yaml
-  - .droneey/constitution/presets/common/lefthook/workflow/biome.yaml
-  - .droneey/constitution/presets/common/lefthook/workflow/ruff.yaml
-  - .droneey/constitution/presets/common/lefthook/workflow/rumdl.yaml
-  - .droneey/constitution/presets/common/lefthook/workflow/shellcheck.yaml
-  - .droneey/constitution/presets/common/lefthook/workflow/shfmt.yaml
-  - .droneey/constitution/presets/common/lefthook/workflow/tombi.yaml
-
-# ruff finds no configuration of this repository over a template's Python, and its defaults would
-# rewrite it
 pre-commit:
   jobs:
-    - name: ruff
-      exclude:
-        - 'packages/constitution/templates/**'
+    # lefthook
+    - name: validate-branch
+      run: |
+        BRANCH="$(git branch --show-current)"
+        if [ -z "$BRANCH" ]; then
+          exit 0
+        fi
+        PATTERN='^(feature|fix|hotfix)'
+        PATTERN="$PATTERN/[0-9]+-[a-z0-9]+(-[a-z0-9]+)*\$"
+        if ! echo "$BRANCH" | grep -qE "$PATTERN"; then
+          echo "[branch-named-type-issue-name] Branch must match:" \
+            "(feature|fix|hotfix)/{id}-{name}"
+          echo "  got: $BRANCH"
+          exit 1
+        fi
 
-    # The root's Biome, rumdl and tombi jobs skip the units, as the root's configurations do;
-    # shellcheck and shfmt read no list of folders to skip, so their jobs name the workspace's. The
-    # jobs below run in each unit's own folder.
-    - name: shellcheck
-      exclude:
-        - 'apps/**'
-        - 'packages/**'
+    # betterleaks
+    - name: secrets
+      run: betterleaks git --pre-commit --staged --redact --no-banner
+
+    # biome
+    - name: biome
+      run: bunx --bun biome check --write --no-errors-on-unmatched {staged_files}
+      stage_fixed: true
+
+    # ruff
+    - name: ruff
+      stage_fixed: true
+      glob: '*.{py,pyi}'
+      run: >-
+        uv run --locked ruff check --fix --force-exclude {staged_files} && uv run --locked ruff
+        format --force-exclude {staged_files}
+
+    # rumdl
+    - name: rumdl
+      stage_fixed: true
+      glob: '*.md'
+      run: rumdl check --fix {staged_files}
+
+    # shfmt
     - name: shfmt
+      stage_fixed: true
+      glob: '*.{sh,bash}'
+      run: shfmt -w {staged_files}
       exclude:
-        - 'apps/**'
-        - 'packages/**'
+        - apps/docs/**
+        - packages/@design/browser/**
+        - packages/@design/cli/**
+        - packages/@design/tokens/**
+        - packages/@mutation-check/python/**
+        - packages/@mutation-check/typescript/**
+        - packages/brand/**
+        - packages/constitution/**
+        - packages/python-check/**
+
+    # tombi
+    - name: tombi
+      stage_fixed: true
+      glob: '*.toml'
+      run: tombi format {staged_files}
+
+    # shellcheck
+    - name: shellcheck
+      glob: '*.{sh,bash}'
+      run: shellcheck {staged_files}
+      exclude:
+        - apps/docs/**
+        - packages/@design/browser/**
+        - packages/@design/cli/**
+        - packages/@design/tokens/**
+        - packages/@mutation-check/python/**
+        - packages/@mutation-check/typescript/**
+        - packages/brand/**
+        - packages/constitution/**
+        - packages/python-check/**
     - name: biome apps/docs
       root: apps/docs/
       stage_fixed: true
-      run: &unit-lint bun run lint:fix --no-errors-on-unmatched {staged_files}
+      run: &unit-lint bun run fix:lint --no-errors-on-unmatched {staged_files}
     - name: biome packages/constitution
       root: packages/constitution/
       stage_fixed: true
       run: *unit-lint
-    - name: biome packages/design-cli
-      root: packages/design-cli/
+    - name: biome packages/@design/cli
+      root: packages/@design/cli/
       stage_fixed: true
       run: *unit-lint
-    - name: biome packages/design-tokens
-      root: packages/design-tokens/
+    - name: biome packages/@design/tokens
+      root: packages/@design/tokens/
       stage_fixed: true
       run: *unit-lint
-    - name: biome packages/design-browser
-      root: packages/design-browser/
+    - name: biome packages/@design/browser
+      root: packages/@design/browser/
       stage_fixed: true
       run: *unit-lint
-    - name: biome packages/mutation-check/languages/typescript
-      root: packages/mutation-check/languages/typescript/
+    - name: biome packages/brand
+      root: packages/brand/
       stage_fixed: true
       run: *unit-lint
-    - name: biome packages/mutation-check/languages/python
-      root: packages/mutation-check/languages/python/
+    - name: biome packages/@mutation-check/typescript
+      root: packages/@mutation-check/typescript/
+      stage_fixed: true
+      run: *unit-lint
+    - name: biome packages/@mutation-check/python
+      root: packages/@mutation-check/python/
       stage_fixed: true
       run: &python-unit-lint bunx --bun biome check --write --no-errors-on-unmatched {staged_files}
     - name: biome packages/python-check
@@ -63,31 +115,31 @@ pre-commit:
       root: apps/docs/
       glob: '*.md'
       stage_fixed: true
-      run: &unit-markdown bun run markdown:fix {staged_files}
+      run: &unit-markdown bun run fix:markdown {staged_files}
     - name: rumdl packages/constitution
       root: packages/constitution/
       glob: '*.md'
       stage_fixed: true
       run: *unit-markdown
-    - name: rumdl packages/design-cli
-      root: packages/design-cli/
+    - name: rumdl packages/@design/cli
+      root: packages/@design/cli/
       glob: '*.md'
       stage_fixed: true
       run: *unit-markdown
-    - name: rumdl packages/design-tokens
-      root: packages/design-tokens/
+    - name: rumdl packages/@design/tokens
+      root: packages/@design/tokens/
       glob: '*.md'
       stage_fixed: true
       run: *unit-markdown
-    - name: rumdl packages/design-browser
-      root: packages/design-browser/
+    - name: rumdl packages/@design/browser
+      root: packages/@design/browser/
       glob: '*.md'
       stage_fixed: true
       run: *unit-markdown
     - name: shell apps/docs
       root: apps/docs/
       glob: '*.{sh,bash}'
-      run: &unit-shell bun run shell:check
+      run: &unit-shell bun run check:shell
     - name: shell packages/constitution
       root: packages/constitution/
       glob: '*.{sh,bash}'
@@ -107,28 +159,28 @@ pre-commit:
       glob: '*.toml'
       stage_fixed: true
       run: *unit-toml
-    - name: tombi packages/design-cli
-      root: packages/design-cli/
+    - name: tombi packages/@design/cli
+      root: packages/@design/cli/
       glob: '*.toml'
       stage_fixed: true
       run: *unit-toml
-    - name: tombi packages/design-tokens
-      root: packages/design-tokens/
+    - name: tombi packages/@design/tokens
+      root: packages/@design/tokens/
       glob: '*.toml'
       stage_fixed: true
       run: *unit-toml
-    - name: tombi packages/design-browser
-      root: packages/design-browser/
+    - name: tombi packages/@design/browser
+      root: packages/@design/browser/
       glob: '*.toml'
       stage_fixed: true
       run: *unit-toml
-    - name: tombi packages/mutation-check/languages/typescript
-      root: packages/mutation-check/languages/typescript/
+    - name: tombi packages/@mutation-check/typescript
+      root: packages/@mutation-check/typescript/
       glob: '*.toml'
       stage_fixed: true
       run: *unit-toml
-    - name: tombi packages/mutation-check/languages/python
-      root: packages/mutation-check/languages/python/
+    - name: tombi packages/@mutation-check/python
+      root: packages/@mutation-check/python/
       glob: '*.toml'
       stage_fixed: true
       run: *unit-toml
@@ -137,3 +189,68 @@ pre-commit:
       glob: '*.toml'
       stage_fixed: true
       run: *unit-toml
+
+  # lefthook
+  parallel: true
+
+# lefthook
+commit-msg:
+  jobs:
+    - name: commit-body
+      run: |
+        # git commit -v leaves the diff below its scissors line for the hook to read.
+        BODY="$(sed -e '/^# -\{24\} >8 -\{24\}$/,$d' -e '1d;/^#/d;/^$/d' {1} |
+          grep -vE '^[A-Za-z][A-Za-z-]*: .+$' || true)"
+        if [ -n "$BODY" ]; then
+          echo "[commit-body-empty-and-footer-only-trailers]" \
+            "Body must be empty; a footer holds only trailers"
+          exit 1
+        fi
+    - name: commit-header
+      run: |
+        MSG="$(head -1 {1})"
+
+        if [ "${#MSG}" -gt 100 ]; then
+          echo "[commit-header-type-and-subject]" \
+            "Header must be 100 characters or less (got ${#MSG})"
+          exit 1
+        fi
+
+        TYPE="$(printf '%s\n' "$MSG" | sed -n 's/^\([a-z]*\)!\{0,1\}: .*/\1/p')"
+        SUBJECT="$(printf '%s\n' "$MSG" | sed -n 's/^[a-z]*!\{0,1\}: \(.*\)/\1/p')"
+
+        if [ -z "$TYPE" ] || [ -z "$SUBJECT" ]; then
+          echo "[commit-header-type-and-subject]" \
+            "Commit must match format: type: Subject,"
+          echo "  or type!: Subject for a breaking change"
+          exit 1
+        fi
+
+        case "$TYPE" in
+          feat|fix|refactor|chore) ;;
+          *)
+            echo "[commit-header-type-and-subject]" \
+              "Invalid type '$TYPE'. Allowed: feat, fix, refactor, chore"
+            exit 1
+            ;;
+        esac
+
+        FIRST_CHAR="$(printf '%s' "$SUBJECT" | cut -c1)"
+        if ! printf '%s' "$FIRST_CHAR" | grep -q '[A-Z]'; then
+          echo "[commit-header-type-and-subject]" \
+            "Subject must start with an uppercase letter (sentence-case)"
+          exit 1
+        fi
+    - name: commit-placeholder
+      run: |
+        SUBJECT="$(head -1 {1} | sed 's/^[A-Za-z]*\(([^)]*)\)\{0,1\}!\{0,1\}: //')"
+
+        case "$(printf '%s' "$SUBJECT" | tr '[:upper:]' '[:lower:]')" in
+          update | updates | changes | change | misc | wip | fix | fixes | \
+            "fix stuff" | stuff | \
+            "minor changes" | "small fix" | tmp | test)
+            echo "[commit-subject-never-a-placeholder]" \
+              "Subject '$SUBJECT' says nothing; say what changed"
+            exit 1
+            ;;
+        esac

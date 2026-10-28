@@ -1,4 +1,4 @@
-import type { Version } from '#/kernel/value-objects';
+import type { AbsolutePath, RepositoryRelativePath, Version } from '#/kernel/value-objects';
 
 enum Health {
   Sound = 'sound',
@@ -9,7 +9,7 @@ enum Health {
 
 /** In the order doctor reports them. */
 enum InstallationPart {
-  Program = 'program',
+  Executable = 'executable',
   Plugin = 'plugin',
   Release = 'release',
   Path = 'path',
@@ -18,21 +18,25 @@ enum InstallationPart {
 }
 
 enum Diagnosis {
-  ProgramRuns = 'program-runs',
+  ExecutableRuns = 'executable-runs',
   PluginMissing = 'plugin-missing',
   PluginMatches = 'plugin-matches',
   PluginDiffersAtItsVersion = 'plugin-differs-at-its-version',
   PluginOlder = 'plugin-older',
   PluginNewer = 'plugin-newer',
-  LatestUnknown = 'latest-unknown',
+  LatestUnanswered = 'latest-unanswered',
+  LatestRefused = 'latest-refused',
+  LatestUnreadable = 'latest-unreadable',
   LatestAhead = 'latest-ahead',
   LatestHeld = 'latest-held',
-  ProgramNotOnPath = 'program-not-on-path',
+  ExecutableNotOnPath = 'executable-not-on-path',
   PathMatches = 'path-matches',
   PathSilent = 'path-silent',
   PathDiffers = 'path-differs',
   LinkWithoutProject = 'link-without-project',
   ManifestUnreadable = 'manifest-unreadable',
+  ManifestNotObject = 'manifest-not-object',
+  ManifestMalformed = 'manifest-malformed',
   ManifestWithoutVersion = 'manifest-without-version',
   ReleaseMissing = 'release-missing',
   ReleaseFormatNewer = 'release-format-newer',
@@ -47,56 +51,72 @@ enum Diagnosis {
 }
 
 interface PluginVersions {
+  readonly executable: Version;
   readonly plugin: Version;
-  readonly program: Version;
 }
 
-/** Both as paths from the project. */
+/** Each from the repository's folder where it lies in it, else absolute. */
 interface ReleaseLink {
-  readonly folder: string;
-  readonly target: string;
+  readonly linkPath: RepositoryRelativePath | AbsolutePath;
+  readonly targetPath: RepositoryRelativePath | AbsolutePath;
 }
 
 interface DiagnosisDetails {
-  readonly [Diagnosis.ProgramRuns]: {
-    readonly program: Version;
+  readonly [Diagnosis.ExecutableRuns]: {
+    readonly executable: Version;
   };
   readonly [Diagnosis.PluginMissing]: object;
   readonly [Diagnosis.PluginMatches]: PluginVersions;
   readonly [Diagnosis.PluginDiffersAtItsVersion]: {
-    readonly program: Version;
+    readonly executable: Version;
   };
   readonly [Diagnosis.PluginOlder]: PluginVersions;
   readonly [Diagnosis.PluginNewer]: PluginVersions;
-  readonly [Diagnosis.LatestUnknown]: object;
+  readonly [Diagnosis.LatestUnanswered]: {
+    /** what the failed call said, as the system words it */
+    readonly reason: string;
+  };
+  readonly [Diagnosis.LatestRefused]: {
+    /** the HTTP status GitHub answered with */
+    readonly status: number;
+  };
+  readonly [Diagnosis.LatestUnreadable]: object;
   readonly [Diagnosis.LatestAhead]: {
+    readonly executable: Version;
     readonly latest: Version;
-    readonly program: Version;
   };
   readonly [Diagnosis.LatestHeld]: {
     readonly latest: Version;
   };
-  readonly [Diagnosis.ProgramNotOnPath]: object;
+  readonly [Diagnosis.ExecutableNotOnPath]: object;
   readonly [Diagnosis.PathMatches]: {
-    readonly path: string;
+    readonly path: AbsolutePath;
   };
   readonly [Diagnosis.PathSilent]: {
-    readonly path: string;
+    readonly path: AbsolutePath;
   };
   readonly [Diagnosis.PathDiffers]: {
     readonly answered: string;
-    readonly path: string;
-    readonly program: Version;
+    readonly executable: Version;
+    readonly path: AbsolutePath;
   };
   readonly [Diagnosis.LinkWithoutProject]: object;
   readonly [Diagnosis.ManifestUnreadable]: {
-    readonly manifest: string;
+    readonly manifest: AbsolutePath;
+  };
+  readonly [Diagnosis.ManifestNotObject]: {
+    readonly manifest: AbsolutePath;
+  };
+  readonly [Diagnosis.ManifestMalformed]: {
+    /** the fields of another form, each by its path, at least one */
+    readonly fields: readonly string[];
+    readonly manifest: AbsolutePath;
   };
   readonly [Diagnosis.ManifestWithoutVersion]: {
-    readonly manifest: string;
+    readonly manifest: AbsolutePath;
   };
   readonly [Diagnosis.ReleaseMissing]: {
-    readonly releaseFolder: string;
+    readonly releaseFolderPath: AbsolutePath;
   };
   readonly [Diagnosis.ReleaseFormatNewer]: {
     readonly format: number;
@@ -106,8 +126,8 @@ interface DiagnosisDetails {
     readonly link: ReleaseLink;
   };
   readonly [Diagnosis.LinkDiffers]: {
+    readonly executable: Version;
     readonly link: ReleaseLink;
-    readonly program: Version;
     readonly release: Version;
   };
   readonly [Diagnosis.HooksWithoutProject]: object;
@@ -124,21 +144,25 @@ type PartDiagnosis<TKind extends Diagnosis = Diagnosis> = {
 }[TKind];
 
 const PART_OF = {
-  [Diagnosis.ProgramRuns]: InstallationPart.Program,
+  [Diagnosis.ExecutableRuns]: InstallationPart.Executable,
   [Diagnosis.PluginMissing]: InstallationPart.Plugin,
   [Diagnosis.PluginMatches]: InstallationPart.Plugin,
   [Diagnosis.PluginDiffersAtItsVersion]: InstallationPart.Plugin,
   [Diagnosis.PluginOlder]: InstallationPart.Plugin,
   [Diagnosis.PluginNewer]: InstallationPart.Plugin,
-  [Diagnosis.LatestUnknown]: InstallationPart.Release,
+  [Diagnosis.LatestUnanswered]: InstallationPart.Release,
+  [Diagnosis.LatestRefused]: InstallationPart.Release,
+  [Diagnosis.LatestUnreadable]: InstallationPart.Release,
   [Diagnosis.LatestAhead]: InstallationPart.Release,
   [Diagnosis.LatestHeld]: InstallationPart.Release,
-  [Diagnosis.ProgramNotOnPath]: InstallationPart.Path,
+  [Diagnosis.ExecutableNotOnPath]: InstallationPart.Path,
   [Diagnosis.PathMatches]: InstallationPart.Path,
   [Diagnosis.PathSilent]: InstallationPart.Path,
   [Diagnosis.PathDiffers]: InstallationPart.Path,
   [Diagnosis.LinkWithoutProject]: InstallationPart.Link,
   [Diagnosis.ManifestUnreadable]: InstallationPart.Link,
+  [Diagnosis.ManifestNotObject]: InstallationPart.Link,
+  [Diagnosis.ManifestMalformed]: InstallationPart.Link,
   [Diagnosis.ManifestWithoutVersion]: InstallationPart.Link,
   [Diagnosis.ReleaseMissing]: InstallationPart.Link,
   [Diagnosis.ReleaseFormatNewer]: InstallationPart.Link,
@@ -153,21 +177,25 @@ const PART_OF = {
 } as const satisfies Readonly<Record<Diagnosis, InstallationPart>>;
 
 const HEALTH_OF = {
-  [Diagnosis.ProgramRuns]: Health.Sound,
+  [Diagnosis.ExecutableRuns]: Health.Sound,
   [Diagnosis.PluginMissing]: Health.Warned,
   [Diagnosis.PluginMatches]: Health.Sound,
   [Diagnosis.PluginDiffersAtItsVersion]: Health.Warned,
   [Diagnosis.PluginOlder]: Health.Warned,
   [Diagnosis.PluginNewer]: Health.Warned,
-  [Diagnosis.LatestUnknown]: Health.Skipped,
+  [Diagnosis.LatestUnanswered]: Health.Skipped,
+  [Diagnosis.LatestRefused]: Health.Skipped,
+  [Diagnosis.LatestUnreadable]: Health.Skipped,
   [Diagnosis.LatestAhead]: Health.Warned,
   [Diagnosis.LatestHeld]: Health.Sound,
-  [Diagnosis.ProgramNotOnPath]: Health.Broken,
+  [Diagnosis.ExecutableNotOnPath]: Health.Broken,
   [Diagnosis.PathMatches]: Health.Sound,
   [Diagnosis.PathSilent]: Health.Warned,
   [Diagnosis.PathDiffers]: Health.Warned,
   [Diagnosis.LinkWithoutProject]: Health.Skipped,
   [Diagnosis.ManifestUnreadable]: Health.Broken,
+  [Diagnosis.ManifestNotObject]: Health.Broken,
+  [Diagnosis.ManifestMalformed]: Health.Broken,
   [Diagnosis.ManifestWithoutVersion]: Health.Broken,
   [Diagnosis.ReleaseMissing]: Health.Broken,
   [Diagnosis.ReleaseFormatNewer]: Health.Broken,
@@ -181,16 +209,20 @@ const HEALTH_OF = {
   [Diagnosis.HooksUnconfigured]: Health.Skipped,
 } as const satisfies Readonly<Record<Diagnosis, Health>>;
 
+const healthOf = (diagnosis: PartDiagnosis): Health => HEALTH_OF[diagnosis.kind];
+
 const isTroubled = (diagnosis: PartDiagnosis): boolean => {
-  const health = HEALTH_OF[diagnosis.kind];
+  const health = healthOf(diagnosis);
 
   return health === Health.Warned || health === Health.Broken;
 };
 
+const partOf = (diagnosis: PartDiagnosis): InstallationPart => PART_OF[diagnosis.kind];
+
 const PartDiagnosis = {
-  healthOf: (diagnosis: PartDiagnosis): Health => HEALTH_OF[diagnosis.kind],
+  healthOf,
   isTroubled,
-  partOf: (diagnosis: PartDiagnosis): InstallationPart => PART_OF[diagnosis.kind],
+  partOf,
 } as const;
 
 export { Diagnosis, Health, InstallationPart, PartDiagnosis };

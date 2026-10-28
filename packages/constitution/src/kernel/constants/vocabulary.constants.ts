@@ -4,7 +4,7 @@ enum Axis {
   Workflow = 'workflow',
 }
 
-// Each axis keeps a folder in a block and in a preset alike.
+/** Each axis keeps a folder in a block and in a preset alike. */
 const AXES = [
   Axis.Foundation,
   Axis.Architecture,
@@ -35,8 +35,8 @@ const LAYER_RANK = {
   [Layer.Platform]: 2,
 } as const satisfies Readonly<Record<Layer, number>>;
 
-// The folder of each layer under the blocks folder; core's is its one block's.
-const LAYER_FOLDER = {
+/** The folder of each layer under the blocks folder; core's is its one block's. */
+const LAYER_FOLDER_NAME = {
   [Layer.Core]: 'core',
   [Layer.Domain]: 'domains',
   [Layer.Implementation]: 'implementations',
@@ -44,9 +44,9 @@ const LAYER_FOLDER = {
   [Layer.Platform]: 'contexts/platforms',
 } as const satisfies Readonly<Record<Layer, string>>;
 
-const BLOCKS_FOLDER = 'blocks';
-// The folder of an axis that holds its seams, <axis>/with/<block>.md.
-const SEAM_FOLDER = 'with';
+const BLOCKS_FOLDER_NAME = 'blocks';
+/** The folder of an axis that holds its seams, <axis>/with/<block>.md. */
+const SEAM_FOLDER_NAME = 'with';
 const MARKDOWN_EXTENSION = '.md';
 
 enum Level {
@@ -60,7 +60,7 @@ const LEVELS = [
   Level.Should,
   Level.May,
 ] as const;
-// An override lowers a rule, so it sets one of these, never MUST.
+/** An override lowers a rule, so it sets one of these, never MUST. */
 const LOWERED_LEVELS = [
   Level.Should,
   Level.May,
@@ -68,21 +68,22 @@ const LOWERED_LEVELS = [
 
 type LoweredLevel = (typeof LOWERED_LEVELS)[number];
 
-// A rule states its Why in one table of this header and one row of as many cells.
+/** The header of the one table a rule states its Why in. */
 const RULE_TABLE_HEADER = '| Why |';
+/** The cells of the one row of a rule's Why table. */
 const RULE_TABLE_CELLS = 1;
 
-// An implementation answers the requirements of the blocks above it in its passport, under this
-// heading, in a table of this header.
+/** The heading of a passport's answers to the requirements of the blocks above it. */
 const REQUIREMENTS_HEADING = '## Requirements';
+/** The header of the table a passport's answers to the requirements are written in. */
 const REQUIREMENTS_TABLE_HEADER = '| Requirement | How | Met |';
 
 export type { LoweredLevel };
 export {
   AXES,
   Axis,
-  BLOCKS_FOLDER,
-  LAYER_FOLDER,
+  BLOCKS_FOLDER_NAME,
+  LAYER_FOLDER_NAME,
   LAYER_RANK,
   LAYERS,
   Layer,
@@ -94,5 +95,5 @@ export {
   REQUIREMENTS_TABLE_HEADER,
   RULE_TABLE_CELLS,
   RULE_TABLE_HEADER,
-  SEAM_FOLDER,
+  SEAM_FOLDER_NAME,
 };

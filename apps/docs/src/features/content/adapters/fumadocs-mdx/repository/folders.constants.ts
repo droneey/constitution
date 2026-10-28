@@ -1,32 +1,38 @@
-import type { SidebarFolder } from './folders.types';
+import type { SidebarFolder } from '#/shared/types';
 
-const LAYER_FOLDERS: Readonly<Record<string, Pick<SidebarFolder, 'icon' | 'title'>>> = {
+import { BlockLayer } from '../../../domain/entities';
+
+type FolderHeading = Pick<SidebarFolder, 'icon' | 'title'>;
+
+const LAYER_FOLDERS = {
+  [BlockLayer.Core]: {
+    icon: 'ScrollText',
+    title: 'Core',
+  },
+  [BlockLayer.Domain]: {
+    icon: 'Shapes',
+    title: 'Domains',
+  },
+  [BlockLayer.Implementation]: {
+    icon: 'Wrench',
+    title: 'Implementations',
+  },
+  [BlockLayer.Language]: {
+    icon: 'Code',
+    title: 'Languages',
+  },
+  [BlockLayer.Platform]: {
+    icon: 'MonitorSmartphone',
+    title: 'Platforms',
+  },
+} as const satisfies Readonly<Record<BlockLayer, FolderHeading>>;
+
+/** the folders of the sidebar that group layers of their own, by their path */
+const layerGroupFolders: Readonly<Record<string, FolderHeading>> = {
   contexts: {
     icon: 'Boxes',
     title: 'Contexts',
   },
-  'contexts/languages': {
-    icon: 'Code',
-    title: 'Languages',
-  },
-  'contexts/platforms': {
-    icon: 'MonitorSmartphone',
-    title: 'Platforms',
-  },
-  core: {
-    icon: 'ScrollText',
-    title: 'Core',
-  },
-  domains: {
-    icon: 'Shapes',
-    title: 'Domains',
-  },
-  implementations: {
-    icon: 'Wrench',
-    title: 'Implementations',
-  },
-} as const;
+};
 
-const AXIS_SEPARATOR = '/';
-
-export { AXIS_SEPARATOR, LAYER_FOLDERS };
+export { LAYER_FOLDERS, layerGroupFolders };

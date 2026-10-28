@@ -1,12 +1,10 @@
 @layer overrides {
   /* the list is a stop of its own, so the keyboard can scroll it; its fading edges would clip its
      ring, which its unmasked frame draws instead */
-  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-sidebar [data-id$='-viewport']:focus-visible {
     outline: none;
   }
 
-  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-sidebar :has(> [data-id$='-viewport']:focus-visible) {
     border-radius: var(--radius-control-base);
     outline: var(--ring-focus-width) solid var(--color-fd-ring);
@@ -14,7 +12,6 @@
   }
 
   /* the logo's icon on the fields' leading icons, the collapse icon on their trailing ones */
-  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-sidebar > div > div:first-child {
     gap: var(--spacing-xs);
     margin-block: var(--spacing-xs);
@@ -25,7 +22,8 @@
       padding-inline-start: var(--spacing-xs);
       gap: var(--spacing-xs);
       border-radius: var(--radius-control-base);
-      font-size: var(--text-base);
+      font: var(--font-heading-sm);
+      letter-spacing: var(--font-heading-sm--letter-spacing);
     }
 
     & > button:last-child {
@@ -33,20 +31,17 @@
     }
   }
 
-  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-sidebar > div > div:nth-child(2) {
     gap: var(--spacing-xs);
     padding-inline: var(--spacing-sm);
   }
 
-  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-sidebar [data-id$='-viewport'] {
     padding-inline: var(--spacing-sm);
-    font-size: var(--text-sm);
-    font-weight: var(--font-weight-ui);
+    font: var(--font-label-sm);
+    letter-spacing: var(--font-label-sm--letter-spacing);
   }
 
-  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-sidebar [data-id$='-viewport'] :is(a, button):not([data-sidebar-field]) {
     gap: var(--spacing-xs);
     min-height: var(--size-control-md);
@@ -83,7 +78,6 @@
   }
 
   /* the library's own block under the hovered row, drawn as the glide's */
-  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-sidebar [data-id$='-viewport'] > div > [aria-hidden]:first-child {
     padding: 0;
     border: 0;
@@ -92,7 +86,6 @@
     background-clip: content-box;
   }
 
-  /* biome-ignore lint/plugin/selector-never-targets-an-id: Fumadocs reaches this part of its layout only by its id; constitution.yaml lowers the rule for the site */
   #nd-sidebar [data-cross-link] {
     margin-inline-start: auto;
     color: var(--color-text-muted);

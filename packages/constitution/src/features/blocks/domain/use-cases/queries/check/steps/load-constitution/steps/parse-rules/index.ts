@@ -1,1 +1,1 @@
-export { parseBlockRules } from './parse-rules.utils';
+export { parseRules } from './parse-rules';

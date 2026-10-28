@@ -3,8 +3,16 @@ import { describe, expect, it } from 'bun:test';
 import { ColourLevel, createTheme, ThemeMode } from '@droneey/design-cli';
 import { CommanderError } from 'commander';
 
+import { goldenFileText, goldenOf } from '#/__tests__/golden.fixtures';
 import { TreeError, TreeFailure } from '#/features/blocks';
-import { ProjectError, ProjectFailure } from '#/kernel/errors';
+import { ApplyError, ApplyFailure } from '#/features/presets';
+import {
+  ReleaseError,
+  ReleaseFailure,
+  UnreadableFileError,
+  UnreadableFileFailure,
+} from '#/features/project';
+import { AbsolutePath } from '#/kernel/value-objects';
 import { ExitCode, outputFlagsOf } from '#/shared/cli';
 
 import { clockOf } from '../configuration';
@@ -57,328 +65,221 @@ const unparsedOptionsFailure = ((): unknown => {
   }
 })();
 
-describe('createErrorHandler', () => {
-  it.each([
-    {
-      condition: 'the archive is missing',
-      failure: {
-        code: ProjectFailure.ReleaseMissing,
-        details: {
-          path: '.droneey/constitution',
-        },
+// Each failure the handler words, by a name the golden file heads it with.
+const failures: readonly {
+  readonly failure: unknown;
+  readonly name: string;
+}[] = [
+  {
+    failure: new UnreadableFileError({
+      code: UnreadableFileFailure.Config,
+      details: {
+        path: AbsolutePath.create('/work/constitution.yaml'),
       },
-      line: 'constitution hook: .droneey/constitution does not exist — run mise install\n',
-    },
-    {
-      condition: 'the blocks cannot be listed',
-      failure: {
-        code: ProjectFailure.BlocksUnlisted,
-        details: {
-          path: '/archive/blocks',
-        },
+    }),
+    name: 'constitution.yaml unreadable',
+  },
+  {
+    failure: new ReleaseError({
+      code: ReleaseFailure.BlocksUnlisted,
+      details: {
+        path: AbsolutePath.create('/work/.droneey/constitution'),
       },
-      line: 'constitution hook: cannot list the blocks of /archive/blocks\n',
-    },
-    {
-      condition: 'constitution.yaml does not parse at a line',
-      failure: {
-        code: ProjectFailure.ConfigUnparsed,
-        details: {
-          line: 12,
-          path: 'constitution.yaml',
-        },
+    }),
+    name: 'blocks unlisted',
+  },
+  {
+    failure: new UnreadableFileError({
+      code: UnreadableFileFailure.Core,
+      details: {
+        path: AbsolutePath.create('/work/.droneey/constitution/blocks/core/core.md'),
       },
-      line: 'constitution hook: constitution.yaml does not parse at line 12\n',
-    },
-    {
-      condition: 'constitution.yaml does not parse at no known line',
-      failure: {
-        code: ProjectFailure.ConfigUnparsed,
-        details: {
-          path: 'constitution.yaml',
-        },
-      },
-      line: 'constitution hook: constitution.yaml does not parse\n',
-    },
-    {
-      condition: 'constitution.yaml cannot be read',
-      failure: {
-        code: ProjectFailure.ConfigUnreadable,
-        details: {
-          path: '/work/constitution.yaml',
-        },
-      },
-      line: 'constitution hook: cannot read /work/constitution.yaml\n',
-    },
-    {
-      condition: 'the core cannot be read',
-      failure: {
-        code: ProjectFailure.CoreUnreadable,
-        details: {
-          path: '/archive/blocks/core/core.md',
-        },
-      },
-      line: 'constitution hook: cannot build the digest\n',
-    },
-    {
-      condition: 'the manifest cannot be read',
-      failure: {
-        code: ProjectFailure.ManifestUnreadable,
-        details: {
-          path: '/archive/package.json',
-        },
-      },
-      line: 'constitution hook: cannot read /archive/package.json\n',
-    },
-    {
-      condition: 'no project is found',
-      failure: {
-        code: ProjectFailure.NoProject,
-        details: {
-          path: '/work',
-        },
-      },
-      line: 'constitution hook: no constitution.yaml in this folder or above it\n',
-    },
-    {
-      condition: 'the manifest has no version',
-      failure: {
-        code: ProjectFailure.VersionMissing,
-        details: {
-          path: '/archive/package.json',
-        },
-      },
-      line: 'constitution hook: /archive/package.json has no version\n',
-    },
-  ])(
-    'should write its one line and end with the failure code when a hook fails as $condition',
-    ({ failure, line }) => {
-      // Arrange
-      const handler = handlerOf({
-        isHook: true,
-      });
-
-      // Act
-      const code = handler.errors.codeOf(new ProjectError(failure));
-
-      // Assert
-      expect({
-        code,
-        written: handler.written(),
-      }).toStrictEqual({
-        code: ExitCode.Failure,
-        written: line,
-      });
-    },
-  );
-
-  it.each([
-    {
-      failure: ProjectFailure.NoProject,
-      written:
-        '✗ no constitution.yaml in this folder or above it\n  → run /constitution:ratify in a Claude Code session to write one\n',
-    },
-    {
-      failure: ProjectFailure.ConfigUnparsed,
-      written: '✗ constitution.yaml does not parse\n  → fix constitution.yaml at that line\n',
-    },
-    {
-      failure: ProjectFailure.ConfigUnreadable,
-      written: '✗ cannot read /work/constitution.yaml\n  → make constitution.yaml readable\n',
-    },
-    {
-      failure: ProjectFailure.ReleaseMissing,
-      written:
-        '✗ /work/constitution.yaml does not exist — run mise install\n  → run constitution doctor, which says what is wrong with the installation\n',
-    },
-    {
-      failure: ProjectFailure.BlocksUnlisted,
-      written:
-        '✗ cannot list the blocks of /work/constitution.yaml\n  → run constitution doctor, which says what is wrong with the installation\n',
-    },
-    {
-      failure: ProjectFailure.CoreUnreadable,
-      written:
-        '✗ cannot build the digest\n  → run constitution doctor, which says what is wrong with the installation\n',
-    },
-    {
-      failure: ProjectFailure.ManifestUnreadable,
-      written:
-        '✗ cannot read /work/constitution.yaml\n  → run constitution doctor, which says what is wrong with the installation\n',
-    },
-    {
-      failure: ProjectFailure.VersionMissing,
-      written:
-        '✗ /work/constitution.yaml has no version\n  → run constitution doctor, which says what is wrong with the installation\n',
-    },
-  ])(
-    'should write the failure block, and end with the failure code, when a command fails as $failure',
-    ({ failure, written }) => {
-      // Arrange
-      const handler = handlerOf({
-        isHook: false,
-      });
-
-      // Act
-      const code = handler.errors.codeOf(
-        new ProjectError({
-          code: failure,
-          details: {
-            path: '/work/constitution.yaml',
-          },
-        }),
-      );
-
-      // Assert
-      expect({
-        code,
-        written: handler.written(),
-      }).toStrictEqual({
-        code: ExitCode.Failure,
-        written,
-      });
-    },
-  );
-
-  it.each([
-    {
-      code: TreeFailure.TimedOut,
-      written:
-        '✗ git did not list the files of /work/constitution in time\n  → run git status there, which says what git cannot read\n',
-    },
-    {
+    }),
+    name: 'core unreadable',
+  },
+  {
+    failure: new TreeError({
       code: TreeFailure.Failed,
-      written:
-        '✗ git could not list the files of /work/constitution\n  → run git status there, which says what git cannot read\n',
-    },
-    {
+      details: {
+        path: AbsolutePath.create('/work/constitution'),
+      },
+    }),
+    name: 'tree failed',
+  },
+  {
+    failure: new TreeError({
+      code: TreeFailure.TimedOut,
+      details: {
+        path: AbsolutePath.create('/work/constitution'),
+      },
+    }),
+    name: 'tree timed out',
+  },
+  {
+    failure: new TreeError({
+      code: TreeFailure.Unreadable,
+      details: {
+        path: AbsolutePath.create('/work/constitution/blocks/core/core.md'),
+      },
+    }),
+    name: 'tree file unreadable',
+  },
+  {
+    failure: new TreeError({
       code: TreeFailure.TooLarge,
-      written:
-        '✗ the blocks of /work/constitution hold more files than a release does\n  → run constitution doctor, which says what is wrong with the installation\n',
-    },
-  ])(
-    'should name the folder whose files could not be listed, and end with the failure code, when it is $code',
-    ({ code, written }) => {
-      // Arrange
-      const handler = handlerOf({
-        isHook: false,
-      });
+      details: {
+        path: AbsolutePath.create('/work/constitution'),
+      },
+    }),
+    name: 'tree too large',
+  },
+  {
+    failure: new ApplyError({
+      code: ApplyFailure.NotWritten,
+      details: {
+        filePath: AbsolutePath.create('/work/project/biome.json'),
+      },
+    }),
+    name: 'apply not written',
+  },
+  {
+    failure: malformedDayFailure,
+    name: 'day malformed',
+  },
+  {
+    failure: unparsedOptionsFailure,
+    name: 'options unparsed',
+  },
+  {
+    failure: new TypeError('undefined is not an object'),
+    name: 'an error of its own',
+  },
+];
 
-      // Act
-      const exit = handler.errors.codeOf(
-        new TreeError({
-          code,
-          details: {
-            path: '/work/constitution',
-          },
-        }),
-      );
+// What commander says of command lines typed wrong, by a name the golden file heads it with.
+const usages: readonly {
+  readonly name: string;
+  readonly said: string;
+}[] = [
+  {
+    name: 'usage with the prefix of commander',
+    said: "error: unknown command 'chek'\n(Did you mean check?)\n",
+  },
+  {
+    name: 'usage with no prefix of commander',
+    said: 'too many arguments; error: see help',
+  },
+];
 
-      // Assert
-      expect({
-        exit,
-        written: handler.written(),
-      }).toStrictEqual({
-        exit: ExitCode.Failure,
-        written,
-      });
-    },
+// What the handler writes of a failure, as a hook and then for a person.
+const failureWrittenOf = (failure: unknown): string => {
+  const hook = handlerOf({
+    isHook: true,
+  });
+  const person = handlerOf({
+    isHook: false,
+  });
+
+  hook.errors.codeOf(failure);
+  person.errors.codeOf(failure);
+
+  return `${hook.written()}${person.written()}`;
+};
+
+const usageWrittenOf = (said: string): string => {
+  const handler = handlerOf({
+    isHook: false,
+  });
+
+  handler.errors.writeUsage(said);
+
+  return handler.written();
+};
+
+// What the handler writes of each failure and each command line typed wrong, as the golden file holds it.
+const goldenText = (): string =>
+  goldenOf(
+    Object.fromEntries([
+      ...failures.map(({ failure, name }) => [
+        name,
+        failureWrittenOf(failure),
+      ]),
+      ...usages.map(({ name, said }) => [
+        name,
+        usageWrittenOf(said),
+      ]),
+    ]),
   );
 
-  it('should name the file it could not read, with what to do, and end with the failure code, when a listed file is unreadable', () => {
-    // Arrange
-    const handler = handlerOf({
-      isHook: false,
-    });
-
+describe('createErrorHandler', () => {
+  it('should word each failure as the golden file shows, a hook in one line and a person in a block', async () => {
     // Act
-    const exit = handler.errors.codeOf(
-      new TreeError({
-        code: TreeFailure.Unreadable,
-        details: {
-          path: '/work/constitution/blocks/core/core.md',
-        },
-      }),
-    );
+    const written = goldenText();
 
     // Assert
-    expect({
-      exit,
-      written: handler.written(),
-    }).toStrictEqual({
-      exit: ExitCode.Failure,
-      written:
-        '✗ cannot read /work/constitution/blocks/core/core.md\n  → make the file readable, or remove it from the tree\n',
-    });
+    expect(written).toBe(
+      await goldenFileText(new URL('error-handler.golden.txt', import.meta.url), written),
+    );
   });
 
   it.each([
     {
+      code: ExitCode.Failure,
+      condition: 'a project cannot be read',
+      failure: new UnreadableFileError({
+        code: UnreadableFileFailure.Config,
+        details: {
+          path: AbsolutePath.create('/work/constitution.yaml'),
+        },
+      }),
+    },
+    {
+      code: ExitCode.Failure,
+      condition: 'a tree cannot be listed',
+      failure: new TreeError({
+        code: TreeFailure.Failed,
+        details: {
+          path: AbsolutePath.create('/work/constitution'),
+        },
+      }),
+    },
+    {
+      code: ExitCode.Failure,
+      condition: 'an apply cannot write',
+      failure: new ApplyError({
+        code: ApplyFailure.NotWritten,
+        details: {
+          filePath: AbsolutePath.create('/work/project/biome.json'),
+        },
+      }),
+    },
+    {
+      code: ExitCode.Usage,
+      condition: 'a setting of the environment is malformed',
+      failure: malformedDayFailure,
+    },
+    {
+      code: ExitCode.Usage,
+      condition: 'the options do not parse',
+      failure: unparsedOptionsFailure,
+    },
+    {
+      code: ExitCode.Defect,
+      condition: 'the run throws an error of its own',
+      failure: new TypeError('undefined is not an object'),
+    },
+  ])('should end with $code when $condition', ({ code, failure }) => {
+    // Arrange
+    const handler = handlerOf({
       isHook: true,
-      written:
-        'constitution hook: CONSTITUTION_TODAY is "2026-6-15", which is no date written YYYY-MM-DD\n',
-    },
-    {
-      isHook: false,
-      written:
-        '✗ CONSTITUTION_TODAY is "2026-6-15", which is no date written YYYY-MM-DD\n  → unset CONSTITUTION_TODAY, which only the program\'s specs set\n',
-    },
-  ])(
-    'should say which setting it cannot take and end with the usage code when the hook is $isHook',
-    ({ isHook, written }) => {
-      // Arrange
-      const handler = handlerOf({
-        isHook,
-      });
+    });
 
-      // Act
-      const exit = handler.errors.codeOf(malformedDayFailure);
+    // Act
+    const ended = handler.errors.codeOf(failure);
 
-      // Assert
-      expect({
-        exit,
-        written: handler.written(),
-      }).toStrictEqual({
-        exit: ExitCode.Usage,
-        written,
-      });
-    },
-  );
-
-  it.each([
-    {
-      condition: 'a hook',
-      isHook: true,
-      written:
-        'constitution hook: the run stopped on an error of its own; report it at https://github.com/droneey/constitution/issues\n',
-    },
-    {
-      condition: 'a command',
-      isHook: false,
-      written:
-        '✗ the run stopped on an error of its own\n  → report it at https://github.com/droneey/constitution/issues\n',
-    },
-  ])(
-    'should ask for a report and end with the defect code when $condition throws an error of its own',
-    ({ isHook, written }) => {
-      // Arrange
-      const handler = handlerOf({
-        isHook,
-      });
-
-      // Act
-      const code = handler.errors.codeOf(new TypeError('undefined is not an object'));
-
-      // Assert
-      expect({
-        code,
-        written: handler.written(),
-      }).toStrictEqual({
-        code: ExitCode.Defect,
-        written,
-      });
-    },
-  );
+    // Assert
+    expect(ended).toBe(code);
+  });
 
   it.each([
     {
@@ -411,65 +312,4 @@ describe('createErrorHandler', () => {
       written: '',
     });
   });
-
-  it.each([
-    {
-      condition: 'a command',
-      isHook: false,
-      written:
-        '✗ the options do not parse\n  plain: Invalid input: expected boolean, received string\n',
-    },
-    {
-      condition: 'a hook',
-      isHook: true,
-      written: 'constitution hook: the options do not parse\n',
-    },
-  ])(
-    'should end with the usage code, what does not parse said, when the options of $condition do not parse',
-    ({ isHook, written }) => {
-      // Arrange
-      const handler = handlerOf({
-        isHook,
-      });
-
-      // Act
-      const code = handler.errors.codeOf(unparsedOptionsFailure);
-
-      // Assert
-      expect({
-        code,
-        written: handler.written(),
-      }).toStrictEqual({
-        code: ExitCode.Usage,
-        written,
-      });
-    },
-  );
-
-  it.each([
-    {
-      condition: 'its message opens with the prefix of commander',
-      said: "error: unknown command 'chek'\n(Did you mean check?)\n",
-      written: "✗ unknown command 'chek'\n  (Did you mean check?)\n",
-    },
-    {
-      condition: 'its message opens with no prefix of commander',
-      said: 'too many arguments; error: see help',
-      written: '✗ too many arguments; error: see help\n',
-    },
-  ])(
-    'should write what commander says of a command line typed wrong as a failure block when $condition',
-    ({ said, written }) => {
-      // Arrange
-      const handler = handlerOf({
-        isHook: false,
-      });
-
-      // Act
-      handler.errors.writeUsage(said);
-
-      // Assert
-      expect(handler.written()).toBe(written);
-    },
-  );
 });

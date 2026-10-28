@@ -1,0 +1,4 @@
+# hadolint
+failure-threshold: style
+ignored:
+  - DL3010

@@ -1,1 +1,1 @@
-export { readDocuments } from './read-documents.utils';
+export { readDocuments } from './read-documents';

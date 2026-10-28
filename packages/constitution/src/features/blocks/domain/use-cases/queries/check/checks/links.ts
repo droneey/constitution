@@ -2,7 +2,7 @@ import type { FindingOf } from '#/kernel/types';
 
 import { Block, DocumentPath } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
-import { foldersOf, linkTargetsOf, resolveLink } from '../shared/markdown';
+import { foldersOf, linkTargetsOf, resolveLink } from '../utils';
 
 enum LinksCode {
   MissingTarget = 'link-to-missing-file',
@@ -18,7 +18,7 @@ interface LinksDetails {
 type LinksFinding = FindingOf<LinksDetails>;
 
 interface Document {
-  // The files and folders its links may reach.
+  /** the files and folders its links may reach */
   readonly known: ReadonlySet<string>;
   readonly path: string;
   readonly text: string;

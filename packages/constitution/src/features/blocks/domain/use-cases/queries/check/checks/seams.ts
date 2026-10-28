@@ -6,6 +6,7 @@ import { BlockId } from '#/kernel/value-objects';
 import type { Block } from '../../../../entities';
 import { BlockFile, BlockFileRole, BlockGraph, pairableBy } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
+import { findingsAt } from '../utils';
 
 enum SeamsCode {
   NamedAfterOwnBlock = 'seam-named-after-own-block',
@@ -139,7 +140,10 @@ const pairingOf = (
       };
 };
 
-/** a seam titled otherwise than the other block's passport, since the seam's folder already names the block it belongs to */
+/**
+ * A seam titled otherwise than the other block's passport, since the seam's folder already names the
+ * block it belongs to.
+ */
 const titleProblem = (input: { file: BlockFile; other: Block }): SeamsProblem | undefined =>
   titleOf(input.file.body) === titleOf(input.other.passport.body)
     ? undefined
@@ -168,14 +172,9 @@ const seamFindings = (subject: Subject): readonly SeamsFinding[] =>
             other: pairing.other,
           });
 
-    return problem === undefined
-      ? []
-      : [
-          {
-            ...problem,
-            path: file.path,
-          },
-        ];
+    return findingsAt(file.path, [
+      problem,
+    ]);
   });
 
 const chapterFindings = (subject: Subject): readonly SeamsFinding[] =>

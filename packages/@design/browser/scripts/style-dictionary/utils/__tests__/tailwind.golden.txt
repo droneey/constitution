@@ -1,0 +1,44 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+@theme inline reference {
+  --color-surface-base: var(--color-surface-base);
+  --color-accent-solid: var(--color-accent-solid);
+  --color-fill-hover: var(--color-fill-hover);
+  --spacing-sm: var(--spacing-sm);
+  --size-icon-md: var(--size-icon-md);
+  --font-weight-normal: var(--font-weight-normal);
+  --radius-surface-raised: var(--radius-surface-raised);
+  --shadow-surface-raised: var(--shadow-surface-raised);
+  --duration-fast: var(--duration-fast);
+  --ease-out: var(--ease-out);
+  --layer-surface-raised: var(--layer-surface-raised);
+}
+
+@theme inline {
+  --spacing-icon-md: var(--size-icon-md);
+  --text-sm: var(--font-size-sm);
+  --leading-sm: var(--font-leading-sm);
+  --text-sm--line-height: var(--font-leading-sm);
+  --font-mono: var(--font-family-mono);
+  --tracking-normal: var(--font-tracking-normal);
+  --text-code-sm: var(--font-size-sm);
+  --text-code-sm--line-height: var(--font-leading-sm);
+  --text-code-sm--letter-spacing: var(--font-tracking-normal);
+  --text-code-sm--font-weight: var(--font-weight-normal);
+  --text-code-md: var(--font-size-sm);
+  --text-code-md--line-height: var(--font-leading-sm);
+  --text-code-md--letter-spacing: var(--font-tracking-normal);
+  --text-code-md--font-weight: var(--font-weight-normal);
+  --z-index-surface-raised: var(--layer-surface-raised);
+  --font-code: var(--font-family-mono);
+  --radius-xs: var(--radius-4);
+  --radius-sm: var(--radius-4);
+  --radius-md: var(--radius-8);
+  --radius-lg: var(--radius-8);
+  --radius-xl: var(--radius-12);
+  --radius-2xl: var(--radius-16);
+  --radius-3xl: var(--radius-24);
+  --radius-4xl: var(--radius-32);
+}

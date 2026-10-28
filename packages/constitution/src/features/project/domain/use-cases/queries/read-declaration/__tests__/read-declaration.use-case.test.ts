@@ -3,38 +3,36 @@ import { describe, expect, it } from 'bun:test';
 import { createFakeProjectFiles } from '#/__tests__/project-files.fake';
 import { PROJECT, projectPlace, releaseFolderPath } from '#/__tests__/project-place.fixtures';
 import { Axis, Layer } from '#/kernel/constants';
-import type { Declaration } from '#/kernel/entities';
-import { ConfigReadStatus, ProjectWarning, WarningCode, WarningKind } from '#/kernel/entities';
-import { ProjectFailure } from '#/kernel/errors';
-import { PackPath, SourceKind } from '#/kernel/value-objects';
+import { ConfigReadStatus, WarningKind } from '#/kernel/entities';
+import { PackPath, SourceKind, UnitPath } from '#/kernel/value-objects';
 
 import { createFakeClock } from '../../../../../__tests__/clock.fake';
 import {
   blockFilesOf,
   configPath,
   Folder,
+  failureOf,
   manifest,
   manifestOf,
   parsers,
   projectTreeOf,
   ruleOf,
 } from '../../../../../__tests__/project.fixtures';
-import { createFakeWorkspace } from '../../../../../__tests__/workspace.fake';
-import { readDeclaration } from '../read-declaration.use-case';
 import {
   activeOf,
-  blockSetEntryOf,
-  failureOf,
   filesOn,
   listedOf,
   listingOf,
-  memberYamlOf,
   modelOf,
   mustOf,
   today,
   unitOf,
   yamlOf,
-} from '../steps/resolve-declaration/__tests__/resolution.fixtures';
+} from '../../../../../__tests__/resolution.fixtures';
+import { createFakeWorkspace } from '../../../../../__tests__/workspace.fake';
+import type { Declaration } from '../../../../entities';
+import { ReleaseFailure, UnreadableFileFailure } from '../../../../errors';
+import { readDeclaration } from '../read-declaration.use-case';
 
 const uiRules = ruleOf({
   level: 'MUST',
@@ -42,7 +40,7 @@ const uiRules = ruleOf({
 });
 
 // What a declaration read of the members: where each active block is and its passport, the packs
-// and its warnings' codes.
+// and its warnings.
 const membersReadOf = (declaration: Declaration): unknown =>
   declaration.status === ConfigReadStatus.Parsed
     ? {
@@ -50,7 +48,7 @@ const membersReadOf = (declaration: Declaration): unknown =>
           (block) => `${block.unit}: ${block.files[0] ?? ''}`,
         ),
         packs: declaration.packs,
-        warnings: declaration.resolution.warnings.map(ProjectWarning.codeOf),
+        warnings: declaration.resolution.warnings,
       }
     : declaration;
 
@@ -130,11 +128,6 @@ describe('readDeclaration', () => {
             id: 'lint',
           }),
         ],
-        blocks: [
-          blockSetEntryOf('core', Layer.Core),
-          blockSetEntryOf('ui', Layer.Domain),
-          blockSetEntryOf('lint', Layer.Implementation),
-        ],
         listing: listingOf({
           repository: [
             listedOf({
@@ -169,13 +162,21 @@ describe('readDeclaration', () => {
             {
               id: 'core',
               layer: Layer.Core,
+              summary: undefined,
             },
             {
+              chapters: [
+                'foundation/forms.md',
+              ],
               id: 'ui',
             },
             {
+              chapters: [
+                'foundation/style.md',
+              ],
               id: 'lint',
               layer: Layer.Implementation,
+              source: './rules',
             },
           ],
           rules: [
@@ -248,7 +249,7 @@ describe('readDeclaration', () => {
   it("should read each member's own constitution.yaml, and its packs from its folder, and note those it cannot read when the workspace declares members", () => {
     // Arrange
     const text = yamlOf();
-    const web = memberYamlOf({
+    const web = yamlOf({
       domains: 'domains: [ui]',
       implementations: 'implementations: [lint]',
       packs: 'packs: [../../rules]',
@@ -306,10 +307,34 @@ describe('readDeclaration', () => {
         'rules',
       ],
       warnings: [
-        WarningCode.Config,
-        WarningCode.Config,
-        WarningCode.Workspace,
-        WarningCode.Constitution,
+        {
+          details: {
+            lines: [
+              2,
+            ],
+            member: UnitPath.create('apps/docs'),
+          },
+          kind: WarningKind.MemberConfigUnparsed,
+        },
+        {
+          details: {
+            member: UnitPath.create('packages/ui'),
+          },
+          kind: WarningKind.MemberConfigUnreadable,
+        },
+        {
+          details: {
+            member: UnitPath.create('apps/api'),
+          },
+          kind: WarningKind.MemberWithoutConfig,
+        },
+        {
+          details: {
+            file: '/work/project/.droneey/constitution/blocks/core/core.md',
+            source: SourceKind.Release,
+          },
+          kind: WarningKind.FrontMatterMissing,
+        },
       ],
     });
   });
@@ -347,13 +372,24 @@ describe('readDeclaration', () => {
         'empty',
       ],
       warnings: [
-        WarningCode.Installation,
-        WarningCode.Constitution,
+        {
+          details: {
+            where: 'empty',
+          },
+          kind: WarningKind.PackNotInstalled,
+        },
+        {
+          details: {
+            file: '/work/project/.droneey/constitution/blocks/core/core.md',
+            source: SourceKind.Release,
+          },
+          kind: WarningKind.FrontMatterMissing,
+        },
       ],
     });
   });
 
-  it('should give the line the read stops at when constitution.yaml does not parse', () => {
+  it('should give the lines the file fails at when constitution.yaml does not parse', () => {
     // Arrange
     const files = createFakeProjectFiles(
       projectTreeOf({
@@ -372,7 +408,9 @@ describe('readDeclaration', () => {
 
     // Assert
     expect(declaration).toStrictEqual({
-      line: 2,
+      lines: [
+        3,
+      ],
       status: ConfigReadStatus.Unparsed,
     });
   });
@@ -380,10 +418,12 @@ describe('readDeclaration', () => {
   it.each([
     {
       cause: undefined,
-      code: ProjectFailure.ConfigUnreadable,
+      code: UnreadableFileFailure.Config,
       condition: 'there is no constitution.yaml',
       folders: [],
-      path: configPath,
+      details: {
+        path: configPath,
+      },
       tree: {
         [`${releaseFolderPath}/blocks/core/core.md`]: '# Core\n',
       },
@@ -391,10 +431,12 @@ describe('readDeclaration', () => {
     },
     {
       cause: expect.any(Error),
-      code: ProjectFailure.ConfigUnreadable,
+      code: UnreadableFileFailure.Config,
       condition: 'constitution.yaml cannot be read',
       folders: [],
-      path: configPath,
+      details: {
+        path: configPath,
+      },
       tree: {
         [configPath]: yamlOf(),
         [`${releaseFolderPath}/blocks/core/core.md`]: '# Core\n',
@@ -405,10 +447,12 @@ describe('readDeclaration', () => {
     },
     {
       cause: undefined,
-      code: ProjectFailure.BlocksUnlisted,
+      code: ReleaseFailure.BlocksUnlisted,
       condition: 'the release holds no blocks folder',
       folders: [],
-      path: releaseFolderPath,
+      details: {
+        path: releaseFolderPath,
+      },
       tree: {
         [configPath]: 'domains: [ui\n',
         [manifest]: manifestOf(),
@@ -417,10 +461,12 @@ describe('readDeclaration', () => {
     },
     {
       cause: undefined,
-      code: ProjectFailure.BlocksUnlisted,
+      code: ReleaseFailure.BlocksUnlisted,
       condition: 'the release holds presets and no blocks folder',
       folders: [],
-      path: releaseFolderPath,
+      details: {
+        path: releaseFolderPath,
+      },
       tree: {
         [configPath]: yamlOf(),
         [manifest]: manifestOf(),
@@ -430,7 +476,7 @@ describe('readDeclaration', () => {
     },
   ])(
     'should fail with $code, keeping why the read failed, when $condition',
-    ({ cause, code, folders, path, tree, unreadable }) => {
+    ({ cause, code, details, folders, tree, unreadable }) => {
       // Arrange
       const files = createFakeProjectFiles({
         files: tree,
@@ -453,8 +499,7 @@ describe('readDeclaration', () => {
       expect(failure).toStrictEqual({
         cause,
         code,
-        line: undefined,
-        path,
+        details,
       });
     },
   );

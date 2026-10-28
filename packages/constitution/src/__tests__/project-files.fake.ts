@@ -1,6 +1,7 @@
 import type { ProjectFiles } from '#/kernel/contracts';
 import type { FileRead } from '#/kernel/entities';
 import { FileReadStatus } from '#/kernel/entities';
+import { AbsolutePath } from '#/kernel/value-objects';
 
 // A tree of files in memory, by absolute path; a folder is any path a file lies below, and a link
 // stands for the folder it names.
@@ -78,7 +79,8 @@ const createFakeProjectFiles = (tree: FakeTree): ProjectFiles => {
             text,
           };
     },
-    realFolder: (path: string): string | undefined => (isFolder(path) ? resolve(path) : undefined),
+    realFolder: (folderPath: AbsolutePath): AbsolutePath | undefined =>
+      isFolder(folderPath) ? AbsolutePath.create(resolve(folderPath)) : undefined,
   };
 };
 

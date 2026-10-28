@@ -1,9 +1,9 @@
 import { afterEach, describe, expect, it } from 'bun:test';
 
-import { ZodError } from 'zod';
-
+import { BlockLayer } from '../../../../domain/entities';
+import { SourceFailure } from '../../../../domain/errors';
 import { axisFoldersOf, coreChaptersOf, layerBlocksOf, seamHoldersOf } from '../blocks.adapter';
-import { enterRepository } from './repository.fixtures';
+import { enterRepository, failureOf } from './repository.fixtures';
 
 const CORE = 'packages/constitution/blocks/core';
 
@@ -67,24 +67,30 @@ describe('coreChaptersOf', () => {
       extra: {
         [`${CORE}/foundation/names.md`]: '# Names\n',
       },
-      named: 'names',
+      gaps: {
+        missing: [
+          'foundation/names',
+        ],
+        repeated: [],
+        unknown: [],
+      },
       passport: passportText,
     },
     {
       condition: 'lists a chapter core does not have',
       extra: {},
-      named: 'types',
+      gaps: {
+        missing: [],
+        repeated: [],
+        unknown: [
+          'foundation/types',
+        ],
+      },
       passport: `${passportText}- \`foundation/\`: [types](foundation/types.md)\n`,
     },
-    {
-      condition: 'lists a chapter twice',
-      extra: {},
-      named: 'code twice',
-      passport: `${passportText}- \`workflow/\`: [code](foundation/code.md)\n`,
-    },
   ])(
-    'should stop the build, naming the entry, when the passport $condition',
-    ({ extra, named, passport }) => {
+    'should stop the build, naming the gap, when the passport $condition',
+    ({ extra, gaps, passport }) => {
       // Arrange
       repository.leave = enterRepository({
         files: {
@@ -95,10 +101,14 @@ describe('coreChaptersOf', () => {
       }).leave;
 
       // Act
-      const read = (): readonly string[] => coreChaptersOf();
+      const failure = failureOf(coreChaptersOf);
 
       // Assert
-      expect(read).toThrow(named);
+      expect(failure).toStrictEqual({
+        cause: undefined,
+        code: SourceFailure.ChapterListMismatch,
+        details: gaps,
+      });
     },
   );
 });
@@ -119,7 +129,7 @@ describe('layerBlocksOf', () => {
     }).leave;
 
     // Act
-    const blocks = layerBlocksOf('domains');
+    const blocks = layerBlocksOf(BlockLayer.Domain);
 
     // Assert
     expect(blocks).toStrictEqual([
@@ -131,7 +141,7 @@ describe('layerBlocksOf', () => {
     ]);
   });
 
-  it("should stop the build on the card's model when a card's base is no block's id", () => {
+  it("should stop the build, naming the passport, when a card's base is no block's id", () => {
     // Arrange
     repository.leave = enterRepository({
       files: {
@@ -140,10 +150,16 @@ describe('layerBlocksOf', () => {
     }).leave;
 
     // Act
-    const read = (): readonly string[] => layerBlocksOf('domains');
+    const failure = failureOf(() => layerBlocksOf(BlockLayer.Domain));
 
     // Assert
-    expect(read).toThrow(ZodError);
+    expect(failure).toStrictEqual({
+      cause: 'ZodError',
+      code: SourceFailure.FileMalformed,
+      details: {
+        path: 'domains/ui/ui.md',
+      },
+    });
   });
 });
 
@@ -162,7 +178,7 @@ describe('axisFoldersOf', () => {
     }).leave;
 
     // Act
-    const folders = axisFoldersOf('domains');
+    const folders = axisFoldersOf(BlockLayer.Domain);
 
     // Assert
     expect(folders).toStrictEqual([
@@ -188,7 +204,7 @@ describe('seamHoldersOf', () => {
     }).leave;
 
     // Act
-    const folders = seamHoldersOf('domains');
+    const folders = seamHoldersOf(BlockLayer.Domain);
 
     // Assert
     expect(folders).toStrictEqual([

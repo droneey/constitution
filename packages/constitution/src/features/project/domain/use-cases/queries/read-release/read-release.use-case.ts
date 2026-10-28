@@ -1,98 +1,78 @@
 import type { Release } from '#/kernel/entities';
-import {
-  FileRead,
-  FileReadStatus,
-  NEWEST_FORMAT,
-  OLDEST_FORMAT,
-  ReleaseStatus,
-} from '#/kernel/entities';
-import { ProjectError, ProjectFailure } from '#/kernel/errors';
-import { Version } from '#/kernel/value-objects';
+import { FileReadStatus, NEWEST_FORMAT, OLDEST_FORMAT, ReleaseStatus } from '#/kernel/entities';
+import { AbsolutePath } from '#/kernel/value-objects';
 
-import { joinPath } from '../shared/project-paths';
+import type { ReleaseManifestParser } from '../../../contracts';
+import { ManifestReadStatus } from '../../../contracts';
 import type { ReleaseReadInput } from '../shared/release-read';
 
-const MANIFEST = 'package.json';
-// As sed reads a line of the manifest: the last match on the first line that matches.
-const FORMAT = /.*"constitutionFormat"\s*:\s*(\d+)/;
-const VERSION = /.*"version"\s*:\s*"([^"]*)"/;
+const MANIFEST_NAME = 'package.json';
 
-const firstMatchOf = (input: { pattern: RegExp; text: string }): string | undefined =>
-  input.text
-    .split('\n')
-    .map((line) => input.pattern.exec(line)?.[1])
-    .find((found) => found !== undefined);
+interface ReadReleaseInput extends ReleaseReadInput {
+  readonly manifestParser: ReleaseManifestParser;
+}
 
 /**
  * The release a project pins, as its manifest names it; a release that names no block format is
  * older than the first one read from the blocks.
- *
- * @throws {@link ProjectError} when the manifest cannot be read or names no release version
  */
-const readRelease = (input: ReleaseReadInput): Release => {
+const readRelease = (input: ReadReleaseInput): Release => {
   const { files } = input;
-  const { releaseFolder } = input.place;
-  const manifest = joinPath({
-    folder: releaseFolder,
-    name: MANIFEST,
-  });
+  const { releaseFolderPath } = input.place;
+  const manifestPath = AbsolutePath.join(releaseFolderPath, MANIFEST_NAME);
 
-  if (!files.isFolder(releaseFolder)) {
+  if (!files.isFolder(releaseFolderPath)) {
     return {
       status: ReleaseStatus.Missing,
     };
   }
 
-  const read = files.read(manifest);
+  const read = files.read(manifestPath);
 
   if (read.status !== FileReadStatus.Read) {
-    throw new ProjectError(
-      {
-        code: ProjectFailure.ManifestUnreadable,
-        details: {
-          path: manifest,
-        },
-      },
-      {
-        cause: FileRead.causeOf(read),
-      },
-    );
-  }
-
-  const { text } = read;
-
-  const format = Number(
-    firstMatchOf({
-      pattern: FORMAT,
-      text,
-    }) ?? 0,
-  );
-
-  if (format > NEWEST_FORMAT) {
     return {
-      format,
-      status: ReleaseStatus.Newer,
+      manifest: manifestPath,
+      status: ReleaseStatus.ManifestUnreadable,
     };
   }
 
-  if (format < OLDEST_FORMAT) {
+  const parsed = input.manifestParser.parse(read.text);
+
+  if (parsed.status === ManifestReadStatus.NotObject) {
+    return {
+      manifest: manifestPath,
+      status: ReleaseStatus.ManifestNotObject,
+    };
+  }
+
+  if (parsed.status === ManifestReadStatus.Malformed) {
+    return {
+      fields: parsed.fields,
+      manifest: manifestPath,
+      status: ReleaseStatus.ManifestMalformed,
+    };
+  }
+
+  const { blockFormat, version } = parsed.manifest;
+
+  if (blockFormat === undefined || blockFormat < OLDEST_FORMAT) {
     return {
       status: ReleaseStatus.Older,
     };
   }
 
-  const version = firstMatchOf({
-    pattern: VERSION,
-    text,
-  });
+  if (blockFormat > NEWEST_FORMAT) {
+    return {
+      format: blockFormat,
+      status: ReleaseStatus.Newer,
+    };
+  }
 
-  if (!Version.is(version)) {
-    throw new ProjectError({
-      code: ProjectFailure.VersionMissing,
-      details: {
-        path: manifest,
-      },
-    });
+  if (version === undefined) {
+    return {
+      manifest: manifestPath,
+      status: ReleaseStatus.VersionMissing,
+    };
   }
 
   return {

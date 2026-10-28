@@ -2,7 +2,9 @@
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
-import brand from '../../../brand.tokens.json' with { type: 'json' };
+import brand from '@droneey/constitution-brand' with { type: 'json' };
+import { AccentScale } from '@droneey/design-cli';
+
 import packageJson from '../package.json' with { type: 'json' };
 import { readTextWithin } from './libs/bounded-input';
 import { pluginFingerprintOf } from './libs/claude-plugin';
@@ -51,7 +53,7 @@ const today = process.env[TODAY_VARIABLE];
 const projectDir = process.env['CLAUDE_PROJECT_DIR'];
 
 const program = createProgram({
-  accent: brand,
+  accent: AccentScale.create(brand),
   environment: {
     claudeConfig: process.env['CLAUDE_CONFIG_DIR'] ?? join(homedir(), '.claude'),
     commands: environmentOf([

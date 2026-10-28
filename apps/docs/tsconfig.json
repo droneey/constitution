@@ -1,26 +1,76 @@
 {
-  "extends": [
-    "../../.droneey/constitution/presets/typescript/tsc/foundation/self.json",
-    "../../.droneey/constitution/presets/typescript/tsc/foundation/core.json",
-    "../../.droneey/constitution/presets/typescript/tsc/foundation/workspace.json",
-    "../../.droneey/constitution/presets/typescript/tsc/foundation/browser.json",
-    "../../.droneey/constitution/presets/typescript/tsc/foundation/_react.json",
-    "../../.droneey/constitution/presets/typescript/tsc/foundation/bun.json"
-  ],
   "compilerOptions": {
     "paths": {
       "#/*": [
         "./src/*"
       ]
     },
+
+    // bun
     "types": [
       "bun",
       "vite/client"
-    ]
+    ],
+
+    // biome
+    "allowUnreachableCode": true,
+    "allowUnusedLabels": true,
+
+    // tsc
+    "noUnusedLocals": true,
+
+    // biome
+    "noUnusedParameters": false,
+
+    // workspace
+    "composite": true,
+    "emitDeclarationOnly": true,
+    "outDir": "${configDir}/.tsc-cache",
+
+    // browser
+    "lib": [
+      "ESNext",
+      "DOM",
+      "DOM.Iterable"
+    ],
+
+    // tsc
+    "strict": true,
+    "noImplicitOverride": true,
+    "exactOptionalPropertyTypes": true,
+    "verbatimModuleSyntax": true,
+
+    // _react
+    "jsx": "react-jsx",
+
+    // tsc
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "moduleDetection": "force",
+
+    // workspace
+    "noEmit": false,
+
+    // tsc
+    "allowJs": true,
+    "checkJs": true,
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "noUncheckedSideEffectImports": true,
+    "skipLibCheck": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true
   },
+
+  // tsc
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
+    "scripts/**/*.ts",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
     "vite.config.ts",
     "source.config.ts",
     ".source/*.ts"
@@ -30,7 +80,7 @@
       "path": "../../packages/constitution"
     },
     {
-      "path": "../../packages/design-browser"
+      "path": "../../packages/@design/browser"
     }
   ]
 }

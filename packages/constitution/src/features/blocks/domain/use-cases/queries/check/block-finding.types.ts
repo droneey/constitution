@@ -7,7 +7,6 @@ import type { FindingOf } from '#/kernel/types';
 
 import type {
   AbstractBlocksDetails,
-  BindingsDetails,
   BlockFormDetails,
   BudgetDetails,
   ConfigurationLanguagesDetails,
@@ -16,22 +15,22 @@ import type {
   CyclesDetails,
   DecisionsDetails,
   FrontMatterDetails,
+  HooksDetails,
   LinksDetails,
+  MarketplaceDetails,
   PluginDetails,
-  PresetsDetails,
   ReferencesDetails,
   RequirementsDetails,
   RequiresDetails,
   RulesDetails,
   SeamsDetails,
-  TemplatesDetails,
   TermsDetails,
 } from './checks';
 import type { LoadFindingDetails } from './steps/load-constitution';
+import type { ManifestReadDetails } from './utils';
 
 /** What each code of the blocks' findings names. */
 type BlockFindingDetails = AbstractBlocksDetails &
-  BindingsDetails &
   BlockFormDetails &
   BudgetDetails &
   ConfigurationLanguagesDetails &
@@ -40,10 +39,12 @@ type BlockFindingDetails = AbstractBlocksDetails &
   CyclesDetails &
   DecisionsDetails &
   FrontMatterDetails &
+  HooksDetails &
   LinksDetails &
   LoadFindingDetails &
+  ManifestReadDetails &
+  MarketplaceDetails &
   PluginDetails &
-  PresetsDetails &
   ReferencesDetails &
   RequirementsDetails &
   RequirementsTableDetails &
@@ -51,7 +52,6 @@ type BlockFindingDetails = AbstractBlocksDetails &
   RuleFormDetails &
   RulesDetails &
   SeamsDetails &
-  TemplatesDetails &
   TermsDetails &
   ValueFindingDetails;
 

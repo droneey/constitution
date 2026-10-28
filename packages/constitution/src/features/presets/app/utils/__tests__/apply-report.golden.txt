@@ -1,0 +1,34 @@
+# outcome when found
+1 finding
+
+# outcome when no project
+no constitution.yaml in this folder or above it
+
+# outcome when written
+1 file written
+
+# sections
+2 files written
+  biome.json
+  constitution.lock
+
+1 file deleted, which the apply created and nothing holds any longer
+  notes.json
+
+2 settings removed, which no entry gives any longer
+  biome.json: files "dist"
+  .gitignore: "dist/"
+
+1 setting added as defaults to files that were there
+  biome.json: test.randomize
+
+# sections when found
+1 finding in the presets
+  biome.json: holds formatter.width otherwise than the presets, which give 100 — put it back, or lower the rule with an override in constitution.yaml [loosened]
+
+# sections when noted
+1 note on what the apply wrote
+  constitution.lock: does not parse, so the apply wrote it again from the files [lock-unparsed]
+
+1 file written
+  biome.json

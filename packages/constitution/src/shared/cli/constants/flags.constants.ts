@@ -1,21 +1,18 @@
 import { z } from 'zod';
 
-interface FlagDeclaration {
-  readonly description: string;
-  readonly flags: string;
-}
+import type { OptionDeclaration } from '#/libs/commander';
 
-const BASE_FLAG: FlagDeclaration = {
+const BASE_FLAG = {
   // Stryker disable next-line StringLiteral: help text commander prints; no caller relies on it
   description: 'the installed Constitution a pack extends, such as .droneey/constitution',
   flags: '--base <folder>',
-} as const;
+} as const satisfies OptionDeclaration;
 
 const baseFlagsSchema = z.strictObject({
   base: z.string().optional(),
 });
 
-const OUTPUT_FLAGS: readonly FlagDeclaration[] = [
+const OUTPUT_FLAGS = [
   {
     // Stryker disable next-line StringLiteral: help text commander prints; no caller relies on it
     description: 'print plain text, without colour or motion',
@@ -36,7 +33,7 @@ const OUTPUT_FLAGS: readonly FlagDeclaration[] = [
     description: 'print without motion',
     flags: '--no-motion',
   },
-] as const;
+] as const satisfies readonly OptionDeclaration[];
 
 const outputFlagsSchema = z.strictObject({
   color: z.boolean().optional(),

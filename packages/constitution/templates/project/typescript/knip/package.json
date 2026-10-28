@@ -1,8 +1,0 @@
-{
-  "scripts": {
-    "unused:check": "knip --no-config-hints && knip --strict --no-config-hints"
-  },
-  "devDependencies": {
-    "knip": "6.41.0"
-  }
-}

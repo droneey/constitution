@@ -4,19 +4,16 @@
 
 ## The trees
 
-A package keeps each folder below only when it has a file to hold. A delivery unit lives in the feature or the composition module it serves, and the root registers it. At every level, `shared/` holds what two or more of its neighbours need and the level gives no other home: beside the languages of one purpose, what they need written in none of them; in a source, the plumbing several features use.
+A package keeps each folder below only when it has a file to hold. A delivery unit lives in the feature or the composition module it serves, and the root registers it. At every level, `shared/` holds what two or more of its neighbours need and the level gives no other home: in a source, the plumbing several features use.
 
 ```text
 <package>/
 ├── <manifest>             the manifest, the lockfile, and the files tools look up at the root
 ├── src/                   the source: the module tree below
+├── scripts/               the code that only builds the package: a build program, a generator's configuration
 ├── tests/<kind>/          suites that drive the built package, one folder per kind: tests/e2e/
 ├── docs/                  writing for readers outside the code
 └── <kind>/<member>/       content the package ships as it is, one folder per kind, members of one shape
-
-<name>/                    code of one purpose in several languages, from its second language on
-├── languages/<language>/  one package for each language, each with the tree above
-└── shared/                what the languages need, written in none of them: schema/, conformance/
 
 src/
 ├── main.*                 the entry of a program: builds the root and runs it
@@ -27,8 +24,8 @@ src/
 ├── composition/<m>/       modules laid out as features: what several features make together, and the
 │                          delivery units that compose them; each named after what it assembles
 ├── features/<f>/          bounded contexts, blind to each other
-├── kernel/                the shared domain: the vocabulary and the ports two or more features need,
-│                          in role folders as a domain's: pure, small, stable
+├── kernel/                the shared domain: the vocabulary features share and the ports of outside systems
+│                          they ask alike, in role folders as a domain's: pure, small, stable
 ├── adapters/<system>/     adapters implementing the kernel's ports
 ├── shared/                application plumbing without business, used by two or more features
 ├── libs/                  code that knows nothing of the product: primitives, vendor clients; publishable
@@ -42,7 +39,8 @@ features/<f>/
 │   ├── contracts/         ports; a data port is repositories/{queries,commands}/<entity>.repository
 │   ├── use-cases/         {queries,commands}/<op>/, one for each operation, reads included
 │   └── errors/            the feature's expected failures
-├── adapters/<system>/     this feature's contracts over one outside system
+├── adapters/<system>/     this feature's contracts over one outside system; in composition, a contract
+│                          answered through another feature
 ├── app/                   binding units: use-cases/{queries,commands}/<op>/, and role folders of the vocabulary
 └── index.*                the surface
 ```
@@ -51,7 +49,7 @@ A surface is the file the language resolves when a folder is imported. A **bindi
 
 ## The vocabulary
 
-The layers are the folders of the tree. **`root/`**{#composition-root} is the composition root: the wiring file, the providers, the configuration parsed at start, the handler of last resort and the registration of every delivery unit. **`features/`**{#bounded-context} holds the features, bounded contexts blind to each other. **`composition/`**{#composition-module} holds modules laid out as features: what several features make together, and the delivery units that compose them. **`adapters/`**{#gateway} holds the adapters, each implementing ports over one outside system: the kernel's at the top of the source, a feature's own contracts inside the feature. **`kernel/`**{#shared-domain} holds the domain the features share: the vocabulary and the ports two or more features need. **`shared/`**{#shared-code} holds, at any level, what two or more of its neighbours need and the level gives no other home. **`libs/`**{#generic-library} holds code that knows nothing of the product: primitives and vendor clients, publishable. **`integrations/`**{#host-integration} holds the package's integration into a host framework, an entry of its own. **`entrypoints/`**{#extra-entry} holds another artefact of the program, or a command of a tooling program. Inside a feature, **`domain/`**{#pure-layer} is the pure layer, and **`app/`**{#application-layer} holds the binding units and the role folders they need.
+The layers are the folders of the tree. **`root/`**{#composition-root} is the composition root: the wiring file, the providers, the configuration parsed at start, the handler of last resort and the registration of every delivery unit. **`features/`**{#bounded-context} holds the features, bounded contexts blind to each other. **`composition/`**{#composition-module} holds modules laid out as features: what several features make together, and the delivery units that compose them. **`adapters/`**{#gateway} holds the adapters, each implementing ports over one outside system — the kernel's at the top of the source, a feature's or a composition module's own contracts inside it — or, inside a module of composition, a feature's contract answered through another feature's surface. **`kernel/`**{#shared-domain} holds the domain the features share: the vocabulary two or more features use with one meaning, and the ports of outside systems they ask in the same words. **`shared/`**{#shared-code} holds, at any level, what two or more of its neighbours need and the level gives no other home. **`libs/`**{#generic-library} holds code that knows nothing of the product: primitives and vendor clients, publishable. **`integrations/`**{#host-integration} holds the package's integration into a host framework, an entry of its own. **`entrypoints/`**{#extra-entry} holds another artefact of the program, or a command of a tooling program. Inside a feature, **`domain/`**{#pure-layer} is the pure layer, and **`app/`**{#application-layer} holds the binding units and the role folders they need.
 
 A role folder holds members of one kind. **`contracts/`**{#port} holds the ports, in a feature's domain or in the kernel, and **`repositories/`**{#data-port} inside it holds the data ports. **`use-cases/`**{#use-case} holds the use cases, one folder for each operation. Under `use-cases/` and `repositories/`, **`queries/`**{#read-operation} holds the reads and **`commands/`**{#write-operation} the writes. **`entities/`**{#business-type} holds the business types and enumerations, and **`value-objects/`**{#invariant-value} the values with an invariant. **`errors/`**{#expected-failure} holds the expected failures: a feature's in its domain, those every feature shares in the kernel. **`constants/`**{#constant} holds a module's constants and `types/` its types, vocabulary with no behaviour. **`utils/`**{#helper} holds pure helpers with no meaning of the product. **`steps/`**{#pipeline-stage} holds a pipeline's stages. **`models/`**{#wire-model} holds the wire models and stored shapes, inside adapters. **`providers/`**{#framework-provider} holds the framework's providers and the instances they wire.
 
@@ -84,14 +82,6 @@ A package’s root holds its manifest, its source, the suites that drive the bui
 | Why |
 |---|
 | a reader who knows one repository finds the way in every other, and a file has one obvious place. |
-
-### code-in-several-languages-holds-a-package-per-language · SHOULD
-
-Code that serves one purpose in several languages holds `languages/<language>/`, one package for each language with the tree in its `src/`, and beside it `shared/`, what the languages need written in none of them, laid out by meaning — `schema/`, `conformance/`; **`languages/`**{#language-package} appears with the second language and `shared/` with its first file, and until then the code is the package itself.
-
-| Why |
-|---|
-| the code is found in one folder whatever its languages, `languages/` says at a glance that its children serve one purpose written several times, and what no language owns is written once beside the packages that read it. |
 
 ### feature-laid-out-by-its-tree · SHOULD
 

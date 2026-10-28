@@ -3,8 +3,9 @@ import { describe, expect, it } from 'bun:test';
 import { BlockId } from '#/kernel/value-objects';
 
 import type { Files } from '../../../__tests__/constitution.fixtures';
-import { checkInputOf, passportFile } from '../../../__tests__/constitution.fixtures';
+import { passportFile } from '../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../__tests__/valid-files.fixtures';
+import { checkInputOf } from '../../use-cases/queries/check/__tests__/check.fixtures';
 import type { BlockPlace } from '../block.entity';
 import { BlockGraph } from '../block-graph.entity';
 

@@ -1,59 +1,36 @@
 import { parseDocument } from 'yaml';
 
+import { attempted } from '#/kernel/utils';
+
 import type { BlockCard, BlockCardParser } from '../../domain/contracts';
 import { EMPTY_CARD } from '../../domain/contracts';
+import { blockCardModel } from './models';
 
-const isMapping = (parsed: unknown): parsed is Record<string, unknown> =>
-  typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed);
-
-const textOf = (field: unknown): string =>
-  typeof field === 'string' || typeof field === 'number' || typeof field === 'boolean'
-    ? String(field)
-    : '';
-
-const listOf = (field: unknown): readonly string[] => {
-  if (Array.isArray(field)) {
-    return field.map(textOf).filter((entry) => entry !== '');
-  }
-
-  const text = textOf(field);
-
-  return text === ''
-    ? []
-    : [
-        text,
-      ];
-};
+const isReferenceError = (error: unknown): error is ReferenceError =>
+  error instanceof ReferenceError;
 
 // A project reads a card it can: a field left out, or of another form, is empty or absent, and a
-// front matter that is no YAML mapping gives an empty card.
+// front matter that is no YAML mapping gives an empty card. An alias counts as no YAML, as the
+// blocks' check refuses one, so none is expanded.
 const card = (yaml: string): BlockCard => {
-  const document = parseDocument(yaml);
-  const parsed: unknown = document.errors.length === 0 ? document.toJS() : undefined;
+  // Stryker disable next-line ObjectLiteral: YAML 1.2 reads by the core schema where none is named
+  const document = parseDocument(yaml, {
+    // Stryker disable next-line StringLiteral: an empty schema name names none, and YAML 1.2 then reads by the core schema
+    schema: 'core',
+  });
+  const written =
+    document.errors.length === 0
+      ? attempted({
+          effect: (): unknown =>
+            document.toJS({
+              maxAliasCount: 0,
+            }),
+          isRecognised: isReferenceError,
+        })
+      : undefined;
+  const read = blockCardModel.safeParse(written);
 
-  if (!isMapping(parsed)) {
-    return EMPTY_CARD;
-  }
-
-  const base = textOf(parsed['extends']);
-  const summary = textOf(parsed['summary']);
-
-  return {
-    ...(base === ''
-      ? {}
-      : {
-          extends: base,
-        }),
-    governs: listOf(parsed['governs']),
-    isAbstract: parsed['abstract'] === true || parsed['abstract'] === 'true',
-    languages: listOf(parsed['languages']),
-    requires: listOf(parsed['requires']),
-    ...(summary === ''
-      ? {}
-      : {
-          summary,
-        }),
-  };
+  return read.success ? read.data : EMPTY_CARD;
 };
 
 const createYamlBlockCardParser = (): BlockCardParser => ({

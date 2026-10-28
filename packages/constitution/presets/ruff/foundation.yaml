@@ -1,0 +1,448 @@
+core:
+  dead-code-deleted:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - ARG
+                - F401
+                - F841
+                - F842
+  error-keeps-its-cause:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - B904
+  catch-handles-only-what-it-recognises:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - BLE
+  '*':
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - EM
+                - TRY
+  code-never-commented-out:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - ERA
+  function-takes-no-boolean-position:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - FBT
+  todo-names-its-issue:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - FIX001
+                - FIX003
+                - FIX004
+                - TD
+  function-takes-at-most-three-positions:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - PLR0917
+              pylint:
+                max-positional-args: 3
+  literal-with-a-meaning-is-named:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - PLR2004
+  async-work-awaited-or-held-by-a-scope:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - RUF006
+  outside-call-has-a-timeout:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - S
+  outside-input-never-rebuilt-as-objects:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - S
+  outside-input-reaches-interpreters-as-parameters:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - S
+  outside-input-parsed-without-external-references:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - S
+  cryptographic-algorithm-approved-by-current-guidance:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - S
+  diagnostics-written-through-a-logger:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - T10
+                - T20
+  formatters-share-one-indent-and-width:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            indent-width: 2
+            line-length: 100
+python:
+  mapped-error-raised-from-its-cause:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - B904
+  except-clause-names-what-it-handles:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - BLE
+                - E722
+  boolean-parameter-keyword-only:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - FBT
+  parameter-past-the-third-keyword-only:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - PLR0917
+              pylint:
+                max-positional-args: 3
+  outside-data-never-unpickled:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - S
+  text-never-run-as-code:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - S
+  process-started-with-an-argument-list:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - S
+  guarding-value-drawn-from-secrets:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - S
+  interpreter-input-never-formatted-into-text:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - S
+                - G001
+                - G002
+                - G003
+                - G004
+  assert-statement-only-in-specs:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - S
+  '*':
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-ignore:
+                - D1
+              extend-select:
+                - D
+                - SLF
+                - TC
+              pydocstyle:
+                convention: google
+  typing-any-never-written:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - ANN
+  async-functions-never-block:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - ASYNC
+  parameter-default-never-mutable:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - B006
+  finally-never-left-by-a-jump:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - B012
+  instant-is-an-aware-datetime:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - DTZ
+  import-never-a-wildcard:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - F403
+  source-folder-is-a-regular-package:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - INP
+  names-cased-as-pep-8:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - 'N'
+  module-named-in-snake-case:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - N999
+  module-level-state-never-mutable:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - PLW0602
+                - PLW0603
+                - RUF012
+  except-never-only-passes:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - S110
+                - S112
+              flake8-bandit:
+                check-typed-exception: true
+  resource-held-by-with:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - SIM115
+  sys-path-never-touched:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - TID251
+              flake8-tidy-imports:
+                banned-api:
+                  sys.path:
+                    msg: a module is imported as a member of an installed package
+  annotation-written-unquoted:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - UP037
+  generics-in-pep-695-form:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - UP040
+                - UP046
+                - UP047
+ruff:
+  '*':
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            format:
+              docstring-code-format: true
+            lint:
+              ignore:
+                - PLR09
+              select:
+                - A
+                - ASYNC
+                - B
+                - C4
+                - E
+                - EXE
+                # pyflakes but its unused imports and locals, which dead-code-deleted selects
+                - F402
+                - F403
+                - F404
+                - F405
+                - F406
+                - F407
+                - F5
+                - F6
+                - F7
+                - F81
+                - F82
+                - F9
+                - FURB
+                - G
+                - I
+                - ICN
+                - ISC
+                - LOG
+                - 'N'
+                - PERF
+                - PIE
+                - PL
+                - PYI
+                - RET
+                - RSE
+                - SIM
+                - SLOT
+                - UP
+                - W
+              extend-per-file-ignores:
+                ${role.package-suites}/**:
+                  - INP001
+                  - PLR2004
+                  - S101
+  ruff-format-is-the-formatter:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            format:
+              quote-style: single
+  noqa-names-its-codes:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              select:
+                - PGH
+                - RUF

@@ -16,13 +16,17 @@ enum StateFolderProblem {
   Unwritable = 'unwritable',
 }
 
-/** HOME and XDG_STATE_HOME */
+/** The environment the folder is named from: HOME and XDG_STATE_HOME. */
 type StateEnvironment = Readonly<Record<string, string | undefined>>;
 
-interface StateFolderWarning {
-  readonly code: StateFolderProblem;
-  readonly folder?: string;
-}
+type StateFolderWarning =
+  | {
+      readonly code: StateFolderProblem.Unnamed;
+    }
+  | {
+      readonly code: StateFolderProblem.Unsafe | StateFolderProblem.Unwritable;
+      readonly folder: string;
+    };
 
 // The XDG Base Directory Specification ignores a relative or empty XDG_STATE_HOME.
 const stateHomeOf = (environment: StateEnvironment): string | undefined => {
@@ -95,7 +99,10 @@ interface PrivateFolderInput {
   readonly warn: (warning: StateFolderWarning) => void;
 }
 
-/** undefined, after a warning, when the folder cannot be named or made, or is not the user's own */
+/**
+ * The folder, or undefined, after a warning, when it cannot be named or made, or is not the user's
+ * own.
+ */
 const privateStateFolder = (input: PrivateFolderInput): string | undefined => {
   const home = stateHomeOf(input.environment);
 
@@ -211,18 +218,16 @@ const sweepStale = (input: SweepInput): void => {
       // a try and finally, not `using`: constitution.yaml overrides scoped-resource-held-by-using
       const listing = opendirSync(input.folder);
 
-      // Stryker disable BlockStatement: Bun's listing holds no descriptor, so one left open leaks nothing a caller sees
       try {
         sweepListing({
           listing,
           maxEntries: input.maxEntries,
           since: input.now.subtract(input.kept),
         });
-      } finally {
-        // Stryker disable next-line CallExpression: as above, closing it changes nothing a caller sees
+      } finally /* Stryker disable next-line BlockStatement: Bun's listing holds no descriptor, so one left open leaks nothing a caller sees */ {
+        // Stryker disable next-line CallExpression: Bun's listing holds no descriptor, so closing it changes nothing a caller sees
         listing.closeSync();
       }
-      // Stryker restore BlockStatement
     },
     isRecognised: isSystemError,
   });

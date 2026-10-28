@@ -1,405 +1,133 @@
-import {
-  mkdirSync,
-  mkdtempSync,
-  readdirSync,
-  readFileSync,
-  rmSync,
-  symlinkSync,
-  writeFileSync,
-} from 'node:fs';
+import { mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join, normalize } from 'node:path';
+import { join, normalize } from 'node:path';
 
 import { z } from 'zod';
 
-import { createBatch } from './batch.fixtures';
+import { appliedUnit } from './applied-unit.fixtures';
+import { linkRelease, nodeBinary, release, toolEnvironment, writeFiles } from './package.fixtures';
+import { loadOf, widestAppliedUnit } from './preset-load.fixtures';
 
-interface Project {
-  readonly files: Readonly<Record<string, string>>;
-  readonly parts?: readonly string[];
-}
-
-interface Findings {
-  readonly plugins: readonly string[];
-  readonly rules: readonly string[];
-}
-
-const report = z.object({
-  diagnostics: z.array(
-    z.object({
-      category: z.string(),
-      location: z.object({
-        path: z.string(),
-      }),
-      message: z.string(),
-    }),
-  ),
+const diagnostic = z.object({
+  category: z.string(),
+  location: z.object({
+    path: z.string(),
+  }),
+  message: z.string(),
 });
 
-const preset = z.object({
-  plugins: z
-    .array(
+const report = z.object({
+  diagnostics: z.array(diagnostic),
+});
+
+type BiomeDiagnostic = z.infer<typeof diagnostic>;
+
+const plugins = z.array(
+  z.union([
+    z.string(),
+    z.object({
+      includes: z.array(z.string()),
+      path: z.string(),
+    }),
+  ]),
+);
+
+const rules = z.record(
+  z.string(),
+  z.union([
+    z.string(),
+    z.record(
+      z.string(),
       z.union([
         z.string(),
         z.object({
-          includes: z.array(z.string()),
-          path: z.string(),
+          level: z.string(),
         }),
       ]),
-    )
-    .optional(),
+    ),
+  ]),
+);
+
+const linter = z.object({
+  rules: rules.optional(),
 });
 
-const repository = join(import.meta.dir, '..', '..');
-const biome = join(repository, 'node_modules', '.bin', 'biome');
-const presetsFolder = join(repository, 'presets');
-const blocks = join(repository, 'blocks');
-
-const baseParts = [
-  'common/self',
-  'typescript/self',
-  'typescript/core',
-  'typescript/typescript',
-];
-
-const PARTS: readonly string[] = [
-  ...baseParts,
-  'typescript/bun-test',
-  'typescript/_react',
-  'typescript/architecture/core',
-  'typescript/architecture/typescript',
-] as const;
-
-// A plugin opens its message with the slug of its rule in brackets.
-const PLUGIN_SLUG = /^\[([a-z0-9-]+)\]/;
-
-const writeFiles = (folder: string, files: Readonly<Record<string, string>>): void => {
-  for (const [path, text] of Object.entries(files)) {
-    mkdirSync(dirname(join(folder, path)), {
-      recursive: true,
-    });
-    writeFileSync(join(folder, path), text);
-  }
-};
-
-const MANIFEST = 'package.json';
-
-const partFile = (part: string): string =>
-  `${part.replace('/', '/biome/').replace(/\/biome\/(?!architecture\/|workflow\/)/, '/biome/foundation/')}.jsonc`;
-
-const includesOf = (configuration: unknown): readonly string[] => {
-  if (Array.isArray(configuration)) {
-    return configuration.flatMap(includesOf);
-  }
-
-  if (typeof configuration !== 'object' || configuration === null) {
-    return [];
-  }
-
-  return Object.entries(configuration).flatMap(([name, inner]) =>
-    name === 'includes' && Array.isArray(inner) ? inner.map(String) : includesOf(inner),
-  );
-};
-
-// A glob not opened by ** matches only from the folder of its configuration.
-const anchoredGlobs = (parts: readonly string[]): readonly Bun.Glob[] =>
-  parts
-    .flatMap((part) =>
-      includesOf(Bun.JSONC.parse(readFileSync(join(presetsFolder, partFile(part)), 'utf8'))),
+const preset = z.object({
+  linter: linter.optional(),
+  overrides: z
+    .array(
+      z.object({
+        linter: linter.optional(),
+      }),
     )
-    .filter((glob) => !/^!{0,2}\*\*/.test(glob))
-    .map((glob) => new Bun.Glob(glob.replace(/^!+/, '')));
+    .optional(),
+  plugins: plugins.optional(),
+});
 
-const manifestOf = (project: Project): string | undefined =>
-  Object.hasOwn(project.files, MANIFEST) ? project.files[MANIFEST] : undefined;
+const biome = nodeBinary('biome');
+const blocks = join(release, 'blocks');
+const CONFIG = 'biome.jsonc';
+const PRESETS = 'presets';
+const SOURCE = 'src/order.ts';
+const WARN = 'warn';
 
-const keyOf = (project: Project): string =>
-  JSON.stringify([
-    project.parts ?? PARTS,
-    Object.entries(project.files).toSorted(([left], [right]) => left.localeCompare(right)),
-  ]);
-
-// Projects of the same parts and manifest share one configuration and one run, each in a folder
-// of its own beneath it; a project with a file an anchored glob matches keeps a configuration of
-// its own.
-const groupKeyOf = (key: string, project: Project): string => {
-  const parts = project.parts ?? PARTS;
-  const anchored = anchoredGlobs(parts);
-  const isAnchored = Object.keys(project.files).some((path) =>
-    anchored.some((glob) => glob.match(path)),
-  );
-
-  return JSON.stringify([
-    parts,
-    manifestOf(project) ?? '',
-    isAnchored ? key : '',
-  ]);
-};
-
-// The folder of a project's files, relative to its group's.
-interface Member {
-  readonly folder: string;
-  readonly key: string;
-}
-
-interface Group {
-  readonly folder: string;
-  readonly members: readonly Member[];
-}
-
-type Entry = readonly [
-  string,
-  Project,
-];
-
-const RUNS_AT_ONCE = 4;
-
-// Plugin paths resolve from the configuration's folder, so .droneey/constitution is linked
-// into each, where a case can put a file beside the presets.
-const writeConfiguration = (folder: string, project: Project): void => {
-  mkdirSync(join(folder, '.droneey', 'constitution'), {
-    recursive: true,
-  });
-  symlinkSync(presetsFolder, join(folder, '.droneey', 'constitution', 'presets'));
-  writeFiles(folder, {
-    'biome.json': JSON.stringify({
-      extends: (project.parts ?? PARTS).map(
-        (part) => `./.droneey/constitution/presets/${partFile(part)}`,
-      ),
-      vcs: {
-        enabled: false,
-      },
-    }),
-    ...Object.fromEntries(Object.entries(project.files).filter(([path]) => path === MANIFEST)),
-  });
-};
-
-// A group of one project holds its files; a larger one holds a folder for each.
-const writeGroup = (folder: string, entries: readonly Entry[]): Group => {
-  const members = entries.map(([key, project], index) => {
-    const member = entries.length === 1 ? '.' : String(index);
-
-    if (index === 0) {
-      writeConfiguration(folder, project);
-    }
-
-    writeFiles(
-      join(folder, member),
-      Object.fromEntries(Object.entries(project.files).filter(([path]) => path !== MANIFEST)),
-    );
-
-    return {
-      folder: member,
-      key,
-    };
-  });
-
-  return {
-    folder,
-    members,
-  };
-};
-
-const writeGroups = (root: string, entries: readonly Entry[]): readonly Group[] =>
-  [
-    ...Map.groupBy(entries, ([key, project]) => groupKeyOf(key, project)).values(),
-  ].map((grouped, index) => writeGroup(join(root, String(index)), grouped));
-
-const inRoot = async <T>(run: (root: string) => Promise<T>): Promise<T> => {
-  const root = mkdtempSync(join(tmpdir(), 'constitution-biome-'));
-
-  try {
-    return await run(root);
-  } finally {
-    rmSync(root, {
-      force: true,
-      recursive: true,
-    });
-  }
-};
-
-const findingsOf = (
-  diagnostics: z.infer<typeof report>['diagnostics'],
-  member: Member,
-): Findings => {
-  const own = diagnostics.filter(
-    ({ location }) => member.folder === '.' || location.path.startsWith(`${member.folder}/`),
-  );
-
-  return {
-    plugins: own
-      .filter(({ category }) => category === 'plugin')
-      .map(({ message }) => PLUGIN_SLUG.exec(message)?.[1] ?? message),
-    rules: own
-      .filter(({ category }) => category !== 'plugin')
-      .map(({ category }) => category.slice(category.lastIndexOf('/') + 1)),
-  };
-};
-
-const lintGroup = async (
-  group: Group,
-): Promise<
-  readonly (readonly [
-    string,
-    Findings,
-  ])[]
-> => {
+/** What Biome reports when it lints the whole tree of the folder, version control aside. */
+const biomeDiagnostics = async (folder: string): Promise<readonly BiomeDiagnostic[]> => {
   const linting = Bun.spawn(
     [
       biome,
       'lint',
       '--reporter=json',
       '--max-diagnostics=none',
+      '--vcs-enabled=false',
       '.',
     ],
     {
-      cwd: group.folder,
+      cwd: folder,
+      env: toolEnvironment(),
       stderr: 'ignore',
     },
   );
-  const { diagnostics } = report.parse(JSON.parse(await new Response(linting.stdout).text()));
 
-  return group.members.map((member) => [
-    member.key,
-    findingsOf(diagnostics, member),
-  ]);
+  return report.parse(JSON.parse(await new Response(linting.stdout).text())).diagnostics;
 };
 
-// Each group is a project of its own, for Biome checks types and the module graph only in the
-// project of its root configuration; a few run at a time.
-const lintAll = (entries: readonly Entry[]): Promise<ReadonlyMap<string, Findings>> =>
-  inRoot(async (root) => {
-    const queue = writeGroups(root, entries).values();
+const widestConfig = (): z.infer<typeof preset> =>
+  preset.parse(Bun.JSONC.parse(readFileSync(join(widestAppliedUnit('biome'), CONFIG), 'utf8')));
 
-    const lintNext = async (): Promise<
-      readonly (readonly [
-        string,
-        Findings,
-      ])[]
-    > => {
-      const next = queue.next();
-
-      return next.done === true
-        ? []
-        : [
-            ...(await lintGroup(next.value)),
-            ...(await lintNext()),
-          ];
-    };
-
-    const runs = await Promise.all(
-      Array.from(
-        {
-          length: RUNS_AT_ONCE,
-        },
-        lintNext,
-      ),
-    );
-
-    return new Map(runs.flat());
-  });
-
-interface LintBatch {
-  readonly lintCase: <TProject extends Project>(project: TProject) => TProject;
-  readonly lintCases: <TRow extends Partial<Project>>(
-    rows: readonly TRow[],
-    base?: Partial<Project>,
-  ) => readonly (Omit<TRow, keyof Project> & Required<Project>)[];
-  /** @throws Error when no table registered the project, or before the batch is linted. */
-  readonly lintFindings: (project: Project) => Findings;
-  readonly lintRegistered: () => Promise<void>;
-}
-
-const createLintBatch = (): LintBatch => {
-  const { outcomeOf, register, runRegistered } = createBatch({
-    keyOf,
-    runAll: lintAll,
-  });
-
-  // A row names the files its case adds to the table's and, where they differ, its parts.
-  const lintCases = <TRow extends Partial<Project>>(
-    rows: readonly TRow[],
-    base: Partial<Project> = {},
-  ): readonly (Omit<TRow, keyof Project> & Required<Project>)[] =>
-    rows.map((row) =>
-      register({
-        ...row,
-        files: {
-          ...base.files,
-          ...row.files,
-        },
-        parts: row.parts ?? base.parts ?? PARTS,
-      }),
-    );
-
-  return {
-    lintCase: register,
-    lintCases,
-    lintFindings: outcomeOf,
-    lintRegistered: runRegistered,
-  };
-};
-
-// Biome rewrites the file in place; the case reads back what it wrote.
-const formattedText = (source: string): Promise<string> =>
-  inRoot(async (root) => {
-    const { folder } = writeGroup(root, [
-      [
-        'formatted',
-        {
-          files: {
-            'src/order.ts': source,
-          },
-          parts: baseParts,
-        },
-      ],
-    ]);
-
-    await Bun.spawn(
-      [
+/**
+ * Biome's status on the widest configuration where it checks a file that keeps every rule: it fails
+ * on a key, a rule or a plugin it does not know, and on a warning.
+ */
+const widestStatus = async (): Promise<number> =>
+  (
+    await loadOf('biome', {
+      command: [
         biome,
-        'format',
-        '--write',
-        'src',
+        'check',
+        '--error-on-warnings',
+        '--vcs-enabled=false',
+        SOURCE,
       ],
-      {
-        cwd: folder,
-        stderr: 'ignore',
-        stdout: 'ignore',
+      files: {
+        [SOURCE]: "export const ORDER_KIND = 'order';\n",
       },
-    ).exited;
+    })
+  ).status;
 
-    return readFileSync(join(folder, 'src', 'order.ts'), 'utf8');
-  });
+const presetPlugins = (): z.infer<typeof plugins> => widestConfig().plugins ?? [];
 
-const presetFiles = (): readonly string[] =>
-  readdirSync(presetsFolder, {
-    recursive: true,
-  })
-    .map(String)
-    .filter((path) => path.split('/')[1] === 'biome' && path.endsWith('.jsonc'))
-    .toSorted((left, right) => left.localeCompare(right));
+/**
+ * The plugin paths the widest configuration declares in more than one entry: Biome 2.6 runs every
+ * entry of one path over the union of their includes, so an entry that narrows another narrows
+ * nothing.
+ */
+const repeatedPluginPaths = (): readonly string[] => {
+  const paths = presetPlugins().map((plugin) =>
+    normalize(typeof plugin === 'string' ? plugin : plugin.path),
+  );
 
-const presetText = (path: string): string => readFileSync(join(presetsFolder, path), 'utf8');
-
-const presetPlugins = (): readonly NonNullable<z.infer<typeof preset>['plugins']>[number][] =>
-  presetFiles().flatMap((path) => preset.parse(Bun.JSONC.parse(presetText(path))).plugins ?? []);
-
-// Biome 2.6 runs every entry of one path over the union of their includes, so an entry that
-// narrows another narrows nothing.
-const presetPluginPaths = (): readonly string[] =>
-  presetPlugins().map((plugin) => normalize(typeof plugin === 'string' ? plugin : plugin.path));
-
-const presetWords = (): readonly string[] => {
-  const segments = presetPlugins()
-    .flatMap((plugin) => (typeof plugin === 'string' ? [] : plugin.includes))
-    .flatMap((glob) => glob.replace(/^!/, '').split('/'))
-    .filter((segment) => segment !== '**')
-    .map((segment) => segment.replace(/^\*/, ''));
-
-  return [
-    ...new Set(segments),
-  ];
+  return paths.filter((path, index) => paths.indexOf(path) !== index);
 };
 
 // What the blocks write as code — in backticks, or in a block's `governs`.
@@ -415,13 +143,89 @@ const blockCode = (): readonly string[] =>
     ])
     .map(([, code, quoted]) => code ?? quoted ?? '');
 
+/** The folders, files and suffixes the plugins' includes name that no block writes as code. */
+const unwrittenPresetWords = (): readonly string[] => {
+  const code = blockCode();
+  const words = presetPlugins()
+    .flatMap((plugin) => (typeof plugin === 'string' ? [] : plugin.includes))
+    .flatMap((glob) => glob.replace(/^!/, '').split('/'))
+    .filter((segment) => segment !== '**')
+    .map((segment) => segment.replace(/^\*/, ''));
+
+  return [
+    ...new Set(words),
+  ].filter((word) => !code.some((written) => written.includes(word)));
+};
+
+/** The rules the widest configuration sets at warn, in its linter and in its overrides. */
+const warnedRules = (): readonly string[] => {
+  const config = widestConfig();
+
+  return [
+    config.linter,
+    ...(config.overrides ?? []).map((override) => override.linter),
+  ]
+    .flatMap((settings) => Object.entries(settings?.rules ?? {}))
+    .flatMap(([group, groupRules]) =>
+      typeof groupRules === 'string'
+        ? []
+        : Object.entries(groupRules).map(([rule, setting]) => ({
+            level: typeof setting === 'string' ? setting : setting.level,
+            rule: `${group}/${rule}`,
+          })),
+    )
+    .filter(({ level }) => level === WARN)
+    .map(({ rule }) => rule);
+};
+
+/**
+ * The codes Biome reports when it lints the whole tree of a unit of the base alone, holding the
+ * files given; the presets are linked in, as a project's release is, so a file can lie beside them.
+ */
+const codesOfWholeTree = async (
+  files: Readonly<Record<string, string>>,
+): Promise<readonly string[]> => {
+  const folder = mkdtempSync(join(tmpdir(), 'constitution-biome-'));
+
+  try {
+    linkRelease(folder, PRESETS);
+    writeFiles({
+      files: {
+        ...files,
+        [CONFIG]: readFileSync(
+          join(
+            appliedUnit({
+              axes: [],
+              implementations: [
+                'biome',
+              ],
+              languages: [
+                'typescript',
+              ],
+            }),
+            CONFIG,
+          ),
+          'utf8',
+        ),
+      },
+      folder,
+    });
+
+    return (await biomeDiagnostics(folder)).map(({ category }) => category);
+  } finally {
+    rmSync(folder, {
+      force: true,
+      recursive: true,
+    });
+  }
+};
+
+export type { BiomeDiagnostic };
 export {
-  baseParts,
-  blockCode,
-  createLintBatch,
-  formattedText,
-  presetFiles,
-  presetPluginPaths,
-  presetText,
-  presetWords,
+  biomeDiagnostics,
+  codesOfWholeTree,
+  repeatedPluginPaths,
+  unwrittenPresetWords,
+  warnedRules,
+  widestStatus,
 };

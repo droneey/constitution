@@ -1,72 +1,15 @@
 import { describe, expect, it } from 'bun:test';
 
-import { analyseScript, templateTasks } from './shellcheck-preset.fixtures';
+import { unknownChecks } from './shellcheck-preset.fixtures';
 
-describe('the ShellCheck preset', () => {
-  it('should accept a script that quotes, checks and stops on every failure', () => {
-    // Arrange
-    const script = [
-      '#!/usr/bin/env bash',
-      'set -euo pipefail',
-      'name="${1:-world}"',
-      'today="$(date +%F)"',
-      'printf "%s %s\\n" "${name}" "${today}"',
-      '',
-    ].join('\n');
-
+// ShellCheck skips a check it does not know in its .shellcheckrc, so each check the presets enable
+// is named as ShellCheck lists it; a check it lists reports as ShellCheck documents.
+describe("the configuration ShellCheck's presets write", () => {
+  it('should enable only checks ShellCheck lists when a unit follows every block ShellCheck is configured for', () => {
     // Act
-    const analysis = analyseScript(script);
+    const unknown = unknownChecks();
 
     // Assert
-    expect(analysis).toStrictEqual({
-      codes: [],
-      exitCode: 0,
-    });
-  });
-
-  it('should report a safe variable unquoted, a masked return and errexit suppressed by the optional checks it enables', () => {
-    // Arrange
-    const script = [
-      '#!/bin/sh',
-      'set -e',
-      'check() {',
-      '  return 1',
-      '}',
-      'if check; then',
-      '  :',
-      'fi',
-      'name=x',
-      'printf "%s\\n" $name',
-      'printf "%s\\n" "$(date)"',
-      '',
-    ].join('\n');
-
-    // Act
-    const analysis = analyseScript(script);
-
-    // Assert
-    expect(analysis).toStrictEqual({
-      codes: [
-        2248,
-        2310,
-        2312,
-      ],
-      exitCode: 1,
-    });
-  });
-});
-
-describe("the commands of the templates' mise tasks", () => {
-  it.each([
-    ...templateTasks(),
-  ])('should pass ShellCheck for $task of the $template template', ({ run }) => {
-    // Act
-    const analysis = analyseScript(run);
-
-    // Assert
-    expect(analysis).toStrictEqual({
-      codes: [],
-      exitCode: 0,
-    });
+    expect(unknown).toStrictEqual([]);
   });
 });

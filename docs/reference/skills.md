@@ -22,7 +22,7 @@ Puts a repository under the Constitution. It takes no arguments.
 6. Finds the command that runs every check, or asks for it.
 7. Asks which blocks each [member of a workspace](constitution-yaml.md#members-of-a-workspace) follows, for a `constitution.yaml` of its own.
 8. Interviews you for `PROJECT.md`, a question or two at a time.
-9. Wires each tool's configuration from its [template](templates.md) with the [parts](presets.md#the-parts-a-project-takes) its unit takes, shows the diff, and writes it once you agree; run again, it brings the configurations up to the blocks and the release.
+9. Runs `constitution presets apply`, which writes each tool's configuration from [the presets](presets.md) of the unit's blocks, and shows the diff and the findings, grouped by rule; each finding is fixed in the code or offered as an override through `/constitution:amend`.
 
 [Choose the blocks](../guides/choose-blocks.md) shows how to check its proposal and change the list later.
 

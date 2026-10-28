@@ -1,195 +1,22 @@
-import type { Nodes, PhrasingContent, Root, RootContent, Table } from 'mdast';
+import type { Nodes, Root, RootContent } from 'mdast';
 import { toString as plainText } from 'mdast-util-to-string';
 import { visit } from 'unist-util-visit';
-
-import { nodesOf, span, text, withoutPositions } from './mdast.fixtures';
-
-interface LevelInput {
-  readonly level: string;
-  readonly mark: string;
-}
-
-interface MarkInput extends LevelInput {
-  readonly letter: string;
-}
-
-const markOf = (input: MarkInput): PhrasingContent =>
-  span(
-    {
-      'data-rule-mark': input.mark,
-    },
-    [
-      span(
-        {
-          'data-rule-mark-letter': '',
-        },
-        [
-          text(input.letter),
-        ],
-      ),
-      span(
-        {
-          className: [
-            'sr-only',
-          ],
-        },
-        [
-          text(input.level),
-        ],
-      ),
-    ],
-  );
-
-const levelOf = (input: LevelInput): PhrasingContent =>
-  span(
-    {
-      'data-rule-level': input.mark,
-    },
-    [
-      text(input.level),
-    ],
-  );
-
-const metaOf = (children: PhrasingContent[]): RootContent => ({
-  children,
-  data: {
-    hProperties: {
-      'data-rule-meta': '',
-    },
-  },
-  type: 'paragraph',
-});
-
-const headingOf = (children: PhrasingContent[]): RootContent => ({
-  children,
-  data: {
-    hProperties: {
-      'data-rule': '',
-    },
-  },
-  depth: 3,
-  type: 'heading',
-});
-
-const parentLineOf = (children: PhrasingContent[]): RootContent => ({
-  children,
-  data: {
-    hProperties: {
-      'data-rule-parent': '',
-    },
-  },
-  type: 'paragraph',
-});
-
-const whyOf = (children: PhrasingContent[]): RootContent => ({
-  children: [
-    span(
-      {
-        'data-rule-why-label': '',
-      },
-      [
-        text('Why'),
-      ],
-    ),
-    ...children,
-  ],
-  data: {
-    hProperties: {
-      'data-rule-why': '',
-    },
-  },
-  type: 'paragraph',
-});
-
-const cardOf = (children: RootContent[]): RootContent => ({
-  children,
-  data: {
-    hName: 'section',
-    hProperties: {
-      'data-rule-card': '',
-    },
-  },
-  type: 'ruleCard',
-});
-
-const boxOf = (
-  attributes: Readonly<Record<string, string>>,
-  children: RootContent[],
-): RootContent => ({
-  children,
-  data: {
-    hName: 'div',
-    hProperties: {
-      ...attributes,
-    },
-  },
-  type: 'box',
-});
-
-interface ColumnInput {
-  readonly code: string;
-  readonly title: string;
-  readonly tone: string;
-}
-
-const columnOf = (input: ColumnInput): RootContent =>
-  boxOf(
-    {
-      'data-rule-example-column': input.tone,
-    },
-    [
-      {
-        children: [
-          span(
-            {
-              'data-rule-example-label': '',
-            },
-            [
-              text(input.title),
-            ],
-          ),
-        ],
-        type: 'paragraph',
-      },
-      ...nodesOf(input.code),
-    ],
-  );
-
-const cellLessTable = (): Table => ({
-  align: [],
-  children: [
-    {
-      children: [],
-      type: 'tableRow',
-    },
-    {
-      children: [],
-      type: 'tableRow',
-    },
-  ],
-  type: 'table',
-});
 
 const attributeOf = (node: Nodes, name: string): unknown =>
   node.data?.hProperties?.[`data-${name}`];
 
-/** in reading order, without positions */
-const partsOf = (tree: Nodes, name: string): Nodes[] => {
+/** the first part of the card the plugin marks with the name, in reading order */
+const partOf = (tree: Nodes, name: string): Nodes | undefined => {
   const parts: Nodes[] = [];
 
   visit(tree, (node) => {
     if (attributeOf(node, name) !== undefined) {
-      parts.push(withoutPositions(node));
+      parts.push(node);
     }
   });
 
-  return parts;
+  return parts[0];
 };
-
-const partOf = (tree: Nodes, name: string): Nodes | undefined => partsOf(tree, name)[0];
-
-const textsOf = (nodes: readonly Nodes[]): readonly string[] =>
-  nodes.map((node) => plainText(node));
 
 const slugOf = (card: Nodes): string => {
   const heading = partOf(card, 'rule');
@@ -217,7 +44,7 @@ const outlineOf = (tree: Root): ReadonlyArray<CardOutline | string> =>
   tree.children.map((node) =>
     node.type === 'ruleCard'
       ? {
-          body: textsOf(node.children.filter(isAuthored)),
+          body: node.children.filter(isAuthored).map((child) => plainText(child)),
           rule: slugOf(node),
         }
       : plainText(node),
@@ -241,18 +68,15 @@ const linksOf = (tree: Root): readonly LinkOutline[] => {
   return links;
 };
 
-export {
-  boxOf,
-  cardOf,
-  cellLessTable,
-  columnOf,
-  headingOf,
-  levelOf,
-  linksOf,
-  markOf,
-  metaOf,
-  outlineOf,
-  parentLineOf,
-  partOf,
-  whyOf,
+/** the meta of each block of code, which the site's highlighter reads a title from */
+const codeMetasOf = (tree: Root): readonly (string | null | undefined)[] => {
+  const metas: (string | null | undefined)[] = [];
+
+  visit(tree, 'code', (node) => {
+    metas.push(node.meta);
+  });
+
+  return metas;
 };
+
+export { codeMetasOf, linksOf, outlineOf };

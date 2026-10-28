@@ -1,0 +1,18 @@
+core:
+  module-imports-form-no-cycle:
+    python:
+      pyproject.toml ? !${workspace.isRoot}:
+        tool:
+          importlinter:
+            contracts[name=module-imports-form-no-cycle]:
+              type: acyclic_siblings
+              ancestors:
+                - ${package.name}
+import-linter:
+  '*':
+    python:
+      pyproject.toml ? !${workspace.isRoot}:
+        tool:
+          importlinter:
+            root_packages:
+              - ${package.name}

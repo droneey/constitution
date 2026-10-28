@@ -1,0 +1,2 @@
+design-tokens: the generation stopped: the build failed; if it names no fault of the platform's configuration, report it with the command you ran at https://github.com/droneey/constitution/issues
+design-tokens: the generation stopped: 42; if it names no fault of the platform's configuration, report it with the command you ran at https://github.com/droneey/constitution/issues

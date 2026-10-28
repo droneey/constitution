@@ -1,3 +1,5 @@
+import type { HelpExamples } from '#/libs/commander';
+
 import type { Renderer } from './renderer.types';
 
 /**
@@ -18,7 +20,7 @@ interface CommandPlaces {
 
 interface CommandContext {
   /** the examples of a command's common use, as the text its help opens with, given to `addHelpText` */
-  readonly helpExamples: (examples: readonly string[]) => () => string;
+  readonly helpExamples: HelpExamples;
   readonly io: CommandIo;
   readonly places: CommandPlaces;
   readonly renderer: Renderer;

@@ -1,0 +1,13 @@
+{
+  "pattern": "{src,scripts}/**",
+  "format": [
+    "python"
+  ],
+  "ignore": [
+    "**/*_gen.py",
+    "**/*_gen/**"
+  ],
+  "minLines": 5,
+  "minTokens": 50,
+  "exitCode": 1
+}

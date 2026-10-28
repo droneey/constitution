@@ -1,3 +1,0 @@
-# structlog: configured by the root alone
-[homes]
-structlog = ["root"]

@@ -1,0 +1,6 @@
+shfmt:
+  '*':
+    '*':
+      .editorconfig:
+        '*.{sh,bash}':
+          switch_case_indent: true

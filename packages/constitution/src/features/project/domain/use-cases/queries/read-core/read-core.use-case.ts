@@ -1,25 +1,35 @@
-import { BLOCKS_FOLDER, LAYER_FOLDER, Layer } from '#/kernel/constants';
+import {
+  BLOCKS_FOLDER_NAME,
+  LAYER_FOLDER_NAME,
+  Layer,
+  MARKDOWN_EXTENSION,
+  PATH_SEPARATOR,
+} from '#/kernel/constants';
 import { FileRead, FileReadStatus } from '#/kernel/entities';
-import { ProjectError, ProjectFailure } from '#/kernel/errors';
-import { coreBlockId } from '#/kernel/value-objects';
+import { AbsolutePath, coreBlockId } from '#/kernel/value-objects';
 
+import { UnreadableFileError, UnreadableFileFailure } from '../../../errors';
 import type { ReleaseReadInput } from '../shared/release-read';
 
-const corePassport = `${BLOCKS_FOLDER}/${LAYER_FOLDER[Layer.Core]}/${coreBlockId}.md`;
+const corePassportPath = [
+  BLOCKS_FOLDER_NAME,
+  LAYER_FOLDER_NAME[Layer.Core],
+  `${coreBlockId}${MARKDOWN_EXTENSION}`,
+].join(PATH_SEPARATOR);
 
 /**
  * The text of core's passport in the release the project pins, which every session's digest gives.
  *
- * @throws {@link ProjectError} when the file cannot be read
+ * @throws {@link UnreadableFileError} when the file cannot be read
  */
 const readCore = (input: ReleaseReadInput): string => {
-  const path = `${input.place.releaseFolder}/${corePassport}`;
+  const path = AbsolutePath.join(input.place.releaseFolderPath, corePassportPath);
   const read = input.files.read(path);
 
   if (read.status !== FileReadStatus.Read) {
-    throw new ProjectError(
+    throw new UnreadableFileError(
       {
-        code: ProjectFailure.CoreUnreadable,
+        code: UnreadableFileFailure.Core,
         details: {
           path,
         },

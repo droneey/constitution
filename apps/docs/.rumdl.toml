@@ -1,3 +1,21 @@
-# rumdl: the Constitution's parts, each extending the one before; rumdl extends the last
-# from .droneey/constitution/presets/markdown/rumdl/foundation/self.toml, .droneey/constitution/presets/markdown/rumdl/foundation/core.toml
-extends = ".droneey/constitution/presets/markdown/rumdl/foundation/core.toml"
+# rumdl
+[global]
+extend-enable = ["MD087", "MD001", "MD025", "MD036", "MD040", "MD045", "MD051", "MD057", "MD059"]
+disable = ["MD013", "MD041"]
+
+[MD046]
+style = "fenced"
+
+[MD057]
+absolute-links = "relative_to_roots"
+
+[per-file-ignores]
+"**/AGENTS.md" = ["MD033"]
+"**/CLAUDE.md" = ["MD033"]
+"**/SKILL.md" = ["MD033"]
+
+[MD033]
+allowed-elements = ["details", "summary", "kbd", "img"]
+
+[MD024]
+siblings-only = true

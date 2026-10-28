@@ -1,0 +1,11 @@
+ty:
+  '*':
+    python:
+      pyproject.toml:
+        tool:
+          mutmut:
+            type_check_command:
+              - ty
+              - check
+              - --output-format
+              - gitlab

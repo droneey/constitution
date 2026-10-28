@@ -7,8 +7,8 @@
     height: var(--size-control-md);
     padding-inline: var(--spacing-xs);
     border-radius: var(--radius-control-base);
-    font-size: var(--text-sm);
-    font-weight: var(--font-weight-ui);
+    font: var(--font-label-sm);
+    letter-spacing: var(--font-label-sm--letter-spacing);
     cursor: pointer;
 
     /* the list scrolls, so an outer ring would be clipped */
@@ -21,7 +21,8 @@
     }
 
     &[data-level='0'] {
-      font-weight: var(--font-weight-medium);
+      font: var(--font-heading-xs);
+      letter-spacing: var(--font-heading-xs--letter-spacing);
     }
 
     &[data-level='1'] {
@@ -32,7 +33,7 @@
         position: absolute;
         inset-block: 0;
         inset-inline-start: calc(-1 * var(--spacing-2xs));
-        width: 1px;
+        width: var(--border-width-thin);
         background-color: var(--color-fd-border);
         transition: background-color var(--duration-fast) var(--ease-standard);
       }
@@ -71,8 +72,8 @@
       padding: 0;
       border: 0;
       background: none;
-      font-size: var(--text-xs);
-      font-weight: var(--font-weight-normal);
+      font: var(--font-code-xs);
+      letter-spacing: var(--font-code-xs--letter-spacing);
       text-overflow: ellipsis;
     }
   }

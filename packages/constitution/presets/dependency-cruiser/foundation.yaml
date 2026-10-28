@@ -1,0 +1,100 @@
+core:
+  module-imports-form-no-cycle:
+    typescript:
+      .dependency-cruiser.jsonc:
+        forbidden[name=no-circular]:
+          severity: error
+          from: {}
+          to:
+            circular: true
+  test-code-never-reached-from-production:
+    typescript:
+      .dependency-cruiser.jsonc:
+        forbidden[name=no-test-code-in-production]:
+          severity: error
+          from:
+            pathNot:
+              - (^|/)(${role.colocated-specs}|${role.end-to-end-suite})/
+              - ^${role.package-suites}/
+          to:
+            path:
+              - (^|/)(${role.colocated-specs}|${role.end-to-end-suite})/
+              - ^${role.package-suites}/
+  production-code-imports-no-tool:
+    typescript:
+      .dependency-cruiser.jsonc:
+        forbidden[name=no-development-dependency-in-production]:
+          from:
+            pathNot:
+              - (^|/)(${role.colocated-specs}|${role.end-to-end-suite})/
+              - ^${role.package-suites}/
+            path: ^${role.source}/
+          severity: error
+          to:
+            dependencyTypes:
+              - npm-dev
+            dependencyTypesNot:
+              - type-only
+              - npm-peer
+            pathNot: node_modules/@types/
+  deprecated-dependency-replaced:
+    typescript:
+      .dependency-cruiser.jsonc:
+        forbidden[name=no-deprecated-dependency]:
+          severity: error
+          from: {}
+          to:
+            dependencyTypes:
+              - deprecated
+  deprecated-form-never-used:
+    typescript:
+      .dependency-cruiser.jsonc:
+        forbidden[name=no-deprecated-core]:
+          severity: error
+          from: {}
+          to:
+            dependencyTypes:
+              - core
+            path: ^(?:punycode|domain|constants|sys|_linklist|_stream_wrap)$
+dependency-cruiser:
+  '*':
+    typescript:
+      .dependency-cruiser.jsonc:
+        forbidden[name=no-undeclared-dependency]:
+          severity: error
+          from: {}
+          to:
+            dependencyTypes:
+              - npm-no-pkg
+              - npm-unknown
+        forbidden[name=no-unresolvable]:
+          severity: error
+          from: {}
+          to:
+            couldNotResolve: true
+        forbidden[name=no-duplicate-dep-types]:
+          severity: error
+          from: {}
+          to:
+            moreThanOneDependencyType: true
+            dependencyTypesNot:
+              - type-only
+              - npm-peer
+        options:
+          parser: swc
+          skipAnalysisNotInRules: true
+          enhancedResolveOptions:
+            exportsFields:
+              - exports
+            conditionNames:
+              - import
+              - require
+              - node
+              - default
+          doNotFollow:
+            path:
+              - node_modules
+          exclude:
+            path:
+              - ^(?!(?:\.\./)*node_modules/)(?:\.[^./]|.*/\.[^./]|dist/|.*/dist/)
+              - \.gen\.

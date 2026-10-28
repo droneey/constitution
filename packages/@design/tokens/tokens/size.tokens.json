@@ -1,0 +1,246 @@
+{
+  "dimension": {
+    "$type": "dimension",
+    "$description": "Every size on the 8-pixel grid, with 4 where a tight space needs it; radii follow nesting.",
+    "4": {
+      "$value": {
+        "unit": "px",
+        "value": 4
+      }
+    },
+    "8": {
+      "$value": {
+        "unit": "px",
+        "value": 8
+      }
+    },
+    "16": {
+      "$value": {
+        "unit": "px",
+        "value": 16
+      }
+    },
+    "24": {
+      "$value": {
+        "unit": "px",
+        "value": 24
+      }
+    },
+    "32": {
+      "$value": {
+        "unit": "px",
+        "value": 32
+      }
+    },
+    "40": {
+      "$value": {
+        "unit": "px",
+        "value": 40
+      }
+    },
+    "48": {
+      "$value": {
+        "unit": "px",
+        "value": 48
+      }
+    },
+    "56": {
+      "$value": {
+        "unit": "px",
+        "value": 56
+      }
+    },
+    "64": {
+      "$value": {
+        "unit": "px",
+        "value": 64
+      }
+    },
+    "240": {
+      "$value": {
+        "unit": "px",
+        "value": 240
+      }
+    },
+    "272": {
+      "$value": {
+        "unit": "px",
+        "value": 272
+      }
+    },
+    "352": {
+      "$value": {
+        "unit": "px",
+        "value": 352
+      }
+    },
+    "768": {
+      "$value": {
+        "unit": "px",
+        "value": 768
+      }
+    }
+  },
+  "spacing": {
+    "$type": "dimension",
+    "2xs": {
+      "$value": "{dimension.4}"
+    },
+    "xs": {
+      "$value": "{dimension.8}"
+    },
+    "sm": {
+      "$value": "{dimension.16}"
+    },
+    "md": {
+      "$value": "{dimension.24}"
+    },
+    "lg": {
+      "$value": "{dimension.32}"
+    },
+    "xl": {
+      "$value": "{dimension.48}"
+    },
+    "2xl": {
+      "$value": "{dimension.64}"
+    }
+  },
+  "size": {
+    "$type": "dimension",
+    "control": {
+      "xs": {
+        "$value": "{dimension.24}"
+      },
+      "md": {
+        "$value": "{dimension.40}"
+      },
+      "lg": {
+        "$value": "{dimension.48}"
+      }
+    },
+    "icon": {
+      "md": {
+        "$value": "{dimension.16}"
+      }
+    },
+    "header": {
+      "$value": "{dimension.56}",
+      "$description": "A common token: the height of the application's header."
+    },
+    "popup": {
+      "min": {
+        "$value": "{dimension.240}",
+        "$description": "A common token: the narrowest a dropdown opens."
+      },
+      "max": {
+        "$value": "{dimension.352}",
+        "$description": "A common token: the widest a dropdown opens."
+      }
+    },
+    "layout": {
+      "sidebar": {
+        "$value": "{dimension.272}",
+        "$description": "A common token: the width of the sidebar and of the contents column beside the page."
+      },
+      "page": {
+        "$value": "{dimension.768}",
+        "$description": "A common token: the widest the page's text runs."
+      }
+    }
+  },
+  "radius": {
+    "4": {
+      "$value": {
+        "unit": "px",
+        "value": 4
+      }
+    },
+    "8": {
+      "$value": {
+        "unit": "px",
+        "value": 8
+      }
+    },
+    "12": {
+      "$value": {
+        "unit": "px",
+        "value": 12
+      }
+    },
+    "16": {
+      "$value": {
+        "unit": "px",
+        "value": 16
+      }
+    },
+    "24": {
+      "$value": {
+        "unit": "px",
+        "value": 24
+      }
+    },
+    "32": {
+      "$value": {
+        "unit": "px",
+        "value": 32
+      }
+    },
+    "control": {
+      "base": {
+        "$value": "{radius.8}"
+      }
+    },
+    "surface": {
+      "raised": {
+        "$value": "{radius.12}"
+      }
+    },
+    "$type": "dimension"
+  },
+  "ring": {
+    "$type": "dimension",
+    "$description": "The focus ring, a line off the 8-pixel grid: the primitive, and the roles that read it.",
+    "2": {
+      "$value": {
+        "unit": "px",
+        "value": 2
+      }
+    },
+    "focus": {
+      "width": {
+        "$value": "{ring.2}",
+        "$description": "How thick the focus ring is drawn."
+      },
+      "offset": {
+        "$value": "{ring.2}",
+        "$description": "The gap between the focus ring and the edge of what it marks."
+      }
+    }
+  },
+  "border": {
+    "$type": "dimension",
+    "$description": "The width of a border, a line off the 8-pixel grid: the primitives, and the roles that read them.",
+    "1": {
+      "$value": {
+        "unit": "px",
+        "value": 1
+      }
+    },
+    "2": {
+      "$value": {
+        "unit": "px",
+        "value": 2
+      }
+    },
+    "width": {
+      "thin": {
+        "$value": "{border.1}",
+        "$description": "The line around a surface or a field, and between sections."
+      },
+      "thick": {
+        "$value": "{border.2}",
+        "$description": "An edge that marks what it bounds, such as the top of an example to avoid or to prefer."
+      }
+    }
+  }
+}

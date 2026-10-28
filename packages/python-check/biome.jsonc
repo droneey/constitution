@@ -1,0 +1,141 @@
+{
+  "$schema": "../../node_modules/@biomejs/biome/configuration_schema.json",
+  "root": true,
+
+  // biome
+  "formatter": {
+    "lineWidth": 100,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "attributePosition": "multiline",
+    "expand": "always",
+  },
+  "files": {
+    "ignoreUnknown": true,
+    "includes": [
+      "**",
+      "!!**/.droneey",
+    ],
+  },
+  "markdown": {
+    "linter": {
+      "enabled": false,
+    },
+    "formatter": {
+      "enabled": false,
+    },
+  },
+  "linter": {
+    "rules": {
+      "preset": "recommended",
+      "complexity": {
+        "noAdjacentSpacesInRegex": "error",
+        "noArguments": "error",
+        "noBannedTypes": "error",
+        "noCommaOperator": "error",
+        "noEmptyTypeParameters": "error",
+        "noExtraBooleanCast": "error",
+        "noFlatMapIdentity": "error",
+        "noStaticOnlyClass": "error",
+        "noThisInStatic": "error",
+        "noUselessCatch": "error",
+        "noUselessConstructor": "error",
+        "noUselessContinue": "error",
+        "noUselessEmptyExport": "error",
+        "noUselessEscapeInRegex": "error",
+        "noUselessFragments": "error",
+        "noUselessLabel": "error",
+        "noUselessLoneBlockStatements": "error",
+        "noUselessRename": "error",
+        "noUselessStringRaw": "error",
+        "noUselessSwitchCase": "error",
+        "noUselessTernary": "error",
+        "noUselessThisAlias": "error",
+        "noUselessTypeConstraint": "error",
+        "noUselessUndefinedInitialization": "error",
+        "useArrowFunction": "error",
+        "useDateNow": "error",
+        "useFlatMap": "error",
+        "useIndexOf": "error",
+        "useLiteralKeys": "error",
+        "useMathMinMax": "error",
+        "useNumericLiterals": "error",
+        "useOptionalChain": "error",
+        "useRegexLiterals": "error",
+        "useSimpleNumberKeys": "error",
+      },
+      "correctness": {
+        "useParseIntRadix": "error",
+      },
+      "performance": {
+        "noAccumulatingSpread": "error",
+        "noDynamicNamespaceImportAccess": "error",
+        "useDomNodeTextContent": "error",
+      },
+      "style": {
+        "useArrayLiterals": "error",
+        "useConst": "error",
+        "useDeprecatedReason": "error",
+        "useExponentiationOperator": "error",
+        "useLiteralEnumMembers": "error",
+        "useNodejsImportProtocol": "error",
+        "useShorthandFunctionType": "error",
+        "useTemplate": "error",
+      },
+      "suspicious": {
+        "noApproximativeNumericConstant": "error",
+        "noCatchAssign": "error",
+        "noConfusingLabels": "error",
+        "noConfusingVoidType": "error",
+        "noDeprecatedMediaType": "error",
+        "noDocumentCookie": "error",
+        "noDuplicateEnumValues": "error",
+        "noDuplicateFields": "error",
+        "noEmptyBlock": "error",
+        "noExtraNonNullAssertion": "error",
+        "noGlobalIsFinite": "error",
+        "noGlobalIsNan": "error",
+        "noIrregularWhitespace": "error",
+        "noOctalEscape": "error",
+        "noProto": "error",
+        "noPrototypeBuiltins": "error",
+        "noQuickfixBiome": "error",
+        "noRedundantUseStrict": "error",
+        "noSuspiciousSemicolonInJsx": "error",
+        "noTemplateCurlyInString": "error",
+        "noUselessEscapeInString": "error",
+        "noUselessRegexBackrefs": "error",
+        "useAdjacentOverloadSignatures": "error",
+        "useBiomeIgnoreFolder": "error",
+        "useDefaultSwitchClauseLast": "error",
+        "useGoogleFontDisplay": "error",
+        "useIsArray": "error",
+      },
+    },
+  },
+  "yaml": {
+    "formatter": {
+      "quoteStyle": "single",
+    },
+  },
+  "overrides": [
+    {
+      "includes": [
+        "**/*.jsonc",
+      ],
+      "json": {
+        "formatter": {
+          "trailingCommas": "all",
+        },
+      },
+    },
+  ],
+
+  // git
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true,
+  },
+}

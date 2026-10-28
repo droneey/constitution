@@ -1,0 +1,22 @@
+# outcome when both warn
+2 warnings, 1 finding
+
+# outcome when no project
+no constitution.yaml in this folder or above it
+
+# outcome when the presets find something
+2 findings
+
+# outcome when the project has a warning
+1 warning
+
+# outcome when the project is sound
+constitution.yaml and its configurations are sound
+
+# sections
+2 warnings in the project
+  blocks: nope is not a block — check the name
+  blocks: nope is not a block — check the name
+
+1 finding in the configurations
+  biome.json: still holds width, which no entry gives any longer — run constitution presets apply [stale]

@@ -1,0 +1,56 @@
+# plugin-manifest-missing
+is missing; the Constitution ships as a plugin and needs its manifest
+
+# marketplace-missing
+is missing; the Constitution ships as a plugin and needs its marketplace
+
+# manifest-not-json
+is not valid JSON: the reason
+
+# manifest-off-schema (the whole file)
+does not match its schema: <root>: the reason
+
+# manifest-off-schema
+does not match its schema: plugins: the reason
+
+# skills-directory-without-skills
+lists the skills directory "./skills/", which holds no <skill>/SKILL.md
+
+# skills-directory-unlisted
+does not list "./tools/skills/", which holds skills
+
+# skill-without-skill-file
+holds no SKILL.md; a skill is a folder with SKILL.md in it
+
+# skill-without-front-matter
+has no front matter; a skill names itself and says when to use it there
+
+# skill-front-matter-not-yaml
+front matter is not valid YAML: the reason
+
+# skill-field-missing
+front matter lacks "name"; a skill declares its name and description
+
+# agent-without-front-matter
+has no front matter; an agent names itself and says when to use it there
+
+# agent-front-matter-not-yaml
+front matter is not valid YAML: the reason
+
+# agent-field-missing
+front matter lacks "description"; an agent declares its name and description
+
+# agent-name-mismatches-file
+is named "critic" in its front matter; an agent is named after its file, reviewer
+
+# template-missing
+is missing; /ratify writes a project from the templates
+
+# marketplace-omits-plugin
+does not list the plugin "constitution" from the GitHub repository its manifest names (droneey/constitution), at a release tag v<major>.<minor>.<patch> and from the folder that holds its manifest
+
+# marketplace-omits-plugin (nothing named)
+does not list the plugin "" from the GitHub repository its manifest names (none), at a release tag v<major>.<minor>.<patch> and from the folder that holds its manifest
+
+# hook-runs-missing-file
+runs "hooks/session-start.sh", which is missing

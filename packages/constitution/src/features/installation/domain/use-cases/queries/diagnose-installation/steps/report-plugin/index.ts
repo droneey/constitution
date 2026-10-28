@@ -1,1 +1,1 @@
-export { pluginReport } from './report-plugin.utils';
+export { reportPlugin } from './report-plugin';

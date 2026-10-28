@@ -1,12 +1,13 @@
 import type { Axis } from '../constants';
 import {
   AXES,
-  BLOCKS_FOLDER,
-  LAYER_FOLDER,
+  BLOCKS_FOLDER_NAME,
+  LAYER_FOLDER_NAME,
   LAYERS,
   Layer,
   MARKDOWN_EXTENSION,
-  SEAM_FOLDER,
+  PATH_SEPARATOR,
+  SEAM_FOLDER_NAME,
 } from '../constants';
 import type { Brand } from '../types';
 import { compareText, fieldsOf, isDeepEqual } from '../utils';
@@ -58,6 +59,14 @@ type FileInBlock =
         | BlockFileKind.Stray;
     };
 
+/** A file a block's folder holds by its form: its passport, a chapter or a seam. */
+type BlockPart = Extract<
+  FileInBlock,
+  {
+    readonly kind: BlockFileKind.Chapter | BlockFileKind.Passport | BlockFileKind.Seam;
+  }
+>;
+
 type PlaceFields = {
   readonly path: string;
 } & (
@@ -85,11 +94,14 @@ interface LayerFolder {
   readonly prefix: string;
 }
 
-const SEPARATOR = '/';
 const HIDDEN = '.';
+
+const prefixOf = (layer: Layer): string =>
+  `${BLOCKS_FOLDER_NAME}${PATH_SEPARATOR}${LAYER_FOLDER_NAME[layer]}${PATH_SEPARATOR}`;
+
 const layerFolders: readonly LayerFolder[] = LAYERS.map((layer) => ({
   layer,
-  prefix: `${BLOCKS_FOLDER}/${LAYER_FOLDER[layer]}/`,
+  prefix: prefixOf(layer),
 }));
 
 const ROLE_RANK = {
@@ -142,7 +154,7 @@ const fileOf = (input: { id: BlockId; segments: readonly string[] }): FileInBloc
         };
   }
 
-  if (name !== SEAM_FOLDER || !isMarkdown(seam)) {
+  if (name !== SEAM_FOLDER_NAME || !isMarkdown(seam)) {
     return STRAY;
   }
 
@@ -197,18 +209,17 @@ const placeOf = (path: string): PlaceFields | undefined => {
 
   const rest = path.slice(folder.prefix.length);
 
-  // core's folder is its one block's
   if (folder.layer === Layer.Core) {
     return inFolder({
-      dir: folder.prefix.slice(0, -SEPARATOR.length),
+      dir: folder.prefix.slice(0, -PATH_SEPARATOR.length),
       layer: folder.layer,
       name: coreBlockId,
       path,
-      segments: rest.split(SEPARATOR),
+      segments: rest.split(PATH_SEPARATOR),
     });
   }
 
-  const slash = rest.indexOf(SEPARATOR);
+  const slash = rest.indexOf(PATH_SEPARATOR);
 
   return slash === -1
     ? {
@@ -221,7 +232,7 @@ const placeOf = (path: string): PlaceFields | undefined => {
         layer: folder.layer,
         name: rest.slice(0, slash),
         path,
-        segments: rest.slice(slash + SEPARATOR.length).split(SEPARATOR),
+        segments: rest.slice(slash + PATH_SEPARATOR.length).split(PATH_SEPARATOR),
       });
 };
 
@@ -232,12 +243,11 @@ interface OrderKey {
   readonly role: number;
 }
 
-// Stryker disable ConditionalExpression: a passport and a stray file are never ordered by axis
 const axisRankOf = (file: FileInBlock): number =>
+  // Stryker disable next-line ConditionalExpression: a passport and a stray file are never ordered by axis
   file.kind === BlockFileKind.Chapter || file.kind === BlockFileKind.Seam
     ? AXES.indexOf(file.axis)
     : 0;
-// Stryker restore ConditionalExpression
 
 // A layer's folder holds one block's folder of a name. Only a chapter's and a seam's axis orders: a
 // block has one passport, and a stray file sorts by its path.
@@ -293,6 +303,34 @@ const parse = (path: string): BlockFilePlace | undefined => {
   return is(place) ? place : undefined;
 };
 
+interface PathInput {
+  readonly block: BlockId;
+  readonly file: BlockPart;
+  readonly layer: Layer;
+}
+
+/** The path from a Constitution's or a pack's folder of a block's part, as parse reads it back. */
+const pathOf = (input: PathInput): string => {
+  const { file } = input;
+  // core's folder is its one block's
+  const folder =
+    input.layer === Layer.Core
+      ? prefixOf(input.layer)
+      : `${prefixOf(input.layer)}${input.block}${PATH_SEPARATOR}`;
+
+  switch (file.kind) {
+    case BlockFileKind.Passport:
+      return `${folder}${input.block}${MARKDOWN_EXTENSION}`;
+    case BlockFileKind.Chapter:
+      return `${folder}${file.axis}${PATH_SEPARATOR}${file.name}${MARKDOWN_EXTENSION}`;
+    case BlockFileKind.Seam:
+      return `${folder}${file.axis}${PATH_SEPARATOR}${SEAM_FOLDER_NAME}${PATH_SEPARATOR}${file.other}${MARKDOWN_EXTENSION}`;
+    // Stryker disable next-line ConditionalExpression: no part reaches the default, which only the compiler reads
+    default:
+      return file satisfies never;
+  }
+};
+
 // A place is all its path says of it, so one path is one place.
 const equals = (left: BlockFilePlace, right: BlockFilePlace): boolean => left.path === right.path;
 
@@ -301,7 +339,8 @@ const BlockFilePlace = {
   equals,
   is,
   parse,
+  pathOf,
 } as const;
 
-export type { BlockFolder, FileInBlock };
+export type { BlockFolder, BlockPart, FileInBlock };
 export { BlockFileKind, BlockFilePlace, Placement };

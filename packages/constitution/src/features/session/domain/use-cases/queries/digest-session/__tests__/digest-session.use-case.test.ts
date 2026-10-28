@@ -1,50 +1,36 @@
 import { describe, expect, it } from 'bun:test';
 
-import { corePassport, PROJECT, releaseFolderPath } from '#/__tests__/project-place.fixtures';
-import { CORE_TEXT } from '#/__tests__/project-source.fake';
+import { PROJECT, releaseFolderPath } from '#/__tests__/project-place.fixtures';
 import type { ProjectWarning } from '#/kernel/entities';
-import { ConfigReadStatus, ReleaseStatus, WarningKind } from '#/kernel/entities';
-import { isProjectError, ProjectError, ProjectFailure } from '#/kernel/errors';
-import { PackPath, repositoryUnit, Version } from '#/kernel/value-objects';
+import { ConfigReadStatus, WarningKind } from '#/kernel/entities';
+import { AbsolutePath } from '#/kernel/value-objects';
 
-import { CheckState, DigestKind, HookEventName, SessionOrigin } from '../../../../entities';
+import { createFakeWorkingTree } from '../../../../../__tests__/working-tree.fake';
+import { ConfigurationsCheckStatus } from '../../../../contracts';
+import { DigestKind, HookEventName, SessionOrigin } from '../../../../entities';
 import { digestSession } from '../digest-session.use-case';
-import { quiet, sessionPortsOf, uncheckedWiring, wiringOf } from './digest-session.fixtures';
+import { CORE_TEXT, QUIET, sessionPortsOf, unchecked, version } from './digest-session.fixtures';
 
+const searchFrom = AbsolutePath.create(PROJECT);
 const releaseFiles = {
-  folder: releaseFolderPath,
-  version: Version.create('1.0.0'),
+  folderPath: AbsolutePath.create(releaseFolderPath),
+  version: version,
 };
 const kept = {
   active: [],
-  check: CheckState.create('bun run check'),
   musts: [],
-  project: PROJECT,
-  units: [
-    repositoryUnit,
-  ],
+  repositoryFolderPath: AbsolutePath.create(PROJECT),
+  status: ConfigReadStatus.Parsed,
 };
-const unchecked: ProjectWarning = {
-  details: {},
-  kind: WarningKind.WiringUnchecked,
+const uncheckedWarning: ProjectWarning = {
+  details: {
+    reason: 'cannot list the presets',
+  },
+  kind: WarningKind.ConfigurationsUnchecked,
 };
-
-// The code and the path of the ProjectError an act throws; undefined when it throws none.
-const failureOf = (act: () => unknown): unknown => {
-  try {
-    act();
-
-    return undefined;
-  } catch (error) {
-    if (!isProjectError(error)) {
-      throw error;
-    }
-
-    return {
-      code: error.code,
-      path: error.details.path,
-    };
-  }
+const uncheckedRules = {
+  ...QUIET,
+  configurations: unchecked,
 };
 
 describe('digestSession', () => {
@@ -68,11 +54,11 @@ describe('digestSession', () => {
       origin: SessionOrigin.Startup,
     },
   ])(
-    'should warn of a wiring it cannot check, and give the state to keep, when $condition',
+    'should warn of presets it cannot check, and give the state to keep, when $condition',
     ({ event, isStartup, origin }) => {
       // Arrange
       const ports = sessionPortsOf({
-        wiring: uncheckedWiring,
+        rules: uncheckedRules,
       });
 
       // Act
@@ -80,7 +66,7 @@ describe('digestSession', () => {
         ...ports,
         event,
         origin,
-        searchFrom: PROJECT,
+        searchFrom,
       });
 
       // Assert
@@ -90,10 +76,10 @@ describe('digestSession', () => {
           count: 1,
           isStartup,
           kind: DigestKind.Resolved,
-          listing: quiet.listing,
+          listing: QUIET.listing,
           release: releaseFiles,
           warnings: [
-            unchecked,
+            uncheckedWarning,
           ],
         },
         state: kept,
@@ -101,39 +87,50 @@ describe('digestSession', () => {
     },
   );
 
-  it('should give the warnings of constitution.yaml before those of the wiring when both warn', () => {
+  it('should warn that the gate cannot run, before the presets, when the project lies in no repository', () => {
     // Arrange
-    const unknown: ProjectWarning = {
-      details: {
-        name: 'nope',
-      },
-      kind: WarningKind.NameUnknown,
-    };
     const ports = sessionPortsOf({
-      project: {
-        declaration: {
-          packs: [
-            PackPath.create('packs/acme'),
-          ],
-          resolution: {
-            ...quiet,
-            warnings: [
-              unknown,
-            ],
-          },
-          status: ConfigReadStatus.Parsed,
+      rules: uncheckedRules,
+      workingTree: createFakeWorkingTree({
+        repositoryFolderPath: '/work/elsewhere',
+      }),
+    });
+
+    // Act
+    const digest = digestSession({
+      ...ports,
+      event: HookEventName.SessionStart,
+      origin: SessionOrigin.Startup,
+      searchFrom,
+    });
+
+    // Assert
+    expect(digest?.contents).toStrictEqual({
+      core: CORE_TEXT,
+      count: 1,
+      isStartup: true,
+      kind: DigestKind.Resolved,
+      listing: QUIET.listing,
+      release: releaseFiles,
+      warnings: [
+        {
+          details: {},
+          kind: WarningKind.NoRepository,
+        },
+        uncheckedWarning,
+      ],
+    });
+  });
+
+  it('should warn of presets it cannot check, naming no reason, when the check gives none', () => {
+    // Arrange
+    const ports = sessionPortsOf({
+      rules: {
+        ...QUIET,
+        configurations: {
+          status: ConfigurationsCheckStatus.Unchecked,
         },
       },
-      wiring: wiringOf((opened) => [
-        {
-          details: {
-            member: opened.project,
-            path: opened.releaseFolder,
-            tool: opened.packs.join(', '),
-          },
-          kind: WarningKind.MemberNotSkipped,
-        },
-      ]),
     });
 
     // Act
@@ -141,7 +138,7 @@ describe('digestSession', () => {
       ...ports,
       event: HookEventName.SubagentStart,
       origin: SessionOrigin.Startup,
-      searchFrom: PROJECT,
+      searchFrom,
     });
 
     // Assert
@@ -150,18 +147,67 @@ describe('digestSession', () => {
       count: 1,
       isStartup: false,
       kind: DigestKind.Resolved,
-      listing: quiet.listing,
+      listing: QUIET.listing,
+      release: releaseFiles,
+      warnings: [
+        {
+          details: {},
+          kind: WarningKind.ConfigurationsUnchecked,
+        },
+      ],
+    });
+  });
+
+  it('should give the warnings of constitution.yaml before those of the presets when both warn', () => {
+    // Arrange
+    const unknown: ProjectWarning = {
+      details: {
+        name: 'nope',
+      },
+      kind: WarningKind.NameUnknown,
+    };
+    const found: ProjectWarning = {
+      details: {
+        code: 'missing',
+        file: 'biome.jsonc',
+        says: 'lacks formatter.enabled',
+      },
+      kind: WarningKind.ConfigurationFinding,
+    };
+    const ports = sessionPortsOf({
+      rules: {
+        ...QUIET,
+        configurations: {
+          status: ConfigurationsCheckStatus.Checked,
+          warnings: [
+            found,
+          ],
+        },
+        warnings: [
+          unknown,
+        ],
+      },
+    });
+
+    // Act
+    const digest = digestSession({
+      ...ports,
+      event: HookEventName.SubagentStart,
+      origin: SessionOrigin.Startup,
+      searchFrom,
+    });
+
+    // Assert
+    expect(digest?.contents).toStrictEqual({
+      core: CORE_TEXT,
+      count: 1,
+      isStartup: false,
+      kind: DigestKind.Resolved,
+      listing: QUIET.listing,
       release: releaseFiles,
       warnings: [
         unknown,
-        {
-          details: {
-            member: PROJECT,
-            path: releaseFolderPath,
-            tool: 'packs/acme',
-          },
-          kind: WarningKind.MemberNotSkipped,
-        },
+        found,
       ],
     });
   });
@@ -176,15 +222,15 @@ describe('digestSession', () => {
       event: HookEventName.SubagentStart,
     },
   ])(
-    'should give core alone, and a state with no check, when constitution.yaml does not parse and $condition',
+    'should give core alone, and a state of no rules, when constitution.yaml does not parse and $condition',
     ({ event }) => {
       // Arrange
       const ports = sessionPortsOf({
-        project: {
-          declaration: {
-            line: 1,
-            status: ConfigReadStatus.Unparsed,
-          },
+        rules: {
+          lines: [
+            1,
+          ],
+          status: ConfigReadStatus.Unparsed,
         },
       });
 
@@ -193,7 +239,7 @@ describe('digestSession', () => {
         ...ports,
         event,
         origin: SessionOrigin.Startup,
-        searchFrom: PROJECT,
+        searchFrom,
       });
 
       // Assert
@@ -201,15 +247,14 @@ describe('digestSession', () => {
         contents: {
           core: CORE_TEXT,
           kind: DigestKind.Unparsed,
-          line: 1,
+          lines: [
+            1,
+          ],
           release: releaseFiles,
         },
         state: {
-          active: [],
-          check: CheckState.unparsed(),
-          musts: [],
-          project: PROJECT,
-          units: [],
+          repositoryFolderPath: AbsolutePath.create(PROJECT),
+          status: ConfigReadStatus.Unparsed,
         },
       });
     },
@@ -218,11 +263,7 @@ describe('digestSession', () => {
   it('should point to doctor alone, and give no state, when no release is installed', () => {
     // Arrange
     const ports = sessionPortsOf({
-      project: {
-        release: {
-          status: ReleaseStatus.Missing,
-        },
-      },
+      version: undefined,
     });
 
     // Act
@@ -230,14 +271,14 @@ describe('digestSession', () => {
       ...ports,
       event: HookEventName.SessionStart,
       origin: SessionOrigin.Startup,
-      searchFrom: PROJECT,
+      searchFrom,
     });
 
     // Assert
     expect(digest).toStrictEqual({
       contents: {
         kind: DigestKind.NoRelease,
-        releaseFolder: releaseFolderPath,
+        releaseFolderPath: AbsolutePath.create(releaseFolderPath),
       },
     });
   });
@@ -251,40 +292,30 @@ describe('digestSession', () => {
       ...ports,
       event: HookEventName.SessionStart,
       origin: SessionOrigin.Startup,
-      searchFrom: '/elsewhere',
+      searchFrom: AbsolutePath.create('/elsewhere'),
     });
 
     // Assert
     expect(digest).toBeUndefined();
   });
 
-  it('should fail with the path of core when the source cannot read core', () => {
+  it('should let a failure of the source through when it cannot read core', () => {
     // Arrange
+    const failure = new Error('core unreadable');
     const ports = sessionPortsOf({
-      project: {
-        core: new ProjectError({
-          code: ProjectFailure.CoreUnreadable,
-          details: {
-            path: corePassport,
-          },
-        }),
-      },
+      core: failure,
     });
 
     // Act
-    const failure = failureOf(() =>
+    const act = (): unknown =>
       digestSession({
         ...ports,
         event: HookEventName.SessionStart,
         origin: SessionOrigin.Startup,
-        searchFrom: PROJECT,
-      }),
-    );
+        searchFrom,
+      });
 
     // Assert
-    expect(failure).toStrictEqual({
-      code: ProjectFailure.CoreUnreadable,
-      path: corePassport,
-    });
+    expect(act).toThrow(failure);
   });
 });

@@ -1,0 +1,17 @@
+name: '@droneey/constitution-brand'
+axes: []
+domains:
+  - version-control
+  - workspace
+platforms: []
+languages:
+  - typescript
+  - json
+  - toml
+  - yaml
+implementations:
+  - bun
+  - biome
+  - git
+packs: []
+overrides: []

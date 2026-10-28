@@ -1,29 +1,25 @@
-import { CONFIG_FILE, RELEASE_FOLDER } from '#/kernel/constants';
+import { CONFIG_FILE_NAME, PATH_SEPARATOR, RELEASE_FOLDER_PATH } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
-import { ProjectPlace } from '#/kernel/entities';
+import type { ProjectPlace } from '#/kernel/entities';
+import { AbsolutePath } from '#/kernel/value-objects';
 
-import { joinPath, ROOT } from '../shared/project-paths';
+const REPOSITORY_MARKER_NAME = '.git';
+const rootFolderPath = AbsolutePath.create(PATH_SEPARATOR);
 
-const REPOSITORY = '.git';
+const parentOf = (folderPath: AbsolutePath): AbsolutePath => {
+  const at = folderPath.lastIndexOf(PATH_SEPARATOR);
 
-const parentOf = (folder: string): string => {
-  const at = folder.lastIndexOf('/');
-
-  return at <= 0 ? ROOT : folder.slice(0, at);
+  return at <= 0 ? rootFolderPath : AbsolutePath.create(folderPath.slice(0, at));
 };
 
-const placeOf = (project: string): ProjectPlace =>
-  ProjectPlace.create({
-    project,
-    releaseFolder: joinPath({
-      folder: project,
-      name: RELEASE_FOLDER,
-    }),
-  });
+const placeOf = (repositoryFolderPath: AbsolutePath): ProjectPlace => ({
+  releaseFolderPath: AbsolutePath.join(repositoryFolderPath, RELEASE_FOLDER_PATH),
+  repositoryFolderPath,
+});
 
 interface FindProjectInput {
   readonly files: ProjectFiles;
-  readonly start: string;
+  readonly startFolderPath: AbsolutePath;
 }
 
 /**
@@ -33,38 +29,26 @@ interface FindProjectInput {
  */
 const findProject = (input: FindProjectInput): ProjectPlace | undefined => {
   const { files } = input;
-  const start = files.realFolder(input.start);
+  const startFolderPath = files.realFolder(input.startFolderPath);
 
-  if (start === undefined) {
+  if (startFolderPath === undefined) {
     return undefined;
   }
 
-  const hasConfig = (folder: string): boolean =>
-    files.isFile(
-      joinPath({
-        folder,
-        name: CONFIG_FILE,
-      }),
-    );
+  const hasConfig = (folderPath: AbsolutePath): boolean =>
+    files.isFile(AbsolutePath.join(folderPath, CONFIG_FILE_NAME));
 
-  let found: string | undefined;
+  let found: AbsolutePath | undefined;
 
-  for (let folder = start; ; folder = parentOf(folder)) {
-    found = hasConfig(folder) ? folder : found;
+  for (let folderPath = startFolderPath; ; folderPath = parentOf(folderPath)) {
+    found = hasConfig(folderPath) ? folderPath : found;
 
-    if (
-      files.exists(
-        joinPath({
-          folder,
-          name: REPOSITORY,
-        }),
-      )
-    ) {
+    if (files.exists(AbsolutePath.join(folderPath, REPOSITORY_MARKER_NAME))) {
       return found === undefined ? undefined : placeOf(found);
     }
 
-    if (folder === ROOT) {
-      return hasConfig(start) ? placeOf(start) : undefined;
+    if (folderPath === rootFolderPath) {
+      return hasConfig(startFolderPath) ? placeOf(startFolderPath) : undefined;
     }
   }
 };

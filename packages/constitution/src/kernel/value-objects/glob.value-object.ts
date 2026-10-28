@@ -1,15 +1,14 @@
 import { InvalidValueError, ValueFailure } from '../errors';
 import type { Brand } from '../types';
+import { globMatches, globPiecesOf } from '../utils';
 
-/** A glob of the paths a block governs; a session's state joins globs with spaces, so it holds none. */
+/** A glob of the paths a block governs, one whose braces pair. */
 type Glob = Brand<string, 'Glob'>;
 
-const ONE_TOKEN = /^\S+$/;
-
 const is = (candidate: unknown): candidate is Glob =>
-  typeof candidate === 'string' && ONE_TOKEN.test(candidate);
+  typeof candidate === 'string' && candidate !== '' && globPiecesOf(candidate) !== undefined;
 
-/** @throws {@link InvalidValueError} when the text is empty or holds whitespace */
+/** @throws {@link InvalidValueError} when the text is empty or its braces do not pair or nest too deep */
 const create = (text: string): Glob => {
   if (!is(text)) {
     throw new InvalidValueError({
@@ -23,12 +22,24 @@ const create = (text: string): Glob => {
   return text;
 };
 
-const equals = (left: Glob, right: Glob): boolean => left === right;
+interface MatchesAnyInput {
+  readonly globs: readonly Glob[];
+  /** from the folder of the unit whose block gives the globs */
+  readonly path: string;
+}
+
+const matchesAny = (input: MatchesAnyInput): boolean =>
+  input.globs.some((glob) =>
+    globMatches({
+      glob,
+      path: input.path,
+    }),
+  );
 
 const Glob = {
   create,
-  equals,
   is,
+  matchesAny,
 } as const;
 
 export { Glob };

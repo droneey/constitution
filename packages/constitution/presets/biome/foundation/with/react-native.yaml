@@ -1,0 +1,15 @@
+react-native:
+  style-colour-read-from-tokens:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            style:
+              noReactNativeLiteralColors: error
+  react-native-imported-from-its-entry:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            suspicious:
+              noReactNativeDeepImports: error

@@ -50,7 +50,7 @@ services:
       - node-modules:/usr/src/app/node_modules
       - node-modules-docs:/usr/src/app/apps/docs/node_modules
       - node-modules-constitution:/usr/src/app/packages/constitution/node_modules
-      - node-modules-mutation-check:/usr/src/app/packages/mutation-check/languages/typescript/node_modules
+      - node-modules-mutation-check:/usr/src/app/packages/@mutation-check/typescript/node_modules
     environment:
       NODE_ENV: development
 

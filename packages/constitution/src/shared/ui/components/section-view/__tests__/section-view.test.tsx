@@ -1,26 +1,19 @@
 import { describe, expect, it } from 'bun:test';
 
-import { ColourLevel, OutputMode, StepStatus, ThemeMode, Tone } from '@droneey/design-cli';
+import { StepStatus, Tone } from '@droneey/design-cli';
 import { ThemeProvider } from '@droneey/design-cli/ink';
 import { render } from 'ink-testing-library';
 
 import { noteSection, SectionKind, stepsSection } from '#/shared/cli';
 
 import { SectionView } from '../section-view';
-import type { SectionViewProps } from '../section-view.types';
-
-const outputStream = {
-  colourLevel: ColourLevel.None,
-  isMotionReduced: true,
-  mode: OutputMode.Pretty,
-  themeMode: ThemeMode.Dark,
-};
+import { createPlainOutput, screenReaderOutputOf } from './section-view.fixtures';
 
 describe('SectionView', () => {
   it.each<{
     condition: string;
     frame: string[];
-    section: SectionViewProps['section'];
+    section: Parameters<typeof SectionView>[0]['section'];
   }>([
     {
       condition: 'steps',
@@ -70,7 +63,7 @@ describe('SectionView', () => {
   ])('should draw $condition as the design system draws them', ({ frame, section }) => {
     // Arrange
     const tree = (
-      <ThemeProvider output={outputStream}>
+      <ThemeProvider output={createPlainOutput()}>
         <SectionView section={section} />
       </ThemeProvider>
     );
@@ -80,5 +73,86 @@ describe('SectionView', () => {
 
     // Assert
     expect(lastFrame()?.split('\n')).toStrictEqual(frame);
+  });
+
+  it.each([
+    {
+      spoken: 'list: listitem: pending Blocks',
+      status: StepStatus.Pending,
+    },
+    {
+      spoken: 'list: listitem: (busy) running Blocks',
+      status: StepStatus.Running,
+    },
+    {
+      spoken: 'listitem: done Blocks\nlist: ',
+      status: StepStatus.Done,
+    },
+    {
+      spoken: 'listitem: failed Blocks\nlist: ',
+      status: StepStatus.Failed,
+    },
+    {
+      spoken: 'listitem: warned Blocks\nlist: ',
+      status: StepStatus.Warned,
+    },
+    {
+      spoken: 'listitem: skipped Blocks\nlist: ',
+      status: StepStatus.Skipped,
+    },
+  ])('should read out a step that is $status by its label', ({ spoken, status }) => {
+    // Arrange
+    const section = stepsSection([
+      {
+        label: 'Blocks',
+        status,
+      },
+    ]);
+
+    // Act
+    const readOut = screenReaderOutputOf(<SectionView section={section} />);
+
+    // Assert
+    expect(readOut).toBe(spoken);
+  });
+
+  it.each([
+    {
+      spoken: 'accent Plan',
+      tone: Tone.Accent,
+    },
+    {
+      spoken: 'success Plan',
+      tone: Tone.Success,
+    },
+    {
+      spoken: 'error Plan',
+      tone: Tone.Error,
+    },
+    {
+      spoken: 'warning Plan',
+      tone: Tone.Warning,
+    },
+    {
+      spoken: 'info Plan',
+      tone: Tone.Info,
+    },
+    {
+      spoken: 'muted Plan',
+      tone: Tone.Muted,
+    },
+  ])('should read out a note of the $tone tone by its label', ({ spoken, tone }) => {
+    // Arrange
+    const section = noteSection({
+      lines: [],
+      title: 'Plan',
+      tone,
+    });
+
+    // Act
+    const readOut = screenReaderOutputOf(<SectionView section={section} />);
+
+    // Assert
+    expect(readOut).toBe(spoken);
   });
 });

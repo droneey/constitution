@@ -1,0 +1,40 @@
+# commit-msg "docs: Explain the presets"
+[commit-header-type-and-subject] Invalid type 'docs'. Allowed: feat, fix, refactor, chore
+
+# commit-msg "feat(biome): Add a preset"
+[commit-header-type-and-subject] Commit must match format: type: Subject,
+  or type!: Subject for a breaking change
+
+# commit-msg "feat:Add a preset"
+[commit-header-type-and-subject] Commit must match format: type: Subject,
+  or type!: Subject for a breaking change
+
+# commit-msg "fix: keep the header short"
+[commit-header-type-and-subject] Subject must start with an uppercase letter (sentence-case)
+
+# commit-msg "chore: Wip"
+[commit-subject-never-a-placeholder] Subject 'Wip' says nothing; say what changed
+
+# commit-msg "fix: Fix stuff"
+[commit-subject-never-a-placeholder] Subject 'Fix stuff' says nothing; say what changed
+
+# commit-msg "feat: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+[commit-header-type-and-subject] Header must be 100 characters or less (got 101)
+
+# commit-msg "feat: Add a preset\n\nBecause the kit needs one"
+[commit-body-empty-and-footer-only-trailers] Body must be empty; a footer holds only trailers
+
+# commit-msg "feat: Add a preset\n\nSigned-off-by: A Person <a@example.com>\nAnd a note"
+[commit-body-empty-and-footer-only-trailers] Body must be empty; a footer holds only trailers
+
+# pre-commit "main"
+[branch-named-type-issue-name] Branch must match: (feature|fix|hotfix)/{id}-{name}
+  got: main
+
+# pre-commit "feature/give-every-rule-one-home"
+[branch-named-type-issue-name] Branch must match: (feature|fix|hotfix)/{id}-{name}
+  got: feature/give-every-rule-one-home
+
+# pre-commit "docs/12-explain-the-presets"
+[branch-named-type-issue-name] Branch must match: (feature|fix|hotfix)/{id}-{name}
+  got: docs/12-explain-the-presets

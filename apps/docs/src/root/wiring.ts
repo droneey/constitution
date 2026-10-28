@@ -35,6 +35,7 @@ import {
   createGetPageMarkdown,
   createGetSearchIndex,
   createSearchPages,
+  SiteBasePath,
 } from '#/features/content';
 import type { PageBody } from '#/features/content/adapters/fumadocs-browser';
 import {
@@ -45,6 +46,7 @@ import {
 import type { GetVersions } from '#/features/versions';
 import { createGetVersions, Version } from '#/features/versions';
 import { createStaticFileVersionsRepository } from '#/features/versions/adapters/static-file';
+import { once } from '#/libs/once';
 import { trackedForUse } from '#/libs/ui';
 import { DOCS_ROUTE } from '#/shared/constants';
 import browserCollections from '#collections/browser';
@@ -60,48 +62,44 @@ interface ServerContent {
   readonly getSearchIndex: GetSearchIndex;
 }
 
-/** the path the site is served under, ending in a slash: `/` or a release's `/v<version>/` */
-const siteBase = import.meta.env.BASE_URL;
+const siteBasePath = SiteBasePath.create(import.meta.env.BASE_URL);
 
-const searchIndexAddress = `${siteBase}api/search`;
+const searchIndexAddress = `${siteBasePath}api/search`;
 
-const navigationAddress = `${siteBase}api/navigation`;
+const navigationAddress = `${siteBasePath}api/navigation`;
 
-const pageCatalogAddress = `${siteBase}api/pages`;
+const pageCatalogAddress = `${siteBasePath}api/pages`;
 
 /** at the host's root, beside every release's site, so a release's site learns of each later one */
 const VERSIONS_ADDRESS = '/versions.json';
 
-const serverContentBuilt: {
-  content?: Promise<ServerContent>;
-} = {};
-
 /** built once, on the server alone: the client bundle never holds the adapters that read the repository */
-const serverContent = createServerOnlyFn((): Promise<ServerContent> => {
-  serverContentBuilt.content ??= Promise.all([
-    import('#/features/content/adapters/fumadocs'),
-    import('#/features/content/adapters/fumadocs-mdx'),
-    import('#collections/server'),
-  ]).then(([{ createFumadocsContent }, { siteLayoutOf }, collections]) => {
-    const content = createFumadocsContent({
-      collections,
-      layout: siteLayoutOf(DOCS_ROUTE),
-      siteBase: siteBase,
-    });
+const serverContent = createServerOnlyFn(
+  once(
+    (): Promise<ServerContent> =>
+      Promise.all([
+        import('#/features/content/adapters/fumadocs'),
+        import('#/features/content/adapters/fumadocs-mdx'),
+        import('#collections/server'),
+      ]).then(([{ createFumadocsContent }, { siteLayoutOf }, collections]) => {
+        const content = createFumadocsContent({
+          collections,
+          layout: siteLayoutOf(DOCS_ROUTE),
+          siteBasePath,
+        });
 
-    return {
-      getFullText: createGetFullText(content),
-      getNavigation: createGetNavigation(content),
-      getPage: createGetPage(content),
-      getPageCatalog: createGetPageCatalog(content),
-      getPageIndex: createGetPageIndex(content),
-      getPageMarkdown: createGetPageMarkdown(content),
-      getSearchIndex: createGetSearchIndex(content),
-    };
-  });
-
-  return serverContentBuilt.content;
-});
+        return {
+          getFullText: createGetFullText(content),
+          getNavigation: createGetNavigation(content),
+          getPage: createGetPage(content),
+          getPageCatalog: createGetPageCatalog(content),
+          getPageIndex: createGetPageIndex(content),
+          getPageMarkdown: createGetPageMarkdown(content),
+          getSearchIndex: createGetSearchIndex(content),
+        };
+      }),
+  ),
+);
 
 const serverContentMiddleware = createMiddleware().server(async ({ next }) =>
   next({
@@ -143,24 +141,14 @@ const readNavigation = createIsomorphicFn()
   .server(async (): Promise<SerializedPageTree> => (await serverContent()).getNavigation())
   .client(createGetNavigation(staticExports));
 
-/** the same promise on every call, which React's `use` reads at once when it has settled */
-const keptRead = <TValue>(read: () => Promise<TValue>): (() => Promise<TValue>) => {
-  const kept: {
-    loading?: Promise<TValue>;
-  } = {};
-
-  return (): Promise<TValue> => {
-    kept.loading ??= trackedForUse(read());
-
-    return kept.loading;
-  };
-};
-
 interface DocsContent {
   /** throws not found when no page has the slugs */
   readonly getPage: (slugs: PageSlugs) => Promise<Page>;
   readonly getPageBody: GetPageBody<PageBody>;
-  /** kept for the server's life, and in the browser for the tab's */
+  /**
+   * The same promise on every call, which React's `use` reads at once when it has settled, kept
+   * for the server's life and in the browser for the tab's
+   */
   readonly loadNavigation: () => Promise<SerializedPageTree>;
 }
 
@@ -180,7 +168,7 @@ const routerContext: RouterContext = {
       return page;
     },
     getPageBody: createGetPageBody(createPageBodies(browserCollections)),
-    loadNavigation: keptRead(readNavigation),
+    loadNavigation: once(() => trackedForUse(readNavigation())),
   },
 };
 
@@ -203,7 +191,7 @@ const rootProviders: RootProviders = {
   markSidebar: createMarkSidebar(documentFrame),
   searchPages: createSearchPages(
     createStaticPageSearch({
-      address: searchIndexAddress,
+      indexAddress: searchIndexAddress,
     }),
   ),
 };

@@ -1,1 +1,1 @@
-export { createConfigurationParser } from './configuration-parser.adapter';
+export { createConfigurationFormat } from './configuration-format.adapter';

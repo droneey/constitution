@@ -1,0 +1,31 @@
+{
+  "name": "@droneey/constitution-brand",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The Constitution's own accent, the brand tokens its program and its site are drawn with.",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "author": {
+    "name": "Dmytro Kurovskyi",
+    "email": "me@kurovskyi.dev",
+    "url": "https://kurovskyi.dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/droneey/constitution.git",
+    "directory": "packages/brand"
+  },
+  "type": "module",
+  "exports": {
+    ".": "./brand.tokens.json"
+  },
+  "scripts": {
+    "check": "bun run --sequential 'check:*'",
+    "check:lint": "biome check --error-on-warnings",
+    "fix": "bun run --sequential 'fix:*'",
+    "fix:lint": "biome check --write"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.3"
+  },
+  "trustedDependencies": []
+}

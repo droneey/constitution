@@ -1,3 +1,0 @@
-# shfmt: pinned by mise
-[tools]
-shfmt = "3.14.1"

@@ -1,6 +1,6 @@
 import { createFileRoute, notFound } from '@tanstack/react-router';
 
-import { slugsOfMarkdownAddress } from '#/features/content';
+import { PageSlugs } from '#/features/content';
 
 // Stryker disable next-line StringLiteral: the router takes the route's address from its file; the string only types it
 export const Route = createFileRoute('/docs/{$}.md')({
@@ -8,9 +8,8 @@ export const Route = createFileRoute('/docs/{$}.md')({
     handlers: {
       // biome-ignore lint/style/useNamingConvention: TanStack Start keys a route's server handlers by their HTTP method
       GET: async ({ context, params }) => {
-        const markdown = await context.getPageMarkdown(
-          slugsOfMarkdownAddress(params._splat?.split('/') ?? []),
-        );
+        const slugs = PageSlugs.ofMarkdownAddress(params._splat ?? '');
+        const markdown = slugs === undefined ? undefined : await context.getPageMarkdown(slugs);
 
         if (markdown === undefined) {
           throw notFound();

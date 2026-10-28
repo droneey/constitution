@@ -1,0 +1,6 @@
+stryker:
+  '*':
+    typescript:
+      bunfig.mutation.toml:
+        test:
+          root: !replace ./src

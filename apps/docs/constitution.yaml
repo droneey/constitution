@@ -27,6 +27,7 @@ implementations:
   - dependency-cruiser
   - git
   - knip
+  - jscpd
   - mise
   - osv-scanner
   - shellcheck
@@ -48,7 +49,8 @@ implementations:
   - compose
   - hadolint
   - dclint
-packs: []
+packs:
+  - pack
 overrides:
   - rule: selector-never-targets-an-id
     level: MAY

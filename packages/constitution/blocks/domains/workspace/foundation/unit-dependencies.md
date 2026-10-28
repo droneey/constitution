@@ -38,6 +38,14 @@ The units of a workspace form no cycle, neither in the dependencies their manife
 |---|
 | units in a cycle cannot be built, released or versioned apart, so they are one unit in disguise. |
 
+### unit-generates-what-its-dependents-read → generated-file-made-by-its-own-step · SHOULD
+
+A unit's build makes only what the unit ships; a unit that reads another's generated sources runs that unit's generation step before its own, never its build, and a language's types generated from shared data are generated in that language's unit.
+
+| Why |
+|---|
+| a unit that ran the build of what it imports would build every product it depends on, and types generated in the package of the shared data would put code in a package that holds none. |
+
 ## Requirements for implementation
 
 ### workspace-tool-links-units-from-the-working-tree · SHOULD

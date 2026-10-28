@@ -1,0 +1,15 @@
+nestjs:
+  '*':
+    typescript:
+      .dependency-cruiser.jsonc:
+        allowedSeverity: error
+  nestjs-imported-by-modules-and-providers:
+    typescript:
+      .dependency-cruiser.jsonc:
+        allowed[comment=nestjs-imported-by-modules-and-providers]:
+          from:
+            path:
+              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.application-layer}/
+              - /${role.framework-provider}/
+          to:
+            path: node_modules/@nestjs/

@@ -1,1 +1,1 @@
-export { createPathProgram } from './path-program.adapter';
+export { createPathExecutable } from './path-executable.adapter';

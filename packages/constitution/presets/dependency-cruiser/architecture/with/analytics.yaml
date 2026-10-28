@@ -1,0 +1,13 @@
+analytics:
+  event-sent-only-by-delivery-units:
+    typescript:
+      .dependency-cruiser.jsonc:
+        forbidden[name=features-never-track]:
+          severity: error
+          from:
+            path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/(${role.pure-layer}|${role.gateway})/
+          to:
+            path:
+              - /${role.analytics-sink}/
+              - ^${role.source}/${role.gateway}/analytics/
+              - ^${role.source}/${role.shared-domain}/${role.port}/analytics

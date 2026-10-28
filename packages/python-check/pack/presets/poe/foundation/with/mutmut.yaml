@@ -1,0 +1,10 @@
+# The workspace installs mutmut-check, which runs in place of the distribution's build.
+mutmut:
+  '*':
+    python:
+      pyproject.toml:
+        tool:
+          poe:
+            tasks:
+              mutate:branch: !replace mutmut-check
+              mutate:all: !replace mutmut-check all

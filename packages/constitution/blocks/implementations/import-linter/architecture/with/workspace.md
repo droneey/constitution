@@ -6,11 +6,11 @@
 
 ### units-blind-by-an-independence-contract → apps-blind-to-each-other · MUST
 
-`[tool.importlinter]` of the root `pyproject.toml` names the import package of every unit in `root_packages`, and an `independence` contract lists those of the units of `apps/`.
+`[tool.importlinter]` of the root `pyproject.toml` names the import package of every unit that holds Python modules in `root_packages`, and an `independence` contract lists those of the units of `apps/`.
 
 | Why |
 |---|
-| import-linter knows a unit by its import name, not by its folder, so the project names them; one contract then refuses any import between two of them. |
+| import-linter knows a unit by its import name, not by its folder, so the project names them; one contract then refuses any import between two of them, while a package of data alone holds no module import-linter 2.15 finds, and naming it fails the contract. |
 
 ### units-ordered-by-a-layers-contract → packages-never-import-apps · MUST
 

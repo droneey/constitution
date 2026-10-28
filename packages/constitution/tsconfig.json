@@ -1,36 +1,82 @@
 {
-  "extends": [
-    "../../.droneey/constitution/presets/typescript/tsc/foundation/self.json",
-    "../../.droneey/constitution/presets/typescript/tsc/foundation/core.json",
-    "../../.droneey/constitution/presets/typescript/tsc/foundation/workspace.json",
-    "../../.droneey/constitution/presets/typescript/tsc/foundation/_react.json",
-    "../../.droneey/constitution/presets/typescript/tsc/foundation/bun.json"
-  ],
   "compilerOptions": {
     "paths": {
       "#/*": [
         "./src/*"
       ]
-    }
+    },
+
+    // biome
+    "allowUnreachableCode": true,
+    "allowUnusedLabels": true,
+
+    // tsc
+    "noUnusedLocals": true,
+
+    // biome
+    "noUnusedParameters": false,
+
+    // workspace
+    "composite": true,
+    "emitDeclarationOnly": true,
+    "outDir": "${configDir}/.tsc-cache",
+
+    // tsc
+    "strict": true,
+    "noImplicitOverride": true,
+    "exactOptionalPropertyTypes": true,
+    "verbatimModuleSyntax": true,
+
+    // _react
+    "jsx": "react-jsx",
+
+    // bun
+    "types": [
+      "bun"
+    ],
+
+    // tsc
+    "lib": [
+      "ESNext"
+    ],
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "moduleDetection": "force",
+
+    // workspace
+    "noEmit": false,
+
+    // tsc
+    "allowJs": true,
+    "checkJs": true,
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "noUncheckedSideEffectImports": true,
+    "skipLibCheck": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true
   },
+
+  // tsc
   "include": [
-    "package.json",
     "src/**/*.ts",
     "src/**/*.tsx",
+    "scripts/**/*.ts",
     "tests/**/*.ts",
-    "presets/typescript/stryker/foundation/bun-test.mjs",
-    "presets/json/syncpack/foundation/self.mjs",
-    "presets/typescript/join.mjs"
+    "tests/**/*.tsx",
+    "package.json"
   ],
   "exclude": [
     "**/coverage"
   ],
   "references": [
     {
-      "path": "../mutation-check/languages/typescript"
+      "path": "../@mutation-check/typescript"
     },
     {
-      "path": "../design-cli"
+      "path": "../@design/cli"
     }
   ]
 }

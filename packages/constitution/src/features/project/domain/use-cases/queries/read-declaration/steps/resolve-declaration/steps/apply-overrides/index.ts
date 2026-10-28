@@ -1,1 +1,1 @@
-export { applyOverrides } from './apply-overrides.utils';
+export { applyOverrides } from './apply-overrides';

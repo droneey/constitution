@@ -1,0 +1,6 @@
+git:
+  gitignore-covers-dependencies-output-and-caches:
+    typescript:
+      .gitignore:
+        - .stryker-tmp/
+        - reports/mutation/

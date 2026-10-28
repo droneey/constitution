@@ -30,11 +30,11 @@ A contract — a port, its parameters and results — imports no vendor, no adap
 
 ### feature-asks-another-through-its-own-contract · MUST
 
-A feature that needs an answer from another declares a contract in its own words and receives an input built for it; composition implements the contract through the other feature’s surface.
+A feature that needs an answer from another declares a contract in its own words — its parameters, its results and the failures it acts on — and receives an input built for it; composition implements the contract through the other feature’s surface, maps the other’s results into the asker’s terms and the failures the asker acts on into the asker’s own, and lets every other failure pass.
 
 | Why |
 |---|
-| the feature stays blind to the other, and the other can change its model without breaking it. |
+| the feature stays blind to the other, its code holds none of the other’s types or failures, and the other can change its model without breaking it. |
 
 ### feature-reacts-to-another-only-through-composition · MUST
 
@@ -64,7 +64,7 @@ An outside shape, a **wire model** — a response, a row, a message, a file form
 
 ### adapter-imports-only-its-owners-domain-and-shared-layers · MUST
 
-An adapter imports the domain of the owner whose ports it implements — its contracts, entities, value objects and errors — the kernel, shared and libs, never an application layer, a composition module or another adapter; what two adapters share lives in libs, which takes what it needs of the program as parameters, or in shared when it knows the program and holds no effect.
+An adapter imports the domain of the owner whose ports it implements — its contracts, entities, value objects and errors — the kernel, shared and libs, and, when it answers a feature’s contract through another feature, that other feature’s surface; never an application layer, another composition module or another adapter; what two adapters share lives in libs, which takes what it needs of the program as parameters, or in shared when it knows the program and holds no effect.
 
 | Why |
 |---|
@@ -72,7 +72,7 @@ An adapter imports the domain of the owner whose ports it implements — its con
 
 ### adapter-one-per-system-and-owner · SHOULD
 
-An adapter implements, over one outside system, every contract of its owner that system serves, and lives beside that owner; there is never one per method.
+An adapter implements, over one outside system, every contract of its owner that system serves, and lives beside that owner; one that answers a feature’s contract through another feature lives in the composition module that joins the two; there is never one per method.
 
 | Why |
 |---|

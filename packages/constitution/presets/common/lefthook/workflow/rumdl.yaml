@@ -1,7 +1,0 @@
-pre-commit:
-  parallel: true
-  jobs:
-    - name: rumdl
-      glob: '*.md'
-      stage_fixed: true
-      run: rumdl check --fix {staged_files}

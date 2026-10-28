@@ -1,5 +1,6 @@
 import type { PagesQueryRepository } from '../../contracts';
-import type { Page, PageSlugs } from '../../entities';
+import type { Page } from '../../entities';
+import type { PageSlugs } from '../../value-objects';
 
 interface FakePagesInput {
   /** by their slugs joined with `/` */

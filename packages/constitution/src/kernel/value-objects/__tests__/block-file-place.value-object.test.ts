@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import { Axis, Layer } from '../../constants';
-import type { FileInBlock } from '../block-file-place.value-object';
+import type { BlockPart, FileInBlock } from '../block-file-place.value-object';
 import { BlockFileKind, BlockFilePlace, Placement } from '../block-file-place.value-object';
 import { BlockId, coreBlockId } from '../block-id.value-object';
 
@@ -178,7 +178,7 @@ describe('BlockFilePlace.parse', () => {
     {
       expected: undefined,
       name: 'a file outside the blocks',
-      path: 'presets/common/biome/foundation/self.jsonc',
+      path: 'presets/biome/foundation.yaml',
     },
   ])('should place $name apart from any block when the path is $path', ({ expected, path }) => {
     // Act
@@ -201,6 +201,67 @@ const placeOf = (path: string): BlockFilePlace => {
 };
 
 const pathOf = (place: BlockFilePlace): string => place.path;
+
+describe('BlockFilePlace.pathOf', () => {
+  it.each<{
+    block: string;
+    file: BlockPart;
+    layer: Layer;
+    name: string;
+    path: string;
+  }>([
+    {
+      block: 'ui',
+      file: {
+        kind: BlockFileKind.Passport,
+      },
+      layer: Layer.Domain,
+      name: "a block's passport",
+      path: `${UI}/ui.md`,
+    },
+    {
+      block: 'ui',
+      file: {
+        axis: Axis.Architecture,
+        kind: BlockFileKind.Chapter,
+        name: 'screens',
+      },
+      layer: Layer.Domain,
+      name: "a block's chapter",
+      path: `${UI}/architecture/screens.md`,
+    },
+    {
+      block: 'react',
+      file: {
+        axis: Axis.Foundation,
+        kind: BlockFileKind.Seam,
+        other: BlockId.create('ui'),
+      },
+      layer: Layer.Implementation,
+      name: "a block's seam",
+      path: 'blocks/implementations/react/foundation/with/ui.md',
+    },
+    {
+      block: 'core',
+      file: {
+        kind: BlockFileKind.Passport,
+      },
+      layer: Layer.Core,
+      name: "core's passport",
+      path: 'blocks/core/core.md',
+    },
+  ])('should give the path parse places $name at', ({ block, file, layer, path }) => {
+    // Act
+    const given = BlockFilePlace.pathOf({
+      block: BlockId.create(block),
+      file,
+      layer,
+    });
+
+    // Assert
+    expect(given).toBe(path);
+  });
+});
 
 describe('BlockFilePlace.compare', () => {
   it('should order the files of the blocks by layer, folder name, folder, role, axis and path', () => {

@@ -1,0 +1,7 @@
+git:
+  gitignore-covers-dependencies-output-and-caches:
+    python:
+      .gitignore:
+        - .pytest_cache/
+        - .coverage
+        - htmlcov/

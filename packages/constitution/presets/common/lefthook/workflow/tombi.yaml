@@ -1,7 +1,0 @@
-pre-commit:
-  parallel: true
-  jobs:
-    - name: tombi
-      glob: '*.toml'
-      stage_fixed: true
-      run: tombi format {staged_files}

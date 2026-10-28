@@ -1,1 +1,1 @@
-export { hooksReport } from './report-hooks.utils';
+export { reportHooks } from './report-hooks';

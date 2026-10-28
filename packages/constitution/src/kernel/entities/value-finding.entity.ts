@@ -6,8 +6,6 @@ enum ValueSite {
   BlockFolder = 'block-folder',
   SeamFile = 'seam-file',
   Governs = 'governs',
-  BoundRule = 'bound-rule',
-  BoundPart = 'bound-part',
   RuleHeading = 'rule-heading',
   TightenedRule = 'tightened-rule',
 }
@@ -26,13 +24,9 @@ interface ValueFindingDetails {
     readonly site: ValueSite.Governs;
     readonly written: string;
   };
-  readonly [ValueFailure.PartAddress]: {
-    readonly site: ValueSite.BoundPart;
-    readonly written: string;
-  };
   readonly [ValueFailure.RuleSlug]:
     | {
-        readonly site: ValueSite.BoundRule | ValueSite.RuleHeading;
+        readonly site: ValueSite.RuleHeading;
         readonly written: string;
       }
     | {

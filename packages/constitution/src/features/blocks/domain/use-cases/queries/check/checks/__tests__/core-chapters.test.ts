@@ -2,8 +2,9 @@ import { describe, expect, it } from 'bun:test';
 
 import type { FindingOf } from '#/kernel/types';
 
-import { checkInputOf, passportFile } from '../../../../../../__tests__/constitution.fixtures';
+import { passportFile } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
+import { checkInputOf } from '../../__tests__/check.fixtures';
 import type { CoreChaptersDetails } from '../core-chapters';
 import { CoreChaptersCode, coreChaptersCheck } from '../core-chapters';
 

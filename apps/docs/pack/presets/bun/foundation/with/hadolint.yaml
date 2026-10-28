@@ -1,0 +1,6 @@
+hadolint:
+  '*':
+    dockerfile:
+      package.json:
+        scripts:
+          check:dockerfile: !replace hadolint docker/images/app.Dockerfile

@@ -6,7 +6,7 @@
 
 ### licences-checked-against-the-shared-allowlist → dependency-licence-on-the-allowlist · MUST
 
-OSV-Scanner checks every licence against the allowlist of the Constitution's release archive, so a licence that is not on it is a finding.
+OSV-Scanner checks the licence of every dependency a lockfile names against the allowlist of the Constitution's distribution, so a licence that is not on it is a finding.
 
 | Why |
 |---|

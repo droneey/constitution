@@ -20,9 +20,9 @@ Every tool outside the package manager — the runtime, the package manager itse
 |---|
 | a tool's download is then verified against the lock, and a tool the lock does not name fails instead of being fetched unverified. |
 
-### shared-configuration-archive-installed-by-mise · SHOULD
+### shared-configuration-distribution-installed-by-mise · SHOULD
 
-An archive of shared tool configuration — presets, starter files, built tools — is a mise tool through its `github` backend, pinned by version, with `asset_pattern` naming the archive and `strip_components = 0` so it keeps its folders; `mise.lock` holds the checksum GitHub publishes for it. A `postinstall` hook links it where the configuration reads it.
+A distribution of shared tool configuration — presets, starter files, built tools — is a mise tool through its `github` backend, pinned by version, with `asset_pattern` naming the distribution, under `platforms.<os>-<arch>` for one built for each platform, `strip_components = 0` so it keeps its folders, and `bin_path` naming its folder of executables where it holds one; `mise.lock` holds the checksum GitHub publishes for it. A `postinstall` hook links it where the configuration reads it.
 
 | Why |
 |---|

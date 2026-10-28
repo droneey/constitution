@@ -1,0 +1,75 @@
+core:
+  dead-code-deleted:
+    typescript:
+      tsconfig.json !jsonc:
+        compilerOptions:
+          allowUnreachableCode: false
+          allowUnusedLabels: false
+          noUnusedLocals: true
+          noUnusedParameters: true
+tsc:
+  '*':
+    typescript:
+      tsconfig.json !jsonc:
+        compilerOptions:
+          lib:
+            - ESNext
+          target: ESNext
+          module: ESNext
+          moduleResolution: bundler
+          moduleDetection: force
+          noEmit: true
+          allowJs: true
+          checkJs: true
+          resolveJsonModule: true
+          allowImportingTsExtensions: true
+          noUncheckedSideEffectImports: true
+          skipLibCheck: true
+        include:
+          - ${role.source}/**/*.ts
+          - ${role.source}/**/*.tsx
+          - ${role.build-code}/**/*.ts
+          - ${role.package-suites}/**/*.ts
+          - ${role.package-suites}/**/*.tsx
+  compiler-is-the-type-gate:
+    typescript:
+      tsconfig.json !jsonc:
+        compilerOptions:
+          strict: true
+          noFallthroughCasesInSwitch: true
+          noImplicitOverride: true
+          noImplicitReturns: true
+          noUncheckedIndexedAccess: true
+          exactOptionalPropertyTypes: true
+          verbatimModuleSyntax: true
+typescript:
+  any-never-written:
+    typescript:
+      tsconfig.json !jsonc:
+        compilerOptions:
+          strict: true
+  caught-value-recognised-before-use:
+    typescript:
+      tsconfig.json !jsonc:
+        compilerOptions:
+          strict: true
+  overrides-marked-by-keyword:
+    typescript:
+      tsconfig.json !jsonc:
+        compilerOptions:
+          noImplicitOverride: true
+  undefined-is-the-only-absence:
+    typescript:
+      tsconfig.json !jsonc:
+        compilerOptions:
+          exactOptionalPropertyTypes: true
+  absent-optional-field-left-out:
+    typescript:
+      tsconfig.json !jsonc:
+        compilerOptions:
+          exactOptionalPropertyTypes: true
+  type-only-import-written-as-import-type:
+    typescript:
+      tsconfig.json !jsonc:
+        compilerOptions:
+          verbatimModuleSyntax: true

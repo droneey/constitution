@@ -1,0 +1,1 @@
+export { writeWholeWhenChanged } from './utils';

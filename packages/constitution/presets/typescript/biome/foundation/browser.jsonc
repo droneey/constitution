@@ -1,5 +1,0 @@
-{
-  "plugins": [
-    "./.droneey/constitution/presets/typescript/biome/foundation/plugins/raw-html-never-reaches-the-dom.grit",
-  ],
-}

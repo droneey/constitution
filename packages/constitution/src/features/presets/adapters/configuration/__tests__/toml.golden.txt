@@ -1,0 +1,360 @@
+# a TOML file is new
+smol = true
+
+[test]
+preload = ["a.ts"]
+
+
+# an array runs past the width, a text holds brackets and an array holds tables of its own
+[test]
+marks = ["[ x ]"]
+preload = [
+  "./src/__tests__/first-of-the-fixtures.ts",
+  "./src/__tests__/second-of-the-fixtures.ts",
+  "./src/__tests__/third.ts"
+]
+rows = [["a"]]
+
+
+# an array as long as the width, a long text and an array of arrays stay on their lines
+rows = [["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"], ["bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"]]
+tags = ["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"]
+title = "tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt"
+
+
+# a file's own indented array runs past the width and a literal string holds brackets
+[test]
+  preload = [
+    'a, ba, ba, ba, ba, ba, ba, ba, ba, ba, ba, ba, ba, ba, ba, b',
+    'cccccccccccccccccccccccccccccccccccccccc'
+  ]
+  title = '[ a ]'
+
+
+# a table names a header longer than the width, and a list mixes a table and a text
+mixed = [{ a = 1 }, "x"]
+
+[kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk]
+a = 1
+
+
+# a key of a plain table becomes an inline table of two keys
+[test]
+x = 1
+cover = { functions = 1, lines = 1 }
+
+
+# one of two tables dots its keys
+[a.x]
+y = 2
+
+[b]
+z = 1
+
+
+# a plain table changes a key, gains one and keeps its comments
+# top
+[test]
+# why
+randomize = true
+timeout = 5 # seconds
+added = "x"
+
+# after
+
+
+# a key of many lines goes and the table loses its last key but one
+[test]
+kept = 1
+
+
+# a section is gone, its comment above it kept
+[kept]
+a = 1
+
+# old
+
+
+# a table of tables changes one of its tables
+[tool.ruff]
+line = 100
+
+[tool.uv]
+# mine
+x = 1
+
+
+# a table of tables gains a table
+[tool.ruff]
+line = 80
+
+[tool.ty]
+strict = true
+
+
+# a table dots its keys
+[project]
+name = "kit"
+
+[project.urls]
+home = "https://example.com"
+
+
+# an array of tables changes
+[[jobs]]
+run = "a"
+
+[[jobs]]
+run = "c"
+
+
+# the root dots its keys
+version = "1.0"
+
+[format]
+width = 100
+
+
+# a plain table gains a key whose value is a map
+[test]
+randomize = true
+coverage = { threshold = 1 }
+
+
+# a plain table changes a list and gains a key that needs quotes
+[test]
+preload = ["a.ts", "b.ts"]
+"only.this" = true
+
+
+# a plain table changes two keys, the first of many lines
+[test]
+a = ["x"]
+b = 20
+
+
+# tables of a table keep their headers as written: indented, commented, their parts quoted
+[tool."my.app"] # the app
+# keep
+a = 2
+
+  [tool."it's"]
+# its
+b = 2
+
+[tool.'lit.x']
+# lit
+c = 2
+
+
+# a plain table changes quoted keys, a key of no spaces and an array whose strings and comment hold brackets
+[t]
+# keep
+"my key" = 2
+"lit key" = 2
+k = 2
+"a.b" = 2
+arr = ["z"]
+# see a.b
+last = 1
+
+
+# a plain table dots an indented key with spaces around its dot
+[t]
+x = 2
+
+[t.c]
+d = 1
+
+
+# a header of no section dots the keys of a table of tables
+[t.c]
+d = 2
+
+
+# an empty table gains a key above the blanks that close it
+[a]
+k = 1
+  
+
+[b]
+x = 1
+
+
+# only the root changes, the tables and arrays of tables kept as written
+a = 2
+
+[t]
+# keep
+x=1
+
+[[l]]
+y=1
+
+
+# the root holds an empty list and a list of a table and a scalar
+e = []
+m = [{ x = 1 }, 2]
+v = 2
+
+
+# a new file holds an empty table
+[a]
+
+
+# a plain table gains a list of a map of two keys and a scalar
+[t]
+x = 1
+m = [{ a = 1, b = 2 }, 1]
+
+
+# a text of many lines opens a bracket, so the table is written again
+[a]
+b = 2
+doc = "[\ny"
+
+
+# a table turns into a table of tables, its own keys gone
+[tool.app]
+# keep
+a = 2
+
+
+# a text of many lines holds a line that looks like a header
+[a]
+doc = """
+[x] y
+"""
+b = 2
+
+
+# an array of one table changes, written again
+[[l]]
+y = 2
+
+
+# a table's header holds a comment that names an array of tables
+[t] # see [[x]]
+# keep
+x = 2
+
+
+# a root list empties
+e = []
+v = 1
+
+
+# a root list gains a table beside a scalar
+m = [{ x = 1 }, 2]
+
+
+# a table below a plain table changes, the two written again
+[a]
+x = 1
+
+[a.b]
+y = 2
+
+
+# a plain table with a table below it changes a key, the two written again
+[a]
+x = 2
+
+[a.b]
+y = 1
+
+
+# a table goes and another keeps its comment
+[t]
+# keep
+y = 1
+
+
+# a table of tables holds a table named undefined
+[tool]
+
+[tool.undefined]
+# keep
+a = 2
+
+
+# a table that dots a key goes and another keeps its comment
+[t]
+# keep
+y = 1
+
+
+# a table turns into an array of tables
+[[jobs]]
+run = "a"
+
+
+# the settings change nothing
+[test]
+randomize = true # kept
+
+
+# a plain table changes a quoted key that holds a quote of the other kind
+[t]
+# keep
+"it's" = 2
+
+
+# a TOML file takes them above tables, keys, items and tables of an array, each a paragraph over the comments of what it names, and drops the old
+# poe
+# mine's "note
+title="x"
+# mine = own
+subtitle = "y"
+
+[project]
+name = "x"
+
+# python
+requires-python = ">=3.14"
+
+[tool.notes]
+text = '''
+# ruff
+# ruff """
+x = 1
+'''
+
+[tool.ruff]
+# ruff
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+  # ruff
+  "A", # its own
+  # note
+  "B",
+  "C", "E",
+
+  # pytest
+  "D",
+]
+
+[tool.poe]
+# poe
+executor = "simple"
+mine=[1, 2]
+
+# poe
+after = 1
+
+[tool.poe.tasks]
+a = "x"
+   
+# poe
+[tool.x.y]
+z = 1
+
+[[jobs]]
+name = "a"
+
+  [[jobs]]
+  # pytest
+  name = "b"
+

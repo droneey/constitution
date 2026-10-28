@@ -1,13 +1,10 @@
 import type { DocumentFrame } from '../../domain/contracts';
-import { NARROW_SCREEN_QUERY, SidebarMark } from './document-frame.constants';
+import { NARROW_SCREEN_QUERY } from './document-frame.constants';
 
-/** the frame's styles read the `data-sidebar` it marks */
+/** the frame's styles read the `data-sidebar` it marks with the sidebar's state */
 export const documentFrame: DocumentFrame = {
   isNarrow: (): boolean => globalThis.matchMedia(NARROW_SCREEN_QUERY).matches,
-  markSidebarCollapsed: (): void => {
-    document.documentElement.dataset.sidebar = SidebarMark.Collapsed;
-  },
-  markSidebarOpen: (): void => {
-    document.documentElement.dataset.sidebar = SidebarMark.Open;
+  markSidebar: (state): void => {
+    document.documentElement.dataset.sidebar = state;
   },
 };

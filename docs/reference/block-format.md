@@ -102,7 +102,7 @@ A term is defined once, in bold, in the rule or the passport that says what it i
 | ``**`renovate.json`**`` | `renovate.json` | a file, a name with an extension |
 | ``**`createServerFn`**`` | `createServerFn` | an API, a command or a package, any other code span |
 
-A folder or a suffix carries an id right after its bold, ``**`adapters/`**{#gateway}``: the role's stable name, which a tool's settings can name it by while its spelling changes. The id names what the folder holds, or, for a suffix whose file is a member of such a folder, that folder's id followed by `-file` — `.adapter` is `gateway-file`; it is lower-case words and digits joined by hyphens, opening with a letter, unique across every term, and never changed, so a folder renamed changes only its definition. Any other term may carry one too. The site makes the id the term's anchor and shows no braces.
+A folder or a suffix carries an id right after its bold, ``**`adapters/`**{#gateway}``: the role's stable name, which a tool's settings can name it by while its spelling changes. The id names what the folder holds, or, for a suffix whose file is a member of such a folder, that folder's id followed by `-file` — `.adapter` is `gateway-file`; it is lower-case words and digits joined by hyphens, opening with a letter, unique across every term save one: a block that builds on the term's owner and spells it its own way, as Python writes `use_cases/`, defines its spelling under the same id. An id is never changed, so a folder renamed changes only its definition. Any other term may carry one too. The site makes the id the term's anchor and shows no braces.
 
 A term's owner is the block of the file that defines it, and its axis that file's axis: a passport and `foundation/` are foundation's, and a seam takes the axis of its folder. A brand the block is named after, and the files, commands and APIs of its tool, are defined in its passport, in the line of what it is or the setup after it; a concept, a folder or a suffix in the rule, or the opening paragraph of the chapter, that says what it is. [Terms](terms.md) lists every one.
 
@@ -154,8 +154,6 @@ A domain, a platform or core may list, in a chapter under a heading `Requirement
 - a rule of a language's or a platform's chapter that tightens a rule of core outside the chapter titled like its parent's;
 - a list of core's chapters, in core's passport, that leaves one out, names a file that is no chapter of core, or names one twice;
 - a malformed Requirements row, or a `partly` or `no` that names no rule of its own block;
-- a preset part named after no block, a binding whose rule, part or setting does not hold;
-- a tool with preset parts and no template that takes them, a template outside a folder `templates/project/<scope>/<block>/` of a block;
 - a file over 500 lines, and a link to a missing file.
 
 After the findings, it advises, without failing, on rules of sibling blocks similar enough to move one layer up.

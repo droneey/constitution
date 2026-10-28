@@ -1,8 +1,10 @@
 import { afterEach, describe, expect, it } from 'bun:test';
 
+import { SourceFailure } from '../../../../domain/errors';
+import { AbsolutePath, RepositoryPath } from '../../../../domain/value-objects';
 import { documentIconOf, guideIconOf, sectionSummaryOf, sidebarOf } from '../navigation.adapter';
 import { inRepository } from '../repository.adapter';
-import { enterRepository } from './repository.fixtures';
+import { enterRepository, failureOf } from './repository.fixtures';
 
 const MARK = '<img src=".brand/diamond.svg" width="18" height="18" alt="">';
 
@@ -163,10 +165,17 @@ describe('sidebarOf', () => {
     }).leave;
 
     // Act
-    const read = (): unknown => sidebarOf('/docs');
+    const failure = failureOf(() => sidebarOf('/docs'));
 
     // Assert
-    expect(read).toThrow(new Error('README.md has no section Documentation'));
+    expect(failure).toStrictEqual({
+      cause: undefined,
+      code: SourceFailure.ReadmeSectionMissing,
+      details: {
+        path: 'README.md',
+        section: 'Documentation',
+      },
+    });
   });
 });
 
@@ -235,8 +244,10 @@ describe('guideIconOf', () => {
     // Arrange
     repository.leave = enterRepository({}).leave;
 
+    const filePath = inRepository(RepositoryPath.create(path));
+
     // Act
-    const found = guideIconOf(inRepository(path));
+    const found = guideIconOf(filePath);
 
     // Assert
     expect(found).toBe(icon);
@@ -261,8 +272,11 @@ describe('documentIconOf', () => {
       path: '/repository/README.md',
     },
   ])('should give the icon when $condition', ({ icon, path }) => {
+    // Arrange
+    const filePath = AbsolutePath.create(path);
+
     // Act
-    const found = documentIconOf(path);
+    const found = documentIconOf(filePath);
 
     // Assert
     expect(found).toBe(icon);

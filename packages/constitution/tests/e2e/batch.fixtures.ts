@@ -53,5 +53,4 @@ const createBatch = <TInput, TOutcome>(
   };
 };
 
-export type { Entries };
 export { createBatch };

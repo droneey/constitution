@@ -1,7 +1,0 @@
-[test]
-root = "."
-pathIgnorePatterns = ["tests/**"]
-coverage = false
-
-[run]
-bun = true

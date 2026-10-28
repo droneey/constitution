@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
 import { VFile } from 'vfile';
 
+import { RepositoryPath } from '../../../../domain/value-objects';
 import { inRepository } from '../../repository';
 import { enterRepository } from '../../repository/__tests__/repository.fixtures';
 import { remarkRepoLinks } from '../remark-repo-links.adapter';
@@ -32,7 +33,7 @@ describe('remarkRepoLinks', () => {
     })(
       tree,
       new VFile({
-        path: inRepository('docs/guides/upgrade.md'),
+        path: inRepository(RepositoryPath.create('docs/guides/upgrade.md')),
       }),
     );
 

@@ -1,0 +1,28 @@
+actionlint:
+  '*':
+    yaml:
+      package.json ? ${file.isTop}:
+        scripts:
+          check:workflows: actionlint -pyflakes=
+bun:
+  '*':
+    yaml:
+      package.json ? ${file.isTop}:
+        scripts: !sorted {}
+  script-group-run-by-its-prefix:
+    yaml:
+      package.json ? ${file.isTop}:
+        scripts:
+          check: !words
+            - bun run --sequential
+            - slot: checks
+            - slot: tests
+            - slot: mutations
+          check@checks:
+            - "'check:*'"
+_task-runner:
+  unit-run-through-its-action-tasks:
+    yaml:
+      ${constitution.run} ? ${file.isTop}:
+        check:
+          - bun run check

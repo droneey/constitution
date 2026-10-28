@@ -1,15 +1,15 @@
 import { useState } from 'react';
 
-export function useHasNavigated(path: string): boolean {
+export function useHasNavigated(pageKey: string): boolean {
   const [shown, setShown] = useState({
     hasNavigated: false,
-    path,
+    pageKey,
   });
 
-  if (shown.path !== path) {
+  if (shown.pageKey !== pageKey) {
     setShown({
       hasNavigated: true,
-      path,
+      pageKey,
     });
   }
 

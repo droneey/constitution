@@ -2,83 +2,30 @@ import type { FailureContent, Theme } from '@droneey/design-cli';
 import { formatFailure } from '@droneey/design-cli';
 import { CommanderError } from 'commander';
 
-import type { TreeError } from '#/features/blocks';
-import { isTreeError, TreeFailure } from '#/features/blocks';
-import type { ProjectError } from '#/kernel/errors';
-import { isProjectError, ProjectFailure } from '#/kernel/errors';
+import { isTreeError } from '#/features/blocks';
+import { isApplyError } from '#/features/presets';
+import { isProjectError } from '#/features/project';
 import { ExitCode, isUsageError } from '#/shared/cli';
 
-import type { ConfigurationError } from './configuration.error';
-import { ConfigurationFailure, isConfigurationError } from './configuration.error';
+import { isConfigurationError } from './configuration.error';
+import {
+  APPLY_FAILURE_HINT,
+  applyFailureMessages,
+  configurationFailureMessages,
+  configurationHintMessage,
+  DEFECT,
+  defectHint,
+  defectLine,
+  OPTIONS_UNPARSED,
+  PROJECT_FAILURE_HINTS,
+  projectFailureMessages,
+  TREE_FAILURE_HINTS,
+  treeFailureMessages,
+} from './error-handler.messages';
+import { hookPrefix } from './hook.constants';
 
-const ISSUES = 'https://github.com/droneey/constitution/issues';
-const HOOK = 'constitution hook';
-const DOCTOR = 'run constitution doctor, which says what is wrong with the installation';
 const COMMANDER_PREFIX = /^error: /;
 
-const messageOf = (error: ProjectError): string => {
-  const messages: Readonly<Record<ProjectFailure, string>> = {
-    [ProjectFailure.ReleaseMissing]: `${error.details.path} does not exist — run mise install`,
-    [ProjectFailure.BlocksUnlisted]: `cannot list the blocks of ${error.details.path}`,
-    [ProjectFailure.ConfigUnparsed]: `constitution.yaml does not parse${error.details.line === undefined ? '' : ` at line ${String(error.details.line)}`}`,
-    [ProjectFailure.ConfigUnreadable]: `cannot read ${error.details.path}`,
-    [ProjectFailure.CoreUnreadable]: 'cannot build the digest',
-    [ProjectFailure.ManifestUnreadable]: `cannot read ${error.details.path}`,
-    [ProjectFailure.NoProject]: 'no constitution.yaml in this folder or above it',
-    [ProjectFailure.VersionMissing]: `${error.details.path} has no version`,
-  };
-
-  return messages[error.code];
-};
-
-const hintOf = (failure: ProjectFailure): string => {
-  const hints: Readonly<Record<ProjectFailure, string>> = {
-    [ProjectFailure.ReleaseMissing]: DOCTOR,
-    [ProjectFailure.BlocksUnlisted]: DOCTOR,
-    [ProjectFailure.ConfigUnparsed]: 'fix constitution.yaml at that line',
-    [ProjectFailure.ConfigUnreadable]: 'make constitution.yaml readable',
-    [ProjectFailure.CoreUnreadable]: DOCTOR,
-    [ProjectFailure.ManifestUnreadable]: DOCTOR,
-    [ProjectFailure.NoProject]: 'run /constitution:ratify in a Claude Code session to write one',
-    [ProjectFailure.VersionMissing]: DOCTOR,
-  };
-
-  return hints[failure];
-};
-
-const treeMessageOf = (error: TreeError): string => {
-  const messages: Readonly<Record<TreeFailure, string>> = {
-    [TreeFailure.Failed]: `git could not list the files of ${error.details.path}`,
-    [TreeFailure.TimedOut]: `git did not list the files of ${error.details.path} in time`,
-    [TreeFailure.Unreadable]: `cannot read ${error.details.path}`,
-    [TreeFailure.TooLarge]: `the blocks of ${error.details.path} hold more files than a release does`,
-  };
-
-  return messages[error.code];
-};
-
-const treeHintOf = (failure: TreeFailure): string => {
-  const gitStatus = 'run git status there, which says what git cannot read';
-  const hints: Readonly<Record<TreeFailure, string>> = {
-    [TreeFailure.Failed]: gitStatus,
-    [TreeFailure.TimedOut]: gitStatus,
-    [TreeFailure.Unreadable]: 'make the file readable, or remove it from the tree',
-    [TreeFailure.TooLarge]: DOCTOR,
-  };
-
-  return hints[failure];
-};
-
-const configurationMessageOf = (error: ConfigurationError): string => {
-  const { variable, written } = error.details;
-  const messages: Readonly<Record<ConfigurationFailure, string>> = {
-    [ConfigurationFailure.DayMalformed]: `${variable} is "${written}", which is no date written YYYY-MM-DD`,
-  };
-
-  return messages[error.code];
-};
-
-// What commander writes of a command line typed wrong, as a failure: its first line the title.
 const commanderFailureOf = (message: string): FailureContent => {
   // Stryker disable next-line StringLiteral: split always yields a first part
   const [first = '', ...rest] = message.trimEnd().split('\n');
@@ -108,11 +55,13 @@ interface ErrorHandlerInput {
 const createErrorHandler = (input: ErrorHandlerInput): ErrorHandler => {
   const write = (
     failure: FailureContent & {
-      line: string;
+      line?: string;
     },
   ): void => {
     input.writeError(
-      input.isHook() ? `${HOOK}: ${failure.line}\n` : `${formatFailure(input.theme(), failure)}\n`,
+      input.isHook()
+        ? `${hookPrefix}: ${failure.line ?? failure.title}\n`
+        : `${formatFailure(input.theme(), failure)}\n`,
     );
   };
 
@@ -125,9 +74,8 @@ const createErrorHandler = (input: ErrorHandlerInput): ErrorHandler => {
       if (isProjectError(error)) {
         write({
           details: [],
-          hint: hintOf(error.code),
-          line: messageOf(error),
-          title: messageOf(error),
+          hint: PROJECT_FAILURE_HINTS[error.code],
+          title: projectFailureMessages[error.code](error.details.path),
         });
 
         return ExitCode.Failure;
@@ -136,22 +84,28 @@ const createErrorHandler = (input: ErrorHandlerInput): ErrorHandler => {
       if (isTreeError(error)) {
         write({
           details: [],
-          hint: treeHintOf(error.code),
-          line: treeMessageOf(error),
-          title: treeMessageOf(error),
+          hint: TREE_FAILURE_HINTS[error.code],
+          title: treeFailureMessages[error.code](error.details.path),
+        });
+
+        return ExitCode.Failure;
+      }
+
+      if (isApplyError(error)) {
+        write({
+          details: [],
+          hint: APPLY_FAILURE_HINT,
+          title: applyFailureMessages[error.code](error.details.filePath),
         });
 
         return ExitCode.Failure;
       }
 
       if (isConfigurationError(error)) {
-        const line = configurationMessageOf(error);
-
         write({
           details: [],
-          hint: `unset ${error.details.variable}, which only the program's specs set`,
-          line,
-          title: line,
+          hint: configurationHintMessage(error.details.variable),
+          title: configurationFailureMessages[error.code](error.details),
         });
 
         return ExitCode.Usage;
@@ -160,8 +114,7 @@ const createErrorHandler = (input: ErrorHandlerInput): ErrorHandler => {
       if (isUsageError(error)) {
         write({
           details: error.details.problems,
-          line: 'the options do not parse',
-          title: 'the options do not parse',
+          title: OPTIONS_UNPARSED,
         });
 
         return ExitCode.Usage;
@@ -169,9 +122,9 @@ const createErrorHandler = (input: ErrorHandlerInput): ErrorHandler => {
 
       write({
         details: [],
-        hint: `report it at ${ISSUES}`,
-        line: `the run stopped on an error of its own; report it at ${ISSUES}`,
-        title: 'the run stopped on an error of its own',
+        hint: defectHint,
+        line: defectLine,
+        title: DEFECT,
       });
 
       return ExitCode.Defect;

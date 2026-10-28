@@ -1,9 +1,0 @@
-{
-  "$schema": "../../node_modules/@biomejs/biome/configuration_schema.json",
-  "root": true,
-  "extends": [
-    "../../.droneey/constitution/presets/common/biome/foundation/self.jsonc",
-    "../../.droneey/constitution/presets/common/biome/foundation/git.jsonc",
-    "../../.droneey/constitution/presets/yaml/biome/foundation/self.jsonc"
-  ]
-}

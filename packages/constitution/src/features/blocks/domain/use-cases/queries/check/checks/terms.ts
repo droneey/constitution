@@ -2,7 +2,13 @@ import { Axis, Layer } from '#/kernel/constants';
 import type { TermKind } from '#/kernel/entities';
 import { Term } from '#/kernel/entities';
 import type { FindingOf } from '#/kernel/types';
-import { collapseWhitespace, inlineCodeSpans, isHeading, withoutCodeFences } from '#/kernel/utils';
+import {
+  collapseWhitespace,
+  firstBy,
+  inlineCodeSpans,
+  isHeading,
+  withoutCodeFences,
+} from '#/kernel/utils';
 import type { BlockId } from '#/kernel/value-objects';
 
 import type { BlockFile } from '../../../../entities';
@@ -80,11 +86,19 @@ interface Defined extends Definition {
 interface Placed {
   readonly block: Block;
   readonly file: BlockFile;
+  /** whether the file's block builds on the owner's: core's terms are everyone's */
+  readonly isReached: (owned: Owned) => boolean;
 }
 
-interface IdOwner {
-  readonly path: string;
-  readonly term: string;
+/** A term as a file of a block defines it. */
+interface PlacedTerm {
+  readonly placed: Placed;
+  readonly term: Term;
+}
+
+interface Owned {
+  readonly block: BlockId;
+  readonly layer: Layer;
 }
 
 interface Glossary {
@@ -92,24 +106,37 @@ interface Glossary {
   readonly findings: readonly TermsFinding[];
 }
 
-const placedFiles = (blocks: readonly Block[]): readonly Placed[] =>
-  blocks.flatMap((block) =>
-    Block.filesOf(block).map((file) => ({
-      block,
-      file,
-    })),
+const placedFiles = (input: { blocks: readonly Block[]; graph: BlockGraph }): readonly Placed[] =>
+  input.blocks.flatMap((block) =>
+    Block.filesOf(block).map((file) => {
+      const allowed = BlockGraph.reachableFrom(input.graph, Block.placeOf(block, file));
+
+      return {
+        block,
+        file,
+        isReached: (owned: Owned): boolean =>
+          owned.layer === Layer.Core || allowed.has(owned.block),
+      };
+    }),
   );
 
 const TERM_ID_SHAPE = /^[a-z][a-z0-9-]*$/;
 
+const ownedOf = (block: Block): Owned => ({
+  block: block.id,
+  layer: block.layer,
+});
+
 // A role is named by its id wherever its spelling may change, so each folder and suffix carries one,
-// well-formed and its own; any other term may.
+// well-formed and its own; any other term may. Of two blocks one builds on, the more specific may
+// spell the id its own way, as a language spells a folder, whichever is read first.
 const idFinding = (input: {
-  owners: Map<string, IdOwner>;
-  path: string;
-  term: Term;
+  owners: ReadonlyMap<string | undefined, PlacedTerm>;
+  placedTerm: PlacedTerm;
 }): TermsFinding | undefined => {
-  const { id, kind, term } = input.term;
+  const { placedTerm } = input;
+  const { block, file, isReached } = placedTerm.placed;
+  const { id, kind, term } = placedTerm.term;
 
   if (id === undefined) {
     return Term.isRoleKind(kind)
@@ -118,7 +145,7 @@ const idFinding = (input: {
           details: {
             term,
           },
-          path: input.path,
+          path: file.path,
         }
       : undefined;
   }
@@ -130,95 +157,103 @@ const idFinding = (input: {
         id,
         term,
       },
-      path: input.path,
+      path: file.path,
     };
   }
 
-  const owner = input.owners.get(id);
+  const owner = input.owners.get(id) ?? placedTerm;
+  const isBuiltOn =
+    isReached(ownedOf(owner.placed.block)) || owner.placed.isReached(ownedOf(block));
 
-  if (owner === undefined) {
-    input.owners.set(id, {
-      path: input.path,
-      term,
-    });
-
+  if (owner === placedTerm || (owner.placed.block.id !== block.id && isBuiltOn)) {
     return undefined;
   }
 
   return {
     code: TermsCode.IdRepeated,
     details: {
-      firstFile: owner.path,
-      firstTerm: owner.term,
+      firstFile: owner.placed.file.path,
+      firstTerm: owner.term.term,
       id,
       term,
     },
-    path: input.path,
+    path: file.path,
   };
 };
 
+const twiceFinding = (input: {
+  firsts: ReadonlyMap<string, PlacedTerm>;
+  placedTerm: PlacedTerm;
+}): TermsFinding | undefined => {
+  const { placedTerm } = input;
+  const earlier = input.firsts.get(placedTerm.term.term) ?? placedTerm;
+
+  return earlier === placedTerm
+    ? undefined
+    : {
+        code: TermsCode.DefinedTwice,
+        details: {
+          firstBlock: earlier.placed.block.id,
+          firstFile: earlier.placed.file.path,
+          term: placedTerm.term.term,
+        },
+        path: placedTerm.placed.file.path,
+      };
+};
+
 const glossaryOf = (files: readonly Placed[]): Glossary => {
-  const first = new Map<string, Definition>();
-  const owners = new Map<string, IdOwner>();
-  const findings: TermsFinding[] = [];
+  const reads = files.map((placed) => {
+    const read = Term.allIn(placed.file.body);
 
-  for (const { block, file } of files) {
-    const read = Term.allIn(file.body);
+    return {
+      misshapen: read.misshapen,
+      placed,
+      terms: read.terms.map(
+        (term): PlacedTerm => ({
+          placed,
+          term,
+        }),
+      ),
+    };
+  });
+  const terms = reads.flatMap((read) => read.terms);
+  const firsts = firstBy(terms, ({ term }) => term.term);
+  const owners = firstBy(terms, ({ term }) => term.id);
 
-    findings.push(
-      ...read.misshapen.map(
+  return {
+    defined: terms
+      .filter((placedTerm) => firsts.get(placedTerm.term.term) === placedTerm)
+      .map(({ placed, term }) => ({
+        ...term,
+        axis: placed.file.axis,
+        block: placed.block.id,
+        layer: placed.block.layer,
+        matches: Term.matcherOf(term),
+        path: placed.file.path,
+      })),
+    findings: reads.flatMap(({ misshapen, placed, terms: own }) => [
+      ...misshapen.map(
         (written): TermsFinding => ({
           code: TermsCode.Misshapen,
           details: {
             written,
           },
-          path: file.path,
+          path: placed.file.path,
         }),
       ),
-    );
-
-    for (const term of read.terms) {
-      const earlier = first.get(term.term);
-      const idProblem = idFinding({
-        owners,
-        path: file.path,
-        term,
-      });
-
-      if (idProblem !== undefined) {
-        findings.push(idProblem);
-      }
-
-      if (earlier === undefined) {
-        first.set(term.term, {
-          ...term,
-          axis: file.axis,
-          block: block.id,
-          layer: block.layer,
-          path: file.path,
-        });
-      } else {
-        findings.push({
-          code: TermsCode.DefinedTwice,
-          details: {
-            firstBlock: earlier.block,
-            firstFile: earlier.path,
-            term: term.term,
-          },
-          path: file.path,
-        });
-      }
-    }
-  }
-
-  return {
-    defined: [
-      ...first.values(),
-    ].map((definition) => ({
-      ...definition,
-      matches: Term.matcherOf(definition),
-    })),
-    findings,
+      ...own.flatMap((placedTerm) =>
+        [
+          idFinding({
+            owners,
+            placedTerm,
+          }),
+          twiceFinding({
+            firsts,
+            placedTerm,
+          }),
+        ].filter((finding) => finding !== undefined),
+      ),
+    ]),
   };
 };
 
@@ -264,58 +299,36 @@ const reachProseOf = ({ block, file }: Placed): string => {
   );
 };
 
-// Every block builds on core, so core's terms are everyone's.
-const reaches = (input: { graph: BlockGraph; placed: Placed }): ((term: Defined) => boolean) => {
-  const allowed = BlockGraph.reachableFrom(
-    input.graph,
-    Block.placeOf(input.placed.block, input.placed.file),
-  );
-
-  return (term: Defined): boolean => term.layer === Layer.Core || allowed.has(term.block);
-};
-
-const reachFindings = (input: {
-  graph: BlockGraph;
+// A file that cannot reach a term's owner speaks of something else when it writes its stem; one
+// that reaches it writes the term as its owner spells it.
+const useFindings = (input: {
   defined: readonly Defined[];
   files: readonly Placed[];
 }): readonly TermsFinding[] =>
   input.files.flatMap((placed) => {
-    const isReached = reaches({
-      graph: input.graph,
-      placed,
-    });
     const prose = reachProseOf(placed);
-
-    return input.defined
-      .filter((term) => !isReached(term) && term.matches(prose))
-      .map((term) => ({
-        code: TermsCode.OutOfReach,
-        details: {
-          owner: term.block,
-          term: term.term,
-        },
-        path: placed.file.path,
-      }));
-  });
-
-// A file that cannot reach a term's owner speaks of something else when it writes its stem.
-const spellingFindings = (input: {
-  graph: BlockGraph;
-  defined: readonly Defined[];
-  files: readonly Placed[];
-}): readonly TermsFinding[] =>
-  input.files.flatMap((placed) => {
-    const isReached = reaches({
-      graph: input.graph,
-      placed,
-    });
     const spans = new Set(inlineCodeSpans(withoutCodeFences(placed.file.body)));
 
-    return input.defined.flatMap((term) => {
+    return input.defined.flatMap((term): readonly TermsFinding[] => {
+      if (!placed.isReached(term)) {
+        return term.matches(prose)
+          ? [
+              {
+                code: TermsCode.OutOfReach,
+                details: {
+                  owner: term.block,
+                  term: term.term,
+                },
+                path: placed.file.path,
+              },
+            ]
+          : [];
+      }
+
       const other = Term.otherSpellingOf(term);
 
       // Stryker disable next-line ConditionalExpression: no span is undefined, so the check only narrows its type
-      return other !== undefined && spans.has(other) && isReached(term)
+      return other !== undefined && spans.has(other)
         ? [
             {
               code: TermsCode.Misspelled,
@@ -336,7 +349,10 @@ const termsCheck: Check<TermsFinding> = ({
   graph,
   constitution,
 }: CheckInput): readonly TermsFinding[] => {
-  const files = placedFiles(constitution.blocks);
+  const files = placedFiles({
+    blocks: constitution.blocks,
+    graph,
+  });
   const { defined, findings } = glossaryOf(files);
 
   return [
@@ -345,13 +361,7 @@ const termsCheck: Check<TermsFinding> = ({
       defined,
       files,
     }),
-    ...reachFindings({
-      graph,
-      defined,
-      files,
-    }),
-    ...spellingFindings({
-      graph,
+    ...useFindings({
       defined,
       files,
     }),

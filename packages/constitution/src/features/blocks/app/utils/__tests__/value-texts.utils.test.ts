@@ -47,30 +47,10 @@ describe('valueTexts', () => {
         code: ValueFailure.Glob,
         details: {
           site: ValueSite.Governs,
-          written: 'src/**/*.ts lib',
+          written: 'src/**/*.{ts',
         },
       },
-      text: 'front matter: governs lists "src/**/*.ts lib", which holds whitespace; the index separates globs with spaces',
-    },
-    {
-      problem: {
-        code: ValueFailure.PartAddress,
-        details: {
-          site: ValueSite.BoundPart,
-          written: 'a/b',
-        },
-      },
-      text: 'binds the part "a/b", which is not a file name: it is empty or holds a "/"',
-    },
-    {
-      problem: {
-        code: ValueFailure.RuleSlug,
-        details: {
-          site: ValueSite.BoundRule,
-          written: 'Not_A_Slug',
-        },
-      },
-      text: 'binds "Not_A_Slug", which is not a kebab-case slug',
+      text: 'front matter: governs lists "src/**/*.{ts", whose braces do not pair or nest too deep',
     },
     {
       problem: {

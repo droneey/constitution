@@ -1,6 +1,6 @@
 import { Axis, LAYER_RANK, LAYERS, Layer } from '#/kernel/constants';
 
-/** a reference made on one axis to a rule or a term of another */
+/** A reference made on one axis to a rule or a term of another. */
 interface AxisReach {
   readonly from: Axis;
   readonly to: Axis;

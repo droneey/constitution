@@ -22,7 +22,7 @@ A `# ty: ignore` names its rule and silences a finding ty would report, and a `#
 
 ### deprecated-calls-fail-the-types → deprecated-form-never-used · MUST
 
-A use of anything marked `@deprecated` fails the type check as `deprecated`, which the part makes an error.
+A use of anything marked `@deprecated` fails the type check as `deprecated`, which the settings make an error.
 
 | Why |
 |---|

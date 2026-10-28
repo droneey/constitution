@@ -1,0 +1,18 @@
+pytest:
+  '*':
+    python:
+      pyproject.toml:
+        tool:
+          poe:
+            tasks:
+              test:specs: 'pytest --cov -o "norecursedirs=.* ${role.end-to-end-suite}"'
+poe:
+  task-group-walks-poes-own-list:
+    python:
+      pyproject.toml:
+        tool:
+          poe:
+            tasks:
+              check:
+                shell@tests:
+                  - '&& poe test'

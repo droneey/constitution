@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import { Level } from '#/kernel/constants';
-import { BlockId } from '#/kernel/value-objects';
+import { BlockId, RepositoryRelativePath } from '#/kernel/value-objects';
 
 import {
   activeBlockOf,
@@ -91,6 +91,10 @@ describe('remindOfFile', () => {
       condition: 'the path is from the project',
       path: 'src/ui/a.ts',
     },
+    {
+      condition: 'the path takes a part back',
+      path: 'src/api/../ui/a.ts',
+    },
   ])(
     'should name every block that governs the file, with its MUST rules, when $condition',
     ({ path }) => {
@@ -115,7 +119,7 @@ describe('remindOfFile', () => {
           uiReminded,
           typescriptReminded,
         ],
-        path: 'src/ui/a.ts',
+        path: RepositoryRelativePath.create('src/ui/a.ts'),
       });
     },
   );
@@ -179,7 +183,7 @@ describe('remindOfFile', () => {
       // Assert
       expect(reminder).toStrictEqual({
         blocks,
-        path: 'src/ui/a.ts',
+        path: RepositoryRelativePath.create('src/ui/a.ts'),
       });
     },
   );
@@ -214,7 +218,7 @@ describe('remindOfFile', () => {
     // Assert
     expect(reminder).toStrictEqual({
       blocks: [],
-      path,
+      path: RepositoryRelativePath.create(path),
     });
   });
 
@@ -232,6 +236,11 @@ describe('remindOfFile', () => {
     {
       condition: "the file lies in a folder that only starts with the project's name",
       path: '/work/project-two/src/ui/a.ts',
+      session: keptSession,
+    },
+    {
+      condition: 'the path from the project leaves it',
+      path: '../other/src/ui/a.ts',
       session: keptSession,
     },
   ])('should give no reminder when $condition', ({ path, session }) => {

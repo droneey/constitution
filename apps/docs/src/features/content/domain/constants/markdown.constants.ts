@@ -1,0 +1,3 @@
+const MARKDOWN_EXTENSION = '.md';
+
+export { MARKDOWN_EXTENSION };

@@ -1,104 +1,55 @@
-# core: the Constitution, unpacked by mise
+# Caches of the Python tools when they run from the root
+/.ruff_cache/
+/.complexipy_cache/
+
+# git
 /.droneey
-
-# core: OS
+.claude/settings.local.json
+.claude/worktrees/
+/local/
 .DS_Store
-
-# core: environment
-.env*
-!.env.example
-mise.local.toml
-
-# core: runtime
-/pids
-/*.pid
-/*.seed
-/*.pid.lock
-
-# core: temporary
-/.temp/
-/.tmp/
-
-# core: backups
-*.bak
-*.orig
-*~
-
-# core: logs
-/logs/
-/*.log
-
-# core: build
-/dist/
-/build/
-/coverage/
-
-# core: IDE
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-/.idea/
-.claude/settings.local.json
-.claude/worktrees/
-/.project
-/.classpath
-/.c9/
-/*.launch
-/.settings/
-/*.sublime-workspace
-
-# core: diagnostic
-/report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
-
-# core: keys and credentials
-ssl/
-acme.json
+.idea/
+*.log
+**/logs/
+.temp/
+.tmp/
+*.bak
+*.orig
+*~
+.env*
+!.env.example
 *.pem
 *.key
 *.p12
 *.pfx
 *.jks
-*.crt
 credentials.json
 id_rsa
 *.secrets
-.htpasswd
 
-# core: working notes
-/local/
+# mise
+mise.local.toml
 
-# typescript: dependencies
-/node_modules/
+# _js-runtime
+**/node_modules/
+*.tgz
 
-# typescript: logs
-/npm-debug.log*
-/pnpm-debug.log*
-/yarn-debug.log*
-/yarn-error.log*
-/lerna-debug.log*
-
-# typescript: build
-/*.tgz
-/*.lcov
-
-# typescript: auth
+# bun
 .npmrc
 
-# typescript: caches
-/.eslintcache
-/.cache
-/*.tsbuildinfo
-
-# python: environments
-/.venv/
-
-# ruff
-/.ruff_cache/
-
-# complexipy
-/.complexipy_cache/
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
 
 # rumdl
-/.rumdl_cache/
+.rumdl_cache/
+
+# uv
+.venv/
+**/dist/

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { allowlist, verdictOn } from './osv-scanner-preset.fixtures';
+import { allowlist, imageLicences, verdictOn } from './osv-scanner-preset.fixtures';
 
 describe('the osv-scanner licence allowlist', () => {
   it('should hold only SPDX ids when osv-scanner reads it', () => {
@@ -34,5 +34,13 @@ describe('the osv-scanner licence allowlist', () => {
         'Permissive',
       ],
     });
+  });
+
+  it('should check no licence when it scans an image', () => {
+    // Act
+    const licences = imageLicences;
+
+    // Assert
+    expect(licences).toStrictEqual([]);
   });
 });

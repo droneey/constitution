@@ -1,0 +1,11 @@
+# bun-test
+[test]
+root = "."
+preload = ["./src/__tests__/sandbox.fixtures.ts"]
+randomize = true
+coverage = false
+pathIgnorePatterns = ["tests/**", "**/*.integration.test.*"]
+
+# bun
+[run]
+bun = true

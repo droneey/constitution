@@ -2,8 +2,8 @@ import { describe, expect, it } from 'bun:test';
 
 import { BlockId, RuleSlug } from '#/kernel/value-objects';
 
-import { checkInputOf } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
+import { checkInputOf } from '../../__tests__/check.fixtures';
 import { ReferencesCode, referencesCheck } from '../references';
 
 const PRINCIPLES = 'blocks/core/foundation/principles.md';

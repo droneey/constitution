@@ -44,8 +44,10 @@ export function DocsVersionMenu({
           className='text-fd-muted-foreground'
           name={IconName.Version}
         />
-        <span className='font-medium'>v{currentVersion}</span>
-        {currentVersion === latest && <span className='text-xs text-fd-primary'>latest</span>}
+        <span>v{currentVersion}</span>
+        {currentVersion === latest && (
+          <span className='font-label text-fd-primary text-label-xs'>latest</span>
+        )}
         <Icon
           className='ms-auto text-fd-muted-foreground'
           name={IconName.Switch}
@@ -69,13 +71,15 @@ export function DocsVersionMenu({
                   aria-current={version === currentVersion ? 'page' : undefined}
                   className='flex h-control-md items-center gap-xs rounded-lg px-xs'
                   href={Versions.pageAddressIn({
-                    path: pageHref,
+                    pageHref,
                     version,
                   })}
                 >
                   <span>v{version}</span>
                   {version === latest && (
-                    <span className='text-xs text-fd-muted-foreground'>latest</span>
+                    <span className='font-label text-fd-muted-foreground text-label-xs'>
+                      latest
+                    </span>
                   )}
                   {version === currentVersion && (
                     <Icon

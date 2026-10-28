@@ -1,19 +1,20 @@
 import { StepStatus } from '@droneey/design-cli';
 import { Command } from 'commander';
 
-import type { ProjectWarning } from '#/kernel/entities';
-import type { CommandContext } from '#/shared/cli';
+import { AbsolutePath } from '#/kernel/value-objects';
+import type { CommandContext, StepReport } from '#/shared/cli';
 
-import { presetsOutcomeOf, presetsSectionsOf } from '../../../utils';
+import type { ConfigurationsCheck, ProjectRead } from '../../../../domain/entities';
+import { configurationsStepOf } from '../../../utils';
 
-interface PresetsCheckContext extends CommandContext {
-  readonly checkPresets: (start: string) => readonly ProjectWarning[] | undefined;
+interface ConfigurationsCheckContext extends CommandContext {
+  readonly checkConfigurations: (startFolderPath: AbsolutePath) => ProjectRead<ConfigurationsCheck>;
 }
 
-const createPresetsCheckCommand = (context: PresetsCheckContext): Command =>
+const createPresetsCheckCommand = (context: ConfigurationsCheckContext): Command =>
   new Command('check')
     .description(
-      "Check the project's constitution.yaml, and that its tools' configurations take every part of its blocks' presets.",
+      "Check the project's constitution.yaml, its preset files, and that its tools' configurations hold what the presets compute.",
     )
     .addHelpText(
       'before',
@@ -22,16 +23,19 @@ const createPresetsCheckCommand = (context: PresetsCheckContext): Command =>
       ]),
     )
     .action(async (): Promise<void> => {
-      const warnings = await context.renderer.run({
+      const step = await context.renderer.run({
         label: 'Presets',
-        outcomeOf: (checked: readonly ProjectWarning[] | undefined) =>
-          presetsOutcomeOf(checked, StepStatus.Failed),
-        run: () => context.checkPresets(context.places.cwd),
+        outcomeOf: (checked: StepReport) => checked.outcome,
+        run: () =>
+          configurationsStepOf(
+            context.checkConfigurations(AbsolutePath.create(context.places.cwd)),
+            StepStatus.Failed,
+          ),
       });
 
-      await context.renderer.print(presetsSectionsOf(warnings));
+      await context.renderer.print(step.sections);
 
-      if (warnings === undefined || warnings.length > 0) {
+      if (step.isFailed) {
         context.setFailed();
       }
     });

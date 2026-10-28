@@ -1,0 +1,7 @@
+mutation: unchanged: no function to mutate changed
+mutation: killed: every mutant killed
+mutation: nothing-to-mutate: the functions hold nothing to mutate
+mutation: not-killed: shop.orders.x_total__mutmut_1: survived
+mutation: not-killed: shop.orders.x_total__mutmut_2: no tests
+mutation: mutmut-failed: failed to run the clean tests
+mutation: mutmut-failed: AssertionError: assert False

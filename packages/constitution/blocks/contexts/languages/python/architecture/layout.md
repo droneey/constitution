@@ -2,6 +2,10 @@
 
 > Governs the program's entry, role suffixes, relative imports and surfaces.
 
+## The vocabulary
+
+A module path joins words by underscores, so Python spells two of core's role folders its own way: **`use_cases/`**{#use-case} holds the use cases, one folder for each operation, and **`value_objects/`**{#invariant-value} holds the values with an invariant.
+
 ## Form
 
 ### program-entry-is-main-of-main-py → package-laid-out-by-the-tree · SHOULD

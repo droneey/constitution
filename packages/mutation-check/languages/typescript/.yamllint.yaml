@@ -1,9 +1,0 @@
-extends: .droneey/constitution/presets/yaml/yamllint/foundation/self.yaml
-
-# .gitignore's paths
-ignore: |
-  /.droneey/
-  node_modules/
-  .tsc-cache/
-  .stryker-tmp/
-  coverage/

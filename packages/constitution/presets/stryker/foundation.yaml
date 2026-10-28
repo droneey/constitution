@@ -1,0 +1,47 @@
+core:
+  every-mutant-killed:
+    typescript:
+      stryker.config.json:
+        mutate:
+          - ${role.source}/**/*.{ts,tsx}
+          - '!${role.source}/**/${role.colocated-specs}/**'
+          - '!${role.source}/main.{ts,tsx}'
+          - '!${role.source}/**/*.gen.*'
+          - '!${role.source}/**/*.d.ts'
+          - ${role.build-code}/**/*.ts
+          - '!${role.build-code}/**/${role.colocated-specs}/**'
+          - '!${role.build-code}/*/main.ts'
+        thresholds:
+          break: 100
+  '*':
+    typescript:
+      stryker.config.json:
+        thresholds:
+          high: 100
+          low: 100
+  failure-told-apart-by-code:
+    typescript:
+      stryker.config.json:
+        diagnosticsTextArguments:
+          new *Error: 0
+          super: 0
+stryker:
+  diagnostic-mutants-left-out-by-the-ignorer:
+    typescript:
+      stryker.config.json:
+        plugins:
+          - ./${constitution.path}/tools/mutation-check/dist/ignorers.js
+        ignorers:
+          - diagnostics
+  '*':
+    typescript:
+      stryker.config.json:
+        reporters:
+          - clear-text
+        clearTextReporter:
+          allowColor: false
+          logTests: false
+        tempDirName: .stryker-tmp
+        tsconfigFile: stryker-has-no-tsconfig.json
+        timeoutMS: 30000
+        concurrency: 50%

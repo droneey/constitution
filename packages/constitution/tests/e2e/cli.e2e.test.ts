@@ -8,10 +8,11 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 import { z } from 'zod';
 
 import { cliPath } from './cli.fixtures';
+import { environmentOf } from './package.fixtures';
 import {
-  archiveOf,
   createPluginRoot,
-  linkArchive,
+  distributionOf,
+  linkDistribution,
   removePluginRoots,
 } from './plugin-root.fixtures';
 import { ConfigKey, configOf, createProject, removeProjects } from './project.fixtures';
@@ -32,26 +33,28 @@ const packageVersion = z
 // A proxy that refuses every call: doctor finds GitHub unreachable at once, and no spec reaches it.
 const NO_NETWORK = 'http://127.0.0.1:9';
 
-// A run as a pipeline runs the program: no terminal, a clean environment.
-const runProgram = (input: {
+// A run as a pipeline runs the executable: no terminal, a clean environment.
+const runExecutable = (input: {
   args: readonly string[];
   cwd: string;
-  env?: Readonly<Record<string, string>>;
+  env?: ReadonlyMap<string, string>;
 }): Run => {
   const ran = spawnSync(cliPath, input.args, {
     cwd: input.cwd,
     encoding: 'utf8',
-    env: Object.fromEntries([
-      [
-        'HTTPS_PROXY',
-        NO_NETWORK,
-      ],
-      [
-        'PATH',
-        '/usr/bin:/bin',
-      ],
-      ...Object.entries(input.env ?? {}),
-    ]),
+    env: environmentOf(
+      new Map([
+        [
+          'HTTPS_PROXY',
+          NO_NETWORK,
+        ],
+        [
+          'PATH',
+          '/usr/bin:/bin',
+        ],
+        ...(input.env ?? new Map()),
+      ]),
+    ),
   });
 
   return {
@@ -86,15 +89,15 @@ const linkedProject = (config: string): string => {
     config,
   });
 
-  linkArchive({
-    archive: archiveOf(root),
+  linkDistribution({
+    distribution: distributionOf(root),
     project,
   });
 
   return project;
 };
 
-describe('the constitution program', () => {
+describe('the constitution executable', () => {
   it('should print its version and exit 0 when asked for it', () => {
     // Arrange
     const args = [
@@ -102,7 +105,7 @@ describe('the constitution program', () => {
     ];
 
     // Act
-    const ran = runProgram({
+    const ran = runExecutable({
       args,
       cwd: elsewhere,
     });
@@ -138,7 +141,7 @@ describe('the constitution program', () => {
     },
   ])('should print help that opens with examples, and exit 0, when asked by $args', ({ args }) => {
     // Act
-    const ran = runProgram({
+    const ran = runExecutable({
       args,
       cwd: elsewhere,
     });
@@ -182,7 +185,7 @@ describe('the constitution program', () => {
     },
   ])('should name the closest match and exit 2 when $condition', ({ args, named }) => {
     // Act
-    const ran = runProgram({
+    const ran = runExecutable({
       args,
       cwd: elsewhere,
     });
@@ -204,7 +207,7 @@ describe('the constitution program', () => {
     const project = linkedProject(configOf({}));
 
     // Act
-    const ran = runProgram({
+    const ran = runExecutable({
       args: [
         'check',
       ],
@@ -220,7 +223,8 @@ describe('the constitution program', () => {
       exitCode: 0,
       steps: [
         '• Blocks',
-        '✓ Presets',
+        '• Presets',
+        '✓ Configurations',
         '',
       ],
       stdout: '',
@@ -236,7 +240,7 @@ describe('the constitution program', () => {
     );
 
     // Act
-    const ran = runProgram({
+    const ran = runExecutable({
       args: [
         'presets',
         'check',
@@ -271,7 +275,7 @@ describe('the constitution program', () => {
     },
   ])('should exit 1 when $condition', ({ args }) => {
     // Act
-    const ran = runProgram({
+    const ran = runExecutable({
       args,
       cwd: elsewhere,
     });
@@ -280,7 +284,7 @@ describe('the constitution program', () => {
     expect(ran.exitCode).toBe(1);
   });
 
-  it('should write the failure block, and exit 1, when the plan finds no project', () => {
+  it("should fail the presets' step, and exit 1, when the plan finds no project", () => {
     // Arrange
     const asked = [
       'presets',
@@ -288,7 +292,7 @@ describe('the constitution program', () => {
     ];
 
     // Act
-    const ran = runProgram({
+    const ran = runExecutable({
       args: asked,
       cwd: elsewhere,
     });
@@ -300,14 +304,13 @@ describe('the constitution program', () => {
         .trimEnd()
         .split('\n')
         .map((line) => line.trimStart().slice(0, 1)),
-      namesTheStep: ran.stderr.includes('/constitution:ratify'),
+      stdout: ran.stdout,
     }).toStrictEqual({
       exitCode: 1,
       marks: [
         '✗',
-        '→',
       ],
-      namesTheStep: true,
+      stdout: '',
     });
   });
 
@@ -316,12 +319,12 @@ describe('the constitution program', () => {
     const project = linkedProject(configOf({}));
 
     // Act
-    const ran = runProgram({
+    const ran = runExecutable({
       args: [
         'doctor',
       ],
       cwd: project,
-      env: Object.fromEntries([
+      env: new Map([
         [
           'CLAUDE_CONFIG_DIR',
           elsewhere,
@@ -339,7 +342,7 @@ describe('the constitution program', () => {
     }).toStrictEqual({
       exitCode: 1,
       parts: [
-        '✓ Program',
+        '✓ Executable',
         '⚠ Claude Code plugin',
         '• Latest release',
         '✗ constitution on PATH',

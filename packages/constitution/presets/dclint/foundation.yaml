@@ -1,0 +1,79 @@
+compose:
+  '*':
+    yaml:
+      .dclintrc.yaml:
+        rules:
+          no-build-and-image: 2
+          no-duplicate-container-names: 2
+          no-duplicate-exported-ports: 2
+          no-quotes-in-volumes: 2
+          require-project-name-field: 0
+          service-container-name-regex: 0
+          service-dependencies-alphabetical-order: 0
+          service-ports-alphabetical-order: 0
+          services-alphabetical-order: 0
+  published-address-bound-to-its-interface:
+    yaml:
+      .dclintrc.yaml:
+        rules:
+          no-unbound-port-interfaces: 2
+  compose-without-version-field:
+    yaml:
+      .dclintrc.yaml:
+        rules:
+          no-version-field: 2
+  service-image-pinned-by-version-and-digest:
+    yaml:
+      .dclintrc.yaml:
+        rules:
+          service-image-require-explicit-tag: 2
+  compose-keys-in-shared-order:
+    yaml:
+      .dclintrc.yaml:
+        rules:
+          service-keys-order:
+            - 2
+            - groupOrder:
+                - Core Definitions
+              groups:
+                Core Definitions:
+                  - image
+                  - build
+                  - container_name
+                  - extends
+                  - profiles
+                  - restart
+                  - command
+                  - depends_on
+                  - networks
+                  - ports
+                  - volumes
+                  - logging
+                  - healthcheck
+                  - security_opt
+                  - cap_drop
+                  - cap_add
+                  - read_only
+                  - labels
+                  - tmpfs
+                  - environment
+          top-level-properties-order:
+            - 2
+            - customOrder:
+                - version
+                - name
+                - include
+                - x-properties
+                - services
+                - networks
+                - volumes
+                - secrets
+                - configs
+yaml:
+  ambiguous-scalar-quoted:
+    yaml:
+      .dclintrc.yaml:
+        rules:
+          require-quotes-in-ports:
+            - 2
+            - quoteType: single

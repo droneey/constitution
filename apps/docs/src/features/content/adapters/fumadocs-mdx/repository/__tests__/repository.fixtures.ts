@@ -2,6 +2,8 @@ import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
+import { ProgramError } from '#/kernel/errors';
+
 /** entered from its site's folder, as the build enters it */
 interface TemporaryRepository {
   /** goes back to the folder the case started in and removes the repository */
@@ -46,4 +48,28 @@ export const enterRepository = (input: EnterRepositoryInput): TemporaryRepositor
     },
     root,
   };
+};
+
+/**
+ * The code, the details and the name of the cause a read failed with, the code of a failure of the
+ * system, or the failure itself when it is neither
+ */
+export const failureOf = (read: () => unknown): unknown => {
+  try {
+    return read();
+  } catch (error) {
+    if (error instanceof ProgramError) {
+      return {
+        cause: error.cause instanceof Error ? error.cause.name : error.cause,
+        code: error.code,
+        details: error.details,
+      };
+    }
+
+    return error instanceof Error && 'code' in error
+      ? {
+          code: error.code,
+        }
+      : error;
+  }
 };

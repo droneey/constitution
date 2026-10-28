@@ -73,29 +73,4 @@ describe('AgentId', () => {
       }),
     );
   });
-
-  it.each([
-    {
-      condition: 'both name one agent',
-      isEqual: true,
-      right: 'a1b2-c3',
-    },
-    {
-      condition: 'they name two',
-      isEqual: false,
-      right: 'a1b2-c3x',
-    },
-  ])('should say $isEqual when $condition', ({ isEqual, right }) => {
-    // Arrange
-    const ids = [
-      AgentId.create('a1b2-c3'),
-      AgentId.create(right),
-    ] as const;
-
-    // Act
-    const isSame = AgentId.equals(...ids);
-
-    // Assert
-    expect(isSame).toBe(isEqual);
-  });
 });

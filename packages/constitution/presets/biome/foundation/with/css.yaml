@@ -1,0 +1,81 @@
+css:
+  declaration-never-important:
+    css:
+      biome.jsonc:
+        linter:
+          rules:
+            complexity:
+              noImportantStyles: error
+  selector-classes-within-the-limit:
+    css:
+      biome.jsonc:
+        linter:
+          rules:
+            complexity:
+              noExcessiveSelectorClasses:
+                level: error
+                options:
+                  maxClasses: 3
+  custom-property-read-where-defined:
+    css:
+      biome.jsonc:
+        linter:
+          rules:
+            correctness:
+              noMissingVarFunction: error
+            nursery:
+              noUndeclaredCustomProperties: error
+  selector-specificity-never-descends:
+    css:
+      biome.jsonc:
+        linter:
+          rules:
+            style:
+              noDescendingSpecificity: error
+  '*':
+    css:
+      biome.jsonc:
+        linter:
+          rules:
+            suspicious:
+              noDuplicateSelectors: error
+  style-rule-in-a-named-layer:
+    css:
+      biome.jsonc:
+        linter:
+          rules:
+            nursery:
+              useLayeredStyles: error
+              useNamedLayer: error
+  animated-custom-property-registered:
+    css:
+      biome.jsonc:
+        linter:
+          rules:
+            nursery:
+              noInvalidPropertyInitValue: error
+  class-declared-is-used:
+    css:
+      biome.jsonc:
+        linter:
+          rules:
+            nursery:
+              noUnusedClasses: error
+  selector-never-targets-an-id:
+    css:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/css/selector-never-targets-an-id.${role.grit-rule}]:
+          includes:
+            - '**/*.css'
+  transition-names-its-properties:
+    css:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/css/transition-names-its-properties.${role.grit-rule}]:
+          includes:
+            - '**/*.css'
+  line-height-set-as-a-number:
+    css:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/css/line-height-set-as-a-number.${role.grit-rule}]:
+          includes:
+            - '**/*.css'

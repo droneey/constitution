@@ -1,17 +1,7 @@
 [[IgnoredVulns]]
-id = "GHSA-4mjr-xmp4-gh2g"
-ignoreUntil = 2026-12-28
-reason = "qs 6.15.1 comes only with Stryker, whose typed-rest-client pins it; a development tool that never ships"
-
-[[IgnoredVulns]]
-id = "GHSA-q8mj-m7cp-5q26"
-ignoreUntil = 2026-12-28
-reason = "qs 6.15.1 comes only with Stryker, whose typed-rest-client pins it; a development tool that never ships"
-
-[[IgnoredVulns]]
-id = "GHSA-x5fp-wj9c-mxmx"
-ignoreUntil = 2026-12-28
-reason = "qs 6.15.1 comes only with Stryker, whose typed-rest-client pins it; a development tool that never ships"
+id = "GHSA-gcqx-w48m-w2h4"
+ignoreUntil = 2027-01-28
+reason = "a build tool of the design tokens; it merges only our own token files; no fixed version upstream"
 
 [[PackageOverrides]]
 name = "is-core-module"
@@ -50,7 +40,7 @@ license.override = ["MIT"]
 reason = "deps.dev reports a non-standard licence for vulture; its LICENSE.txt is MIT"
 
 [[PackageOverrides]]
-name = "droneey-mutation-check"
+name = "droneey-mutation-check-python"
 ecosystem = "PyPI"
 license.ignore = true
 reason = "this repository's own gate for mutmut, a member of its uv workspace that only checks code and never ships in a program"
@@ -66,6 +56,12 @@ name = "@droneey/constitution"
 ecosystem = "npm"
 license.ignore = true
 reason = "this repository's own package, a member of its Bun workspace, under the repository's LICENSE.md"
+
+[[PackageOverrides]]
+name = "@droneey/constitution-brand"
+ecosystem = "npm"
+license.ignore = true
+reason = "this repository's own brand assets, a member of its Bun workspace, under the repository's LICENSE.md"
 
 [[PackageOverrides]]
 name = "@droneey/design-cli"
@@ -92,7 +88,7 @@ license.ignore = true
 reason = "this repository's own documentation site, a member of its Bun workspace, under the repository's LICENSE.md"
 
 [[PackageOverrides]]
-name = "@droneey/mutation-check"
+name = "@droneey/mutation-check-typescript"
 ecosystem = "npm"
 license.ignore = true
 reason = "this repository's own gate for Stryker, a member of its Bun workspace that only checks code and never ships in a program"

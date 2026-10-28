@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { BlockId } from '#/kernel/value-objects';
+import { AbsolutePath, BlockId } from '#/kernel/value-objects';
 
 import {
   heldSessionsOf,
@@ -13,7 +13,7 @@ import { keepSession } from '../keep-session.use-case';
 
 const heldState = sessionStateOf();
 const startedState = sessionStateOf({
-  project: '/work/started',
+  repositoryFolderPath: AbsolutePath.create('/work/started'),
 });
 
 // The session keeps a state and was reminded of ui before the hook.

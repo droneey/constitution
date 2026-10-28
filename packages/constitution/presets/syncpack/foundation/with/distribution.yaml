@@ -1,0 +1,16 @@
+distribution:
+  '*':
+    json:
+      .syncpackrc.yaml:
+        versionGroups[label=Peer dependencies keep their wider ranges]:
+          dependencyTypes:
+            - peer
+          isIgnored: true
+_js-runtime:
+  dependency-declared-with-a-caret:
+    json:
+      .syncpackrc.yaml:
+        semverGroups[label=Use caret ranges for the dependencies of the program]:
+          range: ^
+          dependencyTypes:
+            - prod

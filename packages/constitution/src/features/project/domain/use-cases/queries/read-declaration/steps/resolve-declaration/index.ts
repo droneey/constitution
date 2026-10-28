@@ -1,1 +1,1 @@
-export { resolveDeclaration } from './resolve-declaration.utils';
+export { resolveDeclaration } from './resolve-declaration';

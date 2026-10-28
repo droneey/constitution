@@ -29,33 +29,24 @@ const linkTo = (version: string): HTMLElement =>
 describe('DocsVersionMenu', () => {
   it.each([
     {
-      condition: 'the releases are loading',
-      versionsState: {
-        status: VersionsStatus.Loading,
-      },
-      shown: 'v0.70.0',
-    },
-    {
       condition: 'this release is the latest',
-      versionsState: loaded,
+      currentVersion: Version.create('0.70.0'),
       shown: 'v0.70.0latest',
     },
-  ] satisfies {
-    condition: string;
-    versionsState: VersionsState;
-    shown: string;
-  }[])(
+    {
+      condition: 'this site belongs to an older one',
+      currentVersion: Version.create('0.69.2'),
+      shown: 'v0.69.2',
+    },
+  ])(
     'should name this release, and whether it is the latest, when $condition',
-    ({ versionsState, shown }) => {
-      // Arrange
-      const currentVersion = Version.create('0.70.0');
-
+    ({ currentVersion, shown }) => {
       // Act
       render(
         <DocsVersionMenu
           currentVersion={currentVersion}
           pageHref='/docs/guides/write-a-pack'
-          versionsState={versionsState}
+          versionsState={loaded}
         />,
       );
 
@@ -63,23 +54,6 @@ describe('DocsVersionMenu', () => {
       expect(screen.getByRole('button').textContent).toBe(shown);
     },
   );
-
-  it('should name no release the latest when this site belongs to an older one', () => {
-    // Arrange
-    const currentVersion = Version.create('0.69.2');
-
-    // Act
-    render(
-      <DocsVersionMenu
-        currentVersion={currentVersion}
-        pageHref='/docs/guides/write-a-pack'
-        versionsState={loaded}
-      />,
-    );
-
-    // Assert
-    expect(screen.getByRole('button').textContent).toBe('v0.69.2');
-  });
 
   it.each([
     {
@@ -146,27 +120,6 @@ describe('DocsVersionMenu', () => {
       '/v0.70.0/docs/guides/write-a-pack',
       '/v0.69.2/docs/guides/write-a-pack',
     ]);
-  });
-
-  it('should list the releases with no notice when they have loaded', async () => {
-    // Arrange
-    render(
-      <DocsVersionMenu
-        currentVersion={Version.create('0.70.0')}
-        pageHref='/docs/guides/write-a-pack'
-        versionsState={loaded}
-      />,
-    );
-
-    // Act
-    await openMenu();
-
-    // Assert
-    expect(
-      screen.getByRole('navigation', {
-        name: 'Versions',
-      }).textContent,
-    ).toBe('v0.70.0latestv0.69.2');
   });
 
   it('should mark the latest release among the releases when they have loaded', async () => {

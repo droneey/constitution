@@ -1,19 +1,21 @@
+export { EXECUTABLE_NAME, projectCheck } from './executable.constants';
+export { CURRENT_SEGMENT, PARENT_SEGMENT, PATH_SEPARATOR } from './path.constants';
+export { PRESETS_FOLDER_NAME } from './presets-folder-name.constants';
+export type { ListKey, RequiredConfigKey } from './project.constants';
 export {
-  COMMON_SCOPE,
-  Placeholder,
-  PRESETS_FOLDER,
-  SELF_PART,
-  TEMPLATES_FOLDER,
-  WORKSPACE_PART,
-} from './preset.constants';
-export { PROGRAM_NAME } from './program.constants';
-export { CHECK_KEY, CONFIG_FILE, RELEASE_FOLDER } from './project.constants';
+  CHECK_KEY,
+  CONFIG_FILE_NAME,
+  ConfigKey,
+  LIST_KEYS,
+  RELEASE_FOLDER_PATH,
+  REQUIRED_CONFIG_KEYS,
+} from './project.constants';
 export type { LoweredLevel } from './vocabulary.constants';
 export {
   AXES,
   Axis,
-  BLOCKS_FOLDER,
-  LAYER_FOLDER,
+  BLOCKS_FOLDER_NAME,
+  LAYER_FOLDER_NAME,
   LAYER_RANK,
   LAYERS,
   Layer,
@@ -25,5 +27,5 @@ export {
   REQUIREMENTS_TABLE_HEADER,
   RULE_TABLE_CELLS,
   RULE_TABLE_HEADER,
-  SEAM_FOLDER,
+  SEAM_FOLDER_NAME,
 } from './vocabulary.constants';

@@ -1,60 +1,107 @@
+import { StepStatus } from '@droneey/design-cli';
 import { Command } from 'commander';
 
-import type { Validation } from '#/features/blocks';
-import { blocksOutcomeOf, blocksSectionsOf } from '#/features/blocks';
-import { presetsOutcomeOf, presetsSectionsOf } from '#/features/presets';
-import type { ProjectWarning } from '#/kernel/entities';
-import type { CommandContext } from '#/shared/cli';
+import type { PackBase, Validation } from '#/features/blocks';
+import {
+  blocksOutcomeOf,
+  blocksSectionsOf,
+  NO_BLOCKS,
+  packBaseOf,
+  ValidationStage,
+} from '#/features/blocks';
+import type { BlockModel } from '#/kernel/entities';
+import { AbsolutePath, BlockSource, PackPath } from '#/kernel/value-objects';
+import { withOption } from '#/libs/commander';
+import type { CommandContext, StepReport } from '#/shared/cli';
 import { BASE_FLAG, baseFlagsOf } from '#/shared/cli';
 
 interface CheckContext extends CommandContext {
   readonly checkBlocks: (input: {
-    base: string | undefined;
-    folder: string;
+    base: PackBase | undefined;
+    folderPath: AbsolutePath;
   }) => Validation | undefined;
-  readonly checkPresets: (start: string) => readonly ProjectWarning[] | undefined;
+  readonly checkConfigurations: (startFolderPath: AbsolutePath) => StepReport;
+  /** the presets beside the blocks, checked against the model of the blocks that load */
+  readonly checkPresets: (input: {
+    model: BlockModel;
+    source: BlockSource;
+    sourceFolderPath: AbsolutePath;
+  }) => StepReport;
+  /** the presets' step where no blocks load, so nothing holds the presets */
+  readonly presetsSkipped: StepReport;
 }
 
+const outcomeOf = (report: StepReport): StepReport['outcome'] => report.outcome;
+
 const createCheckCommand = (context: CheckContext): Command =>
-  new Command('check')
-    .summary('Check the blocks in this folder, then the project around it.')
-    .description(
-      "Check the blocks of the Constitution or the pack in this folder, then the project's constitution.yaml and its tools' configurations.",
-    )
-    .addHelpText(
-      'before',
-      context.helpExamples([
-        'constitution check',
-        'constitution check --base .droneey/constitution',
-      ]),
-    )
-    .option(BASE_FLAG.flags, BASE_FLAG.description)
-    .action(async (_options: unknown, command: Command): Promise<void> => {
-      const { base } = baseFlagsOf(command.opts());
+  withOption({
+    command: new Command('check')
+      .summary('Check the blocks in this folder, then the project around it.')
+      .description(
+        "Check the blocks of the Constitution or the pack in this folder and its presets, then the project's constitution.yaml and its tools' configurations.",
+      )
+      .addHelpText(
+        'before',
+        context.helpExamples([
+          'constitution check',
+          'constitution check --base .droneey/constitution',
+        ]),
+      ),
+    option: BASE_FLAG,
+    parse: baseFlagsOf,
+    run: async ({ base }): Promise<void> => {
       const { places, renderer } = context;
+      const folderPath = AbsolutePath.create(places.cwd);
       const validation = await renderer.run({
         label: 'Blocks',
-        outcomeOf: blocksOutcomeOf,
+        outcomeOf: (checked: Validation | undefined) =>
+          checked === undefined
+            ? {
+                detail: NO_BLOCKS,
+                status: StepStatus.Skipped,
+              }
+            : blocksOutcomeOf(checked),
         run: () =>
           context.checkBlocks({
-            base,
-            folder: places.cwd,
+            base: packBaseOf({
+              base,
+              folderPath,
+            }),
+            folderPath,
           }),
       });
-      const warnings = await renderer.run({
+      const presets = await renderer.run({
         label: 'Presets',
-        outcomeOf: presetsOutcomeOf,
-        run: () => context.checkPresets(places.cwd),
+        outcomeOf,
+        run: () =>
+          validation?.stage === ValidationStage.Checked
+            ? context.checkPresets({
+                model: validation.model,
+                // A folder checked on a base is a pack, itself the pack its preset files are read from.
+                source:
+                  base === undefined
+                    ? BlockSource.create()
+                    : BlockSource.create(PackPath.create('.')),
+                sourceFolderPath: folderPath,
+              })
+            : context.presetsSkipped,
+      });
+      const configurations = await renderer.run({
+        label: 'Configurations',
+        outcomeOf,
+        run: () => context.checkConfigurations(folderPath),
       });
 
       await renderer.print([
         ...blocksSectionsOf(validation),
-        ...presetsSectionsOf(warnings),
+        ...presets.sections,
+        ...configurations.sections,
       ]);
 
-      if ((validation?.findings.length ?? 0) + (warnings?.length ?? 0) > 0) {
+      if ((validation?.findings.length ?? 0) > 0 || presets.isFailed || configurations.isFailed) {
         context.setFailed();
       }
-    });
+    },
+  });
 
 export { createCheckCommand };

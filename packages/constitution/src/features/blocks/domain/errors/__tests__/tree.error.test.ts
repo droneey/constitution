@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
+import { AbsolutePath } from '#/kernel/value-objects';
+
 import { isTreeError, TreeError, TreeFailure } from '../tree.error';
 
 describe('TreeError', () => {
@@ -9,7 +11,7 @@ describe('TreeError', () => {
     const failure = {
       code: TreeFailure.TimedOut,
       details: {
-        path: '/work/constitution',
+        path: AbsolutePath.create('/work/constitution'),
       },
     };
 
@@ -28,7 +30,7 @@ describe('TreeError', () => {
       cause,
       code: TreeFailure.TimedOut,
       details: {
-        path: '/work/constitution',
+        path: AbsolutePath.create('/work/constitution'),
       },
       name: 'TreeError',
     });
@@ -40,7 +42,7 @@ describe('TreeError', () => {
       error: new TreeError({
         code: TreeFailure.Failed,
         details: {
-          path: '/work',
+          path: AbsolutePath.create('/work'),
         },
       }),
       isTree: true,

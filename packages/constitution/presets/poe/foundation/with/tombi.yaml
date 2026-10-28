@@ -1,0 +1,10 @@
+tombi:
+  '*':
+    toml:
+      pyproject.toml:
+        tool:
+          poe:
+            tasks:
+              check:toml:
+                shell: tombi format --check && tombi lint
+              fix:toml: tombi format

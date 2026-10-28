@@ -1,23 +1,33 @@
+import type { ProgramErrorInput } from '#/kernel/errors';
 import { ProgramError } from '#/kernel/errors';
 
 enum ExportFailure {
-  Unavailable = 'export-unavailable',
+  Unreachable = 'export-unreachable',
+  NoFile = 'export-no-file',
+  Malformed = 'export-malformed',
 }
 
-interface UnavailableDetails {
+interface ExportAddress {
   readonly address: string;
 }
 
-/** a file the site's server exported for the browser could not be read: the site gave none, or none it could read */
-class ExportError extends ProgramError<ExportFailure, UnavailableDetails> {
-  public constructor(details: UnavailableDetails, options?: ErrorOptions) {
-    super(
-      {
-        code: ExportFailure.Unavailable,
-        details,
-      },
-      options,
-    );
+interface ExportAnswer extends ExportAddress {
+  readonly status: number;
+}
+
+interface MalformedExport extends ExportAddress {
+  /** the path to each value the file got wrong, the empty path for the whole file */
+  readonly problems: readonly string[];
+}
+
+type ExportFailed =
+  | ProgramErrorInput<ExportFailure.Unreachable, ExportAddress>
+  | ProgramErrorInput<ExportFailure.NoFile, ExportAnswer>
+  | ProgramErrorInput<ExportFailure.Malformed, MalformedExport>;
+
+class ExportError extends ProgramError<ExportFailure, ExportFailed['details']> {
+  public constructor(input: ExportFailed, options?: ErrorOptions) {
+    super(input, options);
     // Stryker disable next-line StringLiteral: the name only labels the error in a trace
     this.name = 'ExportError';
   }

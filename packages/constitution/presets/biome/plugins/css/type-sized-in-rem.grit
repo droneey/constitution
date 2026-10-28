@@ -1,0 +1,9 @@
+language css
+
+// In the font shorthand the length after the slash is the line height.
+CssRegularDimension() as $size where {
+  $size <: r"(?i).*\d(?:px|pt|pc|in|cm|mm|q)",
+  $size <: within CssGenericProperty(name=$property),
+  or { $property <: r"(?i)font-size", and { $property <: r"(?i)font", $size <: not after "/" } },
+  register_diagnostic(span=$size, message="[type-sized-in-rem] Set a font size in rem, never in px or another absolute unit, so it follows the reader's text size", severity="error")
+}
