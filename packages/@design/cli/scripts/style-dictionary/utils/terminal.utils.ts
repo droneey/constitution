@@ -5,7 +5,6 @@ import { MalformedTokenError } from '../errors';
 
 const JSON_INDENT = 2;
 
-/** the scale an app's own brand.tokens.json replaces */
 const ACCENT_SCALE_NAME = 'brand';
 
 const nameOf = ({ path: [, ...nameSegments] }: TransformedToken): string => nameSegments.join('.');
@@ -13,11 +12,7 @@ const nameOf = ({ path: [, ...nameSegments] }: TransformedToken): string => name
 const isOnAccentScale = ({ path: [, scaleName] }: TransformedToken): boolean =>
   scaleName === ACCENT_SCALE_NAME;
 
-/**
- * A colour without an alpha, which a terminal can draw as it is.
- *
- * @throws {@link MalformedTokenError} when the token's value is no colour object
- */
+/** @throws {MalformedTokenError} when the token's value is no colour object */
 const isOpaque = ({ name, original }: TransformedToken): boolean => {
   const colour: unknown = original.$value;
 
@@ -28,7 +23,7 @@ const isOpaque = ({ name, original }: TransformedToken): boolean => {
   return !('alpha' in colour);
 };
 
-/** @throws {@link MalformedTokenError} when the token's value is no measure */
+/** @throws {MalformedTokenError} when the token's value is no measure */
 const amountOf = ({ $value, name }: TransformedToken): number => {
   const measure: unknown = $value;
 
@@ -39,10 +34,11 @@ const amountOf = ({ $value, name }: TransformedToken): number => {
   throw new MalformedTokenError(name);
 };
 
+// Why: Style Dictionary has no format for a terminal, and the module keeps the accent's roles as
+// steps so that an app's own scale takes their place at run time.
 /**
- * Style Dictionary has no format for a terminal: the module holds the accent's roles as steps, so an
- * app's own scale takes their place at run time, every other role that is opaque in hex, the
- * durations in milliseconds and the spacings in pixels.
+ * @throws {MalformedTokenError} when a colour's value is no colour object, or a duration's or a
+ * spacing's value is no measure
  */
 const terminalModule: FormatFn = async ({ dictionary }) => {
   const tokensOf = (groupName: string): TransformedToken[] =>
@@ -70,7 +66,7 @@ const terminalModule: FormatFn = async ({ dictionary }) => {
         step.$value,
       ]),
     ),
-    // a terminal cannot lay a colour over another
+    // Why: a terminal cannot lay a colour over another.
     colour: Object.fromEntries(
       roleSteps
         .filter(({ step }) => !isOnAccentScale(step) && isOpaque(step))

@@ -17,8 +17,6 @@ const write = (input: { path: string; root: string; text: string }): void => {
   writeFileSync(join(input.root, input.path), input.text);
 };
 
-// A plugin at root/<name>: a manifest that names its skills, a hook, an agent and a file that is
-// none of its parts; a file given as undefined is left out.
 const pluginOf = (input: {
   files?: Readonly<Record<string, string | undefined>>;
   name: string;
@@ -55,7 +53,6 @@ const pluginOf = (input: {
   return root;
 };
 
-// The plugin's fingerprint once a file outside it and one of it that is no glue hold the text.
 const fingerprintAfterOutside = (input: { root: string; text: string }): string | undefined => {
   write({
     path: 'outside/x.md',

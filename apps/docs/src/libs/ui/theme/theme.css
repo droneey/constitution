@@ -1,9 +1,9 @@
 @theme {
-  /* The library switches to its phone layout below its medium breakpoint; the site keeps one
-     layout at every width. */
+  /* Why: the library switches to its phone layout below md; the site keeps one layout at every
+     width. */
   --breakpoint-md: 0rem;
 
-  /* The search dialog opens from the keyboard many times a day, so it does not animate. */
+  /* Why: the search dialog opens from the keyboard many times a day, so it does not animate. */
   --animate-fd-fade-in: fd-fade-in var(--duration-base) var(--ease-out);
   --animate-fd-fade-out: fd-fade-out var(--duration-base) var(--ease-out);
   --animate-fd-roll-in: fd-roll-in var(--duration-base) var(--ease-out);
@@ -14,8 +14,8 @@
   --animate-fd-dialog-in: none;
   --animate-fd-dialog-out: none;
 
-  /* In place of the library's default palette, whose unlayered `.dark` block would beat every
-     layer; the callout hues keep the library's values. */
+  /* Why: in place of the library's default palette, whose unlayered `.dark` block would beat
+     every layer; the callout hues keep the library's values. */
   --color-fd-background: var(--color-surface-base);
   --color-fd-foreground: var(--color-text-primary);
   --color-fd-muted: var(--color-fill-muted);
@@ -45,7 +45,8 @@
 }
 
 @layer base {
-  /* set before focus, so a colour transition never fades the ring in from the text's colour */
+  /* Why: set before focus, so a colour transition never fades the ring in from the text's
+     colour. */
   * {
     outline-color: var(--color-fd-ring);
   }
@@ -67,7 +68,8 @@
     outline: none;
   }
 
-  /* without it the sidebar loses its hover, and its scrollbar fades out and back, on every page */
+  /* Why: without it the sidebar loses its hover, and its scrollbar fades out and back, on every
+     page. */
   /* biome-ignore lint/suspicious/useBaseline: behind @supports selector(), which the linter does not read as a guard */
   @supports selector(::view-transition) {
     /* biome-ignore lint/suspicious/useBaseline: behind @supports selector(), which the linter does not read as a guard */
@@ -85,7 +87,7 @@
     }
   }
 
-  /* after the utilities it remaps */
+  /* Why: after the utilities it remaps. */
   /* biome-ignore lint/nursery/noUnusedClasses: Fumadocs uses it */
   .duration-100,
   /* biome-ignore lint/nursery/noUnusedClasses: Fumadocs uses it */

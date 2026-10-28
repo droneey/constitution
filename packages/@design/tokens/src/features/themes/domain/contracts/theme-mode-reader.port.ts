@@ -1,7 +1,7 @@
 import type { ThemeModeFiles } from '../entities';
 
 interface ThemeModeReader {
-  /** every mode of the tokens' `theme` modifier, with the files it takes */
+  /** @throws {UnknownDefaultModeError} when the modifier's default names no context */
   readonly read: () => readonly ThemeModeFiles[];
 }
 

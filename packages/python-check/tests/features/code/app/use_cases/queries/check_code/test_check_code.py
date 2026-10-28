@@ -30,8 +30,6 @@ if TYPE_CHECKING:
 FINDINGS_GOLDEN_PATH: Final = Path(__file__).with_name('findings.golden.txt')
 ORDERS = Path('src/shop/orders.py')
 CLIMB = Finding(path=ORDERS, line_number=1, breach=ImportClimbingOut())
-# Every breach, with a folder of the package root and a home of every kind of place, so that the
-# golden file holds each label the wording has.
 EVERY_BREACH: Final = (
   Finding(path=ORDERS, line_number=2, breach=Unparsable(parser_message='invalid syntax')),
   Finding(path=ORDERS, line_number=1, breach=LongFile(line_count=501, limit=500)),
@@ -77,8 +75,6 @@ EVERY_BREACH: Final = (
 
 
 class _RecordingCheck:
-  """A check_code that keeps the paths it was asked about and answers with the findings given."""
-
   def __init__(self, findings: tuple[Finding, ...] = ()) -> None:
     self.findings = findings
     self.checked_paths: list[Sequence[Path]] = []

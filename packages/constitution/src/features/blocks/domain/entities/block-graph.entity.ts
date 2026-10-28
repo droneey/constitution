@@ -4,7 +4,6 @@ import { BlockId } from '#/kernel/value-objects';
 import type { BlockPlace } from './block.entity';
 import { Block } from './block.entity';
 
-/** The blocks by id, linked by what each requires or extends. */
 type BlockGraph = ReadonlyMap<BlockId, Block>;
 
 const createGraph = (blocks: readonly Block[]): BlockGraph =>
@@ -73,8 +72,6 @@ const mayReferTo = (
   );
 };
 
-// A rule tightens another only where the other is active too: in core, or in a block its place
-// reaches, and in a seam only when it reaches that seam's other block as well.
 const mayCarryOut = (
   graph: BlockGraph,
   input: {

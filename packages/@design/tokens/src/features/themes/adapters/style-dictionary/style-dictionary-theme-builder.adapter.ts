@@ -6,7 +6,6 @@ import { writeWholeWhenChanged } from '#/libs/files';
 import type { ConfigOfMode, ThemeBuilder } from '../../domain/contracts';
 import type { ThemeModeFiles } from '../../domain/entities';
 
-/** Reads the files every mode takes and its own in place of any the platform names. */
 const configOfModeFiles = (
   configOf: ConfigOfMode,
   { name, isDefault, sharedPaths, ownPaths }: ThemeModeFiles,
@@ -32,7 +31,8 @@ const writeBuild = async (config: Config): Promise<void> => {
   );
 
   for (const { destination, output } of formattedFiles.flat()) {
-    // Style Dictionary gives a file that names no destination an empty one, which its own build skips
+    // Why: Style Dictionary gives a file that names no destination an empty one, which its own
+    // build skips.
     if (
       // Stryker disable next-line ConditionalExpression: Style Dictionary fills in every file's destination, so none is undefined here
       destination !== undefined &&

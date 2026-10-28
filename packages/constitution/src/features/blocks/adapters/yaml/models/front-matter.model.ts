@@ -2,7 +2,6 @@ import { z } from 'zod';
 
 import type { FrontMatterFields } from '../../../domain/entities';
 
-/** `extends: null` names no base, so the field is left out. */
 const frontMatterModel: z.ZodType<FrontMatterFields> = z
   .looseObject({
     abstract: z.boolean(),

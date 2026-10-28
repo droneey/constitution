@@ -6,18 +6,19 @@ import { createFakeContext, runCommand } from '#/__tests__/command-context.fake'
 import { BlockId, RepositoryRelativePath } from '#/kernel/value-objects';
 
 import type { Reminder } from '../../../../../domain/entities';
+import { SessionAgent } from '../../../../../domain/entities';
 import { AgentId, SessionId } from '../../../../../domain/value-objects';
 import { reminderNotesOf } from '../../../../utils';
 import { createPostToolUseCommand } from '../post-tool-use.cli';
 
 interface Asked {
-  agent: AgentId | undefined;
+  agent: SessionAgent;
   path: string;
   session: SessionId;
 }
 
 interface Recorded {
-  agent: AgentId | undefined;
+  agent: SessionAgent;
   ids: readonly BlockId[];
   session: SessionId;
 }
@@ -26,8 +27,6 @@ interface Named extends Recorded {
   askedBefore: number;
 }
 
-// What the hook wrote on standard output, read as Claude Code reads it: the event it answers and the
-// notes of the context it adds; a note's wording is reminderNotesOf's, which its own spec pins.
 const contextOf = (
   stdout: string,
 ): {
@@ -173,7 +172,7 @@ describe('createPostToolUseCommand', () => {
       condition: 'no block is left to name',
       named: [
         {
-          agent: undefined,
+          agent: SessionAgent.main,
           askedBefore: 1,
           ids: [],
           session: SessionId.create('s1'),

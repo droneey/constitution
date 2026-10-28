@@ -7,8 +7,6 @@ const { allowedCases, lintRegistered, pluginsOf, reportedCases } = createPluginB
 
 const LINT_TIMEOUT = 120_000;
 
-// Each GritQL plugin of the presets: a sample of each form it reports and of each allowed form it
-// could mistake for one, each linted in its row's unit unless it names its own.
 const pluginRows: readonly PluginRow[] = [
   {
     language: 'css',
@@ -67,8 +65,6 @@ const pluginRows: readonly PluginRow[] = [
           'src/features/orders/order.ts': 'export const data = 1;\n',
         },
       },
-    ],
-    allowed: [
       {
         condition: 'generic code in libs names a value by an empty word',
         files: {
@@ -1234,7 +1230,6 @@ const pluginRows: readonly PluginRow[] = [
       },
     ],
   },
-  // A size in vw that is no full width, or in vmin or vmax, is left to review.
   {
     language: 'css',
     slug: 'viewport-size-in-small-viewport-units',
@@ -1293,8 +1288,6 @@ const pluginRows: readonly PluginRow[] = [
       },
     ],
   },
-  // A size in vw or a percentage outside clamp() is left to review, since clamp's preferred value
-  // takes one.
   {
     language: 'css',
     slug: 'type-sized-in-rem',
@@ -1578,7 +1571,6 @@ const pluginRows: readonly PluginRow[] = [
       },
     ],
   },
-  // A shell option read from a name is left to review.
   {
     language: 'typescript',
     slug: 'child-process-started-without-a-shell',
@@ -1636,8 +1628,6 @@ const pluginRows: readonly PluginRow[] = [
       },
     ],
   },
-  // A start whose options or arguments are read from a name may hold an env or none, and an env
-  // read from a name may be a copy: both are left to review.
   {
     language: 'typescript',
     slug: 'child-process-given-an-env-of-its-own',
@@ -1827,7 +1817,6 @@ const pluginRows: readonly PluginRow[] = [
       },
     ],
   },
-  // A value cast after it is held by a name is left to review.
   {
     language: 'typescript',
     slug: 'boundary-values-unknown-until-parsed',
@@ -1906,7 +1895,6 @@ const pluginRows: readonly PluginRow[] = [
       },
     ],
   },
-  // A start held by another module or object than its reading's is left to review.
   {
     language: 'typescript',
     slug: 'duration-measured-by-performance-now',
@@ -2010,7 +1998,6 @@ const pluginRows: readonly PluginRow[] = [
   },
 ];
 
-// The samples of every row are linted before the first case.
 beforeAll(lintRegistered, LINT_TIMEOUT);
 
 describe("the GritQL plugins of Biome's presets", () => {

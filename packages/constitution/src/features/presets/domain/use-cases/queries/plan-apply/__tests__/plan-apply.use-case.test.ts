@@ -38,31 +38,22 @@ import { FileFormat } from '../../../../value-objects';
 import { planApply } from '../plan-apply.use-case';
 
 interface Step {
-  /** the project's own files, by their paths from it */
   readonly files: Files;
   readonly formats?: ConfigurationFormat;
   readonly locks?: Readonly<Record<string, LockRead>>;
   readonly presets: Files;
   readonly units?: readonly ProjectUnit[];
-  /** the files that cannot be read, by their absolute paths */
   readonly unreadable?: readonly string[];
 }
 
 interface Planned {
-  /** the files deleted, by their paths from the project */
   readonly deleted: readonly string[];
-  /** the files written, by their paths from the project, each as its format reads it back */
   readonly files: Readonly<Record<string, Setting | undefined>>;
-  /** what a held plan found */
   readonly findings: readonly PresetsFinding[];
-  /** the files the locks it wrote name, by their paths from their units */
   readonly lockedFiles: readonly string[];
   readonly locks: Readonly<Record<string, Readonly<Record<string, LockRecord>>>>;
-  /** what a ready plan notes it wrote despite */
   readonly notes: readonly PresetsFinding[];
-  /** what a ready plan reports it writes */
   readonly report: ApplyReport | undefined;
-  /** the texts written, by their paths from the project */
   readonly texts: Files;
 }
 
@@ -76,19 +67,15 @@ const repository = unitOf({
   ],
 });
 
-// What a ready plan reports it writes; a held one writes nothing.
 const reportOf = (plan: ApplyPlan): ApplyReport | undefined =>
   plan.kind === ApplyPlanKind.Ready ? plan.report : undefined;
 
-// What a held plan found; a ready one found nothing.
 const findingsOf = (plan: ApplyPlan): readonly PresetsFinding[] =>
   plan.kind === ApplyPlanKind.Held ? plan.findings : [];
 
-// What a ready plan notes; a held one notes nothing.
 const notesOf = (plan: ApplyPlan): readonly PresetsFinding[] =>
   plan.kind === ApplyPlanKind.Ready ? plan.notes : [];
 
-// The plan of an apply on the project as the step gives it.
 const planOf = (step: Step): ApplyPlan => {
   const { files, reader } = projectOf({
     files: {
@@ -118,8 +105,6 @@ const planOf = (step: Step): ApplyPlan => {
   );
 };
 
-// One plan of an apply: what it reports, and the changes it writes, as the next step finds them; a
-// held plan writes none.
 const planOnce = (step: Step): Planned => {
   const planned = planOf(step);
   const applied = planned.kind === ApplyPlanKind.Ready ? planned.changes : undefined;
@@ -157,7 +142,6 @@ const planOnce = (step: Step): Planned => {
   };
 };
 
-// A JSON file as the fake format writes it, so an apply that changes nothing writes nothing.
 const jsonTextOf = (settings: Setting): string =>
   format.write({
     filePath: RepositoryRelativePath.create('settings.json'),
@@ -170,7 +154,6 @@ const jsonTextOf = (settings: Setting): string =>
     text: '',
   });
 
-// The locks an apply wrote, as the next apply reads them.
 const readOf = (locks: Planned['locks']): Readonly<Record<string, LockRead>> =>
   Object.fromEntries(
     Object.entries(locks).map(([unitFolderPath, lock]) => [
@@ -204,7 +187,6 @@ const biomePresetFile = [
   '        pass',
 ].join('\n');
 
-// biome's preset file writing each file given, which a later apply may write no longer.
 const presetsWith = (files: readonly string[]): Files => ({
   'biome/foundation.yaml': [
     'biome:',
@@ -258,10 +240,10 @@ describe('planApply', () => {
 
     // Assert
     expect(reportOf(planned)).toStrictEqual({
-      added: [],
+      defaultsAddedToExistingFiles: [],
       deletedFilePaths: [],
-      removed: [],
-      unitPaths: [
+      removedByApply: [],
+      writtenUnitPaths: [
         UnitPath.create(''),
       ],
       writtenFilePaths: [
@@ -292,7 +274,6 @@ describe('planApply', () => {
     });
   });
 
-  // An apply that wrote three files, the user's own among them, then one that writes only the first.
   const deletingSteps = (): {
     readonly first: Planned;
     readonly second: Planned;
@@ -541,7 +522,6 @@ describe('planApply', () => {
     ]);
   });
 
-  // The user's own biome.json, beside which biome's preset file writes.
   const beside: Files = {
     'biome.json': JSON.stringify({
       files: [
@@ -596,15 +576,15 @@ describe('planApply', () => {
         'src/sandbox.py': 'pass\n',
       },
       report: {
-        added: [
+        defaultsAddedToExistingFiles: [
           {
             filePath: RepositoryRelativePath.create('biome.json'),
-            setting: 'test.randomize',
+            settingPath: 'test.randomize',
           },
         ],
         deletedFilePaths: [],
-        removed: [],
-        unitPaths: [
+        removedByApply: [],
+        writtenUnitPaths: [
           UnitPath.create(''),
         ],
         writtenFilePaths: [
@@ -637,7 +617,7 @@ describe('planApply', () => {
     expect({
       files: second.files,
       locks: second.locks,
-      units: second.report?.unitPaths,
+      units: second.report?.writtenUnitPaths,
       written: second.report?.writtenFilePaths,
     }).toStrictEqual({
       files: {},
@@ -708,19 +688,19 @@ describe('planApply', () => {
         },
       },
       report: {
-        added: [],
+        defaultsAddedToExistingFiles: [],
         deletedFilePaths: [],
-        removed: [
+        removedByApply: [
           {
             filePath: RepositoryRelativePath.create('biome.json'),
-            setting: 'files "**"',
+            settingPath: 'files "**"',
           },
           {
             filePath: RepositoryRelativePath.create('biome.json'),
-            setting: 'formatter.width',
+            settingPath: 'formatter.width',
           },
         ],
-        unitPaths: [
+        writtenUnitPaths: [
           UnitPath.create(''),
         ],
         writtenFilePaths: [
@@ -887,7 +867,7 @@ describe('planApply', () => {
     // Assert
     expect({
       files: second.files,
-      removed: second.report?.removed,
+      removed: second.report?.removedByApply,
     }).toStrictEqual({
       files: {
         'biome.json': {
@@ -900,11 +880,11 @@ describe('planApply', () => {
       removed: [
         {
           filePath: RepositoryRelativePath.create('biome.json'),
-          setting: 'width',
+          settingPath: 'width',
         },
         {
           filePath: RepositoryRelativePath.create('biome.json'),
-          setting: 'rules[name=size].level',
+          settingPath: 'rules[name=size].level',
         },
       ],
     });
@@ -1031,8 +1011,8 @@ describe('planApply', () => {
             lock: lockOf({
               [file]: {
                 addresses: [],
-                defaults: [],
-                isCreated: false,
+                everMetDefaults: [],
+                isCreatedByApply: false,
                 kind: RecordKind.Settings,
                 leaves: [
                   'kept',
@@ -1116,7 +1096,6 @@ describe('planApply', () => {
       }),
       'src/sandbox.py': 'mine\n',
     };
-    // The lock the files call for: the file the user held first is its own.
     const sandboxLocked: Planned['locks'] = {
       [PROJECT]: {
         'src/sandbox.py': {
@@ -1394,27 +1373,27 @@ describe('planApply', () => {
         },
       },
       report: {
-        added: [
+        defaultsAddedToExistingFiles: [
           {
             filePath: RepositoryRelativePath.create('.gitignore'),
-            setting: '"node_modules/"',
+            settingPath: '"node_modules/"',
           },
           {
             filePath: RepositoryRelativePath.create('biome.json'),
-            setting: 'test.randomize',
+            settingPath: 'test.randomize',
           },
           {
             filePath: RepositoryRelativePath.create('package.json'),
-            setting: 'private',
+            settingPath: 'private',
           },
           {
             filePath: RepositoryRelativePath.create('package.json'),
-            setting: 'scripts.test',
+            settingPath: 'scripts.test',
           },
         ],
         deletedFilePaths: [],
-        removed: [],
-        unitPaths: [
+        removedByApply: [],
+        writtenUnitPaths: [
           UnitPath.create(''),
         ],
         writtenFilePaths: [
@@ -1468,8 +1447,8 @@ describe('planApply', () => {
         [PROJECT]: {
           'notes.json': {
             addresses: [],
-            defaults: [],
-            isCreated: false,
+            everMetDefaults: [],
+            isCreatedByApply: false,
             kind: RecordKind.Settings,
             leaves: [
               Leaf.keyOf({

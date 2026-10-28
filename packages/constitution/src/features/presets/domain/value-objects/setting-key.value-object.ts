@@ -1,8 +1,8 @@
+import { SLOT_KEY } from '../constants';
+
 enum KeyKind {
   Plain = 'plain',
-  /** `list[field=value]`: the element of the list whose field holds the value */
   Address = 'address',
-  /** `list@slot`: items placed where the list holds the slot `{slot: <name>}` */
   Insert = 'insert',
 }
 
@@ -68,10 +68,17 @@ const addressOf = (text: string): AddressKey | undefined => {
   return key.kind === KeyKind.Address ? key : undefined;
 };
 
+const slotAddressOf = (text: string): AddressKey | undefined => {
+  const address = addressOf(text);
+
+  return address?.field === SLOT_KEY ? address : undefined;
+};
+
 const SettingKey = {
   addressOf,
   addressText,
   of,
+  slotAddressOf,
 } as const;
 
 export type { AddressKey };

@@ -4,9 +4,9 @@
 
 ## General
 
-### docstring-only-where-not-obvious → export-documented-only-where-not-obvious · SHOULD
+### docstring-only-where-not-obvious → published-declaration-documented-only-where-not-obvious · SHOULD
 
-A public module, class or function has a docstring only where its names and annotations leave something unsaid: a precondition, a unit, a failure, an effect.
+A module, class or function a package publishes has a docstring only where its names and annotations leave something unsaid: what it does for a caller, a precondition, a unit, a failure, an effect, a bound, a default. Any other has none, save the marks another rule asks for.
 
 | Why |
 |---|
@@ -14,11 +14,11 @@ A public module, class or function has a docstring only where its names and anno
 
 ### docstring-in-google-form · SHOULD
 
-A docstring is in the Google form: a one-line summary on its first line, then the `Args:`, `Returns:` and `Raises:` sections it needs.
+A docstring is in the Google form: a one-line summary on its first line, then the `Args:`, `Returns:` and `Raises:` sections it needs or another rule asks for. A docstring there only for a section another rule asks for holds its summary and that section, nothing else.
 
 | Why |
 |---|
-| one form reads the same in every module, and the summary on the first line is what `help()` and an editor show first. |
+| one form reads the same in every module, and the summary on the first line is what `help()` and an editor show first, so even a docstring held to one section keeps it. |
 
 ## Deprecation
 

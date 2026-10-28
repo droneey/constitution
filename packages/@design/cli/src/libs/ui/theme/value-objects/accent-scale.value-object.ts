@@ -1,13 +1,10 @@
 import type { Brand } from '../../types';
 import { MalformedAccentError } from '../errors';
 
-/** an sRGB colour, `#rrggbb` */
 type HexColour = Brand<string, 'HexColour'>;
 
-/** an app's accent: each step of its scale by its sRGB colour */
 type AccentScale = Brand<Readonly<Record<string, HexColour>>, 'AccentScale'>;
 
-/** the keys of a brand file that lead to the steps of its scale */
 const SCALE_KEYS = [
   'color',
   'brand',
@@ -15,7 +12,6 @@ const SCALE_KEYS = [
 
 const stepsPath = SCALE_KEYS.join('.');
 
-/** what sets a group's own property apart from its tokens */
 const GROUP_PROPERTY_PREFIX = '$';
 
 const HEX_COLOUR = /^#[\da-f]{6}$/iu;
@@ -58,7 +54,7 @@ const isColourStep = (step: Step): step is ColourStep => {
   return isRecord(colour) && (colour['hex'] === undefined || isHexColour(colour['hex']));
 };
 
-// No prototype, since the step names are the file's own.
+// Why: no prototype, since the step names are the file's own.
 const scaleOf = (steps: readonly ColourStep[]): Readonly<Record<string, HexColour>> => {
   const scale: Record<string, HexColour> = Object.create(null);
 
@@ -75,10 +71,10 @@ const is = (candidate: unknown): candidate is AccentScale =>
   isRecord(candidate) && Object.values(candidate).every(isHexColour);
 
 /**
- * The scale of an app's brand file, as the W3C Design Tokens format writes it; a step whose colour
- * gives no sRGB colour is left out, so the default's step stands in for it.
+ * the scale of an app's brand file, as the W3C Design Tokens format writes it; a step whose colour
+ * gives no sRGB colour is left out, so the default's step stands in for it
  *
- * @throws {@link MalformedAccentError} when the file holds no scale, or a step holds no colour or one
+ * @throws {MalformedAccentError} when the file holds no scale, or a step holds no colour or one
  * whose sRGB colour is no `#rrggbb`
  */
 const create = (brandFile: unknown): AccentScale => {

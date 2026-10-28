@@ -1,5 +1,4 @@
 enum SectionKind {
-  /** lines of data, printed as they are */
   Lines = 'lines',
   Note = 'note',
   Pairs = 'pairs',

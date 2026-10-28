@@ -12,12 +12,9 @@ interface ThemeDeclarations {
   readonly own: readonly string[];
 }
 
-/** the group of the tokens of text, whose names Tailwind reads as families */
 const FONT_GROUP_NAME = 'font';
-/** the one scale of text Tailwind reads by its own name, `--font-weight-*` */
 const FONT_WEIGHT_SCALE_NAME = 'weight';
 
-/** the names Tailwind's utilities read a group by, besides its own */
 const tailwindAliases = {
   size: (step): string => `spacing-${step}`,
   layer: (step): string => `z-index-${step}`,
@@ -25,12 +22,10 @@ const tailwindAliases = {
 
 const LINE_HEIGHT_SUFFIX = '--line-height';
 
-/** the name of Tailwind's text utility, its size and the composite of a style of text */
 const textAliasOf: AliasOf = (step) => `text-${step}`;
 
 const familyAliasOf: AliasOf = (familyName) => `font-${familyName}`;
 
-/** the names Tailwind's utilities read each scale of text by, in place of its own */
 const tailwindFontAliases = {
   size: [
     textAliasOf,
@@ -47,7 +42,6 @@ const tailwindFontAliases = {
   ],
 } satisfies Readonly<Record<string, readonly AliasOf[]>>;
 
-/** Tailwind's text composite, the suffix of each of its properties with the part of a typography token it reads; the family stays its own utility */
 const TEXT_COMPOSITE_PARTS = [
   [
     '',
@@ -67,7 +61,7 @@ const TEXT_COMPOSITE_PARTS = [
   ],
 ] as const;
 
-/** Tailwind's radius names, each on the radius primitive of its pixels, which the tokens must hold */
+// Why: Tailwind names its radii so; the tokens must hold a radius primitive of each one's pixels.
 const TAILWIND_RADIUS_PIXELS = {
   xs: 4,
   sm: 4,
@@ -79,7 +73,6 @@ const TAILWIND_RADIUS_PIXELS = {
   '4xl': 32,
 } as const satisfies Readonly<Record<string, number>>;
 
-/** how deep below its group, and below its scale of text, a token's path names its step */
 const GROUP_STEP_DEPTH = 1;
 const SCALE_STEP_DEPTH = 2;
 
@@ -105,6 +98,7 @@ const aliasesOf = (token: TransformedToken): string[] =>
       : [],
   );
 
+/** @throws {MalformedTokenError} when a style of text has a part that refers to no token */
 const fontDeclarationsOf = (
   token: TransformedToken,
   dictionary: Dictionary,
@@ -137,6 +131,7 @@ const fontDeclarationsOf = (
     );
 };
 
+/** @throws {MalformedTokenError} when a style of text has a part that refers to no token */
 const declarationsOf = (token: TransformedToken, dictionary: Dictionary): ThemeDeclarations => {
   const {
     name,
@@ -159,10 +154,11 @@ const declarationsOf = (token: TransformedToken, dictionary: Dictionary): ThemeD
       };
 };
 
+// Why: Tailwind's text composite lacks the family, so each kind of text gets an alias,
+// `--font-code`.
 /**
- * The alias of each kind of text's family, `--font-code`, which Tailwind's text composite lacks.
- *
- * @throws {@link MalformedTokenError} when a style of text has no kind, or names another family than the rest of its kind
+ * @throws {MalformedTokenError} when a style of text has no kind, or names another family
+ * than the rest of its kind
  */
 const kindFamilyDeclarationsOf = (dictionary: Dictionary): string[] => {
   const familyNameByKind = new Map<string, string>();
@@ -198,11 +194,7 @@ const kindFamilyDeclarationsOf = (dictionary: Dictionary): string[] => {
   );
 };
 
-/**
- * Tailwind's radius names, each on its primitive.
- *
- * @throws {@link MalformedTokenError} when the tokens hold no primitive of a radius's pixels
- */
+/** @throws {MalformedTokenError} when the tokens hold no primitive of a radius's pixels */
 const radiusDeclarationsOf = ({ unfilteredTokenMap }: Dictionary): string[] =>
   Object.entries(TAILWIND_RADIUS_PIXELS).map(([radiusName, pixels]) => {
     const primitiveName = `radius-${pixels}`;
@@ -218,12 +210,10 @@ const radiusDeclarationsOf = ({ unfilteredTokenMap }: Dictionary): string[] =>
     });
   });
 
+// Why: Style Dictionary has no format for Tailwind's `@theme`. A token named as Tailwind's is
+// `reference`, never written: on the root, `--x: var(--x)` is a cycle that voids the theme's value.
 /**
- * Style Dictionary has no format for Tailwind's `@theme`. A token whose name is Tailwind's is
- * `reference`, never written out: on the root, `--x: var(--x)` would be a cycle that voids the
- * theme's value.
- *
- * @throws {@link MalformedTokenError} when a style of text has a part that refers to no token, has
+ * @throws {MalformedTokenError} when a style of text has a part that refers to no token, has
  * no kind or names another family than the rest of its kind, or the tokens hold no primitive of a
  * radius's pixels
  */

@@ -1,5 +1,4 @@
 @layer overrides {
-  /* the sidebar's version menu draws its trigger as this field by `data-sidebar-field` */
   :is([data-search-full], [data-sidebar-field]) {
     display: flex;
     align-items: center;

@@ -11,7 +11,6 @@ import { uvBinary, uvEnvironment } from './uv.fixtures';
 
 const MARKS = 'ran.txt';
 
-// A Python unit's pyproject.toml as apply writes it: poe's tasks that run every task of an action.
 const appliedProject = appliedUnit({
   implementations: [
     'poe',
@@ -33,7 +32,6 @@ afterEach(() => {
   }
 });
 
-// The applied project with the tasks given beside the aggregators, each a command of the shell.
 const projectWith = (tasks: Readonly<Record<string, string>>): string => {
   const folder = mkdtempSync(join(tmpdir(), 'poe-aggregator-'));
 

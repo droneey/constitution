@@ -5,7 +5,6 @@ import { visit } from 'unist-util-visit';
 const attributeOf = (node: Nodes, name: string): unknown =>
   node.data?.hProperties?.[`data-${name}`];
 
-/** the first part of the card the plugin marks with the name, in reading order */
 const partOf = (tree: Nodes, name: string): Nodes | undefined => {
   const parts: Nodes[] = [];
 
@@ -31,7 +30,6 @@ const slugOf = (card: Nodes): string => {
   return slugs.join('');
 };
 
-/** the plugin marks every part of a card, so a node without marks is the author's */
 const isAuthored = (node: RootContent): boolean =>
   Object.keys(node.data?.hProperties ?? {}).length === 0;
 
@@ -68,7 +66,6 @@ const linksOf = (tree: Root): readonly LinkOutline[] => {
   return links;
 };
 
-/** the meta of each block of code, which the site's highlighter reads a title from */
 const codeMetasOf = (tree: Root): readonly (string | null | undefined)[] => {
   const metas: (string | null | undefined)[] = [];
 

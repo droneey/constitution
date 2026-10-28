@@ -28,7 +28,7 @@ version-control:
         commit-msg:
           jobs[name=commit-body]:
             run: |
-              # git commit -v leaves the diff below its scissors line for the hook to read.
+              # Why: git commit -v leaves the diff below its scissors line for the hook to read.
               BODY="$(sed -e '/^# -\{24\} >8 -\{24\}$/,$d' -e '1d;/^#/d;/^$/d' {1} |
                 grep -vE '^[A-Za-z][A-Za-z-]*: .+$' || true)"
               if [ -n "$BODY" ]; then

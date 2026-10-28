@@ -38,8 +38,6 @@ const EXECUTABLE = 0o755;
 
 const repository = join(import.meta.dir, '..', '..');
 const bin = join(repository, 'node_modules', '.bin');
-// Each TypeScript package's folder, by the name that follows its folder, and its group's where a
-// group folder holds it.
 const UNITS: Readonly<Record<string, string>> = {
   '@shop/api': 'apps/api',
   '@shop/desk-web': 'apps/@desk/web',
@@ -49,16 +47,12 @@ const UNITS: Readonly<Record<string, string>> = {
   '@shop/web': 'apps/web',
 } as const;
 
-// Each Python package's folder: a library the workspace releases, in two
-// languages, an application and the library of packages/ it uses.
 const PYTHON_PACKAGES: readonly string[] = [
   'packages/@eros/python',
   'apps/reports',
   'packages/tabula',
 ] as const;
 
-// Each package of data in no language, by its name: the packages of its group
-// read it through its entry.
 const SHARED_PACKAGES: Readonly<Record<string, string>> = {
   '@shop/desk-shared': 'packages/@desk/shared',
   '@shop/eros-shared': 'packages/@eros/shared',
@@ -66,7 +60,6 @@ const SHARED_PACKAGES: Readonly<Record<string, string>> = {
 
 const jsonFileOf = (fields: unknown): string => `${JSON.stringify(fields, undefined, 2)}\n`;
 
-// A unit's own compiler settings: what apply writes joins them.
 const tsconfigOf = (input: { references: readonly string[] }): string =>
   jsonFileOf({
     compilerOptions: {
@@ -91,7 +84,6 @@ interface ManifestInput {
   readonly name: string;
 }
 
-// The packages of the tools the scripts apply writes run, which a unit declares for development.
 const toolPackages: Readonly<Record<string, string>> = {
   '@biomejs/biome': '1.0.0',
   'dependency-cruiser': '1.0.0',
@@ -137,8 +129,6 @@ const pyprojectOf = (input: { lines?: readonly string[]; name: string }): string
     '',
   ].join('\n');
 
-// A package an application must not import outside the edge, built into its
-// dist/ as a registry's package is, and the framework eros integrates with.
 const installed: Files = {
   'node_modules/@nestjs/common/index.d.ts':
     'export declare const Module: (metadata: { providers: readonly unknown[] }) => (target: object) => void;\n',
@@ -159,9 +149,6 @@ const installed: Files = {
   }),
 };
 
-// eros, a library the workspace releases, in two languages: a group folder of a
-// package for each language, laid out by layers with its integrations into host
-// frameworks as entries of their own, and the package of the data they share.
 const eros: Files = {
   'packages/@eros/shared/package.json': jsonFileOf({
     name: '@shop/eros-shared',
@@ -344,7 +331,6 @@ KINDS = tuple(
   'packages/@eros/python/src/shop_eros_python/py.typed': '',
 };
 
-// An application in Python alone, and the library of packages/ it takes from the workspace.
 const reports: Files = {
   'packages/tabula/pyproject.toml': pyprojectOf({
     name: 'shop-tabula',
@@ -381,7 +367,6 @@ const reports: Files = {
     "import structlog\n\n\ndef run() -> None:\n  structlog.get_logger().info('reports')\n",
 };
 
-// An application of a group, which reads the data its group shares by the name of their package.
 const desk: Files = {
   'packages/@desk/shared/package.json': jsonFileOf({
     name: '@shop/desk-shared',
@@ -413,7 +398,6 @@ export const QUEUES: readonly string[] = isQueues(queues) ? queues : [];
   }),
 };
 
-// A browser application whose specs are checked by a configuration of their own.
 const web: Files = {
   'apps/web/package.json': manifestOf({
     dependencies: [
@@ -449,7 +433,6 @@ export const label = (id: OrderId): string => \`Order \${describeOrder({ id, tot
   }),
 };
 
-// A NestJS API on the compiler options of its framework, and what the apps share.
 const apiAndShared: Files = {
   'packages/money/package.json': manifestOf({
     exports: {
@@ -742,7 +725,6 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
   },
 };
 
-// apply writes the tools' configurations around the settings the units hold of their own.
 const workspaceFiles: Files = {
   ...installed,
   ...eros,
@@ -757,7 +739,6 @@ const workspaceFiles: Files = {
     ]),
   ),
   [`apps/web/${OWN_PACK}/presets/stryker/foundation/with/bun-test.yaml`]: strykerPack,
-  // The root's knip reads its own scripts, each package's runs by the configuration in its folder.
   'knip.jsonc': jsonFileOf({
     entry: [
       'scripts/*.ts!',
@@ -819,8 +800,6 @@ const write = (input: WriteInput): void => {
   }
 };
 
-// The units are linked by their names as a package manager links them, beside
-// this repository's packages; `node` runs on Bun, as `bun run` makes it.
 const link = (folder: string): void => {
   mkdirSync(join(folder, 'node_modules', '@shop'), {
     recursive: true,
@@ -851,7 +830,6 @@ const git = (input: { args: readonly string[]; folder: string }): void => {
   });
 };
 
-/** @throws Error when the apply fails. */
 const apply = (folder: string): void => {
   const run = spawnSync(
     cliPath,
@@ -873,7 +851,7 @@ const apply = (folder: string): void => {
   }
 };
 
-// The real path, since the compiler matches a referenced unit's files by it.
+// Why: the real path, since the compiler matches a referenced unit's files by it.
 const createWorkspace = (changes: Files = {}): string => {
   const folder = realpathSync(mkdtempSync(join(tmpdir(), 'constitution-workspace-')));
 
@@ -922,7 +900,6 @@ const runTool = (workspace: string, command: Command): Run => {
   };
 };
 
-// The branch's base is committed and named `origin/main`; the change is left in the tree.
 const commitBase = (workspace: string): void => {
   for (const args of [
     [

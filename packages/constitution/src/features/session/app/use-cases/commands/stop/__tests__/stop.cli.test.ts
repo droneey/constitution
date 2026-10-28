@@ -22,7 +22,6 @@ interface Recorded extends Judged {
 const STDIN =
   '{"session_id":"s1","hook_event_name":"SubagentStop","agent_type":"Explore","agent_name":"helper","stop_hook_active":true}';
 
-// What a run answered: the JSON it wrote, read back, or undefined when it wrote none.
 const answerOf = (stdout: string): unknown => (stdout === '' ? undefined : JSON.parse(stdout));
 
 const runOf = async (

@@ -1,5 +1,5 @@
 core:
-  every-mutant-killed:
+  spec-boundaries-follow-the-tree:
     typescript:
       stryker.config.json:
         mutate:

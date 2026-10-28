@@ -44,20 +44,20 @@ const presetsFindingTexts: TextsOf<PresetsDetails> = {
     ].join(''),
   [PresetsCode.EntryMisshapen]: ({ keys }) =>
     entryMisshapenMessage(keys.length === 0 ? AT_TOP : underKeysMessage(keys)),
-  [PresetsCode.Loosened]: ({ setting, wanted }) =>
+  [PresetsCode.Loosened]: ({ settingPath, wanted }) =>
     loosenedMessage({
-      held: setting === '' ? ALL_SETTINGS : setting,
+      held: settingPath === '' ? ALL_SETTINGS : settingPath,
       wanted,
     }),
-  [PresetsCode.SortedInUnsortableFile]: ({ file, setting, ...named }) =>
+  [PresetsCode.SortedInUnsortableFile]: ({ file, settingPath, ...named }) =>
     sortedInUnsortableMessage({
       file,
       named,
-      sorted: setting === '' ? ALL_SETTINGS : setting,
+      sorted: settingPath === '' ? ALL_SETTINGS : settingPath,
     }),
-  [PresetsCode.Missing]: ({ settings }) => missingMessage(settingsOf(settings)),
-  [PresetsCode.Stale]: ({ settings }) => staleMessage(settingsOf(settings)),
-  [PresetsCode.Unsorted]: ({ settings }) => unsortedMessage(settingsOf(settings)),
+  [PresetsCode.Missing]: ({ settingPaths }) => missingMessage(settingsOf(settingPaths)),
+  [PresetsCode.Stale]: ({ settingPaths }) => staleMessage(settingsOf(settingPaths)),
+  [PresetsCode.Unsorted]: ({ settingPaths }) => unsortedMessage(settingsOf(settingPaths)),
 };
 
 const presetsFindingTextOf = (finding: PresetsFinding): string =>

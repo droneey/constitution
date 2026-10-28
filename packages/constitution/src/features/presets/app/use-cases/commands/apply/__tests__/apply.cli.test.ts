@@ -37,10 +37,10 @@ const changes: AppliedFiles = {
 };
 
 const writtenReport: ApplyReport = {
-  added: [],
+  defaultsAddedToExistingFiles: [],
   deletedFilePaths: [],
-  removed: [],
-  unitPaths: [
+  removedByApply: [],
+  writtenUnitPaths: [
     UnitPath.create('packages/kit'),
   ],
   writtenFilePaths: [
@@ -81,7 +81,6 @@ const fixPlan: RunPlan = {
   ],
 };
 
-// A step's label names it: any text but an empty one.
 const NAMED = /\S/;
 
 const runOf = async (input: {
@@ -311,7 +310,7 @@ describe('createPresetsApplyCommand', () => {
         notes: [],
         report: {
           ...writtenReport,
-          unitPaths: [],
+          writtenUnitPaths: [],
           writtenFilePaths: [],
         },
       }),

@@ -21,21 +21,23 @@ const rowOf = (cells: TableCell[]): TableRow => ({
   type: 'tableRow',
 });
 
-// A link of the sentence leads from its block's file, not from this page, so it keeps only its words;
-// a term's id is the anchor of its own page, so the sentence drops it.
 const definitionOf = (sentence: string): PhrasingContent[] => {
   const tree = fromMarkdown(sentence);
   const [paragraph] = tree.children;
 
+  // Why: a term's id is the anchor of its own page, so the sentence drops it.
   takeTermIds(tree);
 
-  return (
+  const phrasing =
     paragraph?.type === 'paragraph'
       ? paragraph.children
       : [
           textNode(sentence),
-        ]
-  ).flatMap((child) =>
+        ];
+
+  // Why: a link of the sentence leads from its block's file, not from this page, so it keeps only
+  // its words.
+  return phrasing.flatMap((child) =>
     child.type === 'link'
       ? child.children
       : [

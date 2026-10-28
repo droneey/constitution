@@ -11,7 +11,6 @@ from droneey_mutation_check_python.features.mutation.domain.errors import (
 )
 from droneey_mutation_check_python.features.mutation.domain.value_objects import UnitRelativePath
 
-# A name of a folder or a file: no separator, no NUL, never `.` or `..`.
 SEGMENTS: Final = st.text(
   alphabet=st.characters(exclude_characters='/\0'), min_size=1, max_size=12
 ).filter(lambda segment: segment not in {'.', '..'})

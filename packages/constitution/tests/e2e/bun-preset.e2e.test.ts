@@ -4,9 +4,9 @@ import { runTool, widestAppliedUnit } from './preset-load.fixtures';
 
 const PROBE = 'probe';
 
-// Bun takes a key of its bunfig.toml it does not know without a word, so each setting of Bun's own
-// the presets write has a run it must change. How old a release install takes needs the registry,
-// which no spec reaches.
+// Why: Bun takes a key of its bunfig.toml it does not know without a word, so each setting of Bun's
+// own the presets write has a run it must change. How old a release install takes needs the
+// registry, which no spec reaches.
 describe("the configuration Bun's presets write", () => {
   it("should run a script's node as Bun when a unit follows every block Bun is configured for", async () => {
     // Arrange

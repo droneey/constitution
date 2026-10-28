@@ -23,9 +23,6 @@ interface PlanApplyInput {
   readonly startFolderPath: AbsolutePath;
 }
 
-// The findings that hold no plan, where any other holds it. A lock that does not parse is written
-// again from the files, and the plan notes it; a tool no runner runs is the run's and the check's
-// to report, so the plan leaves it out.
 const noted: ReadonlySet<PresetsCode> = new Set([
   PresetsCode.LockUnparsed,
 ]);
@@ -88,13 +85,12 @@ const planOf = (
       locks: locks.map((lock) => lock.next),
     },
     kind: ApplyPlanKind.Ready,
-    // none of the findings holds the plan, so each is one it notes
     notes: reported,
     report: {
-      added: files.flatMap((file) => file.added),
+      defaultsAddedToExistingFiles: files.flatMap((file) => file.defaultsAddedToExistingFile),
       deletedFilePaths: deleted.map((file) => file.filePath),
-      removed: files.flatMap((file) => file.removed),
-      unitPaths: units
+      removedByApply: files.flatMap((file) => file.removedByApply),
+      writtenUnitPaths: units
         .filter((unit) => unit.files.some((file) => file.change.kind !== FileChangeKind.Kept))
         .map((unit) => unit.unitPath),
       writtenFilePaths: [
@@ -106,9 +102,8 @@ const planOf = (
 };
 
 /**
- * What an apply writes, deletes and reports; a plan with a finding it does not only note is held
- * and writes nothing. A setting the user keeps in a file stays, and one of ours the user changed
- * stays changed.
+ * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
+ * @throws {ReleaseError} when the release's blocks cannot be listed
  */
 const planApply = (input: PlanApplyInput): ProjectRead<ApplyPlan> =>
   ProjectRead.map(input.reader.open(input.startFolderPath), (project) =>

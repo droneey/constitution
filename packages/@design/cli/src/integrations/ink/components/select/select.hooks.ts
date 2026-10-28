@@ -25,7 +25,8 @@ const useSelect = <T>({ choices, onInterrupt, onSubmit }: SelectInput<T>): numbe
     } else if (key.downArrow) {
       setMovedIndex((index) => (clampedIndexOf(index) + 1) % choices.length);
     } else if (key.return) {
-      // A reduce over a non-empty list always gives an answer, so no index lookup can miss.
+      // Why: a reduce over a non-empty list always gives an answer, where an index lookup could
+      // miss.
       onSubmit(
         choices.reduce((pointed, choice, index) => (index === pointedIndex ? choice : pointed))
           .value,

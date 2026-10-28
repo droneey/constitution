@@ -1375,7 +1375,7 @@ describe('resolveDeclaration', () => {
           },
         ],
       }),
-      musts: [],
+      mustsBesideCore: [],
       units: [
         unitOf({
           blocks: [
@@ -1593,7 +1593,7 @@ describe('resolveDeclaration', () => {
           },
         ],
       }),
-      musts: [
+      mustsBesideCore: [
         mustOf({
           block: 'forms',
           lowerings: [
@@ -1748,7 +1748,7 @@ describe('resolveDeclaration', () => {
     });
 
     // Assert
-    expect(resolution.musts).toStrictEqual([
+    expect(resolution.mustsBesideCore).toStrictEqual([
       mustOf({
         block: 'ui',
         slug: 'inputs-are-labelled',
@@ -2302,7 +2302,7 @@ describe('resolveDeclaration', () => {
         ],
       }),
       model: modelOf(),
-      musts: [],
+      mustsBesideCore: [],
       units: [
         unitOf({
           blocks: [],

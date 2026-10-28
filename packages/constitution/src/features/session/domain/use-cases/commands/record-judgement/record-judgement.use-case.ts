@@ -9,11 +9,6 @@ interface RecordJudgementInput {
   readonly sessions: SessionCommandRepository;
 }
 
-/**
- * Records the tree the gate judged: as reviewed when the reviewer finished, as blocked when the
- * agent was sent to run the check; records why git failed to report the tree, so the gate tells a
- * reason once a session; records nothing for a review asked for.
- */
 const recordJudgement = (input: RecordJudgementInput): void => {
   const { judgement, session } = input;
 

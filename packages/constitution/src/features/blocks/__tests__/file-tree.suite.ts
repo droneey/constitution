@@ -6,7 +6,6 @@ import { TreePath } from '../domain/value-objects';
 
 interface FileTreeSuiteInput {
   readonly name: string;
-  /** a tree that holds these files, each under blocks/ */
   readonly treeOf: (files: Readonly<Record<string, string>>) => FileTree;
 }
 

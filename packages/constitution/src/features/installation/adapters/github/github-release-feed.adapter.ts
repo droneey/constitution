@@ -7,12 +7,10 @@ import type { LatestRelease } from '../../domain/entities';
 import { ReleaseLookup } from '../../domain/entities';
 import { releasesModel } from './models';
 
-// Every release is published as a pre-release first, which GitHub's latest leaves out, so the
+// Why: every release is published as a pre-release first, which GitHub's latest leaves out, so the
 // newest of the list is read; one is all the list is asked for.
 const RELEASES = 'https://api.github.com/repos/droneey/constitution/releases?per_page=1';
 const TAG_PREFIX = /^v/;
-// One release's record is a few kilobytes and a few levels deep; an answer past these is refused
-// unread.
 const MAX_ANSWER_BYTES = 1_048_576;
 const MAX_ANSWER_DEPTH = 16;
 
@@ -20,8 +18,8 @@ const UNREADABLE = {
   lookup: ReleaseLookup.Unreadable,
 } as const satisfies LatestRelease;
 
-// What fetch throws when the network is down, a proxy refuses the call, or it ran out of time; Bun
-// gives a refused connection or tunnel its code.
+// Why: fetch throws these when the network is down, a proxy refuses the call, or it ran out of
+// time; Bun gives a refused connection or tunnel its code.
 const isUnanswered = (error: unknown): error is Error =>
   error instanceof TypeError ||
   error instanceof DOMException ||
@@ -84,7 +82,6 @@ const createGitHubReleaseFeed = (input: GitHubReleaseFeedInput): ReleaseFeed => 
         return UNREADABLE;
       }
 
-      // an answer that is no JSON reads as no list of releases
       const body = attempted<unknown>({
         effect: () => JSON.parse(text),
         isRecognised: isSyntaxError,

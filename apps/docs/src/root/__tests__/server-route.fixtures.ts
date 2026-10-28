@@ -12,7 +12,6 @@ const noNextMiddleware = (): never => {
   throw new Error('a route with no component has no middleware after its handler');
 };
 
-/** a GET of the route's address, as Start hands it to a route's handler after the request middleware */
 const getCallOf = <TPath extends string, TContext, TParams>(
   pathname: TPath,
   context: TContext,
@@ -25,7 +24,6 @@ const getCallOf = <TPath extends string, TContext, TParams>(
   request: new Request(new URL(pathname, ORIGIN)),
 });
 
-/** the handler's answer, which a route that renders no screen always gives as a response */
 const responseOf = async (answer: unknown): Promise<Response> => {
   const response = await answer;
 

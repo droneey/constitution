@@ -19,8 +19,6 @@ import {
 } from '../../../domain/use-cases/queries/check';
 import { pluginTexts } from '../plugin-texts.utils';
 
-// One problem of each code, and a second where its text words a field left empty, by the name the
-// golden file heads it with.
 const problems: Readonly<
   Record<string, ProblemOf<HooksDetails & ManifestReadDetails & MarketplaceDetails & PluginDetails>>
 > = {

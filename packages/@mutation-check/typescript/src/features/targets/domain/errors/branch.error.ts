@@ -15,7 +15,6 @@ enum BranchFailure {
   OutputPastLimit = 'branch-output-past-limit',
 }
 
-/** The command that failed, run in the folder. */
 interface BranchCommand {
   readonly args: readonly string[];
   readonly folderPath: AbsolutePath;

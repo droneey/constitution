@@ -9,7 +9,7 @@ interface RepoLinksOptions {
   readonly baseUrl: string;
 }
 
-/** @throws {@link InvalidValueError} when the file's path is relative */
+/** @throws {InvalidValueError} when the file's path is relative */
 const remarkRepoLinks =
   ({ baseUrl }: RepoLinksOptions) =>
   (tree: Root, file: VFile): void => {

@@ -27,7 +27,6 @@ interface HookRun {
 
 interface HookCheck {
   readonly exitCode: number | undefined;
-  /** the rules the hook names, each at the head of a line it prints */
   readonly rules: readonly string[];
 }
 
@@ -55,7 +54,6 @@ interface UnitJob {
 
 const RULE = /^\[([a-z0-9-]+)\]/gm;
 
-/** lefthook's own validation of the configuration of the widest unit, made a repository. */
 const validation = (): Promise<Load> =>
   loadOf('lefthook', {
     command: [
@@ -65,7 +63,6 @@ const validation = (): Promise<Load> =>
     ],
   });
 
-/** The jobs of the lefthook.yaml of the widest unit, beside what is given. */
 const unitJobs = (more: Partial<UnitFixture> = {}): readonly UnitJob[] =>
   Object.entries(
     hooks.parse(
@@ -90,11 +87,6 @@ interface JobRunInput {
   readonly job: string;
 }
 
-/**
- * The command of a job of the widest unit's lefthook.yaml.
- *
- * @throws Error when the hook holds no such job.
- */
 const jobRun = (input: JobRunInput): string => {
   const found = unitJobs().find(({ hook, job }) => hook === input.hook && job === input.job);
 
@@ -105,8 +97,8 @@ const jobRun = (input: JobRunInput): string => {
   return found.run;
 };
 
-// lefthook runs a job under sh with its files in place of {staged_files} and
-// the message file in place of {1}; ShellCheck reads the command as such a script.
+// Why: lefthook runs a job under sh with its files in place of {staged_files} and the message file
+// in place of {1}; ShellCheck reads the command as such a script.
 const shellCheckRun = (run: string): HookRun => {
   const check = spawnSync(
     shellcheck,
@@ -136,7 +128,7 @@ const DETACHED_HEAD = [
   '--detach',
 ] as const;
 
-// -B, as the branch may be the one git starts a repository on.
+// Why: -B, as the branch may be the one git starts a repository on.
 const checkoutOf = (branch: string): readonly string[] => [
   'checkout',
   '--quiet',
@@ -144,7 +136,6 @@ const checkoutOf = (branch: string): readonly string[] => [
   branch,
 ];
 
-// The branch job run in a repository of one commit, its HEAD set by the checkout given.
 const headRun = (checkout: readonly string[]): HookRun => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-branch-'));
 
@@ -190,8 +181,6 @@ const headRun = (checkout: readonly string[]): HookRun => {
   }
 };
 
-// lefthook passes the message file as {1} and runs each job of the hook under sh; the hook fails as
-// its first job to fail does.
 const commitMessageRun = (message: string, more: Partial<UnitFixture> = {}): HookRun => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-commit-'));
 
@@ -239,7 +228,6 @@ const checkOf = (run: HookRun): HookCheck => ({
   ].map(([, rule]) => String(rule)),
 });
 
-/** The names of the commit message hook's jobs, in a unit whose override lowers the rules given. */
 const commitMessageJobs = (lowered: readonly string[]): readonly string[] =>
   unitJobs({
     lowered,
@@ -247,13 +235,10 @@ const commitMessageJobs = (lowered: readonly string[]): readonly string[] =>
     .filter(({ hook }) => hook === Hook.CommitMessage)
     .map(({ job }) => job);
 
-/** The branch hook's judgement of the branch checked out. */
 const checkBranch = (branch: string): HookCheck => checkOf(headRun(checkoutOf(branch)));
 
-/** The branch hook's judgement of a HEAD on no branch, as in a rebase or a bisect. */
 const checkDetachedHead = (): HookCheck => checkOf(headRun(DETACHED_HEAD));
 
-/** The commit message hook's judgement of the message, in the widest unit beside what is given. */
 const checkCommitMessage = (message: string, more: Partial<UnitFixture> = {}): HookCheck =>
   checkOf(commitMessageRun(message, more));
 
@@ -262,7 +247,6 @@ interface HookTextsInput {
   readonly messages: readonly string[];
 }
 
-/** What the hooks print for each message and branch, as a golden file holds it. */
 const hookTexts = (input: HookTextsInput): string =>
   goldenOf(
     Object.fromEntries([

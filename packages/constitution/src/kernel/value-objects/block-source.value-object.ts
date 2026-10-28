@@ -31,7 +31,6 @@ const equals = (left: BlockSource, right: BlockSource): boolean =>
     ? PackPath.equals(left.pack, right.pack)
     : left.kind === right.kind;
 
-/** Whether a value is a source: the release, or a pack with its path. */
 const is = (candidate: unknown): candidate is BlockSource => {
   const fields = fieldsOf(candidate);
   const kind = fields.get('kind');

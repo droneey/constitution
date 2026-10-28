@@ -1,5 +1,7 @@
-import type { PresetsFinding } from '../../../../../entities';
-import { MergedFile, PresetValue } from '../../../../../entities';
+import { isDeepEqual } from '#/kernel/utils';
+
+import type { MergeProblem, PresetsFinding } from '../../../../../entities';
+import { MergedFile, PresetsCode, PresetValue } from '../../../../../entities';
 import { joinWords } from '../join-words';
 import type { ResolvedCandidate } from '../resolve-facts';
 import { candidatePathOf } from '../select-entries';
@@ -17,10 +19,34 @@ interface MergeEntriesInput {
   readonly resolved: readonly ResolvedCandidate[];
 }
 
-/**
- * A candidate whose entries only insert into lists no entry of it places is not written: its
- * lists' owner is not in force there.
- */
+const isInsertWithoutTarget = (problem: MergeProblem): boolean =>
+  problem.code === PresetsCode.SlotInNoList || problem.code === PresetsCode.MissingSlot;
+
+// Why: an insert lands in a list another entry gives; when an override or an axis drops that entry,
+// the insert has nowhere to land and is skipped, as a file that receives only inserts is.
+const withoutProblemsOfInsertsIntoDropped = (
+  candidate: ResolvedCandidate,
+  written: MergedFile,
+): MergedFile => {
+  // Stryker disable next-line ConditionalExpression,BlockStatement: with nothing dropped the second merge finds the same problems; the return only spares it
+  if (candidate.droppedContributions.length === 0) {
+    return written;
+  }
+
+  const { problems } = MergedFile.merge([
+    ...candidate.contributions,
+    ...candidate.droppedContributions,
+  ]);
+
+  return {
+    ...written,
+    problems: written.problems.filter(
+      (problem) =>
+        !isInsertWithoutTarget(problem) || problems.some((kept) => isDeepEqual(kept, problem)),
+    ),
+  };
+};
+
 const mergeEntries = (input: MergeEntriesInput): CandidatesMerged => {
   const candidates = input.resolved.flatMap((candidate): readonly MergedCandidate[] => {
     if (
@@ -29,7 +55,10 @@ const mergeEntries = (input: MergeEntriesInput): CandidatesMerged => {
       return [];
     }
 
-    const written = MergedFile.merge(candidate.contributions);
+    const written = withoutProblemsOfInsertsIntoDropped(
+      candidate,
+      MergedFile.merge(candidate.contributions),
+    );
 
     return [
       {

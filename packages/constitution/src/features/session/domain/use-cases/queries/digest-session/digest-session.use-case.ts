@@ -11,7 +11,6 @@ interface DigestSessionPorts {
   readonly workingTree: WorkingTree;
 }
 
-// Presets that cannot be checked cost their warnings, never the digest.
 const presetsWarningsOf = (report: ConfigurationsReport): readonly ProjectWarning[] =>
   report.status === ConfigurationsCheckStatus.Checked
     ? report.warnings
@@ -27,7 +26,6 @@ const presetsWarningsOf = (report: ConfigurationsReport): readonly ProjectWarnin
         },
       ];
 
-// A project in no repository has no hand-back gate; a failure of git is told by the gate itself.
 const repositoryWarningsOf = (tree: TreeState): readonly ProjectWarning[] =>
   tree.status === TreeStateStatus.NoRepository
     ? [
@@ -39,20 +37,19 @@ const repositoryWarningsOf = (tree: TreeState): readonly ProjectWarning[] =>
     : [];
 
 /**
- * The digest of the rules a session starts with, and the state its later hooks read; or undefined
- * when no project around the start declares any. Lets through the source's failure to read
- * constitution.yaml, the release's blocks or core.
+ * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
+ * @throws {ReleaseError} when the release's blocks cannot be listed
  */
 const digestSession = (input: DigestSessionPorts & SessionStart): SessionDigest | undefined => {
   const { source } = input;
-  const place = source.find(input.searchFrom);
+  const place = source.findProjectAround(input.searchFrom);
 
   if (place === undefined) {
     return undefined;
   }
 
   const { releaseFolderPath, repositoryFolderPath } = place;
-  const version = source.versionOf(place);
+  const version = source.pinnedVersionOf(place);
 
   if (version === undefined) {
     return {
@@ -64,7 +61,7 @@ const digestSession = (input: DigestSessionPorts & SessionStart): SessionDigest 
   }
 
   const rules = source.readRules(place);
-  const core = source.readCore(place);
+  const core = source.readCorePassport(place);
 
   const digestRelease = {
     folderPath: releaseFolderPath,
@@ -89,7 +86,7 @@ const digestSession = (input: DigestSessionPorts & SessionStart): SessionDigest 
   return {
     contents: {
       core,
-      count: rules.activeCount,
+      count: rules.activeInAnyUnitCount,
       isStartup:
         input.event === HookEventName.SessionStart && input.origin === SessionOrigin.Startup,
       kind: DigestKind.Resolved,
@@ -103,7 +100,7 @@ const digestSession = (input: DigestSessionPorts & SessionStart): SessionDigest 
     },
     state: {
       active: rules.active,
-      musts: rules.musts,
+      mustsBesideCore: rules.mustsBesideCore,
       repositoryFolderPath,
       status: ConfigReadStatus.Parsed,
     },

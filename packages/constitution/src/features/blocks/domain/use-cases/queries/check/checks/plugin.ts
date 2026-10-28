@@ -26,7 +26,6 @@ enum PluginCode {
 interface PluginDetails {
   readonly [PluginCode.ManifestMissing]: object;
   readonly [PluginCode.SkillsDirectoryEmpty]: {
-    /** as the manifest lists it, without its leading ./ */
     readonly directory: string;
   };
   readonly [PluginCode.SkillsDirectoryUnlisted]: {
@@ -56,7 +55,7 @@ interface PluginDetails {
 
 type PluginFinding = FindingOf<ManifestReadDetails & PluginDetails>;
 
-// Claude Code scans it whether or not the manifest lists it.
+// Why: Claude Code scans it whether or not the manifest lists it.
 const DEFAULT_SKILLS_FOLDER_PATH = 'skills/';
 const SKILL_FOLDER = /^([^./][^/]*)\//;
 enum Template {
@@ -101,7 +100,8 @@ const listingFindings = (input: {
   ];
 };
 
-// A folder directly inside a skills directory is a skill, a hidden one aside.
+// Why: Claude Code takes a folder directly inside a skills directory for a skill, a hidden one
+// aside.
 const folderFindings = (input: {
   declared: readonly string[];
   paths: ReadonlySet<string>;

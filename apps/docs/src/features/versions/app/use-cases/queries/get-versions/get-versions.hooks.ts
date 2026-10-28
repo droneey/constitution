@@ -41,7 +41,8 @@ export function useGetVersions(): VersionsState {
           return;
         }
 
-        // the menu is an optional part: a defect shows it unavailable and is reported, never thrown at the page
+        // Why: the menu is an optional part: a defect shows it unavailable and is reported, never
+        // thrown at the page.
         if (!(error instanceof VersionsError)) {
           reportError(error);
         }

@@ -9,10 +9,13 @@ import { ProjectReadStatus } from '../../../../domain/entities';
 import { failUnreadStep, planLinesOf } from '../../../utils';
 
 interface PresetsPlanContext extends CommandContext {
+  /**
+   * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
+   * @throws {ReleaseError} when the release's blocks cannot be listed
+   */
   readonly planPresets: (startFolderPath: AbsolutePath) => ProjectRead<PresetsPlan>;
 }
 
-/** Claude Code's project, else the folder the run starts in: /constitution:ratify runs it there. */
 const createPresetsPlanCommand = (context: PresetsPlanContext): Command =>
   new Command('plan')
     .description(

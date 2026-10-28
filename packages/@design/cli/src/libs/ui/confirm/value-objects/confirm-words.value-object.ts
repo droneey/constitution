@@ -10,7 +10,7 @@ type ConfirmWords = Brand<
   'ConfirmWords'
 >;
 
-// The first code point, so a letter beyond the basic plane stays whole.
+// Why: the first code point, so a letter beyond the basic plane stays whole.
 const keyOf = (word: string): string | undefined => Array.from(word)[0]?.toLowerCase();
 
 const usableKeysOf = (words: ConfirmWordsInput): ConfirmKeys | undefined => {
@@ -31,7 +31,7 @@ const hasKeys = (
   },
 ): words is ConfirmWords => words.keys !== undefined;
 
-/** @throws {@link UnusableConfirmWordsError} when a word is empty or both begin with one letter */
+/** @throws {UnusableConfirmWordsError} when a word is empty or both begin with one letter */
 const create = (input: ConfirmWordsInput): ConfirmWords => {
   const words = {
     ...input,

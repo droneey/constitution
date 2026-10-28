@@ -8,9 +8,6 @@ import { ConfigReadStatus } from '#/kernel/entities';
 import type { UnitPath } from '#/kernel/value-objects';
 import { Version } from '#/kernel/value-objects';
 
-// A project in a repository, its release installed and holding core alone. The parsers stand in
-// for the project feature's own: a constitution.yaml gives every key it needs and lists nothing,
-// unless it is the one that does not parse.
 const CORE_TEXT = '---\nid: core\n---\n\n# core\n';
 const CONFIG = 'axes: []\n';
 const UNPARSED_CONFIG = 'axes: [\n';

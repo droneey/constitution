@@ -7,24 +7,35 @@ import { AbsolutePath, BlockId, Glob, RuleSlug, UnitPath } from '#/kernel/value-
 
 import type { SessionState } from '../../../domain/entities';
 
-const absolutePathModel = z.string().refine(AbsolutePath.is).transform(AbsolutePath.create);
+const absolutePathModel: z.ZodType<AbsolutePath, string> = z
+  .string()
+  .refine(AbsolutePath.is)
+  .transform(AbsolutePath.create);
 
-const blockIdModel = z.string().refine(BlockId.is).transform(BlockId.create);
+const blockIdModel: z.ZodType<BlockId, string> = z
+  .string()
+  .refine(BlockId.is)
+  .transform(BlockId.create);
 
-const globModel = z.string().refine(Glob.is).transform(Glob.create);
+const globModel: z.ZodType<Glob, string> = z.string().refine(Glob.is).transform(Glob.create);
 
-const ruleSlugModel = z.string().refine(RuleSlug.is).transform(RuleSlug.create);
+const ruleSlugModel: z.ZodType<RuleSlug, string> = z
+  .string()
+  .refine(RuleSlug.is)
+  .transform(RuleSlug.create);
 
-const unitPathModel = z.string().refine(UnitPath.is).transform(UnitPath.create);
+const unitPathModel: z.ZodType<UnitPath, string> = z
+  .string()
+  .refine(UnitPath.is)
+  .transform(UnitPath.create);
 
 const activeBlockModel = z.strictObject({
-  files: z.array(z.string()),
-  governs: z.array(globModel),
+  files: z.array(z.string()).readonly(),
+  governs: z.array(globModel).readonly(),
   id: blockIdModel,
   unit: unitPathModel,
 });
 
-// A lowering that names no rule it takes its level from leaves via out.
 const loweringModel = z
   .strictObject({
     level: z.enum(LOWERED_LEVELS),
@@ -43,22 +54,29 @@ const loweringModel = z
 
 const mustRuleModel = z.strictObject({
   block: blockIdModel,
-  lowerings: z.array(loweringModel),
+  lowerings: z.array(loweringModel).readonly(),
   slug: ruleSlugModel,
 });
 
-/** The state a session keeps, as its file holds it: the state's own JSON. */
-const sessionStateModel: z.ZodType<SessionState> = z.discriminatedUnion('status', [
+const sessionStateModel = z.discriminatedUnion('status', [
   z.strictObject({
     repositoryFolderPath: absolutePathModel,
     status: z.literal(ConfigReadStatus.Unparsed),
   }),
-  z.strictObject({
-    active: z.array(activeBlockModel),
-    musts: z.array(mustRuleModel),
-    repositoryFolderPath: absolutePathModel,
-    status: z.literal(ConfigReadStatus.Parsed),
-  }),
-]);
+  z
+    .strictObject({
+      active: z.array(activeBlockModel).readonly(),
+      musts: z.array(mustRuleModel).readonly(),
+      repositoryFolderPath: absolutePathModel,
+      status: z.literal(ConfigReadStatus.Parsed),
+    })
+    .transform(({ musts, ...state }) => ({
+      ...state,
+      mustsBesideCore: musts,
+    })),
+]) satisfies z.ZodType<SessionState>;
 
+type SessionStateWire = z.input<typeof sessionStateModel>;
+
+export type { SessionStateWire };
 export { sessionStateModel };

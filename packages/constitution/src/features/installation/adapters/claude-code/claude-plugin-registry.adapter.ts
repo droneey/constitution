@@ -16,10 +16,8 @@ interface ClaudePluginRegistryInput {
   readonly pluginRoot: string | undefined;
 }
 
-/**
- * pluginRoot is the root Claude Code runs the plugin's hooks from, when it names one; otherwise the
- * plugin is looked up in the record Claude Code keeps under configFolder.
- */
+// Why: Claude Code names the root it runs the plugin's hooks from when it has one; otherwise the
+// plugin is looked up in the record it keeps under configFolder.
 const createClaudePluginRegistry = (input: ClaudePluginRegistryInput): PluginRegistry => ({
   installed: (): InstalledPlugin | undefined => {
     const root =

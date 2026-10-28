@@ -40,7 +40,7 @@ interface BlocksOptionsInput {
   readonly layers: readonly BlockLayer[];
 }
 
-/** @throws {@link SourceError} when an example names no rule of the folders */
+/** @throws {SourceError} when an example names no rule of the folders */
 const blocksOptionsOf = (input: BlocksOptionsInput): BlocksOptions => {
   const addressesBySlug = new Map<string, string>();
 

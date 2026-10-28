@@ -42,7 +42,7 @@ describe('writeDefaults', () => {
       leaves: [
         ignored,
       ],
-      met: [],
+      metBefore: [],
       setting,
     });
 

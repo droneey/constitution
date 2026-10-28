@@ -1,8 +1,9 @@
 import type { UnitRelativePath } from '#/kernel/value-objects';
 
-/** The specs of the unit, and for each file the specs that load it, the nearest first. */
 interface UnitSpecs {
   readonly specPaths: readonly UnitRelativePath[];
+  // Why: the nearest spec first, since a spec that imports a file directly kills its mutants
+  // soonest.
   readonly specPathsByFilePath: ReadonlyMap<UnitRelativePath, readonly UnitRelativePath[]>;
 }
 

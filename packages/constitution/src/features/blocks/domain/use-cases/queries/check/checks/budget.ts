@@ -9,7 +9,6 @@ enum BudgetCode {
 
 interface BudgetDetails {
   readonly [BudgetCode.FileOverBudget]: {
-    /** the most lines a file may hold */
     readonly budget: number;
     readonly lines: number;
   };

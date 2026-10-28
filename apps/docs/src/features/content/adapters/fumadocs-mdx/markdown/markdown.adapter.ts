@@ -5,7 +5,6 @@ import { toString as mdastTextOf } from 'mdast-util-to-string';
 import { SUBSECTION_HEADING_DEPTH, TITLE_HEADING_DEPTH } from './markdown.constants';
 import { takeTermIds } from './term-ids.adapter';
 
-/** without the HTML a heading holds, such as the README's marks */
 const headingTextOf = (heading: Heading): string =>
   mdastTextOf(heading, {
     includeHtml: false,
@@ -15,7 +14,6 @@ const isHeading = (node: RootContent, depth: number): node is Heading =>
   // Stryker disable next-line ConditionalExpression: only a heading has a depth, so checking its type only narrows it
   node.type === 'heading' && node.depth === depth;
 
-/** a heading of a rule's depth or above, where the section before it ends */
 const isSectionHeading = (node: RootContent): node is Heading =>
   // Stryker disable next-line ConditionalExpression: only a heading has a depth, so checking its type only narrows it
   node.type === 'heading' && node.depth <= SUBSECTION_HEADING_DEPTH;
@@ -28,7 +26,6 @@ const titleOf = (markdown: string): string | undefined => {
   return title === undefined ? undefined : headingTextOf(title);
 };
 
-/** the words of the first line of the file's first quote, without the ids of its terms */
 const summaryOf = (markdown: string): string | undefined => {
   const tree = fromMarkdown(markdown);
   const [summary] = tree.children.flatMap((node) =>

@@ -36,6 +36,6 @@ packs: []
 overrides:
   - rule: agent-file-restates-no-rule
     level: MAY
-    # constitution reads an override's reason from its one line
+    # Why: constitution reads an override's reason from its one line.
     # yamllint disable-line rule:line-length
     reason: "The Constitution's authors read the working-tree blocks they edit, not the installed ones"

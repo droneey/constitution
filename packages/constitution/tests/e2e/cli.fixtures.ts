@@ -15,15 +15,12 @@ import { join } from 'node:path';
 
 import { toolEnvironment } from './package.fixtures';
 
-// The executable a release ships, built once for the specs of a run as the release builds it: a
-// hook finds it on its PATH, as mise puts it there.
 const packageFolder = join(import.meta.dir, '..', '..');
 const EXECUTABLE = 'constitution';
 const FAILED = 'failed';
 const BUILD_WAIT_MS = 300_000;
 const BUILD_SCRIPT = 'build';
 
-/** @throws Error when the executable does not build. */
 const buildInto = (folder: string): void => {
   const pending = join(folder, `${EXECUTABLE}.${String(process.pid)}.tmp`);
   const run = spawnSync(
@@ -50,8 +47,6 @@ const buildInto = (folder: string): void => {
   renameSync(pending, join(folder, EXECUTABLE));
 };
 
-// The workers of one --parallel run share a folder named by their coordinator, its process id and
-// the time it started, which no later run repeats.
 const sharedFolder = (): string | undefined => {
   if (process.env['BUN_TEST_WORKER_ID'] === undefined) {
     return undefined;
@@ -76,7 +71,6 @@ const sharedFolder = (): string | undefined => {
     : join(tmpdir(), `constitution-cli-${String(process.ppid)}-${Bun.hash(started).toString(36)}`);
 };
 
-/** @throws Error when the worker that builds the executable has failed. */
 const isBuilt = (folder: string): boolean => {
   if (existsSync(join(folder, EXECUTABLE))) {
     return true;
@@ -89,9 +83,8 @@ const isBuilt = (folder: string): boolean => {
   return false;
 };
 
-// The folder is watched before it is first looked at, so a build that ends between the two is
+// Why: the folder is watched before it is first looked at, so a build that ends between the two is
 // still seen; the building worker renames the executable into it, or writes the failure there.
-/** Rejects when the worker that builds the executable fails or takes past the deadline. */
 const awaitBuild = (folder: string): Promise<void> =>
   new Promise((resolve, reject) => {
     const watcher = watch(folder);
@@ -136,8 +129,8 @@ const remove = (folder: string): void => {
   });
 };
 
-// Signal 0 tests whether the process is there and sends nothing; only ESRCH says it is gone, so a
-// folder is kept on any other answer.
+// Why: signal 0 tests whether the process is there and sends nothing; only ESRCH says it is gone,
+// so a folder is kept on any other answer.
 const isRunning = (pid: number): boolean => {
   try {
     process.kill(pid, 0);
@@ -148,7 +141,6 @@ const isRunning = (pid: number): boolean => {
   }
 };
 
-// A shared folder outlives its run, so the next run removes those of coordinators that have exited.
 const removeFinishedRuns = (): void => {
   for (const name of readdirSync(tmpdir())) {
     const coordinator = /^constitution-cli-(\d+)-/.exec(name)?.[1];
@@ -159,7 +151,6 @@ const removeFinishedRuns = (): void => {
   }
 };
 
-// Only the first worker to ask makes the folder.
 const claims = (folder: string): boolean => {
   try {
     mkdirSync(folder);
@@ -174,7 +165,6 @@ const claims = (folder: string): boolean => {
   }
 };
 
-// The worker that claims the shared folder builds into it; the others wait for its build.
 const build = async (): Promise<string> => {
   const shared = sharedFolder();
 

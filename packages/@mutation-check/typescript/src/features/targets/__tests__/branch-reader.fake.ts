@@ -7,8 +7,8 @@ import type { BranchError } from '../domain/errors';
 interface FakeBranch {
   readonly baseTexts?: ReadonlyMap<UnitRelativePath, string>;
   readonly changedFiles?: readonly ChangedFile[];
+  readonly newFilePaths?: readonly UnitRelativePath[];
   readonly readFailure?: BranchError;
-  readonly untrackedPaths?: readonly UnitRelativePath[];
 }
 
 const fakeBranchReader = (fakeBranch: FakeBranch): BranchReader => {
@@ -29,7 +29,7 @@ const fakeBranchReader = (fakeBranch: FakeBranch): BranchReader => {
         }),
       ),
     changedFiles: fakeBranch.changedFiles ?? [],
-    untrackedPaths: fakeBranch.untrackedPaths ?? [],
+    newFilePaths: fakeBranch.newFilePaths ?? [],
   };
 
   return {

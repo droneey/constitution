@@ -27,7 +27,6 @@ interface SeamsDetails {
     readonly other: BlockId;
   };
   readonly [SeamsCode.OutOfLayer]: {
-    /** the layers the block may pair with */
     readonly allowed: readonly Layer[];
     readonly layer: Layer;
     readonly other: BlockId;
@@ -140,10 +139,6 @@ const pairingOf = (
       };
 };
 
-/**
- * A seam titled otherwise than the other block's passport, since the seam's folder already names the
- * block it belongs to.
- */
 const titleProblem = (input: { file: BlockFile; other: Block }): SeamsProblem | undefined =>
   titleOf(input.file.body) === titleOf(input.other.passport.body)
     ? undefined

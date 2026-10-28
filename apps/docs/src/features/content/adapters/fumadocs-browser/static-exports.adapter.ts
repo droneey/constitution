@@ -1,7 +1,7 @@
 import type { SerializedPageTree } from 'fumadocs-core/source/client';
 import type { z } from 'zod';
 
-import { once } from '#/libs/once';
+import { onceSucceeded } from '#/libs/once-succeeded';
 import { isNoJson, isUnreachable, problemPathsOf, WHOLE_FILE_PATH } from '#/libs/served-json';
 
 import type { NavigationQueryRepository, PageLookup } from '../../domain/contracts';
@@ -31,17 +31,13 @@ const rethrownAs =
     throw isRecognised(error) ? errorOf(error) : error;
   };
 
-/**
- * Reads what the site's server exported as plain files, which any static host serves: the tree of
- * the pages, and the list of the pages, read once and kept for the page's life
- */
 export const createStaticExports = ({
   catalogAddress,
   navigationAddress,
   transport = fetch,
 }: StaticExportsInput): NavigationQueryRepository<SerializedPageTree> & PageLookup => {
   /**
-   * @throws {@link ExportError} when the site gives no answer in time, answers no file, or a file
+   * @throws {ExportError} when the site gives no answer in time, answers no file, or a file
    * that holds no JSON or no value the model takes
    */
   const readFile = async <TValue>(address: string, model: z.ZodType<TValue>): Promise<TValue> => {
@@ -115,16 +111,26 @@ export const createStaticExports = ({
     return parsedFile.data;
   };
 
-  // a read that failed is forgotten, so the next page the reader opens reads the list again
-  const keptCatalog = once((): Promise<PageCatalog> => readFile(catalogAddress, pageCatalogModel));
+  // Why: a failed catalog read is forgotten, so the next page the reader opens reads it again.
+  const keptCatalog = onceSucceeded(
+    (): Promise<PageCatalog> => readFile(catalogAddress, pageCatalogModel),
+  );
 
   return {
+    /**
+     * @throws {ExportError} when the site gives no answer in time, answers no file, or a file
+     * that holds no JSON or no value the model takes
+     */
     find: async (slugs): Promise<Page | undefined> => {
       const catalog = await keptCatalog();
       const key = Page.catalogKeyOf(slugs);
 
       return Object.hasOwn(catalog, key) ? catalog[key] : undefined;
     },
+    /**
+     * @throws {ExportError} when the site gives no answer in time, answers no file, or a file
+     * that holds no JSON or no value the model takes
+     */
     readNavigation: (): Promise<SerializedPageTree> => readFile(navigationAddress, pageTreeModel),
   };
 };

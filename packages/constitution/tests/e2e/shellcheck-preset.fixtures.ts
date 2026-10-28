@@ -12,7 +12,6 @@ const RC_FILE = '.shellcheckrc';
 const ENABLED = /^enable=(.+)$/gm;
 const OPTIONAL = /^name:\s+(\S+)$/gm;
 
-/** The optional checks the presets enable that ShellCheck does not list, which it would skip unread. */
 const unknownChecks = (): readonly string[] => {
   const listed = new Set(
     [

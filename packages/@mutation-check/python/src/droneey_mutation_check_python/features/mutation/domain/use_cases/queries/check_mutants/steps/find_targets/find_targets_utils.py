@@ -11,7 +11,7 @@ if TYPE_CHECKING:
   from ......value_objects import UnitRelativePath
 
 INIT_MODULE_NAME: Final = '__init__'
-# mutmut names a method's mutants by its class between these separators
+# Why: mutmut names a method's mutants by its class between these separators.
 CLASS_SEPARATOR: Final = 'ǁ'
 
 type Function = ast.FunctionDef | ast.AsyncFunctionDef
@@ -23,8 +23,7 @@ def _module_name(path: UnitRelativePath) -> str:
   return '.'.join(parts[:-1] if parts[-1] == INIT_MODULE_NAME else parts)
 
 
-# Each function with the name mutmut gives it within its module.
-def _functions(tree: ast.Module) -> Iterator[tuple[str, Function]]:
+def _functions_by_mutmut_name(tree: ast.Module) -> Iterator[tuple[str, Function]]:
   for node in tree.body:
     if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
       yield f'x_{node.name}', node
@@ -58,7 +57,7 @@ def _touches(function: Function, file: FileChange) -> bool:
 def _function_globs(*, file: FileChange, source_text: str) -> Iterator[MutantGlob]:
   module_name = _module_name(file.path)
 
-  for mutmut_name, function in _functions(ast.parse(source_text)):
+  for mutmut_name, function in _functions_by_mutmut_name(ast.parse(source_text)):
     if _touches(function, file):
       yield MutantGlob(f'{module_name}.{mutmut_name}__mutmut_*')
 
@@ -66,7 +65,6 @@ def _function_globs(*, file: FileChange, source_text: str) -> Iterator[MutantGlo
 def find_targets(
   changes: Changes, *, read_text: Callable[[UnitRelativePath], str]
 ) -> tuple[MutantGlob, ...]:
-  """The globs of the mutants of every function a change touches."""
   source_paths = set(changes.python_source_paths)
 
   return tuple(

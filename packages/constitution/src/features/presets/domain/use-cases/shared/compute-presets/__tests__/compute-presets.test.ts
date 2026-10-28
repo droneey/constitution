@@ -37,7 +37,6 @@ const planOf = (input: {
   });
 };
 
-// What a plan writes: each file, its unit's path and the settings its entries merge to.
 const writtenOf = (plan: PresetsPlan) =>
   plan.files.map(({ filePath, merged, unitPath }) => ({
     file: String(filePath),
@@ -56,8 +55,6 @@ const valuesOf = (plan: PresetsPlan): readonly Written[] =>
     value: merged.value,
   }));
 
-// bun's entries in three units: the repository's, a member with a link of its own to the release,
-// and a member of no name.
 const factsPlanOf = (lines: readonly string[]): PresetsPlan =>
   planOf({
     files: {
@@ -101,7 +98,6 @@ const factsPlanOf = (lines: readonly string[]): PresetsPlan =>
     ],
   });
 
-// lefthook's entries in the repository's unit alone, of no name and no member.
 const lefthookPlanOf = (lines: readonly string[]): PresetsPlan =>
   planOf({
     files: releasePresets({
@@ -121,6 +117,32 @@ const lefthookPlanOf = (lines: readonly string[]): PresetsPlan =>
       }),
     ],
   });
+
+const INSERTING_ENTRY = [
+  'lefthook:',
+  "  '*':",
+  "    '*':",
+  '      lefthook.yaml:',
+  '        jobs@checks:',
+  '          - lint',
+  '        kept: 1',
+] as const;
+
+const placingEntryOf = (rule: string): readonly string[] => [
+  'core:',
+  `  ${rule}:`,
+  "    '*':",
+  '      lefthook.yaml:',
+  '        jobs:',
+  '          - slot: checks',
+  '          - format',
+];
+
+const mergeCodes: ReadonlySet<PresetsCode> = new Set([
+  PresetsCode.Clash,
+  PresetsCode.MissingSlot,
+  PresetsCode.SlotInNoList,
+]);
 
 describe('computePresets', () => {
   it("should give each unit the entries its blocks, languages, axes and rules take, in their order, and none of another's", () => {
@@ -356,43 +378,74 @@ describe('computePresets', () => {
     );
   });
 
-  it('should write a list marked as words as one text, the items inserted at its slots among them', () => {
-    // Arrange
-    const asked = {
-      files: releasePresets({
-        'biome/foundation.yaml': [
-          'biome:',
-          "  '*':",
-          "    '*':",
-          '      biome.json:',
-          '        command: !words',
-          '          - biome ${package.name}',
-          '          - slot: paths',
-          '        command@paths:',
-          '          - src',
-        ].join('\n'),
-      }),
-      units: [
-        unitOf({
-          blocks: [
-            'core',
-            'biome',
-          ],
-          name: 'kit',
-        }),
+  it.each<{
+    condition: string;
+    lines: readonly string[];
+    written: Setting;
+  }>([
+    {
+      condition: 'under a key',
+      lines: [
+        '        command: !words',
+        '          - biome ${package.name}',
+        '          - slot: paths',
+        '        command@paths:',
+        '          - src',
       ],
-    };
-
-    // Act
-    const plan = planOf(asked);
-
-    // Assert
-    expect(plan.files.map(({ merged }) => merged.value)).toStrictEqual([
-      {
+      written: {
         command: 'biome kit src',
       },
-    ]);
-  });
+    },
+    {
+      condition: 'in an element of a list found by its field',
+      lines: [
+        '        jobs[name=lint]:',
+        '          run: !words',
+        '            - biome ${package.name}',
+        '            - slot: paths',
+        '          run@paths:',
+        '            - src',
+      ],
+      written: {
+        'jobs[name=lint]': {
+          run: 'biome kit src',
+        },
+      },
+    },
+  ])(
+    'should write a list marked as words $condition as one text, the items inserted at its slots among them',
+    ({ lines, written }) => {
+      // Arrange
+      const asked = {
+        files: releasePresets({
+          'biome/foundation.yaml': [
+            'biome:',
+            "  '*':",
+            "    '*':",
+            '      biome.json:',
+            ...lines,
+          ].join('\n'),
+        }),
+        units: [
+          unitOf({
+            blocks: [
+              'core',
+              'biome',
+            ],
+            name: 'kit',
+          }),
+        ],
+      };
+
+      // Act
+      const plan = planOf(asked);
+
+      // Assert
+      expect(plan.files.map(({ merged }) => merged.value)).toStrictEqual([
+        written,
+      ]);
+    },
+  );
 
   it('should mark what the block gives each file of whatever shape, and nothing a default gives', () => {
     // Arrange
@@ -1565,6 +1618,205 @@ describe('computePresets', () => {
     },
   );
 
+  it.each<{
+    codes: readonly PresetsCode[];
+    condition: string;
+    presets: Files;
+    written: Setting;
+  }>([
+    {
+      codes: [],
+      condition: 'its unit takes the entry that places the list',
+      presets: {
+        'lefthook/foundation.yaml': [
+          ...placingEntryOf('file-within-500-lines'),
+          ...INSERTING_ENTRY,
+        ].join('\n'),
+      },
+      written: {
+        jobs: [
+          'lint',
+          'format',
+        ],
+        kept: 1,
+      },
+    },
+    {
+      codes: [],
+      condition: 'an override lowers the rule of the entry that places the list',
+      presets: {
+        'lefthook/foundation.yaml': [
+          ...placingEntryOf('unit-checked-by-its-own-tools'),
+          ...INSERTING_ENTRY,
+        ].join('\n'),
+      },
+      written: {
+        kept: 1,
+      },
+    },
+    {
+      codes: [],
+      condition: 'its unit follows no axis of the rule of the entry that places the list',
+      presets: {
+        'lefthook/architecture.yaml': placingEntryOf('import-points-inward').join('\n'),
+        'lefthook/foundation.yaml': INSERTING_ENTRY.join('\n'),
+      },
+      written: {
+        kept: 1,
+      },
+    },
+    {
+      codes: [],
+      condition: 'an entry the unit takes gives the list and a dropped one places the slot',
+      presets: {
+        'lefthook/architecture.yaml': placingEntryOf('import-points-inward').join('\n'),
+        'lefthook/foundation.yaml': [
+          'core:',
+          '  file-within-500-lines:',
+          "    '*':",
+          '      lefthook.yaml:',
+          '        jobs:',
+          '          - test',
+          ...INSERTING_ENTRY,
+        ].join('\n'),
+      },
+      written: {
+        jobs: [
+          'test',
+        ],
+        kept: 1,
+      },
+    },
+    {
+      codes: [
+        PresetsCode.SlotInNoList,
+      ],
+      condition: 'the entry that places the list lacks a block its path names',
+      presets: {
+        'lefthook/foundation.yaml': INSERTING_ENTRY.join('\n'),
+        'lefthook/foundation/with/bun.yaml': placingEntryOf('file-within-500-lines').join('\n'),
+      },
+      written: {
+        kept: 1,
+      },
+    },
+    {
+      codes: [
+        PresetsCode.SlotInNoList,
+      ],
+      condition: 'the dropped entry whose guard does not hold places the list',
+      presets: {
+        'lefthook/foundation.yaml': [
+          'core:',
+          '  unit-checked-by-its-own-tools:',
+          "    '*':",
+          '      lefthook.yaml ? !${file.isTop}:',
+          '        jobs:',
+          '          - slot: checks',
+          ...INSERTING_ENTRY,
+        ].join('\n'),
+      },
+      written: {
+        kept: 1,
+      },
+    },
+    {
+      codes: [
+        PresetsCode.SlotInNoList,
+      ],
+      condition: 'a dropped entry gives the file only what places no list',
+      presets: {
+        'lefthook/architecture.yaml': [
+          'core:',
+          '  import-points-inward:',
+          "    '*':",
+          '      lefthook.yaml:',
+          '        other: 2',
+        ].join('\n'),
+        'lefthook/foundation.yaml': INSERTING_ENTRY.join('\n'),
+      },
+      written: {
+        kept: 1,
+      },
+    },
+    {
+      codes: [
+        PresetsCode.Clash,
+      ],
+      condition: 'two entries the unit takes clash where a dropped one writes too',
+      presets: {
+        'lefthook/architecture.yaml': [
+          'core:',
+          '  import-points-inward:',
+          "    '*':",
+          '      lefthook.yaml:',
+          '        kept: 3',
+        ].join('\n'),
+        'lefthook/foundation.yaml': [
+          'core:',
+          '  file-within-500-lines:',
+          "    '*':",
+          '      lefthook.yaml:',
+          '        kept: 2',
+          '        jobs:',
+          '          - slot: checks',
+          '          - format',
+          ...INSERTING_ENTRY,
+        ].join('\n'),
+      },
+      written: {
+        jobs: [
+          'lint',
+          'format',
+        ],
+        kept: 2,
+      },
+    },
+  ])(
+    'should skip only an insert whose list or slot an entry an override or an axis drops places when $condition',
+    ({ codes, presets, written }) => {
+      // Arrange
+      const asked = {
+        files: releasePresets(presets),
+        units: [
+          unitOf({
+            axes: [
+              Axis.Foundation,
+              Axis.Workflow,
+            ],
+            blocks: [
+              'core',
+              'lefthook',
+              'typescript',
+            ],
+            lowered: [
+              'unit-checked-by-its-own-tools',
+            ],
+          }),
+        ],
+      };
+
+      // Act
+      const plan = planOf(asked);
+
+      // Assert
+      expect({
+        codes: plan.findings.map(({ code }) => code).filter((code) => mergeCodes.has(code)),
+        values: valuesOf(plan),
+      }).toStrictEqual({
+        codes: [
+          ...codes,
+        ],
+        values: [
+          {
+            file: 'lefthook.yaml',
+            value: written,
+          },
+        ],
+      });
+    },
+  );
+
   it.each([
     {
       condition: 'a value names a fact no file is given',
@@ -1980,7 +2232,7 @@ describe('computePresets', () => {
         {
           code: PresetsCode.Clash,
           details: {
-            setting: 'width',
+            settingPath: 'width',
             sources: [
               'packs/acme/presets/biome/foundation.yaml: core → *',
               'packs/acme/presets/biome/foundation.yaml: biome → *',

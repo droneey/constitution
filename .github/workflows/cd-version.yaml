@@ -12,7 +12,7 @@ concurrency:
 jobs:
   version:
     if: "!startsWith(github.event.head_commit.message, 'chore: Release v')"
-    # Renovate reads the version from the comment after the pinned digest
+    # Why: Renovate reads the version from the comment after the pinned digest.
     # yamllint disable-line rule:line-length
     uses: droneey/.github/.github/workflows/cd-version.yaml@b1df2c9432a507a8c2ff15d19ecf524c6ad9ddf0 # v2.6.0
     permissions:

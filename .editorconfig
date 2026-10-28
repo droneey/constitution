@@ -1,7 +1,6 @@
 # editorconfig
 root = true
 
-# core
 [*]
 charset = utf-8
 end_of_line = lf

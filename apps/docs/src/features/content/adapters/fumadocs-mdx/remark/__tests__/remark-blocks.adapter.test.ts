@@ -25,7 +25,6 @@ const ruleAddresses = new Map([
   ],
 ]);
 
-/** the rule's own heading and Markdown, with the example the examples' folder gives its slug */
 const ruleCard = (markdown: string, example?: string): MarkdownVariant => ({
   markdown,
   plugins: [

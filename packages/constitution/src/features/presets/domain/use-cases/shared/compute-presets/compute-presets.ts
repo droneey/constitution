@@ -51,15 +51,12 @@ const writtenOf = (input: { entry: PresetEntry; model: BlockModel }): readonly W
         model: input.model,
       });
 
-      // A path that leaves its unit writes no file of it, which the entry's own finding reports.
       return writtenPath === undefined || !EntryTarget.staysInItsUnit(entry)
         ? []
-        : [
-            {
-              block: PresetEntry.blockOf(entry),
-              pathInUnit: UnitRelativePath.create(normalizePath(writtenPath)),
-            },
-          ];
+        : PresetEntry.blocksCommentsNameOf(entry).map((block) => ({
+            block,
+            pathInUnit: UnitRelativePath.create(normalizePath(writtenPath)),
+          }));
     }
     case TargetKind.Run:
       return [];

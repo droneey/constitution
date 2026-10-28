@@ -5,6 +5,7 @@ export type { ApplyReport, SettingPlace } from './apply-report.entity';
 export type { BlockMark, HeldStep, MarkStep } from './block-marks.entity';
 export { BlockMarks } from './block-marks.entity';
 export type { ConfigurationsCheck } from './configurations-check.entity';
+export type { EntryAsked } from './in-force.entity';
 export { InForce } from './in-force.entity';
 export { Leaf } from './leaf.entity';
 export type { LockRead, LockRecord, SettingsRecord, WholeRecord } from './lock.entity';

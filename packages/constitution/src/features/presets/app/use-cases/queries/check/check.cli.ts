@@ -8,6 +8,10 @@ import type { ConfigurationsCheck, ProjectRead } from '../../../../domain/entiti
 import { configurationsStepOf } from '../../../utils';
 
 interface ConfigurationsCheckContext extends CommandContext {
+  /**
+   * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
+   * @throws {ReleaseError} when the release's blocks cannot be listed
+   */
   readonly checkConfigurations: (startFolderPath: AbsolutePath) => ProjectRead<ConfigurationsCheck>;
 }
 
@@ -26,6 +30,10 @@ const createPresetsCheckCommand = (context: ConfigurationsCheckContext): Command
       const step = await context.renderer.run({
         label: 'Presets',
         outcomeOf: (checked: StepReport) => checked.outcome,
+        /**
+         * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
+         * @throws {ReleaseError} when the release's blocks cannot be listed
+         */
         run: () =>
           configurationsStepOf(
             context.checkConfigurations(AbsolutePath.create(context.places.cwd)),

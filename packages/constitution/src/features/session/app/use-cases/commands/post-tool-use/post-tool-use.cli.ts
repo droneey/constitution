@@ -4,6 +4,7 @@ import type { BlockId } from '#/kernel/value-objects';
 import type { CommandContext } from '#/shared/cli';
 
 import type { Reminder } from '../../../../domain/entities';
+import { SessionAgent } from '../../../../domain/entities';
 import type { SessionId } from '../../../../domain/value-objects';
 import { AgentId } from '../../../../domain/value-objects';
 import { HookField, postToolUseEventSchema } from '../../../constants';
@@ -13,18 +14,17 @@ const EVENT = 'PostToolUse';
 
 interface PostToolUseContext extends CommandContext {
   readonly recordReminders: (input: {
-    agent: AgentId | undefined;
+    agent: SessionAgent;
     ids: readonly BlockId[];
     session: SessionId;
   }) => void;
   readonly remindOfFile: (input: {
-    agent: AgentId | undefined;
+    agent: SessionAgent;
     path: string;
     session: SessionId;
   }) => Reminder | undefined;
 }
 
-/** PostToolUse of a tool that reads or edits a file. */
 const createPostToolUseCommand = (context: PostToolUseContext): Command =>
   new Command('post-tool-use')
     .description('Name the blocks that govern a file the agent reads or edits, once a session.')
@@ -40,19 +40,20 @@ const createPostToolUseCommand = (context: PostToolUseContext): Command =>
         text: await context.io.readInput(),
       });
       const session = event[HookField.SessionId];
-      const agent = event[HookField.AgentId];
+      const agentId = event[HookField.AgentId];
       const path =
         event[HookField.ToolInput][HookField.FilePath] ??
         event[HookField.ToolInput][HookField.NotebookPath];
 
-      // A subagent's id that is no plain name is refused like the session's own.
       if (
         session === undefined ||
         path === undefined ||
-        !(agent === undefined || AgentId.is(agent))
+        !(agentId === undefined || AgentId.is(agentId))
       ) {
         return;
       }
+
+      const agent = agentId ?? SessionAgent.main;
 
       const reminder = context.remindOfFile({
         agent,

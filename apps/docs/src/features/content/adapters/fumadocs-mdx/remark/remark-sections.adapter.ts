@@ -3,13 +3,10 @@ import type { Heading, Root, RootContent } from 'mdast';
 import { headingTextOf, isHeading, SECTION_HEADING_DEPTH } from '../markdown';
 
 interface SectionsOptions {
-  /** by the text of their headings */
   drop?: readonly string[];
-  /** the one section the page shows, without its heading */
   keep?: string;
 }
 
-/** without a heading, what comes before the first section */
 interface Section {
   body: RootContent[];
   heading: Heading | undefined;

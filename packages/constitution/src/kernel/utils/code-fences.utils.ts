@@ -39,10 +39,8 @@ const closes = (input: { fence: Fence; line: string }): boolean => {
   );
 };
 
-/**
- * A fence closes only on its own character, at least as long, as CommonMark says; a shorter or
- * different fence inside it is part of the sample.
- */
+// Why: a fence closes only on its own character, at least as long, as CommonMark says; a shorter or
+// different fence inside it is part of the sample.
 const withoutCodeFences = (text: string): string => {
   const lines: string[] = [];
   let fence: Fence | undefined;

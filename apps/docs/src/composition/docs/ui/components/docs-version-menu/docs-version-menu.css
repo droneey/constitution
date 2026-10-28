@@ -7,7 +7,7 @@
       background-color: var(--color-fd-accent);
     }
 
-    /* the popup scrolls, so an outer ring would be clipped */
+    /* Why: the popup scrolls, so an outer ring would be clipped. */
     & a:focus-visible {
       outline-offset: calc(-1 * var(--ring-focus-width));
     }

@@ -43,6 +43,7 @@ export const createStaticFileVersionsRepository = ({
   timeoutMs = READ_TIMEOUT_MS,
   transport = fetch,
 }: StaticFileVersionsInput): VersionsQueryRepository => ({
+  /** @throws {VersionsError} when the site answers no list of releases, in time or at all */
   read: async (signal): Promise<Versions> => {
     const response = await transport(address, {
       signal: AbortSignal.any([

@@ -15,7 +15,6 @@ interface ChapterListGaps {
 }
 
 interface UnknownExampleRules {
-  /** the slugs the examples' files are named by, which no rule of the site has */
   readonly slugs: readonly string[];
 }
 
@@ -34,7 +33,6 @@ type SourceFailed =
   | ProgramErrorInput<SourceFailure.FileMalformed, MalformedFile>
   | ProgramErrorInput<SourceFailure.ReadmeSectionMissing, MissingSection>;
 
-/** the repository the site builds from holds what the site cannot build: a defect of its files */
 class SourceError extends ProgramError<SourceFailure, SourceFailed['details']> {
   public constructor(input: SourceFailed, options?: ErrorOptions) {
     super(input, options);

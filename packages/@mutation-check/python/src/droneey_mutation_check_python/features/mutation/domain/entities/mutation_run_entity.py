@@ -11,13 +11,10 @@ class Ran:
   mutants: tuple[Mutant, ...]
 
 
+# Why: mutmut stops before running when the functions it was given hold no mutant a spec reaches,
+# and still lists the mutants it made.
 @dataclass(frozen=True, slots=True, kw_only=True)
 class Stopped:
-  """mutmut stopped before running, as the functions it was given hold no mutant a spec reaches.
-
-  It still lists the mutants it made.
-  """
-
   mutants: tuple[Mutant, ...]
 
 

@@ -23,10 +23,6 @@ const wordPatterns: Readonly<Record<WordKind, (word: string) => string>> = {
 
 const collapseWhitespace = (text: string): string => text.replaceAll(WHITESPACE, ' ');
 
-/**
- * A hyphen continues a block id, so "react-dom-extra" is not react-dom, but it ends an owned word,
- * so "React-based" names React.
- */
 const ownedWordMatcher = (word: string): ((text: string) => boolean) => {
   const normalized = collapseWhitespace(word);
   const pattern = new RegExp(

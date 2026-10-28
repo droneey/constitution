@@ -9,8 +9,6 @@ import { createYamlPresetFileParser } from '../yaml-preset-file-parser.adapter';
 
 const parser = createYamlPresetFileParser();
 
-// Texts of the pieces a preset file is made of, its marks, tags, anchors and flows among them, and
-// texts of any characters.
 const texts = fc.oneof(
   fc
     .array(
@@ -55,7 +53,6 @@ const texts = fc.oneof(
   }),
 );
 
-// The invariant: any text reads as a value or as unparsed, and never throws.
 const isReadOrUnparsed = (text: string): boolean => {
   const read = parser.parse(text);
 
@@ -374,6 +371,14 @@ describe('createYamlPresetFileParser', () => {
         status: PresetFileReadStatus.Unparsed,
       },
       text: 'a: !words {b: 1}\n',
+    },
+    {
+      condition: 'a key that addresses an element by its slot holds more than inserts',
+      read: {
+        line: 2,
+        status: PresetFileReadStatus.Unparsed,
+      },
+      text: 'a: 1\noverrides[slot=injected]:\n  includes@injected: [x]\n  linter: 1\n',
     },
     {
       condition: 'a mark tags a null',

@@ -20,6 +20,10 @@ interface PlanPresetsInput {
   readonly startFolderPath: AbsolutePath;
 }
 
+/**
+ * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
+ * @throws {ReleaseError} when the release's blocks cannot be listed
+ */
 const planPresets = (input: PlanPresetsInput): ProjectRead<PresetsPlan> =>
   ProjectRead.map(input.reader.open(input.startFolderPath), (project) =>
     computePresets({

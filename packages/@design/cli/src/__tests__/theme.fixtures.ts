@@ -23,17 +23,14 @@ const mark = new RegExp(`${ESCAPE}\\]8;;(?:mark:(\\w+))?${BELL}`, 'gu');
 
 const markOf = (name: string): string => `${ESCAPE}]8;;mark:${name}${BELL}`;
 
-/**
- * A plain theme that marks each tone and bold text as a terminal link, which takes no cell, so Ink
- * lays the text out as it would the palette's colours and a spec reads the marks with markedSpansOf.
- */
+// Why: a terminal link takes no cell, so Ink lays the marked text out as it would the palette's
+// colours.
 const createMarkingTheme = (): Theme => ({
   ...createPlainTheme(),
   paint: (tone, text) => `${markOf(tone)}${text}${markEnd}`,
   strong: (text) => `${markOf(STRONG)}${text}${markEnd}`,
 });
 
-/** each marked span of a text: its marks, the outermost first, and its text */
 const markedSpansOf = (
   marked: string | undefined,
 ): readonly (readonly [
@@ -70,8 +67,7 @@ const markedSpansOf = (
   return spans;
 };
 
-/** an app's brand.tokens.json: its 300 and 600 with an sRGB fallback, its 700 without */
-const GOLD = {
+const GOLD_BRAND_FILE = {
   color: {
     brand: {
       $type: 'color',
@@ -111,4 +107,4 @@ const GOLD = {
   },
 } as const;
 
-export { createMarkingTheme, createPlainTheme, GOLD, markedSpansOf };
+export { createMarkingTheme, createPlainTheme, GOLD_BRAND_FILE, markedSpansOf };

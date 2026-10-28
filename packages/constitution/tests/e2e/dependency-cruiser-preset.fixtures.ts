@@ -25,26 +25,17 @@ interface Installed {
 }
 
 interface Project {
-  /** the optional axes the unit follows; architecture and workflow where it names none */
   readonly axes?: readonly string[];
-  /** the blocks of the unit beside its language's and dependency-cruiser */
   readonly blocks?: readonly string[];
   readonly files: Readonly<Record<string, string>>;
-  /**
-   * a link's path, then the folder of the unit it points to, as a package manager links a
-   * workspace's units
-   */
   readonly links?: Readonly<Record<string, string>>;
-  /** the text of the unit's own preset file of dependency-cruiser, in a pack of its own */
   readonly own?: string;
   readonly roots?: readonly string[];
-  /** cruised from its own folder by its own configuration; the project's root where absent */
   readonly unit?: string;
   readonly workspaces?: readonly string[];
 }
 
 interface Cruise {
-  /** whether it read any module */
   readonly isCruised: boolean;
   readonly violations: readonly string[];
 }
@@ -62,8 +53,6 @@ const report = z.object({
   }),
 });
 
-// The packages the blocks' rules name, and those the base's rules tell apart: `kit` declared,
-// `devtool` a development dependency, `ghost` installed but never declared, `legacy` deprecated.
 const installedPackages: Readonly<Record<string, Installed>> = {
   '@bunli/core': {
     declaration: Declaration.Production,
@@ -169,8 +158,6 @@ const unitOf = (project: Project): UnitFixture => ({
   ],
 });
 
-// A workspace's root lists its units in its manifest, and each unit follows the root's blocks by a
-// constitution.yaml of its own, so the apply writes each unit's configuration.
 const workspaceFilesOf = (project: Project): Readonly<Record<string, string>> =>
   project.workspaces === undefined
     ? {}
@@ -262,7 +249,6 @@ const writeProject = (folder: string, project: Project): void => {
   }
 };
 
-// The json reporter's output is the text of the result.
 const cruiseOf = (output: unknown): Cruise => {
   const { summary } = report.parse(JSON.parse(String(output)));
 
@@ -274,8 +260,8 @@ const cruiseOf = (output: unknown): Cruise => {
   };
 };
 
-// dependency-cruiser runs in the spec's process, as its command line runs it: it resolves the
-// configuration and the modules from the working folder, so the cruise holds the process there.
+// Why: dependency-cruiser resolves the configuration and the modules from the working folder, as
+// its command line does, so the cruise holds the process there.
 const cruise = async (project: Project): Promise<Cruise> => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-depcruise-'));
   const workingFolder = process.cwd();
@@ -327,7 +313,6 @@ const presetRuleNames = (): readonly string[] => [
   ),
 ];
 
-/** The forbidden rules of the preset files that no row given names. */
 const rulesNamedByNoRow = (
   rows: readonly {
     readonly rule: string;

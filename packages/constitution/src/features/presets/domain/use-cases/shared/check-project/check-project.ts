@@ -5,26 +5,25 @@ import { computeChanges } from '../compute-changes';
 import type { FileComputed } from '../compute-files';
 import { findReleaseLoops } from './steps/find-release-loops';
 
-// What an apply would change in a file, defaults aside.
 const driftOf = (file: FileComputed): readonly PresetsFinding[] => [
-  ...(file.missing.length === 0
+  ...(file.missingOrOutdated.length === 0
     ? []
     : [
         {
           code: PresetsCode.Missing,
           details: {
-            settings: file.missing.map(({ setting }) => setting),
+            settingPaths: file.missingOrOutdated.map(({ settingPath }) => settingPath),
           },
           path: file.filePath,
         } satisfies PresetsFinding,
       ]),
-  ...(file.stale.length === 0
+  ...(file.staleWithoutReplacement.length === 0
     ? []
     : [
         {
           code: PresetsCode.Stale,
           details: {
-            settings: file.stale.map(({ setting }) => setting),
+            settingPaths: file.staleWithoutReplacement.map(({ settingPath }) => settingPath),
           },
           path: file.filePath,
         } satisfies PresetsFinding,
@@ -35,7 +34,7 @@ const driftOf = (file: FileComputed): readonly PresetsFinding[] => [
         {
           code: PresetsCode.Unsorted,
           details: {
-            settings: file.unsorted.map(({ setting }) => setting),
+            settingPaths: file.unsorted.map(({ settingPath }) => settingPath),
           },
           path: file.filePath,
         } satisfies PresetsFinding,

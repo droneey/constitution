@@ -13,7 +13,6 @@ const projectFilePath = RepositoryPath.create('PROJECT.md');
 
 const QUICK_START = 'quick-start';
 
-/** the page made of PROJECT.md's glossary, and that section's anchor */
 const GLOSSARY = 'glossary';
 
 const siteDocuments: Readonly<Record<string, string>> = {
@@ -21,7 +20,6 @@ const siteDocuments: Readonly<Record<string, string>> = {
   'DECISIONS.md': 'decisions',
 };
 
-/** contexts/ holds two layers, and the sidebar one folder for them */
 const siteLayers: readonly string[] = [
   ...new Set(blockLayers.map((layer) => layer.replace(/\/.*/, ''))),
 ];

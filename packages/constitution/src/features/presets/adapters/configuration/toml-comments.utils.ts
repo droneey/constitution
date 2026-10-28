@@ -5,13 +5,11 @@ import { ownFieldOf } from './own-field.utils';
 import { NEWLINE } from './text.constants';
 import { depthOf, headerOf, keysOfText, readToml } from './toml-lines.utils';
 
-// A key's line: its keys, dotted or quoted, before the first equals sign.
 const KEY_PATH = /^\s*([^\s#=[][^=]*?)\s*=/;
 const MULTILINE_QUOTE = /"{3}|'{3}/g;
 const ITEM_KEY = 'items';
 
-// The lines a multi-line string holds past its opening one, which hold no key and no comment.
-const stringLinesOf = (lines: readonly string[]): ReadonlySet<number> => {
+const multilineStringLinesOf = (lines: readonly string[]): ReadonlySet<number> => {
   const inside = new Set<number>();
   let open: string | undefined;
 
@@ -32,16 +30,14 @@ const stringLinesOf = (lines: readonly string[]): ReadonlySet<number> => {
   return inside;
 };
 
-// An item of an array broken over lines, where the line holds it alone, read as a one-item array.
-const itemOf = (line: string): Setting | undefined => {
+const lineArrayItemOf = (line: string): Setting | undefined => {
   const parsed = readToml(`${ITEM_KEY} = [${line}\n]`);
   const items = Settings.isMap(parsed) ? parsed[ITEM_KEY] : undefined;
 
   return Settings.isList(items) && items.length === 1 ? items[0] : undefined;
 };
 
-// The element an array-of-tables header opens: the one after those its earlier headers opened.
-const elementOf = (input: {
+const arrayTableElementOf = (input: {
   counts: Map<string, number>;
   keys: readonly string[];
   settings: Setting | undefined;
@@ -68,7 +64,7 @@ const tablePathOf = (input: {
   header: readonly string[];
   settings: Setting | undefined;
 }): readonly HeldStep[] => {
-  const element = elementOf({
+  const element = arrayTableElementOf({
     counts: input.counts,
     keys: input.header,
     settings: input.settings,
@@ -92,7 +88,7 @@ const itemAnchorsOf = (input: {
   line: string;
 }): readonly Anchor[] =>
   [
-    itemOf(input.line),
+    lineArrayItemOf(input.line),
   ]
     .filter((listed) => listed !== undefined)
     .map((listed) => ({
@@ -107,7 +103,7 @@ const itemAnchorsOf = (input: {
 
 const tomlAnchorsOf = (text: string): readonly Anchor[] => {
   const lines = text.split(NEWLINE);
-  const strings = stringLinesOf(lines);
+  const strings = multilineStringLinesOf(lines);
   const settings = readToml(text);
   const counts = new Map<string, number>();
   const anchors: Anchor[] = [];
@@ -161,7 +157,7 @@ const tomlAnchorsOf = (text: string): readonly Anchor[] => {
 const tomlCommenting: Commenting = {
   anchorsOf: tomlAnchorsOf,
   prefix: '#',
-  textLinesOf: (text) => stringLinesOf(text.split(NEWLINE)),
+  linesInsideTextValuesOf: (text) => multilineStringLinesOf(text.split(NEWLINE)),
 };
 
 export { tomlCommenting };

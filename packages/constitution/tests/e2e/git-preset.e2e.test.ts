@@ -2,8 +2,6 @@ import { describe, expect, it } from 'bun:test';
 
 import { ignoredOf, patternsMeetingNoPath } from './git-preset.fixtures';
 
-// The paths the presets' patterns mean git to ignore, in the order the cases list them, which git
-// answers in.
 const ignoredPaths = [
   '.droneey/state.json',
   '.claude/settings.local.json',
@@ -61,8 +59,6 @@ const ignoredPaths = [
   'apps/web/build/index.js',
 ];
 
-// The paths beside them the presets keep: those a negation names, and those a pattern only seems
-// to meet.
 const keptPaths = [
   'src/order.ts',
   '.claude/settings.json',
@@ -89,8 +85,8 @@ describe("the configuration git's presets write", () => {
     expect(ignored).toStrictEqual(ignoredPaths);
   });
 
-  // git reads every line of a .gitignore as a pattern and refuses none, so each pattern the presets
-  // write meets a path of the tables above.
+  // Why: git reads every line of a .gitignore as a pattern and refuses none, so each pattern the
+  // presets write meets a path of the tables above.
   it('should meet a path of the tables with each pattern when a unit follows every block git is configured for', () => {
     // Act
     const unmet = patternsMeetingNoPath([

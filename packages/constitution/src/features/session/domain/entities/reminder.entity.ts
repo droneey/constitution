@@ -7,7 +7,6 @@ interface RemindedBlock {
   readonly musts: readonly MustRule[];
 }
 
-/** The blocks a file reminds of, with the file's path from the project's folder. */
 interface Reminder {
   readonly blocks: readonly RemindedBlock[];
   readonly path: RepositoryRelativePath;

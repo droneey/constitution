@@ -13,10 +13,6 @@ interface RecordTreeInput {
   readonly workingTree: WorkingTree;
 }
 
-/**
- * Records the fingerprint of the session's tree under the mark; records nothing when the session
- * keeps no rules or git cannot report the tree.
- */
 const recordTree = (input: RecordTreeInput): void => {
   const state = input.sessions.state(input.session);
 

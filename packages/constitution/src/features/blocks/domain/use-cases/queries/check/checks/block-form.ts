@@ -41,7 +41,6 @@ const SECTION = /^## (.+)/;
 
 const linesOf = (file: BlockFile): readonly string[] => withoutCodeFences(file.body).split('\n');
 
-// The passport says what the block is and how it is set up; its rules live in its axes' chapters.
 const passportFindings = (block: Block): readonly BlockFormFinding[] =>
   linesOf(block.passport).some((line) => line.startsWith(RULE_HEADING))
     ? [

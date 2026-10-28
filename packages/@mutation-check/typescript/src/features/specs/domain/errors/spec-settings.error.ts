@@ -16,7 +16,6 @@ type SpecSettingsFailureDetails =
   | {
       readonly code: SpecSettingsFailure.Malformed;
       readonly fileName: string;
-      /** each place in the file that breaks the shape, by its path */
       readonly problemPaths: readonly string[];
     };
 

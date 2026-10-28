@@ -68,11 +68,9 @@ const headingOf = (title: string): HTMLElement =>
     name: title,
   });
 
-/** the next page's contents load before it shows */
 const navigate = (rendered: RenderResult, page: ReactElement): Promise<void> =>
   act(() => Promise.resolve(rendered.rerender(page)));
 
-/** the page's heading as its first commit shows it, read before the sidebar's scroll area measures itself */
 const firstCommitHeadingOf = async (page: ReactElement): Promise<string | undefined> => {
   render(page, {
     wrapper: docsWrapperOf({}),
@@ -96,6 +94,14 @@ const lastOf = (elements: HTMLElement[]): HTMLElement => {
 
   return last;
 };
+
+// Why: the page's header holds the last of the sidebar's buttons in the document.
+const pageHeaderSidebarButton = (): HTMLElement =>
+  lastOf(
+    screen.getAllByRole('button', {
+      name: 'Collapse Sidebar',
+    }),
+  );
 
 const versionMenu = (): Promise<HTMLElement> =>
   screen.findByRole('button', {
@@ -342,7 +348,7 @@ describe('DocsPageScreen', () => {
       />
     );
 
-    const { recovered } = await hydrateInDocs(
+    const { recoverableErrors } = await hydrateInDocs(
       {
         client: pageWith(
           pageEntryFixture({
@@ -370,7 +376,7 @@ describe('DocsPageScreen', () => {
 
     // Assert
     expect([
-      recovered,
+      recoverableErrors,
       marks.at(-1),
     ]).toStrictEqual([
       [],
@@ -387,14 +393,7 @@ describe('DocsPageScreen', () => {
       frame,
     });
 
-    // the collapsed sidebar is out of reach, so the reader opens it from the page's header, last in the document
-    await userEvent.click(
-      lastOf(
-        screen.getAllByRole('button', {
-          name: 'Collapse Sidebar',
-        }),
-      ),
-    );
+    await userEvent.click(pageHeaderSidebarButton());
 
     // Act
     await navigate(rendered, guidePage());

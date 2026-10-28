@@ -4,7 +4,6 @@ import { ConfigOverride } from '../project-config.entity';
 
 const LINE = 7;
 
-// An override opening at LINE that gives only the fields a case is about.
 const overrideOf = (fields: Partial<ConfigOverride>): ConfigOverride =>
   ConfigOverride.create({
     level: undefined,

@@ -70,7 +70,6 @@ def check_mutants(scope: Scope, *, workspace: Workspace) -> Outcome:
         mutant for mutant in _targeted(mutants, targets) if not is_killed(mutant.status)
       )
       reason = PassReason.KILLED
-    # once mutmut stopped before running, a mutant it lists for the functions is one no spec reaches
     case Stopped(mutants=mutants):
       not_killed = _targeted(mutants, targets)
       reason = PassReason.NOTHING_TO_MUTATE

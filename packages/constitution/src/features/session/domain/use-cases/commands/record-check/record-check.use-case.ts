@@ -20,7 +20,6 @@ const withoutRunner = (step: string): string => {
   return runner === undefined ? step : step.slice(runner.length);
 };
 
-// Whether one of the commands a shell line runs in turn is the check, alone or with its options.
 const runsCheck = (command: string): boolean =>
   command.split(COMMAND_SEPARATOR).some((part) => {
     const step = withoutRunner(part.trim());
@@ -35,10 +34,6 @@ interface RecordCheckInput {
   readonly workingTree: WorkingTree;
 }
 
-/**
- * Records the fingerprint of the tree as checked when a command the agent ran is the project's
- * check; records nothing when it is not, the session keeps no rules, or git cannot report the tree.
- */
 const recordCheck = (input: RecordCheckInput): void => {
   if (!runsCheck(input.command)) {
     return;

@@ -11,7 +11,7 @@ interface PopoverPanelProps extends ComponentPropsWithRef<'div'> {
   readonly positionMethod?: PopoverPositionerProps['positionMethod'];
   /** in pixels, between the trigger's edge and the panel */
   readonly sideOffset?: number;
-  /** the content's own by default; the trigger's, or as wide as the room between the popup's least and greatest */
+  /** the content's own when omitted */
   readonly width?: PopoverWidth;
 }
 

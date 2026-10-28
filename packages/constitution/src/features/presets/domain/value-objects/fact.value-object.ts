@@ -1,24 +1,15 @@
-/** A value constitution computes for the file an entry writes, written `${<object>.<property>}`. */
 enum FactName {
-  /** the path from the file's folder to the nearest installed Constitution at or above it */
   ConstitutionPath = 'constitution.path',
-  /** the name the unit's constitution.yaml gives its package */
   PackageName = 'package.name',
-  /** whether no unit above the file's writes a file of the same name */
   FileIsTop = 'file.isTop',
-  /** the folder at the repository's root that holds the file's unit; none for a unit at the root */
   UnitParent = 'unit.parent',
-  /** how many folders the file's unit lies below `unit.parent`; none where that is none */
   UnitDepth = 'unit.depth',
-  /** whether units lie below the file's unit */
   WorkspaceIsRoot = 'workspace.isRoot',
-  /** the units below the file's unit, by their paths from it: a list item names it whole */
   WorkspaceMembers = 'workspace.members',
 }
 
 enum FactKind {
   Named = 'named',
-  /** `${role.<id>}`: the name of the folder or suffix term whose definition carries the id */
   Role = 'role',
   Unknown = 'unknown',
 }
@@ -39,7 +30,6 @@ type Fact =
 
 interface FactReference {
   readonly fact: Fact;
-  /** the reference whole, `${…}` included */
   readonly written: string;
 }
 
@@ -80,10 +70,6 @@ const referencesIn = (text: string): readonly FactReference[] =>
     written: match[0],
   }));
 
-/**
- * The text with each reference replaced by what the function gives for its fact; undefined when it
- * gives nothing for one of them.
- */
 const resolvedIn = (input: {
   text: string;
   valueOf: (fact: Fact) => string | undefined;
@@ -104,7 +90,6 @@ const resolvedIn = (input: {
   return isResolved ? resolved : undefined;
 };
 
-/** The fact a text names when the text is that one reference alone. */
 const wholeOf = (text: string): Fact | undefined => {
   const [reference] = referencesIn(text);
 
@@ -129,13 +114,11 @@ const isNamed = (fact: Fact, name: FactName): boolean =>
   // Stryker disable next-line ConditionalExpression: the test of its kind only narrows the type
   fact.kind === FactKind.Named && fact.name === name;
 
-/** Whether the fact is true or false, which a value or a guard may name whole. */
 const isBoolean = (fact: Fact): boolean =>
   // Stryker disable next-line ConditionalExpression: the test of its kind only narrows the type
   fact.kind === FactKind.Named && truthFacts.includes(fact.name);
 
-/** The text of a list item that becomes one item per member. */
-const membersText = `\${${FactName.WorkspaceMembers}}`;
+const membersItemText = `\${${FactName.WorkspaceMembers}}`;
 
 const Fact = {
   isBoolean,
@@ -148,4 +131,4 @@ const Fact = {
 } as const;
 
 export type { FactReference };
-export { Fact, FactKind, FactName, membersText };
+export { Fact, FactKind, FactName, membersItemText };

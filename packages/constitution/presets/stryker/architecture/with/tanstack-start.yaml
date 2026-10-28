@@ -1,7 +1,12 @@
 core:
-  every-mutant-killed:
+  spec-boundaries-follow-the-tree:
+    typescript:
+      stryker.config.json:
+        mutate:
+          - '!${role.source}/${role.composition-root}/${role.file-routes}/__root.{ts,tsx}'
+tanstack-start:
+  start-router-entries-point-into-the-root:
     typescript:
       stryker.config.json:
         mutate:
           - '!${role.source}/${role.composition-root}/router.{ts,tsx}'
-          - '!${role.source}/${role.composition-root}/${role.file-routes}/__root.{ts,tsx}'

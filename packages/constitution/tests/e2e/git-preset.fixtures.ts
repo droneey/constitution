@@ -6,10 +6,8 @@ import { gitIn, toolEnvironment } from './package.fixtures';
 import { linesOf, widestAppliedUnit } from './preset-load.fixtures';
 
 const COMMENT = '#';
-// git's verbose answer: the ignore file, the line and the pattern that met the path, a tab, the path.
 const VERBOSE_LINE = /^[^:]*:\d*:(.*)\t/;
 
-// The widest unit made a repository, which git's check of its ignore files needs.
 const repositoryUnit = (): string => {
   const folder = widestAppliedUnit('git');
 
@@ -30,7 +28,6 @@ const checkIgnore = (input: {
     spawnSync(
       'git',
       [
-        // the machine's own ignore file aside, as a project's checkout on another machine reads none
         '-c',
         'core.excludesFile=/dev/null',
         'check-ignore',
@@ -47,7 +44,6 @@ const checkIgnore = (input: {
     ).stdout,
   );
 
-/** Of the paths given, those git ignores by the .gitignore of the widest unit. */
 const ignoredOf = (paths: readonly string[]): readonly string[] =>
   checkIgnore({
     args: [],
@@ -55,7 +51,6 @@ const ignoredOf = (paths: readonly string[]): readonly string[] =>
     paths,
   });
 
-/** The patterns of the .gitignore of the widest unit that meet none of the paths given. */
 const patternsMeetingNoPath = (paths: readonly string[]): readonly string[] => {
   const folder = repositoryUnit();
   const met = new Set(

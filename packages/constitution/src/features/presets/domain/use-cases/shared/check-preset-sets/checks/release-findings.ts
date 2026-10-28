@@ -10,21 +10,17 @@ import { PresetEntry, PresetsCode, TextPlace } from '../../../../entities';
 import { Fact, FactKind, FactName } from '../../../../value-objects';
 
 interface ReleaseFiles {
-  /** each file the distribution packs from a package that builds it, by its path in it */
   readonly distributed: ReadonlySet<string>;
   readonly files: ProjectFiles;
   readonly folderPath: AbsolutePath;
-  /** how findings name its folder; empty for the folder checked itself */
   readonly folderPathFromRepository: RepositoryRelativePath;
 }
 
-// A path from the release after its fact, up to what ends a path in a value or a command.
 const releaseFile = new RegExp(
   `${RegExp.escape(Fact.textOf(Fact.of(FactName.ConstitutionPath)))}/([^\\s"'\`,;)\\]]+)`,
   'g',
 );
 const TRAILING_SEPARATOR = /\/$/;
-// <reader>/plugins/<language>/<rule>.<extension>, from presets/.
 const pluginPath = new RegExp(`^[^/]+/${PLUGINS_FOLDER_NAME}/[^/]+/([^/]+)\\.[^./]+$`);
 
 interface ReleaseFindingsInput {
@@ -34,13 +30,11 @@ interface ReleaseFindingsInput {
   readonly rules: ReadonlySet<RuleSlug>;
 }
 
-// The files of the release a text names, from the release, its roles written as their terms are.
 const releaseFilesIn = (input: {
   entry: PresetEntry;
   model: BlockModel;
   text: string;
 }): readonly string[] => {
-  // a role no term defines leaves the text unread, as its own finding says
   const written = Fact.resolvedIn({
     text: input.text,
     valueOf: (fact) => {
@@ -73,7 +67,6 @@ const namedFilesOf = (input: { entry: PresetEntry; model: BlockModel }): readonl
       }),
     );
 
-// A file the release lacks is sound where the distribution packs it from a package that builds it.
 const isSound = (input: { pathInRelease: string; release: ReleaseFiles }): boolean => {
   const { distributed, files, folderPath } = input.release;
 
@@ -85,7 +78,6 @@ const isSound = (input: { pathInRelease: string; release: ReleaseFiles }): boole
 
 const releaseFindings = (input: ReleaseFindingsInput): readonly PresetsFinding[] => {
   const { release } = input;
-  // A pack's entries name the release's files as the project's, never as the release's own.
   const named = input.entries
     .filter((entry) => entry.set.source.kind === SourceKind.Release)
     .flatMap((entry) =>

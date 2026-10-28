@@ -12,12 +12,8 @@ interface OpenProjectInput extends ProjectPorts {
 }
 
 /**
- * The project around the start folder with what it declares resolved, for the commands a person
- * runs in it; or why it cannot be opened: no project holds the start folder, its release is not
- * installed, or its constitution.yaml does not parse.
- *
- * @throws {@link ReleaseError} when its blocks cannot be listed
- * @throws {@link UnreadableFileError} when its constitution.yaml cannot be read
+ * @throws {ReleaseError} when its blocks cannot be listed
+ * @throws {UnreadableFileError} when its constitution.yaml cannot be read
  */
 const openProject = (input: OpenProjectInput): ProjectOpening => {
   const place = findProject(input);

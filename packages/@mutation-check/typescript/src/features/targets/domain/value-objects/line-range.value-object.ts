@@ -8,7 +8,7 @@ interface LineBounds {
   readonly startLine: number;
 }
 
-/** Lines of a file, counted from one, both ends included. */
+// Why: counted from one, both ends included, as Stryker reads a line range.
 type LineRange = Brand<LineBounds, 'LineRange'>;
 
 const FIRST_LINE = 1;
@@ -19,7 +19,7 @@ const isLineRange = (bounds: LineBounds): bounds is LineRange =>
   bounds.startLine >= FIRST_LINE &&
   bounds.endLine >= bounds.startLine;
 
-/** @throws InvalidValueError when the range does not run forward from line one or later */
+/** @throws {InvalidValueError} when the range does not run forward from line one or later */
 const create = (bounds: LineBounds): LineRange => {
   if (!isLineRange(bounds)) {
     throw new InvalidValueError({

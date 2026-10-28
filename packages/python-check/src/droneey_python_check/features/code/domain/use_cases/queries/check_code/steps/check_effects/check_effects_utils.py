@@ -1,7 +1,7 @@
 import ast
 from typing import TYPE_CHECKING
 
-from ......constants import EFFECT_MODULE_NAMES, EFFECT_NAMES, TIMER_NAMES
+from ......constants import EFFECT_MODULE_NAMES, EFFECT_NAMES_OF_PURE_MODULES, TIMER_NAMES
 from ......entities import (
   EffectOutsideEdge,
   Finding,
@@ -36,7 +36,11 @@ def check_effects(*, path: Path, tree: ast.Module) -> tuple[Finding, ...]:
     return ()
 
   aliases = aliases_of(tree)
-  effect_names = EFFECT_NAMES if is_binding_unit(root.file_folder) else EFFECT_NAMES | TIMER_NAMES
+  effect_names = (
+    EFFECT_NAMES_OF_PURE_MODULES
+    if is_binding_unit(root.file_folder)
+    else EFFECT_NAMES_OF_PURE_MODULES | TIMER_NAMES
+  )
 
   return tuple(
     Finding(

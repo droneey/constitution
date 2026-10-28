@@ -33,8 +33,8 @@ const secretsUnit = (): string =>
 
 const betterleaks = miseBinary('betterleaks');
 
-// A token of GitHub's shape, drawn at random on each run: no source file holds
-// one, and a random body carries the entropy the scanner looks for.
+// Why: drawn at random on each run: no source file holds a token of GitHub's shape, and a random
+// body carries the entropy the scanner looks for.
 const TOKEN_BYTES = 48;
 const TOKEN_BODY_LENGTH = 36;
 const token = `ghp_${randomBytes(TOKEN_BYTES)
@@ -42,8 +42,8 @@ const token = `ghp_${randomBytes(TOKEN_BYTES)
   .replaceAll(/[^A-Za-z0-9]/g, '')
   .slice(0, TOKEN_BODY_LENGTH)}`;
 
-// The dependency a lockfile names, joined at run time: written out, this file
-// would hold the very line the preset lets through in bun.lock only.
+// Why: joined at run time: written out, this file would hold the very line the preset lets through
+// in bun.lock only.
 const passwordPackage = [
   '@inquirer',
   'password',
@@ -51,7 +51,6 @@ const passwordPackage = [
 
 const SCANNED = 'scanned';
 
-/** betterleaks over a folder of no secret, by the configuration of the widest unit, its warnings shown. */
 const configuredScan = (): Promise<Load> =>
   loadOf('betterleaks', {
     command: [

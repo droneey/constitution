@@ -13,7 +13,6 @@ import { LAYER_ARTICLE } from '../constants';
 import type { TextsOf } from '../types';
 import { LIST_SEPARATOR } from './list-separator.messages';
 
-// What a file adds for a key it lacks, and writes in a key it leaves empty.
 const ADD = {
   [ConfigKey.Axes]: 'axes: [architecture, workflow]',
   [ConfigKey.Domains]: 'domains: []',
@@ -33,7 +32,7 @@ const FILL = {
   [ConfigKey.Overrides]: 'write overrides: []',
 } as const satisfies Readonly<Record<RequiredConfigKey, string>>;
 
-// The kinds whose wording a choice of the warning's text decides on.
+// Why: a messages file holds no branch, so the table of texts chooses the wording of these kinds.
 type ChosenKind =
   | WarningKind.MemberConfigUnparsed
   | WarningKind.KeyUnknown
@@ -43,7 +42,6 @@ type ChosenKind =
   | WarningKind.ConfigurationsUnchecked
   | WarningKind.ReleaseLinkLoops;
 
-/** The text of each warning that names its details as they are. */
 const warningMessages: Omit<TextsOf<WarningDetails>, ChosenKind> = {
   [WarningKind.MemberWithoutConfig]: ({ member }) =>
     `${member} is a member of the workspace with no ${CONFIG_FILE_NAME} — write one that lists the blocks it follows`,
@@ -99,7 +97,6 @@ const warningMessages: Omit<TextsOf<WarningDetails>, ChosenKind> = {
 };
 
 interface MemberUnparsedInput {
-  /** " at line …" for the lines the file fails at, or nothing */
   readonly atLines: string;
   readonly member: string;
 }
@@ -117,7 +114,6 @@ const unknownKeyMessage = ({ file, key }: WarningDetails[WarningKind.KeyUnknown]
   `${file} has the unknown key ${key} — remove it`;
 
 interface AbstractListedInput {
-  /** the heirs offered in its place, as a list words them */
   readonly heirs: string;
   readonly name: string;
 }
@@ -125,9 +121,7 @@ interface AbstractListedInput {
 const abstractListedMessage = ({ heirs, name }: AbstractListedInput): string =>
   `${name} cannot be listed — list ${heirs}`;
 
-/** The heirs an abstract block's warning offers when it names none. */
 const UNNAMED_HEIRS = 'one of its heirs';
-/** The word before the last heir of a list. */
 const LAST_HEIR_SEPARATOR = ' or ';
 
 const inUnitMessage = (unit: string): string => ` in ${unit}`;
@@ -135,10 +129,8 @@ const inUnitMessage = (unit: string): string => ` in ${unit}`;
 interface BlockNeededInput {
   readonly block: string;
   readonly key: string;
-  /** the block, or the heirs of an abstract one, to add */
   readonly offered: string;
   readonly required: string;
-  /** where it holds, as {@link inUnitMessage} words it, or nothing for the repository */
   readonly where: string;
 }
 

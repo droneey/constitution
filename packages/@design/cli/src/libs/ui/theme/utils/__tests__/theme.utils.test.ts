@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { createPlainTheme, GOLD } from '#/__tests__/theme.fixtures';
+import { createPlainTheme, GOLD_BRAND_FILE } from '#/__tests__/theme.fixtures';
 
 import { ColourLevel, Space, ThemeMode, Tone } from '../../constants';
 import type { Theme } from '../../types';
@@ -75,7 +75,7 @@ describe('createTheme', () => {
   ])("should draw the accent on the app's own scale in the $mode mode", ({ drawn, mode }) => {
     // Arrange
     const theme = createPlainTheme({
-      accent: AccentScale.create(GOLD),
+      accent: AccentScale.create(GOLD_BRAND_FILE),
       colourLevel: ColourLevel.TrueColour,
       mode,
     });
@@ -91,7 +91,7 @@ describe('createTheme', () => {
     // Arrange
     const theme = createPlainTheme(
       {
-        accent: AccentScale.create(GOLD),
+        accent: AccentScale.create(GOLD_BRAND_FILE),
         colourLevel: ColourLevel.TrueColour,
       },
       createTokens({

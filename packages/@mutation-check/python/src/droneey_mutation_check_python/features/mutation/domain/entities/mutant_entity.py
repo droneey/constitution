@@ -2,14 +2,11 @@ from dataclasses import dataclass
 from enum import StrEnum, unique
 from typing import NewType, assert_never
 
-# mutmut's name of a mutant, `shop.orders.x_total__mutmut_1`.
 MutantName = NewType('MutantName', str)
 
 
 @unique
 class MutantStatus(StrEnum):
-  """A mutant's status, spelled as mutmut spells it."""
-
   KILLED = 'killed'
   CAUGHT_BY_TYPE_CHECK = 'caught by type check'
   SKIPPED = 'skipped'
@@ -20,7 +17,6 @@ class MutantStatus(StrEnum):
   SUSPICIOUS = 'suspicious'
   SEGFAULT = 'segfault'
   INTERRUPTED = 'check was interrupted by user'
-  # a status a later mutmut adds
   UNKNOWN = 'unknown'
 
 

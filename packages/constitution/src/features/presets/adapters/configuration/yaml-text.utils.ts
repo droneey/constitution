@@ -17,7 +17,8 @@ const OPTIONS = {
   version: '1.2',
 } as const;
 const MAX_ALIASES = 1000;
-// A word YAML 1.1 reads as a boolean is quoted, so a reader of YAML 1.1 reads it as a string too.
+// Why: a word YAML 1.1 reads as a boolean is quoted, so a reader of YAML 1.1 reads it as a string
+// too.
 const YAML_11_BOOLEAN = /^(?:y|yes|n|no|on|off|true|false)$/i;
 const LONG_TEXT = 80;
 const INDENT_AND_DASHES = /^\s*(?:- )*$/;
@@ -28,11 +29,14 @@ const documentOf = (text: string): Document | undefined => {
   return document.errors.length === 0 ? document : undefined;
 };
 
-// The parser refuses a document whose aliases expand past the bound with a ReferenceError.
-const isAliasExcess = (error: unknown): error is ReferenceError => error instanceof ReferenceError;
+// Why: the parser refuses a document whose aliases expand past the bound with a ReferenceError.
+const isAliasExpansionPastBound = (error: unknown): error is ReferenceError =>
+  error instanceof ReferenceError;
+
+const isEmptyDocument = (document: Document): boolean => document.contents === null;
 
 const settingOfDocument = (document: Document): Setting | undefined => {
-  if (document.contents === null) {
+  if (isEmptyDocument(document)) {
     return {};
   }
 
@@ -41,7 +45,7 @@ const settingOfDocument = (document: Document): Setting | undefined => {
       document.toJS({
         maxAliasCount: MAX_ALIASES,
       }),
-    isRecognised: isAliasExcess,
+    isRecognised: isAliasExpansionPastBound,
   });
 
   return settingOfWire(wire);
@@ -53,13 +57,13 @@ const readYaml = (text: string): Setting | undefined => {
   return document === undefined ? undefined : settingOfDocument(document);
 };
 
-// A node the file did not hold is written as a preset file writes it; the parser's writer gives a
-// text of lines its literal block by itself.
-const styled = (node: unknown): void => {
+// Why: a node the file did not hold is written as a preset file writes it; the parser's writer
+// gives a text of lines its literal block by itself.
+const styledAsPresetFiles = (node: unknown): void => {
   if (isMap(node)) {
     for (const pair of node.items) {
-      styled(pair.key);
-      styled(pair.value);
+      styledAsPresetFiles(pair.key);
+      styledAsPresetFiles(pair.value);
     }
 
     return;
@@ -67,7 +71,7 @@ const styled = (node: unknown): void => {
 
   if (isSeq(node)) {
     for (const listed of node.items) {
-      styled(listed);
+      styledAsPresetFiles(listed);
     }
 
     return;
@@ -90,7 +94,7 @@ const styled = (node: unknown): void => {
 const nodeOf = (document: Document, setting: Setting): Node => {
   const node = document.createNode(setting);
 
-  styled(node);
+  styledAsPresetFiles(node);
 
   return node;
 };
@@ -99,9 +103,7 @@ const keyOfPair = (pair: Pair): unknown => (isScalar(pair.key) ? pair.key.value 
 
 const keysOf = (node: YAMLMap): readonly unknown[] => node.items.map(keyOfPair);
 
-// The settings laid on the document: only what changed is touched, so the file's comments stay; a
-// list keeps the nodes of the items it keeps, and a value the settings cannot hold is left alone.
-const lay = (input: {
+const laidOnDocument = (input: {
   after: Setting;
   before: Setting | undefined;
   document: Document;
@@ -126,7 +128,7 @@ const lay = (input: {
     }
 
     for (const [key, held] of Object.entries(after)) {
-      lay({
+      laidOnDocument({
         after: held,
         before: ownFieldOf(before, key),
         document,
@@ -157,7 +159,6 @@ const lay = (input: {
     return;
   }
 
-  // A scalar takes its new value in place, so its comment stays.
   if (isScalar(node) && Settings.isScalar(after)) {
     node.value = after;
 
@@ -169,7 +170,6 @@ const lay = (input: {
 
 interface Child {
   readonly held: unknown;
-  /** where the key or the item begins */
   readonly offset: number;
   readonly step: HeldStep;
 }
@@ -234,16 +234,14 @@ const yamlAnchorsOf = (text: string): readonly Anchor[] => {
 
 const indentOf = (line: string): number => line.length - line.trimStart().length;
 
-// A literal or folded block runs on over the lines indented deeper than the one it opens on, its
-// blank lines among them.
-const blockEndOf = (lines: readonly string[], first: number): number => {
+const blockScalarEndOf = (lines: readonly string[], first: number): number => {
   let last = first;
 
-  // past the last line String() gives a word, which ends the run
   while (
-    // Stryker disable next-line MethodExpression: the writer writes a block's blank line bare
-    String(lines[last + 1]).trim() === '' ||
-    indentOf(String(lines[last + 1])) > indentOf(String(lines[first]))
+    // Stryker disable next-line ConditionalExpression,EqualityOperator,ArithmeticOperator: a line past the end reads as "undefined", which no block holds, so the bound only states where the walk stops
+    last + 1 < lines.length &&
+    (String(lines[last + 1]).trim() === '' ||
+      indentOf(String(lines[last + 1])) > indentOf(String(lines[first])))
   ) {
     last += 1;
   }
@@ -251,9 +249,9 @@ const blockEndOf = (lines: readonly string[], first: number): number => {
   return last;
 };
 
-const yamlTextLinesOf = (text: string): ReadonlySet<number> => {
+const yamlLinesInsideTextValuesOf = (text: string): ReadonlySet<number> => {
   const lines = text.split(NEWLINE);
-  const texts = new Set<number>();
+  const linesInsideTextValues = new Set<number>();
 
   visit(parseDocument(text, OPTIONS), (_key, node) => {
     if (!isScalar(node)) {
@@ -265,31 +263,30 @@ const yamlTextLinesOf = (text: string): ReadonlySet<number> => {
     const first = lineAt(text, start);
     const last =
       node.type === 'BLOCK_LITERAL' || node.type === 'BLOCK_FOLDED'
-        ? blockEndOf(lines, first)
+        ? blockScalarEndOf(lines, first)
         : lineAt(text, end);
 
     for (let line = first; line <= last; line += 1) {
-      texts.add(line);
+      linesInsideTextValues.add(line);
     }
   });
 
-  return texts;
+  return linesInsideTextValues;
 };
 
 const yamlCommenting: Commenting = {
   anchorsOf: yamlAnchorsOf,
   prefix: '#',
-  textLinesOf: yamlTextLinesOf,
+  linesInsideTextValuesOf: yamlLinesInsideTextValuesOf,
 };
 
 const writeSettings = (input: ConfigurationWrite): string => {
   const document = parseDocument(input.text, OPTIONS);
 
-  // A document of no node is written as null, which reads as no settings, so it takes them whole.
-  if (document.contents === null) {
+  if (isEmptyDocument(document)) {
     document.setIn([], nodeOf(document, input.settings));
   } else {
-    lay({
+    laidOnDocument({
       after: input.settings,
       before: settingOfDocument(document),
       document,
@@ -297,7 +294,6 @@ const writeSettings = (input: ConfigurationWrite): string => {
     });
   }
 
-  // a map kept sorted keeps its pairs' nodes and comments
   for (const keyPath of input.sorted) {
     const node = document.getIn(keyPath);
 
@@ -308,7 +304,6 @@ const writeSettings = (input: ConfigurationWrite): string => {
     }
   }
 
-  // As the formatter writes YAML.
   return document.toString({
     lineWidth: LINE_WIDTH,
     singleQuote: true,

@@ -20,9 +20,6 @@ import type { ProjectReader } from '../domain/contracts';
 import type { Lock, LockRecord, PresetsProject } from '../domain/entities';
 import { ProjectRead, ProjectReadStatus } from '../domain/entities';
 
-// The blocks the presets' specs hold their preset files against: core, the languages, a domain, and
-// the tools that read the files, each with the rules and the role terms the cases name.
-
 interface BlockFixture {
   readonly extends?: string;
   readonly governs?: readonly string[];
@@ -288,7 +285,6 @@ const presetsModel: BlockModel = BlockModel.create({
 
 interface UnitFixture {
   readonly axes?: readonly Axis[];
-  /** core and the bases of the blocks given are the case's to list */
   readonly blocks?: readonly string[];
   readonly languages?: readonly string[];
   readonly lowered?: readonly string[];
@@ -320,7 +316,6 @@ const unitOf = (input: UnitFixture = {}): ProjectUnit =>
 
 type Files = Readonly<Record<string, string>>;
 
-/** The release's preset files and data, by their paths under its presets/, as absolute files. */
 const releasePresets = (presets: Files): Files =>
   Object.fromEntries(
     Object.entries(presets).map(([path, text]) => [
@@ -329,7 +324,6 @@ const releasePresets = (presets: Files): Files =>
     ]),
   );
 
-/** The project's own files, by their paths from its folder, as absolute files. */
 const projectFiles = (files: Files): Files =>
   Object.fromEntries(
     Object.entries(files).map(([path, text]) => [
@@ -347,7 +341,6 @@ interface ProjectFixture {
   readonly warnings?: readonly ProjectWarning[];
 }
 
-/** A project of these units around the release, its files read through the fake. */
 const projectOf = (
   input: ProjectFixture,
 ): {
@@ -379,7 +372,6 @@ const projectOf = (
     }),
     project,
     reader: {
-      // the project holds its own folder and every folder below it
       open: (startFolderPath: AbsolutePath): ProjectRead<PresetsProject> =>
         startFolderPath === projectPlace.repositoryFolderPath ||
         startFolderPath.startsWith(`${projectPlace.repositoryFolderPath}/`)
@@ -391,7 +383,6 @@ const projectOf = (
   };
 };
 
-/** The answer of a read the case expects to open the project. */
 const answerOf = <TAnswer>(read: ProjectRead<TAnswer>): TAnswer => {
   if (read.status !== ProjectReadStatus.Opened) {
     throw new Error(`the project did not open: ${read.status}`);

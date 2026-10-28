@@ -3,7 +3,7 @@ import https from 'node:https';
 import net from 'node:net';
 import tls from 'node:tls';
 
-// A declaration, not an arrow, so that `new WebSocket()` and `new Bun.SQL()` throw this error too.
+// Why: a declaration, not an arrow, so `new WebSocket()` and `new Bun.SQL()` throw this error too.
 function refuseNetwork(): never {
   throw new Error('A spec reached the network: give it the fake of its transport');
 }

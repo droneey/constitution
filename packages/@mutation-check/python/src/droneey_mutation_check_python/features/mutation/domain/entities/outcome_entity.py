@@ -25,8 +25,6 @@ class Survived:
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class Broken:
-  """mutmut failed before it ran the mutants, with what it printed."""
-
   output: str
 
 

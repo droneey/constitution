@@ -14,10 +14,10 @@ if TYPE_CHECKING:
 
   from droneey_mutation_check_python.features.mutation import ExitStatus
 
-# What git and mutmut need of the environment: mutmut's type check finds the project's packages by
-# VIRTUAL_ENV, as it runs from mutants/, where no .venv is.
+# Why: mutmut's type check finds the project's packages by VIRTUAL_ENV, as it runs from mutants/,
+# where no .venv is.
 CHILD_VARIABLE_NAMES: Final = ('HOME', 'LANG', 'LC_ALL', 'PATH', 'TMPDIR', 'VIRTUAL_ENV')
-# A whole mutation run is one command, so the bound is the longest run a project may take.
+# Why: one run is one command, so the bound is the longest run a project may take.
 COMMAND_TIMEOUT_SECONDS: Final = 3 * 60 * 60
 
 

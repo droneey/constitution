@@ -38,7 +38,7 @@ Two acts that undo each other are named by a verb and its antonym, the same pair
 
 ### name-never-an-empty-word · SHOULD
 
-A name is never only an empty word — `data`, `result`, `temp`, `info`, `item`, `value`, `obj`, `stuff`, `thing`; code that knows nothing of the program may use one for what is truly generic.
+A name is never only an empty word — `data`, `result`, `temp`, `info`, `item`, `value`, `obj`, `stuff`, `thing`; only a value whose shape the code does not know may take one, and the code says so where it does.
 
 | Why |
 |---|

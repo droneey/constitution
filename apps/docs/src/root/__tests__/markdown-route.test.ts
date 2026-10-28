@@ -9,7 +9,6 @@ import { getCallOf, responseOf } from './server-route.fixtures';
 const handlers = Route.options.server?.handlers;
 const get = typeof handlers === 'object' ? handlers.GET : undefined;
 
-/** the address after `/docs/` and before `.md` */
 const markdownAt = (splat?: string): Promise<Response> =>
   responseOf(
     get?.(

@@ -1,6 +1,6 @@
 language css
 
-// In the font shorthand the length after the slash is the line height.
+// Why: in the font shorthand the length after the slash is the line height.
 CssRegularDimension() as $size where {
   $size <: r"(?i).*\d(?:px|pt|pc|in|cm|mm|q)",
   $size <: within CssGenericProperty(name=$property),

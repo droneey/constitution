@@ -1,4 +1,3 @@
-/** Each key's first entry, in the order the keys first appear. */
 const firstBy = <TEntry, TKey>(
   entries: readonly TEntry[],
   keyOf: (entry: TEntry) => TKey,

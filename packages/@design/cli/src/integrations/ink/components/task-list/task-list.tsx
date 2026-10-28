@@ -10,7 +10,7 @@ import { Step } from '../step';
 interface TaskListProps {
   /** what a screen reader says for each status a step may have, in the run's language */
   readonly statusLabels: Readonly<Record<StepStatus, string>>;
-  /** the steps of a run, each named by its own label; a settled step never changes again */
+  /** each label unique: it names its step; a settled step never changes again */
   readonly steps: readonly StepContent[];
 }
 

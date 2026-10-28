@@ -19,14 +19,12 @@ type SkillFrontMatterRead =
 
 interface Skill {
   readonly directory: string;
-  /** absent when the file does not open with a front matter */
   readonly frontMatter?: SkillFrontMatterRead;
   readonly path: TreePath;
 }
 
 interface Agent {
   readonly file: string;
-  /** absent when the file does not open with a front matter */
   readonly frontMatter?: SkillFrontMatterRead;
   readonly path: TreePath;
 }

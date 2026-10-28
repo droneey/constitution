@@ -15,22 +15,22 @@ interface Presentation {
 interface PresentationInput {
   readonly accent: AccentScale;
   readonly env: Readonly<Record<string, string | undefined>>;
+  /** @throws {UsageError} when the options do not parse */
   readonly flags: () => OutputFlags;
   readonly io: CommandIo;
   readonly isTerminal: boolean;
   readonly streams: Streams;
 }
 
-/**
- * The plain path never loads Ink; the terminal path loads it, and the screens, on its first step
- * or result.
- */
+// Why: the plain path never loads Ink; the terminal path loads it, and the screens, on its first
+// step or result.
 const createPresentation = (input: PresentationInput): Presentation => {
   let output: Output | undefined;
   let theme: Theme | undefined;
   let chosen: Promise<Renderer> | undefined;
   let terminal: Promise<TerminalRenderer> | undefined;
 
+  /** @throws {UsageError} when the options do not parse */
   const outputOf = (): Output => {
     output ??= chooseOutput({
       env: input.env,
@@ -41,6 +41,7 @@ const createPresentation = (input: PresentationInput): Presentation => {
     return output;
   };
 
+  /** @throws {UsageError} when the options do not parse */
   const themeOf = (): Theme => {
     const { colourLevel, isMotionReduced, themeMode } = outputOf();
 
@@ -54,6 +55,7 @@ const createPresentation = (input: PresentationInput): Presentation => {
     return theme;
   };
 
+  /** @throws {UsageError} when the options do not parse */
   const terminalRendererOf = async (): Promise<TerminalRenderer> => {
     const { createTerminalRenderer } = await import('./terminal-renderer');
 
@@ -65,6 +67,7 @@ const createPresentation = (input: PresentationInput): Presentation => {
     });
   };
 
+  /** @throws {UsageError} when the options do not parse */
   const choose = async (): Promise<Renderer> => {
     if (outputOf().mode === OutputMode.Plain) {
       return createPlainRenderer({
@@ -78,6 +81,7 @@ const createPresentation = (input: PresentationInput): Presentation => {
     return await terminal;
   };
 
+  /** @throws {UsageError} when the options do not parse */
   const rendererOf = async (): Promise<Renderer> => {
     chosen ??= choose();
 
@@ -89,9 +93,11 @@ const createPresentation = (input: PresentationInput): Presentation => {
       await (await terminal)?.close();
     },
     renderer: {
+      /** @throws {UsageError} when the options do not parse */
       print: async (report: Report): Promise<void> => {
         await (await rendererOf()).print(report);
       },
+      /** @throws {UsageError} when the options do not parse */
       run: async <TResult>(task: Task<TResult>): Promise<TResult> =>
         await (await rendererOf()).run(task),
     },

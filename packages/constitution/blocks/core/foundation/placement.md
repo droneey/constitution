@@ -96,7 +96,7 @@ A rule never refers to a rule of its own block. It may tighten a rule of core, o
 
 ### setting-placed-by-its-reader-and-key-rule · MUST
 
-A setting a tool reads sits in that tool's preset file of the axis of the rule it holds, or of one that axis stands on, keyed by that rule, or by `*` when the tool needs it and no rule asks for it; one that needs a block beyond the tool's reach sits in the tool's `with/` file of that block, and one that needs a second block in that file's `with/` file of the second, so its path names exactly the blocks it needs. A plugin of a tool sits in the tool's `plugins/` folder of its language, named by the rule it holds.
+A setting a tool reads sits in that tool's preset file of the axis of the rule it holds, keyed by that rule, or by `*` when the tool needs it and no rule asks for it; one that needs a block beyond the tool's reach sits in the tool's `with/` file of that block, and one that needs a second block in that file's `with/` file of the second, so its path names exactly the blocks it needs. A plugin of a tool sits in the tool's `plugins/` folder of its language, named by the rule it holds.
 
 | Why |
 |---|

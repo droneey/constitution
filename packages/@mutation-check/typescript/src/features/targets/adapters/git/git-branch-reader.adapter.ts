@@ -18,9 +18,7 @@ import { lineRangesOf } from './line-ranges.utils.ts';
 
 interface GitBranchReaderInput {
   readonly env: Readonly<Record<string, string>>;
-  /** past it, git's answer counts as a failure, never as cut short */
   readonly outputLimitBytes: number;
-  /** where git is handed a copy of the index */
   readonly scratchFolderPath: AbsolutePath;
   readonly timeoutMs: number;
   readonly unitFolderPath: AbsolutePath;
@@ -29,7 +27,7 @@ interface GitBranchReaderInput {
 const TOOL_NAME = 'git';
 const MAINLINE_NAME = 'origin/main';
 
-// git writes a name with a byte past ASCII raw, not escaped in quotes, so it reads as written.
+// Why: git writes a name with a byte past ASCII raw, not escaped in quotes, so it reads as written.
 const RAW_PATHS = [
   '-c',
   'core.quotePath=false',
@@ -57,7 +55,9 @@ const failureOf = (error: Error): UnansweredFailure => {
   }
 };
 
-// A base or a diff git could not give would read as no change, and the gate would pass unchecked.
+// Why: a base or a diff git could not give would read as no change, and the gate would pass
+// unchecked.
+/** @throws {BranchError} when a call of the git it gives cannot run to its end or ends in failure */
 const gitIn = (input: GitBranchReaderInput): Git => {
   const commandOf = (args: readonly string[]): BranchCommand => ({
     args,
@@ -65,6 +65,7 @@ const gitIn = (input: GitBranchReaderInput): Git => {
     toolName: TOOL_NAME,
   });
 
+  /** @throws {BranchError} when git cannot run to its end */
   const runGit = (
     args: readonly string[],
     // Stryker disable next-line StringLiteral: only `cat-file --batch` reads its input, and gets one
@@ -110,11 +111,9 @@ const gitIn = (input: GitBranchReaderInput): Git => {
   };
 };
 
-/**
- * What git answers with a copy of the index that holds the untracked files as ones to add, so its
- * detection of moves pairs each with a file the branch deleted, wherever in the repository that file
- * lay; the project's own index is never written.
- */
+// Why: a copy of the index holds the untracked files as ones to add, so git's detection of moves
+// pairs each with a file the branch deleted, wherever it lay; the project's own index is never
+// written.
 const withNewFilesIndexed = <TResult>(input: {
   env: Readonly<Record<string, string>>;
   git: Git;
@@ -128,8 +127,8 @@ const withNewFilesIndexed = <TResult>(input: {
   try {
     const indexPath = join(scratchFolderPath, 'index');
 
-    // The copy keeps the index's time: git checks again the text of a file written in the second
-    // the index was, which a newer copy would let it take for unchanged.
+    // Why: git checks again the text of a file written in the second the index was, which a newer
+    // copy would let it take for unchanged.
     cpSync(
       input
         .git([
@@ -174,7 +173,6 @@ const withNewFilesIndexed = <TResult>(input: {
   }
 };
 
-/** An untracked file nothing was moved into, which the copied index lists as added. */
 const isNewUnitFile = (input: {
   section: UnitSection;
   untrackedPaths: readonly UnitRelativePath[];
@@ -182,10 +180,7 @@ const isNewUnitFile = (input: {
   input.section.kind === SectionKind.Changed &&
   input.untrackedPaths.includes(input.section.filePath);
 
-/**
- * Git reads paths from the unit's folder and lists only its subtree, so a unit of a workspace checks
- * its own changes; a file moved into the unit is compared with the file it left.
- */
+/** @throws {BranchError} when git cannot run to its end or ends in failure */
 const readBranch = (input: GitBranchReaderInput): Branch => {
   const git = gitIn(input);
   const baseCommit = git([
@@ -195,7 +190,6 @@ const readBranch = (input: GitBranchReaderInput): Branch => {
   ])
     .toString(UTF8)
     .trim();
-  // git's prefix ends in a slash, and is empty at the repository's root
   const unitPrefix = git([
     'rev-parse',
     '--show-prefix',
@@ -282,11 +276,12 @@ const readBranch = (input: GitBranchReaderInput): Branch => {
           lineRanges: lineRangesOf(text),
         }),
       ),
-    untrackedPaths: untrackedPaths.filter((filePath) => !movedFromPaths.has(filePath)),
+    newFilePaths: untrackedPaths.filter((filePath) => !movedFromPaths.has(filePath)),
   };
 };
 
 const gitBranchReader = (input: GitBranchReaderInput): BranchReader => ({
+  /** @throws {BranchError} when the branch cannot be read */
   read: () => readBranch(input),
 });
 

@@ -2,18 +2,11 @@ import { PARENT_SEGMENT, PATH_SEPARATOR } from '#/kernel/constants';
 
 import { Fact } from './fact.value-object';
 
-/** A mark after a file's path that names the format its text is written in, whatever its name. */
 enum FileFormat {
-  /** JSON with comments, for a tool that reads them in a file named `.json` */
   Jsonc = 'jsonc',
 }
 
-/**
- * What decides whether an entry writes its target: a truth, or a fact that equals a text, `!`
- * before the fact for the opposite.
- */
 interface Guard {
-  /** the text, facts in it resolved, that the fact must equal; absent where the fact is a truth */
   readonly equals?: string;
   readonly fact: Fact;
   readonly isNegated: boolean;
@@ -21,16 +14,13 @@ interface Guard {
 
 enum TargetKind {
   File = 'file',
-  /** the commands constitution runs in the unit for each entry point, which no file holds */
   Run = 'run',
 }
 
-/** A configuration file, as its key spells it: `<path>[ !<format>]`. */
 interface TargetFile {
   readonly format?: FileFormat;
   readonly guard?: Guard;
   readonly kind: TargetKind.File;
-  /** from the unit's folder, facts in it unresolved; it may lead out of the folder */
   readonly writtenPath: string;
 }
 
@@ -39,20 +29,15 @@ interface TargetRun {
   readonly kind: TargetKind.Run;
 }
 
-/**
- * What an entry writes, as its key spells it: `<file>` or `${constitution.run}`, then `[ ? <guard>]`,
- * the guard `${<fact>}` or `${<fact>} = <text>`.
- */
 type EntryTarget = TargetFile | TargetRun;
 
 const GUARDED = /(.+?)\s+\?\s+(!?)(\$\{[^}]*\})(?:\s+=\s+(\S.*))?$/;
 const FORMATTED = /(.+?)\s+!([a-z]+)$/;
 const formats: readonly FileFormat[] = Object.values(FileFormat);
-// Spelled through its fact, as the linter refuses `${` in a plain string.
-const runKey = Fact.textOf(Fact.of('constitution.run'));
+// Why: spelled through its fact, as the linter refuses `${` in a plain string.
+const runTargetKey = Fact.textOf(Fact.of('constitution.run'));
 
-// An unknown format's mark stays part of the path.
-const fileOf = (text: string): TargetFile => {
+const targetFileOf = (text: string): TargetFile => {
   const marked = FORMATTED.exec(text);
 
   if (marked === null) {
@@ -77,11 +62,11 @@ const fileOf = (text: string): TargetFile => {
 };
 
 const unguardedOf = (text: string): EntryTarget =>
-  text === runKey
+  text === runTargetKey
     ? {
         kind: TargetKind.Run,
       }
-    : fileOf(text);
+    : targetFileOf(text);
 
 const of = (key: string): EntryTarget => {
   const guarded = GUARDED.exec(key);
@@ -112,13 +97,12 @@ const of = (key: string): EntryTarget => {
   };
 };
 
-/** The target as its key names it, its format and its guard left out: one text, one target. */
 const textOf = (target: EntryTarget): string => {
   switch (target.kind) {
     case TargetKind.File:
       return target.writtenPath;
     case TargetKind.Run:
-      return runKey;
+      return runTargetKey;
     // Stryker disable next-line ConditionalExpression: no kind reaches the default, which only the compiler reads
     default:
       return target satisfies never;

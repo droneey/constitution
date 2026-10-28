@@ -3,7 +3,6 @@ import { ProgramError } from '#/kernel/errors';
 import type { AbsolutePath } from '#/kernel/value-objects';
 
 enum ApplyFailure {
-  /** a file or a lock could not be written, and what the apply had written was put back */
   NotWritten = 'not-written',
 }
 

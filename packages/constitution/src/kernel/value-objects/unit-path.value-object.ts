@@ -5,10 +5,6 @@ import { normalizePath } from '../utils';
 import { RepositoryRelativePath } from './repository-relative-path.value-object';
 import { UnitRelativePath } from './unit-relative-path.value-object';
 
-/**
- * A unit's folder from the repository, written one way: the repository's own is '', a member's is
- * its folder's path with no empty, "." or ".." segment.
- */
 type UnitPath = Brand<string, 'UnitPath'>;
 
 const REPOSITORY = '';
@@ -20,7 +16,7 @@ const is = (candidate: unknown): candidate is UnitPath =>
   typeof candidate === 'string' &&
   (candidate === REPOSITORY || candidate.split(PATH_SEPARATOR).every(isSegment));
 
-/** @throws {@link InvalidValueError} when the text is no folder written one way */
+/** @throws {InvalidValueError} when the text is no folder written one way */
 const create = (text: string): UnitPath => {
   if (!is(text)) {
     throw new InvalidValueError({
@@ -38,11 +34,10 @@ const equals = (left: UnitPath, right: UnitPath): boolean => left === right;
 
 const isRepository = (unit: UnitPath): boolean => unit === REPOSITORY;
 
-/** Whether the path lies in the unit's folder, the folder itself included. */
 const holds = (unit: UnitPath, path: RepositoryRelativePath | UnitPath): boolean =>
   isRepository(unit) || `${path}${PATH_SEPARATOR}`.startsWith(`${unit}${PATH_SEPARATOR}`);
 
-/** @throws {@link InvalidValueError} when the path lies outside the unit's folder */
+/** @throws {InvalidValueError} when the path lies outside the unit's folder */
 const pathFrom = (unit: UnitPath, path: RepositoryRelativePath | UnitPath): UnitRelativePath => {
   if (!holds(unit, path)) {
     throw new InvalidValueError({
@@ -64,7 +59,6 @@ const joined = (unit: UnitPath, text: string): string =>
 const pathOf = (unit: UnitPath, path: UnitRelativePath): RepositoryRelativePath =>
   RepositoryRelativePath.create(joined(unit, path));
 
-/** A path a text writes from the unit's folder, "./" and ".." in it or not, written one way. */
 const resolve = (unit: UnitPath, writtenPath: string): RepositoryRelativePath =>
   RepositoryRelativePath.create(normalizePath(joined(unit, writtenPath)));
 

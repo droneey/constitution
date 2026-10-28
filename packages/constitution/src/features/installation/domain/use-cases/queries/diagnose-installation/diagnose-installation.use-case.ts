@@ -27,18 +27,16 @@ interface DiagnoseInstallationPorts {
 
 interface DiagnoseInstallationInput extends DiagnoseInstallationPorts {
   readonly executable: Version;
-  /** the fingerprint of the plugin's files this executable was built with, if it can be read */
   readonly fingerprint: string | undefined;
   readonly startFolderPath: AbsolutePath;
 }
 
-/** It changes nothing; the latest release is skipped where GitHub cannot be reached. */
 const diagnoseInstallation = async (
   input: DiagnoseInstallationInput,
 ): Promise<readonly PartDiagnosis[]> => {
   const { executable } = input;
   const latest = await input.releases.latest();
-  const place = input.pinned.find(input.startFolderPath);
+  const place = input.pinned.findProjectAround(input.startFolderPath);
 
   return [
     {

@@ -3,10 +3,11 @@ import { join } from 'node:path';
 
 import { describe, expect, it } from 'bun:test';
 
-// The presets are data: the program that applies them names no tool it configures, no file a tool
-// reads and no key of one, so a new tool is a preset file and never a change of the program.
+// Why: the presets are data: the program that applies them names no tool it configures, no file a
+// tool reads and no key of one, so a new tool is a preset file and never a change of the program.
 
-// Read beside the e2e specs, which mutation testing leaves out: it rewrites the sources it tests.
+// Why: read beside the e2e specs, which mutation testing leaves out: it rewrites the sources it
+// tests.
 const packageFolder = join(import.meta.dir, '..', '..');
 const featureFolder = join(packageFolder, 'src', 'features', 'presets');
 
@@ -30,8 +31,6 @@ const toolWords: readonly string[] = [
   'tsconfig',
 ];
 
-// What the program's own text cannot help naming: the modules it imports, and the directives the
-// mutation testing of this repository reads.
 const IMPORT = /^import .* from '[^']+';$/gm;
 const MUTATION_DIRECTIVE = /\/\/ Stryker (?:disable|restore) .*$/gm;
 

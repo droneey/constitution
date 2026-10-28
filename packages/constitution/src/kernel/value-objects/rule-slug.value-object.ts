@@ -8,7 +8,7 @@ const KEBAB_CASE_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const is = (candidate: unknown): candidate is RuleSlug =>
   typeof candidate === 'string' && KEBAB_CASE_SLUG.test(candidate);
 
-/** @throws {@link InvalidValueError} when the text is no kebab-case slug */
+/** @throws {InvalidValueError} when the text is no kebab-case slug */
 const create = (text: string): RuleSlug => {
   if (!is(text)) {
     throw new InvalidValueError({

@@ -1,9 +1,9 @@
-/* The typography plugin's styles are utilities, so the site's styles of rendered Markdown sit in
-   the later `prose` layer, and its restyling of the library in `overrides`, after both. */
+/* Why: the typography plugin's styles are utilities, so the site's styles of rendered Markdown
+   sit in the later `prose` layer, and its restyling of the library in `overrides`, after both. */
 @layer theme, base, components, utilities, prose, overrides;
 
-/* Tailwind scans the app's folder by default, which holds the unpacked Constitution and the prose of
-   `content/`, whose examples are not the site's classes; the sources alone are scanned */
+/* Why: Tailwind scans the app's folder by default, which holds the unpacked Constitution and the
+   prose of `content/`, whose examples are not the site's classes; the sources alone are scanned. */
 /* biome-ignore lint/nursery/useLayeredStyles: the imported stylesheet declares its own cascade layers */
 @import 'tailwindcss' source('..');
 /* biome-ignore lint/nursery/useLayeredStyles: the imported stylesheet declares its own cascade layers */

@@ -9,7 +9,6 @@ interface PathInRoot {
 }
 
 interface ConfinedPathInput {
-  /** a path from outside the program, absolute or relative to the root */
   readonly givenPath: string;
   readonly rootPath: string;
 }
@@ -25,12 +24,11 @@ const leadsOutOf = ({ rootPath, path }: PathInRoot): boolean => {
   );
 };
 
+// Why: a path that leads out by its name alone is refused before the file system is asked, so the
+// answer never tells whether anything lies outside the root.
 /**
- * The real path of `givenPath` resolved from `rootPath`, or undefined when it leads out of the root.
- * A path that leads out by its name alone is refused before the file system is asked, so the answer
- * never tells whether anything lies outside the root.
- *
- * @throws a failure {@link isMissingPathError} recognises when nothing lies at a path inside the root
+ * @throws {NodeJS.ErrnoException} when nothing lies at a path inside the root, one
+ * {@link isMissingPathError} recognises
  */
 const confinedPathOf = ({ rootPath, givenPath }: ConfinedPathInput): string | undefined => {
   const resolvedPath = resolve(rootPath, givenPath);

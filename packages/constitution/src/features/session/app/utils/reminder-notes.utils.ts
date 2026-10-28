@@ -9,8 +9,8 @@ const ELLIPSIS = '...';
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
-// A note over its budget is cut at a byte, which can split a character: the decoder turns the split
-// character's bytes into a replacement character, dropped before the ellipsis.
+// Why: a note over its budget is cut at a byte, which can split a character: the decoder turns the
+// split character's bytes into a replacement character, dropped before the ellipsis.
 const fitted = (note: string): string => {
   const bytes = encoder.encode(note);
 
@@ -39,7 +39,6 @@ const noteOf = (input: { block: RemindedBlock; path: RepositoryRelativePath }): 
   );
 };
 
-/** A note for each block a file reminds of, within the budget the hook's context gives one. */
 const reminderNotesOf = (reminder: Reminder): readonly string[] =>
   reminder.blocks.map((block) =>
     noteOf({

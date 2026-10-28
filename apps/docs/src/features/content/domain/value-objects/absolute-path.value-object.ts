@@ -8,7 +8,7 @@ type AbsolutePath = Brand<string, 'AbsolutePath'>;
 const is = (candidate: unknown): candidate is AbsolutePath =>
   typeof candidate === 'string' && candidate.startsWith(PATH_SEPARATOR);
 
-/** @throws {@link InvalidValueError} when the text does not open with "/" */
+/** @throws {InvalidValueError} when the text does not open with "/" */
 const create = (text: string): AbsolutePath => {
   if (!is(text)) {
     throw new InvalidValueError({

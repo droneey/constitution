@@ -7,9 +7,7 @@ import { nodeBinary } from './package.fixtures';
 import { linesOf, runTool, widestAppliedUnit } from './preset-load.fixtures';
 
 interface Scan {
-  /** the lines jscpd prints on a configuration it cannot take */
   readonly refusals: readonly string[];
-  /** the files jscpd reads */
   readonly sources: number;
   readonly status: number;
 }
@@ -23,11 +21,10 @@ const report = z.object({
 });
 
 const REPORT_FOLDER = '.jscpd-report';
-// jscpd only prints a key it does not know, as `config file .jscpd.json: unknown field '<key>'`,
-// and still ends 0.
+// Why: jscpd only prints a key it does not know, as
+// `config file .jscpd.json: unknown field '<key>'`, and still ends 0.
 const CONFIG_REFUSAL = /^config file /;
 
-/** jscpd's scan of the widest unit, which holds the files given, read from its JSON report. */
 const scanOf = async (files: Readonly<Record<string, string>>): Promise<Scan> => {
   const folder = widestAppliedUnit('jscpd', {
     files,

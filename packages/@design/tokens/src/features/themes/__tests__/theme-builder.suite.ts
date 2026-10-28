@@ -3,7 +3,6 @@ import { describe, expect, it } from 'bun:test';
 import type { ConfigOfMode, ThemeBuilder } from '../domain/contracts';
 import type { ThemeModeFiles } from '../domain/entities';
 
-/** the modes every scenario holds, in the order it gives them */
 const SCENARIO_MODE_NAMES = [
   'light',
   'dark',
@@ -11,12 +10,9 @@ const SCENARIO_MODE_NAMES = [
 
 interface ThemeBuilderScenario {
   readonly builder: ThemeBuilder;
-  /** the names of the modes built so far, sorted */
-  readonly builtModeNames: () => readonly string[];
-  /** a configuration each mode builds with */
   readonly configOf: ConfigOfMode;
-  /** a mode for each name of `SCENARIO_MODE_NAMES` */
   readonly modes: readonly ThemeModeFiles[];
+  readonly sortedBuiltModeNames: () => readonly string[];
 }
 
 const configOfFailingFor =
@@ -38,13 +34,13 @@ const themeBuilderSuite = (input: ThemeBuilderSuiteInput): void => {
   describe(`the ThemeBuilder contract, kept by ${input.implementationName}`, () => {
     it('should build every mode', async () => {
       // Arrange
-      const { builder, builtModeNames, configOf, modes } = input.scenario();
+      const { builder, sortedBuiltModeNames, configOf, modes } = input.scenario();
 
       // Act
       await builder.build(configOf, modes);
 
       // Assert
-      expect(builtModeNames()).toStrictEqual([
+      expect(sortedBuiltModeNames()).toStrictEqual([
         'dark',
         'light',
       ]);

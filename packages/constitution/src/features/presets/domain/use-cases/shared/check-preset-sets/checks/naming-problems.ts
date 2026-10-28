@@ -34,8 +34,6 @@ const roleProblems = (
         },
       ];
 
-// A fact constitution computes stands where its kind may: a list of members only as a list item, a
-// truth only alone in a value or an item, and none in the path of a file, which names only roles.
 const namedProblems = (input: {
   named: EntryNamed;
   name: FactName;
@@ -124,7 +122,6 @@ const guardTextProblems = (
     }),
   );
 
-// A guard's facts are checked as a value's are.
 const guardProblems = (
   input: NamingInput & {
     named: EntryNamed;

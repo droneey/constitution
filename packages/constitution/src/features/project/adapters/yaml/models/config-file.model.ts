@@ -4,7 +4,6 @@ import { ConfigKey } from '#/kernel/constants';
 
 import { OverrideField } from '../../../domain/entities';
 
-// YAML's null, a key given no value among its spellings, gives no text.
 const textModel = z
   .string()
   .min(1)
@@ -20,9 +19,6 @@ const overrideModel = z.strictObject({
   [OverrideField.Until]: textModel.optional(),
 });
 
-/**
- * A key the program does not know is the domain's to warn of, and a file that holds no key is null.
- */
 const configFileModel = z
   .looseObject({
     [ConfigKey.Axes]: itemsModel.optional(),

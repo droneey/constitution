@@ -32,16 +32,12 @@ import { blockSetBlockOf, blockSetRuleOf } from './block-set.fixtures';
 import type { BlockFixture } from './project.fixtures';
 import { blockFilesOf, parsers } from './project.fixtures';
 
-// The sources and the constitution.yaml a resolution reads, built from blocks and the keys of a
-// declaration.
-
 const ROOT = '/source';
 const RELEASE_WHERE = '/work/project/.droneey/constitution';
 const today = Temporal.PlainDate.from('2026-06-15');
 const CORE_FOLDER = 'blocks/core/';
 const CORE_AS_DOMAIN = 'blocks/domains/core/';
 
-// Every key the repository's constitution.yaml needs, each written so it warns of nothing.
 const KEYS: Readonly<Record<string, string>> = {
   axes: 'axes: [architecture, workflow]',
   domains: 'domains: []',
@@ -52,14 +48,12 @@ const KEYS: Readonly<Record<string, string>> = {
   overrides: 'overrides: []',
 } as const;
 
-// A constitution.yaml of every key, the repository's or a member's, the given ones written as given.
 const yamlOf = (keys: Readonly<Record<string, string>> = {}): string =>
   `${Object.values({
     ...KEYS,
     ...keys,
   }).join('\n')}\n`;
 
-// What the real parser reads of a constitution.yaml that parses.
 const unitConfigOf = (text: string): DeclaredUnit['config'] => {
   const read = parsers().configParser.parse(text);
 
@@ -70,8 +64,6 @@ const unitConfigOf = (text: string): DeclaredUnit['config'] => {
   return read.config;
 };
 
-// The declaration of a repository whose constitution.yaml is the text given, and of its members,
-// each by its path and its own text.
 const parsedOf = (text: string, members: Readonly<Record<string, string>> = {}): ProjectConfig => ({
   units: [
     {
@@ -86,7 +78,6 @@ const parsedOf = (text: string, members: Readonly<Record<string, string>> = {}):
   unread: [],
 });
 
-// The declaration of a repository of the keys given, and of its members, each of the keys given.
 const configOf = (
   keys: Readonly<Record<string, string>> = {},
   members: Readonly<Record<string, Readonly<Record<string, string>>>> = {},
@@ -101,7 +92,6 @@ const configOf = (
     ),
   );
 
-// The files of blocks, by their path from the source's folder.
 const filesOf = (blocks: readonly BlockFixture[]): readonly SourceFile[] =>
   Object.entries(
     blockFilesOf({
@@ -116,15 +106,12 @@ const filesOf = (blocks: readonly BlockFixture[]): readonly SourceFile[] =>
 
 interface SourceFixture {
   readonly blocks?: readonly BlockFixture[];
-  // core's rules, globs and more files
   readonly core?: Omit<BlockFixture, 'folder' | 'id'>;
   readonly source?: string;
 }
 
-// A source of the blocks given: the Constitution's by default, with core, or a pack's.
 const sourceOf = (input: SourceFixture = {}): BlockSetSource => {
   const pack = input.source;
-  // core is written as a domain, then moved to its own folder
   const core = filesOf([
     {
       ...input.core,
@@ -157,7 +144,6 @@ interface UnitFixture {
   readonly path?: string;
 }
 
-// A unit of the repository with core alone on every axis, unless the case gives another.
 const unitOf = (input: UnitFixture = {}): ProjectUnit =>
   ProjectUnit.create({
     axes: input.axes ?? [
@@ -185,7 +171,6 @@ interface ModelFixture {
   readonly rules?: readonly BlockSetRuleFixture[];
 }
 
-// The model of the blocks a resolution gives: the blocks and rules as the block set reads them.
 const modelOf = (input: ModelFixture = {}): BlockModel => ({
   blocks: (input.blocks ?? []).map(blockSetBlockOf),
   roles: input.roles ?? [],
@@ -199,7 +184,6 @@ interface ActiveBlockFixture {
   readonly unit?: string;
 }
 
-// An active block of a unit, the repository's unless the case names another.
 const activeOf = (input: ActiveBlockFixture): ActiveBlock => ({
   files: input.files,
   governs: (input.governs ?? []).map(Glob.create),
@@ -213,8 +197,6 @@ interface LoweringFixture {
   readonly via?: string;
 }
 
-// How an override lowers a rule: in the repository unless the case names a unit, and directly
-// unless it names the rule it lowers through.
 const loweringOf = (input: LoweringFixture): Lowering => ({
   level: input.level,
   unit: UnitPath.create(input.unit ?? ''),
@@ -243,7 +225,6 @@ interface ListedFilesFixture {
   readonly seams?: readonly string[];
 }
 
-// What a unit reads of a block on an axis.
 const filesOn = (input: ListedFilesFixture): ListedFiles => ({
   axis: input.axis,
   chapters: input.chapters ?? [],
@@ -255,11 +236,9 @@ interface ListedBlockFixture {
   readonly id: string;
   readonly layer: Layer;
   readonly pack?: string;
-  // undefined given for a block whose card has no summary
   readonly summary?: string | undefined;
 }
 
-// A block of the list, the release's and summarised as the fixtures write it unless the case says.
 const listedOf = (input: ListedBlockFixture): ListedBlock => {
   const summary = 'summary' in input ? input.summary : `The ${input.id} block.`;
 
@@ -332,7 +311,6 @@ const listingOf = (input: Partial<BlockListing> = {}): BlockListing => ({
   units: input.units ?? [],
 });
 
-// A Requirements table answering each requirement as met or not.
 const requirementsOf = (answers: Readonly<Record<string, string>>): string =>
   [
     '## Requirements',

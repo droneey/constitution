@@ -12,7 +12,6 @@ interface CodeComparerSuiteInput {
   readonly implementationName: string;
 }
 
-/** The behaviours of a `CodeComparer` whose unit holds `src/order.ts` with the text given. */
 const codeComparerSuite = (input: CodeComparerSuiteInput): void => {
   describe(`the CodeComparer contract, kept by ${input.implementationName}`, () => {
     const comparer = input.comparerHolding(

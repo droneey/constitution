@@ -6,12 +6,12 @@ import { accentStylesheetOf } from '#/libs/ui';
 import { ACCENT_STYLESHEET } from './theme-provider.constants';
 
 interface ThemeProviderProps {
-  /** the app's accent; the default theme's stays where none is given */
+  /** none keeps the default theme's */
   readonly accent?: AccentScale;
   readonly children: ReactNode;
 }
 
-/** puts the app's accent in place of the default theme's, for the whole document */
+/** the accent applies to the whole document */
 function ThemeProvider({ accent, children }: ThemeProviderProps): ReactElement {
   return (
     <>

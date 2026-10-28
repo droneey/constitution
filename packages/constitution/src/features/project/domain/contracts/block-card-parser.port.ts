@@ -1,7 +1,3 @@
-/**
- * The fields a project reads from a block's card; where the card leaves one out or gives it in
- * another form, a list is empty, a flag false and a text absent.
- */
 interface BlockCard {
   readonly extends?: string;
   readonly governs: readonly string[];
@@ -11,7 +7,6 @@ interface BlockCard {
   readonly summary?: string;
 }
 
-/** The card of a block whose front matter gives nothing. */
 const EMPTY_CARD = {
   governs: [],
   isAbstract: false,

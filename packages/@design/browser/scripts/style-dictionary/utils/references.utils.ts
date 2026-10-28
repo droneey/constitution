@@ -8,18 +8,13 @@ const isRecord = (tokenValue: unknown): tokenValue is Readonly<Record<string, un
   // Stryker disable next-line ConditionalExpression,LogicalOperator: a string has no parts, and Style Dictionary finds no reference in a number or in null, so the check only types the value
   typeof tokenValue === 'object' && tokenValue !== null;
 
-/** the tokens a value refers to: a reference is a string, or a composite whose parts hold them */
 const referencesOf = (tokenValue: unknown, dictionary: Dictionary): TransformedToken[] =>
   // Stryker disable next-line ConditionalExpression: Style Dictionary finds no reference in any other value, so the check only types it
   typeof tokenValue === 'string' || isRecord(tokenValue)
     ? getReferences(tokenValue, dictionary.tokens)
     : [];
 
-/**
- * The name of the token one part of a composite refers to, as the build writes it.
- *
- * @throws {@link MalformedTokenError} when the part refers to no token
- */
+/** @throws {MalformedTokenError} when the part refers to no token */
 const referencedNameOf = (
   token: TransformedToken,
   partName: TypographyPart,

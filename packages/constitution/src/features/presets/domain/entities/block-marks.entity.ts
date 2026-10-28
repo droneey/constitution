@@ -1,11 +1,8 @@
 import type { BlockId } from '#/kernel/value-objects';
 
+import { PresetValue } from './preset-value.entity';
 import { Setting } from './setting.entity';
 
-/**
- * One step from a map or a list to what it holds: a key, an item of the list told by its value, or
- * an element of maps told by one field's value.
- */
 type MarkStep =
   | string
   | {
@@ -16,22 +13,16 @@ type MarkStep =
       readonly item: Setting;
     };
 
-/** A key or an item one block alone gives, everything below it included. */
 interface BlockMark {
   readonly block: BlockId;
   readonly keyPath: readonly MarkStep[];
 }
 
-/**
- * What the presets give a file, by block: each mark, in the order the merge meets it, and every
- * block an entry of the file's path names, whose comment naming it is constitution's own.
- */
 interface BlockMarks {
   readonly blocks: readonly BlockId[];
   readonly marks: readonly BlockMark[];
 }
 
-/** A key of a map, or an item of a list by its value, as a file holds it. */
 type HeldStep =
   | {
       readonly item: Setting;
@@ -49,7 +40,7 @@ const isStepOf = (step: MarkStep, held: HeldStep): boolean => {
   const listed = 'item' in held ? held.item : undefined;
 
   if ('item' in step) {
-    return Setting.same(step.item, listed);
+    return PresetValue.isFilledFrom(step.item, listed);
   }
 
   const named = Setting.isMap(listed) ? listed[step.field] : undefined;

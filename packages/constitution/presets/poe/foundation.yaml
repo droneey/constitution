@@ -4,14 +4,16 @@ poe:
       pyproject.toml:
         tool:
           poe:
-            # Each task runs in the environment `uv run` entered, with no environment of its own.
+            # Why: each task runs in the environment `uv run` entered, with no environment of its
+            # own.
             executor: simple
   task-group-walks-poes-own-list:
     python:
       pyproject.toml:
         tool:
           poe:
-            # poe runs no task by a pattern, so a group walks poe's own list as Bun's pattern does.
+            # Why: poe runs no task by a pattern, so a group walks poe's own list as Bun's pattern
+            # does.
             tasks:
               check:
                 shell: !words

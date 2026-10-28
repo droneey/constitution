@@ -3,7 +3,6 @@ interface TextWithinInput {
   readonly stream: AsyncIterable<Uint8Array> | Iterable<Uint8Array>;
 }
 
-/** The stream's text, decoded as UTF-8, or undefined as soon as it runs past maxBytes, read no further. */
 const readTextWithin = async (input: TextWithinInput): Promise<string | undefined> => {
   const decoder = new TextDecoder();
   let text = '';
@@ -38,10 +37,6 @@ const closings: ReadonlySet<string> = new Set([
   '}',
 ]);
 
-/**
- * Whether JSON text nests its arrays and objects at most maxDepth deep, brackets inside strings
- * aside; a text that is no JSON is read the same way, for its parser to refuse.
- */
 const isNestedWithin = (input: NestingInput): boolean => {
   let depth = 0;
   let isInString = false;

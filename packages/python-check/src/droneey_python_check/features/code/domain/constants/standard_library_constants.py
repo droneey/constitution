@@ -1,7 +1,5 @@
 from typing import Final
 
-# The standard library's modules of input and output, the clock, randomness and identifiers,
-# which only the edge imports.
 EFFECT_MODULE_NAMES: Final = frozenset(
   {
     'ctypes',
@@ -46,9 +44,7 @@ EFFECT_MODULE_NAMES: Final = frozenset(
     'xmlrpc',
   }
 )
-# What of the standard library reaches an effect although its module's types are pure,
-# by its dotted name.
-EFFECT_NAMES: Final = frozenset(
+EFFECT_NAMES_OF_PURE_MODULES: Final = frozenset(
   {
     'asyncio.create_subprocess_exec',
     'asyncio.create_subprocess_shell',
@@ -91,11 +87,8 @@ EFFECT_NAMES: Final = frozenset(
     'zipfile.ZipFile',
   }
 )
-# The module whose classes reach the clock through calls such as `datetime.now()`.
 DATETIME_MODULE_NAME: Final = 'datetime'
-# A timer, which a binding unit alone may hold to schedule its own work.
 TIMER_NAMES: Final = frozenset({'asyncio.sleep', 'threading.Timer'})
-# What reads or changes the environment, which only the root and the entry files reach.
 ENVIRONMENT_NAMES: Final = frozenset(
   {'os.environ', 'os.environb', 'os.getenv', 'os.getenvb', 'os.putenv', 'os.unsetenv'}
 )

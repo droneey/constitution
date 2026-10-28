@@ -14,7 +14,6 @@ interface RefusedValue {
   readonly value: string;
 }
 
-/** a value the site's build made or read breaks its invariant: a defect of the build or of the repository */
 class InvalidValueError extends ProgramError<ValueFailure, RefusedValue> {
   public constructor(input: ProgramErrorInput<ValueFailure, RefusedValue>, options?: ErrorOptions) {
     super(input, options);

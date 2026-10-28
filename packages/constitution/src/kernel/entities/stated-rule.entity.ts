@@ -12,7 +12,6 @@ import { RuleHeading } from './rule-heading.entity';
 import type { ValueFindingDetails } from './value-finding.entity';
 import { ValueSite } from './value-finding.entity';
 
-/** A rule as its heading states it: one that tightens another may leave its level to the chain. */
 interface StatedRule extends RulePlace, RuleText {
   readonly statedLevel?: Level;
 }
@@ -197,7 +196,6 @@ const statementOf = (lines: readonly string[]): string => {
     .join(' ');
 };
 
-// A slug a heading names is a kebab-case token; a heading that names another is no rule.
 const slugProblemOf = (heading: RuleHeading): SlugProblem | undefined => {
   if (!RuleSlug.is(heading.slug)) {
     return {
@@ -372,11 +370,6 @@ const levelOf = (input: {
   });
 };
 
-/**
- * The rules at the level each states, or else at the level the chain it tightens gives; a chain
- * that never states one, through a cycle or a slug that names no rule, binds as MUST, and the
- * rules check reports the broken chain.
- */
 const inheritLevels = (stated: readonly StatedRule[]): readonly Rule[] => {
   const rules = Rule.bySlug(stated);
 

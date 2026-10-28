@@ -20,7 +20,6 @@ import { ConfigKey, configOf, createProject, removeProjects } from '../project.f
 
 let root = '';
 
-// The files of Acme's axes a reminder names, and its MUST rules.
 const acmeNames = [
   'packs/acme/blocks/implementations/acme/acme.md',
   'packs/acme/blocks/implementations/acme/foundation/dependencies.md',
@@ -28,7 +27,6 @@ const acmeNames = [
   'acme-reached-through-its-entry',
   'acme-client-wired-by-the-root',
 ];
-// The warnings of the project whose pack's rule carries out no rule, in their order.
 const unknownParent = [
   [
     'installation',
@@ -41,8 +39,6 @@ const unknownParent = [
   ],
 ];
 
-// A project that follows Acme from the packs it lists, the first linked where
-// it says and the second never installed.
 const startProject = (
   pack: string,
 ): {
@@ -159,7 +155,6 @@ describe('a pack in a project', () => {
 
     // Act
     const reminder = runScript({
-      // The event's fields are the snake_case names Claude Code sends.
       event: Object.fromEntries([
         [
           'hook_event_name',

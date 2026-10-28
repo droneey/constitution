@@ -11,7 +11,7 @@ type AbsolutePath = string & {
 const is = (candidate: unknown): candidate is AbsolutePath =>
   typeof candidate === 'string' && isAbsolute(candidate);
 
-/** @throws {@link RelativePathError} when the text is no absolute path */
+/** @throws {RelativePathError} when the text is no absolute path */
 const create = (text: string): AbsolutePath => {
   if (!is(text)) {
     throw new RelativePathError(text);

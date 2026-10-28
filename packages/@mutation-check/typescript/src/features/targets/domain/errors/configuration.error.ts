@@ -24,7 +24,6 @@ type ConfigurationFailureDetails =
   | {
       readonly code: ConfigurationFailure.MutateMalformed;
       readonly fileName: string;
-      /** each place in the file that breaks the shape, by its path */
       readonly problemPaths: readonly string[];
     };
 
@@ -42,7 +41,6 @@ const messageOf = (details: ConfigurationFailureDetails): string => {
   }
 };
 
-/** The unit's configuration of the mutation tool cannot tell which files the tool mutates. */
 class ConfigurationError extends ProgramError<ConfigurationFailureDetails> {
   public constructor(details: ConfigurationFailureDetails, options?: ErrorOptions) {
     super(messageOf(details), details, options);

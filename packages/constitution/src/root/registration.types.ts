@@ -39,7 +39,6 @@ interface Ports {
   readonly workingTree: WorkingTree;
 }
 
-/** What the presets' check, plan and apply each read of the project. */
 type PresetsInput = CheckConfigurationsInput & PlanApplyInput & PlanPresetsInput;
 
 interface Registration {

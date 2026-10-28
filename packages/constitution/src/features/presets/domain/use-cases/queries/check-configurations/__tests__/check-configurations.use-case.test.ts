@@ -166,8 +166,8 @@ describe('checkConfigurations', () => {
           lock: lockOf({
             'biome.json': {
               addresses: [],
-              defaults: [],
-              isCreated: false,
+              everMetDefaults: [],
+              isCreatedByApply: false,
               kind: RecordKind.Settings,
               leaves: [
                 Leaf.keyOf({
@@ -197,7 +197,7 @@ describe('checkConfigurations', () => {
       {
         code: PresetsCode.Loosened,
         details: {
-          setting: 'style',
+          settingPath: 'style',
           wanted: '"space"',
         },
         path: 'biome.json',
@@ -205,7 +205,7 @@ describe('checkConfigurations', () => {
       {
         code: PresetsCode.Missing,
         details: {
-          settings: [
+          settingPaths: [
             'width',
           ],
         },
@@ -214,7 +214,7 @@ describe('checkConfigurations', () => {
       {
         code: PresetsCode.Stale,
         details: {
-          settings: [
+          settingPaths: [
             'gone',
           ],
         },
@@ -230,7 +230,7 @@ describe('checkConfigurations', () => {
         {
           code: PresetsCode.Unsorted,
           details: {
-            settings: [
+            settingPaths: [
               'tool.scripts',
             ],
           },
@@ -250,7 +250,7 @@ describe('checkConfigurations', () => {
         {
           code: PresetsCode.Loosened,
           details: {
-            setting: 'tool.scripts',
+            settingPath: 'tool.scripts',
             wanted: '{"a":1,"b":2}',
           },
           path: 'biome.json',
@@ -333,21 +333,21 @@ describe('checkConfigurations', () => {
       [
         PresetsCode.Loosened,
         {
-          setting: 'formatter.style',
+          settingPath: 'formatter.style',
           wanted: '"space"',
         },
       ],
       [
         PresetsCode.Loosened,
         {
-          setting: 'lint',
+          settingPath: 'lint',
           wanted: '"on"',
         },
       ],
       [
         PresetsCode.Missing,
         {
-          settings: [
+          settingPaths: [
             'formatter.width',
           ],
         },
@@ -369,8 +369,8 @@ describe('checkConfigurations', () => {
           lock: lockOf({
             'old.json': {
               addresses: [],
-              defaults: [],
-              isCreated: false,
+              everMetDefaults: [],
+              isCreatedByApply: false,
               kind: RecordKind.Settings,
               leaves: [
                 Leaf.keyOf({

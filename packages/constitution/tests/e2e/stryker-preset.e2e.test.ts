@@ -6,7 +6,6 @@ import { appliedConfig, mutationOf, widestWarnings } from './stryker-preset.fixt
 
 const STRYKER_RUN_MS = 60_000;
 
-// The specs prove the call, by the count the logger keeps, and never its text.
 const LOGGED_SOURCE = `export const counts = { logged: 0 };\n\nconst logger = { info: (message: string): void => {\n  counts.logged += 1;\n} };\n\nexport const total = (price: number, tax: number): number => {\n  if (price < 0) {\n    throw new Error('A price is never negative');\n  }\n  logger.info('Totalled');\n  return price + tax;\n};\n`;
 const LOGGED_SPEC = `import { expect, test } from 'bun:test';\n\nimport { counts, total } from '../order.utils';\n\ntest('should add the tax when both are set', () => {\n  expect(total(10, 2)).toBe(12);\n});\n\ntest('should refuse a negative price', () => {\n  expect(() => total(-1, 2)).toThrow();\n});\n\ntest('should take a zero price', () => {\n  expect(total(0, 2)).toBe(2);\n});\n\ntest('should log once when it totals', () => {\n  const before = counts.logged;\n  total(10, 2);\n  expect(counts.logged - before).toBe(1);\n});\n`;
 
@@ -130,7 +129,7 @@ describe("the configuration Stryker's presets write", () => {
     expect(runner).toBe(plugin.name);
   });
 
-  // Stryker resolves a relative plugin from the folder it runs in, the unit's.
+  // Why: Stryker resolves a relative plugin from the folder it runs in, the unit's.
   it("should name the runner and the ignorer by the paths of the distribution's build from the unit when Stryker loads them", () => {
     // Act
     const { plugins } = appliedConfig();

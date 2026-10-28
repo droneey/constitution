@@ -5,7 +5,6 @@ interface MarkdownDocument {
   readonly frontMatter?: string;
 }
 
-/** The front matter and the body of a Markdown text, each with its lines ending in LF. */
 const splitFrontMatter = (text: string): MarkdownDocument => {
   const lines = text.split(/\r?\n/);
   const end = lines[0] === DELIMITER ? lines.indexOf(DELIMITER, 1) : -1;

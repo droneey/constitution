@@ -4,7 +4,6 @@ import { HookEventName, SessionOrigin } from '../../domain/entities';
 import { SessionId } from '../../domain/value-objects';
 import { totalTableOf } from '../utils';
 
-/** The fields of Claude Code's events the hooks read, as Claude Code names them. */
 enum HookField {
   AgentId = 'agent_id',
   AgentName = 'agent_name',
@@ -20,9 +19,8 @@ enum HookField {
   ToolInput = 'tool_input',
 }
 
-// Claude Code's events as each hook reads them: Claude Code owns the shapes, so a field a hook does
-// not read is dropped, and one that is absent, empty or of another kind reads as absent, a flag as
-// false.
+// Why: Claude Code owns the shapes of its events, so a field a hook does not read is dropped, and
+// one that is absent, empty or of another kind reads as absent, a flag as false.
 const textField = z.string().min(1).optional().catch(undefined);
 const flagField = z.boolean().catch(false);
 const sessionIdField = z
@@ -32,7 +30,6 @@ const sessionIdField = z
   .optional()
   .catch(undefined);
 
-// Claude Code's names, the outside vocabulary its events are read in.
 const hookEventNames = totalTableOf<Exclude<HookEventName, HookEventName.Unknown>>()({
   // biome-ignore lint/style/useNamingConvention: Claude Code names the event SessionStart
   SessionStart: HookEventName.SessionStart,
@@ -43,7 +40,6 @@ const hookEventNames = totalTableOf<Exclude<HookEventName, HookEventName.Unknown
   // biome-ignore lint/style/useNamingConvention: Claude Code names the event SubagentStop
   SubagentStop: HookEventName.SubagentStop,
 });
-/** Claude Code's name of each event a hook may answer, which none but these has. */
 const hookEventTexts: ReadonlyMap<HookEventName, string> = new Map(
   [
     ...hookEventNames,
@@ -69,7 +65,6 @@ const eventNameOf = (text: string): HookEventName =>
 
 const eventNameField = z.string().transform(eventNameOf).catch(HookEventName.Unknown);
 
-/** What every hook reads of its event: the session it names, when that is a plain name. */
 interface HookEvent {
   readonly [HookField.SessionId]?: SessionId | undefined;
 }
@@ -101,7 +96,6 @@ interface PostToolUseHookEvent extends HookEvent {
   };
 }
 
-/** Claude Code names the event it runs the hook for; one that names none is a session's start. */
 const sessionStartEventSchema: z.ZodType<SessionStartHookEvent> = z.object({
   [HookField.Cwd]: textField,
   [HookField.HookEventName]: z

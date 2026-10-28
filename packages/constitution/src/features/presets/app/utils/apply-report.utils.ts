@@ -56,19 +56,18 @@ const writtenSectionsOf = ({
   }),
   ...countedNoteSections({
     after: REMOVED_AFTER,
-    lines: report.removed.map(placeMessage),
+    lines: report.removedByApply.map(placeMessage),
     noun: SETTING_NOUN,
     tone: Tone.Info,
   }),
   ...countedNoteSections({
     after: ADDED_AFTER,
-    lines: report.added.map(placeMessage),
+    lines: report.defaultsAddedToExistingFiles.map(placeMessage),
     noun: SETTING_NOUN,
     tone: Tone.Info,
   }),
 ];
 
-/** Failed where the project cannot be read, or where the apply is held by its findings. */
 const applyOutcomeOf = (read: ProjectRead<ApplyPlan>): TaskOutcome => {
   if (read.status !== ProjectReadStatus.Opened) {
     return unreadOutcomeOf(read);
@@ -101,10 +100,6 @@ const applyOutcomeOf = (read: ProjectRead<ApplyPlan>): TaskOutcome => {
   }
 };
 
-/**
- * A ready apply shows what it noted and what it wrote; a held one wrote nothing, so it shows only
- * its findings.
- */
 const applySectionsOf = (read: ProjectRead<ApplyPlan>): readonly Section[] => {
   if (read.status !== ProjectReadStatus.Opened) {
     return [];

@@ -12,8 +12,8 @@ import type { EntryNamed, PresetsDetails, UnreachedRole } from '../../domain/ent
 import { EntryPoint, PresetsCode } from '../../domain/entities';
 import { Fact, FactName, PresetFilePath } from '../../domain/value-objects';
 
-// The codes whose text varies with their details: a messages file holds no branch, so the table of
-// texts chooses among the messages below for them.
+// Why: a messages file holds no branch, so the table of texts chooses among the messages below for
+// the codes whose text varies with their details.
 type VariedCode =
   | PresetsCode.EntryMisplaced
   | PresetsCode.EntryMisshapen
@@ -65,7 +65,6 @@ const entryOf = ({ block, rule }: EntryNamed): string => `${block}${KEY_SEPARATO
 
 const namesOf = (names: readonly string[]): string => names.join(' and ');
 
-/** Each text follows the path its finding names. */
 const presetsFindingMessages: Omit<TextsOf<PresetsDetails>, VariedCode> = {
   [PresetsCode.PresetFileMisplaced]: () => `is not a preset file: ${presetFilePlaces}`,
   [PresetsCode.UnknownReader]: ({ reader }) => `is the preset file of ${reader}, which is no block`,
@@ -77,7 +76,7 @@ const presetsFindingMessages: Omit<TextsOf<PresetsDetails>, VariedCode> = {
   [PresetsCode.EntryNeedsTooManyBlocks]: (named) =>
     `${entryOf(named)}: needs ${named.needed.join(LIST_SEPARATOR)} beyond its reader, and a preset file's path names at most ${String(MAX_WITHS)}; leave out a role that needs a block of its own`,
   [PresetsCode.EntryOffItsAxis]: (named) =>
-    `${entryOf(named)}: ${named.rule} is a rule of ${named.ruleAxis}, an axis this preset file does not stand on`,
+    `${entryOf(named)}: ${named.rule} is a rule of ${named.ruleAxis}, not of this preset file's axis`,
   [PresetsCode.FileOutsideItsUnit]: (named) =>
     `${entryOf(named)}: ${named.file} leaves the folder of its unit`,
   [PresetsCode.UnknownFact]: (named) =>
@@ -92,14 +91,16 @@ const presetsFindingMessages: Omit<TextsOf<PresetsDetails>, VariedCode> = {
   [PresetsCode.PluginUnreferenced]: () => 'is a plugin no entry names',
   [PresetsCode.PluginNamesNoRule]: ({ rule }) =>
     `is named "${rule}", which is no rule; a plugin is named after the rule it holds`,
-  [PresetsCode.Clash]: ({ setting, sources }) =>
-    `gets two values at ${setting} from ${namesOf(sources)}`,
-  [PresetsCode.TwoReplacers]: ({ setting, sources }) =>
-    `has ${setting} replaced twice, otherwise each time, by ${namesOf(sources)}`,
-  [PresetsCode.MissingSlot]: ({ setting, slot }) =>
-    `gets an insert into the slot ${slot} of ${setting}, which the list does not place`,
-  [PresetsCode.SlotInNoList]: ({ setting, slot }) =>
-    `gets an insert into the slot ${slot} of ${setting}, which is no list`,
+  [PresetsCode.Clash]: ({ settingPath, sources }) =>
+    `gets two values at ${settingPath} from ${namesOf(sources)}`,
+  [PresetsCode.TwoReplacers]: ({ settingPath, sources }) =>
+    `has ${settingPath} replaced twice, otherwise each time, by ${namesOf(sources)}`,
+  [PresetsCode.MissingSlot]: ({ settingPath, slot }) =>
+    `gets an insert into the slot ${slot} of ${settingPath}, which the list does not place`,
+  [PresetsCode.SlotInNoList]: ({ settingPath, slot }) =>
+    `gets an insert into the slot ${slot} of ${settingPath}, which is no list`,
+  [PresetsCode.SlotPlacedTwice]: ({ settingPath, slot }) =>
+    `gets an insert into the item of ${settingPath} that places the slot ${slot}, which two items place`,
   [PresetsCode.MissingName]: () =>
     `gives no name, which an entry it takes writes as ${packageNameFact}; add name`,
   [PresetsCode.MissingConstitution]: () =>

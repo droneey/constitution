@@ -6,7 +6,6 @@ import { Rule } from '../rule.entity';
 
 const FILE = 'blocks/core/foundation/principles.md';
 
-// A MUST rule "a" of core, with the fields a case is about.
 const ruleOf = (fields: Partial<Rule>): Rule =>
   Rule.create({
     axis: Axis.Foundation,

@@ -1,4 +1,3 @@
-/** The problems found at a file as its findings; a check that found none there gives undefined. */
 const findingsAt = <TProblem extends object>(
   path: string,
   problems: readonly (TProblem | undefined)[],

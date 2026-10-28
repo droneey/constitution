@@ -31,53 +31,52 @@ const lockUnparsed: PresetsFinding = {
 const loosened: PresetsFinding = {
   code: PresetsCode.Loosened,
   details: {
-    setting: 'formatter.width',
+    settingPath: 'formatter.width',
     wanted: '100',
   },
   path: 'biome.json',
 };
 const added: SettingPlace = {
   filePath: RepositoryRelativePath.create('biome.json'),
-  setting: 'test.randomize',
+  settingPath: 'test.randomize',
 };
 const removedFromBiome: SettingPlace = {
   filePath: RepositoryRelativePath.create('biome.json'),
-  setting: 'files "dist"',
+  settingPath: 'files "dist"',
 };
 const removedFromIgnore: SettingPlace = {
   filePath: RepositoryRelativePath.create('.gitignore'),
-  setting: '"dist/"',
+  settingPath: '"dist/"',
 };
 
 const quietReport: ApplyReport = {
-  added: [],
+  defaultsAddedToExistingFiles: [],
   deletedFilePaths: [],
-  removed: [],
-  unitPaths: [],
+  removedByApply: [],
+  writtenUnitPaths: [],
   writtenFilePaths: [],
 };
 const writtenReport: ApplyReport = {
   ...quietReport,
-  unitPaths: [
+  writtenUnitPaths: [
     UnitPath.create(''),
   ],
   writtenFilePaths: [
     RepositoryRelativePath.create('biome.json'),
   ],
 };
-// Each part of a report that writes.
 const fullReport: ApplyReport = {
-  added: [
+  defaultsAddedToExistingFiles: [
     added,
   ],
   deletedFilePaths: [
     RepositoryRelativePath.create('notes.json'),
   ],
-  removed: [
+  removedByApply: [
     removedFromBiome,
     removedFromIgnore,
   ],
-  unitPaths: [
+  writtenUnitPaths: [
     UnitPath.create(''),
   ],
   writtenFilePaths: [
@@ -86,7 +85,6 @@ const fullReport: ApplyReport = {
   ],
 };
 
-// The changes a ready plan writes play no part in its report.
 const readyOf = (report: ApplyReport, notes: readonly PresetsFinding[] = []): ApplyPlan => ({
   changes: {
     deletedFilePaths: [],

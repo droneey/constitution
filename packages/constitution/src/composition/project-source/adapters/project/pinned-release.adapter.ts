@@ -5,7 +5,7 @@ import type { ProjectPlace, Release } from '#/kernel/entities';
 import type { AbsolutePath } from '#/kernel/value-objects';
 
 const createPinnedRelease = (ports: ProjectPorts): PinnedRelease => ({
-  find: (startFolderPath: AbsolutePath): ProjectPlace | undefined =>
+  findProjectAround: (startFolderPath: AbsolutePath): ProjectPlace | undefined =>
     findProject({
       files: ports.files,
       startFolderPath,

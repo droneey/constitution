@@ -15,7 +15,6 @@ import {
 import { budgetedBodyOf, coreBodyOf } from './digest-body.utils';
 import { overrideListLines } from './override-list.utils';
 
-/** The digest's text: the lines before the rules, and the rules. */
 interface Digest {
   readonly body: readonly string[];
   readonly head: readonly string[];
@@ -56,7 +55,6 @@ const resolvedDigestOf = (
   ],
 });
 
-// One line in place of the rules when the release cannot give them: doctor tells what is wrong.
 const doctorNoticeOf = (releaseFolderPath: AbsolutePath): Digest => ({
   body: [],
   head: [
@@ -64,7 +62,6 @@ const doctorNoticeOf = (releaseFolderPath: AbsolutePath): Digest => ({
   ],
 });
 
-/** The digest a session starts with, its block list within the budget the hook's context gives. */
 const digestOf = (contents: DigestContents): Digest => {
   switch (contents.kind) {
     case DigestKind.NoRelease:

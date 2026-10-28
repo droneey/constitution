@@ -6,12 +6,10 @@ interface Versions {
 }
 
 interface PageAddressInput {
-  /** as the router reads it, without the base of the site it is served from */
   readonly pageHref: string;
   readonly version: Version;
 }
 
-/** every release's site is served under `/v<version>/`, the latest's included */
 const pageAddressIn = (input: PageAddressInput): string => `/v${input.version}${input.pageHref}`;
 
 const Versions = {

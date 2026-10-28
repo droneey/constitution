@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Hands Claude Code's event on stdin to `constitution hook <event>`, the executable the project
-# installs through mise. Without it the hook says so in one line and never fails the session.
+# Why: the project installs the executable through mise; without it the hook says so in one line and
+# never fails the session.
 set -euo pipefail
 if ((BASH_VERSINFO[0] * 100 + BASH_VERSINFO[1] >= 404)); then
   shopt -s inherit_errexit

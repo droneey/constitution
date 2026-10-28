@@ -1,9 +1,4 @@
-/**
- * Gives on every call the value its first call made, a promise itself and never one chained to it.
- * A make that throws, or whose promise rejects, keeps nothing, so the call after it makes the value
- * again.
- */
-const once = <TValue>(make: () => TValue): (() => TValue) => {
+const onceSucceeded = <TValue>(make: () => TValue): (() => TValue) => {
   let made:
     | {
         readonly value: TValue;
@@ -27,4 +22,4 @@ const once = <TValue>(make: () => TValue): (() => TValue) => {
   };
 };
 
-export { once };
+export { onceSucceeded };

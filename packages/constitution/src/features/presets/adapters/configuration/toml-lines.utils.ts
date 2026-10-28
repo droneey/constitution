@@ -24,7 +24,6 @@ const readToml = (text: string): Setting | undefined =>
 
 const unquotedOf = (key: string): string => key.replace(QUOTES, '');
 
-// The keys down the one path of the tables a dotted key makes, to the value it gives.
 const keyPathOf = (wire: unknown): readonly string[] => {
   const [step] = fieldsOf(wire);
 
@@ -36,7 +35,6 @@ const keyPathOf = (wire: unknown): readonly string[] => {
       ];
 };
 
-/** The keys a header or a dotted key names, each unquoted and its escapes read as TOML reads them. */
 const keysOfText = (text: string): readonly string[] =>
   keyPathOf(
     attempted({
@@ -51,7 +49,6 @@ const headerOf = (line: string): readonly string[] | undefined => {
   return match === null ? undefined : keysOfText(String(match[1]));
 };
 
-/** How far a key's value runs: the brackets the line opens, strings and comments aside. */
 const depthOf = (line: string): number => {
   // Stryker disable next-line StringLiteral: what stands for a string or a comment only has to hold no bracket
   const bare = line.replace(STRINGS, '').replace(COMMENT, '');

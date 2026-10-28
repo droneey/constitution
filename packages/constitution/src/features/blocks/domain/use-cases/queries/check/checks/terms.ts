@@ -28,23 +28,19 @@ enum TermsCode {
 
 interface TermsDetails {
   readonly [TermsCode.Misshapen]: {
-    /** the text set in bold */
     readonly written: string;
   };
   readonly [TermsCode.DefinedTwice]: {
-    /** the block of the term's first definition */
     readonly firstBlock: BlockId;
     readonly firstFile: string;
     readonly term: string;
   };
   readonly [TermsCode.OffAxis]: {
-    /** the axis of the file that uses the term */
     readonly axis: Axis;
     readonly term: string;
     readonly termAxis: Axis;
   };
   readonly [TermsCode.OutOfReach]: {
-    /** the block that defines the term */
     readonly owner: BlockId;
     readonly term: string;
   };
@@ -52,7 +48,6 @@ interface TermsDetails {
     readonly kind: TermKind;
     readonly owner: BlockId;
     readonly term: string;
-    /** the other spelling the file writes */
     readonly written: string;
   };
   readonly [TermsCode.WithoutId]: {
@@ -86,11 +81,9 @@ interface Defined extends Definition {
 interface Placed {
   readonly block: Block;
   readonly file: BlockFile;
-  /** whether the file's block builds on the owner's: core's terms are everyone's */
   readonly isReached: (owned: Owned) => boolean;
 }
 
-/** A term as a file of a block defines it. */
 interface PlacedTerm {
   readonly placed: Placed;
   readonly term: Term;
@@ -127,9 +120,6 @@ const ownedOf = (block: Block): Owned => ({
   layer: block.layer,
 });
 
-// A role is named by its id wherever its spelling may change, so each folder and suffix carries one,
-// well-formed and its own; any other term may. Of two blocks one builds on, the more specific may
-// spell the id its own way, as a language spells a folder, whichever is read first.
 const idFinding = (input: {
   owners: ReadonlyMap<string | undefined, PlacedTerm>;
   placedTerm: PlacedTerm;
@@ -265,7 +255,6 @@ const axisProseOf = (file: BlockFile): string =>
       .join('\n'),
   );
 
-// A passport speaks of its whole block, every axis at once, as its front matter does.
 const axisFindings = (input: {
   defined: readonly Defined[];
   files: readonly Placed[];
@@ -290,7 +279,6 @@ const axisFindings = (input: {
         }));
     });
 
-// The summary is prose too: it is the block's line in every digest.
 const reachProseOf = ({ block, file }: Placed): string => {
   const body = withoutCodeFences(file.body);
 
@@ -299,8 +287,6 @@ const reachProseOf = ({ block, file }: Placed): string => {
   );
 };
 
-// A file that cannot reach a term's owner speaks of something else when it writes its stem; one
-// that reaches it writes the term as its owner spells it.
 const useFindings = (input: {
   defined: readonly Defined[];
   files: readonly Placed[];

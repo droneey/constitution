@@ -24,11 +24,9 @@ import { DocsSearchWidget } from '../ui/widgets';
 
 interface DocsProviders {
   frame?: DocumentFrame;
-  /** read on every render, as the search is */
   getVersions?: GetVersions | undefined;
   pathname?: string;
   release?: Version | undefined;
-  /** read on every render, so a rerender takes the one set since */
   searchPages?: SearchPages | undefined;
 }
 
@@ -85,7 +83,6 @@ const tocFixture = (): TocHeading[] => [
   },
 ];
 
-/** loads a body with no headings whose loading has ended where React's `use` reads it, as a route's loader leaves it */
 const settledLoad = async (): Promise<DocsPageEntry['load']> => {
   const body = trackedForUse(
     Promise.resolve({
@@ -98,7 +95,6 @@ const settledLoad = async (): Promise<DocsPageEntry['load']> => {
   return () => body;
 };
 
-/** its contents already loaded */
 const pageEntryFixture = (overrides: Partial<DocsPageEntry> = {}): DocsPageEntry => {
   const loaded = Promise.resolve({
     toc: tocFixture(),
@@ -171,11 +167,6 @@ const docsWrapperOf = (
   );
 };
 
-/**
- * Rendered whole, a body that suspends included; the release is 0.70.0 unless the providers name
- * one, or `undefined` for none; likewise the read of the releases never answers and the search
- * finds nothing
- */
 const renderInDocs = (ui: ReactElement, providers: DocsProviders = {}): Promise<RenderResult> =>
   act(() =>
     Promise.resolve(
@@ -191,34 +182,29 @@ interface HydrationTrees {
 }
 
 interface HydratedInDocs {
-  /** the errors React recovered from by rendering the client's tree over the server's */
-  readonly recovered: unknown[];
+  readonly recoverableErrors: unknown[];
 }
 
-/**
- * hydrates the client's tree over the HTML the server renders of its own, as a prerendered page
- * loads; the release is as in `renderInDocs`
- */
 const hydrateInDocs = async (
   { client, server }: HydrationTrees,
   providers: DocsProviders = {},
 ): Promise<HydratedInDocs> => {
   const Wrapper = docsWrapperOf(providers);
   const container = document.createElement('div');
-  const recovered: unknown[] = [];
+  const recoverableErrors: unknown[] = [];
 
   // biome-ignore lint/plugin/raw-html-never-reaches-the-dom: the server's own rendering, which hydration takes as markup
   container.innerHTML = renderToString(<Wrapper>{server}</Wrapper>);
   document.body.append(container);
 
-  // awaited, as a tree that suspends while it hydrates asks
+  // Why: a tree that suspends while it hydrates asks for an awaited act.
   await act(() =>
     Promise.resolve(
       render(client, {
         container,
         hydrate: true,
         onRecoverableError: (error) => {
-          recovered.push(error);
+          recoverableErrors.push(error);
         },
         wrapper: Wrapper,
       }),
@@ -226,7 +212,7 @@ const hydrateInDocs = async (
   );
 
   return {
-    recovered,
+    recoverableErrors,
   };
 };
 

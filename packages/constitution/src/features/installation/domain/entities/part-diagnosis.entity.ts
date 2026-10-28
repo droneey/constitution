@@ -7,7 +7,6 @@ enum Health {
   Skipped = 'skipped',
 }
 
-/** In the order doctor reports them. */
 enum InstallationPart {
   Executable = 'executable',
   Plugin = 'plugin',
@@ -55,7 +54,6 @@ interface PluginVersions {
   readonly plugin: Version;
 }
 
-/** Each from the repository's folder where it lies in it, else absolute. */
 interface ReleaseLink {
   readonly linkPath: RepositoryRelativePath | AbsolutePath;
   readonly targetPath: RepositoryRelativePath | AbsolutePath;
@@ -73,11 +71,9 @@ interface DiagnosisDetails {
   readonly [Diagnosis.PluginOlder]: PluginVersions;
   readonly [Diagnosis.PluginNewer]: PluginVersions;
   readonly [Diagnosis.LatestUnanswered]: {
-    /** what the failed call said, as the system words it */
     readonly reason: string;
   };
   readonly [Diagnosis.LatestRefused]: {
-    /** the HTTP status GitHub answered with */
     readonly status: number;
   };
   readonly [Diagnosis.LatestUnreadable]: object;
@@ -108,7 +104,6 @@ interface DiagnosisDetails {
     readonly manifest: AbsolutePath;
   };
   readonly [Diagnosis.ManifestMalformed]: {
-    /** the fields of another form, each by its path, at least one */
     readonly fields: readonly string[];
     readonly manifest: AbsolutePath;
   };

@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 import pytest
-from source_fixtures import folder, function_of, lifted, python, table_function_of
+from source_fixtures import folder, function_of, python, table_function_of, with_limit_lifted
 
 from droneey_python_check.features.code import check_code
 from droneey_python_check.features.code.domain.entities import (
@@ -30,8 +30,7 @@ from droneey_python_check.features.code.domain.entities import (
 if TYPE_CHECKING:
   from droneey_python_check.features.code.domain.entities import Breach
 
-# The files of a package laid out as core's tree lays it out.
-TREE: Final = (
+TREE_FILE_PATHS: Final = (
   'src/shop/__init__.py',
   'src/shop/main.py',
   'src/shop/kernel/__init__.py',
@@ -46,10 +45,9 @@ TREE: Final = (
   'src/shop/libs/tabula/sheet.py',
 )
 PACKAGE_PATH: Final = Path('src/shop')
-# The folders of the tree, as the edge reads them.
 PACKAGE_FOLDER_PATHS: Final = frozenset(
   folder_path
-  for file_path in TREE
+  for file_path in TREE_FILE_PATHS
   for folder_path in Path(file_path).parents
   if folder_path.is_relative_to(PACKAGE_PATH)
 )
@@ -65,8 +63,7 @@ SETTINGS: Final = Settings(
 )
 APP: Final = 'src/shop/features/orders/app/use_cases/place_order.py'
 DOMAIN: Final = 'src/shop/features/orders/domain/entities/order_entity.py'
-# A line of a list literal.
-ZERO: Final = '    0,'
+LIST_LITERAL_LINE: Final = '    0,'
 
 
 def _findings(*, path: str, text: str) -> tuple[Finding, ...]:
@@ -152,19 +149,25 @@ def test_should_report_a_file_when_it_does_not_parse() -> None:
     ),
     pytest.param(
       'src/shop/orders.py',
-      lifted(table_function_of(101)),
+      with_limit_lifted(table_function_of(101)),
       id='a function returning one literal that lifts its limit with a reason',
     ),
     pytest.param(
       'src/shop/orders.py',
-      lifted(
-        python('def table() -> list[int]:', '  """The table."""', '  return [', *[ZERO] * 97, '  ]')
+      with_limit_lifted(
+        python(
+          'def table() -> list[int]:',
+          '  """The table."""',
+          '  return [',
+          *[LIST_LITERAL_LINE] * 97,
+          '  ]',
+        )
       ),
       id='a function returning one literal past its docstring',
     ),
     pytest.param(
       'src/shop/orders.py',
-      lifted(python('def table() -> None:', '  [', *[ZERO] * 98, '  ]')),
+      with_limit_lifted(python('def table() -> None:', '  [', *[LIST_LITERAL_LINE] * 98, '  ]')),
       id='a function whose body is one literal standing alone',
     ),
   ],
@@ -187,25 +190,31 @@ def test_should_find_nothing_when_the_code_keeps_the_line_limits(path: str, text
       id='a function of more than 100 lines',
     ),
     pytest.param(
-      lifted(function_of(101), reason=''),
+      with_limit_lifted(function_of(101), reason=''),
       1,
       LongFunction(function_name='tally', line_count=101, limit=100),
       id='a function that lifts its limit without a reason',
     ),
     pytest.param(
-      lifted(function_of(101)),
+      with_limit_lifted(function_of(101)),
       1,
       LongFunction(function_name='tally', line_count=101, limit=100),
       id='a function that lifts its limit for a body that is no literal',
     ),
     pytest.param(
-      lifted(python('def table() -> list[int]:', '  x = 1', '  return [', *[ZERO] * 97, '  ]')),
+      with_limit_lifted(
+        python(
+          'def table() -> list[int]:', '  x = 1', '  return [', *[LIST_LITERAL_LINE] * 97, '  ]'
+        )
+      ),
       1,
       LongFunction(function_name='table', line_count=101, limit=100),
       id='a function that lifts its limit for a literal after another statement',
     ),
     pytest.param(
-      lifted(python('def table() -> list[int]:', '  return sorted([', *[ZERO] * 98, '  ])')),
+      with_limit_lifted(
+        python('def table() -> list[int]:', '  return sorted([', *[LIST_LITERAL_LINE] * 98, '  ])')
+      ),
       1,
       LongFunction(function_name='table', line_count=101, limit=100),
       id='a function that lifts its limit for a call over a literal',

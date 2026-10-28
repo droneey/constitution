@@ -3,7 +3,6 @@ import type { Brand } from '#/kernel/types';
 import { MARKDOWN_EXTENSION, PATH_SEPARATOR } from '../constants';
 import { InvalidValueError, ValueFailure } from '../errors';
 
-/** a Markdown file's path from the blocks folder: `<layer>/<id>/<id>.md` for a passport */
 type BlockPath = Brand<string, 'BlockPath'>;
 
 const is = (candidate: unknown): candidate is BlockPath =>
@@ -11,7 +10,7 @@ const is = (candidate: unknown): candidate is BlockPath =>
   !candidate.startsWith(PATH_SEPARATOR) &&
   candidate.endsWith(MARKDOWN_EXTENSION);
 
-/** @throws {@link InvalidValueError} when the text opens with "/" or names no Markdown file */
+/** @throws {InvalidValueError} when the text opens with "/" or names no Markdown file */
 const create = (text: string): BlockPath => {
   if (!is(text)) {
     throw new InvalidValueError({

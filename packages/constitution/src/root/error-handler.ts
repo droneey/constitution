@@ -47,11 +47,6 @@ interface ErrorHandlerInput {
   readonly writeError: (text: string) => void;
 }
 
-/**
- * The handler of last resort: a failure the program foresees ends the run with the code the user
- * can act on, a usage error with the usage code, any other with the code of a defect. A hook
- * writes one line, as its callers read it; a person gets the failure block.
- */
 const createErrorHandler = (input: ErrorHandlerInput): ErrorHandler => {
   const write = (
     failure: FailureContent & {

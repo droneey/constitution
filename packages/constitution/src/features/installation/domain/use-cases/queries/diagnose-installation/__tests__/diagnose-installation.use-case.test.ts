@@ -27,7 +27,6 @@ const linkFolder = RepositoryRelativePath.create('.droneey/constitution');
 const executable = Version.create('1.0.0');
 const older = Version.create('0.9.0');
 const manifest = AbsolutePath.create(`${releaseFolderPath}/package.json`);
-// A project linked to a release of this executable's version.
 const TREE: FakeTree = {
   files: {
     [`${PROJECT}/.git/HEAD`]: 'ref: refs/heads/main\n',
@@ -37,27 +36,22 @@ const TREE: FakeTree = {
 } as const;
 
 interface Installation {
-  // the version the executable on PATH answers to --version
   readonly answered?: string | undefined;
-  // the fingerprint of the plugin's files this executable was built with
   readonly fingerprint?: string | undefined;
   readonly hooks?: HooksState;
   readonly isOnPath?: boolean;
   readonly latest?: LatestRelease;
   readonly plugin?: InstalledPlugin | undefined;
-  // the release the project pins, or the failure its read throws
   readonly release?: Release | Error;
   readonly tree?: FakeTree;
 }
 
-// A sound installation by default: one release everywhere, the hooks installed.
 const portsOf = (installation: Installation = {}): DiagnoseInstallationPorts => ({
   files: createFakeProjectFiles(installation.tree ?? TREE),
   hooks: {
     stateOf: (): HooksState => installation.hooks ?? HooksState.Installed,
   },
   path: {
-    // PATH holds the executable under its own name only
     find: (name: string): AbsolutePath | undefined =>
       installation.isOnPath === false || name !== EXECUTABLE_NAME ? undefined : onPath,
     versionOf: (): string | undefined =>
@@ -82,8 +76,7 @@ const portsOf = (installation: Installation = {}): DiagnoseInstallationPorts => 
       ),
   },
   pinned: {
-    // the project holds its own folder and every folder below it
-    find: (startFolderPath: AbsolutePath): ProjectPlace | undefined =>
+    findProjectAround: (startFolderPath: AbsolutePath): ProjectPlace | undefined =>
       startFolderPath === PROJECT || startFolderPath.startsWith(`${PROJECT}/`)
         ? projectPlace
         : undefined,

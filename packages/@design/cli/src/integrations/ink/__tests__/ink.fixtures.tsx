@@ -11,7 +11,6 @@ import { ColourLevel, ConfirmWords, OutputMode, StepStatus, ThemeMode } from '#/
 
 import { ThemeContext } from '../theme';
 
-/** the keys a person presses, as a terminal sends them */
 enum Key {
   Up = '\u001B[A',
   Down = '\u001B[B',
@@ -26,7 +25,6 @@ const englishWords = ConfirmWords.create({
   yes: 'yes',
 });
 
-/** what a screen reader says for each status, worded unlike the statuses so a spec tells them apart */
 const STATUS_LABELS = {
   [StepStatus.Pending]: 'waiting',
   [StepStatus.Running]: 'working',
@@ -72,7 +70,6 @@ const renderWithTheme = (tree: ReactElement, theme: Theme = createPlainTheme()):
   };
 };
 
-/** the last frame a tree draws, the tree taken off again so nothing it starts outlives it */
 const frameOf = (tree: ReactElement, theme?: Theme): string | undefined => {
   const { lastFrame, unmount } = renderWithTheme(tree, theme);
   const frame = lastFrame();
@@ -104,7 +101,6 @@ const createTerminalOutput = (): TerminalOutput => {
 };
 
 interface FakeKeyboard extends PassThrough {
-  /** whether the keys reach the program one by one, as Ink sets it while it reads them */
   isRaw: boolean;
 }
 
@@ -154,11 +150,9 @@ const FRAME_DEADLINE_MS = 2000;
 
 interface ShownFrame {
   readonly frame: string | undefined;
-  /** since the wait began */
   readonly shownAfterMs: number;
 }
 
-/** the frame once it shows the text, or the last one drawn by the deadline */
 const frameOnceShown = async (
   lastFrame: () => string | undefined,
   text: string,
@@ -179,7 +173,6 @@ const frameOnceShown = async (
   return frameOnceShown(lastFrame, text, startedAt);
 };
 
-/** lets the work a key started run to its end before the spec reads the frame */
 const settle = (): Promise<void> =>
   new Promise((resolve) => {
     setImmediate(resolve);

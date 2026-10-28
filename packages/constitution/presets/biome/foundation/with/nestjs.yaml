@@ -25,6 +25,7 @@ nestjs:
               - '**/*.${role.nest-pipe}'
               - '**/*.${role.nest-guard}'
               - '**/*.${role.nest-interceptor}'
+              - slot: decorated-constructors
             linter:
               rules:
                 complexity:
@@ -40,6 +41,7 @@ nestjs:
               - '**/*.${role.nest-pipe}'
               - '**/*.${role.nest-guard}'
               - '**/*.${role.nest-interceptor}'
+              - slot: injected-classes
             linter:
               rules:
                 style:

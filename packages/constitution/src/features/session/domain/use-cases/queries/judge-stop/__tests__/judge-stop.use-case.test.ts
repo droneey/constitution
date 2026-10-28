@@ -17,7 +17,6 @@ import { HookEventName, SessionMark, StopVerdict } from '../../../../entities';
 import { SessionId, TreeFingerprint } from '../../../../value-objects';
 import { judgeStop } from '../judge-stop.use-case';
 
-// The tree's fingerprint now, and that of a tree before it.
 const treeNow = TreeFingerprint.create('tree-now');
 const treeBefore = TreeFingerprint.create('tree-before');
 

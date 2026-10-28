@@ -22,7 +22,6 @@ import type { AbsolutePath, Version } from '#/kernel/value-objects';
 import { digestListingOf } from './digest-listing.utils';
 import { presetsProjectOf } from './presets-project.utils';
 
-/** What the presets read beside the project's files. */
 interface PresetsPorts {
   readonly distribution: DistributionSources;
   readonly formats: ConfigurationFormat;
@@ -63,7 +62,7 @@ const configurationsOf = (input: {
       ],
     };
   } catch (error) {
-    // The boundary of an optional part: any failure of the check, a defect included, costs the
+    // Why: the boundary of an optional part: any failure of the check, a defect included, costs the
     // digest its presets' warnings and is reported as unchecked, never the session's start.
     return error instanceof Error
       ? {
@@ -80,16 +79,21 @@ const createRulesSource = (input: RulesSourceInput): RulesSource => {
   const { project } = input;
 
   return {
-    find: (searchFrom: AbsolutePath): ProjectPlace | undefined =>
+    findProjectAround: (searchFrom: AbsolutePath): ProjectPlace | undefined =>
       findProject({
         files: project.files,
         startFolderPath: searchFrom,
       }),
-    readCore: (place: ProjectPlace): string =>
+    /** @throws {UnreadableFileError} when core's passport cannot be read */
+    readCorePassport: (place: ProjectPlace): string =>
       readCore({
         files: project.files,
         place,
       }),
+    /**
+     * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
+     * @throws {ReleaseError} when the release's blocks cannot be listed
+     */
     readRules: (place: ProjectPlace): DeclaredRules => {
       const declaration = readDeclaration({
         ...project,
@@ -107,7 +111,7 @@ const createRulesSource = (input: RulesSourceInput): RulesSource => {
 
       return {
         active: resolution.active,
-        activeCount: Resolution.activeCountOf(resolution),
+        activeInAnyUnitCount: Resolution.activeInAnyUnitCountOf(resolution),
         configurations: configurationsOf({
           opened: {
             ...place,
@@ -117,12 +121,12 @@ const createRulesSource = (input: RulesSourceInput): RulesSource => {
           ports: input,
         }),
         listing: digestListingOf(resolution.listing),
-        musts: resolution.musts,
+        mustsBesideCore: resolution.mustsBesideCore,
         status: ConfigReadStatus.Parsed,
         warnings: resolution.warnings,
       };
     },
-    versionOf: (place: ProjectPlace): Version | undefined => {
+    pinnedVersionOf: (place: ProjectPlace): Version | undefined => {
       const release = readRelease({
         files: project.files,
         manifestParser: project.manifestParser,

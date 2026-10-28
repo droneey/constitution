@@ -11,14 +11,12 @@ interface FailureInput {
   readonly kind: FailureKind;
 }
 
-/** What a case compares of a failure, each part by value. */
 interface CaughtFailure {
   readonly cause: unknown;
   readonly code: unknown;
   readonly details: unknown;
 }
 
-/** The failure of the kind the call throws or rejects with; any other fails the case. */
 const failureOf = async (input: FailureInput): Promise<CaughtFailure | undefined> => {
   try {
     await input.call();
@@ -37,7 +35,6 @@ const failureOf = async (input: FailureInput): Promise<CaughtFailure | undefined
   return undefined;
 };
 
-/** The code a system's failure carries, such as `ENOENT`. */
 const causeCodeOf = (cause: unknown): unknown =>
   cause instanceof Error && 'code' in cause ? cause.code : undefined;
 

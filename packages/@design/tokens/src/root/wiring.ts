@@ -1,5 +1,5 @@
 import type { ExitCode, ThemeModeFiles } from '#/features/themes';
-import { AbsolutePath, generateThemes, runGenerateThemes } from '#/features/themes';
+import { AbsolutePath, createGenerateThemes, runGenerateThemes } from '#/features/themes';
 import { createConfigModuleLoader } from '#/features/themes/adapters/config-module';
 import type { Resolver } from '#/features/themes/adapters/resolver';
 import { createResolverThemeModeReader } from '#/features/themes/adapters/resolver';
@@ -18,34 +18,28 @@ interface DesignTokensInput extends ResolverInput {
   readonly writeError: (text: string) => void;
 }
 
-/** The theme modes the resolver names, read as a run of the generator reads them. */
+/** @throws {UnknownDefaultModeError} when the modifier's default names no context */
 const readThemeModes = (input: ResolverInput): readonly ThemeModeFiles[] =>
   createResolverThemeModeReader(input).read();
 
 const runDesignTokens = (input: DesignTokensInput): Promise<ExitCode> =>
   withLastResort({
-    run: () => {
-      const ports = {
-        builder: styleDictionaryThemeBuilder,
-        loader: createConfigModuleLoader({
-          workingFolderPath: AbsolutePath.create(input.workingFolderPath),
-        }),
-        modeReader: createResolverThemeModeReader({
-          resolver: input.resolver,
-          resolverUrl: input.resolverUrl,
-        }),
-      };
-
-      return runGenerateThemes({
+    /** @throws {UnknownDefaultModeError} when the modifier's default names no context */
+    run: () =>
+      runGenerateThemes({
         args: input.args,
-        generateThemes: (configPath) =>
-          generateThemes({
-            ...ports,
-            configPath,
+        generateThemes: createGenerateThemes({
+          builder: styleDictionaryThemeBuilder,
+          loader: createConfigModuleLoader({
+            workingFolderPath: AbsolutePath.create(input.workingFolderPath),
           }),
+          modeReader: createResolverThemeModeReader({
+            resolver: input.resolver,
+            resolverUrl: input.resolverUrl,
+          }),
+        }),
         writeError: input.writeError,
-      });
-    },
+      }),
     writeError: input.writeError,
   });
 

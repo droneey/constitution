@@ -26,7 +26,7 @@ or {
     $type <: not `unknown`,
     $type <: not `Promise<unknown>`
   },
-  // A parsed value is any, which satisfies every type and stays any.
+  // Why: a parsed value is any, which satisfies every type and stays any.
   TsSatisfiesExpression(expression=or {
     parsed_value(),
     JsParenthesizedExpression(expression=parsed_value())

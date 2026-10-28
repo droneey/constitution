@@ -12,7 +12,6 @@ import { TreeError, TreeFailure } from '../../../domain/errors';
 import { TreePath } from '../../../domain/value-objects';
 import { createGitFileTrees } from '../git-file-trees.adapter';
 
-// git as the program finds it: on the PATH the spec runs with.
 const gitOptions = {
   env: Object.fromEntries([
     [
@@ -24,7 +23,6 @@ const gitOptions = {
       process.env['PATH'] ?? '',
     ],
   ]),
-  // an unpacked Constitution of the specs holds three entries at most
   maxFiles: 3,
   timeoutMs: 30_000,
 };
@@ -46,8 +44,6 @@ const git = (args: readonly string[]): void => {
   });
 };
 
-// What the tree fails with: its failure, the folder or file it names and the code of what the
-// system failed with.
 const failureOf = (act: () => unknown): unknown => {
   try {
     act();
@@ -280,7 +276,6 @@ describe('createGitFileTrees: installed', () => {
 });
 
 describe('createGitFileTrees: installed, a folder it cannot list', () => {
-  // The folder is made listable again, so the cleanup can remove it.
   afterEach(() => {
     chmodSync(join(root, 'blocks/domains'), 0o755);
   });
@@ -378,7 +373,6 @@ describe('createGitFileTrees', () => {
 });
 
 describe('createGitFileTrees: git', () => {
-  // A git on PATH that runs the script given.
   const fakeGit = (input: { script: string; timeoutMs: number }): typeof gitOptions => {
     const folder = join(root, 'bin');
 

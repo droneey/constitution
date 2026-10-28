@@ -16,7 +16,6 @@ interface VersionsAnswer extends VersionsAddress {
 }
 
 interface MalformedVersions extends VersionsAddress {
-  /** the path to each value the file got wrong, the empty path for the whole file */
   readonly problems: readonly string[];
 }
 

@@ -14,7 +14,6 @@ interface TransportInit {
   signal: AbortSignal;
 }
 
-/** an address it has no answer for is 404, and an aborted request rejects as `fetch` does */
 export const transportServing =
   (served: Served) =>
   (address: string, init: TransportInit): Promise<Response> => {
@@ -32,7 +31,6 @@ export const transportServing =
         );
   };
 
-/** answers nothing until its request is aborted, then rejects as `fetch` does */
 export const transportSilent = (_address: string, init: TransportInit): Promise<Response> =>
   new Promise((_resolve, reject) => {
     init.signal.addEventListener('abort', () => reject(init.signal.reason));
@@ -40,7 +38,6 @@ export const transportSilent = (_address: string, init: TransportInit): Promise<
 
 export const transportFailing = (error: Error) => (): Promise<Response> => Promise.reject(error);
 
-/** the code and the details a read failed with and the name of its cause, or the error itself when it is none of the program's */
 export const failureOf = (read: Promise<unknown>): Promise<unknown> =>
   read.then(
     () => undefined,

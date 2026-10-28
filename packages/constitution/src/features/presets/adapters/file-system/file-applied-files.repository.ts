@@ -20,7 +20,8 @@ interface Before {
 // Stryker disable next-line StringLiteral: an encoding left empty is UTF-8 as well
 const ENCODING = 'utf8';
 
-// A file lands whole: written beside it under a fresh name no file holds yet, then renamed over it.
+// Why: a file lands whole: written beside it under a fresh name no file holds yet, then renamed
+// over it.
 const writeWhole = (file: FileText): void => {
   const pending = `${file.filePath}.${randomUUID()}.tmp`;
 
@@ -63,6 +64,7 @@ const restore = (written: readonly Before[]): void => {
   }
 };
 
+/** @throws {ApplyError} when a file cannot be written, which leaves every file as it was */
 const write = (applied: AppliedFiles): void => {
   const files: readonly FileText[] = [
     ...applied.files,
@@ -72,7 +74,7 @@ const write = (applied: AppliedFiles): void => {
     })),
   ];
   const written: Before[] = [];
-  // The deletions first, so a write that fails puts back a file deleted before it.
+  // Why: the deletions first, so a write that fails puts back a file deleted before it.
   const steps = [
     ...applied.deletedFilePaths.map((filePath) => ({
       filePath,

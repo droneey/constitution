@@ -57,10 +57,8 @@ interface ResolveLinkInput {
   readonly target: string;
 }
 
-/**
- * A link that starts with "/" is resolved from the repository root, as GitHub renders it; any other
- * link from the folder of the file that holds it.
- */
+// Why: GitHub renders a link that starts with "/" from the repository's root, and any other from
+// the folder of the file that holds it.
 const resolveLink = (input: ResolveLinkInput): string => {
   const joined = input.target.startsWith(PATH_SEPARATOR)
     ? input.target

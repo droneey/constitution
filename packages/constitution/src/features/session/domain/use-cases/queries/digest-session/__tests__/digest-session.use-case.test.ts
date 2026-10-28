@@ -18,7 +18,7 @@ const releaseFiles = {
 };
 const kept = {
   active: [],
-  musts: [],
+  mustsBesideCore: [],
   repositoryFolderPath: AbsolutePath.create(PROJECT),
   status: ConfigReadStatus.Parsed,
 };

@@ -10,8 +10,6 @@ import { overrideOf, parsedConfigOf } from './config-file.fixtures';
 
 const parser = createYamlConfigFileParser();
 
-// Texts of the pieces constitution.yaml is made of, its marks, tags, anchors and flows among them,
-// and texts of any characters.
 const texts = fc.oneof(
   fc
     .array(
@@ -54,7 +52,6 @@ const texts = fc.oneof(
   }),
 );
 
-// The invariant: any text reads as parsed or as unparsed at lines of the text, and never throws.
 const isParsedOrUnparsedAtItsLines = (text: string): boolean => {
   const read = parser.parse(text);
   const lineCount = text.split('\n').length;

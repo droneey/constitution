@@ -46,8 +46,6 @@ const filesText = (files: readonly DigestFiles[]): string =>
 const alsoOf = (files: readonly DigestFiles[]): string =>
   files.length === 0 ? '' : ` (${filesText(files)})`;
 
-// An implementation is known by its library's name; the digest's budget goes to the blocks a
-// name alone does not explain.
 const summaryOf = (block: DigestBlock): string =>
   block.layer === Layer.Implementation || block.summary === undefined ? '' : `: ${block.summary}`;
 

@@ -7,7 +7,6 @@ interface MarkdownSection {
 
 const isHeading = (line: string): boolean => HEADING.test(line);
 
-/** The text before the first heading belongs to no section and is dropped. */
 const sectionsOf = (text: string): readonly MarkdownSection[] => {
   const sections: {
     readonly heading: string;

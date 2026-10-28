@@ -128,7 +128,7 @@ describe('openProject', () => {
               },
             ],
           }),
-          musts: [
+          mustsBesideCore: [
             mustOf({
               block: 'ui',
               slug: 'inputs-are-labelled',

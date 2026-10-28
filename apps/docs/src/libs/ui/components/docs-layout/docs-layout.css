@@ -1,8 +1,9 @@
-/* Hooks are the library's ids, data and aria attributes, roles and element structure, never its
-   generated class names. */
+/* Why: hooks are the library's ids, data and aria attributes, roles and element structure, never
+   its generated class names. */
 
 @layer overrides {
-  /* the page, taller than the window, would show only the sides of its ring; its panel draws it */
+  /* Why: the page, taller than the window, would show only the sides of its ring; its panel
+     draws it. */
   #nd-page-panel [role='main']:focus-visible {
     outline-color: transparent;
   }
@@ -13,9 +14,9 @@
     outline-offset: calc(-1 * var(--ring-focus-width));
   }
 
-  /* The page is never narrower than a phone, so on a narrow screen the open sidebar pushes it out
-     under the edge. The layout is the container the page measures, for its width leaves out the
-     scrollbar a viewport unit counts. */
+  /* Why: the page is never narrower than a phone, so on a narrow screen the open sidebar pushes
+     it out under the edge. The layout is the container the page measures, for its width leaves
+     out the scrollbar a viewport unit counts. */
   #fd-spacious-layout {
     container-type: inline-size;
     --fd-page-width: var(--size-layout-page);
@@ -31,7 +32,6 @@
     transition-timing-function: var(--ease-out);
   }
 
-  /* the page sets data-sidebar on the document; before it does, a narrow screen shows it collapsed */
   html[data-sidebar='collapsed'] {
     & #fd-spacious-layout {
       --fd-sidebar-col: 0px;
@@ -64,9 +64,6 @@
     }
   }
 
-  /* The bar's controls overhang the gutter by the space around their icons, so an icon stands a
-     gutter from the panel's sides; the bar centres them in the padding above and below, is as tall
-     as the two make it, and the page starts under it by the same sum. */
   #nd-page-panel > :is(header, :has(> article)) {
     --nd-gutter: var(--spacing-sm);
     --nd-overhang: calc((var(--size-control-md) - var(--size-icon-md)) / 2);
@@ -91,7 +88,6 @@
     padding-top: 0;
   }
 
-  /* the bar's background fades out below it, where the page at rest starts */
   #nd-page-panel > header {
     gap: var(--spacing-xs);
     height: auto;
@@ -182,8 +178,6 @@
     }
   }
 
-  /* flush targets, each showing a smaller shape at its centre that holds the hover, the chosen
-     one's thumb, the press and the focus ring */
   [data-theme-toggle] {
     display: inline-flex;
     gap: var(--spacing-2xs);

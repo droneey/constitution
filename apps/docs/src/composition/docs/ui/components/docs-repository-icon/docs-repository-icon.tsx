@@ -2,7 +2,8 @@ import type { ReactElement } from 'react';
 
 import { GITHUB_MARK } from './docs-repository-icon.constants';
 
-// the library draws this mark as an unnamed image; the link carries the name, so the mark is hidden
+// Why: the library draws this mark as an unnamed image; the link carries the name, so the mark is
+// hidden.
 export function DocsRepositoryIcon(): ReactElement {
   return (
     <svg

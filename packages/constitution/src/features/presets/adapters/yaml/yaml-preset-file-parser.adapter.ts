@@ -7,6 +7,7 @@ import type { PresetFileParser, PresetFileRead } from '../../domain/contracts';
 import { PresetFileReadStatus } from '../../domain/contracts';
 import type { PresetValue, Setting } from '../../domain/entities';
 import { PresetValue as Value, ValueKind } from '../../domain/entities';
+import { SettingKey } from '../../domain/value-objects';
 import type { PresetFileRefusal } from './errors';
 import { isPresetFileRefusal, PresetFileRefusal as Refusal } from './errors';
 
@@ -25,7 +26,6 @@ const coreSchema = new Schema({
   // Stryker disable next-line StringLiteral: a schema named by an empty text is the core schema
   schema: 'core',
 });
-// The core schema's tags that tell a plain scalar's type by its text, as the parser picks them.
 const plainTags = coreSchema.tags.filter(
   (
     tag,
@@ -39,8 +39,7 @@ const refusalAt = (offset: number): PresetFileRefusal =>
     offset,
   });
 
-// An alias, or a value left empty, is no node a preset file writes; the offset of an empty value is
-// its holder's.
+/** @throws {PresetFileRefusal} when the value is an alias or left empty */
 const nodeOf = (candidate: unknown, near: number): ValueNode => {
   // Stryker disable next-line ConditionalExpression: an alias, the only value that is no node, is refused at its own offset either way
   if (isMap(candidate) || isSeq(candidate) || isScalar(candidate)) {
@@ -61,16 +60,16 @@ const markOf = (node: ValueNode): ValueKind.Default | ValueKind.Replace | undefi
   // Stryker disable next-line ConditionalExpression: no mark is keyed by an absent tag
   node.tag === undefined ? undefined : marks[node.tag];
 
-// A plain scalar's text read by the core schema, as an untagged one is: a text no tag tests is a
-// string, and a tag resolves to a value or to a scalar holding it. The core schema's tags report no
-// error, so the message sink is String, which drops it; a function of our own would never run.
+// Why: the core schema's tags report no error, so the message sink is String, which drops it; a
+// function of our own would never run.
 const plainValueOf = (text: string): unknown => {
   const resolved = plainTags.find((one) => one.test.test(text))?.resolve(text, String, {});
 
   return isScalar(resolved) ? resolved.value : (resolved ?? text);
 };
 
-// A scalar a mark tags is left unresolved by the parser, so its text is read by the core schema.
+// Why: the parser leaves a scalar a mark tags unresolved, so its text is read by the core schema.
+/** @throws {PresetFileRefusal} when the scalar holds no text, number or truth */
 const scalarOf = (node: Scalar): Setting => {
   const read: unknown =
     isCoreTagged(node) || node.type !== PLAIN_SCALAR
@@ -84,6 +83,7 @@ const scalarOf = (node: Scalar): Setting => {
   throw refusalAt(offsetOf(node));
 };
 
+/** @throws {PresetFileRefusal} when the key is no text or number */
 const keyOf = (node: unknown, near: number): string => {
   const key = nodeOf(node, near);
 
@@ -94,6 +94,7 @@ const keyOf = (node: unknown, near: number): string => {
   throw refusalAt(offsetOf(key));
 };
 
+/** @throws {PresetFileRefusal} when a key is no text or number */
 const contentOf = (node: ValueNode): Setting => {
   const near = offsetOf(node);
 
@@ -116,6 +117,7 @@ const contentOf = (node: ValueNode): Setting => {
   return isSeq(node) ? node.items.map((listed) => settingOf(nodeOf(listed, near))) : scalarOf(node);
 };
 
+/** @throws {PresetFileRefusal} when the node holds a tag or a mark */
 const settingOf = (node: ValueNode): Setting => {
   if (!isCoreTagged(node)) {
     throw refusalAt(offsetOf(node));
@@ -124,6 +126,10 @@ const settingOf = (node: ValueNode): Setting => {
   return contentOf(node);
 };
 
+/**
+ * @throws {PresetFileRefusal} when the node holds a tag the grammar refuses, or a key
+ * `list[slot=<name>]` holds more than inserts
+ */
 const presetOf = (node: ValueNode): PresetValue => {
   const mark = markOf(node);
   const near = offsetOf(node);
@@ -151,19 +157,23 @@ const presetOf = (node: ValueNode): PresetValue => {
     return Value.plain(contentOf(node));
   }
 
-  const pairs = node.items.map((pair) => ({
-    key: keyOf(pair.key, near),
-    value: presetOf(nodeOf(pair.value, near)),
-  }));
+  const pairs = node.items.map((pair) => {
+    const key = keyOf(pair.key, near);
+    const preset = presetOf(nodeOf(pair.value, near));
+
+    if (SettingKey.slotAddressOf(key) !== undefined && !Value.isInsertOnly(preset)) {
+      throw refusalAt(offsetOf(nodeOf(pair.key, near)));
+    }
+
+    return {
+      key,
+      value: preset,
+    };
+  });
 
   return isSorted ? Value.sortedMapOf(pairs) : Value.mapOf(pairs);
 };
 
-/**
- * A preset file as YAML 1.2 by its core schema writes it, with no custom tag given to the parser: the
- * marks are read from the nodes' own tags, `!sorted` a map's alone and `!words` a list's alone, and
- * an alias is refused, so none is expanded.
- */
 const parse = (text: string): PresetFileRead => {
   const lineCounter = new LineCounter();
   const document = parseDocument(text, {

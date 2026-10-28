@@ -4,19 +4,20 @@ import { BlockId } from '#/kernel/value-objects';
 
 import { heldSessionsOf, keptSession } from '../../../../../__tests__/session.fixtures';
 import { createFakeSessionCommandRepository } from '../../../../../__tests__/session-command-repository.fake';
+import { SessionAgent } from '../../../../entities';
 import { AgentId } from '../../../../value-objects';
 import { recordReminders } from '../record-reminders.use-case';
 
 describe('recordReminders', () => {
   it.each<{
     asker: {
-      agent: AgentId | undefined;
+      agent: SessionAgent;
     };
     condition: string;
   }>([
     {
       asker: {
-        agent: undefined,
+        agent: SessionAgent.main,
       },
       condition: 'the session itself was reminded',
     },
@@ -56,7 +57,7 @@ describe('recordReminders', () => {
 
     // Act
     recordReminders({
-      agent: undefined,
+      agent: SessionAgent.main,
       ids: [],
       session: keptSession,
       sessions: createFakeSessionCommandRepository(store),

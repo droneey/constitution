@@ -1,20 +1,13 @@
 import { PATH_SEPARATOR } from '../constants';
 
-// A glob read into its pieces: "**/" any folders or none, "**" anything, "*" and "?" within a
-// folder, "{a,b}" either. Braces that do not pair, or nest deeper than the limit, read as no glob.
 const MAX_NESTING = 32;
 
 enum PieceKind {
   Literal = 'literal',
-  /** "?" */
   One = 'one',
-  /** "*" */
   InFolder = 'in-folder',
-  /** "**" */
   Anything = 'anything',
-  /** "**\/" */
   AnyFolders = 'any-folders',
-  /** "{a,b}" */
   Either = 'either',
 }
 
@@ -203,7 +196,6 @@ const eitherOf = (input: PiecesInput): ReadPiece | undefined => {
   }
 };
 
-/** The pieces of a glob, or undefined when its braces do not pair or nest too deep. */
 const globPiecesOf = (glob: string): readonly Piece[] | undefined =>
   piecesOf({
     at: 0,

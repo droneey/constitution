@@ -14,7 +14,6 @@ enum DecisionsCode {
 interface DecisionsDetails {
   readonly [DecisionsCode.LogMissing]: object;
   readonly [DecisionsCode.OutOfOrder]: {
-    /** the number of the entry, as its heading ADR-<number> gives it */
     readonly entry: number;
     readonly previous: number;
   };
@@ -22,7 +21,6 @@ interface DecisionsDetails {
     readonly entry: number;
   };
   readonly [DecisionsCode.NotCalendarDate]: {
-    /** the date as written, YYYY-MM-DD */
     readonly date: string;
     readonly entry: number;
   };

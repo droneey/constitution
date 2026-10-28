@@ -4,7 +4,6 @@ import { isNestedWithin, readTextWithin } from '../bounded-input';
 
 const encoder = new TextEncoder();
 
-// A stream of the chunks, one by one; past the last it ends, or, when it is endless, fails the read.
 const streamOf = (input: {
   chunks: readonly Uint8Array[];
   isEndless: boolean;

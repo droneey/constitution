@@ -17,18 +17,14 @@ enum ReferencesCode {
 
 interface ReferencesDetails {
   readonly [ReferencesCode.LinkIntoOtherBlock]: {
-    /** the block whose file the link reaches */
     readonly owner: BlockId;
-    /** the link's target as written */
     readonly target: string;
   };
   readonly [ReferencesCode.NamesOtherRule]: {
-    /** the block of the rule named */
     readonly owner: BlockId;
     readonly slug: RuleSlug;
   };
   readonly [ReferencesCode.CitesDecision]: {
-    /** the decision as cited, ADR-<number> */
     readonly decision: string;
   };
 }

@@ -13,7 +13,8 @@ lingui:
         test:
           preload@fixtures:
             - ./${role.source}/${role.colocated-specs}/lingui.fixtures.ts
-      # The fixture's own text, laid out at its depth by its formatter, runs past YAML's width here.
+      # Why: the fixture's own text, laid out at its depth by its formatter, runs past YAML's width
+      # here.
       # yamllint disable rule:line-length
       ${role.source}/${role.colocated-specs}/lingui.fixtures.ts: !default |
         import { basename, relative } from 'node:path';

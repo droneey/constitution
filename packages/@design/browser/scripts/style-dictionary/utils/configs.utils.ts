@@ -9,22 +9,15 @@ import { tailwindTheme } from './tailwind-theme.utils';
 const TAILWIND_THEME_FORMAT = 'tailwind/theme';
 const MODE_VARIABLES_FORMAT = 'css/mode-variables';
 
-/** writes every duration as none, for those who ask for reduced motion */
 // Stryker disable next-line StringLiteral: the name only joins the transform to the platform that runs it, so any name serves
-const DURATION_NONE_TRANSFORM = 'duration/none';
+const REDUCED_MOTION_DURATION_TRANSFORM = 'duration/none';
 
-/** the groups whose primitives Tailwind's theme takes besides the roles */
-const tailwindGroupNames: ReadonlySet<string | undefined> = new Set([
+const tailwindPrimitiveGroupNames: ReadonlySet<string | undefined> = new Set([
   'duration',
   'ease',
   'font',
 ]);
 
-/**
- * The configuration of a mode, writing in `buildPath`: the default mode writes every token on the
- * root, the durations of reduced motion and Tailwind's theme; another mode writes, under its class,
- * its own tokens and those that read them.
- */
 const configOf = ({ name: modeName, isDefault }: ThemeMode, buildPath: string): Config => {
   const hooks: Hooks = {
     formats: {
@@ -32,7 +25,7 @@ const configOf = ({ name: modeName, isDefault }: ThemeMode, buildPath: string): 
       [MODE_VARIABLES_FORMAT]: modeVariables,
     },
     transforms: {
-      [DURATION_NONE_TRANSFORM]: {
+      [REDUCED_MOTION_DURATION_TRANSFORM]: {
         type: 'value',
         transform: (): string => '0s',
       },
@@ -45,7 +38,8 @@ const configOf = ({ name: modeName, isDefault }: ThemeMode, buildPath: string): 
   };
 
   return {
-    // another mode's roles refer to the steps the default mode declares, which it does not write
+    // Why: another mode's roles refer to steps the default mode declares and it does not write, so
+    // its warnings are noise.
     // Stryker disable ObjectLiteral,ConditionalExpression,StringLiteral: the log only quiets the build
     log: {
       warnings: isDefault ? 'warn' : 'disabled',
@@ -75,7 +69,8 @@ const configOf = ({ name: modeName, isDefault }: ThemeMode, buildPath: string): 
                 destination: 'tailwind.gen.css',
                 format: TAILWIND_THEME_FORMAT,
                 filter: (token: TransformedToken) =>
-                  usesReferences(token.original.$value) || tailwindGroupNames.has(token.path[0]),
+                  usesReferences(token.original.$value) ||
+                  tailwindPrimitiveGroupNames.has(token.path[0]),
               },
             ]
           : [
@@ -94,7 +89,7 @@ const configOf = ({ name: modeName, isDefault }: ThemeMode, buildPath: string): 
             'reduced-motion': {
               transforms: [
                 transforms.nameKebab,
-                DURATION_NONE_TRANSFORM,
+                REDUCED_MOTION_DURATION_TRANSFORM,
               ],
               buildPath,
               files: [

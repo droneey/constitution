@@ -11,7 +11,6 @@ import { createManifestWorkspace } from '../manifest-workspace.adapter';
 let parent = '';
 let project = '';
 
-// The files given, by their path from the project's folder.
 const writeAll = (files: Readonly<Record<string, string>>): void => {
   for (const [path, text] of Object.entries(files)) {
     mkdirSync(dirname(join(project, path)), {
@@ -29,7 +28,6 @@ const typescriptUnits = {
   'packages/mixed/typescript/package.json': '{}\n',
 };
 
-// The project sits beside a package of another repository, which no glob of its own reaches.
 beforeEach(() => {
   parent = mkdtempSync(join(tmpdir(), 'manifest-workspace-'));
   project = join(parent, 'project');

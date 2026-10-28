@@ -11,8 +11,8 @@ interface OpenInput {
   readonly path: string;
 }
 
-// A try and finally, not `using`: constitution.yaml overrides scoped-resource-held-by-using. The
-// mode applies only to a file the open makes; one that exists keeps its own.
+// Why: a try and finally, not `using`: constitution.yaml lowers scoped-resource-held-by-using here.
+// The mode applies only to a file the open makes; one that exists keeps its own.
 const withOpened = <TOutcome>(
   input: OpenInput,
   work: (descriptor: number) => TOutcome,
@@ -33,9 +33,6 @@ interface FileText {
 
 type OpenedWrite = FileText & OpenInput;
 
-/**
- * The file's text, or undefined for no file or for a link in its place, which is never followed.
- */
 const readUnfollowed = (path: string): string | undefined =>
   attempted({
     effect: () =>
@@ -57,7 +54,6 @@ const writeOpened = (input: OpenedWrite): void => {
   });
 };
 
-/** Appends to a file, made private when it is new, never through a link in its place. */
 const appendPrivately = (input: FileText): void => {
   writeOpened({
     ...input,
@@ -65,10 +61,8 @@ const appendPrivately = (input: FileText): void => {
   });
 };
 
-/**
- * Writes a file another hook may read so it lands whole: written private beside it, under a fresh
- * name no file or link holds yet, then renamed over it.
- */
+// Why: another hook may read the file, so it lands whole: written private beside it, under a fresh
+// name no file or link holds yet, then renamed over it.
 const writeWhole = (input: FileText): void => {
   const pending = `${input.path}.${randomUUID()}.tmp`;
 

@@ -10,7 +10,6 @@ x-common-logging: &common-logging
     max-size: '50m'
     max-file: '10'
 
-# the repository's root, which the app reads and installs from
 x-docs-build: &docs-build
   context: ../../../../
   dockerfile: ./apps/docs/docker/images/app.Dockerfile
@@ -33,7 +32,6 @@ services:
     cap_drop:
       - ALL
 
-  # the working tree, mounted over the image, with the dependencies installed for Linux in volumes
   docs-development:
     build:
       <<: *docs-build
@@ -54,7 +52,6 @@ services:
     environment:
       NODE_ENV: development
 
-  # the working tree's build alone, unless DOCS_KEPT_RELEASES keeps the releases' sites beside it
   docs-production:
     build:
       <<: *docs-build

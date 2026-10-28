@@ -9,12 +9,10 @@ import type { BlockCard, BlockCardParser } from '../../../../../../../../../cont
 import type { BlockSetAnswer, ChapterPlace, SeamPlace } from '../../../../../../../../../entities';
 import type { FileInFolder } from '../place-files';
 
-/** What a file adds to its block. */
 enum PartKind {
   Card = 'card',
   Chapter = 'chapter',
   Seam = 'seam',
-  /** a passport whose card cannot be read, or a file that is no part of a block */
   None = 'none',
 }
 
@@ -67,7 +65,6 @@ const answerOf = (answer: RequirementAnswer): BlockSetAnswer => {
   };
 };
 
-// The text a rule or a requirement is read from: no front matter, no code sample.
 const statementsOf = (input: {
   axis: Axis;
   block: BlockId;

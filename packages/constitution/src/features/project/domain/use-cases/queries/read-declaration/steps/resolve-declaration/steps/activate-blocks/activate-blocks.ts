@@ -19,7 +19,7 @@ interface ActivateBlocksInput {
   readonly units: readonly ResolvedUnit[];
 }
 
-const mustRulesOf = (input: ActivateBlocksInput): readonly MustRule[] =>
+const mustRulesBesideCoreOf = (input: ActivateBlocksInput): readonly MustRule[] =>
   input.rules.flatMap((rule) => {
     const isActive = input.units.some((unit) => ResolvedUnit.isActiveRule(unit, rule));
 
@@ -36,8 +36,6 @@ const mustRulesOf = (input: ActivateBlocksInput): readonly MustRule[] =>
     ];
   });
 
-// What a block needs in a unit: what it requires, its bases, and the blocks its seams name on the
-// axes the unit follows.
 const neededOf = (input: {
   block: BlockSetBlock;
   model: ProjectModel;
@@ -50,8 +48,6 @@ const neededOf = (input: {
     .map((seam) => seam.other),
 ];
 
-// The block and every active block it needs, directly or through others; active holds the unit's
-// active blocks, core aside.
 const reachedFrom = (input: {
   active: ReadonlyMap<BlockId, BlockSetBlock>;
   from: BlockSetBlock;
@@ -80,8 +76,6 @@ const reachedFrom = (input: {
   return reached;
 };
 
-// The files of a block a unit reads: its passport, its chapters on the axes the unit follows, and
-// its seams with the blocks active there; a pack's from the pack's folder.
 const filesOf = (input: { block: BlockSetBlock; unit: ResolvedUnit }): readonly string[] => {
   const { block, unit } = input;
   const source =
@@ -119,7 +113,6 @@ const filesOf = (input: { block: BlockSetBlock; unit: ResolvedUnit }): readonly 
   ];
 };
 
-// A block also governs what every active block that needs it, directly or through others, governs.
 const activeBlocksOf = (input: ActivateBlocksInput): readonly ActiveBlock[] =>
   input.units.flatMap((unit) => {
     const blocks = input.model.blocks.filter(
@@ -158,13 +151,12 @@ const activeBlocksOf = (input: ActivateBlocksInput): readonly ActiveBlock[] =>
 
 interface BlocksActivated {
   readonly active: readonly ActiveBlock[];
-  /** the MUST rules of the active blocks, core's aside */
-  readonly musts: readonly MustRule[];
+  readonly mustsBesideCore: readonly MustRule[];
 }
 
 const activateBlocks = (input: ActivateBlocksInput): BlocksActivated => ({
   active: activeBlocksOf(input),
-  musts: mustRulesOf(input),
+  mustsBesideCore: mustRulesBesideCoreOf(input),
 });
 
 export { activateBlocks };

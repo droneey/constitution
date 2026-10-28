@@ -16,8 +16,8 @@ import { SpecRunStatus } from '#/features/specs';
 import type { AbsolutePath } from '#/kernel/value-objects';
 import { UnitRelativePath } from '#/kernel/value-objects';
 
-// Stryker's INSTRUMENTER_CONSTANTS.ACTIVE_MUTANT_ENV_VARIABLE: its module reads Stryker's schema
-// beside it when imported, and the distribution's bundle of this runner carries no schema.
+// Why: Stryker's INSTRUMENTER_CONSTANTS.ACTIVE_MUTANT_ENV_VARIABLE; its module reads Stryker's
+// schema beside it when imported, and the distribution's bundle of this runner carries no schema.
 const ACTIVE_MUTANT_VARIABLE_NAME = '__STRYKER_ACTIVE_MUTANT__';
 
 interface BunSpecsRunnerInput {
@@ -25,8 +25,8 @@ interface BunSpecsRunnerInput {
   readonly unitFolderPath: AbsolutePath;
 }
 
-// A run that stops at its first failure tells no case apart, so each spec counts as one test, failed
-// when the run failed.
+// Why: a run that stops at its first failure tells no case apart, so each spec counts as one test,
+// failed when the run failed.
 const dryRunResultOf = (input: {
   run: ChosenSpecsRun;
   unitFolderPath: AbsolutePath;
@@ -98,7 +98,6 @@ const mutantRunResultOf = (run: ChosenSpecsRun): MutantRunResult => {
   }
 };
 
-/** Runs each mutant against the specs that load its file, the nearest first, in a new process. */
 const bunSpecsRunner = (input: BunSpecsRunnerInput): TestRunner => {
   const disposal = new AbortController();
 
@@ -119,7 +118,7 @@ const bunSpecsRunner = (input: BunSpecsRunnerInput): TestRunner => {
         run: await input.runSpecs({
           signal: disposal.signal,
           timeoutMs: options.timeout,
-          variables: {},
+          addedVariables: {},
         }),
         unitFolderPath: input.unitFolderPath,
       }),
@@ -131,7 +130,7 @@ const bunSpecsRunner = (input: BunSpecsRunnerInput): TestRunner => {
           ],
           signal: disposal.signal,
           timeoutMs: options.timeout,
-          variables: {
+          addedVariables: {
             [ACTIVE_MUTANT_VARIABLE_NAME]: options.activeMutant.id,
           },
         }),

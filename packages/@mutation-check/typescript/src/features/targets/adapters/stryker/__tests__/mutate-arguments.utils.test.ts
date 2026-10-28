@@ -6,7 +6,6 @@ import { LineRange } from '../../../domain/value-objects';
 import { mutateArgumentsOf } from '../mutate-arguments.utils.ts';
 
 describe('mutateArgumentsOf', () => {
-  // Each pattern was seen to resolve to its one file on a real Stryker run.
   it.each([
     {
       condition: 'an exclamation mark inside',

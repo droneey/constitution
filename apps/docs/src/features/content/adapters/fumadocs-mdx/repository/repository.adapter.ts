@@ -20,7 +20,8 @@ import {
 
 const repositoryRootPath = RepositoryPath.create('');
 
-/** the site builds from its own folder; the path is resolved when asked, since the browser has none */
+// Why: the site builds from its own folder; the path is resolved when asked, since the browser has
+// none.
 const inRepository = (repositoryPath: RepositoryPath = repositoryRootPath): AbsolutePath =>
   AbsolutePath.create(resolve('../..', repositoryPath));
 
@@ -45,12 +46,12 @@ const githubAddressOf = (repositoryPath: RepositoryPath): string => {
   return `${REPOSITORY_URL}/${view}/main/${repositoryPath}`;
 };
 
-/** a page where the site renders the file, GitHub's view where it does not */
 const addressOf = (baseUrl: string, repositoryPath: RepositoryPath, hash: string): string => {
   const anchor = hash === '' ? '' : `#${hash}`;
 
   if (repositoryPath === readmeFilePath) {
-    // a heading of the README opens with the brand's mark, which GitHub's anchor keeps as a hyphen
+    // Why: a heading of the README opens with the brand's mark, which GitHub's anchor keeps as a
+    // hyphen.
     const section = hash.replace(/^-/, '');
 
     if (section === QUICK_START) {
@@ -83,7 +84,6 @@ const addressOf = (baseUrl: string, repositoryPath: RepositoryPath, hash: string
   return githubAddressOf(repositoryPath) + anchor;
 };
 
-/** undefined for a link that leaves the repository or names a scheme or the host's root */
 const linkTargetOf = (fromFilePath: AbsolutePath, url: string): LinkTarget | undefined => {
   if (/^[a-z]+:/i.test(url) || url.startsWith('/')) {
     return undefined;

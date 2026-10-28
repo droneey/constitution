@@ -1,6 +1,6 @@
 import type { TextsOf } from '../types';
 
-/** The text a format's table gives one code, which a union of codes cannot index the table for. */
+// Why: a union of codes cannot index the table.
 const textOf = <TDetails, TCode extends keyof TDetails>(
   texts: TextsOf<TDetails>,
   code: TCode,

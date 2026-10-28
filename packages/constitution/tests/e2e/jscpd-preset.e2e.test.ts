@@ -8,8 +8,7 @@ const typeScriptTotalOf = (step: number): string =>
 const pythonTotalOf = (step: number): string =>
   `def total${String(step)}(price: float, tax: float) -> float:\n    total = price + tax * ${String(step)}\n    if total > 100:\n        return total - 10\n    return total + 10\n`;
 
-// A source file of each language long enough for jscpd to read, as it skips one shorter than its
-// least clone.
+// Why: jscpd skips a source file shorter than its least clone.
 const sourceOf = (totalOf: (step: number) => string): string =>
   [
     1,
@@ -41,9 +40,9 @@ describe("the configuration jscpd's presets write", () => {
     });
   });
 
-  // jscpd reads its folders left out and its exit code without a word, so each has a sample it must
-  // react to. The least clone, five lines and fifty tokens as the rule names it, is jscpd's own
-  // default, so no sample can tell the presets' limits from jscpd's.
+  // Why: jscpd reads its folders left out and its exit code without a word, so each has a sample it
+  // must react to. The least clone, five lines and fifty tokens as the rule names it, is jscpd's
+  // own default, so no sample can tell the presets' limits from jscpd's.
   it.each([
     {
       condition: 'two sources share a clone',

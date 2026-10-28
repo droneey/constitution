@@ -1,4 +1,3 @@
-/** the language of the fenced block the table of terms replaces */
 const TERMS_LANGUAGE = 'terms';
 
 const TERMS_HEADER = [

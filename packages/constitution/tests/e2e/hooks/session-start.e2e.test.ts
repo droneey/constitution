@@ -4,7 +4,11 @@ import { join } from 'node:path';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 
 import { coreText } from '../constitution.fixtures';
-import { browserAppContext, everyCodeContext, unparsedContext } from '../digests.fixtures';
+import {
+  browserAppWithPackAndOverrideContext,
+  everyCodeContext,
+  unparsedContext,
+} from '../digests.fixtures';
 import type { HookRun } from '../hook.fixtures';
 import {
   BUDGET,
@@ -32,16 +36,16 @@ import {
 } from '../plugin-root.fixtures';
 import type { ProjectLayout } from '../project.fixtures';
 import {
-  browserApp,
+  browserAppWithPackAndOverride,
   ConfigKey,
-  cli,
+  cliInBlockSequences,
   configOf,
   createProject,
   lineNumberOf,
   Repository,
-  ratified,
-  realCli,
-  realWebApp,
+  ratifiedFromTemplates,
+  referenceCli,
+  referenceWebApp,
   removeProjects,
 } from '../project.fixtures';
 
@@ -71,9 +75,7 @@ interface GoldenCase {
 
 interface NoticeCase {
   condition: string;
-  // what the case links into the project before the hook runs, which then links nothing over it
   link: (project: string) => void;
-  // no distribution is linked into the project
   unlinked?: boolean | undefined;
 }
 
@@ -85,7 +87,6 @@ const found = configOf({
 const fourDataStatesOverride = (fields: string): string =>
   `\n  - rule: four-data-states\n${fields}`;
 
-// A project that sets off a warning of every code.
 const everyCode: ProjectLayout = {
   config: configOf({
     domains: '[analytics, version-control]',
@@ -103,7 +104,6 @@ const DOCTOR = 'constitution doctor';
 
 const distributionIn = (project: string): string => join(project, LINK);
 
-// runHook links the release's distribution into a project that holds no link of its own.
 const linkNothing = (): void => undefined;
 
 let root = '';
@@ -126,7 +126,7 @@ describe('session-start hook', () => {
     {
       condition: 'CLAUDE_PLUGIN_ROOT is unset',
       cwd: '',
-      layout: cli,
+      layout: cliInBlockSequences,
       pluginRootUnset: true,
     },
     {
@@ -137,7 +137,7 @@ describe('session-start hook', () => {
     {
       condition: 'CLAUDE_PROJECT_DIR names a folder that does not exist',
       cwd: '',
-      layout: cli,
+      layout: cliInBlockSequences,
       projectDir: 'gone',
     },
   ])(
@@ -229,7 +229,7 @@ describe('session-start hook', () => {
 
   it('should read the files without a warning when they are written from the templates', () => {
     // Arrange
-    const project = createProject(ratified);
+    const project = createProject(ratifiedFromTemplates);
 
     // Act
     const context = contextOf(
@@ -267,8 +267,8 @@ describe('session-start hook', () => {
 
   it.each<GoldenCase>([
     {
-      context: browserAppContext,
-      layout: browserApp,
+      context: browserAppWithPackAndOverrideContext,
+      layout: browserAppWithPackAndOverride,
       project: 'a browser application with a block of its own pack and an override',
     },
     {
@@ -309,11 +309,11 @@ describe('session-start hook', () => {
 
   it.each([
     {
-      layout: realWebApp,
+      layout: referenceWebApp,
       shape: 'the reference web application',
     },
     {
-      layout: realCli,
+      layout: referenceCli,
       shape: 'the reference command-line tool',
     },
   ])(
@@ -379,7 +379,7 @@ describe('session-start hook', () => {
     'should point to doctor in one line and save no state when $condition',
     ({ link, unlinked }) => {
       // Arrange
-      const project = createProject(cli);
+      const project = createProject(cliInBlockSequences);
       const session = newSession();
 
       link(project);
@@ -395,7 +395,6 @@ describe('session-start hook', () => {
 
       // Assert
       const context = contextOf(run);
-      // the one line names the distribution and the command that says what is wrong
       const names = [
         distributionIn(project),
         DOCTOR,
@@ -423,7 +422,7 @@ describe('session-start hook', () => {
   it('should write one line of the hook to stderr, naming the file it stopped at, and exit 1 when constitution.yaml cannot be read', () => {
     // Arrange
     const project = createProject({
-      ...cli,
+      ...cliInBlockSequences,
       unreadable: [
         'constitution.yaml',
       ],

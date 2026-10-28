@@ -1,7 +1,7 @@
 import { BAR_CELLS, ColumnAlign, PERCENT } from '../constants';
 import type { Column, KeyValue, TableContent } from '../types';
 
-/** the cells a text takes on a terminal, its wide and its invisible characters counted as such */
+/** in terminal cells */
 const widthOf = (text: string): number => Bun.stringWidth(text);
 
 interface PadInput {
@@ -21,7 +21,6 @@ const columnWidthsOf = ({ columns, rows }: TableContent): readonly number[] =>
     Math.max(widthOf(column.title), ...rows.map((row) => widthOf(row[column.key] ?? ''))),
   );
 
-/** the cells of the widest key, so the values after the keys line up */
 const keyWidthOf = (pairs: readonly KeyValue[]): number =>
   Math.max(0, ...pairs.map(([key]) => widthOf(key)));
 

@@ -4,15 +4,9 @@ import { dayOf } from '#/kernel/utils';
 
 import { ConfigurationError, ConfigurationFailure } from './configuration.error';
 
-/** The environment variable the specs fix the day by; no user sets it. */
 const TODAY_VARIABLE = 'CONSTITUTION_TODAY';
 
-/**
- * The clock the program reads the day from: a fixed day when the environment names one, the
- * system's otherwise.
- *
- * @throws {@link ConfigurationError} when the day is written otherwise than YYYY-MM-DD
- */
+/** @throws {ConfigurationError} when the day is written otherwise than YYYY-MM-DD */
 const clockOf = (today: string | undefined): Clock => {
   if (today === undefined) {
     return createSystemClock();

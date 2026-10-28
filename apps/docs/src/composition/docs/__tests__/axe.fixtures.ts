@@ -9,12 +9,13 @@ const WCAG_LEVEL_TAGS = [
   'wcag22aa',
 ] as const;
 
-/** a simulated document lays nothing out and paints nothing, so contrast is the token-pair test's */
+// Why: a simulated document lays nothing out and paints nothing, so contrast is the token-pair
+// test's.
 const UNJUDGED_IN_SIMULATED_DOM = [
   'color-contrast',
 ] as const;
 
-/** only a screen answers for the page's landmarks and the ways to skip past them */
+// Why: only a screen answers for the page's landmarks and the ways to skip past them.
 const PAGE_RULES = [
   'bypass',
   'landmark-one-main',
@@ -54,7 +55,6 @@ const findingsOf = async (root: Element, disabled: readonly string[]): Promise<A
 const screenViolationsIn = (root: Element = document.body): Promise<AxeFinding[]> =>
   findingsOf(root, UNJUDGED_IN_SIMULATED_DOM);
 
-/** a component owns no landmark of the page */
 const componentViolationsIn = (root: Element = document.body): Promise<AxeFinding[]> =>
   findingsOf(root, [
     ...UNJUDGED_IN_SIMULATED_DOM,

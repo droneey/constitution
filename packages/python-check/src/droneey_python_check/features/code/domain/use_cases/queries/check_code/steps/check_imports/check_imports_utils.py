@@ -29,12 +29,11 @@ class _Importer:
 
 @dataclass(frozen=True, slots=True)
 class _ClimbsOut:
-  """The target of a relative import that climbs out of the import package."""
+  pass
 
 
-# A target that names no folder is a module, whose folder holds it.
 def _target_folder(*, importer: _Importer, target: PackagePath) -> PackagePath:
-  is_folder = importer.root.path.joinpath(*target) in importer.package_folder_paths
+  is_folder = importer.root.package_path.joinpath(*target) in importer.package_folder_paths
 
   return target if is_folder else PackagePath(target[:-1])
 
@@ -86,7 +85,7 @@ def _absolute_findings(
   for imported_name in imported_names:
     package_name, *inner_names = imported_name.split('.')
 
-    if package_name != importer.root.path.name:
+    if package_name != importer.root.package_path.name:
       continue
 
     target_folder = _target_folder(importer=importer, target=PackagePath(tuple(inner_names)))

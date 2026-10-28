@@ -23,7 +23,6 @@ import { dropTitle } from './remark-drop-title.adapter';
 
 interface BlocksOptions {
   addressesBySlug: ReadonlyMap<string, string>;
-  /** in Markdown */
   examplesBySlug: ReadonlyMap<string, string>;
 }
 
@@ -44,7 +43,6 @@ declare module 'mdast' {
   }
 }
 
-/** a rule whose heading states its level; one that leaves it to the chain gets no card */
 interface LevelledRule extends RuleHeading {
   readonly level: Level;
 }
@@ -224,7 +222,6 @@ const exampleOf = (markdown: string): Box => {
   );
 };
 
-/** a line apart from the heading, so its slug is linked as every slug outside a heading is */
 const tightenedRuleLineOf = (tightens: string | undefined): Paragraph[] =>
   tightens === undefined
     ? []
@@ -300,7 +297,7 @@ const cardOf = (
 };
 
 const wrapRules = (tree: Root, options: BlocksOptions): void => {
-  // from the last rule up, so a section ends at the card that follows it
+  // Why: from the last rule up, so a section ends at the card that follows it.
   for (const [index, node] of [
     ...tree.children.entries(),
   ].reverse()) {

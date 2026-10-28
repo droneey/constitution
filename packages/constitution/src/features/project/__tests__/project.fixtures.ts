@@ -7,9 +7,6 @@ import type { BlockCardParser, ConfigParser, ReleaseManifestParser } from '../do
 import type { ProjectError } from '../domain/errors';
 import { isProjectError } from '../domain/errors';
 
-// A project and the release it links, as the project reads them: its constitution.yaml, and the
-// release folder, .droneey/constitution, with its blocks.
-
 const configPath = `${PROJECT}/constitution.yaml`;
 const manifest = `${releaseFolderPath}/package.json`;
 const VERSION = '1.0.0';
@@ -26,7 +23,6 @@ interface BlockFixture {
   readonly abstract?: boolean;
   readonly body?: string;
   readonly extends?: string;
-  // more files of the block, by their path in its folder: foundation/screens.md
   readonly files?: Readonly<Record<string, string>>;
   readonly folder?: Folder;
   readonly governs?: readonly string[];
@@ -64,7 +60,6 @@ interface BlockFilesFixture {
   readonly root?: string;
 }
 
-// The files of blocks below a source's folder, the release folder's by default.
 const blockFilesOf = (input: BlockFilesFixture): Readonly<Record<string, string>> =>
   Object.fromEntries(
     input.blocks.flatMap((block) => {
@@ -130,7 +125,6 @@ interface ProjectTreeFixture {
   readonly files?: Readonly<Record<string, string>>;
 }
 
-// A project whose release holds core and the blocks given, and whose constitution.yaml is config.
 const projectTreeOf = (input: ProjectTreeFixture): FakeTree => ({
   files: {
     [`${PROJECT}/.git/HEAD`]: 'ref: refs/heads/main\n',
@@ -155,13 +149,11 @@ const parsers = (): {
 });
 
 interface Failure {
-  // the failure of the read it stopped at, where one was
   readonly cause: unknown;
   readonly code: ProjectError['code'];
   readonly details: unknown;
 }
 
-// The failure of a project an act throws, as its fields; undefined when it throws none.
 const failureOf = (act: () => unknown): Failure | undefined => {
   try {
     act();

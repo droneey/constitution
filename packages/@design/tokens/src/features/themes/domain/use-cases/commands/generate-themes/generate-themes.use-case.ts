@@ -1,23 +1,26 @@
 import type { ConfigModuleLoader, ThemeBuilder, ThemeModeReader } from '../../../contracts';
-import type { ConfigModuleError } from '../../../errors';
 
-interface GenerateThemesInput {
+interface GenerateThemesPorts {
   readonly builder: ThemeBuilder;
-  readonly configPath: string;
   readonly loader: ConfigModuleLoader;
   readonly modeReader: ThemeModeReader;
 }
 
 /**
- * Builds every mode of the tokens with the configuration the platform's module at `configPath`
- * gives it.
- *
- * @throws a {@link ConfigModuleError} when the module is refused, or gives a mode no configuration
+ * @throws {ConfigModuleError} when nothing lies at the path, or the module lies outside the
+ * working folder or exports no function; the function it gives throws it when it returns no object
+ * for a mode
+ * @throws {UnknownDefaultModeError} when the modifier's default names no context
  */
-const generateThemes = async (input: GenerateThemesInput): Promise<void> => {
-  const configOf = await input.loader.load(input.configPath);
+type GenerateThemes = (configPath: string) => Promise<void>;
 
-  await input.builder.build(configOf, input.modeReader.read());
-};
+const createGenerateThemes =
+  (ports: GenerateThemesPorts): GenerateThemes =>
+  async (configPath: string): Promise<void> => {
+    const configOf = await ports.loader.load(configPath);
 
-export { generateThemes };
+    await ports.builder.build(configOf, ports.modeReader.read());
+  };
+
+export type { GenerateThemes };
+export { createGenerateThemes };

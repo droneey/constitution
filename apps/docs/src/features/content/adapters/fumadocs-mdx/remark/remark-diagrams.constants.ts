@@ -1,4 +1,3 @@
-/** the language of the fenced block a diagram replaces */
 const DIAGRAM_LANGUAGE = 'mermaid';
 
 const DIAGRAM_SPACING_PX = 32;

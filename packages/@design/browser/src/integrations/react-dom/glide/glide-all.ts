@@ -98,7 +98,6 @@ const isFilled = (row: HTMLElement, filledRowSelector: string | undefined): bool
   }
 };
 
-/** a muted block under the list's rows slides to the one under the pointer or the keyboard; what it returns takes the block, its listeners and its watcher off again */
 function glide(
   area: HTMLElement,
   { rowSelector, markAttribute, filledRowSelector }: GlideList,
@@ -112,7 +111,7 @@ function glide(
 
   let currentRow: HTMLElement | undefined;
 
-  /** by offsets, which a popup's opening scale leaves alone */
+  // Why: offsets, unlike a bounding box, ignore a popup's opening scale.
   const place = (row: HTMLElement): void => {
     let leftPx = 0;
     let topPx = 0;
@@ -167,7 +166,9 @@ function glide(
   };
 }
 
-/** a list put on the page again still holds its block and gets no second one */
+const holdsGlideBlock = (area: HTMLElement): boolean =>
+  area.querySelector(`:scope > [${GLIDE_ATTRIBUTE}]`) !== null;
+
 function scan(root: Element, lists: GlideLists, releases: Map<HTMLElement, () => void>): void {
   for (const [listSelector, list] of Object.entries(lists)) {
     const areas = root.matches(listSelector)
@@ -178,17 +179,13 @@ function scan(root: Element, lists: GlideLists, releases: Map<HTMLElement, () =>
       : root.querySelectorAll(listSelector);
 
     for (const area of areas) {
-      if (
-        area instanceof HTMLElement &&
-        area.querySelector(`:scope > [${GLIDE_ATTRIBUTE}]`) === null
-      ) {
+      if (area instanceof HTMLElement && !holdsGlideBlock(area)) {
         releases.set(area, glide(area, list));
       }
     }
   }
 }
 
-/** gives every list on the page its block, now and as lists open later; what it returns takes them all off */
 function glideAll(lists: GlideLists): () => void {
   const releases = new Map<HTMLElement, () => void>();
 

@@ -1,4 +1,3 @@
-/** what `act` throws, or undefined when it returns */
 const failureOf = (act: () => unknown): unknown => {
   try {
     act();

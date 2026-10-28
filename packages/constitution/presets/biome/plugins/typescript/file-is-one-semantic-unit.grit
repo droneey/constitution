@@ -19,7 +19,6 @@ pattern declared_function($module) {
   }
 }
 
-// A compound is the component its parts are attached to by Object.assign.
 pattern component_value($module) {
   or {
     component_function(),
@@ -63,7 +62,6 @@ pattern type_declared($module) {
   }
 }
 
-// A local value that is no component, or an imported name in no component's case.
 pattern non_component_name($module) {
   $name where {
     $name <: not component_named($module),
@@ -93,7 +91,6 @@ pattern type_only_export() {
   }
 }
 
-// A value a module exports beside its components.
 pattern non_component_export($module) {
   or {
     or {
@@ -119,9 +116,8 @@ pattern non_component_export($module) {
   }
 }
 
-// Whether the module exports a component is asked once, before its exports,
-// whose kinds come first since Biome tells a kind apart without copying its
-// matching state.
+// Why: whether the module exports a component is asked once, before its exports, whose kinds come
+// first since Biome tells a kind apart without copying its matching state.
 file(body=$module) where {
   $module <: JsModule(),
   $module <: exports_component($module),
@@ -134,9 +130,8 @@ file(body=$module) where {
   } as $export where {
     $export <: non_component_export($module),
     register_diagnostic(span=$export, message="[file-is-one-semantic-unit] A module that exports a component exports only components, so Fast Refresh can swap it: move this value into a file of its own", severity="error"),
-    // Biome keeps what a match adds to its matching state and copies that
-    // state at every node, so each match would slow the next: the diagnostic
-    // stays, the match fails.
+    // Why: Biome keeps what a match adds to its matching state and copies that state at every node,
+    // so each match would slow the next: the diagnostic stays, the match fails.
     false
   }
 }

@@ -289,12 +289,191 @@ describe('MergedFile.merge', () => {
       {
         code,
         details: {
-          setting: 'jobs',
+          settingPath: 'jobs',
           slot: 'checks',
         },
       },
     ]);
   });
+
+  it('should insert into the element that places the slot, whichever entry comes first', () => {
+    // Arrange
+    const contributions = [
+      from(
+        'insert',
+        map({
+          'overrides[slot=injected]': map({
+            'includes@injected': plain([
+              '*.adapter.ts',
+            ]),
+          }),
+        }),
+      ),
+      from(
+        'owner',
+        map({
+          overrides: plain([
+            {
+              includes: [
+                '*.controller.ts',
+                {
+                  slot: 'injected',
+                },
+              ],
+              linter: {
+                enabled: false,
+              },
+            },
+            {
+              includes: [
+                '*.ts',
+              ],
+            },
+          ]),
+        }),
+      ),
+    ];
+
+    // Act
+    const merged = MergedFile.merge(contributions);
+
+    // Assert
+    expect(merged).toStrictEqual({
+      defaults: [],
+      problems: [],
+      value: {
+        overrides: [
+          {
+            includes: [
+              '*.controller.ts',
+              '*.adapter.ts',
+            ],
+            linter: {
+              enabled: false,
+            },
+          },
+          {
+            includes: [
+              '*.ts',
+            ],
+          },
+        ],
+      },
+    });
+  });
+
+  it('should take out the slot of an element that no entry fills', () => {
+    // Arrange
+    const contributions = [
+      from(
+        'owner',
+        map({
+          overrides: plain([
+            {
+              includes: [
+                '*.controller.ts',
+                {
+                  slot: 'injected',
+                },
+              ],
+            },
+          ]),
+        }),
+      ),
+    ];
+
+    // Act
+    const merged = MergedFile.merge(contributions);
+
+    // Assert
+    expect(merged.value).toStrictEqual({
+      overrides: [
+        {
+          includes: [
+            '*.controller.ts',
+          ],
+        },
+      ],
+    });
+  });
+
+  it.each([
+    {
+      code: PresetsCode.MissingSlot,
+      condition: 'no element places the slot',
+      owner: plain([
+        {
+          includes: [
+            '*.ts',
+          ],
+        },
+      ]),
+    },
+    {
+      code: PresetsCode.SlotPlacedTwice,
+      condition: 'two elements place the slot',
+      owner: plain([
+        {
+          includes: [
+            {
+              slot: 'injected',
+            },
+          ],
+        },
+        {
+          excludes: [
+            {
+              slot: 'injected',
+            },
+          ],
+        },
+      ]),
+    },
+    {
+      code: PresetsCode.SlotInNoList,
+      condition: 'the address names no list',
+      owner: plain('scalar'),
+    },
+  ])(
+    'should find an insert into an element addressed by its slot when $condition',
+    ({ code, owner }) => {
+      // Arrange
+      const contributions = [
+        from(
+          'owner',
+          map({
+            linter: map({
+              overrides: owner,
+            }),
+          }),
+        ),
+        from(
+          'insert',
+          map({
+            linter: map({
+              'overrides[slot=injected]': map({
+                'includes@injected': plain('*.adapter.ts'),
+              }),
+            }),
+          }),
+        ),
+      ];
+
+      // Act
+      const merged = MergedFile.merge(contributions);
+
+      // Assert
+      expect(merged.problems).toStrictEqual([
+        {
+          code,
+          details: {
+            settingPath: 'linter.overrides',
+            slot: 'injected',
+          },
+        },
+      ]);
+    },
+  );
 
   it.each<{
     condition: string;
@@ -363,7 +542,7 @@ describe('MergedFile.merge', () => {
       {
         code: PresetsCode.Clash,
         details: {
-          setting: 'a.b',
+          settingPath: 'a.b',
           sources: [
             'first',
             'second',
@@ -441,7 +620,7 @@ describe('MergedFile.merge', () => {
         {
           code: PresetsCode.Clash,
           details: {
-            setting: 'width',
+            settingPath: 'width',
             sources: [
               'a',
               'b',
@@ -451,7 +630,7 @@ describe('MergedFile.merge', () => {
         {
           code: PresetsCode.TwoReplacers,
           details: {
-            setting: 'level',
+            settingPath: 'level',
             sources: [
               'a',
               'b',
@@ -725,7 +904,7 @@ describe('MergedFile.merge', () => {
         {
           code: PresetsCode.Clash,
           details: {
-            setting: '',
+            settingPath: '',
             sources: [
               'a',
               'c',

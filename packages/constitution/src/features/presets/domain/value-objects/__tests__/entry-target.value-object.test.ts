@@ -5,8 +5,6 @@ import fc from 'fast-check';
 import { EntryTarget, FileFormat, TargetKind } from '../entry-target.value-object';
 import { FactKind, FactName } from '../fact.value-object';
 
-// Keys of the pieces an entry's key is made of, its format marks and guards among them, and keys of
-// any text.
 const entryKeys = fc.oneof(
   fc
     .array(
@@ -32,7 +30,6 @@ const entryKeys = fc.oneof(
   fc.string(),
 );
 
-// The invariant: every key names a target, and the target's text opens the key.
 const opensItsKey = (key: string): boolean =>
   key.startsWith(EntryTarget.textOf(EntryTarget.of(key)));
 

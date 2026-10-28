@@ -70,7 +70,6 @@ const readManifest = <TWire, TManifest>(input: {
       };
 };
 
-// A source that names no ref or repository leaves it out.
 const sourceOf = (input: {
   ref: string | undefined;
   repo: string | undefined;

@@ -61,7 +61,6 @@ const routerAt = (address: string, content: DocsContentFake) => {
   });
 };
 
-/** rendered whole, the page and the sidebar settled */
 const renderRouter = async (router: ReturnType<typeof routerAt>): Promise<void> => {
   await act(() => Promise.resolve(render(<RouterProvider router={router} />)));
 };

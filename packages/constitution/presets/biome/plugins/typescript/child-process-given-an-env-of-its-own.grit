@@ -14,8 +14,6 @@ pattern bun_source() { r"[\"']bun[\"']" }
 
 pattern env_key() { r"^[\"']?env[\"']?$" }
 
-// A value the module imports from $source under a name of $imported's, held by $local, renamed or
-// not; a type imported is no value.
 pattern imported_value($local, $source, $imported) {
   JsImport(import_clause=JsImportNamedClause(source=$source, named_specifiers=JsNamedImportSpecifiers(specifiers=some or {
     JsShorthandNamedImportSpecifier(local_name=$local) as $specifier where { $local <: $imported },
@@ -26,8 +24,6 @@ pattern imported_value($local, $source, $imported) {
   }
 }
 
-// What starts a child process: a function of child_process or of Bun, held by the name the module
-// imports it by or read from the module imported whole, or Bun's own.
 pattern process_starter() {
   or {
     r"Bun\.spawn(?:Sync)?",
@@ -54,8 +50,6 @@ pattern environment() {
   }
 }
 
-// process.env or Bun.env whole: itself, spread into an object, or copied whole; a part picked
-// from it is an env built for the child.
 pattern whole_environment() {
   or {
     environment(),
@@ -75,7 +69,6 @@ pattern shell_tag() {
   }
 }
 
-// Bun's shell given an env built for it by .env() on itself: the module's commands run with it.
 pattern shell_given_its_env() {
   JsCallExpression(callee=JsStaticMemberExpression(object=shell_tag(), member=`env`), arguments=JsCallArguments(args=[
     $given
@@ -86,7 +79,7 @@ or {
   JsPropertyObjectMember(name=env_key(), value=whole_environment()) as $hit where {
     $hit <: within JsCallExpression(callee=process_starter())
   },
-  // A command of Bun's shell runs with Bun.env unless .env() gives it or the shell one.
+  // Why: a command of Bun's shell runs with Bun.env unless .env() gives it or the shell one.
   JsTemplateExpression(tag=shell_tag()) as $hit where {
     $hit <: not within JsCallExpression(callee=JsStaticMemberExpression(member=`env`)),
     $hit <: within JsModule() as $module,
@@ -100,8 +93,8 @@ or {
       contains JsTemplateExpression(tag=shell_tag())
     }
   },
-  // Every argument is one that holds no options, or options that name no env and spread none in;
-  // an argument read from a name may hold options, so its start is left to review.
+  // Why: an argument read from a name may hold options a pattern cannot see, so its start is left
+  // to review.
   JsCallExpression(callee=process_starter(), arguments=JsCallArguments(args=$arguments)) as $hit where {
     $arguments <: every or {
       JsStringLiteralExpression(),

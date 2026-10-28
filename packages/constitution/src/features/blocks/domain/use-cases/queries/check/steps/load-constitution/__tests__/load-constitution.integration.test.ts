@@ -3,7 +3,6 @@ import { describe, expect, it } from 'bun:test';
 import { paraglideCard } from '../../../../../../../__tests__/templates.fixtures';
 import { loadedOf } from '../../../__tests__/check.fixtures';
 
-// The case reads the repository's own templates, so it runs with the integration specs.
 describe('loadConstitution', () => {
   it('should load a block written from templates/block/ without a finding when its placeholders are filled and its rules sit in foundation', () => {
     // Arrange

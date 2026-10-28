@@ -42,7 +42,6 @@ const unreachable = (): VersionsError =>
     },
   });
 
-/** at the address the router reads, without the site's base */
 const onGuidePage = (): ReactElement => (
   <DocsLocationContext
     value={{
@@ -122,7 +121,7 @@ describe('DocsVersionWidget', () => {
     );
   });
 
-  it("should lead beside the menu to the page's address with no release, which the host gives the latest's, when this site belongs to an older release", async () => {
+  it("should lead beside the menu to the page's address in the latest release when this site belongs to an older release", async () => {
     // Arrange
     await renderInDocs(onGuidePage(), {
       getVersions: createFakeGetVersions(versionsFixture()).getVersions,
@@ -134,7 +133,7 @@ describe('DocsVersionWidget', () => {
     await releasesSettled();
 
     // Assert
-    expect(noticeAddress()).toBe('/docs/guides/write-a-pack');
+    expect(noticeAddress()).toBe('/v0.70.0/docs/guides/write-a-pack');
   });
 
   it.each([

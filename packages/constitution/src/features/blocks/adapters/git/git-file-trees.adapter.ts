@@ -12,7 +12,7 @@ import { TreeError, TreeFailure } from '../../domain/errors';
 import { TreePath } from '../../domain/value-objects';
 
 const BYTE_ORDER_MARK = '﻿';
-// A tree of many files lists past the 1 MiB that spawnSync keeps by default.
+// Why: a tree of many files lists past the 1 MiB that spawnSync keeps by default.
 const OUTPUT_LIMIT_BYTES = 268_435_456;
 const TIMED_OUT = 'ETIMEDOUT';
 const GIT_FILES = [
@@ -34,8 +34,7 @@ const normalized = (text: string): string =>
     '\n',
   );
 
-// What the system reads at a path of the tree; a file or a folder it refuses to read fails the
-// tree, naming it.
+/** @throws {TreeError} when the file cannot be read */
 const readOrFail = <TRead>(path: AbsolutePath, read: (path: AbsolutePath) => TRead): TRead => {
   try {
     return read(path);
@@ -59,10 +58,11 @@ const readOrFail = <TRead>(path: AbsolutePath, read: (path: AbsolutePath) => TRe
   }
 };
 
+/** @throws {TreeError} when the file cannot be read */
 const readListed = (path: AbsolutePath): string =>
   normalized(readOrFail(path, (file) => readFileSync(file, 'utf8')));
 
-// What git prints in the folder; a git that fails, or answers past its time, fails the tree.
+/** @throws {TreeError} when git fails or answers past its time */
 const runGit = (
   input: ChildProcessSettings & {
     args: readonly string[];
@@ -97,13 +97,14 @@ const runGit = (
   return run.stdout;
 };
 
-// One adapter for the one system: the tree reads what git holds — an ignored
-// file is no part of the Constitution, and CI sees only committed files.
+// Why: the tree reads what git holds: an ignored file is no part of the Constitution, and CI sees
+// only committed files.
 const createGitTree = (
   input: ChildProcessSettings & {
     root: AbsolutePath;
   },
 ): FileTree => ({
+  /** @throws {TreeError} when git fails or answers past its time */
   list: (): readonly TreePath[] =>
     [
       ...new Set(
@@ -117,6 +118,7 @@ const createGitTree = (
       .filter((path) => isFile(AbsolutePath.join(input.root, path)))
       .map(TreePath.create)
       .toSorted(compareText),
+  /** @throws {TreeError} when the file cannot be read */
   read: (path: TreePath): string => readListed(AbsolutePath.join(input.root, path)),
 });
 
@@ -125,8 +127,10 @@ interface FolderTreeInput {
   readonly root: AbsolutePath;
 }
 
-// What lies below the blocks folder, a link listed and not followed, from the root; a folder
-// that holds more than the limit fails the tree once the walk passes it.
+/**
+ * @throws {TreeError} when a folder cannot be read, or the folder holds more files than the
+ * limit
+ */
 const pathsBelow = (input: FolderTreeInput): readonly string[] => {
   const paths: string[] = [];
   const folders = [
@@ -161,9 +165,13 @@ const pathsBelow = (input: FolderTreeInput): readonly string[] => {
   return paths;
 };
 
-// The installed Constitution a pack extends, as mise unpacks it: no repository
-// of its own, so its blocks are read from their folder.
+// Why: mise unpacks the installed Constitution a pack extends with no repository of its own, so its
+// blocks are read from their folder.
 const createFolderTree = (input: FolderTreeInput): FileTree => ({
+  /**
+   * @throws {TreeError} when a folder cannot be read, or the folder holds more files than the
+   * limit
+   */
   list: (): readonly TreePath[] =>
     existsSync(AbsolutePath.join(input.root, BLOCKS_FOLDER_NAME))
       ? pathsBelow(input)
@@ -171,21 +179,21 @@ const createFolderTree = (input: FolderTreeInput): FileTree => ({
           .map(TreePath.create)
           .toSorted(compareText)
       : [],
+  /** @throws {TreeError} when the file cannot be read */
   read: (path: TreePath): string => readListed(AbsolutePath.join(input.root, path)),
 });
 
 interface GitFileTreesInput extends ChildProcessSettings {
-  /** the files an installed Constitution's blocks folder may hold */
   readonly maxFiles: number;
 }
 
-/** timeoutMs bounds each run of git. */
 const createGitFileTrees = (git: GitFileTreesInput): FileTrees => ({
   installed: (folderPath: AbsolutePath): FileTree =>
     createFolderTree({
       maxFiles: git.maxFiles,
       root: folderPath,
     }),
+  /** @throws {TreeError} when git fails or answers past its time */
   repository: (folderPath: AbsolutePath): FileTree =>
     createGitTree({
       ...git,

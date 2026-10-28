@@ -3,10 +3,6 @@ interface RecognisedFailureInput<TFailure> {
   readonly isRecognised: (error: unknown) => error is TFailure;
 }
 
-/**
- * A catch handles only the failures it recognises: this gives back the one it recognises and
- * rethrows any other, so a defect never passes for an expected failure.
- */
 const recognisedFailure = <TFailure>(input: RecognisedFailureInput<TFailure>): TFailure => {
   if (input.isRecognised(input.error)) {
     return input.error;
@@ -20,10 +16,6 @@ interface AttemptInput<TOutcome, TFailure> {
   readonly isRecognised: (error: unknown) => error is TFailure;
 }
 
-/**
- * The outcome of an effect, or undefined when it fails as the caller expects; any other failure is
- * rethrown.
- */
 const attempted = <TOutcome, TFailure = unknown>(
   input: AttemptInput<TOutcome, TFailure>,
 ): TOutcome | undefined => {

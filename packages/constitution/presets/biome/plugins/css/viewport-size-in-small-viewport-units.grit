@@ -1,6 +1,6 @@
 language css
 
-// A media or container query measures the viewport rather than sizing a box by it.
+// Why: a media or container query measures the viewport rather than sizing a box by it.
 CssRegularDimension() as $size where {
   or { $size <: r"(?i).*\d(?:l?vh)", $size <: r"(?i)100(?:\.0*)?vw" },
   $size <: not within or {

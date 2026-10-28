@@ -16,7 +16,6 @@ import { SourceStatus } from '../../../../../entities';
 interface ReadSourceInput {
   readonly files: ProjectFiles;
   readonly folderPath: AbsolutePath;
-  /** the folder as a warning names it: the release's own, or the pack's as its unit lists it */
   readonly shownFolderPath: AbsolutePath | PackPath;
   readonly source: BlockSource;
 }
@@ -37,11 +36,6 @@ const sourceFileOf = (input: { path: string; read: FileRead }): SourceFile =>
         status: FileReadStatus.Unreadable,
       };
 
-/**
- * The markdown files of the Constitution's or a pack's blocks folder, the only ones a block is read
- * from; a source whose blocks folder cannot be listed is not installed, save a pack that holds
- * presets alone, and then no block.
- */
 const readSource = (input: ReadSourceInput): BlockSetSource => {
   const blocksFolderPath = AbsolutePath.join(input.folderPath, BLOCKS_FOLDER_NAME);
   const listed = input.files.listFiles(blocksFolderPath);

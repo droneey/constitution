@@ -1,10 +1,8 @@
 import type { BlockModel, ModelBlock, ModelRule } from '#/kernel/entities';
 import type { BlockId, RuleSlug } from '#/kernel/value-objects';
 
-/** The model's blocks, role ids and rules, looked up by the checks of each set and entry. */
 interface ModelIndex {
   readonly blocks: ReadonlyMap<BlockId, ModelBlock>;
-  /** the ids a role term of the model is given */
   readonly roleIds: ReadonlySet<string>;
   readonly rules: ReadonlyMap<RuleSlug, ModelRule>;
 }

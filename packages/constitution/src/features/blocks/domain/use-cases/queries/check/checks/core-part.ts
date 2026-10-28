@@ -9,7 +9,6 @@ enum CorePartCode {
 
 interface CorePartDetails {
   readonly [CorePartCode.OverBudget]: {
-    /** the most bytes the digest holds of core */
     readonly budget: number;
     readonly bytes: number;
   };
@@ -20,10 +19,6 @@ type CorePartFinding = FindingOf<CorePartDetails>;
 const CORE_BUDGET = 3500;
 const encoder = new TextEncoder();
 
-/**
- * The hook gives core's passport, its front matter aside, whole in every session's digest, so its
- * text keeps within a budget.
- */
 const corePartCheck: Check<CorePartFinding> = ({
   constitution,
 }: CheckInput): readonly CorePartFinding[] =>

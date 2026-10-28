@@ -3,7 +3,6 @@ import { ConfigReadStatus } from '#/kernel/entities';
 import type { ConfigRead, DeclaredUnit } from '../../../domain/entities';
 import { ConfigOverride } from '../../../domain/entities';
 
-// constitution.yaml read whole: nothing in it unless the overrides give it.
 const parsedConfigOf = (overrides: Partial<DeclaredUnit['config']> = {}): ConfigRead => ({
   config: {
     empties: [],
@@ -15,7 +14,6 @@ const parsedConfigOf = (overrides: Partial<DeclaredUnit['config']> = {}): Config
   status: ConfigReadStatus.Parsed,
 });
 
-// An override on the first line, every field left out unless the overrides give it.
 const overrideOf = (overrides: Partial<ConfigOverride> = {}): ConfigOverride =>
   ConfigOverride.create({
     level: overrides.level,

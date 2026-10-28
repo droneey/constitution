@@ -6,7 +6,6 @@ import { BlockId, RepositoryRelativePath } from '#/kernel/value-objects';
 import { mustOf } from '../../../__tests__/session.fixtures';
 import { reminderNotesOf } from '../reminder-notes.utils';
 
-// The note "x governs a: read <file>." takes 300 bytes with a file of 281.
 const NOTE_START = 'x governs a: read ';
 const fullFile = 'f'.repeat(281);
 const longFile = 'f'.repeat(282);

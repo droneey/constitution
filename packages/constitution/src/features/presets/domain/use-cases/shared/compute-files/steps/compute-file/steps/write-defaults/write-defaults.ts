@@ -2,33 +2,28 @@ import type { MergedFile } from '../../../../../../../entities';
 import { Leaf, Setting, WholeKind } from '../../../../../../../entities';
 
 interface DefaultLeavesInput {
-  /** whether the file is one of lines, whose whole default adds each line it lacks */
   readonly isLines: boolean;
   readonly merged: MergedFile;
 }
 
 interface WriteDefaultsInput {
   readonly leaves: readonly Leaf[];
-  /** the keys of the defaults the lock says were met before */
-  readonly met: readonly string[];
+  readonly metBefore: readonly string[];
   readonly setting: Setting;
 }
 
 interface DefaultsWritten {
   readonly added: readonly Leaf[];
-  /** the keys of every default met, written or found present */
-  readonly met: readonly string[];
+  readonly everMet: readonly string[];
   readonly setting: Setting;
 }
 
 interface Written {
   readonly added: readonly Leaf[];
-  readonly met: ReadonlySet<string>;
+  readonly everMet: ReadonlySet<string>;
   readonly setting: Setting;
 }
 
-// Of a whole file's default, each line of a file of lines or each key is a leaf; a text is none,
-// written only while the file is absent.
 const wholeLeavesOf = (input: DefaultLeavesInput): readonly Leaf[] => {
   const { whole } = input.merged;
 
@@ -55,7 +50,6 @@ const wholeLeavesOf = (input: DefaultLeavesInput): readonly Leaf[] => {
   }));
 };
 
-/** The defaults the entries give at their paths, then those of the whole file. */
 const defaultLeavesOf = (input: DefaultLeavesInput): readonly Leaf[] => [
   ...input.merged.defaults.map((setting) => ({
     isItem: false,
@@ -78,12 +72,11 @@ const withAdded = (input: { leaf: Leaf; value: Setting; written: Written }): Wri
   }),
 });
 
-// A line or a key the file lacks is added, a map the file holds takes the keys it lacks, and what
-// the file holds stays; each default met is recorded, so one the user deletes stays deleted.
+// Why: a default met once is never written again, so one the user deleted stays deleted.
 const withDefault = (written: Written, leaf: Leaf): Written => {
   const key = Leaf.keyOf(leaf);
 
-  if (written.met.has(key)) {
+  if (written.everMet.has(key)) {
     return written;
   }
 
@@ -91,8 +84,8 @@ const withDefault = (written: Written, leaf: Leaf): Written => {
   const held = Setting.at(setting, leaf.keyPath);
   const kept: Written = {
     ...written,
-    met: new Set([
-      ...written.met,
+    everMet: new Set([
+      ...written.everMet,
       key,
     ]),
   };
@@ -132,18 +125,17 @@ const withDefault = (written: Written, leaf: Leaf): Written => {
     : kept;
 };
 
-/** A default met before and deleted since stays out. */
 const writeDefaults = (input: WriteDefaultsInput): DefaultsWritten => {
   const written = input.leaves.reduce(withDefault, {
     added: [],
-    met: new Set(input.met),
+    everMet: new Set(input.metBefore),
     setting: input.setting,
   });
 
   return {
     added: written.added,
-    met: [
-      ...written.met,
+    everMet: [
+      ...written.everMet,
     ],
     setting: written.setting,
   };

@@ -6,11 +6,9 @@ enum UsageFailure {
 }
 
 interface UsageProblems {
-  /** each as "<option>: <what is wrong>" */
   readonly problems: readonly string[];
 }
 
-/** A command line the program cannot take, past what commander itself refuses. */
 class UsageError extends ProgramError<UsageFailure, UsageProblems> {
   public constructor(input: ProgramErrorInput<UsageFailure, UsageProblems>) {
     super(input);

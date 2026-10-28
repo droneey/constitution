@@ -12,7 +12,6 @@ enum CyclesCode {
 
 interface CyclesDetails {
   readonly [CyclesCode.Cycle]: {
-    /** the blocks of the cycle from the block it is reported at, which closes it again */
     readonly cycle: readonly BlockId[];
   };
 }
@@ -40,8 +39,7 @@ const nextOf = (input: { block: Block; graph: BlockGraph }): readonly Block[] =>
         ];
   });
 
-// A block explored without reaching the start never reaches it by another
-// path either, so it is not walked again from the same start.
+// Why: a block explored without reaching the start never reaches it by another path either.
 const cycleFrom = (search: Search): readonly BlockId[] | undefined => {
   for (const next of nextOf(search)) {
     if (BlockId.equals(next.id, search.start)) {

@@ -68,7 +68,7 @@ describe('ThemeProvider', () => {
     expect(rootPropertyOf('--color-brand-600')).toBe('');
   });
 
-  // React keeps one stylesheet of a name for the document, so only the first case of the file
+  // Why: React keeps one stylesheet of a name for the document, so only the first case of the file
   // that gives an accent sees it drawn: this one gives none.
   it('should break no rule of WCAG A and AA around what it holds', async () => {
     // Arrange

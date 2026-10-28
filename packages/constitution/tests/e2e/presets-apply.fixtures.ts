@@ -13,7 +13,6 @@ import { createProject } from './project.fixtures';
 
 interface Applied {
   readonly exitCode: number | undefined;
-  /** each file the case reads, as it stands after the run; undefined where it is absent */
   readonly files: Readonly<Record<string, string | undefined>>;
 }
 
@@ -24,8 +23,6 @@ interface ApplyInput {
 
 const linesOf = (...lines: readonly string[]): string => `${lines.join('\n')}\n`;
 
-// The release's preset files: markdownlint's own settings and ignore file, and a setting the ui
-// domain's rule adds where a unit follows both.
 const releasePresetFiles: Files = {
   'presets/markdownlint/foundation.yaml': linesOf(
     'markdownlint:',
@@ -49,7 +46,6 @@ const releasePresetFiles: Files = {
 
 const MEMBER = 'packages/lib';
 
-// A member's own pack: a tool no release block names, and the preset file that writes its file.
 const memberPackFiles: Files = {
   [`${MEMBER}/pack/blocks/implementations/own-tool/own-tool.md`]: linesOf(
     '---',
@@ -100,7 +96,6 @@ const createPluginRootWithPresets = (): string => {
 
 interface LinkedProjectInput {
   readonly layout: ProjectLayout;
-  /** the plugin root whose distribution the project links */
   readonly root: string;
 }
 
@@ -115,7 +110,6 @@ const createLinkedProject = (input: LinkedProjectInput): string => {
   return project;
 };
 
-// A run as a pipeline runs the executable, from the project's folder with a clean environment.
 const applyIn = (input: ApplyInput): Applied => {
   const ran = spawnSync(
     cliPath,

@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-/** the pages the site's server exported, by their slugs joined with `/` */
 export const pageCatalogModel = z.record(
   z.string(),
   z.object({

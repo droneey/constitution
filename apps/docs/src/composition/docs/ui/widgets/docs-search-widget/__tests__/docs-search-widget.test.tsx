@@ -21,7 +21,6 @@ const pageResult = (content: string, breadcrumbs: string[] = []): SearchResult =
   url: '/docs/guides/write-a-pack',
 });
 
-/** a row of the parts table, as the index holds it: the row under its table's header */
 const partRow = (row: string): SearchResult => ({
   breadcrumbs: [],
   content: `${PARTS_TABLE}\n${row}`,

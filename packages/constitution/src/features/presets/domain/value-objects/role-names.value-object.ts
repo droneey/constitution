@@ -8,31 +8,25 @@ interface NamedRole {
   readonly term: string;
 }
 
-/** The roles of one kind by their names, and how to find one typed by hand in a text. */
 interface KindNames {
   readonly byName: ReadonlyMap<string, NamedRole>;
   readonly pattern: RegExp;
 }
 
-/** The names of the folder and suffix terms a preset may name only by their facts. */
 interface RoleNames {
   readonly folders: KindNames;
   readonly suffixes: KindNames;
 }
 
-/** Where a role's name stands in a text: the lookbehind and lookahead around it. */
 interface NamePlace {
   readonly after: string;
   readonly before: string;
 }
 
 const ANY_SUFFIX_GLOB = '**';
-// A fact stands for what it names, which is never typed by hand.
 const FACT = /\$\{[^}]*\}/g;
-const FACT_PLACE = '\u0000';
+const FACT_MASK = '\u0000';
 
-// Every folder and suffix term with an id is named by it, save a language's file suffix and a name
-// a block governs, which a tool reads by its spelling.
 const namedOf = (input: {
   governed: ReadonlySet<string>;
   layers: ReadonlyMap<string, Layer>;
@@ -62,8 +56,8 @@ const keyedByName = (roles: readonly NamedRole[]): ReadonlyMap<string, NamedRole
     ]),
   );
 
-// The longest names first, so a suffix `module.ts` wins over a suffix `ts`.
-const alternation = (names: ReadonlyMap<string, NamedRole>): string =>
+// Why: the longest names first, so a suffix `module.ts` wins over a suffix `ts`.
+const longestFirstAlternation = (names: ReadonlyMap<string, NamedRole>): string =>
   [
     ...names.keys(),
   ]
@@ -71,13 +65,11 @@ const alternation = (names: ReadonlyMap<string, NamedRole>): string =>
     .map((name) => RegExp.escape(name))
     .join('|');
 
-/** A folder's name: after a path's start, a separator, or a group's opening or alternative. */
 const folderPlace: NamePlace = {
   after: '(?=/|(?:\\|[^()]*)?\\)/|(?:,[^{}]*)?\\}/)',
   before: `(?<=^|[/^!(|{,'"\\s*:])`,
 };
 
-/** A suffix's name: after a name's dot, escaped or not, and before a dot, a `]` or the end. */
 const suffixPlace: NamePlace = {
   after: `(?=\\\\?\\.|[{)|*$'"\\]]|$)`,
   before: '(?<=[A-Za-z0-9_*\\]})-]\\\\?\\.)',
@@ -85,7 +77,7 @@ const suffixPlace: NamePlace = {
 
 const kindNamesOf = (byName: ReadonlyMap<string, NamedRole>, place: NamePlace): KindNames => ({
   byName,
-  pattern: new RegExp(`${place.before}(${alternation(byName)})${place.after}`, 'g'),
+  pattern: new RegExp(`${place.before}(${longestFirstAlternation(byName)})${place.after}`, 'g'),
 });
 
 const of = (model: BlockModel): RoleNames => {
@@ -114,15 +106,13 @@ const of = (model: BlockModel): RoleNames => {
   };
 };
 
-// With no names, the pattern finds only empty ones, which name no role.
 const matchesOf = (names: KindNames, text: string): readonly NamedRole[] =>
   Array.from(text.matchAll(names.pattern)).flatMap(
     (match) => names.byName.get(String(match[1])) ?? [],
   );
 
-/** What stays once the text's facts are taken out. */
 const handTypedIn = (roles: RoleNames, text: string): readonly NamedRole[] => {
-  const bare = text.replace(FACT, FACT_PLACE);
+  const bare = text.replace(FACT, FACT_MASK);
 
   return [
     ...matchesOf(roles.folders, bare),
@@ -130,7 +120,6 @@ const handTypedIn = (roles: RoleNames, text: string): readonly NamedRole[] => {
   ];
 };
 
-// The names of no role: what a project's own pack writes, which may spell its folders.
 const none: RoleNames = {
   folders: kindNamesOf(new Map(), folderPlace),
   suffixes: kindNamesOf(new Map(), suffixPlace),

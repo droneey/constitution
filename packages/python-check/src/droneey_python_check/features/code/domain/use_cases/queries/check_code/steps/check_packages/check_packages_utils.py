@@ -97,7 +97,7 @@ def check_packages(
   importer = _Importer(
     file_folder=root.file_folder,
     own_package_names=frozenset(
-      {root.path.name, *settings.workspace_unit_import_names, *standard_module_names}
+      {root.package_path.name, *settings.workspace_unit_import_names, *standard_module_names}
     ),
     role=role_of(file_folder=root.file_folder, file_stem=path.stem),
     settings=settings,

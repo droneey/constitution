@@ -138,11 +138,11 @@ A contract belongs to the feature that needs it; when a second feature needs it 
 
 ### type-lifts-when-features-share-its-meaning · MUST
 
-A business type — an entity, a value object, an enumeration — belongs to the feature whose model holds it, and lifts to the kernel when two or more features use it with one meaning, universal and stable; otherwise — another meaning, only a sliver of it, or a meaning not yet universal and stable — a feature that needs it declares a type of its own, into which composition translates the other’s.
+A business type — an entity, a value object, an enumeration — belongs to the feature whose model holds it, and lifts to the kernel only when two or more features use it with one meaning, universal and stable; otherwise — another meaning, only a sliver of it, or a meaning not yet universal and stable — a feature that needs it keeps its own narrow view, a type of its own or a reference by identifier, into which composition translates the other’s; a fact or a rule of the business is never duplicated.
 
 | Why |
 |---|
-| one meaning has one home every feature reads, and a type a feature reads its own way changes with that feature alone. |
+| one meaning has one home every feature reads, while a type shared by features that read it differently must satisfy them all and stops them changing apart; a narrow view changes with its feature alone. |
 
 ### composition-lifts-on-its-second-consumer · MUST
 

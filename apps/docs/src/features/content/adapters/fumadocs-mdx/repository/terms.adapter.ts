@@ -35,7 +35,6 @@ const kinds: Readonly<Record<DefinedTermKind, TermKind>> = {
 
 const WHITESPACE = /\s+/g;
 
-/** the term as the Constitution's grammar reads it, its plain words on one line as its check reads them */
 const nameOf = (bold: Bold): TermName => {
   const { kind, term } = DefinedTerm.of(
     bold.isCode
@@ -54,7 +53,6 @@ const nameOf = (bold: Bold): TermName => {
 
 const isText = (node: PhrasingContent): node is Text => node.type === 'text';
 
-/** undefined for bold that is neither one code span nor plain words, which the check refuses */
 const boldOf = (strong: Strong): Bold | undefined => {
   const [first] = strong.children;
 
@@ -74,7 +72,6 @@ const boldOf = (strong: Strong): Bold | undefined => {
     : undefined;
 };
 
-// A rule's section runs from its heading to the next heading of its depth or above.
 const ruleSlugAt = (input: {
   index: number;
   nodes: readonly RootContent[];
@@ -86,7 +83,6 @@ const ruleSlugAt = (input: {
     : undefined;
 };
 
-// A term with an id is linked to its own anchor, which the page gives its bold.
 const idOf = (input: { index: number | undefined; parent: Parent }): string | undefined => {
   // Stryker disable next-line ConditionalExpression: bold always has an index, so the check only narrows its type
   const next = input.index === undefined ? undefined : input.parent.children[input.index + 1];
@@ -169,7 +165,6 @@ const termsIn = (input: {
   );
 };
 
-/** every term the blocks define, by name */
 const termsOf = (baseUrl: string): readonly Term[] => {
   const blocksFolderAbsolutePath = inRepository(blocksFolderPath);
 

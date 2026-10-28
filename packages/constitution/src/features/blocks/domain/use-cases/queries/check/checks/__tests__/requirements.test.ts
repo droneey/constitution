@@ -25,7 +25,6 @@ const answering = (rows: readonly string[]): CheckInput => {
   return checkInputOf(files);
 };
 
-// Lingui with a rule of its own, which a partly or no answer may name.
 const coveredBy = (rows: readonly string[]): CheckInput => {
   const files = validFiles();
 

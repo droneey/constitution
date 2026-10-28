@@ -53,7 +53,6 @@ const requiresWarningsOf = (input: NeedsInput): readonly ProjectWarning[] => {
     );
 };
 
-// A requirement a library does not meet matters where the MUST rule it names is active and kept.
 const isUnmet = (input: {
   answer: BlockSetAnswer;
   applied: AppliedOverrides;

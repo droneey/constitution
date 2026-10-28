@@ -80,7 +80,7 @@ const MUTANT_REQUEST = {
     UnitRelativePath.create('src/order.ts'),
   ],
   timeoutMs: 1000,
-  variables: Object.fromEntries([
+  addedVariables: Object.fromEntries([
     [
       '__STRYKER_ACTIVE_MUTANT__',
       '7',
@@ -88,7 +88,6 @@ const MUTANT_REQUEST = {
   ]),
 } as const;
 
-// A request is recorded apart from its signal, which only the case of disposal reads.
 const runnerAnswering = (run: ChosenSpecsRun) => {
   const requests: Omit<SpecsRequest, 'signal'>[] = [];
   const signals: AbortSignal[] = [];
@@ -232,7 +231,7 @@ describe('bunSpecsRunner', () => {
         requests: [
           {
             timeoutMs: 1000,
-            variables: {},
+            addedVariables: {},
           },
         ],
       });

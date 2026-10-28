@@ -25,7 +25,7 @@ branchReaderSuite({
           ],
         },
       ],
-      untrackedPaths: [
+      newFilePaths: [
         UnitRelativePath.create('src/line.ts'),
       ],
     }),

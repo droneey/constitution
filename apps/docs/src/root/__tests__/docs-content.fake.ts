@@ -20,7 +20,7 @@ const pageFixture = (overrides: Partial<Page> = {}): Page => ({
   ...overrides,
 });
 
-/** made anew for each fake, since rendering the tree turns its names into elements in place */
+// Why: made anew for each fake, since rendering the tree turns its names into elements in place.
 const navigationFixture = (): SerializedPageTree => ({
   // biome-ignore lint/style/useNamingConvention: Fumadocs marks a serialized page tree by this key
   $fumadocs_loader: 'page-tree',
@@ -43,17 +43,10 @@ const navigationFixture = (): SerializedPageTree => ({
 
 interface DocsContentFake {
   docs: DocsContent;
-  /** oldest first */
   loads: (readonly string[])[];
-  /** by collection and path */
   preloads: string[];
 }
 
-/**
- * The overview, the quick start, one guide and one page the server lists after its body left its
- * collection, and the tree; each body and the tree are kept once read, where React's `use` reads
- * them, as the wiring keeps them
- */
 const docsContentFake = (): DocsContentFake => {
   const loads: (readonly string[])[] = [];
   const keptBodies = new Map<string, Promise<Loaded>>();
@@ -61,7 +54,6 @@ const docsContentFake = (): DocsContentFake => {
     navigation?: Promise<SerializedPageTree>;
   } = {};
   const preloads: string[] = [];
-  // both of the README, as the site's collections hold them
   const overview = pageFixture({
     collection: 'overview',
     description: 'The rules a repository is built by.',

@@ -7,7 +7,7 @@ enum Tone {
   Muted = 'muted',
 }
 
-/** a status's symbol, so it reads without its colour */
+/** so a status reads without its colour */
 enum Glyph {
   Step = 'step',
   Success = 'success',
@@ -62,10 +62,8 @@ const SPINNER_FRAMES: readonly string[] = [
   '⠏',
 ] as const;
 
-/** the role the accent's tone is drawn in, which reads a step of the accent's scale */
 const ACCENT_TONE_ROLE = 'accent.text';
 
-/** a role of the tokens a tone other than the accent's is drawn in */
 enum ColourRole {
   Success = 'text.success',
   Danger = 'text.danger',
@@ -84,7 +82,6 @@ const TONE_ROLES: Readonly<Record<Exclude<Tone, Tone.Accent>, ColourRole>> = {
 
 const FRAME_DURATION_TOKEN = 'fast';
 
-/** a terminal cell stands for one step of the design system's 8-pixel grid */
 const PIXELS_PER_CELL = 8;
 
 export {

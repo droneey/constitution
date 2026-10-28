@@ -6,7 +6,7 @@ core:
   layer-imports-dependencies-by-its-role:
     typescript:
       .dependency-cruiser.jsonc:
-        # A key, which YAML cannot break.
+        # Why: a key, which YAML cannot break.
         # yamllint disable-line rule:line-length
         'allowed[comment=layer-imports-dependencies-by-its-role: what is no package of a registry, the forbidden rules hold]':
           from: {}
@@ -17,7 +17,7 @@ core:
               - npm-peer
               - npm-optional
               - npm-bundled
-        # A key, which YAML cannot break.
+        # Why: a key, which YAML cannot break.
         # yamllint disable-line rule:line-length
         'allowed[comment=layer-imports-dependencies-by-its-role: the edge and the specs import any package]':
           from:
@@ -303,18 +303,12 @@ core:
   module-files-import-each-other-directly:
     typescript:
       .dependency-cruiser.jsonc:
-        # Each group takes one more folder of the importer's path, or nothing, so the target's
-        # pattern names the surface of every folder that holds the importer.
         forbidden[name=module-never-imports-its-own-surface]:
           severity: error
           from:
             path: ^([^/]+/)([^/]+/|)([^/]+/|)([^/]+/|)([^/]+/|)([^/]+/|)([^/]+/|)([^/]+/|)([^/]+/|)
           to:
             path: ^(?:$1|$1$2|$1$2$3|$1$2$3$4|$1$2$3$4$5|$1$2$3$4$5$6|$1$2$3$4$5$6$7|$1$2$3$4$5$6$7$8|$1$2$3$4$5$6$7$8$9)index\.[^/]+$
-        # The third group is the layer and role folder that hold the importer, or nothing: a role
-        # folder's own files reach each other directly, and the rest of the module reaches it
-        # through its surface, the surface of one of its sides of reads and writes, or the surface
-        # of an operation or of what operations share.
         forbidden[name=role-reached-through-its-surface]:
           severity: error
           from:
@@ -476,8 +470,8 @@ _js-runtime:
   hash-imports-leave-the-module:
     typescript:
       .dependency-cruiser.jsonc:
-        # dependency-cruiser marks an import written from `#/` as `aliased-subpath-import`, and one
-        # written by a relative path as `local` alone; the first group is the importer's module.
+        # Why: dependency-cruiser marks an import written from `#/` as `aliased-subpath-import`, and
+        # one written by a relative path as `local` alone; the first group is the importer's module.
         forbidden[name=relative-import-stays-in-its-module]:
           severity: error
           from:

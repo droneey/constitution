@@ -9,9 +9,6 @@ import { blockCardModel } from './models';
 const isReferenceError = (error: unknown): error is ReferenceError =>
   error instanceof ReferenceError;
 
-// A project reads a card it can: a field left out, or of another form, is empty or absent, and a
-// front matter that is no YAML mapping gives an empty card. An alias counts as no YAML, as the
-// blocks' check refuses one, so none is expanded.
 const card = (yaml: string): BlockCard => {
   // Stryker disable next-line ObjectLiteral: YAML 1.2 reads by the core schema where none is named
   const document = parseDocument(yaml, {

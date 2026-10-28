@@ -34,6 +34,6 @@ packs:
 overrides:
   - rule: scoped-resource-held-by-using
     level: SHOULD
-    # constitution reads an override's reason from its one line
+    # Why: constitution reads an override's reason from its one line.
     # yamllint disable-line rule:line-length
     reason: "dependency-cruiser 18's swc visitor fails on UsingDeclaration and its tsc and acorn parsers drop type-only dependencies, so terminal.tsx, which must pass check:architecture, closes its view with try/finally; removed with #186 (parser tsc on TypeScript 7.1)"

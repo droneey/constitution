@@ -1,5 +1,4 @@
 @layer overrides {
-  /* a section is a row of plain text; the entries under it sit on a line, as a folder's do */
   [data-toc-list] > a {
     position: relative;
     display: flex;
@@ -11,7 +10,7 @@
     letter-spacing: var(--font-label-sm--letter-spacing);
     cursor: pointer;
 
-    /* the list scrolls, so an outer ring would be clipped */
+    /* Why: the list scrolls, so an outer ring would be clipped. */
     &:focus-visible {
       outline-offset: calc(-1 * var(--ring-focus-width));
     }

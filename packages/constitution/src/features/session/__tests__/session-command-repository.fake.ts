@@ -5,11 +5,6 @@ import type { SessionId } from '../domain/value-objects';
 import type { HeldSessions } from './session.fixtures';
 import { heldSessionsOf } from './session.fixtures';
 
-/**
- * What a session's hooks write, kept in the sessions held as the real store keeps them: a save
- * replaces the state and, unless it keeps them, the reminders; a write to a session never saved is
- * dropped.
- */
 const createFakeSessionCommandRepository = (
   sessions: HeldSessions = heldSessionsOf(),
 ): SessionCommandRepository => ({

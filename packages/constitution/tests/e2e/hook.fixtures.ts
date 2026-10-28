@@ -16,24 +16,18 @@ enum HookEvent {
   Subagent = 'subagent',
 }
 
-// Folders are relative to the project root.
 interface HookCall {
   cwd?: string | undefined;
-  // the distribution linked into the project, the plugin root's by default
   distribution?: string | undefined;
   event: HookEvent;
   nonUtf8Byte?: boolean | undefined;
-  // CLAUDE_PLUGIN_ROOT is unset, though the command still names the root
   pluginRootUnset?: boolean | undefined;
   project: string;
   projectDir?: string | undefined;
   root: string;
   session?: string | undefined;
-  // the process starts outside the project, so only the event names cwd
   spawnOutside?: boolean | undefined;
-  // neither XDG_STATE_HOME nor HOME is set, so no folder keeps the session
   stateHomeUnset?: boolean | undefined;
-  // no distribution is linked into the project
   unlinked?: boolean | undefined;
 }
 
@@ -48,23 +42,23 @@ interface HookOutput {
   event: string;
 }
 
-// CI's macOS entry of the hooks matrix sets HOOK_SHELL=/bin/bash to run the hook under bash 3.2.
+// Why: CI's macOS entry of the hooks matrix sets HOOK_SHELL=/bin/bash to run the hook under bash
+// 3.2.
 const shell: string = process.env['HOOK_SHELL'] ?? 'bash';
 const WARNINGS = '⚠️ Warnings';
-// A session carries the user's locale; the hook must not depend on it.
+// Why: a session carries the user's locale; the hook must not depend on it.
 const LOCALE = 'en_US.UTF-8';
 const PLACEHOLDER = '@';
 const NOT_UTF8 = 0xe9;
-// A hook that blocks, on a named pipe say, fails its case instead of the run.
+// Why: a hook that blocks, on a named pipe say, fails its own case instead of the whole run.
 const TIMEOUT_MS = 20_000;
-// The day the hook's clock gives, by the variable the root reads: the spec never reads the real clock.
 const HOOK_TODAY = '2026-06-15';
 const TODAY_VARIABLE = 'CONSTITUTION_TODAY';
 const HOOK = 'hook.sh';
 const STATE_HOME_VARIABLE = 'XDG_STATE_HOME';
 
-// The state home of every hook the specs run, so none writes into the user's: a folder of this
-// process's own, removed when it exits.
+// Why: the state home of every hook the specs run is this process's own, so none writes into the
+// user's.
 const stateHome = realpathSync(mkdtempSync(join(tmpdir(), 'constitution-state-')));
 
 process.once('exit', () => {
@@ -74,7 +68,6 @@ process.once('exit', () => {
   });
 });
 
-// Claude Code names the event's fields in snake case.
 const eventOf = (input: {
   cwd: string;
   event: HookEvent;
@@ -136,8 +129,7 @@ const inputOf = (input: {
   return bytes;
 };
 
-// A clean environment: the session that runs the tests sets CLAUDE_PROJECT_DIR
-// and CLAUDE_PLUGIN_ROOT of its own.
+// Why: the session that runs the tests sets CLAUDE_PROJECT_DIR and CLAUDE_PLUGIN_ROOT of its own.
 const runHook = (call: HookCall): HookRun => {
   const cwd = join(call.project, call.cwd ?? '');
 
@@ -221,7 +213,7 @@ const runHook = (call: HookCall): HookRun => {
 const isRecord = (parsed: unknown): parsed is Record<string, unknown> =>
   typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed);
 
-// JSON.parse refuses a second object, so a parse proves there is exactly one.
+// Why: JSON.parse refuses a second object, so a parse that succeeds proves there is exactly one.
 const outputOf = (run: HookRun): HookOutput => {
   const parsed: unknown = JSON.parse(run.stdout);
   const inner = isRecord(parsed) ? parsed['hookSpecificOutput'] : undefined;
@@ -247,14 +239,12 @@ const contextOf = (run: HookRun): string => outputOf(run).context;
 
 const linesOf = (context: string): readonly string[] => context.replace(/\n$/, '').split('\n');
 
-// The digest is read by its marks, a list item's "- " and a heading's "## ", and
-// by the names it gives, never by its wording: a sentence reworded breaks no case.
+// Why: the digest is read by its marks, a list item's "- " and a heading's "## ", and by the names
+// it gives, never by its wording: a sentence reworded breaks no case.
 const ITEM = '- ';
 const HEADING = '## ';
-// The note that closes a block list cut short opens with the number of lines it leaves out.
 const NOTE = /^\d/u;
 
-// A character of a name, a path or a date: a name is mentioned where none borders it.
 const NAME_CHARACTER = /[\w./-]/u;
 
 const isMentioned = (input: { name: string; text: string }): boolean => {
@@ -262,7 +252,6 @@ const isMentioned = (input: { name: string; text: string }): boolean => {
 
   for (let at = text.indexOf(name); at !== -1; at = text.indexOf(name, at + 1)) {
     const after = at + name.length;
-    // a full stop that ends a sentence borders a name too
     const isBorderedAfter =
       !NAME_CHARACTER.test(text.charAt(after)) ||
       (text.charAt(after) === '.' && !NAME_CHARACTER.test(text.charAt(after + 1)));
@@ -293,12 +282,8 @@ const numberIn = (line: string): number => Number(/\d+/u.exec(line)?.[0] ?? 0);
 const headerOf = (context: string): readonly string[] =>
   linesOf(context.slice(0, context.indexOf('\n\n')));
 
-// The number the header's fact gives: how many blocks are active, or the line
-// at which constitution.yaml does not parse.
 const factNumberOf = (context: string): number => numberIn(headerOf(context)[1] ?? '');
 
-// The block list closes the digest, the paragraph after core's text: it opens
-// with a heading or, when none of its lines fit, is the note alone.
 const blockListOf = (context: string): readonly string[] => {
   const lines = linesOf(context);
   const list = lines.slice(lines.lastIndexOf('') + 1);
@@ -307,20 +292,16 @@ const blockListOf = (context: string): readonly string[] => {
   return first.startsWith(HEADING) || (list.length === 1 && NOTE.test(first)) ? list : [];
 };
 
-// The mark of an application's item that adds files to a block the repository lists.
 const ALSO = 'Also: ';
 
 const GROUP = /\([^()]*\)/gu;
 const LAST_GROUP = /\([^()]*\)$/u;
 
-// Where a line's first ": " outside brackets starts, or -1.
 const colonOf = (text: string): number =>
   text.replace(GROUP, (group) => '_'.repeat(group.length)).indexOf(': ');
 
 const lastGroupOf = (text: string): string => LAST_GROUP.exec(text)?.[0] ?? '';
 
-// An item as its id, the brackets that follow it and the bracketed files that
-// close it; the summary between, or an override's level, is left out.
 const itemOf = (line: string): string => {
   const text = line.slice(ITEM.length);
   const colon = colonOf(text);
@@ -336,8 +317,6 @@ const itemOf = (line: string): string => {
   return files === '' ? head : `${head} ${files}`;
 };
 
-// The block list as its headings, without the folder they name, and its items;
-// the summaries and the prose between are left out.
 const indexOf = (context: string): readonly string[] =>
   blockListOf(context).flatMap((line) => {
     if (line.startsWith(HEADING)) {
@@ -354,9 +333,7 @@ const indexOf = (context: string): readonly string[] =>
   });
 
 interface Cut {
-  // the lines given, or the warnings
   kept: number;
-  // the number the note closing them gives, or 0 with no note
   leftOut: number;
 }
 
@@ -388,7 +365,6 @@ const warningSectionOf = (context: string): readonly string[] => {
 const warningLinesOf = (context: string): readonly string[] =>
   warningSectionOf(context).filter((line) => line.startsWith(ITEM));
 
-// A warning as its code, then the names it gives.
 type Warning = readonly string[];
 
 interface WarningsInput {
@@ -396,8 +372,6 @@ interface WarningsInput {
   readonly like: readonly Warning[];
 }
 
-// Each warning given, read as its code and, of the names its counterpart in
-// `like` gives, those it mentions: the words around them are wording.
 const warningsOf = (input: WarningsInput): readonly Warning[] =>
   warningLinesOf(input.context).map((line, index) => [
     line.slice(ITEM.length, line.indexOf(': ')),
@@ -407,7 +381,6 @@ const warningsOf = (input: WarningsInput): readonly Warning[] =>
     }),
   ]);
 
-// The blocks a reminder's notes name, one note to a line, each opening with its block's id.
 const remindedOf = (stdout: string): readonly string[] =>
   stdout === ''
     ? []
@@ -423,7 +396,6 @@ const remindedOf = (stdout: string): readonly string[] =>
 const bytesAfterHeader = (context: string): number =>
   Buffer.byteLength(context.slice(context.indexOf('\n\n') + 2));
 
-// The hook's budget of the digest after its header.
 const BUDGET = 9400;
 
 interface ScriptCall {
@@ -484,7 +456,6 @@ const runScript = (call: ScriptCall): HookRun => {
 
 const sessions: string[] = [];
 
-// A spec isolates its state by a session id of its own: the state home is shared by the process.
 const newSession = (): string => {
   const session = `spec-${randomUUID()}`;
 

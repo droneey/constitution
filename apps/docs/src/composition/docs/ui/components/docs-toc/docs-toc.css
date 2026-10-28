@@ -4,7 +4,8 @@
 
     padding-block: var(--spacing-sm);
 
-    /* the column keeps its gap only where it shows; narrower, the library folds it to nothing */
+    /* Why: the column keeps its gap only where it shows; narrower, the library folds it to
+       nothing. */
     @container (width >= 64rem) {
       padding-inline-start: var(--spacing-lg);
     }

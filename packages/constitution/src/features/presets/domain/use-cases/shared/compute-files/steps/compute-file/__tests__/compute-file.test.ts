@@ -34,8 +34,8 @@ describe('computeFile', () => {
     // Arrange
     const record: LockRecord = {
       addresses: [],
-      defaults: [],
-      isCreated: false,
+      everMetDefaults: [],
+      isCreatedByApply: false,
       kind: RecordKind.Settings,
       leaves: [
         'kept',

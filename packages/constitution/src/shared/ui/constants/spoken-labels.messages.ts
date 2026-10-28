@@ -1,6 +1,5 @@
 import { StepStatus, Tone } from '@droneey/design-cli';
 
-/** What a screen reader says for a step's status in place of its symbol. */
 const STEP_STATUS_LABELS = {
   [StepStatus.Pending]: 'pending',
   [StepStatus.Running]: 'running',
@@ -10,7 +9,6 @@ const STEP_STATUS_LABELS = {
   [StepStatus.Skipped]: 'skipped',
 } as const satisfies Readonly<Record<StepStatus, string>>;
 
-/** What a screen reader says for a note's tone in place of its symbol. */
 const TONE_LABELS = {
   [Tone.Accent]: 'accent',
   [Tone.Success]: 'success',

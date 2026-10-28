@@ -1,6 +1,6 @@
 # Errors
 
-> Governs except clauses, exception groups, the cause of a raised error, finally blocks and assert statements.
+> Governs except clauses, exception groups, the cause of a raised error, finally blocks, assert statements and the `Raises:` section.
 
 ## General
 
@@ -11,6 +11,16 @@ Production code checks no input, invariant or state with an `assert` statement; 
 | Why |
 |---|
 | an interpreter run with optimisation strips every `assert`, so a check written as one vanishes from that run. |
+
+## Kinds of failure
+
+### expected-failure-named-in-raises → expected-failure-documented-where-no-signature-names-it · MUST
+
+An expected failure is named in the `Raises:` section of the function's docstring, its type and then its condition: `OrderNotFoundError: when no order has the id.`
+
+| Why |
+|---|
+| Python has no checked exceptions, so its annotations name no failure; `Raises:` is the section of the Google form that `help()`, the editor and documentation generators read as the failures. |
 
 ## Catching and carrying
 

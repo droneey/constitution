@@ -8,7 +8,7 @@ import { recognise } from '#/libs/errors';
 import { SpawnErrorCode, spawnErrorCodeOf } from '#/libs/processes';
 import { problemPathsOf } from '#/libs/schemas';
 
-import type { MutationRunner } from '../../domain/contracts';
+import type { MutationRunner, ToolExitCode } from '../../domain/contracts';
 import {
   ConfigurationError,
   ConfigurationFailure,
@@ -34,14 +34,14 @@ const CONFIG_FILE_NAMES = [
   'stryker.config.json',
 ] as const;
 
-// What Bun's import throws for a file it cannot load: a module it cannot parse or resolve, or a JSON
-// text it cannot read.
+// Why: Bun's import throws these for a file it cannot load: a module it cannot parse or resolve, or
+// a JSON text it cannot read.
 const isImportFailure = (caught: unknown): boolean =>
   caught instanceof BuildMessage ||
   caught instanceof ResolveMessage ||
   caught instanceof SyntaxError;
 
-/** @throws ConfigurationError when the file cannot be loaded */
+/** @throws {ConfigurationError} when the file cannot be loaded */
 const configurationModuleOf = async (input: {
   fileName: string;
   unitFolderPath: AbsolutePath;
@@ -67,8 +67,8 @@ const configurationModuleOf = async (input: {
 };
 
 /**
- * @throws ConfigurationError when the unit has none, it cannot be read, or its `mutate` is no
- * list of patterns.
+ * @throws {ConfigurationError} when the unit has none, it cannot be read, or its `mutate` is
+ * no list of patterns.
  */
 const mutateGlobsIn = async (unitFolderPath: AbsolutePath): Promise<readonly string[]> => {
   const fileName = CONFIG_FILE_NAMES.find((candidateName) =>
@@ -100,8 +100,8 @@ const mutateGlobsIn = async (unitFolderPath: AbsolutePath): Promise<readonly str
   return parsing.data.default.mutate;
 };
 
-// A Stryker that never ran reports an error, one killed at the time it is given reports it as timed
-// out, and one stopped by any other signal reports none.
+// Why: a Stryker that never ran reports an error, one killed at the time it is given reports it as
+// timed out, and one stopped by any other signal reports none.
 const failureOf = (error: Error | undefined): MutationRunFailure => {
   if (error === undefined) {
     return MutationRunFailure.ToolStopped;
@@ -112,38 +112,59 @@ const failureOf = (error: Error | undefined): MutationRunFailure => {
     : MutationRunFailure.ToolNotRun;
 };
 
-const strykerRunner = (input: StrykerRunnerInput): MutationRunner => ({
-  mutatedOf: async (filePaths): Promise<readonly UnitRelativePath[]> =>
-    filePaths.filter(isMutatedBy(await mutateGlobsIn(input.unitFolderPath))),
-  run: (targets): number => {
-    const done = spawnSync(
-      TOOL_NAME,
-      [
-        'run',
-        ...(targets === undefined ? [] : mutateArgumentsOf(targets)),
-      ],
+/** @throws {MutationRunError} when Stryker does not run to its end */
+const strykerRunWith = (input: {
+  mutateArguments: readonly string[];
+  runner: StrykerRunnerInput;
+}): ToolExitCode => {
+  const done = spawnSync(
+    TOOL_NAME,
+    [
+      'run',
+      ...input.mutateArguments,
+    ],
+    {
+      cwd: input.runner.unitFolderPath,
+      env: input.runner.env,
+      stdio: input.runner.output,
+      timeout: input.runner.timeoutMs,
+    },
+  );
+
+  if (done.status === null) {
+    throw new MutationRunError(
       {
-        cwd: input.unitFolderPath,
-        env: input.env,
-        stdio: input.output,
-        timeout: input.timeoutMs,
+        code: failureOf(done.error),
+        toolName: TOOL_NAME,
+      },
+      {
+        cause: done.error ?? done.signal,
       },
     );
+  }
 
-    if (done.status === null) {
-      throw new MutationRunError(
-        {
-          code: failureOf(done.error),
-          toolName: TOOL_NAME,
-        },
-        {
-          cause: done.error ?? done.signal,
-        },
-      );
-    }
+  return done.status;
+};
 
-    return done.status;
-  },
+const strykerRunner = (input: StrykerRunnerInput): MutationRunner => ({
+  /**
+   * @throws {ConfigurationError} when the unit has none, it cannot be read, or its `mutate`
+   * is no list of patterns.
+   */
+  mutatedOf: async (filePaths): Promise<readonly UnitRelativePath[]> =>
+    filePaths.filter(isMutatedBy(await mutateGlobsIn(input.unitFolderPath))),
+  /** @throws {MutationRunError} when Stryker does not run to its end */
+  runAll: (): ToolExitCode =>
+    strykerRunWith({
+      mutateArguments: [],
+      runner: input,
+    }),
+  /** @throws {MutationRunError} when Stryker does not run to its end */
+  runTargets: (targets): ToolExitCode =>
+    strykerRunWith({
+      mutateArguments: mutateArgumentsOf(targets),
+      runner: input,
+    }),
 });
 
 export { strykerRunner };

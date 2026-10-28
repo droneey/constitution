@@ -14,7 +14,6 @@ type ToolEnd =
       readonly failure: MutationRunFailure;
     };
 
-/** The configuration of the scenario mutates the source and leaves out its specs. */
 const MUTATE_SCENARIO = {
   mutateGlobs: [
     'src/**/*.ts',
@@ -34,14 +33,28 @@ interface MutationRunnerSuiteInput {
 
 const mutationRunnerSuite = (input: MutationRunnerSuiteInput): void => {
   describe(`the MutationRunner contract, kept by ${input.implementationName}`, () => {
-    it('should end with the exit code the tool ended with', () => {
+    it.each([
+      {
+        run: (runner: MutationRunner) => runner.runAll(),
+        scope: 'every file',
+      },
+      {
+        run: (runner: MutationRunner) =>
+          runner.runTargets([
+            {
+              filePath: MUTATE_SCENARIO.mutatedPath,
+            },
+          ]),
+        scope: 'the targets',
+      },
+    ])('should end with the exit code the tool ended with on $scope', ({ run }) => {
       // Arrange
       const runner = input.runnerEndingWith({
         exitCode: 3,
       });
 
       // Act
-      const exitCode = runner.run();
+      const exitCode = run(runner);
 
       // Assert
       expect(exitCode).toBe(3);
@@ -86,7 +99,7 @@ const mutationRunnerSuite = (input: MutationRunnerSuiteInput): void => {
 
       // Act
       const runFailure = await failureOf({
-        call: () => runner.run(),
+        call: () => runner.runAll(),
         kind: MutationRunError,
       });
 

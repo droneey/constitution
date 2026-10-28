@@ -12,14 +12,12 @@ if TYPE_CHECKING:
   from droneey_mutation_check_python.features.mutation.domain.contracts import Workspace
 
 ORDERS_PATH: Final = UnitRelativePath(path=PurePosixPath('src/shop/orders.py'))
-# A unit whose branch changed nothing against its base.
 UNCHANGED_UNIT_TEXTS: Final[Mapping[str, str]] = {
   'src/shop/orders.py': python('def total() -> int:', '  return 1'),
   'src/shop/kernel/money.py': python('RATE = 2'),
   'src/shop/data.json': '{}\n',
   'tests/test_orders.py': python('LIMIT = 1'),
 }
-# A unit mutmut runs over whose sources hold no function, with a spec that passes.
 NO_FUNCTION_TEXTS: Final[Mapping[str, str]] = {
   'pyproject.toml': python('[tool.mutmut]', 'source_paths = ["src"]'),
   'src/shop/__init__.py': '',
@@ -30,13 +28,9 @@ NO_FUNCTION_TEXTS: Final[Mapping[str, str]] = {
 type WorkspaceBuilder = Callable[[Mapping[str, str]], Workspace]
 
 
+# Why: no `Test` prefix, so pytest collects only the subclasses, which give the cases a
+# `build_workspace` fixture: a workspace over the files given.
 class WorkspaceSuite:
-  """The contract of Workspace.
-
-  A spec subclasses it with a `build_workspace` fixture that answers a workspace over a unit holding
-  the files given.
-  """
-
   def test_should_list_the_python_files_under_src_as_the_sources(
     self, build_workspace: WorkspaceBuilder
   ) -> None:

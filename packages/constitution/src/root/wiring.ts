@@ -99,18 +99,15 @@ import type { Program, ProgramInput } from './program.types';
 import type { Ports, PresetsInput, Registration } from './registration.types';
 import { stateFolderWarningText } from './state-folder-warning';
 
-// The time each outside call may take: a run of git, of the executable on PATH, of lefthook, and
-// the call that asks GitHub for the latest release.
 const GIT_TIMEOUT_MS = 30_000;
 const EXECUTABLE_TIMEOUT_MS = 5000;
 const LEFTHOOK_TIMEOUT_MS = 10_000;
 const RELEASE_TIMEOUT_MS = 3000;
-// The files a folder of a release or a pack lists at most, the workspace's folders in one look, and
-// the globs one workspace glob's braces spell out.
 const FOLDER_FILES = 10_000;
 const WORKSPACE_FOLDERS = 10_000;
 const WORKSPACE_GLOBS = 1000;
 
+/** @throws {ConfigurationError} when the day is written otherwise than YYYY-MM-DD */
 const portsOf = (input: ProgramInput): Ports => {
   const files = createNodeProjectFiles({
     maxFiles: FOLDER_FILES,
@@ -180,6 +177,10 @@ const hookCommandsOf = ({ context, ports, program }: Registration): Command =>
     [
       createSessionStartCommand({
         ...context,
+        /**
+         * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
+         * @throws {ReleaseError} when the release's blocks cannot be listed
+         */
         digestSession: (start: SessionStart): SessionDigest | undefined =>
           digestSession({
             ...start,
@@ -245,10 +246,8 @@ const hookCommandsOf = ({ context, ports, program }: Registration): Command =>
 const doctorCommandOf = ({ context, ports, programInput }: Registration): Command =>
   createDoctorCommand({
     ...context,
-    diagnoseInstallation: async (
-      startFolderPath: AbsolutePath,
-    ): Promise<readonly PartDiagnosis[]> =>
-      await diagnoseInstallation({
+    diagnoseInstallation: (startFolderPath: AbsolutePath): Promise<readonly PartDiagnosis[]> =>
+      diagnoseInstallation({
         executable: Version.create(programInput.version),
         files: ports.files,
         fingerprint: programInput.pluginFingerprint(),
@@ -314,22 +313,35 @@ const presetsCommandsOf = ({ context, ports, program }: Registration): Command =
     [
       createPresetsCheckCommand({
         ...context,
+        /**
+         * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
+         * @throws {ReleaseError} when the release's blocks cannot be listed
+         */
         checkConfigurations: (startFolderPath: AbsolutePath): ProjectRead<ConfigurationsCheck> =>
           checkConfigurations(presetsInputOf(ports)(startFolderPath)),
       }),
       createPresetsPlanCommand({
         ...context,
+        /**
+         * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
+         * @throws {ReleaseError} when the release's blocks cannot be listed
+         */
         planPresets: (startFolderPath: AbsolutePath): ProjectRead<PresetsPlan> =>
           planPresets(presetsInputOf(ports)(startFolderPath)),
       }),
       createPresetsApplyCommand({
         ...context,
+        /** @throws {ApplyError} when a file cannot be written, which leaves every file as it was */
         applyChanges: (changes: AppliedFiles): void => {
           applyChanges({
             changes,
             writes: ports.appliedFiles,
           });
         },
+        /**
+         * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
+         * @throws {ReleaseError} when the release's blocks cannot be listed
+         */
         planApply: (startFolderPath: AbsolutePath): ProjectRead<ApplyPlan> =>
           planApply(presetsInputOf(ports)(startFolderPath)),
         planRun: planRunOf(ports),
@@ -341,6 +353,7 @@ const presetsCommandsOf = ({ context, ports, program }: Registration): Command =
 const registerCommands = (registration: Registration): void => {
   const { context, ports, program, programInput } = registration;
 
+  /** @throws {TreeError} when git cannot list a tree, or a file it lists cannot be read */
   const checkBlocksIn = (asked: {
     base: PackBase | undefined;
     folderPath: AbsolutePath;
@@ -366,6 +379,10 @@ const registerCommands = (registration: Registration): void => {
     createCheckCommand({
       ...context,
       checkBlocks: checkBlocksIn,
+      /**
+       * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
+       * @throws {ReleaseError} when the release's blocks cannot be listed
+       */
       checkConfigurations: (startFolderPath: AbsolutePath): StepReport =>
         configurationsStepOf(checkConfigurations(presetsInputOf(ports)(startFolderPath))),
       checkPresets: (asked): StepReport =>
@@ -415,6 +432,7 @@ const createProgram = (input: ProgramInput): Program => {
   const presentation = createPresentation({
     accent: input.accent,
     env: input.environment.output,
+    /** @throws {UsageError} when the options do not parse */
     flags: () => flagsOf(program.opts()),
     io: input.io,
     isTerminal: input.isTerminal,
@@ -462,7 +480,6 @@ const createProgram = (input: ProgramInput): Program => {
     fail: errors.codeOf,
     run: async (args: readonly string[]): Promise<ExitCode> => {
       try {
-        // building the ports parses the configuration: a malformed setting fails the start here
         registerCommands({
           context: {
             helpExamples,
@@ -485,7 +502,7 @@ const createProgram = (input: ProgramInput): Program => {
 
         return isFailed ? ExitCode.Failure : ExitCode.Success;
       } catch (error) {
-        // the terminal is restored before the failure is written below what was drawn
+        // Why: the terminal is restored before the failure is written below what was drawn.
         await presentation.close();
 
         return errors.codeOf(error);

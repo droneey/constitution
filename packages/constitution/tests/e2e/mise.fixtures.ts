@@ -1,31 +1,25 @@
 import { spawnSync } from 'node:child_process';
 import { join } from 'node:path';
 
-import { toolEnvironment } from './package.fixtures';
+import { machineVariables, toolEnvironment } from './package.fixtures';
 
 const repository = join(import.meta.dir, '..', '..');
 
-// mise finds its installs, its settings and the configs it trusts through these variables as well
-// as through its files at home; a CI runner sets them in place of the files.
-const MISE_VARIABLE = /^(MISE|XDG)_/u;
+// Why: mise finds its installs and the configs it trusts through these variables as well as through
+// its files at home; a CI runner sets them in place of the files.
+const MISE_VARIABLES = [
+  'MISE_CACHE_DIR',
+  'MISE_CONFIG_DIR',
+  'MISE_DATA_DIR',
+  'MISE_STATE_DIR',
+  'MISE_TRUSTED_CONFIG_PATHS',
+  'XDG_CACHE_HOME',
+  'XDG_CONFIG_HOME',
+  'XDG_DATA_HOME',
+  'XDG_STATE_HOME',
+] as const;
 
-/** The machine's own variables mise reads, by their names. */
-const miseVariables = (): ReadonlyMap<string, string> =>
-  new Map(
-    Object.entries(process.env).flatMap(([name, setting]) =>
-      MISE_VARIABLE.test(name) && setting !== undefined
-        ? [
-            [
-              name,
-              setting,
-            ] as const,
-          ]
-        : [],
-    ),
-  );
-
-// mise pins the tool for this repository; its shim does not resolve in a
-// temporary folder, so a check runs the binary it points to.
+// Why: mise's shim does not resolve in a temporary folder, so a check runs the binary it points to.
 const miseBinary = (tool: string): string => {
   const run = spawnSync(
     'mise',
@@ -36,18 +30,15 @@ const miseBinary = (tool: string): string => {
     {
       cwd: repository,
       encoding: 'utf8',
-      env: toolEnvironment(miseVariables()),
+      env: toolEnvironment(machineVariables(MISE_VARIABLES)),
     },
   );
-  const binary = run.stdout.trim();
 
-  if (binary === '') {
-    throw new Error(
-      `${tool} is not installed: run \`mise install\` in a trusted checkout\n${run.stderr}`,
-    );
+  if (run.error !== undefined || run.status !== 0) {
+    throw new Error(`mise which ${tool} failed: ${run.error?.message ?? run.stderr}`);
   }
 
-  return binary;
+  return run.stdout.trim();
 };
 
 export { miseBinary };

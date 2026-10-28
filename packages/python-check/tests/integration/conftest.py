@@ -1,7 +1,8 @@
 import pytest
 
 
-# The integration specs reach the engines they start, so the refusal is lifted by its name.
+# Why: the integration specs reach the engines they start, so the root's refusal of the network is
+# overridden.
 @pytest.fixture(autouse=True)
 def network_refused() -> None:
   return None

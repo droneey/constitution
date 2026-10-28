@@ -6,11 +6,11 @@ import { terminalModule } from './terminal.utils';
 
 const TERMINAL_MODULE_FORMAT = 'terminal/module';
 
-/** The configuration of a mode, writing its own module in `buildPath`. */
 const configOf = ({ name: modeName }: ThemeMode, buildPath: string): Config => ({
   platforms: {
     terminal: {
-      // the module reads no name; a name of its own keeps one step from colliding with another
+      // Why: the module reads no name, but a name of its own keeps one step from colliding with
+      // another.
       transforms: [
         transforms.nameKebab,
         transforms.colorHex,

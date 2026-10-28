@@ -4,7 +4,6 @@ import { cruise, rulesNamedByNoRow } from './dependency-cruiser-preset.fixtures'
 import { nodeBinary } from './package.fixtures';
 import { loadOf } from './preset-load.fixtures';
 
-// A unit's own preset file that names a build tool's folder development code.
 const OWN_DEVELOPMENT_FILES = `core:
   production-code-imports-no-tool:
     typescript:
@@ -83,9 +82,6 @@ const wellFormed = {
   }),
 };
 
-// A workspace of seven units, one of them a library whose TypeScript package
-// sits beside the package of its data in no language, each linked by its name as a
-// package manager links it, with the workspace's preset files.
 const units: Readonly<Record<string, string>> = {
   admin: 'apps/admin',
   'eros-typescript': 'packages/@eros/typescript',
@@ -98,7 +94,6 @@ const units: Readonly<Record<string, string>> = {
 
 interface WorkspaceInput {
   readonly files: Readonly<Record<string, string>>;
-  /** cruised from the workspace's root where absent */
   readonly unit?: string | undefined;
 }
 
@@ -145,7 +140,6 @@ const workspaceProject = (input: WorkspaceInput) => ({
   ],
 });
 
-// The violations of the layer set, each a condition and the rule that reports it.
 const layerViolations = [
   {
     condition: 'the domain imports a vendor package',
@@ -670,7 +664,6 @@ const layerViolations = [
   },
 ];
 
-// The violations of the blocks' own rules, each in a unit that follows the block.
 const blockViolations = [
   {
     condition: "a feature's application layer opens a database through Bun by a lib",
@@ -1152,7 +1145,6 @@ const blockViolations = [
   },
 ];
 
-// The violations of a workspace, each cruised from the unit named, or from the root.
 const workspaceViolations = [
   {
     condition: 'a package imports an app by its name',
@@ -1235,7 +1227,6 @@ const workspaceViolations = [
   },
 ];
 
-// The violations of the base every unit of dependency-cruiser follows.
 const baseViolations = [
   {
     condition: 'two modules import each other',
@@ -1331,8 +1322,7 @@ describe("the configuration dependency-cruiser's presets write", () => {
     });
   });
 
-  // A rule's paths are the presets' own patterns, which dependency-cruiser takes as given, so each
-  // rule has a tree it must report.
+  // Why: dependency-cruiser takes a rule's paths as given, so each rule has a tree it must report.
   it('should name each forbidden rule of the preset files in a table of violations when the tables are read', () => {
     // Act
     const unnamed = rulesNamedByNoRow([

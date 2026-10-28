@@ -28,7 +28,6 @@ enum RequirementsTableCode {
 
 interface RequirementsTableDetails {
   readonly [RequirementsTableCode.HeaderMisshapen]: {
-    /** the header row as written */
     readonly row: string;
   };
   readonly [RequirementsTableCode.RowMisshapen]: {
@@ -57,7 +56,6 @@ const SEPARATOR = /^\|?[\s:|-]+\|?$/;
 const NEAR_HEADER = /^\|\s*Requirement\s*\|/;
 const PIPE = '|';
 
-// A row without the padding of its cells, so the header is known however its columns are aligned.
 const unpadded = (row: string): string =>
   row
     .split(PIPE)

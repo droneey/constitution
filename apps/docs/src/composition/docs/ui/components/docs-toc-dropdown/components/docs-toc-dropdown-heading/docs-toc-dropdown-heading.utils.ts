@@ -1,6 +1,5 @@
 import type { TocHeading, TocTrackedHeading } from '#/libs/ui';
 
-/** `position` is -1, before the first heading, when none is on screen */
 interface TopmostHeading {
   heading: TocHeading | undefined;
   position: number;

@@ -12,13 +12,13 @@ import { ThemeContext } from '../theme';
 import { AnswerKind } from './terminal.constants';
 
 interface TerminalStreams {
-  /** the stream the view is drawn on: standard error for progress and questions, standard output for a result */
+  /** standard error for progress and questions, standard output for a result */
   readonly screen: NodeJS.WritableStream;
   readonly stdin: NodeJS.ReadableStream;
 }
 
 interface TerminalInput {
-  /** the app's accent; the default theme's where none is given */
+  /** none keeps the default theme's */
   readonly accent?: AccentScale;
   readonly output: Output;
   readonly streams: TerminalStreams;
@@ -40,7 +40,7 @@ interface AskTextInput extends TerminalInput {
   readonly placeholder: string;
 }
 
-/** a tree drawn on a terminal, redrawn by each `show`, and gone, the terminal restored, once closed */
+/** `close` restores the terminal */
 interface TerminalView {
   readonly close: () => Promise<void>;
   readonly show: (tree: ReactNode) => void;
@@ -56,10 +56,11 @@ type Answer<T> =
     };
 
 /**
- * Ctrl-C reaches the tree as a key, never as Ink's own exit, so a question can end the run as interrupted.
- * The theme is made before Ink draws, since a failure inside Ink's render leaves a question unanswered.
+ * the tree gets Ctrl-C as a key, never as Ink's own exit, so a question can end the run as
+ * interrupted
  */
 const openTerminalView = ({ output, streams, ...accentInput }: TerminalInput): TerminalView => {
+  // Why: a failure inside Ink's render leaves a question unanswered, so the theme is made first.
   const theme = createTheme({
     ...accentInput,
     colourLevel: output.colourLevel,

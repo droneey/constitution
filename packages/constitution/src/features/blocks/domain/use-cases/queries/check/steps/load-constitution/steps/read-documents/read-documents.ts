@@ -6,12 +6,13 @@ import type { Agent, Documents, Skill, SkillFrontMatterRead } from '../../../../
 import { DocumentPath } from '../../../../../../../entities';
 import { TreePath } from '../../../../../../../value-objects';
 
-// <directory>/<skill>/SKILL.md, where no folder is hidden
+// Why: Claude Code reads a skill at <directory>/<skill>/SKILL.md, where no folder is hidden.
 const skillPath = new RegExp(
   `^((?:[^./][^/]*\\/)+)[^./][^/]*\\/${RegExp.escape(SKILL_FILE_NAME)}$`,
 );
 const AGENT_FILE = /^agents\/([^./][^/]*)\.md$/;
 
+/** @throws {TreeError} when the skill's file cannot be read */
 const skillFrontMatterOf = (input: {
   parser: FrontMatterParser;
   path: TreePath;
@@ -28,6 +29,7 @@ const skillFrontMatterOf = (input: {
       };
 };
 
+/** @throws {TreeError} when a skill's file cannot be read */
 const skillsOf = (input: {
   listed: readonly TreePath[];
   parser: FrontMatterParser;
@@ -53,6 +55,7 @@ const skillsOf = (input: {
     ];
   });
 
+/** @throws {TreeError} when an agent's file cannot be read */
 const agentsOf = (input: {
   listed: readonly TreePath[];
   parser: FrontMatterParser;
@@ -88,13 +91,16 @@ interface ReadDocumentsInput {
   readonly tree: FileTree;
 }
 
+/** @throws {TreeError} when a document cannot be read */
 const readDocuments = (input: ReadDocumentsInput): Documents => {
+  /** @throws {TreeError} when the document cannot be read */
   const textOf = (path: DocumentPath): string | undefined => {
     const treePath = TreePath.create(path);
 
     return input.paths.has(treePath) ? input.tree.read(treePath) : undefined;
   };
 
+  /** @throws {TreeError} when the document cannot be read */
   const repositoryTextOf = (path: DocumentPath): string | undefined => {
     const treePath = TreePath.create(path);
 

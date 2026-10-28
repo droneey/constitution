@@ -8,7 +8,7 @@ import { keyWidthOf, Space, Tone } from '#/libs/ui';
 import { useTheme } from '../../theme';
 
 interface KeyValueListProps {
-  /** the pairs, each named by its own key */
+  /** each key unique: it names its row */
   readonly pairs: readonly KeyValue[];
 }
 

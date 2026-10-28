@@ -33,7 +33,7 @@ interface ElementSpec {
   readonly text?: string;
 }
 
-/** the simulated page never computes it */
+// Why: the simulated page never computes a layout.
 interface ElementLayout {
   readonly height?: number;
   readonly left: number;
@@ -235,7 +235,6 @@ const ownBlocksIn = (list: HTMLElement): HTMLElement[] =>
     .queryAllByTestId(GLIDE_TEST_ID)
     .filter((block) => block.parentElement === list);
 
-/** the list's own block; like a `getBy` query, it fails when the list holds none */
 const blockOf = (list: HTMLElement): HTMLElement => {
   const [block] = ownBlocksIn(list);
 
@@ -254,7 +253,6 @@ const placementOf = (block: HTMLElement): BlockPlacement => ({
   height: block.style.height,
 });
 
-/** whether the block is entering, which fades it in, and whether it is drawn */
 const phaseOf = (block: HTMLElement): BlockPhase => ({
   isVisible: block.hasAttribute('data-visible'),
   isEntering: block.hasAttribute('data-entering'),
@@ -274,7 +272,7 @@ const createBlockStyle = (overrides: Partial<BlockStyle> = {}): BlockStyle => ({
   ...overrides,
 });
 
-/** a pointer over a row's text, which userEvent never sends: it always targets an element */
+// Why: userEvent always targets an element, so it never sends a pointer over a row's text.
 const pointOverTextOf = (row: HTMLElement): void => {
   const [text] = row.childNodes;
 
@@ -290,7 +288,8 @@ const pointOverTextOf = (row: HTMLElement): void => {
   );
 };
 
-/** a focus that arrives unshown, as a click's does, which userEvent never gives: the simulated page shows every focus as the keyboard's */
+// Why: userEvent never gives a focus that arrives unshown, as a click's does: the simulated page
+// shows every focus as the keyboard's.
 const focusUnshown = (element: HTMLElement): void => {
   element.dispatchEvent(
     new FocusEvent('focusin', {
@@ -299,7 +298,7 @@ const focusUnshown = (element: HTMLElement): void => {
   );
 };
 
-/** the element answers `:hover` as one under the pointer does, which the simulated page never tracks */
+// Why: the simulated page never tracks `:hover`.
 const holdPointerOver = (element: HTMLElement): void => {
   const matches = element.matches.bind(element);
 
@@ -308,7 +307,6 @@ const holdPointerOver = (element: HTMLElement): void => {
   });
 };
 
-/** settles once the page has changed and every watcher of the page, the hook's among them, has heard of it */
 const nextMutation = (): Promise<void> =>
   new Promise((resolve) => {
     const watcher = new MutationObserver(() => {

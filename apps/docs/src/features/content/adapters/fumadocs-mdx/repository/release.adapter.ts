@@ -7,7 +7,7 @@ import { inRepository } from './repository.adapter';
 
 const constitutionManifestPath = RepositoryPath.create('packages/constitution/package.json');
 
-/** @throws {@link SourceError} when the Constitution's package names no release version */
+/** @throws {SourceError} when the Constitution's package names no release version */
 const releaseOf = (): string =>
   fileValueOf({
     model: manifestModel,

@@ -1,15 +1,8 @@
-# The context is the repository's root: the app reads the Markdown and the blocks of the whole
-# repository, and installs as a member of its Bun workspace. Production serves the prerendered pages
-# as files, as the static host does, beside the sites of the last releases.
-#   --build-arg KEPT_RELEASES=<n>                how many releases to keep; 0 serves the current build alone
-#   --secret id=github_token,env=GITHUB_TOKEN    lifts the GitHub API's limit of 60 requests an hour
-#   --no-cache-filter releases                   reads the releases again, as one promoted since the last build
-
 FROM oven/bun:1.4.3-alpine@sha256:629e17411f1f129dbec3af78d5af9c9f2a937435c80349437206c6b0b7422373 AS base
 
 WORKDIR /usr/src/app
 
-# zlib above the base image's own, which carries ALPINE-CVE-2026-85091
+# Why: the base image's own zlib carries ALPINE-CVE-2026-85091.
 RUN apk add --no-cache dumb-init=1.2.5-r4 zlib=1.3.2-r1 && \
   chown 1000:1000 /usr/src/app
 
@@ -36,8 +29,8 @@ FROM install-dependencies AS builder
 
 COPY --chown=1000:1000 ./ ./
 
-# Bun links no bin whose file is missing, and the first install ran before the sources came: this
-# one links the design-tokens bin that each platform package's `generate` runs. The release's
+# Why: Bun links no bin whose file is missing, and the first install ran before the sources came:
+# this one links the design-tokens bin that each platform package's `generate` runs. The release's
 # presets are linked as mise links them on a developer's machine.
 RUN bun install --frozen-lockfile --ignore-scripts && \
   mkdir -p .droneey && \
@@ -76,6 +69,4 @@ COPY --chown=1000:1000 --from=releases /usr/src/app/site ./public
 COPY --chown=1000:1000 --from=releases /usr/src/app/server.toml ./
 
 ENTRYPOINT ["dumb-init", "--"]
-# an address with no page gets the shell of the release it names, which shows its own not-found page;
-# the configuration file redirects every address with no release to the latest's
 CMD ["static-web-server", "--port", "3000", "--root", "/usr/src/app/public", "--page404", "404.html", "--compression", "true", "--security-headers", "true", "--redirect-trailing-slash", "true", "--health", "true", "--config-file", "/usr/src/app/server.toml"]

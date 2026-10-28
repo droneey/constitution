@@ -1,5 +1,5 @@
 import pytest
-from changes_fixtures import TEXTS, changed, new
+from changes_fixtures import SHOP_PACKAGE_TEXTS, changed, new
 from workspace_fake import WorkspaceFake
 
 from droneey_mutation_check_python.features.mutation import check_mutants
@@ -42,7 +42,7 @@ def _total_mutant(status: MutantStatus) -> Mutant:
 def test_should_pass_without_mutmut_when_no_function_changed() -> None:
   # Arrange
   workspace = WorkspaceFake(
-    texts_by_path=TEXTS, files=(changed('src/shop/orders.py', range(1, 2)),)
+    texts_by_path=SHOP_PACKAGE_TEXTS, files=(changed('src/shop/orders.py', range(1, 2)),)
   )
 
   # Act
@@ -107,7 +107,7 @@ def test_should_count_a_changed_mutant_as_killed_by_its_status(
 ) -> None:
   # Arrange
   run = Ran(mutants=(_total_mutant(status),))
-  workspace = WorkspaceFake(texts_by_path=TEXTS, files=TOTAL_CHANGED, run=run)
+  workspace = WorkspaceFake(texts_by_path=SHOP_PACKAGE_TEXTS, files=TOTAL_CHANGED, run=run)
 
   # Act
   checked = check_mutants(Scope.CHANGED, workspace=workspace)
@@ -161,7 +161,7 @@ def test_should_answer_how_the_mutants_of_the_scope_fared(
   scope: Scope, run: MutationRun, outcome: Outcome
 ) -> None:
   # Arrange
-  workspace = WorkspaceFake(texts_by_path=TEXTS, files=TOTAL_CHANGED, run=run)
+  workspace = WorkspaceFake(texts_by_path=SHOP_PACKAGE_TEXTS, files=TOTAL_CHANGED, run=run)
 
   # Act
   answered = check_mutants(scope, workspace=workspace)
@@ -230,7 +230,7 @@ def test_should_mutate_the_functions_a_change_touches(
   files: tuple[FileChange, ...], targets: list[MutationTargets]
 ) -> None:
   # Arrange
-  workspace = WorkspaceFake(texts_by_path=TEXTS, files=files)
+  workspace = WorkspaceFake(texts_by_path=SHOP_PACKAGE_TEXTS, files=files)
 
   # Act
   check_mutants(Scope.CHANGED, workspace=workspace)
@@ -241,7 +241,7 @@ def test_should_mutate_the_functions_a_change_touches(
 
 def test_should_mutate_every_function_when_the_scope_is_all() -> None:
   # Arrange
-  workspace = WorkspaceFake(texts_by_path=TEXTS, files=TOTAL_CHANGED)
+  workspace = WorkspaceFake(texts_by_path=SHOP_PACKAGE_TEXTS, files=TOTAL_CHANGED)
 
   # Act
   check_mutants(Scope.ALL, workspace=workspace)
@@ -265,7 +265,7 @@ def test_should_remove_the_mutants_before_the_run_and_after_a_pass(
   run: MutationRun, removal_count: int
 ) -> None:
   # Arrange
-  workspace = WorkspaceFake(texts_by_path=TEXTS, files=TOTAL_CHANGED, run=run)
+  workspace = WorkspaceFake(texts_by_path=SHOP_PACKAGE_TEXTS, files=TOTAL_CHANGED, run=run)
 
   # Act
   check_mutants(Scope.CHANGED, workspace=workspace)
@@ -285,17 +285,21 @@ MUTMUT_TIMED_OUT = CommandUnfinishedError(
   ('workspace', 'error'),
   [
     pytest.param(
-      WorkspaceFake(texts_by_path=TEXTS, read_changes_error=GIT_FAILED),
+      WorkspaceFake(texts_by_path=SHOP_PACKAGE_TEXTS, read_changes_error=GIT_FAILED),
       GIT_FAILED,
       id='reading the changes',
     ),
     pytest.param(
-      WorkspaceFake(texts_by_path=TEXTS, files=TOTAL_CHANGED, remove_mutants_error=MUTANTS_KEPT),
+      WorkspaceFake(
+        texts_by_path=SHOP_PACKAGE_TEXTS, files=TOTAL_CHANGED, remove_mutants_error=MUTANTS_KEPT
+      ),
       MUTANTS_KEPT,
       id='removing the mutants of an earlier run',
     ),
     pytest.param(
-      WorkspaceFake(texts_by_path=TEXTS, files=TOTAL_CHANGED, mutate_error=MUTMUT_TIMED_OUT),
+      WorkspaceFake(
+        texts_by_path=SHOP_PACKAGE_TEXTS, files=TOTAL_CHANGED, mutate_error=MUTMUT_TIMED_OUT
+      ),
       MUTMUT_TIMED_OUT,
       id='mutating',
     ),

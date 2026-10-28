@@ -4,21 +4,14 @@ import { BlockId } from '#/kernel/value-objects';
 
 import { MAX_WITHS, PRESET_FILE_EXTENSION } from '../constants';
 
-/**
- * Where a preset file lies under `presets/`: `<reader>/<axis>.yaml`, or below its axis's folder
- * `with/<block>.yaml` and `with/<first>/with/<second>.yaml`, each id spelled as a block's is; the
- * checks hold the ids against the blocks.
- */
 interface PresetFilePath {
   readonly axis: Axis;
   readonly reader: BlockId;
-  /** the blocks the path names after its reader, outermost first */
   readonly withs: readonly BlockId[];
 }
 
 enum PathKind {
   PresetFile = 'preset-file',
-  /** a file of a reader's folder that is no axis's: the data its entries name, such as plugins */
   Data = 'data',
   Misplaced = 'misplaced',
 }
@@ -44,7 +37,6 @@ const misplacedPath: PathRead = {
 
 const stemOf = (fileName: string): string => fileName.slice(0, -PRESET_FILE_EXTENSION.length);
 
-// with/<block>, repeated, the last ending in the extension.
 const withsOf = (segments: readonly string[]): readonly BlockId[] | undefined => {
   const withs: BlockId[] = [];
 
@@ -69,7 +61,6 @@ const withsOf = (segments: readonly string[]): readonly BlockId[] | undefined =>
   return withs.length > MAX_WITHS ? undefined : withs;
 };
 
-/** A file of no YAML is data, and so is one in a folder of a reader's that is no axis. */
 const readOf = (pathInPresets: string): PathRead => {
   // Stryker disable next-line StringLiteral: neither default is ever read as a reader or an axis
   const [reader = '', head = '', ...rest] = pathInPresets.split(PATH_SEPARATOR);

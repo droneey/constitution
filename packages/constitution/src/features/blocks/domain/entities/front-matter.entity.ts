@@ -8,7 +8,6 @@ import { repeatsOf } from '../utils';
 import type { FieldIssue } from './document-read.entity';
 import { ReadStatus } from './document-read.entity';
 
-/** The fields of a passport's front matter, in the order it lists them. */
 enum FrontMatterField {
   Id = 'id',
   Summary = 'summary',
@@ -29,10 +28,8 @@ interface FrontMatter {
   readonly summary: string;
 }
 
-/** The fields as the YAML writes them, before any is known to keep its rule. */
 interface FrontMatterFields {
   readonly abstract: boolean;
-  /** absent when the block extends none */
   readonly extends?: string;
   readonly governs: readonly string[];
   readonly id: string;
@@ -41,12 +38,9 @@ interface FrontMatterFields {
   readonly summary: string;
 }
 
-/** What the parser makes of a front matter's YAML. */
 type FrontMatterRead =
   | {
-      /** where the parser stopped, when it says so: the line of the YAML, counted from 1 */
       readonly at?: {
-        /** the top-level field the line belongs to */
         readonly key?: string;
         readonly line: number;
       };
@@ -90,17 +84,13 @@ const LIST_FIELDS = [
 
 type ListField = (typeof LIST_FIELDS)[number];
 
-/** A field that names blocks by their ids. */
 type IdField = FrontMatterField.Requires | FrontMatterField.Languages | FrontMatterField.Extends;
 
 interface FrontMatterReadDetails {
   readonly [FrontMatterReadCode.Missing]: object;
   readonly [FrontMatterReadCode.NotYaml]: {
-    /** where the parser stopped, when it says so */
     readonly at?: {
-      /** the top-level field the line belongs to */
       readonly key?: string;
-      /** the line of the file, counted from 1 */
       readonly line: number;
     };
     readonly reason: string;
@@ -116,7 +106,6 @@ interface FrontMatterReadDetails {
     readonly order: readonly FrontMatterField[];
   };
   readonly [FrontMatterReadCode.OffSchema]: {
-    /** the path of the field the schema refuses, empty for the whole front matter */
     readonly field: string;
     readonly reason: string;
   };
@@ -151,7 +140,6 @@ type FrontMatterParsed =
       readonly status: FrontMatterStatus.Valid;
     }
   | {
-      /** each once, however many entries share it */
       readonly problems: readonly FrontMatterProblem[];
       readonly status: FrontMatterStatus.Invalid;
     };
@@ -161,7 +149,7 @@ const ONE_SENTENCE = /^[^\n\r\t]+\.$/;
 const SUMMARY_LENGTH = 70;
 const OPENING_LINES = 1;
 
-// The parser counts the lines of the YAML; the file holds the opening --- above them.
+// Why: the parser counts the lines of the YAML; the file holds the opening --- above them.
 const yamlProblem = (
   read: Extract<
     FrontMatterRead,
@@ -391,7 +379,6 @@ const invalid = (problems: readonly FrontMatterProblem[]): FrontMatterParsed => 
   status: FrontMatterStatus.Invalid,
 });
 
-// The fields once they break no rule, so each id they name is a block id.
 const frontMatterOf = (fields: FrontMatterFields): FrontMatter => ({
   abstract: fields.abstract,
   ...(fields.extends === undefined
@@ -406,10 +393,6 @@ const frontMatterOf = (fields: FrontMatterFields): FrontMatter => ({
   summary: fields.summary,
 });
 
-/**
- * The front matter a passport's YAML holds, or every rule of its fields it breaks: it is valid only
- * when its keys are the fields in their order and each field keeps its rule.
- */
 const parse = (read: FrontMatterRead): FrontMatterParsed => {
   if (read.status !== ReadStatus.Mapping) {
     return invalid(unreadProblems(read));

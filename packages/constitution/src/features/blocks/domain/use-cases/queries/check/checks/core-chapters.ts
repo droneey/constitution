@@ -27,7 +27,6 @@ interface CoreChaptersDetails {
 
 type CoreChaptersFinding = FindingOf<CoreChaptersDetails>;
 
-/** An item of the passport's list of core's chapters, which opens with its axis folder: "- `foundation/`: …". */
 const AXIS_ITEM = /^- `[a-z]+\/`:/;
 
 const listedIn = (core: Block): readonly string[] =>
@@ -43,7 +42,6 @@ const listedIn = (core: Block): readonly string[] =>
     );
 
 const coreFindings = (core: Block): readonly CoreChaptersFinding[] => {
-  // the passport is core.md, which opens the Constitution: the list names the rest
   const chapters = core.parts.map((file) => file.path);
   const listed = listedIn(core);
   const { path } = core.passport;
@@ -83,7 +81,6 @@ const coreFindings = (core: Block): readonly CoreChaptersFinding[] => {
   ];
 };
 
-/** Core's passport lists its chapters in the order they are read, which the site follows. */
 const coreChaptersCheck: Check<CoreChaptersFinding> = ({
   graph,
 }: CheckInput): readonly CoreChaptersFinding[] => {

@@ -26,8 +26,8 @@ interface UnitSectionsInput {
 }
 
 const BEFORE_FILE_HEADER_PATTERN = /(?=^diff --git )/m;
-// a moved file that keeps its text has no `+++` line, only the name it was moved to; git ends a name
-// that holds a space with a tab
+// Why: a moved file that keeps its text has no `+++` line, only the name it was moved to; git ends
+// a name that holds a space with a tab.
 const NEW_PATH_PATTERN = /^(?:\+\+\+ b\/|rename to )(.+?)\t?$/m;
 const MOVED_FROM_PATH_PATTERN = /^rename from (.+)/m;
 

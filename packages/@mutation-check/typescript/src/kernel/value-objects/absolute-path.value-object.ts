@@ -7,7 +7,7 @@ type AbsolutePath = Brand<string, 'AbsolutePath'>;
 
 const AbsolutePath: BrandedPath<AbsolutePath> = brandedPath({
   accepts: isAbsolutePath,
-  code: ValueFailure.AbsolutePath,
+  refusalCode: ValueFailure.AbsolutePath,
 });
 
 export { AbsolutePath };

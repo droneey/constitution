@@ -1,10 +1,5 @@
 #!/bin/sh
-# Lays out the site the production image serves: each kept release's site, the current build where
-# no release carries its version, the version menu's list, the not-found page and the redirects:
-#   scripts/fetch-releases.sh <current build> <current version> <site> <server config>
-# KEPT_RELEASES: how many releases to keep, newest first by version; 0 serves the current build alone
-# GITHUB_REPOSITORY, GITHUB_API_URL, GITHUB_SERVER_URL: where the releases are, as in GitHub Actions
-# GITHUB_TOKEN_FILE: a token that lifts the API's limit of 60 requests an hour, read if it exists
+# shellcheck disable=SC3043 # busybox's ash, the image's shell, has local
 set -eu
 # shellcheck disable=SC3040 # busybox's ash, the image's shell, has it
 set -o pipefail
@@ -20,8 +15,7 @@ log() {
   printf '%s\n' "$*" >&2
 }
 
-# the API's answer to the path; it checks its own commands, as set -e is off where a caller runs
-# it as a condition
+# Why: api checks its own commands, as set -e is off where a caller runs api as a condition.
 api() {
   set -- --header 'Accept: application/vnd.github+json' -- "$API_URL/repos/$REPOSITORY/$1"
   if [ -r "$TOKEN_FILE" ]; then
@@ -31,8 +25,6 @@ api() {
   wget -q -O - "$@"
 }
 
-# the releases carrying the archive and its checksum, newest first by version, as
-# `<version> <pre-release>`
 releases_kept() {
   if [ "$KEPT" -eq 0 ]; then
     return
@@ -46,7 +38,6 @@ releases_kept() {
     | "\(.version) \(.prerelease)"'
 }
 
-# the version of the release GitHub calls the latest, or nothing when none is, or none can be read
 latest_release() {
   if [ "$KEPT" -eq 0 ]; then
     return
@@ -57,29 +48,30 @@ latest_release() {
   fi
 }
 
-# unpacks the archive of release $1 into its folder of site $2, once its checksum holds
 unpack_release() {
+  local release_version="$1"
+  local site_folder="$2"
   downloads="$(mktemp -d)"
   trap 'rm -rf "$downloads"' EXIT
   trap 'rm -rf "$downloads"; exit 1' HUP INT TERM
 
   for file in "$ARCHIVE" "$ARCHIVE.sha256"; do
-    wget -q -O "$downloads/$file" -- "$SERVER_URL/$REPOSITORY/releases/download/v$1/$file"
+    wget -q -O "$downloads/$file" -- "$SERVER_URL/$REPOSITORY/releases/download/v$release_version/$file"
   done
   if ! (cd "$downloads" && sha256sum -c -s -- "$ARCHIVE.sha256"); then
-    log "The archive of v$1 does not match its checksum."
+    log "The archive of v$release_version does not match its checksum."
     exit 1
   fi
-  mkdir -p "$2/v$1"
-  tar -xzf "$downloads/$ARCHIVE" -C "$2/v$1"
+  mkdir -p "$site_folder/v$release_version"
+  tar -xzf "$downloads/$ARCHIVE" -C "$site_folder/v$release_version"
   rm -rf "$downloads"
   trap - EXIT HUP INT TERM
 }
 
-# `{latest, versions}` of the sites served, `<version> <pre-release>` lines in $1, and the latest, $2:
-# every one but the pre-releases, which stay reachable unlisted, and the latest
 versions_list() {
-  printf '%s\n' "$1" | jq -R -s --arg latest "$2" '
+  local served_lines="$1"
+  local latest_version="$2"
+  printf '%s\n' "$served_lines" | jq -R -s --arg latest "$latest_version" '
     [split("\n")[] | select(. != "") | split(" ") | {version: .[0], prerelease: (.[1] == "true")}]
     | {
         latest: $latest,
@@ -90,11 +82,11 @@ versions_list() {
       }'
 }
 
-# the server's one page for an address with no file, $1 the latest: it loads the app shell of the
-# release the address names, or the latest's for an address outside every release, under the same
-# address, so that release's router shows its own not-found page; the server has no 404 page per
-# folder, and its rewrites replace files that exist too
+# Why: the server has no 404 page per folder, and its rewrites replace files that exist too, so its
+# one page for an address with no file loads the app shell of the release the address names, or the
+# latest's, under the same address, where that release's router shows its own not-found page.
 not_found_page() {
+  local latest_version="$1"
   cat <<EOF
 <!doctype html>
 <html lang="en">
@@ -104,7 +96,7 @@ not_found_page() {
 <title>Not found</title>
 <script>
 (async () => {
-  const latest = '/v$1/';
+  const latest = '/v$latest_version/';
   const named = /^\/v[0-9]+[.][0-9]+[.][0-9]+\//.exec(location.pathname)?.[0] ?? latest;
   let shell = await fetch(named + '_shell.html');
   if (!shell.ok) shell = await fetch(latest + '_shell.html');
@@ -120,16 +112,16 @@ not_found_page() {
 EOF
 }
 
-# static-web-server's redirects of every address with no release to the latest's, $1
 server_config() {
+  local latest_version="$1"
   printf '%s\n' '[advanced]'
   for address in '/' '/docs' '/llms.txt' '/llms-full.txt'; do
     printf '\n[[advanced.redirects]]\nsource = "%s"\ndestination = "/v%s%s"\nkind = 302\n' \
-      "$address" "$1" "$address"
+      "$address" "$latest_version" "$address"
   done
   # shellcheck disable=SC2016 # the $1 in the text is the server's capture, not the shell's
   printf '\n[[advanced.redirects]]\nsource = "/docs/{**}"\ndestination = "/v%s/docs/$1"\nkind = 302\n' \
-    "$1"
+    "$latest_version"
 }
 
 main() {

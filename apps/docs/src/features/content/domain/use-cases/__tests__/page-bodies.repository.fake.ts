@@ -1,7 +1,6 @@
 import type { PageBodiesQueryRepository } from '../../contracts';
 import type { PageLocation } from '../../entities';
 
-/** a page's body is the name of its file, for the pages it holds */
 export const createFakePageBodiesRepository = (
   pages: readonly PageLocation[],
 ): PageBodiesQueryRepository<string> => ({

@@ -19,7 +19,6 @@ const blockOf = (id: BlockId, layer: Layer): ModelBlock => ({
   requires: [],
 });
 
-// A unit of the folder that follows the blocks.
 const unitOf = (input: { blocks: readonly BlockId[]; path: UnitPath }): ProjectUnit =>
   ProjectUnit.create({
     axes: [],
@@ -30,7 +29,6 @@ const unitOf = (input: { blocks: readonly BlockId[]; path: UnitPath }): ProjectU
     path: input.path,
   });
 
-// A resolution of no block, which gives the warnings.
 const warnedOf = (warnings: readonly ProjectWarning[]): Resolution =>
   Resolution.create({
     active: [],
@@ -44,7 +42,7 @@ const warnedOf = (warnings: readonly ProjectWarning[]): Resolution =>
       roles: [],
       rules: [],
     }),
-    musts: [],
+    mustsBesideCore: [],
     units: [],
     warnings,
   });
@@ -156,7 +154,7 @@ describe('Resolution.create', () => {
   });
 });
 
-describe('Resolution.activeCountOf', () => {
+describe('Resolution.activeInAnyUnitCountOf', () => {
   it('should count each block some unit makes active once when a block is active in two units and one in none', () => {
     // Arrange
     const resolution = Resolution.create({
@@ -175,7 +173,7 @@ describe('Resolution.activeCountOf', () => {
         roles: [],
         rules: [],
       }),
-      musts: [],
+      mustsBesideCore: [],
       units: [
         unitOf({
           blocks: [
@@ -195,7 +193,7 @@ describe('Resolution.activeCountOf', () => {
     });
 
     // Act
-    const count = Resolution.activeCountOf(resolution);
+    const count = Resolution.activeInAnyUnitCountOf(resolution);
 
     // Assert
     expect(count).toBe(2);

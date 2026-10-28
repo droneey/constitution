@@ -11,11 +11,6 @@ interface KeepSessionInput {
   readonly state: SessionState | undefined;
 }
 
-/**
- * Keeps the state a session starts with for its later hooks: a resumed session keeps what it was
- * reminded of, any other starts afresh. A subagent's start, and a start that gave no state, keep
- * nothing.
- */
 const keepSession = (input: KeepSessionInput): void => {
   if (input.state === undefined || input.event !== HookEventName.SessionStart) {
     return;

@@ -7,7 +7,6 @@ interface FrameFakeInput {
 
 export interface FrameFake {
   frame: DocumentFrame;
-  /** oldest first */
   marks: SidebarState[];
 }
 

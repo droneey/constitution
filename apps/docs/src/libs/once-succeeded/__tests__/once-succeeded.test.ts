@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'bun:test';
 
-import { once } from '../once';
+import { onceSucceeded } from '../once-succeeded';
 
-describe('once', () => {
+describe('onceSucceeded', () => {
   it('should make the value on the first call and give it on every later one', () => {
     // Arrange
     const makes: string[] = [];
-    const read = once(() => {
+    const read = onceSucceeded(() => {
       makes.push('made');
 
       return 'Ports';
@@ -39,7 +39,7 @@ describe('once', () => {
       },
       (): string => 'Ports',
     ];
-    const read = once(() => makes.shift()?.());
+    const read = onceSucceeded(() => makes.shift()?.());
 
     // Act
     const firstRead = (): unknown => read();
@@ -61,7 +61,7 @@ describe('once', () => {
       (): Promise<string> => Promise.reject(unreachable),
       (): Promise<string> => Promise.resolve('Ports'),
     ];
-    const read = once(() => makes.shift()?.());
+    const read = onceSucceeded(() => makes.shift()?.());
 
     // Act
     const firstRead = read();
@@ -78,7 +78,7 @@ describe('once', () => {
 
   it('should give the same promise on every call while it has not rejected', () => {
     // Arrange
-    const read = once(() => Promise.resolve('Ports'));
+    const read = onceSucceeded(() => Promise.resolve('Ports'));
     const first = read();
 
     // Act

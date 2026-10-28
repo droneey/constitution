@@ -6,11 +6,11 @@
 
 ### biome-refuses-empty-names → name-never-an-empty-word · SHOULD
 
-A variable, a parameter or a destructured field named only `data`, `result`, `temp`, `info`, `item`, `value`, `obj`, `arr`, `stuff` or `thing` fails the lint wherever its setting reaches.
+A variable, a parameter or a destructured field named only `data`, `result`, `temp`, `info`, `item`, `value`, `obj`, `arr`, `stuff` or `thing` fails the lint wherever its setting reaches; one that holds a value whose shape the code does not know takes a suppression that says so.
 
 | Why |
 |---|
-| a list of words is what a lint can hold of the rule; whether a word is truly generic stays the reviewer's. |
+| a list of words is what a lint can hold of the rule, and the suppression is where the code says that it knows nothing of the value's shape. |
 
 ### biome-refuses-empty-verbs → function-name-has-a-concrete-verb · SHOULD
 

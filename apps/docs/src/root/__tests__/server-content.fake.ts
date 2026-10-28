@@ -10,7 +10,6 @@ import type {
   GetSearchIndex,
 } from '#/features/content';
 
-/** the use cases the request middleware hands the server's handlers */
 interface ServerContent {
   readonly getFullText: GetFullText;
   readonly getNavigation: GetNavigation<SerializedPageTree>;
@@ -21,7 +20,6 @@ interface ServerContent {
   readonly getSearchIndex: GetSearchIndex;
 }
 
-/** what the fake serves: the overview and one guide */
 const SERVED = {
   navigation: {
     // biome-ignore lint/style/useNamingConvention: Fumadocs marks a serialized page tree by this key
@@ -51,7 +49,6 @@ const SERVED = {
   },
 } as const;
 
-/** by the slugs joined */
 const markdownBySlugs = new Map([
   [
     '',

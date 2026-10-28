@@ -14,12 +14,12 @@ describe('recordOf', () => {
 
     // Act
     const record = recordOf({
-      defaults: [],
+      everMetDefaults: [],
       fields: [
         'name',
       ],
       heldBefore: new Set(Leaf.leavesOf(ours).map(Leaf.keyOf)),
-      isCreated: false,
+      isCreatedByApply: false,
       lock: Lock.emptyRecord,
       ours,
     });

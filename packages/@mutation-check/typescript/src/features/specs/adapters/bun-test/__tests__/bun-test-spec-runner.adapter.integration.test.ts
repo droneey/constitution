@@ -23,13 +23,12 @@ afterAll(() => {
   });
 });
 
-// The failing spec passes when the run hands it the variable `spare`.
 const UNIT: Files = {
   'bunfig.mutation.toml': '[test]\npathIgnorePatterns = ["tests/**"]\n',
   'node_modules/shop/__tests__/shop.test.ts': '',
   [SPEC_SCENARIO.failingPath]: `import { test } from 'bun:test';\n\ntest('${SPEC_SCENARIO.caseTitle}', () => {\n  if (process.env['spare'] !== '1') {\n    throw new Error('broken');\n  }\n});\n`,
   [SPEC_SCENARIO.passingPath]: `import { test } from 'bun:test';\n\ntest('${SPEC_SCENARIO.caseTitle}', () => {});\n`,
-  [SPEC_SCENARIO.waitingPath]: `import { test } from 'bun:test';\n\ntest('${SPEC_SCENARIO.caseTitle}', () => Bun.sleep(60_000), 60_000);\n`,
+  [SPEC_SCENARIO.timingOutPath]: `import { test } from 'bun:test';\n\ntest('${SPEC_SCENARIO.caseTitle}', () => Bun.sleep(60_000), 60_000);\n`,
   'tests/e2e/order.e2e.test.ts': '',
 } as const;
 
@@ -169,7 +168,7 @@ describe('bunTestSpecRunner', () => {
         SPEC_SCENARIO.failingPath,
       ],
       timeoutMs: 30_000,
-      variables: {
+      addedVariables: {
         spare: '1',
       },
     });
@@ -194,7 +193,7 @@ describe('bunTestSpecRunner', () => {
         UnitRelativePath.create('src/__tests__/later.test.ts'),
       ],
       timeoutMs: 30_000,
-      variables: {},
+      addedVariables: {},
     });
 
     // Assert

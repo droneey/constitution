@@ -12,10 +12,6 @@ interface ReadReleaseInput extends ReleaseReadInput {
   readonly manifestParser: ReleaseManifestParser;
 }
 
-/**
- * The release a project pins, as its manifest names it; a release that names no block format is
- * older than the first one read from the blocks.
- */
 const readRelease = (input: ReadReleaseInput): Release => {
   const { files } = input;
   const { releaseFolderPath } = input.place;

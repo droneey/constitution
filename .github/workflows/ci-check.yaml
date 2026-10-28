@@ -16,8 +16,6 @@ permissions:
   contents: read
 
 jobs:
-  # The project's one check, the same command an agent runs before it hands a
-  # change back.
   units:
     name: units
     runs-on: ubuntu-latest
@@ -44,8 +42,8 @@ jobs:
       - name: Build
         run: bun run --cwd packages/constitution build
 
-  # check proves the logic once; an executable the release ships can still break on
-  # its own platform, so each is built and run on its own runner.
+  # Why: check proves the logic once; an executable the release ships can still break on its own
+  # platform, so each is built and run on its own runner.
   executable:
     name: executable (${{ matrix.target }})
     runs-on: ${{ matrix.runner }}
@@ -81,7 +79,7 @@ jobs:
           HOOK_SHELL: /bin/bash
         run: bun run --cwd packages/constitution executable:test
 
-  # The ruleset requires this one name, whatever the platform matrix holds.
+  # Why: the ruleset requires this one name, whatever the platform matrix holds.
   check:
     name: check
     needs:

@@ -33,7 +33,6 @@ function Confirm({
     onSubmit,
   });
 
-  // An answer is read out as its word, and the default, which Enter gives, as checked.
   const answerOf = (word: string, key: string, isDefault: boolean): ReactElement => (
     <Box
       aria-label={word}

@@ -10,7 +10,6 @@ COMMAND_TIMED_OUT: Final = '{command} ran past its time'
 MUTANTS_KEPT: Final = (
   'the mutants/ folder of an earlier run could not be removed, {reason}; remove it and run again'
 )
-# git and mutmut never write a value the check refuses, so one is a defect
 ABSOLUTE_PATH: Final = '{text} is absolute where a path from the unit belongs; report it'
 PATH_OUT_OF_UNIT: Final = '{text} climbs out of the unit where a path from it belongs; report it'
 UNKNOWN_ARGUMENTS: Final = (

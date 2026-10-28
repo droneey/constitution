@@ -12,6 +12,7 @@ import {
 } from '../../../../../__tests__/session.fixtures';
 import { createFakeSessionQueryRepository } from '../../../../../__tests__/session-query-repository.fake';
 import type { RemindedBlock } from '../../../../entities';
+import { SessionAgent } from '../../../../entities';
 import { AgentId, SessionId } from '../../../../value-objects';
 import { remindOfFile } from '../remind-of-file.use-case';
 
@@ -53,7 +54,7 @@ const savedState = sessionStateOf({
     ui,
     typescript,
   ],
-  musts: [
+  mustsBesideCore: [
     oneScreen,
     mustOf({
       block: 'api',
@@ -107,7 +108,7 @@ describe('remindOfFile', () => {
 
       // Act
       const reminder = remindOfFile({
-        agent: undefined,
+        agent: SessionAgent.main,
         path,
         session: keptSession,
         sessions,
@@ -126,14 +127,14 @@ describe('remindOfFile', () => {
 
   it.each<{
     asker: {
-      agent: AgentId | undefined;
+      agent: SessionAgent;
     };
     blocks: readonly RemindedBlock[];
     condition: string;
   }>([
     {
       asker: {
-        agent: undefined,
+        agent: SessionAgent.main,
       },
       blocks: [
         typescriptReminded,
@@ -209,7 +210,7 @@ describe('remindOfFile', () => {
 
     // Act
     const reminder = remindOfFile({
-      agent: undefined,
+      agent: SessionAgent.main,
       path,
       session: keptSession,
       sessions,
@@ -253,7 +254,7 @@ describe('remindOfFile', () => {
 
     // Act
     const reminder = remindOfFile({
-      agent: undefined,
+      agent: SessionAgent.main,
       path,
       session,
       sessions,

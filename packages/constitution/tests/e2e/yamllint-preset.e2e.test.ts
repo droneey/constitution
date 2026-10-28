@@ -16,8 +16,8 @@ describe("the configuration yamllint's presets write", () => {
     });
   });
 
-  // yamllint skips a key it does not know at the top of its configuration, so each top-level key
-  // the presets write has a sample it must react to, beside a sample that keeps every rule.
+  // Why: yamllint skips a key it does not know at the top of its configuration, so each top-level
+  // key the presets write has a sample it must react to, beside a sample that keeps every rule.
   it.each([
     {
       condition: 'a document keeps every rule',

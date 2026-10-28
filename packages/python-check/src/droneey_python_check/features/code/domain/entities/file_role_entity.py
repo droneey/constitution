@@ -7,12 +7,10 @@ from .layer_entity import Layer
 if TYPE_CHECKING:
   from ..types import PackagePath
 
-# The kernel, the ports it shares among it, is pure, and so is a domain.
-PURE_LAYERS: Final = frozenset({Layer.KERNEL})
+PURE_TOP_LEVEL_LAYERS: Final = frozenset({Layer.KERNEL})
 EDGE_LAYERS: Final = frozenset({Layer.ADAPTERS, Layer.INTEGRATIONS, Layer.LIBS, Layer.ROOT})
 MAIN_STEM: Final = 'main'
 ENTRY_STEMS: Final = frozenset({'__main__', MAIN_STEM})
-# The folders of an entry file of its own: entrypoints/<name>/main.py.
 ENTRY_DEPTH: Final = 2
 
 
@@ -32,19 +30,18 @@ def is_entry(*, file_folder: PackagePath, file_stem: str) -> bool:
 
 
 def layers_of(file_folder: PackagePath) -> tuple[str, ...]:
-  """The layers a file sits in, by its folder inside the import package.
+  top_level_folder = file_folder[:1]
+  module_layer_folder = file_folder[2:3]
 
-  They are its top-level folder and, in a feature or a module of composition, that module's layer,
-  its third folder.
-  """
-  return (*file_folder[:1], *file_folder[2:3]) if in_feature_form(file_folder) else file_folder[:1]
+  return (
+    (*top_level_folder, *module_layer_folder) if in_feature_form(file_folder) else top_level_folder
+  )
 
 
 def role_of(*, file_folder: PackagePath, file_stem: str) -> FileRole:
-  """The role of a file; a top-level folder the tree does not name is no part of the edge."""
   layers = layers_of(file_folder)
 
-  if layers and (layers[0] in PURE_LAYERS or layers[1:] == (Layer.DOMAIN,)):
+  if layers and (layers[0] in PURE_TOP_LEVEL_LAYERS or layers[1:] == (Layer.DOMAIN,)):
     return FileRole.PURE
 
   if (
@@ -58,7 +55,6 @@ def role_of(*, file_folder: PackagePath, file_stem: str) -> FileRole:
 
 
 def is_edge(role: FileRole) -> bool:
-  """Whether the role is the edge's, the one that reaches effects and the environment."""
   match role:
     case FileRole.EDGE:
       return True
@@ -69,7 +65,6 @@ def is_edge(role: FileRole) -> bool:
 
 
 def may_import_packages(role: FileRole) -> bool:
-  """Whether a file of the role may import a package in its home, which no pure file does."""
   match role:
     case FileRole.EDGE | FileRole.INNER:
       return True

@@ -8,7 +8,7 @@ interface FlagsInput<TFlags> {
   readonly schema: ZodType<TFlags>;
 }
 
-/** @throws {@link UsageError} when the options do not parse */
+/** @throws {UsageError} when the options do not parse */
 const flagsOf = <TFlags>(input: FlagsInput<TFlags>): TFlags => {
   const parsed = input.schema.safeParse(input.opts);
 
@@ -24,14 +24,14 @@ const flagsOf = <TFlags>(input: FlagsInput<TFlags>): TFlags => {
   return parsed.data;
 };
 
-/** @throws {@link UsageError} when the options do not parse */
+/** @throws {UsageError} when the options do not parse */
 const baseFlagsOf = (opts: unknown): z.output<typeof baseFlagsSchema> =>
   flagsOf({
     opts,
     schema: baseFlagsSchema,
   });
 
-/** @throws {@link UsageError} when the options do not parse */
+/** @throws {UsageError} when the options do not parse */
 const outputFlagsOf = (opts: unknown): z.output<typeof outputFlagsSchema> =>
   flagsOf({
     opts,

@@ -1,13 +1,13 @@
 import type { ReactElement } from 'react';
 
 import type { Version } from '#/features/versions';
+import { Versions } from '#/features/versions';
 
 interface DocsVersionNoticeProps {
   latestVersion: Version;
   pageHref: string;
 }
 
-/** the link leaves the site's base, so the host leads it to the same page of the latest release */
 export function DocsVersionNotice({
   latestVersion,
   pageHref,
@@ -17,7 +17,10 @@ export function DocsVersionNotice({
       Not the latest release.
       <a
         className='text-fd-primary underline'
-        href={pageHref}
+        href={Versions.pageAddressIn({
+          pageHref,
+          version: latestVersion,
+        })}
       >
         Read v{latestVersion}
       </a>

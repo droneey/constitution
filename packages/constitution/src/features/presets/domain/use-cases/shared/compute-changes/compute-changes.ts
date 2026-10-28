@@ -21,9 +21,7 @@ interface ComputeChangesInput {
 }
 
 interface ChangesComputed {
-  /** every unit's files, in the units' order */
   readonly files: readonly FileComputed[];
-  /** what the preset files and their entries hold wrong, the files' own findings aside */
   readonly presetsFindings: readonly PresetsFinding[];
   readonly units: readonly UnitComputed[];
 }

@@ -24,12 +24,9 @@ interface BlockSetBlockFixture {
   readonly requires?: readonly string[];
   readonly seams?: readonly string[];
   readonly source?: string;
-  // undefined given for a block whose card has no summary
   readonly summary?: string | undefined;
 }
 
-// A block as the block set reads it, the release's domain unless the case says; a chapter as
-// "<axis>/<name>.md", a seam as "<axis>/<other block>".
 const blockSetBlockOf = (block: BlockSetBlockFixture): BlockSetBlock => {
   const summary = 'summary' in block ? block.summary : `The ${block.id} block.`;
 
@@ -74,7 +71,6 @@ interface BlockSetRuleFixture {
   readonly tightens?: string;
 }
 
-// A rule as the block set reads it: a MUST it states on foundation unless the case says.
 const blockSetRuleOf = (rule: BlockSetRuleFixture): BlockSetRule => ({
   axis: rule.axis ?? Axis.Foundation,
   block: BlockId.create(rule.block),

@@ -3,11 +3,13 @@ import { ProjectUnit } from '#/kernel/entities';
 import type { BlockId, RepositoryRelativePath, RuleSlug } from '#/kernel/value-objects';
 import { configFilePath, PackPath, SourceKind, UnitPath } from '#/kernel/value-objects';
 
+import type { EntryAsked } from '../../../../../entities';
 import { InForce, PresetEntry } from '../../../../../entities';
 import type { TargetFile, TargetRun } from '../../../../../value-objects';
 import { EntryTarget, TargetKind } from '../../../../../value-objects';
 
 interface FileCandidate {
+  readonly droppedByOverrideOrAxis: readonly PresetEntry[];
   readonly entries: readonly (PresetEntry & TargetFile)[];
   readonly filePath: RepositoryRelativePath;
   readonly kind: TargetKind.File;
@@ -15,18 +17,16 @@ interface FileCandidate {
 }
 
 interface RunCandidate {
+  readonly droppedByOverrideOrAxis: readonly PresetEntry[];
   readonly entries: readonly (PresetEntry & TargetRun)[];
   readonly kind: TargetKind.Run;
   readonly unit: ProjectUnit;
 }
 
-/** The entries in force for one target: a file, held by the first unit that writes it, or a unit's run. */
 type Candidate = FileCandidate | RunCandidate;
 
-/**
- * The path a candidate's findings name, from whose folder its facts are read: its file's, or its
- * unit's constitution.yaml.
- */
+type EntryFile = Omit<FileCandidate, 'droppedByOverrideOrAxis'>;
+
 const candidatePathOf = (candidate: Candidate): RepositoryRelativePath => {
   switch (candidate.kind) {
     case TargetKind.File:
@@ -48,13 +48,11 @@ const listsSource = (unit: ProjectUnit, entry: PresetEntry): boolean => {
   );
 };
 
-// An entry's file, its roles written as their terms are; none when it names a role no term
-// defines or leaves its unit's folder, which its own finding reports.
 const fileCandidatesOf = (input: {
   entry: PresetEntry & TargetFile;
   model: BlockModel;
   unit: ProjectUnit;
-}): readonly FileCandidate[] => {
+}): readonly EntryFile[] => {
   const writtenPath = PresetEntry.writtenPathOf(input);
 
   return writtenPath === undefined || !EntryTarget.staysInItsUnit(input.entry)
@@ -71,12 +69,11 @@ const fileCandidatesOf = (input: {
       ];
 };
 
-// The files an entry writes; a run's entries make a candidate of their own.
 const entryFilesOf = (input: {
   entry: PresetEntry;
   model: BlockModel;
   unit: ProjectUnit;
-}): readonly FileCandidate[] => {
+}): readonly EntryFile[] => {
   const { entry } = input;
 
   switch (entry.kind) {
@@ -94,7 +91,6 @@ const entryFilesOf = (input: {
 };
 
 interface SelectEntriesInput {
-  /** in the order they merge in */
   readonly entries: readonly PresetEntry[];
   readonly model: BlockModel;
   readonly units: readonly ProjectUnit[];
@@ -104,15 +100,17 @@ interface TakeContext {
   readonly forAll: InForce;
   readonly model: BlockModel;
   readonly rules: ReadonlyMap<RuleSlug, ModelRule>;
-  /** the readers only the repository's unit follows */
   readonly shared: ReadonlySet<BlockId>;
 }
 
 interface UnitTaken {
-  /** each of one entry */
-  readonly files: readonly FileCandidate[];
+  readonly droppedFiles: readonly EntryFile[];
+  readonly files: readonly EntryFile[];
   readonly runs: readonly RunCandidate[];
 }
+
+const runEntriesOf = (entries: readonly PresetEntry[]): readonly (PresetEntry & TargetRun)[] =>
+  entries.filter((entry) => entry.kind === TargetKind.Run);
 
 const takenBy = (
   input: TakeContext & {
@@ -122,36 +120,47 @@ const takenBy = (
 ): UnitTaken => {
   const { unit } = input;
   const own = InForce.ofUnit(unit);
-  const taken = input.entries.filter((entry) => {
-    const isShared = input.shared.has(entry.set.placeInPresets.reader);
-    const isServed = !isShared || ProjectUnit.isRepository(unit);
 
-    return (
-      isServed &&
-      listsSource(unit, entry) &&
-      InForce.takes(isShared ? input.forAll : own, {
-        entry,
-        rules: input.rules,
-      })
-    );
-  });
+  const servedWhere = (
+    isInForce: (inForce: InForce, given: EntryAsked) => boolean,
+  ): readonly PresetEntry[] =>
+    input.entries.filter((entry) => {
+      const isShared = input.shared.has(entry.set.placeInPresets.reader);
+      const isServed = !isShared || ProjectUnit.isRepository(unit);
 
-  const runEntries = taken.filter((entry) => entry.kind === TargetKind.Run);
+      return (
+        isServed &&
+        listsSource(unit, entry) &&
+        isInForce(isShared ? input.forAll : own, {
+          entry,
+          rules: input.rules,
+        })
+      );
+    });
 
-  return {
-    files: taken.flatMap((entry) =>
+  const filesOf = (entries: readonly PresetEntry[]): readonly EntryFile[] =>
+    entries.flatMap((entry) =>
       entryFilesOf({
         entry,
         model: input.model,
         unit,
       }),
-    ),
+    );
+
+  const taken = servedWhere(InForce.takes);
+  const dropped = servedWhere(InForce.isDroppedByOverrideOrAxis);
+  const runEntries = runEntriesOf(taken);
+
+  return {
+    droppedFiles: filesOf(dropped),
+    files: filesOf(taken),
     runs:
       // Stryker disable next-line ConditionalExpression: a run of no entry resolves to no candidate, which the resolve leaves out
       runEntries.length === 0
         ? []
         : [
             {
+              droppedByOverrideOrAxis: runEntriesOf(dropped),
               entries: runEntries,
               kind: TargetKind.Run,
               unit,
@@ -160,7 +169,6 @@ const takenBy = (
   };
 };
 
-/** An entry is taken where its reader, blocks, language and rule are in force in the unit. */
 const selectEntries = (input: SelectEntriesInput): readonly Candidate[] => {
   const { model, units } = input;
   const repository = units.find(ProjectUnit.isRepository);
@@ -201,12 +209,18 @@ const selectEntries = (input: SelectEntriesInput): readonly Candidate[] => {
     taken.flatMap((unitTaken) => unitTaken.files),
     (file) => file.filePath,
   );
+  const droppedFiles = Map.groupBy(
+    taken.flatMap((unitTaken) => unitTaken.droppedFiles),
+    (file) => file.filePath,
+  );
 
   return [
-    // A file is held by the first unit that writes it, with the entries of every unit that does.
     ...files.values().flatMap((writers) =>
       writers.slice(0, 1).map((first) => ({
         ...first,
+        droppedByOverrideOrAxis: (droppedFiles.get(first.filePath) ?? []).flatMap(
+          (file) => file.entries,
+        ),
         entries: writers.flatMap((file) => file.entries),
       })),
     ),

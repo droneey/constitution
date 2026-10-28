@@ -21,11 +21,10 @@ interface BodyProps {
 
 interface PageBody {
   body: FC<BodyProps>;
-  /** the same promise on every call, which React's `use` reads at once when it has settled */
+  // Why: React's `use` suspends on every new promise, so each call gives the same one.
   load: () => Promise<Loaded>;
 }
 
-/** a collection's compiled files by their path, `./<path>`, as fumadocs-mdx's browser collections hold them */
 interface BodyCollection {
   readonly raw: Readonly<Record<string, () => Promise<CompiledMDXProperties>>>;
 }
@@ -34,7 +33,6 @@ const render = ({ default: Body }: CompiledMDXProperties, props: BodyProps): Rea
   <Body {...props} />
 );
 
-/** the bodies of the pages, each loaded once and kept, as React's `use` needs */
 const createPageBodies = (
   collections: Readonly<Record<string, BodyCollection>>,
 ): PageBodiesQueryRepository<PageBody> => {
@@ -50,10 +48,8 @@ const createPageBodies = (
       },
     ]),
   );
-  /**
-   * Read at once when settled, as the library's own renderer does: a page whose route loaded its body
-   * renders whole in its first commit, so the router finds a heading the address names.
-   */
+  // Why: read at once when settled, as the library's own renderer does: a page whose route loaded
+  // its body renders whole in its first commit, so the router finds a heading the address names.
   const loadings = new Map<string, Promise<Loaded>>();
 
   const find = (page: PageLocation): PageBody | undefined => {

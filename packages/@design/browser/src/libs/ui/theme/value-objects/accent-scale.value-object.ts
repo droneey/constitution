@@ -9,14 +9,12 @@ type Oklch = readonly [
   hueDegrees: number,
 ];
 
-/** keyed by the step names of the brand file's group, past its `$` properties */
 type AccentScale = Readonly<Record<string, Oklch>> & {
   readonly [brand]: 'AccentScale';
 };
 
 const PATH_SEPARATOR = '.';
 
-/** what sets a group's own property apart from its tokens */
 const GROUP_PROPERTY_PREFIX = '$';
 
 const OKLCH_SPACE = 'oklch';
@@ -30,7 +28,6 @@ const isOklch = (candidate: unknown): candidate is Oklch =>
   candidate.length === OKLCH_COMPONENTS &&
   candidate.every((component) => typeof component === 'number');
 
-/** a step's name as the build writes a token's, so it stays one property name in the stylesheet */
 const STEP_NAME = /^[\da-z]+(?:-[\da-z]+)*$/u;
 
 const isStep = ([name, colour]: readonly [
@@ -64,9 +61,9 @@ const componentsOf = (token: unknown): unknown => {
 };
 
 /**
- * The scale of an app's brand file, as the W3C Design Tokens format writes it.
+ * the scale of an app's brand file, as the W3C Design Tokens format writes it
  *
- * @throws {@link MalformedAccentError} when the file holds no step, or a step is named otherwise
+ * @throws {MalformedAccentError} when the file holds no step, or a step is named otherwise
  * than a token or holds no colour in OKLCH
  */
 const create = (brandFile: unknown): AccentScale => {

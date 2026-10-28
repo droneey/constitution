@@ -3,7 +3,6 @@ import { describe, expect, it } from 'bun:test';
 import { clockOf, TODAY_VARIABLE } from '../configuration';
 import { ConfigurationFailure, isConfigurationError } from '../configuration.error';
 
-// The code and details of the configuration failure a read throws, if it throws one.
 const failureOf = (
   read: () => unknown,
 ):

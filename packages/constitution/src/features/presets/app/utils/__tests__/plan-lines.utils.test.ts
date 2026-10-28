@@ -28,7 +28,6 @@ const entry: PresetEntry = {
   value: PresetValue.plain(true),
 };
 
-// A file with its entry, the runs of the root and of a member, and a finding.
 const plan: PresetsPlan = {
   blockIds: new Map(),
   files: [

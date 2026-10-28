@@ -1,11 +1,16 @@
 import type { Axis } from '#/kernel/constants';
+import { AXES } from '#/kernel/constants';
 import type { ModelRule, ProjectUnit } from '#/kernel/entities';
 import type { BlockId, RuleSlug } from '#/kernel/value-objects';
 
 import { EVERY } from '../constants';
 import type { PresetEntry } from './preset-entry.entity';
 
-/** What a unit follows, against which an entry's keys and preset file are taken or left. */
+interface EntryAsked {
+  readonly entry: PresetEntry;
+  readonly rules: ReadonlyMap<RuleSlug, ModelRule>;
+}
+
 interface InForce {
   readonly axes: ReadonlySet<Axis>;
   readonly blocks: ReadonlySet<BlockId>;
@@ -20,8 +25,6 @@ const ofUnit = (unit: ProjectUnit): InForce => ({
   lowered: unit.loweredRules,
 });
 
-// A reader only the repository's unit follows is served by its file alone, over the blocks,
-// languages and axes of every unit (ADR-0218); the rules it lowers are the repository's own.
 const ofUnits = (input: {
   lowered: ReadonlySet<RuleSlug>;
   units: readonly ProjectUnit[];
@@ -40,13 +43,7 @@ const ofUnits = (input: {
   lowered: input.lowered,
 });
 
-const isRuleInForce = (
-  inForce: InForce,
-  input: {
-    entry: PresetEntry;
-    rules: ReadonlyMap<RuleSlug, ModelRule>;
-  },
-): boolean => {
+const isRuleInForce = (inForce: InForce, input: EntryAsked): boolean => {
   if (input.entry.rule === EVERY) {
     return true;
   }
@@ -60,13 +57,7 @@ const isRuleInForce = (
   );
 };
 
-const takes = (
-  inForce: InForce,
-  input: {
-    entry: PresetEntry;
-    rules: ReadonlyMap<RuleSlug, ModelRule>;
-  },
-): boolean => {
+const takes = (inForce: InForce, input: EntryAsked): boolean => {
   const { entry } = input;
   const { placeInPresets } = entry.set;
 
@@ -80,10 +71,23 @@ const takes = (
   );
 };
 
+const isDroppedByOverrideOrAxis = (inForce: InForce, input: EntryAsked): boolean =>
+  !takes(inForce, input) &&
+  takes(
+    {
+      ...inForce,
+      axes: new Set(AXES),
+      lowered: new Set(),
+    },
+    input,
+  );
+
 const InForce = {
+  isDroppedByOverrideOrAxis,
   ofUnit,
   ofUnits,
   takes,
 } as const;
 
+export type { EntryAsked };
 export { InForce };

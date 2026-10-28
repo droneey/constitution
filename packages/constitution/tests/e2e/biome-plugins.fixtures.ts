@@ -12,7 +12,6 @@ import { biomeDiagnostics } from './biome-preset.fixtures';
 import { linkRelease, release, writeFiles } from './package.fixtures';
 
 interface BiomeUnit {
-  /** the optional axes it follows; architecture and workflow where it names none */
   readonly axes?: readonly string[];
   readonly blocks: readonly string[];
 }
@@ -25,20 +24,14 @@ interface Project {
 interface Sample {
   readonly condition: string;
   readonly files: Readonly<Record<string, string>>;
-  /** the unit it is linted in, where its condition needs another than its row's */
   readonly unit?: BiomeUnit;
 }
 
 interface PluginRow {
-  /** the samples the plugin lets through, one for each allowed form it could mistake */
   readonly allowed?: readonly Sample[];
-  /** the folder of the plugin's file under presets/biome/plugins/ */
   readonly language: string;
-  /** the samples the plugin reports, one for each form its rule forbids */
   readonly reported: readonly Sample[];
-  /** the plugin's file name without its extension, the code its diagnostics open with */
   readonly slug: string;
-  /** the unit its samples are linted in; typescriptUnit where it names none */
   readonly unit?: BiomeUnit;
 }
 
@@ -55,10 +48,8 @@ const MANIFEST = 'package.json';
 const PLUGIN_CATEGORY = 'plugin';
 const LINT_CATEGORY = 'lint/';
 const PLUGIN_FILE = /\.grit$/;
-// A plugin opens its message with its slug in brackets.
 const PLUGIN_SLUG = /^\[([a-z0-9-]+)\]/;
 const RUNS_AT_ONCE = 4;
-// A unit of TypeScript with Bun's specs and React's DOM, whose plugins most rows' samples need.
 const typescriptUnit: BiomeUnit = {
   blocks: [
     'bun-test',
@@ -83,7 +74,6 @@ const unitFixtureOf = (unit: BiomeUnit): UnitFixture => ({
 
 const configs = new Map<string, unknown>();
 
-// The configuration the apply writes for the unit, applied once for each unit.
 const configOf = (unit: BiomeUnit): unknown => {
   const key = JSON.stringify(unit);
 
@@ -111,7 +101,7 @@ const includesOf = (configuration: unknown): readonly string[] => {
   );
 };
 
-// A glob not opened by ** matches only from the folder of its configuration.
+// Why: a glob not opened by ** matches only from the folder of its configuration.
 const anchoredGlobs = (unit: BiomeUnit): readonly Bun.Glob[] =>
   includesOf(configOf(unit))
     .filter((glob) => !/^!{0,2}\*\*/.test(glob))
@@ -123,9 +113,6 @@ const keyOf = (project: Project): string =>
     Object.entries(project.files).toSorted(([left], [right]) => left.localeCompare(right)),
   ]);
 
-// Projects of the same unit and manifest share one configuration and one run, each in a folder
-// of its own beneath it; a project with a file an anchored glob matches keeps a configuration of
-// its own.
 const groupKeyOf = (key: string, project: Project): string => {
   const anchored = anchoredGlobs(project.unit);
   const isAnchored = Object.keys(project.files).some((path) =>
@@ -140,7 +127,6 @@ const groupKeyOf = (key: string, project: Project): string => {
 };
 
 interface Member {
-  /** the folder of a project's files, relative to its group's */
   readonly folder: string;
   readonly key: string;
 }
@@ -155,7 +141,8 @@ type Entry = readonly [
   Project,
 ];
 
-// Plugin paths resolve from the configuration's folder, so the presets are linked into each group.
+// Why: plugin paths resolve from the configuration's folder, so the presets are linked into each
+// group.
 const writeConfiguration = (folder: string, project: Project): void => {
   linkRelease(folder, PRESETS);
   writeFiles({
@@ -172,7 +159,6 @@ const writeConfiguration = (folder: string, project: Project): void => {
   });
 };
 
-// A group of one project holds its files; a larger one holds a folder for each.
 const writeGroup = (folder: string, entries: readonly Entry[]): Group => ({
   folder,
   members: entries.map(([key, project], index) => {
@@ -208,12 +194,6 @@ const pluginsOfMember = (
     )
     .map(({ message }) => PLUGIN_SLUG.exec(message)?.[1] ?? message);
 
-/**
- * The slugs of the plugins Biome reports on each member of the group.
- *
- * @throws Error when Biome reports what is neither a plugin's nor a lint rule's finding, as on a
- * configuration or a plugin it cannot load, under which no plugin would report anything.
- */
 const lintGroup = async (
   group: Group,
 ): Promise<
@@ -239,8 +219,8 @@ const lintGroup = async (
   ]);
 };
 
-// Each group is a project of its own, for Biome checks types and the module graph only in the
-// project of its root configuration; a few run at a time.
+// Why: Biome checks types and the module graph only in the project of its root configuration, so
+// each group is a project of its own; a few run at a time.
 const lintAll = async (
   entries: readonly Entry[],
 ): Promise<ReadonlyMap<string, readonly string[]>> => {
@@ -288,16 +268,9 @@ const lintAll = async (
 };
 
 interface PluginBatch {
-  /** the cases of the samples the rows' plugins let through, registered to be linted */
   readonly allowedCases: (rows: readonly PluginRow[]) => readonly PluginCase[];
   readonly lintRegistered: () => Promise<void>;
-  /**
-   * The slugs of the plugins Biome reports on a registered project.
-   *
-   * @throws Error when no table registered the project, or before the batch is linted.
-   */
   readonly pluginsOf: (project: Project) => readonly string[];
-  /** the cases of the samples the rows' plugins report, registered to be linted */
   readonly reportedCases: (rows: readonly PluginRow[]) => readonly PluginCase[];
 }
 
@@ -326,7 +299,6 @@ const createPluginBatch = (): PluginBatch => {
   };
 };
 
-/** The plugin files under presets/biome/plugins/ that no row names, by their paths there. */
 const pluginsWithNoRow = (rows: readonly PluginRow[]): readonly string[] =>
   readdirSync(pluginsFolder, {
     recursive: true,

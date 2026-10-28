@@ -10,7 +10,7 @@ import {
   wordMatcher,
 } from '../utils';
 
-/** What a bold term of a block file names. */
+/** what a bold term of a block file names */
 enum TermKind {
   Concept = 'concept',
   Brand = 'brand',
@@ -29,7 +29,7 @@ interface Term {
   readonly term: string;
 }
 
-/** A bold span that defines a term: the text of its one code span, or its plain words. */
+/** a bold span that defines a term: the text of its one code span, or its plain words */
 interface Bold {
   readonly isCode: boolean;
   readonly text: string;
@@ -41,15 +41,14 @@ interface TermsRead {
   readonly terms: readonly Term[];
 }
 
-// Strong emphasis as CommonMark reads it: no space just inside either pair of asterisks, and no
-// blank line between them.
+// Why: strong emphasis as CommonMark reads it: no space just inside either pair of asterisks, and
+// no blank line between them.
 const BOLD = /\*\*(?![\s*])((?:[^*\n]|\n(?![ \t]*\n))+?)(?<![\s*])\*\*/g;
 const BOLD_MARK = '**';
 const PLAIN = /^[^`[\]]+$/;
 const CONCEPT = /^[a-z]+(?:[ -][a-z]+)*$/;
 const LEAD_IN_END = /[.:]$/;
 const FILE_NAME = /^[\w-]+(?:\.[\w-]+)+$/;
-// What `{#` and `}` enclose is taken whole, so a misshapen id is read and the check can name it.
 const TERM_ID = /^\{#([^}\n]*)\}/;
 const SUFFIX_START = '.';
 
@@ -65,8 +64,6 @@ const codeKindOf = (name: string): TermKind => {
   return FILE_NAME.test(name) ? TermKind.File : TermKind.Api;
 };
 
-// A lead-in closes on "." or ":" and opens its sentence, so a capital that opens it is the
-// sentence's, not the term's.
 const plainTermOf = (text: string): Term => {
   const isLeadIn = LEAD_IN_END.test(text);
   const term = isLeadIn ? text.slice(0, -1) : text;
@@ -83,7 +80,7 @@ const plainTermOf = (text: string): Term => {
       };
 };
 
-/** The term a bold span defines, its whitespace already collapsed. */
+/** the term a bold span defines, its whitespace already collapsed */
 const of = (bold: Bold): Term =>
   bold.isCode
     ? {
@@ -100,7 +97,6 @@ const wordMatcherOf =
       word,
     });
 
-// A concept, a folder and a suffix are words of their own form; any other term is matched as written.
 const matcherOfKind: Readonly<Record<TermKind, (word: string) => (text: string) => boolean>> = {
   [TermKind.Api]: ownedWordMatcher,
   [TermKind.Brand]: ownedWordMatcher,
@@ -110,7 +106,7 @@ const matcherOfKind: Readonly<Record<TermKind, (word: string) => (text: string) 
   [TermKind.Suffix]: wordMatcherOf(WordKind.Suffix),
 };
 
-/** The id written at the start of `text`, the text that follows a bold term. */
+/** the id written at the start of `text`, the text that follows a bold term */
 const idAfter = (text: string): string | undefined => TERM_ID.exec(text)?.[1];
 
 const withIdAfter = (input: { term: Term; text: string }): Term => {
@@ -130,7 +126,7 @@ const isRoleKind = (kind: TermKind): kind is RoleKind =>
 const isOneCodeSpan = (text: string): boolean =>
   inlineCodeSpans(text).length === 1 && withoutInlineCode(text).trim() === '';
 
-/** The terms a block file's body defines: its bold spans outside code. */
+/** the terms a block file's body defines: its bold spans outside code */
 const allIn = (body: string): TermsRead => {
   const prose = withoutCodeFences(body);
   const terms: Term[] = [];
@@ -177,13 +173,13 @@ const allIn = (body: string): TermsRead => {
 
 const matcherOf = (term: Term): ((text: string) => boolean) => matcherOfKind[term.kind](term.term);
 
-/** The name a folder or a suffix gives a path: its term without the "/", or without the ".". */
+/** the name a folder or a suffix gives a path: its term without the "/", or without the "." */
 const roleNameOf = (role: { readonly kind: RoleKind; readonly term: string }): string =>
   role.kind === TermKind.Folder
     ? role.term.slice(0, -PATH_SEPARATOR.length)
     : role.term.slice(SUFFIX_START.length);
 
-/** The spelling of a folder without its "/", or of a suffix without its ".". */
+/** the spelling of a folder without its "/", or of a suffix without its "." */
 const otherSpellingOf = (term: Term): string | undefined => {
   const { kind } = term;
 

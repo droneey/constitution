@@ -28,7 +28,6 @@ import {
 
 const PACKAGES_KEY = 'packages';
 
-/** The heirs a warning offers in place of an abstract block: "a, b or c", or one of them unnamed. */
 const heirsText = (heirs: readonly BlockId[]): string =>
   heirs.length === 0
     ? UNNAMED_HEIRS
@@ -42,7 +41,6 @@ const heirsText = (heirs: readonly BlockId[]): string =>
         })
         .join('');
 
-/** Where a warning holds: in a member, or nothing for the repository. */
 const whereText = (unit: UnitPath): string =>
   UnitPath.isRepository(unit) ? '' : inUnitMessage(unit);
 
@@ -88,7 +86,6 @@ const warningTexts: TextsOf<WarningDetails> = {
   [WarningKind.ReleaseLinkLoops]: ({ unit }) => releaseLinkLoopsMessage(unitText(unit)),
 };
 
-/** What a warning of a project says, as every report of warnings words it. */
 const warningTextOf = (warning: ProjectWarning): string =>
   textOf(warningTexts, warning.kind, warning.details);
 

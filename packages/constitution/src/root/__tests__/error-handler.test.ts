@@ -24,7 +24,6 @@ const testTheme = createTheme({
   mode: ThemeMode.Dark,
 });
 
-// The handler of a run of a hook, or of a person's command, that keeps what it writes.
 const handlerOf = (input: {
   isHook: boolean;
 }): {
@@ -45,7 +44,6 @@ const handlerOf = (input: {
   };
 };
 
-// What the root's clock throws when the environment fixes a day written otherwise than YYYY-MM-DD.
 const malformedDayFailure = ((): unknown => {
   try {
     return clockOf('2026-6-15').today();
@@ -54,7 +52,6 @@ const malformedDayFailure = ((): unknown => {
   }
 })();
 
-// What the output flags throw when an option does not parse.
 const unparsedOptionsFailure = ((): unknown => {
   try {
     return outputFlagsOf({
@@ -65,7 +62,6 @@ const unparsedOptionsFailure = ((): unknown => {
   }
 })();
 
-// Each failure the handler words, by a name the golden file heads it with.
 const failures: readonly {
   readonly failure: unknown;
   readonly name: string;
@@ -156,7 +152,6 @@ const failures: readonly {
   },
 ];
 
-// What commander says of command lines typed wrong, by a name the golden file heads it with.
 const usages: readonly {
   readonly name: string;
   readonly said: string;
@@ -171,7 +166,6 @@ const usages: readonly {
   },
 ];
 
-// What the handler writes of a failure, as a hook and then for a person.
 const failureWrittenOf = (failure: unknown): string => {
   const hook = handlerOf({
     isHook: true,
@@ -196,7 +190,6 @@ const usageWrittenOf = (said: string): string => {
   return handler.written();
 };
 
-// What the handler writes of each failure and each command line typed wrong, as the golden file holds it.
 const goldenText = (): string =>
   goldenOf(
     Object.fromEntries([

@@ -139,6 +139,11 @@ typescript:
           rules:
             style:
               useEnumInitializers: error
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/closed-name-set-is-a-string-enum.${role.grit-rule}]:
+          includes:
+            - '**/*.ts'
+            - '**/*.tsx'
+            - slot: left-out
   date-and-time-are-temporal-values:
     typescript:
       biome.jsonc:
@@ -222,6 +227,11 @@ typescript:
           rules:
             complexity:
               noUselessUndefined: error
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/undefined-is-the-only-absence.${role.grit-rule}]:
+          includes:
+            - '**'
+            - slot: left-out
+            - '!**/*.tsx'
   promise-awaited-returned-or-handed-to-a-scope:
     typescript:
       biome.jsonc:
@@ -281,6 +291,12 @@ typescript:
       biome.jsonc:
         plugins:
           - ./${constitution.path}/presets/biome/plugins/typescript/type-names-undecorated.${role.grit-rule}
+  business-types-readonly:
+    typescript:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/business-types-readonly.${role.grit-rule}]:
+          includes:
+            - slot: business-types
   module-level-value-never-changed:
     typescript:
       biome.jsonc:

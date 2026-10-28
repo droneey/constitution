@@ -8,13 +8,11 @@ import { RecordKind } from '../domain/entities';
 import { ApplyError, ApplyFailure } from '../domain/errors';
 import { lockOf } from './presets.fixtures';
 
-/** A project of these files, by their paths, and the path of one no write reaches. */
 interface AppliedFilesWorld {
   readonly files: Readonly<Record<string, string>>;
   readonly unwritable?: string;
 }
 
-/** What a project holds after the writes: a file's text and a unit's lock, by their paths. */
 interface AppliedFilesState {
   readonly lockOf: (unitPath: string) => Lock | undefined;
   readonly textOf: (filePath: string) => string | undefined;
@@ -22,7 +20,6 @@ interface AppliedFilesState {
 
 interface AppliedFilesRepositorySuiteInput {
   readonly name: string;
-  /** a repository over a project that holds the world, its folder, and what it holds after */
   readonly repositoryOf: (world: AppliedFilesWorld) => {
     readonly projectFolderPath: AbsolutePath;
     readonly repository: AppliedFilesCommandRepository;
@@ -33,8 +30,8 @@ interface AppliedFilesRepositorySuiteInput {
 const lock = lockOf({
   'biome.json': {
     addresses: [],
-    defaults: [],
-    isCreated: true,
+    everMetDefaults: [],
+    isCreatedByApply: true,
     kind: RecordKind.Settings,
     leaves: [
       'abc',
@@ -42,7 +39,6 @@ const lock = lockOf({
   },
 });
 
-// What a write fails with: its code and the file it names.
 const failureOf = (act: () => unknown): unknown => {
   try {
     act();

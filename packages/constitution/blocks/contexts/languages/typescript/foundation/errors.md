@@ -4,13 +4,13 @@
 
 ## Kinds of failure
 
-### expected-failure-named-by-a-throws-tag → expected-failure-is-part-of-the-contract · SHOULD
+### expected-failure-named-by-a-throws-tag → expected-failure-documented-where-no-signature-names-it · MUST
 
-A function that throws an expected failure names its type in a `@throws` tag of its JSDoc — `@throws {@link OrderNotFoundError} when no order has the id` — beside the one named type of its failures.
+An expected failure is named in a `@throws` tag of the function's JSDoc, its type in braces and then its condition: `@throws {OrderNotFoundError} when no order has the id`.
 
 | Why |
 |---|
-| TypeScript has no checked exceptions, so no signature can say what a function throws and no compiler holds it; the tag is where the editor shows it to every caller. |
+| TypeScript has no checked exceptions, so its signatures name no failure; the tag is where the editor shows one to a caller, and its braces name the type the caller recognises the failure by. |
 
 ## Catching and carrying
 

@@ -9,7 +9,7 @@ const VERSION_PATTERN = /^\d+\.\d+\.\d+$/;
 const is = (candidate: unknown): candidate is Version =>
   typeof candidate === 'string' && VERSION_PATTERN.test(candidate);
 
-/** @throws {@link VersionError} when the text is no `<major>.<minor>.<patch>` */
+/** @throws {VersionError} when the text is no `<major>.<minor>.<patch>` */
 const create = (text: string): Version => {
   if (!is(text)) {
     throw new VersionError({

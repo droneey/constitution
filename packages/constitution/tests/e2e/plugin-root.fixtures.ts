@@ -16,7 +16,6 @@ import { dirname, join } from 'node:path';
 import type { Files } from './constitution.fixtures';
 import { constitutionFiles } from './constitution.fixtures';
 
-// A file the distribution is built without.
 enum Breakage {
   Manifest = 'package.json',
 }
@@ -27,8 +26,6 @@ interface PluginRootOptions {
 
 const INSTALLED = '1.0.0';
 const repository = join(import.meta.dir, '..', '..');
-// The block format of this repository's release, the one its hooks read, found
-// in its package.json as the hook finds it.
 const releaseFormat = Number(
   /"constitutionFormat"\s*:\s*(\d+)/u.exec(
     readFileSync(join(repository, 'package.json'), 'utf8'),
@@ -61,8 +58,6 @@ const PLUGIN = 'plugin';
 const DISTRIBUTION = 'distribution';
 const LINK = '.droneey/constitution';
 
-// The distribution a plugin root's hooks are tested with: the release a project pins,
-// which mise unpacks and links into the project.
 const distributionOf = (root: string): string => join(dirname(root), DISTRIBUTION);
 
 const writeManifest = (input: { folder: string; format: number | undefined }): void => {
@@ -85,8 +80,6 @@ const writeManifest = (input: { folder: string; format: number | undefined }): v
   );
 };
 
-// The plugin brings the hooks; the distribution beside it, the blocks and the
-// manifest that names their format, as a release packs them.
 const createPluginRoot = (options: PluginRootOptions = {}): string => {
   const { breakage } = options;
   const folder = mkdtempSync(join(tmpdir(), 'constitution-plugin-'));
@@ -114,8 +107,6 @@ const createPluginRoot = (options: PluginRootOptions = {}): string => {
   return root;
 };
 
-// The plugin root a release of this repository ships, as far as the hook reads
-// it, and the distribution beside it: the real blocks and the manifest.
 const createRealPluginRoot = (): string => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-plugin-'));
   const root = join(folder, PLUGIN);
@@ -137,9 +128,6 @@ interface DistributionLink {
   readonly project: string;
 }
 
-// Links the distribution into a project as mise's postinstall does, unless the
-// project holds something there already; the project's git ignores the link,
-// as a project's .gitignore does.
 const linkDistribution = (input: DistributionLink): void => {
   const link = join(input.project, LINK);
 

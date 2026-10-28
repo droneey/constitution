@@ -11,22 +11,16 @@ import type {
 } from '#/kernel/value-objects';
 import { BlockFilePlace } from '#/kernel/value-objects';
 
-/** A chapter of a block, <axis>/<name>.md. */
 interface ChapterPlace {
   readonly axis: Axis;
   readonly name: string;
 }
 
-/** A seam of a block, <axis>/with/<other>.md. */
 interface SeamPlace {
   readonly axis: Axis;
   readonly other: BlockId;
 }
 
-/**
- * A block of the Constitution or of a pack as a project reads it, its chapters and seams in the
- * order the blocks are read; a card without front matter leaves its fields empty or absent.
- */
 interface BlockSetBlock {
   readonly chapters: readonly ChapterPlace[];
   readonly extends?: BlockId;
@@ -60,12 +54,10 @@ interface BlockSetAnswer {
 interface BlockSet {
   readonly answers: readonly BlockSetAnswer[];
   readonly blocks: readonly BlockSetBlock[];
-  /** the folders and suffixes the blocks define, each by its first definition */
   readonly roles: readonly RoleTerm[];
   readonly rules: readonly BlockSetRule[];
 }
 
-/** A markdown file of a source, its path from the source's folder: blocks/domains/ui/ui.md. */
 type SourceFile = {
   readonly path: string;
 } & (
@@ -78,10 +70,6 @@ type SourceFile = {
     }
 );
 
-/**
- * The files of a source in the order a project reads them, the one the Constitution's check loads
- * its blocks in; a file in no block's folder comes last.
- */
 const inReadOrder = (files: readonly SourceFile[]): readonly SourceFile[] =>
   files
     .map((file) => ({
@@ -104,14 +92,12 @@ const SourceFile = {
   inReadOrder,
 } as const;
 
-/** Whether the blocks folder of a source can be listed: a pack's cannot until it is installed. */
 enum SourceStatus {
   Listed = 'listed',
   Unlisted = 'unlisted',
 }
 
 type BlockSetSource = {
-  /** the folder a warning names the source's files under */
   readonly shownFolderPath: AbsolutePath | PackPath;
   readonly source: BlockSource;
 } & (

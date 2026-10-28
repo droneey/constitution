@@ -3,15 +3,10 @@ import type { FileRead } from '#/kernel/entities';
 import { FileReadStatus } from '#/kernel/entities';
 import { AbsolutePath } from '#/kernel/value-objects';
 
-// A tree of files in memory, by absolute path; a folder is any path a file lies below, and a link
-// stands for the folder it names.
 interface FakeTree {
   readonly files: Readonly<Record<string, string>>;
-  // folders that hold no file
   readonly folders?: readonly string[];
-  // link → the absolute folder it names, followed as a shell follows it
   readonly links?: Readonly<Record<string, string>>;
-  // files that exist but cannot be read
   readonly unreadable?: readonly string[];
 }
 

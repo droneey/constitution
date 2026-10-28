@@ -36,7 +36,7 @@ def python_sources(paths: Sequence[Path]) -> Sources:
 
   file_paths = tuple(file_path for path in paths for file_path in _python_file_paths(path))
   package_paths = {
-    root.path for file_path in file_paths if (root := import_root_of(file_path)) is not None
+    root.package_path for file_path in file_paths if (root := import_root_of(file_path)) is not None
   }
 
   return Sources(

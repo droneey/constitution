@@ -24,7 +24,6 @@ import {
 
 const PRESET_FILE = '.droneey/constitution/presets/biome/foundation.yaml';
 
-// A parser that reads no preset file.
 const unparsed: PresetFileParser = {
   parse: () => ({
     line: 1,
@@ -32,8 +31,6 @@ const unparsed: PresetFileParser = {
   }),
 };
 
-// The presets' ports: no built file, no lock, and a format that reads and writes text as it is and
-// sorts no keys.
 const presetsOf = (input: Partial<PresetsPorts> = {}): PresetsPorts => ({
   distribution: {
     builtFilesOf: () => new Set<string>(),
@@ -51,16 +48,15 @@ const presetsOf = (input: Partial<PresetsPorts> = {}): PresetsPorts => ({
   ...input,
 });
 
-// What a constitution.yaml that lists no block beyond core declares, the presets aside.
 const DECLARED = {
   active: [],
-  activeCount: 1,
+  activeInAnyUnitCount: 1,
   listing: {
     overrides: [],
     repository: [],
     units: [],
   },
-  musts: [],
+  mustsBesideCore: [],
   status: ConfigReadStatus.Parsed,
   warnings: [],
 } as const;
@@ -85,7 +81,7 @@ const sourceOf = (input: { config?: string; presets?: PresetsPorts } = {}) =>
 describe('createRulesSource', () => {
   it('should find the project around the folder through the project feature', () => {
     // Act
-    const place = sourceOf().find(AbsolutePath.create(PROJECT));
+    const place = sourceOf().findProjectAround(AbsolutePath.create(PROJECT));
 
     // Assert
     expect(place).toStrictEqual(projectPlace);
@@ -93,7 +89,7 @@ describe('createRulesSource', () => {
 
   it("should read the text of core's passport through the project feature", () => {
     // Act
-    const core = sourceOf().readCore(projectPlace);
+    const core = sourceOf().readCorePassport(projectPlace);
 
     // Assert
     expect(core).toBe(CORE_TEXT);
@@ -101,7 +97,7 @@ describe('createRulesSource', () => {
 
   it('should give the version of the release the project pins when it is installed', () => {
     // Act
-    const version = sourceOf().versionOf(projectPlace);
+    const version = sourceOf().pinnedVersionOf(projectPlace);
 
     // Assert
     expect(version).toBe(Version.create('1.0.0'));
@@ -119,7 +115,7 @@ describe('createRulesSource', () => {
     });
 
     // Act
-    const version = source.versionOf(projectPlace);
+    const version = source.pinnedVersionOf(projectPlace);
 
     // Assert
     expect(version).toBeUndefined();

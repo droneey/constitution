@@ -22,7 +22,6 @@ const CONFIGURATIONS = '- configurations: ';
 
 let root = '';
 
-// A project of TypeScript checked by Biome and run by Bun, whose biome.jsonc holds the files given.
 const projectOf = (files: Readonly<Record<string, string>>): string =>
   createProject({
     config: configOf({
@@ -43,7 +42,6 @@ const configurationLinesOf = (project: string): readonly string[] =>
     ),
   ).filter((line) => line.startsWith(CONFIGURATIONS));
 
-/** @throws Error when the apply fails. */
 const apply = (project: string): void => {
   linkDistribution({
     distribution: distributionOf(root),
@@ -72,8 +70,6 @@ const apply = (project: string): void => {
 
 const distributionMap = z.record(z.string(), z.unknown());
 
-// The release's distribution holds the presets beside the blocks, and the files its map packs,
-// which stand empty here.
 beforeAll(() => {
   root = createRealPluginRoot();
   cpSync(join(repository, 'presets'), join(distributionOf(root), 'presets'), {

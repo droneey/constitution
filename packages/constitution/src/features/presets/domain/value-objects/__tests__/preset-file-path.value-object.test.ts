@@ -8,7 +8,6 @@ import { BlockId } from '#/kernel/value-objects';
 import type { PathRead } from '../preset-file-path.value-object';
 import { PathKind, PresetFilePath } from '../preset-file-path.value-object';
 
-// Paths of the segments a preset file's path is made of, and of any text.
 const pathsInPresets = fc.oneof(
   fc
     .array(
@@ -31,7 +30,6 @@ const pathsInPresets = fc.oneof(
   fc.string(),
 );
 
-// The invariant: a preset file's place, written again, is the path it was read from.
 const isReadBack = (path: string): boolean => {
   const read = PresetFilePath.readOf(path);
 

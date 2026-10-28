@@ -50,7 +50,7 @@ function Table({ table }: TableProps): ReactElement {
         lineOf((_columnKey, title) => theme.strong(title), 'titles')
       }
       {
-        // A row has no identity of its own, and a frame never reorders its rows.
+        // Why: a row has no identity of its own, and a frame never reorders its rows.
         // Stryker disable next-line StringLiteral: a key only names a line to React, which draws the same with any
         table.rows.map((row, index) => lineOf((columnKey) => row[columnKey] ?? '', `row-${index}`))
       }

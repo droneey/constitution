@@ -6,7 +6,7 @@ interface Lock {
   readonly warnings: readonly string[];
 }
 
-// uv only warns on a pyproject.toml it cannot read, and then leaves out all of [tool.uv].
+// Why: uv only warns on a pyproject.toml it cannot read, and then leaves out all of [tool.uv].
 const WARNING = /^warning:/;
 
 const lockOf = async (reader: string): Promise<Lock> => {

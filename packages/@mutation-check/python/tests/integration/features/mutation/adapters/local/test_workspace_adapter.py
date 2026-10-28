@@ -182,7 +182,8 @@ def test_should_see_a_change_only_the_text_tells_as_the_project_index_does(tmp_p
   money_path.write_text('LIMIT = 1\n', encoding='utf-8')
   os.utime(money_path, (hour_ago, hour_ago))
   git(tmp_path, 'init', '--quiet')
-  # git then compares only sizes and times; an hour back, it records the file apart from the index
+  # Why: git then compares only sizes and times; an hour back, it records the file apart from the
+  # index.
   git(tmp_path, 'config', 'core.checkStat', 'minimal')
   git(tmp_path, 'add', '.')
   git(tmp_path, 'commit', '--quiet', '--no-verify', '-m', 'base')
@@ -221,8 +222,6 @@ def test_should_stop_with_the_command_when_git_fails(
   assert raised.value.command == command
 
 
-# A unit mutmut runs over, mutating src/ alone: two functions, of which the spec given calls only
-# `total`, so mutmut reaches no mutant of `tax`.
 def _unit(unit_path: Path, *, spec_text: str) -> None:
   write_files(
     unit_path,
@@ -242,7 +241,6 @@ def _unit(unit_path: Path, *, spec_text: str) -> None:
   )
 
 
-# the spec reaches `total` but cannot tell `price + fee` from `price - fee`
 WEAK_SPEC: Final = python(
   'from shop.orders import total',
   '',
@@ -328,7 +326,7 @@ def test_should_answer_what_mutmut_printed_when_its_clean_run_fails(tmp_path: Pa
   assert 'test_broken_on_purpose' in mutated.output
 
 
-# A stand-in for mutmut in the unit's folder, which `python -m mutmut` finds before the real one.
+# Why: `python -m mutmut` finds the stand-in in the unit's folder before the real one.
 def _stand_in_unit(unit_path: Path, *lines: str) -> None:
   write_files(
     unit_path, {'mutmut.py': python('import os', 'import sys', 'from pathlib import Path', *lines)}

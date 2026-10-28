@@ -51,17 +51,14 @@ core:
             lint:
               extend-select:
                 - FBT
-  todo-names-its-issue:
+  comment-explains-why:
     python:
       pyproject.toml:
         tool:
           ruff:
             lint:
               extend-select:
-                - FIX001
-                - FIX003
-                - FIX004
-                - TD
+                - FIX
   function-takes-at-most-three-positions:
     python:
       pyproject.toml:
@@ -395,7 +392,7 @@ ruff:
                 - C4
                 - E
                 - EXE
-                # pyflakes but its unused imports and locals, which dead-code-deleted selects
+                # Why: pyflakes but its unused imports and locals, which dead-code-deleted selects.
                 - F402
                 - F403
                 - F404

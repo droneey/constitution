@@ -6,7 +6,7 @@ import { createFakeThemeModeReader } from '../../../../../__tests__/theme-mode-r
 import type { ThemeMode, ThemeModeFiles } from '../../../../entities';
 import { ConfigModuleError, ConfigModuleFailure } from '../../../../errors';
 import { AbsolutePath } from '../../../../value-objects';
-import { generateThemes } from '../generate-themes.use-case';
+import { createGenerateThemes } from '../generate-themes.use-case';
 
 const CONFIG_PATH = 'style-dictionary.config.ts';
 
@@ -27,18 +27,17 @@ const modes: readonly ThemeModeFiles[] = [
   },
 ];
 
-describe('generateThemes', () => {
+describe('createGenerateThemes', () => {
   it("should build every mode the tokens define with the platform module's configuration", async () => {
     // Arrange
     const builder = createFakeThemeBuilder();
 
     // Act
-    await generateThemes({
+    await createGenerateThemes({
       builder,
-      configPath: CONFIG_PATH,
       loader: createFakeConfigModuleLoader(CONFIG_PATH, configOf),
       modeReader: createFakeThemeModeReader(modes),
-    });
+    })(CONFIG_PATH);
 
     // Assert
     expect(builder.builds).toStrictEqual([
@@ -55,12 +54,11 @@ describe('generateThemes', () => {
 
   it('should pass the refusal on when the platform module is refused', async () => {
     // Act
-    const refusal = await generateThemes({
+    const refusal = await createGenerateThemes({
       builder: createFakeThemeBuilder(),
-      configPath: '../outside.config.ts',
       loader: createFakeConfigModuleLoader(CONFIG_PATH, configOf),
       modeReader: createFakeThemeModeReader(modes),
-    }).catch((error: unknown) => error);
+    })('../outside.config.ts').catch((error: unknown) => error);
 
     // Assert
     expect(refusal).toStrictEqual(
@@ -73,12 +71,11 @@ describe('generateThemes', () => {
 
   it('should pass the refusal on when the platform module gives a mode no configuration', async () => {
     // Act
-    const refusal = await generateThemes({
+    const refusal = await createGenerateThemes({
       builder: createFakeThemeBuilder(),
-      configPath: CONFIG_PATH,
       loader: createFakeConfigModuleLoader(CONFIG_PATH, () => 'style-dictionary.config.json'),
       modeReader: createFakeThemeModeReader(modes),
-    }).catch((error: unknown) => error);
+    })(CONFIG_PATH).catch((error: unknown) => error);
 
     // Assert
     expect(refusal).toStrictEqual(

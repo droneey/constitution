@@ -17,10 +17,6 @@ const problemText = (warning: StateFolderWarning): string => {
   }
 };
 
-/**
- * The line a hook writes when no folder keeps the session: the problem, what to do, and what the
- * session goes without.
- */
 const stateFolderWarningText = (warning: StateFolderWarning): string =>
   `${hookPrefix}: ${problemText(warning)}; this session keeps no reminders and no gate\n`;
 

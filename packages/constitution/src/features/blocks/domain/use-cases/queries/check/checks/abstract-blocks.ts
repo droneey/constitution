@@ -4,7 +4,6 @@ import { BlockId } from '#/kernel/value-objects';
 import { Block, BlockFile, BlockFileRole } from '../../../../entities';
 import type { Check, CheckInput } from '../check.types';
 
-// An id stands alone: no word, dot or hyphen continues it on either side.
 const containsId = (input: { id: string; text: string }): boolean =>
   new RegExp(`(?<![\\w.-])${RegExp.escape(input.id)}(?![\\w-])`).test(input.text);
 

@@ -39,7 +39,6 @@ const answerOf = (judgement: StopJudgement): string | undefined => {
   }
 };
 
-/** Stop and SubagentStop: the hand-back gate, the tree it judged recorded. */
 const createStopCommand = (context: StopContext): Command =>
   new Command('stop')
     .description('Hold the hand-back until the check passed on the tree, and ask for a review.')

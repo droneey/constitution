@@ -192,7 +192,7 @@ const findingOfEachCode: {
     details: {
       ...named,
       file: 'pyproject.toml',
-      setting: 'tool.poe.tasks',
+      settingPath: 'tool.poe.tasks',
     },
     path: 'presets/poe/foundation.yaml',
   },
@@ -218,7 +218,7 @@ const findingOfEachCode: {
   [PresetsCode.Clash]: {
     code: PresetsCode.Clash,
     details: {
-      setting: SETTING,
+      settingPath: SETTING,
       sources: sourceNames,
     },
     path: 'biome.json',
@@ -226,7 +226,7 @@ const findingOfEachCode: {
   [PresetsCode.TwoReplacers]: {
     code: PresetsCode.TwoReplacers,
     details: {
-      setting: SETTING,
+      settingPath: SETTING,
       sources: sourceNames,
     },
     path: 'biome.json',
@@ -234,7 +234,7 @@ const findingOfEachCode: {
   [PresetsCode.MissingSlot]: {
     code: PresetsCode.MissingSlot,
     details: {
-      setting: 'jobs',
+      settingPath: 'jobs',
       slot: 'checks',
     },
     path: 'lefthook.yaml',
@@ -242,10 +242,18 @@ const findingOfEachCode: {
   [PresetsCode.SlotInNoList]: {
     code: PresetsCode.SlotInNoList,
     details: {
-      setting: 'jobs',
+      settingPath: 'jobs',
       slot: 'checks',
     },
     path: 'lefthook.yaml',
+  },
+  [PresetsCode.SlotPlacedTwice]: {
+    code: PresetsCode.SlotPlacedTwice,
+    details: {
+      settingPath: 'overrides',
+      slot: 'injected-classes',
+    },
+    path: 'biome.jsonc',
   },
   [PresetsCode.MissingName]: {
     code: PresetsCode.MissingName,
@@ -260,7 +268,7 @@ const findingOfEachCode: {
   [PresetsCode.Loosened]: {
     code: PresetsCode.Loosened,
     details: {
-      setting: 'formatter.width',
+      settingPath: 'formatter.width',
       wanted: '100',
     },
     path: 'biome.json',
@@ -268,7 +276,7 @@ const findingOfEachCode: {
   [PresetsCode.Missing]: {
     code: PresetsCode.Missing,
     details: {
-      settings: [
+      settingPaths: [
         'a',
         'b',
         'c',
@@ -279,7 +287,7 @@ const findingOfEachCode: {
   [PresetsCode.Stale]: {
     code: PresetsCode.Stale,
     details: {
-      settings: [
+      settingPaths: [
         'a',
         'b',
         'c',
@@ -292,7 +300,7 @@ const findingOfEachCode: {
   [PresetsCode.Unsorted]: {
     code: PresetsCode.Unsorted,
     details: {
-      settings: [
+      settingPaths: [
         'scripts',
       ],
     },
@@ -421,7 +429,7 @@ describe('presetsFindingTextOf', () => {
       finding: {
         code: PresetsCode.Loosened,
         details: {
-          setting: '',
+          settingPath: '',
           wanted: '{"width":100}',
         },
         path: 'biome.json',
@@ -438,7 +446,7 @@ describe('presetsFindingTextOf', () => {
         details: {
           ...named,
           file: 'pyproject.toml',
-          setting: '',
+          settingPath: '',
         },
         path: 'presets/poe/foundation.yaml',
       },
@@ -453,7 +461,7 @@ describe('presetsFindingTextOf', () => {
       finding: {
         code: PresetsCode.Missing,
         details: {
-          settings: [
+          settingPaths: [
             'a',
             'b',
             'c',
@@ -468,7 +476,7 @@ describe('presetsFindingTextOf', () => {
       finding: {
         code: PresetsCode.Missing,
         details: {
-          settings: [
+          settingPaths: [
             'a',
             'b',
             'c',

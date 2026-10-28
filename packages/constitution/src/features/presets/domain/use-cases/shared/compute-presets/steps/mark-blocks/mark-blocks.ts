@@ -19,22 +19,16 @@ import { EntryTarget, KeyKind, SettingKey } from '../../../../../value-objects';
 
 interface MarkBlocksInput {
   readonly contributions: readonly Contribution[];
-  /** every entry the presets hold, whatever the unit's blocks */
   readonly entries: readonly PresetEntry[];
   readonly merged: Setting | undefined;
   readonly written: readonly (PresetEntry & TargetFile)[];
 }
 
-/**
- * Where a value stands: its path as the file holds it, and as the merge holds it, which keeps an
- * addressed element under its address as a key.
- */
 interface Place {
   readonly keyPath: readonly MarkStep[];
   readonly mergedKeyPath: readonly MarkStep[];
 }
 
-/** What an entry gives at a place: the value there, or, where it has none, whatever is held there. */
 interface Given extends Place {
   readonly value?: Setting;
 }
@@ -84,7 +78,6 @@ const itemsAt = (place: Place, items: readonly Setting[]): readonly Given[] =>
     }),
   );
 
-// A default is the file's own once written, so it gives no mark.
 const givenOf = (preset: PresetValue, place: Place): readonly Given[] => {
   if (preset.kind === ValueKind.Default) {
     return [];
@@ -156,7 +149,6 @@ const givenOf = (preset: PresetValue, place: Place): readonly Given[] => {
   });
 };
 
-// Each value the file holds belongs to the first entry that gives it, in the merge's order.
 const nodesOf = (input: {
   contributions: readonly Contribution[];
   merged: Setting;
@@ -193,11 +185,6 @@ const nodesOf = (input: {
   return nodes;
 };
 
-/**
- * The keys and items one block alone gives, each below a key or an item several blocks fill or at
- * the file's top; and every block an entry of the file's path names. Undefined where the entries
- * write only defaults.
- */
 const markBlocks = (input: MarkBlocksInput): BlockMarks | undefined => {
   const { merged } = input;
 
@@ -228,7 +215,7 @@ const markBlocks = (input: MarkBlocksInput): BlockMarks | undefined => {
       ...new Set(
         input.entries
           .filter((entry) => writtenPaths.has(EntryTarget.textOf(entry)))
-          .map(Entries.blockOf),
+          .flatMap(Entries.blocksCommentsNameOf),
       ),
     ],
     marks: [

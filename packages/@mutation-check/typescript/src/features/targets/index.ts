@@ -15,4 +15,4 @@ export {
   MutationRunError,
   MutationRunFailure,
 } from './domain/errors';
-export { checkMutations } from './domain/use-cases';
+export { createCheckMutations } from './domain/use-cases';

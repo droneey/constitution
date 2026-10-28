@@ -5,7 +5,6 @@ interface FakeGetVersions {
   signals: AbortSignal[];
 }
 
-/** waits when given no answer; a read rejects once its signal aborts, as `fetch` does */
 export const createFakeGetVersions = (answer?: Versions | Error): FakeGetVersions => {
   const signals: AbortSignal[] = [];
 

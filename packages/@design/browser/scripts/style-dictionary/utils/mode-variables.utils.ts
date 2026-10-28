@@ -9,7 +9,7 @@ interface WrittenVariable {
   readonly name: string;
 }
 
-/** the parts of a typography token in the order the `font` shorthand takes them, each after its separator; the shorthand has no letter spacing */
+// Why: CSS's `font` shorthand takes the parts in this order, and it has no letter spacing.
 const FONT_SHORTHAND_PARTS = [
   [
     '',
@@ -29,6 +29,7 @@ const FONT_SHORTHAND_PARTS = [
   ],
 ] as const;
 
+/** @throws {MalformedTokenError} when a style of text has a part that refers to no token */
 const fontShorthandOf = (token: TransformedToken, dictionary: Dictionary): string =>
   FONT_SHORTHAND_PARTS.map(
     ([separator, partName]) =>
@@ -49,7 +50,7 @@ const withValueOf = (
   },
 });
 
-/** a typography token as the `font` shorthand of its parts and, apart, the letter spacing the shorthand lacks */
+/** @throws {MalformedTokenError} when a style of text has a part that refers to no token */
 const writtenTokensOf = (token: TransformedToken, dictionary: Dictionary): TransformedToken[] =>
   token.$type === TYPOGRAPHY_TYPE
     ? [
@@ -66,7 +67,6 @@ const writtenTokensOf = (token: TransformedToken, dictionary: Dictionary): Trans
         token,
       ];
 
-/** a token of the mode's own file, or one that reads such a token through its references */
 const readsModeToken = (token: TransformedToken, dictionary: Dictionary): boolean => {
   const tokenValue: unknown = token.original.$value;
 
@@ -76,15 +76,10 @@ const readsModeToken = (token: TransformedToken, dictionary: Dictionary): boolea
   );
 };
 
-/**
- * Style Dictionary's `css/variables`, whose own `font` shorthand writes resolved values, which a
- * mode that redefines a weight never reaches; and a variable resolves its references where it is
- * declared, so a mode that writes only its own tokens, `modeTokensOnly`, also writes every token
- * that reads one of them.
- *
- * @throws MalformedTokenError, of the references it reads, when a style of text has a part that
- * refers to no token
- */
+// Why: Style Dictionary's `css/variables` writes its `font` shorthand of resolved values, which a
+// mode that redefines a weight never reaches; and a variable resolves its references where it is
+// declared, so a mode that writes only its own tokens also writes every token that reads one.
+/** @throws {MalformedTokenError} when a style of text has a part that refers to no token */
 const modeVariables: FormatFn = async ({ dictionary, options }) => {
   const { outputReferences, usesDtcg } = options;
   const modeTokensOnly: unknown = options.modeTokensOnly;

@@ -20,6 +20,14 @@ An expected failure is an error of the program’s own — never one of the fram
 |---|
 | a failure that is part of the contract is handled by design, and a framework’s error carries no code of the program’s. |
 
+### expected-failure-documented-where-no-signature-names-it · MUST
+
+Where its signature cannot name a failure, every function that can produce an expected failure names it, and the condition it arises in, in its documentation, whether its package publishes the function or not.
+
+| Why |
+|---|
+| a caller handles only the failures it knows of, and where no signature and no compiler carry them, the documentation is the one place a caller inside the package or outside it learns of them. |
+
 ### failure-names-only-reachable-steps · MUST
 
 The next step a failure names — an operation to call, a command to run, a value to send — exists, is open to the one the failure reaches with the rights they hold, and accepts what it names.

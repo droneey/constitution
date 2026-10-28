@@ -11,7 +11,6 @@ import type { Candidate } from '../select-entries';
 
 interface SplitRunsInput {
   readonly candidates: readonly Candidate[];
-  /** every entry the presets hold */
   readonly entries: readonly PresetEntry[];
   readonly merged: readonly MergedCandidate[];
   readonly units: readonly ProjectUnit[];
@@ -119,8 +118,6 @@ const isRun = (outcome: UnitRun | PresetsFinding): outcome is UnitRun => 'comman
 
 const isFinding = (outcome: UnitRun | PresetsFinding): outcome is PresetsFinding => !isRun(outcome);
 
-// A runner is the reader of a preset file that gives what constitution runs; a tool is a block its
-// preset files pair with a runner, in whatever language.
 const runnersOf = (entries: readonly PresetEntry[]): ReadonlySet<BlockId> =>
   new Set(
     entries
@@ -138,7 +135,6 @@ const toolsOf = (input: {
       .flatMap((entry) => entry.set.placeInPresets.withs),
   );
 
-// A tool some runner runs, which a unit follows and none of its runners runs, is never run there.
 const unrunFindings = (input: SplitRunsInput): readonly PresetsFinding[] => {
   const runners = runnersOf(input.entries);
   const runnable = toolsOf({

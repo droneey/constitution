@@ -11,8 +11,8 @@ import { pluginFingerprintOf } from './libs/claude-plugin';
 import { createProgram, TODAY_VARIABLE } from './root';
 import { ExitCode } from './shared/cli';
 
-// The fingerprint of the plugin's files the build embeds; a run from the sources has none and takes
-// its working tree's.
+// Why: the build embeds the fingerprint of the plugin's files; a run from the sources has none and
+// takes its working tree's.
 declare const CONSTITUTION_PLUGIN_FINGERPRINT: string | undefined;
 
 const environmentOf = (names: readonly string[]): Readonly<Record<string, string>> =>
@@ -31,8 +31,8 @@ const environmentOf = (names: readonly string[]): Readonly<Record<string, string
     }),
   );
 
-// A hook's event is a few kilobytes, a file an agent wrote among them at most; an input past this
-// is refused unread, and reads as no event.
+// Why: a hook's event is a few kilobytes, a file an agent wrote among them at most; an input past
+// this is refused unread, and reads as no event.
 const MAX_INPUT_BYTES = 67_108_864;
 
 const io = {
@@ -107,8 +107,6 @@ const program = createProgram({
   version: packageJson.version,
 });
 
-// An interrupt or a termination says it stops, restores the terminal within a bound and ends the
-// run with the code the map gives the signal; a second one ends it at once.
 const STOP_BOUND_MS = 2000;
 
 for (const [signal, code] of [
@@ -136,8 +134,7 @@ for (const [signal, code] of [
   });
 }
 
-// A closed pipe ends the run with its code; any other failure of standard output goes to the
-// handler of last resort, which writes it and gives its code.
+// Why: a reader that closes the pipe, as `| head` does, is no failure of the program.
 process.stdout.on('error', (error: NodeJS.ErrnoException): void => {
   process.exit(error.code === 'EPIPE' ? ExitCode.ClosedPipe : program.fail(error));
 });

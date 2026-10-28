@@ -1,5 +1,5 @@
 @layer components {
-  /* a list keeps the position its own styles give it, and is positioned only where none do */
+  /* Why: :where() has no specificity, so a list keeps the position its own styles give it. */
   :where(:has(> [data-glide])) {
     position: relative;
     isolation: isolate;
@@ -28,7 +28,6 @@
     opacity: 1;
   }
 
-  /* a block that enters fades in where its row is, and only then slides from row to row */
   @media (prefers-reduced-motion: no-preference) {
     [data-glide]:not([data-entering]) {
       transition-property: translate, width, height, opacity, scale;

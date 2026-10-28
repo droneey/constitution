@@ -5,14 +5,14 @@ import type { AbsolutePath } from '#/kernel/value-objects';
 import type { Contribution, PresetsFinding, PresetValue } from '../../../../../entities';
 import { PresetEntry, Setting, ValueKind } from '../../../../../entities';
 import type { Guard } from '../../../../../value-objects';
-import { Fact, FactName, membersText } from '../../../../../value-objects';
+import { Fact, FactName, membersItemText } from '../../../../../value-objects';
 import type { Candidate } from '../select-entries';
 import type { FileFacts, LackedFact } from './steps/read-facts';
 import { constitutionPathFor, lackedFindingOf, lackOf, readFacts } from './steps/read-facts';
 
-/** A candidate of the entries whose guards hold, with what they contribute. */
 type ResolvedCandidate = Candidate & {
   readonly contributions: readonly Contribution[];
+  readonly droppedContributions: readonly Contribution[];
 };
 
 interface CandidatesResolved {
@@ -22,9 +22,7 @@ interface CandidatesResolved {
 
 enum OutcomeKind {
   Resolved = 'resolved',
-  /** every item a list held was a member, and the file's unit has none */
   Emptied = 'emptied',
-  /** a fact the file cannot be given */
   Unresolved = 'unresolved',
 }
 
@@ -57,7 +55,6 @@ const resolved = <TValue>(given: TValue): Resolved<TValue> => ({
   value: given,
 });
 
-// A text is never emptied: it resolves or it does not.
 const textOf = (text: string, facts: FileFacts): Resolved<string> | Unresolved => {
   const written = Fact.resolvedIn({
     text,
@@ -77,9 +74,7 @@ const booleanOf = (fact: Fact | undefined, facts: FileFacts): boolean | undefine
     : undefined;
 };
 
-// The values of outcomes: an unresolved one unresolves them all, and those the members empty go;
-// where they all go and emptying them empties their holder, so does it.
-const collected = <TValue>(input: {
+const outcomesCollected = <TValue>(input: {
   isEmptiable: boolean;
   outcomes: readonly Outcome<TValue>[];
 }): Outcome<readonly TValue[]> => {
@@ -98,7 +93,6 @@ const collected = <TValue>(input: {
   return values.length === 0 && input.isEmptiable ? emptied : resolved(values);
 };
 
-// A pair goes where its value goes; when every pair goes, so does the map.
 const pairsOf = <TValue>(
   outcomes: readonly (readonly [
     Resolved<string> | Unresolved,
@@ -110,7 +104,7 @@ const pairsOf = <TValue>(
     TValue,
   ])[]
 > =>
-  collected({
+  outcomesCollected({
     isEmptiable: outcomes.length > 0,
     outcomes: outcomes.map(
       ([key, held]): Outcome<
@@ -134,16 +128,15 @@ const pairsOf = <TValue>(
   });
 
 const isMembersItem = (listed: Setting): listed is string =>
-  typeof listed === 'string' && listed.includes(membersText);
+  typeof listed === 'string' && listed.includes(membersItemText);
 
-// A list whose members' items all go goes too.
 const itemsOf = (list: readonly Setting[], facts: FileFacts): Outcome<Setting> =>
-  collected({
+  outcomesCollected({
     isEmptiable: list.some(isMembersItem),
     outcomes: list.flatMap((listed) =>
       isMembersItem(listed)
         ? facts.memberPaths.map((memberPath) =>
-            textOf(listed.replaceAll(membersText, memberPath), facts),
+            textOf(listed.replaceAll(membersItemText, memberPath), facts),
           )
         : [
             settingOf(listed, facts),
@@ -212,7 +205,6 @@ const presetOf = (given: PresetValue, facts: FileFacts): Outcome<PresetValue> =>
     : pairs;
 };
 
-// A guard of a fact and a text holds where both resolve and are the same text.
 const guardHolds = (guard: Guard | undefined, facts: FileFacts): boolean => {
   if (guard === undefined) {
     return true;
@@ -241,22 +233,22 @@ interface ResolveFactsInput {
   readonly units: readonly ProjectUnit[];
 }
 
-// The lacks among the facts the texts name that the file's unit gives no value.
-const lacksIn = (texts: readonly (string | undefined)[], facts: FileFacts): readonly LackedFact[] =>
+const factsLackedIn = (
+  texts: readonly (string | undefined)[],
+  facts: FileFacts,
+): readonly LackedFact[] =>
   texts
     .filter((text) => text !== undefined)
     .flatMap((text) => Fact.referencesIn(text))
     .filter(({ fact }) => facts.valueOf(fact) === undefined)
     .flatMap(({ fact }) => lackOf(fact) ?? []);
 
-// A guard's facts are read for every entry, as the guard reads them: its text's only where its own
-// fact has a value. A value's are read only where its guard holds.
 const guardLacksOf = (guard: Guard | undefined, facts: FileFacts): readonly LackedFact[] => {
   if (guard === undefined) {
     return [];
   }
 
-  return lacksIn(
+  return factsLackedIn(
     [
       facts.valueOf(guard.fact) === undefined ? Fact.textOf(guard.fact) : guard.equals,
     ],
@@ -264,7 +256,23 @@ const guardLacksOf = (guard: Guard | undefined, facts: FileFacts): readonly Lack
   );
 };
 
-// Generic, so the entries kept keep the type of their candidate's kind.
+interface EntryRead {
+  readonly entry: PresetEntry;
+  readonly facts: FileFacts;
+}
+
+const contributionsOf = (read: readonly EntryRead[]): readonly Contribution[] =>
+  read.flatMap(({ entry, facts }) => {
+    const outcome = presetOf(entry.value, facts);
+
+    return outcome.kind === OutcomeKind.Resolved
+      ? [
+          PresetEntry.contributionOf(entry, outcome.value),
+        ]
+      : [];
+  });
+
+// Why: generic, so the entries kept keep the type of their candidate's kind.
 const resolveCandidate = <TCandidate extends Candidate>(
   input: ResolveFactsInput & {
     candidate: TCandidate;
@@ -275,32 +283,27 @@ const resolveCandidate = <TCandidate extends Candidate>(
 } => {
   const { candidate } = input;
   const constitutionPath = constitutionPathFor(input);
-  const read = candidate.entries.map((entry) => ({
-    entry,
-    facts: readFacts({
-      ...input,
-      constitutionPath,
+
+  const readOf = (entries: readonly PresetEntry[]): readonly EntryRead[] =>
+    entries.map((entry) => ({
       entry,
-    }),
-  }));
+      facts: readFacts({
+        ...input,
+        constitutionPath,
+        entry,
+      }),
+    }));
+
+  const read = readOf(candidate.entries);
   const held = read.filter(({ entry, facts }) => guardHolds(entry.guard, facts));
   const kept: TCandidate = {
     ...candidate,
     entries: held.map(({ entry }) => entry),
   };
-  const contributions = held.flatMap(({ entry, facts }) => {
-    const outcome = presetOf(entry.value, facts);
-
-    return outcome.kind === OutcomeKind.Resolved
-      ? [
-          PresetEntry.contributionOf(entry, outcome.value),
-        ]
-      : [];
-  });
   const lacked = new Set([
     ...read.flatMap(({ entry, facts }) => guardLacksOf(entry.guard, facts)),
     ...held.flatMap(({ entry, facts }) =>
-      lacksIn(
+      factsLackedIn(
         PresetEntry.textsOf(entry).map(({ text }) => text),
         facts,
       ),
@@ -323,16 +326,17 @@ const resolveCandidate = <TCandidate extends Candidate>(
         : [
             {
               ...kept,
-              contributions,
+              contributions: contributionsOf(held),
+              droppedContributions: contributionsOf(
+                readOf(candidate.droppedByOverrideOrAxis).filter(({ entry, facts }) =>
+                  guardHolds(entry.guard, facts),
+                ),
+              ),
             },
           ],
   };
 };
 
-/**
- * An entry that names a fact its target cannot be given writes nothing, and the fact a unit lacks
- * is a finding.
- */
 const resolveFacts = (input: ResolveFactsInput): CandidatesResolved => {
   const outcomes = input.candidates.map((candidate) =>
     resolveCandidate({
