@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
+import fc from 'fast-check';
+
 import { createFakeProjectFiles } from '#/__tests__/project-files.fake';
 import { Axis } from '#/kernel/constants';
 import { BlockModel } from '#/kernel/entities';
@@ -97,6 +99,104 @@ const belongsOf = (
         ]
       : [],
   );
+
+interface Key {
+  readonly block: string;
+  readonly rule?: string;
+}
+
+/** An entry in biome's foundation. */
+interface EntryShape {
+  readonly key: Key;
+  /** the blocks its path names after the axis */
+  readonly path: readonly string[];
+  /** the roles its value names */
+  readonly roles: readonly string[];
+}
+
+const modelKeys: readonly Key[] = [
+  {
+    block: 'biome',
+  },
+  {
+    block: 'bun',
+  },
+  {
+    block: 'bun',
+    rule: 'install-settings-only-in-the-root',
+  },
+  {
+    block: 'css',
+  },
+  {
+    block: 'css',
+    rule: 'css-loaded-by-the-bundle',
+  },
+  {
+    block: 'git',
+  },
+  {
+    block: 'git',
+    rule: 'lock-file-committed',
+  },
+  {
+    block: 'nestjs',
+  },
+  {
+    block: 'ui',
+  },
+];
+
+const modelRoles = [
+  'declaration-cache',
+  'ignore-file',
+  'nest-module',
+  'typescript-source',
+];
+
+// every block an entry may need, and ui for one it never does: core, biome and json are the
+// reader's reach, _runtime and lefthook give no role and no rule, and docker only a role's second
+// spelling
+const pathBlocks = [
+  'browser',
+  'bun',
+  'css',
+  'git',
+  'nestjs',
+  'nx',
+  'typescript',
+  'ui',
+  'workspace',
+];
+
+// Any of the model's keys, naming any of its roles, under any path of up to two blocks.
+const entryShapes: fc.Arbitrary<EntryShape> = fc.record({
+  key: fc.constantFrom(...modelKeys),
+  path: fc.uniqueArray(fc.constantFrom(...pathBlocks), {
+    maxLength: 2,
+  }),
+  roles: fc.subarray(modelRoles),
+});
+
+// A sample of the 11,808 shapes small enough for a slow runner; the shapes that broke before are
+// rows of their own, checked on every run.
+const SHAPES_SAMPLED = 1000;
+
+// The placement findings of an entry moved to where the check sends it: none where the check finds
+// it placed, or where it does not send it at all.
+const placementsWhereSent = (shape: EntryShape): readonly PresetsFinding[] => {
+  const entry = entryOf({
+    ...shape.key,
+    value: `files: [${shape.roles.map((role) => `'\${role.${role}}'`).join(', ')}]`,
+  });
+
+  return placementsOf(
+    entry,
+    belongsOf(entry, [
+      shape.path,
+    ]),
+  );
+};
 
 describe('checkPresets', () => {
   it('should find nothing when every preset file is sound', () => {
@@ -1010,103 +1110,150 @@ describe('checkPresets', () => {
     expect(found).toStrictEqual(findings);
   });
 
-  it('should find placed, where it sends it, every entry of the model’s keys and roles it finds misplaced', () => {
-    // Arrange
-    const keys = [
-      {
-        block: 'biome',
-      },
-      {
-        block: 'bun',
-      },
-      {
-        block: 'bun',
-        rule: 'install-settings-only-in-the-root',
-      },
-      {
-        block: 'css',
-      },
-      {
-        block: 'css',
-        rule: 'css-loaded-by-the-bundle',
-      },
-      {
-        block: 'git',
-      },
-      {
-        block: 'git',
-        rule: 'lock-file-committed',
-      },
-      {
-        block: 'nestjs',
-      },
-      {
-        block: 'ui',
-      },
-    ];
-    const roleSets = [
-      'declaration-cache',
-      'ignore-file',
-      'nest-module',
-      'typescript-source',
-    ].reduce<readonly (readonly string[])[]>(
-      (sets, role) =>
-        sets.flatMap((set) => [
-          set,
-          [
-            ...set,
-            role,
-          ],
-        ]),
-      [
-        [],
-      ],
-    );
-    // every block an entry may need, and ui for one it never does: core, biome and json are the
-    // reader's reach, _runtime and lefthook give no role and no rule, and docker only a role's second
-    // spelling
-    const blocks = [
-      'browser',
-      'bun',
-      'css',
-      'git',
-      'nestjs',
-      'nx',
-      'typescript',
-      'ui',
-      'workspace',
-    ];
-    const paths = [
-      [],
-      ...blocks.flatMap((first) => [
-        [
-          first,
-        ],
-        ...blocks
-          .filter((second) => second !== first)
-          .map((second) => [
-            first,
-            second,
-          ]),
-      ]),
-    ];
-
+  it('should find placed, where it sends it, any entry of the model’s keys and roles it finds misplaced', () => {
     // Act
-    const refused = keys.flatMap((key) =>
-      roleSets.flatMap((set) => {
-        const entry = entryOf({
-          ...key,
-          value: `files: [${set.map((role) => `'\${role.${role}}'`).join(', ')}]`,
-        });
-
-        return placementsOf(entry, belongsOf(entry, paths)).map(
-          ({ path }) => `${key.block} → ${key.rule ?? '*'} naming [${set.join(', ')}] at ${path}`,
-        );
-      }),
+    const run = fc.check(
+      fc.property(entryShapes, (shape) => placementsWhereSent(shape).length === 0),
+      {
+        numRuns: SHAPES_SAMPLED,
+      },
     );
 
     // Assert
-    expect(refused).toStrictEqual([]);
+    expect(run.counterexample).toBeNull();
+  });
+
+  // Entries whose path names a block that reaches the definer of a role they name: the check once
+  // sent them to a path without that block, and refused them there.
+  it.each<{
+    condition: string;
+    shape: EntryShape;
+  }>([
+    {
+      condition: 'biome’s, naming typescript-source and ignore-file, lies under with/bun',
+      shape: {
+        key: {
+          block: 'biome',
+        },
+        path: [
+          'bun',
+        ],
+        roles: [
+          'ignore-file',
+          'typescript-source',
+        ],
+      },
+    },
+    {
+      condition: 'css’s, naming typescript-source, lies under with/bun',
+      shape: {
+        key: {
+          block: 'css',
+        },
+        path: [
+          'bun',
+        ],
+        roles: [
+          'typescript-source',
+        ],
+      },
+    },
+    {
+      condition: 'css’s, naming typescript-source and ignore-file, lies under with/bun',
+      shape: {
+        key: {
+          block: 'css',
+        },
+        path: [
+          'bun',
+        ],
+        roles: [
+          'ignore-file',
+          'typescript-source',
+        ],
+      },
+    },
+    {
+      condition:
+        'its key is a rule with a seam, naming typescript-source, and it lies under with/bun',
+      shape: {
+        key: {
+          block: 'css',
+          rule: 'css-loaded-by-the-bundle',
+        },
+        path: [
+          'bun',
+        ],
+        roles: [
+          'typescript-source',
+        ],
+      },
+    },
+    {
+      condition: 'git’s, naming typescript-source, lies under with/git/with/bun',
+      shape: {
+        key: {
+          block: 'git',
+        },
+        path: [
+          'git',
+          'bun',
+        ],
+        roles: [
+          'typescript-source',
+        ],
+      },
+    },
+    {
+      condition: 'git’s, naming typescript-source and ignore-file, lies under with/bun',
+      shape: {
+        key: {
+          block: 'git',
+        },
+        path: [
+          'bun',
+        ],
+        roles: [
+          'ignore-file',
+          'typescript-source',
+        ],
+      },
+    },
+    {
+      condition: 'ui’s, naming typescript-source, lies under with/bun',
+      shape: {
+        key: {
+          block: 'ui',
+        },
+        path: [
+          'bun',
+        ],
+        roles: [
+          'typescript-source',
+        ],
+      },
+    },
+    {
+      condition: 'ui’s, naming typescript-source and ignore-file, lies under with/bun',
+      shape: {
+        key: {
+          block: 'ui',
+        },
+        path: [
+          'bun',
+        ],
+        roles: [
+          'ignore-file',
+          'typescript-source',
+        ],
+      },
+    },
+  ])('should find placed, where it sends it, an entry when $condition', ({ shape }) => {
+    // Act
+    const found = placementsWhereSent(shape);
+
+    // Assert
+    expect(found).toStrictEqual([]);
   });
 
   it.each<{
