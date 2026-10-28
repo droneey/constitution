@@ -1,5 +1,3 @@
-ignore-from-file: .gitignore
-
 # yamllint
 rules:
   indentation:
@@ -34,3 +32,7 @@ rules:
   empty-lines:
     max: 1
 extends: default
+
+# git
+ignore-from-file:
+  - .gitignore

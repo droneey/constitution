@@ -18,10 +18,17 @@ implementations:
   - dependency-cruiser
   - git
   - knip
+  - jscpd
   - yamllint
   - tombi
   - bun-test
   - stryker
+  - zod
 packs:
   - pack
-overrides: []
+overrides:
+  - rule: scoped-resource-held-by-using
+    level: SHOULD
+    # constitution reads an override's reason from its one line
+    # yamllint disable-line rule:line-length
+    reason: "dependency-cruiser 18's swc parser fails on a using declaration, and its tsc and acorn parsers drop the type-only imports its rules read, so the git adapter's temporary index is released by try/finally; removed with #186 (parser tsc on TypeScript 7.1)"

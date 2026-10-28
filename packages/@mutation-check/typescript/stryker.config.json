@@ -9,6 +9,7 @@
     "!scripts/**/__tests__/**",
     "!scripts/*/main.ts",
     "!src/entrypoints/*/main.{ts,tsx}",
+    "!src/integrations/*/main.{ts,tsx}",
     "!src/root/wiring.{ts,tsx}"
   ],
   "thresholds": {
@@ -21,7 +22,7 @@
     "*/worktrees"
   ],
   "plugins": [
-    "./src/integrations/stryker/runner.ts",
+    "./src/integrations/stryker/index.ts",
     "./src/integrations/stryker/ignorers.ts"
   ],
   "ignorers": [
@@ -41,6 +42,7 @@
   "testRunner": "bun-specs",
   "coverageAnalysis": "off",
   "diagnosticsTextArguments": {
-    "new *Error": 0
+    "new *Error": 0,
+    "super": 0
   }
 }

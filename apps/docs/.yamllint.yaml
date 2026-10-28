@@ -1,14 +1,3 @@
-# .gitignore's paths
-ignore: |
-  /.droneey/
-  node_modules/
-  .output/
-  .source/
-  .tanstack/
-  .tsc-cache/
-  .stryker-tmp/
-  coverage/
-
 # yamllint
 rules:
   indentation:
@@ -43,3 +32,9 @@ rules:
   empty-lines:
     max: 1
 extends: default
+ignore-from-file:
+  # git
+  - .gitignore
+
+  # mise
+  - .yamlignore

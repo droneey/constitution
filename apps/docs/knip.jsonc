@@ -1,16 +1,14 @@
 {
   "entry": [
     // knip
+    "src/entrypoints/*/main.{ts,tsx}!",
+    "src/**/index.{ts,tsx}!",
     "src/main.{ts,tsx}!",
     "scripts/*/main.ts",
 
     // tanstack-start
     "src/router.{ts,tsx}!",
     "src/client.{ts,tsx}!",
-
-    // knip
-    "src/entrypoints/*/main.{ts,tsx}!",
-    "src/**/index.{ts,tsx}!",
 
     // tanstack-router
     "src/root/routes/**/*.{ts,tsx}!",

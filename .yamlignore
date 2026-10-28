@@ -1,0 +1,13 @@
+# workspace
+/apps/docs/**
+/packages/@design/browser/**
+/packages/@design/cli/**
+/packages/@design/tokens/**
+/packages/@mutation-check/python/**
+/packages/@mutation-check/typescript/**
+/packages/brand/**
+/packages/constitution/**
+/packages/python-check/**
+
+# mise
+.mise/locks/

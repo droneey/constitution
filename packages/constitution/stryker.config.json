@@ -9,6 +9,7 @@
     "!scripts/**/__tests__/**",
     "!scripts/*/main.ts",
     "!src/entrypoints/*/main.{ts,tsx}",
+    "!src/integrations/*/main.{ts,tsx}",
     "!src/root/wiring.{ts,tsx}"
   ],
   "thresholds": {
@@ -33,14 +34,15 @@
     "summary": 0,
     "usage": 0,
     "version": 2,
-    "new *Error": 0
+    "new *Error": 0,
+    "super": 0
   },
   "ignorePatterns": [
     "/.droneey",
     "*/worktrees"
   ],
   "plugins": [
-    "../@mutation-check/typescript/src/integrations/stryker/runner.ts",
+    "../@mutation-check/typescript/src/integrations/stryker/index.ts",
     "../@mutation-check/typescript/src/integrations/stryker/ignorers.ts"
   ],
   "ignorers": [

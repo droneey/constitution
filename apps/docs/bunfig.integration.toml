@@ -18,7 +18,7 @@ coveragePathIgnorePatterns = [
   "../**",
   # The entry files the framework calls, as the tanstack-start block asks; the tests drive the rest.
   "src/client.tsx",
-  "src/root/router.tsx",
+  "src/root/router.ts",
   "src/root/routes/__root.tsx",
   "src/root/routeTree.gen.ts",
   # Another unit of the workspace, which its own specs cover.

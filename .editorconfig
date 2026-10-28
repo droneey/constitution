@@ -17,3 +17,7 @@ switch_case_indent = true
 # local
 [*.md]
 trim_trailing_whitespace = false
+
+# editorconfig
+[*.golden.*]
+trim_trailing_whitespace = false

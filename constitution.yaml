@@ -16,6 +16,7 @@ languages:
   - shell
   - markdown
 implementations:
+  - actionlint
   - bun
   - biome
   - syncpack

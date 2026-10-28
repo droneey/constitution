@@ -1,17 +1,7 @@
 [[IgnoredVulns]]
-id = "GHSA-4mjr-xmp4-gh2g"
-ignoreUntil = 2026-12-28
-reason = "qs 6.15.1 comes only with Stryker, whose typed-rest-client pins it; a development tool that never ships"
-
-[[IgnoredVulns]]
-id = "GHSA-q8mj-m7cp-5q26"
-ignoreUntil = 2026-12-28
-reason = "qs 6.15.1 comes only with Stryker, whose typed-rest-client pins it; a development tool that never ships"
-
-[[IgnoredVulns]]
-id = "GHSA-x5fp-wj9c-mxmx"
-ignoreUntil = 2026-12-28
-reason = "qs 6.15.1 comes only with Stryker, whose typed-rest-client pins it; a development tool that never ships"
+id = "GHSA-gcqx-w48m-w2h4"
+ignoreUntil = 2027-01-28
+reason = "a build tool of the design tokens; it merges only our own token files; no fixed version upstream"
 
 [[PackageOverrides]]
 name = "is-core-module"

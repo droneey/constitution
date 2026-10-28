@@ -25,7 +25,7 @@
     "check:shell": "git ls-files -z --cached --others --exclude-standard -- '*.sh' '*.bash' ':(exclude)apps/docs' ':(exclude)packages/@design/browser' ':(exclude)packages/@design/cli' ':(exclude)packages/@design/tokens' ':(exclude)packages/@mutation-check/python' ':(exclude)packages/@mutation-check/typescript' ':(exclude)packages/brand' ':(exclude)packages/constitution' ':(exclude)packages/python-check' | xargs -0 -r sh -c \"for file do if [ -e \\\"\\$file\\\" ]; then printf '%s\\0' \\\"\\$file\\\"; fi; done\" sh | xargs -0 -r shellcheck",
     "check:shell-format": "git ls-files -z --cached --others --exclude-standard -- '*.sh' '*.bash' ':(exclude)apps/docs' ':(exclude)packages/@design/browser' ':(exclude)packages/@design/cli' ':(exclude)packages/@design/tokens' ':(exclude)packages/@mutation-check/python' ':(exclude)packages/@mutation-check/typescript' ':(exclude)packages/brand' ':(exclude)packages/constitution' ':(exclude)packages/python-check' | xargs -0 -r sh -c \"for file do if [ -e \\\"\\$file\\\" ]; then printf '%s\\0' \\\"\\$file\\\"; fi; done\" sh | xargs -0 -r shfmt -d",
     "check:toml": "tombi format --check && tombi lint",
-    "check:workflows": "actionlint",
+    "check:workflows": "actionlint -pyflakes=",
     "check:yaml": "yamllint --strict .",
     "constitution": "bun run --filter '@droneey/constitution^...' generate && bun packages/constitution/src/main.ts",
     "fix": "bun run --sequential 'fix:*'",
@@ -42,12 +42,14 @@
     "packages/@mutation-check/*"
   ],
   "devDependencies": {
-    "@biomejs/biome": "2.6.2",
+    "@biomejs/biome": "2.6.3",
+    "jscpd": "5.4.2",
     "syncpack": "15.3.3"
   },
   "resolutions": {
     "fast-uri": "3.1.9",
-    "happy-dom": "21.0.4"
+    "happy-dom": "21.0.4",
+    "qs": "6.16.1"
   },
   "trustedDependencies": []
 }

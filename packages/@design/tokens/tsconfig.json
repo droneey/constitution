@@ -6,11 +6,15 @@
       ]
     },
 
+    // biome
+    "allowUnreachableCode": true,
+    "allowUnusedLabels": true,
+
     // tsc
-    "allowUnreachableCode": false,
-    "allowUnusedLabels": false,
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
+
+    // biome
+    "noUnusedParameters": false,
 
     // workspace
     "composite": true,

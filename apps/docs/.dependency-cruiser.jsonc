@@ -88,6 +88,27 @@
       },
     },
     {
+      "name": "no-deprecated-dependency",
+      "severity": "error",
+      "from": {},
+      "to": {
+        "dependencyTypes": [
+          "deprecated",
+        ],
+      },
+    },
+    {
+      "name": "no-deprecated-core",
+      "severity": "error",
+      "from": {},
+      "to": {
+        "dependencyTypes": [
+          "core",
+        ],
+        "path": "^(?:punycode|domain|constants|sys|_linklist|_stream_wrap)$",
+      },
+    },
+    {
       "name": "integration-never-imported",
       "severity": "error",
       "from": {
@@ -213,6 +234,7 @@
         "pathNot": [
           "^src/(?!index\\.)[^/]+\\.[^/]+$",
           "^src/entrypoints/[^/]+/main\\.[^/]+$",
+          "^src/integrations/[^/]+/main\\.[^/]+$",
           "^src/root/",
           "(^|/)__tests__/",
           "^tests/",
@@ -290,8 +312,26 @@
     {
       "name": "module-reached-through-its-surface-from-outside-modules",
       "severity": "error",
+      "to": {
+        "path": "^src/(features|adapters|shared|libs|composition|integrations)/[^/]+/",
+        "pathNot": "^src/(features|adapters|shared|libs|composition|integrations)/[^/]+/index\\.[^/]+$",
+      },
       "from": {
-        "pathNot": "^src/(features|adapters|shared|libs|composition|integrations)/[^/]+/",
+        "pathNot": [
+          "^src/(features|adapters|shared|libs|composition|integrations)/[^/]+/",
+          "^src/root/",
+          "^src/[^/]+\\.[^/]+$",
+        ],
+      },
+    },
+    {
+      "name": "module-reached-through-its-surface-from-the-root",
+      "severity": "error",
+      "from": {
+        "path": [
+          "^src/root/",
+          "^src/[^/]+\\.[^/]+$",
+        ],
       },
       "to": {
         "path": "^src/(features|adapters|shared|libs|composition|integrations)/[^/]+/",
@@ -313,35 +353,57 @@
       },
     },
     {
-      "name": "domain-role-reached-through-its-surface",
-      "severity": "error",
-      "from": {
-        "path": "^src/(features|composition)/([^/]+)/(?!domain/)",
-      },
-      "to": {
-        "path": "^src/$1/$2/domain/[^/]+/",
-        "pathNot": "^src/$1/$2/domain/.*/index\\.[^/]+$",
-      },
-    },
-    {
       "name": "module-never-imports-its-own-surface",
       "severity": "error",
       "from": {
-        "path": "^src/(features|adapters|shared|libs|composition|integrations)/([^/]+)/",
+        "path": "^([^/]+/)([^/]+/|)([^/]+/|)([^/]+/|)([^/]+/|)([^/]+/|)([^/]+/|)([^/]+/|)([^/]+/|)",
       },
       "to": {
-        "path": "^src/$1/$2/index\\.[^/]+$",
+        "path": "^(?:$1|$1$2|$1$2$3|$1$2$3$4|$1$2$3$4$5|$1$2$3$4$5$6|$1$2$3$4$5$6$7|$1$2$3$4$5$6$7$8|$1$2$3$4$5$6$7$8$9)index\\.[^/]+$",
       },
     },
     {
-      "name": "domain-role-reaches-a-sibling-through-its-surface",
+      "name": "role-reached-through-its-surface",
+
+      // dependency-cruiser
       "severity": "error",
       "from": {
-        "path": "^src/(features|composition)/([^/]+)/domain/([^/]+)/",
+        "path": "^src/(features|composition)/([^/]+)/([^/]+/[^/]+(?=/)|)",
       },
       "to": {
-        "path": "^src/$1/$2/domain/(?!$3/)[^/]+/",
-        "pathNot": "^src/$1/$2/domain/.*/index\\.[^/]+$",
+        "path": [
+          // dependency-cruiser
+          "^src/$1/$2/(?:domain|app)/[^/]+/",
+
+          // ui
+          "^src/$1/$2/ui/[^/]+/",
+        ],
+
+        // dependency-cruiser
+        "pathNot": [
+          "^src/$1/$2/$3/",
+          "(^|/)__tests__/",
+          "^src/$1/$2/[^/]+/[^/]+/index\\.[^/]+$",
+          "^src/$1/$2/[^/]+/[^/]+/(?:[^/]+/|)(?:queries|commands)/index\\.[^/]+$",
+          "^src/$1/$2/[^/]+/[^/]+/(?:queries|commands|shared)/[^/]+/index\\.[^/]+$",
+        ],
+      },
+    },
+
+    // dependency-cruiser
+    {
+      "name": "integration-role-reached-through-its-surface",
+      "severity": "error",
+      "from": {
+        "path": "^src/integrations/([^/]+)/([^/]+(?=/)|)",
+      },
+      "to": {
+        "path": "^src/integrations/$1/[^/]+/",
+        "pathNot": [
+          "^src/integrations/$1/$2/",
+          "(^|/)__tests__/",
+          "^src/integrations/$1/[^/]+/index\\.[^/]+$",
+        ],
       },
     },
     {
@@ -610,6 +672,37 @@
 
     // dependency-cruiser
     {
+      "name": "relative-import-stays-in-its-module",
+      "severity": "error",
+      "from": {
+        "path": "^(src/(?:features|composition|adapters|shared|libs|integrations|entrypoints)/[^/]+|src/(?:kernel|root)|(?:scripts|tests)/[^/]+)/",
+      },
+      "to": {
+        "path": "^src/",
+        "pathNot": "^$1/",
+        "dependencyTypes": [
+          "local",
+        ],
+        "dependencyTypesNot": [
+          "aliased-subpath-import",
+        ],
+      },
+    },
+    {
+      "name": "hash-import-leaves-its-module",
+      "severity": "error",
+      "from": {
+        "path": "^(src/(?:features|composition|adapters|shared|libs|integrations|entrypoints)/[^/]+|src/(?:kernel|root))/",
+      },
+      "to": {
+        "path": "^$1/",
+        "dependencyTypes": [
+          "aliased-subpath-import",
+        ],
+      },
+    },
+
+    {
       "name": "no-undeclared-dependency",
       "severity": "error",
       "from": {},
@@ -629,16 +722,6 @@
       },
     },
     {
-      "name": "no-deprecated-dependency",
-      "severity": "error",
-      "from": {},
-      "to": {
-        "dependencyTypes": [
-          "deprecated",
-        ],
-      },
-    },
-    {
       "name": "no-duplicate-dep-types",
       "severity": "error",
       "from": {},
@@ -648,17 +731,6 @@
           "type-only",
           "npm-peer",
         ],
-      },
-    },
-    {
-      "name": "no-deprecated-core",
-      "severity": "error",
-      "from": {},
-      "to": {
-        "dependencyTypes": [
-          "core",
-        ],
-        "path": "^(?:punycode|domain|constants|sys|_linklist|_stream_wrap)$",
       },
     },
 

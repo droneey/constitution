@@ -514,33 +514,6 @@
       "linter": {
         "rules": {
           "nursery": {
-            "useReactCompiler": "error",
-          },
-        },
-      },
-    },
-    {
-      "includes": [
-        "**/*.tsx",
-        "**/*.jsx",
-      ],
-      "assist": {
-        "actions": {
-          "source": {
-            "useSortedAttributes": {
-              "level": "on",
-              "options": {},
-            },
-            "noDuplicateClasses": {
-              "level": "on",
-              "options": {},
-            },
-          },
-        },
-      },
-      "linter": {
-        "rules": {
-          "nursery": {
             "useReactNamingConvention": "error",
           },
         },
@@ -1095,6 +1068,33 @@
                 ],
               },
             },
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.tsx",
+        "**/*.jsx",
+      ],
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedAttributes": {
+              "level": "on",
+              "options": {},
+            },
+            "noDuplicateClasses": {
+              "level": "on",
+              "options": {},
+            },
+          },
+        },
+      },
+      "linter": {
+        "rules": {
+          "nursery": {
+            "useReactCompiler": "error",
           },
         },
       },
@@ -1802,14 +1802,16 @@
         "!**/__tests__/**",
       ],
     },
-
-    // typescript
     {
       "path": "./.droneey/constitution/presets/biome/plugins/typescript/surface-only-re-exports.grit",
       "includes": [
+        // typescript
         "**/index.ts",
         "**/index.tsx",
         "!**/src/root/**/index.tsx",
+
+        // tanstack-router
+        "!**/src/root/routes/**/index.ts",
       ],
     },
 
@@ -1821,7 +1823,25 @@
       ],
     },
     {
+      "path": "./.droneey/constitution/presets/biome/plugins/css/line-height-set-as-a-number.grit",
+      "includes": [
+        "**/*.css",
+      ],
+    },
+    {
       "path": "./.droneey/constitution/presets/biome/plugins/css/web-font-served-as-woff2.grit",
+      "includes": [
+        "**/*.css",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/css/viewport-size-in-small-viewport-units.grit",
+      "includes": [
+        "**/*.css",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/css/type-sized-in-rem.grit",
       "includes": [
         "**/*.css",
       ],
@@ -1845,6 +1865,40 @@
     },
     {
       "path": "./.droneey/constitution/presets/biome/plugins/typescript/parameter-object-has-a-named-type.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/tsx-only-where-markup-is-written.grit",
+      "includes": [
+        "**/*.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/child-process-started-without-a-shell.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/child-process-given-an-env-of-its-own.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/boundary-values-unknown-until-parsed.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/duration-measured-by-performance-now.grit",
       "includes": [
         "**/*.ts",
         "**/*.tsx",

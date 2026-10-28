@@ -12,3 +12,7 @@ insert_final_newline = true
 # shfmt
 [*.{sh,bash}]
 switch_case_indent = true
+
+# editorconfig
+[*.golden.*]
+trim_trailing_whitespace = false

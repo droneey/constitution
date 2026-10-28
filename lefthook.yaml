@@ -10,7 +10,9 @@ pre-commit:
         PATTERN='^(feature|fix|hotfix)'
         PATTERN="$PATTERN/[0-9]+-[a-z0-9]+(-[a-z0-9]+)*\$"
         if ! echo "$BRANCH" | grep -qE "$PATTERN"; then
-          echo "Branch '$BRANCH' must match: (feature|fix|hotfix)/{id}-{name}"
+          echo "[branch-named-type-issue-name] Branch must match:" \
+            "(feature|fix|hotfix)/{id}-{name}"
+          echo "  got: $BRANCH"
           exit 1
         fi
 
@@ -194,12 +196,23 @@ pre-commit:
 # lefthook
 commit-msg:
   jobs:
-    - name: commit-message
+    - name: commit-body
+      run: |
+        # git commit -v leaves the diff below its scissors line for the hook to read.
+        BODY="$(sed -e '/^# -\{24\} >8 -\{24\}$/,$d' -e '1d;/^#/d;/^$/d' {1} |
+          grep -vE '^[A-Za-z][A-Za-z-]*: .+$' || true)"
+        if [ -n "$BODY" ]; then
+          echo "[commit-body-empty-and-footer-only-trailers]" \
+            "Body must be empty; a footer holds only trailers"
+          exit 1
+        fi
+    - name: commit-header
       run: |
         MSG="$(head -1 {1})"
 
         if [ "${#MSG}" -gt 100 ]; then
-          echo "Header must be 100 characters or less (got ${#MSG})"
+          echo "[commit-header-type-and-subject]" \
+            "Header must be 100 characters or less (got ${#MSG})"
           exit 1
         fi
 
@@ -207,33 +220,37 @@ commit-msg:
         SUBJECT="$(printf '%s\n' "$MSG" | sed -n 's/^[a-z]*!\{0,1\}: \(.*\)/\1/p')"
 
         if [ -z "$TYPE" ] || [ -z "$SUBJECT" ]; then
-          echo "Commit must match format: type: Subject," \
-            "or type!: Subject for a breaking change"
+          echo "[commit-header-type-and-subject]" \
+            "Commit must match format: type: Subject,"
+          echo "  or type!: Subject for a breaking change"
           exit 1
         fi
 
         case "$TYPE" in
           feat|fix|refactor|chore) ;;
-          *) echo "Invalid type '$TYPE'. Allowed: feat, fix, refactor, chore"; exit 1 ;;
+          *)
+            echo "[commit-header-type-and-subject]" \
+              "Invalid type '$TYPE'. Allowed: feat, fix, refactor, chore"
+            exit 1
+            ;;
         esac
 
         FIRST_CHAR="$(printf '%s' "$SUBJECT" | cut -c1)"
         if ! printf '%s' "$FIRST_CHAR" | grep -q '[A-Z]'; then
-          echo "Subject must start with an uppercase letter (sentence-case)"
+          echo "[commit-header-type-and-subject]" \
+            "Subject must start with an uppercase letter (sentence-case)"
           exit 1
         fi
+    - name: commit-placeholder
+      run: |
+        SUBJECT="$(head -1 {1} | sed 's/^[A-Za-z]*\(([^)]*)\)\{0,1\}!\{0,1\}: //')"
 
         case "$(printf '%s' "$SUBJECT" | tr '[:upper:]' '[:lower:]')" in
           update | updates | changes | change | misc | wip | fix | fixes | \
             "fix stuff" | stuff | \
             "minor changes" | "small fix" | tmp | test)
-            echo "Subject '$SUBJECT' says nothing; say what changed"
+            echo "[commit-subject-never-a-placeholder]" \
+              "Subject '$SUBJECT' says nothing; say what changed"
             exit 1
             ;;
         esac
-
-        BODY="$(sed '1d;/^#/d;/^$/d' {1} | grep -vE '^[A-Za-z][A-Za-z-]*: .+$' || true)"
-        if [ -n "$BODY" ]; then
-          echo "Body must be empty; a footer holds only trailers"
-          exit 1
-        fi

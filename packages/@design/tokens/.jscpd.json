@@ -1,0 +1,15 @@
+{
+  "pattern": "{src,scripts}/**",
+  "format": [
+    "typescript",
+    "tsx"
+  ],
+  "ignore": [
+    "**/__tests__/**",
+    "**/e2e/**",
+    "**/*.gen.*"
+  ],
+  "minLines": 5,
+  "minTokens": 50,
+  "exitCode": 1
+}

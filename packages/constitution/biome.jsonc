@@ -509,33 +509,6 @@
       "linter": {
         "rules": {
           "nursery": {
-            "useReactCompiler": "error",
-          },
-        },
-      },
-    },
-    {
-      "includes": [
-        "**/*.tsx",
-        "**/*.jsx",
-      ],
-      "assist": {
-        "actions": {
-          "source": {
-            "useSortedAttributes": {
-              "level": "on",
-              "options": {},
-            },
-            "noDuplicateClasses": {
-              "level": "on",
-              "options": {},
-            },
-          },
-        },
-      },
-      "linter": {
-        "rules": {
-          "nursery": {
             "useReactNamingConvention": "error",
           },
         },
@@ -1094,6 +1067,33 @@
         },
       },
     },
+    {
+      "includes": [
+        "**/*.tsx",
+        "**/*.jsx",
+      ],
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedAttributes": {
+              "level": "on",
+              "options": {},
+            },
+            "noDuplicateClasses": {
+              "level": "on",
+              "options": {},
+            },
+          },
+        },
+      },
+      "linter": {
+        "rules": {
+          "nursery": {
+            "useReactCompiler": "error",
+          },
+        },
+      },
+    },
 
     // biome
     {
@@ -1434,7 +1434,6 @@
         "noProcessEnv": "error",
 
         // biome
-        "noDescendingSpecificity": "error",
         "useArrayLiterals": "error",
         "useConst": "error",
         "useDeprecatedReason": "error",
@@ -1555,7 +1554,6 @@
         "noEmptyTypeParameters": "error",
         "noExtraBooleanCast": "error",
         "noFlatMapIdentity": "error",
-        "noImportantStyles": "error",
         "noStaticOnlyClass": "error",
         "noThisInStatic": "error",
         "noUselessCatch": "error",
@@ -1717,6 +1715,40 @@
     },
     {
       "path": "./.droneey/constitution/presets/biome/plugins/typescript/parameter-object-has-a-named-type.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/tsx-only-where-markup-is-written.grit",
+      "includes": [
+        "**/*.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/child-process-started-without-a-shell.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/child-process-given-an-env-of-its-own.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/boundary-values-unknown-until-parsed.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/duration-measured-by-performance-now.grit",
       "includes": [
         "**/*.ts",
         "**/*.tsx",

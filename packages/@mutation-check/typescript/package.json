@@ -19,16 +19,17 @@
     "mutation-check": "./src/main.ts"
   },
   "exports": {
-    "./runner": "./src/integrations/stryker/runner.ts",
+    "./runner": "./src/integrations/stryker/index.ts",
     "./ignorers": "./src/integrations/stryker/ignorers.ts"
   },
   "imports": {
     "#/*": "./src/*"
   },
   "scripts": {
-    "build": "bun build --target=bun --packages=external src/main.ts --outfile dist/main.js && bun build --target=bun src/integrations/stryker/runner.ts --outfile dist/runner.js && bun build --target=bun src/integrations/stryker/ignorers.ts --outfile dist/ignorers.js",
+    "build": "bun build --target=bun --packages=external src/main.ts --outfile dist/main.js && bun build --target=bun src/integrations/stryker/index.ts --outfile dist/runner.js && bun build --target=bun src/integrations/stryker/ignorers.ts --outfile dist/ignorers.js",
     "check": "bun run --sequential 'check:*' test mutate:branch",
-    "check:architecture": "depcruise src --config .dependency-cruiser.jsonc",
+    "check:architecture": "depcruise src tests --config .dependency-cruiser.jsonc",
+    "check:duplicates": "jscpd",
     "check:lint": "biome check --error-on-warnings",
     "check:toml": "tombi format --check && tombi lint",
     "check:types": "tsc -b",
@@ -45,15 +46,17 @@
     "test:unit": "CI=1 bun test"
   },
   "dependencies": {
-    "@stryker-mutator/api": "^10.0.0"
+    "@stryker-mutator/api": "^10.0.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.6.2",
-    "@stryker-mutator/core": "10.0.0",
+    "@biomejs/biome": "2.6.3",
+    "@stryker-mutator/core": "10.1.1",
     "@types/bun": "1.4.3",
     "@types/node": "26.6.5",
     "dependency-cruiser": "18.7.0",
-    "knip": "6.41.0",
+    "jscpd": "5.4.2",
+    "knip": "6.43.0",
     "typescript": "7.0.2"
   },
   "trustedDependencies": []

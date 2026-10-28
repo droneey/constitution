@@ -30,6 +30,9 @@ id_rsa
 # complexipy
 .complexipy_cache/
 
+# hypothesis
+.hypothesis/
+
 # mutmut
 mutants/
 

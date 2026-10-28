@@ -25,6 +25,7 @@
   "scripts": {
     "check": "bun run --sequential 'check:*' test mutate:branch",
     "check:architecture": "depcruise src scripts --config .dependency-cruiser.jsonc",
+    "check:duplicates": "jscpd",
     "check:lint": "biome check --error-on-warnings",
     "check:markdown": "rumdl check . && rumdl fmt --check .",
     "check:toml": "tombi format --check && tombi lint",
@@ -49,18 +50,19 @@
     "ansis": "^4.4.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.6.2",
+    "@biomejs/biome": "2.6.3",
     "@droneey/design-tokens": "workspace:*",
     "@droneey/mutation-check-typescript": "workspace:*",
-    "@stryker-mutator/core": "10.0.0",
+    "@stryker-mutator/core": "10.1.1",
     "@types/bun": "1.4.3",
     "@types/react": "19.3.0",
     "dependency-cruiser": "18.7.0",
     "ink": "8.0.0",
     "ink-testing-library": "4.0.0",
-    "knip": "6.41.0",
+    "jscpd": "5.4.2",
+    "knip": "6.43.0",
     "react": "19.3.1",
-    "style-dictionary": "5.7.0",
+    "style-dictionary": "5.7.1",
     "typescript": "7.0.2"
   },
   "peerDependencies": {
