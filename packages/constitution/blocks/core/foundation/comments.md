@@ -4,13 +4,13 @@
 
 ## General
 
-### comment-explains-why · SHOULD
+### comment-explains-why · MUST
 
-A comment states what the code cannot show — a constraint, a workaround, a decision — or is one another rule asks for; any other comment is removed.
+The code first says all it can — by a name, a type, an extracted function — and a comment states only what is still left, such as a constraint, a workaround or a decision, or what another rule asks for. A comment that stands in for a name, a type or a function the code could carry is replaced by it, and one that states nothing still left is removed.
 
 | Why |
 |---|
-| the code already says what it does, and a narrating comment repeats it and drifts from it. |
+| a name or a type goes with the thing to every use and changes with it, while a comment stays where it was written, repeats the code and drifts from it. |
 
 ### export-documented-only-where-not-obvious · SHOULD
 
