@@ -16,8 +16,8 @@ No spec calls `querySelector` or `querySelectorAll` on the container, the docume
 
 ### ui-specs-run-the-axe-scan → ui-specs-scan-accessibility · MUST
 
-Every screen and component spec runs the axe scan over what it rendered, on the WCAG 2.2 A and AA rules only, and passes with zero violations. Contrast, which a simulated DOM cannot judge, is turned off there and is the token-pair test's; the landmark rule runs in screen specs, not over a lone component.
+A screen or component spec runs the axe scan over each state it renders that no narrower spec renders, on the WCAG 2.2 A and AA rules only, and passes with zero violations. Contrast, which a simulated DOM cannot judge, is turned off there and is the token-pair test's; the landmark rule runs in screen specs, not over a lone component.
 
 | Why |
 |---|
-| the scan catches a third of the problems in every spec, on every change, for free. |
+| the scan catches a third of the problems, on every change, for free. |

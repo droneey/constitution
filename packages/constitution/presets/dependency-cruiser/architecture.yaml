@@ -213,6 +213,7 @@ core:
             pathNot:
               - ^${role.source}/(?!index\.)[^/]+\.[^/]+$
               - ^${role.source}/${role.extra-entry}/[^/]+/main\.[^/]+$
+              - ^${role.source}/${role.host-integration}/[^/]+/main\.[^/]+$
               - ^${role.source}/${role.composition-root}/
               - (^|/)__tests__/
               - ^${role.package-suites}/
@@ -274,7 +275,19 @@ core:
         forbidden[name=module-reached-through-its-surface-from-outside-modules]:
           severity: error
           from:
-            pathNot: ^${role.source}/(${role.bounded-context}|${role.gateway}|${role.shared-code}|${role.generic-library}|${role.composition-module}|${role.host-integration})/[^/]+/
+            pathNot:
+              - ^${role.source}/(${role.bounded-context}|${role.gateway}|${role.shared-code}|${role.generic-library}|${role.composition-module}|${role.host-integration})/[^/]+/
+              - ^${role.source}/${role.composition-root}/
+              - ^${role.source}/[^/]+\.[^/]+$
+          to:
+            path: ^${role.source}/(${role.bounded-context}|${role.gateway}|${role.shared-code}|${role.generic-library}|${role.composition-module}|${role.host-integration})/[^/]+/
+            pathNot: ^${role.source}/(${role.bounded-context}|${role.gateway}|${role.shared-code}|${role.generic-library}|${role.composition-module}|${role.host-integration})/[^/]+/index\.[^/]+$
+        forbidden[name=module-reached-through-its-surface-from-the-root]:
+          severity: error
+          from:
+            path:
+              - ^${role.source}/${role.composition-root}/
+              - ^${role.source}/[^/]+\.[^/]+$
           to:
             path: ^${role.source}/(${role.bounded-context}|${role.gateway}|${role.shared-code}|${role.generic-library}|${role.composition-module}|${role.host-integration})/[^/]+/
             pathNot:
@@ -287,29 +300,44 @@ core:
           to:
             path: ^${role.source}/${role.shared-domain}/
             pathNot: ^${role.source}/${role.shared-domain}/[^/]+/index\.[^/]+$
-        forbidden[name=domain-role-reached-through-its-surface]:
-          severity: error
-          from:
-            path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/([^/]+)/(?!${role.pure-layer}/)
-          to:
-            path: ^${role.source}/$1/$2/${role.pure-layer}/[^/]+/
-            pathNot: ^${role.source}/$1/$2/${role.pure-layer}/.*/index\.[^/]+$
   module-files-import-each-other-directly:
     typescript:
       .dependency-cruiser.jsonc:
+        # Each group takes one more folder of the importer's path, or nothing, so the target's
+        # pattern names the surface of every folder that holds the importer.
         forbidden[name=module-never-imports-its-own-surface]:
           severity: error
           from:
-            path: ^${role.source}/(${role.bounded-context}|${role.gateway}|${role.shared-code}|${role.generic-library}|${role.composition-module}|${role.host-integration})/([^/]+)/
+            path: ^([^/]+/)([^/]+/|)([^/]+/|)([^/]+/|)([^/]+/|)([^/]+/|)([^/]+/|)([^/]+/|)([^/]+/|)
           to:
-            path: ^${role.source}/$1/$2/index\.[^/]+$
-        forbidden[name=domain-role-reaches-a-sibling-through-its-surface]:
+            path: ^(?:$1|$1$2|$1$2$3|$1$2$3$4|$1$2$3$4$5|$1$2$3$4$5$6|$1$2$3$4$5$6$7|$1$2$3$4$5$6$7$8|$1$2$3$4$5$6$7$8$9)index\.[^/]+$
+        # The third group is the layer and role folder that hold the importer, or nothing: a role
+        # folder's own files reach each other directly, and the rest of the module reaches it
+        # through its surface, the surface of one of its sides of reads and writes, or the surface
+        # of an operation or of what operations share.
+        forbidden[name=role-reached-through-its-surface]:
           severity: error
           from:
-            path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/([^/]+)/${role.pure-layer}/([^/]+)/
+            path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/([^/]+)/([^/]+/[^/]+(?=/)|)
           to:
-            path: ^${role.source}/$1/$2/${role.pure-layer}/(?!$3/)[^/]+/
-            pathNot: ^${role.source}/$1/$2/${role.pure-layer}/.*/index\.[^/]+$
+            path:
+              - ^${role.source}/$1/$2/(?:${role.pure-layer}|${role.application-layer})/[^/]+/
+            pathNot:
+              - ^${role.source}/$1/$2/$3/
+              - (^|/)__tests__/
+              - ^${role.source}/$1/$2/[^/]+/[^/]+/index\.[^/]+$
+              - ^${role.source}/$1/$2/[^/]+/[^/]+/(?:[^/]+/|)(?:${role.read-operation}|${role.write-operation})/index\.[^/]+$
+              - ^${role.source}/$1/$2/[^/]+/[^/]+/(?:${role.read-operation}|${role.write-operation}|${role.shared-code})/[^/]+/index\.[^/]+$
+        forbidden[name=integration-role-reached-through-its-surface]:
+          severity: error
+          from:
+            path: ^${role.source}/${role.host-integration}/([^/]+)/([^/]+(?=/)|)
+          to:
+            path: ^${role.source}/${role.host-integration}/$1/[^/]+/
+            pathNot:
+              - ^${role.source}/${role.host-integration}/$1/$2/
+              - (^|/)__tests__/
+              - ^${role.source}/${role.host-integration}/$1/[^/]+/index\.[^/]+$
         forbidden[name=kernel-role-reaches-a-sibling-through-its-surface]:
           severity: error
           from:
@@ -444,3 +472,28 @@ core:
           to:
             path: /(${role.use-case}|${role.data-port})/${role.read-operation}/
             reachable: true
+_js-runtime:
+  hash-imports-leave-the-module:
+    typescript:
+      .dependency-cruiser.jsonc:
+        # dependency-cruiser marks an import written from `#/` as `aliased-subpath-import`, and one
+        # written by a relative path as `local` alone; the first group is the importer's module.
+        forbidden[name=relative-import-stays-in-its-module]:
+          severity: error
+          from:
+            path: ^(${role.source}/(?:${role.bounded-context}|${role.composition-module}|${role.gateway}|${role.shared-code}|${role.generic-library}|${role.host-integration}|${role.extra-entry})/[^/]+|${role.source}/(?:${role.shared-domain}|${role.composition-root})|(?:${role.build-code}|${role.package-suites})/[^/]+)/
+          to:
+            path: ^${role.source}/
+            pathNot: ^$1/
+            dependencyTypes:
+              - local
+            dependencyTypesNot:
+              - aliased-subpath-import
+        forbidden[name=hash-import-leaves-its-module]:
+          severity: error
+          from:
+            path: ^(${role.source}/(?:${role.bounded-context}|${role.composition-module}|${role.gateway}|${role.shared-code}|${role.generic-library}|${role.host-integration}|${role.extra-entry})/[^/]+|${role.source}/(?:${role.shared-domain}|${role.composition-root}))/
+          to:
+            path: ^$1/
+            dependencyTypes:
+              - aliased-subpath-import

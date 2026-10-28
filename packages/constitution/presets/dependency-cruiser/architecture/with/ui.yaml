@@ -41,3 +41,11 @@ ui:
             path:
               - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/(${role.gateway}|${role.presentation-layer})/
               - ^${role.source}/${role.gateway}/
+core:
+  module-files-import-each-other-directly:
+    typescript:
+      .dependency-cruiser.jsonc:
+        forbidden[name=role-reached-through-its-surface]:
+          to:
+            path:
+              - ^${role.source}/$1/$2/${role.presentation-layer}/[^/]+/

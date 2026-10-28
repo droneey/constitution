@@ -1,4 +1,11 @@
 mutmut:
+  messages-modules-left-out-by-do-not-mutate:
+    python:
+      pyproject.toml:
+        tool:
+          mutmut:
+            do_not_mutate:
+              - '*_${role.message-file}.py'
   '*':
     python:
       pyproject.toml:

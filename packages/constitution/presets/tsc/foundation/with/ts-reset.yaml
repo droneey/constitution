@@ -1,5 +1,5 @@
 ts-reset:
-  '*':
+  reset-loaded-in-applications:
     typescript:
-      ${role.source}/reset.d.ts: !default |
-        import '@total-typescript/ts-reset';
+      ${role.source}/reset.d.ts:
+        - import '@total-typescript/ts-reset';

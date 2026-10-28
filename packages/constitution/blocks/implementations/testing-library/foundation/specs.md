@@ -30,7 +30,7 @@ What appears asynchronously is awaited with `findBy…` or `waitFor`, never a fi
 
 ### hooks-proven-through-their-screen → spec-proves-one-boundary · SHOULD
 
-A hook that loads or writes data is proven through the screen or component that uses it; `renderHook` only for a hook that is a boundary of its own, such as a UI-kit hook.
+A hook that loads or writes data — an operation's hook, or the hook that holds a component's effects — is proven through the screen, widget or component that uses it; `renderHook` only for a hook that is a boundary of its own, such as a UI-kit hook.
 
 | Why |
 |---|

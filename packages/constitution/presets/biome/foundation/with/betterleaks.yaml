@@ -1,0 +1,8 @@
+core:
+  secret-never-in-the-repository:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            security:
+              noSecrets: !replace 'off'

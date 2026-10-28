@@ -41,8 +41,6 @@ tsc:
           noImplicitReturns: true
           noUncheckedIndexedAccess: true
           exactOptionalPropertyTypes: true
-          noUnusedLocals: true
-          noUnusedParameters: true
           verbatimModuleSyntax: true
 typescript:
   any-never-written:

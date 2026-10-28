@@ -1,0 +1,8 @@
+actionlint:
+  '*':
+    yaml:
+      pyproject.toml ? ${file.isTop}:
+        tool:
+          poe:
+            tasks:
+              check:workflows: actionlint -pyflakes=

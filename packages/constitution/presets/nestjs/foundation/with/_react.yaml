@@ -1,0 +1,10 @@
+_react:
+  '*':
+    typescript:
+      .swcrc !jsonc:
+        jsc:
+          parser:
+            tsx: true
+          transform:
+            react:
+              runtime: automatic

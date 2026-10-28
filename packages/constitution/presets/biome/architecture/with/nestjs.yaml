@@ -1,21 +1,42 @@
 nestjs:
-  '*':
+  feature-module-takes-its-adapters-from-the-root:
     typescript:
       biome.jsonc:
         overrides:
           - includes:
-              - '**/*.${role.use-case-file}.ts'
+              - '**/*.${role.nest-module}'
+            linter:
+              rules:
+                complexity:
+                  noStaticOnlyClass: 'off'
+  providers-injected-through-the-constructor:
+    typescript:
+      biome.jsonc:
+        overrides:
+          - includes:
+              - '**/*.ts'
+            linter:
+              rules:
+                style:
+                  noParameterProperties: 'off'
+  decorated-constructor-takes-every-dependency:
+    typescript:
+      biome.jsonc:
+        overrides:
+          - includes:
               - '**/*.${role.gateway-file}.ts'
               - '**/*.${role.data-port-file}.ts'
-              - '**/*.${role.analytics-sink-file}.ts'
             linter:
               rules:
                 complexity:
                   useMaxParams: 'off'
+  injected-classes-imported-as-values:
+    typescript:
+      biome.jsonc:
+        overrides:
           - includes:
               - '**/*.${role.gateway-file}.ts'
               - '**/*.${role.data-port-file}.ts'
-              - '**/*.${role.analytics-sink-file}.ts'
             linter:
               rules:
                 style:

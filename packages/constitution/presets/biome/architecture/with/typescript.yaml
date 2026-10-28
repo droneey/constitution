@@ -22,7 +22,7 @@ typescript:
   undefined-is-the-only-absence:
     typescript:
       biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/undefined-is-the-only-absence.grit]:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/undefined-is-the-only-absence.${role.grit-rule}]:
           includes:
             - '**'
             - '!**/${role.gateway}/**'
@@ -31,7 +31,7 @@ typescript:
   closed-name-set-is-a-string-enum:
     typescript:
       biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/closed-name-set-is-a-string-enum.grit]:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/closed-name-set-is-a-string-enum.${role.grit-rule}]:
           includes:
             - '**/*.ts'
             - '**/*.tsx'
@@ -40,7 +40,7 @@ typescript:
   business-types-readonly:
     typescript:
       biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/business-types-readonly.grit]:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/business-types-readonly.${role.grit-rule}]:
           includes:
             - '**/${role.pure-layer}/**'
             - '**/${role.shared-domain}/**'
@@ -48,7 +48,7 @@ typescript:
   timer-set-only-by-the-edge-and-binding-units:
     typescript:
       biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/timer-set-only-by-the-edge-and-binding-units.grit]:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/timer-set-only-by-the-edge-and-binding-units.${role.grit-rule}]:
           includes:
             - '**/${role.source}/**'
             - '!**/${role.source}/${role.gateway}/**'
@@ -67,8 +67,9 @@ core:
   surface-only-re-exports:
     typescript:
       biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/surface-only-re-exports.grit]:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/surface-only-re-exports.${role.grit-rule}]:
           includes:
             - '**/index.ts'
             - '**/index.tsx'
             - '!**/${role.source}/${role.composition-root}/**/index.tsx'
+            - slot: left-out

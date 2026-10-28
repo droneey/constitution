@@ -5,7 +5,7 @@ requires: [tanstack-router]
 extends: null
 abstract: false
 languages: []
-governs: ["src/routes/__root.tsx", "src/router.tsx", "src/root/routes/__root.tsx", "src/root/router.tsx", "src/client.tsx"]
+governs: ["src/routes/__root.tsx", "src/router.ts", "src/router.tsx", "src/root/routes/__root.tsx", "src/root/router.ts", "src/root/router.tsx", "src/client.tsx"]
 ---
 
 # TanStack Start

@@ -48,8 +48,8 @@ A distributed unit's readme shows the install line and the shortest use: for a c
 
 ### shipped-configuration-asserted-by-spec → spec-proves-one-boundary · MUST
 
-Each distributed configuration has a spec that parses it and asserts its intent.
+Each distributed configuration has a spec that parses it and asserts its settings in one table; the real tool runs only over what the configuration brings of its own — a plugin, a scope, a glob — and once to prove it loads the configuration, never in a case that proves a rule built into the tool.
 
 | Why |
 |---|
-| a configuration has no behaviour to call, so its spec is what proves it says what it means. |
+| a configuration has no behaviour to call, so its spec is what proves it says what it means; a case that runs a rule built into the tool proves the tool's code, which its authors test, at the cost of a run of the tool. |

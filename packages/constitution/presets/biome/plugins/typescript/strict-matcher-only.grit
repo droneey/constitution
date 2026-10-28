@@ -8,5 +8,5 @@ or {
   `$_.toBeTruthy()`,
   `$_.toBeFalsy()`
 } as $call where {
-  register_diagnostic(span=$call, message="[strict-matcher-only] Compare the whole outcome with toStrictEqual: toEqual, toMatchObject, objectContaining, arrayContaining, toBeTruthy and toBeFalsy pass on a partial or loose match", severity="error")
+  register_diagnostic(span=$call, message="[strict-matcher-only] Compare the part of the outcome the case is about with toStrictEqual: toEqual, toMatchObject, objectContaining, arrayContaining, toBeTruthy and toBeFalsy pass on a partial or loose match", severity="error")
 }

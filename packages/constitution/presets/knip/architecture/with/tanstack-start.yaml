@@ -1,5 +1,5 @@
-core:
-  dead-code-deleted:
+knip:
+  production-set-marked-in-the-entries:
     typescript:
       knip.jsonc:
         entry:

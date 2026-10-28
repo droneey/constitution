@@ -1,0 +1,38 @@
+language js
+
+or {
+  JsImport() as $node where {
+    $node <: r"(?s).*\b(?:exec|execSync)\b.*\bfrom\s*[\"'](?:node:)?child_process[\"'].*"
+  },
+  JsPropertyObjectMember(name=`shell`, value=$shell) as $node where {
+    $shell <: or {
+      `true`,
+      JsStringLiteralExpression(),
+      JsTemplateExpression()
+    },
+    $node <: within or {
+      `spawn($...)`,
+      `spawnSync($...)`,
+      `execFile($...)`,
+      `execFileSync($...)`,
+      `fork($...)`,
+      `$_.spawn($...)`,
+      `$_.spawnSync($...)`,
+      `$_.execFile($...)`,
+      `$_.execFileSync($...)`,
+      `$_.fork($...)`
+    }
+  },
+  or {
+    `$module.exec($...)`,
+    `$module.execSync($...)`
+  } as $node where {
+    $node <: within JsModule() as $program,
+    $program <: contains or {
+      `import * as $module from $source`,
+      `import $module from $source`
+    } where { $source <: r"[\"'](?:node:)?child_process[\"']" }
+  }
+} as $hit where {
+  register_diagnostic(span=$hit, message="[child-process-started-without-a-shell] Start the process with an argument array (execFile, spawn), never exec, execSync or a shell option", severity="error")
+}

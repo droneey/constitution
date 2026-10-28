@@ -1,9 +1,0 @@
-testing-library:
-  queries-by-role-label-text:
-    typescript:
-      biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/spec-never-selects-from-the-document.grit]:
-          includes:
-            - '**/${role.colocated-specs}/**'
-            - '**/*.test.ts'
-            - '**/*.test.tsx'

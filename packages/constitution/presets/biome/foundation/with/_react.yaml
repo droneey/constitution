@@ -82,22 +82,6 @@ _react:
             linter:
               rules:
                 nursery:
-                  useReactCompiler: error
-          - includes:
-              - '**/*.tsx'
-              - '**/*.jsx'
-            assist:
-              actions:
-                source:
-                  useSortedAttributes:
-                    level: 'on'
-                    options: {}
-                  noDuplicateClasses:
-                    level: 'on'
-                    options: {}
-            linter:
-              rules:
-                nursery:
                   useReactNamingConvention: error
           - includes:
               - '**/*.tsx'
@@ -465,19 +449,36 @@ _react:
   nothing-rendered-as-null:
     typescript:
       biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/nothing-rendered-as-null.grit]:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/nothing-rendered-as-null.${role.grit-rule}]:
           includes:
             - '**/*.tsx'
   compound-parts-share-the-root-context:
     typescript:
       biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/compound-parts-share-the-root-context.grit]:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/compound-parts-share-the-root-context.${role.grit-rule}]:
           includes:
             - '**/*.tsx'
   react-compiler-on:
     typescript:
       biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/react-compiler-on.grit]:
+        overrides:
+          - includes:
+              - '**/*.tsx'
+              - '**/*.jsx'
+            assist:
+              actions:
+                source:
+                  useSortedAttributes:
+                    level: 'on'
+                    options: {}
+                  noDuplicateClasses:
+                    level: 'on'
+                    options: {}
+            linter:
+              rules:
+                nursery:
+                  useReactCompiler: error
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/react-compiler-on.${role.grit-rule}]:
           includes:
             - '**/*.ts'
             - '**/*.tsx'
@@ -485,6 +486,6 @@ core:
   file-is-one-semantic-unit:
     typescript:
       biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/file-is-one-semantic-unit.grit]:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/file-is-one-semantic-unit.${role.grit-rule}]:
           includes:
             - '**/*.tsx'

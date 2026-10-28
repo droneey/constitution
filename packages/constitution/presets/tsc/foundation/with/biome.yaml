@@ -1,0 +1,10 @@
+# Biome reports unused parameters, labels and unreachable code where it runs; tsc keeps reporting
+# unused locals, as Biome lets a local named with an underscore pass.
+core:
+  dead-code-deleted:
+    typescript:
+      tsconfig.json !jsonc:
+        compilerOptions:
+          allowUnreachableCode: !replace true
+          allowUnusedLabels: !replace true
+          noUnusedParameters: !replace false

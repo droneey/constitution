@@ -8,9 +8,10 @@ osv-scanner:
           # finds in no other way.
           check:audit-image: >-
             docker build --quiet --target base --tag audit-image:base --file Dockerfile .
-            && { osv-scanner scan image
-            $(test -f osv-scanner.toml && echo --config osv-scanner.toml) audit-image:base;
-            status=$?; docker rmi audit-image:base > /dev/null; exit $status; }
+            && { if [ -f osv-scanner.toml ];
+            then osv-scanner scan image --config osv-scanner.toml audit-image:base;
+            else osv-scanner scan image audit-image:base; fi;
+            status=$?; docker rmi audit-image:base > /dev/null; exit "$status"; }
 bun:
   '*':
     dockerfile:

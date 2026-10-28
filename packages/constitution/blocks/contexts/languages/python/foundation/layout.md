@@ -24,7 +24,7 @@ An integration spec sits in `tests/integration/`, an end-to-end spec in `tests/e
 
 ### module-named-in-snake-case → file-name-in-its-owners-case · MUST
 
-A module is a snake_case **`.py`**{#python-module} file and its stub a **`.pyi`**{#python-stub}; a folder of the import package is a snake_case package — `order_lines/` — a generated module `<name>_gen.py` and a generated package `<name>_gen/`; a folder of `tests/` is a snake_case folder that is no package; the interpreter's `__pycache__/` and `.pyc` files keep the names it gives them.
+A module is a snake_case **`.py`**{#python-module} file and its stub a **`.pyi`**{#python-stub}; a folder of the import package is a snake_case package — `order_lines/` — a generated module `<name>_gen.py` and a generated package `<name>_gen/`, a module of messages `<name>_messages.py`; a folder of `tests/` is a snake_case folder that is no package; the interpreter's `__pycache__/` and `.pyc` files keep the names it gives them.
 
 | Why |
 |---|

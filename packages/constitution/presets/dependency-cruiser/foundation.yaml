@@ -37,6 +37,25 @@ core:
               - type-only
               - npm-peer
             pathNot: node_modules/@types/
+  deprecated-dependency-replaced:
+    typescript:
+      .dependency-cruiser.jsonc:
+        forbidden[name=no-deprecated-dependency]:
+          severity: error
+          from: {}
+          to:
+            dependencyTypes:
+              - deprecated
+  deprecated-form-never-used:
+    typescript:
+      .dependency-cruiser.jsonc:
+        forbidden[name=no-deprecated-core]:
+          severity: error
+          from: {}
+          to:
+            dependencyTypes:
+              - core
+            path: ^(?:punycode|domain|constants|sys|_linklist|_stream_wrap)$
 dependency-cruiser:
   '*':
     typescript:
@@ -53,12 +72,6 @@ dependency-cruiser:
           from: {}
           to:
             couldNotResolve: true
-        forbidden[name=no-deprecated-dependency]:
-          severity: error
-          from: {}
-          to:
-            dependencyTypes:
-              - deprecated
         forbidden[name=no-duplicate-dep-types]:
           severity: error
           from: {}
@@ -67,13 +80,6 @@ dependency-cruiser:
             dependencyTypesNot:
               - type-only
               - npm-peer
-        forbidden[name=no-deprecated-core]:
-          severity: error
-          from: {}
-          to:
-            dependencyTypes:
-              - core
-            path: ^(?:punycode|domain|constants|sys|_linklist|_stream_wrap)$
         options:
           parser: swc
           skipAnalysisNotInRules: true

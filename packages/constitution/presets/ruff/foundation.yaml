@@ -9,6 +9,7 @@ core:
                 - ARG
                 - F401
                 - F841
+                - F842
   error-keeps-its-cause:
     python:
       pyproject.toml:
@@ -394,7 +395,19 @@ ruff:
                 - C4
                 - E
                 - EXE
-                - F
+                # pyflakes but its unused imports and locals, which dead-code-deleted selects
+                - F402
+                - F403
+                - F404
+                - F405
+                - F406
+                - F407
+                - F5
+                - F6
+                - F7
+                - F81
+                - F82
+                - F9
                 - FURB
                 - G
                 - I

@@ -5,19 +5,19 @@ nestjs:
         javascript:
           parser:
             unsafeParameterDecoratorsEnabled: true
+        assist:
+          actions:
+            source:
+              organizeImports:
+                options:
+                  groups@frameworks:
+                    - - '@nest*'
+                      - nest*
+                    - ':BLANK_LINE:'
+  decorated-constructor-takes-every-dependency:
+    typescript:
+      biome.jsonc:
         overrides:
-          - includes:
-              - '**/*.ts'
-            linter:
-              rules:
-                complexity:
-                  noStaticOnlyClass: 'off'
-          - includes:
-              - '**/*.ts'
-            linter:
-              rules:
-                style:
-                  noParameterProperties: 'off'
           - includes:
               - '**/*.${role.nest-controller}'
               - '**/*.${role.nest-provider}'
@@ -29,6 +29,10 @@ nestjs:
               rules:
                 complexity:
                   useMaxParams: 'off'
+  injected-classes-imported-as-values:
+    typescript:
+      biome.jsonc:
+        overrides:
           - includes:
               - '**/*.${role.nest-controller}'
               - '**/*.${role.nest-provider}'
@@ -40,12 +44,3 @@ nestjs:
               rules:
                 style:
                   useImportType: 'off'
-        assist:
-          actions:
-            source:
-              organizeImports:
-                options:
-                  groups@frameworks:
-                    - - '@nest*'
-                      - nest*
-                    - ':BLANK_LINE:'

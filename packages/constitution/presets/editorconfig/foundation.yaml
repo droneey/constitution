@@ -1,3 +1,9 @@
+core:
+  snapshot-readable-by-eye:
+    '*':
+      .editorconfig:
+        '*.golden.*':
+          trim_trailing_whitespace: false
 editorconfig:
   '*':
     '*':

@@ -4,9 +4,6 @@ yamllint:
       .yamllint.yaml:
         extends: default
         rules:
-          line-length:
-            max: 100
-            allow-non-breakable-inline-mappings: true
           comments:
             level: error
             min-spaces-from-content: 1
@@ -23,6 +20,9 @@ core:
     yaml:
       .yamllint.yaml:
         rules:
+          line-length:
+            max: 100
+            allow-non-breakable-inline-mappings: true
           indentation:
             spaces: 2
             indent-sequences: true

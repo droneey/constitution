@@ -1,0 +1,26 @@
+jscpd:
+  clone-in-source-joined-or-suppressed:
+    typescript:
+      .jscpd.json:
+        pattern: '{${role.source},${role.build-code}}/**'
+        format:
+          - typescript
+          - tsx
+        ignore:
+          - '**/${role.colocated-specs}/**'
+          - '**/${role.end-to-end-suite}/**'
+          - '**/*.gen.*'
+        minLines: 5
+        minTokens: 50
+        exitCode: 1
+    python:
+      .jscpd.json:
+        pattern: '{${role.source},${role.build-code}}/**'
+        format:
+          - python
+        ignore:
+          - '**/*_gen.py'
+          - '**/*_gen/**'
+        minLines: 5
+        minTokens: 50
+        exitCode: 1

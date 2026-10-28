@@ -1,6 +1,8 @@
 workspace:
   unit-checked-by-its-own-tools:
     yaml:
-      .yamllint.yaml:
-        ignore:
-          - /${workspace.members}/**
+      .yamllint.yaml ? ${workspace.isRoot}:
+        ignore-from-file:
+          - .yamlignore
+      .yamlignore ? ${workspace.isRoot}:
+        - /${workspace.members}/**

@@ -24,6 +24,7 @@ core:
       stryker.config.json:
         diagnosticsTextArguments:
           new *Error: 0
+          super: 0
 stryker:
   diagnostic-mutants-left-out-by-the-ignorer:
     typescript:

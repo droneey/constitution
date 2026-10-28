@@ -112,7 +112,7 @@ typescript:
                       match: T([A-Z].*)?
                       formats:
                         - PascalCase
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/identifier-case-by-kind.grit]:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/identifier-case-by-kind.${role.grit-rule}]:
           includes:
             - '**/*.ts'
             - '**/*.tsx'
@@ -284,7 +284,7 @@ typescript:
   module-level-value-never-changed:
     typescript:
       biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/module-level-value-never-changed.grit]:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/module-level-value-never-changed.${role.grit-rule}]:
           includes:
             - '**'
             - '!**/*.test.ts'
@@ -292,7 +292,7 @@ typescript:
   parameter-object-has-a-named-type:
     typescript:
       biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/parameter-object-has-a-named-type.grit]:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/parameter-object-has-a-named-type.${role.grit-rule}]:
           includes:
             - '**/*.ts'
             - '**/*.tsx'
@@ -312,6 +312,40 @@ typescript:
                       filenameCases:
                         - kebab-case
                       match: ([^.]+)[.]((?:[^.]+[.])?(?:integration[.]|e2e[.])?(?:test|fake|suite|fixtures)[.]tsx?)
+  tsx-only-where-markup-is-written:
+    typescript:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/tsx-only-where-markup-is-written.${role.grit-rule}]:
+          includes:
+            - '**/*.tsx'
+  child-process-started-without-a-shell:
+    typescript:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/child-process-started-without-a-shell.${role.grit-rule}]:
+          includes:
+            - '**/*.ts'
+            - '**/*.tsx'
+  child-process-given-an-env-of-its-own:
+    typescript:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/child-process-given-an-env-of-its-own.${role.grit-rule}]:
+          includes:
+            - '**/*.ts'
+            - '**/*.tsx'
+  boundary-values-unknown-until-parsed:
+    typescript:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/boundary-values-unknown-until-parsed.${role.grit-rule}]:
+          includes:
+            - '**/*.ts'
+            - '**/*.tsx'
+  duration-measured-by-performance-now:
+    typescript:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/duration-measured-by-performance-now.${role.grit-rule}]:
+          includes:
+            - '**/*.ts'
+            - '**/*.tsx'
 core:
   async-work-awaited-or-held-by-a-scope:
     typescript:

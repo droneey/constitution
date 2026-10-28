@@ -5,7 +5,7 @@ requires: [yaml, _task-runner]
 extends: null
 abstract: false
 languages: [yaml]
-governs: [".yamllint.yaml"]
+governs: [".yamllint.yaml", ".yamlignore"]
 ---
 
 # yamllint

@@ -5,7 +5,7 @@ requires: [react-dom]
 extends: null
 abstract: false
 languages: []
-governs: ["src/routes/**", "src/router.tsx", "src/root/routes/**", "src/root/router.tsx"]
+governs: ["src/routes/**", "src/router.ts", "src/router.tsx", "src/root/routes/**", "src/root/router.ts", "src/root/router.tsx"]
 ---
 
 # TanStack Router

@@ -1,0 +1,8 @@
+mise:
+  '*':
+    yaml:
+      .yamllint.yaml:
+        ignore-from-file:
+          - .yamlignore
+      .yamlignore:
+        - .mise/locks/

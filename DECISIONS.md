@@ -11,37 +11,37 @@
 | Scope | ADR-0001 |
 | Blocks and layers | ADR-0002 – ADR-0005, ADR-0007 |
 | Project files | ADR-0009, ADR-0010, ADR-0102, ADR-0208, ADR-0231 |
-| Rules and roles | ADR-0013 – ADR-0016, ADR-0144, ADR-0219, ADR-0226, ADR-0232 |
+| Rules and roles | ADR-0013 – ADR-0016, ADR-0144, ADR-0219, ADR-0226, ADR-0232, ADR-0240 |
 | Overrides and precedence | ADR-0020 |
 | Delivery | ADR-0026 |
 | The anatomy | ADR-0029, ADR-0032, ADR-0033, ADR-0035, ADR-0036, ADR-0141, ADR-0143, ADR-0157, ADR-0158 |
 | The rest | ADR-0043, ADR-0045 |
-| Testing | ADR-0046 – ADR-0049, ADR-0220 – ADR-0222 |
+| Testing | ADR-0046 – ADR-0049, ADR-0220 – ADR-0222, ADR-0236, ADR-0255 |
 | Code | ADR-0050, ADR-0052 |
 | Core | ADR-0053 – ADR-0055, ADR-0057, ADR-0058, ADR-0060, ADR-0062, ADR-0063 |
-| Blocks | ADR-0064, ADR-0066 – ADR-0076, ADR-0092, ADR-0095, ADR-0206, ADR-0209, ADR-0210, ADR-0211, ADR-0214 – ADR-0216, ADR-0233 |
+| Blocks | ADR-0064, ADR-0066 – ADR-0076, ADR-0092, ADR-0095, ADR-0206, ADR-0209, ADR-0210, ADR-0211, ADR-0214 – ADR-0216, ADR-0233, ADR-0242 |
 | Tools and tests | ADR-0077 – ADR-0084, ADR-0086, ADR-0096, ADR-0097, ADR-0099, ADR-0101, ADR-0103, ADR-0105, ADR-0138 |
 | Axes | ADR-0088 – ADR-0091, ADR-0093, ADR-0094, ADR-0098 |
 | The 2026 audits | ADR-0104, ADR-0106 – ADR-0110, ADR-0113 – ADR-0115 |
 | A real application | ADR-0116, ADR-0118 – ADR-0123 |
 | Delivery of the constitution | ADR-0124 |
-| Workspaces and distribution | ADR-0125, ADR-0139, ADR-0150, ADR-0151, ADR-0159, ADR-0207, ADR-0213, ADR-0217, ADR-0218, ADR-0227, ADR-0228, ADR-0229 |
+| Workspaces and distribution | ADR-0125, ADR-0139, ADR-0150, ADR-0151, ADR-0159, ADR-0207, ADR-0213, ADR-0217, ADR-0218, ADR-0227, ADR-0228, ADR-0229, ADR-0237, ADR-0238, ADR-0245, ADR-0248 – ADR-0250 |
 | Line width and licences | ADR-0126 |
 | Python | ADR-0127 – ADR-0129, ADR-0140, ADR-0142 |
-| TypeScript configuration | ADR-0130, ADR-0131, ADR-0133 |
-| Scripts of the check | ADR-0132 |
-| Dependencies | ADR-0134, ADR-0145 |
+| TypeScript configuration | ADR-0130, ADR-0131, ADR-0133, ADR-0257 |
+| Scripts of the check | ADR-0132, ADR-0241 |
+| Dependencies | ADR-0134, ADR-0145, ADR-0251 |
 | Levels | ADR-0135 |
-| Domains | ADR-0136, ADR-0137 |
+| Domains | ADR-0136, ADR-0137, ADR-0253, ADR-0254 |
 | The expert review of #271 | ADR-0146 – ADR-0149 |
 | The fifth audit | ADR-0152 – ADR-0154 |
-| What a tool holds, not how it runs | ADR-0155 |
+| What a tool holds, not how it runs | ADR-0155, ADR-0234, ADR-0235, ADR-0243, ADR-0244, ADR-0246, ADR-0247 |
 | The sixth audit | ADR-0156 |
 | One home per rule | ADR-0160 – ADR-0186 |
-| The program's tree | ADR-0187 – ADR-0190, ADR-0194, ADR-0195, ADR-0199 |
+| The program's tree | ADR-0187 – ADR-0190, ADR-0194, ADR-0195, ADR-0199, ADR-0239, ADR-0256 |
 | A project's decisions and the cost of its work | ADR-0191 – ADR-0193 |
 | The 2026 expert audit | ADR-0196 – ADR-0198 |
-| What a tool holds and what review holds | ADR-0200 – ADR-0202 |
+| What a tool holds and what review holds | ADR-0200 – ADR-0202, ADR-0258 |
 | The plugin and the project's rules | ADR-0203 – ADR-0205, ADR-0212 |
 | The whole-repository review of #383 | ADR-0223, ADR-0225 |
 | Formatters | ADR-0224, ADR-0230 |
@@ -2291,8 +2291,7 @@
     - the test fixtures: sandbox, DOM, lingui;
     - pytest's `conftest.py` example;
     - Biome's `$schema`;
-    - a Python unit's `name`, `version` and `dependencies`;
-    - ts-reset's `reset.d.ts` and NestJS's `.swcrc`, which a rule names. They stay defaults because they are whole texts in no format the program reads back: a held whole text would be reported as changed after every apply.
+    - a Python unit's `name`, `version` and `dependencies`.
   - The `.gitignore` lists are re-cut:
     - a base list every unit takes, keyed to `machine-local-files-ignored` and git's environment and key-file rules;
     - per-block lists, each keyed to `gitignore-covers-dependencies-output-and-caches` or the key-file rule, where the block runs;
@@ -2302,6 +2301,9 @@
   - `!default` for everything the presets give: a setting a rule depends on went unchecked after its first write. Design-tokens' unit run kept its own coverage, and the units' lists drifted.
   - One `.gitignore` list for every project: lines for tools a project does not use, and no home for a tool's cache beside its block.
 - **Why.** The check holds what the rules hold, and a file a user is meant to own is written once and left to them.
+- **Amendment, 2026-10-28.** The entry first named ts-reset's `reset.d.ts` and NestJS's `.swcrc` among the `!default` starter files, as whole texts in no format the program reads back. Both left `!default`:
+  - `.swcrc` is written as keyed JSONC (`!jsonc`): the decorator-metadata keys are held under `nestjs-keeps-decorator-metadata`, and the rest under `*`.
+  - `reset.d.ts` is held by its import line, through the lines format with `//` comments, under `reset-loaded-in-applications`.
 
 ## ADR-0244 — A map a preset marks `!sorted` keeps its keys in their order as texts
 
@@ -2431,3 +2433,80 @@
   - A default `osv-scanner.toml` written into each unit: the source scan reads the configuration nearest to each lockfile, so an empty file in a unit would hide the root's entries from that unit's lockfiles.
   - A tag per unit: no fact gives a valid image reference, `@droneey/docs` being none, and the tag lives only for the scan.
 - **Why.** A known vulnerability in the system an image runs on is found like one in a lockfile, by the check every unit already runs, while what the project ships stays the only thing held to its licences.
+
+## ADR-0253 — A font token names the kind of text, and a style of text is one typography composite
+
+**Date:** 2026-10-27 · **Status:** Accepted
+
+- **Decision.**
+  - `token-name-follows-the-grammar` leaves the concept out of a `font` token, whose category styles nothing but text, and the kind of text takes the role's place, Atlassian's form: `font.body.md`, `font.heading.lg`, `font.code.sm`.
+  - A property of text — size, leading, weight, family, tracking — is the scale of a primitive, never a role: `font.size.<step>`, `font.leading.<step>`, `font.weight.<name>`, `font.family.<name>`, `font.tracking.<step>`.
+  - A semantic `font` token is one composite of the W3C Design Tokens format's `typography` type, whose `fontFamily`, `fontSize`, `fontWeight`, `letterSpacing` and `lineHeight` refer to those primitives (`font-token-is-one-typography-composite`). The line height is a unitless multiple of the font size, the only form the format's `lineHeight` takes.
+- **Rejected.**
+  - `font.text.body.md`, the grammar kept as it stood: `text` would repeat in every name of the category and say nothing.
+  - A property in the role's place, as Primer's `text-body-size-medium` and `text-body-lineHeight-medium` have it, here `font.text.size.md`: a semantic name would hold a raw value, a style of text would be several tokens a component must keep in step, and a theme that changes one would miss the others.
+  - A line height as a length, `24px` or `1.5rem`: the format refuses it, and a fixed length no longer fits once a theme changes the font size.
+- **Why.** Read against Primer, Material 3, Spectrum 2, Carbon, Atlassian, Polaris and the format's 2025.10 release, Atlassian's form alone names a style of text by its kind with no segment every name repeats, and the format's composite is the one unit design tools and every platform's output read as a style.
+
+## ADR-0254 — Tailwind reads the tokens through aliases, and a style of text is its text composite
+
+**Date:** 2026-10-27 · **Status:** Accepted
+
+- **Decision.** The tokens' custom properties keep the tokens' names on the root, and Tailwind's theme is a generated layer of aliases in Tailwind's own namespaces, `@theme inline` (`utilities-only-from-tokens`), with `@theme inline reference` for a name that already is Tailwind's (`theme-aliases-the-token-properties`). A typography token becomes Tailwind's text composite, `--text-body-md` with its line height, letter spacing and weight, so one class, `text-body-md`, sets it, and its family, which the composite lacks, is one alias for each kind of text, `--font-body`, so a component writes `text-body-md font-body` and never a primitive's class (`typography-token-aliased-as-a-text-composite`). One `@theme { --*: initial; }` clears Tailwind's default theme (`utilities-only-from-tokens`).
+- **Rejected.**
+  - An `@utility font-body-md` for each typography token, writing its five properties: a class outside Tailwind's namespaces, which `tailwind-merge` must be taught as a group of its own, and which Tailwind's tooling — the sorting of classes, an editor's completion and preview of a value — does not know as a size of text.
+  - Semantic variables named in Tailwind's namespaces, as rozumchik-web's theme declares them, `--text-body-md` on the root for `font.body.md`: a token's name would differ from its variable, and a search for one would miss the other.
+- **Why.** On Tailwind 4.3.3, variables on the root alone create no utility, the tokens' `--font-*` names inside a plain `@theme` create font-family utilities of nonsense, `@theme inline` writes the token's variable straight into the utility, and `--*: initial` clears every default scale. Aliases alone keep one name for each token and every utility in Tailwind's namespaces.
+
+## ADR-0255 — Text a person reads is a file kind its mutants leave with, and a format is pinned by a golden file
+
+**Date:** 2026-10-27 · **Status:** Accepted
+
+- **Decision.**
+  - Text a unit writes for a person — a message, a command's help, the wording of a report — sits in a `.messages` file (`text-a-person-reads-held-in-a-messages-file`). Stryker's ignorer leaves out that file's string and template mutants, and the text an error hands to `super`; mutmut leaves the module of messages out whole, which a messages file's kind allows by holding no branch, and an exception's text keeps its pragma (`diagnostic-mutants-left-out-by-the-ignorer`, `messages-modules-left-out-by-do-not-mutate`). The gate stays at every mutant killed.
+  - The wording and layout of a format are pinned by one golden file for each renderer, never a table of wording cases (`snapshot-readable-by-eye`).
+- **Rejected.**
+  - Killing text mutants with cases: a case that pins a message proves no bug a caller meets, and fails on every rewording.
+  - Leaving text out by a pattern over names or string literals: a pattern guesses, so it hides logic that looks like text and misses text that does not; a file's kind is declared, and a missing entry shows in the run.
+  - Lowering the gate below every mutant killed: a threshold lets any mutant live, a real one among them, while leaving out one kind keeps every other mutant held.
+  - A table of wording cases for each renderer: it pins each message apart from the layout around it, and a rewording touches the table and every case that reads it, while a golden file shows the whole format as a reader meets it and a run rewrites it.
+- **Why.** Specs then carry the cases a caller's behaviour earns, the text stays free to change in one place, and the format is still pinned once, where a reviewer reads it.
+
+## ADR-0256 — A contract another feature answers stays with each feature that asks; only one an outside system answers lifts to the kernel
+
+**Date:** 2026-10-27 · **Status:** Accepted
+
+- **Context.** The kernel held a port, `ProjectSource`, that composition implemented through the project feature. It carried the project feature's entities and failures into the kernel, and forced an import cycle between the kernel's errors and its value objects.
+- **Decision.**
+  - `contract-lifts-on-its-second-feature` lifts a contract to the kernel only when an outside system answers it, a clock or a mailer, in the same words for the features that ask. A contract another feature answers never lifts: each feature that asks words its own.
+  - `feature-asks-another-through-its-own-contract` has the contract hold the asker's parameters, results and the failures it acts on; composition maps the other's results into the asker's terms and those failures into the asker's own, and lets every other failure pass.
+  - `type-lifts-when-features-share-its-meaning` lifts a business type to the kernel when two or more features use it with one meaning, universal and stable; otherwise the asking feature declares its own and composition translates.
+  - An adapter that answers a feature's contract through another feature lives in the composition module that joins them and imports that feature's surface.
+- **Rejected.**
+  - Keeping a feature-answered contract liftable to the kernel when two features ask in the same words: the kernel then holds a feature's model and failures, and the answering feature can no longer change them alone.
+  - A second kernel folder for the failures that carry values: it removes the cycle but keeps the feature's failures in the kernel.
+  - One shared failure type passed through to every asker: the askers then branch on another feature's codes.
+  - Every type another feature reads lifts to the kernel: the kernel then grows with each reader and holds types no two features read alike.
+- **Why.** What a feature answers is that feature's model, so it stays in the feature, and the kernel holds only what no feature owns.
+
+## ADR-0257 — The unused-code options of the compiler hold dead code, not the type gate
+
+**Date:** 2026-10-28 · **Status:** Accepted
+
+- **Decision.** `noUnusedLocals` and `noUnusedParameters` leave `compiler-is-the-type-gate`; the presets set them under `dead-code-deleted`. Where Biome runs in the same unit, tsc turns off `noUnusedParameters`, `allowUnreachableCode` and `allowUnusedLabels`, since Biome reports unused parameters, unused labels and unreachable code, but keeps `noUnusedLocals`, because Biome's unused-variable rule always lets a local whose name starts with `_` pass, which would loosen `dead-code-deleted`; so unused imports and locals are still reported by both. A unit with tsc alone keeps all of them.
+- **Rejected.**
+  - Keeping them in the type gate: every unused name is reported twice where Biome runs, and a rule of the compiler stops the linter from holding dead code alone.
+  - Turning Biome's unused rules off instead: Biome also lints files outside the compiler's `include`, such as the root config files, which would lose them.
+  - Turning `noUnusedLocals` off where Biome runs: an unused local named with a leading underscore would then pass unreported.
+- **Why.** Dead code is one rule, held under that rule, with one reporter where a tool can hold it fully.
+
+## ADR-0258 — actionlint alone checks the workflows
+
+**Date:** 2026-10-28 · **Status:** Accepted
+
+- **Decision.** The implementation `actionlint` lints a repository's GitHub Actions workflows, and through the ShellCheck it finds on the `PATH`, the command of each `run:` step. Its default checks hold `runner-value-reaches-the-command-through-the-environment`, for the values GitHub marks untrusted, and with ShellCheck pinned `embedded-command-expansion-double-quoted`; the presets write no `.github/actionlint.yaml`, since no setting of it holds a rule. Its runner gives `check:workflows`, `actionlint -pyflakes=`, to the topmost unit that lists it, pyflakes off since no block pins it, as actionlint reads every workflow of the repository from any folder of it. A finding is silenced under the one workflow's key in `.github/actionlint.yaml` (`actionlint-ignore-names-workflow-and-message`).
+- **Rejected.**
+  - zizmor beside it, by the owner's choice, which spares one more pinned tool and its configuration for two rules review already carries: the rules its audits would reach — `outside-change-runs-without-secrets`, `credential-has-least-privilege` — stay with review.
+  - A block for GitHub Actions itself: the rules on a workflow's commands already sit in the YAML language's seam with the shell, and no rule yet loses its meaning without GitHub alone.
+  - The script in every unit that lists the block: each would lint the root's workflows again.
+- **Why.** The rules on a workflow's commands were held by no block's tool, and actionlint holds them with its defaults and one pinned tool.

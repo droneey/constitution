@@ -8,11 +8,19 @@ A package keeps its source, what it ships, in **`src/`**{#source}, and the code 
 
 ### file-named-for-its-kind · MUST
 
-A file of a kind this table names carries that name, and the name marks nothing else: a generated file carries `.gen` or sits in a folder `*.gen/`; a spec is `<name>.test`, `<name>.integration.test` or `<name>.e2e.test`; a fake is `<contract>.fake`; a contract suite is `<contract>.suite`; fixtures are `<name>.fixtures`; a golden file is `<name>.golden.<ext>`, and a snapshot is the file its runner names; a repository’s or a module’s readme is `README.md`. The language fixes the spelling of its own files.
+A file of a kind this table names carries that name, and the name marks nothing else: a generated file carries `.gen` or sits in a folder `*.gen/`; a spec is `<name>.test`, `<name>.integration.test` or `<name>.e2e.test`; a fake is `<contract>.fake`; a contract suite is `<contract>.suite`; fixtures are `<name>.fixtures`; a golden file is `<name>.golden.<ext>`, and a snapshot is the file its runner names; a file of the text a person reads and the templates that fill it with values, holding no branch, carries **`.messages`**{#message-file}; a repository’s or a module’s readme is `README.md`. The language fixes the spelling of its own files.
 
 | Why |
 |---|
 | the name tells a reader and a tool what a file is before it is opened. |
+
+### text-a-person-reads-held-in-a-messages-file · SHOULD
+
+The text a unit writes for a person to read — a message, a command's help, the wording of a report — sits in a `.messages` file beside the unit, save the message an error is built with, and the logic that chooses a text — a plural, a variant — sits outside it and names the messages it chooses from.
+
+| Why |
+|---|
+| the text is reworded in one place without touching logic, and the mutation tools leave its mutants out by the file's kind, never by a guess, so a choice left inside it would go unmeasured. |
 
 ### generated-file-never-edited · MUST
 

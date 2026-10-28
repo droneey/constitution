@@ -21,7 +21,6 @@ biome:
               noEmptyTypeParameters: error
               noExtraBooleanCast: error
               noFlatMapIdentity: error
-              noImportantStyles: error
               noStaticOnlyClass: error
               noThisInStatic: error
               noUselessCatch: error
@@ -56,14 +55,10 @@ biome:
               noDynamicNamespaceImportAccess: error
               useDomNodeTextContent: error
             style:
-              noDescendingSpecificity: error
-              noNonNullAssertion: error
               useArrayLiterals: error
               useConst: error
               useDeprecatedReason: error
               useExponentiationOperator: error
-              useExportType: error
-              useImportType: error
               useLiteralEnumMembers: error
               useNodejsImportProtocol: error
               useShorthandFunctionType: error
@@ -73,13 +68,11 @@ biome:
               noCatchAssign: error
               noConfusingLabels: error
               noConfusingVoidType: error
-              noConstEnum: error
               noDeprecatedMediaType: error
               noDocumentCookie: error
               noDuplicateEnumValues: error
               noDuplicateFields: error
               noEmptyBlock: error
-              noExplicitAny: error
               noExtraNonNullAssertion: error
               noGlobalIsFinite: error
               noGlobalIsNan: error
@@ -91,7 +84,6 @@ biome:
               noRedundantUseStrict: error
               noSuspiciousSemicolonInJsx: error
               noTemplateCurlyInString: error
-              noTsIgnore: error
               noUselessEscapeInString: error
               noUselessRegexBackrefs: error
               useAdjacentOverloadSignatures: error
@@ -503,7 +495,7 @@ core:
   case-named-should-when:
     typescript:
       biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/case-named-should-when.grit]:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/case-named-should-when.${role.grit-rule}]:
           includes:
             - '**/${role.colocated-specs}/**'
             - '**/*.test.ts'
@@ -511,7 +503,7 @@ core:
   case-holds-no-logic:
     typescript:
       biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/case-holds-no-logic.grit]:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/case-holds-no-logic.${role.grit-rule}]:
           includes:
             - '**/${role.colocated-specs}/**'
             - '**/*.test.ts'
@@ -519,7 +511,7 @@ core:
   case-split-by-arrange-act-assert-comments:
     typescript:
       biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/case-split-by-arrange-act-assert-comments.grit]:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/case-split-by-arrange-act-assert-comments.${role.grit-rule}]:
           includes:
             - '**/${role.colocated-specs}/**'
             - '**/*.test.ts'
@@ -527,7 +519,7 @@ core:
   case-pins-meaning-never-wording:
     typescript:
       biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/case-pins-meaning-never-wording.grit]:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/case-pins-meaning-never-wording.${role.grit-rule}]:
           includes:
             - '**/${role.colocated-specs}/**'
             - '**/*.test.ts'

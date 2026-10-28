@@ -59,7 +59,7 @@ core:
                         window: >-
                           Outside the edge, input and output reach this code through a port.
                         sessionStorage: Outside the edge, storage reaches this code through a port.
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/effects-held-only-by-the-edge.grit]:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/effects-held-only-by-the-edge.${role.grit-rule}]:
           includes:
             - '**/${role.source}/**'
             - '!**/${role.source}/${role.gateway}/**'
@@ -76,7 +76,7 @@ biome:
   biome-refuses-empty-names:
     typescript:
       biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/biome-refuses-empty-names.grit]:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/biome-refuses-empty-names.${role.grit-rule}]:
           includes:
             - '**'
             - '!**/${role.generic-library}/**'

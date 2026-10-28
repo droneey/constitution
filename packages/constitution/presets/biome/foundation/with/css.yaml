@@ -64,12 +64,18 @@ css:
   selector-never-targets-an-id:
     css:
       biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/css/selector-never-targets-an-id.grit]:
+        plugins[path=./${constitution.path}/presets/biome/plugins/css/selector-never-targets-an-id.${role.grit-rule}]:
           includes:
             - '**/*.css'
   transition-names-its-properties:
     css:
       biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/css/transition-names-its-properties.grit]:
+        plugins[path=./${constitution.path}/presets/biome/plugins/css/transition-names-its-properties.${role.grit-rule}]:
+          includes:
+            - '**/*.css'
+  line-height-set-as-a-number:
+    css:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/css/line-height-set-as-a-number.${role.grit-rule}]:
           includes:
             - '**/*.css'

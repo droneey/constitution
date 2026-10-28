@@ -18,7 +18,7 @@ tailwind:
   utilities-only-from-tokens:
     css:
       biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/css/utilities-only-from-tokens.grit]:
+        plugins[path=./${constitution.path}/presets/biome/plugins/css/utilities-only-from-tokens.${role.grit-rule}]:
           includes:
             - '**/*.css'
     typescript:
@@ -30,7 +30,7 @@ tailwind:
   transition-all-never-used:
     css:
       biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/css/transition-all-never-used.grit]:
+        plugins[path=./${constitution.path}/presets/biome/plugins/css/transition-all-never-used.${role.grit-rule}]:
           includes:
             - '**/*.css'
     typescript:

@@ -27,11 +27,11 @@ pattern matcher() {
 }
 
 // Prose written as an assertion's expected value; a value a case reads from a row of its table is
-// data, and the table is the one place its wording is pinned.
+// data, and the wording itself is pinned by its renderer's golden file.
 JsCallExpression(callee=JsStaticMemberExpression(member=matcher()), arguments=JsCallArguments(args=[
   prose() as $wording
 ])) where {
-  register_diagnostic(span=$wording, message="[case-pins-meaning-never-wording] Compare what the outcome means — its code, its subject, the values it names — and pin the wording once, in the one table of its renderer", severity="error"),
+  register_diagnostic(span=$wording, message="[case-pins-meaning-never-wording] Compare what the outcome means — its code, its subject, the values it names — and pin the wording once, in the golden file of its renderer", severity="error"),
   // Biome keeps what a match adds to its matching state and copies that state
   // before every node, so each match would slow the next: the diagnostic stays,
   // the match fails.

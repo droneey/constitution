@@ -58,8 +58,8 @@ No action passes `force: true`.
 
 ### screens-scanned-in-the-browser → ui-specs-scan-accessibility · MUST
 
-Every end-to-end spec scans each screen it reaches with `@axe-core/playwright`, through one shared fixture, on the tags `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa` and `wcag22aa`, and passes with zero violations.
+The end-to-end specs scan each state of a screen they reach once across the suite, with `@axe-core/playwright` through one shared fixture: on the rules a simulated document cannot judge, `color-contrast` and `target-size`, where a narrower spec renders the state, and on the tags `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa` and `wcag22aa` where none does; each scan passes with zero violations.
 
 | Why |
 |---|
-| only a real browser measures contrast over the real background and the size of a target; without `wcag22aa` the target size is never checked. |
+| only a real browser measures contrast over the real background and the size of a target, and a rule a narrower spec already judged proves nothing new when run again; without `wcag22aa` the target size is never checked. |

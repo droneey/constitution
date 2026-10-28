@@ -38,11 +38,11 @@ The project’s permission settings for agents, deny rules included, live in the
 
 ### agent-asks-before-a-consequential-change · MUST
 
-An agent asks before it adds a dependency or a package, or changes the entry a package publishes, a database schema or a stored format, and goes on only with a person’s consent to that change, unless the task names that change.
+An agent asks before it adds a dependency or a package, changes the entry a package publishes, a database schema or a stored format, or brings back what a recorded decision rejected, and goes on only with a person’s consent to that change, unless the task its person set names that change. An agent that delegated the task gives no such consent: it takes the question to its person.
 
 | Why |
 |---|
-| these changes reach beyond the task and are hard to take back once others build on them. |
+| these changes reach beyond the task and are hard to take back once others build on them, and a delegating agent answers for the task, not for the decisions its person keeps. |
 
 ### agent-asks-when-readings-diverge · SHOULD
 
@@ -59,6 +59,14 @@ An agent reports outcomes as they are, with their evidence: a failing test with 
 | Why |
 |---|
 | a person decides on the report, and a report better than the truth makes the decision wrong. |
+
+### handed-back-change-names-what-its-abstractions-earn · MUST
+
+An agent that hands a change back names, for each abstraction the change adds — a port, an adapter, a value with an invariant, an entity, an operation, an error code, a layer, a helper — what it earns: the concept of the business it holds, the boundary it guards or the value that crosses one, the seam that makes a behaviour testable, or the rule that asks for it.
+
+| Why |
+|---|
+| an agent adds structure more readily than it removes it; an abstraction named with what it earns is weighed by its person in a line, and one for which nothing can be named shows itself before the change is read. |
 
 ## Trust
 

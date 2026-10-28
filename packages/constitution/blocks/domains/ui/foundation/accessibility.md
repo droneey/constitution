@@ -200,11 +200,11 @@ A screen declares the language of its content, and a passage in another language
 
 ### ui-specs-scan-accessibility · MUST
 
-Every screen and component spec runs an accessibility scan, and passes with zero violations.
+Each state the interface renders is scanned for accessibility once, in the spec of the narrowest unit that renders it — a component's states in the component's spec, the states a screen adds in the screen's — and passes with zero violations; a rule that spec's environment cannot judge, such as contrast in a simulated document, is proven where the platform renders, or by a test over the values that decide it.
 
 | Why |
 |---|
-| a scan catches many problems for free, on every change, before a person has to. |
+| a scan catches many problems for free, on every change, before a person has to, and a state scanned again in every spec that renders it costs a run for no problem the first scan missed. |
 
 ### interactive-checked-by-hand · SHOULD
 
@@ -222,4 +222,4 @@ The scanner runs over the rendered tree inside a spec, covers the WCAG 2.2 A and
 
 | Why |
 |---|
-| without it, the scan cannot run in every spec, and a violation cannot be traced to its element. |
+| without it, a state cannot be scanned in the spec that renders it, and a violation cannot be traced to its element. |

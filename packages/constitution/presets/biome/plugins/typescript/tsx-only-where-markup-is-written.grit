@@ -1,0 +1,43 @@
+language js
+
+or {
+  JsExport(),
+  JsImport(),
+  JsVariableStatement(),
+  JsFunctionDeclaration(),
+  JsClassDeclaration(),
+  JsExpressionStatement(),
+  JsIfStatement(),
+  JsForStatement(),
+  JsForInStatement(),
+  JsForOfStatement(),
+  JsWhileStatement(),
+  JsDoWhileStatement(),
+  JsBlockStatement(),
+  JsTryStatement(),
+  JsTryFinallyStatement(),
+  JsSwitchStatement(),
+  JsLabeledStatement(),
+  JsThrowStatement(),
+  JsEmptyStatement(),
+  JsDebuggerStatement(),
+  TsTypeAliasDeclaration(),
+  TsInterfaceDeclaration(),
+  TsEnumDeclaration(),
+  TsModuleDeclaration(),
+  TsExternalModuleDeclaration(),
+  TsGlobalDeclaration(),
+  TsImportEqualsDeclaration(),
+  TsDeclareStatement(),
+  TsDeclareFunctionDeclaration()
+} as $item where {
+  $item <: within JsModule(items=$items) as $module,
+  $items <: [$first, ...],
+  $item <: $first,
+  $module <: not contains or {
+    JsxElement(),
+    JsxSelfClosingElement(),
+    JsxFragment()
+  },
+  register_diagnostic(span=$item, message="[tsx-only-where-markup-is-written] This file writes no markup: name it .ts", severity="error")
+}

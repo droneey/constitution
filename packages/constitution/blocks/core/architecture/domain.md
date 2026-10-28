@@ -6,7 +6,7 @@
 
 - **Ubiquitous language.** Names match the business, mirrored from the people who own it and kept in the project's glossary.
 - **Bounded context.** A feature is one: one word may mean different things in two features.
-- **Ports and adapters.** A port names what the domain needs, in the domain's words; an adapter implements it over one outside system.
+- **Ports and adapters.** A port names what the domain needs, in the domain's words; an adapter implements it over one outside system or, in composition, through another feature's surface.
 - Entities are the business types with identity; a **value object** is a small value that guards an invariant; a **use case** is an operation a feature offers, with the business rules it carries. Their form is the language's.
 - **Domain event.** It records, in the past tense, what happened, in the domain's words.
 
