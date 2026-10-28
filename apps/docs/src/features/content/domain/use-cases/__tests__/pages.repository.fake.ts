@@ -3,11 +3,9 @@ import type { Page } from '../../entities';
 import type { PageSlugs } from '../../value-objects';
 
 interface FakePagesInput {
-  /** by their slugs joined with `/` */
   readonly pages: ReadonlyMap<string, Page>;
 }
 
-/** a page's text is its collection and path; the navigation, the index and the full text list every page's */
 export const createFakePagesRepository = ({
   pages,
 }: FakePagesInput): PagesQueryRepository<readonly string[]> => {

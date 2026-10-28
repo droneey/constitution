@@ -8,15 +8,9 @@ import type { Resolver, Source } from './models';
 
 interface ResolverThemeModeReaderInput {
   readonly resolver: Resolver;
-  /** where the resolver lies, which its references are resolved from */
   readonly resolverUrl: URL;
 }
 
-/**
- * Each mode of the resolver's `theme` modifier takes the files of every set and of its own context.
- *
- * @throws {@link UnknownDefaultModeError} from `read`, when the modifier's default names no context
- */
 const createResolverThemeModeReader = ({
   resolver,
   resolverUrl,
@@ -25,6 +19,7 @@ const createResolverThemeModeReader = ({
     sources.map(({ $ref }) => AbsolutePath.create(fileURLToPath(new URL($ref, resolverUrl))));
 
   return {
+    /** @throws {UnknownDefaultModeError} when the modifier's default names no context */
     read: (): ThemeModeFiles[] => {
       const { contexts, default: defaultModeName } = resolver.modifiers.theme;
 

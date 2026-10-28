@@ -8,7 +8,6 @@ import {
   RepositoryRelativePath,
 } from '../repository-relative-path.model.ts';
 
-// git names no file by an absolute path, so the git adapter's spec cannot hand one over.
 describe('RepositoryRelativePath', () => {
   it('should refuse an absolute path with its code', async () => {
     // Act

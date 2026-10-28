@@ -29,7 +29,6 @@ const warned: ConfigurationsCheck = {
   ],
 };
 
-// A step's label names it: any text but an empty one.
 const NAMED = /\S/;
 
 const runOf = async (checked: ProjectRead<ConfigurationsCheck>) => {
@@ -105,7 +104,7 @@ describe('createPresetsCheckCommand', () => {
           {
             code: PresetsCode.Missing,
             details: {
-              settings: [
+              settingPaths: [
                 'width',
               ],
             },

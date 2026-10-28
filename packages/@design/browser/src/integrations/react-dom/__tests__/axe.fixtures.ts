@@ -9,10 +9,8 @@ const WCAG_LEVEL_TAGS = [
   'wcag22aa',
 ] as const;
 
-/**
- * a simulated document lays nothing out and paints nothing, so contrast is the token-pair test's,
- * and only a page answers for its landmarks and the ways to skip past them
- */
+// Why: a simulated document lays nothing out and paints nothing, so contrast is the token-pair
+// test's, and only a page answers for its landmarks and the ways to skip past them.
 const UNJUDGED_IN_A_COMPONENT = [
   'bypass',
   'color-contrast',
@@ -26,7 +24,6 @@ interface AxeFinding {
   readonly targets: readonly string[];
 }
 
-/** what axe finds against WCAG A and AA in what a component draws */
 const componentViolationsIn = async (root: Element = document.body): Promise<AxeFinding[]> => {
   const results = await axe.run(root, {
     rules: Object.fromEntries(

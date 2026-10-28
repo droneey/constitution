@@ -3,7 +3,6 @@ import { describe, expect, it } from 'bun:test';
 import { nodeBinary } from './package.fixtures';
 import { loadOf } from './preset-load.fixtures';
 
-// A Compose file that keeps every rule the presets set.
 const COMPOSE = `name: shop
 
 services:

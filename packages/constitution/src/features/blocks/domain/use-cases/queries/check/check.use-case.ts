@@ -33,7 +33,6 @@ import { adviseConstitution } from './steps/advise-constitution';
 import type { BaseTree } from './steps/load-constitution';
 import { loadConstitution } from './steps/load-constitution';
 
-// The checks a pack's blocks run: a pack ships no plugin, marketplace or hooks.
 const packChecks: readonly Check<BlockFinding>[] = [
   frontMatterCheck,
   requiresCheck,
@@ -61,7 +60,6 @@ const releaseChecks: readonly Check<BlockFinding>[] = [
 ];
 
 enum ValidationStage {
-  /** a block did not load, so no check ran */
   Unloaded = 'unloaded',
   Checked = 'checked',
 }
@@ -72,10 +70,8 @@ type Validation =
       readonly stage: ValidationStage.Unloaded;
     }
   | {
-      /** none for a pack */
       readonly advice: readonly SimilarRules[];
       readonly findings: readonly BlockFinding[];
-      /** the model of the blocks, a pack's base among them */
       readonly model: BlockModel;
       readonly stage: ValidationStage.Checked;
     };
@@ -85,8 +81,11 @@ interface Parsers {
   readonly manifestParser: ManifestParser;
 }
 
-// The checks run on a sound structure only: a block that did not load would
-// otherwise be reported as missing by every check that names it.
+// Why: a block that did not load would otherwise be reported as missing by every check that names
+// it.
+/**
+ * @throws {TreeError} when git cannot list the files of a tree, or a file it lists cannot be read
+ */
 const validate = (
   input: Parsers & {
     base?: BaseTree;
@@ -100,7 +99,6 @@ const validate = (
     graph: BlockGraph.create(constitution.blocks),
     model: Constitution.modelOf(constitution),
   };
-  // What a pack's base holds is the base's to report.
   const baseFiles = new Set(
     constitution.blocks
       .filter(Block.isBase)
@@ -135,9 +133,7 @@ const validate = (
   };
 };
 
-/** The installed Constitution a pack extends, as the check is pointed to it. */
 interface PackBase {
-  /** as the check was given it, which the paths of its files start from */
   readonly folder: string;
   readonly folderPath: AbsolutePath;
 }
@@ -150,9 +146,8 @@ interface CheckBlocksInput extends Parsers {
 }
 
 /**
- * The blocks' validation, or undefined when the folder holds no blocks.
- *
- * @throws {@link TreeError} when git cannot list the files of a tree, or a file it lists cannot be read
+ * @throws {TreeError} when git cannot list the files of a tree, or a file it lists cannot be
+ * read
  */
 const checkBlocks = (input: CheckBlocksInput): Validation | undefined => {
   const { folderPath, trees } = input;

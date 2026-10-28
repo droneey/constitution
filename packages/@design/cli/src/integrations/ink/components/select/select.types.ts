@@ -4,7 +4,7 @@ interface Choice<T> {
 }
 
 interface SelectProps<T> {
-  /** the answers, at least one, each named by its own label */
+  /** each label unique: it names its choice */
   readonly choices: readonly [
     Choice<T>,
     ...Choice<T>[],

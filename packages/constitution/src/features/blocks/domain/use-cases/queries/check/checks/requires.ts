@@ -26,7 +26,6 @@ interface RequiresDetails {
   };
   readonly [RequiresCode.RequiresItself]: object;
   readonly [RequiresCode.RequiresOutOfLayer]: {
-    /** the layers the block may require */
     readonly allowed: readonly Layer[];
     readonly layer: Layer;
     readonly required: BlockId;
@@ -143,8 +142,6 @@ const extendsProblem = (subject: Subject): RequiresProblem | undefined => {
       };
 };
 
-// A layer that requires or extends nothing leaves the fields empty; the
-// front-matter check reports a filled one, so this check skips those layers.
 const blockFindings = (subject: Subject): readonly RequiresFinding[] => {
   const allowed = requirableBy(subject.block.layer);
   const problems = [

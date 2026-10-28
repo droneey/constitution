@@ -14,8 +14,8 @@ describe("the configuration import-linter's presets write", () => {
     });
   });
 
-  // import-linter takes a key of a contract it does not know without a word, so each such key the
-  // presets set has imports it must judge by it.
+  // Why: import-linter takes a key of a contract it does not know without a word, so each such key
+  // the presets set has imports it must judge by it.
   it.each([
     {
       condition: 'the composition root builds a feature adapter, which its imports ignore',

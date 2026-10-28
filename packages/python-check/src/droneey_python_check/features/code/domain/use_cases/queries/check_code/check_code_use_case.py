@@ -35,7 +35,6 @@ def _file_findings(
 def check_code(
   *, sources: Sources, settings: Settings, standard_module_names: frozenset[str]
 ) -> tuple[Finding, ...]:
-  """Every finding in the sources, each file read alone."""
   return tuple(
     finding
     for source in sources.files

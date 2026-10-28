@@ -20,10 +20,10 @@ const metaFile = (path: string, sidebarFolder: SidebarFolder): MetaFile => ({
   type: 'meta',
 });
 
-/** an axis folder has no page of its own to give it a title */
 const titleOfAxis = (axis: string): string => `${axis.charAt(0).toUpperCase()}${axis.slice(1)}`;
 
-/** In an axis folder, the library's `...` lists its other pages, so its seams come after all else. */
+// Why: in an axis folder, the library's `...` lists its other pages, so its seams come after all
+// else.
 const blockSubfolders = (): readonly MetaFile[] => {
   const sidebarFoldersByPath = new Map<string, SidebarFolder>();
 
@@ -57,7 +57,10 @@ const blockSubfolders = (): readonly MetaFile[] => {
   ].map(([folderPath, sidebarFolder]) => metaFile(`${folderPath}/meta.json`, sidebarFolder));
 };
 
-/** the `meta.json` of every folder of blocks the sidebar shows: its title, its icon and the order of its pages */
+/**
+ * @throws {SourceError} when the chapters core's passport lists and those on disk differ, or a
+ * passport's front matter names no base it can read
+ */
 const blockFoldersOf = (): readonly MetaFile[] => {
   const chapters = coreChaptersOf();
   const axes = [
@@ -98,7 +101,10 @@ const blockFoldersOf = (): readonly MetaFile[] => {
   ];
 };
 
-/** what the site's loader serves beside the guide's own files: the README's sidebar as the guide's folder, and every folder of blocks */
+/**
+ * @throws {SourceError} when the README has no Documentation section, the chapters core's
+ * passport lists and those on disk differ, or a passport's front matter names no base it can read
+ */
 const siteLayoutOf = (baseUrl: string): SiteLayout => ({
   documents: siteDocuments,
   folders: [

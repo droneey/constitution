@@ -1,5 +1,5 @@
-knip:
-  production-set-marked-in-the-entries:
+tanstack-start:
+  start-router-entries-point-into-the-root:
     typescript:
       knip.jsonc:
         entry:

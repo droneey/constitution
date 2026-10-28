@@ -8,7 +8,6 @@ interface PluginManifest {
 
 interface MarketplacePlugin {
   readonly name: string;
-  /** the folder of the repository that holds the plugin, '' for its root */
   readonly path: string;
   readonly ref?: string;
   readonly repo?: string;

@@ -16,9 +16,7 @@ interface ListedBlock {
 }
 
 enum UnitEntryKind {
-  /** a block the member makes active and the repository does not */
   Own = 'own',
-  /** a block both make active, with what the member reads of it beyond the repository */
   Added = 'added',
 }
 
@@ -48,7 +46,6 @@ interface ListedOverride {
   readonly until?: Temporal.PlainDate;
 }
 
-/** The blocks each unit reads, the repository's first, each list in the block set's order, and the overrides that hold. */
 interface BlockListing {
   readonly overrides: readonly ListedOverride[];
   readonly repository: readonly ListedBlock[];

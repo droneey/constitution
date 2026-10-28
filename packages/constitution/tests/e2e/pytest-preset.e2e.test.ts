@@ -8,8 +8,8 @@ const unitWithSpec = {
   'tests/test_unit.py': 'def test_should_hold_when_run() -> None:\n  assert True\n',
 };
 
-// pytest prints its run and coverage.py its settings on every run, so each case reads the status:
-// under the flags given, an option pytest or coverage.py does not know fails the run.
+// Why: pytest prints its run and coverage.py its settings on every run, so each case reads the
+// status: under the flags given, an option pytest or coverage.py does not know fails the run.
 describe("the configuration pytest's presets write", () => {
   it('should load in pytest with no option it does not know when a unit follows every block pytest is configured for', async () => {
     // Act
@@ -27,7 +27,8 @@ describe("the configuration pytest's presets write", () => {
     expect(status).toBe(0);
   });
 
-  // coverage.py only warns on an option it does not know, which Python's warnings filter makes an error.
+  // Why: coverage.py only warns on an option it does not know, which Python's warnings filter makes
+  // an error.
   it('should load in coverage.py with no option it does not know when a unit follows every block pytest is configured for', async () => {
     // Act
     const { status } = await loadOf('pytest', {

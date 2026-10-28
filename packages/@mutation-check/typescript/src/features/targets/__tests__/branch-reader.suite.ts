@@ -31,7 +31,7 @@ const branchReaderSuite = (input: BranchReaderSuiteInput): void => {
       // Assert
       expect({
         changedFiles: branch.changedFiles,
-        untrackedPaths: branch.untrackedPaths,
+        newFilePaths: branch.newFilePaths,
       }).toStrictEqual({
         changedFiles: [
           {
@@ -44,7 +44,7 @@ const branchReaderSuite = (input: BranchReaderSuiteInput): void => {
             ],
           },
         ],
-        untrackedPaths: [
+        newFilePaths: [
           linePath,
         ],
       });

@@ -11,14 +11,11 @@ import { Fact, FactKind, FactName } from '../../../../../../../value-objects';
 import type { Candidate } from '../../../select-entries';
 import { candidatePathOf } from '../../../select-entries';
 
-/** A fact the file's unit cannot give, by the finding that reports it. */
 type LackedFact = PresetsCode.MissingConstitution | PresetsCode.MissingName;
 
-/** What one entry may name of the file it writes. */
 interface FileFacts {
   readonly isRoot: boolean;
   readonly isTop: boolean;
-  /** the units below the file's unit */
   readonly memberPaths: readonly UnitRelativePath[];
   readonly valueOf: (fact: Fact) => string | undefined;
 }
@@ -26,14 +23,12 @@ interface FileFacts {
 interface ReadFactsInput {
   readonly candidate: Candidate;
   readonly candidates: readonly Candidate[];
-  /** the release's path from the candidate's folder, shared by its entries */
   readonly constitutionPath: () => string | undefined;
   readonly entry: PresetEntry;
   readonly model: BlockModel;
   readonly units: readonly ProjectUnit[];
 }
 
-// Top among the units that get the same entry: a unit above that gets it holds the file instead.
 const isTopOf = (input: ReadFactsInput): boolean =>
   !input.candidates.some(
     (other) =>
@@ -53,7 +48,6 @@ const memberPathsOf = (
     .map((other) => UnitPath.pathFrom(unit.path, other.path))
     .toSorted(compareText);
 
-/** The release's path from the file's folder, by the nearest link to it at or above the folder. */
 const constitutionPathOf = (input: {
   filePath: RepositoryRelativePath;
   files: ProjectFiles;
@@ -92,7 +86,6 @@ interface ConstitutionPathInput {
   readonly repositoryFolderPath: AbsolutePath;
 }
 
-/** A candidate's release path: its folders are walked where a text first names it, and once only. */
 const constitutionPathFor = (input: ConstitutionPathInput): (() => string | undefined) => {
   let walked:
     | {
@@ -142,7 +135,6 @@ const namedValueOf = (input: ReadFactsInput, factName: FactName): string | undef
   return factName === FactName.ConstitutionPath ? input.constitutionPath() : undefined;
 };
 
-/** The finding a fact stands for where the unit gives it no value. */
 const lackOf = (fact: Fact): LackedFact | undefined => {
   if (Fact.isNamed(fact, FactName.PackageName)) {
     return PresetsCode.MissingName;

@@ -4,7 +4,6 @@ import type { ThemeModeReader } from '../domain/contracts';
 
 interface ThemeModeReaderSuiteInput {
   readonly implementationName: string;
-  /** a reader whose tokens hold the modes `light` and `dark`, in that order, `dark` the default */
   readonly readerOfScenario: () => ThemeModeReader;
 }
 

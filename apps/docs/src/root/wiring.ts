@@ -46,12 +46,11 @@ import {
 import type { GetVersions } from '#/features/versions';
 import { createGetVersions, Version } from '#/features/versions';
 import { createStaticFileVersionsRepository } from '#/features/versions/adapters/static-file';
-import { once } from '#/libs/once';
+import { onceSucceeded } from '#/libs/once-succeeded';
 import { trackedForUse } from '#/libs/ui';
 import { DOCS_ROUTE } from '#/shared/constants';
 import browserCollections from '#collections/browser';
 
-/** the use cases that read the repository, which only the server builds */
 interface ServerContent {
   readonly getFullText: GetFullText;
   readonly getNavigation: GetNavigation<SerializedPageTree>;
@@ -70,12 +69,14 @@ const navigationAddress = `${siteBasePath}api/navigation`;
 
 const pageCatalogAddress = `${siteBasePath}api/pages`;
 
-/** at the host's root, beside every release's site, so a release's site learns of each later one */
+// Why: at the host's root, beside every release's site, so a release's site learns of each later
+// one.
 const VERSIONS_ADDRESS = '/versions.json';
 
-/** built once, on the server alone: the client bundle never holds the adapters that read the repository */
+// Why: built once, on the server alone: the client bundle never holds the adapters that read the
+// repository.
 const serverContent = createServerOnlyFn(
-  once(
+  onceSucceeded(
     (): Promise<ServerContent> =>
       Promise.all([
         import('#/features/content/adapters/fumadocs'),
@@ -107,10 +108,8 @@ const serverContentMiddleware = createMiddleware().server(async ({ next }) =>
   }),
 );
 
-/**
- * Start's own guard of server functions against cross-site calls, which it adds only to a program
- * that declares no middleware of its own
- */
+// Why: Start adds its own guard of server functions against cross-site calls only to a program that
+// declares no middleware of its own.
 const serverFunctionsCsrfMiddleware = createCsrfMiddleware({
   filter: ({ handlerType }) => handlerType === 'serverFn',
 });
@@ -122,10 +121,6 @@ const startInstance = createStart(() => ({
   ],
 }));
 
-/**
- * What the browser reads of the site's server, as plain files the site prerenders: the tree every
- * page shares, and the list of the pages, which no page's own data holds
- */
 const staticExports = createStaticExports({
   catalogAddress: pageCatalogAddress,
   navigationAddress,
@@ -142,13 +137,15 @@ const readNavigation = createIsomorphicFn()
   .client(createGetNavigation(staticExports));
 
 interface DocsContent {
-  /** throws not found when no page has the slugs */
+  /**
+   * @throws {NotFoundError} when no page has the slugs
+   * @throws {ExportError} when the site gives no list of the pages in time, or none it can read
+   */
   readonly getPage: (slugs: PageSlugs) => Promise<Page>;
   readonly getPageBody: GetPageBody<PageBody>;
-  /**
-   * The same promise on every call, which React's `use` reads at once when it has settled, kept
-   * for the server's life and in the browser for the tab's
-   */
+  // Why: React's `use` suspends on every new promise, so each call gives the same one, kept for the
+  // server's life and in the browser for the tab's.
+  /** @throws {ExportError} when the site gives no tree in time, or none it can read */
   readonly loadNavigation: () => Promise<SerializedPageTree>;
 }
 
@@ -158,6 +155,10 @@ interface RouterContext {
 
 const routerContext: RouterContext = {
   docs: {
+    /**
+     * @throws {NotFoundError} when no page has the slugs
+     * @throws {ExportError} when the site gives no list of the pages in time, or none it can read
+     */
     getPage: async (slugs) => {
       const page = await findPage(slugs);
 
@@ -168,7 +169,7 @@ const routerContext: RouterContext = {
       return page;
     },
     getPageBody: createGetPageBody(createPageBodies(browserCollections)),
-    loadNavigation: once(() => trackedForUse(readNavigation())),
+    loadNavigation: onceSucceeded(() => trackedForUse(readNavigation())),
   },
 };
 

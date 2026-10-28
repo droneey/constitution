@@ -20,7 +20,6 @@ const UI = 'blocks/domains/ui/ui.md';
 const UI_CHAPTER = 'blocks/domains/ui/foundation/forms.md';
 const LINGUI = 'blocks/implementations/lingui/lingui.md';
 
-// Core's terms of the architecture and of the workflow, which the cases below use.
 const withCoreTerms = (files: Files): Files => ({
   ...files,
   [PORTS]:

@@ -6,7 +6,7 @@ on:
       - 'v*'
 
 jobs:
-  # Built before the release opens: an immutable release takes no file after.
+  # Why: built before the release opens: an immutable release takes no file after.
   assets:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -21,11 +21,10 @@ jobs:
         with:
           version: 2026.10.19
 
-      # Not --production: the executable's build needs the React Compiler.
+      # Why: not --production: the executable's build needs the React Compiler.
       - name: Install dependencies
         run: bun install --frozen-lockfile --ignore-scripts
 
-      # One distribution for each platform: the content, then that platform's executable in bin/.
       - name: Pack the distribution
         run: |
           (
@@ -54,7 +53,6 @@ jobs:
             sha256sum "constitution-${name}.tar.gz" > "constitution-${name}.tar.gz.sha256"
           done
 
-      # The site under its release's address, which the docs image serves beside the others'
       - name: Build the site
         run: |
           bun run --cwd apps/docs build
@@ -72,7 +70,7 @@ jobs:
 
   pre-release:
     needs: assets
-    # Renovate reads the version from the comment after the pinned digest
+    # Why: Renovate reads the version from the comment after the pinned digest.
     # yamllint disable-line rule:line-length
     uses: droneey/.github/.github/workflows/cd-release.yaml@95685e4bc5b1d94f67431e96a130ee90207f533d # v2.11.0
     permissions:

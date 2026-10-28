@@ -10,6 +10,7 @@ const marked: BlockMarks = {
     BlockId.create('biome'),
     BlockId.create('git'),
     BlockId.create('lefthook'),
+    BlockId.create('nestjs'),
   ],
   marks: [
     {
@@ -35,6 +36,22 @@ const marked: BlockMarks = {
       block: BlockId.create('lefthook'),
       keyPath: [
         'parallel',
+      ],
+    },
+    {
+      block: BlockId.create('nestjs'),
+      keyPath: [
+        'overrides',
+        {
+          item: {
+            includes: [
+              '**/*.controller.ts',
+              {
+                slot: 'injected-classes',
+              },
+            ],
+          },
+        },
       ],
     },
   ],
@@ -74,6 +91,23 @@ describe('BlockMarks.blockAt', () => {
           item: {
             port: 80,
             run: 'lint',
+          },
+        },
+      ],
+    },
+    {
+      block: BlockId.create('nestjs'),
+      condition: 'an item by its value, its slot filled',
+      keyPath: [
+        {
+          key: 'overrides',
+        },
+        {
+          item: {
+            includes: [
+              '**/*.controller.ts',
+              '**/*.adapter.ts',
+            ],
           },
         },
       ],

@@ -8,7 +8,6 @@ const NOTE_OF_ONE =
 const NOTE_OF_TWO =
   '2 more lines of the block list did not fit; constitution.yaml names every block.';
 
-// Lines of warnings that take 499, 333, 400, 700 and 20 bytes.
 const m489 = `- wiring: ${'w'.repeat(489)}`;
 const m323 = `- wiring: ${'w'.repeat(323)}`;
 const m390 = `- wiring: ${'w'.repeat(390)}`;
@@ -20,7 +19,6 @@ const overrideSection = [
   '- inputs-are-labelled: SHOULD',
 ];
 
-// Core of one line that, with its line break, takes 9000 bytes of the digest's 9400.
 const largeCore = 'c'.repeat(8999);
 
 describe('budgetedBodyOf', () => {

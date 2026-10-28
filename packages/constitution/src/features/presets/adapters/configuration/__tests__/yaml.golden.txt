@@ -123,3 +123,21 @@ list:
   - null
   - b
 
+
+# a comment opens a YAML file and a literal block closes it
+# biome
+# top
+first: 1
+last: |
+  # biome
+
+
+# a YAML item's literal block holds a line of fewer spaces than the item and a line that names a block, under the file's own comment
+list:
+  - a
+  # mine
+  - |
+    one
+
+    # biome
+

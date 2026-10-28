@@ -29,7 +29,6 @@ const aliasOffset = (document: Document): number | undefined => {
   return offset;
 };
 
-// A line of the YAML, counted from 1, with the top-level key at or above it.
 const placeOf = (input: {
   line: number;
   yaml: string;
@@ -74,8 +73,7 @@ const mappingOf = (mapping: Record<string, unknown>): FrontMatterRead => {
       };
 };
 
-// The value a front matter holds, or why it is no YAML; an alias counts as none, so no value is
-// expanded from its anchor.
+// Why: an alias counts as no YAML, so no value is expanded from its anchor.
 const writtenOf = (
   yaml: string,
 ):
@@ -147,8 +145,6 @@ const parse = (yaml: string): FrontMatterRead => {
       };
 };
 
-// A value that is not a mapping, an empty front matter included, has neither
-// field.
 const skill = (yaml: string): SkillFrontMatterRead => {
   const read = writtenOf(yaml);
 

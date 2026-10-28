@@ -1,10 +1,11 @@
 import { ConfigModuleError } from '../../../../domain/errors';
+import type { GenerateThemes } from '../../../../domain/use-cases/commands/generate-themes';
 import { ExitCode } from '../../../constants';
 import { failureLine, usageLine } from './generate-themes.messages';
 
 interface GenerateThemesCommandInput {
   readonly args: readonly string[];
-  readonly generateThemes: (configPath: string) => Promise<void>;
+  readonly generateThemes: GenerateThemes;
   readonly writeError: (text: string) => void;
 }
 
@@ -17,11 +18,9 @@ const isGenerateCommand = (
   string,
 ] => args.length === 2 && args[0] === GENERATE_COMMAND;
 
-/**
- * The command line's `design-tokens generate <config>`.
- *
- * @throws any failure of the generation but a {@link ConfigModuleError}, which it writes
- */
+// Why: bad arguments and a refused module end in ExitCode.Failure with a written line, so only
+// UnknownDefaultModeError escapes.
+/** @throws {UnknownDefaultModeError} when the modifier's default names no context */
 const runGenerateThemes = async ({
   args,
   generateThemes,

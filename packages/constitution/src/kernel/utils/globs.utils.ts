@@ -2,15 +2,12 @@ import { PATH_SEPARATOR } from '../constants';
 import type { Piece } from './glob-pieces.utils';
 import { globPiecesOf, PieceKind } from './glob-pieces.utils';
 
-// A glob as it matches a path. A glob comes from a block file, a project's own among them, so it
-// is never made a regular expression: it becomes an automaton whose states are all walked at once,
-// in time linear in the path's length; a glob whose braces do not pair, or nest too deep, matches
-// nothing.
+// Why: a glob comes from a block file, a project's own among them, so it is never made a regular
+// expression: it becomes an automaton whose states are all walked at once, in time linear in the
+// path's length.
 
 enum NodeKind {
-  /** takes one character it accepts, then goes on to next */
   Step = 'step',
-  /** goes on to every one of next without taking a character */
   Split = 'split',
   Accept = 'accept',
 }

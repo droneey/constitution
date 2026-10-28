@@ -2,7 +2,6 @@ interface Source {
   readonly $ref: string;
 }
 
-/** the parts of a resolver of the Design Tokens Resolver module the generation reads */
 interface Resolver {
   readonly modifiers: {
     readonly theme: {

@@ -4,7 +4,7 @@ name = "droneey-mutation-check-python"
 version = "0.0.0"
 requires-python = ">=3.14"
 authors = [{ name = "Dmytro Kurovskyi", email = "me@kurovskyi.dev" }]
-# it ships only inside the Constitution's distribution
+# Why: it ships only inside the Constitution's distribution.
 classifiers = ["Private :: Do Not Upload"]
 dependencies = []
 
@@ -22,7 +22,8 @@ minversion = "9.1"
 strict = true
 testpaths = ["tests"]
 pythonpath = ["tests"]
-# the list replaces pytest's defaults: `.*` keeps the hidden folders out, or Hypothesis warns of .hypothesis/
+# Why: the list replaces pytest's defaults: `.*` keeps the hidden folders out, or Hypothesis warns
+# of .hypothesis/.
 norecursedirs = [".*", "integration", "e2e"]
 addopts = ["-ra", "--import-mode=importlib"]
 filterwarnings = ["error"]
@@ -43,10 +44,10 @@ exclude_also = ["if TYPE_CHECKING:", "@overload", "assert_never\\("]
 [tool.mutmut]
 # mutmut
 source_paths = ["src"]
-do_not_mutate = ["*_messages.py", "*/main.py", "*/root/wiring.py", "*_gen.py", "*_gen/*"]
-# a log call's text and level are no behaviour a caller relies on
+do_not_mutate = ["*/root/wiring.py", "*_messages.py", "*/main.py", "*_gen.py", "*_gen/*"]
+# Why: a log call's text and level are no behaviour a caller relies on.
 do_not_mutate_patterns = ['^\s*logger\.(debug|info|warning|error|exception|critical)\(']
-# each mutant's run collects the integration specs too, as the coverage gate's run does
+# Why: each mutant's run collects the integration specs too, as the coverage gate's run does.
 pytest_add_cli_args = ["-p", "no:randomly", "-o", "norecursedirs=.* e2e"]
 
 # ty
@@ -88,10 +89,7 @@ extend-select = [
   "TRY",
   "ERA",
   "FBT",
-  "FIX001",
-  "FIX003",
-  "FIX004",
-  "TD",
+  "FIX",
   "PLR0917",
   "PLR2004",
   "RUF006",

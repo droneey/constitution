@@ -21,7 +21,7 @@ import { AbsolutePath, BlockId } from '#/kernel/value-objects';
 
 import { activeBlockOf, keptSession, sessionStateOf } from '../../../__tests__/session.fixtures';
 import { runSessionRepositorySuite } from '../../../__tests__/session-repository.suite';
-import { SessionMark } from '../../../domain/entities';
+import { SessionAgent, SessionMark } from '../../../domain/entities';
 import { AgentId, TreeFingerprint } from '../../../domain/value-objects';
 import type { StateEnvironment, StateFolderWarning } from '../state-folder.utils';
 import { StateFolderProblem } from '../state-folder.utils';
@@ -35,7 +35,6 @@ const startedAt = Temporal.Instant.from('2026-06-15T00:00:00Z');
 const SECONDS_IN_A_DAY = 86_400;
 const user = process.geteuid?.();
 
-// XDG_STATE_HOME of every case that names no other
 let folder = '';
 let warnings: StateFolderWarning[] = [];
 
@@ -109,8 +108,6 @@ beforeEach(() => {
   warnings = [];
 });
 
-// A case may leave a folder closed to its user, as a store that failed to open it would; it is
-// opened again so the state home can be removed.
 const closedFolders = (): readonly string[] => [
   join(folder, 'home', '.local', 'state', 'droneey-constitution'),
   join(folder, 'home', '.local', 'state', 'droneey-constitution', 'sessions'),
@@ -175,14 +172,14 @@ describe('createXdgSessionRepository', () => {
 
   it.each<{
     asker: {
-      agent: AgentId | undefined;
+      agent: SessionAgent;
     };
     condition: string;
     name: string;
   }>([
     {
       asker: {
-        agent: undefined,
+        agent: SessionAgent.main,
       },
       condition: 'the session itself',
       name: 'reminded',
@@ -254,7 +251,7 @@ describe('createXdgSessionRepository', () => {
     // Act
     const reminded = {
       main: sessions.reminded({
-        agent: undefined,
+        agent: SessionAgent.main,
         session: keptSession,
       }),
       subagent: sessions.reminded({
@@ -306,7 +303,7 @@ describe('createXdgSessionRepository', () => {
       state: savedState,
     });
     sessions.addReminded({
-      agent: undefined,
+      agent: SessionAgent.main,
       ids: [
         BlockId.create('core'),
       ],
@@ -468,7 +465,7 @@ describe('createXdgSessionRepository', () => {
       condition: 'blocks are reminded',
       write: (sessions: XdgSessions): void => {
         sessions.addReminded({
-          agent: undefined,
+          agent: SessionAgent.main,
           ids: [
             BlockId.create('core'),
           ],
@@ -788,7 +785,7 @@ describe('createXdgSessionRepository: no folder to keep the sessions in', () => 
       session: keptSession,
     });
     sessions.addReminded({
-      agent: undefined,
+      agent: SessionAgent.main,
       ids: [
         BlockId.create('core'),
       ],
@@ -802,7 +799,7 @@ describe('createXdgSessionRepository: no folder to keep the sessions in', () => 
         session: keptSession,
       }),
       reminded: sessions.reminded({
-        agent: undefined,
+        agent: SessionAgent.main,
         session: keptSession,
       }),
       state: sessions.state(keptSession),
@@ -853,7 +850,7 @@ describe('createXdgSessionRepository: links in place of its files', () => {
       name: 'reminded',
       read: (sessions: XdgSessions): unknown =>
         sessions.reminded({
-          agent: undefined,
+          agent: SessionAgent.main,
           session: keptSession,
         }),
       text: 'core\n',

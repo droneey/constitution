@@ -3,7 +3,6 @@ import { describe, expect, it } from 'bun:test';
 import { pythonPackage, runTool, widestAppliedUnit } from './preset-load.fixtures';
 import { uvBinary } from './uv.fixtures';
 
-// A function of one condition for each step, each adding one to its cognitive complexity.
 const functionOf = (steps: number): string =>
   [
     'def level(value: int) -> int:',
@@ -35,7 +34,7 @@ const complexityStatus = async (steps: number): Promise<number> =>
     })
   ).status;
 
-// complexipy takes a key it does not know without a word, so the limit the presets set has a
+// Why: complexipy takes a key it does not know without a word, so the limit the presets set has a
 // function on each side of it.
 describe("the configuration complexipy's presets write", () => {
   it.each([

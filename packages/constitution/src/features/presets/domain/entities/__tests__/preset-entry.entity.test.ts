@@ -36,7 +36,6 @@ const entryOf = (input: { index: number; key?: string; pack?: string }): Entry =
   value: PresetValue.plain(input.index),
 });
 
-// Core spells the folder one way, and Python, which import-linter requires, its own.
 const spelledModel = BlockModel.create({
   blocks: [
     ...presetsModel.blocks,
@@ -237,7 +236,7 @@ describe('PresetEntry', () => {
     });
 
     // Act
-    const named = PresetEntry.blockOf({
+    const named = PresetEntry.bringingBlockOf({
       ...entry,
       block: coreBlockId,
       set: {

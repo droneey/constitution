@@ -13,7 +13,6 @@ import {
 
 const TOOL_PATH = 'blocks/implementations/tool/tool.md';
 
-/** the valid files with a json language, a tool, and a tool base that requires json and governs its files, though no language */
 const filesWith = (tool: {
   extends?: string;
   governs: readonly string[];

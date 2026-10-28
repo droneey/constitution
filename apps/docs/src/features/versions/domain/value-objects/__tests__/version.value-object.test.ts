@@ -3,7 +3,6 @@ import { describe, expect, it } from 'bun:test';
 import { VersionError } from '../../errors';
 import { Version } from '../version.value-object';
 
-/** the code and the details a creation failed with, or the error itself when it is none of the feature's */
 const failureOf = (create: () => Version): unknown => {
   try {
     return create();

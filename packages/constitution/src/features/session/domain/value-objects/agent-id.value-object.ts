@@ -9,7 +9,7 @@ type AgentId = Brand<string, 'AgentId'>;
 const is = (candidate: unknown): candidate is AgentId =>
   typeof candidate === 'string' && PLAIN_NAME.test(candidate);
 
-/** @throws {@link InvalidValueError} when the text is no plain name */
+/** @throws {InvalidValueError} when the text is no plain name */
 const create = (text: string): AgentId => {
   if (!is(text)) {
     throw new InvalidValueError({

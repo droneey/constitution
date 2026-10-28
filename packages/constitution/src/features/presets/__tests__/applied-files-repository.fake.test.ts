@@ -10,7 +10,6 @@ const projectFolderPath = AbsolutePath.create(PROJECT);
 
 const pathOf = (filePath: AbsolutePath): string => filePath.slice(projectFolderPath.length + 1);
 
-// The project's files once each write the fake kept is made on them, in order.
 const filesAfter = (input: {
   files: Readonly<Record<string, string>>;
   written: readonly AppliedFiles[];

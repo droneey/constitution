@@ -60,7 +60,6 @@ const section = (input: {
 }): string =>
   `# ${input.title}\n\n${input.governs === undefined ? '' : `> Governs ${input.governs}\n\n`}${input.rules.map(rule).join('\n')}`;
 
-/** a path with no axis folder is foundation's */
 const inAxis = (path: string): string =>
   AXES.some((axis) => path.startsWith(`${axis}/`)) ? path : `${Axis.Foundation}/${path}`;
 
@@ -83,7 +82,6 @@ const blockFiles = (
   };
 };
 
-// Core's card runs close to its 3,500 bytes, as the real one may.
 const coreLines = [
   '# Core',
   '',
@@ -103,7 +101,6 @@ const coreLines = [
   ]),
 ].join('\n');
 
-// The digest gives core's card without its front matter and the blank lines around it.
 const coreText = `${coreLines.trim()}\n`;
 
 const coreFiles = (): Files =>

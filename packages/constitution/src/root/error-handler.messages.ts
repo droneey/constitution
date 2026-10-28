@@ -23,7 +23,6 @@ const PROJECT_FAILURE_HINTS = {
   [ReleaseFailure.BlocksUnlisted]: REINSTALL,
 } as const satisfies Readonly<Record<ProjectError['code'], string>>;
 
-/** What each failure to list or read a tree says, by the folder or the file it names. */
 const treeFailureMessages: Readonly<Record<TreeFailure, (path: string) => string>> = {
   [TreeFailure.Failed]: (path) => `git could not list the files of ${path}`,
   [TreeFailure.TimedOut]: (path) => `git did not list the files of ${path} in time`,

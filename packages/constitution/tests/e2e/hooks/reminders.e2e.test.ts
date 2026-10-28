@@ -19,7 +19,6 @@ import { configOf, createProject, removeProjects } from '../project.fixtures';
 let root = '';
 
 const ORDER_CARD = 'src/features/orders/ui/order-card.tsx';
-// The file a note names, ui's passport and one of its MUST rules.
 const uiNames = [
   ORDER_CARD,
   'blocks/domains/ui/ui.md',

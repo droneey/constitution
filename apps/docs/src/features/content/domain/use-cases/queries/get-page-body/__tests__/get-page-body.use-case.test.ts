@@ -3,7 +3,6 @@ import { describe, expect, it } from 'bun:test';
 import { createFakePageBodiesRepository } from '../../../__tests__/page-bodies.repository.fake';
 import { createGetPageBody } from '../get-page-body.use-case';
 
-/** as the fake names the body of the page it holds */
 const PAGE_BODY = 'body of guide:guides/write-a-pack.md';
 
 describe('createGetPageBody', () => {

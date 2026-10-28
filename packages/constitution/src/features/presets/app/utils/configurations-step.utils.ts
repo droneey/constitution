@@ -83,7 +83,6 @@ const failedStatuses: ReadonlySet<StepStatus> = new Set([
   StepStatus.Warned,
 ]);
 
-/** Where no project is, the step takes the status given, and fails only when that is a failure. */
 const configurationsStepOf = (
   read: ProjectRead<ConfigurationsCheck>,
   statusWithoutProject: StepStatus = StepStatus.Skipped,

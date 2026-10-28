@@ -4,8 +4,10 @@ import type { RepositoryRelativePath } from './models';
 
 const NEWLINE_BYTE = 0x0a;
 
-// `cat-file --batch` answers a name with `<id> <type> <size>` and the object's bytes, or with the name
-// and why it has no object, such as `missing` for a file the main line never had.
+const OBJECT_TRAILING_NEWLINE_BYTES = 1;
+
+// Why: `cat-file --batch` answers a name with `<id> <type> <size>` and the object's bytes, or with
+// the name and why it has no object, such as `missing` for a file the main line never had.
 const OBJECT_HEADER_PATTERN = /^[\da-f]+ \S+ (\d+)/;
 
 interface CatFileRequestInput {
@@ -19,7 +21,6 @@ interface BaseTextsInput {
   readonly filePaths: readonly UnitRelativePath[];
 }
 
-/** A moved file is named by its path from the repository's folder, any other from the unit's by `./`. */
 const catFileRequestOf = (input: CatFileRequestInput): string =>
   input.filePaths
     .map((filePath) => {
@@ -31,7 +32,8 @@ const catFileRequestOf = (input: CatFileRequestInput): string =>
     })
     .join('');
 
-// The answer is read as bytes, since a size counts bytes and a text may hold several to a character.
+// Why: a size counts bytes and a text may hold several to a character, so the answer is read as
+// bytes.
 const baseTextsIn = (input: BaseTextsInput): ReadonlyMap<UnitRelativePath, string> => {
   let headerStartByte = 0;
 
@@ -51,8 +53,7 @@ const baseTextsIn = (input: BaseTextsInput): ReadonlyMap<UnitRelativePath, strin
 
       const textEndByte = textStartByte + Number(sizeBytesText);
 
-      // the object's bytes end in a newline of their own
-      headerStartByte = textEndByte + 1;
+      headerStartByte = textEndByte + OBJECT_TRAILING_NEWLINE_BYTES;
 
       return [
         [

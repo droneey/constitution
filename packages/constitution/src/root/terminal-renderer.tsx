@@ -17,7 +17,7 @@ interface TerminalRenderer extends Renderer {
   readonly close: () => Promise<void>;
 }
 
-// Ink draws a running step on its next turn: the work waits for it so the step shows first.
+// Why: Ink draws a running step on its next turn: the work waits for it so the step shows first.
 // Stryker disable next-line BlockStatement: Ink writes no frame but its last in CI, where the specs run, so the running step is seen only on a terminal
 const nextTurn = async (): Promise<void> => {
   await new Promise<void>((resolve) => {
@@ -32,10 +32,6 @@ interface TerminalRendererInput {
   readonly write: (text: string) => void;
 }
 
-/**
- * Ink draws on the streams; the lines of data, which it never draws, go to standard output through
- * write.
- */
 const createTerminalRenderer = (input: TerminalRendererInput): TerminalRenderer => {
   const settled: StepContent[] = [];
   let progress: TerminalView | undefined;
@@ -67,7 +63,8 @@ const createTerminalRenderer = (input: TerminalRendererInput): TerminalRenderer 
           input.write('\n');
         }
 
-        // lines of data are printed as they are, where Ink would wrap them at the terminal's width
+        // Why: lines of data are printed as they are, where Ink would wrap them at the terminal's
+        // width.
         if (section.kind === SectionKind.Lines) {
           input.write(`${section.lines.join('\n')}\n`);
         } else {

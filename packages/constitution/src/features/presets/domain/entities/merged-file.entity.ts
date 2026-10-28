@@ -15,15 +15,12 @@ interface Contribution {
   readonly value: PresetValue;
 }
 
-/** A setting written only where the file holds nothing at its path, and never checked. */
 type DefaultSetting = MergeState['defaults'][number];
 
 interface MergedFile {
   readonly defaults: readonly DefaultSetting[];
   readonly problems: readonly MergeProblem[];
-  /** the paths of the maps whose keys the file keeps sorted */
   readonly sorted?: readonly (readonly string[])[];
-  /** what the entries write; absent where they write only defaults */
   readonly value?: Setting;
   readonly whole?: WholeDefault;
 }
@@ -88,8 +85,6 @@ const valuePlaced = (state: MergeState, placed: PlacedValue): MergeState => {
       });
 };
 
-// What the merge leaves: no slot, and no map that only defaults or inserts opened, which would write
-// an empty one where the file holds nothing.
 const settled = (input: {
   keyPath: readonly string[];
   merged: MergeState;
@@ -98,7 +93,7 @@ const settled = (input: {
   const { setting } = input;
 
   if (Setting.isList(setting)) {
-    return setting.filter((listed) => Value.slotOf(listed) === undefined);
+    return Value.withoutSlots(setting);
   }
 
   if (!Setting.isMap(setting)) {
@@ -147,8 +142,8 @@ const merge = (contributions: readonly Contribution[]): MergedFile => {
     MergeState.unmerged,
   );
   const merged = MergeState.withInserts(MergeState.withReplacers(placed));
-  const { clashes, defaults, problems, sorted, value: written, whole } = merged;
-  const wholeDefault = WholeDefault.of(whole);
+  const { clashes, defaults, problems, sorted, unitedWholeDefault, value: written } = merged;
+  const wholeDefault = WholeDefault.of(unitedWholeDefault);
 
   return {
     defaults,

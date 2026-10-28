@@ -3,7 +3,6 @@ import { createJavaScriptRegexEngine } from 'shiki/engine/javascript';
 
 import { PSEUDO } from '../pseudo-grammar.constants';
 
-/** only the scopes beyond the language's own */
 export const scopesOf = async (code: string): Promise<string[][]> => {
   const highlighter = await createHighlighterCore({
     engine: createJavaScriptRegexEngine(),

@@ -8,7 +8,6 @@ interface SortingInput {
   readonly formats: ConfigurationFormat;
 }
 
-// The key paths of the maps a value marks sorted, from its file's top.
 const sortedPathsOf = (
   given: PresetValue,
   keyPath: readonly string[],
@@ -29,7 +28,6 @@ const sortedPathsOf = (
       ]
     : [];
 
-/** A map an entry marks sorted in a file whose writer keeps no order of its keys holds nowhere. */
 const sortingProblems = (input: SortingInput): readonly PresetsProblem[] => {
   const { entry } = input;
 
@@ -42,7 +40,7 @@ const sortingProblems = (input: SortingInput): readonly PresetsProblem[] => {
     details: {
       ...PresetEntry.namedOf(entry),
       file: entry.writtenPath,
-      setting: Setting.pathTextOf(keyPath),
+      settingPath: Setting.pathTextOf(keyPath),
     },
   }));
 };

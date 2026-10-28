@@ -3,10 +3,8 @@ interface StreamTextInput {
   readonly stream: ReadableStream<Uint8Array>;
 }
 
-/**
- * The stream's text up to the limit; past it the read stops and lets the stream go, so a writer that
- * does not stop is stopped by the pipe it can no longer write to.
- */
+// Why: past the limit the read lets the stream go, so a writer that does not stop is stopped by the
+// pipe it can no longer write to.
 const streamTextOf = async (input: StreamTextInput): Promise<string> => {
   const chunks: Uint8Array[] = [];
   let sizeBytes = 0;

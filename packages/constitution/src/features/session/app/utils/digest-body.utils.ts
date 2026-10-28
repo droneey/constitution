@@ -1,7 +1,5 @@
 import { splitFrontMatter } from '#/kernel/utils';
 
-// The digest's budgets count bytes: the room after its header, the warnings' share of it, and the
-// room kept for the note of the block list's lines left out.
 const BUDGET_BYTES = 9400;
 const WARNING_BUDGET_BYTES = 1000;
 const LEFT_OUT_NOTE_BYTES = 200;
@@ -12,7 +10,6 @@ const bytesOf = (line: string): number => encoder.encode(line).length + 1;
 const bytesOfLines = (lines: readonly string[]): number =>
   lines.reduce((sum, line) => sum + bytesOf(line), 0);
 
-/** The first lines whose bytes, line breaks included, add up to no more than the budget. */
 const linesWithin = (input: { budget: number; lines: readonly string[] }): readonly string[] => {
   let used = 0;
 
@@ -27,7 +24,6 @@ const linesWithin = (input: { budget: number; lines: readonly string[] }): reado
   return input.lines;
 };
 
-/** The sections that hold lines, a blank line between each two. */
 const joinedSections = (sections: readonly (readonly string[])[]): readonly string[] =>
   sections
     .filter((section) => section.length > 0)
@@ -65,13 +61,11 @@ const warningSection = (input: {
   ];
 };
 
-/** Core's text alone, as the digest gives it when constitution.yaml does not parse. */
 const coreBodyOf = (core: string): readonly string[] => {
   const text = splitFrontMatter(core).body.split('\n');
   const first = text.findIndex((line) => line !== '');
   const last = text.findLastIndex((line) => line !== '');
 
-  // With no line of text both ends are -1, and the slice is empty.
   return text.slice(first, last + 1);
 };
 
@@ -98,11 +92,7 @@ interface BudgetedBodyInput {
   readonly warnings: readonly string[];
 }
 
-/**
- * The warnings' lines, core's text, the overrides and the block list: the warnings within their
- * share of the budget, the block list within what the rest leaves, core and the overrides whole, so
- * a rule the project lowered is never cut.
- */
+// Why: core and the overrides are given whole, so a rule the project lowered is never cut.
 const budgetedBodyOf = (input: BudgetedBodyInput): readonly string[] => {
   const head = joinedSections([
     warningSection({

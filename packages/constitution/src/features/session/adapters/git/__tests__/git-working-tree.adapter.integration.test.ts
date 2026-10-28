@@ -15,7 +15,7 @@ import { createGitWorkingTree } from '../git-working-tree.adapter';
 
 const TIMEOUT_MS = 30_000;
 
-// A repository and a home of its own, so that no configuration of the machine reaches git.
+// Why: a repository and a home of its own, so that no configuration of the machine reaches git.
 let folder = '';
 let project = '';
 let env: Readonly<Record<string, string>> = {};
@@ -45,7 +45,6 @@ const git = (args: readonly string[]): void => {
   );
 };
 
-// One commit of a.txt, then a.txt changed and b.txt left untracked.
 const changedRepository = (): void => {
   git([
     'init',
@@ -92,8 +91,6 @@ const readOf = (fingerprint: string): TreeState => ({
   status: TreeStateStatus.Read,
 });
 
-// Whether a state is failed and names why, as git or the system said it, without its line breaks
-// around it.
 const failureOf = (
   state: TreeState,
 ): {
@@ -112,8 +109,6 @@ const failed = {
   status: TreeStateStatus.Failed,
 };
 
-// A folder of one git that runs the script given: one that answers nothing for longer than any
-// spec waits, or one that fails and says nothing.
 const gitIn = (input: { parent: string; script: string }): string => {
   const bin = join(input.parent, 'bin');
 
@@ -129,7 +124,6 @@ beforeEach(() => {
   project = join(folder, 'project');
   mkdirSync(project);
   mkdirSync(join(folder, 'home'));
-  // the names git reads, as the root builds them
   env = Object.fromEntries([
     [
       'HOME',
@@ -164,7 +158,6 @@ describe('createGitWorkingTree', () => {
 
     // Assert
     expect(state).toStrictEqual(
-      // the SHA-256 of " M a.txt", "?? apps/web/package.json", "?? b.txt" and the diff of a.txt
       readOf('e4bbf951d86fc6f1c67c645989c137ad86c28fdab042bff6407641be04f7ace0'),
     );
   });
@@ -189,7 +182,6 @@ describe('createGitWorkingTree', () => {
     const state = tree.stateOf(AbsolutePath.create(project));
 
     // Assert
-    // the SHA-256 of "?? a.txt"
     expect(state).toStrictEqual(
       readOf('7c4099b5921da7c9dbdefeac9e7e5b83f0a14ddeca6d51f6ce0846df94ad2468'),
     );
@@ -205,7 +197,7 @@ describe('createGitWorkingTree', () => {
     });
 
     // Act
-    const changed = tree.changedFiles(AbsolutePath.create(project));
+    const changed = tree.changedAndUntrackedFiles(AbsolutePath.create(project));
 
     // Assert
     expect<readonly string[]>(changed).toStrictEqual([
@@ -297,7 +289,7 @@ describe('createGitWorkingTree', () => {
 
       // Act
       const seen = {
-        changed: tree.changedFiles(AbsolutePath.create(project)),
+        changed: tree.changedAndUntrackedFiles(AbsolutePath.create(project)),
         failure: failureOf(tree.stateOf(AbsolutePath.create(project))),
       };
 

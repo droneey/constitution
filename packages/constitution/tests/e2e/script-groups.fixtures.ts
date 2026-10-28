@@ -40,8 +40,6 @@ const shell = {
   ],
 };
 
-// A workspace whose root and web member each hold a shell script, and whose api member takes only
-// the tools a top unit runs, which give it no script.
 const appliedWorkspace = (): string =>
   appliedUnit({
     ...shell,
@@ -72,7 +70,6 @@ const appliedWorkspace = (): string =>
     name: 'root',
   });
 
-// Each member links the release as the root does, as an install links it.
 const workspace = (): string => {
   const root = appliedWorkspace();
 
@@ -94,8 +91,6 @@ const workspace = (): string => {
 const scriptsOf = (folder: string): Readonly<Record<string, string>> =>
   manifest.parse(JSON.parse(readFileSync(join(folder, 'package.json'), 'utf8'))).scripts ?? {};
 
-// The files a unit's check:shell hands ShellCheck, by a stand-in that prints them: the workspace is
-// a repository of its own, so git lists its files.
 const shellFilesOf = (unit: string): readonly string[] => {
   const root = workspace();
   const stand = join(root, '.stand');
@@ -141,7 +136,6 @@ const shellFilesOf = (unit: string): readonly string[] => {
   return listed.stdout.split('\n').filter((line) => line !== '');
 };
 
-// The units whose check the executable runs from the root, by a stand-in Bun that marks its folder.
 const checkedUnits = (): readonly string[] => {
   const root = workspace();
   const stand = join(root, '.stand');
@@ -197,7 +191,6 @@ const specsUnit = (files: Readonly<Record<string, string>> = {}): string =>
 
 const specsScripts = (): Readonly<Record<string, string>> => scriptsOf(specsUnit());
 
-// The specs of a unit of Bun's specs that holds no spec yet.
 const testsRun = (files: Readonly<Record<string, string>>): Ran => {
   const folder = specsUnit(files);
 

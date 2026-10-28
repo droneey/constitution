@@ -26,9 +26,7 @@ const outputStream = {
   themeMode: ThemeMode.Dark,
 };
 
-// What the renderer writes to each stream, chunk by chunk, what it writes through the program's
-// writer among them; the specs run in CI, where Ink writes a tree's settled lines and its last frame
-// alone.
+// Why: the specs run in CI, where Ink writes a tree's settled lines and its last frame alone.
 const terminalOf = (): {
   drawn: {
     stderr: string[];
@@ -73,7 +71,6 @@ const terminalOf = (): {
   };
 };
 
-// A section as the shared view draws it, whose spec pins the design system's drawing.
 const frameOf = (
   section: Exclude<
     Section,

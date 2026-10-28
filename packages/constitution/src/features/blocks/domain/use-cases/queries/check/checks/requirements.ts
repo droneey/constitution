@@ -30,12 +30,10 @@ interface RequirementsDetails {
     readonly requirement: RuleSlug;
   };
   readonly [RequirementsCode.OutOfReach]: {
-    /** the block of the rule the answer names */
     readonly owner: BlockId;
     readonly requirement: RuleSlug;
   };
   readonly [RequirementsCode.MetUnknown]: {
-    /** the Met cell as written */
     readonly met: string;
     readonly requirement: RuleSlug;
   };
@@ -221,7 +219,6 @@ const requirementsCheck: Check<RequirementsFinding> = ({
         details: {},
       },
     }),
-    // The answers describe the block whole, so its passport holds them, never a chapter or a seam.
     ...fileFindings({
       isMisplaced: (answer: RequirementAnswer): boolean =>
         isInImplementation(answer) && !isInPassport(answer),

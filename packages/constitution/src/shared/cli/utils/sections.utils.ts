@@ -5,10 +5,8 @@ import type { Section, SectionOf } from '../types';
 import { countOf } from './count.utils';
 
 interface CountedNote {
-  /** what the title says after the count of the lines */
   readonly after: string;
   readonly lines: readonly string[];
-  /** what each line is */
   readonly noun: string;
   readonly tone: Tone;
 }
@@ -28,7 +26,6 @@ const stepsSection = (steps: readonly StepContent[]): SectionOf<SectionKind.Step
   steps,
 });
 
-/** The sections of a counted note: none where no line is. */
 const countedNoteSections = (note: CountedNote): readonly Section[] =>
   note.lines.length === 0
     ? []

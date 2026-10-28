@@ -73,7 +73,6 @@
     margin-inline: auto;
   }
 
-  /* a box keeps its square reading; only a terminal's round ends mean a start or an end */
   [data-docs-body] figure[data-diagram] rect[rx='0'] {
     rx: var(--radius-xs);
     ry: var(--radius-xs);
@@ -91,8 +90,8 @@
     }
   }
 
-  /* a search result is prose too, and its code keeps the result's size; :where() keeps the rules
-     of a rule's own code above this one */
+  /* Why: search results keep their own code size, and :where() keeps a rule's own code styles
+     above this one. */
   [data-docs-body] :where(:not(pre)) > code:where(:not(#fd-search-list *)) {
     font: var(--font-code-sm);
     letter-spacing: var(--font-code-sm--letter-spacing);
@@ -187,7 +186,6 @@
     letter-spacing: var(--font-heading-xs--letter-spacing);
   }
 
-  /* without masks the label stands alone */
   @supports (mask: none) {
     [data-docs-body] [data-rule-example-label]::before {
       content: '';
@@ -288,8 +286,6 @@
     border-radius: var(--radius-control-base);
   }
 
-  /* a rule's level is a badge in the page and one letter outside it, in the contents and the
-     search, both filled, tinted or outlined alike */
   :is([data-rule-level], [data-rule-mark]:not([data-docs-body] *)) {
     display: inline-flex;
     align-items: center;

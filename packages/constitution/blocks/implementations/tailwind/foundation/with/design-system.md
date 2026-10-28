@@ -2,7 +2,7 @@
 
 > Governs how Tailwind resolves the tokens, styles of text and variants of a design system.
 
-## General
+## Variants
 
 ### variants-in-one-cva-map → own-variants-one-typed-map · MUST
 
@@ -12,6 +12,16 @@ A component's own variants are one `cva` map, which types the props through `Var
 |---|
 | a second declaration of an axis drifts from the map, and a class decided outside the map is a variant nobody can find. |
 
+### cascading-variants-in-utilities → cascading-variant-by-data-attribute · MUST
+
+A cascading variant is a `data-*` attribute on the root, resolved by a `@custom-variant` or the `in-data-*` variant, and never passed down as a prop.
+
+| Why |
+|---|
+| the stylesheet reaches every descendant at once, with no prop threaded through them. |
+
+## Modes
+
 ### dark-theme-redefines-tokens → theme-modes-share-one-token-set · MUST
 
 Dark mode redefines the semantic tokens under one selector; a component writes `dark:` only where no token can say it.
@@ -20,13 +30,7 @@ Dark mode redefines the semantic tokens under one selector; a component writes `
 |---|
 | components written against tokens switch theme without a line of their own. |
 
-### cascading-variants-in-utilities → cascading-variant-by-data-attribute · MUST
-
-A cascading variant is a `data-*` attribute on the root, resolved by a `@custom-variant` or the `in-data-*` variant, and never passed down as a prop.
-
-| Why |
-|---|
-| the stylesheet reaches every descendant at once, with no prop threaded through them. |
+## Primitives
 
 ### primitive-class-merged-by-cn → primitive-passes-attributes-and-class · SHOULD
 

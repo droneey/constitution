@@ -8,11 +8,9 @@ enum BuildFailure {
 }
 
 interface BuildInput {
-  /** the --target given, the package folder whose plugin files cannot be read, or the file compiled */
   readonly given: string;
 }
 
-/** The executable cannot be built from what the build was given. */
 class BuildError extends ProgramError<BuildFailure, BuildInput> {
   public constructor(input: ProgramErrorInput<BuildFailure, BuildInput>) {
     super(input);

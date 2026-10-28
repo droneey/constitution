@@ -11,29 +11,25 @@ import type {
 } from '../../domain/contracts/repositories/commands';
 import type { SessionQueryRepository } from '../../domain/contracts/repositories/queries';
 import type { SessionState } from '../../domain/entities';
-import { SessionMark } from '../../domain/entities';
-import type { AgentId, SessionId } from '../../domain/value-objects';
+import { SessionAgent, SessionMark } from '../../domain/entities';
+import type { SessionId } from '../../domain/value-objects';
 import { TreeFingerprint } from '../../domain/value-objects';
 import { sessionStateModel } from './models';
 import { appendPrivately, readUnfollowed, writeWhole } from './private-file.utils';
+import { wireOfState } from './session-state-wire.utils';
 import type { StateEnvironment, StateFolderWarning } from './state-folder.utils';
 import { privateStateFolder, removeOwnedFolder, sweepStale } from './state-folder.utils';
-
-// A session's folder, named by its id, holds plain files: state.json, the state as JSON; reminded,
-// and reminded.<agent> for each subagent, one block to a line; and one file per mark, holding its
-// fingerprint.
 
 const PROGRAM_FOLDER_NAME = 'droneey-constitution';
 const SESSIONS_FOLDER_NAME = 'sessions';
 const SESSION_FOLDER_MODE = 0o700;
-// as Claude Code forgets a transcript after 30 days; an instant subtracts no days
+// Why: Claude Code forgets a transcript after 30 days; an instant subtracts no days.
 const keptFor = Temporal.Duration.from({
   hours: 720,
 });
 const STATE_FILE_NAME = 'state.json';
 const REMINDED_FILE_NAME = 'reminded';
 
-// A file that is no JSON, or no state of this release's form, keeps no state.
 const stateOf = (text: string): SessionState | undefined => {
   const read = sessionStateModel.safeParse(
     attempted<unknown>({
@@ -45,9 +41,8 @@ const stateOf = (text: string): SessionState | undefined => {
   return read.success ? read.data : undefined;
 };
 
-const stateText = (state: SessionState): string => `${JSON.stringify(state)}\n`;
+const stateText = (state: SessionState): string => `${JSON.stringify(wireOfState(state))}\n`;
 
-// A write that cannot land is dropped: it costs the reminders and the gate, never the hook.
 const tryWrite = (write: () => void): void => {
   attempted({
     effect: write,
@@ -56,7 +51,6 @@ const tryWrite = (write: () => void): void => {
 };
 
 interface MarkFile {
-  /** the session's folder, undefined where no folder keeps the sessions */
   readonly folder: string | undefined;
   readonly mark: SessionMark;
 }
@@ -85,10 +79,10 @@ const readMark = (input: MarkFile): string | undefined =>
     ? undefined
     : readUnfollowed(join(input.folder, input.mark))?.replace(/\n+$/, '');
 
-const remindedFile = (input: { agent: AgentId | undefined; folder: string }): string =>
+const remindedFile = (input: { agent: SessionAgent; folder: string }): string =>
   join(
     input.folder,
-    input.agent === undefined ? REMINDED_FILE_NAME : `${REMINDED_FILE_NAME}.${input.agent}`,
+    input.agent === SessionAgent.main ? REMINDED_FILE_NAME : `${REMINDED_FILE_NAME}.${input.agent}`,
   );
 
 interface SaveInput {
@@ -124,21 +118,16 @@ const writeState = ({ folder, saved }: SaveInput): void => {
 
 interface SessionsPlace {
   readonly environment: StateEnvironment;
-  /** the folder an earlier release kept the sessions in, removed when a session starts */
   readonly formerFolder: string;
-  /** the user who must own the folders; undefined where the system has no users */
   readonly owner: number | undefined;
 }
 
 interface XdgSessionRepositoryInput extends SessionsPlace {
-  /** the sessions a start looks at, at most, for those to remove */
   readonly maxSessions: number;
   readonly now: () => Temporal.Instant;
-  /** told once, when no folder keeps the sessions and every hook keeps nothing */
   readonly warn: (warning: StateFolderWarning) => void;
 }
 
-/** A start removes the sessions unchanged for 30 days, and the folder of an earlier release. */
 const createXdgSessionRepository = (
   input: XdgSessionRepositoryInput,
 ): SessionCommandRepository & SessionQueryRepository => {
@@ -148,8 +137,8 @@ const createXdgSessionRepository = (
       }
     | undefined;
 
-  // The folder is made and checked when a hook first needs it, so a command that keeps no session
-  // never touches it.
+  // Why: the folder is made and checked when a hook first needs it, so a command that keeps no
+  // session never touches it.
   const sessionsFolder = (): string | undefined => {
     prepared ??= {
       folder: privateStateFolder({

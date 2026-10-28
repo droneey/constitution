@@ -16,9 +16,7 @@ interface DigestBlock {
 }
 
 enum DigestEntryKind {
-  /** a block the member makes active and the repository does not */
   Own = 'own',
-  /** a block both make active, with what the member reads of it beyond the repository */
   Added = 'added',
 }
 
@@ -48,7 +46,6 @@ interface DigestOverride {
   readonly until?: Temporal.PlainDate;
 }
 
-/** The blocks a session's digest lists, each list in the block set's order; the overrides print before them. */
 interface DigestListing {
   readonly overrides: readonly DigestOverride[];
   readonly repository: readonly DigestBlock[];

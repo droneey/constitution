@@ -233,6 +233,54 @@ describe('Setting', () => {
     expect(withValue).toStrictEqual(written);
   });
 
+  it('should read and place by keys as written, an address a plain key and never an element', () => {
+    // Arrange
+    const keyPath = [
+      'forbidden[name=no-cycles]',
+      'severity',
+    ];
+    const held = {
+      ...rules,
+      'forbidden[name=no-cycles]': {
+        severity: 'warn',
+      },
+    };
+
+    // Act
+    const read = [
+      Settings.atKeysAsWritten(held, keyPath),
+      Settings.atKeysAsWritten(rules, keyPath),
+      Settings.atKeysAsWritten(held, [
+        'options',
+        'depth',
+        'more',
+      ]),
+    ];
+    const placed = Settings.withAtKeysAsWritten({
+      held: 'off',
+      keyPath,
+      setting: rules,
+    });
+
+    // Assert
+    expect({
+      placed,
+      read,
+    }).toStrictEqual({
+      placed: {
+        ...rules,
+        'forbidden[name=no-cycles]': {
+          severity: 'off',
+        },
+      },
+      read: [
+        'warn',
+        undefined,
+        undefined,
+      ],
+    });
+  });
+
   it('should write a setting as one text whatever the order of its keys', () => {
     // Act
     const texts = [

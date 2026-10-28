@@ -12,18 +12,12 @@ import type { Workspace } from '../../domain/contracts';
 import type { PackageManifestWire } from './models';
 import { packageManifestModel, pyprojectModel } from './models';
 
-// A workspace as its root's manifests declare it: package.json's workspaces, as Bun, npm and Yarn
-// read them, and uv's members in pyproject.toml. A glob's folder is a member only when it holds
-// the manifest of its kind, as Bun and uv pass over the others; "!" before a glob, or uv's exclude,
-// leaves its folders out, and a glob that reaches the project itself or above it reaches nothing.
-// Braces are spelled out before a glob is split into folders, as "/" may stand inside them.
-
 const PACKAGE_MANIFEST_NAME = 'package.json';
 const PYPROJECT_NAME = 'pyproject.toml';
 const NEGATION = '!';
 const ANY_DEPTH = '**';
 const SKIPPED_FOLDER_NAME = 'node_modules';
-const HIDDEN = '.';
+const HIDDEN_NAME_PREFIX = '.';
 const WILDCARDS = /[*?[{]/u;
 const ESCAPE = '\\';
 const GROUP_OPEN = '{';
@@ -31,16 +25,16 @@ const GROUP_CLOSE = '}';
 const ALTERNATIVE = ',';
 
 interface Declared {
-  /** the globs of the members, a "!" before those left out */
   readonly globs: readonly string[];
-  /** the manifest a folder holds to be a member */
   readonly manifest: string;
 }
 
 const globsOf = (workspaces: PackageManifestWire['workspaces']): readonly string[] | undefined =>
   Array.isArray(workspaces) ? workspaces : workspaces?.packages;
 
-const declaredOf = (repositoryFolderPath: AbsolutePath): readonly Declared[] => {
+// Why: Bun, npm and Yarn read package.json's workspaces, and uv the members in pyproject.toml; Bun
+// and uv pass over a folder without its manifest.
+const workspaceManifestsOf = (repositoryFolderPath: AbsolutePath): readonly Declared[] => {
   const uv = readModelFile({
     model: pyprojectModel,
     parse: Bun.TOML.parse,
@@ -75,14 +69,10 @@ const declaredOf = (repositoryFolderPath: AbsolutePath): readonly Declared[] => 
 
 interface BraceGroup {
   readonly alternatives: readonly string[];
-  /** where the "}" that closes it stands */
   readonly end: number;
-  /** where "{" stands */
   readonly start: number;
 }
 
-// The first group of braces to close, so the innermost first, or undefined where none closes; a
-// character after "\" is taken as it is.
 const firstGroupOf = (glob: string): BraceGroup | undefined => {
   let open:
     | {
@@ -122,8 +112,7 @@ const firstGroupOf = (glob: string): BraceGroup | undefined => {
   return undefined;
 };
 
-// The globs a glob's braces spell out, "{a,b}" as either, in their order. Each glob spelled out, in
-// part or in whole, counts toward the bound, so braces upon braces stop there.
+// Why: braces are spelled out before a glob is split into folders, as `/` may stand inside braces.
 function* bracesExpanded(input: { glob: string; maxGlobs: number }): Generator<string> {
   const pending = [
     input.glob,
@@ -153,11 +142,10 @@ function* bracesExpanded(input: { glob: string; maxGlobs: number }): Generator<s
 }
 
 interface Walk {
-  /** shared and mutable: one bound on the folders listed covers the whole walk, so every step adds to it */
+  // Why: shared and mutable: one bound on the folders listed covers the whole walk, so every step
+  // adds to it.
   listed: number;
-  /** the most folders the walk lists */
   readonly maxFolders: number;
-  /** the most globs one glob's braces are spelled out into, the partial ones counted */
   readonly maxGlobs: number;
   readonly repositoryFolderPath: AbsolutePath;
 }
@@ -165,8 +153,6 @@ interface Walk {
 const pathOf = (input: { folder: string; name: string }): string =>
   input.folder === '' ? input.name : `${input.folder}${PATH_SEPARATOR}${input.name}`;
 
-// What a folder holds that a walk may enter, no package store and nothing hidden among them; a
-// folder past the walk's bound, or that cannot be listed, holds nothing.
 const childrenOf = (input: { folder: string; walk: Walk }): readonly string[] => {
   const { walk } = input;
   const names =
@@ -181,7 +167,7 @@ const childrenOf = (input: { folder: string; walk: Walk }): readonly string[] =>
 
   // Stryker disable next-line ArrayDeclaration: a name the folder does not hold reaches no member
   return (names ?? [])
-    .filter((name) => name !== SKIPPED_FOLDER_NAME && !name.startsWith(HIDDEN))
+    .filter((name) => name !== SKIPPED_FOLDER_NAME && !name.startsWith(HIDDEN_NAME_PREFIX))
     .toSorted(compareText)
     .map((name) =>
       pathOf({
@@ -191,7 +177,7 @@ const childrenOf = (input: { folder: string; walk: Walk }): readonly string[] =>
     );
 };
 
-const expand = (input: {
+const foldersMatching = (input: {
   folder: string;
   segments: readonly string[];
   walk: Walk;
@@ -206,12 +192,12 @@ const expand = (input: {
 
   if (segment === ANY_DEPTH) {
     return [
-      ...expand({
+      ...foldersMatching({
         ...input,
         segments: rest,
       }),
       ...childrenOf(input).flatMap((child) =>
-        expand({
+        foldersMatching({
           ...input,
           folder: child,
         }),
@@ -220,7 +206,7 @@ const expand = (input: {
   }
 
   if (!WILDCARDS.test(segment)) {
-    return expand({
+    return foldersMatching({
       ...input,
       folder: pathOf({
         folder: input.folder,
@@ -230,14 +216,14 @@ const expand = (input: {
     });
   }
 
-  // "*" is any name, "?" one character, "{a,b}" either, "[ab]" one of; Bun's glob matches in linear
-  // time, where a pattern built from a manifest's glob could backtrack.
+  // Why: Bun's glob matches in linear time, where a pattern built from a manifest's glob could
+  // backtrack.
   const glob = new Bun.Glob(segment);
 
   return childrenOf(input)
     .filter((child) => glob.match(child.slice(child.lastIndexOf(PATH_SEPARATOR) + 1)))
     .flatMap((child) =>
-      expand({
+      foldersMatching({
         ...input,
         folder: child,
         segments: rest,
@@ -245,9 +231,8 @@ const expand = (input: {
     );
 };
 
-// A glob of the project's own folders, none above it; one that names the project itself reaches
-// ".", which no member's path is.
-const isWithin = (glob: string): boolean => !normalizePath(glob).startsWith(PARENT_SEGMENT);
+const staysInsideProject = (glob: string): boolean =>
+  !normalizePath(glob).startsWith(PARENT_SEGMENT);
 
 const pathsOf = (input: { globs: readonly string[]; walk: Walk }): ReadonlySet<string> =>
   new Set(
@@ -258,9 +243,9 @@ const pathsOf = (input: { globs: readonly string[]; walk: Walk }): ReadonlySet<s
           maxGlobs: input.walk.maxGlobs,
         }),
       ])
-      .filter(isWithin)
+      .filter(staysInsideProject)
       .flatMap((glob) =>
-        expand({
+        foldersMatching({
           folder: '',
           segments: normalizePath(glob)
             .split(PATH_SEPARATOR)
@@ -277,9 +262,7 @@ const isFile = (path: string): boolean =>
   }) === true;
 
 interface ManifestWorkspaceInput {
-  /** bounds the folders the globs of one look list, so a glob over a vast tree stops there */
   readonly maxFolders: number;
-  /** bounds the globs one glob's braces are spelled out into, the partial ones counted */
   readonly maxGlobs: number;
 }
 
@@ -291,7 +274,7 @@ const createManifestWorkspace = (input: ManifestWorkspaceInput): Workspace => ({
       maxGlobs: input.maxGlobs,
       repositoryFolderPath,
     };
-    const members = declaredOf(repositoryFolderPath).flatMap((declared) => {
+    const members = workspaceManifestsOf(repositoryFolderPath).flatMap((declared) => {
       const excluded = pathsOf({
         globs: declared.globs
           .filter((glob) => glob.startsWith(NEGATION))

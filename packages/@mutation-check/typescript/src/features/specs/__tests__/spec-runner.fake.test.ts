@@ -11,10 +11,10 @@ specRunnerSuite({
       specPaths: [
         SPEC_SCENARIO.failingPath,
         SPEC_SCENARIO.passingPath,
-        SPEC_SCENARIO.waitingPath,
+        SPEC_SCENARIO.timingOutPath,
       ],
-      waitingPaths: [
-        SPEC_SCENARIO.waitingPath,
+      timingOutPaths: [
+        SPEC_SCENARIO.timingOutPath,
       ],
     }),
 });

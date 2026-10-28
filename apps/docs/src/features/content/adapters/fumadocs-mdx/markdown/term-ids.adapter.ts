@@ -5,13 +5,11 @@ import { visit } from 'unist-util-visit';
 interface TermId {
   readonly id: string;
   readonly strong: Strong;
-  /** the text that held the id */
   readonly text: Text;
 }
 
 const idMarkOf = (id: string): string => `{#${id}}`;
 
-/** Takes the id written right after each bold term off the text, and gives each id with its bold. */
 const takeTermIds = (tree: Nodes): readonly TermId[] => {
   const termIds: TermId[] = [];
 

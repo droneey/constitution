@@ -5,12 +5,11 @@ import { UnitRelativePath } from '#/kernel/value-objects';
 import type { SpecRunner } from '../domain/contracts';
 import { SpecRunStatus } from '../domain/entities';
 
-/** The specs of the scenario, each of one case: one passes, one fails, one waits past any run's time. */
 const SPEC_SCENARIO = {
   caseTitle: 'should hold',
   failingPath: UnitRelativePath.create('src/__tests__/fail.test.ts'),
   passingPath: UnitRelativePath.create('src/__tests__/pass.test.ts'),
-  waitingPath: UnitRelativePath.create('src/__tests__/wait.test.ts'),
+  timingOutPath: UnitRelativePath.create('src/__tests__/time-out.test.ts'),
 } as const;
 
 const TIMEOUT_MS = 30_000;
@@ -34,7 +33,7 @@ const specRunnerSuite = (input: SpecRunnerSuiteInput): void => {
         new Set([
           SPEC_SCENARIO.failingPath,
           SPEC_SCENARIO.passingPath,
-          SPEC_SCENARIO.waitingPath,
+          SPEC_SCENARIO.timingOutPath,
         ]),
       );
     });
@@ -61,7 +60,7 @@ const specRunnerSuite = (input: SpecRunnerSuiteInput): void => {
         condition: 'a spec outlasts the time of the run',
         status: SpecRunStatus.TimedOut,
         specPaths: [
-          SPEC_SCENARIO.waitingPath,
+          SPEC_SCENARIO.timingOutPath,
         ],
         timeoutMs: 500,
       },
@@ -76,7 +75,7 @@ const specRunnerSuite = (input: SpecRunnerSuiteInput): void => {
           signal: new AbortController().signal,
           specPaths,
           timeoutMs,
-          variables: {},
+          addedVariables: {},
         });
 
         // Assert

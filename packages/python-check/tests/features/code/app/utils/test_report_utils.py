@@ -20,11 +20,15 @@ USAGE_ERROR: Final = UsageError(code=Misuse.NO_PATH)
 MISSING_PATHS_ERROR: Final = MissingPathsError((Path('scr'), Path('test')))
 SETTINGS_ERROR: Final = SettingsError(
   (
-    WrongShape(file_path='pyproject.toml', dotted_key='tool.uv', expected=Expected.TABLE),
-    WrongShape(file_path='parts/a.toml', dotted_key='homes.httpx', expected=Expected.LIST_OF_TEXT),
-    UnknownKey(file_path='pyproject.toml', dotted_key='tool.python-check.home'),
-    MissingPart(file_path='parts/b.toml'),
-    MalformedFile(file_path='parts/c.toml', parser_message="Expected ']' (at line 1, column 7)"),
+    WrongShape(path_from_unit='pyproject.toml', dotted_key='tool.uv', expected=Expected.TABLE),
+    WrongShape(
+      path_from_unit='parts/a.toml', dotted_key='homes.httpx', expected=Expected.LIST_OF_TEXT
+    ),
+    UnknownKey(path_from_unit='pyproject.toml', dotted_key='tool.python-check.home'),
+    MissingPart(path_from_unit='parts/b.toml'),
+    MalformedFile(
+      path_from_unit='parts/c.toml', parser_message="Expected ']' (at line 1, column 7)"
+    ),
   )
 )
 OWN_ERROR: Final = RuntimeError('boom')

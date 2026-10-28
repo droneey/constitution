@@ -8,13 +8,11 @@ import { configOf } from '../configs.utils';
 
 const BUILD_PATH = 'theme/';
 
-/** the files every mode reads besides its own, when a case names none */
 const SHARED_FIXTURE_FILE_NAMES = [
   'base.fixtures.tokens.json',
   'radius.fixtures.tokens.json',
 ] as const;
 
-/** what a mode's build writes, by file */
 type ModeOutput = Readonly<Record<string, unknown>>;
 
 interface FixtureOutputs {
@@ -25,7 +23,6 @@ interface FixtureOutputs {
 const fixturePathOf = (fileName: string): string =>
   fileURLToPath(new URL(fileName, import.meta.url));
 
-/** read as the runner of design-tokens reads a resolver's: the shared files, then the mode's own */
 const outputOf = async (
   mode: ThemeMode,
   sharedFileNames: readonly string[],

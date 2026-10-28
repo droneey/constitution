@@ -7,11 +7,9 @@ enum ReleaseFailure {
 }
 
 interface ReleaseFailureDetails {
-  /** the release's folder */
   readonly path: AbsolutePath;
 }
 
-/** The release a project pins is not installed as a release installs itself. */
 class ReleaseError extends ProgramError<ReleaseFailure, ReleaseFailureDetails> {
   public constructor(input: ProgramErrorInput<ReleaseFailure, ReleaseFailureDetails>) {
     super(input);

@@ -22,7 +22,10 @@ interface CheckConfigurationsInput {
   readonly startFolderPath: AbsolutePath;
 }
 
-/** A file is reported where an apply would change it, defaults aside. */
+/**
+ * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
+ * @throws {ReleaseError} when the release's blocks cannot be listed
+ */
 const checkConfigurations = (input: CheckConfigurationsInput): ProjectRead<ConfigurationsCheck> =>
   ProjectRead.map(input.reader.open(input.startFolderPath), (project) => {
     const check = checkProject({

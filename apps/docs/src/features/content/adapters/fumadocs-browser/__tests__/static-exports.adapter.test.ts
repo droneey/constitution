@@ -44,7 +44,6 @@ interface Answer {
   readonly status?: number;
 }
 
-/** answers each address with its body, as JSON when it is not already text, and any other with 404 */
 const serving =
   (answers: Readonly<Record<string, Answer>>) =>
   (address: string): Promise<Response> => {
@@ -73,7 +72,6 @@ const exportsServing = (
     transport: serving(answers),
   });
 
-/** the code, the details and the name of the cause a read failed with, or the error itself when it is none of the program's */
 const failureOf = (read: Promise<unknown>): Promise<unknown> =>
   read.then(
     () => undefined,

@@ -23,7 +23,7 @@ import { rootProviders } from '../wiring';
 
 const accent = AccentScale.create(brand);
 
-// a modifier, so a key typed for a screen reader or a speech command never switches the theme
+// Why: a modifier, so a key typed for a screen reader or a speech command never switches the theme.
 const isThemeHotKey = (event: KeyboardEvent): boolean =>
   event.altKey && event.shiftKey && event.code === 'KeyD';
 

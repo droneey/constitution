@@ -31,7 +31,6 @@ const refused = (warning: ProjectWarning): OverrideCheck => ({
   warning,
 });
 
-// The override as it holds in its unit, or the warning that says why it does not.
 const checkOverride = (input: {
   model: ProjectModel;
   override: ConfigOverride;
@@ -113,8 +112,6 @@ const checkOverride = (input: {
   };
 };
 
-// The rules an override lowers, each with how: its own rule, then through the chain of arrows every
-// rule that takes its level from it, each once.
 const loweredBy = (input: {
   model: ProjectModel;
   override: ListedOverride;
@@ -170,14 +167,9 @@ interface ApplyOverridesInput {
 
 interface OverridesApplied {
   readonly applied: AppliedOverrides;
-  /** why each override that does not hold is refused */
   readonly warnings: readonly ProjectWarning[];
 }
 
-/**
- * An override lowers its rule and, through the chain of arrows, every rule that takes its level from
- * it, in the unit whose constitution.yaml lists it alone.
- */
 const applyOverrides = (input: ApplyOverridesInput): OverridesApplied => {
   const checked = input.config.units.flatMap((unit) =>
     unit.config.overrides.map((override) =>

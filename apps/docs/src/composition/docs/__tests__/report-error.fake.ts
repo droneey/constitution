@@ -3,7 +3,7 @@ export interface ReportErrorFake {
   readonly restore: () => void;
 }
 
-/** Bun fails the running spec on a reported error, so a spec that expects one takes this fake */
+// Why: Bun fails the running spec on a reported error, so a spec that expects one takes this fake.
 export const reportErrorFake = (): ReportErrorFake => {
   const reported: unknown[] = [];
   const original = globalThis.reportError;

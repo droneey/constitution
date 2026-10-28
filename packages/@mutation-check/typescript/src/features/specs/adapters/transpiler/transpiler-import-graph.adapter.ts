@@ -5,7 +5,7 @@ import { importsOf } from '#/libs/transpiler';
 import type { ImportGraph } from '../../domain/contracts';
 
 const transpilerImportGraph = (unitFolderPath: AbsolutePath): ImportGraph => ({
-  importsOf: (filePath) =>
+  directImportsOf: (filePath) =>
     importsOf({
       filePath,
       workingFolderPath: unitFolderPath,

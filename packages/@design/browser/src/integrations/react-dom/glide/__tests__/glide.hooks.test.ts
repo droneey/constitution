@@ -39,7 +39,6 @@ const mountVersions = (style = ''): HTMLElement => {
   const nav = mountElement(versionsSpec(style));
   const links = within(nav);
 
-  // The list's own offsets, from the page, count for nothing: the block sits inside the list.
   layOut(nav, {
     left: 500,
     top: 500,

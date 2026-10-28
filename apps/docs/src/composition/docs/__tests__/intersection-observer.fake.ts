@@ -1,10 +1,8 @@
 export interface ViewportFake {
   restore: () => void;
-  /** every other section goes off screen */
   show: (...ids: string[]) => void;
 }
 
-/** replaces the browser's intersection observer until restored */
 export const viewportFake = (): ViewportFake => {
   const original = globalThis.IntersectionObserver;
   const observers: IntersectionObserverFake[] = [];
@@ -27,7 +25,7 @@ export const viewportFake = (): ViewportFake => {
     }
 
     unobserve(): void {
-      // the fake reports every target it was given until it disconnects
+      // Why: the fake reports every target it was given until it disconnects.
     }
 
     disconnect(): void {

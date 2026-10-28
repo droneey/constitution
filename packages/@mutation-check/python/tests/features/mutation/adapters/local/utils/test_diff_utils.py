@@ -12,7 +12,6 @@ if TYPE_CHECKING:
   from droneey_mutation_check_python.features.mutation.domain.entities import FileChange
   from droneey_mutation_check_python.features.mutation.domain.value_objects import UnitRelativePath
 
-# Each diff is of the whole repository, run from packages/shop/.
 CHANGED_IN_TWO_HUNKS = """\
 diff --git a/packages/shop/src/shop/orders.py b/packages/shop/src/shop/orders.py
 index 1111111..2222222 100644
@@ -144,15 +143,16 @@ def test_should_read_the_files_of_the_unit_a_diff_changed(
 ) -> None:
   # Act
   read = file_changes(
-    diff_output=diff_output, unit_prefix='packages/shop/', untracked_paths=untracked_paths
+    diff_with_untracked_added=diff_output,
+    unit_prefix='packages/shop/',
+    untracked_paths=untracked_paths,
   )
 
   # Assert
   assert read == files
 
 
-# The openings of the lines git writes in a diff, each followed by any text.
-LINE_OPENINGS: Final = (
+DIFF_LINE_OPENINGS: Final = (
   'diff --git a/packages/shop/src/x.py b/',
   '+++ b/packages/shop/',
   'rename from packages/old/',
@@ -163,7 +163,7 @@ LINE_OPENINGS: Final = (
 )
 DIFF_LINES: Final = st.one_of(
   st.text(),
-  st.sampled_from(LINE_OPENINGS).flatmap(lambda opening: st.text().map(opening.__add__)),
+  st.sampled_from(DIFF_LINE_OPENINGS).flatmap(lambda opening: st.text().map(opening.__add__)),
 )
 
 
@@ -176,7 +176,7 @@ def test_should_answer_the_files_or_refuse_a_path_out_of_the_unit_whatever_the_d
   # Act
   try:
     answered = file_changes(
-      diff_output=diff_output, unit_prefix='packages/shop/', untracked_paths=()
+      diff_with_untracked_added=diff_output, unit_prefix='packages/shop/', untracked_paths=()
     )
   except InvalidValueError as error:
     answered = error

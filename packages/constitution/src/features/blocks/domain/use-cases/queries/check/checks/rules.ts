@@ -36,7 +36,6 @@ interface RulesDetails {
     readonly slug: RuleSlug;
   };
   readonly [RulesCode.DefinedTwice]: {
-    /** the file of the rule's first definition */
     readonly firstFile: string;
     readonly slug: RuleSlug;
   };
@@ -45,7 +44,6 @@ interface RulesDetails {
     readonly slug: RuleSlug;
   };
   readonly [RulesCode.ParentChainCycle]: {
-    /** the slugs of the chain, from the rule back to it */
     readonly cycle: readonly RuleSlug[];
     readonly slug: RuleSlug;
   };
@@ -123,8 +121,6 @@ const fieldProblems = (rule: Rule): readonly (RulesProblem | undefined)[] => {
   ];
 };
 
-// Where the tightened rule sits and what level it gives, once it is a rule of another block outside
-// any cycle.
 const placementProblem = (input: {
   graph: BlockGraph;
   parent: RuleSlug;
@@ -200,8 +196,6 @@ const placementProblem = (input: {
       };
 };
 
-// A language or a platform names its chapters after core's, so a rule of one of its
-// chapters that tightens a rule of core sits in the chapter titled like its parent's.
 const MIRRORS_CORE: readonly Layer[] = [
   Layer.Language,
   Layer.Platform,

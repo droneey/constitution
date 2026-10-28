@@ -5,13 +5,13 @@ import tls from 'node:tls';
 
 const REFUSAL = 'A spec reached the network: give it the fake of its transport';
 
-// A declaration, not an arrow, so that `new WebSocket()` and `new Bun.SQL()` throw this error too.
+// Why: a declaration, not an arrow, so `new WebSocket()` and `new Bun.SQL()` throw this error too.
 function refuseNetwork(): never {
   throw new Error(REFUSAL);
 }
 
-// fetch refuses by a rejected promise, as a fetch fails: yoga-layout, under bunli's terminal
-// renderer, loads its WebAssembly from a data: URL and decodes it itself only when fetch rejects.
+// Why: yoga-layout, under the terminal renderer, loads its WebAssembly from a data: URL and decodes
+// it itself only when fetch rejects.
 const refuseFetch = async (): Promise<never> => await Promise.reject(new Error(REFUSAL));
 
 Object.defineProperty(globalThis, 'fetch', {

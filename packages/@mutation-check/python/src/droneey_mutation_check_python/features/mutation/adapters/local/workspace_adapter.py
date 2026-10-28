@@ -21,10 +21,9 @@ if TYPE_CHECKING:
 
 MUTANTS_FOLDER_NAME: Final = 'mutants'
 BASE_REF: Final = 'origin/main'
-# git then writes a name with a letter past ASCII as it is, never escaped in quotes
+# Why: git then writes a name with a letter past ASCII as it is, never escaped in quotes.
 GIT: Final = ('git', '-c', 'core.quotePath=false')
 PREFIX_COMMAND: Final = (*GIT, 'rev-parse', '--show-prefix')
-# each name ended by a NUL, which no name holds
 UNTRACKED_COMMAND: Final = (*GIT, 'ls-files', '-z', '--others', '--exclude-standard')
 NAME_END: Final = '\0'
 DIFF_COMMAND: Final = (
@@ -48,7 +47,8 @@ INDEX_PATH_COMMAND: Final = (*GIT, 'rev-parse', '--path-format=absolute', '--git
 INDEX_COPY_NAME: Final = 'index'
 INDEX_FILE_VARIABLE: Final = 'GIT_INDEX_FILE'
 ADD_INTENT_COMMAND: Final = (*GIT, 'add', '--intent-to-add', '--')
-# a constant, since mutmut would spell the codec's name in capitals, which names the same codec
+# Why: a constant, since mutmut would spell the codec's name in capitals, which names the same
+# codec.
 UTF_8: Final = 'utf-8'
 
 
@@ -93,10 +93,10 @@ def _output_of(command: Sequence[str], *, settings: ProcessSettings) -> str:
   return result.joined_output
 
 
+# Why: a copy of the index that holds the paths as files to add lets git's detection of moves see
+# them, and the project's own index is never written.
 def _diff_with_files_to_add(paths: Sequence[UnitRelativePath], *, settings: ProcessSettings) -> str:
   """The diff of the branch, run against a copy of the index that holds the paths as files to add.
-
-  git's detection of moves then sees them, and the project's own index is never written.
 
   Raises:
     CommandFailedError: a git command fails.
@@ -106,8 +106,8 @@ def _diff_with_files_to_add(paths: Sequence[UnitRelativePath], *, settings: Proc
 
   with tempfile.TemporaryDirectory() as scratch_path:
     index_copy_path = Path(scratch_path) / INDEX_COPY_NAME
-    # the copy keeps the index's time: git checks again the text of a file written in the second
-    # the index was, which a newer copy would let it take for unchanged
+    # Why: the copy keeps the index's time: git checks again the text of a file written in the
+    # second the index was, which a newer copy would let it take for unchanged.
     shutil.copy2(index_path, index_copy_path)
     on_index_copy = replace(
       settings,
@@ -161,19 +161,24 @@ class WorkspaceAdapter:
 
     return Changes(
       files=file_changes(
-        diff_output=diff_output, unit_prefix=unit_prefix, untracked_paths=untracked_paths
+        diff_with_untracked_added=diff_output,
+        unit_prefix=unit_prefix,
+        untracked_paths=untracked_paths,
       ),
       python_source_paths=self._python_source_paths(),
     )
 
   def remove_mutants(self) -> None:
+    """Removes the mutants/ folder mutmut keeps between runs.
+
+    Raises:
+      MutantsKeptError: the system refuses to remove it.
+    """
     try:
-      # a folder that is not there holds no mutant to remove
       with contextlib.suppress(FileNotFoundError):
         shutil.rmtree(self.process.folder_path / MUTANTS_FOLDER_NAME)
     except OSError as error:
-      # the system's account of the refusal is text only a person reads
-      raise MutantsKeptError(reason=str(error)) from error  # pragma: no mutate -- text
+      raise MutantsKeptError(reason=str(error)) from error  # pragma: no mutate -- a person's text
 
   def mutate(self, targets: MutationTargets) -> MutationRun:
     mutmut_command = (self.python_path, *MUTMUT_ARGUMENTS)

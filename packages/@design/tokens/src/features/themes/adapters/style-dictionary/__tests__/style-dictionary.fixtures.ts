@@ -35,7 +35,6 @@ const destinationlessConfigOf = (buildPath: string): Config => ({
 
 const TEXTLESS_FORMAT = 'textless';
 
-/** a configuration whose format gives no text for its file in `buildPath` */
 const textlessConfigOf = (buildPath: string): Config => ({
   ...platformlessConfig,
   hooks: {
@@ -58,7 +57,6 @@ const textlessConfigOf = (buildPath: string): Config => ({
 
 const TOKEN_PATHS_FORMAT = 'token-paths';
 
-/** what a mode's file holds: the mode's name and the paths of the tokens its build read */
 interface ModeTokens {
   readonly modeName: string;
   readonly tokenPaths: readonly string[];

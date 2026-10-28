@@ -18,7 +18,6 @@ const write = (input: { path: string; text: string }): void => {
   writeFileSync(join(root, input.path), input.text);
 };
 
-// <root> in a file's text stands for the folder the spec writes in.
 const writeAll = (files: Readonly<Record<string, string>>): void => {
   for (const [path, text] of Object.entries(files)) {
     write({

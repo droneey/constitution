@@ -41,8 +41,6 @@ const configOf = (unit: string): z.infer<typeof strykerConfig> =>
 const appliedConfig = (blocks: readonly string[] = []): z.infer<typeof strykerConfig> =>
   configOf(strykerUnit(blocks));
 
-// The sources of the runner and the ignorer stand in for the distribution's build, which this
-// repository never makes.
 const config = (unit: string): string =>
   JSON.stringify({
     ...configOf(unit),
@@ -52,14 +50,12 @@ const config = (unit: string): string =>
     ],
   });
 
-// The fixture the specs' preload names, which the presets write once beside the specs.
 const SANDBOX = 'src/__tests__/sandbox.fixtures.ts';
 const SURVIVED = /\[Survived\]/g;
 
 const TOTAL = 'export const total = (price: number, tax: number): number => price + tax;\n';
 
 interface MutationInput {
-  /** the blocks of the unit beside its language's, Bun's and Stryker's */
   readonly blocks?: readonly string[];
   readonly source?: string;
   readonly spec: string;
@@ -70,7 +66,6 @@ interface StrykerRun {
   readonly stdout: string;
 }
 
-// Stryker run over a copy of the unit's configuration, its source and its spec.
 const strykerRunIn = (input: { source?: string; spec: string; unit: string }): StrykerRun => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-stryker-'));
 
@@ -92,7 +87,7 @@ const strykerRunIn = (input: { source?: string; spec: string; unit: string }): S
       folder,
     });
 
-    // Stryker's plugins and the specs' runner resolve from this package's install.
+    // Why: Stryker's plugins and the specs' runner resolve from this package's install.
     const running = spawnSync(
       process.execPath,
       [
@@ -135,13 +130,11 @@ const mutationOf = (input: MutationInput): Mutation => {
 
 interface Validation {
   readonly passed: boolean;
-  /** what Stryker's validation of its options warns of */
   readonly warnings: readonly string[];
 }
 
 const WARNING = / WARN OptionsValidator\b/;
 
-/** Stryker's warnings on the configuration of the widest unit, where a spec kills every mutant. */
 const widestWarnings = (spec: string): Validation => {
   const run = strykerRunIn({
     spec,

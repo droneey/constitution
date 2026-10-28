@@ -1,6 +1,5 @@
 import type { ValueFailure } from '../errors';
 
-/** Where a value the Constitution refuses is written, which its finding names. */
 enum ValueSite {
   FrontMatterId = 'front-matter-id',
   BlockFolder = 'block-folder',
@@ -10,7 +9,6 @@ enum ValueSite {
   TightenedRule = 'tightened-rule',
 }
 
-/** The details of the findings that take the codes of the value objects. */
 interface ValueFindingDetails {
   readonly [ValueFailure.BlockId]:
     | {
@@ -30,7 +28,6 @@ interface ValueFindingDetails {
         readonly written: string;
       }
     | {
-        /** the slug of the rule whose heading tightens it */
         readonly rule: string;
         readonly site: ValueSite.TightenedRule;
         readonly written: string;

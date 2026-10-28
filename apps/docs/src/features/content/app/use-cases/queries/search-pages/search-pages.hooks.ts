@@ -25,7 +25,6 @@ const hitOf = ({ breadcrumbs, kind, table, ...found }: SearchResult): SearchHit 
   type: kind,
 });
 
-/** the pages that match what the reader types, searched a moment after they stop typing */
 export function useSearchPages(): SearchState {
   const searchPages = use(SearchPagesContext);
 

@@ -12,7 +12,6 @@ const theme = createTheme({
   mode: ThemeMode.Dark,
 });
 
-// A program laid out, its help written to a buffer, and the text of examples for its commands.
 const createProgram = (): {
   readonly help: () => readonly string[];
   readonly helpExamples: HelpExamples;

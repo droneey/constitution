@@ -13,8 +13,6 @@ import { LoadCode, PlaceCode } from '../steps/load-constitution';
 const REMOTE_DATA = 'blocks/domains/remote-data/remote-data.md';
 const UI = 'blocks/domains/ui/foundation/screens.md';
 
-// A rule of ui that says nearly what a rule of i18n says: the advice names the
-// pair whenever the checks run.
 const similarRule = rule({
   slug: 'screens-plurals-by-cldr',
 });

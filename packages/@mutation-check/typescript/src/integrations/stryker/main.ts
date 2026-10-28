@@ -7,9 +7,8 @@ import { runSpecsIn } from '#/root';
 import { bunSpecsRunner } from './bun-specs-runner.ts';
 
 /**
- * Stryker builds the runner in the folder it runs the specs in.
- *
- * @throws SpecSettingsError when the unit's configuration of the specs is not of the shape `bun test` reads.
+ * @throws {SpecSettingsError} when the unit's configuration of the specs is not of the shape
+ * `bun test` reads
  */
 const specsRunner = (): TestRunner => {
   const unitFolderPath = AbsolutePath.create(process.cwd());
@@ -25,6 +24,7 @@ const specsRunner = (): TestRunner => {
 
 specsRunner.inject = [] as const;
 
+/** the `bun-specs` runner, which runs the unit's specs with `bun test` */
 const STRYKER_PLUGINS = [
   declareFactoryPlugin(PluginKind.TestRunner, 'bun-specs', specsRunner),
 ] as const;

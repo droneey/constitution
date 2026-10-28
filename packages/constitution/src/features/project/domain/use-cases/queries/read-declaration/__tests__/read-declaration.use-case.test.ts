@@ -39,8 +39,6 @@ const uiRules = ruleOf({
   slug: 'inputs-are-labelled',
 });
 
-// What a declaration read of the members: where each active block is and its passport, the packs
-// and its warnings.
 const membersReadOf = (declaration: Declaration): unknown =>
   declaration.status === ConfigReadStatus.Parsed
     ? {
@@ -186,7 +184,7 @@ describe('readDeclaration', () => {
             },
           ],
         }),
-        musts: [
+        mustsBesideCore: [
           mustOf({
             block: 'ui',
             slug: 'inputs-are-labelled',

@@ -14,8 +14,6 @@ const dropSummary = (tree: Root): void => {
   }
 };
 
-// The page takes its title and summary from the file's heading and the first paragraph of its quote,
-// so the body drops them and keeps what the quote says beyond.
 const dropTitle = (tree: Root): void => {
   const [first] = tree.children;
 

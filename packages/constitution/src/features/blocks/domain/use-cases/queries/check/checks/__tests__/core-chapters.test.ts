@@ -10,9 +10,6 @@ import { CoreChaptersCode, coreChaptersCheck } from '../core-chapters';
 
 const CORE = 'blocks/core/core.md';
 
-// The valid files' core holds foundation/principles.md and workflow/workflow.md beside its passport,
-// which the list leaves out; a list item that names no axis folder, or a link in a code fence, is
-// no item of it.
 const passportListing = (items: readonly string[]): string =>
   passportFile({
     body: [

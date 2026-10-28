@@ -33,9 +33,6 @@ const roleOf = (input: {
   term: input.term,
 });
 
-// A folder and two suffixes named by their ids, one a prefix of the other, beside the terms a
-// preset file may type by their spelling: a language's suffix, the names a block governs, a term with
-// no id.
 const model: BlockModel = {
   blocks: [
     blockOf({

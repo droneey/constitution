@@ -16,6 +16,10 @@ import { HookField, hookEventTexts, sessionStartEventSchema } from '../../../con
 import { contextOutputOf, digestOf, hookEventOf } from '../../../utils';
 
 interface SessionStartContext extends CommandContext {
+  /**
+   * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
+   * @throws {ReleaseError} when the release's blocks cannot be listed
+   */
   readonly digestSession: (start: SessionStart) => SessionDigest | undefined;
   readonly keepSession: (kept: {
     event: HookEventName;
@@ -25,10 +29,6 @@ interface SessionStartContext extends CommandContext {
   }) => void;
 }
 
-/**
- * SessionStart and SubagentStart: the digest of the rules the session starts with, its state kept
- * for the hooks that follow.
- */
 const createSessionStartCommand = (context: SessionStartContext): Command =>
   new Command('session-start')
     .description('Give the digest of the active blocks when a session or a subagent starts.')
@@ -47,7 +47,7 @@ const createSessionStartCommand = (context: SessionStartContext): Command =>
       const name = event[HookField.HookEventName];
       const answered = hookEventTexts.get(name);
 
-      // Claude Code takes an answer only for an event it names.
+      // Why: Claude Code takes an answer only for an event it names.
       if (answered === undefined) {
         return;
       }

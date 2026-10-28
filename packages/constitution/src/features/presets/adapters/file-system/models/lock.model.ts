@@ -2,7 +2,6 @@ import { z } from 'zod';
 
 import { UnitRelativePath } from '#/kernel/value-objects';
 
-// Of each file only the fields that hold something, so the lock stays small.
 const lockRecordModel = z.union([
   z.strictObject({
     whole: z.literal(true),

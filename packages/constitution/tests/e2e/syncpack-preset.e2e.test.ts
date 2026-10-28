@@ -34,8 +34,9 @@ describe("the configuration syncpack's presets write", () => {
     });
   });
 
-  // syncpack takes a range it does not know, and a field to sort it never finds, without a word, so
-  // each the presets set has a manifest it must judge otherwise than syncpack does by default.
+  // Why: syncpack takes a range it does not know, and a field to sort it never finds, without a
+  // word, so each the presets set has a manifest it must judge otherwise than syncpack does by
+  // default.
   it.each([
     {
       condition: 'a tool takes a caret range, where the tools are pinned exactly',

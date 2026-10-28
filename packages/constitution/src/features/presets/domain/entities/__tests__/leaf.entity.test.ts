@@ -29,7 +29,7 @@ const cruiser: Setting = {
 };
 
 describe('Leaf', () => {
-  // The lock names each leaf by its key, so a key once released never changes.
+  // Why: the lock names each leaf by its key, so a key once released never changes.
   it.each<{
     key: string;
     leaf: LeafRow;

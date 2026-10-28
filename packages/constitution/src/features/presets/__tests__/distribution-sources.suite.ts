@@ -4,7 +4,6 @@ import type { AbsolutePath } from '#/kernel/value-objects';
 
 import type { DistributionSources } from '../domain/contracts';
 
-/** A release whose distribution packs these files, each from a package that builds it or not. */
 interface DistributionWorld {
   readonly built: readonly string[];
   readonly unbuilt: readonly string[];
@@ -12,7 +11,6 @@ interface DistributionWorld {
 
 interface DistributionSourcesSuiteInput {
   readonly name: string;
-  /** the sources over a release that holds the world, and the release's folder */
   readonly sourcesOf: (world: DistributionWorld) => {
     readonly releaseFolderPath: AbsolutePath;
     readonly sources: DistributionSources;

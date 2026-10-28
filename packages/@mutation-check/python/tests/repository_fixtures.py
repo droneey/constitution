@@ -8,7 +8,6 @@ if TYPE_CHECKING:
   from collections.abc import Mapping
   from pathlib import Path
 
-# git run by the specs reads no configuration of the machine's user
 GIT_ENVIRONMENT: Final = {'PATH': os.environ['PATH'], 'GIT_CONFIG_NOSYSTEM': '1'}
 
 
@@ -29,7 +28,6 @@ def git(repository_path: Path, *arguments: str) -> None:
 
 
 def repository(repository_path: Path, texts: Mapping[str, str]) -> None:
-  """A repository whose base, origin/main, holds the files given."""
   write_files(repository_path, texts)
   git(repository_path, 'init', '--quiet')
   git(repository_path, 'add', '.')
@@ -38,7 +36,6 @@ def repository(repository_path: Path, texts: Mapping[str, str]) -> None:
 
 
 def moved_unit(repository_path: Path) -> Path:
-  """A repository whose branch moved a file into the unit it answers, without telling git yet."""
   repository(repository_path, {'packages/old/money.py': python('LIMIT = 1', 'RATE = 2', 'TAX = 3')})
   (repository_path / 'packages/shop').mkdir()
   (repository_path / 'packages/old/money.py').rename(repository_path / 'packages/shop/money.py')

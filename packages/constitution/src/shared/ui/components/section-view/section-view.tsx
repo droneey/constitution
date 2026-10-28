@@ -8,7 +8,6 @@ import { SectionKind } from '#/shared/cli';
 
 import { STEP_STATUS_LABELS, TONE_LABELS } from '../../constants';
 
-// What the view draws: every section but lines of data, which are printed as they are.
 type DrawnSection = Exclude<
   Section,
   {
@@ -44,7 +43,6 @@ const contentOf = (section: DrawnSection): ReactElement => {
   }
 };
 
-/** a section of a command's result, as wide as what it holds */
 function SectionView({ section }: SectionViewProps): ReactElement {
   return <Box alignItems='flex-start'>{contentOf(section)}</Box>;
 }

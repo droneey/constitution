@@ -6,7 +6,6 @@ type SiteSource = ReturnType<SiteCollections['guide']['toFumadocsSource']>;
 
 interface PageInput {
   readonly icon?: string;
-  /** in its collection */
   readonly path: string;
   readonly text: string;
   readonly title: string;
@@ -42,7 +41,6 @@ const collectionOf = (pages: readonly PageInput[]): SiteCollections['guide'] => 
   toFumadocsSource: () => sourceOf(pages),
 });
 
-/** an overview, a guide, a block's passport and chapter, a document, the glossary and the quick start */
 export const siteCollectionsFixture = (): SiteCollections => ({
   blocks: collectionOf([
     {

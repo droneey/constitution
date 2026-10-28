@@ -17,6 +17,7 @@ import { AbsolutePath, UnitRelativePath } from '#/kernel/value-objects';
 
 import type { ToolEnd } from '../../../__tests__/mutation-runner.suite.ts';
 import { MUTATE_SCENARIO, mutationRunnerSuite } from '../../../__tests__/mutation-runner.suite.ts';
+import type { MutationRunner } from '../../../domain/contracts';
 import {
   ConfigurationError,
   ConfigurationFailure,
@@ -45,14 +46,11 @@ const SCENARIO_CONFIG_FILES = {
 } as const;
 
 interface Tool {
-  /** none gives the configuration of the scenario */
   readonly configFiles?: Readonly<Record<string, string>>;
   readonly timeoutMs?: number;
-  /** none leaves the unit with no tool */
   readonly toolScript?: string;
 }
 
-// A Stryker that keeps the arguments it was given and ends as a run with a survivor does.
 const argumentsScript = `#!/bin/sh\nprintf "%s " "$@" > "$PWD/${ARGUMENTS_FILE_NAME}"\nexit 1\n`;
 
 const unitWith = (tool: Tool) => {
@@ -99,7 +97,7 @@ const toolOf = (toolEnd: ToolEnd): Tool => {
     case MutationRunFailure.ToolTimedOut:
       return {
         timeoutMs: 100,
-        // by its path, since the runner's PATH holds only the fake's folder
+        // Why: by its path, since the runner's PATH holds only the fake's folder.
         toolScript: '#!/bin/sh\nexec /bin/sleep 10\n',
       };
     case MutationRunFailure.ToolStopped:
@@ -120,33 +118,34 @@ describe('strykerRunner', () => {
   it.each([
     {
       condition: 'everything',
+      run: (runner: MutationRunner) => runner.runAll(),
       strykerArguments: 'run',
-      targets: undefined,
     },
     {
       condition: 'the lines of one file and the whole of another',
+      run: (runner: MutationRunner) =>
+        runner.runTargets([
+          {
+            filePath: UnitRelativePath.create('src/order.utils.ts'),
+            lineRange: LineRange.create({
+              endLine: 5,
+              startLine: 3,
+            }),
+          },
+          {
+            filePath: UnitRelativePath.create('src/line.utils.ts'),
+          },
+        ]),
       strykerArguments: 'run --mutate src/order.utils.ts:3-5,src/line.utils.ts',
-      targets: [
-        {
-          filePath: UnitRelativePath.create('src/order.utils.ts'),
-          lineRange: LineRange.create({
-            endLine: 5,
-            startLine: 3,
-          }),
-        },
-        {
-          filePath: UnitRelativePath.create('src/line.utils.ts'),
-        },
-      ],
     },
-  ])('should run Stryker in the unit on $condition', ({ strykerArguments, targets }) => {
+  ])('should run Stryker in the unit on $condition', ({ run, strykerArguments }) => {
     // Arrange
     const unit = unitWith({
       toolScript: argumentsScript,
     });
 
     // Act
-    unit.runner.run(targets);
+    run(unit.runner);
 
     // Assert
     expect(unit.strykerArguments()).toStrictEqual(strykerArguments);
@@ -158,7 +157,7 @@ describe('strykerRunner', () => {
 
     // Act
     const failure = await failureOf({
-      call: () => runner.run(),
+      call: () => runner.runAll(),
       kind: MutationRunError,
     });
 

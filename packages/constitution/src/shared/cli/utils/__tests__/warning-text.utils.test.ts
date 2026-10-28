@@ -8,7 +8,6 @@ import { BlockId, PackPath, RuleSlug, SourceKind, UnitPath } from '#/kernel/valu
 
 import { warningTextOf } from '../warning-text.utils';
 
-// One warning of each kind, and of each variant its wording takes.
 const warnings: readonly ProjectWarning[] = [
   {
     details: {
@@ -369,7 +368,6 @@ const warnings: readonly ProjectWarning[] = [
   },
 ];
 
-// Each warning as the golden file holds it, one to a line.
 const goldenText = (): string => warnings.map((warning) => `${warningTextOf(warning)}\n`).join('');
 
 describe('warningTextOf', () => {

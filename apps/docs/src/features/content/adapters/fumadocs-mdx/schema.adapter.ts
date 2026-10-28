@@ -14,7 +14,7 @@ interface MarkdownFields {
 
 type MarkdownSchema = ReturnType<typeof pageSchema.extend<MarkdownFields>>;
 
-/** @throws {@link InvalidValueError} when the file's path is relative */
+/** @throws {InvalidValueError} when the file's path is relative */
 const markdownSchema =
   (iconOf: (filePath: AbsolutePath) => string | undefined) =>
   (context: { path: string }): MarkdownSchema => {

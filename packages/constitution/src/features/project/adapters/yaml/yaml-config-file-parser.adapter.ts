@@ -26,8 +26,8 @@ const requiredKeys: ReadonlySet<string> = new Set(REQUIRED_CONFIG_KEYS);
 
 const isRequiredKey = (key: string): key is RequiredConfigKey => requiredKeys.has(key);
 
-// A value reads where it is written: no anchor or alias takes it from elsewhere, no tag retypes it
-// and no block scalar runs it over the lines below.
+// Why: a value reads where it is written: no anchor or alias takes it from elsewhere, no tag
+// retypes it and no block scalar runs it over the lines below.
 const isRefused = (node: unknown): boolean =>
   isAlias(node) ||
   (isNode(node) &&
@@ -47,8 +47,6 @@ const refusedNodesOf = (document: Document): readonly unknown[] => {
   return refused;
 };
 
-// The values of the file with its aliases left out, as one without its anchor cannot be read, so
-// none is expanded.
 const writtenOf = (document: Document): unknown => {
   const withoutAliases = document.clone();
 
@@ -60,7 +58,6 @@ const writtenOf = (document: Document): unknown => {
   });
 };
 
-// An issue of a field the schema does not know names the object; the field's own path names its line.
 const pathsOf = (issue: z.core.$ZodIssue): readonly (readonly PropertyKey[])[] =>
   issue.code === 'unrecognized_keys'
     ? issue.keys.map((key) => [

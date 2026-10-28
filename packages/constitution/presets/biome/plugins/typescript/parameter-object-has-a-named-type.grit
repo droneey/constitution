@@ -1,7 +1,6 @@
 language js
 
-// Each parameter typed by an object type written inline, alone or as a part of an intersection,
-// gets a diagnostic, and the match fails, so the next parameter binds afresh.
+// Why: the match fails after each diagnostic, so the next parameter binds afresh.
 pattern inline_object_parameters() {
   JsParameters(items=some JsFormalParameter(type_annotation=TsTypeAnnotation(ty=or {
     TsObjectType() as $type,
@@ -54,9 +53,10 @@ pattern local_declaration($name) {
   }
 }
 
-// Only the module's own statements are read, never the code inside them. A declaration an export
-// list names is looked up in that list only when it holds an object type and the list's text holds
-// its name, first by the text of each name, which is quicker than reading each specifier's parts.
+// Why: only the module's own statements are read, never the code inside them. A declaration an
+// export list names is looked up in that list only when it holds an object type and the list's text
+// holds its name, first by the text of each name, which is quicker than reading each specifier's
+// parts.
 file(body=JsModule(items=$items)) where {
   or {
     $items <: some JsExport(export_clause=reported_declaration()),

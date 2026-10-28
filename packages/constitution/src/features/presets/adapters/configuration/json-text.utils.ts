@@ -7,7 +7,7 @@ import type { ConfigurationWrite } from '../../domain/contracts';
 import type { HeldStep, Setting } from '../../domain/entities';
 import { Setting as Settings } from '../../domain/entities';
 import type { Anchor, Commenting } from './block-comments.utils';
-import { anchorAt, noTextLines, withBlockComments } from './block-comments.utils';
+import { anchorAt, noLinesInsideTextValues, withBlockComments } from './block-comments.utils';
 import { ownFieldOf } from './own-field.utils';
 import { NEWLINE } from './text.constants';
 import { settingOfWire } from './wire-setting.utils';
@@ -31,7 +31,6 @@ const wireOf = (text: string): unknown => {
   return errors.length === 0 ? wire : undefined;
 };
 
-/** An empty text holds no settings; one that does not parse gives undefined. */
 const readJson = (text: string): Setting | undefined =>
   text.trim() === '' ? {} : settingOfWire(wireOf(text));
 
@@ -39,12 +38,13 @@ const isWireObject = (wire: unknown): wire is Readonly<Record<string, unknown>> 
   // Stryker disable next-line ConditionalExpression,LogicalOperator: the test only narrows the type
   typeof wire === 'object' && wire !== null && !Array.isArray(wire);
 
-const replaced = (input: { keyPath: JSONPath; text: string; value: Setting | undefined }): string =>
-  applyEdits(input.text, modify(input.text, input.keyPath, input.value, FORMATTING));
+const withValueReplacedAt = (input: {
+  keyPath: JSONPath;
+  text: string;
+  value: Setting | undefined;
+}): string => applyEdits(input.text, modify(input.text, input.keyPath, input.value, FORMATTING));
 
-// A list is edited item by item while the items it keeps stay in their order; any other change, or
-// a list holding what the settings cannot, is written whole.
-const editedList = (input: {
+const listEditedItemByItem = (input: {
   after: readonly Setting[];
   before: readonly Setting[];
   keyPath: JSONPath;
@@ -63,7 +63,7 @@ const editedList = (input: {
   const kept = current.filter((listed) => wanted.includes(listed));
   let text = gone.toReversed().reduce(
     (written, at) =>
-      replaced({
+      withValueReplacedAt({
         keyPath: [
           ...keyPath,
           at,
@@ -80,7 +80,7 @@ const editedList = (input: {
       kept,
     )
   ) {
-    return replaced({
+    return withValueReplacedAt({
       keyPath,
       text: input.text,
       value: after,
@@ -111,9 +111,9 @@ const editedList = (input: {
   return text;
 };
 
-// The changes are edits of the text, so its comments and layout stay where nothing changed; a key
-// whose value the settings cannot hold, such as a null, is never touched.
-const edited = (input: {
+// Why: the changes are edits of the text, so its comments and layout stay where nothing changed; a
+// key whose value the settings cannot hold, such as a null, is never touched.
+const editedInPlace = (input: {
   after: Setting;
   before: Setting | undefined;
   keyPath: JSONPath;
@@ -129,18 +129,18 @@ const edited = (input: {
   if (Settings.isMap(before) && Settings.isMap(after) && isWireObject(wire)) {
     const keys = Object.keys(before);
     const gone = keys.filter((key) => !Object.hasOwn(after, key));
-    // jsonc-parser leaves a trailing comma behind when it removes an object's last key, so an object
-    // that loses every key is emptied whole.
+    // Why: jsonc-parser leaves a trailing comma behind when it removes an object's last key, so an
+    // object that loses every key is emptied whole.
     let text =
       gone.length > 0 && gone.length === keys.length
-        ? replaced({
+        ? withValueReplacedAt({
             keyPath,
             text: input.text,
             value: {},
           })
         : gone.reduce(
             (written, key) =>
-              replaced({
+              withValueReplacedAt({
                 keyPath: [
                   ...keyPath,
                   key,
@@ -152,7 +152,7 @@ const edited = (input: {
           );
 
     for (const [key, held] of Object.entries(after)) {
-      text = edited({
+      text = editedInPlace({
         after: held,
         before: ownFieldOf(before, key),
         keyPath: [
@@ -171,21 +171,20 @@ const edited = (input: {
     Settings.isList(after) &&
     Array.isArray(wire) &&
     wire.length === before.length
-    ? editedList({
+    ? listEditedItemByItem({
         after,
         before,
         keyPath,
         text: input.text,
       })
-    : replaced({
+    : withValueReplacedAt({
         keyPath,
         text: input.text,
         value: after,
       });
 };
 
-// The values the settings cannot hold are sorted with the rest.
-const sortedIn = (text: string, keyPath: readonly string[]): string => {
+const withKeysSortedAt = (text: string, keyPath: readonly string[]): string => {
   const held = keyPath.reduce<unknown>(
     (wire, key) => (isWireObject(wire) ? ownFieldOf(wire, key) : undefined),
     wireOf(text),
@@ -213,13 +212,12 @@ const sortedIn = (text: string, keyPath: readonly string[]): string => {
       );
 };
 
-/** A new file is written whole, laid out as the edits lay it. */
 const writeJson = (input: ConfigurationWrite): string => {
   const { settings, text } = input;
   const wire = wireOf(text);
   const written = input.sorted.reduce(
-    sortedIn,
-    edited({
+    withKeysSortedAt,
+    editedInPlace({
       after: settings,
       before: settingOfWire(wire),
       keyPath: [],
@@ -232,7 +230,6 @@ const writeJson = (input: ConfigurationWrite): string => {
 };
 
 interface Container {
-  /** where the value read last ends, while no separator follows it */
   lastEnd?: number | undefined;
 }
 
@@ -271,7 +268,6 @@ const missingCommasOf = (text: string): readonly number[] => {
     },
     onObjectBegin: opened,
     onObjectEnd: closed,
-    // a comma ends the value before it, and a colon follows a key, which no value precedes
     onSeparator: () => {
       const container = containers.at(-1);
 
@@ -287,7 +283,6 @@ const missingCommasOf = (text: string): readonly number[] => {
 
 interface Child {
   readonly held: Node | undefined;
-  /** the node that begins the key or the item */
   readonly start: Node;
   readonly step: HeldStep;
 }
@@ -353,11 +348,11 @@ const jsoncAnchorsOf = (text: string): readonly Anchor[] => {
 const jsoncCommenting: Commenting = {
   anchorsOf: jsoncAnchorsOf,
   prefix: '//',
-  textLinesOf: noTextLines,
+  linesInsideTextValuesOf: noLinesInsideTextValues,
 };
 
-/** As the formatter writes JSONC: a comma after the last item of a list broken over lines. */
-const writeCommas = (input: ConfigurationWrite): string => {
+// Why: the formatter writes a comma after the last item of a list broken over lines in JSONC.
+const writeTrailingCommas = (input: ConfigurationWrite): string => {
   const written = writeJson(input);
 
   return missingCommasOf(written)
@@ -367,10 +362,10 @@ const writeCommas = (input: ConfigurationWrite): string => {
 
 const writeJsonc = withBlockComments({
   commenting: jsoncCommenting,
-  write: writeCommas,
+  write: writeTrailingCommas,
 });
 
-/** JSON with comments under a `.json` name, its commas as a formatter writes plain JSON. */
+// Why: a JSONC file named `.json` is formatted as plain JSON, which takes no trailing comma.
 const writeCommentedJson = withBlockComments({
   commenting: jsoncCommenting,
   write: writeJson,

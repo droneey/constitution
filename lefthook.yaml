@@ -148,8 +148,8 @@ pre-commit:
       root: apps/docs/
       glob: '*.toml'
       stage_fixed: true
-      # lefthook hands a job with a root its files as ./path, and tombi skips a file its tombi.toml
-      # excludes only when named without the ./
+      # Why: lefthook hands a job with a root its files as ./path, and tombi skips a file its
+      # tombi.toml excludes only when named without the ./.
       run: &unit-toml |
         set -- {staged_files}
         for file; do shift; set -- "$@" "${file#./}"; done
@@ -198,7 +198,7 @@ commit-msg:
   jobs:
     - name: commit-body
       run: |
-        # git commit -v leaves the diff below its scissors line for the hook to read.
+        # Why: git commit -v leaves the diff below its scissors line for the hook to read.
         BODY="$(sed -e '/^# -\{24\} >8 -\{24\}$/,$d' -e '1d;/^#/d;/^$/d' {1} |
           grep -vE '^[A-Za-z][A-Za-z-]*: .+$' || true)"
         if [ -n "$BODY" ]; then

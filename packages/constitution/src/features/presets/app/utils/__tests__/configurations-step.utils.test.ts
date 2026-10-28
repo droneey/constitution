@@ -23,7 +23,7 @@ const warning: ProjectWarning = {
 const finding: PresetsFinding = {
   code: PresetsCode.Stale,
   details: {
-    settings: [
+    settingPaths: [
       'width',
     ],
   },

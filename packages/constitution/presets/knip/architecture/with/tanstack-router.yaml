@@ -1,5 +1,5 @@
-knip:
-  production-set-marked-in-the-entries:
+tanstack-router:
+  routes-registered-in-the-root:
     typescript:
       knip.jsonc:
         entry:

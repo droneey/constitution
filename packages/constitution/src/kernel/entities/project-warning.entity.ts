@@ -2,10 +2,6 @@ import type { ConfigKey, Layer, RequiredConfigKey } from '../constants';
 import type { BlockId, PackPath, RuleSlug, UnitPath } from '../value-objects';
 import { SourceKind } from '../value-objects';
 
-/**
- * The codes of a project's warnings, one for each subject a reader fixes, in the order a
- * declaration's warnings are grouped.
- */
 enum WarningCode {
   Config = 'config',
   Blocks = 'blocks',
@@ -18,7 +14,6 @@ enum WarningCode {
   Constitution = 'constitution',
 }
 
-/** What a warning says, finer than its code: each kind names its own details. */
 enum WarningKind {
   MemberWithoutConfig = 'member-without-config',
   MemberConfigUnparsed = 'member-config-unparsed',
@@ -59,27 +54,22 @@ enum WarningKind {
   NoRepository = 'no-repository',
 }
 
-/** A file named by its path from the repository. */
 interface FileNamed {
   readonly file: string;
 }
 
-/** A key a constitution.yaml must give, in the file that holds it. */
 interface KeyNamed extends FileNamed {
   readonly key: RequiredConfigKey;
 }
 
-/** A name a list of a constitution.yaml gives, as it is written. */
 interface NameGiven {
   readonly name: string;
 }
 
-/** The slug an override names, as it is written. */
 interface OverrideNamed {
   readonly rule: string;
 }
 
-/** The block set whose own files a warning is about: the Constitution's release or a pack. */
 interface SourceNamed {
   readonly source: SourceKind;
 }
@@ -89,7 +79,6 @@ interface WarningDetails {
     readonly member: UnitPath;
   };
   readonly [WarningKind.MemberConfigUnparsed]: {
-    /** every line, from 1, the file fails at, in order */
     readonly lines: readonly number[];
     readonly member: UnitPath;
   };
@@ -98,7 +87,6 @@ interface WarningDetails {
   };
   readonly [WarningKind.KeyMissing]: KeyNamed;
   readonly [WarningKind.KeyUnknown]: FileNamed & {
-    /** the key as the file writes it */
     readonly key: string;
   };
   readonly [WarningKind.KeyEmpty]: KeyNamed;
@@ -108,7 +96,6 @@ interface WarningDetails {
   };
   readonly [WarningKind.OverrideIncomplete]: {
     readonly line: number;
-    /** the fields it lacks, in the order an override writes them */
     readonly missing: readonly string[];
   };
   readonly [WarningKind.OverrideLevelNotLowered]: OverrideNamed & {
@@ -125,11 +112,9 @@ interface WarningDetails {
   readonly [WarningKind.BlockUnderWrongKey]: NameGiven & {
     readonly key: ConfigKey;
     readonly layer: Layer;
-    /** the key that lists blocks of its layer */
     readonly toKey: ConfigKey;
   };
   readonly [WarningKind.AbstractListed]: NameGiven & {
-    /** the blocks that extend it, which a unit lists in its place */
     readonly heirs: readonly BlockId[];
   };
   readonly [WarningKind.PackUnlisted]: FileNamed &
@@ -137,7 +122,6 @@ interface WarningDetails {
       readonly pack: PackPath;
     };
   readonly [WarningKind.PackNotInstalled]: {
-    /** the pack's folder as constitution.yaml lists it */
     readonly where: string;
   };
   readonly [WarningKind.FileUnreadable]: FileNamed & SourceNamed;
@@ -171,9 +155,7 @@ interface WarningDetails {
   };
   readonly [WarningKind.BlockNeeded]: {
     readonly block: BlockId;
-    /** for an abstract block, the blocks that extend it, one of which is listed in its place */
     readonly heirs?: readonly BlockId[];
-    /** the key that lists the needed block */
     readonly key: ConfigKey;
     readonly required: BlockId;
     readonly unit: UnitPath;
@@ -185,17 +167,13 @@ interface WarningDetails {
   };
   readonly [WarningKind.OverrideNamesNoRule]: OverrideNamed;
   readonly [WarningKind.OverrideExpired]: OverrideNamed & {
-    /** the day it lapsed, written YYYY-MM-DD */
     readonly until: string;
   };
   readonly [WarningKind.ConfigurationFinding]: FileNamed & {
-    /** the presets' code of the finding, such as `missing` */
     readonly code: string;
-    /** what the finding says, as the presets word it */
     readonly says: string;
   };
   readonly [WarningKind.ConfigurationsUnchecked]: {
-    /** what the check failed with, as its error words it; absent when it threw no error */
     readonly reason?: string;
   };
   readonly [WarningKind.ReleaseLinkLoops]: {
@@ -204,10 +182,6 @@ interface WarningDetails {
   readonly [WarningKind.NoRepository]: object;
 }
 
-/**
- * What is wrong with a project, by its kind and the values it names; its code and the text a reader
- * sees follow from them.
- */
 type ProjectWarning<TKind extends WarningKind = WarningKind> = {
   readonly [TEach in TKind]: {
     readonly details: WarningDetails[TEach];
@@ -215,7 +189,6 @@ type ProjectWarning<TKind extends WarningKind = WarningKind> = {
   };
 }[TKind];
 
-// The kinds a block set's own files give, whose code is the set's.
 type BlockSetKind =
   | WarningKind.FileUnreadable
   | WarningKind.RuleRepeated
@@ -270,7 +243,6 @@ const codeOfSource: {
 const isOfBlockSet = (warning: ProjectWarning): warning is ProjectWarning<BlockSetKind> =>
   !Object.hasOwn(codeOfKind, warning.kind);
 
-/** The code of a warning, the subject a reader fixes and scripts against. */
 const codeOf = (warning: ProjectWarning): WarningCode =>
   isOfBlockSet(warning) ? codeOfSource[warning.details.source] : codeOfKind[warning.kind];
 

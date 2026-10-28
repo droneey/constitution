@@ -1,2 +1,2 @@
-export type { CheckMutationsInput, CheckOutcome } from './check-mutations';
-export { CheckScope, CheckStatus, checkMutations } from './check-mutations';
+export type { CheckMutations, CheckOutcome } from './check-mutations';
+export { CheckScope, CheckStatus, createCheckMutations } from './check-mutations';

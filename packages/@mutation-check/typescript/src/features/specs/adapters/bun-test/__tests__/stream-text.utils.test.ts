@@ -7,7 +7,6 @@ interface StreamRead {
   readonly streamText: string;
 }
 
-// Reads a stream that writes the texts one at a time, each only when the reader asks, as a child's stderr does.
 const streamReadOf = async (texts: readonly string[]): Promise<StreamRead> => {
   const pending = [
     ...texts,

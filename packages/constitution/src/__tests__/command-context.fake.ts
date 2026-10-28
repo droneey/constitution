@@ -8,8 +8,6 @@ interface Ran {
   readonly outcome: TaskOutcome;
 }
 
-// What a command did through its context: what it wrote to each stream, the steps it ran, the
-// reports it printed, and whether it ended the run as failed.
 interface CommandRecord {
   readonly failures: number;
   readonly printed: readonly Report[];
@@ -23,7 +21,6 @@ interface FakeContextInput {
   readonly stdin?: string;
 }
 
-// The context a command takes from the root, its standard input given, every effect recorded.
 const createFakeContext = (
   input: FakeContextInput = {},
 ): {
@@ -91,8 +88,6 @@ interface RunCommandInput {
   readonly group?: string;
 }
 
-// Runs a command on its argument list as the root runs it: inside a program that takes the output
-// flags, whose output goes to the spec's buffers and whose exits are thrown.
 const runCommand = async (
   input: RunCommandInput,
 ): Promise<{

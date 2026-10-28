@@ -1,21 +1,10 @@
 nestjs:
-  decorated-constructor-takes-every-dependency:
+  adapter-is-an-injectable-class:
     typescript:
       biome.jsonc:
-        overrides:
-          - includes:
-              - '**/*.${role.analytics-sink-file}.ts'
-            linter:
-              rules:
-                complexity:
-                  useMaxParams: 'off'
-  injected-classes-imported-as-values:
-    typescript:
-      biome.jsonc:
-        overrides:
-          - includes:
-              - '**/*.${role.analytics-sink-file}.ts'
-            linter:
-              rules:
-                style:
-                  useImportType: 'off'
+        overrides[slot=decorated-constructors]:
+          includes@decorated-constructors:
+            - '**/*.${role.analytics-sink-file}.ts'
+        overrides[slot=injected-classes]:
+          includes@injected-classes:
+            - '**/*.${role.analytics-sink-file}.ts'

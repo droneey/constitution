@@ -8,15 +8,11 @@ import { isSystemError } from '#/libs/system-error';
 const PRIVATE_FOLDER_MODE = 0o700;
 
 enum StateFolderProblem {
-  /** neither XDG_STATE_HOME nor HOME names an absolute folder */
   Unnamed = 'unnamed',
-  /** a link, no folder, or a folder another user owns */
   Unsafe = 'unsafe',
-  /** the system refused to make the folder or to narrow its mode */
   Unwritable = 'unwritable',
 }
 
-/** The environment the folder is named from: HOME and XDG_STATE_HOME. */
 type StateEnvironment = Readonly<Record<string, string | undefined>>;
 
 type StateFolderWarning =
@@ -28,7 +24,7 @@ type StateFolderWarning =
       readonly folder: string;
     };
 
-// The XDG Base Directory Specification ignores a relative or empty XDG_STATE_HOME.
+// Why: the XDG Base Directory Specification ignores a relative or empty XDG_STATE_HOME.
 const stateHomeOf = (environment: StateEnvironment): string | undefined => {
   const named = environment['XDG_STATE_HOME'];
 
@@ -43,12 +39,11 @@ const stateHomeOf = (environment: StateEnvironment): string | undefined => {
 
 interface OwnedInput {
   readonly folder: string;
-  /** undefined where the system has no users, so no folder is owned */
   readonly owner: number | undefined;
 }
 
-// Never a link, and the user's own, as tmux checks its sockets' folder; the mode of a folder that
-// existed is narrowed too.
+// Why: never a link, and the user's own, as tmux checks its sockets' folder; the mode of a folder
+// that existed is narrowed too.
 const isOwnedFolder = (input: OwnedInput): boolean => {
   const stats = lstatSync(input.folder);
 
@@ -62,13 +57,11 @@ const isOwnedFolder = (input: OwnedInput): boolean => {
 };
 
 interface FoldersInput {
-  /** each inside the one before it */
   readonly folders: readonly string[];
   readonly owner: number | undefined;
 }
 
-// Each folder is checked before the next is made inside it.
-const unsafeFolderOf = (input: FoldersInput): string | undefined => {
+const firstUnsafeFolderOf = (input: FoldersInput): string | undefined => {
   for (const folder of input.folders) {
     mkdirSync(folder, {
       mode: PRIVATE_FOLDER_MODE,
@@ -90,7 +83,6 @@ const unsafeFolderOf = (input: FoldersInput): string | undefined => {
 
 interface PrivateFolderInput {
   readonly environment: StateEnvironment;
-  /** the program's folder in the state home, then the folder inside it */
   readonly names: readonly [
     string,
     string,
@@ -99,10 +91,6 @@ interface PrivateFolderInput {
   readonly warn: (warning: StateFolderWarning) => void;
 }
 
-/**
- * The folder, or undefined, after a warning, when it cannot be named or made, or is not the user's
- * own.
- */
 const privateStateFolder = (input: PrivateFolderInput): string | undefined => {
   const home = stateHomeOf(input.environment);
 
@@ -117,10 +105,11 @@ const privateStateFolder = (input: PrivateFolderInput): string | undefined => {
   const [program, name] = input.names;
   const programFolder = join(home, program);
   const folder = join(programFolder, name);
-  // an object, since attempted gives undefined for a system error, and unsafe is undefined for none
+  // Why: an object, since attempted gives undefined for a system error, and unsafe is undefined for
+  // none.
   const made = attempted({
     effect: () => ({
-      unsafe: unsafeFolderOf({
+      unsafe: firstUnsafeFolderOf({
         folders: [
           programFolder,
           folder,
@@ -154,9 +143,8 @@ const privateStateFolder = (input: PrivateFolderInput): string | undefined => {
 
 interface SweepInput {
   readonly folder: string;
-  /** in hours or smaller units: an instant subtracts no days */
+  // Why: an instant subtracts no days, so the duration is in hours or smaller units.
   readonly kept: Temporal.Duration;
-  /** the entries looked at, at most */
   readonly maxEntries: number;
   readonly now: Temporal.Instant;
 }
@@ -182,7 +170,6 @@ interface ListingInput {
   readonly since: Temporal.Instant;
 }
 
-// An entry another run removes meanwhile is passed over.
 const sweepListing = (input: ListingInput): void => {
   for (let looked = 0; looked < input.maxEntries; looked += 1) {
     const entry = input.listing.readSync();
@@ -211,11 +198,11 @@ const sweepListing = (input: ListingInput): void => {
   }
 };
 
-/** A folder that cannot be listed is passed over. */
 const sweepStale = (input: SweepInput): void => {
   attempted({
     effect: () => {
-      // a try and finally, not `using`: constitution.yaml overrides scoped-resource-held-by-using
+      // Why: a try and finally, not `using`: constitution.yaml lowers scoped-resource-held-by-using
+      // here.
       const listing = opendirSync(input.folder);
 
       try {
@@ -233,7 +220,6 @@ const sweepStale = (input: SweepInput): void => {
   });
 };
 
-/** A link, or a folder another user owns, stays. */
 const removeOwnedFolder = (input: OwnedInput): void => {
   attempted({
     effect: () => {

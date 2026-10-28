@@ -53,7 +53,6 @@ const computedMethod = (methodName: string) =>
     property: identifier(methodName),
   });
 
-// The path of an argument of a call, `<callee>(...)` or `new <callee>(...)`, as Babel hands it to Stryker.
 const argumentOf = (input: {
   callee: object;
   key?: number;
@@ -74,7 +73,6 @@ const argumentOf = (input: {
   },
 });
 
-// A literal of a file, as Babel hands it to Stryker with the file it walks.
 const literalIn = (input: { fileName: string; type: string }) => ({
   hub: {
     file: {

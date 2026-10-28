@@ -1,14 +1,12 @@
 import type { ChapterListGaps } from '../errors';
 import { SourceError, SourceFailure } from '../errors';
 
-/** the axes a block's rules sit on, in their reading order */
 enum Axis {
   Foundation = 'foundation',
   Architecture = 'architecture',
   Workflow = 'workflow',
 }
 
-/** the layers of blocks, each by its folder under the blocks folder and on the site, in their reading order */
 enum BlockLayer {
   Core = 'core',
   Domain = 'domains',
@@ -34,13 +32,11 @@ const groupOf = (block: Block): string => {
   return groupId.startsWith(ABSTRACT_MARK) ? groupId.slice(ABSTRACT_MARK.length) : groupId;
 };
 
-/** below every character an id holds */
+// Why: it sorts below every character an id holds, so a group's blocks stay together.
 const KEY_SEPARATOR = '\u0000';
 
-/**
- * An abstract block sits right above the blocks that extend it. The keys sort by code point, as the
- * hook sorts the blocks, so `_` puts the abstract block first in its group.
- */
+// Why: the keys sort by code point, as the hook sorts the blocks, so `_` puts the abstract block
+// first in its group, right above the blocks that extend it.
 const readingOrderOf = (blocks: readonly Block[]): readonly string[] =>
   blocks
     .map((block) => `${groupOf(block)}${KEY_SEPARATOR}${block.id}`)
@@ -52,7 +48,7 @@ interface ChapterListInput {
   readonly listed: readonly string[];
 }
 
-/** @throws {@link SourceError} when the list leaves out, repeats or invents a chapter */
+/** @throws {SourceError} when the list leaves out, repeats or invents a chapter */
 const listedChaptersOf = (input: ChapterListInput): readonly string[] => {
   const gaps: ChapterListGaps = {
     missing: input.chapters.filter((chapter) => !input.listed.includes(chapter)),

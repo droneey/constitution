@@ -36,11 +36,7 @@ const coreChaptersOnDisk = (): readonly string[] =>
     )
     .map((filePath) => filePath.slice(0, -MARKDOWN_EXTENSION.length));
 
-/**
- * In the order core's passport lists them
- *
- * @throws {@link SourceError} when that list and the chapters on disk differ
- */
+/** @throws {SourceError} when the chapters core's passport lists and those on disk differ */
 const coreChaptersOf = (): readonly string[] =>
   Block.listedChaptersOf({
     chapters: coreChaptersOnDisk(),
@@ -51,11 +47,7 @@ const coreChaptersOf = (): readonly string[] =>
       .map((url) => url.slice(0, -MARKDOWN_EXTENSION.length)),
   });
 
-/**
- * The Constitution's check sees every passport opens with its front matter
- *
- * @throws {@link SourceError} when the passport's front matter names no base it can read
- */
+/** @throws {SourceError} when the passport's front matter names no base it can read */
 const baseBlockIdOf = (layer: BlockLayer, id: string): string | undefined => {
   const passportPath = BlockPath.create(`${layer}/${id}/${id}${MARKDOWN_EXTENSION}`);
 
@@ -70,6 +62,7 @@ const baseBlockIdOf = (layer: BlockLayer, id: string): string | undefined => {
   }).extends;
 };
 
+/** @throws {SourceError} when the passport's front matter names no base it can read */
 const blockOf = (layer: BlockLayer, id: string): Block => {
   const baseId = baseBlockIdOf(layer, id);
 
@@ -84,6 +77,7 @@ const blockOf = (layer: BlockLayer, id: string): Block => {
       };
 };
 
+/** @throws {SourceError} when the passport's front matter names no base it can read */
 const layerBlocksOf = (layer: BlockLayer): readonly string[] =>
   Block.readingOrderOf(readdirSync(inBlocks(layer)).map((id) => blockOf(layer, id)));
 

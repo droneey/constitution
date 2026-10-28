@@ -4,7 +4,6 @@ enum SpecRunStatus {
   Passed = 'passed',
   Failed = 'failed',
   TimedOut = 'timed-out',
-  /** no spec loads the file, so none ran */
   Unrun = 'unrun',
 }
 

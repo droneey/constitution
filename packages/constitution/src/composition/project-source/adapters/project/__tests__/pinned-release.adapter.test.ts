@@ -13,7 +13,7 @@ describe('createPinnedRelease', () => {
     const pinned = createPinnedRelease(projectPortsOf());
 
     // Act
-    const place = pinned.find(AbsolutePath.create(PROJECT));
+    const place = pinned.findProjectAround(AbsolutePath.create(PROJECT));
 
     // Assert
     expect(place).toStrictEqual(projectPlace);

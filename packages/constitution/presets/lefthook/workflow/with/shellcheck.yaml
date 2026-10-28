@@ -10,7 +10,7 @@ shellcheck:
     shell:
       lefthook.yaml:
         pre-commit:
-          # The root's job skips the members, each checked in its own run.
+          # Why: the root's job skips the members, each checked in its own run.
           jobs[name=shellcheck]:
             exclude:
               - ${workspace.members}/**

@@ -7,7 +7,7 @@ import {
   CONFIG_PATH,
   failureTexts,
   GENERATE_ARGS,
-  refusals,
+  refusalOfEachCode,
   runWith,
 } from './generate-themes.fixtures';
 
@@ -60,7 +60,7 @@ describe('runGenerateThemes', () => {
     {
       condition: 'the generation refuses the module',
       args: GENERATE_ARGS,
-      failure: refusals[0],
+      failure: refusalOfEachCode[0],
       exitCode: ExitCode.Failure,
     },
   ])(

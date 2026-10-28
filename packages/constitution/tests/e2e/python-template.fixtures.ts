@@ -17,7 +17,6 @@ interface Run {
   readonly output: string;
 }
 
-// One area of the check, or the whole of it, over the applied files and those a case changes.
 interface TaskRun {
   readonly changes: Files;
   readonly task: string;
@@ -71,8 +70,6 @@ const settingsSchema = z.looseObject({
 });
 const appliedSettings = settingsSchema.parse(Bun.TOML.parse(appliedText('pyproject.toml')));
 
-// The project's own name and its development group, which pins its tools, join the settings
-// apply writes.
 const pyproject = stringify({
   ...appliedSettings,
   'dependency-groups': {
@@ -96,8 +93,6 @@ const appliedFiles: Files = {
   'pyproject.toml': pyproject,
 };
 
-// A package that keeps every rule of the applied settings: a surface, a module, an
-// async function, and specs that kill each of their mutants.
 const shop: Files = {
   'src/shop/__init__.py': python(
     'from .orders import total, totals',
@@ -169,10 +164,6 @@ const git = (folder: string, args: readonly string[]): void => {
   }
 };
 
-// The project's base, the applied files with the shop package, is committed as
-// origin/main; the files a case changes are written over it. The package
-// stands in for its install by PYTHONPATH, and the tools are the repository's
-// own, pinned to the versions the presets give.
 const runInTemplate = (input: {
   changes: Files;
   command: readonly string[];
@@ -249,7 +240,6 @@ const poeTasksSchema = z.object({
   }),
 });
 
-// The command of each task the applied [tool.poe.tasks] declares; `check`, a sequence, is not one.
 const tasks: ReadonlyMap<string, string> = new Map(
   Object.entries(poeTasksSchema.parse(Bun.TOML.parse(pyproject)).tool.poe.tasks).flatMap(
     ([task, command]) =>
@@ -264,8 +254,6 @@ const tasks: ReadonlyMap<string, string> = new Map(
   ),
 );
 
-// The tasks a project's check runs: its gates, its specs and its mutants of the changed lines, never a
-// fix or a run over the whole program.
 const checkCommand = [
   ...tasks,
 ]
@@ -296,7 +284,6 @@ const runTask = (input: { run: TaskRun; tools: readonly BuiltTool[] }): Promise<
     tools: input.tools,
   });
 
-// The runs take seconds each, mutmut's above all, so this many run at a time.
 const RUNS_AT_ONCE = 4;
 
 const keyOf = (input: TaskRun): string =>
@@ -305,7 +292,6 @@ const keyOf = (input: TaskRun): string =>
     Object.entries(input.changes).toSorted(([left], [right]) => left.localeCompare(right)),
   ]);
 
-// Runs every run given, a few at a time, with the tools built once for them all.
 const runAll = async (
   entries: readonly (readonly [
     string,
@@ -355,7 +341,6 @@ const runAll = async (
 };
 
 interface TaskBatch {
-  /** @throws Error when no table registered the run, or before the batch is run. */
   readonly runOf: (input: TaskRun) => Run;
   readonly runRegistered: () => Promise<void>;
   readonly taskCase: <TRow extends TaskRun>(row: TRow) => TRow;
@@ -381,12 +366,9 @@ interface FoundInInput {
   readonly output: string;
 }
 
-// Whether one line of a tool's output holds every text of a finding: the package,
-// the place and the home a finding names, say, rather than its sentence.
 const isFoundIn = (input: FoundInInput): boolean =>
   input.output.split('\n').some((line) => input.finding.every((text) => line.includes(text)));
 
-// mutmut-check opens each line of its report with its code: `mutation: <code>: `.
 const MUTATION_CODE = /^mutation: (?<code>[a-z-]+): /gm;
 
 const mutationCodesOf = (output: string): readonly string[] =>

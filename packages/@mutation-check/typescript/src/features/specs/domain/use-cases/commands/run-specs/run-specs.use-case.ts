@@ -5,11 +5,10 @@ import type { ChosenSpecsRun, UnitSpecs } from '../../../entities';
 import { SpecRunStatus } from '../../../entities';
 
 interface SpecsRequest {
-  /** none runs every spec; files run the specs that load any of them */
+  readonly addedVariables: Readonly<Record<string, string>>;
   readonly filePaths?: readonly UnitRelativePath[];
   readonly signal: AbortSignal;
   readonly timeoutMs: number;
-  readonly variables: Readonly<Record<string, string>>;
 }
 
 interface RunSpecsInput extends SpecsRequest {
@@ -39,7 +38,7 @@ const runSpecs = async (input: RunSpecsInput): Promise<ChosenSpecsRun> => {
     signal: input.signal,
     specPaths,
     timeoutMs: input.timeoutMs,
-    variables: input.variables,
+    addedVariables: input.addedVariables,
   });
 
   return {

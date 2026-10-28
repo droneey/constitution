@@ -9,7 +9,6 @@ import { checkInputOf } from '../../use-cases/queries/check/__tests__/check.fixt
 import type { BlockPlace } from '../block.entity';
 import { BlockGraph } from '../block-graph.entity';
 
-// A place as a case writes it: its block, and the other block of its seam when it is one.
 interface PlaceFixture {
   block: string;
   seam?: string;

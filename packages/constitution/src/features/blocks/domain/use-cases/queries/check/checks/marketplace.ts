@@ -15,9 +15,7 @@ enum MarketplaceCode {
 interface MarketplaceDetails {
   readonly [MarketplaceCode.Missing]: object;
   readonly [MarketplaceCode.OmitsPlugin]: {
-    /** the name the plugin manifest gives, if it gives one */
     readonly plugin?: string;
-    /** the owner/name of the GitHub repository the plugin manifest names, if it names one */
     readonly repo?: string;
   };
 }

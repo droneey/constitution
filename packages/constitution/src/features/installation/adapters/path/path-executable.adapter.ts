@@ -7,7 +7,6 @@ import type { ExecutablePath } from '../../domain/contracts';
 
 const OUTPUT_LIMIT_BYTES = 65_536;
 
-/** env's PATH is searched; an executable that does not answer within timeoutMs answers nothing. */
 const createPathExecutable = (input: ChildProcessSettings): ExecutablePath => ({
   find: (name: string): AbsolutePath | undefined => {
     const found = Bun.which(name, input.env);

@@ -8,7 +8,6 @@ interface MarkdownVariant {
   readonly plugins: PluggableList;
 }
 
-/** the HTML a page shows of the Markdown, read with GitHub's tables and then the plugins, a tag on each line */
 const htmlOf = ({ markdown, plugins }: MarkdownVariant): string => {
   const { Markdown } = createMarkdownRenderer({
     remarkPlugins: [
@@ -22,7 +21,6 @@ const htmlOf = ({ markdown, plugins }: MarkdownVariant): string => {
 
 export type { MarkdownVariant };
 
-/** each variant's HTML under a comment that names it, as one golden file holds them */
 export const htmlOfVariants = (variants: Readonly<Record<string, MarkdownVariant>>): string =>
   Object.entries(variants)
     .map(([variant, markdownVariant]) => `<!-- ${variant} -->\n${htmlOf(markdownVariant)}`)

@@ -3,8 +3,8 @@ shfmt:
     shell:
       package.json:
         scripts:
-          # The unit's script skips its members, each checked in its own run, and a file deleted
-          # but not yet committed, which git still lists.
+          # Why: the unit's script skips its members, each checked in its own run, and a file
+          # deleted but not yet committed, which git still lists.
           check:shell-format: !words
             - git ls-files -z --cached --others --exclude-standard -- '*.sh' '*.bash'
             - "':(exclude)${workspace.members}'"

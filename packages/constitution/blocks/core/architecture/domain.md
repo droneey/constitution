@@ -54,14 +54,6 @@ A feature is cut where the business's language and model change — one meaning 
 |---|
 | a context cut finer than its model duplicates that model and translates between its copies on every call. |
 
-### contexts-duplicate-rather-than-share · SHOULD
-
-Across bounded contexts a model is duplicated by default and shared by exception; a fact or a rule of the business is never duplicated: a context that needs another’s entity keeps its own narrow view of it, such as a reference by identifier, and the shared kernel holds only what is universal and stable.
-
-| Why |
-|---|
-| a type shared by two contexts must satisfy both, and the contexts stop being able to change apart. |
-
 ## Use cases
 
 ### operation-has-a-use-case · MUST

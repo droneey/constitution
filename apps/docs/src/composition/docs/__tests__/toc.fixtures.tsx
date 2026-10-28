@@ -8,7 +8,6 @@ import { Toc } from '#/libs/ui';
 
 import { tocFixture } from './docs.fixtures';
 
-/** with the page's sections, which the TOC watches */
 const renderOnPage = (ui: ReactElement, toc: TocHeading[] = tocFixture()): RenderResult =>
   render(
     <Toc toc={toc}>

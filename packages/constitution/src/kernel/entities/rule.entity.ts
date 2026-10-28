@@ -56,7 +56,6 @@ const create = (input: Rule): Rule => ({
   why: input.why,
 });
 
-/** The rules by slug; a slug written twice names the rule read first. */
 const bySlug = <TRule extends RuleText>(rules: readonly TRule[]): ReadonlyMap<RuleSlug, TRule> =>
   firstBy(rules, (rule) => rule.slug);
 
@@ -69,7 +68,6 @@ const tightenedIn = <TRule extends RuleText>(
   // Stryker disable next-line ConditionalExpression: the test only narrows the type
   rule.tightens === undefined ? undefined : rules.get(rule.tightens);
 
-/** The chain of slugs a rule tightens when it comes back to the rule, the rule's slug at both ends. */
 const tighteningCycleOf = (
   rule: RuleText,
   rules: ReadonlyMap<RuleSlug, RuleText>,

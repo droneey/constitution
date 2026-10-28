@@ -5,7 +5,6 @@ import { createTaskBatch, isFoundIn, mutationCodesOf } from './python-template.f
 
 const { runOf, runRegistered, taskCase, taskCases } = createTaskBatch();
 
-// The runs of the check, mutmut's above all, take seconds each, not milliseconds.
 const RUNS_MS = 600_000;
 const manyLines = Array.from(
   {
@@ -44,7 +43,6 @@ const specOfOneCase = python(
   '  assert result == 5',
 );
 
-// The function of the base, changed: each mutant of the changed line is run.
 const reorderedOrders = python(
   'def total(prices: list[int], *, discount: int) -> int:',
   '  return max(0, sum(prices) - discount)',
@@ -72,7 +70,6 @@ const ordersWithLabel = (comment: string): string =>
     `  return 'orders'${comment}`,
   );
 
-// A feature's folders, as core's tree lays them out, before a case adds a layer.
 const feature = {
   'src/shop/features/__init__.py': '',
   'src/shop/features/orders/__init__.py': '',
@@ -93,7 +90,6 @@ const spec = (...body: readonly string[]): string =>
     ...body,
   );
 
-// The runs of every table are run before the first case.
 beforeAll(runRegistered, RUNS_MS);
 
 describe('the files apply writes for a unit of Python', () => {

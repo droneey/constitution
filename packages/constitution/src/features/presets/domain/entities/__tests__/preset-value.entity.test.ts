@@ -42,6 +42,255 @@ describe('PresetValue', () => {
 
   it.each<{
     condition: string;
+    listed: Setting;
+    placesSlot: boolean;
+  }>([
+    {
+      condition: 'one of its own lists places the slot',
+      listed: {
+        includes: [
+          '**/*.controller.ts',
+          {
+            slot: 'injected-classes',
+          },
+        ],
+      },
+      placesSlot: true,
+    },
+    {
+      condition: 'its list places another slot',
+      listed: {
+        includes: [
+          {
+            slot: 'decorated-constructors',
+          },
+        ],
+      },
+      placesSlot: false,
+    },
+    {
+      condition: 'only a map below it holds the list',
+      listed: {
+        files: {
+          includes: [
+            {
+              slot: 'injected-classes',
+            },
+          ],
+        },
+      },
+      placesSlot: false,
+    },
+    {
+      condition: 'it is the slot itself',
+      listed: {
+        slot: 'injected-classes',
+      },
+      placesSlot: false,
+    },
+    {
+      condition: 'it is a text',
+      listed: 'injected-classes',
+      placesSlot: false,
+    },
+  ])('should tell an element that places a slot when $condition', ({ listed, placesSlot }) => {
+    // Act
+    const answer = PresetValue.placesSlot(listed, 'injected-classes');
+
+    // Assert
+    expect(answer).toBe(placesSlot);
+  });
+
+  it('should take out the slots of lists at any depth, an item that places one included', () => {
+    // Arrange
+    const setting: Setting = {
+      overrides: [
+        {
+          slot: 'more',
+        },
+        {
+          includes: [
+            'a',
+            {
+              slot: 'injected-classes',
+            },
+          ],
+          linter: {
+            enabled: true,
+          },
+        },
+      ],
+    };
+
+    // Act
+    const left = PresetValue.withoutSlots(setting);
+
+    // Assert
+    expect(left).toStrictEqual({
+      overrides: [
+        {
+          includes: [
+            'a',
+          ],
+          linter: {
+            enabled: true,
+          },
+        },
+      ],
+    });
+  });
+
+  it.each<{
+    condition: string;
+    given: Setting;
+    held: Setting | undefined;
+    isFilled: boolean;
+  }>([
+    {
+      condition: 'it is the same, with no slot',
+      given: {
+        includes: [
+          'a',
+        ],
+      },
+      held: {
+        includes: [
+          'a',
+        ],
+      },
+      isFilled: true,
+    },
+    {
+      condition: 'its slot holds the items inserted',
+      given: {
+        includes: [
+          'a',
+          {
+            slot: 'more',
+          },
+          'z',
+        ],
+      },
+      held: {
+        includes: [
+          'a',
+          'b',
+          'c',
+          'z',
+        ],
+      },
+      isFilled: true,
+    },
+    {
+      condition: 'its slot is left empty',
+      given: [
+        {
+          slot: 'more',
+        },
+      ],
+      held: [],
+      isFilled: true,
+    },
+    {
+      condition: 'an item beside the slot differs',
+      given: [
+        'a',
+        {
+          slot: 'more',
+        },
+        'z',
+      ],
+      held: [
+        'a',
+        'b',
+        'y',
+      ],
+      isFilled: false,
+    },
+    {
+      condition: 'the held list ends early',
+      given: [
+        'a',
+        'z',
+      ],
+      held: [
+        'a',
+      ],
+      isFilled: false,
+    },
+    {
+      condition: 'the held list goes on',
+      given: [
+        'a',
+      ],
+      held: [
+        'a',
+        'b',
+      ],
+      isFilled: false,
+    },
+    {
+      condition: 'the held map has a key more',
+      given: {
+        a: 1,
+      },
+      held: {
+        a: 1,
+        b: 2,
+      },
+      isFilled: false,
+    },
+    {
+      condition: 'a value of the held map differs',
+      given: {
+        a: 1,
+        b: 2,
+      },
+      held: {
+        a: 1,
+        b: 3,
+      },
+      isFilled: false,
+    },
+    {
+      condition: 'a list meets a map',
+      given: [
+        'a',
+      ],
+      held: {
+        a: 1,
+      },
+      isFilled: false,
+    },
+    {
+      condition: 'a map meets a list',
+      given: {
+        a: 1,
+      },
+      held: [
+        'a',
+      ],
+      isFilled: false,
+    },
+    {
+      condition: 'nothing is held',
+      given: 'a',
+      held: undefined,
+      isFilled: false,
+    },
+  ])(
+    'should tell a held setting that fills the slots of the one given when $condition',
+    ({ given, held, isFilled }) => {
+      // Act
+      const answer = PresetValue.isFilledFrom(given, held);
+
+      // Assert
+      expect(answer).toBe(isFilled);
+    },
+  );
+
+  it.each<{
+    condition: string;
     isInsertOnly: boolean;
     given: Value;
   }>([

@@ -20,7 +20,6 @@ import { computeFile, FileChangeKind } from './steps/compute-file';
 interface UnitComputed {
   readonly files: readonly FileComputed[];
   readonly findings: readonly PresetsFinding[];
-  /** absent where the lock stays as it is */
   readonly lock?: {
     readonly filePath: RepositoryRelativePath;
     readonly next: UnitLock;
@@ -85,7 +84,6 @@ const computeUnit = (
     files,
     unit,
   });
-  // A lock that does not parse is written again from the files, even where they call for none.
   const isChanged = read.status === LockReadStatus.Unparsed || !Lock.equals(lock, next);
 
   return {

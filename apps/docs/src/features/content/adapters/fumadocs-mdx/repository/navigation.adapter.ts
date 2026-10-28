@@ -81,7 +81,7 @@ const sectionStartOf = (nodes: readonly RootContent[], title: string): number =>
     (node) => isHeading(node, SECTION_HEADING_DEPTH) && headingTextOf(node) === title,
   );
 
-/** @throws {@link SourceError} when the README has no Documentation section */
+/** @throws {SourceError} when the README has no Documentation section */
 const documentationOf = (baseUrl: string): Group[] => {
   const nodes = readmeNodes();
   const start = sectionStartOf(nodes, DOCUMENTATION_SECTION);
@@ -152,7 +152,7 @@ const sidebarEntryOf = (entry: Entry, { addressFromBase, pagePath }: Place): str
   return `./${pagePath}`;
 };
 
-/** @throws {@link SourceError} when the README has no Documentation section */
+/** @throws {SourceError} when the README has no Documentation section */
 const sidebarOf = (
   baseUrl: string,
 ): {

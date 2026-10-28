@@ -20,11 +20,9 @@ import { defaultLeavesOf, writeDefaults } from './steps/write-defaults';
 enum FileChangeKind {
   Kept = 'kept',
   Written = 'written',
-  /** a file it created, which no entry writes and nothing is left in: it leaves the lock too */
   Deleted = 'deleted',
 }
 
-/** What an apply does to the file, and what the lock keeps of it while the file stays. */
 type FileChange =
   | {
       readonly kind: FileChangeKind.Deleted;
@@ -40,25 +38,20 @@ type FileChange =
     };
 
 interface FileComputed {
-  readonly added: readonly SettingPlace[];
   readonly change: FileChange;
+  readonly defaultsAddedToExistingFile: readonly SettingPlace[];
   readonly filePath: RepositoryRelativePath;
   readonly findings: readonly PresetsFinding[];
-  /** the settings of ours the file lacks or holds as an earlier release gave them, defaults aside */
-  readonly missing: readonly SettingPlace[];
-  readonly removed: readonly SettingPlace[];
-  /** what an earlier apply wrote that no entry gives any longer, a value ours replaces aside */
-  readonly stale: readonly SettingPlace[];
-  /** the maps the presets keep sorted whose keys the file orders otherwise */
+  readonly missingOrOutdated: readonly SettingPlace[];
+  readonly removedByApply: readonly SettingPlace[];
+  readonly staleWithoutReplacement: readonly SettingPlace[];
   readonly unsorted: readonly SettingPlace[];
 }
 
 interface ComputeFileInput {
-  /** the blocks whose entries write the file in any unit, which its comments may name */
   readonly blockIds: readonly BlockId[];
   readonly filePath: RepositoryRelativePath;
   readonly formats: ConfigurationFormat;
-  /** absent where no entry writes the file in its unit any longer */
   readonly plan: FilePlan | undefined;
   readonly read: FileRead;
   readonly record: LockRecord;
@@ -68,13 +61,13 @@ const reportsOf = (input: {
   change: FileChange;
   filePath: RepositoryRelativePath;
 }): FileComputed => ({
-  added: [],
   change: input.change,
+  defaultsAddedToExistingFile: [],
   filePath: input.filePath,
   findings: [],
-  missing: [],
-  removed: [],
-  stale: [],
+  missingOrOutdated: [],
+  removedByApply: [],
+  staleWithoutReplacement: [],
   unsorted: [],
 });
 
@@ -103,13 +96,14 @@ const placesOf = (
 ): readonly SettingPlace[] =>
   leaves.map((leaf) => ({
     filePath,
-    setting: Leaf.textOf(leaf),
+    settingPath: Leaf.textOf(leaf),
   }));
 
 const isBelow = (keyPath: readonly string[], prefix: readonly string[]): boolean =>
   prefix.every((key, at) => keyPath[at] === key);
 
-// A whole text is written once, where the file is missing and the lock has not seen it written.
+// Why: a whole default is written once, only while the file is missing and the lock has not seen
+// it written, so a user who deletes or rewrites it keeps their choice.
 const computeWholeDefault = (
   input: ComputeFileInput & {
     whole: string;
@@ -166,10 +160,9 @@ const unsortedOf = (input: {
     })
     .map((keyPath) => ({
       filePath: input.filePath,
-      setting: Setting.pathTextOf(keyPath),
+      settingPath: Setting.pathTextOf(keyPath),
     }));
 
-// What the entries write, else the lines or keys the whole default adds.
 const shapingOf = (merged: MergedFile | undefined): Setting | undefined => {
   const whole = merged?.whole;
 
@@ -192,12 +185,12 @@ const configurationFileOf = (
 });
 
 const isForgotten = (input: {
-  isCreated: boolean;
+  isCreatedByApply: boolean;
   plan: FilePlan | undefined;
   setting: Setting;
-}): boolean => input.plan === undefined && input.isCreated && isEmpty(input.setting);
+}): boolean => input.plan === undefined && input.isCreatedByApply && isEmpty(input.setting);
 
-// An absent file stays absent while nothing is due in it, as when the user deleted it.
+// Why: an absent file stays absent while nothing is due in it, as when the user deleted it.
 const isUnchanged = (input: { read: FileRead; setting: Setting; written: string }): boolean =>
   input.read.status === FileReadStatus.Read
     ? input.written === input.read.text
@@ -273,14 +266,14 @@ const computeSettings = (
             isLines: Setting.isList(parsed),
             merged: plan.merged,
           }),
-    met: record.defaults,
+    metBefore: record.everMetDefaults,
     setting: overlaid.value,
   });
   const sorted = plan?.merged.sorted ?? [];
-  const isCreated = record.isCreated || read.status === FileReadStatus.Missing;
-  // A file no entry writes keeps no comment naming a block: its blocks are named, and none marked.
+  const isCreatedByApply = record.isCreatedByApply || read.status === FileReadStatus.Missing;
   const written = input.formats.write({
     ...file,
+    // Why: a file no entry writes keeps no block comment: its blocks are named, and none marked.
     marks: plan?.marks ?? {
       blocks: input.blockIds,
       marks: [],
@@ -290,10 +283,9 @@ const computeSettings = (
   });
 
   return {
-    added: read.status === FileReadStatus.Read ? placesOf(filePath, defaults.added) : [],
     change: changeOf({
       isDeleted: isForgotten({
-        isCreated,
+        isCreatedByApply,
         plan,
         setting: defaults.setting,
       }),
@@ -303,25 +295,27 @@ const computeSettings = (
         written,
       }),
       record: recordOf({
-        defaults: defaults.met,
+        everMetDefaults: defaults.everMet,
         fields,
         heldBefore,
-        isCreated,
+        isCreatedByApply,
         lock: record,
         ours,
       }),
       written,
     }),
+    defaultsAddedToExistingFile:
+      read.status === FileReadStatus.Read ? placesOf(filePath, defaults.added) : [],
     filePath,
     findings: overlaid.loosenings.map((loosening) => ({
       code: PresetsCode.Loosened,
       details: {
-        setting: Setting.pathTextOf(loosening.keyPath),
+        settingPath: Setting.pathTextOf(loosening.keyPath),
         wanted: Setting.canonicalTextOf(loosening.wanted),
       },
       path: filePath,
     })),
-    missing: placesOf(
+    missingOrOutdated: placesOf(
       filePath,
       Leaf.leavesOf(ours).filter(
         (leaf) =>
@@ -331,8 +325,8 @@ const computeSettings = (
           ),
       ),
     ),
-    removed: placesOf(filePath, stale.removed),
-    stale: placesOf(
+    removedByApply: placesOf(filePath, stale.removed),
+    staleWithoutReplacement: placesOf(
       filePath,
       stale.removed.filter((leaf) => leaf.isItem || Setting.at(ours, leaf.keyPath) === undefined),
     ),

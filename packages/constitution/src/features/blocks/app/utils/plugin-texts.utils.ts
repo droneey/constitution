@@ -18,7 +18,6 @@ import { fieldOf } from './wording.utils';
 const missingText = (role: string): string =>
   `is missing; the Constitution ships as a plugin and needs its ${role}`;
 
-/** The plugin's documents: its manifest, its marketplace and its hooks. */
 const pluginTexts: TextsOf<
   HooksDetails & ManifestReadDetails & MarketplaceDetails & PluginDetails
 > = {

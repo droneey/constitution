@@ -6,6 +6,7 @@ import { PageSlugs } from '#/features/content';
 export const Route = createFileRoute('/docs/{$}.md')({
   server: {
     handlers: {
+      /** @throws {NotFoundError} when no page has the Markdown address */
       // biome-ignore lint/style/useNamingConvention: TanStack Start keys a route's server handlers by their HTTP method
       GET: async ({ context, params }) => {
         const slugs = PageSlugs.ofMarkdownAddress(params._splat ?? '');

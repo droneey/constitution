@@ -14,7 +14,6 @@ enum FrontMatterCode {
   UnderscoreNotAbstract = 'underscore-id-not-abstract',
 }
 
-// The fields of the front matter that only some layers fill.
 const LAYER_FIELDS = [
   FrontMatterField.Requires,
   FrontMatterField.Extends,
@@ -82,8 +81,6 @@ const layerFindings = (block: Block): readonly FrontMatterFinding[] =>
     path: block.passport.path,
   }));
 
-// A tool's languages are those whose files its presets cover. A layer that
-// leaves the field empty is reported by layerFindings alone.
 const languageFindings = (input: {
   block: Block;
   graph: BlockGraph;

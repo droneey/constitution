@@ -7,16 +7,12 @@ interface SyncpackInput {
 }
 
 interface Issues {
-  /** the codes of the issues syncpack names, in the order it names them */
   readonly issues: readonly string[];
   readonly status: number;
 }
 
-// syncpack names each issue by a code of capitalised words joined, beside the dependency or the
-// property it finds it in.
 const ISSUE_CODE = /\b(?:[A-Z][a-z]+){2,}\b/g;
 
-/** syncpack's run in the widest unit, which holds the files given. */
 const syncpackIssues = async (input: SyncpackInput): Promise<Issues> => {
   const { output, status } = await loadOf('syncpack', {
     command: [

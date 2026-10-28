@@ -23,7 +23,6 @@ SURVIVED = Survived(
 )
 
 
-# Each line of the report opens with its code: `mutation: <code>: `.
 REPORT_CODE: Final = re.compile(r'^mutation: (?P<code>[a-z-]+): ', re.MULTILINE)
 
 
@@ -32,8 +31,6 @@ def _report_codes(written: list[str]) -> list[str]:
 
 
 class _RecordingCheck:
-  """A check_mutants that keeps the scopes it was asked about and answers with the outcome given."""
-
   def __init__(self, outcome: Outcome) -> None:
     self.outcome = outcome
     self.checked_scopes: list[Scope] = []

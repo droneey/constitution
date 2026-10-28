@@ -22,15 +22,12 @@ interface ToolInput {
 }
 
 interface Load {
-  /** the lines the tool prints, on either stream */
   readonly output: readonly string[];
   readonly status: number;
 }
 
-/** The unit's blocks are more blocks beside those the reader's preset files name. */
 interface LoadInput extends Partial<Pick<UnitFixture, 'blocks' | 'files'>> {
   readonly command: readonly string[];
-  /** whether the unit's packages resolve from this package's install */
   readonly isInstalled?: boolean;
 }
 
@@ -41,7 +38,6 @@ interface Passport {
 
 const presetsFolder = join(release, 'presets');
 const blocksFolder = join(release, 'blocks');
-// The files the readers' entries are written in; any other file of a reader's folder is data.
 const PRESET_FILE = /\.yaml$/;
 const EVERY = '*';
 const CORE = 'core';
@@ -56,10 +52,8 @@ const passportModel = z.object({
     .transform((parent) => parent ?? undefined),
 });
 
-// An entry's key is its block, then its rule, then the language it is written for.
 const presetFile = z.record(z.string(), z.record(z.string(), z.record(z.string(), z.unknown())));
 
-// The passport of each block: it opens the file named after the block's folder.
 const passportsIn = (folder: string): ReadonlyMap<string, Passport> =>
   new Map(
     readdirSync(folder, {
@@ -85,7 +79,6 @@ const read: {
   passports?: ReadonlyMap<string, Passport>;
 } = {};
 
-// The passports of the release's blocks, read once.
 const passports = (): ReadonlyMap<string, Passport> => {
   read.passports ??= passportsIn(blocksFolder);
 
@@ -98,10 +91,6 @@ const isHeirOf = (block: string, abstract: string): boolean => {
   return parent !== undefined && (parent === abstract || isHeirOf(parent, abstract));
 };
 
-/**
- * The blocks a unit lists for those given: an abstract block through an heir, none where the unit
- * already holds one, else the first concrete heir by name.
- */
 const concreteBlocksOf = (blocks: ReadonlySet<string>): readonly string[] =>
   [
     ...blocks,
@@ -129,7 +118,6 @@ const presetFilesOf = (reader: string): readonly string[] =>
     .map(String)
     .filter((path) => PRESET_FILE.test(path));
 
-// The blocks one preset file needs: those its path names, its entries' key blocks and their languages.
 const blocksOfFile = (input: { path: string; reader: string }): readonly string[] => {
   const segments = input.path.replace(PRESET_FILE, '').split('/');
   const withs = segments.filter((_segment, index) => segments[index - 1] === SEAM_FOLDER_NAME);
@@ -148,7 +136,6 @@ const blocksOfFile = (input: { path: string; reader: string }): readonly string[
 
 const readerBlocks = new Map<string, readonly string[]>();
 
-// The blocks every preset file of the reader names, read once for each reader.
 const blocksOfReader = (reader: string): readonly string[] => {
   const known = readerBlocks.get(reader);
 
@@ -168,10 +155,6 @@ const blocksOfReader = (reader: string): readonly string[] => {
   return blocks;
 };
 
-/**
- * A unit of the reader and every block its preset files name, beside what is given: its
- * configuration holds every entry of the reader at once.
- */
 const widestUnitOf = (reader: string, more: Partial<UnitFixture> = {}): UnitFixture => ({
   ...more,
   blocks: concreteBlocksOf(
@@ -185,11 +168,9 @@ const widestUnitOf = (reader: string, more: Partial<UnitFixture> = {}): UnitFixt
   ).toSorted((left, right) => left.localeCompare(right)),
 });
 
-/** The folder of the reader's widest unit, written by the program's own `presets apply`. */
 const widestAppliedUnit = (reader: string, more: Partial<UnitFixture> = {}): string =>
   appliedUnit(widestUnitOf(reader, more));
 
-/** The files of a Python unit's package, named after the unit as its pyproject.toml names it. */
 const pythonPackage: Readonly<Record<string, string>> = {
   'src/unit/__init__.py': '"""The unit."""\n',
 };
@@ -221,7 +202,6 @@ const runTool = async (input: ToolInput): Promise<ToolRun> => {
 
 const linesOf = (text: string): readonly string[] => text.split('\n').filter((line) => line !== '');
 
-/** The reader's command run in its widest unit, which holds the files given: what it ends with and prints. */
 const loadOf = async (reader: string, input: LoadInput): Promise<Load> => {
   const { command, isInstalled, ...unit } = input;
   const folder = widestAppliedUnit(reader, unit);

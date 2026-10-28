@@ -22,7 +22,6 @@ const configFiles: readonly string[] = [
   ].map((extension) => `${prefix}lefthook.${extension}`),
 );
 
-/** A lefthook that cannot start, or does not answer within timeoutMs, is unavailable. */
 const createLefthookGitHooks = (input: ChildProcessSettings): GitHooks => ({
   stateOf: (repositoryFolderPath: AbsolutePath): HooksState => {
     if (!configFiles.some((name) => existsSync(join(repositoryFolderPath, name)))) {

@@ -8,7 +8,6 @@ import type { BlockPlace } from '../block.entity';
 import { Block } from '../block.entity';
 import type { BlockFile } from '../block-file.entity';
 
-// A place as a case writes it: its block, and the other block of its seam when it is one.
 interface PlaceFixture {
   block: string;
   seam?: string;
@@ -33,7 +32,6 @@ const blockOfValidTree = (id: string): Block => {
   return block;
 };
 
-// The block of the valid tree a file belongs to, and the file.
 const fileOfUi = (
   path: string,
 ): {

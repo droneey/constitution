@@ -1,6 +1,5 @@
 import type { Version } from '#/kernel/value-objects';
 
-/** What a release's manifest names; a field it leaves out is absent. */
 interface ReleaseManifest {
   readonly blockFormat?: number;
   readonly version?: Version;
@@ -21,7 +20,6 @@ type ManifestRead =
       readonly status: ManifestReadStatus.NotObject;
     }
   | {
-      /** the fields of another form, each by its path, at least one */
       readonly fields: readonly string[];
       readonly status: ManifestReadStatus.Malformed;
     };

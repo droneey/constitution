@@ -34,8 +34,6 @@ type FileReading = KeptFile & {
   readonly read: BlockFileRead;
 };
 
-// A block is what its folder holds: the card of its passport, and its chapters and seams in the
-// order they were read.
 const draftOf = (input: { first: FileInFolder; own: readonly FileReading[] }): BlockDraft => {
   const reads = input.own.map((reading) => reading.read);
 
@@ -75,7 +73,6 @@ const draftsOf = (readings: readonly FileReading[]): ReadonlyMap<BlockId, BlockD
     ]),
   );
 
-// A rule keeps the slug of the first rule read with it; a later one warns.
 const repeatedWarningsOf = (input: {
   firsts: ReadonlyMap<RuleSlug, StatedRule>;
   reading: FileReading;
@@ -95,8 +92,6 @@ const draftNamed = (input: {
   name: string | undefined;
 }): BlockDraft | undefined => (BlockId.is(input.name) ? input.drafts.get(input.name) : undefined);
 
-// A base's own bases follow it, nearest first, as far as each is a block; a cycle of bases stops
-// where it closes.
 const ancestorsOf = (input: {
   drafts: ReadonlyMap<BlockId, BlockDraft>;
   heirs: readonly BlockDraft[];
@@ -279,14 +274,9 @@ interface BlockSetRead {
     readonly ancestors: ReadonlyMap<BlockId, readonly BlockId[]>;
   };
   readonly model: BlockModel;
-  /** what keeps a source, a file, a block or a rule from the set, and what its blocks name wrong */
   readonly warnings: readonly ProjectWarning[];
 }
 
-/**
- * Reads the blocks of the Constitution, then of each pack in the order constitution.yaml lists them;
- * a block read first keeps its id, and a rule read first its slug.
- */
 const readBlockSet = (input: ReadBlockSetInput): BlockSetRead => {
   const outcomes = placeFiles(input.sources).map((place): FileReading | PassedFile =>
     place.fate === FileFate.Kept

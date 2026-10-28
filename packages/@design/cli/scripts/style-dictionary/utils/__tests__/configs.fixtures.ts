@@ -20,10 +20,6 @@ const fixtureModes: readonly ThemeMode[] = [
 
 const fixturePathOf = (file: string): string => fileURLToPath(new URL(file, import.meta.url));
 
-/**
- * What each mode's build writes from the fixture tokens and `extra`, more files every mode takes,
- * by file, read as the runner of design-tokens reads a resolver's.
- */
 const outputsOf = async (extra: readonly string[] = []): Promise<Record<string, unknown>[]> =>
   Promise.all(
     fixtureModes.map(async (mode) => {

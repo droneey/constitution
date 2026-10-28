@@ -13,31 +13,29 @@ import { depthOf, headerOf, readToml, STRINGS, unquotedOf } from './toml-lines.u
 
 interface Block {
   readonly lines: string[];
-  /** empty for the root's lines before any header */
   readonly section: string;
 }
 
-// A section is a table by its key, or a table of a table that holds only tables, the two keys
-// joined by a character no key holds.
-const SEPARATOR = '\u001F';
+const SECTION_KEY_SEPARATOR = '\u001F';
 const BARE_KEY = /^[A-Za-z0-9_-]+$/;
 const KEY_LINE = /^\s*("[^"]+"|'[^']+'|[A-Za-z0-9_-]+)\s*=/;
 const DOTTED_KEY_LINE = /^\s*[A-Za-z0-9_"'-]+\s*\.\s*[A-Za-z0-9_"'-]/;
 const BLANK_RUN = /\n{3,}/g;
-// smol-toml writes a value alone only under a key; the key it is given here goes with its prefix.
+// Why: smol-toml writes a value alone only under a key; the key it is given here goes with its
+// prefix.
 const VALUE_PREFIX = 'value = ';
 const ITEM_INDENT = '  ';
 const ARRAY_OPEN = '= [';
 const ARRAY_CLOSE = ']';
 const NOT_FOUND = -1;
-// smol-toml pads an array's brackets with spaces, which the formatter takes out; a string keeps its own.
+// Why: smol-toml pads an array's brackets with spaces, which the formatter takes out; a string
+// keeps its own.
 const paddedBracket = new RegExp(`(${STRINGS.source})|\\[ | \\]`, 'g');
 const itemPattern = new RegExp(`(?:${STRINGS.source}|[^,"'])+`, 'g');
-// An array that holds a table or an array stays as written.
-const NESTED = /[[\]{}]/;
+const TABLE_OR_ARRAY_INSIDE = /[[\]{}]/;
 
-// As the formatter writes it, an array past the width breaks to one item a line.
-const styledLine = (line: string): string => {
+// Why: as the formatter writes it, an array past the width breaks to one item a line.
+const formattedLine = (line: string): string => {
   const unpadded = line.replace(paddedBracket, (match, text?: string) => text ?? match.trim());
   const open = unpadded.indexOf(ARRAY_OPEN);
   const key = unpadded.slice(0, open + ARRAY_OPEN.length);
@@ -46,7 +44,7 @@ const styledLine = (line: string): string => {
     open !== NOT_FOUND &&
     unpadded.endsWith(ARRAY_CLOSE) &&
     // Stryker disable next-line StringLiteral: what stands for a string only has to hold no bracket
-    !NESTED.test(items.replace(STRINGS, ''));
+    !TABLE_OR_ARRAY_INSIDE.test(items.replace(STRINGS, ''));
 
   if (unpadded.length <= LINE_WIDTH || !isFlatArray) {
     return unpadded;
@@ -64,10 +62,9 @@ const styledLine = (line: string): string => {
   ].join(NEWLINE);
 };
 
-const styled = (text: string): string => text.split(NEWLINE).map(styledLine).join(NEWLINE);
+const formatted = (text: string): string => text.split(NEWLINE).map(formattedLine).join(NEWLINE);
 
-// A table or an array of tables goes under a header of its own, never among the root's keys.
-const isTable = (setting: Setting | undefined): boolean =>
+const needsHeaderOfItsOwn = (setting: Setting | undefined): boolean =>
   Settings.isMap(setting) ||
   (Settings.isList(setting) && setting.length > 0 && setting.every(Settings.isMap));
 
@@ -77,7 +74,7 @@ const mapOf = (setting: Setting | undefined): SettingMap =>
 const sectionsOf = (setting: Setting | undefined): ReadonlyMap<string, Setting> =>
   new Map(
     Object.entries(mapOf(setting))
-      .filter(([, held]) => isTable(held))
+      .filter(([, held]) => needsHeaderOfItsOwn(held))
       .flatMap(
         ([key, held]): [
           string,
@@ -91,7 +88,7 @@ const sectionsOf = (setting: Setting | undefined): ReadonlyMap<string, Setting> 
                   string,
                   Setting,
                 ] => [
-                  `${key}${SEPARATOR}${child}`,
+                  `${key}${SECTION_KEY_SEPARATOR}${child}`,
                   table,
                 ],
               )
@@ -105,7 +102,9 @@ const sectionsOf = (setting: Setting | undefined): ReadonlyMap<string, Setting> 
   );
 
 const rootOf = (setting: Setting | undefined): SettingMap =>
-  Object.fromEntries(Object.entries(mapOf(setting)).filter(([, held]) => !isTable(held)));
+  Object.fromEntries(
+    Object.entries(mapOf(setting)).filter(([, held]) => !needsHeaderOfItsOwn(held)),
+  );
 
 const keyText = (key: string): string => (BARE_KEY.test(key) ? key : JSON.stringify(key));
 
@@ -172,11 +171,7 @@ const spansOf = (
   return spans;
 };
 
-/**
- * Only the changed keys' lines change, a new key after the last. Undefined where the table is no
- * plain one: a dotted key, or a key the file writes as a table.
- */
-const splicedKeys = (input: {
+const withChangedKeysSpliced = (input: {
   after: Setting | undefined;
   before: Setting | undefined;
   lines: readonly string[];
@@ -230,7 +225,7 @@ const splicedKeys = (input: {
 
   lines.splice(ends.length === 0 ? place : Math.max(...ends), 0, ...added);
 
-  // the changed keys from the last back, so the places of those before it stay
+  // Why: the changed keys from the last back, so the places of those before it stay.
   for (const [key, [first, last]] of [
     ...spans,
   ]
@@ -252,10 +247,10 @@ const splicedKeys = (input: {
   return lines;
 };
 
-// smol-toml gives a table of tables no header of its own.
-const sectionText = (input: { merged: Setting; section: string }): string => {
+// Why: smol-toml gives a table of tables no header of its own.
+const writtenSection = (input: { merged: Setting; section: string }): string => {
   // Stryker disable next-line StringLiteral: a split gives its first part always
-  const [table = '', child] = input.section.split(SEPARATOR);
+  const [table = '', child] = input.section.split(SECTION_KEY_SEPARATOR);
   const held = ownFieldOf(mapOf(input.merged), table);
 
   // Stryker disable next-line MethodExpression: the blanks around a section collapse to one when the text is joined
@@ -308,22 +303,19 @@ interface Sections {
   readonly before: ReadonlyMap<string, Setting>;
 }
 
-// A header names a section of a table of tables where either side knows one by both its keys.
 const sectionOfHeader =
   (sections: Sections) =>
   (header: readonly string[]): string => {
     // Stryker disable next-line StringLiteral: a header names its first part always
     const [table = '', child] = header;
-    const both = `${table}${SEPARATOR}${child}`;
+    const both = `${table}${SECTION_KEY_SEPARATOR}${child}`;
 
     return child !== undefined && (sections.after.has(both) || sections.before.has(both))
       ? both
       : table;
   };
 
-// A block under a header that names no section, as a table of tables' own header does, holding keys
-// it gives that table by dotting them.
-const isLoose =
+const holdsKeysDottedIntoTable =
   (sections: Sections) =>
   (block: Block): boolean =>
     !(sections.after.has(block.section) || sections.before.has(block.section)) &&
@@ -336,8 +328,6 @@ interface Rewrite {
   readonly sections: Sections;
 }
 
-// The lines a changed section's block keeps: its keys spliced where it is a table of one block, else
-// the section written again, as an array of tables always is.
 const changedLinesOf = (
   input: Rewrite & {
     block: Block;
@@ -345,7 +335,7 @@ const changedLinesOf = (
 ): readonly string[] => {
   const { block } = input;
   // Stryker disable next-line StringLiteral: a split gives its first part always
-  const [table = '', child] = block.section.split(SEPARATOR);
+  const [table = '', child] = block.section.split(SECTION_KEY_SEPARATOR);
   const isOneBlock = input.blocks.filter((other) => other.section === block.section).length === 1;
 
   const tableOf = (setting: Setting): Setting | undefined =>
@@ -354,7 +344,7 @@ const changedLinesOf = (
       : ownFieldOf(mapOf(ownFieldOf(mapOf(setting), table)), child);
 
   const spliced = isOneBlock
-    ? splicedKeys({
+    ? withChangedKeysSpliced({
         after: tableOf(input.merged),
         before: tableOf(input.before),
         lines: block.lines,
@@ -364,7 +354,7 @@ const changedLinesOf = (
 
   return (
     spliced ?? [
-      sectionText({
+      writtenSection({
         merged: input.merged,
         section: block.section,
       }),
@@ -373,10 +363,6 @@ const changedLinesOf = (
   );
 };
 
-/**
- * Only the sections whose value changed are written again, and of a plain table only its changed
- * keys, so every other line and comment stays; a section whose table is gone goes with its lines.
- */
 const writeSettings = (input: ConfigurationWrite): string => {
   const { settings, text } = input;
   const before = readToml(text) ?? {};
@@ -393,17 +379,15 @@ const writeSettings = (input: ConfigurationWrite): string => {
   });
   const root = isDeepEqual(rootOf(before), rootOf(settings))
     ? blocks.root
-    : splicedKeys({
+    : withChangedKeysSpliced({
         after: rootOf(settings),
         before: rootOf(before),
         lines: blocks.root,
         start: 0,
       });
 
-  // keys the file dots, at the root or under a header of no section, are no plain keys to splice:
-  // the file is written again whole
-  if (root === undefined || blocks.sections.some(isLoose(sections))) {
-    return `${styled(stringify(settings).trim())}${NEWLINE}`;
+  if (root === undefined || blocks.sections.some(holdsKeysDottedIntoTable(sections))) {
+    return `${formatted(stringify(settings).trim())}${NEWLINE}`;
   }
 
   const rewrite: Rewrite = {
@@ -437,14 +421,14 @@ const writeSettings = (input: ConfigurationWrite): string => {
     .filter((section) => !emitted.has(section))
     .flatMap((section) => [
       '',
-      sectionText({
+      writtenSection({
         merged: settings,
         section,
       }),
       '',
     ]);
 
-  return `${styled(
+  return `${formatted(
     [
       ...root,
       ...lines,

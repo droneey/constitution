@@ -24,10 +24,6 @@ const trimSpaceLeftByHtml = (heading: Heading): void => {
   }
 };
 
-/**
- * A page of the README drops its raw HTML — the banner, the badges, the marks of its headings —
- * since the site draws its own.
- */
 const remarkDropHtml =
   () =>
   (tree: Root): void => {

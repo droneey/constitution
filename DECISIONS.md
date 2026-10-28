@@ -2482,6 +2482,7 @@
   - `feature-asks-another-through-its-own-contract` has the contract hold the asker's parameters, results and the failures it acts on; composition maps the other's results into the asker's terms and those failures into the asker's own, and lets every other failure pass.
   - `type-lifts-when-features-share-its-meaning` lifts a business type to the kernel when two or more features use it with one meaning, universal and stable; otherwise the asking feature declares its own and composition translates.
   - An adapter that answers a feature's contract through another feature lives in the composition module that joins them and imports that feature's surface.
+  - `contexts-duplicate-rather-than-share` merges into `type-lifts-when-features-share-its-meaning`, since the two stated one requirement; the merged rule names the narrow view, a reference by identifier among them, and keeps a fact or a rule of the business from being duplicated.
 - **Rejected.**
   - Keeping a feature-answered contract liftable to the kernel when two features ask in the same words: the kernel then holds a feature's model and failures, and the answering feature can no longer change them alone.
   - A second kernel folder for the failures that carry values: it removes the cycle but keeps the feature's failures in the kernel.

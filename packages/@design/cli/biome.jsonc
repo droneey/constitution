@@ -450,6 +450,23 @@
 
     // typescript
     {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/closed-name-set-is-a-string-enum.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+        "!**/adapters/**",
+        "!**/models/**",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/business-types-readonly.grit",
+      "includes": [
+        "**/domain/**",
+        "**/kernel/**",
+        "!**/__tests__/**",
+      ],
+    },
+    {
       "path": "./.droneey/constitution/presets/biome/plugins/typescript/surface-only-re-exports.grit",
       "includes": [
         "**/index.ts",
@@ -462,6 +479,15 @@
       "includes": [
         "**/*.ts",
         "**/*.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/undefined-is-the-only-absence.grit",
+      "includes": [
+        "**",
+        "!**/adapters/**",
+        "!**/models/**",
+        "!**/*.tsx",
       ],
     },
     {
@@ -514,32 +540,6 @@
       ],
     },
     {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/undefined-is-the-only-absence.grit",
-      "includes": [
-        "**",
-        "!**/adapters/**",
-        "!**/models/**",
-        "!**/*.tsx",
-      ],
-    },
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/closed-name-set-is-a-string-enum.grit",
-      "includes": [
-        "**/*.ts",
-        "**/*.tsx",
-        "!**/adapters/**",
-        "!**/models/**",
-      ],
-    },
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/business-types-readonly.grit",
-      "includes": [
-        "**/domain/**",
-        "**/kernel/**",
-        "!**/__tests__/**",
-      ],
-    },
-    {
       "path": "./.droneey/constitution/presets/biome/plugins/typescript/timer-set-only-by-the-edge-and-binding-units.grit",
       "includes": [
         "**/src/**",
@@ -576,15 +576,6 @@
       "includes": [
         "**/*.ts",
         "**/*.tsx",
-      ],
-    },
-
-    // biome
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/biome-refuses-empty-names.grit",
-      "includes": [
-        "**",
-        "!**/libs/**",
       ],
     },
 
@@ -634,6 +625,7 @@
 
     // biome
     "./.droneey/constitution/presets/biome/plugins/typescript/biome-refuses-empty-verbs.grit",
+    "./.droneey/constitution/presets/biome/plugins/typescript/biome-refuses-empty-names.grit",
   ],
   "overrides": [
     // biome

@@ -3,7 +3,7 @@ osv-scanner:
     dockerfile:
       package.json:
         scripts:
-          # The image's own system is no dependency the project ships, so its scan checks no
+          # Why: the image's own system is no dependency the project ships, so its scan checks no
           # licence; --config only where the unit keeps an osv-scanner.toml, which an image's scan
           # finds in no other way.
           check:audit-image: >-

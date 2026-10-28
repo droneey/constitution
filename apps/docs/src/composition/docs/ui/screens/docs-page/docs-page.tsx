@@ -14,7 +14,6 @@ import type { DocsPageEntry } from './docs-page.types';
 interface DocsPageScreenProps {
   href: string;
   page: DocsPageEntry;
-  /** tells one page from the next, which the address's path alone does not */
   pageKey: string;
   pageTree: PageTreeRoot;
 }

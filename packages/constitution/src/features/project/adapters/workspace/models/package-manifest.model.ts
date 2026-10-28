@@ -1,9 +1,6 @@
 import { z } from 'zod';
 
-/**
- * A package.json as far as its workspace goes: the globs of its members, as a list or, as Yarn
- * writes them, under packages.
- */
+// Why: Yarn writes the members' globs under packages, the others as a list.
 const packageManifestModel = z.looseObject({
   workspaces: z
     .union([

@@ -21,7 +21,6 @@ interface MarkdownPage {
 
 interface SitePaths {
   readonly collectionPathOf: (sitePath: string) => string;
-  /** records each file's path in its collection, for `collectionPathOf` */
   readonly servedUnderSitePaths: <
     TSource extends {
       files: {
@@ -55,17 +54,15 @@ const createSitePaths = (): SitePaths => {
   };
 };
 
-/** @throws {@link InvalidValueError} when the path names no Markdown file of the blocks folder */
+/** @throws {InvalidValueError} when the path names no Markdown file of the blocks folder */
 const passportAsIndex = (collectionPath: string): string => {
   const blockPath = BlockPath.create(collectionPath);
 
   return `${Page.slugsOf(blockPath).join('/')}${Page.isPassportPath(blockPath) ? '/index' : ''}.md`;
 };
 
-/**
- * A link to a whole page leads to its main region, since the library places a page, for its
- * breadcrumbs, its neighbours and the open folder, at the first entry of its address.
- */
+// Why: the library places a page, for its breadcrumbs, its neighbours and the open folder, at the
+// first entry of its address, so a link to a whole page leads to its main region.
 const crossLinked = (node: Item, filePath: string | undefined): Item => {
   if (filePath !== undefined || node.external === true || !node.url.startsWith(DOCS_ROUTE)) {
     return node;
@@ -94,7 +91,8 @@ const crossLinks: LoaderPlugin = {
   },
 };
 
-/** a link the sidebar writes by its address, which the loader leaves off the base it serves its pages under */
+// Why: the sidebar writes a link by its address, which the loader leaves off the base it serves its
+// pages under.
 const linksUnder = (siteBasePath: SiteBasePath): LoaderPlugin => ({
   // Stryker disable next-line StringLiteral: the name only labels the plugin in fumadocs' diagnostics
   name: 'links-under-site-base',
@@ -109,7 +107,6 @@ const linksUnder = (siteBasePath: SiteBasePath): LoaderPlugin => ({
   },
 });
 
-/** the text a reader sees of an entry's name, which a cross link wraps with its arrow */
 const textOfName = (name: ReactNode): string => {
   if (typeof name === 'string') {
     return name;

@@ -48,8 +48,6 @@ const UNPARSED = {
 } as const;
 const unparsedDigest = digestOf(UNPARSED);
 
-// What a hook wrote on standard output, read as Claude Code reads it: the event it answers and the
-// lines of the context it adds; the digest's wording is digestOf's, which its own spec pins.
 const contextOf = (
   stdout: string,
 ): {

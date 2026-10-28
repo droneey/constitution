@@ -48,12 +48,10 @@ enum Tool {
 const release = join(import.meta.dir, '..', '..');
 const workspace = join(release, '..', '..');
 
-// A tool of the package's own development dependencies, as its install links it.
 const bin = (tool: string): string => join(release, 'node_modules', '.bin', tool);
 
 const SCOPE = '@';
 
-// The folders whose packages a unit's imports resolve from, the workspace's own first.
 const moduleFolders = [
   join(workspace, 'node_modules'),
   ...[
@@ -61,7 +59,6 @@ const moduleFolders = [
     'apps',
   ].flatMap((group) =>
     readdirSync(join(workspace, group)).flatMap((folder) =>
-      // a group folder holds units, each with its own install
       folder.startsWith(SCOPE)
         ? readdirSync(join(workspace, group, folder)).map((unit) =>
             join(workspace, group, folder, unit, 'node_modules'),
@@ -76,8 +73,6 @@ const IMPORT = /^import (?:[^'"]+ from )?'([^.'][^']*)'/gm;
 const NODE_PREFIX = 'node:';
 const SOURCE_FILE = /\.(?:ts|tsx)$/;
 
-// The units of the deployment, so that blocks that exclude each other, the platforms above all, sit
-// in units of their own.
 const deployedUnits: readonly DeployedUnit[] = [
   {
     name: 'web',
@@ -352,7 +347,6 @@ const deployedUnits: readonly DeployedUnit[] = [
   },
 ];
 
-/** The ids of every block the release holds, an abstract one aside, which a block extends. */
 const releaseBlocks = (): readonly string[] =>
   [
     'domains',
@@ -438,7 +432,6 @@ const initRepository = (folder: string): void => {
   );
 };
 
-/** Its packages are linked from this repository's installs, or declared where none installs them. */
 const writeProject = (input: { deployed: DeployedUnit; folder: string }): void => {
   const { deployed, folder } = input;
   const manifestPath = join(folder, 'package.json');
@@ -682,7 +675,7 @@ const checkDeployed = async (deployed: DeployedUnit): Promise<readonly Failure[]
     folder,
   });
 
-  // Biome runs first and alone: the others write caches, a compiler's declarations among them.
+  // Why: Biome runs first and alone: the others write caches, a compiler's declarations among them.
   const runsOf = (tools: readonly Tool[]): Promise<readonly (readonly Failure[])[]> =>
     Promise.all(
       tools.flatMap((tool) =>

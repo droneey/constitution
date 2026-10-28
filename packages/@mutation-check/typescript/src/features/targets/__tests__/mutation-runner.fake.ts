@@ -1,20 +1,18 @@
 import type { UnitRelativePath } from '#/kernel/value-objects';
 
-import type { MutationRunner } from '../domain/contracts';
+import type { MutationRunner, ToolExitCode } from '../domain/contracts';
 import type { MutationTarget } from '../domain/entities';
 import type { ConfigurationError, MutationRunError } from '../domain/errors';
 
 interface FakeMutationRunner extends MutationRunner {
-  /** the targets of each run, undefined for a run of everything */
-  readonly runs: readonly (readonly MutationTarget[] | undefined)[];
+  readonly targetsRun: readonly (readonly MutationTarget[])[];
+  readonly wholeRunCount: () => number;
 }
 
 type FakeRunEnd =
   | {
-      readonly exitCode: number;
-      /** the failure of reading which files the configuration mutates */
-      readonly mutatedFailure?: ConfigurationError;
-      /** the files the configuration leaves out */
+      readonly exitCode: ToolExitCode;
+      readonly mutatedOfRejection?: ConfigurationError;
       readonly unmutatedPaths?: readonly UnitRelativePath[];
     }
   | {
@@ -22,12 +20,21 @@ type FakeRunEnd =
     };
 
 const fakeMutationRunner = (runEnd: FakeRunEnd): FakeMutationRunner => {
-  const runs: (readonly MutationTarget[] | undefined)[] = [];
+  const targetsRun: (readonly MutationTarget[])[] = [];
+  let wholeRunCount = 0;
+
+  const ended = (): ToolExitCode => {
+    if ('runFailure' in runEnd) {
+      throw runEnd.runFailure;
+    }
+
+    return runEnd.exitCode;
+  };
 
   return {
     mutatedOf: (filePaths) => {
-      if ('mutatedFailure' in runEnd && runEnd.mutatedFailure !== undefined) {
-        return Promise.reject(runEnd.mutatedFailure);
+      if ('mutatedOfRejection' in runEnd && runEnd.mutatedOfRejection !== undefined) {
+        return Promise.reject(runEnd.mutatedOfRejection);
       }
 
       return Promise.resolve(
@@ -36,16 +43,18 @@ const fakeMutationRunner = (runEnd: FakeRunEnd): FakeMutationRunner => {
         ),
       );
     },
-    run: (targets) => {
-      runs.push(targets);
+    runAll: () => {
+      wholeRunCount += 1;
 
-      if ('runFailure' in runEnd) {
-        throw runEnd.runFailure;
-      }
-
-      return runEnd.exitCode;
+      return ended();
     },
-    runs,
+    runTargets: (targets) => {
+      targetsRun.push(targets);
+
+      return ended();
+    },
+    targetsRun,
+    wholeRunCount: () => wholeRunCount,
   };
 };
 

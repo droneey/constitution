@@ -25,9 +25,7 @@ interface LoadPresetSetsInput {
   readonly files: ProjectFiles;
   readonly parser: PresetFileParser;
   readonly source: BlockSource;
-  /** the folder whose presets/ holds the preset files */
   readonly sourceFolderPath: AbsolutePath;
-  /** how findings name the folder; empty for the folder checked itself */
   readonly sourceFolderPathFromRepository: RepositoryRelativePath;
 }
 
@@ -40,8 +38,6 @@ const isRuleKey = (key: string): key is RuleKey => key === EVERY || RuleSlug.is(
 
 const isLanguageKey = (key: string): key is LanguageKey => key === EVERY || BlockId.is(key);
 
-// The entries of a preset file's value, block → rule → language → file, in the order it writes them;
-// a value that is no map where the next key is due is a finding that names the keys down to it.
 const entriesIn = (input: { set: PresetSet; value: PresetValue }): PresetSetsLoaded => {
   const { set } = input;
   const entries: PresetEntry[] = [];
@@ -62,7 +58,6 @@ const entriesIn = (input: { set: PresetSet; value: PresetValue }): PresetSetsLoa
     return [];
   };
 
-  // The pairs whose keys read as the level's ids; any other key is the finding of an unknown one.
   const keyedOf = <TKey extends string>(level: {
     given: PresetValue;
     isKey: (key: string) => key is TKey;
@@ -217,7 +212,6 @@ const loadedFrom = (
   });
 };
 
-/** In the order of their paths. */
 const loadPresetSets = (input: LoadPresetSetsInput): PresetSetsLoaded => {
   const presetsFolderPath = AbsolutePath.join(input.sourceFolderPath, PRESETS_FOLDER_NAME);
   // Stryker disable next-line ArrayDeclaration: a path that names no preset file is data

@@ -6,7 +6,6 @@ import type { BlockGraph, Constitution } from '../../../entities';
 interface CheckInput {
   readonly constitution: Constitution;
   readonly graph: BlockGraph;
-  /** the model of the blocks, a pack's base among them */
   readonly model: BlockModel;
 }
 

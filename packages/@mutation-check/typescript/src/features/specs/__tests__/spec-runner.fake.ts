@@ -4,11 +4,9 @@ import type { SpecRunInput, SpecRunner } from '../domain/contracts';
 import { SpecRunStatus } from '../domain/entities';
 
 interface FakeSpecs {
-  /** a run that holds one of them fails, naming it in its error output */
   readonly failingPaths?: readonly UnitRelativePath[];
   readonly specPaths: readonly UnitRelativePath[];
-  /** a run that holds one of them outlasts its time */
-  readonly waitingPaths?: readonly UnitRelativePath[];
+  readonly timingOutPaths?: readonly UnitRelativePath[];
 }
 
 interface FakeSpecRunner extends SpecRunner {
@@ -23,7 +21,7 @@ const fakeSpecRunner = (fakeSpecs: FakeSpecs): FakeSpecRunner => {
     run: (run) => {
       runs.push(run);
 
-      if (run.specPaths.some((specPath) => fakeSpecs.waitingPaths?.includes(specPath))) {
+      if (run.specPaths.some((specPath) => fakeSpecs.timingOutPaths?.includes(specPath))) {
         return Promise.resolve({
           status: SpecRunStatus.TimedOut,
         });

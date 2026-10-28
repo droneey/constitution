@@ -7,20 +7,14 @@ import { cliPath } from './cli.fixtures';
 import { linkRelease, release, toolEnvironment, writeFiles } from './package.fixtures';
 
 interface UnitFixture {
-  /** the optional axes it follows; architecture and workflow where it names none */
   readonly axes?: readonly string[];
-  /** more blocks of any layer, each listed in the layer its folder in the release names */
   readonly blocks?: readonly string[];
   readonly domains?: readonly string[];
-  /** by their paths from the unit's folder */
   readonly files?: Readonly<Record<string, string>>;
   readonly implementations?: readonly string[];
   readonly languages?: readonly string[];
-  /** the rules an override in its constitution.yaml lowers to SHOULD */
   readonly lowered?: readonly string[];
-  /** unit where it names none */
   readonly name?: string;
-  /** the folders of its own packs, among its files */
   readonly packs?: readonly string[];
   readonly platforms?: readonly string[];
 }
@@ -98,7 +92,6 @@ const createdFolder = (): string => {
   return folder;
 };
 
-// The unit's folder, its files and its link to this release written, not yet applied.
 const unitFolderOf = (unit: UnitFixture): string => {
   const folder = createdFolder();
 
@@ -114,7 +107,6 @@ const unitFolderOf = (unit: UnitFixture): string => {
   return folder;
 };
 
-// A copy of its own for each caller, so what a tool writes in it reaches no other case.
 const copyOf = (folder: string): string => {
   const copy = createdFolder();
 
@@ -126,11 +118,6 @@ const copyOf = (folder: string): string => {
   return copy;
 };
 
-/**
- * Applied once for each unit asked, by the program's own `presets apply`, and copied for each call.
- *
- * @throws Error when the apply fails.
- */
 const appliedUnit = (unit: UnitFixture): string => {
   const key = JSON.stringify(unit);
   const known = applied.get(key);

@@ -44,7 +44,6 @@ const designResolver: Resolver = {
   },
 };
 
-/** the design resolver, its `theme` modifier's default `modeName` */
 const resolverWithDefault = (modeName: string): Resolver => ({
   ...designResolver,
   modifiers: {

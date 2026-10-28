@@ -3,7 +3,7 @@
     width: calc(100% - 2 * var(--spacing-sm));
     border-radius: var(--radius-2xl);
 
-    /* the input holds the caret across the whole row, so the row draws the input's ring */
+    /* Why: the input holds the caret across the whole row, so the row draws the input's ring. */
     & > div:has(> [data-fd-search-dialog-input]) {
       gap: var(--spacing-xs);
       height: var(--size-header);
@@ -39,7 +39,7 @@
     }
   }
 
-  /* its row draws its ring; forced colours paint this one in the system's colour */
+  /* Why: its row draws its ring; forced colours paint this one in the system's colour. */
   [data-fd-search-dialog-input] {
     font: var(--font-body-md);
     letter-spacing: var(--font-body-md--letter-spacing);
@@ -96,7 +96,6 @@
       }
     }
 
-    /* a page's headings and passages sit on a line under it, as a folder's items do */
     & [role='option']:has(> [role='none']) {
       margin-inline-start: var(--spacing-sm);
 

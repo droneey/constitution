@@ -2,7 +2,6 @@ import type { SettingMap } from '../../../../../../../entities';
 import { Leaf, Setting } from '../../../../../../../entities';
 import { SettingKey } from '../../../../../../../value-objects';
 
-/** A setting of ours the file holds otherwise, kept as the file has it. */
 interface Loosening {
   readonly keyPath: readonly string[];
   readonly wanted: Setting;
@@ -16,7 +15,6 @@ interface Overlaid {
 interface OverlayInput {
   readonly fileSetting: Setting | undefined;
   readonly keyPath: readonly string[];
-  /** the keys of the leaves the lock says are ours from before */
   readonly locked: ReadonlySet<string>;
   readonly ours: Setting;
 }
@@ -35,7 +33,6 @@ const loosened = (
   value: input.fileSetting,
 });
 
-// Our items first, each found in the file where it holds it, then the file's own.
 const overlayList = (
   input: OverlayInput & {
     ours: readonly Setting[];
@@ -63,8 +60,6 @@ const overlayList = (
   };
 };
 
-// Maps merge deeply, key by key; then each element we address is found by its field or made, and
-// the elements we address lead their list.
 const overlayMap = (
   input: OverlayInput & {
     ours: SettingMap;
@@ -160,10 +155,6 @@ const overlayMap = (
   };
 };
 
-/**
- * A path of ours the file holds otherwise is the user's loosening, kept and reported, unless the
- * lock says the value there is ours from before.
- */
 const overlayFile = (input: OverlayInput): Overlaid => {
   const { fileSetting, ours } = input;
 

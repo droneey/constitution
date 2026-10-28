@@ -12,7 +12,7 @@ import { APP_NAME } from '#/shared/constants';
 
 import type { RouterContext } from '../../wiring';
 
-/** throws not found when the page's collection holds no body at its path */
+/** @throws {NotFoundError} when the page's collection holds no body at its path */
 const bodyOf = (context: RouterContext, page: Page): PageBody => {
   const body = context.docs.getPageBody(page);
 
@@ -26,8 +26,8 @@ const bodyOf = (context: RouterContext, page: Page): PageBody => {
 function DocsRoute(): ReactElement {
   const page = Route.useLoaderData();
   const context = Route.useRouteContext();
-  // a prerendered page leaves out the tree every page shares, so its hydration waits here for the
-  // one file that holds it, and keeps the server's markup meanwhile
+  // Why: a prerendered page leaves out the tree every page shares, so its hydration waits here for
+  // the one file that holds it, and keeps the server's markup meanwhile.
   const { navigation } = useFumadocsLoader({
     navigation: use(context.docs.loadNavigation()),
   });
@@ -48,6 +48,12 @@ function DocsRoute(): ReactElement {
   );
 }
 
+/**
+ * @throws {NotFoundError} when no page has the address, or the page's collection holds no body at
+ * its path
+ * @throws {ExportError} when the site gives no list of the pages or no tree in time, or none it
+ * can read
+ */
 const loadDocsPage = async ({
   context,
   params,

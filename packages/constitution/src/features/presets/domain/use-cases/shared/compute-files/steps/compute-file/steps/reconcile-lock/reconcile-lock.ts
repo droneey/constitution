@@ -13,10 +13,6 @@ interface StaleRemoved {
   readonly value: Setting;
 }
 
-/**
- * The file without what an earlier apply wrote and no entry gives any longer: a leaf the lock names
- * that ours lacks, its emptied maps, lists and elements gone with it; a value the user wrote stays.
- */
 const removeStale = (input: RemoveStaleInput): StaleRemoved => {
   const locked = new Set(input.lock.leaves);
   const kept = new Set(Leaf.leavesOf(input.ours).map(Leaf.keyOf));
@@ -40,19 +36,14 @@ const removeStale = (input: RemoveStaleInput): StaleRemoved => {
 };
 
 interface RecordInput {
-  readonly defaults: readonly string[];
+  readonly everMetDefaults: readonly string[];
   readonly fields: readonly string[];
-  /** the keys of our leaves the file held before the apply */
   readonly heldBefore: ReadonlySet<string>;
-  readonly isCreated: boolean;
+  readonly isCreatedByApply: boolean;
   readonly lock: SettingsRecord;
   readonly ours: Setting;
 }
 
-/**
- * What the lock keeps of a file: our leaves the apply wrote, or that the lock held already, never
- * one the user's file held first; the address fields while any leaf is ours; the defaults met.
- */
 const recordOf = (input: RecordInput): SettingsRecord => {
   const locked = new Set(input.lock.leaves);
   const leaves = Leaf.leavesOf(input.ours)
@@ -62,8 +53,8 @@ const recordOf = (input: RecordInput): SettingsRecord => {
   return {
     ...Lock.emptyRecord,
     addresses: leaves.length === 0 ? [] : input.fields,
-    defaults: input.defaults,
-    isCreated: input.isCreated,
+    everMetDefaults: input.everMetDefaults,
+    isCreatedByApply: input.isCreatedByApply,
     leaves,
   };
 };

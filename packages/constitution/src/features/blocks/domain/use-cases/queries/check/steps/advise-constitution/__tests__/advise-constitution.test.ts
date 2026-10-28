@@ -17,8 +17,6 @@ const TYPESCRIPT = 'blocks/contexts/languages/typescript/foundation/types.md';
 const STATEMENT = 'Every visible label comes from a message catalog.';
 
 interface Scenario {
-  // Rules added at the end of a file; a with/ file not there yet starts as a
-  // bare seam.
   rules: Readonly<Record<string, readonly RuleFixture[]>>;
 }
 

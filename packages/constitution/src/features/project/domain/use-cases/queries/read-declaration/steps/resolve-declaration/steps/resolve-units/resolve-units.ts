@@ -18,7 +18,6 @@ const OPTIONAL_AXES = [
   Axis.Workflow,
 ] as const;
 
-// name is known to every unit and asked of none (ADR-0231).
 const knownKeys: ReadonlySet<string> = new Set([
   ...REQUIRED_CONFIG_KEYS,
   ConfigKey.Name,
@@ -85,8 +84,6 @@ const refused = (warning: ProjectWarning): Declared => ({
   ],
 });
 
-// foundation is always followed and never listed; axes lists the optional ones, and a unit without
-// the key follows every optional one.
 const axesOf = (
   unit: DeclaredUnit,
 ): Warned<{
@@ -129,8 +126,6 @@ const axesOf = (
   };
 };
 
-// The blocks a name of a unit's list makes active, the bases of the block it names among them, or
-// none with the warning that says why.
 const declaredOf = (input: {
   entry: ConfigItem;
   model: ProjectModel;
@@ -213,8 +208,6 @@ const declaredOf = (input: {
 const isDeclared = (entry: ConfigItem): boolean =>
   entry.key !== ConfigKey.Axes && entry.key !== ConfigKey.Packs;
 
-// A unit's blocks start from core, in the block set's order; then each block its unit lists joins
-// them, with its bases.
 const blocksOf = (input: {
   model: ProjectModel;
   unit: DeclaredUnit;
@@ -272,14 +265,9 @@ interface ResolveUnitsInput {
 
 interface UnitsResolved {
   readonly units: ResolvedUnits;
-  /** what is wrong with the keys of each constitution.yaml, and what keeps an axis or a block it lists from being followed or made active */
   readonly warnings: readonly ProjectWarning[];
 }
 
-/**
- * A resolved unit for each declared one, the repository's first: each holds its own axes and blocks
- * alone.
- */
 const resolveUnits = (input: ResolveUnitsInput): UnitsResolved => {
   const [repository, ...members] = input.config.units;
 

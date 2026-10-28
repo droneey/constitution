@@ -35,7 +35,6 @@ const normalizePath = (path: string): string => {
   return path.endsWith(PATH_SEPARATOR) ? `${body}${PATH_SEPARATOR}` : body;
 };
 
-/** Whether a path from a folder is written one way and stays inside it; an empty one is the folder. */
 const isInnerPath = (path: string): boolean =>
   path === '' ||
   (normalizePath(path) === path &&

@@ -7,7 +7,6 @@ const overrideLine = (override: DigestOverride): string =>
     override.until === undefined ? '' : ` until ${override.until.toString()}`
   }`;
 
-/** The rules the project lowered, each with its level, the member it applies to and its end. */
 const overrideListLines = (overrides: readonly DigestOverride[]): readonly string[] =>
   overrides.length === 0
     ? []

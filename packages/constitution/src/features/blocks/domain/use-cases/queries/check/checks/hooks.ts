@@ -34,7 +34,6 @@ const missingFilesOf = (input: {
     )
     .filter((file) => !input.paths.has(file));
 
-/** A plugin without a hooks manifest runs no hook. */
 const hooksCheck: Check<HooksFinding> = ({ constitution }: CheckInput): readonly HooksFinding[] => {
   const read = constitution.documents.hooks;
 

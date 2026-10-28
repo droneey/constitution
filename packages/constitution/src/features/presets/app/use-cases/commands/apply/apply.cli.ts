@@ -19,8 +19,17 @@ import type { RunStepsContext } from '../../../utils';
 import { applyOutcomeOf, applySectionsOf, runSteps } from '../../../utils';
 
 interface PresetsApplyContext extends CommandContext, RunStepsContext {
+  /** @throws {ApplyError} when a file cannot be written, which leaves every file as it was */
   readonly applyChanges: (changes: AppliedFiles) => void;
+  /**
+   * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
+   * @throws {ReleaseError} when the release's blocks cannot be listed
+   */
   readonly planApply: (startFolderPath: AbsolutePath) => ProjectRead<ApplyPlan>;
+  /**
+   * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
+   * @throws {ReleaseError} when the release's blocks cannot be listed
+   */
   readonly planRun: (input: RunAsked) => ProjectRead<RunPlan>;
 }
 
@@ -34,7 +43,6 @@ const applyFlagsSchema = z.strictObject({
   fix: z.boolean(),
 });
 
-/** Claude Code's project, else the folder the run starts in: /constitution:ratify runs it there. */
 const createPresetsApplyCommand = (context: PresetsApplyContext): Command =>
   withOption({
     command: new Command('apply')
@@ -49,11 +57,16 @@ const createPresetsApplyCommand = (context: PresetsApplyContext): Command =>
         ]),
       ),
     option: NO_FIX_FLAG,
+    /** @throws {UsageError} when the options do not parse */
     parse: (opts) =>
       flagsOf({
         opts,
         schema: applyFlagsSchema,
       }),
+    /**
+     * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
+     * @throws {ReleaseError} when the release's blocks cannot be listed
+     */
     run: async ({ fix }): Promise<void> => {
       const { places } = context;
       const startFolderPath = folderPathOf({
@@ -63,6 +76,11 @@ const createPresetsApplyCommand = (context: PresetsApplyContext): Command =>
       const read = await context.renderer.run({
         label: 'Presets',
         outcomeOf: applyOutcomeOf,
+        /**
+         * @throws {ApplyError} when a file cannot be written, which leaves every file as it was
+         * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
+         * @throws {ReleaseError} when the release's blocks cannot be listed
+         */
         run: () => {
           const planned = context.planApply(startFolderPath);
 
@@ -85,13 +103,13 @@ const createPresetsApplyCommand = (context: PresetsApplyContext): Command =>
         return;
       }
 
-      if (fix && read.answer.report.unitPaths.length > 0) {
+      if (fix && read.answer.report.writtenUnitPaths.length > 0) {
         await runSteps(
           context,
           context.planRun({
             entryPoint: EntryPoint.Fix,
             startFolderPath,
-            unitPaths: read.answer.report.unitPaths,
+            unitPaths: read.answer.report.writtenUnitPaths,
           }),
         );
       }

@@ -17,9 +17,9 @@ if TYPE_CHECKING:
   from ...domain.entities import Outcome
   from ...domain.errors import Unfinished
 
-# Each line of the report opens with its code, `mutation: <code>: `, which a reader scripts against,
-# and a not-killed line ends with the mutant's status. Both sets are open: a later version may add a
-# code or a status, so a reader passes over one it does not know rather than failing on it.
+# Why: a reader scripts against the code, and a not-killed line ends with the mutant's status. Both
+# sets are open: a later version may add a code or a status, so a reader passes over one it does not
+# know rather than failing on it.
 REPORT_LINE: Final = 'mutation: {code}: {text}\n'
 NOT_KILLED_CODE: Final = 'not-killed'
 MUTMUT_FAILED_CODE: Final = 'mutmut-failed'

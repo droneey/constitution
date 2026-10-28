@@ -2,22 +2,19 @@ import type { UnitRelativePath } from '#/kernel/value-objects';
 
 import type { MutationTarget } from '../entities';
 
+type ToolExitCode = number;
+
 interface MutationRunner {
   /**
-   * The files of these the configuration mutates.
-   *
-   * @throws ConfigurationError when the configuration cannot tell which files it mutates
+   * @throws {ConfigurationError} when the configuration cannot tell which files it mutates
    */
   readonly mutatedOf: (
     filePaths: readonly UnitRelativePath[],
   ) => Promise<readonly UnitRelativePath[]>;
-  /**
-   * Mutates the targets, or with none everything the configuration names.
-   *
-   * @returns the exit code the mutation tool ended with
-   * @throws MutationRunError when the tool does not run to its end
-   */
-  readonly run: (targets?: readonly MutationTarget[]) => number;
+  /** @throws {MutationRunError} when the tool does not run to its end */
+  readonly runAll: () => ToolExitCode;
+  /** @throws {MutationRunError} when the tool does not run to its end */
+  readonly runTargets: (targets: readonly MutationTarget[]) => ToolExitCode;
 }
 
-export type { MutationRunner };
+export type { MutationRunner, ToolExitCode };

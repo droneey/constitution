@@ -9,7 +9,6 @@ import type { FrontMatter } from './front-matter.entity';
 
 enum BlockOrigin {
   Own = 'own',
-  /** a block of the Constitution a pack extends, which only resolves the pack's references */
   Base = 'base',
 }
 
@@ -18,7 +17,6 @@ interface Block {
   readonly id: BlockId;
   readonly layer: Layer;
   readonly origin: BlockOrigin;
-  /** the chapters by axis, then the seams by axis */
   readonly parts: readonly PartFile[];
   readonly passport: PassportFile;
 }
@@ -51,7 +49,6 @@ const filesOf = (block: Block): readonly BlockFile[] => [
   ...block.parts,
 ];
 
-/** Names each file by the path a user opens: the folder the base was read from, then its path there. */
 const asBase = (block: Block, folder: string): Block =>
   createBlock({
     ...block,

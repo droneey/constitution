@@ -65,7 +65,6 @@ const diagramOf = (chart: string): Diagram => {
   };
 };
 
-// The SVG joins the page as its elements rather than as injected markup.
 const remarkDiagrams =
   () =>
   (tree: Root): void => {

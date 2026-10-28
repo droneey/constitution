@@ -12,8 +12,7 @@ def python(*lines: str) -> str:
   return ''.join(f'{line}\n' for line in lines)
 
 
-# A package of two modules and a class, laid out under src/ as mutmut reads it.
-TEXTS: Final[Mapping[str, str]] = {
+SHOP_PACKAGE_TEXTS: Final[Mapping[str, str]] = {
   'src/shop/__init__.py': python('def version() -> str:', "  return '1'"),
   'src/shop/orders.py': python(
     'LIMIT = 10',

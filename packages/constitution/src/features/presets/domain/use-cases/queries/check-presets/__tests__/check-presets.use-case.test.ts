@@ -3,8 +3,9 @@ import { describe, expect, it } from 'bun:test';
 import fc from 'fast-check';
 
 import { createFakeProjectFiles } from '#/__tests__/project-files.fake';
-import { Axis } from '#/kernel/constants';
+import { AXES, Axis, Layer } from '#/kernel/constants';
 import { BlockModel } from '#/kernel/entities';
+import type { RuleSlug } from '#/kernel/value-objects';
 import { AbsolutePath, BlockId, BlockSource, PackPath } from '#/kernel/value-objects';
 
 import { createFakeConfigurationFormat } from '../../../../../__tests__/configuration-format.fake';
@@ -13,7 +14,7 @@ import type { Files } from '../../../../../__tests__/presets.fixtures';
 import { presetFileParser, presetsModel } from '../../../../../__tests__/presets.fixtures';
 import type { PresetsFinding } from '../../../../entities';
 import { PresetsCode } from '../../../../entities';
-import type { PresetFilePath } from '../../../../value-objects';
+import { PresetFilePath } from '../../../../value-objects';
 import { checkPresets } from '../check-presets.use-case';
 
 const FOLDER = '/work/constitution';
@@ -50,7 +51,6 @@ const placeOf = (reader: string, axis: Axis, ...withs: readonly string[]): Prese
   withs: withs.map(BlockId.create),
 });
 
-// A preset file of one entry, in biome's foundation.
 const entryOf = (input: {
   block?: string;
   file?: string;
@@ -66,19 +66,14 @@ const entryOf = (input: {
     `        ${input.value ?? 'width: 100'}`,
   ].join('\n');
 
-// The placement findings of an entry written in biome's foundation under each of these paths, all
-// checked at once.
 const placementsOf = (
   entry: string,
-  places: readonly (readonly string[])[],
+  places: readonly PresetFilePath[],
 ): readonly PresetsFinding[] =>
   findingsOf({
     presets: Object.fromEntries(
-      places.map((withs) => [
-        `${[
-          'biome/foundation',
-          ...withs.map((block) => `with/${block}`),
-        ].join('/')}.yaml`,
+      places.map((place) => [
+        PresetFilePath.textOf(place),
         entry,
       ]),
     ),
@@ -87,103 +82,103 @@ const placementsOf = (
       code === PresetsCode.EntryMisplaced || code === PresetsCode.EntryNeedsTooManyBlocks,
   );
 
-// The paths the check sends an entry to from each of these paths.
-const belongsOf = (
-  entry: string,
-  places: readonly (readonly string[])[],
-): readonly (readonly string[])[] =>
+const belongsOf = (entry: string, places: readonly PresetFilePath[]): readonly PresetFilePath[] =>
   placementsOf(entry, places).flatMap((finding) =>
     finding.code === PresetsCode.EntryMisplaced
       ? [
-          finding.details.belongs.withs,
+          finding.details.belongs,
         ]
       : [],
   );
 
-interface Key {
-  readonly block: string;
-  readonly rule?: string;
+interface EntryKey {
+  readonly block: BlockId;
+  readonly rule?: RuleSlug;
 }
 
-/** An entry in biome's foundation. */
 interface EntryShape {
-  readonly key: Key;
-  /** the blocks its path names after the axis */
-  readonly path: readonly string[];
-  /** the roles its value names */
+  readonly key: EntryKey;
+  readonly place: PresetFilePath;
   readonly roles: readonly string[];
 }
 
-const modelKeys: readonly Key[] = [
-  {
-    block: 'biome',
-  },
-  {
-    block: 'bun',
-  },
-  {
-    block: 'bun',
-    rule: 'install-settings-only-in-the-root',
-  },
-  {
-    block: 'css',
-  },
-  {
-    block: 'css',
-    rule: 'css-loaded-by-the-bundle',
-  },
-  {
-    block: 'git',
-  },
-  {
-    block: 'git',
-    rule: 'lock-file-committed',
-  },
-  {
-    block: 'nestjs',
-  },
-  {
-    block: 'ui',
-  },
+const modelKeys: readonly EntryKey[] = [
+  ...presetsModel.blocks.map(({ id }) => ({
+    block: id,
+  })),
+  ...presetsModel.rules.map(({ block, slug }) => ({
+    block,
+    rule: slug,
+  })),
 ];
 
-const modelRoles = [
-  'declaration-cache',
-  'ignore-file',
-  'nest-module',
-  'typescript-source',
-];
+const axesOf = (key: EntryKey): readonly Axis[] => {
+  const rule = presetsModel.rules.find(({ slug }) => slug === key.rule);
 
-// every block an entry may need, and ui for one it never does: core, biome and json are the
-// reader's reach, _runtime and lefthook give no role and no rule, and docker only a role's second
-// spelling
-const pathBlocks = [
-  'browser',
-  'bun',
-  'css',
-  'git',
-  'nestjs',
-  'nx',
-  'typescript',
-  'ui',
-  'workspace',
-];
+  return rule === undefined
+    ? AXES
+    : [
+        rule.axis,
+      ];
+};
 
-// Any of the model's keys, naming any of its roles, under any path of up to two blocks.
-const entryShapes: fc.Arbitrary<EntryShape> = fc.record({
-  key: fc.constantFrom(...modelKeys),
-  path: fc.uniqueArray(fc.constantFrom(...pathBlocks), {
-    maxLength: 2,
+const modelRoleSets = [
+  ...new Set(presetsModel.roles.flatMap(({ id }) => id ?? [])),
+].reduce<readonly (readonly string[])[]>(
+  (sets, role) =>
+    sets.flatMap((set) => [
+      set,
+      [
+        ...set,
+        role,
+      ],
+    ]),
+  [
+    [],
+  ],
+);
+
+const modelBlocks = presetsModel.blocks.map(({ id }) => id);
+
+const modelPlacesOn = (axis: Axis): readonly PresetFilePath[] =>
+  presetsModel.blocks
+    .filter(({ layer }) => layer === Layer.Implementation)
+    .flatMap(({ id: reader }) =>
+      [
+        [],
+        ...modelBlocks.flatMap((first) => [
+          [
+            first,
+          ],
+          ...modelBlocks
+            .filter((second) => second !== first)
+            .map((second) => [
+              first,
+              second,
+            ]),
+        ]),
+      ].map((withs) => ({
+        axis,
+        reader,
+        withs,
+      })),
+    );
+
+const modelPlaces = new Map(
+  AXES.map((axis) => [
+    axis,
+    modelPlacesOn(axis),
+  ]),
+);
+
+const entryShapes: fc.Arbitrary<EntryShape> = fc.constantFrom(...modelKeys).chain((key) =>
+  fc.record({
+    key: fc.constant(key),
+    place: fc.constantFrom(...axesOf(key).flatMap((axis) => modelPlaces.get(axis) ?? [])),
+    roles: fc.constantFrom(...modelRoleSets),
   }),
-  roles: fc.subarray(modelRoles),
-});
+);
 
-// A sample of the 11,808 shapes small enough for a slow runner; the shapes that broke before are
-// rows of their own, checked on every run.
-const SHAPES_SAMPLED = 1000;
-
-// The placement findings of an entry moved to where the check sends it: none where the check finds
-// it placed, or where it does not send it at all.
 const placementsWhereSent = (shape: EntryShape): readonly PresetsFinding[] => {
   const entry = entryOf({
     ...shape.key,
@@ -193,10 +188,12 @@ const placementsWhereSent = (shape: EntryShape): readonly PresetsFinding[] => {
   return placementsOf(
     entry,
     belongsOf(entry, [
-      shape.path,
+      shape.place,
     ]),
   );
 };
+
+const isPlacedWhereSent = (shape: EntryShape): boolean => placementsWhereSent(shape).length === 0;
 
 describe('checkPresets', () => {
   it('should find nothing when every preset file is sound', () => {
@@ -258,7 +255,15 @@ describe('checkPresets', () => {
       }),
       'biome/workflow.yaml': entryOf({
         block: 'core',
-        rule: 'file-within-500-lines',
+        rule: 'commit-checked-by-hooks',
+      }),
+      'biome/foundation/with/nestjs.yaml': entryOf({
+        block: 'typescript',
+        rule: 'unchecked-type-never-used',
+      }),
+      'biome/foundation/with/bun/with/nx.yaml': entryOf({
+        block: 'bun',
+        rule: 'install-settings-only-in-the-root',
       }),
       'biome/foundation/with/css/with/browser.yaml': entryOf({
         block: 'css',
@@ -891,6 +896,36 @@ describe('checkPresets', () => {
       },
     },
     {
+      condition: 'a role its value names is defined by a seam whose one block its reader reaches',
+      findings: [
+        {
+          code: PresetsCode.EntryMisplaced,
+          details: {
+            belongs: placeOf('bun', Axis.Foundation, 'workspace'),
+            block: BlockId.create('bun'),
+            rule: '*',
+            unneededBlocks: [],
+            unreachedRoles: [
+              {
+                definers: [
+                  BlockId.create('typescript'),
+                  BlockId.create('workspace'),
+                ],
+                role: 'declaration-cache',
+              },
+            ],
+          },
+          path: 'presets/bun/foundation.yaml',
+        },
+      ],
+      presets: {
+        'bun/foundation.yaml': entryOf({
+          block: 'bun',
+          value: "files: ['${role.declaration-cache}']",
+        }),
+      },
+    },
+    {
       condition:
         'a role its value names is defined by a seam whose one block its key block reaches and its path names only the key block',
       findings: [
@@ -970,7 +1005,7 @@ describe('checkPresets', () => {
       },
     },
     {
-      condition: 'its rule is of an axis its preset file does not stand on',
+      condition: 'its rule is of another axis than its preset file',
       findings: [
         {
           code: PresetsCode.EntryOffItsAxis,
@@ -986,6 +1021,75 @@ describe('checkPresets', () => {
         'biome/workflow.yaml': entryOf({
           block: 'core',
           rule: 'import-points-inward',
+        }),
+      },
+    },
+    {
+      condition: 'its rule is of foundation and its preset file of an axis that stands on it',
+      findings: [
+        {
+          code: PresetsCode.EntryOffItsAxis,
+          details: {
+            block: BlockId.create('core'),
+            rule: 'file-within-500-lines',
+            ruleAxis: Axis.Foundation,
+          },
+          path: 'presets/biome/architecture.yaml',
+        },
+      ],
+      presets: {
+        'biome/architecture.yaml': entryOf({
+          block: 'core',
+          rule: 'file-within-500-lines',
+        }),
+      },
+    },
+    {
+      condition: 'its path names a block that does not reach its key block',
+      findings: [
+        {
+          code: PresetsCode.EntryMisplaced,
+          details: {
+            belongs: placeOf('biome', Axis.Foundation, 'typescript'),
+            block: BlockId.create('typescript'),
+            rule: 'unchecked-type-never-used',
+            unneededBlocks: [
+              BlockId.create('git'),
+            ],
+            unreachedRoles: [],
+          },
+          path: 'presets/biome/foundation/with/git.yaml',
+        },
+      ],
+      presets: {
+        'biome/foundation/with/git.yaml': entryOf({
+          block: 'typescript',
+          rule: 'unchecked-type-never-used',
+        }),
+      },
+    },
+    {
+      condition: 'its path names its key block beside a block that reaches it',
+      findings: [
+        {
+          code: PresetsCode.EntryMisplaced,
+          details: {
+            belongs: placeOf('biome', Axis.Foundation, 'nestjs'),
+            block: BlockId.create('typescript'),
+            rule: 'unchecked-type-never-used',
+            unneededBlocks: [
+              BlockId.create('typescript'),
+            ],
+            unreachedRoles: [],
+          },
+          path: 'presets/biome/foundation/with/typescript/with/nestjs.yaml',
+        },
+      ],
+      presets: {
+        'biome/foundation/with/typescript/with/nestjs.yaml': entryOf({
+          block: 'typescript',
+          rule: 'unchecked-type-never-used',
+          value: "files: ['**/*${role.nest-module}']",
         }),
       },
     },
@@ -1112,19 +1216,15 @@ describe('checkPresets', () => {
 
   it('should find placed, where it sends it, any entry of the model’s keys and roles it finds misplaced', () => {
     // Act
-    const run = fc.check(
-      fc.property(entryShapes, (shape) => placementsWhereSent(shape).length === 0),
-      {
-        numRuns: SHAPES_SAMPLED,
-      },
-    );
+    const run = fc.check(fc.property(entryShapes, isPlacedWhereSent), {
+      // Why: 0.4 s here, so a runner five times slower stays well inside bun's 5 s for a case.
+      numRuns: 2000,
+    });
 
     // Assert
     expect(run.counterexample).toBeNull();
   });
 
-  // Entries whose path names a block that reaches the definer of a role they name: the check once
-  // sent them to a path without that block, and refused them there.
   it.each<{
     condition: string;
     shape: EntryShape;
@@ -1133,11 +1233,9 @@ describe('checkPresets', () => {
       condition: 'biome’s, naming typescript-source and ignore-file, lies under with/bun',
       shape: {
         key: {
-          block: 'biome',
+          block: BlockId.create('biome'),
         },
-        path: [
-          'bun',
-        ],
+        place: placeOf('biome', Axis.Foundation, 'bun'),
         roles: [
           'ignore-file',
           'typescript-source',
@@ -1148,42 +1246,9 @@ describe('checkPresets', () => {
       condition: 'css’s, naming typescript-source, lies under with/bun',
       shape: {
         key: {
-          block: 'css',
+          block: BlockId.create('css'),
         },
-        path: [
-          'bun',
-        ],
-        roles: [
-          'typescript-source',
-        ],
-      },
-    },
-    {
-      condition: 'css’s, naming typescript-source and ignore-file, lies under with/bun',
-      shape: {
-        key: {
-          block: 'css',
-        },
-        path: [
-          'bun',
-        ],
-        roles: [
-          'ignore-file',
-          'typescript-source',
-        ],
-      },
-    },
-    {
-      condition:
-        'its key is a rule with a seam, naming typescript-source, and it lies under with/bun',
-      shape: {
-        key: {
-          block: 'css',
-          rule: 'css-loaded-by-the-bundle',
-        },
-        path: [
-          'bun',
-        ],
+        place: placeOf('biome', Axis.Foundation, 'bun'),
         roles: [
           'typescript-source',
         ],
@@ -1193,57 +1258,10 @@ describe('checkPresets', () => {
       condition: 'git’s, naming typescript-source, lies under with/git/with/bun',
       shape: {
         key: {
-          block: 'git',
+          block: BlockId.create('git'),
         },
-        path: [
-          'git',
-          'bun',
-        ],
+        place: placeOf('biome', Axis.Foundation, 'git', 'bun'),
         roles: [
-          'typescript-source',
-        ],
-      },
-    },
-    {
-      condition: 'git’s, naming typescript-source and ignore-file, lies under with/bun',
-      shape: {
-        key: {
-          block: 'git',
-        },
-        path: [
-          'bun',
-        ],
-        roles: [
-          'ignore-file',
-          'typescript-source',
-        ],
-      },
-    },
-    {
-      condition: 'ui’s, naming typescript-source, lies under with/bun',
-      shape: {
-        key: {
-          block: 'ui',
-        },
-        path: [
-          'bun',
-        ],
-        roles: [
-          'typescript-source',
-        ],
-      },
-    },
-    {
-      condition: 'ui’s, naming typescript-source and ignore-file, lies under with/bun',
-      shape: {
-        key: {
-          block: 'ui',
-        },
-        path: [
-          'bun',
-        ],
-        roles: [
-          'ignore-file',
           'typescript-source',
         ],
       },
@@ -1588,7 +1606,7 @@ describe('checkPresets', () => {
           block: BlockId.create('biome'),
           file: 'pyproject.toml',
           rule: '*',
-          setting: 'tool.poe.tasks',
+          settingPath: 'tool.poe.tasks',
         },
         path: FOUNDATION,
       },
@@ -1598,7 +1616,7 @@ describe('checkPresets', () => {
           block: BlockId.create('biome'),
           file: '.editorconfig',
           rule: '*',
-          setting: '*',
+          settingPath: '*',
         },
         path: FOUNDATION,
       },
@@ -1607,7 +1625,6 @@ describe('checkPresets', () => {
 
   it('should find only the unknown role, and no misplacement, when an entry under a with/ path names a role no term carries', () => {
     // Arrange
-    // a release's every term carries an id, as its blocks' check holds them to
     const model = BlockModel.create({
       ...presetsModel,
       roles: presetsModel.roles.filter(({ id }) => id !== undefined),
@@ -1856,7 +1873,7 @@ describe('checkPresets', () => {
       {
         code: PresetsCode.Clash,
         details: {
-          setting: 'width',
+          settingPath: 'width',
           sources: [
             'presets/biome/foundation/with/css/with/browser.yaml: css → css-loaded-by-the-bundle',
             'presets/biome/foundation.yaml: biome → *',
@@ -1867,7 +1884,7 @@ describe('checkPresets', () => {
       {
         code: PresetsCode.MissingSlot,
         details: {
-          setting: 'ignore',
+          settingPath: 'ignore',
           slot: 'own',
         },
         path: 'knip.json',
@@ -1875,7 +1892,7 @@ describe('checkPresets', () => {
       {
         code: PresetsCode.Clash,
         details: {
-          setting: 'fix',
+          settingPath: 'fix',
           sources: [
             'presets/biome/foundation/with/css/with/browser.yaml: css → css-loaded-by-the-bundle',
             'presets/biome/foundation.yaml: biome → *',

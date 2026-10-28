@@ -1,4 +1,3 @@
-/** by the address each entry leads to, from the site's base */
 const ICONS_BY_ADDRESS: Readonly<Record<string, string>> = {
   '': 'BookOpenText',
   '/core#precedence': 'Layers',

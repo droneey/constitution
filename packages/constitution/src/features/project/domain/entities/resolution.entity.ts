@@ -7,10 +7,8 @@ interface Resolution {
   readonly active: readonly ActiveBlock[];
   readonly listing: BlockListing;
   readonly model: BlockModel;
-  /** the MUST rules of the active blocks, core's aside */
-  readonly musts: readonly MustRule[];
+  readonly mustsBesideCore: readonly MustRule[];
   readonly units: readonly ProjectUnit[];
-  /** each once, grouped by code in the order WarningCode declares, each group in the order given */
   readonly warnings: readonly ProjectWarning[];
 }
 
@@ -31,8 +29,7 @@ const listedOnce = (warnings: readonly ProjectWarning[]): readonly ProjectWarnin
   );
 };
 
-/** How many blocks of the model some unit makes active. */
-const activeCountOf = (resolution: Resolution): number =>
+const activeInAnyUnitCountOf = (resolution: Resolution): number =>
   resolution.model.blocks.filter((block) =>
     resolution.units.some((unit) => unit.blocks.has(block.id)),
   ).length;
@@ -41,13 +38,13 @@ const create = (input: Resolution): Resolution => ({
   active: input.active,
   listing: input.listing,
   model: input.model,
-  musts: input.musts,
+  mustsBesideCore: input.mustsBesideCore,
   units: input.units,
   warnings: listedOnce(input.warnings),
 });
 
 const Resolution = {
-  activeCountOf,
+  activeInAnyUnitCountOf,
   create,
 } as const;
 

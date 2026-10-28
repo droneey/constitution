@@ -10,7 +10,6 @@ interface UserPromptSubmitContext extends CommandContext {
   readonly markTurn: (session: SessionId) => void;
 }
 
-/** UserPromptSubmit: notes the tree as the turn begins, so the gate knows what the turn changed. */
 const createUserPromptSubmitCommand = (context: UserPromptSubmitContext): Command =>
   new Command('user-prompt-submit')
     .description('Note the tree when the user sends a prompt.')

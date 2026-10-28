@@ -94,7 +94,7 @@ JsVariableDeclarator(id=$name, initializer=JsInitializerClause(expression=$value
         and {
           $name <: pascal_case(),
           $value <: not component_value(),
-          // An exported name may be one a framework reads by its spelling.
+          // Why: an exported name may be one a framework reads by its spelling.
           $constant <: not within JsExport(),
           $name <: not companion_of_a_type($module),
           $name <: not exported_by_a_clause($module)
@@ -103,8 +103,7 @@ JsVariableDeclarator(id=$name, initializer=JsInitializerClause(expression=$value
       register_diagnostic(span=$name, message="[identifier-case-by-kind] A module-level constant computed at run time is camelCase, or PascalCase for a component or the companion of a type of its name", severity="error")
     }
   },
-  // Biome keeps what a match adds to its matching state and copies that state
-  // before every declarator, so each match would slow the next: the diagnostic
-  // stays, the match fails.
+  // Why: Biome keeps what a match adds to its matching state and copies that state before every
+  // declarator, so each match would slow the next: the diagnostic stays, the match fails.
   false
 }

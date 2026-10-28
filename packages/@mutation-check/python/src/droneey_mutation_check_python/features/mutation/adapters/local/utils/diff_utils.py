@@ -10,10 +10,9 @@ from ....domain.value_objects import UnitRelativePath
 if TYPE_CHECKING:
   from ....domain.entities import FileChange
 
-# a diff split before each file's header, which each section keeps
 SECTION_PATTERN: Final = re.compile(r'(?=^diff --git )', re.MULTILINE)
-# a moved file that keeps its text has no `+++` line, only the name it was moved to; git ends a name
-# that holds a space with a tab
+# Why: a moved file that keeps its text has no `+++` line, only the name it was moved to; git ends a
+# name that holds a space with a tab.
 FILE_PATH_PATTERN: Final = re.compile(r'^(?:\+\+\+ b/|rename to )(.+?)\t?$', re.MULTILINE)
 MOVED_PATTERN: Final = re.compile(r'^rename from ', re.MULTILINE)
 NEW_FILE_PATTERN: Final = re.compile(r'^new file mode ', re.MULTILINE)
@@ -66,16 +65,12 @@ def _unit_sections(*, diff_output: str, unit_prefix: str) -> tuple[_Section, ...
 
 
 def file_changes(
-  *, diff_output: str, unit_prefix: str, untracked_paths: tuple[UnitRelativePath, ...]
+  *, diff_with_untracked_added: str, unit_prefix: str, untracked_paths: tuple[UnitRelativePath, ...]
 ) -> tuple[FileChange, ...]:
-  """The files of the unit a diff of the whole repository changed, then those git does not track.
-
-  The diff is git's `-U0` diff run with the files git does not track indexed as files to add.
-  """
   changed_files: list[FileChange] = []
   moved_paths: set[UnitRelativePath] = set()
 
-  for section in _unit_sections(diff_output=diff_output, unit_prefix=unit_prefix):
+  for section in _unit_sections(diff_output=diff_with_untracked_added, unit_prefix=unit_prefix):
     changed_file = ChangedFile(path=section.path, line_ranges=section.line_ranges)
 
     match section.kind:
@@ -84,8 +79,8 @@ def file_changes(
       case _SectionKind.MOVED:
         changed_files.append(changed_file)
         moved_paths.add(section.path)
-      # a file git does not track is left to the new files
       case _SectionKind.NEW:
+        # Why: a NEW section of an untracked file is left to the new files, which mutate it whole.
         if section.path not in untracked_paths:
           changed_files.append(changed_file)
       case _:  # pragma: no mutate -- no kind reaches it

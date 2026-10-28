@@ -16,7 +16,7 @@ import {
   MutationRunFailure,
 } from '../../../../errors';
 import { LineRange } from '../../../../value-objects';
-import { CheckScope, CheckStatus, checkMutations } from '../check-mutations.use-case.ts';
+import { CheckScope, CheckStatus, createCheckMutations } from '../check-mutations.use-case.ts';
 
 const orderPath = UnitRelativePath.create('src/order.utils.ts');
 const ratePath = UnitRelativePath.create('src/rate.utils.ts');
@@ -33,8 +33,6 @@ const fifthLine = LineRange.create({
   startLine: 5,
 });
 
-// The order's code changed, the price's only its form, the rate is new to the main line, and the
-// spec is a file the configuration leaves out.
 const branchReader = fakeBranchReader({
   baseTexts: new Map([
     [
@@ -73,7 +71,7 @@ const branchReader = fakeBranchReader({
       ],
     },
   ],
-  untrackedPaths: [
+  newFilePaths: [
     linePath,
     specPath,
   ],
@@ -109,7 +107,7 @@ const branchFailure = new BranchError({
   },
 });
 
-describe('checkMutations', () => {
+describe('createCheckMutations', () => {
   it('should mutate the lines the branch wrote in mutated files whose code changed, and every new file it mutates', async () => {
     // Arrange
     const runner = fakeMutationRunner({
@@ -120,15 +118,14 @@ describe('checkMutations', () => {
     });
 
     // Act
-    await checkMutations({
+    await createCheckMutations({
       branchReader,
       codeComparer,
       runner,
-      scope: CheckScope.Branch,
-    });
+    })(CheckScope.Branch);
 
     // Assert
-    expect(runner.runs).toStrictEqual([
+    expect(runner.targetsRun).toStrictEqual([
       [
         {
           filePath: linePath,
@@ -167,12 +164,11 @@ describe('checkMutations', () => {
       });
 
       // Act
-      const outcome = await checkMutations({
+      const outcome = await createCheckMutations({
         branchReader,
         codeComparer,
         runner,
-        scope,
-      });
+      })(scope);
 
       // Assert
       expect(outcome).toStrictEqual({
@@ -189,7 +185,7 @@ describe('checkMutations', () => {
     });
 
     // Act
-    const outcome = await checkMutations({
+    const outcome = await createCheckMutations({
       branchReader: fakeBranchReader({
         baseTexts: new Map([
           [
@@ -208,18 +204,19 @@ describe('checkMutations', () => {
       }),
       codeComparer,
       runner,
-      scope: CheckScope.Branch,
-    });
+    })(CheckScope.Branch);
 
     // Assert
     expect({
       outcome,
-      runs: runner.runs,
+      targetsRun: runner.targetsRun,
+      wholeRunCount: runner.wholeRunCount(),
     }).toStrictEqual({
       outcome: {
         status: CheckStatus.NothingChanged,
       },
-      runs: [],
+      targetsRun: [],
+      wholeRunCount: 0,
     });
   });
 
@@ -230,19 +227,22 @@ describe('checkMutations', () => {
     });
 
     // Act
-    await checkMutations({
+    await createCheckMutations({
       branchReader: fakeBranchReader({
         readFailure: branchFailure,
       }),
       codeComparer,
       runner,
-      scope: CheckScope.Everything,
-    });
+    })(CheckScope.Everything);
 
     // Assert
-    expect(runner.runs).toStrictEqual([
-      undefined,
-    ]);
+    expect({
+      targetsRun: runner.targetsRun,
+      wholeRunCount: runner.wholeRunCount(),
+    }).toStrictEqual({
+      targetsRun: [],
+      wholeRunCount: 1,
+    });
   });
 
   it.each([
@@ -260,7 +260,7 @@ describe('checkMutations', () => {
       failure: ConfigurationFailure.Missing,
       runner: fakeMutationRunner({
         exitCode: 0,
-        mutatedFailure: new ConfigurationError({
+        mutatedOfRejection: new ConfigurationError({
           code: ConfigurationFailure.Missing,
           fileNames: [
             'stryker.config.json',
@@ -284,12 +284,11 @@ describe('checkMutations', () => {
       // Act
       const thrown = await failureOf({
         call: () =>
-          checkMutations({
+          createCheckMutations({
             branchReader: reader,
             codeComparer,
             runner,
-            scope: CheckScope.Branch,
-          }),
+          })(CheckScope.Branch),
         kind: ProgramError,
       });
 

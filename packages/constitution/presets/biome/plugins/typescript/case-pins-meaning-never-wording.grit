@@ -1,7 +1,6 @@
 language js
 
-// Prose is three words in a row, each opened by a letter and parted by spaces; a code, a path, an id
-// or a number is not.
+// Why: prose is three words in a row; a code, a path, an id or a number is not.
 pattern prose() {
   or {
     JsStringLiteralExpression(),
@@ -26,14 +25,13 @@ pattern matcher() {
   }
 }
 
-// Prose written as an assertion's expected value; a value a case reads from a row of its table is
-// data, and the wording itself is pinned by its renderer's golden file.
+// Why: a value a case reads from a row of its table is data, and the golden file of its renderer
+// pins the wording.
 JsCallExpression(callee=JsStaticMemberExpression(member=matcher()), arguments=JsCallArguments(args=[
   prose() as $wording
 ])) where {
   register_diagnostic(span=$wording, message="[case-pins-meaning-never-wording] Compare what the outcome means — its code, its subject, the values it names — and pin the wording once, in the golden file of its renderer", severity="error"),
-  // Biome keeps what a match adds to its matching state and copies that state
-  // before every node, so each match would slow the next: the diagnostic stays,
-  // the match fails.
+  // Why: Biome keeps what a match adds to its matching state and copies that state before every
+  // node, so each match would slow the next: the diagnostic stays, the match fails.
   false
 }

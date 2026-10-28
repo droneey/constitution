@@ -30,10 +30,10 @@ const packageVersion = z
   .parse(
     JSON.parse(readFileSync(join(import.meta.dir, '..', '..', 'package.json'), 'utf8')),
   ).version;
-// A proxy that refuses every call: doctor finds GitHub unreachable at once, and no spec reaches it.
+// Why: a proxy that refuses every call: doctor finds GitHub unreachable at once, and no spec
+// reaches it.
 const NO_NETWORK = 'http://127.0.0.1:9';
 
-// A run as a pipeline runs the executable: no terminal, a clean environment.
 const runExecutable = (input: {
   args: readonly string[];
   cwd: string;

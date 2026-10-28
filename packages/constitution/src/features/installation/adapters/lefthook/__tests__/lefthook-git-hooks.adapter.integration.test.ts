@@ -29,7 +29,6 @@ const projectOf = (input: { config?: string }): string => {
 
 const TIMEOUT_MS = 10_000;
 
-// A lefthook on PATH that runs the script given.
 const binOf = (script: string): string => {
   const bin = join(root, 'bin');
   const path = join(bin, 'lefthook');
@@ -43,7 +42,6 @@ const binOf = (script: string): string => {
   return bin;
 };
 
-// A lefthook on PATH that answers check-install with the code given.
 const binWith = (code: number): string =>
   binOf(`[ "$1" = check-install ] && exit ${String(code)}\nexit 9`);
 

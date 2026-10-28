@@ -2,7 +2,7 @@ from .home_constants import WHOLE_EDGE_WORD
 from .standard_library_constants import (
   DATETIME_MODULE_NAME,
   EFFECT_MODULE_NAMES,
-  EFFECT_NAMES,
+  EFFECT_NAMES_OF_PURE_MODULES,
   ENVIRONMENT_NAMES,
   TIMER_NAMES,
 )
@@ -10,7 +10,7 @@ from .standard_library_constants import (
 __all__ = [
   'DATETIME_MODULE_NAME',
   'EFFECT_MODULE_NAMES',
-  'EFFECT_NAMES',
+  'EFFECT_NAMES_OF_PURE_MODULES',
   'ENVIRONMENT_NAMES',
   'TIMER_NAMES',
   'WHOLE_EDGE_WORD',

@@ -15,7 +15,6 @@ import {
 } from '../../../../../domain/entities';
 import { createRunCommand } from '../run.cli';
 
-// Two commands of the root and one of a member, with a finding of the plan.
 const plan: RunPlan = {
   findings: [
     {

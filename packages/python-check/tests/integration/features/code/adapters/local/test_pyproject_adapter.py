@@ -90,20 +90,20 @@ def test_should_read_the_settings_of_the_unit(
   [
     pytest.param(
       'tool = 1\n',
-      WrongShape(file_path='pyproject.toml', dotted_key='tool', expected=Expected.TABLE),
+      WrongShape(path_from_unit='pyproject.toml', dotted_key='tool', expected=Expected.TABLE),
       id='a tool of no table',
     ),
     pytest.param(
       'tool = { python-check = 1 }\n',
       WrongShape(
-        file_path='pyproject.toml', dotted_key='tool.python-check', expected=Expected.TABLE
+        path_from_unit='pyproject.toml', dotted_key='tool.python-check', expected=Expected.TABLE
       ),
       id='its own table of no table',
     ),
     pytest.param(
       '[tool.python-check]\nextend = "parts/a.toml"\n',
       WrongShape(
-        file_path='pyproject.toml',
+        path_from_unit='pyproject.toml',
         dotted_key='tool.python-check.extend',
         expected=Expected.LIST_OF_TEXT,
       ),
@@ -112,18 +112,22 @@ def test_should_read_the_settings_of_the_unit(
     pytest.param(
       '[tool.python-check]\nhomes = 1\n',
       WrongShape(
-        file_path='pyproject.toml', dotted_key='tool.python-check.homes', expected=Expected.TABLE
+        path_from_unit='pyproject.toml',
+        dotted_key='tool.python-check.homes',
+        expected=Expected.TABLE,
       ),
       id='homes of no table',
     ),
     pytest.param(
       '[tool.python-check]\nhome = { httpx = ["adapters"] }\n',
-      UnknownKey(file_path='pyproject.toml', dotted_key='tool.python-check.home'),
+      UnknownKey(path_from_unit='pyproject.toml', dotted_key='tool.python-check.home'),
       id='a key its own table does not hold',
     ),
     pytest.param(
       '[tool.uv]\nsources = 1\n',
-      WrongShape(file_path='pyproject.toml', dotted_key='tool.uv.sources', expected=Expected.TABLE),
+      WrongShape(
+        path_from_unit='pyproject.toml', dotted_key='tool.uv.sources', expected=Expected.TABLE
+      ),
       id='sources of no table',
     ),
   ],
@@ -169,28 +173,28 @@ def test_should_fail_with_every_problem_when_the_settings_have_the_wrong_shape(
 
   # Assert
   assert raised.value.problems == (
-    MissingPart(file_path='parts/missing.toml'),
-    WrongShape(file_path='parts/flat.toml', dotted_key='homes', expected=Expected.TABLE),
-    UnknownKey(file_path='parts/bad.toml', dotted_key='extend'),
+    MissingPart(path_from_unit='parts/missing.toml'),
+    WrongShape(path_from_unit='parts/flat.toml', dotted_key='homes', expected=Expected.TABLE),
+    UnknownKey(path_from_unit='parts/bad.toml', dotted_key='extend'),
     WrongShape(
-      file_path='parts/bad.toml', dotted_key='homes.httpx', expected=Expected.LIST_OF_TEXT
+      path_from_unit='parts/bad.toml', dotted_key='homes.httpx', expected=Expected.LIST_OF_TEXT
     ),
     WrongShape(
-      file_path='pyproject.toml',
+      path_from_unit='pyproject.toml',
       dotted_key='tool.python-check.homes.pydantic',
       expected=Expected.LIST_OF_TEXT,
     ),
     WrongShape(
-      file_path='pyproject.toml',
+      path_from_unit='pyproject.toml',
       dotted_key='tool.python-check.homes.attrs',
       expected=Expected.LIST_OF_TEXT,
     ),
-    WrongShape(file_path='pyproject.toml', dotted_key='tool.uv', expected=Expected.TABLE),
+    WrongShape(path_from_unit='pyproject.toml', dotted_key='tool.uv', expected=Expected.TABLE),
   )
 
 
 @pytest.mark.parametrize(
-  ('files', 'file_path'),
+  ('files', 'path_from_unit'),
   [
     pytest.param({'pyproject.toml': '[tool\n'}, 'pyproject.toml', id='the pyproject'),
     pytest.param(
@@ -204,7 +208,7 @@ def test_should_fail_with_every_problem_when_the_settings_have_the_wrong_shape(
   ],
 )
 def test_should_fail_by_the_file_when_it_does_not_parse_as_toml(
-  *, tmp_path: Path, files: dict[str, str], file_path: str
+  *, tmp_path: Path, files: dict[str, str], path_from_unit: str
 ) -> None:
   # Arrange
   write_files(tmp_path, files)
@@ -215,15 +219,13 @@ def test_should_fail_by_the_file_when_it_does_not_parse_as_toml(
 
   # Assert
   (problem,) = raised.value.problems
-  assert (type(problem), problem.file_path, type(raised.value.__cause__)) == (
+  assert (type(problem), problem.path_from_unit, type(raised.value.__cause__)) == (
     MalformedFile,
-    file_path,
+    path_from_unit,
     tomllib.TOMLDecodeError,
   )
 
 
-# Lines of the TOML the check reads, drawn beside any other text, so that a draw reaches its tables,
-# their wrong shapes and text that does not parse.
 TOML_LINES: Final = (
   '[tool]',
   '[tool.python-check]',

@@ -1,6 +1,6 @@
 @layer overrides {
-  /* the list is a stop of its own, so the keyboard can scroll it; its fading edges would clip its
-     ring, which its unmasked frame draws instead */
+  /* Why: the list is a stop of its own, so the keyboard can scroll it; its fading edges would
+     clip its ring, which its unmasked frame draws instead. */
   #nd-sidebar [data-id$='-viewport']:focus-visible {
     outline: none;
   }
@@ -11,7 +11,7 @@
     outline-offset: calc(-1 * var(--ring-focus-width));
   }
 
-  /* the logo's icon on the fields' leading icons, the collapse icon on their trailing ones */
+  /* Why: Fumadocs gives the rows above the list no hook but their place. */
   #nd-sidebar > div > div:first-child {
     gap: var(--spacing-xs);
     margin-block: var(--spacing-xs);
@@ -60,14 +60,13 @@
       transition-timing-function: var(--ease-out);
     }
 
-    /* a folder's panel grows and fades; its rows keep their size, so only its height moves them */
     & + div {
       transition-property: height, opacity;
       transition-duration: var(--duration-base);
       transition-timing-function: var(--ease-out);
     }
 
-    /* the list scrolls, so an outer ring would be clipped */
+    /* Why: the list scrolls, so an outer ring would be clipped. */
     &:focus-visible {
       outline-offset: calc(-1 * var(--ring-focus-width));
     }
@@ -77,7 +76,7 @@
     }
   }
 
-  /* the library's own block under the hovered row, drawn as the glide's */
+  /* Why: Fumadocs gives its hovered-row block no hook but its place; it is drawn as the glide's. */
   #nd-sidebar [data-id$='-viewport'] > div > [aria-hidden]:first-child {
     padding: 0;
     border: 0;

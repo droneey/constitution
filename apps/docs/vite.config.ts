@@ -16,13 +16,12 @@ const manifestShape = z.object({
 const { version: constitutionVersion } = manifestShape.parse(constitutionManifest);
 
 export default defineConfig({
-  // the site lives under its version beside the other releases', in the dev server too
   base: `/v${constitutionVersion}/`,
   server: {
     port: 3000,
     watch: {
-      // Stryker's sandboxes copy the app, tsconfig.json included, and a changed
-      // tsconfig.json restarts the server under the page being served
+      // Why: Stryker's sandboxes copy the app, tsconfig.json included, and a changed tsconfig.json
+      // restarts the server under the page being served.
       ignored: [
         '**/.stryker-tmp/**',
         '**/.tsc-cache/**',
@@ -37,7 +36,7 @@ export default defineConfig({
     fumadocsMdx(),
     tailwindcss(),
     tanstackStart({
-      // the wiring declares Start's request middleware, so it is the start entry
+      // Why: the wiring declares Start's request middleware, so it is the start entry.
       start: {
         entry: 'root/wiring.ts',
       },

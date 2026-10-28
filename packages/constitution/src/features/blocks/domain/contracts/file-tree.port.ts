@@ -2,18 +2,17 @@ import type { AbsolutePath } from '#/kernel/value-objects';
 
 import type { TreePath } from '../value-objects';
 
-/** Each call throws a {@link TreeError} when git cannot list or read the files. */
 interface FileTree {
+  /** @throws {TreeError} when git cannot list the files */
   readonly list: () => readonly TreePath[];
+  /** @throws {TreeError} when the file cannot be read */
   readonly read: (path: TreePath) => string;
 }
 
 interface FileTrees {
-  /** the files of an installed Constitution, as mise unpacks it */
   readonly installed: (folderPath: AbsolutePath) => FileTree;
-  /** the files of the repository that holds the folder */
+  /** @throws {TreeError} when git fails or answers past its time */
   readonly repository: (folderPath: AbsolutePath) => FileTree;
-  /** the files git holds in the folder */
   readonly tracked: (folderPath: AbsolutePath) => FileTree;
 }
 

@@ -12,6 +12,11 @@ if TYPE_CHECKING:
 
 
 def _scope_of(arguments: Sequence[str]) -> Scope:
+  """The scope the command line names.
+
+  Raises:
+    UsageError: the command line names an argument other than `all`.
+  """
   match arguments:
     case []:
       return Scope.CHANGED
@@ -27,9 +32,7 @@ def run_check_mutants(
   check_mutants: Callable[[Scope], Outcome],
   write: Callable[[str], object],
 ) -> ExitStatus:
-  """The command line's `mutmut-check [all]`: mutates the changed functions, or with `all` all.
-
-  check_mutants is the use case, bound by the root to the unit's workspace.
+  """Runs `mutmut-check [all]`: mutates the changed functions, or with `all` all.
 
   Raises:
     UsageError: the command line names an argument other than `all`.

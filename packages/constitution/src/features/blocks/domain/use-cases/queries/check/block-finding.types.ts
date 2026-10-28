@@ -29,7 +29,6 @@ import type {
 import type { LoadFindingDetails } from './steps/load-constitution';
 import type { ManifestReadDetails } from './utils';
 
-/** What each code of the blocks' findings names. */
 type BlockFindingDetails = AbstractBlocksDetails &
   BlockFormDetails &
   BudgetDetails &

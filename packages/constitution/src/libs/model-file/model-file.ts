@@ -6,15 +6,10 @@ import { isSystemError } from '#/libs/system-error';
 
 interface ReadModelFileInput<TModel> {
   readonly model: ZodType<TModel>;
-  /** the file's text as data; throws a SyntaxError on text of no form it reads */
   readonly parse: (text: string) => unknown;
   readonly path: string;
 }
 
-/**
- * The file's data as the model reads it; undefined when the file is missing, unreadable or
- * unparsed, or its data is not of the model's shape.
- */
 const readModelFile = <TModel>(input: ReadModelFileInput<TModel>): TModel | undefined => {
   let parsed: unknown;
 

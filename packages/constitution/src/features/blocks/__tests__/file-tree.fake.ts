@@ -5,7 +5,6 @@ import type { FileTree } from '../domain/contracts';
 import { TreeError, TreeFailure } from '../domain/errors';
 import { TreePath } from '../domain/value-objects';
 
-// The tree lies at the root, so a file it cannot read is named from there.
 const root = AbsolutePath.create('/');
 
 const createFakeFileTree = (files: Readonly<Record<string, string>>): FileTree => ({

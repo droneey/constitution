@@ -4,11 +4,6 @@ import { ConfigModuleError, ConfigModuleFailure } from '../domain/errors';
 
 const PARENT_PREFIX = '../';
 
-/**
- * a loader that holds one module, at `configPath`, whose default export is `exportedConfigOf`: a
- * path that leads out of the working folder is outside it, and any other it does not hold has
- * nothing at it
- */
 const createFakeConfigModuleLoader = (
   configPath: string,
   exportedConfigOf: (mode: ThemeMode) => unknown,

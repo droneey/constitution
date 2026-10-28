@@ -5,7 +5,6 @@ import type { DigestRelease } from '../../domain/entities';
 const releaseMessage = (release: DigestRelease): string =>
   `The Droneey Constitution ${release.version} supplies this repository's rules. Block files live under ${release.folderPath}.`;
 
-/** atLines is the " at line …" the text goes on with, or empty when no line is known. */
 const unparsedMessage = (atLines: string): string =>
   `constitution.yaml does not parse${atLines}; only core applies.`;
 

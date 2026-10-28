@@ -15,9 +15,7 @@ import { BlockId, coreBlockId } from './block-id.value-object';
 
 enum Placement {
   InBlock = 'in-block',
-  /** at the root of a layer's folder, in no block's folder */
   Loose = 'loose',
-  /** in a block folder whose name is no block id */
   MisnamedFolder = 'misnamed-folder',
 }
 
@@ -25,9 +23,7 @@ enum BlockFileKind {
   Passport = 'passport',
   Chapter = 'chapter',
   Seam = 'seam',
-  /** <axis>/<id>.md: a chapter named after its block, which only the passport is */
   NamedAfterBlock = 'named-after-block',
-  /** <axis>/with/<name>.md whose name is no block id */
   SeamOfNoBlockId = 'seam-of-no-block-id',
   Stray = 'stray',
 }
@@ -59,7 +55,6 @@ type FileInBlock =
         | BlockFileKind.Stray;
     };
 
-/** A file a block's folder holds by its form: its passport, a chapter or a seam. */
 type BlockPart = Extract<
   FileInBlock,
   {
@@ -94,7 +89,7 @@ interface LayerFolder {
   readonly prefix: string;
 }
 
-const HIDDEN = '.';
+const HIDDEN_NAME_PREFIX = '.';
 
 const prefixOf = (layer: Layer): string =>
   `${BLOCKS_FOLDER_NAME}${PATH_SEPARATOR}${LAYER_FOLDER_NAME[layer]}${PATH_SEPARATOR}`;
@@ -118,9 +113,8 @@ const STRAY = {
 } as const satisfies FileInBlock;
 
 const isMarkdown = (name: string): boolean =>
-  !name.startsWith(HIDDEN) && name.endsWith(MARKDOWN_EXTENSION);
+  !name.startsWith(HIDDEN_NAME_PREFIX) && name.endsWith(MARKDOWN_EXTENSION);
 
-// <id>.md, <axis>/<name>.md or <axis>/with/<block>.md below the block's folder.
 const fileOf = (input: { id: BlockId; segments: readonly string[] }): FileInBlock => {
   const [first, name, seam, ...deeper] = input.segments;
   const own = `${input.id}${MARKDOWN_EXTENSION}`;
@@ -171,7 +165,7 @@ const fileOf = (input: { id: BlockId; segments: readonly string[] }): FileInBloc
       };
 };
 
-const inFolder = (input: {
+const placeInBlockFolder = (input: {
   dir: string;
   layer: Layer;
   name: string;
@@ -210,7 +204,7 @@ const placeOf = (path: string): PlaceFields | undefined => {
   const rest = path.slice(folder.prefix.length);
 
   if (folder.layer === Layer.Core) {
-    return inFolder({
+    return placeInBlockFolder({
       dir: folder.prefix.slice(0, -PATH_SEPARATOR.length),
       layer: folder.layer,
       name: coreBlockId,
@@ -227,7 +221,7 @@ const placeOf = (path: string): PlaceFields | undefined => {
         path,
         placement: Placement.Loose,
       }
-    : inFolder({
+    : placeInBlockFolder({
         dir: `${folder.prefix}${rest.slice(0, slash)}`,
         layer: folder.layer,
         name: rest.slice(0, slash),
@@ -249,9 +243,7 @@ const axisRankOf = (file: FileInBlock): number =>
     ? AXES.indexOf(file.axis)
     : 0;
 
-// A layer's folder holds one block's folder of a name. Only a chapter's and a seam's axis orders: a
-// block has one passport, and a stray file sorts by its path.
-const keyOf = (place: BlockFilePlace): OrderKey => {
+const orderKeyOf = (place: BlockFilePlace): OrderKey => {
   if (place.placement === Placement.InBlock) {
     const { file } = place;
 
@@ -271,13 +263,9 @@ const keyOf = (place: BlockFilePlace): OrderKey => {
   };
 };
 
-/**
- * The order the blocks are read in: by layer, then folder, then the passport, the chapters, the seams
- * and any other file, each by axis and then by path.
- */
 const compare = (left: BlockFilePlace, right: BlockFilePlace): number => {
-  const leftKey = keyOf(left);
-  const rightKey = keyOf(right);
+  const leftKey = orderKeyOf(left);
+  const rightKey = orderKeyOf(right);
 
   return (
     leftKey.layer - rightKey.layer ||
@@ -288,14 +276,12 @@ const compare = (left: BlockFilePlace, right: BlockFilePlace): number => {
   );
 };
 
-/** Whether a value is the place its path parses to. */
 const is = (candidate: unknown): candidate is BlockFilePlace => {
   const path = fieldsOf(candidate).get('path');
 
   return typeof path === 'string' && isDeepEqual(placeOf(path), candidate);
 };
 
-/** Where a path from a Constitution's or a pack's folder sits, or undefined outside every layer. */
 const parse = (path: string): BlockFilePlace | undefined => {
   const place = placeOf(path);
 
@@ -309,10 +295,8 @@ interface PathInput {
   readonly layer: Layer;
 }
 
-/** The path from a Constitution's or a pack's folder of a block's part, as parse reads it back. */
 const pathOf = (input: PathInput): string => {
   const { file } = input;
-  // core's folder is its one block's
   const folder =
     input.layer === Layer.Core
       ? prefixOf(input.layer)
@@ -331,7 +315,6 @@ const pathOf = (input: PathInput): string => {
   }
 };
 
-// A place is all its path says of it, so one path is one place.
 const equals = (left: BlockFilePlace, right: BlockFilePlace): boolean => left.path === right.path;
 
 const BlockFilePlace = {

@@ -11,7 +11,6 @@ import type {
 } from './manifest.entity';
 import type { Agent, Skill } from './skill.entity';
 
-/** Each document is absent when its file is. */
 interface Documents {
   readonly agents: readonly Agent[];
   readonly decisions?: string;
@@ -26,13 +25,11 @@ interface Constitution {
   readonly blocks: readonly Block[];
   readonly documents: Documents;
   readonly paths: ReadonlySet<TreePath>;
-  /** the files of the repository that holds the Constitution, which its README and decision log link to */
   readonly repositoryPaths: ReadonlySet<TreePath>;
   readonly requirementAnswers: readonly RequirementAnswer[];
   readonly rules: readonly Rule[];
 }
 
-/** The model of its blocks, a pack's base among them, that a check of its presets reads. */
 const modelOf = (constitution: Constitution): BlockModel =>
   BlockModel.create({
     blocks: constitution.blocks.map(({ frontMatter, id, layer }) => ({

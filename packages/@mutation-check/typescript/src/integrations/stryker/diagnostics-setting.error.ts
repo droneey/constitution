@@ -6,7 +6,6 @@ enum DiagnosticsSettingFailure {
 
 interface DiagnosticsSettingDetails {
   readonly code: DiagnosticsSettingFailure;
-  /** each place in the configuration that breaks the shape, by its path */
   readonly problemPaths: readonly string[];
 }
 

@@ -3,8 +3,6 @@ import { describe, expect, it } from 'bun:test';
 import { isUsageError, UsageFailure } from '../../errors';
 import { baseFlagsOf, outputFlagsOf } from '../flags.utils';
 
-// The code of the UsageError an act throws and the option each of its problems names; undefined
-// when it throws none.
 const refusalOf = (act: () => unknown): unknown => {
   try {
     act();

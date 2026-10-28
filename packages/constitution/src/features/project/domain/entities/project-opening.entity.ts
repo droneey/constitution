@@ -5,7 +5,6 @@ import type { ParseFailure } from './project-config.entity';
 import type { Resolution } from './resolution.entity';
 
 interface OpenedProject extends ProjectPlace {
-  /** the packs its units list, each once, in the order they are first listed */
   readonly packs: readonly PackPath[];
   readonly resolution: Resolution;
 }
@@ -17,7 +16,6 @@ enum OpeningStatus {
   ConfigUnparsed = 'config-unparsed',
 }
 
-/** The project around a folder with what it declares resolved, or why it cannot be opened. */
 type ProjectOpening =
   | {
       readonly project: OpenedProject;

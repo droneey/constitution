@@ -71,7 +71,6 @@ const PRESETS = 'presets';
 const SOURCE = 'src/order.ts';
 const WARN = 'warn';
 
-/** What Biome reports when it lints the whole tree of the folder, version control aside. */
 const biomeDiagnostics = async (folder: string): Promise<readonly BiomeDiagnostic[]> => {
   const linting = Bun.spawn(
     [
@@ -95,10 +94,7 @@ const biomeDiagnostics = async (folder: string): Promise<readonly BiomeDiagnosti
 const widestConfig = (): z.infer<typeof preset> =>
   preset.parse(Bun.JSONC.parse(readFileSync(join(widestAppliedUnit('biome'), CONFIG), 'utf8')));
 
-/**
- * Biome's status on the widest configuration where it checks a file that keeps every rule: it fails
- * on a key, a rule or a plugin it does not know, and on a warning.
- */
+// Why: Biome fails on a key, a rule or a plugin it does not know, and on a warning.
 const widestStatus = async (): Promise<number> =>
   (
     await loadOf('biome', {
@@ -117,11 +113,8 @@ const widestStatus = async (): Promise<number> =>
 
 const presetPlugins = (): z.infer<typeof plugins> => widestConfig().plugins ?? [];
 
-/**
- * The plugin paths the widest configuration declares in more than one entry: Biome 2.6 runs every
- * entry of one path over the union of their includes, so an entry that narrows another narrows
- * nothing.
- */
+// Why: Biome 2.6 runs every entry of one plugin path over the union of their includes, so an entry
+// that narrows another narrows nothing.
 const repeatedPluginPaths = (): readonly string[] => {
   const paths = presetPlugins().map((plugin) =>
     normalize(typeof plugin === 'string' ? plugin : plugin.path),
@@ -130,7 +123,6 @@ const repeatedPluginPaths = (): readonly string[] => {
   return paths.filter((path, index) => paths.indexOf(path) !== index);
 };
 
-// What the blocks write as code — in backticks, or in a block's `governs`.
 const blockCode = (): readonly string[] =>
   readdirSync(blocks, {
     recursive: true,
@@ -143,7 +135,6 @@ const blockCode = (): readonly string[] =>
     ])
     .map(([, code, quoted]) => code ?? quoted ?? '');
 
-/** The folders, files and suffixes the plugins' includes name that no block writes as code. */
 const unwrittenPresetWords = (): readonly string[] => {
   const code = blockCode();
   const words = presetPlugins()
@@ -157,7 +148,6 @@ const unwrittenPresetWords = (): readonly string[] => {
   ].filter((word) => !code.some((written) => written.includes(word)));
 };
 
-/** The rules the widest configuration sets at warn, in its linter and in its overrides. */
 const warnedRules = (): readonly string[] => {
   const config = widestConfig();
 
@@ -178,10 +168,6 @@ const warnedRules = (): readonly string[] => {
     .map(({ rule }) => rule);
 };
 
-/**
- * The codes Biome reports when it lints the whole tree of a unit of the base alone, holding the
- * files given; the presets are linked in, as a project's release is, so a file can lie beside them.
- */
 const codesOfWholeTree = async (
   files: Readonly<Record<string, string>>,
 ): Promise<readonly string[]> => {

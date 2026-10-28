@@ -188,7 +188,7 @@ core:
                 - '*.${role.gateway}'
               forbidden_modules:
                 - '*.${role.bounded-context}'
-            # composition implements a feature's contract through another feature's surface
+            # Why: composition implements a feature's contract through another feature's surface.
             contracts[id=adapter-imports-only-its-owners-domain-and-shared-layers.composition-adapters]:
               name: adapter-imports-only-its-owners-domain-and-shared-layers
               type: forbidden
@@ -351,8 +351,8 @@ core:
       pyproject.toml:
         tool:
           importlinter:
-            # a role folder of the kernel and a module of each layer are reached from outside only
-            # through their __init__.py
+            # Why: a role folder of the kernel and a module of each layer are reached from outside
+            # only through their __init__.py.
             contracts[id=module-reached-only-through-its-surface.kernel]:
               name: module-reached-only-through-its-surface
               type: protected
@@ -367,8 +367,8 @@ core:
                 - '*.${role.gateway}.*.*'
               allowed_importers:
                 - '*.${role.gateway}.*'
-            # the root and the package's surface reach a composition module's adapter through the
-            # adapter's own surface
+            # Why: the root and the package's surface reach a composition module's adapter through
+            # the adapter's own surface.
             contracts[id=module-reached-only-through-its-surface.composition]:
               name: module-reached-only-through-its-surface
               type: protected
@@ -382,8 +382,8 @@ core:
                   -> *.${role.composition-module}.*.${role.gateway}.*'
                 - '* -> *.${role.composition-module}.*.${role.gateway}.*'
               unmatched_ignore_imports_alerting: none
-            # the root and the package's surface reach a feature's adapter through the adapter's own
-            # surface
+            # Why: the root and the package's surface reach a feature's adapter through the
+            # adapter's own surface.
             contracts[id=module-reached-only-through-its-surface.features]:
               name: module-reached-only-through-its-surface
               type: protected

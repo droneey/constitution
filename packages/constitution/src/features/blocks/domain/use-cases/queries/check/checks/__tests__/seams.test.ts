@@ -10,7 +10,6 @@ import { checkInputOf } from '../../__tests__/check.fixtures';
 import type { SeamsDetails } from '../seams';
 import { SeamsCode, seamsCheck } from '../seams';
 
-/** a seam titled as its other block's passport in the valid files, so only its pairing is in question */
 const seamOf = (path: string): string => {
   const titles: Readonly<Record<string, string>> = {
     biome: 'Biome',

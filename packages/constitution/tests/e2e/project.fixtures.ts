@@ -35,15 +35,12 @@ type Config = Partial<Record<ConfigKey, string>> & {
   omit?: ConfigKey;
 };
 
-// Paths are relative to the project root; aboveConfig and links lie in the
-// folder above it.
 interface ProjectLayout {
   aboveConfig?: string;
   config?: string;
   files?: Files | undefined;
   links?: Readonly<Record<string, string>>;
   namedPipes?: readonly string[];
-  // a worktree's root holds .git as a file
   repository?: Repository;
   unreadable?: readonly string[];
 }
@@ -62,7 +59,6 @@ const DEFAULTS: Readonly<Record<ConfigKey, string>> = {
 
 const created: string[] = [];
 
-// A value that opens with a line break is a block below its key.
 const configOf = (config: Config): string =>
   Object.values(ConfigKey)
     .filter((key) => key !== config.omit)
@@ -74,8 +70,6 @@ const configOf = (config: Config): string =>
     .join('\n')
     .concat('\n');
 
-// A workspace of the members given, each by its path with its constitution.yaml: the root's
-// package.json declares them, and each holds a package.json of its own.
 const workspaceOf = (members: Readonly<Record<string, string>>): Files => ({
   'package.json': `${JSON.stringify({
     workspaces: Object.keys(members),
@@ -181,8 +175,6 @@ const writeSpecials = (input: { above: string; layout: ProjectLayout; root: stri
   }
 };
 
-// The project root sits one folder below a temporary folder, so a
-// constitution.yaml can lie above the repository.
 const createProject = (layout: ProjectLayout): string => {
   const above = mkdtempSync(join(tmpdir(), 'constitution-project-'));
   const root = join(above, 'project');
@@ -222,10 +214,8 @@ const packCard = (fields: Readonly<Record<string, string>>): string =>
     '',
   ].join('\n');
 
-// The project's own pack, the folder /ratify writes its blocks to.
 const OWN_PACK = 'pack';
 
-// The passport of a block of the pack, by its id.
 const packPath = (id: string): string => `${OWN_PACK}/blocks/implementations/${id}/${id}.md`;
 
 interface PackBlockInput {
@@ -254,8 +244,7 @@ const paraglideFiles: Files = packBlockFiles({
   id: 'paraglide',
 });
 
-// Modelled on the reference web application.
-const browserApp: ProjectLayout = {
+const browserAppWithPackAndOverride: ProjectLayout = {
   config: [
     'axes: [architecture, workflow]',
     'domains: [ui, remote-data, i18n, analytics, version-control,',
@@ -275,8 +264,7 @@ const browserApp: ProjectLayout = {
   files: paraglideFiles,
 };
 
-// Modelled on nydra, with block sequences.
-const cli: ProjectLayout = {
+const cliInBlockSequences: ProjectLayout = {
   config: [
     'axes: [architecture, workflow]',
     'domains:',
@@ -308,9 +296,7 @@ const fromTemplate = (input: {
     readFileSync(join(templates, input.name), 'utf8'),
   );
 
-// The files /ratify writes from the templates; only the placeholders of the
-// block's front matter are filled, and the project lists its own pack.
-const ratified: ProjectLayout = {
+const ratifiedFromTemplates: ProjectLayout = {
   config: fromTemplate({
     fills: [
       [
@@ -361,9 +347,7 @@ const ratified: ProjectLayout = {
   },
 };
 
-// The reference web application and command-line tool, as the real blocks of
-// this repository would serve them.
-const realWebApp: ProjectLayout = {
+const referenceWebApp: ProjectLayout = {
   config: [
     'axes: [architecture, workflow]',
     '',
@@ -381,7 +365,7 @@ const realWebApp: ProjectLayout = {
   ].join('\n'),
 };
 
-const realCli: ProjectLayout = {
+const referenceCli: ProjectLayout = {
   config: [
     'axes: [architecture, workflow]',
     '',
@@ -399,17 +383,17 @@ const realCli: ProjectLayout = {
 
 export type { ProjectLayout };
 export {
-  browserApp,
+  browserAppWithPackAndOverride,
   ConfigKey,
-  cli,
+  cliInBlockSequences,
   configOf,
   createProject,
   lineNumberOf,
   OWN_PACK,
   Repository,
-  ratified,
-  realCli,
-  realWebApp,
+  ratifiedFromTemplates,
+  referenceCli,
+  referenceWebApp,
   removeProjects,
   workspaceOf,
 };

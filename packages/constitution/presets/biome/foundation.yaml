@@ -276,6 +276,11 @@ biome:
       biome.jsonc:
         plugins:
           - ./${constitution.path}/presets/biome/plugins/typescript/biome-refuses-empty-verbs.${role.grit-rule}
+  biome-refuses-empty-names:
+    typescript:
+      biome.jsonc:
+        plugins:
+          - ./${constitution.path}/presets/biome/plugins/typescript/biome-refuses-empty-names.${role.grit-rule}
 core:
   formatters-share-one-indent-and-width:
     '*':

@@ -8,8 +8,8 @@ const searchTrigger: BaseSlots['searchTrigger'] = {
   sm: SearchTrigger,
 };
 
-// one sidebar at every width, so the library's drawer is left out
 const sidebar = {
+  // Why: the page keeps one sidebar at every width, so it draws no drawer.
   drawer: (): undefined => undefined,
   main: DocsSidebarWidget,
   provider: Sidebar.Provider,

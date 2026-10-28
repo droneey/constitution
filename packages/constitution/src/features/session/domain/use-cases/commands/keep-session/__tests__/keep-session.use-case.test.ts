@@ -8,7 +8,7 @@ import {
   sessionStateOf,
 } from '../../../../../__tests__/session.fixtures';
 import { createFakeSessionCommandRepository } from '../../../../../__tests__/session-command-repository.fake';
-import { HookEventName, SessionOrigin } from '../../../../entities';
+import { HookEventName, SessionAgent, SessionOrigin } from '../../../../entities';
 import { keepSession } from '../keep-session.use-case';
 
 const heldState = sessionStateOf();
@@ -16,7 +16,6 @@ const startedState = sessionStateOf({
   repositoryFolderPath: AbsolutePath.create('/work/started'),
 });
 
-// The session keeps a state and was reminded of ui before the hook.
 const heldBefore = {
   reminded: [
     {
@@ -59,7 +58,7 @@ describe('keepSession', () => {
 
       // Assert
       expect({
-        reminded: store.get(keptSession)?.reminded.get(undefined),
+        reminded: store.get(keptSession)?.reminded.get(SessionAgent.main),
         state: store.get(keptSession)?.state,
       }).toStrictEqual({
         reminded,
@@ -94,7 +93,7 @@ describe('keepSession', () => {
 
     // Assert
     expect({
-      reminded: store.get(keptSession)?.reminded.get(undefined),
+      reminded: store.get(keptSession)?.reminded.get(SessionAgent.main),
       state: store.get(keptSession)?.state,
     }).toStrictEqual({
       reminded: new Set([

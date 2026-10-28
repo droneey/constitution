@@ -3,7 +3,6 @@ import { BlockId, RuleSlug } from '#/kernel/value-objects';
 
 import type { BlockSet, BlockSetBlock, BlockSetRule } from './block-set.entity';
 
-/** The block set as the resolution looks it up, with each block's bases, nearest first. */
 interface ProjectModel {
   readonly ancestors: ReadonlyMap<BlockId, readonly BlockId[]>;
   readonly blocks: readonly BlockSetBlock[];
@@ -39,11 +38,9 @@ const extendsBlock = (block: BlockSetBlock, id: BlockId): boolean =>
   // Stryker disable next-line ConditionalExpression,LogicalOperator: the test only narrows the type; an absent base equals none
   block.extends !== undefined && BlockId.equals(block.extends, id);
 
-/** The blocks that extend a block, in the order they were read. */
 const heirsOf = (model: ProjectModel, id: BlockId): readonly BlockId[] =>
   model.blocks.filter((block) => extendsBlock(block, id)).map((block) => block.id);
 
-/** The rules that tighten a rule and take their level from it, in the order they were read. */
 const inheritorsOf = (model: ProjectModel, slug: RuleSlug): readonly RuleSlug[] =>
   [
     ...model.rules.values(),
@@ -55,7 +52,6 @@ const inheritorsOf = (model: ProjectModel, slug: RuleSlug): readonly RuleSlug[] 
     )
     .map((rule) => rule.slug);
 
-/** The language blocks among a unit's blocks, in the order they were read. */
 const languagesOf = (model: ProjectModel, blocks: ReadonlySet<BlockId>): ReadonlySet<BlockId> =>
   new Set(
     model.blocks

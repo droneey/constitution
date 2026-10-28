@@ -37,13 +37,13 @@ const wordsPathsOf = (contributions: readonly Contribution[]): readonly (readonl
 
 const joinWords = (input: JoinWordsInput): Setting =>
   wordsPathsOf(input.contributions).reduce<Setting>((merged, keyPath) => {
-    const words = Setting.at(merged, keyPath);
+    const words = Setting.atKeysAsWritten(merged, keyPath);
 
     return Setting.isList(words)
-      ? Setting.withAt({
+      ? Setting.withAtKeysAsWritten({
+          held: words.map(String).join(' '),
           keyPath,
           setting: merged,
-          value: words.map(String).join(' '),
         })
       : merged;
   }, input.merged);

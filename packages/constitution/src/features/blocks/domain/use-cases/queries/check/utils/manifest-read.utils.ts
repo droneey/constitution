@@ -3,7 +3,6 @@ import type { FindingOf } from '#/kernel/types';
 import type { ManifestRead } from '../../../../entities';
 import { ReadStatus } from '../../../../entities';
 
-/** The codes of a plugin document that does not parse, the plugin's, its marketplace's or its hooks'. */
 enum ManifestReadCode {
   NotJson = 'manifest-not-json',
   OffSchema = 'manifest-off-schema',
@@ -14,7 +13,6 @@ interface ManifestReadDetails {
     readonly reason: string;
   };
   readonly [ManifestReadCode.OffSchema]: {
-    /** the path of the field the schema refuses, '' for the whole document */
     readonly field: string;
     readonly reason: string;
   };

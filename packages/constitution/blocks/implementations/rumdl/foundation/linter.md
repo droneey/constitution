@@ -4,9 +4,9 @@
 
 ## General
 
-### rule-lists-extended-never-replaced · MUST
+### rule-lists-extended-never-replaced → own-settings-only-add · MUST
 
-A project adds a rule with `extend-enable` and removes one with `extend-disable`, never with `enable` or `disable`, and a `[per-file-ignores]` of its own repeats the entries of the Constitution's distribution.
+A project adds a rule with `extend-enable` and removes with `extend-disable` only a rumdl rule that holds no rule of the Constitution, never with `enable` or `disable`, and a `[per-file-ignores]` of its own repeats the entries of the Constitution's distribution.
 
 | Why |
 |---|

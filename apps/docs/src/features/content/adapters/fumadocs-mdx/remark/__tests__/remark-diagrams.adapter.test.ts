@@ -23,7 +23,7 @@ describe('remarkDiagrams', () => {
     const html = htmlOfVariants(variants);
 
     // Assert
-    // in a text file, as Biome lints HTML and the SVG beautiful-mermaid draws trips its rules
+    // Why: in a text file, as Biome lints HTML and the SVG beautiful-mermaid draws trips its rules.
     expect(html).toBe(
       await goldenText(new URL('remark-diagrams.adapter.golden.txt', import.meta.url), html),
     );

@@ -1,8 +1,6 @@
 import { coreText } from './constitution.fixtures';
 import { INSTALLED } from './plugin-root.fixtures';
 
-// The digests a case pins whole, as a reader sees them: the one place their
-// wording is written down.
 const KEY =
   "In brackets, a block's chapters and seams, named without .md: foundation's first, then <axis>: <file>, ... An implementation is named by its library alone; square brackets name a block's pack or, in an application, its layer.";
 const DOMAINS = '## Domains (blocks/domains/<id>/<id>.md)';
@@ -58,7 +56,7 @@ const unparsedContext = (input: UnparsedContextInput): string =>
     root: input.root,
   });
 
-const browserAppContext = (root: string): string =>
+const browserAppWithPackAndOverrideContext = (root: string): string =>
   contextWith({
     body: [
       DOMAINS,
@@ -128,4 +126,4 @@ const everyCodeContext = (root: string): string =>
     ],
   });
 
-export { browserAppContext, everyCodeContext, unparsedContext };
+export { browserAppWithPackAndOverrideContext, everyCodeContext, unparsedContext };

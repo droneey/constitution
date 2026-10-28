@@ -6,7 +6,6 @@ import { loadOf } from './preset-load.fixtures';
 
 const SCRIPT = 'scripts/check.sh';
 
-// The scripts as shfmt prints them, formatted by the settings the presets write.
 const formattedIf = [
   '#!/bin/sh',
   'if true; then',
@@ -21,8 +20,8 @@ const formattedCase = [
 ];
 
 describe("the configuration EditorConfig's presets write", () => {
-  // Biome reads the .editorconfig of a unit that follows it, and fails on a value it does not know;
-  // it prints a summary of every check, so the status says it all.
+  // Why: Biome reads the .editorconfig of a unit that follows it, and fails on a value it does not
+  // know; it prints a summary of every check, so the status says it all.
   it('should load in Biome with no value it does not know when a unit follows every block EditorConfig is configured for', async () => {
     // Act
     const { status } = await loadOf('editorconfig', {
@@ -46,7 +45,7 @@ describe("the configuration EditorConfig's presets write", () => {
     expect(status).toBe(0);
   });
 
-  // shfmt skips a key or a value of the .editorconfig it does not know, so each it reads has a
+  // Why: shfmt skips a key or a value of the .editorconfig it does not know, so each it reads has a
   // script it must write otherwise than by default.
   it.each([
     {

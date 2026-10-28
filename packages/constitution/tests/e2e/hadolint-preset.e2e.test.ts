@@ -7,7 +7,6 @@ const BASE =
   'FROM alpine:3.22@sha256:4bcff63911fcb4448bd4fdacec207030997caf25e9bea4045fa6c8c44de311d1';
 const RUN_AS = 'USER 65534\nCMD ["true"]\n';
 const DOCKERFILE = 'Dockerfile';
-// hadolint names each finding by the code of its rule.
 const RULE_CODE = /\b(?:DL|SC)\d{4}\b/g;
 
 interface Lint {
@@ -32,7 +31,7 @@ const lintIn = async (dockerfile: string): Promise<Lint> => {
   };
 };
 
-// hadolint skips a key or a rule it does not know, and only prints, never fails, on a
+// Why: hadolint skips a key or a rule it does not know, and only prints, never fails, on a
 // configuration it cannot read, so each setting the presets write has a sample it must react to.
 describe("the configuration hadolint's presets write", () => {
   it('should load in hadolint when a unit follows every block hadolint is configured for', async () => {

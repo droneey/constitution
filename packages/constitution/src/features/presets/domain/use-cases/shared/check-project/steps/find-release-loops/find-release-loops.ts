@@ -10,10 +10,6 @@ interface FindReleaseLoopsInput {
   readonly units: readonly ProjectUnit[];
 }
 
-/**
- * A unit whose link to the release leads back to a folder that holds the link, the unit's own or
- * one above it: a tool that walks the unit follows it without end.
- */
 const findReleaseLoops = (input: FindReleaseLoopsInput): readonly ProjectWarning[] =>
   input.units.flatMap((unit) => {
     const unitFolderPath = AbsolutePath.join(input.repositoryFolderPath, unit.path);

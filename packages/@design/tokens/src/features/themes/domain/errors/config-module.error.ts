@@ -41,7 +41,6 @@ const messageOf = (details: ConfigModuleFailureDetails): string => {
   }
 };
 
-/** A platform's configuration module the generation cannot build from: a failure of the platform, never of the tokens. */
 class ConfigModuleError extends Error {
   public readonly code: ConfigModuleFailure;
   public readonly details: ConfigModuleFailureDetails;

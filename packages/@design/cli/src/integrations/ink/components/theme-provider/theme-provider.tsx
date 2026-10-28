@@ -6,7 +6,7 @@ import { createTheme } from '#/libs/ui';
 import { ThemeContext } from '../../theme';
 
 interface ThemeProviderProps {
-  /** the app's accent; the default theme's where none is given */
+  /** none keeps the default theme's */
   readonly accent?: AccentScale;
   readonly children: ReactNode;
   readonly output: Output;

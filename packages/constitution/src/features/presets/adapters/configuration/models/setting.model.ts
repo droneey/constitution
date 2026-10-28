@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-// A configuration's settings as JSON holds them once its nulls are left out.
 type SettingWire =
   | boolean
   | number

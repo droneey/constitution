@@ -290,7 +290,7 @@ describe('markBlocks', () => {
     ]);
   });
 
-  it('should name every block an entry of the file brings, whatever the unit takes', () => {
+  it('should name every block that brings or keys an entry of the file, whatever the unit takes', () => {
     // Arrange
     const written = entryOf({
       file: '.gitignore',
@@ -324,6 +324,7 @@ describe('markBlocks', () => {
     // Assert
     expect(marks?.blocks).toStrictEqual([
       BlockId.create('git'),
+      BlockId.create('core'),
       BlockId.create('vite'),
     ]);
   });

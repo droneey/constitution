@@ -9,6 +9,7 @@ export type {
 export { DigestEntryKind } from './digest-listing.entity';
 export { HookEventName } from './hook-event-name.entity';
 export type { RemindedBlock, Reminder } from './reminder.entity';
+export { SessionAgent } from './session-agent.entity';
 export type { DigestContents, DigestRelease, SessionDigest } from './session-digest.entity';
 export { DigestKind } from './session-digest.entity';
 export type { FingerprintMark } from './session-mark.entity';

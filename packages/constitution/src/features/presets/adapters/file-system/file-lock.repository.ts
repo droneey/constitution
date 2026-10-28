@@ -15,8 +15,6 @@ const unparsed: LockRead = {
   status: LockReadStatus.Unparsed,
 };
 
-// A lock that is not there is empty; one that cannot be read or does not parse, as a merge's
-// conflict leaves it, is unparsed.
 const read = (unitFolderPath: AbsolutePath): LockRead => {
   const lockFilePath = AbsolutePath.join(unitFolderPath, LOCK_FILE_NAME);
 

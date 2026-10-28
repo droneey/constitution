@@ -1,13 +1,11 @@
+import { SLOT_KEY } from '../constants';
 import { KeyKind, SettingKey } from '../value-objects';
 import { Setting } from './setting.entity';
 
 enum ValueKind {
   Map = 'map',
-  /** a scalar or a list, written as it is; a list item `{slot: <name>}` is a slot */
   Plain = 'plain',
-  /** `!replace`: the value replaces whatever the other entries give its path */
   Replace = 'replace',
-  /** `!default`: the value is written only where the file holds nothing, and never checked */
   Default = 'default',
 }
 
@@ -18,21 +16,16 @@ interface PresetPair {
 
 type PresetValue =
   | {
-      /** `!words`: a list the file holds as one text, its items joined by spaces */
       readonly isWords: boolean;
       readonly kind: ValueKind.Default | ValueKind.Plain | ValueKind.Replace;
       readonly setting: Setting;
     }
   | {
-      /** `!sorted`: the file keeps the map's keys, its own among them, in their order as texts */
       readonly isSorted: boolean;
       readonly kind: ValueKind.Map;
       readonly pairs: readonly PresetPair[];
     };
 
-const SLOT_KEY = 'slot';
-
-/** The slot a list item places, `{slot: <name>}`, whose name inserts address as `list@<name>`. */
 const slotOf = (listed: Setting): string | undefined => {
   // Stryker disable next-line ConditionalExpression,BlockStatement: a text or a list holds no slot key either
   if (!Setting.isMap(listed)) {
@@ -42,6 +35,62 @@ const slotOf = (listed: Setting): string | undefined => {
   const name = listed[SLOT_KEY];
 
   return Object.keys(listed).length === 1 && typeof name === 'string' ? name : undefined;
+};
+
+const placesSlot = (element: Setting, slot: string): boolean =>
+  Setting.isMap(element) &&
+  Object.values(element).some(
+    (held) => Setting.isList(held) && held.some((listed) => slotOf(listed) === slot),
+  );
+
+const withoutSlots = (setting: Setting): Setting => {
+  if (Setting.isList(setting)) {
+    return setting.filter((listed) => slotOf(listed) === undefined).map(withoutSlots);
+  }
+
+  return Setting.isMap(setting)
+    ? Object.fromEntries(
+        Object.entries(setting).map(([key, held]) => [
+          key,
+          withoutSlots(held),
+        ]),
+      )
+    : setting;
+};
+
+const isListFilledFrom = (given: readonly Setting[], held: readonly Setting[]): boolean => {
+  const [first, ...rest] = given;
+
+  if (first === undefined) {
+    return held.length === 0;
+  }
+
+  if (slotOf(first) !== undefined) {
+    return [
+      ...held.keys(),
+      held.length,
+    ].some((filled) => isListFilledFrom(rest, held.slice(filled)));
+  }
+
+  const [next, ...others] = held;
+
+  return isFilledFrom(first, next) && isListFilledFrom(rest, others);
+};
+
+const isFilledFrom = (given: Setting, held: Setting | undefined): boolean => {
+  if (Setting.isList(given)) {
+    return Setting.isList(held) && isListFilledFrom(given, held);
+  }
+
+  if (Setting.isMap(given)) {
+    return (
+      Setting.isMap(held) &&
+      Object.keys(held).length === Object.keys(given).length &&
+      Object.entries(given).every(([key, listed]) => isFilledFrom(listed, held[key]))
+    );
+  }
+
+  return Setting.same(given, held);
 };
 
 const settingOf = (given: PresetValue): Setting =>
@@ -61,7 +110,6 @@ const settingOf = (given: PresetValue): Setting =>
       )
     : given.setting;
 
-/** A list item, or the map of a pair, as the item it inserts. */
 const itemsOf = (given: PresetValue): readonly Setting[] => {
   const setting = settingOf(given);
 
@@ -104,13 +152,16 @@ const sortedMapOf = (pairs: readonly PresetPair[]): PresetValue => ({
 });
 
 const PresetValue = {
+  isFilledFrom,
   isInsertOnly,
   itemsOf,
   mapOf,
+  placesSlot,
   plain,
   settingOf,
   slotOf,
   sortedMapOf,
+  withoutSlots,
   wordsOf,
 } as const;
 

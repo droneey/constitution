@@ -29,8 +29,6 @@ interface Session {
 }
 
 const CHECK = 'constitution run check';
-// What the gate says: its decision, or a review asked for in a system message,
-// then the names it gives, the check to run or the blocks the changes fall under.
 const NOTHING: readonly string[] = [] as const;
 const BLOCKED: readonly string[] = [
   'block',

@@ -7,10 +7,10 @@ import { createPlainTheme } from '#/__tests__/theme.fixtures';
 import { frameOnceShown, renderWithTheme } from '../../../__tests__/ink.fixtures';
 import { Spinner } from '../spinner';
 
-/** slower than Ink's own pace, so a spinner that kept Ink's would move too soon */
+// Why: slower than Ink's own pace, so a spinner that kept Ink's would move too soon.
 const PACE_MS = 300;
 
-/** the least wait the pace allows, since Ink's clock starts while it draws, a moment before the wait */
+// Why: Ink's clock starts while it draws, a moment before the wait.
 const LEAST_WAIT_MS = 250;
 
 const pacedTheme = {

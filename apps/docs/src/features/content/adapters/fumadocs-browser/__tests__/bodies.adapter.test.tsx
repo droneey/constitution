@@ -13,7 +13,6 @@ afterEach(cleanup);
 
 const neverLoads = (): Promise<never> => new Promise(() => undefined);
 
-/** the first heading the body's table of contents lists */
 function FirstHeading({ load }: { load: PageBody['load'] }): ReactElement {
   return <p>{use(load()).toc[0]?.title}</p>;
 }

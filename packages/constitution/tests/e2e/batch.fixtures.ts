@@ -9,14 +9,13 @@ interface BatchSource<TInput, TOutcome> {
 }
 
 interface Batch<TInput, TOutcome> {
-  /** @throws Error when no table registered the input, or before the batch is run. */
   readonly outcomeOf: (input: TInput) => TOutcome;
   readonly register: <TRow extends TInput>(row: TRow) => TRow;
   readonly runRegistered: () => Promise<void>;
 }
 
-// The tables of a spec file register their inputs while the file is collected, and one run takes
-// them all before the first case: a spec file makes its own batch, so no state outlives it.
+// Why: the tables of a spec file register their inputs while the file is collected, and one run
+// takes them all before the first case: a spec file makes its own batch, so no state outlives it.
 const createBatch = <TInput, TOutcome>(
   source: BatchSource<TInput, TOutcome>,
 ): Batch<TInput, TOutcome> => {

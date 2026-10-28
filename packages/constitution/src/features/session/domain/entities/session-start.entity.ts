@@ -2,7 +2,6 @@ import type { AbsolutePath } from '#/kernel/value-objects';
 
 import type { HookEventName } from './hook-event-name.entity';
 
-/** How a session started, as Claude Code names it; any other is Unknown. */
 enum SessionOrigin {
   Startup = 'startup',
   Resume = 'resume',
@@ -14,7 +13,6 @@ enum SessionOrigin {
 interface SessionStart {
   readonly event: HookEventName;
   readonly origin: SessionOrigin;
-  /** the folder the project is looked for from */
   readonly searchFrom: AbsolutePath;
 }
 

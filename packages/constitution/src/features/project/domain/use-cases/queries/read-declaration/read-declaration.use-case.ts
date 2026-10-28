@@ -38,11 +38,8 @@ interface ReadDeclarationInput extends ProjectPorts {
 }
 
 /**
- * What the constitution.yaml of a project and of each member of its workspace declare, read against
- * the release the project pins and the packs they list.
- *
- * @throws {@link UnreadableFileError} when constitution.yaml cannot be read
- * @throws {@link ReleaseError} when the release's blocks cannot be listed
+ * @throws {UnreadableFileError} when constitution.yaml cannot be read
+ * @throws {ReleaseError} when the release's blocks cannot be listed
  */
 const readDeclaration = (input: ReadDeclarationInput): Declaration => {
   const { files } = input;

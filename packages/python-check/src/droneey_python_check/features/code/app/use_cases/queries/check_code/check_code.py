@@ -16,9 +16,7 @@ def run_check_code(
   check_code: Callable[[Sequence[Path]], tuple[Finding, ...]],
   write: Callable[[str], object],
 ) -> ExitStatus:
-  """The command line's `python-check <path>...`: each finding in the files under the paths.
-
-  check_code is the use case, bound by the root to the files and the settings it reads.
+  """Runs `python-check <path>...`.
 
   Raises:
     UsageError: the command line names no path.

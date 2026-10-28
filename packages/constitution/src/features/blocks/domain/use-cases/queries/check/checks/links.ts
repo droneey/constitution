@@ -10,7 +10,6 @@ enum LinksCode {
 
 interface LinksDetails {
   readonly [LinksCode.MissingTarget]: {
-    /** the link's target as written */
     readonly target: string;
   };
 }
@@ -18,7 +17,6 @@ interface LinksDetails {
 type LinksFinding = FindingOf<LinksDetails>;
 
 interface Document {
-  /** the files and folders its links may reach */
   readonly known: ReadonlySet<string>;
   readonly path: string;
   readonly text: string;

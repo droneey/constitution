@@ -52,7 +52,8 @@ themeBuilderSuite({
   implementationName: 'styleDictionaryThemeBuilder',
   scenario: () => ({
     builder: styleDictionaryThemeBuilder,
-    builtModeNames: () => (existsSync(builtPath()) ? readdirSync(builtPath()).toSorted() : []),
+    sortedBuiltModeNames: () =>
+      existsSync(builtPath()) ? readdirSync(builtPath()).toSorted() : [],
     configOf: tokenPathsConfigOf(builtPath()),
     modes: scenarioModes(),
   }),

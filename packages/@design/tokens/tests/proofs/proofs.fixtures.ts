@@ -13,7 +13,6 @@ const resolverUrl = new URL('../../tokens/design.resolver.json', import.meta.url
 
 const READ_PLATFORM_NAME = 'tokens';
 
-/** the surface a role laid over at a share of opacity is seen on */
 const BASE_SURFACE_PATH = 'color.surface.base';
 
 const LEADING_PREFIX = 'font.leading.';
@@ -25,7 +24,7 @@ const GRID_GROUP_PREFIXES: readonly string[] = [
   SIZE_PREFIX,
 ] as const;
 
-/** the decimals a line height is rounded to, since a leading is a float a hair off its fraction */
+// Why: a leading is a float a hair off its fraction, so it is compared to this many digits.
 const LINE_HEIGHT_PRECISION = 9;
 const GRID_PIXELS: readonly number[] = [
   4,
@@ -47,7 +46,6 @@ const GRID_PIXELS: readonly number[] = [
   768,
 ] as const;
 
-/** the pairs of roles whose contrast every mode must reach: 4.5 for text, 3 for a control and the focus ring, 7 for body text */
 const CONTRAST_PAIRS = [
   [
     'text.primary',
@@ -273,7 +271,6 @@ const isComponents = (
 ] =>
   Array.isArray(raw) && raw.length === 3 && raw.every((component) => typeof component === 'number');
 
-/** a role's colour in linear sRGB, laid over the base surface at its opacity */
 const colourOf = (tokens: DesignTokens, tokenPath: string): PlainColorObject => {
   const reference = tokens.get(tokenPath);
   const colour = typeof reference === 'string' ? tokens.get(reference.slice(1, -1)) : reference;
@@ -333,6 +330,10 @@ const pixelsOf = (tokenPath: string): number => {
   return measure['value'];
 };
 
+// Why: a leading's step names the size it serves before any suffix: `sm-relaxed` is a line for `sm`.
+const sizeStepOfLeading = (leadingPath: string): string | undefined =>
+  leadingPath.slice(LEADING_PREFIX.length).split('-')[0];
+
 const lineHeightPixelsOf = (leadingPath: string): number => {
   const leading = defaultTokens.get(leadingPath);
 
@@ -340,14 +341,11 @@ const lineHeightPixelsOf = (leadingPath: string): number => {
     throw new Error(`the tokens hold no leading for ${leadingPath}`);
   }
 
-  // a leading's step names the size it serves before any suffix: `sm-relaxed` is a line for `sm`
-  const [sizeStep] = leadingPath.slice(LEADING_PREFIX.length).split('-');
-  const pixels = leading * pixelsOf(`${SIZE_PREFIX}${sizeStep}`);
+  const pixels = leading * pixelsOf(`${SIZE_PREFIX}${sizeStepOfLeading(leadingPath)}`);
 
   return Number(pixels.toFixed(LINE_HEIGHT_PRECISION));
 };
 
-/** whether the line a leading gives the size it serves measures a whole, even number of pixels */
 const isLineOfEvenPixels = (leadingPath: string): boolean =>
   lineHeightPixelsOf(leadingPath) % 2 === 0;
 

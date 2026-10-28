@@ -17,10 +17,6 @@ interface ResolveDeclarationInput {
   readonly today: Temporal.PlainDate;
 }
 
-/**
- * Which blocks the constitution.yaml of the repository and of each member make active, what is
- * wrong with them, and what the digest and the later hooks give of them.
- */
 const resolveDeclaration = (input: ResolveDeclarationInput): Resolution => {
   const read = readBlockSet({
     parser: input.parser,
@@ -54,7 +50,7 @@ const resolveDeclaration = (input: ResolveDeclarationInput): Resolution => {
       units,
     }),
     model: read.model,
-    musts: activated.musts,
+    mustsBesideCore: activated.mustsBesideCore,
     units: units.map((unit) =>
       ProjectUnit.create({
         axes: [

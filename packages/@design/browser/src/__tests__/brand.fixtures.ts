@@ -1,4 +1,3 @@
-/** an app's brand file: two steps beside its group's own type, one also giving its sRGB colour */
 const createBrandFile = (stepOverrides: Readonly<Record<string, unknown>> = {}): unknown => ({
   color: {
     brand: {

@@ -37,7 +37,7 @@ const searchIndex = createSearchAPI('advanced', {
 
 const refusingFetch = globalThis.fetch;
 
-/** Fumadocs keeps an index by its address for the page's life, so each case serves its own */
+// Why: Fumadocs keeps an index by its address for the page's life, so each case serves its own.
 const serveAt = (address: string, answer: () => Promise<Response>): void => {
   Object.defineProperty(globalThis, 'fetch', {
     configurable: true,
@@ -61,7 +61,6 @@ afterEach(() => {
   });
 });
 
-/** the code, the details and the name of the cause a search failed with, or the error itself when it is none of the feature's */
 const failureOf = (search: Promise<unknown>): Promise<unknown> =>
   search.catch((error: unknown) =>
     error instanceof SearchError

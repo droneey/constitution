@@ -30,7 +30,7 @@ const formatStep = (theme: Theme, step: StepContent): string => {
 const formatTaskList = (theme: Theme, steps: readonly StepContent[]): string =>
   steps.map((step) => formatStep(theme, step)).join('\n');
 
-/** the line a spinner stands for where nothing moves: the work going on */
+/** stands for a spinner where nothing moves */
 const formatWaiting = (theme: Theme, label: string): string =>
   `${theme.paint(Tone.Accent, theme.glyphs[Glyph.Step])}${gapOf(theme)}${label}${ELLIPSIS}`;
 

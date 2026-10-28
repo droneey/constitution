@@ -1,7 +1,6 @@
 import { ReleaseError } from './release.error';
 import { UnreadableFileError } from './unreadable-file.error';
 
-/** An expected failure to read a project's Constitution. */
 type ProjectError = ReleaseError | UnreadableFileError;
 
 const isProjectError = (error: unknown): error is ProjectError =>

@@ -29,7 +29,7 @@ biome → file-within-500-lines: belongs in presets/biome/foundation/with/git/wi
 biome → file-within-500-lines: needs css, browser, git beyond its reader, and a preset file's path names at most 2; leave out a role that needs a block of its own
 
 # entry-off-its-axis
-biome → file-within-500-lines: file-within-500-lines is a rule of architecture, an axis this preset file does not stand on
+biome → file-within-500-lines: file-within-500-lines is a rule of architecture, not of this preset file's axis
 
 # file-outside-its-unit
 biome → file-within-500-lines: ../biome.json leaves the folder of its unit
@@ -69,6 +69,9 @@ gets an insert into the slot checks of jobs, which the list does not place
 
 # slot-in-no-list
 gets an insert into the slot checks of jobs, which is no list
+
+# slot-placed-twice
+gets an insert into the item of overrides that places the slot injected-classes, which two items place
 
 # missing-name
 gives no name, which an entry it takes writes as ${package.name}; add name

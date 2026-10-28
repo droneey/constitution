@@ -19,7 +19,6 @@ import { createConfigModuleLoader } from '../config-module-loader.adapter';
 
 const sandboxPath = temporaryFolder();
 
-/** a working folder inside the sandbox that holds `configText` at the scenario's path, beside a module that throws when it runs */
 const workingFolderWith = (configText: string): AbsolutePath => {
   const workingFolderPath = AbsolutePath.create(join(sandboxPath(), 'platform'));
 

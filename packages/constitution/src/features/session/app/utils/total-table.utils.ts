@@ -1,7 +1,3 @@
-/**
- * Another party's names of a set of the program's values, as a Map from each name to its value; the
- * type checker refuses a table that leaves a value of TValue unnamed.
- */
 const totalTableOf =
   <TValue extends string>() =>
   <TTable extends Readonly<Record<string, TValue>>>(

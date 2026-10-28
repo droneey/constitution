@@ -16,9 +16,7 @@ import { specSettingsModel } from './spec-settings.model.ts';
 import { streamTextOf } from './stream-text.utils.ts';
 
 interface BunTestSpecRunnerInput {
-  /** the only variables of the environment the specs see */
   readonly env: Readonly<Record<string, string>>;
-  /** past it, the rest of a run's error output is left unread */
   readonly outputLimitBytes: number;
   readonly unitFolderPath: AbsolutePath;
 }
@@ -28,7 +26,7 @@ const DEPENDENCY_FOLDER_NAME = 'node_modules';
 
 const configOption = `--config=./${CONFIG_FILE_NAME}`;
 
-// A mutant's verdict needs no case past the first failure.
+// Why: a mutant's verdict needs no case past the first failure.
 const COMMAND = [
   'bun',
   configOption,
@@ -40,7 +38,7 @@ const specGlob = new Bun.Glob('**/*.test.{ts,tsx}');
 
 const isSyntaxError = (caught: unknown): boolean => caught instanceof SyntaxError;
 
-/** @throws SpecSettingsError when the text is no TOML */
+/** @throws {SpecSettingsError} when the text is no TOML */
 const tomlOf = (configText: string): unknown => {
   try {
     return Bun.TOML.parse(configText);
@@ -62,7 +60,10 @@ const tomlOf = (configText: string): unknown => {
   }
 };
 
-/** @throws SpecSettingsError when the unit has none, or it is no TOML of the shape `bun test` reads */
+/**
+ * @throws {SpecSettingsError} when the unit has none, or it is no TOML of the shape
+ * `bun test` reads
+ */
 const specSettingsIn = (unitFolderPath: AbsolutePath): SpecSettings['test'] => {
   const configPath = join(unitFolderPath, CONFIG_FILE_NAME);
 
@@ -89,8 +90,11 @@ const specSettingsIn = (unitFolderPath: AbsolutePath): SpecSettings['test'] => {
   return parsing.data.test;
 };
 
-/** Runs `bun test` in the unit's folder by the unit's mutation configuration. */
 const bunTestSpecRunner = (input: BunTestSpecRunnerInput): SpecRunner => ({
+  /**
+   * @throws {SpecSettingsError} when the unit has none, or it is no TOML of the shape `bun
+   * test` reads
+   */
   findSpecPaths: (): readonly UnitRelativePath[] => {
     const settings = specSettingsIn(input.unitFolderPath);
     const rootFolderPath = join(input.unitFolderPath, settings.root);
@@ -121,7 +125,7 @@ const bunTestSpecRunner = (input: BunTestSpecRunnerInput): SpecRunner => ({
         cwd: input.unitFolderPath,
         env: {
           ...input.env,
-          ...run.variables,
+          ...run.addedVariables,
         },
         signal: AbortSignal.any([
           run.signal,

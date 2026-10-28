@@ -31,8 +31,13 @@ OWN_TABLE_KEYS: Final = frozenset({EXTEND_KEY, HOMES_KEY})
 PART_KEYS: Final = frozenset({HOMES_KEY})
 
 
-def _toml_document(*, folder_path: Path, file_path: str) -> Mapping[str, object] | None:
-  absolute_path = folder_path / file_path
+def _toml_document(*, folder_path: Path, path_from_unit: str) -> Mapping[str, object] | None:
+  """The file's TOML document, or None when no file is there.
+
+  Raises:
+    SettingsError: the file does not parse as TOML.
+  """
+  absolute_path = folder_path / path_from_unit
 
   if not absolute_path.is_file():
     return None
@@ -42,7 +47,7 @@ def _toml_document(*, folder_path: Path, file_path: str) -> Mapping[str, object]
       return tomllib.load(toml_file)
     except tomllib.TOMLDecodeError as error:
       parser_message = str(error)  # pragma: no mutate -- the parser's text only a person reads
-      problem = MalformedFile(file_path=file_path, parser_message=parser_message)
+      problem = MalformedFile(path_from_unit=path_from_unit, parser_message=parser_message)
 
       raise SettingsError((problem,)) from error
 
@@ -79,14 +84,13 @@ class _File:
   def table(
     self, parent: Mapping[str, object], *, key: str, dotted_key: str
   ) -> _Read[Mapping[str, object]]:
-    """The table under the key of the parent, empty when it is absent."""
     candidate = parent.get(key, {})
 
     if _is_table(candidate):
       return _Read(value=candidate)
 
     problem = WrongShape(
-      file_path=self.path_from_unit, dotted_key=dotted_key, expected=Expected.TABLE
+      path_from_unit=self.path_from_unit, dotted_key=dotted_key, expected=Expected.TABLE
     )
 
     return _Read(value={}, problems=(problem,))
@@ -95,7 +99,7 @@ class _File:
     self, table: Mapping[str, object], *, known_keys: frozenset[str], keys_to_table: tuple[str, ...]
   ) -> tuple[Problem, ...]:
     return tuple(
-      UnknownKey(file_path=self.path_from_unit, dotted_key=_dotted_key(*keys_to_table, key))
+      UnknownKey(path_from_unit=self.path_from_unit, dotted_key=_dotted_key(*keys_to_table, key))
       for key in table
       if key not in known_keys
     )
@@ -115,7 +119,7 @@ class _File:
       problems=table.problems
       + tuple(
         WrongShape(
-          file_path=self.path_from_unit,
+          path_from_unit=self.path_from_unit,
           dotted_key=_dotted_key(dotted_key, package_name),
           expected=Expected.LIST_OF_TEXT,
         )
@@ -125,7 +129,7 @@ class _File:
     )
 
 
-# The build backend names the import package after the distribution.
+# Why: the build backend names the import package after the distribution.
 def _import_name(distribution_name: str) -> str:
   return re.sub(r'[-.]+', '_', distribution_name).lower()
 
@@ -142,7 +146,7 @@ def _part_homes(
   part_path: str, part: Mapping[str, object] | None
 ) -> _Read[dict[str, tuple[HomePlace, ...]]]:
   if part is None:
-    return _Read(value={}, problems=(MissingPart(file_path=part_path),))
+    return _Read(value={}, problems=(MissingPart(path_from_unit=part_path),))
 
   part_file = _File(path_from_unit=part_path)
   homes = part_file.homes(part, dotted_key=HOMES_KEY)
@@ -160,7 +164,7 @@ def _part_paths(own_table: Mapping[str, object]) -> _Read[tuple[str, ...]]:
     return _Read(value=tuple(part_paths))
 
   problem = WrongShape(
-    file_path=PYPROJECT_FILE_NAME,
+    path_from_unit=PYPROJECT_FILE_NAME,
     dotted_key=_dotted_key(TOOL_KEY, OWN_TABLE_KEY, EXTEND_KEY),
     expected=Expected.LIST_OF_TEXT,
   )
@@ -173,13 +177,7 @@ def _settings_of(
   pyproject: Mapping[str, object] | None,
   read_part: Callable[[str], Mapping[str, object] | None],
 ) -> Settings:
-  """Parses the settings of pyproject.toml, absent when None, and of each part it extends.
-
-  Its own table and the parts are read strictly, `[tool.uv]` tolerantly.
-
-  Args:
-    pyproject: the document of pyproject.toml.
-    read_part: the document of a part by its path as `extend` names it, None when it is no file.
+  """Parses the settings of pyproject.toml and of each part it extends.
 
   Raises:
     SettingsError: with every problem of their shapes, each by its file and key.
@@ -231,6 +229,6 @@ def read_settings(unit_path: Path) -> Settings:
     SettingsError: with every problem of their shapes, or a file that does not parse as TOML.
   """
   return _settings_of(
-    pyproject=_toml_document(folder_path=unit_path, file_path=PYPROJECT_FILE_NAME),
-    read_part=lambda part_path: _toml_document(folder_path=unit_path, file_path=part_path),
+    pyproject=_toml_document(folder_path=unit_path, path_from_unit=PYPROJECT_FILE_NAME),
+    read_part=lambda part_path: _toml_document(folder_path=unit_path, path_from_unit=part_path),
   )

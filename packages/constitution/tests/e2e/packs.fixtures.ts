@@ -17,8 +17,6 @@ const repository = join(import.meta.dir, '..', '..');
 
 const created: string[] = [];
 
-// A pack of one implementation whose rule carries out a rule of core's foundation,
-// in a repository of its own, with a chapter on its foundation and one on its architecture.
 const packFilesOf = (parent: string): Files => ({
   'blocks/implementations/acme/architecture/root.md': [
     '# Root',
@@ -98,8 +96,6 @@ const createPack = (parent = 'dependency-reached-through-its-public-entry'): str
   return folder;
 };
 
-// The Constitution's own check, run in the pack against this repository as its
-// base, as a pack's author runs the one its base's distribution carries.
 const checkPack = (pack: string): Run => {
   const run = spawnSync(
     cliPath,

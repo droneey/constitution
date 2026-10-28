@@ -7,7 +7,6 @@ import { ColourLevel, OutputMode, ThemeMode } from '@droneey/design-cli';
 import { ThemeProvider } from '@droneey/design-cli/ink';
 import { render } from 'ink';
 
-/** a terminal's output with no colour and no motion, the fields a case is about overridden */
 const createPlainOutput = (overrides: Partial<Output> = {}): Output => ({
   colourLevel: ColourLevel.None,
   isMotionReduced: true,
@@ -16,7 +15,6 @@ const createPlainOutput = (overrides: Partial<Output> = {}): Output => ({
   ...overrides,
 });
 
-/** what Ink says of a tree to a screen reader, its first frame in place of its drawing */
 const screenReaderOutputOf = (tree: ReactElement): string => {
   const written: string[] = [];
   const screen = new Writable({

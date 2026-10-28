@@ -25,7 +25,6 @@ const contentFixture = (): ReturnType<typeof createFumadocsContent> =>
     siteBasePath: SiteBasePath.create('/'),
   });
 
-/** each entry of the tree as `<type> <address or name>`, then its marks, its children indented */
 const outlineOf = (node: OutlineNode, depth = 0): readonly string[] => [
   [
     `${'  '.repeat(depth)}${node.type} ${node.url ?? node.name}`,
@@ -44,18 +43,15 @@ const outlineOf = (node: OutlineNode, depth = 0): readonly string[] => [
   ...(node.children ?? []).flatMap((child) => outlineOf(child, depth + 1)),
 ];
 
-/** the text of a page's Markdown below the heading that names it */
 const bodyOf = (markdown: string | undefined): string | undefined =>
   markdown?.split('\n\n').slice(1).join('\n\n');
 
-/** the addresses a text links or names in brackets, in order */
 const addressesIn = (text: string | undefined): readonly string[] =>
   Array.from(
     text?.matchAll(/\((?<address>\/[^)]*)\)/gu) ?? [],
     ({ groups }) => groups?.['address'] ?? '',
   );
 
-/** the ids of the documents the exported index holds: a page, and each section of its text */
 const indexedIdsOf = (exported: unknown): unknown =>
   JSON.parse(JSON.stringify(exported)).internalDocumentIDStore.internalIdToId;
 

@@ -7,7 +7,6 @@ interface LastResortInput {
   readonly writeError: (text: string) => void;
 }
 
-/** The handler of last resort: a failure the run lets through ends it with one written line and the failure code. */
 const withLastResort = async ({ run, writeError }: LastResortInput): Promise<ExitCode> => {
   try {
     return await run();

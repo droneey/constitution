@@ -11,10 +11,7 @@ interface RecordCheckContext extends CommandContext {
   readonly recordCheck: (input: { command: string; session: SessionId }) => void;
 }
 
-/**
- * PostToolUse of a shell command that passed. A command that failed fires PostToolUseFailure, never
- * this hook.
- */
+// Why: a command that failed fires PostToolUseFailure, never this hook.
 const createRecordCheckCommand = (context: RecordCheckContext): Command =>
   new Command('record-check')
     .description("Note the tree when a shell command that passed ran the project's check.")

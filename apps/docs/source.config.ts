@@ -64,6 +64,7 @@ const CODE_OPTIONS: RehypeCodeOptions = {
 const markdownOptions = (remarkPlugins: PluggableList): ReturnType<typeof applyMdxPreset> =>
   applyMdxPreset({
     rehypeCodeOptions: CODE_OPTIONS,
+    /** @throws {SourceError} when the Constitution's package names no release version */
     remarkPlugins: (plugins) => [
       remarkDropTitle,
       ...remarkPlugins,
@@ -108,7 +109,7 @@ const guide = defineDocs({
 
 const overview = defineDocs({
   dir: '../..',
-  // the repository's root holds no sidebar, only the README and the tools' configurations
+  // Why: the repository's root holds no sidebar, only the README and the tools' configurations.
   meta: {
     files: [
       'meta.json',
@@ -122,6 +123,7 @@ const overview = defineDocs({
     postprocess: {
       includeProcessedMarkdown: true,
     },
+    /** @throws {SourceError} when the brand holds no tagline */
     schema: (context) =>
       markdownSchema(() => ICONS_BY_ADDRESS[''])(context).extend({
         description: z.string().default(taglineOf()),
@@ -190,6 +192,7 @@ const glossary = defineDocs({
     postprocess: {
       includeProcessedMarkdown: true,
     },
+    /** @throws {SourceError} when the README has no Documentation section */
     schema: (context) =>
       markdownSchema(() => ICONS_BY_ADDRESS[`/${GLOSSARY}`])(context).extend({
         description: z.string().default(sidebarOf(DOCS_ROUTE).descriptions.get(GLOSSARY) ?? ''),
@@ -238,6 +241,7 @@ const blocks = defineDocs({
       includeProcessedMarkdown: true,
     },
     schema: markdownSchema(() => undefined),
+    /** @throws {SourceError} when an example names no rule of the folders */
     mdxOptions: async (environment) => {
       const options = blocksOptionsOf({
         baseUrl: DOCS_ROUTE,
@@ -249,7 +253,8 @@ const blocks = defineDocs({
       return await applyMdxPreset({
         rehypeCodeOptions: CODE_OPTIONS,
         remarkPlugins: (plugins) => [
-          // first, so the ids leave the summary the next step drops, whose source the page's Markdown keeps
+          // Why: first, so the ids leave the summary the next step drops, whose source the page's
+          // Markdown keeps.
           remarkTermIds,
           [
             remarkBlocks,

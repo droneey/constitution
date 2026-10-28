@@ -3,7 +3,7 @@ osv-scanner:
     '*':
       package.json ? ${file.isTop}:
         scripts:
-          # --no-ignore: a checkout nested in a folder another repository ignores, an agent's
+          # Why: --no-ignore: a checkout nested in a folder another repository ignores, an agent's
           # worktree, is otherwise read as ignored, and no lockfile is found.
           check:audit: >-
             osv-scanner scan source

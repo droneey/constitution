@@ -23,7 +23,6 @@ const sourceOf = (lines: readonly string[]): RuleSource => ({
   text: lines.join('\n'),
 });
 
-// A rule as "### a · MUST" states it, with the fields a case is about.
 const ruleOf = (fields: Partial<StatedRule>): StatedRule => ({
   axis: Axis.Foundation,
   block: coreBlockId,
@@ -35,7 +34,6 @@ const ruleOf = (fields: Partial<StatedRule>): StatedRule => ({
   ...fields,
 });
 
-// A rule whose heading states no level, as "### a → b" does.
 const unstatedRuleOf = (fields: Partial<StatedRule>): StatedRule => ({
   axis: Axis.Foundation,
   block: coreBlockId,

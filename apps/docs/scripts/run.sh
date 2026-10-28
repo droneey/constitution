@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
-# Starts or stops the documentation app in Docker, from any folder:
-#   scripts/run.sh dev up      the app with live reload, on the working tree
-#   scripts/run.sh prod up     the built app, as it is served
-#   scripts/run.sh dev down    stops and removes the containers
 set -euo pipefail
 if ((BASH_VERSINFO[0] * 100 + BASH_VERSINFO[1] >= 404)); then
   shopt -s inherit_errexit
 fi
 
-readonly USAGE='Usage: scripts/run.sh [dev|prod] [up|down]'
+readonly USAGE='Usage: scripts/run.sh [dev|prod] [up|down], from any folder
+  dev up    the app with live reload, on the working tree
+  prod up   the built app, as it is served
+  dev down  stops and removes the containers'
 readonly DEVELOPMENT_SERVICE='docs-development'
 readonly VOLUMES=(
   droneey-constitution-docs-node-modules
@@ -37,13 +36,13 @@ remove_dependency_volumes() {
   done
 }
 
-# The volumes keep the dependencies installed in the image they were made from; a changed
+# Why: the volumes keep the dependencies installed in the image they were made from; a changed
 # bun.lock makes them stale, so they are made again from the new image.
 refresh_dependency_volumes() {
   local lock_hash volume_hash
   lock_hash="$(shasum -a 256 ../../bun.lock | cut -d' ' -f1)"
-  # Called directly, not through `compose`: a function on the left of `||` runs with errexit off.
-  # A volume with no hash yet makes the command fail, which is the same as a stale one.
+  # Why: called directly, not through `compose`, as a function on the left of `||` runs with errexit
+  # off; a volume with no hash yet makes the command fail, which is the same as a stale one.
   volume_hash="$(docker compose --profile development run --rm --no-deps --entrypoint cat "$DEVELOPMENT_SERVICE" node_modules/.bun-lock-hash 2>/dev/null)" || volume_hash=''
 
   if [[ "$volume_hash" == "$lock_hash" ]]; then

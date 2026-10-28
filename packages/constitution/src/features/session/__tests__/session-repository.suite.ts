@@ -7,7 +7,7 @@ import { AbsolutePath, BlockId } from '#/kernel/value-objects';
 import type { SessionCommandRepository } from '../domain/contracts/repositories/commands';
 import type { SessionQueryRepository } from '../domain/contracts/repositories/queries';
 import type { SessionState } from '../domain/entities';
-import { SessionMark } from '../domain/entities';
+import { SessionAgent, SessionMark } from '../domain/entities';
 import { AgentId, SessionId, TreeFingerprint } from '../domain/value-objects';
 import { activeBlockOf, mustOf, sessionStateOf } from './session.fixtures';
 
@@ -15,7 +15,6 @@ type SessionRepository = SessionCommandRepository & SessionQueryRepository;
 
 interface SessionRepositorySuiteInput {
   readonly name: string;
-  /** a store that never held the session the suite writes to */
   readonly repositoryOf: () => SessionRepository;
 }
 
@@ -23,7 +22,6 @@ const session = SessionId.create('session-3');
 const agent = AgentId.create('agent-7');
 const otherAgent = AgentId.create('agent-8');
 
-// A state of every kind of value it holds.
 const savedState = sessionStateOf({
   active: [
     activeBlockOf({
@@ -36,7 +34,7 @@ const savedState = sessionStateOf({
       unit: 'web',
     }),
   ],
-  musts: [
+  mustsBesideCore: [
     mustOf({
       block: 'ui',
       lowerings: [
@@ -90,7 +88,7 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
           session,
         }),
         reminded: sessions.reminded({
-          agent: undefined,
+          agent: SessionAgent.main,
           session,
         }),
         state: sessions.state(session),
@@ -119,7 +117,7 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
         condition: 'blocks are reminded',
         write: (sessions: SessionRepository): void => {
           sessions.addReminded({
-            agent: undefined,
+            agent: SessionAgent.main,
             ids: [
               BlockId.create('ui'),
             ],
@@ -141,7 +139,7 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
           session,
         }),
         reminded: sessions.reminded({
-          agent: undefined,
+          agent: SessionAgent.main,
           session,
         }),
       }).toStrictEqual({
@@ -215,7 +213,7 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
         state: savedState,
       });
       sessions.addReminded({
-        agent: undefined,
+        agent: SessionAgent.main,
         ids: [
           BlockId.create('core'),
           BlockId.create('ui'),
@@ -223,7 +221,7 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
         session,
       });
       sessions.addReminded({
-        agent: undefined,
+        agent: SessionAgent.main,
         ids: [
           BlockId.create('api'),
         ],
@@ -248,7 +246,7 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
           session,
         }),
         own: sessions.reminded({
-          agent: undefined,
+          agent: SessionAgent.main,
           session,
         }),
       };
@@ -300,7 +298,7 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
           state: savedState,
         });
         sessions.addReminded({
-          agent: undefined,
+          agent: SessionAgent.main,
           ids: [
             BlockId.create('ui'),
           ],
@@ -333,7 +331,7 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
             session,
           }),
           own: sessions.reminded({
-            agent: undefined,
+            agent: SessionAgent.main,
             session,
           }),
           state: sessions.state(session),

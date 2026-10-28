@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { GOLD } from '#/__tests__/theme.fixtures';
+import { GOLD_BRAND_FILE } from '#/__tests__/theme.fixtures';
 
 import { MalformedAccentError } from '../../errors';
 import { AccentScale } from '../accent-scale.value-object';
@@ -22,7 +22,7 @@ describe('AccentScale.create', () => {
   }>([
     {
       condition: 'a step gives no sRGB colour',
-      brandFile: GOLD,
+      brandFile: GOLD_BRAND_FILE,
       steps: [
         [
           '300',

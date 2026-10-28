@@ -24,12 +24,11 @@ if TYPE_CHECKING:
   )
 
 
-# Declared a Workspace, so the type checker holds it to the port where it is defined.
+# Why: declared a Workspace, so the type checker holds it to the port where it is defined.
 @dataclass(kw_only=True)
 class WorkspaceFake(Workspace):
   texts_by_path: Mapping[str, str]
   files: tuple[FileChange, ...] = ()
-  # what mutmut answers for a unit whose sources hold no function
   run: MutationRun = field(default_factory=lambda: Stopped(mutants=()))
   mutated_targets: list[MutationTargets] = field(default_factory=list[MutationTargets])
   mutants_removal_count: int = 0

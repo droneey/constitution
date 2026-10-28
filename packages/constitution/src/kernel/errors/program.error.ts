@@ -3,10 +3,6 @@ interface ProgramErrorInput<TCode extends string, TDetails extends object> {
   readonly details: TDetails;
 }
 
-/**
- * The base of every error the program declares: a stable code a caller branches on, the details
- * that say what failed, and, where it maps another failure, that failure as its cause.
- */
 class ProgramError<TCode extends string, TDetails extends object> extends Error {
   public readonly code: TCode;
   public readonly details: Readonly<TDetails>;

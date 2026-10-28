@@ -299,7 +299,6 @@ export const shortLabel = (id: OrderId): string => \`#\${id}\`;
         'apps/@desk/web/src/kernel/constants/reached.constants.ts': reached,
       });
 
-      // A second app of the group, linked by its name as an install links it.
       symlinkSync(
         join(folder, 'apps', '@desk', 'admin'),
         join(folder, 'node_modules', '@shop', 'desk-admin'),

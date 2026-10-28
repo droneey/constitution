@@ -20,14 +20,16 @@ interface CheckContext extends CommandContext {
     base: PackBase | undefined;
     folderPath: AbsolutePath;
   }) => Validation | undefined;
+  /**
+   * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
+   * @throws {ReleaseError} when the release's blocks cannot be listed
+   */
   readonly checkConfigurations: (startFolderPath: AbsolutePath) => StepReport;
-  /** the presets beside the blocks, checked against the model of the blocks that load */
   readonly checkPresets: (input: {
     model: BlockModel;
     source: BlockSource;
     sourceFolderPath: AbsolutePath;
   }) => StepReport;
-  /** the presets' step where no blocks load, so nothing holds the presets */
   readonly presetsSkipped: StepReport;
 }
 
@@ -77,7 +79,6 @@ const createCheckCommand = (context: CheckContext): Command =>
           validation?.stage === ValidationStage.Checked
             ? context.checkPresets({
                 model: validation.model,
-                // A folder checked on a base is a pack, itself the pack its preset files are read from.
                 source:
                   base === undefined
                     ? BlockSource.create()
@@ -89,6 +90,10 @@ const createCheckCommand = (context: CheckContext): Command =>
       const configurations = await renderer.run({
         label: 'Configurations',
         outcomeOf,
+        /**
+         * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
+         * @throws {ReleaseError} when the release's blocks cannot be listed
+         */
         run: () => context.checkConfigurations(folderPath),
       });
 

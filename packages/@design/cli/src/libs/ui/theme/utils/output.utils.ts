@@ -1,7 +1,7 @@
 import { ColourLevel, OutputMode, ThemeMode } from '../constants';
 import type { Output, OutputInput } from '../types';
 
-// Any non-empty FORCE_COLOR forces colour, as force-color.org and CPython read it; the levels
+// Why: any non-empty FORCE_COLOR forces colour, as force-color.org and CPython read it; the levels
 // Node.js names by 2 and 3 choose a deeper palette.
 const deeperColourLevels: ReadonlyMap<string, ColourLevel> = new Map([
   [
@@ -14,7 +14,7 @@ const deeperColourLevels: ReadonlyMap<string, ColourLevel> = new Map([
   ],
 ]);
 
-/** `COLORFGBG`'s white and bright white */
+// Why: `COLORFGBG` names white by 7 and bright white by 15.
 const LIGHT_BACKGROUNDS: readonly string[] = [
   '7',
   '15',

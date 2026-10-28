@@ -6,7 +6,7 @@ interface ApplyChangesInput {
   readonly writes: AppliedFilesCommandRepository;
 }
 
-/** @throws {@link ApplyError} when a file cannot be written, which leaves every file as it was */
+/** @throws {ApplyError} when a file cannot be written, which leaves every file as it was */
 const applyChanges = (input: ApplyChangesInput): void => {
   input.writes.write(input.changes);
 };

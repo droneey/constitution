@@ -9,11 +9,9 @@ import { ExitCode } from '#/shared/cli';
 
 import { BuildError, BuildFailure, isBuildError } from './errors';
 
-// Builds the constitution executable: `--target`, one of Bun's, the host's by default;
-// `--outfile`, from the folder it runs in, dist/cli/constitution by default. The React Compiler
-// memoises every component and hook of constitution and of the design system on the way, and the
-// fingerprint of the plugin's files in the package is built in, for doctor to compare the installed
-// plugin's with.
+// Why: the React Compiler memoises every component and hook of constitution and of the design
+// system on the way, and the fingerprint of the plugin's files is built in, for doctor to compare
+// the installed plugin's with.
 const entryFile = resolve(import.meta.dir, '../../src/main.ts');
 const packageFolder = resolve(import.meta.dir, '../..');
 const TARGETS: readonly Bun.Build.CompileTarget[] = [
@@ -46,6 +44,9 @@ const messageOf = (error: unknown): string => {
 
 const reactCompilerPlugin: Bun.BunPlugin = {
   name: 'react-compiler',
+  /**
+   * @throws {BuildError} from the load it registers, when the React Compiler gives no code
+   */
   setup: (build): void => {
     build.onLoad(
       {
@@ -95,8 +96,8 @@ const reactCompilerPlugin: Bun.BunPlugin = {
   },
 };
 
-// Ink reaches react-devtools-core only when DEV is set, and no install of the executable holds it,
-// so the bundle takes an empty module in its place.
+// Why: Ink reaches react-devtools-core only when DEV is set, and no install of the executable holds
+// it, so the bundle takes an empty module in its place.
 const devtoolsStubPlugin: Bun.BunPlugin = {
   name: 'devtools-stub',
   setup: (build): void => {
@@ -122,7 +123,9 @@ const devtoolsStubPlugin: Bun.BunPlugin = {
   },
 };
 
-/** The logs of a build that failed are printed. */
+/**
+ * @throws {BuildError} when the target is none of Bun's or the plugin's files cannot be read
+ */
 const buildExecutable = async (): Promise<boolean> => {
   const { values } = parseArgs({
     options: {
@@ -200,8 +203,8 @@ const buildExecutable = async (): Promise<boolean> => {
   return built.success;
 };
 
-// A build Bun refuses, or a failure the build foresees, is one the user can act on; any other is
-// the build's own defect.
+// Why: a build Bun refuses, or a failure the build foresees, is one the user can act on; any other
+// is the build's own defect.
 try {
   process.exitCode = (await buildExecutable()) ? ExitCode.Success : ExitCode.Failure;
 } catch (error) {

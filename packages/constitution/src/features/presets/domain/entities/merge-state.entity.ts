@@ -1,14 +1,9 @@
+import { Insert } from './insert.entity';
 import type { PresetPair, PresetValue } from './preset-value.entity';
 import { PresetValue as Value } from './preset-value.entity';
 import type { MergeProblem } from './presets-finding.entity';
 import { PresetsCode } from './presets-finding.entity';
 import { Setting } from './setting.entity';
-
-interface Insert {
-  readonly items: readonly (readonly Setting[])[];
-  readonly list: readonly string[];
-  readonly slot: string;
-}
 
 interface Replacer {
   readonly keyPath: readonly string[];
@@ -16,32 +11,25 @@ interface Replacer {
   readonly source: string;
 }
 
-/**
- * What the contributions merged so far hold. Each step gives a new one, copying the collection it
- * changes: a merge of a file's few hundred paths costs milliseconds more than one that mutates,
- * and no step sees another's state change under it.
- */
+// Why: each step gives a new state, copying the collection it changes: a merge of a file's few
+// hundred paths costs milliseconds more than one that mutates, and no step sees another's state
+// change under it.
 interface MergeState {
   readonly clashes: ReadonlyMap<string, MergeProblem>;
   readonly defaults: readonly {
     readonly keyPath: readonly string[];
     readonly value: Setting;
   }[];
-  /** the paths an entry writes as an empty map, which stay though nothing fills them */
-  readonly empties: ReadonlySet<string>;
   readonly inserts: ReadonlyMap<string, Insert>;
+  readonly keptEmptyMaps: ReadonlySet<string>;
   readonly owners: ReadonlyMap<string, string>;
   readonly problems: readonly MergeProblem[];
   readonly replacers: ReadonlyMap<string, Replacer>;
-  /** the paths of the maps an entry marks sorted */
   readonly sorted: ReadonlyMap<string, readonly string[]>;
-  /** what the entries write */
+  readonly unitedWholeDefault?: Setting;
   readonly value?: Setting;
-  /** the file as a default, as its defaults unite */
-  readonly whole?: Setting;
 }
 
-/** Where a contribution places what it gives, and whose it is. */
 interface Placed {
   readonly keyPath: readonly string[];
   readonly source: string;
@@ -59,22 +47,20 @@ interface PlacedMap extends Placed {
 const unmerged: MergeState = {
   clashes: new Map(),
   defaults: [],
-  empties: new Set(),
   inserts: new Map(),
+  keptEmptyMaps: new Set(),
   owners: new Map(),
   problems: [],
   replacers: new Map(),
   sorted: new Map(),
 };
 
-// The owner of the file as a default, kept apart from the owner of its value's root.
 // Stryker disable next-line StringLiteral: any text that no key path's JSON spells keeps it apart
 const WHOLE_OWNER = 'whole';
 
 const keyOf = (keyPath: readonly string[]): string => JSON.stringify(keyPath);
 
-// A key held already keeps its place, so the steps after the fold meet the paths in their order.
-const withEntry = <TKey, TValue>(
+const withEntryKeepingItsPlace = <TKey, TValue>(
   map: ReadonlyMap<TKey, TValue>,
   key: TKey,
   held: TValue,
@@ -87,36 +73,6 @@ const withEntry = <TKey, TValue>(
     ],
   ]);
 
-// A key here is the preset file's own, an address among them: the merge never reads one through a list.
-const heldAt = (setting: Setting | undefined, keyPath: readonly string[]): Setting | undefined =>
-  keyPath.reduce<Setting | undefined>(
-    (held, key) => (Setting.isMap(held) ? held[key] : undefined),
-    setting,
-  );
-
-const withHeldAt = (input: {
-  held: Setting;
-  keyPath: readonly string[];
-  setting: Setting | undefined;
-}): Setting => {
-  const [key, ...rest] = input.keyPath;
-
-  if (key === undefined) {
-    return input.held;
-  }
-
-  const map = Setting.isMap(input.setting) ? input.setting : {};
-
-  return {
-    ...map,
-    [key]: withHeldAt({
-      held: input.held,
-      keyPath: rest,
-      setting: map[key],
-    }),
-  };
-};
-
 const placedAt = (
   state: MergeState,
   input: {
@@ -125,7 +81,7 @@ const placedAt = (
   },
 ): MergeState => ({
   ...state,
-  value: withHeldAt({
+  value: Setting.withAtKeysAsWritten({
     ...input,
     setting: state.value,
   }),
@@ -137,10 +93,10 @@ const clashed = (
   key: string = keyOf(placed.keyPath),
 ): MergeState => ({
   ...state,
-  clashes: withEntry(state.clashes, key, {
+  clashes: withEntryKeepingItsPlace(state.clashes, key, {
     code: PresetsCode.Clash,
     details: {
-      setting: Setting.pathTextOf(placed.keyPath),
+      settingPath: Setting.pathTextOf(placed.keyPath),
       sources: [
         state.owners.get(key) ?? placed.source,
         placed.source,
@@ -149,14 +105,13 @@ const clashed = (
   }),
 });
 
-// Called only where the path is first written, so the owner is the first source that wrote it.
-const owned = (
+const ownedByFirstWriter = (
   state: MergeState,
   placed: Placed,
   key: string = keyOf(placed.keyPath),
 ): MergeState => ({
   ...state,
-  owners: withEntry(state.owners, key, placed.source),
+  owners: withEntryKeepingItsPlace(state.owners, key, placed.source),
 });
 
 const withProblem = (state: MergeState, problem: MergeProblem): MergeState => ({
@@ -174,7 +129,7 @@ const replaced = (state: MergeState, placed: PlacedSetting): MergeState => {
   if (before === undefined) {
     return {
       ...state,
-      replacers: withEntry(state.replacers, key, {
+      replacers: withEntryKeepingItsPlace(state.replacers, key, {
         keyPath: placed.keyPath,
         setting: placed.setting,
         source: placed.source,
@@ -187,7 +142,7 @@ const replaced = (state: MergeState, placed: PlacedSetting): MergeState => {
     : withProblem(state, {
         code: PresetsCode.TwoReplacers,
         details: {
-          setting: Setting.pathTextOf(placed.keyPath),
+          settingPath: Setting.pathTextOf(placed.keyPath),
           sources: [
             before.source,
             placed.source,
@@ -196,49 +151,50 @@ const replaced = (state: MergeState, placed: PlacedSetting): MergeState => {
       });
 };
 
-// The items of an entry join the list once each, but an item the entry itself repeats stays repeated.
-const joined = (current: readonly Setting[], items: readonly Setting[]): readonly Setting[] => [
+const withItemsNotYetHeld = (
+  current: readonly Setting[],
+  items: readonly Setting[],
+): readonly Setting[] => [
   ...current,
   ...items.filter((listed) => !current.some((known) => Setting.same(known, listed))),
 ];
 
-// Several whole-file defaults unite as their values do: lines and keys join, two texts clash.
-const unitedWhole = (state: MergeState, placed: PlacedSetting): MergeState => {
-  const { whole } = state;
+const wholeDefaultsUnited = (state: MergeState, placed: PlacedSetting): MergeState => {
+  const { unitedWholeDefault } = state;
   const { setting } = placed;
 
-  if (whole === undefined) {
+  if (unitedWholeDefault === undefined) {
     return {
-      ...owned(state, placed, WHOLE_OWNER),
-      whole: setting,
+      ...ownedByFirstWriter(state, placed, WHOLE_OWNER),
+      unitedWholeDefault: setting,
     };
   }
 
-  if (Setting.isList(whole) && Setting.isList(setting)) {
+  if (Setting.isList(unitedWholeDefault) && Setting.isList(setting)) {
     return {
       ...state,
-      whole: joined(whole, setting),
+      unitedWholeDefault: withItemsNotYetHeld(unitedWholeDefault, setting),
     };
   }
 
-  if (Setting.isMap(whole) && Setting.isMap(setting)) {
+  if (Setting.isMap(unitedWholeDefault) && Setting.isMap(setting)) {
     return {
       ...state,
-      whole: {
-        ...whole,
+      unitedWholeDefault: {
+        ...unitedWholeDefault,
         ...setting,
       },
     };
   }
 
-  return Setting.same(whole, setting) ? state : clashed(state, placed, WHOLE_OWNER);
+  return Setting.same(unitedWholeDefault, setting) ? state : clashed(state, placed, WHOLE_OWNER);
 };
 
 const defaulted = (state: MergeState, placed: PlacedSetting): MergeState => {
   const { keyPath, setting } = placed;
 
   if (keyPath.length === 0) {
-    return unitedWhole(state, placed);
+    return wholeDefaultsUnited(state, placed);
   }
 
   const isKnown = state.defaults.some(
@@ -259,7 +215,6 @@ const defaulted = (state: MergeState, placed: PlacedSetting): MergeState => {
       };
 };
 
-// An insert is kept whole: the same insert from two entries goes in once.
 const inserted = (
   state: MergeState,
   input: {
@@ -282,7 +237,7 @@ const inserted = (
 
   return {
     ...state,
-    inserts: withEntry(
+    inserts: withEntryKeepingItsPlace(
       state.inserts,
       key,
       isKnown
@@ -300,18 +255,18 @@ const inserted = (
 
 const settingPlaced = (state: MergeState, placed: PlacedSetting): MergeState => {
   const { setting } = placed;
-  const current = heldAt(state.value, placed.keyPath);
+  const current = Setting.atKeysAsWritten(state.value, placed.keyPath);
 
   if (current === undefined) {
-    return placedAt(owned(state, placed), {
-      held: Setting.isList(setting) ? joined([], setting) : setting,
+    return placedAt(ownedByFirstWriter(state, placed), {
+      held: setting,
       keyPath: placed.keyPath,
     });
   }
 
   if (Setting.isList(setting) && Setting.isList(current)) {
     return placedAt(state, {
-      held: joined(current, setting),
+      held: withItemsNotYetHeld(current, setting),
       keyPath: placed.keyPath,
     });
   }
@@ -321,26 +276,24 @@ const settingPlaced = (state: MergeState, placed: PlacedSetting): MergeState => 
     : state;
 };
 
-// A map's path is marked before its pairs are placed: sorted where the entry says so, and kept
-// though empty where the entry writes it so.
-const marked = (state: MergeState, placed: PlacedMap): MergeState => {
+const mapMarked = (state: MergeState, placed: PlacedMap): MergeState => {
   const key = keyOf(placed.keyPath);
 
   return {
     ...state,
-    empties:
+    keptEmptyMaps:
       placed.pairs.length === 0
         ? new Set([
-            ...state.empties,
+            ...state.keptEmptyMaps,
             key,
           ])
-        : state.empties,
-    sorted: placed.isSorted ? withEntry(state.sorted, key, placed.keyPath) : state.sorted,
+        : state.keptEmptyMaps,
+    sorted: placed.isSorted
+      ? withEntryKeepingItsPlace(state.sorted, key, placed.keyPath)
+      : state.sorted,
   };
 };
 
-// A map's path opened for its pairs; where it holds a setting other than a map, it clashes and its
-// pairs go nowhere.
 const mapOpened = (
   state: MergeState,
   placed: PlacedMap,
@@ -348,8 +301,8 @@ const mapOpened = (
   readonly isOpen: boolean;
   readonly state: MergeState;
 } => {
-  const current = heldAt(state.value, placed.keyPath);
-  const withMarks = marked(state, placed);
+  const current = Setting.atKeysAsWritten(state.value, placed.keyPath);
+  const withMarks = mapMarked(state, placed);
 
   if (current !== undefined && !Setting.isMap(current)) {
     return {
@@ -362,7 +315,7 @@ const mapOpened = (
     isOpen: true,
     state:
       current === undefined
-        ? placedAt(owned(withMarks, placed), {
+        ? placedAt(ownedByFirstWriter(withMarks, placed), {
             held: {},
             keyPath: placed.keyPath,
           })
@@ -370,7 +323,6 @@ const mapOpened = (
   };
 };
 
-// A replacer settles its path, clash or none.
 const withReplacers = (state: MergeState): MergeState =>
   state.replacers.entries().reduce(
     (next, [key, { keyPath, setting }]) => ({
@@ -384,38 +336,21 @@ const withReplacers = (state: MergeState): MergeState =>
   );
 
 const withInsert = (state: MergeState, insert: Insert): MergeState => {
-  const { items, list, slot } = insert;
-  const target = heldAt(state.value, list);
-  const details = {
-    setting: Setting.pathTextOf(list),
-    slot,
-  };
+  const filled = Insert.placedIn(insert, state.value);
 
-  if (!Setting.isList(target)) {
-    return withProblem(state, {
-      code: PresetsCode.SlotInNoList,
-      details,
-    });
-  }
-
-  const at = target.findIndex((listed) => Value.slotOf(listed) === slot);
-
-  return at < 0
-    ? withProblem(state, {
-        code: PresetsCode.MissingSlot,
-        details,
-      })
-    : placedAt(state, {
-        held: target.toSpliced(at + 1, 0, ...items.flat(1)),
-        keyPath: list,
-      });
+  return 'problem' in filled
+    ? withProblem(state, filled.problem)
+    : {
+        ...state,
+        value: filled.setting,
+      };
 };
 
 const withInserts = (state: MergeState): MergeState =>
   state.inserts.values().reduce(withInsert, state);
 
 const isKeptEmpty = (state: MergeState, keyPath: readonly string[]): boolean =>
-  state.empties.has(keyOf(keyPath));
+  state.keptEmptyMaps.has(keyOf(keyPath));
 
 const MergeState = {
   defaulted,

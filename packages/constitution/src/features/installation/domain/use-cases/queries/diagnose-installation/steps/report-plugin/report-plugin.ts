@@ -9,10 +9,6 @@ interface ReportPluginInput {
   readonly plugin: InstalledPlugin | undefined;
 }
 
-/**
- * The plugin is only glue to this executable: it matters only when its own files differ from those
- * this executable was built with, and then its version says which is older.
- */
 const reportPlugin = (input: ReportPluginInput): PartDiagnosis => {
   const { executable, plugin } = input;
 

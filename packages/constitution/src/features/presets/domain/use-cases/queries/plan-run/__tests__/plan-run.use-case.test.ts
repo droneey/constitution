@@ -16,7 +16,6 @@ import type { RunAsked } from '../../../../entities';
 import { EntryPoint, PresetsCode, ProjectReadStatus } from '../../../../entities';
 import { planRun } from '../plan-run.use-case';
 
-// Bun runs every unit that follows it; biome needs a runner, which the unit of hooks lacks.
 const project = projectOf({
   files: releasePresets({
     'bun/foundation.yaml': [

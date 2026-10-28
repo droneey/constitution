@@ -26,7 +26,7 @@ class LongFunction:
 
 @dataclass(frozen=True, slots=True)
 class ImportClimbingOut:
-  """A relative import that climbs out of the import package."""
+  pass
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -70,7 +70,6 @@ class EnvironmentOutsideRoot:
   environment_name: str
 
 
-# A rule a file breaks, with the values a finding names.
 type Breach = (
   Unparsable
   | LongFile

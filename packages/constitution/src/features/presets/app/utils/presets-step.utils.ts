@@ -22,7 +22,6 @@ const checkedOutcomeOf = (findings: readonly PresetsFinding[]): TaskOutcome =>
         status: StepStatus.Failed,
       };
 
-/** The step where the folder holds no blocks that load, so nothing holds the presets. */
 const presetsSkippedStep: StepReport = {
   isFailed: false,
   outcome: {

@@ -12,7 +12,6 @@ interface PackSourceInput {
   readonly pack: Readonly<Files>;
 }
 
-// A pack beside the base it extends, installed where a project keeps it unless the case says otherwise.
 const packSourceOf = (
   input: PackSourceInput,
 ): Source & {

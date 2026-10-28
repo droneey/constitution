@@ -9,12 +9,16 @@ import type { RunStepsContext } from '../../../utils';
 import { runSteps } from '../../../utils';
 
 interface RunContext extends CommandContext, RunStepsContext {
+  /**
+   * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
+   * @throws {ReleaseError} when the release's blocks cannot be listed
+   */
   readonly planRun: (input: RunAsked) => ProjectRead<RunPlan>;
 }
 
 const entryPoints: readonly EntryPoint[] = Object.values(EntryPoint);
 
-/** @throws {@link InvalidArgumentError} when the text names no entry point */
+/** @throws {InvalidArgumentError} when the text names no entry point */
 const entryPointOf = (text: string): EntryPoint => {
   const entryPoint = entryPoints.find((known) => known === text);
 
@@ -25,7 +29,6 @@ const entryPointOf = (text: string): EntryPoint => {
   return entryPoint;
 };
 
-/** Runs from the folder it starts in: a member's own commands there, every unit's from the root. */
 const createRunCommand = (context: RunContext): Command =>
   new Command('run')
     .description(

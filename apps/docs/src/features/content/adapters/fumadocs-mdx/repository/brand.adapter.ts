@@ -9,7 +9,7 @@ import { inRepository } from './repository.adapter';
 
 const brandFilePath = RepositoryPath.create('brand.yaml');
 
-/** @throws {@link SourceError} when the brand holds no tagline */
+/** @throws {SourceError} when the brand holds no tagline */
 const taglineOf = (): string =>
   fileValueOf({
     model: brandModel,

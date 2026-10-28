@@ -4,7 +4,7 @@ import { Command } from 'commander';
 import type { CommandContext } from '#/shared/cli';
 import { outputFlagsOf } from '#/shared/cli';
 
-/** The output flags as the design system takes them, each left out where the run gives none. */
+/** @throws {UsageError} when the options do not parse */
 const flagsOf = (opts: unknown): OutputFlags => {
   const { color, motion, plain } = outputFlagsOf(opts);
 
@@ -44,7 +44,6 @@ interface GroupInput {
   readonly parent: Command;
 }
 
-/** A command that groups others under a name, with the program's settings and its examples. */
 const groupOf = (input: GroupInput): Command =>
   new Command(input.name)
     .description(input.description)

@@ -20,8 +20,6 @@ interface Ran {
   readonly stdout: string;
 }
 
-// A member's own runner: a block of its pack whose entries give what the executable runs, each
-// command leaving a mark, and a check of the project's own that the runner's check runs too.
 const runnerPack = (check: string): Readonly<Record<string, string>> => ({
   [`${MEMBER}/pack/blocks/implementations/own-runner/own-runner.md`]: linesOf(
     '---',

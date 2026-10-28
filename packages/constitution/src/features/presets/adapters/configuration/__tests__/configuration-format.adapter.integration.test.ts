@@ -14,7 +14,6 @@ import { createConfigurationFormat } from '../configuration-format.adapter';
 
 const format = createConfigurationFormat();
 
-// The list each alias of a YAML file below repeats.
 const aliased = [
   1,
   2,
@@ -44,13 +43,11 @@ interface ReadRow {
   readonly text: string;
 }
 
-/** The settings written over a file's text, with the blocks its comments may name. */
 interface WriteRow {
   readonly condition: string;
   readonly format?: FileFormat;
   readonly marks?: BlockMarks;
   readonly path: string;
-  /** what the text written reads back as, where the format cannot hold the settings as they are */
   readonly reads?: Setting;
   readonly settings: Setting;
   readonly shape?: SettingShape;
@@ -58,7 +55,6 @@ interface WriteRow {
   readonly text: string;
 }
 
-/** A write whose marks name blocks, and the blocks its comments then name, in their order. */
 interface MarkedRow extends WriteRow {
   readonly marks: BlockMarks;
   readonly named: readonly string[];
@@ -122,10 +118,8 @@ const writeOf = (row: WriteRow): string =>
 
 const readBackOf = (row: WriteRow): Setting | undefined => format.read(fileOf(row, writeOf(row)));
 
-// A comment of its own line that holds one word, as the comment naming a block does.
 const NAMING_COMMENT = /^\s*(?:#|\/\/) (\S+)$/;
 
-// The blocks of the marks the comments of the text written name, in their order.
 const namedBlocksOf = (row: MarkedRow): readonly string[] =>
   writeOf(row)
     .split('\n')
@@ -139,7 +133,6 @@ const namedBlocksOf = (row: MarkedRow): readonly string[] =>
         : [];
     });
 
-// Each scenario's text written, under its condition, as a golden file holds them.
 const writtenOf = (rows: readonly WriteRow[]): Readonly<Record<string, string>> =>
   Object.fromEntries(
     rows.map((row) => [
@@ -150,7 +143,6 @@ const writtenOf = (rows: readonly WriteRow[]): Readonly<Record<string, string>> 
 
 const SECTION_HEADER = /^\[(.+)\]$/gm;
 
-// The sections of an ini-like text, by their names in the order it holds them.
 const sectionsOf = (text: string): readonly string[] =>
   [
     ...text.matchAll(SECTION_HEADER),
@@ -1584,6 +1576,53 @@ list:
   - b
 `,
   },
+  {
+    condition: 'a comment opens a YAML file and a literal block closes it',
+    marks: {
+      blocks: [
+        BlockId.create('biome'),
+      ],
+      marks: [
+        {
+          block: BlockId.create('biome'),
+          keyPath: [
+            'first',
+          ],
+        },
+      ],
+    },
+    named: [
+      'biome',
+      'biome',
+    ],
+    path: 'lefthook.yaml',
+    settings: {
+      first: 1,
+      last: '# biome\n',
+    },
+    text: '# top\nfirst: 1\nlast: |\n  # biome\n',
+  },
+  {
+    condition:
+      "a YAML item's literal block holds a line of fewer spaces than the item and a line that names a block, under the file's own comment",
+    marks: {
+      blocks: [
+        BlockId.create('biome'),
+      ],
+      marks: [],
+    },
+    named: [
+      'biome',
+    ],
+    path: 'lefthook.yaml',
+    settings: {
+      list: [
+        'a',
+        'one\n\n# biome\n',
+      ],
+    },
+    text: 'list:\n  - a\n  # mine\n  - |\n    one\n \n    # biome\n',
+  },
 ];
 
 const iniWrites: readonly WriteRow[] = [
@@ -2059,7 +2098,6 @@ const markedWrites: readonly MarkedRow[] = [
   ...linesMarkedWrites,
 ];
 
-// Each write with what its text reads back as: its settings, where the format holds them as given.
 const readBacks = [
   ...jsonWrites,
   ...tomlWrites,
@@ -2072,8 +2110,6 @@ const readBacks = [
   reads: row.reads ?? row.settings,
 }));
 
-// Keys and texts a configuration holds, those a format must quote or that look typed among them,
-// and any text.
 const keys = fc.oneof(
   fc.constantFrom('name', 'x.y', 'my key', "it's", '"q"', '1', 'true', '[x]', '#k', '-'),
   fc.string({
@@ -2100,7 +2136,6 @@ const texts = fc.oneof(
     maxLength: 10,
   }),
 );
-// A negative zero is no value a configuration names: every format writes it as a zero.
 const scalars = fc.oneof(
   fc.boolean(),
   fc.integer(),
@@ -2134,8 +2169,6 @@ const { map: maps } = fc.letrec<{
   ),
 }));
 
-// The sections of a file of sections: a name of no bracket, the top's only where it holds a pair,
-// and its pairs of keys and values its lines can tell apart, a text no truth nor whole number.
 const sections = fc
   .dictionary(
     fc.oneof(fc.constant(''), fc.stringMatching(/^[^\n[\]]+$/)),
@@ -2158,12 +2191,10 @@ const sections = fc
   )
   .filter((given) => Object.keys(given[''] ?? {}).length > 0 || !('' in given));
 
-// The lines of a file of lines: neither blank, nor a comment, nor edged with blanks.
 const lineLists = fc.array(fc.stringMatching(/^[^\s#;](?:.*\S)?$/), {
   maxLength: 5,
 });
 
-// The lines of a source file: neither blank, nor a comment of its language, nor edged with blanks.
 const codeLineLists = fc.array(
   fc.stringMatching(/^\S(?:.*\S)?$/).filter((line) => !line.startsWith('//')),
   {
@@ -2171,7 +2202,6 @@ const codeLineLists = fc.array(
   },
 );
 
-// The invariant: the settings written to a new file read back as they are.
 const isReadBackIn =
   (row: Omit<WriteRow, 'condition' | 'settings' | 'text'>) =>
   (settings: Setting): boolean =>
@@ -2186,9 +2216,7 @@ const isReadBackIn =
       true,
     );
 
-/** A write whose text once read back wrong, and what its text then means. */
 interface FixedRow extends WriteRow {
-  /** the comments of their own lines the text holds */
   readonly comments: readonly string[];
   readonly reads: Setting;
 }
@@ -2640,7 +2668,6 @@ describe('createConfigurationFormat', () => {
     expect(again).toBe(written);
   });
 
-  // EditorConfig reads its sections in order, a later one overriding an earlier.
   it.each([
     {
       condition: 'its settings give the narrower section first',

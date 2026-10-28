@@ -23,7 +23,6 @@ const manifest = z.object({
   scripts: z.record(z.string(), z.string()),
 });
 
-/** None where the script passes no list. */
 const licencesOf = (input: { languages: readonly string[]; script: string }): readonly string[] => {
   const listed = LICENCES.exec(
     manifest.parse(
@@ -62,8 +61,8 @@ const imageLicences = licencesOf({
   script: 'check:audit-image',
 });
 
-// Offline, osv-scanner still validates the list, then stops at the licences it
-// would fetch from deps.dev; that stop shows the list was accepted.
+// Why: offline, osv-scanner still validates the list, then stops at the licences it would fetch
+// from deps.dev; that stop shows the list was accepted.
 const verdictOn = (licences: readonly string[]): Verdict => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-osv-scanner-'));
 

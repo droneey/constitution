@@ -29,6 +29,5 @@ def table_function_of(line_count: int) -> str:
   return python('def table() -> list[int]:', '  return [', *['    0,'] * (line_count - 3), '  ]')
 
 
-def lifted(source: str, *, reason: str = 'a table') -> str:
-  """The source with its first `def` line lifting the function's limit by the reason."""
+def with_limit_lifted(source: str, *, reason: str = 'a table') -> str:
   return source.replace(':\n', f':  # python-check: ignore[function-lines] -- {reason}\n', 1)

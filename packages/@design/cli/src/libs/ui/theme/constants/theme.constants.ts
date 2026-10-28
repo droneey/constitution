@@ -7,7 +7,6 @@ enum ThemeMode {
   Dark = 'dark',
 }
 
-/** each mode's default theme, as the tokens' generation writes it */
 const DESIGN_TOKENS = {
   [ThemeMode.Light]: lightTokens,
   [ThemeMode.Dark]: darkTokens,

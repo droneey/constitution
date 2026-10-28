@@ -19,32 +19,13 @@ typescript:
               rules:
                 style:
                   noProcessEnv: 'off'
-  undefined-is-the-only-absence:
+  null-mapped-to-undefined-in-the-adapter:
     typescript:
       biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/undefined-is-the-only-absence.${role.grit-rule}]:
-          includes:
-            - '**'
+          includes@left-out:
             - '!**/${role.gateway}/**'
             - '!**/${role.wire-model}/**'
-            - '!**/*.tsx'
-  closed-name-set-is-a-string-enum:
-    typescript:
-      biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/closed-name-set-is-a-string-enum.${role.grit-rule}]:
-          includes:
-            - '**/*.ts'
-            - '**/*.tsx'
-            - '!**/${role.gateway}/**'
-            - '!**/${role.wire-model}/**'
-  business-types-readonly:
-    typescript:
-      biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/business-types-readonly.${role.grit-rule}]:
-          includes:
-            - '**/${role.pure-layer}/**'
-            - '**/${role.shared-domain}/**'
-            - '!**/${role.colocated-specs}/**'
   timer-set-only-by-the-edge-and-binding-units:
     typescript:
       biome.jsonc:
@@ -64,6 +45,21 @@ typescript:
             - '!**/${role.source}/${role.composition-module}/*/${role.application-layer}/**'
             - '!**/${role.colocated-specs}/**'
 core:
+  outside-shape-mapped-in-the-adapter:
+    typescript:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/closed-name-set-is-a-string-enum.${role.grit-rule}]:
+          includes@left-out:
+            - '!**/${role.gateway}/**'
+            - '!**/${role.wire-model}/**'
+  type-lifts-when-features-share-its-meaning:
+    typescript:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/business-types-readonly.${role.grit-rule}]:
+          includes@business-types:
+            - '**/${role.pure-layer}/**'
+            - '**/${role.shared-domain}/**'
+            - '!**/${role.colocated-specs}/**'
   surface-only-re-exports:
     typescript:
       biome.jsonc:

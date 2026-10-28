@@ -1,6 +1,6 @@
 import type { GlideLists } from '@droneey/design-browser/react-dom';
 
-/** the sidebar is left out, since its block is the library's own */
+// Why: the sidebar is left out, since the library draws its own block for it.
 export const GLIDE_LISTS: GlideLists = {
   "nav[aria-label='Versions']": {
     rowSelector: 'a',

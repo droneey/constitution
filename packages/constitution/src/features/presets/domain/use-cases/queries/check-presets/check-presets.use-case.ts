@@ -15,20 +15,15 @@ import { loadPresetSets } from '../../shared/load-preset-sets';
 import { mergeEveryEntry } from './steps/merge-every-entry';
 
 interface CheckPresetsInput {
-  /** what the folder's build makes, which its source tree need not hold */
   readonly distribution: DistributionSources;
   readonly files: ProjectFiles;
   readonly formats: ConfigurationFormat;
-  /** the model of the folder's blocks, a pack's base among them */
   readonly model: BlockModel;
   readonly parser: PresetFileParser;
-  /** what the folder is: the Constitution's release, whose own files and plugins it checks, or a pack */
   readonly source: BlockSource;
-  /** the folder of the Constitution or the pack checked */
   readonly sourceFolderPath: AbsolutePath;
 }
 
-// The folder checked stands for the repository its findings' paths start from.
 const checkedFolderPathFromRepository = RepositoryRelativePath.create('');
 
 const checkPresets = (input: CheckPresetsInput): readonly PresetsFinding[] => {

@@ -39,7 +39,6 @@ enum BlockLoadCode {
 interface BlockLoadDetails {
   readonly [BlockLoadCode.SecondaryFrontMatter]: object;
   readonly [BlockLoadCode.WithoutPassport]: {
-    /** the id the folder names, whose passport is <id>.md */
     readonly id: BlockId;
   };
 }
@@ -52,7 +51,6 @@ type BlocksLoadedFinding =
       readonly path: string;
     });
 
-/** The kinds of a file in a block's folder that is no part of the block. */
 type UnplacedFile =
   | BlockFileKind.NamedAfterBlock
   | BlockFileKind.SeamOfNoBlockId
@@ -105,16 +103,13 @@ interface Unplaced {
   readonly path: TreePath;
 }
 
-/** A block folder whose name is no block id, from which no block loads. */
 interface Misnamed {
   readonly dir: TreePath;
-  /** the folder's name, as it is written */
   readonly name: string;
 }
 
 interface Location {
   readonly misnamed: readonly Misnamed[];
-  /** under the blocks folder, in no block's folder */
   readonly outside: readonly TreePath[];
   readonly placed: readonly Located[];
   readonly unplaced: readonly Unplaced[];
@@ -140,12 +135,10 @@ enum LoadStatus {
 type BlockLoaded =
   | {
       readonly block: Block;
-      /** what the block's chapters and seams hold amiss, which keeps none of them out */
       readonly findings: readonly BlocksLoadedFinding[];
       readonly status: LoadStatus.Loaded;
     }
   | {
-      /** why the block did not load, never empty */
       readonly findings: readonly BlocksLoadedFinding[];
       readonly status: LoadStatus.Unloaded;
     };
@@ -244,6 +237,7 @@ const secondaryFindings = (parts: readonly Part[]): readonly BlocksLoadedFinding
       path,
     }));
 
+/** @throws {TreeError} when a file of the block cannot be read */
 const loadBlock = (input: {
   group: BlockGroup;
   parser: FrontMatterParser;
@@ -340,6 +334,7 @@ interface LoadBlocksInput {
   readonly tree: FileTree;
 }
 
+/** @throws {TreeError} when git cannot list the files, or a file of a block cannot be read */
 const loadBlocks = (input: LoadBlocksInput): BlocksLoaded => {
   const underBlocks = input.tree.list().filter((path) => path.startsWith(blocksPrefix));
   const located = locate(underBlocks);

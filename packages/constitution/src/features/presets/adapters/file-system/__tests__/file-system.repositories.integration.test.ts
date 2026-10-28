@@ -35,7 +35,6 @@ const writeFiles = (files: Readonly<Record<string, string>>): void => {
 const textOf = (path: string): string | undefined =>
   existsSync(at(path)) ? readFileSync(at(path), 'utf8') : undefined;
 
-// A unit's lock as the lock repository reads it, where the unit holds one.
 const lockAt = (unitPath: string): Lock | undefined => {
   const read = createFileLockRepository().read(at(unitPath));
 
@@ -55,7 +54,6 @@ const writeLocks = (locks: Readonly<Record<string, Lock>>): void => {
   });
 };
 
-// The code of what the system failed with, which the failure of a write keeps as its cause.
 const causeCodeOf = (act: () => unknown): unknown => {
   try {
     act();
@@ -136,8 +134,8 @@ describe('createFileAppliedFilesRepository', () => {
         },
         'tsconfig.json': {
           addresses: [],
-          defaults: [],
-          isCreated: true,
+          everMetDefaults: [],
+          isCreatedByApply: true,
           kind: RecordKind.Settings,
           leaves: [],
         },
@@ -145,10 +143,10 @@ describe('createFileAppliedFilesRepository', () => {
           addresses: [
             'name',
           ],
-          defaults: [
+          everMetDefaults: [
             'def',
           ],
-          isCreated: true,
+          isCreatedByApply: true,
           kind: RecordKind.Settings,
           leaves: [
             'abc',

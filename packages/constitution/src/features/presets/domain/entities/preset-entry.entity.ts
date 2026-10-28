@@ -18,49 +18,41 @@ import { ValueKind } from './preset-value.entity';
 import type { EntryNamed } from './presets-finding.entity';
 import { Setting } from './setting.entity';
 
-/** A preset file: one reader's entries on one axis, under the blocks its path names. */
 interface PresetSet {
   readonly filePath: RepositoryRelativePath;
   readonly placeInPresets: PresetFilePath;
   readonly source: BlockSource;
 }
 
-/** The rule an entry is keyed by: one rule, or every rule of its block. */
 type RuleKey = RuleSlug | typeof EVERY;
 
-/** The language an entry is keyed by: one language's block, or every language. */
 type LanguageKey = BlockId | typeof EVERY;
 
 enum TextPlace {
-  /** the file an entry writes, which names no fact but a role */
   Path = 'path',
   Key = 'key',
   Value = 'value',
   Item = 'item',
-  /** a whole file's text, written as a default: the file itself, whose names are its own */
   File = 'file',
 }
 
-/** A text an entry writes, where facts and folder names may stand. */
 interface EntryText {
   readonly place: TextPlace;
   readonly text: string;
 }
 
-/**
- * One setting of a preset file, keyed `<block> → <rule> | * → <language> | * → <target>`. Its
- * target's fields are its own rather than a nested value's, as TypeScript narrows a union only by
- * a field of its own: a branch on the kind narrows the entry.
- */
+// Why: the target's fields are the entry's own rather than a nested value's, as TypeScript narrows
+// a union only by a field of its own.
 type PresetEntry = EntryTarget & {
   readonly block: BlockId;
-  /** its place in its preset file, which orders the entries of one block */
   readonly index: number;
   readonly language: LanguageKey;
   readonly rule: RuleKey;
   readonly set: PresetSet;
   readonly value: PresetValue;
 };
+
+const mostSpecificLayer = Layer.Implementation;
 
 const packOf = (source: BlockSource): string =>
   source.kind === SourceKind.Pack ? source.pack : '';
@@ -73,12 +65,11 @@ const orderOf = (model: BlockModel): ((left: PresetEntry, right: PresetEntry) =>
     ]),
   );
 
-  // a block the model does not know sorts with the implementations, the most specific layer
-  const rankOf = (entry: PresetEntry): number =>
-    LAYER_RANK[layers.get(entry.block) ?? Layer.Implementation];
+  const layerRankOf = (entry: PresetEntry): number =>
+    LAYER_RANK[layers.get(entry.block) ?? mostSpecificLayer];
 
   return (left: PresetEntry, right: PresetEntry): number =>
-    rankOf(left) - rankOf(right) ||
+    layerRankOf(left) - layerRankOf(right) ||
     compareText(left.block, right.block) ||
     AXES.indexOf(left.set.placeInPresets.axis) - AXES.indexOf(right.set.placeInPresets.axis) ||
     compareText(packOf(left.set.source), packOf(right.set.source)) ||
@@ -97,18 +88,16 @@ const namedOf = (entry: PresetEntry): EntryNamed => ({
   rule: entry.rule,
 });
 
-/**
- * The block that brings the entry into a file: the first block its preset file's path names beyond
- * the reader, or the reader.
- */
-const blockOf = (entry: PresetEntry): BlockId =>
+const bringingBlockOf = (entry: PresetEntry): BlockId =>
   entry.set.placeInPresets.withs[0] ?? entry.set.placeInPresets.reader;
 
-/**
- * The name an entry's `${role.<id>}` gives a path: its term as its language spells it, or, for an
- * entry of every language, as the blocks its key and its preset file name do; undefined where no
- * term defines the role.
- */
+// Why: a block that keys an entry brought it before another block stood in for it, so a comment an
+// earlier apply wrote may name it.
+const blocksCommentsNameOf = (entry: PresetEntry): readonly BlockId[] => [
+  bringingBlockOf(entry),
+  entry.block,
+];
+
 const roleNameOf = (input: {
   entry: PresetEntry;
   id: string;
@@ -132,10 +121,6 @@ const roleNameOf = (input: {
   return term === undefined ? undefined : Term.roleNameOf(term);
 };
 
-/**
- * The path from its unit's folder the entry's key writes, its roles named; undefined where it names
- * a role no term defines, or any other fact.
- */
 const writtenPathOf = (input: {
   entry: PresetEntry & TargetFile;
   model: BlockModel;
@@ -152,9 +137,8 @@ const writtenPathOf = (input: {
         : undefined,
   });
 
-/** What the entry contributes is its own value, or its value with its facts resolved. */
 const contributionOf = (entry: PresetEntry, contributed: PresetValue): Contribution => ({
-  block: blockOf(entry),
+  block: bringingBlockOf(entry),
   source: sourceOf(entry),
   value: contributed,
 });
@@ -195,7 +179,6 @@ const textsOfValue = (given: PresetValue): readonly EntryText[] =>
       ])
     : textsOfSetting(given.setting, TextPlace.Value);
 
-/** The texts of the entry's value: its keys, values and items, or the whole file it writes. */
 const textsOf = (entry: PresetEntry): readonly EntryText[] =>
   entry.value.kind === ValueKind.Default && typeof entry.value.setting === 'string'
     ? [
@@ -206,7 +189,6 @@ const textsOf = (entry: PresetEntry): readonly EntryText[] =>
       ]
     : textsOfValue(entry.value);
 
-/** The ids of the roles an entry names: in the path of the file it writes, its guard and its value. */
 const roleIdsOf = (entry: PresetEntry): readonly string[] =>
   [
     // Stryker disable next-line ConditionalExpression: a run's target holds no path, so read as a file's it gives none
@@ -222,7 +204,8 @@ const roleIdsOf = (entry: PresetEntry): readonly string[] =>
     .map((fact) => fact.role);
 
 const PresetEntry = {
-  blockOf,
+  bringingBlockOf,
+  blocksCommentsNameOf,
   contributionOf,
   namedOf,
   orderOf,

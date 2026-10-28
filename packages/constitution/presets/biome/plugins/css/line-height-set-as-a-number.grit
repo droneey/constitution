@@ -1,6 +1,6 @@
 language css
 
-// In the font shorthand the line height is what follows the slash.
+// Why: in the font shorthand the line height is what follows the slash.
 or {
   CssRegularDimension(),
   CssPercentage()

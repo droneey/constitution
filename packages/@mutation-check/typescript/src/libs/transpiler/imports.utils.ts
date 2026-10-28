@@ -28,7 +28,6 @@ interface ResolveInput {
   readonly specifier: string;
 }
 
-// An import Bun cannot resolve names no file there is, so it adds none.
 const resolvedPathsOf = (input: ResolveInput): readonly string[] => {
   try {
     return [
@@ -46,12 +45,10 @@ const resolvedPathsOf = (input: ResolveInput): readonly string[] => {
 };
 
 interface ImportsInput {
-  /** from the working folder */
   readonly filePath: string;
   readonly workingFolderPath: string;
 }
 
-/** The files of the working folder the file imports, by their paths from it. */
 const importsOf = (input: ImportsInput): readonly string[] => {
   const loader = loaderOf(input.filePath);
 

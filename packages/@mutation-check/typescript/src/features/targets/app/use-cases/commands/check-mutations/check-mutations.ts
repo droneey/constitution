@@ -1,11 +1,11 @@
-import type { CheckOutcome } from '../../../../domain/use-cases';
+import type { CheckMutations } from '../../../../domain/use-cases';
 import { CheckScope, CheckStatus } from '../../../../domain/use-cases';
 import { ExitCode } from '../../../constants';
 import { nothingChangedMessage, unknownArgumentsMessage } from './check-mutations.messages.ts';
 
 interface CheckMutationsCommandInput {
   readonly args: readonly string[];
-  readonly checkMutations: (scope: CheckScope) => Promise<CheckOutcome>;
+  readonly checkMutations: CheckMutations;
   readonly writeError: (text: string) => void;
   readonly writeOutput: (text: string) => void;
 }
@@ -21,11 +21,9 @@ const scopeOf = (args: readonly string[]): CheckScope | undefined => {
 };
 
 /**
- * The command line's `mutation-check [all]`: the branch's changed lines, or with `all` everything.
- *
- * @throws BranchError when the branch cannot be read.
- * @throws ConfigurationError when the configuration cannot tell which files it mutates.
- * @throws MutationRunError when the mutation tool does not run to its end.
+ * @throws {BranchError} when the branch cannot be read
+ * @throws {ConfigurationError} when the configuration cannot tell which files it mutates
+ * @throws {MutationRunError} when the mutation tool does not run to its end
  */
 const runCheckMutations = async (input: CheckMutationsCommandInput): Promise<number> => {
   const scope = scopeOf(input.args);

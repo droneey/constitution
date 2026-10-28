@@ -27,8 +27,8 @@ describe("the configuration Bun's test runner's presets write", () => {
     },
   );
 
-  // Bun takes a key of its bunfig.toml it does not know without a word, so each setting of the test
-  // runner the presets write has a run it must change.
+  // Why: Bun takes a key of its bunfig.toml it does not know without a word, so each setting of the
+  // test runner the presets write has a run it must change.
   it.each([
     BunConfig.Unit,
     BunConfig.Mutation,

@@ -16,14 +16,11 @@ interface BuildDeclaration {
 
 interface DistributionMapSourcesInput {
   readonly builds: readonly BuildDeclaration[];
-  /** in the release's folder */
   readonly mapName: string;
 }
 
 const TOML_EXTENSION = '.toml';
 
-// A file that is missing, unreadable or does not parse reads as nothing; a manifest of TOML is read
-// as TOML, any other as JSON.
 const readOf = (filePath: AbsolutePath): unknown =>
   attempted({
     effect: (): unknown => {
@@ -57,7 +54,6 @@ const isBuilt = (input: {
       undefined,
   );
 
-/** A map that is missing, unreadable or of another shape packs nothing. */
 const createDistributionMapSources = (input: DistributionMapSourcesInput): DistributionSources => ({
   builtFilesOf: (releaseFolderPath: AbsolutePath): ReadonlySet<string> => {
     const read = distributionMapModel.safeParse(

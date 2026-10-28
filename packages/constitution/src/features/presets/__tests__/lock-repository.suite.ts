@@ -7,7 +7,6 @@ import type { Lock } from '../domain/entities';
 import { LockReadStatus, RecordKind } from '../domain/entities';
 import { lockOf } from './presets.fixtures';
 
-/** A project whose units hold these locks, and one whose lock does not parse. */
 interface LockWorld {
   readonly locks: Readonly<Record<string, Lock>>;
   readonly unparsed: readonly string[];
@@ -15,7 +14,6 @@ interface LockWorld {
 
 interface LockRepositorySuiteInput {
   readonly name: string;
-  /** a repository over a project that holds the world, and the folder of a unit by its path */
   readonly repositoryOf: (world: LockWorld) => {
     readonly folderOf: (unitPath: string) => AbsolutePath;
     readonly repository: LockQueryRepository;
@@ -27,8 +25,8 @@ const lock = lockOf({
     addresses: [
       'name',
     ],
-    defaults: [],
-    isCreated: true,
+    everMetDefaults: [],
+    isCreatedByApply: true,
     kind: RecordKind.Settings,
     leaves: [
       'abc',
@@ -36,10 +34,10 @@ const lock = lockOf({
   },
   'knip.jsonc': {
     addresses: [],
-    defaults: [
+    everMetDefaults: [
       'def',
     ],
-    isCreated: false,
+    isCreatedByApply: false,
     kind: RecordKind.Settings,
     leaves: [],
   },

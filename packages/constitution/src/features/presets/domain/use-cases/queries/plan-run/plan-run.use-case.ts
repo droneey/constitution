@@ -19,18 +19,16 @@ interface PlanRunInput extends RunAsked {
   readonly reader: ProjectReader;
 }
 
-// The findings that bear on what runs; the files' own are the check's and the apply's.
 const runCodes: ReadonlySet<PresetsCode> = new Set([
   PresetsCode.Clash,
   PresetsCode.MissingSlot,
   PresetsCode.RunMisshapen,
   PresetsCode.SlotInNoList,
+  PresetsCode.SlotPlacedTwice,
   PresetsCode.ToolWithoutRunner,
   PresetsCode.TwoReplacers,
 ]);
 
-// The unit whose folder holds the start most closely; the repository's runs every unit, its own
-// first, as its check covers what no member's does.
 const unitsToRun = (input: {
   repositoryFolderPath: AbsolutePath;
   startFolderPath: AbsolutePath;
@@ -95,7 +93,10 @@ const planOf = (
   };
 };
 
-/** Each unit's commands in the order its runners' entries give them. */
+/**
+ * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
+ * @throws {ReleaseError} when the release's blocks cannot be listed
+ */
 const planRun = (input: PlanRunInput): ProjectRead<RunPlan> =>
   ProjectRead.map(input.reader.open(input.startFolderPath), (project) =>
     planOf({

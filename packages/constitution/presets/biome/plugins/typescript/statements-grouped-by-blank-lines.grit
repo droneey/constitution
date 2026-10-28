@@ -53,7 +53,8 @@ pattern statement() {
   }
 }
 
-// GritQL patterns cannot recurse, so a member chain is unrolled to three accesses and a group to eight statements.
+// Why: GritQL patterns cannot recurse, so a member chain is unrolled to three accesses and a group
+// to eight statements.
 pattern member1($id) {
   or {
     $id,
@@ -76,7 +77,6 @@ pattern member3($id) {
   }
 }
 
-// A call or an assignment on the variable or one of its members.
 pattern operates_on($id) {
   JsExpressionStatement(expression=or {
     JsCallExpression(callee=member3($id)),
@@ -94,7 +94,6 @@ pattern declares($id) {
   ])) where { $id <: JsIdentifierBinding() }
 }
 
-// A declaration of one variable, or a statement operating on it that the declaration's group runs on to.
 pattern group1($id) {
   or {
     declares($id),
@@ -152,7 +151,6 @@ pattern group8($id) {
   }
 }
 
-// Spaces and comments only, with a comment on every line between the two statements.
 pattern gap_without_blank_line() {
   r"(?:[ \t]|//[^\n]*|/\*(?s:.*?)\*/)*(?:\n[ \t]*(?://[^\n]*|/\*(?s:.*?)\*/)(?:[ \t]|//[^\n]*|/\*(?s:.*?)\*/)*)*(?:\n[ \t]*)?"
 }
@@ -192,8 +190,9 @@ statement() as $b where {
     JsModule(),
     JsScript()
   } as $c,
-  // A node's text leaves out the lines around it, so the gap between the two statements is read from
-  // their container's text: after the one before, or before this one, whichever the other does not contain.
+  // Why: a node's text leaves out the lines around it, so the gap between the two statements is
+  // read from their container's text: after the one before, or before this one, whichever the other
+  // does not contain.
   $text = text($c),
   or {
     and {

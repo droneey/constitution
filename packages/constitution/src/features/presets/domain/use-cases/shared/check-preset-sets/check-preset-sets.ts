@@ -15,11 +15,8 @@ import {
   sortingProblems,
 } from './checks';
 
-/** How a pack's preset files may name a role; the release's always name it by its id. */
 enum PackRoleNaming {
-  /** a pack checked on its own, which others take */
   ById = 'by-id',
-  /** the project's own packs, which may write its folders by their names */
   ByIdOrName = 'by-id-or-name',
 }
 
@@ -28,7 +25,6 @@ interface CheckPresetSetsInput {
   readonly formats: ConfigurationFormat;
   readonly model: BlockModel;
   readonly packRoleNaming: PackRoleNaming;
-  /** the release whose files and plugins its entries name; absent where no release is checked */
   readonly release?: ReleaseFiles;
 }
 

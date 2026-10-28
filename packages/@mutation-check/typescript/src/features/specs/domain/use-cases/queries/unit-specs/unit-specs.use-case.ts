@@ -26,7 +26,7 @@ const importDepthsOf = (input: {
     const next: UnitRelativePath[] = [];
 
     for (const filePath of layer) {
-      for (const importedPath of input.importGraph.importsOf(filePath)) {
+      for (const importedPath of input.importGraph.directImportsOf(filePath)) {
         if (!importDepths.has(importedPath)) {
           importDepths.set(importedPath, depth);
           next.push(importedPath);
@@ -41,9 +41,8 @@ const importDepthsOf = (input: {
 };
 
 /**
- * The specs nearest a file come first, since a spec importing the file directly kills its mutants soonest.
- *
- * @throws SpecSettingsError when the configuration of the specs is not of the shape their runner reads
+ * @throws {SpecSettingsError} when the configuration of the specs is not of the shape their
+ * runner reads
  */
 const unitSpecs = (input: UnitSpecsInput): UnitSpecs => {
   const specPaths = input.specRunner.findSpecPaths();

@@ -29,6 +29,7 @@ enum PresetsCode {
   TwoReplacers = 'two-replacers',
   MissingSlot = 'missing-slot',
   SlotInNoList = 'slot-in-no-list',
+  SlotPlacedTwice = 'slot-placed-twice',
   MissingName = 'missing-name',
   MissingConstitution = 'missing-constitution',
   Loosened = 'loosened',
@@ -47,22 +48,16 @@ interface EntryNamed {
 }
 
 interface UnreachedRole {
-  /**
-   * the blocks of the role's first definition, whose spelling the apply falls back to: its block
-   * and, in a seam, the seam's other block
-   */
   readonly definers: readonly BlockId[];
   readonly role: string;
 }
 
 interface SettingNamed {
-  /** its keys joined by dots */
-  readonly setting: string;
+  readonly settingPath: string;
 }
 
 interface SettingsNamed {
-  /** each as a report names it: its keys joined by dots, and an item's value after them */
-  readonly settings: readonly string[];
+  readonly settingPaths: readonly string[];
 }
 
 interface SourcesNamed extends SettingNamed {
@@ -76,18 +71,15 @@ interface SlotNamed extends SettingNamed {
 interface PresetsDetails {
   readonly [PresetsCode.PresetFileMisplaced]: object;
   readonly [PresetsCode.PresetFileUnparsed]: {
-    /** from 1; absent when the parser names none */
     readonly line?: number;
   };
   readonly [PresetsCode.EntryMisshapen]: {
-    /** the keys down to the one whose value is no map of the entry's next key */
     readonly keys: readonly string[];
   };
   readonly [PresetsCode.UnknownReader]: {
     readonly reader: BlockId;
   };
   readonly [PresetsCode.UnknownBlock]: {
-    /** as the preset file spells it, which may be no block id at all */
     readonly block: string;
   };
   readonly [PresetsCode.UnknownRule]: EntryNamed;
@@ -99,13 +91,10 @@ interface PresetsDetails {
   };
   readonly [PresetsCode.EntryMisplaced]: EntryNamed & {
     readonly belongs: PresetFilePath;
-    /** the blocks its path names that it does not need */
     readonly unneededBlocks: readonly BlockId[];
-    /** the roles it names that its path leaves out of reach, the reason it belongs elsewhere */
     readonly unreachedRoles: readonly UnreachedRole[];
   };
   readonly [PresetsCode.EntryNeedsTooManyBlocks]: EntryNamed & {
-    /** the blocks beyond its reader's reach that its path would name, more than any path names */
     readonly needed: readonly BlockId[];
   };
   readonly [PresetsCode.EntryOffItsAxis]: EntryNamed & {
@@ -130,7 +119,6 @@ interface PresetsDetails {
       readonly file: string;
     };
   readonly [PresetsCode.MissingDistributionFile]: {
-    /** the file's path from the release */
     readonly file: string;
   };
   readonly [PresetsCode.PluginUnreferenced]: object;
@@ -141,10 +129,10 @@ interface PresetsDetails {
   readonly [PresetsCode.TwoReplacers]: SourcesNamed;
   readonly [PresetsCode.MissingSlot]: SlotNamed;
   readonly [PresetsCode.SlotInNoList]: SlotNamed;
+  readonly [PresetsCode.SlotPlacedTwice]: SlotNamed;
   readonly [PresetsCode.MissingName]: object;
   readonly [PresetsCode.MissingConstitution]: object;
   readonly [PresetsCode.Loosened]: SettingNamed & {
-    /** the value the presets give the setting, as JSON writes it */
     readonly wanted: string;
   };
   readonly [PresetsCode.Missing]: SettingsNamed;
@@ -160,7 +148,6 @@ interface PresetsDetails {
 
 type PresetsFinding = FindingOf<PresetsDetails>;
 
-// Each finding once, though several entries or files find the one thing wrong.
 const eachOnce = (findings: readonly PresetsFinding[]): readonly PresetsFinding[] => [
   ...new Map(
     findings.map((finding) => [
@@ -183,6 +170,7 @@ type MergeProblem = Extract<
       | PresetsCode.Clash
       | PresetsCode.MissingSlot
       | PresetsCode.SlotInNoList
+      | PresetsCode.SlotPlacedTwice
       | PresetsCode.TwoReplacers;
   }
 >;

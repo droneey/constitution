@@ -4,13 +4,10 @@ import { folderPathOf } from '#/shared/cli';
 import type { PackBase } from '../../domain/use-cases/queries/check';
 
 interface PackBaseInput {
-  /** as the check was given it */
   readonly base: string | undefined;
-  /** the folder the check runs in */
   readonly folderPath: AbsolutePath;
 }
 
-/** The base a check names, from the folder it runs in unless it opens with "/"; none when none is named. */
 const packBaseOf = (input: PackBaseInput): PackBase | undefined =>
   input.base === undefined
     ? undefined

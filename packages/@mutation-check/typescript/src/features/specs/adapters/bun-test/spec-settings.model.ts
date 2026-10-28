@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { UnitRelativePath } from '#/kernel/value-objects';
 
-/** The settings of the specs in a `bunfig.toml`, each left out taken as `bun test` takes it. */
+// Why: `bun test` defaults each setting left out.
 interface SpecSettings {
   readonly test: {
     readonly pathIgnorePatterns: readonly string[];

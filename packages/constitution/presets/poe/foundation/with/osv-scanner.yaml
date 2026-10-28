@@ -5,7 +5,7 @@ osv-scanner:
         tool:
           poe:
             tasks:
-              # --no-ignore: a checkout nested in a folder another repository ignores, an
+              # Why: --no-ignore: a checkout nested in a folder another repository ignores, an
               # agent's worktree, is otherwise read as ignored, and no lockfile is found.
               check:audit: >-
                 osv-scanner scan source

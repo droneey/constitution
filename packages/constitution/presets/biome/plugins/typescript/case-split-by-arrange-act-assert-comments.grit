@@ -1,6 +1,6 @@
 language js
 
-// Biome keeps comments as trivia, out of reach of a node pattern, but inside the text of the
+// Why: Biome keeps comments as trivia, out of reach of a node pattern, but inside the text of the
 // callback, so the sections are read from that text: a section opens with a line that holds only
 // its comment, and the next one found is the nearest, since `.*?` is lazy.
 pattern next_section($name, $rest) { r"(?s).*?\n[ \t]*// (Arrange|Act|Assert)\n(.*)"($name, $rest) }
@@ -9,7 +9,7 @@ pattern after_act() {
   next_section($name, $rest) where { $name <: "Assert", $rest <: after_assert() }
 }
 
-// A lifecycle or an end-to-end case repeats an Act and its Assert for each step.
+// Why: a lifecycle or an end-to-end case repeats an Act and its Assert for each step.
 pattern after_assert() {
   or {
     not includes r"\n[ \t]*// (?:Arrange|Act|Assert)\n",
@@ -17,7 +17,8 @@ pattern after_assert() {
   }
 }
 
-// An Arrange the next section's comment follows at once is empty, and an empty one is refused.
+// Why: the rule lets a case leave its Arrange out but never leave it empty, so an Arrange followed by
+// nothing but blank space before the next section's comment is refused.
 pattern sections() {
   next_section($name, $rest) where {
     or {
@@ -41,8 +42,7 @@ pattern sections() {
   },
   $body <: not sections(),
   register_diagnostic(span=$title, message="[case-split-by-arrange-act-assert-comments] Open the sections of a case with // Arrange where it sets anything up, then // Act and // Assert, each on a line of its own and in that order", severity="error"),
-  // Biome keeps what a match adds to its matching state and copies that state
-  // before every node, so each match would slow the next: the diagnostic stays,
-  // the match fails.
+  // Why: Biome keeps what a match adds to its matching state and copies that state before every
+  // node, so each match would slow the next: the diagnostic stays, the match fails.
   false
 }

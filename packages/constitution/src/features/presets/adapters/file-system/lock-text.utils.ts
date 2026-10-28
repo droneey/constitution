@@ -13,8 +13,8 @@ const recordOfWire = (wire: LockRecordWire): LockRecord =>
     ? Locks.wholeRecord
     : {
         addresses: wire.addresses ?? [],
-        defaults: wire.defaults ?? [],
-        isCreated: wire.created === true,
+        everMetDefaults: wire.defaults ?? [],
+        isCreatedByApply: wire.created === true,
         kind: RecordKind.Settings,
         leaves: wire.leaves ?? [],
       };
@@ -49,14 +49,14 @@ const wireOfRecord = (record: LockRecord): LockRecordWire => {
             ...record.addresses,
           ],
         }),
-    ...(record.defaults.length === 0
+    ...(record.everMetDefaults.length === 0
       ? {}
       : {
           defaults: [
-            ...record.defaults,
+            ...record.everMetDefaults,
           ],
         }),
-    ...(record.isCreated
+    ...(record.isCreatedByApply
       ? {
           created: true,
         }
@@ -64,7 +64,7 @@ const wireOfRecord = (record: LockRecord): LockRecordWire => {
   };
 };
 
-/** One file to a line, in the order of their paths, so a change touches only its file's line. */
+// Why: one file to a line, in the order of their paths, so a change touches only its file's line.
 const textOfLock = (lock: Lock): string => {
   const lines = Object.entries(lock)
     .toSorted(([left], [right]) => compareText(left, right))

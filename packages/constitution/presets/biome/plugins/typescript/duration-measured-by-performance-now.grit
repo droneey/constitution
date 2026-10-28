@@ -12,8 +12,8 @@ pattern wall_clock_declarators($start) {
   JsVariableDeclaration(declarators=some JsVariableDeclarator(id=$start, initializer=JsInitializerClause(expression=wall_clock_reading())))
 }
 
-// A statement that gives a name a wall-clock reading, declared or assigned; the code inside it
-// is not read, so a name of another function's is never taken for it.
+// Why: the code inside the statement is not read, so a name of another function's is never taken
+// for a wall-clock reading.
 pattern wall_clock_statement($start) {
   or {
     JsVariableStatement(declaration=wall_clock_declarators($start)),
@@ -22,9 +22,6 @@ pattern wall_clock_statement($start) {
   }
 }
 
-// A name given a wall-clock reading where the difference can see it: by a statement of a function
-// body, a block, a case or a static block around it, or of the module; or a field of its class,
-// read through this and given the reading where it is declared or through this.
 pattern wall_clock_start() {
   or {
     `this.$field` where {

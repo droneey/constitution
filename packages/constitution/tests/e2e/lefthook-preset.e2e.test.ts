@@ -13,7 +13,6 @@ import {
   validation,
 } from './lefthook-preset.fixtures';
 
-// What git commit -v hands the hook below the message: the scissors line and the diff after it.
 const verboseDiff = [
   '# ------------------------ >8 ------------------------',
   '# Do not modify or remove the line above.',

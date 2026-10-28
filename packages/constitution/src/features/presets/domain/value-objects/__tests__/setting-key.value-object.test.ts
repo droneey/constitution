@@ -5,8 +5,6 @@ import fc from 'fast-check';
 import type { SettingKey } from '../setting-key.value-object';
 import { SettingKey as Key, KeyKind } from '../setting-key.value-object';
 
-// Texts of the pieces a key is made of, its addresses and slots among them, and texts of any
-// characters.
 const keyTexts = fc.oneof(
   fc
     .array(fc.constantFrom('rules', 'name', 'lint', '[', ']', '=', '@', 'checks', '.'), {
@@ -16,7 +14,6 @@ const keyTexts = fc.oneof(
   fc.string(),
 );
 
-// The invariant: every text reads as a key whose parts spell the text again.
 const isSpelledBack = (text: string): boolean => {
   const key = Key.of(text);
 
@@ -112,6 +109,27 @@ describe('SettingKey', () => {
         list: 'forbidden',
         value: 'no-cycles',
       },
+      undefined,
+    ]);
+  });
+
+  it('should give the address of a key that names an element by its slot, and none of another', () => {
+    // Act
+    const addresses = [
+      Key.slotAddressOf('overrides[slot=injected-classes]'),
+      Key.slotAddressOf('forbidden[name=no-cycles]'),
+      Key.slotAddressOf('overrides@injected-classes'),
+    ];
+
+    // Assert
+    expect(addresses).toStrictEqual([
+      {
+        field: 'slot',
+        kind: KeyKind.Address,
+        list: 'overrides',
+        value: 'injected-classes',
+      },
+      undefined,
       undefined,
     ]);
   });

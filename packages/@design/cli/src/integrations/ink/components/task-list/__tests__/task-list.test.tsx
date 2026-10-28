@@ -10,7 +10,6 @@ import {
 } from '../../../__tests__/ink.fixtures';
 import { TaskList } from '../task-list';
 
-/** the first frame of a list whose step `lint` waits and whose step `test` is `status` */
 const firstFrameOf = (status: StepStatus): string | undefined =>
   renderWithTheme(
     <TaskList
@@ -28,7 +27,6 @@ const firstFrameOf = (status: StepStatus): string | undefined =>
     />,
   ).frames[0];
 
-/** what a screen reader says of a list whose one step `lint` is `status` */
 const readOutOf = (status: StepStatus): string =>
   screenReaderOutputOf(
     <TaskList

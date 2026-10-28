@@ -21,7 +21,6 @@ const sourceOf = (input: { block: Block; file: BlockFile }): RuleSource => ({
   text: withoutCodeFences(input.file.body),
 });
 
-/** The rules and the answers every file of the blocks states, each rule at the level it binds at. */
 const parseRules = (blocks: readonly Block[]): BlockRulesParsed => {
   const sources = blocks.flatMap((block) =>
     Block.filesOf(block).map((file) =>

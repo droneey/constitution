@@ -112,7 +112,6 @@ describe('BlockFilePlace.parse', () => {
     },
   ])('should place $name in its block when the path is $path', ({ file, path }) => {
     // Act
-    // the place a caller reads: its fields, the brand being the compiler's alone
     const place: object | undefined = BlockFilePlace.parse(path);
 
     // Assert
@@ -129,7 +128,6 @@ describe('BlockFilePlace.parse', () => {
     const path = 'blocks/core/workflow/delivery.md';
 
     // Act
-    // the place a caller reads: its fields, the brand being the compiler's alone
     const place: object | undefined = BlockFilePlace.parse(path);
 
     // Assert
@@ -182,7 +180,6 @@ describe('BlockFilePlace.parse', () => {
     },
   ])('should place $name apart from any block when the path is $path', ({ expected, path }) => {
     // Act
-    // the place a caller reads: its fields, the brand being the compiler's alone
     const place: object | undefined = BlockFilePlace.parse(path);
 
     // Assert

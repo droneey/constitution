@@ -27,7 +27,6 @@ const LAYER_FOLDERS = {
   },
 } as const satisfies Readonly<Record<BlockLayer, FolderHeading>>;
 
-/** the folders of the sidebar that group layers of their own, by their path */
 const layerGroupFolders: Readonly<Record<string, FolderHeading>> = {
   contexts: {
     icon: 'Boxes',

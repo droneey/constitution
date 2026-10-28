@@ -18,8 +18,6 @@ interface ListInput {
   readonly unit: ResolvedUnit;
 }
 
-// The chapters and seams a unit reads of a block, axis by axis; with isOnlyAdded, only those a
-// member adds to what the repository reads.
 const filesOf = (
   input: ListInput & {
     isOnlyAdded: boolean;

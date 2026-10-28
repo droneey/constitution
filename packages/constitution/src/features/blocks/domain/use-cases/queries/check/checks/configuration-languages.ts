@@ -26,7 +26,6 @@ const blockFindings = (input: {
 }): readonly ConfigurationLanguagesFinding[] => {
   const reached = BlockGraph.closureOf(input.graph, input.block.id);
 
-  // A glob read as a path matches a language's pattern only when it ends in that language's extension.
   return input.block.frontMatter.governs.flatMap((glob) =>
     input.languages
       .filter(

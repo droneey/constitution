@@ -8,7 +8,6 @@ export const pageFixture = (overrides: Partial<Page> = {}): Page => ({
   ...overrides,
 });
 
-/** a guide and the overview, by their slugs joined with `/` */
 export const pagesFixture = (): ReadonlyMap<string, Page> =>
   new Map([
     [

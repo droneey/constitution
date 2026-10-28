@@ -12,7 +12,6 @@ import { recordJudgement } from '../record-judgement.use-case';
 const treeNow = TreeFingerprint.create('tree-now');
 const treeBefore = TreeFingerprint.create('tree-before');
 
-// The tree was last reviewed, and the gate last blocked, on an earlier tree.
 const heldBefore = {
   marks: [
     {

@@ -17,5 +17,5 @@ governs: ["lingui.config.ts", "**/locales/**"]
 | Requirement | How | Met |
 |---|---|---|
 | `plural-forms-by-locale-rules` | ICU `plural` and `<Plural>`, with CLDR rules through `Intl.PluralRules` | yes |
-| `messages-take-named-parameters` | ICU placeholders; `<Trans>` keeps components inside the message | yes |
+| `messages-take-named-parameters` | ICU placeholders of the `msg` descriptor, markup inside the message among them | yes |
 | `i18n-missing-key-fails-the-check` | a message's id is its source text, and the check fails when the extracted source catalog differs from the committed one (`source-catalog-current-in-the-check`) | yes |

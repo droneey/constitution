@@ -1,6 +1,7 @@
-import { Axis, Layer } from '#/kernel/constants';
+import { Layer } from '#/kernel/constants';
 import type { ModelRule } from '#/kernel/entities';
 import { BlockModel } from '#/kernel/entities';
+import { isDeepEqual } from '#/kernel/utils';
 import type { BlockId } from '#/kernel/value-objects';
 
 import { EVERY, MAX_WITHS } from '../../../../constants';
@@ -48,15 +49,10 @@ const setProblems = (input: SetProblemsInput): readonly PresetsProblem[] => {
 };
 
 interface DefinedRole {
-  /**
-   * the blocks of its first definition, whose spelling readers that reach none fall back to: its
-   * block and, in a seam, the seam's other block
-   */
   readonly definers: readonly BlockId[];
   readonly id: string;
 }
 
-// The roles an entry names that some block defines.
 const definedRolesOf = (input: { entry: PresetEntry; model: BlockModel }): readonly DefinedRole[] =>
   PresetEntry.roleIdsOf(input.entry).flatMap((id) => {
     const definition = BlockModel.definitionOf(input.model, id);
@@ -81,12 +77,52 @@ const isReached = (input: {
     readers: input.readers,
   }) !== undefined;
 
-// The blocks an entry needs beyond its reader's reach, in the order its path names them: the key
-// block, the key rule's seam partner, then a block for each definer of the roles these two leave out
-// of reach. A definer another such definer reaches is no need of its own: reach is transitive and
-// runs through no cycle, so those left reach none of each other. A named block stands in for each
-// definer it reaches: of the named blocks that reach one, the first in path order that no other named
-// block reaches. So the blocks found, named as a path, are found again there.
+const reachesAnother = (input: {
+  block: BlockId;
+  blocks: readonly BlockId[];
+  model: BlockModel;
+}): boolean =>
+  input.blocks.some(
+    (other) => other !== input.block && BlockModel.reachOf(input.model, other).has(input.block),
+  );
+
+// Why: reach is transitive and runs through no cycle, so the blocks kept reach none of each other,
+// whatever order they are filtered in.
+const widestOf = (input: { blocks: readonly BlockId[]; model: BlockModel }): readonly BlockId[] =>
+  input.blocks.filter(
+    (block) =>
+      !reachesAnother({
+        ...input,
+        block,
+      }),
+  );
+
+const withStandIns = (input: {
+  blocks: readonly BlockId[];
+  model: BlockModel;
+  withs: readonly BlockId[];
+}): readonly BlockId[] => {
+  const { blocks, model, withs } = input;
+
+  const reachOf = (block: BlockId): ReadonlySet<BlockId> => BlockModel.reachOf(model, block);
+
+  const widestNamed = widestOf({
+    blocks: withs,
+    model,
+  });
+
+  return widestOf({
+    blocks,
+    model,
+  }).reduce<readonly BlockId[]>(
+    (chosen, block) =>
+      chosen.some((standIn) => reachOf(standIn).has(block))
+        ? chosen
+        : chosen.concat(widestNamed.find((named) => reachOf(named).has(block)) ?? block),
+    [],
+  );
+};
+
 const neededOf = (input: {
   entry: PresetEntry;
   model: BlockModel;
@@ -95,14 +131,7 @@ const neededOf = (input: {
 }): readonly BlockId[] => {
   const { entry, model, roles, rule } = input;
   const { reader, withs } = entry.set.placeInPresets;
-
-  const reachOf = (block: BlockId): ReadonlySet<BlockId> => BlockModel.reachOf(model, block);
-
-  const reachesAnother = (block: BlockId, blocks: readonly BlockId[]): boolean =>
-    blocks.some((other) => other !== block && reachOf(other).has(block));
-
-  const readerReach = reachOf(reader);
-  // A key block may be the partner of its own rule's seam.
+  const readerReach = BlockModel.reachOf(model, reader);
   const keyed = [
     ...new Set([
       entry.block,
@@ -113,12 +142,6 @@ const neededOf = (input: {
           ]),
     ]),
   ];
-  const keyedReach = new Set([
-    ...readerReach,
-    ...keyed.flatMap((block) => [
-      ...reachOf(block),
-    ]),
-  ]);
   const definers = [
     ...new Set(
       roles
@@ -135,33 +158,22 @@ const neededOf = (input: {
         )
         .flatMap(({ definers: blocks }) => blocks),
     ),
-  ].filter((block) => !keyedReach.has(block));
-  const widestNamed = withs.filter((block) => !reachesAnother(block, withs));
-  const standIns = definers
-    .filter((block) => !reachesAnother(block, definers))
-    .reduce<readonly BlockId[]>(
-      (chosen, definer) =>
-        chosen.some((block) => reachOf(block).has(definer))
-          ? chosen
-          : chosen.concat(widestNamed.find((block) => reachOf(block).has(definer)) ?? definer),
-      [],
-    );
+  ].filter((block) => !readerReach.has(block));
 
-  return [
-    ...keyed.filter((block) => !readerReach.has(block)),
-    ...standIns,
-  ];
+  return withStandIns({
+    blocks: [
+      ...keyed.filter((block) => !readerReach.has(block)),
+      ...definers,
+    ],
+    model,
+    withs,
+  });
 };
 
-// A key the reader reaches may lie under any with/ path, which is then its condition.
 const isPlaced = (input: { needed: readonly BlockId[]; withs: readonly BlockId[] }): boolean =>
-  input.needed.length === 0 ||
-  (input.needed.length === input.withs.length &&
-    input.needed.every((block, at) => input.withs[at] === block));
+  // Why: an entry its reader alone places may sit under any with/ path, which only conditions it.
+  input.needed.length === 0 || isDeepEqual(input.needed, input.withs);
 
-// An entry that needs more blocks than a path names has no place at all. A misplaced one names as
-// its reasons the roles its path leaves out of reach and the blocks its path names that it does not
-// need.
 const placementProblems = (input: {
   entry: PresetEntry;
   model: BlockModel;
@@ -239,7 +251,7 @@ const ruleProblems = (input: {
             },
           } satisfies PresetsProblem,
         ]),
-    ...(rule.axis === entry.set.placeInPresets.axis || rule.axis === Axis.Foundation
+    ...(rule.axis === entry.set.placeInPresets.axis
       ? []
       : [
           {
@@ -253,7 +265,6 @@ const ruleProblems = (input: {
   ];
 };
 
-// The problems of an entry whose block is known and whose rule, where it keys one, is the model's.
 const keyedProblems = (
   input: EntryProblemsInput & {
     rule: ModelRule | undefined;

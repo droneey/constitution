@@ -22,11 +22,6 @@ interface FindProjectInput {
   readonly startFolderPath: AbsolutePath;
 }
 
-/**
- * The farthest folder with a constitution.yaml at or above the start, up to the root of its
- * repository, whose members each hold one of their own; outside any repository, only the start
- * folder's own. Undefined when there is none.
- */
 const findProject = (input: FindProjectInput): ProjectPlace | undefined => {
   const { files } = input;
   const startFolderPath = files.realFolder(input.startFolderPath);

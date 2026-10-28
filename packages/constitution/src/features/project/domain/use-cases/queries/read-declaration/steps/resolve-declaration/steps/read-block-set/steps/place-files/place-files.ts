@@ -14,22 +14,17 @@ import {
 import type { BlockSetSource } from '../../../../../../../../../entities';
 import { SourceFile, SourceStatus } from '../../../../../../../../../entities';
 
-/** A markdown file in the folder of a block. */
 interface FileInFolder {
   readonly block: BlockId;
   readonly file: SourceFile;
   readonly layer: Layer;
-  /** the file as a warning names it */
   readonly named: WarningDetails[WarningKind.FileUnreadable];
   readonly part: FileInBlock;
   readonly source: BlockSource;
 }
 
-/** Where a file of a source stands once the block set has weighed it. */
 enum FileFate {
-  /** in no block's folder the set reads, with what it warns of */
   Passed = 'passed',
-  /** in the folder its block is read from */
   Kept = 'kept',
 }
 
@@ -41,13 +36,11 @@ interface PassedFile {
 interface KeptFile {
   readonly fate: FileFate.Kept;
   readonly file: FileInFolder;
-  /** the first file of its block, whose folder the block is read from */
   readonly first: FileInFolder;
 }
 
 type PlacedFile = KeptFile | PassedFile;
 
-/** Where a file's path alone puts it, before the folders of its block are weighed. */
 enum Spot {
   Passed = 'passed',
   InFolder = 'in-folder',
@@ -68,8 +61,6 @@ const passed = (warnings: readonly ProjectWarning[]): Placed => ({
   warnings,
 });
 
-// A file outside every block's folder, or in core's outside the release, warns; a loose file of the
-// blocks folder is passed over.
 const placedOf = (input: { file: SourceFile; source: BlockSetSource }): Placed => {
   const { file, source } = input;
   const place = BlockFilePlace.parse(file.path);
@@ -123,9 +114,6 @@ const isSameFolder = (left: FileInFolder, right: FileInFolder): boolean =>
   left.layer === right.layer &&
   BlockSource.equals(left.source, right.source);
 
-// A block is read from the folder of its first file; a file of another folder of it, in a later
-// source or in another layer of the same one, is passed over, the first of each folder with a
-// warning.
 const weighedOf = (input: {
   file: FileInFolder;
   firsts: ReadonlyMap<BlockId, FileInFolder>;

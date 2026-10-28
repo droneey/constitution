@@ -7,7 +7,6 @@ import type { BlockSetAnswer, BlockSetSource, SourceFile } from '../../../../../
 import { SourceStatus } from '../../../../../../../../entities';
 import { readBlockSet } from '../read-block-set';
 
-// The folders a warning names the files of the release and of a pack under.
 const RELEASE = '/release';
 const PROJECT = '/project';
 
@@ -18,7 +17,6 @@ interface SourceFixture {
   readonly unreadable?: readonly string[];
 }
 
-// A source whose files are given by their path from its folder, the unreadable ones apart.
 const sourceOf = (input: SourceFixture): BlockSetSource => ({
   files: [
     ...Object.entries(input.files ?? {}).map(
@@ -48,14 +46,12 @@ interface PackFixture {
   readonly unreadable?: readonly string[];
 }
 
-// A pack listed as source, under the project's folder.
 const packOf = (input: PackFixture): BlockSetSource =>
   sourceOf({
     ...input,
     shownFolderPath: `${PROJECT}/${input.source}`,
   });
 
-// Each block's bases, nearest first, by the ids a case writes.
 const ancestorsOf = (
   bases: Readonly<Record<string, readonly string[]>>,
 ): ReadonlyMap<BlockId, readonly BlockId[]> =>
@@ -82,7 +78,6 @@ const blockSetAnswerOf = (answer: BlockSetAnswerFixture): BlockSetAnswer => ({
   requirement: RuleSlug.create(answer.requirement),
 });
 
-// The block set the sources read as, with the warnings given while reading it.
 const blockSetOf = (
   sources: readonly BlockSetSource[],
 ): ReturnType<typeof readBlockSet>['blockSet'] & {

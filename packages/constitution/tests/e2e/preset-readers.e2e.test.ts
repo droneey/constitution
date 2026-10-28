@@ -5,7 +5,6 @@ import { describe, expect, it } from 'bun:test';
 
 const packageFolder = join(import.meta.dir, '..', '..');
 
-// A reader's load spec: its widest unit loaded by the reader itself.
 const LOAD_SPEC_SUFFIX = '-preset.e2e.test.ts';
 
 const readersWithNoLoadSpec = (): readonly string[] =>

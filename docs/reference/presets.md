@@ -39,6 +39,7 @@ The settings are those the file holds, in its own shape: a table of JSON, TOML o
 |---|---|
 | `list[field=value]` | the item of a list whose field holds the value: a dependency-cruiser rule by its name, an import contract by its id |
 | `list@name`, `- slot: name` | a place in a list where other entries insert their items, in their blocks' order |
+| `list[slot=name]` | the item of a list one of whose own lists places the slot, which holds only inserts: `overrides[slot=injected-classes].includes@injected-classes` fills a Biome override that no field names; no item placing it is `missing-slot`, two are `slot-placed-twice` |
 | `!replace` | replaces what the entries before gave, a list or a value, instead of joining it |
 | `!default` | written once, while the file lacks it, and never checked again: a starter file the project owns, on whose content no rule depends |
 | `!words` | on a list: written as one text, its items joined by spaces |

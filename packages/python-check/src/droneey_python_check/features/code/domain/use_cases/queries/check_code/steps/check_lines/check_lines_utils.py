@@ -28,7 +28,6 @@ def _is_generated(path: Path) -> bool:
 
 
 def _is_one_data_literal(function: _Function) -> bool:
-  """Whether the body, past its docstring, is one data literal, returned or standing alone."""
   statements = function.body[1:] if ast.get_docstring(function) is not None else function.body
 
   match statements:
@@ -39,7 +38,6 @@ def _is_one_data_literal(function: _Function) -> bool:
 
 
 def _lifts_its_limit(function: _Function, *, lines: list[bytes]) -> bool:
-  """Whether its `def` line lifts the limit by the comment, which only a data literal's may."""
   return LIFTED_PATTERN.search(lines[function.lineno - 1]) is not None and _is_one_data_literal(
     function
   )

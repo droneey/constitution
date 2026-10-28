@@ -3,17 +3,14 @@ import { SettingKey } from '../value-objects';
 import type { Addressed, SettingMap } from './setting.entity';
 import { Setting } from './setting.entity';
 
-/**
- * One value an apply writes: a scalar at its path, or an item of the list at its path; an addressed
- * element also gives its address field as a leaf, so the element is found again by it.
- */
 interface Leaf {
   readonly isItem: boolean;
   readonly keyPath: readonly string[];
   readonly value: Setting;
 }
 
-// cyrb53, a 53-bit hash: a lock names each leaf by it, so the hash never changes once released.
+// Why: cyrb53, a 53-bit hash: a lock names each leaf by it, so the hash never changes once
+// released.
 const SEED_LEFT = 0xde_ad_be_ef;
 const SEED_RIGHT = 0x41_c6_ce_57;
 const MIX_LEFT = 2_654_435_761;
@@ -104,7 +101,6 @@ const leavesOf = (setting: Setting, keyPath: readonly string[] = []): readonly L
   });
 };
 
-// The leaves of each element of a list, seen through every address field the leaves in use name.
 const elementLeaves = (input: {
   element: SettingMap;
   fields: readonly string[];
@@ -230,8 +226,10 @@ const removedAtEnd = (node: Setting, leaf: Leaf): Removal => {
   return at < 0 ? kept : removedTo(node.toSpliced(at, 1));
 };
 
-// What is left of an element once a leaf of it goes: nothing, when only its address field is left.
-const elementLeft = (rest: Setting | undefined, address: AddressKey): Setting | undefined =>
+const elementUnlessOnlyItsAddressIsLeft = (
+  rest: Setting | undefined,
+  address: AddressKey,
+): Setting | undefined =>
   Setting.isMap(rest) && Object.keys(rest).some((key) => key !== address.field) ? rest : undefined;
 
 const withElement = (input: {
@@ -254,7 +252,6 @@ const withElement = (input: {
       };
 };
 
-// The address field's own leaf takes its element only when the element holds nothing else.
 const removedIn = (node: Setting, keys: readonly string[], leaf: Leaf): Removal => {
   const [key, ...rest] = keys;
 
@@ -294,7 +291,7 @@ const removedIn = (node: Setting, keys: readonly string[], leaf: Leaf): Removal 
   const removal =
     !leaf.isItem && rest.length === 1 && rest[0] === address.field
       ? {
-          isRemoved: elementLeft(found.element, address) === undefined,
+          isRemoved: elementUnlessOnlyItsAddressIsLeft(found.element, address) === undefined,
           rest: undefined,
         }
       : removedIn(found.element, rest, leaf);
@@ -305,16 +302,12 @@ const removedIn = (node: Setting, keys: readonly string[], leaf: Leaf): Removal 
           address,
           found,
           node,
-          rest: elementLeft(removal.rest, address),
+          rest: elementUnlessOnlyItsAddressIsLeft(removal.rest, address),
         }),
       )
     : kept;
 };
 
-/**
- * The setting without the leaf, every map, list and addressed element the removal empties gone with
- * it; undefined when the setting does not hold the leaf.
- */
 const removedFrom = (setting: Setting, leaf: Leaf): Setting | undefined => {
   const removal = removedIn(setting, leaf.keyPath, leaf);
 

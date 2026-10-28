@@ -10,9 +10,6 @@ interface RefusedValue<TCode extends string> {
   readonly text: string;
 }
 
-/**
- * A defect where the program wrote the text. A feature's value objects name their failures in an enum of their own.
- */
 class InvalidValueError<TCode extends string = ValueFailure> extends ProgramError<
   RefusedValue<TCode>
 > {

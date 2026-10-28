@@ -10,10 +10,10 @@ import { TreeStateStatus } from '../../domain/contracts';
 import { TreeFingerprint } from '../../domain/value-objects';
 import { gitEndedMessage } from './git-working-tree.messages';
 
-// A diff of a large tree runs past the 1 MiB that spawnSync keeps by default.
+// Why: a diff of a large tree runs past the 1 MiB that spawnSync keeps by default.
 const OUTPUT_LIMIT_BYTES = 268_435_456;
 
-// git words what it finds in no repository so, in the C locale it is run in.
+// Why: git words what it finds in no repository so, in the C locale it is run in.
 const NO_REPOSITORY = 'fatal: not a git repository';
 const cLocale: Readonly<Record<string, string>> = Object.fromEntries([
   [
@@ -23,15 +23,10 @@ const cLocale: Readonly<Record<string, string>> = Object.fromEntries([
 ]);
 
 interface GitRun {
-  /**
-   * why git gave no answer: the failure to start or to finish it, what it wrote of its error, or
-   * the status it ended with; absent when it answered
-   */
   readonly failure?: string;
   readonly output: Uint8Array;
 }
 
-// git's output, empty when it fails, finds no repository or does not answer within its time.
 const runGit = (
   input: ChildProcessSettings & {
     args: readonly string[];
@@ -47,7 +42,7 @@ const runGit = (
     maxBuffer: OUTPUT_LIMIT_BYTES,
     timeout: input.timeoutMs,
   });
-  // Bun leaves stdout and stderr undefined when git cannot start, which make empty arrays
+  // Why: Bun leaves stdout and stderr undefined when git cannot start, which make empty arrays.
   const output = new Uint8Array(run.stdout);
 
   if (run.status === 0) {
@@ -70,7 +65,6 @@ const linesOf = (output: Uint8Array): readonly string[] =>
     .split('\n')
     .filter((line) => line !== '');
 
-// The status, then the diff from HEAD, which a repository with no commit yet lacks.
 const stateOf = (
   input: ChildProcessSettings & {
     repositoryFolderPath: AbsolutePath;
@@ -117,9 +111,10 @@ const stateOf = (
   };
 };
 
-/** timeoutMs bounds each run of git. */
 const createGitWorkingTree = (input: ChildProcessSettings): WorkingTree => ({
-  changedFiles: (repositoryFolderPath: AbsolutePath): readonly RepositoryRelativePath[] =>
+  changedAndUntrackedFiles: (
+    repositoryFolderPath: AbsolutePath,
+  ): readonly RepositoryRelativePath[] =>
     [
       ...linesOf(
         runGit({

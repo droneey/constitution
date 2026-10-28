@@ -8,21 +8,23 @@ import { ConfigModuleError, ConfigModuleFailure } from '../../domain/errors';
 import type { AbsolutePath } from '../../domain/value-objects';
 
 interface ConfigModuleLoaderInput {
-  /** the folder the generation runs in, which a module must lie in */
   readonly workingFolderPath: AbsolutePath;
 }
 
 type ExportedConfigOfMode = (mode: ThemeMode) => unknown;
 
-/** Any function can be given a mode; what it returns is checked once it has. */
+// Why: any function can take a mode, and what it returns is checked later.
 const isExportedConfigOfMode = (candidate: unknown): candidate is ExportedConfigOfMode =>
   typeof candidate === 'function';
 
-/** Style Dictionary parses the configuration's fields itself. */
+// Why: Style Dictionary parses the fields itself.
 const isConfigObject = (candidate: unknown): candidate is object =>
   typeof candidate === 'object' && candidate !== null && !Array.isArray(candidate);
 
-/** @throws {@link ConfigModuleError} from the function it gives, when the export returns no object for a mode */
+/**
+ * @throws {ConfigModuleError} from the function it gives, when the export returns no object
+ * for a mode
+ */
 const checkedConfigOf =
   (exportedConfigOf: ExportedConfigOfMode): ConfigOfMode =>
   (mode): object => {
@@ -38,11 +40,7 @@ const checkedConfigOf =
     return config;
   };
 
-/**
- * The real path of the module, or undefined when it lies outside the working folder.
- *
- * @throws {@link ConfigModuleError} when nothing lies at a path inside the working folder
- */
+/** @throws {ConfigModuleError} when nothing lies at a path inside the working folder */
 const confinedConfigPathOf = (
   workingFolderPath: AbsolutePath,
   configPath: string,
@@ -69,10 +67,14 @@ const confinedConfigPathOf = (
   }
 };
 
-/** A module's code runs as it is imported, so only a module inside the working folder is. */
+// Why: a module's code runs as it is imported, so only one inside the working folder is.
 const createConfigModuleLoader = ({
   workingFolderPath,
 }: ConfigModuleLoaderInput): ConfigModuleLoader => ({
+  /**
+   * @throws {ConfigModuleError} when nothing lies at the path, or the module lies outside the
+   * working folder or exports no function
+   */
   load: async (configPath): Promise<ConfigOfMode> => {
     const configRealPath = confinedConfigPathOf(workingFolderPath, configPath);
 
@@ -83,7 +85,6 @@ const createConfigModuleLoader = ({
       });
     }
 
-    // A dynamic import gives the module's namespace, an object whatever the module exports.
     const {
       default: defaultExport,
     }: {

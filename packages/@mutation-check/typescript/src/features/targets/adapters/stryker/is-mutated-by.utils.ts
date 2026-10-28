@@ -2,7 +2,8 @@ import { matchesGlob } from 'node:path';
 
 import type { UnitRelativePath } from '#/kernel/value-objects';
 
-// Stryker's `mutate` reads a pattern that opens with `!` as one that leaves out what it matches.
+// Why: Stryker's `mutate` reads a pattern that opens with `!` as one that leaves out what it
+// matches.
 const NEGATION = '!';
 
 const isMutatedBy =

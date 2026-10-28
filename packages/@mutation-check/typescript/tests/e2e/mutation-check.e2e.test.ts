@@ -41,7 +41,6 @@ const CHANGE: Files = {
   'src/order.utils.ts': 'export const total = 1;\nexport const count = 3;\n',
 } as const;
 
-// git sees no configuration of the machine's: its home is the repository's folder, and the system's is off.
 const runCommand = (input: { args: readonly string[]; folderPath: string }) =>
   spawnSync(input.args[0] ?? '', input.args.slice(1), {
     cwd: input.folderPath,
@@ -72,8 +71,6 @@ const writeFiles = (input: { files: Files; folderPath: string }): void => {
   }
 };
 
-// A repository whose main line holds the unit's source and its configuration, a branch that changes
-// it, and a Stryker that keeps the arguments it was given.
 const runCheck = (configText: string): Outcome => {
   const folderPath = mkdtempSync(join(repositoryFolderPath, 'unit-'));
 

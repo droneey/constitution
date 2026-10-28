@@ -5,17 +5,13 @@ import type { AbsolutePath } from '#/kernel/value-objects';
 import type { WorkingTree } from '../domain/contracts';
 import { TreeStateStatus } from '../domain/contracts';
 
-/** A project of one commit, then files written beside it. */
 interface WorkingTreeWorld {
-  /** the files of the commit, in the order git lists them */
   readonly committed: readonly string[];
-  /** the files written since and never added */
   readonly untracked: readonly string[];
 }
 
 interface WorkingTreeSuiteInput {
   readonly name: string;
-  /** a working tree over a project that holds the world, its folder and a folder of no repository */
   readonly treeOf: (world: WorkingTreeWorld) => {
     readonly elsewhere: AbsolutePath;
     readonly repositoryFolderPath: AbsolutePath;
@@ -37,7 +33,7 @@ const runWorkingTreeSuite = (input: WorkingTreeSuiteInput): void => {
       });
 
       // Act
-      const changed = tree.changedFiles(repositoryFolderPath);
+      const changed = tree.changedAndUntrackedFiles(repositoryFolderPath);
 
       // Assert
       expect<readonly string[]>(changed).toStrictEqual([
@@ -74,7 +70,7 @@ const runWorkingTreeSuite = (input: WorkingTreeSuiteInput): void => {
 
       // Act
       const seen = {
-        changed: tree.changedFiles(elsewhere),
+        changed: tree.changedAndUntrackedFiles(elsewhere),
         state: tree.stateOf(elsewhere),
       };
 

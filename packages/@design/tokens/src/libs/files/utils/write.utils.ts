@@ -7,10 +7,8 @@ interface FileText {
   readonly text: string;
 }
 
-/**
- * Writes a file that another build may write or read at the same time so it lands whole: under a
- * fresh name beside it, then renamed over it. A file that already holds the text is left untouched.
- */
+// Why: another build may write or read the file at the same time, so it is written under a fresh
+// name beside it and renamed over it to land whole.
 const writeWholeWhenChanged = ({ path, text }: FileText): void => {
   if (existsSync(path) && readFileSync(path, 'utf8') === text) {
     return;

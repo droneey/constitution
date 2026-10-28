@@ -22,17 +22,18 @@ const malformedFileError = (filePath: string, cause: unknown): SourceError =>
     },
   );
 
-/** @throws {@link SourceError} when the file holds no YAML or JSON, or no value the model takes */
+/** @throws {SourceError} when the file holds no YAML or JSON, or no value the model takes */
 const fileValueOf = <TValue>({
   filePath,
   model,
   parseYamlOrJson,
 }: FileValueInput<TValue>): TValue => {
+  /** @throws {SourceError} when the file holds no YAML or JSON */
   const parsedFile = (): unknown => {
     try {
       return parseYamlOrJson();
     } catch (error) {
-      // yaml throws a ReferenceError for an alias whose anchor the file never sets
+      // Why: yaml throws a ReferenceError for an alias whose anchor the file never sets.
       if (
         error instanceof YAMLParseError ||
         error instanceof SyntaxError ||

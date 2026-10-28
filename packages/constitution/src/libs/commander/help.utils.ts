@@ -36,15 +36,11 @@ const sectionOf = (input: {
   ];
 };
 
-/**
- * The help of a command in three parts, each ending in a blank line, since commander prints the
- * text added to the help before the help it formats: what the command does, its examples, then
- * its usage and the lists of its commands and flags.
- */
+// Why: commander prints the text added to the help before the help it formats, so each part ends in
+// a blank line.
 interface HelpLayout {
   readonly examplesOf: (examples: readonly string[]) => string;
   readonly formatHelp: (command: Command, helper: Help) => string;
-  /** what the command does, or nothing for a command that says nothing */
   readonly leadOf: (command: Command) => string;
 }
 
@@ -105,11 +101,6 @@ const createHelpLayout = (input: { theme: Theme }): HelpLayout => {
 
 type HelpExamples = (examples: readonly string[]) => () => string;
 
-/**
- * Lays out the help of the program and of every command added to it, in the theme read when the
- * help is printed, once the flags that set it are parsed. Gives the text of a command's examples,
- * which the command adds with `addHelpText('before', …)`.
- */
 const configureHelpLayout = (program: Command, themeOf: () => Theme): HelpExamples => {
   const layout = (): HelpLayout =>
     createHelpLayout({

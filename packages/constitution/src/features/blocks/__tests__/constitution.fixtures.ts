@@ -31,7 +31,6 @@ interface BlockFilesFixture extends CardFixture {
 }
 
 interface RuleFixture {
-  // false leaves the level out of a heading that carries out another rule.
   isLevelStated?: boolean;
   level?: string;
   slug: string;
@@ -57,7 +56,6 @@ const passportFile = (block: BlockFixture): string =>
     block.body,
   ].join('\n');
 
-/** a path with no axis folder is foundation's */
 const inAxis = (path: string): string =>
   AXES.some((axis) => path.startsWith(`${axis}/`)) ? path : `${Axis.Foundation}/${path}`;
 
@@ -111,8 +109,6 @@ const sourceOf = (files: Readonly<Files>, repositoryFiles: Readonly<Files> = fil
   tree: createFakeFileTree(files),
 });
 
-// The blocks of a folder as their check reads them: the files git holds there, those of its
-// repository, and those of the installed Constitution a pack extends.
 const FOLDER = '/work/constitution';
 const BASE_FOLDER = '.droneey/constitution';
 const basePath = `${FOLDER}/${BASE_FOLDER}`;

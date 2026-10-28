@@ -7,7 +7,6 @@ import { enterRepository, failureOf } from './repository.fixtures';
 
 const CORE = 'packages/constitution/blocks/core';
 
-// a link in the passport's prose, or in an item that names no axis folder, is no entry
 const passportText = [
   '# Core',
   '',

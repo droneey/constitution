@@ -12,7 +12,8 @@ const NOTED_AFTER = 'on what the apply wrote';
 
 const writtenMessage = (files: string): string => `${files} ${WRITTEN_AFTER}`;
 
-const placeMessage = ({ filePath, setting }: SettingPlace): string => `${filePath}: ${setting}`;
+const placeMessage = ({ filePath, settingPath }: SettingPlace): string =>
+  `${filePath}: ${settingPath}`;
 
 export {
   ADDED_AFTER,

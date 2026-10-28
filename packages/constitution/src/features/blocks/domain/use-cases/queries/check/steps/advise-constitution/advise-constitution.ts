@@ -53,10 +53,6 @@ const areSiblings = (input: { graph: BlockGraph; left: Rule; right: Rule }): boo
   );
 };
 
-/**
- * Advice only: two blocks of one layer — one kind, so a platform and a language are siblings —
- * saying nearly the same thing may share a rule that belongs one layer up; a person decides.
- */
 const adviseConstitution = (input: CheckInput): readonly SimilarRules[] => {
   const { rules } = input.constitution;
   const words = rules.map((rule) => wordsOf(rule.statement));

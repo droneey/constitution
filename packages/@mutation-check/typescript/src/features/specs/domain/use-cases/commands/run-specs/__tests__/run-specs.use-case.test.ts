@@ -14,7 +14,7 @@ const pricePath = UnitRelativePath.create('src/price.ts');
 const REQUEST = {
   signal: new AbortController().signal,
   timeoutMs: 1000,
-  variables: {
+  addedVariables: {
     mutant: '1',
   },
 } as const;

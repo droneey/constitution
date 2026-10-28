@@ -11,7 +11,7 @@ interface DocsPageEntry {
     components?: typeof mdxComponents;
   }>;
   description: string;
-  /** the same promise on every call, which React's `use` reads at once when it has settled */
+  // Why: React's `use` suspends on every new promise, so each call gives the same one.
   load: () => Promise<DocsPageBody>;
   title: string;
 }

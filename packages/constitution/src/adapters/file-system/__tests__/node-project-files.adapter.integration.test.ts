@@ -18,17 +18,15 @@ import { AbsolutePath } from '#/kernel/value-objects';
 
 import { createNodeProjectFiles } from '../node-project-files.adapter';
 
-// The folder as made, through the links of the system's temporary folder, and as resolved.
 let made = '';
 let real = '';
 
-// A folder of a listing holds two files, as many as listFiles lists.
 const limits = {
   maxFiles: 2,
 };
 const LOCKED = 0o000;
 const OPEN = 0o755;
-// mkfifo needs only the PATH it is found on.
+// Why: mkfifo needs only the PATH it is found on.
 const pipeEnvironment = Object.fromEntries([
   [
     'PATH',
@@ -38,11 +36,9 @@ const pipeEnvironment = Object.fromEntries([
 
 const at = (path: string): AbsolutePath => AbsolutePath.create(join(made, path));
 
-// The text a read holds, or undefined where it holds none.
 const textOf = (read: FileRead): string | undefined =>
   read.status === FileReadStatus.Read ? read.text : undefined;
 
-// The code a system error carries, or undefined for any other failure.
 const systemCodeOf = (cause: unknown): unknown =>
   cause instanceof Error && 'code' in cause ? cause.code : undefined;
 

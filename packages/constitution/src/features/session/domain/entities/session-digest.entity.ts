@@ -10,9 +10,7 @@ interface DigestRelease {
 }
 
 enum DigestKind {
-  /** no release is installed, or one this program cannot read */
   NoRelease = 'no-release',
-  /** constitution.yaml does not parse, so only core applies */
   Unparsed = 'unparsed',
   Resolved = 'resolved',
 }
@@ -25,7 +23,6 @@ type DigestContents =
   | {
       readonly core: string;
       readonly kind: DigestKind.Unparsed;
-      /** every line constitution.yaml fails at, in order */
       readonly lines: readonly number[];
       readonly release: DigestRelease;
     }
@@ -41,7 +38,6 @@ type DigestContents =
 
 interface SessionDigest {
   readonly contents: DigestContents;
-  /** absent when the release gives no rules */
   readonly state?: SessionState;
 }
 

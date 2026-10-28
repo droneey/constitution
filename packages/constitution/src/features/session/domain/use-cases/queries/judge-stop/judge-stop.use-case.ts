@@ -19,11 +19,6 @@ const isReviewerStop = (event: StopEvent): boolean =>
   event.event === HookEventName.SubagentStop &&
   (event.agentType === REVIEWER || event.agentName === REVIEWER);
 
-/**
- * The hand-back gate: whether the agent, or a subagent, may stop now, and what it is told when it
- * may not or when git first fails to report the tree for a reason; undefined when it may stop, the
- * session keeps no rules or the project lies in no repository.
- */
 const judgeStop = (input: JudgeStopInput): StopJudgement | undefined => {
   const { sessions, session } = input;
   const state = sessions.state(session);
@@ -79,7 +74,7 @@ const judgeStop = (input: JudgeStopInput): StopJudgement | undefined => {
   const blocks = [
     ...new Set(
       input.workingTree
-        .changedFiles(state.repositoryFolderPath)
+        .changedAndUntrackedFiles(state.repositoryFolderPath)
         .flatMap((path) => SessionState.governing(state, path).map((block) => block.id)),
     ),
   ];

@@ -2,7 +2,6 @@ import { linesOf, runTool, widestAppliedUnit } from './preset-load.fixtures';
 import { uvBinary } from './uv.fixtures';
 
 interface Lint {
-  /** the names of the contracts the imports break */
   readonly broken: readonly string[];
   readonly status: number;
 }
@@ -10,7 +9,6 @@ interface Lint {
 const BROKEN = /^(\S+) BROKEN$/;
 const ORDERS = 'src/unit/features/orders';
 
-// A feature whose command reaches its port through a use case, and an adapter of that port.
 const feature: Readonly<Record<string, string>> = {
   'src/unit/features/__init__.py': '',
   [`${ORDERS}/__init__.py`]: 'from unit.features.orders.app import orders_cli as orders_cli\n',

@@ -17,7 +17,8 @@ interface DocsPageContentProps {
   pageKey: string;
 }
 
-// the page panel remounts after the router resolves, so the heading takes focus as it attaches
+// Why: the page panel remounts after the router resolves, so the heading takes focus as it
+// attaches.
 const focusOnAttach: RefCallback<HTMLHeadingElement> = (heading) =>
   heading?.focus({
     preventScroll: true,
@@ -33,17 +34,19 @@ export function DocsPageContent({
 
   const { setCollapsed } = useSidebar();
 
-  // here, not in the root: the lists are on the page only once this content, which waits for its body, is hydrated
+  // Why: here, not in the root: the lists are on the page only once this content, which waits for
+  // its body, is hydrated.
   useGlide(GLIDE_LISTS);
-  // here, not in the sidebar: collapsed before this content hydrates, its header would no longer
-  // match the server's, rendered beside an open sidebar
+  // Why: here, not in the sidebar: collapsed before this content hydrates, its header would no
+  // longer match the server's, rendered beside an open sidebar.
   useCollapsedOnNarrowScreen({
     collapse: () => setCollapsed(true),
     pageKey,
   });
 
-  // keyed by the page, the panel and the TOC's observer remount on each page, or it watches the old
-  // headings; the page is a stop of the keyboard, as the sidebar's list is, so the arrows scroll it
+  // Why: keyed by the page, the panel and the TOC's observer remount on each page, or it watches
+  // the old headings; the page is a stop of the keyboard, as the sidebar's list is, so the arrows
+  // scroll it.
   return (
     <DocsPage
       id={MAIN_CONTENT_ID}

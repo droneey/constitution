@@ -2,7 +2,6 @@ import type { Tone } from '../../theme';
 import type { ColumnAlign, StepStatus } from '../constants';
 
 interface StepContent {
-  /** what is known of its outcome: a count, a reason, a time */
   readonly detail?: string;
   readonly label: string;
   readonly status: StepStatus;
@@ -10,12 +9,11 @@ interface StepContent {
 
 interface Column {
   readonly align?: ColumnAlign;
-  /** the field of a row the column shows */
+  /** the key of the cell this column shows in each row */
   readonly key: string;
   readonly title: string;
 }
 
-/** a row's cells by their columns' keys */
 type TableRow = Readonly<Record<string, string>>;
 
 interface TableContent {
@@ -36,9 +34,9 @@ interface NoteContent {
 }
 
 interface FailureContent {
-  /** what is known of the failure, each fact a line */
+  /** each fact a line */
   readonly details: readonly string[];
-  /** what to do next */
+  /** what the reader can do next */
   readonly hint?: string;
   readonly title: string;
 }

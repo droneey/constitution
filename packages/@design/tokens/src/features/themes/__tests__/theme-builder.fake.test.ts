@@ -9,7 +9,7 @@ themeBuilderSuite({
 
     return {
       builder,
-      builtModeNames: () =>
+      sortedBuiltModeNames: () =>
         builder.builds.flatMap(({ modes }) => modes.map(({ name }) => name)).toSorted(),
       configOf: () => ({}),
       modes: SCENARIO_MODE_NAMES.map((name) => ({

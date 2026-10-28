@@ -1,4 +1,3 @@
-/** The JSON a hook answers Claude Code with, in Claude Code's fields. */
 type HookOutput =
   | {
       readonly decision: 'block';

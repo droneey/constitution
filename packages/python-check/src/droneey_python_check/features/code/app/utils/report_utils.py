@@ -36,7 +36,7 @@ if TYPE_CHECKING:
   from ...domain.types import PackagePath
 
 PROGRAM_NAME: Final = 'python-check'
-# The layout of a finding, which editors and scripts read.
+# Why: editors and scripts parse this layout.
 FINDING_LINE: Final = '{path}:{line_number}: {message}'
 FOLDER_SEPARATOR: Final = '/'
 
@@ -131,17 +131,19 @@ def _problem_message(problem: Problem) -> str:
   match problem:
     case WrongShape():
       return messages.WRONG_SHAPE.format(
-        file_path=problem.file_path,
+        path_from_unit=problem.path_from_unit,
         dotted_key=problem.dotted_key,
         expected=_expected_text(problem.expected),
       )
     case UnknownKey():
-      return messages.UNKNOWN_KEY.format(file_path=problem.file_path, dotted_key=problem.dotted_key)
+      return messages.UNKNOWN_KEY.format(
+        path_from_unit=problem.path_from_unit, dotted_key=problem.dotted_key
+      )
     case MissingPart():
-      return messages.MISSING_PART.format(file_path=problem.file_path)
+      return messages.MISSING_PART.format(path_from_unit=problem.path_from_unit)
     case MalformedFile():
       return messages.MALFORMED_FILE.format(
-        file_path=problem.file_path, parser_message=problem.parser_message
+        path_from_unit=problem.path_from_unit, parser_message=problem.parser_message
       )
     case _:  # pragma: no mutate -- no problem reaches it
       assert_never(problem)  # pragma: no mutate -- no problem reaches it

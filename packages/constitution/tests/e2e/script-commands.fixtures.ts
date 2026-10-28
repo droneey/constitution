@@ -33,7 +33,6 @@ const manifest = z.object({
   scripts: z.record(z.string(), z.string()),
 });
 
-/** ShellCheck's codes on a script, read with the .shellcheckrc of the widest unit. */
 const analyseScript = (text: string): Analysis => {
   const run = spawnSync(
     shellcheck,
@@ -58,7 +57,6 @@ const analyseScript = (text: string): Analysis => {
   };
 };
 
-// The scripts of the widest unit Bun runs: every tool whose script Bun's presets give.
 const unitScripts = (): Readonly<Record<string, string>> =>
   manifest.parse(JSON.parse(readFileSync(join(widestAppliedUnit('bun'), 'package.json'), 'utf8')))
     .scripts;
@@ -75,7 +73,6 @@ const shellTask = z.object({
   shell: z.string(),
 });
 
-// The shell tasks of the widest unit poe runs, keyed as poe declares them.
 const unitShellTasks = (): Readonly<Record<string, string>> =>
   Object.fromEntries(
     Object.entries(
@@ -101,19 +98,11 @@ const shellScriptOf = (task: string, run: string): UnitTask => ({
   task,
 });
 
-// Each script of the package.json and each shell task of the pyproject.toml the presets give a unit,
-// whose command runs under sh.
 const unitTasks = (): readonly UnitTask[] => [
   ...Object.entries(unitScripts()).map(([task, run]) => shellScriptOf(task, run)),
   ...Object.entries(unitShellTasks()).map(([task, run]) => shellScriptOf(`poe ${task}`, run)),
 ];
 
-/**
- * The exit code of a script the presets give a unit, run in a repository that tracks a shell file
- * deleted since its last commit, beside one still there.
- *
- * @throws Error when the unit's package.json holds no such script.
- */
 const exitCodeBesideDeletedFile = (task: string): number | undefined => {
   const script = unitScripts()[task];
 

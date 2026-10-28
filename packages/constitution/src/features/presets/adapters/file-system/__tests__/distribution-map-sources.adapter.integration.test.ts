@@ -13,7 +13,6 @@ let folder = '';
 
 const MAP = 'distribution.json';
 
-// The distribution's folder beside the packages it packs: each package's folder, then its files.
 const writeFolder = (files: Readonly<Record<string, string>>): void => {
   for (const [path, text] of Object.entries(files)) {
     mkdirSync(join(folder, path, '..'), {

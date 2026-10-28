@@ -7,8 +7,8 @@ enum BunConfig {
   Mutation = 'bunfig.mutation.toml',
 }
 
-// The fixtures the presets write for the i18n and DOM libraries, whose packages this repository
-// does not install, kept as empty modules: what is proven is that Bun loads them, not what they do.
+// Why: this repository does not install the i18n and DOM libraries, so their fixtures are empty
+// modules: what is proven is that Bun loads them, not what they do.
 const stubbed: Readonly<Record<string, string>> = {
   'package.json': '{ "name": "unit", "type": "module" }\n',
   'src/__tests__/dom.fixtures.ts': 'export {};\n',
@@ -22,7 +22,6 @@ interface BunTestInput {
   readonly files: Readonly<Record<string, string>>;
 }
 
-/** A test run of Bun's, with the configuration given, in the widest unit that holds the files. */
 const bunTestRun = (input: BunTestInput): Promise<ToolRun> =>
   runTool({
     command: [

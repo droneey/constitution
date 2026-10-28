@@ -3,21 +3,17 @@ import { normalizePath } from '#/kernel/utils';
 import { AbsolutePath, BlockId, RepositoryRelativePath } from '#/kernel/value-objects';
 
 import type { SessionQueryRepository } from '../../../contracts/repositories/queries';
-import type { Reminder } from '../../../entities';
+import type { Reminder, SessionAgent } from '../../../entities';
 import { SessionState } from '../../../entities';
-import type { AgentId, SessionId } from '../../../value-objects';
+import type { SessionId } from '../../../value-objects';
 
 interface RemindOfFileInput {
-  readonly agent: AgentId | undefined;
+  readonly agent: SessionAgent;
   readonly path: string;
   readonly session: SessionId;
   readonly sessions: SessionQueryRepository;
 }
 
-/**
- * The blocks that govern a file the agent touched and that the session, or its agent, was not yet
- * reminded of; undefined when the session keeps no rules or the file lies outside its project.
- */
 const remindOfFile = (input: RemindOfFileInput): Reminder | undefined => {
   const state = input.sessions.state(input.session);
 
@@ -44,7 +40,7 @@ const remindOfFile = (input: RemindOfFileInput): Reminder | undefined => {
       .map((block) => ({
         files: block.files,
         id: block.id,
-        musts: state.musts.filter((must) => BlockId.equals(must.block, block.id)),
+        musts: state.mustsBesideCore.filter((must) => BlockId.equals(must.block, block.id)),
       })),
     path,
   };

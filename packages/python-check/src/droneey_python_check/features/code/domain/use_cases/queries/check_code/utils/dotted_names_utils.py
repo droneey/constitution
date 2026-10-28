@@ -8,7 +8,6 @@ if TYPE_CHECKING:
 
 
 def imported_package_names(node: ast.Import | ast.ImportFrom) -> tuple[str, ...]:
-  """The top-level packages an import names; a relative import names none."""
   match node:
     case ast.ImportFrom(level=0, module=str(module_name)):
       return (module_name.split('.')[0],)
@@ -21,10 +20,6 @@ def imported_package_names(node: ast.Import | ast.ImportFrom) -> tuple[str, ...]
 
 
 def _aliased(node: ast.AST) -> tuple[tuple[str, str], ...]:
-  """The names an import binds under another name, each with the dotted name it stands for.
-
-  `import datetime as dt` binds dt, `from datetime import datetime as moment` moment.
-  """
   match node:
     case ast.Import(names=names):
       return tuple((alias.asname, alias.name) for alias in names if alias.asname is not None)
@@ -52,11 +47,8 @@ def _dotted_name(node: ast.expr, *, aliases: Mapping[str, str]) -> str | None:
       return None
 
 
+# Why: a class imported from datetime is called bare, e.g. datetime.now for datetime.datetime.now.
 def _through_a_datetime_class(dotted_name: str) -> str:
-  """The name a call through a class imported from datetime stands for.
-
-  `datetime.now` stands for `datetime.datetime.now`, `date.today` for `datetime.date.today`.
-  """
   return f'{DATETIME_MODULE_NAME}.{dotted_name}'
 
 
@@ -77,5 +69,4 @@ def _names_of(node: ast.AST, *, aliases: Mapping[str, str]) -> tuple[str, ...]:
 
 
 def named_one_of(node: ast.AST, *, aliases: Mapping[str, str], names: frozenset[str]) -> str | None:
-  """The first of the names that the node imports, reads or calls, None when it names none."""
   return next((name for name in _names_of(node, aliases=aliases) if name in names), None)

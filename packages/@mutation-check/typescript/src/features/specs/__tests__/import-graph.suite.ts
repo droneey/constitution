@@ -45,7 +45,7 @@ const importGraphSuite = (input: ImportGraphSuiteInput): void => {
         const graph = input.graphOfScenario();
 
         // Act
-        const found = graph.importsOf(UnitRelativePath.create(filePath));
+        const found = graph.directImportsOf(UnitRelativePath.create(filePath));
 
         // Assert
         expect(found).toStrictEqual(importedPaths.map(UnitRelativePath.create));

@@ -10,7 +10,7 @@ const NUMBERS = 3;
 const is = (candidate: unknown): candidate is Version =>
   typeof candidate === 'string' && RELEASE_VERSION.test(candidate);
 
-/** @throws {@link InvalidValueError} when the text is no <major>.<minor>.<patch>[-<pre-release>] */
+/** @throws {InvalidValueError} when the text is no <major>.<minor>.<patch>[-<pre-release>] */
 const create = (text: string): Version => {
   if (!is(text)) {
     throw new InvalidValueError({
@@ -29,10 +29,6 @@ const equals = (left: Version, right: Version): boolean => left === right;
 const numbersOf = (version: Version): readonly number[] =>
   version.split(NUMBER_END, NUMBERS).map(Number);
 
-/**
- * -1 when left is the older release, 1 when it is the newer, 0 when their numbers are one; a
- * pre-release ranks with the release it leads to.
- */
 const compare = (left: Version, right: Version): -1 | 0 | 1 => {
   const rightNumbers = numbersOf(right);
   const difference =

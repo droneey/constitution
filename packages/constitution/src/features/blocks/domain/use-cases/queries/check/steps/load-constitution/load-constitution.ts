@@ -25,22 +25,17 @@ interface LoadDetails {
   readonly [LoadCode.BaseDoesNotLoad]: object;
   readonly [LoadCode.IdShared]: {
     readonly id: BlockId;
-    /** the passports of the other blocks of that id */
     readonly others: readonly string[];
   };
 }
 
-/** What each code of the load steps' own findings names. */
 type LoadFindingDetails = BlockLoadDetails & FrontMatterReadDetails & LoadDetails & PlaceDetails;
 
-/** A finding of loading the Constitution, its rules' parse included. */
 type LoadFinding = FindingOf<
   LoadFindingDetails & RequirementsTableDetails & RuleFormDetails & ValueFindingDetails
 >;
 
-/** The installed Constitution a pack extends, as the tree its blocks load from. */
 interface BaseTree {
-  /** where the base was read from, as the check was given it */
   readonly folder: string;
   readonly tree: FileTree;
 }
@@ -70,7 +65,7 @@ const duplicateIdFindings = (blocks: readonly Block[]): readonly LoadFinding[] =
         ];
   });
 
-// normalizePath drops a leading "/", which a base given from the root keeps.
+// Why: normalizePath drops a leading "/", which a base given from the root keeps.
 const folderOf = (base: BaseTree): string =>
   `${base.folder.startsWith(PATH_SEPARATOR) ? PATH_SEPARATOR : ''}${normalizePath(`${base.folder}${PATH_SEPARATOR}.`)}`;
 
@@ -83,9 +78,8 @@ interface LoadConstitutionInput {
 }
 
 /**
- * The tree is the Constitution's own package; the repository is the one that holds it, the same
- * tree when the package is the repository. A pack is loaded beside the base it extends, so its
- * arrows and requires resolve against it.
+ * @throws {TreeError} when git cannot list the files of a tree, or a file it lists cannot be
+ * read
  */
 const loadConstitution = (input: LoadConstitutionInput): ConstitutionLoaded => {
   const listed = input.tree.list();

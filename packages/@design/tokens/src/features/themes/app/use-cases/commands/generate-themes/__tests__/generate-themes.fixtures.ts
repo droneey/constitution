@@ -9,8 +9,7 @@ const GENERATE_ARGS = [
   CONFIG_PATH,
 ] as const;
 
-/** a refusal of each code the generation gives */
-const refusals = [
+const refusalOfEachCode = [
   new ConfigModuleError({
     code: ConfigModuleFailure.NotFound,
     configPath: CONFIG_PATH,
@@ -66,10 +65,10 @@ const failureTexts = async (): Promise<string> => {
     runWith([
       'generate',
     ]),
-    ...refusals.map((refusal) => runWith(GENERATE_ARGS, refusal)),
+    ...refusalOfEachCode.map((refusal) => runWith(GENERATE_ARGS, refusal)),
   ]);
 
   return runs.map(({ errorText }) => errorText).join('');
 };
 
-export { CONFIG_PATH, failureTexts, GENERATE_ARGS, refusals, runWith };
+export { CONFIG_PATH, failureTexts, GENERATE_ARGS, refusalOfEachCode, runWith };

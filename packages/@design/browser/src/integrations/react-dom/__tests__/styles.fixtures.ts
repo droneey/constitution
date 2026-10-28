@@ -13,7 +13,8 @@ const TOKEN_VALUES = {
 
 const LAYER = /^@layer [\w-]+ \{(?<rules>[\s\S]*)\}\s*$/u;
 
-/** happy-dom applies no rule inside a cascade layer, so the stylesheet's rules are lifted out of it */
+// Why: happy-dom applies no rule inside a cascade layer, so the stylesheet's rules are lifted out
+// of it.
 const applyStylesheet = async (url: URL): Promise<void> => {
   const css = await Bun.file(url).text();
   const style = document.createElement('style');
@@ -25,12 +26,11 @@ const applyStylesheet = async (url: URL): Promise<void> => {
   document.head.append(style);
 };
 
-/** React hoists a stylesheet into the head, which outlives the tree that rendered it */
+// Why: React hoists a stylesheet into the head, which outlives the tree that rendered it.
 const removeStylesheets = (): void => {
   document.head.replaceChildren();
 };
 
-/** a custom property of the document's root, as the cascade gives it */
 const rootPropertyOf = (property: string): string =>
   getComputedStyle(document.documentElement).getPropertyValue(property).trim();
 

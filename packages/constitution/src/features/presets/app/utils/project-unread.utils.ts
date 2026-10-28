@@ -21,7 +21,6 @@ const unreadTextOf = (unread: ProjectUnread): string => {
   }
 };
 
-/** A project that cannot be read fails its step; where none is, the step takes the status given. */
 const unreadOutcomeOf = (
   unread: ProjectUnread,
   statusWithoutProject: StepStatus = StepStatus.Failed,
@@ -30,7 +29,6 @@ const unreadOutcomeOf = (
   status: unread.status === ProjectReadStatus.NoProject ? statusWithoutProject : StepStatus.Failed,
 });
 
-/** Shows the presets' step failed where the project cannot be read, and fails the run. */
 const failUnreadStep = async (
   context: Pick<CommandContext, 'renderer' | 'setFailed'>,
   unread: ProjectUnread,
