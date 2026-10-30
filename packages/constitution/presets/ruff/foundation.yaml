@@ -1,11 +1,4 @@
 core:
-  one-formatter-per-language:
-    python:
-      pyproject.toml:
-        tool:
-          ruff:
-            format:
-              quote-style: single
   suppression-silences-one-finding:
     python:
       pyproject.toml:
@@ -384,6 +377,13 @@ python:
                 - UP046
                 - UP047
 ruff:
+  ruff-format-is-the-formatter:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            format:
+              quote-style: single
   '*':
     python:
       pyproject.toml:

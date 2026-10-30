@@ -738,7 +738,7 @@
 
     // zod
     {
-      "comment": "zod-home-is-the-edge-and-shared-parsing",
+      "comment": "parsing-library-imported-at-the-edge-and-in-shared: zod",
       "from": {
         "path": [
           "^src/(features|composition)/[^/]+/presentation/",

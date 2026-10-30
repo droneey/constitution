@@ -48,9 +48,9 @@ A message carries only the fields its type declares — the identifiers and the 
 |---|
 | a record sent whole sends every field later added to it to every subscriber, and ties each of them to the publisher's storage. |
 
-### message-carries-no-secret-and-only-needed-personal-data → secret-kept-out-of-output · MUST
+### message-carries-no-secret → secret-kept-out-of-output · MUST
 
-A message carries no secret — a password, a token, a key — and no personal data its consumers do not need, which they otherwise reach by an identifier.
+A message carries no secret — a password, a token, a key.
 
 | Why |
 |---|

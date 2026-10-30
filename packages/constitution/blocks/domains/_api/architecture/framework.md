@@ -6,7 +6,7 @@
 
 ### server-framework-imported-by-the-delivery-units → layer-imports-dependencies-by-its-role · MUST
 
-The framework that serves the program's operations has its home past the edge in the delivery units of the presentation of features and of composition modules — the routers, handlers and tools that declare them — and in `root/`, which assembles it.
+The framework that serves the program's operations has its home past the edge in the delivery units of the presentation of features and of composition modules — the routers, handlers and tools that declare them, and the modules that group them where the framework has modules — in `root/`, which assembles it, and in the `providers/` folders where a framework that injects dependencies has its providers build the use cases.
 
 | Why |
 |---|

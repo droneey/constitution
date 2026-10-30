@@ -22,14 +22,6 @@ A request whose body is in a media type its operation does not declare is refuse
 
 ## Uploads
 
-### upload-accepted-by-its-content · MUST
-
-An uploaded file is accepted only when its kind, read from its content, is one the operation allows; its name and its declared type decide nothing.
-
-| Why |
-|---|
-| a caller names a script `photo.jpg` and declares it an image, and a check that trusts either stores and serves it as one. |
-
 ### uploaded-file-never-rendered-from-the-programs-origin · MUST
 
 A file a person uploaded is served from another registrable domain than the program's, or with `Content-Disposition: attachment` or `Content-Security-Policy: sandbox`; it is never opened as a page of the program's own origin.

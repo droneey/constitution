@@ -1,8 +1,8 @@
 import type { UnitRelativePath } from '#/kernel/value-objects';
 
-import type { SpecRunner } from '../../../contracts';
 import type { ChosenSpecsRun, UnitSpecs } from '../../../../domain/entities';
 import { SpecRunStatus } from '../../../../domain/entities';
+import type { SpecRunner } from '../../../contracts';
 
 interface SpecsRequest {
   readonly addedVariables: Readonly<Record<string, string>>;

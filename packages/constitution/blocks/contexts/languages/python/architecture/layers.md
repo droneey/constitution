@@ -1,6 +1,6 @@
 # Layers
 
-> Governs the imports made only for the type checker, and which units set timers.
+> Governs which units set timers.
 
 ## Direction
 

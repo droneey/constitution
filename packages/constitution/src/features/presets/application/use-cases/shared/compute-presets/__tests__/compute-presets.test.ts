@@ -67,7 +67,7 @@ const factsPlanOf = (lines: readonly string[]): PresetsPlan =>
         ].join('\n'),
       }),
       ...projectFiles({
-        'packages/presentation/.droneey/constitution/presets/bun/fixture.ts': '',
+        'packages/app/.droneey/constitution/presets/bun/fixture.ts': '',
       }),
     },
     units: [
@@ -86,7 +86,7 @@ const factsPlanOf = (lines: readonly string[]): PresetsPlan =>
           'typescript',
         ],
         name: 'app',
-        path: 'packages/presentation',
+        path: 'packages/app',
       }),
       unitOf({
         blocks: [
@@ -861,7 +861,7 @@ describe('computePresets', () => {
           },
         },
         {
-          file: 'packages/presentation/bunfig.toml',
+          file: 'packages/app/bunfig.toml',
           value: {
             preload: '.droneey/constitution/presets/bun/fixture.ts',
           },
@@ -888,7 +888,7 @@ describe('computePresets', () => {
           },
         },
         {
-          file: 'packages/presentation/bunfig.toml',
+          file: 'packages/app/bunfig.toml',
           value: {
             preload: 'src/setup.ts',
           },
@@ -915,7 +915,7 @@ describe('computePresets', () => {
           },
         },
         {
-          file: 'packages/presentation/bunfig.toml',
+          file: 'packages/app/bunfig.toml',
           value: {
             top: false,
           },
@@ -945,7 +945,7 @@ describe('computePresets', () => {
           },
         },
         {
-          file: 'packages/presentation/bunfig.toml',
+          file: 'packages/app/bunfig.toml',
           value: {
             roots: [
               false,
@@ -981,7 +981,7 @@ describe('computePresets', () => {
           },
         },
         {
-          file: 'packages/presentation/bunfig.toml',
+          file: 'packages/app/bunfig.toml',
           value: {
             items: [
               {
@@ -1016,7 +1016,7 @@ describe('computePresets', () => {
           },
         },
         {
-          file: 'packages/presentation/package.json',
+          file: 'packages/app/package.json',
           value: {
             name: 'app',
           },
@@ -1049,7 +1049,7 @@ describe('computePresets', () => {
     {
       condition: 'the guard denies that the unit holds members',
       files: [
-        'packages/presentation/bunfig.toml',
+        'packages/app/bunfig.toml',
         'packages/kit/bunfig.toml',
       ],
       guarded: '      bunfig.toml ? !${workspace.isRoot}:',
@@ -1128,7 +1128,7 @@ describe('computePresets', () => {
     // Assert
     expect(writtenOf(plan)).toStrictEqual([
       {
-        file: 'packages/presentation/src/index.ts',
+        file: 'packages/app/src/index.ts',
         merged: {
           defaults: [],
           problems: [],
@@ -1137,7 +1137,7 @@ describe('computePresets', () => {
             text: 'export {};\n',
           },
         },
-        unit: 'packages/presentation',
+        unit: 'packages/app',
       },
       {
         file: 'packages/kit/src/index.ts',
@@ -1179,7 +1179,7 @@ describe('computePresets', () => {
       ],
       written: [
         {
-          file: 'packages/presentation/pyproject.toml',
+          file: 'packages/app/pyproject.toml',
           value: {
             tool: {
               uv: {},
@@ -1244,7 +1244,7 @@ describe('computePresets', () => {
               'core',
               'uv',
             ],
-            path: 'packages/presentation',
+            path: 'packages/app',
           }),
         ],
       };
@@ -2392,7 +2392,7 @@ describe('computePresets', () => {
           'core',
           'biome',
         ],
-        path: 'packages/presentation',
+        path: 'packages/app',
       }),
     },
     {

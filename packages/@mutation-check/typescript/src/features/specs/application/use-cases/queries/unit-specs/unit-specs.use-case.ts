@@ -1,7 +1,7 @@
 import type { UnitRelativePath } from '#/kernel/value-objects';
 
-import type { ImportGraph, SpecRunner } from '../../../contracts';
 import type { UnitSpecs } from '../../../../domain/entities';
+import type { ImportGraph, SpecRunner } from '../../../contracts';
 
 interface UnitSpecsInput {
   readonly importGraph: ImportGraph;
