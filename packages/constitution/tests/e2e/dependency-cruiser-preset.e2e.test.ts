@@ -26,7 +26,7 @@ const wellFormed = {
     name: 'smtp',
   }),
   'src/composition/checkout/presentation/bindings/queries/cart/cart.ts':
-    "import type { Mail } from '../../../../../kernel/contracts';\nimport { listOrders } from '../../../../../features/orders';\nexport const cart = (mail: Mail): unknown => [mail, listOrders];\n",
+    "import type { Mail } from '../../../../../../kernel/contracts';\nimport { listOrders } from '../../../../../../features/orders';\nexport const cart = (mail: Mail): unknown => [mail, listOrders];\n",
   'src/composition/checkout/presentation/bindings/queries/cart/index.ts':
     "export { cart } from './cart';\n",
   'src/composition/checkout/index.ts':
@@ -55,7 +55,7 @@ const wellFormed = {
   'src/features/orders/application/contracts/repositories/queries/order.repository.ts':
     'export interface OrderReader { count: number }\n',
   'src/features/orders/application/use-cases/queries/count-orders/count-orders.use-case.ts':
-    "import type { Mail } from '../../../../../kernel/contracts';\nimport type { OrderReader } from '../../../contracts/repositories/queries';\nexport const countOrders = (mail: Mail, reader: OrderReader): unknown => [mail, reader];\n",
+    "import type { Mail } from '../../../../../../kernel/contracts';\nimport type { OrderReader } from '../../../contracts/repositories/queries';\nexport const countOrders = (mail: Mail, reader: OrderReader): unknown => [mail, reader];\n",
   'src/features/orders/application/use-cases/queries/count-orders/index.ts':
     "export { countOrders } from './count-orders.use-case';\n",
   'src/features/orders/domain/entities/index.ts': "export { order } from './order.entity';\n",
@@ -638,6 +638,17 @@ const layerViolations = [
       }),
     },
     rule: 'application-reaches-only-the-domain-and-its-contracts',
+  },
+  {
+    condition: "a feature's contract imports its feature's presentation",
+    files: {
+      'src/features/orders/presentation/order-texts.ts': exported('orderTexts'),
+      'src/features/orders/application/contracts/payment.port.ts': importing({
+        from: '../../presentation/order-texts',
+        name: 'orderTexts',
+      }),
+    },
+    rule: 'contract-reaches-only-its-model-and-the-kernel',
   },
   {
     condition: 'a read imports a write',
