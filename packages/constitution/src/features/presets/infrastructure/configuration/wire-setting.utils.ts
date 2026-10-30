@@ -1,4 +1,4 @@
-import type { Setting } from '../../domain/entities';
+import type { Setting } from '../../domain/setting/entities';
 import { settingModel } from './models';
 
 const withoutNull = (_key: string, held: unknown): unknown => {

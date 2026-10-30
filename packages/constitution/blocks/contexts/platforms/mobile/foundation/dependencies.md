@@ -1,6 +1,6 @@
 # Dependencies
 
-> Governs the minimum OS version.
+> Governs what an app on a phone or tablet takes from the system: the minimum OS version.
 
 ## General
 

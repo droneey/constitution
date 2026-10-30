@@ -8,8 +8,8 @@ import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 import { AbsolutePath } from '#/kernel/value-objects';
 
 import { runFileTreeSuite } from '../../../__tests__/file-tree.suite';
-import { TreeError, TreeFailure } from '../../../domain/errors';
-import { TreePath } from '../../../domain/value-objects';
+import { TreeError, TreeFailure } from '../../../domain/shared/errors';
+import { TreePath } from '../../../domain/shared/value-objects';
 import { createGitFileTrees } from '../git-file-trees.adapter';
 
 const gitOptions = {

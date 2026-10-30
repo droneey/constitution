@@ -1,5 +1,6 @@
-import type { HeldStep, Setting } from '../../domain/entities';
-import { Setting as Settings } from '../../domain/entities';
+import type { HeldStep } from '../../domain/configuration-file/entities';
+import type { Setting } from '../../domain/setting/entities';
+import { Setting as Settings } from '../../domain/setting/entities';
 import type { Anchor, Commenting } from './block-comments.utils';
 import { ownFieldOf } from './own-field.utils';
 import { NEWLINE } from './text.constants';

@@ -379,20 +379,21 @@
     {
       "name": "role-reached-through-its-surface",
       "severity": "error",
-      "from": {
-        "path": "^src/(features|composition)/([^/]+)/([^/]+/[^/]+(?=/)|)",
-      },
       "to": {
         "pathNot": [
           "^src/$1/$2/$3/",
           "(^|/)__tests__/",
           "^src/$1/$2/[^/]+/[^/]+/index\\.[^/]+$",
+          "^src/$1/$2/domain/[^/]+/[^/]+/index\\.[^/]+$",
           "^src/$1/$2/[^/]+/[^/]+/(?:[^/]+/|)(?:queries|commands)/index\\.[^/]+$",
           "^src/$1/$2/[^/]+/[^/]+/(?:queries|commands|shared)/[^/]+/index\\.[^/]+$",
         ],
         "path": [
           "^src/$1/$2/(?:domain|application|presentation)/[^/]+/",
         ],
+      },
+      "from": {
+        "path": "^src/(features|composition)/([^/]+)/(domain/[^/]+/[^/]+(?=/)|[^/]+/[^/]+(?=/)|)",
       },
     },
     {
@@ -452,6 +453,7 @@
           "^src/index\\.[^/]+$",
           "^src/(features|libs|infrastructure|integrations|kernel|shared|composition)/index\\.[^/]+$",
           "^src/(features|composition)/[^/]+/(domain|application|presentation|infrastructure)/index\\.[^/]+$",
+          "^src/(features|composition)/[^/]+/domain/[^/]+/index\\.[^/]+$",
         ],
       },
     },
@@ -531,6 +533,20 @@
       },
       "to": {
         "path": "^src/$1/$2/application/contracts/",
+      },
+    },
+    {
+      "name": "presentation-reaches-no-transition",
+      "severity": "error",
+      "from": {
+        "path": "^src/(features|composition)/[^/]+/presentation/",
+        "pathNot": [
+          "(^|/)__tests__/",
+          "^tests/",
+        ],
+      },
+      "to": {
+        "path": "^src/(features|composition)/[^/]+/domain/[^/]+/transitions/",
       },
     },
     {

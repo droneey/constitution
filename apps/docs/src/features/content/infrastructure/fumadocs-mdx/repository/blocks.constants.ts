@@ -1,4 +1,4 @@
-import { MARKDOWN_EXTENSION } from '../../../domain/constants';
+import { MARKDOWN_EXTENSION } from '../../../domain/shared/constants';
 
 const corePassportFileName = `core${MARKDOWN_EXTENSION}`;
 

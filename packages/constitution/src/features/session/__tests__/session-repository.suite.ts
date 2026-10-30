@@ -6,9 +6,10 @@ import { AbsolutePath, BlockId } from '#/kernel/value-objects';
 
 import type { SessionCommandRepository } from '../application/contracts/repositories/commands';
 import type { SessionQueryRepository } from '../application/contracts/repositories/queries';
-import type { SessionState } from '../domain/entities';
-import { SessionAgent, SessionMark } from '../domain/entities';
-import { AgentId, SessionId, TreeFingerprint } from '../domain/value-objects';
+import type { SessionState } from '../domain/session/entities';
+import { SessionAgent, SessionMark } from '../domain/session/entities';
+import { AgentId, SessionId } from '../domain/session/value-objects';
+import { TreeFingerprint } from '../domain/tree-state/value-objects';
 import { activeBlockOf, mustOf, sessionStateOf } from './session.fixtures';
 
 type SessionRepository = SessionCommandRepository & SessionQueryRepository;

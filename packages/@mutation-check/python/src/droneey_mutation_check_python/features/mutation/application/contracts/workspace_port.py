@@ -1,8 +1,10 @@
 from typing import TYPE_CHECKING, Protocol
 
 if TYPE_CHECKING:
-  from ...domain.entities import Changes, MutationRun, MutationTargets
-  from ...domain.value_objects import UnitRelativePath
+  from ...domain.changes.entities import Changes
+  from ...domain.changes.value_objects import UnitRelativePath
+  from ...domain.mutation_run.entities import MutationRun
+  from ...domain.mutation_targets.entities import MutationTargets
 
 
 class Workspace(Protocol):

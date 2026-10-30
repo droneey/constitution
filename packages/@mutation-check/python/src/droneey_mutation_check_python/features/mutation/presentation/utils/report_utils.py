@@ -1,21 +1,21 @@
 from typing import TYPE_CHECKING, Final, assert_never
 
-from ...domain.entities import Broken, Passed, PassReason, Scope, Survived
-from ...domain.errors import (
+from ...domain.changes.errors import InvalidValueError, ValueFailure
+from ...domain.mutation_run.entities import Broken, Passed, PassReason, Survived
+from ...domain.mutation_targets.entities import Scope
+from ...domain.shared.errors import (
   CommandFailedError,
   CommandUnfinishedError,
   Failure,
-  InvalidValueError,
   MutantsKeptError,
-  ValueFailure,
 )
 from ..constants import ExitStatus
 from ..errors import Misuse, UsageError
 from . import report_messages as messages
 
 if TYPE_CHECKING:
-  from ...domain.entities import Outcome
-  from ...domain.errors import Unfinished
+  from ...domain.mutation_run.entities import Outcome
+  from ...domain.shared.errors import Unfinished
 
 # Why: a reader scripts against the code, and a not-killed line ends with the mutant's status. Both
 # sets are open: a later version may add a code or a status, so a reader passes over one it does not

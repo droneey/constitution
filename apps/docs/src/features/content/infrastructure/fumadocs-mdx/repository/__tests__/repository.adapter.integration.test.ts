@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
-import { RepositoryPath } from '../../../../domain/value-objects';
+import { RepositoryPath } from '../../../../domain/source/value-objects';
 import { addressOf, blockLayerOf, inRepository, linkTargetOf } from '../repository.adapter';
 import { enterRepository } from './repository.fixtures';
 

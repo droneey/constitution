@@ -1,8 +1,8 @@
 import { ConfigReadStatus } from '#/kernel/entities';
 import type { AbsolutePath } from '#/kernel/value-objects';
 
-import type { ProjectOpening } from '../../../../domain/entities';
-import { OpeningStatus } from '../../../../domain/entities';
+import type { ProjectOpening } from '../../../../domain/project-opening/entities';
+import { OpeningStatus } from '../../../../domain/project-opening/entities';
 import { findProject } from '../find-project';
 import type { ProjectPorts } from '../read-declaration';
 import { readDeclaration } from '../read-declaration';

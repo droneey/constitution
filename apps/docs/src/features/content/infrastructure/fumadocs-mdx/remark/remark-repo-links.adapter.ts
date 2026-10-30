@@ -2,7 +2,7 @@ import type { Root } from 'mdast';
 import { visit } from 'unist-util-visit';
 import type { VFile } from 'vfile';
 
-import { AbsolutePath } from '../../../domain/value-objects';
+import { AbsolutePath } from '../../../domain/source/value-objects';
 import { addressOf, linkTargetOf } from '../repository';
 
 interface RepoLinksOptions {

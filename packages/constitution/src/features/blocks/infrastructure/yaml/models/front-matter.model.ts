@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import type { FrontMatterFields } from '../../../domain/entities';
+import type { FrontMatterFields } from '../../../domain/block/entities';
 
 const frontMatterModel: z.ZodType<FrontMatterFields> = z
   .looseObject({

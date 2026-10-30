@@ -5,16 +5,15 @@ from typing import Final
 from source_fixtures import folder, function_of, python
 
 from droneey_python_check.features.code import check_code
-from droneey_python_check.features.code.domain.entities import (
+from droneey_python_check.features.code.domain.finding.entities import (
   EffectOutsideEdge,
   Finding,
   ImportLeavingModule,
   LongFunction,
   PackageInPure,
-  Settings,
-  Source,
-  Sources,
 )
+from droneey_python_check.features.code.domain.settings.entities import Settings
+from droneey_python_check.features.code.domain.source.entities import Source, Sources
 
 SETTINGS: Final = Settings(homes_by_import_name={}, workspace_unit_import_names=frozenset())
 

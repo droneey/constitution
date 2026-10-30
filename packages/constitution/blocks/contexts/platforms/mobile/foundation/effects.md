@@ -1,6 +1,6 @@
 # Effects
 
-> Governs background work.
+> Governs the effects of an app on a phone or tablet: its background work.
 
 ## Calls and resources
 

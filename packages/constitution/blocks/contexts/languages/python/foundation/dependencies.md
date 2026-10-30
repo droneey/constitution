@@ -1,6 +1,6 @@
 # Dependencies
 
-> Governs the dev group, the pinned Python and the private names of a dependency.
+> Governs the packages and tools a Python project takes from others: the dev group, the pinned Python and a dependency's private names.
 
 ## Pinning
 

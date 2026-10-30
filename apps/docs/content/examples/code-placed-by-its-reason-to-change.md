@@ -9,6 +9,6 @@ src/
 ```text title="Prefer"
 src/features/invoices/
 ├── application/use-cases/issue-invoice/
-└── domain/value-objects/
+└── domain/invoice/value-objects/
     └── invoice-number.value-object.ts
 ```

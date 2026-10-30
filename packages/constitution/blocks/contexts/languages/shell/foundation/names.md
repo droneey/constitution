@@ -1,6 +1,6 @@
 # Names
 
-> Governs the case of shell names.
+> Governs a name in a script: its case.
 
 ## Form
 

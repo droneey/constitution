@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { pageSchema } from 'fumadocs-core/source/schema';
 import { z } from 'zod';
 
-import { AbsolutePath } from '../../domain/value-objects';
+import { AbsolutePath } from '../../domain/source/value-objects';
 import { summaryOf, titleOf } from './markdown';
 
 interface MarkdownFields {

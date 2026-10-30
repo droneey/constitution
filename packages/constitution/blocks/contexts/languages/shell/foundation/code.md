@@ -1,6 +1,6 @@
 # Code
 
-> Governs what a script does, its expansions, its lists and its reads, and the commands other files hold.
+> Governs any shell code no other chapter governs: what a script does, its expansions, its lists and its reads, and the commands other files hold.
 
 ## General
 

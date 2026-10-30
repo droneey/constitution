@@ -1,6 +1,6 @@
 # Ports
 
-> Governs how a port is declared and how an adapter maps null.
+> Governs a contract at a boundary in TypeScript and its adapter: how a port is declared and how an adapter maps null.
 
 ## Contracts
 

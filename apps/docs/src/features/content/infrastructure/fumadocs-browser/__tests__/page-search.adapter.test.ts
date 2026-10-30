@@ -2,8 +2,8 @@ import { afterEach, describe, expect, it } from 'bun:test';
 
 import { createSearchAPI } from 'fumadocs-core/search/server';
 
-import { SearchResultKind } from '../../../domain/entities';
-import { SearchError, SearchFailure } from '../../../domain/errors';
+import { SearchResultKind } from '../../../domain/search/entities';
+import { SearchError, SearchFailure } from '../../../domain/search/errors';
 import { createStaticPageSearch } from '../page-search.adapter';
 
 const searchIndex = createSearchAPI('advanced', {

@@ -5,8 +5,8 @@ import { StepStatus, Tone } from '@droneey/design-cli';
 import { AbsolutePath, RepositoryRelativePath, Version } from '#/kernel/value-objects';
 import { noteSection, stepsSection } from '#/shared/cli';
 
-import type { PartDiagnosis } from '../../../domain/entities';
-import { Diagnosis } from '../../../domain/entities';
+import type { PartDiagnosis } from '../../../domain/part-diagnosis/entities';
+import { Diagnosis } from '../../../domain/part-diagnosis/entities';
 import { installationOutcomeOf, installationSectionsOf } from '../report.utils';
 
 const onPath = AbsolutePath.create('/home/me/.local/bin/constitution');

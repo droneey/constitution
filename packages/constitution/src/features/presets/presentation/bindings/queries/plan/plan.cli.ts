@@ -4,8 +4,9 @@ import { AbsolutePath } from '#/kernel/value-objects';
 import type { CommandContext } from '#/shared/cli';
 import { folderPathOf, linesSection } from '#/shared/cli';
 
-import type { PresetsPlan, ProjectRead } from '../../../../domain/entities';
-import { ProjectReadStatus } from '../../../../domain/entities';
+import type { PresetsPlan } from '../../../../domain/presets-plan/entities';
+import type { ProjectRead } from '../../../../domain/presets-project/entities';
+import { ProjectReadStatus } from '../../../../domain/presets-project/entities';
 import { failUnreadStep, planLinesOf } from '../../../utils';
 
 interface PresetsPlanContext extends CommandContext {

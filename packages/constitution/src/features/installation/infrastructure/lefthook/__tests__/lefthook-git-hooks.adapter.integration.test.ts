@@ -6,7 +6,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
 import { AbsolutePath } from '#/kernel/value-objects';
 
-import { HooksState } from '../../../domain/entities';
+import { HooksState } from '../../../domain/hooks-state/entities';
 import { createLefthookGitHooks } from '../lefthook-git-hooks.adapter';
 
 const PATH = 'PATH';

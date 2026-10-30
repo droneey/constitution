@@ -1,7 +1,7 @@
 import { PROJECT } from '#/__tests__/project-place.fixtures';
 import { AbsolutePath } from '#/kernel/value-objects';
 
-import { LockReadStatus } from '../domain/entities';
+import { LockReadStatus } from '../domain/lock/entities';
 import { createFakeLockRepository } from './lock-repository.fake';
 import { runLockRepositorySuite } from './lock-repository.suite';
 

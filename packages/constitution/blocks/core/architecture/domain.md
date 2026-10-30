@@ -25,9 +25,9 @@ A rule that would hold with no user interface and no transport lives in the doma
 |---|
 | the business is the reason such a rule changes, not its caller. |
 
-### aggregate-rule-lives-in-its-module · SHOULD
+### aggregate-rule-lives-in-its-concept · SHOULD
 
-What concerns one aggregate or one entity alone — a predicate, a derived value, a transition — lives in its module, in the form its language's block names, and is never repeated in a use case, a binding unit or a delivery unit.
+What concerns one aggregate or one entity alone lives in its concept folder, in the form its language's block names — a predicate or a derived value in its type's file, a transition in its `transitions/` — and is never repeated in a use case, a binding unit or a delivery unit.
 
 | Why |
 |---|
@@ -53,7 +53,7 @@ A value object checks the invariants the domain relies on and no more; a stricte
 
 ### aggregate-changed-only-by-its-transitions · MUST
 
-An aggregate changes only through its root's transitions. Each transition, declared in the aggregate's own module, checks its precondition — the move the business allows from the current state — and returns a new state that keeps every invariant. No code outside that module builds the aggregate, a changed copy of it or one of its inner entities, save through its `create`, which checks the creation's precondition and yields its event, or its `restore`, which rebuilds one already stored — checking its invariants, no precondition, and yielding no event — for the adapter that reads it, a stored one that breaks an invariant failing as corrupt data, never as a refused move; no write repository exists for an inner entity.
+An aggregate changes only through its root's transitions. Each transition, declared in its concept's `transitions/`, checks its precondition — the move the business allows from the current state — and returns a new state that keeps every invariant. No code outside those `transitions/` builds the aggregate, a changed copy of it or one of its inner entities, save through the two declared there beside them: its `create`, which checks the creation's precondition and yields its event, and its `restore`, which rebuilds one already stored — checking its invariants, no precondition, and yielding no event — for the adapter that reads it, a stored one that breaks an invariant failing as corrupt data, never as a refused move; no write repository exists for an inner entity.
 
 | Why |
 |---|
@@ -69,7 +69,7 @@ An entity with a life of its own — created, changed or removed apart from its 
 
 ### transition-yields-its-event · SHOULD
 
-A transition the business announces returns the domain event it decided beside the new state; a use case publishes the events its model yielded and makes none of its own.
+A transition the business announces returns the domain event it decided beside the new state, the event declared beside the transition; a use case publishes the events its model yielded and makes none of its own.
 
 | Why |
 |---|

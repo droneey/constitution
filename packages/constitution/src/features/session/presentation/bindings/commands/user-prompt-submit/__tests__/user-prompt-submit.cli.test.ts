@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import { createFakeContext, runCommand } from '#/__tests__/command-context.fake';
 
-import { SessionId } from '../../../../../domain/value-objects';
+import { SessionId } from '../../../../../domain/session/value-objects';
 import { createUserPromptSubmitCommand } from '../user-prompt-submit.cli';
 
 const runOf = async (

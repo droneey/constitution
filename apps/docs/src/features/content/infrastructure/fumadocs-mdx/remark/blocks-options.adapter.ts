@@ -4,12 +4,12 @@ import { basename, join } from 'node:path';
 import { RuleHeading } from '@droneey/constitution';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 
-import { MARKDOWN_EXTENSION } from '../../../domain/constants';
-import type { BlockLayer } from '../../../domain/entities';
-import { Page } from '../../../domain/entities';
-import { SourceError, SourceFailure } from '../../../domain/errors';
-import type { AbsolutePath } from '../../../domain/value-objects';
-import { BlockPath } from '../../../domain/value-objects';
+import type { BlockLayer } from '../../../domain/block/entities';
+import { Page } from '../../../domain/page/entities';
+import { MARKDOWN_EXTENSION } from '../../../domain/shared/constants';
+import { BlockPath } from '../../../domain/shared/value-objects';
+import { SourceError, SourceFailure } from '../../../domain/source/errors';
+import type { AbsolutePath } from '../../../domain/source/value-objects';
 import { headingTextOf, isHeading, SUBSECTION_HEADING_DEPTH } from '../markdown';
 import type { BlocksOptions } from './remark-blocks.adapter';
 

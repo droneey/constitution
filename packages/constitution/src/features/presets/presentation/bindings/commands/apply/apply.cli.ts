@@ -7,14 +7,12 @@ import { withOption } from '#/libs/commander';
 import type { CommandContext } from '#/shared/cli';
 import { flagsOf, folderPathOf } from '#/shared/cli';
 
-import type {
-  AppliedFiles,
-  ApplyPlan,
-  ProjectRead,
-  RunAsked,
-  RunPlan,
-} from '../../../../domain/entities';
-import { ApplyPlanKind, EntryPoint, ProjectReadStatus } from '../../../../domain/entities';
+import type { AppliedFiles, ApplyPlan } from '../../../../domain/apply-plan/entities';
+import { ApplyPlanKind } from '../../../../domain/apply-plan/entities';
+import type { ProjectRead } from '../../../../domain/presets-project/entities';
+import { ProjectReadStatus } from '../../../../domain/presets-project/entities';
+import type { RunAsked, RunPlan } from '../../../../domain/run-plan/entities';
+import { EntryPoint } from '../../../../domain/run-plan/entities';
 import type { RunStepsContext } from '../../../utils';
 import { applyOutcomeOf, applySectionsOf, runSteps } from '../../../utils';
 

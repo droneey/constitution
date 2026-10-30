@@ -1,6 +1,6 @@
 # Code
 
-> Governs the doctype a document opens with.
+> Governs any markup no other chapter governs: the doctype a document opens with.
 
 ## General
 

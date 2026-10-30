@@ -1,6 +1,6 @@
 # Code
 
-> Governs the syntax a JSON file is written in.
+> Governs any JSON no other chapter governs: the syntax a file is written in.
 
 ## Syntax
 

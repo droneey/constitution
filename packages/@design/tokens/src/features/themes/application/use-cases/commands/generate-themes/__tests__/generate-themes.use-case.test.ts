@@ -3,9 +3,9 @@ import { describe, expect, it } from 'bun:test';
 import { createFakeConfigModuleLoader } from '../../../../../__tests__/config-module-loader.fake';
 import { createFakeThemeBuilder } from '../../../../../__tests__/theme-builder.fake';
 import { createFakeThemeModeReader } from '../../../../../__tests__/theme-mode-reader.fake';
-import type { ThemeMode, ThemeModeFiles } from '../../../../../domain/entities';
-import { ConfigModuleError, ConfigModuleFailure } from '../../../../../domain/errors';
-import { AbsolutePath } from '../../../../../domain/value-objects';
+import { ConfigModuleError, ConfigModuleFailure } from '../../../../../domain/config-module/errors';
+import type { ThemeMode, ThemeModeFiles } from '../../../../../domain/theme-mode/entities';
+import { AbsolutePath } from '../../../../../domain/theme-mode/value-objects';
 import { createGenerateThemes } from '../generate-themes.use-case';
 
 const CONFIG_PATH = 'style-dictionary.config.ts';

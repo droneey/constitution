@@ -1,7 +1,7 @@
 import type { TextsOf } from '#/shared/cli';
 
-import type { TermsDetails } from '../../domain/services';
-import { TermsCode } from '../../domain/services';
+import type { TermsDetails } from '../../domain/validate-constitution/services';
+import { TermsCode } from '../../domain/validate-constitution/services';
 
 const termsTexts: TextsOf<TermsDetails> = {
   [TermsCode.Misshapen]: ({ written }) =>

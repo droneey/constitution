@@ -3,10 +3,10 @@ import type { ActiveBlock, MustRule } from '#/kernel/entities';
 import { ConfigReadStatus } from '#/kernel/entities';
 import { AbsolutePath, BlockId, Glob, RuleSlug, UnitPath } from '#/kernel/value-objects';
 
-import type { ParsedState, SessionMark, SessionState } from '../domain/entities';
-import { SessionAgent } from '../domain/entities';
-import type { AgentId } from '../domain/value-objects';
-import { SessionId } from '../domain/value-objects';
+import type { ParsedState, SessionMark, SessionState } from '../domain/session/entities';
+import { SessionAgent } from '../domain/session/entities';
+import type { AgentId } from '../domain/session/value-objects';
+import { SessionId } from '../domain/session/value-objects';
 
 const keptSession = SessionId.create('session-1');
 

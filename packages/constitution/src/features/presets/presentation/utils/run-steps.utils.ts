@@ -2,8 +2,9 @@ import { UnitPath } from '#/kernel/value-objects';
 import type { CommandContext } from '#/shared/cli';
 import { ExitCode } from '#/shared/cli';
 
-import type { CommandToRun, ProjectRead, RunPlan } from '../../domain/entities';
-import { ProjectReadStatus } from '../../domain/entities';
+import type { ProjectRead } from '../../domain/presets-project/entities';
+import { ProjectReadStatus } from '../../domain/presets-project/entities';
+import type { CommandToRun, RunPlan } from '../../domain/run-plan/entities';
 import { findingLinesOf } from './finding-lines.utils';
 import { failUnreadStep } from './project-unread.utils';
 import { lineMessage, stepFailedMessage, stepMessage, unitStepMessage } from './run-steps.messages';

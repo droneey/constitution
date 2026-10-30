@@ -8,8 +8,8 @@ import type { BlockModel } from '#/kernel/entities';
 import { BlockId, RuleSlug } from '#/kernel/value-objects';
 import { noteSection } from '#/shared/cli';
 
-import type { BlockFinding, Validation } from '../../../domain/services';
-import { RequiresCode, ValidationStage } from '../../../domain/services';
+import type { BlockFinding, Validation } from '../../../domain/validate-constitution/services';
+import { RequiresCode, ValidationStage } from '../../../domain/validate-constitution/services';
 import { findingTextOf } from '../finding-text.utils';
 import { adviceMessage, SOUND } from '../report.messages';
 import { blocksOutcomeOf, blocksSectionsOf } from '../report.utils';

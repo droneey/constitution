@@ -26,8 +26,12 @@ export {
   createGetSearchIndex,
   createSearchPages,
 } from './application/use-cases';
-export type { PageCatalog, PageLocation, SearchResult } from './domain/entities';
-export { BlockLayer, Page, SearchResultKind } from './domain/entities';
-export { AbsolutePath, PageSlugs, SiteBasePath } from './domain/value-objects';
+export { BlockLayer } from './domain/block/entities';
+export type { PageCatalog, PageLocation } from './domain/page/entities';
+export { Page } from './domain/page/entities';
+export { PageSlugs, SiteBasePath } from './domain/page/value-objects';
+export type { SearchResult } from './domain/search/entities';
+export { SearchResultKind } from './domain/search/entities';
+export { AbsolutePath } from './domain/source/value-objects';
 export { useSearchPages } from './presentation/bindings';
 export { SearchPagesContext } from './presentation/providers';

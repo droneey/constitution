@@ -1,6 +1,6 @@
 # Functions
 
-> Governs parameter objects and return types.
+> Governs a function in TypeScript: its parameter object and its return type.
 
 ## Parameters
 

@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it } from 'bun:test';
 
-import { Axis, TermKind } from '../../../../domain/entities';
+import { Axis } from '../../../../domain/block/entities';
+import { TermKind } from '../../../../domain/term/entities';
 import { termsOf } from '../terms.adapter';
 import { enterRepository } from './repository.fixtures';
 

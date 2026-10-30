@@ -4,10 +4,13 @@ import { goldenFileText, goldenOf } from '#/__tests__/golden.fixtures';
 import { Axis } from '#/kernel/constants';
 import { BlockId, BlockSource, RepositoryRelativePath, UnitPath } from '#/kernel/value-objects';
 
-import { EVERY } from '../../../domain/constants';
-import type { PresetEntry, PresetsPlan } from '../../../domain/entities';
-import { EntryPoint, PresetsCode, PresetValue } from '../../../domain/entities';
-import { EntryTarget } from '../../../domain/value-objects';
+import type { PresetEntry } from '../../../domain/preset-entry/entities';
+import type { PresetsPlan } from '../../../domain/presets-plan/entities';
+import { EntryPoint } from '../../../domain/run-plan/entities';
+import { PresetValue } from '../../../domain/setting/entities';
+import { EVERY } from '../../../domain/shared/constants';
+import { PresetsCode } from '../../../domain/shared/entities';
+import { EntryTarget } from '../../../domain/shared/value-objects';
 import { planLinesOf } from '../plan-lines.utils';
 
 const entry: PresetEntry = {

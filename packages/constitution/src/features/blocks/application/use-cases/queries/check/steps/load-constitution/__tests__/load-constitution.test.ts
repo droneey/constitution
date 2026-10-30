@@ -24,11 +24,11 @@ import {
   BlockFile,
   BlockLoadCode,
   FrontMatterReadCode,
-  LoadCode,
   PlaceCode,
-  ReadStatus,
-} from '../../../../../../../domain/entities';
-import { TreePath } from '../../../../../../../domain/value-objects';
+} from '../../../../../../../domain/block/entities';
+import { LoadCode } from '../../../../../../../domain/constitution/entities';
+import { ReadStatus } from '../../../../../../../domain/shared/entities';
+import { TreePath } from '../../../../../../../domain/shared/value-objects';
 import { loadedOf, packSourceOf } from '../../../__tests__/check.fixtures';
 import type { ConstitutionLoaded } from '../load-constitution';
 import { loadConstitution } from '../load-constitution';

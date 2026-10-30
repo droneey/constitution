@@ -1,14 +1,8 @@
 import type { ProjectFiles } from '#/kernel/contracts';
 import { AbsolutePath } from '#/kernel/value-objects';
 
-import type {
-  FileComputed,
-  LockRead,
-  PresetsPlan,
-  PresetsProject,
-  UnitComputed,
-} from '../../../../domain/entities';
-import type { FileAsked } from '../../../../domain/services';
+import type { FileComputed, UnitComputed } from '../../../../domain/apply-plan/entities';
+import type { FileAsked } from '../../../../domain/apply-plan/services';
 import {
   beginFile,
   FileStepKind,
@@ -16,7 +10,10 @@ import {
   settleFile,
   unitComputedOf,
   unitFilesOf,
-} from '../../../../domain/services';
+} from '../../../../domain/apply-plan/services';
+import type { LockRead } from '../../../../domain/lock/entities';
+import type { PresetsPlan } from '../../../../domain/presets-plan/entities';
+import type { PresetsProject } from '../../../../domain/presets-project/entities';
 import type { ConfigurationFormat } from '../../../contracts';
 
 interface ComputeFilesInput {

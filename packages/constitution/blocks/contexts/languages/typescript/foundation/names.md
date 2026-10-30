@@ -1,6 +1,6 @@
 # Names
 
-> Governs the case of identifiers and the names of types, error types and type parameters.
+> Governs a name in TypeScript: the case of an identifier and the names of types, error types and type parameters.
 
 ## Form
 

@@ -1,4 +1,4 @@
-import { AbsolutePath } from '../domain/value-objects';
+import { AbsolutePath } from '../domain/theme-mode/value-objects';
 import { createFakeThemeBuilder } from './theme-builder.fake';
 import { SCENARIO_MODE_NAMES, themeBuilderSuite } from './theme-builder.suite';
 

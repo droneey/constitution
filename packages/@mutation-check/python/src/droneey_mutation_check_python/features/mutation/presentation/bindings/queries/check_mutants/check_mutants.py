@@ -1,13 +1,13 @@
 from typing import TYPE_CHECKING
 
-from .....domain.entities import Scope
+from .....domain.mutation_targets.entities import Scope
 from ....errors import Misuse, UsageError
 from ....utils import exit_status, render
 
 if TYPE_CHECKING:
   from collections.abc import Callable, Sequence
 
-  from .....domain.entities import Outcome
+  from .....domain.mutation_run.entities import Outcome
   from ....constants import ExitStatus
 
 

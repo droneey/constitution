@@ -1,6 +1,6 @@
 # Code
 
-> Governs the version of TOML a file is written in and the form of its tables.
+> Governs any TOML no other chapter governs: the version a file is written in and the form of its tables.
 
 ## Versions
 

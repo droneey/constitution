@@ -1,6 +1,6 @@
 # Effects
 
-> Governs temporary files and a script's diagnostics.
+> Governs a script's effects: its temporary files and its diagnostics.
 
 ## Calls and resources
 

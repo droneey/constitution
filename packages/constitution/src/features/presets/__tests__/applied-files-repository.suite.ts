@@ -3,9 +3,9 @@ import { describe, expect, it } from 'bun:test';
 import { AbsolutePath } from '#/kernel/value-objects';
 
 import type { AppliedFilesCommandRepository } from '../application/contracts/repositories/commands';
-import type { Lock } from '../domain/entities';
-import { RecordKind } from '../domain/entities';
-import { ApplyError, ApplyFailure } from '../domain/errors';
+import { ApplyError, ApplyFailure } from '../domain/apply-plan/errors';
+import type { Lock } from '../domain/lock/entities';
+import { RecordKind } from '../domain/lock/entities';
 import { lockOf } from './presets.fixtures';
 
 interface AppliedFilesWorld {

@@ -1,6 +1,6 @@
 # Security
 
-> Governs the user an image runs as, the secrets its build takes and the context its build is sent.
+> Governs an image's security: the user it runs as, the secrets its build takes and the context its build is sent.
 
 ## Users
 

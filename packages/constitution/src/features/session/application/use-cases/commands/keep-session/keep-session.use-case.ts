@@ -1,6 +1,8 @@
-import type { HookEventName, SessionOrigin, SessionState } from '../../../../domain/entities';
-import { SessionStart } from '../../../../domain/entities';
-import type { SessionId } from '../../../../domain/value-objects';
+import type { SessionState } from '../../../../domain/session/entities';
+import type { SessionId } from '../../../../domain/session/value-objects';
+import type { SessionOrigin } from '../../../../domain/session-start/entities';
+import { SessionStart } from '../../../../domain/session-start/entities';
+import type { HookEventName } from '../../../../domain/shared/entities';
 import type { SessionCommandRepository } from '../../../contracts/repositories/commands';
 
 interface KeepSessionInput {

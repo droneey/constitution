@@ -4,8 +4,8 @@ import { goldenFileText, goldenOf } from '#/__tests__/golden.fixtures';
 import { Axis } from '#/kernel/constants';
 import { BlockId } from '#/kernel/value-objects';
 
-import type { PresetsFinding } from '../../../domain/entities';
-import { PresetsCode } from '../../../domain/entities';
+import type { PresetsFinding } from '../../../domain/shared/entities';
+import { PresetsCode } from '../../../domain/shared/entities';
 import {
   ALL_SETTINGS,
   AT_TOP,

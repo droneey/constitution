@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { ConfigKey } from '#/kernel/constants';
 
-import { OverrideField } from '../../../domain/entities';
+import { OverrideField } from '../../../domain/project-config/entities';
 
 const textModel = z
   .string()

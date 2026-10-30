@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import { UnitRelativePath } from '#/kernel/value-objects';
 
-import { LineRange } from '../../../domain/value-objects';
+import { LineRange } from '../../../domain/shared/value-objects';
 import { mutateArgumentsOf } from '../mutate-arguments.utils.ts';
 
 describe('mutateArgumentsOf', () => {

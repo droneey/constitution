@@ -3,9 +3,9 @@ import tomllib
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Final, TypeIs
 
-from ...domain.constants import WHOLE_EDGE_WORD
-from ...domain.entities import HomePlace, Layer, Settings, TopLevelFolder, WholeEdge
-from ...domain.errors import (
+from ...domain.settings.constants import WHOLE_EDGE_WORD
+from ...domain.settings.entities import HomePlace, Settings, TopLevelFolder, WholeEdge
+from ...domain.settings.errors import (
   Expected,
   MalformedFile,
   MissingPart,
@@ -14,6 +14,7 @@ from ...domain.errors import (
   UnknownKey,
   WrongShape,
 )
+from ...domain.shared.entities import Layer
 
 if TYPE_CHECKING:
   from collections.abc import Callable, Mapping

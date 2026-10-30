@@ -1,7 +1,7 @@
 import { AXES, Axis, Layer, Level } from '#/kernel/constants';
 import { BlockId, BlockSource, Glob, PackPath, RuleSlug } from '#/kernel/value-objects';
 
-import type { BlockSetBlock, BlockSetRule } from '../domain/entities';
+import type { BlockSetBlock, BlockSetRule } from '../domain/block-set/entities';
 
 const axisOf = (place: string): Axis => {
   const axis = AXES.find((candidate) => place.startsWith(`${candidate}/`));

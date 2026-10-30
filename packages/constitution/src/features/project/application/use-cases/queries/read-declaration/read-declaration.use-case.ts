@@ -5,15 +5,16 @@ import { ConfigReadStatus, FileRead, FileReadStatus } from '#/kernel/entities';
 import { withoutDotSlash } from '#/kernel/utils';
 import { AbsolutePath, BlockSource } from '#/kernel/value-objects';
 
-import type { Declaration } from '../../../../domain/entities';
-import { BlockSetSource, ProjectConfig, SourceStatus } from '../../../../domain/entities';
+import { BlockSetSource, SourceStatus } from '../../../../domain/block-set/entities';
+import type { Declaration } from '../../../../domain/declaration/entities';
+import { ProjectConfig } from '../../../../domain/project-config/entities';
+import { resolveDeclaration } from '../../../../domain/resolve-declaration/services';
 import {
   ReleaseError,
   ReleaseFailure,
   UnreadableFileError,
   UnreadableFileFailure,
-} from '../../../../domain/errors';
-import { resolveDeclaration } from '../../../../domain/services';
+} from '../../../../domain/shared/errors';
 import type {
   BlockCardParser,
   Clock,

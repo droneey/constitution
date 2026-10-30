@@ -9,9 +9,9 @@ import { createFakeWorkingTree } from '../../../../../__tests__/working-tree.fak
 import {
   ConfigurationsCheckStatus,
   DigestKind,
-  HookEventName,
-  SessionOrigin,
-} from '../../../../../domain/entities';
+} from '../../../../../domain/session-digest/entities';
+import { SessionOrigin } from '../../../../../domain/session-start/entities';
+import { HookEventName } from '../../../../../domain/shared/entities';
 import { digestSession } from '../digest-session.use-case';
 import { CORE_TEXT, QUIET, sessionPortsOf, unchecked, version } from './digest-session.fixtures';
 

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'bun:test';
 import { UnitRelativePath } from '#/kernel/value-objects';
 
 import type { BranchReader } from '../application/contracts';
-import { LineRange } from '../domain/value-objects';
+import { LineRange } from '../domain/shared/value-objects';
 
 const BRANCH_SCENARIO = {
   baseOrderText: 'export const total = 1;\n',

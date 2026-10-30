@@ -7,8 +7,8 @@ import { notesTextOf } from '#/__tests__/notes-text.fixtures';
 import { BlockId } from '#/kernel/value-objects';
 import { noteSection } from '#/shared/cli';
 
-import type { PresetsFinding } from '../../../domain/entities';
-import { PresetsCode } from '../../../domain/entities';
+import type { PresetsFinding } from '../../../domain/shared/entities';
+import { PresetsCode } from '../../../domain/shared/entities';
 import { presetsSkippedStep, presetsStepOf } from '../presets-step.utils';
 
 const misplaced: PresetsFinding = {

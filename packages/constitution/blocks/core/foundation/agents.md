@@ -1,6 +1,6 @@
 # Agents
 
-> Governs a person or an agent at work on the repository — not a model or an agent the product runs.
+> Governs a person or an agent at work on the repository.
 
 ## Deciding
 

@@ -1,4 +1,4 @@
-import type { Versions } from '../../../../../domain/entities';
+import type { Versions } from '../../../../../domain/versions/entities';
 import type { VersionsQueryRepository } from '../../../../contracts';
 
 interface FakeVersionsRepository extends VersionsQueryRepository {

@@ -1,6 +1,6 @@
 import type { UnitRelativePath } from '#/kernel/value-objects';
 
-import type { SpecRun } from '../../domain/entities';
+import type { SpecRun } from '../../domain/spec-run/entities';
 
 interface SpecRunInput {
   readonly addedVariables: Readonly<Record<string, string>>;

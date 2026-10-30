@@ -1,7 +1,7 @@
 import type { TextsOf } from '#/shared/cli';
 
-import type { RequiresDetails } from '../../domain/services';
-import { RequiresCode } from '../../domain/services';
+import type { RequiresDetails } from '../../domain/validate-constitution/services';
+import { RequiresCode } from '../../domain/validate-constitution/services';
 import { aBlock, blocksOf } from './wording.utils';
 
 const requiresTexts: TextsOf<RequiresDetails> = {

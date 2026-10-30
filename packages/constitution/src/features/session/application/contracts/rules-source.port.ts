@@ -7,7 +7,7 @@ import type {
 } from '#/kernel/entities';
 import type { AbsolutePath, Version } from '#/kernel/value-objects';
 
-import type { ConfigurationsReport, DigestListing } from '../../domain/entities';
+import type { ConfigurationsReport, DigestListing } from '../../domain/session-digest/entities';
 
 type DeclaredRules =
   | {

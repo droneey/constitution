@@ -1,6 +1,6 @@
 # Types
 
-> Governs the strings that hold a backslash.
+> Governs a value in TOML and its type: a string that holds a backslash.
 
 ## Strings
 

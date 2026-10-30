@@ -23,8 +23,8 @@ import {
   ConfigurationFailure,
   MutationRunError,
   MutationRunFailure,
-} from '../../../domain/errors';
-import { LineRange } from '../../../domain/value-objects';
+} from '../../../domain/check/errors';
+import { LineRange } from '../../../domain/shared/value-objects';
 import { strykerRunner } from '../stryker-runner.adapter.ts';
 
 const outerFolderPath = realpathSync(mkdtempSync(join(tmpdir(), 'mutation-check-stryker-')));

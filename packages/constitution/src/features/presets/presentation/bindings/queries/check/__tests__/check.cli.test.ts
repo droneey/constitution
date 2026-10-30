@@ -7,8 +7,9 @@ import type { ProjectWarning } from '#/kernel/entities';
 import { WarningKind } from '#/kernel/entities';
 import type { AbsolutePath } from '#/kernel/value-objects';
 
-import type { ConfigurationsCheck } from '../../../../../domain/entities';
-import { PresetsCode, ProjectRead, ProjectReadStatus } from '../../../../../domain/entities';
+import type { ConfigurationsCheck } from '../../../../../domain/configurations-check/entities';
+import { ProjectRead, ProjectReadStatus } from '../../../../../domain/presets-project/entities';
+import { PresetsCode } from '../../../../../domain/shared/entities';
 import { configurationsStepOf } from '../../../../utils';
 import { createPresetsCheckCommand } from '../check.cli';
 

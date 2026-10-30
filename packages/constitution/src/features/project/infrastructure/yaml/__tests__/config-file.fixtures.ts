@@ -1,7 +1,7 @@
 import { ConfigReadStatus } from '#/kernel/entities';
 
-import type { ConfigRead, DeclaredUnit } from '../../../domain/entities';
-import { ConfigOverride } from '../../../domain/entities';
+import type { ConfigRead, DeclaredUnit } from '../../../domain/project-config/entities';
+import { ConfigOverride } from '../../../domain/project-config/entities';
 
 const parsedConfigOf = (overrides: Partial<DeclaredUnit['config']> = {}): ConfigRead => ({
   config: {

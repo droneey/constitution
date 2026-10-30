@@ -1,6 +1,6 @@
 # Layout
 
-> Governs a script's interpreter line and its extension.
+> Governs a shell file: its interpreter line and its extension.
 
 ## Kinds
 

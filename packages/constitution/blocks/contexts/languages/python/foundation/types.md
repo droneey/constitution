@@ -1,6 +1,6 @@
 # Types
 
-> Governs how Python types the program: absence, unchecked types, narrowing, enumerations and new types, generics, frozen values, and the values of time, money and text.
+> Governs how Python types the program: absence, unchecked types, narrowing, enumerations and new types, generics, frozen values, and the values of time, money, text and paths.
 
 ## General
 
@@ -179,3 +179,11 @@ Text written for another program uses no call of the `locale` module, no `'{:n}'
 | Why |
 |---|
 | these forms read the locale of the process, so the same value is written differently on each machine. |
+
+### path-handled-by-pathlib · SHOULD
+
+A file-system path is a `pathlib.Path`, joined with `/` and read through its methods, never a string built with `os.path`.
+
+| Why |
+|---|
+| one object joins, resolves and reads a path, where a string path is joined by hand and a separator or a `..` slips through. |

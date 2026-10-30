@@ -1,32 +1,40 @@
+from typing import TYPE_CHECKING
+
 import pytest
 from changes_fixtures import SHOP_PACKAGE_TEXTS, changed, new
 from workspace_fake import WorkspaceFake
 
 from droneey_mutation_check_python.features.mutation import check_mutants
-from droneey_mutation_check_python.features.mutation.domain.entities import (
-  Broken,
-  EveryFunction,
-  FileChange,
-  Functions,
+from droneey_mutation_check_python.features.mutation.domain.mutant.entities import (
   Mutant,
-  MutantGlob,
   MutantName,
   MutantStatus,
+)
+from droneey_mutation_check_python.features.mutation.domain.mutation_run.entities import (
+  Broken,
   MutationRun,
-  MutationTargets,
   Outcome,
   Passed,
   PassReason,
   Ran,
-  Scope,
   Survived,
 )
-from droneey_mutation_check_python.features.mutation.domain.errors import (
+from droneey_mutation_check_python.features.mutation.domain.mutation_targets.entities import (
+  EveryFunction,
+  Functions,
+  MutantGlob,
+  MutationTargets,
+  Scope,
+)
+from droneey_mutation_check_python.features.mutation.domain.shared.errors import (
   CommandFailedError,
   CommandUnfinishedError,
   Failure,
   MutantsKeptError,
 )
+
+if TYPE_CHECKING:
+  from droneey_mutation_check_python.features.mutation.domain.changes.entities import FileChange
 
 TOTAL_CHANGED = (changed('src/shop/orders.py', range(5, 6)),)
 DISCOUNT_SURVIVED = Mutant(

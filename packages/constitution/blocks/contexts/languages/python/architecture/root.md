@@ -1,6 +1,6 @@
 # Root
 
-> Governs the wiring file and the reading of the environment.
+> Governs the composition root in Python: its wiring file and the reading of the environment.
 
 ## Wiring
 

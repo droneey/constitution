@@ -1,5 +1,5 @@
 ```pseudo
-# orders/domain/value-objects/discount.value-object
+# orders/domain/pricing/services/discount.service
 function discountFor(total)
   if total >= 100 then return 10
   return 0

@@ -1,8 +1,13 @@
 from pathlib import PurePosixPath
 from typing import TYPE_CHECKING, Final
 
-from droneey_mutation_check_python.features.mutation.domain.entities import ChangedFile, NewFile
-from droneey_mutation_check_python.features.mutation.domain.value_objects import UnitRelativePath
+from droneey_mutation_check_python.features.mutation.domain.changes.entities import (
+  ChangedFile,
+  NewFile,
+)
+from droneey_mutation_check_python.features.mutation.domain.changes.value_objects import (
+  UnitRelativePath,
+)
 
 if TYPE_CHECKING:
   from collections.abc import Mapping

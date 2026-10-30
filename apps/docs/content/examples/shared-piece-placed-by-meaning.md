@@ -1,8 +1,8 @@
 ```text
 src/
 ├── kernel/
-│   ├── value-objects/money/   business meaning
-│   └── types/result/          no meaning, needed by the domain
+│   ├── value-objects/         business meaning: money.value-object.ts
+│   └── types/                 no meaning, needed by the domain: result.types.ts
 ├── shared/
 │   └── pagination/            no business meaning
 └── libs/

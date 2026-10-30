@@ -5,8 +5,8 @@ import { ValueFailure } from '#/kernel/errors';
 import { RuleSlug } from '#/kernel/value-objects';
 import { textOf } from '#/shared/cli';
 
-import { LoadCode } from '../../../domain/entities';
-import type { BlockFinding } from '../../../domain/services';
+import { LoadCode } from '../../../domain/constitution/entities';
+import type { BlockFinding } from '../../../domain/validate-constitution/services';
 import {
   BudgetCode,
   CyclesCode,
@@ -17,7 +17,7 @@ import {
   RequiresCode,
   RulesCode,
   TermsCode,
-} from '../../../domain/services';
+} from '../../../domain/validate-constitution/services';
 import { budgetTexts } from '../budget-texts.utils';
 import { decisionsTexts } from '../decisions-texts.utils';
 import { findingTextOf } from '../finding-text.utils';

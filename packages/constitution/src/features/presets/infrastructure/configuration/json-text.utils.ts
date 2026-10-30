@@ -3,8 +3,9 @@ import { applyEdits, getNodeValue, modify, parse, parseTree, visit } from 'jsonc
 
 import { compareText, isDeepEqual } from '#/kernel/utils';
 
-import type { ConfigurationWrite, HeldStep, Setting } from '../../domain/entities';
-import { Setting as Settings } from '../../domain/entities';
+import type { ConfigurationWrite, HeldStep } from '../../domain/configuration-file/entities';
+import type { Setting } from '../../domain/setting/entities';
+import { Setting as Settings } from '../../domain/setting/entities';
 import type { Anchor, Commenting } from './block-comments.utils';
 import { anchorAt, noLinesInsideTextValues, withBlockComments } from './block-comments.utils';
 import { ownFieldOf } from './own-field.utils';

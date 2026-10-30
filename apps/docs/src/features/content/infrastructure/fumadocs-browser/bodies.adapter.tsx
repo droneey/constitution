@@ -8,8 +8,8 @@ import type { MDXComponents } from 'mdx/types';
 import { trackedForUse } from '#/libs/ui';
 
 import type { PageBodiesQueryRepository } from '../../application/contracts';
-import type { PageLocation } from '../../domain/entities';
-import { Page } from '../../domain/entities';
+import type { PageLocation } from '../../domain/page/entities';
+import { Page } from '../../domain/page/entities';
 
 interface Loaded {
   toc: TOCItemType[];

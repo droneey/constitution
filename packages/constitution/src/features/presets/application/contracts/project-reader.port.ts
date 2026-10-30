@@ -1,6 +1,6 @@
 import type { AbsolutePath } from '#/kernel/value-objects';
 
-import type { PresetsProject, ProjectRead } from '../../domain/entities';
+import type { PresetsProject, ProjectRead } from '../../domain/presets-project/entities';
 
 interface ProjectReader {
   /**

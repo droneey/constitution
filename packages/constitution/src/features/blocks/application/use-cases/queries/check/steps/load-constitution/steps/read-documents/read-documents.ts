@@ -1,8 +1,10 @@
 import { splitFrontMatter } from '#/kernel/utils';
 
-import type { Documents, SkillFrontMatterRead } from '../../../../../../../../domain/entities';
-import { Agent, DocumentPath, Skill } from '../../../../../../../../domain/entities';
-import { TreePath } from '../../../../../../../../domain/value-objects';
+import type { Documents } from '../../../../../../../../domain/constitution/entities';
+import { DocumentPath } from '../../../../../../../../domain/constitution/entities';
+import { TreePath } from '../../../../../../../../domain/shared/value-objects';
+import type { SkillFrontMatterRead } from '../../../../../../../../domain/skill/entities';
+import { Agent, Skill } from '../../../../../../../../domain/skill/entities';
 import type { FileTree, FrontMatterParser, ManifestParser } from '../../../../../../../contracts';
 
 /** @throws {TreeError} when the skill's file cannot be read */

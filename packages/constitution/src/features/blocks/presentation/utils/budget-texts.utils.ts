@@ -1,7 +1,7 @@
 import type { TextsOf } from '#/shared/cli';
 
-import type { BudgetDetails } from '../../domain/services';
-import { BudgetCode } from '../../domain/services';
+import type { BudgetDetails } from '../../domain/validate-constitution/services';
+import { BudgetCode } from '../../domain/validate-constitution/services';
 
 const budgetTexts: TextsOf<BudgetDetails> = {
   [BudgetCode.FileOverBudget]: ({ budget, lines }) =>

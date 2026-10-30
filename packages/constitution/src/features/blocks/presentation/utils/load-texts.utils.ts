@@ -8,8 +8,9 @@ import {
 } from '#/kernel/constants';
 import type { TextsOf } from '#/shared/cli';
 
-import type { LoadFindingDetails } from '../../domain/entities';
-import { BlockLoadCode, FrontMatterReadCode, LoadCode, PlaceCode } from '../../domain/entities';
+import { BlockLoadCode, FrontMatterReadCode, PlaceCode } from '../../domain/block/entities';
+import type { LoadFindingDetails } from '../../domain/constitution/entities';
+import { LoadCode } from '../../domain/constitution/entities';
 import { fieldOf, listOf } from './wording.utils';
 
 const layerFolders = listOf({

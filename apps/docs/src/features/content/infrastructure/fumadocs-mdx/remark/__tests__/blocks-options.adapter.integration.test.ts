@@ -3,9 +3,9 @@ import { join } from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
-import { BlockLayer } from '../../../../domain/entities';
-import { SourceFailure } from '../../../../domain/errors';
-import { AbsolutePath } from '../../../../domain/value-objects';
+import { BlockLayer } from '../../../../domain/block/entities';
+import { SourceFailure } from '../../../../domain/source/errors';
+import { AbsolutePath } from '../../../../domain/source/value-objects';
 import { enterRepository, failureOf } from '../../repository/__tests__/repository.fixtures';
 import { blocksOptionsOf } from '../blocks-options.adapter';
 

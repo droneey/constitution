@@ -1,4 +1,4 @@
-import type { MutationTarget } from '../../domain/entities';
+import type { MutationTarget } from '../../domain/mutation-target/entities';
 
 // Why: Stryker matches a target as a minimatch glob after turning each backslash into a slash, and
 // refuses a wildcard beside a line range, so a glob character is escaped by a class of that one

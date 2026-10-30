@@ -1,6 +1,6 @@
 # Interaction
 
-> Governs what a tool server asks of the person and tells them.
+> Governs what a tool server asks of the person through the client.
 
 ## Elicitation
 

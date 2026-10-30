@@ -12,8 +12,9 @@ import { fromMarkdown } from 'mdast-util-from-markdown';
 import { toString as mdastTextOf } from 'mdast-util-to-string';
 import { visit } from 'unist-util-visit';
 
-import { Page, Term, TermKind } from '../../../domain/entities';
-import { BlockPath } from '../../../domain/value-objects';
+import { Page } from '../../../domain/page/entities';
+import { BlockPath } from '../../../domain/shared/value-objects';
+import { Term, TermKind } from '../../../domain/term/entities';
 import { headingTextOf, isSectionHeading, SUBSECTION_HEADING_DEPTH } from '../markdown';
 import { FRONT_MATTER } from './blocks.constants';
 import { inRepository } from './repository.adapter';

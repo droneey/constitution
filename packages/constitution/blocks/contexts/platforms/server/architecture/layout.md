@@ -1,6 +1,6 @@
 # Layout
 
-> Governs where the server's processes, probes and stop live.
+> Governs a server's tree: where its processes, probes and stop live.
 
 ## Form
 

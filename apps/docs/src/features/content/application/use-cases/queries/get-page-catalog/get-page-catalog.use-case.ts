@@ -1,4 +1,4 @@
-import type { PageCatalog } from '../../../../domain/entities';
+import type { PageCatalog } from '../../../../domain/page/entities';
 import type { PagesQueryRepository } from '../../../contracts';
 
 export type GetPageCatalog = () => Promise<PageCatalog>;

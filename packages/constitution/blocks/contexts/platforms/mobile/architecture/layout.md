@@ -1,6 +1,6 @@
 # Layout
 
-> Governs the place of app extensions.
+> Governs the tree of an app on a phone or tablet: the place of its extensions.
 
 ## Form
 

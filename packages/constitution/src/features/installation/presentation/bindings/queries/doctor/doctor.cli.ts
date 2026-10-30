@@ -3,7 +3,7 @@ import { Command } from 'commander';
 import { AbsolutePath } from '#/kernel/value-objects';
 import type { CommandContext } from '#/shared/cli';
 
-import { PartDiagnosis } from '../../../../domain/entities';
+import { PartDiagnosis } from '../../../../domain/part-diagnosis/entities';
 import { installationOutcomeOf, installationSectionsOf } from '../../../utils';
 
 interface DoctorContext extends CommandContext {

@@ -1,4 +1,4 @@
-import type { PageSlugs } from '../../../../domain/value-objects';
+import type { PageSlugs } from '../../../../domain/page/value-objects';
 import type { PagesQueryRepository } from '../../../contracts';
 
 export type GetPageMarkdown = (slugs: PageSlugs) => Promise<string | undefined>;

@@ -1,6 +1,6 @@
 # Ports
 
-> Governs the readiness check an adapter offers.
+> Governs a server's adapters at its boundaries: the readiness check an adapter offers.
 
 ## General
 

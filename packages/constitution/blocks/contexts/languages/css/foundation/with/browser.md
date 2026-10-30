@@ -1,6 +1,6 @@
 # Browser
 
-> Governs the fonts a stylesheet loads in a browser, the features it may use there, where it places a popover and the sizes it takes from the viewport.
+> Governs a stylesheet in a browser: the fonts it loads, the features it may use there, where it places a popover and the sizes it takes from the viewport.
 
 ## Bundle
 

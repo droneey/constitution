@@ -1,5 +1,5 @@
-import { SessionMark } from '../../../../domain/entities';
-import type { SessionId } from '../../../../domain/value-objects';
+import { SessionMark } from '../../../../domain/session/entities';
+import type { SessionId } from '../../../../domain/session/value-objects';
 import type { WorkingTree } from '../../../contracts';
 import type { SessionCommandRepository } from '../../../contracts/repositories/commands';
 import { recordTree } from '../shared/record-tree';

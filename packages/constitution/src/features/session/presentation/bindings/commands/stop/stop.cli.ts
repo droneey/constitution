@@ -4,9 +4,10 @@ import { projectCheck } from '#/kernel/constants';
 import type { CommandContext } from '#/shared/cli';
 import { LIST_SEPARATOR } from '#/shared/cli';
 
-import type { StopEvent, StopJudgement } from '../../../../domain/entities';
-import { HookEventName, StopVerdict } from '../../../../domain/entities';
-import type { SessionId } from '../../../../domain/value-objects';
+import type { SessionId } from '../../../../domain/session/value-objects';
+import { HookEventName } from '../../../../domain/shared/entities';
+import type { StopEvent, StopJudgement } from '../../../../domain/stop-judgement/entities';
+import { StopVerdict } from '../../../../domain/stop-judgement/entities';
 import { HookField, stopEventSchema } from '../../../constants';
 import { hookEventOf, hookOutputOf } from '../../../utils';
 import { blockedMessage, reviewMessage, unjudgedMessage } from './stop.messages';

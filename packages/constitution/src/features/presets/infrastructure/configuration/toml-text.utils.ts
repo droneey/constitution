@@ -2,8 +2,9 @@ import { stringify } from 'smol-toml';
 
 import { isDeepEqual } from '#/kernel/utils';
 
-import type { ConfigurationWrite, Setting, SettingMap } from '../../domain/entities';
-import { Setting as Settings } from '../../domain/entities';
+import type { ConfigurationWrite } from '../../domain/configuration-file/entities';
+import type { Setting, SettingMap } from '../../domain/setting/entities';
+import { Setting as Settings } from '../../domain/setting/entities';
 import { withBlockComments } from './block-comments.utils';
 import { ownFieldOf } from './own-field.utils';
 import { LINE_WIDTH, NEWLINE } from './text.constants';

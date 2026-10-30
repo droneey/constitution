@@ -4,17 +4,19 @@ from typing import Final
 import pytest
 
 from droneey_mutation_check_python.features.mutation import ExitStatus, run_check_mutants
-from droneey_mutation_check_python.features.mutation.domain.entities import (
-  Broken,
+from droneey_mutation_check_python.features.mutation.domain.mutant.entities import (
   Mutant,
   MutantName,
   MutantStatus,
+)
+from droneey_mutation_check_python.features.mutation.domain.mutation_run.entities import (
+  Broken,
   Outcome,
   Passed,
   PassReason,
-  Scope,
   Survived,
 )
+from droneey_mutation_check_python.features.mutation.domain.mutation_targets.entities import Scope
 from droneey_mutation_check_python.features.mutation.presentation.errors import Misuse, UsageError
 
 PASSED = Passed(reason=PassReason.KILLED)

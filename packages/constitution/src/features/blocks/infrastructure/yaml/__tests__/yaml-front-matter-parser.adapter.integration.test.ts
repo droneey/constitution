@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { ReadStatus } from '../../../domain/entities';
+import { ReadStatus } from '../../../domain/shared/entities';
 import { createYamlFrontMatterParser } from '../yaml-front-matter-parser.adapter';
 
 const fieldTable = [

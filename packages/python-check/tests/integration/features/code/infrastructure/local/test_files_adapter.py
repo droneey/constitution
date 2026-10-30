@@ -3,8 +3,8 @@ from typing import TYPE_CHECKING
 import pytest
 from source_fixtures import write_files
 
-from droneey_python_check.features.code.domain.entities import Source, Sources
-from droneey_python_check.features.code.domain.errors import MissingPathsError
+from droneey_python_check.features.code.domain.source.entities import Source, Sources
+from droneey_python_check.features.code.domain.source.errors import MissingPathsError
 from droneey_python_check.features.code.infrastructure.local import python_sources
 
 if TYPE_CHECKING:

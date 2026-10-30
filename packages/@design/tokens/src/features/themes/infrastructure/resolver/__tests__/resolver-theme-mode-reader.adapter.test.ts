@@ -3,8 +3,8 @@ import { describe, expect, it } from 'bun:test';
 import { failureOf } from '#/__tests__/failure.fixtures';
 
 import { themeModeReaderSuite } from '../../../__tests__/theme-mode-reader.suite';
-import { UnknownDefaultModeError } from '../../../domain/errors';
-import { AbsolutePath } from '../../../domain/value-objects';
+import { UnknownDefaultModeError } from '../../../domain/theme-mode/errors';
+import { AbsolutePath } from '../../../domain/theme-mode/value-objects';
 import { createResolverThemeModeReader } from '../resolver-theme-mode-reader.adapter';
 import { designResolver, designResolverUrl, resolverWithDefault } from './resolver.fixtures';
 

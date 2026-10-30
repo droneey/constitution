@@ -6,17 +6,25 @@ from dataclasses import dataclass, replace
 from pathlib import Path, PurePosixPath
 from typing import TYPE_CHECKING, Final, assert_never
 
-from ...domain.constants import SOURCE_ROOT_PATH
-from ...domain.entities import Broken, Changes, EveryFunction, Functions, Ran, Stopped
-from ...domain.errors import CommandFailedError, CommandUnfinishedError, Failure, MutantsKeptError
-from ...domain.value_objects import UnitRelativePath
+from ...domain.changes.constants import SOURCE_ROOT_PATH
+from ...domain.changes.entities import Changes
+from ...domain.changes.value_objects import UnitRelativePath
+from ...domain.mutation_run.entities import Broken, Ran, Stopped
+from ...domain.mutation_targets.entities import EveryFunction, Functions
+from ...domain.shared.errors import (
+  CommandFailedError,
+  CommandUnfinishedError,
+  Failure,
+  MutantsKeptError,
+)
 from .models import CommandResult
 from .utils import file_changes, read_mutants
 
 if TYPE_CHECKING:
   from collections.abc import Sequence
 
-  from ...domain.entities import MutantGlob, MutationRun, MutationTargets
+  from ...domain.mutation_run.entities import MutationRun
+  from ...domain.mutation_targets.entities import MutantGlob, MutationTargets
   from .process_settings_config import ProcessSettings
 
 MUTANTS_FOLDER_NAME: Final = 'mutants'

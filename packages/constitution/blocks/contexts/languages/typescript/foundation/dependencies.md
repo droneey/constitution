@@ -1,6 +1,6 @@
 # Dependencies
 
-> Governs stateful packages and polyfills.
+> Governs the packages a TypeScript program takes from others: how a stateful package resolves and where a missing built-in is polyfilled.
 
 ## Resolution
 

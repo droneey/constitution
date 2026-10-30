@@ -1,8 +1,8 @@
 import { isNoJson, isUnreachable, problemPathsOf, WHOLE_FILE_PATH } from '#/libs/served-json';
 
 import type { VersionsQueryRepository } from '../../application/contracts';
-import type { Versions } from '../../domain/entities';
-import { VersionsError, VersionsFailure } from '../../domain/errors';
+import type { Versions } from '../../domain/versions/entities';
+import { VersionsError, VersionsFailure } from '../../domain/versions/errors';
 import { versionsModel } from './models';
 
 type Transport = (

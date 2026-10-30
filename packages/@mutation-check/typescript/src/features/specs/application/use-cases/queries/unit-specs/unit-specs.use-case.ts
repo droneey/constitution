@@ -1,7 +1,7 @@
 import type { UnitRelativePath } from '#/kernel/value-objects';
 
-import type { ImportEdges } from '../../../../domain/entities';
-import { UnitSpecs } from '../../../../domain/entities';
+import type { ImportEdges } from '../../../../domain/unit-specs/entities';
+import { UnitSpecs } from '../../../../domain/unit-specs/entities';
 import type { ImportGraph, SpecRunner } from '../../../contracts';
 
 interface UnitSpecsInput {

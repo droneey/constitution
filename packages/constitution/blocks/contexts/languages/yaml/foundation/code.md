@@ -1,6 +1,6 @@
 # Code
 
-> Governs anchors and the style of collections.
+> Governs any YAML no other chapter governs: the style of collections and their anchors.
 
 ## General
 

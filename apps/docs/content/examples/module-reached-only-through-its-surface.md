@@ -1,7 +1,7 @@
 ```pseudo title="Avoid"
 # composition/checkout/presentation/check-out
 import Order from
-  "features/orders/domain/entities"
+  "features/orders/domain/order/entities"
 ```
 
 ```pseudo title="Prefer"

@@ -3,9 +3,13 @@ import type { BlockModel } from '#/kernel/entities';
 import type { AbsolutePath, BlockSource } from '#/kernel/value-objects';
 import { RepositoryRelativePath } from '#/kernel/value-objects';
 
-import type { PresetsFinding } from '../../../../domain/entities';
-import { PresetEntry } from '../../../../domain/entities';
-import { checkPresetSets, isReleaseChecked, PackRoleNaming } from '../../../../domain/services';
+import {
+  checkPresetSets,
+  isReleaseChecked,
+  PackRoleNaming,
+} from '../../../../domain/check-preset-sets/services';
+import { PresetEntry } from '../../../../domain/preset-entry/entities';
+import type { PresetsFinding } from '../../../../domain/shared/entities';
 import type {
   ConfigurationFormat,
   DistributionSources,

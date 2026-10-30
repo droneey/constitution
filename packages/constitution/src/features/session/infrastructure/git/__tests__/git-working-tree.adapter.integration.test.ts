@@ -8,9 +8,9 @@ import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 import { AbsolutePath } from '#/kernel/value-objects';
 
 import { runWorkingTreeSuite } from '../../../__tests__/working-tree.suite';
-import type { TreeState } from '../../../domain/entities';
-import { TreeStateStatus } from '../../../domain/entities';
-import { TreeFingerprint } from '../../../domain/value-objects';
+import type { TreeState } from '../../../domain/tree-state/entities';
+import { TreeStateStatus } from '../../../domain/tree-state/entities';
+import { TreeFingerprint } from '../../../domain/tree-state/value-objects';
 import { createGitWorkingTree } from '../git-working-tree.adapter';
 
 const TIMEOUT_MS = 30_000;

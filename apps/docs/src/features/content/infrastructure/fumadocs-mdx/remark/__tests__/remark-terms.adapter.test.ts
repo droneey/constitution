@@ -2,7 +2,8 @@ import { describe, expect, it } from 'bun:test';
 
 import { goldenText } from '#/__tests__/golden.fixtures';
 
-import { Axis, Term, TermKind } from '../../../../domain/entities';
+import { Axis } from '../../../../domain/block/entities';
+import { Term, TermKind } from '../../../../domain/term/entities';
 import { remarkTerms } from '../remark-terms.adapter';
 import type { MarkdownVariant } from './html.fixtures';
 import { htmlOfVariants } from './html.fixtures';

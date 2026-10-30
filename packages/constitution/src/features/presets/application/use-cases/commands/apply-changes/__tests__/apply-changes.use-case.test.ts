@@ -4,7 +4,7 @@ import { AbsolutePath } from '#/kernel/value-objects';
 
 import { createFakeAppliedFilesRepository } from '../../../../../__tests__/applied-files-repository.fake';
 import { PROJECT } from '../../../../../__tests__/presets.fixtures';
-import type { AppliedFiles } from '../../../../../domain/entities';
+import type { AppliedFiles } from '../../../../../domain/apply-plan/entities';
 import { applyChanges } from '../apply-changes.use-case';
 
 const changes: AppliedFiles = {

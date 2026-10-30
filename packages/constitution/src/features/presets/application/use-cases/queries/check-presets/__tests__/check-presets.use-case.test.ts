@@ -12,9 +12,9 @@ import { createFakeConfigurationFormat } from '../../../../../__tests__/configur
 import { createFakeDistributionSources } from '../../../../../__tests__/distribution-sources.fake';
 import type { Files } from '../../../../../__tests__/presets.fixtures';
 import { presetFileParser, presetsModel } from '../../../../../__tests__/presets.fixtures';
-import type { PresetsFinding } from '../../../../../domain/entities';
-import { PresetsCode } from '../../../../../domain/entities';
-import { PresetFilePath } from '../../../../../domain/value-objects';
+import type { PresetsFinding } from '../../../../../domain/shared/entities';
+import { PresetsCode } from '../../../../../domain/shared/entities';
+import { PresetFilePath } from '../../../../../domain/shared/value-objects';
 import { checkPresets } from '../check-presets.use-case';
 
 const FOLDER = '/work/constitution';

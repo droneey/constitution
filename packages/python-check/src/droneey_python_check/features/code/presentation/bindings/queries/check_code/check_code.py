@@ -6,7 +6,7 @@ if TYPE_CHECKING:
   from collections.abc import Callable, Sequence
   from pathlib import Path
 
-  from .....domain.entities import Finding
+  from .....domain.finding.entities import Finding
   from ....constants import ExitStatus
 
 

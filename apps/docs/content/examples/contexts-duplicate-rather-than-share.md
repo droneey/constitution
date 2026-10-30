@@ -7,7 +7,7 @@ function shipOrder(order, customer)
 ```
 
 ```pseudo title="Prefer"
-# shipping: entities/recipient.entity
+# shipping: domain/recipient/entities/recipient.entity
 # CustomerId comes from the kernel
 type Recipient = {
   customerId: CustomerId,

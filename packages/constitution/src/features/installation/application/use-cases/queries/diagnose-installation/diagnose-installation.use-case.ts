@@ -2,7 +2,7 @@ import { EXECUTABLE_NAME } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
 import type { AbsolutePath, Version } from '#/kernel/value-objects';
 
-import { Diagnosis, PartDiagnosis } from '../../../../domain/entities';
+import { Diagnosis, PartDiagnosis } from '../../../../domain/part-diagnosis/entities';
 import type {
   ExecutablePath,
   GitHooks,

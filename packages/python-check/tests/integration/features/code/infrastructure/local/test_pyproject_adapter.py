@@ -6,13 +6,12 @@ from hypothesis import given
 from hypothesis import strategies as st
 from source_fixtures import write_files
 
-from droneey_python_check.features.code.domain.entities import (
-  Layer,
+from droneey_python_check.features.code.domain.settings.entities import (
   Settings,
   TopLevelFolder,
   WholeEdge,
 )
-from droneey_python_check.features.code.domain.errors import (
+from droneey_python_check.features.code.domain.settings.errors import (
   Expected,
   MalformedFile,
   MissingPart,
@@ -21,6 +20,7 @@ from droneey_python_check.features.code.domain.errors import (
   UnknownKey,
   WrongShape,
 )
+from droneey_python_check.features.code.domain.shared.entities import Layer
 from droneey_python_check.features.code.infrastructure.local import read_settings
 
 if TYPE_CHECKING:

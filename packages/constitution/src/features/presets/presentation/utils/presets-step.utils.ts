@@ -3,7 +3,7 @@ import { StepStatus, Tone } from '@droneey/design-cli';
 import type { StepReport, TaskOutcome } from '#/shared/cli';
 import { countedNoteSections, countOf } from '#/shared/cli';
 
-import type { PresetsFinding } from '../../domain/entities';
+import type { PresetsFinding } from '../../domain/shared/entities';
 import { findingLinesOf } from './finding-lines.utils';
 import { FINDING_NOUN, FOUND_IN_PRESETS_AFTER } from './presets-finding-text.messages';
 import { NO_BLOCKS, SOUND } from './presets-step.messages';

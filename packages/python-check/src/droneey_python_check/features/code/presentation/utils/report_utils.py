@@ -1,39 +1,39 @@
 from typing import TYPE_CHECKING, Final, assert_never
 
-from ...domain.constants import WHOLE_EDGE_WORD
-from ...domain.entities import (
+from ...domain.finding.entities import (
   EffectOutsideEdge,
   EnvironmentOutsideRoot,
   ImportClimbingOut,
   ImportLeavingModule,
   ImportOfItself,
-  Layer,
   LongFile,
   LongFunction,
   PackageInPure,
   PackageOutsideHome,
   PackageWithoutHome,
-  TopLevelFolder,
   Unparsable,
-  WholeEdge,
 )
-from ...domain.errors import (
+from ...domain.settings.constants import WHOLE_EDGE_WORD
+from ...domain.settings.entities import TopLevelFolder, WholeEdge
+from ...domain.settings.errors import (
   Expected,
   MalformedFile,
   MissingPart,
-  MissingPathsError,
   SettingsError,
   UnknownKey,
   WrongShape,
 )
+from ...domain.shared.entities import Layer
+from ...domain.source.errors import MissingPathsError
 from ..constants import ExitStatus
 from ..errors import Misuse, UsageError
 from . import report_messages as messages
 
 if TYPE_CHECKING:
-  from ...domain.entities import Breach, Finding, HomePlace
-  from ...domain.errors import Problem
-  from ...domain.types import PackagePath
+  from ...domain.finding.entities import Breach, Finding
+  from ...domain.settings.entities import HomePlace
+  from ...domain.settings.errors import Problem
+  from ...domain.shared.types import PackagePath
 
 PROGRAM_NAME: Final = 'python-check'
 # Why: editors and scripts parse this layout.

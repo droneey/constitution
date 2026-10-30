@@ -1,7 +1,8 @@
 import { UnitPath } from '#/kernel/value-objects';
 
-import type { PresetsPlan, UnitRun } from '../../domain/entities';
-import { PresetEntry } from '../../domain/entities';
+import { PresetEntry } from '../../domain/preset-entry/entities';
+import type { PresetsPlan } from '../../domain/presets-plan/entities';
+import type { UnitRun } from '../../domain/run-plan/entities';
 import { findingLinesOf } from './finding-lines.utils';
 import { indentedMessage, runMessage, unitRunMessage } from './plan-lines.messages';
 

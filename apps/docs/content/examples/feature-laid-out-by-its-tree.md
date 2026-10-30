@@ -12,11 +12,13 @@ features/orders/
 ```text title="Prefer"
 features/orders/
 ├── domain/
-│   └── entities/
-│       ├── order/
-│       │   ├── order.entity.ts
+│   └── order/
+│       ├── entities/
+│       │   ├── order.aggregate.ts
 │       │   └── index.ts
-│       └── index.ts
+│       └── transitions/
+│           ├── order.transitions.ts
+│           └── index.ts
 ├── infrastructure/postgres/
 │   ├── models/order.model.ts
 │   ├── order.repository.ts

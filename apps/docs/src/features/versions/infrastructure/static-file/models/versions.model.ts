@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { Version } from '../../../domain/value-objects';
+import { Version } from '../../../domain/versions/value-objects';
 
 const versionModel = z.custom<Version>(Version.is);
 

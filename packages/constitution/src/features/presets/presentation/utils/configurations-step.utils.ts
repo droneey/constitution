@@ -4,8 +4,9 @@ import { ProjectWarning } from '#/kernel/entities';
 import type { Section, StepReport, TaskOutcome } from '#/shared/cli';
 import { countedNoteSections, countOf, LIST_SEPARATOR, warningTextOf } from '#/shared/cli';
 
-import type { ConfigurationsCheck, ProjectRead } from '../../domain/entities';
-import { ProjectReadStatus } from '../../domain/entities';
+import type { ConfigurationsCheck } from '../../domain/configurations-check/entities';
+import type { ProjectRead } from '../../domain/presets-project/entities';
+import { ProjectReadStatus } from '../../domain/presets-project/entities';
 import {
   FINDINGS_AFTER,
   SOUND,

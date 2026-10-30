@@ -1,4 +1,4 @@
-import { LineRange } from '../../domain/value-objects';
+import { LineRange } from '../../domain/shared/value-objects';
 
 const HUNK_HEADER_PATTERN = /^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@/gm;
 const IMPLIED_LINE_COUNT = '1';

@@ -1,4 +1,4 @@
-import type { SearchResult } from '../../../../domain/entities';
+import type { SearchResult } from '../../../../domain/search/entities';
 import type { PageSearch } from '../../../contracts';
 
 /** @throws {SearchError} when the index of the pages cannot be read */

@@ -3,8 +3,8 @@ import { StepStatus } from '@droneey/design-cli';
 import type { CommandContext, TaskOutcome } from '#/shared/cli';
 import { atLinesText, NO_PROJECT, releaseMissingMessage } from '#/shared/cli';
 
-import type { ProjectUnread } from '../../domain/entities';
-import { ProjectReadStatus } from '../../domain/entities';
+import type { ProjectUnread } from '../../domain/presets-project/entities';
+import { ProjectReadStatus } from '../../domain/presets-project/entities';
 import { configUnparsedMessage } from './project-unread.messages';
 
 const unreadTextOf = (unread: ProjectUnread): string => {

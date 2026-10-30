@@ -3,7 +3,7 @@ import type { ProjectFiles } from '#/kernel/contracts';
 import type { ProjectUnit, ProjectWarning } from '#/kernel/entities';
 import { AbsolutePath } from '#/kernel/value-objects';
 
-import { PresetsProject } from '../../../../../../domain/entities';
+import { PresetsProject } from '../../../../../../domain/presets-project/entities';
 
 interface FindReleaseLoopsInput {
   readonly files: ProjectFiles;

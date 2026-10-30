@@ -5,9 +5,9 @@ import { recognisedFailure } from '#/kernel/utils';
 
 import type { PresetFileParser, PresetFileRead } from '../../application/contracts';
 import { PresetFileReadStatus } from '../../application/contracts';
-import type { PresetValue, Setting } from '../../domain/entities';
-import { PresetValue as Value, ValueKind } from '../../domain/entities';
-import { SettingKey } from '../../domain/value-objects';
+import type { PresetValue, Setting } from '../../domain/setting/entities';
+import { PresetValue as Value, ValueKind } from '../../domain/setting/entities';
+import { SettingKey } from '../../domain/shared/value-objects';
 import type { PresetFileRefusal } from './errors';
 import { isPresetFileRefusal, PresetFileRefusal as Refusal } from './errors';
 

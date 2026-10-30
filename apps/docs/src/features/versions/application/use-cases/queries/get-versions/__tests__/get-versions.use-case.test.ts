@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { Version } from '../../../../../domain/value-objects';
+import { Version } from '../../../../../domain/versions/value-objects';
 import { createGetVersions } from '../get-versions.use-case';
 import { createFakeVersionsRepository } from './versions.repository.fake';
 

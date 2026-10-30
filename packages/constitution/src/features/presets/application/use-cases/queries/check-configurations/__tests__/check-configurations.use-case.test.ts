@@ -18,14 +18,11 @@ import {
   releasePresets,
   unitOf,
 } from '../../../../../__tests__/presets.fixtures';
-import type { LockRead } from '../../../../../domain/entities';
-import {
-  Leaf,
-  LockReadStatus,
-  PresetsCode,
-  ProjectReadStatus,
-  RecordKind,
-} from '../../../../../domain/entities';
+import type { LockRead } from '../../../../../domain/lock/entities';
+import { LockReadStatus, RecordKind } from '../../../../../domain/lock/entities';
+import { ProjectReadStatus } from '../../../../../domain/presets-project/entities';
+import { Leaf } from '../../../../../domain/setting/entities';
+import { PresetsCode } from '../../../../../domain/shared/entities';
 import { checkConfigurations } from '../check-configurations.use-case';
 
 const unknownBlock: ProjectWarning = {

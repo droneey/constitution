@@ -8,9 +8,9 @@ import { recognise } from '#/libs/errors';
 import { problemPathsOf } from '#/libs/schemas';
 
 import type { SpecRunner } from '../../application/contracts';
-import type { SpecRun } from '../../domain/entities';
-import { SpecRunStatus } from '../../domain/entities';
-import { SpecSettingsError, SpecSettingsFailure } from '../../domain/errors';
+import type { SpecRun } from '../../domain/spec-run/entities';
+import { SpecRunStatus } from '../../domain/spec-run/entities';
+import { SpecSettingsError, SpecSettingsFailure } from '../../domain/spec-run/errors';
 import type { SpecSettings } from './spec-settings.model.ts';
 import { specSettingsModel } from './spec-settings.model.ts';
 import { streamTextOf } from './stream-text.utils.ts';

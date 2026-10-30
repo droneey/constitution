@@ -1,6 +1,6 @@
 # Layers
 
-> Governs how the app reaches device capabilities.
+> Governs the layers of an app on a phone or tablet: how it reaches device capabilities.
 
 ## Direction
 

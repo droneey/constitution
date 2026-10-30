@@ -1,7 +1,7 @@
 import type { TextsOf } from '#/shared/cli';
 
-import type { RulesDetails } from '../../domain/services';
-import { RulesCode } from '../../domain/services';
+import type { RulesDetails } from '../../domain/validate-constitution/services';
+import { RulesCode } from '../../domain/validate-constitution/services';
 
 const UNTITLED = 'untitled';
 

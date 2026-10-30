@@ -1,6 +1,6 @@
 import type { AbsolutePath, RepositoryRelativePath } from '#/kernel/value-objects';
 
-import type { TreeState } from '../../domain/entities';
+import type { TreeState } from '../../domain/tree-state/entities';
 
 interface WorkingTree {
   readonly changedAndUntrackedFiles: (

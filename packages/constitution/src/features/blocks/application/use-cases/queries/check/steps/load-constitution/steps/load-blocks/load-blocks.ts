@@ -3,8 +3,8 @@ import type {
   BlockLoadFinding,
   BlockLoadStep,
   PlaceFinding,
-} from '../../../../../../../../domain/entities';
-import { Block, BlockFile, BlockLoadStatus } from '../../../../../../../../domain/entities';
+} from '../../../../../../../../domain/block/entities';
+import { Block, BlockFile, BlockLoadStatus } from '../../../../../../../../domain/block/entities';
 import type { FileTree, FrontMatterParser } from '../../../../../../../contracts';
 
 type BlocksLoadedFinding = BlockLoadFinding | PlaceFinding;

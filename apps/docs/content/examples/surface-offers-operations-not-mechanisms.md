@@ -11,5 +11,5 @@ export { OrderRowModel }
 export { placeOrder }
   from "./application/use-cases"
 export { Order }
-  from "./domain/entities"
+  from "./domain/order/entities"
 ```

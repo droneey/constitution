@@ -10,10 +10,10 @@ import type {
   SessionCommandRepository,
 } from '../../application/contracts/repositories/commands';
 import type { SessionQueryRepository } from '../../application/contracts/repositories/queries';
-import type { SessionState } from '../../domain/entities';
-import { SessionAgent, SessionMark } from '../../domain/entities';
-import type { SessionId } from '../../domain/value-objects';
-import { TreeFingerprint } from '../../domain/value-objects';
+import type { SessionState } from '../../domain/session/entities';
+import { SessionAgent, SessionMark } from '../../domain/session/entities';
+import type { SessionId } from '../../domain/session/value-objects';
+import { TreeFingerprint } from '../../domain/tree-state/value-objects';
 import { sessionStateModel } from './models';
 import { appendPrivately, readUnfollowed, writeWhole } from './private-file.utils';
 import { wireOfState } from './session-state-wire.utils';

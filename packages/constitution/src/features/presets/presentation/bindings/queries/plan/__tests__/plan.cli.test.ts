@@ -7,8 +7,9 @@ import type { AbsolutePath } from '#/kernel/value-objects';
 import type { CommandPlaces } from '#/shared/cli';
 import { linesSection } from '#/shared/cli';
 
-import type { PresetsPlan } from '../../../../../domain/entities';
-import { PresetsCode, ProjectRead, ProjectReadStatus } from '../../../../../domain/entities';
+import type { PresetsPlan } from '../../../../../domain/presets-plan/entities';
+import { ProjectRead, ProjectReadStatus } from '../../../../../domain/presets-project/entities';
+import { PresetsCode } from '../../../../../domain/shared/entities';
 import { planLinesOf } from '../../../../utils';
 import { createPresetsPlanCommand } from '../plan.cli';
 

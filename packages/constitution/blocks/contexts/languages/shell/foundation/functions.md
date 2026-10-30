@@ -1,6 +1,6 @@
 # Functions
 
-> Governs a script's main function.
+> Governs a function in a script: the main function that holds its logic.
 
 ## General
 

@@ -7,15 +7,16 @@ import type { ProjectPlace, Release } from '#/kernel/entities';
 import { ReleaseStatus } from '#/kernel/entities';
 import { AbsolutePath, RepositoryRelativePath, Version } from '#/kernel/value-objects';
 
-import type { InstalledPlugin, LatestRelease } from '../../../../../domain/entities';
+import { HooksState } from '../../../../../domain/hooks-state/entities';
+import type { InstalledPlugin } from '../../../../../domain/installed-plugin/entities';
+import type { LatestRelease } from '../../../../../domain/latest-release/entities';
+import { ReleaseLookup } from '../../../../../domain/latest-release/entities';
 import {
   Diagnosis,
   Health,
-  HooksState,
   InstallationPart,
   PartDiagnosis,
-  ReleaseLookup,
-} from '../../../../../domain/entities';
+} from '../../../../../domain/part-diagnosis/entities';
 import type { DiagnoseInstallationPorts } from '../diagnose-installation.use-case';
 import { diagnoseInstallation } from '../diagnose-installation.use-case';
 

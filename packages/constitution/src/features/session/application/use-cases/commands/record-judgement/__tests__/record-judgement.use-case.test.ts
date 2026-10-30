@@ -4,9 +4,10 @@ import { BlockId } from '#/kernel/value-objects';
 
 import { heldSessionsOf, keptSession } from '../../../../../__tests__/session.fixtures';
 import { createFakeSessionCommandRepository } from '../../../../../__tests__/session-command-repository.fake';
-import type { StopJudgement } from '../../../../../domain/entities';
-import { SessionMark, StopVerdict } from '../../../../../domain/entities';
-import { TreeFingerprint } from '../../../../../domain/value-objects';
+import { SessionMark } from '../../../../../domain/session/entities';
+import type { StopJudgement } from '../../../../../domain/stop-judgement/entities';
+import { StopVerdict } from '../../../../../domain/stop-judgement/entities';
+import { TreeFingerprint } from '../../../../../domain/tree-state/value-objects';
 import { recordJudgement } from '../record-judgement.use-case';
 
 const treeNow = TreeFingerprint.create('tree-now');

@@ -1,4 +1,4 @@
-import type { SimilarRules } from '../../domain/entities';
+import type { SimilarRules } from '../../domain/block-graph/entities';
 
 const FINDING = 'finding';
 

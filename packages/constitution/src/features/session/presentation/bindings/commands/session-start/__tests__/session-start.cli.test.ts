@@ -6,9 +6,13 @@ import { createFakeContext, runCommand } from '#/__tests__/command-context.fake'
 import { AbsolutePath, Version } from '#/kernel/value-objects';
 
 import { sessionStateOf } from '../../../../../__tests__/session.fixtures';
-import type { SessionDigest, SessionStart, SessionState } from '../../../../../domain/entities';
-import { DigestKind, HookEventName, SessionOrigin } from '../../../../../domain/entities';
-import { SessionId } from '../../../../../domain/value-objects';
+import type { SessionState } from '../../../../../domain/session/entities';
+import { SessionId } from '../../../../../domain/session/value-objects';
+import type { SessionDigest } from '../../../../../domain/session-digest/entities';
+import { DigestKind } from '../../../../../domain/session-digest/entities';
+import type { SessionStart } from '../../../../../domain/session-start/entities';
+import { SessionOrigin } from '../../../../../domain/session-start/entities';
+import { HookEventName } from '../../../../../domain/shared/entities';
 import { digestOf } from '../../../../utils';
 import { createSessionStartCommand } from '../session-start.cli';
 

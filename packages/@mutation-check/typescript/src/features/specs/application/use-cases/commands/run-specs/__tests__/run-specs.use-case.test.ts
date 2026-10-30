@@ -3,7 +3,7 @@ import { describe, expect, it } from 'bun:test';
 import { UnitRelativePath } from '#/kernel/value-objects';
 
 import { fakeSpecRunner } from '../../../../../__tests__/spec-runner.fake.ts';
-import { SpecRunStatus } from '../../../../../domain/entities';
+import { SpecRunStatus } from '../../../../../domain/spec-run/entities';
 import { runSpecs } from '../run-specs.use-case.ts';
 
 const orderSpecPath = UnitRelativePath.create('src/__tests__/order.test.ts');

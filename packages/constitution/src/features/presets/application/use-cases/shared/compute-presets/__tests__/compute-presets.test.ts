@@ -16,9 +16,11 @@ import {
   releasePresets,
   unitOf,
 } from '../../../../../__tests__/presets.fixtures';
-import type { PresetsPlan, Setting } from '../../../../../domain/entities';
-import { PresetsCode, WholeKind } from '../../../../../domain/entities';
-import { FileFormat } from '../../../../../domain/value-objects';
+import type { PresetsPlan } from '../../../../../domain/presets-plan/entities';
+import type { Setting } from '../../../../../domain/setting/entities';
+import { WholeKind } from '../../../../../domain/setting/entities';
+import { PresetsCode } from '../../../../../domain/shared/entities';
+import { FileFormat } from '../../../../../domain/shared/value-objects';
 import { computePresets } from '../compute-presets';
 
 const planOf = (input: {

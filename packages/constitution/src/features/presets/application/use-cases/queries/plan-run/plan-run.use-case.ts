@@ -1,7 +1,9 @@
 import type { ProjectFiles } from '#/kernel/contracts';
 
-import type { PresetsProject, RunAsked } from '../../../../domain/entities';
-import { ProjectRead, RunPlan } from '../../../../domain/entities';
+import type { PresetsProject } from '../../../../domain/presets-project/entities';
+import { ProjectRead } from '../../../../domain/presets-project/entities';
+import type { RunAsked } from '../../../../domain/run-plan/entities';
+import { RunPlan } from '../../../../domain/run-plan/entities';
 import type {
   ConfigurationFormat,
   DistributionSources,

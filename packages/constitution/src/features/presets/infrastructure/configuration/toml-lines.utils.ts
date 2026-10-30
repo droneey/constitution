@@ -2,7 +2,7 @@ import { parse, TomlError } from 'smol-toml';
 
 import { attempted, fieldsOf } from '#/kernel/utils';
 
-import type { Setting } from '../../domain/entities';
+import type { Setting } from '../../domain/setting/entities';
 import { settingOfWire } from './wire-setting.utils';
 
 const HEADER = /^\s*\[\[?\s*([^\]]+?)\s*\]\]?\s*(?:#.*)?$/;

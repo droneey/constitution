@@ -1,4 +1,4 @@
-import type { ThemeModeFiles } from '../../domain/entities';
+import type { ThemeModeFiles } from '../../domain/theme-mode/entities';
 import type { ConfigOfMode } from './config-of-mode.port';
 
 interface ThemeBuilder {

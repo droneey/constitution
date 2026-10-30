@@ -1,4 +1,4 @@
-import type { SettingPlace } from '../../domain/entities';
+import type { SettingPlace } from '../../domain/apply-plan/entities';
 
 const FILE_NOUN = 'file';
 const NOTE_NOUN = 'note';

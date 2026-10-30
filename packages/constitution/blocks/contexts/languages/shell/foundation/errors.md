@@ -1,6 +1,6 @@
 # Errors
 
-> Governs how a script stops on a failed command.
+> Governs a failure in a script: how the script stops on a failed command.
 
 ## Catching and carrying
 

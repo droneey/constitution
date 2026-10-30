@@ -8,8 +8,10 @@ import { ProjectWarning, WarningKind } from '#/kernel/entities';
 import { AbsolutePath } from '#/kernel/value-objects';
 import { noteSection, warningTextOf } from '#/shared/cli';
 
-import type { ConfigurationsCheck, PresetsFinding } from '../../../domain/entities';
-import { PresetsCode, ProjectRead, ProjectReadStatus } from '../../../domain/entities';
+import type { ConfigurationsCheck } from '../../../domain/configurations-check/entities';
+import { ProjectRead, ProjectReadStatus } from '../../../domain/presets-project/entities';
+import type { PresetsFinding } from '../../../domain/shared/entities';
+import { PresetsCode } from '../../../domain/shared/entities';
 import { warningLineMessage } from '../configurations-step.messages';
 import { configurationsStepOf } from '../configurations-step.utils';
 import { findingLinesOf } from '../finding-lines.utils';

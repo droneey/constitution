@@ -5,14 +5,14 @@ export type {
   MutationRunner,
 } from './application/contracts';
 export { createCheckMutations } from './application/use-cases';
-export type { ChangedFile, MutationTarget } from './domain/entities';
+export type { ChangedFile } from './domain/changed-file/entities';
+export { BranchError, BranchFailure } from './domain/changed-file/errors';
 export {
-  BranchError,
-  BranchFailure,
   ConfigurationError,
   ConfigurationFailure,
   MutationRunError,
   MutationRunFailure,
-} from './domain/errors';
+} from './domain/check/errors';
+export type { MutationTarget } from './domain/mutation-target/entities';
 export { runCheckMutations } from './presentation/bindings';
 export { ExitCode } from './presentation/constants';

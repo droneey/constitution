@@ -4,7 +4,7 @@ import { pluginFingerprintOf } from '#/libs/claude-plugin';
 import { readModelFile } from '#/libs/model-file';
 
 import type { PluginRegistry } from '../../application/contracts';
-import type { InstalledPlugin } from '../../domain/entities';
+import type { InstalledPlugin } from '../../domain/installed-plugin/entities';
 import { installedPluginsModel, packageModel } from './models';
 
 const PLUGIN = 'constitution@droneey';

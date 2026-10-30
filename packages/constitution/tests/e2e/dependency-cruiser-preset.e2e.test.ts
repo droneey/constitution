@@ -34,17 +34,15 @@ const wellFormed = {
   'src/kernel/contracts/index.ts': "export type { Mail } from './mail.port';\n",
   'src/kernel/contracts/mail.port.ts':
     "import type { Money } from '../values';\nexport interface Mail { cost: Money }\n",
-  'src/features/orders/domain/entities/__tests__/order.entity.test.ts':
-    "import { expect } from 'bun:test';\nimport { order } from '../order.entity';\nexpect(order).toBe(1);\n",
+  'src/features/orders/domain/order/entities/__tests__/order.aggregate.test.ts':
+    "import { expect } from 'bun:test';\nimport { order } from '../order.aggregate';\nexpect(order).toBe(1);\n",
   'src/features/orders/infrastructure/api/index.ts': "export { order } from './order.adapter';\n",
-  'src/features/orders/infrastructure/api/order.adapter.ts': importing({
-    from: '../../domain/entities',
-    name: 'order',
-  }),
+  'src/features/orders/infrastructure/api/order.adapter.ts':
+    "import { order as stored } from '../../domain/order/entities';\nimport { restoreOrder } from '../../domain/order/transitions';\nexport const order = [stored, restoreOrder];\n",
   'src/features/orders/presentation/bindings/queries/list-orders/index.ts':
     "export { listOrders } from './list-orders.use-case';\n",
   'src/features/orders/presentation/bindings/queries/list-orders/list-orders.use-case.ts':
-    "import { order } from '../../../../domain/entities';\nimport { price } from '../../../../application/use-cases/shared/price';\nexport const listOrders = [order, price];\n",
+    "import { order } from '../../../../domain/order/entities';\nimport { price } from '../../../../application/use-cases/shared/price';\nexport const listOrders = [order, price];\n",
   'src/features/orders/presentation/bindings/queries/count-orders/count-orders.use-case.ts':
     importing({
       from: '../../../../application/use-cases/queries/count-orders',
@@ -58,9 +56,23 @@ const wellFormed = {
     "import type { Mail } from '../../../../../../kernel/contracts';\nimport type { OrderReader } from '../../../contracts/repositories/queries';\nexport const countOrders = (mail: Mail, reader: OrderReader): unknown => [mail, reader];\n",
   'src/features/orders/application/use-cases/queries/count-orders/index.ts':
     "export { countOrders } from './count-orders.use-case';\n",
-  'src/features/orders/domain/entities/index.ts': "export { order } from './order.entity';\n",
-  'src/features/orders/domain/entities/order.entity.ts':
-    "import { money } from '../../../../kernel/values';\nexport const order = money;\n",
+  'src/features/orders/application/use-cases/commands/ship-order/ship-order.use-case.ts': importing(
+    {
+      from: '../../../../domain/order/transitions',
+      name: 'shipOrder',
+    },
+  ),
+  'src/features/orders/domain/order/entities/index.ts':
+    "export { order } from './order.aggregate';\n",
+  'src/features/orders/domain/order/entities/order.aggregate.ts':
+    "import { money } from '../../../../../kernel/values';\nexport const order = money;\n",
+  'src/features/orders/domain/order/transitions/index.ts':
+    "export { restoreOrder, shipOrder } from './order.transitions';\n",
+  'src/features/orders/domain/order/transitions/order.transitions.ts':
+    "import { order } from '../entities';\nimport { cost } from '../../shared/value-objects';\nexport const restoreOrder = [order, cost];\nexport const shipOrder = order;\n",
+  'src/features/orders/domain/shared/value-objects/index.ts':
+    "export { cost } from './cost.value-object';\n",
+  'src/features/orders/domain/shared/value-objects/cost.value-object.ts': exported('cost'),
   'src/features/orders/application/use-cases/shared/price/index.ts':
     "export { price } from './price';\n",
   'src/features/orders/application/use-cases/shared/price/price.ts': exported('price'),
@@ -146,7 +158,7 @@ const layerViolations = [
   {
     condition: 'the domain imports a vendor package',
     files: {
-      'src/features/orders/domain/entities/order.entity.ts': importing({
+      'src/features/orders/domain/order/entities/order.aggregate.ts': importing({
         from: 'kit',
         name: 'value',
       }),
@@ -184,14 +196,26 @@ const layerViolations = [
     rule: 'effects-reached-only-from-the-edge',
   },
   {
-    condition: "an entity reaches past the surface of the domain's errors",
+    condition: "an aggregate reaches past the surface of its concept's errors",
     files: {
-      'src/features/orders/domain/entities/order.entity.ts': importing({
-        from: '../errors/order.error',
-        name: 'orderError',
+      'src/features/orders/domain/order/entities/order.aggregate.ts': importing({
+        from: '../errors/order-paid.error',
+        name: 'orderPaid',
       }),
-      'src/features/orders/domain/errors/index.ts': "export { orderError } from './order.error';\n",
-      'src/features/orders/domain/errors/order.error.ts': exported('orderError'),
+      'src/features/orders/domain/order/errors/index.ts':
+        "export { orderPaid } from './order-paid.error';\n",
+      'src/features/orders/domain/order/errors/order-paid.error.ts': exported('orderPaid'),
+    },
+    rule: 'role-reached-through-its-surface',
+  },
+  {
+    condition: "an aggregate reaches past the surface of the domain's shared value objects",
+    files: {
+      'src/features/orders/domain/order/entities/order.aggregate.ts': importing({
+        from: '../../shared/value-objects/cost.value-object',
+        name: 'cost',
+      }),
+      'src/features/orders/domain/shared/value-objects/cost.value-object.ts': exported('cost'),
     },
     rule: 'role-reached-through-its-surface',
   },
@@ -210,8 +234,8 @@ const layerViolations = [
   {
     condition: 'the domain imports a library',
     files: {
-      'src/features/orders/domain/entities/order.entity.ts': importing({
-        from: '../../../../libs/smtp',
+      'src/features/orders/domain/order/entities/order.aggregate.ts': importing({
+        from: '../../../../../libs/smtp',
         name: 'smtp',
       }),
       'src/libs/smtp/index.ts': exported('smtp'),
@@ -449,10 +473,10 @@ const layerViolations = [
     condition: 'the application layer reaches past a domain role’s surface',
     files: {
       'src/features/orders/presentation/order.use-case.ts': importing({
-        from: '../domain/entities/order.entity',
+        from: '../domain/order/entities/order.aggregate',
         name: 'order',
       }),
-      'src/features/orders/domain/entities/order.entity.ts': exported('order'),
+      'src/features/orders/domain/order/entities/order.aggregate.ts': exported('order'),
     },
     rule: 'role-reached-through-its-surface',
   },
@@ -466,6 +490,39 @@ const layerViolations = [
       'src/features/orders/domain/index.ts': exported('order'),
     },
     rule: 'layer-folder-never-a-target',
+  },
+  {
+    condition: 'code imports a concept folder of the domain',
+    files: {
+      'src/features/orders/presentation/order.use-case.ts': importing({
+        from: '../domain/order',
+        name: 'order',
+      }),
+      'src/features/orders/domain/order/index.ts': exported('order'),
+    },
+    rule: 'layer-folder-never-a-target',
+  },
+  {
+    condition: "a binding unit calls an aggregate's transition",
+    files: {
+      'src/features/orders/presentation/bindings/commands/ship-order/ship-order.ts': importing({
+        from: '../../../../domain/order/transitions',
+        name: 'shipOrder',
+      }),
+      'src/features/orders/domain/order/transitions/index.ts': exported('shipOrder'),
+    },
+    rule: 'presentation-reaches-no-transition',
+  },
+  {
+    condition: "a screen of composition builds an aggregate of the module's domain",
+    files: {
+      'src/composition/checkout/presentation/screens/cart-screen/cart-screen.tsx': importing({
+        from: '../../../domain/cart/transitions',
+        name: 'createCart',
+      }),
+      'src/composition/checkout/domain/cart/transitions/index.ts': exported('createCart'),
+    },
+    rule: 'presentation-reaches-no-transition',
   },
   {
     condition: 'a port the kernel shares imports an adapter',
@@ -621,8 +678,8 @@ const layerViolations = [
     condition: "a feature's domain imports a port of the kernel",
     files: {
       'src/kernel/contracts/index.ts': exported('clock'),
-      'src/features/orders/domain/entities/order.entity.ts': importing({
-        from: '../../../../kernel/contracts',
+      'src/features/orders/domain/order/entities/order.aggregate.ts': importing({
+        from: '../../../../../kernel/contracts',
         name: 'clock',
       }),
     },
@@ -855,7 +912,7 @@ const blockViolations = [
   {
     condition: "a module of composition's domain imports React",
     files: {
-      'src/composition/checkout/domain/entities/cart.entity.ts': importing({
+      'src/composition/checkout/domain/cart/entities/cart.aggregate.ts': importing({
         from: 'react',
         name: 'value',
       }),
@@ -1462,10 +1519,10 @@ describe('the dependency-cruiser layer set', () => {
     // Arrange
     const project = {
       files: {
-        'src/features/orders/domain/entities/index.ts':
+        'src/features/orders/domain/order/entities/index.ts':
           "export enum OrderStatus {\n  Pending = 'pending',\n}\n",
         'src/features/orders/presentation/widgets/orders-widget/orders-widget.tsx': importing({
-          from: '../../../domain/entities',
+          from: '../../../domain/order/entities',
           name: 'OrderStatus',
         }),
       },
@@ -1496,9 +1553,10 @@ describe('the dependency-cruiser layer set', () => {
           from: 'yaml',
           name: 'value',
         }),
-        'src/features/orders/domain/entities/index.ts': 'export type Order = { id: string };\n',
+        'src/features/orders/domain/order/entities/index.ts':
+          'export type Order = { id: string };\n',
         'src/features/orders/presentation/widgets/orders.tsx':
-          "import type { Order } from '../../domain/entities';\nimport { track } from '../../../../shared/sinks';\nexport const orders: Order[] = [];\nexport const tracked = track;\n",
+          "import type { Order } from '../../domain/order/entities';\nimport { track } from '../../../../shared/sinks';\nexport const orders: Order[] = [];\nexport const tracked = track;\n",
         'src/shared/sinks/index.ts': exported('track'),
         'src/features/orders/presentation/bindings/commands/sync-orders/sync-orders.cli.ts':
           importing({
@@ -1536,7 +1594,7 @@ describe('the dependency-cruiser layer set', () => {
         'src/libs/ui/button.stories.tsx':
           "import { value } from 'devtool';\nimport { button } from './button';\nexport const stories = [value, button];\n",
         'src/libs/ui/button.tsx': exported('button'),
-        'src/features/orders/domain/utils/digest.utils.ts':
+        'src/features/orders/domain/shared/utils/digest.utils.ts':
           "import { createHash } from 'node:crypto';\nexport const digest = createHash;\n",
         'src/kernel/utils/format.utils.ts':
           "import { format } from 'node:util';\nexport const formatted = format;\n",

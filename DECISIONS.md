@@ -45,7 +45,7 @@
 | The plugin and the project's rules | ADR-0203 – ADR-0205, ADR-0212 |
 | The whole-repository review of #383 | ADR-0223, ADR-0225 |
 | Formatters | ADR-0224, ADR-0230 |
-| Evans' layers, the model that decides and the cohesion review | ADR-0259 – ADR-0268 |
+| Evans' layers, the model that decides and the cohesion review | ADR-0259 – ADR-0269 |
 
 ---
 
@@ -2519,15 +2519,13 @@
 
 **Date:** 2026-10-30 · **Status:** Accepted
 
-- **Decision.** A feature, and a module of composition, holds `domain/` (the model: `entities/<entity>/`, one folder for each entity, enumeration and aggregate — an aggregate's holding its root `.aggregate` and its inner `.entity` files —, `value-objects/`, `services/` for domain services, `errors/`), `application/` (`use-cases/{queries,commands}/<op>/` and `contracts/`, every port a use case asks, data ports in `repositories/` included), `infrastructure/<system>/` (the adapters, formerly `adapters/`, also at the source's top) and `presentation/` (all through which the program is called — a screen, a request, a command, a message, a schedule: `bindings/{queries,commands}/<op>/`, formerly `app/use-cases/`, and an interface's `screens/`, `widgets/` and `components/`, formerly the ui domain's `ui/`). The domain imports no port, no use case and no installed library; the application imports only the domain, the kernel and its own contracts. The repository's own packages move to this tree in the same change.
+- **Decision.** A feature, and a module of composition, holds `domain/` (the model, by concept: a folder for each concept of the feature's language, holding `entities/` — an aggregate's root `.aggregate`, its inner `.entity` files, the enumerations —, `transitions/`, `value-objects/`, `services/` for domain services and `errors/`, and `shared/` for what several concepts use; ADR-0269), `application/` (`use-cases/{queries,commands}/<op>/` and `contracts/`, every port a use case asks, data ports in `repositories/` included), `infrastructure/<system>/` (the adapters, formerly `adapters/`, also at the source's top) and `presentation/` (all through which the program is called — a screen, a request, a command, a message, a schedule: `bindings/{queries,commands}/<op>/`, formerly `app/use-cases/`, and an interface's `screens/`, `widgets/` and `components/`, formerly the ui domain's `ui/`). The domain imports no port, no use case and no installed library; the application imports only the domain, the kernel and its own contracts. The repository's own packages move to this tree in the same change.
 - **Rejected.**
   - `app/` as the name of the binding layer: a reader who knows DDD takes it for the application layer, and the use case then seemed to live in two places.
   - Use cases inside `domain/` (ADR-0196 kept them there so that `domain/` stays the part programs share across hosts): `application/` is framework-free too, so the reason holds, while the model and the orchestration are no longer one folder no check can split. ADR-0196's rejection of "a use case moved into `app/`" stands for `app/`.
   - Repository interfaces in the domain, as Evans places them: the model never calls a repository, a use case does, so the port sits with the layer that needs it (`contract-declared-by-the-layer-that-needs-it`, as Uncle Bob's gateways and the hexagonal architecture place it), and "the domain imports no port" is one check.
   - `infrastructure/adapters/<system>/`: the infrastructure holds nothing but adapters, so a second level is a folder that only holds a folder; the `.adapter` suffix keeps the word.
-  - One folder per aggregate with no `entities/`: a feature that only reads holds records and enumerations that are no aggregate, and forcing them into aggregate folders would name a boundary of consistency that does not exist.
-  - `aggregates/<aggregate>/` beside a flat `entities/`: an aggregate's root is an entity, so two folders split one kind by a property the `.aggregate` suffix already shows, and a feature's reader looks in two places for its entities.
-  - Flat `entities/*.entity` files, with a folder only for an aggregate that has inner entities: an entity gains a spec, a fixture or an inner part as it grows, and each then moves; one folder each from the start keeps every entity's files together and its path stable.
+  - `aggregates/<aggregate>/` beside `entities/`: an aggregate's root is an entity, so two folders split one kind by a property the `.aggregate` suffix already shows, and a feature's reader looks in two places for its entities.
   - Vertical slices by operation, or layers held by file suffix instead of folders: the owner keeps the layers inside a feature, whose shared model is what DDD protects.
   - `presentation/` and `ui/` side by side: Evans' presentation layer holds both what binds an operation to a framework and what shows it.
 - **Why.** Each canonical word now names one place, the dependency direction is a matter of folders the import checks read, and the application can run from a component, a route loader, a worker, a command or another client of the same language.
@@ -2544,6 +2542,7 @@
   - "Policy" for a rule over several aggregates: EventStorming uses the word for a reaction to an event; Evans' term is domain service.
   - A use case that may decide nothing at all: it keeps the application's own rules — who acts, what to load, the order of steps, the transaction — as Uncle Bob's interactors do.
 - **Why.** A rule written in a use case is skipped by the next one, which is how a model turns anaemic; a model that holds its rules and guards its transitions is DDD whatever the syntax.
+- **Superseded in part.** An aggregate's `create`, `restore` and transitions move out of its root's file into its concept's `transitions/`, Python's transitions are no longer methods, and `aggregate-rule-lives-in-its-module` is renamed `aggregate-rule-lives-in-its-concept` (ADR-0269).
 
 ## ADR-0261 — A use case is a framework-free function; a hook or a controller only binds it
 
@@ -2630,3 +2629,16 @@
   - A status field checked at run time before each transition: the check is repeated, and forgetting it compiles.
   - Returning a `Result` from the use case, as Domain Modeling Made Functional does: ADR-0263 keeps native throw, which Wlaschin's own "Against Railway-Oriented Programming" allows for errors the domain need not model.
 - **Why.** Both come from Scott Wlaschin's Domain Modeling Made Functional (2018), whose functional modelling of a workflow matches the style this Constitution keeps.
+
+## ADR-0269 — A feature's domain is laid out by concept, and an aggregate's transitions have a folder of their own
+
+**Date:** 2026-10-30 · **Status:** Accepted
+
+- **Decision.** A feature's `domain/` holds concept folders named in its language — usually one aggregate (`order/`), or an entity or enumeration read on its own, or a rule no entity owns (`pricing/`) — and `shared/` for what two or more of them use; each holds the role folders `entities/`, `transitions/`, `value-objects/`, `services/`, `errors/` (and `constants/`, `types/`, `utils/`), whose files lie flat, as the kernel's do. `transitions/`, its files suffixed `.transitions`, holds an aggregate's `create`, its `restore` and its transitions, `create` and each transition with the event it yields; the root's file keeps its type, its predicates and its derived values. A domain service sits in the concept whose rule it is, or in a concept of its own when it reads aggregates of several concepts. The presentation never imports a `transitions/` (dependency-cruiser's `presentation-reaches-no-transition`, import-linter's `model-changed-only-through-a-use-case`); an adapter imports it for `restore` alone, which review holds, since a role folder is imported through its one surface. A concept folder has no surface, as a layer folder has none; each role folder has one. `aggregate-rule-lives-in-its-module` becomes `aggregate-rule-lives-in-its-concept`; Python's `aggregate-changed-by-replace-in-its-module` becomes `aggregate-changed-by-replace-in-its-transitions` and no longer allows transitions as methods; TypeScript's `invariant-value-built-only-by-create` names a value that keeps an invariant, so an aggregate is built in its `transitions/` by `aggregate-changed-only-by-its-transitions` alone.
+- **Rejected.**
+  - Role folders at the top of the domain (`domain/entities/<entity>/`, `value-objects/`, `services/`, `errors/`): the model reads as a list of kinds, one aggregate's values and failures scatter over four folders, and the folders no longer tell the story of the model, as Evans' and Vernon's modules do.
+  - A folder for each entity inside `entities/`: the concept folder already keeps an aggregate's files together, so the second level would hold one file.
+  - A `.transitions` suffix alone, the transitions beside the root in `entities/`: import-linter matches a module's name segment by segment and cannot match a suffix, so Python could not keep the presentation from them; a folder is matched alike by dependency-cruiser's paths and import-linter's segments.
+  - `restore` beside the root in `entities/`, which the presentation reads: a screen could then make an aggregate as if read back from storage. A folder for `restore` alone: a role folder of one member per aggregate, for a call the adapter's rule already confines.
+  - A surface on each concept folder: it would offer the transitions beside the types the presentation reads, and an import of it would no longer name the side of the boundary it reaches.
+- **Why.** A reader finds an aggregate, its values, its failures and its moves in one folder named in the business's words, and `model-changed-only-through-a-use-case` becomes a check every language's import checker can hold.

@@ -1,8 +1,8 @@
 ```text title="Avoid"
 orders/
-├── domain/entities/order/
+├── domain/order/entities/
 │   └── order.ts
-├── domain/errors/
+├── domain/order/errors/
 │   └── order-already-paid.ts
 └── application/contracts/
     └── payment-gateway.ts
@@ -10,9 +10,9 @@ orders/
 
 ```text title="Prefer"
 orders/
-├── domain/entities/order/
-│   └── order.entity.ts
-├── domain/errors/
+├── domain/order/entities/
+│   └── order.aggregate.ts
+├── domain/order/errors/
 │   └── order-already-paid.error.ts
 └── application/contracts/
     └── payment-gateway.port.ts

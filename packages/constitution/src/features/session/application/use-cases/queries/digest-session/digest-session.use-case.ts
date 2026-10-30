@@ -1,6 +1,7 @@
 import { ConfigReadStatus } from '#/kernel/entities';
 
-import { DigestKind, SessionDigest, SessionStart } from '../../../../domain/entities';
+import { DigestKind, SessionDigest } from '../../../../domain/session-digest/entities';
+import { SessionStart } from '../../../../domain/session-start/entities';
 import type { RulesSource, WorkingTree } from '../../../contracts';
 
 interface DigestSessionPorts {

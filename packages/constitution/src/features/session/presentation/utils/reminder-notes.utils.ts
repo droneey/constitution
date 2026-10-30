@@ -2,7 +2,7 @@ import type { Lowering, MustRule } from '#/kernel/entities';
 import type { RepositoryRelativePath } from '#/kernel/value-objects';
 import { UnitPath } from '#/kernel/value-objects';
 
-import type { RemindedBlock, Reminder } from '../../domain/entities';
+import type { RemindedBlock, Reminder } from '../../domain/reminder/entities';
 
 const NOTE_BYTES = 300;
 const ELLIPSIS = '...';

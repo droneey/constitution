@@ -4,10 +4,19 @@ import { goldenFileText, goldenOf } from '#/__tests__/golden.fixtures';
 import type { ProblemOf } from '#/kernel/types';
 import { textOf } from '#/shared/cli';
 
-import type { ManifestReadDetails } from '../../../domain/entities';
-import { ManifestReadCode, SkillField } from '../../../domain/entities';
-import type { HooksDetails, MarketplaceDetails, PluginDetails } from '../../../domain/services';
-import { HooksCode, MarketplaceCode, PluginCode } from '../../../domain/services';
+import type { ManifestReadDetails } from '../../../domain/manifest/entities';
+import { ManifestReadCode } from '../../../domain/manifest/entities';
+import { SkillField } from '../../../domain/skill/entities';
+import type {
+  HooksDetails,
+  MarketplaceDetails,
+  PluginDetails,
+} from '../../../domain/validate-constitution/services';
+import {
+  HooksCode,
+  MarketplaceCode,
+  PluginCode,
+} from '../../../domain/validate-constitution/services';
 import { pluginTexts } from '../plugin-texts.utils';
 
 const problems: Readonly<

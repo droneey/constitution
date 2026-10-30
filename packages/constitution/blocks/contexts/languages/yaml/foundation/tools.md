@@ -1,6 +1,6 @@
 # Tools
 
-> Governs the schema a configuration names for the tools that read it.
+> Governs the tools that read a YAML configuration: the schema it names for them.
 
 ## Schema
 

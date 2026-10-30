@@ -3,8 +3,8 @@ import { StepStatus, Tone } from '@droneey/design-cli';
 import type { Section, TaskOutcome } from '#/shared/cli';
 import { countOf, noteSection, reportLinesOf } from '#/shared/cli';
 
-import type { Validation } from '../../domain/services';
-import { ValidationStage } from '../../domain/services';
+import type { Validation } from '../../domain/validate-constitution/services';
+import { ValidationStage } from '../../domain/validate-constitution/services';
 import { findingTextOf } from './finding-text.utils';
 import {
   ADVICE_TITLE,

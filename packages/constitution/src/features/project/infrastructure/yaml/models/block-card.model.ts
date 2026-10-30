@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import type { BlockCard } from '../../../domain/entities';
+import type { BlockCard } from '../../../domain/block-set/entities';
 
 const textModel = z
   .union([

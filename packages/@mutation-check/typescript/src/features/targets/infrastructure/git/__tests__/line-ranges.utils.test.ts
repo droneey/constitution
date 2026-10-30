@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { LineRange } from '../../../domain/value-objects';
+import { LineRange } from '../../../domain/shared/value-objects';
 import { lineRangesOf } from '../line-ranges.utils.ts';
 
 const sectionOf = (hunkLines: readonly string[]): string =>

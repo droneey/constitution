@@ -9,13 +9,13 @@ import { SpawnErrorCode, spawnErrorCodeOf } from '#/libs/processes';
 import { problemPathsOf } from '#/libs/schemas';
 
 import type { MutationRunner } from '../../application/contracts';
-import type { ToolExitCode } from '../../domain/entities';
+import type { ToolExitCode } from '../../domain/check/entities';
 import {
   ConfigurationError,
   ConfigurationFailure,
   MutationRunError,
   MutationRunFailure,
-} from '../../domain/errors';
+} from '../../domain/check/errors';
 import { isMutatedBy } from './is-mutated-by.utils.ts';
 import { strykerConfigurationModuleModel } from './models';
 import { mutateArgumentsOf } from './mutate-arguments.utils.ts';

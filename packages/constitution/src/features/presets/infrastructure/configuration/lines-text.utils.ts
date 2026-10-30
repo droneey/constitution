@@ -1,5 +1,7 @@
-import type { BlockMarks, ConfigurationWrite, Setting } from '../../domain/entities';
-import { BlockMarks as Marks, Setting as Settings } from '../../domain/entities';
+import type { BlockMarks, ConfigurationWrite } from '../../domain/configuration-file/entities';
+import { BlockMarks as Marks } from '../../domain/configuration-file/entities';
+import type { Setting } from '../../domain/setting/entities';
+import { Setting as Settings } from '../../domain/setting/entities';
 import { NEWLINE } from './text.constants';
 
 interface LinesLayout {

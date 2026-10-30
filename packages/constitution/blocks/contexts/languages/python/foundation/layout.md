@@ -1,6 +1,6 @@
 # Layout
 
-> Governs the source root, its packages, and the names of modules and test files.
+> Governs a Python file or folder: the source root, its packages, and the names of modules and test files.
 
 ## Kinds
 

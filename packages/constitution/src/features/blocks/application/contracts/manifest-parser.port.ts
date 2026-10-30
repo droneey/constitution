@@ -3,7 +3,7 @@ import type {
   ManifestRead,
   MarketplaceManifest,
   PluginManifest,
-} from '../../domain/entities';
+} from '../../domain/manifest/entities';
 
 interface ManifestParser {
   readonly hooks: (json: string) => ManifestRead<HooksManifest>;

@@ -3,8 +3,13 @@ from typing import TYPE_CHECKING, Final
 
 from changes_fixtures import python
 
-from droneey_mutation_check_python.features.mutation.domain.entities import EveryFunction, Stopped
-from droneey_mutation_check_python.features.mutation.domain.value_objects import UnitRelativePath
+from droneey_mutation_check_python.features.mutation.domain.changes.value_objects import (
+  UnitRelativePath,
+)
+from droneey_mutation_check_python.features.mutation.domain.mutation_run.entities import Stopped
+from droneey_mutation_check_python.features.mutation.domain.mutation_targets.entities import (
+  EveryFunction,
+)
 
 if TYPE_CHECKING:
   from collections.abc import Callable, Mapping

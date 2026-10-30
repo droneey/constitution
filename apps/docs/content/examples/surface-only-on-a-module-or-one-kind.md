@@ -7,6 +7,7 @@ src/                            an application's source: no surface
     └── orders/
         ├── index.ts            a module: its door
         └── domain/             a layer: no surface
-            └── entities/
-                └── index.ts    a role folder of one kind: a surface
+            └── order/          a concept folder: no surface
+                └── entities/
+                    └── index.ts    a role folder of one kind: a surface
 ```

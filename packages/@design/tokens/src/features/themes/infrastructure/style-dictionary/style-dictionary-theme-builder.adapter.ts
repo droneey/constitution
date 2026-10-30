@@ -4,7 +4,7 @@ import type { Config } from 'style-dictionary/types';
 import { writeWholeWhenChanged } from '#/libs/files';
 
 import type { ConfigOfMode, ThemeBuilder } from '../../application/contracts';
-import type { ThemeModeFiles } from '../../domain/entities';
+import type { ThemeModeFiles } from '../../domain/theme-mode/entities';
 
 const configOfModeFiles = (
   configOf: ConfigOfMode,

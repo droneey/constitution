@@ -1,6 +1,6 @@
 # Types
 
-> Governs data from another app.
+> Governs a value on a phone or tablet and its type: data from another app.
 
 ## Values from outside
 

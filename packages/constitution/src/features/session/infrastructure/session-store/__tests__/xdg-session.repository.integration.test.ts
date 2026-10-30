@@ -21,8 +21,9 @@ import { AbsolutePath, BlockId } from '#/kernel/value-objects';
 
 import { activeBlockOf, keptSession, sessionStateOf } from '../../../__tests__/session.fixtures';
 import { runSessionRepositorySuite } from '../../../__tests__/session-repository.suite';
-import { SessionAgent, SessionMark } from '../../../domain/entities';
-import { AgentId, TreeFingerprint } from '../../../domain/value-objects';
+import { SessionAgent, SessionMark } from '../../../domain/session/entities';
+import { AgentId } from '../../../domain/session/value-objects';
+import { TreeFingerprint } from '../../../domain/tree-state/value-objects';
 import type { StateEnvironment, StateFolderWarning } from '../state-folder.utils';
 import { StateFolderProblem } from '../state-folder.utils';
 import { createXdgSessionRepository } from '../xdg-session.repository';

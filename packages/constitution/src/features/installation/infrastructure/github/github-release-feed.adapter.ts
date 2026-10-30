@@ -3,8 +3,8 @@ import { Version } from '#/kernel/value-objects';
 import { isNestedWithin, readTextWithin } from '#/libs/bounded-input';
 
 import type { ReleaseFeed } from '../../application/contracts';
-import type { LatestRelease } from '../../domain/entities';
-import { ReleaseLookup } from '../../domain/entities';
+import type { LatestRelease } from '../../domain/latest-release/entities';
+import { ReleaseLookup } from '../../domain/latest-release/entities';
 import { releasesModel } from './models';
 
 // Why: every release is published as a pre-release first, which GitHub's latest leaves out, so the

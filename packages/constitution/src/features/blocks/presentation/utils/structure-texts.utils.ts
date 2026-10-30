@@ -1,6 +1,10 @@
 import type { TextsOf } from '#/shared/cli';
 
-import { GENERAL_SECTION, GOVERNS_LINE, REQUIREMENTS_SECTION } from '../../domain/constants';
+import {
+  GENERAL_SECTION,
+  GOVERNS_LINE,
+  REQUIREMENTS_SECTION,
+} from '../../domain/validate-constitution/constants';
 import type {
   AbstractBlocksDetails,
   BlockFormDetails,
@@ -10,7 +14,7 @@ import type {
   CyclesDetails,
   FrontMatterDetails,
   SeamsDetails,
-} from '../../domain/services';
+} from '../../domain/validate-constitution/services';
 import {
   AbstractBlocksCode,
   BlockFormCode,
@@ -20,7 +24,7 @@ import {
   CyclesCode,
   FrontMatterCode,
   SeamsCode,
-} from '../../domain/services';
+} from '../../domain/validate-constitution/services';
 import { aBlock, blocksOf } from './wording.utils';
 
 const structureTexts: TextsOf<

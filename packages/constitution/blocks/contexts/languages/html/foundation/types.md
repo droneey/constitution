@@ -1,6 +1,6 @@
 # Types
 
-> Governs the encoding a document declares and how its boolean attributes are written.
+> Governs a value in a document and its type: the encoding the document declares and how a boolean attribute is written.
 
 ## Encoding
 

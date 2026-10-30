@@ -1,8 +1,8 @@
 import { Met } from '#/kernel/entities';
 import type { TextsOf } from '#/shared/cli';
 
-import type { RequirementsDetails } from '../../domain/services';
-import { RequirementsCode } from '../../domain/services';
+import type { RequirementsDetails } from '../../domain/validate-constitution/services';
+import { RequirementsCode } from '../../domain/validate-constitution/services';
 
 const requirementsTexts: TextsOf<RequirementsDetails> = {
   [RequirementsCode.OutsideImplementation]: () =>

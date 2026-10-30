@@ -6,7 +6,7 @@ import type { AbsolutePath } from '#/kernel/value-objects';
 import type { ChildProcessSettings } from '#/libs/child-process';
 
 import type { GitHooks } from '../../application/contracts';
-import { HooksState } from '../../domain/entities';
+import { HooksState } from '../../domain/hooks-state/entities';
 
 const configFiles: readonly string[] = [
   '',

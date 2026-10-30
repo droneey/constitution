@@ -1,4 +1,4 @@
-import type { SearchResult } from '../../domain/entities';
+import type { SearchResult } from '../../domain/search/entities';
 
 export interface PageSearch {
   /** @throws {SearchError} when the index of the pages cannot be read */

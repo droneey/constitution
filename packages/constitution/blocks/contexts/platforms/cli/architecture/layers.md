@@ -1,6 +1,6 @@
 # Layers
 
-> Governs the place of the shared flags, of the command-line parser and of a command.
+> Governs the layers of a command-line program: where the shared flags, the command-line parser and a command sit.
 
 ## Homes
 

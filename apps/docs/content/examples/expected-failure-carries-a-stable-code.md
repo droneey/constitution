@@ -7,7 +7,7 @@ function findOrder(id: OrderId): Order
 ```
 
 ```pseudo title="Prefer"
-# errors/order-not-found.error
+# order/errors/order-not-found.error
 class OrderNotFoundError extends Error
   code = "order.not-found"
   orderId: OrderId

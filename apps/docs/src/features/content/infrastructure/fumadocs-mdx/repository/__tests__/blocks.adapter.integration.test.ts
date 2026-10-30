@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from 'bun:test';
 
-import { BlockLayer } from '../../../../domain/entities';
-import { SourceFailure } from '../../../../domain/errors';
+import { BlockLayer } from '../../../../domain/block/entities';
+import { SourceFailure } from '../../../../domain/source/errors';
 import { axisFoldersOf, coreChaptersOf, layerBlocksOf, seamHoldersOf } from '../blocks.adapter';
 import { enterRepository, failureOf } from './repository.fixtures';
 

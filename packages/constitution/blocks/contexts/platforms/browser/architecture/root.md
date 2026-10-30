@@ -1,6 +1,6 @@
 # Root
 
-> Governs where the tab reads its configuration.
+> Governs the composition root in a browser: where the tab reads its configuration.
 
 ## Wiring
 

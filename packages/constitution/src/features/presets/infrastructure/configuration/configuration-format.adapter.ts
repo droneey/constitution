@@ -1,9 +1,13 @@
 import { PATH_SEPARATOR } from '#/kernel/constants';
 
 import type { ConfigurationFormat, ConfigurationTarget } from '../../application/contracts';
-import type { ConfigurationFile, ConfigurationWrite, Setting } from '../../domain/entities';
-import { SettingShape } from '../../domain/entities';
-import { FileFormat } from '../../domain/value-objects';
+import type {
+  ConfigurationFile,
+  ConfigurationWrite,
+} from '../../domain/configuration-file/entities';
+import { SettingShape } from '../../domain/configuration-file/entities';
+import type { Setting } from '../../domain/setting/entities';
+import { FileFormat } from '../../domain/shared/value-objects';
 import { readIni, writeIni } from './ini-text.utils';
 import { readJson, writeCommentedJson, writeJson, writeJsonc } from './json-text.utils';
 import { readCodeLines, readLines, writeCodeLines, writeLines } from './lines-text.utils';

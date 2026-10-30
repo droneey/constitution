@@ -1,5 +1,5 @@
 import type { GenerateThemes } from '../../../../application/use-cases/commands/generate-themes';
-import { ConfigModuleError } from '../../../../domain/errors';
+import { ConfigModuleError } from '../../../../domain/config-module/errors';
 import { ExitCode } from '../../../constants';
 import { failureLine, usageLine } from './generate-themes.messages';
 

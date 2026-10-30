@@ -1,6 +1,6 @@
 import { reportLinesOf } from '#/shared/cli';
 
-import type { PresetsFinding } from '../../domain/entities';
+import type { PresetsFinding } from '../../domain/shared/entities';
 import { presetsFindingTextOf } from './presets-finding-text.utils';
 
 const findingLinesOf = (findings: readonly PresetsFinding[]): readonly string[] =>

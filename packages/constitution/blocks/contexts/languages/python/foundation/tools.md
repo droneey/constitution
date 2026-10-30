@@ -1,6 +1,6 @@
 # Tools
 
-> Governs the suppression of a tool's finding.
+> Governs the tools that hold the rules in Python, and their findings: how a finding is suppressed.
 
 ## Findings
 

@@ -5,9 +5,9 @@ import { AbsolutePath } from '#/kernel/value-objects';
 import { isSystemError } from '#/libs/system-error';
 
 import type { LockQueryRepository } from '../../application/contracts/repositories/queries';
-import { LOCK_FILE_NAME } from '../../domain/constants';
-import type { LockRead } from '../../domain/entities';
-import { LockReadStatus } from '../../domain/entities';
+import type { LockRead } from '../../domain/lock/entities';
+import { LockReadStatus } from '../../domain/lock/entities';
+import { LOCK_FILE_NAME } from '../../domain/shared/constants';
 import { lockOfWire } from './lock-text.utils';
 import { lockModel } from './models';
 

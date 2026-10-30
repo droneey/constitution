@@ -1,8 +1,8 @@
 import { compareText } from '#/kernel/utils';
 import { UnitRelativePath } from '#/kernel/value-objects';
 
-import type { Lock, LockRecord } from '../../domain/entities';
-import { Lock as Locks, RecordKind } from '../../domain/entities';
+import type { Lock, LockRecord } from '../../domain/lock/entities';
+import { Lock as Locks, RecordKind } from '../../domain/lock/entities';
 import type { LockRecordWire, LockWire } from './models';
 
 const NEWLINE = '\n';

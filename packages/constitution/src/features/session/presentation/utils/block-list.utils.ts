@@ -8,8 +8,13 @@ import {
 } from '#/kernel/constants';
 import { SourceKind } from '#/kernel/value-objects';
 
-import type { DigestBlock, DigestFiles, DigestListing, DigestUnit } from '../../domain/entities';
-import { DigestEntryKind } from '../../domain/entities';
+import type {
+  DigestBlock,
+  DigestFiles,
+  DigestListing,
+  DigestUnit,
+} from '../../domain/session-digest/entities';
+import { DigestEntryKind } from '../../domain/session-digest/entities';
 
 const TITLES = [
   [

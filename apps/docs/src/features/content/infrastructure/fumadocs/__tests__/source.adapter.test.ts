@@ -2,8 +2,8 @@ import { describe, expect, it } from 'bun:test';
 
 import { goldenText } from '#/__tests__/golden.fixtures';
 
-import type { Page } from '../../../domain/entities';
-import { PageSlugs, SiteBasePath } from '../../../domain/value-objects';
+import type { Page } from '../../../domain/page/entities';
+import { PageSlugs, SiteBasePath } from '../../../domain/page/value-objects';
 import { createFumadocsContent } from '../source.adapter';
 import { siteCollectionsFixture, siteLayoutFixture } from './source.fixtures';
 

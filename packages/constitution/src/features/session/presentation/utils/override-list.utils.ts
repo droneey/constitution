@@ -1,6 +1,6 @@
 import { UnitPath } from '#/kernel/value-objects';
 
-import type { DigestOverride } from '../../domain/entities';
+import type { DigestOverride } from '../../domain/session-digest/entities';
 
 const overrideLine = (override: DigestOverride): string =>
   `- ${override.rule}: ${override.level}${UnitPath.isRepository(override.unit) ? '' : ` in ${override.unit}`}${

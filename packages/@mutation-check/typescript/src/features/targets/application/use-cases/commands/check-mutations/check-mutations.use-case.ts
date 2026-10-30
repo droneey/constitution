@@ -1,7 +1,8 @@
 import type { UnitRelativePath } from '#/kernel/value-objects';
 
-import type { CheckOutcome } from '../../../../domain/entities';
-import { CheckScope, CheckStatus, MutationTarget } from '../../../../domain/entities';
+import type { CheckOutcome } from '../../../../domain/check/entities';
+import { CheckScope, CheckStatus } from '../../../../domain/check/entities';
+import { MutationTarget } from '../../../../domain/mutation-target/entities';
 import type { Branch, BranchReader, CodeComparer, MutationRunner } from '../../../contracts';
 
 /**

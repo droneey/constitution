@@ -10,8 +10,8 @@ import { FileReadStatus } from '#/kernel/entities';
 import type { BlockSource, PackPath } from '#/kernel/value-objects';
 import { AbsolutePath } from '#/kernel/value-objects';
 
-import type { SourceFile } from '../../../../../../domain/entities';
-import { BlockSetSource, SourceStatus } from '../../../../../../domain/entities';
+import type { SourceFile } from '../../../../../../domain/block-set/entities';
+import { BlockSetSource, SourceStatus } from '../../../../../../domain/block-set/entities';
 
 interface ReadSourceInput {
   readonly files: ProjectFiles;

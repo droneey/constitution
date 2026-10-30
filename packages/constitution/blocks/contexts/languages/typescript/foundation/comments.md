@@ -1,6 +1,6 @@
 # Comments
 
-> Governs JSDoc.
+> Governs a comment in TypeScript: the JSDoc that documents what a package publishes.
 
 ## General
 

@@ -1,4 +1,4 @@
-import type { AppliedFiles } from '../../../../domain/entities';
+import type { AppliedFiles } from '../../../../domain/apply-plan/entities';
 import type { AppliedFilesCommandRepository } from '../../../contracts/repositories/commands';
 
 interface ApplyChangesInput {

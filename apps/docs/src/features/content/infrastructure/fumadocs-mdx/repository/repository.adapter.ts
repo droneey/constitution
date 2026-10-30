@@ -3,10 +3,11 @@ import { relative, resolve } from 'node:path';
 
 import { REPOSITORY_URL } from '#/shared/constants';
 
-import { MARKDOWN_EXTENSION } from '../../../domain/constants';
-import { Page } from '../../../domain/entities';
-import { withoutMarkdownExtension } from '../../../domain/utils';
-import { AbsolutePath, BlockPath, RepositoryPath } from '../../../domain/value-objects';
+import { Page } from '../../../domain/page/entities';
+import { withoutMarkdownExtension } from '../../../domain/page/utils';
+import { MARKDOWN_EXTENSION } from '../../../domain/shared/constants';
+import { BlockPath } from '../../../domain/shared/value-objects';
+import { AbsolutePath, RepositoryPath } from '../../../domain/source/value-objects';
 import {
   blocksFolderPath,
   docsFolderPath,

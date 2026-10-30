@@ -1,6 +1,6 @@
 # Types
 
-> Governs the server process's time zone.
+> Governs a value on a server and its type: the time zone of its process.
 
 ## Kinds of value
 
