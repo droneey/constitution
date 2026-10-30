@@ -8,7 +8,7 @@ function validateOrder(rawOrder)
 function priceOrder(order)
   return saveOrder(applyPrices(order))
 
-# use-cases/commands/import-order
+# import-order.use-case
 function importOrder(rawOrder)
   return validateOrder(rawOrder)
 ```
@@ -22,7 +22,7 @@ function validateOrder(rawOrder)
 function priceOrder(order)
   return applyPrices(order)
 
-# use-cases/commands/import-order
+# import-order.use-case
 function importOrder(rawOrder)
   let order = validateOrder(rawOrder)
   call saveOrder(priceOrder(order))

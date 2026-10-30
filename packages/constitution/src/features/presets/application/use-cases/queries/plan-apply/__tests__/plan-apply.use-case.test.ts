@@ -17,7 +17,6 @@ import {
   releasePresets,
   unitOf,
 } from '../../../../../__tests__/presets.fixtures';
-import type { ConfigurationFormat, ConfigurationWrite } from '../../../../contracts';
 import type {
   ApplyPlan,
   ApplyReport,
@@ -35,6 +34,7 @@ import {
   RecordKind,
 } from '../../../../../domain/entities';
 import { FileFormat } from '../../../../../domain/value-objects';
+import type { ConfigurationFormat, ConfigurationWrite } from '../../../../contracts';
 import { planApply } from '../plan-apply.use-case';
 
 interface Step {

@@ -1,7 +1,7 @@
-import type { ConfigurationFormat } from '../../../../contracts';
 import type { PresetsProblem, PresetValue } from '../../../../../domain/entities';
 import { PresetEntry, PresetsCode, Setting, ValueKind } from '../../../../../domain/entities';
 import { TargetKind } from '../../../../../domain/value-objects';
+import type { ConfigurationFormat } from '../../../../contracts';
 
 interface SortingInput {
   readonly entry: PresetEntry;

@@ -1,5 +1,5 @@
 ```pseudo
-# adapters/postgres/__tests__/order.repository.integration.test
+# infrastructure/postgres/__tests__/order.repository.integration.test
 let postgres = startPostgres()  # a disposable container on the loopback
 function newRepository()
   return new PostgresOrderRepository(postgres.url)

@@ -1,9 +1,9 @@
 import { EXECUTABLE_NAME } from '#/kernel/constants';
 import type { Version } from '#/kernel/value-objects';
 
-import type { ExecutablePath } from '../../../../../contracts';
 import type { PartDiagnosis } from '../../../../../../domain/entities';
 import { Diagnosis } from '../../../../../../domain/entities';
+import type { ExecutablePath } from '../../../../../contracts';
 
 interface ReportPathInput {
   readonly executable: Version;

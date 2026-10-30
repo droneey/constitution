@@ -11,14 +11,14 @@ import {
   UnitRelativePath,
 } from '#/kernel/value-objects';
 
+import type { PresetsPlan, PresetsProject } from '../../../../domain/entities';
+import { PresetEntry, PresetsFinding } from '../../../../domain/entities';
+import { EntryTarget, TargetKind } from '../../../../domain/value-objects';
 import type {
   ConfigurationFormat,
   DistributionSources,
   PresetFileParser,
 } from '../../../contracts';
-import type { PresetsPlan, PresetsProject } from '../../../../domain/entities';
-import { PresetEntry, PresetsFinding } from '../../../../domain/entities';
-import { EntryTarget, TargetKind } from '../../../../domain/value-objects';
 import { checkPresetSets, PackRoleNaming } from '../check-preset-sets';
 import { loadPresetSets } from '../load-preset-sets';
 import { mergeEntries } from './steps/merge-entries';

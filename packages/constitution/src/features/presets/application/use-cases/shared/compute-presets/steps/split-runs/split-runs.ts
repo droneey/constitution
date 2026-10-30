@@ -2,7 +2,12 @@ import type { ProjectUnit } from '#/kernel/entities';
 import type { BlockId } from '#/kernel/value-objects';
 import { configFilePath, UnitPath } from '#/kernel/value-objects';
 
-import type { FilePlan, PresetEntry, PresetsFinding, UnitRun } from '../../../../../../domain/entities';
+import type {
+  FilePlan,
+  PresetEntry,
+  PresetsFinding,
+  UnitRun,
+} from '../../../../../../domain/entities';
 import { EntryPoint, PresetsCode, Setting } from '../../../../../../domain/entities';
 import { TargetKind } from '../../../../../../domain/value-objects';
 import { markBlocks } from '../mark-blocks';

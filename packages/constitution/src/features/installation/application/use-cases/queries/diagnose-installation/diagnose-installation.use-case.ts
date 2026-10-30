@@ -1,6 +1,8 @@
 import type { ProjectFiles } from '#/kernel/contracts';
 import type { AbsolutePath, Version } from '#/kernel/value-objects';
 
+import type { PartDiagnosis } from '../../../../domain/entities';
+import { Diagnosis } from '../../../../domain/entities';
 import type {
   ExecutablePath,
   GitHooks,
@@ -8,8 +10,6 @@ import type {
   PluginRegistry,
   ReleaseFeed,
 } from '../../../contracts';
-import type { PartDiagnosis } from '../../../../domain/entities';
-import { Diagnosis } from '../../../../domain/entities';
 import { reportHooks } from './steps/report-hooks';
 import { reportLink } from './steps/report-link';
 import { reportPath } from './steps/report-path';

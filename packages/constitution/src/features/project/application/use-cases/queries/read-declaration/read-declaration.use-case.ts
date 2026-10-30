@@ -5,13 +5,6 @@ import { ConfigReadStatus, FileRead, FileReadStatus } from '#/kernel/entities';
 import { withoutDotSlash } from '#/kernel/utils';
 import { AbsolutePath, BlockSource, repositoryUnit } from '#/kernel/value-objects';
 
-import type {
-  BlockCardParser,
-  Clock,
-  ConfigParser,
-  ReleaseManifestParser,
-  Workspace,
-} from '../../../contracts';
 import type { Declaration } from '../../../../domain/entities';
 import { ProjectConfig, SourceStatus } from '../../../../domain/entities';
 import {
@@ -20,6 +13,13 @@ import {
   UnreadableFileError,
   UnreadableFileFailure,
 } from '../../../../domain/errors';
+import type {
+  BlockCardParser,
+  Clock,
+  ConfigParser,
+  ReleaseManifestParser,
+  Workspace,
+} from '../../../contracts';
 import { readMembers } from './steps/read-members';
 import { readSource } from './steps/read-source';
 import { resolveDeclaration } from './steps/resolve-declaration';

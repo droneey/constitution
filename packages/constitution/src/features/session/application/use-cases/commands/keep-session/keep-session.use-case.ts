@@ -1,7 +1,7 @@
-import type { SessionCommandRepository } from '../../../contracts/repositories/commands';
 import type { SessionState } from '../../../../domain/entities';
 import { HookEventName, SessionOrigin } from '../../../../domain/entities';
 import type { SessionId } from '../../../../domain/value-objects';
+import type { SessionCommandRepository } from '../../../contracts/repositories/commands';
 
 interface KeepSessionInput {
   readonly event: HookEventName;

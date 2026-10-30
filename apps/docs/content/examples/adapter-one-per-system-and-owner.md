@@ -1,5 +1,5 @@
 ```text title="Avoid"
-orders/adapters/
+orders/infrastructure/
 ├── find-order-postgres/
 ├── list-orders-postgres/
 ├── save-order-postgres/
@@ -7,7 +7,7 @@ orders/adapters/
 ```
 
 ```text title="Prefer"
-orders/adapters/
+orders/infrastructure/
 ├── postgres/  OrderQueryRepository,
 │              OrderCommandRepository
 └── stripe/    PaymentPort

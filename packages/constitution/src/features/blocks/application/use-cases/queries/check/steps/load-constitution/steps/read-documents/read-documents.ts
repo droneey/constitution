@@ -1,10 +1,15 @@
 import { splitFrontMatter } from '#/kernel/utils';
 
 import { SKILL_FILE_NAME } from '../../../../../../../../domain/constants';
-import type { FileTree, FrontMatterParser, ManifestParser } from '../../../../../../../contracts';
-import type { Agent, Documents, Skill, SkillFrontMatterRead } from '../../../../../../../../domain/entities';
+import type {
+  Agent,
+  Documents,
+  Skill,
+  SkillFrontMatterRead,
+} from '../../../../../../../../domain/entities';
 import { DocumentPath } from '../../../../../../../../domain/entities';
 import { TreePath } from '../../../../../../../../domain/value-objects';
+import type { FileTree, FrontMatterParser, ManifestParser } from '../../../../../../../contracts';
 
 // Why: Claude Code reads a skill at <directory>/<skill>/SKILL.md, where no folder is hidden.
 const skillPath = new RegExp(

@@ -1,5 +1,5 @@
 ```pseudo title="Avoid"
-# orders/app/.../place-order
+# orders/presentation/.../place-order
 function onPlace(request, placeOrder)
   let cart = parseCart(request.body)
   if cart.total > 100
@@ -10,7 +10,7 @@ function onPlace(request, placeOrder)
 ```
 
 ```pseudo title="Prefer"
-# orders/app/.../place-order
+# orders/presentation/.../place-order
 function onPlace(request, placeOrder)
   let cart = parseCart(request.body)
   let order = placeOrder(cart)

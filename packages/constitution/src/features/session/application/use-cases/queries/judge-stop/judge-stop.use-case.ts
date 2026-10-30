@@ -1,11 +1,11 @@
 import { ConfigReadStatus } from '#/kernel/entities';
 
-import type { WorkingTree } from '../../../contracts';
-import { TreeStateStatus } from '../../../contracts';
-import type { SessionQueryRepository } from '../../../contracts/repositories/queries';
 import type { FingerprintMark, StopEvent, StopJudgement } from '../../../../domain/entities';
 import { HookEventName, SessionMark, SessionState, StopVerdict } from '../../../../domain/entities';
 import type { TreeFingerprint } from '../../../../domain/value-objects';
+import type { WorkingTree } from '../../../contracts';
+import { TreeStateStatus } from '../../../contracts';
+import type { SessionQueryRepository } from '../../../contracts/repositories/queries';
 
 const REVIEWER = 'constitution:reviewer';
 

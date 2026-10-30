@@ -4,9 +4,9 @@ import type { ProblemOf } from '#/kernel/types';
 import { BlockId } from '#/kernel/value-objects';
 import { textOf } from '#/shared/cli';
 
-import { FrontMatterField, FrontMatterReadCode } from '../../../domain/entities';
 import type { LoadFindingDetails } from '../../../application/use-cases/queries/check';
 import { BlockLoadCode, LoadCode, PlaceCode } from '../../../application/use-cases/queries/check';
+import { FrontMatterField, FrontMatterReadCode } from '../../../domain/entities';
 import { loadTexts } from '../load-texts.utils';
 
 describe('loadTexts', () => {

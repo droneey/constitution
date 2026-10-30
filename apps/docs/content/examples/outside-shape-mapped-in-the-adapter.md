@@ -1,5 +1,5 @@
 ```pseudo title="Avoid"
-# orders/adapters/postgres
+# orders/infrastructure/postgres
 function findOrder(orderId)
   let row = query(selectOrder, orderId)
   # goes inward as it is: total_cents,
@@ -8,7 +8,7 @@ function findOrder(orderId)
 ```
 
 ```pseudo title="Prefer"
-# orders/adapters/postgres
+# orders/infrastructure/postgres
 function findOrder(orderId)
   let row = query(selectOrder, orderId)
   return toOrder(row)

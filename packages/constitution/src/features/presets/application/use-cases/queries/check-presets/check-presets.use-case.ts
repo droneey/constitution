@@ -3,13 +3,13 @@ import type { BlockModel } from '#/kernel/entities';
 import type { AbsolutePath, BlockSource } from '#/kernel/value-objects';
 import { RepositoryRelativePath, SourceKind } from '#/kernel/value-objects';
 
+import type { PresetsFinding } from '../../../../domain/entities';
+import { PresetEntry } from '../../../../domain/entities';
 import type {
   ConfigurationFormat,
   DistributionSources,
   PresetFileParser,
 } from '../../../contracts';
-import type { PresetsFinding } from '../../../../domain/entities';
-import { PresetEntry } from '../../../../domain/entities';
 import { checkPresetSets, PackRoleNaming } from '../../shared/check-preset-sets';
 import { loadPresetSets } from '../../shared/load-preset-sets';
 import { mergeEveryEntry } from './steps/merge-every-entry';

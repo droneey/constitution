@@ -4,7 +4,11 @@ import { WarningKind } from '#/kernel/entities';
 import type { BlockId } from '#/kernel/value-objects';
 import { configFilePath, coreBlockId, SourceKind, UnitPath } from '#/kernel/value-objects';
 
-import type { ConfigItem, ProjectConfig, ResolvedUnits } from '../../../../../../../../domain/entities';
+import type {
+  ConfigItem,
+  ProjectConfig,
+  ResolvedUnits,
+} from '../../../../../../../../domain/entities';
 import {
   DeclaredUnit,
   LAYER_KEYS,

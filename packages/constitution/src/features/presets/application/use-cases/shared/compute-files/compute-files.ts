@@ -5,7 +5,6 @@ import type { RepositoryRelativePath } from '#/kernel/value-objects';
 import { AbsolutePath, UnitPath, UnitRelativePath } from '#/kernel/value-objects';
 
 import { LOCK_FILE_NAME } from '../../../../domain/constants';
-import type { ConfigurationFormat } from '../../../contracts';
 import type {
   LockRead,
   PresetsFinding,
@@ -14,6 +13,7 @@ import type {
   UnitLock,
 } from '../../../../domain/entities';
 import { Lock, LockReadStatus, PresetsCode } from '../../../../domain/entities';
+import type { ConfigurationFormat } from '../../../contracts';
 import type { FileComputed } from './steps/compute-file';
 import { computeFile, FileChangeKind } from './steps/compute-file';
 

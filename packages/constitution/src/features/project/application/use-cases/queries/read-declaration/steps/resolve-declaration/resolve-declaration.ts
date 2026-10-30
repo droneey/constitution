@@ -1,8 +1,8 @@
 import { ProjectUnit } from '#/kernel/entities';
 
-import type { BlockCardParser } from '../../../../../contracts';
 import type { BlockSetSource, ProjectConfig } from '../../../../../../domain/entities';
 import { ProjectModel, Resolution, UnreadMember } from '../../../../../../domain/entities';
+import type { BlockCardParser } from '../../../../../contracts';
 import { activateBlocks } from './steps/activate-blocks';
 import { applyOverrides } from './steps/apply-overrides';
 import { checkNeeds } from './steps/check-needs';

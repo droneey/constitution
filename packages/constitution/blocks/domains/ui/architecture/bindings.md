@@ -30,7 +30,7 @@ A feature's screens, widgets and components import `libs/ui`, `shared/ui`, the f
 
 ### rendering-library-imported-by-the-presentation → layer-imports-dependencies-by-its-role · MUST
 
-The library that renders the interface has its home past the edge in the presentation of features and of composition modules: its screens, widgets and components, and the binding units built on the library's hooks.
+The library that renders the interface has its home past the edge in the presentation of features and of composition modules — its screens, widgets and components, and the binding units built on the library's hooks — and in the shared and generic pieces of `shared/ui` and `libs/ui`.
 
 | Why |
 |---|

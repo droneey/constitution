@@ -308,7 +308,8 @@ export const KINDS: readonly string[] = isKinds(kinds) ? kinds : [];
     'class ErosError(Exception):\n  pass\n',
   'packages/@eros/python/src/shop_eros_python/features/problem/__init__.py': '',
   'packages/@eros/python/src/shop_eros_python/features/problem/infrastructure/__init__.py': '',
-  'packages/@eros/python/src/shop_eros_python/features/problem/infrastructure/problem/__init__.py': '',
+  'packages/@eros/python/src/shop_eros_python/features/problem/infrastructure/problem/__init__.py':
+    '',
   'packages/@eros/python/src/shop_eros_python/features/problem/infrastructure/problem/problem_adapter.py':
     "def problem_of(code: str) -> dict[str, str]:\n  return {'code': code, 'type': 'about:blank'}\n",
   'packages/@eros/python/src/shop_eros_python/integrations/__init__.py': '',
@@ -487,7 +488,8 @@ interface Totalled {
 
 export const totalLine = (order: Totalled): string => \`\${describeOrder(order)} \${CURRENCY}\`;
 `,
-  'apps/api/src/features/totals/index.ts': "export { totalLine } from './presentation/total-line';\n",
+  'apps/api/src/features/totals/index.ts':
+    "export { totalLine } from './presentation/total-line';\n",
   'apps/api/src/kernel/constants/currency.constants.ts': "export const CURRENCY = 'EUR';\n",
   'apps/api/src/kernel/constants/index.ts': "export { CURRENCY } from './currency.constants';\n",
   'apps/api/src/main.ts':

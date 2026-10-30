@@ -1,14 +1,14 @@
 import type { ProjectFiles } from '#/kernel/contracts';
 import type { AbsolutePath } from '#/kernel/value-objects';
 
+import type { PresetsPlan } from '../../../../domain/entities';
+import { ProjectRead } from '../../../../domain/entities';
 import type {
   ConfigurationFormat,
   DistributionSources,
   PresetFileParser,
   ProjectReader,
 } from '../../../contracts';
-import type { PresetsPlan } from '../../../../domain/entities';
-import { ProjectRead } from '../../../../domain/entities';
 import { computePresets } from '../../shared/compute-presets';
 
 interface PlanPresetsInput {

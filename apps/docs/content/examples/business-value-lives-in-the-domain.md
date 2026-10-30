@@ -1,5 +1,5 @@
 ```pseudo title="Avoid"
-# users/app/sign-up
+# users/presentation/sign-up
 function signUpHandler(request)
   let text = request.email
   if not text.contains("@") then
@@ -15,7 +15,7 @@ function parseEmail(text)
     return failure(InvalidEmail)
   return success({ address: text })
 
-# users/app/sign-up
+# users/presentation/sign-up
 let email = parseEmail(request.email)
 if email is InvalidEmail then
   return badRequest(InvalidEmail)

@@ -4,7 +4,6 @@ import { goldenFileText, goldenOf } from '#/__tests__/golden.fixtures';
 import type { ProblemOf } from '#/kernel/types';
 import { textOf } from '#/shared/cli';
 
-import { SkillField } from '../../../domain/entities';
 import type {
   HooksDetails,
   ManifestReadDetails,
@@ -17,6 +16,7 @@ import {
   MarketplaceCode,
   PluginCode,
 } from '../../../application/use-cases/queries/check';
+import { SkillField } from '../../../domain/entities';
 import { pluginTexts } from '../plugin-texts.utils';
 
 const problems: Readonly<

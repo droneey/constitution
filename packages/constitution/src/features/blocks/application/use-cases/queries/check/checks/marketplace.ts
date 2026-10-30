@@ -1,7 +1,11 @@
 import { PATH_SEPARATOR } from '#/kernel/constants';
 import type { FindingOf } from '#/kernel/types';
 
-import type { ManifestRead, MarketplacePlugin, PluginManifest } from '../../../../../domain/entities';
+import type {
+  ManifestRead,
+  MarketplacePlugin,
+  PluginManifest,
+} from '../../../../../domain/entities';
 import { DocumentPath, ReadStatus } from '../../../../../domain/entities';
 import type { Check, CheckInput } from '../check.types';
 import type { ManifestReadDetails } from '../utils';

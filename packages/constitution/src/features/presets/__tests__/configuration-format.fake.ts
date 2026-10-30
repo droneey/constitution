@@ -1,4 +1,3 @@
-import { settingModel } from '../infrastructure/configuration/models';
 import type {
   ConfigurationFile,
   ConfigurationFormat,
@@ -7,6 +6,7 @@ import type {
 } from '../application/contracts';
 import { SettingShape } from '../application/contracts';
 import type { Setting } from '../domain/entities';
+import { settingModel } from '../infrastructure/configuration/models';
 
 const NEWLINE = '\n';
 const PAIR = '=';

@@ -1,8 +1,8 @@
 import type { AbsolutePath } from '#/kernel/value-objects';
 
-import type { GitHooks } from '../../../../../contracts';
 import type { PartDiagnosis } from '../../../../../../domain/entities';
 import { Diagnosis, HooksState } from '../../../../../../domain/entities';
+import type { GitHooks } from '../../../../../contracts';
 
 const DIAGNOSIS_OF_STATE = {
   [HooksState.Installed]: Diagnosis.HooksInstalled,

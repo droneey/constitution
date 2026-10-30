@@ -1,10 +1,10 @@
 import type { ProjectWarning } from '#/kernel/entities';
 import { ConfigReadStatus, WarningKind } from '#/kernel/entities';
 
-import type { ConfigurationsReport, RulesSource, TreeState, WorkingTree } from '../../../contracts';
-import { ConfigurationsCheckStatus, TreeStateStatus } from '../../../contracts';
 import type { SessionDigest, SessionStart } from '../../../../domain/entities';
 import { DigestKind, HookEventName, SessionOrigin } from '../../../../domain/entities';
+import type { ConfigurationsReport, RulesSource, TreeState, WorkingTree } from '../../../contracts';
+import { ConfigurationsCheckStatus, TreeStateStatus } from '../../../contracts';
 
 interface DigestSessionPorts {
   readonly source: RulesSource;

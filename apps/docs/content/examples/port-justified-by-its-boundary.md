@@ -10,7 +10,7 @@ function expireCarts(carts)
 
 ```pseudo title="Prefer"
 # contracts/clock.port — one adapter,
-# adapters/system, and it is complete
+# infrastructure/system, and it is complete
 type Clock = { now: function(): Time }
 
 # use-cases/commands/expire-carts

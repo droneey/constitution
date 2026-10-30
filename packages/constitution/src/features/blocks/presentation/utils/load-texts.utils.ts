@@ -8,9 +8,9 @@ import {
 } from '#/kernel/constants';
 import type { TextsOf } from '#/shared/cli';
 
-import { FrontMatterReadCode } from '../../domain/entities';
 import type { LoadFindingDetails } from '../../application/use-cases/queries/check';
 import { BlockLoadCode, LoadCode, PlaceCode } from '../../application/use-cases/queries/check';
+import { FrontMatterReadCode } from '../../domain/entities';
 import { fieldOf, listOf } from './wording.utils';
 
 const layerFolders = listOf({

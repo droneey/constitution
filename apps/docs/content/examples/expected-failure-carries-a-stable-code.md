@@ -7,13 +7,14 @@ function findOrder(id: OrderId): Order
 ```
 
 ```pseudo title="Prefer"
-# code "order.not-found"
-type FindOrderFailure = OrderNotFound
+# errors/order-not-found.error
+class OrderNotFoundError extends Error
+  code = "order.not-found"
+  orderId: OrderId
 
-function findOrder(id: OrderId):
-    Result<Order, FindOrderFailure>
+function findOrder(id: OrderId): Order
   let order = orders.get(id)
   if order is nothing then
-    return failure(OrderNotFound(id))
-  return success(order)
+    throw new OrderNotFoundError(id)
+  return order
 ```

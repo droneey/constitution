@@ -9,7 +9,11 @@ import {
   SourceKind,
 } from '#/kernel/value-objects';
 
-import type { AppliedOverrides, BlockSetBlock, BlockSetRule } from '../../../../../../../../domain/entities';
+import type {
+  AppliedOverrides,
+  BlockSetBlock,
+  BlockSetRule,
+} from '../../../../../../../../domain/entities';
 import { ProjectModel, ResolvedUnit } from '../../../../../../../../domain/entities';
 
 interface ActivateBlocksInput {

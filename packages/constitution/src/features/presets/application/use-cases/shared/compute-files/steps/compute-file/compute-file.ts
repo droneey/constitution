@@ -3,8 +3,6 @@ import { FileReadStatus } from '#/kernel/entities';
 import { compareText, isDeepEqual } from '#/kernel/utils';
 import type { BlockId, RepositoryRelativePath } from '#/kernel/value-objects';
 
-import type { ConfigurationFile, ConfigurationFormat } from '../../../../../contracts';
-import { SettingShape } from '../../../../../contracts';
 import type {
   FilePlan,
   LockRecord,
@@ -12,7 +10,16 @@ import type {
   PresetsFinding,
   SettingPlace,
 } from '../../../../../../domain/entities';
-import { Leaf, Lock, PresetsCode, RecordKind, Setting, WholeKind } from '../../../../../../domain/entities';
+import {
+  Leaf,
+  Lock,
+  PresetsCode,
+  RecordKind,
+  Setting,
+  WholeKind,
+} from '../../../../../../domain/entities';
+import type { ConfigurationFile, ConfigurationFormat } from '../../../../../contracts';
+import { SettingShape } from '../../../../../contracts';
 import { overlayFile } from './steps/overlay-file';
 import { recordOf, removeStale } from './steps/reconcile-lock';
 import { defaultLeavesOf, writeDefaults } from './steps/write-defaults';

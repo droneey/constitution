@@ -635,14 +635,14 @@
     {
       "name": "ui-reaches-no-mechanism",
       "severity": "error",
-      "from": {
-        "path": "^src/(features|composition)/([^/]+)/presentation/(?!bindings/)",
-      },
       "to": {
         "path": [
           "^src/$1/$2/(infrastructure|application)/",
           "^src/(kernel/contracts|infrastructure)/",
         ],
+      },
+      "from": {
+        "path": "^src/(features|composition)/([^/]+)/presentation/(screens|widgets|components)/",
       },
     },
     {
@@ -663,7 +663,7 @@
       },
       "to": {
         "path": [
-          "^src/(features|composition)/[^/]+/(infrastructure|presentation/(?!bindings/))",
+          "^src/(features|composition)/[^/]+/(infrastructure|presentation/(screens|widgets|components)/)",
           "^src/infrastructure/",
         ],
       },
@@ -816,6 +816,7 @@
         "path": [
           "/presentation/",
           "^src/(features|composition)/[^/]+/presentation/",
+          "^src/(shared|libs)/ui/",
         ],
       },
       "to": {
@@ -826,11 +827,14 @@
     // ink
     {
       "comment": "rendering-library-imported-by-the-presentation: ink",
-      "from": {
-        "path": "/presentation/",
-      },
       "to": {
         "path": "node_modules/ink/",
+      },
+      "from": {
+        "path": [
+          "/presentation/",
+          "^src/(shared|libs)/ui/",
+        ],
       },
     },
   ],

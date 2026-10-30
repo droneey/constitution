@@ -7,7 +7,7 @@ core:
   layer-imports-dependencies-by-its-role:
     typescript:
       .dependency-cruiser.jsonc:
-        'allowed[comment=layer-imports-dependencies-by-its-role: a story imports what it renders with]':
+        'allowed[comment=layer-imports-dependencies-by-its-role: a story]':
           from:
             path: \.stories\.[^/]+$
           to:

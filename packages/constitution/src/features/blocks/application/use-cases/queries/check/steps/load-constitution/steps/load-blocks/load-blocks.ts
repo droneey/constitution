@@ -7,7 +7,6 @@ import { firstBy, splitFrontMatter } from '#/kernel/utils';
 import type { BlockFolder, BlockId, FileInBlock } from '#/kernel/value-objects';
 import { BlockFileKind, BlockFilePlace, Placement } from '#/kernel/value-objects';
 
-import type { FileTree, FrontMatterParser } from '../../../../../../../contracts';
 import type { FrontMatterProblem, PartFile } from '../../../../../../../../domain/entities';
 import {
   Block,
@@ -18,6 +17,7 @@ import {
   FrontMatterStatus,
 } from '../../../../../../../../domain/entities';
 import { TreePath } from '../../../../../../../../domain/value-objects';
+import type { FileTree, FrontMatterParser } from '../../../../../../../contracts';
 
 enum PlaceCode {
   OutsideBlockFolder = 'outside-block-folder',

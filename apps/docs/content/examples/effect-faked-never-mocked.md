@@ -1,7 +1,7 @@
 ```pseudo title="Avoid"
 test "should email the receipt"
   # Arrange
-  mockModule("../adapters/smtp")
+  mockModule("../infrastructure/smtp")
   # Act
   payOrder(anOrder())
   # Assert

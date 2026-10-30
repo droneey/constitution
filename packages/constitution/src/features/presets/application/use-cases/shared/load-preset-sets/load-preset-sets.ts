@@ -6,8 +6,6 @@ import type { BlockSource } from '#/kernel/value-objects';
 import { AbsolutePath, BlockId, RepositoryRelativePath, RuleSlug } from '#/kernel/value-objects';
 
 import { EVERY } from '../../../../domain/constants';
-import type { PresetFileParser, PresetFileRead } from '../../../contracts';
-import { PresetFileReadStatus } from '../../../contracts';
 import type {
   LanguageKey,
   PresetEntry,
@@ -20,6 +18,8 @@ import type {
 } from '../../../../domain/entities';
 import { PresetsCode, ValueKind } from '../../../../domain/entities';
 import { EntryTarget, PathKind, PresetFilePath } from '../../../../domain/value-objects';
+import type { PresetFileParser, PresetFileRead } from '../../../contracts';
+import { PresetFileReadStatus } from '../../../contracts';
 
 interface LoadPresetSetsInput {
   readonly files: ProjectFiles;

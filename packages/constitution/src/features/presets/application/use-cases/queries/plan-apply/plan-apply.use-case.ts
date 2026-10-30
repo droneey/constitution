@@ -1,6 +1,8 @@
 import type { ProjectFiles } from '#/kernel/contracts';
 import { AbsolutePath } from '#/kernel/value-objects';
 
+import type { ApplyPlan, PresetsProject } from '../../../../domain/entities';
+import { ApplyPlanKind, PresetsCode, ProjectRead } from '../../../../domain/entities';
 import type {
   ConfigurationFormat,
   DistributionSources,
@@ -8,8 +10,6 @@ import type {
   ProjectReader,
 } from '../../../contracts';
 import type { LockQueryRepository } from '../../../contracts/repositories/queries';
-import type { ApplyPlan, PresetsProject } from '../../../../domain/entities';
-import { ApplyPlanKind, PresetsCode, ProjectRead } from '../../../../domain/entities';
 import { computeChanges } from '../../shared/compute-changes';
 import { FileChangeKind } from '../../shared/compute-files';
 

@@ -1,7 +1,7 @@
-import type { SessionCommandRepository } from '../../../contracts/repositories/commands';
 import type { StopJudgement } from '../../../../domain/entities';
 import { SessionMark, StopVerdict } from '../../../../domain/entities';
 import type { SessionId } from '../../../../domain/value-objects';
+import type { SessionCommandRepository } from '../../../contracts/repositories/commands';
 
 interface RecordJudgementInput {
   readonly judgement: StopJudgement;

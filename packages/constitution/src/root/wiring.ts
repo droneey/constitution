@@ -1,6 +1,5 @@
 import { Command } from 'commander';
 
-import { createNodeProjectFiles } from '#/infrastructure/file-system';
 import { createCheckCommand } from '#/composition/check';
 import {
   createPinnedRelease,
@@ -81,6 +80,7 @@ import {
 } from '#/features/session';
 import { createGitWorkingTree } from '#/features/session/infrastructure/git';
 import { createXdgSessionRepository } from '#/features/session/infrastructure/session-store';
+import { createNodeProjectFiles } from '#/infrastructure/file-system';
 import { EXECUTABLE_NAME } from '#/kernel/constants';
 import type { AbsolutePath } from '#/kernel/value-objects';
 import { Version } from '#/kernel/value-objects';
