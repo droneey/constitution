@@ -294,7 +294,7 @@ describe('the files apply writes for a unit of Python', () => {
         finding: [
           'httpx2',
           'features/orders/presentation',
-          'adapters, libs, shared, root',
+          'infrastructure, libs, shared, root',
         ],
         task: 'check:code',
       },
@@ -396,6 +396,7 @@ describe('the files apply writes for a unit of Python', () => {
         changes: {
           ...feature,
           'src/shop/features/orders/domain/__init__.py': '',
+          'src/shop/features/orders/application/__init__.py': '',
           'src/shop/features/orders/application/use_cases/__init__.py': '',
           'src/shop/features/orders/application/use_cases/commands/__init__.py': '',
           'src/shop/features/orders/application/use_cases/commands/place_order_use_case.py': '',
@@ -468,6 +469,7 @@ describe('the files apply writes for a unit of Python', () => {
           'src/shop/features/orders/presentation/orders_api.py':
             'from shop.features.orders.application.contracts import ORDERS\n',
           'src/shop/features/orders/domain/__init__.py': '',
+          'src/shop/features/orders/application/__init__.py': '',
           'src/shop/features/orders/application/contracts/__init__.py': 'ORDERS = 1\n',
         },
         finding: [

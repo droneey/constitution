@@ -20,6 +20,7 @@ const feature: Readonly<Record<string, string>> = {
   [`${ORDERS}/presentation/orders_cli.py`]:
     'from unit.features.orders.application.use_cases import count as count\n',
   [`${ORDERS}/domain/__init__.py`]: '',
+  [`${ORDERS}/application/__init__.py`]: '',
   [`${ORDERS}/application/contracts/__init__.py`]:
     'from typing import Protocol\n\n\nclass Store(Protocol):\n  def size(self) -> int: ...\n',
   [`${ORDERS}/application/use_cases/__init__.py`]:

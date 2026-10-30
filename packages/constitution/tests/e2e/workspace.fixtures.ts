@@ -253,7 +253,7 @@ export const problemOf = (problem: Problem): ProblemDocument => ({
     "export type { ErrorRecord } from './error-record.entity';\n",
   'packages/@eros/typescript/src/features/records/application/use-cases/queries/to-record/index.ts':
     "export { toRecord } from './to-record.use-case';\n",
-  'packages/@eros/typescript/src/features/records/application/use-cases/queries/to-record/to-record.use-case.ts': `import type { ErrorRecord } from '../../../entities';
+  'packages/@eros/typescript/src/features/records/application/use-cases/queries/to-record/to-record.use-case.ts': `import type { ErrorRecord } from '../../../../domain/entities';
 
 export const toRecord = (input: ErrorRecord): ErrorRecord => ({ code: input.code, kind: input.kind });
 `,
@@ -577,6 +577,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
   '.': {
     domains: [
       'workspace',
+      'version-control',
     ],
     implementations: [
       'bun',
@@ -596,6 +597,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
   'apps/api': {
     domains: [
       'workspace',
+      'version-control',
     ],
     implementations: [
       ...typescriptTools,
@@ -609,6 +611,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
   'apps/@desk/web': {
     domains: [
       'workspace',
+      'version-control',
     ],
     implementations: typescriptTools,
     languages: [
@@ -619,6 +622,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
   'apps/reports': {
     domains: [
       'workspace',
+      'version-control',
     ],
     implementations: [
       'uv',
@@ -633,6 +637,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
   'apps/web': {
     domains: [
       'workspace',
+      'version-control',
     ],
     implementations: [
       ...typescriptTools,
@@ -652,6 +657,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
   'packages/@desk/shared': {
     domains: [
       'workspace',
+      'version-control',
     ],
     languages: [
       'yaml',
@@ -661,6 +667,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
   'packages/@eros/python': {
     domains: [
       'workspace',
+      'version-control',
     ],
     implementations: [
       'uv',
@@ -676,6 +683,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
   'packages/@eros/shared': {
     domains: [
       'workspace',
+      'version-control',
     ],
     languages: [
       'yaml',
@@ -685,6 +693,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
   'packages/@eros/typescript': {
     domains: [
       'workspace',
+      'version-control',
     ],
     implementations: typescriptTools,
     languages: [
@@ -695,6 +704,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
   'packages/money': {
     domains: [
       'workspace',
+      'version-control',
     ],
     implementations: typescriptTools.filter((block) => block !== 'bun-test'),
     languages: [
@@ -705,6 +715,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
   'packages/orders': {
     domains: [
       'workspace',
+      'version-control',
     ],
     implementations: typescriptTools,
     languages: [
@@ -715,6 +726,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
   'packages/tabula': {
     domains: [
       'workspace',
+      'version-control',
     ],
     implementations: [
       'uv',

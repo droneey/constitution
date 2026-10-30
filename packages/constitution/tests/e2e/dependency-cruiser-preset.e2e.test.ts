@@ -26,7 +26,7 @@ const wellFormed = {
     name: 'smtp',
   }),
   'src/composition/checkout/presentation/bindings/queries/cart/cart.ts':
-    "import type { Mail } from '../../../../../kernel/contracts';\nimport { listOrders } from '../../../../../features/orders';\nexport const cart = (mail: Mail): unknown => [mail, listOrders];\n",
+    "import type { Mail } from '../../../../../../kernel/contracts';\nimport { listOrders } from '../../../../../../features/orders';\nexport const cart = (mail: Mail): unknown => [mail, listOrders];\n",
   'src/composition/checkout/presentation/bindings/queries/cart/index.ts':
     "export { cart } from './cart';\n",
   'src/composition/checkout/index.ts':
@@ -55,7 +55,7 @@ const wellFormed = {
   'src/features/orders/application/contracts/repositories/queries/order.repository.ts':
     'export interface OrderReader { count: number }\n',
   'src/features/orders/application/use-cases/queries/count-orders/count-orders.use-case.ts':
-    "import type { Mail } from '../../../../../kernel/contracts';\nimport type { OrderReader } from '../../../contracts/repositories/queries';\nexport const countOrders = (mail: Mail, reader: OrderReader): unknown => [mail, reader];\n",
+    "import type { Mail } from '../../../../../../kernel/contracts';\nimport type { OrderReader } from '../../../contracts/repositories/queries';\nexport const countOrders = (mail: Mail, reader: OrderReader): unknown => [mail, reader];\n",
   'src/features/orders/application/use-cases/queries/count-orders/index.ts':
     "export { countOrders } from './count-orders.use-case';\n",
   'src/features/orders/domain/entities/index.ts': "export { order } from './order.entity';\n",
@@ -618,6 +618,28 @@ const layerViolations = [
     rule: 'adapters-reached-only-from-the-root',
   },
   {
+    condition: "a feature's domain imports a port of the kernel",
+    files: {
+      'src/kernel/contracts/index.ts': exported('clock'),
+      'src/features/orders/domain/entities/order.entity.ts': importing({
+        from: '../../../../kernel/contracts',
+        name: 'clock',
+      }),
+    },
+    rule: 'domain-reaches-no-port',
+  },
+  {
+    condition: "a feature's use case imports its feature's presentation",
+    files: {
+      'src/features/orders/presentation/order-texts.ts': exported('orderTexts'),
+      'src/features/orders/application/use-cases/queries/list/list.use-case.ts': importing({
+        from: '../../../../presentation/order-texts',
+        name: 'orderTexts',
+      }),
+    },
+    rule: 'application-reaches-only-the-domain-and-its-contracts',
+  },
+  {
     condition: 'a read imports a write',
     files: {
       'src/features/orders/presentation/bindings/commands/cancel/cancel.use-case.ts':
@@ -712,7 +734,7 @@ const blockViolations = [
     condition: 'a component imports an adapter',
     files: {
       'src/infrastructure/api/index.ts': exported('fetchOrders'),
-      'src/features/orders/ui/components/order-card.tsx': importing({
+      'src/features/orders/presentation/components/order-card.tsx': importing({
         from: '../../../../infrastructure/api',
         name: 'fetchOrders',
       }),
@@ -753,9 +775,10 @@ const blockViolations = [
   {
     condition: "a screen reaches past the surface of the feature's components",
     files: {
-      'src/features/orders/ui/components/index.ts': "export { orderCard } from './order-card';\n",
-      'src/features/orders/ui/components/order-card/index.ts': exported('orderCard'),
-      'src/features/orders/ui/screens/orders-screen/orders-screen.tsx': importing({
+      'src/features/orders/presentation/components/index.ts':
+        "export { orderCard } from './order-card';\n",
+      'src/features/orders/presentation/components/order-card/index.ts': exported('orderCard'),
+      'src/features/orders/presentation/screens/orders-screen/orders-screen.tsx': importing({
         from: '../../components/order-card',
         name: 'orderCard',
       }),
@@ -795,7 +818,7 @@ const blockViolations = [
   {
     condition: 'a screen imports Expo Router',
     files: {
-      'src/composition/orders/ui/screens/orders-screen/orders-screen.tsx': importing({
+      'src/composition/orders/presentation/screens/orders-screen/orders-screen.tsx': importing({
         from: 'expo-router',
         name: 'value',
       }),
@@ -834,7 +857,7 @@ const blockViolations = [
   {
     condition: 'a component imports a package no block gives a home there',
     files: {
-      'src/features/orders/ui/components/order-card.tsx': importing({
+      'src/features/orders/presentation/components/order-card.tsx': importing({
         from: 'ky',
         name: 'value',
       }),
@@ -910,12 +933,13 @@ const blockViolations = [
   {
     condition: 'a component imports the query library',
     files: {
-      'src/features/orders/ui/components/order-card.tsx': importing({
+      'src/features/orders/presentation/components/order-card.tsx': importing({
         from: '@tanstack/react-query',
         name: 'value',
       }),
     },
     blocks: [
+      'remote-data',
       'tanstack-query',
     ],
     rule: 'query-library-only-in-its-home',
@@ -924,7 +948,7 @@ const blockViolations = [
     condition: 'a widget imports an adapter',
     files: {
       'src/features/orders/infrastructure/api/order.adapter.ts': exported('fetchOrders'),
-      'src/features/orders/ui/widgets/orders.tsx': importing({
+      'src/features/orders/presentation/widgets/orders.tsx': importing({
         from: '../../infrastructure/api/order.adapter',
         name: 'fetchOrders',
       }),
@@ -951,7 +975,7 @@ const blockViolations = [
   {
     condition: 'a component imports a router primitive',
     files: {
-      'src/features/orders/ui/components/order-card.tsx': importing({
+      'src/features/orders/presentation/components/order-card.tsx': importing({
         from: '@tanstack/react-router',
         name: 'value',
       }),
@@ -964,7 +988,7 @@ const blockViolations = [
   {
     condition: 'a widget imports a router primitive',
     files: {
-      'src/features/orders/ui/widgets/orders-widget/orders-widget.tsx': importing({
+      'src/features/orders/presentation/widgets/orders-widget/orders-widget.tsx': importing({
         from: '@tanstack/react-router',
         name: 'value',
       }),
@@ -991,7 +1015,7 @@ const blockViolations = [
   {
     condition: 'the application layer imports the message library',
     files: {
-      'src/features/orders/presentation/order.use-case.ts': importing({
+      'src/features/orders/application/order.use-case.ts': importing({
         from: '@lingui/core',
         name: 'value',
       }),
@@ -1040,7 +1064,7 @@ const blockViolations = [
     blocks: [
       'pino',
     ],
-    rule: 'only-the-root-imports-pino',
+    rule: 'root-alone-configures-logging-pino',
   },
   {
     condition: 'an integration imports the HTTP client',
@@ -1052,14 +1076,15 @@ const blockViolations = [
     },
     blocks: [
       'ky',
+      'remote-service',
     ],
-    rule: 'ky-home-is-the-adapters-libs-root-and-its-failure-mapper',
+    rule: 'transport-library-home-is-the-infrastructure-ky',
   },
   {
     condition: 'a component imports a widget',
     files: {
-      'src/features/orders/ui/widgets/orders-widget/index.ts': exported('ordersWidget'),
-      'src/features/orders/ui/components/order-card.tsx': importing({
+      'src/features/orders/presentation/widgets/orders-widget/index.ts': exported('ordersWidget'),
+      'src/features/orders/presentation/components/order-card.tsx': importing({
         from: '../widgets/orders-widget',
         name: 'ordersWidget',
       }),
@@ -1087,10 +1112,10 @@ const blockViolations = [
   {
     condition: 'a binding unit imports a component',
     files: {
-      'src/features/orders/ui/components/order-card.tsx': exported('orderCard'),
+      'src/features/orders/presentation/components/order-card.tsx': exported('orderCard'),
       'src/features/orders/presentation/bindings/queries/list-orders/list-orders.hooks.ts':
         importing({
-          from: '../../../../ui/components/order-card',
+          from: '../../../../presentation/components/order-card',
           name: 'orderCard',
         }),
     },
@@ -1108,6 +1133,7 @@ const blockViolations = [
       }),
     },
     blocks: [
+      'remote-data',
       'tanstack-query',
     ],
     rule: 'query-library-only-in-its-home',
@@ -1121,6 +1147,7 @@ const blockViolations = [
       }),
     },
     blocks: [
+      'remote-data',
       'tanstack-query',
     ],
     rule: 'query-library-only-in-its-home',
@@ -1141,7 +1168,7 @@ const blockViolations = [
   {
     condition: 'a widget imports a route of the root',
     files: {
-      'src/features/orders/ui/widgets/orders-widget/orders-widget.tsx': importing({
+      'src/features/orders/presentation/widgets/orders-widget/orders-widget.tsx': importing({
         from: '../../../../../root/routes/orders',
         name: 'route',
       }),
@@ -1397,12 +1424,13 @@ describe('the dependency-cruiser layer set', () => {
     // Arrange
     const project = {
       files: {
-        'src/features/orders/index.ts': "export { ordersWidget } from './ui/widgets';\n",
-        'src/features/orders/ui/widgets/index.ts':
+        'src/features/orders/index.ts': "export { ordersWidget } from './presentation/widgets';\n",
+        'src/features/orders/presentation/widgets/index.ts':
           "export { ordersWidget } from './orders-widget';\n",
-        'src/features/orders/ui/widgets/orders-widget/index.ts':
+        'src/features/orders/presentation/widgets/orders-widget/index.ts':
           "export { ordersWidget } from './orders-widget';\n",
-        'src/features/orders/ui/widgets/orders-widget/orders-widget.tsx': exported('ordersWidget'),
+        'src/features/orders/presentation/widgets/orders-widget/orders-widget.tsx':
+          exported('ordersWidget'),
       },
       blocks: [
         'ui',
@@ -1425,7 +1453,7 @@ describe('the dependency-cruiser layer set', () => {
       files: {
         'src/features/orders/domain/entities/index.ts':
           "export enum OrderStatus {\n  Pending = 'pending',\n}\n",
-        'src/features/orders/ui/widgets/orders-widget/orders-widget.tsx': importing({
+        'src/features/orders/presentation/widgets/orders-widget/orders-widget.tsx': importing({
           from: '../../../domain/entities',
           name: 'OrderStatus',
         }),
@@ -1458,7 +1486,7 @@ describe('the dependency-cruiser layer set', () => {
           name: 'value',
         }),
         'src/features/orders/domain/entities/index.ts': 'export type Order = { id: string };\n',
-        'src/features/orders/ui/widgets/orders.tsx':
+        'src/features/orders/presentation/widgets/orders.tsx':
           "import type { Order } from '../../domain/entities';\nimport { track } from '../../../../shared/sinks';\nexport const orders: Order[] = [];\nexport const tracked = track;\n",
         'src/shared/sinks/index.ts': exported('track'),
         'src/features/orders/presentation/bindings/commands/sync-orders/sync-orders.cli.ts':
@@ -1466,7 +1494,7 @@ describe('the dependency-cruiser layer set', () => {
             from: '@bunli/core',
             name: 'value',
           }),
-        'src/composition/checkout/ui/screens/cart-screen/cart-screen.tsx':
+        'src/composition/checkout/presentation/screens/cart-screen/cart-screen.tsx':
           "import { useMemo } from 'react';\nimport { value } from '@lingui/core';\nexport const screen = [useMemo, value];\n",
         'src/composition/checkout/presentation/bindings/queries/cart/cart.hooks.ts':
           "import { value } from '@tanstack/react-query';\nexport const cart = value;\n",
@@ -1476,7 +1504,7 @@ describe('the dependency-cruiser layer set', () => {
         }),
         'src/features/orders/presentation/bindings/queries/list-orders/list-orders.hooks.ts':
           "import { value } from '@tanstack/react-query';\nimport { useMemo } from 'react';\nexport const listOrders = [value, useMemo];\n",
-        'src/features/orders/ui/components/order-card.tsx':
+        'src/features/orders/presentation/components/order-card.tsx':
           "import { value } from '@lingui/core';\nimport type { ReactNode } from 'react';\nexport const card: ReactNode = value;\n",
         'src/integrations/nestjs/index.ts': importing({
           from: 'kit',
@@ -1524,6 +1552,9 @@ describe('the dependency-cruiser layer set', () => {
         'yaml-js',
         'ky',
         'zod',
+        'cli',
+        'remote-data',
+        'remote-service',
       ],
     };
 
