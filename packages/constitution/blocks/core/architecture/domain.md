@@ -7,7 +7,7 @@
 - **Ubiquitous language.** Names match the business, mirrored from the people who own it and kept in the project's glossary.
 - **Bounded context.** A feature is one: one word may mean different things in two features. The **shared kernel** holds what two or more contexts share with one meaning: the part of the model they use alike, and the ports of outside systems they ask in the same words.
 - *Entity.* A business type with identity, which lives through changes. A *value object* is a small immutable value that guards an invariant and is compared by its data.
-- *Aggregate.* Entities and values changed as one, one boundary of consistency; its **aggregate root** is the entity through which alone it changes. A *factory* builds a valid aggregate: its `create`, or, when building needs several aggregates or values, a domain service that calls that `create`.
+- *Aggregate.* Entities and values changed as one, one boundary of consistency; its **aggregate root** is the entity through which alone it changes. A *factory* builds a valid aggregate: its `create`, or, when building needs several aggregates or values, a domain service that calls that `create`; its `restore` rebuilds one read back from storage.
 - **Domain service.** A rule or a computation of the domain that no one entity or aggregate owns: stateless and pure.
 - **Domain event.** What happened, in the past tense and the domain's words, yielded by the transition that decided it.
 - *Repository.* The port through which a use case loads an aggregate, or an entity read on its own, and saves an aggregate, in the model's words.
@@ -53,7 +53,7 @@ A value object checks the invariants the domain relies on and no more; a stricte
 
 ### aggregate-changed-only-by-its-transitions · MUST
 
-An aggregate changes only through its root's transitions. Each transition, declared in the aggregate's own module, checks its precondition — the move the business allows from the current state — and returns a new state that keeps every invariant; no code outside that module builds the aggregate, a changed copy of it or one of its inner entities, and no write repository exists for an inner entity.
+An aggregate changes only through its root's transitions. Each transition, declared in the aggregate's own module, checks its precondition — the move the business allows from the current state — and returns a new state that keeps every invariant. No code outside that module builds the aggregate, a changed copy of it or one of its inner entities, save through its `create`, which checks the creation's precondition and yields its event, or its `restore`, which rebuilds one already stored — checking its invariants, no precondition, and yielding no event — for the adapter that reads it; no write repository exists for an inner entity.
 
 | Why |
 |---|

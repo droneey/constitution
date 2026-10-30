@@ -88,7 +88,7 @@ No other code of the package imports an integration, and an integration imports 
 
 ### kernel-imports-only-itself · MUST
 
-The kernel imports only itself, the data files its values are read from, and the parts of the language's standard library that hold no effect.
+Of the program's code, the kernel imports only itself and the data files its values are read from; of the standard library, only what holds no effect; of installed dependencies, only a library of one outside format or arithmetic that one value object imports.
 
 | Why |
 |---|
