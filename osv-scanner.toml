@@ -3,6 +3,16 @@ id = "GHSA-gcqx-w48m-w2h4"
 ignoreUntil = 2027-01-28
 reason = "a build tool of the design tokens; it merges only our own token files; no fixed version upstream"
 
+[[IgnoredVulns]]
+id = "GHSA-3g3m-2fjr-6pw4"
+ignoreUntil = 2026-11-30
+reason = "glob reaches us only through style-dictionary, the build tool of the design tokens, which globs our own token files with no abort signal; the fix is a new major published today, inside the release cooldown, that style-dictionary does not accept yet"
+
+[[IgnoredVulns]]
+id = "GHSA-g3hv-75wg-m249"
+ignoreUntil = 2026-11-30
+reason = "minimatch reaches us only through style-dictionary's glob and Stryker, development tools that match our own patterns; the fix is a new major published today, inside the release cooldown, that neither accepts yet"
+
 [[PackageOverrides]]
 name = "is-core-module"
 ecosystem = "npm"
