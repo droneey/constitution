@@ -130,7 +130,7 @@ A value is immutable by default: a change makes a new value, and mutation stays 
 
 ### outside-value-untyped-until-parsed · MUST
 
-A value from outside the program — text, a response, a file, a message — has no known type until a schema parses it or plain checks narrow it, in specs as in production, and no cast stands in for either. It is parsed once, where it enters, and trusted after.
+A value from outside the program — text, a response, a file, a message, and what the program itself stored in an earlier run or version — has no known type until a schema parses it or plain checks narrow it, in specs as in production, and no cast stands in for either. It is parsed once, where it enters, and trusted after.
 
 | Why |
 |---|
