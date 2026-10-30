@@ -2,7 +2,7 @@
 
 > Governs a commit's message and the hooks that check it: how they are installed, what they rewrite and what they refuse.
 
-## General
+## Message
 
 ### commit-header-type-and-subject · MUST
 
@@ -27,6 +27,16 @@ A commit's body is empty, and its footer holds only trailers such as `Signed-off
 | Why |
 |---|
 | the reason is reviewed in the change request, and a body written beside it is a second account nobody reviews; a trailer is data a tool reads. |
+
+### commit-subject-never-a-placeholder · MUST
+
+The commit hooks reject a placeholder subject: "update", "fix stuff", "wip", "changes", "misc".
+
+| Why |
+|---|
+| a placeholder subject makes the history useless at exactly the commit someone needs to understand. |
+
+## Hooks
 
 ### commit-checked-by-the-hooks · MUST
 
@@ -59,11 +69,3 @@ A commit hook that formats rewrites only the staged files and stages them again.
 | Why |
 |---|
 | a hook that touches unstaged files mixes work in progress into the commit. |
-
-### commit-subject-never-a-placeholder · MUST
-
-The commit hooks reject a placeholder subject: "update", "fix stuff", "wip", "changes", "misc".
-
-| Why |
-|---|
-| a placeholder subject makes the history useless at exactly the commit someone needs to understand. |

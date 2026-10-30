@@ -1,5 +1,6 @@
 import type { UnitRelativePath } from '#/kernel/value-objects';
 
+import type { MutationTarget } from '../../../../domain/entities';
 import type {
   Branch,
   BranchReader,
@@ -7,7 +8,6 @@ import type {
   MutationRunner,
   ToolExitCode,
 } from '../../../contracts';
-import type { MutationTarget } from '../../../../domain/entities';
 
 enum CheckScope {
   Branch = 'branch',

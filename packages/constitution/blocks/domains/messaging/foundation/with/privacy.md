@@ -1,6 +1,16 @@
 # Privacy
 
-> Governs how long a broker keeps personal data.
+> Governs the personal data a message carries and how long a broker keeps it.
+
+## Content
+
+### message-carries-only-needed-personal-data → personal-data-collected-only-for-its-purpose · MUST
+
+A message carries no personal data its consumers do not need; they reach the rest by an identifier.
+
+| Why |
+|---|
+| a broker keeps messages, their copies in dead letters and their replays beyond the reach of an erasure, and every subscriber reads them. |
 
 ## Retention
 

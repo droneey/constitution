@@ -2773,7 +2773,7 @@ describe('createConfigurationFormat: keys kept sorted', () => {
   }>([
     {
       canSortKeys: true,
-      writtenPath: 'packages/presentation/package.json',
+      writtenPath: 'packages/app/package.json',
     },
     {
       canSortKeys: true,

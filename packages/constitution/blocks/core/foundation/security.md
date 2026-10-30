@@ -1,6 +1,6 @@
 # Security
 
-> Governs secrets, credentials, cryptography, outside input — its size, its matching, the work done on it, and where it is run, rebuilt or followed — and the vulnerabilities found in what was released.
+> Governs secrets, credentials, cryptography, outside input — its size, its matching, the work done on it, and where it is run, rebuilt or followed — the results a cache may serve, and the vulnerabilities found in what was released.
 
 ## Secrets
 
@@ -149,6 +149,16 @@ A check that guards access or trust — a signature, an allowlist, a token, a lo
 | Why |
 |---|
 | an attacker who can make the check fail otherwise passes it, and a missing setting that allows opens the door on the first misconfigured deployment. |
+
+## Caches
+
+### caller-shaped-result-never-served-from-a-cache-to-another · MUST
+
+A result shaped by its caller — by their rights, their tenant or their own data — is never served from a cache to another caller: the cache keeps it for that caller alone or is keyed by all that shaped it.
+
+| Why |
+|---|
+| a result drawn from one caller's rights and served from a cache to the next hands over what the second could never read, with no check of access ever run. |
 
 ## Primitives
 

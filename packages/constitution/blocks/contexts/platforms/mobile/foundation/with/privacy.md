@@ -1,8 +1,16 @@
 # Privacy
 
-> Governs permissions, store declarations, account deletion and tracking on a phone or tablet.
+> Governs permissions, store declarations, push payloads, account deletion and tracking on a phone or tablet.
 
 ## Processing
+
+### push-payload-holds-no-personal-data-in-clear → personal-data-kept-out-of-output · MUST
+
+A push notification's payload holds no personal data in clear: it carries an identifier, and the app fetches the content, or decrypts it, on the device.
+
+| Why |
+|---|
+| a push passes through the platform's push service and may show on a locked screen, so what it carries in clear reaches people and systems the user never chose. |
 
 ### permission-narrowed-to-its-purpose → personal-data-collected-only-for-its-purpose · MUST
 

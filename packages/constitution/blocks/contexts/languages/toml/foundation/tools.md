@@ -4,10 +4,10 @@
 
 ## Schema
 
-### toml-configuration-names-its-schema · SHOULD
+### toml-configuration-names-its-schema → configuration-names-its-schema · SHOULD
 
-A configuration written in TOML names its schema on its first line — `#:schema <schema URL>` — wherever its reader publishes one.
+A configuration written in TOML names its reader's schema on its first line — `#:schema <schema URL>`.
 
 | Why |
 |---|
-| an editor then checks and completes every key as it is written, so a misspelt or misplaced key shows before the tool ignores it. |
+| the first line is where editors of TOML look for a schema. |

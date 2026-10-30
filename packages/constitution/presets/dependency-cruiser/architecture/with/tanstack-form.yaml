@@ -3,10 +3,11 @@ tanstack-form:
     typescript:
       .dependency-cruiser.jsonc:
         allowedSeverity: error
+ui:
   form-library-imported-by-the-ui:
     typescript:
       .dependency-cruiser.jsonc:
-        allowed[comment=form-library-imported-by-the-ui]:
+        'allowed[comment=form-library-imported-by-the-ui: tanstack-form]':
           from:
             path:
               - /${role.presentation-layer}/

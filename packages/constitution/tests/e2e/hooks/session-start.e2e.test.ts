@@ -169,7 +169,7 @@ describe('session-start hook', () => {
     {
       condition: 'CLAUDE_PROJECT_DIR names a subfolder of the repository',
       cwd: '..',
-      projectDir: 'packages/presentation',
+      projectDir: 'packages/app',
       repository: Repository.Folder,
     },
     {
@@ -201,7 +201,7 @@ describe('session-start hook', () => {
       const project = createProject({
         config: found,
         files: {
-          'packages/presentation/.keep': '',
+          'packages/app/.keep': '',
           'src/deep/.keep': '',
         },
         repository,

@@ -1,16 +1,8 @@
 # Files
 
-> Governs the files git ignores, and those it keeps outside its history.
+> Governs the files git keeps outside its history.
 
 ## General
-
-### ignored-file-never-tracked · SHOULD
-
-A file the ignore list covers is not tracked.
-
-| Why |
-|---|
-| git goes on tracking a file it already tracks whatever the ignore list says, so an ignore rule alone leaves in the history what is already there. |
 
 ### lfs-for-files-over-a-megabyte → large-files-outside-history · SHOULD
 

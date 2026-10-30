@@ -54,16 +54,6 @@ An answer carries only the fields the caller may see, and a write changes only t
 |---|
 | a caller allowed to see an object is not allowed every field of it, and one field too many leaks what the object hides. |
 
-## Caches
-
-### caller-shaped-result-never-served-from-a-cache-to-another · MUST
-
-A result shaped by its caller — by their rights, their tenant or their own data — is never served from a cache to another caller: the cache keeps it for that caller alone or is keyed by all that shaped it.
-
-| Why |
-|---|
-| a result drawn from one caller's rights and served from a cache to the next hands over what the second could never read, with no check of access ever run. |
-
 ## Proof
 
 ### operation-access-proven-by-a-case → declared-failure-has-a-case · MUST

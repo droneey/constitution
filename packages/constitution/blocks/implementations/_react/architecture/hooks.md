@@ -1,6 +1,6 @@
 # Hooks
 
-> Governs the hooks that hold a component's effects and a binding unit, and where React is imported.
+> Governs the hooks that hold a component's effects and a binding unit.
 
 **`hooks/`**{#reusable-hook} holds a set of reusable hooks.
 
@@ -23,5 +23,3 @@ An operation's binding unit is a hook in `<op>.hooks.ts`: it takes its use case 
 | Why |
 |---|
 | a hook is the framework's reactive unit; the use case comes from the composition root, so a spec hands it another. |
-
-## Packages

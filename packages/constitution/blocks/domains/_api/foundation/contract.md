@@ -38,6 +38,14 @@ An enumeration in an answer is declared open in the contract — its known value
 |---|
 | a client generated from the contract, or one that checks answers by it, fails on a value outside a closed set, so the first value added breaks every client built before it. |
 
+### upload-accepted-by-its-content · MUST
+
+An uploaded file is accepted only when its kind, read from its content, is one the operation allows; its name and its declared type decide nothing.
+
+| Why |
+|---|
+| a caller names a script `photo.jpg` and declares it an image, and a check that trusts either stores and serves it as one. |
+
 ## Effects
 
 ### write-takes-an-idempotency-key → operation-idempotent-by-design · SHOULD

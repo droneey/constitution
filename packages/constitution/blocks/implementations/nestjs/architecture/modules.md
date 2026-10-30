@@ -30,7 +30,7 @@ A feature's module imports only modules of its own feature, of `shared/` and of 
 |---|
 | a feature's module that imports another feature's ties the two features as an import of code would. |
 
-### nestjs-imported-by-modules-and-providers → layer-imports-dependencies-by-its-role · MUST
+### nestjs-imported-by-modules-and-providers → server-framework-imported-by-the-delivery-units · MUST
 
 NestJS's home reaches past the edge into the presentation of features and of composition modules, which holds the modules and controllers, and into every `providers/` folder, whose providers build the use cases.
 

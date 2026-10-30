@@ -1,11 +1,10 @@
-export { ExitCode } from './presentation/constants';
-export { runCheckMutations } from './presentation/bindings';
 export type {
   Branch,
   BranchReader,
   CodeComparer,
   MutationRunner,
 } from './application/contracts';
+export { createCheckMutations } from './application/use-cases';
 export type { ChangedFile, MutationTarget } from './domain/entities';
 export {
   BranchError,
@@ -15,4 +14,5 @@ export {
   MutationRunError,
   MutationRunFailure,
 } from './domain/errors';
-export { createCheckMutations } from './application/use-cases';
+export { runCheckMutations } from './presentation/bindings';
+export { ExitCode } from './presentation/constants';

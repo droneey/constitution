@@ -1,6 +1,6 @@
 # Prompts
 
-> Governs the text a program sends a model: its instructions, the text others wrote, what it may hold and where its text may go.
+> Governs the text a program sends a model: its instructions, the text others wrote, and what it may hold.
 
 ## Instructions
 
@@ -37,8 +37,6 @@ A prompt holds no secret — no key, password, connection string or internal add
 | Why |
 |---|
 | a model can be made to repeat its prompt, so whatever the prompt holds, the person talking to it can read. |
-
-## Telemetry
 
 ## Caching
 

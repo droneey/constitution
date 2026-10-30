@@ -1,6 +1,6 @@
 # Versions
 
-> Governs how versions are numbered, compared and kept.
+> Governs how versions are numbered, compared and kept, and when a runtime floor moves.
 
 ## General
 
@@ -27,3 +27,11 @@ A release compares its public entries with those of the last release, and a diff
 | Why |
 |---|
 | a break nobody noticed ships as a minor version and breaks every consumer who trusted the number. |
+
+### runtime-floor-never-raised-in-a-patch · MUST
+
+A unit's runtime floor is never raised in a patch; it is raised in a minor only where the registry's resolver skips a release whose floor the consumer's runtime misses, and otherwise in a major.
+
+| Why |
+|---|
+| a consumer takes every patch, and under a range every minor, without reading it; a release that drops its runtime must reach it only where its resolver keeps it on the last release that runs. |
