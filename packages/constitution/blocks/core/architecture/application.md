@@ -32,6 +32,14 @@ A use case's signature is written in the business's words: its input is a type n
 |---|
 | the signature then documents the operation as the business states it, and a change of framework or transport never reaches it. |
 
+### model-changed-only-through-a-use-case · MUST
+
+Only the application changes the model: a use case alone calls an aggregate's `create` and its transitions. The presentation reads the model — its types, enumerations, errors, the value objects that parse what enters and the predicates and derived values that answer about a state — and changes it only by calling a use case; an adapter rebuilds what it reads back only through an aggregate's `restore`.
+
+| Why |
+|---|
+| a change made outside a use case is neither checked against the store, saved nor announced, and the screen that made it shows a state no one else sees. |
+
 ### domain-and-application-log-nothing · MUST
 
 The domain and the application log nothing: a use case returns its result or throws its expected failure, or publishes an event, and a binding or delivery unit logs what happened, a failure the use case handled included.
