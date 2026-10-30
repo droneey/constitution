@@ -7,7 +7,7 @@ interface ModelIndex {
   readonly rules: ReadonlyMap<RuleSlug, ModelRule>;
 }
 
-const indexOf = (model: BlockModel): ModelIndex => ({
+const modelIndexOf = (model: BlockModel): ModelIndex => ({
   blocks: new Map<BlockId, ModelBlock>(
     model.blocks.map((block) => [
       block.id,
@@ -23,6 +23,25 @@ const indexOf = (model: BlockModel): ModelIndex => ({
     ]),
   ),
 });
+
+// Why: every check of a model's preset sets looks its blocks, roles and rules up, so a model is
+// indexed once.
+const indexesByModel = new WeakMap<BlockModel, ModelIndex>();
+
+const indexOf = (model: BlockModel): ModelIndex => {
+  const known = indexesByModel.get(model);
+
+  // Stryker disable next-line ConditionalExpression,BlockStatement: an answer worked out again equals the remembered one, which only saves time
+  if (known !== undefined) {
+    return known;
+  }
+
+  const index = modelIndexOf(model);
+
+  indexesByModel.set(model, index);
+
+  return index;
+};
 
 export type { ModelIndex };
 export { indexOf };

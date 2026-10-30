@@ -48,6 +48,30 @@ const setProblems = (input: SetProblemsInput): readonly PresetsProblem[] => {
   ];
 };
 
+// Why: an entry's placement weighs each block's reach against every other's and asks again whether
+// a role is reached, each answer walking the whole model, so a model gives each answer once.
+const reachesByModel = new WeakMap<BlockModel, Map<BlockId, ReadonlySet<BlockId>>>();
+const reachedByModel = new WeakMap<BlockModel, Map<string, boolean>>();
+// Why: no role id and no block id holds a line break, so a question joined by one is unique.
+// Stryker disable next-line StringLiteral: no two questions of a model's ids join alike without it, so no spec can tell
+const ASKED_SEPARATOR = '\n';
+
+const reachOf = (model: BlockModel, block: BlockId): ReadonlySet<BlockId> => {
+  const reaches = reachesByModel.get(model) ?? new Map<BlockId, ReadonlySet<BlockId>>();
+  const known = reaches.get(block);
+
+  // Stryker disable next-line ConditionalExpression,BlockStatement: an answer worked out again equals the remembered one, which only saves time
+  if (known !== undefined) {
+    return known;
+  }
+
+  const reach = BlockModel.reachOf(model, block);
+
+  reachesByModel.set(model, reaches.set(block, reach));
+
+  return reach;
+};
+
 interface DefinedRole {
   readonly definers: readonly BlockId[];
   readonly id: string;
@@ -71,11 +95,30 @@ const isReached = (input: {
   id: string;
   model: BlockModel;
   readers: readonly BlockId[];
-}): boolean =>
-  BlockModel.reachedRoleOf(input.model, {
-    id: input.id,
-    readers: input.readers,
-  }) !== undefined;
+}): boolean => {
+  const { id, model, readers } = input;
+  const reached = reachedByModel.get(model) ?? new Map<string, boolean>();
+  const asked = [
+    id,
+    ...readers,
+  ].join(ASKED_SEPARATOR);
+  const known = reached.get(asked);
+
+  // Stryker disable next-line ConditionalExpression,BlockStatement: an answer worked out again equals the remembered one, which only saves time
+  if (known !== undefined) {
+    return known;
+  }
+
+  const isRoleReached =
+    BlockModel.reachedRoleOf(model, {
+      id,
+      readers,
+    }) !== undefined;
+
+  reachedByModel.set(model, reached.set(asked, isRoleReached));
+
+  return isRoleReached;
+};
 
 const reachesAnother = (input: {
   block: BlockId;
@@ -83,7 +126,7 @@ const reachesAnother = (input: {
   model: BlockModel;
 }): boolean =>
   input.blocks.some(
-    (other) => other !== input.block && BlockModel.reachOf(input.model, other).has(input.block),
+    (other) => other !== input.block && reachOf(input.model, other).has(input.block),
   );
 
 // Why: reach is transitive and runs through no cycle, so the blocks kept reach none of each other,
@@ -104,7 +147,7 @@ const withStandIns = (input: {
 }): readonly BlockId[] => {
   const { blocks, model, withs } = input;
 
-  const reachOf = (block: BlockId): ReadonlySet<BlockId> => BlockModel.reachOf(model, block);
+  const reachOfBlock = (block: BlockId): ReadonlySet<BlockId> => reachOf(model, block);
 
   const widestNamed = widestOf({
     blocks: withs,
@@ -116,9 +159,9 @@ const withStandIns = (input: {
     model,
   }).reduce<readonly BlockId[]>(
     (chosen, block) =>
-      chosen.some((standIn) => reachOf(standIn).has(block))
+      chosen.some((standIn) => reachOfBlock(standIn).has(block))
         ? chosen
-        : chosen.concat(widestNamed.find((named) => reachOf(named).has(block)) ?? block),
+        : chosen.concat(widestNamed.find((named) => reachOfBlock(named).has(block)) ?? block),
     [],
   );
 };
@@ -131,7 +174,7 @@ const neededOf = (input: {
 }): readonly BlockId[] => {
   const { entry, model, roles, rule } = input;
   const { reader, withs } = entry.set.placeInPresets;
-  const readerReach = BlockModel.reachOf(model, reader);
+  const readerReach = reachOf(model, reader);
   const keyed = [
     ...new Set([
       entry.block,
