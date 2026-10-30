@@ -2,9 +2,19 @@
 .source/
 
 # git
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+credentials.json
+id_rsa
+*.secrets
+/local/
 .claude/settings.local.json
 .claude/worktrees/
-/local/
+.env*
+!.env.example
 .DS_Store
 .vscode/*
 !.vscode/settings.json
@@ -19,19 +29,9 @@
 *.bak
 *.orig
 *~
-.env*
-!.env.example
-*.pem
-*.key
-*.p12
-*.pfx
-*.jks
-credentials.json
-id_rsa
-*.secrets
 
-# mise
-mise.local.toml
+# bun
+.npmrc
 
 # _js-runtime
 **/node_modules/
@@ -40,8 +40,8 @@ mise.local.toml
 # bun-test
 **/coverage/
 
-# bun
-.npmrc
+# mise
+mise.local.toml
 
 # rumdl
 .rumdl_cache/

@@ -18,7 +18,8 @@ uv:
           uv:
             python-downloads: never
             python-preference: only-system
-  uv-build-backend-capped:
+core:
+  tool-pinned-exactly-by-the-repository:
     python:
       pyproject.toml ? !${workspace.isRoot}:
         build-system:

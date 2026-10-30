@@ -90,14 +90,6 @@ A folder holds one purpose, said in one phrase without “and”, and is named f
 |---|
 | a folder of two purposes gives a new file two places to go, and a catch-all name tells nothing about the system. |
 
-### folder-appears-with-its-first-file · SHOULD
-
-A folder appears when its first file does, never ahead of what it will hold.
-
-| Why |
-|---|
-| a folder made in advance shows a part the program does not have, and its name guesses a purpose before the code has one. |
-
 ### set-folder-holds-only-members · SHOULD
 
 Files of one kind that arrive one at a time — one per vendor, command or rule — live in a folder named for the members in the plural, and nothing else lives there; their contract, registry and runner sit beside it.
@@ -110,7 +102,7 @@ Files of one kind that arrive one at a time — one per vendor, command or rule 
 
 ### readme-is-the-front-door · SHOULD
 
-A repository’s readme says what the repository is, how to install and run it, and how to change it, for a reader who knows nothing else.
+A repository’s readme answers, for a reader who knows nothing else: what it is and what problem it solves, for whom; how to get it running, as commands to copy; and how to change it, or where that is written.
 
 | Why |
 |---|

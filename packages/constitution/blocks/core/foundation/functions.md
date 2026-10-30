@@ -18,7 +18,7 @@ A function either answers a question or changes state, never both: one that answ
 
 | Why |
 |---|
-| a question that changes something cannot be asked twice safely, and a change that reads more than it changes decides on data its caller never saw. |
+| a question that changes something cannot be asked twice safely, and a change that reads more than it changes decides on data its caller never saw — command–query separation. |
 
 ### function-answers-from-its-input-and-handed-dependencies · SHOULD
 

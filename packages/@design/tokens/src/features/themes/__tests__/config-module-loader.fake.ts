@@ -1,4 +1,4 @@
-import type { ConfigModuleLoader, ConfigOfMode } from '../domain/contracts';
+import type { ConfigModuleLoader, ConfigOfMode } from '../application/contracts';
 import type { ThemeMode } from '../domain/entities';
 import { ConfigModuleError, ConfigModuleFailure } from '../domain/errors';
 

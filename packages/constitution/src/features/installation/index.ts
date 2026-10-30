@@ -1,4 +1,4 @@
-export { createDoctorCommand } from './app/use-cases/queries/doctor';
-export type { PinnedRelease } from './domain/contracts';
+export { createDoctorCommand } from './presentation/bindings/queries/doctor';
+export type { PinnedRelease } from './application/contracts';
 export type { PartDiagnosis } from './domain/entities';
-export { diagnoseInstallation } from './domain/use-cases/queries/diagnose-installation';
+export { diagnoseInstallation } from './application/use-cases/queries/diagnose-installation';

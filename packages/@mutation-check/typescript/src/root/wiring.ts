@@ -2,12 +2,12 @@ import { tmpdir } from 'node:os';
 
 import type { ChosenSpecsRun, SpecsRequest } from '#/features/specs';
 import { runSpecs, unitSpecs } from '#/features/specs';
-import { bunTestSpecRunner } from '#/features/specs/adapters/bun-test';
-import { transpilerImportGraph } from '#/features/specs/adapters/transpiler';
+import { bunTestSpecRunner } from '#/features/specs/infrastructure/bun-test';
+import { transpilerImportGraph } from '#/features/specs/infrastructure/transpiler';
 import { createCheckMutations, runCheckMutations } from '#/features/targets';
-import { gitBranchReader } from '#/features/targets/adapters/git';
-import { strykerRunner } from '#/features/targets/adapters/stryker';
-import { workingCopyCodeComparer } from '#/features/targets/adapters/working-copy';
+import { gitBranchReader } from '#/features/targets/infrastructure/git';
+import { strykerRunner } from '#/features/targets/infrastructure/stryker';
+import { workingCopyCodeComparer } from '#/features/targets/infrastructure/working-copy';
 import { AbsolutePath } from '#/kernel/value-objects';
 import { variablesNamed } from '#/libs/environment';
 

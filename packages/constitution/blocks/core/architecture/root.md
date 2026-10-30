@@ -6,11 +6,27 @@
 
 ### composition-root-wires-everything · MUST
 
-The **composition root** chooses every concrete implementation, builds every adapter, every use case and every stateful client — a cache, a store, a connection — applies every decorator — behaviour wrapped around an implementation of a contract, not a language's decorator syntax — and wires the program in one known place, its **wiring file**. A unit receives its dependencies typed by their contracts, or a use case by its own type — as parameters or, in a delivery or binding unit, from a typed scope the root fills — and never builds an adapter or asks a registry for one by its contract. A framework's container, where the program's framework block brings one, wires only from bindings the root declares, never by scanning, name or convention; where the framework brings no container, the root wires by hand, with no container library.
+The **composition root** chooses every concrete implementation, builds every adapter, every use case and every stateful client — a cache, a store, a connection — applies every decorator — behaviour wrapped around an implementation of a contract, not a language's decorator syntax — and wires the program in one known place, its **wiring file**.
 
 | Why |
 |---|
-| one place that names every concrete choice makes the program’s shape readable and every choice replaceable; a container library the framework does not impose adds only indirection. |
+| one place that names every concrete choice makes the program’s shape readable and every choice replaceable. |
+
+### unit-receives-its-dependencies-by-contract · MUST
+
+A unit receives its dependencies typed by their contracts, or a use case by its own type — as parameters or, in a delivery or binding unit, from a typed scope the root fills — and never builds an adapter or asks a registry for one by its contract.
+
+| Why |
+|---|
+| a dependency handed in is one a spec replaces by handing in another, while one a unit builds or looks up binds it to the concrete choice the root exists to make. |
+
+### container-wires-only-declared-bindings · MUST
+
+A framework's container, where the program's framework block brings one, wires only from bindings the root declares, never by scanning, name or convention; where the framework brings no container, the root wires by hand, with no container library.
+
+| Why |
+|---|
+| a binding found by scanning or by name is a choice no file states, and a container library the framework does not impose adds only indirection. |
 
 ### package-has-at-most-one-root · MUST
 
@@ -38,7 +54,7 @@ The composition root, its configuration provider included, and the entry files a
 
 ### root-alone-configures-logging · MUST
 
-The composition root alone configures where log records go.
+The composition root alone configures where log records go, and alone imports the library that writes them; the code below it logs through the language's logging facade.
 
 | Why |
 |---|

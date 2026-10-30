@@ -1,16 +1,8 @@
 # Checks
 
-> Governs ShellCheck's optional checks, what it reads and its suppressions.
+> Governs what ShellCheck reads and its suppressions.
 
 ## General
-
-### optional-checks-enabled-by-name · MUST
-
-`.shellcheckrc` enables each optional check by its name, never with `enable=all`.
-
-| Why |
-|---|
-| `all` turns on checks no rule asks for, such as braces around every variable, and each check a new release adds, so an update fails the check with findings nobody chose. |
 
 ### embedded-command-reaches-shellcheck → rule-held-by-a-tool-where-one-can · MUST
 

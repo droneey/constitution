@@ -2,10 +2,10 @@ import { createFakeProjectFiles } from '#/__tests__/project-files.fake';
 import { AXES, Axis } from '#/kernel/constants';
 import { AbsolutePath } from '#/kernel/value-objects';
 
-import { createJsonManifestParser } from '../adapters/json';
-import { createYamlFrontMatterParser } from '../adapters/yaml';
-import type { FileTree, FrontMatterParser, ManifestParser } from '../domain/contracts';
-import type { CheckBlocksInput } from '../domain/use-cases/queries/check';
+import { createJsonManifestParser } from '../infrastructure/json';
+import { createYamlFrontMatterParser } from '../infrastructure/yaml';
+import type { FileTree, FrontMatterParser, ManifestParser } from '../application/contracts';
+import type { CheckBlocksInput } from '../application/use-cases/queries/check';
 import { createFakeFileTree } from './file-tree.fake';
 
 type Files = Record<string, string>;

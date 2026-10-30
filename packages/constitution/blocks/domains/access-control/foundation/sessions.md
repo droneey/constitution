@@ -28,13 +28,21 @@ A change of password, a reset, an account recovery and a change or removal of a 
 |---|
 | the person who changes a credential is often shutting out someone who took the old one, and a session left open keeps them in. |
 
-### access-change-reaches-every-session-and-token · MUST
+### removed-account-loses-sessions-tokens-and-keys · MUST
 
-A disabled or deleted account loses its sessions, its refresh tokens where it issues them, and its keys at once; a revoked right is read from the store by every session and key the server keeps on the next request that needs it, and left out of every token issued after it; an access token checked without the store lives only minutes.
+A disabled or deleted account loses its sessions, its refresh tokens where it issues them, and its keys at once.
 
 | Why |
 |---|
-| a person removed from a team otherwise keeps their access until a long-lived token expires, which is the window an insider uses. |
+| a person removed from a team otherwise keeps their access through whatever they were already holding. |
+
+### revoked-right-read-on-the-next-request · MUST
+
+A revoked right is read from the store by every session and key the server keeps on the next request that needs it, and left out of every token issued after it; an access token checked without the store lives only minutes.
+
+| Why |
+|---|
+| a right cached in a session or a long-lived token otherwise outlasts its revocation by that token's life, which is the window an insider uses. |
 
 ### session-has-idle-and-absolute-limits · SHOULD
 

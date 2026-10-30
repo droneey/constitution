@@ -1,9 +1,9 @@
 import type { FakeTree } from '#/__tests__/project-files.fake';
 import { corePassport, PROJECT, releaseFolderPath } from '#/__tests__/project-place.fixtures';
 
-import { createJsonReleaseManifestParser } from '../adapters/json';
-import { createYamlBlockCardParser, createYamlConfigFileParser } from '../adapters/yaml';
-import type { BlockCardParser, ConfigParser, ReleaseManifestParser } from '../domain/contracts';
+import { createJsonReleaseManifestParser } from '../infrastructure/json';
+import { createYamlBlockCardParser, createYamlConfigFileParser } from '../infrastructure/yaml';
+import type { BlockCardParser, ConfigParser, ReleaseManifestParser } from '../application/contracts';
 import type { ProjectError } from '../domain/errors';
 import { isProjectError } from '../domain/errors';
 

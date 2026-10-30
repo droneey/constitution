@@ -8,7 +8,8 @@ if TYPE_CHECKING:
   from ..types import PackagePath
 
 PURE_TOP_LEVEL_LAYERS: Final = frozenset({Layer.KERNEL})
-EDGE_LAYERS: Final = frozenset({Layer.ADAPTERS, Layer.INTEGRATIONS, Layer.LIBS, Layer.ROOT})
+PURE_MODULE_LAYERS: Final = frozenset({(Layer.DOMAIN,), (Layer.APPLICATION,)})
+EDGE_LAYERS: Final = frozenset({Layer.INFRASTRUCTURE, Layer.INTEGRATIONS, Layer.LIBS, Layer.ROOT})
 MAIN_STEM: Final = 'main'
 ENTRY_STEMS: Final = frozenset({'__main__', MAIN_STEM})
 ENTRY_DEPTH: Final = 2
@@ -41,12 +42,12 @@ def layers_of(file_folder: PackagePath) -> tuple[str, ...]:
 def role_of(*, file_folder: PackagePath, file_stem: str) -> FileRole:
   layers = layers_of(file_folder)
 
-  if layers and (layers[0] in PURE_TOP_LEVEL_LAYERS or layers[1:] == (Layer.DOMAIN,)):
+  if layers and (layers[0] in PURE_TOP_LEVEL_LAYERS or layers[1:] in PURE_MODULE_LAYERS):
     return FileRole.PURE
 
   if (
     (layers and layers[0] in EDGE_LAYERS)
-    or layers[1:] == (Layer.ADAPTERS,)
+    or layers[1:] == (Layer.INFRASTRUCTURE,)
     or is_entry(file_folder=file_folder, file_stem=file_stem)
   ):
     return FileRole.EDGE
@@ -75,4 +76,4 @@ def may_import_packages(role: FileRole) -> bool:
 
 
 def is_binding_unit(file_folder: PackagePath) -> bool:
-  return layers_of(file_folder)[1:] == (Layer.APP,)
+  return layers_of(file_folder)[1:] == (Layer.PRESENTATION,)

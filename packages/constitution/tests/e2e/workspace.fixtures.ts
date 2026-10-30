@@ -215,18 +215,18 @@ export const isErrorCode = (text: string): text is ErrorCode => /^[a-z-]+\\.[a-z
     "export { type ErrorCode, isErrorCode } from './error-code.value-object';\n",
   'packages/@eros/typescript/src/features/errors/index.ts':
     "export { ErosError } from './domain/errors';\nexport { type ErrorCode, isErrorCode } from './domain/value-objects';\n",
-  'packages/@eros/typescript/src/features/mapping/domain/use-cases/queries/kind-of/index.ts':
+  'packages/@eros/typescript/src/features/mapping/application/use-cases/queries/kind-of/index.ts':
     "export { kindOf } from './kind-of.use-case';\n",
-  'packages/@eros/typescript/src/features/mapping/domain/use-cases/queries/kind-of/kind-of.use-case.ts': `import { KINDS } from '#/kernel/constants';
+  'packages/@eros/typescript/src/features/mapping/application/use-cases/queries/kind-of/kind-of.use-case.ts': `import { KINDS } from '#/kernel/constants';
 
 export const kindOf = (code: string): string | undefined =>
   KINDS.find((kind) => code.startsWith(\`\${kind}.\`));
 `,
   'packages/@eros/typescript/src/features/mapping/index.ts':
-    "export { kindOf } from './domain/use-cases/queries/kind-of';\n",
-  'packages/@eros/typescript/src/features/problem/adapters/problem/index.ts':
+    "export { kindOf } from './application/use-cases/queries/kind-of';\n",
+  'packages/@eros/typescript/src/features/problem/infrastructure/problem/index.ts':
     "export { problemOf } from './problem.adapter';\n",
-  'packages/@eros/typescript/src/features/problem/adapters/problem/problem.adapter.ts': `import type { Problem } from '../../domain/entities';
+  'packages/@eros/typescript/src/features/problem/infrastructure/problem/problem.adapter.ts': `import type { Problem } from '../../domain/entities';
 
 // The wire shape of RFC 9457.
 interface ProblemDocument {
@@ -251,18 +251,18 @@ export const problemOf = (problem: Problem): ProblemDocument => ({
     'export interface ErrorRecord {\n  readonly code: string;\n  readonly kind: string;\n}\n',
   'packages/@eros/typescript/src/features/records/domain/entities/index.ts':
     "export type { ErrorRecord } from './error-record.entity';\n",
-  'packages/@eros/typescript/src/features/records/domain/use-cases/queries/to-record/index.ts':
+  'packages/@eros/typescript/src/features/records/application/use-cases/queries/to-record/index.ts':
     "export { toRecord } from './to-record.use-case';\n",
-  'packages/@eros/typescript/src/features/records/domain/use-cases/queries/to-record/to-record.use-case.ts': `import type { ErrorRecord } from '../../../entities';
+  'packages/@eros/typescript/src/features/records/application/use-cases/queries/to-record/to-record.use-case.ts': `import type { ErrorRecord } from '../../../entities';
 
 export const toRecord = (input: ErrorRecord): ErrorRecord => ({ code: input.code, kind: input.kind });
 `,
   'packages/@eros/typescript/src/features/records/index.ts':
-    "export type { ErrorRecord } from './domain/entities';\nexport { toRecord } from './domain/use-cases/queries/to-record';\n",
+    "export type { ErrorRecord } from './domain/entities';\nexport { toRecord } from './application/use-cases/queries/to-record';\n",
   'packages/@eros/typescript/src/index.ts': `export { ErosError, type ErrorCode, isErrorCode } from './features/errors';
 export { kindOf } from './features/mapping';
 export type { Problem } from './features/problem';
-export { problemOf } from './features/problem/adapters/problem';
+export { problemOf } from './features/problem/infrastructure/problem';
 export { type ErrorRecord, toRecord } from './features/records';
 export { KINDS } from './kernel/constants';
 `,
@@ -307,9 +307,9 @@ export const KINDS: readonly string[] = isKinds(kinds) ? kinds : [];
   'packages/@eros/python/src/shop_eros_python/features/errors/domain/errors/eros_error.py':
     'class ErosError(Exception):\n  pass\n',
   'packages/@eros/python/src/shop_eros_python/features/problem/__init__.py': '',
-  'packages/@eros/python/src/shop_eros_python/features/problem/adapters/__init__.py': '',
-  'packages/@eros/python/src/shop_eros_python/features/problem/adapters/problem/__init__.py': '',
-  'packages/@eros/python/src/shop_eros_python/features/problem/adapters/problem/problem_adapter.py':
+  'packages/@eros/python/src/shop_eros_python/features/problem/infrastructure/__init__.py': '',
+  'packages/@eros/python/src/shop_eros_python/features/problem/infrastructure/problem/__init__.py': '',
+  'packages/@eros/python/src/shop_eros_python/features/problem/infrastructure/problem/problem_adapter.py':
     "def problem_of(code: str) -> dict[str, str]:\n  return {'code': code, 'type': 'about:blank'}\n",
   'packages/@eros/python/src/shop_eros_python/integrations/__init__.py': '',
   'packages/@eros/python/src/shop_eros_python/integrations/fastapi/__init__.py':
@@ -358,8 +358,8 @@ const reports: Files = {
   'apps/reports/src/shop_reports/__init__.py': '',
   'apps/reports/src/shop_reports/features/__init__.py': '',
   'apps/reports/src/shop_reports/features/sales/__init__.py': '',
-  'apps/reports/src/shop_reports/features/sales/app/__init__.py': '',
-  'apps/reports/src/shop_reports/features/sales/app/sales_report.py':
+  'apps/reports/src/shop_reports/features/sales/presentation/__init__.py': '',
+  'apps/reports/src/shop_reports/features/sales/presentation/sales_report.py':
     "from shop_tabula import sheet\n\n\ndef sales_report() -> str:\n  return sheet(['sales'])\n",
   'apps/reports/src/shop_reports/main.py': 'from shop_reports.root.wiring import run\n\nrun()\n',
   'apps/reports/src/shop_reports/root/__init__.py': '',
@@ -405,7 +405,7 @@ const web: Files = {
     ],
     name: '@shop/web',
   }),
-  'apps/web/src/features/labels/app/__tests__/label.test.ts': `import { expect, it } from 'bun:test';
+  'apps/web/src/features/labels/presentation/__tests__/label.test.ts': `import { expect, it } from 'bun:test';
 
 import type { OrderId } from '@shop/orders';
 
@@ -419,11 +419,11 @@ it('should name the order when an order is labelled', () => {
   expect(text).toBe('Order order:a');
 });
 `,
-  'apps/web/src/features/labels/app/label.ts': `import { describeOrder, type OrderId } from '@shop/orders';
+  'apps/web/src/features/labels/presentation/label.ts': `import { describeOrder, type OrderId } from '@shop/orders';
 
 export const label = (id: OrderId): string => \`Order \${describeOrder({ id, total: 0 })}\`;
 `,
-  'apps/web/src/features/labels/index.ts': "export { label } from './app/label';\n",
+  'apps/web/src/features/labels/index.ts': "export { label } from './presentation/label';\n",
   'apps/web/src/main.ts':
     "import { label } from '#/features/labels';\n\nexport const main = label;\n",
   'apps/web/tsconfig.json': tsconfigOf({
@@ -457,7 +457,7 @@ const apiAndShared: Files = {
     ],
     name: '@shop/api',
   }),
-  'apps/api/src/features/totals/app/__tests__/total-line.test.ts': `import { expect, it } from 'bun:test';
+  'apps/api/src/features/totals/presentation/__tests__/total-line.test.ts': `import { expect, it } from 'bun:test';
 
 import type { Cents } from '@shop/money';
 import type { OrderId } from '@shop/orders';
@@ -475,7 +475,7 @@ it('should name the order and its currency when an order is totalled', () => {
   expect(line).toBe('order:a EUR');
 });
 `,
-  'apps/api/src/features/totals/app/total-line.ts': `import type { Cents } from '@shop/money';
+  'apps/api/src/features/totals/presentation/total-line.ts': `import type { Cents } from '@shop/money';
 import { describeOrder, type OrderId } from '@shop/orders';
 
 import { CURRENCY } from '#/kernel/constants';
@@ -487,7 +487,7 @@ interface Totalled {
 
 export const totalLine = (order: Totalled): string => \`\${describeOrder(order)} \${CURRENCY}\`;
 `,
-  'apps/api/src/features/totals/index.ts': "export { totalLine } from './app/total-line';\n",
+  'apps/api/src/features/totals/index.ts': "export { totalLine } from './presentation/total-line';\n",
   'apps/api/src/kernel/constants/currency.constants.ts': "export const CURRENCY = 'EUR';\n",
   'apps/api/src/kernel/constants/index.ts': "export { CURRENCY } from './currency.constants';\n",
   'apps/api/src/main.ts':

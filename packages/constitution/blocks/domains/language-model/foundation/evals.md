@@ -28,6 +28,14 @@ A sample of each task's runs in production — failures, refusals and outliers f
 |---|
 | a model meets inputs no eval foresaw and changes its behaviour on them with no change of code, and only its real runs show that. |
 
+### eval-runs-apart-from-the-specs · MUST
+
+An eval that calls a real model runs apart from the specs, by a command of its own.
+
+| Why |
+|---|
+| a real model is slow and paid for, and a spec run that calls it fails by chance and costs money on every change. |
+
 ## Graders
 
 ### model-grader-checked-against-people · SHOULD

@@ -45,6 +45,7 @@
 | The plugin and the project's rules | ADR-0203 – ADR-0205, ADR-0212 |
 | The whole-repository review of #383 | ADR-0223, ADR-0225 |
 | Formatters | ADR-0224, ADR-0230 |
+| Evans' layers, the model that decides and the cohesion review | ADR-0259 – ADR-0265 |
 
 ---
 
@@ -183,6 +184,7 @@
 - **Decision.** No vendor library is imported under `domain/`, a pure one included. Parsing a format and checking its wire shape happen in an adapter behind a port, with the wire shapes as that adapter's models, and the domain checks its own rules on the parsed data.
 - **Rejected.** A pure vendor library — a YAML parser, a validator — in `domain/`, read as allowed because it has no side effects.
 - **Why.** The core imports only itself and the shared kernel, so a vendor's types and upgrades never reach it.
+- **Superseded in part.** A library of one outside format or arithmetic one value object imports is admitted by ADR-0262.
 
 ## ADR-0043 — Python configs and tools live in devkit
 
@@ -1570,6 +1572,7 @@
   - One repository for a simple feature in place of the split by side: the split is interface segregation and keeps one tree, and CQRS's warnings concern separate models, which the split does not make.
   - Business metrics of the critical scenarios: deferred.
 - **Why.** Each change follows the consensus of 2024–2026 sources the audit cites — Evans and Vernon, Jovanović and Spring Modulith, Microsoft, Seemann, Nx and Turborepo, the Google SRE books — or a church rule our form lacked; each rejection keeps a stricter choice the owner made.
+- **Superseded in part.** The use case moves out of `domain/` into `application/` (ADR-0259); the rejection of a use case in `app/` stands.
 
 ## ADR-0197 — What the 2026 expert audit changed beyond the architecture
 
@@ -2511,3 +2514,84 @@
   - A block for GitHub Actions itself: the rules on a workflow's commands already sit in the YAML language's seam with the shell, and no rule yet loses its meaning without GitHub alone.
   - The script in every unit that lists the block: each would lint the root's workflows again.
 - **Why.** The rules on a workflow's commands were held by no block's tool, and actionlint holds them with its defaults and one pinned tool.
+
+## ADR-0259 — A feature is laid out in Evans' four layers: domain, application, infrastructure, presentation
+
+**Date:** 2026-10-30 · **Status:** Accepted
+
+- **Decision.** A feature, and a module of composition, holds `domain/` (the model: `entities/`, `aggregates/<aggregate>/` with its root `.aggregate` and inner `.entity` files, `value-objects/`, `services/` for domain services, `errors/`), `application/` (`use-cases/{queries,commands}/<op>/` and `contracts/`, every port a use case asks, data ports in `repositories/` included), `infrastructure/<system>/` (the adapters, formerly `adapters/`, also at the source's top) and `presentation/` (all through which the program is called — a screen, a request, a command, a message, a schedule: `bindings/{queries,commands}/<op>/`, formerly `app/use-cases/`, and an interface's `screens/`, `widgets/` and `components/`, formerly the ui domain's `ui/`). The domain imports no port, no use case and no installed library; the application imports only the domain, the kernel and its own contracts. The repository's own packages move to this tree in the same change.
+- **Rejected.**
+  - `app/` as the name of the binding layer: a reader who knows DDD takes it for the application layer, and the use case then seemed to live in two places.
+  - Use cases inside `domain/` (ADR-0196 kept them there so that `domain/` stays the part programs share across hosts): `application/` is framework-free too, so the reason holds, while the model and the orchestration are no longer one folder no check can split. ADR-0196's rejection of "a use case moved into `app/`" stands for `app/`.
+  - Repository interfaces in the domain, as Evans places them: the model never calls a repository, a use case does, so the port sits with the layer that needs it (`contract-declared-by-the-layer-that-needs-it`, as Uncle Bob's gateways and the hexagonal architecture place it), and "the domain imports no port" is one check.
+  - `infrastructure/adapters/<system>/`: the infrastructure holds nothing but adapters, so a second level is a folder that only holds a folder; the `.adapter` suffix keeps the word.
+  - One folder per aggregate with no `entities/`: a feature that only reads holds records and enumerations that are no aggregate, and forcing them into aggregate folders would name a boundary of consistency that does not exist.
+  - Vertical slices by operation, or layers held by file suffix instead of folders: the owner keeps the layers inside a feature, whose shared model is what DDD protects.
+  - `presentation/` and `ui/` side by side: Evans' presentation layer holds both what binds an operation to a framework and what shows it.
+- **Why.** Each canonical word now names one place, the dependency direction is a matter of folders the import checks read, and the application can run from a component, a route loader, a worker, a command or another client of the same language.
+
+## ADR-0260 — The model decides: aggregates change only through their transitions, use cases orchestrate
+
+**Date:** 2026-10-30 · **Status:** Accepted
+
+- **Decision.** Core gains `aggregate-changed-only-by-its-transitions` (MUST; merging owned-data's `aggregate-changed-only-through-its-root` and `command-repository-per-aggregate-root`), `independent-entity-is-its-own-aggregate` (moved from owned-data), `transition-yields-its-event`, `domain-service-holds-a-rule-of-several` (MUST) and, for the application, `use-case-leaves-decisions-to-the-model` (MUST). The vocabulary defines the canonical terms — entity, value object, aggregate and its root, factory, domain service, domain event, repository, application service, bounded context, shared kernel, anti-corruption layer. `entity-rule-lives-beside-the-entity` becomes `aggregate-rule-lives-in-its-module` and leaves the form to the language: TypeScript keeps plain data and a companion, with no literal or spread of an aggregate outside its file; Python lets transitions be methods of a frozen dataclass returning `dataclasses.replace`.
+- **Rejected.**
+  - Classes with private fields for TypeScript aggregates: they close the spread hole by the language, but every boundary the data crosses — the query cache and its persister, IndexedDB and `structuredClone`, a worker, a server component — then needs a mapper.
+  - A Transaction Script exemption for simple features (Khononov, Fowler, Bogard): the owner wants one form everywhere; `use-case-leaves-decisions-to-the-model` already leaves no exemption.
+  - A rule that every feature has a domain model: where a feature decides nothing, a model made for it is a structure no need earns, and it clashed with `remote-data-has-no-second-model`.
+  - "Policy" for a rule over several aggregates: EventStorming uses the word for a reaction to an event; Evans' term is domain service.
+  - A use case that may decide nothing at all: it keeps the application's own rules — who acts, what to load, the order of steps, the transaction — as Uncle Bob's interactors do.
+- **Why.** A rule written in a use case is skipped by the next one, which is how a model turns anaemic; a model that holds its rules and guards its transitions is DDD whatever the syntax.
+
+## ADR-0261 — A use case is a framework-free function; a hook or a controller only binds it
+
+**Date:** 2026-10-30 · **Status:** Accepted
+
+- **Decision.** Every operation, a read included, has a use case in the application layer, however thin; a hook, a controller, a command or a consumer is a binding unit of the presentation that calls it. On a front end the query library decides when and how often a use case runs, never what it decides (`query-library-decides-when-never-what`).
+- **Rejected.**
+  - The use case as a React hook (Stemmler's interaction layer, overview articles): a hook runs only while a component renders, so a route loader, a server, a worker, background sync, a command line or another framework could not run the operation, and the library's pauses change the business flow unseen.
+  - A use case only where the operation orchestrates (Android's and Flutter's guides make it optional): one form for every operation keeps the place where the next step goes, at the cost of a thin file.
+- **Why.** Uncle Bob, Cockburn, Android and Flutter keep use cases free of the interface's lifecycle, and the cost is linear and small.
+
+## ADR-0262 — The domain checks its own values, with no schema library
+
+**Date:** 2026-10-30 · **Status:** Accepted
+
+- **Decision.** `layer-imports-dependencies-by-its-role` keeps the domain, the application and the kernel free of installed dependencies, save a library of one outside format or arithmetic one value object imports (a numbering plan, bank account numbers by country, decimal arithmetic); a general schema or parsing library is never one. `value-object-checks-what-the-domain-relies-on` lets an interface add its stricter checks over the value object's, never restating it; a schema at the edge builds a domain value through its constructor and turns its failure into an issue.
+- **Rejected.**
+  - A schema library inside the value objects: its error model, coercions and messages enter the domain, and the domain changes whenever the library is swapped or rewritten.
+  - A validation port: a pure invariant behind a port is configuration, and the value no longer guarantees anything.
+  - A value object implementing the Standard Schema interface: a front-end convention becomes part of the domain's public surface.
+  - The recipe of the helper that turns a domain failure into a schema issue as a rule: the rule fixes the substance, each project writes its helper.
+- **Why.** The domain's checks are a few lines, while a format no one should write by hand is held in the one value object that needs it.
+
+## ADR-0263 — Expected failures stay thrown; an adapter maps what it recognises
+
+**Date:** 2026-10-30 · **Status:** Accepted
+
+- **Decision.** Expected failures stay thrown errors of the program's own, named where callers read them (`expected-failure-named-where-callers-read-it`) and carrying a stable code (`expected-failure-carries-a-stable-code`). An adapter maps every failure of its dependency it recognises, a transient one included, to its port's own and lets every other pass as a defect, wrapped at most once with its cause.
+- **Rejected.**
+  - Returning an expected failure as a discriminated union (a Result), even as a choice the rules allow: the owner keeps native throw.
+  - Wrapping every input and output in a catch that turns any failure into an error of the program's: it disguises a defect as something a caller can handle.
+- **Why.** Catching everything is easy, classifying everything is impossible and needless; the retry logic must know only the port's transient failures.
+
+## ADR-0264 — The cohesion review: one subject, one rule; a tool rule only where it adds
+
+**Date:** 2026-10-30 · **Status:** Accepted
+
+- **Decision.** Six reviewers read every rule for subjects cut apart and rules bundling two. Rules no project would lower apart merge (among them `growing-collection-bounded`, `name-number-matches-its-value`, `name-never-an-empty-word` with the empty verbs, `test-seen-failing` with the regression test, `contract-has-one-fake-and-one-suite`, the data port's naming into `data-port-one-per-entity-and-side`, the pipeline rules into `pipeline-stages-run-by-their-use-case`); rules of two subjects split (`composition-root-wires-everything` into three, `structure-appears-by-symptom` and `copies-joined-when-they-change-together`, the expected-failure rules, `secret-kept-out-of-output` in core and `personal-data-kept-out-of-output` in privacy); a rule that only repeats another goes. A tool rule that only names its parent and exists as a key for a preset is deleted and its settings key the parent. Rules that give a library its home merge into one rule of the role, in the domain or platform that owns it, with no new field in a block's front matter. The rules on agents keep apart the agent at work on the repository (core) and the model or agent a product runs (language-model). The rules on text a person reads gather in one ui chapter.
+- **Rejected.**
+  - A `homes:` field in each passport: a new mechanism for what one rule of the role already says.
+  - One TLS rule in core: TLS is a means of the network domains, not a concern of every program.
+  - One safety chapter for every agent: an agent that writes the code and a feature of the product answer to different people and risks.
+- **Why.** A subject cut into distant rules is read in part, and a project that lowers one half keeps the other by accident; the presets follow the rules, never the reverse.
+
+## ADR-0265 — Names never date their thing, a closed set is decided in one place, copies join when they change together
+
+**Date:** 2026-10-30 · **Status:** Accepted
+
+- **Decision.** `name-never-dates-its-thing` bans `new`, `old`, `v2`, `legacy`, `fixed`, `improved` and `final` in a name, save a version of a contract. `closed-set-decided-in-one-place` gathers what each member of a closed set means for several concerns into one record keyed by member. `copies-joined-when-they-change-together` keeps DRY for knowledge and the rule of three for look-alike code, and joins copies only when they change together.
+- **Rejected.**
+  - Replacing every switch by polymorphism, as clean-code notes ask: a switch over a closed set is exhaustive and cheap to extend by operation; the smell is the same switch repeated (Fowler's "Repeated Switches"), and an open set already grows by registration.
+  - The third occurrence as a trigger to join: copies that change apart are coincidence, not a fact.
+- **Why.** These close the gaps the review of a software-design book found in the names and the code rules.

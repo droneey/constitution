@@ -5,7 +5,7 @@ requires: [typescript]
 extends: null
 abstract: false
 languages: []
-governs: ["**/models/**", "**/adapters/**"]
+governs: ["**/models/**", "**/infrastructure/**"]
 ---
 
 # zod

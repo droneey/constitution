@@ -6,7 +6,7 @@
 
 ### spec-boundaries-follow-the-tree · SHOULD
 
-The boundaries of the tree are what a caller outside a folder reaches through its surface: a use case of the domain, an adapter, a delivery unit, a reusable unit of a composition module, a lib, an entity or a value object that holds an invariant or a transition, and a unit of the root other than the wiring; the wiring gets no spec, composition gets one where it derives a fact or implements a contract, and a binding unit that is no delivery unit is proven through the units that consume it.
+The boundaries of the tree are what a caller outside a folder reaches through its surface: a use case, an aggregate, a domain service, an adapter, a delivery unit, a reusable unit of a composition module, a lib, an entity or a value object that holds an invariant or a transition, and a unit of the root other than the wiring; the wiring gets no spec, composition gets one where it derives a fact or implements a contract, and a binding unit that is no delivery unit is proven through the units that consume it.
 
 | Why |
 |---|

@@ -16,11 +16,6 @@ tailwind:
             nursery:
               noUndeclaredClasses: !replace 'off'
   utilities-only-from-tokens:
-    css:
-      biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/css/utilities-only-from-tokens.${role.grit-rule}]:
-          includes:
-            - '**/*.css'
     typescript:
       biome.jsonc:
         linter:

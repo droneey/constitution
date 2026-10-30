@@ -1,0 +1,11 @@
+ui:
+  ui-specs-scan-accessibility:
+    typescript:
+      ${role.storybook-setup}/preview.ts: !default |
+        export default {
+          parameters: {
+            a11y: {
+              test: 'error',
+            },
+          },
+        };

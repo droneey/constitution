@@ -1,5 +1,9 @@
 pre-commit:
   jobs:
+    # betterleaks
+    - name: secrets
+      run: betterleaks git --pre-commit --staged --redact --no-banner
+
     # lefthook
     - name: validate-branch
       run: |
@@ -15,10 +19,6 @@ pre-commit:
           echo "  got: $BRANCH"
           exit 1
         fi
-
-    # betterleaks
-    - name: secrets
-      run: betterleaks git --pre-commit --staged --redact --no-banner
 
     # biome
     - name: biome

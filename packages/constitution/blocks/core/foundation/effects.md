@@ -44,13 +44,13 @@ A resource the code acquires — a handle, a connection, a lock, a subscription 
 |---|
 | a release written only on the path that succeeds leaks on the first failure, and the leak shows far from its cause. |
 
-### outside-read-bounded · MUST
+### growing-collection-bounded · MUST
 
-Every read of a collection from outside the program — a query, a remote list, a queue, a file — has an explicit limit, and pages or refuses beyond it.
+Whatever grows with the data has a bound, and says what happens at it. A read of a collection from outside the program — a query, a remote list, a queue, a file — has an explicit limit and pages or refuses beyond it; a collection the program keeps beyond one operation — a cache, a queue, a buffer, a table of sessions — evicts, refuses or makes the producer wait at its bound; and work started concurrently over a collection — calls, tasks, jobs — runs at most a set number at a time.
 
 | Why |
 |---|
-| an unbounded read works on test data and fails in production when the data grows. |
+| an unbounded read, store or fan-out works on test data and fails in production when the data grows, far from the code that let it grow, by exhausting memory, connections or the quota of the system it calls. |
 
 ### outside-call-never-made-per-item · SHOULD
 
@@ -59,22 +59,6 @@ A loop makes no call across a process boundary per item where the other side ans
 | Why |
 |---|
 | one call per item multiplies the latency and the load by the size of the set, and works only while the set is small. |
-
-### kept-collection-bounded · MUST
-
-Every collection the program keeps beyond one operation — a cache, a queue, a buffer, a table of sessions — has a bound and says what happens at it: it evicts, refuses or makes the producer wait.
-
-| Why |
-|---|
-| a collection that only grows works for days and then takes the process down, far from the code that filled it. |
-
-### concurrent-fan-out-bounded · MUST
-
-Work started concurrently over a collection — calls, tasks, jobs — runs at most a set number at a time.
-
-| Why |
-|---|
-| an unbounded fan-out over a large collection exhausts connections, memory and the quota of the system it calls. |
 
 ### state-shared-by-concurrent-work-owned-or-guarded · MUST
 

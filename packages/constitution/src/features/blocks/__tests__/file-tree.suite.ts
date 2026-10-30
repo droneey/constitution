@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import type { FileTree } from '../domain/contracts';
+import type { FileTree } from '../application/contracts';
 import { isTreeError, TreeFailure } from '../domain/errors';
 import { TreePath } from '../domain/value-objects';
 

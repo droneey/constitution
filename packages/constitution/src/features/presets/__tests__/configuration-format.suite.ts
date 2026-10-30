@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import { RepositoryRelativePath } from '#/kernel/value-objects';
 
-import type { ConfigurationFormat } from '../domain/contracts';
+import type { ConfigurationFormat } from '../application/contracts';
 import type { Setting } from '../domain/entities';
 
 interface ConfigurationFormatSuiteInput {

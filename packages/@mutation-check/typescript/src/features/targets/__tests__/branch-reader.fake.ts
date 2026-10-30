@@ -1,6 +1,6 @@
 import type { UnitRelativePath } from '#/kernel/value-objects';
 
-import type { Branch, BranchReader } from '../domain/contracts';
+import type { Branch, BranchReader } from '../application/contracts';
 import type { ChangedFile } from '../domain/entities';
 import type { BranchError } from '../domain/errors';
 

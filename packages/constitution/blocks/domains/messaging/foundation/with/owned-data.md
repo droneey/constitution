@@ -6,7 +6,7 @@
 
 ### change-and-its-message-written-through-an-outbox → write-lands-whole · MUST
 
-A message about a change to owned data is written to an outbox in the store, in the transaction of the change, and sent by a relay after the commit — never published inside the transaction or from a hook after it.
+The event a transition of owned data yielded is written to an outbox in the store, in the transaction that saves the change, and sent by a relay after the commit — never published inside the transaction or from a hook after it.
 
 | Why |
 |---|

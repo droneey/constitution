@@ -1,8 +1,8 @@
-pino:
-  only-the-root-imports-pino:
+core:
+  root-alone-configures-logging:
     typescript:
       .dependency-cruiser.jsonc:
-        forbidden[name=only-the-root-imports-pino]:
+        forbidden[name=root-alone-configures-logging-pino]:
           severity: error
           from:
             pathNot:

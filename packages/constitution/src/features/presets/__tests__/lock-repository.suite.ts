@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import type { AbsolutePath } from '#/kernel/value-objects';
 
-import type { LockQueryRepository } from '../domain/contracts/repositories/queries';
+import type { LockQueryRepository } from '../application/contracts/repositories/queries';
 import type { Lock } from '../domain/entities';
 import { LockReadStatus, RecordKind } from '../domain/entities';
 import { lockOf } from './presets.fixtures';

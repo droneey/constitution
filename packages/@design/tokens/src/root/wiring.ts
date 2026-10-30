@@ -1,9 +1,9 @@
 import type { ExitCode, ThemeModeFiles } from '#/features/themes';
 import { AbsolutePath, createGenerateThemes, runGenerateThemes } from '#/features/themes';
-import { createConfigModuleLoader } from '#/features/themes/adapters/config-module';
-import type { Resolver } from '#/features/themes/adapters/resolver';
-import { createResolverThemeModeReader } from '#/features/themes/adapters/resolver';
-import { styleDictionaryThemeBuilder } from '#/features/themes/adapters/style-dictionary';
+import { createConfigModuleLoader } from '#/features/themes/infrastructure/config-module';
+import type { Resolver } from '#/features/themes/infrastructure/resolver';
+import { createResolverThemeModeReader } from '#/features/themes/infrastructure/resolver';
+import { styleDictionaryThemeBuilder } from '#/features/themes/infrastructure/style-dictionary';
 
 import { withLastResort } from './with-last-resort';
 

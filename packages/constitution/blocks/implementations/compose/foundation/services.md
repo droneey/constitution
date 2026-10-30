@@ -1,12 +1,12 @@
 # Services
 
-> Governs a Compose file: its structure, the images its services run, their privileges and how they start.
+> Governs a Compose file: its structure, its services' privileges and how they start.
 
 ## Structure
 
 ### compose-keys-in-shared-order · MUST
 
-A Compose file lists its top-level keys as `name`, `include`, extensions (`x-*`), `services`, `networks`, `volumes`, and a service's keys as `image` or `build`, `container_name`, `extends`, `profiles`, `restart`, `command`, `depends_on`, `networks`, `ports`, `volumes`, `logging`, `healthcheck`, `security_opt`, `cap_drop`, `cap_add`, `read_only`, `labels`, `tmpfs`, `environment`.
+A Compose file's top-level keys, and a service's keys, follow the one order the presets set.
 
 | Why |
 |---|
@@ -35,16 +35,6 @@ The variants of one service extend a base service whose name starts with `_` and
 | Why |
 |---|
 | the variants share one definition, the base never starts by itself, and a service's name says where it runs. |
-
-## Images
-
-### service-image-pinned-by-version-and-digest → download-pinned-by-version-and-checksum · MUST
-
-A service's `image` names the most specific version the image is published under — `major.minor.patch` where it has one — and its digest, `image:x.y.z@sha256:<digest>`; never `latest`, never a floating major or minor, never a tag alone and never a digest alone.
-
-| Why |
-|---|
-| any tag, a patch's included, can be pushed again under the same name, so only the digest fixes what a service runs; the version beside it tells a reader and an updater which release the digest is. |
 
 ## Security
 

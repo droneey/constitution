@@ -6,7 +6,7 @@
 
 ### primitives-are-a-set-of-components → behaviour-lives-in-a-feature · SHOULD
 
-A set of interface primitives is a set of components, each a module of its own in `components/<name>/`, and grows `features/` only when it gains behaviour of the product.
+A set of interface primitives is a set of components, each a module of its own in `components/<name>/`, and takes a feature's layers only when it gains behaviour of the product.
 
 | Why |
 |---|

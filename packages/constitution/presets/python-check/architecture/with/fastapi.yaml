@@ -1,5 +1,5 @@
-fastapi:
-  fastapi-imported-by-delivery-units:
+_api:
+  server-framework-imported-by-the-delivery-units:
     python:
       pyproject.toml:
         tool:
@@ -7,4 +7,4 @@ fastapi:
             homes:
               fastapi:
                 - edge
-                - ${role.application-layer}
+                - ${role.presentation-layer}

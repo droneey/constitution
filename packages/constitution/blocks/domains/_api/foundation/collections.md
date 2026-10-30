@@ -4,7 +4,7 @@
 
 ## Paging
 
-### list-answer-paged-with-a-maximum → outside-read-bounded · MUST
+### list-answer-paged-with-a-maximum → growing-collection-bounded · MUST
 
 A list answer is paged, with a default page size and a maximum the caller cannot raise; a larger page asked for is cut to the maximum or refused.
 

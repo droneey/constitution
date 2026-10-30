@@ -4,9 +4,9 @@
 
 ## General
 
-### bunli-handler-exits-by-the-map → exit-codes-from-one-map · MUST
+### bunli-handler-through-the-last-resort-handler → last-resort-handler-one-per-entry · MUST
 
-A handler lets no failure escape to bunli: it ends each one with the code the exit map gives it.
+Every handler runs its work through the program's one handler of last resort, which ends each failure with the code the exit map gives it, so no failure escapes to bunli.
 
 | Why |
 |---|
@@ -19,11 +19,3 @@ The program's entry adds a listener to the process's `exit` that turns an exit `
 | Why |
 |---|
 | bunli ends its own usage failures with `process.exit(1)`, the code the map gives to a failure the user can act on, and offers no hook to change it. |
-
-### bunli-handler-through-the-error-handler → last-resort-handler-one-per-entry · MUST
-
-Every handler runs its work through the program's one error handler, which maps a failure to the exit map.
-
-| Why |
-|---|
-| every command then exits by the same map, whatever fails. |

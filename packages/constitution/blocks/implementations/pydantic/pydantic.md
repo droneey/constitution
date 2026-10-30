@@ -5,7 +5,7 @@ requires: [python]
 extends: null
 abstract: false
 languages: []
-governs: ["**/models/**", "**/adapters/**", "**/root/**"]
+governs: ["**/models/**", "**/infrastructure/**", "**/root/**"]
 ---
 
 # pydantic

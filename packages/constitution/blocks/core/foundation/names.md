@@ -38,19 +38,19 @@ Two acts that undo each other are named by a verb and its antonym, the same pair
 
 ### name-never-an-empty-word · SHOULD
 
-A name is never only an empty word — `data`, `result`, `temp`, `info`, `item`, `value`, `obj`, `stuff`, `thing`; only a value whose shape the code does not know may take one, and the code says so where it does.
+A name is never only an empty word. A thing is never named `data`, `result`, `temp`, `info`, `item`, `value`, `obj`, `stuff` or `thing` — only a value whose shape the code does not know may take one, and the code says so where it does; a function is named by a concrete verb and its object — `cancelOrder`, `getOrder` — never by an empty verb, whatever its object — `handle`, `process`, `manage`, `do`, `execute` — save a callback named after the event it answers, a function named for the thing it returns or renders — a component, a derived value — and a name an implemented interface imposes.
 
 | Why |
 |---|
-| an empty name makes the reader look up what it holds, every time. |
+| an empty name makes the reader look up what it holds, every time, and an empty verb says that a function does something, never what. |
 
-### function-name-has-a-concrete-verb · SHOULD
+### name-never-dates-its-thing · SHOULD
 
-A function's name is a concrete verb and its object — `cancelOrder`, `getOrder` — never an empty verb, whatever its object — `handle`, `process`, `manage`, `do`, `execute`; a callback named after the event it answers, a function named for the thing it returns or renders — a component, a derived value — and a name an implemented interface imposes are exempt.
+A name says what its thing is, never when or how it was written: no `new`, `old`, `v2`, `legacy`, `fixed`, `improved`, `final`; a version that is part of a contract — an API's, a format's — is no such word.
 
 | Why |
 |---|
-| an empty verb says that a function does something, never what. |
+| the moment a name records passes with the next change, and the name then lies; the history is the version control's to keep. |
 
 ### member-name-never-repeats-its-owner · SHOULD
 
@@ -86,21 +86,13 @@ Each kind of name — a type, a function, a variable, a constant, an enumeration
 |---|
 | the case alone tells what kind of thing a name is, before its declaration is read. |
 
-### collection-name-plural · SHOULD
+### name-number-matches-its-value · SHOULD
 
-A collection's name is plural and an item's singular, destructured names included, so a loop reads `for order of orders`.
-
-| Why |
-|---|
-| the name alone tells a list from one of its elements. |
-
-### type-name-singular · SHOULD
-
-A type's name, an enumeration's included, is singular unless its value is a collection: it names one value of the type — `OrderStatus`, not `OrderStatuses`.
+A name's grammatical number is the number of values it holds: a collection's name is plural and an item's singular, destructured names included, so a loop reads `for order of orders`; a type's name, an enumeration's included, is singular unless its value is a collection — `OrderStatus`, not `OrderStatuses`.
 
 | Why |
 |---|
-| the type names one value; a plural name reads as a list where it holds one. |
+| the name alone tells a list from one of its elements, and a type names one value of it, which a plural name reads as a list. |
 
 ### event-name-in-past-tense · SHOULD
 
@@ -109,6 +101,14 @@ An event's name says what happened, in the past tense: `OrderPlaced`, not `Place
 | Why |
 |---|
 | an event records a fact that already happened; a command asks for one. |
+
+### error-name-ends-in-error · SHOULD
+
+The name of an error type ends in `Error`: `OrderNotFoundError`, never `OrderNotFound` or `NotFoundException`.
+
+| Why |
+|---|
+| a reader and a search tell an error from the value it is about by its name alone, and one ending marks every error the same way. |
 
 ### value-name-carries-its-unit · SHOULD
 

@@ -1,4 +1,4 @@
-import type { DocumentFrame } from '../domain/contracts';
+import type { DocumentFrame } from '../application/contracts';
 import type { SidebarState } from '../domain/entities';
 
 interface FrameFakeInput {

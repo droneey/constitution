@@ -1,6 +1,6 @@
 # Packages
 
-> Governs Python's packages and installs: the lockfile, the build backend, the cooldown, sources, builds and the interpreter.
+> Governs Python's packages and installs: the lockfile, the cooldown, sources, builds and the interpreter.
 
 ## General
 
@@ -11,14 +11,6 @@
 | Why |
 |---|
 | two package managers resolve differently, and a second lockfile is a second truth about what is installed. |
-
-### uv-build-backend-capped · SHOULD
-
-A package builds with **`uv_build`**, required in `[build-system]` with a floor and a cap below the next minor: `uv_build>=0.13,<0.14`.
-
-| Why |
-|---|
-| a new minor of the backend may build a different package from the same files; the cap makes that an update someone reviews. |
 
 ## Installs
 

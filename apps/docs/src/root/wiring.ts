@@ -11,7 +11,7 @@ import type { SerializedPageTree } from 'fumadocs-core/source/client';
 
 import type { IsScreenNarrow, MarkSidebar } from '#/composition/docs';
 import { createIsScreenNarrow, createMarkSidebar } from '#/composition/docs';
-import { documentFrame } from '#/composition/docs/adapters/document';
+import { documentFrame } from '#/composition/docs/infrastructure/document';
 import type {
   GetFullText,
   GetNavigation,
@@ -37,15 +37,15 @@ import {
   createSearchPages,
   SiteBasePath,
 } from '#/features/content';
-import type { PageBody } from '#/features/content/adapters/fumadocs-browser';
+import type { PageBody } from '#/features/content/infrastructure/fumadocs-browser';
 import {
   createPageBodies,
   createStaticExports,
   createStaticPageSearch,
-} from '#/features/content/adapters/fumadocs-browser';
+} from '#/features/content/infrastructure/fumadocs-browser';
 import type { GetVersions } from '#/features/versions';
 import { createGetVersions, Version } from '#/features/versions';
-import { createStaticFileVersionsRepository } from '#/features/versions/adapters/static-file';
+import { createStaticFileVersionsRepository } from '#/features/versions/infrastructure/static-file';
 import { onceSucceeded } from '#/libs/once-succeeded';
 import { trackedForUse } from '#/libs/ui';
 import { DOCS_ROUTE } from '#/shared/constants';
@@ -79,8 +79,8 @@ const serverContent = createServerOnlyFn(
   onceSucceeded(
     (): Promise<ServerContent> =>
       Promise.all([
-        import('#/features/content/adapters/fumadocs'),
-        import('#/features/content/adapters/fumadocs-mdx'),
+        import('#/features/content/infrastructure/fumadocs'),
+        import('#/features/content/infrastructure/fumadocs-mdx'),
         import('#collections/server'),
       ]).then(([{ createFumadocsContent }, { siteLayoutOf }, collections]) => {
         const content = createFumadocsContent({

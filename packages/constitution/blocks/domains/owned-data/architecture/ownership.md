@@ -6,7 +6,7 @@
 
 ### feature-owns-its-stored-records · MUST
 
-A feature's stored records — its tables, collections, keys — are read and written only by its own adapters; another feature reaches them only through the owner's operations, composed in composition, never by a query, a join or a view over them.
+A feature's stored records — its tables, collections, keys — are read and written only by the adapters of its own repositories; another feature reaches them only through the owner's operations, composed in composition, never by a query, a join or a view over them.
 
 | Why |
 |---|

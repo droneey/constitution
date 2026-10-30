@@ -12,7 +12,7 @@ A search that finds documents for a model is limited, inside the search itself a
 |---|
 | whatever reaches the model's context can reach its answer, and an instruction to keep a document secret is one a question can undo. |
 
-### answer-cache-keyed-by-the-callers-rights → object-access-checked-against-the-caller · MUST
+### answer-cache-keyed-by-the-callers-rights → caller-shaped-result-never-served-from-a-cache-to-another · MUST
 
 A cache of model answers is keyed by what shaped the answer — the prompt, the model and the caller's rights or tenant — and never serves one caller's answer to another with other rights.
 

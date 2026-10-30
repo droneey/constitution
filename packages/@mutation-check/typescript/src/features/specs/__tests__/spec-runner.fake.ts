@@ -1,6 +1,6 @@
 import type { UnitRelativePath } from '#/kernel/value-objects';
 
-import type { SpecRunInput, SpecRunner } from '../domain/contracts';
+import type { SpecRunInput, SpecRunner } from '../application/contracts';
 import { SpecRunStatus } from '../domain/entities';
 
 interface FakeSpecs {

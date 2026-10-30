@@ -1,6 +1,6 @@
 # HTTP server
 
-> Governs the origins a tool server over HTTP answers, a server on the user’s machine, and how it tells a client where to get a token.
+> Governs the origins a tool server over HTTP answers and a server on the user’s machine.
 
 ## Origins
 
@@ -19,13 +19,3 @@ A tool server over HTTP meant to run on the user's machine binds the loopback ad
 | Why |
 |---|
 | a server bound to every interface serves the whole network the machine sits on. |
-
-## Authorization
-
-### tool-server-announces-its-authorization-server · MUST
-
-A tool server that uses MCP's authorization publishes its Protected Resource Metadata (RFC 9728), answers a missing or invalid token with `401` and a `WWW-Authenticate` naming it, and a token short of a scope with `403`, `error="insufficient_scope"` and the scopes required.
-
-| Why |
-|---|
-| a client learns where to sign in, and which scope to ask for, only from these answers. |

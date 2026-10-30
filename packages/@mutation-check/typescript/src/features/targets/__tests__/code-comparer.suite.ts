@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import { UnitRelativePath } from '#/kernel/value-objects';
 
-import type { CodeComparer } from '../domain/contracts';
+import type { CodeComparer } from '../application/contracts';
 
 const orderPath = UnitRelativePath.create('src/order.ts');
 const CURRENT_TEXT = 'export const total = 2;\n';

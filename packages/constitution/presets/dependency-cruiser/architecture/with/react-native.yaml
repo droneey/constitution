@@ -3,13 +3,14 @@ react-native:
     typescript:
       .dependency-cruiser.jsonc:
         allowedSeverity: error
-  react-native-imported-by-the-ui:
+ui:
+  rendering-library-imported-by-the-presentation:
     typescript:
       .dependency-cruiser.jsonc:
-        allowed[comment=react-native-imported-by-the-ui]:
+        'allowed[comment=rendering-library-imported-by-the-presentation: react-native]':
           from:
             path:
               - /${role.presentation-layer}/
-              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.application-layer}/
+              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.presentation-layer}/
           to:
             path: node_modules/react-native/

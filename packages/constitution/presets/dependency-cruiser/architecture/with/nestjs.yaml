@@ -9,7 +9,7 @@ nestjs:
         allowed[comment=nestjs-imported-by-modules-and-providers]:
           from:
             path:
-              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.application-layer}/
+              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.presentation-layer}/
               - /${role.framework-provider}/
           to:
             path: node_modules/@nestjs/

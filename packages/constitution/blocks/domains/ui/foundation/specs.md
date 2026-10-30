@@ -22,11 +22,19 @@ A reusable component's spec proves the variants that change behaviour or meaning
 
 ### element-found-by-role-label-or-text → case-asserts-what-a-caller-observes · MUST
 
-An element a spec looks for is found by its role, its label or its text, never by a class or internal state; an element no person perceives — one hidden from assistive technology, or a framework's own element — is found by an attribute the code that renders it sets for the spec; and a selector the program configures a framework with is checked by one spec, through that same constant.
+An element a spec looks for is found by its role, its label or its text, never by a class or internal state; an element no person perceives — one hidden from assistive technology, or a framework's own element — is found by an attribute the code that renders it sets for the spec.
 
 | Why |
 |---|
-| a spec that finds elements as a user does changes only when the behaviour does, and an element no user perceives has nothing else a spec can find it by but an attribute set for the spec; a selector handed to a framework is a contract with markup the program does not render, which only a spec of that selector proves. |
+| a spec that finds elements as a user does changes only when the behaviour does, and an element no user perceives has nothing else a spec can find it by but an attribute set for the spec. |
+
+### framework-selector-proven-by-one-spec · MUST
+
+A selector the program configures a framework with is checked by one spec, through that same constant.
+
+| Why |
+|---|
+| a selector handed to a framework is a contract with markup the program does not render, which only a spec of that selector proves. |
 
 ### layout-and-focus-proven-on-the-platform · SHOULD
 

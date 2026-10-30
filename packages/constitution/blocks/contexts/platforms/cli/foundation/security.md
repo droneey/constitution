@@ -4,7 +4,7 @@
 
 ## Secrets
 
-### output-masks-every-known-secret → secret-and-personal-data-kept-out-of-output · MUST
+### output-masks-every-known-secret → secret-kept-out-of-output · MUST
 
 Every value the run knows to be secret is masked in all output, that of the tools it runs included, before it is printed.
 

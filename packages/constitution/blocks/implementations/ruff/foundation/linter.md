@@ -1,29 +1,13 @@
 # Linter
 
-> Governs the rules Ruff selects and its suppressions.
+> Governs the rules Ruff selects.
 
 ## General
 
-### rule-families-selected-by-name · MUST
-
-The rules are selected by family or code, never with `ALL`.
-
-| Why |
-|---|
-| `ALL` turns on every rule a new release adds, so an update fails the check with rules nobody chose, some of which contradict others. |
-
-### preview-rules-only-by-code · SHOULD
+### preview-rules-only-by-code → linter-rules-turned-on-by-name · MUST
 
 A preview rule is selected only by its exact code, with `explicit-preview-rules = true`, never through a family.
 
 | Why |
 |---|
 | a family in preview grows with each release; a code names one rule someone read. |
-
-### noqa-names-its-codes → suppression-silences-one-finding · MUST
-
-A `# noqa` names its codes and silences a finding Ruff would report.
-
-| Why |
-|---|
-| a blanket suppression silences rules nobody meant to, and one that silences nothing stays after the finding it was for is gone. |

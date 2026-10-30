@@ -4,7 +4,7 @@
 
 ## Kinds of failure
 
-### expected-failure-named-by-a-throws-tag → expected-failure-documented-where-no-signature-names-it · MUST
+### expected-failure-named-by-a-throws-tag → expected-failure-named-where-callers-read-it · MUST
 
 An expected failure is named in a `@throws` tag of the function's JSDoc, its type in braces and then its condition: `@throws {OrderNotFoundError} when no order has the id`.
 

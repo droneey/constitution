@@ -1,4 +1,8 @@
 version-control:
+  working-notes-stay-out-of-history:
+    '*':
+      .gitignore:
+        - /${role.working-notes}/
   machine-local-files-ignored:
     '*':
       .gitignore ? ${file.isTop}:
@@ -6,10 +10,8 @@ version-control:
       .gitignore:
         - .claude/settings.local.json
         - .claude/worktrees/
-git:
-  gitignore-covers-dependencies-output-and-caches:
-    '*':
-      .gitignore:
+        - .env*
+        - '!.env.example'
         - .DS_Store
         - .vscode/*
         - '!.vscode/settings.json'
@@ -24,12 +26,8 @@ git:
         - '*.bak'
         - '*.orig'
         - '*~'
-  gitignore-covers-environment-files:
-    '*':
-      .gitignore:
-        - .env*
-        - '!.env.example'
-  gitignore-covers-key-files:
+core:
+  secret-never-in-the-repository:
     '*':
       .gitignore:
         - '*.pem'

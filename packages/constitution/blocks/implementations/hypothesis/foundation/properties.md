@@ -6,19 +6,11 @@
 
 ### property-written-with-given → property-tested-where-it-pays · SHOULD
 
-A property test is a case of its unit's spec decorated with `@given`, its inputs drawn by strategies built on the unit's fixture, narrowed by the invariant it proves.
+A property test is a case of its unit's spec decorated with `@given`, its inputs drawn by strategies built on the unit's fixture, narrowed by the invariant it proves, and a counterexample Hypothesis finds is kept as an `@example(...)` on it.
 
 | Why |
 |---|
-| a property beside the unit's other cases runs and fails with them, and a strategy built from the invariant draws the inputs that can break it. |
-
-### counterexample-kept-by-example → property-tested-where-it-pays · SHOULD
-
-A counterexample Hypothesis finds is kept as an `@example(...)` on its property.
-
-| Why |
-|---|
-| an explicit example runs first on every run, whatever the strategies draw. |
+| a property beside the unit's other cases runs and fails with them, a strategy built from the invariant draws the inputs that can break it, and an explicit example runs first on every run, whatever the strategies draw. |
 
 ### ci-profile-left-to-hypothesis → flaky-test-fixed-never-retried · SHOULD
 

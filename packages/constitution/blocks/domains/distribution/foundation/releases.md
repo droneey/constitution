@@ -1,42 +1,8 @@
 # Releases
 
-> Governs versions, breaking changes, notes and the supply chain.
+> Governs deprecations, a release's notes and its supply chain.
 
-## Versions
-
-### published-version-never-replaced · MUST
-
-A version once published is never replaced and its number never reused, even after it is withdrawn; a fix ships as a new version.
-
-| Why |
-|---|
-| a consumer who installed a version must get the same code every time, and a replaced one lets whoever publishes swap it under them. |
-
-### release-entries-compared-with-the-last-release · SHOULD
-
-A release compares its public entries with those of the last release, and a difference a consumer must adapt to is released as a breaking change.
-
-| Why |
-|---|
-| a break nobody noticed ships as a minor version and breaks every consumer who trusted the number. |
-
-### unit-checked-on-every-runtime-it-supports · MUST
-
-A unit published for others is checked on its floor's release line and on each later line of its runtime that the runtime's maintainers still support, up to the newest stable one.
-
-| Why |
-|---|
-| a unit that claims a runtime it was never run on breaks its consumers there first. |
-
-## Breaking changes and deprecations
-
-### breaking-change-ships-its-migration · MUST
-
-A breaking change of an entry ships with a migration a consumer can follow.
-
-| Why |
-|---|
-| a break without a migration leaves every consumer to rediscover what changed and how to follow it. |
+## Deprecations
 
 ### deprecation-names-replacement-and-removal → retired-code-marked-deprecated · MUST
 
@@ -54,7 +20,7 @@ Every release carries notes: what changed, each breaking change with its migrati
 
 | Why |
 |---|
-| a consumer decides on the notes whether and how to update, and a fixed vulnerability without its identifier is never matched to the advisory that names it. |
+| a consumer decides on the notes whether and how to update, a break without its migration leaves every consumer to rediscover what changed and how to follow it, and a fixed vulnerability without its identifier is never matched to the advisory that names it. |
 
 ## Supply chain
 

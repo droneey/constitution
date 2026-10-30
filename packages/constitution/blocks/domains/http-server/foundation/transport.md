@@ -1,6 +1,6 @@
 # Transport
 
-> Governs TLS, the client's address behind a proxy, and the time a request may take.
+> Governs TLS, the client's address behind a proxy, and how long a request and a connection may last.
 
 ## General
 
@@ -20,6 +20,8 @@ The address and the scheme of a client are read from `Forwarded` or `X-Forwarded
 |---|
 | a header any client can write otherwise decides its rate limit, its security record and whether it is redirected to TLS. |
 
+## Connections
+
 ### request-read-within-a-time-bound · MUST
 
 The server bounds how long it waits for a request's headers, for its body and on an idle connection, and closes a connection past a bound.
@@ -27,3 +29,11 @@ The server bounds how long it waits for a request's headers, for its body and on
 | Why |
 |---|
 | a client that sends a byte at a time otherwise holds a connection for ever, and a few hundred of them take the server down. |
+
+### long-lived-connection-bounded → growing-collection-bounded · MUST
+
+A long-lived connection — a WebSocket, an event stream — is closed after an idle time the project sets, and the messages it buffers for a slow reader are bounded.
+
+| Why |
+|---|
+| connections a client left open and buffers a slow reader never drains hold the server's memory until it falls. |

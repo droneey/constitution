@@ -1,16 +1,8 @@
 # Queries
 
-> Governs a read through the cache: the hook it takes, its result, the key of an input, a stream folded into it, its abort signal and its retries.
+> Governs a read through the cache: its result, the key of an input, its abort signal and its retries.
 
 ## General
-
-### query-for-reads-mutation-for-writes · SHOULD
-
-A read goes through `useQuery`, or `useSuspenseQuery` where the read suspends, and a write through `useMutation`.
-
-| Why |
-|---|
-| the cache then handles loading, deduplication and retries, which a hand-written request gets wrong. |
 
 ### query-result-returned-as-status-union → data-result-is-union-by-status · MUST
 
@@ -20,7 +12,7 @@ What wraps a query or a mutation returns Query's own result narrowed by its `sta
 |---|
 | consumers then handle states, not combinations of flags, and never mistake "not loaded" for "empty". |
 
-## Inputs and streams
+## Inputs
 
 ### input-query-keyed-on-debounced-value → input-driven-requests-debounced · SHOULD
 
@@ -29,14 +21,6 @@ A query driven by typing is keyed on the debounced or deferred value, and keeps 
 | Why |
 |---|
 | a query per keystroke floods the server, and a blank list between keystrokes flickers. |
-
-### stream-folded-into-cache-per-frame → fast-source-updates-once-per-frame · SHOULD
-
-A stream's events reach the cache in batches, with at most one cache write per frame.
-
-| Why |
-|---|
-| a cache write per event redraws every subscriber on every event. |
 
 ## Cancellation and retries
 

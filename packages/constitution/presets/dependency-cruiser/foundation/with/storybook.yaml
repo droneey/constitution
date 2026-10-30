@@ -1,5 +1,5 @@
-storybook:
-  stories-unreachable-from-production:
+core:
+  test-code-never-reached-from-production:
     typescript:
       .dependency-cruiser.jsonc:
         forbidden[name=stories-unreachable-from-production]:
@@ -10,7 +10,6 @@ storybook:
               - ^\.storybook/
           to:
             path: \.stories\.[^/]+$
-core:
   production-code-imports-no-tool:
     typescript:
       .dependency-cruiser.jsonc:

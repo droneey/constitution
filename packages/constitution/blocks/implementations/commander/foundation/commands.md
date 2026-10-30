@@ -1,6 +1,6 @@
 # Commands
 
-> Governs a command's options, the settings it inherits, how the program is run, and a command's spec.
+> Governs a command's options, the settings it inherits, and a command's spec.
 
 ## General
 
@@ -19,14 +19,6 @@ A command added with `addCommand` first takes the program's settings through `co
 | Why |
 |---|
 | `addCommand` copies none of the settings `command()` copies, so a command added bare writes its errors to the process's streams and exits on its own. |
-
-### commander-run-by-parse-async → async-work-awaited-or-held-by-a-scope · MUST
-
-The program is run with `await program.parseAsync(argv)`, never with `parse`.
-
-| Why |
-|---|
-| `parse` returns before an asynchronous action ends, so its failure is never awaited and the run exits before its work is done. |
 
 ## Specs
 

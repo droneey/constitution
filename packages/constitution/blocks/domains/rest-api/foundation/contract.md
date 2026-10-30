@@ -1,6 +1,6 @@
 # Contract
 
-> Governs the OpenAPI document and the version.
+> Governs the OpenAPI document, the version, and how an operation or a field is retired.
 
 ## General
 
@@ -28,6 +28,8 @@ Every path begins with the API's major from its first release — `/v1/orders` �
 |---|
 | a version in the path shows in every log, cache key, route and link, and one scheme for every API leaves no caller unsure what it gets; versions kept for breaking changes alone stay few. |
 
+## Retirement
+
 ### retired-field-marked-deprecated-in-the-openapi-document → retired-operation-announced-before-removal · MUST
 
 A field being retired is marked `deprecated` in the OpenAPI document, naming its replacement and its removal date.
@@ -35,3 +37,11 @@ A field being retired is marked `deprecated` in the OpenAPI document, naming its
 | Why |
 |---|
 | a field has no header of its own, so the contract is where a caller and a generated client learn it is going. |
+
+### retired-operation-answers-deprecation-headers → retired-operation-announced-before-removal · MUST
+
+An operation being retired answers with `Deprecation` (RFC 9745) and `Sunset` (RFC 8594), the sunset no earlier than the deprecation, and a `Link` with `rel="deprecation"` to its notice.
+
+| Why |
+|---|
+| a caller's monitoring sees the retirement in every answer, long before the removal breaks it. |

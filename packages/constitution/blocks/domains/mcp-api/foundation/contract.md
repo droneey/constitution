@@ -64,7 +64,7 @@ A tool's name, description, schemas and annotations, and the server's instructio
 
 ### changed-tool-ships-under-a-new-name → published-contract-changed-only-by-addition · MUST
 
-A tool whose contract changes incompatibly ships under a new name beside the old one, which is then retired as the contract's rules say, since a tool server serves no two versions of one name.
+A tool whose contract changes incompatibly ships under a new name, the only way a tool server has: it serves no two versions of one name.
 
 | Why |
 |---|

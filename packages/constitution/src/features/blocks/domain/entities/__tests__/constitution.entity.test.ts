@@ -5,7 +5,7 @@ import { TermKind } from '#/kernel/entities';
 import { BlockId, Glob } from '#/kernel/value-objects';
 
 import { blockFiles, chapterFile, rule } from '../../../__tests__/constitution.fixtures';
-import { loadedOf } from '../../use-cases/queries/check/__tests__/check.fixtures';
+import { loadedOf } from '../../../application/use-cases/queries/check/__tests__/check.fixtures';
 import { Constitution } from '../constitution.entity';
 
 describe('Constitution.modelOf', () => {

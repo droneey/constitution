@@ -1,0 +1,11 @@
+language js
+
+or {
+  JsPropertyObjectMember(name=r"queryKey", value=$key),
+  `$client.getQueryData($key)`,
+  `$client.getQueryState($key)`,
+  `$client.setQueryData($key, $_)`
+} where {
+  $key <: JsArrayExpression(),
+  register_diagnostic(span=$key, message="[cache-key-built-by-its-features-factory] Take the key from the key factory: an inline key drifts from it and an invalidation misses it", severity="error")
+}

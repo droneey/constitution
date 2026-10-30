@@ -1,6 +1,6 @@
 # Commits
 
-> Governs a commit's message and the hooks that check it.
+> Governs a commit's message and the hooks that check it: how they are installed, what they rewrite and what they refuse.
 
 ## General
 
@@ -35,3 +35,35 @@ A **commit hook** runs as a commit is made. The commit hooks hold what can be ch
 | Why |
 |---|
 | a failure stopped before the commit never reaches the history, and the person who caused it sees it while the change is in mind. |
+
+### hooks-installed-on-setup · SHOULD
+
+Setting up a clone installs the commit hooks, so none commits without them; never through a package manager's install script.
+
+| Why |
+|---|
+| hooks a person must remember to install are missing on exactly the machine that needs them, and an install script runs on every install of a dependency, wherever it comes from. |
+
+### hooks-never-bypassed · MUST
+
+No commit skips the commit hooks, save the release automation's version commit.
+
+| Why |
+|---|
+| a skipped hook lets through exactly the commit the hook exists to stop. |
+
+### hook-rewrites-only-staged-files · MUST
+
+A commit hook that formats rewrites only the staged files and stages them again.
+
+| Why |
+|---|
+| a hook that touches unstaged files mixes work in progress into the commit. |
+
+### commit-subject-never-a-placeholder · MUST
+
+The commit hooks reject a placeholder subject: "update", "fix stuff", "wip", "changes", "misc".
+
+| Why |
+|---|
+| a placeholder subject makes the history useless at exactly the commit someone needs to understand. |

@@ -46,14 +46,6 @@ The outcome of every critical scenario of `PROJECT.md` — completed, abandoned,
 
 ## Data
 
-### event-names-no-person → secret-and-personal-data-kept-out-of-output · MUST
-
-No event carries data that names a person — a name, an email, a phone, an address — or content a person wrote; the only identifier an event carries is the analytics library's own pseudonymous one.
-
-| Why |
-|---|
-| analytics services are third parties, and what reaches them has left the product's control. |
-
 ### environment-sends-to-its-own-destination · MUST
 
 Each environment — development, preview, production — sends to its own destination or to none, so only production's events reach production's reports.

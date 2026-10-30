@@ -57,7 +57,7 @@ overrides:
     # Why: the program reads an override's reason from its one line.
     # yamllint disable-line rule:line-length
     reason: "Fumadocs exposes the parts of its layout only by their ids, so the site's styles reach them there"
-  - rule: utilities-only-from-tokens
+  - rule: theme-aliases-the-token-properties
     level: SHOULD
     # yamllint disable-line rule:line-length
     reason: "Fumadocs styles its own components with Tailwind's default scales, so the theme cannot reset them"

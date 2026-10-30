@@ -14,7 +14,7 @@ Production code checks no input, invariant or state with an `assert` statement; 
 
 ## Kinds of failure
 
-### expected-failure-named-in-raises → expected-failure-documented-where-no-signature-names-it · MUST
+### expected-failure-named-in-raises → expected-failure-named-where-callers-read-it · MUST
 
 An expected failure is named in the `Raises:` section of the function's docstring, its type and then its condition: `OrderNotFoundError: when no order has the id.`
 

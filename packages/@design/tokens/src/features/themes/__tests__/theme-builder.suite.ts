@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import type { ConfigOfMode, ThemeBuilder } from '../domain/contracts';
+import type { ConfigOfMode, ThemeBuilder } from '../application/contracts';
 import type { ThemeModeFiles } from '../domain/entities';
 
 const SCENARIO_MODE_NAMES = [

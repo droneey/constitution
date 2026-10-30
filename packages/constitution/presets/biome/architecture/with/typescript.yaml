@@ -41,8 +41,8 @@ typescript:
             - '!**/${role.source}/*.tsx'
             - '!**/${role.source}/${role.extra-entry}/**'
             - '!**/${role.source}/${role.host-integration}/**'
-            - '!**/${role.source}/${role.bounded-context}/*/${role.application-layer}/**'
-            - '!**/${role.source}/${role.composition-module}/*/${role.application-layer}/**'
+            - '!**/${role.source}/${role.bounded-context}/*/${role.presentation-layer}/**'
+            - '!**/${role.source}/${role.composition-module}/*/${role.presentation-layer}/**'
             - '!**/${role.colocated-specs}/**'
 core:
   outside-shape-mapped-in-the-adapter:

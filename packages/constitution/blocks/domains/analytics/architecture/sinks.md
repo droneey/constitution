@@ -6,7 +6,7 @@
 
 ### event-sent-only-by-delivery-units → code-placed-by-its-reason-to-change · MUST
 
-No domain, use case or adapter of a feature sends an event; a screen, a widget or another delivery unit translates what the user did and what the operation returned into events.
+No feature's domain, application or infrastructure sends an event; its presentation — a screen, a widget or another delivery unit — translates what the user did and what the operation returned into events.
 
 | Why |
 |---|
@@ -14,7 +14,7 @@ No domain, use case or adapter of a feature sends an event; a screen, a widget o
 
 ### sinks-behind-one-contract → new-kind-added-as-a-member · MUST
 
-Each analytics service is one sink, one **`.sink`**{#analytics-sink-file} file in **`sinks/`**{#analytics-sink}, under one contract beside the folder; the composition root chooses the active sinks and hands them to the one that sends.
+Each analytics service is one sink, an adapter of the infrastructure — one **`.sink`**{#analytics-sink-file} file in **`sinks/`**{#analytics-sink} — implementing one contract in the application's contracts; the composition root chooses the active sinks and hands them to the one that sends.
 
 | Why |
 |---|

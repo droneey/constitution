@@ -4,7 +4,7 @@
 
 ## What it holds
 
-### client-holds-nothing-hidden → secret-and-personal-data-kept-out-of-output · MUST
+### client-holds-nothing-hidden → secret-kept-out-of-output · MUST
 
 Nothing shipped to the client — code, configuration, a value the build inlines under a public prefix, data in memory or in storage — is treated as hidden from its user, so none of it holds a secret; configuration the client receives at runtime is public.
 

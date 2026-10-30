@@ -10,7 +10,7 @@ A module hides much behind a small interface: few operations, each doing much it
 
 | Why |
 |---|
-| a deep module spares its callers the details it hides; a shallow one makes them learn an interface nearly as large as the work behind it. |
+| a deep module spares its callers the details it hides; a shallow one makes them learn an interface nearly as large as the work behind it — Ousterhout's deep modules. |
 
 ### module-imports-form-no-cycle · MUST
 
@@ -18,7 +18,7 @@ Files and modules form no import cycle, direct or through a chain.
 
 | Why |
 |---|
-| a cycle ties two modules into one unit that can be neither tested nor changed apart. |
+| a cycle ties two modules into one unit that can be neither tested nor changed apart — the acyclic dependencies principle. |
 
 ### dependency-points-toward-stability · SHOULD
 
@@ -26,7 +26,7 @@ A unit depends only on units that change less often than itself.
 
 | Why |
 |---|
-| a stable unit that depends on a volatile one changes whenever the volatile one does. |
+| a stable unit that depends on a volatile one changes whenever the volatile one does — the stable dependencies principle. |
 
 ## Contracts
 
@@ -36,7 +36,7 @@ A contract between units offers the operations one role of caller needs — read
 
 | Why |
 |---|
-| a contract wider than its role couples every caller to operations it never uses, and one cut per caller multiplies contracts that change together. |
+| a contract wider than its role couples every caller to operations it never uses, and one cut per caller multiplies contracts that change together — the interface segregation principle. |
 
 ### implementation-keeps-the-whole-contract · MUST
 
@@ -44,7 +44,7 @@ Every implementation of a contract keeps all of it: no operation of it refuses a
 
 | Why |
 |---|
-| a caller relies on the contract, not on the implementation behind it. |
+| a caller relies on the contract, not on the implementation behind it — the Liskov substitution principle. |
 
 ### unit-talks-only-to-its-neighbours · SHOULD
 
@@ -52,7 +52,7 @@ A unit calls its own collaborators, never theirs: no chain walks into another un
 
 | Why |
 |---|
-| a chain couples the caller to the whole path, so a change anywhere along it breaks the caller. |
+| a chain couples the caller to the whole path, so a change anywhere along it breaks the caller — the law of Demeter. |
 
 ## Deprecation
 
@@ -63,6 +63,14 @@ New code calls nothing a dependency or the program marks deprecated, and uses no
 | Why |
 |---|
 | a deprecated form is removed in a later release, and two spellings of one thing double what a reader must know. |
+
+### retired-code-marked-deprecated · SHOULD
+
+Code kept only for its old callers is marked deprecated where it is declared, naming what replaces it.
+
+| Why |
+|---|
+| the mark stops new callers where they use it, and the replacement it names is the way off. |
 
 ## Construction and state
 
@@ -90,7 +98,7 @@ A unit shares behaviour by composing other units, never by inheriting an impleme
 
 | Why |
 |---|
-| inheritance couples a child to its parent’s internals and resists every change the hierarchy did not foresee. |
+| inheritance couples a child to its parent’s internals and resists every change the hierarchy did not foresee — composition over inheritance. |
 
 ### override-marked-where-declared · MUST
 
@@ -102,7 +110,7 @@ A method that overrides one of its base carries the language's mark of an overri
 
 ### pattern-chosen-by-problem · SHOULD
 
-A pattern, where a problem calls for one, is the one this table names: several interchangeable ways to do one job — a strategy and a registry keyed by kind; the states of a thing and the moves between them — a union of states and a pure transition function, a transition table when they grow; behaviour wrapped around an implementation — a decorator; an outside interface turned into the one the code needs — an adapter; a complicated subsystem behind a few operations — a facade; steps in a fixed order — a pipeline of functions; construction that depends on configuration — a factory; a fact others react to — an event; a request to run later, retry or undo — a command object. A class of unrelated helpers is no pattern.
+A pattern, where a problem calls for one, is the one its problem names: several interchangeable ways to do one job — a strategy, registered by kind; a complicated subsystem behind a few operations — a facade; construction that depends on configuration — a factory; a fact others react to — an event; a request to run later, retry or undo — a command object. A class of unrelated helpers is no pattern.
 
 | Why |
 |---|

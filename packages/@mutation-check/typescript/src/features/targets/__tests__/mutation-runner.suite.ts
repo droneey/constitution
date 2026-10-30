@@ -3,7 +3,7 @@ import { describe, expect, it } from 'bun:test';
 import { failureOf } from '#/__tests__/failure.fixtures.ts';
 import { UnitRelativePath } from '#/kernel/value-objects';
 
-import type { MutationRunner } from '../domain/contracts';
+import type { MutationRunner } from '../application/contracts';
 import { MutationRunError, MutationRunFailure } from '../domain/errors';
 
 type ToolEnd =

@@ -1,24 +1,16 @@
 # Schemas
 
-> Governs a schema: how it relates to the types — brands, strictness and conformance — and the forms of Zod's API it uses.
+> Governs a schema: how it relates to the types — the values it builds and its conformance — and the forms of Zod's API it uses.
 
 ## General
 
-### schema-never-brands → invariant-value-is-a-branded-type · MUST
+### schema-builds-values-through-the-domain → invariant-value-built-only-by-create · MUST
 
-A schema never calls `.brand()`; it produces a branded value through the value's own `<Name>.create`, after the schema has checked the invariant, as in `z.string().refine(Email.is).transform(Email.create)`, since a transform that throws escapes `safeParse`.
-
-| Why |
-|---|
-| zod's brand is a type of its own, so `.brand()` makes a second definition of the value that skips its check. |
-
-### strict-objects-for-owned-documents → own-shape-strict-other-shape-tolerant · MUST
-
-A document the program owns is parsed with `z.strictObject`; a vendor's response with `z.object`.
+A schema never calls `.brand()` and never restates the check of a value that keeps an invariant: it builds the value through the value's own constructor and turns the value's failure into an issue of its own, since a transform that throws escapes `safeParse`.
 
 | Why |
 |---|
-| `z.strictObject` fails on an unknown key, and `z.object` drops it. |
+| zod's brand is a type of its own, so `.brand()` makes a second definition of the value that skips its check, and a check copied into the schema drifts from the value's own. |
 
 ### schema-held-exactly-to-its-model → declared-values-never-typed-again · MUST
 

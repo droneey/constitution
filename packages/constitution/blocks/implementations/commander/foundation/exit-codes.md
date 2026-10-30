@@ -1,6 +1,6 @@
 # Exit codes
 
-> Governs how commander's own exits and an action's failures reach the program's exit codes.
+> Governs how the program is run, and how commander's own exits and an action's failures reach the program's exit codes.
 
 ## General
 
@@ -12,10 +12,10 @@ The program calls `exitOverride()`, and a `CommanderError` whose `exitCode` is 0
 |---|
 | commander otherwise ends its usage failures with `process.exit(1)`, the code the map gives a failure the user can act on, and an `error()` raised by an action reaches the map as one of commander's. |
 
-### commander-run-inside-the-last-resort-handler → last-resort-handler-one-per-entry · MUST
+### commander-run-by-parse-async-inside-the-last-resort-handler → last-resort-handler-one-per-entry · MUST
 
-`parseAsync` runs inside the program's one handler of last resort, which every `CommanderError` and every failure an action lets escape reach.
+The program is run with `await program.parseAsync(argv)`, never with `parse`, inside the program's one handler of last resort, which every `CommanderError` and every failure an action lets escape reach.
 
 | Why |
 |---|
-| with the exits overridden, every failure of a run surfaces from `parseAsync`, so one handler around it ends every command by the same map. |
+| `parse` returns before an asynchronous action ends, so its failure is never awaited; with the exits overridden, every failure of a run surfaces from `parseAsync`, so one handler around it ends every command by the same map. |

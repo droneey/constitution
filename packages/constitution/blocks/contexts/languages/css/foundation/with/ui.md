@@ -1,6 +1,6 @@
 # User interface
 
-> Governs how a stylesheet serves screens and components: focus, boundaries, text size, wrapping, reflow, overlays, hover, motion, values and scope.
+> Governs how a stylesheet serves screens and components: focus, boundaries, text size, reflow, overlays, hover, motion, values and scope.
 
 ## Screens
 
@@ -46,14 +46,6 @@ Only the entry stylesheet, and the theme it imports, style elements by their typ
 |---|
 | a global rule in a component's stylesheet reaches every screen, and changes whenever that component is or is not loaded. |
 
-### short-text-wrapped-to-balance · SHOULD
-
-A heading wraps with `text-wrap: balance`, and a short paragraph — a description, a caption — with `text-wrap: pretty`; long-form text takes neither.
-
-| Why |
-|---|
-| balanced lines keep a heading from ending on a lone word and pretty ones keep a short text's last line from holding one, while past a few lines the browser balances nothing, and re-wrapping every paragraph of a long page costs layout time no reader sees. |
-
 ## Accessibility
 
 ### focus-ring-drawn-as-an-outline → focus-always-visible · MUST
@@ -80,7 +72,7 @@ Content that stays on screen while the page scrolls — a header, a footer, a ba
 |---|
 | the browser then scrolls a focused element clear of it, and focus moved under a sticky header is focus the user cannot see. |
 
-### type-sized-in-rem · MUST
+### type-sized-in-rem → wcag-aa-conformance · MUST
 
 A font size is set in `rem`, in `em` relative to one, or by a `clamp()` whose bounds are in `rem` and whose preferred value adds a `rem` term, never in `px`.
 

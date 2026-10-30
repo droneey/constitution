@@ -1,6 +1,6 @@
 # Security
 
-> Governs child processes, outside paths, code run from strings, keyed collections, random values, the comparison of secrets, and outside patterns and identifiers.
+> Governs child processes, the input of interpreters, outside paths, code run from strings, keyed collections, random values, the comparison of secrets, and outside patterns and identifiers.
 
 ## Secrets
 
@@ -29,6 +29,14 @@ A path built from outside input is resolved with `path.resolve(root, input)`, ta
 | Why |
 |---|
 | `path.join` follows every `..` it is given, out of the root, and a check on the string before it is resolved misses an encoded or nested one. |
+
+### interpreter-input-never-joined-by-a-template-literal → outside-input-reaches-interpreters-as-parameters · MUST
+
+Outside input never reaches a query, markup or a log message through a template literal or `+`; it travels as the interpreter's parameter — a query's bound value, a log record's field — or in a tagged template whose tag the interpreter's library provides and which binds or escapes each value.
+
+| Why |
+|---|
+| a template literal joins the input into the text before the interpreter sees it, so the input becomes code, while a tag receives the strings and the values apart. |
 
 ### code-never-run-from-a-string → outside-input-reaches-interpreters-as-parameters · MUST
 

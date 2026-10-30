@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import { AbsolutePath } from '#/kernel/value-objects';
 
-import type { AppliedFilesCommandRepository } from '../domain/contracts/repositories/commands';
+import type { AppliedFilesCommandRepository } from '../application/contracts/repositories/commands';
 import type { Lock } from '../domain/entities';
 import { RecordKind } from '../domain/entities';
 import { ApplyError, ApplyFailure } from '../domain/errors';

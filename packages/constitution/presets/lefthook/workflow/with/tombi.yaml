@@ -7,7 +7,7 @@ tombi:
           jobs[name=tombi]:
             glob: '*.toml'
             run: tombi format {staged_files}
-lefthook:
+version-control:
   hook-rewrites-only-staged-files:
     '*':
       lefthook.yaml:

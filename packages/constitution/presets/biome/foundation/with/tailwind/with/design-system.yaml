@@ -1,4 +1,10 @@
 tailwind:
+  theme-aliases-the-token-properties:
+    css:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/css/theme-aliases-the-token-properties.${role.grit-rule}]:
+          includes:
+            - '**/*.css'
   class-names-only-semantic-colors:
     typescript:
       biome.jsonc:

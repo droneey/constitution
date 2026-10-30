@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import { UnitRelativePath } from '#/kernel/value-objects';
 
-import type { BranchReader } from '../domain/contracts';
+import type { BranchReader } from '../application/contracts';
 import { LineRange } from '../domain/value-objects';
 
 const BRANCH_SCENARIO = {

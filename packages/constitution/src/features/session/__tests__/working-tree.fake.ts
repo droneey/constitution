@@ -1,8 +1,8 @@
 import type { AbsolutePath } from '#/kernel/value-objects';
 import { RepositoryRelativePath } from '#/kernel/value-objects';
 
-import type { TreeState, WorkingTree } from '../domain/contracts';
-import { TreeStateStatus } from '../domain/contracts';
+import type { TreeState, WorkingTree } from '../application/contracts';
+import { TreeStateStatus } from '../application/contracts';
 import { TreeFingerprint } from '../domain/value-objects';
 
 interface FakeWorkingTree {

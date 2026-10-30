@@ -18,7 +18,7 @@ The rules a repository is built by. The digest lists the active blocks and their
 2. Before handing a change back, read it against every active rule, not only those it seemed to touch; a rule outranks the habit of the code around the change, so a breach nearby is no precedent to copy.
 3. A rule is `### <slug> · <level>`, or `### <slug> → <rule> · <level>` when it tightens another rule, never looser than it; then its statement and Why. MUST binds; SHOULD is left only with a stated reason; MAY is a choice.
 4. A request against a MUST gets the conflict and an alternative, never silent obedience.
-5. A rule is placed by the `placement` chapter. A case no rule covers follows the nearest rule, and between two choices the one that raises cohesion and lowers coupling wins; a real gap is amended or written as a block of the project's own pack, never kept as a habit.
+5. A rule is placed by `placement`. A case no rule covers follows the nearest rule, and of two choices the one that raises cohesion and lowers coupling wins; a real gap is amended or written as a block of the project's own pack, never kept as a habit.
 
 ## Precedence
 
@@ -29,15 +29,15 @@ The rules a repository is built by. The digest lists the active blocks and their
 
 ## Its chapters
 
-Read in this order, each in its axis's folder:
+By axis, in reading order:
 
 - `foundation/`: [placement](foundation/placement.md), [code](foundation/code.md), [names](foundation/names.md), [functions](foundation/functions.md), [relations](foundation/relations.md), [types](foundation/types.md), [errors](foundation/errors.md), [effects](foundation/effects.md), [security](foundation/security.md), [dependencies](foundation/dependencies.md), [tools](foundation/tools.md), [changes](foundation/changes.md), [layout](foundation/layout.md), [comments](foundation/comments.md), [tests](foundation/tests.md), [agents](foundation/agents.md).
-- `architecture/`: [layers](architecture/layers.md), [layout](architecture/layout.md), [ports](architecture/ports.md), [root](architecture/root.md), [domain](architecture/domain.md), [tests](architecture/tests.md).
+- `architecture/`: [layers](architecture/layers.md), [layout](architecture/layout.md), [ports](architecture/ports.md), [root](architecture/root.md), [domain](architecture/domain.md), [application](architecture/application.md), [tests](architecture/tests.md).
 - `workflow/`: [agents](workflow/agents.md).
 
 ## A dependency with no block
 
-Hold it to the rules of the project's domains and language and their requirements for implementation, report every MUST it cannot meet, and propose a block for it in the project's own pack. Never break a rule silently.
+Hold it to the rules of the project's domains and language and their requirements for implementation, report every MUST it cannot meet, and propose it a block in the project's own pack; never break a rule silently.
 
 ## The project's files
 

@@ -4,7 +4,7 @@
 
 ## Answers
 
-### failure-answered-by-its-code → expected-failure-is-part-of-the-contract · MUST
+### failure-answered-by-its-code → expected-failure-carries-a-stable-code · MUST
 
 A failure of a request is answered from what failed: an expected error with the answer its code maps to, carrying its code and details; a refusal the framework raises before the operation runs — a refused input, an unknown operation — as the caller's failure of that kind, a refused input naming the path of each field it refused; and any other failure as an internal error.
 
@@ -30,7 +30,7 @@ Every failure answer, a masked one included, carries an identifier of its occurr
 
 ## Raising
 
-### error-carries-a-code-never-a-status → expected-failure-is-part-of-the-contract · MUST
+### error-carries-a-code-never-a-status → expected-failure-carries-a-stable-code · MUST
 
 An error the code of a request raises carries a code, never a status or an answer of the protocol — neither the framework's error nor one of the program's own that holds a status.
 

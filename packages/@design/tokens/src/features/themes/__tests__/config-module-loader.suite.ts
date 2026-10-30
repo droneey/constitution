@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import type { ConfigModuleLoader } from '../domain/contracts';
+import type { ConfigModuleLoader } from '../application/contracts';
 import { ConfigModuleError, ConfigModuleFailure } from '../domain/errors';
 
 const SCENARIO_CONFIG_PATH = 'style-dictionary.config.ts';

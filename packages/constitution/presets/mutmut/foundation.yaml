@@ -1,11 +1,23 @@
 mutmut:
-  messages-modules-left-out-by-do-not-mutate:
+  text-for-a-person-left-out-by-configuration:
     python:
       pyproject.toml:
         tool:
           mutmut:
             do_not_mutate:
               - '*_${role.message-file}.py'
+            do_not_mutate_patterns:
+              - ^\s*logger\.(debug|info|warning|error|exception|critical)\(
+  mutants-run-without-the-gates:
+    python:
+      pyproject.toml:
+        tool:
+          mutmut:
+            pytest_add_cli_args:
+              - -p
+              - no:randomly
+              - -o
+              - norecursedirs=.* ${role.end-to-end-suite}
   '*':
     python:
       pyproject.toml:
@@ -17,10 +29,3 @@ mutmut:
               - '*/main.py'
               - '*_gen.py'
               - '*_gen/*'
-            do_not_mutate_patterns:
-              - ^\s*logger\.(debug|info|warning|error|exception|critical)\(
-            pytest_add_cli_args:
-              - -p
-              - no:randomly
-              - -o
-              - norecursedirs=.* ${role.end-to-end-suite}

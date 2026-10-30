@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { StateFolderProblem } from '#/features/session/adapters/session-store';
+import { StateFolderProblem } from '#/features/session/infrastructure/session-store';
 
 import { stateFolderWarningText } from '../state-folder-warning';
 

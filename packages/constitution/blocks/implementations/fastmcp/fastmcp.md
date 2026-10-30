@@ -5,7 +5,7 @@ requires: [python, pydantic, mcp-api]
 extends: null
 abstract: false
 languages: []
-governs: ["**/app/**", "**/root/**"]
+governs: ["**/presentation/**", "**/root/**"]
 ---
 
 # FastMCP

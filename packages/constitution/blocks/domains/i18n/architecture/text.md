@@ -1,12 +1,12 @@
 # Text
 
-> Governs where text is made from the codes the domain returns.
+> Governs where text is made from the codes the domain and the application return.
 
 ## General
 
-### domain-returns-codes-not-text → domain-imports-only-itself-and-the-kernel · MUST
+### domain-returns-codes-not-text → layer-imports-dependencies-by-its-role · MUST
 
-The domain and the application layers return codes and values, and the presentation turns them into text; no message library reaches the domain.
+The domain and the application return codes and values, and the presentation turns them into text; neither imports a message library, which holds the product's wording and is no library of an outside format.
 
 | Why |
 |---|

@@ -52,6 +52,14 @@ Personal data reaches another company only when the inventory lists it as a reci
 |---|
 | data handed to a company nobody listed is data no request to export or erase reaches, under terms nobody read. |
 
+### personal-data-kept-out-of-output · MUST
+
+Personal data the program holds about the people it serves appears in no log, error, URL, build artefact, test data or document; a record is named there by an identifier that carries no personal data, and an error that reaches anyone but the data’s owner carries such identifiers, never the values it rejected. An audit record kept for security holds the identifier and the network address its event needs, and nothing more.
+
+| Why |
+|---|
+| output is copied to places with weaker access than the data it came from, and a security audit needs to know who acted and from where, and no more. |
+
 ### high-risk-processing-assessed-before-it-starts · MUST
 
 Where the law of the region asks for it, processing the inventory marks as high-risk to people — profiling, large-scale special categories, monitoring — starts only after an assessment of its impact, kept beside the inventory.

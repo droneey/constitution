@@ -7,7 +7,7 @@ pydantic:
             homes:
               pydantic:
                 - edge
-                - ${role.application-layer}
+                - ${role.presentation-layer}
                 - ${role.shared-code}
               pydantic_settings:
                 - edge

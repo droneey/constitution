@@ -1,6 +1,6 @@
 # Rendering
 
-> Governs what a component renders and reads — overlays, browser APIs, inline styles, images and raw markup — where its render errors are reported, and who writes the document's head.
+> Governs what a component renders and reads — overlays, browser APIs, inline styles and raw markup — where its render errors are reported, and who writes the document's head.
 
 ## General
 
@@ -28,14 +28,6 @@ An element's inline `style` is an object literal of custom properties only; geom
 |---|
 | an inline visual value is a value written outside the tokens, while a custom property passes data to the stylesheet that styles it. |
 
-### jsx-images-declare-their-size → image-declares-its-size · SHOULD
-
-An `<img>` written in JSX declares `width` and `height`.
-
-| Why |
-|---|
-| this is the form of the rule the linter sees in markup. |
-
 ### dangerously-set-inner-html-never-used → raw-html-never-reaches-the-dom · MUST
 
 `dangerouslySetInnerHTML` is never set.
@@ -58,8 +50,8 @@ Render errors are reported once, through the root's `onUncaughtError`, `onCaught
 
 ### one-writer-of-the-head → browser-resources-have-one-writer · MUST
 
-Unless another active block claims the document's head, React's hoisted elements are its one writer: no head library, no effect writing to the document head, and no script tag inserted by hand, save by the one module that wraps a third-party service, which appends its script once to the body.
+React's rendering is the one writer of the document's head: `<title>`, `<meta>` and `<link>` reach it only as rendered elements React hoists, never through a library that writes the head itself or an effect that writes to it.
 
 | Why |
 |---|
-| a library or an effect is a second writer of the head, and it and React overwrite each other; a hand-inserted script runs twice or too early, unless the one module that wraps its service appends it once to the body, which leaves the head to React. |
+| a library or an effect is a second writer of the head, and it and React overwrite each other. |

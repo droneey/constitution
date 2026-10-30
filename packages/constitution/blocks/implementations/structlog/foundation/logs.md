@@ -30,7 +30,7 @@ The pipeline is structlog's chain over the standard library: `structlog.stdlib.L
 |---|
 | `foreign_pre_chain` is what runs the processors over a record a library or the server wrote through the standard logger; without it, those records skip them. |
 
-### secret-keys-masked-by-a-processor → log-value-masked-by-its-key · MUST
+### secret-keys-masked-by-a-processor → signal-value-masked-by-its-key · MUST
 
 The mask is a processor of the chain, placed before the renderer, that walks the event's nested maps.
 
@@ -40,7 +40,7 @@ The mask is a processor of the chain, placed before the renderer, that walks the
 
 ### json-in-production-console-in-development → log-output-structured-in-production · SHOULD
 
-The chain ends in `dict_tracebacks` and `JSONRenderer` in production, and in `ConsoleRenderer` in development, as a setting read at the program's start chooses.
+The chain ends in `dict_tracebacks` and `JSONRenderer` in production, and in `ConsoleRenderer` in development.
 
 | Why |
 |---|
@@ -48,7 +48,7 @@ The chain ends in `dict_tracebacks` and `JSONRenderer` in production, and in `Co
 
 ### trace-id-bound-through-contextvars → log-record-carries-the-trace-id · SHOULD
 
-`merge_contextvars` is the chain's first processor, and the middleware of each request or task clears the context with `clear_contextvars` and binds its trace id — the caller's, from its header, where the caller is one of the program's own systems, and a new one otherwise — with `bind_contextvars`.
+`merge_contextvars` is the chain's first processor, and the middleware of each request or task clears the context with `clear_contextvars` and binds its trace id with `bind_contextvars`.
 
 | Why |
 |---|

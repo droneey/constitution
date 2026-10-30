@@ -15,13 +15,6 @@ react-dom:
               useUniqueElementIds: error
         plugins:
           - ./${constitution.path}/presets/biome/plugins/typescript/labels-bound-with-use-id.${role.grit-rule}
-  jsx-images-declare-their-size:
-    typescript:
-      biome.jsonc:
-        linter:
-          rules:
-            correctness:
-              useImageSize: error
   dangerously-set-inner-html-never-used:
     typescript:
       biome.jsonc:
@@ -45,37 +38,6 @@ react-dom:
               noRedundantAlt: error
             nursery:
               noInvalidFileInputAccept: error
-  known-fields-declare-autocomplete:
-    typescript:
-      biome.jsonc:
-        linter:
-          rules:
-            a11y:
-              useValidAutocomplete: error
-        plugins:
-          - ./${constitution.path}/presets/biome/plugins/typescript/field-declares-its-autocomplete.${role.grit-rule}
-  jsx-controls-named:
-    typescript:
-      biome.jsonc:
-        linter:
-          rules:
-            a11y:
-              useAnchorContent: error
-              useAltText: error
-              noLabelWithoutControl: error
-              useIframeTitle: error
-              noSvgWithoutTitle: error
-            nursery:
-              useControlLabel: error
-  handlers-and-links-on-native-elements:
-    typescript:
-      biome.jsonc:
-        linter:
-          rules:
-            a11y:
-              useValidAnchor: error
-              useSemanticElements: error
-              noStaticElementInteractions: error
   jsx-roles-and-aria-valid:
     typescript:
       biome.jsonc:
@@ -91,13 +53,6 @@ react-dom:
               useFocusableInteractive: error
               noNoninteractiveElementInteractions: error
               noNoninteractiveElementToInteractiveRole: error
-  jsx-viewport-never-blocks-zoom:
-    typescript:
-      biome.jsonc:
-        linter:
-          rules:
-            nursery:
-              noNonScalableViewport: error
   inline-style-only-custom-properties-and-geometry:
     typescript:
       biome.jsonc:
@@ -138,5 +93,46 @@ html:
       biome.jsonc:
         linter:
           rules:
+            a11y:
+              useValidAnchor: error
+              useSemanticElements: error
+              noStaticElementInteractions: error
             nursery:
               noMisplacedListElements: error
+  image-declares-its-size:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            correctness:
+              useImageSize: error
+  field-declares-its-autocomplete:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            a11y:
+              useValidAutocomplete: error
+        plugins:
+          - ./${constitution.path}/presets/biome/plugins/typescript/field-declares-its-autocomplete.${role.grit-rule}
+  viewport-never-blocks-zoom:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            nursery:
+              noNonScalableViewport: error
+ui:
+  every-control-has-an-accessible-name:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            a11y:
+              useAnchorContent: error
+              useAltText: error
+              noLabelWithoutControl: error
+              useIframeTitle: error
+              noSvgWithoutTitle: error
+            nursery:
+              useControlLabel: error

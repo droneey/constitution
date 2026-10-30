@@ -2,8 +2,8 @@ import { describe, expect, it } from 'bun:test';
 
 import type { AbsolutePath } from '#/kernel/value-objects';
 
-import type { WorkingTree } from '../domain/contracts';
-import { TreeStateStatus } from '../domain/contracts';
+import type { WorkingTree } from '../application/contracts';
+import { TreeStateStatus } from '../application/contracts';
 
 interface WorkingTreeWorld {
   readonly committed: readonly string[];

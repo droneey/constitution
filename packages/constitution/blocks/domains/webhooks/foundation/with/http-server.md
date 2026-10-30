@@ -6,11 +6,19 @@
 
 ### webhook-verified-before-it-is-acted-on · MUST
 
-A webhook the program receives is acted on only once one of the signatures it carries verifies, compared in constant time, with the sender's secret or public key, over its raw body: the bytes as the server received them, never a form a framework parsed and wrote again. Where the sender signs a timestamp, the signature covers it and the timestamp falls within a window the project sets. In Standard Webhooks' format, the signed content is `webhook-id`, `webhook-timestamp` and the raw body joined by full stops, checked against each signature `webhook-signature` lists. From a sender that signs nothing, the program acts only on what it reads back from the sender itself.
+A webhook the program receives from a sender that signs is acted on only once one of the signatures it carries verifies, compared in constant time, with the sender's secret or public key, over its raw body: the bytes as the server received them, never a form a framework parsed and wrote again. Where the sender signs a timestamp, the signature covers it and the timestamp falls within a window the project sets. In Standard Webhooks' format, the signed content is `webhook-id`, `webhook-timestamp` and the raw body joined by full stops, checked against each signature `webhook-signature` lists.
 
 | Why |
 |---|
-| anyone who finds the address can post to it, a body parsed and written again differs from the bytes signed by a space or the order of its keys, a delivery whose timestamp the signature does not cover is replayed with a fresh one, a sender rotating its secret signs with both for a while, a comparison that stops at the first wrong byte tells an attacker how much they guessed, and what the program reads back from the sender is the sender's word. |
+| anyone who finds the address can post to it, a body parsed and written again differs from the bytes signed by a space or the order of its keys, a delivery whose timestamp the signature does not cover is replayed with a fresh one, a sender rotating its secret signs with both for a while, and a comparison that stops at the first wrong byte tells an attacker how much they guessed. |
+
+### unsigned-webhook-acted-on-only-by-a-read-back · MUST
+
+From a sender that signs nothing, the program acts only on what it reads back from the sender itself, never on the webhook's content.
+
+| Why |
+|---|
+| anyone who finds the address can post to it, and only what the program reads back from the sender is the sender's word. |
 
 ### webhook-delivery-processed-once → operation-idempotent-by-design · MUST
 
