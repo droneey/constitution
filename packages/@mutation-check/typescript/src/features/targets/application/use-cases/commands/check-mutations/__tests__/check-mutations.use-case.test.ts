@@ -17,6 +17,7 @@ import {
   MutationRunFailure,
 } from '../../../../../domain/errors';
 import { LineRange } from '../../../../../domain/value-objects';
+import type { CodeComparer } from '../../../../contracts';
 import { createCheckMutations } from '../check-mutations.use-case.ts';
 
 const orderPath = UnitRelativePath.create('src/order.utils.ts');
@@ -144,6 +145,37 @@ describe('createCheckMutations', () => {
           lineRange: fifthLine,
         },
       ],
+    ]);
+  });
+
+  it('should compare the code of only the changed files the runner mutates', async () => {
+    // Arrange
+    const compared: UnitRelativePath[] = [];
+    const recordingComparer: CodeComparer = {
+      hasCodeChanged: (filePath, baseText) => {
+        compared.push(filePath);
+
+        return codeComparer.hasCodeChanged(filePath, baseText);
+      },
+    };
+
+    // Act
+    await createCheckMutations({
+      branchReader,
+      codeComparer: recordingComparer,
+      runner: fakeMutationRunner({
+        exitCode: 0,
+        unmutatedPaths: [
+          specPath,
+        ],
+      }),
+    })(CheckScope.Branch);
+
+    // Assert
+    expect(compared).toStrictEqual([
+      orderPath,
+      pricePath,
+      ratePath,
     ]);
   });
 
