@@ -10,7 +10,7 @@ let payOrder = newPayOrder(payments)
 ```pseudo title="Prefer"
 # src/root/wiring.ts
 import CardPaymentAdapter from
-  "../adapters/card-payments"
+  "../infrastructure/card-payments"
 
 let payments = new CardPaymentAdapter()
 let payOrder = newPayOrder(payments)

@@ -9,6 +9,8 @@ ui:
       .dependency-cruiser.jsonc:
         'allowed[comment=rendering-library-imported-by-the-presentation: ink]':
           from:
-            path: /${role.presentation-layer}/
+            path:
+              - /${role.presentation-layer}/
+              - ^${role.source}/(${role.shared-code}|${role.generic-library})/ui/
           to:
             path: node_modules/ink/

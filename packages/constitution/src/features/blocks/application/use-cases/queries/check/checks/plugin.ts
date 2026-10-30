@@ -2,7 +2,12 @@ import { PATH_SEPARATOR } from '#/kernel/constants';
 import type { FindingOf } from '#/kernel/types';
 
 import { RELATIVE_PREFIX, SKILL_FILE_NAME } from '../../../../../domain/constants';
-import type { Agent, Constitution, Skill, SkillFrontMatterRead } from '../../../../../domain/entities';
+import type {
+  Agent,
+  Constitution,
+  Skill,
+  SkillFrontMatterRead,
+} from '../../../../../domain/entities';
 import { DocumentPath, ReadStatus, SkillField } from '../../../../../domain/entities';
 import type { Check, CheckInput } from '../check.types';
 import type { ManifestReadDetails } from '../utils';

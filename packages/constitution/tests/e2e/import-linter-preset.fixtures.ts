@@ -11,7 +11,8 @@ const ORDERS = 'src/unit/features/orders';
 
 const feature: Readonly<Record<string, string>> = {
   'src/unit/features/__init__.py': '',
-  [`${ORDERS}/__init__.py`]: 'from unit.features.orders.presentation import orders_cli as orders_cli\n',
+  [`${ORDERS}/__init__.py`]:
+    'from unit.features.orders.presentation import orders_cli as orders_cli\n',
   [`${ORDERS}/infrastructure/__init__.py`]: '',
   [`${ORDERS}/infrastructure/memory_store.py`]:
     'class MemoryStore:\n  def size(self) -> int:\n    return 0\n',

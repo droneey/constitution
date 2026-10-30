@@ -11,10 +11,10 @@ import {
 } from '../../../../../__tests__/session.fixtures';
 import { createFakeSessionQueryRepository } from '../../../../../__tests__/session-query-repository.fake';
 import { createFakeWorkingTree } from '../../../../../__tests__/working-tree.fake';
-import { TreeStateStatus } from '../../../../contracts';
 import type { StopEvent } from '../../../../../domain/entities';
 import { HookEventName, SessionMark, StopVerdict } from '../../../../../domain/entities';
 import { SessionId, TreeFingerprint } from '../../../../../domain/value-objects';
+import { TreeStateStatus } from '../../../../contracts';
 import { judgeStop } from '../judge-stop.use-case';
 
 const treeNow = TreeFingerprint.create('tree-now');

@@ -1,5 +1,5 @@
 ```pseudo title="Avoid"
-# orders/adapters/postgres
+# orders/infrastructure/postgres
 function createOrders(client)
   let table = env("ORDERS_TABLE")
   return {
@@ -14,7 +14,7 @@ let orders = createOrders(client)
 ```
 
 ```pseudo title="Prefer"
-# orders/adapters/postgres
+# orders/infrastructure/postgres
 function createOrders(client, table)
   return {
     find: function(orderId)

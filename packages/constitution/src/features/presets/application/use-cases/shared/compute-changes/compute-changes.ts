@@ -1,12 +1,12 @@
 import type { ProjectFiles } from '#/kernel/contracts';
 import type { AbsolutePath } from '#/kernel/value-objects';
 
+import type { LockRead, PresetsFinding, PresetsProject } from '../../../../domain/entities';
 import type {
   ConfigurationFormat,
   DistributionSources,
   PresetFileParser,
 } from '../../../contracts';
-import type { LockRead, PresetsFinding, PresetsProject } from '../../../../domain/entities';
 import type { FileComputed, UnitComputed } from '../compute-files';
 import { computeFiles } from '../compute-files';
 import { computePresets } from '../compute-presets';

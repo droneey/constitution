@@ -1,10 +1,10 @@
 import type { BlockModel } from '#/kernel/entities';
 import { SourceKind } from '#/kernel/value-objects';
 
-import type { ConfigurationFormat } from '../../../contracts';
 import type { PresetEntry, PresetSet, PresetsProblem } from '../../../../domain/entities';
 import { PresetsFinding } from '../../../../domain/entities';
 import { RoleNames } from '../../../../domain/value-objects';
+import type { ConfigurationFormat } from '../../../contracts';
 import type { ReleaseFiles } from './checks';
 import {
   entryProblems,

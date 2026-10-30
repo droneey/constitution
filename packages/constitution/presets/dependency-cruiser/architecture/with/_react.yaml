@@ -12,5 +12,6 @@ ui:
             path:
               - /${role.presentation-layer}/
               - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.presentation-layer}/
+              - ^${role.source}/(${role.shared-code}|${role.generic-library})/ui/
           to:
             path: node_modules/react/

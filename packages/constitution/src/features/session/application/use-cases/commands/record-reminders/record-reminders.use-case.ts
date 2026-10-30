@@ -1,8 +1,8 @@
 import type { BlockId } from '#/kernel/value-objects';
 
-import type { SessionCommandRepository } from '../../../contracts/repositories/commands';
 import type { SessionAgent } from '../../../../domain/entities';
 import type { SessionId } from '../../../../domain/value-objects';
+import type { SessionCommandRepository } from '../../../contracts/repositories/commands';
 
 interface RecordRemindersInput {
   readonly agent: SessionAgent;

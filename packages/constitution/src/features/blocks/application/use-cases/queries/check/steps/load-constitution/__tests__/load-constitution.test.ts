@@ -19,7 +19,12 @@ import {
 } from '../../../../../../../__tests__/constitution.fixtures';
 import { packFiles } from '../../../../../../../__tests__/pack-files.fixtures';
 import { validFiles } from '../../../../../../../__tests__/valid-files.fixtures';
-import { Block, BlockFile, FrontMatterReadCode, ReadStatus } from '../../../../../../../domain/entities';
+import {
+  Block,
+  BlockFile,
+  FrontMatterReadCode,
+  ReadStatus,
+} from '../../../../../../../domain/entities';
 import { TreePath } from '../../../../../../../domain/value-objects';
 import { loadedOf, packSourceOf } from '../../../__tests__/check.fixtures';
 import type { ConstitutionLoaded } from '../load-constitution';

@@ -14,9 +14,14 @@ function fakeGateway()
 type PaymentGatewayFake = {
   charges: Charge[], refunds: Refund[] }
 
-# pay-order.use-case.test
-let gateway = new PaymentGatewayFake()
+# __tests__/payment-gateway.suite
+function paymentGatewaySuite(newGateway)
+  test "should refund the charge it took"
+    ...
 
-# refund-order.use-case.test
-let gateway = new PaymentGatewayFake()
+# __tests__/payment-gateway.fake.test
+paymentGatewaySuite(newPaymentGatewayFake)
+
+# infrastructure/stripe/__tests__/payment-gateway.integration.test
+paymentGatewaySuite(newStripePaymentGateway)
 ```

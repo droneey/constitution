@@ -1,5 +1,5 @@
 ```pseudo title="Avoid"
-# features/orders/app/place-order
+# features/orders/presentation/place-order
 import charge from "features/payments"
 
 function placeOrder(cart)
@@ -9,7 +9,7 @@ function placeOrder(cart)
 ```
 
 ```pseudo title="Prefer"
-# composition/checkout/app/check-out
+# composition/checkout/presentation/check-out
 import placeOrder from "features/orders"
 import charge from "features/payments"
 

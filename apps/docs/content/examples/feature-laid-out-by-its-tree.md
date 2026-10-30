@@ -2,7 +2,7 @@
 features/orders/
 ├── domain/
 │   └── order.entity.ts
-├── adapters/postgres/
+├── infrastructure/postgres/
 │   ├── order.repository.ts
 │   └── index.ts
 ├── order.model.ts
@@ -15,7 +15,7 @@ features/orders/
 │   └── entities/
 │       ├── order.entity.ts
 │       └── index.ts
-├── adapters/postgres/
+├── infrastructure/postgres/
 │   ├── models/order.model.ts
 │   ├── order.repository.ts
 │   └── index.ts

@@ -1,5 +1,5 @@
 ```pseudo title="Avoid"
-# composition/refunds/app/refund
+# composition/refunds/presentation/refund
 import Receipt from "composition/cart"
 
 function refund(receipt: Receipt)
@@ -7,7 +7,7 @@ function refund(receipt: Receipt)
 ```
 
 ```pseudo title="Prefer"
-# composition/refunds/app/refund
+# composition/refunds/presentation/refund
 import Receipt from "kernel"
 
 function refund(receipt: Receipt)

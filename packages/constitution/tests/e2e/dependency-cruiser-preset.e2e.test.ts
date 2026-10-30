@@ -29,7 +29,8 @@ const wellFormed = {
     "import type { Mail } from '../../../../../kernel/contracts';\nimport { listOrders } from '../../../../../features/orders';\nexport const cart = (mail: Mail): unknown => [mail, listOrders];\n",
   'src/composition/checkout/presentation/bindings/queries/cart/index.ts':
     "export { cart } from './cart';\n",
-  'src/composition/checkout/index.ts': "export { cart } from './presentation/bindings/queries/cart';\n",
+  'src/composition/checkout/index.ts':
+    "export { cart } from './presentation/bindings/queries/cart';\n",
   'src/kernel/contracts/index.ts': "export type { Mail } from './mail.port';\n",
   'src/kernel/contracts/mail.port.ts':
     "import type { Money } from '../values';\nexport interface Mail { cost: Money }\n",
@@ -44,10 +45,11 @@ const wellFormed = {
     "export { listOrders } from './list-orders.use-case';\n",
   'src/features/orders/presentation/bindings/queries/list-orders/list-orders.use-case.ts':
     "import { order } from '../../../../domain/entities';\nimport { price } from '../../../../application/use-cases/shared/price';\nexport const listOrders = [order, price];\n",
-  'src/features/orders/presentation/bindings/queries/count-orders/count-orders.use-case.ts': importing({
-    from: '../../../../application/use-cases/queries/count-orders',
-    name: 'countOrders',
-  }),
+  'src/features/orders/presentation/bindings/queries/count-orders/count-orders.use-case.ts':
+    importing({
+      from: '../../../../application/use-cases/queries/count-orders',
+      name: 'countOrders',
+    }),
   'src/features/orders/application/contracts/repositories/queries/index.ts':
     "export type { OrderReader } from './order.repository';\n",
   'src/features/orders/application/contracts/repositories/queries/order.repository.ts':
@@ -162,10 +164,11 @@ const layerViolations = [
   {
     condition: "a feature's application layer reads a file through a lib",
     files: {
-      'src/features/orders/presentation/bindings/queries/list-orders/list-orders.use-case.ts': importing({
-        from: '../../../../../../libs/files',
-        name: 'readText',
-      }),
+      'src/features/orders/presentation/bindings/queries/list-orders/list-orders.use-case.ts':
+        importing({
+          from: '../../../../../../libs/files',
+          name: 'readText',
+        }),
       'src/libs/files/index.ts': "export { readText } from './read-text';\n",
       'src/libs/files/read-text.ts':
         "import { readFileSync } from 'node:fs';\nexport const readText = readFileSync;\n",
@@ -576,10 +579,11 @@ const layerViolations = [
     condition: 'a use case imports an adapter past its port',
     files: {
       'src/features/orders/infrastructure/api/order.adapter.ts': exported('orderAdapter'),
-      'src/features/orders/presentation/bindings/queries/list-orders/list-orders.use-case.ts': importing({
-        from: '../../../../infrastructure/api/order.adapter',
-        name: 'orderAdapter',
-      }),
+      'src/features/orders/presentation/bindings/queries/list-orders/list-orders.use-case.ts':
+        importing({
+          from: '../../../../infrastructure/api/order.adapter',
+          name: 'orderAdapter',
+        }),
     },
     rule: 'adapters-reached-only-from-the-root',
   },
@@ -616,7 +620,8 @@ const layerViolations = [
   {
     condition: 'a read imports a write',
     files: {
-      'src/features/orders/presentation/bindings/commands/cancel/cancel.use-case.ts': exported('cancel'),
+      'src/features/orders/presentation/bindings/commands/cancel/cancel.use-case.ts':
+        exported('cancel'),
       'src/features/orders/presentation/bindings/queries/list/list.use-case.ts': importing({
         from: '../../commands/cancel/cancel.use-case',
         name: 'cancel',
@@ -668,10 +673,11 @@ const blockViolations = [
   {
     condition: "a feature's application layer opens a database through Bun by a lib",
     files: {
-      'src/features/orders/presentation/bindings/queries/list-orders/list-orders.use-case.ts': importing({
-        from: '../../../../../../libs/db',
-        name: 'open',
-      }),
+      'src/features/orders/presentation/bindings/queries/list-orders/list-orders.use-case.ts':
+        importing({
+          from: '../../../../../../libs/db',
+          name: 'open',
+        }),
       'src/libs/db/index.ts':
         "import { Database } from 'bun:sqlite';\nexport const open = Database;\n",
     },
@@ -841,10 +847,11 @@ const blockViolations = [
   {
     condition: 'a binding unit imports a package no block gives a home there',
     files: {
-      'src/features/orders/presentation/bindings/queries/list-orders/list-orders.hooks.ts': importing({
-        from: 'kit',
-        name: 'value',
-      }),
+      'src/features/orders/presentation/bindings/queries/list-orders/list-orders.hooks.ts':
+        importing({
+          from: 'kit',
+          name: 'value',
+        }),
     },
     axes: [],
     blocks: [],
@@ -1066,10 +1073,11 @@ const blockViolations = [
     condition: 'a binding unit imports an adapter',
     files: {
       'src/features/orders/infrastructure/api/index.ts': exported('ordersAdapter'),
-      'src/features/orders/presentation/bindings/queries/list-orders/list-orders.hooks.ts': importing({
-        from: '../../../../infrastructure/api',
-        name: 'ordersAdapter',
-      }),
+      'src/features/orders/presentation/bindings/queries/list-orders/list-orders.hooks.ts':
+        importing({
+          from: '../../../../infrastructure/api',
+          name: 'ordersAdapter',
+        }),
     },
     blocks: [
       'ui',
@@ -1080,10 +1088,11 @@ const blockViolations = [
     condition: 'a binding unit imports a component',
     files: {
       'src/features/orders/ui/components/order-card.tsx': exported('orderCard'),
-      'src/features/orders/presentation/bindings/queries/list-orders/list-orders.hooks.ts': importing({
-        from: '../../../../ui/components/order-card',
-        name: 'orderCard',
-      }),
+      'src/features/orders/presentation/bindings/queries/list-orders/list-orders.hooks.ts':
+        importing({
+          from: '../../../../ui/components/order-card',
+          name: 'orderCard',
+        }),
     },
     blocks: [
       'ui',
@@ -1452,10 +1461,11 @@ describe('the dependency-cruiser layer set', () => {
         'src/features/orders/ui/widgets/orders.tsx':
           "import type { Order } from '../../domain/entities';\nimport { track } from '../../../../shared/sinks';\nexport const orders: Order[] = [];\nexport const tracked = track;\n",
         'src/shared/sinks/index.ts': exported('track'),
-        'src/features/orders/presentation/bindings/commands/sync-orders/sync-orders.cli.ts': importing({
-          from: '@bunli/core',
-          name: 'value',
-        }),
+        'src/features/orders/presentation/bindings/commands/sync-orders/sync-orders.cli.ts':
+          importing({
+            from: '@bunli/core',
+            name: 'value',
+          }),
         'src/composition/checkout/ui/screens/cart-screen/cart-screen.tsx':
           "import { useMemo } from 'react';\nimport { value } from '@lingui/core';\nexport const screen = [useMemo, value];\n",
         'src/composition/checkout/presentation/bindings/queries/cart/cart.hooks.ts':

@@ -6,8 +6,8 @@ import { recognisedFailure } from '#/kernel/utils';
 import { AbsolutePath } from '#/kernel/value-objects';
 import { isSystemError } from '#/libs/system-error';
 
-import { LOCK_FILE_NAME } from '../../domain/constants';
 import type { AppliedFilesCommandRepository } from '../../application/contracts/repositories/commands';
+import { LOCK_FILE_NAME } from '../../domain/constants';
 import type { AppliedFiles, FileText } from '../../domain/entities';
 import { ApplyError, ApplyFailure } from '../../domain/errors';
 import { textOfLock } from './lock-text.utils';

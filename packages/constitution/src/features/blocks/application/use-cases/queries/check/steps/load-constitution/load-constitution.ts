@@ -8,9 +8,9 @@ import type { FindingOf } from '#/kernel/types';
 import { normalizePath } from '#/kernel/utils';
 import type { BlockId } from '#/kernel/value-objects';
 
-import type { FileTree, FrontMatterParser, ManifestParser } from '../../../../../contracts';
 import type { Constitution, FrontMatterReadDetails } from '../../../../../../domain/entities';
 import { Block } from '../../../../../../domain/entities';
+import type { FileTree, FrontMatterParser, ManifestParser } from '../../../../../contracts';
 import type { BlockLoadDetails, PlaceDetails } from './steps/load-blocks';
 import { loadBlocks } from './steps/load-blocks';
 import { parseRules } from './steps/parse-rules';

@@ -1,5 +1,5 @@
 ```pseudo
-# orders/adapters/order-schemas.ts
+# orders/infrastructure/order-schemas.ts
 
 # our own request: an unknown key or an unknown method fails
 let createOrderRequest = strictObject({

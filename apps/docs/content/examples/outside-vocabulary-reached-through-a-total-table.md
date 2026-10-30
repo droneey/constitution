@@ -1,5 +1,5 @@
 ```pseudo
-# shipping/adapters/carrier-status.ts
+# shipping/infrastructure/carrier-status.ts
 type ShipmentStatus = InTransit | Delivered | Lost | UnknownStatus
 
 # total: the checker refuses a carrier code with no entry

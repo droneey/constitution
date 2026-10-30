@@ -10,9 +10,9 @@ import {
 } from '../../../../../__tests__/session.fixtures';
 import { createFakeSessionCommandRepository } from '../../../../../__tests__/session-command-repository.fake';
 import { createFakeWorkingTree } from '../../../../../__tests__/working-tree.fake';
-import { TreeStateStatus } from '../../../../contracts';
 import { SessionMark } from '../../../../../domain/entities';
 import { SessionId } from '../../../../../domain/value-objects';
+import { TreeStateStatus } from '../../../../contracts';
 import { recordCheck } from '../record-check.use-case';
 
 const TREE = 'tree-now';

@@ -4,9 +4,9 @@ import { ReleaseStatus } from '#/kernel/entities';
 import type { AbsolutePath, Version } from '#/kernel/value-objects';
 import { RepositoryRelativePath } from '#/kernel/value-objects';
 
-import type { PinnedRelease } from '../../../../../contracts';
 import type { PartDiagnosis } from '../../../../../../domain/entities';
 import { Diagnosis } from '../../../../../../domain/entities';
+import type { PinnedRelease } from '../../../../../contracts';
 
 const unreadDiagnosisOf = (input: {
   release: Exclude<

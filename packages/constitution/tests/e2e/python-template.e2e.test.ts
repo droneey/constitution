@@ -259,7 +259,8 @@ describe('the files apply writes for a unit of Python', () => {
         changes: {
           ...feature,
           'src/shop/features/orders/presentation/__init__.py': '',
-          'src/shop/features/orders/presentation/orders_export.py': 'from shop.libs.run import run\n',
+          'src/shop/features/orders/presentation/orders_export.py':
+            'from shop.libs.run import run\n',
           'src/shop/libs/__init__.py': '',
           'src/shop/libs/run/__init__.py': "from .run_utils import run\n\n__all__ = ['run']\n",
           'src/shop/libs/run/run_utils.py': "from subprocess import run\n\n__all__ = ['run']\n",
@@ -369,7 +370,8 @@ describe('the files apply writes for a unit of Python', () => {
           ...feature,
           'src/shop/features/orders/infrastructure/__init__.py': '',
           'src/shop/features/orders/infrastructure/http/__init__.py': 'ADAPTER = 1\n',
-          'src/shop/features/orders/presentation/__init__.py': 'from ..infrastructure.http import ADAPTER\n',
+          'src/shop/features/orders/presentation/__init__.py':
+            'from ..infrastructure.http import ADAPTER\n',
         },
         finding: [
           'adapter-imported-only-by-the-root BROKEN',

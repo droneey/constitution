@@ -1,15 +1,16 @@
 ```pseudo title="Avoid"
-# entities/order.entity
-class Order
-  function isRefundable()
-    return this.status is Paid
+# aggregates/order/order.aggregate
+type Order = {
+  id: OrderId,
+  status: OrderStatus
+}
 
-# orders/app/show-order
+# presentation/widgets/order-details
 let canRefund = order.status is Paid
 ```
 
 ```pseudo title="Prefer"
-# entities/order.entity
+# aggregates/order/order.aggregate
 type Order = {
   id: OrderId,
   status: OrderStatus
@@ -18,6 +19,6 @@ type Order = {
 function isRefundable(order)
   return order.status is Paid
 
-# orders/app/show-order
+# presentation/widgets/order-details
 let canRefund = isRefundable(order)
 ```

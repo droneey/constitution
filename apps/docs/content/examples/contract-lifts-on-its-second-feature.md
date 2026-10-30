@@ -3,7 +3,7 @@ src/
 ├── features/
 │   ├── billing/   imports orders' port
 │   └── orders/
-│       └── domain/contracts/
+│       └── application/contracts/
 │           └── clock.port.ts
 └── kernel/
 ```

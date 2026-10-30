@@ -3,7 +3,11 @@ import type { FindingOf, ProblemOf } from '#/kernel/types';
 import { withoutCodeFences } from '#/kernel/utils';
 import type { RuleSlug } from '#/kernel/value-objects';
 
-import { GENERAL_SECTION, GOVERNS_LINE, REQUIREMENTS_SECTION } from '../../../../../domain/constants';
+import {
+  GENERAL_SECTION,
+  GOVERNS_LINE,
+  REQUIREMENTS_SECTION,
+} from '../../../../../domain/constants';
 import type { Block, BlockFile } from '../../../../../domain/entities';
 import type { Check, CheckInput } from '../check.types';
 

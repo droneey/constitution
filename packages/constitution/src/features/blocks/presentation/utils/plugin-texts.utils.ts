@@ -1,6 +1,5 @@
 import type { TextsOf } from '#/shared/cli';
 
-import { RELATIVE_PREFIX, SKILL_FILE_NAME } from '../../domain/constants';
 import type {
   HooksDetails,
   ManifestReadDetails,
@@ -13,6 +12,7 @@ import {
   MarketplaceCode,
   PluginCode,
 } from '../../application/use-cases/queries/check';
+import { RELATIVE_PREFIX, SKILL_FILE_NAME } from '../../domain/constants';
 import { fieldOf } from './wording.utils';
 
 const missingText = (role: string): string =>

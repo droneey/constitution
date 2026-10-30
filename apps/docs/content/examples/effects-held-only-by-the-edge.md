@@ -1,5 +1,5 @@
 ```pseudo title="Avoid"
-# domain/use-cases/expire-cart
+# application/use-cases/expire-cart
 function expireCart(cart)
   let now = Date.now()
   if cart.expiresAt < now
@@ -8,7 +8,7 @@ function expireCart(cart)
 ```
 
 ```pseudo title="Prefer"
-# domain/use-cases/expire-cart
+# application/use-cases/expire-cart
 function expireCart(cart, clock: Clock)
   let now = clock.now()
   if cart.expiresAt < now

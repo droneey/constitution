@@ -5,8 +5,6 @@ import { firstBy } from '#/kernel/utils';
 import type { BlockSource, RuleSlug } from '#/kernel/value-objects';
 import { BlockId, Glob } from '#/kernel/value-objects';
 
-import type { BlockCard, BlockCardParser } from '../../../../../../../contracts';
-import { EMPTY_CARD } from '../../../../../../../contracts';
 import type {
   BlockSet,
   BlockSetBlock,
@@ -16,6 +14,8 @@ import type {
   SeamPlace,
 } from '../../../../../../../../domain/entities';
 import { SourceStatus } from '../../../../../../../../domain/entities';
+import type { BlockCard, BlockCardParser } from '../../../../../../../contracts';
+import { EMPTY_CARD } from '../../../../../../../contracts';
 import type { FileInFolder, KeptFile, PassedFile } from './steps/place-files';
 import { FileFate, placeFiles } from './steps/place-files';
 import type { BlockFileRead } from './steps/read-block-file';

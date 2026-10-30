@@ -3,9 +3,9 @@ import type { ProjectFiles } from '#/kernel/contracts';
 import type { BlockModel } from '#/kernel/entities';
 import { AbsolutePath } from '#/kernel/value-objects';
 
-import type { FileTree, FileTrees, FrontMatterParser, ManifestParser } from '../../../contracts';
 import type { SimilarRules } from '../../../../domain/entities';
 import { Block, BlockGraph, Constitution } from '../../../../domain/entities';
+import type { FileTree, FileTrees, FrontMatterParser, ManifestParser } from '../../../contracts';
 import type { BlockFinding } from './block-finding.types';
 import type { Check, CheckInput } from './check.types';
 import {

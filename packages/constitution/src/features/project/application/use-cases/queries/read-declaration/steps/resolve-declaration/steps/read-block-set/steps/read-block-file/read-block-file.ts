@@ -5,8 +5,12 @@ import { splitFrontMatter, withoutCodeFences } from '#/kernel/utils';
 import type { BlockId } from '#/kernel/value-objects';
 import { BlockFileKind } from '#/kernel/value-objects';
 
+import type {
+  BlockSetAnswer,
+  ChapterPlace,
+  SeamPlace,
+} from '../../../../../../../../../../domain/entities';
 import type { BlockCard, BlockCardParser } from '../../../../../../../../../contracts';
-import type { BlockSetAnswer, ChapterPlace, SeamPlace } from '../../../../../../../../../../domain/entities';
 import type { FileInFolder } from '../place-files';
 
 enum PartKind {

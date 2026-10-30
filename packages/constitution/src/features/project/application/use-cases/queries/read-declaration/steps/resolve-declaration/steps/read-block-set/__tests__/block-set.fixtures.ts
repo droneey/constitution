@@ -3,7 +3,11 @@ import { FileReadStatus } from '#/kernel/entities';
 import { AbsolutePath, BlockId, BlockSource, PackPath, RuleSlug } from '#/kernel/value-objects';
 
 import { parsers } from '../../../../../../../../../__tests__/project.fixtures';
-import type { BlockSetAnswer, BlockSetSource, SourceFile } from '../../../../../../../../../domain/entities';
+import type {
+  BlockSetAnswer,
+  BlockSetSource,
+  SourceFile,
+} from '../../../../../../../../../domain/entities';
 import { SourceStatus } from '../../../../../../../../../domain/entities';
 import { readBlockSet } from '../read-block-set';
 

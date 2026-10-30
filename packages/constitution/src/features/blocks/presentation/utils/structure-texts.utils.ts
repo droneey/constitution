@@ -1,6 +1,5 @@
 import type { TextsOf } from '#/shared/cli';
 
-import { GENERAL_SECTION, GOVERNS_LINE, REQUIREMENTS_SECTION } from '../../domain/constants';
 import type {
   AbstractBlocksDetails,
   BlockFormDetails,
@@ -21,6 +20,7 @@ import {
   FrontMatterCode,
   SeamsCode,
 } from '../../application/use-cases/queries/check';
+import { GENERAL_SECTION, GOVERNS_LINE, REQUIREMENTS_SECTION } from '../../domain/constants';
 import { aBlock, blocksOf } from './wording.utils';
 
 const structureTexts: TextsOf<

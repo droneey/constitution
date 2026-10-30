@@ -1,15 +1,15 @@
 ```text title="Avoid"
 composition/checkout/
-├── app/
+├── presentation/
 │   └── check-out.ts
-├── domain/use-cases/
+├── application/use-cases/
 │   └── price-cart/   only check-out
 └── index.ts
 ```
 
 ```text title="Prefer"
 composition/checkout/
-├── app/
+├── presentation/
 │   └── check-out.ts  prices the cart
 └── index.ts
 ```

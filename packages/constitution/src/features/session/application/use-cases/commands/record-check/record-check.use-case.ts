@@ -1,9 +1,9 @@
 import { projectCheck } from '#/kernel/constants';
 
-import type { WorkingTree } from '../../../contracts';
-import type { SessionCommandRepository } from '../../../contracts/repositories/commands';
 import { SessionMark } from '../../../../domain/entities';
 import type { SessionId } from '../../../../domain/value-objects';
+import type { WorkingTree } from '../../../contracts';
+import type { SessionCommandRepository } from '../../../contracts/repositories/commands';
 import { recordTree } from '../shared/record-tree';
 
 const COMMAND_SEPARATOR = /&&|;/;

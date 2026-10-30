@@ -1,5 +1,5 @@
 ```pseudo title="Avoid"
-# orders/domain/contracts/payment.port
+# orders/application/contracts/payment.port
 import StripeCharge from "stripe"
 
 type PaymentPort = {
@@ -8,7 +8,7 @@ type PaymentPort = {
 ```
 
 ```pseudo title="Prefer"
-# orders/domain/contracts/payment.port
+# orders/application/contracts/payment.port
 import Payment from "../entities"
 
 type PaymentPort = {

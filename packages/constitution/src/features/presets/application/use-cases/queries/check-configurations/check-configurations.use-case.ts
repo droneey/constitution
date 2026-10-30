@@ -1,6 +1,8 @@
 import type { ProjectFiles } from '#/kernel/contracts';
 import type { AbsolutePath } from '#/kernel/value-objects';
 
+import type { ConfigurationsCheck } from '../../../../domain/entities';
+import { ProjectRead } from '../../../../domain/entities';
 import type {
   ConfigurationFormat,
   DistributionSources,
@@ -8,8 +10,6 @@ import type {
   ProjectReader,
 } from '../../../contracts';
 import type { LockQueryRepository } from '../../../contracts/repositories/queries';
-import type { ConfigurationsCheck } from '../../../../domain/entities';
-import { ProjectRead } from '../../../../domain/entities';
 import { checkProject } from '../../shared/check-project';
 
 interface CheckConfigurationsInput {

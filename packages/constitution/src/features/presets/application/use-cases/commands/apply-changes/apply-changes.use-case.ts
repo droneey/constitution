@@ -1,5 +1,5 @@
-import type { AppliedFilesCommandRepository } from '../../../contracts/repositories/commands';
 import type { AppliedFiles } from '../../../../domain/entities';
+import type { AppliedFilesCommandRepository } from '../../../contracts/repositories/commands';
 
 interface ApplyChangesInput {
   readonly changes: AppliedFiles;

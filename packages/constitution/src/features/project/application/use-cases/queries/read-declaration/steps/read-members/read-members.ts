@@ -4,9 +4,9 @@ import { ConfigReadStatus, FileReadStatus } from '#/kernel/entities';
 import type { UnitPath } from '#/kernel/value-objects';
 import { AbsolutePath } from '#/kernel/value-objects';
 
-import type { ConfigParser, Workspace } from '../../../../../contracts';
 import type { DeclaredUnit, UnreadMember } from '../../../../../../domain/entities';
 import { MemberProblem } from '../../../../../../domain/entities';
+import type { ConfigParser, Workspace } from '../../../../../contracts';
 
 interface ReadMembersInput {
   readonly configParser: ConfigParser;
