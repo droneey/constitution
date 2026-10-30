@@ -30,11 +30,11 @@ A closed set of named values the program owns is declared once, as one enumerati
 
 ### identifier-branded-by-entity · SHOULD
 
-An entity's identifier is a type of its own, branded by its entity, so one entity's identifier is refused where another's is expected.
+An entity's identifier is a type of its own, branded by its entity, so one entity's identifier is refused where another's is expected; its type is given only where the identifier is minted, by the one function that makes new ones, or where it enters the program, in the parse of the outside value.
 
 | Why |
 |---|
-| two identifiers of one primitive type are swapped silently; a brand makes the type checker refuse it. |
+| two identifiers of one primitive type are swapped silently; a brand makes the type checker refuse it, and given in one place it proves the value came through it. |
 
 ### shape-composed-of-small-shapes · SHOULD
 
@@ -109,14 +109,6 @@ A value that must keep an invariant is built only through the function that chec
 | Why |
 |---|
 | no caller has to check the invariant again, or can forget to. |
-
-### value-object-checks-what-the-domain-relies-on · SHOULD
-
-A value object checks the invariants the domain relies on and no more; a stricter check an interface asks for — a required field, a format hint, a stricter pattern — is the interface's own, and composes the value object's check instead of restating it.
-
-| Why |
-|---|
-| the domain's check then changes only when the domain's needs do, and an interface's wishes never refuse a value the domain would accept through another door. |
 
 ### invariant-value-is-plain-immutable-data · MUST
 

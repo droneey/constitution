@@ -20,9 +20,9 @@ A case is a function `test_should_<behaviour>`, followed by `_when_<condition>` 
 |---|
 | a case is a function found by its `test_` prefix, so core's words follow the prefix and a failing case still names its behaviour and condition. |
 
-### case-variants-are-parametrized-rows → case-holds-no-logic · SHOULD
+### case-variants-are-parametrized-rows → variants-are-one-table · SHOULD
 
-The variants of one behaviour are the rows of a parametrized table on one `test_` function, each row its input and its expected value.
+The variants of one behaviour are the rows of a parametrized table on one `test_` function, each row naming its condition and holding its input and its expected value.
 
 | Why |
 |---|

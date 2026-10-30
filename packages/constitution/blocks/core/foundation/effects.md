@@ -102,14 +102,6 @@ A write decided on data read earlier, which another writer may change meanwhile,
 |---|
 | two writers who read the same state otherwise overwrite each other, and the first update is lost without a trace. |
 
-### multi-step-process-compensated · SHOULD
-
-A business process that spans several programs or transactions keeps its state in a store, runs each step in a transaction of its own, and runs a compensating step for each step already done when a later one fails for good or a wait for a reply passes its deadline.
-
-| Why |
-|---|
-| no transaction spans programs, so a process that fails midway is either undone step by step or left half done, and one whose state lives only in memory is lost with the process that held it. |
-
 ### irreversible-operation-runs-dry-by-default · MUST
 
 An operation run by hand or by a pipeline against a live system (one others use, or whose data outlives the task) — a script, a data fix, a migration, a deployment, an apply — that destroys data, spends money, changes the system or sends something outward runs only on an explicit confirmation of that run; without it, it shows what it would do. A command of the product whose one purpose is that effect, invoked by its user, and the reviewed change that sets off a pipeline’s deployment are that confirmation.

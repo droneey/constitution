@@ -1,5 +1,5 @@
 ```pseudo title="Avoid"
-# entities/invoice.entity
+# entities/invoice/invoice.entity
 type Invoice = { total: Money }
 
 function isWeekend(date)
@@ -7,7 +7,7 @@ function isWeekend(date)
 ```
 
 ```pseudo title="Prefer"
-# entities/invoice.entity
+# entities/invoice/invoice.entity
 type Invoice = { total: Money }
 
 # utils/is-weekend.utils

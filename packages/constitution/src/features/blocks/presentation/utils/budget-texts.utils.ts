@@ -1,7 +1,7 @@
 import type { TextsOf } from '#/shared/cli';
 
-import type { BudgetDetails } from '../../application/use-cases/queries/check';
-import { BudgetCode } from '../../application/use-cases/queries/check';
+import type { BudgetDetails } from '../../domain/services';
+import { BudgetCode } from '../../domain/services';
 
 const budgetTexts: TextsOf<BudgetDetails> = {
   [BudgetCode.FileOverBudget]: ({ budget, lines }) =>

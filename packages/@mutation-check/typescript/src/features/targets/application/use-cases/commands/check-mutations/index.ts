@@ -1,2 +1,2 @@
-export type { CheckMutations, CheckOutcome } from './check-mutations.use-case.ts';
-export { CheckScope, CheckStatus, createCheckMutations } from './check-mutations.use-case.ts';
+export type { CheckMutations } from './check-mutations.use-case.ts';
+export { createCheckMutations } from './check-mutations.use-case.ts';

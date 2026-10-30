@@ -7,6 +7,7 @@ import { AbsolutePath, UnitRelativePath } from '#/kernel/value-objects';
 import { fakeBranchReader } from '../../../../../__tests__/branch-reader.fake.ts';
 import { fakeCodeComparer } from '../../../../../__tests__/code-comparer.fake.ts';
 import { fakeMutationRunner } from '../../../../../__tests__/mutation-runner.fake.ts';
+import { CheckScope, CheckStatus } from '../../../../../domain/entities';
 import {
   BranchError,
   BranchFailure,
@@ -16,7 +17,7 @@ import {
   MutationRunFailure,
 } from '../../../../../domain/errors';
 import { LineRange } from '../../../../../domain/value-objects';
-import { CheckScope, CheckStatus, createCheckMutations } from '../check-mutations.use-case.ts';
+import { createCheckMutations } from '../check-mutations.use-case.ts';
 
 const orderPath = UnitRelativePath.create('src/order.utils.ts');
 const ratePath = UnitRelativePath.create('src/rate.utils.ts');

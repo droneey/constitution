@@ -46,14 +46,6 @@ A brand is an intersection with a property keyed by the program's one `declare c
 |---|
 | one form of brand reads the same in every file; no object literal written elsewhere can spell its symbol key, so nothing carries the brand by accident, and it never exists at run time. |
 
-### brand-set-only-where-minted-or-parsed → identifier-branded-by-entity · SHOULD
-
-An identifier's brand is set only where the identifier is minted, by the one function that makes new ones, or where it enters the program, in the parse of the outside value that carries it.
-
-| Why |
-|---|
-| a brand set in one place proves the value came through it; set anywhere, it proves nothing. |
-
 ### program-type-never-declared-ambient → type-has-one-home · MUST
 
 A type of the program is exported by a module and imported where it is used, never declared ambient in a global `.d.ts` or `declare global`; an ambient declaration only describes what the runtime or a library provides.
@@ -220,7 +212,7 @@ Money and every other exact decimal quantity is a `bigint`, or a `number` that `
 |---|
 | a JavaScript `number` is binary floating point, where `0.1 + 0.2` is not `0.3`, and past 2^53 it no longer holds every integer, so a total drifts by amounts the books will not. |
 
-### nullish-operators-for-absence · SHOULD
+### nullish-operators-for-absence → absence-shown-by-the-type · MUST
 
 `??` gives a default and `?.` reaches through an absent value; neither `!value` nor `||` tests or replaces an absent value that is not boolean.
 

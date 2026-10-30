@@ -46,7 +46,7 @@ A feature publishes its own events and never subscribes to another feature's; th
 
 ### data-port-one-per-entity-and-side · SHOULD
 
-A data port is a repository per side — one for reads, one for writes — for each aggregate a caller changes and each entity it loads on its own, each declaring its operations' parameters and results and named after its entity and its side: `<Entity>QueryRepository`, `<Entity>CommandRepository`; a shape both sides use is an entity.
+A data port is a repository per side: a command repository for each aggregate a caller changes, a query repository for each aggregate or entity read on its own, each declaring its operations' parameters and results and named after its entity and its side: `<Entity>QueryRepository`, `<Entity>CommandRepository`; a shape both sides use is an entity.
 
 | Why |
 |---|
@@ -69,6 +69,14 @@ An adapter imports the domain and the contracts of the owner whose ports it impl
 | Why |
 |---|
 | adapters that know each other or their callers form a hidden second program beside the domain. |
+
+### adapter-maps-its-dependencys-failures · MUST
+
+An adapter maps the failures of its dependency it recognises to the ones its port declares, and no failure of the dependency's own type crosses the port.
+
+| Why |
+|---|
+| a caller of a port acts on the port's failures alone, and a vendor's failure that crosses the port binds every caller to the vendor the port hides. |
 
 ### adapter-one-per-system-and-owner · SHOULD
 

@@ -1,32 +1,8 @@
 import type { UnitRelativePath } from '#/kernel/value-objects';
 
-import type { MutationTarget } from '../../../../domain/entities';
-import type {
-  Branch,
-  BranchReader,
-  CodeComparer,
-  MutationRunner,
-  ToolExitCode,
-} from '../../../contracts';
-
-enum CheckScope {
-  Branch = 'branch',
-  Everything = 'everything',
-}
-
-enum CheckStatus {
-  NothingChanged = 'nothing-changed',
-  Ran = 'ran',
-}
-
-type CheckOutcome =
-  | {
-      readonly status: CheckStatus.NothingChanged;
-    }
-  | {
-      readonly exitCode: ToolExitCode;
-      readonly status: CheckStatus.Ran;
-    };
+import type { CheckOutcome } from '../../../../domain/entities';
+import { CheckScope, CheckStatus, MutationTarget } from '../../../../domain/entities';
+import type { Branch, BranchReader, CodeComparer, MutationRunner } from '../../../contracts';
 
 /**
  * @throws {BranchError} when the branch cannot be read
@@ -42,33 +18,21 @@ interface CheckMutationsPorts {
 }
 
 /** @throws {BranchError} when the base texts cannot be read */
-const codeChangedTargetsOf = (input: {
+const codeChangedPathsOf = (input: {
   branch: Branch;
   codeComparer: CodeComparer;
   mutatedPaths: ReadonlySet<UnitRelativePath>;
-}): readonly MutationTarget[] => {
-  const changedFiles = input.branch.changedFiles.filter(({ filePath }) =>
-    input.mutatedPaths.has(filePath),
-  );
-  const baseTexts = input.branch.baseTextsOf(changedFiles.map(({ filePath }) => filePath));
+}): ReadonlySet<UnitRelativePath> => {
+  const changedPaths = input.branch.changedFiles
+    .map(({ filePath }) => filePath)
+    .filter((filePath) => input.mutatedPaths.has(filePath));
+  const baseTexts = input.branch.baseTextsOf(changedPaths);
 
-  return [
-    ...input.branch.newFilePaths
-      .filter((filePath) => input.mutatedPaths.has(filePath))
-      .map((filePath) => ({
-        filePath,
-      })),
-    ...changedFiles
-      .filter(({ filePath }) =>
-        input.codeComparer.hasCodeChanged(filePath, baseTexts.get(filePath)),
-      )
-      .flatMap(({ filePath, lineRanges }) =>
-        lineRanges.map((lineRange) => ({
-          filePath,
-          lineRange,
-        })),
-      ),
-  ];
+  return new Set(
+    changedPaths.filter((filePath) =>
+      input.codeComparer.hasCodeChanged(filePath, baseTexts.get(filePath)),
+    ),
+  );
 };
 
 /**
@@ -84,10 +48,15 @@ const checkBranch = async (ports: CheckMutationsPorts): Promise<CheckOutcome> =>
       ...branch.newFilePaths,
     ]),
   );
-  const targets = codeChangedTargetsOf({
-    branch,
-    codeComparer: ports.codeComparer,
+  const targets = MutationTarget.targetsOf({
+    changedFiles: branch.changedFiles,
+    codeChangedPaths: codeChangedPathsOf({
+      branch,
+      codeComparer: ports.codeComparer,
+      mutatedPaths,
+    }),
     mutatedPaths,
+    newFilePaths: branch.newFilePaths,
   });
 
   if (targets.length === 0) {
@@ -119,5 +88,5 @@ const createCheckMutations =
     }
   };
 
-export type { CheckMutations, CheckOutcome };
-export { CheckScope, CheckStatus, createCheckMutations };
+export type { CheckMutations };
+export { createCheckMutations };

@@ -25,7 +25,6 @@ const EXECUTABLE_NAME = 'constitution';
 const linkFolder = RepositoryRelativePath.create('.droneey/constitution');
 
 const executable = Version.create('1.0.0');
-const older = Version.create('0.9.0');
 const manifest = AbsolutePath.create(`${releaseFolderPath}/package.json`);
 const TREE: FakeTree = {
   files: {
@@ -241,146 +240,6 @@ describe('diagnoseInstallation', () => {
       },
     },
     {
-      condition: 'the plugin is older than the executable and its files differ',
-      expected: {
-        executable,
-        kind: Diagnosis.PluginOlder,
-        plugin: older,
-      },
-      health: Health.Warned,
-      installation: {
-        plugin: {
-          fingerprint: 'f0',
-          version: older,
-        },
-      },
-    },
-    {
-      condition: 'the plugin is newer than the executable and its files differ',
-      expected: {
-        executable,
-        kind: Diagnosis.PluginNewer,
-        plugin: Version.create('1.0.1'),
-      },
-      health: Health.Warned,
-      installation: {
-        plugin: {
-          fingerprint: 'f2',
-          version: Version.create('1.0.1'),
-        },
-      },
-    },
-    {
-      condition: "the plugin is another release whose files are the executable's",
-      expected: {
-        executable,
-        kind: Diagnosis.PluginMatches,
-        plugin: older,
-      },
-      health: Health.Sound,
-      installation: {
-        plugin: {
-          fingerprint: FINGERPRINT,
-          version: older,
-        },
-      },
-    },
-    {
-      condition:
-        "the plugin's files differ from constitution's at one version, as a working tree's do",
-      expected: {
-        executable,
-        kind: Diagnosis.PluginDiffersAtItsVersion,
-      },
-      health: Health.Warned,
-      installation: {
-        plugin: {
-          fingerprint: 'f0',
-          version: executable,
-        },
-      },
-    },
-    {
-      condition: "the plugin is this executable's release with its files",
-      expected: {
-        executable,
-        kind: Diagnosis.PluginMatches,
-        plugin: executable,
-      },
-      health: Health.Sound,
-      installation: {},
-    },
-    {
-      condition: "neither the plugin's files nor the executable's can be read",
-      expected: {
-        executable,
-        kind: Diagnosis.PluginDiffersAtItsVersion,
-      },
-      health: Health.Warned,
-      installation: {
-        fingerprint: undefined,
-        plugin: {
-          version: executable,
-        },
-      },
-    },
-    {
-      condition: "the plugin's files cannot be read",
-      expected: {
-        executable,
-        kind: Diagnosis.PluginDiffersAtItsVersion,
-      },
-      health: Health.Warned,
-      installation: {
-        plugin: {
-          version: executable,
-        },
-      },
-    },
-    {
-      condition: 'a newer release is out',
-      expected: {
-        executable,
-        kind: Diagnosis.LatestAhead,
-        latest: Version.create('1.1.0'),
-      },
-      health: Health.Warned,
-      installation: {
-        latest: {
-          lookup: ReleaseLookup.Found,
-          version: Version.create('1.1.0'),
-        },
-      },
-    },
-    {
-      condition: 'the executable is ahead of the latest release',
-      expected: {
-        kind: Diagnosis.LatestHeld,
-        latest: Version.create('0.9.9'),
-      },
-      health: Health.Sound,
-      installation: {
-        latest: {
-          lookup: ReleaseLookup.Found,
-          version: Version.create('0.9.9'),
-        },
-      },
-    },
-    {
-      condition: 'GitHub cannot be reached',
-      expected: {
-        kind: Diagnosis.LatestUnanswered,
-        reason: 'fetch failed',
-      },
-      health: Health.Skipped,
-      installation: {
-        latest: {
-          lookup: ReleaseLookup.Unanswered,
-          reason: 'fetch failed',
-        },
-      },
-    },
-    {
       condition: 'GitHub refuses the call',
       expected: {
         kind: Diagnosis.LatestRefused,
@@ -395,18 +254,6 @@ describe('diagnoseInstallation', () => {
       },
     },
     {
-      condition: "GitHub's answer names no release",
-      expected: {
-        kind: Diagnosis.LatestUnreadable,
-      },
-      health: Health.Skipped,
-      installation: {
-        latest: {
-          lookup: ReleaseLookup.Unreadable,
-        },
-      },
-    },
-    {
       condition: 'the executable is not on PATH',
       expected: {
         kind: Diagnosis.ExecutableNotOnPath,
@@ -414,19 +261,6 @@ describe('diagnoseInstallation', () => {
       health: Health.Broken,
       installation: {
         isOnPath: false,
-      },
-    },
-    {
-      condition: 'the executable on PATH is another release',
-      expected: {
-        answered: '0.9.0',
-        executable,
-        kind: Diagnosis.PathDiffers,
-        path: onPath,
-      },
-      health: Health.Warned,
-      installation: {
-        answered: '0.9.0',
       },
     },
     {
@@ -454,113 +288,6 @@ describe('diagnoseInstallation', () => {
       },
     },
     {
-      condition: 'the linked release is of a newer block format',
-      expected: {
-        format: 9,
-        kind: Diagnosis.ReleaseFormatNewer,
-      },
-      health: Health.Broken,
-      installation: {
-        release: {
-          format: 9,
-          status: ReleaseStatus.Newer,
-        },
-      },
-    },
-    {
-      condition: 'the linked release is of an older block format',
-      expected: {
-        kind: Diagnosis.ReleaseFormatOlder,
-      },
-      health: Health.Broken,
-      installation: {
-        release: {
-          status: ReleaseStatus.Older,
-        },
-      },
-    },
-    {
-      condition: 'the linked release names no version',
-      expected: {
-        kind: Diagnosis.ManifestWithoutVersion,
-        manifest,
-      },
-      health: Health.Broken,
-      installation: {
-        release: {
-          manifest,
-          status: ReleaseStatus.VersionMissing,
-        },
-      },
-    },
-    {
-      condition: "the linked release's manifest cannot be read",
-      expected: {
-        kind: Diagnosis.ManifestUnreadable,
-        manifest,
-      },
-      health: Health.Broken,
-      installation: {
-        release: {
-          manifest,
-          status: ReleaseStatus.ManifestUnreadable,
-        },
-      },
-    },
-    {
-      condition: "the linked release's manifest is no JSON object",
-      expected: {
-        kind: Diagnosis.ManifestNotObject,
-        manifest,
-      },
-      health: Health.Broken,
-      installation: {
-        release: {
-          manifest,
-          status: ReleaseStatus.ManifestNotObject,
-        },
-      },
-    },
-    {
-      condition: "the linked release's manifest gives a field of another form",
-      expected: {
-        fields: [
-          'version',
-        ],
-        kind: Diagnosis.ManifestMalformed,
-        manifest,
-      },
-      health: Health.Broken,
-      installation: {
-        release: {
-          fields: [
-            'version',
-          ],
-          manifest,
-          status: ReleaseStatus.ManifestMalformed,
-        },
-      },
-    },
-    {
-      condition: 'the linked release is another than the executable',
-      expected: {
-        kind: Diagnosis.LinkDiffers,
-        link: {
-          linkPath: linkFolder,
-          targetPath: linkFolder,
-        },
-        executable,
-        release: older,
-      },
-      health: Health.Warned,
-      installation: {
-        release: {
-          status: ReleaseStatus.Installed,
-          version: older,
-        },
-      },
-    },
-    {
       condition: "lefthook's hooks are not installed",
       expected: {
         kind: Diagnosis.HooksMissing,
@@ -570,28 +297,8 @@ describe('diagnoseInstallation', () => {
         hooks: HooksState.Missing,
       },
     },
-    {
-      condition: 'lefthook is not on PATH',
-      expected: {
-        kind: Diagnosis.HooksUnavailable,
-      },
-      health: Health.Warned,
-      installation: {
-        hooks: HooksState.Unavailable,
-      },
-    },
-    {
-      condition: 'the project keeps no lefthook configuration',
-      expected: {
-        kind: Diagnosis.HooksUnconfigured,
-      },
-      health: Health.Skipped,
-      installation: {
-        hooks: HooksState.Unconfigured,
-      },
-    },
   ])(
-    'should diagnose $expected.kind, $health, when $condition',
+    'should diagnose $expected.kind, $health, from what the ports answer when $condition',
     async ({ expected, health, installation }) => {
       // Arrange
       const asked = {

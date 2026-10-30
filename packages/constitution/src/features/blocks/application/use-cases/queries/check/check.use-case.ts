@@ -1,147 +1,23 @@
 import { BLOCKS_FOLDER_NAME } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
-import type { BlockModel } from '#/kernel/entities';
 import { AbsolutePath } from '#/kernel/value-objects';
 
-import type { SimilarRules } from '../../../../domain/entities';
-import { Block, BlockGraph, Constitution } from '../../../../domain/entities';
-import type { FileTree, FileTrees, FrontMatterParser, ManifestParser } from '../../../contracts';
-import type { BlockFinding } from './block-finding.types';
-import type { Check, CheckInput } from './check.types';
-import {
-  abstractBlocksCheck,
-  blockFormCheck,
-  budgetCheck,
-  configurationLanguagesCheck,
-  coreChaptersCheck,
-  corePartCheck,
-  cyclesCheck,
-  decisionsCheck,
-  frontMatterCheck,
-  hooksCheck,
-  linksCheck,
-  marketplaceCheck,
-  pluginCheck,
-  referencesCheck,
-  requirementsCheck,
-  requiresCheck,
-  rulesCheck,
-  seamsCheck,
-  termsCheck,
-} from './checks';
-import { adviseConstitution } from './steps/advise-constitution';
-import type { BaseTree } from './steps/load-constitution';
+import type { Validation } from '../../../../domain/services';
+import { validateConstitution } from '../../../../domain/services';
+import type { FileTrees, FrontMatterParser, ManifestParser } from '../../../contracts';
 import { loadConstitution } from './steps/load-constitution';
-
-const packChecks: readonly Check<BlockFinding>[] = [
-  frontMatterCheck,
-  requiresCheck,
-  configurationLanguagesCheck,
-  seamsCheck,
-  cyclesCheck,
-  abstractBlocksCheck,
-  termsCheck,
-  rulesCheck,
-  requirementsCheck,
-  referencesCheck,
-  budgetCheck,
-  linksCheck,
-  decisionsCheck,
-  corePartCheck,
-  coreChaptersCheck,
-  blockFormCheck,
-];
-
-const releaseChecks: readonly Check<BlockFinding>[] = [
-  ...packChecks,
-  pluginCheck,
-  marketplaceCheck,
-  hooksCheck,
-];
-
-enum ValidationStage {
-  Unloaded = 'unloaded',
-  Checked = 'checked',
-}
-
-type Validation =
-  | {
-      readonly findings: readonly BlockFinding[];
-      readonly stage: ValidationStage.Unloaded;
-    }
-  | {
-      readonly advice: readonly SimilarRules[];
-      readonly findings: readonly BlockFinding[];
-      readonly model: BlockModel;
-      readonly stage: ValidationStage.Checked;
-    };
-
-interface Parsers {
-  readonly frontMatterParser: FrontMatterParser;
-  readonly manifestParser: ManifestParser;
-}
-
-// Why: a block that did not load would otherwise be reported as missing by every check that names
-// it.
-/**
- * @throws {TreeError} when git cannot list the files of a tree, or a file it lists cannot be read
- */
-const validate = (
-  input: Parsers & {
-    base?: BaseTree;
-    repository: FileTree;
-    tree: FileTree;
-  },
-): Validation => {
-  const { constitution, findings } = loadConstitution(input);
-  const checked: CheckInput = {
-    constitution,
-    graph: BlockGraph.create(constitution.blocks),
-    model: Constitution.modelOf(constitution),
-  };
-  const baseFiles = new Set(
-    constitution.blocks
-      .filter(Block.isBase)
-      .flatMap(Block.filesOf)
-      .map((file) => file.path),
-  );
-
-  const ownOf = (all: readonly BlockFinding[]): readonly BlockFinding[] =>
-    all.filter((finding) => !baseFiles.has(finding.path));
-
-  if (findings.length > 0) {
-    return {
-      findings: ownOf(findings),
-      stage: ValidationStage.Unloaded,
-    };
-  }
-
-  if (input.base !== undefined) {
-    return {
-      advice: [],
-      findings: ownOf(packChecks.flatMap((check) => check(checked))),
-      model: checked.model,
-      stage: ValidationStage.Checked,
-    };
-  }
-
-  return {
-    advice: adviseConstitution(checked),
-    findings: releaseChecks.flatMap((check) => check(checked)),
-    model: checked.model,
-    stage: ValidationStage.Checked,
-  };
-};
 
 interface PackBase {
   readonly folder: string;
   readonly folderPath: AbsolutePath;
 }
 
-interface CheckBlocksInput extends Parsers {
+interface CheckBlocksInput {
   readonly base?: PackBase;
   readonly files: ProjectFiles;
   readonly folderPath: AbsolutePath;
+  readonly frontMatterParser: FrontMatterParser;
+  readonly manifestParser: ManifestParser;
   readonly trees: FileTrees;
 }
 
@@ -156,7 +32,7 @@ const checkBlocks = (input: CheckBlocksInput): Validation | undefined => {
     return undefined;
   }
 
-  return validate({
+  const { constitution, findings } = loadConstitution({
     frontMatterParser: input.frontMatterParser,
     manifestParser: input.manifestParser,
     ...(input.base === undefined
@@ -170,7 +46,13 @@ const checkBlocks = (input: CheckBlocksInput): Validation | undefined => {
     repository: trees.repository(folderPath),
     tree: trees.tracked(folderPath),
   });
+
+  return validateConstitution({
+    constitution,
+    findings,
+    isPack: input.base !== undefined,
+  });
 };
 
-export type { CheckBlocksInput, PackBase, Validation };
-export { checkBlocks, ValidationStage };
+export type { CheckBlocksInput, PackBase };
+export { checkBlocks };

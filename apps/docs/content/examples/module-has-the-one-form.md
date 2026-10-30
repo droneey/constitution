@@ -3,7 +3,9 @@ src/
 ├── features/orders/              a feature
 │   ├── domain/
 │   │   └── entities/             a role folder: the same form
-│   │       ├── order.entity.ts
+│   │       ├── order/            an entity's folder: the same form
+│   │       │   ├── order.entity.ts
+│   │       │   └── index.ts
 │   │       └── index.ts
 │   ├── presentation/
 │   └── index.ts                  its surface

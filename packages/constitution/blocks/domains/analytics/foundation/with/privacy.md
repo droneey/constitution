@@ -1,6 +1,6 @@
 # Privacy
 
-> Governs the personal data an event carries and what an analytics library keeps before consent.
+> Governs the personal data an event carries, the network address an analytics library drops, and what it keeps before consent.
 
 ## General
 
@@ -21,3 +21,11 @@ The analytics library stores nothing on the device and sends no identifier until
 | Why |
 |---|
 | a library that stores or identifies before consent makes the measurement the law exempts need consent, and starts the rest too early. |
+
+### analytics-drops-the-ip-address · MUST
+
+The library truncates or drops the IP address.
+
+| Why |
+|---|
+| a library that identifies users by default leaks personal data on its first event. |

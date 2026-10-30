@@ -1,6 +1,6 @@
 # Names
 
-> Governs the case of identifiers and the names of types and type parameters.
+> Governs the case of identifiers and the names of types, error types and type parameters.
 
 ## Form
 
@@ -19,6 +19,14 @@ A type's name is a noun with no decoration: no `I` prefix, on interfaces too, an
 | Why |
 |---|
 | a decoration repeats what the language already shows and makes every name longer. |
+
+### error-class-name-ends-in-error → error-name-ends-in-error · MUST
+
+A class of error the program throws ends its name in `Error`: `OrderNotFoundError`, never `OrderNotFound` or `OrderNotFoundException`.
+
+| Why |
+|---|
+| the language's own `TypeError` and `RangeError` end an error's name so, and a project's errors then read like the ones every reader knows. |
 
 ### type-parameter-starts-with-t · SHOULD
 

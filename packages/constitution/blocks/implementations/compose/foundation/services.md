@@ -1,6 +1,6 @@
 # Services
 
-> Governs a Compose file: its structure, its services' privileges and how they start.
+> Governs a Compose file: its structure, its services' images and privileges, and how they start.
 
 ## Structure
 
@@ -35,6 +35,16 @@ The variants of one service extend a base service whose name starts with `_` and
 | Why |
 |---|
 | the variants share one definition, the base never starts by itself, and a service's name says where it runs. |
+
+## Images
+
+### service-image-pinned-by-version-and-digest → download-pinned-by-version-and-checksum · MUST
+
+A service's `image` names the most specific version the image is published under — `major.minor.patch` where it has one — and its digest, `image:x.y.z@sha256:<digest>`; never `latest`, never a floating major or minor, never a tag alone and never a digest alone.
+
+| Why |
+|---|
+| any tag, a patch's included, can be pushed again under the same name, so only the digest fixes what a service runs; the version beside it tells a reader and an updater which release the digest is. |
 
 ## Security
 

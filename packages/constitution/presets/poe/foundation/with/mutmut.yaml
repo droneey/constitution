@@ -9,8 +9,8 @@ mutmut:
                 python ${constitution.path}/tools/mutmut-check/dist/mutmut-check.pyz
               mutate:all: >-
                 python ${constitution.path}/tools/mutmut-check/dist/mutmut-check.pyz all
-poe:
-  task-group-walks-poes-own-list:
+_task-runner:
+  check-task-is-the-units-whole-gate:
     python:
       pyproject.toml:
         tool:

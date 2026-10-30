@@ -33,19 +33,9 @@ ui:
   binding-unit-imports-nothing-of-the-ui:
     typescript:
       .dependency-cruiser.jsonc:
-        forbidden[name=binding-units-reach-no-adapter-or-ui]:
+        forbidden[name=binding-units-reach-no-ui]:
           severity: error
           from:
             path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.presentation-layer}/${role.binding}/
           to:
-            path:
-              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/(${role.gateway}|${role.presentation-layer}/(${role.screen}|${role.widget}|${role.component})/)
-              - ^${role.source}/${role.gateway}/
-core:
-  module-files-import-each-other-directly:
-    typescript:
-      .dependency-cruiser.jsonc:
-        forbidden[name=role-reached-through-its-surface]:
-          to:
-            path:
-              - ^${role.source}/$1/$2/${role.presentation-layer}/[^/]+/
+            path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.presentation-layer}/(${role.screen}|${role.widget}|${role.component})/

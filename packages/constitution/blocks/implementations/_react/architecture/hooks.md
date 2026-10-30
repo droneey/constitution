@@ -8,7 +8,7 @@
 
 ### component-effects-in-its-hooks-file → effects-held-only-by-the-edge · MUST
 
-A component file calls no effect hook: its effects live in hooks in a file ending in **`.hooks`**{#component-effects}, `<name>.hooks.ts`, beside it, and input or output goes only through binding units.
+A component file calls no effect hook: its effects live in hooks in `<name>.hooks.ts` beside it — a file ending in **`.hooks`**{#hooks-file}, a file of hooks: a component's effects or a binding unit built on hooks — and input or output goes only through binding units.
 
 | Why |
 |---|

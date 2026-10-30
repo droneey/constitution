@@ -1,3 +1,4 @@
-export type { ChosenSpecsRun, SpecRun } from './spec-run.entity.ts';
-export { SpecRunStatus } from './spec-run.entity.ts';
-export type { UnitSpecs } from './unit-specs.entity.ts';
+export type { ChosenSpecsRun, SpecRun } from './spec-run';
+export { SpecRunStatus } from './spec-run';
+export type { ImportEdges } from './unit-specs';
+export { UnitSpecs } from './unit-specs';

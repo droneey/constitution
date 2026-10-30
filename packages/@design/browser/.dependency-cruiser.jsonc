@@ -133,6 +133,26 @@
       },
     },
     {
+      "name": "contract-reaches-only-its-model-and-the-kernel",
+      "severity": "error",
+      "from": {
+        "path": "^src/features/([^/]+)/application/contracts/",
+        "pathNot": [
+          "(^|/)__tests__/",
+          "^tests/",
+        ],
+      },
+      "to": {
+        "dependencyTypesNot": [
+          "core",
+        ],
+        "pathNot": [
+          "^src/features/$1/(domain|application/contracts)/",
+          "^src/kernel/",
+        ],
+      },
+    },
+    {
       "name": "libs-know-no-application",
       "severity": "error",
       "from": {
@@ -358,14 +378,11 @@
     },
     {
       "name": "role-reached-through-its-surface",
-
-      // dependency-cruiser
       "severity": "error",
       "from": {
         "path": "^src/(features|composition)/([^/]+)/([^/]+/[^/]+(?=/)|)",
       },
       "to": {
-        // dependency-cruiser
         "pathNot": [
           "^src/$1/$2/$3/",
           "(^|/)__tests__/",
@@ -374,16 +391,10 @@
           "^src/$1/$2/[^/]+/[^/]+/(?:queries|commands|shared)/[^/]+/index\\.[^/]+$",
         ],
         "path": [
-          // dependency-cruiser
           "^src/$1/$2/(?:domain|application|presentation)/[^/]+/",
-
-          // ui
-          "^src/$1/$2/presentation/[^/]+/",
         ],
       },
     },
-
-    // dependency-cruiser
     {
       "name": "integration-role-reached-through-its-surface",
       "severity": "error",
@@ -615,16 +626,13 @@
       },
     },
     {
-      "name": "binding-units-reach-no-adapter-or-ui",
+      "name": "binding-units-reach-no-ui",
       "severity": "error",
       "from": {
         "path": "^src/(features|composition)/[^/]+/presentation/bindings/",
       },
       "to": {
-        "path": [
-          "^src/(features|composition)/[^/]+/(infrastructure|presentation/(screens|widgets|components)/)",
-          "^src/infrastructure/",
-        ],
+        "path": "^src/(features|composition)/[^/]+/presentation/(screens|widgets|components)/",
       },
     },
 

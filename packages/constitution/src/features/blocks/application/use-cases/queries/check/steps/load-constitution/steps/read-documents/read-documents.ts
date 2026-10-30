@@ -1,21 +1,9 @@
 import { splitFrontMatter } from '#/kernel/utils';
 
-import { SKILL_FILE_NAME } from '../../../../../../../../domain/constants';
-import type {
-  Agent,
-  Documents,
-  Skill,
-  SkillFrontMatterRead,
-} from '../../../../../../../../domain/entities';
-import { DocumentPath } from '../../../../../../../../domain/entities';
+import type { Documents, SkillFrontMatterRead } from '../../../../../../../../domain/entities';
+import { Agent, DocumentPath, Skill } from '../../../../../../../../domain/entities';
 import { TreePath } from '../../../../../../../../domain/value-objects';
 import type { FileTree, FrontMatterParser, ManifestParser } from '../../../../../../../contracts';
-
-// Why: Claude Code reads a skill at <directory>/<skill>/SKILL.md, where no folder is hidden.
-const skillPath = new RegExp(
-  `^((?:[^./][^/]*\\/)+)[^./][^/]*\\/${RegExp.escape(SKILL_FILE_NAME)}$`,
-);
-const AGENT_FILE = /^agents\/([^./][^/]*)\.md$/;
 
 /** @throws {TreeError} when the skill's file cannot be read */
 const skillFrontMatterOf = (input: {
@@ -41,7 +29,7 @@ const skillsOf = (input: {
   tree: FileTree;
 }): readonly Skill[] =>
   input.listed.flatMap((path) => {
-    const directory = skillPath.exec(path)?.[1];
+    const directory = Skill.directoryOf(path);
 
     if (directory === undefined) {
       return [];
@@ -67,7 +55,7 @@ const agentsOf = (input: {
   tree: FileTree;
 }): readonly Agent[] =>
   input.listed.flatMap((path) => {
-    const file = AGENT_FILE.exec(path)?.[1];
+    const file = Agent.fileOf(path);
 
     if (file === undefined) {
       return [];

@@ -1,5 +1,4 @@
-import type { Release } from '#/kernel/entities';
-import { FileReadStatus, NEWEST_FORMAT, OLDEST_FORMAT, ReleaseStatus } from '#/kernel/entities';
+import { FileReadStatus, Release, ReleaseStatus } from '#/kernel/entities';
 import { AbsolutePath } from '#/kernel/value-objects';
 
 import type { ReleaseManifestParser } from '../../../contracts';
@@ -49,32 +48,11 @@ const readRelease = (input: ReadReleaseInput): Release => {
     };
   }
 
-  const { blockFormat, version } = parsed.manifest;
-
-  if (blockFormat === undefined || blockFormat < OLDEST_FORMAT) {
-    return {
-      status: ReleaseStatus.Older,
-    };
-  }
-
-  if (blockFormat > NEWEST_FORMAT) {
-    return {
-      format: blockFormat,
-      status: ReleaseStatus.Newer,
-    };
-  }
-
-  if (version === undefined) {
-    return {
-      manifest: manifestPath,
-      status: ReleaseStatus.VersionMissing,
-    };
-  }
-
-  return {
-    status: ReleaseStatus.Installed,
-    version,
-  };
+  return Release.ofManifest({
+    blockFormat: parsed.manifest.blockFormat,
+    manifestPath,
+    version: parsed.manifest.version,
+  });
 };
 
 export { readRelease };

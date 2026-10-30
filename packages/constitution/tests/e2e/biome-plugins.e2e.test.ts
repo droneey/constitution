@@ -812,7 +812,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'the cache utilities declare a read and the root builds the client',
         files: {
-          'src/features/orders/presentation/utils/cache.utils.ts':
+          'src/features/orders/presentation/bindings/shared/cache.ts':
             "export const listOptions = { queryKey: ['orders'], queryFn: (): number => 1 };\n",
           'src/root/query-client.ts':
             "import { QueryClient } from '@tanstack/react-query';\n\nexport const client = new QueryClient();\n",
@@ -882,7 +882,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'the cache utilities declare a read and the root builds the client',
         files: {
-          'src/features/orders/presentation/utils/cache.utils.ts':
+          'src/features/orders/presentation/bindings/shared/cache.ts':
             "export const listOptions = { queryKey: ['orders'], queryFn: (): number => 1 };\n",
           'src/root/query-client.ts':
             "import { QueryClient } from '@tanstack/react-query';\n\nexport const client = new QueryClient();\n",
@@ -1474,7 +1474,7 @@ const pluginRows: readonly PluginRow[] = [
         condition: 'a read takes its key from the key factory',
         files: {
           'src/features/orders/presentation/bindings/queries/list-orders/list-orders.hooks.ts':
-            "import { orderKeys } from '../../../../../../shared/cache';\n\nexport const listOrdersOptions = { queryKey: orderKeys.all };\n",
+            "import { orderKeys } from '../../shared/cache';\n\nexport const listOrdersOptions = { queryKey: orderKeys.all };\n",
         },
       },
     ],

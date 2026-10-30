@@ -56,7 +56,7 @@ A failed parse of outside input is one expected failure whose details name every
 
 ### catch-handles-only-what-it-recognises · MUST
 
-A catch handles only the failures it recognises by type or code — handling changes what the program does next; logging and carrying on is not handling — and rethrows every other, save at an optional part's boundary, at a supervisor, which reports them and starts its worker again, and at the handler of last resort; an adapter maps every failure of its dependency it recognises — a transient one included — to its port's own, and lets every other pass as a defect, at most wrapped once in a defect of the program's own that keeps its cause, never as an expected failure. No catch is empty; one that ignores a failure on purpose says why in a suppression.
+A catch handles only the failures it recognises by type or code — handling changes what the program does next; logging and carrying on is not handling — and rethrows every other, save at an optional part's boundary, at a supervisor, which reports them and starts its worker again, and at the handler of last resort; code that wraps a dependency maps every failure of it that it recognises — a transient one included — to the program's own, and lets every other pass as a defect, at most wrapped once in a defect of the program's own that keeps its cause, never as an expected failure. No catch is empty; one that ignores a failure on purpose says why in a suppression.
 
 | Why |
 |---|

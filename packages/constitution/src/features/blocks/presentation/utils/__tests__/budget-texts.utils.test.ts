@@ -3,8 +3,8 @@ import { describe, expect, it } from 'bun:test';
 import type { ProblemOf } from '#/kernel/types';
 import { textOf } from '#/shared/cli';
 
-import type { BudgetDetails } from '../../../application/use-cases/queries/check';
-import { BudgetCode } from '../../../application/use-cases/queries/check';
+import type { BudgetDetails } from '../../../domain/services';
+import { BudgetCode } from '../../../domain/services';
 import { budgetTexts } from '../budget-texts.utils';
 
 describe('budgetTexts', () => {

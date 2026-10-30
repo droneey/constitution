@@ -1,7 +1,6 @@
 import { isDeepEqual } from '#/kernel/utils';
 
-import type { ConfigurationWrite } from '../../application/contracts';
-import type { BlockMarks, HeldStep } from '../../domain/entities';
+import type { BlockMarks, ConfigurationWrite, HeldStep } from '../../domain/entities';
 import { BlockMarks as Marks } from '../../domain/entities';
 import { NEWLINE } from './text.constants';
 

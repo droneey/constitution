@@ -54,9 +54,9 @@ Data from outside is never read by a loader that builds objects from what it nam
 |---|
 | unpickling calls whatever the data names, so a crafted file runs code with the program's rights. |
 
-### outside-pattern-safe-or-on-google-re2 → outside-input-matched-in-linear-time · MUST
+### outside-pattern-safe-or-on-a-linear-engine → outside-input-matched-in-linear-time · MUST
 
-A regular expression that runs on outside input has no nested or overlapping quantifiers — possessive or atomic where it needs one — or runs on `google-re2`; it is never compiled from outside input.
+A regular expression that runs on outside input has no nested or overlapping quantifiers — possessive or atomic where it needs one — or runs on a linear-time engine; it is never compiled from outside input.
 
 | Why |
 |---|

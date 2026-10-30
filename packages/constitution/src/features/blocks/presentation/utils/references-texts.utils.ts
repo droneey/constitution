@@ -1,7 +1,7 @@
 import type { TextsOf } from '#/shared/cli';
 
-import type { LinksDetails, ReferencesDetails } from '../../application/use-cases/queries/check';
-import { LinksCode, ReferencesCode } from '../../application/use-cases/queries/check';
+import type { LinksDetails, ReferencesDetails } from '../../domain/services';
+import { LinksCode, ReferencesCode } from '../../domain/services';
 
 const referencesTexts: TextsOf<LinksDetails & ReferencesDetails> = {
   [LinksCode.MissingTarget]: ({ target }) => `links to a missing file "${target}"`,

@@ -15,13 +15,6 @@ poe:
             # Why: poe runs no task by a pattern, so a group walks poe's own list as Bun's pattern
             # does.
             tasks:
-              check:
-                shell: !words
-                  - >-
-                    for task in $(poe _list_tasks | tr ' ' '\n' | sort); do case "$task" in
-                    check:*) poe "$task" || exit 1;; esac; done
-                  - slot: tests
-                  - slot: mutations
               test:
                 shell: >-
                   for task in $(poe _list_tasks | tr ' ' '\n' | sort); do case "$task" in
@@ -31,6 +24,21 @@ poe:
                   for task in $(poe _list_tasks | tr ' ' '\n' | sort); do case "$task" in
                   fix:*) poe "$task" || exit 1;; esac; done
 _task-runner:
+  check-task-is-the-units-whole-gate:
+    python:
+      pyproject.toml:
+        tool:
+          poe:
+            # Why: the check walks its group in poe's own list, then the specs and the mutation gate
+            # the unit has insert their tasks.
+            tasks:
+              check:
+                shell: !words
+                  - >-
+                    for task in $(poe _list_tasks | tr ' ' '\n' | sort); do case "$task" in
+                    check:*) poe "$task" || exit 1;; esac; done
+                  - slot: tests
+                  - slot: mutations
   unit-run-through-its-action-tasks:
     python:
       ${constitution.run}:

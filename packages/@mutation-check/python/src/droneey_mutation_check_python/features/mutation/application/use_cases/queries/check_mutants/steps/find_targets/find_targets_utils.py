@@ -1,8 +1,8 @@
 import ast
-from typing import TYPE_CHECKING, Final, assert_never
+from typing import TYPE_CHECKING, Final
 
 from .......domain.constants import SOURCE_ROOT_PATH
-from .......domain.entities import ChangedFile, MutantGlob, NewFile
+from .......domain.entities import MutantGlob, python_source_files, touches
 
 if TYPE_CHECKING:
   from collections.abc import Callable, Iterator
@@ -33,46 +33,30 @@ def _functions_by_mutmut_name(tree: ast.Module) -> Iterator[tuple[str, Function]
           yield f'x{CLASS_SEPARATOR}{node.name}{CLASS_SEPARATOR}{member.name}', member
 
 
-def _touches(function: Function, file: FileChange) -> bool:
-  match file:
-    case NewFile():
-      return True
-    case ChangedFile(line_ranges=line_ranges):
-      first_line = min(
-        [
-          function.lineno,
-          *(decorator.lineno for decorator in function.decorator_list),
-        ]
-      )
-      function_lines = range(first_line, (function.end_lineno or function.lineno) + 1)
-
-      return any(
-        changed.start < function_lines.stop and function_lines.start < changed.stop
-        for changed in line_ranges
-      )
-    case _:  # pragma: no mutate -- no file reaches it
-      assert_never(file)  # pragma: no mutate -- no file reaches it
+def _first_line(function: Function) -> int:
+  return min([function.lineno, *(decorator.lineno for decorator in function.decorator_list)])
 
 
 def _function_globs(*, file: FileChange, source_text: str) -> Iterator[MutantGlob]:
   module_name = _module_name(file.path)
 
   for mutmut_name, function in _functions_by_mutmut_name(ast.parse(source_text)):
-    if _touches(function, file):
+    if touches(
+      file,
+      first_line=_first_line(function),
+      last_line=function.end_lineno or function.lineno,
+    ):
       yield MutantGlob(f'{module_name}.{mutmut_name}__mutmut_*')
 
 
 def find_targets(
   changes: Changes, *, read_text: Callable[[UnitRelativePath], str]
 ) -> tuple[MutantGlob, ...]:
-  source_paths = set(changes.python_source_paths)
-
   return tuple(
     sorted(
       {
         glob
-        for file in changes.files
-        if file.path in source_paths
+        for file in python_source_files(changes)
         for glob in _function_globs(file=file, source_text=read_text(file.path))
       },
     ),

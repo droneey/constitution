@@ -1,6 +1,6 @@
 ---
 id: remote-service
-summary: Another system the program calls, hears from or pushes to.
+summary: Another system the program calls or hears from.
 requires: []
 extends: null
 abstract: false

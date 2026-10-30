@@ -6,30 +6,13 @@ import type {
 } from '#/kernel/entities';
 import type { FindingOf } from '#/kernel/types';
 import { normalizePath } from '#/kernel/utils';
-import type { BlockId } from '#/kernel/value-objects';
 
-import type { Constitution, FrontMatterReadDetails } from '../../../../../../domain/entities';
-import { Block } from '../../../../../../domain/entities';
+import type { LoadFindingDetails } from '../../../../../../domain/entities';
+import { Block, Constitution } from '../../../../../../domain/entities';
 import type { FileTree, FrontMatterParser, ManifestParser } from '../../../../../contracts';
-import type { BlockLoadDetails, PlaceDetails } from './steps/load-blocks';
 import { loadBlocks } from './steps/load-blocks';
 import { parseRules } from './steps/parse-rules';
 import { readDocuments } from './steps/read-documents';
-
-enum LoadCode {
-  BaseDoesNotLoad = 'base-does-not-load',
-  IdShared = 'block-id-shared',
-}
-
-interface LoadDetails {
-  readonly [LoadCode.BaseDoesNotLoad]: object;
-  readonly [LoadCode.IdShared]: {
-    readonly id: BlockId;
-    readonly others: readonly string[];
-  };
-}
-
-type LoadFindingDetails = BlockLoadDetails & FrontMatterReadDetails & LoadDetails & PlaceDetails;
 
 type LoadFinding = FindingOf<
   LoadFindingDetails & RequirementsTableDetails & RuleFormDetails & ValueFindingDetails
@@ -44,26 +27,6 @@ interface ConstitutionLoaded {
   readonly constitution: Constitution;
   readonly findings: readonly LoadFinding[];
 }
-
-const duplicateIdFindings = (blocks: readonly Block[]): readonly LoadFinding[] =>
-  blocks.flatMap((block) => {
-    const others = blocks.filter(
-      (other) => Block.sameAs(other, block) && other.passport.path !== block.passport.path,
-    );
-
-    return others.length === 0
-      ? []
-      : [
-          {
-            code: LoadCode.IdShared,
-            details: {
-              id: block.id,
-              others: others.map((other) => other.passport.path),
-            },
-            path: block.passport.path,
-          },
-        ];
-  });
 
 // Why: normalizePath drops a leading "/", which a base given from the root keeps.
 const folderOf = (base: BaseTree): string =>
@@ -126,20 +89,12 @@ const loadConstitution = (input: LoadConstitutionInput): ConstitutionLoaded => {
     },
     findings: [
       ...own.findings,
-      ...(base !== undefined && base.loaded.findings.length > 0
-        ? [
-            {
-              code: LoadCode.BaseDoesNotLoad,
-              details: {},
-              path: base.folder,
-            } satisfies LoadFinding,
-          ]
-        : []),
-      ...duplicateIdFindings(blocks),
+      ...(base === undefined ? [] : Constitution.baseFindings(base)),
+      ...Constitution.sharedIdFindings(blocks),
       ...parsed.findings,
     ],
   };
 };
 
-export type { BaseTree, ConstitutionLoaded, LoadFindingDetails };
-export { LoadCode, loadConstitution };
+export type { BaseTree, ConstitutionLoaded };
+export { loadConstitution };

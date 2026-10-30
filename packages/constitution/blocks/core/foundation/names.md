@@ -104,7 +104,7 @@ An event's name says what happened, in the past tense: `OrderPlaced`, not `Place
 
 ### error-name-ends-in-error · SHOULD
 
-The name of an error type ends in `Error`: `OrderNotFoundError`, never `OrderNotFound` or `NotFoundException`.
+The name of an error type ends in the one suffix its language's block names for errors, the same for every error of the program: never `OrderNotFound` beside `PaymentFailedError`.
 
 | Why |
 |---|

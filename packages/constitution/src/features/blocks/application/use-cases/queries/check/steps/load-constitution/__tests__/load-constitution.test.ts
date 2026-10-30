@@ -22,14 +22,16 @@ import { validFiles } from '../../../../../../../__tests__/valid-files.fixtures'
 import {
   Block,
   BlockFile,
+  BlockLoadCode,
   FrontMatterReadCode,
+  LoadCode,
+  PlaceCode,
   ReadStatus,
 } from '../../../../../../../domain/entities';
 import { TreePath } from '../../../../../../../domain/value-objects';
 import { loadedOf, packSourceOf } from '../../../__tests__/check.fixtures';
 import type { ConstitutionLoaded } from '../load-constitution';
-import { LoadCode, loadConstitution } from '../load-constitution';
-import { BlockLoadCode, PlaceCode } from '../steps/load-blocks';
+import { loadConstitution } from '../load-constitution';
 
 type LoadFinding = ConstitutionLoaded['findings'][number];
 

@@ -12,13 +12,13 @@ Routes are file routes under `root/routes/`, from which the router generates its
 |---|
 | the file tree is the route tree, so a screen's registration is found by its URL. |
 
-### route-file-holds-only-what-the-router-asks → ui-never-touches-navigation · MUST
+### route-file-holds-only-what-the-router-asks → delivery-unit-registered-by-the-root · MUST
 
-A route file registers one screen of a feature's or a composition module's presentation and holds only what the router asks of it — its address and its schema, its loader and guard, its head, its pending and error components — and hands the screen its parameters, links and transitions; a layout route hands its screen `<Outlet/>` as a slot.
+What TanStack Router asks of a route file counts its `head` and its pending and error components, which sit there too; a layout route hands its screen `<Outlet/>` as a slot.
 
 | Why |
 |---|
-| the one place that knows the address is the one that turns it into data, and the screen itself stays free of the router. |
+| the router renders these around the screen, so they belong to its registration, and a screen handed its outlet renders without the router. |
 
 ### services-reach-loaders-through-router-context → unit-receives-its-dependencies-by-contract · MUST
 

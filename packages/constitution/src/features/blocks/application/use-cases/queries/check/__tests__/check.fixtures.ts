@@ -2,7 +2,7 @@ import type { Files, Source } from '../../../../../__tests__/constitution.fixtur
 import { sourceOf } from '../../../../../__tests__/constitution.fixtures';
 import { createFakeFileTree } from '../../../../../__tests__/file-tree.fake';
 import { BlockGraph, Constitution } from '../../../../../domain/entities';
-import type { CheckInput } from '../check.types';
+import type { CheckInput } from '../../../../../domain/services';
 import type { BaseTree, ConstitutionLoaded } from '../steps/load-constitution';
 import { loadConstitution } from '../steps/load-constitution';
 
@@ -29,6 +29,9 @@ const loadedOf = (
   repositoryFiles: Readonly<Files> = files,
 ): ConstitutionLoaded => loadConstitution(sourceOf(files, repositoryFiles));
 
+const packLoadedOf = (input: PackSourceInput): ConstitutionLoaded =>
+  loadConstitution(packSourceOf(input));
+
 const checkInputOf = (
   files: Readonly<Files>,
   repositoryFiles: Readonly<Files> = files,
@@ -48,4 +51,4 @@ const checkInputOf = (
   };
 };
 
-export { checkInputOf, loadedOf, packSourceOf };
+export { checkInputOf, loadedOf, packLoadedOf, packSourceOf };

@@ -1,6 +1,6 @@
 # MCP server
 
-> Governs where fastmcp is imported and the handler the root gives the server's failures.
+> Governs the handler the root gives the server's failures.
 
 ## General
 

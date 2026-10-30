@@ -1,13 +1,13 @@
 pytest:
-  '*':
+  coverage-gate-with-branches:
     python:
       pyproject.toml:
         tool:
           poe:
             tasks:
               test:specs: 'pytest --cov -o "norecursedirs=.* ${role.end-to-end-suite}"'
-poe:
-  task-group-walks-poes-own-list:
+_task-runner:
+  check-task-is-the-units-whole-gate:
     python:
       pyproject.toml:
         tool:

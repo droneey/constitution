@@ -2,8 +2,7 @@ import { stringify } from 'smol-toml';
 
 import { isDeepEqual } from '#/kernel/utils';
 
-import type { ConfigurationWrite } from '../../application/contracts';
-import type { Setting, SettingMap } from '../../domain/entities';
+import type { ConfigurationWrite, Setting, SettingMap } from '../../domain/entities';
 import { Setting as Settings } from '../../domain/entities';
 import { withBlockComments } from './block-comments.utils';
 import { ownFieldOf } from './own-field.utils';

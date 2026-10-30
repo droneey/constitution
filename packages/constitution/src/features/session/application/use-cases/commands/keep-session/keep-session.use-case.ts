@@ -1,5 +1,5 @@
-import type { SessionState } from '../../../../domain/entities';
-import { HookEventName, SessionOrigin } from '../../../../domain/entities';
+import type { HookEventName, SessionOrigin, SessionState } from '../../../../domain/entities';
+import { SessionStart } from '../../../../domain/entities';
 import type { SessionId } from '../../../../domain/value-objects';
 import type { SessionCommandRepository } from '../../../contracts/repositories/commands';
 
@@ -12,12 +12,12 @@ interface KeepSessionInput {
 }
 
 const keepSession = (input: KeepSessionInput): void => {
-  if (input.state === undefined || input.event !== HookEventName.SessionStart) {
+  if (input.state === undefined || !SessionStart.keepsState(input.event)) {
     return;
   }
 
   input.sessions.saveState({
-    isReminderKept: input.origin === SessionOrigin.Resume,
+    isReminderKept: SessionStart.keepsReminders(input.origin),
     session: input.session,
     state: input.state,
   });

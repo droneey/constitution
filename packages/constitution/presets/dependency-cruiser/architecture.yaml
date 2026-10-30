@@ -86,6 +86,19 @@ core:
             pathNot:
               - ^${role.source}/${role.shared-domain}/
               - \.(?:json|ya?ml)$
+        forbidden[name=contract-reaches-only-its-model-and-the-kernel]:
+          severity: error
+          from:
+            path: ^${role.source}/${role.bounded-context}/([^/]+)/${role.application-layer}/${role.port}/
+            pathNot:
+              - (^|/)__tests__/
+              - ^${role.package-suites}/
+          to:
+            dependencyTypesNot:
+              - core
+            pathNot:
+              - ^${role.source}/${role.bounded-context}/$1/(${role.pure-layer}|${role.application-layer}/${role.port})/
+              - ^${role.source}/${role.shared-domain}/
   import-points-inward:
     typescript:
       .dependency-cruiser.jsonc:

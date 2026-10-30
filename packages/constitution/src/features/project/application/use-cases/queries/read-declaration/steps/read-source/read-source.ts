@@ -8,10 +8,10 @@ import type { ProjectFiles } from '#/kernel/contracts';
 import type { FileRead } from '#/kernel/entities';
 import { FileReadStatus } from '#/kernel/entities';
 import type { BlockSource, PackPath } from '#/kernel/value-objects';
-import { AbsolutePath, SourceKind } from '#/kernel/value-objects';
+import { AbsolutePath } from '#/kernel/value-objects';
 
-import type { BlockSetSource, SourceFile } from '../../../../../../domain/entities';
-import { SourceStatus } from '../../../../../../domain/entities';
+import type { SourceFile } from '../../../../../../domain/entities';
+import { BlockSetSource, SourceStatus } from '../../../../../../domain/entities';
 
 interface ReadSourceInput {
   readonly files: ProjectFiles;
@@ -19,10 +19,6 @@ interface ReadSourceInput {
   readonly shownFolderPath: AbsolutePath | PackPath;
   readonly source: BlockSource;
 }
-
-const isPresetsPack = (input: ReadSourceInput): boolean =>
-  input.source.kind === SourceKind.Pack &&
-  input.files.isFolder(AbsolutePath.join(input.folderPath, PRESETS_FOLDER_NAME));
 
 const sourceFileOf = (input: { path: string; read: FileRead }): SourceFile =>
   input.read.status === FileReadStatus.Read
@@ -41,18 +37,11 @@ const readSource = (input: ReadSourceInput): BlockSetSource => {
   const listed = input.files.listFiles(blocksFolderPath);
 
   if (listed === undefined) {
-    return isPresetsPack(input)
-      ? {
-          files: [],
-          shownFolderPath: input.shownFolderPath,
-          source: input.source,
-          status: SourceStatus.Listed,
-        }
-      : {
-          shownFolderPath: input.shownFolderPath,
-          source: input.source,
-          status: SourceStatus.Unlisted,
-        };
+    return BlockSetSource.withoutBlocksFolder({
+      holdsPresets: input.files.isFolder(AbsolutePath.join(input.folderPath, PRESETS_FOLDER_NAME)),
+      shownFolderPath: input.shownFolderPath,
+      source: input.source,
+    });
   }
 
   return {

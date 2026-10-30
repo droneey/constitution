@@ -1,18 +1,10 @@
 import type { TextsOf } from '#/shared/cli';
 
-import type {
-  HooksDetails,
-  ManifestReadDetails,
-  MarketplaceDetails,
-  PluginDetails,
-} from '../../application/use-cases/queries/check';
-import {
-  HooksCode,
-  ManifestReadCode,
-  MarketplaceCode,
-  PluginCode,
-} from '../../application/use-cases/queries/check';
 import { RELATIVE_PREFIX, SKILL_FILE_NAME } from '../../domain/constants';
+import type { ManifestReadDetails } from '../../domain/entities';
+import { ManifestReadCode } from '../../domain/entities';
+import type { HooksDetails, MarketplaceDetails, PluginDetails } from '../../domain/services';
+import { HooksCode, MarketplaceCode, PluginCode } from '../../domain/services';
 import { fieldOf } from './wording.utils';
 
 const missingText = (role: string): string =>

@@ -5,7 +5,7 @@ lingui:
         allowed[comment=lingui-only-where-text-is-rendered]:
           from:
             path:
-              - ^${role.source}/(?!${role.generic-library}/).*/${role.presentation-layer}/
+              - ^${role.source}/(?!${role.generic-library}/).*/${role.presentation-layer}/(${role.screen}|${role.widget}|${role.component})/
               - ^${role.source}/(?!index\.)[^/]+\.[^/]+$
               - ^${role.source}/${role.extra-entry}/[^/]+/main\.[^/]+$
               - ^${role.source}/${role.composition-root}/
@@ -18,7 +18,7 @@ lingui:
           severity: error
           from:
             pathNot:
-              - ^${role.source}/(?!${role.generic-library}/).*/${role.presentation-layer}/
+              - ^${role.source}/(?!${role.generic-library}/).*/${role.presentation-layer}/(${role.screen}|${role.widget}|${role.component})/
               - ^${role.source}/(?!index\.)[^/]+\.[^/]+$
               - ^${role.source}/${role.extra-entry}/[^/]+/main\.[^/]+$
               - ^${role.source}/${role.composition-root}/

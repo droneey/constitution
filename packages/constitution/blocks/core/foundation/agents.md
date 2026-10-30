@@ -62,7 +62,7 @@ An agent reports outcomes as they are, with their evidence: a failing test with 
 
 ### handed-back-change-names-what-its-abstractions-earn · MUST
 
-An agent that hands a change back names, for each abstraction the change adds — a port, an adapter, a value with an invariant, an aggregate, an operation, an error code, a layer, a helper — the present need that earns it its place, as the rules on structure count needs.
+An agent that hands a change back names, for each abstraction the change adds — a contract, an implementation of it, a value with an invariant, a type, an operation, an error code, a layer, a helper — the present need that earns it its place, as the rules on structure count needs.
 
 | Why |
 |---|

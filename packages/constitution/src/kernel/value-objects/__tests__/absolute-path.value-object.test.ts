@@ -78,4 +78,32 @@ describe('AbsolutePath', () => {
       expect<string>(joined).toBe(expected);
     },
   );
+
+  it.each([
+    {
+      condition: 'the folder lies below the root',
+      expected: [
+        '/work/project',
+        '/work',
+        '/',
+      ],
+      folder: '/work/project',
+    },
+    {
+      condition: 'the folder is the root',
+      expected: [
+        '/',
+      ],
+      folder: '/',
+    },
+  ])('should give the folder and each folder above it when $condition', ({ expected, folder }) => {
+    // Arrange
+    const folderPath = AbsolutePath.create(folder);
+
+    // Act
+    const folders = AbsolutePath.upwardFrom(folderPath);
+
+    // Assert
+    expect<readonly string[]>(folders).toStrictEqual(expected);
+  });
 });

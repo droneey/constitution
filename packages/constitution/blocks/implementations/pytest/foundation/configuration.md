@@ -42,11 +42,11 @@ No plugin that runs a case again — pytest-rerunfailures, flaky — is installe
 
 ### integration-folders-not-collected → integration-spec-runs-the-real-engine · SHOULD
 
-`norecursedirs` leaves out `tests/integration/` and `tests/e2e/`, and keeps pytest's `.*` for the hidden folders the tools write.
+`norecursedirs` leaves out `tests/integration/` and `tests/e2e/`, and keeps pytest's `.*` for the hidden folders the tools write; a run that collects the integration specs lifts `integration` from it, `-o "norecursedirs=.* e2e"`.
 
 | Why |
 |---|
-| pytest collects every folder under `tests/`, so only `norecursedirs` keeps the integration and end-to-end specs out of a run of the unit specs. |
+| pytest collects every folder under `tests/`, so only `norecursedirs` keeps the integration and end-to-end specs out of a run of the unit specs, and pytest drops a folder named on its command line beside its parent, so a run that needs the integration specs lifts it from the list instead. |
 
 ### shared-fixtures-in-the-conftest → test-folder-files-in-python-forms · MUST
 

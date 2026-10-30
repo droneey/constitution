@@ -5,19 +5,19 @@ import { ValueFailure } from '#/kernel/errors';
 import { RuleSlug } from '#/kernel/value-objects';
 import { textOf } from '#/shared/cli';
 
-import type { BlockFinding } from '../../../application/use-cases/queries/check';
+import { LoadCode } from '../../../domain/entities';
+import type { BlockFinding } from '../../../domain/services';
 import {
   BudgetCode,
   CyclesCode,
   DecisionsCode,
   LinksCode,
-  LoadCode,
   PluginCode,
   RequirementsCode,
   RequiresCode,
   RulesCode,
   TermsCode,
-} from '../../../application/use-cases/queries/check';
+} from '../../../domain/services';
 import { budgetTexts } from '../budget-texts.utils';
 import { decisionsTexts } from '../decisions-texts.utils';
 import { findingTextOf } from '../finding-text.utils';

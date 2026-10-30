@@ -58,7 +58,7 @@ An answer carries only the fields the caller may see, and a write changes only t
 
 ### caller-shaped-result-never-served-from-a-cache-to-another · MUST
 
-A result shaped by its caller — by their rights, their tenant or their own data — is never served from a cache to another caller: the cache keeps it for that caller alone or is keyed by all that shaped it.
+A result shaped by its caller — by their rights or their tenant — is never served from a cache to another caller: the cache keeps it for that caller alone or is keyed by all that shaped it.
 
 | Why |
 |---|

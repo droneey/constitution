@@ -54,9 +54,9 @@ A collection keyed by values from outside the program is a `Map`, or an object m
 |---|
 | a key such as `__proto__` or `constructor` written into a plain object changes the prototype every object shares, and with it the checks and defaults of the whole program. |
 
-### outside-pattern-a-safe-literal-or-on-re2 → outside-input-matched-in-linear-time · MUST
+### outside-pattern-a-safe-literal-or-on-a-linear-engine → outside-input-matched-in-linear-time · MUST
 
-A regular expression that runs on outside input is a literal with no nested or overlapping quantifiers, or runs on a linear engine such as RE2; it is never built from outside input.
+A regular expression that runs on outside input is a literal with no nested or overlapping quantifiers, or runs on a linear-time engine; it is never built from outside input.
 
 | Why |
 |---|

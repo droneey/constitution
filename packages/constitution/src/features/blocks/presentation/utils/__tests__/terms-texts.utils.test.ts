@@ -6,8 +6,8 @@ import type { ProblemOf } from '#/kernel/types';
 import { BlockId } from '#/kernel/value-objects';
 import { textOf } from '#/shared/cli';
 
-import type { TermsDetails } from '../../../application/use-cases/queries/check';
-import { TermsCode } from '../../../application/use-cases/queries/check';
+import type { TermsDetails } from '../../../domain/services';
+import { TermsCode } from '../../../domain/services';
 import { termsTexts } from '../terms-texts.utils';
 
 describe('termsTexts', () => {

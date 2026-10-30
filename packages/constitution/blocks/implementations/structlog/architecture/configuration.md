@@ -1,6 +1,6 @@
 # Configuration
 
-> Governs who configures structlog and imports it.
+> Governs who configures structlog and its handlers.
 
 ## General
 

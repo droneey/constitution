@@ -5,8 +5,9 @@ import type { AbsolutePath } from '#/kernel/value-objects';
 import { RepositoryRelativePath } from '#/kernel/value-objects';
 import type { ChildProcessSettings } from '#/libs/child-process';
 
-import type { TreeState, WorkingTree } from '../../application/contracts';
-import { TreeStateStatus } from '../../application/contracts';
+import type { WorkingTree } from '../../application/contracts';
+import type { TreeState } from '../../domain/entities';
+import { TreeStateStatus } from '../../domain/entities';
 import { TreeFingerprint } from '../../domain/value-objects';
 import { gitEndedMessage } from './git-working-tree.messages';
 

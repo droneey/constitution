@@ -8,7 +8,8 @@ ty:
               respect-type-ignore-comments: false
             rules:
               all: error
-  ty-is-the-type-gate:
+core:
+  rule-held-by-a-tool-where-one-can:
     python:
       pyproject.toml:
         tool:
@@ -17,7 +18,6 @@ ty:
               all: error
             terminal:
               error-on-warning: true
-core:
   async-work-awaited-or-held-by-a-scope:
     python:
       pyproject.toml:

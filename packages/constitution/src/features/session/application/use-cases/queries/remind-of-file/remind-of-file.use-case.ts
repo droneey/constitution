@@ -1,9 +1,9 @@
 import { ConfigReadStatus } from '#/kernel/entities';
 import { normalizePath } from '#/kernel/utils';
-import { AbsolutePath, BlockId, RepositoryRelativePath } from '#/kernel/value-objects';
+import { AbsolutePath, RepositoryRelativePath } from '#/kernel/value-objects';
 
-import type { Reminder, SessionAgent } from '../../../../domain/entities';
-import { SessionState } from '../../../../domain/entities';
+import type { SessionAgent } from '../../../../domain/entities';
+import { Reminder } from '../../../../domain/entities';
 import type { SessionId } from '../../../../domain/value-objects';
 import type { SessionQueryRepository } from '../../../contracts/repositories/queries';
 
@@ -29,21 +29,14 @@ const remindOfFile = (input: RemindOfFileInput): Reminder | undefined => {
     return undefined;
   }
 
-  const reminded = input.sessions.reminded({
-    agent: input.agent,
-    session: input.session,
-  });
-
-  return {
-    blocks: SessionState.governing(state, path)
-      .filter((block) => !reminded.has(block.id))
-      .map((block) => ({
-        files: block.files,
-        id: block.id,
-        musts: state.mustsBesideCore.filter((must) => BlockId.equals(must.block, block.id)),
-      })),
+  return Reminder.of({
     path,
-  };
+    reminded: input.sessions.reminded({
+      agent: input.agent,
+      session: input.session,
+    }),
+    state,
+  });
 };
 
 export { remindOfFile };

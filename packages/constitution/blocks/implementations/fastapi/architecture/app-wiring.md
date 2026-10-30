@@ -1,6 +1,6 @@
 # App wiring
 
-> Governs how the root assembles the app and registers its error handlers, and where FastAPI is imported.
+> Governs how the root assembles the app and registers its error handlers.
 
 ## General
 

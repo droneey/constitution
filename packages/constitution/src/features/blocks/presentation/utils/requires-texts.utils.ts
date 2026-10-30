@@ -1,7 +1,7 @@
 import type { TextsOf } from '#/shared/cli';
 
-import type { RequiresDetails } from '../../application/use-cases/queries/check';
-import { RequiresCode } from '../../application/use-cases/queries/check';
+import type { RequiresDetails } from '../../domain/services';
+import { RequiresCode } from '../../domain/services';
 import { aBlock, blocksOf } from './wording.utils';
 
 const requiresTexts: TextsOf<RequiresDetails> = {

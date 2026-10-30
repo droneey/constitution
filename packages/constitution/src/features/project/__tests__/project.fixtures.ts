@@ -6,6 +6,8 @@ import type {
   ConfigParser,
   ReleaseManifestParser,
 } from '../application/contracts';
+import type { BlockCards } from '../domain/entities';
+import { BlockSetSource } from '../domain/entities';
 import type { ProjectError } from '../domain/errors';
 import { isProjectError } from '../domain/errors';
 import { createJsonReleaseManifestParser } from '../infrastructure/json';
@@ -152,6 +154,14 @@ const parsers = (): {
   manifestParser: createJsonReleaseManifestParser(),
 });
 
+const cardsOf = (sources: readonly BlockSetSource[]): BlockCards =>
+  new Map(
+    BlockSetSource.frontMattersOf(sources).map((frontMatter) => [
+      frontMatter,
+      parsers().cardParser.card(frontMatter),
+    ]),
+  );
+
 interface Failure {
   readonly cause: unknown;
   readonly code: ProjectError['code'];
@@ -179,6 +189,7 @@ const failureOf = (act: () => unknown): Failure | undefined => {
 export type { BlockFixture };
 export {
   blockFilesOf,
+  cardsOf,
   configPath,
   Folder,
   failureOf,

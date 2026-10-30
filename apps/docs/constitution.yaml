@@ -8,6 +8,7 @@ domains:
   - ui
   - design-system
   - untrusted-client
+  - copy
 platforms:
   - browser
 languages:

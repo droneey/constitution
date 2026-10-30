@@ -170,6 +170,26 @@
       },
     },
     {
+      "name": "contract-reaches-only-its-model-and-the-kernel",
+      "severity": "error",
+      "from": {
+        "path": "^src/features/([^/]+)/application/contracts/",
+        "pathNot": [
+          "(^|/)__tests__/",
+          "^tests/",
+        ],
+      },
+      "to": {
+        "dependencyTypesNot": [
+          "core",
+        ],
+        "pathNot": [
+          "^src/features/$1/(domain|application/contracts)/",
+          "^src/kernel/",
+        ],
+      },
+    },
+    {
       "name": "libs-know-no-application",
       "severity": "error",
       "from": {

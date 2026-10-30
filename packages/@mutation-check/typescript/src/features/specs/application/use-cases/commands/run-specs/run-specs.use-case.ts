@@ -1,7 +1,7 @@
 import type { UnitRelativePath } from '#/kernel/value-objects';
 
-import type { ChosenSpecsRun, UnitSpecs } from '../../../../domain/entities';
-import { SpecRunStatus } from '../../../../domain/entities';
+import type { ChosenSpecsRun } from '../../../../domain/entities';
+import { SpecRunStatus, UnitSpecs } from '../../../../domain/entities';
 import type { SpecRunner } from '../../../contracts';
 
 interface SpecsRequest {
@@ -17,16 +17,7 @@ interface RunSpecsInput extends SpecsRequest {
 }
 
 const runSpecs = async (input: RunSpecsInput): Promise<ChosenSpecsRun> => {
-  const specPaths =
-    input.filePaths === undefined
-      ? input.unitSpecs.specPaths
-      : [
-          ...new Set(
-            input.filePaths.flatMap(
-              (filePath) => input.unitSpecs.specPathsByFilePath.get(filePath) ?? [],
-            ),
-          ),
-        ];
+  const specPaths = UnitSpecs.specPathsFor(input.unitSpecs, input.filePaths);
 
   if (specPaths.length === 0) {
     return {

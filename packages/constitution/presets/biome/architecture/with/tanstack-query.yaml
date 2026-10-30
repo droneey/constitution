@@ -19,7 +19,7 @@ tanstack-query:
           includes:
             - '**/*.ts'
             - '**/*.tsx'
-            - '!**/cache.${role.helper-file}.ts'
+            - '!**/${role.presentation-layer}/${role.binding}/${role.shared-code}/cache.ts'
             - '!**/${role.source}/${role.composition-root}/**'
             - '!**/${role.colocated-specs}/**'
             - '!**/*.test.ts'
@@ -32,4 +32,4 @@ remote-data:
           includes:
             - '**/*.ts'
             - '**/*.tsx'
-            - '!**/cache.${role.helper-file}.ts'
+            - '!**/${role.presentation-layer}/${role.binding}/${role.shared-code}/cache.ts'

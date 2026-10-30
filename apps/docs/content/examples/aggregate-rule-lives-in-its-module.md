@@ -1,5 +1,5 @@
 ```pseudo title="Avoid"
-# aggregates/order/order.aggregate
+# entities/order/order.aggregate
 type Order = {
   id: OrderId,
   status: OrderStatus
@@ -10,7 +10,7 @@ let canRefund = order.status is Paid
 ```
 
 ```pseudo title="Prefer"
-# aggregates/order/order.aggregate
+# entities/order/order.aggregate
 type Order = {
   id: OrderId,
   status: OrderStatus

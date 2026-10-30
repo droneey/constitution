@@ -24,7 +24,7 @@ Of the program's code, the domain imports only itself and the kernel's model —
 
 ### application-imports-only-the-domain-and-its-contracts · MUST
 
-Of the program's code, the application imports only the domain, the kernel and its own contracts — never an adapter, a presentation or the root; of the language's standard library, only what holds no effect.
+Of the program's code, the application imports only the domain, the kernel and its own contracts, and in composition the surfaces of the features it composes — never an adapter, a presentation or the root; of the language's standard library, only what holds no effect.
 
 | Why |
 |---|
@@ -48,7 +48,7 @@ A module of composition never imports another; what two of them need lives in th
 
 ### effects-held-only-by-the-edge · MUST
 
-Only the edge holds effects — input and output, the network, storage, the file system, the clock, randomness, identifiers, the environment and processes — and the domain and every other unit of logic reach them only through ports their adapters implement. A unit outside the edge reaches no effect through a lib either. A unit outside the domain writing diagnostics through the logging facade, a binding unit's timer that schedules its own work, and a delivery unit reading and writing through the input and output its framework hands it — a request and its reply, the streams of a run — stand outside the ports.
+Only the edge holds effects — input and output, the network, storage, the file system, the clock, randomness, identifiers, the environment and processes — and the application and every other unit of logic reach them only through ports their adapters implement, while the domain reaches none. A unit outside the edge reaches no effect through a lib either. A unit outside the domain and the application writing diagnostics through the logging facade, a binding unit's timer that schedules its own work, and a delivery unit reading and writing through the input and output its framework hands it — a request and its reply, the streams of a run — stand outside the ports.
 
 | Why |
 |---|
@@ -162,7 +162,7 @@ Composition across features lives beside the delivery unit that needs it, in tha
 
 ### shared-piece-placed-by-meaning · SHOULD
 
-A shared piece with business meaning goes to the kernel, one without it to shared, and one that would make sense in any program to libs; a piece without meaning that the domain or the kernel needs — a result type, a guard of exhaustiveness — lives in a role folder of the kernel, which both may import. The kernel stays small.
+A shared piece with business meaning goes to the kernel, one without it to shared, and one that would make sense in any program to libs; a piece without meaning that the domain or the kernel needs — a guard of exhaustiveness, a base error — lives in a role folder of the kernel, which both may import. The kernel stays small.
 
 | Why |
 |---|
@@ -196,7 +196,7 @@ A delivery unit that serves one feature’s operations lives in that feature’s
 
 ### binding-unit-calls-only-use-cases · MUST
 
-A binding unit, and a delivery unit that binds several operations itself, calls each operation's use case and never a port of the domain it serves; a port of its own concern — the identifier it makes for a command, the events it reports — comes from the root as the use case does.
+A binding unit, and a delivery unit that binds several operations itself, calls each operation's use case and never a port of its feature or of the kernel; a port of its own concern — the identifier it makes for a command, the events it reports — comes from the root as the use case does.
 
 | Why |
 |---|

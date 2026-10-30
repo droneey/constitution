@@ -7,22 +7,7 @@ import type {
 } from '#/kernel/entities';
 import type { AbsolutePath, Version } from '#/kernel/value-objects';
 
-import type { DigestListing } from '../../domain/entities';
-
-enum ConfigurationsCheckStatus {
-  Checked = 'checked',
-  Unchecked = 'unchecked',
-}
-
-type ConfigurationsReport =
-  | {
-      readonly status: ConfigurationsCheckStatus.Checked;
-      readonly warnings: readonly ProjectWarning[];
-    }
-  | {
-      readonly reason?: string;
-      readonly status: ConfigurationsCheckStatus.Unchecked;
-    };
+import type { ConfigurationsReport, DigestListing } from '../../domain/entities';
 
 type DeclaredRules =
   | {
@@ -51,5 +36,4 @@ interface RulesSource {
   readonly readRules: (place: ProjectPlace) => DeclaredRules;
 }
 
-export type { ConfigurationsReport, DeclaredRules, RulesSource };
-export { ConfigurationsCheckStatus };
+export type { DeclaredRules, RulesSource };

@@ -1,8 +1,8 @@
 import { Met } from '#/kernel/entities';
 import type { TextsOf } from '#/shared/cli';
 
-import type { RequirementsDetails } from '../../application/use-cases/queries/check';
-import { RequirementsCode } from '../../application/use-cases/queries/check';
+import type { RequirementsDetails } from '../../domain/services';
+import { RequirementsCode } from '../../domain/services';
 
 const requirementsTexts: TextsOf<RequirementsDetails> = {
   [RequirementsCode.OutsideImplementation]: () =>
