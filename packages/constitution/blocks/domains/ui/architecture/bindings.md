@@ -22,7 +22,7 @@ Within the interface, binding units are consumed by screens and widgets only, ne
 
 ### ui-layer-imports-only-what-its-feature-offers → import-points-inward · MUST
 
-A feature's screens, widgets and components import `libs/ui`, `shared/ui`, the feature's own binding units, its entities, aggregates and value objects — their types, enumerations, checks and functions — its errors' codes and the kernel save its contracts, never an adapter, a contract — the kernel's included — or a use case.
+A feature's screens, widgets and components import `libs/ui`, `shared/ui`, the feature's own binding units, its entities, aggregates and value objects — their types, enumerations, predicates and derived values, never a transition — its errors' codes and the kernel save its contracts, never an adapter, a contract — the kernel's included — or a use case.
 
 | Why |
 |---|

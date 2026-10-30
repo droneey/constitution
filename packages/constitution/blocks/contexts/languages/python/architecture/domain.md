@@ -6,7 +6,7 @@
 
 ### aggregate-changed-by-replace-in-its-module → aggregate-changed-only-by-its-transitions · MUST
 
-An aggregate's transitions are its methods or the functions of its module, each returning a copy made by `dataclasses.replace`; no code outside that module calls its constructor, save through its `create`, or `replace` on it.
+An aggregate's transitions are its methods or the functions of its module, each returning a copy made by `dataclasses.replace`; no code outside that module calls its constructor, save through its `create` or its `restore`, or `replace` on it.
 
 | Why |
 |---|

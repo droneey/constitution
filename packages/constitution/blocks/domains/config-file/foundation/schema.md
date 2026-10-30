@@ -12,9 +12,9 @@ Where the config file's format has a schema editors read — JSON Schema for JSO
 |---|
 | a schema written twice drifts, and editors then accept files the program rejects; a stale copy is what editors fetch, and only a spec notices that the code's schema moved on without it. |
 
-### config-file-points-editors-at-the-schema · SHOULD
+### config-file-points-editors-at-the-schema → configuration-names-its-schema · SHOULD
 
-The config file points editors at its published schema, where its format has one.
+The config file names the schema the program publishes for it, in the form its format gives.
 
 | Why |
 |---|

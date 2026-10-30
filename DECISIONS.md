@@ -45,7 +45,7 @@
 | The plugin and the project's rules | ADR-0203 – ADR-0205, ADR-0212 |
 | The whole-repository review of #383 | ADR-0223, ADR-0225 |
 | Formatters | ADR-0224, ADR-0230 |
-| Evans' layers, the model that decides and the cohesion review | ADR-0259 – ADR-0266 |
+| Evans' layers, the model that decides and the cohesion review | ADR-0259 – ADR-0267 |
 
 ---
 
@@ -2609,3 +2609,14 @@
   - The voice rules in core: a library or a job with no text for a person needs none of them, and core holds only what every project needs.
   - The messages-file rule in the new domain or in i18n: its reasons — text reworded in one place, a file mutation tools skip by its kind — hold for any program that writes text a person reads, and its `.messages` term is what core's mutation rule names.
 - **Why.** The voice belongs to the text, not to the surface that shows it or to the number of its languages.
+
+## ADR-0267 — A configuration names its schema in core; an aggregate read back is rebuilt by its restore
+
+**Date:** 2026-10-30 · **Status:** Accepted
+
+- **Decision.** Core's `configuration-names-its-schema` asks every configuration file to name the schema its reader publishes; JSON, TOML and YAML keep only the form their language gives it, and config-file's rule tightens it for the program's own file. `aggregate-changed-only-by-its-transitions` gives an aggregate a second way in besides `create`: its `restore`, which rebuilds one already stored, checking its invariants, no precondition, and yielding no event, for the adapter that reads it.
+- **Rejected.**
+  - The schema rule kept in each language block: the three stated one requirement with no parent, and almost every project holds a configuration file whose reader publishes a schema, which is the measure core keeps.
+  - Rebuilding a stored aggregate through `create`: it checks the creation's precondition against data that already passed it, and yields the creation's event a second time.
+  - Letting the adapter build the aggregate itself: the module is then no longer the one place an aggregate is made, and an invariant a mapper forgets is never checked.
+- **Why.** Five independent reviews of the rule set agreed on the first; the second is Evans' reconstitution, which the layout had left with no lawful path.
