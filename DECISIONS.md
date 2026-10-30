@@ -45,7 +45,7 @@
 | The plugin and the project's rules | ADR-0203 – ADR-0205, ADR-0212 |
 | The whole-repository review of #383 | ADR-0223, ADR-0225 |
 | Formatters | ADR-0224, ADR-0230 |
-| Evans' layers, the model that decides and the cohesion review | ADR-0259 – ADR-0267 |
+| Evans' layers, the model that decides and the cohesion review | ADR-0259 – ADR-0268 |
 
 ---
 
@@ -2619,4 +2619,14 @@
   - The schema rule kept in each language block: the three stated one requirement with no parent, and almost every project holds a configuration file whose reader publishes a schema, which is the measure core keeps.
   - Rebuilding a stored aggregate through `create`: it checks the creation's precondition against data that already passed it, and yields the creation's event a second time.
   - Letting the adapter build the aggregate itself: the module is then no longer the one place an aggregate is made, and an invariant a mapper forgets is never checked.
-- **Why.** Five independent reviews of the rule set agreed on the first; the second is Evans' reconstitution, which the layout had left with no lawful path.
+- **Why.** Five independent reviews of the rule set agreed on the first; the second is Evans' reconstitution, which the layout had left with no lawful path. Evans asks only that reconstitution meet a broken invariant otherwise than creation does, with some strategy of repair; failing it as corrupt data, and repairing stored data by a migration, is this Constitution's own choice within that.
+
+## ADR-0268 — A transition takes the stage it starts from; a use case's signature speaks the business
+
+**Date:** 2026-10-30 · **Status:** Accepted
+
+- **Decision.** `illegal-state-unrepresentable` adds that each move between a value's stages takes only the stage it starts from and returns the stage it reaches, so shipping an order that is not paid does not type-check. `use-case-signature-speaks-the-business` asks a use case's input, a query's result, the failures it throws and the events it publishes to be named types of the business, with no framework or transport type in the signature.
+- **Rejected.**
+  - A status field checked at run time before each transition: the check is repeated, and forgetting it compiles.
+  - Returning a `Result` from the use case, as Domain Modeling Made Functional does: ADR-0263 keeps native throw, which Wlaschin's own "Against Railway-Oriented Programming" allows for errors the domain need not model.
+- **Why.** Both come from Scott Wlaschin's Domain Modeling Made Functional (2018), whose functional modelling of a workflow matches the style this Constitution keeps.

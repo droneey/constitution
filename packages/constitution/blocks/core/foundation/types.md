@@ -6,7 +6,7 @@
 
 ### illegal-state-unrepresentable · MUST
 
-A value with distinct stages is a union keyed by its stage, never a bag of optional fields and flags that allows combinations no stage has; the moves between its stages are pure transition functions, gathered in a table once they grow.
+A value with distinct stages is a union keyed by its stage, never a bag of optional fields and flags that allows combinations no stage has; the moves between its stages are pure transition functions, each taking only the stage it starts from and returning the stage it reaches, gathered in a table once they grow.
 
 | Why |
 |---|

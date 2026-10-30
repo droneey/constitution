@@ -24,6 +24,14 @@ A use case orchestrates; the model decides. It holds only the application's own 
 |---|
 | a rule written in a use case is skipped by the next use case that changes the same aggregate, and the model is left holding the data while the rules live nowhere. |
 
+### use-case-signature-speaks-the-business · SHOULD
+
+A use case's signature is written in the business's words: its input is a type named for the operation — `PlaceOrder`, `ListOverdueInvoices` — a query's result is a type the business names, and the expected failures it throws and the events it publishes are named types of the domain; no type of a framework or a transport appears in it.
+
+| Why |
+|---|
+| the signature then documents the operation as the business states it, and a change of framework or transport never reaches it. |
+
 ### domain-and-application-log-nothing · MUST
 
 The domain and the application log nothing: a use case returns its result or throws its expected failure, or publishes an event, and a binding or delivery unit logs what happened, a failure the use case handled included.
