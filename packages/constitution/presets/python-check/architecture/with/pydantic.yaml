@@ -1,5 +1,5 @@
-core:
-  parsing-library-imported-at-the-edge-and-in-shared:
+pydantic:
+  pydantic-home-is-the-edge-and-shared-parsing:
     python:
       pyproject.toml:
         tool:

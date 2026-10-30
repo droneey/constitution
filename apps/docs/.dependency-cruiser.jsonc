@@ -845,20 +845,6 @@
       },
     },
 
-    // zod
-    {
-      "comment": "parsing-library-imported-at-the-edge-and-in-shared: zod",
-      "from": {
-        "path": [
-          "^src/(features|composition)/[^/]+/presentation/",
-          "^src/shared/",
-        ],
-      },
-      "to": {
-        "path": "node_modules/zod/",
-      },
-    },
-
     // _react
     {
       "comment": "rendering-library-imported-by-the-presentation: react",
@@ -888,6 +874,20 @@
       },
       "to": {
         "path": "node_modules/@tanstack/react-router/",
+      },
+    },
+
+    // zod
+    {
+      "comment": "zod-home-is-the-edge-and-shared-parsing",
+      "from": {
+        "path": [
+          "^src/(features|composition)/[^/]+/presentation/",
+          "^src/shared/",
+        ],
+      },
+      "to": {
+        "path": "node_modules/zod/",
       },
     },
   ],

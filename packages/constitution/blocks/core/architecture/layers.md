@@ -118,14 +118,6 @@ Each folder of the tree imports installed dependencies by its role: the domain, 
 |---|
 | a dependency is volatile, and one table by folder role holds every dependency at once, those nobody wrote a rule for included; a library swapped for another is then swapped at the edge alone, and a format no one should write by hand is held in the one value object that needs it. |
 
-### parsing-library-imported-at-the-edge-and-in-shared · MUST
-
-A library that parses or validates outside data against a schema has its home at the edge — the presentation of features and of composition modules, where a request's, an answer's or a form's input is checked, an adapter's wire models, the settings the root parses — and in `shared/`, where code parses; no other folder imports it.
-
-| Why |
-|---|
-| a schema inside the domain ties the business types to a parsing library, and runs its validation again on data the edge has already checked. |
-
 ## Homes
 
 ### code-placed-by-its-reason-to-change · MUST
