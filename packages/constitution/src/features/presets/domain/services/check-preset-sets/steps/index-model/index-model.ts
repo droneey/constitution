@@ -38,6 +38,7 @@ const indexOf = (model: BlockModel): ModelIndex => {
 
   const index = modelIndexOf(model);
 
+  // Stryker disable next-line CallExpression: an answer not remembered is worked out again, alike
   indexesByModel.set(model, index);
 
   return index;
