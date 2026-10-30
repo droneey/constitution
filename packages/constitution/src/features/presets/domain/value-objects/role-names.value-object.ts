@@ -80,7 +80,7 @@ const kindNamesOf = (byName: ReadonlyMap<string, NamedRole>, place: NamePlace): 
   pattern: new RegExp(`${place.before}(${longestFirstAlternation(byName)})${place.after}`, 'g'),
 });
 
-const of = (model: BlockModel): RoleNames => {
+const roleNamesOf = (model: BlockModel): RoleNames => {
   const layers = new Map<string, Layer>(
     model.blocks.map((block) => [
       block.id,
@@ -104,6 +104,25 @@ const of = (model: BlockModel): RoleNames => {
     folders: kindNamesOf(keyedByName(namedBy(TermKind.Folder)), folderPlace),
     suffixes: kindNamesOf(keyedByName(namedBy(TermKind.Suffix)), suffixPlace),
   };
+};
+
+// Why: every check of a model's preset sets reads its role names, which walk its every role and
+// build two patterns, so a model's are read once.
+const roleNamesByModel = new WeakMap<BlockModel, RoleNames>();
+
+const of = (model: BlockModel): RoleNames => {
+  const known = roleNamesByModel.get(model);
+
+  // Stryker disable next-line ConditionalExpression,BlockStatement: an answer worked out again equals the remembered one, which only saves time
+  if (known !== undefined) {
+    return known;
+  }
+
+  const names = roleNamesOf(model);
+
+  roleNamesByModel.set(model, names);
+
+  return names;
 };
 
 const matchesOf = (names: KindNames, text: string): readonly NamedRole[] =>

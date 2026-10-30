@@ -56,8 +56,21 @@ const releaseFilesIn = (input: {
       ].map((match) => String(match[1]).replace(TRAILING_SEPARATOR, ''));
 };
 
-const namedFilesOf = (input: { entry: PresetEntry; model: BlockModel }): readonly string[] =>
-  PresetEntry.textsOf(input.entry)
+// Why: the files to look for are named before the check reads them again, and resolving an entry's
+// roles is the dearest step of either, so an entry's are resolved once for each model.
+const namedFilesByModel = new WeakMap<BlockModel, WeakMap<PresetEntry, readonly string[]>>();
+
+const namedFilesOf = (input: { entry: PresetEntry; model: BlockModel }): readonly string[] => {
+  const byEntry =
+    namedFilesByModel.get(input.model) ?? new WeakMap<PresetEntry, readonly string[]>();
+  const known = byEntry.get(input.entry);
+
+  // Stryker disable next-line ConditionalExpression,BlockStatement: an answer worked out again equals the remembered one, which only saves time
+  if (known !== undefined) {
+    return known;
+  }
+
+  const named = PresetEntry.textsOf(input.entry)
     .filter((text) => text.place !== TextPlace.File)
     .flatMap((text) =>
       releaseFilesIn({
@@ -65,6 +78,11 @@ const namedFilesOf = (input: { entry: PresetEntry; model: BlockModel }): readonl
         text: text.text,
       }),
     );
+
+  namedFilesByModel.set(input.model, byEntry.set(input.entry, named));
+
+  return named;
+};
 
 const isSound = (input: { pathInRelease: string; release: ReleaseFiles }): boolean => {
   const { distributed, existing } = input.release;
