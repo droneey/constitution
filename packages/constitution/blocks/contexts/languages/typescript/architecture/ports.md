@@ -16,7 +16,7 @@ A port is an `interface`, or a type of functions, holding no implementation, so 
 
 ### null-mapped-to-undefined-in-the-adapter → outside-shape-mapped-in-the-adapter · MUST
 
-A `null` of an outside format lives only in wire types and in the adapters that read and write them, which map it to and from `undefined`.
+A `null` of an outside format lives only in wire models and in the adapters that read and write them, which map it to and from `undefined`.
 
 | Why |
 |---|

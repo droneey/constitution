@@ -6,11 +6,11 @@
 
 ### illegal-state-unrepresentable · MUST
 
-A value with distinct stages is a union keyed by its stage, never a bag of optional fields and flags that allows combinations no stage has.
+A value with distinct stages is a union keyed by its stage, never a bag of optional fields and flags that allows combinations no stage has; the moves between its stages are pure transition functions, gathered in a table once they grow.
 
 | Why |
 |---|
-| a state the type cannot express is a state no code has to handle and no test has to find. |
+| a state the type cannot express is a state no code has to handle and no test has to find — make illegal states unrepresentable. |
 
 ### closed-set-branched-exhaustively · MUST
 
@@ -44,6 +44,14 @@ A shared shape is composed of small named shapes — an identifier, timestamps, 
 |---|
 | a shape cut from a large one changes whenever the large one does, and hides which fields its consumer needs. |
 
+### semantic-alias-names-a-shared-meaning · SHOULD
+
+A semantic alias — a name of its own for a plain type, as a chat's title over a string — names a meaning found in two or more places, carries no brand, and is used wherever that meaning appears, never the bare type beside it.
+
+| Why |
+|---|
+| an alias names a meaning the program shares; one for every string turns vocabulary into noise, and a bare type beside an existing alias hides the meaning again. |
+
 ### type-has-one-home · MUST
 
 A type has one home — beside the signature that introduces it, or in the folder the layout gives its kind — every other unit imports it from there or from a surface that re-exports it, and it is declared nowhere else.
@@ -62,11 +70,19 @@ A set of values the program declares is never typed out again: a subset is a nam
 
 ### outside-vocabulary-reached-through-a-total-table · MUST
 
-A vocabulary another party owns — its codes, its statuses — is reached through a total table from it to the program's own values, which the type checker proves complete for every value the program knows; a value it does not know, in a vocabulary its party may extend, maps to a member of the program's own for the unknown, which every branch names, and never fails the read. A set of numbers another system defines is declared once, with every value written, and a number that arrives stays a number until it is compared with them.
+A vocabulary another party owns — its codes, its statuses — is reached through a total table from it to the program's own values, which the type checker proves complete for every value the program knows; a value it does not know, in a vocabulary its party may extend, maps to a member of the program's own for the unknown, which every branch names, and never fails the read.
 
 | Why |
 |---|
 | a value added to the program's copy of that vocabulary then fails the type check instead of falling through to a default nobody chose. |
+
+### outside-number-set-declared-once · MUST
+
+A set of numbers another system defines — its status codes, its exit codes — is declared once, with every value written, and a number that arrives stays a number until it is compared with them.
+
+| Why |
+|---|
+| one declaration names each number where a reader looks for it, and a number cast to the program's own type on arrival claims a value the other side may never have sent. |
 
 ### enumeration-others-read-declared-extensible · MUST
 
@@ -94,6 +110,14 @@ A value that must keep an invariant is built only through the function that chec
 |---|
 | no caller has to check the invariant again, or can forget to. |
 
+### value-object-checks-what-the-domain-relies-on · SHOULD
+
+A value object checks the invariants the domain relies on and no more; a stricter check an interface asks for — a required field, a format hint, a stricter pattern — is the interface's own, and composes the value object's check instead of restating it.
+
+| Why |
+|---|
+| the domain's check then changes only when the domain's needs do, and an interface's wishes never refuse a value the domain would accept through another door. |
+
 ### invariant-value-is-plain-immutable-data · MUST
 
 A value whose equality is its data and that keeps an invariant is immutable, compared by value and made of data alone, in its language's plain immutable record form, with no identity and no state that changes.
@@ -118,7 +142,7 @@ A value from outside the program — text, a response, a file, a message — has
 
 | Why |
 |---|
-| a type written over unparsed data is a promise the data never made, and the first unexpected field breaks code far away. |
+| a type written over unparsed data is a promise the data never made, and the first unexpected field breaks code far away — parse, don't validate. |
 
 ### narrowing-proves-all-it-claims · MUST
 

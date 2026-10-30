@@ -16,7 +16,7 @@ A publish is done only once the broker confirms it holds the message durably —
 
 ### ordered-messages-share-an-ordering-key · MUST
 
-Messages whose order matters — the changes of one entity — are published with that entity's identifier as their ordering key — a partition key, a message group, a session — and no consumer counts on an order across keys.
+Messages whose order matters — the changes of one object — are published with that object's identifier as their ordering key — a partition key, a message group, a session — and no consumer counts on an order across keys.
 
 | Why |
 |---|

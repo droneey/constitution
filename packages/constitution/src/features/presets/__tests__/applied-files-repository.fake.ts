@@ -1,4 +1,4 @@
-import type { AppliedFilesCommandRepository } from '../domain/contracts/repositories/commands';
+import type { AppliedFilesCommandRepository } from '../application/contracts/repositories/commands';
 import type { AppliedFiles } from '../domain/entities';
 
 const createFakeAppliedFilesRepository = (

@@ -79,7 +79,7 @@ describe('a workspace on the presets', () => {
   it("should fail a unit's test script when a file a spec loads holds a function no spec calls", () => {
     // Arrange
     const folder = workspace({
-      'apps/web/src/features/labels/app/label.ts': `import { describeOrder, type OrderId } from '@shop/orders';
+      'apps/web/src/features/labels/presentation/label.ts': `import { describeOrder, type OrderId } from '@shop/orders';
 
 export const label = (id: OrderId): string => \`Order \${describeOrder({ id, total: 0 })}\`;
 
@@ -352,7 +352,7 @@ export const shortLabel = (id: OrderId): string => \`#\${id}\`;
         ],
         name: '@shop/web',
       }),
-      'apps/web/src/features/labels/app/fetch-label.ts':
+      'apps/web/src/features/labels/presentation/fetch-label.ts':
         "import { get } from 'x-api';\n\nexport const fetchLabel = get;\n",
     });
 
@@ -368,7 +368,7 @@ export const shortLabel = (id: OrderId): string => \`#\${id}\`;
     });
 
     // Assert
-    expect(output).toContain('not-in-allowed: src/features/labels/app/fetch-label.ts');
+    expect(output).toContain('not-in-allowed: src/features/labels/presentation/fetch-label.ts');
   });
 
   it.each([
@@ -393,9 +393,9 @@ export const shortLabel = (id: OrderId): string => \`#\${id}\`;
   it('should report the home a preset file gives when an adapter of a Python package imports structlog', () => {
     // Arrange
     const folder = workspace({
-      'apps/reports/src/shop_reports/adapters/__init__.py': '',
-      'apps/reports/src/shop_reports/adapters/log/__init__.py': '',
-      'apps/reports/src/shop_reports/adapters/log/log_adapter.py': 'import structlog\n',
+      'apps/reports/src/shop_reports/infrastructure/__init__.py': '',
+      'apps/reports/src/shop_reports/infrastructure/log/__init__.py': '',
+      'apps/reports/src/shop_reports/infrastructure/log/log_adapter.py': 'import structlog\n',
     });
 
     // Act
@@ -427,9 +427,9 @@ export const shortLabel = (id: OrderId): string => \`#\${id}\`;
     commitBase(folder);
     write({
       files: {
-        'apps/web/src/features/labels/app/label.ts':
+        'apps/web/src/features/labels/presentation/label.ts':
           "import { describeOrder, type OrderId } from '@shop/orders';\n\nexport const label = (id: OrderId): string => `Ordered ${describeOrder({ id, total: 0 })}`;\n",
-        'apps/web/src/features/labels/app/__tests__/label.test.ts':
+        'apps/web/src/features/labels/presentation/__tests__/label.test.ts':
           "import { expect, it } from 'bun:test';\n\nimport type { OrderId } from '@shop/orders';\n\nimport { label } from '../label';\n\nit('should name the order when an order is labelled', () => {\n  // Act\n  const text = label('a' as OrderId);\n\n  // Assert\n  expect(text).toBe('Ordered order:a');\n});\n",
       },
       folder,

@@ -30,7 +30,7 @@ Work a page does as it is left — saving its state, sending a last report — r
 
 ## Calls and resources
 
-### service-worker-caches-versioned → kept-collection-bounded · MUST
+### service-worker-caches-versioned → growing-collection-bounded · MUST
 
 Each cache a service worker fills is named by its version, and a worker that activates deletes the caches of every older version.
 

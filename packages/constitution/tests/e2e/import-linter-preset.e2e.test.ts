@@ -23,7 +23,7 @@ describe("the configuration import-linter's presets write", () => {
         ...feature,
         'src/unit/root/__init__.py': '',
         'src/unit/root/wiring.py':
-          'from unit.features.orders.adapters.memory_store import MemoryStore\n\nSTORE = MemoryStore()\n',
+          'from unit.features.orders.infrastructure.memory_store import MemoryStore\n\nSTORE = MemoryStore()\n',
       },
       lint: {
         broken: [],
@@ -44,8 +44,8 @@ describe("the configuration import-linter's presets write", () => {
         'a binding unit builds an adapter, which only the adapters themselves and not their packages may',
       files: {
         ...feature,
-        [`${ORDERS}/app/orders_cli.py`]:
-          'from unit.features.orders.adapters.memory_store import MemoryStore\n\nSTORE = MemoryStore()\n',
+        [`${ORDERS}/presentation/orders_cli.py`]:
+          'from unit.features.orders.infrastructure.memory_store import MemoryStore\n\nSTORE = MemoryStore()\n',
       },
       lint: {
         broken: [

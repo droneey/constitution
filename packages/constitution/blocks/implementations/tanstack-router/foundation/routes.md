@@ -24,21 +24,13 @@ The router's bundler plugin splits every route's code automatically (`autoCodeSp
 
 ## Files and layouts
 
-### layout-lives-in-route-file · SHOULD
-
-A layout is a pathless `_name/route.tsx` that renders `<Outlet/>`, never an `index.tsx`.
-
-| Why |
-|---|
-| an `index.tsx` is a leaf route, and a layout placed there renders nothing below it. |
-
 ### tanstack-router-file-names-kept → file-name-in-its-owners-case · MUST
 
-A route keeps the names TanStack Router builds its tree from: `__root.tsx`, a pathless layout `_auth/route.tsx`, a group `(shop)/`, a parameter `$orderId.tsx`, and a route that leaves its parent's layout, `posts_.tsx`.
+A route keeps the names TanStack Router builds its tree from: `__root.tsx`, a pathless layout `_auth/route.tsx` that renders `<Outlet/>` and is never an `index.tsx`, a group `(shop)/`, a parameter `$orderId.tsx`, and a route that leaves its parent's layout, `posts_.tsx`.
 
 | Why |
 |---|
-| the router builds its tree from these names alone. |
+| the router builds its tree from these names alone, and an `index.tsx` is a leaf route, so a layout placed there renders nothing below it. |
 
 ## Failures
 
@@ -60,10 +52,10 @@ Each route that renders a screen declares its error component.
 
 ## Head
 
-### router-claims-the-head → browser-resources-have-one-writer · MUST
+### router-claims-the-head → one-writer-of-the-head · MUST
 
-The router claims the document's head: the root renders `<HeadContent/>`, and nothing else writes the head.
+The root renders `<HeadContent/>`, which renders the head's elements from the routes' `head`; no component renders `<title>`, `<meta>` or `<link>` itself.
 
 | Why |
 |---|
-| the router changes the head with the route, so a second writer would fight it on every navigation. |
+| the router changes the head with the route, so an element a component renders would fight it on every navigation. |

@@ -28,6 +28,14 @@ A unit's own settings, written in its files or in its own pack, add to what its 
 |---|
 | a rule then holds in every unit that has it in force, and the one way to weaken it is the override, which names the rule and its reason. |
 
+### linter-rules-turned-on-by-name · MUST
+
+A linter's rules are turned on by their names, families or codes, never by a switch that turns on every rule it has.
+
+| Why |
+|---|
+| a switch for every rule turns on each rule a new release adds, so an update fails the check with rules nobody chose, some of which contradict others. |
+
 ### one-formatter-per-language · MUST
 
 One formatter formats the files of each language, and a file it would change fails the check.

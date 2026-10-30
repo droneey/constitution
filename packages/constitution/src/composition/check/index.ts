@@ -1,1 +1,1 @@
-export { createCheckCommand } from './app/use-cases/queries/check';
+export { createCheckCommand } from './presentation/bindings/queries/check';

@@ -1,6 +1,6 @@
 # Agents
 
-> Governs a person or an agent at work on the repository.
+> Governs a person or an agent at work on the repository — not a model or an agent the product runs.
 
 ## Deciding
 
@@ -62,7 +62,7 @@ An agent reports outcomes as they are, with their evidence: a failing test with 
 
 ### handed-back-change-names-what-its-abstractions-earn · MUST
 
-An agent that hands a change back names, for each abstraction the change adds — a port, an adapter, a value with an invariant, an entity, an operation, an error code, a layer, a helper — what it earns: the concept of the business it holds, the boundary it guards or the value that crosses one, the seam that makes a behaviour testable, or the rule that asks for it.
+An agent that hands a change back names, for each abstraction the change adds — a port, an adapter, a value with an invariant, an aggregate, an operation, an error code, a layer, a helper — the present need that earns it its place, as the rules on structure count needs.
 
 | Why |
 |---|
@@ -109,22 +109,6 @@ An agent never widens its own limits: it changes no permission setting, hook, in
 | Why |
 |---|
 | an agent steered by what it reads would otherwise remove the very limit that stops it, and every other rule of this chapter would hold only until then. |
-
-### agent-extension-vetted-as-a-dependency · SHOULD
-
-A server, plugin or skill that extends an agent is a dependency, vetted as one before it is added.
-
-| Why |
-|---|
-| an extension runs with the agent’s rights over the code, the secrets and the network. |
-
-### agent-extension-pinned · MUST
-
-A server, plugin or skill that extends an agent is pinned to an exact version or digest, never run as `@latest` or from a moving branch; a remote one whose version cannot be pinned has its tool definitions pinned, and a definition that changed is withheld until a person has reviewed it.
-
-| Why |
-|---|
-| an extension that was clean for fifteen versions turned malicious in its sixteenth, and an agent runs whatever its next release brings with the agent's rights, which no other download the project fetches is trusted with unpinned. |
 
 ## Delegating and knowing
 

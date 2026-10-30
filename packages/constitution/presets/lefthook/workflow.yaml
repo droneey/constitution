@@ -75,7 +75,6 @@ version-control:
                   "Subject must start with an uppercase letter (sentence-case)"
                 exit 1
               fi
-lefthook:
   commit-subject-never-a-placeholder:
     '*':
       lefthook.yaml:

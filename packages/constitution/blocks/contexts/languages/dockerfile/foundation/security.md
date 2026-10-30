@@ -14,7 +14,7 @@ The final stage of an image sets `USER` to the numeric id of an unprivileged use
 
 ## Secrets
 
-### secrets-never-baked-into-images → secret-and-personal-data-kept-out-of-output · MUST
+### secrets-never-baked-into-images → secret-kept-out-of-output · MUST
 
 A build takes a secret through a secret mount, `RUN --mount=type=secret`, never through `ARG`, `ENV` or a copied file.
 

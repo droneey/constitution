@@ -1,4 +1,20 @@
 core:
+  one-formatter-per-language:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            format:
+              quote-style: single
+  suppression-silences-one-finding:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              select:
+                - PGH
+                - RUF
   dead-code-deleted:
     python:
       pyproject.toml:
@@ -35,14 +51,6 @@ core:
               extend-select:
                 - EM
                 - TRY
-  code-never-commented-out:
-    python:
-      pyproject.toml:
-        tool:
-          ruff:
-            lint:
-              extend-select:
-                - ERA
   function-takes-no-boolean-position:
     python:
       pyproject.toml:
@@ -58,6 +66,7 @@ core:
           ruff:
             lint:
               extend-select:
+                - ERA
                 - FIX
   function-takes-at-most-three-positions:
     python:
@@ -427,19 +436,3 @@ ruff:
                   - INP001
                   - PLR2004
                   - S101
-  ruff-format-is-the-formatter:
-    python:
-      pyproject.toml:
-        tool:
-          ruff:
-            format:
-              quote-style: single
-  noqa-names-its-codes:
-    python:
-      pyproject.toml:
-        tool:
-          ruff:
-            lint:
-              select:
-                - PGH
-                - RUF

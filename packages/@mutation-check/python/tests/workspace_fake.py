@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from pathlib import PurePosixPath
 from typing import TYPE_CHECKING, override
 
-from droneey_mutation_check_python.features.mutation.domain.contracts import Workspace
+from droneey_mutation_check_python.features.mutation.application.contracts import Workspace
 from droneey_mutation_check_python.features.mutation.domain.entities import (
   Changes,
   MutationTargets,

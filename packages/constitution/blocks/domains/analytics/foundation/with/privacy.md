@@ -1,6 +1,16 @@
 # Privacy
 
-> Governs what an analytics library keeps before consent.
+> Governs the personal data an event carries and what an analytics library keeps before consent.
+
+## General
+
+### event-names-no-person → personal-data-kept-out-of-output · MUST
+
+No event carries data that names a person — a name, an email, a phone, an address — or content a person wrote; the only identifier an event carries is the analytics library's own pseudonymous one.
+
+| Why |
+|---|
+| analytics services are third parties, and what reaches them has left the product's control. |
 
 ## Requirements for implementation
 

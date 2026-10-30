@@ -1,5 +1,5 @@
-export { createBlocksCheckCommand } from './app/use-cases/queries/check';
-export { blocksOutcomeOf, blocksSectionsOf, NO_BLOCKS, packBaseOf } from './app/utils';
+export { createBlocksCheckCommand } from './presentation/bindings/queries/check';
+export { blocksOutcomeOf, blocksSectionsOf, NO_BLOCKS, packBaseOf } from './presentation/utils';
 export { isTreeError, TreeError, TreeFailure } from './domain/errors';
-export type { PackBase, Validation } from './domain/use-cases/queries/check';
-export { checkBlocks, ValidationStage } from './domain/use-cases/queries/check';
+export type { PackBase, Validation } from './application/use-cases/queries/check';
+export { checkBlocks, ValidationStage } from './application/use-cases/queries/check';

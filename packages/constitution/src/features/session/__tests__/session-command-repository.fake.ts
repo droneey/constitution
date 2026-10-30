@@ -1,4 +1,4 @@
-import type { SessionCommandRepository } from '../domain/contracts/repositories/commands';
+import type { SessionCommandRepository } from '../application/contracts/repositories/commands';
 import type { SessionState } from '../domain/entities';
 import { SessionMark } from '../domain/entities';
 import type { SessionId } from '../domain/value-objects';

@@ -32,6 +32,14 @@ A dead-lettered message keeps its body, its headers, its count of attempts and t
 |---|
 | a dead letter without its cause cannot be diagnosed, one without its body cannot be replayed, and one sent back automatically fails again for the same reason. |
 
+### key-held-while-its-message-is-dead-lettered · SHOULD
+
+A consumer for which the order of a key's messages matters holds the later messages of a key while one of its messages is dead-lettered, or states why a gap in that key is safe.
+
+| Why |
+|---|
+| a later change applied on top of one that never landed leaves the object in a state no sequence of its changes produces. |
+
 ## Delivery
 
 ### redelivery-and-reordering-have-cases → edge-cases-chosen-by-risk · SHOULD

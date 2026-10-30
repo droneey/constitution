@@ -20,13 +20,13 @@ A client is opened once, with `async with`, for as long as the program runs, and
 |---|
 | a client pools its connections, so a client per call pays for a new connection and handshake each time, and one never closed leaks its sockets. |
 
-### httpx2-retries-kept-to-transient-failures → failure-retried-only-when-transient · MUST
+### httpx2-transport-retries-off → failure-retried-only-when-transient · MUST
 
-A call is retried only after a timeout, a lost connection, a `429` or a `503` — after the `Retry-After` the answer gives — with backoff and a limit, and only when it repeats safely.
+The transport's `retries` stays off; the calling code retries a timeout, a lost connection, a `429` or a `503` after the `Retry-After` the answer gives, with backoff and a limit.
 
 | Why |
 |---|
-| httpx2's transport repeats only a connection that failed to open, so any other retry is written by the program, and one written on another failure or for a call that does not repeat safely waits for nothing or repeats its effect. |
+| httpx2's transport repeats only a connection that failed to open, with no backoff and blind to the status and the method, while the calling code knows which of its calls repeat safely. |
 
 ### mock-transport-refuses-unmatched → unmatched-request-fails-the-spec · MUST
 

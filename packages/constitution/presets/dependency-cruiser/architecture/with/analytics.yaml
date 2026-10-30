@@ -5,7 +5,7 @@ analytics:
         forbidden[name=features-never-track]:
           severity: error
           from:
-            path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/(${role.pure-layer}|${role.gateway})/
+            path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/(${role.pure-layer}|${role.application-layer}|${role.gateway})/
           to:
             path:
               - /${role.analytics-sink}/

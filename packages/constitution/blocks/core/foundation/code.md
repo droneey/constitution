@@ -10,7 +10,7 @@ A class or a module answers to one actor: the one person or group whose needs ch
 
 | Why |
 |---|
-| a unit that serves two actors changes for both, and a change for one breaks the other. |
+| a unit that serves two actors changes for both, and a change for one breaks the other — the single-responsibility principle. |
 
 ### fact-has-one-source · MUST
 
@@ -18,15 +18,23 @@ Each fact — a value, a rule of the business, a piece of state — has one home
 
 | Why |
 |---|
-| two copies of one fact drift apart, and the program is then wrong in one of them. |
+| two copies of one fact drift apart, and the program is then wrong in one of them — DRY, as its authors meant it: one home for each piece of knowledge. |
 
 ### structure-appears-by-symptom · MUST
 
-A structure — an abstraction, a pattern, a shared module, a layer — appears when a present need demands it: a concept of the business, a boundary or a value that crosses one, a seam that makes a behaviour testable, or a rule that asks for it. A structure that earns one of these needs is kept, since removing it is the same error as adding one that earns none, and one that only forwards, restates or anticipates is removed; a concept or a decision left as a plain string, a flag or a repeated branch is a structure missing. Code that only looks alike waits for its third occurrence before it is joined; a new member of an open set is registered at once.
+A structure answers a need present now, never one foreseen. A structure — an abstraction, a pattern, a shared module, a layer, a folder — appears when a present need demands it: a concept of the business, a boundary or a value that crosses one, a seam that makes a behaviour testable, or a rule that asks for it. A structure that earns one of these needs is kept, since removing it is the same error as adding one that earns none, and one that only restates or anticipates is removed; a concept or a decision left as a plain string, a flag or a repeated branch is a structure missing; a new member of an open set is registered at once.
 
 | Why |
 |---|
-| a structure made in advance guesses its axis and is torn out before it can be fixed, and one removed while its need stands leaves that need checked again wherever it is met: both cost the same. |
+| a structure made in advance guesses its axis and is torn out before it can be fixed, and one removed while its need stands leaves that need checked again wherever it is met: both cost the same — YAGNI, held both ways. |
+
+### copies-joined-when-they-change-together · MUST
+
+Copies that change together are one fact, and are joined at once; code that only looks alike is not joined before its third occurrence, and then only when its copies change together.
+
+| Why |
+|---|
+| duplicated knowledge drifts the first time one copy changes alone, while an abstraction drawn over look-alike code guesses an axis two cases cannot show — DRY is about knowledge, the rule of three about code. |
 
 ### new-kind-added-as-a-member · MUST
 
@@ -34,7 +42,15 @@ A new kind of an open set — a vendor, a command, a format — is added as a ne
 
 | Why |
 |---|
-| code that grows by addition leaves every existing member untouched, so adding one cannot break another. |
+| code that grows by addition leaves every existing member untouched, so adding one cannot break another — the open–closed principle. |
+
+### closed-set-decided-in-one-place · SHOULD
+
+What a member of a closed set means for one concern — a label, a price rule, a next step — is decided in one place; when several concerns branch on the same members, what each member means for them is gathered in one record keyed by member, which the type checker proves complete.
+
+| Why |
+|---|
+| a set decided on in many places changes in many places when a member is added, while one record is complete by its type and is changed once — the repeated switch is the smell, not the switch. |
 
 ## Clarity
 
@@ -55,14 +71,6 @@ A blank line sets apart from the statements before and after it a compound state
 | a blank line shows where one step of a body ends and the next begins, so a reader takes the body in by its steps instead of line by line, and with the places fixed no review argues over them. |
 
 ## Dead code
-
-### code-never-commented-out · MUST
-
-Code is never commented out; it is deleted.
-
-| Why |
-|---|
-| commented-out code is never compiled, checked or tested, yet a reader takes it for code that still means something. |
 
 ### dead-code-deleted · MUST
 

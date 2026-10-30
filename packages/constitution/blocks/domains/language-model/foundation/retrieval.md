@@ -1,6 +1,6 @@
-# Retrieval
+# Retrieval and memory
 
-> Governs the documents found for a model: how they are indexed, searched and cited.
+> Governs the documents found for a model — how they are indexed, searched and cited — and what an agent keeps in its memory.
 
 ## Index
 
@@ -29,3 +29,13 @@ An answer drawn from retrieved documents names the documents it drew on, by iden
 | Why |
 |---|
 | a person can verify only an answer whose sources they can open, and a citation the model invented points nowhere. |
+
+## Memory
+
+### memory-keeps-its-source-and-person · SHOULD
+
+What an agent writes to its memory from text others wrote keeps its source, is scoped to its person, and is read back as content, never as instructions.
+
+| Why |
+|---|
+| memory written from a poisoned page steers every later run that reads it, unseen. |

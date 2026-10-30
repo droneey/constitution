@@ -1,5 +1,5 @@
-betterleaks:
-  scan-redacted:
+core:
+  secret-kept-out-of-output:
     '*':
       lefthook.yaml:
         pre-commit:

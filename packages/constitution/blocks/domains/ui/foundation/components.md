@@ -1,6 +1,6 @@
 # Components
 
-> Governs a component: where it comes from, how it is composed, its props, size, interaction and appearance.
+> Governs a component: where it comes from, how it is composed, its props, size, interaction, actions and appearance.
 
 ## Sourcing
 
@@ -46,14 +46,6 @@ A component with a second region, an optional part that carries the caller's con
 |---|
 | a component with a prop per region grows a prop for every new need; a compound grows by composition. |
 
-### props-drilled-at-most-two-levels · SHOULD
-
-A prop passed unchanged through more than two levels calls for composition or a nearer widget that loads the data itself.
-
-| Why |
-|---|
-| a prop threaded through components that do not use it couples them all to it. |
-
 ### stateful-component-controllable-or-not · SHOULD
 
 A component that holds a value can be driven from outside or left to itself through one interface — the value, its initial value and a change callback — and never switches between the two.
@@ -61,6 +53,14 @@ A component that holds a value can be driven from outside or left to itself thro
 | Why |
 |---|
 | one interface serves the screen that owns the value and the one that does not, and a component that switches loses or fights the value. |
+
+### passing-state-kept-in-its-component · SHOULD
+
+Passing state — an open menu, a hover — lives in the component that shows it.
+
+| Why |
+|---|
+| state lifted above the component that shows it is shared by accident and copied until the copies disagree. |
 
 ## Props
 
@@ -124,38 +124,6 @@ Text cut to fit — truncated or clamped to a number of lines — can be read in
 
 ## Interaction
 
-### button-names-its-result · SHOULD
-
-A button names its result, verb and object — never "Submit" or "OK". "Cancel" and "Close" serve a secondary action, and one label such as "Continue" moves a flow to its next step; a confirmation of a destructive action names the action; a payment button shows the amount.
-
-| Why |
-|---|
-| a person reads the button to know what will happen; a vague label makes them guess. |
-
-### same-action-same-label · MUST
-
-A control that does the same thing on several screens or steps carries the same label on each.
-
-| Why |
-|---|
-| a user knows a control by its name, so a new name for the same action reads as a new action. |
-
-### switch-labelled-by-its-on-state · SHOULD
-
-A switch or a checkbox is labelled by what it does when it is on, never by a negation: "Send notifications", never "Disable notifications" or "Don't send notifications".
-
-| Why |
-|---|
-| a negated label turned off is a double negative, which the user must work out before they dare touch it. |
-
-### long-lists-virtualised · SHOULD
-
-A list whose length the product does not bound renders only the rows in view and those near them, or is paged.
-
-| Why |
-|---|
-| a list that mounts every row at once grows slower with every item, and a long one freezes the device. |
-
 ### drag-shows-grab-hold-and-targets · SHOULD
 
 An item that can be dragged shows that it can be grabbed; while it is held, it shows that it is held, and every place that accepts it is marked.
@@ -163,6 +131,16 @@ An item that can be dragged shows that it can be grabbed; while it is held, it s
 | Why |
 |---|
 | without these marks a user cannot tell what moves, that it is moving, or where it may land. |
+
+## Actions
+
+### destructive-action-confirmed-or-undoable · MUST
+
+An action that deletes the user's data, spends their money or commits them to an agreement can be undone, or is reviewed and confirmed by the user before it takes effect.
+
+| Why |
+|---|
+| a slip on such an action costs the user something they cannot get back. |
 
 ## Appearance
 
@@ -198,38 +176,6 @@ Long-form text — an article, a page of help — is set at no more than 80 char
 |---|
 | the eye loses its place on the way back from the end of a long line to the start of the next. |
 
-### space-between-groups-twice-the-space-within · SHOULD
-
-The space between two groups is at least twice the space between the items inside a group.
-
-| Why |
-|---|
-| a reader sees what belongs together by how close it sits, and groups spaced like their items read as one list. |
-
-### nested-radius-concentric · SHOULD
-
-A rounded element nested in another takes the outer radius less the space between them, so both curves share a centre, and is square where that leaves nothing.
-
-| Why |
-|---|
-| an inner curve as round as the outer one leaves the gap thicker at the corners than along the sides, and the nesting looks misaligned. |
-
-### icon-stroke-matches-its-text · SHOULD
-
-An icon beside text draws its strokes as heavy as that text's.
-
-| Why |
-|---|
-| an icon heavier than its label pulls the eye from it, and a lighter one fades beside it, so the pair stops reading as one control. |
-
-### content-image-edged-by-a-hairline · SHOULD
-
-A content image carries a hairline inside its edge, in the text's colour at a low opacity, which darkens its edge in a light mode and lightens it in a dark one.
-
-| Why |
-|---|
-| an image whose edge matches the surface around it bleeds into it, and the hairline drawn inside keeps its shape without changing its size. |
-
 ## Requirements for implementation
 
 ### ui-primitives-keep-keyboard-and-focus · MUST
@@ -239,3 +185,11 @@ The library's complex patterns follow the platform's keyboard conventions for ea
 | Why |
 |---|
 | without it, the rule on accessible primitives cannot be kept through the library. |
+
+### ui-styling-restricted-to-tokens · MUST
+
+The library lets its default scales be reset, so a check rejects a value outside the tokens.
+
+| Why |
+|---|
+| without it, the rule that tokens are the only source of appearance cannot be held by a tool. |

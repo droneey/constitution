@@ -9,7 +9,7 @@ ruff:
             run: >-
               uv run --locked ruff check --fix --force-exclude {staged_files} && uv run --locked
               ruff format --force-exclude {staged_files}
-lefthook:
+version-control:
   hook-rewrites-only-staged-files:
     '*':
       lefthook.yaml:

@@ -1,6 +1,6 @@
 import type { AccentScale } from '@droneey/design-cli';
 
-import type { SessionsPlace } from '#/features/session/adapters/session-store';
+import type { SessionsPlace } from '#/features/session/infrastructure/session-store';
 import type { CommandIo, CommandPlaces, ExitCode } from '#/shared/cli';
 
 import type { Streams } from './presentation';

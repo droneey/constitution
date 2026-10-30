@@ -1,4 +1,4 @@
-import type { ThemeBuilder } from '../domain/contracts';
+import type { ThemeBuilder } from '../application/contracts';
 import type { ThemeModeFiles } from '../domain/entities';
 
 interface Build {

@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from droneey_mutation_check_python.features.mutation import check_mutants, run_check_mutants
-from droneey_mutation_check_python.features.mutation.adapters.local import (
+from droneey_mutation_check_python.features.mutation.infrastructure.local import (
   ProcessSettings,
   WorkspaceAdapter,
 )

@@ -1,11 +1,11 @@
-import { settingModel } from '../adapters/configuration/models';
+import { settingModel } from '../infrastructure/configuration/models';
 import type {
   ConfigurationFile,
   ConfigurationFormat,
   ConfigurationTarget,
   ConfigurationWrite,
-} from '../domain/contracts';
-import { SettingShape } from '../domain/contracts';
+} from '../application/contracts';
+import { SettingShape } from '../application/contracts';
 import type { Setting } from '../domain/entities';
 
 const NEWLINE = '\n';

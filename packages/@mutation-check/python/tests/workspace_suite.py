@@ -9,7 +9,7 @@ from droneey_mutation_check_python.features.mutation.domain.value_objects import
 if TYPE_CHECKING:
   from collections.abc import Callable, Mapping
 
-  from droneey_mutation_check_python.features.mutation.domain.contracts import Workspace
+  from droneey_mutation_check_python.features.mutation.application.contracts import Workspace
 
 ORDERS_PATH: Final = UnitRelativePath(path=PurePosixPath('src/shop/orders.py'))
 UNCHANGED_UNIT_TEXTS: Final[Mapping[str, str]] = {

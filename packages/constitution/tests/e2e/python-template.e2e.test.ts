@@ -258,8 +258,8 @@ describe('the files apply writes for a unit of Python', () => {
         condition: "a feature's application layer runs a process through a lib",
         changes: {
           ...feature,
-          'src/shop/features/orders/app/__init__.py': '',
-          'src/shop/features/orders/app/orders_export.py': 'from shop.libs.run import run\n',
+          'src/shop/features/orders/presentation/__init__.py': '',
+          'src/shop/features/orders/presentation/orders_export.py': 'from shop.libs.run import run\n',
           'src/shop/libs/__init__.py': '',
           'src/shop/libs/run/__init__.py': "from .run_utils import run\n\n__all__ = ['run']\n",
           'src/shop/libs/run/run_utils.py': "from subprocess import run\n\n__all__ = ['run']\n",
@@ -273,12 +273,12 @@ describe('the files apply writes for a unit of Python', () => {
         condition: 'a feature imports structlog',
         changes: {
           ...feature,
-          'src/shop/features/orders/app/__init__.py': '',
-          'src/shop/features/orders/app/orders_logs.py': 'import structlog\n',
+          'src/shop/features/orders/presentation/__init__.py': '',
+          'src/shop/features/orders/presentation/orders_logs.py': 'import structlog\n',
         },
         finding: [
           'structlog',
-          'features/orders/app',
+          'features/orders/presentation',
           'root',
         ],
         task: 'check:code',
@@ -287,12 +287,12 @@ describe('the files apply writes for a unit of Python', () => {
         condition: "a feature's application layer imports httpx2",
         changes: {
           ...feature,
-          'src/shop/features/orders/app/__init__.py': '',
-          'src/shop/features/orders/app/orders_client.py': 'import httpx2\n',
+          'src/shop/features/orders/presentation/__init__.py': '',
+          'src/shop/features/orders/presentation/orders_client.py': 'import httpx2\n',
         },
         finding: [
           'httpx2',
-          'features/orders/app',
+          'features/orders/presentation',
           'adapters, libs, shared, root',
         ],
         task: 'check:code',
@@ -301,12 +301,12 @@ describe('the files apply writes for a unit of Python', () => {
         condition: "a feature's application layer imports a package no block gives a home",
         changes: {
           ...feature,
-          'src/shop/features/orders/app/__init__.py': '',
-          'src/shop/features/orders/app/orders_dates.py': 'import arrow\n',
+          'src/shop/features/orders/presentation/__init__.py': '',
+          'src/shop/features/orders/presentation/orders_dates.py': 'import arrow\n',
         },
         finding: [
           'arrow',
-          'features/orders/app',
+          'features/orders/presentation',
         ],
         task: 'check:code',
       },
@@ -314,8 +314,8 @@ describe('the files apply writes for a unit of Python', () => {
         condition: 'a shared adapter imports a feature',
         changes: {
           ...feature,
-          'src/shop/adapters/__init__.py': '',
-          'src/shop/adapters/mail/__init__.py': 'from shop.features import orders\n',
+          'src/shop/infrastructure/__init__.py': '',
+          'src/shop/infrastructure/mail/__init__.py': 'from shop.features import orders\n',
         },
         finding: [
           'adapter-imports-only-its-owners-domain-and-shared-layers BROKEN',
@@ -326,8 +326,8 @@ describe('the files apply writes for a unit of Python', () => {
         condition: 'a feature imports the entry file',
         changes: {
           ...feature,
-          'src/shop/features/orders/app/__init__.py': '',
-          'src/shop/features/orders/app/orders_start.py': 'from shop.main import main\n',
+          'src/shop/features/orders/presentation/__init__.py': '',
+          'src/shop/features/orders/presentation/orders_start.py': 'from shop.main import main\n',
           'src/shop/main.py': 'def main() -> None:\n  pass\n',
         },
         finding: [
@@ -339,8 +339,8 @@ describe('the files apply writes for a unit of Python', () => {
         condition: 'a feature imports the integration of a host framework',
         changes: {
           ...feature,
-          'src/shop/features/orders/app/__init__.py': '',
-          'src/shop/features/orders/app/orders_router.py':
+          'src/shop/features/orders/presentation/__init__.py': '',
+          'src/shop/features/orders/presentation/orders_router.py':
             'from shop.integrations.fastapi import router\n',
           'src/shop/integrations/__init__.py': '',
           'src/shop/integrations/fastapi/__init__.py': 'router = 1\n',
@@ -367,9 +367,9 @@ describe('the files apply writes for a unit of Python', () => {
         condition: 'a binding unit imports an adapter past its port',
         changes: {
           ...feature,
-          'src/shop/features/orders/adapters/__init__.py': '',
-          'src/shop/features/orders/adapters/http/__init__.py': 'ADAPTER = 1\n',
-          'src/shop/features/orders/app/__init__.py': 'from ..adapters.http import ADAPTER\n',
+          'src/shop/features/orders/infrastructure/__init__.py': '',
+          'src/shop/features/orders/infrastructure/http/__init__.py': 'ADAPTER = 1\n',
+          'src/shop/features/orders/presentation/__init__.py': 'from ..infrastructure.http import ADAPTER\n',
         },
         finding: [
           'adapter-imported-only-by-the-root BROKEN',
@@ -380,9 +380,9 @@ describe('the files apply writes for a unit of Python', () => {
         condition: "a feature's surface offers its adapter",
         changes: {
           'src/shop/features/__init__.py': '',
-          'src/shop/features/orders/__init__.py': 'from .adapters.http import ADAPTER\n',
-          'src/shop/features/orders/adapters/__init__.py': '',
-          'src/shop/features/orders/adapters/http/__init__.py': 'ADAPTER = 1\n',
+          'src/shop/features/orders/__init__.py': 'from .infrastructure.http import ADAPTER\n',
+          'src/shop/features/orders/infrastructure/__init__.py': '',
+          'src/shop/features/orders/infrastructure/http/__init__.py': 'ADAPTER = 1\n',
         },
         finding: [
           'adapter-imported-only-by-the-root BROKEN',
@@ -394,11 +394,11 @@ describe('the files apply writes for a unit of Python', () => {
         changes: {
           ...feature,
           'src/shop/features/orders/domain/__init__.py': '',
-          'src/shop/features/orders/domain/use_cases/__init__.py': '',
-          'src/shop/features/orders/domain/use_cases/commands/__init__.py': '',
-          'src/shop/features/orders/domain/use_cases/commands/place_order_use_case.py': '',
-          'src/shop/features/orders/domain/use_cases/queries/__init__.py': '',
-          'src/shop/features/orders/domain/use_cases/queries/list_orders_use_case.py':
+          'src/shop/features/orders/application/use_cases/__init__.py': '',
+          'src/shop/features/orders/application/use_cases/commands/__init__.py': '',
+          'src/shop/features/orders/application/use_cases/commands/place_order_use_case.py': '',
+          'src/shop/features/orders/application/use_cases/queries/__init__.py': '',
+          'src/shop/features/orders/application/use_cases/queries/list_orders_use_case.py':
             'from ..commands import place_order_use_case\n',
         },
         finding: [
@@ -462,11 +462,11 @@ describe('the files apply writes for a unit of Python', () => {
         condition: "a binding unit imports a port of its feature's domain",
         changes: {
           ...feature,
-          'src/shop/features/orders/app/__init__.py': '',
-          'src/shop/features/orders/app/orders_api.py':
-            'from shop.features.orders.domain.contracts import ORDERS\n',
+          'src/shop/features/orders/presentation/__init__.py': '',
+          'src/shop/features/orders/presentation/orders_api.py':
+            'from shop.features.orders.application.contracts import ORDERS\n',
           'src/shop/features/orders/domain/__init__.py': '',
-          'src/shop/features/orders/domain/contracts/__init__.py': 'ORDERS = 1\n',
+          'src/shop/features/orders/application/contracts/__init__.py': 'ORDERS = 1\n',
         },
         finding: [
           'binding-unit-calls-only-use-cases BROKEN',
@@ -670,9 +670,9 @@ describe('the files apply writes for a unit of Python', () => {
         condition: 'an adapter parses with pydantic and calls through httpx2',
         changes: {
           ...feature,
-          'src/shop/features/orders/adapters/__init__.py': '',
-          'src/shop/features/orders/adapters/http/__init__.py': '',
-          'src/shop/features/orders/adapters/http/orders_adapter.py': python(
+          'src/shop/features/orders/infrastructure/__init__.py': '',
+          'src/shop/features/orders/infrastructure/http/__init__.py': '',
+          'src/shop/features/orders/infrastructure/http/orders_adapter.py': python(
             'import httpx2',
             'from pydantic import BaseModel',
           ),
@@ -692,11 +692,11 @@ describe('the files apply writes for a unit of Python', () => {
         condition: "the root reaches a feature's adapter through the adapter's own surface",
         changes: {
           ...feature,
-          'src/shop/features/orders/adapters/__init__.py': '',
-          'src/shop/features/orders/adapters/http/__init__.py': 'ADAPTER = 1\n',
+          'src/shop/features/orders/infrastructure/__init__.py': '',
+          'src/shop/features/orders/infrastructure/http/__init__.py': 'ADAPTER = 1\n',
           'src/shop/root/__init__.py': '',
           'src/shop/root/wiring.py':
-            'from shop.features.orders.adapters.http import ADAPTER\n\nWIRED = ADAPTER\n',
+            'from shop.features.orders.infrastructure.http import ADAPTER\n\nWIRED = ADAPTER\n',
         },
         task: 'check:architecture',
       },
@@ -705,13 +705,13 @@ describe('the files apply writes for a unit of Python', () => {
         changes: {
           ...feature,
           'src/shop/__init__.py': python(
-            'from .features.orders.adapters.http import ADAPTER',
+            'from .features.orders.infrastructure.http import ADAPTER',
             'from .orders import total, totals',
             '',
             "__all__ = ['ADAPTER', 'total', 'totals']",
           ),
-          'src/shop/features/orders/adapters/__init__.py': '',
-          'src/shop/features/orders/adapters/http/__init__.py': 'ADAPTER = 1\n',
+          'src/shop/features/orders/infrastructure/__init__.py': '',
+          'src/shop/features/orders/infrastructure/http/__init__.py': 'ADAPTER = 1\n',
         },
         task: 'check:architecture',
       },
@@ -722,11 +722,11 @@ describe('the files apply writes for a unit of Python', () => {
           ...feature,
           'src/shop/composition/__init__.py': '',
           'src/shop/composition/checkout/__init__.py': '',
-          'src/shop/composition/checkout/adapters/__init__.py': '',
-          'src/shop/composition/checkout/adapters/mail/__init__.py': '',
-          'src/shop/composition/checkout/adapters/mail/mail_adapter.py': 'import smtplib\n',
-          'src/shop/features/orders/app/__init__.py': '',
-          'src/shop/features/orders/app/orders_api.py': 'from fastapi import APIRouter\n',
+          'src/shop/composition/checkout/infrastructure/__init__.py': '',
+          'src/shop/composition/checkout/infrastructure/mail/__init__.py': '',
+          'src/shop/composition/checkout/infrastructure/mail/mail_adapter.py': 'import smtplib\n',
+          'src/shop/features/orders/presentation/__init__.py': '',
+          'src/shop/features/orders/presentation/orders_api.py': 'from fastapi import APIRouter\n',
         },
         task: 'check:code',
       },
@@ -736,11 +736,11 @@ describe('the files apply writes for a unit of Python', () => {
         changes: {
           'src/shop/composition/__init__.py': '',
           'src/shop/composition/checkout/__init__.py': '',
-          'src/shop/composition/checkout/adapters/__init__.py': '',
-          'src/shop/composition/checkout/adapters/mail/__init__.py': 'ADAPTER = 1\n',
+          'src/shop/composition/checkout/infrastructure/__init__.py': '',
+          'src/shop/composition/checkout/infrastructure/mail/__init__.py': 'ADAPTER = 1\n',
           'src/shop/root/__init__.py': '',
           'src/shop/root/wiring.py':
-            'from shop.composition.checkout.adapters.mail import ADAPTER\n\nWIRED = ADAPTER\n',
+            'from shop.composition.checkout.infrastructure.mail import ADAPTER\n\nWIRED = ADAPTER\n',
         },
         task: 'check:architecture',
       },

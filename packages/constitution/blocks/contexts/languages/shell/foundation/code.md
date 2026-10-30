@@ -22,7 +22,7 @@ A shell command another file holds — a manifest's script, a CI step, a hook's 
 
 ### expansion-double-quoted · MUST
 
-Every expansion of a parameter or a command is double-quoted — `"$file"`, `"$(date +%s)"`, `"${paths[@]}"` — save the left side inside `[[ ]]`, and inside `(( ))`; the right side of `==`, `!=` or `=~` in `[[ ]]` is quoted unless it is meant as a pattern.
+Every expansion of a parameter or a command, in a script or in a command another file holds, is double-quoted — `"$file"`, `"$(date +%s)"`, `"${paths[@]}"` — save the left side inside `[[ ]]`, and inside `(( ))`; the right side of `==`, `!=` or `=~` in `[[ ]]` is quoted unless it is meant as a pattern.
 
 | Why |
 |---|

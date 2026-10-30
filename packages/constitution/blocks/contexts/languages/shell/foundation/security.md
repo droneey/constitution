@@ -4,7 +4,7 @@
 
 ## Secrets
 
-### xtrace-never-ships → secret-and-personal-data-kept-out-of-output · MUST
+### xtrace-never-ships → secret-kept-out-of-output · MUST
 
 A committed script never turns on `set -x`.
 

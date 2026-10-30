@@ -1,6 +1,6 @@
 # Comments
 
-> Governs a comment, the documentation of what a package publishes, a mark of deprecation.
+> Governs a comment and the documentation of what a package publishes.
 
 ## General
 
@@ -19,13 +19,3 @@ A declaration a package publishes — one its published entries lead to, directl
 | Why |
 |---|
 | a package's caller reads its documentation in place of its code, while code inside it is read where it stands, and documentation that repeats a signature adds reading and drifts. |
-
-## Deprecation
-
-### retired-code-marked-deprecated · SHOULD
-
-Code kept only for its old callers is marked deprecated where it is declared, naming what replaces it.
-
-| Why |
-|---|
-| the mark stops new callers where they use it, and the replacement it names is the way off. |

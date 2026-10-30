@@ -4,7 +4,7 @@
 
 ## Secrets
 
-### push-payload-holds-no-secret → secret-and-personal-data-kept-out-of-output · MUST
+### push-payload-holds-no-secret → secret-kept-out-of-output · MUST
 
 A push notification's payload holds no secret and no personal data in clear: it carries an identifier, and the app fetches the content, or decrypts it, on the device.
 

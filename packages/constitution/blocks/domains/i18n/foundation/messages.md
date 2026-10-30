@@ -1,6 +1,6 @@
 # Messages
 
-> Governs a message: its catalog, its composition and its writing.
+> Governs a message: its catalog and its composition.
 
 ## Catalog
 
@@ -62,31 +62,13 @@ A short or ambiguous message carries a comment or a context for its translator.
 |---|
 | "Open" is a verb or an adjective; a translator who cannot see the screen guesses. |
 
-## Writing
+### message-apostrophe-never-straight · SHOULD
 
-### message-addresses-the-reader-as-you · SHOULD
-
-A message speaks to its reader as `you`, never as `the user`, and in a language with a formal and an informal `you`, in the one form the product chose.
+A message writes an apostrophe as its language's typographic one — `’` in English, `ʼ` in Ukrainian — never the straight `'`.
 
 | Why |
 |---|
-| a message that talks about `the user` talks past the person reading it, and two forms of address read as two products. |
-
-### message-written-in-sentence-case · SHOULD
-
-A message is written in sentence case, with only the capitals its language gives it.
-
-| Why |
-|---|
-| one case reads as one voice, and a translator keeps the case the source shows. |
-
-### message-uses-the-locales-punctuation · SHOULD
-
-A message uses its locale's typographic punctuation — its quotation marks, `«…»` in Ukrainian, `„…”` in Polish, `“…”` in English; its apostrophe, `’` in English and `ʼ` in Ukrainian; its dashes, `–` for a range and the dash its language sets an aside with; and the ellipsis `…` — never straight quotes, a hyphen for a dash or three dots.
-
-| Why |
-|---|
-| typed punctuation reads as unfinished text, each language quotes in its own marks, and MessageFormat 1 reads a straight apostrophe before a brace as the start of an escape. |
+| MessageFormat 1 reads a straight apostrophe before a brace as the start of an escape, so the parameter after it is shown as text. |
 
 ## Development
 

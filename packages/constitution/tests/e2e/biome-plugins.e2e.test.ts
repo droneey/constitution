@@ -29,11 +29,12 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'css',
-    slug: 'utilities-only-from-tokens',
+    slug: 'theme-aliases-the-token-properties',
     unit: {
       axes: [],
       blocks: [
         'css',
+        'design-system',
         'tailwind',
       ],
     },
@@ -214,7 +215,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'a catch holds only a comment',
         files: {
-          'src/features/orders/app/load.ts':
+          'src/features/orders/presentation/load.ts':
             'export const load = (): void => {\n  try {\n    globalThis.focus();\n  } catch {\n    // ignore\n  }\n};\n',
         },
       },
@@ -260,7 +261,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'an adapter draws a random value and reads the clock',
         files: {
-          'src/adapters/ids/ids.adapter.ts':
+          'src/infrastructure/ids/ids.adapter.ts':
             'export const orderId = (): string => crypto.randomUUID();\nexport const placedAt = (): number => Date.now();\n',
         },
       },
@@ -671,7 +672,7 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'typescript',
-    slug: 'module-level-messages-are-descriptors',
+    slug: 'module-level-text-holds-the-message',
     unit: {
       axes: [],
       blocks: [
@@ -808,7 +809,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'the cache utilities declare a read and the root builds the client',
         files: {
-          'src/features/orders/app/utils/cache.utils.ts':
+          'src/features/orders/presentation/utils/cache.utils.ts':
             "export const listOptions = { queryKey: ['orders'], queryFn: (): number => 1 };\n",
           'src/root/query-client.ts':
             "import { QueryClient } from '@tanstack/react-query';\n\nexport const client = new QueryClient();\n",
@@ -869,7 +870,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'a hook writes its read inline',
         files: {
-          'src/features/orders/app/use-cases/queries/list/list.hooks.ts':
+          'src/features/orders/presentation/bindings/queries/list/list.hooks.ts':
             "export const options = { queryKey: ['orders'], queryFn: (): number => 1 };\n",
         },
       },
@@ -878,7 +879,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'the cache utilities declare a read and the root builds the client',
         files: {
-          'src/features/orders/app/utils/cache.utils.ts':
+          'src/features/orders/presentation/utils/cache.utils.ts':
             "export const listOptions = { queryKey: ['orders'], queryFn: (): number => 1 };\n",
           'src/root/query-client.ts':
             "import { QueryClient } from '@tanstack/react-query';\n\nexport const client = new QueryClient();\n",
@@ -888,7 +889,7 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'typescript',
-    slug: 'schema-never-brands',
+    slug: 'schema-builds-values-through-the-domain',
     unit: {
       axes: [],
       blocks: [
@@ -899,7 +900,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'a type argument',
         files: {
-          'src/features/accounts/adapters/api/models/account.model.ts':
+          'src/features/accounts/infrastructure/api/models/account.model.ts':
             "import { z } from 'zod';\n\nexport const emailModel = z.string().brand<'Email'>();\n",
         },
       },
@@ -1074,7 +1075,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'a use case of the application layer sets a timer',
         files: {
-          'src/features/orders/app/use-cases/poll-orders.use-case.ts':
+          'src/features/orders/presentation/bindings/poll-orders.use-case.ts':
             'export const later = (run: () => void): void => {\n  setTimeout(run, 10);\n};\n',
         },
       },
@@ -1114,7 +1115,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'an adapter maps null from the wire',
         files: {
-          'src/features/orders/adapters/api/order.adapter.ts':
+          'src/features/orders/infrastructure/api/order.adapter.ts':
             'export const toCancelledAt = (raw: string | null): string | undefined =>\n  raw === null ? undefined : raw;\n',
         },
       },
@@ -1133,7 +1134,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'a schema chains a format on z.string()',
         files: {
-          'src/features/chat/adapters/api/models/user.model.ts':
+          'src/features/chat/infrastructure/api/models/user.model.ts':
             "import { z } from 'zod';\n\nexport const userModel = z.strictObject({ email: z.string().email() });\n",
         },
       },
@@ -1142,7 +1143,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'a schema takes a format on its own and merges by extend',
         files: {
-          'src/features/chat/adapters/api/models/user.model.ts':
+          'src/features/chat/infrastructure/api/models/user.model.ts':
             "import { z } from 'zod';\n\nconst baseSchema = z.strictObject({ id: z.string() });\n\nexport const userModel = baseSchema.extend({ email: z.email() });\n",
         },
       },
@@ -1449,7 +1450,7 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'typescript',
-    slug: 'keys-only-from-the-key-factory',
+    slug: 'cache-key-built-by-its-features-factory',
     unit: {
       blocks: [
         'tanstack-query',
@@ -1459,7 +1460,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'a read writes its key inline',
         files: {
-          'src/features/orders/app/use-cases/queries/list-orders/list-orders.hooks.ts':
+          'src/features/orders/presentation/bindings/queries/list-orders/list-orders.hooks.ts':
             "export const listOrdersOptions = { queryKey: ['orders'] };\n",
         },
       },
@@ -1468,8 +1469,8 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'a read takes its key from the key factory',
         files: {
-          'src/features/orders/app/use-cases/queries/list-orders/list-orders.hooks.ts':
-            "import { orderKeys } from '../../../../../../shared/cache';\n\nexport const listOrdersOptions = { queryKey: orderKeys.all };\n",
+          'src/features/orders/presentation/bindings/queries/list-orders/list-orders.hooks.ts':
+            "import { orderKeys } from '../../../../../shared/cache';\n\nexport const listOrdersOptions = { queryKey: orderKeys.all };\n",
         },
       },
     ],

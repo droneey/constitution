@@ -6,19 +6,11 @@
 
 ### published-schema-generated-from-code → generated-file-never-edited · MUST
 
-Where the config file's format has a schema editors read — JSON Schema for JSON, YAML and TOML — the schema published for editors is generated from the program's schema of the config file, never written by hand.
+Where the config file's format has a schema editors read — JSON Schema for JSON, YAML and TOML — the schema published for editors is generated from the program's schema of the config file, never written by hand, and the copy the project commits is compared by a spec with a fresh generation and differs in nothing.
 
 | Why |
 |---|
-| a schema written twice drifts, and editors then accept files the program rejects. |
-
-### published-schema-copy-checked-by-a-spec · MUST
-
-The copy of the published schema kept in the repository is compared by a spec with a fresh generation, and differs in nothing.
-
-| Why |
-|---|
-| a stale copy is what editors fetch, and only a spec notices that the code's schema moved on without it. |
+| a schema written twice drifts, and editors then accept files the program rejects; a stale copy is what editors fetch, and only a spec notices that the code's schema moved on without it. |
 
 ### config-file-points-editors-at-the-schema · SHOULD
 

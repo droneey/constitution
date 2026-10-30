@@ -4,14 +4,6 @@
 
 ## General
 
-### remote-system-proven-by-captured-responses · SHOULD
-
-A remote system a spec cannot run in its sandbox is proven through the transport, with responses captured from it.
-
-| Why |
-|---|
-| the remote system's engine runs only on its side, so its answers, captured once, are the closest a spec can come to it. |
-
 ### captured-response-verified-against-its-system · SHOULD
 
 A captured response is verified against the system that gave it: captured again, with any difference reported; a system of the same repository is checked against its own contract instead.

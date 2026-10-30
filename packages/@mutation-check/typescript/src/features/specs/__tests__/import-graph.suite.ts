@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import { UnitRelativePath } from '#/kernel/value-objects';
 
-import type { ImportGraph } from '../domain/contracts';
+import type { ImportGraph } from '../application/contracts';
 
 const IMPORT_SCENARIO: Readonly<Record<string, string>> = {
   'src/__tests__/order.test.ts':

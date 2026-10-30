@@ -30,16 +30,8 @@ Every run that loads code with Lingui's macros — the build and the specs — e
 
 ### source-catalog-current-in-the-check → i18n-missing-key-fails-the-check · MUST
 
-The check extracts the source locale's catalog and fails when it differs from the one committed; a translation another locale lacks falls back to its source message.
+The check extracts the source locale's catalog and fails when it differs from the one committed.
 
 | Why |
 |---|
-| a message missing from the committed catalog then fails before release, not on a user's screen, and a translation not yet made shows the source text, never a raw id. |
-
-### module-level-messages-are-descriptors → module-level-text-holds-the-message · MUST
-
-Text defined at a module's top level — an option list, an enumeration's labels — is a `msg` descriptor rendered later.
-
-| Why |
-|---|
-| a module's text is evaluated once, before the locale is known. |
+| a message missing from the committed catalog then fails before release, not on a user's screen. |

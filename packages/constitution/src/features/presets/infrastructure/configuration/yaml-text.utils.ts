@@ -1,0 +1,318 @@
+import type { Document, Node, Pair, YAMLMap } from 'yaml';
+import { isMap, isNode, isScalar, isSeq, parseDocument, visit } from 'yaml';
+
+import { attempted, compareText, isDeepEqual } from '#/kernel/utils';
+
+import type { ConfigurationWrite } from '../../application/contracts';
+import type { HeldStep, Setting } from '../../domain/entities';
+import { Setting as Settings } from '../../domain/entities';
+import type { Anchor, Commenting } from './block-comments.utils';
+import { anchorAt, lineAt, withBlockComments } from './block-comments.utils';
+import { ownFieldOf } from './own-field.utils';
+import { LINE_WIDTH, NEWLINE } from './text.constants';
+import { settingOfWire } from './wire-setting.utils';
+
+const OPTIONS = {
+  schema: 'core',
+  version: '1.2',
+} as const;
+const MAX_ALIASES = 1000;
+// Why: a word YAML 1.1 reads as a boolean is quoted, so a reader of YAML 1.1 reads it as a string
+// too.
+const YAML_11_BOOLEAN = /^(?:y|yes|n|no|on|off|true|false)$/i;
+const LONG_TEXT = 80;
+const INDENT_AND_DASHES = /^\s*(?:- )*$/;
+
+const documentOf = (text: string): Document | undefined => {
+  const document = parseDocument(text, OPTIONS);
+
+  return document.errors.length === 0 ? document : undefined;
+};
+
+// Why: the parser refuses a document whose aliases expand past the bound with a ReferenceError.
+const isAliasExpansionPastBound = (error: unknown): error is ReferenceError =>
+  error instanceof ReferenceError;
+
+const isEmptyDocument = (document: Document): boolean => document.contents === null;
+
+const settingOfDocument = (document: Document): Setting | undefined => {
+  if (isEmptyDocument(document)) {
+    return {};
+  }
+
+  const wire = attempted<unknown>({
+    effect: () =>
+      document.toJS({
+        maxAliasCount: MAX_ALIASES,
+      }),
+    isRecognised: isAliasExpansionPastBound,
+  });
+
+  return settingOfWire(wire);
+};
+
+const readYaml = (text: string): Setting | undefined => {
+  const document = documentOf(text);
+
+  return document === undefined ? undefined : settingOfDocument(document);
+};
+
+// Why: a node the file did not hold is written as a preset file writes it; the parser's writer
+// gives a text of lines its literal block by itself.
+const styledAsPresetFiles = (node: unknown): void => {
+  if (isMap(node)) {
+    for (const pair of node.items) {
+      styledAsPresetFiles(pair.key);
+      styledAsPresetFiles(pair.value);
+    }
+
+    return;
+  }
+
+  if (isSeq(node)) {
+    for (const listed of node.items) {
+      styledAsPresetFiles(listed);
+    }
+
+    return;
+  }
+
+  // Stryker disable next-line ConditionalExpression,LogicalOperator,BlockStatement: a node of no text is left unstyled either way
+  if (!(isScalar(node) && typeof node.value === 'string')) {
+    return;
+  }
+
+  if (YAML_11_BOOLEAN.test(node.value)) {
+    node.type = 'QUOTE_SINGLE';
+  }
+
+  if (node.value.length > LONG_TEXT && !node.value.includes(NEWLINE)) {
+    node.type = 'BLOCK_FOLDED';
+  }
+};
+
+const nodeOf = (document: Document, setting: Setting): Node => {
+  const node = document.createNode(setting);
+
+  styledAsPresetFiles(node);
+
+  return node;
+};
+
+const keyOfPair = (pair: Pair): unknown => (isScalar(pair.key) ? pair.key.value : pair.key);
+
+const keysOf = (node: YAMLMap): readonly unknown[] => node.items.map(keyOfPair);
+
+const laidOnDocument = (input: {
+  after: Setting;
+  before: Setting | undefined;
+  document: Document;
+  keyPath: readonly string[];
+}): void => {
+  const { after, before, document, keyPath } = input;
+  const node = document.getIn(keyPath, true);
+
+  // Stryker disable next-line ConditionalExpression,BlockStatement: equal settings laid again change no node
+  if (isDeepEqual(before, after)) {
+    return;
+  }
+
+  if (Settings.isMap(before) && Settings.isMap(after) && isMap(node)) {
+    for (const key of keysOf(node).filter(
+      (held) => Object.hasOwn(before, String(held)) && !Object.hasOwn(after, String(held)),
+    )) {
+      document.deleteIn([
+        ...keyPath,
+        key,
+      ]);
+    }
+
+    for (const [key, held] of Object.entries(after)) {
+      laidOnDocument({
+        after: held,
+        before: ownFieldOf(before, key),
+        document,
+        keyPath: [
+          ...keyPath,
+          key,
+        ],
+      });
+    }
+
+    return;
+  }
+
+  if (Settings.isList(after) && Settings.isList(before) && isSeq(node)) {
+    const left = [
+      ...node.items,
+    ];
+
+    node.items = after.map((listed) => {
+      const at = left.findIndex((known) =>
+        // Stryker disable next-line ConditionalExpression: the test only narrows the type
+        isDeepEqual(settingOfWire(isNode(known) ? known.toJS(document) : known), listed),
+      );
+
+      return at < 0 ? nodeOf(document, listed) : left.splice(at, 1)[0];
+    });
+
+    return;
+  }
+
+  if (isScalar(node) && Settings.isScalar(after)) {
+    node.value = after;
+
+    return;
+  }
+
+  document.setIn(keyPath, nodeOf(document, after));
+};
+
+interface Child {
+  readonly held: unknown;
+  readonly offset: number;
+  readonly step: HeldStep;
+}
+
+// Stryker disable next-line ConditionalExpression,OptionalChaining,LogicalOperator: a parsed key or item is a node with its range
+const startOf = (node: unknown): number => (isNode(node) ? (node.range?.[0] ?? 0) : 0);
+
+const childrenOf = (node: unknown, document: Document): readonly Child[] => {
+  if (isMap(node)) {
+    return node.items.map((pair) => ({
+      held: pair.value,
+      offset: startOf(pair.key),
+      step: {
+        key: String(keyOfPair(pair)),
+      },
+    }));
+  }
+
+  return isSeq(node)
+    ? node.items.flatMap((listed): readonly Child[] => {
+        // Stryker disable next-line ConditionalExpression: an item of a parsed sequence is a node; the test only narrows the type
+        const setting = settingOfWire(isNode(listed) ? listed.toJS(document) : listed);
+
+        return setting === undefined
+          ? []
+          : [
+              {
+                held: listed,
+                offset: startOf(listed),
+                step: {
+                  item: setting,
+                },
+              },
+            ];
+      })
+    : [];
+};
+
+const yamlAnchorsOf = (text: string): readonly Anchor[] => {
+  const document = parseDocument(text, OPTIONS);
+
+  const walk = (node: unknown, keyPath: readonly HeldStep[]): readonly Anchor[] =>
+    childrenOf(node, document).flatMap((child) => {
+      const at = [
+        ...keyPath,
+        child.step,
+      ];
+
+      return [
+        ...anchorAt({
+          lineStart: INDENT_AND_DASHES,
+          offset: child.offset,
+          keyPath: at,
+          text,
+        }),
+        ...walk(child.held, at),
+      ];
+    });
+
+  return walk(document.contents, []);
+};
+
+const indentOf = (line: string): number => line.length - line.trimStart().length;
+
+const blockScalarEndOf = (lines: readonly string[], first: number): number => {
+  let last = first;
+
+  while (
+    // Stryker disable next-line ConditionalExpression,EqualityOperator,ArithmeticOperator: a line past the end reads as "undefined", which no block holds, so the bound only states where the walk stops
+    last + 1 < lines.length &&
+    (String(lines[last + 1]).trim() === '' ||
+      indentOf(String(lines[last + 1])) > indentOf(String(lines[first])))
+  ) {
+    last += 1;
+  }
+
+  return last;
+};
+
+const yamlLinesInsideTextValuesOf = (text: string): ReadonlySet<number> => {
+  const lines = text.split(NEWLINE);
+  const linesInsideTextValues = new Set<number>();
+
+  visit(parseDocument(text, OPTIONS), (_key, node) => {
+    if (!isScalar(node)) {
+      return;
+    }
+
+    // Stryker disable next-line ArrayDeclaration,LogicalOperator: a parsed scalar holds its range
+    const [start = 0, end = 0] = node.range ?? [];
+    const first = lineAt(text, start);
+    const last =
+      node.type === 'BLOCK_LITERAL' || node.type === 'BLOCK_FOLDED'
+        ? blockScalarEndOf(lines, first)
+        : lineAt(text, end);
+
+    for (let line = first; line <= last; line += 1) {
+      linesInsideTextValues.add(line);
+    }
+  });
+
+  return linesInsideTextValues;
+};
+
+const yamlCommenting: Commenting = {
+  anchorsOf: yamlAnchorsOf,
+  prefix: '#',
+  linesInsideTextValuesOf: yamlLinesInsideTextValuesOf,
+};
+
+const writeSettings = (input: ConfigurationWrite): string => {
+  const document = parseDocument(input.text, OPTIONS);
+
+  if (isEmptyDocument(document)) {
+    document.setIn([], nodeOf(document, input.settings));
+  } else {
+    laidOnDocument({
+      after: input.settings,
+      before: settingOfDocument(document),
+      document,
+      keyPath: [],
+    });
+  }
+
+  for (const keyPath of input.sorted) {
+    const node = document.getIn(keyPath);
+
+    if (isMap(node)) {
+      node.items = node.items.toSorted((left, right) =>
+        compareText(String(keyOfPair(left)), String(keyOfPair(right))),
+      );
+    }
+  }
+
+  return document.toString({
+    lineWidth: LINE_WIDTH,
+    singleQuote: true,
+  });
+};
+
+const writeYaml = withBlockComments({
+  commenting: yamlCommenting,
+  write: writeSettings,
+});
+
+export { readYaml, writeYaml };

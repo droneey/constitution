@@ -1,13 +1,13 @@
 # Domain
 
-> Governs the domain's logging.
+> Governs the form of an aggregate.
 
-## Where rules live
+## Aggregates
 
-### domain-imports-no-logging → domain-logs-nothing · MUST
+### aggregate-is-a-frozen-dataclass-changed-by-replace → aggregate-changed-only-by-its-transitions · MUST
 
-A feature's `domain/` imports neither `logging` nor a logging library.
+An aggregate's transitions are its methods or the functions of its module, each returning a copy made by `dataclasses.replace`; no code outside that module calls its constructor, save through its `create`, or `replace` on it.
 
 | Why |
 |---|
-| a domain that cannot reach a logger returns what happened to its caller, which decides what an operator is told. |
+| Python cannot keep a constructor private, so the module is the boundary, and `replace` runs `__post_init__` again, so the invariants hold after every transition. |

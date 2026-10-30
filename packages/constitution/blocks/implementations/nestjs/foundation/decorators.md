@@ -1,6 +1,6 @@
 # Decorators
 
-> Governs the classes the injector and the framework build: their metadata, imports, constructors and fields.
+> Governs the classes the injector and the framework build: their metadata, imports and fields.
 
 ## General
 
@@ -19,14 +19,6 @@ A class a decorated constructor names is imported as a value, never with `import
 | Why |
 |---|
 | the metadata of a class imported as a type is `Object`, which the injector cannot resolve, and the compiler reports nothing. |
-
-### decorated-constructor-takes-every-dependency → function-takes-at-most-three-positions · SHOULD
-
-A constructor the injector calls takes one parameter for each dependency, however many: the injector imposes its signature, so the limit of three positions leaves it out, and the linter's limit is lifted in the files that hold such classes.
-
-| Why |
-|---|
-| the injector resolves each parameter by its type, so dependencies gathered into one object would no longer be injected; a class with too many is split by its responsibilities, not by its signature. |
 
 ### framework-filled-fields-marked-definite → compiler-is-the-type-gate · MUST
 

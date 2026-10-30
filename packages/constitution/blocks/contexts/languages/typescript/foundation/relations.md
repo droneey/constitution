@@ -55,3 +55,13 @@ A method that overrides one of its base class carries `override`.
 | Why |
 |---|
 | an override then says so where it is declared, and a base method renamed or removed leaves no method that silently overrides nothing. |
+
+## Deprecation
+
+### deprecated-by-jsdoc-tag → retired-code-marked-deprecated · SHOULD
+
+Code kept only for its old callers carries a JSDoc `@deprecated` tag that names its replacement.
+
+| Why |
+|---|
+| the tag travels with the declaration, so every use of it is marked where it is written, not only where it is declared. |

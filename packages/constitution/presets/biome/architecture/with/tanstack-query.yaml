@@ -1,12 +1,4 @@
 tanstack-query:
-  keys-only-from-the-key-factory:
-    typescript:
-      biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/keys-only-from-the-key-factory.${role.grit-rule}]:
-          includes:
-            - '**/*.ts'
-            - '**/*.tsx'
-            - '!**/cache.${role.helper-file}.ts'
   query-client-built-by-the-root:
     typescript:
       biome.jsonc:
@@ -32,3 +24,12 @@ tanstack-query:
             - '!**/${role.colocated-specs}/**'
             - '!**/*.test.ts'
             - '!**/*.test.tsx'
+remote-data:
+  cache-key-built-by-its-features-factory:
+    typescript:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/cache-key-built-by-its-features-factory.${role.grit-rule}]:
+          includes:
+            - '**/*.ts'
+            - '**/*.tsx'
+            - '!**/cache.${role.helper-file}.ts'

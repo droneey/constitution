@@ -1,6 +1,6 @@
 import type { BlockId } from '#/kernel/value-objects';
 
-import type { SessionQueryRepository } from '../domain/contracts/repositories/queries';
+import type { SessionQueryRepository } from '../application/contracts/repositories/queries';
 import type { SessionState } from '../domain/entities';
 import { SessionMark } from '../domain/entities';
 import type { SessionId } from '../domain/value-objects';

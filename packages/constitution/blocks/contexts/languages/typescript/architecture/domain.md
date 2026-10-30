@@ -1,13 +1,13 @@
 # Domain
 
-> Governs the form of an entity's rules.
+> Governs the form of an aggregate and of an entity with rules of its own.
 
 ## Where rules live
 
-### entity-rules-held-by-its-companion → entity-rule-lives-beside-the-entity · SHOULD
+### aggregate-rules-held-by-its-companion → aggregate-rule-lives-in-its-module · MUST
 
-An entity with rules of its own is a `readonly` type and a `const` object of the same name, declared in its file, whose functions take the entity as their first parameter: `Rule.create`, `Rule.tightenedBy(rule, other)`, `Rule.withLevel(rule, level)`. The entity is made only by its `create`, and only the companion spreads its fields to make a changed one.
+An aggregate, and an entity with rules of its own, is a `readonly` type whose rules its companion — the `const` object of its name, declared in its file — holds as functions that take it as their first parameter — `Order.create`, `Order.ship(order, at)` — never a class with methods; it is changed only by those functions.
 
 | Why |
 |---|
-| everything about an entity is found in one place under its own name, and its data stays plain at every boundary. |
+| plain data crosses the query cache, storage, a worker and a server component as it is, and a brand alone lets a spread elsewhere make a changed copy that no transition checked. |

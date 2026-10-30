@@ -14,14 +14,6 @@ Code that parses YAML reads it by YAML 1.2's core schema, with the timestamp tag
 
 ## YAML from outside
 
-### yaml-from-outside-loaded-by-a-safe-loader-only → outside-yaml-loaded-by-a-safe-loader · MUST
-
-Code that loads YAML from outside the program uses a safe loader, which builds only plain values, and never a full or an unsafe one.
-
-| Why |
-|---|
-| a full loader builds whatever object a tag names, so the file's author runs code in the program. |
-
 ### yaml-from-outside-refused-with-an-alias → alias-expansion-bounded · MUST
 
 Code that loads YAML from outside the program refuses a document that holds an alias, found among its parser's events, before it loads it.

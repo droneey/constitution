@@ -6,11 +6,11 @@
 
 ### data-view-shows-every-state · MUST
 
-A data view shows each state its data can have: loading, failure, content, and the empty or not-found state where its data can be empty or missing.
+A data view shows each state its data can have: loading, failure, content, and the empty or not-found state where its data can be empty or missing; no default stands in for data not yet loaded.
 
 | Why |
 |---|
-| an empty view cannot otherwise be told from a slow or a broken one, and the user does not know what to do. |
+| an empty view cannot otherwise be told from a slow or a broken one, and an invented default hides loading and failure behind something that looks like data, so the user does not know what to do. |
 
 ### data-result-is-union-by-status → illegal-state-unrepresentable · MUST
 
@@ -35,14 +35,6 @@ An empty state names the situation and offers an action, and a state with no res
 | Why |
 |---|
 | each is a moment the user decides what to do next, and a blank area leaves them stuck. |
-
-### unknown-address-shows-the-not-found-screen · SHOULD
-
-An address no screen answers shows the application's not-found screen, which is not the not-found state of a view whose data is missing.
-
-| Why |
-|---|
-| a mistyped or stale link otherwise ends on a blank page or an error, and the user cannot tell a wrong address from a broken application. |
 
 ## Address and view state
 
@@ -70,23 +62,15 @@ View state a link or a restart must reproduce — a filter, a sort, a page, the 
 |---|
 | state a link must carry is lost on reload or shared by accident anywhere else. |
 
-### passing-state-kept-in-its-component · SHOULD
+### unknown-address-shows-the-not-found-screen · SHOULD
 
-Passing state — an open menu, a hover — lives in the component that shows it.
+An address no screen answers shows the application's not-found screen, which is not the not-found state of a view whose data is missing.
 
 | Why |
 |---|
-| state lifted above the component that shows it is shared by accident and copied until the copies disagree. |
+| a mistyped or stale link otherwise ends on a blank page or an error, and the user cannot tell a wrong address from a broken application. |
 
 ## Loading
-
-### unloaded-data-has-no-stand-in → absence-shown-by-the-type · MUST
-
-No default stands in for data not yet loaded; the waiting state is shown as waiting.
-
-| Why |
-|---|
-| an invented default hides loading and failure behind something that looks like data. |
 
 ### loading-never-replaces-shown-content · SHOULD
 
@@ -155,3 +139,11 @@ A layer the user opens many times a session — a menu, a command palette — op
 | Why |
 |---|
 | an animation seen for the hundredth time is only a wait, and a result held back by motion makes the interface slow however fast its work is. |
+
+### long-lists-virtualised · SHOULD
+
+A list whose length the product does not bound renders only the rows in view and those near them, or is paged.
+
+| Why |
+|---|
+| a list that mounts every row at once grows slower with every item, and a long one freezes the device. |

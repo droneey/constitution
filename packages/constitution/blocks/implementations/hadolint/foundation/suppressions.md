@@ -6,8 +6,8 @@
 
 ### hadolint-suppression-names-rule-and-reason → suppression-silences-one-finding · MUST
 
-A suppression is `# hadolint ignore=<code> # <reason>` on the line above its instruction; a rule is ignored in the configuration only where it contradicts a rule of the Constitution, with the reason above it, as the Constitution's presets ignore DL3010, which asks for `ADD`.
+A suppression is `# hadolint ignore=<code> # <reason>` on the line above its instruction.
 
 | Why |
 |---|
-| a rule ignored in the configuration is silenced for every Dockerfile, so only one that asks for what the Constitution forbids may be. |
+| hadolint reads an inline suppression only on the line above the instruction, and a code it names there is silenced for that instruction alone. |

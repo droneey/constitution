@@ -4,13 +4,13 @@
 
 ## General
 
-### owned-documents-strict-vendor-answers-tolerant → own-shape-strict-other-shape-tolerant · MUST
+### owned-document-model-strict → own-shape-strict-other-shape-tolerant · MUST
 
-A model of a document the program owns sets `ConfigDict(extra='forbid', strict=True)`; a model of a vendor's answer keeps `extra='ignore'`.
+A model of a document the program owns sets `strict=True` in its `ConfigDict`.
 
 | Why |
 |---|
-| `extra='forbid'` fails on an unknown key and `strict=True` on a value of another type, which pydantic otherwise converts. |
+| pydantic otherwise converts a value of another type, the string `"1"` to the number 1, where the parent wants it to fail. |
 
 ### models-frozen → value-immutable-by-default · SHOULD
 
@@ -20,7 +20,7 @@ A model sets `frozen=True` in its `ConfigDict`.
 |---|
 | a parsed value then cannot change after the check that admitted it. |
 
-### secrets-typed-secret-str → secret-and-personal-data-kept-out-of-output · MUST
+### secrets-typed-secret-str → secret-kept-out-of-output · MUST
 
 A secret a model holds — a token, a password, a key — is typed `SecretStr`, and `get_secret_value()` is called only where the secret is sent.
 

@@ -87,8 +87,8 @@ extend-select = [
   "BLE",
   "EM",
   "TRY",
-  "ERA",
   "FBT",
+  "ERA",
   "FIX",
   "PLR0917",
   "PLR2004",
@@ -133,6 +133,8 @@ extend-select = [
 extend-ignore = ["D1"]
 ignore = ["PLR09"]
 select = [
+  "PGH",
+  "RUF",
   "A",
   "ASYNC",
   "B",
@@ -167,9 +169,7 @@ select = [
   "SIM",
   "SLOT",
   "UP",
-  "W",
-  "PGH",
-  "RUF"
+  "W"
 ]
 
 [tool.ruff.lint.extend-per-file-ignores]

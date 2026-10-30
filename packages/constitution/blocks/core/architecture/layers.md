@@ -2,13 +2,13 @@
 
 > Governs a layer: what it holds and may import.
 
-The import rules of this chapter together are the **layer matrix**; the language's block names the source root, the surface file and the suffix form. The edge is every folder that may hold effects and import any package: adapters, libs, the root, the entry files and integrations. Inward means toward the kernel, in this order: the entry files, the root and integrations; composition; a feature's application layer; its domain; the kernel. Shared plumbing and libs sit below every layer that may import them, and an adapter beside the domain it implements.
+The import rules of this chapter together are the **layer matrix**; the language's block names the source root, the surface file and the suffix form. The edge is every folder that may hold effects and import any package: adapters, libs, the root, the entry files and integrations. Inward means toward the kernel, in this order: the entry files, the root and integrations; composition; a feature's presentation; its application; its domain; the kernel. Shared plumbing and libs sit below every layer that may import them, and an adapter beside the layer whose ports it implements.
 
 ## Direction
 
 ### import-points-inward · MUST
 
-An import points inward, toward stability, in the order this chapter opens with; never the reverse.
+An import points inward, toward stability, in the order this chapter opens with; never the reverse; an import made only for types counts like any other.
 
 | Why |
 |---|
@@ -16,11 +16,19 @@ An import points inward, toward stability, in the order this chapter opens with;
 
 ### domain-imports-only-itself-and-the-kernel · MUST
 
-Of the program's code, the domain imports only itself and the kernel, the kernel's contracts included; of the language's standard library, only what holds no effect; no framework, and no library.
+Of the program's code, the domain imports only itself and the kernel's model — never a port, a use case or anything of the presentation; of the language's standard library, only what holds no effect.
 
 | Why |
 |---|
 | a domain that imports a library changes when the library does, and cannot be read or tested without it. |
+
+### application-imports-only-the-domain-and-its-contracts · MUST
+
+Of the program's code, the application imports only the domain, the kernel and its own contracts — never an adapter, a presentation or the root; of the language's standard library, only what holds no effect.
+
+| Why |
+|---|
+| a use case that knows a framework, an adapter or a screen can run nowhere else, and the next client, worker or command of the program must write it again. |
 
 ### feature-never-imports-a-feature · MUST
 
@@ -44,7 +52,7 @@ Only the edge holds effects — input and output, the network, storage, the file
 
 | Why |
 |---|
-| code without effects is deterministic, so it is tested fast, reasoned about locally and reused, and a test replaces an effect through its port. |
+| code without effects is deterministic, so it is tested fast, reasoned about locally and reused, and a test replaces an effect through its port — a functional core in an imperative shell. |
 
 ### root-imported-only-by-entries · MUST
 
@@ -104,11 +112,11 @@ Shared plumbing imports no feature, adapter or contract, the kernel's included, 
 
 ### layer-imports-dependencies-by-its-role · MUST
 
-Each folder of the tree imports installed dependencies by its role: the domain and the kernel import none; the edge imports any; every other folder imports only a dependency whose block gives it a home there. A dependency with no block, or whose block names no home, is imported only at the edge; specs import what they need.
+Each folder of the tree imports installed dependencies by its role: the domain, the application and the kernel import none, save a library of one outside format or arithmetic the domain cannot reasonably own — a numbering plan, bank account numbers by country, decimal arithmetic — that does no input or output, holds no state or configuration, needs no framework and is pinned exactly, which one value object imports, keeping its types out of every signature and its failures its own; a general schema or parsing library is never one. The edge imports any; every other folder imports only a dependency whose block gives it a home there. A dependency with no block, or whose block names no home, is imported only at the edge; specs import what they need.
 
 | Why |
 |---|
-| a dependency is volatile, and one table by folder role holds every dependency at once, those nobody wrote a rule for included. |
+| a dependency is volatile, and one table by folder role holds every dependency at once, those nobody wrote a rule for included; a library swapped for another is then swapped at the edge alone, and a format no one should write by hand is held in the one value object that needs it. |
 
 ## Homes
 
@@ -138,7 +146,7 @@ A contract belongs to the feature that needs it; when a second feature needs it 
 
 ### type-lifts-when-features-share-its-meaning · MUST
 
-A business type — an entity, a value object, an enumeration — belongs to the feature whose model holds it, and lifts to the kernel only when two or more features use it with one meaning, universal and stable; otherwise — another meaning, only a sliver of it, or a meaning not yet universal and stable — a feature that needs it keeps its own narrow view, a type of its own or a reference by identifier, into which composition translates the other’s; a fact or a rule of the business is never duplicated.
+A business type — an entity, a value object, an enumeration — belongs to the feature whose model holds it, and lifts to the kernel only when two or more features use it with one meaning, universal and stable; otherwise — another meaning, only a sliver of it, or a meaning not yet universal and stable — a feature that needs it keeps its own narrow view, a type of its own or a reference by identifier, into which composition translates the other’s.
 
 | Why |
 |---|
@@ -180,7 +188,7 @@ A protocol two artefacts of one program speak lives in the program’s shared pl
 
 ### delivery-unit-beside-what-it-serves · SHOULD
 
-A delivery unit that serves one feature’s operations lives in that feature’s application layer; one that composes several features lives in the composition module that composes them. No folder of the tree is a delivery layer of its own.
+A delivery unit that serves one feature’s operations lives in that feature’s presentation; one that composes several features lives in the composition module that composes them. No folder of the tree is a delivery layer of its own.
 
 | Why |
 |---|

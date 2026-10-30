@@ -16,7 +16,7 @@ A named constant is a module-level UPPER_SNAKE_CASE name annotated `Final`: `MAX
 
 ### names-cased-as-pep-8 → name-case-by-kind · SHOULD
 
-A class, a type alias, a type parameter and an exception are PascalCase, an exception's name ending in `Error`; a module, a function, a method, a variable and a parameter are snake_case; a module-level constant and an enumeration's member are UPPER_SNAKE_CASE; a name kept to its module or class opens with one underscore.
+A class, a type alias, a type parameter and an exception are PascalCase; a module, a function, a method, a variable and a parameter are snake_case; a module-level constant and an enumeration's member are UPPER_SNAKE_CASE; a name kept to its module or class opens with one underscore.
 
 | Why |
 |---|

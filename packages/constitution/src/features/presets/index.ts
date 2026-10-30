@@ -1,13 +1,13 @@
-export { createPresetsApplyCommand } from './app/use-cases/commands/apply';
-export { createRunCommand } from './app/use-cases/commands/run';
-export { createPresetsCheckCommand } from './app/use-cases/queries/check';
-export { createPresetsPlanCommand } from './app/use-cases/queries/plan';
+export { createPresetsApplyCommand } from './presentation/bindings/commands/apply';
+export { createRunCommand } from './presentation/bindings/commands/run';
+export { createPresetsCheckCommand } from './presentation/bindings/queries/check';
+export { createPresetsPlanCommand } from './presentation/bindings/queries/plan';
 export {
   configurationsStepOf,
   presetsFindingTextOf,
   presetsSkippedStep,
   presetsStepOf,
-} from './app/utils';
+} from './presentation/utils';
 export type {
   CommandRunner,
   ConfigurationFormat,
@@ -15,10 +15,10 @@ export type {
   PresetFileParser,
   PresetFileRead,
   ProjectReader,
-} from './domain/contracts';
-export { PresetFileReadStatus } from './domain/contracts';
-export type { AppliedFilesCommandRepository } from './domain/contracts/repositories/commands';
-export type { LockQueryRepository } from './domain/contracts/repositories/queries';
+} from './application/contracts';
+export { PresetFileReadStatus } from './application/contracts';
+export type { AppliedFilesCommandRepository } from './application/contracts/repositories/commands';
+export type { LockQueryRepository } from './application/contracts/repositories/queries';
 export type {
   AppliedFiles,
   ApplyPlan,
@@ -34,13 +34,13 @@ export type {
 } from './domain/entities';
 export { LockReadStatus, PresetsCode, ProjectRead, ProjectReadStatus } from './domain/entities';
 export { ApplyError, ApplyFailure, isApplyError } from './domain/errors';
-export { applyChanges } from './domain/use-cases/commands/apply-changes';
-export type { CheckConfigurationsInput } from './domain/use-cases/queries/check-configurations';
-export { checkConfigurations } from './domain/use-cases/queries/check-configurations';
-export { checkPresets } from './domain/use-cases/queries/check-presets';
-export type { PlanPresetsInput } from './domain/use-cases/queries/plan';
-export { planPresets } from './domain/use-cases/queries/plan';
-export type { PlanApplyInput } from './domain/use-cases/queries/plan-apply';
-export { planApply } from './domain/use-cases/queries/plan-apply';
-export { planRun } from './domain/use-cases/queries/plan-run';
-export { checkProject } from './domain/use-cases/shared/check-project';
+export { applyChanges } from './application/use-cases/commands/apply-changes';
+export type { CheckConfigurationsInput } from './application/use-cases/queries/check-configurations';
+export { checkConfigurations } from './application/use-cases/queries/check-configurations';
+export { checkPresets } from './application/use-cases/queries/check-presets';
+export type { PlanPresetsInput } from './application/use-cases/queries/plan';
+export { planPresets } from './application/use-cases/queries/plan';
+export type { PlanApplyInput } from './application/use-cases/queries/plan-apply';
+export { planApply } from './application/use-cases/queries/plan-apply';
+export { planRun } from './application/use-cases/queries/plan-run';
+export { checkProject } from './application/use-cases/shared/check-project';

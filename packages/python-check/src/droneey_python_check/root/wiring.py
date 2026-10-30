@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from droneey_python_check.features.code import check_code, run_check_code
-from droneey_python_check.features.code.adapters.local import python_sources, read_settings
+from droneey_python_check.features.code.infrastructure.local import python_sources, read_settings
 
 if TYPE_CHECKING:
   from collections.abc import Sequence

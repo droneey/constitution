@@ -66,7 +66,7 @@ A failed submit moves focus to the first invalid field, or to a summary that lin
 
 ### submit-never-disabled-by-an-invalid-form · SHOULD
 
-A submit control is never disabled while its form is not yet valid: a submit of such a form is answered by its errors, and once the form submits, the control shows it is busy.
+A submit control is never disabled while its form is not yet valid: a submit of such a form is answered by its errors.
 
 | Why |
 |---|
@@ -87,14 +87,6 @@ A submit control shows it is busy while its form submits, with a busy label, and
 | Why |
 |---|
 | a control taken out of reach drops focus to the page and says nothing; a busy one keeps both. |
-
-### destructive-action-confirmed-or-undoable · MUST
-
-An action that deletes the user's data, spends their money or commits them to an agreement can be undone, or is reviewed and confirmed by the user before it takes effect.
-
-| Why |
-|---|
-| a slip on such an action costs the user something they cannot get back. |
 
 ## Unsaved input
 

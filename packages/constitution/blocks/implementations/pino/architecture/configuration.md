@@ -19,11 +19,3 @@ Code logs through the program's logging facade, which `root/` implements over th
 | Why |
 |---|
 | a spec then configures the facade's sink instead of pino's. |
-
-### only-the-root-imports-pino → root-alone-configures-logging · MUST
-
-pino's home is `root/`: no other folder imports it.
-
-| Why |
-|---|
-| no code below the root then depends on a logging library. |

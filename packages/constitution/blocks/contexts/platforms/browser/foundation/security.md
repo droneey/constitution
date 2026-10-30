@@ -6,7 +6,7 @@
 
 ### credential-never-readable-by-script → client-credential-kept-in-the-protected-store · MUST
 
-A credential in the tab lives only in a cookie its script cannot read, never in web storage, IndexedDB or the script's memory, so the tab holds no bearer token; where the API takes bearer tokens, a server of the program's own holds them behind the cookie.
+A credential in the tab lives only in a cookie its script cannot read, never in web storage, IndexedDB or the script's memory, so the tab holds no bearer token.
 
 | Why |
 |---|

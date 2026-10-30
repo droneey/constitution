@@ -1,0 +1,10 @@
+import type { SearchResult } from '../../../../domain/entities';
+import type { PageSearch } from '../../../contracts';
+
+/** @throws {SearchError} when the index of the pages cannot be read */
+export type SearchPages = (query: string) => Promise<readonly SearchResult[]>;
+
+export const createSearchPages =
+  (pageSearch: PageSearch): SearchPages =>
+  (query: string): Promise<readonly SearchResult[]> =>
+    pageSearch.search(query);

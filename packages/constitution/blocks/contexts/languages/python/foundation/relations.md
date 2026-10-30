@@ -47,3 +47,13 @@ A method that overrides one of a base class is decorated `@typing.override`; `__
 | Why |
 |---|
 | a marked method whose base renamed or dropped its counterpart then fails the type check, and the methods aside are hooks of the language that no mark would make clearer. |
+
+## Deprecation
+
+### deprecated-by-decorator → retired-code-marked-deprecated · SHOULD
+
+Code kept only for its old callers is decorated `@warnings.deprecated` with a message that names its replacement.
+
+| Why |
+|---|
+| the mark warns at every call at run time and flags every call where it is written, both with the message, which a docstring never does. |

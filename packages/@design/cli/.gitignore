@@ -2,9 +2,19 @@
 /src/libs/ui/theme/constants/*.gen.*
 
 # git
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+credentials.json
+id_rsa
+*.secrets
+/local/
 .claude/settings.local.json
 .claude/worktrees/
-/local/
+.env*
+!.env.example
 .DS_Store
 .vscode/*
 !.vscode/settings.json
@@ -19,16 +29,9 @@
 *.bak
 *.orig
 *~
-.env*
-!.env.example
-*.pem
-*.key
-*.p12
-*.pfx
-*.jks
-credentials.json
-id_rsa
-*.secrets
+
+# bun
+.npmrc
 
 # _js-runtime
 **/node_modules/
@@ -36,9 +39,6 @@ id_rsa
 
 # bun-test
 **/coverage/
-
-# bun
-.npmrc
 
 # rumdl
 .rumdl_cache/

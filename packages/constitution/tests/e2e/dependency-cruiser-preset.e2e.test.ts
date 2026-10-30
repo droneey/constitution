@@ -20,50 +20,50 @@ const importing = (input: { from: string; name: string }): string =>
   `import { ${input.name} } from '${input.from}';\nexport const uses = ${input.name};\n`;
 
 const wellFormed = {
-  'src/adapters/mail/index.ts': "export { sendMail } from './mail.adapter';\n",
-  'src/adapters/mail/mail.adapter.ts': importing({
+  'src/infrastructure/mail/index.ts': "export { sendMail } from './mail.adapter';\n",
+  'src/infrastructure/mail/mail.adapter.ts': importing({
     from: '../../libs/smtp',
     name: 'smtp',
   }),
-  'src/composition/checkout/app/use-cases/queries/cart/cart.ts':
-    "import type { Mail } from '../../../../../../kernel/contracts';\nimport { listOrders } from '../../../../../../features/orders';\nexport const cart = (mail: Mail): unknown => [mail, listOrders];\n",
-  'src/composition/checkout/app/use-cases/queries/cart/index.ts':
+  'src/composition/checkout/presentation/bindings/queries/cart/cart.ts':
+    "import type { Mail } from '../../../../../kernel/contracts';\nimport { listOrders } from '../../../../../features/orders';\nexport const cart = (mail: Mail): unknown => [mail, listOrders];\n",
+  'src/composition/checkout/presentation/bindings/queries/cart/index.ts':
     "export { cart } from './cart';\n",
-  'src/composition/checkout/index.ts': "export { cart } from './app/use-cases/queries/cart';\n",
+  'src/composition/checkout/index.ts': "export { cart } from './presentation/bindings/queries/cart';\n",
   'src/kernel/contracts/index.ts': "export type { Mail } from './mail.port';\n",
   'src/kernel/contracts/mail.port.ts':
     "import type { Money } from '../values';\nexport interface Mail { cost: Money }\n",
   'src/features/orders/domain/entities/__tests__/order.entity.test.ts':
     "import { expect } from 'bun:test';\nimport { order } from '../order.entity';\nexpect(order).toBe(1);\n",
-  'src/features/orders/adapters/api/index.ts': "export { order } from './order.adapter';\n",
-  'src/features/orders/adapters/api/order.adapter.ts': importing({
+  'src/features/orders/infrastructure/api/index.ts': "export { order } from './order.adapter';\n",
+  'src/features/orders/infrastructure/api/order.adapter.ts': importing({
     from: '../../domain/entities',
     name: 'order',
   }),
-  'src/features/orders/app/use-cases/queries/list-orders/index.ts':
+  'src/features/orders/presentation/bindings/queries/list-orders/index.ts':
     "export { listOrders } from './list-orders.use-case';\n",
-  'src/features/orders/app/use-cases/queries/list-orders/list-orders.use-case.ts':
-    "import { order } from '../../../../domain/entities';\nimport { price } from '../../../../domain/use-cases/shared/price';\nexport const listOrders = [order, price];\n",
-  'src/features/orders/app/use-cases/queries/count-orders/count-orders.use-case.ts': importing({
-    from: '../../../../domain/use-cases/queries/count-orders',
+  'src/features/orders/presentation/bindings/queries/list-orders/list-orders.use-case.ts':
+    "import { order } from '../../../../domain/entities';\nimport { price } from '../../../../application/use-cases/shared/price';\nexport const listOrders = [order, price];\n",
+  'src/features/orders/presentation/bindings/queries/count-orders/count-orders.use-case.ts': importing({
+    from: '../../../../application/use-cases/queries/count-orders',
     name: 'countOrders',
   }),
-  'src/features/orders/domain/contracts/repositories/queries/index.ts':
+  'src/features/orders/application/contracts/repositories/queries/index.ts':
     "export type { OrderReader } from './order.repository';\n",
-  'src/features/orders/domain/contracts/repositories/queries/order.repository.ts':
+  'src/features/orders/application/contracts/repositories/queries/order.repository.ts':
     'export interface OrderReader { count: number }\n',
-  'src/features/orders/domain/use-cases/queries/count-orders/count-orders.use-case.ts':
-    "import type { Mail } from '../../../../../../kernel/contracts';\nimport type { OrderReader } from '../../../contracts/repositories/queries';\nexport const countOrders = (mail: Mail, reader: OrderReader): unknown => [mail, reader];\n",
-  'src/features/orders/domain/use-cases/queries/count-orders/index.ts':
+  'src/features/orders/application/use-cases/queries/count-orders/count-orders.use-case.ts':
+    "import type { Mail } from '../../../../../kernel/contracts';\nimport type { OrderReader } from '../../../contracts/repositories/queries';\nexport const countOrders = (mail: Mail, reader: OrderReader): unknown => [mail, reader];\n",
+  'src/features/orders/application/use-cases/queries/count-orders/index.ts':
     "export { countOrders } from './count-orders.use-case';\n",
   'src/features/orders/domain/entities/index.ts': "export { order } from './order.entity';\n",
   'src/features/orders/domain/entities/order.entity.ts':
     "import { money } from '../../../../kernel/values';\nexport const order = money;\n",
-  'src/features/orders/domain/use-cases/shared/price/index.ts':
+  'src/features/orders/application/use-cases/shared/price/index.ts':
     "export { price } from './price';\n",
-  'src/features/orders/domain/use-cases/shared/price/price.ts': exported('price'),
+  'src/features/orders/application/use-cases/shared/price/price.ts': exported('price'),
   'src/features/orders/index.ts':
-    "export { listOrders } from './app/use-cases/queries/list-orders';\n",
+    "export { listOrders } from './presentation/bindings/queries/list-orders';\n",
   'src/kernel/values/index.ts':
     "export { money } from './money';\nexport type { Money } from './money';\n",
   'src/kernel/values/money.ts': 'export const money = 1;\nexport type Money = number;\n',
@@ -74,7 +74,7 @@ const wellFormed = {
     name: 'wiring',
   }),
   'src/root/wiring.ts':
-    "import { sendMail } from '../adapters/mail';\nimport { cart } from '../composition/checkout';\nimport { listOrders } from '../features/orders';\nimport { order } from '../features/orders/adapters/api';\nexport const wiring = [sendMail, cart, listOrders, order];\n",
+    "import { sendMail } from '../infrastructure/mail';\nimport { cart } from '../composition/checkout';\nimport { listOrders } from '../features/orders';\nimport { order } from '../features/orders/infrastructure/api';\nexport const wiring = [sendMail, cart, listOrders, order];\n",
   'src/shared/format/index.ts': "export { format } from './format';\n",
   'src/shared/format/format.ts': importing({
     from: '../../kernel/values',
@@ -162,7 +162,7 @@ const layerViolations = [
   {
     condition: "a feature's application layer reads a file through a lib",
     files: {
-      'src/features/orders/app/use-cases/queries/list-orders/list-orders.use-case.ts': importing({
+      'src/features/orders/presentation/bindings/queries/list-orders/list-orders.use-case.ts': importing({
         from: '../../../../../../libs/files',
         name: 'readText',
       }),
@@ -175,7 +175,7 @@ const layerViolations = [
   {
     condition: "a feature's application layer opens a database through Node.js",
     files: {
-      'src/features/orders/app/use-cases/queries/list-orders/list-orders.use-case.ts':
+      'src/features/orders/presentation/bindings/queries/list-orders/list-orders.use-case.ts':
         "import { DatabaseSync } from 'node:sqlite';\nexport const listOrders = DatabaseSync;\n",
     },
     rule: 'effects-reached-only-from-the-edge',
@@ -251,7 +251,7 @@ const layerViolations = [
   {
     condition: 'a feature imports the composition root',
     files: {
-      'src/features/orders/app/order.use-case.ts': importing({
+      'src/features/orders/presentation/order.use-case.ts': importing({
         from: '../../../root/wiring',
         name: 'wiring',
       }),
@@ -262,7 +262,7 @@ const layerViolations = [
   {
     condition: 'a module of composition imports the composition root',
     files: {
-      'src/composition/checkout/app/check-out.ts': importing({
+      'src/composition/checkout/presentation/check-out.ts': importing({
         from: '../../../root/wiring',
         name: 'wiring',
       }),
@@ -318,7 +318,7 @@ const layerViolations = [
     condition: 'a feature imports another',
     files: {
       'src/features/billing/index.ts': exported('invoice'),
-      'src/features/orders/app/order.use-case.ts': importing({
+      'src/features/orders/presentation/order.use-case.ts': importing({
         from: '../../billing',
         name: 'invoice',
       }),
@@ -339,9 +339,9 @@ const layerViolations = [
   {
     condition: 'the root reaches past a feature’s surface',
     files: {
-      'src/features/orders/app/order.use-case.ts': exported('order'),
+      'src/features/orders/presentation/order.use-case.ts': exported('order'),
       'src/root/wiring.ts': importing({
-        from: '../features/orders/app/order.use-case',
+        from: '../features/orders/presentation/order.use-case',
         name: 'order',
       }),
     },
@@ -351,10 +351,10 @@ const layerViolations = [
     condition: 'a fixture outside the root reaches a feature’s adapter through its surface',
     files: {
       'src/__tests__/orders.fixtures.ts': importing({
-        from: '../features/orders/adapters/api',
+        from: '../features/orders/infrastructure/api',
         name: 'order',
       }),
-      'src/features/orders/adapters/api/index.ts': exported('order'),
+      'src/features/orders/infrastructure/api/index.ts': exported('order'),
     },
     rule: 'module-reached-through-its-surface-from-outside-modules',
   },
@@ -362,12 +362,12 @@ const layerViolations = [
     condition: 'a spec of a feature reaches past an operation’s surface into its stages',
     files: {
       'src/features/orders/__tests__/orders.fixtures.ts': importing({
-        from: '../domain/use-cases/queries/count-orders/steps/read-orders',
+        from: '../application/use-cases/queries/count-orders/steps/read-orders',
         name: 'readOrders',
       }),
-      'src/features/orders/domain/use-cases/queries/count-orders/index.ts':
+      'src/features/orders/application/use-cases/queries/count-orders/index.ts':
         "export { readOrders } from './steps/read-orders';\n",
-      'src/features/orders/domain/use-cases/queries/count-orders/steps/read-orders/index.ts':
+      'src/features/orders/application/use-cases/queries/count-orders/steps/read-orders/index.ts':
         exported('readOrders'),
     },
     rule: 'role-reached-through-its-surface',
@@ -375,12 +375,12 @@ const layerViolations = [
   {
     condition: "a feature's surface reaches past the surface of a binding unit",
     files: {
-      'src/features/orders/app/use-cases/queries/list-orders/index.ts':
+      'src/features/orders/presentation/bindings/queries/list-orders/index.ts':
         "export { listOrders } from './list-orders.use-case';\n",
-      'src/features/orders/app/use-cases/queries/list-orders/list-orders.use-case.ts':
+      'src/features/orders/presentation/bindings/queries/list-orders/list-orders.use-case.ts':
         exported('listOrders'),
       'src/features/orders/index.ts':
-        "export { listOrders } from './app/use-cases/queries/list-orders/list-orders.use-case';\n",
+        "export { listOrders } from './presentation/bindings/queries/list-orders/list-orders.use-case';\n",
     },
     rule: 'role-reached-through-its-surface',
   },
@@ -400,8 +400,8 @@ const layerViolations = [
   {
     condition: 'a use case imports the surface of the role folder that holds it',
     files: {
-      'src/features/orders/domain/use-cases/index.ts': exported('countOrders'),
-      'src/features/orders/domain/use-cases/queries/count-orders/count-orders.use-case.ts':
+      'src/features/orders/application/use-cases/index.ts': exported('countOrders'),
+      'src/features/orders/application/use-cases/queries/count-orders/count-orders.use-case.ts':
         importing({
           from: '../..',
           name: 'countOrders',
@@ -412,7 +412,7 @@ const layerViolations = [
   {
     condition: 'a feature reaches past the surface of a role folder of the kernel',
     files: {
-      'src/features/orders/app/order.use-case.ts': importing({
+      'src/features/orders/presentation/order.use-case.ts': importing({
         from: '../../../kernel/values/money',
         name: 'money',
       }),
@@ -445,7 +445,7 @@ const layerViolations = [
   {
     condition: 'the application layer reaches past a domain role’s surface',
     files: {
-      'src/features/orders/app/order.use-case.ts': importing({
+      'src/features/orders/presentation/order.use-case.ts': importing({
         from: '../domain/entities/order.entity',
         name: 'order',
       }),
@@ -456,7 +456,7 @@ const layerViolations = [
   {
     condition: 'code imports a layer folder',
     files: {
-      'src/features/orders/app/order.use-case.ts': importing({
+      'src/features/orders/presentation/order.use-case.ts': importing({
         from: '../domain',
         name: 'order',
       }),
@@ -467,9 +467,9 @@ const layerViolations = [
   {
     condition: 'a port the kernel shares imports an adapter',
     files: {
-      'src/adapters/mail/index.ts': exported('sendMail'),
+      'src/infrastructure/mail/index.ts': exported('sendMail'),
       'src/kernel/contracts/mail.port.ts': importing({
-        from: '../../adapters/mail',
+        from: '../../infrastructure/mail',
         name: 'sendMail',
       }),
     },
@@ -490,7 +490,7 @@ const layerViolations = [
     condition: 'a module of composition imports another',
     files: {
       'src/composition/cart/index.ts': exported('cart'),
-      'src/composition/checkout/app/check-out.ts': importing({
+      'src/composition/checkout/presentation/check-out.ts': importing({
         from: '../../cart',
         name: 'cart',
       }),
@@ -500,9 +500,9 @@ const layerViolations = [
   {
     condition: "a binding unit imports a port of its feature's domain",
     files: {
-      'src/features/orders/app/use-cases/queries/list-orders/list-orders.hooks.ts':
-        "import type { OrderQueryRepository } from '../../../../domain/contracts';\nexport type Uses = OrderQueryRepository;\n",
-      'src/features/orders/domain/contracts/index.ts':
+      'src/features/orders/presentation/bindings/queries/list-orders/list-orders.hooks.ts':
+        "import type { OrderQueryRepository } from '../../../../application/contracts';\nexport type Uses = OrderQueryRepository;\n",
+      'src/features/orders/application/contracts/index.ts':
         'export interface OrderQueryRepository { list(): number }\n',
     },
     rule: 'binding-units-reach-no-port',
@@ -510,11 +510,11 @@ const layerViolations = [
   {
     condition: "a binding unit of composition imports a port of the module's domain",
     files: {
-      'src/composition/checkout/app/check-out.ts': importing({
-        from: '../domain/contracts',
+      'src/composition/checkout/presentation/check-out.ts': importing({
+        from: '../application/contracts',
         name: 'payments',
       }),
-      'src/composition/checkout/domain/contracts/index.ts': exported('payments'),
+      'src/composition/checkout/application/contracts/index.ts': exported('payments'),
     },
     rule: 'binding-units-reach-no-port',
   },
@@ -531,11 +531,11 @@ const layerViolations = [
   {
     condition: "a module of composition's adapter imports another module's adapter",
     files: {
-      'src/composition/checkout/adapters/mail/mail.adapter.ts': importing({
-        from: '../../../../features/orders/adapters/api',
+      'src/composition/checkout/infrastructure/mail/mail.adapter.ts': importing({
+        from: '../../../../features/orders/infrastructure/api',
         name: 'order',
       }),
-      'src/features/orders/adapters/api/index.ts': exported('order'),
+      'src/features/orders/infrastructure/api/index.ts': exported('order'),
     },
     rule: 'feature-adapters-blind-to-each-other',
   },
@@ -543,7 +543,7 @@ const layerViolations = [
     condition: 'a feature imports the composition above it',
     files: {
       'src/composition/checkout/index.ts': exported('checkout'),
-      'src/features/orders/app/order.use-case.ts': importing({
+      'src/features/orders/presentation/order.use-case.ts': importing({
         from: '../../../composition/checkout',
         name: 'checkout',
       }),
@@ -553,31 +553,31 @@ const layerViolations = [
   {
     condition: 'an adapter imports another adapter',
     files: {
-      'src/adapters/mail/mail.adapter.ts': importing({
+      'src/infrastructure/mail/mail.adapter.ts': importing({
         from: '../sms',
         name: 'sendSms',
       }),
-      'src/adapters/sms/index.ts': exported('sendSms'),
+      'src/infrastructure/sms/index.ts': exported('sendSms'),
     },
     rule: 'adapters-blind-to-each-other',
   },
   {
     condition: 'an adapter imports the application layer of a feature',
     files: {
-      'src/features/orders/adapters/api/order.adapter.ts': importing({
-        from: '../../app/order.use-case',
+      'src/features/orders/infrastructure/api/order.adapter.ts': importing({
+        from: '../../presentation/order.use-case',
         name: 'order',
       }),
-      'src/features/orders/app/order.use-case.ts': exported('order'),
+      'src/features/orders/presentation/order.use-case.ts': exported('order'),
     },
     rule: 'adapters-know-no-caller',
   },
   {
     condition: 'a use case imports an adapter past its port',
     files: {
-      'src/features/orders/adapters/api/order.adapter.ts': exported('orderAdapter'),
-      'src/features/orders/app/use-cases/queries/list-orders/list-orders.use-case.ts': importing({
-        from: '../../../../adapters/api/order.adapter',
+      'src/features/orders/infrastructure/api/order.adapter.ts': exported('orderAdapter'),
+      'src/features/orders/presentation/bindings/queries/list-orders/list-orders.use-case.ts': importing({
+        from: '../../../../infrastructure/api/order.adapter',
         name: 'orderAdapter',
       }),
     },
@@ -586,9 +586,9 @@ const layerViolations = [
   {
     condition: 'the entry file imports an adapter past the root',
     files: {
-      'src/adapters/mail/index.ts': exported('sendMail'),
+      'src/infrastructure/mail/index.ts': exported('sendMail'),
       'src/main.ts': importing({
-        from: './adapters/mail',
+        from: './infrastructure/mail',
         name: 'sendMail',
       }),
     },
@@ -597,7 +597,7 @@ const layerViolations = [
   {
     condition: 'a shared adapter imports the surface of a feature',
     files: {
-      'src/adapters/mail/mail.adapter.ts': importing({
+      'src/infrastructure/mail/mail.adapter.ts': importing({
         from: '../../features/orders',
         name: 'listOrders',
       }),
@@ -608,16 +608,16 @@ const layerViolations = [
   {
     condition: "a feature's surface offers its adapter",
     files: {
-      'src/features/orders/adapters/api/index.ts': exported('orderAdapter'),
-      'src/features/orders/index.ts': "export { orderAdapter } from './adapters/api';\n",
+      'src/features/orders/infrastructure/api/index.ts': exported('orderAdapter'),
+      'src/features/orders/index.ts': "export { orderAdapter } from './infrastructure/api';\n",
     },
     rule: 'adapters-reached-only-from-the-root',
   },
   {
     condition: 'a read imports a write',
     files: {
-      'src/features/orders/app/use-cases/commands/cancel/cancel.use-case.ts': exported('cancel'),
-      'src/features/orders/app/use-cases/queries/list/list.use-case.ts': importing({
+      'src/features/orders/presentation/bindings/commands/cancel/cancel.use-case.ts': exported('cancel'),
+      'src/features/orders/presentation/bindings/queries/list/list.use-case.ts': importing({
         from: '../../commands/cancel/cancel.use-case',
         name: 'cancel',
       }),
@@ -627,20 +627,20 @@ const layerViolations = [
   {
     condition: 'a write imports a read',
     files: {
-      'src/features/orders/app/use-cases/commands/cancel/cancel.use-case.ts': importing({
+      'src/features/orders/presentation/bindings/commands/cancel/cancel.use-case.ts': importing({
         from: '../../queries/list/list.use-case',
         name: 'list',
       }),
-      'src/features/orders/app/use-cases/queries/list/list.use-case.ts': exported('list'),
+      'src/features/orders/presentation/bindings/queries/list/list.use-case.ts': exported('list'),
     },
     rule: 'writes-never-reach-reads',
   },
   {
     condition: 'a shared helper imports an adapter',
     files: {
-      'src/adapters/api/index.ts': exported('fetchOrders'),
+      'src/infrastructure/api/index.ts': exported('fetchOrders'),
       'src/shared/http/index.ts': importing({
-        from: '../../adapters/api',
+        from: '../../infrastructure/api',
         name: 'fetchOrders',
       }),
     },
@@ -649,15 +649,15 @@ const layerViolations = [
   {
     condition: 'a write reaches a read through a surface that joins both',
     files: {
-      'src/features/orders/app/use-cases/commands/cancel/cancel.use-case.ts': importing({
-        from: '../../../../domain/contracts',
+      'src/features/orders/presentation/bindings/commands/cancel/cancel.use-case.ts': importing({
+        from: '../../../../application/contracts',
         name: 'cancelOrder',
       }),
-      'src/features/orders/domain/contracts/index.ts':
+      'src/features/orders/application/contracts/index.ts':
         "export { cancelOrder } from './repositories/commands/order.repository';\nexport { listOrders } from './repositories/queries/order.repository';\n",
-      'src/features/orders/domain/contracts/repositories/commands/order.repository.ts':
+      'src/features/orders/application/contracts/repositories/commands/order.repository.ts':
         exported('cancelOrder'),
-      'src/features/orders/domain/contracts/repositories/queries/order.repository.ts':
+      'src/features/orders/application/contracts/repositories/queries/order.repository.ts':
         exported('listOrders'),
     },
     rule: 'writes-never-reach-reads',
@@ -668,7 +668,7 @@ const blockViolations = [
   {
     condition: "a feature's application layer opens a database through Bun by a lib",
     files: {
-      'src/features/orders/app/use-cases/queries/list-orders/list-orders.use-case.ts': importing({
+      'src/features/orders/presentation/bindings/queries/list-orders/list-orders.use-case.ts': importing({
         from: '../../../../../../libs/db',
         name: 'open',
       }),
@@ -683,7 +683,7 @@ const blockViolations = [
   {
     condition: "a feature's application layer opens a database through Bun",
     files: {
-      'src/features/orders/app/use-cases/queries/list-orders/list-orders.use-case.ts':
+      'src/features/orders/presentation/bindings/queries/list-orders/list-orders.use-case.ts':
         "import { Database } from 'bun:sqlite';\nexport const listOrders = Database;\n",
     },
     blocks: [
@@ -694,7 +694,7 @@ const blockViolations = [
   {
     condition: "a feature's application layer spawns a process through Bun's bare module",
     files: {
-      'src/features/orders/app/use-cases/queries/list-orders/list-orders.use-case.ts':
+      'src/features/orders/presentation/bindings/queries/list-orders/list-orders.use-case.ts':
         "import { spawn } from 'bun';\nexport const listOrders = spawn;\n",
     },
     blocks: [
@@ -705,9 +705,9 @@ const blockViolations = [
   {
     condition: 'a component imports an adapter',
     files: {
-      'src/adapters/api/index.ts': exported('fetchOrders'),
+      'src/infrastructure/api/index.ts': exported('fetchOrders'),
       'src/features/orders/ui/components/order-card.tsx': importing({
-        from: '../../../../adapters/api',
+        from: '../../../../infrastructure/api',
         name: 'fetchOrders',
       }),
     },
@@ -762,9 +762,9 @@ const blockViolations = [
   {
     condition: "a feature's adapter imports another feature's adapter",
     files: {
-      'src/features/billing/adapters/api/index.ts': exported('charge'),
-      'src/features/orders/adapters/api/index.ts': importing({
-        from: '../../../billing/adapters/api',
+      'src/features/billing/infrastructure/api/index.ts': exported('charge'),
+      'src/features/orders/infrastructure/api/index.ts': importing({
+        from: '../../../billing/infrastructure/api',
         name: 'charge',
       }),
     },
@@ -775,7 +775,7 @@ const blockViolations = [
   {
     condition: 'an adapter imports a route of the root',
     files: {
-      'src/adapters/api/index.ts': importing({
+      'src/infrastructure/api/index.ts': importing({
         from: '../../root/routes/orders',
         name: 'route',
       }),
@@ -802,7 +802,7 @@ const blockViolations = [
   {
     condition: 'a helper beside a command imports bunli',
     files: {
-      'src/features/orders/app/helpers/tool.ts': importing({
+      'src/features/orders/presentation/helpers/tool.ts': importing({
         from: '@bunli/core',
         name: 'value',
       }),
@@ -841,7 +841,7 @@ const blockViolations = [
   {
     condition: 'a binding unit imports a package no block gives a home there',
     files: {
-      'src/features/orders/app/use-cases/queries/list-orders/list-orders.hooks.ts': importing({
+      'src/features/orders/presentation/bindings/queries/list-orders/list-orders.hooks.ts': importing({
         from: 'kit',
         name: 'value',
       }),
@@ -877,7 +877,7 @@ const blockViolations = [
   {
     condition: 'the application imports an integration',
     files: {
-      'src/features/orders/app/order.use-case.ts': importing({
+      'src/features/orders/presentation/order.use-case.ts': importing({
         from: '../../../integrations/nestjs/eros.module',
         name: 'erosModule',
       }),
@@ -916,9 +916,9 @@ const blockViolations = [
   {
     condition: 'a widget imports an adapter',
     files: {
-      'src/features/orders/adapters/api/order.adapter.ts': exported('fetchOrders'),
+      'src/features/orders/infrastructure/api/order.adapter.ts': exported('fetchOrders'),
       'src/features/orders/ui/widgets/orders.tsx': importing({
-        from: '../../adapters/api/order.adapter',
+        from: '../../infrastructure/api/order.adapter',
         name: 'fetchOrders',
       }),
     },
@@ -970,7 +970,7 @@ const blockViolations = [
   {
     condition: "a use case of a feature's domain sends an event through a sink",
     files: {
-      'src/features/orders/domain/use-cases/commands/place/place.use-case.ts': importing({
+      'src/features/orders/application/use-cases/commands/place/place.use-case.ts': importing({
         from: '../../../../../../shared/sinks',
         name: 'track',
       }),
@@ -984,7 +984,7 @@ const blockViolations = [
   {
     condition: 'the application layer imports the message library',
     files: {
-      'src/features/orders/app/order.use-case.ts': importing({
+      'src/features/orders/presentation/order.use-case.ts': importing({
         from: '@lingui/core',
         name: 'value',
       }),
@@ -1012,7 +1012,7 @@ const blockViolations = [
   {
     condition: 'the application layer imports yaml',
     files: {
-      'src/features/orders/app/order.use-case.ts': importing({
+      'src/features/orders/presentation/order.use-case.ts': importing({
         from: 'yaml',
         name: 'value',
       }),
@@ -1025,7 +1025,7 @@ const blockViolations = [
   {
     condition: 'an adapter imports the logging library',
     files: {
-      'src/adapters/files/files.adapter.ts': importing({
+      'src/infrastructure/files/files.adapter.ts': importing({
         from: 'pino',
         name: 'value',
       }),
@@ -1065,9 +1065,9 @@ const blockViolations = [
   {
     condition: 'a binding unit imports an adapter',
     files: {
-      'src/features/orders/adapters/api/index.ts': exported('ordersAdapter'),
-      'src/features/orders/app/use-cases/queries/list-orders/list-orders.hooks.ts': importing({
-        from: '../../../../adapters/api',
+      'src/features/orders/infrastructure/api/index.ts': exported('ordersAdapter'),
+      'src/features/orders/presentation/bindings/queries/list-orders/list-orders.hooks.ts': importing({
+        from: '../../../../infrastructure/api',
         name: 'ordersAdapter',
       }),
     },
@@ -1080,7 +1080,7 @@ const blockViolations = [
     condition: 'a binding unit imports a component',
     files: {
       'src/features/orders/ui/components/order-card.tsx': exported('orderCard'),
-      'src/features/orders/app/use-cases/queries/list-orders/list-orders.hooks.ts': importing({
+      'src/features/orders/presentation/bindings/queries/list-orders/list-orders.hooks.ts': importing({
         from: '../../../../ui/components/order-card',
         name: 'orderCard',
       }),
@@ -1093,7 +1093,7 @@ const blockViolations = [
   {
     condition: 'an adapter imports the cache library',
     files: {
-      'src/features/orders/adapters/api/orders.adapter.ts': importing({
+      'src/features/orders/infrastructure/api/orders.adapter.ts': importing({
         from: '@tanstack/react-query',
         name: 'value',
       }),
@@ -1440,11 +1440,11 @@ describe('the dependency-cruiser layer set', () => {
     // Arrange
     const project = {
       files: {
-        'src/features/orders/adapters/api/models/order.model.ts': importing({
+        'src/features/orders/infrastructure/api/models/order.model.ts': importing({
           from: 'zod',
           name: 'value',
         }),
-        'src/features/orders/adapters/yaml/order.adapter.ts': importing({
+        'src/features/orders/infrastructure/yaml/order.adapter.ts': importing({
           from: 'yaml',
           name: 'value',
         }),
@@ -1452,19 +1452,19 @@ describe('the dependency-cruiser layer set', () => {
         'src/features/orders/ui/widgets/orders.tsx':
           "import type { Order } from '../../domain/entities';\nimport { track } from '../../../../shared/sinks';\nexport const orders: Order[] = [];\nexport const tracked = track;\n",
         'src/shared/sinks/index.ts': exported('track'),
-        'src/features/orders/app/use-cases/commands/sync-orders/sync-orders.cli.ts': importing({
+        'src/features/orders/presentation/bindings/commands/sync-orders/sync-orders.cli.ts': importing({
           from: '@bunli/core',
           name: 'value',
         }),
         'src/composition/checkout/ui/screens/cart-screen/cart-screen.tsx':
           "import { useMemo } from 'react';\nimport { value } from '@lingui/core';\nexport const screen = [useMemo, value];\n",
-        'src/composition/checkout/app/use-cases/queries/cart/cart.hooks.ts':
+        'src/composition/checkout/presentation/bindings/queries/cart/cart.hooks.ts':
           "import { value } from '@tanstack/react-query';\nexport const cart = value;\n",
         'src/client.tsx': importing({
           from: 'kit',
           name: 'value',
         }),
-        'src/features/orders/app/use-cases/queries/list-orders/list-orders.hooks.ts':
+        'src/features/orders/presentation/bindings/queries/list-orders/list-orders.hooks.ts':
           "import { value } from '@tanstack/react-query';\nimport { useMemo } from 'react';\nexport const listOrders = [value, useMemo];\n",
         'src/features/orders/ui/components/order-card.tsx':
           "import { value } from '@lingui/core';\nimport type { ReactNode } from 'react';\nexport const card: ReactNode = value;\n",
@@ -1480,7 +1480,7 @@ describe('the dependency-cruiser layer set', () => {
           from: 'zod',
           name: 'value',
         }),
-        'src/features/orders/app/models/order-request.model.ts': importing({
+        'src/features/orders/presentation/models/order-request.model.ts': importing({
           from: 'zod',
           name: 'value',
         }),
@@ -1491,8 +1491,8 @@ describe('the dependency-cruiser layer set', () => {
           "import { createHash } from 'node:crypto';\nexport const digest = createHash;\n",
         'src/kernel/utils/format.utils.ts':
           "import { format } from 'node:util';\nexport const formatted = format;\n",
-        'src/index.ts': "export { readOrders } from './adapters/files';\n",
-        'src/adapters/files/index.ts':
+        'src/index.ts': "export { readOrders } from './infrastructure/files';\n",
+        'src/infrastructure/files/index.ts':
           "import { readFile } from 'node:fs/promises';\nexport const readOrders = readFile;\n",
         'src/root/wiring.ts': exported('wiring'),
         'src/root/routes/__root.tsx': importing({

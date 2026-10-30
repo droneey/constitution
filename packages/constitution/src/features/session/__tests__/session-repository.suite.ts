@@ -4,8 +4,8 @@ import { Level } from '#/kernel/constants';
 import { ConfigReadStatus } from '#/kernel/entities';
 import { AbsolutePath, BlockId } from '#/kernel/value-objects';
 
-import type { SessionCommandRepository } from '../domain/contracts/repositories/commands';
-import type { SessionQueryRepository } from '../domain/contracts/repositories/queries';
+import type { SessionCommandRepository } from '../application/contracts/repositories/commands';
+import type { SessionQueryRepository } from '../application/contracts/repositories/queries';
 import type { SessionState } from '../domain/entities';
 import { SessionAgent, SessionMark } from '../domain/entities';
 import { AgentId, SessionId, TreeFingerprint } from '../domain/value-objects';

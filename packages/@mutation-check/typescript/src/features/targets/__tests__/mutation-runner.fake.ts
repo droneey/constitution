@@ -1,6 +1,6 @@
 import type { UnitRelativePath } from '#/kernel/value-objects';
 
-import type { MutationRunner, ToolExitCode } from '../domain/contracts';
+import type { MutationRunner, ToolExitCode } from '../application/contracts';
 import type { MutationTarget } from '../domain/entities';
 import type { ConfigurationError, MutationRunError } from '../domain/errors';
 

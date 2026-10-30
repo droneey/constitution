@@ -3,7 +3,7 @@ import { describe, expect, it } from 'bun:test';
 import { BlockId } from '#/kernel/value-objects';
 
 import { validFiles } from '../../../__tests__/valid-files.fixtures';
-import { checkInputOf } from '../../use-cases/queries/check/__tests__/check.fixtures';
+import { checkInputOf } from '../../../application/use-cases/queries/check/__tests__/check.fixtures';
 import type { BlockPlace } from '../block.entity';
 import { Block } from '../block.entity';
 import type { BlockFile } from '../block-file.entity';

@@ -22,11 +22,6 @@ compose:
       .dclintrc.yaml:
         rules:
           no-version-field: 2
-  service-image-pinned-by-version-and-digest:
-    yaml:
-      .dclintrc.yaml:
-        rules:
-          service-image-require-explicit-tag: 2
   compose-keys-in-shared-order:
     yaml:
       .dclintrc.yaml:
@@ -77,3 +72,9 @@ yaml:
           require-quotes-in-ports:
             - 2
             - quoteType: single
+core:
+  download-pinned-by-version-and-checksum:
+    yaml:
+      .dclintrc.yaml:
+        rules:
+          service-image-require-explicit-tag: 2

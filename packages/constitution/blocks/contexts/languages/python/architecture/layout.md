@@ -20,7 +20,7 @@ A program's entry is the function `main()` of `main.py` at the top of the import
 
 ### relative-imports-stay-in-the-module → module-files-import-each-other-directly · MUST
 
-An import that leaves its module — a feature, or outside `features/` the top-level folder it sits in — is absolute, from the import package's name. Files inside one module import each other by relative path, and a relative import never climbs out of the module. A role folder of a feature's domain, and another module of a layer, are imported through their surface. A module never imports itself by its absolute path.
+An import that leaves its module — a feature, or outside `features/` the top-level folder it sits in — is absolute, from the import package's name. Files inside one module import each other by relative path, and a relative import never climbs out of the module. A role folder of a feature's domain or application, and another module of a layer, are imported through their surface. A module never imports itself by its absolute path.
 
 | Why |
 |---|
@@ -46,7 +46,7 @@ The `__init__.py` of a layer folder, and that of an application's import package
 
 ### role-suffix-spelled-in-snake-case → file-carries-its-role-suffix · MUST
 
-A role file is `<name>_<role>.py`, its role the vocabulary's suffix in snake_case — `order_entity.py`, `orders_query_repository.py`.
+A role file is `<name>_<role>.py`, its role the vocabulary's suffix in snake_case — `order_aggregate.py`, `order_line_entity.py`, `order_repository.py`.
 
 | Why |
 |---|

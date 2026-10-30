@@ -6,7 +6,7 @@
 
 ### task-group-walks-poes-own-list → task-group-run-by-its-prefix · MUST
 
-The task named by an action is a shell task that walks the names `poe _list_tasks` gives, sorted, and runs each of its prefix; where none is, it runs nothing. The check then runs the specs' and the mutation gate's tasks the unit has, each by its name.
+The task named by an action is a shell task that walks the names `poe _list_tasks` gives, sorted, and runs each of its prefix; where none is, it runs nothing.
 
 | Why |
 |---|
