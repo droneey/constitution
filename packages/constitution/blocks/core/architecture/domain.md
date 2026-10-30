@@ -53,7 +53,7 @@ A value object checks the invariants the domain relies on and no more; a stricte
 
 ### aggregate-changed-only-by-its-transitions · MUST
 
-An aggregate changes only through its root's transitions. Each transition, declared in the aggregate's own module, checks its precondition — the move the business allows from the current state — and returns a new state that keeps every invariant. No code outside that module builds the aggregate, a changed copy of it or one of its inner entities, save through its `create`, which checks the creation's precondition and yields its event, or its `restore`, which rebuilds one already stored — checking its invariants, no precondition, and yielding no event — for the adapter that reads it; no write repository exists for an inner entity.
+An aggregate changes only through its root's transitions. Each transition, declared in the aggregate's own module, checks its precondition — the move the business allows from the current state — and returns a new state that keeps every invariant. No code outside that module builds the aggregate, a changed copy of it or one of its inner entities, save through its `create`, which checks the creation's precondition and yields its event, or its `restore`, which rebuilds one already stored — checking its invariants, no precondition, and yielding no event — for the adapter that reads it, a stored one that breaks an invariant failing as corrupt data, never as a refused move; no write repository exists for an inner entity.
 
 | Why |
 |---|
