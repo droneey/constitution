@@ -336,18 +336,22 @@ core:
               source_modules:
                 - '**.${role.data-port}.${role.read-operation}'
                 - '**.${role.use-case}.${role.read-operation}'
+                - '**.${role.binding}.${role.read-operation}'
               forbidden_modules:
                 - '**.${role.data-port}.${role.write-operation}'
                 - '**.${role.use-case}.${role.write-operation}'
+                - '**.${role.binding}.${role.write-operation}'
             contracts[id=query-and-command-apart.commands]:
               name: query-and-command-apart
               type: forbidden
               source_modules:
                 - '**.${role.data-port}.${role.write-operation}'
                 - '**.${role.use-case}.${role.write-operation}'
+                - '**.${role.binding}.${role.write-operation}'
               forbidden_modules:
                 - '**.${role.data-port}.${role.read-operation}'
                 - '**.${role.use-case}.${role.read-operation}'
+                - '**.${role.binding}.${role.read-operation}'
   surface-only-on-a-module-or-one-kind:
     python:
       pyproject.toml:

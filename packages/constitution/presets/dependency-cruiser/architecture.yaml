@@ -481,16 +481,16 @@ core:
         forbidden[name=reads-never-reach-writes]:
           severity: error
           from:
-            path: /(${role.use-case}|${role.data-port})/${role.read-operation}/
+            path: /(${role.use-case}|${role.binding}|${role.data-port})/${role.read-operation}/
           to:
-            path: /(${role.use-case}|${role.data-port})/${role.write-operation}/
+            path: /(${role.use-case}|${role.binding}|${role.data-port})/${role.write-operation}/
             reachable: true
         forbidden[name=writes-never-reach-reads]:
           severity: error
           from:
-            path: /(${role.use-case}|${role.data-port})/${role.write-operation}/
+            path: /(${role.use-case}|${role.binding}|${role.data-port})/${role.write-operation}/
           to:
-            path: /(${role.use-case}|${role.data-port})/${role.read-operation}/
+            path: /(${role.use-case}|${role.binding}|${role.data-port})/${role.read-operation}/
             reachable: true
 _js-runtime:
   hash-imports-leave-the-module:

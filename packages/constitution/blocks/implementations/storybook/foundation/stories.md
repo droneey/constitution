@@ -1,6 +1,6 @@
 # Stories
 
-> Governs the stories: the kit's states, their fixtures and screenshots.
+> Governs the stories: the kit's states, their fixtures, screenshots and accessibility check.
 
 ## General
 
@@ -27,3 +27,13 @@ Screenshots are compared over the UI kit's stories, where the look is the contra
 | Why |
 |---|
 | the kit's look is the one place a changed pixel is a changed contract. |
+
+## Accessibility
+
+### stories-fail-on-a11y-violations → ui-specs-scan-accessibility · MUST
+
+The accessibility check of the stories is set to fail — `parameters.a11y.test: 'error'` — for the whole project.
+
+| Why |
+|---|
+| Storybook's default runs no check, and a report nobody fails on is ignored. |

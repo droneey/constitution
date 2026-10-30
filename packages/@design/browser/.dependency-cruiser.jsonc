@@ -533,23 +533,23 @@
     {
       "name": "reads-never-reach-writes",
       "severity": "error",
-      "from": {
-        "path": "/(use-cases|repositories)/queries/",
-      },
       "to": {
-        "path": "/(use-cases|repositories)/commands/",
         "reachable": true,
+        "path": "/(use-cases|bindings|repositories)/commands/",
+      },
+      "from": {
+        "path": "/(use-cases|bindings|repositories)/queries/",
       },
     },
     {
       "name": "writes-never-reach-reads",
       "severity": "error",
-      "from": {
-        "path": "/(use-cases|repositories)/commands/",
-      },
       "to": {
-        "path": "/(use-cases|repositories)/queries/",
         "reachable": true,
+        "path": "/(use-cases|bindings|repositories)/queries/",
+      },
+      "from": {
+        "path": "/(use-cases|bindings|repositories)/commands/",
       },
     },
 

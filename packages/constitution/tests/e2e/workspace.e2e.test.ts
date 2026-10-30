@@ -412,7 +412,7 @@ export const shortLabel = (id: OrderId): string => \`#\${id}\`;
       isFoundIn({
         finding: [
           'structlog',
-          'adapters/log',
+          'infrastructure/log',
           'root',
         ],
         output,

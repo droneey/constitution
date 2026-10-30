@@ -305,6 +305,8 @@ const pluginRows: readonly PluginRow[] = [
         'browser',
         'tailwind',
         'testing-library',
+        'html',
+        'ui',
       ],
     },
     reported: [
@@ -509,7 +511,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'a link target is concatenated',
         files: {
-          'src/features/orders/ui/widgets/order-link.ts':
+          'src/features/orders/presentation/widgets/order-link.ts':
             "export const target = (id: string): { to: string } => ({ to: '/orders/' + id });\n",
         },
       },
@@ -518,7 +520,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'a link names its route by path and params',
         files: {
-          'src/features/orders/ui/widgets/order-link.ts':
+          'src/features/orders/presentation/widgets/order-link.ts':
             "export const target = { to: '/orders/$orderId' };\n",
         },
       },
@@ -676,6 +678,7 @@ const pluginRows: readonly PluginRow[] = [
     unit: {
       axes: [],
       blocks: [
+        'i18n',
         'lingui',
       ],
     },
@@ -683,7 +686,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'a message is translated at the top level of a module',
         files: {
-          'src/features/chat/ui/status.ts':
+          'src/features/chat/presentation/status.ts':
             "import { t } from '@lingui/core/macro';\n\nexport const online = t`Online`;\n",
         },
       },
@@ -692,7 +695,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'a module declares its message and a component translates it',
         files: {
-          'src/features/chat/ui/status.ts':
+          'src/features/chat/presentation/status.ts':
             "import { msg, t } from '@lingui/core/macro';\n\nexport const online = msg`Online`;\nexport const label = (): string => t`Away`;\n",
         },
       },
@@ -830,7 +833,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'markup is assigned to innerHTML',
         files: {
-          'src/features/orders/ui/show.ts':
+          'src/features/orders/presentation/show.ts':
             'export const show = (panel: Element, markup: string): void => {\n  panel.innerHTML = markup;\n};\n',
         },
       },
@@ -839,7 +842,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'text is set through the element interfaces',
         files: {
-          'src/features/orders/ui/show.ts':
+          'src/features/orders/presentation/show.ts':
             'export const show = (panel: Element, label: string): void => {\n  panel.textContent = label;\n};\n',
         },
       },
@@ -1453,6 +1456,7 @@ const pluginRows: readonly PluginRow[] = [
     slug: 'cache-key-built-by-its-features-factory',
     unit: {
       blocks: [
+        'remote-data',
         'tanstack-query',
       ],
     },
@@ -1470,7 +1474,7 @@ const pluginRows: readonly PluginRow[] = [
         condition: 'a read takes its key from the key factory',
         files: {
           'src/features/orders/presentation/bindings/queries/list-orders/list-orders.hooks.ts':
-            "import { orderKeys } from '../../../../../shared/cache';\n\nexport const listOrdersOptions = { queryKey: orderKeys.all };\n",
+            "import { orderKeys } from '../../../../../../shared/cache';\n\nexport const listOrdersOptions = { queryKey: orderKeys.all };\n",
         },
       },
     ],
