@@ -351,7 +351,7 @@ const referenceWebApp: ProjectLayout = {
   config: [
     'axes: [architecture, workflow]',
     '',
-    'domains: [ui, design-system, remote-data, remote-service, i18n, analytics, privacy,',
+    'domains: [ui, design-system, remote-data, remote-service, copy, i18n, analytics, privacy,',
     '          version-control, untrusted-client]',
     'platforms: [browser, server]',
     'languages: [typescript, css, html, json, toml, yaml]',
