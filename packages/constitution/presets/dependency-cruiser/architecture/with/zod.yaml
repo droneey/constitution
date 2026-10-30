@@ -3,11 +3,10 @@ zod:
     typescript:
       .dependency-cruiser.jsonc:
         allowedSeverity: error
-core:
-  parsing-library-imported-at-the-edge-and-in-shared:
+  zod-home-is-the-edge-and-shared-parsing:
     typescript:
       .dependency-cruiser.jsonc:
-        'allowed[comment=parsing-library-imported-at-the-edge-and-in-shared: zod]':
+        allowed[comment=zod-home-is-the-edge-and-shared-parsing]:
           from:
             path:
               - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.presentation-layer}/

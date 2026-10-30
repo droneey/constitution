@@ -4,7 +4,7 @@
 
 ## General
 
-### personal-answer-kept-out-of-shared-caches → caller-shaped-result-never-served-from-a-cache-to-another · MUST
+### personal-answer-kept-out-of-shared-caches · MUST
 
 An answer that carries a caller's own data sets `Cache-Control: private` or `no-store`, and no shared cache in front of the server — a CDN's or a proxy's — is given a rule that stores it anyway.
 

@@ -20,14 +20,6 @@ A tool's configuration in a unit holds every setting the presets of the release 
 |---|
 | the configuration then changes with the blocks: a setting missing, loosened or left behind after its rule is gone shows as a finding of the check, and no copy of a shared file drifts unseen. |
 
-### configuration-names-its-schema · SHOULD
-
-A configuration file names the schema its reader publishes, in the form its language gives it, wherever the reader accepts it.
-
-| Why |
-|---|
-| an editor then checks and completes every key as it is written, so a misspelt or misplaced key shows before the tool ignores it. |
-
 ### own-settings-only-add · MUST
 
 A unit's own settings, written in its files or in its own pack, add to what its blocks compute: a further setting, a stricter value, or a value that names the same thing for this unit, such as its own path to the same program or its own files a rule's term covers or leaves out. A setting that holds a rule is removed, or made to reach less than the rule asks, only by an override that lowers that rule.
