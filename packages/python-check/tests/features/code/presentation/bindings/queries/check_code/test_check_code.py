@@ -5,23 +5,22 @@ import pytest
 from source_fixtures import folder
 
 from droneey_python_check.features.code import ExitStatus, run_check_code
-from droneey_python_check.features.code.domain.entities import (
+from droneey_python_check.features.code.domain.finding.entities import (
   EffectOutsideEdge,
   EnvironmentOutsideRoot,
   Finding,
   ImportClimbingOut,
   ImportLeavingModule,
   ImportOfItself,
-  Layer,
   LongFile,
   LongFunction,
   PackageInPure,
   PackageOutsideHome,
   PackageWithoutHome,
-  TopLevelFolder,
   Unparsable,
-  WholeEdge,
 )
+from droneey_python_check.features.code.domain.settings.entities import TopLevelFolder, WholeEdge
+from droneey_python_check.features.code.domain.shared.entities import Layer
 from droneey_python_check.features.code.presentation.errors import Misuse, UsageError
 
 if TYPE_CHECKING:

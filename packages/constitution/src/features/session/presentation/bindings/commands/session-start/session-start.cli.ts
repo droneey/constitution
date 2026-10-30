@@ -4,14 +4,11 @@ import { AbsolutePath } from '#/kernel/value-objects';
 import type { CommandContext } from '#/shared/cli';
 import { folderPathOf } from '#/shared/cli';
 
-import type {
-  HookEventName,
-  SessionDigest,
-  SessionOrigin,
-  SessionStart,
-  SessionState,
-} from '../../../../domain/entities';
-import type { SessionId } from '../../../../domain/value-objects';
+import type { SessionState } from '../../../../domain/session/entities';
+import type { SessionId } from '../../../../domain/session/value-objects';
+import type { SessionDigest } from '../../../../domain/session-digest/entities';
+import type { SessionOrigin, SessionStart } from '../../../../domain/session-start/entities';
+import type { HookEventName } from '../../../../domain/shared/entities';
 import { HookField, hookEventTexts, sessionStartEventSchema } from '../../../constants';
 import { contextOutputOf, digestOf, hookEventOf } from '../../../utils';
 

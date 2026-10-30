@@ -64,7 +64,7 @@ An outside shape, a **wire model** — a response, a row, a message, a file form
 
 ### adapter-imports-only-its-owners-domain-and-shared-layers · MUST
 
-An adapter imports the domain and the contracts of the owner whose ports it implements — its contracts, entities, aggregates, value objects and errors — the kernel, shared and libs, and, when it answers a feature’s contract through another feature, that other feature’s surface; never a use case, a presentation, another composition module or another adapter; what two adapters share lives in libs, which takes what it needs of the program as parameters, or in shared when it knows the program and holds no effect.
+An adapter imports the domain and the contracts of the owner whose ports it implements — its contracts, entities, aggregates and their `restore`, value objects and errors — the kernel, shared and libs, and, when it answers a feature’s contract through another feature, that other feature’s surface; never a use case, a presentation, another composition module or another adapter; what two adapters share lives in libs, which takes what it needs of the program as parameters, or in shared when it knows the program and holds no effect.
 
 | Why |
 |---|

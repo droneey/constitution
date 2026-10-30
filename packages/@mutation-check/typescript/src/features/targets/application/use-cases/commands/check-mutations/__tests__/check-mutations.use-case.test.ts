@@ -7,16 +7,15 @@ import { AbsolutePath, UnitRelativePath } from '#/kernel/value-objects';
 import { fakeBranchReader } from '../../../../../__tests__/branch-reader.fake.ts';
 import { fakeCodeComparer } from '../../../../../__tests__/code-comparer.fake.ts';
 import { fakeMutationRunner } from '../../../../../__tests__/mutation-runner.fake.ts';
-import { CheckScope, CheckStatus } from '../../../../../domain/entities';
+import { BranchError, BranchFailure } from '../../../../../domain/changed-file/errors';
+import { CheckScope, CheckStatus } from '../../../../../domain/check/entities';
 import {
-  BranchError,
-  BranchFailure,
   ConfigurationError,
   ConfigurationFailure,
   MutationRunError,
   MutationRunFailure,
-} from '../../../../../domain/errors';
-import { LineRange } from '../../../../../domain/value-objects';
+} from '../../../../../domain/check/errors';
+import { LineRange } from '../../../../../domain/shared/value-objects';
 import type { CodeComparer } from '../../../../contracts';
 import { createCheckMutations } from '../check-mutations.use-case.ts';
 

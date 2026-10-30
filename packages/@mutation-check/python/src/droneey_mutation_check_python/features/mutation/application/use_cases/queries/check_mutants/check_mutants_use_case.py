@@ -1,18 +1,12 @@
 from typing import TYPE_CHECKING, assert_never
 
-from .....domain.entities import (
-  EveryFunction,
-  Functions,
-  Passed,
-  PassReason,
-  Scope,
-  is_empty,
-  outcome_of,
-)
+from .....domain.mutation_run.entities import Passed, PassReason, outcome_of
+from .....domain.mutation_targets.entities import EveryFunction, Functions, Scope, is_empty
 from .steps import find_targets
 
 if TYPE_CHECKING:
-  from .....domain.entities import MutationTargets, Outcome
+  from .....domain.mutation_run.entities import Outcome
+  from .....domain.mutation_targets.entities import MutationTargets
   from ....contracts import Workspace
 
 

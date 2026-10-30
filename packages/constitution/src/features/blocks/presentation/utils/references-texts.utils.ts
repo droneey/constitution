@@ -1,7 +1,7 @@
 import type { TextsOf } from '#/shared/cli';
 
-import type { LinksDetails, ReferencesDetails } from '../../domain/services';
-import { LinksCode, ReferencesCode } from '../../domain/services';
+import type { LinksDetails, ReferencesDetails } from '../../domain/validate-constitution/services';
+import { LinksCode, ReferencesCode } from '../../domain/validate-constitution/services';
 
 const referencesTexts: TextsOf<LinksDetails & ReferencesDetails> = {
   [LinksCode.MissingTarget]: ({ target }) => `links to a missing file "${target}"`,

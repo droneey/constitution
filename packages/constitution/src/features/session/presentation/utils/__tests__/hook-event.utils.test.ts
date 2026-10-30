@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'bun:test';
 
-import { HookEventName, SessionOrigin } from '../../../domain/entities';
-import { SessionId } from '../../../domain/value-objects';
+import { SessionId } from '../../../domain/session/value-objects';
+import { SessionOrigin } from '../../../domain/session-start/entities';
+import { HookEventName } from '../../../domain/shared/entities';
 import {
   HookField,
   recordCheckEventSchema,

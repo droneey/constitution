@@ -1,7 +1,11 @@
 import { isDeepEqual } from '#/kernel/utils';
 
-import type { BlockMarks, ConfigurationWrite, HeldStep } from '../../domain/entities';
-import { BlockMarks as Marks } from '../../domain/entities';
+import type {
+  BlockMarks,
+  ConfigurationWrite,
+  HeldStep,
+} from '../../domain/configuration-file/entities';
+import { BlockMarks as Marks } from '../../domain/configuration-file/entities';
 import { NEWLINE } from './text.constants';
 
 interface Anchor {

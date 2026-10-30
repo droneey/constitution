@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import { createFakePageSearch } from '#/__tests__/page-search.fake';
 
-import { SearchResultKind } from '../../../../../domain/entities';
+import { SearchResultKind } from '../../../../../domain/search/entities';
 import { createSearchPages } from '../search-pages.use-case';
 
 const packPage = {

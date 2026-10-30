@@ -1,8 +1,10 @@
 import { ConfigReadStatus } from '#/kernel/entities';
 
-import type { FingerprintMark, StopEvent } from '../../../../domain/entities';
-import { SessionMark, StopJudgement } from '../../../../domain/entities';
-import type { TreeFingerprint } from '../../../../domain/value-objects';
+import type { FingerprintMark } from '../../../../domain/session/entities';
+import { SessionMark } from '../../../../domain/session/entities';
+import type { StopEvent } from '../../../../domain/stop-judgement/entities';
+import { StopJudgement } from '../../../../domain/stop-judgement/entities';
+import type { TreeFingerprint } from '../../../../domain/tree-state/value-objects';
 import type { WorkingTree } from '../../../contracts';
 import type { SessionQueryRepository } from '../../../contracts/repositories/queries';
 

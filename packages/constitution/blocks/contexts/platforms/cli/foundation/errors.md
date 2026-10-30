@@ -1,6 +1,6 @@
 # Errors
 
-> Governs exit codes, unknown commands, and who decides the exit.
+> Governs a failure of a command-line program: its exit code, an unknown command, and who decides the exit.
 
 ## General
 

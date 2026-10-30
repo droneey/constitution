@@ -7,18 +7,11 @@ import { notesTextOf } from '#/__tests__/notes-text.fixtures';
 import { RepositoryRelativePath, UnitPath } from '#/kernel/value-objects';
 import { noteSection } from '#/shared/cli';
 
-import type {
-  ApplyPlan,
-  ApplyReport,
-  PresetsFinding,
-  SettingPlace,
-} from '../../../domain/entities';
-import {
-  ApplyPlanKind,
-  PresetsCode,
-  ProjectRead,
-  ProjectReadStatus,
-} from '../../../domain/entities';
+import type { ApplyPlan, ApplyReport, SettingPlace } from '../../../domain/apply-plan/entities';
+import { ApplyPlanKind } from '../../../domain/apply-plan/entities';
+import { ProjectRead, ProjectReadStatus } from '../../../domain/presets-project/entities';
+import type { PresetsFinding } from '../../../domain/shared/entities';
+import { PresetsCode } from '../../../domain/shared/entities';
 import { placeMessage } from '../apply-report.messages';
 import { applyOutcomeOf, applySectionsOf } from '../apply-report.utils';
 import { findingLinesOf } from '../finding-lines.utils';

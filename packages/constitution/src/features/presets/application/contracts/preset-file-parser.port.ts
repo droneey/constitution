@@ -1,4 +1,4 @@
-import type { PresetValue } from '../../domain/entities';
+import type { PresetValue } from '../../domain/setting/entities';
 
 enum PresetFileReadStatus {
   Parsed = 'parsed',

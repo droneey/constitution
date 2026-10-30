@@ -1,6 +1,7 @@
 import type { UnitRelativePath } from '#/kernel/value-objects';
 
-import type { MutationTarget, ToolExitCode } from '../../domain/entities';
+import type { ToolExitCode } from '../../domain/check/entities';
+import type { MutationTarget } from '../../domain/mutation-target/entities';
 
 interface MutationRunner {
   /**

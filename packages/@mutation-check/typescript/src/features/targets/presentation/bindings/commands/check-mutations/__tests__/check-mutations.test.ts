@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
-import type { CheckOutcome } from '../../../../../domain/entities';
-import { CheckScope, CheckStatus } from '../../../../../domain/entities';
+import type { CheckOutcome } from '../../../../../domain/check/entities';
+import { CheckScope, CheckStatus } from '../../../../../domain/check/entities';
 import { ExitCode } from '../../../../constants';
 import { nothingChangedMessage, unknownArgumentsMessage } from '../check-mutations.messages.ts';
 import { runCheckMutations } from '../check-mutations.ts';

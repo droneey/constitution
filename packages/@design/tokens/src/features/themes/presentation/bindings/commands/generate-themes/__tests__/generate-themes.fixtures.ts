@@ -1,4 +1,4 @@
-import { ConfigModuleError, ConfigModuleFailure } from '../../../../../domain/errors';
+import { ConfigModuleError, ConfigModuleFailure } from '../../../../../domain/config-module/errors';
 import type { ExitCode } from '../../../../constants';
 import { runGenerateThemes } from '../generate-themes';
 

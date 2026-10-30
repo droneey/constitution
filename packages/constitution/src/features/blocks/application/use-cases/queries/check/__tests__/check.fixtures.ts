@@ -1,8 +1,9 @@
 import type { Files, Source } from '../../../../../__tests__/constitution.fixtures';
 import { sourceOf } from '../../../../../__tests__/constitution.fixtures';
 import { createFakeFileTree } from '../../../../../__tests__/file-tree.fake';
-import { BlockGraph, Constitution } from '../../../../../domain/entities';
-import type { CheckInput } from '../../../../../domain/services';
+import { BlockGraph } from '../../../../../domain/block-graph/entities';
+import { Constitution } from '../../../../../domain/constitution/entities';
+import type { CheckInput } from '../../../../../domain/validate-constitution/services';
 import type { BaseTree, ConstitutionLoaded } from '../steps/load-constitution';
 import { loadConstitution } from '../steps/load-constitution';
 

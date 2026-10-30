@@ -5,8 +5,8 @@ src/
 │   └── app.config.ts                   spec: a unit of the root
 ├── features/orders/
 │   ├── domain/
-│   │   ├── value-objects/money/        spec: pure rules
-│   │   └── errors/                     no spec: proven through callers
+│   │   ├── order/transitions/          spec: pure rules
+│   │   └── order/errors/               no spec: proven through callers
 │   ├── application/
 │   │   └── use-cases/…/pay-order/      spec: a use case
 │   ├── infrastructure/postgres/        spec: an adapter

@@ -1,6 +1,6 @@
 # Formatter
 
-> Governs the files Biome formats and the style it writes.
+> Governs Biome's formatter: the files it formats and the style it writes.
 
 ## General
 

@@ -7,7 +7,7 @@ import type { CommandContext } from '#/shared/cli';
 import { BASE_FLAG, baseFlagsOf } from '#/shared/cli';
 
 import type { PackBase } from '../../../../application/use-cases/queries/check';
-import type { Validation } from '../../../../domain/services';
+import type { Validation } from '../../../../domain/validate-constitution/services';
 import { blocksOutcomeOf, blocksSectionsOf, NO_BLOCKS, packBaseOf } from '../../../utils';
 
 interface BlocksCheckContext extends CommandContext {

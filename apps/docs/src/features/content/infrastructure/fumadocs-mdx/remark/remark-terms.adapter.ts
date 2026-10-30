@@ -1,8 +1,8 @@
 import type { PhrasingContent, Root, Table, TableCell, TableRow } from 'mdast';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 
-import type { Term } from '../../../domain/entities';
-import { TermKind } from '../../../domain/entities';
+import type { Term } from '../../../domain/term/entities';
+import { TermKind } from '../../../domain/term/entities';
 import { replaceFencedBlocks, takeTermIds, textNode } from '../markdown';
 import { TERMS_HEADER, TERMS_LANGUAGE } from './remark-terms.constants';
 

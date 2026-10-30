@@ -3,8 +3,8 @@ import { describe, expect, it } from 'bun:test';
 import type { AbsolutePath } from '#/kernel/value-objects';
 
 import type { LockQueryRepository } from '../application/contracts/repositories/queries';
-import type { Lock } from '../domain/entities';
-import { LockReadStatus, RecordKind } from '../domain/entities';
+import type { Lock } from '../domain/lock/entities';
+import { LockReadStatus, RecordKind } from '../domain/lock/entities';
 import { lockOf } from './presets.fixtures';
 
 interface LockWorld {

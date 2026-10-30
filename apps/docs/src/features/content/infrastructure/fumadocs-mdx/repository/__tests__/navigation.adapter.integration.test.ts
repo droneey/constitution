@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from 'bun:test';
 
-import { SourceFailure } from '../../../../domain/errors';
-import { AbsolutePath, RepositoryPath } from '../../../../domain/value-objects';
+import { SourceFailure } from '../../../../domain/source/errors';
+import { AbsolutePath, RepositoryPath } from '../../../../domain/source/value-objects';
 import { documentIconOf, guideIconOf, sectionSummaryOf, sidebarOf } from '../navigation.adapter';
 import { inRepository } from '../repository.adapter';
 import { enterRepository, failureOf } from './repository.fixtures';

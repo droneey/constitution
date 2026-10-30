@@ -11,9 +11,9 @@ import {
   sessionStateOf,
 } from '../../../../../__tests__/session.fixtures';
 import { createFakeSessionQueryRepository } from '../../../../../__tests__/session-query-repository.fake';
-import type { RemindedBlock } from '../../../../../domain/entities';
-import { SessionAgent } from '../../../../../domain/entities';
-import { AgentId, SessionId } from '../../../../../domain/value-objects';
+import type { RemindedBlock } from '../../../../../domain/reminder/entities';
+import { SessionAgent } from '../../../../../domain/session/entities';
+import { AgentId, SessionId } from '../../../../../domain/session/value-objects';
 import { remindOfFile } from '../remind-of-file.use-case';
 
 const ui = activeBlockOf({

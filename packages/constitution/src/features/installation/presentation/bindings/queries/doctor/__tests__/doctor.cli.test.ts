@@ -3,8 +3,8 @@ import { describe, expect, it } from 'bun:test';
 import { createFakeContext, runCommand } from '#/__tests__/command-context.fake';
 import { AbsolutePath } from '#/kernel/value-objects';
 
-import type { PartDiagnosis } from '../../../../../domain/entities';
-import { Diagnosis } from '../../../../../domain/entities';
+import type { PartDiagnosis } from '../../../../../domain/part-diagnosis/entities';
+import { Diagnosis } from '../../../../../domain/part-diagnosis/entities';
 import { createDoctorCommand } from '../doctor.cli';
 
 const SOUND: PartDiagnosis = {

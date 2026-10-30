@@ -1,7 +1,7 @@
 import type { MetaFile, SidebarFolder, SiteLayout } from '#/shared/types';
 
-import { PATH_SEPARATOR } from '../../../domain/constants';
-import { BlockLayer } from '../../../domain/entities';
+import { BlockLayer } from '../../../domain/block/entities';
+import { PATH_SEPARATOR } from '../../../domain/shared/constants';
 import { axisFoldersOf, coreChaptersOf, layerBlocksOf, seamHoldersOf } from './blocks.adapter';
 import { SEAMS_FOLDER } from './blocks.constants';
 import { LAYER_FOLDERS, layerGroupFolders } from './folders.constants';

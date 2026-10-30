@@ -2,8 +2,8 @@ import { ProjectWarning } from '#/kernel/entities';
 import type { AbsolutePath } from '#/kernel/value-objects';
 import { atLinesText, warningTextOf } from '#/shared/cli';
 
-import type { DigestContents, DigestRelease } from '../../domain/entities';
-import { DigestKind } from '../../domain/entities';
+import type { DigestContents, DigestRelease } from '../../domain/session-digest/entities';
+import { DigestKind } from '../../domain/session-digest/entities';
 import { blockListLines } from './block-list.utils';
 import {
   activeMessage,

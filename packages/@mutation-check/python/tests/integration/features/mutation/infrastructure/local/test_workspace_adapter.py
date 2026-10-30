@@ -8,19 +8,23 @@ from changes_fixtures import changed, new, python
 from repository_fixtures import GIT_ENVIRONMENT, git, moved_unit, repository, write_files
 from workspace_suite import WorkspaceSuite
 
-from droneey_mutation_check_python.features.mutation.domain.entities import (
-  Broken,
-  EveryFunction,
-  Functions,
+from droneey_mutation_check_python.features.mutation.domain.mutant.entities import (
   Mutant,
-  MutantGlob,
   MutantName,
   MutantStatus,
+)
+from droneey_mutation_check_python.features.mutation.domain.mutation_run.entities import (
+  Broken,
   MutationRun,
   Ran,
   Stopped,
 )
-from droneey_mutation_check_python.features.mutation.domain.errors import (
+from droneey_mutation_check_python.features.mutation.domain.mutation_targets.entities import (
+  EveryFunction,
+  Functions,
+  MutantGlob,
+)
+from droneey_mutation_check_python.features.mutation.domain.shared.errors import (
   CommandFailedError,
   CommandUnfinishedError,
   Failure,

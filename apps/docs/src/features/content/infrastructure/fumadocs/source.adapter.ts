@@ -9,9 +9,9 @@ import { DOCS_ROUTE } from '#/shared/constants';
 import type { SiteLayout } from '#/shared/types';
 
 import type { PagesQueryRepository, SearchIndex } from '../../application/contracts';
-import type { PageCatalog } from '../../domain/entities';
-import { Page } from '../../domain/entities';
-import type { PageSlugs, SiteBasePath } from '../../domain/value-objects';
+import type { PageCatalog } from '../../domain/page/entities';
+import { Page } from '../../domain/page/entities';
+import type { PageSlugs, SiteBasePath } from '../../domain/page/value-objects';
 import {
   createSitePaths,
   crossLinks,

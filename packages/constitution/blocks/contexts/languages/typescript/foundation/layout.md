@@ -1,6 +1,6 @@
 # Layout
 
-> Governs the names and extensions of source and test files.
+> Governs a TypeScript file: the names and extensions of source and test files.
 
 ## Kinds
 

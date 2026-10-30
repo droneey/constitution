@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 
-import { RepositoryPath } from '../../../domain/value-objects';
+import { RepositoryPath } from '../../../domain/source/value-objects';
 import { fileValueOf } from './file-value.adapter';
 import { manifestModel } from './models';
 import { inRepository } from './repository.adapter';

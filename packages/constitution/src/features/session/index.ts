@@ -9,18 +9,17 @@ export { recordReminders } from './application/use-cases/commands/record-reminde
 export { digestSession } from './application/use-cases/queries/digest-session';
 export { judgeStop } from './application/use-cases/queries/judge-stop';
 export { remindOfFile } from './application/use-cases/queries/remind-of-file';
+export type { Reminder } from './domain/reminder/entities';
+export type { SessionId } from './domain/session/value-objects';
 export type {
   ConfigurationsReport,
   DigestEntry,
   DigestListing,
-  Reminder,
   SessionDigest,
-  SessionStart,
-  StopEvent,
-  StopJudgement,
-} from './domain/entities';
-export { ConfigurationsCheckStatus, DigestEntryKind } from './domain/entities';
-export type { SessionId } from './domain/value-objects';
+} from './domain/session-digest/entities';
+export { ConfigurationsCheckStatus, DigestEntryKind } from './domain/session-digest/entities';
+export type { SessionStart } from './domain/session-start/entities';
+export type { StopEvent, StopJudgement } from './domain/stop-judgement/entities';
 export { createPostToolUseCommand } from './presentation/bindings/commands/post-tool-use';
 export { createRecordCheckCommand } from './presentation/bindings/commands/record-check';
 export { createSessionStartCommand } from './presentation/bindings/commands/session-start';

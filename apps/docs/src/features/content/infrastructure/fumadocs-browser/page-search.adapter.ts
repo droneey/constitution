@@ -2,9 +2,9 @@ import type { SortedResult } from 'fumadocs-core/search';
 import { staticClient } from 'fumadocs-core/search/client/orama-static';
 
 import type { PageSearch } from '../../application/contracts';
-import type { SearchResult } from '../../domain/entities';
-import { SearchResultKind } from '../../domain/entities';
-import { SearchError } from '../../domain/errors';
+import type { SearchResult } from '../../domain/search/entities';
+import { SearchResultKind } from '../../domain/search/entities';
+import { SearchError } from '../../domain/search/errors';
 
 interface StaticPageSearchInput {
   readonly indexAddress: string;

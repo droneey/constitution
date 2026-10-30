@@ -4,14 +4,14 @@ import type { ProblemOf } from '#/kernel/types';
 import { BlockId } from '#/kernel/value-objects';
 import { textOf } from '#/shared/cli';
 
-import type { LoadFindingDetails } from '../../../domain/entities';
 import {
   BlockLoadCode,
   FrontMatterField,
   FrontMatterReadCode,
-  LoadCode,
   PlaceCode,
-} from '../../../domain/entities';
+} from '../../../domain/block/entities';
+import type { LoadFindingDetails } from '../../../domain/constitution/entities';
+import { LoadCode } from '../../../domain/constitution/entities';
 import { loadTexts } from '../load-texts.utils';
 
 describe('loadTexts', () => {

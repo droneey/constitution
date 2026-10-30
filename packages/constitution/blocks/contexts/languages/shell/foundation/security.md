@@ -1,6 +1,6 @@
 # Security
 
-> Governs outside input, tracing, secrets and exported variables.
+> Governs a script's security: outside input, tracing, secrets and exported variables.
 
 ## Secrets
 

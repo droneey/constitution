@@ -1,5 +1,5 @@
-import type { Page } from '../../../domain/entities';
-import type { PageSlugs } from '../../../domain/value-objects';
+import type { Page } from '../../../domain/page/entities';
+import type { PageSlugs } from '../../../domain/page/value-objects';
 import type { PagesQueryRepository } from '../../contracts';
 
 interface FakePagesInput {

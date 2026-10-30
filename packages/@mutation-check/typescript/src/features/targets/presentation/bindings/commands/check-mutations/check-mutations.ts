@@ -1,5 +1,5 @@
 import type { CheckMutations } from '../../../../application/use-cases';
-import { CheckScope, CheckStatus } from '../../../../domain/entities';
+import { CheckScope, CheckStatus } from '../../../../domain/check/entities';
 import { ExitCode } from '../../../constants';
 import { nothingChangedMessage, unknownArgumentsMessage } from './check-mutations.messages.ts';
 

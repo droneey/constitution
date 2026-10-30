@@ -5,8 +5,8 @@ import type { ProblemOf } from '#/kernel/types';
 import { BlockId } from '#/kernel/value-objects';
 import { textOf } from '#/shared/cli';
 
-import type { RequiresDetails } from '../../../domain/services';
-import { RequiresCode } from '../../../domain/services';
+import type { RequiresDetails } from '../../../domain/validate-constitution/services';
+import { RequiresCode } from '../../../domain/validate-constitution/services';
 import { requiresTexts } from '../requires-texts.utils';
 
 describe('requiresTexts', () => {

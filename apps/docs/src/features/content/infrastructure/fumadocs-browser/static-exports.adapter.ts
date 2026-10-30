@@ -5,9 +5,9 @@ import { onceSucceeded } from '#/libs/once-succeeded';
 import { isNoJson, isUnreachable, problemPathsOf, WHOLE_FILE_PATH } from '#/libs/served-json';
 
 import type { NavigationQueryRepository, PageLookup } from '../../application/contracts';
-import type { PageCatalog } from '../../domain/entities';
-import { Page } from '../../domain/entities';
-import { ExportError, ExportFailure } from '../../domain/errors';
+import type { PageCatalog } from '../../domain/page/entities';
+import { Page } from '../../domain/page/entities';
+import { ExportError, ExportFailure } from '../../domain/page/errors';
 import { pageCatalogModel, pageTreeModel } from './models';
 
 type Transport = (

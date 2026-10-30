@@ -1,6 +1,6 @@
 # Names
 
-> Governs the names of classes.
+> Governs a name in a stylesheet: what a class is named for, and its case.
 
 ## Meaning
 

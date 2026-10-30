@@ -6,10 +6,10 @@ import type {
   ConfigParser,
   ReleaseManifestParser,
 } from '../application/contracts';
-import type { BlockCards } from '../domain/entities';
-import { BlockSetSource } from '../domain/entities';
-import type { ProjectError } from '../domain/errors';
-import { isProjectError } from '../domain/errors';
+import type { BlockCards } from '../domain/block-set/entities';
+import { BlockSetSource } from '../domain/block-set/entities';
+import type { ProjectError } from '../domain/shared/errors';
+import { isProjectError } from '../domain/shared/errors';
 import { createJsonReleaseManifestParser } from '../infrastructure/json';
 import { createYamlBlockCardParser, createYamlConfigFileParser } from '../infrastructure/yaml';
 

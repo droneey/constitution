@@ -4,7 +4,7 @@ import { createFakeProjectFiles } from '#/__tests__/project-files.fake';
 import { corePassport, projectPlace } from '#/__tests__/project-place.fixtures';
 
 import { failureOf } from '../../../../../__tests__/project.fixtures';
-import { UnreadableFileFailure } from '../../../../../domain/errors';
+import { UnreadableFileFailure } from '../../../../../domain/shared/errors';
 import { readCore } from '../read-core.use-case';
 
 const CORE_TEXT = '---\nid: core\n---\n\n# core\n';

@@ -4,8 +4,11 @@ import type { ProblemOf } from '#/kernel/types';
 import { BlockId, RuleSlug } from '#/kernel/value-objects';
 import { textOf } from '#/shared/cli';
 
-import type { LinksDetails, ReferencesDetails } from '../../../domain/services';
-import { LinksCode, ReferencesCode } from '../../../domain/services';
+import type {
+  LinksDetails,
+  ReferencesDetails,
+} from '../../../domain/validate-constitution/services';
+import { LinksCode, ReferencesCode } from '../../../domain/validate-constitution/services';
 import { referencesTexts } from '../references-texts.utils';
 
 describe('referencesTexts', () => {

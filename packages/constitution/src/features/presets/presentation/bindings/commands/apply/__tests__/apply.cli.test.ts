@@ -10,16 +10,12 @@ import type {
   AppliedFiles,
   ApplyPlan,
   ApplyReport,
-  RunAsked,
-  RunPlan,
-} from '../../../../../domain/entities';
-import {
-  ApplyPlanKind,
-  EntryPoint,
-  PresetsCode,
-  ProjectRead,
-  ProjectReadStatus,
-} from '../../../../../domain/entities';
+} from '../../../../../domain/apply-plan/entities';
+import { ApplyPlanKind } from '../../../../../domain/apply-plan/entities';
+import { ProjectRead, ProjectReadStatus } from '../../../../../domain/presets-project/entities';
+import type { RunAsked, RunPlan } from '../../../../../domain/run-plan/entities';
+import { EntryPoint } from '../../../../../domain/run-plan/entities';
+import { PresetsCode } from '../../../../../domain/shared/entities';
 import { applySectionsOf } from '../../../../utils';
 import { createPresetsApplyCommand } from '../apply.cli';
 

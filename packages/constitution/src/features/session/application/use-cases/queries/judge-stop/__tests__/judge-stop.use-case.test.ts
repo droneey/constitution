@@ -11,14 +11,13 @@ import {
 } from '../../../../../__tests__/session.fixtures';
 import { createFakeSessionQueryRepository } from '../../../../../__tests__/session-query-repository.fake';
 import { createFakeWorkingTree } from '../../../../../__tests__/working-tree.fake';
-import type { StopEvent } from '../../../../../domain/entities';
-import {
-  HookEventName,
-  SessionMark,
-  StopVerdict,
-  TreeStateStatus,
-} from '../../../../../domain/entities';
-import { SessionId, TreeFingerprint } from '../../../../../domain/value-objects';
+import { SessionMark } from '../../../../../domain/session/entities';
+import { SessionId } from '../../../../../domain/session/value-objects';
+import { HookEventName } from '../../../../../domain/shared/entities';
+import type { StopEvent } from '../../../../../domain/stop-judgement/entities';
+import { StopVerdict } from '../../../../../domain/stop-judgement/entities';
+import { TreeStateStatus } from '../../../../../domain/tree-state/entities';
+import { TreeFingerprint } from '../../../../../domain/tree-state/value-objects';
 import { judgeStop } from '../judge-stop.use-case';
 
 const treeNow = TreeFingerprint.create('tree-now');

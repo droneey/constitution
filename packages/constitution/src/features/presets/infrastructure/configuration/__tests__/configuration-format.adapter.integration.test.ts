@@ -6,9 +6,10 @@ import { goldenFileText, goldenOf } from '#/__tests__/golden.fixtures';
 import { BlockId, RepositoryRelativePath } from '#/kernel/value-objects';
 
 import { runConfigurationFormatSuite } from '../../../__tests__/configuration-format.suite';
-import type { BlockMarks, ConfigurationFile, Setting } from '../../../domain/entities';
-import { SettingShape } from '../../../domain/entities';
-import { FileFormat } from '../../../domain/value-objects';
+import type { BlockMarks, ConfigurationFile } from '../../../domain/configuration-file/entities';
+import { SettingShape } from '../../../domain/configuration-file/entities';
+import type { Setting } from '../../../domain/setting/entities';
+import { FileFormat } from '../../../domain/shared/value-objects';
 import { createConfigurationFormat } from '../configuration-format.adapter';
 
 const format = createConfigurationFormat();

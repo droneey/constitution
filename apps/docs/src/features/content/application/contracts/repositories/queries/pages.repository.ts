@@ -1,5 +1,5 @@
-import type { PageCatalog } from '../../../../domain/entities';
-import type { PageSlugs } from '../../../../domain/value-objects';
+import type { PageCatalog } from '../../../../domain/page/entities';
+import type { PageSlugs } from '../../../../domain/page/value-objects';
 import type { PageLookup } from '../../page-lookup.port';
 import type { NavigationQueryRepository } from './navigation.repository';
 

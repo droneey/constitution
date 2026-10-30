@@ -5,9 +5,10 @@ import type { Nodes } from 'mdast';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { parse } from 'yaml';
 
-import { MARKDOWN_EXTENSION } from '../../../domain/constants';
-import { Axis, Block, BlockLayer } from '../../../domain/entities';
-import { AbsolutePath, BlockPath } from '../../../domain/value-objects';
+import { Axis, Block, BlockLayer } from '../../../domain/block/entities';
+import { MARKDOWN_EXTENSION } from '../../../domain/shared/constants';
+import { BlockPath } from '../../../domain/shared/value-objects';
+import { AbsolutePath } from '../../../domain/source/value-objects';
 import { AXIS_ITEM, corePassportFileName, FRONT_MATTER, SEAMS_FOLDER } from './blocks.constants';
 import { fileValueOf } from './file-value.adapter';
 import { passportModel } from './models';

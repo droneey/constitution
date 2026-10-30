@@ -8,7 +8,9 @@ import {
   sessionStateOf,
 } from '../../../../../__tests__/session.fixtures';
 import { createFakeSessionCommandRepository } from '../../../../../__tests__/session-command-repository.fake';
-import { HookEventName, SessionAgent, SessionOrigin } from '../../../../../domain/entities';
+import { SessionAgent } from '../../../../../domain/session/entities';
+import { SessionOrigin } from '../../../../../domain/session-start/entities';
+import { HookEventName } from '../../../../../domain/shared/entities';
 import { keepSession } from '../keep-session.use-case';
 
 const heldState = sessionStateOf();

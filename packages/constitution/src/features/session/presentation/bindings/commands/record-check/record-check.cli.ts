@@ -3,7 +3,7 @@ import { Command } from 'commander';
 import { projectCheck } from '#/kernel/constants';
 import type { CommandContext } from '#/shared/cli';
 
-import type { SessionId } from '../../../../domain/value-objects';
+import type { SessionId } from '../../../../domain/session/value-objects';
 import { HookField, recordCheckEventSchema } from '../../../constants';
 import { hookEventOf } from '../../../utils';
 

@@ -1,11 +1,10 @@
 ```text
 src/
 ├── features/orders/              a feature
-│   ├── domain/
+│   ├── domain/order/
 │   │   └── entities/             a role folder: the same form
-│   │       ├── order/            an entity's folder: the same form
-│   │       │   ├── order.entity.ts
-│   │       │   └── index.ts
+│   │       ├── order.aggregate.ts
+│   │       ├── order-line.entity.ts
 │   │       └── index.ts
 │   ├── presentation/
 │   └── index.ts                  its surface

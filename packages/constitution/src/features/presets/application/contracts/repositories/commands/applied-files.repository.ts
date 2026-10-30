@@ -1,4 +1,4 @@
-import type { AppliedFiles } from '../../../../domain/entities';
+import type { AppliedFiles } from '../../../../domain/apply-plan/entities';
 
 interface AppliedFilesCommandRepository {
   /** @throws {ApplyError} when a file cannot be written */

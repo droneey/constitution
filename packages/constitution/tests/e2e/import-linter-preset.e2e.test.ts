@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { feature, lintImports, ORDERS } from './import-linter-preset.fixtures';
+import { concept, feature, lintImports, ORDERS } from './import-linter-preset.fixtures';
 
 describe("the configuration import-linter's presets write", () => {
   it('should load in import-linter and keep every contract when a unit follows every block import-linter is configured for', async () => {
@@ -50,6 +50,54 @@ describe("the configuration import-linter's presets write", () => {
       lint: {
         broken: [
           'adapter-imported-only-by-the-root',
+        ],
+        status: 1,
+      },
+    },
+    {
+      condition:
+        'a binding unit reaches the transitions only through a use case, and an adapter rebuilds an aggregate through them',
+      files: {
+        ...feature,
+        ...concept,
+        [`${ORDERS}/application/use_cases/ship.py`]:
+          'from unit.features.orders.domain.order.transitions import ship_order as ship_order\n',
+        [`${ORDERS}/presentation/ship_cli.py`]:
+          'from unit.features.orders.application.use_cases.ship import ship_order as ship_order\n',
+        [`${ORDERS}/infrastructure/order_store.py`]:
+          'from unit.features.orders.domain.order.transitions import restore_order as restore_order\n',
+      },
+      lint: {
+        broken: [],
+        status: 0,
+      },
+    },
+    {
+      condition: "a binding unit calls an aggregate's transition",
+      files: {
+        ...feature,
+        ...concept,
+        [`${ORDERS}/presentation/ship_cli.py`]:
+          'from unit.features.orders.domain.order.transitions import ship_order as ship_order\n',
+      },
+      lint: {
+        broken: [
+          'model-changed-only-through-a-use-case',
+        ],
+        status: 1,
+      },
+    },
+    {
+      condition: 'a binding unit imports a concept folder of the domain',
+      files: {
+        ...feature,
+        ...concept,
+        [`${ORDERS}/presentation/ship_cli.py`]:
+          'from unit.features.orders.domain import order as order\n',
+      },
+      lint: {
+        broken: [
+          'surface-only-on-a-module-or-one-kind',
         ],
         status: 1,
       },

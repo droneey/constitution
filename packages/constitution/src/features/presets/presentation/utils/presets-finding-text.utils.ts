@@ -1,8 +1,8 @@
 import type { TextsOf } from '#/shared/cli';
 import { LIST_SEPARATOR, textOf } from '#/shared/cli';
 
-import type { PresetsDetails, PresetsFinding } from '../../domain/entities';
-import { PresetsCode } from '../../domain/entities';
+import type { PresetsDetails, PresetsFinding } from '../../domain/shared/entities';
+import { PresetsCode } from '../../domain/shared/entities';
 import {
   ALL_SETTINGS,
   AT_TOP,

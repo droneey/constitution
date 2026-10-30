@@ -1,5 +1,6 @@
-import { SessionMark, StopJudgement } from '../../../../domain/entities';
-import type { SessionId } from '../../../../domain/value-objects';
+import { SessionMark } from '../../../../domain/session/entities';
+import type { SessionId } from '../../../../domain/session/value-objects';
+import { StopJudgement } from '../../../../domain/stop-judgement/entities';
 import type { SessionCommandRepository } from '../../../contracts/repositories/commands';
 
 interface RecordJudgementInput {

@@ -6,7 +6,12 @@ import { Version } from '#/kernel/value-objects';
 import type { Section, TaskOutcome } from '#/shared/cli';
 import { countOf, LIST_SEPARATOR, NO_PROJECT, noteSection, stepsSection } from '#/shared/cli';
 
-import { Diagnosis, Health, InstallationPart, PartDiagnosis } from '../../domain/entities';
+import {
+  Diagnosis,
+  Health,
+  InstallationPart,
+  PartDiagnosis,
+} from '../../domain/part-diagnosis/entities';
 import {
   latestRefusedMessage,
   latestUnansweredMessage,

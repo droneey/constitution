@@ -1,6 +1,6 @@
 # Layout
 
-> Governs the extension of a Markdown file.
+> Governs a Markdown file's kind and name: its extension.
 
 ## Names
 

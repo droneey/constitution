@@ -1,6 +1,6 @@
 import { ConfigReadStatus } from '#/kernel/entities';
 
-import type { SessionState } from '../../domain/entities';
+import type { SessionState } from '../../domain/session/entities';
 import type { SessionStateWire } from './models';
 
 const wireOfState = (state: SessionState): SessionStateWire => {

@@ -6,13 +6,10 @@ import { createFakeContext, runCommand } from '#/__tests__/command-context.fake'
 import { goldenFileText, goldenOf } from '#/__tests__/golden.fixtures';
 import { AbsolutePath, BlockId, UnitPath } from '#/kernel/value-objects';
 
-import type { RunAsked, RunPlan } from '../../../../../domain/entities';
-import {
-  EntryPoint,
-  PresetsCode,
-  ProjectRead,
-  ProjectReadStatus,
-} from '../../../../../domain/entities';
+import { ProjectRead, ProjectReadStatus } from '../../../../../domain/presets-project/entities';
+import type { RunAsked, RunPlan } from '../../../../../domain/run-plan/entities';
+import { EntryPoint } from '../../../../../domain/run-plan/entities';
+import { PresetsCode } from '../../../../../domain/shared/entities';
 import { createRunCommand } from '../run.cli';
 
 const plan: RunPlan = {

@@ -4,7 +4,8 @@ import { Command } from 'commander';
 import { AbsolutePath } from '#/kernel/value-objects';
 import type { CommandContext, StepReport } from '#/shared/cli';
 
-import type { ConfigurationsCheck, ProjectRead } from '../../../../domain/entities';
+import type { ConfigurationsCheck } from '../../../../domain/configurations-check/entities';
+import type { ProjectRead } from '../../../../domain/presets-project/entities';
 import { configurationsStepOf } from '../../../utils';
 
 interface ConfigurationsCheckContext extends CommandContext {

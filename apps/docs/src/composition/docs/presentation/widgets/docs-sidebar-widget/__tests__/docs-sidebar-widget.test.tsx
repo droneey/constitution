@@ -10,7 +10,7 @@ import { DocsLayout, Sidebar } from '#/libs/ui';
 import { componentViolationsIn } from '../../../../__tests__/axe.fixtures';
 import { pageTreeFixture, renderInDocs } from '../../../../__tests__/docs.fixtures';
 import { frameFake } from '../../../../__tests__/docs-frame.fake';
-import { SidebarState } from '../../../../domain/entities';
+import { SidebarState } from '../../../../domain/sidebar-state/entities';
 import { DocsNavTitle, repositoryLink } from '../../../components';
 import { DocsLocationContext } from '../../../providers';
 import { DocsSidebarWidget } from '../docs-sidebar-widget';

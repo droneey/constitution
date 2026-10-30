@@ -7,7 +7,7 @@ import { AbsolutePath, UnitPath } from '#/kernel/value-objects';
 import { parsers } from '../../../../../../../__tests__/project.fixtures';
 import { yamlOf } from '../../../../../../../__tests__/resolution.fixtures';
 import { createFakeWorkspace } from '../../../../../../../__tests__/workspace.fake';
-import { MemberProblem } from '../../../../../../../domain/entities';
+import { MemberProblem } from '../../../../../../../domain/project-config/entities';
 import { readMembers } from '../read-members';
 
 describe('readMembers', () => {

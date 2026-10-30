@@ -174,6 +174,22 @@ core:
                 - '*.${role.composition-module}.*.${role.application-layer}.${role.port}'
                 - '*.${role.bounded-context}.*.${role.application-layer}.${role.port}'
               allow_indirect_imports: true
+  model-changed-only-through-a-use-case:
+    python:
+      pyproject.toml:
+        tool:
+          importlinter:
+            # Why: a binding unit reaches the transitions through the use case it calls, so only a
+            # direct import breaks the contract.
+            contracts[name=model-changed-only-through-a-use-case]:
+              type: forbidden
+              source_modules:
+                - '*.${role.composition-module}.*.${role.presentation-layer}'
+                - '*.${role.bounded-context}.*.${role.presentation-layer}'
+              forbidden_modules:
+                - '*.${role.composition-module}.*.${role.pure-layer}.*.${role.aggregate-transition}'
+                - '*.${role.bounded-context}.*.${role.pure-layer}.*.${role.aggregate-transition}'
+              allow_indirect_imports: true
   composition-module-never-imports-another:
     python:
       pyproject.toml:
@@ -369,11 +385,13 @@ core:
                 - '*.${role.composition-module}.*.${role.application-layer}'
                 - '*.${role.composition-module}.*.${role.presentation-layer}'
                 - '*.${role.composition-module}.*.${role.pure-layer}'
+                - '*.${role.composition-module}.*.${role.pure-layer}.*'
                 - '*.${role.bounded-context}'
                 - '*.${role.bounded-context}.*.${role.gateway}'
                 - '*.${role.bounded-context}.*.${role.application-layer}'
                 - '*.${role.bounded-context}.*.${role.presentation-layer}'
                 - '*.${role.bounded-context}.*.${role.pure-layer}'
+                - '*.${role.bounded-context}.*.${role.pure-layer}.*'
                 - '*.${role.host-integration}'
                 - '*.${role.shared-domain}'
                 - '*.${role.generic-library}'

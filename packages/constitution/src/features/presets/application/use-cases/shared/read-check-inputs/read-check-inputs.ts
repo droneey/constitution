@@ -4,10 +4,10 @@ import type { BlockModel } from '#/kernel/entities';
 import type { RepositoryRelativePath } from '#/kernel/value-objects';
 import { AbsolutePath } from '#/kernel/value-objects';
 
-import type { PresetEntry } from '../../../../domain/entities';
-import type { ReleaseFiles } from '../../../../domain/services';
-import { releaseFilesNamedBy } from '../../../../domain/services';
-import { TargetKind } from '../../../../domain/value-objects';
+import type { ReleaseFiles } from '../../../../domain/check-preset-sets/services';
+import { releaseFilesNamedBy } from '../../../../domain/check-preset-sets/services';
+import type { PresetEntry } from '../../../../domain/preset-entry/entities';
+import { TargetKind } from '../../../../domain/shared/value-objects';
 import type { ConfigurationFormat, DistributionSources } from '../../../contracts';
 
 interface ReleaseSources {

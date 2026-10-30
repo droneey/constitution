@@ -1,6 +1,6 @@
 # Errors
 
-> Governs a failure no handler owns.
+> Governs a failure in a server: one no handler owns.
 
 ## At the entries
 

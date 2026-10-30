@@ -2,7 +2,7 @@ import re
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Final
 
-from ....domain.entities import Mutant, MutantName, MutantStatus
+from ....domain.mutant.entities import Mutant, MutantName, MutantStatus
 
 if TYPE_CHECKING:
   from collections.abc import Mapping

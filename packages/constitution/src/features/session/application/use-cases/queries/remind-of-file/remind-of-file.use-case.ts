@@ -2,9 +2,9 @@ import { ConfigReadStatus } from '#/kernel/entities';
 import { normalizePath } from '#/kernel/utils';
 import { AbsolutePath, RepositoryRelativePath } from '#/kernel/value-objects';
 
-import type { SessionAgent } from '../../../../domain/entities';
-import { Reminder } from '../../../../domain/entities';
-import type { SessionId } from '../../../../domain/value-objects';
+import { Reminder } from '../../../../domain/reminder/entities';
+import type { SessionAgent } from '../../../../domain/session/entities';
+import type { SessionId } from '../../../../domain/session/value-objects';
 import type { SessionQueryRepository } from '../../../contracts/repositories/queries';
 
 interface RemindOfFileInput {

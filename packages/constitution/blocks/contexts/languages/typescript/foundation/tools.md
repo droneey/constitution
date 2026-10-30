@@ -1,6 +1,6 @@
 # Tools
 
-> Governs the suppression of a type error.
+> Governs the tools that hold the rules in TypeScript, and their findings: how a type error is suppressed.
 
 ## Findings
 

@@ -1,7 +1,7 @@
 import { YAMLParseError } from 'yaml';
 import type { z } from 'zod';
 
-import { SourceError, SourceFailure } from '../../../domain/errors';
+import { SourceError, SourceFailure } from '../../../domain/source/errors';
 
 interface FileValueInput<TValue> {
   readonly filePath: string;

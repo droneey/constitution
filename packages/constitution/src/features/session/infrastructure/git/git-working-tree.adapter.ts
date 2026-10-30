@@ -6,9 +6,9 @@ import { RepositoryRelativePath } from '#/kernel/value-objects';
 import type { ChildProcessSettings } from '#/libs/child-process';
 
 import type { WorkingTree } from '../../application/contracts';
-import type { TreeState } from '../../domain/entities';
-import { TreeStateStatus } from '../../domain/entities';
-import { TreeFingerprint } from '../../domain/value-objects';
+import type { TreeState } from '../../domain/tree-state/entities';
+import { TreeStateStatus } from '../../domain/tree-state/entities';
+import { TreeFingerprint } from '../../domain/tree-state/value-objects';
 import { gitEndedMessage } from './git-working-tree.messages';
 
 // Why: a diff of a large tree runs past the 1 MiB that spawnSync keeps by default.

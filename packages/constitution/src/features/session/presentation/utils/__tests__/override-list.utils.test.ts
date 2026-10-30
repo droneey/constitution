@@ -3,7 +3,7 @@ import { describe, expect, it } from 'bun:test';
 import { Level } from '#/kernel/constants';
 import { RuleSlug, repositoryUnit, UnitPath } from '#/kernel/value-objects';
 
-import type { DigestOverride } from '../../../domain/entities';
+import type { DigestOverride } from '../../../domain/session-digest/entities';
 import { overrideListLines } from '../override-list.utils';
 
 describe('overrideListLines', () => {

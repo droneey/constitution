@@ -1,6 +1,6 @@
 # Names
 
-> Governs the case of Python's names, the ending of its exceptions' names and its named constants.
+> Governs a name in Python: its case, an exception's ending and a named constant.
 
 ## Meaning
 

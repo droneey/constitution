@@ -4,9 +4,9 @@ import type { SerializedPageTree } from 'fumadocs-core/source/client';
 
 import { ProgramError } from '#/kernel/errors';
 
-import type { Page } from '../../../domain/entities';
-import { ExportFailure } from '../../../domain/errors';
-import { PageSlugs } from '../../../domain/value-objects';
+import type { Page } from '../../../domain/page/entities';
+import { ExportFailure } from '../../../domain/page/errors';
+import { PageSlugs } from '../../../domain/page/value-objects';
 import { createStaticExports } from '../static-exports.adapter';
 
 const CATALOG_ADDRESS = '/v0.83.0/api/pages';

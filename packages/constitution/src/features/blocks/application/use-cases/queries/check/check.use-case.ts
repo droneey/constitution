@@ -2,8 +2,8 @@ import { BLOCKS_FOLDER_NAME } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
 import { AbsolutePath } from '#/kernel/value-objects';
 
-import type { Validation } from '../../../../domain/services';
-import { validateConstitution } from '../../../../domain/services';
+import type { Validation } from '../../../../domain/validate-constitution/services';
+import { validateConstitution } from '../../../../domain/validate-constitution/services';
 import type { FileTrees, FrontMatterParser, ManifestParser } from '../../../contracts';
 import { loadConstitution } from './steps/load-constitution';
 

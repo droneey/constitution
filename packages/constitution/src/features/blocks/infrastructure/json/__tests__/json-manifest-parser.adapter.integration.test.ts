@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
-import type { FieldIssue } from '../../../domain/entities';
-import { ReadStatus } from '../../../domain/entities';
+import type { FieldIssue } from '../../../domain/shared/entities';
+import { ReadStatus } from '../../../domain/shared/entities';
 import { createJsonManifestParser } from '../json-manifest-parser.adapter';
 
 enum Manifest {

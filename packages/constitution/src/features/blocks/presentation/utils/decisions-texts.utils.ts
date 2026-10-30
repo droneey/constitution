@@ -1,7 +1,7 @@
 import type { TextsOf } from '#/shared/cli';
 
-import type { DecisionsDetails } from '../../domain/services';
-import { DecisionsCode } from '../../domain/services';
+import type { DecisionsDetails } from '../../domain/validate-constitution/services';
+import { DecisionsCode } from '../../domain/validate-constitution/services';
 
 const DECISION_NUMBER_WIDTH = 4;
 

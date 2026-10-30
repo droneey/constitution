@@ -5,8 +5,13 @@ import { compareText } from '#/kernel/utils';
 import type { BlockSource, RepositoryRelativePath } from '#/kernel/value-objects';
 import { AbsolutePath } from '#/kernel/value-objects';
 
-import type { PresetSetsLoaded } from '../../../../domain/services';
-import { entriesIn, SetPlaceKind, setPlaceOf, unparsedSetOf } from '../../../../domain/services';
+import type { PresetSetsLoaded } from '../../../../domain/preset-entry/services';
+import {
+  entriesIn,
+  SetPlaceKind,
+  setPlaceOf,
+  unparsedSetOf,
+} from '../../../../domain/preset-entry/services';
 import type { PresetFileParser, PresetFileRead } from '../../../contracts';
 import { PresetFileReadStatus } from '../../../contracts';
 

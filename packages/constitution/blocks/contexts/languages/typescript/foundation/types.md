@@ -122,7 +122,7 @@ A value that keeps an invariant is a branded type — of a primitive, or of a pl
 
 ### invariant-value-built-only-by-create → invariant-checked-at-construction · MUST
 
-A type that keeps an invariant is built only by its companion's `create`, which throws the type's error when the invariant fails; no cast, object literal or spread of the type is written outside the companion's file, in specs as in production.
+A value that keeps an invariant is built only by its companion's `create`, which throws the type's error when the invariant fails; no cast, object literal or spread of the type is written outside the companion's file, in specs as in production.
 
 | Why |
 |---|

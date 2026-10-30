@@ -17,8 +17,8 @@ import { causeCodeOf, failureOf } from '#/__tests__/failure.fixtures.ts';
 import { AbsolutePath, UnitRelativePath } from '#/kernel/value-objects';
 
 import { BRANCH_SCENARIO, branchReaderSuite } from '../../../__tests__/branch-reader.suite.ts';
-import { BranchError, BranchFailure } from '../../../domain/errors';
-import { LineRange } from '../../../domain/value-objects';
+import { BranchError, BranchFailure } from '../../../domain/changed-file/errors';
+import { LineRange } from '../../../domain/shared/value-objects';
 import { gitBranchReader } from '../git-branch-reader.adapter.ts';
 
 type Files = Readonly<Record<string, string>>;

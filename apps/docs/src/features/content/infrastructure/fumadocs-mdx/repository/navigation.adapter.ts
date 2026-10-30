@@ -5,9 +5,9 @@ import type { ListItem, RootContent } from 'mdast';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { toString as textOf } from 'mdast-util-to-string';
 
-import { SourceError, SourceFailure } from '../../../domain/errors';
-import { withoutMarkdownExtension } from '../../../domain/utils';
-import type { AbsolutePath } from '../../../domain/value-objects';
+import { withoutMarkdownExtension } from '../../../domain/page/utils';
+import { SourceError, SourceFailure } from '../../../domain/source/errors';
+import type { AbsolutePath } from '../../../domain/source/value-objects';
 import {
   headingTextOf,
   isHeading,

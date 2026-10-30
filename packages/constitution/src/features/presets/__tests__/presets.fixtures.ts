@@ -16,8 +16,9 @@ import {
 } from '#/kernel/value-objects';
 
 import type { ProjectReader } from '../application/contracts';
-import type { Lock, LockRecord, PresetsProject } from '../domain/entities';
-import { ProjectRead, ProjectReadStatus } from '../domain/entities';
+import type { Lock, LockRecord } from '../domain/lock/entities';
+import type { PresetsProject } from '../domain/presets-project/entities';
+import { ProjectRead, ProjectReadStatus } from '../domain/presets-project/entities';
 import { createYamlPresetFileParser } from '../infrastructure/yaml';
 
 interface BlockFixture {

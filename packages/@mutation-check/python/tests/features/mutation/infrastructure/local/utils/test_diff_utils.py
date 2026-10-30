@@ -5,12 +5,14 @@ from changes_fixtures import changed, new, unit_relative_path
 from hypothesis import example, given
 from hypothesis import strategies as st
 
-from droneey_mutation_check_python.features.mutation.domain.errors import InvalidValueError
+from droneey_mutation_check_python.features.mutation.domain.changes.errors import InvalidValueError
 from droneey_mutation_check_python.features.mutation.infrastructure.local.utils import file_changes
 
 if TYPE_CHECKING:
-  from droneey_mutation_check_python.features.mutation.domain.entities import FileChange
-  from droneey_mutation_check_python.features.mutation.domain.value_objects import UnitRelativePath
+  from droneey_mutation_check_python.features.mutation.domain.changes.entities import FileChange
+  from droneey_mutation_check_python.features.mutation.domain.changes.value_objects import (
+    UnitRelativePath,
+  )
 
 CHANGED_IN_TWO_HUNKS = """\
 diff --git a/packages/shop/src/shop/orders.py b/packages/shop/src/shop/orders.py

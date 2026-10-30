@@ -1,4 +1,4 @@
-import type { InstalledPlugin } from '../../domain/entities';
+import type { InstalledPlugin } from '../../domain/installed-plugin/entities';
 
 interface PluginRegistry {
   readonly installed: () => InstalledPlugin | undefined;

@@ -6,8 +6,8 @@ import { describe, expect, it } from 'bun:test';
 import { temporaryFolder } from '#/__tests__/temporary-folder.fixtures';
 
 import { SCENARIO_MODE_NAMES, themeBuilderSuite } from '../../../__tests__/theme-builder.suite';
-import type { ThemeModeFiles } from '../../../domain/entities';
-import { AbsolutePath } from '../../../domain/value-objects';
+import type { ThemeModeFiles } from '../../../domain/theme-mode/entities';
+import { AbsolutePath } from '../../../domain/theme-mode/value-objects';
 import { styleDictionaryThemeBuilder } from '../style-dictionary-theme-builder.adapter';
 import {
   colourTokensText,

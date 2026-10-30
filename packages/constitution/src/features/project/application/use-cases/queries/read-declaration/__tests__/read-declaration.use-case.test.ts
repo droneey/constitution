@@ -30,8 +30,8 @@ import {
   yamlOf,
 } from '../../../../../__tests__/resolution.fixtures';
 import { createFakeWorkspace } from '../../../../../__tests__/workspace.fake';
-import type { Declaration } from '../../../../../domain/entities';
-import { ReleaseFailure, UnreadableFileFailure } from '../../../../../domain/errors';
+import type { Declaration } from '../../../../../domain/declaration/entities';
+import { ReleaseFailure, UnreadableFileFailure } from '../../../../../domain/shared/errors';
 import { readDeclaration } from '../read-declaration.use-case';
 
 const uiRules = ruleOf({

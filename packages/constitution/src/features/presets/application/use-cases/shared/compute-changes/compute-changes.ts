@@ -1,13 +1,10 @@
 import type { ProjectFiles } from '#/kernel/contracts';
 import type { AbsolutePath } from '#/kernel/value-objects';
 
-import type {
-  FileComputed,
-  LockRead,
-  PresetsFinding,
-  PresetsProject,
-  UnitComputed,
-} from '../../../../domain/entities';
+import type { FileComputed, UnitComputed } from '../../../../domain/apply-plan/entities';
+import type { LockRead } from '../../../../domain/lock/entities';
+import type { PresetsProject } from '../../../../domain/presets-project/entities';
+import type { PresetsFinding } from '../../../../domain/shared/entities';
 import type {
   ConfigurationFormat,
   DistributionSources,

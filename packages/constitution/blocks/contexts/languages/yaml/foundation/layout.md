@@ -1,6 +1,6 @@
 # Layout
 
-> Governs a YAML file's extension and its documents.
+> Governs a YAML file's kind and name: the documents it holds and its extension.
 
 ## Kinds
 

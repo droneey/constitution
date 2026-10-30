@@ -29,6 +29,17 @@ const feature: Readonly<Record<string, string>> = {
     'from unit.features.orders.application.contracts import Store\n\n\ndef count(store: Store) -> int:\n  return store.size()\n',
 };
 
+const concept: Readonly<Record<string, string>> = {
+  [`${ORDERS}/domain/order/__init__.py`]: '',
+  [`${ORDERS}/domain/order/entities/__init__.py`]:
+    'from unit.features.orders.domain.order.entities.order_aggregate import Order as Order\n',
+  [`${ORDERS}/domain/order/entities/order_aggregate.py`]: 'class Order:\n  pass\n',
+  [`${ORDERS}/domain/order/transitions/__init__.py`]:
+    'from unit.features.orders.domain.order.transitions.order_transitions import restore_order as restore_order\nfrom unit.features.orders.domain.order.transitions.order_transitions import ship_order as ship_order\n',
+  [`${ORDERS}/domain/order/transitions/order_transitions.py`]:
+    'from unit.features.orders.domain.order.entities import Order\n\n\ndef restore_order() -> Order:\n  return Order()\n\n\ndef ship_order(order: Order) -> Order:\n  return order\n',
+};
+
 const lintImports = async (files: Readonly<Record<string, string>> = {}): Promise<Lint> => {
   const run = await runTool({
     command: [
@@ -64,4 +75,4 @@ const lintImports = async (files: Readonly<Record<string, string>> = {}): Promis
   };
 };
 
-export { feature, lintImports, ORDERS };
+export { concept, feature, lintImports, ORDERS };

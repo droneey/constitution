@@ -1,6 +1,6 @@
 # Diagnostics
 
-> Governs ty's suppressions.
+> Governs ty's diagnostics: how one is suppressed.
 
 ## General
 

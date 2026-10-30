@@ -20,7 +20,7 @@ import {
   versionsFixture,
 } from '../../../../__tests__/docs.fixtures';
 import { frameFake } from '../../../../__tests__/docs-frame.fake';
-import { SidebarState } from '../../../../domain/entities';
+import { SidebarState } from '../../../../domain/sidebar-state/entities';
 import { PAGE_SCROLLER_SELECTOR } from '../../../constants';
 import { DocsPageScreen } from '../docs-page';
 import type { DocsPageEntry } from '../docs-page.types';

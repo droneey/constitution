@@ -1,6 +1,6 @@
 # Comments
 
-> Governs docstrings.
+> Governs a comment in Python: the docstring that documents what a package publishes.
 
 ## General
 

@@ -1,6 +1,6 @@
 # Application
 
-> Governs the logging of the domain and the application.
+> Governs the use cases in Python: the logging the domain and the application never import.
 
 ## Use cases
 

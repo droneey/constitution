@@ -1,6 +1,6 @@
 # Relations
 
-> Governs overrides, module-level state, parameter defaults and imports.
+> Governs how a Python unit is built, holds state and depends on or extends another: imports, module-level state, parameter defaults, overrides and deprecation.
 
 ## Modules
 

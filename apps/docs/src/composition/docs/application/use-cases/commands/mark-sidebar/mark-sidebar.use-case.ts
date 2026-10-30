@@ -1,4 +1,4 @@
-import type { SidebarState } from '../../../../domain/entities';
+import type { SidebarState } from '../../../../domain/sidebar-state/entities';
 import type { DocumentFrame } from '../../../contracts';
 
 export type MarkSidebar = (state: SidebarState) => void;

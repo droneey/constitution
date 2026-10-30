@@ -1,6 +1,6 @@
 import type { UnitRelativePath } from '#/kernel/value-objects';
 
-import type { ChangedFile } from '../../domain/entities';
+import type { ChangedFile } from '../../domain/changed-file/entities';
 
 interface Branch {
   /** @throws {BranchError} when the texts cannot be read */

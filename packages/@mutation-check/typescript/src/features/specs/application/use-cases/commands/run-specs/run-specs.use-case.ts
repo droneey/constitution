@@ -1,7 +1,8 @@
 import type { UnitRelativePath } from '#/kernel/value-objects';
 
-import type { ChosenSpecsRun } from '../../../../domain/entities';
-import { SpecRunStatus, UnitSpecs } from '../../../../domain/entities';
+import type { ChosenSpecsRun } from '../../../../domain/spec-run/entities';
+import { SpecRunStatus } from '../../../../domain/spec-run/entities';
+import { UnitSpecs } from '../../../../domain/unit-specs/entities';
 import type { SpecRunner } from '../../../contracts';
 
 interface SpecsRequest {

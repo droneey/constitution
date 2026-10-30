@@ -1,8 +1,8 @@
 import type { ProjectFiles } from '#/kernel/contracts';
 import type { AbsolutePath } from '#/kernel/value-objects';
 
-import type { PresetsPlan } from '../../../../domain/entities';
-import { ProjectRead } from '../../../../domain/entities';
+import type { PresetsPlan } from '../../../../domain/presets-plan/entities';
+import { ProjectRead } from '../../../../domain/presets-project/entities';
 import type {
   ConfigurationFormat,
   DistributionSources,

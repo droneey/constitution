@@ -1,4 +1,4 @@
-import { MutationRunError } from '../domain/errors';
+import { MutationRunError } from '../domain/check/errors';
 import { fakeMutationRunner } from './mutation-runner.fake.ts';
 import type { ToolEnd } from './mutation-runner.suite.ts';
 import { MUTATE_SCENARIO, mutationRunnerSuite } from './mutation-runner.suite.ts';

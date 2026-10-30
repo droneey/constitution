@@ -1,14 +1,15 @@
 import ast
 from typing import TYPE_CHECKING, Final
 
-from .......domain.constants import SOURCE_ROOT_PATH
-from .......domain.entities import MutantGlob, python_source_files, touches
+from .......domain.changes.constants import SOURCE_ROOT_PATH
+from .......domain.changes.entities import python_source_files, touches
+from .......domain.mutation_targets.entities import MutantGlob
 
 if TYPE_CHECKING:
   from collections.abc import Callable, Iterator
 
-  from .......domain.entities import Changes, FileChange
-  from .......domain.value_objects import UnitRelativePath
+  from .......domain.changes.entities import Changes, FileChange
+  from .......domain.changes.value_objects import UnitRelativePath
 
 INIT_MODULE_NAME: Final = '__init__'
 # Why: mutmut names a method's mutants by its class between these separators.

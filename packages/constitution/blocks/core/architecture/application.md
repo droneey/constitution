@@ -34,7 +34,7 @@ A use case's signature is written in the business's words: its input is a type n
 
 ### model-changed-only-through-a-use-case · MUST
 
-Only the application changes the model: a use case alone calls an aggregate's `create` and its transitions. The presentation reads the model — its types, enumerations, errors, the value objects that parse what enters and the predicates and derived values that answer about a state — and changes it only by calling a use case; an adapter rebuilds what it reads back only through an aggregate's `restore`.
+Only the application changes the model: a use case alone calls an aggregate's transitions, and its `create` too, or through the domain service that acts as its factory. The presentation reads the model — its types, enumerations, errors, the value objects that parse what enters and the predicates and derived values that answer about a state — never reaches a concept's `transitions/`, and changes the model only by calling a use case; an adapter calls nothing of a `transitions/` but an aggregate's `restore`, to rebuild what it reads back.
 
 | Why |
 |---|

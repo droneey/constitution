@@ -3,9 +3,9 @@ import { pathToFileURL } from 'node:url';
 import { confinedPathOf, isMissingPathError } from '#/libs/paths';
 
 import type { ConfigModuleLoader, ConfigOfMode } from '../../application/contracts';
-import type { ThemeMode } from '../../domain/entities';
-import { ConfigModuleError, ConfigModuleFailure } from '../../domain/errors';
-import type { AbsolutePath } from '../../domain/value-objects';
+import { ConfigModuleError, ConfigModuleFailure } from '../../domain/config-module/errors';
+import type { ThemeMode } from '../../domain/theme-mode/entities';
+import type { AbsolutePath } from '../../domain/theme-mode/value-objects';
 
 interface ConfigModuleLoaderInput {
   readonly workingFolderPath: AbsolutePath;

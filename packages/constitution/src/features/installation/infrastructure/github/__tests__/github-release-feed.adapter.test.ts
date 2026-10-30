@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import { Version } from '#/kernel/value-objects';
 
-import { ReleaseLookup } from '../../../domain/entities';
+import { ReleaseLookup } from '../../../domain/latest-release/entities';
 import { createGitHubReleaseFeed } from '../github-release-feed.adapter';
 
 interface Asked {

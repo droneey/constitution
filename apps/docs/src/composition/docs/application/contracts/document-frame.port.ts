@@ -1,4 +1,4 @@
-import type { SidebarState } from '../../domain/entities';
+import type { SidebarState } from '../../domain/sidebar-state/entities';
 
 export interface DocumentFrame {
   readonly isNarrow: () => boolean;

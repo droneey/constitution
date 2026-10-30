@@ -3,8 +3,11 @@ import { StepStatus, Tone } from '@droneey/design-cli';
 import type { Section, TaskOutcome } from '#/shared/cli';
 import { countedNoteSections, countOf } from '#/shared/cli';
 
-import type { ApplyPlan, ApplyReport, PresetsFinding, ProjectRead } from '../../domain/entities';
-import { ApplyPlanKind, ProjectReadStatus } from '../../domain/entities';
+import type { ApplyPlan, ApplyReport } from '../../domain/apply-plan/entities';
+import { ApplyPlanKind } from '../../domain/apply-plan/entities';
+import type { ProjectRead } from '../../domain/presets-project/entities';
+import { ProjectReadStatus } from '../../domain/presets-project/entities';
+import type { PresetsFinding } from '../../domain/shared/entities';
 import {
   ADDED_AFTER,
   DELETED_AFTER,

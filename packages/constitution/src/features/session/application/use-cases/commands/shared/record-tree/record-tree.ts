@@ -1,8 +1,8 @@
 import { ConfigReadStatus } from '#/kernel/entities';
 
-import type { FingerprintMark } from '../../../../../domain/entities';
-import { TreeStateStatus } from '../../../../../domain/entities';
-import type { SessionId } from '../../../../../domain/value-objects';
+import type { FingerprintMark } from '../../../../../domain/session/entities';
+import type { SessionId } from '../../../../../domain/session/value-objects';
+import { TreeStateStatus } from '../../../../../domain/tree-state/entities';
 import type { WorkingTree } from '../../../../contracts';
 import type { SessionCommandRepository } from '../../../../contracts/repositories/commands';
 

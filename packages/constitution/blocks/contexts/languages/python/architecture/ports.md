@@ -1,6 +1,6 @@
 # Ports
 
-> Governs how a port is declared.
+> Governs a contract at a boundary in Python: how a port is declared.
 
 ## Contracts
 

@@ -5,8 +5,8 @@ import type { ProblemOf } from '#/kernel/types';
 import { BlockId, RuleSlug } from '#/kernel/value-objects';
 import { textOf } from '#/shared/cli';
 
-import type { RulesDetails } from '../../../domain/services';
-import { RulesCode } from '../../../domain/services';
+import type { RulesDetails } from '../../../domain/validate-constitution/services';
+import { RulesCode } from '../../../domain/validate-constitution/services';
 import { rulesTexts } from '../rules-texts.utils';
 
 describe('rulesTexts', () => {

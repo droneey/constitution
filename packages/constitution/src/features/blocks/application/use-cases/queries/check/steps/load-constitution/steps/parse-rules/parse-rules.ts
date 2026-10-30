@@ -1,7 +1,7 @@
 import type { RequirementsParsed, Rule, RulesParsed } from '#/kernel/entities';
 import { RequirementAnswer, StatedRule } from '#/kernel/entities';
 
-import { Block } from '../../../../../../../../domain/entities';
+import { Block } from '../../../../../../../../domain/block/entities';
 
 interface BlockRulesParsed {
   readonly answers: readonly RequirementAnswer[];

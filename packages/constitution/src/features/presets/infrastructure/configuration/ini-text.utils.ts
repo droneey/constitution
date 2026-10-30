@@ -1,5 +1,6 @@
-import type { ConfigurationWrite, Setting, SettingMap } from '../../domain/entities';
-import { Setting as Settings } from '../../domain/entities';
+import type { ConfigurationWrite } from '../../domain/configuration-file/entities';
+import type { Setting, SettingMap } from '../../domain/setting/entities';
+import { Setting as Settings } from '../../domain/setting/entities';
 import type { Anchor, Commenting } from './block-comments.utils';
 import { noLinesInsideTextValues, withBlockComments } from './block-comments.utils';
 import { ownFieldOf } from './own-field.utils';

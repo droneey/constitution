@@ -1,9 +1,11 @@
 from typing import TYPE_CHECKING
 
-from .....domain.services import file_findings
+from .....domain.file_findings.services import file_findings
 
 if TYPE_CHECKING:
-  from .....domain.entities import Finding, Settings, Sources
+  from .....domain.finding.entities import Finding
+  from .....domain.settings.entities import Settings
+  from .....domain.source.entities import Sources
 
 
 def check_code(

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
-import { VersionsFailure } from '../../../domain/errors';
-import { Version } from '../../../domain/value-objects';
+import { VersionsFailure } from '../../../domain/versions/errors';
+import { Version } from '../../../domain/versions/value-objects';
 import { createStaticFileVersionsRepository } from '../versions.repository';
 import {
   failureOf,

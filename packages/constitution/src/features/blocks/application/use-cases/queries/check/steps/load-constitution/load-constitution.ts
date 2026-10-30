@@ -7,8 +7,9 @@ import type {
 import type { FindingOf } from '#/kernel/types';
 import { normalizePath } from '#/kernel/utils';
 
-import type { LoadFindingDetails } from '../../../../../../domain/entities';
-import { Block, Constitution } from '../../../../../../domain/entities';
+import { Block } from '../../../../../../domain/block/entities';
+import type { LoadFindingDetails } from '../../../../../../domain/constitution/entities';
+import { Constitution } from '../../../../../../domain/constitution/entities';
 import type { FileTree, FrontMatterParser, ManifestParser } from '../../../../../contracts';
 import { loadBlocks } from './steps/load-blocks';
 import { parseRules } from './steps/parse-rules';

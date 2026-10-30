@@ -1,5 +1,5 @@
-import type { ConfigurationsCheck } from '../../../../domain/entities';
-import { FileComputed } from '../../../../domain/entities';
+import { FileComputed } from '../../../../domain/apply-plan/entities';
+import type { ConfigurationsCheck } from '../../../../domain/configurations-check/entities';
 import type { ComputeChangesInput } from '../compute-changes';
 import { computeChanges } from '../compute-changes';
 import { findReleaseLoops } from './steps/find-release-loops';

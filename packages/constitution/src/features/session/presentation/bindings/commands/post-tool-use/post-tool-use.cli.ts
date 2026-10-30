@@ -3,10 +3,10 @@ import { Command } from 'commander';
 import type { BlockId } from '#/kernel/value-objects';
 import type { CommandContext } from '#/shared/cli';
 
-import type { Reminder } from '../../../../domain/entities';
-import { SessionAgent } from '../../../../domain/entities';
-import type { SessionId } from '../../../../domain/value-objects';
-import { AgentId } from '../../../../domain/value-objects';
+import type { Reminder } from '../../../../domain/reminder/entities';
+import { SessionAgent } from '../../../../domain/session/entities';
+import type { SessionId } from '../../../../domain/session/value-objects';
+import { AgentId } from '../../../../domain/session/value-objects';
 import { HookField, postToolUseEventSchema } from '../../../constants';
 import { contextOutputOf, hookEventOf, reminderNotesOf } from '../../../utils';
 

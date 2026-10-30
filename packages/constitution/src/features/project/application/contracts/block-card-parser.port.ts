@@ -1,4 +1,4 @@
-import type { BlockCard } from '../../domain/entities';
+import type { BlockCard } from '../../domain/block-set/entities';
 
 interface BlockCardParser {
   readonly card: (yaml: string) => BlockCard;

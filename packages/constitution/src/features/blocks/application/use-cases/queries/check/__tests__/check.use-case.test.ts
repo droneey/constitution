@@ -5,8 +5,8 @@ import { AbsolutePath, BlockId, RuleSlug } from '#/kernel/value-objects';
 import { checkSourceOf, rule, textOf } from '../../../../../__tests__/constitution.fixtures';
 import { packFiles } from '../../../../../__tests__/pack-files.fixtures';
 import { validFiles } from '../../../../../__tests__/valid-files.fixtures';
-import { LoadCode } from '../../../../../domain/entities';
-import { RulesCode, ValidationStage } from '../../../../../domain/services';
+import { LoadCode } from '../../../../../domain/constitution/entities';
+import { RulesCode, ValidationStage } from '../../../../../domain/validate-constitution/services';
 import { checkBlocks } from '../check.use-case';
 
 describe('checkBlocks', () => {

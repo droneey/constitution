@@ -2,8 +2,9 @@ import type { Document } from 'yaml';
 import { isAlias, LineCounter, parseDocument, visit } from 'yaml';
 
 import type { FrontMatterParser } from '../../application/contracts';
-import type { FrontMatterRead, SkillFrontMatterRead } from '../../domain/entities';
-import { ReadStatus } from '../../domain/entities';
+import type { FrontMatterRead } from '../../domain/block/entities';
+import { ReadStatus } from '../../domain/shared/entities';
+import type { SkillFrontMatterRead } from '../../domain/skill/entities';
 import { frontMatterModel, skillFrontMatterModel } from './models';
 
 const ALIAS_REASON = 'an unquoted value starts with "*", which YAML reads as an alias; quote it';

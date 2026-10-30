@@ -1,6 +1,6 @@
 import type { AbsolutePath } from '#/kernel/value-objects';
 
-import type { TreePath } from '../../domain/value-objects';
+import type { TreePath } from '../../domain/shared/value-objects';
 
 interface FileTree {
   /** @throws {TreeError} when git cannot list the files */

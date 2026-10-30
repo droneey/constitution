@@ -13,8 +13,8 @@ import {
   SCENARIO_CONFIG_PATH,
   UNCONFIGURED_MODE_NAME,
 } from '../../../__tests__/config-module-loader.suite';
-import { ConfigModuleError, ConfigModuleFailure } from '../../../domain/errors';
-import { AbsolutePath } from '../../../domain/value-objects';
+import { ConfigModuleError, ConfigModuleFailure } from '../../../domain/config-module/errors';
+import { AbsolutePath } from '../../../domain/theme-mode/value-objects';
 import { createConfigModuleLoader } from '../config-module-loader.adapter';
 
 const sandboxPath = temporaryFolder();

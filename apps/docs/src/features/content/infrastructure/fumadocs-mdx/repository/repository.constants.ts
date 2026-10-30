@@ -1,5 +1,5 @@
-import { BlockLayer } from '../../../domain/entities';
-import { RepositoryPath } from '../../../domain/value-objects';
+import { BlockLayer } from '../../../domain/block/entities';
+import { RepositoryPath } from '../../../domain/source/value-objects';
 
 const blockLayers: readonly string[] = Object.values(BlockLayer);
 

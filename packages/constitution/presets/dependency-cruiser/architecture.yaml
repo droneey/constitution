@@ -348,10 +348,12 @@ core:
             path: ^([^/]+/)([^/]+/|)([^/]+/|)([^/]+/|)([^/]+/|)([^/]+/|)([^/]+/|)([^/]+/|)([^/]+/|)
           to:
             path: ^(?:$1|$1$2|$1$2$3|$1$2$3$4|$1$2$3$4$5|$1$2$3$4$5$6|$1$2$3$4$5$6$7|$1$2$3$4$5$6$7$8|$1$2$3$4$5$6$7$8$9)index\.[^/]+$
+        # Why: the third group is the importer's role folder: a layer's, or, in the domain, a
+        # concept folder's or its shared folder's, whose surfaces sit one level deeper.
         forbidden[name=role-reached-through-its-surface]:
           severity: error
           from:
-            path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/([^/]+)/([^/]+/[^/]+(?=/)|)
+            path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/([^/]+)/(${role.pure-layer}/[^/]+/[^/]+(?=/)|[^/]+/[^/]+(?=/)|)
           to:
             path:
               - ^${role.source}/$1/$2/(?:${role.pure-layer}|${role.application-layer}|${role.presentation-layer})/[^/]+/
@@ -359,6 +361,7 @@ core:
               - ^${role.source}/$1/$2/$3/
               - (^|/)__tests__/
               - ^${role.source}/$1/$2/[^/]+/[^/]+/index\.[^/]+$
+              - ^${role.source}/$1/$2/${role.pure-layer}/[^/]+/[^/]+/index\.[^/]+$
               - ^${role.source}/$1/$2/[^/]+/[^/]+/(?:[^/]+/|)(?:${role.read-operation}|${role.write-operation})/index\.[^/]+$
               - ^${role.source}/$1/$2/[^/]+/[^/]+/(?:${role.read-operation}|${role.write-operation}|${role.shared-code})/[^/]+/index\.[^/]+$
         forbidden[name=integration-role-reached-through-its-surface]:
@@ -409,6 +412,7 @@ core:
               - ^${role.source}/index\.[^/]+$
               - ^${role.source}/(${role.bounded-context}|${role.generic-library}|${role.gateway}|${role.host-integration}|${role.shared-domain}|${role.shared-code}|${role.composition-module})/index\.[^/]+$
               - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/(${role.pure-layer}|${role.application-layer}|${role.presentation-layer}|${role.gateway})/index\.[^/]+$
+              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.pure-layer}/[^/]+/index\.[^/]+$
   adapter-imports-only-its-owners-domain-and-shared-layers:
     typescript:
       .dependency-cruiser.jsonc:
@@ -480,6 +484,18 @@ core:
               - ^${role.package-suites}/
           to:
             path: ^${role.source}/$1/$2/${role.application-layer}/${role.port}/
+  model-changed-only-through-a-use-case:
+    typescript:
+      .dependency-cruiser.jsonc:
+        forbidden[name=presentation-reaches-no-transition]:
+          severity: error
+          from:
+            path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.presentation-layer}/
+            pathNot:
+              - (^|/)__tests__/
+              - ^${role.package-suites}/
+          to:
+            path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.pure-layer}/[^/]+/${role.aggregate-transition}/
   container-wires-only-declared-bindings:
     typescript:
       .dependency-cruiser.jsonc:

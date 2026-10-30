@@ -12,7 +12,7 @@ import {
   releasePresets,
   unitOf,
 } from '../../../../../__tests__/presets.fixtures';
-import { ProjectReadStatus } from '../../../../../domain/entities';
+import { ProjectReadStatus } from '../../../../../domain/presets-project/entities';
 import { planPresets } from '../plan.use-case';
 
 describe('planPresets', () => {

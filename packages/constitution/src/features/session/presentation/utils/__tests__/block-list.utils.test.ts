@@ -3,8 +3,8 @@ import { describe, expect, it } from 'bun:test';
 import { Axis, Layer } from '#/kernel/constants';
 import { BlockId, BlockSource, PackPath, UnitPath } from '#/kernel/value-objects';
 
-import type { DigestBlock, DigestFiles } from '../../../domain/entities';
-import { DigestEntryKind } from '../../../domain/entities';
+import type { DigestBlock, DigestFiles } from '../../../domain/session-digest/entities';
+import { DigestEntryKind } from '../../../domain/session-digest/entities';
 import { blockListLines } from '../block-list.utils';
 
 const KEY =

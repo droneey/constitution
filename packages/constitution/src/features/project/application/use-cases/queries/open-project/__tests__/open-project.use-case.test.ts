@@ -26,8 +26,8 @@ import {
   yamlOf,
 } from '../../../../../__tests__/resolution.fixtures';
 import { createFakeWorkspace } from '../../../../../__tests__/workspace.fake';
-import type { ProjectOpening } from '../../../../../domain/entities';
-import { OpeningStatus } from '../../../../../domain/entities';
+import type { ProjectOpening } from '../../../../../domain/project-opening/entities';
+import { OpeningStatus } from '../../../../../domain/project-opening/entities';
 import { openProject } from '../open-project.use-case';
 
 const uiRules = ruleOf({

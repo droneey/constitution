@@ -1,5 +1,5 @@
 import type { ThemeBuilder } from '../application/contracts';
-import type { ThemeModeFiles } from '../domain/entities';
+import type { ThemeModeFiles } from '../domain/theme-mode/entities';
 
 interface Build {
   readonly configs: readonly object[];

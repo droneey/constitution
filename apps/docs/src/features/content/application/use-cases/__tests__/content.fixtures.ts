@@ -1,4 +1,4 @@
-import type { Page } from '../../../domain/entities';
+import type { Page } from '../../../domain/page/entities';
 
 export const pageFixture = (overrides: Partial<Page> = {}): Page => ({
   collection: 'guide',

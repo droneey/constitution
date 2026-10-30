@@ -4,9 +4,11 @@ import { createFakeContext, runCommand } from '#/__tests__/command-context.fake'
 import { projectCheck } from '#/kernel/constants';
 import { BlockId } from '#/kernel/value-objects';
 
-import type { StopEvent, StopJudgement } from '../../../../../domain/entities';
-import { HookEventName, StopVerdict } from '../../../../../domain/entities';
-import { SessionId, TreeFingerprint } from '../../../../../domain/value-objects';
+import { SessionId } from '../../../../../domain/session/value-objects';
+import { HookEventName } from '../../../../../domain/shared/entities';
+import type { StopEvent, StopJudgement } from '../../../../../domain/stop-judgement/entities';
+import { StopVerdict } from '../../../../../domain/stop-judgement/entities';
+import { TreeFingerprint } from '../../../../../domain/tree-state/value-objects';
 import { createStopCommand } from '../stop.cli';
 import { blockedMessage, reviewMessage, unjudgedMessage } from '../stop.messages';
 

@@ -1,5 +1,5 @@
 import type { AppliedFilesCommandRepository } from '../application/contracts/repositories/commands';
-import type { AppliedFiles } from '../domain/entities';
+import type { AppliedFiles } from '../domain/apply-plan/entities';
 
 const createFakeAppliedFilesRepository = (
   failure?: Error,

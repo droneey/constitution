@@ -19,21 +19,17 @@ export type { PlanApplyInput } from './application/use-cases/queries/plan-apply'
 export { planApply } from './application/use-cases/queries/plan-apply';
 export { planRun } from './application/use-cases/queries/plan-run';
 export { checkProject } from './application/use-cases/shared/check-project';
-export type {
-  AppliedFiles,
-  ApplyPlan,
-  ApplyReport,
-  CommandToRun,
-  ConfigurationsCheck,
-  LockRead,
-  PresetsFinding,
-  PresetsPlan,
-  PresetsProject,
-  RunAsked,
-  RunPlan,
-} from './domain/entities';
-export { LockReadStatus, PresetsCode, ProjectRead, ProjectReadStatus } from './domain/entities';
-export { ApplyError, ApplyFailure, isApplyError } from './domain/errors';
+export type { AppliedFiles, ApplyPlan, ApplyReport } from './domain/apply-plan/entities';
+export { ApplyError, ApplyFailure, isApplyError } from './domain/apply-plan/errors';
+export type { ConfigurationsCheck } from './domain/configurations-check/entities';
+export type { LockRead } from './domain/lock/entities';
+export { LockReadStatus } from './domain/lock/entities';
+export type { PresetsPlan } from './domain/presets-plan/entities';
+export type { PresetsProject } from './domain/presets-project/entities';
+export { ProjectRead, ProjectReadStatus } from './domain/presets-project/entities';
+export type { CommandToRun, RunAsked, RunPlan } from './domain/run-plan/entities';
+export type { PresetsFinding } from './domain/shared/entities';
+export { PresetsCode } from './domain/shared/entities';
 export { createPresetsApplyCommand } from './presentation/bindings/commands/apply';
 export { createRunCommand } from './presentation/bindings/commands/run';
 export { createPresetsCheckCommand } from './presentation/bindings/queries/check';

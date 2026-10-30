@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { PageSlugs } from '../../../../../domain/value-objects';
+import { PageSlugs } from '../../../../../domain/page/value-objects';
 import { pagesFixture } from '../../../__tests__/content.fixtures';
 import { createFakePagesRepository } from '../../../__tests__/pages.repository.fake';
 import { createGetPageMarkdown } from '../get-page-markdown.use-case';

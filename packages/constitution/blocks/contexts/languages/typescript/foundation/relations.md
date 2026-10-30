@@ -1,6 +1,6 @@
 # Relations
 
-> Governs modules, imports, exports, module-level values and overrides.
+> Governs how a TypeScript unit is built, holds state and depends on or extends another: modules, imports, exports, module-level values, overrides and deprecation.
 
 ## Modules
 

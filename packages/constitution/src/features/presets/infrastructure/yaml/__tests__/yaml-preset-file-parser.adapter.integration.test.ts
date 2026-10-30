@@ -4,7 +4,7 @@ import fc from 'fast-check';
 
 import type { PresetFileRead } from '../../../application/contracts';
 import { PresetFileReadStatus } from '../../../application/contracts';
-import { PresetValue, ValueKind } from '../../../domain/entities';
+import { PresetValue, ValueKind } from '../../../domain/setting/entities';
 import { createYamlPresetFileParser } from '../yaml-preset-file-parser.adapter';
 
 const parser = createYamlPresetFileParser();

@@ -10,9 +10,9 @@ import { AbsolutePath } from '#/kernel/value-objects';
 import { runAppliedFilesRepositorySuite } from '../../../__tests__/applied-files-repository.suite';
 import { runLockRepositorySuite } from '../../../__tests__/lock-repository.suite';
 import { lockOf } from '../../../__tests__/presets.fixtures';
-import type { Lock } from '../../../domain/entities';
-import { LockReadStatus, RecordKind } from '../../../domain/entities';
-import { ApplyError } from '../../../domain/errors';
+import { ApplyError } from '../../../domain/apply-plan/errors';
+import type { Lock } from '../../../domain/lock/entities';
+import { LockReadStatus, RecordKind } from '../../../domain/lock/entities';
 import { createFileAppliedFilesRepository } from '../file-applied-files.repository';
 import { createFileLockRepository } from '../file-lock.repository';
 

@@ -4,11 +4,11 @@ from enum import StrEnum, unique
 from pathlib import PurePosixPath
 from typing import TYPE_CHECKING, Final, assert_never
 
-from ....domain.entities import ChangedFile, NewFile
-from ....domain.value_objects import UnitRelativePath
+from ....domain.changes.entities import ChangedFile, NewFile
+from ....domain.changes.value_objects import UnitRelativePath
 
 if TYPE_CHECKING:
-  from ....domain.entities import FileChange
+  from ....domain.changes.entities import FileChange
 
 SECTION_PATTERN: Final = re.compile(r'(?=^diff --git )', re.MULTILINE)
 # Why: a moved file that keeps its text has no `+++` line, only the name it was moved to; git ends a

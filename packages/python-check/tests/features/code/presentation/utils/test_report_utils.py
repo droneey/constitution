@@ -4,15 +4,15 @@ from typing import Final
 import pytest
 
 from droneey_python_check.features.code import ExitStatus, error_status, render_error
-from droneey_python_check.features.code.domain.errors import (
+from droneey_python_check.features.code.domain.settings.errors import (
   Expected,
   MalformedFile,
   MissingPart,
-  MissingPathsError,
   SettingsError,
   UnknownKey,
   WrongShape,
 )
+from droneey_python_check.features.code.domain.source.errors import MissingPathsError
 from droneey_python_check.features.code.presentation.errors import Misuse, UsageError
 
 ERRORS_GOLDEN_PATH: Final = Path(__file__).with_name('errors.golden.txt')

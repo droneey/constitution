@@ -1,9 +1,9 @@
 import { fileURLToPath } from 'node:url';
 
 import type { ThemeModeReader } from '../../application/contracts';
-import type { ThemeModeFiles } from '../../domain/entities';
-import { UnknownDefaultModeError } from '../../domain/errors';
-import { AbsolutePath } from '../../domain/value-objects';
+import type { ThemeModeFiles } from '../../domain/theme-mode/entities';
+import { UnknownDefaultModeError } from '../../domain/theme-mode/errors';
+import { AbsolutePath } from '../../domain/theme-mode/value-objects';
 import type { Resolver, Source } from './models';
 
 interface ResolverThemeModeReaderInput {

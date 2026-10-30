@@ -3,7 +3,7 @@ import { use, useCallback } from 'react';
 import type { SearchHit, SearchState } from '#/libs/ui';
 import { useSearch } from '#/libs/ui';
 
-import type { SearchResult } from '../../../../domain/entities';
+import type { SearchResult } from '../../../../domain/search/entities';
 import { SearchPagesContext } from '../../../providers';
 
 const hitOf = ({ breadcrumbs, kind, table, ...found }: SearchResult): SearchHit => ({

@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'bun:test';
 
-import { SourceFailure } from '../../../../domain/errors';
+import { SourceFailure } from '../../../../domain/source/errors';
 import { taglineOf } from '../brand.adapter';
 import { enterRepository, failureOf } from './repository.fixtures';
 

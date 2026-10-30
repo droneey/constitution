@@ -1,6 +1,6 @@
 # Errors
 
-> Governs except clauses, exception groups, the cause of a raised error, finally blocks, assert statements and the `Raises:` section.
+> Governs a failure in Python: its `Raises:` section, its cause, the except clauses and exception groups that catch it, finally blocks and assert statements.
 
 ## General
 

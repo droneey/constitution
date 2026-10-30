@@ -7,9 +7,9 @@ import type { LoaderPlugin } from 'fumadocs-core/source';
 
 import { DOCS_ROUTE, MAIN_CONTENT_ID } from '#/shared/constants';
 
-import { Page } from '../../domain/entities';
-import type { SiteBasePath } from '../../domain/value-objects';
-import { BlockPath } from '../../domain/value-objects';
+import { Page } from '../../domain/page/entities';
+import type { SiteBasePath } from '../../domain/page/value-objects';
+import { BlockPath } from '../../domain/shared/value-objects';
 
 interface MarkdownPage {
   data: {

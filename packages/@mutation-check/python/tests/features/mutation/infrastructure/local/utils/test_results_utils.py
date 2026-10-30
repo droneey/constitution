@@ -1,6 +1,6 @@
 import pytest
 
-from droneey_mutation_check_python.features.mutation.domain.entities import (
+from droneey_mutation_check_python.features.mutation.domain.mutant.entities import (
   Mutant,
   MutantName,
   MutantStatus,

@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from 'bun:test';
 
 import { keepOneLayout } from '#/libs/ui';
 
-import { SidebarState } from '../../../domain/entities';
+import { SidebarState } from '../../../domain/sidebar-state/entities';
 import { documentFrame } from '../document-frame.adapter';
 
 declare global {

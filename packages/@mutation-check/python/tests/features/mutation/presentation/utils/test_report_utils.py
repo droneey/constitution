@@ -1,22 +1,26 @@
 from pathlib import Path
 from typing import Final
 
-from droneey_mutation_check_python.features.mutation.domain.entities import (
-  Broken,
+from droneey_mutation_check_python.features.mutation.domain.changes.errors import (
+  InvalidValueError,
+  ValueFailure,
+)
+from droneey_mutation_check_python.features.mutation.domain.mutant.entities import (
   Mutant,
   MutantName,
   MutantStatus,
+)
+from droneey_mutation_check_python.features.mutation.domain.mutation_run.entities import (
+  Broken,
   Passed,
   PassReason,
   Survived,
 )
-from droneey_mutation_check_python.features.mutation.domain.errors import (
+from droneey_mutation_check_python.features.mutation.domain.shared.errors import (
   CommandFailedError,
   CommandUnfinishedError,
   Failure,
-  InvalidValueError,
   MutantsKeptError,
-  ValueFailure,
 )
 from droneey_mutation_check_python.features.mutation.presentation.errors import Misuse, UsageError
 from droneey_mutation_check_python.features.mutation.presentation.utils import render, render_error

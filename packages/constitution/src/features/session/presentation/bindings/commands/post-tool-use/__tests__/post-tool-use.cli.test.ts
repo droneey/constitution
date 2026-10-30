@@ -5,9 +5,9 @@ import { z } from 'zod';
 import { createFakeContext, runCommand } from '#/__tests__/command-context.fake';
 import { BlockId, RepositoryRelativePath } from '#/kernel/value-objects';
 
-import type { Reminder } from '../../../../../domain/entities';
-import { SessionAgent } from '../../../../../domain/entities';
-import { AgentId, SessionId } from '../../../../../domain/value-objects';
+import type { Reminder } from '../../../../../domain/reminder/entities';
+import { SessionAgent } from '../../../../../domain/session/entities';
+import { AgentId, SessionId } from '../../../../../domain/session/value-objects';
 import { reminderNotesOf } from '../../../../utils';
 import { createPostToolUseCommand } from '../post-tool-use.cli';
 

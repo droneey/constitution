@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
 import { VFile } from 'vfile';
 
-import { RepositoryPath } from '../../../../domain/value-objects';
+import { RepositoryPath } from '../../../../domain/source/value-objects';
 import { inRepository } from '../../repository';
 import { enterRepository } from '../../repository/__tests__/repository.fixtures';
 import { remarkRepoLinks } from '../remark-repo-links.adapter';

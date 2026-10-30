@@ -1,7 +1,8 @@
 from typing import TYPE_CHECKING, Final
 
-from ...domain.entities import Source, Sources, import_root_of
-from ...domain.errors import MissingPathsError
+from ...domain.file_role.entities import import_root_of
+from ...domain.source.entities import Source, Sources
+from ...domain.source.errors import MissingPathsError
 
 if TYPE_CHECKING:
   from collections.abc import Iterator, Sequence

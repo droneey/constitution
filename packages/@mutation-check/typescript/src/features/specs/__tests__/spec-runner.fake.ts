@@ -1,7 +1,7 @@
 import type { UnitRelativePath } from '#/kernel/value-objects';
 
 import type { SpecRunInput, SpecRunner } from '../application/contracts';
-import { SpecRunStatus } from '../domain/entities';
+import { SpecRunStatus } from '../domain/spec-run/entities';
 
 interface FakeSpecs {
   readonly failingPaths?: readonly UnitRelativePath[];

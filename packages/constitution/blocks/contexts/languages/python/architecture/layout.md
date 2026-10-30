@@ -1,6 +1,6 @@
 # Layout
 
-> Governs the program's entry, role suffixes, relative imports and surfaces.
+> Governs a package's tree in Python: the program's entry, its surfaces, its relative imports and its role suffixes.
 
 ## The vocabulary
 
@@ -36,7 +36,7 @@ A surface `__init__.py` holds only `from .<module> import <Name>` lines and an `
 
 ### layer-init-empty → surface-only-on-a-module-or-one-kind · MUST
 
-The `__init__.py` of a layer folder, and that of an application's import package, is empty: it makes the folder a package and offers nothing.
+The `__init__.py` of a layer folder, of a domain's `shared/` and of an application's import package is empty: it makes the folder a package and offers nothing.
 
 | Why |
 |---|

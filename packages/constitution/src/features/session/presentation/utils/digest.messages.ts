@@ -1,6 +1,6 @@
 import type { AbsolutePath } from '#/kernel/value-objects';
 
-import type { DigestRelease } from '../../domain/entities';
+import type { DigestRelease } from '../../domain/session-digest/entities';
 
 const releaseMessage = (release: DigestRelease): string =>
   `The Droneey Constitution ${release.version} supplies this repository's rules. Block files live under ${release.folderPath}.`;

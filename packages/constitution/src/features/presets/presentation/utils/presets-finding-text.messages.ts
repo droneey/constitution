@@ -7,10 +7,11 @@ import {
 import type { TextsOf } from '#/shared/cli';
 import { LIST_SEPARATOR } from '#/shared/cli';
 
-import { MAX_WITHS } from '../../domain/constants';
-import type { EntryNamed, PresetsDetails, UnreachedRole } from '../../domain/entities';
-import { EntryPoint, PresetsCode } from '../../domain/entities';
-import { Fact, FactName, PresetFilePath } from '../../domain/value-objects';
+import { EntryPoint } from '../../domain/run-plan/entities';
+import { MAX_WITHS } from '../../domain/shared/constants';
+import type { EntryNamed, PresetsDetails, UnreachedRole } from '../../domain/shared/entities';
+import { PresetsCode } from '../../domain/shared/entities';
+import { Fact, FactName, PresetFilePath } from '../../domain/shared/value-objects';
 
 // Why: a messages file holds no branch, so the table of texts chooses among the messages below for
 // the codes whose text varies with their details.

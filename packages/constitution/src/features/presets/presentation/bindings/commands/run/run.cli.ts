@@ -3,8 +3,9 @@ import { Argument, Command, InvalidArgumentError } from 'commander';
 import { AbsolutePath } from '#/kernel/value-objects';
 import type { CommandContext } from '#/shared/cli';
 
-import type { ProjectRead, RunAsked, RunPlan } from '../../../../domain/entities';
-import { EntryPoint } from '../../../../domain/entities';
+import type { ProjectRead } from '../../../../domain/presets-project/entities';
+import type { RunAsked, RunPlan } from '../../../../domain/run-plan/entities';
+import { EntryPoint } from '../../../../domain/run-plan/entities';
 import type { RunStepsContext } from '../../../utils';
 import { runSteps } from '../../../utils';
 

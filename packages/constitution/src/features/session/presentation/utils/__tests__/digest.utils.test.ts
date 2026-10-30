@@ -13,7 +13,7 @@ import {
 } from '#/kernel/value-objects';
 import { warningTextOf } from '#/shared/cli';
 
-import { DigestKind } from '../../../domain/entities';
+import { DigestKind } from '../../../domain/session-digest/entities';
 import { blockListLines } from '../block-list.utils';
 import { digestOf } from '../digest.utils';
 import { overrideListLines } from '../override-list.utils';

@@ -8,8 +8,8 @@ import type { ChildProcessSettings } from '#/libs/child-process';
 import { isSystemError } from '#/libs/system-error';
 
 import type { FileTree, FileTrees } from '../../application/contracts';
-import { TreeError, TreeFailure } from '../../domain/errors';
-import { TreePath } from '../../domain/value-objects';
+import { TreeError, TreeFailure } from '../../domain/shared/errors';
+import { TreePath } from '../../domain/shared/value-objects';
 
 const BYTE_ORDER_MARK = '﻿';
 // Why: a tree of many files lists past the 1 MiB that spawnSync keeps by default.

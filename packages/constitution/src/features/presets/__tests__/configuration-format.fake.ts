@@ -1,6 +1,7 @@
 import type { ConfigurationFormat, ConfigurationTarget } from '../application/contracts';
-import type { ConfigurationFile, ConfigurationWrite, Setting } from '../domain/entities';
-import { SettingShape } from '../domain/entities';
+import type { ConfigurationFile, ConfigurationWrite } from '../domain/configuration-file/entities';
+import { SettingShape } from '../domain/configuration-file/entities';
+import type { Setting } from '../domain/setting/entities';
 import { settingModel } from '../infrastructure/configuration/models';
 
 const NEWLINE = '\n';

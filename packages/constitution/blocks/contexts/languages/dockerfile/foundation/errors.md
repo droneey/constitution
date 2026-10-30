@@ -1,6 +1,6 @@
 # Errors
 
-> Governs how a build step fails.
+> Governs a failure in an image's build: how a build step fails.
 
 ## Catching and carrying
 

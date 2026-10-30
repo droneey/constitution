@@ -8,7 +8,7 @@ import {
 import { FileRead, FileReadStatus } from '#/kernel/entities';
 import { AbsolutePath, coreBlockId } from '#/kernel/value-objects';
 
-import { UnreadableFileError, UnreadableFileFailure } from '../../../../domain/errors';
+import { UnreadableFileError, UnreadableFileFailure } from '../../../../domain/shared/errors';
 import type { ReleaseReadInput } from '../shared/release-read';
 
 const corePassportPath = [

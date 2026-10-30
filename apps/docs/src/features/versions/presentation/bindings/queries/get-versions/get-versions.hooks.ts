@@ -1,7 +1,7 @@
 import { use, useEffect, useState } from 'react';
 
-import type { Versions } from '../../../../domain/entities';
-import { VersionsError } from '../../../../domain/errors';
+import type { Versions } from '../../../../domain/versions/entities';
+import { VersionsError } from '../../../../domain/versions/errors';
 import { GetVersionsContext } from '../../../providers';
 import { VersionsStatus } from './get-versions.constants';
 

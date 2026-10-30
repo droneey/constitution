@@ -5,7 +5,7 @@ import type { Lowering } from '#/kernel/entities';
 import { ConfigReadStatus } from '#/kernel/entities';
 import { AbsolutePath, BlockId, Glob, RuleSlug, UnitPath } from '#/kernel/value-objects';
 
-import type { SessionState } from '../../../domain/entities';
+import type { SessionState } from '../../../domain/session/entities';
 
 const absolutePathModel: z.ZodType<AbsolutePath, string> = z
   .string()

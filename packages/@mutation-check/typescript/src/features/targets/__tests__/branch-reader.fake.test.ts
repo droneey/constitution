@@ -1,6 +1,6 @@
 import { UnitRelativePath } from '#/kernel/value-objects';
 
-import { LineRange } from '../domain/value-objects';
+import { LineRange } from '../domain/shared/value-objects';
 import { fakeBranchReader } from './branch-reader.fake.ts';
 import { BRANCH_SCENARIO, branchReaderSuite } from './branch-reader.suite.ts';
 

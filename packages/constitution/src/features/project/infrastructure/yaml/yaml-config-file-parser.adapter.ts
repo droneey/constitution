@@ -8,8 +8,8 @@ import { ConfigReadStatus } from '#/kernel/entities';
 import { fieldsOf } from '#/kernel/utils';
 
 import type { ConfigParser } from '../../application/contracts';
-import type { ConfigRead, DeclaredUnit } from '../../domain/entities';
-import { ConfigOverride } from '../../domain/entities';
+import type { ConfigRead, DeclaredUnit } from '../../domain/project-config/entities';
+import { ConfigOverride } from '../../domain/project-config/entities';
 import type { ConfigFileWire } from './models';
 import { configFileModel } from './models';
 

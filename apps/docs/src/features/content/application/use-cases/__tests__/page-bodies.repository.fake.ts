@@ -1,4 +1,4 @@
-import type { PageLocation } from '../../../domain/entities';
+import type { PageLocation } from '../../../domain/page/entities';
 import type { PageBodiesQueryRepository } from '../../contracts';
 
 export const createFakePageBodiesRepository = (

@@ -8,9 +8,9 @@ import { UnitRelativePath } from '#/kernel/value-objects';
 import { SpawnErrorCode, spawnErrorCodeOf } from '#/libs/processes';
 
 import type { Branch, BranchReader } from '../../application/contracts';
-import type { ChangedFile } from '../../domain/entities';
-import type { BranchCommand, UnansweredFailure } from '../../domain/errors';
-import { BranchError, BranchFailure } from '../../domain/errors';
+import type { ChangedFile } from '../../domain/changed-file/entities';
+import type { BranchCommand, UnansweredFailure } from '../../domain/changed-file/errors';
+import { BranchError, BranchFailure } from '../../domain/changed-file/errors';
 import { baseTextsIn, catFileRequestOf } from './cat-file.utils.ts';
 import type { UnitSection } from './diff-sections.utils.ts';
 import { SectionKind, unitSectionsOf } from './diff-sections.utils.ts';

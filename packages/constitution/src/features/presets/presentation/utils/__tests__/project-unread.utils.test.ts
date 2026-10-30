@@ -6,8 +6,8 @@ import { createFakeContext } from '#/__tests__/command-context.fake';
 import { goldenFileText, goldenOf } from '#/__tests__/golden.fixtures';
 import { AbsolutePath } from '#/kernel/value-objects';
 
-import type { ProjectUnread } from '../../../domain/entities';
-import { ProjectReadStatus } from '../../../domain/entities';
+import type { ProjectUnread } from '../../../domain/presets-project/entities';
+import { ProjectReadStatus } from '../../../domain/presets-project/entities';
 import { failUnreadStep, unreadOutcomeOf } from '../project-unread.utils';
 
 const noProject: ProjectUnread = {

@@ -1,5 +1,9 @@
-import type { ConfigurationFile, ConfigurationWrite, Setting } from '../../domain/entities';
-import type { FileFormat } from '../../domain/value-objects';
+import type {
+  ConfigurationFile,
+  ConfigurationWrite,
+} from '../../domain/configuration-file/entities';
+import type { Setting } from '../../domain/setting/entities';
+import type { FileFormat } from '../../domain/shared/value-objects';
 
 interface ConfigurationTarget {
   readonly format?: FileFormat;

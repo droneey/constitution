@@ -7,14 +7,11 @@ import {
   RepositoryRelativePath,
 } from '#/kernel/value-objects';
 
-import type { PresetsPlan, PresetsProject } from '../../../../domain/entities';
-import { Candidate } from '../../../../domain/entities';
-import {
-  checkPresetSets,
-  PackRoleNaming,
-  presetsPlanOf,
-  presetsSelectedOf,
-} from '../../../../domain/services';
+import { checkPresetSets, PackRoleNaming } from '../../../../domain/check-preset-sets/services';
+import type { PresetsPlan } from '../../../../domain/presets-plan/entities';
+import { Candidate } from '../../../../domain/presets-plan/entities';
+import { presetsPlanOf, presetsSelectedOf } from '../../../../domain/presets-plan/services';
+import type { PresetsProject } from '../../../../domain/presets-project/entities';
 import type {
   ConfigurationFormat,
   DistributionSources,

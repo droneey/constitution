@@ -1,6 +1,6 @@
 # Errors
 
-> Governs causes, caught values, try and finally blocks, and the throws tag.
+> Governs a failure in TypeScript: its throws tag, its cause, the caught value, and try and finally blocks.
 
 ## Kinds of failure
 

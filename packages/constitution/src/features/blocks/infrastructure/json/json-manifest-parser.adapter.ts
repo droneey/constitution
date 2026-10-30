@@ -7,8 +7,8 @@ import type {
   MarketplaceManifest,
   MarketplacePlugin,
   PluginManifest,
-} from '../../domain/entities';
-import { ReadStatus } from '../../domain/entities';
+} from '../../domain/manifest/entities';
+import { ReadStatus } from '../../domain/shared/entities';
 import type { HooksWire, MarketplaceWire, PluginWire } from './models';
 import { hooksModel, marketplaceModel, pluginModel } from './models';
 import { syntaxErrorOf } from './syntax-error.utils';

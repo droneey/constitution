@@ -12,8 +12,10 @@ import {
   releasePresets,
   unitOf,
 } from '../../../../../__tests__/presets.fixtures';
-import type { RunAsked } from '../../../../../domain/entities';
-import { EntryPoint, PresetsCode, ProjectReadStatus } from '../../../../../domain/entities';
+import { ProjectReadStatus } from '../../../../../domain/presets-project/entities';
+import type { RunAsked } from '../../../../../domain/run-plan/entities';
+import { EntryPoint } from '../../../../../domain/run-plan/entities';
+import { PresetsCode } from '../../../../../domain/shared/entities';
 import { planRun } from '../plan-run.use-case';
 
 const project = projectOf({

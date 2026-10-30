@@ -8,7 +8,7 @@ function signUpHandler(request)
 ```
 
 ```pseudo title="Prefer"
-# value-objects/email.value-object
+# users/domain/user/value-objects/email.value-object
 type Email = { address: String }
 function parseEmail(text)
   if not text.contains("@") then

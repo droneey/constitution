@@ -17,24 +17,17 @@ import {
   releasePresets,
   unitOf,
 } from '../../../../../__tests__/presets.fixtures';
-import type {
-  ApplyPlan,
-  ApplyReport,
-  ConfigurationWrite,
-  LockRead,
-  LockRecord,
-  PresetsFinding,
-  Setting,
-} from '../../../../../domain/entities';
-import {
-  ApplyPlanKind,
-  Leaf,
-  LockReadStatus,
-  PresetsCode,
-  ProjectReadStatus,
-  RecordKind,
-} from '../../../../../domain/entities';
-import { FileFormat } from '../../../../../domain/value-objects';
+import type { ApplyPlan, ApplyReport } from '../../../../../domain/apply-plan/entities';
+import { ApplyPlanKind } from '../../../../../domain/apply-plan/entities';
+import type { ConfigurationWrite } from '../../../../../domain/configuration-file/entities';
+import type { LockRead, LockRecord } from '../../../../../domain/lock/entities';
+import { LockReadStatus, RecordKind } from '../../../../../domain/lock/entities';
+import { ProjectReadStatus } from '../../../../../domain/presets-project/entities';
+import type { Setting } from '../../../../../domain/setting/entities';
+import { Leaf } from '../../../../../domain/setting/entities';
+import type { PresetsFinding } from '../../../../../domain/shared/entities';
+import { PresetsCode } from '../../../../../domain/shared/entities';
+import { FileFormat } from '../../../../../domain/shared/value-objects';
 import type { ConfigurationFormat } from '../../../../contracts';
 import { planApply } from '../plan-apply.use-case';
 

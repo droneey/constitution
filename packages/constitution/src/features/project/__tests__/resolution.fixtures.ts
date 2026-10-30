@@ -14,19 +14,18 @@ import {
   UnitPath,
 } from '#/kernel/value-objects';
 
+import type { BlockSetSource, SourceFile } from '../domain/block-set/entities';
+import { SourceStatus } from '../domain/block-set/entities';
+import type { DeclaredUnit, ProjectConfig } from '../domain/project-config/entities';
 import type {
   BlockListing,
-  BlockSetSource,
-  DeclaredUnit,
   ListedBlock,
   ListedFiles,
   ListedOverride,
-  ProjectConfig,
-  SourceFile,
   UnitEntry,
   UnitListing,
-} from '../domain/entities';
-import { SourceStatus, UnitEntryKind } from '../domain/entities';
+} from '../domain/resolution/entities';
+import { UnitEntryKind } from '../domain/resolution/entities';
 import type { BlockSetBlockFixture, BlockSetRuleFixture } from './block-set.fixtures';
 import { blockSetBlockOf, blockSetRuleOf } from './block-set.fixtures';
 import type { BlockFixture } from './project.fixtures';

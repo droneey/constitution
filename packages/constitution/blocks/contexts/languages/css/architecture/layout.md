@@ -1,6 +1,6 @@
 # Layout
 
-> Governs how a module offers its styles.
+> Governs a package's tree in CSS: how a module offers its styles through its surface.
 
 ## Surfaces
 

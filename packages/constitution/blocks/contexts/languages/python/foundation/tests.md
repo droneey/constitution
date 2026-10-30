@@ -1,6 +1,6 @@
 # Tests
 
-> Governs where specs live, how their cases are named and what a case holds.
+> Governs specs and cases in Python: where specs live, how their cases are named and what a case holds.
 
 ## How a case is written
 

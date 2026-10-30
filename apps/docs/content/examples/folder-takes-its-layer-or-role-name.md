@@ -14,7 +14,7 @@ src/
 src/
 ├── features/
 │   └── orders/
-│       ├── domain/
+│       ├── domain/order/
 │       │   ├── entities/
 │       │   └── errors/
 │       └── application/

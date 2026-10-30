@@ -1,6 +1,6 @@
 # Layout
 
-> Governs role suffixes and surfaces.
+> Governs a package's tree in TypeScript: its surfaces, how they are imported, and its role suffixes.
 
 ## Surfaces
 

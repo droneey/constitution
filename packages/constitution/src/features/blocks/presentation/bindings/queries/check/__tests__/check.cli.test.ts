@@ -4,8 +4,11 @@ import { StepStatus } from '@droneey/design-cli';
 
 import { createFakeContext, runCommand } from '#/__tests__/command-context.fake';
 
-import type { Validation } from '../../../../../domain/services';
-import { RequiresCode, ValidationStage } from '../../../../../domain/services';
+import type { Validation } from '../../../../../domain/validate-constitution/services';
+import {
+  RequiresCode,
+  ValidationStage,
+} from '../../../../../domain/validate-constitution/services';
 import { blocksOutcomeOf, NO_BLOCKS } from '../../../../utils';
 import { createBlocksCheckCommand } from '../check.cli';
 

@@ -8,8 +8,8 @@ import { failureOf } from '#/__tests__/failure.fixtures.ts';
 import { AbsolutePath, UnitRelativePath } from '#/kernel/value-objects';
 
 import { SPEC_SCENARIO, specRunnerSuite } from '../../../__tests__/spec-runner.suite.ts';
-import { SpecRunStatus } from '../../../domain/entities';
-import { SpecSettingsError, SpecSettingsFailure } from '../../../domain/errors';
+import { SpecRunStatus } from '../../../domain/spec-run/entities';
+import { SpecSettingsError, SpecSettingsFailure } from '../../../domain/spec-run/errors';
 import { bunTestSpecRunner } from '../bun-test-spec-runner.adapter.ts';
 
 type Files = Readonly<Record<string, string>>;

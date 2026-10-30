@@ -1,6 +1,6 @@
 import type { SidebarFolder } from '#/shared/types';
 
-import { BlockLayer } from '../../../domain/entities';
+import { BlockLayer } from '../../../domain/block/entities';
 
 type FolderHeading = Pick<SidebarFolder, 'icon' | 'title'>;
 

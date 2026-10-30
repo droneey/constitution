@@ -1,7 +1,12 @@
 import type { BlockId } from '#/kernel/value-objects';
 
-import type { FingerprintMark, SessionAgent, SessionState } from '../../../../domain/entities';
-import type { SessionId, TreeFingerprint } from '../../../../domain/value-objects';
+import type {
+  FingerprintMark,
+  SessionAgent,
+  SessionState,
+} from '../../../../domain/session/entities';
+import type { SessionId } from '../../../../domain/session/value-objects';
+import type { TreeFingerprint } from '../../../../domain/tree-state/value-objects';
 
 interface AddRemindedInput {
   readonly agent: SessionAgent;

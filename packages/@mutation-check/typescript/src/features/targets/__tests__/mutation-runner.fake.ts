@@ -1,8 +1,9 @@
 import type { UnitRelativePath } from '#/kernel/value-objects';
 
 import type { MutationRunner } from '../application/contracts';
-import type { MutationTarget, ToolExitCode } from '../domain/entities';
-import type { ConfigurationError, MutationRunError } from '../domain/errors';
+import type { ToolExitCode } from '../domain/check/entities';
+import type { ConfigurationError, MutationRunError } from '../domain/check/errors';
+import type { MutationTarget } from '../domain/mutation-target/entities';
 
 interface FakeMutationRunner extends MutationRunner {
   readonly targetsRun: readonly (readonly MutationTarget[])[];
