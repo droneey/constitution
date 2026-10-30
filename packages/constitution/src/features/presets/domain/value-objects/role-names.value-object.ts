@@ -120,6 +120,7 @@ const of = (model: BlockModel): RoleNames => {
 
   const names = roleNamesOf(model);
 
+  // Stryker disable next-line CallExpression: an answer not remembered is worked out again, alike
   roleNamesByModel.set(model, names);
 
   return names;

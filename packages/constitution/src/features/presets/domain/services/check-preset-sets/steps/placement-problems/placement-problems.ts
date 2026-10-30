@@ -67,6 +67,7 @@ const reachOf = (model: BlockModel, block: BlockId): ReadonlySet<BlockId> => {
 
   const reach = BlockModel.reachOf(model, block);
 
+  // Stryker disable next-line CallExpression: an answer not remembered is worked out again, alike
   reachesByModel.set(model, reaches.set(block, reach));
 
   return reach;
@@ -115,6 +116,7 @@ const isReached = (input: {
       readers,
     }) !== undefined;
 
+  // Stryker disable next-line CallExpression: an answer not remembered is worked out again, alike
   reachedByModel.set(model, reached.set(asked, isRoleReached));
 
   return isRoleReached;

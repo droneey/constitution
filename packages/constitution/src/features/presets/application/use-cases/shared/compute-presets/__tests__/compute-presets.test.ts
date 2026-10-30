@@ -1003,6 +1003,28 @@ describe('computePresets', () => {
       ],
     },
     {
+      condition:
+        'the guard asks for the path to the Constitution, which the entry names nowhere else',
+      lines: [
+        '      bunfig.toml ? ${constitution.path} = .droneey/constitution:',
+        '        guarded: true',
+      ],
+      written: [
+        {
+          file: 'bunfig.toml',
+          value: {
+            guarded: true,
+          },
+        },
+        {
+          file: 'packages/app/bunfig.toml',
+          value: {
+            guarded: true,
+          },
+        },
+      ],
+    },
+    {
       condition: "the fact is the unit's name, which a unit may lack",
       lines: [
         '      package.json:',
@@ -1068,7 +1090,7 @@ describe('computePresets', () => {
     },
   );
 
-  it("should walk the folders for the Constitution's path once for an entry that names it twice", () => {
+  it("should walk the folders for the Constitution's path once for an entry that names it twice, and not for a file that names it nowhere", () => {
     // Arrange
     const { files, project } = projectOf({
       files: releasePresets({
@@ -1079,6 +1101,8 @@ describe('computePresets', () => {
           '      twice.json:',
           '        first: ${constitution.path}',
           '        second: ${constitution.path}/presets',
+          '      plain.json:',
+          '        width: 1',
         ].join('\n'),
       }),
       units: [
@@ -1877,6 +1901,14 @@ describe('computePresets', () => {
         '      lefthook.yaml:',
         '        items:',
         '          - value: ${file.name}',
+      ],
+    },
+    {
+      condition: 'a text names a truth beside the path to the Constitution its file is given',
+      lines: [
+        '      lefthook.yaml:',
+        '        path: ${constitution.path}',
+        '        value: x${file.isTop}',
       ],
     },
   ])(

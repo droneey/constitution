@@ -144,9 +144,9 @@ const frontMatterOf = (file: SourceFile): readonly string[] => {
 /** Each front matter the read files of the sources open with, once. */
 const frontMattersOf = (sources: readonly BlockSetSource[]): readonly string[] => [
   ...new Set(
-    sources
-      .flatMap((source) => (source.status === SourceStatus.Listed ? source.files : []))
-      .flatMap(frontMatterOf),
+    sources.flatMap((source) =>
+      source.status === SourceStatus.Listed ? source.files.flatMap(frontMatterOf) : [],
+    ),
   ),
 ];
 

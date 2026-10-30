@@ -79,6 +79,7 @@ const namedFilesOf = (input: { entry: PresetEntry; model: BlockModel }): readonl
       }),
     );
 
+  // Stryker disable next-line CallExpression: an answer not remembered is worked out again, alike
   namedFilesByModel.set(input.model, byEntry.set(input.entry, named));
 
   return named;

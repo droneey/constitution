@@ -1580,7 +1580,7 @@ describe('checkPresets', () => {
     ]);
   });
 
-  it('should find each map an entry marks sorted in a file whose format keeps no order of its keys, and none in a file whose format keeps it', () => {
+  it('should find each map an entry marks sorted in a file whose format keeps no order of its keys, and none in a file whose format keeps it or in a run', () => {
     // Act
     const found = findingsOf({
       presets: {
@@ -1594,6 +1594,7 @@ describe('checkPresets', () => {
           '        tool: {poe: {tasks: !sorted {}}}',
           '      .editorconfig:',
           "        '*': !sorted {indent_size: 2}",
+          "      '${constitution.run}': !sorted {check: [biome check]}",
         ].join('\n'),
       },
     });

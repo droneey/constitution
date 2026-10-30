@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'bun:test';
 
-import { AbsolutePath } from '#/kernel/value-objects';
+import { AbsolutePath, BlockId, RuleSlug } from '#/kernel/value-objects';
 
-import { checkSourceOf } from '../../../../../__tests__/constitution.fixtures';
+import { checkSourceOf, rule, textOf } from '../../../../../__tests__/constitution.fixtures';
 import { packFiles } from '../../../../../__tests__/pack-files.fixtures';
 import { validFiles } from '../../../../../__tests__/valid-files.fixtures';
 import { LoadCode } from '../../../../../domain/entities';
@@ -24,6 +24,45 @@ describe('checkBlocks', () => {
 
     // Assert
     expect(validation?.findings.map(({ path }) => path)).toContain('DECISIONS.md');
+  });
+
+  it("should advise on a rule that says nearly what a sibling block's does when the folder is a release", () => {
+    // Arrange
+    const files = validFiles();
+    const screens = 'blocks/domains/ui/foundation/screens.md';
+
+    files[screens] = `${textOf({
+      files,
+      path: screens,
+    })}\n${rule({
+      slug: 'screens-plurals-by-cldr',
+    })}`;
+
+    const source = checkSourceOf({
+      files,
+    });
+
+    // Act
+    const validation = checkBlocks(source);
+
+    // Assert
+    expect(validation).toStrictEqual({
+      advice: [
+        {
+          left: {
+            block: BlockId.create('i18n'),
+            slug: RuleSlug.create('i18n-plurals-by-cldr'),
+          },
+          right: {
+            block: BlockId.create('ui'),
+            slug: RuleSlug.create('screens-plurals-by-cldr'),
+          },
+        },
+      ],
+      findings: [],
+      model: expect.any(Object),
+      stage: ValidationStage.Checked,
+    });
   });
 
   it('should check the pack against the base its folder names when that folder holds no Constitution', () => {
