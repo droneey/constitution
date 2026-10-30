@@ -194,7 +194,7 @@ const eros: Files = {
     },
     name: '@shop/eros-typescript',
   }),
-  'packages/@eros/typescript/src/features/errors/domain/errors/eros.error.ts': `import type { ErrorCode } from '../value-objects';
+  'packages/@eros/typescript/src/features/errors/domain/error/errors/eros.error.ts': `import type { ErrorCode } from '../value-objects';
 
 export class ErosError extends Error {
   readonly code: ErrorCode;
@@ -205,16 +205,16 @@ export class ErosError extends Error {
   }
 }
 `,
-  'packages/@eros/typescript/src/features/errors/domain/errors/index.ts':
+  'packages/@eros/typescript/src/features/errors/domain/error/errors/index.ts':
     "export { ErosError } from './eros.error';\n",
-  'packages/@eros/typescript/src/features/errors/domain/value-objects/error-code.value-object.ts': `export type ErrorCode = string & { readonly __brand: 'ErrorCode' };
+  'packages/@eros/typescript/src/features/errors/domain/error/value-objects/error-code.value-object.ts': `export type ErrorCode = string & { readonly __brand: 'ErrorCode' };
 
 export const isErrorCode = (text: string): text is ErrorCode => /^[a-z-]+\\.[a-z-]+$/u.test(text);
 `,
-  'packages/@eros/typescript/src/features/errors/domain/value-objects/index.ts':
+  'packages/@eros/typescript/src/features/errors/domain/error/value-objects/index.ts':
     "export { type ErrorCode, isErrorCode } from './error-code.value-object';\n",
   'packages/@eros/typescript/src/features/errors/index.ts':
-    "export { ErosError } from './domain/errors';\nexport { type ErrorCode, isErrorCode } from './domain/value-objects';\n",
+    "export { ErosError } from './domain/error/errors';\nexport { type ErrorCode, isErrorCode } from './domain/error/value-objects';\n",
   'packages/@eros/typescript/src/features/mapping/application/use-cases/queries/kind-of/index.ts':
     "export { kindOf } from './kind-of.use-case';\n",
   'packages/@eros/typescript/src/features/mapping/application/use-cases/queries/kind-of/kind-of.use-case.ts': `import { KINDS } from '#/kernel/constants';
@@ -226,7 +226,7 @@ export const kindOf = (code: string): string | undefined =>
     "export { kindOf } from './application/use-cases/queries/kind-of';\n",
   'packages/@eros/typescript/src/features/problem/infrastructure/problem/index.ts':
     "export { problemOf } from './problem.adapter';\n",
-  'packages/@eros/typescript/src/features/problem/infrastructure/problem/problem.adapter.ts': `import type { Problem } from '../../domain/entities';
+  'packages/@eros/typescript/src/features/problem/infrastructure/problem/problem.adapter.ts': `import type { Problem } from '../../domain/problem/entities';
 
 // The wire shape of RFC 9457.
 interface ProblemDocument {
@@ -241,24 +241,24 @@ export const problemOf = (problem: Problem): ProblemDocument => ({
   type: 'about:blank',
 });
 `,
-  'packages/@eros/typescript/src/features/problem/domain/entities/index.ts':
+  'packages/@eros/typescript/src/features/problem/domain/problem/entities/index.ts':
     "export type { Problem } from './problem.entity';\n",
-  'packages/@eros/typescript/src/features/problem/domain/entities/problem.entity.ts':
+  'packages/@eros/typescript/src/features/problem/domain/problem/entities/problem.entity.ts':
     'export interface Problem {\n  readonly code: string;\n  readonly status: number;\n}\n',
   'packages/@eros/typescript/src/features/problem/index.ts':
-    "export type { Problem } from './domain/entities';\n",
-  'packages/@eros/typescript/src/features/records/domain/entities/error-record.entity.ts':
+    "export type { Problem } from './domain/problem/entities';\n",
+  'packages/@eros/typescript/src/features/records/domain/error-record/entities/error-record.entity.ts':
     'export interface ErrorRecord {\n  readonly code: string;\n  readonly kind: string;\n}\n',
-  'packages/@eros/typescript/src/features/records/domain/entities/index.ts':
+  'packages/@eros/typescript/src/features/records/domain/error-record/entities/index.ts':
     "export type { ErrorRecord } from './error-record.entity';\n",
   'packages/@eros/typescript/src/features/records/application/use-cases/queries/to-record/index.ts':
     "export { toRecord } from './to-record.use-case';\n",
-  'packages/@eros/typescript/src/features/records/application/use-cases/queries/to-record/to-record.use-case.ts': `import type { ErrorRecord } from '../../../../domain/entities';
+  'packages/@eros/typescript/src/features/records/application/use-cases/queries/to-record/to-record.use-case.ts': `import type { ErrorRecord } from '../../../../domain/error-record/entities';
 
 export const toRecord = (input: ErrorRecord): ErrorRecord => ({ code: input.code, kind: input.kind });
 `,
   'packages/@eros/typescript/src/features/records/index.ts':
-    "export type { ErrorRecord } from './domain/entities';\nexport { toRecord } from './application/use-cases/queries/to-record';\n",
+    "export type { ErrorRecord } from './domain/error-record/entities';\nexport { toRecord } from './application/use-cases/queries/to-record';\n",
   'packages/@eros/typescript/src/index.ts': `export { ErosError, type ErrorCode, isErrorCode } from './features/errors';
 export { kindOf } from './features/mapping';
 export type { Problem } from './features/problem';
@@ -303,8 +303,8 @@ export const KINDS: readonly string[] = isKinds(kinds) ? kinds : [];
   'packages/@eros/python/src/shop_eros_python/features/__init__.py': '',
   'packages/@eros/python/src/shop_eros_python/features/errors/__init__.py': '',
   'packages/@eros/python/src/shop_eros_python/features/errors/domain/__init__.py': '',
-  'packages/@eros/python/src/shop_eros_python/features/errors/domain/errors/__init__.py': '',
-  'packages/@eros/python/src/shop_eros_python/features/errors/domain/errors/eros_error.py':
+  'packages/@eros/python/src/shop_eros_python/features/errors/domain/error/errors/__init__.py': '',
+  'packages/@eros/python/src/shop_eros_python/features/errors/domain/error/errors/eros_error.py':
     'class ErosError(Exception):\n  pass\n',
   'packages/@eros/python/src/shop_eros_python/features/problem/__init__.py': '',
   'packages/@eros/python/src/shop_eros_python/features/problem/infrastructure/__init__.py': '',
@@ -441,12 +441,12 @@ const apiAndShared: Files = {
     },
     name: '@shop/money',
   }),
-  'packages/money/src/features/currency/domain/value-objects/cents.value-object.ts':
+  'packages/money/src/features/currency/domain/currency/value-objects/cents.value-object.ts':
     "export type Cents = number & { readonly __brand: 'Cents' };\n",
-  'packages/money/src/features/currency/domain/value-objects/index.ts':
+  'packages/money/src/features/currency/domain/currency/value-objects/index.ts':
     "export type { Cents } from './cents.value-object';\n",
   'packages/money/src/features/currency/index.ts':
-    "export type { Cents } from './domain/value-objects';\n",
+    "export type { Cents } from './domain/currency/value-objects';\n",
   'packages/money/src/index.ts': "export type { Cents } from './features/currency';\n",
   'packages/money/tsconfig.json': tsconfigOf({
     references: [],
@@ -506,7 +506,7 @@ export const totalLine = (order: Totalled): string => \`\${describeOrder(order)}
     },
     name: '@shop/orders',
   }),
-  'packages/orders/src/features/orders/domain/entities/__tests__/order.entity.test.ts': `import { expect, it } from 'bun:test';
+  'packages/orders/src/features/orders/domain/order/entities/__tests__/order.entity.test.ts': `import { expect, it } from 'bun:test';
 
 import { describeOrder, type OrderId, refundLine } from '../order.entity.ts';
 
@@ -526,9 +526,9 @@ it('should name the refund when an order is refunded', () => {
   expect(text).toBe('refund of order:a');
 });
 `,
-  'packages/orders/src/features/orders/domain/entities/index.ts':
+  'packages/orders/src/features/orders/domain/order/entities/index.ts':
     "export { describeOrder, type Order, type OrderId, refundLine } from './order.entity.ts';\n",
-  'packages/orders/src/features/orders/domain/entities/order.entity.ts': `import { ORDER_PREFIX } from '#/kernel/constants/index.ts';
+  'packages/orders/src/features/orders/domain/order/entities/order.entity.ts': `import { ORDER_PREFIX } from '#/kernel/constants/index.ts';
 
 export type OrderId = string & { readonly __brand: 'OrderId' };
 
@@ -542,7 +542,7 @@ export const describeOrder = (order: Order): string => \`\${ORDER_PREFIX}:\${ord
 export const refundLine = (id: OrderId): string => \`refund of \${ORDER_PREFIX}:\${id}\`;
 `,
   'packages/orders/src/features/orders/index.ts':
-    "export { describeOrder, type Order, type OrderId, refundLine } from './domain/entities/index.ts';\n",
+    "export { describeOrder, type Order, type OrderId, refundLine } from './domain/order/entities/index.ts';\n",
   'packages/orders/src/index.ts':
     "export { describeOrder, type Order, type OrderId, refundLine } from './features/orders/index.ts';\n",
   'packages/orders/src/kernel/constants/index.ts':
