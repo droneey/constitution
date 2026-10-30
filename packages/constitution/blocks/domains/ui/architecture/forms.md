@@ -12,10 +12,10 @@ The form library has its home past the edge in the components and widgets of an 
 |---|
 | a form is presentation that holds its own state, and the binding unit it submits through needs nothing of the library. |
 
-### form-reuses-domain-predicates → business-value-lives-in-the-domain · MUST
+### form-reuses-domain-predicates → value-object-checks-what-the-domain-relies-on · MUST
 
-A form's schema composes the checks of the domain's value objects and sits with the form; it never restates an invariant.
+A form's schema sits with the form and composes the checks of the value objects it fills.
 
 | Why |
 |---|
-| a rule checked in two places drifts, and the form then accepts what the domain rejects. |
+| the form's checks are read beside the form they guard, and change with the value objects' checks they compose. |

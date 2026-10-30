@@ -31,10 +31,30 @@ const join = (folderPath: AbsolutePath, relativePath: string): AbsolutePath => {
     : create(`${folderPath}${PATH_SEPARATOR}${relativePath}`);
 };
 
+const rootFolderPath = create(PATH_SEPARATOR);
+
+const parentOf = (folderPath: AbsolutePath): AbsolutePath => {
+  const at = folderPath.lastIndexOf(PATH_SEPARATOR);
+
+  return at <= 0 ? rootFolderPath : create(folderPath.slice(0, at));
+};
+
+/** The folder, then each folder above it, the root last. */
+const upwardFrom = (folderPath: AbsolutePath): readonly AbsolutePath[] =>
+  folderPath === rootFolderPath
+    ? [
+        folderPath,
+      ]
+    : [
+        folderPath,
+        ...upwardFrom(parentOf(folderPath)),
+      ];
+
 const AbsolutePath = {
   create,
   is,
   join,
+  upwardFrom,
 } as const;
 
 export { AbsolutePath };

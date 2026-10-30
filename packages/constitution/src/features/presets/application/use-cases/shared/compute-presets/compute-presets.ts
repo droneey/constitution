@@ -1,30 +1,27 @@
 import { RELEASE_FOLDER_PATH } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
-import type { BlockModel } from '#/kernel/entities';
-import { compareText, normalizePath } from '#/kernel/utils';
-import type { BlockId } from '#/kernel/value-objects';
 import {
   AbsolutePath,
   BlockSource,
   PackPath,
   RepositoryRelativePath,
-  UnitRelativePath,
 } from '#/kernel/value-objects';
 
 import type { PresetsPlan, PresetsProject } from '../../../../domain/entities';
-import { PresetEntry, PresetsFinding } from '../../../../domain/entities';
-import { EntryTarget, TargetKind } from '../../../../domain/value-objects';
+import { Candidate } from '../../../../domain/entities';
+import {
+  checkPresetSets,
+  PackRoleNaming,
+  presetsPlanOf,
+  presetsSelectedOf,
+} from '../../../../domain/services';
 import type {
   ConfigurationFormat,
   DistributionSources,
   PresetFileParser,
 } from '../../../contracts';
-import { checkPresetSets, PackRoleNaming } from '../check-preset-sets';
 import { loadPresetSets } from '../load-preset-sets';
-import { mergeEntries } from './steps/merge-entries';
-import { resolveFacts } from './steps/resolve-facts';
-import { selectEntries } from './steps/select-entries';
-import { splitRuns } from './steps/split-runs';
+import { readCheckInputs } from '../read-check-inputs';
 
 interface ComputePresetsInput {
   readonly distribution: DistributionSources;
@@ -36,56 +33,39 @@ interface ComputePresetsInput {
 
 const releaseFolderPathFromRepository = RepositoryRelativePath.create(RELEASE_FOLDER_PATH);
 
-interface Written {
-  readonly block: BlockId;
-  readonly pathInUnit: UnitRelativePath;
-}
-
-const writtenOf = (input: { entry: PresetEntry; model: BlockModel }): readonly Written[] => {
-  const { entry } = input;
-
-  switch (entry.kind) {
-    case TargetKind.File: {
-      const writtenPath = PresetEntry.writtenPathOf({
-        entry,
-        model: input.model,
-      });
-
-      return writtenPath === undefined || !EntryTarget.staysInItsUnit(entry)
-        ? []
-        : PresetEntry.blocksCommentsNameOf(entry).map((block) => ({
-            block,
-            pathInUnit: UnitRelativePath.create(normalizePath(writtenPath)),
-          }));
-    }
-    case TargetKind.Run:
-      return [];
-    // Stryker disable next-line ConditionalExpression: no kind reaches the default, which only the compiler reads
-    default:
-      return entry satisfies never;
-  }
-};
-
-const blockIdsOf = (input: {
-  entries: readonly PresetEntry[];
-  model: BlockModel;
-}): PresetsPlan['blockIds'] => {
-  const written = input.entries.flatMap((entry) =>
-    writtenOf({
-      entry,
-      model: input.model,
-    }),
+const constitutionPathsOf = (input: {
+  candidates: readonly Candidate[];
+  files: ProjectFiles;
+  repositoryFolderPath: AbsolutePath;
+}): ReadonlyMap<RepositoryRelativePath, string> => {
+  const naming = new Map(
+    input.candidates
+      .filter((candidate) => Candidate.namesConstitutionPath(candidate))
+      .map((candidate) => [
+        Candidate.pathOf(candidate),
+        candidate,
+      ]),
   );
 
   return new Map(
     [
-      ...Map.groupBy(written, ({ pathInUnit }) => pathInUnit),
-    ].map(([pathInUnit, writers]) => [
-      pathInUnit,
-      [
-        ...new Set(writers.map(({ block }) => block)),
-      ],
-    ]),
+      ...naming,
+    ].flatMap(([filePath, candidate]) => {
+      const found = Candidate.releaseProbesOf(candidate).find((probe) =>
+        input.files.isFolder(
+          AbsolutePath.join(input.repositoryFolderPath, probe.releaseFolderPath),
+        ),
+      );
+
+      return found === undefined
+        ? []
+        : [
+            [
+              filePath,
+              found.constitutionPath,
+            ] as const,
+          ];
+    }),
   );
 };
 
@@ -110,55 +90,42 @@ const computePresets = (input: ComputePresetsInput): PresetsPlan => {
       }),
     ),
   ];
-  const entries = loaded.flatMap((one) => one.entries).toSorted(PresetEntry.orderOf(model));
-  const candidates = selectEntries({
-    entries,
+  const selected = presetsSelectedOf({
+    entries: loaded.flatMap((one) => one.entries),
     model,
     units,
   });
-  const resolved = resolveFacts({
-    candidates,
-    files,
-    model,
-    repositoryFolderPath: project.repositoryFolderPath,
-    units,
-  });
-  const merged = mergeEntries({
-    resolved: resolved.candidates,
-  });
-  const split = splitRuns({
-    candidates,
-    entries,
-    merged: merged.candidates,
-    units,
-  });
+  const { entries } = selected;
 
-  return {
-    blockIds: blockIdsOf({
-      entries,
-      model,
+  return presetsPlanOf({
+    ...selected,
+    constitutionPaths: constitutionPathsOf({
+      candidates: selected.candidates,
+      files,
+      repositoryFolderPath: project.repositoryFolderPath,
     }),
-    files: split.files.toSorted((left, right) => compareText(left.filePath, right.filePath)),
-    runs: split.runs,
-    findings: PresetsFinding.eachOnce([
+    findings: [
       ...loaded.flatMap((one) => one.findings),
       ...checkPresetSets({
         entries,
-        formats: input.formats,
         model,
         packRoleNaming: PackRoleNaming.ByIdOrName,
-        release: {
-          distributed: input.distribution.builtFilesOf(project.releaseFolderPath),
-          files,
-          folderPath: project.releaseFolderPath,
-          folderPathFromRepository: releaseFolderPathFromRepository,
-        },
+        ...readCheckInputs({
+          entries,
+          formats: input.formats,
+          model,
+          release: {
+            distribution: input.distribution,
+            files,
+            folderPath: project.releaseFolderPath,
+            folderPathFromRepository: releaseFolderPathFromRepository,
+          },
+        }),
       }),
-      ...resolved.findings,
-      ...merged.findings,
-      ...split.findings,
-    ]),
-  };
+    ],
+    model,
+    units,
+  });
 };
 
 export type { ComputePresetsInput };

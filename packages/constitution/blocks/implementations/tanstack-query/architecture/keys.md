@@ -6,7 +6,7 @@
 
 ### read-declared-once-as-query-options → cache-key-built-by-its-features-factory · MUST
 
-Each feature's key factory, and each composition module's, lives in `presentation/utils/cache.utils.ts`, and each read is declared there once as `queryOptions`, taking its use case as input; the hook, the loader and the guard all use it. A `queryFn` is written only there, inside the read's `queryOptions`.
+Each feature's key factory, and each composition module's, lives in `presentation/bindings/shared/cache.ts`, beside the binding units that use it, and each read is declared there once as `queryOptions`, taking its use case as input; the hook, the loader and the guard all use it. A `queryFn` is written only there, inside the read's `queryOptions`.
 
 | Why |
 |---|

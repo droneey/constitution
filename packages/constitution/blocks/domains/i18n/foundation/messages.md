@@ -62,9 +62,9 @@ A short or ambiguous message carries a comment or a context for its translator.
 |---|
 | "Open" is a verb or an adjective; a translator who cannot see the screen guesses. |
 
-### message-apostrophe-never-straight · SHOULD
+### message-apostrophe-never-straight → text-uses-the-locales-punctuation · SHOULD
 
-A message writes an apostrophe as its language's typographic one — `’` in English, `ʼ` in Ukrainian — never the straight `'`.
+A message in MessageFormat writes no straight `'`: its apostrophe is its language's typographic one.
 
 | Why |
 |---|

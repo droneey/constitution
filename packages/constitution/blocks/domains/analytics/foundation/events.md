@@ -63,13 +63,3 @@ A failing analytics destination, or a failure of the code that sends to it, neit
 | Why |
 |---|
 | measurement must never cost the user the thing they came to do. |
-
-## Requirements for implementation
-
-### analytics-drops-the-ip-address · MUST
-
-The library truncates or drops the IP address.
-
-| Why |
-|---|
-| a library that identifies users by default leaks personal data on its first event. |

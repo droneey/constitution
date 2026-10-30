@@ -1,8 +1,6 @@
-import type { RequirementsParsed, Rule, RuleSource, RulesParsed } from '#/kernel/entities';
+import type { RequirementsParsed, Rule, RulesParsed } from '#/kernel/entities';
 import { RequirementAnswer, StatedRule } from '#/kernel/entities';
-import { withoutCodeFences } from '#/kernel/utils';
 
-import type { BlockFile } from '../../../../../../../../domain/entities';
 import { Block } from '../../../../../../../../domain/entities';
 
 interface BlockRulesParsed {
@@ -14,22 +12,8 @@ interface BlockRulesParsed {
   readonly rules: readonly Rule[];
 }
 
-const sourceOf = (input: { block: Block; file: BlockFile }): RuleSource => ({
-  ...Block.placeOf(input.block, input.file),
-  axis: input.file.axis,
-  file: input.file.path,
-  text: withoutCodeFences(input.file.body),
-});
-
 const parseRules = (blocks: readonly Block[]): BlockRulesParsed => {
-  const sources = blocks.flatMap((block) =>
-    Block.filesOf(block).map((file) =>
-      sourceOf({
-        block,
-        file,
-      }),
-    ),
-  );
+  const sources = blocks.flatMap(Block.ruleSourcesOf);
   const rules = sources.map(StatedRule.parse);
   const answers = sources.map(RequirementAnswer.parse);
 

@@ -1,1 +1,1 @@
-export { SidebarState } from './sidebar-state.entity';
+export { SidebarState } from './sidebar-state';

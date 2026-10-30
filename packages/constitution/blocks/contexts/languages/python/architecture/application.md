@@ -4,7 +4,7 @@
 
 ## Use cases
 
-### domain-imports-no-logging → domain-logs-nothing · MUST
+### domain-and-application-import-no-logging → domain-and-application-log-nothing · MUST
 
 A feature's `domain/` and `application/` import neither `logging` nor a logging library.
 

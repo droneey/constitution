@@ -34,15 +34,16 @@ src/
 
 features/<f>/
 ├── domain/                the model, pure: no port, no use case, no library
-│   ├── entities/          business types and enumerations the feature reads and decides on
-│   ├── aggregates/<a>/    what the feature changes: its root, its inner entities, its transitions and the
-│   │                      events they yield
+│   ├── entities/<e>/      one folder each: an entity or enumeration the feature reads and decides on, or
+│   │                      an aggregate it changes — its root with its transitions and their events, its
+│   │                      inner entities, the enumerations only it uses
 │   ├── value-objects/     values with an invariant
-│   ├── services/          domain services: rules over several aggregates
+│   ├── services/          domain services: rules and computations no one entity or aggregate owns
 │   └── errors/            the feature's expected failures
 ├── application/           the use cases and the ports they ask, free of any framework
-│   ├── use-cases/         {queries,commands}/<op>/, one for each operation, reads included
-│   └── contracts/         ports; a data port is repositories/{queries,commands}/<aggregate>.repository
+│   ├── use-cases/         {queries,commands}/<op>/, one for each operation, reads included, a pipeline's
+│   │                      stages in <op>/steps/
+│   └── contracts/         ports; a data port is repositories/{queries,commands}/<entity>.repository
 ├── infrastructure/<system>/  this feature's contracts over one outside system; in composition, a contract
 │                          answered through another feature
 ├── presentation/          what calls the program: bindings/{queries,commands}/<op>/, and role folders of
@@ -56,7 +57,7 @@ A surface is the file the language resolves when a folder is imported. A **bindi
 
 The layers are the folders of the tree. **`root/`**{#composition-root} is the composition root: the wiring file, the providers, the configuration parsed at start, the handler of last resort and the registration of every delivery unit. **`features/`**{#bounded-context} holds the features, bounded contexts blind to each other. **`composition/`**{#composition-module} holds modules laid out as features: what several features make together, and the delivery units that compose them. **`infrastructure/`**{#gateway} holds the adapters, each implementing ports over one outside system — the kernel's at the top of the source, a feature's or a composition module's own contracts inside it — or, inside a module of composition, a feature's contract answered through another feature's surface. **`kernel/`**{#shared-domain} is the shared kernel: the vocabulary two or more features use with one meaning, and the ports of outside systems they ask in the same words. **`shared/`**{#shared-code} holds, at any level, what two or more of its neighbours need and the level gives no other home. **`libs/`**{#generic-library} holds code that knows nothing of the product: primitives and vendor clients, publishable. **`integrations/`**{#host-integration} holds the package's integration into a host framework, an entry of its own. **`entrypoints/`**{#extra-entry} holds another artefact of the program, or a command of a tooling program. Inside a feature, **`domain/`**{#pure-layer} is the domain layer, the model; **`application/`**{#application-layer} is the application layer, its use cases and the ports they ask; and **`presentation/`**{#presentation-layer} is the presentation layer, all through which the program is called — a screen, a request, a command, a message, a schedule — which binds each use case to its framework.
 
-A role folder holds members of one kind. **`contracts/`**{#port} holds the ports, in a feature's application or in the kernel, and **`repositories/`**{#data-port} inside it holds the data ports. **`use-cases/`**{#use-case} holds the use cases, one folder for each operation, and **`bindings/`**{#binding} the binding units, one folder for each operation. Under `use-cases/`, `bindings/` and `repositories/`, **`queries/`**{#read-operation} holds the reads and **`commands/`**{#write-operation} the writes. **`entities/`**{#business-type} holds the business types and enumerations a feature reads and decides on, **`aggregates/`**{#aggregate} the aggregates it changes, one folder each, and **`value-objects/`**{#invariant-value} the values with an invariant. **`services/`**{#domain-service} holds the domain services. **`errors/`**{#expected-failure} holds the expected failures: a feature's in its domain, those every feature shares in the kernel. **`constants/`**{#constant} holds a module's constants and `types/` its types, vocabulary with no behaviour. **`utils/`**{#helper} holds pure helpers with no meaning of the product. **`steps/`**{#pipeline-stage} holds a pipeline's stages. **`models/`**{#wire-model} holds the wire models and stored shapes, inside adapters. **`providers/`**{#framework-provider} holds the framework's providers and the instances they wire.
+A role folder holds members of one kind. **`contracts/`**{#port} holds the ports, in a feature's application or in the kernel, and **`repositories/`**{#data-port} inside it holds the data ports. **`use-cases/`**{#use-case} holds the use cases, one folder for each operation, and **`bindings/`**{#binding} the binding units, one folder for each operation. Under `use-cases/`, `bindings/` and `repositories/`, **`queries/`**{#read-operation} holds the reads and **`commands/`**{#write-operation} the writes. **`entities/`**{#business-type} holds the entities and enumerations a feature reads and decides on and the aggregates it changes, one folder each: an aggregate's holds its root, whose file declares the transitions, which belong to the root alone, and the domain event each yields beside it, then its inner entities and the enumerations only that aggregate uses; **`value-objects/`**{#invariant-value} holds the values with an invariant. **`services/`**{#domain-service} holds the domain services, the rules and computations no one entity or aggregate owns. **`errors/`**{#expected-failure} holds the expected failures: a feature's in its domain, those every feature shares in the kernel. **`constants/`**{#constant} holds a module's constants and `types/` its types, vocabulary with no behaviour. **`utils/`**{#helper} holds pure helpers with no meaning of the product. **`steps/`**{#pipeline-stage} holds a pipeline's stages, inside the use case or domain service that runs them. **`models/`**{#wire-model} holds the wire models and stored shapes, inside adapters. **`providers/`**{#framework-provider} holds the framework's providers and the instances they wire.
 
 A role file's suffix names its role. **`.entity`**{#business-type-file} marks an entity or a business type, **`.aggregate`**{#aggregate-file} an aggregate's root, **`.value-object`**{#invariant-value-file} a value object, **`.service`**{#domain-service-file} a domain service and `.error` an error. **`.repository`**{#data-port-file} marks a data port, **`.port`**{#port-file} any other port, and **`.adapter`**{#gateway-file} a port's implementation that is no repository. **`.use-case`**{#use-case-file} marks a use case, and **`.model`**{#wire-model-file} a wire model or a stored shape. **`.utils`**{#helper-file}, `.types` and **`.constants`**{#constant-file} mark the files of helpers, types and constants, and `.config` a file of configuration.
 
@@ -90,7 +91,7 @@ A package’s root holds its manifest, its source, the suites that drive the bui
 
 ### feature-laid-out-by-its-tree · SHOULD
 
-A feature, and a module of composition, holds its layers, its specs and its surface and nothing else, and its domain, its application and its presentation hold only the role folders of the tree.
+A feature, and a module of composition, holds its layers, its specs and its surface and nothing else, and its domain, its application and its presentation hold only the role folders of the vocabulary.
 
 | Why |
 |---|
@@ -166,7 +167,7 @@ A folder whose purpose a layer or a role of the active vocabulary names takes th
 
 ### file-carries-its-role-suffix · MUST
 
-A **role file**, a file of a role, carries its **role suffix**, whatever its folder; a surface, an entry, a name a tool fixes, a unit named after its own folder, a member of a set whose role has no suffix, a registry and a binding unit named after its operation carry none. A spec keeps the suffix of the file it proves.
+A **role file**, a file of a role, carries its **role suffix**, whatever its folder; a surface, an entry, a name a tool fixes, a unit named after its own folder, a member of a set whose role has no suffix and a registry carry none, and a binding unit, named after its operation, carries none save the one its framework's block names. A spec keeps the suffix of the file it proves.
 
 | Why |
 |---|

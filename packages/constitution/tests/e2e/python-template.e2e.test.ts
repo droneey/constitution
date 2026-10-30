@@ -250,7 +250,7 @@ describe('the files apply writes for a unit of Python', () => {
           'src/shop/features/orders/domain/order_entity.py': 'import logging\n',
         },
         finding: [
-          'domain-imports-no-logging BROKEN',
+          'domain-and-application-import-no-logging BROKEN',
         ],
         task: 'check:architecture',
       },

@@ -1,6 +1,6 @@
 # Transport
 
-> Governs where ky is imported and who builds the ky instances.
+> Governs who builds the ky instances and how they reach the adapters.
 
 ## General
 

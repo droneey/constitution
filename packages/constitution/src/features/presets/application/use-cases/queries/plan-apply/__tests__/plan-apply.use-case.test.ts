@@ -20,6 +20,7 @@ import {
 import type {
   ApplyPlan,
   ApplyReport,
+  ConfigurationWrite,
   LockRead,
   LockRecord,
   PresetsFinding,
@@ -34,7 +35,7 @@ import {
   RecordKind,
 } from '../../../../../domain/entities';
 import { FileFormat } from '../../../../../domain/value-objects';
-import type { ConfigurationFormat, ConfigurationWrite } from '../../../../contracts';
+import type { ConfigurationFormat } from '../../../../contracts';
 import { planApply } from '../plan-apply.use-case';
 
 interface Step {

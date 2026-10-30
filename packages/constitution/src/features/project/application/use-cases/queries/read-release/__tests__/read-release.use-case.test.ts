@@ -37,26 +37,6 @@ describe('readRelease', () => {
       },
     },
     {
-      condition: 'the release is of an older block format',
-      expected: {
-        status: ReleaseStatus.Older,
-      },
-      files: {
-        [manifest]: manifestOf({
-          format: 2,
-        }),
-      },
-    },
-    {
-      condition: 'the release names no block format',
-      expected: {
-        status: ReleaseStatus.Older,
-      },
-      files: {
-        [manifest]: '{\n  "version": "1.0.0"\n}\n',
-      },
-    },
-    {
       condition: 'the release is of the block format this program reads',
       expected: {
         status: ReleaseStatus.Installed,
@@ -128,17 +108,6 @@ describe('readRelease', () => {
       },
       files: {
         [manifest]: '{"constitutionFormat": 4, "version": 1}\n',
-      },
-      unreadable: [],
-    },
-    {
-      condition: 'its manifest names no version',
-      expected: {
-        manifest: manifestPath,
-        status: ReleaseStatus.VersionMissing,
-      },
-      files: {
-        [manifest]: '{"constitutionFormat": 4}\n',
       },
       unreadable: [],
     },

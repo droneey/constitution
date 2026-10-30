@@ -2,8 +2,9 @@ import { parseDocument } from 'yaml';
 
 import { attempted } from '#/kernel/utils';
 
-import type { BlockCard, BlockCardParser } from '../../application/contracts';
-import { EMPTY_CARD } from '../../application/contracts';
+import type { BlockCardParser } from '../../application/contracts';
+import type { BlockCard } from '../../domain/entities';
+import { EMPTY_CARD } from '../../domain/entities';
 import { blockCardModel } from './models';
 
 const isReferenceError = (error: unknown): error is ReferenceError =>

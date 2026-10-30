@@ -1,4 +1,4 @@
-from .breach_entity import (
+from .breach import (
   Breach,
   EffectOutsideEdge,
   EnvironmentOutsideRoot,
@@ -12,7 +12,7 @@ from .breach_entity import (
   PackageWithoutHome,
   Unparsable,
 )
-from .file_role_entity import (
+from .file_role import (
   FileRole,
   is_binding_unit,
   is_edge,
@@ -21,11 +21,11 @@ from .file_role_entity import (
   may_import_packages,
   role_of,
 )
-from .finding_entity import Finding
-from .import_root_entity import ImportRoot, import_root_of, in_feature_form, module_of
-from .layer_entity import Layer
-from .settings_entity import HomePlace, Homes, Settings, TopLevelFolder, WholeEdge
-from .source_entity import Source, Sources
+from .finding import Finding
+from .import_root import ImportRoot, import_root_of, in_feature_form, module_of
+from .layer import Layer
+from .settings import HomePlace, Homes, Settings, TopLevelFolder, WholeEdge
+from .source import Source, Sources
 
 __all__ = [
   'Breach',

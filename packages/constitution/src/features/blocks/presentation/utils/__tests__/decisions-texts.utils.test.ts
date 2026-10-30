@@ -3,8 +3,8 @@ import { describe, expect, it } from 'bun:test';
 import type { ProblemOf } from '#/kernel/types';
 import { textOf } from '#/shared/cli';
 
-import type { DecisionsDetails } from '../../../application/use-cases/queries/check';
-import { DecisionsCode } from '../../../application/use-cases/queries/check';
+import type { DecisionsDetails } from '../../../domain/services';
+import { DecisionsCode } from '../../../domain/services';
 import { decisionsTexts } from '../decisions-texts.utils';
 
 describe('decisionsTexts', () => {

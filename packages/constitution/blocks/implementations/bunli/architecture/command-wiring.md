@@ -1,6 +1,6 @@
 # Command wiring
 
-> Governs a command file, where bunli is imported, and the configuration the root gives the commands.
+> Governs a command file and the configuration the root gives the commands.
 
 ## General
 

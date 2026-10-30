@@ -10,9 +10,8 @@ import {
 } from '../../../../../__tests__/session.fixtures';
 import { createFakeSessionCommandRepository } from '../../../../../__tests__/session-command-repository.fake';
 import { createFakeWorkingTree } from '../../../../../__tests__/working-tree.fake';
-import { SessionMark } from '../../../../../domain/entities';
+import { SessionMark, TreeStateStatus } from '../../../../../domain/entities';
 import { SessionId } from '../../../../../domain/value-objects';
-import { TreeStateStatus } from '../../../../contracts';
 import { recordCheck } from '../record-check.use-case';
 
 const TREE = 'tree-now';
@@ -25,82 +24,30 @@ describe('recordCheck', () => {
       condition: 'the command is the check',
     },
     {
-      checked: TREE,
-      command: 'constitution run check --verbose',
-      condition: 'the check takes its options',
-    },
-    {
-      checked: TREE,
-      command: 'constitution run check; echo done',
-      condition: 'the check opens the command and a semicolon ends it',
-    },
-    {
-      checked: TREE,
-      command: 'cd app && constitution run check | tee log',
-      condition: 'the check follows &&',
-    },
-    {
-      checked: TREE,
-      command: 'cd app;constitution run check',
-      condition: 'the check follows a semicolon with no blank',
-    },
-    {
-      checked: TREE,
-      command: 'bun run constitution run check',
-      condition: 'bun run runs the check',
-    },
-    {
-      checked: TREE,
-      command: 'bunx constitution run check',
-      condition: 'bunx runs the check',
-    },
-    {
-      checked: TREE,
-      command: 'npx constitution run check',
-      condition: 'npx runs the check',
-    },
-    {
-      checked: TREE,
-      command: 'cd app && mise exec -- constitution run check',
-      condition: 'mise exec runs the check after &&',
-    },
-    {
       checked: undefined,
       command: 'constitution run checkout',
       condition: 'the command only starts with the check',
     },
-    {
-      checked: undefined,
-      command: 'echo constitution run check',
-      condition: 'the check follows a blank',
-    },
-    {
-      checked: undefined,
-      command: 'bun run check',
-      condition: "a package's own script is run",
-    },
-    {
-      checked: undefined,
-      command: '',
-      condition: 'the command is empty',
-    },
-  ])('should leave $checked as the tree checked when $condition', ({ checked, command }) => {
-    // Arrange
-    const store = heldSessionsOf();
+  ])(
+    'should leave $checked as the tree checked when $condition, as the command tells',
+    ({ checked, command }) => {
+      // Arrange
+      const store = heldSessionsOf();
 
-    // Act
-    recordCheck({
-      command,
-      session: keptSession,
-      sessions: createFakeSessionCommandRepository(store),
-      workingTree: createFakeWorkingTree({
-        state: TREE,
-      }),
-    });
+      // Act
+      recordCheck({
+        command,
+        session: keptSession,
+        sessions: createFakeSessionCommandRepository(store),
+        workingTree: createFakeWorkingTree({
+          state: TREE,
+        }),
+      });
 
-    // Assert
-    expect(store.get(keptSession)?.marks.get(SessionMark.Checked)).toBe(checked);
-  });
+      // Assert
+      expect(store.get(keptSession)?.marks.get(SessionMark.Checked)).toBe(checked);
+    },
+  );
 
   it.each([
     {

@@ -24,7 +24,7 @@ The library that speaks a remote system's transport has its home in the infrastr
 
 ## Failures
 
-### transport-failures-mapped-once → catch-handles-only-what-it-recognises · MUST
+### transport-failures-mapped-once → adapter-maps-its-dependencys-failures · MUST
 
 One shared mapper per transport, in the infrastructure's `shared/<transport>/`, turns the transport's failures, a transient one included, into the failures of the ports its adapters implement, so nothing of the transport's library crosses an adapter.
 
@@ -42,9 +42,9 @@ The transport's mapper maps the unauthenticated, forbidden and unexpected failur
 
 ## Streams
 
-### stream-returned-as-a-sequence-of-domain-events → contract-knows-no-vendor · MUST
+### stream-returned-as-a-sequence-of-port-events → contract-knows-no-vendor · MUST
 
-A progressive result reaches the application as an asynchronous sequence of events in the feature's words that the port returns: its end completes it, a failure fails it, and a caller that stops reading cancels it. Its events are a union declared in the port's file, to which the adapter maps the wire's events, dropping one it does not know.
+A progressive result reaches the application as an asynchronous sequence the port returns, of events in the feature's words, which are no domain events: its end completes it, a failure fails it, and a caller that stops reading cancels it. Its events are a union declared in the port's file, to which the adapter maps the wire's events, dropping one it does not know.
 
 | Why |
 |---|

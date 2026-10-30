@@ -1,2 +1,5 @@
-export type { ChangedFile } from './changed-file.entity.ts';
-export type { MutationTarget } from './mutation-target.entity.ts';
+export type { ChangedFile } from './changed-file';
+export type { CheckOutcome, ToolExitCode } from './check-outcome';
+export { CheckStatus } from './check-outcome';
+export { CheckScope } from './check-scope';
+export { MutationTarget } from './mutation-target';

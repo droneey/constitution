@@ -5,8 +5,8 @@ import type { ProblemOf } from '#/kernel/types';
 import { BlockId, RuleSlug } from '#/kernel/value-objects';
 import { textOf } from '#/shared/cli';
 
-import type { RequirementsDetails } from '../../../application/use-cases/queries/check';
-import { RequirementsCode } from '../../../application/use-cases/queries/check';
+import type { RequirementsDetails } from '../../../domain/services';
+import { RequirementsCode } from '../../../domain/services';
 import { requirementsTexts } from '../requirements-texts.utils';
 
 describe('requirementsTexts', () => {

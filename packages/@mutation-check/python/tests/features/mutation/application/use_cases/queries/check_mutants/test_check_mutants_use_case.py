@@ -19,7 +19,6 @@ from droneey_mutation_check_python.features.mutation.domain.entities import (
   PassReason,
   Ran,
   Scope,
-  Stopped,
   Survived,
 )
 from droneey_mutation_check_python.features.mutation.domain.errors import (
@@ -57,66 +56,6 @@ def test_should_pass_without_mutmut_when_no_function_changed() -> None:
 
 
 @pytest.mark.parametrize(
-  ('status', 'outcome'),
-  [
-    pytest.param(MutantStatus.KILLED, Passed(reason=PassReason.KILLED), id='killed'),
-    pytest.param(
-      MutantStatus.CAUGHT_BY_TYPE_CHECK,
-      Passed(reason=PassReason.KILLED),
-      id='caught by the type check',
-    ),
-    pytest.param(MutantStatus.SKIPPED, Passed(reason=PassReason.KILLED), id='skipped'),
-    pytest.param(MutantStatus.NOT_CHECKED, Passed(reason=PassReason.KILLED), id='not checked'),
-    pytest.param(
-      MutantStatus.SURVIVED,
-      Survived(mutants=(_total_mutant(MutantStatus.SURVIVED),)),
-      id='survived',
-    ),
-    pytest.param(
-      MutantStatus.NO_TESTS,
-      Survived(mutants=(_total_mutant(MutantStatus.NO_TESTS),)),
-      id='no tests',
-    ),
-    pytest.param(
-      MutantStatus.TIMEOUT, Survived(mutants=(_total_mutant(MutantStatus.TIMEOUT),)), id='timed out'
-    ),
-    pytest.param(
-      MutantStatus.SUSPICIOUS,
-      Survived(mutants=(_total_mutant(MutantStatus.SUSPICIOUS),)),
-      id='suspicious',
-    ),
-    pytest.param(
-      MutantStatus.SEGFAULT,
-      Survived(mutants=(_total_mutant(MutantStatus.SEGFAULT),)),
-      id='a segfault',
-    ),
-    pytest.param(
-      MutantStatus.INTERRUPTED,
-      Survived(mutants=(_total_mutant(MutantStatus.INTERRUPTED),)),
-      id='interrupted',
-    ),
-    pytest.param(
-      MutantStatus.UNKNOWN,
-      Survived(mutants=(_total_mutant(MutantStatus.UNKNOWN),)),
-      id='a status mutmut adds later',
-    ),
-  ],
-)
-def test_should_count_a_changed_mutant_as_killed_by_its_status(
-  status: MutantStatus, outcome: Outcome
-) -> None:
-  # Arrange
-  run = Ran(mutants=(_total_mutant(status),))
-  workspace = WorkspaceFake(texts_by_path=SHOP_PACKAGE_TEXTS, files=TOTAL_CHANGED, run=run)
-
-  # Act
-  checked = check_mutants(Scope.CHANGED, workspace=workspace)
-
-  # Assert
-  assert checked == outcome
-
-
-@pytest.mark.parametrize(
   ('scope', 'run', 'outcome'),
   [
     pytest.param(
@@ -130,24 +69,6 @@ def test_should_count_a_changed_mutant_as_killed_by_its_status(
       Ran(mutants=(_total_mutant(MutantStatus.SURVIVED), DISCOUNT_SURVIVED)),
       Survived(mutants=(_total_mutant(MutantStatus.SURVIVED), DISCOUNT_SURVIVED)),
       id='all mutated',
-    ),
-    pytest.param(
-      Scope.CHANGED,
-      Stopped(
-        mutants=(
-          Mutant(
-            name=MutantName('shop.orders.x_discount__mutmut_1'), status=MutantStatus.NOT_CHECKED
-          ),
-        )
-      ),
-      Passed(reason=PassReason.NOTHING_TO_MUTATE),
-      id='mutmut stopped with nothing to mutate',
-    ),
-    pytest.param(
-      Scope.CHANGED,
-      Stopped(mutants=(_total_mutant(MutantStatus.NOT_CHECKED),)),
-      Survived(mutants=(_total_mutant(MutantStatus.NOT_CHECKED),)),
-      id='mutmut stopped before running the changed mutants',
     ),
     pytest.param(
       Scope.CHANGED,

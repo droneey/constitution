@@ -24,9 +24,9 @@ A use case orchestrates; the model decides. It holds only the application's own 
 |---|
 | a rule written in a use case is skipped by the next use case that changes the same aggregate, and the model is left holding the data while the rules live nowhere. |
 
-### domain-logs-nothing · MUST
+### domain-and-application-log-nothing · MUST
 
-The domain and the application log nothing: a use case returns a result or a failure, or publishes an event, and a binding or delivery unit logs what happened, a failure the use case handled included.
+The domain and the application log nothing: a use case returns its result or throws its expected failure, or publishes an event, and a binding or delivery unit logs what happened, a failure the use case handled included.
 
 | Why |
 |---|
@@ -36,7 +36,7 @@ The domain and the application log nothing: a use case returns a result or a fai
 
 ### command-loads-through-its-write-port · SHOULD
 
-A command loads the aggregate it changes through its own port of the write side, and decides only through that aggregate and its input.
+A command loads the aggregates it decides on through its ports of the write side, and decides only through them and its input.
 
 | Why |
 |---|
@@ -44,7 +44,7 @@ A command loads the aggregate it changes through its own port of the write side,
 
 ### command-returns-nothing · SHOULD
 
-A command returns no data — only its success or its expected failure; the caller makes the identifier of what the command creates and passes it in.
+A command returns nothing; an expected failure is thrown, and the caller makes the identifier of what the command creates and passes it in.
 
 | Why |
 |---|
@@ -60,10 +60,10 @@ Where a feature splits its **read side** from its **write side**, the two never 
 
 ## Pipelines
 
-### pipeline-stages-run-by-their-use-case · SHOULD
+### pipeline-stages-run-by-their-owner · SHOULD
 
-A pipeline's stages live in its steps folder, in the order its use case calls them, and no stage calls another.
+A pipeline's stages live in the `steps/` of the use case or domain service that runs them, in the order it calls them, and no stage calls another; a stage of a use case decides nothing — its decisions are calls into the model.
 
 | Why |
 |---|
-| the use case reads as the pipeline, and a stage is added, removed or tested alone. |
+| the owner reads as the pipeline, a stage is added, removed or tested alone, and a rule hidden in a use case's stage is skipped by every other use case. |

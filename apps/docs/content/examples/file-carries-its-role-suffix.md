@@ -1,6 +1,6 @@
 ```text title="Avoid"
 orders/
-├── domain/entities/
+├── domain/entities/order/
 │   └── order.ts
 ├── domain/errors/
 │   └── order-already-paid.ts
@@ -10,7 +10,7 @@ orders/
 
 ```text title="Prefer"
 orders/
-├── domain/entities/
+├── domain/entities/order/
 │   └── order.entity.ts
 ├── domain/errors/
 │   └── order-already-paid.error.ts

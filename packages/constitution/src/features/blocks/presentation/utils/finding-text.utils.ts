@@ -1,7 +1,7 @@
 import type { TextsOf } from '#/shared/cli';
 import { textOf } from '#/shared/cli';
 
-import type { BlockFinding, BlockFindingDetails } from '../../application/use-cases/queries/check';
+import type { BlockFinding, BlockFindingDetails } from '../../domain/services';
 import { budgetTexts } from './budget-texts.utils';
 import { decisionsTexts } from './decisions-texts.utils';
 import { loadTexts } from './load-texts.utils';

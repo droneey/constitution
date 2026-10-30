@@ -1,6 +1,7 @@
 import type { UnitRelativePath } from '#/kernel/value-objects';
 
-import type { UnitSpecs } from '../../../../domain/entities';
+import type { ImportEdges } from '../../../../domain/entities';
+import { UnitSpecs } from '../../../../domain/entities';
 import type { ImportGraph, SpecRunner } from '../../../contracts';
 
 interface UnitSpecsInput {
@@ -8,36 +9,29 @@ interface UnitSpecsInput {
   readonly specRunner: SpecRunner;
 }
 
-interface LoadingSpec {
-  readonly depth: number;
-  readonly specPath: UnitRelativePath;
-}
-
-const importDepthsOf = (input: {
-  filePath: UnitRelativePath;
+const importEdgesFrom = (input: {
   importGraph: ImportGraph;
-}): ReadonlyMap<UnitRelativePath, number> => {
-  const importDepths = new Map<UnitRelativePath, number>();
-  let layer: readonly UnitRelativePath[] = [
-    input.filePath,
-  ];
+  specPaths: readonly UnitRelativePath[];
+}): ImportEdges => {
+  const edges = new Map<UnitRelativePath, readonly UnitRelativePath[]>();
+  let layer = input.specPaths;
 
-  for (let depth = 1; layer.length > 0; depth += 1) {
+  while (layer.length > 0) {
     const next: UnitRelativePath[] = [];
 
     for (const filePath of layer) {
-      for (const importedPath of input.importGraph.directImportsOf(filePath)) {
-        if (!importDepths.has(importedPath)) {
-          importDepths.set(importedPath, depth);
-          next.push(importedPath);
-        }
+      if (!edges.has(filePath)) {
+        const importedPaths = input.importGraph.directImportsOf(filePath);
+
+        edges.set(filePath, importedPaths);
+        next.push(...importedPaths);
       }
     }
 
     layer = next;
   }
 
-  return importDepths;
+  return edges;
 };
 
 /**
@@ -46,36 +40,14 @@ const importDepthsOf = (input: {
  */
 const unitSpecs = (input: UnitSpecsInput): UnitSpecs => {
   const specPaths = input.specRunner.findSpecPaths();
-  const loadingSpecs = new Map<UnitRelativePath, LoadingSpec[]>();
 
-  for (const specPath of specPaths) {
-    for (const [filePath, depth] of importDepthsOf({
-      filePath: specPath,
+  return UnitSpecs.create({
+    edges: importEdgesFrom({
       importGraph: input.importGraph,
-    })) {
-      loadingSpecs.set(filePath, [
-        ...(loadingSpecs.get(filePath) ?? []),
-        {
-          depth,
-          specPath,
-        },
-      ]);
-    }
-  }
-
-  return {
+      specPaths,
+    }),
     specPaths,
-    specPathsByFilePath: new Map(
-      [
-        ...loadingSpecs,
-      ].map(([filePath, fileLoadingSpecs]) => [
-        filePath,
-        fileLoadingSpecs
-          .toSorted((left, right) => left.depth - right.depth)
-          .map(({ specPath }) => specPath),
-      ]),
-    ),
-  };
+  });
 };
 
 export type { UnitSpecsInput };

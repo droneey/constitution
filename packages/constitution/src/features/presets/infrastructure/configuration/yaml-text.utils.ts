@@ -3,8 +3,7 @@ import { isMap, isNode, isScalar, isSeq, parseDocument, visit } from 'yaml';
 
 import { attempted, compareText, isDeepEqual } from '#/kernel/utils';
 
-import type { ConfigurationWrite } from '../../application/contracts';
-import type { HeldStep, Setting } from '../../domain/entities';
+import type { ConfigurationWrite, HeldStep, Setting } from '../../domain/entities';
 import { Setting as Settings } from '../../domain/entities';
 import type { Anchor, Commenting } from './block-comments.utils';
 import { anchorAt, lineAt, withBlockComments } from './block-comments.utils';

@@ -1,5 +1,4 @@
-import type { ConfigurationWrite } from '../../application/contracts';
-import type { BlockMarks, Setting } from '../../domain/entities';
+import type { BlockMarks, ConfigurationWrite, Setting } from '../../domain/entities';
 import { BlockMarks as Marks, Setting as Settings } from '../../domain/entities';
 import { NEWLINE } from './text.constants';
 

@@ -7,7 +7,7 @@ function placeOrderHandler(request)
 ```
 
 ```pseudo title="Prefer"
-# orders/domain/aggregates/order/order.aggregate
+# orders/domain/entities/order/order.aggregate
 function place(cart)
   if cart.total < minimumTotal then
     throw new BelowMinimumError(cart.total)

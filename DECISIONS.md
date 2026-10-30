@@ -45,7 +45,7 @@
 | The plugin and the project's rules | ADR-0203 – ADR-0205, ADR-0212 |
 | The whole-repository review of #383 | ADR-0223, ADR-0225 |
 | Formatters | ADR-0224, ADR-0230 |
-| Evans' layers, the model that decides and the cohesion review | ADR-0259 – ADR-0265 |
+| Evans' layers, the model that decides and the cohesion review | ADR-0259 – ADR-0266 |
 
 ---
 
@@ -2519,13 +2519,15 @@
 
 **Date:** 2026-10-30 · **Status:** Accepted
 
-- **Decision.** A feature, and a module of composition, holds `domain/` (the model: `entities/`, `aggregates/<aggregate>/` with its root `.aggregate` and inner `.entity` files, `value-objects/`, `services/` for domain services, `errors/`), `application/` (`use-cases/{queries,commands}/<op>/` and `contracts/`, every port a use case asks, data ports in `repositories/` included), `infrastructure/<system>/` (the adapters, formerly `adapters/`, also at the source's top) and `presentation/` (all through which the program is called — a screen, a request, a command, a message, a schedule: `bindings/{queries,commands}/<op>/`, formerly `app/use-cases/`, and an interface's `screens/`, `widgets/` and `components/`, formerly the ui domain's `ui/`). The domain imports no port, no use case and no installed library; the application imports only the domain, the kernel and its own contracts. The repository's own packages move to this tree in the same change.
+- **Decision.** A feature, and a module of composition, holds `domain/` (the model: `entities/<entity>/`, one folder for each entity, enumeration and aggregate — an aggregate's holding its root `.aggregate` and its inner `.entity` files —, `value-objects/`, `services/` for domain services, `errors/`), `application/` (`use-cases/{queries,commands}/<op>/` and `contracts/`, every port a use case asks, data ports in `repositories/` included), `infrastructure/<system>/` (the adapters, formerly `adapters/`, also at the source's top) and `presentation/` (all through which the program is called — a screen, a request, a command, a message, a schedule: `bindings/{queries,commands}/<op>/`, formerly `app/use-cases/`, and an interface's `screens/`, `widgets/` and `components/`, formerly the ui domain's `ui/`). The domain imports no port, no use case and no installed library; the application imports only the domain, the kernel and its own contracts. The repository's own packages move to this tree in the same change.
 - **Rejected.**
   - `app/` as the name of the binding layer: a reader who knows DDD takes it for the application layer, and the use case then seemed to live in two places.
   - Use cases inside `domain/` (ADR-0196 kept them there so that `domain/` stays the part programs share across hosts): `application/` is framework-free too, so the reason holds, while the model and the orchestration are no longer one folder no check can split. ADR-0196's rejection of "a use case moved into `app/`" stands for `app/`.
   - Repository interfaces in the domain, as Evans places them: the model never calls a repository, a use case does, so the port sits with the layer that needs it (`contract-declared-by-the-layer-that-needs-it`, as Uncle Bob's gateways and the hexagonal architecture place it), and "the domain imports no port" is one check.
   - `infrastructure/adapters/<system>/`: the infrastructure holds nothing but adapters, so a second level is a folder that only holds a folder; the `.adapter` suffix keeps the word.
   - One folder per aggregate with no `entities/`: a feature that only reads holds records and enumerations that are no aggregate, and forcing them into aggregate folders would name a boundary of consistency that does not exist.
+  - `aggregates/<aggregate>/` beside a flat `entities/`: an aggregate's root is an entity, so two folders split one kind by a property the `.aggregate` suffix already shows, and a feature's reader looks in two places for its entities.
+  - Flat `entities/*.entity` files, with a folder only for an aggregate that has inner entities: an entity gains a spec, a fixture or an inner part as it grows, and each then moves; one folder each from the start keeps every entity's files together and its path stable.
   - Vertical slices by operation, or layers held by file suffix instead of folders: the owner keeps the layers inside a feature, whose shared model is what DDD protects.
   - `presentation/` and `ui/` side by side: Evans' presentation layer holds both what binds an operation to a framework and what shows it.
 - **Why.** Each canonical word now names one place, the dependency direction is a matter of folders the import checks read, and the application can run from a component, a route loader, a worker, a command or another client of the same language.
@@ -2579,7 +2581,7 @@
 
 **Date:** 2026-10-30 · **Status:** Accepted
 
-- **Decision.** Six reviewers read every rule for subjects cut apart and rules bundling two. Rules no project would lower apart merge (among them `growing-collection-bounded`, `name-number-matches-its-value`, `name-never-an-empty-word` with the empty verbs, `test-seen-failing` with the regression test, `contract-has-one-fake-and-one-suite`, the data port's naming into `data-port-one-per-entity-and-side`, the pipeline rules into `pipeline-stages-run-by-their-use-case`); rules of two subjects split (`composition-root-wires-everything` into three, `structure-appears-by-symptom` and `copies-joined-when-they-change-together`, the expected-failure rules, `secret-kept-out-of-output` in core and `personal-data-kept-out-of-output` in privacy); a rule that only repeats another goes. A tool rule that only names its parent and exists as a key for a preset is deleted and its settings key the parent. Rules that give a library its home merge into one rule of the role, in the domain or platform that owns it, with no new field in a block's front matter. The rules on agents keep apart the agent at work on the repository (core) and the model or agent a product runs (language-model). The rules on text a person reads gather in one ui chapter.
+- **Decision.** Six reviewers read every rule for subjects cut apart and rules bundling two. Rules no project would lower apart merge (among them `growing-collection-bounded`, `name-number-matches-its-value`, `name-never-an-empty-word` with the empty verbs, `test-seen-failing` with the regression test, `contract-has-one-fake-and-one-suite`, the data port's naming into `data-port-one-per-entity-and-side`, the pipeline rules into `pipeline-stages-run-by-their-owner`); rules of two subjects split (`composition-root-wires-everything` into three, `structure-appears-by-symptom` and `copies-joined-when-they-change-together`, the expected-failure rules, `secret-kept-out-of-output` in core and `personal-data-kept-out-of-output` in privacy); a rule that only repeats another goes. A tool rule that only names its parent and exists as a key for a preset is deleted and its settings key the parent. Rules that give a library its home merge into one rule of the role, in the domain or platform that owns it, with no new field in a block's front matter. The rules on agents keep apart the agent at work on the repository (core) and the model or agent a product runs (language-model). The labels of controls gather in ui's labels chapter, and the voice of text a person reads is the copy domain's (ADR-0266).
 - **Rejected.**
   - A `homes:` field in each passport: a new mechanism for what one rule of the role already says.
   - One TLS rule in core: TLS is a means of the network domains, not a concern of every program.
@@ -2595,3 +2597,15 @@
   - Replacing every switch by polymorphism, as clean-code notes ask: a switch over a closed set is exhaustive and cheap to extend by operation; the smell is the same switch repeated (Fowler's "Repeated Switches"), and an open set already grows by registration.
   - The third occurrence as a trigger to join: copies that change apart are coincidence, not a fact.
 - **Why.** These close the gaps the review of a software-design book found in the names and the code rules.
+
+## ADR-0266 — The voice of text a person reads is the copy domain's
+
+**Date:** 2026-10-30 · **Status:** Accepted
+
+- **Decision.** A domain block `copy` holds how text a program writes for a person addresses them, its case and its punctuation (`text-addresses-the-reader-as-you`, `text-written-in-sentence-case`, `text-uses-the-locales-punctuation`). A unit follows it whatever shows its text — a screen, a terminal, an email, a document. i18n requires it, and its MessageFormat apostrophe rule tightens the punctuation one. The labels of controls stay in ui; `text-a-person-reads-held-in-a-messages-file` and the `.messages` file stay in core.
+- **Rejected.**
+  - The voice rules in ui: a command-line tool or an email shows text to a person and follows no ui block.
+  - The voice rules in i18n: its rules assume a second locale, and a product in one language would miss them.
+  - The voice rules in core: a library or a job with no text for a person needs none of them, and core holds only what every project needs.
+  - The messages-file rule in the new domain or in i18n: its reasons — text reworded in one place, a file mutation tools skip by its kind — hold for any program that writes text a person reads, and its `.messages` term is what core's mutation rule names.
+- **Why.** The voice belongs to the text, not to the surface that shows it or to the number of its languages.

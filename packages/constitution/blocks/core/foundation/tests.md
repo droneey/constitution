@@ -52,7 +52,7 @@ Edge cases are chosen by risk and by the partitions of the input — empty input
 
 ### property-tested-where-it-pays · SHOULD
 
-A property test proves an invariant where one pays — the check of a value with an invariant, a mapper that can be inverted, a transition function, and a parser of outside input, which on any input returns a value or its declared failure and never throws anything else — with its cases in the spec of its unit and a counterexample it finds is kept as a fixed case.
+A property test proves an invariant where one pays — the check of a value with an invariant, a mapper that can be inverted, a transition function, and a parser of outside input, which on any input returns a value or throws its declared failure and nothing else — with its cases in the spec of its unit and a counterexample it finds is kept as a fixed case.
 
 | Why |
 |---|

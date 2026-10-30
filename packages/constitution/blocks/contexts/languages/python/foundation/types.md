@@ -62,14 +62,6 @@ An identifier is a `NewType` over its primitive, named after what it identifies:
 |---|
 | the type checker refuses an `OrderId` where a `CustomerId` is expected, and at run time the value is the primitive itself, at no cost. |
 
-### new-type-called-only-where-minted-or-parsed → identifier-branded-by-entity · SHOULD
-
-An identifier's `NewType` is called only where the identifier is minted, by the one function that makes new ones, or where it enters the program, in the parse of the outside value that carries it.
-
-| Why |
-|---|
-| a `NewType` called in one place proves the value came through it; called anywhere, it proves nothing. |
-
 ### enumeration-is-a-unique-str-enum → closed-name-set-declared-once · MUST
 
 A closed set of named values the program owns is an `enum.StrEnum` marked `@unique`, never a union of `Literal` strings, each member's value written out as the string the program stores and sends, never `auto()`.
@@ -140,7 +132,7 @@ Absence is `None`, typed `T | None`, and no other value stands for it. Where `No
 |---|
 | a second spelling of absence needs a second check, and a sentinel the type names keeps “not given” apart from “cleared” without an object the checker cannot see through. |
 
-### absence-tested-by-is-none · SHOULD
+### absence-tested-by-is-none → absence-shown-by-the-type · MUST
 
 An absent value is tested by `is None` or `is not None` and replaced by a conditional expression on that test, never by `if not x` or `x or default` where the value is not a `bool`.
 

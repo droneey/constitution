@@ -1,1 +1,1 @@
-export { Versions } from './versions.entity';
+export { Versions } from './versions';

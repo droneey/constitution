@@ -1,40 +1,12 @@
-import type { ProjectWarning } from '#/kernel/entities';
-import { ConfigReadStatus, WarningKind } from '#/kernel/entities';
+import { ConfigReadStatus } from '#/kernel/entities';
 
-import type { SessionDigest, SessionStart } from '../../../../domain/entities';
-import { DigestKind, HookEventName, SessionOrigin } from '../../../../domain/entities';
-import type { ConfigurationsReport, RulesSource, TreeState, WorkingTree } from '../../../contracts';
-import { ConfigurationsCheckStatus, TreeStateStatus } from '../../../contracts';
+import { DigestKind, SessionDigest, SessionStart } from '../../../../domain/entities';
+import type { RulesSource, WorkingTree } from '../../../contracts';
 
 interface DigestSessionPorts {
   readonly source: RulesSource;
   readonly workingTree: WorkingTree;
 }
-
-const presetsWarningsOf = (report: ConfigurationsReport): readonly ProjectWarning[] =>
-  report.status === ConfigurationsCheckStatus.Checked
-    ? report.warnings
-    : [
-        {
-          details:
-            report.reason === undefined
-              ? {}
-              : {
-                  reason: report.reason,
-                },
-          kind: WarningKind.ConfigurationsUnchecked,
-        },
-      ];
-
-const repositoryWarningsOf = (tree: TreeState): readonly ProjectWarning[] =>
-  tree.status === TreeStateStatus.NoRepository
-    ? [
-        {
-          details: {},
-          kind: WarningKind.NoRepository,
-        },
-      ]
-    : [];
 
 /**
  * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
@@ -87,16 +59,15 @@ const digestSession = (input: DigestSessionPorts & SessionStart): SessionDigest 
     contents: {
       core,
       count: rules.activeInAnyUnitCount,
-      isStartup:
-        input.event === HookEventName.SessionStart && input.origin === SessionOrigin.Startup,
+      isStartup: SessionStart.isStartup(input),
       kind: DigestKind.Resolved,
       listing: rules.listing,
       release: digestRelease,
-      warnings: [
-        ...rules.warnings,
-        ...repositoryWarningsOf(input.workingTree.stateOf(repositoryFolderPath)),
-        ...presetsWarningsOf(rules.configurations),
-      ],
+      warnings: SessionDigest.warningsOf({
+        configurations: rules.configurations,
+        rules: rules.warnings,
+        tree: input.workingTree.stateOf(repositoryFolderPath),
+      }),
     },
     state: {
       active: rules.active,

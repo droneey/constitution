@@ -1,6 +1,6 @@
 # Security
 
-> Governs pins, links, webviews, exported components, biometrics, push payloads, release builds, personal data at rest and in backups, downloaded code, attestation, and what the client keeps and grants.
+> Governs pins, links, webviews, exported components, biometrics, push payloads, release builds, downloaded code, attestation, and what the client keeps and grants.
 
 ## Secrets
 
@@ -53,24 +53,6 @@ A component another app can start or reach — an activity, a service, a receive
 | Why |
 |---|
 | every exported component is a door other apps on the device can open, and one exported by accident is a door nobody guards. |
-
-## Data at rest
-
-### personal-data-at-rest-kept-in-the-protected-class · MUST
-
-Personal data the app stores beyond its credentials sits in the system's strongest protected file class it can use — `complete` on iOS, `completeUnlessOpen` where work in the background must write it and `completeUntilFirstUserAuthentication` where it must read it, and the app's private, encrypted storage on Android.
-
-| Why |
-|---|
-| a device that is lost, backed up to another account or read by another app gives up whatever the app left outside the protected class. |
-
-### restorable-personal-data-left-out-of-device-backups · MUST
-
-Personal data the server holds and can restore is left out of backups to other devices; data that lives only on the device is backed up within the protection its class gives.
-
-| Why |
-|---|
-| a backup restored to another device carries the person's data to a device and an account they may not hold, while data that lives only on the device is lost without its backup. |
 
 ## Integrity
 

@@ -26,7 +26,7 @@ const wellFormed = {
     name: 'smtp',
   }),
   'src/composition/checkout/presentation/bindings/queries/cart/cart.ts':
-    "import type { Mail } from '../../../../../../kernel/contracts';\nimport { listOrders } from '../../../../../../features/orders';\nexport const cart = (mail: Mail): unknown => [mail, listOrders];\n",
+    "import type { Mail } from '../../../../../kernel/contracts';\nimport { listOrders } from '../../../../../features/orders';\nexport const cart = (mail: Mail): unknown => [mail, listOrders];\n",
   'src/composition/checkout/presentation/bindings/queries/cart/index.ts':
     "export { cart } from './cart';\n",
   'src/composition/checkout/index.ts':
@@ -55,7 +55,7 @@ const wellFormed = {
   'src/features/orders/application/contracts/repositories/queries/order.repository.ts':
     'export interface OrderReader { count: number }\n',
   'src/features/orders/application/use-cases/queries/count-orders/count-orders.use-case.ts':
-    "import type { Mail } from '../../../../../../kernel/contracts';\nimport type { OrderReader } from '../../../contracts/repositories/queries';\nexport const countOrders = (mail: Mail, reader: OrderReader): unknown => [mail, reader];\n",
+    "import type { Mail } from '../../../../../kernel/contracts';\nimport type { OrderReader } from '../../../contracts/repositories/queries';\nexport const countOrders = (mail: Mail, reader: OrderReader): unknown => [mail, reader];\n",
   'src/features/orders/application/use-cases/queries/count-orders/index.ts':
     "export { countOrders } from './count-orders.use-case';\n",
   'src/features/orders/domain/entities/index.ts': "export { order } from './order.entity';\n",
@@ -1107,7 +1107,7 @@ const blockViolations = [
     blocks: [
       'ui',
     ],
-    rule: 'binding-units-reach-no-adapter-or-ui',
+    rule: 'adapters-reached-only-from-the-root',
   },
   {
     condition: 'a binding unit imports a component',
@@ -1122,7 +1122,7 @@ const blockViolations = [
     blocks: [
       'ui',
     ],
-    rule: 'binding-units-reach-no-adapter-or-ui',
+    rule: 'binding-units-reach-no-ui',
   },
   {
     condition: 'an adapter imports the cache library',

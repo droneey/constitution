@@ -1,18 +1,18 @@
 import type { ProjectFiles } from '#/kernel/contracts';
 import type { BlockModel } from '#/kernel/entities';
 import type { AbsolutePath, BlockSource } from '#/kernel/value-objects';
-import { RepositoryRelativePath, SourceKind } from '#/kernel/value-objects';
+import { RepositoryRelativePath } from '#/kernel/value-objects';
 
 import type { PresetsFinding } from '../../../../domain/entities';
 import { PresetEntry } from '../../../../domain/entities';
+import { checkPresetSets, isReleaseChecked, PackRoleNaming } from '../../../../domain/services';
 import type {
   ConfigurationFormat,
   DistributionSources,
   PresetFileParser,
 } from '../../../contracts';
-import { checkPresetSets, PackRoleNaming } from '../../shared/check-preset-sets';
 import { loadPresetSets } from '../../shared/load-preset-sets';
-import { mergeEveryEntry } from './steps/merge-every-entry';
+import { readCheckInputs } from '../../shared/read-check-inputs';
 
 interface CheckPresetsInput {
   readonly distribution: DistributionSources;
@@ -27,6 +27,7 @@ interface CheckPresetsInput {
 const checkedFolderPathFromRepository = RepositoryRelativePath.create('');
 
 const checkPresets = (input: CheckPresetsInput): readonly PresetsFinding[] => {
+  const { model } = input;
   const loaded = loadPresetSets({
     files: input.files,
     parser: input.parser,
@@ -34,27 +35,31 @@ const checkPresets = (input: CheckPresetsInput): readonly PresetsFinding[] => {
     sourceFolderPath: input.sourceFolderPath,
     sourceFolderPathFromRepository: checkedFolderPathFromRepository,
   });
-  const entries = loaded.entries.toSorted(PresetEntry.orderOf(input.model));
+  const entries = loaded.entries.toSorted(PresetEntry.orderOf(model));
 
   return [
     ...loaded.findings,
     ...checkPresetSets({
       entries,
-      formats: input.formats,
-      model: input.model,
+      model,
       packRoleNaming: PackRoleNaming.ById,
-      ...(input.source.kind === SourceKind.Release
-        ? {
-            release: {
-              distributed: input.distribution.builtFilesOf(input.sourceFolderPath),
-              files: input.files,
-              folderPath: input.sourceFolderPath,
-              folderPathFromRepository: checkedFolderPathFromRepository,
-            },
-          }
-        : {}),
+      ...readCheckInputs({
+        entries,
+        formats: input.formats,
+        model,
+        ...(isReleaseChecked(input.source)
+          ? {
+              release: {
+                distribution: input.distribution,
+                files: input.files,
+                folderPath: input.sourceFolderPath,
+                folderPathFromRepository: checkedFolderPathFromRepository,
+              },
+            }
+          : {}),
+      }),
     }),
-    ...mergeEveryEntry(entries),
+    ...PresetEntry.mergeProblemsOf(entries),
   ];
 };
 

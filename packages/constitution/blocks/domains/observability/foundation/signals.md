@@ -40,8 +40,8 @@ A program told to stop flushes the log records, spans and metrics it holds in bu
 
 ### signal-value-masked-by-its-key → secret-kept-out-of-output · MUST
 
-Before any output or export, the value of every key of a signal — a log record's field, a span's attribute, a metric's exemplar — that holds the words of a name the project lists as secret or personal — such as `password`, `token`, `api key`, `private key`, `authorization`, `cookie`, `secret`, `email` and `phone` — is replaced, the words compared as whole words, at any depth: `refreshToken`, `apiKey` and `user_email` are masked, `input_tokens` is not. An address is recorded without its query, and a database statement only with placeholders for its values.
+Before any output or export, the value of every key of a signal — a log record's field, a span's attribute, a metric's exemplar — that holds the words of a name the project lists as secret — such as `password`, `token`, `api key`, `private key`, `authorization`, `cookie` and `secret` — is replaced, the words compared as whole words, at any depth: `refreshToken` and `apiKey` are masked, `input_tokens` is not. An address is recorded without its query, and a database statement only with placeholders for its values.
 
 | Why |
 |---|
-| a secret or a person's data passed as a field by mistake is masked whichever code wrote it, while a mask of exact keys misses `refreshToken` and one of substrings masks the counts of tokens a span must carry; instrumentation records the full URL and the statement's text by default, so a mask on logs alone leaves the same secret in every trace. |
+| a secret passed as a field by mistake is masked whichever code wrote it, while a mask of exact keys misses `refreshToken` and one of substrings masks the counts of tokens a span must carry; instrumentation records the full URL and the statement's text by default, so a mask on logs alone leaves the same secret in every trace. |

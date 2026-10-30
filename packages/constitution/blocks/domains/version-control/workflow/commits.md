@@ -28,14 +28,6 @@ A commit's body is empty, and its footer holds only trailers such as `Signed-off
 |---|
 | the reason is reviewed in the change request, and a body written beside it is a second account nobody reviews; a trailer is data a tool reads. |
 
-### commit-subject-never-a-placeholder · MUST
-
-The commit hooks reject a placeholder subject: "update", "fix stuff", "wip", "changes", "misc".
-
-| Why |
-|---|
-| a placeholder subject makes the history useless at exactly the commit someone needs to understand. |
-
 ## Hooks
 
 ### commit-checked-by-the-hooks · MUST

@@ -5,13 +5,9 @@ import type { AbsolutePath } from '#/kernel/value-objects';
 import { Version } from '#/kernel/value-objects';
 
 import { createFakeWorkingTree } from '../../../../../__tests__/working-tree.fake';
-import type {
-  ConfigurationsReport,
-  DeclaredRules,
-  RulesSource,
-  WorkingTree,
-} from '../../../../contracts';
-import { ConfigurationsCheckStatus } from '../../../../contracts';
+import type { ConfigurationsReport } from '../../../../../domain/entities';
+import { ConfigurationsCheckStatus } from '../../../../../domain/entities';
+import type { DeclaredRules, RulesSource, WorkingTree } from '../../../../contracts';
 import type { DigestSessionPorts } from '../digest-session.use-case';
 
 const CORE_TEXT = '# core\n';

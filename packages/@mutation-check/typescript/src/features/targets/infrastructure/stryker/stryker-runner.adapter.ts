@@ -8,7 +8,8 @@ import { recognise } from '#/libs/errors';
 import { SpawnErrorCode, spawnErrorCodeOf } from '#/libs/processes';
 import { problemPathsOf } from '#/libs/schemas';
 
-import type { MutationRunner, ToolExitCode } from '../../application/contracts';
+import type { MutationRunner } from '../../application/contracts';
+import type { ToolExitCode } from '../../domain/entities';
 import {
   ConfigurationError,
   ConfigurationFailure,

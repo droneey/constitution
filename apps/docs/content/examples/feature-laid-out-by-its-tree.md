@@ -13,7 +13,9 @@ features/orders/
 features/orders/
 ├── domain/
 │   └── entities/
-│       ├── order.entity.ts
+│       ├── order/
+│       │   ├── order.entity.ts
+│       │   └── index.ts
 │       └── index.ts
 ├── infrastructure/postgres/
 │   ├── models/order.model.ts

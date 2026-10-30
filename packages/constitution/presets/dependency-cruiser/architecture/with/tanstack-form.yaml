@@ -10,6 +10,6 @@ ui:
         'allowed[comment=form-library-imported-by-the-ui: tanstack-form]':
           from:
             path:
-              - /${role.presentation-layer}/
+              - /${role.presentation-layer}/(${role.widget}|${role.component})/
           to:
             path: node_modules/@tanstack/react-form/

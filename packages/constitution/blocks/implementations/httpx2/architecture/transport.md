@@ -1,6 +1,6 @@
 # Transport
 
-> Governs where httpx2 is imported and who builds the clients.
+> Governs who builds the clients and how they reach the adapters.
 
 ## General
 

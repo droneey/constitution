@@ -1,8 +1,8 @@
+import { EXECUTABLE_NAME } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
 import type { AbsolutePath, Version } from '#/kernel/value-objects';
 
-import type { PartDiagnosis } from '../../../../domain/entities';
-import { Diagnosis } from '../../../../domain/entities';
+import { Diagnosis, PartDiagnosis } from '../../../../domain/entities';
 import type {
   ExecutablePath,
   GitHooks,
@@ -10,11 +10,6 @@ import type {
   PluginRegistry,
   ReleaseFeed,
 } from '../../../contracts';
-import { reportHooks } from './steps/report-hooks';
-import { reportLink } from './steps/report-link';
-import { reportPath } from './steps/report-path';
-import { reportPlugin } from './steps/report-plugin';
-import { reportRelease } from './steps/report-release';
 
 interface DiagnoseInstallationPorts {
   readonly files: ProjectFiles;
@@ -37,35 +32,46 @@ const diagnoseInstallation = async (
   const { executable } = input;
   const latest = await input.releases.latest();
   const place = input.pinned.findProjectAround(input.startFolderPath);
+  const found = input.path.find(EXECUTABLE_NAME);
 
   return [
     {
       executable,
       kind: Diagnosis.ExecutableRuns,
     },
-    reportPlugin({
+    PartDiagnosis.ofPlugin({
       executable,
       fingerprint: input.fingerprint,
       plugin: input.plugins.installed(),
     }),
-    reportRelease({
+    PartDiagnosis.ofLatest({
       executable,
       latest,
     }),
-    reportPath({
+    PartDiagnosis.ofPath({
       executable,
-      path: input.path,
+      found:
+        found === undefined
+          ? undefined
+          : {
+              answered: input.path.versionOf(found),
+              path: found,
+            },
     }),
-    reportLink({
+    PartDiagnosis.ofLink({
       executable,
-      files: input.files,
-      pinned: input.pinned,
-      place,
+      linked:
+        place === undefined
+          ? undefined
+          : {
+              place,
+              release: input.pinned.readRelease(place),
+              realFolderPath: input.files.realFolder(place.releaseFolderPath),
+            },
     }),
-    reportHooks({
-      hooks: input.hooks,
-      repositoryFolderPath: place?.repositoryFolderPath,
-    }),
+    PartDiagnosis.ofHooks(
+      place === undefined ? undefined : input.hooks.stateOf(place.repositoryFolderPath),
+    ),
   ];
 };
 

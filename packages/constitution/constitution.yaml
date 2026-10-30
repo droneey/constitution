@@ -6,6 +6,7 @@ domains:
   - version-control
   - workspace
   - ui
+  - copy
 platforms:
   - cli
 languages:

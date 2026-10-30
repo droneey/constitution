@@ -6,7 +6,8 @@ import { withOption } from '#/libs/commander';
 import type { CommandContext } from '#/shared/cli';
 import { BASE_FLAG, baseFlagsOf } from '#/shared/cli';
 
-import type { PackBase, Validation } from '../../../../application/use-cases/queries/check';
+import type { PackBase } from '../../../../application/use-cases/queries/check';
+import type { Validation } from '../../../../domain/services';
 import { blocksOutcomeOf, blocksSectionsOf, NO_BLOCKS, packBaseOf } from '../../../utils';
 
 interface BlocksCheckContext extends CommandContext {

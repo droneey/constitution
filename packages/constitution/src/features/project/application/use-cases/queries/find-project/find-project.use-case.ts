@@ -1,21 +1,9 @@
-import { CONFIG_FILE_NAME, PATH_SEPARATOR, RELEASE_FOLDER_PATH } from '#/kernel/constants';
+import { CONFIG_FILE_NAME } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
-import type { ProjectPlace } from '#/kernel/entities';
+import { ProjectPlace } from '#/kernel/entities';
 import { AbsolutePath } from '#/kernel/value-objects';
 
 const REPOSITORY_MARKER_NAME = '.git';
-const rootFolderPath = AbsolutePath.create(PATH_SEPARATOR);
-
-const parentOf = (folderPath: AbsolutePath): AbsolutePath => {
-  const at = folderPath.lastIndexOf(PATH_SEPARATOR);
-
-  return at <= 0 ? rootFolderPath : AbsolutePath.create(folderPath.slice(0, at));
-};
-
-const placeOf = (repositoryFolderPath: AbsolutePath): ProjectPlace => ({
-  releaseFolderPath: AbsolutePath.join(repositoryFolderPath, RELEASE_FOLDER_PATH),
-  repositoryFolderPath,
-});
 
 interface FindProjectInput {
   readonly files: ProjectFiles;
@@ -30,22 +18,13 @@ const findProject = (input: FindProjectInput): ProjectPlace | undefined => {
     return undefined;
   }
 
-  const hasConfig = (folderPath: AbsolutePath): boolean =>
-    files.isFile(AbsolutePath.join(folderPath, CONFIG_FILE_NAME));
-
-  let found: AbsolutePath | undefined;
-
-  for (let folderPath = startFolderPath; ; folderPath = parentOf(folderPath)) {
-    found = hasConfig(folderPath) ? folderPath : found;
-
-    if (files.exists(AbsolutePath.join(folderPath, REPOSITORY_MARKER_NAME))) {
-      return found === undefined ? undefined : placeOf(found);
-    }
-
-    if (folderPath === rootFolderPath) {
-      return hasConfig(startFolderPath) ? placeOf(startFolderPath) : undefined;
-    }
-  }
+  return ProjectPlace.find(
+    AbsolutePath.upwardFrom(startFolderPath).map((folderPath) => ({
+      folderPath,
+      holdsConfig: files.isFile(AbsolutePath.join(folderPath, CONFIG_FILE_NAME)),
+      holdsRepository: files.exists(AbsolutePath.join(folderPath, REPOSITORY_MARKER_NAME)),
+    })),
+  );
 };
 
 export { findProject };

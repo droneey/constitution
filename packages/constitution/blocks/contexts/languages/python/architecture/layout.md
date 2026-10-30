@@ -20,11 +20,11 @@ A program's entry is the function `main()` of `main.py` at the top of the import
 
 ### relative-imports-stay-in-the-module → module-files-import-each-other-directly · MUST
 
-An import that leaves its module — a feature, or outside `features/` the top-level folder it sits in — is absolute, from the import package's name. Files inside one module import each other by relative path, and a relative import never climbs out of the module. A role folder of a feature's domain or application, and another module of a layer, are imported through their surface. A module never imports itself by its absolute path.
+An import that leaves the outermost module holding its file — a feature, a module of composition, a lib, a module of a shared layer, or else the top-level folder it sits in — is absolute, from the import package's name. Files inside one such module import each other by relative path, and a relative import never climbs out of it. A role folder of the module, and another module of a layer, are imported through their surface. A module never imports itself by its absolute path.
 
 | Why |
 |---|
-| the import then shows at a glance whether it crosses a feature's border, and a feature that imports its own absolute path starts a cycle through its surface. |
+| the import then shows at a glance whether it crosses a module's border, and a module that imports its own absolute path starts a cycle through its surface. |
 
 ### surface-is-init-with-sorted-all → surface-only-re-exports · MUST
 

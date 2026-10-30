@@ -6,8 +6,12 @@ import { ConfigReadStatus, WarningKind } from '#/kernel/entities';
 import { AbsolutePath } from '#/kernel/value-objects';
 
 import { createFakeWorkingTree } from '../../../../../__tests__/working-tree.fake';
-import { DigestKind, HookEventName, SessionOrigin } from '../../../../../domain/entities';
-import { ConfigurationsCheckStatus } from '../../../../contracts';
+import {
+  ConfigurationsCheckStatus,
+  DigestKind,
+  HookEventName,
+  SessionOrigin,
+} from '../../../../../domain/entities';
 import { digestSession } from '../digest-session.use-case';
 import { CORE_TEXT, QUIET, sessionPortsOf, unchecked, version } from './digest-session.fixtures';
 

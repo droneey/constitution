@@ -1,6 +1,6 @@
 # Configuration
 
-> Governs who creates the pino instance and imports pino.
+> Governs who creates the pino instance and how code logs through it.
 
 ## General
 

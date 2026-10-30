@@ -5,6 +5,7 @@ import type { ProblemOf } from '#/kernel/types';
 import { BlockId, Glob, RuleSlug } from '#/kernel/value-objects';
 import { textOf } from '#/shared/cli';
 
+import { FrontMatterField } from '../../../domain/entities';
 import type {
   AbstractBlocksDetails,
   BlockFormDetails,
@@ -14,7 +15,7 @@ import type {
   CyclesDetails,
   FrontMatterDetails,
   SeamsDetails,
-} from '../../../application/use-cases/queries/check';
+} from '../../../domain/services';
 import {
   AbstractBlocksCode,
   BlockFormCode,
@@ -24,8 +25,7 @@ import {
   CyclesCode,
   FrontMatterCode,
   SeamsCode,
-} from '../../../application/use-cases/queries/check';
-import { FrontMatterField } from '../../../domain/entities';
+} from '../../../domain/services';
 import { structureTexts } from '../structure-texts.utils';
 
 describe('structureTexts', () => {

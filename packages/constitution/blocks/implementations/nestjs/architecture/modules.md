@@ -1,6 +1,6 @@
 # Modules
 
-> Governs the suffixes of Nest's files and their place in the tree, what a feature's module imports and takes from the root, global modules, and where NestJS is imported.
+> Governs the suffixes of Nest's files and their place in the tree, what a feature's module imports and takes from the root, and global modules.
 
 A module's file ends in **`.module.ts`**{#nest-module} and a controller's in **`.controller.ts`**{#nest-controller}; a token bound to its implementation by `useClass` or `useFactory` ends in **`.provider.ts`**{#nest-provider}, and the framework's providers of a request in **`.filter.ts`**{#nest-filter}, **`.pipe.ts`**{#nest-pipe}, **`.guard.ts`**{#nest-guard} and **`.interceptor.ts`**{#nest-interceptor}.
 
@@ -29,14 +29,6 @@ A feature's module imports only modules of its own feature, of `shared/` and of 
 | Why |
 |---|
 | a feature's module that imports another feature's ties the two features as an import of code would. |
-
-### nestjs-imported-by-modules-and-providers → server-framework-imported-by-the-delivery-units · MUST
-
-NestJS's home reaches past the edge into the presentation of features and of composition modules, which holds the modules and controllers, and into every `providers/` folder, whose providers build the use cases.
-
-| Why |
-|---|
-| the injector's decorators are written on the classes these folders hold; the domain and the application, its use cases, stay free of the framework, and a provider's factory builds each use case over its ports. |
 
 ### global-module-never-declared → container-wires-only-declared-bindings · MUST
 

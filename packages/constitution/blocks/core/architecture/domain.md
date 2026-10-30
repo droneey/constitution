@@ -5,12 +5,12 @@
 ## The vocabulary
 
 - **Ubiquitous language.** Names match the business, mirrored from the people who own it and kept in the project's glossary.
-- **Bounded context.** A feature is one: one word may mean different things in two features. The **shared kernel** is the part of the model two or more contexts share with one meaning.
+- **Bounded context.** A feature is one: one word may mean different things in two features. The **shared kernel** holds what two or more contexts share with one meaning: the part of the model they use alike, and the ports of outside systems they ask in the same words.
 - *Entity.* A business type with identity, which lives through changes. A *value object* is a small immutable value that guards an invariant and is compared by its data.
-- *Aggregate.* Entities and values changed as one, one boundary of consistency; its **aggregate root** is the entity through which alone it changes. A *factory* is the function that builds a valid aggregate: its `create`, or one of its own when building needs other aggregates.
-- **Domain service.** A rule or a computation of the domain that is no one aggregate's: stateless and pure.
+- *Aggregate.* Entities and values changed as one, one boundary of consistency; its **aggregate root** is the entity through which alone it changes. A *factory* builds a valid aggregate: its `create`, or, when building needs several aggregates or values, a domain service that calls that `create`.
+- **Domain service.** A rule or a computation of the domain that no one entity or aggregate owns: stateless and pure.
 - **Domain event.** What happened, in the past tense and the domain's words, yielded by the transition that decided it.
-- *Repository.* The port through which a use case loads and saves an aggregate, in the aggregate's words.
+- *Repository.* The port through which a use case loads an aggregate, or an entity read on its own, and saves an aggregate, in the model's words.
 - **Anti-corruption layer.** An adapter that translates another model — an outside system's or another feature's — into this context's terms.
 
 Their form is the language's.
@@ -41,6 +41,14 @@ A business value with an invariant — an email address, an amount in its curren
 |---|
 | the invariant has one home, in the layer that owns its meaning. |
 
+### value-object-checks-what-the-domain-relies-on · SHOULD
+
+A value object checks the invariants the domain relies on and no more; a stricter check an interface asks for — a required field, a format hint, a stricter pattern — is the interface's own, and composes the value object's check instead of restating it.
+
+| Why |
+|---|
+| the domain's check then changes only when the domain's needs do, and an interface's wishes never refuse a value the domain would accept through another door. |
+
 ## Aggregates
 
 ### aggregate-changed-only-by-its-transitions · MUST
@@ -53,11 +61,11 @@ An aggregate changes only through its root's transitions. Each transition, decla
 
 ### independent-entity-is-its-own-aggregate · SHOULD
 
-An entity with a life of its own — created, changed or removed apart from its parent — is an aggregate of its own, which others reference by identifier.
+An entity with a life of its own — created, changed or removed apart from its parent — is an aggregate of its own, which others reference by identifier. An invariant that must hold in one transaction across several aggregates is the sign their boundary is drawn wrong.
 
 | Why |
 |---|
-| an aggregate that holds what changes apart locks it on every change, and two people editing unrelated things collide. |
+| an aggregate that holds what changes apart locks it on every change, and two people editing unrelated things collide; one split where an invariant spans it lets each part change into a state the two together forbid. |
 
 ### transition-yields-its-event · SHOULD
 
@@ -71,7 +79,7 @@ A transition the business announces returns the domain event it decided beside t
 
 ### domain-service-holds-a-rule-of-several · MUST
 
-A rule that needs several aggregates is a domain service: a pure function the domain declares, which takes the aggregates and values it decides on and never a port. A rule that must hold at once across several aggregates is the sign their boundary is drawn wrong.
+A decision or computation that reads several aggregates is a domain service: a pure function the domain declares, which takes the aggregates and values it decides on and never a port.
 
 | Why |
 |---|

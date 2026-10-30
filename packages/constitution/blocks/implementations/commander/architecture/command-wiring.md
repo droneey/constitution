@@ -1,6 +1,6 @@
 # Command wiring
 
-> Governs a command file and where commander is imported.
+> Governs a command file and how the root adds it to the program.
 
 ## General
 

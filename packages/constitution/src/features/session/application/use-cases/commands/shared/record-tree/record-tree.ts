@@ -1,9 +1,9 @@
 import { ConfigReadStatus } from '#/kernel/entities';
 
 import type { FingerprintMark } from '../../../../../domain/entities';
+import { TreeStateStatus } from '../../../../../domain/entities';
 import type { SessionId } from '../../../../../domain/value-objects';
 import type { WorkingTree } from '../../../../contracts';
-import { TreeStateStatus } from '../../../../contracts';
 import type { SessionCommandRepository } from '../../../../contracts/repositories/commands';
 
 interface RecordTreeInput {

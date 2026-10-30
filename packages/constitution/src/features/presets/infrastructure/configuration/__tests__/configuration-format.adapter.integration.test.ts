@@ -6,9 +6,8 @@ import { goldenFileText, goldenOf } from '#/__tests__/golden.fixtures';
 import { BlockId, RepositoryRelativePath } from '#/kernel/value-objects';
 
 import { runConfigurationFormatSuite } from '../../../__tests__/configuration-format.suite';
-import type { ConfigurationFile } from '../../../application/contracts';
-import { SettingShape } from '../../../application/contracts';
-import type { BlockMarks, Setting } from '../../../domain/entities';
+import type { BlockMarks, ConfigurationFile, Setting } from '../../../domain/entities';
+import { SettingShape } from '../../../domain/entities';
 import { FileFormat } from '../../../domain/value-objects';
 import { createConfigurationFormat } from '../configuration-format.adapter';
 

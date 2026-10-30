@@ -1,6 +1,6 @@
 # Names
 
-> Governs the case of Python's names and its named constants.
+> Governs the case of Python's names, the ending of its exceptions' names and its named constants.
 
 ## Meaning
 
@@ -21,3 +21,11 @@ A class, a type alias, a type parameter and an exception are PascalCase; a modul
 | Why |
 |---|
 | every Python reader and library uses these cases, so the case alone tells a class from a function and a constant from a variable before the declaration is read. |
+
+### exception-name-ends-in-error → error-name-ends-in-error · MUST
+
+An exception class the program raises for a failure ends its name in `Error`: `OrderNotFoundError`, never `OrderNotFound` or `OrderNotFoundException`.
+
+| Why |
+|---|
+| PEP 8 and the standard library's own `ValueError` and `KeyError` end an error's name so, and a project's errors then read like the ones every reader knows. |
