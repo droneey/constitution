@@ -2,27 +2,45 @@ import { mkdirSync, readdirSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { attempted, isSyntaxError } from '#/kernel/utils';
+import type { AbsolutePath } from '#/kernel/value-objects';
 import { BlockId } from '#/kernel/value-objects';
-import { isSystemError } from '#/libs/system-error';
 
 import type {
+  GateCommandRepository,
   SaveStateInput,
   SessionCommandRepository,
 } from '../../domain/contracts/repositories/commands';
 import type { SessionQueryRepository } from '../../domain/contracts/repositories/queries';
-import type { SessionState } from '../../domain/entities';
+import type { ReviewDebt, SessionState } from '../../domain/entities';
 import { SessionAgent, SessionMark } from '../../domain/entities';
 import type { SessionId } from '../../domain/value-objects';
 import { TreeFingerprint } from '../../domain/value-objects';
-import { sessionStateModel } from './models';
-import { appendPrivately, readUnfollowed, writeWhole } from './private-file.utils';
+import { agentFileNameOf } from './agent-file.utils';
+import {
+  LineMark,
+  markLineOf,
+  pathsAfterMarkOf,
+  reviewDebtsOfLines,
+  sessionStateModel,
+  settledLineOf,
+} from './models';
+import { appendPrivately, readUnfollowed, writeOrDrop, writeWhole } from './private-file.utils';
+import type { FolderOf, SessionLines } from './session-lines.utils';
+import { sessionLinesOf } from './session-lines.utils';
 import { wireOfState } from './session-state-wire.utils';
 import type { StateEnvironment, StateFolderWarning } from './state-folder.utils';
-import { privateStateFolder, removeOwnedFolder, sweepStale } from './state-folder.utils';
+import {
+  PRIVATE_FOLDER_MODE,
+  privateStateFolder,
+  removeOwnedFolder,
+  sweepStale,
+} from './state-folder.utils';
+import { createXdgGateRepository } from './xdg-gate.repository';
 
 const PROGRAM_FOLDER_NAME = 'droneey-constitution';
 const SESSIONS_FOLDER_NAME = 'sessions';
-const SESSION_FOLDER_MODE = 0o700;
+const OWN_CHANGES_FILE_NAME = 'owned';
+const REVIEW_DEBT_FILE_NAME = 'review-debt';
 // Why: Claude Code forgets a transcript after 30 days; an instant subtracts no days.
 const keptFor = Temporal.Duration.from({
   hours: 720,
@@ -43,13 +61,6 @@ const stateOf = (text: string): SessionState | undefined => {
 
 const stateText = (state: SessionState): string => `${JSON.stringify(wireOfState(state))}\n`;
 
-const tryWrite = (write: () => void): void => {
-  attempted({
-    effect: write,
-    isRecognised: isSystemError,
-  });
-};
-
 interface MarkFile {
   readonly folder: string | undefined;
   readonly mark: SessionMark;
@@ -66,7 +77,7 @@ const writeMark = (
     return;
   }
 
-  tryWrite(() => {
+  writeOrDrop(() => {
     writeWhole({
       path: join(folder, input.mark),
       text: `${input.value}\n`,
@@ -82,7 +93,10 @@ const readMark = (input: MarkFile): string | undefined =>
 const remindedFile = (input: { agent: SessionAgent; folder: string }): string =>
   join(
     input.folder,
-    input.agent === SessionAgent.main ? REMINDED_FILE_NAME : `${REMINDED_FILE_NAME}.${input.agent}`,
+    agentFileNameOf({
+      agent: input.agent,
+      name: REMINDED_FILE_NAME,
+    }),
   );
 
 interface SaveInput {
@@ -92,7 +106,7 @@ interface SaveInput {
 
 const writeState = ({ folder, saved }: SaveInput): void => {
   mkdirSync(folder, {
-    mode: SESSION_FOLDER_MODE,
+    mode: PRIVATE_FOLDER_MODE,
     recursive: true,
   });
   writeWhole({
@@ -116,6 +130,140 @@ const writeState = ({ folder, saved }: SaveInput): void => {
   }
 };
 
+const handBackOf = (
+  lines: SessionLines,
+): Pick<
+  SessionCommandRepository & SessionQueryRepository,
+  | 'addOwnChanges'
+  | 'addReviewDebt'
+  | 'clearOwnChanges'
+  | 'ownChanges'
+  | 'reviewDebt'
+  | 'settleReviewDebt'
+> => ({
+  addOwnChanges: (added): void => {
+    lines.append({
+      ...added,
+      lines: added.paths,
+      name: OWN_CHANGES_FILE_NAME,
+    });
+  },
+  addReviewDebt: (added): void => {
+    lines.append({
+      agent: SessionAgent.main,
+      lines: added.paths.map(
+        (path): ReviewDebt => ({
+          agent: added.subagent,
+          path,
+        }),
+      ),
+      name: REVIEW_DEBT_FILE_NAME,
+      session: added.session,
+    });
+  },
+  clearOwnChanges: (cleared): void => {
+    lines.append({
+      ...cleared,
+      lines: [
+        markLineOf(LineMark.Cleared),
+      ],
+      name: OWN_CHANGES_FILE_NAME,
+    });
+  },
+  ownChanges: (asked): readonly AbsolutePath[] =>
+    pathsAfterMarkOf(
+      lines.readLines({
+        ...asked,
+        name: OWN_CHANGES_FILE_NAME,
+      }),
+      LineMark.Cleared,
+    ),
+  reviewDebt: (session): readonly ReviewDebt[] =>
+    reviewDebtsOfLines(
+      lines.readLines({
+        agent: SessionAgent.main,
+        name: REVIEW_DEBT_FILE_NAME,
+        session,
+      }),
+    ),
+  settleReviewDebt: (settled): void => {
+    lines.append({
+      agent: SessionAgent.main,
+      lines: settled.debts.map(settledLineOf),
+      name: REVIEW_DEBT_FILE_NAME,
+      session: settled.session,
+    });
+  },
+});
+
+const marksOf = (
+  folderOf: FolderOf,
+): Pick<
+  SessionCommandRepository & SessionQueryRepository,
+  'addReminded' | 'fingerprint' | 'recordFingerprint' | 'recordUnjudged' | 'reminded' | 'unjudged'
+> => ({
+  addReminded: (added): void => {
+    const folder = folderOf(added.session);
+
+    if (folder === undefined) {
+      return;
+    }
+
+    writeOrDrop(() => {
+      appendPrivately({
+        path: remindedFile({
+          agent: added.agent,
+          folder,
+        }),
+        text: added.ids.map((id) => `${id}\n`).join(''),
+      });
+    });
+  },
+  recordFingerprint: (recorded): void => {
+    writeMark({
+      folder: folderOf(recorded.session),
+      mark: recorded.mark,
+      value: recorded.fingerprint,
+    });
+  },
+  recordUnjudged: (recorded): void => {
+    writeMark({
+      folder: folderOf(recorded.session),
+      mark: SessionMark.Unjudged,
+      value: recorded.reason,
+    });
+  },
+  fingerprint: (asked): TreeFingerprint | undefined => {
+    const text = readMark({
+      folder: folderOf(asked.session),
+      mark: asked.mark,
+    });
+
+    return TreeFingerprint.is(text) ? text : undefined;
+  },
+  reminded: (asked): ReadonlySet<BlockId> => {
+    const folder = folderOf(asked.session);
+
+    return new Set(
+      folder === undefined
+        ? []
+        : readUnfollowed(
+            remindedFile({
+              agent: asked.agent,
+              folder,
+            }),
+          )
+            ?.split('\n')
+            .filter(BlockId.is),
+    );
+  },
+  unjudged: (session: SessionId): string | undefined =>
+    readMark({
+      folder: folderOf(session),
+      mark: SessionMark.Unjudged,
+    }),
+});
+
 interface SessionsPlace {
   readonly environment: StateEnvironment;
   readonly formerFolder: string;
@@ -130,7 +278,7 @@ interface XdgSessionRepositoryInput extends SessionsPlace {
 
 const createXdgSessionRepository = (
   input: XdgSessionRepositoryInput,
-): SessionCommandRepository & SessionQueryRepository => {
+): GateCommandRepository & SessionCommandRepository & SessionQueryRepository => {
   let prepared:
     | {
         readonly folder: string | undefined;
@@ -161,38 +309,16 @@ const createXdgSessionRepository = (
     return folder === undefined ? undefined : join(folder, session);
   };
 
+  const lines = sessionLinesOf(folderOf);
+
   return {
-    addReminded: (added): void => {
-      const folder = folderOf(added.session);
-
-      if (folder === undefined) {
-        return;
-      }
-
-      tryWrite(() => {
-        appendPrivately({
-          path: remindedFile({
-            agent: added.agent,
-            folder,
-          }),
-          text: added.ids.map((id) => `${id}\n`).join(''),
-        });
-      });
-    },
-    recordFingerprint: (recorded): void => {
-      writeMark({
-        folder: folderOf(recorded.session),
-        mark: recorded.mark,
-        value: recorded.fingerprint,
-      });
-    },
-    recordUnjudged: (recorded): void => {
-      writeMark({
-        folder: folderOf(recorded.session),
-        mark: SessionMark.Unjudged,
-        value: recorded.reason,
-      });
-    },
+    ...createXdgGateRepository({
+      lines,
+      maxEntries: input.maxSessions,
+      now: input.now,
+    }),
+    ...handBackOf(lines),
+    ...marksOf(folderOf),
     saveState: (saved): void => {
       removeOwnedFolder({
         folder: input.formerFolder,
@@ -212,42 +338,13 @@ const createXdgSessionRepository = (
         now: input.now(),
       });
 
-      tryWrite(() => {
+      writeOrDrop(() => {
         writeState({
           folder: join(sessions, saved.session),
           saved,
         });
       });
     },
-    fingerprint: (asked): TreeFingerprint | undefined => {
-      const text = readMark({
-        folder: folderOf(asked.session),
-        mark: asked.mark,
-      });
-
-      return TreeFingerprint.is(text) ? text : undefined;
-    },
-    reminded: (asked): ReadonlySet<BlockId> => {
-      const folder = folderOf(asked.session);
-
-      return new Set(
-        folder === undefined
-          ? []
-          : readUnfollowed(
-              remindedFile({
-                agent: asked.agent,
-                folder,
-              }),
-            )
-              ?.split('\n')
-              .filter(BlockId.is),
-      );
-    },
-    unjudged: (session: SessionId): string | undefined =>
-      readMark({
-        folder: folderOf(session),
-        mark: SessionMark.Unjudged,
-      }),
     state: (session: SessionId): SessionState | undefined => {
       const folder = folderOf(session);
       const text = folder === undefined ? undefined : readUnfollowed(join(folder, STATE_FILE_NAME));

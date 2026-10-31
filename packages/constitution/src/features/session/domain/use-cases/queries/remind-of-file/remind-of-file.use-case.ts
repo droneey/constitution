@@ -4,7 +4,7 @@ import { AbsolutePath, BlockId, RepositoryRelativePath } from '#/kernel/value-ob
 
 import type { SessionQueryRepository } from '../../../contracts/repositories/queries';
 import type { Reminder, SessionAgent } from '../../../entities';
-import { SessionState } from '../../../entities';
+import { ActiveBlocks } from '../../../entities';
 import type { SessionId } from '../../../value-objects';
 
 interface RemindOfFileInput {
@@ -35,7 +35,7 @@ const remindOfFile = (input: RemindOfFileInput): Reminder | undefined => {
   });
 
   return {
-    blocks: SessionState.governing(state, path)
+    blocks: ActiveBlocks.governing(state, path)
       .filter((block) => !reminded.has(block.id))
       .map((block) => ({
         files: block.files,

@@ -238,11 +238,6 @@ const blockOf = (draft: BlockDraft): BlockSetBlock => {
     requires: draft.card.requires.filter(BlockId.is),
     seams: draft.seams,
     source: draft.source,
-    ...(draft.card.summary === undefined
-      ? {}
-      : {
-          summary: draft.card.summary,
-        }),
   };
 };
 

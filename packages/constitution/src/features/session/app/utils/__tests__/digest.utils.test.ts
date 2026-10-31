@@ -1,163 +1,189 @@
 import { describe, expect, it } from 'bun:test';
 
-import { ConfigKey, Layer, Level } from '#/kernel/constants';
+import { goldenFileText, goldenOf } from '#/__tests__/golden.fixtures';
+import { Axis, ConfigKey, Layer } from '#/kernel/constants';
 import type { ProjectWarning } from '#/kernel/entities';
 import { WarningKind } from '#/kernel/entities';
 import {
   AbsolutePath,
   BlockId,
   BlockSource,
-  RuleSlug,
-  repositoryUnit,
+  PackPath,
+  UnitPath,
   Version,
 } from '#/kernel/value-objects';
-import { warningTextOf } from '#/shared/cli';
 
+import type { DigestContents, DigestListing, DigestUnit } from '../../../domain/entities';
 import { DigestKind } from '../../../domain/entities';
-import { blockListLines } from '../block-list.utils';
 import { digestOf } from '../digest.utils';
-import { overrideListLines } from '../override-list.utils';
 
-const RELEASE_FOLDER_PATH = '/work/project/.droneey/constitution';
-const releaseFiles = {
-  folderPath: AbsolutePath.create(RELEASE_FOLDER_PATH),
+const release = {
+  folderPath: AbsolutePath.create('/work/project/.droneey/constitution'),
   version: Version.create('1.0.0'),
 };
-const RELEASE_LINE =
-  "The Droneey Constitution 1.0.0 supplies this repository's rules. Block files live under /work/project/.droneey/constitution.";
-const emptyListing = {
-  overrides: [],
-  repository: [],
-  units: [],
+const CORE = '---\nid: core\n---\n\n# Core\n\nThe rules a repository is built by.\n';
+const fromRelease = BlockSource.create(undefined);
+const fromPack = BlockSource.create(PackPath.create('./rules'));
+
+const listing: DigestListing = {
+  repository: [
+    {
+      id: BlockId.create('ui'),
+      layer: Layer.Domain,
+      source: fromRelease,
+    },
+    {
+      id: BlockId.create('browser'),
+      layer: Layer.Platform,
+      source: fromRelease,
+    },
+    {
+      id: BlockId.create('typescript'),
+      layer: Layer.Language,
+      source: fromRelease,
+    },
+    {
+      id: BlockId.create('react'),
+      layer: Layer.Implementation,
+      source: fromRelease,
+    },
+    {
+      id: BlockId.create('lint'),
+      layer: Layer.Implementation,
+      source: fromPack,
+    },
+  ],
+  units: [
+    {
+      leftOutAxes: [
+        Axis.Workflow,
+      ],
+      leftOutBlocks: [
+        BlockId.create('browser'),
+      ],
+      own: [
+        {
+          id: BlockId.create('api'),
+          source: fromRelease,
+        },
+        {
+          id: BlockId.create('style'),
+          source: fromPack,
+        },
+      ],
+      unit: UnitPath.create('apps/web'),
+    },
+  ],
+};
+
+const memberOf = (index: number): DigestUnit => ({
+  leftOutAxes: [
+    Axis.Workflow,
+  ],
+  leftOutBlocks: [
+    BlockId.create('ui'),
+  ],
+  own: [
+    {
+      id: BlockId.create('api'),
+      source: fromRelease,
+    },
+  ],
+  unit: UnitPath.create(`apps/member-${String(index).padStart(3, '0')}`),
+});
+
+const warnings: readonly ProjectWarning[] = [
+  {
+    details: {
+      file: 'constitution.yaml',
+      key: ConfigKey.Packs,
+    },
+    kind: WarningKind.KeyMissing,
+  },
+  {
+    details: {},
+    kind: WarningKind.NoRepository,
+  },
+];
+
+const variants: Readonly<Record<string, DigestContents>> = {
+  'resolved at the start of a session': {
+    core: CORE,
+    isStartup: true,
+    kind: DigestKind.Resolved,
+    listing,
+    release,
+    warnings,
+  },
+  'resolved, its map cut to the budget': {
+    core: CORE,
+    isStartup: false,
+    kind: DigestKind.Resolved,
+    listing: {
+      repository: listing.repository,
+      units: Array.from(
+        {
+          length: 160,
+        },
+        (_, index) => memberOf(index + 1),
+      ),
+    },
+    release,
+    warnings: [],
+  },
+  'resolved, its warnings cut to their share': {
+    core: CORE,
+    isStartup: false,
+    kind: DigestKind.Resolved,
+    listing,
+    release,
+    warnings: Array.from(
+      {
+        length: 40,
+      },
+      (): ProjectWarning => ({
+        details: {},
+        kind: WarningKind.NoRepository,
+      }),
+    ),
+  },
+  'constitution.yaml does not parse': {
+    core: CORE,
+    kind: DigestKind.Unparsed,
+    lines: [
+      3,
+    ],
+    release,
+  },
+  'no release is installed': {
+    kind: DigestKind.NoRelease,
+    releaseFolderPath: release.folderPath,
+  },
 };
 
 describe('digestOf', () => {
-  it.each([
-    {
-      condition: 'one block is active',
-      count: 1,
-      counted: 'constitution.yaml makes 1 block active.',
-    },
-    {
-      condition: 'several blocks are active',
-      count: 2,
-      counted: 'constitution.yaml makes 2 blocks active.',
-    },
-  ])(
-    'should give the release and the count, then the warnings, core, the overrides and the block list, when $condition',
-    ({ count, counted }) => {
-      // Arrange
-      const warning: ProjectWarning = {
-        details: {
-          file: 'constitution.yaml',
-          key: ConfigKey.Packs,
-        },
-        kind: WarningKind.KeyMissing,
-      };
-      const contents = {
-        core: '# Core\n',
-        count,
-        isStartup: false,
-        kind: DigestKind.Resolved,
-        listing: {
-          ...emptyListing,
-          overrides: [
-            {
-              level: Level.May,
-              rule: RuleSlug.create('inputs-are-labelled'),
-              unit: repositoryUnit,
-            },
-          ],
-          repository: [
-            {
-              files: [],
-              id: BlockId.create('ui'),
-              layer: Layer.Domain,
-              source: BlockSource.create(),
-              summary: 'The screens.',
-            },
-          ],
-        },
-        release: releaseFiles,
-        warnings: [
-          warning,
-        ],
-      } as const;
-
-      // Act
-      const digest = digestOf(contents);
-
-      // Assert
-      expect(digest).toStrictEqual({
-        body: [
-          '⚠️ Warnings',
-          `- config: ${warningTextOf(warning)}`,
-          '',
-          '# Core',
-          '',
-          ...overrideListLines(contents.listing.overrides),
-          '',
-          ...blockListLines(contents.listing),
-        ],
-        head: [
-          RELEASE_LINE,
-          counted,
-        ],
-      });
-    },
-  );
-
-  it('should give core alone and the line constitution.yaml stops at when it does not parse', () => {
-    // Arrange
-    const contents = {
-      core: '---\nid: core\n---\n\n# Core\n',
-      kind: DigestKind.Unparsed,
-      lines: [
-        4,
-      ],
-      release: releaseFiles,
-    } as const;
-
+  it('should word and lay out the digest of each kind as the golden file shows it', async () => {
     // Act
-    const digest = digestOf(contents);
+    const golden = goldenOf(
+      Object.fromEntries(
+        Object.entries(variants).map(([name, contents]) => {
+          const digest = digestOf(contents);
+
+          return [
+            name,
+            [
+              ...digest.head,
+              '',
+              ...digest.body,
+            ].join('\n'),
+          ];
+        }),
+      ),
+    );
 
     // Assert
-    expect(digest).toStrictEqual({
-      body: [
-        '# Core',
-      ],
-      head: [
-        RELEASE_LINE,
-        'constitution.yaml does not parse at line 4; only core applies.',
-      ],
-    });
-  });
-
-  it('should give one line that names the release folder and points to doctor when the release cannot give the rules', () => {
-    // Arrange
-    const contents = {
-      kind: DigestKind.NoRelease,
-      releaseFolderPath: AbsolutePath.create(RELEASE_FOLDER_PATH),
-    } as const;
-
-    // Act
-    const digest = digestOf(contents);
-
-    // Assert
-    expect({
-      body: digest.body,
-      lines: digest.head.length,
-      names: [
-        RELEASE_FOLDER_PATH,
-        'constitution doctor',
-      ].map((name) => digest.head[0]?.includes(name)),
-    }).toStrictEqual({
-      body: [],
-      lines: 1,
-      names: [
-        true,
-        true,
-      ],
-    });
+    expect(golden).toBe(
+      await goldenFileText(new URL('digest.golden.txt', import.meta.url), golden),
+    );
   });
 });

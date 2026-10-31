@@ -19,6 +19,13 @@ interface Kept {
   state: SessionState | undefined;
 }
 
+type Reset = Omit<Kept, 'state'>;
+
+interface Swept {
+  searchFrom: AbsolutePath;
+  session: SessionId;
+}
+
 interface KeptAfter extends Kept {
   askedBefore: number;
 }
@@ -79,10 +86,14 @@ const runOf = async (input: {
 }): Promise<{
   asked: SessionStart[];
   kept: KeptAfter[];
+  reset: Reset[];
   stdout: string;
+  swept: Swept[];
 }> => {
   const asked: SessionStart[] = [];
   const kept: KeptAfter[] = [];
+  const reset: Reset[] = [];
+  const swept: Swept[] = [];
   const { context, record } = createFakeContext({
     ...(input.places === undefined
       ? {}
@@ -107,6 +118,12 @@ const runOf = async (input: {
           askedBefore: asked.length,
         });
       },
+      resetReading: (start: Reset): void => {
+        reset.push(start);
+      },
+      sweepStaleSessions: (sweep: Swept): void => {
+        swept.push(sweep);
+      },
     }),
     group: 'hook',
   });
@@ -114,7 +131,9 @@ const runOf = async (input: {
   return {
     asked,
     kept,
+    reset,
     stdout: record().stdout,
+    swept,
   };
 };
 
@@ -166,8 +185,56 @@ describe('createSessionStartCommand', () => {
           },
         ],
         kept: [],
+        reset: [
+          {
+            event: HookEventName.SubagentStart,
+            origin: SessionOrigin.Startup,
+            session: SessionId.create('session-1'),
+          },
+        ],
         stdout: '',
+        swept: [],
       });
+    },
+  );
+
+  it.each<{
+    condition: string;
+    event: string;
+    swept: Swept[];
+  }>([
+    {
+      condition: 'the session starts',
+      event: 'SessionStart',
+      swept: [
+        {
+          searchFrom: AbsolutePath.create('/work/event'),
+          session: SessionId.create('session-1'),
+        },
+      ],
+    },
+    {
+      condition: 'a subagent starts, and sweeps nothing',
+      event: 'SubagentStart',
+      swept: [],
+    },
+  ])(
+    'should sweep the stale sessions from where it starts only when $condition',
+    async ({ event, swept }) => {
+      // Arrange
+      const asked = {
+        digest: undefined,
+        places: {
+          cwd: '/work/package',
+        },
+        stdin: `{"session_id":"session-1","cwd":"/work/event","hook_event_name":"${event}","source":"startup"}`,
+      };
+
+      // Act
+      const run = await runOf(asked);
+
+      // Assert
+      expect(run.swept).toStrictEqual(swept);
     },
   );
 
@@ -300,7 +367,7 @@ describe('createSessionStartCommand', () => {
       condition: 'the event names no session',
       stdin: '{"hook_event_name":"SessionStart","source":"startup"}',
     },
-  ])('should keep nothing, yet give the digest, when $condition', async ({ stdin }) => {
+  ])('should reset and keep nothing, yet give the digest, when $condition', async ({ stdin }) => {
     // Arrange
     const asked = {
       digest: noRelease,
@@ -314,12 +381,16 @@ describe('createSessionStartCommand', () => {
     expect({
       context: contextOf(run.stdout),
       kept: run.kept,
+      reset: run.reset,
+      swept: run.swept,
     }).toStrictEqual({
       context: {
         event: 'SessionStart',
         lines: noReleaseLines,
       },
       kept: [],
+      reset: [],
+      swept: [],
     });
   });
 
@@ -337,7 +408,40 @@ describe('createSessionStartCommand', () => {
     expect(run).toStrictEqual({
       asked: [],
       kept: [],
+      reset: [],
       stdout: '',
+      swept: [],
     });
   });
+  it.each([
+    {
+      origin: SessionOrigin.Compact,
+      source: 'compact',
+    },
+    {
+      origin: SessionOrigin.Resume,
+      source: 'resume',
+    },
+  ])(
+    'should hand the gate the $source start of the session, before its digest is asked for',
+    async ({ origin, source }) => {
+      // Arrange
+      const asked = {
+        digest: undefined,
+        stdin: `{"session_id":"session-1","hook_event_name":"SessionStart","source":"${source}"}`,
+      };
+
+      // Act
+      const run = await runOf(asked);
+
+      // Assert
+      expect(run.reset).toStrictEqual([
+        {
+          event: HookEventName.SessionStart,
+          origin,
+          session: SessionId.create('session-1'),
+        },
+      ]);
+    },
+  );
 });

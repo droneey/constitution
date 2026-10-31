@@ -24,42 +24,32 @@ interface BlockSetBlockFixture {
   readonly requires?: readonly string[];
   readonly seams?: readonly string[];
   readonly source?: string;
-  readonly summary?: string | undefined;
 }
 
-const blockSetBlockOf = (block: BlockSetBlockFixture): BlockSetBlock => {
-  const summary = 'summary' in block ? block.summary : `The ${block.id} block.`;
-
-  return {
-    chapters: (block.chapters ?? []).map((chapter) => ({
-      axis: axisOf(chapter),
-      name: chapter.slice(chapter.indexOf('/') + 1, -'.md'.length),
-    })),
-    ...(block.extends === undefined
-      ? {}
-      : {
-          extends: BlockId.create(block.extends),
-        }),
-    governs: (block.governs ?? []).map(Glob.create),
-    id: BlockId.create(block.id),
-    isAbstract: block.isAbstract ?? false,
-    languages: (block.languages ?? []).map(BlockId.create),
-    layer: block.layer ?? Layer.Domain,
-    requires: (block.requires ?? []).map(BlockId.create),
-    seams: (block.seams ?? []).map((seam) => ({
-      axis: axisOf(seam),
-      other: BlockId.create(seam.slice(seam.indexOf('/') + 1)),
-    })),
-    source: BlockSource.create(
-      block.source === undefined ? undefined : PackPath.create(block.source),
-    ),
-    ...(summary === undefined
-      ? {}
-      : {
-          summary,
-        }),
-  };
-};
+const blockSetBlockOf = (block: BlockSetBlockFixture): BlockSetBlock => ({
+  chapters: (block.chapters ?? []).map((chapter) => ({
+    axis: axisOf(chapter),
+    name: chapter.slice(chapter.indexOf('/') + 1, -'.md'.length),
+  })),
+  ...(block.extends === undefined
+    ? {}
+    : {
+        extends: BlockId.create(block.extends),
+      }),
+  governs: (block.governs ?? []).map(Glob.create),
+  id: BlockId.create(block.id),
+  isAbstract: block.isAbstract ?? false,
+  languages: (block.languages ?? []).map(BlockId.create),
+  layer: block.layer ?? Layer.Domain,
+  requires: (block.requires ?? []).map(BlockId.create),
+  seams: (block.seams ?? []).map((seam) => ({
+    axis: axisOf(seam),
+    other: BlockId.create(seam.slice(seam.indexOf('/') + 1)),
+  })),
+  source: BlockSource.create(
+    block.source === undefined ? undefined : PackPath.create(block.source),
+  ),
+});
 
 interface BlockSetRuleFixture {
   readonly axis?: Axis;

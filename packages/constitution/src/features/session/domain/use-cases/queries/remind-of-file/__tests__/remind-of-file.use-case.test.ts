@@ -4,8 +4,8 @@ import { Level } from '#/kernel/constants';
 import { BlockId, RepositoryRelativePath } from '#/kernel/value-objects';
 
 import {
-  activeBlockOf,
   heldSessionsOf,
+  keptBlockOf,
   keptSession,
   mustOf,
   sessionStateOf,
@@ -16,7 +16,7 @@ import { SessionAgent } from '../../../../entities';
 import { AgentId, SessionId } from '../../../../value-objects';
 import { remindOfFile } from '../remind-of-file.use-case';
 
-const ui = activeBlockOf({
+const ui = keptBlockOf({
   files: [
     'blocks/domains/ui/ui.md',
     'blocks/domains/ui/foundation/ui.md',
@@ -26,7 +26,7 @@ const ui = activeBlockOf({
   ],
   id: 'ui',
 });
-const typescript = activeBlockOf({
+const typescript = keptBlockOf({
   files: [
     'blocks/contexts/languages/typescript/typescript.md',
   ],

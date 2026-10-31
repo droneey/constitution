@@ -1,31 +1,15 @@
-import { InvalidValueError } from '#/kernel/errors';
 import type { Brand } from '#/kernel/types';
+import type { PatternedText } from '#/kernel/utils';
+import { patternedTextOf } from '#/kernel/utils';
 
 import { PLAIN_NAME } from '../constants';
 import { SessionValueFailure } from '../errors';
 
 type AgentId = Brand<string, 'AgentId'>;
 
-const is = (candidate: unknown): candidate is AgentId =>
-  typeof candidate === 'string' && PLAIN_NAME.test(candidate);
-
-/** @throws {InvalidValueError} when the text is no plain name */
-const create = (text: string): AgentId => {
-  if (!is(text)) {
-    throw new InvalidValueError({
-      code: SessionValueFailure.AgentId,
-      details: {
-        text,
-      },
-    });
-  }
-
-  return text;
-};
-
-const AgentId = {
-  create,
-  is,
-} as const;
+const AgentId: PatternedText<'AgentId'> = patternedTextOf({
+  code: SessionValueFailure.AgentId,
+  pattern: PLAIN_NAME,
+});
 
 export { AgentId };

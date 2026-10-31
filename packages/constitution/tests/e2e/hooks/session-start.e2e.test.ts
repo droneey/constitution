@@ -5,20 +5,21 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 
 import { coreText } from '../constitution.fixtures';
 import {
-  browserAppWithPackAndOverrideContext,
-  everyCodeContext,
-  unparsedContext,
+  BROWSER_APP_WITH_PACK_AND_OVERRIDE_NAMES,
+  EVERY_CODE_NAMES,
+  EVERY_CODE_WARNINGS,
 } from '../digests.fixtures';
 import type { HookRun } from '../hook.fixtures';
 import {
   BUDGET,
   bytesAfterHeader,
+  CONTEXT_CAP,
   contextOf,
-  factNumberOf,
   HookEvent,
-  indexOf,
-  listCutOf,
+  headerOf,
+  mapOf,
   mentionedOf,
+  namedInMapOf,
   newSession,
   removeSessions,
   runHook,
@@ -47,6 +48,7 @@ import {
   referenceCli,
   referenceWebApp,
   removeProjects,
+  workspaceOf,
 } from '../project.fixtures';
 
 interface Place {
@@ -67,10 +69,11 @@ interface FindCase extends Place {
   spawnOutside?: boolean;
 }
 
-interface GoldenCase {
-  context: (distribution: string) => string;
+interface DigestCase {
   layout: ProjectLayout;
+  names: readonly string[];
   project: string;
+  warnings: readonly (readonly string[])[];
 }
 
 interface NoticeCase {
@@ -100,6 +103,29 @@ const everyCode: ProjectLayout = {
 const unparsedConfig = configOf({
   domains: '&listed [ui]',
 });
+const MEMBERS = 40;
+const memberNames = Array.from(
+  {
+    length: MEMBERS,
+  },
+  (_, index) => `packages/member-${String(index + 1).padStart(2, '0')}`,
+);
+const largeWorkspace: ProjectLayout = {
+  config: found,
+  files: workspaceOf(
+    Object.fromEntries(
+      memberNames.map((member) => [
+        member,
+        configOf({
+          domains: '[ui, i18n, analytics, remote-data, untrusted-client, unreliable-network]',
+          implementations: '[react-dom, tanstack-query, matomo, biome, lefthook, betterleaks]',
+          languages: '[typescript]',
+          platforms: '[browser]',
+        }),
+      ]),
+    ),
+  ),
+};
 const DOCTOR = 'constitution doctor';
 
 const distributionIn = (project: string): string => join(project, LINK);
@@ -195,7 +221,7 @@ describe('session-start hook', () => {
       repository: Repository.Folder,
     },
   ])(
-    'should find the project and count its blocks when $condition',
+    'should find the project and name its blocks when $condition',
     ({ cwd, nonUtf8Byte, projectDir, repository, spawnOutside }) => {
       // Arrange
       const project = createProject({
@@ -208,22 +234,32 @@ describe('session-start hook', () => {
       });
 
       // Act
-      const count = factNumberOf(
-        contextOf(
-          runHook({
-            cwd,
-            event: HookEvent.Subagent,
-            nonUtf8Byte,
-            project,
-            projectDir,
-            root,
-            spawnOutside,
-          }),
-        ),
+      const context = contextOf(
+        runHook({
+          cwd,
+          event: HookEvent.Subagent,
+          nonUtf8Byte,
+          project,
+          projectDir,
+          root,
+          spawnOutside,
+        }),
       );
 
       // Assert
-      expect(count).toBe(3);
+      expect(
+        namedInMapOf({
+          context,
+          names: [
+            'version-control',
+            'git',
+            'ui',
+          ],
+        }),
+      ).toStrictEqual([
+        'version-control',
+        'git',
+      ]);
     },
   );
 
@@ -242,60 +278,106 @@ describe('session-start hook', () => {
 
     // Assert
     expect({
-      count: factNumberOf(context),
-      index: indexOf(context),
+      names: namedInMapOf({
+        context,
+        names: [
+          'i18n',
+          'version-control',
+          'typescript',
+          'betterleaks',
+          'git',
+          'paraglide',
+          'pack',
+        ],
+      }),
       warnings: warningsOf({
         context,
         like: [],
       }),
     }).toStrictEqual({
-      count: 7,
-      index: [
-        '## Domains',
-        'i18n (plurals)',
-        'version-control (workflow: commits)',
-        '## Languages',
-        'typescript (types)',
-        '## Implementations',
+      names: [
+        'i18n',
+        'version-control',
+        'typescript',
         'betterleaks',
-        'git (workflow: tags)',
-        'paraglide [pack] (messages)',
+        'git',
+        'paraglide',
+        'pack',
       ],
       warnings: [],
     });
   });
 
-  it.each<GoldenCase>([
+  it.each<DigestCase>([
     {
-      context: browserAppWithPackAndOverrideContext,
       layout: browserAppWithPackAndOverride,
+      names: BROWSER_APP_WITH_PACK_AND_OVERRIDE_NAMES,
       project: 'a browser application with a block of its own pack and an override',
+      warnings: [],
     },
     {
-      context: everyCodeContext,
       layout: everyCode,
+      names: EVERY_CODE_NAMES,
       project: 'one that sets off a warning of every code',
+      warnings: EVERY_CODE_WARNINGS,
     },
-    {
-      context: (distribution): string =>
-        unparsedContext({
-          line: lineNumberOf({
-            at: '&listed',
-            config: unparsedConfig,
-          }),
-          root: distribution,
+  ])(
+    'should name the release, give core whole, name the active blocks in the map and give each warning by its code when the project is $project',
+    ({ layout, names, warnings }) => {
+      // Arrange
+      const project = createProject(layout);
+
+      // Act
+      const context = contextOf(
+        runHook({
+          project,
+          event: HookEvent.Startup,
+          root,
         }),
-      layout: {
-        config: unparsedConfig,
-      },
-      project: 'one whose constitution.yaml does not parse',
+      );
+
+      // Assert
+      expect({
+        holdsCore: context.includes(coreText),
+        names: namedInMapOf({
+          context,
+          names,
+        }),
+        release: mentionedOf({
+          names: [
+            distributionIn(project),
+          ],
+          text: headerOf(context),
+        }),
+        warnings: warningsOf({
+          context,
+          like: warnings,
+        }),
+      }).toStrictEqual({
+        holdsCore: true,
+        names,
+        release: [
+          distributionIn(project),
+        ],
+        warnings,
+      });
     },
-  ])('should give the digest word for word when the project is $project', ({ context, layout }) => {
+  );
+
+  it('should give core whole, name the line constitution.yaml stops parsing at and give no map when it does not parse', () => {
     // Arrange
-    const project = createProject(layout);
+    const project = createProject({
+      config: unparsedConfig,
+    });
+    const line = String(
+      lineNumberOf({
+        at: '&listed',
+        config: unparsedConfig,
+      }),
+    );
 
     // Act
-    const printed = contextOf(
+    const context = contextOf(
       runHook({
         project,
         event: HookEvent.Startup,
@@ -304,7 +386,61 @@ describe('session-start hook', () => {
     );
 
     // Assert
-    expect(printed).toBe(context(distributionIn(project)));
+    expect({
+      holdsCore: context.includes(coreText),
+      map: mapOf(context),
+      named: mentionedOf({
+        names: [
+          'constitution.yaml',
+          line,
+        ],
+        text: headerOf(context),
+      }),
+    }).toStrictEqual({
+      holdsCore: true,
+      map: [],
+      named: [
+        'constitution.yaml',
+        line,
+      ],
+    });
+  });
+
+  it('should keep the digest within 9,400 bytes after its header, core whole and the map cut from its last members, when a workspace of 40 members passes the budget', () => {
+    // Arrange
+    const project = createProject(largeWorkspace);
+
+    // Act
+    const context = contextOf(
+      runHook({
+        project,
+        event: HookEvent.Startup,
+        root,
+      }),
+    );
+
+    // Assert
+    expect({
+      holdsCore: context.includes(coreText),
+      isWithinBudget: bytesAfterHeader(context) <= BUDGET,
+      named: namedInMapOf({
+        context,
+        names: [
+          'version-control',
+          'git',
+          'packages/member-01',
+          'packages/member-40',
+        ],
+      }),
+    }).toStrictEqual({
+      holdsCore: true,
+      isWithinBudget: true,
+      named: [
+        'version-control',
+        'git',
+        'packages/member-01',
+      ],
+    });
   });
 
   it.each([
@@ -317,7 +453,7 @@ describe('session-start hook', () => {
       shape: 'the reference command-line tool',
     },
   ])(
-    'should keep the digest within 9,400 bytes, list every block and warn of nothing when $shape follows the real blocks',
+    'should give the digest whole within the cap of the context and warn of nothing when $shape follows the real blocks',
     ({ layout }) => {
       // Arrange
       const project = createProject(layout);
@@ -333,15 +469,13 @@ describe('session-start hook', () => {
 
       // Assert
       expect({
-        isWithinBudget: bytesAfterHeader(context) <= BUDGET,
-        leftOut: listCutOf(context).leftOut,
+        isWithinCap: context.length <= CONTEXT_CAP,
         warnings: warningsOf({
           context,
           like: [],
         }),
       }).toStrictEqual({
-        isWithinBudget: true,
-        leftOut: 0,
+        isWithinCap: true,
         warnings: [],
       });
     },

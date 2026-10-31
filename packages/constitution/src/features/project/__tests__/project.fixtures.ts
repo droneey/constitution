@@ -29,7 +29,6 @@ interface BlockFixture {
   readonly id: string;
   readonly languages?: readonly string[];
   readonly requires?: readonly string[];
-  readonly summary?: string;
 }
 
 const listOf = (entries: readonly string[] | undefined): string =>
@@ -39,7 +38,7 @@ const passportOf = (block: BlockFixture): string =>
   [
     '---',
     `id: ${block.id}`,
-    `summary: ${JSON.stringify(block.summary ?? `The ${block.id} block.`)}`,
+    `summary: ${JSON.stringify(`The ${block.id} block.`)}`,
     `requires: ${listOf(block.requires)}`,
     `extends: ${block.extends ?? 'null'}`,
     `abstract: ${String(block.abstract ?? false)}`,

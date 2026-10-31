@@ -1,6 +1,6 @@
-import type { BlockId } from '#/kernel/value-objects';
+import type { AbsolutePath, BlockId } from '#/kernel/value-objects';
 
-import type { FingerprintMark, SessionAgent, SessionState } from '../../../entities';
+import type { AgentInSession, FingerprintMark, ReviewDebt, SessionState } from '../../../entities';
 import type { SessionId, TreeFingerprint } from '../../../value-objects';
 
 interface FingerprintInput {
@@ -8,14 +8,11 @@ interface FingerprintInput {
   readonly session: SessionId;
 }
 
-interface RemindedInput {
-  readonly agent: SessionAgent;
-  readonly session: SessionId;
-}
-
 interface SessionQueryRepository {
   readonly fingerprint: (input: FingerprintInput) => TreeFingerprint | undefined;
-  readonly reminded: (input: RemindedInput) => ReadonlySet<BlockId>;
+  readonly ownChanges: (input: AgentInSession) => readonly AbsolutePath[];
+  readonly reminded: (input: AgentInSession) => ReadonlySet<BlockId>;
+  readonly reviewDebt: (session: SessionId) => readonly ReviewDebt[];
   readonly state: (session: SessionId) => SessionState | undefined;
   readonly unjudged: (session: SessionId) => string | undefined;
 }

@@ -17,12 +17,23 @@ import { join } from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
-import { AbsolutePath, BlockId } from '#/kernel/value-objects';
+import { Level } from '#/kernel/constants';
+import type { Lowering } from '#/kernel/entities';
+import { AbsolutePath, BlockId, RuleSlug, UnitPath } from '#/kernel/value-objects';
 
-import { activeBlockOf, keptSession, sessionStateOf } from '../../../__tests__/session.fixtures';
+import { runGateCommandRepositorySuite } from '../../../__tests__/gate-command-repository.suite';
+import { keptBlockOf, keptSession, sessionStateOf } from '../../../__tests__/session.fixtures';
 import { runSessionRepositorySuite } from '../../../__tests__/session-repository.suite';
-import { SessionAgent, SessionMark } from '../../../domain/entities';
-import { AgentId, TreeFingerprint } from '../../../domain/value-objects';
+import type { GatedRule } from '../../../domain/entities';
+import { DebtKind, GateEntryKind, SessionAgent, SessionMark } from '../../../domain/entities';
+import {
+  AgentId,
+  RuleHash,
+  RuleSetHash,
+  SessionId,
+  ToolUseId,
+  TreeFingerprint,
+} from '../../../domain/value-objects';
 import type { StateEnvironment, StateFolderWarning } from '../state-folder.utils';
 import { StateFolderProblem } from '../state-folder.utils';
 import { createXdgSessionRepository } from '../xdg-session.repository';
@@ -84,9 +95,41 @@ const changedBefore = (input: { days: number; path: string; seconds?: number }):
 
 const namesOf = (path: string): readonly string[] => readdirSync(path).toSorted();
 
+const set = RuleSetHash.create('0123456789abcdef');
+
+const gatedRuleOf = (index: number): GatedRule => ({
+  file: AbsolutePath.create('/work/blocks/core/foundation/names.md'),
+  hash: RuleHash.create(index.toString(16).padStart(16, '0')),
+  level: Level.Must,
+  slug: RuleSlug.create(`rule-${index}`),
+  statement: 'word '.repeat(60).trim(),
+  why: 'Readers learn from names.',
+});
+
+const rulesOfParts = Array.from(
+  {
+    length: 400,
+  },
+  (_, index) => gatedRuleOf(index + 1),
+);
+
+const partsFolder = (): string =>
+  join(folder, 'project', '.droneey', 'constitution-sessions', keptSession, 'parts');
+
+const inodesOf = (paths: readonly string[]): readonly number[] =>
+  paths.map((path) => lstatSync(path).ino);
+
+const writePartsOfManyRules = (sessions: XdgSessions): readonly AbsolutePath[] =>
+  sessions.writeParts({
+    projectFolderPath: AbsolutePath.create(join(folder, 'project')),
+    rules: rulesOfParts,
+    session: keptSession,
+    set,
+  });
+
 const savedState = sessionStateOf({
   active: [
-    activeBlockOf({
+    keptBlockOf({
       id: 'core',
     }),
   ],
@@ -168,6 +211,52 @@ describe('createXdgSessionRepository', () => {
 
     // Assert
     expect(state).toBeUndefined();
+  });
+
+  it('should keep no reason of a lowering in the state it saves', () => {
+    // Arrange
+    const sessions = repositoryOf();
+    const reasonedLowering: Lowering = {
+      level: Level.May,
+      reason: 'generated screens',
+      unit: UnitPath.create(''),
+    };
+
+    // Act
+    sessions.saveState({
+      isReminderKept: false,
+      session: keptSession,
+      state: sessionStateOf({
+        mustsBesideCore: [
+          {
+            block: BlockId.create('ui'),
+            lowerings: [
+              reasonedLowering,
+            ],
+            slug: RuleSlug.create('screen-reads-aloud'),
+          },
+        ],
+      }),
+    });
+
+    // Assert
+    expect(JSON.parse(readFileSync(join(sessionFolder(), 'state.json'), 'utf8'))).toStrictEqual({
+      active: [],
+      musts: [
+        {
+          block: 'ui',
+          lowerings: [
+            {
+              level: 'MAY',
+              unit: '',
+            },
+          ],
+          slug: 'screen-reads-aloud',
+        },
+      ],
+      repositoryFolderPath: '/work/project',
+      status: 'parsed',
+    });
   });
 
   it.each<{
@@ -425,13 +514,13 @@ describe('createXdgSessionRepository', () => {
       mkdirSync(sessionFolder(), {
         recursive: true,
       });
-      writeFileSync(join(sessionFolder(), SessionMark.Blocked), text);
+      writeFileSync(join(sessionFolder(), SessionMark.Reviewed), text);
 
       const sessions = repositoryOf();
 
       // Act
       const fingerprint = sessions.fingerprint({
-        mark: SessionMark.Blocked,
+        mark: SessionMark.Reviewed,
         session: keptSession,
       });
 
@@ -824,6 +913,489 @@ describe('createXdgSessionRepository: no folder to keep the sessions in', () => 
   });
 });
 
+describe("createXdgSessionRepository: the gate's files", () => {
+  it.each<{
+    expected: unknown;
+    kept: string;
+    read: (sessions: XdgSessions) => unknown;
+  }>([
+    {
+      expected: [],
+      kept: 'gate entry',
+      read: (sessions) =>
+        sessions.gateEntries({
+          agent: SessionAgent.main,
+          session: keptSession,
+        }),
+    },
+    {
+      expected: undefined,
+      kept: 'tree',
+      read: (sessions) =>
+        sessions.takeShellTree({
+          call: ToolUseId.create('toolu_1'),
+          session: keptSession,
+        }),
+    },
+  ])('should keep no $kept when no folder keeps the sessions', ({ expected, read }) => {
+    // Arrange
+    const sessions = repositoryOf({
+      environment: environmentOf({}),
+    });
+
+    sessions.addGateEntry({
+      agent: SessionAgent.main,
+      entry: {
+        kind: GateEntryKind.Told,
+      },
+      session: keptSession,
+    });
+    sessions.keepShellTree({
+      call: ToolUseId.create('toolu_1'),
+      session: keptSession,
+      tree: {
+        fileSignatures: new Map(),
+        repositoryFolderPath: AbsolutePath.create('/work'),
+      },
+    });
+
+    // Act
+    const kept = read(sessions);
+
+    // Assert
+    expect(kept).toStrictEqual(expected);
+  });
+
+  it('should write no part where no folder can be made', () => {
+    // Arrange
+    const sessions = repositoryOf();
+
+    writeFileSync(join(folder, 'project-file'), '');
+
+    // Act
+    const parts = sessions.writeParts({
+      projectFolderPath: AbsolutePath.create(join(folder, 'project-file')),
+      rules: [
+        gatedRuleOf(1),
+      ],
+      session: keptSession,
+      set,
+    });
+
+    // Assert
+    expect(parts).toStrictEqual([]);
+  });
+
+  it('should read past a gate entry of another form', () => {
+    // Arrange
+    mkdirSync(sessionFolder(), {
+      recursive: true,
+    });
+    writeFileSync(
+      join(sessionFolder(), 'gate'),
+      [
+        '{"key":"not-a-hash","kind":"refused"}',
+        '{"kind":"unknown"}',
+        'told',
+        '{"kind":"told"}',
+        '',
+      ].join('\n'),
+    );
+
+    const sessions = repositoryOf();
+
+    // Act
+    const entries = sessions.gateEntries({
+      agent: SessionAgent.main,
+      session: keptSession,
+    });
+
+    // Assert
+    expect(entries).toStrictEqual([
+      {
+        kind: GateEntryKind.Told,
+      },
+    ]);
+  });
+
+  it('should add no line for no debt', () => {
+    // Arrange
+    const sessions = repositoryOf();
+
+    // Act
+    sessions.addDebts({
+      agent: keptAgent,
+      debts: [],
+      session: keptSession,
+    });
+
+    // Assert
+    expect(existsSync(join(sessionFolder(), `debt.${keptAgent}`))).toBe(false);
+  });
+
+  it('should read back a debt whose path holds a line break', () => {
+    // Arrange
+    const sessions = repositoryOf();
+    const debt = {
+      kind: DebtKind.Read,
+      path: AbsolutePath.create('/work/src/a\nread b.ts'),
+    };
+
+    sessions.addDebts({
+      agent: keptAgent,
+      debts: [
+        debt,
+      ],
+      session: keptSession,
+    });
+
+    // Act
+    const debts = sessions.debts({
+      agent: keptAgent,
+      session: keptSession,
+    });
+
+    // Assert
+    expect(debts).toStrictEqual([
+      debt,
+    ]);
+  });
+
+  it('should remove the file of a tree once it is taken', () => {
+    // Arrange
+    const sessions = repositoryOf();
+    const call = ToolUseId.create('toolu_1');
+
+    sessions.keepShellTree({
+      call,
+      session: keptSession,
+      tree: {
+        fileSignatures: new Map(),
+        repositoryFolderPath: AbsolutePath.create('/work'),
+      },
+    });
+
+    // Act
+    sessions.takeShellTree({
+      call,
+      session: keptSession,
+    });
+
+    // Assert
+    expect(namesOf(sessionFolder())).toStrictEqual([]);
+  });
+
+  it('should make the folder of a session whose start it missed private', () => {
+    // Arrange
+    const sessions = repositoryOf();
+
+    // Act
+    sessions.addGateEntry({
+      agent: SessionAgent.main,
+      entry: {
+        kind: GateEntryKind.Told,
+      },
+      session: keptSession,
+    });
+
+    // Assert
+    expect(modeOf(sessionFolder())).toBe(0o700);
+  });
+
+  it.each([
+    {
+      add: (sessions: XdgSessions): void => {
+        sessions.addRulesRead({
+          agent: keptAgent,
+          rules: [
+            gatedRuleOf(1),
+          ],
+          session: keptSession,
+        });
+      },
+      list: 'the rules read',
+      name: 'rules.agent-7',
+    },
+    {
+      add: (sessions: XdgSessions): void => {
+        sessions.addDebts({
+          agent: keptAgent,
+          debts: [
+            {
+              kind: DebtKind.Read,
+              path: AbsolutePath.create('/work/src/a.ts'),
+            },
+          ],
+          session: keptSession,
+        });
+      },
+      list: 'the debts',
+      name: 'debt.agent-7',
+    },
+    {
+      add: (sessions: XdgSessions): void => {
+        sessions.addGateEntry({
+          agent: keptAgent,
+          entry: {
+            kind: GateEntryKind.Told,
+          },
+          session: keptSession,
+        });
+      },
+      list: 'the gate entries',
+      name: 'gate.agent-7',
+    },
+    {
+      add: (sessions: XdgSessions): void => {
+        sessions.addHotReminded({
+          agent: keptAgent,
+          paths: [
+            AbsolutePath.create('/work/src/a.ts'),
+          ],
+          session: keptSession,
+        });
+      },
+      list: 'the files reminded of their hot rules',
+      name: 'hot.agent-7',
+    },
+    {
+      add: (sessions: XdgSessions): void => {
+        sessions.addOwnChanges({
+          agent: keptAgent,
+          paths: [
+            AbsolutePath.create('/work/src/a.ts'),
+          ],
+          session: keptSession,
+        });
+      },
+      list: 'the own changes',
+      name: 'owned.agent-7',
+    },
+    {
+      add: (sessions: XdgSessions): void => {
+        sessions.addReviewDebt({
+          paths: [
+            AbsolutePath.create('/work/src/a.ts'),
+          ],
+          session: keptSession,
+          subagent: keptAgent,
+        });
+      },
+      list: 'the reviews owed',
+      name: 'review-debt',
+    },
+  ])('should keep $list in a file of its own name in the session', ({ add, name }) => {
+    // Arrange
+    const sessions = repositoryOf();
+
+    // Act
+    add(sessions);
+
+    // Assert
+    expect(namesOf(sessionFolder())).toStrictEqual([
+      name,
+    ]);
+  });
+
+  it.each<{
+    expected: unknown;
+    lines: readonly string[];
+    list: string;
+    name: string;
+    read: (sessions: XdgSessions) => unknown;
+  }>([
+    {
+      expected: [],
+      lines: [
+        '{"kind":"unknown","path":"/work/src/a.ts"}',
+        '{"kind":"read","path":"work/src/a.ts"}',
+        'read /work/src/a.ts',
+      ],
+      list: 'the debts',
+      name: 'debt.agent-7',
+      read: (sessions) =>
+        sessions.debts({
+          agent: keptAgent,
+          session: keptSession,
+        }),
+    },
+    {
+      expected: [],
+      lines: [
+        '{"agent":"bad!agent","path":"/work/src/a.ts"}',
+        '{"agent":"agent-7","path":"work/src/a.ts"}',
+        'agent-7 /work/src/a.ts',
+      ],
+      list: 'the reviews owed',
+      name: 'review-debt',
+      read: (sessions) => sessions.reviewDebt(keptSession),
+    },
+    {
+      expected: new Map(),
+      lines: [
+        '{"hash":"0123456789abcdef","slug":"Bad_Slug"}',
+        '{"hash":"xyz","slug":"rule-1"}',
+        'rule-1 0123456789abcdef',
+      ],
+      list: 'the rules read',
+      name: 'rules.agent-7',
+      read: (sessions) =>
+        sessions.rulesRead({
+          agent: keptAgent,
+          session: keptSession,
+        }),
+    },
+    {
+      expected: new Set(),
+      lines: [
+        '"work/src/a.ts"',
+        '/work/src/a.ts',
+      ],
+      list: 'the files reminded of their hot rules',
+      name: 'hot.agent-7',
+      read: (sessions) =>
+        sessions.hotReminded({
+          agent: keptAgent,
+          session: keptSession,
+        }),
+    },
+    {
+      expected: [],
+      lines: [
+        '"work/src/a.ts"',
+        '/work/src/a.ts',
+      ],
+      list: 'the own changes',
+      name: 'owned.agent-7',
+      read: (sessions) =>
+        sessions.ownChanges({
+          agent: keptAgent,
+          session: keptSession,
+        }),
+    },
+    {
+      expected: new Set([
+        AbsolutePath.create('/work/src/a.ts'),
+      ]),
+      lines: [
+        '"/work/src/a.ts"',
+        '{"mark":"cleared"}',
+      ],
+      list: 'the files reminded of their hot rules, past a mark of another file',
+      name: 'hot.agent-7',
+      read: (sessions) =>
+        sessions.hotReminded({
+          agent: keptAgent,
+          session: keptSession,
+        }),
+    },
+  ])('should read past a line of another form in $list', ({ expected, lines, name, read }) => {
+    // Arrange
+    mkdirSync(sessionFolder(), {
+      recursive: true,
+    });
+    writeFileSync(join(sessionFolder(), name), `${lines.join('\n')}\n`);
+
+    const sessions = repositoryOf();
+
+    // Act
+    const held = read(sessions);
+
+    // Assert
+    expect(held).toStrictEqual(expected);
+  });
+
+  it.each([
+    {
+      condition: 'it names a part numbered past nine',
+      expected: {
+        lineCount: 2,
+        rules: [
+          {
+            hash: RuleHash.create('0000000000000001'),
+            slug: RuleSlug.create('rule-1'),
+          },
+        ],
+      },
+      make: (path: string): void => {
+        writeFileSync(path, '<!-- rule rule-1 0000000000000001 -->\n');
+      },
+      name: `${set}.12.md`,
+    },
+    {
+      condition: 'its name holds more before the set',
+      expected: undefined,
+      make: (path: string): void => {
+        writeFileSync(path, '<!-- rule rule-1 0000000000000001 -->\n');
+      },
+      name: `x${set}.1.md`,
+    },
+    {
+      condition: 'its name holds more after the extension',
+      expected: undefined,
+      make: (path: string): void => {
+        writeFileSync(path, '<!-- rule rule-1 0000000000000001 -->\n');
+      },
+      name: `${set}.1.md.bak`,
+    },
+    {
+      condition: 'it is a folder named as a part',
+      expected: undefined,
+      make: (path: string): void => {
+        mkdirSync(path);
+      },
+      name: `${set}.1.md`,
+    },
+  ])(
+    'should give the rules of a file in the parts folder only as a part when $condition',
+    ({ expected, make, name }) => {
+      // Arrange
+      mkdirSync(partsFolder(), {
+        recursive: true,
+      });
+      make(join(partsFolder(), name));
+
+      const sessions = repositoryOf();
+
+      // Act
+      const part = sessions.partOf({
+        path: AbsolutePath.create(join(partsFolder(), name)),
+        session: keptSession,
+      });
+
+      // Assert
+      expect(part).toStrictEqual(expected);
+    },
+  );
+
+  it('should leave the parts of a set as they are when the set is written again', () => {
+    // Arrange
+    const sessions = repositoryOf();
+    const parts = writePartsOfManyRules(sessions);
+    const before = inodesOf(parts);
+
+    // Act
+    writePartsOfManyRules(sessions);
+
+    // Assert
+    expect(inodesOf(parts)).toStrictEqual(before);
+  });
+
+  it('should write the parts of a set again when one of them is gone', () => {
+    // Arrange
+    const sessions = repositoryOf();
+    const [, second = ''] = writePartsOfManyRules(sessions);
+
+    rmSync(second);
+
+    // Act
+    writePartsOfManyRules(sessions);
+
+    // Assert
+    expect(existsSync(second)).toBe(true);
+  });
+});
+
 describe('createXdgSessionRepository: links in place of its files', () => {
   it.each([
     {
@@ -1055,6 +1627,236 @@ describe('createXdgSessionRepository: what a start removes', () => {
   );
 });
 
+const projectFolder = (name: string): string => join(folder, name);
+
+const sessionPartsIn = (project: string, session: string): string =>
+  join(projectFolder(project), '.droneey', 'constitution-sessions', session);
+
+const partsWrittenIn = (input: {
+  project: string;
+  session: SessionId;
+  sessions: XdgSessions;
+}): void => {
+  input.sessions.writeParts({
+    projectFolderPath: AbsolutePath.create(projectFolder(input.project)),
+    rules: [
+      gatedRuleOf(1),
+    ],
+    session: input.session,
+    set,
+  });
+};
+
+const staleSessionIn = (name: string): void => {
+  mkdirSync(sessionPartsIn('first', name), {
+    recursive: true,
+  });
+  changedBefore({
+    days: 2,
+    path: sessionPartsIn('first', name),
+  });
+};
+
+describe('createXdgSessionRepository: what the end of a session removes', () => {
+  it("should remove the session's parts in each project it wrote them to, and keep its state, its own changes and another session's parts", () => {
+    // Arrange
+    const sessions = repositoryOf();
+    const other = SessionId.create('session-2');
+
+    sessions.saveState({
+      isReminderKept: false,
+      session: keptSession,
+      state: savedState,
+    });
+    sessions.addOwnChanges({
+      agent: SessionAgent.main,
+      paths: [
+        AbsolutePath.create('/work/src/a.ts'),
+      ],
+      session: keptSession,
+    });
+    partsWrittenIn({
+      project: 'first',
+      session: keptSession,
+      sessions,
+    });
+    partsWrittenIn({
+      project: 'second',
+      session: keptSession,
+      sessions,
+    });
+    partsWrittenIn({
+      project: 'first',
+      session: other,
+      sessions,
+    });
+
+    // Act
+    sessions.removeSessionFolders(keptSession);
+
+    // Assert
+    expect({
+      first: existsSync(sessionPartsIn('first', keptSession)),
+      other: existsSync(sessionPartsIn('first', other)),
+      own: sessions.ownChanges({
+        agent: SessionAgent.main,
+        session: keptSession,
+      }),
+      second: existsSync(sessionPartsIn('second', keptSession)),
+      state: sessions.state(keptSession),
+    }).toStrictEqual({
+      first: false,
+      other: true,
+      own: [
+        AbsolutePath.create('/work/src/a.ts'),
+      ],
+      second: false,
+      state: savedState,
+    });
+  });
+
+  it('should remove no part when no folder keeps the sessions', () => {
+    // Arrange
+    const sessions = repositoryOf({
+      environment: environmentOf({}),
+    });
+
+    partsWrittenIn({
+      project: 'first',
+      session: keptSession,
+      sessions,
+    });
+
+    // Act
+    sessions.removeSessionFolders(keptSession);
+
+    // Assert
+    expect(existsSync(sessionPartsIn('first', keptSession))).toBe(true);
+  });
+});
+
+describe("createXdgSessionRepository: what a start sweeps from a project's sessions", () => {
+  it.each([
+    {
+      condition: 'its folder and its parts are unchanged for longer than a day',
+      folder: 1,
+      isKept: false,
+      parts: 1,
+    },
+    {
+      condition: 'its folder and its parts are unchanged for a day exactly',
+      folder: 0,
+      isKept: true,
+      parts: 0,
+    },
+    {
+      condition: 'its parts changed within a day',
+      folder: 1,
+      isKept: true,
+      parts: -1,
+    },
+  ])(
+    'should keep the parts of another session only while it is not $condition',
+    ({ folder: folderSeconds, isKept, parts }) => {
+      // Arrange
+      const sessions = repositoryOf();
+      const other = SessionId.create('session-2');
+
+      partsWrittenIn({
+        project: 'first',
+        session: other,
+        sessions,
+      });
+      changedBefore({
+        days: 1,
+        path: join(sessionPartsIn('first', other), 'parts'),
+        seconds: parts,
+      });
+      changedBefore({
+        days: 1,
+        path: sessionPartsIn('first', other),
+        seconds: folderSeconds,
+      });
+
+      // Act
+      sessions.sweepStaleSessions({
+        projectFolderPath: AbsolutePath.create(projectFolder('first')),
+        session: keptSession,
+      });
+
+      // Assert
+      expect(existsSync(sessionPartsIn('first', other))).toBe(isKept);
+    },
+  );
+
+  it('should keep the parts of the session that starts, however old', () => {
+    // Arrange
+    const sessions = repositoryOf();
+
+    partsWrittenIn({
+      project: 'first',
+      session: keptSession,
+      sessions,
+    });
+    changedBefore({
+      days: 2,
+      path: join(sessionPartsIn('first', keptSession), 'parts'),
+    });
+    changedBefore({
+      days: 2,
+      path: sessionPartsIn('first', keptSession),
+    });
+
+    // Act
+    sessions.sweepStaleSessions({
+      projectFolderPath: AbsolutePath.create(projectFolder('first')),
+      session: keptSession,
+    });
+
+    // Assert
+    expect(existsSync(sessionPartsIn('first', keptSession))).toBe(true);
+  });
+
+  it("should sweep a session's folder that holds no parts by its own age", () => {
+    // Arrange
+    const sessions = repositoryOf();
+    const stale = sessionPartsIn('first', 'session-2');
+
+    staleSessionIn('session-2');
+
+    // Act
+    sessions.sweepStaleSessions({
+      projectFolderPath: AbsolutePath.create(projectFolder('first')),
+      session: keptSession,
+    });
+
+    // Assert
+    expect(existsSync(stale)).toBe(false);
+  });
+
+  it('should look at no more sessions than its limit', () => {
+    // Arrange
+    const sessions = repositoryOf({
+      maxSessions: 2,
+    });
+
+    staleSessionIn('session-2');
+    staleSessionIn('session-3');
+    staleSessionIn('session-4');
+
+    // Act
+    sessions.sweepStaleSessions({
+      projectFolderPath: AbsolutePath.create(projectFolder('first')),
+      session: keptSession,
+    });
+
+    // Assert
+    expect(namesOf(join(projectFolder('first'), '.droneey', 'constitution-sessions')).length).toBe(
+      1,
+    );
+  });
+});
+
 describe('createXdgSessionRepository: the files it opens', () => {
   it.each([
     {
@@ -1095,5 +1897,11 @@ describe('createXdgSessionRepository: the files it opens', () => {
 
 runSessionRepositorySuite({
   name: 'createXdgSessionRepository',
+  repositoryOf: () => repositoryOf(),
+});
+
+runGateCommandRepositorySuite({
+  name: 'createXdgSessionRepository',
+  projectOf: () => AbsolutePath.create(join(folder, 'project')),
   repositoryOf: () => repositoryOf(),
 });

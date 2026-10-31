@@ -17,16 +17,13 @@ import type { BlockFixture } from '../../../../../../../__tests__/project.fixtur
 import { Folder, parsers, ruleOf } from '../../../../../../../__tests__/project.fixtures';
 import {
   activeOf,
-  addedEntryOf,
   configOf,
-  filesOn,
+  coreFilesOf,
   listedOf,
-  listedOverrideOf,
   listingOf,
   loweringOf,
   modelOf,
   mustOf,
-  ownEntryOf,
   parsedOf,
   requirementsOf,
   sourceOf,
@@ -1191,6 +1188,8 @@ describe('resolveDeclaration', () => {
 
     // Assert
     expect(resolution).toStrictEqual({
+      core: [],
+      lowerings: new Map(),
       active: [
         activeOf({
           files: [
@@ -1269,25 +1268,16 @@ describe('resolveDeclaration', () => {
         ],
         units: [
           unitListingOf({
-            entries: [
-              ownEntryOf(
-                listedOf({
-                  id: 'base',
-                  layer: Layer.Domain,
-                }),
-              ),
-              ownEntryOf(
-                listedOf({
-                  id: 'store',
-                  layer: Layer.Domain,
-                }),
-              ),
-              ownEntryOf(
-                listedOf({
-                  id: 'redux',
-                  layer: Layer.Implementation,
-                }),
-              ),
+            own: [
+              {
+                id: 'base',
+              },
+              {
+                id: 'store',
+              },
+              {
+                id: 'redux',
+              },
             ],
             leftOutBlocks: [
               'ui',
@@ -1295,25 +1285,16 @@ describe('resolveDeclaration', () => {
             unit: 'apps/web',
           }),
           unitListingOf({
-            entries: [
-              ownEntryOf(
-                listedOf({
-                  id: 'cache',
-                  layer: Layer.Domain,
-                }),
-              ),
-              ownEntryOf(
-                listedOf({
-                  id: 'web',
-                  layer: Layer.Platform,
-                }),
-              ),
-              ownEntryOf(
-                listedOf({
-                  id: 'redis',
-                  layer: Layer.Implementation,
-                }),
-              ),
+            own: [
+              {
+                id: 'cache',
+              },
+              {
+                id: 'web',
+              },
+              {
+                id: 'redis',
+              },
             ],
             leftOutBlocks: [
               'ui',
@@ -1486,6 +1467,70 @@ describe('resolveDeclaration', () => {
 
     // Assert
     expect(resolution).toStrictEqual({
+      core: [],
+      lowerings: new Map([
+        [
+          RuleSlug.create('inputs-are-labelled'),
+          [
+            loweringOf({
+              level: Level.Should,
+            }),
+            loweringOf({
+              level: Level.May,
+              unit: 'apps/web',
+            }),
+          ],
+        ],
+        [
+          RuleSlug.create('labels-are-visible'),
+          [
+            loweringOf({
+              level: Level.Should,
+              via: 'inputs-are-labelled',
+            }),
+            loweringOf({
+              level: Level.May,
+              unit: 'apps/web',
+              via: 'inputs-are-labelled',
+            }),
+          ],
+        ],
+        [
+          RuleSlug.create('labels-are-above'),
+          [
+            loweringOf({
+              level: Level.Should,
+              via: 'inputs-are-labelled',
+            }),
+            loweringOf({
+              level: Level.May,
+              unit: 'apps/web',
+              via: 'inputs-are-labelled',
+            }),
+          ],
+        ],
+        [
+          RuleSlug.create('loops-back'),
+          [
+            loweringOf({
+              level: Level.May,
+            }),
+            loweringOf({
+              level: Level.May,
+              via: 'loops-back',
+            }),
+          ],
+        ],
+        [
+          RuleSlug.create('loops-ahead'),
+          [
+            loweringOf({
+              level: Level.May,
+              via: 'loops-back',
+            }),
+          ],
+        ],
+      ]),
       active: [
         activeOf({
           files: [
@@ -1512,22 +1557,6 @@ describe('resolveDeclaration', () => {
         }),
       ],
       listing: listingOf({
-        overrides: [
-          listedOverrideOf({
-            level: Level.Should,
-            rule: 'inputs-are-labelled',
-          }),
-          listedOverrideOf({
-            level: Level.May,
-            rule: 'loops-back',
-          }),
-          listedOverrideOf({
-            level: Level.May,
-            rule: 'inputs-are-labelled',
-            unit: 'apps/web',
-            until: '2026-06-15',
-          }),
-        ],
         repository: [
           listedOf({
             id: 'forms',
@@ -1764,7 +1793,7 @@ describe('resolveDeclaration', () => {
     ]);
   });
 
-  it('should list the repository blocks by layer, what each member adds and leaves out, then the overrides when the project spans members and a pack', () => {
+  it('should list the repository blocks by layer and what each member adds and leaves out when the project spans members and a pack', () => {
     // Arrange
     const config = configOf(
       {
@@ -1772,8 +1801,6 @@ describe('resolveDeclaration', () => {
         domains: 'domains: [ui]',
         implementations: 'implementations: [react, lint]',
         languages: 'languages: [typescript]',
-        overrides:
-          'overrides:\n  - rule: inputs-are-labelled\n    level: SHOULD\n    reason: A reason.\n    until: 2026-07-01',
         packs: 'packs: [./rules]',
         platforms: 'platforms: [browser]',
       },
@@ -1782,8 +1809,6 @@ describe('resolveDeclaration', () => {
           domains: 'domains: [ui]',
           implementations: 'implementations: [react, redux, lint]',
           languages: 'languages: [typescript]',
-          overrides:
-            'overrides:\n  - rule: themes-are-tokens\n    level: MAY\n    reason: A reason.',
           packs: 'packs: [../../rules]',
           platforms: 'platforms: [browser, web]',
         },
@@ -1848,37 +1873,8 @@ describe('resolveDeclaration', () => {
     // Assert
     expect(resolution.listing).toStrictEqual(
       listingOf({
-        overrides: [
-          listedOverrideOf({
-            level: Level.Should,
-            rule: 'inputs-are-labelled',
-            until: '2026-07-01',
-          }),
-          listedOverrideOf({
-            level: Level.May,
-            rule: 'themes-are-tokens',
-            unit: 'apps/web',
-          }),
-        ],
         repository: [
           listedOf({
-            files: [
-              filesOn({
-                axis: Axis.Foundation,
-                chapters: [
-                  'writing.md-files',
-                ],
-                seams: [
-                  'react',
-                ],
-              }),
-              filesOn({
-                axis: Axis.Architecture,
-                chapters: [
-                  'layers',
-                ],
-              }),
-            ],
             id: 'ui',
             layer: Layer.Domain,
           }),
@@ -1902,48 +1898,13 @@ describe('resolveDeclaration', () => {
         ],
         units: [
           unitListingOf({
-            entries: [
-              addedEntryOf({
-                files: [
-                  filesOn({
-                    axis: Axis.Architecture,
-                    seams: [
-                      'redux',
-                    ],
-                  }),
-                  filesOn({
-                    axis: Axis.Workflow,
-                    chapters: [
-                      'release',
-                    ],
-                    seams: [
-                      'react',
-                    ],
-                  }),
-                ],
-                id: 'ui',
-                layer: Layer.Domain,
-              }),
-              ownEntryOf(
-                listedOf({
-                  files: [
-                    filesOn({
-                      axis: Axis.Workflow,
-                      chapters: [
-                        'deploy',
-                      ],
-                    }),
-                  ],
-                  id: 'web',
-                  layer: Layer.Platform,
-                }),
-              ),
-              ownEntryOf(
-                listedOf({
-                  id: 'redux',
-                  layer: Layer.Implementation,
-                }),
-              ),
+            own: [
+              {
+                id: 'web',
+              },
+              {
+                id: 'redux',
+              },
             ],
             unit: 'apps/web',
           }),
@@ -1959,43 +1920,6 @@ describe('resolveDeclaration', () => {
               'lint',
             ],
             unit: 'apps/api',
-          }),
-        ],
-      }),
-    );
-  });
-
-  it('should list a block without a summary when its card gives none', () => {
-    // Arrange
-    const config = configOf({
-      domains: 'domains: [ui]',
-    });
-
-    // Act
-    const resolution = resolveDeclaration({
-      config,
-      parser: parsers().cardParser,
-      sources: [
-        sourceOf({
-          blocks: [
-            {
-              id: 'ui',
-              summary: '',
-            },
-          ],
-        }),
-      ],
-      today,
-    });
-
-    // Assert
-    expect(resolution.listing).toStrictEqual(
-      listingOf({
-        repository: [
-          listedOf({
-            id: 'ui',
-            layer: Layer.Domain,
-            summary: undefined,
           }),
         ],
       }),
@@ -2142,6 +2066,7 @@ describe('resolveDeclaration', () => {
           './rules/blocks/implementations/lint/lint.md',
           './rules/blocks/implementations/lint/architecture/rules.md',
         ],
+        source: SourceKind.Pack,
         governs: [
           '**/*',
         ],
@@ -2193,6 +2118,7 @@ describe('resolveDeclaration', () => {
           './rules/blocks/implementations/lint/lint.md',
           './rules/blocks/implementations/lint/architecture/rules.md',
         ],
+        source: SourceKind.Pack,
         governs: [
           '**/*.tsx',
           '**/*.css',
@@ -2293,6 +2219,8 @@ describe('resolveDeclaration', () => {
 
     // Assert
     expect(resolution).toStrictEqual({
+      core: [],
+      lowerings: new Map(),
       active: [],
       listing: listingOf({
         units: [
@@ -2314,6 +2242,44 @@ describe('resolveDeclaration', () => {
       ],
       warnings: [],
     });
+  });
+
+  it("should give each unit core's chapters on its axes without the passport, and leave out a unit with none, when core holds chapters", () => {
+    // Arrange
+    const config = configOf(
+      {
+        axes: 'axes: [architecture]',
+      },
+      {
+        'apps/web': {},
+      },
+    );
+
+    // Act
+    const resolution = resolveDeclaration({
+      config,
+      parser: parsers().cardParser,
+      sources: [
+        sourceOf({
+          core: {
+            files: {
+              'workflow/release.md': '# Release\n',
+            },
+          },
+        }),
+      ],
+      today,
+    });
+
+    // Assert
+    expect(resolution.core).toStrictEqual([
+      coreFilesOf({
+        files: [
+          'blocks/core/workflow/release.md',
+        ],
+        unit: 'apps/web',
+      }),
+    ]);
   });
 
   it('should give each unit its name, its packs and its languages, and the model of every block at every level, when units name themselves and list packs', () => {

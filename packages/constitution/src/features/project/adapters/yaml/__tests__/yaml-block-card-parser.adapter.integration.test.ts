@@ -19,7 +19,6 @@ describe('createYamlBlockCardParser', () => {
         requires: [
           'ui',
         ],
-        summary: 'Screens.',
       },
       condition: 'every field is given in its own form',
       yaml: 'summary: Screens.\nextends: web\nabstract: true\nrequires: [ui]\nlanguages: [typescript, css]\ngoverns: ["**/ui/**", "**/web/**"]',
@@ -38,7 +37,6 @@ describe('createYamlBlockCardParser', () => {
           '3',
           'true',
         ],
-        summary: '12',
       },
       condition: 'scalars stand for text and a single pattern for a list',
       yaml: 'summary: 12\nextends: 7\nabstract: "true"\nrequires: [3, true, "", null, {a: b}, [c]]\nlanguages: python\ngoverns: "**/api/**"',
@@ -59,9 +57,8 @@ describe('createYamlBlockCardParser', () => {
         isAbstract: false,
         languages: [],
         requires: [],
-        summary: 'Screens.',
       },
-      condition: 'every field but the summary is left out',
+      condition: 'every field the card reads is left out',
       yaml: 'id: ui\nsummary: Screens.',
     },
     {

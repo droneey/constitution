@@ -4,7 +4,6 @@ interface BlockCard {
   readonly isAbstract: boolean;
   readonly languages: readonly string[];
   readonly requires: readonly string[];
-  readonly summary?: string;
 }
 
 const EMPTY_CARD = {

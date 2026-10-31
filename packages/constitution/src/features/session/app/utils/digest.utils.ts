@@ -6,14 +6,13 @@ import type { DigestContents, DigestRelease } from '../../domain/entities';
 import { DigestKind } from '../../domain/entities';
 import { blockListLines } from './block-list.utils';
 import {
-  activeMessage,
   doctorNoticeMessage,
-  oneActiveMessage,
+  dutyLines,
   releaseMessage,
   unparsedMessage,
+  warningLineMessage,
 } from './digest.messages';
-import { budgetedBodyOf, coreBodyOf } from './digest-body.utils';
-import { overrideListLines } from './override-list.utils';
+import { coreBodyOf, digestBodyOf } from './digest-body.utils';
 
 interface Digest {
   readonly body: readonly string[];
@@ -25,7 +24,11 @@ const unparsedDigestOf = (input: {
   lines: readonly number[];
   release: DigestRelease;
 }): Digest => ({
-  body: coreBodyOf(input.core),
+  body: [
+    ...coreBodyOf(input.core),
+    '',
+    ...dutyLines(),
+  ],
   head: [
     releaseMessage(input.release),
     unparsedMessage(atLinesText(input.lines)),
@@ -40,18 +43,20 @@ const resolvedDigestOf = (
     }
   >,
 ): Digest => ({
-  body: budgetedBodyOf({
+  body: digestBodyOf({
     blockList: blockListLines(contents.listing),
     core: contents.core,
+    duty: dutyLines(),
     isStartup: contents.isStartup,
-    overrides: overrideListLines(contents.listing.overrides),
-    warnings: contents.warnings.map(
-      (warning) => `- ${ProjectWarning.codeOf(warning)}: ${warningTextOf(warning)}`,
+    warnings: contents.warnings.map((warning) =>
+      warningLineMessage({
+        code: ProjectWarning.codeOf(warning),
+        text: warningTextOf(warning),
+      }),
     ),
   }),
   head: [
     releaseMessage(contents.release),
-    contents.count === 1 ? oneActiveMessage() : activeMessage(contents.count),
   ],
 });
 

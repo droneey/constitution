@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { Axis, RELEASE_FOLDER_PATH } from '#/kernel/constants';
+import { Axis, releaseFolderInProject } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
 import type { ProjectUnit } from '#/kernel/entities';
 import { BlockId, UnitRelativePath } from '#/kernel/value-objects';
@@ -1111,10 +1111,10 @@ describe('computePresets', () => {
     });
 
     // Assert
-    expect(walked.filter((path) => path.endsWith(RELEASE_FOLDER_PATH))).toStrictEqual([
-      `${PROJECT}/packages/kit/${RELEASE_FOLDER_PATH}`,
-      `${PROJECT}/packages/${RELEASE_FOLDER_PATH}`,
-      `${PROJECT}/${RELEASE_FOLDER_PATH}`,
+    expect(walked.filter((path) => path.endsWith(releaseFolderInProject))).toStrictEqual([
+      `${PROJECT}/packages/kit/${releaseFolderInProject}`,
+      `${PROJECT}/packages/${releaseFolderInProject}`,
+      `${PROJECT}/${releaseFolderInProject}`,
     ]);
   });
 

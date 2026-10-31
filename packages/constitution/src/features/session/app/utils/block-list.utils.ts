@@ -1,105 +1,109 @@
-import {
-  Axis,
-  BLOCKS_FOLDER_NAME,
-  LAYER_FOLDER_NAME,
-  Layer,
-  PATH_SEPARATOR,
-  SEAM_FOLDER_NAME,
-} from '#/kernel/constants';
+import { Layer } from '#/kernel/constants';
 import { SourceKind } from '#/kernel/value-objects';
 
-import type { DigestBlock, DigestFiles, DigestListing, DigestUnit } from '../../domain/entities';
-import { DigestEntryKind } from '../../domain/entities';
+import type {
+  DigestBlock,
+  DigestListing,
+  DigestUnit,
+  DigestUnitBlock,
+} from '../../domain/entities';
+import type { ListedLayer } from './digest.messages';
+import {
+  addsMessage,
+  LAYER_TITLES,
+  leavesOutMessage,
+  leftOutAxisMessage,
+  MAP_HEADING,
+  mapLineMessage,
+  memberLineMessage,
+  PACKS_TITLE,
+  packedNameMessage,
+} from './digest.messages';
 
-const TITLES = [
-  [
-    Layer.Domain,
-    'Domains',
-  ],
-  [
-    Layer.Platform,
-    'Platforms',
-  ],
-  [
-    Layer.Language,
-    'Languages',
-  ],
-  [
-    Layer.Implementation,
-    'Implementations',
-  ],
-] as const;
-const KEY =
-  "In brackets, a block's chapters and seams, named without .md: foundation's first, then <axis>: <file>, ... An implementation is named by its library alone; square brackets name a block's pack or, in an application, its layer.";
+const mapLayers: readonly ListedLayer[] = [
+  Layer.Domain,
+  Layer.Platform,
+  Layer.Language,
+  Layer.Implementation,
+];
 
-const filesText = (files: readonly DigestFiles[]): string =>
-  files
-    .map(
-      (onAxis) =>
-        `${onAxis.axis === Axis.Foundation ? '' : `${onAxis.axis}: `}${[
-          ...onAxis.chapters,
-          ...onAxis.seams.map((seam) => `${SEAM_FOLDER_NAME}${PATH_SEPARATOR}${seam}`),
-        ].join(', ')}`,
-    )
-    .join('; ');
+const isFromPack = (block: DigestUnitBlock): boolean => block.source.kind === SourceKind.Pack;
 
-const alsoOf = (files: readonly DigestFiles[]): string =>
-  files.length === 0 ? '' : ` (${filesText(files)})`;
+const nameOf = (block: DigestUnitBlock): string => {
+  switch (block.source.kind) {
+    case SourceKind.Release:
+      return block.id;
+    case SourceKind.Pack:
+      return packedNameMessage({
+        id: block.id,
+        pack: block.source.pack,
+      });
+    // Stryker disable next-line ConditionalExpression: no kind reaches the default, which only the compiler reads
+    default:
+      return block.source satisfies never;
+  }
+};
 
-const summaryOf = (block: DigestBlock): string =>
-  block.layer === Layer.Implementation || block.summary === undefined ? '' : `: ${block.summary}`;
+const lineOf = (title: string, names: readonly string[]): readonly string[] =>
+  names.length === 0
+    ? []
+    : [
+        mapLineMessage({
+          names,
+          title,
+        }),
+      ];
 
-const sourceOf = (block: DigestBlock): string =>
-  block.source.kind === SourceKind.Pack ? ` [${block.source.pack}]` : '';
-
-const repositoryLines = (blocks: readonly DigestBlock[]): readonly string[] =>
-  TITLES.map(([layer, title]) => ({
-    layer,
-    listed: blocks.filter((block) => block.layer === layer),
-    title,
-  }))
-    .filter(({ listed }) => listed.length > 0)
-    .flatMap(({ layer, listed, title }, index) => [
-      `## ${title} (${BLOCKS_FOLDER_NAME}${PATH_SEPARATOR}${LAYER_FOLDER_NAME[layer]}${PATH_SEPARATOR}<id>/<id>.md)`,
-      ...(index === 0
-        ? [
-            KEY,
-          ]
-        : []),
-      ...listed.map(
-        (block) => `- ${block.id}${sourceOf(block)}${summaryOf(block)}${alsoOf(block.files)}`,
-      ),
-    ]);
+const repositoryLines = (blocks: readonly DigestBlock[]): readonly string[] => [
+  ...mapLayers.flatMap((layer) =>
+    lineOf(
+      LAYER_TITLES[layer],
+      blocks.filter((block) => block.layer === layer && !isFromPack(block)).map(nameOf),
+    ),
+  ),
+  ...lineOf(PACKS_TITLE, blocks.filter(isFromPack).map(nameOf)),
+];
 
 const unitLines = (unit: DigestUnit): readonly string[] => {
   const leftOut = [
     ...unit.leftOutBlocks,
-    ...unit.leftOutAxes.map((axis) => `the ${axis} axis`),
+    ...unit.leftOutAxes.map(leftOutAxisMessage),
   ];
-  const lines = [
+  const changes = [
+    ...(unit.own.length === 0
+      ? []
+      : [
+          addsMessage(unit.own.map(nameOf)),
+        ]),
     ...(leftOut.length === 0
       ? []
       : [
-          `- leaves out: ${leftOut.join(', ')}`,
+          leavesOutMessage(leftOut),
         ]),
-    ...unit.entries.map((entry) =>
-      entry.kind === DigestEntryKind.Own
-        ? `- ${entry.block.id} [${LAYER_FOLDER_NAME[entry.block.layer]}]${summaryOf(entry.block)}${alsoOf(entry.block.files)}`
-        : `- ${entry.id} [${LAYER_FOLDER_NAME[entry.layer]}]: Also: ${filesText(entry.files)}`,
-    ),
+  ];
+
+  return changes.length === 0
+    ? []
+    : [
+        memberLineMessage({
+          changes,
+          unit: unit.unit,
+        }),
+      ];
+};
+
+const blockListLines = (listing: DigestListing): readonly string[] => {
+  const lines = [
+    ...repositoryLines(listing.repository),
+    ...listing.units.flatMap(unitLines),
   ];
 
   return lines.length === 0
     ? []
     : [
-        `## ${unit.unit}`,
+        MAP_HEADING,
         ...lines,
       ];
 };
-
-const blockListLines = (listing: DigestListing): readonly string[] => [
-  ...repositoryLines(listing.repository),
-  ...listing.units.flatMap(unitLines),
-];
 
 export { blockListLines };

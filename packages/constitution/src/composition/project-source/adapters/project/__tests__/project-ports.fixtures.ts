@@ -8,6 +8,32 @@ import { ConfigReadStatus } from '#/kernel/entities';
 import type { UnitPath } from '#/kernel/value-objects';
 import { Version } from '#/kernel/value-objects';
 
+const chapterPath = `${releaseFolderPath}/blocks/core/foundation/names.md`;
+const chapterText = [
+  '# Names',
+  '',
+  '### name-reveals-intent · MUST',
+  '',
+  'A name says what the thing is for.',
+  '',
+  '```ts',
+  '### not-a-rule · MUST',
+  '```',
+  '',
+  '| Why |',
+  '|---|',
+  '| a reader learns it from the name. |',
+  '',
+  '### name-reveals-more → name-reveals-intent',
+  '',
+  'A name says more.',
+  '',
+  '| Why |',
+  '|---|',
+  '| more is clearer. |',
+  '',
+].join('\n');
+
 const CORE_TEXT = '---\nid: core\n---\n\n# core\n';
 const CONFIG = 'axes: []\n';
 const UNPARSED_CONFIG = 'axes: [\n';
@@ -76,4 +102,12 @@ const projectPortsOf = (tree: FakeTree = projectTreeOf()): ProjectPorts => ({
   },
 });
 
-export { CORE_TEXT, projectPortsOf, projectTreeOf, UNPARSED_CONFIG, UNPARSED_LINE };
+export {
+  CORE_TEXT,
+  chapterPath,
+  chapterText,
+  projectPortsOf,
+  projectTreeOf,
+  UNPARSED_CONFIG,
+  UNPARSED_LINE,
+};

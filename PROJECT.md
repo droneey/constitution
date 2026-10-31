@@ -17,14 +17,14 @@ The Droneey Constitution: the engineering rules every Droneey repository is buil
 - **Blocks** — the rules, split by layer — core, domains, contexts, implementations — and inside each block by axis, a folder each of one form: `foundation`, always followed, and the optional `architecture` and `workflow`.
 - **Validation** — the checks that keep every block sound and consistent with the others.
 - **Presets** — the settings that hold the tool-checked rules, each keyed by the rule it holds, which the executable writes into a project's configurations.
-- **Delivery** — the release's distribution, one for each platform, `constitution-<platform>.tar.gz`, which a project pins through mise and which carries the blocks, the digests generated from them, the presets, the templates, the tools and the `constitution` executable compiled for that platform, which checks a project and does the hooks' work; and the plugin, the engine installed from its release tag: the session-start hook that reads the project's digests, the skills that write a project's files, and the reviewer agent.
+- **Delivery** — the release's distribution, one for each platform, `constitution-<platform>.tar.gz`, which a project pins through mise and which carries the blocks, the digests generated from them, the presets, the templates, the tools and the `constitution` executable compiled for that platform, which checks a project and does the hooks' work; and the plugin, the engine installed from its release tag: the hooks — the digest at a session's start, the rule gate before an action, the hand-back at a stop, and the clean-up at a session's end — the skills that write a project's files, and the reviewer agent.
 
 ## Core entities and relationships
 
 - **Block** — `requires` or `extends` blocks of the layers above, and holds rules.
 - **Rule** — belongs to one block, and may tighten one rule of another.
 - **Requirement answer** — a library block's answer to a requirement of a block above it.
-- **Digest** — built by the hook from a project's `constitution.yaml` and the blocks of its release.
+- **Digest** — built by the hook from a project's `constitution.yaml` and the blocks of its release: core's passport, the duty the rule gate sets, the map of the active blocks and the warnings.
 - **Preset part** — belongs to one tool's preset, and is named after one block.
 - **Binding** — ties settings of one part to one rule.
 - **Decision** — an entry of `DECISIONS.md`: why a rule of the Constitution is what it is.
@@ -32,6 +32,7 @@ The Droneey Constitution: the engineering rules every Droneey repository is buil
 ## Critical scenarios
 
 - A session in a repository with `constitution.yaml` starts with a digest of its active blocks, within budget, and the warnings about its file.
+- In such a repository, the agent's edit is refused until it has read, whole, the rules that govern it, and goes through once it has.
 - A change to a block that breaks the format, the layers or the digests fails `bun run check`.
 
 ## Boundaries — what it does not do
@@ -63,7 +64,8 @@ The Droneey Constitution: the engineering rules every Droneey repository is buil
 - **Entry** — one setting of a preset file, for one rule of a block or the tool's own under `*`, for one language and one file.
 - **Lock** — `constitution.lock`, beside a unit's `constitution.yaml`: what the executable last wrote into the unit's files.
 - **Template** — a file a project starts from: the starting `constitution.yaml`, `PROJECT.md`, `DECISIONS.md` and a new block's skeleton.
-- **Digest** — what the plugin gives an agent at the start of a session: the release, the warnings and the active blocks.
+- **Digest** — what the plugin gives an agent at the start of a session: the release, core's passport, the duty the rule gate sets, the active blocks and the warnings.
+- **Rule gate** — the hook that refuses an agent's edit, command, sub-agent or MCP call until it has read, whole, the rules that govern it.
 - **Check** — the one command that runs every tool, named by `check:`.
 - **Owned word** — a brand, a language or a file name that only its block and the blocks that depend on it may write.
 

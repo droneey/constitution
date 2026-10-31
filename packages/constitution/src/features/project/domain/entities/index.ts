@@ -1,12 +1,5 @@
 export { AppliedOverrides } from './applied-overrides.entity';
-export type {
-  ListedBlock,
-  ListedFiles,
-  ListedOverride,
-  UnitEntry,
-  UnitListing,
-} from './block-listing.entity';
-export { BlockListing, UnitEntryKind } from './block-listing.entity';
+export type { BlockListing, ListedBlock, UnitBlock, UnitListing } from './block-listing.entity';
 export type {
   BlockSet,
   BlockSetAnswer,

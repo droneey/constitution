@@ -3,52 +3,41 @@ import { describe, expect, it } from 'bun:test';
 import { Axis, Layer } from '#/kernel/constants';
 import { BlockId, BlockSource, PackPath, UnitPath } from '#/kernel/value-objects';
 
-import type { DigestBlock, DigestFiles } from '../../../domain/entities';
-import { DigestEntryKind } from '../../../domain/entities';
+import type { DigestBlock, DigestListing, DigestUnitBlock } from '../../../domain/entities';
 import { blockListLines } from '../block-list.utils';
+import {
+  addsMessage,
+  LAYER_TITLES,
+  leavesOutMessage,
+  leftOutAxisMessage,
+  MAP_HEADING,
+  mapLineMessage,
+  memberLineMessage,
+  PACKS_TITLE,
+  packedNameMessage,
+} from '../digest.messages';
 
-const KEY =
-  "In brackets, a block's chapters and seams, named without .md: foundation's first, then <axis>: <file>, ... An implementation is named by its library alone; square brackets name a block's pack or, in an application, its layer.";
-
-const listedOf = (input: {
-  files?: readonly DigestFiles[];
-  id: string;
-  layer: Layer;
-  pack?: string;
-}): DigestBlock => ({
-  files: input.files ?? [],
+const unitBlockOf = (input: { id: string; pack?: string }): DigestUnitBlock => ({
   id: BlockId.create(input.id),
-  layer: input.layer,
   source: BlockSource.create(input.pack === undefined ? undefined : PackPath.create(input.pack)),
-  summary: `The ${input.id} block.`,
+});
+
+const listedOf = (input: { id: string; layer: Layer; pack?: string }): DigestBlock => ({
+  ...unitBlockOf(input),
+  layer: input.layer,
 });
 
 describe('blockListLines', () => {
-  it('should list the repository blocks by layer, what each member adds and leaves out', () => {
+  it('should name the blocks by layer, a pack apart, then what each member adds and leaves out', () => {
     // Arrange
-    const listing = {
-      overrides: [],
+    const listing: DigestListing = {
       repository: [
         listedOf({
-          files: [
-            {
-              axis: Axis.Foundation,
-              chapters: [
-                'writing.md-files',
-              ],
-              seams: [
-                BlockId.create('react'),
-              ],
-            },
-            {
-              axis: Axis.Architecture,
-              chapters: [
-                'layers',
-              ],
-              seams: [],
-            },
-          ],
           id: 'ui',
+          layer: Layer.Domain,
+        }),
+        listedOf({
+          id: 'docs',
           layer: Layer.Domain,
         }),
         listedOf({
@@ -71,118 +60,48 @@ describe('blockListLines', () => {
       ],
       units: [
         {
-          entries: [
-            {
-              files: [
-                {
-                  axis: Axis.Architecture,
-                  chapters: [],
-                  seams: [
-                    BlockId.create('redux'),
-                  ],
-                },
-                {
-                  axis: Axis.Workflow,
-                  chapters: [
-                    'release',
-                  ],
-                  seams: [
-                    BlockId.create('react'),
-                  ],
-                },
-              ],
-              id: BlockId.create('ui'),
-              kind: DigestEntryKind.Added,
-              layer: Layer.Domain,
-            },
-            {
-              block: listedOf({
-                files: [
-                  {
-                    axis: Axis.Workflow,
-                    chapters: [
-                      'deploy',
-                    ],
-                    seams: [],
-                  },
-                ],
-                id: 'web',
-                layer: Layer.Platform,
-              }),
-              kind: DigestEntryKind.Own,
-            },
-            {
-              block: listedOf({
-                id: 'redux',
-                layer: Layer.Implementation,
-              }),
-              kind: DigestEntryKind.Own,
-            },
+          leftOutAxes: [
+            Axis.Workflow,
           ],
-          leftOutAxes: [],
-          leftOutBlocks: [],
+          leftOutBlocks: [
+            BlockId.create('browser'),
+          ],
+          own: [
+            unitBlockOf({
+              id: 'api',
+            }),
+            unitBlockOf({
+              id: 'style',
+              pack: './rules',
+            }),
+          ],
           unit: UnitPath.create('apps/web'),
         },
         {
-          entries: [],
-          leftOutAxes: [
-            Axis.Architecture,
-          ],
-          leftOutBlocks: [
-            BlockId.create('ui'),
-            BlockId.create('browser'),
-            BlockId.create('typescript'),
-            BlockId.create('react'),
-            BlockId.create('lint'),
-          ],
-          unit: UnitPath.create('apps/api'),
-        },
-        {
-          entries: [],
           leftOutAxes: [],
           leftOutBlocks: [],
-          unit: UnitPath.create('apps/docs'),
+          own: [],
+          unit: UnitPath.create('apps/same'),
         },
-      ],
-    } as const;
-
-    // Act
-    const lines = blockListLines(listing);
-
-    // Assert
-    expect(lines).toStrictEqual([
-      '## Domains (blocks/domains/<id>/<id>.md)',
-      KEY,
-      '- ui: The ui block. (writing.md-files, with/react; architecture: layers)',
-      '## Platforms (blocks/contexts/platforms/<id>/<id>.md)',
-      '- browser: The browser block.',
-      '## Languages (blocks/contexts/languages/<id>/<id>.md)',
-      '- typescript: The typescript block.',
-      '## Implementations (blocks/implementations/<id>/<id>.md)',
-      '- react',
-      '- lint [./rules]',
-      '## apps/web',
-      '- ui [domains]: Also: architecture: with/redux; workflow: release, with/react',
-      '- web [contexts/platforms]: The web block. (workflow: deploy)',
-      '- redux [implementations]',
-      '## apps/api',
-      '- leaves out: ui, browser, typescript, react, lint, the architecture axis',
-    ]);
-  });
-
-  it('should name a block alone when its card gives no summary', () => {
-    // Arrange
-    const listing = {
-      overrides: [],
-      repository: [
         {
-          files: [],
-          id: BlockId.create('ui'),
-          layer: Layer.Domain,
-          source: BlockSource.create(),
+          leftOutAxes: [],
+          leftOutBlocks: [
+            BlockId.create('ui'),
+          ],
+          own: [],
+          unit: UnitPath.create('apps/less'),
+        },
+        {
+          leftOutAxes: [],
+          leftOutBlocks: [],
+          own: [
+            unitBlockOf({
+              id: 'auth',
+            }),
+          ],
+          unit: UnitPath.create('apps/more'),
         },
       ],
-      units: [],
     };
 
     // Act
@@ -190,16 +109,79 @@ describe('blockListLines', () => {
 
     // Assert
     expect(lines).toStrictEqual([
-      '## Domains (blocks/domains/<id>/<id>.md)',
-      KEY,
-      '- ui',
+      MAP_HEADING,
+      mapLineMessage({
+        names: [
+          'ui',
+          'docs',
+        ],
+        title: LAYER_TITLES[Layer.Domain],
+      }),
+      mapLineMessage({
+        names: [
+          'browser',
+        ],
+        title: LAYER_TITLES[Layer.Platform],
+      }),
+      mapLineMessage({
+        names: [
+          'typescript',
+        ],
+        title: LAYER_TITLES[Layer.Language],
+      }),
+      mapLineMessage({
+        names: [
+          'react',
+        ],
+        title: LAYER_TITLES[Layer.Implementation],
+      }),
+      mapLineMessage({
+        names: [
+          packedNameMessage({
+            id: BlockId.create('lint'),
+            pack: PackPath.create('./rules'),
+          }),
+        ],
+        title: PACKS_TITLE,
+      }),
+      memberLineMessage({
+        changes: [
+          addsMessage([
+            'api',
+            packedNameMessage({
+              id: BlockId.create('style'),
+              pack: PackPath.create('./rules'),
+            }),
+          ]),
+          leavesOutMessage([
+            'browser',
+            leftOutAxisMessage(Axis.Workflow),
+          ]),
+        ],
+        unit: UnitPath.create('apps/web'),
+      }),
+      memberLineMessage({
+        changes: [
+          leavesOutMessage([
+            'ui',
+          ]),
+        ],
+        unit: UnitPath.create('apps/less'),
+      }),
+      memberLineMessage({
+        changes: [
+          addsMessage([
+            'auth',
+          ]),
+        ],
+        unit: UnitPath.create('apps/more'),
+      }),
     ]);
   });
 
-  it('should give no line when no block or member is listed', () => {
+  it('should give no map when no block is active', () => {
     // Arrange
-    const listing = {
-      overrides: [],
+    const listing: DigestListing = {
       repository: [],
       units: [],
     };

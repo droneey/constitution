@@ -32,7 +32,6 @@ interface BlockSetBlock {
   readonly requires: readonly BlockId[];
   readonly seams: readonly SeamPlace[];
   readonly source: BlockSource;
-  readonly summary?: string;
 }
 
 interface BlockSetRule {

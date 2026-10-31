@@ -21,7 +21,6 @@ const blockOf = (input: { base?: string; id: string; layer?: Layer }): BlockSetB
   requires: [],
   seams: [],
   source: BlockSource.create(),
-  summary: input.id,
 });
 
 const ruleOf = (input: {

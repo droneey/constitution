@@ -3,6 +3,7 @@ import { Command } from 'commander';
 import { createNodeProjectFiles } from '#/adapters/file-system';
 import { createCheckCommand } from '#/composition/check';
 import {
+  createActiveRulesSource,
   createPinnedRelease,
   createProjectReader,
   createRulesSource,
@@ -56,29 +57,7 @@ import {
   createYamlBlockCardParser,
   createYamlConfigFileParser,
 } from '#/features/project/adapters/yaml';
-import type {
-  Reminder,
-  SessionDigest,
-  SessionId,
-  SessionStart,
-  StopEvent,
-  StopJudgement,
-} from '#/features/session';
-import {
-  createPostToolUseCommand,
-  createRecordCheckCommand,
-  createSessionStartCommand,
-  createStopCommand,
-  createUserPromptSubmitCommand,
-  digestSession,
-  judgeStop,
-  keepSession,
-  markTurn,
-  recordCheck,
-  recordJudgement,
-  recordReminders,
-  remindOfFile,
-} from '#/features/session';
+import { createSha256TextHasher } from '#/features/session/adapters/crypto';
 import { createGitWorkingTree } from '#/features/session/adapters/git';
 import { createXdgSessionRepository } from '#/features/session/adapters/session-store';
 import { EXECUTABLE_NAME } from '#/kernel/constants';
@@ -94,6 +73,7 @@ import { DISTRIBUTION_MAP_NAME, PACKAGE_BUILDS } from './distribution.constants'
 import type { ErrorHandler } from './error-handler';
 import { createErrorHandler } from './error-handler';
 import { HOOK_GROUP } from './hook.constants';
+import { hookCommandsOf } from './hook-commands';
 import { createPresentation } from './presentation';
 import type { Program, ProgramInput } from './program.types';
 import type { Ports, PresetsInput, Registration } from './registration.types';
@@ -131,12 +111,22 @@ const portsOf = (input: ProgramInput): Ports => {
     }),
   };
 
+  const sessions = createXdgSessionRepository({
+    ...input.environment.sessions,
+    maxSessions: FOLDER_FILES,
+    now: (): Temporal.Instant => Temporal.Now.instant(),
+    warn: (warning): void => input.io.writeError(stateFolderWarningText(warning)),
+  });
+
   return {
+    activeRules: createActiveRulesSource(project),
     appliedFiles: createFileAppliedFilesRepository(),
     commands: createShellCommandRunner(),
     distribution,
     files,
     formats,
+    gates: sessions,
+    hasher: createSha256TextHasher(),
     locks,
     pinned: createPinnedRelease(project),
     presetFiles,
@@ -150,98 +140,13 @@ const portsOf = (input: ProgramInput): Ports => {
       },
       project,
     }),
-    sessions: createXdgSessionRepository({
-      ...input.environment.sessions,
-      maxSessions: FOLDER_FILES,
-      now: (): Temporal.Instant => Temporal.Now.instant(),
-      warn: (warning): void => input.io.writeError(stateFolderWarningText(warning)),
-    }),
+    sessions,
     workingTree: createGitWorkingTree({
       env: input.environment.commands,
       timeoutMs: GIT_TIMEOUT_MS,
     }),
   };
 };
-
-const hookCommandsOf = ({ context, ports, program }: Registration): Command =>
-  adopt(
-    groupOf({
-      context,
-      description: "Serve one of Claude Code's hooks, its event read from standard input.",
-      examples: [
-        `printf '{"cwd":"%s","hook_event_name":"SessionStart","source":"startup"}' "$PWD" | constitution hook session-start`,
-      ],
-      name: HOOK_GROUP,
-      parent: program,
-    }),
-    [
-      createSessionStartCommand({
-        ...context,
-        /**
-         * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
-         * @throws {ReleaseError} when the release's blocks cannot be listed
-         */
-        digestSession: (start: SessionStart): SessionDigest | undefined =>
-          digestSession({
-            ...start,
-            source: ports.rules,
-            workingTree: ports.workingTree,
-          }),
-        keepSession: (kept): void => {
-          keepSession({
-            ...kept,
-            sessions: ports.sessions,
-          });
-        },
-      }),
-      createPostToolUseCommand({
-        ...context,
-        recordReminders: (named): void => {
-          recordReminders({
-            ...named,
-            sessions: ports.sessions,
-          });
-        },
-        remindOfFile: (asked): Reminder | undefined =>
-          remindOfFile({
-            ...asked,
-            sessions: ports.sessions,
-          }),
-      }),
-      createRecordCheckCommand({
-        ...context,
-        recordCheck: (asked): void => {
-          recordCheck({
-            ...asked,
-            ...ports,
-          });
-        },
-      }),
-      createUserPromptSubmitCommand({
-        ...context,
-        markTurn: (session: SessionId): void => {
-          markTurn({
-            ...ports,
-            session,
-          });
-        },
-      }),
-      createStopCommand({
-        ...context,
-        judgeStop: (event: StopEvent): StopJudgement | undefined =>
-          judgeStop({
-            ...event,
-            ...ports,
-          }),
-        recordJudgement: (judged): void => {
-          recordJudgement({
-            ...judged,
-            sessions: ports.sessions,
-          });
-        },
-      }),
-    ],
-  );
 
 const doctorCommandOf = ({ context, ports, programInput }: Registration): Command =>
   createDoctorCommand({

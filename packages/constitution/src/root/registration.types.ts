@@ -14,9 +14,12 @@ import type {
   ProjectReader,
 } from '#/features/presets';
 import type {
+  ActiveRulesSource,
+  GateCommandRepository,
   RulesSource,
   SessionCommandRepository,
   SessionQueryRepository,
+  TextHasher,
   WorkingTree,
 } from '#/features/session';
 import type { ProjectFiles } from '#/kernel/contracts';
@@ -25,11 +28,14 @@ import type { CommandContext } from '#/shared/cli';
 import type { ProgramInput } from './program.types';
 
 interface Ports {
+  readonly activeRules: ActiveRulesSource;
   readonly appliedFiles: AppliedFilesCommandRepository;
   readonly commands: CommandRunner;
   readonly distribution: DistributionSources;
   readonly files: ProjectFiles;
   readonly formats: ConfigurationFormat;
+  readonly gates: GateCommandRepository;
+  readonly hasher: TextHasher;
   readonly locks: LockQueryRepository;
   readonly pinned: PinnedRelease;
   readonly presetFiles: PresetFileParser;
