@@ -1,6 +1,6 @@
 # Parsing
 
-> Governs the failures of `parse`.
+> Governs how the program parses YAML with `parse`: its failures.
 
 ## General
 

@@ -1,7 +1,7 @@
 ```pseudo title="Avoid"
 # features/orders/index
-export * from "./domain/use-cases"
-export * from "./domain/entities"
+export * from "./application/use-cases"
+export * from "./domain/order/entities"
 
 function totalOf(order)
   return sum(order.lines)
@@ -10,7 +10,7 @@ function totalOf(order)
 ```pseudo title="Prefer"
 # features/orders/index
 export { placeOrder }
-  from "./domain/use-cases"
+  from "./application/use-cases"
 export { Order }
-  from "./domain/entities"
+  from "./domain/order/entities"
 ```

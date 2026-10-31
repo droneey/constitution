@@ -20,6 +20,14 @@ A tool's configuration in a unit holds every setting the presets of the release 
 |---|
 | the configuration then changes with the blocks: a setting missing, loosened or left behind after its rule is gone shows as a finding of the check, and no copy of a shared file drifts unseen. |
 
+### configuration-names-its-schema · SHOULD
+
+A configuration file names the schema its reader publishes, in the form its language gives it, wherever the reader accepts it.
+
+| Why |
+|---|
+| an editor then checks and completes every key as it is written, so a misspelt or misplaced key shows before the tool ignores it. |
+
 ### own-settings-only-add · MUST
 
 A unit's own settings, written in its files or in its own pack, add to what its blocks compute: a further setting, a stricter value, or a value that names the same thing for this unit, such as its own path to the same program or its own files a rule's term covers or leaves out. A setting that holds a rule is removed, or made to reach less than the rule asks, only by an override that lowers that rule.
@@ -27,6 +35,14 @@ A unit's own settings, written in its files or in its own pack, add to what its 
 | Why |
 |---|
 | a rule then holds in every unit that has it in force, and the one way to weaken it is the override, which names the rule and its reason. |
+
+### linter-rules-turned-on-by-name · MUST
+
+A linter's rules are turned on by their names, families or codes, never by a switch that turns on every rule it has.
+
+| Why |
+|---|
+| a switch for every rule turns on each rule a new release adds, so an update fails the check with rules nobody chose, some of which contradict others. |
 
 ### one-formatter-per-language · MUST
 
@@ -54,21 +70,13 @@ One check runs every tool that holds a rule and fails on any violation.
 
 ## Findings
 
-### suppression-states-its-reason · MUST
-
-A suppression — of a lint rule, a type error, a mutant, a deliberately ignored failure — carries its reason beside it.
-
-| Why |
-|---|
-| the next reader must know whether the exception still holds, and a bare suppression cannot be judged. |
-
 ### suppression-silences-one-finding · MUST
 
-A suppression silences one finding: it sits on the finding’s line or the line above, or names the finding, and names the one rule it silences wherever the tool can name one; a suppression that silences nothing is removed.
+A suppression — of a lint rule, a type error, a mutant, a deliberately ignored failure — silences one finding and carries its reason beside it: it sits on the finding's line or the line above, or names the finding, and names the one rule it silences wherever the tool can; a suppression that silences nothing is removed.
 
 | Why |
 |---|
-| a narrow suppression can be judged where it stands; a broad one silences rules and lines nobody meant to. |
+| a narrow suppression can be judged where it stands, a broad one silences rules and lines nobody meant to, and one without its reason leaves the next reader unable to tell whether the exception still holds. |
 
 ### check-never-weakened-to-pass · MUST
 

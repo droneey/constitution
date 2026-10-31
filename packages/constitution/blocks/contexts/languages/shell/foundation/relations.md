@@ -1,6 +1,6 @@
 # Relations
 
-> Governs a function's variables.
+> Governs how a script's unit holds state: a function's variables.
 
 ## Construction and state
 

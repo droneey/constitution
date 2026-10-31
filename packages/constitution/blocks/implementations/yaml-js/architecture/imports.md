@@ -6,7 +6,7 @@
 
 ### yaml-home-is-the-parsing-adapter-and-lib → layer-imports-dependencies-by-its-role · MUST
 
-The `yaml` package's home is the adapters that parse YAML and the lib under `libs/` that wraps it; no other folder imports it.
+The `yaml` package's home is the adapters of the infrastructure that parse YAML and the lib under `libs/` that wraps it; no other folder imports it.
 
 | Why |
 |---|

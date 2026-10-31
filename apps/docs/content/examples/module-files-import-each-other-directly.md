@@ -1,5 +1,5 @@
 ```pseudo title="Avoid"
-# orders/domain/entities/order.entity
+# orders/domain/order/entities/order.aggregate
 import Line from "features/orders"
 import OrderId from "features/orders"
 
@@ -10,8 +10,8 @@ type Order = {
 ```
 
 ```pseudo title="Prefer"
-# orders/domain/entities/order.entity
-import Line from "./line.entity"
+# orders/domain/order/entities/order.aggregate
+import Line from "./order-line.entity"
 import OrderId from "../value-objects"
 
 type Order = {

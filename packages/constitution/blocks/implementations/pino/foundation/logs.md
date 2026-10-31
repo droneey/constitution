@@ -12,7 +12,7 @@ The pipeline is one pino instance, created at the program's start. Code logs thr
 |---|
 | the mask and the trace id are options of the instance, so a record a second instance writes carries neither. |
 
-### secret-keys-masked-in-the-finished-line → log-value-masked-by-its-key · MUST
+### secret-keys-masked-in-the-finished-line → signal-value-masked-by-its-key · MUST
 
 The mask is the instance's `hooks.streamWrite`, which parses each finished line, masks it and writes it again. `redact` is no such mask: it matches exact paths, with case, and its wildcard spans one level.
 
@@ -22,7 +22,7 @@ The mask is the instance's `hooks.streamWrite`, which parses each finished line,
 
 ### json-lines-to-stdout-in-production → log-output-structured-in-production · SHOULD
 
-In production the instance has no `transport` and writes JSON lines to stdout, its default destination; in development a setting read at the program's start adds `transport: { target: 'pino-pretty' }`.
+In production the instance has no `transport` and writes JSON lines to stdout, its default destination; in development it takes `transport: { target: 'pino-pretty' }`.
 
 | Why |
 |---|
@@ -30,7 +30,7 @@ In production the instance has no `transport` and writes JSON lines to stdout, i
 
 ### trace-id-added-by-mixin → log-record-carries-the-trace-id · SHOULD
 
-The instance's `mixin` returns the trace id from an `AsyncLocalStorage` — `mixin: () => ({ traceId: traceScope.getStore()?.traceId })` — and the middleware of each request or task enters it with `traceScope.run({ traceId }, next)`, the caller's id from its header where the caller is one of the program's own systems, and a new one otherwise.
+The instance's `mixin` returns the trace id from an `AsyncLocalStorage` — `mixin: () => ({ traceId: traceScope.getStore()?.traceId })` — and the middleware of each request or task enters it with `traceScope.run({ traceId }, next)`.
 
 | Why |
 |---|

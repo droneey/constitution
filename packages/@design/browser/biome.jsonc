@@ -110,9 +110,6 @@
         // css
         "noMissingVarFunction": "error",
 
-        // typescript
-        "noUnsafeFinally": "error",
-
         // biome
         "useParseIntRadix": "error",
         "noGlobalDirnameFilename": "error",
@@ -529,9 +526,9 @@
       "path": "./.droneey/constitution/presets/biome/plugins/typescript/effects-held-only-by-the-edge.grit",
       "includes": [
         "**/src/**",
-        "!**/src/adapters/**",
-        "!**/src/features/*/adapters/**",
-        "!**/src/composition/*/adapters/**",
+        "!**/src/infrastructure/**",
+        "!**/src/features/*/infrastructure/**",
+        "!**/src/composition/*/infrastructure/**",
         "!**/src/libs/**",
         "!**/src/root/**",
         "!**/src/*.ts",
@@ -548,7 +545,7 @@
       "includes": [
         "**/*.ts",
         "**/*.tsx",
-        "!**/adapters/**",
+        "!**/infrastructure/**",
         "!**/models/**",
       ],
     },
@@ -619,7 +616,7 @@
       "path": "./.droneey/constitution/presets/biome/plugins/typescript/undefined-is-the-only-absence.grit",
       "includes": [
         "**",
-        "!**/adapters/**",
+        "!**/infrastructure/**",
         "!**/models/**",
         "!**/*.tsx",
       ],
@@ -677,17 +674,17 @@
       "path": "./.droneey/constitution/presets/biome/plugins/typescript/timer-set-only-by-the-edge-and-binding-units.grit",
       "includes": [
         "**/src/**",
-        "!**/src/adapters/**",
-        "!**/src/features/*/adapters/**",
-        "!**/src/composition/*/adapters/**",
+        "!**/src/infrastructure/**",
+        "!**/src/features/*/infrastructure/**",
+        "!**/src/composition/*/infrastructure/**",
         "!**/src/libs/**",
         "!**/src/root/**",
         "!**/src/*.ts",
         "!**/src/*.tsx",
         "!**/src/entrypoints/**",
         "!**/src/integrations/**",
-        "!**/src/features/*/app/**",
-        "!**/src/composition/*/app/**",
+        "!**/src/features/*/presentation/bindings/**",
+        "!**/src/composition/*/presentation/bindings/**",
         "!**/__tests__/**",
       ],
     },
@@ -749,13 +746,13 @@
 
     // tailwind
     {
-      "path": "./.droneey/constitution/presets/biome/plugins/css/utilities-only-from-tokens.grit",
+      "path": "./.droneey/constitution/presets/biome/plugins/css/transition-all-never-used.grit",
       "includes": [
         "**/*.css",
       ],
     },
     {
-      "path": "./.droneey/constitution/presets/biome/plugins/css/transition-all-never-used.grit",
+      "path": "./.droneey/constitution/presets/biome/plugins/css/theme-aliases-the-token-properties.grit",
       "includes": [
         "**/*.css",
       ],
@@ -778,6 +775,9 @@
     // browser
     "./.droneey/constitution/presets/biome/plugins/typescript/raw-html-never-reaches-the-dom.grit",
 
+    // react-dom
+    "./.droneey/constitution/presets/biome/plugins/typescript/field-declares-its-autocomplete.grit",
+
     // typescript
     "./.droneey/constitution/presets/biome/plugins/typescript/type-names-undecorated.grit",
 
@@ -790,7 +790,6 @@
 
     // react-dom
     "./.droneey/constitution/presets/biome/plugins/typescript/labels-bound-with-use-id.grit",
-    "./.droneey/constitution/presets/biome/plugins/typescript/field-declares-its-autocomplete.grit",
     "./.droneey/constitution/presets/biome/plugins/typescript/inline-style-only-custom-properties-and-geometry.grit",
 
     // tailwind
@@ -910,9 +909,9 @@
     {
       "includes": [
         "**/src/**",
-        "!**/src/adapters/**",
-        "!**/src/features/*/adapters/**",
-        "!**/src/composition/*/adapters/**",
+        "!**/src/infrastructure/**",
+        "!**/src/features/*/infrastructure/**",
+        "!**/src/composition/*/infrastructure/**",
         "!**/src/libs/**",
         "!**/src/root/**",
         "!**/src/*.ts",
@@ -956,9 +955,9 @@
     {
       "includes": [
         "**/src/**",
-        "!**/src/adapters/**",
-        "!**/src/features/*/adapters/**",
-        "!**/src/composition/*/adapters/**",
+        "!**/src/infrastructure/**",
+        "!**/src/features/*/infrastructure/**",
+        "!**/src/composition/*/infrastructure/**",
         "!**/src/libs/**",
         "!**/src/root/**",
         "!**/src/*.ts",

@@ -6,19 +6,11 @@
 
 ### call-handle-random-and-never-a-credential · MUST
 
-A handle that relates one request to the next — one an operation minted, a task's — is unguessable, and never authenticates the caller by itself.
+A handle that relates one request to the next — one an operation minted, a task's — is unguessable, never authenticates the caller by itself, and when expired or unknown is answered as an expected failure that says so.
 
 | Why |
 |---|
-| a handle that can be guessed, or that stands in for a credential, lets anyone act as the caller who got it. |
-
-### unknown-or-expired-handle-answered-as-such · MUST
-
-An expired or unknown handle is answered as an expected failure that says so.
-
-| Why |
-|---|
-| a caller recovers from an expired handle only if the answer says it expired. |
+| a handle that can be guessed, or that stands in for a credential, lets anyone act as the caller who got it, and a caller recovers from an expired one only if the answer says it expired. |
 
 ## Cancellation
 

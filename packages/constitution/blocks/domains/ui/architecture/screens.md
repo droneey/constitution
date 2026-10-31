@@ -6,37 +6,19 @@
 
 ### screen-loads-its-data-and-composes-the-page → delivery-unit-stays-thin · SHOULD
 
-A screen receives its parsed address from its registration, loads the data its pieces render, and composes the page from widgets and from pieces private to it.
+A screen receives its parsed address from its registration, loads the data its pieces render, and composes the page from widgets and from pieces private to it, which receive data and `on<Event>` callbacks and know no screen; a piece whose loading would hold back its screen becomes a widget with a binding unit of its own.
 
 | Why |
 |---|
-| the screen is the one place that knows its data, and one loading point shows one loading state and one error instead of a page that fills in piece by piece. |
+| the screen is the one place that knows its data, one loading point shows one loading state and one error instead of a page that fills in piece by piece, and a piece that knows only its data is reused and tested alone. |
 
 ### screen-lives-in-composition → delivery-unit-beside-what-it-serves · SHOULD
 
-Every screen lives in a composition module's `ui/screens/`, whatever features it uses today; a feature offers its widgets, components and binding units, never a screen.
+Every screen lives in the screens of a composition module's presentation, whatever features it uses today; a feature offers its widgets, components and binding units, never a screen.
 
 | Why |
 |---|
 | a screen is a place in the product, not an operation of a feature, and it does not move when it starts showing a second feature. |
-
-## Pieces
-
-### screen-piece-receives-data-and-callbacks · SHOULD
-
-A screen's piece receives data and `on<Event>` callbacks and never knows which screen it sits on; where one loading point hurts its screen it becomes a widget with a binding unit of its own.
-
-| Why |
-|---|
-| a piece that knows only its data is reused and tested alone. |
-
-### screen-private-pieces-beside-screen → delivery-unit-beside-what-it-serves · SHOULD
-
-Pieces and binding units private to one screen live beside it, private to it.
-
-| Why |
-|---|
-| what one screen uses changes with that screen, and nothing else can reach it by accident. |
 
 ## Navigation
 

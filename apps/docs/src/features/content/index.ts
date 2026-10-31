@@ -1,13 +1,9 @@
-export { SearchPagesContext } from './app/providers';
-export { useSearchPages } from './app/use-cases';
 export type {
   PageBodiesQueryRepository,
   PageSearch,
   PagesQueryRepository,
   SearchIndex,
-} from './domain/contracts';
-export type { PageCatalog, PageLocation, SearchResult } from './domain/entities';
-export { BlockLayer, Page, SearchResultKind } from './domain/entities';
+} from './application/contracts';
 export type {
   GetFullText,
   GetNavigation,
@@ -18,7 +14,7 @@ export type {
   GetPageMarkdown,
   GetSearchIndex,
   SearchPages,
-} from './domain/use-cases';
+} from './application/use-cases';
 export {
   createGetFullText,
   createGetNavigation,
@@ -29,5 +25,13 @@ export {
   createGetPageMarkdown,
   createGetSearchIndex,
   createSearchPages,
-} from './domain/use-cases';
-export { AbsolutePath, PageSlugs, SiteBasePath } from './domain/value-objects';
+} from './application/use-cases';
+export { BlockLayer } from './domain/block/entities';
+export type { PageCatalog, PageLocation } from './domain/page/entities';
+export { Page } from './domain/page/entities';
+export { PageSlugs, SiteBasePath } from './domain/page/value-objects';
+export type { SearchResult } from './domain/search/entities';
+export { SearchResultKind } from './domain/search/entities';
+export { AbsolutePath } from './domain/source/value-objects';
+export { useSearchPages } from './presentation/bindings';
+export { SearchPagesContext } from './presentation/providers';

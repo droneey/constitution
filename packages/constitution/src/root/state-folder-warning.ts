@@ -1,5 +1,5 @@
-import type { StateFolderWarning } from '#/features/session/adapters/session-store';
-import { StateFolderProblem } from '#/features/session/adapters/session-store';
+import type { StateFolderWarning } from '#/features/session/infrastructure/session-store';
+import { StateFolderProblem } from '#/features/session/infrastructure/session-store';
 
 import { hookPrefix } from './hook.constants';
 

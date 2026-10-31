@@ -1,18 +1,18 @@
-export { ExitCode } from './app/constants';
-export { runCheckMutations } from './app/use-cases';
 export type {
   Branch,
   BranchReader,
   CodeComparer,
   MutationRunner,
-} from './domain/contracts';
-export type { ChangedFile, MutationTarget } from './domain/entities';
+} from './application/contracts';
+export { createCheckMutations } from './application/use-cases';
+export type { ChangedFile } from './domain/changed-file/entities';
+export { BranchError, BranchFailure } from './domain/changed-file/errors';
 export {
-  BranchError,
-  BranchFailure,
   ConfigurationError,
   ConfigurationFailure,
   MutationRunError,
   MutationRunFailure,
-} from './domain/errors';
-export { createCheckMutations } from './domain/use-cases';
+} from './domain/check/errors';
+export type { MutationTarget } from './domain/mutation-target/entities';
+export { runCheckMutations } from './presentation/bindings';
+export { ExitCode } from './presentation/constants';

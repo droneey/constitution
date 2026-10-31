@@ -6,19 +6,11 @@
 
 ### utilities-only-from-tokens → tokens-single-source-of-appearance · MUST
 
-One `@theme` block holds `--*: initial`, which resets every default scale at once, and every other `@theme` block is `inline` and holds only aliases of the tokens' custom properties, so a utility exists only for a token. No arbitrary value of any kind — a colour, a size or any other — is written in a class, save one that assigns a token's variable, with a suppression that says why.
+No arbitrary value of any kind — a colour, a size or any other — is written in a class, save one that assigns a token's variable, with a suppression that says why.
 
 | Why |
 |---|
-| with the default scales gone, a value outside the tokens cannot be written by accident, and an `inline` alias writes the token's own property into the utility, which then follows the mode. |
-
-### bare-utility-only-without-a-token · SHOULD
-
-A utility with no token behind it — `flex`, `items-center`, `truncate` — is used only where a token would make no sense.
-
-| Why |
-|---|
-| every visual value stays a token, and layout plumbing stays plain. |
+| an arbitrary value is a value outside the tokens, written where no theme and no mode reaches it. |
 
 ## Breakpoints and sizes
 

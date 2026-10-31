@@ -46,14 +46,6 @@ The outcome of every critical scenario of `PROJECT.md` — completed, abandoned,
 
 ## Data
 
-### event-names-no-person → secret-and-personal-data-kept-out-of-output · MUST
-
-No event carries data that names a person — a name, an email, a phone, an address — or content a person wrote; the only identifier an event carries is the analytics library's own pseudonymous one.
-
-| Why |
-|---|
-| analytics services are third parties, and what reaches them has left the product's control. |
-
 ### environment-sends-to-its-own-destination · MUST
 
 Each environment — development, preview, production — sends to its own destination or to none, so only production's events reach production's reports.
@@ -66,18 +58,8 @@ Each environment — development, preview, production — sends to its own desti
 
 ### analytics-fault-isolated → optional-part-isolated-from-its-faults · MUST
 
-A failing analytics destination, or a failure of the code that sends to it, neither breaks the user's action nor silences the other destinations; the fault is reported out of band.
+Each analytics destination is isolated from the others: one that fails, or whose sending code fails, never stops the events sent to the rest.
 
 | Why |
 |---|
-| measurement must never cost the user the thing they came to do. |
-
-## Requirements for implementation
-
-### analytics-drops-the-ip-address · MUST
-
-The library truncates or drops the IP address.
-
-| Why |
-|---|
-| a library that identifies users by default leaks personal data on its first event. |
+| one broken service would otherwise blind every report, not only its own. |

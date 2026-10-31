@@ -56,6 +56,9 @@ const unit = appliedUnit({
     'ty',
     'uv',
     'vulture',
+    'rest-api',
+    'mcp-api',
+    'remote-service',
   ],
   languages: [
     'python',

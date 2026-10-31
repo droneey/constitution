@@ -1,5 +1,9 @@
 pre-commit:
   jobs:
+    # betterleaks
+    - name: secrets
+      run: betterleaks git --pre-commit --staged --redact --no-banner
+
     # lefthook
     - name: validate-branch
       run: |
@@ -15,10 +19,6 @@ pre-commit:
           echo "  got: $BRANCH"
           exit 1
         fi
-
-    # betterleaks
-    - name: secrets
-      run: betterleaks git --pre-commit --staged --redact --no-banner
 
     # biome
     - name: biome
@@ -196,6 +196,19 @@ pre-commit:
 # lefthook
 commit-msg:
   jobs:
+    - name: commit-placeholder
+      run: |
+        SUBJECT="$(head -1 {1} | sed 's/^[A-Za-z]*\(([^)]*)\)\{0,1\}!\{0,1\}: //')"
+
+        case "$(printf '%s' "$SUBJECT" | tr '[:upper:]' '[:lower:]')" in
+          update | updates | changes | change | misc | wip | fix | fixes | \
+            "fix stuff" | stuff | \
+            "minor changes" | "small fix" | tmp | test)
+            echo "[commit-subject-says-what-changed]" \
+              "Subject '$SUBJECT' says nothing; say what changed"
+            exit 1
+            ;;
+        esac
     - name: commit-body
       run: |
         # Why: git commit -v leaves the diff below its scissors line for the hook to read.
@@ -241,16 +254,3 @@ commit-msg:
             "Subject must start with an uppercase letter (sentence-case)"
           exit 1
         fi
-    - name: commit-placeholder
-      run: |
-        SUBJECT="$(head -1 {1} | sed 's/^[A-Za-z]*\(([^)]*)\)\{0,1\}!\{0,1\}: //')"
-
-        case "$(printf '%s' "$SUBJECT" | tr '[:upper:]' '[:lower:]')" in
-          update | updates | changes | change | misc | wip | fix | fixes | \
-            "fix stuff" | stuff | \
-            "minor changes" | "small fix" | tmp | test)
-            echo "[commit-subject-never-a-placeholder]" \
-              "Subject '$SUBJECT' says nothing; say what changed"
-            exit 1
-            ;;
-        esac

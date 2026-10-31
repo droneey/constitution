@@ -1,16 +1,16 @@
 # Screens
 
-> Governs a screen: its states, its address and view state, loading, images and response.
+> Governs a screen: its states, its address and view state, the permissions it asks for, loading, images and response.
 
 ## States
 
 ### data-view-shows-every-state · MUST
 
-A data view shows each state its data can have: loading, failure, content, and the empty or not-found state where its data can be empty or missing.
+A data view shows each state its data can have: loading, failure, content, and the empty or not-found state where its data can be empty or missing; no default stands in for data not yet loaded.
 
 | Why |
 |---|
-| an empty view cannot otherwise be told from a slow or a broken one, and the user does not know what to do. |
+| an empty view cannot otherwise be told from a slow or a broken one, and an invented default hides loading and failure behind something that looks like data, so the user does not know what to do. |
 
 ### data-result-is-union-by-status → illegal-state-unrepresentable · MUST
 
@@ -36,14 +36,6 @@ An empty state names the situation and offers an action, and a state with no res
 |---|
 | each is a moment the user decides what to do next, and a blank area leaves them stuck. |
 
-### unknown-address-shows-the-not-found-screen · SHOULD
-
-An address no screen answers shows the application's not-found screen, which is not the not-found state of a view whose data is missing.
-
-| Why |
-|---|
-| a mistyped or stale link otherwise ends on a blank page or an error, and the user cannot tell a wrong address from a broken application. |
-
 ## Address and view state
 
 ### address-parsed-as-untrusted-input → outside-value-untyped-until-parsed · MUST
@@ -53,6 +45,14 @@ A screen's address — its path and its parameters, in a URL or a deep link — 
 | Why |
 |---|
 | anyone can write a link and send it to the user, so a malformed one is to be expected, and it must not break the program. |
+
+### address-only-opens-a-screen · MUST
+
+A link — a URL or a deep link — opens a screen with its parameters and performs no action — a payment, a send, a change of settings — until the user confirms it there.
+
+| Why |
+|---|
+| anyone can craft a link and get it tapped, so a link that acts at once acts for its author, not for the user. |
 
 ### address-write-keeps-the-other-parameters · MUST
 
@@ -70,23 +70,25 @@ View state a link or a restart must reproduce — a filter, a sort, a page, the 
 |---|
 | state a link must carry is lost on reload or shared by accident anywhere else. |
 
-### passing-state-kept-in-its-component · SHOULD
+### unknown-address-shows-the-not-found-screen · SHOULD
 
-Passing state — an open menu, a hover — lives in the component that shows it.
+An address no screen answers shows the application's not-found screen, which is not the not-found state of a view whose data is missing.
 
 | Why |
 |---|
-| state lifted above the component that shows it is shared by accident and copied until the copies disagree. |
+| a mistyped or stale link otherwise ends on a blank page or an error, and the user cannot tell a wrong address from a broken application. |
+
+## Permissions
+
+### permission-asked-in-context · SHOULD
+
+A permission the platform asks the person for is requested when they first reach the feature that needs it, after the screen says why, never at start; a refusal leaves every other feature working, and the feature that needs it says what it lacks and how to grant it in the platform's settings.
+
+| Why |
+|---|
+| a person grants what they understand at the moment it is needed, a request out of context is refused for good, and a feature that fails silently tells them nothing. |
 
 ## Loading
-
-### unloaded-data-has-no-stand-in → absence-shown-by-the-type · MUST
-
-No default stands in for data not yet loaded; the waiting state is shown as waiting.
-
-| Why |
-|---|
-| an invented default hides loading and failure behind something that looks like data. |
 
 ### loading-never-replaces-shown-content · SHOULD
 
@@ -132,6 +134,14 @@ Every image a screen shows is sharp at the screen's pixel density, and never fet
 
 ## Response
 
+### felt-speed-measured-in-the-field-within-budget · SHOULD
+
+The interface's speed as people feel it — the wait for its main content, the answer to their input, the stillness of what it shows — is measured in the field, at the 75th percentile of real uses, and kept within a budget the project sets.
+
+| Why |
+|---|
+| a fast developer's machine hides the slow devices and networks people use, and the 75th percentile counts the slow quarter an average smooths away. |
+
 ### interaction-answered-before-its-work · SHOULD
 
 An interaction shows its first visible response — a pressed state, an opened layer, a busy mark — before the work it starts, within a bound the project sets, and long work runs after that response without blocking the next input.
@@ -155,3 +165,11 @@ A layer the user opens many times a session — a menu, a command palette — op
 | Why |
 |---|
 | an animation seen for the hundredth time is only a wait, and a result held back by motion makes the interface slow however fast its work is. |
+
+### long-lists-virtualised · SHOULD
+
+A list whose length the product does not bound renders only the rows in view and those near them, or is paged.
+
+| Why |
+|---|
+| a list that mounts every row at once grows slower with every item, and a long one freezes the device. |

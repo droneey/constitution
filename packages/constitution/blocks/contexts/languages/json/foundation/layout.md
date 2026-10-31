@@ -1,6 +1,6 @@
 # Layout
 
-> Governs the extension of a JSON file that holds comments.
+> Governs a JSON file's kind and name: the extension of one that holds comments.
 
 ## Names
 

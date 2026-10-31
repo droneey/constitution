@@ -1,5 +1,5 @@
 ```pseudo title="Avoid"
-# orders/app/show-order
+# orders/presentation/show-order
 function showOrder(request)
   return getOrder(request.id)
 
@@ -11,7 +11,7 @@ call loadEvery("features/*/app")
 ```
 
 ```pseudo title="Prefer"
-# orders/app/show-order
+# orders/presentation/show-order
 function showOrder(request)
   return getOrder(request.id)
 

@@ -4,8 +4,6 @@
 
 ## General
 
-Lefthook's settings for Betterleaks run `betterleaks git --pre-commit --staged --redact`.
-
 ### staged-changes-scanned-before-commit → secret-never-in-the-repository · MUST
 
 `pre-commit` scans the staged changes for secrets.

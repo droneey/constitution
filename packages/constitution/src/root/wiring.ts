@@ -1,23 +1,22 @@
 import { Command } from 'commander';
 
-import { createNodeProjectFiles } from '#/adapters/file-system';
 import { createCheckCommand } from '#/composition/check';
 import {
   createPinnedRelease,
   createProjectReader,
   createRulesSource,
-} from '#/composition/project-source/adapters/project';
+} from '#/composition/project-source/infrastructure/project';
 import type { PackBase, Validation } from '#/features/blocks';
 import { checkBlocks, createBlocksCheckCommand } from '#/features/blocks';
-import { createGitFileTrees } from '#/features/blocks/adapters/git';
-import { createJsonManifestParser } from '#/features/blocks/adapters/json';
-import { createYamlFrontMatterParser } from '#/features/blocks/adapters/yaml';
+import { createGitFileTrees } from '#/features/blocks/infrastructure/git';
+import { createJsonManifestParser } from '#/features/blocks/infrastructure/json';
+import { createYamlFrontMatterParser } from '#/features/blocks/infrastructure/yaml';
 import type { PartDiagnosis } from '#/features/installation';
 import { createDoctorCommand, diagnoseInstallation } from '#/features/installation';
-import { createClaudePluginRegistry } from '#/features/installation/adapters/claude-code';
-import { createGitHubReleaseFeed } from '#/features/installation/adapters/github';
-import { createLefthookGitHooks } from '#/features/installation/adapters/lefthook';
-import { createPathExecutable } from '#/features/installation/adapters/path';
+import { createClaudePluginRegistry } from '#/features/installation/infrastructure/claude-code';
+import { createGitHubReleaseFeed } from '#/features/installation/infrastructure/github';
+import { createLefthookGitHooks } from '#/features/installation/infrastructure/lefthook';
+import { createPathExecutable } from '#/features/installation/infrastructure/path';
 import type {
   AppliedFiles,
   ApplyPlan,
@@ -42,20 +41,20 @@ import {
   presetsSkippedStep,
   presetsStepOf,
 } from '#/features/presets';
-import { createConfigurationFormat } from '#/features/presets/adapters/configuration';
+import { createConfigurationFormat } from '#/features/presets/infrastructure/configuration';
 import {
   createDistributionMapSources,
   createFileAppliedFilesRepository,
   createFileLockRepository,
-} from '#/features/presets/adapters/file-system';
-import { createShellCommandRunner } from '#/features/presets/adapters/process';
-import { createYamlPresetFileParser } from '#/features/presets/adapters/yaml';
-import { createJsonReleaseManifestParser } from '#/features/project/adapters/json';
-import { createManifestWorkspace } from '#/features/project/adapters/workspace';
+} from '#/features/presets/infrastructure/file-system';
+import { createShellCommandRunner } from '#/features/presets/infrastructure/process';
+import { createYamlPresetFileParser } from '#/features/presets/infrastructure/yaml';
+import { createJsonReleaseManifestParser } from '#/features/project/infrastructure/json';
+import { createManifestWorkspace } from '#/features/project/infrastructure/workspace';
 import {
   createYamlBlockCardParser,
   createYamlConfigFileParser,
-} from '#/features/project/adapters/yaml';
+} from '#/features/project/infrastructure/yaml';
 import type {
   Reminder,
   SessionDigest,
@@ -79,8 +78,9 @@ import {
   recordReminders,
   remindOfFile,
 } from '#/features/session';
-import { createGitWorkingTree } from '#/features/session/adapters/git';
-import { createXdgSessionRepository } from '#/features/session/adapters/session-store';
+import { createGitWorkingTree } from '#/features/session/infrastructure/git';
+import { createXdgSessionRepository } from '#/features/session/infrastructure/session-store';
+import { createNodeProjectFiles } from '#/infrastructure/file-system';
 import { EXECUTABLE_NAME } from '#/kernel/constants';
 import type { AbsolutePath } from '#/kernel/value-objects';
 import { Version } from '#/kernel/value-objects';

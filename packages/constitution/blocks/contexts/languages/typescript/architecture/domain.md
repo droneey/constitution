@@ -1,13 +1,23 @@
 # Domain
 
-> Governs the form of an entity's rules.
+> Governs the model in TypeScript: the form of an aggregate and of its transitions, and of an entity with rules of its own.
 
 ## Where rules live
 
-### entity-rules-held-by-its-companion → entity-rule-lives-beside-the-entity · SHOULD
+### aggregate-rules-held-by-its-companion → aggregate-rule-lives-in-its-concept · MUST
 
-An entity with rules of its own is a `readonly` type and a `const` object of the same name, declared in its file, whose functions take the entity as their first parameter: `Rule.create`, `Rule.tightenedBy(rule, other)`, `Rule.withLevel(rule, level)`. The entity is made only by its `create`, and only the companion spreads its fields to make a changed one.
+An aggregate, and an entity with rules of its own, is a `readonly` type whose predicates and derived values its companion — the `const` object of its name, declared in its file — holds as functions that take it as their first parameter — `Order.isPaid(order)`, `Order.total(order)` —, never a class with methods; an aggregate's `create`, `restore` and transitions are functions of its concept's `transitions/`, named with their aggregate: `createOrder`, `restoreOrder`, `shipOrder(order, at)`.
 
 | Why |
 |---|
-| everything about an entity is found in one place under its own name, and its data stays plain at every boundary. |
+| plain data crosses the query cache, storage, a worker and a server component as it is, which an instance of a class does not, and a transition apart from the type is a file the presentation's imports can be kept from. |
+
+## Construction
+
+### aggregate-built-only-in-its-transitions → aggregate-changed-only-by-its-transitions · MUST
+
+No object literal, spread or `structuredClone` of an aggregate's type, or of one of its inner entities', is written outside its concept's `transitions/`, in specs as in production; a spec builds one through its `create` or `restore`.
+
+| Why |
+|---|
+| the compiler accepts any object of the right shape as the aggregate, so only the folder keeps a state no transition checked from existing. |

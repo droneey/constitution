@@ -18,7 +18,7 @@ Sign-in and recovery answer the same way whether an account exists or not, and s
 
 | Why |
 |---|
-| an answer that differs tells an attacker which addresses to attack; OWASP ASVS asks for this only at its highest level, and a sign-in that asks for the identifier first gives some of it away, so a product may weigh it against the flow its users need. |
+| an answer that differs tells an attacker which addresses to attack; a flow that asks for the identifier first gives some of it away, which a product may accept for its users' sake. |
 
 ## Providers
 
@@ -42,19 +42,11 @@ An account is found from an outside provider's identity by its issuer and subjec
 
 ### sign-in-takes-more-than-a-password · MUST
 
-An account signs in with a passkey, or with a password and a second factor.
+An account signs in with a passkey, or with a password and a second factor, and every person can choose a phishing-resistant factor, such as a passkey.
 
 | Why |
 |---|
-| a password alone falls to the reuse and the phishing that take most accounts, and NIST and OWASP ASVS ask for more than one factor wherever personal data is held. |
-
-### phishing-resistant-factor-offered · MUST
-
-A person can sign in with a phishing-resistant factor, such as a passkey.
-
-| Why |
-|---|
-| a passkey cannot be typed into a fake page, which defeats the attack that steals most accounts, and NIST's guidance of 2025 makes offering one a duty. |
+| a password alone falls to the reuse and the phishing that take most accounts, and only a phishing-resistant factor cannot be typed into a fake page; NIST SP 800-63B-4 asks for both. |
 
 ### privileged-account-signs-in-with-a-phishing-resistant-factor · MUST
 

@@ -2,22 +2,24 @@ from dataclasses import dataclass, field
 from pathlib import PurePosixPath
 from typing import TYPE_CHECKING, override
 
-from droneey_mutation_check_python.features.mutation.domain.contracts import Workspace
-from droneey_mutation_check_python.features.mutation.domain.entities import (
-  Changes,
-  MutationTargets,
-  Stopped,
+from droneey_mutation_check_python.features.mutation.application.contracts import Workspace
+from droneey_mutation_check_python.features.mutation.domain.changes.entities import Changes
+from droneey_mutation_check_python.features.mutation.domain.changes.value_objects import (
+  UnitRelativePath,
 )
-from droneey_mutation_check_python.features.mutation.domain.value_objects import UnitRelativePath
+from droneey_mutation_check_python.features.mutation.domain.mutation_run.entities import Stopped
+from droneey_mutation_check_python.features.mutation.domain.mutation_targets.entities import (
+  MutationTargets,
+)
 
 if TYPE_CHECKING:
   from collections.abc import Mapping
 
-  from droneey_mutation_check_python.features.mutation.domain.entities import (
-    FileChange,
+  from droneey_mutation_check_python.features.mutation.domain.changes.entities import FileChange
+  from droneey_mutation_check_python.features.mutation.domain.mutation_run.entities import (
     MutationRun,
   )
-  from droneey_mutation_check_python.features.mutation.domain.errors import (
+  from droneey_mutation_check_python.features.mutation.domain.shared.errors import (
     CommandFailedError,
     CommandUnfinishedError,
     MutantsKeptError,

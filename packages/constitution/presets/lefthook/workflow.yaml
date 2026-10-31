@@ -75,21 +75,3 @@ version-control:
                   "Subject must start with an uppercase letter (sentence-case)"
                 exit 1
               fi
-lefthook:
-  commit-subject-never-a-placeholder:
-    '*':
-      lefthook.yaml:
-        commit-msg:
-          jobs[name=commit-placeholder]:
-            run: |
-              SUBJECT="$(head -1 {1} | sed 's/^[A-Za-z]*\(([^)]*)\)\{0,1\}!\{0,1\}: //')"
-
-              case "$(printf '%s' "$SUBJECT" | tr '[:upper:]' '[:lower:]')" in
-                update | updates | changes | change | misc | wip | fix | fixes | \
-                  "fix stuff" | stuff | \
-                  "minor changes" | "small fix" | tmp | test)
-                  echo "[commit-subject-never-a-placeholder]" \
-                    "Subject '$SUBJECT' says nothing; say what changed"
-                  exit 1
-                  ;;
-              esac

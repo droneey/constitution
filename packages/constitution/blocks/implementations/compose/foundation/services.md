@@ -1,12 +1,12 @@
 # Services
 
-> Governs a Compose file: its structure, the images its services run, their privileges and how they start.
+> Governs a Compose file: its structure, its services' images and privileges, and how they start.
 
 ## Structure
 
 ### compose-keys-in-shared-order · MUST
 
-A Compose file lists its top-level keys as `name`, `include`, extensions (`x-*`), `services`, `networks`, `volumes`, and a service's keys as `image` or `build`, `container_name`, `extends`, `profiles`, `restart`, `command`, `depends_on`, `networks`, `ports`, `volumes`, `logging`, `healthcheck`, `security_opt`, `cap_drop`, `cap_add`, `read_only`, `labels`, `tmpfs`, `environment`.
+A Compose file's top-level keys, and a service's keys, follow the one order the presets set.
 
 | Why |
 |---|
@@ -27,14 +27,6 @@ Settings several services share — environment, logging, health checks, securit
 | Why |
 |---|
 | a setting written once changes once; its copies drift apart one service at a time; Compose's reader defines the merge key `<<` that takes them into a service. |
-
-### variants-extend-a-disabled-base · SHOULD
-
-The variants of one service extend a base service whose name starts with `_` and whose `profiles` is `[do-not-use]`; each variant is named with its environment's suffix, `-development`, `-test` or `-production`.
-
-| Why |
-|---|
-| the variants share one definition, the base never starts by itself, and a service's name says where it runs. |
 
 ## Images
 

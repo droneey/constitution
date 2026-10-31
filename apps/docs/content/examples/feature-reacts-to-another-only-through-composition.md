@@ -1,5 +1,5 @@
 ```pseudo title="Avoid"
-# shipping/app/on-order-paid
+# shipping/presentation/on-order-paid
 import OrderPaid from "billing"
 
 when OrderPaid then

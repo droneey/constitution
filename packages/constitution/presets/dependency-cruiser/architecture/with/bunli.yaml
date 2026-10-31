@@ -3,11 +3,12 @@ bunli:
     typescript:
       .dependency-cruiser.jsonc:
         allowedSeverity: error
-  bunli-imported-by-commands:
+cli:
+  command-parser-imported-by-the-command-files:
     typescript:
       .dependency-cruiser.jsonc:
-        allowed[comment=bunli-imported-by-commands]:
+        'allowed[comment=command-parser-imported-by-the-command-files: bunli]':
           from:
-            path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.application-layer}/.*\.${role.command-binding}\.[^/]+$
+            path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.presentation-layer}/.*\.${role.command-binding}\.[^/]+$
           to:
             path: node_modules/@bunli/

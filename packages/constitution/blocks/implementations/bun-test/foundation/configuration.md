@@ -18,7 +18,7 @@
 
 | Why |
 |---|
-| Bun merges no coverage of two runs, so only a run that loads both kinds of spec counts an adapter's lines that only its engine reaches. |
+| Bun merges no coverage of two runs, so only a run that loads both kinds of spec counts the lines of a contract's implementation that only its engine reaches. |
 
 ### test-order-randomized → case-independent-of-order · SHOULD
 

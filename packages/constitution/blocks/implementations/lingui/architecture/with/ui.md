@@ -6,7 +6,7 @@
 
 ### lingui-only-where-text-is-rendered → domain-returns-codes-not-text · MUST
 
-Lingui and the message catalogs have their home where text is rendered — a UI's components and widgets, the screens, and `root/`, which provides the active locale — and no other folder imports them: no domain, no binding unit, no adapter and no primitive of `libs/`.
+Lingui and the message catalogs have their home where text is rendered — a presentation's screens, widgets and components, and `root/`, which provides the active locale — and no other folder imports them: no domain, no application, no binding unit, no adapter and no primitive of `libs/`.
 
 | Why |
 |---|

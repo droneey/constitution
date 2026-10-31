@@ -1,4 +1,13 @@
 core:
+  suppression-silences-one-finding:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              select:
+                - PGH
+                - RUF
   dead-code-deleted:
     python:
       pyproject.toml:
@@ -35,14 +44,6 @@ core:
               extend-select:
                 - EM
                 - TRY
-  code-never-commented-out:
-    python:
-      pyproject.toml:
-        tool:
-          ruff:
-            lint:
-              extend-select:
-                - ERA
   function-takes-no-boolean-position:
     python:
       pyproject.toml:
@@ -58,6 +59,7 @@ core:
           ruff:
             lint:
               extend-select:
+                - ERA
                 - FIX
   function-takes-at-most-three-positions:
     python:
@@ -259,22 +261,6 @@ python:
             lint:
               extend-select:
                 - ASYNC
-  parameter-default-never-mutable:
-    python:
-      pyproject.toml:
-        tool:
-          ruff:
-            lint:
-              extend-select:
-                - B006
-  finally-never-left-by-a-jump:
-    python:
-      pyproject.toml:
-        tool:
-          ruff:
-            lint:
-              extend-select:
-                - B012
   instant-is-an-aware-datetime:
     python:
       pyproject.toml:
@@ -283,14 +269,6 @@ python:
             lint:
               extend-select:
                 - DTZ
-  import-never-a-wildcard:
-    python:
-      pyproject.toml:
-        tool:
-          ruff:
-            lint:
-              extend-select:
-                - F403
   source-folder-is-a-regular-package:
     python:
       pyproject.toml:
@@ -375,6 +353,13 @@ python:
                 - UP046
                 - UP047
 ruff:
+  ruff-format-is-the-formatter:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            format:
+              quote-style: single
   '*':
     python:
       pyproject.toml:
@@ -427,19 +412,3 @@ ruff:
                   - INP001
                   - PLR2004
                   - S101
-  ruff-format-is-the-formatter:
-    python:
-      pyproject.toml:
-        tool:
-          ruff:
-            format:
-              quote-style: single
-  noqa-names-its-codes:
-    python:
-      pyproject.toml:
-        tool:
-          ruff:
-            lint:
-              select:
-                - PGH
-                - RUF

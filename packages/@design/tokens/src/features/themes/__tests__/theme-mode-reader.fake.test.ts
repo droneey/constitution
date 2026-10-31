@@ -1,4 +1,4 @@
-import { AbsolutePath } from '../domain/value-objects';
+import { AbsolutePath } from '../domain/theme-mode/value-objects';
 import { createFakeThemeModeReader } from './theme-mode-reader.fake';
 import { themeModeReaderSuite } from './theme-mode-reader.suite';
 

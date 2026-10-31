@@ -1,6 +1,6 @@
 # Traces
 
-> Governs spans, the trace context, and what a span may carry.
+> Governs spans and the trace context.
 
 ## Context
 
@@ -37,13 +37,3 @@ An event or a failure inside a unit of work is written as a log record in its sp
 | Why |
 |---|
 | OpenTelemetry has deprecated span events, since an event is a log with a name: one written as a log passes the log pipe, its mask and its levels, and stays tied to its span by the trace and span ids it carries. |
-
-## Content
-
-### span-attribute-masked-by-its-key → secret-and-personal-data-kept-out-of-output · MUST
-
-Span attributes and metric exemplars pass the mask the logs pass, by the same words, before export; an address is recorded without its query and a database statement only with placeholders for its values.
-
-| Why |
-|---|
-| instrumentation records the full URL and the statement's text by default, so a mask on logs alone leaves the same secret in every trace. |

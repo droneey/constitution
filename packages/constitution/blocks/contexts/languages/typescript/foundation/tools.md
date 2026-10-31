@@ -1,10 +1,10 @@
 # Tools
 
-> Governs the suppression of a type error.
+> Governs the tools that hold the rules in TypeScript, and their findings: how a type error is suppressed.
 
 ## Findings
 
-### type-error-suppressed-by-ts-expect-error → suppression-states-its-reason · MUST
+### type-error-suppressed-by-ts-expect-error → suppression-silences-one-finding · MUST
 
 A type error kept on purpose is silenced by `@ts-expect-error` with its reason on the same line, never by `@ts-ignore` or `@ts-nocheck`.
 

@@ -1,13 +1,13 @@
 # Tools
 
-> Governs the schema a configuration names for the tools that read it.
+> Governs the tools that read a JSON configuration: the schema it names for them.
 
 ## Schema
 
-### json-configuration-names-its-schema · SHOULD
+### json-configuration-names-its-schema → configuration-names-its-schema · SHOULD
 
-A configuration written in JSON names its schema in `$schema` wherever its reader publishes one and accepts the key.
+A configuration written in JSON names its reader's schema in `$schema`, where the reader accepts the key.
 
 | Why |
 |---|
-| an editor then checks and completes every key as it is written, so a misspelt or misplaced key shows before the tool ignores it. |
+| the key is where JSON tools look for a schema. |

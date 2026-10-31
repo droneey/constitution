@@ -1,6 +1,6 @@
 # Evals
 
-> Governs how what a model does for the program is measured: its cases, graders and results.
+> Governs how what a model does for the program is measured: its cases, its runs, graders and results.
 
 ## Cases
 
@@ -27,6 +27,16 @@ A sample of each task's runs in production — failures, refusals and outliers f
 | Why |
 |---|
 | a model meets inputs no eval foresaw and changes its behaviour on them with no change of code, and only its real runs show that. |
+
+## Runs
+
+### eval-runs-apart-from-the-specs → test-runs-in-a-sandbox · MUST
+
+A spec replaces the model with scripted or recorded answers, and an eval that calls a real model runs apart from the specs, by a command of its own.
+
+| Why |
+|---|
+| a real model is slow, paid for and answers differently on each run, so a spec that calls it fails by chance and costs money on every change. |
 
 ## Graders
 

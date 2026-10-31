@@ -1,15 +1,15 @@
 ```pseudo title="Avoid"
 # features/orders/index
 export { placeOrder }
-  from "./domain/use-cases"
+  from "./application/use-cases"
 export { OrderRowModel }
-  from "./adapters/postgres"
+  from "./infrastructure/postgres"
 ```
 
 ```pseudo title="Prefer"
 # features/orders/index
 export { placeOrder }
-  from "./domain/use-cases"
+  from "./application/use-cases"
 export { Order }
-  from "./domain/entities"
+  from "./domain/order/entities"
 ```

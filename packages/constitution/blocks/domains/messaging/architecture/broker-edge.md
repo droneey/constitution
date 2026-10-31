@@ -6,7 +6,7 @@
 
 ### consumers-and-jobs-beside-the-work-they-run → delivery-unit-beside-what-it-serves · SHOULD
 
-A consumer, one `.consumer` file per message type, lives in **`consumers/`**{#message-consumer} of the application layer of the feature that owns the work, or of the composition module whose reaction it carries; a job, one `.job` file per job, lives in **`jobs/`**{#background-job} the same way.
+A consumer, one `.consumer` file per message type, lives in **`consumers/`**{#message-consumer} of the presentation of the feature that owns the work, or of the composition module whose reaction it carries; a job, one `.job` file per job, lives in **`jobs/`**{#background-job} the same way.
 
 | Why |
 |---|
@@ -24,7 +24,7 @@ A consumer or a job parses its message or its tick, calls one operation of the f
 
 ### publisher-is-a-port-in-the-domains-words → contract-knows-no-vendor · MUST
 
-Code outside the edge publishes through a port that takes the feature's own events and commands, and the broker's client, its channels and its wire shape live only in the port's adapter.
+Code outside the edge publishes through a port in the application's contracts that takes the feature's own events and commands, and the broker's client, its channels and its wire shape live only in the port's adapter.
 
 | Why |
 |---|

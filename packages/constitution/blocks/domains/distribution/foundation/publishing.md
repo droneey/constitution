@@ -1,6 +1,6 @@
 # Publishing
 
-> Governs the identity a version is published under.
+> Governs how a version is published: the identity it is published under and its provenance.
 
 ## Identity
 

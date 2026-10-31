@@ -1,5 +1,5 @@
 ```pseudo title="Avoid"
-# orders/domain/use-cases/place-order
+# orders/application/use-cases/place-order
 import root from "root"
 
 function placeOrder(cart)
@@ -8,7 +8,7 @@ function placeOrder(cart)
 ```
 
 ```pseudo title="Prefer"
-# orders/domain/use-cases/place-order
+# orders/application/use-cases/place-order
 function placeOrder(cart, orders)
   return orders.save(cart.toOrder())
 

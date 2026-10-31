@@ -12,13 +12,13 @@ A secret is never written into the repository in a form that reveals it — in c
 |---|
 | a secret in the repository is readable by everyone who can read it, and by every copy made of it. |
 
-### secret-and-personal-data-kept-out-of-output · MUST
+### secret-kept-out-of-output · MUST
 
-A secret never appears in a log, an error, a URL or a build artefact, save in a URL a token made for it — single-use or short-lived, as a reset link's or a signed address's. Personal data the program holds about the people it serves appears in none of them, nor in test data or a document; a record is named there by an identifier that carries no personal data, and an error that reaches anyone but the data’s owner carries such identifiers, never the values it rejected. An audit record kept for security holds the identifier and the network address its event needs, and nothing more.
+A secret never appears in a log, an error, a URL or a build artefact, save in a URL a token made for it — single-use or short-lived, as a reset link's or a signed address's.
 
 | Why |
 |---|
-| output is copied to places with weaker access than the data it came from, and a URL is logged by every proxy and browser it passes; a security audit needs to know who acted and from where, and no more. |
+| output is copied to places with weaker access than the data it came from, and a URL is logged by every proxy and browser it passes. |
 
 ### secret-never-passed-as-a-process-argument · MUST
 
@@ -154,19 +154,11 @@ A check that guards access or trust — a signature, an allowlist, a token, a lo
 
 ### cryptographic-algorithm-approved-by-current-guidance · MUST
 
-A cryptographic algorithm, mode and key size are ones current guidance approves — NIST's or OWASP ASVS's lists — and one the guidance deprecates is never chosen for new data.
+A cryptographic algorithm, mode and key size are ones current guidance approves — NIST's or OWASP ASVS's lists —, one the guidance deprecates is never chosen for new data, and a key agreement the program sets up uses a hybrid exchange with a post-quantum algorithm, such as X25519MLKEM768, wherever both sides support one.
 
 | Why |
 |---|
-| a vetted library still offers broken algorithms, and data protected by one is open to whoever reads it later. |
-
-### key-agreement-hybrid-with-post-quantum · MUST
-
-A key agreement the program sets up — a TLS connection, an encrypted channel, a sealed envelope — uses a hybrid exchange with a post-quantum algorithm, such as X25519MLKEM768, wherever both sides support one.
-
-| Why |
-|---|
-| traffic recorded today is decrypted once a quantum computer can break the classical exchange, NIST deprecates that exchange by 2030, and the hybrid keeps the classical half's strength should the new algorithm fall. |
+| a vetted library still offers broken algorithms, and data protected by one, or traffic recorded today under a classical exchange, is open to whoever reads it later. |
 
 ### security-primitive-from-a-vetted-library · MUST
 

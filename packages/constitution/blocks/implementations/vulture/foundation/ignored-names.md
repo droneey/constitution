@@ -4,7 +4,7 @@
 
 ## General
 
-### ignored-names-state-their-reasons → suppression-states-its-reason · MUST
+### ignored-names-state-their-reasons → suppression-silences-one-finding · MUST
 
 A name only a framework or an entry reaches — a route, a tool function, a console script — is listed in `ignore_names` or `ignore_decorators` of `[tool.vulture]`, each with its reason in a comment beside it.
 

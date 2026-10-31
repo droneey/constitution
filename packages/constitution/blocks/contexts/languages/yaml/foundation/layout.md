@@ -1,16 +1,6 @@
 # Layout
 
-> Governs a YAML file's extension and its documents.
-
-## Kinds
-
-### yaml-file-holds-one-document · SHOULD
-
-A YAML file holds one document, save where its format reads a stream of several, as Kubernetes manifests do.
-
-| Why |
-|---|
-| a reader that expects one document fails on the second or reads only the first, and a schema describes one document. |
+> Governs a YAML file's name: its extension.
 
 ## Names
 

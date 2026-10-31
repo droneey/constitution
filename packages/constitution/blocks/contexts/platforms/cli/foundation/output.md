@@ -14,7 +14,7 @@ A command that reports data prints it as JSON when given `--json`.
 
 ### progressive-report-printed-as-events-arrive · SHOULD
 
-The command prints a progressive report as its events arrive, and any other report once, at the end of the run.
+A report of a run's progress is printed as its events arrive; the result is printed once, whole, when the run ends.
 
 | Why |
 |---|
@@ -22,11 +22,19 @@ The command prints a progressive report as its events arrive, and any other repo
 
 ### styling-only-on-a-terminal · MUST
 
-A stream is styled — colour, animation, cursor movement — only when it is a terminal, `TERM` is not `dumb`, `NO_COLOR` is unset or empty and `--no-color` was not given. An explicit request for colour turns colour on whatever the stream: `--color`, which overrides `NO_COLOR`, or `FORCE_COLOR` set to any non-empty value, `0` included, which a non-empty `NO_COLOR` overrides; `--no-color` overrides both.
+A stream is styled — colour, animation, cursor movement — only when it is a terminal, `TERM` is not `dumb`, `NO_COLOR` is unset or empty and `--no-color` was not given, save colour that an explicit request turns on.
 
 | Why |
 |---|
-| escape codes in a pipe, a file or a log are noise to whoever reads it, and `NO_COLOR` is a person's one setting for every program; a request for colour serves a log that renders it, a flag given for one run outranks a setting for every program, and of the two settings the one that keeps colour off wins. |
+| escape codes in a pipe, a file or a log are noise to whoever reads it, and `NO_COLOR` is a person's one setting for every program. |
+
+### colour-forced-by-an-explicit-request · SHOULD
+
+An explicit request for colour turns colour on whatever the stream: `--color`, which overrides `NO_COLOR`, or `FORCE_COLOR` set to any non-empty value, `0` included, which a non-empty `NO_COLOR` overrides; `--no-color` overrides both.
+
+| Why |
+|---|
+| a request for colour serves a log that renders it, a flag given for one run outranks a setting for every program, and of the two settings the one that keeps colour off wins. |
 
 ### status-never-shown-by-colour-alone · SHOULD
 

@@ -5,10 +5,7 @@ yamllint:
         extends: default
         rules:
           comments:
-            level: error
             min-spaces-from-content: 1
-          comments-indentation:
-            level: error
           document-start: disable
           document-end: disable
           empty-lines:
@@ -16,6 +13,14 @@ yamllint:
           octal-values:
             forbid-explicit-octal: true
 core:
+  rule-held-by-a-tool-where-one-can:
+    yaml:
+      .yamllint.yaml:
+        rules:
+          comments:
+            level: error
+          comments-indentation:
+            level: error
   formatters-share-one-indent-and-width:
     yaml:
       .yamllint.yaml:
@@ -31,6 +36,12 @@ core:
       .yamllint.yaml:
         rules:
           key-duplicates: enable
+  dead-code-deleted:
+    yaml:
+      .yamllint.yaml:
+        rules:
+          anchors:
+            forbid-unused-anchors: true
 yaml:
   collection-written-in-block-style:
     yaml:
@@ -62,9 +73,3 @@ yaml:
               - 'true'
               - 'false'
             check-keys: false
-  anchor-aliased-at-least-once:
-    yaml:
-      .yamllint.yaml:
-        rules:
-          anchors:
-            forbid-unused-anchors: true

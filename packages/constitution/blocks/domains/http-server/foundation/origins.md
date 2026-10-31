@@ -39,11 +39,3 @@ A WebSocket upgrade that carries what the browser attaches itself — a cookie, 
 | Why |
 |---|
 | an upgrade is a `GET` no cross-origin policy guards, so without the check any page the person visits opens a socket with their cookies. |
-
-### long-lived-connection-bounded → kept-collection-bounded · MUST
-
-A long-lived connection — a WebSocket, an event stream — is closed after an idle time the project sets, and the messages it buffers for a slow reader are bounded.
-
-| Why |
-|---|
-| connections a client left open and buffers a slow reader never drains hold the server's memory until it falls. |

@@ -6,19 +6,11 @@
 
 ### answer-declares-its-exact-content-type · MUST
 
-Every answer carries its exact `Content-Type`, and an operation that answers JSON never answers `text/html`, its failures and the framework's defaults included.
+Every answer carries its exact `Content-Type` and `X-Content-Type-Options: nosniff`, and an operation that answers JSON never answers `text/html`, its failures and the framework's defaults included.
 
 | Why |
 |---|
-| a client that knows the type parses the body as it was meant, and an HTML answer from an API is a page a browser may run. |
-
-### answer-forbids-type-sniffing · MUST
-
-Every answer carries `X-Content-Type-Options: nosniff`.
-
-| Why |
-|---|
-| a browser that guesses the type of an answer holding a caller's text may run it as a page. |
+| a client that knows the type parses the body as it was meant, while an HTML answer from an API, or one whose type a browser guesses, is a page the browser may run with a caller's text in it. |
 
 ### request-body-refused-in-an-undeclared-type · MUST
 
@@ -27,6 +19,8 @@ A request whose body is in a media type its operation does not declare is refuse
 | Why |
 |---|
 | a page on another origin sends `text/plain` and form bodies without a preflight, so an API that reads them as JSON accepts forged writes. |
+
+## Uploads
 
 ### uploaded-file-never-rendered-from-the-programs-origin · MUST
 

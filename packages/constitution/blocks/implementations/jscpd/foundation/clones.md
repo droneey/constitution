@@ -4,7 +4,7 @@
 
 ## General
 
-### clone-in-source-joined-or-suppressed → fact-has-one-source · MUST
+### clone-in-source-joined-or-suppressed → copies-joined-when-they-change-together · MUST
 
 A clone of five lines and fifty tokens in a unit's source or build code, its specs, their fixtures and its generated files aside, is joined into one home both places read, or, where its copies only look alike and would change apart, suppressed on the copy written later.
 

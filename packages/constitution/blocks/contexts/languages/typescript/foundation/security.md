@@ -1,6 +1,6 @@
 # Security
 
-> Governs child processes, outside paths, code run from strings, keyed collections, random values, the comparison of secrets, and outside patterns and identifiers.
+> Governs child processes, the input of interpreters, outside paths, code run from strings, keyed collections, random values, the comparison of secrets, and outside patterns and identifiers.
 
 ## Secrets
 
@@ -30,6 +30,14 @@ A path built from outside input is resolved with `path.resolve(root, input)`, ta
 |---|
 | `path.join` follows every `..` it is given, out of the root, and a check on the string before it is resolved misses an encoded or nested one. |
 
+### interpreter-input-never-joined-by-a-template-literal → outside-input-reaches-interpreters-as-parameters · MUST
+
+Outside input never reaches a query, markup or a log message through a template literal or `+`; it travels as the interpreter's parameter — a query's bound value, a log record's field — or in a tagged template whose tag the interpreter's library provides and which binds or escapes each value.
+
+| Why |
+|---|
+| a template literal joins the input into the text before the interpreter sees it, so the input becomes code, while a tag receives the strings and the values apart. |
+
 ### code-never-run-from-a-string → outside-input-reaches-interpreters-as-parameters · MUST
 
 No code is run from a string: no `eval`, no `new Function`, and no `setTimeout` or `setInterval` given a string.
@@ -46,9 +54,9 @@ A collection keyed by values from outside the program is a `Map`, or an object m
 |---|
 | a key such as `__proto__` or `constructor` written into a plain object changes the prototype every object shares, and with it the checks and defaults of the whole program. |
 
-### outside-pattern-a-safe-literal-or-on-re2 → outside-input-matched-in-linear-time · MUST
+### outside-pattern-a-safe-literal-or-on-a-linear-engine → outside-input-matched-in-linear-time · MUST
 
-A regular expression that runs on outside input is a literal with no nested or overlapping quantifiers, or runs on a linear engine such as RE2; it is never built from outside input.
+A regular expression that runs on outside input is a literal with no nested or overlapping quantifiers, or runs on a linear-time engine; it is never built from outside input.
 
 | Why |
 |---|

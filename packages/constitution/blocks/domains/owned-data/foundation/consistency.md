@@ -1,6 +1,6 @@
 # Consistency
 
-> Governs concurrent changes and the invariants the store holds.
+> Governs concurrent changes, the invariants the store holds and the processes that span transactions.
 
 ## Concurrent changes
 
@@ -10,7 +10,7 @@ A stored record that a write decides on from a read made in an earlier request c
 
 | Why |
 |---|
-| the version is how the store tells a write made on a stale read from a fresh one. |
+| no lock outlives a request, so only a version the record carries shows that what one request read changed before the next request writes. |
 
 ## Invariants
 
@@ -21,3 +21,13 @@ An invariant the store can express — a uniqueness, a reference, a required val
 | Why |
 |---|
 | two concurrent writes each pass the code's check, and only the store sees them together. |
+
+## Processes
+
+### multi-step-process-compensated · SHOULD
+
+A business process that spans several programs or transactions keeps its state in a store, runs each step in a transaction of its own, and runs a compensating step for each step already done when a later one fails for good or a wait for a reply passes its deadline.
+
+| Why |
+|---|
+| no transaction spans programs, so a process that fails midway is either undone step by step or left half done, and one whose state lives only in memory is lost with the process that held it. |

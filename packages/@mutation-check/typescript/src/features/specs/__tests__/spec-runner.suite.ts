@@ -2,8 +2,8 @@ import { describe, expect, it } from 'bun:test';
 
 import { UnitRelativePath } from '#/kernel/value-objects';
 
-import type { SpecRunner } from '../domain/contracts';
-import { SpecRunStatus } from '../domain/entities';
+import type { SpecRunner } from '../application/contracts';
+import { SpecRunStatus } from '../domain/spec-run/entities';
 
 const SPEC_SCENARIO = {
   caseTitle: 'should hold',

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import type { AbsolutePath } from '#/kernel/value-objects';
 
-import type { DistributionSources } from '../domain/contracts';
+import type { DistributionSources } from '../application/contracts';
 
 interface DistributionWorld {
   readonly built: readonly string[];

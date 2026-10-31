@@ -1,5 +1,5 @@
 ```pseudo title="Avoid"
-# orders/app/.../cancel-order
+# orders/presentation/.../cancel-order
 function onCancel(request, orders)
   let order = orders.find(request.id)
   orders.save(order.cancel())
@@ -7,7 +7,7 @@ function onCancel(request, orders)
 ```
 
 ```pseudo title="Prefer"
-# orders/app/.../cancel-order
+# orders/presentation/.../cancel-order
 function onCancel(request, cancelOrder)
   cancelOrder(request.id)
   return ok()

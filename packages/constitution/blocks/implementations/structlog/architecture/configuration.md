@@ -1,6 +1,6 @@
 # Configuration
 
-> Governs who configures structlog and imports it.
+> Governs who configures structlog and its handlers.
 
 ## General
 
@@ -11,11 +11,3 @@
 | Why |
 |---|
 | a handler added elsewhere writes records past the chain, and `logging.basicConfig` adds one. |
-
-### only-the-root-imports-structlog → root-alone-configures-logging · MUST
-
-structlog's home is `root/`: no other folder imports it.
-
-| Why |
-|---|
-| no code below the root then depends on a logging library. |

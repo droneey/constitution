@@ -1,6 +1,6 @@
 # Errors
 
-> Governs except clauses, exception groups, the cause of a raised error, finally blocks, assert statements and the `Raises:` section.
+> Governs a failure in Python: its `Raises:` section, its cause, the except clauses and exception groups that catch it, and assert statements.
 
 ## General
 
@@ -14,7 +14,7 @@ Production code checks no input, invariant or state with an `assert` statement; 
 
 ## Kinds of failure
 
-### expected-failure-named-in-raises → expected-failure-documented-where-no-signature-names-it · MUST
+### expected-failure-named-in-raises → expected-failure-named-where-callers-read-it · MUST
 
 An expected failure is named in the `Raises:` section of the function's docstring, its type and then its condition: `OrderNotFoundError: when no order has the id.`
 
@@ -55,11 +55,3 @@ An exception raised inside an `except` clause to map the one caught is raised `f
 | Why |
 |---|
 | `from` records the caught exception as the direct cause, so both tracebacks print together and the new one never reads as an accident during handling. |
-
-### finally-never-left-by-a-jump → catch-handles-only-what-it-recognises · MUST
-
-A `finally` block is never left by `return`, `break` or `continue`.
-
-| Why |
-|---|
-| a jump out of `finally` silently discards the exception in flight, which is why Python 3.14 warns of it. |

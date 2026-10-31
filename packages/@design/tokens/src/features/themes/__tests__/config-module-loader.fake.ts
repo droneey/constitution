@@ -1,6 +1,6 @@
-import type { ConfigModuleLoader, ConfigOfMode } from '../domain/contracts';
-import type { ThemeMode } from '../domain/entities';
-import { ConfigModuleError, ConfigModuleFailure } from '../domain/errors';
+import type { ConfigModuleLoader, ConfigOfMode } from '../application/contracts';
+import { ConfigModuleError, ConfigModuleFailure } from '../domain/config-module/errors';
+import type { ThemeMode } from '../domain/theme-mode/entities';
 
 const PARENT_PREFIX = '../';
 

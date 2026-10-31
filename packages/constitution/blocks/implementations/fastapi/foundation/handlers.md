@@ -1,6 +1,6 @@
 # Handlers
 
-> Governs a handler: its dependencies, its parameters, its blocking work, and the transport a spec drives it through.
+> Governs a handler: its dependencies, its parameters, and the transport a spec drives it through.
 
 ## General
 
@@ -19,14 +19,6 @@ Every parameter of a route's path is a parameter of its handler.
 | Why |
 |---|
 | a path parameter the handler does not take is parsed by nobody, and the route matches values the program never checks. |
-
-### async-handlers-never-block → async-functions-never-block · SHOULD
-
-A handler whose work blocks is a `def` handler, which FastAPI runs in its threadpool, or hands that work to Starlette's `run_in_threadpool`.
-
-| Why |
-|---|
-| FastAPI runs an `async def` handler on the event loop that serves every request, and a `def` handler in a thread. |
 
 ### specs-through-the-asgi-transport → server-spec-runs-in-process · MUST
 

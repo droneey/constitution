@@ -94,6 +94,7 @@ const deployedUnits: readonly DeployedUnit[] = [
     unit: {
       domains: [
         'analytics',
+        'copy',
         'design-system',
         'i18n',
         'open-source',

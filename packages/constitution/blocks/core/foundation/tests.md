@@ -52,7 +52,7 @@ Edge cases are chosen by risk and by the partitions of the input — empty input
 
 ### property-tested-where-it-pays · SHOULD
 
-A property test proves an invariant where one pays — the check of a value with an invariant, a mapper that can be inverted, a transition function, and a parser of outside input, which on any input returns a value or its declared failure and never throws anything else — with its cases in the spec of its unit and a counterexample it finds is kept as a fixed case.
+A property test proves an invariant where one pays — the check of a value with an invariant, a mapper that can be inverted, a transition function, and a parser of outside input, which on any input returns a value or throws its declared failure and nothing else — with its cases in the spec of its unit and a counterexample it finds is kept as a fixed case.
 
 | Why |
 |---|
@@ -66,14 +66,6 @@ A lifecycle test takes a value made by its factory through every transition to i
 |---|
 | each transition may pass alone while their sequence breaks. |
 
-### contract-has-one-suite · SHOULD
-
-Each contract with a fake has one contract suite, run against the fake and against its real implementation where that implementation's engine runs in the sandbox.
-
-| Why |
-|---|
-| a fake that behaves unlike the real implementation makes every test that uses it prove the wrong thing. |
-
 ## How a case is written
 
 ### case-proves-one-intent · SHOULD
@@ -86,7 +78,7 @@ A case proves one intent and asserts it with strict equality on the part of the 
 
 ### case-pins-meaning-never-wording · MUST
 
-A case reads a message, a report or a rendered text by what it means — its code, its subject, the values it names, the part the case is about, taken from the value before it is rendered where the unit gives one — and compares that whole; the wording and the layout of a format are pinned once, for each renderer, by the comparison of its generated format.
+A case reads a message, a report or a rendered text by what it means — its code, its subject, the values it names, the part the case is about, taken from the value before it is rendered where the unit gives one — and compares that whole; the wording and the layout of a format are pinned once, for each renderer, by comparing its generated format with one golden file a reader can read, never with a table of its wording.
 
 | Why |
 |---|
@@ -118,11 +110,11 @@ A fixture is a factory that returns a valid value and takes overrides; a case ov
 
 ### snapshot-readable-by-eye · SHOULD
 
-No snapshot holds a structure a reader cannot check by eye; a generated format is compared with one golden file a reader can read, never with a table of its wording.
+No snapshot holds a structure a reader cannot check by eye.
 
 | Why |
 |---|
-| a snapshot nobody reads is accepted whatever it holds, and a golden file shows the whole format as a reader meets it, which a run rewrites in one file a reviewer reads. |
+| a snapshot nobody reads is accepted whatever it holds. |
 
 ### case-named-should-when · SHOULD
 
@@ -184,19 +176,11 @@ A test ships in the same change as the behaviour it proves, and a change of beha
 
 ### test-seen-failing · SHOULD
 
-Every test has been seen failing for the right reason: written before the code, or after it with the code broken for a moment.
+Every test has been seen failing for the right reason: written before the code, or after it with the code broken for a moment; a bug fix ships with a test that reproduces the bug and was seen failing without the fix.
 
 | Why |
 |---|
-| a test never seen failing may test nothing. |
-
-### bug-fix-ships-with-its-regression-test · SHOULD
-
-A bug fix ships with a test that reproduces the bug and was seen failing without the fix.
-
-| Why |
-|---|
-| the test proves the fix fixes this bug and keeps it from coming back. |
+| a test never seen failing may test nothing, and a bug's own failing test proves the fix fixes it and keeps it from coming back. |
 
 ### flaky-test-fixed-never-retried · SHOULD
 
@@ -248,13 +232,13 @@ In a unit spec every call that opens a connection is replaced, once for all unit
 |---|
 | a spec that reaches a server by mistake fails at once where the mistake is, instead of at random later. |
 
-### contract-has-one-fake · SHOULD
+### contract-has-one-fake-and-one-suite · SHOULD
 
-Each faked contract has one fake, shared by every spec that needs it.
+Each faked contract has one fake, shared by every spec that needs it, and one contract suite that the fake passes.
 
 | Why |
 |---|
-| one fake is kept in step with its real implementation once, not once per spec. |
+| one fake is kept in step with its real implementation once, not once per spec, and a fake that behaves unlike the real implementation makes every test that uses it prove the wrong thing. |
 
 ### effect-faked-never-mocked · SHOULD
 
@@ -281,14 +265,6 @@ Each critical scenario of `PROJECT.md` has one end-to-end spec through the built
 | the scenarios that must never break are proven the way users meet them, and no more end-to-end tests are paid for than that; a variant proven end to end costs the slowest run for a bug a faster spec already catches. |
 
 ## The gates
-
-### every-spec-passes · MUST
-
-Every spec passes.
-
-| Why |
-|---|
-| a spec left failing proves nothing from then on. |
 
 ### logic-fully-covered · MUST
 

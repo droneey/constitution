@@ -1,5 +1,5 @@
 ```pseudo title="Avoid"
-# orders/adapters/postgres
+# orders/infrastructure/postgres
 # built when the module loads
 let client = new PgClient(databaseUrl)
 
@@ -10,7 +10,7 @@ let orderRepository = {
 ```
 
 ```pseudo title="Prefer"
-# orders/adapters/postgres
+# orders/infrastructure/postgres
 function createOrderRepository(client)
   return {
     find: function(orderId)

@@ -32,7 +32,7 @@ Dark mode redefines the semantic tokens under one selector; a component writes `
 
 ## Primitives
 
-### primitive-class-merged-by-cn → primitive-passes-attributes-and-class · SHOULD
+### primitive-class-merged-by-cn → primitive-passes-its-element-through · SHOULD
 
 A primitive merges its class with the caller's through `cn()`, the caller's last.
 
@@ -44,19 +44,19 @@ A primitive merges its class with the caller's through `cn()`, the caller's last
 
 ### class-names-only-semantic-colors → component-reads-only-semantic-and-common-tokens · MUST
 
-A class list names a colour only through the design system's semantic and common tokens, never through Tailwind's own palette.
+`@theme` aliases only the semantic and common colour tokens, so no class can name a primitive colour or a palette Tailwind ships.
 
 | Why |
 |---|
-| a palette class reaches past the tokens, so a component that writes one escapes the theme and its modes. |
+| a utility exists only for what `@theme` aliases, so a primitive left out of it cannot be written in a class. |
 
 ### theme-aliases-the-token-properties → custom-property-spells-its-token · MUST
 
-The tokens' custom properties keep the tokens' names, on the root; each alias of Tailwind's theme sits in Tailwind's own namespace and reads a token's property, `--text-sm: var(--font-size-sm)`, and a token whose name already is Tailwind's, `--font-weight-bold`, is named as itself in an `@theme inline reference` block.
+One `@theme` block holds `--*: initial`, which resets every default scale at once, and every other `@theme` block is `inline` and holds only aliases of the tokens' custom properties, so a utility exists only for a token. The tokens' custom properties keep the tokens' names, on the root; each alias of Tailwind's theme sits in Tailwind's own namespace and reads a token's property, `--text-sm: var(--font-size-sm)`, and a token whose name already is Tailwind's, `--font-weight-bold`, is named as itself in an `@theme inline reference` block.
 
 | Why |
 |---|
-| a token keeps one name in its source, in every stylesheet and in the browser, while each utility still reads Tailwind's own namespace, and Tailwind never reads a token's name as another namespace's, as it reads any `--font-*` as a family; an alias of a name Tailwind already reads would read itself, a cycle that voids the value. |
+| with the default scales gone, a value outside the tokens cannot be written by accident, and an `inline` alias writes the token's own property into the utility, which then follows the mode; a token keeps one name in its source, in every stylesheet and in the browser, while each utility still reads Tailwind's own namespace, and Tailwind never reads a token's name as another namespace's, as it reads any `--font-*` as a family; an alias of a name Tailwind already reads would read itself, a cycle that voids the value. |
 
 ### typography-token-aliased-as-a-text-composite → font-token-is-one-typography-composite · MUST
 

@@ -33,7 +33,7 @@ syncpack:
           - keywords
           - peerDependencies
           - resolutions
-  syncpack-holds-versions-and-field-order:
+  syncpack-holds-the-field-order:
     json:
       .syncpackrc.yaml:
         sortFirst:

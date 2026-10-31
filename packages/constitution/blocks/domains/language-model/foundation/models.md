@@ -1,6 +1,6 @@
 # Models
 
-> Governs the model a program calls, and what stands in for it in a spec.
+> Governs the model a program calls: its snapshot and its retirement.
 
 ## General
 
@@ -19,13 +19,3 @@ Each pinned model has the retirement date its provider announced recorded beside
 | Why |
 |---|
 | a provider retires a snapshot on a date it announces, and after it every call to the pin fails, so a pin nobody watches turns stability into an outage. |
-
-## In specs
-
-### spec-replaces-the-model → test-runs-in-a-sandbox · MUST
-
-A spec replaces the model with scripted or recorded answers, and an eval that calls a real model runs apart, by a command of its own, never among the specs.
-
-| Why |
-|---|
-| a real model is slow, paid for and answers differently on each run, while a spec must give the same answer every run. |

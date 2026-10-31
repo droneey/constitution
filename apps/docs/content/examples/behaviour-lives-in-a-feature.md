@@ -8,7 +8,7 @@ src/
 ```text title="Prefer"
 src/
 └── features/orders/
-    └── domain/use-cases/commands/
+    └── application/use-cases/commands/
         └── refund-order/
             └── refund-order.use-case.ts
 ```

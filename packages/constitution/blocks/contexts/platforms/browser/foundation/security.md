@@ -6,7 +6,7 @@
 
 ### credential-never-readable-by-script → client-credential-kept-in-the-protected-store · MUST
 
-A credential in the tab lives only in a cookie its script cannot read, never in web storage, IndexedDB or the script's memory, so the tab holds no bearer token; where the API takes bearer tokens, a server of the program's own holds them behind the cookie.
+A credential in the tab lives only in a cookie its script cannot read, never in web storage, IndexedDB or the script's memory, so the tab holds no bearer token.
 
 | Why |
 |---|
@@ -71,14 +71,6 @@ The Content Security Policy names an endpoint for its violation reports — `rep
 | Why |
 |---|
 | a policy that only blocks hides both the attack it stopped and the page it broke; a report shows each of them. |
-
-### document-served-with-a-strict-referrer-policy · SHOULD
-
-Every document is served with `Referrer-Policy: strict-origin-when-cross-origin` or a stricter one.
-
-| Why |
-|---|
-| a full address sent to other sites carries the paths and parameters of the person's session to whoever they link to. |
 
 ### document-served-with-a-same-origin-opener-policy · SHOULD
 

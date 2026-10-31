@@ -1,18 +1,26 @@
 # Route tree
 
-> Governs where routes are registered, how services reach loaders, where the router is imported, and who declares a route's document metadata.
+> Governs where routes are registered, what a route file holds, how services reach loaders, where the router is imported, and who declares a route's document metadata.
 
 ## General
 
 ### routes-registered-in-the-root → delivery-unit-registered-by-the-root · MUST
 
-Routes are file routes under `root/routes/`, from which the router generates its tree into `root/`, and `root/router.ts`, or `root/router.tsx` where it writes markup, creates the router. A route file registers one screen of composition and holds only what the router asks of it — its address and its schema, its loader and guard, its head, its pending and error components — and hands the screen its parameters, links and transitions; a layout route hands its screen `<Outlet/>` as a slot.
+Routes are file routes under `root/routes/`, from which the router generates its tree into `root/`, and `root/router.ts`, or `root/router.tsx` where it writes markup, creates the router.
 
 | Why |
 |---|
-| the file tree is the route tree, so a screen's registration is found by its URL; the one place that knows the address is the one that turns it into data, and the screen itself stays free of the router. |
+| the file tree is the route tree, so a screen's registration is found by its URL. |
 
-### services-reach-loaders-through-router-context → composition-root-wires-everything · MUST
+### route-file-holds-only-what-the-router-asks → delivery-unit-registered-by-the-root · MUST
+
+What TanStack Router asks of a route file counts its `head` and its pending and error components, which sit there too; a layout route hands its screen `<Outlet/>` as a slot.
+
+| Why |
+|---|
+| the router renders these around the screen, so they belong to its registration, and a screen handed its outlet renders without the router. |
+
+### services-reach-loaders-through-router-context → unit-receives-its-dependencies-by-contract · MUST
 
 Every service the providers build — the use cases, the cache client, analytics, the configuration — reaches loaders and guards through the router's context.
 
@@ -30,7 +38,7 @@ Every service the providers build — the use cases, the cache client, analytics
 
 ### document-head-declared-by-route → document-metadata-owned-by-screen · SHOULD
 
-A route declares its document metadata in `head`.
+A screen's document metadata is owned by its route, which declares it in `head`.
 
 | Why |
 |---|

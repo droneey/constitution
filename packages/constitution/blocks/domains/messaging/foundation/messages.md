@@ -42,15 +42,15 @@ A message type another program reads changes only by addition — a new optional
 
 ### message-carries-only-its-declared-fields · MUST
 
-A message carries only the fields its type declares — the identifiers and the facts of what happened — never an entity or a stored record serialised whole.
+A message carries only the fields its type declares — the identifiers and the facts of what happened — never a domain object or a stored record serialised whole.
 
 | Why |
 |---|
 | a record sent whole sends every field later added to it to every subscriber, and ties each of them to the publisher's storage. |
 
-### message-carries-no-secret-and-only-needed-personal-data → secret-and-personal-data-kept-out-of-output · MUST
+### message-carries-no-secret → secret-kept-out-of-output · MUST
 
-A message carries no secret — a password, a token, a key — and no personal data its consumers do not need, which they otherwise reach by an identifier.
+A message carries no secret — a password, a token, a key.
 
 | Why |
 |---|

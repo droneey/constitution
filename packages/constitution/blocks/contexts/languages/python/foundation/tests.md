@@ -1,6 +1,6 @@
 # Tests
 
-> Governs where specs live, how their cases are named and what a case holds.
+> Governs specs and cases in Python: where specs live and how their cases are named.
 
 ## How a case is written
 
@@ -19,11 +19,3 @@ A case is a function `test_should_<behaviour>`, followed by `_when_<condition>` 
 | Why |
 |---|
 | a case is a function found by its `test_` prefix, so core's words follow the prefix and a failing case still names its behaviour and condition. |
-
-### case-function-holds-no-branch → case-holds-no-logic · SHOULD
-
-A `test_` function holds no `if`, `for`, `while`, `match` or conditional expression; its variants are the rows of a parametrized table.
-
-| Why |
-|---|
-| a branch in a case is logic no case proves, and a table names each variant's condition. |

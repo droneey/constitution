@@ -1,16 +1,8 @@
 # MCP server
 
-> Governs where fastmcp is imported and the handler the root gives the server's failures.
+> Governs the handler the root gives the server's failures.
 
 ## General
-
-### fastmcp-imported-by-delivery-units → layer-imports-dependencies-by-its-role · MUST
-
-fastmcp's home reaches past the edge into the delivery units in the `app/` of a feature or a module of composition, which declare the tools.
-
-| Why |
-|---|
-| a tool lives with the feature it serves, and the framework stays out of the domain and the use cases below it. |
 
 ### tool-failures-answered-by-one-middleware → one-error-handler-registered-by-the-root · MUST
 

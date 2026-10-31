@@ -30,7 +30,7 @@ A branch over a union or an enum names every member: a `switch` whose `default` 
 |---|
 | a new member then fails to compile at every branch that forgot it. |
 
-### outside-number-set-is-a-numeric-enum → outside-vocabulary-reached-through-a-total-table · MUST
+### outside-number-set-is-a-numeric-enum → closed-name-set-declared-once · MUST
 
 A set of numbers another system defines — exit statuses, HTTP statuses — is a numeric `enum` with every member's value written, and a number that arrives keeps the type `number` until it is compared with the members.
 
@@ -46,14 +46,6 @@ A brand is an intersection with a property keyed by the program's one `declare c
 |---|
 | one form of brand reads the same in every file; no object literal written elsewhere can spell its symbol key, so nothing carries the brand by accident, and it never exists at run time. |
 
-### brand-set-only-where-minted-or-parsed → identifier-branded-by-entity · SHOULD
-
-An identifier's brand is set only where the identifier is minted — its factory — or where it enters the program, in the parse of the outside value that carries it.
-
-| Why |
-|---|
-| a brand set in one place proves the value came through it; set anywhere, it proves nothing. |
-
 ### program-type-never-declared-ambient → type-has-one-home · MUST
 
 A type of the program is exported by a module and imported where it is used, never declared ambient in a global `.d.ts` or `declare global`; an ambient declaration only describes what the runtime or a library provides.
@@ -61,6 +53,14 @@ A type of the program is exported by a module and imported where it is used, nev
 | Why |
 |---|
 | an imported type shows in every file where its meaning comes from and is held by the import rules like any other; an ambient one reaches every file unseen, a layer that must not know it included. |
+
+### outside-type-derived-from-its-source → type-has-one-home · MUST
+
+A type the program does not declare — a library's parameter or result — is derived from its source, never typed again: `Parameters<typeof lib.fn>[0]`, `ReturnType<typeof lib.parse>`.
+
+| Why |
+|---|
+| a type derived from its source changes when the source does, while one typed again is a second home that drifts. |
 
 ### closed-name-set-is-a-string-enum → closed-name-set-declared-once · MUST
 
@@ -86,14 +86,6 @@ The discriminant of a union is a member of the enum that names its kinds — `ki
 |---|
 | the union's kinds are then the set the enum declares, so a kind is added in one place and every branch over it is checked. |
 
-### semantic-alias-names-a-shared-meaning · SHOULD
-
-A semantic alias — `type ChatTitle = string` — names a meaning found in two or more places, carries no brand, and is used wherever that meaning appears, never the bare type beside it.
-
-| Why |
-|---|
-| an alias names a meaning the program shares; one for every string turns vocabulary into noise, and a bare type beside an existing alias hides the meaning again. |
-
 ### conformance-checked-by-satisfies · SHOULD
 
 A value's conformance to a type is checked with `satisfies`, which keeps its narrow type, never with `as` or a widening annotation.
@@ -102,13 +94,13 @@ A value's conformance to a type is checked with `satisfies`, which keeps its nar
 |---|
 | `satisfies` catches a missing or wrong field and still lets the compiler know the exact value. |
 
-### derivable-types-derived-inline · SHOULD
+### shape-composed-of-small-shapes · SHOULD
 
-A type derivable from an exported parent in one or two indexed accesses is derived where it is used, not exported under a name of its own; the type of an enum's listed subset is named beside the array that lists it, the one place the subset is named.
+A shared shape is composed of small named shapes — an identifier, timestamps, a page of results — never cut out of a large type by omitting or picking its fields.
 
 | Why |
 |---|
-| an exported copy of a derivable type is one more name to keep in sync with its parent. |
+| a shape cut from a large one changes whenever the large one does, and hides which fields its consumer needs. |
 
 ### enum-never-declared-const · MUST
 
@@ -122,11 +114,19 @@ An enum is declared `enum`, never `const enum`.
 
 ### invariant-value-is-a-branded-type → invariant-value-is-plain-immutable-data · MUST
 
-A value that keeps an invariant is a branded type — of a primitive, or of a plain object with `readonly` fields, never a class instance — and a `const` object of the same name holds its functions: built only by `<Name>.create`, which throws the value's error when the invariant fails, narrowed by `<Name>.is`, and, where it is an object, compared by `<Name>.equals`, never by `===`; no cast and no object literal stands in for `create`, in specs as in production.
+A value that keeps an invariant is a branded type — of a primitive, or of a plain object with `readonly` fields, never a class instance — whose functions a `const` object, its companion, holds: `<Name>.is` narrows to it and, where it is an object, `<Name>.equals` compares it, never `===`.
 
 | Why |
 |---|
-| the brand is reachable only through the check, the value stays plain data every boundary can carry, and one name says at each call what is built and what is asked of it. |
+| the value stays plain data every boundary can carry, and one name says at each call what is built and what is asked of it. |
+
+### invariant-value-built-only-by-create → invariant-checked-at-construction · MUST
+
+A value that keeps an invariant is built only by its companion's `create`, which throws the type's error when the invariant fails; no cast, object literal or spread of the type is written outside the companion's file, in specs as in production.
+
+| Why |
+|---|
+| the brand is then reachable only through the check, while a cast, a literal or a spread elsewhere makes a value, or a changed copy, that no check saw. |
 
 ### business-types-readonly → value-immutable-by-default · SHOULD
 
@@ -212,7 +212,7 @@ Money and every other exact decimal quantity is a `bigint`, or a `number` that `
 |---|
 | a JavaScript `number` is binary floating point, where `0.1 + 0.2` is not `0.3`, and past 2^53 it no longer holds every integer, so a total drifts by amounts the books will not. |
 
-### nullish-operators-for-absence · SHOULD
+### nullish-operators-for-absence → absence-shown-by-the-type · MUST
 
 `??` gives a default and `?.` reaches through an absent value; neither `!value` nor `||` tests or replaces an absent value that is not boolean.
 

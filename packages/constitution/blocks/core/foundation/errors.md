@@ -12,17 +12,17 @@ A failure is expected — a case the contract foresees and a caller can act on: 
 |---|
 | a caller can handle only what it foresees, and a defect handled like an expected failure hides the bug and corrupts the data that follows. |
 
-### expected-failure-is-part-of-the-contract · SHOULD
+### expected-failure-carries-a-stable-code · SHOULD
 
-An expected failure is an error of the program’s own — never one of the framework that serves it — with a stable code a caller can branch on and details that say what to do, and the contract that can produce it names it where its callers read it — in its signature's type, or in one named type of its failures beside it.
+An expected failure is an error of the program’s own — never one of the framework that serves it — with a stable code a caller can branch on and details that say what to do.
 
 | Why |
 |---|
-| a failure that is part of the contract is handled by design, and a framework’s error carries no code of the program’s. |
+| a failure with a code of the program's own is handled by design, while a framework's error carries no code of the program's and changes with the framework. |
 
-### expected-failure-documented-where-no-signature-names-it · MUST
+### expected-failure-named-where-callers-read-it · MUST
 
-Where its signature cannot name a failure, every function that can produce an expected failure names it, and the condition it arises in, in its documentation, whether its package publishes the function or not.
+Every function that can produce an expected failure names it, and the condition it arises in, where its callers read it: in its signature's type, or in one named type of its failures beside it, and where its signature cannot name a failure, in its documentation, whether its package publishes the function or not.
 
 | Why |
 |---|
@@ -34,7 +34,7 @@ The next step a failure names — an operation to call, a command to run, a valu
 
 | Why |
 |---|
-| whoever reads a failure — a person, a script, a model — follows its advice literally, and a step the schema refuses or a registration hid sends them round a loop the program built. |
+| whoever reads a failure — a person, a script, a model — follows its advice literally, so a step it cannot take leaves them stuck or retrying the same refusal. |
 
 ### failure-told-apart-by-code · MUST
 
@@ -56,7 +56,7 @@ A failed parse of outside input is one expected failure whose details name every
 
 ### catch-handles-only-what-it-recognises · MUST
 
-A catch handles only the failures it recognises by type or code — handling changes what the program does next; logging and carrying on is not handling — and rethrows every other, save at an optional part's boundary, at a supervisor, which reports them and starts its worker again, and at the handler of last resort; one around a dependency maps the failures of that dependency it recognises to the program's own. No catch is empty; one that ignores a failure on purpose says why in a suppression.
+A catch handles only the failures it recognises by type or code — handling changes what the program does next; logging and carrying on is not handling — and rethrows every other, save at an optional part's boundary, at a supervisor, which reports them and starts its worker again, and at the handler of last resort; code that wraps a dependency maps every failure of it that it recognises — a transient one included — to the program's own, and lets every other pass as a defect, at most wrapped once in a defect of the program's own that keeps its cause, never as an expected failure. No catch is empty; one that ignores a failure on purpose says why in a suppression.
 
 | Why |
 |---|

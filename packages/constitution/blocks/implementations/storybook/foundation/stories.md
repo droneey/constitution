@@ -1,6 +1,6 @@
 # Stories
 
-> Governs the stories: the kit's states, their fixtures, coverage, screenshots and accessibility check.
+> Governs the stories: the kit's states, their fixtures, screenshots and accessibility check.
 
 ## General
 
@@ -19,30 +19,6 @@ Stories render from fixtures and fakes; no request leaves a story.
 | Why |
 |---|
 | a story that reaches the network breaks when the server does, and shows data nobody chose. |
-
-### stories-outside-coverage → logic-fully-covered · MUST
-
-Stories are outside coverage.
-
-| Why |
-|---|
-| a story renders a component without asserting anything, so a line it covers would count as proven when no spec proves it. |
-
-### stories-unreachable-from-production → test-code-never-reached-from-production · MUST
-
-Production code never imports a story.
-
-| Why |
-|---|
-| a story in production ships fixtures and fakes to users. |
-
-### screenshots-over-kit-stories-only → screenshots-only-where-look-is-contract · SHOULD
-
-Screenshots are compared over the UI kit's stories, where the look is the contract, and nowhere else.
-
-| Why |
-|---|
-| the kit's look is the one place a changed pixel is a changed contract. |
 
 ## Accessibility
 

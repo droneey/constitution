@@ -1,10 +1,10 @@
 import type { BlockId } from '#/kernel/value-objects';
 
-import type { SessionQueryRepository } from '../domain/contracts/repositories/queries';
-import type { SessionState } from '../domain/entities';
-import { SessionMark } from '../domain/entities';
-import type { SessionId } from '../domain/value-objects';
-import { TreeFingerprint } from '../domain/value-objects';
+import type { SessionQueryRepository } from '../application/contracts/repositories/queries';
+import type { SessionState } from '../domain/session/entities';
+import { SessionMark } from '../domain/session/entities';
+import type { SessionId } from '../domain/session/value-objects';
+import { TreeFingerprint } from '../domain/tree-state/value-objects';
 import type { HeldSessions } from './session.fixtures';
 import { heldSessionsOf } from './session.fixtures';
 

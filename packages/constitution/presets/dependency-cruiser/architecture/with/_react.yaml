@@ -3,13 +3,15 @@ _react:
     typescript:
       .dependency-cruiser.jsonc:
         allowedSeverity: error
-  react-imported-by-the-ui-and-binding-units:
+ui:
+  rendering-library-imported-by-the-presentation:
     typescript:
       .dependency-cruiser.jsonc:
-        allowed[comment=react-imported-by-the-ui-and-binding-units]:
+        'allowed[comment=rendering-library-imported-by-the-presentation: react]':
           from:
             path:
               - /${role.presentation-layer}/
-              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.application-layer}/
+              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.presentation-layer}/
+              - ^${role.source}/(${role.shared-code}|${role.generic-library})/ui/
           to:
             path: node_modules/react/

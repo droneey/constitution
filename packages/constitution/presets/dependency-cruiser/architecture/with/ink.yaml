@@ -3,11 +3,14 @@ ink:
     typescript:
       .dependency-cruiser.jsonc:
         allowedSeverity: error
-  ink-imported-by-the-ui:
+ui:
+  rendering-library-imported-by-the-presentation:
     typescript:
       .dependency-cruiser.jsonc:
-        allowed[comment=ink-imported-by-the-ui]:
+        'allowed[comment=rendering-library-imported-by-the-presentation: ink]':
           from:
-            path: /${role.presentation-layer}/
+            path:
+              - /${role.presentation-layer}/
+              - ^${role.source}/(${role.shared-code}|${role.generic-library})/ui/
           to:
             path: node_modules/ink/

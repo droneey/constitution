@@ -6,19 +6,19 @@
 
 ### effects-only-for-external-systems · MUST
 
-An effect synchronises with a system outside React — never state from state, never the response to an event. An external store is read with `useSyncExternalStore`.
+An effect synchronises with a system outside React — never state from state, never the response to an event: a value that can be derived is computed during render, never stored in state. An external store is read with `useSyncExternalStore`.
 
 | Why |
 |---|
-| an effect that sets state from state renders twice and races; an event's response belongs in its handler. |
+| a derived copy kept in state by an effect renders twice, races and is one render behind the value it copies; an event's response belongs in its handler. |
 
-### derived-state-computed-in-render · MUST
+### effect-event-for-what-must-not-re-run-it · MUST
 
-A value that can be derived is computed during render, never stored in state and synchronised by an effect.
+A function an effect needs but must not re-run on is wrapped in `useEffectEvent`.
 
 | Why |
 |---|
-| a derived copy in state renders twice and is one render behind the value it copies. |
+| a function listed among an effect's dependencies re-runs it each time the function changes, and one left out of them reads the values of the render that started the effect. |
 
 ### effect-cleans-up-and-cancels → resource-released-on-every-path · MUST
 

@@ -11,20 +11,33 @@ const ORDERS = 'src/unit/features/orders';
 
 const feature: Readonly<Record<string, string>> = {
   'src/unit/features/__init__.py': '',
-  [`${ORDERS}/__init__.py`]: 'from unit.features.orders.app import orders_cli as orders_cli\n',
-  [`${ORDERS}/adapters/__init__.py`]: '',
-  [`${ORDERS}/adapters/memory_store.py`]:
+  [`${ORDERS}/__init__.py`]:
+    'from unit.features.orders.presentation import orders_cli as orders_cli\n',
+  [`${ORDERS}/infrastructure/__init__.py`]: '',
+  [`${ORDERS}/infrastructure/memory_store.py`]:
     'class MemoryStore:\n  def size(self) -> int:\n    return 0\n',
-  [`${ORDERS}/app/__init__.py`]: '',
-  [`${ORDERS}/app/orders_cli.py`]:
-    'from unit.features.orders.domain.use_cases import count as count\n',
+  [`${ORDERS}/presentation/__init__.py`]: '',
+  [`${ORDERS}/presentation/orders_cli.py`]:
+    'from unit.features.orders.application.use_cases import count as count\n',
   [`${ORDERS}/domain/__init__.py`]: '',
-  [`${ORDERS}/domain/contracts/__init__.py`]:
+  [`${ORDERS}/application/__init__.py`]: '',
+  [`${ORDERS}/application/contracts/__init__.py`]:
     'from typing import Protocol\n\n\nclass Store(Protocol):\n  def size(self) -> int: ...\n',
-  [`${ORDERS}/domain/use_cases/__init__.py`]:
-    'from unit.features.orders.domain.use_cases.count import count as count\n',
-  [`${ORDERS}/domain/use_cases/count.py`]:
-    'from unit.features.orders.domain.contracts import Store\n\n\ndef count(store: Store) -> int:\n  return store.size()\n',
+  [`${ORDERS}/application/use_cases/__init__.py`]:
+    'from unit.features.orders.application.use_cases.count import count as count\n',
+  [`${ORDERS}/application/use_cases/count.py`]:
+    'from unit.features.orders.application.contracts import Store\n\n\ndef count(store: Store) -> int:\n  return store.size()\n',
+};
+
+const concept: Readonly<Record<string, string>> = {
+  [`${ORDERS}/domain/order/__init__.py`]: '',
+  [`${ORDERS}/domain/order/entities/__init__.py`]:
+    'from unit.features.orders.domain.order.entities.order_aggregate import Order as Order\n',
+  [`${ORDERS}/domain/order/entities/order_aggregate.py`]: 'class Order:\n  pass\n',
+  [`${ORDERS}/domain/order/transitions/__init__.py`]:
+    'from unit.features.orders.domain.order.transitions.order_transitions import restore_order as restore_order\nfrom unit.features.orders.domain.order.transitions.order_transitions import ship_order as ship_order\n',
+  [`${ORDERS}/domain/order/transitions/order_transitions.py`]:
+    'from unit.features.orders.domain.order.entities import Order\n\n\ndef restore_order() -> Order:\n  return Order()\n\n\ndef ship_order(order: Order) -> Order:\n  return order\n',
 };
 
 const lintImports = async (files: Readonly<Record<string, string>> = {}): Promise<Lint> => {
@@ -62,4 +75,4 @@ const lintImports = async (files: Readonly<Record<string, string>> = {}): Promis
   };
 };
 
-export { feature, lintImports, ORDERS };
+export { concept, feature, lintImports, ORDERS };

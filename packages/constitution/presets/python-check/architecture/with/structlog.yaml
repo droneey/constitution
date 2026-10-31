@@ -1,5 +1,5 @@
-structlog:
-  only-the-root-imports-structlog:
+core:
+  root-alone-configures-logging:
     python:
       pyproject.toml:
         tool:

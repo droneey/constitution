@@ -1,13 +1,13 @@
 # Manifest
 
-> Governs the versions of the dependencies and the order of a manifest's fields.
+> Governs the order of a manifest's fields.
 
 ## General
 
-### syncpack-holds-versions-and-field-order · MUST
+### syncpack-holds-the-field-order · MUST
 
-Syncpack's configuration holds one version of each dependency across the manifests, and the shared order of a manifest's fields.
+Syncpack's configuration holds the shared order of a manifest's fields.
 
 | Why |
 |---|
-| one version per dependency is one behaviour of it in every unit, and one order of fields shows each field where every manifest keeps it. |
+| one order of fields shows each field where every manifest keeps it. |

@@ -1,8 +1,8 @@
 import type { UnitRelativePath } from '#/kernel/value-objects';
 
-import type { Branch, BranchReader } from '../domain/contracts';
-import type { ChangedFile } from '../domain/entities';
-import type { BranchError } from '../domain/errors';
+import type { Branch, BranchReader } from '../application/contracts';
+import type { ChangedFile } from '../domain/changed-file/entities';
+import type { BranchError } from '../domain/changed-file/errors';
 
 interface FakeBranch {
   readonly baseTexts?: ReadonlyMap<UnitRelativePath, string>;

@@ -1,6 +1,6 @@
 # Functions
 
-> Governs the parameters a function takes by keyword only.
+> Governs a function in Python: the parameters it takes by keyword only.
 
 ## Parameters
 

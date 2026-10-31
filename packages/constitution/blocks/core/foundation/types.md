@@ -6,11 +6,11 @@
 
 ### illegal-state-unrepresentable · MUST
 
-A value with distinct stages is a union keyed by its stage, never a bag of optional fields and flags that allows combinations no stage has.
+A value with distinct stages is a union keyed by its stage, never a bag of optional fields and flags that allows combinations no stage has; the moves between its stages are pure transition functions, each taking only the stage it starts from and returning the stage it reaches, gathered in a table once they grow.
 
 | Why |
 |---|
-| a state the type cannot express is a state no code has to handle and no test has to find. |
+| a state the type cannot express is a state no code has to handle and no test has to find — make illegal states unrepresentable. |
 
 ### closed-set-branched-exhaustively · MUST
 
@@ -22,7 +22,7 @@ A branch over a closed set — a union or an enumeration the logic decides on me
 
 ### closed-name-set-declared-once · MUST
 
-A closed set of named values the program owns is declared once, as one enumeration whose members the code reaches by name, never as literal strings repeated at each use.
+A closed set of named values — the program's own, or the numbers another system defines, as its status or exit codes — is declared once, every member written, as one enumeration the code reaches by name, never as literals repeated at each use; a number that arrives stays a number until it is compared with the set.
 
 | Why |
 |---|
@@ -30,19 +30,11 @@ A closed set of named values the program owns is declared once, as one enumerati
 
 ### identifier-branded-by-entity · SHOULD
 
-An entity's identifier is a type of its own, branded by its entity, so one entity's identifier is refused where another's is expected.
+An entity's identifier is a type of its own, branded by its entity, so one entity's identifier is refused where another's is expected; its type is given only where the identifier is minted, by the one function that makes new ones, or where it enters the program, in the parse of the outside value.
 
 | Why |
 |---|
-| two identifiers of one primitive type are swapped silently; a brand makes the type checker refuse it. |
-
-### shape-composed-of-small-shapes · SHOULD
-
-A shared shape is composed of small named shapes — an identifier, timestamps, a page of results — never cut out of a large type by omitting or picking its fields.
-
-| Why |
-|---|
-| a shape cut from a large one changes whenever the large one does, and hides which fields its consumer needs. |
+| two identifiers of one primitive type are swapped silently; a brand makes the type checker refuse it, and given in one place it proves the value came through it. |
 
 ### type-has-one-home · MUST
 
@@ -62,7 +54,7 @@ A set of values the program declares is never typed out again: a subset is a nam
 
 ### outside-vocabulary-reached-through-a-total-table · MUST
 
-A vocabulary another party owns — its codes, its statuses — is reached through a total table from it to the program's own values, which the type checker proves complete for every value the program knows; a value it does not know, in a vocabulary its party may extend, maps to a member of the program's own for the unknown, which every branch names, and never fails the read. A set of numbers another system defines is declared once, with every value written, and a number that arrives stays a number until it is compared with them.
+A vocabulary another party owns — its codes, its statuses — is reached through a total table from it to the program's own values, which the type checker proves complete for every value the program knows; a value it does not know, in a vocabulary its party may extend, maps to a member of the program's own for the unknown, which every branch names, and never fails the read.
 
 | Why |
 |---|
@@ -114,11 +106,11 @@ A value is immutable by default: a change makes a new value, and mutation stays 
 
 ### outside-value-untyped-until-parsed · MUST
 
-A value from outside the program — text, a response, a file, a message — has no known type until a schema parses it or plain checks narrow it, in specs as in production, and no cast stands in for either. It is parsed once, where it enters, and trusted after.
+A value from outside the program — text, a response, a file, a message, and what the program itself stored in an earlier run or version — has no known type until a schema parses it or plain checks narrow it, in specs as in production, and no cast stands in for either. It is parsed once, where it enters, and trusted after.
 
 | Why |
 |---|
-| a type written over unparsed data is a promise the data never made, and the first unexpected field breaks code far away. |
+| a type written over unparsed data is a promise the data never made, and the first unexpected field breaks code far away — parse, don't validate. |
 
 ### narrowing-proves-all-it-claims · MUST
 
@@ -145,6 +137,14 @@ A key appears once in its mapping — an object, a table, a dictionary written a
 | Why |
 |---|
 | most parsers keep the last value of a repeated key silently, so the first one reads as set while it does nothing. |
+
+### string-holding-a-backslash-written-literally · MUST
+
+A string written as data that holds a backslash — a regular expression, a Windows path — is written in its format's literal form, the one that reads every backslash as itself, where the format has one.
+
+| Why |
+|---|
+| a form that reads escapes turns `\b`, `\t` and `\n` into control characters and refuses the others, so the string changes its meaning with no error and still looks the same. |
 
 ### absence-shown-by-the-type · MUST
 

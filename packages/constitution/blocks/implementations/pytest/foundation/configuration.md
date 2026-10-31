@@ -4,7 +4,7 @@
 
 ## Gates
 
-### pytest-runs-strict → every-spec-passes · MUST
+### pytest-runs-strict → change-handed-back-with-a-passing-check · MUST
 
 `[tool.pytest]` sets `strict = true`, `--import-mode=importlib` in `addopts` and `filterwarnings = ["error"]`, so a failing case, a warning, and an unknown marker or option each fail.
 
@@ -14,7 +14,7 @@
 
 ### coverage-gate-with-branches → logic-fully-covered · MUST
 
-`[tool.coverage]` measures branches, `branch = true`, and fails when the lines or branches of `src/` fall below 100 percent, `fail_under = 100`, outside core's exclusions, which `omit` lists; the gate's run collects the integration specs beside the unit specs, `-o "norecursedirs=.* e2e"`, so the code over an engine the sandbox runs counts by its integration specs.
+`[tool.coverage]` measures branches, `branch = true`, and fails when the lines or branches of `src/` fall below 100 percent, `fail_under = 100`, outside core's exclusions, which `omit` lists; the gate's run collects the integration specs beside the unit specs, so the code over an engine the sandbox runs counts by its integration specs.
 
 | Why |
 |---|
@@ -24,7 +24,7 @@
 
 ### test-order-randomized-by-pytest-randomly → case-independent-of-order · SHOULD
 
-pytest-randomly is installed, so the cases are shuffled and the seed is reported; only the mutation tool turns it off, with `-p no:randomly`.
+pytest-randomly is installed, so the cases are shuffled and the seed is reported.
 
 | Why |
 |---|
@@ -42,7 +42,7 @@ No plugin that runs a case again — pytest-rerunfailures, flaky — is installe
 
 ### integration-folders-not-collected → integration-spec-runs-the-real-engine · SHOULD
 
-`norecursedirs` leaves out `tests/integration/` and `tests/e2e/`, and keeps pytest's `.*` for the hidden folders the tools write; a run that collects the integration specs lifts `integration` from it.
+`norecursedirs` leaves out `tests/integration/` and `tests/e2e/`, and keeps pytest's `.*` for the hidden folders the tools write; a run that collects the integration specs lifts `integration` from it, `-o "norecursedirs=.* e2e"`.
 
 | Why |
 |---|

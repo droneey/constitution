@@ -6,7 +6,7 @@
 
 ### react-compiler-on · MUST
 
-The build runs the React Compiler over every component and hook, except one the Compiler refuses, whose `'use no memo'` states why. No `useMemo`, `useCallback` or `memo`: the Compiler memoises. A function an effect needs but must not re-run on is wrapped in `useEffectEvent`. An exception — a value whose identity an effect or a library the Compiler skips depends on, or profiler evidence — is stated in its suppression.
+The build runs the React Compiler over every component and hook, except one the Compiler refuses, whose `'use no memo'` states why. No `useMemo`, `useCallback` or `memo`: the Compiler memoises. An exception — a value whose identity an effect or a library the Compiler skips depends on, or profiler evidence — is stated in its suppression.
 
 | Why |
 |---|
@@ -14,11 +14,19 @@ The build runs the React Compiler over every component and hook, except one the 
 
 ### render-is-pure · MUST
 
-A component or hook returns the same output for the same props, state and context: it changes nothing that existed before the render and reads no ref during it. A value kept from the previous render — an exiting route frozen for its animation — is the component's own state, set during its render behind a comparison with the kept value, as React documents, never a ref. The root renders inside `StrictMode`.
+A component or hook returns the same output for the same props, state and context: it changes nothing that existed before the render and reads no ref during it. A value kept from the previous render — an exiting route frozen for its animation — is the component's own state, set during its render behind a comparison with the kept value, as React documents, never a ref.
 
 | Why |
 |---|
-| the Compiler, concurrent rendering and `StrictMode` run a render more than once; one that is not pure behaves differently each time. |
+| the Compiler and concurrent rendering run a render more than once; one that is not pure behaves differently each time. |
+
+### root-renders-in-strict-mode · MUST
+
+The root renders inside `StrictMode`.
+
+| Why |
+|---|
+| `StrictMode` renders and runs each effect twice while the program is developed, so a render that is not pure or an effect that does not clean up shows at once. |
 
 ## Components and hooks
 

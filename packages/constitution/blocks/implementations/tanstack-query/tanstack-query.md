@@ -5,7 +5,7 @@ requires: [_react, remote-data]
 extends: null
 abstract: false
 languages: []
-governs: ["**/*.hooks.ts", "**/root/providers/**", "**/cache.utils.ts"]
+governs: ["**/*.hooks.ts", "**/root/providers/**", "**/bindings/shared/cache.ts"]
 ---
 
 # TanStack Query

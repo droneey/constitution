@@ -1,16 +1,16 @@
 # Messages
 
-> Governs a message: its catalog, its composition and its writing.
+> Governs a message: its catalog and its composition.
 
 ## Catalog
 
 ### user-facing-text-from-catalog → text-a-person-reads-held-in-a-messages-file · MUST
 
-A string a user reads comes from the message catalog: its `.messages` file holds each message as the catalog's key, never a translation.
+A string a person reads is looked up in the message catalog by its source message, which the `.messages` file holds; a translation lives only in its locale's catalog, never in the `.messages` file or in code.
 
 | Why |
 |---|
-| text in code cannot be translated or reworded without a code change, and a key leaves each language's wording to its catalog. |
+| text in code cannot be translated or reworded without a code change, and each language's wording stays in its own catalog. |
 
 ### source-catalog-ships-with-its-code · MUST
 
@@ -62,31 +62,13 @@ A short or ambiguous message carries a comment or a context for its translator.
 |---|
 | "Open" is a verb or an adjective; a translator who cannot see the screen guesses. |
 
-## Writing
+### message-apostrophe-never-straight → text-uses-the-locales-punctuation · SHOULD
 
-### message-addresses-the-reader-as-you · SHOULD
-
-A message speaks to its reader as `you`, never as `the user`, and in a language with a formal and an informal `you`, in the one form the product chose.
+A message in MessageFormat writes no straight `'`: its apostrophe is its language's typographic one.
 
 | Why |
 |---|
-| a message that talks about `the user` talks past the person reading it, and two forms of address read as two products. |
-
-### message-written-in-sentence-case · SHOULD
-
-A message is written in sentence case, with only the capitals its language gives it.
-
-| Why |
-|---|
-| one case reads as one voice, and a translator keeps the case the source shows. |
-
-### message-uses-the-locales-punctuation · SHOULD
-
-A message uses its locale's typographic punctuation — its quotation marks, `«…»` in Ukrainian, `„…”` in Polish, `“…”` in English; its apostrophe, `’` in English and `ʼ` in Ukrainian; its dashes, `–` for a range and the dash its language sets an aside with; and the ellipsis `…` — never straight quotes, a hyphen for a dash or three dots.
-
-| Why |
-|---|
-| typed punctuation reads as unfinished text, each language quotes in its own marks, and MessageFormat 1 reads a straight apostrophe before a brace as the start of an escape. |
+| MessageFormat 1 reads a straight apostrophe before a brace as the start of an escape, so the parameter after it is shown as text. |
 
 ## Development
 

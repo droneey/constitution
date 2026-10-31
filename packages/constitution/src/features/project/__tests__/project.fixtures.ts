@@ -1,11 +1,17 @@
 import type { FakeTree } from '#/__tests__/project-files.fake';
 import { corePassport, PROJECT, releaseFolderPath } from '#/__tests__/project-place.fixtures';
 
-import { createJsonReleaseManifestParser } from '../adapters/json';
-import { createYamlBlockCardParser, createYamlConfigFileParser } from '../adapters/yaml';
-import type { BlockCardParser, ConfigParser, ReleaseManifestParser } from '../domain/contracts';
-import type { ProjectError } from '../domain/errors';
-import { isProjectError } from '../domain/errors';
+import type {
+  BlockCardParser,
+  ConfigParser,
+  ReleaseManifestParser,
+} from '../application/contracts';
+import type { BlockCards } from '../domain/block-set/entities';
+import { BlockSetSource } from '../domain/block-set/entities';
+import type { ProjectError } from '../domain/shared/errors';
+import { isProjectError } from '../domain/shared/errors';
+import { createJsonReleaseManifestParser } from '../infrastructure/json';
+import { createYamlBlockCardParser, createYamlConfigFileParser } from '../infrastructure/yaml';
 
 const configPath = `${PROJECT}/constitution.yaml`;
 const manifest = `${releaseFolderPath}/package.json`;
@@ -148,6 +154,14 @@ const parsers = (): {
   manifestParser: createJsonReleaseManifestParser(),
 });
 
+const cardsOf = (sources: readonly BlockSetSource[]): BlockCards =>
+  new Map(
+    BlockSetSource.frontMattersOf(sources).map((frontMatter) => [
+      frontMatter,
+      parsers().cardParser.card(frontMatter),
+    ]),
+  );
+
 interface Failure {
   readonly cause: unknown;
   readonly code: ProjectError['code'];
@@ -175,6 +189,7 @@ const failureOf = (act: () => unknown): Failure | undefined => {
 export type { BlockFixture };
 export {
   blockFilesOf,
+  cardsOf,
   configPath,
   Folder,
   failureOf,

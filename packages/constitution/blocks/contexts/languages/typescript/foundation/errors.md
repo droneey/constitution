@@ -1,10 +1,10 @@
 # Errors
 
-> Governs causes, caught values, try and finally blocks, and the throws tag.
+> Governs a failure in TypeScript: its throws tag, its cause, the caught value, and try blocks.
 
 ## Kinds of failure
 
-### expected-failure-named-by-a-throws-tag → expected-failure-documented-where-no-signature-names-it · MUST
+### expected-failure-named-by-a-throws-tag → expected-failure-named-where-callers-read-it · MUST
 
 An expected failure is named in a `@throws` tag of the function's JSDoc, its type in braces and then its condition: `@throws {OrderNotFoundError} when no order has the id`.
 
@@ -37,11 +37,3 @@ Inside a `try`, a returned promise is awaited — `return await` — so its reje
 | Why |
 |---|
 | without the `await`, the function has returned before the promise rejects, so its `catch` never runs and the raw failure passes unmapped. |
-
-### finally-never-leaves-by-a-jump → catch-handles-only-what-it-recognises · MUST
-
-A `finally` block never leaves by `return`, `break`, `continue` or `throw`.
-
-| Why |
-|---|
-| a jump out of `finally` replaces the failure in flight, so the error vanishes without any `catch` having recognised it. |

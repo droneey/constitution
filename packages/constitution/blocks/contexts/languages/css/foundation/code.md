@@ -1,6 +1,6 @@
 # Code
 
-> Governs the classes a stylesheet declares.
+> Governs any stylesheet code no other chapter governs: the classes a stylesheet declares.
 
 ## Dead code
 

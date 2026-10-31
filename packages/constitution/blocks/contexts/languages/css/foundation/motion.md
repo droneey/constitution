@@ -1,6 +1,6 @@
 # Motion
 
-> Governs transitions.
+> Governs motion in a stylesheet: its transitions and the properties they name.
 
 ## General
 

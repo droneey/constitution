@@ -1,19 +1,19 @@
 ```text title="Avoid"
-orders/domain/
-├── entities/
+orders/
+├── domain/order/entities/
 │   └── order.ts
-├── errors/
+├── domain/order/errors/
 │   └── order-already-paid.ts
-└── contracts/
+└── application/contracts/
     └── payment-gateway.ts
 ```
 
 ```text title="Prefer"
-orders/domain/
-├── entities/
-│   └── order.entity.ts
-├── errors/
+orders/
+├── domain/order/entities/
+│   └── order.aggregate.ts
+├── domain/order/errors/
 │   └── order-already-paid.error.ts
-└── contracts/
+└── application/contracts/
     └── payment-gateway.port.ts
 ```

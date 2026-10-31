@@ -1,10 +1,10 @@
 /* biome-ignore lint/nursery/useLayeredStyles: it declares its own layers */
-@import './ui/components/docs-toc/docs-toc.css';
+@import './presentation/components/docs-toc/docs-toc.css';
 /* biome-ignore lint/nursery/useLayeredStyles: it declares its own layers */
-@import './ui/components/docs-toc-dropdown/docs-toc-dropdown.css';
+@import './presentation/components/docs-toc-dropdown/docs-toc-dropdown.css';
 /* biome-ignore lint/nursery/useLayeredStyles: it declares its own layers */
-@import './ui/components/docs-toc-list/docs-toc-list.css';
+@import './presentation/components/docs-toc-list/docs-toc-list.css';
 /* biome-ignore lint/nursery/useLayeredStyles: it declares its own layers */
-@import './ui/components/docs-version-menu/docs-version-menu.css';
+@import './presentation/components/docs-version-menu/docs-version-menu.css';
 /* biome-ignore lint/nursery/useLayeredStyles: it declares its own layers */
-@import './ui/screens/docs-page/docs-page.css';
+@import './presentation/screens/docs-page/docs-page.css';

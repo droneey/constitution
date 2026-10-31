@@ -1,6 +1,6 @@
 # Layers
 
-> Governs which units set timers.
+> Governs the layers in TypeScript: which units may set a timer.
 
 ## Direction
 

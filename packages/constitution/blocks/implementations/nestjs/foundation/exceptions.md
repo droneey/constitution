@@ -1,16 +1,8 @@
 # Exceptions
 
-> Governs Nest's HTTP exceptions.
+> Governs Nest's HTTP exceptions in the program's code.
 
 ## General
-
-### nest-exceptions-answered-by-their-kind → failure-answered-by-its-code · MUST
-
-An `HttpException` Nest throws before a controller runs — the `NotFoundException` of an unknown route or method, the `BadRequestException` of a malformed body — is answered as the kind its status maps to.
-
-| Why |
-|---|
-| Nest throws these with no code of the error kit, so their answer takes its kind from their status, and the caller learns what to correct. |
 
 ### program-throws-no-http-exception → error-carries-a-code-never-a-status · MUST
 

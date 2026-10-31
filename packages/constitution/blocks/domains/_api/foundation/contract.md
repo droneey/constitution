@@ -16,11 +16,11 @@ The API's contract — every operation, its parameters, its answers and its fail
 
 ### answer-built-from-a-declared-shape · MUST
 
-An answer carries only the fields of the shape declared for it, never an entity or a stored record serialised whole.
+An answer carries only the fields of the shape declared for it, never a domain object or a stored record serialised whole.
 
 | Why |
 |---|
-| an entity sent whole sends every field later added to it — a hash, an internal flag, another caller's data — to every caller. |
+| an object sent whole sends every field later added to it — a hash, an internal flag, another caller's data — to every caller. |
 
 ### request-binds-only-declared-fields · MUST
 
@@ -38,6 +38,22 @@ An enumeration in an answer is declared open in the contract — its known value
 |---|
 | a client generated from the contract, or one that checks answers by it, fails on a value outside a closed set, so the first value added breaks every client built before it. |
 
+### upload-accepted-by-its-content · MUST
+
+An uploaded file is accepted only when its kind, read from its content, is one the operation allows; its name and its declared type decide nothing.
+
+| Why |
+|---|
+| a caller names a script `photo.jpg` and declares it an image, and a check that trusts either stores and serves it as one. |
+
+### field-names-in-one-case · SHOULD
+
+The fields of every shape the API exchanges are named in one case across the whole API.
+
+| Why |
+|---|
+| a caller then guesses no field's spelling, and a generated client keeps one convention. |
+
 ## Effects
 
 ### write-takes-an-idempotency-key → operation-idempotent-by-design · SHOULD
@@ -50,7 +66,7 @@ A write that a repeat would perform twice takes an idempotency key: for a creati
 
 ## Change
 
-### published-contract-changed-only-by-addition · MUST
+### published-contract-changed-only-by-addition → format-changed-in-steps · MUST
 
 A published contract changes only by addition — a new operation, a new optional field of a request, a new field of an answer — save the removal of what was retired and is past its announced date; a removal or a change of meaning ships beside the old one, as a new version, or under a new name in a style that has no versions; a check against the last released contract fails on any other change.
 
@@ -66,21 +82,11 @@ An operation or a field a published contract retires is announced before it is r
 |---|
 | a caller learns of a removal from the answers it already reads, in time to move, instead of from the failure on the day it happens. |
 
-## Uploads
-
-### upload-accepted-by-its-content · MUST
-
-An uploaded file is accepted only when its kind, read from its content, is one the operation allows; its name and its declared type decide nothing.
-
-| Why |
-|---|
-| a caller names a script `photo.jpg` and declares it an image, and a check that trusts either stores and serves it as one. |
-
 ## Requirements for implementation
 
 ### framework-parses-a-request-before-its-handler · MUST
 
-The server framework parses a request's parameters and body against a declared shape before the operation runs, and passes a refusal to the one handler with the path of each field it refused.
+The server framework parses a request's parameters and body against a declared shape before the operation runs, and its refusal names the path of each field it refused.
 
 | Why |
 |---|

@@ -22,11 +22,11 @@ A component reads only semantic and common tokens, never a primitive.
 
 ### token-name-follows-the-grammar · MUST
 
-A semantic or common token is named `<category>.<concept>.<role>[.<step>]`. The category is its family — `color`, `space`, `size`, `font`, `radius`, `shadow`, `motion`, `layer`; the concept is what it styles — `surface`, `text`, `border`, `action`; the role is its purpose or tone — `muted`, `danger`, `level-1`; the step is a place on a closed scale declared once — `sm`, `md`, `lg`. A `font` token always styles text, so its concept is left out and the kind of text is its role — `body`, `heading`, `code`. A primitive takes its category, its scale and its step, and a property of text — its `size`, `leading`, `weight`, `family`, `tracking` — is a primitive's scale, never a role. Examples: `color.surface.level-1`, `color.text.muted`, `font.body.md`, `font.heading.lg`; primitives, `color.blue.500`, `font.size.md`, `font.weight.bold`. No token is named after a component — `card.background`, `button.padding-x`; a component's own look comes from its variants over semantic tokens.
+A semantic or common token is named `<category>.<concept>.<role>[.<step>]`. The category is its family — `color`, `space`, `size`, `font`, `radius`, `shadow`, `motion`, `layer`; the concept is what it styles — `surface`, `text`, `border`, `action` — never a component such as `card` or `button`, whose own look comes from its variants over semantic tokens; the role is its purpose or tone — `muted`, `danger`, `level-1`; the step is a place on a closed scale declared once — `sm`, `md`, `lg`. A primitive is named by its category, its scale and its step. Examples: `color.surface.level-1`, `color.text.muted`; a primitive, `color.blue.500`.
 
 | Why |
 |---|
-| the name alone then says what a token styles and what for, and one search finds it in the source and in every output; a segment every name of a category would repeat says nothing, and a property where the purpose belongs names a raw value as if it were a purpose; a token named after one component cannot be shared, and turns the design system into a list of exceptions. |
+| the name alone then says what a token styles and what for, one search finds it in the source and in every output, and a token named after one component cannot be shared. |
 
 ### missing-value-added-as-a-token → tokens-single-source-of-appearance · MUST
 
@@ -58,11 +58,11 @@ Durations and easings are tokens, and motion driven from code reads the same tok
 
 ### font-token-is-one-typography-composite · MUST
 
-A semantic `font` token is one composite of the W3C Design Tokens format's `typography` type, whose `fontFamily`, `fontSize`, `fontWeight`, `letterSpacing` and `lineHeight` each refer to a primitive of the matching scale — `font.family`, `font.size`, `font.weight`, `font.tracking`, `font.leading` — and whose line height is a unitless multiple of its font size, as the format's `lineHeight` takes it.
+A semantic `font` token is named `font.<kind of text>.<step>` — `font.body.md`, `font.heading.lg` — and is one composite of the W3C Design Tokens `typography` type whose `fontFamily`, `fontSize`, `fontWeight`, `letterSpacing` and `lineHeight` each refer to a primitive of `font.family`, `font.size`, `font.weight`, `font.tracking` and `font.leading`, the line height a unitless multiple of the size.
 
 | Why |
 |---|
-| a component reads one token for a style of text, never several that must change together, and a line height that scales with the font size stays right when a theme changes the size. |
+| a component reads one token for a style of text, never several that must change together, and a line height that scales with the size stays right when a theme changes it. |
 
 ## Source
 
@@ -83,13 +83,3 @@ Contrast is proven by a test over each pair of foreground and background tokens 
 | Why |
 |---|
 | a test over the declared pairs proves every screen at once and fails the change that breaks a pair, without checking combinations no screen uses. |
-
-## Requirements for implementation
-
-### ui-styling-restricted-to-tokens · MUST
-
-The library lets its default scales be reset, so a check rejects a value outside the tokens.
-
-| Why |
-|---|
-| without it, the rule that tokens are the only source of appearance cannot be held by a tool. |

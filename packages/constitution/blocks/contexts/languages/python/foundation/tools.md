@@ -1,10 +1,10 @@
 # Tools
 
-> Governs the suppression of a tool's finding.
+> Governs the tools that hold the rules in Python, and their findings: how a finding is suppressed.
 
 ## Findings
 
-### suppression-names-its-code-and-reason → suppression-states-its-reason · MUST
+### suppression-names-its-code-and-reason → suppression-silences-one-finding · MUST
 
 A suppression comment gives its reason after its codes and ` -- `: `# noqa: S608 -- the table name comes from an enum`.
 

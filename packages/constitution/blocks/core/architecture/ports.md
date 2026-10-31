@@ -10,7 +10,7 @@ A contract is declared by the inner layer that needs it, in that layer’s words
 
 | Why |
 |---|
-| the business rules choose what they need, and a vendor or an engine is replaced without touching them. |
+| the business rules choose what they need, and a vendor or an engine is replaced without touching them — the dependency inversion principle. |
 
 ### port-justified-by-its-boundary · SHOULD
 
@@ -46,11 +46,11 @@ A feature publishes its own events and never subscribes to another feature's; th
 
 ### data-port-one-per-entity-and-side · SHOULD
 
-A data port is a repository per side — one for reads, one for writes — for each entity a caller loads or changes on its own, each declaring its operations’ parameters and results; a shape both sides use is an entity.
+A data port is a repository per side: a command repository for each aggregate a caller changes, a query repository for each aggregate or entity read on its own, each declaring its operations' parameters and results and named after its entity and its side: `<Entity>QueryRepository`, `<Entity>CommandRepository`; a shape both sides use is an entity.
 
 | Why |
 |---|
-| reads and writes change apart, and a caller that only reads cannot reach a write. |
+| reads and writes change apart, a caller that only reads cannot reach a write, and the name alone tells two ports of one entity apart wherever they are imported. |
 
 ## Adapters
 
@@ -64,11 +64,19 @@ An outside shape, a **wire model** — a response, a row, a message, a file form
 
 ### adapter-imports-only-its-owners-domain-and-shared-layers · MUST
 
-An adapter imports the domain of the owner whose ports it implements — its contracts, entities, value objects and errors — the kernel, shared and libs, and, when it answers a feature’s contract through another feature, that other feature’s surface; never an application layer, another composition module or another adapter; what two adapters share lives in libs, which takes what it needs of the program as parameters, or in shared when it knows the program and holds no effect.
+An adapter imports the domain and the contracts of the owner whose ports it implements — its contracts, entities, aggregates and their `restore`, value objects and errors — the kernel, shared and libs, and, when it answers a feature’s contract through another feature, that other feature’s surface; never a use case, a presentation, another composition module or another adapter; what two adapters share lives in libs, which takes what it needs of the program as parameters, or in shared when it knows the program and holds no effect.
 
 | Why |
 |---|
 | adapters that know each other or their callers form a hidden second program beside the domain. |
+
+### adapter-maps-its-dependencys-failures · MUST
+
+An adapter maps the failures of its dependency it recognises to the ones its port declares, and no failure of the dependency's own type crosses the port.
+
+| Why |
+|---|
+| a caller of a port acts on the port's failures alone, and a vendor's failure that crosses the port binds every caller to the vendor the port hides. |
 
 ### adapter-one-per-system-and-owner · SHOULD
 

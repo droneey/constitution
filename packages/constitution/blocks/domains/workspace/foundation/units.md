@@ -22,16 +22,8 @@ In a workspace, the files of each package are checked by the tools of its own bl
 
 ### unit-configuration-kept-in-its-folder · SHOULD
 
-A package's configuration of a tool sits in the package's own folder, and the root's configuration of that tool names nothing of a package's own.
+A package's configuration of a tool sits in the package's own folder.
 
 | Why |
 |---|
-| a package then carries the rules that hold it, the root names nothing of one package's own, and a package moved to a repository of its own takes its checks with it. |
-
-### root-lists-only-what-its-own-files-need → configuration-holds-what-its-blocks-compute · MUST
-
-The root of a workspace is a unit of its own: its `constitution.yaml` lists the blocks its own files and the checks that cross the packages need, never a block only a package needs, and its configurations hold every setting of those blocks, which leave the packages' files to the packages.
-
-| Why |
-|---|
-| a root that listed its packages' blocks would hold each package's files to settings written for another's tree, as a path written from one package's `src/` misses or refuses the files of the rest. |
+| a package then carries the rules that hold it, and a package moved to a repository of its own takes its checks with it. |

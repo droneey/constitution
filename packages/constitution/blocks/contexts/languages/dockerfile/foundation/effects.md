@@ -1,6 +1,6 @@
 # Effects
 
-> Governs how a container's command takes the stop signal.
+> Governs the effects of an image's process: how its command takes the stop signal.
 
 ## Stopping
 

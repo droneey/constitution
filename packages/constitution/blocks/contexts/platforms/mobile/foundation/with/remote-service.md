@@ -1,6 +1,6 @@
 # Remote service
 
-> Governs how the app reaches the systems it calls.
+> Governs how the app reaches the systems it calls and the oldest version of it they support.
 
 ## Calls
 
@@ -11,3 +11,13 @@ Every connection the app opens runs over TLS and trusts only the system's certif
 | Why |
 |---|
 | a phone joins networks its user does not control, where plain traffic is read and changed by anyone on the path. |
+
+## Versions
+
+### unsupported-app-version-asks-to-update → client-below-the-oldest-supported-release-updates-first · SHOULD
+
+The app learns the oldest version of itself its server still supports and, below it, asks its user to update before going on.
+
+| Why |
+|---|
+| an installed app is updated only when its user chooses, so a fix for a flaw, or a change of the server's format, reaches every user only through a floor the server sets. |

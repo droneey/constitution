@@ -28,6 +28,14 @@ A dependency that builds, tests or lints, and the runtime it runs on, is pinned 
 |---|
 | a tool installed globally runs in another version on every machine, and its new version changes what the check reports. |
 
+### agent-extension-pinned · MUST
+
+A server, plugin or skill that extends an agent is pinned to an exact version or digest, never run as `@latest` or from a moving branch; a remote one whose version cannot be pinned has its tool definitions pinned, and a definition that changed is withheld until a person has reviewed it.
+
+| Why |
+|---|
+| an extension runs with the agent's rights, its next release can turn malicious with no sign but a changed tool definition, and no other download the project fetches is trusted unpinned. |
+
 ### production-code-imports-no-tool · MUST
 
 Production code imports no dependency that only builds, tests or lints.
@@ -48,7 +56,7 @@ A package a package manager installs, a transitive one included, comes only from
 
 ### new-dependency-vetted · SHOULD
 
-A new dependency is a decision: it needs a reason it cannot be a few lines of the project’s own, its name is confirmed in the registry as the intended project rather than taken from generated code, and it is checked against the signs of a malicious package — a name one typo from a popular one, a recent first release or change of owner, few downloads, no source repository, obfuscated code.
+A new dependency — a server, a plugin or a skill that extends an agent included — is a decision: it needs a reason it cannot be a few lines of the project’s own, its name is confirmed in the registry as the intended project rather than taken from generated code, and it is checked against the signs of a malicious package — a name one typo from a popular one, a recent first release or change of owner, few downloads, no source repository, obfuscated code.
 
 | Why |
 |---|
@@ -60,7 +68,7 @@ A new release of a dependency is adopted only after a cooldown of at least three
 
 | Why |
 |---|
-| most hijacked releases are found and pulled within a day or two, and the major package managers now hold a cooldown of their own, so none is left outside the rule. |
+| most hijacked releases are found and pulled within a day or two, so a release that waited three days has outlived the window in which they are caught. |
 
 ### dependency-provenance-verified · SHOULD
 

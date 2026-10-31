@@ -38,6 +38,22 @@ A generated file is not committed. Two kinds are committed: a file the code impo
 |---|
 | a committed build output drifts from its source and fills every diff, while a fresh clone's type check needs the generated files the code imports, and a reader outside the code finds a copy only where it is committed. |
 
+### working-notes-stay-out-of-history · SHOULD
+
+Plans and working notes live in a **`local/`**{#working-notes} folder that version control ignores; a decision record is committed.
+
+| Why |
+|---|
+| working notes are true for a day, and committed they mislead every later reader. |
+
+### ignored-file-never-tracked · SHOULD
+
+A file the ignore list covers is not tracked.
+
+| Why |
+|---|
+| version control goes on tracking a file it already tracks whatever the ignore list says, so an ignore rule alone leaves in the history what is already there. |
+
 ### machine-local-files-ignored · SHOULD
 
 Files local to one machine — the local environment file, a person's overrides of the project's tools — are ignored by version control.

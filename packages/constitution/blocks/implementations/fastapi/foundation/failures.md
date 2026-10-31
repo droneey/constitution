@@ -10,7 +10,7 @@ A `RequestValidationError` is answered as a validation failure whose details poi
 
 | Why |
 |---|
-| FastAPI raises these before any handler runs, with no code of the error kit, so their answer takes its kind from their status or their fields; an entry's `input` is the value the caller sent, a password or a card number among them, and its `ctx` may quote it. |
+| FastAPI raises these before any handler runs, with no code of the error kit, so their answer takes its kind from their status or their fields; an entry's `input` is the value the caller sent, a password or a card number among them, and its `ctx` may quote it, and as FastAPI raises the error, the program cannot ask pydantic's `errors()` to leave them out. |
 
 ### program-raises-no-http-exception → error-carries-a-code-never-a-status · MUST
 

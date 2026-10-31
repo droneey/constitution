@@ -1,21 +1,13 @@
 # Tracking
 
-> Governs what Matomo tracks and how its container loads.
+> Governs how page views reach Matomo.
 
 ## General
 
-### matomo-tracks-no-personal-data → event-names-no-person · MUST
+### matomo-page-views-pushed-by-the-application → event-sent-once-per-occurrence · MUST
 
-Tracked URLs carry no identifiers or query values, custom dimensions carry no personal data, and the instance anonymises addresses. A single-page application pushes its page views itself, with the route's template as the URL — `/chats/:id` — and the container's history trigger is off.
-
-| Why |
-|---|
-| a URL or a dimension is the easiest way personal data leaks into a third party's reports. |
-
-### matomo-data-layer-seeded-before-container · MUST
-
-The data layer is seeded before Matomo's container script, and the script loads asynchronously.
+A single-page application pushes each page view itself, and the container's history trigger is off.
 
 | Why |
 |---|
-| an event pushed before the container arrives waits in the data layer instead of being lost, and the page never waits for the service. |
+| the trigger would record a second view of each screen the application pushes, under the address with its identifiers. |

@@ -1,6 +1,6 @@
 # Comments
 
-> Governs JSDoc and deprecation.
+> Governs a comment in TypeScript: the JSDoc that documents what a package publishes.
 
 ## General
 
@@ -11,13 +11,3 @@ The documentation of a declaration a package publishes is a `/** … */` block o
 | Why |
 |---|
 | the editor shows that block wherever the declaration is used, and a type written in it repeats the signature and drifts from it. |
-
-## Deprecation
-
-### deprecated-by-jsdoc-tag → retired-code-marked-deprecated · SHOULD
-
-Code kept only for its old callers carries a JSDoc `@deprecated` tag that names its replacement.
-
-| Why |
-|---|
-| the tag travels with the declaration, so every use of it is marked where it is written, not only where it is declared. |

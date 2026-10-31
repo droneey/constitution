@@ -8,8 +8,8 @@ shell:
       .shellcheckrc:
         - enable=check-set-e-suppressed
         - enable=check-extra-masked-returns
-shellcheck:
-  optional-checks-enabled-by-name:
+core:
+  linter-rules-turned-on-by-name:
     shell:
       .shellcheckrc:
         - enable=quote-safe-variables

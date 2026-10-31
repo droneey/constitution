@@ -1,12 +1,8 @@
-import { settingModel } from '../adapters/configuration/models';
-import type {
-  ConfigurationFile,
-  ConfigurationFormat,
-  ConfigurationTarget,
-  ConfigurationWrite,
-} from '../domain/contracts';
-import { SettingShape } from '../domain/contracts';
-import type { Setting } from '../domain/entities';
+import type { ConfigurationFormat, ConfigurationTarget } from '../application/contracts';
+import type { ConfigurationFile, ConfigurationWrite } from '../domain/configuration-file/entities';
+import { SettingShape } from '../domain/configuration-file/entities';
+import type { Setting } from '../domain/setting/entities';
+import { settingModel } from '../infrastructure/configuration/models';
 
 const NEWLINE = '\n';
 const PAIR = '=';

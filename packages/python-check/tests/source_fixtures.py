@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from droneey_python_check.features.code.domain.types import PackagePath
+from droneey_python_check.features.code.domain.shared.types import PackagePath
 
 if TYPE_CHECKING:
   from pathlib import Path

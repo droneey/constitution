@@ -1,5 +1,5 @@
-httpx2:
-  httpx2-home-is-the-adapters-libs-root-and-its-failure-mapper:
+remote-service:
+  transport-library-home-is-the-infrastructure:
     python:
       pyproject.toml:
         tool:

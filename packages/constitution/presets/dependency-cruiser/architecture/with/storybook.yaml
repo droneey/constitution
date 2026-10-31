@@ -3,10 +3,11 @@ storybook:
     typescript:
       .dependency-cruiser.jsonc:
         allowedSeverity: error
-  stories-import-what-they-render-with:
+core:
+  layer-imports-dependencies-by-its-role:
     typescript:
       .dependency-cruiser.jsonc:
-        allowed[comment=stories-import-what-they-render-with]:
+        'allowed[comment=layer-imports-dependencies-by-its-role: a story]':
           from:
             path: \.stories\.[^/]+$
           to:

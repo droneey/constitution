@@ -2,8 +2,8 @@ import { describe, expect, it } from 'bun:test';
 
 import { RepositoryRelativePath } from '#/kernel/value-objects';
 
-import type { ConfigurationFormat } from '../domain/contracts';
-import type { Setting } from '../domain/entities';
+import type { ConfigurationFormat } from '../application/contracts';
+import type { Setting } from '../domain/setting/entities';
 
 interface ConfigurationFormatSuiteInput {
   readonly format: ConfigurationFormat;

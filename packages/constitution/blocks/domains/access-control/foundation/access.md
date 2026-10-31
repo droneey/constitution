@@ -32,7 +32,7 @@ Access to an object a request names — an order by its identifier — is checke
 
 ### hidden-object-answered-as-not-found · SHOULD
 
-An object the caller may not see is answered as not found, as if it did not exist; where the program declares it, every identifier the caller has no right to is instead refused alike, the right checked before the object is looked up. Otherwise, a refusal of access is answered only for an operation the caller may not perform on an object it may see.
+An object the caller may not see is answered as not found, exactly as one that does not exist, or, where the program declares it, every identifier the caller has no right to is refused alike, the right checked before the lookup; a refusal of access answers only an operation the caller may not perform on an object it may see.
 
 | Why |
 |---|
@@ -53,6 +53,16 @@ An answer carries only the fields the caller may see, and a write changes only t
 | Why |
 |---|
 | a caller allowed to see an object is not allowed every field of it, and one field too many leaks what the object hides. |
+
+## Caches
+
+### caller-shaped-result-never-served-from-a-cache-to-another · MUST
+
+A result shaped by its caller — by their rights or their tenant — is never served from a cache to another caller: the cache keeps it for that caller alone or is keyed by all that shaped it.
+
+| Why |
+|---|
+| a result drawn from one caller's rights and served from a cache to the next hands over what the second could never read, with no check of access ever run. |
 
 ## Proof
 

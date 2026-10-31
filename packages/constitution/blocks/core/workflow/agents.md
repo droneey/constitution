@@ -1,6 +1,6 @@
 # Agents
 
-> Governs the working agreement with agents.
+> Governs the working agreement with the agents at work on the repository.
 
 ## Deciding
 

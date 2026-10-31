@@ -1,6 +1,6 @@
 # Types
 
-> Governs how Python types the program: absence, unchecked types, narrowing, enumerations and new types, generics, frozen values, and the values of time, money and text.
+> Governs how Python types the program: absence, unchecked types, narrowing, enumerations and new types, generics, frozen values, and the values of time, money, text and paths.
 
 ## General
 
@@ -24,7 +24,7 @@ Where the floor is Python 3.14 or later, an annotation is written unquoted, and 
 
 ### typing-any-never-written → unchecked-type-never-used · MUST
 
-`Any` is written nowhere — not in an annotation, a `cast` or a generic's arguments such as `dict[str, Any]` — and no parameter, return or generic argument is left unannotated, which reads as `Any`.
+`Any` is written nowhere — not in an annotation or a generic's arguments such as `dict[str, Any]` — and no parameter, return or generic argument is left unannotated, which reads as `Any`.
 
 | Why |
 |---|
@@ -46,7 +46,7 @@ A `match` or an `if` chain over a closed set — an enumeration, a union of clas
 |---|
 | `assert_never` fails the type check wherever a member added to the set is not handled, and raises if one arrives at run time. |
 
-### outside-number-set-is-an-int-enum → outside-vocabulary-reached-through-a-total-table · MUST
+### outside-number-set-is-an-int-enum → closed-name-set-declared-once · MUST
 
 A set of numbers another system defines — exit statuses, HTTP statuses — is an `enum.IntEnum` with every member's value written, or the standard library's own such as `http.HTTPStatus`; a number that arrives stays an `int` until it is compared with the members, never converted by calling the enumeration.
 
@@ -56,7 +56,7 @@ A set of numbers another system defines — exit statuses, HTTP statuses — is 
 
 ### identifier-is-a-new-type → identifier-branded-by-entity · SHOULD
 
-An entity's identifier is a `NewType` over its primitive: `OrderId = NewType('OrderId', UUID)`.
+An identifier is a `NewType` over its primitive, named after what it identifies: `OrderId = NewType('OrderId', UUID)`.
 
 | Why |
 |---|
@@ -80,6 +80,14 @@ A type of the program's business data is a dataclass with `frozen=True, slots=Tr
 |---|
 | the runtime then refuses a mutation the business never meant, each field is set by its name, and a `frozendict` keeps the value hashable where a `dict` behind `Mapping` does not. |
 
+### received-collection-typed-read-only → value-immutable-by-default · SHOULD
+
+A parameter or field holding a collection the code only reads is typed `Sequence`, `Mapping` or `AbstractSet`, never `list`, `dict` or `set`, and a changed one is a new value — `sorted()`, `[*items, item]`, `{**mapping, key: value}` — never `sort`, `append` or an assignment to an index or a key of what was received.
+
+| Why |
+|---|
+| the type checker then refuses `sort`, `append` and item assignment on what the caller still holds, so a sort for one use never reorders the data another reads. |
+
 ### invariant-value-is-a-frozen-dataclass → invariant-value-is-plain-immutable-data · MUST
 
 A value that keeps an invariant is a dataclass with `frozen=True, slots=True`, whose every field is immutable — a `str`, an `int`, a `Decimal`, a `tuple`, a `frozenset`, a `frozendict` where the floor is Python 3.15, or another such value — and never a `NamedTuple` or a parsing library's model.
@@ -100,11 +108,19 @@ A dataclass that keeps an invariant checks it in `__post_init__` and raises an e
 
 ### boundary-values-object-until-parsed → outside-value-untyped-until-parsed · MUST
 
-A value from outside the program — `json.loads`'s result included — is typed `object` until a model parses it or `isinstance` and `in` checks narrow it; a `cast` narrows nothing.
+A value from outside the program — `json.loads`'s result included — is typed `object` until a model parses it or `isinstance` and `in` checks narrow it.
 
 | Why |
 |---|
 | the type checker refuses every use of an `object` value until a check narrows it, where `Any` would allow them all. |
+
+### cast-never-written → narrowing-proves-all-it-claims · MUST
+
+No `typing.cast` is written.
+
+| Why |
+|---|
+| a cast claims a type no check proved and the type checker believes it, so the failure surfaces later, far from the line that claimed it. |
 
 ### narrowing-function-returns-typeis → narrowing-proves-all-it-claims · MUST
 
@@ -123,6 +139,14 @@ Absence is `None`, typed `T | None`, and no other value stands for it. Where `No
 | Why |
 |---|
 | a second spelling of absence needs a second check, and a sentinel the type names keeps “not given” apart from “cleared” without an object the checker cannot see through. |
+
+### absence-tested-by-is-none → absence-shown-by-the-type · MUST
+
+An absent value is tested by `is None` or `is not None` and replaced by a conditional expression on that test, never by `if not x` or `x or default` where the value is not a `bool`.
+
+| Why |
+|---|
+| a negation and an `or` also treat `0`, `''` and `[]` as absent, a bug waiting for its input. |
 
 ### instant-is-an-aware-datetime → instant-is-an-exact-time · MUST
 
@@ -163,3 +187,11 @@ Text written for another program uses no call of the `locale` module, no `'{:n}'
 | Why |
 |---|
 | these forms read the locale of the process, so the same value is written differently on each machine. |
+
+### path-handled-by-pathlib · SHOULD
+
+A file-system path is a `pathlib.Path`, joined with `/` and read through its methods, never a string built with `os.path`.
+
+| Why |
+|---|
+| one object joins, resolves and reads a path, where a string path is joined by hand and a separator or a `..` slips through. |

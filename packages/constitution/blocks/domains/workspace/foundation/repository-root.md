@@ -1,6 +1,6 @@
 # Repository root
 
-> Governs what the workspace's root holds and which units are private.
+> Governs what the workspace's root holds and lists, and which units are private.
 
 ## General
 
@@ -27,3 +27,11 @@ The root holds one workspace for each language, whose members are every package 
 | Why |
 |---|
 | a workspace nested in a package is refused by one package manager and ignored by another, so its packages are never linked. |
+
+### root-lists-only-what-its-own-files-need → configuration-holds-what-its-blocks-compute · MUST
+
+The root of a workspace is a unit of its own: its `constitution.yaml` lists the blocks its own files and the checks that cross the packages need, never a block only a package needs, and its configurations hold every setting of those blocks, which leave the packages' files to the packages.
+
+| Why |
+|---|
+| a root that listed its packages' blocks would hold each package's files to settings written for another's tree, as a path written from one package's `src/` misses or refuses the files of the rest. |

@@ -1,7 +1,7 @@
 import type { AbsolutePath } from '#/kernel/value-objects';
 
-import type { LockRead } from '../domain/entities';
-import { LockReadStatus } from '../domain/entities';
+import type { LockRead } from '../domain/lock/entities';
+import { LockReadStatus } from '../domain/lock/entities';
 
 interface FakeLockRepository {
   readonly read: (unitFolderPath: AbsolutePath) => LockRead;

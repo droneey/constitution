@@ -16,11 +16,11 @@ A consumer's handler of last resort settles every failed message by its failure:
 
 ### redelivery-delayed-and-limited → failure-retried-only-when-transient · MUST
 
-A message released after a transient failure is delivered again after a growing, randomly spread delay, and past a number of attempts the project sets it goes to its dead letters.
+A message released after a transient failure waits before its next delivery — by a delay set on the broker or the consumer, never the broker's default of redelivering at once — and past a number of attempts the project sets it goes to its dead letters.
 
 | Why |
 |---|
-| an immediate redelivery hits the same outage and deepens it, and a message retried without a limit never leaves the queue. |
+| a broker often redelivers a released message at once, into the same outage, and a message retried without a limit never leaves the queue. |
 
 ## Dead letters
 
@@ -31,6 +31,14 @@ A dead-lettered message keeps its body, its headers, its count of attempts and t
 | Why |
 |---|
 | a dead letter without its cause cannot be diagnosed, one without its body cannot be replayed, and one sent back automatically fails again for the same reason. |
+
+### key-held-while-its-message-is-dead-lettered · SHOULD
+
+A consumer for which the order of a key's messages matters holds the later messages of a key while one of its messages is dead-lettered, or states why a gap in that key is safe.
+
+| Why |
+|---|
+| a later change applied on top of one that never landed leaves the object in a state no sequence of its changes produces. |
 
 ## Delivery
 

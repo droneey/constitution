@@ -1,6 +1,6 @@
 ```pseudo title="Avoid"
-# orders/domain/use-cases/confirm-order
-import SmtpMailer from "adapters/smtp"
+# orders/application/use-cases/confirm-order
+import SmtpMailer from "infrastructure/smtp"
 
 function confirmOrder(order)
   let mailer = new SmtpMailer()
@@ -8,11 +8,11 @@ function confirmOrder(order)
 ```
 
 ```pseudo title="Prefer"
-# orders/domain/use-cases/confirm-order
+# orders/application/use-cases/confirm-order
 function confirmOrder(order, mailer)
   mailer.send(order.customerEmail)
 
 # root/wiring
-import SmtpMailer from "adapters/smtp"
+import SmtpMailer from "infrastructure/smtp"
 let mailer = new SmtpMailer()
 ```

@@ -1,7 +1,7 @@
-import type { SessionCommandRepository } from '../domain/contracts/repositories/commands';
-import type { SessionState } from '../domain/entities';
-import { SessionMark } from '../domain/entities';
-import type { SessionId } from '../domain/value-objects';
+import type { SessionCommandRepository } from '../application/contracts/repositories/commands';
+import type { SessionState } from '../domain/session/entities';
+import { SessionMark } from '../domain/session/entities';
+import type { SessionId } from '../domain/session/value-objects';
 import type { HeldSessions } from './session.fixtures';
 import { heldSessionsOf } from './session.fixtures';
 

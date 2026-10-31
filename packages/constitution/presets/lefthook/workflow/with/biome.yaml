@@ -7,7 +7,7 @@ biome:
           jobs[name=biome]:
             run: >-
               bunx --bun biome check --write --no-errors-on-unmatched {staged_files}
-lefthook:
+version-control:
   hook-rewrites-only-staged-files:
     '*':
       lefthook.yaml:

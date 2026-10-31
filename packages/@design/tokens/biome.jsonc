@@ -83,8 +83,9 @@
         "noEmptyObjectKeys": "error",
         "noLoopFunc": "error",
       },
+
+      // biome
       "correctness": {
-        // biome
         "noUnreachable": "error",
         "noUnusedFunctionParameters": "error",
         "noUnusedImports": "error",
@@ -92,10 +93,6 @@
         "noUnusedPrivateClassMembers": "error",
         "noUnusedVariables": "error",
 
-        // typescript
-        "noUnsafeFinally": "error",
-
-        // biome
         "useParseIntRadix": "error",
         "noGlobalDirnameFilename": "error",
         "noUndeclaredDependencies": "error",
@@ -419,9 +416,9 @@
       "path": "./.droneey/constitution/presets/biome/plugins/typescript/effects-held-only-by-the-edge.grit",
       "includes": [
         "**/src/**",
-        "!**/src/adapters/**",
-        "!**/src/features/*/adapters/**",
-        "!**/src/composition/*/adapters/**",
+        "!**/src/infrastructure/**",
+        "!**/src/features/*/infrastructure/**",
+        "!**/src/composition/*/infrastructure/**",
         "!**/src/libs/**",
         "!**/src/root/**",
         "!**/src/*.ts",
@@ -438,10 +435,11 @@
       "includes": [
         "**/*.ts",
         "**/*.tsx",
-        "!**/adapters/**",
+        "!**/infrastructure/**",
         "!**/models/**",
       ],
     },
+
     {
       "path": "./.droneey/constitution/presets/biome/plugins/typescript/business-types-readonly.grit",
       "includes": [
@@ -469,7 +467,7 @@
       "path": "./.droneey/constitution/presets/biome/plugins/typescript/undefined-is-the-only-absence.grit",
       "includes": [
         "**",
-        "!**/adapters/**",
+        "!**/infrastructure/**",
         "!**/models/**",
         "!**/*.tsx",
       ],
@@ -527,17 +525,17 @@
       "path": "./.droneey/constitution/presets/biome/plugins/typescript/timer-set-only-by-the-edge-and-binding-units.grit",
       "includes": [
         "**/src/**",
-        "!**/src/adapters/**",
-        "!**/src/features/*/adapters/**",
-        "!**/src/composition/*/adapters/**",
+        "!**/src/infrastructure/**",
+        "!**/src/features/*/infrastructure/**",
+        "!**/src/composition/*/infrastructure/**",
         "!**/src/libs/**",
         "!**/src/root/**",
         "!**/src/*.ts",
         "!**/src/*.tsx",
         "!**/src/entrypoints/**",
         "!**/src/integrations/**",
-        "!**/src/features/*/app/**",
-        "!**/src/composition/*/app/**",
+        "!**/src/features/*/presentation/bindings/**",
+        "!**/src/composition/*/presentation/bindings/**",
         "!**/__tests__/**",
       ],
     },
@@ -697,9 +695,9 @@
     {
       "includes": [
         "**/src/**",
-        "!**/src/adapters/**",
-        "!**/src/features/*/adapters/**",
-        "!**/src/composition/*/adapters/**",
+        "!**/src/infrastructure/**",
+        "!**/src/features/*/infrastructure/**",
+        "!**/src/composition/*/infrastructure/**",
         "!**/src/libs/**",
         "!**/src/root/**",
         "!**/src/*.ts",
@@ -743,9 +741,9 @@
     {
       "includes": [
         "**/src/**",
-        "!**/src/adapters/**",
-        "!**/src/features/*/adapters/**",
-        "!**/src/composition/*/adapters/**",
+        "!**/src/infrastructure/**",
+        "!**/src/features/*/infrastructure/**",
+        "!**/src/composition/*/infrastructure/**",
         "!**/src/libs/**",
         "!**/src/root/**",
         "!**/src/*.ts",

@@ -1,6 +1,6 @@
 # Retrieval
 
-> Governs the documents found for a model: how they are indexed, searched and cited.
+> Governs the documents found for a model — how they are indexed, searched and cited.
 
 ## Index
 

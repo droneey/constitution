@@ -1,6 +1,6 @@
 # Layout
 
-> Governs role suffixes and surfaces.
+> Governs a package's tree in TypeScript: its surfaces, how they are imported, and its role suffixes.
 
 ## Surfaces
 
@@ -24,7 +24,7 @@ An import of a surface ends at its folder — `…/features/orders`, `…/kernel
 
 ### role-suffix-spelled-after-a-dot → file-carries-its-role-suffix · MUST
 
-A role file is `<name>.<role>.ts` — `order.entity.ts`, `orders.repository.ts` — its role spelled as the vocabulary spells it.
+A role file is `<name>.<role>.ts` — `order.aggregate.ts`, `order-line.entity.ts`, `order.repository.ts` — its role spelled as the vocabulary spells it.
 
 | Why |
 |---|
