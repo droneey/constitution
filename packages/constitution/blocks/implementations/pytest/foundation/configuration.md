@@ -4,7 +4,7 @@
 
 ## Gates
 
-### pytest-runs-strict → every-spec-passes · MUST
+### pytest-runs-strict → change-handed-back-with-a-passing-check · MUST
 
 `[tool.pytest]` sets `strict = true`, `--import-mode=importlib` in `addopts` and `filterwarnings = ["error"]`, so a failing case, a warning, and an unknown marker or option each fail.
 

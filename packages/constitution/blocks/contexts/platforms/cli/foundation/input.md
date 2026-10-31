@@ -12,14 +12,6 @@
 |---|
 | help is how a person or an agent discovers a command, and help that needs every other argument right first cannot be reached when they are wrong. |
 
-### help-leads-with-examples · SHOULD
-
-A command's help opens with what the command does and examples of its common use, before the full list of flags.
-
-| Why |
-|---|
-| people read examples before reference, and most come to the help for the common case. |
-
 ### version-printed-on-version · SHOULD
 
 `--version` prints the program's version to standard output and exits 0.
@@ -27,6 +19,14 @@ A command's help opens with what the command does and examples of its common use
 | Why |
 |---|
 | a bug report and a script both need to know which release ran. |
+
+### help-leads-with-examples · SHOULD
+
+A command's help opens with what the command does and examples of its common use, before the full list of flags.
+
+| Why |
+|---|
+| people read examples before reference, and most come to the help for the common case. |
 
 ## Flags and prompts
 

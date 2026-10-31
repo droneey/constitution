@@ -90,13 +90,6 @@ typescript:
           rules:
             suspicious:
               noConstEnum: error
-  finally-never-leaves-by-a-jump:
-    typescript:
-      biome.jsonc:
-        linter:
-          rules:
-            correctness:
-              noUnsafeFinally: error
   identifier-case-by-kind:
     typescript:
       biome.jsonc:

@@ -266,14 +266,6 @@ Each critical scenario of `PROJECT.md` has one end-to-end spec through the built
 
 ## The gates
 
-### every-spec-passes · MUST
-
-Every spec passes.
-
-| Why |
-|---|
-| a spec left failing proves nothing from then on. |
-
 ### logic-fully-covered · MUST
 
 Logic — all production code but the entry files, the file that wires the program, generated files, declarations and vendored code — is covered at 100 percent of lines and functions, and of branches where the runner measures them, by the specs of its boundaries: the unit specs and, for an implementation of a contract over an outside system whose engine runs in the sandbox, its integration specs as well; end-to-end specs count toward no coverage. A line no behaviour reaches is a missing case or dead code.

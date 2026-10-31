@@ -12,29 +12,13 @@ A session gets a new identifier at sign-in and whenever its rights rise, and the
 |---|
 | an identifier planted before sign-in otherwise becomes, at sign-in, a session the attacker already holds. |
 
-### session-ended-on-the-server-at-sign-out · MUST
+### sessions-ended-on-the-server-when-trust-ends · MUST
 
-A session ends on the server at sign-out: its identifier, and its refresh tokens where it issues them, are refused from then on, whatever copy of them survives on a client.
-
-| Why |
-|---|
-| a sign-out that only forgets the token on the client leaves a stolen copy working. |
-
-### sessions-ended-when-credentials-change · MUST
-
-A change of password, a reset, an account recovery and a change or removal of a factor end the account's other sessions and revoke its refresh tokens, where it issues them.
+A session ends on the server — its identifier and its refresh tokens refused from then on, whatever copy survives on a client — when its person signs out; a change of password, a reset, an account recovery and a change or removal of a factor end the account's other sessions; and a disabled or deleted account loses every session, refresh token and key at once.
 
 | Why |
 |---|
-| the person who changes a credential is often shutting out someone who took the old one, and a session left open keeps them in. |
-
-### removed-account-loses-sessions-tokens-and-keys · MUST
-
-A disabled or deleted account loses its sessions, its refresh tokens where it issues them, and its keys at once.
-
-| Why |
-|---|
-| a person removed from a team otherwise keeps their access through whatever they were already holding. |
+| a stolen copy outlives every end only the client sees, and whoever signs out, changes a credential or is removed is often shutting out someone who holds one. |
 
 ### revoked-right-read-on-the-next-request · MUST
 

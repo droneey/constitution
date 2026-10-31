@@ -30,7 +30,7 @@ A branch over a union or an enum names every member: a `switch` whose `default` 
 |---|
 | a new member then fails to compile at every branch that forgot it. |
 
-### outside-number-set-is-a-numeric-enum → outside-number-set-declared-once · MUST
+### outside-number-set-is-a-numeric-enum → closed-name-set-declared-once · MUST
 
 A set of numbers another system defines — exit statuses, HTTP statuses — is a numeric `enum` with every member's value written, and a number that arrives keeps the type `number` until it is compared with the members.
 
@@ -94,13 +94,13 @@ A value's conformance to a type is checked with `satisfies`, which keeps its nar
 |---|
 | `satisfies` catches a missing or wrong field and still lets the compiler know the exact value. |
 
-### derivable-types-derived-inline · SHOULD
+### shape-composed-of-small-shapes · SHOULD
 
-A type derivable from an exported parent in one or two indexed accesses is derived where it is used, not exported under a name of its own.
+A shared shape is composed of small named shapes — an identifier, timestamps, a page of results — never cut out of a large type by omitting or picking its fields.
 
 | Why |
 |---|
-| an exported copy of a derivable type is one more name to keep in sync with its parent. |
+| a shape cut from a large one changes whenever the large one does, and hides which fields its consumer needs. |
 
 ### enum-never-declared-const · MUST
 

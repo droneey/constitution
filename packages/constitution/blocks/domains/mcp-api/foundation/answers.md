@@ -16,11 +16,11 @@ A refused argument and an expected failure are answered as a tool result with `i
 
 ### tool-answer-bounded-for-the-context → answer-bounded-in-size · MUST
 
-A tool's answer is bounded by a maximum the project sets in tokens or characters, far below a model's context window; an answer cut to it says so, and either says how to narrow the call or carries the cursor of the rest.
+A tool's answer is bounded in tokens or characters by a maximum the project sets far below a model's context window.
 
 | Why |
 |---|
-| an unbounded answer fills the model's context and pushes out its task, and a silent cut makes it believe it saw everything. |
+| an answer that fills the model's context pushes out its task. |
 
 ## Content
 

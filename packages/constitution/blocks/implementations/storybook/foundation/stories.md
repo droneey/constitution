@@ -20,14 +20,6 @@ Stories render from fixtures and fakes; no request leaves a story.
 |---|
 | a story that reaches the network breaks when the server does, and shows data nobody chose. |
 
-### screenshots-over-kit-stories-only → screenshots-only-where-look-is-contract · SHOULD
-
-Screenshots are compared over the UI kit's stories, where the look is the contract, and nowhere else.
-
-| Why |
-|---|
-| the kit's look is the one place a changed pixel is a changed contract. |
-
 ## Accessibility
 
 ### stories-fail-on-a11y-violations → ui-specs-scan-accessibility · MUST

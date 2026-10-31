@@ -62,14 +62,6 @@ A tool's name, description, schemas and annotations, and the server's instructio
 |---|
 | a model obeys what a description says, so a description built from data lets that data steer the model, and lets a definition change after it was approved. |
 
-### changed-tool-ships-under-a-new-name → published-contract-changed-only-by-addition · MUST
-
-A tool whose contract changes incompatibly ships under a new name, the only way a tool server has: it serves no two versions of one name.
-
-| Why |
-|---|
-| a client cannot ask for a tool's older version, so a change made in place breaks every model prompted for the old one. |
-
 ## Proof
 
 ### tool-list-pinned-by-a-spec → contract-published-machine-readable · MUST

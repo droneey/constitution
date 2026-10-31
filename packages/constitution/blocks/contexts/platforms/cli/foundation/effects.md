@@ -52,7 +52,7 @@ A setting given in several places is taken from the flag first, then the environ
 
 ### user-file-kept-in-the-systems-base-directories · SHOULD
 
-Configuration, cache and data a program keeps for its user live in the system's base directory for each kind — the XDG directories on Linux, and on macOS too, and the platform's own on Windows, an `XDG_*` variable that is set honoured on every system — never in a dotfile at the root of the home directory.
+Configuration, cache and data a program keeps for its user live in the base directory of each kind — `XDG_CONFIG_HOME`, `XDG_CACHE_HOME` and `XDG_DATA_HOME` with their defaults on Linux and macOS, the known folders on Windows, and a set `XDG_*` variable on every system — never in a dotfile at the root of the home directory.
 
 | Why |
 |---|

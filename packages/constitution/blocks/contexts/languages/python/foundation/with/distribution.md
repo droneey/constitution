@@ -37,11 +37,3 @@ A package published on a public index floors its `requires-python` at the oldest
 | Why |
 |---|
 | a public package's consumers are unknown, and the window keeps every Python they still run while dropping those the ecosystem has left. |
-
-### classifiers-list-every-supported-minor · SHOULD
-
-A published package's `Programming Language :: Python :: 3.<minor>` classifiers list every minor from its `requires-python` floor to the newest it supports.
-
-| Why |
-|---|
-| a consumer reads from the classifiers which Pythons the package supports, and a missing or stale one says otherwise than the floor. |

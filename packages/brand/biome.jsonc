@@ -98,8 +98,9 @@
         "useArraySome": "error",
         "useRegexpTest": "error",
       },
+
+      // biome
       "correctness": {
-        // biome
         "useParseIntRadix": "error",
         "noUnreachable": "error",
         "noUnusedFunctionParameters": "error",
@@ -108,17 +109,12 @@
         "noUnusedPrivateClassMembers": "error",
         "noUnusedVariables": "error",
 
-        // typescript
-        "noUnsafeFinally": "error",
-
-        // biome
         "noGlobalDirnameFilename": "error",
         "noUndeclaredDependencies": "error",
         "useJsonImportAttributes": "error",
         "noUnusedInstantiation": "error",
       },
 
-      // biome
       "performance": {
         "noAccumulatingSpread": "error",
         "noDynamicNamespaceImportAccess": "error",

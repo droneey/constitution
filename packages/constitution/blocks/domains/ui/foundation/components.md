@@ -1,6 +1,6 @@
 # Components
 
-> Governs a component: where it comes from, how it is composed, its props, size, interaction, actions and appearance.
+> Governs a component: where it comes from, how it is composed, its props, size, actions and appearance.
 
 ## Sourcing
 
@@ -30,7 +30,7 @@ A dialog, a popover, a menu, a combobox, a select, tabs, a tooltip, an accordion
 
 ### vendored-component-adapted-in-the-change-that-installs-it · MUST
 
-A component installed as source is adapted in the change that installs it — restyled to the tokens, stripped of the props no call site uses, and brought under the rules on props — or rejected; it is never kept as it came.
+A component installed as source is adapted in the change that installs it — restyled to the tokens, stripped of the props no call site uses, and brought under the rules on props — or rejected, as it is when the kit already holds an equivalent; it is never kept as it came.
 
 | Why |
 |---|
@@ -121,16 +121,6 @@ Text cut to fit — truncated or clamped to a number of lines — can be read in
 | Why |
 |---|
 | the part cut off is often the one that tells two items apart, and a user who cannot read it cannot choose between them. |
-
-## Interaction
-
-### drag-shows-grab-hold-and-targets · SHOULD
-
-An item that can be dragged shows that it can be grabbed; while it is held, it shows that it is held, and every place that accepts it is marked.
-
-| Why |
-|---|
-| without these marks a user cannot tell what moves, that it is moving, or where it may land. |
 
 ## Actions
 

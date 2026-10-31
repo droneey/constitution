@@ -24,19 +24,11 @@ A hidden part that must keep its state — a tab panel, a step, a view the user 
 
 ### compound-parts-share-the-root-context → component-with-regions-is-a-compound · SHOULD
 
-A compound's parts are attached to its root with a typed `Object.assign`, and the root shares its state — the choreography of animated regions included — through `<name>.context.ts`.
+A compound's parts are attached to its root with a typed `Object.assign` and reached only as `Root.Part`, never imported on their own: the compound exports only its root and its prop types, and the root shares its state, including the choreography of animated regions, through `<name>.context.ts`.
 
 | Why |
 |---|
-| the parts read what the root decides, without props threaded through the consumer's markup. |
-
-### compound-parts-reached-through-the-root → component-with-regions-is-a-compound · SHOULD
-
-A compound exports only its root and its prop types; a part is reached as `Root.Part`, never imported on its own.
-
-| Why |
-|---|
-| a part used without its root loses the root's context, and the dot names the compound it belongs to. |
+| a part used without its root loses the root's context; through it the parts read what the root decides without props threaded through the consumer's markup, and the dot names the compound a part belongs to. |
 
 ## Props
 

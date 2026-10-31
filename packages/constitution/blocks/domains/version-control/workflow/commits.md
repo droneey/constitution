@@ -32,7 +32,7 @@ A commit's body is empty, and its footer holds only trailers such as `Signed-off
 
 ### commit-checked-by-the-hooks · MUST
 
-A **commit hook** runs as a commit is made. The commit hooks hold what can be checked of a commit before it is made: its branch's name, its message and its staged files.
+What can be checked of a commit before it is made — its branch's name, its message and its staged files — is checked by a **commit hook** as the commit is made.
 
 | Why |
 |---|

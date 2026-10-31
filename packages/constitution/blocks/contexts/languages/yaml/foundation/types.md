@@ -20,6 +20,14 @@ A plain scalar meant as text that any reader might resolve to another type is qu
 |---|
 | a YAML 1.1 reader turns `no` into false, `0755` into 493, `1:20` into 80 and a date into a timestamp, and every reader turns `3.10` into 3.1, so the value changes with no error. |
 
+### value-holding-a-backslash-single-quoted → string-holding-a-backslash-written-literally · MUST
+
+A string that holds a backslash is plain or single-quoted, `'\bword\b'`, never double-quoted.
+
+| Why |
+|---|
+| a double-quoted scalar reads `\b`, `\t`, `\n` and `\f` as control characters and refuses other escapes, so `"\bword\b"` changes its meaning with no error. |
+
 ### merge-key-never-used · SHOULD
 
 A mapping never uses the merge key `<<`, save in a format whose own reader defines it.

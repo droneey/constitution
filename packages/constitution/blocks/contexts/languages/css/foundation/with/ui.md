@@ -1,6 +1,6 @@
 # User interface
 
-> Governs how a stylesheet serves screens and components: focus, boundaries, text size, reflow, overlays, hover, motion, values and scope.
+> Governs how a stylesheet serves screens and components: focus, boundaries, text size, reflow, overlays, hover, motion and scope.
 
 ## Screens
 
@@ -13,14 +13,6 @@ Base styles serve the smallest screen, and a breakpoint only adds styles from a 
 | styles that only add are simpler than styles that undo, and the smallest screen is never an afterthought. |
 
 ## Components
-
-### stylesheet-value-read-from-the-theme → tokens-single-source-of-appearance · MUST
-
-In a stylesheet, a colour, space, size, font, radius, shadow, duration or easing — a layout's width included — is read from a custom property of the theme, `var(--color-text-muted)`; a literal appears only where the theme defines the property, and in a value no theme names — `0`, a percentage, a viewport unit, `auto` — and in the condition of a media or a container query, where `var()` cannot be read and the literal repeats a breakpoint the theme names.
-
-| Why |
-|---|
-| a literal in a component is a second source of the value, which a change of the theme misses. |
 
 ### component-adapts-by-container-query → component-sizes-to-its-container · SHOULD
 

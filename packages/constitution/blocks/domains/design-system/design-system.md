@@ -10,6 +10,6 @@ governs: ["**"]
 
 # Design system
 
-> A product that owns the look of its interface: tokens in tiers and from one source, the variants and modes drawn from them, the space, corners, strokes and edges it draws, the kit of primitives built on them, and the proof that every pair of them reads.
+> A product that owns the look of its interface: tokens in tiers and from one source, the variants and modes drawn from them, the corners of nested elements, the kit of primitives built on them, and the proof that every pair of them reads.
 
 A product that uses another's design system lists the ui block alone.

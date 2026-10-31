@@ -1,6 +1,6 @@
 # User interface
 
-> Governs screens on a phone or tablet: the system's lifecycle, links, permissions, the keyboard, touch and the system's accessibility settings.
+> Governs screens on a phone or tablet: the system's lifecycle, its safe areas and back gesture, the view state its navigation parameters hold, what it hides from captures and the clipboard, speed, the keyboard, touch and the system's accessibility settings.
 
 ## Screens
 
@@ -36,14 +36,6 @@ View state a deep link or a restart must reproduce lives in the navigation param
 |---|
 | a view whose state is not in its parameters can be neither linked nor restored after the system ends the app. |
 
-### deep-link-only-opens-a-screen · MUST
-
-A link opens a screen with its parameters and performs no action — a payment, a send, a change of settings — until the user confirms it there.
-
-| Why |
-|---|
-| anyone can craft a link and get it tapped, so a link that acts at once acts for its author, not for the user. |
-
 ### sensitive-screen-hidden-from-captures · SHOULD
 
 A screen that shows a secret or sensitive personal data blocks screenshots and screen recording where the system allows it, and is covered in the snapshot the app switcher keeps.
@@ -52,21 +44,13 @@ A screen that shows a secret or sensitive personal data blocks screenshots and s
 |---|
 | screenshots sync to the cloud and the app switcher shows the last screen to whoever holds the phone, so what was on it outlives the moment it was read. |
 
-### permission-requested-when-its-feature-is-first-used · SHOULD
+### app-vitals-within-budget → felt-speed-measured-in-the-field-within-budget · SHOULD
 
-A permission is requested when the user first reaches the feature that needs it, after the screen says why, never at start.
-
-| Why |
-|---|
-| a person grants what they understand at the moment it is needed, and a request at start, out of context, is refused for good. |
-
-### refused-permission-leaves-the-app-working · SHOULD
-
-A refused permission leaves every feature that does not need it working, and the feature that needs it says what it lacks and how to grant it in the system's settings.
+The budgets cover the app's cold start, slow and frozen frames, crash rate and rate of the system's not-responding reports, and never pass the thresholds of bad behaviour the stores set.
 
 | Why |
 |---|
-| a person who refuses one permission still came to use the app, and a feature that fails silently tells them nothing. |
+| they measure what people feel of an app — the wait to open it, the stutter, the crash — and a store that sees them cross its thresholds shows the app to fewer people. |
 
 ## Components
 
@@ -114,14 +98,6 @@ Every interactive element declares its accessible label, role and state through 
 |---|
 | the system's screen reader reads only what these properties declare. |
 
-### screen-reader-order-follows-the-layout → focus-order-follows-the-visual-order · MUST
-
-The screen reader's order follows the visual order.
-
-| Why |
-|---|
-| a reading order that jumps around the screen cannot be followed. |
-
 ### text-follows-the-systems-text-size → wcag-aa-conformance · MUST
 
 Text follows the system's text size, up to its largest accessibility size, and layouts reflow so nothing is clipped or overlaps.
@@ -145,11 +121,3 @@ The app's manifest — `Info.plist` on iOS, `AndroidManifest.xml` on Android —
 | Why |
 |---|
 | an orientation locked in the manifest turns every screen away from a person whose device is mounted the other way. |
-
-### component-operated-with-each-systems-screen-reader → interactive-checked-by-hand · SHOULD
-
-Before a new interactive component ships, a person operates it with VoiceOver on iOS and TalkBack on Android, and with Switch Control or Switch Access.
-
-| Why |
-|---|
-| each system's screen reader behaves differently, and a scan catches none of it. |

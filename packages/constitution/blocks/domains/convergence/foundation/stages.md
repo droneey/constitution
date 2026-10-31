@@ -6,19 +6,11 @@
 
 ### stages-run-alone · SHOULD
 
-Validating, rendering, planning and applying are stages a user runs alone, and each later stage runs the earlier ones first.
+Validating, rendering, planning and applying are stages a user runs alone, each later stage running the earlier ones first; rendering needs only the config file and the program's own files, never an engine or the world.
 
 | Why |
 |---|
-| a user can check, preview and plan without touching the world, and a later stage builds on exactly what an earlier one showed. |
-
-### rendering-runs-no-engine · SHOULD
-
-Rendering turns the config file into what it implies, from the file and the program's own files alone, and runs no engine.
-
-| Why |
-|---|
-| a user previews what a config file means without any engine installed and without reaching the world. |
+| a user checks and previews what a config file means without touching the world or installing what applies it, and a later stage builds on exactly what an earlier one showed. |
 
 ## Reports and output
 

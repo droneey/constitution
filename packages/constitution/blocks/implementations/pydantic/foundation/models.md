@@ -1,6 +1,6 @@
 # Models
 
-> Governs a model: how strict it is, whether it changes, the secrets it holds, and the forms of pydantic's API it uses.
+> Governs a model: how strict it is, whether it changes, the secrets it holds, the values it builds, and the forms of pydantic's API it uses.
 
 ## General
 
@@ -35,3 +35,11 @@ A model uses pydantic 2's forms — `model_config = ConfigDict(...)`, `field_val
 | Why |
 |---|
 | pydantic 2 deprecates the old forms and will remove them; a type checker reports the deprecated calls, while an inner `class Config` and the `pydantic.v1` module carry no deprecation mark and stay with the review. |
+
+### model-builds-values-through-the-domain → invariant-checked-in-post-init · MUST
+
+A model never restates the check of a value that keeps an invariant: it builds the value through its dataclass, in an `AfterValidator` or a `field_validator`, and raises the value's failure again as a `ValueError` or a `PydanticCustomError`.
+
+| Why |
+|---|
+| pydantic lists only a `ValueError`, an `AssertionError` or a `PydanticCustomError` in its `ValidationError`, so the value's own error escapes the parse unlisted, and a check copied into the model drifts from the value's own. |

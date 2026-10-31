@@ -36,7 +36,7 @@ Every service the providers build — the use cases, the cache client, analytics
 |---|
 | a change of the router or of a path then touches the root alone, and what `libs/` or an adapter wraps knows nothing of the application's navigation. |
 
-### document-head-declared-by-route → document-metadata-rendered-by-its-owner · SHOULD
+### document-head-declared-by-route → document-metadata-owned-by-screen · SHOULD
 
 A screen's document metadata is owned by its route, which declares it in `head`.
 

@@ -16,11 +16,11 @@ No event carries data that names a person — a name, an email, a phone, an addr
 
 ### analytics-stores-nothing-until-consent · MUST
 
-The analytics library stores nothing on the device and sends no identifier until consent is given, where the law subjects its measurement to consent, and measures anonymously where the law exempts it.
+The library can measure without storing anything on the device or sending an identifier — anonymously where the law exempts the measurement from consent — and holds both back until consent where it does not.
 
 | Why |
 |---|
-| a library that stores or identifies before consent makes the measurement the law exempts need consent, and starts the rest too early. |
+| a library that cannot run without storing or identifying makes even the measurement the law exempts wait for consent. |
 
 ### analytics-drops-the-ip-address · MUST
 

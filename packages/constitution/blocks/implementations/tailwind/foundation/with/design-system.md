@@ -32,7 +32,7 @@ Dark mode redefines the semantic tokens under one selector; a component writes `
 
 ## Primitives
 
-### primitive-class-merged-by-cn → primitive-passes-attributes-and-class · SHOULD
+### primitive-class-merged-by-cn → primitive-passes-its-element-through · SHOULD
 
 A primitive merges its class with the caller's through `cn()`, the caller's last.
 
@@ -44,11 +44,11 @@ A primitive merges its class with the caller's through `cn()`, the caller's last
 
 ### class-names-only-semantic-colors → component-reads-only-semantic-and-common-tokens · MUST
 
-A class list names a colour only through the design system's semantic and common tokens, never through Tailwind's own palette.
+`@theme` aliases only the semantic and common colour tokens, so no class can name a primitive colour or a palette Tailwind ships.
 
 | Why |
 |---|
-| a palette class reaches past the tokens, so a component that writes one escapes the theme and its modes. |
+| a utility exists only for what `@theme` aliases, so a primitive left out of it cannot be written in a class. |
 
 ### theme-aliases-the-token-properties → custom-property-spells-its-token · MUST
 

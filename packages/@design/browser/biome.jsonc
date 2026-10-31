@@ -110,9 +110,6 @@
         // css
         "noMissingVarFunction": "error",
 
-        // typescript
-        "noUnsafeFinally": "error",
-
         // biome
         "useParseIntRadix": "error",
         "noGlobalDirnameFilename": "error",

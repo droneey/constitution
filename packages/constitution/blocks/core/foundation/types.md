@@ -22,7 +22,7 @@ A branch over a closed set — a union or an enumeration the logic decides on me
 
 ### closed-name-set-declared-once · MUST
 
-A closed set of named values the program owns is declared once, as one enumeration whose members the code reaches by name, never as literal strings repeated at each use.
+A closed set of named values — the program's own, or the numbers another system defines, as its status or exit codes — is declared once, every member written, as one enumeration the code reaches by name, never as literals repeated at each use; a number that arrives stays a number until it is compared with the set.
 
 | Why |
 |---|
@@ -35,22 +35,6 @@ An entity's identifier is a type of its own, branded by its entity, so one entit
 | Why |
 |---|
 | two identifiers of one primitive type are swapped silently; a brand makes the type checker refuse it, and given in one place it proves the value came through it. |
-
-### shape-composed-of-small-shapes · SHOULD
-
-A shared shape is composed of small named shapes — an identifier, timestamps, a page of results — never cut out of a large type by omitting or picking its fields.
-
-| Why |
-|---|
-| a shape cut from a large one changes whenever the large one does, and hides which fields its consumer needs. |
-
-### semantic-alias-names-a-shared-meaning · SHOULD
-
-A semantic alias — a name of its own for a plain type, as a chat's title over a string — names a meaning found in two or more places, carries no brand, and is used wherever that meaning appears, never the bare type beside it.
-
-| Why |
-|---|
-| an alias names a meaning the program shares; one for every string turns vocabulary into noise, and a bare type beside an existing alias hides the meaning again. |
 
 ### type-has-one-home · MUST
 
@@ -75,14 +59,6 @@ A vocabulary another party owns — its codes, its statuses — is reached throu
 | Why |
 |---|
 | a value added to the program's copy of that vocabulary then fails the type check instead of falling through to a default nobody chose. |
-
-### outside-number-set-declared-once · MUST
-
-A set of numbers another system defines — its status codes, its exit codes — is declared once, with every value written, and a number that arrives stays a number until it is compared with them.
-
-| Why |
-|---|
-| one declaration names each number where a reader looks for it, and a number cast to the program's own type on arrival claims a value the other side may never have sent. |
 
 ### enumeration-others-read-declared-extensible · MUST
 
@@ -161,6 +137,14 @@ A key appears once in its mapping — an object, a table, a dictionary written a
 | Why |
 |---|
 | most parsers keep the last value of a repeated key silently, so the first one reads as set while it does nothing. |
+
+### string-holding-a-backslash-written-literally · MUST
+
+A string written as data that holds a backslash — a regular expression, a Windows path — is written in its format's literal form, the one that reads every backslash as itself, where the format has one.
+
+| Why |
+|---|
+| a form that reads escapes turns `\b`, `\t` and `\n` into control characters and refuses the others, so the string changes its meaning with no error and still looks the same. |
 
 ### absence-shown-by-the-type · MUST
 

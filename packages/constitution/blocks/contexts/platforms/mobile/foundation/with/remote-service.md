@@ -14,7 +14,7 @@ Every connection the app opens runs over TLS and trusts only the system's certif
 
 ## Versions
 
-### unsupported-app-version-asks-to-update · SHOULD
+### unsupported-app-version-asks-to-update → client-below-the-oldest-supported-release-updates-first · SHOULD
 
 The app learns the oldest version of itself its server still supports and, below it, asks its user to update before going on.
 

@@ -4,18 +4,10 @@
 
 ## Scope
 
-### json-output-changed-only-by-adding-fields → format-changed-in-steps · MUST
+### script-facing-output-changed-in-steps → format-changed-in-steps · MUST
 
-A command's JSON output changes by gaining fields; a field is removed, renamed or retyped only after a release that offered its replacement beside it.
-
-| Why |
-|---|
-| scripts read the JSON as a contract, and a field that disappears breaks every one of them silently at the next upgrade. |
-
-### exit-code-keeps-its-meaning → format-changed-in-steps · MUST
-
-An exit code keeps the meaning it was released with; a new outcome gets a code of its own, and no code is reused for another.
+A command's JSON output gains fields freely, and loses, renames or retypes one only after a release that offered its replacement beside it; an exit code keeps the meaning it was released with, and a new outcome takes a code of its own.
 
 | Why |
 |---|
-| a script that calls the command branches on its codes, and a code that changes its meaning sends it down the wrong branch without a word. |
+| scripts branch on the JSON and the exit codes, and a field that disappears or a code that changes its meaning sends them wrong at the next upgrade without a word. |

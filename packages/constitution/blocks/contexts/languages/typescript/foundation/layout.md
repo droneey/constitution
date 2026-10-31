@@ -4,14 +4,6 @@
 
 ## Kinds
 
-### file-named-after-its-export → file-is-one-semantic-unit · MUST
-
-A file with one export is named after it — `order-status.ts` exports `OrderStatus` — and a file with several exports after the unit they form, save a name a framework or a tool reads by its spelling, which its block names.
-
-| Why |
-|---|
-| a reader who knows the name of a thing knows the name of its file. |
-
 ### test-folder-files-in-test-forms → file-named-for-its-kind · MUST
 
 A `.ts` or `.tsx` file in `__tests__/` or `tests/` is a `.test`, `.<kind>.test`, `.fake`, `.suite` or `.fixtures` file.

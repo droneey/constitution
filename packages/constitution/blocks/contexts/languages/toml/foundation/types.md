@@ -4,9 +4,9 @@
 
 ## Strings
 
-### value-holding-a-backslash-is-a-literal-string · MUST
+### value-holding-a-backslash-is-a-literal-string → string-holding-a-backslash-written-literally · MUST
 
-A string that holds a backslash — a regular expression, a Windows path — is a literal string, `'…'` or `'''…'''`.
+A string that holds a backslash is a literal string, `'…'` or `'''…'''`, never a basic one.
 
 | Why |
 |---|

@@ -34,7 +34,7 @@ The next step a failure names — an operation to call, a command to run, a valu
 
 | Why |
 |---|
-| whoever reads a failure — a person, a script, a model — follows its advice literally, and a step the schema refuses or a registration hid sends them round a loop the program built. |
+| whoever reads a failure — a person, a script, a model — follows its advice literally, so a step it cannot take leaves them stuck or retrying the same refusal. |
 
 ### failure-told-apart-by-code · MUST
 

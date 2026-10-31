@@ -4,14 +4,6 @@
 
 ## What it holds
 
-### commit-is-one-logical-change → change-limited-to-its-task · SHOULD
-
-A commit holds one logical change, which can be reviewed, reverted and found in the history on its own.
-
-| Why |
-|---|
-| a commit that mixes two changes cannot revert one without the other, and the history names neither. |
-
 ### commit-holds-only-its-task-files → change-limited-to-its-task · MUST
 
 A commit holds only the files of its task, never whatever else lies in the working copy.

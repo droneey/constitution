@@ -14,7 +14,7 @@ Data another system owns, which the program reads to show or act on, lives only 
 
 ### remote-data-has-no-second-model · MUST
 
-Data another system owns has no second model in the program: the program keeps no aggregate, domain event or specification guarding that data's consistency; what it decides itself — a draft, an optimistic item, the folding of a stream — it models in its domain.
+Data another system owns has no second model in the program: the program keeps no aggregate, domain event or specification guarding that data's consistency; what it decides itself — a draft, an optimistic item — it models in its domain.
 
 | Why |
 |---|

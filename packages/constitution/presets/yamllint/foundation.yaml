@@ -36,6 +36,12 @@ core:
       .yamllint.yaml:
         rules:
           key-duplicates: enable
+  dead-code-deleted:
+    yaml:
+      .yamllint.yaml:
+        rules:
+          anchors:
+            forbid-unused-anchors: true
 yaml:
   collection-written-in-block-style:
     yaml:
@@ -67,9 +73,3 @@ yaml:
               - 'true'
               - 'false'
             check-keys: false
-  anchor-aliased-at-least-once:
-    yaml:
-      .yamllint.yaml:
-        rules:
-          anchors:
-            forbid-unused-anchors: true

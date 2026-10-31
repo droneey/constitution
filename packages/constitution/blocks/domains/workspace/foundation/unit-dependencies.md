@@ -40,11 +40,11 @@ The units of a workspace form no cycle, neither in the dependencies their manife
 
 ### unit-generates-what-its-dependents-read → generated-file-made-by-its-own-step · SHOULD
 
-A unit's build makes only what the unit ships; a unit that reads another's generated sources runs that unit's generation step before its own, never its build, and a language's types generated from shared data are generated in that language's unit.
+Types a language generates from shared data are generated in that language's unit, by a step of its own, never in the package that holds the data.
 
 | Why |
 |---|
-| a unit that ran the build of what it imports would build every product it depends on, and types generated in the package of the shared data would put code in a package that holds none. |
+| the package of shared data holds no code, and a reader that ran another unit's build to get its types would build every product it depends on. |
 
 ## Requirements for implementation
 

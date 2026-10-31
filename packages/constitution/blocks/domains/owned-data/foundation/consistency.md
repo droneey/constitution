@@ -10,7 +10,7 @@ A stored record that a write decides on from a read made in an earlier request c
 
 | Why |
 |---|
-| the version is how the store tells a write made on a stale read from a fresh one. |
+| no lock outlives a request, so only a version the record carries shows that what one request read changed before the next request writes. |
 
 ## Invariants
 

@@ -10,7 +10,7 @@ A module hides much behind a small interface: few operations, each doing much it
 
 | Why |
 |---|
-| a deep module spares its callers the details it hides; a shallow one makes them learn an interface nearly as large as the work behind it — Ousterhout's deep modules. |
+| a deep module spares its callers the details it hides; a shallow one makes them learn an interface nearly as large as the work behind it. |
 
 ### module-imports-form-no-cycle · MUST
 
@@ -107,11 +107,3 @@ A method that overrides one of its base carries the language's mark of an overri
 | Why |
 |---|
 | an override that stops overriding, or a new method that overrides one by accident, fails the check instead of changing behaviour silently. |
-
-### pattern-chosen-by-problem · SHOULD
-
-A pattern, where a problem calls for one, is the one its problem names: several interchangeable ways to do one job — a strategy, registered by kind; a complicated subsystem behind a few operations — a facade; construction that depends on configuration — a factory; a fact others react to — an event; a request to run later, retry or undo — a command object. A class of unrelated helpers is no pattern.
-
-| Why |
-|---|
-| one known pattern per problem is recognised at a glance; an invented one, or one used in advance, must be learned and kept. |

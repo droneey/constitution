@@ -70,21 +70,13 @@ One check runs every tool that holds a rule and fails on any violation.
 
 ## Findings
 
-### suppression-states-its-reason · MUST
-
-A suppression — of a lint rule, a type error, a mutant, a deliberately ignored failure — carries its reason beside it.
-
-| Why |
-|---|
-| the next reader must know whether the exception still holds, and a bare suppression cannot be judged. |
-
 ### suppression-silences-one-finding · MUST
 
-A suppression silences one finding: it sits on the finding’s line or the line above, or names the finding, and names the one rule it silences wherever the tool can name one; a suppression that silences nothing is removed.
+A suppression — of a lint rule, a type error, a mutant, a deliberately ignored failure — silences one finding and carries its reason beside it: it sits on the finding's line or the line above, or names the finding, and names the one rule it silences wherever the tool can; a suppression that silences nothing is removed.
 
 | Why |
 |---|
-| a narrow suppression can be judged where it stands; a broad one silences rules and lines nobody meant to. |
+| a narrow suppression can be judged where it stands, a broad one silences rules and lines nobody meant to, and one without its reason leaves the next reader unable to tell whether the exception still holds. |
 
 ### check-never-weakened-to-pass · MUST
 

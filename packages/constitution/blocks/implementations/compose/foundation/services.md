@@ -28,14 +28,6 @@ Settings several services share — environment, logging, health checks, securit
 |---|
 | a setting written once changes once; its copies drift apart one service at a time; Compose's reader defines the merge key `<<` that takes them into a service. |
 
-### variants-extend-a-disabled-base · SHOULD
-
-The variants of one service extend a base service whose name starts with `_` and whose `profiles` is `[do-not-use]`; each variant is named with its environment's suffix, `-development`, `-test` or `-production`.
-
-| Why |
-|---|
-| the variants share one definition, the base never starts by itself, and a service's name says where it runs. |
-
 ## Images
 
 ### service-image-pinned-by-version-and-digest → download-pinned-by-version-and-checksum · MUST

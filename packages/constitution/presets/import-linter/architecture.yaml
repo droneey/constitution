@@ -462,14 +462,13 @@ core:
                 - '*.${role.shared-code}.*.*'
               allowed_importers:
                 - '*.${role.shared-code}.*'
-python:
-  domain-and-application-import-no-logging:
+  domain-and-application-log-nothing:
     python:
       pyproject.toml:
         tool:
           importlinter:
             include_external_packages: true
-            contracts[name=domain-and-application-import-no-logging]:
+            contracts[name=domain-and-application-log-nothing]:
               type: forbidden
               source_modules:
                 - '*.${role.composition-module}.*.${role.pure-layer}'

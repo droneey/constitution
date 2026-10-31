@@ -261,22 +261,6 @@ python:
             lint:
               extend-select:
                 - ASYNC
-  parameter-default-never-mutable:
-    python:
-      pyproject.toml:
-        tool:
-          ruff:
-            lint:
-              extend-select:
-                - B006
-  finally-never-left-by-a-jump:
-    python:
-      pyproject.toml:
-        tool:
-          ruff:
-            lint:
-              extend-select:
-                - B012
   instant-is-an-aware-datetime:
     python:
       pyproject.toml:
@@ -285,14 +269,6 @@ python:
             lint:
               extend-select:
                 - DTZ
-  import-never-a-wildcard:
-    python:
-      pyproject.toml:
-        tool:
-          ruff:
-            lint:
-              extend-select:
-                - F403
   source-folder-is-a-regular-package:
     python:
       pyproject.toml:

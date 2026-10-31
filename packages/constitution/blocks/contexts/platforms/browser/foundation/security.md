@@ -72,14 +72,6 @@ The Content Security Policy names an endpoint for its violation reports — `rep
 |---|
 | a policy that only blocks hides both the attack it stopped and the page it broke; a report shows each of them. |
 
-### document-served-with-a-strict-referrer-policy · SHOULD
-
-Every document is served with `Referrer-Policy: strict-origin-when-cross-origin` or a stricter one.
-
-| Why |
-|---|
-| a full address sent to other sites carries the paths and parameters of the person's session to whoever they link to. |
-
 ### document-served-with-a-same-origin-opener-policy · SHOULD
 
 Every document is served with `Cross-Origin-Opener-Policy: same-origin`, or `same-origin-allow-popups` where the program opens a window it talks to.

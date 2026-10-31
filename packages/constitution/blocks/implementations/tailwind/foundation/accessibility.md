@@ -1,6 +1,6 @@
 # Accessibility
 
-> Governs focus, reduced motion and the sizes of type in the theme.
+> Governs how the theme shows focus.
 
 ## General
 
@@ -11,19 +11,3 @@ Focus is shown by the design system's `focusable` utility, which draws an outlin
 | Why |
 |---|
 | one utility draws the same visible ring everywhere, and no component removes focus without it. |
-
-### motion-tokens-honour-reduced-motion → reduced-motion-honoured · MUST
-
-The motion tokens collapse under reduced motion, in the theme.
-
-| Why |
-|---|
-| every animation reads the tokens, so one rule in the theme stops them all. |
-
-### type-tokens-in-rem → type-sized-in-rem · MUST
-
-Font-size tokens are in `rem`.
-
-| Why |
-|---|
-| the user's text size then scales every text of the user interface. |

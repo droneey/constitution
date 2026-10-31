@@ -10,7 +10,7 @@ Every user interface meets WCAG 2.2 at level AA; the rules of this block name th
 
 | Why |
 |---|
-| one measurable bar serves people and the tools that check for them; EN 301 549 v4.1.1 adopts it for the European Union once the Official Journal cites it, v3.2.1 and WCAG 2.1 until then. |
+| one measurable bar serves people and the tools that check for them, and it is the bar the accessibility laws of the EU and many other regions cite. |
 
 ### accessibility-statement-published · MUST
 

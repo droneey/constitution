@@ -1,6 +1,6 @@
 # Effects
 
-> Governs the stop, copies, one-off work, pools, configuration, the protocol, logs and work in flight.
+> Governs the stop, copies, one-off work, pools, logs and work in flight.
 
 ## General
 
@@ -11,14 +11,6 @@ A copy of a server keeps in its memory and on its disk only what it can lose —
 | Why |
 |---|
 | its host replaces, moves and multiplies copies without warning, so what one copy holds is lost at its restart and unseen by its siblings. |
-
-### server-serves-its-protocol-itself · SHOULD
-
-A server serves its protocol itself, with no web server its host must put around it.
-
-| Why |
-|---|
-| a server that needs a web server in front of it runs only where that server is configured for it, and each host configures it differently. |
 
 ## Calls and resources
 
@@ -72,15 +64,7 @@ Work done once per release or on demand — a migration, a seed, a backfill, a r
 |---|
 | every copy that starts would run it again, at the same time as its siblings, and a slow run holds back every restart. |
 
-## Records and configuration
-
-### server-configuration-taken-from-its-host → one-artefact-serves-every-environment · MUST
-
-Every setting that differs between deployments reaches a server from its host — an environment variable, a file the host mounts, or a store the server reads with its host's identity — and none is built into its artefact.
-
-| Why |
-|---|
-| one built artefact is then promoted from staging to production unchanged, and it holds nothing one environment must keep from another. |
+## Records
 
 ### server-log-leaves-as-a-stream → diagnostics-written-through-a-logger · MUST
 

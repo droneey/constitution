@@ -28,7 +28,7 @@ Of the program's code, the application imports only the domain, the kernel and i
 
 | Why |
 |---|
-| a use case that knows a framework, an adapter or a screen can run nowhere else, and the next client, worker or command of the program must write it again. |
+| a use case that knows a framework, an adapter or a transport can run nowhere else, and the next client, worker or command of the program must write it again. |
 
 ### feature-never-imports-a-feature · MUST
 
@@ -168,22 +168,6 @@ A shared piece with business meaning goes to the kernel, one without it to share
 |---|
 | the folder then says what a piece means, and the kernel does not grow into a second domain. |
 
-### vendor-client-lives-in-libs · SHOULD
-
-A vendor’s client without knowledge of the application lives in libs, one module per system.
-
-| Why |
-|---|
-| every adapter of that system and other programs can reuse it, and the adapters stay thin. |
-
-### protocol-between-artefacts-lives-in-shared · SHOULD
-
-A protocol two artefacts of one program speak lives in the program’s shared plumbing, imported by both.
-
-| Why |
-|---|
-| each side speaks the same types, and neither artefact imports the other. |
-
 ## Delivery units
 
 ### delivery-unit-beside-what-it-serves · SHOULD
@@ -204,7 +188,7 @@ A binding unit, and a delivery unit that binds several operations itself, calls 
 
 ### delivery-unit-stays-thin · SHOULD
 
-A delivery unit — a screen, a command, a handler, a tool function — parses its input, calls the operations whose results it presents, and presents them; it holds no business logic, and what an operation reports reaches it as a returned value, never as output printed along the way.
+A delivery unit — a command, a request handler, a message consumer, a tool function — parses its input, calls the operations whose results it presents, and presents them; it holds no business logic, and what an operation reports reaches it as a returned value, never as output printed along the way.
 
 | Why |
 |---|

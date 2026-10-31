@@ -47,3 +47,19 @@ A custom property spells its token's name with dashes: `--color-text-muted` for 
 | Why |
 |---|
 | the token and the property are then one name, found by one search in the theme and in every stylesheet. |
+
+### font-size-token-in-rem → wcag-aa-conformance · MUST
+
+A font-size token's value is in `rem`.
+
+| Why |
+|---|
+| the user's text size then scales every text of the user interface. |
+
+### motion-tokens-collapse-under-reduced-motion → reduced-motion-honoured · MUST
+
+Under `@media (prefers-reduced-motion: reduce)` the root redefines the motion tokens, so that durations fall to zero or a movement becomes a fade.
+
+| Why |
+|---|
+| every animation reads the tokens, so one rule in the theme stops them all. |

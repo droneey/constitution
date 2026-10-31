@@ -1,6 +1,6 @@
 # Names
 
-> Governs a name in Python: its case, an exception's ending and a named constant.
+> Governs a name in Python: its case, a class's name and a named constant.
 
 ## Meaning
 
@@ -22,10 +22,10 @@ A class, a type alias, a type parameter and an exception are PascalCase; a modul
 |---|
 | every Python reader and library uses these cases, so the case alone tells a class from a function and a constant from a variable before the declaration is read. |
 
-### exception-name-ends-in-error → error-name-ends-in-error · MUST
+### class-name-undecorated → type-name-undecorated · SHOULD
 
-An exception class the program raises for a failure ends its name in `Error`: `OrderNotFoundError`, never `OrderNotFound` or `OrderNotFoundException`.
+A class's name has no `I` prefix and no `Protocol`, `Interface`, `ABC` or `Type` suffix, and the name of a `Protocol` or an `ABC` no `Abstract` or `Base` prefix either.
 
 | Why |
 |---|
-| PEP 8 and the standard library's own `ValueError` and `KeyError` end an error's name so, and a project's errors then read like the ones every reader knows. |
+| a class's bases already show that it is a `Protocol` or an `ABC`, as the standard library's `Iterable` and `Mapping` show it. |

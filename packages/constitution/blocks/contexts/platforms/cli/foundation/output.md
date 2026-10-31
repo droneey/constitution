@@ -14,7 +14,7 @@ A command that reports data prints it as JSON when given `--json`.
 
 ### progressive-report-printed-as-events-arrive · SHOULD
 
-The command prints a progressive report as its events arrive, and any other report once, at the end of the run.
+A report of a run's progress is printed as its events arrive; the result is printed once, whole, when the run ends.
 
 | Why |
 |---|

@@ -1,6 +1,6 @@
 # Security
 
-> Governs pins, links, webviews, exported components, biometrics, push payloads, release builds, downloaded code, attestation, and what the client keeps and grants.
+> Governs pins, links, webviews, exported components, biometrics, push payloads, release builds, downloaded code, and what the client keeps and grants.
 
 ## Secrets
 
@@ -79,14 +79,6 @@ Code the app receives after it is installed — an update of its script bundle o
 | Why |
 |---|
 | an update channel that serves unsigned code lets whoever reaches it run their code in every installed copy. |
-
-### genuine-app-proven-by-the-systems-attestation · MAY
-
-The app obtains the system's attestation — App Attest on iOS, Play Integrity on Android — and sends it with each request a server must trust as coming from the genuine app on a genuine device.
-
-| Why |
-|---|
-| a modified app or an emulator sends the same requests as the real app, and only a statement the system signs tells them apart. |
 
 ### purchase-granted-after-the-server-verifies-it → client-check-repeated-out-of-its-reach · MUST
 

@@ -12,16 +12,6 @@ An address a caller gives for the program to reach — a callback to notify, a f
 |---|
 | the program reaches what its callers cannot — its own network, the cloud's metadata endpoint — and an address checked before the connection is re-resolved in between by the attacker's name server. |
 
-## Failures
-
-### call-cut-by-the-network-is-an-expected-failure → failure-is-expected-or-defect · MUST
-
-A call to a remote system that times out, loses its connection or cannot reach the system fails with an expected failure of its own type, which its caller handles and may retry — never a hang, a defect or a silent loss.
-
-| Why |
-|---|
-| a remote system is out of reach somewhere every day, and a program that treats that as a bug fails its users each time. |
-
 ## Load
 
 ### concurrent-calls-to-a-system-bounded · SHOULD

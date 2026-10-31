@@ -106,21 +106,13 @@ An invalid field carries `aria-invalid` and an `aria-describedby` that points at
 |---|
 | assistive technology then says that the field is wrong and why, when its user reaches it. |
 
-### entry-document-declares-the-viewport → wcag-aa-conformance · MUST
-
-Every entry document declares the responsive viewport: `<meta name="viewport" content="width=device-width, initial-scale=1">`.
-
-| Why |
-|---|
-| without it a phone lays the page out at a desktop's width and shrinks it, so its text is small and its layout never reflows. |
-
 ### viewport-never-blocks-zoom → wcag-aa-conformance · MUST
 
-The viewport declaration never blocks zooming: no `user-scalable=no`, and no `maximum-scale` below 5.
+Every entry document declares the responsive viewport, `<meta name="viewport" content="width=device-width, initial-scale=1">`, and never blocks zooming: no `user-scalable=no`, and no `maximum-scale` below 5.
 
 | Why |
 |---|
-| a page that cannot be zoomed fails the people who need its text larger. |
+| without it a phone lays the page out at a desktop's width and shrinks it, and a page that cannot be zoomed fails the people who need its text larger. |
 
 ### language-declared-by-lang → screen-declares-its-language · MUST
 

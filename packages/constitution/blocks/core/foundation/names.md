@@ -14,7 +14,7 @@ A name says what its thing is for: pronounceable, searchable, with no abbreviati
 
 ### name-from-the-glossary · SHOULD
 
-A name of the business is the business's own word from the project's glossary — `cancelOrder`, not `updateRecord` — and a new term enters the glossary with the change that introduces it.
+A name of the business is the business's own word from the project's glossary, never the vendor or the storage behind it — `cancelOrder`, not `updateRecord`; `User`, not `UserRow` — and a new term enters the glossary with the change that introduces it.
 
 | Why |
 |---|
@@ -22,23 +22,15 @@ A name of the business is the business's own word from the project's glossary �
 
 ### concept-has-one-word · SHOULD
 
-A concept has one word across the program, and a word names one concept: not `fetch`, `load` and `get` for one act.
+A concept has one word across the program, and a word names one concept: not `fetch`, `load` and `get` for one act; two acts that undo each other are a verb and its antonym, the same pair everywhere — `add` and `remove`, `create` and `delete`, `start` and `stop`.
 
 | Why |
 |---|
 | a reader who sees two words assumes two things, and a search misses the other one. |
 
-### opposite-acts-named-by-a-verb-and-its-antonym · SHOULD
-
-Two acts that undo each other are named by a verb and its antonym, the same pair across the program: `add` and `remove`, `create` and `delete`, `open` and `close`, `start` and `stop`, `show` and `hide`.
-
-| Why |
-|---|
-| a reader who meets one half of a pair finds the other by its antonym, and `create` beside `remove` reads as two unrelated acts. |
-
 ### name-never-an-empty-word · SHOULD
 
-A name is never only an empty word. A thing is never named `data`, `result`, `temp`, `info`, `item`, `value`, `obj`, `stuff` or `thing` — only a value whose shape the code does not know may take one, and the code says so where it does; a function is named by a concrete verb and its object — `cancelOrder`, `getOrder` — never by an empty verb, whatever its object — `handle`, `process`, `manage`, `do`, `execute` — save a callback named after the event it answers, a function named for the thing it returns or renders — a component, a derived value — and a name an implemented interface imposes.
+A name is never only an empty word. A thing is never named `data`, `result`, `temp`, `info`, `item`, `value`, `obj`, `stuff` or `thing` — only a value whose shape the code does not know may take one, and the code says so where it does; a function is named by a concrete verb and its object — `cancelOrder`, `getOrder` — never by an empty verb, whatever its object — `handle`, `process`, `manage`, `do`, `execute` — save a callback named after the event it answers, a function named for the value it returns — a derived value, an element — and a name an implemented interface imposes.
 
 | Why |
 |---|
@@ -54,19 +46,11 @@ A name says what its thing is, never when or how it was written: no `new`, `old`
 
 ### member-name-never-repeats-its-owner · SHOULD
 
-A member never repeats the name of the type or the object it belongs to: `MenuItem.onClick`, not `MenuItem.onMenuItemClick`; `order.total`, not `order.orderTotal`. A name a module exports is read without its module, and keeps its object: `listOrders`.
+A member never repeats the name of the type or the object it belongs to: `order.total`, not `order.orderTotal`; `Invoice.send`, not `Invoice.sendInvoice`. A name a module exports is read without its module, and keeps its object: `listOrders`.
 
 | Why |
 |---|
 | the owner is written beside every use of its member, so its name said again is noise that hides the part that differs. |
-
-### business-name-free-of-vendor-and-storage · SHOULD
-
-A name of the business names its concept, never the vendor or the storage behind it: `User`, not `UserMongoDocument` or `UserRow`.
-
-| Why |
-|---|
-| a vendor in such a name is renamed everywhere when the vendor changes, and leaks into code that should not know it. |
 
 ### literal-with-a-meaning-is-named · SHOULD
 
@@ -86,6 +70,14 @@ Each kind of name — a type, a function, a variable, a constant, an enumeration
 |---|
 | the case alone tells what kind of thing a name is, before its declaration is read. |
 
+### type-name-undecorated · SHOULD
+
+A type's name carries no mark of its kind: no `I` prefix and no suffix that names it, such as `Interface` or `Type` — `PaymentGateway`, not `IPaymentGateway` or `PaymentGatewayInterface`.
+
+| Why |
+|---|
+| the declaration already shows the kind, the mark lengthens the name at every use, and it turns false the day the kind changes while the meaning stays. |
+
 ### name-number-matches-its-value · SHOULD
 
 A name's grammatical number is the number of values it holds: a collection's name is plural and an item's singular, destructured names included, so a loop reads `for order of orders`; a type's name, an enumeration's included, is singular unless its value is a collection — `OrderStatus`, not `OrderStatuses`.
@@ -104,11 +96,11 @@ An event's name says what happened, in the past tense: `OrderPlaced`, not `Place
 
 ### error-name-ends-in-error · SHOULD
 
-The name of an error type ends in the one suffix its language's block names for errors, the same for every error of the program: never `OrderNotFound` beside `PaymentFailedError`.
+The name of an error type ends in `Error`, the same for every error of the program — never `OrderNotFound` or `OrderNotFoundException` beside `PaymentFailedError` — unless its language's convention fixes another suffix, which its block then names.
 
 | Why |
 |---|
-| a reader and a search tell an error from the value it is about by its name alone, and one ending marks every error the same way. |
+| a reader tells a failure from a value by its name alone, as the standard errors of most languages are named. |
 
 ### value-name-carries-its-unit · SHOULD
 
@@ -120,8 +112,8 @@ The name of a number whose type does not carry its unit carries the unit: `timeo
 
 ### boolean-name-is-a-positive-predicate · SHOULD
 
-A boolean's name is a positive predicate that starts with `is`, `has`, `can`, `should` or `did`: `isVisible`, not `visible` or `isNotHidden`. A block below may set the prefixes for booleans of its own kind.
+A boolean's name is a positive predicate that starts with `is`, `has`, `can`, `should` or `did`: `isPaid`, not `paid` or `isNotUnpaid`. A block below may set the prefixes for booleans of its own kind.
 
 | Why |
 |---|
-| `if (isVisible)` reads as a question with a yes-or-no answer, and a negated name turns every check into a double negation. |
+| `if (isPaid)` reads as a question with a yes-or-no answer, and a negated name turns every check into a double negation. |

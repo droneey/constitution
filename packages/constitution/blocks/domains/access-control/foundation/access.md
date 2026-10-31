@@ -32,7 +32,7 @@ Access to an object a request names — an order by its identifier — is checke
 
 ### hidden-object-answered-as-not-found · SHOULD
 
-An object the caller may not see is answered as not found, as if it did not exist; where the program declares it, every identifier the caller has no right to is instead refused alike, the right checked before the object is looked up. Otherwise, a refusal of access is answered only for an operation the caller may not perform on an object it may see.
+An object the caller may not see is answered as not found, exactly as one that does not exist, or, where the program declares it, every identifier the caller has no right to is refused alike, the right checked before the lookup; a refusal of access answers only an operation the caller may not perform on an object it may see.
 
 | Why |
 |---|

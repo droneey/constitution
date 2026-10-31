@@ -1,6 +1,6 @@
 # Browser
 
-> Governs a stylesheet in a browser: the fonts it loads, the features it may use there, where it places a popover and the sizes it takes from the viewport.
+> Governs a stylesheet in a browser: the fonts it loads, the features it may use there and the sizes it takes from the viewport.
 
 ## Bundle
 
@@ -21,16 +21,6 @@ A feature of CSS the declared target does not cover is used only behind `@suppor
 | Why |
 |---|
 | a feature a supported browser lacks breaks silently there, often by dropping the whole rule that uses it, for users nobody on the team sees. |
-
-## Popovers
-
-### native-popover-anchored-to-its-trigger · SHOULD
-
-Unless another active block brings primitives that place their own popovers, a native `popover` is placed against its trigger by the browser's anchor positioning — `anchor-name` on the trigger, `position-anchor` and `position-area` on the popover — where every target browser has it, and otherwise behind `@supports` with a fallback.
-
-| Why |
-|---|
-| the browser keeps the popover beside its trigger through scrolling and resizing, with no positioning library to load. |
 
 ## Viewport
 

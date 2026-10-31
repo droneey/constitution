@@ -6,11 +6,11 @@
 
 ### personal-data-exported-on-request · MUST
 
-A person's request for their data is answered with all of it, in a format a machine reads, within the time the law of the region sets.
+A person's request for their data is answered with all of it, in a format a machine reads, and a request to correct it corrects it, each within the time the law of the region sets.
 
 | Why |
 |---|
-| the right of access and portability is the person's, and data missed by the export is data they cannot check. |
+| data missed by the export is data the person cannot check, and data they know is wrong goes on deciding about them until it is fixed. |
 
 ### rights-request-verified-before-it-is-answered · MUST
 
@@ -27,14 +27,6 @@ A person's request to erase their data erases it everywhere the program keeps it
 | Why |
 |---|
 | a copy left behind is data the person was told was gone. |
-
-### personal-data-corrected-on-request · MUST
-
-A person's request to correct their personal data corrects it, within the time the law of the region sets.
-
-| Why |
-|---|
-| data the person knows is wrong goes on deciding about them until someone fixes it. |
 
 ### objection-honoured · MUST
 
