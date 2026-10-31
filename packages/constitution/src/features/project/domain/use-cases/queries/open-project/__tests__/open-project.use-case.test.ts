@@ -97,6 +97,8 @@ describe('openProject', () => {
               unit: 'apps/web',
             }),
           ],
+          core: [],
+          lowerings: new Map(),
           listing: listingOf({
             repository: [
               listedOf({
@@ -115,7 +117,6 @@ describe('openProject', () => {
               {
                 id: 'core',
                 layer: Layer.Core,
-                summary: undefined,
               },
               {
                 id: 'ui',

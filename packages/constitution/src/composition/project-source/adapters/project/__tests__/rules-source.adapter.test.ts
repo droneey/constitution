@@ -50,9 +50,7 @@ const presetsOf = (input: Partial<PresetsPorts> = {}): PresetsPorts => ({
 
 const DECLARED = {
   active: [],
-  activeInAnyUnitCount: 1,
   listing: {
-    overrides: [],
     repository: [],
     units: [],
   },

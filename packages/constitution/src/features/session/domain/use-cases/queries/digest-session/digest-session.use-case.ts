@@ -1,9 +1,9 @@
-import type { ProjectWarning } from '#/kernel/entities';
+import type { ActiveBlock, ProjectWarning } from '#/kernel/entities';
 import { ConfigReadStatus, WarningKind } from '#/kernel/entities';
 
 import type { ConfigurationsReport, RulesSource, TreeState, WorkingTree } from '../../../contracts';
 import { ConfigurationsCheckStatus, TreeStateStatus } from '../../../contracts';
-import type { SessionDigest, SessionStart } from '../../../entities';
+import type { KeptBlock, SessionDigest, SessionStart } from '../../../entities';
 import { DigestKind, HookEventName, SessionOrigin } from '../../../entities';
 
 interface DigestSessionPorts {
@@ -35,6 +35,13 @@ const repositoryWarningsOf = (tree: TreeState): readonly ProjectWarning[] =>
         },
       ]
     : [];
+
+const keptBlockOf = (block: ActiveBlock): KeptBlock => ({
+  files: block.files.map((file) => file.path),
+  governs: block.governs,
+  id: block.id,
+  unit: block.unit,
+});
 
 /**
  * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
@@ -86,7 +93,6 @@ const digestSession = (input: DigestSessionPorts & SessionStart): SessionDigest 
   return {
     contents: {
       core,
-      count: rules.activeInAnyUnitCount,
       isStartup:
         input.event === HookEventName.SessionStart && input.origin === SessionOrigin.Startup,
       kind: DigestKind.Resolved,
@@ -99,7 +105,7 @@ const digestSession = (input: DigestSessionPorts & SessionStart): SessionDigest 
       ],
     },
     state: {
-      active: rules.active,
+      active: rules.active.map(keptBlockOf),
       mustsBesideCore: rules.mustsBesideCore,
       repositoryFolderPath,
       status: ConfigReadStatus.Parsed,

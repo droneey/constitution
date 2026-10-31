@@ -28,7 +28,6 @@ type DigestContents =
     }
   | {
       readonly core: string;
-      readonly count: number;
       readonly isStartup: boolean;
       readonly kind: DigestKind.Resolved;
       readonly listing: DigestListing;

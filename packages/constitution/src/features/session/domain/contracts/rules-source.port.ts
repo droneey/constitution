@@ -31,7 +31,6 @@ type DeclaredRules =
     }
   | {
       readonly active: readonly ActiveBlock[];
-      readonly activeInAnyUnitCount: number;
       readonly configurations: ConfigurationsReport;
       readonly listing: DigestListing;
       readonly mustsBesideCore: readonly MustRule[];

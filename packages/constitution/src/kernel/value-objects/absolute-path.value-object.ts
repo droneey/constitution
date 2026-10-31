@@ -31,10 +31,20 @@ const join = (folderPath: AbsolutePath, relativePath: string): AbsolutePath => {
     : create(`${folderPath}${PATH_SEPARATOR}${relativePath}`);
 };
 
+const root = create(PATH_SEPARATOR);
+
+const parentOf = (path: AbsolutePath): AbsolutePath => {
+  const at = path.lastIndexOf(PATH_SEPARATOR);
+
+  return at <= 0 ? root : create(path.slice(0, at));
+};
+
 const AbsolutePath = {
   create,
   is,
   join,
+  parentOf,
+  root,
 } as const;
 
 export { AbsolutePath };

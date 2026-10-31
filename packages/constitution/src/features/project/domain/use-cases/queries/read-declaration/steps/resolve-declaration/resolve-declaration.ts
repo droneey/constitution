@@ -44,11 +44,12 @@ const resolveDeclaration = (input: ResolveDeclarationInput): Resolution => {
 
   return Resolution.create({
     active: activated.active,
+    core: activated.core,
     listing: listBlocks({
-      applied,
       model,
       units,
     }),
+    lowerings: applied.lowerings,
     model: read.model,
     mustsBesideCore: activated.mustsBesideCore,
     units: units.map((unit) =>

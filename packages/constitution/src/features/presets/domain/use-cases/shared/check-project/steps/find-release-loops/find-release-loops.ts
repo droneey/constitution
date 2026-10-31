@@ -1,4 +1,4 @@
-import { PATH_SEPARATOR, RELEASE_FOLDER_PATH } from '#/kernel/constants';
+import { PATH_SEPARATOR, releaseFolderInProject } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
 import type { ProjectUnit, ProjectWarning } from '#/kernel/entities';
 import { WarningKind } from '#/kernel/entities';
@@ -13,9 +13,11 @@ interface FindReleaseLoopsInput {
 const findReleaseLoops = (input: FindReleaseLoopsInput): readonly ProjectWarning[] =>
   input.units.flatMap((unit) => {
     const unitFolderPath = AbsolutePath.join(input.repositoryFolderPath, unit.path);
-    const target = input.files.realFolder(AbsolutePath.join(unitFolderPath, RELEASE_FOLDER_PATH));
+    const target = input.files.realFolder(
+      AbsolutePath.join(unitFolderPath, releaseFolderInProject),
+    );
     const segments =
-      `${input.files.realFolder(unitFolderPath)}${PATH_SEPARATOR}${RELEASE_FOLDER_PATH}`.split(
+      `${input.files.realFolder(unitFolderPath)}${PATH_SEPARATOR}${releaseFolderInProject}`.split(
         PATH_SEPARATOR,
       );
     const holders = segments.map((_, index) => segments.slice(0, index).join(PATH_SEPARATOR));

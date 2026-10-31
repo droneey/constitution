@@ -571,6 +571,44 @@ const levelsOf = (
     rule.isLevelStated,
   ]);
 
+describe('StatedRule.wordingsOf', () => {
+  it('should give the wording of each rule a text holds, without a place, past a heading of no rule and a misshapen rule', () => {
+    // Arrange
+    const text = [
+      '# Principles',
+      '## Screens',
+      '### four-data-states · MUST',
+      'Every data view shows four states.',
+      ...table,
+      '### Not-A-Slug · MUST',
+      'A misshapen slug.',
+      ...table,
+      '### name-reveals-more → name-reveals-intent',
+      'A name says more.',
+      ...table,
+    ].join('\n');
+
+    // Act
+    const wordings = StatedRule.wordingsOf(text);
+
+    // Assert
+    expect(wordings).toStrictEqual([
+      {
+        slug: RuleSlug.create('four-data-states'),
+        statedLevel: Level.Must,
+        statement: 'Every data view shows four states.',
+        why: 'it keeps the code honest.',
+      },
+      {
+        slug: RuleSlug.create('name-reveals-more'),
+        statement: 'A name says more.',
+        tightens: RuleSlug.create('name-reveals-intent'),
+        why: 'it keeps the code honest.',
+      },
+    ]);
+  });
+});
+
 describe('StatedRule.inheritLevels', () => {
   it('should bind a rule at the level its heading states and keep where and what it is', () => {
     // Arrange

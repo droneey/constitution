@@ -1,7 +1,7 @@
 export type { Clock } from './domain/contracts';
 export { ManifestReadStatus } from './domain/contracts';
-export type { BlockListing, OpenedProject, UnitEntry } from './domain/entities';
-export { OpeningStatus, Resolution, UnitEntryKind } from './domain/entities';
+export type { OpenedProject } from './domain/entities';
+export { OpeningStatus, Resolution } from './domain/entities';
 export type { ProjectError } from './domain/errors';
 export {
   isProjectError,

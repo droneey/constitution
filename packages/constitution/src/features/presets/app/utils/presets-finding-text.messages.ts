@@ -1,7 +1,7 @@
 import {
   PATH_SEPARATOR,
   PRESETS_FOLDER_NAME,
-  RELEASE_FOLDER_PATH,
+  releaseFolderInProject,
   SEAM_FOLDER_NAME,
 } from '#/kernel/constants';
 import type { TextsOf } from '#/shared/cli';
@@ -104,7 +104,7 @@ const presetsFindingMessages: Omit<TextsOf<PresetsDetails>, VariedCode> = {
   [PresetsCode.MissingName]: () =>
     `gives no name, which an entry it takes writes as ${packageNameFact}; add name`,
   [PresetsCode.MissingConstitution]: () =>
-    `needs the path to the Constitution, and no ${RELEASE_FOLDER_PATH} lies at or above it`,
+    `needs the path to the Constitution, and no ${releaseFolderInProject} lies at or above it`,
   [PresetsCode.FileUnparsed]: () =>
     'cannot be read or does not parse, so nothing was applied to it',
   [PresetsCode.LockUnparsed]: () => 'does not parse, so the apply wrote it again from the files',

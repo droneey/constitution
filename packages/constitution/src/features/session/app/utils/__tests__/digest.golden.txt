@@ -1,0 +1,227 @@
+# resolved at the start of a session
+The Droneey Constitution 1.0.0 supplies this repository's rules. Block files live under /work/project/.droneey/constitution.
+
+# Core
+
+The rules a repository is built by.
+
+Before an action, the hook names the rules that govern it and refuses the action until you have read them whole with Read.
+What you read is remembered, so only new or changed rules are asked for again.
+Code you read leaves a debt: the turn cannot end until you have read the rules that govern it.
+
+## Active blocks
+- Domains: ui
+- Platforms: browser
+- Languages: typescript
+- Implementations: react
+- Packs: lint [./rules]
+- apps/web: adds api, style [./rules]; leaves out browser, the workflow axis
+
+⚠️ Warnings — tell the user at the start of the session
+- config: constitution.yaml has no packs key — add packs: []
+- installation: the project lies in no git repository, so no gate holds the hand-back — run git init to have one
+
+# resolved, its map cut to the budget
+The Droneey Constitution 1.0.0 supplies this repository's rules. Block files live under /work/project/.droneey/constitution.
+
+# Core
+
+The rules a repository is built by.
+
+Before an action, the hook names the rules that govern it and refuses the action until you have read them whole with Read.
+What you read is remembered, so only new or changed rules are asked for again.
+Code you read leaves a debt: the turn cannot end until you have read the rules that govern it.
+
+## Active blocks
+- Domains: ui
+- Platforms: browser
+- Languages: typescript
+- Implementations: react
+- Packs: lint [./rules]
+- apps/member-001: adds api; leaves out ui, the workflow axis
+- apps/member-002: adds api; leaves out ui, the workflow axis
+- apps/member-003: adds api; leaves out ui, the workflow axis
+- apps/member-004: adds api; leaves out ui, the workflow axis
+- apps/member-005: adds api; leaves out ui, the workflow axis
+- apps/member-006: adds api; leaves out ui, the workflow axis
+- apps/member-007: adds api; leaves out ui, the workflow axis
+- apps/member-008: adds api; leaves out ui, the workflow axis
+- apps/member-009: adds api; leaves out ui, the workflow axis
+- apps/member-010: adds api; leaves out ui, the workflow axis
+- apps/member-011: adds api; leaves out ui, the workflow axis
+- apps/member-012: adds api; leaves out ui, the workflow axis
+- apps/member-013: adds api; leaves out ui, the workflow axis
+- apps/member-014: adds api; leaves out ui, the workflow axis
+- apps/member-015: adds api; leaves out ui, the workflow axis
+- apps/member-016: adds api; leaves out ui, the workflow axis
+- apps/member-017: adds api; leaves out ui, the workflow axis
+- apps/member-018: adds api; leaves out ui, the workflow axis
+- apps/member-019: adds api; leaves out ui, the workflow axis
+- apps/member-020: adds api; leaves out ui, the workflow axis
+- apps/member-021: adds api; leaves out ui, the workflow axis
+- apps/member-022: adds api; leaves out ui, the workflow axis
+- apps/member-023: adds api; leaves out ui, the workflow axis
+- apps/member-024: adds api; leaves out ui, the workflow axis
+- apps/member-025: adds api; leaves out ui, the workflow axis
+- apps/member-026: adds api; leaves out ui, the workflow axis
+- apps/member-027: adds api; leaves out ui, the workflow axis
+- apps/member-028: adds api; leaves out ui, the workflow axis
+- apps/member-029: adds api; leaves out ui, the workflow axis
+- apps/member-030: adds api; leaves out ui, the workflow axis
+- apps/member-031: adds api; leaves out ui, the workflow axis
+- apps/member-032: adds api; leaves out ui, the workflow axis
+- apps/member-033: adds api; leaves out ui, the workflow axis
+- apps/member-034: adds api; leaves out ui, the workflow axis
+- apps/member-035: adds api; leaves out ui, the workflow axis
+- apps/member-036: adds api; leaves out ui, the workflow axis
+- apps/member-037: adds api; leaves out ui, the workflow axis
+- apps/member-038: adds api; leaves out ui, the workflow axis
+- apps/member-039: adds api; leaves out ui, the workflow axis
+- apps/member-040: adds api; leaves out ui, the workflow axis
+- apps/member-041: adds api; leaves out ui, the workflow axis
+- apps/member-042: adds api; leaves out ui, the workflow axis
+- apps/member-043: adds api; leaves out ui, the workflow axis
+- apps/member-044: adds api; leaves out ui, the workflow axis
+- apps/member-045: adds api; leaves out ui, the workflow axis
+- apps/member-046: adds api; leaves out ui, the workflow axis
+- apps/member-047: adds api; leaves out ui, the workflow axis
+- apps/member-048: adds api; leaves out ui, the workflow axis
+- apps/member-049: adds api; leaves out ui, the workflow axis
+- apps/member-050: adds api; leaves out ui, the workflow axis
+- apps/member-051: adds api; leaves out ui, the workflow axis
+- apps/member-052: adds api; leaves out ui, the workflow axis
+- apps/member-053: adds api; leaves out ui, the workflow axis
+- apps/member-054: adds api; leaves out ui, the workflow axis
+- apps/member-055: adds api; leaves out ui, the workflow axis
+- apps/member-056: adds api; leaves out ui, the workflow axis
+- apps/member-057: adds api; leaves out ui, the workflow axis
+- apps/member-058: adds api; leaves out ui, the workflow axis
+- apps/member-059: adds api; leaves out ui, the workflow axis
+- apps/member-060: adds api; leaves out ui, the workflow axis
+- apps/member-061: adds api; leaves out ui, the workflow axis
+- apps/member-062: adds api; leaves out ui, the workflow axis
+- apps/member-063: adds api; leaves out ui, the workflow axis
+- apps/member-064: adds api; leaves out ui, the workflow axis
+- apps/member-065: adds api; leaves out ui, the workflow axis
+- apps/member-066: adds api; leaves out ui, the workflow axis
+- apps/member-067: adds api; leaves out ui, the workflow axis
+- apps/member-068: adds api; leaves out ui, the workflow axis
+- apps/member-069: adds api; leaves out ui, the workflow axis
+- apps/member-070: adds api; leaves out ui, the workflow axis
+- apps/member-071: adds api; leaves out ui, the workflow axis
+- apps/member-072: adds api; leaves out ui, the workflow axis
+- apps/member-073: adds api; leaves out ui, the workflow axis
+- apps/member-074: adds api; leaves out ui, the workflow axis
+- apps/member-075: adds api; leaves out ui, the workflow axis
+- apps/member-076: adds api; leaves out ui, the workflow axis
+- apps/member-077: adds api; leaves out ui, the workflow axis
+- apps/member-078: adds api; leaves out ui, the workflow axis
+- apps/member-079: adds api; leaves out ui, the workflow axis
+- apps/member-080: adds api; leaves out ui, the workflow axis
+- apps/member-081: adds api; leaves out ui, the workflow axis
+- apps/member-082: adds api; leaves out ui, the workflow axis
+- apps/member-083: adds api; leaves out ui, the workflow axis
+- apps/member-084: adds api; leaves out ui, the workflow axis
+- apps/member-085: adds api; leaves out ui, the workflow axis
+- apps/member-086: adds api; leaves out ui, the workflow axis
+- apps/member-087: adds api; leaves out ui, the workflow axis
+- apps/member-088: adds api; leaves out ui, the workflow axis
+- apps/member-089: adds api; leaves out ui, the workflow axis
+- apps/member-090: adds api; leaves out ui, the workflow axis
+- apps/member-091: adds api; leaves out ui, the workflow axis
+- apps/member-092: adds api; leaves out ui, the workflow axis
+- apps/member-093: adds api; leaves out ui, the workflow axis
+- apps/member-094: adds api; leaves out ui, the workflow axis
+- apps/member-095: adds api; leaves out ui, the workflow axis
+- apps/member-096: adds api; leaves out ui, the workflow axis
+- apps/member-097: adds api; leaves out ui, the workflow axis
+- apps/member-098: adds api; leaves out ui, the workflow axis
+- apps/member-099: adds api; leaves out ui, the workflow axis
+- apps/member-100: adds api; leaves out ui, the workflow axis
+- apps/member-101: adds api; leaves out ui, the workflow axis
+- apps/member-102: adds api; leaves out ui, the workflow axis
+- apps/member-103: adds api; leaves out ui, the workflow axis
+- apps/member-104: adds api; leaves out ui, the workflow axis
+- apps/member-105: adds api; leaves out ui, the workflow axis
+- apps/member-106: adds api; leaves out ui, the workflow axis
+- apps/member-107: adds api; leaves out ui, the workflow axis
+- apps/member-108: adds api; leaves out ui, the workflow axis
+- apps/member-109: adds api; leaves out ui, the workflow axis
+- apps/member-110: adds api; leaves out ui, the workflow axis
+- apps/member-111: adds api; leaves out ui, the workflow axis
+- apps/member-112: adds api; leaves out ui, the workflow axis
+- apps/member-113: adds api; leaves out ui, the workflow axis
+- apps/member-114: adds api; leaves out ui, the workflow axis
+- apps/member-115: adds api; leaves out ui, the workflow axis
+- apps/member-116: adds api; leaves out ui, the workflow axis
+- apps/member-117: adds api; leaves out ui, the workflow axis
+- apps/member-118: adds api; leaves out ui, the workflow axis
+- apps/member-119: adds api; leaves out ui, the workflow axis
+- apps/member-120: adds api; leaves out ui, the workflow axis
+- apps/member-121: adds api; leaves out ui, the workflow axis
+- apps/member-122: adds api; leaves out ui, the workflow axis
+- apps/member-123: adds api; leaves out ui, the workflow axis
+- apps/member-124: adds api; leaves out ui, the workflow axis
+- apps/member-125: adds api; leaves out ui, the workflow axis
+- apps/member-126: adds api; leaves out ui, the workflow axis
+- apps/member-127: adds api; leaves out ui, the workflow axis
+- apps/member-128: adds api; leaves out ui, the workflow axis
+- apps/member-129: adds api; leaves out ui, the workflow axis
+- apps/member-130: adds api; leaves out ui, the workflow axis
+- apps/member-131: adds api; leaves out ui, the workflow axis
+- apps/member-132: adds api; leaves out ui, the workflow axis
+- apps/member-133: adds api; leaves out ui, the workflow axis
+- apps/member-134: adds api; leaves out ui, the workflow axis
+- apps/member-135: adds api; leaves out ui, the workflow axis
+- apps/member-136: adds api; leaves out ui, the workflow axis
+- apps/member-137: adds api; leaves out ui, the workflow axis
+- apps/member-138: adds api; leaves out ui, the workflow axis
+- apps/member-139: adds api; leaves out ui, the workflow axis
+- apps/member-140: adds api; leaves out ui, the workflow axis
+20 more lines of the map did not fit; constitution.yaml names every block.
+
+# resolved, its warnings cut to their share
+The Droneey Constitution 1.0.0 supplies this repository's rules. Block files live under /work/project/.droneey/constitution.
+
+# Core
+
+The rules a repository is built by.
+
+Before an action, the hook names the rules that govern it and refuses the action until you have read them whole with Read.
+What you read is remembered, so only new or changed rules are asked for again.
+Code you read leaves a debt: the turn cannot end until you have read the rules that govern it.
+
+## Active blocks
+- Domains: ui
+- Platforms: browser
+- Languages: typescript
+- Implementations: react
+- Packs: lint [./rules]
+- apps/web: adds api, style [./rules]; leaves out browser, the workflow axis
+
+⚠️ Warnings
+- installation: the project lies in no git repository, so no gate holds the hand-back — run git init to have one
+- installation: the project lies in no git repository, so no gate holds the hand-back — run git init to have one
+- installation: the project lies in no git repository, so no gate holds the hand-back — run git init to have one
+- installation: the project lies in no git repository, so no gate holds the hand-back — run git init to have one
+- installation: the project lies in no git repository, so no gate holds the hand-back — run git init to have one
+- installation: the project lies in no git repository, so no gate holds the hand-back — run git init to have one
+- installation: the project lies in no git repository, so no gate holds the hand-back — run git init to have one
+- installation: the project lies in no git repository, so no gate holds the hand-back — run git init to have one
+and 32 more
+
+# constitution.yaml does not parse
+The Droneey Constitution 1.0.0 supplies this repository's rules. Block files live under /work/project/.droneey/constitution.
+constitution.yaml does not parse at line 3; only core applies.
+
+# Core
+
+The rules a repository is built by.
+
+Before an action, the hook names the rules that govern it and refuses the action until you have read them whole with Read.
+What you read is remembered, so only new or changed rules are asked for again.
+Code you read leaves a debt: the turn cannot end until you have read the rules that govern it.
+
+# no release is installed
+The Droneey Constitution gives no rules here: /work/project/.droneey/constitution is missing or holds a release this executable cannot read. Tell the user to run constitution doctor.
+

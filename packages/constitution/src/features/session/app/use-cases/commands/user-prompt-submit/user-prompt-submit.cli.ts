@@ -3,8 +3,7 @@ import { Command } from 'commander';
 import type { CommandContext } from '#/shared/cli';
 
 import type { SessionId } from '../../../../domain/value-objects';
-import { HookField, userPromptSubmitEventSchema } from '../../../constants';
-import { hookEventOf } from '../../../utils';
+import { sessionOfEvent } from '../shared/session-event';
 
 interface UserPromptSubmitContext extends CommandContext {
   readonly markTurn: (session: SessionId) => void;
@@ -20,10 +19,7 @@ const createUserPromptSubmitCommand = (context: UserPromptSubmitContext): Comman
       ]),
     )
     .action(async (): Promise<void> => {
-      const session = hookEventOf({
-        schema: userPromptSubmitEventSchema,
-        text: await context.io.readInput(),
-      })[HookField.SessionId];
+      const session = sessionOfEvent(await context.io.readInput());
 
       if (session !== undefined) {
         context.markTurn(session);

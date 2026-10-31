@@ -1,6 +1,14 @@
 import type { Layer, LoweredLevel } from '#/kernel/constants';
 import { Axis } from '#/kernel/constants';
-import type { ActiveBlock, BlockModel, Lowering, MustRule, RoleTerm } from '#/kernel/entities';
+import type {
+  ActiveBlock,
+  BlockModel,
+  CoreFiles,
+  Lowering,
+  MustRule,
+  RoleTerm,
+  SourcedFile,
+} from '#/kernel/entities';
 import { ConfigReadStatus, FileReadStatus, ProjectUnit } from '#/kernel/entities';
 import {
   AbsolutePath,
@@ -11,6 +19,7 @@ import {
   PackPath,
   RuleSlug,
   repositoryUnit,
+  SourceKind,
   UnitPath,
 } from '#/kernel/value-objects';
 
@@ -19,14 +28,12 @@ import type {
   BlockSetSource,
   DeclaredUnit,
   ListedBlock,
-  ListedFiles,
-  ListedOverride,
   ProjectConfig,
   SourceFile,
-  UnitEntry,
+  UnitBlock,
   UnitListing,
 } from '../domain/entities';
-import { SourceStatus, UnitEntryKind } from '../domain/entities';
+import { SourceStatus } from '../domain/entities';
 import type { BlockSetBlockFixture, BlockSetRuleFixture } from './block-set.fixtures';
 import { blockSetBlockOf, blockSetRuleOf } from './block-set.fixtures';
 import type { BlockFixture } from './project.fixtures';
@@ -177,28 +184,50 @@ const modelOf = (input: ModelFixture = {}): BlockModel => ({
   rules: (input.rules ?? []).map(blockSetRuleOf),
 });
 
-interface ActiveBlockFixture {
+interface SourcedFilesFixture {
   readonly files: readonly string[];
+  readonly source?: SourceKind;
+}
+
+const sourcedFilesOf = (input: SourcedFilesFixture): readonly SourcedFile[] =>
+  input.files.map((path) => ({
+    path,
+    source: input.source ?? SourceKind.Release,
+  }));
+
+interface ActiveBlockFixture extends SourcedFilesFixture {
   readonly governs?: readonly string[];
   readonly id: string;
   readonly unit?: string;
 }
 
 const activeOf = (input: ActiveBlockFixture): ActiveBlock => ({
-  files: input.files,
+  files: sourcedFilesOf(input),
   governs: (input.governs ?? []).map(Glob.create),
   id: BlockId.create(input.id),
   unit: UnitPath.create(input.unit ?? ''),
 });
 
+interface CoreFilesFixture {
+  readonly files: readonly string[];
+  readonly unit?: string;
+}
+
+const coreFilesOf = (input: CoreFilesFixture): CoreFiles => ({
+  files: sourcedFilesOf(input),
+  unit: UnitPath.create(input.unit ?? ''),
+});
+
 interface LoweringFixture {
   readonly level: LoweredLevel;
+  readonly reason?: string;
   readonly unit?: string;
   readonly via?: string;
 }
 
 const loweringOf = (input: LoweringFixture): Lowering => ({
   level: input.level,
+  reason: input.reason ?? 'A reason.',
   unit: UnitPath.create(input.unit ?? ''),
   ...(input.via === undefined
     ? {}
@@ -219,94 +248,40 @@ const mustOf = (input: MustRuleFixture): MustRule => ({
   slug: RuleSlug.create(input.slug),
 });
 
-interface ListedFilesFixture {
-  readonly axis: Axis;
-  readonly chapters?: readonly string[];
-  readonly seams?: readonly string[];
-}
-
-const filesOn = (input: ListedFilesFixture): ListedFiles => ({
-  axis: input.axis,
-  chapters: input.chapters ?? [],
-  seams: (input.seams ?? []).map(BlockId.create),
-});
-
-interface ListedBlockFixture {
-  readonly files?: readonly ListedFiles[];
+interface UnitBlockFixture {
   readonly id: string;
-  readonly layer: Layer;
   readonly pack?: string;
-  readonly summary?: string | undefined;
 }
 
-const listedOf = (input: ListedBlockFixture): ListedBlock => {
-  const summary = 'summary' in input ? input.summary : `The ${input.id} block.`;
-
-  return {
-    files: input.files ?? [],
-    id: BlockId.create(input.id),
-    layer: input.layer,
-    source: BlockSource.create(input.pack === undefined ? undefined : PackPath.create(input.pack)),
-    ...(summary === undefined
-      ? {}
-      : {
-          summary,
-        }),
-  };
-};
-
-const ownEntryOf = (block: ListedBlock): UnitEntry => ({
-  block,
-  kind: UnitEntryKind.Own,
+const unitBlockOf = (input: UnitBlockFixture): UnitBlock => ({
+  id: BlockId.create(input.id),
+  source: BlockSource.create(input.pack === undefined ? undefined : PackPath.create(input.pack)),
 });
 
-interface AddedEntryFixture {
-  readonly files: readonly ListedFiles[];
-  readonly id: string;
+interface ListedBlockFixture extends UnitBlockFixture {
   readonly layer: Layer;
 }
 
-const addedEntryOf = (input: AddedEntryFixture): UnitEntry => ({
-  files: input.files,
-  id: BlockId.create(input.id),
-  kind: UnitEntryKind.Added,
+const listedOf = (input: ListedBlockFixture): ListedBlock => ({
+  ...unitBlockOf(input),
   layer: input.layer,
 });
 
 interface UnitListingFixture {
-  readonly entries?: readonly UnitEntry[];
   readonly leftOutAxes?: readonly Axis[];
   readonly leftOutBlocks?: readonly string[];
+  readonly own?: readonly UnitBlockFixture[];
   readonly unit: string;
 }
 
 const unitListingOf = (input: UnitListingFixture): UnitListing => ({
-  entries: input.entries ?? [],
   leftOutAxes: input.leftOutAxes ?? [],
   leftOutBlocks: (input.leftOutBlocks ?? []).map(BlockId.create),
+  own: (input.own ?? []).map(unitBlockOf),
   unit: UnitPath.create(input.unit),
 });
 
-interface ListedOverrideFixture {
-  readonly level: LoweredLevel;
-  readonly rule: string;
-  readonly unit?: string;
-  readonly until?: string;
-}
-
-const listedOverrideOf = (input: ListedOverrideFixture): ListedOverride => ({
-  level: input.level,
-  rule: RuleSlug.create(input.rule),
-  unit: UnitPath.create(input.unit ?? ''),
-  ...(input.until === undefined
-    ? {}
-    : {
-        until: Temporal.PlainDate.from(input.until),
-      }),
-});
-
 const listingOf = (input: Partial<BlockListing> = {}): BlockListing => ({
-  overrides: input.overrides ?? [],
   repository: input.repository ?? [],
   units: input.units ?? [],
 });
@@ -325,16 +300,13 @@ const requirementsOf = (answers: Readonly<Record<string, string>>): string =>
 
 export {
   activeOf,
-  addedEntryOf,
   configOf,
-  filesOn,
+  coreFilesOf,
   listedOf,
-  listedOverrideOf,
   listingOf,
   loweringOf,
   modelOf,
   mustOf,
-  ownEntryOf,
   parsedOf,
   requirementsOf,
   sourceOf,

@@ -171,12 +171,14 @@ const modelPlaces = new Map(
   ]),
 );
 
-const entryShapes: fc.Arbitrary<EntryShape> = fc.constantFrom(...modelKeys).chain((key) =>
-  fc.record({
-    key: fc.constant(key),
-    place: fc.constantFrom(...axesOf(key).flatMap((axis) => modelPlaces.get(axis) ?? [])),
-    roles: fc.constantFrom(...modelRoleSets),
-  }),
+const entryShapes: fc.Arbitrary<EntryShape> = fc.oneof(
+  ...modelKeys.map((key) =>
+    fc.record({
+      key: fc.constant(key),
+      place: fc.constantFrom(...axesOf(key).flatMap((axis) => modelPlaces.get(axis) ?? [])),
+      roles: fc.constantFrom(...modelRoleSets),
+    }),
+  ),
 );
 
 const placementsWhereSent = (shape: EntryShape): readonly PresetsFinding[] => {
@@ -1217,8 +1219,9 @@ describe('checkPresets', () => {
   it('should find placed, where it sends it, any entry of the model’s keys and roles it finds misplaced', () => {
     // Act
     const run = fc.check(fc.property(entryShapes, isPlacedWhereSent), {
-      // Why: 0.4 s here, so a runner five times slower stays well inside bun's 5 s for a case.
-      numRuns: 2000,
+      // Why: 300 draws take 0.09 s here and about 14 times that on CI beside its other test tiers,
+      // far inside bun's 5 s for a case; ten draws already kill every mutant 2000 draws killed.
+      numRuns: 300,
     });
 
     // Assert

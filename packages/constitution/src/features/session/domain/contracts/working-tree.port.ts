@@ -1,5 +1,6 @@
 import type { AbsolutePath, RepositoryRelativePath } from '#/kernel/value-objects';
 
+import type { FileSignatures } from '../entities';
 import type { TreeFingerprint } from '../value-objects';
 
 enum TreeStateStatus {
@@ -8,11 +9,7 @@ enum TreeStateStatus {
   Failed = 'failed',
 }
 
-type TreeState =
-  | {
-      readonly fingerprint: TreeFingerprint;
-      readonly status: TreeStateStatus.Read;
-    }
+type UnreadTree =
   | {
       readonly status: TreeStateStatus.NoRepository;
     }
@@ -21,12 +18,37 @@ type TreeState =
       readonly status: TreeStateStatus.Failed;
     };
 
+type TreeState =
+  | {
+      readonly fingerprint: TreeFingerprint;
+      readonly status: TreeStateStatus.Read;
+    }
+  | UnreadTree;
+
+type TreeSnapshot =
+  | {
+      readonly fileSignatures: FileSignatures;
+      readonly status: TreeStateStatus.Read;
+    }
+  | UnreadTree;
+
+enum IgnoreAnswer {
+  Ignored = 'ignored',
+  NotIgnored = 'not-ignored',
+  Unknown = 'unknown',
+}
+
+interface IgnoredInput {
+  readonly path: RepositoryRelativePath;
+  readonly repositoryFolderPath: AbsolutePath;
+}
+
 interface WorkingTree {
-  readonly changedAndUntrackedFiles: (
-    repositoryFolderPath: AbsolutePath,
-  ) => readonly RepositoryRelativePath[];
+  readonly isIgnored: (input: IgnoredInput) => IgnoreAnswer;
+  readonly mainCheckoutOf: (folderPath: AbsolutePath) => AbsolutePath | undefined;
+  readonly snapshotOf: (repositoryFolderPath: AbsolutePath) => TreeSnapshot;
   readonly stateOf: (repositoryFolderPath: AbsolutePath) => TreeState;
 }
 
-export type { TreeState, WorkingTree };
-export { TreeStateStatus };
+export type { IgnoredInput, TreeSnapshot, TreeState, UnreadTree, WorkingTree };
+export { IgnoreAnswer, TreeStateStatus };

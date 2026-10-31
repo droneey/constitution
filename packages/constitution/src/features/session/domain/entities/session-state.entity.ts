@@ -1,7 +1,11 @@
-import type { ActiveBlock, ConfigReadStatus, MustRule } from '#/kernel/entities';
-import { firstBy } from '#/kernel/utils';
-import type { AbsolutePath, RepositoryRelativePath } from '#/kernel/value-objects';
-import { Glob, repositoryUnit, UnitPath } from '#/kernel/value-objects';
+import type { ConfigReadStatus, MustRule } from '#/kernel/entities';
+import type { AbsolutePath } from '#/kernel/value-objects';
+
+import type { GoverningBlock } from './active-blocks.entity';
+
+interface KeptBlock extends GoverningBlock {
+  readonly files: readonly string[];
+}
 
 type SessionState =
   | {
@@ -9,7 +13,7 @@ type SessionState =
       readonly status: ConfigReadStatus.Unparsed;
     }
   | {
-      readonly active: readonly ActiveBlock[];
+      readonly active: readonly KeptBlock[];
       readonly mustsBesideCore: readonly MustRule[];
       readonly repositoryFolderPath: AbsolutePath;
       readonly status: ConfigReadStatus.Parsed;
@@ -22,36 +26,4 @@ type ParsedState = Extract<
   }
 >;
 
-const deeperOf = (deepest: UnitPath, unit: UnitPath): UnitPath =>
-  // Stryker disable next-line EqualityOperator: two units of one length that both hold a path are one unit
-  unit.length > deepest.length ? unit : deepest;
-
-const unitHolding = (state: ParsedState, path: RepositoryRelativePath): UnitPath =>
-  state.active
-    .map((block) => block.unit)
-    .filter((unit) => !UnitPath.isRepository(unit) && UnitPath.holds(unit, path))
-    .reduce(deeperOf, repositoryUnit);
-
-const governing = (state: ParsedState, path: RepositoryRelativePath): readonly ActiveBlock[] => {
-  const unit = unitHolding(state, path);
-  const inner = UnitPath.pathFrom(unit, path);
-  const matching = state.active.filter(
-    (block) =>
-      UnitPath.equals(block.unit, unit) &&
-      Glob.matchesAny({
-        globs: block.governs,
-        path: inner,
-      }),
-  );
-
-  return [
-    ...firstBy(matching, (block) => block.id).values(),
-  ];
-};
-
-const SessionState = {
-  governing,
-} as const;
-
-export type { ParsedState };
-export { SessionState };
+export type { KeptBlock, ParsedState, SessionState };

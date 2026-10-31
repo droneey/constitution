@@ -6,6 +6,7 @@ import {
   AbsolutePath,
   BlockId,
   BlockSource,
+  Glob,
   PackPath,
   RuleSlug,
   SourceKind,
@@ -91,7 +92,6 @@ describe('readBlockSet', () => {
               slug: 'core-rule',
             }),
             id: 'core',
-            summary: 'What holds.',
           }),
         },
       }),
@@ -147,7 +147,6 @@ describe('readBlockSet', () => {
           ],
           id: 'core',
           layer: Layer.Core,
-          summary: 'What holds.',
         }),
         blockSetBlockOf({
           id: 'api',
@@ -256,8 +255,10 @@ describe('readBlockSet', () => {
       packOf({
         files: {
           'blocks/implementations/kit/kit.md': passportOf({
+            governs: [
+              '**/kit/**',
+            ],
             id: 'kit',
-            summary: 'Kit.',
           }).replaceAll('\n', '\r\n'),
         },
         source: 'rules',
@@ -269,11 +270,13 @@ describe('readBlockSet', () => {
 
     // Assert
     expect({
-      summaries: blockSet.blocks.map((block) => block.summary),
+      governs: blockSet.blocks.map((block) => block.governs),
       warnings: blockSet.warnings,
     }).toStrictEqual({
-      summaries: [
-        'Kit.',
+      governs: [
+        [
+          Glob.create('**/kit/**'),
+        ],
       ],
       warnings: [],
     });
@@ -504,7 +507,6 @@ describe('readBlockSet', () => {
         blocks: [
           blockSetBlockOf({
             id: 'ui',
-            summary: undefined,
           }),
         ],
         roles: [],
@@ -618,7 +620,6 @@ describe('readBlockSet', () => {
         blocks: [
           blockSetBlockOf({
             id: 'ui',
-            summary: undefined,
           }),
         ],
         roles: [],
@@ -818,8 +819,10 @@ describe('readBlockSet', () => {
             chapters: [
               'foundation/screens.md',
             ],
+            governs: [
+              'domains/**',
+            ],
             id: 'twin',
-            summary: 'From domains.',
           }),
           blockSetBlockOf({
             id: 'alpha',
@@ -847,13 +850,17 @@ describe('readBlockSet', () => {
             }),
             'blocks/contexts/languages/twin/foundation/types.md': PLAIN,
             'blocks/contexts/languages/twin/twin.md': passportOf({
+              governs: [
+                'languages/**',
+              ],
               id: 'twin',
-              summary: 'From languages.',
             }),
             'blocks/domains/twin/foundation/screens.md': PLAIN,
             'blocks/domains/twin/twin.md': passportOf({
+              governs: [
+                'domains/**',
+              ],
               id: 'twin',
-              summary: 'From domains.',
             }),
           },
         }),
@@ -870,7 +877,6 @@ describe('readBlockSet', () => {
               'foundation/screens.md',
             ],
             id: 'twin',
-            summary: undefined,
           }),
         ],
         roles: [],
@@ -890,8 +896,10 @@ describe('readBlockSet', () => {
         sourceOf({
           files: {
             'blocks/contexts/languages/twin/twin.md': passportOf({
+              governs: [
+                'languages/**',
+              ],
               id: 'twin',
-              summary: 'From languages.',
             }),
             'blocks/domains/twin/foundation/screens.md': PLAIN,
           },

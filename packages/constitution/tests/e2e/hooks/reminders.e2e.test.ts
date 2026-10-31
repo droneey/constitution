@@ -274,7 +274,6 @@ describe('the reminders of the post-tool-use hook', () => {
     const reminder = touch({
       filePath: join(project, 'src/shared/components/button.tsx'),
       session,
-      toolName: 'Edit',
     });
 
     // Assert

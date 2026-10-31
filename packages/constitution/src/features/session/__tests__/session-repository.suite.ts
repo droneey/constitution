@@ -6,10 +6,10 @@ import { AbsolutePath, BlockId } from '#/kernel/value-objects';
 
 import type { SessionCommandRepository } from '../domain/contracts/repositories/commands';
 import type { SessionQueryRepository } from '../domain/contracts/repositories/queries';
-import type { SessionState } from '../domain/entities';
+import type { ReviewDebt, SessionState } from '../domain/entities';
 import { SessionAgent, SessionMark } from '../domain/entities';
 import { AgentId, SessionId, TreeFingerprint } from '../domain/value-objects';
-import { activeBlockOf, mustOf, sessionStateOf } from './session.fixtures';
+import { keptBlockOf, mustOf, sessionStateOf } from './session.fixtures';
 
 type SessionRepository = SessionCommandRepository & SessionQueryRepository;
 
@@ -24,10 +24,10 @@ const otherAgent = AgentId.create('agent-8');
 
 const savedState = sessionStateOf({
   active: [
-    activeBlockOf({
+    keptBlockOf({
       id: 'core',
     }),
-    activeBlockOf({
+    keptBlockOf({
       files: [],
       governs: [],
       id: 'ui',
@@ -52,6 +52,25 @@ const savedState = sessionStateOf({
   ],
   repositoryFolderPath: AbsolutePath.create('/work'),
 });
+
+const firstPath = AbsolutePath.create('/work/src/a.ts');
+const secondPath = AbsolutePath.create('/work/src/b.ts');
+const firstReview: ReviewDebt = {
+  agent,
+  path: firstPath,
+};
+const secondReview: ReviewDebt = {
+  agent,
+  path: secondPath,
+};
+const reviewOwed = {
+  paths: [
+    firstPath,
+    secondPath,
+  ],
+  session,
+  subagent: agent,
+};
 
 const laterState: SessionState = {
   repositoryFolderPath: AbsolutePath.create('/work/later'),
@@ -179,8 +198,8 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
 
       // Act
       const seen = {
-        blocked: sessions.fingerprint({
-          mark: SessionMark.Blocked,
+        reviewed: sessions.fingerprint({
+          mark: SessionMark.Reviewed,
           session,
         }),
         checked: sessions.fingerprint({
@@ -196,8 +215,8 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
 
       // Assert
       expect(seen).toStrictEqual({
-        blocked: undefined,
         checked: TreeFingerprint.create('f00d'),
+        reviewed: undefined,
         turn: TreeFingerprint.create('def'),
         unjudged: 'git timed out',
       });
@@ -346,6 +365,170 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
         });
       },
     );
+
+    it.each<{
+      asked: SessionAgent;
+      clear: (sessions: SessionRepository) => void;
+      condition: string;
+      expected: readonly AbsolutePath[];
+    }>([
+      {
+        asked: SessionAgent.main,
+        clear: () => undefined,
+        condition: 'it changed them, once each',
+        expected: [
+          firstPath,
+          secondPath,
+        ],
+      },
+      {
+        asked: SessionAgent.main,
+        clear: (sessions) => {
+          sessions.clearOwnChanges({
+            agent: SessionAgent.main,
+            session,
+          });
+        },
+        condition: 'a check and a review cleared them',
+        expected: [],
+      },
+      {
+        asked: agent,
+        clear: (sessions) => {
+          sessions.clearOwnChanges({
+            agent: SessionAgent.main,
+            session,
+          });
+        },
+        condition: 'another agent changed one of them',
+        expected: [
+          secondPath,
+        ],
+      },
+    ])("should read back an agent's own changes when $condition", ({ asked, clear, expected }) => {
+      // Arrange
+      const sessions = input.repositoryOf();
+
+      sessions.addOwnChanges({
+        agent: SessionAgent.main,
+        paths: [
+          firstPath,
+          secondPath,
+          firstPath,
+        ],
+        session,
+      });
+      sessions.addOwnChanges({
+        agent,
+        paths: [
+          secondPath,
+        ],
+        session,
+      });
+
+      clear(sessions);
+
+      // Act
+      const own = sessions.ownChanges({
+        agent: asked,
+        session,
+      });
+
+      // Assert
+      expect(own).toStrictEqual(expected);
+    });
+
+    it.each<{
+      condition: string;
+      expected: readonly ReviewDebt[];
+      write: (sessions: SessionRepository) => void;
+    }>([
+      {
+        condition: 'they are owed, once each',
+        expected: [
+          firstReview,
+          secondReview,
+        ],
+        write: (sessions) => {
+          sessions.addReviewDebt(reviewOwed);
+          sessions.addReviewDebt(reviewOwed);
+        },
+      },
+      {
+        condition: 'the reviews judged are settled',
+        expected: [],
+        write: (sessions) => {
+          sessions.addReviewDebt(reviewOwed);
+          sessions.settleReviewDebt({
+            debts: [
+              firstReview,
+              secondReview,
+            ],
+            session,
+          });
+        },
+      },
+      {
+        condition: 'a review was owed after the judged ones were read and before they were settled',
+        expected: [
+          secondReview,
+        ],
+        write: (sessions) => {
+          sessions.addReviewDebt({
+            ...reviewOwed,
+            paths: [
+              firstPath,
+            ],
+          });
+          sessions.addReviewDebt({
+            ...reviewOwed,
+            paths: [
+              secondPath,
+            ],
+          });
+          sessions.settleReviewDebt({
+            debts: [
+              firstReview,
+            ],
+            session,
+          });
+        },
+      },
+      {
+        condition: 'a review is owed again after it was settled',
+        expected: [
+          firstReview,
+        ],
+        write: (sessions) => {
+          const firstOwed = {
+            ...reviewOwed,
+            paths: [
+              firstPath,
+            ],
+          };
+
+          sessions.addReviewDebt(firstOwed);
+          sessions.settleReviewDebt({
+            debts: [
+              firstReview,
+            ],
+            session,
+          });
+          sessions.addReviewDebt(firstOwed);
+        },
+      },
+    ])('should read back the reviews owed for subagents when $condition', ({ expected, write }) => {
+      // Arrange
+      const sessions = input.repositoryOf();
+
+      write(sessions);
+
+      // Act
+      const owed = sessions.reviewDebt(session);
+
+      // Assert
+      expect(owed).toStrictEqual(expected);
+    });
   });
 };
 

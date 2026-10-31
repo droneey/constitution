@@ -3,6 +3,11 @@ id = "GHSA-gcqx-w48m-w2h4"
 ignoreUntil = 2027-01-28
 reason = "a build tool of the design tokens; it merges only our own token files; no fixed version upstream"
 
+[[IgnoredVulns]]
+id = "GHSA-3g3m-2fjr-6pw4"
+ignoreUntil = 2027-01-28
+reason = "glob 13, which a build tool of the design tokens bundles; it globs only our own token files; style-dictionary depends on ^13 and has no release on glob 14 yet"
+
 [[PackageOverrides]]
 name = "is-core-module"
 ecosystem = "npm"

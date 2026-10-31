@@ -1,4 +1,4 @@
-import { PARENT_SEGMENT, PATH_SEPARATOR, RELEASE_FOLDER_PATH } from '#/kernel/constants';
+import { PARENT_SEGMENT, PATH_SEPARATOR, releaseFolderInProject } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
 import type { BlockModel, ProjectUnit } from '#/kernel/entities';
 import { compareText } from '#/kernel/utils';
@@ -60,7 +60,7 @@ const constitutionPathOf = (input: {
       input.repositoryFolderPath,
       [
         ...folderNames.slice(0, depth),
-        RELEASE_FOLDER_PATH,
+        releaseFolderInProject,
       ].join(PATH_SEPARATOR),
     );
 
@@ -72,7 +72,7 @@ const constitutionPathOf = (input: {
           },
           () => PARENT_SEGMENT,
         ),
-        RELEASE_FOLDER_PATH,
+        releaseFolderInProject,
       ].join(PATH_SEPARATOR);
     }
   }

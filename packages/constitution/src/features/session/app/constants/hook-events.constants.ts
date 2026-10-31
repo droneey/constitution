@@ -1,8 +1,7 @@
 import { z } from 'zod';
 
 import { HookEventName, SessionOrigin } from '../../domain/entities';
-import { SessionId } from '../../domain/value-objects';
-import { totalTableOf } from '../utils';
+import { SessionId, ToolUseId } from '../../domain/value-objects';
 
 enum HookField {
   AgentId = 'agent_id',
@@ -12,17 +11,28 @@ enum HookField {
   Cwd = 'cwd',
   FilePath = 'file_path',
   HookEventName = 'hook_event_name',
+  Limit = 'limit',
   NotebookPath = 'notebook_path',
+  Offset = 'offset',
   SessionId = 'session_id',
   Source = 'source',
   StopHookActive = 'stop_hook_active',
   ToolInput = 'tool_input',
+  ToolName = 'tool_name',
+  ToolUseId = 'tool_use_id',
 }
 
 // Why: Claude Code owns the shapes of its events, so a field a hook does not read is dropped, and
 // one that is absent, empty or of another kind reads as absent, a flag as false.
 const textField = z.string().min(1).optional().catch(undefined);
 const flagField = z.boolean().catch(false);
+const countField = z.number().int().optional().catch(undefined);
+const toolUseIdField = z
+  .string()
+  .refine(ToolUseId.is)
+  .transform(ToolUseId.create)
+  .optional()
+  .catch(undefined);
 const sessionIdField = z
   .string()
   .refine(SessionId.is)
@@ -30,35 +40,55 @@ const sessionIdField = z
   .optional()
   .catch(undefined);
 
-const hookEventNames = totalTableOf<Exclude<HookEventName, HookEventName.Unknown>>()({
-  // biome-ignore lint/style/useNamingConvention: Claude Code names the event SessionStart
-  SessionStart: HookEventName.SessionStart,
-  // biome-ignore lint/style/useNamingConvention: Claude Code names the event SubagentStart
-  SubagentStart: HookEventName.SubagentStart,
-  // biome-ignore lint/style/useNamingConvention: Claude Code names the event Stop
-  Stop: HookEventName.Stop,
-  // biome-ignore lint/style/useNamingConvention: Claude Code names the event SubagentStop
-  SubagentStop: HookEventName.SubagentStop,
-});
-const hookEventTexts: ReadonlyMap<HookEventName, string> = new Map(
-  [
-    ...hookEventNames,
-  ].map(
-    ([text, name]): [
-      HookEventName,
-      string,
-    ] => [
+type NamedHookEvent = Exclude<HookEventName, HookEventName.Unknown>;
+
+const HOOK_EVENT_TEXTS = {
+  [HookEventName.SessionStart]: 'SessionStart',
+  [HookEventName.SubagentStart]: 'SubagentStart',
+  [HookEventName.PreToolUse]: 'PreToolUse',
+  [HookEventName.PostToolUse]: 'PostToolUse',
+  [HookEventName.PostToolUseFailure]: 'PostToolUseFailure',
+  [HookEventName.Stop]: 'Stop',
+  [HookEventName.SubagentStop]: 'SubagentStop',
+  [HookEventName.Unknown]: undefined,
+} as const satisfies Readonly<Record<HookEventName, string | undefined>>;
+
+type HookEventText = (typeof HOOK_EVENT_TEXTS)[NamedHookEvent];
+
+const hookEventNames: ReadonlyMap<string | undefined, HookEventName> = new Map(
+  Object.values(HookEventName).map(
+    (
       name,
-      text,
+    ): [
+      HookEventText | undefined,
+      HookEventName,
+    ] => [
+      HOOK_EVENT_TEXTS[name],
+      name,
     ],
   ),
 );
-const sessionOrigins = totalTableOf<Exclude<SessionOrigin, SessionOrigin.Unknown>>()({
-  startup: SessionOrigin.Startup,
-  resume: SessionOrigin.Resume,
-  clear: SessionOrigin.Clear,
-  compact: SessionOrigin.Compact,
-});
+const SESSION_ORIGIN_TEXTS = {
+  [SessionOrigin.Startup]: 'startup',
+  [SessionOrigin.Resume]: 'resume',
+  [SessionOrigin.Clear]: 'clear',
+  [SessionOrigin.Compact]: 'compact',
+  [SessionOrigin.Unknown]: undefined,
+} as const satisfies Readonly<Record<SessionOrigin, string | undefined>>;
+
+const sessionOrigins: ReadonlyMap<string | undefined, SessionOrigin> = new Map(
+  Object.values(SessionOrigin).map(
+    (
+      origin,
+    ): [
+      string | undefined,
+      SessionOrigin,
+    ] => [
+      SESSION_ORIGIN_TEXTS[origin],
+      origin,
+    ],
+  ),
+);
 
 const eventNameOf = (text: string): HookEventName =>
   hookEventNames.get(text) ?? HookEventName.Unknown;
@@ -76,6 +106,7 @@ interface SessionStartHookEvent extends HookEvent {
 }
 
 interface StopHookEvent extends HookEvent {
+  readonly [HookField.AgentId]?: string | undefined;
   readonly [HookField.AgentName]?: string | undefined;
   readonly [HookField.AgentType]?: string | undefined;
   readonly [HookField.HookEventName]: HookEventName;
@@ -88,12 +119,18 @@ interface RecordCheckHookEvent extends HookEvent {
   };
 }
 
-interface PostToolUseHookEvent extends HookEvent {
+interface ToolHookEvent extends HookEvent {
   readonly [HookField.AgentId]?: string | undefined;
+  readonly [HookField.Cwd]?: string | undefined;
+  readonly [HookField.HookEventName]: HookEventName;
   readonly [HookField.ToolInput]: {
     readonly [HookField.FilePath]?: string | undefined;
+    readonly [HookField.Limit]?: number | undefined;
     readonly [HookField.NotebookPath]?: string | undefined;
+    readonly [HookField.Offset]?: number | undefined;
   };
+  readonly [HookField.ToolName]?: string | undefined;
+  readonly [HookField.ToolUseId]?: ToolUseId | undefined;
 }
 
 const sessionStartEventSchema: z.ZodType<SessionStartHookEvent> = z.object({
@@ -110,11 +147,12 @@ const sessionStartEventSchema: z.ZodType<SessionStartHookEvent> = z.object({
     .catch(SessionOrigin.Unknown),
 });
 
-const userPromptSubmitEventSchema: z.ZodType<HookEvent> = z.object({
+const sessionEventSchema: z.ZodType<HookEvent> = z.object({
   [HookField.SessionId]: sessionIdField,
 });
 
 const stopEventSchema: z.ZodType<StopHookEvent> = z.object({
+  [HookField.AgentId]: textField,
   [HookField.AgentName]: textField,
   [HookField.AgentType]: textField,
   [HookField.HookEventName]: eventNameField,
@@ -131,23 +169,30 @@ const recordCheckEventSchema: z.ZodType<RecordCheckHookEvent> = z.object({
     .catch({}),
 });
 
-const postToolUseEventSchema: z.ZodType<PostToolUseHookEvent> = z.object({
+const toolEventSchema: z.ZodType<ToolHookEvent> = z.object({
   [HookField.AgentId]: textField,
+  [HookField.Cwd]: textField,
+  [HookField.HookEventName]: eventNameField,
   [HookField.SessionId]: sessionIdField,
   [HookField.ToolInput]: z
     .looseObject({
       [HookField.FilePath]: textField,
+      [HookField.Limit]: countField,
       [HookField.NotebookPath]: textField,
+      [HookField.Offset]: countField,
     })
     .catch({}),
+  [HookField.ToolName]: textField,
+  [HookField.ToolUseId]: toolUseIdField,
 });
 
+export type { HookEventText, NamedHookEvent };
 export {
+  HOOK_EVENT_TEXTS,
   HookField,
-  hookEventTexts,
-  postToolUseEventSchema,
   recordCheckEventSchema,
+  sessionEventSchema,
   sessionStartEventSchema,
   stopEventSchema,
-  userPromptSubmitEventSchema,
+  toolEventSchema,
 };
