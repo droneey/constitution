@@ -454,6 +454,10 @@ describe('createGitWorkingTree', () => {
     spawnSync(
       'git',
       [
+        '-c',
+        'user.name=Spec',
+        '-c',
+        'user.email=spec@example.com',
         'merge',
         '--quiet',
         'side',
