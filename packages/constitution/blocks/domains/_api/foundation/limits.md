@@ -24,8 +24,8 @@ Every answer has a maximum size the server holds; an answer cut to it says so, a
 
 ### caller-rate-limited · SHOULD
 
-A caller's requests are limited by rate, per caller and tighter for a costly operation, and a request over the limit is refused as rate-limited.
+A caller's requests are limited by rate, per caller and tighter for a costly operation, and a request over the limit is refused as rate-limited, saying when to retry.
 
 | Why |
 |---|
-| one caller, a runaway script or an attacker, otherwise takes the capacity every other caller needs. |
+| one caller, a runaway script or an attacker, otherwise takes the capacity every other caller needs, and a caller not told when to come back retries at once. |

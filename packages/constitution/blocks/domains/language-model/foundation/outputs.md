@@ -32,14 +32,6 @@ A link, an image or any other address in a model's output is made live, loaded o
 |---|
 | text the model read can tell it to write an image whose address carries the person's data, and the renderer sends that data when it loads the image. |
 
-### output-rendered-as-markup-sanitised → outside-input-reaches-interpreters-as-parameters · MUST
-
-A model's output rendered as markup — HTML, or text in a lighter markup turned into it — passes a sanitiser that keeps only the elements and attributes the screen allows.
-
-| Why |
-|---|
-| text the model was led to write by content it read becomes script, a form or a tracking image in its reader's screen. |
-
 ## Disclosure
 
 ### person-told-they-talk-with-a-model · MUST

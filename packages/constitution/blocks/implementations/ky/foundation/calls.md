@@ -1,6 +1,6 @@
 # Calls
 
-> Governs a call: its timeout and its retries.
+> Governs a call: its timeout, its retries and the fake a spec gives it.
 
 ## General
 
@@ -19,3 +19,11 @@ ky's `retry` stays on its idempotent methods and transient statuses, with `jitte
 | Why |
 |---|
 | ky's defaults already retry only what may succeed the next time, and each option widened loses that silently. |
+
+### ky-spec-fetch-refuses-unmatched → unmatched-request-fails-the-spec · MUST
+
+A spec builds the ky instance with its `fetch` option set to a function that answers the requests the case expects and throws on any other, naming its method and URL; no spec replaces the global `fetch`.
+
+| Why |
+|---|
+| the `fetch` option is the seam ky offers for a fake, while the unit sandbox makes the global `fetch` throw and unwritable. |

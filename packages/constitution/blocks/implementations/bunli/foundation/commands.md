@@ -14,7 +14,7 @@ Every flag is `option(schema, { short, description })`, its schema a standard sc
 
 ### program-keeps-no-bunli-config → fact-has-one-source · MUST
 
-The program keeps no `bunli.config.*`: its configuration lives only in the code that builds it.
+The program's configuration, meaning its name, version, description and plugins, is given to `createCLI` in code, and the program keeps no `bunli.config.*`.
 
 | Why |
 |---|

@@ -1,6 +1,6 @@
 # Errors
 
-> Governs a failure in TypeScript: its throws tag, its cause, the caught value, and try and finally blocks.
+> Governs a failure in TypeScript: its throws tag, its cause, the caught value, and try blocks.
 
 ## Kinds of failure
 
@@ -37,11 +37,3 @@ Inside a `try`, a returned promise is awaited — `return await` — so its reje
 | Why |
 |---|
 | without the `await`, the function has returned before the promise rejects, so its `catch` never runs and the raw failure passes unmapped. |
-
-### finally-never-leaves-by-a-jump → catch-handles-only-what-it-recognises · MUST
-
-A `finally` block never leaves by `return`, `break`, `continue` or `throw`.
-
-| Why |
-|---|
-| a jump out of `finally` replaces the failure in flight, so the error vanishes without any `catch` having recognised it. |

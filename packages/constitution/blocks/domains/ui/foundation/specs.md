@@ -28,14 +28,6 @@ An element a spec looks for is found by its role, its label or its text, never b
 |---|
 | a spec that finds elements as a user does changes only when the behaviour does, and an element no user perceives has nothing else a spec can find it by but an attribute set for the spec. |
 
-### framework-selector-proven-by-one-spec · MUST
-
-A selector the program configures a framework with is checked by one spec, through that same constant.
-
-| Why |
-|---|
-| a selector handed to a framework is a contract with markup the program does not render, which only a spec of that selector proves. |
-
 ### layout-and-focus-proven-on-the-platform · SHOULD
 
 Behaviour that depends on layout, visibility or real focus is proven where the platform renders it — an end-to-end spec, or a component spec the platform's own engine runs — never only in a simulation of the platform.

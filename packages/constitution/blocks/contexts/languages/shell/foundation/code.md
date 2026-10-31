@@ -1,6 +1,6 @@
 # Code
 
-> Governs any shell code no other chapter governs: what a script does, its expansions, its lists and its reads, and the commands other files hold.
+> Governs any shell code no other chapter governs: what a script does, its expansions and its lists, and the commands other files hold.
 
 ## General
 
@@ -35,11 +35,3 @@ In Bash, a list of words — files, arguments, flags — is held in an array and
 | Why |
 |---|
 | a string split on spaces breaks every item that holds one, while an array keeps each item whole. |
-
-### line-read-raw · SHOULD
-
-A line is read by `IFS= read -r`.
-
-| Why |
-|---|
-| without `-r`, read drops backslashes, and without an empty `IFS` it trims the line's leading and trailing spaces. |

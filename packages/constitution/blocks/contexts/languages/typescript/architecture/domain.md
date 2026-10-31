@@ -11,3 +11,13 @@ An aggregate, and an entity with rules of its own, is a `readonly` type whose pr
 | Why |
 |---|
 | plain data crosses the query cache, storage, a worker and a server component as it is, which an instance of a class does not, and a transition apart from the type is a file the presentation's imports can be kept from. |
+
+## Construction
+
+### aggregate-built-only-in-its-transitions → aggregate-changed-only-by-its-transitions · MUST
+
+No object literal, spread or `structuredClone` of an aggregate's type, or of one of its inner entities', is written outside its concept's `transitions/`, in specs as in production; a spec builds one through its `create` or `restore`.
+
+| Why |
+|---|
+| the compiler accepts any object of the right shape as the aggregate, so only the folder keeps a state no transition checked from existing. |

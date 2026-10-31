@@ -1,6 +1,6 @@
 # Errors
 
-> Governs a failure in Python: its `Raises:` section, its cause, the except clauses and exception groups that catch it, finally blocks and assert statements.
+> Governs a failure in Python: its `Raises:` section, its cause, the except clauses and exception groups that catch it, and assert statements.
 
 ## General
 
@@ -55,11 +55,3 @@ An exception raised inside an `except` clause to map the one caught is raised `f
 | Why |
 |---|
 | `from` records the caught exception as the direct cause, so both tracebacks print together and the new one never reads as an accident during handling. |
-
-### finally-never-left-by-a-jump → catch-handles-only-what-it-recognises · MUST
-
-A `finally` block is never left by `return`, `break` or `continue`.
-
-| Why |
-|---|
-| a jump out of `finally` silently discards the exception in flight, which is why Python 3.14 warns of it. |

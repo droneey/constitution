@@ -18,4 +18,4 @@ Writes that overlap never undo each other's results: a read already in flight ne
 
 | Why |
 |---|
-| a snapshot-and-restore recipe breaks as soon as two writes overlap: a late read erases the shown change, or a new item jumps once the remote system names it. |
+| a late read then erases a change already shown, or a new item jumps when the remote system names it, and the screen shows neither what the user did nor what the system holds. |

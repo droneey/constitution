@@ -83,8 +83,9 @@
         "noEmptyObjectKeys": "error",
         "noLoopFunc": "error",
       },
+
+      // biome
       "correctness": {
-        // biome
         "noUnreachable": "error",
         "noUnusedFunctionParameters": "error",
         "noUnusedImports": "error",
@@ -92,10 +93,6 @@
         "noUnusedPrivateClassMembers": "error",
         "noUnusedVariables": "error",
 
-        // typescript
-        "noUnsafeFinally": "error",
-
-        // biome
         "useParseIntRadix": "error",
         "noGlobalDirnameFilename": "error",
         "noUndeclaredDependencies": "error",

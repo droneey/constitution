@@ -1,6 +1,6 @@
 # Components
 
-> Governs the kit's components built from shadcn source: their polymorphism, parts, adaptation and text.
+> Governs the kit's components built from shadcn source: their polymorphism, parts and text.
 
 ## General
 
@@ -19,14 +19,6 @@ A primitive marks itself and each of its parts with `data-slot`, named after the
 | Why |
 |---|
 | a caller and a spec then reach a part by its slot, as shadcn source does, with no class written for it. |
-
-### shadcn-source-adapted-on-arrival → vendored-component-adapted-in-the-change-that-installs-it · MUST
-
-Before shadcn source is added, the kit is searched for an equivalent.
-
-| Why |
-|---|
-| a second copy of a component the kit already holds is a second look and a second set of props for one thing. |
 
 ### shadcn-text-passed-by-props → primitives-take-text-by-props · MUST
 

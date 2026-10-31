@@ -30,13 +30,13 @@ A sample of each task's runs in production — failures, refusals and outliers f
 
 ## Runs
 
-### eval-runs-apart-from-the-specs · MUST
+### eval-runs-apart-from-the-specs → test-runs-in-a-sandbox · MUST
 
-An eval that calls a real model runs apart from the specs, by a command of its own.
+A spec replaces the model with scripted or recorded answers, and an eval that calls a real model runs apart from the specs, by a command of its own.
 
 | Why |
 |---|
-| a real model is slow and paid for, and a spec run that calls it fails by chance and costs money on every change. |
+| a real model is slow, paid for and answers differently on each run, so a spec that calls it fails by chance and costs money on every change. |
 
 ## Graders
 

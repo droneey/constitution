@@ -6,7 +6,7 @@
 
 ### yaml-read-by-a-yaml-1-2-loader → reader-resolves-scalars-by-the-core-schema · SHOULD
 
-Code that parses YAML reads it by YAML 1.2's core schema, with the timestamp tag constructed as text, never by a loader whose resolver follows YAML 1.1.
+Code that parses YAML uses a YAML 1.2 loader — `ruamel.yaml`'s safe loader, never PyYAML, whose every loader resolves by YAML 1.1 — with the timestamp tag constructed as text.
 
 | Why |
 |---|

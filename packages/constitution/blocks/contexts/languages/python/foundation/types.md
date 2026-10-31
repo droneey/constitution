@@ -46,7 +46,7 @@ A `match` or an `if` chain over a closed set — an enumeration, a union of clas
 |---|
 | `assert_never` fails the type check wherever a member added to the set is not handled, and raises if one arrives at run time. |
 
-### outside-number-set-is-an-int-enum → outside-number-set-declared-once · MUST
+### outside-number-set-is-an-int-enum → closed-name-set-declared-once · MUST
 
 A set of numbers another system defines — exit statuses, HTTP statuses — is an `enum.IntEnum` with every member's value written, or the standard library's own such as `http.HTTPStatus`; a number that arrives stays an `int` until it is compared with the members, never converted by calling the enumeration.
 
@@ -79,6 +79,14 @@ A type of the program's business data is a dataclass with `frozen=True, slots=Tr
 | Why |
 |---|
 | the runtime then refuses a mutation the business never meant, each field is set by its name, and a `frozendict` keeps the value hashable where a `dict` behind `Mapping` does not. |
+
+### received-collection-typed-read-only → value-immutable-by-default · SHOULD
+
+A parameter or field holding a collection the code only reads is typed `Sequence`, `Mapping` or `AbstractSet`, never `list`, `dict` or `set`, and a changed one is a new value — `sorted()`, `[*items, item]`, `{**mapping, key: value}` — never `sort`, `append` or an assignment to an index or a key of what was received.
+
+| Why |
+|---|
+| the type checker then refuses `sort`, `append` and item assignment on what the caller still holds, so a sort for one use never reorders the data another reads. |
 
 ### invariant-value-is-a-frozen-dataclass → invariant-value-is-plain-immutable-data · MUST
 

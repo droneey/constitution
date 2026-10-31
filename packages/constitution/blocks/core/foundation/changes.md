@@ -80,7 +80,7 @@ A change is reported done only once the check passes with no error and no warnin
 
 ### change-seen-working-before-hand-back · SHOULD
 
-A change to what a user or a caller observes is run once in the built program — the command run, the screen seen, the endpoint called — and the hand-back says how.
+A change to what a user or a caller observes is run once in the built program, the way its user or caller reaches it — the command run, the endpoint called, the interface used — and the hand-back says how.
 
 | Why |
 |---|

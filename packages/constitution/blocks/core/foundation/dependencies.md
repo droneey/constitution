@@ -34,7 +34,7 @@ A server, plugin or skill that extends an agent is pinned to an exact version or
 
 | Why |
 |---|
-| an extension that was clean for fifteen versions turned malicious in its sixteenth, and an agent runs whatever its next release brings with the agent's rights, which no other download the project fetches is trusted with unpinned. |
+| an extension runs with the agent's rights, its next release can turn malicious with no sign but a changed tool definition, and no other download the project fetches is trusted unpinned. |
 
 ### production-code-imports-no-tool · MUST
 
@@ -68,7 +68,7 @@ A new release of a dependency is adopted only after a cooldown of at least three
 
 | Why |
 |---|
-| most hijacked releases are found and pulled within a day or two, and the major package managers now hold a cooldown of their own, so none is left outside the rule. |
+| most hijacked releases are found and pulled within a day or two, so a release that waited three days has outlived the window in which they are caught. |
 
 ### dependency-provenance-verified · SHOULD
 

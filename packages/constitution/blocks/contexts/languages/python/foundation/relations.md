@@ -1,16 +1,8 @@
 # Relations
 
-> Governs how a Python unit is built, holds state and depends on or extends another: imports, module-level state, parameter defaults, overrides and deprecation.
+> Governs how a Python unit is built, holds state and depends on or extends another: the import path, module-level state, overrides and deprecation.
 
 ## Modules
-
-### import-never-a-wildcard · MUST
-
-An import names each name it takes; `from <module> import *` is never written.
-
-| Why |
-|---|
-| a wildcard hides where a name comes from, and a name the other module adds later silently shadows one of the importer's. |
 
 ### sys-path-never-touched · MUST
 
@@ -29,14 +21,6 @@ No code uses the `global` statement; no module-level name or class attribute hol
 | Why |
 |---|
 | a module is imported once per process, so its state is shared by every caller and leaks from one test into the next. |
-
-### parameter-default-never-mutable → state-never-global-and-mutable · MUST
-
-A parameter's default is an immutable value — `None`, a number, a string, a tuple, a frozen value — never a list, a dict, a set or a call that builds a mutable value.
-
-| Why |
-|---|
-| a default is evaluated once, when the function is defined, so a mutable one is a single object every call shares and changes. |
 
 ## Inheritance and patterns
 

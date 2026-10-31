@@ -12,14 +12,6 @@ A screen's guards and redirects live in the screen's registration in the root an
 |---|
 | access is decided before the screen renders, in one place, and no feature reaches into the session's internals. |
 
-### feature-ui-adapts-to-permissions-passed-down · SHOULD
-
-A feature's widgets and components adapt to the permissions composition passes them, never reaching into the session's internals.
-
-| Why |
-|---|
-| no feature then knows how sessions work, and a change of the session's model never reaches a feature's interface. |
-
 ## Session state
 
 ### session-presence-kept-in-a-root-store · MUST

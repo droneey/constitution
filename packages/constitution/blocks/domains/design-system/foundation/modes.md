@@ -20,14 +20,6 @@ The values of each mode are derived from the primitives by a declared rule and r
 |---|
 | derived values keep contrast right when a colour changes, and a value picked by eye is the first to break it. |
 
-### weight-adjusted-per-mode · SHOULD
-
-Text and icon strokes are drawn slightly lighter in a dark mode than in a light one: the weights and stroke widths are mode values of their tokens, so a component never writes the adjustment.
-
-| Why |
-|---|
-| light marks on a dark ground spread and read heavier than the same weight dark on light, so one weight looks bold in one mode and thin in the other. |
-
 ### theme-follows-system-until-chosen · SHOULD
 
 The theme follows the system's preference until the user chooses one; the choice persists and is applied before the first paint.

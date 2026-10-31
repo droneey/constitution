@@ -1,6 +1,6 @@
 # Sandbox
 
-> Governs the sandbox the specs run in: the network, patching and async specs.
+> Governs the sandbox the specs run in: the network, patching, waits and async specs.
 
 ## General
 
@@ -27,3 +27,11 @@ Async specs run on anyio's plugin, with `anyio_mode = "auto"`; pytest-asyncio is
 | Why |
 |---|
 | one plugin runs every async spec in the task groups the program uses, and two plugins fight over the same specs. |
+
+### spec-never-calls-a-sleep → test-never-sleeps-a-fixed-time · SHOULD
+
+A spec never calls `time.sleep`, nor `asyncio.sleep` or `anyio.sleep` with a delay above zero.
+
+| Why |
+|---|
+| these are the fixed delays a Python spec reaches for; the anyio clock or a wait on a condition replaces them. |

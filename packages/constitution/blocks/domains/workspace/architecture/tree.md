@@ -10,7 +10,7 @@ A workspace holds its units in two places at its root, **`apps/`**{#deployed-uni
 
 | Why |
 |---|
-| the folder says how a unit leaves the repository, the split a reader of Turborepo or of a package manager's workspace knows on sight, and a library or a tool others install sits in `packages/` as in every repository of libraries and tools. |
+| the folder says how a unit leaves the repository — deployed by it, or installed by others — so a reader knows each unit's kind on sight. |
 
 ### code-in-several-languages-holds-a-package-per-language · SHOULD
 
@@ -22,11 +22,11 @@ Code that serves one purpose in several languages is a group folder of units: `<
 
 ### business-shared-across-languages-lives-in-one-package · SHOULD
 
-Business that programs in different languages run lives first in one package, written in a language every one of them can run and compiled for each, reached through generated bindings. Where no such language serves every target, it lives in the service they call. A client then keeps only what must work without the service, as a copy per language, held together by the schema and the conformance cases in the `shared/` package of their group.
+Business that programs in several languages need is written once — in one package, in a language every target runs, reached through generated bindings, or, where none runs on every target, in the service they call; a client copies per language only what must work without the service, held together by the schema and the conformance cases of its group's `shared/` package.
 
 | Why |
 |---|
-| business written once cannot drift between languages, as Rust compiled to native bindings and WebAssembly, or Kotlin Multiplatform, shows; a copy per language is the last resort, held together by the cases every copy must pass. |
+| business written in each language drifts between them, and a copy stays honest only by cases every copy must pass. |
 
 ### unit-offers-everything-through-its-one-package · SHOULD
 

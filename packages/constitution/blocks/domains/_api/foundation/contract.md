@@ -46,6 +46,14 @@ An uploaded file is accepted only when its kind, read from its content, is one t
 |---|
 | a caller names a script `photo.jpg` and declares it an image, and a check that trusts either stores and serves it as one. |
 
+### field-names-in-one-case · SHOULD
+
+The fields of every shape the API exchanges are named in one case across the whole API.
+
+| Why |
+|---|
+| a caller then guesses no field's spelling, and a generated client keeps one convention. |
+
 ## Effects
 
 ### write-takes-an-idempotency-key → operation-idempotent-by-design · SHOULD

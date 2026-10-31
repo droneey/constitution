@@ -1,6 +1,6 @@
 # Tests
 
-> Governs specs and cases in Python: where specs live, how their cases are named and what a case holds.
+> Governs specs and cases in Python: where specs live and how their cases are named.
 
 ## How a case is written
 
@@ -19,11 +19,3 @@ A case is a function `test_should_<behaviour>`, followed by `_when_<condition>` 
 | Why |
 |---|
 | a case is a function found by its `test_` prefix, so core's words follow the prefix and a failing case still names its behaviour and condition. |
-
-### case-variants-are-parametrized-rows → variants-are-one-table · SHOULD
-
-The variants of one behaviour are the rows of a parametrized table on one `test_` function, each row naming its condition and holding its input and its expected value.
-
-| Why |
-|---|
-| each row then runs, passes and fails as a case of its own, under a name that tells its condition. |

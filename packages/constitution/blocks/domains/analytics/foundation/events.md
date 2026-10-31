@@ -58,8 +58,8 @@ Each environment — development, preview, production — sends to its own desti
 
 ### analytics-fault-isolated → optional-part-isolated-from-its-faults · MUST
 
-A failing analytics destination, or a failure of the code that sends to it, neither breaks the user's action nor silences the other destinations; the fault is reported out of band.
+Each analytics destination is isolated from the others: one that fails, or whose sending code fails, never stops the events sent to the rest.
 
 | Why |
 |---|
-| measurement must never cost the user the thing they came to do. |
+| one broken service would otherwise blind every report, not only its own. |

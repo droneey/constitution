@@ -70,7 +70,7 @@ State in the program's memory that concurrent work reaches is owned by one task 
 
 ### program-stops-cleanly · MUST
 
-A program told to stop — by a termination signal or by its host — keeps taking the work routed to it until nothing routes work to it, then takes none, finishes or cancels the work in flight within a bound, releases its resources and exits; a second request to stop may end it at once, without the cleanup.
+A program told to stop — by a termination signal or by its host — takes no new work, finishes or cancels the work in flight within a bound, releases its resources and exits; a second request to stop may end it at once, without the cleanup.
 
 | Why |
 |---|

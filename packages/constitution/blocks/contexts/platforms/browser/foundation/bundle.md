@@ -1,6 +1,6 @@
 # Bundle
 
-> Governs the bundle's size and the caching of its files.
+> Governs the bundle's size, the caching of its files and a tab that outlives its release.
 
 ## General
 
@@ -19,3 +19,11 @@ A file whose name carries the hash of its content is served as `immutable`, and 
 | Why |
 |---|
 | a hashed file never changes, so it is kept for good, while the file that names it must be fresh, or the tab loads a release that no longer exists. |
+
+### tab-missing-a-lazy-file-loads-the-current-release · SHOULD
+
+A tab whose lazily loaded file is gone after a release loads the current release in full at its next navigation, or after its user accepts a reload, keeping what they typed.
+
+| Why |
+|---|
+| a tab stays open for days across releases, and its next lazy import then asks for a hashed file the new release no longer serves. |

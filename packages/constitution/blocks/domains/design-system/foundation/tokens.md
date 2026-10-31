@@ -22,19 +22,11 @@ A component reads only semantic and common tokens, never a primitive.
 
 ### token-name-follows-the-grammar · MUST
 
-A semantic or common token is named `<category>.<concept>.<role>[.<step>]`. The category is its family — `color`, `space`, `size`, `font`, `radius`, `shadow`, `motion`, `layer`; the concept is what it styles — `surface`, `text`, `border`, `action`; the role is its purpose or tone — `muted`, `danger`, `level-1`; the step is a place on a closed scale declared once — `sm`, `md`, `lg`. A primitive is named by its category, its scale and its step. Examples: `color.surface.level-1`, `color.text.muted`; a primitive, `color.blue.500`.
+A semantic or common token is named `<category>.<concept>.<role>[.<step>]`. The category is its family — `color`, `space`, `size`, `font`, `radius`, `shadow`, `motion`, `layer`; the concept is what it styles — `surface`, `text`, `border`, `action` — never a component such as `card` or `button`, whose own look comes from its variants over semantic tokens; the role is its purpose or tone — `muted`, `danger`, `level-1`; the step is a place on a closed scale declared once — `sm`, `md`, `lg`. A primitive is named by its category, its scale and its step. Examples: `color.surface.level-1`, `color.text.muted`; a primitive, `color.blue.500`.
 
 | Why |
 |---|
-| the name alone then says what a token styles and what for, and one search finds it in the source and in every output. |
-
-### token-never-named-after-a-component · MUST
-
-No token is named after a component — `card.background`, `button.padding-x`; a component's own look comes from its variants over semantic tokens.
-
-| Why |
-|---|
-| a token named after one component cannot be shared, and turns the design system into a list of exceptions. |
+| the name alone then says what a token styles and what for, one search finds it in the source and in every output, and a token named after one component cannot be shared. |
 
 ### missing-value-added-as-a-token → tokens-single-source-of-appearance · MUST
 
@@ -66,11 +58,11 @@ Durations and easings are tokens, and motion driven from code reads the same tok
 
 ### font-token-is-one-typography-composite · MUST
 
-A semantic `font` token always styles text, so its name leaves the concept out and takes the kind of text as its role — `font.body.md`, `font.heading.lg` — and it is one composite of the W3C Design Tokens format's `typography` type, whose `fontFamily`, `fontSize`, `fontWeight`, `letterSpacing` and `lineHeight` each refer to a primitive of the matching scale — `font.family`, `font.size`, `font.weight`, `font.tracking`, `font.leading`, such as `font.weight.bold` — and whose line height is a unitless multiple of its font size, as the format's `lineHeight` takes it; a property of text is a primitive's scale, never a role.
+A semantic `font` token is named `font.<kind of text>.<step>` — `font.body.md`, `font.heading.lg` — and is one composite of the W3C Design Tokens `typography` type whose `fontFamily`, `fontSize`, `fontWeight`, `letterSpacing` and `lineHeight` each refer to a primitive of `font.family`, `font.size`, `font.weight`, `font.tracking` and `font.leading`, the line height a unitless multiple of the size.
 
 | Why |
 |---|
-| a component reads one token for a style of text, never several that must change together; a segment every font token would repeat says nothing, and a property where the purpose belongs names a raw value as if it were a purpose; a line height that scales with the font size stays right when a theme changes the size. |
+| a component reads one token for a style of text, never several that must change together, and a line height that scales with the size stays right when a theme changes it. |
 
 ## Source
 

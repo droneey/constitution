@@ -154,19 +154,11 @@ A check that guards access or trust — a signature, an allowlist, a token, a lo
 
 ### cryptographic-algorithm-approved-by-current-guidance · MUST
 
-A cryptographic algorithm, mode and key size are ones current guidance approves — NIST's or OWASP ASVS's lists — and one the guidance deprecates is never chosen for new data.
+A cryptographic algorithm, mode and key size are ones current guidance approves — NIST's or OWASP ASVS's lists —, one the guidance deprecates is never chosen for new data, and a key agreement the program sets up uses a hybrid exchange with a post-quantum algorithm, such as X25519MLKEM768, wherever both sides support one.
 
 | Why |
 |---|
-| a vetted library still offers broken algorithms, and data protected by one is open to whoever reads it later. |
-
-### key-agreement-hybrid-with-post-quantum · MUST
-
-A key agreement the program sets up — a TLS connection, an encrypted channel, a sealed envelope — uses a hybrid exchange with a post-quantum algorithm, such as X25519MLKEM768, wherever both sides support one.
-
-| Why |
-|---|
-| traffic recorded today is decrypted once a quantum computer can break the classical exchange, NIST deprecates that exchange by 2030, and the hybrid keeps the classical half's strength should the new algorithm fall. |
+| a vetted library still offers broken algorithms, and data protected by one, or traffic recorded today under a classical exchange, is open to whoever reads it later. |
 
 ### security-primitive-from-a-vetted-library · MUST
 

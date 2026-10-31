@@ -4,10 +4,10 @@
 
 ## General
 
-### worktree-one-branch-no-linked-folder · MUST
+### worktree-holds-no-linked-folder · MUST
 
-A worktree holds one branch, and no folder of it is a link into another checkout.
+No folder of a worktree is a link into another checkout, such as a shared `node_modules`.
 
 | Why |
 |---|
-| a linked folder escapes the ignore pattern and gets committed, and two worktrees on one branch overwrite each other. |
+| a link is a file, not a folder, so an ignore pattern written for the folder (`node_modules/`) misses it and it is committed. |

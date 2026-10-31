@@ -20,4 +20,4 @@ A screen or component spec runs the axe scan over each state it renders that no 
 
 | Why |
 |---|
-| the scan catches a third of the problems, on every change, for free. |
+| a scan in the spec of each state judges every rule a simulated document can judge, on every change, so a violation fails the change that brings it. |

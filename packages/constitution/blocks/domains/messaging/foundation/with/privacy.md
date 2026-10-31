@@ -10,7 +10,7 @@ A message carries no personal data its consumers do not need; they reach the res
 
 | Why |
 |---|
-| a broker keeps messages, their copies in dead letters and their replays beyond the reach of an erasure, and every subscriber reads them. |
+| every subscriber, dead letter and replay holds a copy of what a message carries, so a field no consumer needs spreads the data to places that never needed it. |
 
 ## Retention
 

@@ -38,7 +38,7 @@ Only the application changes the model: a use case alone calls an aggregate's tr
 
 | Why |
 |---|
-| a change made outside a use case is neither checked against the store, saved nor announced, and the screen that made it shows a state no one else sees. |
+| a change made outside a use case is neither checked against the store, saved nor announced, and the caller that made it holds a state no one else sees. |
 
 ### domain-and-application-log-nothing · MUST
 
@@ -49,14 +49,6 @@ The domain and the application log nothing: a use case returns its result or thr
 | the core of the program would decide what an operator is told, which is its caller's to know. |
 
 ## Commands and queries
-
-### command-loads-through-its-write-port · SHOULD
-
-A command loads the aggregates it decides on through its ports of the write side, and decides only through them and its input.
-
-| Why |
-|---|
-| what a command changes it must load to keep its invariants, and loading it through the write side keeps the command blind to the read side. |
 
 ### command-returns-nothing · SHOULD
 

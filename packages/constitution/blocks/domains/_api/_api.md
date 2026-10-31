@@ -10,6 +10,6 @@ governs: ["**"]
 
 # API
 
-> The base every style of API extends, never listed by a project: how a failure is answered, what the contract offers and how it changes, the most a request may ask, how a collection is paged, how a request is followed and cancelled, and how a value travels.
+> The base every style of API extends, never listed by a project: how a failure is answered, what the contract offers and how it changes, the most a request may ask, how a collection is paged, and how a request is followed and cancelled.
 
 A project lists the block of the style it serves, one that extends this one.

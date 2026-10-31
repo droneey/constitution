@@ -28,17 +28,9 @@ A content image is served as AVIF or WebP.
 |---|
 | both carry the same picture in fewer bytes than JPEG or PNG, and the browsers a Baseline target covers decode them. |
 
-### content-kept-off-the-fold · SHOULD
+### core-web-vitals-within-budget → felt-speed-measured-in-the-field-within-budget · SHOULD
 
-On a foldable screen whose browser reports its viewport segments, content and controls never cross the fold; the layout follows the segments.
-
-| Why |
-|---|
-| text and buttons that fall into the hinge cannot be read or pressed. |
-
-### core-web-vitals-within-budget · SHOULD
-
-Largest Contentful Paint stays within 2.5 s, Interaction to Next Paint within 200 ms and Cumulative Layout Shift within 0.1, at the 75th percentile of visits measured in the field.
+The budget is the Core Web Vitals: Largest Contentful Paint within 2.5 s, Interaction to Next Paint within 200 ms and Cumulative Layout Shift within 0.1, at the 75th percentile of visits.
 
 | Why |
 |---|
@@ -71,14 +63,6 @@ Where the primary pointer is coarse — `@media (pointer: coarse)` — a target 
 | Why |
 |---|
 | a finger covers far more than a cursor, and 44 pixels is the size WCAG's enhanced level sets for a target a thumb hits reliably. |
-
-### fine-pointer-target-at-least-40-css-px · SHOULD
-
-Where the primary pointer is fine — `@media (pointer: fine)` — a target is at least 40 × 40 CSS pixels, save the exceptions WCAG 2.5.8 lists.
-
-| Why |
-|---|
-| the larger a target, the faster and surer a cursor lands on it, and 40 pixels gives a mouse or a trackpad that margin above WCAG's floor. |
 
 ### live-region-mounted-before-message → status-changes-announced · MUST
 

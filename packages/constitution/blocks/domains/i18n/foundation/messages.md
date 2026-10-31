@@ -6,11 +6,11 @@
 
 ### user-facing-text-from-catalog → text-a-person-reads-held-in-a-messages-file · MUST
 
-A string a user reads comes from the message catalog: its `.messages` file holds each message as the catalog's key, never a translation.
+A string a person reads is looked up in the message catalog by its source message, which the `.messages` file holds; a translation lives only in its locale's catalog, never in the `.messages` file or in code.
 
 | Why |
 |---|
-| text in code cannot be translated or reworded without a code change, and a key leaves each language's wording to its catalog. |
+| text in code cannot be translated or reworded without a code change, and each language's wording stays in its own catalog. |
 
 ### source-catalog-ships-with-its-code · MUST
 

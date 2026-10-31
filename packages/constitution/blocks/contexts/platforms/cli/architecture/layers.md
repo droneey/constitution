@@ -1,16 +1,8 @@
 # Layers
 
-> Governs the layers of a command-line program: where the shared flags, the command-line parser and a command sit.
+> Governs the layers of a command-line program: where the command-line parser and a command sit.
 
 ## Homes
-
-### shared-flag-declared-once-in-shared → shared-piece-placed-by-meaning · SHOULD
-
-A flag two or more commands take is declared once, in `shared/`, and every command that takes it imports that declaration.
-
-| Why |
-|---|
-| a flag then means the same in every command that takes it, and no command owns a declaration the others borrow. |
 
 ### command-parser-imported-by-the-command-files → layer-imports-dependencies-by-its-role · MUST
 

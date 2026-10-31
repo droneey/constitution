@@ -1,6 +1,6 @@
 # Screens
 
-> Governs a screen: its states, its address and view state, loading, images and response.
+> Governs a screen: its states, its address and view state, the permissions it asks for, loading, images and response.
 
 ## States
 
@@ -46,6 +46,14 @@ A screen's address — its path and its parameters, in a URL or a deep link — 
 |---|
 | anyone can write a link and send it to the user, so a malformed one is to be expected, and it must not break the program. |
 
+### address-only-opens-a-screen · MUST
+
+A link — a URL or a deep link — opens a screen with its parameters and performs no action — a payment, a send, a change of settings — until the user confirms it there.
+
+| Why |
+|---|
+| anyone can craft a link and get it tapped, so a link that acts at once acts for its author, not for the user. |
+
 ### address-write-keeps-the-other-parameters · MUST
 
 A write to a screen's address changes only the parameter it is for and keeps every other one as it was.
@@ -69,6 +77,16 @@ An address no screen answers shows the application's not-found screen, which is 
 | Why |
 |---|
 | a mistyped or stale link otherwise ends on a blank page or an error, and the user cannot tell a wrong address from a broken application. |
+
+## Permissions
+
+### permission-asked-in-context · SHOULD
+
+A permission the platform asks the person for is requested when they first reach the feature that needs it, after the screen says why, never at start; a refusal leaves every other feature working, and the feature that needs it says what it lacks and how to grant it in the platform's settings.
+
+| Why |
+|---|
+| a person grants what they understand at the moment it is needed, a request out of context is refused for good, and a feature that fails silently tells them nothing. |
 
 ## Loading
 
@@ -115,6 +133,14 @@ Every image a screen shows is sharp at the screen's pixel density, and never fet
 | one image size is blurry on a dense screen and wasteful on a plain one. |
 
 ## Response
+
+### felt-speed-measured-in-the-field-within-budget · SHOULD
+
+The interface's speed as people feel it — the wait for its main content, the answer to their input, the stillness of what it shows — is measured in the field, at the 75th percentile of real uses, and kept within a budget the project sets.
+
+| Why |
+|---|
+| a fast developer's machine hides the slow devices and networks people use, and the 75th percentile counts the slow quarter an average smooths away. |
 
 ### interaction-answered-before-its-work · SHOULD
 
