@@ -130,7 +130,7 @@ A rule refers only to rules within its reach. It never refers to a rule of its o
 
 ### setting-placed-by-its-reader-and-key-rule · MUST
 
-A setting or a plugin sits with the tool that reads it, under the rule it holds. A setting sits in that tool's preset file of the axis of the rule it holds, keyed by that rule, or by `*` when the tool needs it and no rule asks for it. One that needs a block beyond the tool's reach sits in the tool's `with/` file of that block, and one that needs a second block in that file's `with/` file of the second, so its path names exactly the blocks it needs. A plugin of a tool sits in the tool's `plugins/` folder of its language, named by the rule it holds.
+A setting or a plugin sits with the tool that reads it, under the rule it holds. A setting sits in that tool's preset file of the axis of the rule it holds, keyed by that rule, or by `*` when the tool needs it and no rule asks for it. One that needs a block beyond the tool's reach sits in the tool's `with/` file of that block, and one that needs a second block in that file's `with/` file of the second, so its path names exactly the blocks it needs. A plugin of a tool sits in the tool's `plugins/` folder of its language, named by the rule it holds. The entry of a file that agents read and no block's tool reads sits as a setting does, with core as its reader.
 
 | Why |
 |---|

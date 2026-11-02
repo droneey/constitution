@@ -170,6 +170,10 @@ describe('Fact', () => {
       isTruth: true,
     },
     {
+      fact: Facts.of('unit.isRepositoryRoot'),
+      isTruth: true,
+    },
+    {
       fact: Facts.of('workspace.isRoot'),
       isTruth: true,
     },

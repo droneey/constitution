@@ -2,6 +2,7 @@ enum FactName {
   ConstitutionPath = 'constitution.path',
   PackageName = 'package.name',
   FileIsTop = 'file.isTop',
+  UnitIsRepositoryRoot = 'unit.isRepositoryRoot',
   UnitParent = 'unit.parent',
   UnitDepth = 'unit.depth',
   WorkspaceIsRoot = 'workspace.isRoot',
@@ -38,6 +39,7 @@ const ROLE_PREFIX = 'role.';
 const factNames: readonly FactName[] = Object.values(FactName);
 const truthFacts: readonly FactName[] = [
   FactName.FileIsTop,
+  FactName.UnitIsRepositoryRoot,
   FactName.WorkspaceIsRoot,
 ];
 

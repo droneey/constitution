@@ -17,4 +17,4 @@ A release keeps them in `.droneey/constitution/templates/`.
 
 ## The files the blocks give
 
-A block that gives a project a file, a whole file or settings in one, does it through [its preset entries](presets.md): `constitution presets apply` writes them, and a starting file — `.editorconfig`, `tests/conftest.py`, `src/__tests__/sandbox.fixtures.ts` — is an entry written once with `!default`, while the unit lacks it.
+A block that gives a project a file, a whole file or settings in one, does it through [its preset entries](presets.md): `constitution presets apply` writes them, and a starting file — `.editorconfig`, `AGENTS.md`, `tests/conftest.py`, `src/__tests__/sandbox.fixtures.ts` — is an entry written once with `!default`, while the unit lacks it.

@@ -13,6 +13,7 @@ import { Candidate } from '../../../../../../entities';
 type LackedFact = PresetsCode.MissingConstitution | PresetsCode.MissingName;
 
 interface FileFacts {
+  readonly isRepositoryRoot: boolean;
   readonly isRoot: boolean;
   readonly isTop: boolean;
   readonly memberPaths: readonly UnitRelativePath[];
@@ -104,6 +105,7 @@ const readFacts = (input: ReadFactsInput): FileFacts => {
   };
 
   return {
+    isRepositoryRoot: UnitPath.isRepository(input.candidate.unit.path),
     isRoot: memberPaths.length > 0,
     isTop: isTopOf(input),
     memberPaths,

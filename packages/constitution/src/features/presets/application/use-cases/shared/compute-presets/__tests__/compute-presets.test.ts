@@ -1092,6 +1092,69 @@ describe('computePresets', () => {
     },
   );
 
+  it.each<{
+    condition: string;
+    files: string[];
+    units: ProjectUnit[];
+  }>([
+    {
+      condition: 'the repository is one unit',
+      files: [
+        'AGENTS.md',
+      ],
+      units: [
+        unitOf(),
+      ],
+    },
+    {
+      condition: "the repository is a workspace, whose root and members take the guard's entry",
+      files: [
+        'AGENTS.md',
+      ],
+      units: [
+        unitOf(),
+        unitOf({
+          path: 'packages/app',
+        }),
+      ],
+    },
+    {
+      condition: "a member of a workspace is the top unit to take the guard's entry",
+      files: [],
+      units: [
+        unitOf({
+          blocks: [],
+        }),
+        unitOf({
+          path: 'packages/app',
+        }),
+      ],
+    },
+  ])(
+    "should take an entry guarded by the repository's root only in its own unit when $condition",
+    ({ files, units }) => {
+      // Arrange
+      const asked = {
+        files: releasePresets({
+          'core/foundation.yaml': [
+            'core:',
+            "  '*':",
+            "    '*':",
+            '      AGENTS.md ? ${unit.isRepositoryRoot}: !default |',
+            '        @PROJECT.md',
+          ].join('\n'),
+        }),
+        units,
+      };
+
+      // Act
+      const plan = planOf(asked);
+
+      // Assert
+      expect(plan.files.map(({ filePath }) => String(filePath))).toStrictEqual(files);
+    },
+  );
+
   it("should walk the folders for the Constitution's path once for an entry that names it twice, and not for a file that names it nowhere", () => {
     // Arrange
     const { files, project } = projectOf({

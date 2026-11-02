@@ -71,6 +71,10 @@ const booleanOf = (fact: Fact | undefined, facts: FileFacts): boolean | undefine
     return facts.isTop;
   }
 
+  if (fact !== undefined && Fact.isNamed(fact, FactName.UnitIsRepositoryRoot)) {
+    return facts.isRepositoryRoot;
+  }
+
   return fact !== undefined && Fact.isNamed(fact, FactName.WorkspaceIsRoot)
     ? facts.isRoot
     : undefined;
