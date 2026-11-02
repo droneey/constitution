@@ -6,41 +6,33 @@
 
 ### stages-run-alone · SHOULD
 
-Validating, rendering, planning and applying are stages a user runs alone, and each later stage runs the earlier ones first.
+Each stage of a run can be run without the ones after it, rendering without any engine. Validating, rendering, planning and applying are stages a user runs on their own, each later stage running the earlier ones first; rendering needs only the config file and the program's own files, never an engine or the world.
 
 | Why |
 |---|
-| a user can check, preview and plan without touching the world, and a later stage builds on exactly what an earlier one showed. |
-
-### rendering-runs-no-engine · SHOULD
-
-Rendering turns the config file into what it implies, from the file and the program's own files alone, and runs no engine.
-
-| Why |
-|---|
-| a user previews what a config file means without any engine installed and without reaching the world. |
+| a user who can run only the whole must touch the world, or install what applies it, to learn what a config file means, and a later stage that skips the earlier ones acts on something no stage showed. |
 
 ## Reports and output
 
 ### run-reports-per-stage · SHOULD
 
-A run's report holds an entry for each stage: skipped with its reason, unchanged, changed, ran or failed.
+A run reports per stage. Its report holds an entry for each stage: skipped with its reason, unchanged, changed, ran or failed.
 
 | Why |
 |---|
-| the user sees what happened to each part, and where a failed run stopped. |
+| a report of the run as a whole hides what happened to each part, and the user of a failed run cannot tell where it stopped. |
 
 ### run-output-in-one-work-folder · SHOULD
 
-What a run produces — rendered files, records of state — lands in one work folder, apart from the config file.
+A run's output lands in one work folder. What a run produces — rendered files, records of state — lands there, apart from the config file.
 
 | Why |
 |---|
-| rendered files and state never mix with the config file, and one folder is cleared or ignored as a whole. |
+| output scattered beside the config file mixes with what the user wrote, is committed or edited by mistake, and cannot be cleared or ignored as a whole. |
 
 ### work-folder-keeps-secrets-as-references · MUST
 
-What a run writes to its work folder — rendered files, its plan, its state — holds a secret only as a reference by name, or the folder is encrypted and never shared.
+The work folder keeps a secret only as a reference. What a run writes there — rendered files, its plan, its state — holds a secret only as a reference by name, or the folder is encrypted and never shared.
 
 | Why |
 |---|

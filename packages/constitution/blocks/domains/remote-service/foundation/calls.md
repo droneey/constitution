@@ -1,26 +1,16 @@
 # Calls
 
-> Governs a call to another system: the addresses callers give it, its failures, its time, its load and its TLS.
+> Governs a call to another system: the addresses callers give it, its failures, its time, its load and the keys it pins.
 
 ## Addresses from callers
 
 ### address-from-a-caller-reached-only-if-public → outside-address-followed-only-from-an-allowlist · MUST
 
-An address a caller gives for the program to reach — a callback to notify, a file to fetch, a link to preview — is reached only on a host of an allowlist where the program can know its hosts, with no redirect followed past these checks, and only when the address the host resolves to, checked as the connection opens, is public — not private, loopback, link-local, unspecified, shared, reserved, or an IPv4 address mapped into IPv6.
+An address a caller gives the program to reach is reached only if it is public. Such an address — a callback to notify, a file to fetch, a link to preview — is reached only on a host of an allowlist where the program can know its hosts, with no redirect followed past these checks, and only when the address the host resolves to, checked as the connection opens, is public — not private, loopback, link-local, unspecified, shared, reserved, or an IPv4 address mapped into IPv6.
 
 | Why |
 |---|
-| the program reaches what its callers cannot — its own network, the cloud's metadata endpoint — and an address checked before the connection is re-resolved in between by the attacker's name server. |
-
-## Failures
-
-### call-cut-by-the-network-is-an-expected-failure → failure-is-expected-or-defect · MUST
-
-A call to a remote system that times out, loses its connection or cannot reach the system fails with an expected failure of its own type, which its caller handles and may retry — never a hang, a defect or a silent loss.
-
-| Why |
-|---|
-| a remote system is out of reach somewhere every day, and a program that treats that as a bug fails its users each time. |
+| the program reaches what its callers cannot (its own network, the cloud's metadata endpoint) and an address checked before the connection is re-resolved in between by the attacker's name server. |
 
 ## Load
 
@@ -30,40 +20,40 @@ Calls in flight to one remote system are bounded by a limit, and a call beyond i
 
 | Why |
 |---|
-| a slow system otherwise holds every connection and worker of the program, and the parts that never call it stop too. |
+| a slow system otherwise holds every connection and worker of the program, and the parts that never call it stop too — the bulkhead pattern. |
 
 ### calls-to-a-failing-system-cut-off-by-a-breaker · SHOULD
 
-Calls to a remote system that keeps failing are cut off by a breaker: past a threshold of failures the project sets, calls fail at once without reaching the system, and after a pause one trial call decides whether they resume.
+Calls to a remote system that keeps failing are cut off by a breaker. Past a threshold of failures the project sets, calls fail at once without reaching the system, and after a pause one trial call decides whether they resume.
 
 | Why |
 |---|
-| calls to a system that is down only wait out their timeouts, hold the program's resources and slow the system's recovery. |
+| calls to a system that is down only wait out their timeouts, hold the program's resources and slow the system's recovery — the circuit breaker pattern. |
 
 ## Security
 
-### call-runs-over-verified-tls · MUST
+### pinned-endpoint-carries-a-backup-pin · MUST
 
-A call to another system that crosses a network runs over TLS — the program's own, or that of a proxy on its host that verifies for it — which verifies the system's certificate and its name, and never turns the verification off.
+An endpoint whose key a client pins is pinned to at least two keys, one of them a backup not yet in use.
 
 | Why |
 |---|
-| a call that trusts any certificate talks to whoever sits on its path. |
+| a pinned key that must be replaced otherwise cuts every client that pinned it off the system until that client is updated, and an installed app waits for its user to update it. |
 
 ## Requirements for implementation
 
-### transport-sets-a-timeout-and-cancels · MUST
+### transport-sets-a-timeout-and-cancels → outside-call-has-a-timeout · MUST
 
 The transport sets a timeout on each call, per call, and cancels a call by its caller's signal.
 
 | Why |
 |---|
-| without it, no call can be held to a timeout or cancelled by its caller. |
+| a transport that cannot take a timeout and a signal per call leaves every call it makes unbounded and beyond its caller's cancel. |
 
 ### transport-tells-failures-apart · MUST
 
-The transport tells apart, each by a type of its own, a failure the remote system answered, a lost connection and a timeout.
+The transport tells its failures apart by type. A failure the remote system answered, a lost connection and a timeout each have a type of their own.
 
 | Why |
 |---|
-| each maps to a different error of the program, with a different next step for its user. |
+| the three map to different errors of the program, each with its own next step, so a transport that confuses them sends its user to retry what was refused or to fix what only timed out. |

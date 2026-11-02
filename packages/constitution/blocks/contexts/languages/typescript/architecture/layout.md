@@ -1,12 +1,12 @@
 # Layout
 
-> Governs role suffixes and surfaces.
+> Governs a package's tree in TypeScript: its surfaces, how they are imported, and its role suffixes.
 
 ## Surfaces
 
 ### surface-is-the-folders-index-ts → surface-only-on-a-module-or-one-kind · MUST
 
-A surface is the `index.ts` of its folder, and a folder that has no surface — a layer folder, the source of an application — holds no `index.ts`.
+A surface is the `index.ts` of its folder. A folder that has no surface — a layer folder other than `root/`, the source of a program no package imports — holds no `index.ts`.
 
 | Why |
 |---|
@@ -14,18 +14,18 @@ A surface is the `index.ts` of its folder, and a folder that has no surface — 
 
 ### surface-imported-by-its-folders-path → module-reached-only-through-its-surface · MUST
 
-An import of a surface ends at its folder — `…/features/orders`, `…/kernel/errors` — never at its `index` or a file below it; code that runs on a runtime that maps no folder to its surface is bundled first.
+An import of a surface ends at its folder. It names the folder — `…/features/<feature>`, `…/kernel/errors` — never its `index` or a file below it; code that runs on a runtime that maps no folder to its surface is bundled first.
 
 | Why |
 |---|
-| the specifier then names the door it goes through, and an import that reaches past the surface shows as a breach in the import itself. |
+| an import that ends at `index` or at a file below it hides whether it went through the door, so a breach of the surface reads like any other import. |
 
 ## Names
 
 ### role-suffix-spelled-after-a-dot → file-carries-its-role-suffix · MUST
 
-A role file is `<name>.<role>.ts` — `order.entity.ts`, `orders.repository.ts` — its role spelled as the vocabulary spells it.
+A role file is `<name>.<role>.ts`. Its role is spelled after a dot, as the vocabulary spells it.
 
 | Why |
 |---|
-| the dot sets the role apart from a kebab-case name of several words, so the role reads the same way in every folder. |
+| a role joined to a kebab-case name by a hyphen reads as one more word of that name, so neither a reader nor a tool can tell the role apart from it. |

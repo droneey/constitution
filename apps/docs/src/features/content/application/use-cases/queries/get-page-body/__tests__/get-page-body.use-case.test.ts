@@ -1,0 +1,27 @@
+import { describe, expect, it } from 'bun:test';
+
+import { createFakePageBodyQueries } from '../../../__tests__/page-bodies.repository.fake';
+import { createGetPageBody } from '../get-page-body.use-case';
+
+const PAGE_BODY = 'body of guide:guides/write-a-pack.md';
+
+describe('createGetPageBody', () => {
+  it('should find the body of the page its collection holds', () => {
+    // Arrange
+    const page = {
+      collection: 'guide',
+      path: 'guides/write-a-pack.md',
+    };
+    const getPageBody = createGetPageBody(
+      createFakePageBodyQueries([
+        page,
+      ]),
+    );
+
+    // Act
+    const body = getPageBody(page);
+
+    // Assert
+    expect(body).toBe(PAGE_BODY);
+  });
+});

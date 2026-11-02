@@ -6,8 +6,8 @@
 
 ### zod-issues-become-error-details → parse-failure-lists-every-problem · SHOULD
 
-Input is parsed with `safeParse`, and each of the error's `issues` becomes a detail, with its `path`.
+Every issue of a failed parse becomes a detail of the error, with its `path`. Input is parsed with `safeParse`, and each of the error's `issues` becomes one detail.
 
 | Why |
 |---|
-| `safeParse` returns every issue as a value, and each carries the path to its place. |
+| a parse that throws, or reports one issue, hides the input's other problems, so the caller fixes one and meets the next on each try; `safeParse` returns every issue as a value, each with the path to its place. |

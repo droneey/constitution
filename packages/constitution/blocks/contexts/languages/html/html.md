@@ -1,6 +1,6 @@
 ---
 id: html
-summary: "HTML documents: doctype, encoding, ids, attributes and markup."
+summary: "HTML documents: encoding, ids, attributes and markup."
 requires: []
 extends: null
 abstract: false

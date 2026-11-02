@@ -6,7 +6,7 @@
 
 ### optional-peer-ignored-in-production · MUST
 
-The framework an integration imports as an optional peer is listed in `ignoreDependencies` with `!`, `'<framework>!'`, in the configuration of the package that offers the integration.
+An integration's optional peer is ignored by the production runs alone. The framework an integration imports as an optional peer is listed in `ignoreDependencies` with `!`, `'<framework>!'`, in the configuration of the package that offers the integration.
 
 | Why |
 |---|

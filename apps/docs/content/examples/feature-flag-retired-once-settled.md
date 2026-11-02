@@ -1,6 +1,6 @@
 ```pseudo title="Avoid"
-# newCheckout: on everywhere since May
-if flags.newCheckout then
+# oneStepCheckout: on everywhere since May
+if flags.oneStepCheckout then
   checkOutInOneStep(cart)
 else
   checkOutInThreeSteps(cart)

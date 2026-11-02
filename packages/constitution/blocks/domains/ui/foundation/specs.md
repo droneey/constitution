@@ -6,15 +6,15 @@
 
 ### screen-spec-proves-states-and-interactions → spec-proves-one-boundary · SHOULD
 
-A screen's spec proves each data state, each interaction that changes something, each message the user sees and each navigation.
+A screen's spec proves what a person does with the screen. It proves each data state, each interaction that changes something, each message the user sees and each navigation.
 
 | Why |
 |---|
-| that is what a person does with a screen; a spec that proves it fails when their experience changes. |
+| a screen spec that misses a state, an interaction, a message or a navigation passes while that part of the person's experience breaks. |
 
 ### component-spec-proves-behaviour-and-keyboard → spec-proves-one-boundary · SHOULD
 
-A reusable component's spec proves the variants that change behaviour or meaning, its keyboard use, its focus, and its accessible name, role and state.
+A reusable component's spec proves its behaviour and its keyboard use. It proves the variants that change behaviour or meaning, its keyboard use, its focus, and its accessible name, role and state.
 
 | Why |
 |---|
@@ -22,15 +22,15 @@ A reusable component's spec proves the variants that change behaviour or meaning
 
 ### element-found-by-role-label-or-text → case-asserts-what-a-caller-observes · MUST
 
-An element a spec looks for is found by its role, its label or its text, never by a class or internal state; an element no person perceives — one hidden from assistive technology, or a framework's own element — is found by an attribute the code that renders it sets for the spec; and a selector the program configures a framework with is checked by one spec, through that same constant.
+A spec finds an element by its role, its label or its text. It never finds one by a class or internal state; an element no person perceives — one hidden from assistive technology, or a framework's own element — is found by an attribute the code that renders it sets for the spec; and a selector the program configures a framework with is checked by one spec, through that same constant.
 
 | Why |
 |---|
-| a spec that finds elements as a user does changes only when the behaviour does, and an element no user perceives has nothing else a spec can find it by but an attribute set for the spec; a selector handed to a framework is a contract with markup the program does not render, which only a spec of that selector proves. |
+| a spec that finds an element by a class or internal state breaks when the markup changes while the behaviour holds, and passes when the element loses the role or name a person finds it by; an element no user perceives has nothing else a spec can find it by but an attribute set for the spec; a selector handed to a framework is a contract with markup the program does not render, which only a spec of that selector proves. |
 
 ### layout-and-focus-proven-on-the-platform · SHOULD
 
-Behaviour that depends on layout, visibility or real focus is proven where the platform renders it — an end-to-end spec, or a component spec the platform's own engine runs — never only in a simulation of the platform.
+Behaviour that depends on layout, visibility or real focus is proven where the platform renders it. That is an end-to-end spec, or a component spec the platform's own engine runs, never only a simulation of the platform.
 
 | Why |
 |---|

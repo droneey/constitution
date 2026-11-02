@@ -7,13 +7,13 @@ core:
           from:
             path: ^${role.source}/
             pathNot:
-              - ^${role.source}/${role.gateway}/
-              - ^${role.source}/(?:${role.bounded-context}|${role.composition-module})/[^/]+/${role.gateway}/
+              - ^${role.source}/${role.adapter}/
+              - ^${role.source}/(?:${role.bounded-context}|${role.composition-module})/[^/]+/${role.adapter}/
               - ^${role.source}/(?!index\.)[^/]+\.[^/]+$
               - ^${role.source}/${role.extra-entry}/[^/]+/main\.[^/]+$
               - ^${role.source}/${role.composition-root}/
               - ^${role.source}/(${role.generic-library}|${role.host-integration})/
-              - (^|/)__tests__/
+              - (^|/)${role.colocated-specs}/
               - ^${role.package-suites}/
               - ^${role.source}/index\.[^/]+$
           to:

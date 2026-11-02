@@ -10,12 +10,12 @@ No class list uses the important modifier, `px-0!` or `!px-0`.
 
 | Why |
 |---|
-| the modifier writes an `!important` declaration the stylesheet rule never sees. |
+| the modifier writes an `!important` declaration the stylesheet rule never sees, so a class list overrides the cascade while the rule against `!important` passes. |
 
 ### tailwind-layers-are-the-order → layer-order-declared-once · SHOULD
 
-The order of the layers is Tailwind's — `theme, base, components, utilities` — with the project's layers named among them. Tailwind is imported layer by layer (`@import "tailwindcss/theme.css" layer(theme)` and the rest), and any other stylesheet from outside into a layer of its own.
+The order of the layers is Tailwind's. It is `theme, base, components, utilities`, with the project's layers named among them; Tailwind is imported layer by layer, as `@import "tailwindcss/theme.css" layer(theme)` and the rest, and any other stylesheet from outside into a layer of its own.
 
 | Why |
 |---|
-| Tailwind declares its layers itself; a second order would fight it. |
+| Tailwind declares its layers itself, so a second order declared beside it fights it and a utility loses to a rule it should override. |

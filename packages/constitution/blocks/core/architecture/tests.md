@@ -1,13 +1,13 @@
 # Tests
 
-> Governs which units of the tree are a spec's boundaries.
+> Governs a spec's place in the tree: which units are its boundaries, and how the units that decide nothing are proven.
 
 ## Boundaries
 
-### spec-boundaries-follow-the-tree · SHOULD
+### spec-boundaries-follow-the-tree · MUST
 
-The boundaries of the tree are what a caller outside a folder reaches through its surface: a use case of the domain, an adapter, a delivery unit, a reusable unit of a composition module, a lib, an entity or a value object that holds an invariant or a transition, and a unit of the root other than the wiring; the wiring gets no spec, composition gets one where it derives a fact or implements a contract, and a binding unit that is no delivery unit is proven through the units that consume it.
+Each boundary of the tree gets its spec. The boundaries are what a caller outside a folder reaches through its surface: a use case with the parse of its operation input, an aggregate through its transitions, predicates and derived values, a domain service, a value object that holds an invariant, an adapter, a delivery unit, a binding unit that holds a decision, an interface-wide unit, a reusable unit of a composition module and a lib. A binding unit that only hands an operation to its framework is proven through the delivery units that consume it, and composition gets a spec where it derives a fact or implements a port. The composition root and the entry files, which decide nothing, get no spec of their own and are proven by the program's boot spec.
 
 | Why |
 |---|
-| each of these is a unit another part of the program relies on, and what sits behind a surface is proven through it; a binding unit only hands an operation to the framework, so the unit that consumes it proves it the way its caller meets it. |
+| a unit another part of the program relies on that has no spec of its own breaks unseen, and a spec of what sits behind a surface breaks whenever that part moves while the behaviour stays; a binding unit that decides is proven where it decides, and one that only hands an operation over is proven the way its caller meets it. |

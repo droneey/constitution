@@ -6,7 +6,7 @@
 
 ### actionlint-ignore-names-workflow-and-message → suppression-silences-one-finding · MUST
 
-A finding of actionlint's own checks is silenced only in `.github/actionlint.yaml`: an `ignore` pattern of its message, under `paths` keyed by the one workflow's path, with the reason above it; never by `-ignore` on the command line, nor under a key that matches several workflows.
+A finding of actionlint's own checks is silenced only in `.github/actionlint.yaml`, for one workflow. It is an `ignore` pattern of its message, under `paths` keyed by that workflow's path, with the reason above it; never by `-ignore` on the command line, nor under a key that matches several workflows.
 
 | Why |
 |---|

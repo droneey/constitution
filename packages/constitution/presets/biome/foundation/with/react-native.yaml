@@ -6,7 +6,8 @@ react-native:
           rules:
             style:
               noReactNativeLiteralColors: error
-  react-native-imported-from-its-entry:
+core:
+  dependency-reached-through-its-published-entries:
     typescript:
       biome.jsonc:
         linter:

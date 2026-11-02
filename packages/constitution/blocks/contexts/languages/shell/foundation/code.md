@@ -1,12 +1,12 @@
 # Code
 
-> Governs what a script does, its expansions, its lists and its reads, and the commands other files hold.
+> Governs any shell code no other chapter governs: what a script does, its expansions and its lists, and the commands other files hold.
 
 ## General
 
 ### script-only-glues-commands · SHOULD
 
-A script runs commands and passes their results along; logic of its own — parsing structured data, computing over records, branching on many cases — is written in the program's language.
+A script only glues commands. It runs commands and passes their results along; logic of its own — parsing structured data, computing over records, branching on many cases — is written in the program's language.
 
 | Why |
 |---|
@@ -14,7 +14,7 @@ A script runs commands and passes their results along; logic of its own — pars
 
 ### command-another-file-holds-kept-short · SHOULD
 
-A shell command another file holds — a manifest's script, a CI step, a hook's command — stays within the number of commands the project sets, and anything longer is a `.sh` file the command runs.
+A shell command another file holds is kept short. Such a command — a manifest's script, a CI step, a hook's command — stays within the number of commands the project sets, and anything longer is a `.sh` file the command runs.
 
 | Why |
 |---|
@@ -22,7 +22,7 @@ A shell command another file holds — a manifest's script, a CI step, a hook's 
 
 ### expansion-double-quoted · MUST
 
-Every expansion of a parameter or a command is double-quoted — `"$file"`, `"$(date +%s)"`, `"${paths[@]}"` — save the left side inside `[[ ]]`, and inside `(( ))`; the right side of `==`, `!=` or `=~` in `[[ ]]` is quoted unless it is meant as a pattern.
+Every expansion of a parameter or a command is double-quoted. This holds in a script and in a command another file holds, for a parameter, a command's output and an array's elements, save the left side inside `[[ ]]`, and inside `(( ))`; the right side of `==`, `!=` or `=~` in `[[ ]]` is quoted unless it is meant as a pattern.
 
 | Why |
 |---|
@@ -30,16 +30,8 @@ Every expansion of a parameter or a command is double-quoted — `"$file"`, `"$(
 
 ### list-held-in-an-array · SHOULD
 
-In Bash, a list of words — files, arguments, flags — is held in an array and expanded as `"${list[@]}"`, never in a string split on spaces; below Bash 4.4, an array that may be empty is expanded as `${list[@]+"${list[@]}"}`, which `set -u` accepts.
+In Bash, a list of words is held in an array, never in a string split on spaces. Such a list holds files, arguments or flags and is expanded as `"${<array>[@]}"`; below Bash 4.4, an array that may be empty is expanded as `${<array>[@]+"${<array>[@]}"}`, which `set -u` accepts.
 
 | Why |
 |---|
 | a string split on spaces breaks every item that holds one, while an array keeps each item whole. |
-
-### line-read-raw · SHOULD
-
-A line is read by `IFS= read -r`.
-
-| Why |
-|---|
-| without `-r`, read drops backslashes, and without an empty `IFS` it trims the line's leading and trailing spaces. |

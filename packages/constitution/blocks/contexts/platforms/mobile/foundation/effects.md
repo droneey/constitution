@@ -1,12 +1,12 @@
 # Effects
 
-> Governs background work.
+> Governs the effects of an app on a phone or tablet: its background work.
 
 ## Calls and resources
 
 ### background-work-handed-to-the-systems-scheduler → async-work-awaited-or-held-by-a-scope · MUST
 
-Work that must finish after the app leaves the foreground — an upload, a sync, a queued write — is handed to the system's scheduler of background work, never left to a timer or a task of the app it suspends.
+Work that must finish after the app leaves the foreground is handed to the system's scheduler of background work. Such work — an upload, a sync, a queued write — is never left to a timer or a task of the app the system suspends.
 
 | Why |
 |---|

@@ -3,12 +3,13 @@ let carts = new CartRepositoryFake()
 
 test "should add a mug to the cart"
   # ...
-  addItem(carts, "cart-1", aMug())
+  addProduct({ cartId: "cart-1", product: createMug() }, carts)
 
 test "should total the cart at 12"
   # Arrange: the mug added above
   # Act
-  let total = cartTotal(carts, "cart-1")
+  let total = carts.find("cart-1").total
+
   # Assert
   assert total is 12
 ```
@@ -16,11 +17,10 @@ test "should total the cart at 12"
 ```pseudo title="Prefer"
 test "should total the cart at 12"
   # Arrange
-  let cart = aCart({ items: [aMug()] })
-  let carts = new CartRepositoryFake()
-  carts.save(cart)
+  let cart = createCart({ products: [createMug()] })
   # Act
-  let total = cartTotal(carts, cart.id)
+  let total = Cart.total(cart)
+
   # Assert
   assert total is 12
 ```

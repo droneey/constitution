@@ -10,4 +10,4 @@ Version control ignores `mise.local.toml`.
 
 | Why |
 |---|
-| a person's overrides stay on their machine and never change the toolchain of the others. |
+| a committed `mise.local.toml` changes the toolchain of everyone who pulls it to one person's choice. |

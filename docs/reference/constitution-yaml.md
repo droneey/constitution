@@ -31,7 +31,7 @@ packs:
 overrides: []
 ```
 
-Every key but `name` is required; a missing or an unknown key is a warning in the digest. `/constitution:ratify` writes them all, `name` included, in this order. A member of a workspace keeps a file of its own, of the same keys: [members of a workspace](#members-of-a-workspace). The check is no key: the runner blocks give it, and `constitution run check` runs it.
+Every key but `name` is required; a missing or an unknown key is a warning in the digest. `/constitution:ratify` writes them all, `name` included, in this order. A member of a workspace keeps a file of its own, of the same keys: [members of a workspace](#members-of-a-workspace). The check is no key: the runner blocks give it, and `constitution run check` runs it; [Run the check in CI](../guides/check-in-ci.md) runs it on every pull request.
 
 ## Keys
 
@@ -75,10 +75,6 @@ The libraries, tools and services the project installs, runs or reaches. [The im
 ## packs
 
 The folders of blocks the project follows beside the Constitution's: its own pack, and those it shares with other projects. [Write a pack](../guides/write-a-pack.md) shapes one.
-
-## check
-
-The one command that runs every tool; the hand-back waits until it passes. [Run the check in CI](../guides/check-in-ci.md) runs it on every pull request.
 
 ## overrides
 

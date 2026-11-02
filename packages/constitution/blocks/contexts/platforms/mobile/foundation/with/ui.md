@@ -1,16 +1,16 @@
 # User interface
 
-> Governs screens on a phone or tablet: the system's lifecycle, links, permissions, the keyboard, touch and the system's accessibility settings.
+> Governs screens on a phone or tablet: the system's lifecycle, its safe areas and back gesture, the view state its navigation parameters hold, what it hides from captures and the clipboard, speed, the keyboard, touch and the system's accessibility settings.
 
 ## Screens
 
 ### state-survives-the-os-lifecycle · SHOULD
 
-Input and view state survive the system's lifecycle: going to the background, being suspended and being ended by the system lose neither.
+Input and view state survive the system's lifecycle. Going to the background, being suspended and being ended by the system lose neither.
 
 | Why |
 |---|
-| the system ends apps without asking, and a user who comes back expects to find what they left. |
+| the system ends apps without asking, and a user who comes back to find what they left gone has lost their work. |
 
 ### content-kept-inside-the-safe-areas · MUST
 
@@ -22,7 +22,7 @@ Content and controls stay inside the screen's safe areas.
 
 ### back-gesture-goes-back · SHOULD
 
-The system's back gesture and button go back, and no gesture of the app's own competes with the navigator's.
+The system's back gesture and button go back. No gesture of the app's own competes with the navigator's.
 
 | Why |
 |---|
@@ -36,43 +36,27 @@ View state a deep link or a restart must reproduce lives in the navigation param
 |---|
 | a view whose state is not in its parameters can be neither linked nor restored after the system ends the app. |
 
-### deep-link-only-opens-a-screen · MUST
-
-A link opens a screen with its parameters and performs no action — a payment, a send, a change of settings — until the user confirms it there.
-
-| Why |
-|---|
-| anyone can craft a link and get it tapped, so a link that acts at once acts for its author, not for the user. |
-
 ### sensitive-screen-hidden-from-captures · SHOULD
 
-A screen that shows a secret or sensitive personal data blocks screenshots and screen recording where the system allows it, and is covered in the snapshot the app switcher keeps.
+A sensitive screen is hidden from captures. A screen is sensitive when it shows a secret or sensitive personal data; it blocks screenshots and screen recording where the system allows it, and is covered in the snapshot the app switcher keeps.
 
 | Why |
 |---|
 | screenshots sync to the cloud and the app switcher shows the last screen to whoever holds the phone, so what was on it outlives the moment it was read. |
 
-### permission-requested-when-its-feature-is-first-used · SHOULD
+### app-vitals-within-budget → felt-speed-measured-in-the-field-within-budget · SHOULD
 
-A permission is requested when the user first reaches the feature that needs it, after the screen says why, never at start.
-
-| Why |
-|---|
-| a person grants what they understand at the moment it is needed, and a request at start, out of context, is refused for good. |
-
-### refused-permission-leaves-the-app-working · SHOULD
-
-A refused permission leaves every feature that does not need it working, and the feature that needs it says what it lacks and how to grant it in the system's settings.
+The app's vitals stay within their budgets, never past the stores' thresholds of bad behaviour. The budgets cover the app's cold start, slow and frozen frames, crash rate and rate of the system's not-responding reports.
 
 | Why |
 |---|
-| a person who refuses one permission still came to use the app, and a feature that fails silently tells them nothing. |
+| they measure what people feel of an app (the wait to open it, the stutter, the crash) and a store that sees them cross its thresholds shows the app to fewer people. |
 
 ## Components
 
 ### copied-secret-marked-sensitive · SHOULD
 
-A secret the app copies — a one-time code, a password, a key — is marked sensitive and local to the device, and expires from the clipboard.
+A copied secret is marked sensitive and local to the device, and expires from the clipboard. This holds for each secret the app copies — a one-time code, a password, a key.
 
 | Why |
 |---|
@@ -90,7 +74,7 @@ The focused field and its action stay above the on-screen keyboard.
 
 ### sensitive-field-kept-from-keyboard-learning → field-declares-its-kind · MUST
 
-A field that takes a secret is declared a secure entry, and one that takes other sensitive data turns off the keyboard's suggestions and learning; the system's autofill stays on.
+A sensitive field is kept from the keyboard's learning. A field that takes a secret is declared a secure entry, and one that takes other sensitive data turns off the keyboard's suggestions and learning; the system's autofill stays on.
 
 | Why |
 |---|
@@ -104,7 +88,7 @@ A touch target is at least 44 × 44 points on iOS and 48 × 48 density-independe
 
 | Why |
 |---|
-| these are the sizes a finger hits reliably, as each system's guidelines set them. |
+| a finger misses a target smaller than the size each system's guidelines set as the one it hits reliably — WCAG 2.2, Target Size (Enhanced). |
 
 ### control-declares-label-role-and-state → every-control-has-an-accessible-name · MUST
 
@@ -112,43 +96,35 @@ Every interactive element declares its accessible label, role and state through 
 
 | Why |
 |---|
-| the system's screen reader reads only what these properties declare. |
-
-### screen-reader-order-follows-the-layout → focus-order-follows-the-visual-order · MUST
-
-The screen reader's order follows the visual order.
-
-| Why |
-|---|
-| a reading order that jumps around the screen cannot be followed. |
+| the system's screen reader reads only what these properties declare, so a control that declares none is silent or misnamed to its user — WCAG 2.2, Name, Role, Value. |
 
 ### text-follows-the-systems-text-size → wcag-aa-conformance · MUST
 
-Text follows the system's text size, up to its largest accessibility size, and layouts reflow so nothing is clipped or overlaps.
+Text follows the system's text size, up to its largest accessibility size. Layouts reflow so nothing is clipped or overlaps.
 
 | Why |
 |---|
-| people who set a larger text size need it in every app, not only in the system's own. |
+| a person who set a larger text size cannot read an app that ignores it, nor text its layout clips — WCAG 2.2, Resize Text. |
 
 ### reduced-motion-read-from-the-system → reduced-motion-honoured · MUST
 
-The request for reduced motion is the system's setting — Reduce Motion on iOS, Remove animations on Android — read when the app starts and again when it changes.
+The request for reduced motion is read from the system's setting. The setting is Reduce Motion on iOS and Remove animations on Android, read when the app starts and again when it changes.
 
 | Why |
 |---|
-| the setting is the user's request, made once for every app. |
+| the user makes the request once, in the system, for every app, so an app that reads it elsewhere, or only at its start, moves when it was asked not to. |
 
 ### orientations-declared-in-the-manifest → orientation-never-locked · MUST
 
-The app's manifest — `Info.plist` on iOS, `AndroidManifest.xml` on Android — declares portrait and landscape; a screen whose one orientation is essential locks it in its own code.
+The app's manifest declares both portrait and landscape. The manifest is `Info.plist` on iOS and `AndroidManifest.xml` on Android; a screen whose one orientation is essential locks it in its own code.
 
 | Why |
 |---|
-| an orientation locked in the manifest turns every screen away from a person whose device is mounted the other way. |
+| an orientation locked in the manifest turns every screen away from a person whose device is mounted the other way — WCAG 2.2, Orientation. |
 
 ### component-operated-with-each-systems-screen-reader → interactive-checked-by-hand · SHOULD
 
-Before a new interactive component ships, a person operates it with VoiceOver on iOS and TalkBack on Android, and with Switch Control or Switch Access.
+A new interactive component is operated with each system's screen reader and switch access before it ships. A person operates it with VoiceOver on iOS and TalkBack on Android, and with Switch Control or Switch Access.
 
 | Why |
 |---|

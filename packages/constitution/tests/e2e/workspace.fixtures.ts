@@ -194,7 +194,7 @@ const eros: Files = {
     },
     name: '@shop/eros-typescript',
   }),
-  'packages/@eros/typescript/src/features/errors/domain/errors/eros.error.ts': `import type { ErrorCode } from '../value-objects';
+  'packages/@eros/typescript/src/features/errors/domain/error/errors/eros.error.ts': `import type { ErrorCode } from '../value-objects';
 
 export class ErosError extends Error {
   readonly code: ErrorCode;
@@ -205,28 +205,28 @@ export class ErosError extends Error {
   }
 }
 `,
-  'packages/@eros/typescript/src/features/errors/domain/errors/index.ts':
+  'packages/@eros/typescript/src/features/errors/domain/error/errors/index.ts':
     "export { ErosError } from './eros.error';\n",
-  'packages/@eros/typescript/src/features/errors/domain/value-objects/error-code.value-object.ts': `export type ErrorCode = string & { readonly __brand: 'ErrorCode' };
+  'packages/@eros/typescript/src/features/errors/domain/error/value-objects/error-code.value-object.ts': `export type ErrorCode = string & { readonly __brand: 'ErrorCode' };
 
 export const isErrorCode = (text: string): text is ErrorCode => /^[a-z-]+\\.[a-z-]+$/u.test(text);
 `,
-  'packages/@eros/typescript/src/features/errors/domain/value-objects/index.ts':
+  'packages/@eros/typescript/src/features/errors/domain/error/value-objects/index.ts':
     "export { type ErrorCode, isErrorCode } from './error-code.value-object';\n",
   'packages/@eros/typescript/src/features/errors/index.ts':
-    "export { ErosError } from './domain/errors';\nexport { type ErrorCode, isErrorCode } from './domain/value-objects';\n",
-  'packages/@eros/typescript/src/features/mapping/domain/use-cases/queries/kind-of/index.ts':
+    "export { ErosError } from './domain/error/errors';\nexport { type ErrorCode, isErrorCode } from './domain/error/value-objects';\n",
+  'packages/@eros/typescript/src/features/mapping/application/use-cases/queries/kind-of/index.ts':
     "export { kindOf } from './kind-of.use-case';\n",
-  'packages/@eros/typescript/src/features/mapping/domain/use-cases/queries/kind-of/kind-of.use-case.ts': `import { KINDS } from '#/kernel/constants';
+  'packages/@eros/typescript/src/features/mapping/application/use-cases/queries/kind-of/kind-of.use-case.ts': `import { KINDS } from '#/kernel/constants';
 
 export const kindOf = (code: string): string | undefined =>
   KINDS.find((kind) => code.startsWith(\`\${kind}.\`));
 `,
   'packages/@eros/typescript/src/features/mapping/index.ts':
-    "export { kindOf } from './domain/use-cases/queries/kind-of';\n",
-  'packages/@eros/typescript/src/features/problem/adapters/problem/index.ts':
+    "export { kindOf } from './application/use-cases/queries/kind-of';\n",
+  'packages/@eros/typescript/src/features/problem/infrastructure/problem/index.ts':
     "export { problemOf } from './problem.adapter';\n",
-  'packages/@eros/typescript/src/features/problem/adapters/problem/problem.adapter.ts': `import type { Problem } from '../../domain/entities';
+  'packages/@eros/typescript/src/features/problem/infrastructure/problem/problem.adapter.ts': `import type { Problem } from '../../domain/problem/entities';
 
 // The wire shape of RFC 9457.
 interface ProblemDocument {
@@ -241,28 +241,28 @@ export const problemOf = (problem: Problem): ProblemDocument => ({
   type: 'about:blank',
 });
 `,
-  'packages/@eros/typescript/src/features/problem/domain/entities/index.ts':
+  'packages/@eros/typescript/src/features/problem/domain/problem/entities/index.ts':
     "export type { Problem } from './problem.entity';\n",
-  'packages/@eros/typescript/src/features/problem/domain/entities/problem.entity.ts':
+  'packages/@eros/typescript/src/features/problem/domain/problem/entities/problem.entity.ts':
     'export interface Problem {\n  readonly code: string;\n  readonly status: number;\n}\n',
   'packages/@eros/typescript/src/features/problem/index.ts':
-    "export type { Problem } from './domain/entities';\n",
-  'packages/@eros/typescript/src/features/records/domain/entities/error-record.entity.ts':
+    "export type { Problem } from './domain/problem/entities';\n",
+  'packages/@eros/typescript/src/features/records/domain/error-record/entities/error-record.entity.ts':
     'export interface ErrorRecord {\n  readonly code: string;\n  readonly kind: string;\n}\n',
-  'packages/@eros/typescript/src/features/records/domain/entities/index.ts':
+  'packages/@eros/typescript/src/features/records/domain/error-record/entities/index.ts':
     "export type { ErrorRecord } from './error-record.entity';\n",
-  'packages/@eros/typescript/src/features/records/domain/use-cases/queries/to-record/index.ts':
+  'packages/@eros/typescript/src/features/records/application/use-cases/queries/to-record/index.ts':
     "export { toRecord } from './to-record.use-case';\n",
-  'packages/@eros/typescript/src/features/records/domain/use-cases/queries/to-record/to-record.use-case.ts': `import type { ErrorRecord } from '../../../entities';
+  'packages/@eros/typescript/src/features/records/application/use-cases/queries/to-record/to-record.use-case.ts': `import type { ErrorRecord } from '../../../../domain/error-record/entities';
 
 export const toRecord = (input: ErrorRecord): ErrorRecord => ({ code: input.code, kind: input.kind });
 `,
   'packages/@eros/typescript/src/features/records/index.ts':
-    "export type { ErrorRecord } from './domain/entities';\nexport { toRecord } from './domain/use-cases/queries/to-record';\n",
+    "export type { ErrorRecord } from './domain/error-record/entities';\nexport { toRecord } from './application/use-cases/queries/to-record';\n",
   'packages/@eros/typescript/src/index.ts': `export { ErosError, type ErrorCode, isErrorCode } from './features/errors';
 export { kindOf } from './features/mapping';
 export type { Problem } from './features/problem';
-export { problemOf } from './features/problem/adapters/problem';
+export { problemOf } from './features/problem/infrastructure/problem';
 export { type ErrorRecord, toRecord } from './features/records';
 export { KINDS } from './kernel/constants';
 `,
@@ -303,13 +303,14 @@ export const KINDS: readonly string[] = isKinds(kinds) ? kinds : [];
   'packages/@eros/python/src/shop_eros_python/features/__init__.py': '',
   'packages/@eros/python/src/shop_eros_python/features/errors/__init__.py': '',
   'packages/@eros/python/src/shop_eros_python/features/errors/domain/__init__.py': '',
-  'packages/@eros/python/src/shop_eros_python/features/errors/domain/errors/__init__.py': '',
-  'packages/@eros/python/src/shop_eros_python/features/errors/domain/errors/eros_error.py':
+  'packages/@eros/python/src/shop_eros_python/features/errors/domain/error/errors/__init__.py': '',
+  'packages/@eros/python/src/shop_eros_python/features/errors/domain/error/errors/eros_error.py':
     'class ErosError(Exception):\n  pass\n',
   'packages/@eros/python/src/shop_eros_python/features/problem/__init__.py': '',
-  'packages/@eros/python/src/shop_eros_python/features/problem/adapters/__init__.py': '',
-  'packages/@eros/python/src/shop_eros_python/features/problem/adapters/problem/__init__.py': '',
-  'packages/@eros/python/src/shop_eros_python/features/problem/adapters/problem/problem_adapter.py':
+  'packages/@eros/python/src/shop_eros_python/features/problem/infrastructure/__init__.py': '',
+  'packages/@eros/python/src/shop_eros_python/features/problem/infrastructure/problem/__init__.py':
+    '',
+  'packages/@eros/python/src/shop_eros_python/features/problem/infrastructure/problem/problem_adapter.py':
     "def problem_of(code: str) -> dict[str, str]:\n  return {'code': code, 'type': 'about:blank'}\n",
   'packages/@eros/python/src/shop_eros_python/integrations/__init__.py': '',
   'packages/@eros/python/src/shop_eros_python/integrations/fastapi/__init__.py':
@@ -358,8 +359,8 @@ const reports: Files = {
   'apps/reports/src/shop_reports/__init__.py': '',
   'apps/reports/src/shop_reports/features/__init__.py': '',
   'apps/reports/src/shop_reports/features/sales/__init__.py': '',
-  'apps/reports/src/shop_reports/features/sales/app/__init__.py': '',
-  'apps/reports/src/shop_reports/features/sales/app/sales_report.py':
+  'apps/reports/src/shop_reports/features/sales/presentation/__init__.py': '',
+  'apps/reports/src/shop_reports/features/sales/presentation/sales_report.py':
     "from shop_tabula import sheet\n\n\ndef sales_report() -> str:\n  return sheet(['sales'])\n",
   'apps/reports/src/shop_reports/main.py': 'from shop_reports.root.wiring import run\n\nrun()\n',
   'apps/reports/src/shop_reports/root/__init__.py': '',
@@ -405,7 +406,7 @@ const web: Files = {
     ],
     name: '@shop/web',
   }),
-  'apps/web/src/features/labels/app/__tests__/label.test.ts': `import { expect, it } from 'bun:test';
+  'apps/web/src/features/labels/presentation/__tests__/label.test.ts': `import { expect, it } from 'bun:test';
 
 import type { OrderId } from '@shop/orders';
 
@@ -419,11 +420,11 @@ it('should name the order when an order is labelled', () => {
   expect(text).toBe('Order order:a');
 });
 `,
-  'apps/web/src/features/labels/app/label.ts': `import { describeOrder, type OrderId } from '@shop/orders';
+  'apps/web/src/features/labels/presentation/label.ts': `import { describeOrder, type OrderId } from '@shop/orders';
 
 export const label = (id: OrderId): string => \`Order \${describeOrder({ id, total: 0 })}\`;
 `,
-  'apps/web/src/features/labels/index.ts': "export { label } from './app/label';\n",
+  'apps/web/src/features/labels/index.ts': "export { label } from './presentation/label';\n",
   'apps/web/src/main.ts':
     "import { label } from '#/features/labels';\n\nexport const main = label;\n",
   'apps/web/tsconfig.json': tsconfigOf({
@@ -440,12 +441,12 @@ const apiAndShared: Files = {
     },
     name: '@shop/money',
   }),
-  'packages/money/src/features/currency/domain/value-objects/cents.value-object.ts':
+  'packages/money/src/features/currency/domain/currency/value-objects/cents.value-object.ts':
     "export type Cents = number & { readonly __brand: 'Cents' };\n",
-  'packages/money/src/features/currency/domain/value-objects/index.ts':
+  'packages/money/src/features/currency/domain/currency/value-objects/index.ts':
     "export type { Cents } from './cents.value-object';\n",
   'packages/money/src/features/currency/index.ts':
-    "export type { Cents } from './domain/value-objects';\n",
+    "export type { Cents } from './domain/currency/value-objects';\n",
   'packages/money/src/index.ts': "export type { Cents } from './features/currency';\n",
   'packages/money/tsconfig.json': tsconfigOf({
     references: [],
@@ -457,7 +458,7 @@ const apiAndShared: Files = {
     ],
     name: '@shop/api',
   }),
-  'apps/api/src/features/totals/app/__tests__/total-line.test.ts': `import { expect, it } from 'bun:test';
+  'apps/api/src/features/totals/presentation/__tests__/total-line.test.ts': `import { expect, it } from 'bun:test';
 
 import type { Cents } from '@shop/money';
 import type { OrderId } from '@shop/orders';
@@ -475,7 +476,7 @@ it('should name the order and its currency when an order is totalled', () => {
   expect(line).toBe('order:a EUR');
 });
 `,
-  'apps/api/src/features/totals/app/total-line.ts': `import type { Cents } from '@shop/money';
+  'apps/api/src/features/totals/presentation/total-line.ts': `import type { Cents } from '@shop/money';
 import { describeOrder, type OrderId } from '@shop/orders';
 
 import { CURRENCY } from '#/kernel/constants';
@@ -487,7 +488,8 @@ interface Totalled {
 
 export const totalLine = (order: Totalled): string => \`\${describeOrder(order)} \${CURRENCY}\`;
 `,
-  'apps/api/src/features/totals/index.ts': "export { totalLine } from './app/total-line';\n",
+  'apps/api/src/features/totals/index.ts':
+    "export { totalLine } from './presentation/total-line';\n",
   'apps/api/src/kernel/constants/currency.constants.ts': "export const CURRENCY = 'EUR';\n",
   'apps/api/src/kernel/constants/index.ts': "export { CURRENCY } from './currency.constants';\n",
   'apps/api/src/main.ts':
@@ -504,7 +506,7 @@ export const totalLine = (order: Totalled): string => \`\${describeOrder(order)}
     },
     name: '@shop/orders',
   }),
-  'packages/orders/src/features/orders/domain/entities/__tests__/order.entity.test.ts': `import { expect, it } from 'bun:test';
+  'packages/orders/src/features/orders/domain/order/entities/__tests__/order.entity.test.ts': `import { expect, it } from 'bun:test';
 
 import { describeOrder, type OrderId, refundLine } from '../order.entity.ts';
 
@@ -524,9 +526,9 @@ it('should name the refund when an order is refunded', () => {
   expect(text).toBe('refund of order:a');
 });
 `,
-  'packages/orders/src/features/orders/domain/entities/index.ts':
+  'packages/orders/src/features/orders/domain/order/entities/index.ts':
     "export { describeOrder, type Order, type OrderId, refundLine } from './order.entity.ts';\n",
-  'packages/orders/src/features/orders/domain/entities/order.entity.ts': `import { ORDER_PREFIX } from '#/kernel/constants/index.ts';
+  'packages/orders/src/features/orders/domain/order/entities/order.entity.ts': `import { ORDER_PREFIX } from '#/kernel/constants/index.ts';
 
 export type OrderId = string & { readonly __brand: 'OrderId' };
 
@@ -540,7 +542,7 @@ export const describeOrder = (order: Order): string => \`\${ORDER_PREFIX}:\${ord
 export const refundLine = (id: OrderId): string => \`refund of \${ORDER_PREFIX}:\${id}\`;
 `,
   'packages/orders/src/features/orders/index.ts':
-    "export { describeOrder, type Order, type OrderId, refundLine } from './domain/entities/index.ts';\n",
+    "export { describeOrder, type Order, type OrderId, refundLine } from './domain/order/entities/index.ts';\n",
   'packages/orders/src/index.ts':
     "export { describeOrder, type Order, type OrderId, refundLine } from './features/orders/index.ts';\n",
   'packages/orders/src/kernel/constants/index.ts':
@@ -575,6 +577,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
   '.': {
     domains: [
       'workspace',
+      'version-control',
     ],
     implementations: [
       'bun',
@@ -594,6 +597,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
   'apps/api': {
     domains: [
       'workspace',
+      'version-control',
     ],
     implementations: [
       ...typescriptTools,
@@ -607,6 +611,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
   'apps/@desk/web': {
     domains: [
       'workspace',
+      'version-control',
     ],
     implementations: typescriptTools,
     languages: [
@@ -617,6 +622,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
   'apps/reports': {
     domains: [
       'workspace',
+      'version-control',
     ],
     implementations: [
       'uv',
@@ -631,6 +637,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
   'apps/web': {
     domains: [
       'workspace',
+      'version-control',
     ],
     implementations: [
       ...typescriptTools,
@@ -650,6 +657,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
   'packages/@desk/shared': {
     domains: [
       'workspace',
+      'version-control',
     ],
     languages: [
       'yaml',
@@ -659,6 +667,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
   'packages/@eros/python': {
     domains: [
       'workspace',
+      'version-control',
     ],
     implementations: [
       'uv',
@@ -674,6 +683,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
   'packages/@eros/shared': {
     domains: [
       'workspace',
+      'version-control',
     ],
     languages: [
       'yaml',
@@ -683,6 +693,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
   'packages/@eros/typescript': {
     domains: [
       'workspace',
+      'version-control',
     ],
     implementations: typescriptTools,
     languages: [
@@ -693,6 +704,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
   'packages/money': {
     domains: [
       'workspace',
+      'version-control',
     ],
     implementations: typescriptTools.filter((block) => block !== 'bun-test'),
     languages: [
@@ -703,6 +715,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
   'packages/orders': {
     domains: [
       'workspace',
+      'version-control',
     ],
     implementations: typescriptTools,
     languages: [
@@ -713,6 +726,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
   'packages/tabula': {
     domains: [
       'workspace',
+      'version-control',
     ],
     implementations: [
       'uv',

@@ -214,7 +214,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'a catch holds only a comment',
         files: {
-          'src/features/orders/app/load.ts':
+          'src/features/orders/presentation/load.ts':
             'export const load = (): void => {\n  try {\n    globalThis.focus();\n  } catch {\n    // ignore\n  }\n};\n',
         },
       },
@@ -260,7 +260,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'an adapter draws a random value and reads the clock',
         files: {
-          'src/adapters/ids/ids.adapter.ts':
+          'src/infrastructure/ids/ids.adapter.ts':
             'export const orderId = (): string => crypto.randomUUID();\nexport const placedAt = (): number => Date.now();\n',
         },
       },
@@ -304,6 +304,8 @@ const pluginRows: readonly PluginRow[] = [
         'browser',
         'tailwind',
         'testing-library',
+        'html',
+        'ui',
       ],
     },
     reported: [
@@ -508,7 +510,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'a link target is concatenated',
         files: {
-          'src/features/orders/ui/widgets/order-link.ts':
+          'src/features/orders/presentation/widgets/order-link.ts':
             "export const target = (id: string): { to: string } => ({ to: '/orders/' + id });\n",
         },
       },
@@ -517,7 +519,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'a link names its route by path and params',
         files: {
-          'src/features/orders/ui/widgets/order-link.ts':
+          'src/features/orders/presentation/widgets/order-link.ts':
             "export const target = { to: '/orders/$orderId' };\n",
         },
       },
@@ -671,10 +673,11 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'typescript',
-    slug: 'module-level-messages-are-descriptors',
+    slug: 'module-level-text-holds-the-message',
     unit: {
       axes: [],
       blocks: [
+        'i18n',
         'lingui',
       ],
     },
@@ -682,7 +685,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'a message is translated at the top level of a module',
         files: {
-          'src/features/chat/ui/status.ts':
+          'src/features/chat/presentation/status.ts':
             "import { t } from '@lingui/core/macro';\n\nexport const online = t`Online`;\n",
         },
       },
@@ -691,7 +694,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'a module declares its message and a component translates it',
         files: {
-          'src/features/chat/ui/status.ts':
+          'src/features/chat/presentation/status.ts':
             "import { msg, t } from '@lingui/core/macro';\n\nexport const online = msg`Online`;\nexport const label = (): string => t`Away`;\n",
         },
       },
@@ -808,7 +811,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'the cache utilities declare a read and the root builds the client',
         files: {
-          'src/features/orders/app/utils/cache.utils.ts':
+          'src/features/orders/presentation/bindings/shared/cache.ts':
             "export const listOptions = { queryKey: ['orders'], queryFn: (): number => 1 };\n",
           'src/root/query-client.ts':
             "import { QueryClient } from '@tanstack/react-query';\n\nexport const client = new QueryClient();\n",
@@ -829,7 +832,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'markup is assigned to innerHTML',
         files: {
-          'src/features/orders/ui/show.ts':
+          'src/features/orders/presentation/show.ts':
             'export const show = (panel: Element, markup: string): void => {\n  panel.innerHTML = markup;\n};\n',
         },
       },
@@ -838,7 +841,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'text is set through the element interfaces',
         files: {
-          'src/features/orders/ui/show.ts':
+          'src/features/orders/presentation/show.ts':
             'export const show = (panel: Element, label: string): void => {\n  panel.textContent = label;\n};\n',
         },
       },
@@ -869,7 +872,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'a hook writes its read inline',
         files: {
-          'src/features/orders/app/use-cases/queries/list/list.hooks.ts':
+          'src/features/orders/presentation/bindings/queries/list/list.hooks.ts':
             "export const options = { queryKey: ['orders'], queryFn: (): number => 1 };\n",
         },
       },
@@ -878,7 +881,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'the cache utilities declare a read and the root builds the client',
         files: {
-          'src/features/orders/app/utils/cache.utils.ts':
+          'src/features/orders/presentation/bindings/shared/cache.ts':
             "export const listOptions = { queryKey: ['orders'], queryFn: (): number => 1 };\n",
           'src/root/query-client.ts':
             "import { QueryClient } from '@tanstack/react-query';\n\nexport const client = new QueryClient();\n",
@@ -888,7 +891,7 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'typescript',
-    slug: 'schema-never-brands',
+    slug: 'schema-builds-values-through-their-constructor',
     unit: {
       axes: [],
       blocks: [
@@ -899,7 +902,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'a type argument',
         files: {
-          'src/features/accounts/adapters/api/models/account.model.ts':
+          'src/features/accounts/infrastructure/api/models/account.model.ts':
             "import { z } from 'zod';\n\nexport const emailModel = z.string().brand<'Email'>();\n",
         },
       },
@@ -1074,7 +1077,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'a use case of the application layer sets a timer',
         files: {
-          'src/features/orders/app/use-cases/poll-orders.use-case.ts':
+          'src/features/orders/presentation/bindings/poll-orders.use-case.ts':
             'export const later = (run: () => void): void => {\n  setTimeout(run, 10);\n};\n',
         },
       },
@@ -1114,7 +1117,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'an adapter maps null from the wire',
         files: {
-          'src/features/orders/adapters/api/order.adapter.ts':
+          'src/features/orders/infrastructure/api/order.adapter.ts':
             'export const toCancelledAt = (raw: string | null): string | undefined =>\n  raw === null ? undefined : raw;\n',
         },
       },
@@ -1133,7 +1136,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'a schema chains a format on z.string()',
         files: {
-          'src/features/chat/adapters/api/models/user.model.ts':
+          'src/features/chat/infrastructure/api/models/user.model.ts':
             "import { z } from 'zod';\n\nexport const userModel = z.strictObject({ email: z.string().email() });\n",
         },
       },
@@ -1142,7 +1145,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'a schema takes a format on its own and merges by extend',
         files: {
-          'src/features/chat/adapters/api/models/user.model.ts':
+          'src/features/chat/infrastructure/api/models/user.model.ts':
             "import { z } from 'zod';\n\nconst baseSchema = z.strictObject({ id: z.string() });\n\nexport const userModel = baseSchema.extend({ email: z.email() });\n",
         },
       },
@@ -1232,7 +1235,7 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'css',
-    slug: 'viewport-size-in-small-viewport-units',
+    slug: 'viewport-size-leaves-out-what-the-browser-draws',
     unit: {
       axes: [],
       blocks: [
@@ -1449,9 +1452,10 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'typescript',
-    slug: 'keys-only-from-the-key-factory',
+    slug: 'cache-key-built-by-its-owners-factory',
     unit: {
       blocks: [
+        'remote-data',
         'tanstack-query',
       ],
     },
@@ -1459,7 +1463,7 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'a read writes its key inline',
         files: {
-          'src/features/orders/app/use-cases/queries/list-orders/list-orders.hooks.ts':
+          'src/features/orders/presentation/bindings/queries/list-orders/list-orders.hooks.ts':
             "export const listOrdersOptions = { queryKey: ['orders'] };\n",
         },
       },
@@ -1468,8 +1472,8 @@ const pluginRows: readonly PluginRow[] = [
       {
         condition: 'a read takes its key from the key factory',
         files: {
-          'src/features/orders/app/use-cases/queries/list-orders/list-orders.hooks.ts':
-            "import { orderKeys } from '../../../../../../shared/cache';\n\nexport const listOrdersOptions = { queryKey: orderKeys.all };\n",
+          'src/features/orders/presentation/bindings/queries/list-orders/list-orders.hooks.ts':
+            "import { orderKeys } from '../../shared/cache';\n\nexport const listOrdersOptions = { queryKey: orderKeys.all };\n",
         },
       },
     ],
@@ -1574,6 +1578,12 @@ const pluginRows: readonly PluginRow[] = [
   {
     language: 'typescript',
     slug: 'child-process-started-without-a-shell',
+    unit: {
+      axes: [],
+      blocks: [
+        'bun',
+      ],
+    },
     reported: [
       {
         condition: 'a process is started through exec',
@@ -1631,6 +1641,12 @@ const pluginRows: readonly PluginRow[] = [
   {
     language: 'typescript',
     slug: 'child-process-given-an-env-of-its-own',
+    unit: {
+      axes: [],
+      blocks: [
+        'bun',
+      ],
+    },
     reported: [
       {
         condition: 'a process is left to inherit process.env',
@@ -1819,7 +1835,7 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'typescript',
-    slug: 'boundary-values-unknown-until-parsed',
+    slug: 'outside-value-unknown-until-parsed',
     reported: [
       {
         condition: 'parsed JSON is cast to a type',

@@ -1,12 +1,14 @@
 ```pseudo title="Avoid"
 let body = await response.json()
-let order = body as Order
-call shipOrder(order)
+let input = body as ShipOrderInput
+
+call shipOrder(input, context)
 ```
 
 ```pseudo title="Prefer"
 # body is Unknown until it is parsed
 let body = await response.json()
-let order = orderSchema.parse(body)
-call shipOrder(order)
+let input = parseShipOrderInput(body)
+
+call shipOrder(input, context)
 ```

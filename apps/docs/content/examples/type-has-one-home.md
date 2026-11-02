@@ -1,15 +1,18 @@
 ```pseudo title="Avoid"
-# orders/domain/order.ts
+# orders/domain/order/entities/order.aggregate
 type OrderId = Brand<String, "Order">
 
-# invoices/domain/invoice.ts
+# invoices/domain/invoice/entities/invoice.aggregate
 type OrderId = Brand<String, "Order">
 ```
 
 ```pseudo title="Prefer"
-# orders/domain/order.ts
+# kernel/value-objects/order-id.value-object
 type OrderId = Brand<String, "Order">
 
-# invoices/domain/invoice.ts
-import { OrderId } from "orders"
+# orders/domain/order/entities/order.aggregate
+import { OrderId } from "kernel"
+
+# invoices/domain/invoice/entities/invoice.aggregate
+import { OrderId } from "kernel"
 ```

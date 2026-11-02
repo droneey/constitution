@@ -2,8 +2,8 @@ import { PROJECT, projectPlace } from '#/__tests__/project-place.fixtures';
 import type { ProjectPlace, RuleWording } from '#/kernel/entities';
 import type { AbsolutePath } from '#/kernel/value-objects';
 
-import type { ActiveRead, ActiveRulesSource } from '../domain/contracts';
-import { ActiveReadStatus } from '../domain/contracts';
+import type { ActiveRead, ActiveRulesSource } from '../application/contracts';
+import { ActiveReadStatus } from '../application/contracts';
 import { activeRulesOf, defaultFiles } from './gate.fixtures';
 
 interface FakeActiveRulesSourceInput {

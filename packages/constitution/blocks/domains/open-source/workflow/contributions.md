@@ -6,8 +6,8 @@
 
 ### outside-change-runs-without-secrets → credential-has-least-privilege · MUST
 
-A contribution from outside the repository runs in CI with no secret, a read-only token and no cache it can write; a run that needs more waits for a maintainer's approval of that change.
+A contribution from outside the repository runs in CI without secrets. It runs with no secret, a read-only token and no cache it can write; a run that needs more waits for a maintainer's approval of that change.
 
 | Why |
 |---|
-| a contribution's code runs with whatever its run holds, and every secret and writable cache it reaches is the attacker's. |
+| a contribution's code runs with whatever its run holds, and every secret and writable cache it reaches is the attacker's — least privilege. |

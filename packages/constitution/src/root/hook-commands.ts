@@ -1,4 +1,3 @@
-// Stryker disable all: this is the wiring of the hook commands, split out of wiring.ts by the line limit; the wiring is no logic the specs measure, and a spec of the root reaches no feature's fakes
 import type { Command } from 'commander';
 
 import type {
@@ -49,7 +48,7 @@ import type { Registration } from './registration.types';
 
 const gateCommandsOf = ({ context, ports }: Registration): readonly Command[] => {
   const gatePorts = {
-    gates: ports.gates,
+    gateRepository: ports.gateRepository,
     hasher: ports.hasher,
     source: ports.activeRules,
     workingTree: ports.workingTree,
@@ -75,20 +74,20 @@ const gateCommandsOf = ({ context, ports }: Registration): readonly Command[] =>
       recordReminders: (named): void => {
         recordReminders({
           ...named,
-          sessions: ports.sessions,
+          sessionRepository: ports.sessionRepository,
         });
       },
       recordOwnChanges: (own): void => {
         recordOwnChanges({
           ...own,
-          sessions: ports.sessions,
+          sessionRepository: ports.sessionRepository,
           source: ports.activeRules,
         });
       },
       recordRead: (read): void => {
         recordRead({
           ...read,
-          gates: ports.gates,
+          gateRepository: ports.gateRepository,
           source: ports.activeRules,
         });
       },
@@ -100,12 +99,12 @@ const gateCommandsOf = ({ context, ports }: Registration): readonly Command[] =>
       remindOfFile: (asked): Reminder | undefined =>
         remindOfFile({
           ...asked,
-          sessions: ports.sessions,
+          sessionQueries: ports.sessionQueries,
         }),
       settleShell: (settled): readonly AbsolutePath[] =>
         settleShell({
           ...settled,
-          gates: ports.gates,
+          gateRepository: ports.gateRepository,
           workingTree: ports.workingTree,
         }),
     }),
@@ -119,31 +118,31 @@ const gateCommandsOf = ({ context, ports }: Registration): readonly Command[] =>
       handOverChanges: (handing): void => {
         handOverChanges({
           ...handing,
-          sessions: ports.sessions,
+          sessionRepository: ports.sessionRepository,
         });
       },
       holdHandBack: (held): boolean =>
         holdHandBack({
           ...held,
-          gates: ports.gates,
+          gateRepository: ports.gateRepository,
           hasher: ports.hasher,
         }),
       judgeStop: (event: StopEvent): StopJudgement | undefined =>
         judgeStop({
           ...event,
-          sessions: ports.sessions,
+          sessionQueries: ports.sessionQueries,
           workingTree: ports.workingTree,
         }),
       recordJudgement: (judged): void => {
         recordJudgement({
           ...judged,
-          sessions: ports.sessions,
+          sessionRepository: ports.sessionRepository,
         });
       },
       tellPasses: (asked): number =>
         tellPasses({
           ...asked,
-          gates: ports.gates,
+          gateRepository: ports.gateRepository,
         }),
     }),
   ];
@@ -178,19 +177,19 @@ const hookCommandsOf = (registration: Registration): Command => {
         keepSession: (kept): void => {
           keepSession({
             ...kept,
-            sessions: ports.sessions,
+            sessionRepository: ports.sessionRepository,
           });
         },
         resetReading: (reset): void => {
           resetReading({
             ...reset,
-            gates: ports.gates,
+            gateRepository: ports.gateRepository,
           });
         },
         sweepStaleSessions: (swept): void => {
           sweepStaleSessions({
             ...swept,
-            gates: ports.gates,
+            gateRepository: ports.gateRepository,
             source: ports.activeRules,
           });
         },
@@ -199,7 +198,7 @@ const hookCommandsOf = (registration: Registration): Command => {
         ...context,
         endSession: (session: SessionId): void => {
           endSession({
-            gates: ports.gates,
+            gateRepository: ports.gateRepository,
             session,
           });
         },
@@ -210,7 +209,7 @@ const hookCommandsOf = (registration: Registration): Command => {
         recordCheck: (asked): void => {
           recordCheck({
             ...asked,
-            sessions: ports.sessions,
+            sessionRepository: ports.sessionRepository,
             workingTree: ports.workingTree,
           });
         },
@@ -220,7 +219,7 @@ const hookCommandsOf = (registration: Registration): Command => {
         markTurn: (session: SessionId): void => {
           markTurn({
             session,
-            sessions: ports.sessions,
+            sessionRepository: ports.sessionRepository,
             workingTree: ports.workingTree,
           });
         },

@@ -14,7 +14,7 @@ shfmt:
           jobs[name=shfmt]:
             exclude:
               - ${workspace.members}/**
-lefthook:
+version-control:
   hook-rewrites-only-staged-files:
     '*':
       lefthook.yaml:

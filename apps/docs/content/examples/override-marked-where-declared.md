@@ -1,5 +1,5 @@
 ```pseudo title="Avoid"
-class PaymentDeclined
+class PaymentDeclinedError
   extends AppError
   # overrides, but nothing says so
   function message()
@@ -7,7 +7,7 @@ class PaymentDeclined
 ```
 
 ```pseudo title="Prefer"
-class PaymentDeclined
+class PaymentDeclinedError
   extends AppError
   override function message()
     return "Card declined"

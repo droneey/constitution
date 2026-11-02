@@ -6,7 +6,7 @@
 
 ### outside-yaml-loaded-by-a-safe-loader → outside-input-never-rebuilt-as-objects · MUST
 
-YAML from outside the program is loaded by a loader that builds only mappings, sequences and plain scalars, and refuses a tag that names a type of the language.
+YAML from outside the program is loaded by a safe loader. The loader builds only mappings, sequences and plain scalars, and refuses a tag that names a type of the language.
 
 | Why |
 |---|
@@ -14,7 +14,7 @@ YAML from outside the program is loaded by a loader that builds only mappings, s
 
 ### alias-expansion-bounded → outside-input-bounded-before-it-is-parsed · MUST
 
-YAML from outside the program is loaded with a bound on how many aliases to collections it expands, or with aliases refused.
+YAML from outside the program is loaded with its alias expansion bounded. The loader bounds how many aliases to collections it expands, or refuses aliases.
 
 | Why |
 |---|

@@ -6,7 +6,7 @@
 
 ### lifespan-opens-and-closes → resource-released-on-every-path · MUST
 
-What the app keeps open — clients, pools, connections — is opened and closed by the app's `lifespan`, an async context manager around its `yield`, never by `on_event` and never at import.
+The app's `lifespan` opens and closes what the app keeps open. These are its clients, pools and connections; the `lifespan` is an async context manager around its `yield`, and nothing is opened by `on_event` or at import.
 
 | Why |
 |---|

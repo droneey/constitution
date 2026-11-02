@@ -1,9 +1,9 @@
 import { compareText } from '#/kernel/utils';
 import { AbsolutePath } from '#/kernel/value-objects';
 
-import type { FileTree } from '../domain/contracts';
-import { TreeError, TreeFailure } from '../domain/errors';
-import { TreePath } from '../domain/value-objects';
+import type { FileTree } from '../application/contracts';
+import { TreeError, TreeFailure } from '../domain/shared/errors';
+import { TreePath } from '../domain/shared/value-objects';
 
 const root = AbsolutePath.create('/');
 

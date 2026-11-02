@@ -1,6 +1,6 @@
 ---
 id: mcp-api
-summary: A server of tools that models call over the Model Context Protocol.
+summary: A tool server language models call over the Model Context Protocol.
 requires: []
 extends: _api
 abstract: false
@@ -10,6 +10,6 @@ governs: ["**"]
 
 # MCP API
 
-> A server of tools that models call over the Model Context Protocol.
+> A server of tools that language models call over the Model Context Protocol.
 
-The block's rules bind the tools the program serves, and no other: how a tool is defined for a model, how it answers and fails, how it talks to the person, and its specs. Calling another program's tools is a remote service.
+The block's rules bind the tools the program serves, and no other: how a tool is defined for a language model, how it answers and fails, how it talks to the person, and its specs. Calling another program's tools is a remote service.

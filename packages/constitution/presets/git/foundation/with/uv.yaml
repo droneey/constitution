@@ -1,6 +1,9 @@
-git:
-  gitignore-covers-dependencies-output-and-caches:
+version-control:
+  machine-local-files-ignored:
     python:
       .gitignore:
         - .venv/
+  generated-files-not-committed:
+    python:
+      .gitignore:
         - '**/dist/'

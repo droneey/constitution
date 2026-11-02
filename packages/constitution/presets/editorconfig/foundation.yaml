@@ -1,8 +1,8 @@
 core:
-  snapshot-readable-by-eye:
+  case-pins-meaning-never-wording:
     '*':
       .editorconfig:
-        '*.golden.*':
+        '*.${role.golden-file}.*':
           trim_trailing_whitespace: false
 editorconfig:
   '*':

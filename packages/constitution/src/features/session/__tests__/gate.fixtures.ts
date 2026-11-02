@@ -6,12 +6,12 @@ import type { CoreFiles, Lowering, RuleWording } from '#/kernel/entities';
 import type { RuleSlug } from '#/kernel/value-objects';
 import { RuleSlug as Slug, SourceKind, UnitPath } from '#/kernel/value-objects';
 
-import type { TextHasher } from '../domain/contracts';
+import type { TextHasher } from '../application/contracts';
 import type {
-  GateCommandRepository,
-  SessionCommandRepository,
-} from '../domain/contracts/repositories/commands';
-import type { ActiveRules } from '../domain/entities';
+  GateRepository,
+  SessionRepository,
+} from '../application/contracts/repositories/commands';
+import type { ActiveRules } from '../domain/gate/entities';
 import { activeBlockOf } from './session.fixtures';
 
 const coreChapter = `${PROJECT}/.droneey/constitution/blocks/core/foundation/names.md`;
@@ -103,7 +103,7 @@ interface Noted<TStore> {
   readonly writes: readonly StoreWrite[];
 }
 
-const notingGateWritesOf = (store: GateCommandRepository): Noted<GateCommandRepository> => {
+const notingGateWritesOf = (store: GateRepository): Noted<GateRepository> => {
   const writes: StoreWrite[] = [];
 
   return {
@@ -122,9 +122,7 @@ const notingGateWritesOf = (store: GateCommandRepository): Noted<GateCommandRepo
   };
 };
 
-const notingSessionWritesOf = (
-  store: SessionCommandRepository,
-): Noted<SessionCommandRepository> => {
+const notingSessionWritesOf = (store: SessionRepository): Noted<SessionRepository> => {
   const writes: StoreWrite[] = [];
 
   return {

@@ -6,7 +6,7 @@
 
 ### public-repository-carries-a-contribution-guide · SHOULD
 
-A public repository that accepts contributions carries a contribution guide: how to set the project up, check a change and submit it.
+A public repository that accepts contributions carries a contribution guide. It says how to set the project up, check a change and submit it.
 
 | Why |
 |---|
@@ -14,7 +14,7 @@ A public repository that accepts contributions carries a contribution guide: how
 
 ### public-repository-carries-a-code-of-conduct · SHOULD
 
-A public repository that accepts contributions carries a code of conduct, an adopted standard one such as the Contributor Covenant, with a contact for reports.
+A public repository that accepts contributions carries a code of conduct. It is an adopted standard one, such as the Contributor Covenant, with a contact for reports.
 
 | Why |
 |---|

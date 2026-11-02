@@ -42,5 +42,43 @@ type Release =
 const NEWEST_FORMAT = 4;
 const OLDEST_FORMAT = 4;
 
-export type { Release };
-export { NEWEST_FORMAT, OLDEST_FORMAT, ReleaseStatus };
+interface ReleaseManifestFields {
+  readonly blockFormat: number | undefined;
+  readonly manifestPath: AbsolutePath;
+  readonly version: Version | undefined;
+}
+
+const ofManifest = (input: ReleaseManifestFields): Release => {
+  const { blockFormat, version } = input;
+
+  if (blockFormat === undefined || blockFormat < OLDEST_FORMAT) {
+    return {
+      status: ReleaseStatus.Older,
+    };
+  }
+
+  if (blockFormat > NEWEST_FORMAT) {
+    return {
+      format: blockFormat,
+      status: ReleaseStatus.Newer,
+    };
+  }
+
+  if (version === undefined) {
+    return {
+      manifest: input.manifestPath,
+      status: ReleaseStatus.VersionMissing,
+    };
+  }
+
+  return {
+    status: ReleaseStatus.Installed,
+    version,
+  };
+};
+
+const Release = {
+  ofManifest,
+} as const;
+
+export { OLDEST_FORMAT, Release, ReleaseStatus };

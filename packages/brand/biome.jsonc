@@ -98,8 +98,9 @@
         "useArraySome": "error",
         "useRegexpTest": "error",
       },
+
+      // biome
       "correctness": {
-        // biome
         "useParseIntRadix": "error",
         "noUnreachable": "error",
         "noUnusedFunctionParameters": "error",
@@ -108,17 +109,12 @@
         "noUnusedPrivateClassMembers": "error",
         "noUnusedVariables": "error",
 
-        // typescript
-        "noUnsafeFinally": "error",
-
-        // biome
         "noGlobalDirnameFilename": "error",
         "noUndeclaredDependencies": "error",
         "useJsonImportAttributes": "error",
         "noUnusedInstantiation": "error",
       },
 
-      // biome
       "performance": {
         "noAccumulatingSpread": "error",
         "noDynamicNamespaceImportAccess": "error",
@@ -259,7 +255,6 @@
         "useForOf": "error",
         "useGroupedAccessorPairs": "error",
         "useDefaultParameterLast": "error",
-        "useDefaultSwitchClause": "error",
         "useCollapsedIf": "error",
         "useConsistentArrowReturn": "error",
         "noShoutyConstants": "error",
@@ -614,6 +609,7 @@
             "useFilenamingConvention": {
               "level": "error",
               "options": {
+                "strictCase": true,
                 "filenameCases": [
                   "kebab-case",
                 ],
@@ -757,6 +753,22 @@
       ],
     },
     {
+      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/outside-value-unknown-until-parsed.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+    {
+      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/duration-measured-by-performance-now.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+
+    // _js-runtime
+    {
       "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/child-process-started-without-a-shell.grit",
       "includes": [
         "**/*.ts",
@@ -765,20 +777,6 @@
     },
     {
       "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/child-process-given-an-env-of-its-own.grit",
-      "includes": [
-        "**/*.ts",
-        "**/*.tsx",
-      ],
-    },
-    {
-      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/boundary-values-unknown-until-parsed.grit",
-      "includes": [
-        "**/*.ts",
-        "**/*.tsx",
-      ],
-    },
-    {
-      "path": "./../../.droneey/constitution/presets/biome/plugins/typescript/duration-measured-by-performance-now.grit",
       "includes": [
         "**/*.ts",
         "**/*.tsx",

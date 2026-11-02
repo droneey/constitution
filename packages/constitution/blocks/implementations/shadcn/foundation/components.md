@@ -1,24 +1,16 @@
 # Components
 
-> Governs the kit's components built from shadcn source: their primitives, polymorphism, parts, adaptation and text.
+> Governs the kit's components built from shadcn source: their polymorphism, parts and text.
 
 ## General
 
-### complex-widgets-on-base-ui → complex-pattern-built-on-accessible-primitives · MUST
-
-A dialog, popover, menu, select, combobox, tabs, tooltip, accordion and their kin are built on Base UI, through shadcn source made for Base UI, the dialog, the popover and the accordion included: Base UI is the active library of accessible primitives that the browser's `<dialog>`, `popover` and `<details>` give way to, and it places its popovers itself.
-
-| Why |
-|---|
-| Base UI carries the keyboard, focus and announcement behaviour these patterns need, and more than the browser's elements do: a dialog's scroll lock, its light dismiss in Safari and its controlled state; a popover that opens on hover after a delay and holds focus as a modal; arrow, Home and End keys between an accordion's headers. |
-
 ### polymorphism-through-render · SHOULD
 
-A polymorphic render is Base UI's `render` prop, the kit's only polymorphism; no `as` or `asChild` of the kit's own.
+The kit's one polymorphism is Base UI's `render` prop. A polymorphic render goes through it, and the kit adds no `as` or `asChild` of its own.
 
 | Why |
 |---|
-| one mechanism renders the consumer's element with the primitive's behaviour, everywhere the same. |
+| a second mechanism gives each component its own way to swap its element, which callers learn one by one and which joins the primitive's behaviour to the element differently each time. |
 
 ### parts-marked-by-data-slot · SHOULD
 
@@ -26,19 +18,11 @@ A primitive marks itself and each of its parts with `data-slot`, named after the
 
 | Why |
 |---|
-| a caller and a spec then reach a part by its slot, as shadcn source does, with no class written for it. |
-
-### shadcn-source-adapted-on-arrival → vendored-component-adapted-in-the-change-that-installs-it · MUST
-
-Before shadcn source is added, the kit is searched for an equivalent. Added source is, before review, restyled to tokens, stripped of unused props, and made to follow the kit's prop rules.
-
-| Why |
-|---|
-| code kept as it came carries another project's looks and props; adapted on arrival, it is the kit's own. |
+| a part with no slot is reached by a class written for it or by its place in the markup, which breaks when the markup changes. |
 
 ### shadcn-text-passed-by-props → primitives-take-text-by-props · MUST
 
-The text shadcn source ships — a screen reader's "Close" among it — is removed on arrival, and the component takes it by a prop.
+The text shadcn source ships is replaced by a prop when the source arrives. Each string it ships — a screen reader's "Close" among them — is removed on arrival, and the component takes it by a prop.
 
 | Why |
 |---|

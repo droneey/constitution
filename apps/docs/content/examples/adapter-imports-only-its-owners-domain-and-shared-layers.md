@@ -1,14 +1,14 @@
 ```pseudo title="Avoid"
-# orders/adapters/postgres
-import Order from "../../domain"
+# orders/infrastructure/postgres
+import Order from "../../domain/order/entities"
 import Money from "kernel"
 import toCents from "../stripe"
-import placeOrder from "../../app"
+import placeOrder from "../../application/use-cases/commands"
 ```
 
 ```pseudo title="Prefer"
-# orders/adapters/postgres
-import Order from "../../domain"
+# orders/infrastructure/postgres
+import Order from "../../domain/order/entities"
 import Money from "kernel"
 import toCents from "libs/money"
 ```

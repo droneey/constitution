@@ -37,9 +37,6 @@ const contentOf = (section: DrawnSection): ReactElement => {
           steps={section.steps}
         />
       );
-    // Stryker disable next-line ConditionalExpression: no kind reaches the default, which only the compiler reads
-    default:
-      return section satisfies never;
   }
 };
 

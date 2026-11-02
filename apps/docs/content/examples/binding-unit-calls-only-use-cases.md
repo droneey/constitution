@@ -1,14 +1,20 @@
 ```pseudo title="Avoid"
-# orders/app/.../cancel-order
-function onCancel(request, orders)
-  let order = orders.find(request.id)
-  orders.save(order.cancel())
+# orders/presentation/bindings/commands/cancel-order
+function onCancel(request, orders: OrderRepository)
+  let order = orders.find(request.params.orderId)
+
+  orders.save(cancel(order))
+
   return ok()
 ```
 
 ```pseudo title="Prefer"
-# orders/app/.../cancel-order
-function onCancel(request, cancelOrder)
-  cancelOrder(request.id)
+# orders/presentation/bindings/commands/cancel-order
+function onCancel(request, cancelOrder, context)
+  let input = parseCancelOrderInput(request.params)
+
+  # Why: the error filter answers an OrderNotFoundError for every command
+  call cancelOrder(input, context)
+
   return ok()
 ```

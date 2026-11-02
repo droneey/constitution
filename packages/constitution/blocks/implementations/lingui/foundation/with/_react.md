@@ -10,4 +10,4 @@ A component takes `t` from `useLingui`, never the global one.
 
 | Why |
 |---|
-| a global `t` does not re-render the component when the locale changes. |
+| a global `t` does not re-render the component when the locale changes, so the component shows the old locale's text until something else renders it. |

@@ -1,12 +1,12 @@
 # Layout
 
-> Governs a script's interpreter line and its extension.
+> Governs a shell file: its interpreter line and its extension.
 
 ## Kinds
 
 ### executable-script-names-its-shell · MUST
 
-An executable script names the shell it is written for on its first line: `#!/usr/bin/env bash`, or `#!/bin/sh` for one written to POSIX alone.
+An executable script names its shell on its first line. The line is `#!/usr/bin/env bash`, or `#!/bin/sh` for a script written to POSIX alone.
 
 | Why |
 |---|
@@ -16,8 +16,8 @@ An executable script names the shell it is written for on its first line: `#!/us
 
 ### shell-file-ends-in-sh → format-has-one-extension · SHOULD
 
-A shell file ends in **`.sh`**{#shell-script}; a command installed on a user's path under its own name is built or linked from such a file.
+A shell file ends in **`.sh`**{#shell-script}. A command installed on a user's path under its own name is built or linked from such a file.
 
 | Why |
 |---|
-| one extension lets every glob, linter and reader find every script, while a command's name is what its users type. |
+| a script without the extension is missed by every glob, linter and reader that looks for scripts, while a command's name is what its users type. |

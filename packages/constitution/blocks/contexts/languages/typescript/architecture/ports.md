@@ -1,22 +1,22 @@
 # Ports
 
-> Governs how a port is declared and how an adapter maps null.
+> Governs a port at a boundary in TypeScript and its adapter: how a port is declared and how an adapter maps null.
 
-## Contracts
+## Declarations
 
-### port-is-an-interface → contract-declared-by-the-layer-that-needs-it · MUST
+### port-is-an-interface → port-declared-by-the-layer-that-needs-it · MUST
 
-A port is an `interface`, or a type of functions, holding no implementation, so an adapter conforms to it by its shape and never extends a class to implement it.
+A port is an `interface`, or a type of functions, holding no implementation. An adapter conforms to it by its shape and never extends a class to implement it.
 
 | Why |
 |---|
-| the inner layer then owns only a description, and an adapter that shares no base class can change, or give way to a fake, without touching the code that depends on the port. |
+| a port that holds an implementation, or a base class its adapter extends, ties the adapter to the inner layer's code, so neither the adapter nor a fake can change without touching the code that depends on the port — the dependency inversion principle. |
 
 ## Adapters
 
 ### null-mapped-to-undefined-in-the-adapter → outside-shape-mapped-in-the-adapter · MUST
 
-A `null` of an outside format lives only in wire types and in the adapters that read and write them, which map it to and from `undefined`.
+A `null` of an outside format stays in the wire models and their adapters. The adapters that read and write those models map it to and from `undefined`.
 
 | Why |
 |---|

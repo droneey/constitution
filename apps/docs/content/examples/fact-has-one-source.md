@@ -5,9 +5,11 @@ type Cart = {
 }
 
 function addLine(cart, line)
-  cart.lines.add(line)
-  # forget this, and total is wrong
-  cart.total = cart.total + line.price
+  # forget the total, and it is wrong
+  return cart with {
+    lines: cart.lines + [line],
+    total: cart.total + line.price
+  }
 ```
 
 ```pseudo title="Prefer"
@@ -16,8 +18,8 @@ type Cart = {
 }
 
 function addLine(cart, line)
-  cart.lines.add(line)
+  return cart with { lines: cart.lines + [line] }
 
-function totalOf(cart)
+function total(cart)
   return sumPrices(cart.lines)
 ```

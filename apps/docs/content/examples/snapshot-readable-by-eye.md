@@ -1,9 +1,10 @@
 ```pseudo title="Avoid"
 test "should export the invoice"
   # Arrange
-  let invoice = anInvoice()
+  let invoice = createInvoice()
   # Act
   let file = exportInvoice(invoice)
+
   # Assert
   assert file matches snapshot
 
@@ -14,13 +15,14 @@ test "should export the invoice"
 ```pseudo title="Prefer"
 test "should export the invoice"
   # Arrange
-  let invoice = anInvoice()
+  let invoice = createInvoice()
   # Act
   let file = exportInvoice(invoice)
+
   # Assert
   assert file is
     readGolden("invoice.golden.xml")
 
-# invoice.golden.xml: the XML itself,
+# __tests__/invoice.golden.xml: the XML itself,
 # indented, one field a line
 ```

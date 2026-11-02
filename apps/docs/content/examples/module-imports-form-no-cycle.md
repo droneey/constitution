@@ -1,15 +1,15 @@
 ```pseudo title="Avoid"
-# orders/order.ts
-import Invoice from "invoices/invoice"
+# billing/domain/order/entities/order.aggregate
+import Invoice from "../../invoice/entities"
 
-# invoices/invoice.ts
-import Order from "orders/order"
+# billing/domain/invoice/entities/invoice.aggregate
+import Order from "../../order/entities"
 ```
 
 ```pseudo title="Prefer"
-# orders/order.ts
-# imports nothing from invoices
+# billing/domain/order/entities/order.aggregate
+# imports nothing from invoice
 
-# invoices/invoice.ts
-import Order from "orders/order"
+# billing/domain/invoice/entities/invoice.aggregate
+import OrderId from "../../order/value-objects"
 ```

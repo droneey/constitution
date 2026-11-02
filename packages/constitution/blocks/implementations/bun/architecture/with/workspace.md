@@ -4,9 +4,9 @@
 
 ## General
 
-### workspaces-globbed-by-the-tree · SHOULD
+### workspaces-globbed-by-the-tree · MUST
 
-`workspaces` lists the globs `apps/*` and `packages/*`, and for each group folder the glob of its units, `apps/<group>/*` or `packages/<group>/*`.
+`workspaces` globs the unit folders of the tree. It lists `apps/*` and `packages/*`, and for each group folder the glob of its units, `apps/<group>/*` or `packages/<group>/*`.
 
 | Why |
 |---|

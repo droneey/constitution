@@ -4,9 +4,9 @@
 
 ## Paging
 
-### list-answer-paged-with-a-maximum → outside-read-bounded · MUST
+### list-answer-paged-with-a-maximum → growing-collection-bounded · MUST
 
-A list answer is paged, with a default page size and a maximum the caller cannot raise; a larger page asked for is cut to the maximum or refused.
+A list answer is paged, with a maximum page size the caller cannot raise. It has a default page size, and a larger page asked for is cut to the maximum or refused.
 
 | Why |
 |---|
@@ -14,7 +14,7 @@ A list answer is paged, with a default page size and a maximum the caller cannot
 
 ### list-paged-by-an-opaque-cursor · MUST
 
-A list is paged by an opaque cursor over an order whose last key is unique; the server issues one with each page and accepts it back only with the filter and the order it was issued for, and the last page carries none.
+A list is paged by an opaque cursor. The cursor runs over an order whose last key is unique; the server issues one with each page and accepts it back only with the filter and the order it was issued for, and the last page carries none.
 
 | Why |
 |---|
@@ -34,7 +34,7 @@ A list is filtered and sorted only by the fields its operation declares for it, 
 
 ### batch-declares-atomic-or-answers-each-item · SHOULD
 
-A batch operation declares whether it is atomic: an atomic one succeeds or fails whole, and any other answers the outcome of each item — its result or its problem — in the order of the request.
+A batch operation declares whether it is atomic, and one that is not answers each item's outcome. An atomic one succeeds or fails whole, and any other answers the outcome of each item — its result or its problem — in the order of the request.
 
 | Why |
 |---|

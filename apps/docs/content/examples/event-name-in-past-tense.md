@@ -1,17 +1,17 @@
 ```pseudo title="Avoid"
+# orders/domain/order/transitions/order.transitions
 type ShipOrder = { orderId: OrderId }
 
-function shipOrder(order, events)
-  sendToCarrier(order)
-  let event = new ShipOrder(order.id)
-  events.publish(event)
+function ship(order)
+  return { state: order with { status: Shipped },
+           event: ShipOrder(order.id) }
 ```
 
 ```pseudo title="Prefer"
+# orders/domain/order/transitions/order.transitions
 type OrderShipped = { orderId: OrderId }
 
-function shipOrder(order, events)
-  sendToCarrier(order)
-  let event = new OrderShipped(order.id)
-  events.publish(event)
+function ship(order)
+  return { state: order with { status: Shipped },
+           event: OrderShipped(order.id) }
 ```

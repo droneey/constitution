@@ -1,30 +1,46 @@
 # Layers
 
-> Governs a layer: what it holds and may import.
+> Governs the layers: the direction of their imports and the effects they may hold.
 
-The import rules of this chapter together are the **layer matrix**; the language's block names the source root, the surface file and the suffix form. The edge is every folder that may hold effects and import any package: adapters, libs, the root, the entry files and integrations. Inward means toward the kernel, in this order: the entry files, the root and integrations; composition; a feature's application layer; its domain; the kernel. Shared plumbing and libs sit below every layer that may import them, and an adapter beside the domain it implements.
+The import rules of this chapter together are the **layer matrix**{#layer-matrix}; the language's block names the source root, the surface and the suffix form. They hold the order inward, the edge and the shared layers as the layout's vocabulary gives them.
 
 ## Direction
 
 ### import-points-inward · MUST
 
-An import points inward, toward stability, in the order this chapter opens with; never the reverse.
+An import points inward. Inward is toward stability, in the order the layout's vocabulary gives, and no import points the reverse way; an import made only for types counts like any other.
 
 | Why |
 |---|
-| an outward import lets a volatile detail break a stable rule. |
+| an outward import lets a volatile detail break a stable rule — the dependency rule. |
 
 ### domain-imports-only-itself-and-the-kernel · MUST
 
-Of the program's code, the domain imports only itself and the kernel, the kernel's contracts included; of the language's standard library, only what holds no effect; no framework, and no library.
+Of the program's code, the domain imports only itself and the kernel. It imports nothing in the kernel's `contracts/` and never a port, a use case or anything of the presentation.
 
 | Why |
 |---|
-| a domain that imports a library changes when the library does, and cannot be read or tested without it. |
+| a domain that imports a port, a use case or the presentation changes whenever they do and can no longer be read or tested alone, though it is the most stable code of the program — the dependency rule. |
+
+### application-imports-only-its-domain-the-kernel-and-composed-surfaces · MUST
+
+Of the program's code, the application layer imports only itself, the domain, the kernel and, in composition, the surfaces of the features it composes. It never imports an adapter, a presentation or the composition root.
+
+| Why |
+|---|
+| a use case that knows a framework, an adapter or a transport can run nowhere else, and the next interface, worker or subcommand of the program must write it again — ports and adapters. |
+
+### adapter-imports-only-its-owners-domain-and-shared-layers · MUST
+
+An adapter imports only what its owner's ports speak, the shared layers and, where it answers a feature's port through another feature, that feature's surface. What its owner's ports speak is that owner's domain and its ports. No adapter imports a use case, a presentation, another composition module or another adapter module, and an edge worker imports as the adapters of its module do, receiving from the composition root the ports it hands its work to.
+
+| Why |
+|---|
+| adapters that know each other or their callers form a hidden second program beside the domain. |
 
 ### feature-never-imports-a-feature · MUST
 
-A feature never imports another feature; features are combined only by the layer above them.
+A feature never imports another feature. Features are combined only by a layer above them — composition or the program's presentation.
 
 | Why |
 |---|
@@ -32,23 +48,23 @@ A feature never imports another feature; features are combined only by the layer
 
 ### composition-module-never-imports-another · MUST
 
-A module of composition never imports another; what two of them need lives in the kernel when it carries business meaning and in shared when it does not, and what they need of the features is composed in each, or the two become one module.
+A composition module never imports another. What two of them need of the features is composed in each, or the two become one module.
 
 | Why |
 |---|
 | a composition module that leans on another becomes a layer above it, and the composition stops being one flat level any module can be read from alone. |
 
-### effects-held-only-by-the-edge · MUST
+### program-presentation-imports-only-surfaces-and-shared-layers · MUST
 
-Only the edge holds effects — input and output, the network, storage, the file system, the clock, randomness, identifiers, the environment and processes — and the domain and every other unit of logic reach them only through ports their adapters implement. A unit outside the edge reaches no effect through a lib either. A unit outside the domain writing diagnostics through the logging facade, a binding unit's timer that schedules its own work, and a delivery unit reading and writing through the input and output its framework hands it — a request and its reply, the streams of a run — stand outside the ports.
+The program's presentation imports, of what lies inward of it, only surfaces and the shared layers. Those are the surfaces of features and composition modules, the kernel, the top-level `shared/` and libs.
 
 | Why |
 |---|
-| code without effects is deterministic, so it is tested fast, reasoned about locally and reused, and a test replaces an effect through its port. |
+| the program's presentation spans every feature, so one import past their surfaces ties the whole presentation to a feature's internals, and every change inside that feature reaches it. |
 
-### root-imported-only-by-entries · MUST
+### root-imported-only-by-entry-files · MUST
 
-The composition root is imported only by entry files — a file at the top of the source, an entrypoint's main and an integration's main — and by specs.
+The composition root is imported only by entry files and specs.
 
 | Why |
 |---|
@@ -56,7 +72,7 @@ The composition root is imported only by entry files — a file at the top of th
 
 ### adapter-imported-only-by-the-root · MUST
 
-An adapter is imported only by the composition root and by the surface of a package that offers it to its consumers, each through the adapter's own surface, and by specs; a use case or a composition module receives it through its port, and a binding or delivery unit receives the use case built over it.
+An adapter is imported only by the composition root. Beside the composition root, specs may import it, and so may the surface through which a package offers it to its consumers; the composition root and that surface import it through the surface of its adapter module; a use case or a composition module receives it through its port, and a binding or delivery unit receives the use case built over it. An edge worker is imported and started by the composition root alone, as an adapter is.
 
 | Why |
 |---|
@@ -64,140 +80,66 @@ An adapter is imported only by the composition root and by the surface of a pack
 
 ### entrypoint-never-imported · MUST
 
-No code imports an entrypoint; an entrypoint composes features through their surfaces and holds what ships only in its artefact.
+No code imports an entrypoint, and an entrypoint reaches features only through their surfaces.
 
 | Why |
 |---|
-| an entrypoint is a separate artefact, and importing it drags that artefact into another. |
+| an entrypoint is a separate artefact: importing it drags that artefact into another, and one that reaches past a feature's surface ties the artefact to that feature's internals. |
 
 ### integration-never-imported · MUST
 
-No other code of the package imports an integration, and an integration imports only the surfaces of the package’s modules, never its main entry or another integration.
+No other code of the package imports an integration, and an integration imports only the surfaces of the package’s modules. It never imports the package's main entry or another integration.
 
 | Why |
 |---|
-| the host framework calls the package, so an integration offered as its own entry loads the framework only for those who use it. |
+| an integration imported by the rest of the package loads its host framework for every consumer, not only for those who use that host, and one that imports the main entry or another integration ties the hosts to each other. |
 
 ### kernel-imports-only-itself · MUST
 
-The kernel imports only itself, the data files its values are read from, and the parts of the language's standard library that hold no effect.
+The kernel imports only itself. Of the program's code it imports nothing else, and beyond that code only the data files its values are read from, the standard library and the installed dependencies its role admits.
 
 | Why |
 |---|
-| everything depends on the kernel, so it depends on nothing that changes. |
+| everything depends on the kernel, so a change in anything it imports reaches every feature at once — the stable dependencies principle. |
 
-### libs-import-no-application-code · MUST
+### libs-import-no-code-of-the-program · MUST
 
-A lib imports no code of the application — no feature, nor the kernel, shared, adapters, integrations or the root — and knows nothing of the repository that uses it.
-
-| Why |
-|---|
-| a lib could be published tomorrow, and one import of the application ties it to this program for good. |
-
-### shared-imports-no-feature-adapter-contract-or-root · MUST
-
-Shared plumbing imports no feature, adapter or contract, the kernel's included, and not the root.
+A lib imports no code of the program. It imports no feature, nor the kernel, shared, adapters, integrations or the composition root, and knows nothing of the repository that uses it.
 
 | Why |
 |---|
-| plumbing that knows a feature is part of that feature. |
+| a lib could be published tomorrow, and one import of the program ties it to this program for good. |
+
+### shared-imports-no-feature-adapter-port-or-root · MUST
+
+The top-level `shared/` imports no feature, adapter or port, the kernel's included, and not the composition root.
+
+| Why |
+|---|
+| plumbing that knows a feature becomes part of that feature, and every other feature that uses the plumbing is then tied to it unseen. |
 
 ### layer-imports-dependencies-by-its-role · MUST
 
-Each folder of the tree imports installed dependencies by its role: the domain and the kernel import none; the edge imports any; every other folder imports only a dependency whose block gives it a home there. A dependency with no block, or whose block names no home, is imported only at the edge; specs import what they need.
+Each folder of the tree imports only the installed dependencies its role admits. The domain, the application layer and the kernel import none, the edge imports any, and every other folder imports only a dependency whose block gives it a home there. A dependency with no block, or whose block names no home, is imported only at the edge, and specs import what they need. The one exception in the domain and the kernel is a library of one outside format or arithmetic — a numbering plan, bank account numbers by country, decimal arithmetic, calendar dates and times, an identifier's format such as a UUID's or a ULID's —, which only the value objects that need it import, calling none of its functions that read the clock or mint an identifier. Such a library does no input or output, holds no state or configuration, needs no framework and is pinned exactly; its types stay out of every signature and its failures are its own, and a general schema or parsing library is never one.
 
 | Why |
 |---|
-| a dependency is volatile, and one table by folder role holds every dependency at once, those nobody wrote a rule for included. |
+| a dependency imported wherever it is handy spreads its volatility into layers that should not change with it, and replacing it then reaches the domain, while one table by folder role holds every dependency at once, those nobody wrote a rule for included; a format no one should write by hand is held only in the value objects that need it. |
 
-## Homes
+## Effects
 
-### code-placed-by-its-reason-to-change · MUST
+### effects-held-only-by-the-edge · MUST
 
-Code lives in the layer that owns its reason to change, beside its consumer when they share it, and lifts to the nearest common level only when a second consumer appears; a library or a helper is placed the same way.
-
-| Why |
-|---|
-| code placed by its reason to change is found where it is needed and moves only when that reason moves. |
-
-### code-shared-across-repositories-released-from-a-library-repository · SHOULD
-
-Code that knows nothing of the product and is needed by more than one repository is released from a repository of libraries, which holds nothing of any product; until a second repository needs it, it lives in the `libs/` of the source that uses it.
+Only the edge holds effects. An effect is input and output, the network, storage, the file system, the clock, randomness, the minting of a new identifier, the environment or a process; the application layer and every other unit of logic reach effects only through ports their adapters implement, and the domain reaches none. A unit outside the edge reaches no effect through a lib or the standard library either: it calls nothing of them that holds an effect, and imports no module the block of its language or its runtime bars outright. Three uses stand outside the ports: diagnostics written through the logging facade, a binding unit's timer that schedules its own work, and a delivery unit reading and writing through the input and output its framework hands it — a request and its reply, the streams of a run.
 
 | Why |
 |---|
-| the boundary of what knows nothing of the product is then the repository's, which no import can cross, and one release reaches every repository that needs it instead of a copy in each. |
+| logic that holds an effect answers differently from run to run, so its specs need the real effect or a patch of it, run slowly and fail at random — ports and adapters, and a functional core in an imperative shell. |
 
-### contract-lifts-on-its-second-feature · MUST
+### domain-and-application-log-nothing · MUST
 
-A contract belongs to the feature that needs it; when a second feature needs it in the same words and an outside system answers it — a clock, a mailer — it lifts to the kernel's `contracts/`, never sideways into one of them, while one each context words its own way stays with each context. A contract another feature answers never lifts: each feature that asks words its own.
-
-| Why |
-|---|
-| a contract owned by one feature and used by another couples the second to the first, and one lifted while a feature answers it carries that feature's model and failures into the kernel. |
-
-### type-lifts-when-features-share-its-meaning · MUST
-
-A business type — an entity, a value object, an enumeration — belongs to the feature whose model holds it, and lifts to the kernel only when two or more features use it with one meaning, universal and stable; otherwise — another meaning, only a sliver of it, or a meaning not yet universal and stable — a feature that needs it keeps its own narrow view, a type of its own or a reference by identifier, into which composition translates the other’s; a fact or a rule of the business is never duplicated.
+The domain and the application layer log nothing. A use case returns its result or fails with its expected failure, and a binding or delivery unit logs what happened, a failure the use case handled included. A failure of an optional part that the use case contains, which neither its result nor its failure carries, reaches the operator through a reporter port of neither side, which the root hands in.
 
 | Why |
 |---|
-| one meaning has one home every feature reads, while a type shared by features that read it differently must satisfy them all and stops them changing apart; a narrow view changes with its feature alone. |
-
-### composition-lifts-on-its-second-consumer · MUST
-
-Composition across features lives beside the delivery unit that needs it, in that unit's composition module, and lifts into the module's own layers when a second unit needs it; facts derived from several features, and the implementation of a contract one feature asks another to answer, live in a composition module's layers from their first use.
-
-| Why |
-|---|
-| a composition layer made before a second consumer is one nobody needs yet. |
-
-### shared-piece-placed-by-meaning · SHOULD
-
-A shared piece with business meaning goes to the kernel, one without it to shared, and one that would make sense in any program to libs; a piece without meaning that the domain or the kernel needs — a result type, a guard of exhaustiveness — lives in a role folder of the kernel, which both may import. The kernel stays small.
-
-| Why |
-|---|
-| the folder then says what a piece means, and the kernel does not grow into a second domain. |
-
-### vendor-client-lives-in-libs · SHOULD
-
-A vendor’s client without knowledge of the application lives in libs, one module per system.
-
-| Why |
-|---|
-| every adapter of that system and other programs can reuse it, and the adapters stay thin. |
-
-### protocol-between-artefacts-lives-in-shared · SHOULD
-
-A protocol two artefacts of one program speak lives in the program’s shared plumbing, imported by both.
-
-| Why |
-|---|
-| each side speaks the same types, and neither artefact imports the other. |
-
-## Delivery units
-
-### delivery-unit-beside-what-it-serves · SHOULD
-
-A delivery unit that serves one feature’s operations lives in that feature’s application layer; one that composes several features lives in the composition module that composes them. No folder of the tree is a delivery layer of its own.
-
-| Why |
-|---|
-| a unit lives with the reason it changes. |
-
-### binding-unit-calls-only-use-cases · MUST
-
-A binding unit, and a delivery unit that binds several operations itself, calls each operation's use case and never a port of the domain it serves; a port of its own concern — the identifier it makes for a command, the events it reports — comes from the root as the use case does.
-
-| Why |
-|---|
-| the interface then reaches the domain at one door per operation, and which store or service answers stays the root's choice, hidden from every interface. |
-
-### delivery-unit-stays-thin · SHOULD
-
-A delivery unit — a screen, a command, a handler, a tool function — parses its input, calls the operations whose results it presents, and presents them; it holds no business logic, and what an operation reports reaches it as a returned value, never as output printed along the way.
-
-| Why |
-|---|
-| business logic in a delivery unit cannot be reused by another transport or tested without it. |
+| a domain or a use case that logs decides what an operator is told, which only its caller knows enough to decide, while a failure it contains never reaches that caller, so only a port the root wires tells the operator of it. |

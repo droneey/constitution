@@ -1,6 +1,6 @@
 # Tests
 
-> Governs the cases that prove exported types.
+> Governs specs and cases in TypeScript: the cases that prove exported types.
 
 ## General
 

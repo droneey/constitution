@@ -1,20 +1,20 @@
 # Mutations
 
-> Governs a write through the cache: its optimism and its invalidation.
+> Governs a write through the cache: the order of its callbacks, its optimism and its invalidation.
 
 ## General
 
 ### optimism-in-the-mutation-lifecycle → overlapping-writes-keep-each-others-results · MUST
 
-Optimism lives in the mutation's lifecycle: `onMutate` cancels the reads in flight and writes values built by the program's own factories; `onError` restores the snapshot and reapplies the mutations on the key still pending; `onSettled` invalidates once the last mutation on the key settles; an item whose identifier the server assigns renders from the pending variables instead of a cache write. Never inside `mutationFn`.
+An optimistic write follows the mutation's lifecycle in its order, and builds its prediction only through the program's own checks. `onMutate` cancels the key's reads in flight before it writes its prediction, built by the program's own checked constructors and derived values; `onError` restores the snapshot and reapplies the mutations on the key still pending; `onSettled` invalidates once the last mutation on the key settles; an item whose identifier the server assigns renders from the pending variables instead of a cache write. No step of it runs inside `mutationFn`.
 
 | Why |
 |---|
-| this is the order that survives concurrent writes; any shortcut shows data the server refused, or loses another write's success. |
+| this is the order that survives concurrent writes: any shortcut shows data the server refused or loses another write's success, and a prediction built by hand holds a value the program's checked constructor would refuse. |
 
 ### invalidation-in-on-settled · SHOULD
 
-A write invalidates its keys in `onSettled` and returns the invalidation's promise, so it stays pending until the fresh data lands.
+A write invalidates its keys in `onSettled` and returns the invalidation's promise. It stays pending until the fresh data lands.
 
 | Why |
 |---|

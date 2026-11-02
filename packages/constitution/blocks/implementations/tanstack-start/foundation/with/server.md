@@ -4,10 +4,10 @@
 
 ## General
 
-### runtime-config-from-one-server-function → runtime-configuration-served-beside-bundle · MUST
+### runtime-config-from-one-server-function → one-bundle-serves-every-environment · MUST
 
-One server function serves the public projection of the configuration parsed at start; the root route loads it once, before anything reads configuration.
+One server function serves the public projection of the configuration read at start. The root route loads it once, before anything reads configuration.
 
 | Why |
 |---|
-| one bundle then serves every environment, and a missing setting fails at start. |
+| configuration built into the bundle needs a build for each environment, and a setting first read in use fails there instead of at start. |

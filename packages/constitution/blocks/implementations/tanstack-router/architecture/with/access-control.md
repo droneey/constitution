@@ -4,18 +4,10 @@
 
 ## General
 
-### guard-reaches-features-outside-react → screen-guarded-through-the-session-owners-surface · MUST
-
-A route's guard calls the use case that decides access, taken from the router's context, outside React; never a hook or a component.
-
-| Why |
-|---|
-| `beforeLoad` runs before any component renders, so a guard that needs a hook or a component's context has nothing to read. |
-
 ### guards-in-before-load → screen-guarded-through-the-session-owners-surface · MUST
 
-Access control of a route sits in its `beforeLoad`, and ends in `redirect`.
+A route's access control is applied in its `beforeLoad`. It hands the binding unit that decides access the use case that unit calls, taken from the router's context, never through a hook or a component, and ends in `redirect`.
 
 | Why |
 |---|
-| the guard runs before the screen loads anything, so a denied user sees nothing of it. |
+| `beforeLoad` runs before the screen loads anything, so a denied user sees nothing of it, and before any component renders, so a guard that needs a hook or a component's context has nothing to read. |

@@ -10,4 +10,4 @@ governs: ["src/routes/**", "src/router.ts", "src/router.tsx", "src/root/routes/*
 
 # TanStack Router
 
-> **TanStack Router**, the project's only router, which generates its tree in **`routeTree.gen.ts`**.
+> **TanStack Router**, the router, which generates its tree in **`routeTree.gen.ts`**.

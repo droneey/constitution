@@ -7,5 +7,5 @@ type Meeting = {
 }
 
 # the instant is made only when it is used, by that zone's rules
-let reminderAt = instantOf(meeting.startsAt, meeting.zone)
+let reminderAt = toInstant(meeting.startsAt, meeting.zone)
 ```

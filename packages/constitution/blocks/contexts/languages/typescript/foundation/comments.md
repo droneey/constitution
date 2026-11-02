@@ -1,23 +1,13 @@
 # Comments
 
-> Governs JSDoc and deprecation.
+> Governs a comment in TypeScript: the JSDoc that documents what a package publishes.
 
 ## General
 
-### published-declaration-documented-by-jsdoc → published-declaration-documented-only-where-not-obvious · SHOULD
+### published-declaration-documented-by-jsdoc → only-published-declarations-documented-only-where-not-obvious · SHOULD
 
-The documentation of a declaration a package publishes is a `/** … */` block on that declaration that states no type the signature already states: no `{string}` after `@param`, no `@returns {T}`.
-
-| Why |
-|---|
-| the editor shows that block wherever the declaration is used, and a type written in it repeats the signature and drifts from it. |
-
-## Deprecation
-
-### deprecated-by-jsdoc-tag → retired-code-marked-deprecated · SHOULD
-
-Code kept only for its old callers carries a JSDoc `@deprecated` tag that names its replacement.
+The documentation of a published declaration is a JSDoc block that states no type the signature states. It is a `/** … */` block on the declaration a package publishes: no `{string}` after `@param`, no `@returns {T}`.
 
 | Why |
 |---|
-| the tag travels with the declaration, so every use of it is marked where it is written, not only where it is declared. |
+| documentation in any other form is not shown by the editor where the declaration is used, and a type written in the block repeats the signature and drifts from it. |

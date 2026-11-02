@@ -2,12 +2,12 @@ import type { Command } from 'commander';
 
 import type { PinnedRelease } from '#/features/installation';
 import type {
-  AppliedFilesCommandRepository,
+  AppliedFilesRepository,
   CheckConfigurationsInput,
   CommandRunner,
   ConfigurationFormat,
   DistributionSources,
-  LockQueryRepository,
+  LockQueries,
   PlanApplyInput,
   PlanPresetsInput,
   PresetFileParser,
@@ -15,10 +15,10 @@ import type {
 } from '#/features/presets';
 import type {
   ActiveRulesSource,
-  GateCommandRepository,
+  GateRepository,
   RulesSource,
-  SessionCommandRepository,
-  SessionQueryRepository,
+  SessionQueries,
+  SessionRepository,
   TextHasher,
   WorkingTree,
 } from '#/features/session';
@@ -29,19 +29,20 @@ import type { ProgramInput } from './program.types';
 
 interface Ports {
   readonly activeRules: ActiveRulesSource;
-  readonly appliedFiles: AppliedFilesCommandRepository;
+  readonly appliedFilesRepository: AppliedFilesRepository;
   readonly commands: CommandRunner;
   readonly distribution: DistributionSources;
   readonly files: ProjectFiles;
   readonly formats: ConfigurationFormat;
-  readonly gates: GateCommandRepository;
+  readonly gateRepository: GateRepository;
   readonly hasher: TextHasher;
-  readonly locks: LockQueryRepository;
+  readonly lockQueries: LockQueries;
   readonly pinned: PinnedRelease;
   readonly presetFiles: PresetFileParser;
   readonly reader: ProjectReader;
   readonly rules: RulesSource;
-  readonly sessions: SessionCommandRepository & SessionQueryRepository;
+  readonly sessionQueries: SessionQueries;
+  readonly sessionRepository: SessionRepository;
   readonly workingTree: WorkingTree;
 }
 

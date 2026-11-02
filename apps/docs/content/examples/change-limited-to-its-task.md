@@ -2,7 +2,7 @@
 task: refund a paid order
 
 M orders/refund.ts
-M orders/refund.spec.ts
+M orders/__tests__/refund.test.ts
 M users/profile.ts  # renamed
 M README.md         # reformatted
 ```
@@ -11,7 +11,7 @@ M README.md         # reformatted
 task: refund a paid order
 
 M orders/refund.ts
-M orders/refund.spec.ts
+M orders/__tests__/refund.test.ts
 
 reported: users/profile.ts names
   its fields unclearly

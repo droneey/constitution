@@ -8,6 +8,7 @@ function exportInvoices(path, invoices)
 ```pseudo title="Prefer"
 function exportInvoices(path, invoices)
   let file = files.open(path)
+
   try
     file.write(toCsv(invoices))
   finally

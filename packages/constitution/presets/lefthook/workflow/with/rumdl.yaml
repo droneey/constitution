@@ -7,7 +7,7 @@ rumdl:
           jobs[name=rumdl]:
             glob: '*.md'
             run: rumdl check --fix {staged_files}
-lefthook:
+version-control:
   hook-rewrites-only-staged-files:
     '*':
       lefthook.yaml:

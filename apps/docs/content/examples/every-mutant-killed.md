@@ -1,7 +1,8 @@
 ```pseudo
-# orders/domain/value-objects/discount.value-object
+# orders/domain/pricing/services/discount.service
 function discountFor(total)
   if total >= 100 then return 10
+
   return 0
 
 # the mutant `>=` → `>` survives: no case has a total of exactly 100,
@@ -11,6 +12,7 @@ test "should give a discount of 10 when the total is 100"
   let total = 100
   # Act
   let discount = discountFor(total)
+
   # Assert
   assert discount is 10
 ```

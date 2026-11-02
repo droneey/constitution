@@ -9,7 +9,9 @@ function shippingFee(cart, customer)
 function shippingFee(cart, customer)
   if customer.isMember then
     return 0
+
   if cart.total >= freeShippingFrom then
     return 0
+
   return standardFee
 ```

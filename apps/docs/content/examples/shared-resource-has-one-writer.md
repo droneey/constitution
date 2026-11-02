@@ -1,24 +1,21 @@
 ```pseudo title="Avoid"
-# orders/import.ts
-function importOrders(path)
-  if not files.exists(path) then
-    process.exit(2)
-  ...
-
-# main.ts
-importOrders(args.path)
+# orders/application/use-cases/commands/import-orders
+function createImportOrders({ files })
+  return function(input, context)
+    if not files.exists(input.path) then
+      process.exit(ExitCode.Failure)
+    ...
 ```
 
 ```pseudo title="Prefer"
-# orders/import.ts
-function importOrders(path)
-  if not files.exists(path) then
-    throw new ImportFileMissing(path)
-  ...
+# orders/application/use-cases/commands/import-orders
+function createImportOrders({ files })
+  return function(input, context)
+    if not files.exists(input.path) then
+      throw new ImportFileMissingError(input.path)
+    ...
 
-# main.ts
-try
-  importOrders(args.path)
-catch ImportFileMissing
-  process.exitCode = 2
+# presentation/bindings/last-resort: the one writer of the exit code
+catch ImportFileMissingError
+  return ExitCode.Failure
 ```

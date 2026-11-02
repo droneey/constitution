@@ -6,7 +6,7 @@
 
 ### custom-property-read-where-defined · MUST
 
-A custom property is read only through `var()`, and only where the theme, or a rule that matches the element or one of its ancestors, defines it, or with a fallback written in its `var()`.
+A custom property is read only where it is defined. It is read only through `var()`, and only where the theme, or a rule that matches the element or one of its ancestors, defines it, or with a fallback written in its `var()`.
 
 | Why |
 |---|

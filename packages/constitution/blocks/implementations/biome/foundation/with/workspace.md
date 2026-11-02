@@ -6,7 +6,7 @@
 
 ### biome-configuration-in-the-unit → unit-configuration-kept-in-its-folder · MUST
 
-Each package keeps its configuration in its folder and is checked by a run there: a `biome.jsonc` with `"root": true` that holds the settings of its own blocks; the root's `biome.jsonc` holds the root's and skips the folders the packages lie in.
+Each package keeps its Biome configuration in its folder and is checked by a run there. Its `biome.jsonc` has `"root": true` and holds the settings of its own blocks; the root's `biome.jsonc` holds the root's and skips the folders the packages lie in.
 
 | Why |
 |---|

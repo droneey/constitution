@@ -4,28 +4,20 @@
 
 ## Guards
 
-### screen-guarded-through-the-session-owners-surface → entry-point-declares-its-access · MUST
+### screen-guarded-through-the-session-owners-surface → missing-refused-or-failed-answered-in-the-presentation · MUST
 
-A screen's guards and redirects live in the screen's registration in the root and use the surface of the feature that owns sessions.
-
-| Why |
-|---|
-| access is decided before the screen renders, in one place, and no feature reaches into the session's internals. |
-
-### feature-ui-adapts-to-permissions-passed-down · SHOULD
-
-A feature's widgets and components adapt to the permissions composition passes them, never reaching into the session's internals.
+A screen's guard is decided by the feature that owns sessions. What it decides — whether to admit the user and where to send them — is a binding unit's of that feature, reached through its surface, and the screen's registration applies the answer.
 
 | Why |
 |---|
-| no feature then knows how sessions work, and a change of the session's model never reaches a feature's interface. |
+| a guard decided anywhere else repeats the decision wherever a screen needs it and reaches into the session's internals, and one decided after the screen renders shows what it should have refused. |
 
 ## Session state
 
 ### session-presence-kept-in-a-root-store · MUST
 
-Whether a session exists is one of the global concerns the client owns, in a small store the root builds; what the session carries — the user, their rights — keeps the home of the data it is.
+Whether a session exists is kept in a store of its own, which the root builds. It is one of the global concerns the client owns; what the session carries — the user, their rights — keeps the home of the data it is.
 
 | Why |
 |---|
-| every screen asks one place whether someone is signed in, and the user's details are not copied into a store beside their real home. |
+| a session's presence asked of several places gives screens different answers, and the user's details copied into a store drift from their real home. |

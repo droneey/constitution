@@ -4,7 +4,7 @@ test "should store the invoice PDF"
   let folder = "/Users/ann/invoices"
   let store = new PdfStore(folder)
   # Act
-  store.save(anInvoice({ id: "inv-7" }))
+  store.save(createInvoice({ id: "inv-7" }))
   # Assert
   assert listFiles(folder)
     is ["inv-7.pdf"]
@@ -13,10 +13,10 @@ test "should store the invoice PDF"
 ```pseudo title="Prefer"
 test "should store the invoice PDF"
   # Arrange
-  let folder = makeTempFolder()
+  let folder = createTempFolder()
   let store = new PdfStore(folder)
   # Act
-  store.save(anInvoice({ id: "inv-7" }))
+  store.save(createInvoice({ id: "inv-7" }))
   # Assert
   assert listFiles(folder)
     is ["inv-7.pdf"]

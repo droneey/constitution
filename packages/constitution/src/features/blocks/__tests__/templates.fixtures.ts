@@ -32,7 +32,7 @@ const PARAGLIDE: ReadonlyArray<
     '**Paraglide** compiles the messages of each locale into typed functions.',
   ],
   [
-    '<What its parts and templates cannot show: how the library is set up, a quirk of the tool, a limit of what it holds.>',
+    '<What its preset entries and templates cannot show: how the library is set up, a quirk of the tool, a limit of what it holds.>',
     'Its compiler runs before the type check, and its output is ignored.',
   ],
   [
@@ -60,12 +60,16 @@ const PARAGLIDE: ReadonlyArray<
     'paraglide-messages-by-function',
   ],
   [
-    '<The rule, in one or two sentences.>',
-    'A message is read through its compiled function, never by its key.',
+    '<Its slogan: the shortest true statement of the outcome it asks for.>',
+    'A message is read through its compiled function.',
   ],
   [
-    '<the reason>',
-    'the compiler checks a function call, and a key is only a string.',
+    "<The sentences that draw the slogan's limits: where it applies, what it covers, its exceptions.>",
+    'No code reads one by its key.',
+  ],
+  [
+    '<the failure it prevents: what breaks, for whom, when the rule is broken> — <the principle, pattern or reference it applies or follows; drop this part and its dash when it follows none>',
+    'a message read by its key breaks for its reader once the key is renamed, since the compiler checks a function call and a key is only a string.',
   ],
 ] as const;
 

@@ -32,7 +32,7 @@ import {
   sidebarOf,
   taglineOf,
   termsOf,
-} from '#/features/content/adapters/fumadocs-mdx';
+} from '#/features/content/infrastructure/fumadocs-mdx';
 import { DOCS_ROUTE } from '#/shared/constants';
 
 const constitutionBlocksPath = AbsolutePath.create(

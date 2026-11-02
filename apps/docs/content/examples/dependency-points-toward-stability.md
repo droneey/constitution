@@ -2,14 +2,14 @@
 # money/money.ts, changed yearly
 import Theme from "checkout/theme"
 
-function formatMoney(amount)
-  return Theme.styleCurrency(amount)
+function moneyText(amount)
+  return Theme.currencyText(amount)
 ```
 
 ```pseudo title="Prefer"
 # checkout/theme.ts, changed weekly
 import Money from "money/money"
 
-function showPrice(amount)
-  return Money.format(amount)
+function priceText(amount)
+  return Money.toText(amount)
 ```

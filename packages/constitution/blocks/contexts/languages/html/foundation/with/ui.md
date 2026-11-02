@@ -10,11 +10,11 @@ An image declares its width and height in its markup.
 
 | Why |
 |---|
-| the page reserves the image's box before it loads, so nothing already shown moves when it arrives. |
+| an image without its size has no box until it loads, so the content below it jumps when it arrives and the user loses their place or presses what slid under their finger. |
 
 ### image-offers-sources-for-each-density → image-sharp-at-the-pixel-density · SHOULD
 
-A content image offers its widths by `srcset` and `sizes`, so the browser fetches the one the screen's pixel density and the image's box need.
+A content image offers its widths by `srcset` and `sizes`. The browser then fetches the one the screen's pixel density and the image's box need.
 
 | Why |
 |---|
@@ -24,11 +24,11 @@ A content image offers its widths by `srcset` and `sizes`, so the browser fetche
 
 ### dialog-popover-and-details-native → complex-pattern-built-on-accessible-primitives · MUST
 
-Unless another active block brings accessible primitives for these patterns, HTML's own elements carry them: `<dialog>` for a dialog, the `popover` attribute for a popover and `<details>` for a disclosure or an accordion's section.
+HTML's own elements carry a dialog, a popover and a disclosure. `<dialog>` carries a dialog, the `popover` attribute a popover and `<details>` a disclosure or an accordion's section, where no other active block brings accessible primitives for these patterns.
 
 | Why |
 |---|
-| each brings its focus, its keyboard and its announcement from the browser, with no script to get them wrong. |
+| a dialog, a popover or a disclosure scripted by hand gets its focus, its keyboard or its announcement wrong, while each of these elements brings them from the browser. |
 
 ## Forms
 
@@ -38,7 +38,7 @@ A field for its user's own data declares its purpose by the `autocomplete` token
 
 | Why |
 |---|
-| the browser then fills it in, and assistive technology can tell its user what it is for. |
+| a field without its token leaves its user to type by hand what the browser already knows, and assistive technology cannot tell them what the field is for — WCAG 2.2, Identify Input Purpose. |
 
 ### busy-submit-marked-aria-disabled → submit-busy-keeps-its-focus · SHOULD
 
@@ -56,7 +56,7 @@ An element's `tabindex` is `0` or `-1`, never a positive number.
 
 | Why |
 |---|
-| a positive `tabindex` moves its element ahead of every other in the order of the keyboard, wherever it sits on the screen. |
+| a positive `tabindex` moves its element ahead of every other in the order of the keyboard, wherever it sits on the screen, and a keyboard user loses their place — WCAG 2.2, Focus Order. |
 
 ### focusable-element-never-aria-hidden → control-operable-by-every-input · MUST
 
@@ -64,31 +64,31 @@ No element that can take focus, or holds one that can, is `aria-hidden`.
 
 | Why |
 |---|
-| a screen reader user then reaches a control their reader cannot name or describe, and hears nothing where focus landed. |
+| a screen reader user then reaches a control their reader cannot name or describe, and hears nothing where focus landed — WCAG 2.2, Name, Role, Value. |
 
 ### native-html-elements-first → native-semantics-first · MUST
 
-`<button>` carries an action, `<a>` with a real `href` a move, lists are lists and tables have headers and a caption; ARIA is used only where HTML has no element.
+HTML's own elements come first, and ARIA only where HTML has none. `<button>` carries an action, `<a>` with a real `href` a move, lists are lists and tables have headers and a caption.
 
 | Why |
 |---|
-| a native element brings its role, its keyboard and its announcement, while ARIA on a generic element brings only a promise. |
+| ARIA on a generic element announces a role it does not keep (no keyboard, no focus, no behaviour), while a native element brings all three — the first rule of ARIA use. |
 
 ### page-marks-its-landmarks → wcag-aa-conformance · MUST
 
-Every page marks its landmarks — its header, navigation, main content and footer, where it has them — by their elements, with one `<main>`.
+Every page marks its landmarks by their elements, with one `<main>`. Its landmarks are its header, navigation, main content and footer, where it has them.
 
 | Why |
 |---|
-| people using a screen reader or a keyboard move through a page by its landmarks, and a page without them must be read from the top. |
+| people using a screen reader or a keyboard move through a page by its landmarks, and a page without them must be read from the top — WCAG 2.2, Info and Relationships and Bypass Blocks. |
 
 ### skip-link-comes-first → wcag-aa-conformance · MUST
 
-A page that repeats blocks before its content — a header, a navigation — offers as its first focusable element a link that skips to the main content.
+A page that repeats blocks before its content offers, as its first focusable element, a link that skips them. The blocks are such as a header or a navigation, and the link leads to the main content.
 
 | Why |
 |---|
-| it spares a keyboard user tabbing through the same navigation on every page. |
+| without it, a keyboard user tabs through the same header and navigation on every page before reaching its content — WCAG 2.2, Bypass Blocks. |
 
 ### live-region-polite-unless-urgent → status-changes-announced · MUST
 
@@ -96,7 +96,7 @@ A status goes to a polite live region, and only an urgent error to an assertive 
 
 | Why |
 |---|
-| an assertive announcement interrupts what its listener is hearing, so it is kept for what cannot wait. |
+| an assertive announcement cuts off what its listener is hearing, so a status sent to one interrupts them for what could have waited — WCAG 2.2, Status Messages. |
 
 ### invalid-field-tied-to-its-message → status-changes-announced · MUST
 
@@ -104,23 +104,15 @@ An invalid field carries `aria-invalid` and an `aria-describedby` that points at
 
 | Why |
 |---|
-| assistive technology then says that the field is wrong and why, when its user reaches it. |
-
-### entry-document-declares-the-viewport → wcag-aa-conformance · MUST
-
-Every entry document declares the responsive viewport: `<meta name="viewport" content="width=device-width, initial-scale=1">`.
-
-| Why |
-|---|
-| without it a phone lays the page out at a desktop's width and shrinks it, so its text is small and its layout never reflows. |
+| a field marked wrong only by its look, its message merely placed nearby, is announced as valid, and its user never hears why it is wrong — WCAG 2.2, Error Identification. |
 
 ### viewport-never-blocks-zoom → wcag-aa-conformance · MUST
 
-The viewport declaration never blocks zooming: no `user-scalable=no`, and no `maximum-scale` below 5.
+Every entry document declares the responsive viewport and never blocks zooming. It declares `<meta name="viewport" content="width=device-width, initial-scale=1">`, with no `user-scalable=no` and no `maximum-scale` below 5.
 
 | Why |
 |---|
-| a page that cannot be zoomed fails the people who need its text larger. |
+| without it a phone lays the page out at a desktop's width and shrinks it, and a page that cannot be zoomed fails the people who need its text larger — WCAG 2.2, Resize Text and Reflow. |
 
 ### language-declared-by-lang → screen-declares-its-language · MUST
 
@@ -128,4 +120,4 @@ A document declares its language in the `lang` of its root element, and a passag
 
 | Why |
 |---|
-| `lang` is what assistive technology reads to choose how a text is pronounced, and what the browser reads to hyphenate and translate it. |
+| without `lang`, assistive technology pronounces the text by another language's rules, and the browser hyphenates and translates it wrongly — WCAG 2.2, Language of Page and Language of Parts. |

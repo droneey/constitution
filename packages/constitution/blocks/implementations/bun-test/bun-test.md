@@ -16,4 +16,4 @@ governs: ["**/__tests__/**"]
 
 Core's exclusions from coverage are the specs and their fixtures, `**/__tests__/**`, the entry file, `**/main.*`, and generated files, `**/*.gen.*`.
 
-On the architecture axis, core's tree adds to core's exclusions from coverage the wiring file, `**/root/wiring.*`; their `**/main.*` already leaves out the entry file of each artefact.
+On the architecture axis, core's tree adds to core's exclusions from coverage the composition root, `**/root/**`; their `**/main.*` already leaves out the entry file of each artefact.

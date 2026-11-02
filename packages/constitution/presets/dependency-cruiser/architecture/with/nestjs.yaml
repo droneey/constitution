@@ -3,13 +3,15 @@ nestjs:
     typescript:
       .dependency-cruiser.jsonc:
         allowedSeverity: error
-  nestjs-imported-by-modules-and-providers:
+_api:
+  server-framework-imported-by-the-presentation:
     typescript:
       .dependency-cruiser.jsonc:
-        allowed[comment=nestjs-imported-by-modules-and-providers]:
+        'allowed[comment=server-framework-imported-by-the-presentation: nestjs]':
           from:
             path:
-              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.application-layer}/
+              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.presentation-layer}/
+              - ^${role.source}/${role.presentation-layer}/
               - /${role.framework-provider}/
           to:
             path: node_modules/@nestjs/

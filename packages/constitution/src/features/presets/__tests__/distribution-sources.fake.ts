@@ -1,4 +1,4 @@
-import type { DistributionSources } from '../domain/contracts';
+import type { DistributionSources } from '../application/contracts';
 
 const createFakeDistributionSources = (
   builtFiles: readonly string[] = [],

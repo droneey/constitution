@@ -6,7 +6,7 @@
 
 ### consumer-liveness-reports-its-loop · MUST
 
-The liveness check of a server that consumes reports whether its consuming loop still turns — it took, settled or waited for a message, or retried its connection to the broker, within a bound the project sets — never only whether the process answers.
+The liveness check of a server that consumes reports its consuming loop. It reports whether the loop still turns — it took, settled or waited for a message, or retried its connection to the broker, within a bound the project sets — never only whether the process answers.
 
 | Why |
 |---|
@@ -14,7 +14,7 @@ The liveness check of a server that consumes reports whether its consuming loop 
 
 ### consumer-takes-messages-only-while-ready · SHOULD
 
-A server's consumer subscribes to its queues only once the server is ready, and pauses while its readiness fails.
+A server's consumer takes messages only while the server is ready. It subscribes to its queues only once the server is ready, and pauses while its readiness fails.
 
 | Why |
 |---|

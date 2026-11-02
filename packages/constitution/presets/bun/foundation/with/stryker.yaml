@@ -12,7 +12,7 @@ bun:
     typescript:
       package.json:
         scripts: !sorted {}
-  every-tool-runs-on-bun:
+  node-shebang-tool-runs-on-bun:
     typescript:
       bunfig.mutation.toml:
         run:

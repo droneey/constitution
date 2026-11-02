@@ -6,19 +6,11 @@
 
 ### help-printed-on-h-and-help · MUST
 
-`-h` and `--help` print the command's help to standard output and exit 0, whatever other options precede them, unless they follow `--` or are the value of a flag.
+`-h` and `--help` print the command's help and exit 0. They print it to standard output, whatever other options precede them, unless they follow `--` or are the value of a flag.
 
 | Why |
 |---|
 | help is how a person or an agent discovers a command, and help that needs every other argument right first cannot be reached when they are wrong. |
-
-### help-leads-with-examples · SHOULD
-
-A command's help opens with what the command does and examples of its common use, before the full list of flags.
-
-| Why |
-|---|
-| people read examples before reference, and most come to the help for the common case. |
 
 ### version-printed-on-version · SHOULD
 
@@ -26,13 +18,21 @@ A command's help opens with what the command does and examples of its common use
 
 | Why |
 |---|
-| a bug report and a script both need to know which release ran. |
+| without it a bug report cannot name the release that ran, and a script cannot check which one it runs. |
+
+### help-leads-with-examples · SHOULD
+
+A command's help leads with examples. It opens with what the command does and examples of its common use, before the full list of flags.
+
+| Why |
+|---|
+| help that opens with the full list of flags buries the common case most readers came for, and people read examples before reference. |
 
 ## Flags and prompts
 
 ### flag-takes-its-conventional-name · SHOULD
 
-A flag whose purpose has a conventional name takes it: `-q`/`--quiet`, `--verbose`, `-n`/`--dry-run`, `-f`/`--force`, `-o`/`--output`, `--json`, `--no-input`, `--no-color`.
+A flag whose purpose has a conventional name takes it. The names are `-q`/`--quiet`, `--verbose`, `-n`/`--dry-run`, `-f`/`--force`, `-o`/`--output`, `--json`, `--no-input` and `--no-color`.
 
 | Why |
 |---|
@@ -40,7 +40,7 @@ A flag whose purpose has a conventional name takes it: `-q`/`--quiet`, `--verbos
 
 ### prompt-only-on-a-terminal · MUST
 
-A command prompts only when its standard input is a terminal; without one, a missing answer is a usage error that names the flag that gives it.
+A command prompts only on a terminal. It prompts only when its standard input is a terminal; without one, a missing answer is a usage error that names the flag that gives it.
 
 | Why |
 |---|
@@ -52,7 +52,7 @@ A command prompts only when its standard input is a terminal; without one, a mis
 
 | Why |
 |---|
-| a person at a terminal also runs commands from scripts, and needs a way to make a run fail rather than wait for them. |
+| a script run from a terminal otherwise stops at a prompt and waits for an answer nobody gives, where it should fail. |
 
 ## Requirements for implementation
 
@@ -62,4 +62,4 @@ Flags are declared with a schema and parsed before the handler runs.
 
 | Why |
 |---|
-| a handler then receives typed, validated input, and a bad flag is a usage error before any work starts. |
+| flags read by hand inside the handler reach it untyped, and a bad flag is found after work has started — parse, don't validate. |

@@ -1,8 +1,34 @@
 # Effects
 
-> Governs runtime configuration, the browser's resources, the service worker, storage and the page's exit.
+> Governs the browser's shared resources, the tab's storage, the page's exit, the service worker and runtime configuration.
 
-## General
+## Resources and concurrency
+
+### browser-resources-have-one-writer → shared-resource-has-one-writer · MUST
+
+Each resource the tab shares with the browser has one writer. These resources include the document's head, the URL, focus, the scroll position, the root element's classes and attributes, and the service worker.
+
+| Why |
+|---|
+| each outlives the code that writes it, so two writers overwrite each other on every navigation and the last to run wins. |
+
+### tab-only-data-kept-in-persistent-storage · SHOULD
+
+Data that exists only in the tab is kept in persistent storage. Such data — an offline draft, a queued write — sits only in storage the program has asked the browser to persist, by `navigator.storage.persist()` when its user first saves such data.
+
+| Why |
+|---|
+| a browser short of space evicts the storage it was not asked to keep, and data held nowhere else is then lost without a trace. |
+
+### page-exit-work-runs-when-the-page-hides · MUST
+
+A page's exit work runs when the page hides, never on unload. That work — saving its state, sending a last report — runs when `visibilitychange` reports `hidden` or on `pagehide`, never in an `unload` handler.
+
+| Why |
+|---|
+| browsers no longer fire `unload` reliably, and a page that listens for it is kept out of the back/forward cache, so its last work is lost and the way back is slow. |
+
+## Service worker
 
 ### service-worker-update-waits-for-the-page · SHOULD
 
@@ -12,48 +38,20 @@ A new service worker takes control of a page already open only at the page's nex
 |---|
 | a page whose worker changes under it fetches files of a release its code does not know, and a reload nobody asked for loses what its user was typing. |
 
-### tab-only-data-kept-in-persistent-storage · SHOULD
+### service-worker-caches-versioned → growing-collection-bounded · MUST
 
-Data that exists nowhere but in the tab — an offline draft, a queued write — is kept only in storage the program has asked the browser to persist, by `navigator.storage.persist()` when its user first saves such data.
-
-| Why |
-|---|
-| a browser short of space evicts the storage it was not asked to keep, and data held nowhere else is then lost without a trace. |
-
-### page-exit-work-runs-when-the-page-hides · MUST
-
-Work a page does as it is left — saving its state, sending a last report — runs when `visibilitychange` reports `hidden` or on `pagehide`, never in an `unload` handler.
-
-| Why |
-|---|
-| browsers no longer fire `unload` reliably, and a page that listens for it is kept out of the back/forward cache, so its last work is lost and the way back is slow. |
-
-## Calls and resources
-
-### service-worker-caches-versioned → kept-collection-bounded · MUST
-
-Each cache a service worker fills is named by its version, and a worker that activates deletes the caches of every older version.
+A service worker's caches are versioned, and the old versions are deleted. Each cache a service worker fills is named by its version, and a worker that activates deletes the caches of every older version.
 
 | Why |
 |---|
 | caches left by old versions only grow, fill the origin's quota and push out the data the program still needs. |
 
-## Operations
+## Configuration
 
-### browser-resources-have-one-writer → shared-resource-has-one-writer · MUST
+### one-bundle-serves-every-environment → one-artefact-serves-every-environment · MUST
 
-In the browser, the resources the program shares with its host include the document's head, the URL, focus, the scroll position, the root element's classes and attributes, and the service worker; each has one writer.
-
-| Why |
-|---|
-| each outlives the code that writes it, so two writers overwrite each other on every navigation and the last to run wins. |
-
-## Records and configuration
-
-### runtime-configuration-served-beside-bundle → one-artefact-serves-every-environment · MUST
-
-One bundle serves every environment: a setting that differs between environments is served beside the bundle, never built into it.
+One bundle serves every environment, the settings that differ between them served beside it. Its host serves them beside the bundle and the tab fetches them before the program starts; none is built into the bundle.
 
 | Why |
 |---|
-| one tested bundle is promoted from staging to production unchanged, and nothing that belongs to one environment ships inside it. |
+| a setting built into the bundle means one build per environment, so production runs a bundle that was never tested, and a tab has no environment of its host to read, so a setting that is not built in reaches it only from its host, beside the bundle. |

@@ -1,5 +1,5 @@
-python:
-  yaml-from-outside-loaded-by-a-safe-loader-only:
+yaml:
+  outside-yaml-loaded-by-a-safe-loader:
     python:
       pyproject.toml:
         tool:

@@ -1,0 +1,12 @@
+src/shop/orders.py:2: the file does not parse: invalid syntax
+src/shop/orders.py:1: the file holds 501 lines, more than 500
+src/shop/orders.py:3: tally holds 101 lines, more than 100
+src/shop/orders.py:1: a relative import climbs out of the import package
+src/shop/orders.py:4: a relative import leaves its module, kernel; import it by its absolute path
+src/shop/orders.py:5: a relative import leaves its module, the package root; import it by its absolute path
+src/shop/orders.py:6: a module imports itself by its absolute path, shop.kernel; import it relatively
+src/shop/orders.py:7: kernel/contracts imports no package, and attrs is one
+src/shop/orders.py:8: httpx has no home in utils; a package without one is imported at the edge
+src/shop/orders.py:9: fastapi is imported in api, outside its home: edge, presentation, reports
+src/shop/orders.py:10: kernel holds no effect, and time is one; it reaches it through a port
+src/shop/orders.py:11: infrastructure/mail reads the environment through os.environ; only the root reads it

@@ -1,13 +1,13 @@
 # Layout
 
-> Governs the extension of a JSON file that holds comments.
+> Governs a JSON file's kind and name: the extension of one that holds comments.
 
 ## Names
 
 ### json-with-comments-ends-in-jsonc → format-has-one-extension · SHOULD
 
-A JSON file that holds comments or trailing commas ends in `.jsonc`, save a file its reader finds only by a fixed name.
+A JSON file that holds comments or trailing commas ends in `.jsonc`. A file its reader finds only by a fixed name is exempt.
 
 | Why |
 |---|
-| the extension tells every editor, formatter and reader which grammar the file follows, so none of them reads a comment as an error or strips it. |
+| a file that ends in `.json` and holds comments is read as strict JSON by every editor, formatter and reader that trusts its extension, which then reports the comment as an error or strips it. |

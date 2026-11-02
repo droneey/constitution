@@ -10,4 +10,4 @@ tombi formats every TOML file and keeps the keys and the items of an array in th
 
 | Why |
 |---|
-| one formatter for TOML ends every argument about its layout, and an order taken from a schema would move a key away from the comment above it. |
+| two formatters of TOML undo each other's work, and one that ordered keys by a schema would move a key away from the comment above it. |

@@ -5,7 +5,7 @@ requires: [typescript, observability]
 extends: null
 abstract: false
 languages: []
-governs: ["**/root/**"]
+governs: ["**/libs/**", "**/root/**"]
 ---
 
 # pino

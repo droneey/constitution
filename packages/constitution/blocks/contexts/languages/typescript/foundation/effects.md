@@ -1,45 +1,37 @@
 # Effects
 
-> Governs abort signals, scoped resources, promises and synchronous I/O.
+> Governs abort signals, scoped resources and promises.
 
 ## Calls and resources
 
 ### cancellation-by-abort-signal → outside-call-can-be-cancelled · SHOULD
 
-An operation that can be cancelled takes an `AbortSignal` in its options object and hands it to every call across a process boundary it makes.
+A cancellable operation takes an `AbortSignal` and hands it on. It takes the signal in its options object and hands it to every call across a process boundary it makes.
 
 | Why |
 |---|
-| one signal from the caller stops all the work below it, and every API of the platform takes one. |
+| a call the signal does not reach keeps working after its caller gave up, and a cancellation in any other form is one no API of the platform takes. |
 
 ### outside-call-timed-out-by-abort-signal → outside-call-has-a-timeout · MUST
 
-A call across a process boundary that its client does not bound by a timeout of its own is given `AbortSignal.timeout(ms)`, joined to its caller's signal by `AbortSignal.any` where it has one.
+A call across a process boundary is timed out by `AbortSignal.timeout(ms)` where its client sets no timeout of its own. The signal is joined to its caller's by `AbortSignal.any` where the caller has one.
 
 | Why |
 |---|
-| that signal is the timeout every API of the platform takes, and joining it to the caller's keeps one way to stop a call, whether the time ran out or the caller gave up. |
+| a timer of the program's own is a timeout no API of the platform takes, and a timeout not joined to its caller's signal is a second way to stop the call, so the call ignores either the time running out or the caller giving up. |
 
 ### scoped-resource-held-by-using → resource-released-on-every-path · MUST
 
-A resource whose life is one scope — a file handle, a lock, a temporary folder, a connection for one task — is held by `using` or `await using`, and a promise returned inside its scope is awaited, so the resource outlives it.
+A resource whose life is one scope is held by `using` or `await using`. Such a resource is a file handle, a lock, a temporary folder or a connection for one task, and a promise returned inside its scope is awaited, so the resource outlives it.
 
 | Why |
 |---|
-| the resource is then released at the end of its scope on every way out, a thrown failure included, where a `finally` is forgotten on the next path added. |
+| a release written in a `finally` is forgotten on the next path added, and a promise returned unawaited from the scope runs after the resource it uses is released. |
 
 ### promise-awaited-returned-or-handed-to-a-scope → async-work-awaited-or-held-by-a-scope · MUST
 
-Every promise is awaited, returned or handed to a scope that awaits it; `void` never discards one.
+Every promise is awaited, returned or handed to a scope that awaits it. `void` never discards one.
 
 | Why |
 |---|
 | a promise nobody awaits fails where nobody sees it, and the work it stands for outlives the code that started it. |
-
-### request-path-calls-no-sync-io · SHOULD
-
-Code on the path of a request or an event the program serves calls no synchronous input or output — `readFileSync`, `execFileSync` — and runs heavy work, a key derivation by `pbkdf2Sync` or `scryptSync` among it, in a worker.
-
-| Why |
-|---|
-| one synchronous call stalls the event loop, and every request the process holds waits behind it. |

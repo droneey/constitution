@@ -1,6 +1,6 @@
 # Project Context
 
-> The stable, high-level context of the product: what it is, who it is for, the domains of its business, its core entities, its boundaries and its words. Read it first so any change fits the product, not just the task.
+> The stable, high-level context of the product: what it is, who it is for, the subdomains of its business by class, its core entities, its boundaries and its words. Read it first so any change fits the product, not just the task.
 
 ## One-liner
 
@@ -10,9 +10,9 @@
 
 <!-- The problem it solves and the people it solves it for. Name the roles when there are several. -->
 
-## Domains of the business
+## Subdomains
 
-<!-- The main areas of the product, one line each. Name the areas, not the features inside them. -->
+<!-- The areas of the business, one line each: **Area** (core domain, supporting or generic; the features that serve it) — what it covers. Name one core domain, the reason the product exists. -->
 
 ## Core entities and relationships
 

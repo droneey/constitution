@@ -10,11 +10,11 @@ A distributed unit ships the files its manifest names, and no other.
 
 | Why |
 |---|
-| a file the manifest does not name — a spec, a local configuration, a secret left in the folder — ships by accident to every consumer. |
+| a file the manifest does not name (a spec, a local configuration, a secret left in the folder) ships by accident to every consumer. |
 
 ### distributed-unit-ships-its-types · MUST
 
-A distributed unit ships the types of every entry a consumer imports code from, where the consumer's type checker finds them.
+A distributed unit ships its types. It ships the types of every entry a consumer imports code from, where the consumer's type checker finds them.
 
 | Why |
 |---|
@@ -22,7 +22,7 @@ A distributed unit ships the types of every entry a consumer imports code from, 
 
 ### distributed-unit-ships-its-licence · MUST
 
-A distributed unit ships its licence file, and the licence notices of the code of others it bundles.
+A distributed unit ships its licence. It ships its licence file, and the licence notices of the code of others it bundles.
 
 | Why |
 |---|
@@ -36,11 +36,11 @@ A distributed package's integration into a host framework is an entry of its own
 
 | Why |
 |---|
-| a consumer who uses the framework imports the entry and already has the framework, and one who does not never installs it. |
+| an integration in the package's main entry, or a framework the package requires, makes every consumer install and load a framework only some of them use. |
 
 ### readme-shows-install-and-first-use → readme-is-the-front-door · SHOULD
 
-A distributed unit's readme shows the install line and the shortest use: for a configuration package, the one line that extends it and its options; for a command-line tool, its first command.
+A distributed unit's readme shows the install line and the shortest use. For a configuration package the shortest use is the one line that extends it and its options; for a command-line tool, its first command.
 
 | Why |
 |---|
@@ -48,8 +48,8 @@ A distributed unit's readme shows the install line and the shortest use: for a c
 
 ### shipped-configuration-asserted-by-spec → spec-proves-one-boundary · MUST
 
-Each distributed configuration has a spec that parses it and asserts its settings in one table; the real tool runs only over what the configuration brings of its own — a plugin, a scope, a glob — and once to prove it loads the configuration, never in a case that proves a rule built into the tool.
+Each distributed configuration has a spec that asserts its settings in one table. The spec parses the configuration; the real tool runs only over what the configuration brings of its own — a plugin, a scope, a glob — and once to prove it loads the configuration, never in a case that proves a rule built into the tool.
 
 | Why |
 |---|
-| a configuration has no behaviour to call, so its spec is what proves it says what it means; a case that runs a rule built into the tool proves the tool's code, which its authors test, at the cost of a run of the tool. |
+| a configuration has no behaviour to call, so one whose settings no spec asserts can say other than it means and pass every check; a case that runs a rule built into the tool proves only the tool's own code, which its authors test, and slows every run for no bug of the program's. |

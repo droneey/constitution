@@ -6,24 +6,16 @@
 
 ### licences-checked-against-the-shared-allowlist → dependency-licence-on-the-allowlist · MUST
 
-OSV-Scanner checks the licence of every dependency a lockfile names against the allowlist of the Constitution's distribution, so a licence that is not on it is a finding.
+OSV-Scanner checks every dependency's licence against the shared allowlist. The dependencies are those a lockfile names and the allowlist is the one the Constitution's distribution ships, so a licence that is not on it is a finding.
 
 | Why |
 |---|
-| one list, versioned with the Constitution, says which licences every repository accepts. |
+| a list kept in each repository drifts, so one repository ships a licence another refuses and nobody sees the gap — a single source of truth. |
 
 ### licence-override-states-its-reason → dependency-licence-on-the-allowlist · MUST
 
-A package whose licence the registry names wrongly is a `[[PackageOverrides]]` entry with `license.override` and its `reason`. A licence that is not on the allowlist is never overridden to pass.
+A licence exception is a `[[PackageOverrides]]` entry by name, with its `reason`. It takes one of two forms: `license.override` for a package whose licence the registry names wrongly, never for a licence off the allowlist, and `license.ignore = true` for a tool that only builds, tests or checks the program, whose reason says it never ships.
 
 | Why |
 |---|
-| an override corrects the data; used to let a licence through, it hides an obligation the project took on. |
-
-### development-tool-licence-ignored-with-reason → dependency-licence-on-the-allowlist · MUST
-
-A tool that only builds, tests or checks the program and whose licence is off the allowlist is a `[[PackageOverrides]]` entry by name with `license.ignore = true` and a `reason` saying it never ships.
-
-| Why |
-|---|
-| the scanner then skips its licence and still checks its vulnerabilities, and the reason is the only record that it never ships. |
+| an override corrects the data, and used to let a licence through it hides an obligation the project took on; an ignore without the reason that the tool never ships cannot be told from such a pass, and `license.ignore` skips only the licence, so the tool's vulnerabilities are still checked. |

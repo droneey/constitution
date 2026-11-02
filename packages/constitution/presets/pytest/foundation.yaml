@@ -29,10 +29,15 @@ pytest:
         tool:
           pytest:
             strict: true
-            addopts:
-              - --import-mode=importlib
             filterwarnings:
               - error
+  test-modules-imported-by-importlib:
+    python:
+      pyproject.toml:
+        tool:
+          pytest:
+            addopts:
+              - --import-mode=importlib
   integration-folders-not-collected:
     python:
       pyproject.toml:
@@ -58,9 +63,8 @@ pytest:
               omit:
                 - '**/main.py'
                 - '**/__main__.py'
-                - '**/${role.composition-root}/wiring.py'
-                - '**/*_gen.py'
-                - '**/*_gen/**'
+                - '**/*_${role.generated-file}.py'
+                - '**/*_${role.generated-file}/**'
             report:
               fail_under: 100
   network-refused-by-the-conftest:

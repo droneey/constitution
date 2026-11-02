@@ -1,5 +1,5 @@
 expo:
-  expo-router-only-in-the-root:
+  navigation-library-includes-every-expo-router-subpath:
     typescript:
       .dependency-cruiser.jsonc:
         forbidden[name=ui-imports-no-expo-router]:

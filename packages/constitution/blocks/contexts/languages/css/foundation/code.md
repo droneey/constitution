@@ -1,12 +1,12 @@
 # Code
 
-> Governs the classes a stylesheet declares.
+> Governs any stylesheet code no other chapter governs: the classes a stylesheet declares.
 
 ## Dead code
 
 ### class-declared-is-used → dead-code-deleted · MUST
 
-Every class a stylesheet declares is used by markup, save a class a package offers to other packages through the stylesheet it publishes.
+Every class a stylesheet declares is used by markup. A class a package offers to other packages through the stylesheet it publishes is exempt.
 
 | Why |
 |---|

@@ -14,8 +14,8 @@ A minimum release age of at least three days holds back every update. Renovate p
 
 ### step-pins-updated-by-hash-and-version → download-pinned-by-version-and-checksum · MUST
 
-Renovate's configuration pins a step of another repository by its commit's full hash, with its version in a comment beside it, and updates the two together.
+Renovate updates a pinned step's hash and its version together. Its configuration updates, in one change, the full commit hash that pins a step of another repository and the version in the comment beside it.
 
 | Why |
 |---|
-| a hash nobody updates holds the pipeline on a release with known flaws, and a step left on a tag is a download no digest holds. |
+| a hash nobody updates holds the pipeline on a release with known flaws, and a version left behind beside a new hash tells its reader a release the step no longer runs. |

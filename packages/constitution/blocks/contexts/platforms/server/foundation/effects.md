@@ -1,12 +1,12 @@
 # Effects
 
-> Governs the stop, copies, one-off work, pools, configuration, the protocol, logs and work in flight.
+> Governs a server's copies, its stop, its resources and work in flight, one-off work and its logs.
 
 ## General
 
 ### server-copy-keeps-only-what-it-can-lose · MUST
 
-A copy of a server keeps in its memory and on its disk only what it can lose — a cache, a buffer, a temporary file it can rebuild or abandon; a session, an upload, a lock, a claim and the progress of work live in a store its copies share.
+A copy of a server keeps only what it can lose. What it keeps in its memory and on its disk — a cache, a buffer, a temporary file — is what it can rebuild or abandon; a session, an upload, a lock, a claim and the progress of work live in a store its copies share.
 
 | Why |
 |---|
@@ -20,11 +20,11 @@ A server serves its protocol itself, with no web server its host must put around
 |---|
 | a server that needs a web server in front of it runs only where that server is configured for it, and each host configures it differently. |
 
-## Calls and resources
+## Stop
 
 ### server-stop-waits-for-routing-to-end → program-stops-cleanly · MUST
 
-A server's stop begins once its host has stopped routing work to it: the host holds back the stop signal for a pause that outlasts the removal from routing, or, where it cannot, the server goes on answering through such a pause before it closes its listener; only then does it stop taking new work.
+A server's stop waits out a pause that outlasts its removal from routing. Its host holds back the stop signal for that pause or, where it cannot, the server goes on answering through it before it closes its listener; only then does it stop taking new work.
 
 | Why |
 |---|
@@ -40,15 +40,17 @@ A server's stop bound, its pause for routing included, is shorter than the time 
 
 ### stop-signal-reaches-the-server-process → program-stops-cleanly · MUST
 
-The host's stop signal reaches the server's own process: no wrapper stands between them — a shell, a script runner, a supervisor — unless it forwards every signal to the process and waits for it to exit.
+The host's stop signal reaches the server's own process. No wrapper stands between them — a shell, a script runner, a supervisor — unless it forwards every signal to the process and waits for it to exit.
 
 | Why |
 |---|
 | a signal a wrapper swallows never starts the clean stop, and the host kills the process when its grace runs out. |
 
-### server-pools-sized-to-the-hosts-grant · SHOULD
+## Resources and concurrency
 
-A server sizes its heap, its threads, its workers and its pools to the memory and the processors its host grants it, never to those of the machine it runs on.
+### server-sized-to-the-hosts-grant · SHOULD
+
+A server sizes itself to what its host grants, never to the machine it runs on. Its heap, its threads, its workers and its pools fit the memory and the processors its host grants it.
 
 | Why |
 |---|
@@ -56,35 +58,27 @@ A server sizes its heap, its threads, its workers and its pools to the memory an
 
 ### server-work-in-flight-bounded · SHOULD
 
-A server bounds the work it holds in flight, and refuses what comes beyond the bound at once, with its protocol's answer for a busy server, rather than queueing it.
+A server bounds the work it holds in flight and refuses the rest at once. What comes beyond the bound is refused with its protocol's answer for a busy server rather than queued.
 
 | Why |
 |---|
-| a burst queued without a bound waits past every caller's timeout, and the server spends its time on work nobody waits for any more. |
+| a burst queued without a bound waits past every caller's timeout, and the server spends its time on work nobody waits for any more — load shedding. |
 
 ## Operations
 
 ### one-off-work-runs-as-its-own-process · SHOULD
 
-Work done once per release or on demand — a migration, a seed, a backfill, a repair — runs as a one-off process of the server's release, with its configuration, never inside a copy's start.
+One-off work runs as its own process, never inside a copy's start. Work done once per release or on demand — a migration, a seed, a backfill, a repair — runs as a one-off process of the server's release, with its configuration.
 
 | Why |
 |---|
 | every copy that starts would run it again, at the same time as its siblings, and a slow run holds back every restart. |
 
-## Records and configuration
-
-### server-configuration-taken-from-its-host → one-artefact-serves-every-environment · MUST
-
-Every setting that differs between deployments reaches a server from its host — an environment variable, a file the host mounts, or a store the server reads with its host's identity — and none is built into its artefact.
-
-| Why |
-|---|
-| one built artefact is then promoted from staging to production unchanged, and it holds nothing one environment must keep from another. |
+## Diagnostics
 
 ### server-log-leaves-as-a-stream → diagnostics-written-through-a-logger · MUST
 
-A server's logger writes its records as a stream — to standard output or standard error, or to a collector over the network — never to a file inside its copy.
+A server's logs leave as a stream, never as a file inside its copy. Its logger writes its records to standard output or standard error, or to a collector over the network.
 
 | Why |
 |---|
@@ -94,8 +88,8 @@ A server's logger writes its records as a stream — to standard output or stand
 
 ### server-runtime-leaves-the-stop-to-the-program · MUST
 
-A server's framework and runtime hand the stop signal to the program, close a listener when the program asks and report when the work in flight is done; none of them exits on the signal by itself.
+A server's framework and runtime leave the stop to the program. They hand the stop signal to the program, close a listener when the program asks and report when the work in flight is done; none of them exits on the signal by itself.
 
 | Why |
 |---|
-| without it, neither the pause for routing nor the stop bound can hold. |
+| a framework or a runtime that exits on the signal by itself cuts off the pause for routing and the work in flight, so neither the pause nor the stop bound can hold. |

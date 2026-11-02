@@ -1,22 +1,22 @@
 ```pseudo title="Avoid"
-# use-cases/commands/expire-carts
+# carts/application/use-cases/commands/expire-cart
 # no port: there is only one clock
-function expireCarts(carts)
-  let now = Date.now()
-  for each cart in carts
-    if cart.expiresAt < now then
-      call expire(cart)
+function createExpireCart({ cartRepository })
+  return function(input, context)
+    let cart = cartRepository.find(input.cartId, context)
+
+    call cartRepository.save(expire(cart, Date.now()), context)
 ```
 
 ```pseudo title="Prefer"
-# contracts/clock.port — one adapter,
-# adapters/system, and it is complete
-type Clock = { now: function(): Time }
+# kernel/contracts/clock.port — one adapter,
+# infrastructure/system, and it is complete
+type Clock = { now: function(): Instant }
 
-# use-cases/commands/expire-carts
-function expireCarts(carts, clock)
-  let now = clock.now()
-  for each cart in carts
-    if cart.expiresAt < now then
-      call expire(cart)
+# carts/application/use-cases/commands/expire-cart
+function createExpireCart({ cartRepository, clock })
+  return function(input, context)
+    let cart = cartRepository.find(input.cartId, context)
+
+    call cartRepository.save(expire(cart, clock.now()), context)
 ```

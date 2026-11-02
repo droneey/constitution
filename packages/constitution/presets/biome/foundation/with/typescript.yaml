@@ -45,16 +45,16 @@ typescript:
                   noUnusedVariables: 'off'
           - includes:
               - '**/${role.colocated-specs}/**'
-              - '**/*.test.ts'
-              - '**/*.test.tsx'
+              - '**/*.${role.spec-file}.ts'
+              - '**/*.${role.spec-file}.tsx'
             linter:
               rules:
                 style:
                   useConsistentMemberAccessibility: 'off'
           - includes:
               - '**/${role.colocated-specs}/**'
-              - '**/*.test.ts'
-              - '**/*.test.tsx'
+              - '**/*.${role.spec-file}.ts'
+              - '**/*.${role.spec-file}.tsx'
             linter:
               rules:
                 nursery:
@@ -90,13 +90,6 @@ typescript:
           rules:
             suspicious:
               noConstEnum: error
-  finally-never-leaves-by-a-jump:
-    typescript:
-      biome.jsonc:
-        linter:
-          rules:
-            correctness:
-              noUnsafeFinally: error
   identifier-case-by-kind:
     typescript:
       biome.jsonc:
@@ -303,8 +296,8 @@ typescript:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/module-level-value-never-changed.${role.grit-rule}]:
           includes:
             - '**'
-            - '!**/*.test.ts'
-            - '!**/*.test.tsx'
+            - '!**/*.${role.spec-file}.ts'
+            - '!**/*.${role.spec-file}.tsx'
   parameter-object-has-a-named-type:
     typescript:
       biome.jsonc:
@@ -334,24 +327,10 @@ typescript:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/tsx-only-where-markup-is-written.${role.grit-rule}]:
           includes:
             - '**/*.tsx'
-  child-process-started-without-a-shell:
+  outside-value-unknown-until-parsed:
     typescript:
       biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/child-process-started-without-a-shell.${role.grit-rule}]:
-          includes:
-            - '**/*.ts'
-            - '**/*.tsx'
-  child-process-given-an-env-of-its-own:
-    typescript:
-      biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/child-process-given-an-env-of-its-own.${role.grit-rule}]:
-          includes:
-            - '**/*.ts'
-            - '**/*.tsx'
-  boundary-values-unknown-until-parsed:
-    typescript:
-      biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/boundary-values-unknown-until-parsed.${role.grit-rule}]:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/outside-value-unknown-until-parsed.${role.grit-rule}]:
           includes:
             - '**/*.ts'
             - '**/*.tsx'

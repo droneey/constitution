@@ -6,44 +6,44 @@
 
 ### tool-failure-answered-as-an-error-result → failure-answered-by-its-code · MUST
 
-A refused argument and an expected failure are answered as a tool result with `isError: true`, carrying the failure's code and a text naming what to change; only an unknown tool or a request that breaks the protocol gets a protocol error.
+A tool's failure is answered as an error result. A refused argument and an expected failure are answered as a tool result with `isError: true`, carrying the failure's code and a text naming what to change; only an unknown tool or a request that breaks the protocol gets a protocol error.
 
 | Why |
 |---|
-| a client shows a tool's error to the model so that it corrects itself, but may hide a protocol error from it. |
+| a client shows a tool's error to the language model so that it corrects itself, but may hide a protocol error from it, so a failure sent as one leaves the model to retry blind. |
 
 ## Size
 
 ### tool-answer-bounded-for-the-context → answer-bounded-in-size · MUST
 
-A tool's answer is bounded by a maximum the project sets in tokens or characters, far below a model's context window; an answer cut to it says so, and either says how to narrow the call or carries the cursor of the rest.
+A tool's answer is bounded far below a language model's context window. It is bounded in tokens or characters by a maximum the project sets.
 
 | Why |
 |---|
-| an unbounded answer fills the model's context and pushes out its task, and a silent cut makes it believe it saw everything. |
+| an answer that fills the language model's context pushes out its task. |
 
 ## Content
 
 ### tool-answer-carries-the-identifiers-the-next-tool-takes · SHOULD
 
-An item in a tool's answer carries the identifier the tools acting on it accept, and a human-readable name beside it.
+An item in a tool's answer carries the identifier the next tool takes. It carries the identifier the tools acting on it accept, and a human-readable name beside it.
 
 | Why |
 |---|
-| a model chains tools only through the values one answer hands to the next call. |
+| a language model chains tools only through the values one answer hands to the next call, so an item without its identifier leaves the model to guess one or to ask again. |
 
 ### tool-data-answer-structured-by-its-output-schema · SHOULD
 
-A tool that answers with data declares an `outputSchema`, returns `structuredContent` that conforms to it, and the same JSON as text.
+A tool that answers with data answers by its output schema. It declares an `outputSchema`, returns `structuredContent` that conforms to it, and the same JSON as text.
 
 | Why |
 |---|
-| the client validates and parses the answer instead of guessing at prose, and a client that predates structured content still reads the text. |
+| without the schema the client guesses at prose instead of validating and parsing the answer, and without the text a client that predates structured content reads nothing. |
 
 ### outside-text-in-an-answer-kept-as-data · SHOULD
 
-Text a tool returns that others wrote — a page, a document, a message — travels only in a field of its structured answer that names its source, never spliced into the tool's own wording.
+Text others wrote travels in a tool's answer as data. Such text — a page, a document, a message — travels only in a field of the structured answer that names its source, never spliced into the tool's own wording.
 
 | Why |
 |---|
-| text others wrote can carry instructions, and a named field lets the client and the model tell it from the server's own words. |
+| text others wrote can carry instructions, and spliced into the server's own words it reads to the client and the language model as the server's. |

@@ -2,10 +2,11 @@
 src/
 ├── feature/
 │   └── orders/
-│       └── domain/
-│           ├── models/
-│           ├── ports/
-│           └── exceptions/
+│       ├── domain/
+│       │   ├── models/
+│       │   └── exceptions/
+│       └── app/
+│           └── ports/
 └── common/
 ```
 
@@ -13,9 +14,10 @@ src/
 src/
 ├── features/
 │   └── orders/
-│       └── domain/
-│           ├── entities/
-│           ├── contracts/
-│           └── errors/
+│       ├── domain/order/
+│       │   ├── entities/
+│       │   └── errors/
+│       └── application/
+│           └── contracts/
 └── shared/
 ```

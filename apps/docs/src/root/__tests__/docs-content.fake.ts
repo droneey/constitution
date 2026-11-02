@@ -3,7 +3,7 @@ import { notFound } from '@tanstack/react-router';
 import type { SerializedPageTree } from 'fumadocs-core/source/client';
 
 import type { Page, PageLocation, PageSlugs } from '#/features/content';
-import type { PageBody } from '#/features/content/adapters/fumadocs-browser';
+import type { PageBody } from '#/features/content/infrastructure/fumadocs-browser';
 import { trackedForUse } from '#/libs/ui';
 
 import type { RouterContext } from '../wiring';

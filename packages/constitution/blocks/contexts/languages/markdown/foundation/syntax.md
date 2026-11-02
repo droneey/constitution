@@ -6,15 +6,15 @@
 
 ### document-written-in-commonmark-and-gfm · SHOULD
 
-A document uses CommonMark and the extensions of GitHub Flavored Markdown — tables, task lists, strikethrough, autolinks — and another renderer's syntax only in a site that renderer builds.
+A document uses CommonMark and the extensions of GitHub Flavored Markdown. The extensions are tables, task lists, strikethrough and autolinks, and another renderer's syntax appears only in a site that renderer builds.
 
 | Why |
 |---|
-| a document is read in the forge, in editors and by agents, and syntax only one renderer knows shows as stray marks everywhere else. |
+| a document is read in the forge, in editors and by agents, and syntax only one renderer knows shows as stray marks everywhere else — CommonMark and GitHub Flavored Markdown. |
 
 ### raw-html-only-where-markdown-has-no-form · SHOULD
 
-A document writes raw HTML only for what Markdown has no syntax for, such as `<details>` or `<kbd>`; an agent's instruction file may also hold the tags its agent reads, such as `<example>`.
+A document writes raw HTML only for what Markdown has no syntax for. Such things include `<details>` and `<kbd>`, and an agent's instruction file may also hold the tags its agent reads, such as `<example>`.
 
 | Why |
 |---|
@@ -22,8 +22,8 @@ A document writes raw HTML only for what Markdown has no syntax for, such as `<d
 
 ### code-block-names-its-language · SHOULD
 
-A code block is fenced, and its info string names its language: `ts`, `sh`, `text` for plain output.
+A code block is fenced and names its language. Its info string names it: `ts`, `sh`, `text` for plain output.
 
 | Why |
 |---|
-| the language decides how the block is highlighted and checked, and tells a reader or an agent what it is; an indented block can name none. |
+| a block without its language is neither highlighted nor checked as one, and a reader or an agent must guess what it holds; an indented block can name none. |

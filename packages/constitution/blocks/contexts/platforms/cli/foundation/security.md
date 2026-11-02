@@ -4,9 +4,9 @@
 
 ## Secrets
 
-### output-masks-every-known-secret → secret-and-personal-data-kept-out-of-output · MUST
+### output-masks-every-known-secret → secret-kept-out-of-output · MUST
 
-Every value the run knows to be secret is masked in all output, that of the tools it runs included, before it is printed.
+Every secret the run knows is masked in its output. It is masked before it is printed, in all output, that of the tools the run starts included.
 
 | Why |
 |---|
@@ -14,7 +14,7 @@ Every value the run knows to be secret is masked in all output, that of the tool
 
 ### secret-never-passed-as-a-flag → secret-never-passed-as-a-process-argument · MUST
 
-A secret reaches a command through a file only its user can read, standard input, the system's credential store, or an environment built for it where its caller offers no other way, never as the value of a flag.
+A secret never reaches a command as a flag's value. It reaches it through a file only its user can read, standard input, the system's credential store, or an environment built for it where its caller offers no other way.
 
 | Why |
 |---|

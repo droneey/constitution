@@ -1,5 +1,5 @@
-git:
-  gitignore-covers-dependencies-output-and-caches:
+version-control:
+  generated-files-not-committed:
     typescript:
       .gitignore:
         - '*.tsbuildinfo'

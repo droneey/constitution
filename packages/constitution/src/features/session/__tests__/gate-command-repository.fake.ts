@@ -2,17 +2,13 @@ import { sessionsFolderInProject } from '#/kernel/constants';
 import type { RuleSlug } from '#/kernel/value-objects';
 import { AbsolutePath } from '#/kernel/value-objects';
 
-import type { GateCommandRepository, RulesPart } from '../domain/contracts/repositories/commands';
-import type {
-  GateEntry,
-  RuleDebt,
-  RuleRead,
-  RulesRead,
-  SessionAgent,
-  ShellTree,
-} from '../domain/entities';
-import { GateEntryKind } from '../domain/entities';
-import type { RuleHash, SessionId, ToolUseId } from '../domain/value-objects';
+import type { GateRepository, RulesPart } from '../application/contracts/repositories/commands';
+import type { GateEntry, RuleDebt, RuleRead, RulesRead } from '../domain/gate/entities';
+import { GateEntryKind } from '../domain/gate/entities';
+import type { RuleHash } from '../domain/gate/value-objects';
+import type { SessionAgent } from '../domain/session/entities';
+import type { SessionId, ToolUseId } from '../domain/session/value-objects';
+import type { ShellTree } from '../domain/tree-state/entities';
 
 interface HeldGate {
   readonly debts: Map<SessionAgent, Map<string, RuleDebt>>;
@@ -51,7 +47,7 @@ const rulesReadOf = (rules: readonly RuleRead[]): RulesRead => {
   return read;
 };
 
-const createFakeGateCommandRepository = (): GateCommandRepository => {
+const createFakeGateRepository = (): GateRepository => {
   const gates = new Map<SessionId, HeldGate>();
 
   const gateOf = (session: SessionId): HeldGate => {
@@ -166,4 +162,4 @@ const createFakeGateCommandRepository = (): GateCommandRepository => {
   };
 };
 
-export { createFakeGateCommandRepository };
+export { createFakeGateRepository };

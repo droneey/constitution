@@ -6,7 +6,7 @@
 
 ## Layout
 
-A tool's settings sit in preset files in [`presets/`](../../packages/constitution/presets), which the release links as `.droneey/constitution/presets/`, one folder for each tool that reads them:
+A tool's settings sit in preset files in [`presets/`](../../packages/constitution/presets), which the release links as `.droneey/constitution/presets/`, one folder for each tool that reads them and `core/` for the files only agents read, such as `AGENTS.md`:
 
 ```text
 presets/
@@ -44,6 +44,7 @@ The settings are those the file holds, in its own shape: a table of JSON, TOML o
 | `!default` | written once, while the file lacks it, and never checked again: a starter file the project owns, on whose content no rule depends |
 | `!words` | on a list: written as one text, its items joined by spaces |
 | `!sorted` | on a map of a JSON or YAML file: its keys, the project's own among them, stand in their order as texts, as Bun's `scripts` do, each action's script heading its group; in a file of another format, whose writer keeps no order of its keys, the check of the presets reports it (`sorted-in-unsortable-file`) |
+| `<path>: !inherits <path>` | no setting but a declaration: the value at each path its key names starts, once the entries have joined, from the value at the path its text names, both paths read from the map that holds it, step by step at each `.` — `*` every item or key, `<name>` every key, which the text may then name; the inheriting value lies over the inherited one, maps joined key by key, lists holding the inherited items and then those not yet held, any other value the inheriting one's. A path that holds nothing changes nothing, and a declaration whose paths cannot be followed is `inheritance-malformed`, each flaw named. Biome's preset declares `overrides.*.linter.rules.<group>.<rule>.options: !inherits linter.rules.<group>.<rule>.options`, since Biome replaces a rule's options in an override instead of joining them |
 
 Within a value, a fact stands for what `constitution` knows of the unit:
 
@@ -73,7 +74,7 @@ A list marked `!words` is written as one text, its items spaced, so the entries 
 
 A tool's block gives its scripts or tasks through its pairing with the runner, `presets/bun/foundation/with/biome.yaml`, so the runner decides how a tool runs. A tool's block requires the abstract runner it needs, `_task-runner` or `_js-runtime`, so a unit with the tool and no runner fails the requirement; a unit whose runners pair with none of a tool's preset files is reported as `tool-without-runner`.
 
-A guard writes the file only where it holds: `${file.isTop}`, in the unit no unit above gets the same entry for; `${workspace.isRoot}`, at the root of a workspace; or a fact of a text compared with a text, its facts resolved, `${unit.parent} = ${role.deployed-unit}`, in a unit of `apps/`, where both resolve and are the same; each with `!` before its fact for its opposite.
+A guard writes the file only where it holds: `${file.isTop}`, in the unit no unit above gets the same entry for; `${unit.isRepositoryRoot}`, in the repository's own unit, the root of a workspace or a repository of one unit; `${workspace.isRoot}`, at the root of a workspace; or a fact of a text compared with a text, its facts resolved, `${unit.parent} = ${role.deployed-unit}`, in a unit of `apps/`, where both resolve and are the same; each with `!` before its fact for its opposite.
 
 A mark after the file's path names the format of its text where the name does not: `tsconfig.json !jsonc` writes JSON with comments under a `.json` name, for a tool that reads them there, its commas as plain JSON has them.
 

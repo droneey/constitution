@@ -1,10 +1,11 @@
 ```pseudo title="Avoid"
 test "should add tax to each line"
   # Arrange
-  let invoice = anInvoice({
-    lines: [aLine({ net: 100 })] })
+  let invoice = createInvoice({
+    lines: [createLine({ net: 100 })] })
   # Act
-  let taxed = withTax(invoice)
+  let taxed = invoiceWithTax(invoice)
+
   # Assert
   for each line in taxed.lines
     assert line.gross is
@@ -14,11 +15,12 @@ test "should add tax to each line"
 ```pseudo title="Prefer"
 test "should add tax to each line"
   # Arrange
-  let invoice = anInvoice({
-    lines: [aLine({ net: 100 })] })
+  let invoice = createInvoice({
+    lines: [createLine({ net: 100 })] })
   # Act
-  let taxed = withTax(invoice)
+  let taxed = invoiceWithTax(invoice)
+
   # Assert
   assert taxed.lines is [
-    aLine({ net: 100, gross: 120 })]
+    createLine({ net: 100, gross: 120 })]
 ```

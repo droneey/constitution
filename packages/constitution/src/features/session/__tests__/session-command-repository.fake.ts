@@ -1,9 +1,9 @@
 import type { AbsolutePath } from '#/kernel/value-objects';
 
-import type { SessionCommandRepository } from '../domain/contracts/repositories/commands';
-import type { AgentInSession, SessionState } from '../domain/entities';
-import { SessionMark } from '../domain/entities';
-import type { SessionId } from '../domain/value-objects';
+import type { SessionRepository } from '../application/contracts/repositories/commands';
+import type { AgentInSession, SessionState } from '../domain/session/entities';
+import { SessionMark } from '../domain/session/entities';
+import type { SessionId } from '../domain/session/value-objects';
 import type { HeldSessions, KeptSession } from './session.fixtures';
 import { heldSessionsOf, reviewKeyOf } from './session.fixtures';
 
@@ -29,9 +29,9 @@ const ownIn = (sessions: HeldSessions, asked: AgentInSession): Set<AbsolutePath>
   return paths;
 };
 
-const createFakeSessionCommandRepository = (
+const createFakeSessionRepository = (
   sessions: HeldSessions = heldSessionsOf(),
-): SessionCommandRepository => ({
+): SessionRepository => ({
   addOwnChanges: (added): void => {
     const own = ownIn(sessions, added);
 
@@ -95,4 +95,4 @@ const createFakeSessionCommandRepository = (
   state: (session: SessionId): SessionState | undefined => sessions.get(session)?.state,
 });
 
-export { createFakeSessionCommandRepository };
+export { createFakeSessionRepository };

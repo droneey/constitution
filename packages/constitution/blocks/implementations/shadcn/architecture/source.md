@@ -6,8 +6,8 @@
 
 ### shadcn-source-added-into-the-kit → vendored-component-placed-by-its-home · MUST
 
-shadcn source is added into the UI kit as source, never imported from a package, and before review is placed and named by the kit's homes, its imports rewritten to the project's alias; `components.json` names the kit's folders.
+shadcn source is added into the UI kit as source, never imported from a package. Before review it is placed and named by the kit's homes and its imports are rewritten to the project's alias; `components.json` names the kit's folders.
 
 | Why |
 |---|
-| the source becomes part of the kit's tree, found where every other component is, and no copy of it hides in a dependency. |
+| a component left where the generator wrote it, or imported from a package, sits outside the kit's homes, so a reader does not find it where every other component is and a copy of it hides in a dependency. |

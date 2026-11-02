@@ -6,11 +6,11 @@
 
 ### token-sits-in-one-tier · MUST
 
-A token sits in one tier: a primitive holds a raw value, a semantic token names a purpose by the grammar of token names and refers to a primitive, and a common token holds a constant of the application's shell, such as the space below its header.
+A token sits in one tier. A primitive holds a raw value, a semantic token names a purpose by the grammar of token names and refers to a primitive, and a common token holds a constant of the program's shell, such as the space below its header.
 
 | Why |
 |---|
-| the tier says where a token may be read and what may change it, so a theme changes primitives without touching a component. |
+| a token that mixes tiers is read where a raw value should not be and changed by what should not reach it, so a change of theme reaches into the components. |
 
 ### component-reads-only-semantic-and-common-tokens · MUST
 
@@ -22,15 +22,15 @@ A component reads only semantic and common tokens, never a primitive.
 
 ### token-name-follows-the-grammar · MUST
 
-A semantic or common token is named `<category>.<concept>.<role>[.<step>]`. The category is its family — `color`, `space`, `size`, `font`, `radius`, `shadow`, `motion`, `layer`; the concept is what it styles — `surface`, `text`, `border`, `action`; the role is its purpose or tone — `muted`, `danger`, `level-1`; the step is a place on a closed scale declared once — `sm`, `md`, `lg`. A `font` token always styles text, so its concept is left out and the kind of text is its role — `body`, `heading`, `code`. A primitive takes its category, its scale and its step, and a property of text — its `size`, `leading`, `weight`, `family`, `tracking` — is a primitive's scale, never a role. Examples: `color.surface.level-1`, `color.text.muted`, `font.body.md`, `font.heading.lg`; primitives, `color.blue.500`, `font.size.md`, `font.weight.bold`. No token is named after a component — `card.background`, `button.padding-x`; a component's own look comes from its variants over semantic tokens.
+Every token is named by the grammar of its tier. A semantic or common token is named `<category>.<concept>.<role>[.<step>]`. The category is its family — `color`, `space`, `size`, `font`, `radius`, `shadow`, `motion`, `layer`; the concept is what it styles — `surface`, `text`, `border`, `action` — never a component such as `card` or `button`, whose own look comes from its variants over semantic tokens; the role is its purpose or tone — `muted`, `danger`, `level-1`; the step is a place on a closed scale declared once — `sm`, `md`, `lg`. A primitive is named by its category, its scale and its step.
 
 | Why |
 |---|
-| the name alone then says what a token styles and what for, and one search finds it in the source and in every output; a segment every name of a category would repeat says nothing, and a property where the purpose belongs names a raw value as if it were a purpose; a token named after one component cannot be shared, and turns the design system into a list of exceptions. |
+| a token named outside the grammar does not say what it styles or what for, a search misses its other spellings in the source and the outputs, and a token named after one component cannot be shared. |
 
 ### missing-value-added-as-a-token → tokens-single-source-of-appearance · MUST
 
-A visual value no token holds is added as a token of the tier its meaning gives it, never written in place and never borrowed from a token whose name means something else.
+A visual value no token holds is added as a token. It takes the tier its meaning gives it, and is never written in place nor borrowed from a token whose name means something else.
 
 | Why |
 |---|
@@ -38,58 +38,48 @@ A visual value no token holds is added as a token of the tier its meaning gives 
 
 ### token-nothing-reads-deleted → dead-code-deleted · MUST
 
-A token that no component, theme or other token reads is deleted, save a token a package publishes to others.
+A token nothing reads is deleted. That is a token no component, theme or other token reads, save one a package publishes to others.
 
 | Why |
 |---|
-| an unread token is a choice nobody makes, which every later reader weighs before picking a token. |
+| an unread token offers a choice nobody makes, which every later reader weighs before picking a token, and one picked by mistake ties a component to a purpose it does not serve. |
 
 ## Motion
 
 ### motion-from-tokens · MUST
 
-Durations and easings are tokens, and motion driven from code reads the same tokens as motion in styles, so one request for reduced motion reaches all of it.
+Durations and easings are tokens. Motion driven from code reads the same tokens as motion in styles, so one request for reduced motion reaches all of it.
 
 | Why |
 |---|
-| motion defined in one place feels consistent and is turned down in one place. |
+| motion timed outside the tokens drifts from the rest, and a request for reduced motion misses whatever it is not wired to. |
 
 ## Typography
 
 ### font-token-is-one-typography-composite · MUST
 
-A semantic `font` token is one composite of the W3C Design Tokens format's `typography` type, whose `fontFamily`, `fontSize`, `fontWeight`, `letterSpacing` and `lineHeight` each refer to a primitive of the matching scale — `font.family`, `font.size`, `font.weight`, `font.tracking`, `font.leading` — and whose line height is a unitless multiple of its font size, as the format's `lineHeight` takes it.
+A semantic `font` token is one typography composite. It is named `font.<kind of text>.<step>` and is one composite of the W3C Design Tokens `typography` type whose `fontFamily`, `fontSize`, `fontWeight`, `letterSpacing` and `lineHeight` each refer to a primitive of `font.family`, `font.size`, `font.weight`, `font.tracking` and `font.leading`, the line height a unitless multiple of the size.
 
 | Why |
 |---|
-| a component reads one token for a style of text, never several that must change together, and a line height that scales with the font size stays right when a theme changes the size. |
+| a style of text read from several tokens changes in one and not in the others, and a line height fixed in a unit stays as it was when a theme changes the size, so the lines crowd or gape — the W3C Design Tokens format. |
 
 ## Source
 
 ### tokens-sourced-from-the-dtcg-file · MUST
 
-The design system's tokens have one source, a file in the W3C Design Tokens format (`.tokens.json`), and every platform's output — a stylesheet, a module of constants — is generated from it.
+The design system's tokens have one source, a file in the W3C Design Tokens format (`.tokens.json`). Every platform's output — a stylesheet, a module of constants — is generated from it.
 
 | Why |
 |---|
-| one source in an open format is read by design tools and by every platform alike, so they never drift apart. |
+| tokens kept apart for a design tool and for each platform drift apart, so a screen no longer matches its design or the same screen on another platform — a single source of truth. |
 
 ## Proof
 
 ### contrast-tested-over-token-pairs → text-and-controls-meet-the-contrast-minimum · MUST
 
-Contrast is proven by a test over each pair of foreground and background tokens the design system declares, in every mode.
+Contrast is proven by a test over the declared token pairs. The test covers each pair of foreground and background tokens the design system declares, in every mode.
 
 | Why |
 |---|
-| a test over the declared pairs proves every screen at once and fails the change that breaks a pair, without checking combinations no screen uses. |
-
-## Requirements for implementation
-
-### ui-styling-restricted-to-tokens · MUST
-
-The library lets its default scales be reset, so a check rejects a value outside the tokens.
-
-| Why |
-|---|
-| without it, the rule that tokens are the only source of appearance cannot be held by a tool. |
+| contrast checked screen by screen misses the pair the next screen uses, and a change of token that breaks a pair ships until someone looks at that screen in that mode — WCAG 2.2, Contrast (Minimum) and Non-text Contrast. |

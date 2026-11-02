@@ -1,5 +1,5 @@
-pydantic:
-  pydantic-home-is-the-edge-and-shared-parsing:
+_schema:
+  schema-library-home-is-where-input-is-parsed:
     python:
       pyproject.toml:
         tool:
@@ -7,7 +7,7 @@ pydantic:
             homes:
               pydantic:
                 - edge
-                - ${role.application-layer}
+                - ${role.presentation-layer}
                 - ${role.shared-code}
               pydantic_settings:
                 - edge

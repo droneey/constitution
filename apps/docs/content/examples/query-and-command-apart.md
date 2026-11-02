@@ -1,21 +1,24 @@
 ```pseudo title="Avoid"
-# use-cases/commands/cancel-order
-import getOrder from "../../queries"
+# orders/application/use-cases/commands/cancel-order
+import getOrder from "../queries"
 
-function cancelOrder(orderId)
-  let order = getOrder(orderId)
-  if order.status is Shipped then
-    return failure(AlreadyShipped)
-  call orderCommands.save(cancel(order))
+function createCancelOrder({ orderRepository })
+  return function(input, context)
+    let order = getOrder({ orderId: input.orderId })
+
+    call orderRepository.save(cancel(order), context)
 ```
 
 ```pseudo title="Prefer"
-# use-cases/commands/cancel-order
-import orderCommands from "contracts"
+# orders/application/use-cases/commands/cancel-order
+import OrderRepository from "../../contracts"
 
-function cancelOrder(orderId)
-  let order = orderCommands.get(orderId)
-  if order.status is Shipped then
-    return failure(AlreadyShipped)
-  call orderCommands.save(cancel(order))
+function createCancelOrder({ orderRepository: OrderRepository })
+  return function(input, context)
+    let order = orderRepository.find(input.orderId, context)
+
+    if order is nothing then
+      throw new OrderNotFoundError(input.orderId)
+
+    call orderRepository.save(cancel(order), context)
 ```

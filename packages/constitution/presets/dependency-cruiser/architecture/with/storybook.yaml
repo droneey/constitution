@@ -8,7 +8,7 @@ storybook:
       .dependency-cruiser.jsonc:
         allowed[comment=stories-import-what-they-render-with]:
           from:
-            path: \.stories\.[^/]+$
+            path: \.${role.story}\.[^/]+$
           to:
             dependencyTypes:
               - npm

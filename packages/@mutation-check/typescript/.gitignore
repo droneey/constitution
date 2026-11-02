@@ -1,9 +1,16 @@
 /dist/
 
 # git
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+credentials.json
+id_rsa
+*.secrets
 .claude/settings.local.json
 .claude/worktrees/
-/local/
 .DS_Store
 .vscode/*
 !.vscode/settings.json
@@ -18,16 +25,12 @@
 *.bak
 *.orig
 *~
+/local/
 .env*
 !.env.example
-*.pem
-*.key
-*.p12
-*.pfx
-*.jks
-credentials.json
-id_rsa
-*.secrets
+
+# bun
+.npmrc
 
 # _js-runtime
 **/node_modules/
@@ -35,9 +38,6 @@ id_rsa
 
 # bun-test
 **/coverage/
-
-# bun
-.npmrc
 
 # stryker
 .stryker-tmp/

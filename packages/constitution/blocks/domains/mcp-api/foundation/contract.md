@@ -1,20 +1,20 @@
 # Contract
 
-> Governs how a tool is defined for a model, how its definition changes, and the spec that pins it.
+> Governs how a tool is defined for a language model, how its definition and its list stay stable, and the spec that pins them.
 
 ## Definition
 
 ### tool-described-for-the-model · MUST
 
-A tool's definition says what it does, when to call it and what it returns, and each of its parameters says what it holds, in what format and unit.
+A tool's definition describes it for the language model. It says what the tool does, when to call it and what it returns, and each of its parameters says what it holds, in what format and unit.
 
 | Why |
 |---|
-| a model chooses a tool and fills its arguments from its definition alone. |
+| a language model chooses a tool and fills its arguments from its definition alone, so what the definition leaves out becomes a wrong call or a wrong argument. |
 
 ### tool-declares-its-effects · MUST
 
-A tool declares `readOnlyHint`, `destructiveHint`, `idempotentHint` and `openWorldHint` explicitly, and none of them makes the tool look safer than it is.
+A tool declares its effects explicitly, never as safer than they are. It declares `readOnlyHint`, `destructiveHint`, `idempotentHint` and `openWorldHint`, and none of them makes the tool look safer than it is.
 
 | Why |
 |---|
@@ -22,27 +22,29 @@ A tool declares `readOnlyHint`, `destructiveHint`, `idempotentHint` and `openWor
 
 ### tool-name-opens-with-its-area · SHOULD
 
-A tool's name opens with the area it belongs to — `accounting_search_articles` — and is unique on its server.
+A tool's name opens with the area it belongs to, and is unique on its server.
 
 | Why |
 |---|
-| a client that holds tools from several servers tells them apart by the prefix. |
+| a client that holds tools from several servers tells them apart only by the prefix, so two servers' tools of one name collide and the language model calls the wrong one. |
 
 ### tool-input-schema-closed → request-binds-only-declared-fields · MUST
 
-A tool's `inputSchema` is closed and bounds each argument: it refuses an argument it does not declare — `additionalProperties: false`, or `unevaluatedProperties: false` where the schema composes others — and bounds each one it declares by its type, its range or values, and its length.
+A tool's `inputSchema` is closed and bounds each argument. It refuses an argument it does not declare — `additionalProperties: false`, or `unevaluatedProperties: false` where the schema composes others — and bounds each one it declares by its type, its range or values, and its length.
 
 | Why |
 |---|
-| a model invents arguments and fills an unbounded one with whatever it imagines: an open schema that drops an invented filter lets the model believe the filter was applied, and an unbounded argument lets the server spend what the model chose. |
+| a language model invents arguments and fills an unbounded one with whatever it imagines: an open schema that drops an invented filter lets the model believe the filter was applied, and an unbounded argument lets the server spend what the model chose. |
 
 ### model-reached-data-served-as-a-tool · SHOULD
 
-What a model must reach on its own is a tool, or a resource a tool's answer links to; a resource or a prompt alone serves what the application or the user chooses.
+What a language model must reach on its own is served as a tool. It is a tool, or a resource a tool's answer links to; a resource or a prompt alone serves what the host or the user chooses.
 
 | Why |
 |---|
-| the host application attaches resources and the user picks prompts, so a model whose client loads only tools never sees them. |
+| the host attaches resources and the user picks prompts, so a language model whose client loads only tools never sees them. |
+
+## Stability
 
 ### tool-list-stable-in-order · SHOULD
 
@@ -50,32 +52,22 @@ The list of tools is the same, in the same order, while the server's code and th
 
 | Why |
 |---|
-| clients cache the list, and a reordered list misses the model's prompt cache on every call. |
-
-## Change
+| clients cache the list, and a reordered list misses the language model's prompt cache on every call. |
 
 ### tool-definition-fixed-by-the-release · MUST
 
-A tool's name, description, schemas and annotations, and the server's instructions, come from the program's code and change only with a release; none is built from stored data, a caller's input or anything fetched at run time.
+A tool's definition changes only with a release. Its name, description, schemas and annotations, and the server's instructions, come from the program's code; none is built from stored data, a caller's input or anything fetched at run time.
 
 | Why |
 |---|
-| a model obeys what a description says, so a description built from data lets that data steer the model, and lets a definition change after it was approved. |
-
-### changed-tool-ships-under-a-new-name → published-contract-changed-only-by-addition · MUST
-
-A tool whose contract changes incompatibly ships under a new name beside the old one, which is then retired as the contract's rules say, since a tool server serves no two versions of one name.
-
-| Why |
-|---|
-| a client cannot ask for a tool's older version, so a change made in place breaks every model prompted for the old one. |
+| a language model obeys what a description says, so a description built from data lets that data steer the model, and lets a definition change after it was approved. |
 
 ## Proof
 
 ### tool-list-pinned-by-a-spec → contract-published-machine-readable · MUST
 
-The contract of a tool server is what it lists — the tools' names, descriptions, schemas and annotations — pinned by a spec, so a change to what models read shows as a diff in review.
+A tool server's list is pinned by a spec. The server's contract is what it lists — the tools' names, descriptions, schemas and annotations — and the spec makes a change to what language models read show as a diff in review.
 
 | Why |
 |---|
-| a description is the prompt every client sends, and a change to it changes how every model calls the tool. |
+| a description is the prompt every client sends, so a change to it that no diff shows changes how every language model calls the tool, unreviewed. |

@@ -15,12 +15,12 @@ import { GetVersionsContext, Version } from '#/features/versions';
 import type { mdxComponents, PageTreeRoot, TocHeading } from '#/libs/ui';
 import { trackedForUse } from '#/libs/ui';
 
-import { DocsBuiltVersionContext } from '../app/providers';
-import { IsScreenNarrowContext, MarkSidebarContext } from '../app/use-cases';
-import type { DocumentFrame } from '../domain/contracts';
-import { createIsScreenNarrow, createMarkSidebar } from '../domain/use-cases';
-import type { DocsPageEntry } from '../ui/screens';
-import { DocsSearchWidget } from '../ui/widgets';
+import type { DocumentFrame } from '../application/contracts';
+import { createIsScreenNarrow, createMarkSidebar } from '../application/use-cases';
+import { IsScreenNarrowContext, MarkSidebarContext } from '../presentation/bindings';
+import { DocsBuiltVersionContext } from '../presentation/providers';
+import type { DocsPageEntry } from '../presentation/screens';
+import { DocsSearchWidget } from '../presentation/widgets';
 
 interface DocsProviders {
   frame?: DocumentFrame;

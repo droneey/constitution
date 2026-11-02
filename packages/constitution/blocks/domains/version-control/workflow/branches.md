@@ -6,15 +6,15 @@
 
 ### branch-named-type-issue-name · MUST
 
-A branch is named **`feature/`**{#feature-branch}, **`fix/`**{#fix-branch} or **`hotfix/`**{#hotfix-branch}, then `<issue>-<name>`: the issue's number, and a name of lowercase words and digits joined by hyphens. The branches of an **update bot**, the bot that proposes dependency updates, are exempt.
+A branch is named by its type, its issue's number and a name. Its type is **`feature/`**{#feature-branch}, **`fix/`**{#fix-branch} or **`hotfix/`**{#hotfix-branch}, followed by `<issue>-<name>`: the issue's number, and a name of lowercase words and digits joined by hyphens. The branches of an **update bot**, the bot that proposes dependency updates, are exempt.
 
 | Why |
 |---|
-| the name ties the branch to its issue and tells the release automation which version to bump. |
+| a branch named without its issue's number cannot be traced to its issue, and one named without its type leaves the release automation to bump the wrong version. |
 
 ### merged-branch-deleted · SHOULD
 
-A branch is deleted once its change request is merged; the host deletes it on merge where it can.
+A branch is deleted once its change request is merged. The host deletes it on merge where it can.
 
 | Why |
 |---|

@@ -1,13 +1,13 @@
 # Remote service
 
-> Governs how the app reaches the systems it calls.
+> Governs the oldest version of the app the systems it calls support.
 
-## Calls
+## Versions
 
-### traffic-sent-only-over-tls → call-runs-over-verified-tls · MUST
+### unsupported-app-version-asks-to-update → client-below-the-oldest-supported-release-updates-first · SHOULD
 
-Every connection the app opens runs over TLS and trusts only the system's certificate authorities: App Transport Security keeps its defaults, Android's network configuration refuses cleartext, and an exception names its host and its reason.
+The app asks its user to update when it is older than the oldest version its server supports. It learns that version from its server, and below it asks before going on.
 
 | Why |
 |---|
-| a phone joins networks its user does not control, where plain traffic is read and changed by anyone on the path. |
+| an installed app is updated only when its user chooses, so without a floor the server sets, a copy with a known flaw, or one that speaks a format the server dropped, runs on for good. |

@@ -1,21 +1,18 @@
 ```pseudo title="Avoid"
-# orders/domain/order-status.ts
-let orderStatuses = ["draft", "paid",
-  "shipped", "cancelled"]
+# orders/domain/order/value-objects/order-status.value-object
+enum OrderStatus { Draft, Paid, Shipped, Cancelled }
 
-# billing/domain/refund.ts
-if status in ["paid", "shipped"]
-  then refundOrder(order)
+# orders/domain/order/transitions/order.transitions
+if order.status not in [Paid, Shipped] then
+  throw new OrderNotRefundableError(order.status)
 ```
 
 ```pseudo title="Prefer"
-# orders/domain/order-status.ts
-let orderStatuses = ["draft", "paid",
-  "shipped", "cancelled"]
-let refundableStatuses =
-  ["paid", "shipped"]
+# orders/domain/order/value-objects/order-status.value-object
+enum OrderStatus { Draft, Paid, Shipped, Cancelled }
+let refundableStatuses = [Paid, Shipped]
 
-# billing/domain/refund.ts
-if status in refundableStatuses
-  then refundOrder(order)
+# orders/domain/order/transitions/order.transitions
+if order.status not in refundableStatuses then
+  throw new OrderNotRefundableError(order.status)
 ```

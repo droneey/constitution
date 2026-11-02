@@ -4,9 +4,12 @@
 
 test "should refund the order when it is paid"
   # Arrange
-  let orders = fakeOrders([anOrder({ id: orderId, status: Paid })])
+  let orderRepository = new OrderRepositoryFake([createOrder({ id: orderId, status: Paid })])
+  let refundOrder = createRefundOrder({ orderRepository })
+  let context = createContext()
+
   # Act
-  call refundOrder(orders, orderId)
+  call refundOrder({ orderId }, context)
   # Assert
-  expect(orders.get(orderId).status).toBe(Refunded)
+  expect(orderRepository.find(orderId).status).toBe(Refunded)
 ```

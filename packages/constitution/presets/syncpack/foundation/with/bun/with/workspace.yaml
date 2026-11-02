@@ -1,5 +1,5 @@
 bun:
-  own-units-at-workspace-version:
+  own-units-linked-from-the-working-tree:
     json:
       .syncpackrc.yaml:
         versionGroups[label=The repository's own units use the workspace protocol]:

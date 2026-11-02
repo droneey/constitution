@@ -1,12 +1,12 @@
 # Names
 
-> Governs the names of classes.
+> Governs a name in a stylesheet: what a class is named for, and its case.
 
 ## Meaning
 
 ### class-named-for-what-the-element-is → name-reveals-intent · SHOULD
 
-A class the project declares names what its element is — `.order-summary` — never how it looks: `.red`, `.mt-4`.
+A class the project declares names what its element is, never how it looks.
 
 | Why |
 |---|
@@ -16,8 +16,8 @@ A class the project declares names what its element is — `.order-summary` — 
 
 ### class-name-in-kebab-case → name-case-by-kind · SHOULD
 
-A class the project declares is written in kebab-case: `.order-summary`, `.order-summary-title`.
+A class the project declares is written in kebab-case.
 
 | Why |
 |---|
-| one case leaves no class spelled two ways, and a search for a name finds every use of it. |
+| a class spelled in two cases is two classes to the browser, so markup that spells it the other way stays unstyled, and a search for one spelling misses the other. |

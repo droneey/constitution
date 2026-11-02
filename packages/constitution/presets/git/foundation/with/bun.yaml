@@ -1,5 +1,5 @@
-git:
-  gitignore-covers-key-files:
+core:
+  secret-never-in-the-repository:
     typescript:
       .gitignore:
         - .npmrc

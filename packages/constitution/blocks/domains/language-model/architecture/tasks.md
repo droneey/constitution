@@ -1,13 +1,13 @@
 # Tasks
 
-> Governs where a model is reached: through a port of its task.
+> Governs where a language model is reached: through a port of its task.
 
 ## General
 
-### model-reached-through-a-port-of-its-task → contract-knows-no-vendor · MUST
+### model-reached-through-a-port-of-its-task → port-knows-no-vendor · MUST
 
-A model is reached through a port the domain declares for the task in its own words — `classify_question`, `draft_answer` — never through a provider's client or a framework's message types inside the domain or a use case.
+A language model is reached through a port of its task, never through one of the model. The port is declared for one task in the feature's own words — to summarise a ticket, to classify a message —, never as a general contract of prompts and completions.
 
 | Why |
 |---|
-| the task outlives its model and its framework, and a domain built on a framework's messages changes with every release of it. |
+| the task outlives its language model, so a port shaped as a model's prompts and completions changes with each model and leaves every caller to write the prompt its task needs — ports and adapters. |

@@ -1,16 +1,16 @@
 ---
 id: nestjs
-summary: NestJS — modules, providers and the injector that wires them.
+summary: NestJS — modules, providers and the injector that assembles them.
 requires: [typescript, tsc, _api, http-server]
 extends: null
 abstract: false
 languages: []
-governs: ["nest-cli.json", ".swcrc", "**/root/**", "**/*.module.ts", "**/*.controller.ts"]
+governs: ["nest-cli.json", ".swcrc", "**/root/**", "**/*.module.ts", "**/*.controller.ts", "**/*.filter.ts", "**/*.guard.ts", "**/*.pipe.ts", "**/*.interceptor.ts", "**/providers/**"]
 ---
 
 # NestJS
 
-> Builds an HTTP server program from modules whose providers the injector wires by their constructors' types.
+> Builds an HTTP server program from modules whose providers the injector assembles by their constructors' types.
 
 **NestJS**, **Nest** for short, ships as the **`@nestjs`** packages, and **`nest-cli.json`** holds its command line's settings. Its settings, of **`.swcrc`**{#swc-settings} and `tsconfig.json` among them, keep the decorator metadata the injector reads.
 

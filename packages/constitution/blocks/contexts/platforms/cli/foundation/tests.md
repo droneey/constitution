@@ -6,11 +6,11 @@
 
 ### command-tested-through-its-command-line → spec-proves-one-boundary · SHOULD
 
-A command's spec runs the program on an argument list, with its terminal, prompts and clock replaced, and checks standard output, standard error and the exit code.
+A command is tested through its command line. Its spec runs the program on an argument list, with its terminal, prompts and clock replaced, and checks standard output, standard error and the exit code.
 
 | Why |
 |---|
-| the command line is the command's boundary, so the spec proves what its user sees, without a real terminal or a real clock. |
+| the command line is the command's boundary, so a spec that reaches past it proves less than its user sees, and one with a real terminal or a real clock fails with the machine it runs on. |
 
 ## Requirements for implementation
 
@@ -20,4 +20,4 @@ The framework's terminal, prompts, clock and process hooks can be replaced in a 
 
 | Why |
 |---|
-| without it, a command's spec reaches the real process and breaks the test sandbox. |
+| a framework whose terminal, prompts, clock or process hooks cannot be replaced makes a command's spec write to the real terminal, wait on a real prompt or end the runner's process. |

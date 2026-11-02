@@ -1,16 +1,16 @@
 ---
 id: pydantic
-summary: pydantic parses what crosses the program's edge into models.
+summary: pydantic parses outside input into models.
 requires: [python]
-extends: null
+extends: _schema
 abstract: false
 languages: []
-governs: ["**/models/**", "**/adapters/**", "**/root/**"]
+governs: ["**/models/**", "**/infrastructure/**", "**/root/**", "**/presentation/**", "**/libs/**", "**/shared/**"]
 ---
 
 # pydantic
 
-> **Pydantic**, the package **`pydantic`**, parses what crosses the program's edge — a request, a response, a document, the environment — into models, and stays at the edge: the business types inside are frozen dataclasses.
+> **Pydantic**, the package **`pydantic`**, parses what crosses the program's edge — a request, a response, a document, the environment — into models, and stays out of the domain: the business types inside are frozen dataclasses.
 
 **`pydantic-settings`** reads the environment into one settings model, a **`BaseSettings`**, and a secret is typed **`SecretStr`**.
 

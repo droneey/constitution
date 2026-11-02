@@ -1,13 +1,13 @@
 ```pseudo title="Avoid"
-function totalOf(order, currency)
+function total(order, currency)
   return sumPrices(order.lines)
 
 # nothing calls it any more
-function legacyTotalOf(order)
+function grossTotal(order)
   return order.total * 1.2
 ```
 
 ```pseudo title="Prefer"
-function totalOf(order)
+function total(order)
   return sumPrices(order.lines)
 ```

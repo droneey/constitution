@@ -1,12 +1,12 @@
 # Effects
 
-> Governs how a container's command takes the stop signal.
+> Governs the effects of an image's process: how its command takes the stop signal.
 
 ## Stopping
 
 ### commands-in-exec-form → program-stops-cleanly · MUST
 
-`CMD` and `ENTRYPOINT` use the JSON exec form, `["node", "main.js"]`.
+`CMD` and `ENTRYPOINT` use the JSON exec form.
 
 | Why |
 |---|

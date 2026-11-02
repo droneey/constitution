@@ -1,21 +1,13 @@
 # Document
 
-> Governs who renders the document's metadata and a third-party script.
+> Governs who inserts a third-party script into the document.
 
 ## General
 
-### document-metadata-rendered-by-its-owner → document-metadata-owned-by-screen · SHOULD
+### third-party-script-loaded-by-what-needs-it → third-party-script-declared-where-it-is-used · MUST
 
-Unless another active block claims the document's head, `<title>`, `<meta>` and `<link>` are rendered as elements by the screen or component that owns them, and React hoists them into the head.
-
-| Why |
-|---|
-| React hoists these elements from wherever they are rendered, so each is declared beside what it describes. |
-
-### third-party-script-rendered-as-element → third-party-script-declared-where-it-is-used · SHOULD
-
-A third-party script a component uses is rendered as `<script async src>` by that component; one an adapter loads behind its port is inserted by that adapter alone.
+A third-party script is declared by the component or the adapter that needs it. One a component uses is rendered as `<script async src>` by that component, and one a service behind a port needs is inserted by the adapter that implements the port alone.
 
 | Why |
 |---|
-| React dedupes and orders rendered scripts, and the script loads with the component that needs it; a service behind a port stays unknown to every component, so its adapter loads its script. |
+| a script declared elsewhere loads where nothing needs it, or before what it needs; React dedupes and orders the scripts it renders, which load with the component that needs them, and a service behind a port stays unknown to every component, so its adapter loads its script. |

@@ -33,7 +33,7 @@ timeout = "10"
 [tool.coverage.run]
 branch = true
 source = ["src"]
-omit = ["**/main.py", "**/__main__.py", "**/root/wiring.py", "**/*_gen.py", "**/*_gen/**"]
+omit = ["**/root/**", "**/main.py", "**/__main__.py", "**/*_gen.py", "**/*_gen/**"]
 
 [tool.coverage.report]
 fail_under = 100
@@ -44,7 +44,7 @@ exclude_also = ["if TYPE_CHECKING:", "@overload", "assert_never\\("]
 [tool.mutmut]
 # mutmut
 source_paths = ["src"]
-do_not_mutate = ["*/root/wiring.py", "*_messages.py", "*/main.py", "*_gen.py", "*_gen/*"]
+do_not_mutate = ["*/root/*", "*_messages.py", "*/main.py", "*_gen.py", "*_gen/*"]
 # Why: a log call's text and level are no behaviour a caller relies on.
 do_not_mutate_patterns = ['^\s*logger\.(debug|info|warning|error|exception|critical)\(']
 # Why: each mutant's run collects the integration specs too, as the coverage gate's run does.
@@ -87,8 +87,8 @@ extend-select = [
   "BLE",
   "EM",
   "TRY",
-  "ERA",
   "FBT",
+  "ERA",
   "FIX",
   "PLR0917",
   "PLR2004",
@@ -106,10 +106,7 @@ extend-select = [
   "TC",
   "ANN",
   "ASYNC",
-  "B006",
-  "B012",
   "DTZ",
-  "F403",
   "INP",
   "N",
   "N999",
@@ -133,6 +130,8 @@ extend-select = [
 extend-ignore = ["D1"]
 ignore = ["PLR09"]
 select = [
+  "PGH",
+  "RUF",
   "A",
   "ASYNC",
   "B",
@@ -167,9 +166,7 @@ select = [
   "SIM",
   "SLOT",
   "UP",
-  "W",
-  "PGH",
-  "RUF"
+  "W"
 ]
 
 [tool.ruff.lint.extend-per-file-ignores]

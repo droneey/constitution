@@ -10,4 +10,4 @@ A release tag is annotated.
 
 | Why |
 |---|
-| an annotated tag records who tagged the release and when. |
+| a lightweight tag records no tagger and no date, so nothing in the history says who released the code or when. |

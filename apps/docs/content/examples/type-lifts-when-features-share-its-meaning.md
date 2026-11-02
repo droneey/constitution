@@ -1,20 +1,29 @@
 ```pseudo title="Avoid"
-# shipping: use-cases/ship-order
-import Customer from "billing"
+# shipping: application/use-cases/commands/ship-order
+import Customer from "features/billing"
 
-function shipOrder(order, customer)
-  call send(order, customer.address)
+function createShipOrder({ shipmentRepository, customers: Customer })
+  return function(input, context)
+    let shipment = shipmentRepository.find(input.shipmentId, context)
+    let customer = customers.find(input.customerId, context)
+
+    call shipmentRepository.save(dispatch(shipment, customer.address), context)
 ```
 
 ```pseudo title="Prefer"
-# shipping: entities/recipient.entity
-# CustomerId comes from the kernel
+# shipping: domain/recipient/entities/recipient.entity
+import CustomerId from "kernel"
+
 type Recipient = {
   customerId: CustomerId,
   address: Address
 }
 
-# shipping: use-cases/ship-order
-function shipOrder(order, recipient)
-  call send(order, recipient.address)
+# shipping: application/use-cases/commands/ship-order
+function createShipOrder({ shipmentRepository, recipients })
+  return function(input, context)
+    let shipment = shipmentRepository.find(input.shipmentId, context)
+    let recipient = recipients.find(input.customerId, context)
+
+    call shipmentRepository.save(dispatch(shipment, recipient.address), context)
 ```

@@ -10,4 +10,4 @@ governs: ["**"]
 
 # Convergence
 
-> A program that reads one config file its user writes and moves the world toward it: it validates the file, renders what it implies, plans the changes and applies them, and a second run changes nothing.
+> A program that reads one config file its user writes and moves the world toward it, through its stages: validating the file, rendering what it implies, planning the changes and applying them.

@@ -4,17 +4,9 @@
 
 ## General
 
-### personal-answer-kept-out-of-shared-caches · MUST
-
-An answer that carries a caller's own data sets `Cache-Control: private` or `no-store`, and no shared cache in front of the server — a CDN's or a proxy's — is given a rule that stores it anyway.
-
-| Why |
-|---|
-| with no directive a shared cache may keep one caller's answer and serve it to the next. |
-
 ### answer-varies-by-the-headers-it-reads · MUST
 
-An answer that depends on a request header names it in `Vary` — `Origin` wherever `Access-Control-Allow-Origin` is not `*`, `Accept-Language` and `Accept` wherever they choose the body.
+An answer names in `Vary` every request header it depends on. Among them are `Origin` wherever `Access-Control-Allow-Origin` is not `*`, and `Accept-Language` and `Accept` wherever they choose the body.
 
 | Why |
 |---|
@@ -26,4 +18,4 @@ Every answer to a `GET` states its `Cache-Control`.
 
 | Why |
 |---|
-| with no directive each cache decides on its own how long to keep the answer. |
+| with no directive each cache decides on its own how long to keep the answer, so a caller is served a stale one, or a fresh one is fetched again on every request. |

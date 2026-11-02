@@ -1,13 +1,13 @@
 # Text
 
-> Governs where text is made from the codes the domain returns.
+> Governs where text is made from the codes the domain and the application layer return.
 
 ## General
 
-### domain-returns-codes-not-text → domain-imports-only-itself-and-the-kernel · MUST
+### domain-returns-codes-not-text → code-placed-by-its-reason-to-change · MUST
 
-The domain and the application layers return codes and values, and the presentation turns them into text; no message library reaches the domain.
+The domain and the application layer return codes, never text. The presentation turns the codes and values they return into text, and the message library that holds the product's wording is no library of an outside format the domain may import.
 
 | Why |
 |---|
-| the domain stays free of any language, and one code is worded differently per screen and locale. |
+| a domain that returns text is tied to one language and one wording, so a new locale, or a screen that words a code its own way, changes the business rules. |

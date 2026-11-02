@@ -1,18 +1,24 @@
 ```pseudo title="Avoid"
-# orders/domain/use-cases/confirm-order
-import SmtpMailer from "adapters/smtp"
+# orders/application/use-cases/commands/confirm-order
+import SmtpMailer from "infrastructure/smtp"
 
-function confirmOrder(order)
-  let mailer = new SmtpMailer()
-  mailer.send(order.customerEmail)
+function createConfirmOrder({ orderRepository })
+  return function(input, context)
+    let order = orderRepository.find(input.orderId, context)
+    let mailer = new SmtpMailer(smtpClient)
+    mailer.send(order.customerEmail, context)
 ```
 
 ```pseudo title="Prefer"
-# orders/domain/use-cases/confirm-order
-function confirmOrder(order, mailer)
-  mailer.send(order.customerEmail)
+# orders/application/use-cases/commands/confirm-order
+function createConfirmOrder({ orderRepository, mailer })
+  return function(input, context)
+    let order = orderRepository.find(input.orderId, context)
+    mailer.send(order.customerEmail, context)
 
-# root/wiring
-import SmtpMailer from "adapters/smtp"
-let mailer = new SmtpMailer()
+# root/orders
+import SmtpMailer from "infrastructure/smtp"
+
+let mailer = new SmtpMailer(smtpClient)
+let confirmOrder = createConfirmOrder({ orderRepository, mailer })
 ```

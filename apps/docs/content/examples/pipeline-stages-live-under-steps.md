@@ -1,10 +1,19 @@
-```text
-features/invoices/domain/use-cases/commands/import-invoices/
-├── import-invoices.use-case.ts   calls the steps below, in this order
-├── steps/
-│   ├── parse-rows.ts             first
-│   ├── validate-rows.ts          second
-│   ├── save-invoices.ts          third
-│   └── index.ts
-└── index.ts
+```text title="Avoid"
+features/catalog/application/use-cases/commands/
+├── import-catalog.use-case.ts
+├── read-rows.ts
+├── match-products.ts
+└── save-prices.ts
+```
+
+```text title="Prefer"
+features/catalog/application/use-cases/commands/
+└── import-catalog/
+    ├── steps/
+    │   ├── read-rows.ts
+    │   ├── match-products.ts
+    │   ├── save-prices.ts
+    │   └── index.ts
+    ├── import-catalog.use-case.ts
+    └── index.ts
 ```

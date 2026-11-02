@@ -19,7 +19,7 @@ Puts a repository under the Constitution. It takes no arguments.
 3. Asks which [axes](../how-it-works.md#three-axes) the repository follows: `architecture`, `workflow`, both or neither.
 4. Reads the manifests, lock files, tool configurations, folders and CI, and proposes each block with the evidence that picked it, then the blocks those require.
 5. Offers a block of the project's own pack for a library the release has no block for.
-6. Finds the command that runs every check, or asks for it.
+6. Proposes the runner of each unit, and each check the repository runs that no block writes as a `check:` script of its own.
 7. Asks which blocks each [member of a workspace](constitution-yaml.md#members-of-a-workspace) follows, for a `constitution.yaml` of its own.
 8. Interviews you for `PROJECT.md`, a question or two at a time.
 9. Runs `constitution presets apply`, which writes each tool's configuration from [the presets](presets.md) of the unit's blocks, and shows the diff and the findings, grouped by rule; each finding is fixed in the code or offered as an override through `/constitution:amend`.

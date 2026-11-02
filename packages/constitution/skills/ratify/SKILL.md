@@ -25,7 +25,7 @@ The project folder holds:
 ## What you write
 
 - **`constitution.yaml`** at the repository root: the blocks the repository follows, its packs and its overrides; and in a workspace one in each member's folder, with the blocks that member follows. The session-start hook reads them and gives every agent the rules of those blocks, so a block listed by mistake costs every session, and a block left out leaves its rules unenforced.
-- **`PROJECT.md`** beside it: what the product is, for whom, the domains of its business, its entities, its boundaries, its critical scenarios and its glossary. It gives any agent the context of the whole, so a change fits the product and not just the task.
+- **`PROJECT.md`** beside it: what the product is, for whom, the subdomains of its business by class, its entities, its boundaries, its critical scenarios and its glossary. It gives any agent the context of the whole, so a change fits the product and not just the task.
 - **`DECISIONS.md`** beside them, from the template, when the repository has none: the log where every later choice between real alternatives is recorded with what was rejected and why. Any choice the owner names during the interview — a store, a framework, a boundary — goes in as its first entries.
 - **A block of the project's own pack** for each library the owner wants rules for that the plugin has no block for: a folder of blocks shaped like the Constitution — `pack/` unless the owner names another — listed under `packs:`.
 - **Each tool's configuration**, which the executable writes with `constitution presets apply` from the presets of the release and of the unit's packs, into the files the project keeps, beside the settings of its own, and records in each unit's `constitution.lock`. The session-start hook warns of a setting a file lacks, keeps after its rule is gone or loosens, so a project whose blocks or release changed runs `constitution presets apply` again; with `constitution.yaml` already in place, offer to go straight to step 9.
@@ -101,7 +101,7 @@ For a block of the project's own pack, fill the template's placeholders from the
 - the passport's line of what the block is names the library in bold, `> **Paraglide** compiles …`, which defines it as the block's term, and each file, command or API the block owns is set in bold once, as a code span, where the passport first names it; a folder, which ends in `/`, or a suffix, which starts with `.`, carries right after its bold an id that names what it holds, in lower-case words joined by hyphens and unique across the blocks: ``**`project.inlang/`**{#translation-project}``; every other mention is plain;
 - the passport's **setup** paragraph says what the block's preset entries cannot show — how the library is set up, a quirk of the tool, a limit of what it holds; drop it when there is nothing to say;
 - the passport's **Requirements** table answers the requirements for implementation of the blocks above it — rules a domain, a platform or core asks of any library doing its job; read the files of the blocks it requires under `.droneey/constitution/blocks/` to find them. One row per requirement: its slug, how the library meets it, and whether it is met. `yes` — it meets the rule as written; `partly` — it meets the rule's purpose or part of its letter, and a rule of the block covers the part it misses; `no` — it cannot meet the rule, and a rule of the block replaces it. A `partly` or `no` row names that rule in How by its slug in backticks, and the rule is written with the owner as below. Drop the section when there is nothing to answer;
-- a **rule** is written only when the owner states one, in the chapter template's format, with a slug no rule heading of the Constitution's blocks holds. Drop the chapter, and its `foundation/` folder, when there is none.
+- a **rule** is written only when the owner states one, in the chapter template's format and worded as the `Wording` rules of core's `placement` chapter ask, with a slug no rule heading of the Constitution's blocks holds. Drop the chapter, and its `foundation/` folder, when there is none.
 
 A block of the project's own pack is a draft until a person reviews it; say so.
 
@@ -145,7 +145,7 @@ Ask one or two questions at a time, in the order of the sections of `.droneey/co
 
 - **One-liner.** In one sentence, what is this product and who is it for?
 - **Context and users.** Who uses it, and what problem does it solve for them? Are there distinct roles?
-- **Domains of the business.** What are the main areas of the product?
+- **Subdomains.** What are the main areas of the business? Which one is the core domain, the reason the product exists, and is each of the others supporting or generic — something a library or an outside service already does? Which features serve each?
 - **Core entities and relationships.** What are the main business objects, and how do they relate?
 - **Boundaries.** What is out of scope — what will this product never do?
 - **Critical scenarios.** Which journeys must never break — the ones a user would leave over? Each one gets an end-to-end test.

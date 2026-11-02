@@ -10,7 +10,7 @@
     "!scripts/*/main.ts",
     "!src/entrypoints/*/main.{ts,tsx}",
     "!src/integrations/*/main.{ts,tsx}",
-    "!src/root/wiring.{ts,tsx}"
+    "!src/root/**"
   ],
   "thresholds": {
     "break": 100,

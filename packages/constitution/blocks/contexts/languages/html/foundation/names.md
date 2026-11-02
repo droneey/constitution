@@ -1,6 +1,6 @@
 # Names
 
-> Governs the ids of a document's elements.
+> Governs a name in a document: the id of an element.
 
 ## General
 

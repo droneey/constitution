@@ -6,10 +6,6 @@ version-control:
       .gitignore:
         - .claude/settings.local.json
         - .claude/worktrees/
-git:
-  gitignore-covers-dependencies-output-and-caches:
-    '*':
-      .gitignore:
         - .DS_Store
         - .vscode/*
         - '!.vscode/settings.json'
@@ -24,12 +20,14 @@ git:
         - '*.bak'
         - '*.orig'
         - '*~'
+git:
   gitignore-covers-environment-files:
     '*':
       .gitignore:
         - .env*
         - '!.env.example'
-  gitignore-covers-key-files:
+core:
+  secret-never-in-the-repository:
     '*':
       .gitignore:
         - '*.pem'

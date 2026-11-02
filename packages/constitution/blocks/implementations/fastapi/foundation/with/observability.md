@@ -6,7 +6,7 @@
 
 ### uvicorn-records-join-the-pipeline → log-record-passes-one-pipeline · MUST
 
-Uvicorn runs with `log_config=None`, so `uvicorn`, `uvicorn.error` and `uvicorn.access` keep no handler of their own, propagate, and their records pass the one pipeline.
+Uvicorn's records pass the one pipeline. Uvicorn runs with `log_config=None`, so `uvicorn`, `uvicorn.error` and `uvicorn.access` keep no handler of their own and propagate.
 
 | Why |
 |---|

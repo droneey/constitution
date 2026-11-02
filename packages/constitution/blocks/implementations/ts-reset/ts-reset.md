@@ -1,6 +1,6 @@
 ---
 id: ts-reset
-summary: Types an application's parsed and fetched values as unknown.
+summary: Types a program's parsed and fetched values as unknown.
 requires: [typescript]
 extends: null
 abstract: false
@@ -10,4 +10,4 @@ governs: ["src/reset.d.ts"]
 
 # ts-reset
 
-> **`ts-reset`** types an application's standard library strictly: what is parsed or fetched is `unknown`.
+> **`ts-reset`** types a program's standard library strictly: what is parsed or fetched is `unknown`.

@@ -12,8 +12,9 @@ function addToCart(cart, count: Int)
 type Quantity = Brand<Int, "Quantity">
 
 # the only way to make a Quantity
-function quantityOf(count: Int)
+function Quantity.create(count: Int)
   if count < 1 then
-    return failure(InvalidQuantity)
-  return success(count as Quantity)
+    throw new InvalidQuantityError()
+
+  return count as Quantity
 ```

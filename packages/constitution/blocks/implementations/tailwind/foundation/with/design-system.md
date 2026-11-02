@@ -18,50 +18,50 @@ A cascading variant is a `data-*` attribute on the root, resolved by a `@custom-
 
 | Why |
 |---|
-| the stylesheet reaches every descendant at once, with no prop threaded through them. |
+| a variant passed down as a prop is threaded through every component between the root and the descendant that reads it, and one that forgets it renders the wrong variant; the stylesheet reaches every descendant at once. |
 
 ## Modes
 
 ### dark-theme-redefines-tokens → theme-modes-share-one-token-set · MUST
 
-Dark mode redefines the semantic tokens under one selector; a component writes `dark:` only where no token can say it.
+Dark mode redefines the semantic tokens under one selector. A component writes `dark:` only where no token can say it.
 
 | Why |
 |---|
-| components written against tokens switch theme without a line of their own. |
+| a component that writes its own `dark:` classes holds a second dark palette, which the next change of the theme misses. |
 
 ## Primitives
 
-### primitive-class-merged-by-cn → primitive-passes-attributes-and-class · SHOULD
+### primitive-class-merged-by-cn → primitive-passes-its-element-through · SHOULD
 
 A primitive merges its class with the caller's through `cn()`, the caller's last.
 
 | Why |
 |---|
-| the merge keeps the last of two classes of one group, so the caller's utility replaces the primitive's instead of fighting it by its order in the stylesheet. |
+| classes joined without the merge both stay, so the caller's utility and the primitive's fight by their order in the stylesheet and the caller's may lose; the merge keeps the last of two classes of one group. |
 
 ## Tokens
 
 ### class-names-only-semantic-colors → component-reads-only-semantic-and-common-tokens · MUST
 
-A class list names a colour only through the design system's semantic and common tokens, never through Tailwind's own palette.
+A class names only semantic and common colours. `@theme` aliases only the semantic and common colour tokens, so no class can name a primitive colour or a palette Tailwind ships.
 
 | Why |
 |---|
-| a palette class reaches past the tokens, so a component that writes one escapes the theme and its modes. |
+| a class that names a primitive colour or a shipped palette skips the semantic layer and keeps its colour when the theme or the mode remaps the rest; a utility exists only for what `@theme` aliases, so a primitive left out of it cannot be written in a class. |
 
 ### theme-aliases-the-token-properties → custom-property-spells-its-token · MUST
 
-The tokens' custom properties keep the tokens' names, on the root; each alias of Tailwind's theme sits in Tailwind's own namespace and reads a token's property, `--text-sm: var(--font-size-sm)`, and a token whose name already is Tailwind's, `--font-weight-bold`, is named as itself in an `@theme inline reference` block.
+Tailwind's theme aliases the tokens' custom properties, which keep the tokens' names. The properties sit on the root under the tokens' names; each alias of Tailwind's theme sits in Tailwind's own namespace and reads a token's property, and a token whose name already is Tailwind's is named as itself in an `@theme inline reference` block.
 
 | Why |
 |---|
-| a token keeps one name in its source, in every stylesheet and in the browser, while each utility still reads Tailwind's own namespace, and Tailwind never reads a token's name as another namespace's, as it reads any `--font-*` as a family; an alias of a name Tailwind already reads would read itself, a cycle that voids the value. |
+| a token renamed for Tailwind has two names, one in its source and one in the browser, and Tailwind reads a token's name in another namespace as its own, as it reads any `--font-*` as a family; an alias of a name Tailwind already reads would read itself, a cycle that voids the value. |
 
 ### typography-token-aliased-as-a-text-composite → font-token-is-one-typography-composite · MUST
 
-A typography token reaches Tailwind as its text composite: `--text-<kind>-<step>` with its `--line-height`, `--letter-spacing` and `--font-weight`, each the alias of the part's own property, so one class, `text-code-sm`, sets the style of text; its family, which the text composite lacks, is `--font-<kind>`, one alias for each kind of text that reads its styles' family, so a component writes `text-code-sm font-code`.
+A typography token reaches Tailwind as its text composite. The composite is `--text-<kind>-<step>` with its `--line-height`, `--letter-spacing` and `--font-weight`, each the alias of the part's own property, so one class, `text-<kind>-<step>`, sets the style of text; its family, which the text composite lacks, is `--font-<kind>`, one alias for each kind of text that reads its styles' family, so a component writes `text-<kind>-<step> font-<kind>`.
 
 | Why |
 |---|
-| Tailwind's text composite holds every part of a style but its family, so a component applies a style of text with one class and its kind's family with a second, never a primitive's class, and never several that must change together. |
+| a style of text set part by part takes several classes that must change together, and one of them is missed when the style changes; Tailwind's text composite holds every part of a style but its family, so a style takes one class and its kind's family a second, never a primitive's class. |

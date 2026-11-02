@@ -4,26 +4,18 @@
 
 ## General
 
-### config-file-type-declared-with-its-port → code-placed-by-its-reason-to-change · MUST
-
-The config file's type, which joins the sections of several features, is a type of the program's own, declared beside the port that reads the file in the `domain/contracts/` of the composition module that splits it into each feature's section.
-
-| Why |
-|---|
-| the adapter that parses the file and the composition that splits it both reach that module's contracts and neither reaches the other, while the kernel stays free of a type that changes with every feature's section. |
-
 ### config-file-parsed-by-its-adapter → layer-imports-dependencies-by-its-role · MUST
 
-The schema that parses the config file, and the library it is written with, live in the adapter that implements that port, which maps what it parsed to the config file's type and resolves the file's references through a resolver the root hands it; neither that module's domain nor the rest of `composition/` imports a parsing library.
+The config file is parsed in the adapter that reads it. The schema and the library it is written with live in that adapter, which implements the port that reads the file, maps what it parsed to the config file's type and resolves the file's references through a resolver the root hands it; neither that module's domain and application layers nor the rest of `composition/` imports a parsing library.
 
 | Why |
 |---|
-| the file is outside input whose format is a detail of the edge, so the program's own type changes only when the program does, never when the library or the format does. |
+| a parsing library imported past the adapter ties the program's own type to that library and that format, so a change of either reaches code that never reads the file — ports and adapters. |
 
-### feature-blind-to-the-config-file → feature-asks-another-through-its-own-contract · MUST
+### feature-blind-to-the-config-file → port-declared-by-the-layer-that-needs-it · MUST
 
-A feature never reads the config file or its schema: it declares in its own words the vocabulary its section is built from, and receives an input built for it.
+Only the composition module that splits the config file knows it: a feature never reads the file or its schema. A feature declares in its own words the vocabulary its section is built from, and receives an input built for it. The config file's type, which joins every feature's section, is the program's own, declared beside the port that reads the file.
 
 | Why |
 |---|
-| each feature stays blind to the others and to the file's format, and the config file is assembled in one place. |
+| a feature that reads the file depends on every other feature's section and on the file's format, so a change to any of them reaches it, and a type that changes with every section would put that churn in the kernel. |

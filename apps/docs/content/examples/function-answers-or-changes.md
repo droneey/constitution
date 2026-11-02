@@ -1,13 +1,14 @@
 ```pseudo title="Avoid"
-function getCart(session, clock)
+function cart(session, clock)
   session.lastSeenAt = clock.now()
+
   return session.cart
 ```
 
 ```pseudo title="Prefer"
-function getCart(session)
+function cart(session)
   return session.cart
 
 function markSeen(session, clock)
-  session.lastSeenAt = clock.now()
+  return session with { lastSeenAt: clock.now() }
 ```

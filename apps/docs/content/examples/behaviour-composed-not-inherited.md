@@ -1,6 +1,6 @@
 ```pseudo title="Avoid"
-class AuditedOrderStore
-  extends OrderStore
+class AuditedOrderRepository
+  extends OrderRepository
   let log: AuditLog
 
   override function save(order)
@@ -9,8 +9,8 @@ class AuditedOrderStore
 ```
 
 ```pseudo title="Prefer"
-class AuditedOrderStore
-  let store: OrderStore
+class AuditedOrderRepository
+  let store: OrderRepository
   let log: AuditLog
 
   function save(order)

@@ -1,5 +1,5 @@
-import type { DocumentFrame } from '../domain/contracts';
-import type { SidebarState } from '../domain/entities';
+import type { DocumentFrame } from '../application/contracts';
+import type { SidebarState } from '../domain/sidebar-state/entities';
 
 interface FrameFakeInput {
   readonly narrow?: boolean;

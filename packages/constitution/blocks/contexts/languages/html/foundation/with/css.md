@@ -6,7 +6,7 @@
 
 ### class-used-is-declared · MUST
 
-Every class markup names is declared, by a stylesheet of the program or by its styling library.
+Every class markup names is declared. A stylesheet of the program or its styling library declares it.
 
 | Why |
 |---|

@@ -6,7 +6,7 @@
 
 ### plan-reads-the-observed-world · MUST
 
-A plan compares the config file with the world as observed when the plan is made, never only with a record of the last run, so a change made by hand shows as drift.
+A plan reads the observed world. It compares the config file with the world as observed when the plan is made, never only with a record of the last run, so a change made by hand shows as drift.
 
 | Why |
 |---|
@@ -14,7 +14,7 @@ A plan compares the config file with the world as observed when the plan is made
 
 ### plan-outcome-told-apart · MUST
 
-A plan's result tells apart no change, a change and a failure, in a form a caller branches on, such as a command's exit status, never only in its text.
+A plan's outcome tells no change, a change and a failure apart. It does so in a form a caller branches on, such as a command's exit status, never only in its text.
 
 | Why |
 |---|
@@ -26,13 +26,13 @@ A plan names every change that destroys something, and apply carries out none of
 
 | Why |
 |---|
-| a destroyed resource cannot be converged back, so the user must see it and ask for it. |
+| a destroyed resource cannot be converged back, so one destroyed unseen or unasked is lost for good — fail-safe defaults. |
 
 ## Apply
 
 ### apply-carries-out-the-plan-shown · MUST
 
-Apply carries out exactly the plan its user was shown; when the config file or the world changed since that plan, it stops and asks for a new one.
+Apply carries out exactly the plan its user was shown. When the config file or the world changed since that plan, it stops and asks for a new one.
 
 | Why |
 |---|
@@ -40,7 +40,7 @@ Apply carries out exactly the plan its user was shown; when the config file or t
 
 ### apply-changes-only-what-the-program-owns · MUST
 
-Apply changes and removes only what carries the program's mark of ownership, which it puts on everything it creates; what lacks the mark is left alone until the user adopts it.
+Apply changes only what the program owns. It changes and removes only what carries the program's mark of ownership, which it puts on everything it creates; what lacks the mark is left alone until the user adopts it.
 
 | Why |
 |---|
@@ -52,11 +52,11 @@ Applying the same config file twice reports no change the second time, and a tes
 
 | Why |
 |---|
-| convergence is safe to rerun only while it is idempotent, and only a test keeps it so. |
+| a convergence that is not idempotent changes the world again on every rerun after a failure or on a schedule, and only a test catches the first change that breaks it. |
 
 ### interrupted-apply-converges-on-rerun · SHOULD
 
-An apply cut off at any point leaves the world in a state the next run plans from and converges, with no step to repair by hand.
+An interrupted apply converges on the next run. Cut off at any point, it leaves the world in a state the next run plans from and converges, with no step to repair by hand.
 
 | Why |
 |---|
@@ -64,7 +64,7 @@ An apply cut off at any point leaves the world in a state the next run plans fro
 
 ### one-apply-at-a-time → write-on-read-data-is-conditional · MUST
 
-An apply holds a lock on its target for its whole run, which a second apply waits for or is refused by.
+One apply runs at a time on a target. An apply holds a lock on its target for its whole run, which a second apply waits for or is refused by.
 
 | Why |
 |---|

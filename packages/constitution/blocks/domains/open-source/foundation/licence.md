@@ -6,7 +6,7 @@
 
 ### public-repository-carries-a-licence · MUST
 
-A public repository carries a licence file at its root, and names its copyright holder in it or in a `NOTICE` beside it.
+A public repository carries a licence file at its root. It names its copyright holder there or in a `NOTICE` beside it.
 
 | Why |
 |---|

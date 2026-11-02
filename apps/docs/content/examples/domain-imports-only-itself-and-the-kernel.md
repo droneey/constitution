@@ -1,5 +1,5 @@
 ```pseudo title="Avoid"
-# orders/domain/entities/order.entity
+# orders/domain/order/entities/order.aggregate
 import z from "zod"
 import Money from "kernel"
 
@@ -9,7 +9,7 @@ let Order = z.object({
 ```
 
 ```pseudo title="Prefer"
-# orders/domain/entities/order.entity
+# orders/domain/order/entities/order.aggregate
 import Money from "kernel"
 
 type Order = {

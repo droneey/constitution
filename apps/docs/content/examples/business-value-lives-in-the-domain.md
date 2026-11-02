@@ -1,23 +1,31 @@
 ```pseudo title="Avoid"
-# users/app/sign-up
-function signUpHandler(request)
-  let text = request.email
+# users/presentation/bindings/commands/sign-up
+function onSignUp(request, signUp, context)
+  let text = request.body.email
+
   if not text.contains("@") then
-    return badRequest(InvalidEmail)
-  call signUp(text)
+    return badRequest(InvalidEmailError)
+
+  call signUp({ email: text }, context)
 ```
 
 ```pseudo title="Prefer"
-# value-objects/email.value-object
+# users/domain/user/value-objects/email.value-object
 type Email = { address: String }
-function parseEmail(text)
-  if not text.contains("@") then
-    return failure(InvalidEmail)
-  return success({ address: text })
 
-# users/app/sign-up
-let email = parseEmail(request.email)
-if email is InvalidEmail then
-  return badRequest(InvalidEmail)
-call signUp(email)
+function create(text)
+  if not text.contains("@") then
+    throw new InvalidEmailError()
+
+  return { address: text }
+
+# users/application/use-cases/commands/sign-up
+function parseSignUpInput(body)
+  return { email: Email.create(body.email) }
+
+# users/presentation/bindings/commands/sign-up
+function onSignUp(request, signUp, context)
+  let input = parseSignUpInput(request.body)
+
+  call signUp(input, context)
 ```

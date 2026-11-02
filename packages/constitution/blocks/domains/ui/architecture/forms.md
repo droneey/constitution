@@ -4,10 +4,10 @@
 
 ## General
 
-### form-reuses-domain-predicates → business-value-lives-in-the-domain · MUST
+### form-schema-composes-value-object-checks → value-object-checks-what-the-domain-relies-on · MUST
 
-A form's schema composes the checks of the domain's value objects and sits with the form; it never restates an invariant.
+A form's schema sits with the form and composes the checks of the value objects it fills; it never restates an invariant.
 
 | Why |
 |---|
-| a rule checked in two places drifts, and the form then accepts what the domain rejects. |
+| a schema kept away from its form is missed by the reader of the form, and one that restates the value objects' checks drifts from them. |

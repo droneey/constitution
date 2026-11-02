@@ -97,4 +97,4 @@ dependency-cruiser:
           exclude:
             path:
               - ^(?!(?:\.\./)*node_modules/)(?:\.[^./]|.*/\.[^./]|dist/|.*/dist/)
-              - \.gen\.
+              - \.${role.generated-file}\.

@@ -1,10 +1,13 @@
 ```pseudo title="Avoid"
-# payments/config.ts
+# payments/infrastructure/stripe/payment.adapter
 let paymentsApiKey = "sk_live_…"
 ```
 
 ```pseudo title="Prefer"
-# payments/config.ts
-let paymentsApiKey =
-  readSecret("PAYMENTS_API_KEY")
+# infrastructure/config: the configuration provider
+# Why: the secret is set in the environment the root hands it
+let Config = { paymentsApiKey: Secret }
+
+# payments/infrastructure/stripe/payment.adapter
+function createStripePaymentAdapter({ client, apiKey })
 ```

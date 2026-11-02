@@ -1,6 +1,6 @@
 # Project Context
 
-> The stable, high-level context of the product: what it is, who it is for, the domains of its business, its core entities, its boundaries and its words. Read it first so any change fits the product, not just the task.
+> The stable, high-level context of the product: what it is, who it is for, the subdomains of its business by class, its core entities, its boundaries and its words. Read it first so any change fits the product, not just the task.
 
 ## One-liner
 
@@ -12,12 +12,12 @@ The Droneey Constitution: the engineering rules every Droneey repository is buil
 - **Agents** in the owner's repositories receive the rules at session start and follow them while they work.
 - **The owner's repositories** declare the blocks they follow in `constitution.yaml` and describe themselves in `PROJECT.md`.
 
-## Domains of the business
+## Subdomains
 
-- **Blocks** — the rules, split by layer — core, domains, contexts, implementations — and inside each block by axis, a folder each of one form: `foundation`, always followed, and the optional `architecture` and `workflow`.
-- **Validation** — the checks that keep every block sound and consistent with the others.
-- **Presets** — the settings that hold the tool-checked rules, each keyed by the rule it holds, which the executable writes into a project's configurations.
-- **Delivery** — the release's distribution, one for each platform, `constitution-<platform>.tar.gz`, which a project pins through mise and which carries the blocks, the digests generated from them, the presets, the templates, the tools and the `constitution` executable compiled for that platform, which checks a project and does the hooks' work; and the plugin, the engine installed from its release tag: the hooks — the digest at a session's start, the rule gate before an action, the hand-back at a stop, and the clean-up at a session's end — the skills that write a project's files, and the reviewer agent.
+- **Blocks** (core domain) — the rules, split by layer — core, domains, contexts, implementations — and inside each block by axis, a folder each of one form: `foundation`, always followed, and the optional `architecture` and `workflow`.
+- **Validation** (supporting; the `blocks` feature) — the checks that keep every block sound and consistent with the others.
+- **Presets** (supporting; the `presets` feature) — the settings that hold the tool-checked rules, each keyed by the rule it holds, which the executable writes into a project's configurations.
+- **Delivery** (supporting; the `project`, `session` and `installation` features) — the release's distribution, one for each platform, `constitution-<platform>.tar.gz`, which a project pins through mise and which carries the blocks, the digests generated from them, the presets, the templates, the tools and the `constitution` executable compiled for that platform, which checks a project and does the hooks' work; and the plugin, the engine installed from its release tag: the hooks — the digest at a session's start, the rule gate before an action, the hand-back at a stop, and the clean-up at a session's end — the skills that write a project's files, and the reviewer agent.
 
 ## Core entities and relationships
 
@@ -25,15 +25,14 @@ The Droneey Constitution: the engineering rules every Droneey repository is buil
 - **Rule** — belongs to one block, and may tighten one rule of another.
 - **Requirement answer** — a library block's answer to a requirement of a block above it.
 - **Digest** — built by the hook from a project's `constitution.yaml` and the blocks of its release: core's passport, the duty the rule gate sets, the map of the active blocks and the warnings.
-- **Preset part** — belongs to one tool's preset, and is named after one block.
-- **Binding** — ties settings of one part to one rule.
+- **Preset entry** — belongs to one tool's preset file, and is keyed by the block and the rule it holds.
 - **Decision** — an entry of `DECISIONS.md`: why a rule of the Constitution is what it is.
 
 ## Critical scenarios
 
 - A session in a repository with `constitution.yaml` starts with a digest of its active blocks, within budget, and the warnings about its file.
 - In such a repository, the agent's edit is refused until it has read, whole, the rules that govern it, and goes through once it has.
-- A change to a block that breaks the format, the layers or the digests fails `bun run check`.
+- A change to a block that breaks the format, the layers or the digests fails `bun run constitution run check`.
 
 ## Boundaries — what it does not do
 
@@ -50,7 +49,7 @@ The Droneey Constitution: the engineering rules every Droneey repository is buil
 - **Section** — a `##` part of a chapter or a seam that names a part of its subject: `General`, first, for the rules about the whole subject, and `Requirements for implementation`, last.
 - **Seam** — a `with/<other>.md` file: the rules that hold only when two blocks meet.
 - **Rule** — a heading with a slug and a level, a statement and its Why.
-- **Slug** — a rule's kebab-case name, one across the Constitution and its packs: bindings, overrides and other rules name a rule by it.
+- **Slug** — a rule's kebab-case name, one across the Constitution and its packs: preset entries, overrides and other rules name a rule by it.
 - **Tightens** — a rule's `→ <rule>` link: it narrows that rule for its block's case, never looser, and takes its level when it states none.
 - **Level** — `MUST`, `SHOULD` or `MAY`: how hard a rule binds.
 - **Requirement** — a rule of a `Requirements for implementation` section: what a tool of that kind must offer; an implementation's passport answers each with how and whether it is met.
@@ -66,7 +65,7 @@ The Droneey Constitution: the engineering rules every Droneey repository is buil
 - **Template** — a file a project starts from: the starting `constitution.yaml`, `PROJECT.md`, `DECISIONS.md` and a new block's skeleton.
 - **Digest** — what the plugin gives an agent at the start of a session: the release, core's passport, the duty the rule gate sets, the active blocks and the warnings.
 - **Rule gate** — the hook that refuses an agent's edit, command, sub-agent or MCP call until it has read, whole, the rules that govern it.
-- **Check** — the one command that runs every tool, named by `check:`.
+- **Check** — the one command that runs every tool, `constitution run check`, which runs each unit's `check` as its runner block gives it.
 - **Owned word** — a brand, a language or a file name that only its block and the blocks that depend on it may write.
 
 ## Non-functional notes

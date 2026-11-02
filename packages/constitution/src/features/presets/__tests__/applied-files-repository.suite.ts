@@ -2,10 +2,10 @@ import { describe, expect, it } from 'bun:test';
 
 import { AbsolutePath } from '#/kernel/value-objects';
 
-import type { AppliedFilesCommandRepository } from '../domain/contracts/repositories/commands';
-import type { Lock } from '../domain/entities';
-import { RecordKind } from '../domain/entities';
-import { ApplyError, ApplyFailure } from '../domain/errors';
+import type { AppliedFilesRepository } from '../application/contracts/repositories/commands';
+import { ApplyError, ApplyFailure } from '../domain/apply-plan/errors';
+import type { Lock } from '../domain/lock/entities';
+import { RecordKind } from '../domain/lock/entities';
 import { lockOf } from './presets.fixtures';
 
 interface AppliedFilesWorld {
@@ -22,7 +22,7 @@ interface AppliedFilesRepositorySuiteInput {
   readonly name: string;
   readonly repositoryOf: (world: AppliedFilesWorld) => {
     readonly projectFolderPath: AbsolutePath;
-    readonly repository: AppliedFilesCommandRepository;
+    readonly appliedFilesRepository: AppliedFilesRepository;
     readonly state: AppliedFilesState;
   };
 }
@@ -57,10 +57,10 @@ const failureOf = (act: () => unknown): unknown => {
 };
 
 const runAppliedFilesRepositorySuite = (input: AppliedFilesRepositorySuiteInput): void => {
-  describe(`${input.name}: the AppliedFilesCommandRepository contract`, () => {
+  describe(`${input.name}: the AppliedFilesRepository contract`, () => {
     it('should delete the files it names and write every file and lock', () => {
       // Arrange
-      const { projectFolderPath, repository, state } = input.repositoryOf({
+      const { projectFolderPath, appliedFilesRepository, state } = input.repositoryOf({
         files: {
           'biome.json': 'old\n',
           'gone.json': 'old\n',
@@ -70,7 +70,7 @@ const runAppliedFilesRepositorySuite = (input: AppliedFilesRepositorySuiteInput)
       const at = (path: string): AbsolutePath => AbsolutePath.join(projectFolderPath, path);
 
       // Act
-      repository.write({
+      appliedFilesRepository.write({
         deletedFilePaths: [
           at('gone.json'),
         ],
@@ -122,7 +122,7 @@ const runAppliedFilesRepositorySuite = (input: AppliedFilesRepositorySuiteInput)
 
     it('should put back what it wrote, and fail naming the file, when a file cannot be written', () => {
       // Arrange
-      const { projectFolderPath, repository, state } = input.repositoryOf({
+      const { projectFolderPath, appliedFilesRepository, state } = input.repositoryOf({
         files: {
           'biome.json': 'old\n',
           'gone.json': 'kept\n',
@@ -134,7 +134,7 @@ const runAppliedFilesRepositorySuite = (input: AppliedFilesRepositorySuiteInput)
 
       // Act
       const failure = failureOf(() => {
-        repository.write({
+        appliedFilesRepository.write({
           deletedFilePaths: [
             at('gone.json'),
           ],

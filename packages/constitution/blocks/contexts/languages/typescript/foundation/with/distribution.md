@@ -6,15 +6,15 @@
 
 ### package-export-typed-explicitly → distributed-unit-ships-its-types · MUST
 
-Every export of a package others install states its type wherever its declaration needs one — a function's return type, the type of a constant whose value is no literal — so each file's declarations are emitted from that file alone, held by the compiler's `isolatedDeclarations`.
+Every export of a package others install states its type where its declaration needs one. That is a function's return type, or the type of a constant whose value is no literal, so each file's declarations are emitted from that file alone.
 
 | Why |
 |---|
-| the declarations a consumer compiles against then change only when a signature is edited, never when a change inside a function widens what the compiler infers, and any tool can emit them file by file. |
+| a type left to inference changes the declarations a consumer compiles against whenever a change inside a function widens what the compiler infers, and declarations that need inference can be emitted only by the whole compiler, never file by file. |
 
-### distributed-package-checked-under-its-runtimes-resolution → distributed-unit-ships-its-types · MUST
+### distributed-package-checked-under-its-runtimes-resolution → unit-checked-on-every-runtime-it-supports · MUST
 
-A package others install is type-checked under the module resolution of the runtimes it supports — `nodenext` for Node.js — so an import that only a bundler resolves fails the check.
+A package others install is type-checked under its runtimes' module resolution. That is the resolution of each runtime it supports — `nodenext` for Node.js — so an import that only a bundler resolves fails the check.
 
 | Why |
 |---|

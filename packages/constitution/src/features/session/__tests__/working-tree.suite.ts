@@ -5,8 +5,10 @@ import { describe, expect, it } from 'bun:test';
 import type { AbsolutePath } from '#/kernel/value-objects';
 import { RepositoryRelativePath } from '#/kernel/value-objects';
 
-import type { TreeSnapshot, WorkingTree } from '../domain/contracts';
-import { IgnoreAnswer, TreeStateStatus } from '../domain/contracts';
+import type { WorkingTree } from '../application/contracts';
+import { IgnoreAnswer } from '../application/contracts';
+import type { TreeSnapshot } from '../domain/tree-state/entities';
+import { TreeStateStatus } from '../domain/tree-state/entities';
 
 interface WorkingTreeWorld {
   readonly committed: readonly string[];

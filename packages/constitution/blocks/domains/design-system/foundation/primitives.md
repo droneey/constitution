@@ -6,21 +6,21 @@
 
 ### primitive-passes-its-element-through · SHOULD
 
-A primitive accepts its element's own props and reference, and merges its own props and handlers with the caller's.
+A primitive passes through what its caller gives its element. It accepts what the caller passes to that element — its attributes, its handlers and its reference, or the platform's modifier — and merges its own attributes and handlers with the caller's.
 
 | Why |
 |---|
-| without it every consumer wraps or forks the primitive for one attribute. |
+| without it every consumer wraps or forks the primitive for one attribute — the open–closed principle. |
 
 ## Proof
 
 ### primitive-shown-in-every-variant-and-state · SHOULD
 
-Each primitive of the design system is shown in each of its variants and states, in every mode, in one place that people and screenshot specs both see.
+Each primitive is shown in every variant and state. It is shown so in every mode, in one place that people and screenshot specs both see.
 
 | Why |
 |---|
-| a variant nobody renders breaks unseen, and one showcase is what a review and a screenshot compare. |
+| a variant nobody renders breaks unseen, and a primitive shown piecemeal, or nowhere, leaves a review and a screenshot nothing whole to compare. |
 
 ## Requirements for implementation
 

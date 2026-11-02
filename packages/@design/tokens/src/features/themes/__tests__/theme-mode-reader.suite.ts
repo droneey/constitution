@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import type { ThemeModeReader } from '../domain/contracts';
+import type { ThemeModeReader } from '../application/contracts';
 
 interface ThemeModeReaderSuiteInput {
   readonly implementationName: string;

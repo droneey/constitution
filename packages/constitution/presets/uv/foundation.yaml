@@ -18,10 +18,15 @@ uv:
           uv:
             python-downloads: never
             python-preference: only-system
-  uv-build-backend-capped:
+  packages-built-by-uv-build:
+    python:
+      pyproject.toml ? !${workspace.isRoot}:
+        build-system:
+          build-backend: uv_build
+core:
+  tool-pinned-exactly-by-the-repository:
     python:
       pyproject.toml ? !${workspace.isRoot}:
         build-system:
           requires:
             - uv_build>=0.13,<0.14
-          build-backend: uv_build

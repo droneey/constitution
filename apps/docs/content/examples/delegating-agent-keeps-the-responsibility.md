@@ -10,8 +10,8 @@ To the person:
 To the sub-agent:
   Fix the failing refund tests.
   Rules: core's tests and errors.
-  Files: orders/domain/use-cases/
-         commands/refund-order/
+  Files: orders/application/use-cases/
+         commands/refund-order.use-case.ts
 
 To the person:
   Fixed; I reran the specs, and

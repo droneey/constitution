@@ -1,16 +1,16 @@
 # Commits
 
-> Governs a commit's message and the hooks that check it.
+> Governs a commit's message: its header, its type and its body.
 
-## General
+## Message
 
 ### commit-header-type-and-subject · MUST
 
-A commit's header makes it a **conventional commit**, by Conventional Commits 1.0.0: `type: Subject`, with one of four types: **`feat`**, written `feat:`, adds behaviour; `fix:` fixes a bug; `refactor:` changes structure without changing behaviour; `chore:` is everything else that changes no behaviour — dependencies, tooling, documentation, releases. A breaking change is marked by `!` right before the colon, as in `feat!: Split the settings`. No scope; at most 100 characters; the subject starts with a capital letter and is in the imperative.
+A commit's header makes it a **conventional commit**, by Conventional Commits 1.0.0. Its form is `type: Subject`, with one of four types: **`feat`**, written `feat:`, adds behaviour; `fix:` fixes a bug; `refactor:` changes structure without changing behaviour; `chore:` is everything else that changes no behaviour — dependencies, tooling, documentation, releases. A breaking change is marked by `!` right before the colon, as in `feat!:`. No scope; at most 100 characters; the subject starts with a capital letter and is in the imperative.
 
 | Why |
 |---|
-| four types say all a reader and the release automation need, and a type nobody chooses between cannot be chosen wrong. |
+| a header in free form cannot be read by the release automation, and each type beyond the four is one more a committer can choose wrong — Conventional Commits. |
 
 ### commit-type-matches-the-diff · SHOULD
 
@@ -27,11 +27,3 @@ A commit's body is empty, and its footer holds only trailers such as `Signed-off
 | Why |
 |---|
 | the reason is reviewed in the change request, and a body written beside it is a second account nobody reviews; a trailer is data a tool reads. |
-
-### commit-checked-by-the-hooks · MUST
-
-A **commit hook** runs as a commit is made. The commit hooks hold what can be checked of a commit before it is made: its branch's name, its message and its staged files.
-
-| Why |
-|---|
-| a failure stopped before the commit never reaches the history, and the person who caused it sees it while the change is in mind. |

@@ -6,7 +6,7 @@
 
 ### working-notes-stay-out-of-history · SHOULD
 
-Plans and working notes live in a **`local/`**{#working-notes} folder that version control ignores; a decision record is committed.
+Working notes stay out of history. Plans and working notes live in a **`local/`**{#working-notes} folder that version control ignores; a decision record is committed.
 
 | Why |
 |---|

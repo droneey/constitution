@@ -309,9 +309,6 @@ const pathOf = (input: PathInput): string => {
       return `${folder}${file.axis}${PATH_SEPARATOR}${file.name}${MARKDOWN_EXTENSION}`;
     case BlockFileKind.Seam:
       return `${folder}${file.axis}${PATH_SEPARATOR}${SEAM_FOLDER_NAME}${PATH_SEPARATOR}${file.other}${MARKDOWN_EXTENSION}`;
-    // Stryker disable next-line ConditionalExpression: no part reaches the default, which only the compiler reads
-    default:
-      return file satisfies never;
   }
 };
 

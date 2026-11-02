@@ -1,10 +1,13 @@
 ```pseudo title="Avoid"
 function placeOrder(order)
   if order.lines is empty then
-    throw EmptyOrder
+    throw new EmptyOrderError()
+
   let total = 0
+
   for each line in order.lines
     total = total + line.price
+
   saveOrder(order, total)
   mailer.send(order.email, "Thanks")
 ```
@@ -12,7 +15,9 @@ function placeOrder(order)
 ```pseudo title="Prefer"
 function placeOrder(order)
   ensureNotEmpty(order)
-  let total = totalOf(order)
+
+  let total = orderTotal(order)
+
   saveOrder(order, total)
   sendConfirmation(order)
 ```

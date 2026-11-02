@@ -1,20 +1,12 @@
 # Checks
 
-> Governs ShellCheck's optional checks, what it reads and its suppressions.
+> Governs what ShellCheck reads and its suppressions.
 
 ## General
 
-### optional-checks-enabled-by-name · MUST
-
-`.shellcheckrc` enables each optional check by its name, never with `enable=all`.
-
-| Why |
-|---|
-| `all` turns on checks no rule asks for, such as braces around every variable, and each check a new release adds, so an update fails the check with findings nobody chose. |
-
 ### embedded-command-reaches-shellcheck → rule-held-by-a-tool-where-one-can · MUST
 
-A shell command another file holds reaches ShellCheck through the linter of that file, with ShellCheck pinned beside it where that linter runs the one it finds, or through a spec that extracts it from the file; a command neither hands to ShellCheck is moved into a `.sh` file the other file runs.
+A shell command another file holds reaches ShellCheck. It reaches it through the linter of that file, with ShellCheck pinned beside it where that linter runs the one it finds, or through a spec that extracts it from the file; a command neither hands to ShellCheck is moved into a `.sh` file the other file runs.
 
 | Why |
 |---|
@@ -22,8 +14,8 @@ A shell command another file holds reaches ShellCheck through the linter of that
 
 ### shellcheck-directive-names-code-and-reason → suppression-silences-one-finding · MUST
 
-A suppression is `# shellcheck disable=SC<code> # <reason>` on the line above the command it silences; never before a file's first command, where it covers the whole file, and never in `.shellcheckrc`, where it covers every script.
+A suppression is `# shellcheck disable=SC<code> # <reason>` on the line above the command it silences. It is never written before a file's first command, where it covers the whole file, nor in `.shellcheckrc`, where it covers every script.
 
 | Why |
 |---|
-| ShellCheck never reports a directive that silences nothing, so only its place bounds what it hides. |
+| ShellCheck never reports a directive that silences nothing, so only its place bounds what it hides, and one placed wider than its command hides every later finding there. |

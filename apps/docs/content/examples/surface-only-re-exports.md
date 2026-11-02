@@ -1,16 +1,16 @@
 ```pseudo title="Avoid"
 # features/orders/index
-export * from "./domain/use-cases"
-export * from "./domain/entities"
+export * from "./application/use-cases"
+export * from "./domain/order/value-objects"
 
-function totalOf(order)
+function orderTotal(order)
   return sum(order.lines)
 ```
 
 ```pseudo title="Prefer"
 # features/orders/index
 export { placeOrder }
-  from "./domain/use-cases"
-export { Order }
-  from "./domain/entities"
+  from "./application/use-cases"
+export { OrderStatus }
+  from "./domain/order/value-objects"
 ```

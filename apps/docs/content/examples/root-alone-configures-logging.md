@@ -1,6 +1,6 @@
 ```pseudo title="Avoid"
-# orders/app/place-order
-function placeOrder(request, logger)
+# orders/presentation/bindings/commands/place-order
+function onPlace(request, logger)
   logger.addSink(
     fileSink("/var/log/orders.log"))
   logger.info("order placed")
@@ -11,8 +11,8 @@ let logger = createLogger(
 ```
 
 ```pseudo title="Prefer"
-# orders/app/place-order
-function placeOrder(request, logger)
+# orders/presentation/bindings/commands/place-order
+function onPlace(request, logger)
   logger.info("order placed")
 
 # root/logging

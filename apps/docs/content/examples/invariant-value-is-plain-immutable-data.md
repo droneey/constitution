@@ -7,6 +7,7 @@ class Money
 
 let price = new Money(1250, "EUR")
 let sameAmount = new Money(1250, "EUR")
+
 price == sameAmount  # false
 ```
 
@@ -16,7 +17,8 @@ type Money = readonly {
   currency: Currency
 }
 
-let price = money(1250, "EUR")
-let sameAmount = money(1250, "EUR")
+let price = Money.create(1250, "EUR")
+let sameAmount = Money.create(1250, "EUR")
+
 equals(price, sameAmount)  # true
 ```

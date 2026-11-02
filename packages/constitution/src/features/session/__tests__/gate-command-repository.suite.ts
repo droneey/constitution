@@ -3,23 +3,19 @@ import { describe, expect, it } from 'bun:test';
 import { Level } from '#/kernel/constants';
 import { AbsolutePath, RuleSlug } from '#/kernel/value-objects';
 
-import type { GateCommandRepository, PartInput } from '../domain/contracts/repositories/commands';
-import type { GatedRule, RuleDebt, SessionAgent } from '../domain/entities';
-import { SessionAgent as Agents, DebtKind, GateEntryKind } from '../domain/entities';
-import {
-  AgentId,
-  FileSignature,
-  RefusalKey,
-  RuleHash,
-  RuleSetHash,
-  SessionId,
-  ToolUseId,
-} from '../domain/value-objects';
+import type { GateRepository, PartInput } from '../application/contracts/repositories/commands';
+import type { GatedRule, RuleDebt } from '../domain/gate/entities';
+import { DebtKind, GateEntryKind } from '../domain/gate/entities';
+import { RefusalKey, RuleHash, RuleSetHash } from '../domain/gate/value-objects';
+import type { SessionAgent } from '../domain/session/entities';
+import { SessionAgent as Agents } from '../domain/session/entities';
+import { AgentId, SessionId, ToolUseId } from '../domain/session/value-objects';
+import { FileSignature } from '../domain/tree-state/value-objects';
 
-interface GateCommandRepositorySuiteInput {
+interface GateRepositorySuiteInput {
   readonly name: string;
   readonly projectOf: () => AbsolutePath;
-  readonly repositoryOf: () => GateCommandRepository;
+  readonly repositoryOf: () => GateRepository;
 }
 
 const session = SessionId.create('gate-session');
@@ -72,7 +68,7 @@ const tree = {
   repositoryFolderPath: AbsolutePath.create('/work'),
 };
 
-const runGateCommandRepositorySuite = (input: GateCommandRepositorySuiteInput): void => {
+const runGateRepositorySuite = (input: GateRepositorySuiteInput): void => {
   describe(`${input.name}: the gate repository contract`, () => {
     it('should read back the rules an agent read', () => {
       // Arrange
@@ -164,7 +160,7 @@ const runGateCommandRepositorySuite = (input: GateCommandRepositorySuiteInput): 
       asked: SessionAgent;
       condition: string;
       expected: readonly AbsolutePath[];
-      reset: (gates: GateCommandRepository) => void;
+      reset: (gates: GateRepository) => void;
     }>([
       {
         asked: Agents.main,
@@ -222,7 +218,7 @@ const runGateCommandRepositorySuite = (input: GateCommandRepositorySuiteInput): 
     it.each<{
       condition: string;
       expected: readonly RuleDebt[];
-      write: (gates: GateCommandRepository) => void;
+      write: (gates: GateRepository) => void;
     }>([
       {
         condition: 'it owes them, once each and in the order owed',
@@ -610,4 +606,4 @@ const runGateCommandRepositorySuite = (input: GateCommandRepositorySuiteInput): 
   });
 };
 
-export { runGateCommandRepositorySuite };
+export { runGateRepositorySuite };

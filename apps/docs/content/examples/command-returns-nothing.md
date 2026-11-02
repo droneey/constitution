@@ -1,22 +1,30 @@
 ```pseudo title="Avoid"
-# use-cases/commands/place-order
-function placeOrder(cart)
-  if cart.isEmpty then
-    return failure(EmptyCart)
-  let orderId = generateOrderId()
-  call orders.save(orderId, cart)
-  return success(orderId)
+# orders/application/use-cases/commands/place-order
+function createPlaceOrder({ cartRepository, orderRepository })
+  return function(input, context)
+    let cart = cartRepository.find(input.cartId, context)
+    let orderId = generateOrderId()
+
+    call orderRepository.save(place(orderId, cart), context)
+
+    return orderId
 ```
 
 ```pseudo title="Prefer"
-# use-cases/commands/place-order
-function placeOrder(orderId, cart)
-  if cart.isEmpty then
-    return failure(EmptyCart)
-  call orders.save(orderId, cart)
-  return success()
+# orders/application/use-cases/commands/place-order
+function createPlaceOrder({ cartRepository, orderRepository })
+  return function(input, context)
+    let cart = cartRepository.find(input.cartId, context)
 
-# the caller; a retry reuses orderId
-let orderId = generateOrderId()
-call placeOrder(orderId, cart)
+    if cart is nothing then
+      throw new CartNotFoundError(input.cartId)
+
+    call orderRepository.save(place(input.orderId, cart), context)
+
+# orders/presentation/bindings/commands/place-order
+# Why: the caller makes the order's id, so a retry reuses it
+let input = parsePlaceOrderInput(
+  { orderId: orderIds.next(), cartId: request.body.cartId })
+
+call placeOrder(input, context)
 ```

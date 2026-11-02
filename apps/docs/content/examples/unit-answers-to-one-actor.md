@@ -2,19 +2,19 @@
 # employees/employee.ts
 class Employee
   # changed by finance
-  function calculatePay()
+  function monthlyPay()
   # changed by operations
-  function reportHours()
+  function hoursReport()
   # changed by the DBA
   function save()
 ```
 
 ```pseudo title="Prefer"
 # payroll/pay-calculator.ts
-function calculatePay(employee)
+function monthlyPay(employee)
 
 # timesheets/hours-report.ts
-function reportHours(employee)
+function hoursReport(employee)
 
 # employees/employee-store.ts
 function saveEmployee(employee)

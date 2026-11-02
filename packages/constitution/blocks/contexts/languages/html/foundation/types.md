@@ -1,6 +1,6 @@
 # Types
 
-> Governs the encoding a document declares and how its boolean attributes are written.
+> Governs a value in a document and its type: the encoding the document declares and how a boolean attribute is written.
 
 ## Encoding
 
@@ -16,7 +16,7 @@ A document declares `<meta charset="utf-8">` within its first 1024 bytes.
 
 ### boolean-attribute-written-by-presence · MUST
 
-A boolean attribute is present where it is true and absent where it is false — never `disabled="false"`, which the browser reads as true.
+A boolean attribute is present where it is true and absent where it is false. It is never present with a value meant as false, such as `disabled="false"`, which the browser reads as true.
 
 | Why |
 |---|

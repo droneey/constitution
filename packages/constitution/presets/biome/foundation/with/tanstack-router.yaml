@@ -16,7 +16,7 @@ tanstack-router:
         overrides:
           - includes:
               - '**/${role.source}/${role.composition-root}/${role.file-routes}/**'
-              - '**/${role.source}/${role.composition-root}/routeTree.gen.ts'
+              - '**/${role.source}/${role.composition-root}/routeTree.${role.generated-file}.ts'
             linter:
               rules:
                 style:

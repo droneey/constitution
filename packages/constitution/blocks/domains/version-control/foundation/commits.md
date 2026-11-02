@@ -4,14 +4,6 @@
 
 ## What it holds
 
-### commit-is-one-logical-change → change-limited-to-its-task · SHOULD
-
-A commit holds one logical change, which can be reviewed, reverted and found in the history on its own.
-
-| Why |
-|---|
-| a commit that mixes two changes cannot revert one without the other, and the history names neither. |
-
 ### commit-holds-only-its-task-files → change-limited-to-its-task · MUST
 
 A commit holds only the files of its task, never whatever else lies in the working copy.
@@ -24,15 +16,15 @@ A commit holds only the files of its task, never whatever else lies in the worki
 
 ### commit-subject-says-what-changed · SHOULD
 
-A commit's subject says what the change does, never which files it touched and never a placeholder such as “update”, “wip” or “fix stuff”.
+A commit's subject says what the change does. It never says which files the change touched, and is never a placeholder such as “update”, “wip” or “fix stuff”.
 
 | Why |
 |---|
-| the diff already lists the files, so the subject is the only place in the history that says what the change means. |
+| a subject that names files or says “update” repeats what the diff lists, so the history holds no line that says what the change means, and whoever searches or bisects it must read every diff. |
 
 ### reason-for-change-recorded · SHOULD
 
-The reason for a change is written down beside the change, where the project's workflow puts it — a change request, an issue — never only in a conversation.
+The reason for a change is written down beside the change. It goes where the project's workflow puts it — a change request, an issue — never only in a conversation.
 
 | Why |
 |---|
@@ -40,7 +32,7 @@ The reason for a change is written down beside the change, where the project's w
 
 ## Main line
 
-### main-line-commit-passes-the-check → change-handed-back-with-a-passing-check · MUST
+### main-line-commit-passes-the-check · MUST
 
 Every commit of the main line passes the repository's check.
 

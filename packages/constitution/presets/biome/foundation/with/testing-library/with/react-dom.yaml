@@ -5,5 +5,5 @@ testing-library:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/spec-never-selects-from-the-document.${role.grit-rule}]:
           includes:
             - '**/${role.colocated-specs}/**'
-            - '**/*.test.ts'
-            - '**/*.test.tsx'
+            - '**/*.${role.spec-file}.ts'
+            - '**/*.${role.spec-file}.tsx'

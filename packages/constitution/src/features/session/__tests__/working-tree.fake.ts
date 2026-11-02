@@ -1,15 +1,11 @@
 import { sessionsFolderInProject } from '#/kernel/constants';
 import { AbsolutePath } from '#/kernel/value-objects';
 
-import type {
-  IgnoredInput,
-  TreeSnapshot,
-  TreeState,
-  UnreadTree,
-  WorkingTree,
-} from '../domain/contracts';
-import { IgnoreAnswer, TreeStateStatus } from '../domain/contracts';
-import { FileSignature, TreeFingerprint } from '../domain/value-objects';
+import type { IgnoredInput, WorkingTree } from '../application/contracts';
+import { IgnoreAnswer } from '../application/contracts';
+import type { TreeSnapshot, TreeState, UnreadTree } from '../domain/tree-state/entities';
+import { TreeStateStatus } from '../domain/tree-state/entities';
+import { FileSignature, TreeFingerprint } from '../domain/tree-state/value-objects';
 
 interface FakeWorkingTree {
   readonly changed?: readonly string[];

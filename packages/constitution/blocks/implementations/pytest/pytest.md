@@ -16,4 +16,4 @@ governs: ["**/tests/**", "pyproject.toml"]
 
 Core's exclusions from coverage are the entry file, `**/main.py` and `**/__main__.py`, and generated files, `**/*_gen.py` and `**/*_gen/**`.
 
-On the architecture axis, core's tree adds to core's exclusions from coverage the wiring file, `**/root/wiring.py`; their `**/main.py` already leaves out the entry file of each artefact.
+On the architecture axis, core's tree adds to core's exclusions from coverage the composition root, `**/root/**`; their `**/main.py` already leaves out the entry file of each artefact.

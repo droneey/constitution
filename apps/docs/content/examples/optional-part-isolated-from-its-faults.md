@@ -1,17 +1,18 @@
 ```pseudo title="Avoid"
-function checkOut(cart)
-  let order = placeOrder(cart)
-  call trackPurchase(order)
-  return order
+# composition/checkout/presentation/bindings/commands/check-out
+function onCheckOut(input, { checkOut, analytics }, context)
+  call checkOut(input, context)
+  call analytics.send("purchase_completed", { order_id: input.orderId })
 # an analytics fault fails checkout
 ```
 
 ```pseudo title="Prefer"
-function checkOut(cart)
-  let order = placeOrder(cart)
+# composition/checkout/presentation/bindings/commands/check-out
+function onCheckOut(input, { checkOut, analytics }, context)
+  call checkOut(input, context)
+
   try
-    call trackPurchase(order)
+    call analytics.send("purchase_completed", { order_id: input.orderId })
   catch error
     reportFault(error)
-  return order
 ```

@@ -6,7 +6,7 @@
 
 ### line-height-set-as-a-number · MUST
 
-A line height, in `line-height` or in the `font` shorthand, is a unitless number, `1.5`, or a custom property that holds one, never a length or a percentage.
+A line height is a unitless number. In `line-height` or in the `font` shorthand it is a number such as `1.5`, or a custom property that holds one, never a length or a percentage.
 
 | Why |
 |---|

@@ -6,7 +6,7 @@
 
 ### ink-layout-through-box-and-text · SHOULD
 
-Every string an Ink tree renders sits in a `<Text>`, and its space, alignment, columns and borders come from the props of `<Box>`; no layout is written as spaces or line breaks inside a string.
+An Ink tree lays out its text through `<Box>` and `<Text>`, never through spaces in a string. Every string it renders sits in a `<Text>`, and its space, alignment, columns and borders come from the props of `<Box>`; no layout is written as spaces or line breaks inside a string.
 
 | Why |
 |---|
@@ -16,19 +16,19 @@ Every string an Ink tree renders sits in a `<Text>`, and its space, alignment, c
 
 ### ink-renders-only-on-a-terminal → styling-only-on-a-terminal · MUST
 
-Ink renders only where the stream it writes to is a terminal, `CI` is unset and the run asks for no plain output; everywhere else — a pipe, a file, CI, a hook — the program prints the same content as plain text, without Ink.
+Ink renders only on a terminal. It renders only where the stream it writes to is a terminal, `CI` is unset and the run asks for no plain output; everywhere else — a pipe, a file, CI, a hook — the program prints the same content as plain text, without Ink.
 
 | Why |
 |---|
-| Ink's frames carry cursor movement and colour, and even its non-interactive mode writes a last frame laid out for a terminal width the reader of a log never has. |
+| Ink's frames carry cursor movement and colour, which fill a pipe or a log with escape codes, and even its non-interactive mode writes a last frame laid out for a terminal width the reader of a log never has. |
 
 ### ink-progress-rendered-to-standard-error → standard-output-holds-only-data · MUST
 
-A tree that shows progress, a prompt or a status is rendered with `render`'s `stdout` option set to standard error; only a tree that is the command's result renders to standard output.
+Ink's progress renders to standard error. A tree that shows progress, a prompt or a status is rendered with `render`'s `stdout` option set to standard error; only a tree that is the command's result renders to standard output.
 
 | Why |
 |---|
-| Ink writes to standard output unless told otherwise, so a spinner left at the default lands in the pipe that carries the result. |
+| Ink writes to standard output unless told otherwise, so a spinner left at the default lands in the pipe that carries the result and corrupts what the next program reads. |
 
 ### ink-finished-lines-rendered-once-through-static → progressive-report-printed-as-events-arrive · SHOULD
 
@@ -42,7 +42,7 @@ A progressive report renders its finished lines through `<Static>`, and only the
 
 ### ink-loaded-only-on-the-terminal-path · MUST
 
-Ink, and every module that imports it, is reached only through a dynamic `import()` on the path that renders to a terminal; no module the plain path loads imports it.
+Ink is loaded only on the path that renders to a terminal. Ink, and every module that imports it, is reached only through a dynamic `import()` on that path; no module the plain path loads imports it.
 
 | Why |
 |---|

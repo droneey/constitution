@@ -1,5 +1,5 @@
-import type { StateFolderWarning } from '#/features/session/adapters/session-store';
-import { StateFolderProblem } from '#/features/session/adapters/session-store';
+import type { StateFolderWarning } from '#/features/session/infrastructure/session-store';
+import { StateFolderProblem } from '#/features/session/infrastructure/session-store';
 
 import { hookPrefix } from './hook.constants';
 
@@ -11,9 +11,6 @@ const problemText = (warning: StateFolderWarning): string => {
       return `${warning.folder} is a link, no folder, or another user's — remove it`;
     case StateFolderProblem.Unwritable:
       return `cannot make ${warning.folder} — make the folder above it writable`;
-    // Stryker disable next-line ConditionalExpression: no problem reaches the default, which only the compiler reads
-    default:
-      return warning satisfies never;
   }
 };
 

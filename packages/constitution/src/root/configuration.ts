@@ -1,5 +1,5 @@
 import type { Clock } from '#/features/project';
-import { createFixedClock, createSystemClock } from '#/features/project/adapters/clock';
+import { createFixedClock, createSystemClock } from '#/features/project/infrastructure/clock';
 import { dayOf } from '#/kernel/utils';
 
 import { ConfigurationError, ConfigurationFailure } from './configuration.error';

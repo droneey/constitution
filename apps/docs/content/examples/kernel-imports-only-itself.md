@@ -1,15 +1,17 @@
 ```pseudo title="Avoid"
-# kernel/types/money.types
-import Decimal from "decimal.js"
+# kernel/value-objects/money.value-object
+import Currency from "features/billing"
 
 type Money = {
-  amount: Decimal,
+  cents: Integer,
   currency: Currency,
 }
 ```
 
 ```pseudo title="Prefer"
-# kernel/types/money.types
+# kernel/value-objects/money.value-object
+import Currency from "./currency.value-object"
+
 type Money = {
   cents: Integer,
   currency: Currency,

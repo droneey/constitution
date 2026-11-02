@@ -6,7 +6,7 @@ import { createFileRoute, notFound, useLocation } from '@tanstack/react-router';
 import type { DocsPageEntry } from '#/composition/docs';
 import { DocsErrorScreen, DocsPageScreen } from '#/composition/docs';
 import { Page, PageSlugs } from '#/features/content';
-import type { PageBody } from '#/features/content/adapters/fumadocs-browser';
+import type { PageBody } from '#/features/content/infrastructure/fumadocs-browser';
 import { useFumadocsLoader } from '#/libs/ui';
 import { APP_NAME } from '#/shared/constants';
 

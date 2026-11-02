@@ -11,10 +11,7 @@ type Order = {
 type OrderState =
   Draft | Paid | Shipped | Cancelled
 
-function nextState(state, event)
-  when state is Draft and event is Pay
-    return Paid
-  when state is Paid and event is Ship
-    return Shipped
-  throw InvalidTransition
+function pay(order: Draft): Paid
+function ship(order: Paid): Shipped
+function cancel(order: Draft | Paid): Cancelled
 ```

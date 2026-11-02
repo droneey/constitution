@@ -1,16 +1,16 @@
 # Handlers
 
-> Governs a handler: its dependencies, its parameters, its blocking work, and the transport a spec drives it through.
+> Governs a handler: its dependencies, its parameters, and the transport a spec drives it through.
 
 ## General
 
 ### dependencies-declared-in-annotated · SHOULD
 
-A dependency and the source of a parameter — `Depends`, `Query`, `Path`, `Header`, `Body` — are declared in `Annotated[...]`, never as a default value.
+A dependency and the source of a parameter are declared in `Annotated[...]`, never as a default value. Their markers, such as `Depends`, `Query`, `Path`, `Header` and `Body`, sit inside the annotation.
 
 | Why |
 |---|
-| the annotation holds the type and its source together, the default is a real default again, and the function can be called outside FastAPI. |
+| a source declared as a default value takes the place of the parameter's real default, and the function called outside FastAPI receives the `Depends` or `Query` object instead of a value. |
 
 ### path-parameters-read-by-the-handler · SHOULD
 
@@ -20,18 +20,10 @@ Every parameter of a route's path is a parameter of its handler.
 |---|
 | a path parameter the handler does not take is parsed by nobody, and the route matches values the program never checks. |
 
-### async-handlers-never-block → async-functions-never-block · SHOULD
-
-A handler whose work blocks is a `def` handler, which FastAPI runs in its threadpool, or hands that work to Starlette's `run_in_threadpool`.
-
-| Why |
-|---|
-| FastAPI runs an `async def` handler on the event loop that serves every request, and a `def` handler in a thread. |
-
 ### specs-through-the-asgi-transport → server-spec-runs-in-process · MUST
 
-A spec sends its requests through `ASGITransport(app=app)` to an app it builds with fakes, and enters the app's `lifespan` itself when the case needs it.
+A spec sends its requests through `ASGITransport(app=app)`. The app is one it builds with fakes, and the spec enters the app's `lifespan` itself when the case needs it.
 
 | Why |
 |---|
-| the transport hands each request to the app as a server would, without a socket, and the `lifespan` runs only when a case enters it. |
+| a spec over a socket needs a running server outside the case, while the transport hands each request to the app as a server would; the `lifespan` runs only when a case enters it, so a case that needs what it opens fails on a resource never opened unless it enters it. |

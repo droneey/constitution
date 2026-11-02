@@ -6,7 +6,7 @@
 
 ### macros-expanded-by-the-lingui-plugin → macros-expanded-by-the-lingui-transform · MUST
 
-The build runs that transform through Lingui's own plugin, `lingui({ macroTransform: true })`, never through another plugin's Babel options.
+The build expands Lingui's macros through Lingui's own plugin. It runs `lingui({ macroTransform: true })`, never another plugin's Babel options.
 
 | Why |
 |---|
