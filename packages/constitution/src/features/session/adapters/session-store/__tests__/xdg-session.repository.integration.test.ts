@@ -1147,19 +1147,6 @@ describe("createXdgSessionRepository: the gate's files", () => {
     },
     {
       add: (sessions: XdgSessions): void => {
-        sessions.addHotReminded({
-          agent: keptAgent,
-          paths: [
-            AbsolutePath.create('/work/src/a.ts'),
-          ],
-          session: keptSession,
-        });
-      },
-      list: 'the files reminded of their hot rules',
-      name: 'hot.agent-7',
-    },
-    {
-      add: (sessions: XdgSessions): void => {
         sessions.addOwnChanges({
           agent: keptAgent,
           paths: [
@@ -1246,20 +1233,6 @@ describe("createXdgSessionRepository: the gate's files", () => {
         }),
     },
     {
-      expected: new Set(),
-      lines: [
-        '"work/src/a.ts"',
-        '/work/src/a.ts',
-      ],
-      list: 'the files reminded of their hot rules',
-      name: 'hot.agent-7',
-      read: (sessions) =>
-        sessions.hotReminded({
-          agent: keptAgent,
-          session: keptSession,
-        }),
-    },
-    {
       expected: [],
       lines: [
         '"work/src/a.ts"',
@@ -1274,17 +1247,17 @@ describe("createXdgSessionRepository: the gate's files", () => {
         }),
     },
     {
-      expected: new Set([
+      expected: [
         AbsolutePath.create('/work/src/a.ts'),
-      ]),
+      ],
       lines: [
         '"/work/src/a.ts"',
-        '{"mark":"cleared"}',
+        '{"mark":"reset"}',
       ],
-      list: 'the files reminded of their hot rules, past a mark of another file',
-      name: 'hot.agent-7',
+      list: 'the own changes, past a mark of another file',
+      name: 'owned.agent-7',
       read: (sessions) =>
-        sessions.hotReminded({
+        sessions.ownChanges({
           agent: keptAgent,
           session: keptSession,
         }),

@@ -161,65 +161,6 @@ const runGateCommandRepositorySuite = (input: GateCommandRepositorySuiteInput): 
     );
 
     it.each<{
-      asked: SessionAgent;
-      condition: string;
-      expected: readonly AbsolutePath[];
-      reset: (gates: GateCommandRepository) => void;
-    }>([
-      {
-        asked: Agents.main,
-        condition: 'it was shown them',
-        expected: [
-          read.path,
-        ],
-        reset: () => undefined,
-      },
-      {
-        asked: Agents.main,
-        condition: 'its context started afresh since',
-        expected: [],
-        reset: (gates) => {
-          gates.resetReading({
-            agent: Agents.main,
-            session,
-          });
-        },
-      },
-      {
-        asked: agent,
-        condition: 'another agent was shown them',
-        expected: [],
-        reset: () => undefined,
-      },
-    ])(
-      'should read back the files whose hot rules an agent was shown when $condition',
-      ({ asked, expected, reset }) => {
-        // Arrange
-        const gates = input.repositoryOf();
-
-        gates.addHotReminded({
-          agent: Agents.main,
-          paths: [
-            read.path,
-            read.path,
-          ],
-          session,
-        });
-
-        reset(gates);
-
-        // Act
-        const shown = gates.hotReminded({
-          agent: asked,
-          session,
-        });
-
-        // Assert
-        expect(shown).toStrictEqual(new Set(expected));
-      },
-    );
-
-    it.each<{
       condition: string;
       expected: readonly RuleDebt[];
       write: (gates: GateCommandRepository) => void;

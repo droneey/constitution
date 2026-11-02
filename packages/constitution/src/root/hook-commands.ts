@@ -3,7 +3,6 @@ import type { Command } from 'commander';
 
 import type {
   GateVerdict,
-  HotReminder,
   Reminder,
   SessionDigest,
   SessionId,
@@ -34,7 +33,6 @@ import {
   recordOwnChanges,
   recordRead,
   recordReminders,
-  remindHotRules,
   remindOfFile,
   resetReading,
   settleShell,
@@ -94,11 +92,6 @@ const gateCommandsOf = ({ context, ports }: Registration): readonly Command[] =>
           workingTree: ports.workingTree,
         });
       },
-      remindHotRules: (asked): readonly HotReminder[] =>
-        remindHotRules({
-          ...asked,
-          ...gatePorts,
-        }),
       remindOfFile: (asked): Reminder | undefined =>
         remindOfFile({
           ...asked,

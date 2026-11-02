@@ -22,7 +22,6 @@ export type {
 export type { SessionQueryRepository } from './domain/contracts/repositories/queries';
 export type {
   GateVerdict,
-  HotReminder,
   Reminder,
   SessionDigest,
   SessionStart,
@@ -42,7 +41,6 @@ export { recordJudgement } from './domain/use-cases/commands/record-judgement';
 export { recordOwnChanges } from './domain/use-cases/commands/record-own-changes';
 export { recordRead } from './domain/use-cases/commands/record-read';
 export { recordReminders } from './domain/use-cases/commands/record-reminders';
-export { remindHotRules } from './domain/use-cases/commands/remind-hot-rules';
 export { resetReading } from './domain/use-cases/commands/reset-reading';
 export { settleShell } from './domain/use-cases/commands/settle-shell';
 export { sweepStaleSessions } from './domain/use-cases/commands/sweep-stale-sessions';

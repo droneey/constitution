@@ -28,7 +28,7 @@ src/orders/order.ts:42 — fact-has-one-source — the total is stored beside th
 | Before the agent edits a file or runs a command | [the rule gate](#the-rule-gate) refuses the action until the agent has read the rules that govern it; before an MCP call, a hook keeps the tree to find what the call changed |
 | The agent reads or edits a file git does not ignore | names the blocks that govern it, their files and their `MUST` rules, once per block |
 | The agent reads a file | records the rules it read whole, or the [debt](#debts) of the rules that govern the file |
-| The agent edits a file, runs a command or calls an MCP tool, the command or call failing included | records the files it changed, and at its first change of a file gives [the hot list](#the-hot-list) |
+| The agent edits a file, runs a command or calls an MCP tool, the command or call failing included | records the files it changed |
 | The agent runs a command | records the tree when the project's check passes |
 | You send a prompt | records the tree the turn starts from |
 | The agent or a sub-agent stops | holds the stop while it owes rules, then [the hand-back](#the-hand-back) until its own changes are checked and, for the session's agent, reviewed |
@@ -66,11 +66,9 @@ A path is followed through its links, so a file reached through a link is govern
 
 Reading a file of the project that git does not ignore leaves a debt: the rules that govern it are owed before the agent's next action and before its turn ends, and once they are read the debt is settled. A command or an MCP call is bracketed by the tree before and after it, and each file it changed becomes a debt too, whatever the command was and whether or not it failed; the command itself is never read. A debt on a file of a project whose rules cannot be read holds only the turn, never an action on another project's files.
 
-### The hot list
+### The notes on a file
 
-At an agent's first change of a file, the hook names the rules of a short list of those most often broken that govern the file, each by its slug and the first sentence of its statement. The files that share one set of these rules are named once, before it, within 1,000 bytes and a count of the rest; the sets are given within 4,500 bytes, and a note counts the files whose sets did not fit.
-
-The notes that name the blocks governing a file the agent reads or edits share the answer with the hot list and are given within 3,000 bytes; a block left out is named at the file's next read or edit.
+The notes that name the blocks governing a file the agent reads or edits are given within 3,000 bytes; a block left out is named at the file's next read or edit.
 
 ### The hand-back
 
