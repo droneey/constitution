@@ -18,6 +18,7 @@ function cancel(order)
 
   return { ...order, status: Cancelled }
 
+# orders/domain/order/entities/order.aggregate
 function restore(stored)
   if stored.lines is empty then
     throw new CorruptOrderError(stored.id)

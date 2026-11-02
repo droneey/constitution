@@ -8,7 +8,7 @@ A module's file ends in **`.module.ts`**{#nest-module} and a controller's in **`
 
 ### modules-controllers-and-the-global-guard-in-the-presentation → delivery-unit-beside-what-it-serves · MUST
 
-A Nest module lives in the presentation of what it serves, and a controller or the global guard is a binding unit. The root's module, `root/root.module.ts`, is one of the root's own files and imports the modules of features and of composition; a feature's module is `<feature>.module.ts` and a composition module's `<name>.module.ts`, each in its presentation's `module/`. A controller is `<name>.controller.ts`, and the root's module registers the global guard as `APP_GUARD`.
+A Nest module lives in the presentation of what it serves, and a controller is a binding unit and the global guard an interface-wide unit. The root's module, `root/root.module.ts`, is one of the root's own files and imports the modules of features and of composition; a feature's module is `<feature>.module.ts` and a composition module's `<name>.module.ts`, each in its presentation's `module/`. A controller is `<name>.controller.ts`, and the root's module registers the global guard as `APP_GUARD`.
 
 | Why |
 |---|

@@ -252,6 +252,10 @@ describe('blockFormCheck on chapters and seams', () => {
       text: `# Plurals\n\n> Governs plurals.\n\n## Forms\n\n${formsRule}\n## Ranges\n\n${pluralsRule}`,
     },
     {
+      condition: 'a vocabulary that holds no rule comes before General',
+      text: `# Plurals\n\n> Governs plurals.\n\n## The vocabulary\n\nA plural form is a form of a word.\n\n## General\n\n${pluralsRule}`,
+    },
+    {
       condition: "a code fence shows a heading named like the file's title",
       text: `# Plurals\n\n> Governs plurals.\n\n## General\n\n${pluralsRule}\n\`\`\`md\n## Plurals\n\`\`\`\n`,
     },

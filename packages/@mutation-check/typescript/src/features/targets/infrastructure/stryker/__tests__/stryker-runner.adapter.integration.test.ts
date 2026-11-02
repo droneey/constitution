@@ -104,8 +104,6 @@ const toolOf = (toolEnd: ToolEnd): Tool => {
       return {
         toolScript: '#!/bin/sh\nkill -KILL $$\n',
       };
-    default:
-      return toolEnd.failure satisfies never;
   }
 };
 

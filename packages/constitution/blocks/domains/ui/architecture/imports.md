@@ -22,9 +22,9 @@ Within the interface, only screens and self-sufficient widgets consume binding u
 
 ## Widgets and components
 
-### feature-widgets-and-components-import-nothing-of-its-workings → import-points-inward · MUST
+### feature-widgets-and-components-import-nothing-of-its-workings → presentation-reaches-only-what-it-serves · MUST
 
-A feature's widgets and components import nothing of how the feature works. They import only `libs/ui`; `shared/ui`; the feature's own binding units; its aggregates with their inner entities and its value objects, enumerations among them, each with its type, predicates and derived values; the read models its queries return, as types from the surface of its use cases; its errors' codes; and the kernel, save its ports. They never import an adapter, a port — the kernel's included —, a use case or an aggregate's transitions, its rebuild from storage among them.
+A feature's widgets and components import nothing of how the feature works. Of their feature they import only what its surface offers, save its ports and its use cases, whose read models they take as types alone; beyond it they import only `libs/ui`, `shared/ui` and the kernel, save its ports.
 
 | Why |
 |---|

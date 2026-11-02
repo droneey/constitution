@@ -5,7 +5,7 @@ function createPlaceOrder({ cartRepository, orderRepository })
     let cart = cartRepository.find(input.cartId, context)
     let orderId = generateOrderId()
 
-    call orderRepository.save(create(orderId, cart), context)
+    call orderRepository.save(place(orderId, cart), context)
 
     return orderId
 ```
@@ -19,7 +19,7 @@ function createPlaceOrder({ cartRepository, orderRepository })
     if cart is nothing then
       throw new CartNotFoundError(input.cartId)
 
-    call orderRepository.save(create(input.orderId, cart), context)
+    call orderRepository.save(place(input.orderId, cart), context)
 
 # orders/presentation/bindings/commands/place-order
 # Why: the caller makes the order's id, so a retry reuses it

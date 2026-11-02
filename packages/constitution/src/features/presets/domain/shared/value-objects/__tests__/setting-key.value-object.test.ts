@@ -24,8 +24,6 @@ const isSpelledBack = (text: string): boolean => {
       return `${key.list}@${key.slot}` === text;
     case KeyKind.Plain:
       return key.text === text;
-    default:
-      return key satisfies never;
   }
 };
 

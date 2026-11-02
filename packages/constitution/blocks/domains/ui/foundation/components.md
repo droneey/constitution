@@ -74,7 +74,7 @@ Every boolean prop of the program's own components is prefixed by its kind. The 
 
 ### event-props-named-on-event · MUST
 
-A callback prop is named `on<Event>` for the event it answers. It is never named by an action verb, a `handle` name or a bare past tense such as `submitted`.
+A callback prop is named **`on<Event>`**{#event-callback} for the event it answers. That form is a default a framework's block respells under its id, and the prop is never named by an action verb, a `handle` name or a bare past tense such as `submitted`.
 
 | Why |
 |---|

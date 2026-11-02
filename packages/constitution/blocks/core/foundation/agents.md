@@ -96,7 +96,7 @@ An agent runs without its permission checks only on an isolated machine. That ma
 
 ### secret-kept-out-of-the-agents-context · MUST
 
-An agent's context never holds a secret. The files and commands that would print one are denied to it, and a secret that reached it counts as leaked.
+An agent's context never holds a secret. The files and shell commands that would print one are denied to it, and a secret that reached it counts as leaked.
 
 | Why |
 |---|

@@ -140,9 +140,6 @@ const warningOf = (member: UnreadMember): ProjectWarning => {
         },
         kind: WarningKind.MemberConfigUnreadable,
       };
-    // Stryker disable next-line ConditionalExpression: no problem reaches the default, which only the compiler reads
-    default:
-      return member satisfies never;
   }
 };
 

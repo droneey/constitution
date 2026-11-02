@@ -32,12 +32,13 @@ const feature: Readonly<Record<string, string>> = {
 const concept: Readonly<Record<string, string>> = {
   [`${ORDERS}/domain/order/__init__.py`]: '',
   [`${ORDERS}/domain/order/entities/__init__.py`]:
-    'from unit.features.orders.domain.order.entities.order_aggregate import Order as Order\n',
-  [`${ORDERS}/domain/order/entities/order_aggregate.py`]: 'class Order:\n  pass\n',
+    'from unit.features.orders.domain.order.entities.order_aggregate import Order as Order\nfrom unit.features.orders.domain.order.entities.order_aggregate import restore_order as restore_order\n',
+  [`${ORDERS}/domain/order/entities/order_aggregate.py`]:
+    'class Order:\n  pass\n\n\ndef restore_order() -> Order:\n  return Order()\n',
   [`${ORDERS}/domain/order/transitions/__init__.py`]:
-    'from unit.features.orders.domain.order.transitions.order_transitions import restore_order as restore_order\nfrom unit.features.orders.domain.order.transitions.order_transitions import ship_order as ship_order\n',
+    'from unit.features.orders.domain.order.transitions.order_transitions import ship_order as ship_order\n',
   [`${ORDERS}/domain/order/transitions/order_transitions.py`]:
-    'from unit.features.orders.domain.order.entities import Order\n\n\ndef restore_order() -> Order:\n  return Order()\n\n\ndef ship_order(order: Order) -> Order:\n  return order\n',
+    'from unit.features.orders.domain.order.entities import Order\n\n\ndef ship_order(order: Order) -> Order:\n  return order\n',
 };
 
 const lintImports = async (files: Readonly<Record<string, string>> = {}): Promise<Lint> => {

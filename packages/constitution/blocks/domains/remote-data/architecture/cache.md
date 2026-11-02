@@ -14,11 +14,19 @@ Remote data lives only in its cache. Data another system owns, which the program
 
 ### remote-data-has-no-second-domain-model · MUST
 
-Remote data has no second domain model in the program. The program keeps no aggregate, domain event or specification guarding the consistency of data another system owns; what it decides itself — a draft, an optimistic item — it models in its domain.
+Remote data has no second domain model in the program. The program keeps no aggregate or domain event guarding the consistency of data another system owns; what it decides itself — a draft, an optimistic item — it models in its domain.
 
 | Why |
 |---|
 | a second domain model of someone else's data duplicates their rules, and disagrees with them the first time they change. |
+
+### outside-identifier-cached-under-the-callers → command-returns-nothing · MUST
+
+Where the program stores no aggregate for what a command starts, it keeps what an outside system minted for that command in its remote-data cache, under the identifier the command's caller made. That is the outside identifier and the follow-up the port to that system reported, such as the address of a payment page, and the command's query reads them there by the caller's identifier.
+
+| Why |
+|---|
+| a command that returned what the outside system minted would be half a query, and one that kept it nowhere loses it with the answer to its first attempt, so the caller can neither retry safely nor find what it started — command–query separation. |
 
 ## Library
 

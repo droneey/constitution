@@ -18,7 +18,7 @@ A heading is at most one level deeper than the heading before it. A `###` follow
 
 | Why |
 |---|
-| the levels are the document's outline, which a reader, a screen reader and a table of contents follow, and a skipped level reads as a missing section. |
+| the levels are the document's outline, which a reader, a screen reader and a table of contents follow, and a skipped level reads as a missing section — WCAG 2.2, Info and Relationships. |
 
 ### heading-unique-among-its-siblings · SHOULD
 

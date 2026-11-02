@@ -6,7 +6,7 @@
 
 ### every-failure-mapped-by-one-exception-filter → one-error-handler-registered-by-the-root · MUST
 
-One exception filter maps every failure. The handler is a filter whose `@Catch()` names no class, a binding unit that the root's module registers globally as `APP_FILTER`; no controller or method binds a filter of its own with `@UseFilters`.
+One exception filter maps every failure. The handler is a filter whose `@Catch()` names no class, an interface-wide unit that the root's module registers globally as `APP_FILTER`; no controller or method binds a filter of its own with `@UseFilters`.
 
 | Why |
 |---|

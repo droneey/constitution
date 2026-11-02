@@ -20,7 +20,7 @@ Code that serves one purpose in several languages is a group folder with a packa
 |---|
 | a package that holds a second language's code or the data the languages share cannot ship as one language's package, as a published package can carry no file outside its folder; packages of one purpose scattered through the tree hide that they serve it, and data no language owns, copied into each, drifts apart. |
 
-### business-shared-across-languages-lives-in-one-package · SHOULD
+### business-shared-across-languages-lives-in-one-package · MUST
 
 Business that programs in several languages need is written once. It lives in one package, the service they call, and a client copies per language only what must work without the service, held together by the schema and the conformance cases of its group's `shared/` package. It is left, with its reason recorded in `DECISIONS.md`, only where the business is too small for a service to repay its build; each language then keeps its copy, held together the same way.
 

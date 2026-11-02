@@ -7,7 +7,7 @@ function createPlaceOrder({ cartRepository })
     let orderRepository = root.orderRepository
     let cart = cartRepository.find(input.cartId, context)
 
-    call orderRepository.save(create(input.orderId, cart), context)
+    call orderRepository.save(place(input.orderId, cart), context)
 ```
 
 ```pseudo title="Prefer"
@@ -16,7 +16,7 @@ function createPlaceOrder({ cartRepository, orderRepository })
   return function(input, context)
     let cart = cartRepository.find(input.cartId, context)
 
-    call orderRepository.save(create(input.orderId, cart), context)
+    call orderRepository.save(place(input.orderId, cart), context)
 
 # main
 import run from "root"

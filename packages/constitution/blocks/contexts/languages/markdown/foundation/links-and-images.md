@@ -20,13 +20,13 @@ A link to a file of the repository leads to a file that exists, and its fragment
 |---|
 | a broken link sends the reader nowhere just when they need the page, and a moved file or a renamed heading breaks links far from the change. |
 
-### link-text-names-its-target · SHOULD
+### link-text-names-its-target · MUST
 
 A link's text says where it leads. It is never `here`, `this`, `link` or the bare address.
 
 | Why |
 |---|
-| readers scan links, and a screen reader lists them out of their sentence, where `here` tells nothing. |
+| readers scan links, and a screen reader lists them out of their sentence, where `here` tells nothing — WCAG 2.2, Link Purpose (In Context). |
 
 ### image-has-alt-text · MUST
 

@@ -6,7 +6,7 @@
 
 ### domain-returns-codes-not-text → code-placed-by-its-reason-to-change · MUST
 
-The domain and the application layer return codes, never text, and import no message library. The presentation turns the codes and values they return into text; a message library holds the product's wording, and is no library of an outside format.
+The domain and the application layer return codes, never text. The presentation turns the codes and values they return into text, and the message library that holds the product's wording is no library of an outside format the domain may import.
 
 | Why |
 |---|

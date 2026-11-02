@@ -106,9 +106,6 @@ const textOf = (fact: Fact): string => {
       return `\${${ROLE_PREFIX}${fact.role}}`;
     case FactKind.Unknown:
       return `\${${fact.text}}`;
-    // Stryker disable next-line ConditionalExpression: no kind reaches the default, which only the compiler reads
-    default:
-      return fact satisfies never;
   }
 };
 

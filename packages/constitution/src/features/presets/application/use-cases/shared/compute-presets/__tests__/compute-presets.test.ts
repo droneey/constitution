@@ -449,6 +449,54 @@ describe('computePresets', () => {
     },
   );
 
+  it('should report a clash and join nothing when another entry gives a list marked as words a text', () => {
+    // Arrange
+    const asked = {
+      files: releasePresets({
+        'biome/foundation.yaml': [
+          'core:',
+          '  file-within-500-lines:',
+          "    '*':",
+          '      biome.json:',
+          '        command: plain',
+          'biome:',
+          "  '*':",
+          "    '*':",
+          '      biome.json:',
+          '        command: !words',
+          '          - biome check',
+        ].join('\n'),
+      }),
+      units: [
+        unitOf({
+          blocks: [
+            'core',
+            'biome',
+          ],
+          name: 'kit',
+        }),
+      ],
+    };
+
+    // Act
+    const plan = planOf(asked);
+
+    // Assert
+    expect({
+      codes: plan.findings.map(({ code }) => code),
+      written: plan.files.map(({ merged }) => merged.value),
+    }).toStrictEqual({
+      codes: [
+        PresetsCode.Clash,
+      ],
+      written: [
+        {
+          command: 'plain',
+        },
+      ],
+    });
+  });
+
   it('should mark what the block gives each file of whatever shape, and nothing a default gives', () => {
     // Arrange
     const asked = {

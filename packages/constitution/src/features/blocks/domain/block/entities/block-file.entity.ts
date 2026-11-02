@@ -74,11 +74,9 @@ const seamOf = (file: BlockFile): BlockId | undefined => {
     case BlockFileRole.Seam:
       return file.seam;
     case BlockFileRole.Passport:
+    // Stryker disable next-line ConditionalExpression: the last case left without its return falls off the switch into the same absent value
     case BlockFileRole.Chapter:
       return undefined;
-    // Stryker disable next-line ConditionalExpression: no role reaches the default, which only the compiler reads
-    default:
-      return file satisfies never;
   }
 };
 

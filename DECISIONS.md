@@ -2763,6 +2763,7 @@
   - `create` kept for both a checked constructor and an act of the business, beside `delete`: one word would name two concepts, and the act hides the business's own verb.
 - **Why.** The call site then says, before the body is read, whether a call acts, may fail on its input, checks one invariant, cannot fail or only answers, and one word for each kind keeps a search for it whole.
 - **Superseded in part.** By ADR-0278: the kinds gain a factory, a starting transition and a rebuild from storage; a language's own word for a kind stands in where its block names it; the exemptions for callbacks, rendered functions and imposed names return; the rule text keeps roles and words, and its examples move to the docs' example pages. Names since: `function-kinds-spelled-as-classmethods` is now `function-kinds-spelled-on-their-class` (ADR-0280).
+- **Amended.** By ADR-0291: a starting transition takes the business's verb, and `create` is a factory's and a checked constructor's word.
 
 ## ADR-0276 — The model completed: contexts mapped and classed, aggregates by identity and version, whole-aggregate repositories, events after the commit, a process with a model of its own
 
@@ -3039,6 +3040,166 @@
   - "Bounded context" as the word of the rules, with "feature" for the folder: the folder is what a reader and a tool see, and two words for one unit split every search.
   - Ids for `.error`, `types/` and `.types`: the check then reads `uvicorn.error` and a manifest's `types` field as misspelt terms, and no setting names them.
 - **Why.** Each defect the reviewers found is fixed in the rule that owns its subject, a clause keeps the level it had on main save where the owner raised it, so no merge tightens a rule without the owner, and the count of rules grows only where a rule held two subjects.
+- **Superseded in part.** By ADR-0286: several aggregates of one feature may change in one transaction, but no rule of the domain relies on it; an invariant that must hold across them makes them one aggregate. By ADR-0287: a process keeps its state in the aggregate whose lifecycle it is, a feature's where one holds it, and `process-decided-by-an-aggregate-of-its-own` is now `process-kept-by-the-aggregate-whose-lifecycle-it-is`; a composition module may open a transaction for its own aggregate.
+
+## ADR-0281 — Domain events in a folder of their own; the rebuild from storage beside the root's data
+
+**Date:** 2026-11-02 · **Status:** Accepted
+
+- **Decision.** A concept's domain events live in `events/` (suffix `.event`, id `domain-event-file`; the id `domain-event` now names the folder), and `transition-yields-its-event` declares the event there. The rebuild from storage is no transition, having no precondition, no verb of the business and no event: it is a factory in the root's file in `entities/`, as reconstitution is, in the form the language's block gives — a free function of the root's file in TypeScript, a function of the root's module in Python, which the feature's surface leaves out. `transitions/` holds the starting transition and the moves alone, and its feature's use cases and domain services and specs alone import it; the presets keep the adapters and the presentation from it. That the presentation never calls the rebuild is held by review, since it reaches no repository to save what it builds. `transitions/` is a default a language that encapsulates by package, as Go and Java, may respell.
+- **Rejected.**
+  - Events declared beside the transitions: an outbox or a publisher that maps them then imports the transitions.
+  - A role file of its own for the rebuild: a new kind of file for a guard that review and the adapter rule already give.
+  - The rebuild in `transitions/`: it is no transition, and the adapters that call it would reach the moves.
+- **Why.** The adapters reach only what they call, and `transitions/` holds members of one kind.
+
+## ADR-0282 — A use case fails with three kinds of failure
+
+**Date:** 2026-11-02 · **Status:** Accepted
+
+- **Decision.** A use case's signature carries only the domain's failures (a rule of the business refused, the concept's `errors/`), the application layer's (the operation cannot proceed — not found, not permitted — the application's `errors/`) and those its ports declare, beside the port in `contracts/`. The two `errors/` are one term, `expected-failure`, with a home in each layer.
+- **Rejected.**
+  - Every failure as a type of the domain: "not found" and "not permitted" are no rule of the business, and placed in the domain they draw the use case's flow into it.
+  - A term id of its own for the application's `errors/`: the check defines a term once by its spelling, and no setting names either folder.
+- **Why.** A caller tells a refusal from an operation that cannot proceed only when each has its home.
+
+## ADR-0283 — A use case's own branches follow the flow, and decide no rule of the business
+
+**Date:** 2026-11-02 · **Status:** Accepted
+
+- **Decision.** `use-case-leaves-decisions-to-the-domain-model` states the prohibition: every branch on an aggregate's state or a business value is a call into the domain model, and the use case's own branches follow the operation's flow; a check of a role is the application's, a policy that takes the actor is a predicate of the domain model.
+- **Rejected.** The closed list of what a use case may branch on: it refused branches on a port's outcome a flow needs and named no rule a reviewer could judge.
+- **Why.** The outcome a reviewer checks is that no rule of the business sits in the use case — a thin application service over a rich domain model.
+
+## ADR-0284 — Core's repository rules apply where aggregates are stored; the save with its events and the lagging store are owned-data's
+
+**Date:** 2026-11-02 · **Status:** Accepted
+
+- **Decision.** `repository-per-aggregate-and-queries-port-for-reads` holds for each aggregate the program stores and no longer says which side asks which port, which `query-and-command-apart` says. Owned-data tightens core: `aggregate-saved-with-its-events` (→ `repository-stores-whole-aggregates`) and `query-reads-its-callers-writes` (→ `repository-per-aggregate-and-queries-port-for-reads`). `command-returns-nothing` saves an outside identifier through the repository where the program stores the aggregate, and remote-data's `outside-identifier-cached-under-the-callers` keeps it in the cache of a program with no store.
+- **Rejected.** An exception in `command-returns-nothing` for a program with no store: the strict form stays, and the home of what the outside system minted is a domain's rule.
+- **Why.** A program with no store of its own has no repository, and a store that lags is a property of a store.
+
+## ADR-0285 — A use case hands its deadline to every port call
+
+**Date:** 2026-11-02 · **Status:** Accepted
+
+- **Decision.** `port-call-bounded-by-its-use-cases-call` is now `use-case-hands-its-deadline-to-every-port-call`: it states only what foundation's `outside-call-can-be-cancelled` and `call-takes-the-remaining-deadline` do not, that the use case hands its cancellation and remaining time to every port call, whether or not the port crosses a process boundary.
+- **Rejected.** Keeping "a port call that crosses a process boundary": the port hides that from the use case, which cannot obey a condition it cannot see.
+- **Why.** Deadline propagation is the use case's part; the bound of each outside call is foundation's.
+
+## ADR-0286 — A transaction may save several aggregates of a feature, and no rule relies on it
+
+**Date:** 2026-11-02 · **Status:** Accepted
+
+- **Decision.** Amends ADR-0280. A transaction may save several aggregates of one feature, but no rule of the domain relies on it: an invariant that must hold across them at once makes them one aggregate, and one that may lag is kept by a reaction to the event; features never share a transaction (`aggregate-bounded-by-its-true-invariants`, owned-data's `transaction-spans-a-use-case-within-its-feature`).
+- **Rejected.**
+  - Several aggregates in one transaction only where one invariant binds them (ADR-0280): an invariant across aggregates is the sign of one aggregate, and a rule that relies on a shared save breaks when one is saved alone.
+  - One aggregate per transaction always: a use case that changes two unrelated aggregates of its feature gains nothing from two transactions but a half-done change.
+- **Why.** Model true invariants in consistency boundaries and design small aggregates, with the transaction a pragmatic convenience no rule depends on.
+- **Superseded in part.** By ADR-0292: the transaction leaves `aggregate-bounded-by-its-true-invariants`, which keeps only that no rule of the domain relies on several aggregates being saved together; "features never share a transaction" is owned-data's alone.
+- **Amended.** By ADR-0293: owned-data's rule no longer repeats that no rule relies on the shared save; core's `aggregate-bounded-by-its-true-invariants` alone says it.
+
+## ADR-0287 — A composition module is a feature that orchestrates other features
+
+**Date:** 2026-11-02 · **Status:** Accepted
+
+- **Decision.** A composition module is a feature that orchestrates others, laid out and ruled as a feature, save in three ways: it reaches the features it composes through their surfaces; no feature imports it, nor does another composition module; its domain is optional, there only for a rule that spans the features, with an aggregate of its own only for the state of a process no feature's aggregate holds. Its use cases call the features' operations directly, and what it translates between their vocabularies is a total table it owns. Owned-data: a composition module owns only the records of its own aggregates and may open a transaction for one; a process keeps its state in the aggregate whose lifecycle it is (`process-kept-by-the-aggregate-whose-lifecycle-it-is`, formerly `process-decided-by-an-aggregate-of-its-own`), and a one-step reaction needs no aggregate. `feature-classed-by-its-subdomain` covers a composition module with a domain model of its own.
+- **Rejected.**
+  - Ports of the composition module's own between it and the features: the features are code of the program, not outside systems, and a port per call adds an adapter that only forwards.
+  - An aggregate of its own for every process: a process whose state is a feature's aggregate's lifecycle would keep that state twice.
+- **Why.** It is the orchestration layer of a modular monolith, as the owner's codebase has it, and every rule of a feature holds for it unless one of the three differences voids it.
+- **Amended.** By ADR-0293: a process that is no aggregate's lifecycle keeps its state in an aggregate of its own, in the feature whose aggregates it spans or in a composition module where it spans features; a composition module's use case calls any operation of the features it composes, its side that of its own operation.
+
+## ADR-0288 — "command" is the write; a command of a command line is a subcommand
+
+**Date:** 2026-11-02 · **Status:** Accepted
+
+- **Decision.** In core, "command" means the write of command–query separation alone; one command of a command-line program is a **subcommand**, defined in foundation's `names`, and an operation the user invokes replaces "a command of the product" in `irreversible-operation-runs-dry-by-default`. The `cli` block keeps "command" for what one run carries out and says so in its vocabulary. A database query becomes a read of the store.
+- **Rejected.** Renaming core's write: command is the name CQRS gives it.
+- **Why.** One word, one meaning in core; git, cobra and clig.dev name the parts of a command line subcommands.
+
+## ADR-0289 — How features relate is one chapter; a rule about a kind of code sits in that kind's chapter
+
+**Date:** 2026-11-02 · **Status:** Accepted
+
+- **Decision.** Core's architecture gains `composition`, holding how features ask, share, combine and react: `feature-asks-another-through-its-own-port`, `type-lifts-when-features-share-its-meaning`, `port-lifts-on-its-second-feature`, `composition-holds-what-the-business-combines`, `feature-reacts-to-another-only-through-composition`. `read-model-declared-and-named-by-its-operation` and `query-and-command-apart` move to `application`, `port-knows-no-vendor` to `ports`; `layout` keeps the tree, its vocabulary, the surfaces and the homes of shared code, and its Governs line says so. A section that holds no rule, as a chapter's vocabulary, may precede `General`, and the check counts `General` among the sections that hold rules.
+- **Rejected.** Leaving the relations among `layout`, `ports` and `layers`: a change to how features relate was read in three files.
+- **Why.** What changes together is read together.
+
+## ADR-0290 — Precision fixes of the same review
+
+**Date:** 2026-11-02 · **Status:** Accepted
+
+- **Decision.**
+  - Terms defined once and on their axis: the entity in foundation's `types`, the starting transition and the rebuild from storage in foundation's `names`, the value object in core's `domain`; ui's state store, its default `on<Event>` (id `event-callback`) and the workspace's unit are defined in their blocks; the anti-corruption layer translates another bounded context's model.
+  - `kernel/` and `infrastructure/` each say one purpose; a piece without business meaning the domain, the application layer or the kernel needs lives in the kernel; a binding unit's own port is `port-declared-by-the-layer-that-needs-it`'s one exception.
+  - The domain, the application layer and the kernel call nothing of the standard library that holds an effect, and import no module the block of their language or runtime bars outright: `_js-runtime`'s `runtime-module-with-an-effect-imported-only-by-the-edge` and Python's `standard-module-with-an-effect-imported-only-by-the-edge` name them. A library of dates and times or of an identifier's format joins the libraries the value objects may import, its clock and its minting left to the edge.
+  - `application-imports-only-the-domain-and-the-kernel` is `application-imports-only-its-domain-the-kernel-and-composed-surfaces`, and messaging's `outbox-relayed-by-an-adapter-the-root-runs` is `outbox-relayed-by-a-worker-the-root-starts`, the relay implementing no port.
+  - Levels and parents: ui's `headings-in-order` and markdown's `link-text-names-its-target` are MUST, as their WCAG criteria are level A; workspace's `business-shared-across-languages-lives-in-one-package` is MUST, its exception in its text; remote-service's `transport-sets-a-timeout-and-cancels` tightens `outside-call-has-a-timeout`.
+  - Rules stricter than their canon say so in their Why: one feature per bounded context, a domain service that takes no port, command–query separation with no exception.
+- **Rejected.** Moving the list of Node.js modules under `_js-runtime`'s rule: a TypeScript project without a runtime block would lose the check.
+- **Why.** Each fix makes a rule say one thing once, where its readers look for it. The book holds 1764 rules, five more: owned-data's two that take over the save with its events and the store that lags, remote-data's identifier of a program with no store, and the two blocks that name the modules of the runtime and of Python's standard library that hold an effect.
+
+## ADR-0291 — A starting transition takes the business's verb
+
+**Date:** 2026-11-02 · **Status:** Accepted
+
+- **Decision.** Amends ADR-0275 and ADR-0278. An aggregate's starting transition is named by the business's verb from the glossary — `place` an order, `register` a user —, as its moves are; `create` stays the word of a factory and of a checked constructor (`function-named-for-what-it-does`, core's domain vocabulary, the example pages).
+- **Rejected.** `create` for the starting transition: it names a word of building where `name-from-the-glossary` asks for the business's verb, gives one word to three kinds of function that fail differently, and sits oddly beside the event it yields, as `OrderPlaced` beside `create`.
+- **Why.** A transition is an act of the business, and its name is the business's word for it.
+
+## ADR-0292 — The third review: one home for each fact, the failures of composition, a home for the edge workers
+
+**Date:** 2026-11-02 · **Status:** Accepted
+
+- **Decision.**
+  - Transactions are owned-data's alone: core's `aggregate-bounded-by-its-true-invariants` keeps only that no rule of the domain relies on several aggregates being saved together, and "features never share a transaction" stays in `transaction-spans-a-use-case-within-its-feature`. Amends ADR-0286.
+  - `delivery-unit-beside-what-it-serves` lets a page of the program, as its interface's block names one, live in the program's presentation, so ui's `screen-lives-in-the-programs-presentation` tightens it.
+  - The standard library's effects are barred once, in `effects-held-only-by-the-edge`; the import rules of the domain, the application layer and the kernel no longer repeat it, and the kernel's admits the installed dependencies its role admits instead of restating the exception for a library of one outside format or arithmetic. The logging use outside the ports is a unit's outside the domain and the application layer.
+  - A failure of a feature that composition does not act on passes as a defect (`feature-asks-another-through-its-own-port`, `composition-holds-what-the-business-combines`); a use case's three kinds of failure are a rule of their own, `use-case-fails-with-three-kinds-of-failure`, in which a port may declare a failure every port over one kind of system shares in the kernel's `errors/`, as remote-service's mapper gives; any other failure passes as a defect.
+  - An **edge worker** — an outbox's relay, a queue's workers — is a unit at the edge the root starts that implements no port; it lives in the adapter module of the system it serves, imports as its adapters do and is imported by the root alone.
+  - `domain-model-changed-only-through-a-use-case` states only its outcome and moves to `domain`, beside `aggregate-changed-only-by-its-transitions`; how it is checked is the presets' to say.
+  - A surface is what a folder lets code outside it import, in its language's form: a file where a language imports a folder through one, the exported names where it imports a package.
+  - A binding unit binds one operation; an **interface-wide unit** — the handler of last resort, an error filter, an authenticating guard — binds a decision made for every operation of an interface. A check that reads only who acts is the application layer's; one that reads the aggregate's data or a business value with the actor is the domain model's.
+  - Norms leave the vocabularies: a composition module's own domain holds only a rule across the features (`composition-holds-what-the-business-combines`), and the shared layers' imports are the import rules' alone. A query may return an entity that is no aggregate. A delivery unit decides no rule of the business. The default `transitions/` and its respelling for languages that encapsulate by package move from `rule-of-one-thing-lives-beside-its-data` to the layout's defaults. `package-has-at-most-one-root` names a program assembled by a root of its own.
+- **Rejected.**
+  - A fourth kind of use-case failure for a composed feature's failures: a composition module acts on what it maps, and passing a feature's failure through unnamed hands its callers a case they never wrote.
+  - The edge worker in `entrypoints/`: an entrypoint reaches features only through their surfaces, and the relay reads a feature's own records.
+  - The repository rules moved to owned-data, and a query that never returns an aggregate: settled by ADR-0284 and the owner's earlier decision.
+- **Why.** Each fact the reviewers found in several rules now has one home, and each contradiction between a rule and its parent or its neighbour is closed in the rule that owns the subject. The book holds 1765 rules, one more.
+- **Amended.** By ADR-0293: the logging use outside the ports is anyone's diagnostics through the logging facade, the domain and the application layer kept from it by `domain-and-application-log-nothing` alone; the respelling for languages that encapsulate by package sits in `package-laid-out-by-the-tree`; a query, a queries port and the read model's definition all count an entity among what a query returns as it is.
+
+## ADR-0293 — The final review: one home for each fact, what lifts into the kernel, the defaults of form
+
+**Date:** 2026-11-02 · **Status:** Accepted
+
+- **Decision.**
+  - The layout's tree and vocabulary say only what lies where; their norms live in the rules. The rebuild from storage is defined once in foundation's `names` and placed once in the layout's `entities/`, and its properties are `aggregate-changed-only-by-its-transitions`'s; what lifts into the kernel is `type-lifts-when-features-share-its-meaning`'s alone, which `shared-piece-placed-by-meaning` points to.
+  - Only a value object — an enumeration or an identifier among them — lifts into the kernel; an entity never does, since one feature owns its life, and a feature that needs another's holds its identifier or a narrow view.
+  - A query, a queries port and a read model agree: a query returns an aggregate, an entity or a value object as it is, and a read model is a shape that is none of them.
+  - A failure of an optional part that a use case contains reaches the operator through a reporter port of neither side that the root hands in; a refusal decided by a predicate of the domain model that takes the actor is the domain's failure.
+  - A move into the stage an aggregate already stands in returns the same state and no event unless the business names it a refusal, which joins the precondition to `operation-idempotent-by-design`; a function that changes state may decide on the facts it asks of the dependencies it is handed, which joins command–query separation to a use case that asks its ports and then decides.
+  - A value with a starting transition is built only through it, its rebuild from storage and the functions that change it, in core's `invariant-checked-at-construction` and TypeScript's `invariant-value-built-only-by-create`.
+  - The comments of Arrange, Act and Assert get term ids, `arrange-comment`, `act-comment` and `assert-comment`, and the places of blank lines are a default, each respelled by a language's, a runner's or a formatter's block.
+  - A language that encapsulates by package may make a concept's role folders one package and its transitions the root's methods (`package-laid-out-by-the-tree`).
+- **Rejected.**
+  - An entity in the kernel shared by features that agree on its meaning: its life — who creates, changes and removes it — would belong to no feature.
+  - A logging exception for the use case's contained failures: it would let the application layer decide what the operator is told, which the port leaves to the root's wiring.
+  - Objections to settled decisions — the kernel's id, a query returning an aggregate, "command" as the write, the repository rules in core, the technique of opening a transaction at the edge — stay as decided.
+- **Why.** Each fact found in two places now has one, and each contradiction the reviewers found is closed in the rule that owns its subject. The book still holds 1765 rules.
+
+## ADR-0294 — Regressions of the review fixed
+
+**Date:** 2026-11-02 · **Status:** Accepted
+
+- **Decision.** Amends ADR-0293 and ADR-0284.
+  - A composition module's use case keeps to its side: a query calls only the composed features' queries, and a command their commands and the queries it needs, a rule that must hold at the change being decided by the feature's command that makes it (`query-and-command-apart`).
+  - The rebuild from storage is a function beside the root's data, never a factory, as foundation's `names` words it.
+  - ui's `feature-widgets-and-components-import-nothing-of-its-workings` tightens `presentation-reaches-only-what-it-serves`; Python's feature surface leaving the rebuild out is `feature-surface-leaves-out-the-rebuild` in its `layout`, which tightens `surface-offers-operations-not-mechanisms`.
+  - owned-data's `query-reads-its-callers-writes` splits: a read seeing its caller's own writes is foundation's `read-sees-its-callers-own-writes`; that only a queries port's store lags is architecture's `only-a-queries-ports-store-lags`.
+  - The import-linter contract of `standard-module-with-an-effect-imported-only-by-the-edge` takes that rule's name.
+- **Rejected.** A composition query that calls a command: it saves while it answers, against command–query separation.
+- **Why.** Each fix puts back what an earlier edit of this review broke: a rule's parent, its axis or its name. The book holds 1767 rules, two more.
 
 ## Rule aliases
 
@@ -3062,6 +3223,7 @@
 | `answer-built-from-a-declared-shape` | merged | `format-others-read-declared-in-a-schema` (core), which says that what the program writes carries only the fields its schema declares | 2026-11-02 | ADR-0280 |
 | `answer-forbids-type-sniffing` | merged | `answer-declares-its-exact-content-type` (http-server) | 2026-10-31 | ADR-0274 |
 | `application-imports-only-the-domain-and-its-contracts` | renamed | `application-imports-only-the-domain-and-the-kernel` (core); never released | 2026-11-01 | ADR-0280 |
+| `application-imports-only-the-domain-and-the-kernel` | renamed | `application-imports-only-its-domain-the-kernel-and-composed-surfaces` (core): the slug names all the rule admits; never released | 2026-11-02 | ADR-0290 |
 | `aria-attributes-as-the-dom-spells-them` | merged | `jsx-roles-and-aria-valid` (react-dom): an ARIA attribute in camelCase is an invalid one | 2026-11-01 | ADR-0280 |
 | `async-handlers-never-block` | merged | `async-functions-never-block` (python) | 2026-10-30 | ADR-0264 |
 | `bare-utility-only-without-a-token` | dropped | held by `tokens-single-source-of-appearance` (ui), which a bare utility that sets a visual value breaks | 2026-11-01 | ADR-0280 |
@@ -3278,6 +3440,7 @@
 | `operation-input-parsed-beside-its-use-case` | merged | `use-case-takes-only-its-operation-input` (core); never released | 2026-11-01 | ADR-0279 |
 | `opposite-acts-named-by-a-verb-and-its-antonym` | merged | `concept-has-one-word` (core) | 2026-10-30 | ADR-0270 |
 | `optional-checks-enabled-by-name` | merged | `linter-rules-turned-on-by-name` (core) | 2026-10-31 | ADR-0274 |
+| `outbox-relayed-by-an-adapter-the-root-runs` | renamed | `outbox-relayed-by-a-worker-the-root-starts` (messaging with owned-data): the relay implements no port; never released | 2026-11-02 | ADR-0290 |
 | `output-rendered-as-markup-sanitised` | merged | `outside-input-reaches-interpreters-as-parameters` (core) | 2026-10-30 | ADR-0270 |
 | `outside-number-set-declared-once` | merged | `closed-name-set-declared-once` (core); never released | 2026-10-30 | ADR-0270 |
 | `outside-path-checked-by-relative` | moved | `_js-runtime`, foundation/security.md | 2026-11-01 | ADR-0279 |
@@ -3301,8 +3464,10 @@
 | `pipeline-stage-never-calls-a-stage` | merged | `pipeline-stages-run-by-their-owner` (core) | 2026-10-30 | ADR-0264 |
 | `pipeline-stages-run-by-their-owner` | moved, then split | from core's architecture `application` to its foundation `relations`, its home split out into main's `pipeline-stages-live-under-steps` (core layout); never released | 2026-11-02 | ADR-0280 |
 | `plan-with-changes-exits-with-its-own-code` | merged | `plan-outcome-told-apart` (convergence) + `exit-codes-from-one-map` (cli) | 2026-10-30 | ADR-0270 |
+| `port-call-bounded-by-its-use-cases-call` | renamed | `use-case-hands-its-deadline-to-every-port-call` (core): it keeps only what foundation's effects rules do not; never released | 2026-11-02 | ADR-0285 |
 | `primitive-passes-attributes-and-class` | merged | `primitive-passes-its-element-through` (design-system) | 2026-10-30 | ADR-0270 |
 | `process-decided-by-a-model-of-its-own` | renamed | `process-decided-by-an-aggregate-of-its-own` (owned-data); never released | 2026-11-01 | ADR-0280 |
+| `process-decided-by-an-aggregate-of-its-own` | renamed | `process-kept-by-the-aggregate-whose-lifecycle-it-is` (owned-data): a process lives in a feature's aggregate where it is that aggregate's lifecycle; never released | 2026-11-02 | ADR-0287 |
 | `process-env-never-read-in-the-bundle` | merged | `build-env-holds-only-build-facts` (vite with browser) | 2026-10-31 | ADR-0274 |
 | `process-env-read-only-under-root` | moved, then renamed | to `_js-runtime`, architecture/root.md, then `process-env-read-only-by-the-configuration-provider-and-entry-files`: the configuration provider reads it, no other file of the root | 2026-11-02 | ADR-0280 |
 | `props-drilled-at-most-two-levels` | renamed | `prop-never-threaded-through-components-that-ignore-it` (ui) | 2026-11-01 | ADR-0280 |
@@ -3322,6 +3487,7 @@
 | `query-functions-call-the-handed-use-case` | merged | `query-library-decides-when-never-what` (remote-data) + `binding-unit-calls-only-use-cases` | 2026-10-30 | ADR-0261 |
 | `query-hooks-only-in-binding-units` | merged | `query-library-home-is-the-binding-units` (remote-data) | 2026-10-31 | ADR-0274 |
 | `query-library-home-is-the-binding-units` | moved | from tanstack-query to remote-data | 2026-10-30 | ADR-0270 |
+| `query-reads-its-callers-writes` | split | `only-a-queries-ports-store-lags` (owned-data, architecture) + `read-sees-its-callers-own-writes` (owned-data, foundation); never released | 2026-11-02 | ADR-0294 |
 | `react-imported-by-the-ui-and-binding-units` | merged | `rendering-library-imported-by-the-presentation` (ui) | 2026-10-30 | ADR-0264 |
 | `react-native-imported-by-the-ui` | merged | `rendering-library-imported-by-the-presentation` (ui) | 2026-10-30 | ADR-0264 |
 | `react-native-imported-from-its-entry` | merged | `dependency-reached-through-its-published-entries` (core) | 2026-11-01 | ADR-0279 |

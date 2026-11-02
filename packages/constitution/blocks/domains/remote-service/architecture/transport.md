@@ -34,7 +34,7 @@ A transport's failures are mapped once, by one mapper its adapters share. The ma
 
 ### transport-mapper-takes-each-features-codes · MUST
 
-The transport's mapper only maps, taking each feature's codes from that feature's own map. It maps the unauthenticated, forbidden and unexpected failures to shared errors itself, and acts on none of the errors it returns.
+The transport's mapper only maps, taking each feature's codes from that feature's own map. It maps the unauthenticated and forbidden failures itself to the kernel's errors, which the ports over that system declare among their failures, and an unexpected one to a defect, and acts on none of the errors it returns.
 
 | Why |
 |---|

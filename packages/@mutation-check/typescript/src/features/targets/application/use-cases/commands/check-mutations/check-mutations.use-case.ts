@@ -83,9 +83,6 @@ const createCheckMutations =
         };
       case CheckScope.Branch:
         return await checkBranch(ports);
-      // Stryker disable next-line ConditionalExpression: no member reaches the default, which only the compiler reads
-      default:
-        return scope satisfies never;
     }
   };
 

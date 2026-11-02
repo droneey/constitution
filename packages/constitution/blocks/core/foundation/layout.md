@@ -2,7 +2,7 @@
 
 > Governs a file or a folder: its kind, name, size and purpose; readmes.
 
-A package keeps its source, what it ships, in **`src/`**{#source}, and the code that only builds it — a build program, a generator's configuration — in **`scripts/`**{#build-code}; a spec sits beside the code it proves in **`__tests__/`**{#colocated-specs}, or apart from the source in **`tests/`**{#package-suites}, and an end-to-end spec in **`e2e/`**{#end-to-end-suite} inside `tests/`. A program starts at its **`<entry>`**{#entry}, and a folder offers what it holds through its **`<surface>`**{#surface}, the file its import resolves to. Core gives each of these, and the value of absence, the checked constructor and the error suffix its other chapters name, as a default — the folders as the Constitution's first languages spell them, the rest as a role —, and a language's block respells each under the same id; for a language with no block, the project's own pack does, and core's default shows the pattern until then.
+A package keeps its source, what it ships, in **`src/`**{#source}, and the code that only builds it — a build program, a generator's configuration — in **`scripts/`**{#build-code}; a spec sits beside the code it proves in **`__tests__/`**{#colocated-specs}, or apart from the source in **`tests/`**{#package-suites}, and an end-to-end spec in **`e2e/`**{#end-to-end-suite} inside `tests/`. A program starts at its **`<entry>`**{#entry}, and a folder offers what it holds through its **`<surface>`**{#surface}: what it lets code outside it import, in its language's form — the file its import resolves to where a language imports a folder through one file, the names it exports where a language imports the folder's package. Core gives each of these, and the value of absence, the checked constructor and the error suffix its other chapters name, as a default — the folders as the Constitution's first languages spell them, the rest as a role —, and a language's block respells each under the same id; for a language with no block, the project's own pack does, and core's default shows the pattern until then.
 
 ## Kinds
 
@@ -16,7 +16,7 @@ A file of a kind named here carries its kind's name, and that name marks nothing
 
 ### text-a-person-reads-held-in-a-messages-file · SHOULD
 
-The text a unit writes for a person to read sits in a `.messages` file beside the unit. That text includes a message, a command's help and the wording of a report, but not the message an error is built with; the logic that chooses a text — a plural, a variant — sits outside the file and names the messages it chooses from.
+The text a unit writes for a person to read sits in a `.messages` file beside the unit. That text includes a message, a subcommand's help and the wording of a report, but not the message an error is built with; the logic that chooses a text — a plural, a variant — sits outside the file and names the messages it chooses from.
 
 | Why |
 |---|
@@ -102,7 +102,7 @@ A folder holds one purpose, is named for it, and appears with its first file. Th
 
 ### set-folder-holds-only-members · SHOULD
 
-The members of a set live in a folder of their own, and nothing else lives there. Members are files of one kind that arrive one at a time — one per vendor, command or rule; their folder is named for them in the plural, and their contract, registry and runner sit beside it.
+The members of a set live in a folder of their own, and nothing else lives there. Members are files of one kind that arrive one at a time — one per vendor, subcommand or rule; their folder is named for them in the plural, and their contract, registry and runner sit beside it.
 
 | Why |
 |---|
@@ -112,7 +112,7 @@ The members of a set live in a folder of their own, and nothing else lives there
 
 ### readme-is-the-front-door · SHOULD
 
-A repository’s readme answers what a newcomer asks first. For a reader who knows nothing else, it answers what the repository is and what problem it solves, for whom; how to get it running, as commands to copy; and how to change it, or where that is written.
+A repository’s readme answers what a newcomer asks first. For a reader who knows nothing else, it answers what the repository is and what problem it solves, for whom; how to get it running, as shell commands to copy; and how to change it, or where that is written.
 
 | Why |
 |---|

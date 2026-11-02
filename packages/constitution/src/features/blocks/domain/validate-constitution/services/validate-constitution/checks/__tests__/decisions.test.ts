@@ -106,6 +106,31 @@ describe('decisionsCheck', () => {
     expect(findings).toStrictEqual(expected);
   });
 
+  it('should report the entry when its heading ends the log', () => {
+    // Arrange
+    const files = validFiles();
+
+    files[LOG] = logOf([
+      '## ADR-0001 — A decision',
+    ]);
+
+    const input = checkInputOf(files);
+
+    // Act
+    const findings = decisionsCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        code: DecisionsCode.WithoutDateLine,
+        details: {
+          entry: 1,
+        },
+        path: LOG,
+      },
+    ]);
+  });
+
   it.each<{
     expected: FindingOf<DecisionsDetails>[];
     line: string;

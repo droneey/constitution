@@ -16,9 +16,6 @@ const sectionTextOf = (input: { section: Section; theme: Theme }): string => {
       return formatKeyValues(theme, section.pairs);
     case SectionKind.Steps:
       return formatTaskList(theme, section.steps);
-    // Stryker disable next-line ConditionalExpression: no kind reaches the default, which only the compiler reads
-    default:
-      return section satisfies never;
   }
 };
 

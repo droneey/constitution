@@ -2,11 +2,15 @@
 
 > Governs a value and its type.
 
+## The vocabulary
+
+An **entity** is a value with an identity that lives through its changes: it stays the same entity whatever its other data, and its identifier tells it apart from every other.
+
 ## Modelling
 
 ### illegal-state-unrepresentable · MUST
 
-A value with distinct stages is a union keyed by its stage, never a bag of optional fields and flags that allows combinations no stage has.
+A value with distinct stages is a union keyed by its stage, never a bag of optional fields and flags that allows combinations no stage has. The union takes its language's form — a tagged union, a sealed hierarchy, a closed set of implementations.
 
 | Why |
 |---|
@@ -96,7 +100,7 @@ No code uses the type that switches the type checker off. No value, parameter, r
 
 ### invariant-checked-at-construction · MUST
 
-A value that must keep an invariant is built only through the function that checks it. That function is its checked constructor, **`<Type>.<create>`**{#checked-constructor} until its language's block names its form, so a value that exists is valid.
+A value that must keep an invariant is built only through the function that checks it. That function is its checked constructor, **`<Type>.<create>`**{#checked-constructor} until its language's block names its form, so a value that exists is valid. A value with a starting transition is built instead only through it, its rebuild from storage and the functions that change it, each checking what it builds.
 
 | Why |
 |---|

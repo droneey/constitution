@@ -34,9 +34,6 @@ const answerOf = (judgement: StopJudgement): string | undefined => {
       return hookOutputOf({
         systemMessage: unjudgedMessage(judgement.reason),
       });
-    // Stryker disable next-line ConditionalExpression: no verdict reaches the default, which only the compiler reads
-    default:
-      return judgement satisfies never;
   }
 };
 

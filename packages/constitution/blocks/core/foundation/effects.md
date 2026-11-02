@@ -56,7 +56,7 @@ A resource the code acquires is released on every way out, a failure's included.
 
 ### growing-collection-bounded · MUST
 
-Whatever grows with the data has a bound, and says what happens at it. A read of a collection from outside the program — a query, a remote list, a queue, a file — has an explicit limit and pages or refuses beyond it. A collection the program keeps beyond one operation — a cache, a queue, a buffer, a table of sessions — evicts, refuses or makes the producer wait at its bound, and work started concurrently over a collection — calls, tasks, jobs — runs at most a set number at a time.
+Whatever grows with the data has a bound, and says what happens at it. A read of a collection from outside the program — a read of a store, a remote list, a queue, a file — has an explicit limit and pages or refuses beyond it. A collection the program keeps beyond one operation — a cache, a queue, a buffer, a table of sessions — evicts, refuses or makes the producer wait at its bound, and work started concurrently over a collection — calls, tasks, jobs — runs at most a set number at a time.
 
 | Why |
 |---|
@@ -114,7 +114,7 @@ A write decided on data read earlier is made only if that data is still unchange
 
 ### irreversible-operation-runs-dry-by-default · MUST
 
-An irreversible operation against a live system runs only on an explicit confirmation of that run, and otherwise shows what it would do. Such an operation is run by hand or by a pipeline — a script, a data fix, a migration, a deployment, an apply — and destroys data, spends money, changes the system or sends something outward; a live system is one others use, or whose data outlives the task. A command of the product whose one purpose is that effect, invoked by its user, and the reviewed change that sets off a pipeline’s deployment are that confirmation.
+An irreversible operation against a live system runs only on an explicit confirmation of that run, and otherwise shows what it would do. Such an operation is run by hand or by a pipeline — a script, a data fix, a migration, a deployment, an apply — and destroys data, spends money, changes the system or sends something outward; a live system is one others use, or whose data outlives the task. An operation of the product its user invokes, whose one purpose is that effect, and the reviewed change that sets off a pipeline’s deployment are that confirmation.
 
 | Why |
 |---|
@@ -132,7 +132,7 @@ Diagnostics are written only through a logger. The logger is the program's one *
 
 ### configuration-enters-only-through-its-declaration · MUST
 
-Configuration enters the program only through its declaration. It is declared in one place, read only by its declared names and parsed into the value the program receives, typed where its language has types, and a missing or malformed setting fails the start of the work that needs it — the program, or the command or the part that reads it — before that work begins.
+Configuration enters the program only through its declaration. It is declared in one place, read only by its declared names and parsed into the value the program receives, typed where its language has types, and a missing or malformed setting fails the start of the work that needs it — the program, or the subcommand or the part that reads it — before that work begins.
 
 | Why |
 |---|

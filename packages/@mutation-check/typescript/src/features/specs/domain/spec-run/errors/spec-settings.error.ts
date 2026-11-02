@@ -27,9 +27,6 @@ const messageOf = (details: SpecSettingsFailureDetails): string => {
       return unparsableMessage(details.fileName);
     case SpecSettingsFailure.Malformed:
       return malformedMessage(details);
-    // Stryker disable next-line ConditionalExpression: no member reaches the default, which only the compiler reads
-    default:
-      return details satisfies never;
   }
 };
 

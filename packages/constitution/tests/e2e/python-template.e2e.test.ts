@@ -266,7 +266,7 @@ describe('the files apply writes for a unit of Python', () => {
           'src/shop/libs/run/run_utils.py': "from subprocess import run\n\n__all__ = ['run']\n",
         },
         finding: [
-          'effects-held-only-by-the-edge BROKEN',
+          'standard-module-with-an-effect-imported-only-by-the-edge BROKEN',
         ],
         task: 'check:architecture',
       },

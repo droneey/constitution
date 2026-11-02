@@ -70,9 +70,6 @@ const digestOf = (contents: DigestContents): Digest => {
       return unparsedDigestOf(contents);
     case DigestKind.Resolved:
       return resolvedDigestOf(contents);
-    // Stryker disable next-line ConditionalExpression: no kind reaches the default, which only the compiler reads
-    default:
-      return contents satisfies never;
   }
 };
 

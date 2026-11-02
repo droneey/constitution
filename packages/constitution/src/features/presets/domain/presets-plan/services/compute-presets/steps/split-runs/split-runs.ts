@@ -118,9 +118,28 @@ const filePlanOf = (input: {
   };
 };
 
-const isRun = (outcome: UnitRun | PresetsFinding): outcome is UnitRun => 'commands' in outcome;
+type Placed = FilePlan | UnitRun | PresetsFinding;
 
-const isFinding = (outcome: UnitRun | PresetsFinding): outcome is PresetsFinding => !isRun(outcome);
+const placedOf = (input: {
+  candidate: MergedCandidate;
+  entries: readonly PresetEntry[];
+}): Placed => {
+  switch (input.candidate.kind) {
+    case TargetKind.File:
+      return filePlanOf({
+        entries: input.entries,
+        file: input.candidate,
+      });
+    case TargetKind.Run:
+      return runOf(input.candidate);
+  }
+};
+
+const isFilePlan = (placed: Placed): placed is FilePlan => 'merged' in placed;
+
+const isRun = (placed: Placed): placed is UnitRun => 'commands' in placed;
+
+const isFinding = (placed: Placed): placed is PresetsFinding => 'code' in placed;
 
 const runnersOf = (entries: readonly PresetEntry[]): ReadonlySet<BlockId> =>
   new Set(
@@ -169,37 +188,20 @@ const unrunFindings = (input: SplitRunsInput): readonly PresetsFinding[] => {
 };
 
 const splitRuns = (input: SplitRunsInput): RunsSplit => {
-  const files: FilePlan[] = [];
-  const outcomes: (UnitRun | PresetsFinding)[] = [];
-
-  for (const candidate of input.merged) {
-    switch (candidate.kind) {
-      case TargetKind.File:
-        files.push(
-          filePlanOf({
-            entries: input.entries,
-            file: candidate,
-          }),
-        );
-
-        break;
-      case TargetKind.Run:
-        outcomes.push(runOf(candidate));
-
-        break;
-      // Stryker disable next-line ConditionalExpression: no kind reaches the default, which only the compiler reads
-      default:
-        return candidate satisfies never;
-    }
-  }
+  const placed = input.merged.map((candidate) =>
+    placedOf({
+      candidate,
+      entries: input.entries,
+    }),
+  );
 
   return {
-    files,
+    files: placed.filter(isFilePlan),
     findings: [
-      ...outcomes.filter(isFinding),
+      ...placed.filter(isFinding),
       ...unrunFindings(input),
     ],
-    runs: outcomes.filter(isRun),
+    runs: placed.filter(isRun),
   };
 };
 

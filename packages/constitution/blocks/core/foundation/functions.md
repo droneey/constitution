@@ -14,7 +14,7 @@ A function does one thing, at one level of abstraction. It calls steps named for
 
 ### function-answers-or-changes · SHOULD
 
-A function either answers a question or changes state, never both. One that answers changes nothing, and one that changes state decides only on its input and on what it changes. An atomic operation that reports the outcome of its own change — a compare-and-set, a take from a queue — is one change.
+A function either answers a question or changes state, never both. One that answers changes nothing, and one that changes state decides only on its input, on what it changes and on the facts it asks of the dependencies it is handed. An atomic operation that reports the outcome of its own change — a compare-and-set, a take from a queue — is one change.
 
 | Why |
 |---|

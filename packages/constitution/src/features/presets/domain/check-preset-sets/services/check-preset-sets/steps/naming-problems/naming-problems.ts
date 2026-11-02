@@ -101,9 +101,6 @@ const referenceProblems = (
           },
         },
       ];
-    // Stryker disable next-line ConditionalExpression: no kind reaches the default, which only the compiler reads
-    default:
-      return fact satisfies never;
   }
 };
 
@@ -196,9 +193,6 @@ const pathCheckOf = (input: { entry: PresetEntry; named: EntryNamed }): PathChec
         problems: [],
         texts: [],
       };
-    // Stryker disable next-line ConditionalExpression: no kind reaches the default, which only the compiler reads
-    default:
-      return entry satisfies never;
   }
 };
 

@@ -24,11 +24,11 @@ No comparison is loose. No `==` or `!=` is written, against `null` too.
 
 ### exhaustive-branching-over-unions → closed-set-branched-exhaustively · MUST
 
-A branch over a union or an enum names every member. It is a `switch` whose `default` assigns the value to `never`, or an `if` chain that ends in that check.
+A branch over a union or an enum names every member. A `switch` that returns from every case of a function whose return type is declared has no `default`, since the compiler proves it exhaustive; any other branch is a `switch` whose `default` assigns the value to `never`, or an `if` chain that ends in that check.
 
 | Why |
 |---|
-| a branch without the check to `never` takes a new member silently into no case, and nothing shows the branches that must decide on it. |
+| a branch without the check to `never` takes a new member silently into no case, and nothing shows the branches that must decide on it; a `default` beside the compiler's proof is a line no member reaches, which no spec can cover. |
 
 ### outside-number-set-is-a-numeric-enum → closed-name-set-declared-once · MUST
 
@@ -122,7 +122,7 @@ A value that keeps an invariant is a branded type with a companion. It brands a 
 
 ### invariant-value-built-only-by-create → invariant-checked-at-construction · MUST
 
-A value that keeps an invariant is built only by its checked constructor, **`<Type>.create`**{#checked-constructor} on its companion. It throws the type's error when the invariant fails, and no cast, object literal or spread of the type is written outside the companion's file, in specs as in production.
+A value that keeps an invariant is built only by its checked constructor, **`<Type>.create`**{#checked-constructor} on its companion. It throws the type's error when the invariant fails, and no cast, object literal or spread of the type is written outside the companion's file, in specs as in production. A value with a starting transition is built instead only in the files of it, its rebuild from storage and the functions that change it.
 
 | Why |
 |---|

@@ -30,7 +30,7 @@ A secret is never passed to a process as a command-line argument. It reaches the
 
 ### child-process-environment-built-for-it · MUST
 
-A process the program starts receives an environment built for it. That environment holds only what the child needs, never the program's whole environment; a script that only joins commands passes on the environment its caller built for them, each secret it received only to the command that reads it.
+A process the program starts receives an environment built for it. That environment holds only what the child needs, never the program's whole environment; a script that only runs other programs passes on the environment its caller built for them, each secret it received only to the program that reads it.
 
 | Why |
 |---|
@@ -106,7 +106,7 @@ Work over input whose size an outsider chooses grows no faster than n log n in t
 
 ### outside-input-reaches-interpreters-as-parameters · MUST
 
-Input from outside reaches an interpreter only as a parameter. Such input, a language model’s output included, reaches a query, a shell command, markup, a template or a log line only through that interpreter’s parameters or its encoder, or, where the input is itself markup to render, through a sanitiser that keeps only the elements, attributes and schemes allowed. A pattern — a regular expression, a glob — is never built from it: the input is only the text a pattern matches.
+Input from outside reaches an interpreter only as a parameter. Such input, a language model’s output included, reaches a store's query language, a shell command, markup, a template or a log line only through that interpreter’s parameters or its encoder, or, where the input is itself markup to render, through a sanitiser that keeps only the elements, attributes and schemes allowed. A pattern — a regular expression, a glob — is never built from it: the input is only the text a pattern matches.
 
 | Why |
 |---|

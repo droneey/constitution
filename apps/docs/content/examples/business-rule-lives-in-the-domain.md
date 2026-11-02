@@ -9,7 +9,7 @@ function onPlace(request, placeOrder, context)
 
 ```pseudo title="Prefer"
 # orders/domain/order/transitions/order.transitions
-function create(orderId, cart)
+function place(orderId, cart)
   if cart.total < minimumTotal then
     throw new BelowMinimumError(cart.total)
 
@@ -20,5 +20,5 @@ function createPlaceOrder({ cartRepository, orderRepository })
   return function(input, context)
     let cart = cartRepository.find(input.cartId, context)
 
-    call orderRepository.save(create(input.orderId, cart), context)
+    call orderRepository.save(place(input.orderId, cart), context)
 ```

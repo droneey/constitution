@@ -15,9 +15,6 @@ const unreadTextOf = (unread: ProjectUnread): string => {
       return releaseMissingMessage(unread.releaseFolderPath);
     case ProjectReadStatus.ConfigUnparsed:
       return configUnparsedMessage(atLinesText(unread.lines));
-    // Stryker disable next-line ConditionalExpression: no status reaches the default, which only the compiler reads
-    default:
-      return unread satisfies never;
   }
 };
 

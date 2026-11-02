@@ -97,9 +97,6 @@ const applyOutcomeOf = (read: ProjectRead<ApplyPlan>): TaskOutcome => {
         }),
         status: StepStatus.Failed,
       };
-    // Stryker disable next-line ConditionalExpression: no kind reaches the default, which only the compiler reads
-    default:
-      return plan satisfies never;
   }
 };
 
@@ -115,9 +112,6 @@ const applySectionsOf = (read: ProjectRead<ApplyPlan>): readonly Section[] => {
       return writtenSectionsOf(plan);
     case ApplyPlanKind.Held:
       return foundSectionsOf(plan.findings);
-    // Stryker disable next-line ConditionalExpression: no kind reaches the default, which only the compiler reads
-    default:
-      return plan satisfies never;
   }
 };
 

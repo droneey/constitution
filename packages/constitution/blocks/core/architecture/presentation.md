@@ -4,13 +4,13 @@
 
 ## The vocabulary
 
-The presentation is all through which the program is called. An interface is one way the program is called — a user interface, an API, a command line, a consumer of messages, a schedule —, and the presentation holds every interface the program has. A **delivery unit**{#delivery-unit} is a unit its framework calls from outside the program: a screen, a command, a request handler, a message consumer, a tool function, a scheduled job. A **binding unit**{#binding-unit} binds to the program's framework one operation — reading what the framework hands it, calling the operation's use case, and handing the framework what the use case returns or the failure it raised — or one decision made for every operation of an interface, as the handler of last resort, an error filter or a guard that authenticates the caller does. A delivery unit that serves one operation is its binding unit; one that serves several reaches each operation through its binding unit, or binds it itself as that binding unit would. The **program's presentation**{#program-presentation}, at the top of the source, holds the program's pages and the views they share, the binding units of the decisions made for every operation of an interface, and the delivery units and the units that render that span several features or composition modules.
+The presentation is all through which the program is called, the driving side of ports and adapters, whose delivery and binding units are its driving adapters. An interface is one way the program is called — a user interface, an API, a command line, a consumer of messages, a schedule —, and the presentation holds every interface the program has. A **delivery unit**{#delivery-unit} is a unit its framework calls from outside the program: a screen, a subcommand, a request handler, a message consumer, a tool function, a scheduled job. A **binding unit**{#binding-unit} binds one operation to the program's framework: it reads what the framework hands it, calls the operation's use case, and hands the framework what the use case returns or the failure it raised. An **interface-wide unit** binds to the framework one decision made for every operation of an interface, as the handler of last resort, an error filter or a guard that authenticates the caller does; it serves no operation and no side. A delivery unit that serves one operation is its binding unit; one that serves several reaches each operation through its binding unit, or binds it itself as that binding unit would. The **program's presentation**{#program-presentation}, at the top of the source, holds the interface-wide units, and the delivery units and the units that render that span several features or composition modules.
 
 ## Homes
 
 ### delivery-unit-beside-what-it-serves · MUST
 
-A delivery unit lives beside what it serves. It lives in the presentation of the feature or the composition module whose operations it serves, or in the program's presentation when it spans several or is a page of the program.
+A delivery unit lives beside what it serves. It lives in the presentation of the feature or the composition module whose operations it serves, or in the program's presentation when it spans several or is, as its interface's block names one, a page of the program.
 
 | Why |
 |---|
@@ -20,7 +20,7 @@ A delivery unit lives beside what it serves. It lives in the presentation of the
 
 ### presentation-reaches-only-what-it-serves · MUST
 
-A presentation calls and renders only what it serves. A feature's presentation calls only its own feature's operations and the predicates and derived values of its aggregates and value objects, and renders only its own units; a composition module's calls only that module's operations and the predicates and derived values of what they return, and renders its own units and those of the features it composes; the program's presentation calls the operations of any feature or composition module and the predicates and derived values their surfaces offer, and renders their units.
+A presentation calls and renders only what it serves. A feature's presentation calls only what its own feature's surface offers to call, and renders only its own units; a composition module's calls only what its own surface offers to call, and renders its own units and those of the features it composes; the program's presentation calls what the surfaces of features and composition modules offer to call, and renders their units.
 
 | Why |
 |---|
@@ -36,17 +36,17 @@ A binding unit reaches its operation only through the use case, never through a 
 
 ### delivery-unit-stays-thin · MUST
 
-A delivery unit stays thin. It reads its input off what its framework hands it, calls the operations whose results it presents, and presents what they return; it holds no business logic, and what an operation reports reaches it as a returned value, never as output printed along the way.
+A delivery unit stays thin. It reads its input off what its framework hands it, calls the operations whose results it presents, and presents what they return; it decides no rule of the business, and what an operation reports reaches it as a returned value, never as output printed along the way.
 
 | Why |
 |---|
-| business logic in a delivery unit cannot be reused by another transport or tested without it — Humble Object. |
+| a rule of the business decided in a delivery unit cannot be reused by another transport or tested without it — Humble Object. |
 
 ## What it decides
 
 ### missing-refused-or-failed-answered-in-the-presentation · MUST
 
-What the program answers when something is missing, refused or failed is decided in the presentation. The binding unit of the operation, or the delivery unit that renders its answer, decides it, and no unit of another layer does; such answers are a not-found answer, a redirect, what a refusal shows its user, a failure's message with its exit code or its response, and the answer of an entry's handler of last resort. Among the binding units that decide it for every operation are the handler of last resort and an error filter.
+What the program answers when something is missing, refused or failed is decided in the presentation. The binding unit of the operation, or the delivery unit that renders its answer, decides it, and no unit of another layer does; such answers are a not-found answer, a redirect, what a refusal shows its user, a failure's message with its exit code or its response, and the answer of an entry's handler of last resort. Among the units that decide it for every operation are the interface-wide units, the handler of last resort and an error filter among them.
 
 | Why |
 |---|

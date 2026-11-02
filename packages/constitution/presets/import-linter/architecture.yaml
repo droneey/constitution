@@ -72,12 +72,12 @@ core:
                 - '*.${role.generic-library}'
                 - '*.${role.composition-root}'
                 - '*.${role.shared-code}'
-  application-imports-only-the-domain-and-the-kernel:
+  application-imports-only-its-domain-the-kernel-and-composed-surfaces:
     python:
       pyproject.toml:
         tool:
           importlinter:
-            contracts[name=application-imports-only-the-domain-and-the-kernel]:
+            contracts[name=application-imports-only-its-domain-the-kernel-and-composed-surfaces]:
               type: forbidden
               source_modules:
                 - '*.${role.composition-module}.*.${role.application}'
@@ -93,64 +93,6 @@ core:
                 - '*.${role.generic-library}'
                 - '*.${role.composition-root}'
                 - '*.${role.shared-code}'
-  effects-held-only-by-the-edge:
-    python:
-      pyproject.toml:
-        tool:
-          importlinter:
-            include_external_packages: true
-            contracts[name=effects-held-only-by-the-edge]:
-              type: forbidden
-              source_modules:
-                - '*.${role.composition-module}.*.${role.presentation-layer}'
-                - '*.${role.composition-module}.*.${role.application}'
-                - '*.${role.composition-module}.*.${role.domain-layer}'
-                - '*.${role.bounded-context}.*.${role.presentation-layer}'
-                - '*.${role.bounded-context}.*.${role.application}'
-                - '*.${role.bounded-context}.*.${role.domain-layer}'
-                - '*.${role.shared-kernel}'
-                - '*.${role.shared-code}'
-              forbidden_modules:
-                - ctypes
-                - curses
-                - dbm
-                - fcntl
-                - fileinput
-                - ftplib
-                - getpass
-                - glob
-                - grp
-                - imaplib
-                - mmap
-                - multiprocessing
-                - os
-                - platform
-                - poplib
-                - pty
-                - pwd
-                - random
-                - resource
-                - runpy
-                - secrets
-                - select
-                - selectors
-                - shelve
-                - shutil
-                - signal
-                - smtplib
-                - socket
-                - socketserver
-                - sqlite3
-                - ssl
-                - subprocess
-                - syslog
-                - tempfile
-                - termios
-                - time
-                - tty
-                - webbrowser
-                - wsgiref
-                - xmlrpc
   feature-never-imports-a-feature:
     python:
       pyproject.toml:
@@ -181,11 +123,22 @@ core:
           importlinter:
             # Why: a binding unit reaches the transitions through the use case it calls, so only a
             # direct import breaks the contract.
-            contracts[name=domain-model-changed-only-through-a-use-case]:
+            contracts[id=domain-model-changed-only-through-a-use-case.presentation]:
+              name: domain-model-changed-only-through-a-use-case
               type: forbidden
               source_modules:
                 - '*.${role.composition-module}.*.${role.presentation-layer}'
                 - '*.${role.bounded-context}.*.${role.presentation-layer}'
+              forbidden_modules:
+                - '*.${role.composition-module}.*.${role.domain-layer}.*.${role.aggregate-transition}'
+                - '*.${role.bounded-context}.*.${role.domain-layer}.*.${role.aggregate-transition}'
+              allow_indirect_imports: true
+            contracts[id=domain-model-changed-only-through-a-use-case.adapters]:
+              name: domain-model-changed-only-through-a-use-case
+              type: forbidden
+              source_modules:
+                - '*.${role.composition-module}.*.${role.adapter}'
+                - '*.${role.bounded-context}.*.${role.adapter}'
               forbidden_modules:
                 - '*.${role.composition-module}.*.${role.domain-layer}.*.${role.aggregate-transition}'
                 - '*.${role.bounded-context}.*.${role.domain-layer}.*.${role.aggregate-transition}'
@@ -476,3 +429,62 @@ core:
               forbidden_modules:
                 - logging
               allow_indirect_imports: true
+python:
+  standard-module-with-an-effect-imported-only-by-the-edge:
+    python:
+      pyproject.toml:
+        tool:
+          importlinter:
+            include_external_packages: true
+            contracts[name=standard-module-with-an-effect-imported-only-by-the-edge]:
+              type: forbidden
+              source_modules:
+                - '*.${role.composition-module}.*.${role.presentation-layer}'
+                - '*.${role.composition-module}.*.${role.application}'
+                - '*.${role.composition-module}.*.${role.domain-layer}'
+                - '*.${role.bounded-context}.*.${role.presentation-layer}'
+                - '*.${role.bounded-context}.*.${role.application}'
+                - '*.${role.bounded-context}.*.${role.domain-layer}'
+                - '*.${role.shared-kernel}'
+                - '*.${role.shared-code}'
+              forbidden_modules:
+                - ctypes
+                - curses
+                - dbm
+                - fcntl
+                - fileinput
+                - ftplib
+                - getpass
+                - glob
+                - grp
+                - imaplib
+                - mmap
+                - multiprocessing
+                - os
+                - platform
+                - poplib
+                - pty
+                - pwd
+                - random
+                - resource
+                - runpy
+                - secrets
+                - select
+                - selectors
+                - shelve
+                - shutil
+                - signal
+                - smtplib
+                - socket
+                - socketserver
+                - sqlite3
+                - ssl
+                - subprocess
+                - syslog
+                - tempfile
+                - termios
+                - time
+                - tty
+                - webbrowser
+                - wsgiref
+                - xmlrpc

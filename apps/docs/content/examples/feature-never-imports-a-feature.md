@@ -6,7 +6,7 @@ function createPlaceOrder({ cartRepository, orderRepository, charge: Charge })
   return function(input, context)
     let cart = cartRepository.find(input.cartId, context)
 
-    call orderRepository.save(create(input.orderId, cart), context)
+    call orderRepository.save(place(input.orderId, cart), context)
     call charge({ orderId: input.orderId }, context)
 ```
 

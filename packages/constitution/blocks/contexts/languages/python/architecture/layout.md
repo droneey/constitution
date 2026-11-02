@@ -34,6 +34,14 @@ A surface `__init__.py` only re-exports, and lists what it offers in a sorted `_
 |---|
 | a surface without `__all__` leaves its readers and the type checker to guess which of its names it offers, and an unsorted list buries an added or removed name in a reordered diff. |
 
+### feature-surface-leaves-out-the-rebuild → surface-offers-operations-not-mechanisms · MUST
+
+A feature's `__init__.py` leaves its aggregates' rebuild from storage out. It neither imports the rebuild nor lists it in its `__all__`, so only the feature's own adapters reach it, by its module.
+
+| Why |
+|---|
+| Python cannot keep a function of a module private, so a rebuild its feature's surface offers lets any caller outside build an aggregate from data no transition checked. |
+
 ### layer-init-empty → surface-only-on-a-module-or-one-kind · MUST
 
 The `__init__.py` of a folder with no surface offers nothing. It is empty and only makes the folder a package: a layer folder's, a domain's `shared/`'s and that of the import package of a program no package imports. The `__init__.py` of `root/`, the one layer folder with a surface, offers only what the entry files run, as every surface offers what its callers use.

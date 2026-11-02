@@ -136,7 +136,7 @@ A case reads `should <behaviour>`, with `when <condition>` where the behaviour d
 
 ### case-split-by-arrange-act-assert-comments · MUST
 
-A case is split into its Arrange, Act and Assert. Each section is opened by a comment on a line of its own that names it — `Arrange`, `Act`, `Assert` —, present once and in that order, and its Act makes one call; the Arrange may be left out when the case arranges nothing, as when a table's row gives every input, and is never left empty. A lifecycle case repeats an Act and an Assert, each opened by its comment, for each transition, and an end-to-end case for each step of its scenario.
+A case is split into its Arrange, Act and Assert. Each section is opened by a comment on a line of its own that names it — **`Arrange`**{#arrange-comment}, **`Act`**{#act-comment} and **`Assert`**{#assert-comment} until its language's or its runner's block respells them —, present once and in that order, and its Act makes one call; the Arrange may be left out when the case arranges nothing, as when a table's row gives every input, and is never left empty. A lifecycle case repeats an Act and an Assert, each opened by its comment, for each transition, and an end-to-end case for each step of its scenario.
 
 | Why |
 |---|

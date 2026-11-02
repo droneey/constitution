@@ -50,8 +50,8 @@ A presentational component performs no input or output. A component in `componen
 
 ### prop-never-threaded-through-components-that-ignore-it · MUST
 
-A prop never travels through components that ignore it. A component ignores a prop when it neither reads it nor hands it to an element or a component that reads it; a screen that hands what its registration gives it to the pieces of its page ignores none of it. A prop that would travel further is replaced by composition — the part that needs it taken as children or a slot — or by a nearer widget that loads the data itself, never by a store the deep component reads to spare the prop its path.
+A prop never travels through components that ignore it. A component ignores a prop when it neither reads it nor hands it to an element or a component that reads it; a screen that hands what its registration gives it to the pieces of its page ignores none of it. A prop that would travel further is replaced by composition — the part that needs it taken as children or a slot — or by a nearer widget that loads the data itself, never by a state store the deep component reads to spare the prop its path.
 
 | Why |
 |---|
-| a prop threaded through components that ignore it couples them all to it, and a store made to avoid the threading makes the state global, shared by accident and kept after the screen that needed it. |
+| a prop threaded through components that ignore it couples them all to it, and a state store made to avoid the threading makes the state global, shared by accident and kept after the screen that needed it. |

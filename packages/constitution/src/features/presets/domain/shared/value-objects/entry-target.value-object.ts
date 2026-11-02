@@ -103,9 +103,6 @@ const textOf = (target: EntryTarget): string => {
       return target.writtenPath;
     case TargetKind.Run:
       return runTargetKey;
-    // Stryker disable next-line ConditionalExpression: no kind reaches the default, which only the compiler reads
-    default:
-      return target satisfies never;
   }
 };
 

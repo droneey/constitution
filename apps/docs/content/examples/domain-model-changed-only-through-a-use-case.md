@@ -5,5 +5,5 @@ flowchart LR
   repository[Repository adapter] --> rebuild[restore]
   queries[Queries adapter] --> rebuild
   moves --> transitions[Order transitions]
-  rebuild --> transitions
+  rebuild --> root[Order root, beside its data]
 ```

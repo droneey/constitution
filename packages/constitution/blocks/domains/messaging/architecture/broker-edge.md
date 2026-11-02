@@ -24,7 +24,7 @@ A consumer or a job stays thin. It parses its message or its tick, calls one ope
 
 ### publisher-is-a-port-in-the-domains-words → port-knows-no-vendor · MUST
 
-The broker is reached through a port in the domain's words. The port takes the feature's domain events and its command messages; the broker's client, its channels and the integration events it maps them to live only in the port's adapter.
+The broker is reached through a port that takes the feature's domain events and its command messages. The integration events they map to, and the channels they travel on, are its adapter's alone.
 
 | Why |
 |---|

@@ -4,9 +4,9 @@
 
 ## General
 
-### outbox-relayed-by-an-adapter-the-root-runs → events-reach-reactions-after-their-change-commits · MUST
+### outbox-relayed-by-a-worker-the-root-starts → events-reach-reactions-after-their-change-commits · MUST
 
-The events a feature saves with their change reach the broker only through its outbox's relay, an adapter the composition root runs. The relay reads them from the feature's store once their save commits and hands each to the feature's broker port; no use case or binding unit hands such an event to that port, and a use case calls it only for a command message no save yields.
+The events a feature saves with their change reach the broker only through its outbox's relay, an edge worker the composition root starts. The relay reads them from the feature's store once their save commits and hands each to the feature's broker port; no use case or binding unit hands such an event to that port, and a use case calls it only for a command message no save yields.
 
 | Why |
 |---|

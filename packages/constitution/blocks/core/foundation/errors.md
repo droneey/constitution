@@ -30,7 +30,7 @@ An expected failure that no signature can name is named in the function's docume
 
 ### failure-names-only-reachable-steps · MUST
 
-A failure names only a next step its reader can take. The step it names — an operation to call, a command to run, a value to send — exists, is open to the one the failure reaches with the rights they hold, and accepts what it names.
+A failure names only a next step its reader can take. The step it names — an operation to call, a shell command to run, a value to send — exists, is open to the one the failure reaches with the rights they hold, and accepts what it names.
 
 | Why |
 |---|

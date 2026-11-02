@@ -13,9 +13,10 @@ function createShipOrder({ orderRepository, clock })
 ```
 
 ```pseudo title="Prefer"
-# orders/domain/order/transitions/order.transitions
+# orders/domain/order/events/order-shipped.event
 type OrderShipped = { orderId: OrderId, shippedAt: Instant }
 
+# orders/domain/order/transitions/order.transitions
 function ship(order, now)
   if order.status is not Paid then
     throw new OrderNotPaidError(order.id)

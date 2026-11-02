@@ -16,7 +16,7 @@ type Order = {
 }
 
 # sales/domain/order/transitions/order.transitions
-function create(orderId, lines, customer)
+function place(orderId, lines, customer)
   if isBlocked(customer) then
     throw new CustomerBlockedError(customer.id)
 

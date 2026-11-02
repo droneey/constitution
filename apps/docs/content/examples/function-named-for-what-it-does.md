@@ -7,6 +7,7 @@ function makeGetPage(pages)             # a third word for building
 
 ```pseudo title="Prefer"
 function placeOrder(input)              # the glossary's verb
+function place(orderId, lines)          # a starting transition takes it too
 function parseEmail(text)               # may fail, naming every problem
 function OrderId.create(text)           # the checked constructor
 function createGetPage(pages)           # a factory builds a unit

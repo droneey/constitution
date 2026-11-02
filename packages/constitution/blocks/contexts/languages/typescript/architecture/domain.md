@@ -16,8 +16,8 @@ The predicates and derived values of an aggregate, an entity or a value object, 
 
 ### aggregate-built-only-in-its-transitions → aggregate-changed-only-by-its-transitions · MUST
 
-An aggregate is built and changed only in its concept's `transitions/`. Its transitions — its starting transition, its rebuild from storage and every move — are free functions of that folder, never members of its companion, and no object literal, spread or `structuredClone` of an aggregate's type, or of one of its inner entities', is written outside that folder, in specs as in production; a spec builds one through its starting transition or its rebuild from storage.
+An aggregate is built and changed only in its concept's `transitions/` and by its rebuild from storage. Its starting transition and every move are free functions of `transitions/`, and its rebuild a free function its root's file exports beside the type, never members of its companion, so the feature's surface can leave the rebuild out; no object literal, spread or `structuredClone` of an aggregate's type, or of one of its inner entities', is written outside them, in specs as in production; a spec builds one through its starting transition or its rebuild from storage.
 
 | Why |
 |---|
-| the compiler accepts any object of the right shape as the aggregate, so only the folder keeps a state no transition checked from existing, and a transition kept off the companion is a file the presentation's imports can be kept from. |
+| the compiler accepts any object of the right shape as the aggregate, so only these functions keep a state nothing checked from existing; a transition kept off the companion is a file the imports of the presentation and the adapters can be kept from, and a rebuild kept off it is a name the feature's surface can leave out. |

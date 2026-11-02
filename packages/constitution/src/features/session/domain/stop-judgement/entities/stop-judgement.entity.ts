@@ -155,9 +155,6 @@ const recordOf = (judgement: StopJudgement): JudgementRecord | undefined => {
         fingerprint: judgement.fingerprint,
         mark: SessionMark.Blocked,
       };
-    // Stryker disable next-line ConditionalExpression: no verdict reaches the default, which only the compiler reads
-    default:
-      return judgement satisfies never;
   }
 };
 

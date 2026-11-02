@@ -100,11 +100,9 @@ const inheritingFlaw = (
       return step.key === '' ? InheritanceFlaw.EmptyStep : undefined;
     case StepKind.Named:
       return boundNames(earlier).includes(step.name) ? InheritanceFlaw.NameBoundTwice : undefined;
+    // Stryker disable next-line ConditionalExpression: the last case left without its return falls off the switch into the same absent value
     case StepKind.AnyChild:
       return undefined;
-    // Stryker disable next-line ConditionalExpression: no kind reaches the default, which only the compiler reads
-    default:
-      return step satisfies never;
   }
 };
 
@@ -120,9 +118,6 @@ const sourceFlaw = (text: string, bound: readonly string[]): InheritanceFlaw | u
       return step.key === '' ? InheritanceFlaw.EmptyStep : undefined;
     case StepKind.Named:
       return bound.includes(step.name) ? undefined : InheritanceFlaw.UnboundName;
-    // Stryker disable next-line ConditionalExpression: no kind reaches the default, which only the compiler reads
-    default:
-      return step satisfies never;
   }
 };
 

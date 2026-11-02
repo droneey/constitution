@@ -587,6 +587,20 @@
       },
     },
     {
+      "name": "adapters-reach-no-transition",
+      "severity": "error",
+      "from": {
+        "path": "^src/(features|composition)/[^/]+/infrastructure/",
+        "pathNot": [
+          "(^|/)__tests__/",
+          "^tests/",
+        ],
+      },
+      "to": {
+        "path": "^src/(features|composition)/[^/]+/domain/[^/]+/transitions/",
+      },
+    },
+    {
       "name": "root-wires-without-a-container-library",
       "severity": "error",
       "from": {},
@@ -695,7 +709,6 @@
         "path": "^(src/(?:features|composition|infrastructure|shared|libs|integrations|entrypoints)/[^/]+|src/(?:kernel|root))/",
       },
     },
-
     {
       "name": "no-undeclared-dependency",
       "severity": "error",

@@ -22,7 +22,7 @@ The composition root decides nothing. It chooses the implementations and connect
 
 ### unit-receives-its-dependencies-by-contract · MUST
 
-A unit receives its dependencies typed by their contracts, and a use case typed by its own type. It never builds an adapter or asks a registry for one by its contract, and receives its dependencies as parameters or, in a delivery or binding unit, from a typed scope the composition root fills. A port of a binding unit's own concern — the source of the identifier it makes for a command, a reporter of the events it reports — is handed in by the root as its use cases are.
+A unit receives its dependencies typed by their contracts, and a use case typed by its own type. It never builds an adapter or asks a registry for one by its contract, and receives its dependencies as parameters or, in a delivery or binding unit, from a typed scope the composition root fills. A port of a binding unit's own concern is handed in by the root as its use cases are.
 
 | Why |
 |---|
@@ -38,7 +38,7 @@ A program uses no container but its framework's, which holds only the registrati
 
 ### package-has-at-most-one-root · MUST
 
-A package holds at most one composition root, and a library holds none. A program that is assembled apart — on another framework or runtime, or built as an artefact of its own — is a package of its own, and what two such programs run lives in a package with no root; artefacts that start the one root in different ways are entries of one package.
+A package holds at most one composition root, and a library holds none. A program assembled by a root of its own, as one on another framework or runtime is, is a package of its own, and what two such programs run lives in a package with no root; artefacts that start the one root in different ways are entries of one package.
 
 | Why |
 |---|
@@ -48,7 +48,7 @@ A package holds at most one composition root, and a library holds none. A progra
 
 ### delivery-unit-registered-by-the-root · MUST
 
-The composition root registers every delivery unit with its framework. That holds for each address, handler, subscription or schedule the program answers, registered by the names the surfaces of features and composition offer, and no unit is found by scanning a folder or registers itself on import. Where the framework fixes the place of its registration — a folder, a manifest —, the registration lives there, belongs to the root and holds only the address, its parsing and the handoff to the unit; a guard or a loader the framework runs there only applies the answer its binding unit decided.
+The composition root registers every delivery unit with its framework. That holds for each address, handler, subscription or schedule the program answers, registered by the names the surfaces of features and composition offer, and no unit is found by scanning a folder or registers itself on import. Where the framework fixes the place of its registration — a folder, a manifest —, the registration lives there, belongs to the root and holds only the address, its parsing and the handoff to the unit; a guard or a loader the framework runs there only applies the answer its binding or interface-wide unit decided.
 
 | Why |
 |---|

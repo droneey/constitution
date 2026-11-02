@@ -48,9 +48,6 @@ const runCheckMutations = async (input: CheckMutationsCommandInput): Promise<num
       return ExitCode.Success;
     case CheckStatus.Ran:
       return outcome.exitCode;
-    // Stryker disable next-line ConditionalExpression: no member reaches the default, which only the compiler reads
-    default:
-      return outcome satisfies never;
   }
 };
 

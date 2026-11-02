@@ -1623,7 +1623,6 @@
         "useForOf": "error",
         "useGroupedAccessorPairs": "error",
         "useDefaultParameterLast": "error",
-        "useDefaultSwitchClause": "error",
         "useCollapsedIf": "error",
         "useConsistentArrowReturn": "error",
         "noShoutyConstants": "error",

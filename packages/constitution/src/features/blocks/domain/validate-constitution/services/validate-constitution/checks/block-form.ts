@@ -81,11 +81,15 @@ const openingProblems = (opening: {
       ];
 
 const sectionProblems = (input: {
+  ruleSections: readonly (string | undefined)[];
   sections: readonly string[];
   title: string | undefined;
 }): readonly BlockFormProblem[] => {
   const { sections, title } = input;
   const requirements = sections.indexOf(REQUIREMENTS_SECTION);
+  // Why: a vocabulary or a tree that opens a chapter holds no rule, so General leads the
+  // sections that hold one.
+  const sectionsOfRules = sections.filter((section) => input.ruleSections.includes(section));
 
   return [
     ...sections
@@ -106,7 +110,7 @@ const sectionProblems = (input: {
             details: {},
           } satisfies BlockFormProblem,
         ]),
-    ...(sections.indexOf(GENERAL_SECTION) > 0
+    ...(sectionsOfRules.indexOf(GENERAL_SECTION) > 0
       ? [
           {
             code: BlockFormCode.GeneralNotFirst,
@@ -143,11 +147,13 @@ const fileFindings = (input: {
   const { file } = input;
   const lines = linesOf(file);
   const opening = openingOf(lines);
+  const rules = input.rules.filter((rule) => rule.file === file.path);
 
   return [
     ...openingProblems(opening),
-    ...ruleProblems(input.rules.filter((rule) => rule.file === file.path)),
+    ...ruleProblems(rules),
     ...sectionProblems({
+      ruleSections: rules.map((rule) => rule.section),
       sections: lines.flatMap((line) => SECTION.exec(line)?.[1] ?? []),
       title: opening.title,
     }),

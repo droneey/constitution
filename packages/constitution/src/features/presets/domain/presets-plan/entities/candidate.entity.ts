@@ -35,9 +35,6 @@ const pathOf = (candidate: Candidate): RepositoryRelativePath => {
       return candidate.filePath;
     case TargetKind.Run:
       return UnitPath.pathOf(candidate.unit.path, configFilePath);
-    // Stryker disable next-line ConditionalExpression: no kind reaches the default, which only the compiler reads
-    default:
-      return candidate satisfies never;
   }
 };
 

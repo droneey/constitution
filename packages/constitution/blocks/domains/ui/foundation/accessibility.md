@@ -62,13 +62,13 @@ A link's text says where the link leads. It says so read alone or with the sente
 |---|
 | readers scan links, and a screen reader lists them out of their sentence, where `more` tells nothing — WCAG 2.2, Link Purpose (In Context). |
 
-### headings-in-order · SHOULD
+### headings-in-order · MUST
 
 Headings go in order, and no level is skipped.
 
 | Why |
 |---|
-| screen reader users navigate by headings, and a skipped level reads as a missing section. |
+| screen reader users navigate by headings, and a skipped level reads as a missing section — WCAG 2.2, Info and Relationships. |
 
 ## Operation
 

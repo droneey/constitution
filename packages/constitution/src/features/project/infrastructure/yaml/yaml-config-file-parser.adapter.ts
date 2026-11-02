@@ -13,7 +13,6 @@ import { ConfigOverride } from '../../domain/project-config/entities';
 import type { ConfigFileWire } from './models';
 import { configFileModel } from './models';
 
-const FIRST_LINE = 1;
 const blockScalars: ReadonlySet<string | undefined> = new Set([
   Scalar.BLOCK_FOLDED,
   Scalar.BLOCK_LITERAL,
@@ -119,11 +118,10 @@ const parse = (text: string): ConfigRead => {
     schema: 'core',
   });
 
-  const lineOf = (node: unknown): number =>
-    // Stryker disable next-line ConditionalExpression,LogicalOperator: every node a path or a visit reaches is parsed, with its range, so the test only narrows the type
-    isNode(node) && node.range !== undefined && node.range !== null
-      ? lineCounter.linePos(node.range[0]).line
-      : FIRST_LINE;
+  // Stryker disable next-line ConditionalExpression,LogicalOperator: every node a path or a visit reaches is parsed, with its range, so the test only narrows the type, and the file's start stands for any other
+  const startOf = (node: unknown): number => (isNode(node) && node.range ? node.range[0] : 0);
+
+  const lineOf = (node: unknown): number => lineCounter.linePos(startOf(node)).line;
 
   const written = writtenOf(document);
   const read = configFileModel.safeParse(written);

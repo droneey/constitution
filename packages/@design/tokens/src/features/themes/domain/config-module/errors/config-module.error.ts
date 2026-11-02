@@ -35,9 +35,6 @@ const messageOf = (details: ConfigModuleFailureDetails): string => {
       return exportsNoFunctionMessage(details.configPath);
     case ConfigModuleFailure.ReturnsNoObject:
       return returnsNoObjectMessage(details.modeName);
-    // Stryker disable next-line ConditionalExpression: no member reaches the default, which only the compiler reads
-    default:
-      return details satisfies never;
   }
 };
 

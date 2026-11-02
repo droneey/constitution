@@ -42,7 +42,7 @@ An endpoint whose key a client pins is pinned to at least two keys, one of them 
 
 ## Requirements for implementation
 
-### transport-sets-a-timeout-and-cancels · MUST
+### transport-sets-a-timeout-and-cancels → outside-call-has-a-timeout · MUST
 
 The transport sets a timeout on each call, per call, and cancels a call by its caller's signal.
 

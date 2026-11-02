@@ -187,7 +187,7 @@ core:
               - ^${role.package-suites}/
           to:
             path: ^${role.source}/${role.shared-kernel}/${role.port}/
-  application-imports-only-the-domain-and-the-kernel:
+  application-imports-only-its-domain-the-kernel-and-composed-surfaces:
     typescript:
       .dependency-cruiser.jsonc:
         forbidden[name=application-reaches-only-the-domain-and-its-contracts]:
@@ -491,6 +491,15 @@ core:
           severity: error
           from:
             path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.presentation-layer}/
+            pathNot:
+              - (^|/)${role.colocated-specs}/
+              - ^${role.package-suites}/
+          to:
+            path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.domain-layer}/[^/]+/${role.aggregate-transition}/
+        forbidden[name=adapters-reach-no-transition]:
+          severity: error
+          from:
+            path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.adapter}/
             pathNot:
               - (^|/)${role.colocated-specs}/
               - ^${role.package-suites}/

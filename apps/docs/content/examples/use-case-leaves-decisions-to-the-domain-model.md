@@ -1,5 +1,7 @@
 ```pseudo title="Avoid"
 # users/application/use-cases/commands/rename-user
+import UserNotFoundError from "../../../errors"
+
 function createRenameUser({ userRepository })
   return function(input, context)
     let user = userRepository.find(input.userId, context)
@@ -15,6 +17,8 @@ function createRenameUser({ userRepository })
 
 ```pseudo title="Prefer"
 # users/application/use-cases/commands/rename-user
+import UserNotFoundError from "../../../errors"
+
 function createRenameUser({ userRepository })
   return function(input, context)
     let user = userRepository.find(input.userId, context)
@@ -25,6 +29,9 @@ function createRenameUser({ userRepository })
     let isNameTaken = userRepository.isNameTaken(input.name, context)
 
     call userRepository.save(rename(user, input.name, isNameTaken), context)
+
+# users/application/errors/user-not-found.error
+type UserNotFoundError = { code: "user-not-found", userId: UserId }
 
 # users/domain/user/transitions/user.transitions
 function rename(user, name, isNameTaken)

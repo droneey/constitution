@@ -64,7 +64,7 @@ A choice between real alternatives is recorded with what it rejected. Such a cho
 
 ### change-to-a-trust-boundary-names-its-threats · SHOULD
 
-A change at a trust boundary, or one that adds a way into the program, names its threats. Such a way is an endpoint, a command, an upload or a consumer of messages, and the change names how each threat is met.
+A change at a trust boundary, or one that adds a way into the program, names its threats. Such a way is an endpoint, a subcommand, an upload or a consumer of messages, and the change names how each threat is met.
 
 | Why |
 |---|
@@ -82,7 +82,7 @@ A change is reported done only once the check passes with no error and no warnin
 
 ### change-seen-working-before-hand-back · SHOULD
 
-A change to what a user or a caller observes is seen working before it is handed back. It is run once in the built program, the way its user or caller reaches it — the command run, the endpoint called, the screen used — and the hand-back says how.
+A change to what a user or a caller observes is seen working before it is handed back. It is run once in the built program, the way its user or caller reaches it — the subcommand run, the endpoint called, the screen used — and the hand-back says how.
 
 | Why |
 |---|

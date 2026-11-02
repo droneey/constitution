@@ -177,7 +177,6 @@ biome:
               useForOf: error
               useGroupedAccessorPairs: error
               useDefaultParameterLast: error
-              useDefaultSwitchClause: error
               useCollapsedIf: error
               useConsistentArrowReturn: error
               useTemplate: error

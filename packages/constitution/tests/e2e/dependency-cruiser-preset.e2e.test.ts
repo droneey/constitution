@@ -38,7 +38,7 @@ const wellFormed = {
     "import { expect } from 'bun:test';\nimport { order } from '../order.aggregate';\nexpect(order).toBe(1);\n",
   'src/features/orders/infrastructure/api/index.ts': "export { order } from './order.adapter';\n",
   'src/features/orders/infrastructure/api/order.adapter.ts':
-    "import { order as stored } from '../../domain/order/entities';\nimport { restoreOrder } from '../../domain/order/transitions';\nexport const order = [stored, restoreOrder];\n",
+    "import { order as stored, restoreOrder } from '../../domain/order/entities';\nexport const order = [stored, restoreOrder];\n",
   'src/features/orders/presentation/bindings/queries/list-orders/index.ts':
     "export { listOrders } from './list-orders.use-case';\n",
   'src/features/orders/presentation/bindings/queries/list-orders/list-orders.use-case.ts':
@@ -65,13 +65,13 @@ const wellFormed = {
     },
   ),
   'src/features/orders/domain/order/entities/index.ts':
-    "export { order } from './order.aggregate';\n",
+    "export { order, restoreOrder } from './order.aggregate';\n",
   'src/features/orders/domain/order/entities/order.aggregate.ts':
-    "import { money } from '../../../../../kernel/values';\nexport const order = money;\n",
+    "import { money } from '../../../../../kernel/values';\nimport { cost } from '../../shared/value-objects';\nexport const order = money;\nexport const restoreOrder = [order, cost];\n",
   'src/features/orders/domain/order/transitions/index.ts':
-    "export { restoreOrder, shipOrder } from './order.transitions';\n",
+    "export { shipOrder } from './order.transitions';\n",
   'src/features/orders/domain/order/transitions/order.transitions.ts':
-    "import { order } from '../entities';\nimport { cost } from '../../shared/value-objects';\nexport const restoreOrder = [order, cost];\nexport const shipOrder = order;\n",
+    "import { order } from '../entities';\nexport const shipOrder = order;\n",
   'src/features/orders/domain/shared/value-objects/index.ts':
     "export { cost } from './cost.value-object';\n",
   'src/features/orders/domain/shared/value-objects/cost.value-object.ts': exported('cost'),
@@ -514,6 +514,17 @@ const layerViolations = [
       'src/features/orders/domain/order/transitions/index.ts': exported('shipOrder'),
     },
     rule: 'presentation-reaches-no-transition',
+  },
+  {
+    condition: "an adapter calls an aggregate's transition",
+    files: {
+      'src/features/orders/infrastructure/api/order.adapter.ts': importing({
+        from: '../../domain/order/transitions',
+        name: 'shipOrder',
+      }),
+      'src/features/orders/domain/order/transitions/index.ts': exported('shipOrder'),
+    },
+    rule: 'adapters-reach-no-transition',
   },
   {
     condition: "a screen of composition builds an aggregate of the module's domain",

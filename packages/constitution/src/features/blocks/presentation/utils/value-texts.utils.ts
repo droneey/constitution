@@ -11,9 +11,6 @@ const blockIdText = (details: ValueFindingDetails[ValueFailure.BlockId]): string
       return `is a block folder named "${details.written}", which is not a kebab-case block id`;
     case ValueSite.SeamFile:
       return "is a seam whose name is not a kebab-case block id; a seam is with/<block>.md, named after the other block's id";
-    // Stryker disable next-line ConditionalExpression: no site reaches the default, which only the compiler reads
-    default:
-      return details satisfies never;
   }
 };
 
@@ -23,9 +20,6 @@ const ruleSlugText = (details: ValueFindingDetails[ValueFailure.RuleSlug]): stri
       return `rule "${details.written}" is not a kebab-case slug`;
     case ValueSite.TightenedRule:
       return `rule "${details.rule}" tightens "${details.written}", which is not a kebab-case slug`;
-    // Stryker disable next-line ConditionalExpression: no site reaches the default, which only the compiler reads
-    default:
-      return details satisfies never;
   }
 };
 

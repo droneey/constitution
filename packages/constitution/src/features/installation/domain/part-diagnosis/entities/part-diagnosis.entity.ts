@@ -281,9 +281,6 @@ const unreadDiagnosisOf = (input: {
         kind: Diagnosis.ManifestWithoutVersion,
         manifest: release.manifest,
       };
-    // Stryker disable next-line ConditionalExpression: no status reaches the default, which only the compiler reads
-    default:
-      return release satisfies never;
   }
 };
 
@@ -443,9 +440,6 @@ const ofLatest = (input: { executable: Version; latest: LatestRelease }): PartDi
       return {
         kind: Diagnosis.LatestUnreadable,
       };
-    // Stryker disable next-line ConditionalExpression: no lookup reaches the default, which only the compiler reads
-    default:
-      return latest satisfies never;
   }
 };
 

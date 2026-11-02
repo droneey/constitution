@@ -86,7 +86,7 @@ describe("the configuration import-linter's presets write", () => {
     },
     {
       condition:
-        'a binding unit reaches the transitions only through a use case, and an adapter rebuilds an aggregate through them',
+        'a binding unit reaches the transitions only through a use case, and an adapter rebuilds an aggregate beside its root',
       files: {
         ...feature,
         ...concept,
@@ -95,7 +95,7 @@ describe("the configuration import-linter's presets write", () => {
         [`${ORDERS}/presentation/ship_cli.py`]:
           'from unit.features.orders.application.use_cases.ship import ship_order as ship_order\n',
         [`${ORDERS}/infrastructure/order_store.py`]:
-          'from unit.features.orders.domain.order.transitions import restore_order as restore_order\n',
+          'from unit.features.orders.domain.order.entities import restore_order as restore_order\n',
       },
       lint: {
         broken: [],
@@ -108,6 +108,21 @@ describe("the configuration import-linter's presets write", () => {
         ...feature,
         ...concept,
         [`${ORDERS}/presentation/ship_cli.py`]:
+          'from unit.features.orders.domain.order.transitions import ship_order as ship_order\n',
+      },
+      lint: {
+        broken: [
+          'domain-model-changed-only-through-a-use-case',
+        ],
+        status: 1,
+      },
+    },
+    {
+      condition: "an adapter calls an aggregate's transition",
+      files: {
+        ...feature,
+        ...concept,
+        [`${ORDERS}/infrastructure/order_store.py`]:
           'from unit.features.orders.domain.order.transitions import ship_order as ship_order\n',
       },
       lint: {

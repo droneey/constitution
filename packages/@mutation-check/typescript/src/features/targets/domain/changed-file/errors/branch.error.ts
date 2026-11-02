@@ -49,9 +49,6 @@ const messageOf = (details: BranchFailureDetails): string => {
       return toolTimedOutMessage(details.command);
     case BranchFailure.OutputPastLimit:
       return outputPastLimitMessage(details.command);
-    // Stryker disable next-line ConditionalExpression: no member reaches the default, which only the compiler reads
-    default:
-      return details satisfies never;
   }
 };
 

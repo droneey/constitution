@@ -2,6 +2,10 @@
 
 > Governs a unit's name, the tools that check it and where their configuration sits.
 
+## The vocabulary
+
+In this block a unit is one package of the workspace, one it deploys or one others install, never a unit of code inside a package, as core's rules mean the word.
+
 ## General
 
 ### unit-named-after-its-folder · SHOULD

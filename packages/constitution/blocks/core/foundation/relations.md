@@ -64,7 +64,7 @@ A unit calls its own collaborators, never theirs. No chain walks into another un
 
 ### new-kind-added-as-a-member · MUST
 
-A new kind of an open set is added as a new member, without editing the others. The member comes with its registration, and the code that handles the other members is left as it is. A set is open when its members share one contract and the program treats them alike — vendors, commands, formats — and closed when the program's logic decides on each member apart — stages, outcomes; a set with one member is not yet open.
+A new kind of an open set is added as a new member, without editing the others. The member comes with its registration, and the code that handles the other members is left as it is. A set is open when its members share one contract and the program treats them alike — vendors, subcommands, formats — and closed when the program's logic decides on each member apart — stages, outcomes; a set with one member is not yet open.
 
 | Why |
 |---|

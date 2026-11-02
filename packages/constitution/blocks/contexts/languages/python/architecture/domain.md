@@ -6,11 +6,11 @@
 
 ### aggregate-changed-by-replace-in-its-transitions → aggregate-changed-only-by-its-transitions · MUST
 
-An aggregate is built and changed only by the functions of its concept's `transitions/`. Its transitions — its starting transition, its rebuild from storage and every move — are functions there, never its methods: each move returns a copy made by `dataclasses.replace`, and the starting transition and the rebuild call its constructor; no code outside that folder calls the aggregate's constructor, or `replace` on it.
+An aggregate is built and changed only by the functions of its concept's `transitions/` and by its rebuild from storage. Its starting transition and every move are functions of `transitions/`, and its rebuild a function of its root's module, never its methods: each move returns a copy made by `dataclasses.replace`, and the starting transition and the rebuild call its constructor; no other code calls the aggregate's constructor, or `replace` on it.
 
 | Why |
 |---|
-| Python cannot keep a constructor private, so an aggregate built or copied outside its transitions skips the checks they make, and only a folder of their own lets the imports keep the presentation from them; a copy made by `replace` runs `__post_init__` again, so its invariants hold after every transition. |
+| Python cannot keep a constructor private, so an aggregate built or copied outside its transitions skips the checks they make, and only a folder of their own lets the imports keep the presentation and the adapters from the transitions; a copy made by `replace` runs `__post_init__` again, so its invariants hold after every transition. |
 
 ### aggregate-reads-are-methods-of-its-dataclass → rule-of-one-thing-lives-beside-its-data · MUST
 

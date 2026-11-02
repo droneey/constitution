@@ -66,7 +66,7 @@ A language or a platform names its chapters after core's. It takes the names of 
 
 ### rule-sits-in-a-section-of-its-file · MUST
 
-A chapter or a seam opens with its title and a `Governs` line, and every rule of it sits in a section. It holds at least one rule, and its sections are `General`, when some rules are about the whole subject, first, then one for each part of it, none named like the title, and `Requirements for implementation` last.
+A chapter or a seam opens with its title and a `Governs` line, and every rule of it sits in a section. It holds at least one rule, and its sections of rules are `General`, when some rules are about the whole subject, first, then one for each part of it, none named like the title, and `Requirements for implementation` last; a section that holds no rule, such as the vocabulary or the trees a chapter opens with, comes before them.
 
 | Why |
 |---|

@@ -56,9 +56,6 @@ const entryFilesOf = (input: {
       });
     case TargetKind.Run:
       return [];
-    // Stryker disable next-line ConditionalExpression: no kind reaches the default, which only the compiler reads
-    default:
-      return entry satisfies never;
   }
 };
 
