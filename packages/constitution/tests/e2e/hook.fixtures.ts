@@ -243,7 +243,6 @@ const linesOf = (context: string): readonly string[] => context.replace(/\n$/, '
 // it gives, never by its wording: a sentence reworded breaks no case.
 const ITEM = '- ';
 const HEADING = '## ';
-const NOTE = /^\d/u;
 
 const NAME_CHARACTER = /[\w./-]/u;
 
@@ -277,77 +276,36 @@ const mentionedOf = (input: MentionedInput): readonly string[] =>
     }),
   );
 
-const numberIn = (line: string): number => Number(/\d+/u.exec(line)?.[0] ?? 0);
+const headerOf = (context: string): string => context.slice(0, context.indexOf('\n\n'));
 
-const headerOf = (context: string): readonly string[] =>
-  linesOf(context.slice(0, context.indexOf('\n\n')));
+const bytesAfterHeader = (context: string): number =>
+  Buffer.byteLength(context.slice(context.indexOf('\n\n') + 2));
 
-const factNumberOf = (context: string): number => numberIn(headerOf(context)[1] ?? '');
+const BUDGET = 9400;
 
-const blockListOf = (context: string): readonly string[] => {
+const mapOf = (context: string): readonly string[] => {
   const lines = linesOf(context);
-  const list = lines.slice(lines.lastIndexOf('') + 1);
-  const [first = ''] = list;
+  const start = lines.findLastIndex((line) => line.startsWith(HEADING));
 
-  return first.startsWith(HEADING) || (list.length === 1 && NOTE.test(first)) ? list : [];
-};
-
-const ALSO = 'Also: ';
-
-const GROUP = /\([^()]*\)/gu;
-const LAST_GROUP = /\([^()]*\)$/u;
-
-const colonOf = (text: string): number =>
-  text.replace(GROUP, (group) => '_'.repeat(group.length)).indexOf(': ');
-
-const lastGroupOf = (text: string): string => LAST_GROUP.exec(text)?.[0] ?? '';
-
-const itemOf = (line: string): string => {
-  const text = line.slice(ITEM.length);
-  const colon = colonOf(text);
-
-  if (colon === -1) {
-    return text;
+  if (start === -1) {
+    return [];
   }
 
-  const head = text.slice(0, colon);
-  const tail = text.slice(colon + ': '.length);
-  const files = tail.startsWith(ALSO) ? `(${tail.slice(ALSO.length)})` : lastGroupOf(tail);
+  const end = lines.indexOf('', start);
 
-  return files === '' ? head : `${head} ${files}`;
+  return lines.slice(start + 1, end === -1 ? undefined : end);
 };
 
-const indexOf = (context: string): readonly string[] =>
-  blockListOf(context).flatMap((line) => {
-    if (line.startsWith(HEADING)) {
-      return [
-        line.split(' (')[0] ?? line,
-      ];
-    }
-
-    return line.startsWith(ITEM)
-      ? [
-          itemOf(line),
-        ]
-      : [];
-  });
-
-interface Cut {
-  kept: number;
-  leftOut: number;
+interface NamedInMapInput {
+  readonly context: string;
+  readonly names: readonly string[];
 }
 
-const cutOf = (lines: readonly string[]): Cut => {
-  const last = lines.at(-1) ?? '';
-  const leftOut = last.startsWith(ITEM) || last.startsWith(HEADING) ? 0 : numberIn(last);
-
-  return {
-    kept: lines.length - (leftOut > 0 ? 1 : 0),
-    leftOut,
-  };
-};
-
-const listCutOf = (context: string): Cut => cutOf(blockListOf(context));
+const namedInMapOf = (input: NamedInMapInput): readonly string[] =>
+  mentionedOf({
+    names: input.names,
+    text: mapOf(input.context).join('\n'),
+  });
 
 const warningSectionOf = (context: string): readonly string[] => {
   const lines = linesOf(context);
@@ -393,10 +351,7 @@ const remindedOf = (stdout: string): readonly string[] =>
         .map((note) => note.split(' ')[0] ?? '')
         .toSorted();
 
-const bytesAfterHeader = (context: string): number =>
-  Buffer.byteLength(context.slice(context.indexOf('\n\n') + 2));
-
-const BUDGET = 9400;
+const CONTEXT_CAP = 10_000;
 
 interface ScriptCall {
   readonly event: Readonly<Record<string, unknown>>;
@@ -480,13 +435,14 @@ export type { HookRun };
 export {
   BUDGET,
   bytesAfterHeader,
+  CONTEXT_CAP,
   contextOf,
-  factNumberOf,
   HookEvent,
-  indexOf,
+  headerOf,
   isRecord,
-  listCutOf,
+  mapOf,
   mentionedOf,
+  namedInMapOf,
   newSession,
   outputOf,
   remindedOf,

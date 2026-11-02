@@ -1,11 +1,13 @@
-import type { BlockId, RepositoryRelativePath } from '#/kernel/value-objects';
+import type { AbsolutePath, BlockId } from '#/kernel/value-objects';
+import { RepositoryRelativePath } from '#/kernel/value-objects';
 
 import type { FingerprintMark, ParsedState } from '../../session/entities';
-import { SessionMark, SessionState } from '../../session/entities';
+import { ActiveBlocks, SessionMark } from '../../session/entities';
 import { HookEventName } from '../../shared/entities';
 import type { TreeState } from '../../tree-state/entities';
 import { TreeStateStatus } from '../../tree-state/entities';
 import type { TreeFingerprint } from '../../tree-state/value-objects';
+import type { ReviewDebt } from './review-debt.entity';
 import type { StopEvent } from './stop-event.entity';
 
 const REVIEWER = 'constitution:reviewer';
@@ -13,13 +15,21 @@ const REVIEWER = 'constitution:reviewer';
 enum StopVerdict {
   Reviewed = 'reviewed',
   Blocked = 'blocked',
-  Review = 'review',
+  Covered = 'covered',
   Unjudged = 'unjudged',
+}
+
+enum HandBackStep {
+  Check = 'check',
+  Review = 'review',
 }
 
 type StopJudgement =
   | {
+      readonly blocks: readonly BlockId[];
       readonly fingerprint: TreeFingerprint;
+      readonly missing: readonly HandBackStep[];
+      readonly subagentChanges: readonly ReviewDebt[];
       readonly verdict: StopVerdict.Blocked;
     }
   | {
@@ -27,8 +37,8 @@ type StopJudgement =
       readonly verdict: StopVerdict.Reviewed;
     }
   | {
-      readonly blocks: readonly BlockId[];
-      readonly verdict: StopVerdict.Review;
+      readonly subagentChanges: readonly ReviewDebt[];
+      readonly verdict: StopVerdict.Covered;
     }
   | {
       readonly reason: string;
@@ -37,132 +47,145 @@ type StopJudgement =
 
 type StopMarks = Readonly<Record<FingerprintMark, TreeFingerprint | undefined>>;
 
-/** A stop is judged at once, or once the files changed in the tree are known. */
-type StopCall =
-  | {
-      readonly isReviewDue: false;
-      readonly judgement: StopJudgement | undefined;
-    }
-  | {
-      readonly isReviewDue: true;
-    };
-
-type JudgementRecord =
-  | {
-      readonly fingerprint: TreeFingerprint;
-      readonly mark: Exclude<FingerprintMark, SessionMark.Turn | SessionMark.Checked>;
-    }
-  | {
-      readonly mark: SessionMark.Unjudged;
-      readonly reason: string;
-    };
+/** What the session holds of the stopping agent's changes when the tree was read. */
+interface OwnChanges {
+  readonly own: readonly AbsolutePath[];
+  readonly reviewOwed: readonly ReviewDebt[];
+  readonly state: ParsedState;
+}
 
 const isReviewerStop = (event: StopEvent): boolean =>
   // Stryker disable next-line ConditionalExpression: the test only narrows the type; no other event names an agent
   event.event === HookEventName.SubagentStop &&
   (event.agentType === REVIEWER || event.agentName === REVIEWER);
 
-const judged = (judgement: StopJudgement | undefined): StopCall => ({
-  isReviewDue: false,
-  judgement,
-});
+const governingBlocksOf = (input: {
+  paths: readonly AbsolutePath[];
+  state: ParsedState;
+}): readonly BlockId[] => [
+  ...new Set(
+    input.paths.flatMap((path) => {
+      const inner = RepositoryRelativePath.fromAbsolute(input.state.repositoryFolderPath, path);
 
-const judge = (input: {
-  event: StopEvent;
-  marks: StopMarks;
-  tree: TreeState;
-  unjudged: string | undefined;
-}): StopCall => {
-  const { event, marks, tree } = input;
+      return inner === undefined
+        ? []
+        : ActiveBlocks.governing(input.state, inner).map((block) => block.id);
+    }),
+  ),
+];
+
+const missingStepsOf = (input: {
+  blocksToReview: readonly BlockId[];
+  isChecked: boolean;
+  own: readonly AbsolutePath[];
+}): readonly HandBackStep[] => [
+  ...(input.isChecked || input.own.length === 0
+    ? []
+    : [
+        HandBackStep.Check,
+      ]),
+  ...(input.blocksToReview.length === 0
+    ? []
+    : [
+        HandBackStep.Review,
+      ]),
+];
+
+// Why: a subagent cannot start the reviewer, so it answers for the check of its own changes
+// alone, and the main thread reviews them with its own.
+const judgementOfOwnChanges = (
+  input: OwnChanges & {
+    isMainThread: boolean;
+    marks: StopMarks;
+    now: TreeFingerprint;
+  },
+): StopJudgement | undefined => {
+  const { marks, now, own, reviewOwed } = input;
+
+  if (now === marks[SessionMark.Turn] || own.length + reviewOwed.length === 0) {
+    return undefined;
+  }
+
+  const blocksToReview =
+    !input.isMainThread || now === marks[SessionMark.Reviewed]
+      ? []
+      : governingBlocksOf({
+          paths: [
+            ...own,
+            ...reviewOwed.map((debt) => debt.path),
+          ],
+          state: input.state,
+        });
+  const missing = missingStepsOf({
+    blocksToReview,
+    isChecked: now === marks[SessionMark.Checked],
+    own,
+  });
+
+  if (missing.length > 0) {
+    return {
+      blocks: blocksToReview,
+      fingerprint: now,
+      missing,
+      subagentChanges: missing.includes(HandBackStep.Review) ? reviewOwed : [],
+      verdict: StopVerdict.Blocked,
+    };
+  }
+
+  return input.isMainThread
+    ? {
+        subagentChanges: reviewOwed,
+        verdict: StopVerdict.Covered,
+      }
+    : undefined;
+};
+
+/** The stop's judgement: the reviewer's, or what the agent's own changes still owe. */
+const judge = (
+  input: OwnChanges & {
+    event: StopEvent;
+    isMainThread: boolean;
+    marks: StopMarks;
+    tree: TreeState;
+    unjudged: string | undefined;
+  },
+): StopJudgement | undefined => {
+  const { event, tree } = input;
 
   if (isReviewerStop(event)) {
     return tree.status === TreeStateStatus.Read
-      ? judged({
+      ? {
           fingerprint: tree.fingerprint,
           verdict: StopVerdict.Reviewed,
-        })
-      : judged(undefined);
+        }
+      : undefined;
   }
 
-  if (event.isHookActive || tree.status === TreeStateStatus.NoRepository) {
-    return judged(undefined);
+  if (event.isHookActive) {
+    return undefined;
   }
 
-  if (tree.status === TreeStateStatus.Failed) {
-    return tree.reason === input.unjudged
-      ? judged(undefined)
-      : judged({
-          reason: tree.reason,
-          verdict: StopVerdict.Unjudged,
-        });
-  }
-
-  const now = tree.fingerprint;
-  const turn = marks[SessionMark.Turn];
-
-  if (now !== turn && now !== marks[SessionMark.Checked] && now !== marks[SessionMark.Blocked]) {
-    return judged({
-      fingerprint: now,
-      verdict: StopVerdict.Blocked,
-    });
-  }
-
-  if (event.event !== HookEventName.Stop || now === turn || now === marks[SessionMark.Reviewed]) {
-    return judged(undefined);
-  }
-
-  return {
-    isReviewDue: true,
-  };
-};
-
-const reviewOf = (input: {
-  changed: readonly RepositoryRelativePath[];
-  state: ParsedState;
-}): StopJudgement | undefined => {
-  const blocks = [
-    ...new Set(
-      input.changed.flatMap((path) =>
-        SessionState.governing(input.state, path).map((block) => block.id),
-      ),
-    ),
-  ];
-
-  return blocks.length === 0
-    ? undefined
-    : {
-        blocks,
-        verdict: StopVerdict.Review,
-      };
-};
-
-const recordOf = (judgement: StopJudgement): JudgementRecord | undefined => {
-  switch (judgement.verdict) {
-    case StopVerdict.Review:
+  switch (tree.status) {
+    case TreeStateStatus.NoRepository:
       return undefined;
-    case StopVerdict.Unjudged:
-      return {
-        mark: SessionMark.Unjudged,
-        reason: judgement.reason,
-      };
-    case StopVerdict.Reviewed:
-      return {
-        fingerprint: judgement.fingerprint,
-        mark: SessionMark.Reviewed,
-      };
-    case StopVerdict.Blocked:
-      return {
-        fingerprint: judgement.fingerprint,
-        mark: SessionMark.Blocked,
-      };
+    case TreeStateStatus.Failed:
+      return tree.reason === input.unjudged
+        ? undefined
+        : {
+            reason: tree.reason,
+            verdict: StopVerdict.Unjudged,
+          };
+    case TreeStateStatus.Read:
+      return judgementOfOwnChanges({
+        ...input,
+        now: tree.fingerprint,
+      });
   }
 };
 
 const StopJudgement = {
   judge,
-  recordOf,
-  reviewOf,
 } as const;
 
 export type { StopMarks };
-export { StopJudgement, StopVerdict };
+export { HandBackStep, StopJudgement, StopVerdict };

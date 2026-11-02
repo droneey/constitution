@@ -6,8 +6,8 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 import {
   contextOf,
   HookEvent,
-  indexOf,
   mentionedOf,
+  namedInMapOf,
   newSession,
   removeSessions,
   runHook,
@@ -118,7 +118,7 @@ describe('a pack checked against its base', () => {
 });
 
 describe('a pack in a project', () => {
-  it('should list its block and chapters with its pack and warn of a pack not installed when the project lists both', () => {
+  it('should name its block with its pack and warn of a pack not installed when the project lists both', () => {
     // Arrange
     const pack = createPack();
 
@@ -127,7 +127,13 @@ describe('a pack in a project', () => {
 
     // Assert
     expect({
-      listed: indexOf(context).includes('acme [packs/acme] (dependencies; architecture: root)'),
+      named: namedInMapOf({
+        context,
+        names: [
+          'acme',
+          'packs/acme',
+        ],
+      }),
       warnings: warningsOf({
         context,
         like: [
@@ -138,7 +144,10 @@ describe('a pack in a project', () => {
         ],
       }),
     }).toStrictEqual({
-      listed: true,
+      named: [
+        'acme',
+        'packs/acme',
+      ],
       warnings: [
         [
           'installation',

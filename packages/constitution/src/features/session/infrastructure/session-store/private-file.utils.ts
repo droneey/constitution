@@ -74,4 +74,11 @@ const writeWhole = (input: FileText): void => {
   renameSync(pending, input.path);
 };
 
-export { appendPrivately, readUnfollowed, writeWhole };
+const writeOrDrop = (write: () => void): void => {
+  attempted({
+    effect: write,
+    isRecognised: isSystemError,
+  });
+};
+
+export { appendPrivately, readUnfollowed, writeOrDrop, writeWhole };

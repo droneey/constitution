@@ -1,4 +1,4 @@
-import { RELEASE_FOLDER_PATH } from '../constants';
+import { releaseFolderInProject } from '../constants';
 import { AbsolutePath } from '../value-objects';
 
 interface ProjectPlace {
@@ -13,7 +13,7 @@ interface ProjectFolder {
 }
 
 const of = (repositoryFolderPath: AbsolutePath): ProjectPlace => ({
-  releaseFolderPath: AbsolutePath.join(repositoryFolderPath, RELEASE_FOLDER_PATH),
+  releaseFolderPath: AbsolutePath.join(repositoryFolderPath, releaseFolderInProject),
   repositoryFolderPath,
 });
 

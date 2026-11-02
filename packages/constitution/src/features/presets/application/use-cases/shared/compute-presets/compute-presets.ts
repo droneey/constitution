@@ -1,4 +1,4 @@
-import { RELEASE_FOLDER_PATH } from '#/kernel/constants';
+import { releaseFolderInProject } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
 import {
   AbsolutePath,
@@ -28,7 +28,7 @@ interface ComputePresetsInput {
   readonly project: PresetsProject;
 }
 
-const releaseFolderPathFromRepository = RepositoryRelativePath.create(RELEASE_FOLDER_PATH);
+const releaseFolderPathFromRepository = RepositoryRelativePath.create(releaseFolderInProject);
 
 const constitutionPathsOf = (input: {
   candidates: readonly Candidate[];

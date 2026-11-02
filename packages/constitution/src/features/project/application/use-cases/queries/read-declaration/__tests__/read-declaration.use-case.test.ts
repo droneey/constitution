@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import { createFakeProjectFiles } from '#/__tests__/project-files.fake';
 import { PROJECT, projectPlace, releaseFolderPath } from '#/__tests__/project-place.fixtures';
-import { Axis, Layer } from '#/kernel/constants';
+import { Layer } from '#/kernel/constants';
 import { ConfigReadStatus, WarningKind } from '#/kernel/entities';
 import { PackPath, SourceKind, UnitPath } from '#/kernel/value-objects';
 
@@ -20,7 +20,6 @@ import {
 } from '../../../../../__tests__/project.fixtures';
 import {
   activeOf,
-  filesOn,
   listedOf,
   listingOf,
   modelOf,
@@ -43,7 +42,7 @@ const membersReadOf = (declaration: Declaration): unknown =>
   declaration.status === ConfigReadStatus.Parsed
     ? {
         active: declaration.resolution.active.map(
-          (block) => `${block.unit}: ${block.files[0] ?? ''}`,
+          (block) => `${block.unit}: ${block.files[0]?.path ?? ''}`,
         ),
         packs: declaration.packs,
         warnings: declaration.resolution.warnings,
@@ -69,6 +68,9 @@ describe('readDeclaration', () => {
               'foundation/forms.md': '# Forms\n',
               'notes.txt': 'Notes.\n',
             },
+            governs: [
+              '**/*.tsx',
+            ],
             id: 'ui',
           },
         ],
@@ -108,13 +110,17 @@ describe('readDeclaration', () => {
         PackPath.create('extra'),
       ],
       resolution: {
+        core: [],
+        lowerings: new Map(),
         active: [
           activeOf({
             files: [
               'blocks/domains/ui/ui.md',
               'blocks/domains/ui/foundation/forms.md',
             ],
-            governs: [],
+            governs: [
+              '**/*.tsx',
+            ],
             id: 'ui',
           }),
           activeOf({
@@ -123,32 +129,17 @@ describe('readDeclaration', () => {
               './rules/blocks/implementations/lint/foundation/style.md',
             ],
             governs: [],
+            source: SourceKind.Pack,
             id: 'lint',
           }),
         ],
         listing: listingOf({
           repository: [
             listedOf({
-              files: [
-                filesOn({
-                  axis: Axis.Foundation,
-                  chapters: [
-                    'forms',
-                  ],
-                }),
-              ],
               id: 'ui',
               layer: Layer.Domain,
             }),
             listedOf({
-              files: [
-                filesOn({
-                  axis: Axis.Foundation,
-                  chapters: [
-                    'style',
-                  ],
-                }),
-              ],
               id: 'lint',
               layer: Layer.Implementation,
               pack: './rules',
@@ -160,11 +151,13 @@ describe('readDeclaration', () => {
             {
               id: 'core',
               layer: Layer.Core,
-              summary: undefined,
             },
             {
               chapters: [
                 'foundation/forms.md',
+              ],
+              governs: [
+                '**/*.tsx',
               ],
               id: 'ui',
             },

@@ -1,9 +1,11 @@
+export type { HookEventText, NamedHookEvent } from './hook-events.constants';
 export {
+  HOOK_EVENT_TEXTS,
   HookField,
-  hookEventTexts,
-  postToolUseEventSchema,
   recordCheckEventSchema,
+  sessionEventSchema,
   sessionStartEventSchema,
   stopEventSchema,
-  userPromptSubmitEventSchema,
+  toolEventSchema,
 } from './hook-events.constants';
+export { hotRuleSlugs } from './hot-list.constants';

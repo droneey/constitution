@@ -1,42 +1,20 @@
 import { describe, expect, it } from 'bun:test';
 
-import { Layer } from '#/kernel/constants';
-import type { ModelBlock, ProjectWarning } from '#/kernel/entities';
-import { BlockModel, ProjectUnit, WarningKind } from '#/kernel/entities';
-import { BlockId, coreBlockId, repositoryUnit, SourceKind, UnitPath } from '#/kernel/value-objects';
+import type { ProjectWarning } from '#/kernel/entities';
+import { BlockModel, WarningKind } from '#/kernel/entities';
+import { SourceKind } from '#/kernel/value-objects';
 
-import { BlockListing } from '../block-listing.entity';
 import { Resolution } from '../resolution.entity';
-
-const ui = BlockId.create('ui');
-
-const blockOf = (id: BlockId, layer: Layer): ModelBlock => ({
-  governs: [],
-  id,
-  isAbstract: false,
-  languages: [],
-  layer,
-  requires: [],
-});
-
-const unitOf = (input: { blocks: readonly BlockId[]; path: UnitPath }): ProjectUnit =>
-  ProjectUnit.create({
-    axes: [],
-    blocks: new Set(input.blocks),
-    languages: new Set(),
-    loweredRules: new Set(),
-    packs: [],
-    path: input.path,
-  });
 
 const warnedOf = (warnings: readonly ProjectWarning[]): Resolution =>
   Resolution.create({
+    core: [],
     active: [],
-    listing: BlockListing.create({
-      overrides: [],
+    listing: {
       repository: [],
       units: [],
-    }),
+    },
+    lowerings: new Map(),
     model: BlockModel.create({
       blocks: [],
       roles: [],
@@ -151,51 +129,5 @@ describe('Resolution.create', () => {
       releaseUi,
       releaseApi,
     ]);
-  });
-});
-
-describe('Resolution.activeInAnyUnitCountOf', () => {
-  it('should count each block some unit makes active once when a block is active in two units and one in none', () => {
-    // Arrange
-    const resolution = Resolution.create({
-      active: [],
-      listing: BlockListing.create({
-        overrides: [],
-        repository: [],
-        units: [],
-      }),
-      model: BlockModel.create({
-        blocks: [
-          blockOf(coreBlockId, Layer.Core),
-          blockOf(ui, Layer.Domain),
-          blockOf(BlockId.create('lint'), Layer.Implementation),
-        ],
-        roles: [],
-        rules: [],
-      }),
-      mustsBesideCore: [],
-      units: [
-        unitOf({
-          blocks: [
-            coreBlockId,
-          ],
-          path: repositoryUnit,
-        }),
-        unitOf({
-          blocks: [
-            coreBlockId,
-            ui,
-          ],
-          path: UnitPath.create('apps/web'),
-        }),
-      ],
-      warnings: [],
-    });
-
-    // Act
-    const count = Resolution.activeInAnyUnitCountOf(resolution);
-
-    // Assert
-    expect(count).toBe(2);
   });
 });

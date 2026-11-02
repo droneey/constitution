@@ -8,8 +8,7 @@ export { readDeclaration } from './application/use-cases/queries/read-declaratio
 export { readRelease } from './application/use-cases/queries/read-release';
 export type { OpenedProject } from './domain/project-opening/entities';
 export { OpeningStatus } from './domain/project-opening/entities';
-export type { BlockListing, UnitEntry } from './domain/resolution/entities';
-export { Resolution, UnitEntryKind } from './domain/resolution/entities';
+export { Resolution } from './domain/resolution/entities';
 export type { ProjectError } from './domain/shared/errors';
 export {
   isProjectError,

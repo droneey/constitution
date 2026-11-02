@@ -1,5 +1,5 @@
 import { Level, PATH_SEPARATOR } from '#/kernel/constants';
-import type { ActiveBlock, MustRule } from '#/kernel/entities';
+import type { ActiveBlock, CoreFiles, MustRule, SourcedFile } from '#/kernel/entities';
 import type { BlockPart } from '#/kernel/value-objects';
 import {
   BlockFileKind,
@@ -78,26 +78,42 @@ const reachedFrom = (input: {
   return reached;
 };
 
-const filesOf = (input: { block: BlockSetBlock; unit: ResolvedUnit }): readonly string[] => {
-  const { block, unit } = input;
-  const source =
-    block.source.kind === SourceKind.Pack ? `${block.source.pack}${PATH_SEPARATOR}` : '';
+const pathInSourceOf = (block: BlockSetBlock, file: BlockPart): string => {
+  const pathInBlocks = BlockFilePlace.pathOf({
+    block: block.id,
+    file,
+    layer: block.layer,
+  });
 
-  const pathOf = (file: BlockPart): string =>
-    `${source}${BlockFilePlace.pathOf({
-      block: block.id,
-      file,
-      layer: block.layer,
-    })}`;
+  switch (block.source.kind) {
+    case SourceKind.Release:
+      return pathInBlocks;
+    case SourceKind.Pack:
+      return `${block.source.pack}${PATH_SEPARATOR}${pathInBlocks}`;
+  }
+};
+
+const sourcedFileOf = (block: BlockSetBlock, file: BlockPart): SourcedFile => ({
+  path: pathInSourceOf(block, file),
+  source: block.source.kind,
+});
+
+const passportOf = (block: BlockSetBlock): SourcedFile =>
+  sourcedFileOf(block, {
+    kind: BlockFileKind.Passport,
+  });
+
+const partFilesOf = (input: {
+  block: BlockSetBlock;
+  unit: ResolvedUnit;
+}): readonly SourcedFile[] => {
+  const { block, unit } = input;
 
   return [
-    pathOf({
-      kind: BlockFileKind.Passport,
-    }),
     ...block.chapters
       .filter((chapter) => ResolvedUnit.isAxisOn(unit, chapter.axis))
       .map((chapter) =>
-        pathOf({
+        sourcedFileOf(block, {
           ...chapter,
           kind: BlockFileKind.Chapter,
         }),
@@ -107,7 +123,7 @@ const filesOf = (input: { block: BlockSetBlock; unit: ResolvedUnit }): readonly 
         (seam) => ResolvedUnit.isAxisOn(unit, seam.axis) && ResolvedUnit.isActive(unit, seam.other),
       )
       .map((seam) =>
-        pathOf({
+        sourcedFileOf(block, {
           ...seam,
           kind: BlockFileKind.Seam,
         }),
@@ -137,10 +153,13 @@ const activeBlocksOf = (input: ActivateBlocksInput): readonly ActiveBlock[] =>
     }));
 
     return blocks.map((block) => ({
-      files: filesOf({
-        block,
-        unit,
-      }),
+      files: [
+        passportOf(block),
+        ...partFilesOf({
+          block,
+          unit,
+        }),
+      ],
       governs: [
         ...new Set(
           reach.filter(({ reached }) => reached.has(block.id)).flatMap(({ from }) => from.governs),
@@ -151,13 +170,37 @@ const activeBlocksOf = (input: ActivateBlocksInput): readonly ActiveBlock[] =>
     }));
   });
 
+const coreFilesOf = (input: ActivateBlocksInput): readonly CoreFiles[] => {
+  const core = input.model.blocks.find((block) => BlockId.equals(block.id, coreBlockId));
+
+  return core === undefined
+    ? []
+    : input.units.flatMap((unit) => {
+        const files = partFilesOf({
+          block: core,
+          unit,
+        });
+
+        return files.length === 0
+          ? []
+          : [
+              {
+                files,
+                unit: unit.path,
+              },
+            ];
+      });
+};
+
 interface BlocksActivated {
   readonly active: readonly ActiveBlock[];
+  readonly core: readonly CoreFiles[];
   readonly mustsBesideCore: readonly MustRule[];
 }
 
 const activateBlocks = (input: ActivateBlocksInput): BlocksActivated => ({
   active: activeBlocksOf(input),
+  core: coreFilesOf(input),
   mustsBesideCore: mustRulesBesideCoreOf(input),
 });
 

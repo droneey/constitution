@@ -29,14 +29,25 @@ interface Session {
 }
 
 const CHECK = 'constitution run check';
+const REVIEW_COMMAND = '/check';
 const NOTHING: readonly string[] = [] as const;
 const BLOCKED: readonly string[] = [
   'block',
   CHECK,
 ] as const;
-const REVIEW: readonly string[] = [
-  'review',
+const HELD_FOR_BOTH: readonly string[] = [
+  'block',
+  CHECK,
+  REVIEW_COMMAND,
   'ui',
+] as const;
+const HELD_FOR_REVIEW: readonly string[] = [
+  'block',
+  REVIEW_COMMAND,
+  'ui',
+] as const;
+const TOLD: readonly string[] = [
+  'told',
 ] as const;
 
 const gateOf = (stdout: string): readonly string[] => {
@@ -49,23 +60,15 @@ const gateOf = (stdout: string): readonly string[] => {
       ...mentionedOf({
         names: [
           CHECK,
+          REVIEW_COMMAND,
+          'ui',
         ],
         text: String(reason),
       }),
     ];
   }
 
-  return typeof systemMessage === 'string'
-    ? [
-        'review',
-        ...mentionedOf({
-          names: [
-            'ui',
-          ],
-          text: systemMessage,
-        }),
-      ]
-    : NOTHING;
+  return typeof systemMessage === 'string' ? TOLD : NOTHING;
 };
 
 let root = '';
@@ -125,7 +128,7 @@ const startSession = (config: string): Session => {
   };
 };
 
-const write = (input: { path: string; project: string }): void => {
+const writeFile = (input: { path: string; project: string }): void => {
   mkdirSync(dirname(join(input.project, input.path)), {
     recursive: true,
   });
@@ -153,6 +156,41 @@ const fire = (input: {
     root,
     script: input.script,
   });
+
+const write = (input: { agent?: string; path: string; session: Session }): void => {
+  writeFile({
+    path: input.path,
+    project: input.session.project,
+  });
+  fire({
+    event: 'PostToolUse',
+    fields: Object.fromEntries([
+      ...(input.agent === undefined
+        ? []
+        : [
+            [
+              'agent_id',
+              input.agent,
+            ],
+          ]),
+      [
+        'tool_name',
+        'Write',
+      ],
+      [
+        'tool_input',
+        Object.fromEntries([
+          [
+            'file_path',
+            join(input.session.project, input.path),
+          ],
+        ]),
+      ],
+    ]),
+    script: 'post-tool-use.sh',
+    session: input.session,
+  });
+};
 
 const prompt = (session: Session): HookRun =>
   fire({
@@ -185,6 +223,7 @@ const ran = (input: { command: string; session: Session }): HookRun =>
 
 const stop = (input: {
   active?: boolean;
+  agent?: string;
   event?: StopEvent;
   session: Session;
 }): readonly string[] =>
@@ -196,9 +235,36 @@ const stop = (input: {
           'stop_hook_active',
           input.active === true,
         ],
+        ...(input.agent === undefined
+          ? []
+          : [
+              [
+                'agent_id',
+                input.agent,
+              ],
+            ]),
       ]),
       script: 'stop.sh',
       session: input.session,
+    }).stdout.trim(),
+  );
+
+const reviewerStopOf = (session: Session): readonly string[] =>
+  gateOf(
+    fire({
+      event: StopEvent.Subagent,
+      fields: Object.fromEntries([
+        [
+          'agent_id',
+          'reviewer-1',
+        ],
+        [
+          'agent_type',
+          'constitution:reviewer',
+        ],
+      ]),
+      script: 'stop.sh',
+      session,
     }).stdout.trim(),
   );
 
@@ -231,7 +297,7 @@ describe('the hand-back gate', () => {
     expect(output).toStrictEqual(NOTHING);
   });
 
-  it('should block once and then ask for a review when files changed and the check did not run', () => {
+  it('should hold the hand-back for the check and the review three times, then let it through and say so', () => {
     // Arrange
     const session = startSession(
       configOf({
@@ -242,7 +308,7 @@ describe('the hand-back gate', () => {
     prompt(session);
     write({
       path: 'src/features/orders/ui/order-card.tsx',
-      project: session.project,
+      session,
     });
 
     // Act
@@ -251,7 +317,7 @@ describe('the hand-back gate', () => {
     });
 
     // Assert
-    expect(first).toStrictEqual(BLOCKED);
+    expect(first).toStrictEqual(HELD_FOR_BOTH);
 
     // Act
     const second = stop({
@@ -259,7 +325,23 @@ describe('the hand-back gate', () => {
     });
 
     // Assert
-    expect(second).toStrictEqual(REVIEW);
+    expect(second).toStrictEqual(HELD_FOR_BOTH);
+
+    // Act
+    const third = stop({
+      session,
+    });
+
+    // Assert
+    expect(third).toStrictEqual(HELD_FOR_BOTH);
+
+    // Act
+    const fourth = stop({
+      session,
+    });
+
+    // Assert
+    expect(fourth).toStrictEqual(TOLD);
   });
 
   it('should let the agent stop when the check passed on the changed tree', () => {
@@ -269,7 +351,7 @@ describe('the hand-back gate', () => {
     prompt(session);
     write({
       path: 'src/main.ts',
-      project: session.project,
+      session,
     });
     ran({
       command: `${CHECK} && echo done`,
@@ -292,7 +374,7 @@ describe('the hand-back gate', () => {
     prompt(session);
     write({
       path: 'src/main.ts',
-      project: session.project,
+      session,
     });
     ran({
       command: CHECK,
@@ -300,7 +382,7 @@ describe('the hand-back gate', () => {
     });
     write({
       path: 'src/other.ts',
-      project: session.project,
+      session,
     });
 
     // Act
@@ -322,7 +404,7 @@ describe('the hand-back gate', () => {
     prompt(session);
     write({
       path: 'src/main.ts',
-      project: session.project,
+      session,
     });
     ran({
       command,
@@ -349,7 +431,7 @@ describe('the hand-back gate', () => {
     prompt(session);
     write({
       path: 'src/main.ts',
-      project: session.project,
+      session,
     });
     ran({
       command: CHECK,
@@ -376,23 +458,13 @@ describe('the hand-back gate', () => {
     prompt(session);
     write({
       path: 'src/features/orders/ui/order-card.tsx',
-      project: session.project,
+      session,
     });
     ran({
       command: CHECK,
       session,
     });
-    fire({
-      event: StopEvent.Subagent,
-      fields: Object.fromEntries([
-        [
-          'agent_type',
-          'constitution:reviewer',
-        ],
-      ]),
-      script: 'stop.sh',
-      session,
-    });
+    reviewerStopOf(session);
 
     // Act
     const output = stop({
@@ -403,7 +475,7 @@ describe('the hand-back gate', () => {
     expect(output).toStrictEqual(NOTHING);
   });
 
-  it('should let a subagent stop without asking for a review when the check passed', () => {
+  it('should let a subagent that passed the check stop, then hold the coordinator for the review of its work until it is recorded', () => {
     // Arrange
     const session = startSession(
       configOf({
@@ -413,8 +485,9 @@ describe('the hand-back gate', () => {
 
     prompt(session);
     write({
+      agent: 'agent-1',
       path: 'src/features/orders/ui/order-card.tsx',
-      project: session.project,
+      session,
     });
     ran({
       command: CHECK,
@@ -422,13 +495,36 @@ describe('the hand-back gate', () => {
     });
 
     // Act
-    const output = stop({
+    const subagentStop = stop({
+      agent: 'agent-1',
       event: StopEvent.Subagent,
       session,
     });
 
     // Assert
-    expect(output).toStrictEqual(NOTHING);
+    expect(subagentStop).toStrictEqual(NOTHING);
+
+    // Act
+    const held = stop({
+      session,
+    });
+
+    // Assert
+    expect(held).toStrictEqual(HELD_FOR_REVIEW);
+
+    // Act
+    const reviewerStop = reviewerStopOf(session);
+
+    // Assert
+    expect(reviewerStop).toStrictEqual(NOTHING);
+
+    // Act
+    const reviewed = stop({
+      session,
+    });
+
+    // Assert
+    expect(reviewed).toStrictEqual(NOTHING);
   });
 
   it('should let the agent stop when a block of this hook is being answered', () => {
@@ -438,7 +534,7 @@ describe('the hand-back gate', () => {
     prompt(session);
     write({
       path: 'src/main.ts',
-      project: session.project,
+      session,
     });
 
     // Act
@@ -471,7 +567,7 @@ describe('the hand-back gate', () => {
       session: session.id,
     });
     prompt(session);
-    write({
+    writeFile({
       path: 'src/main.ts',
       project,
     });
@@ -495,5 +591,120 @@ describe('the hand-back gate', () => {
 
     // Assert
     expect(main.stdout).toBe('');
+  });
+
+  it('should not hold the main session for files only a subagent changed', () => {
+    // Arrange
+    const session = startSession(
+      configOf({
+        domains: '[ui]',
+      }),
+    );
+
+    prompt(session);
+    write({
+      agent: 'agent-1',
+      path: 'src/features/orders/ui/order-card.tsx',
+      session,
+    });
+
+    // Act
+    const output = stop({
+      session,
+    });
+
+    // Assert
+    expect(output).toStrictEqual(NOTHING);
+  });
+
+  it('should hold a subagent with its own changes for the check alone, and let its second stop in a row through', () => {
+    // Arrange
+    const session = startSession(
+      configOf({
+        domains: '[ui]',
+      }),
+    );
+
+    prompt(session);
+    write({
+      agent: 'agent-1',
+      path: 'src/features/orders/ui/order-card.tsx',
+      session,
+    });
+
+    // Act
+    const first = stop({
+      agent: 'agent-1',
+      event: StopEvent.Subagent,
+      session,
+    });
+
+    // Assert
+    expect(first).toStrictEqual(BLOCKED);
+
+    // Act
+    const second = stop({
+      active: true,
+      agent: 'agent-1',
+      event: StopEvent.Subagent,
+      session,
+    });
+
+    // Assert
+    expect(second).toStrictEqual(NOTHING);
+  });
+
+  it('should hold the main session with its own changes until both the check and the review are recorded', () => {
+    // Arrange
+    const session = startSession(
+      configOf({
+        domains: '[ui]',
+      }),
+    );
+
+    prompt(session);
+    write({
+      path: 'src/features/orders/ui/order-card.tsx',
+      session,
+    });
+
+    // Act
+    const before = stop({
+      session,
+    });
+
+    // Assert
+    expect(before).toStrictEqual(HELD_FOR_BOTH);
+
+    // Act
+    const check = ran({
+      command: CHECK,
+      session,
+    });
+
+    // Assert
+    expect(check.stdout).toBe('');
+
+    // Act
+    const checked = stop({
+      session,
+    });
+
+    // Assert
+    expect(checked).toStrictEqual(HELD_FOR_REVIEW);
+
+    // Act
+    const reviewerStop = reviewerStopOf(session);
+
+    // Assert
+    expect(reviewerStop).toStrictEqual(NOTHING);
+
+    // Act
+    const reviewed = stop({
+      session,
+    });
+
+    // Assert
+    expect(reviewed).toStrictEqual(NOTHING);
   });
 });

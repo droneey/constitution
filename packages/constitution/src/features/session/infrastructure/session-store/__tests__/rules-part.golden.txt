@@ -1,0 +1,46 @@
+# The rules to read, part 1 of 1
+
+Each rule is given at the level that binds where you work, with its Why. Read the whole file.
+
+## /work/blocks/core/foundation/names.md
+
+<!-- rule rule-1 0000000000000001 -->
+### rule-1 · MUST
+
+A name reveals intent.
+
+Why: Readers learn from names.
+
+<!-- rule rule-2 0000000000000002 -->
+### rule-2 → rule-1 · MUST
+
+A name reveals intent.
+
+Why: Readers learn from names.
+
+<!-- rule rule-3 0000000000000003 -->
+### rule-3 · MAY
+
+Lowered here to MAY: generated names
+
+A name reveals intent.
+
+Why: Readers learn from names.
+
+<!-- rule rule-4 0000000000000004 -->
+### rule-4 · SHOULD
+
+Lowered here to SHOULD through generated-code: generated names
+
+A name reveals intent.
+
+Why: Readers learn from names.
+
+## /work/blocks/core/foundation/functions.md
+
+<!-- rule rule-5 0000000000000005 -->
+### rule-5 · MUST
+
+A function does one thing.
+
+Why: One thing is read, named and tested at once.

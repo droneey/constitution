@@ -9,8 +9,9 @@ import type { SessionQueries } from '../application/contracts/repositories/queri
 import type { SessionState } from '../domain/session/entities';
 import { SessionAgent, SessionMark } from '../domain/session/entities';
 import { AgentId, SessionId } from '../domain/session/value-objects';
+import type { ReviewDebt } from '../domain/stop-judgement/entities';
 import { TreeFingerprint } from '../domain/tree-state/value-objects';
-import { activeBlockOf, mustOf, sessionStateOf } from './session.fixtures';
+import { keptBlockOf, mustOf, sessionStateOf } from './session.fixtures';
 
 type SessionPort = SessionRepository & SessionQueries;
 
@@ -25,10 +26,10 @@ const otherAgent = AgentId.create('agent-8');
 
 const savedState = sessionStateOf({
   active: [
-    activeBlockOf({
+    keptBlockOf({
       id: 'core',
     }),
-    activeBlockOf({
+    keptBlockOf({
       files: [],
       governs: [],
       id: 'ui',
@@ -53,6 +54,25 @@ const savedState = sessionStateOf({
   ],
   repositoryFolderPath: AbsolutePath.create('/work'),
 });
+
+const firstPath = AbsolutePath.create('/work/src/a.ts');
+const secondPath = AbsolutePath.create('/work/src/b.ts');
+const firstReview: ReviewDebt = {
+  agent,
+  path: firstPath,
+};
+const secondReview: ReviewDebt = {
+  agent,
+  path: secondPath,
+};
+const reviewOwed = {
+  paths: [
+    firstPath,
+    secondPath,
+  ],
+  session,
+  subagent: agent,
+};
 
 const laterState: SessionState = {
   repositoryFolderPath: AbsolutePath.create('/work/later'),
@@ -180,8 +200,8 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
 
       // Act
       const seen = {
-        blocked: sessionPort.fingerprint({
-          mark: SessionMark.Blocked,
+        reviewed: sessionPort.fingerprint({
+          mark: SessionMark.Reviewed,
           session,
         }),
         checked: sessionPort.fingerprint({
@@ -197,8 +217,8 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
 
       // Assert
       expect(seen).toStrictEqual({
-        blocked: undefined,
         checked: TreeFingerprint.create('f00d'),
+        reviewed: undefined,
         turn: TreeFingerprint.create('def'),
         unjudged: 'git timed out',
       });
@@ -347,6 +367,170 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
         });
       },
     );
+
+    it.each<{
+      asked: SessionAgent;
+      clear: (sessionPort: SessionPort) => void;
+      condition: string;
+      expected: readonly AbsolutePath[];
+    }>([
+      {
+        asked: SessionAgent.main,
+        clear: () => undefined,
+        condition: 'it changed them, once each',
+        expected: [
+          firstPath,
+          secondPath,
+        ],
+      },
+      {
+        asked: SessionAgent.main,
+        clear: (sessionPort) => {
+          sessionPort.clearOwnChanges({
+            agent: SessionAgent.main,
+            session,
+          });
+        },
+        condition: 'a check and a review cleared them',
+        expected: [],
+      },
+      {
+        asked: agent,
+        clear: (sessionPort) => {
+          sessionPort.clearOwnChanges({
+            agent: SessionAgent.main,
+            session,
+          });
+        },
+        condition: 'another agent changed one of them',
+        expected: [
+          secondPath,
+        ],
+      },
+    ])("should read back an agent's own changes when $condition", ({ asked, clear, expected }) => {
+      // Arrange
+      const sessionPort = input.repositoryOf();
+
+      sessionPort.addOwnChanges({
+        agent: SessionAgent.main,
+        paths: [
+          firstPath,
+          secondPath,
+          firstPath,
+        ],
+        session,
+      });
+      sessionPort.addOwnChanges({
+        agent,
+        paths: [
+          secondPath,
+        ],
+        session,
+      });
+
+      clear(sessionPort);
+
+      // Act
+      const own = sessionPort.ownChanges({
+        agent: asked,
+        session,
+      });
+
+      // Assert
+      expect(own).toStrictEqual(expected);
+    });
+
+    it.each<{
+      condition: string;
+      expected: readonly ReviewDebt[];
+      write: (sessionPort: SessionPort) => void;
+    }>([
+      {
+        condition: 'they are owed, once each',
+        expected: [
+          firstReview,
+          secondReview,
+        ],
+        write: (sessionPort) => {
+          sessionPort.addReviewDebt(reviewOwed);
+          sessionPort.addReviewDebt(reviewOwed);
+        },
+      },
+      {
+        condition: 'the reviews judged are settled',
+        expected: [],
+        write: (sessionPort) => {
+          sessionPort.addReviewDebt(reviewOwed);
+          sessionPort.settleReviewDebt({
+            debts: [
+              firstReview,
+              secondReview,
+            ],
+            session,
+          });
+        },
+      },
+      {
+        condition: 'a review was owed after the judged ones were read and before they were settled',
+        expected: [
+          secondReview,
+        ],
+        write: (sessionPort) => {
+          sessionPort.addReviewDebt({
+            ...reviewOwed,
+            paths: [
+              firstPath,
+            ],
+          });
+          sessionPort.addReviewDebt({
+            ...reviewOwed,
+            paths: [
+              secondPath,
+            ],
+          });
+          sessionPort.settleReviewDebt({
+            debts: [
+              firstReview,
+            ],
+            session,
+          });
+        },
+      },
+      {
+        condition: 'a review is owed again after it was settled',
+        expected: [
+          firstReview,
+        ],
+        write: (sessionPort) => {
+          const firstOwed = {
+            ...reviewOwed,
+            paths: [
+              firstPath,
+            ],
+          };
+
+          sessionPort.addReviewDebt(firstOwed);
+          sessionPort.settleReviewDebt({
+            debts: [
+              firstReview,
+            ],
+            session,
+          });
+          sessionPort.addReviewDebt(firstOwed);
+        },
+      },
+    ])('should read back the reviews owed for subagents when $condition', ({ expected, write }) => {
+      // Arrange
+      const sessionPort = input.repositoryOf();
+
+      write(sessionPort);
+
+      // Act
+      const owed = sessionPort.reviewDebt(session);
+
+      // Assert
+      expect(owed).toStrictEqual(expected);
+    });
   });
 };
 

@@ -12,9 +12,11 @@ import { RuleHeading } from './rule-heading.entity';
 import type { ValueFindingDetails } from './value-finding.entity';
 import { ValueSite } from './value-finding.entity';
 
-interface StatedRule extends RulePlace, RuleText {
+interface RuleWording extends RuleText {
   readonly statedLevel?: Level;
 }
+
+interface StatedRule extends RulePlace, RuleWording {}
 
 enum RuleFormCode {
   HeadingMisshapen = 'rule-heading-misshapen',
@@ -73,6 +75,11 @@ interface RuleSource {
 interface Table {
   readonly cells: readonly string[];
   readonly problems: readonly RuleFormProblem[];
+}
+
+interface WordingRead {
+  readonly problems: readonly (RuleFormProblem | SlugProblem)[];
+  readonly wording?: RuleWording;
 }
 
 interface SectionRead {
@@ -244,29 +251,19 @@ const placeOf = (input: {
       }),
 });
 
-const readSection = (input: {
-  chapterTitle: string | undefined;
-  markdown: MarkdownSection;
-  section: string | undefined;
-  source: RuleSource;
-}): SectionRead => {
-  const heading = headingOf(input.markdown.heading);
-
-  const atFile = (problem: RuleFormProblem | SlugProblem): RuleFormFinding => ({
-    ...problem,
-    path: input.source.file,
-  });
+const wordingOfSection = (markdown: MarkdownSection): WordingRead => {
+  const heading = headingOf(markdown.heading);
 
   if (heading === undefined) {
     return {
-      findings: LOOKS_LIKE_RULE.test(input.markdown.heading)
+      problems: LOOKS_LIKE_RULE.test(markdown.heading)
         ? [
-            atFile({
+            {
               code: RuleFormCode.HeadingMisshapen,
               details: {
-                heading: input.markdown.heading,
+                heading: markdown.heading,
               },
-            }),
+            },
           ]
         : [],
     };
@@ -276,31 +273,29 @@ const readSection = (input: {
 
   if (slugProblem !== undefined) {
     return {
-      findings: [
-        atFile(slugProblem),
+      problems: [
+        slugProblem,
       ],
     };
   }
 
-  const { lines } = input.markdown;
+  const { lines } = markdown;
   const slug = RuleSlug.create(heading.slug);
   const table = tableOf({
     lines,
     slug,
   });
   const [why = ''] = table.cells;
-  const problems: readonly RuleFormProblem[] = [
-    ...table.problems,
-    ...labelProblems({
-      lines,
-      slug,
-    }),
-  ];
 
   return {
-    findings: problems.map(atFile),
-    rule: {
-      ...placeOf(input),
+    problems: [
+      ...table.problems,
+      ...labelProblems({
+        lines,
+        slug,
+      }),
+    ],
+    wording: {
       slug,
       ...(heading.level === undefined
         ? {}
@@ -316,6 +311,33 @@ const readSection = (input: {
       why,
     },
   };
+};
+
+const readSection = (input: {
+  chapterTitle: string | undefined;
+  markdown: MarkdownSection;
+  section: string | undefined;
+  source: RuleSource;
+}): SectionRead => {
+  const { problems, wording } = wordingOfSection(input.markdown);
+  const findings = problems.map(
+    (problem): RuleFormFinding => ({
+      ...problem,
+      path: input.source.file,
+    }),
+  );
+
+  return wording === undefined
+    ? {
+        findings,
+      }
+    : {
+        findings,
+        rule: {
+          ...placeOf(input),
+          ...wording,
+        },
+      };
 };
 
 const parse = (source: RuleSource): RulesParsed => {
@@ -344,6 +366,9 @@ const parse = (source: RuleSource): RulesParsed => {
     ),
   };
 };
+
+const wordingsOf = (text: string): readonly RuleWording[] =>
+  sectionsOf(text).flatMap((markdown) => wordingOfSection(markdown).wording ?? []);
 
 const levelOf = (input: {
   rule: StatedRule;
@@ -392,7 +417,8 @@ const inheritLevels = (stated: readonly StatedRule[]): readonly Rule[] => {
 const StatedRule = {
   inheritLevels,
   parse,
+  wordingsOf,
 } as const;
 
-export type { RuleFormDetails, RuleSource, RulesParsed };
+export type { RuleFormDetails, RuleSource, RulesParsed, RuleWording };
 export { RuleFormCode, StatedRule };

@@ -33,9 +33,8 @@ const blockCardModel: z.ZodType<BlockCard> = z
     governs: listModel,
     languages: listModel,
     requires: listModel,
-    summary: textModel,
   })
-  .transform(({ abstract, extends: base, governs, languages, requires, summary }) => ({
+  .transform(({ abstract, extends: base, governs, languages, requires }) => ({
     ...(base === ''
       ? {}
       : {
@@ -45,11 +44,6 @@ const blockCardModel: z.ZodType<BlockCard> = z
     isAbstract: abstract,
     languages,
     requires,
-    ...(summary === ''
-      ? {}
-      : {
-          summary,
-        }),
   }));
 
 export { blockCardModel };

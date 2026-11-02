@@ -1,10 +1,14 @@
 import type { LoweredLevel } from '../constants';
 import type { RuleSlug, UnitPath } from '../value-objects';
 
-interface Lowering {
+interface LoweringPlace {
   readonly level: LoweredLevel;
   readonly unit: UnitPath;
   readonly via?: RuleSlug;
 }
 
-export type { Lowering };
+interface Lowering extends LoweringPlace {
+  readonly reason: string;
+}
+
+export type { Lowering, LoweringPlace };

@@ -6,9 +6,11 @@ export {
   CHECK_KEY,
   CONFIG_FILE_NAME,
   ConfigKey,
+  DRONEEY_FOLDER_NAME,
   LIST_KEYS,
-  RELEASE_FOLDER_PATH,
   REQUIRED_CONFIG_KEYS,
+  releaseFolderInProject,
+  sessionsFolderInProject,
 } from './project.constants';
 export type { LoweredLevel } from './vocabulary.constants';
 export {

@@ -106,4 +106,28 @@ describe('AbsolutePath', () => {
     // Assert
     expect<readonly string[]>(folders).toStrictEqual(expected);
   });
+
+  it.each([
+    {
+      condition: 'it lies in a folder',
+      parent: '/work/project/src',
+      path: '/work/project/src/a.ts',
+    },
+    {
+      condition: 'it lies at the root',
+      parent: '/',
+      path: '/a.ts',
+    },
+    {
+      condition: 'it is the root',
+      parent: '/',
+      path: '/',
+    },
+  ])('should give the folder of a path when $condition', ({ parent, path }) => {
+    // Act
+    const given = AbsolutePath.parentOf(AbsolutePath.create(path));
+
+    // Assert
+    expect<string>(given).toBe(parent);
+  });
 });

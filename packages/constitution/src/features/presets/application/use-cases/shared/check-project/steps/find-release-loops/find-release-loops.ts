@@ -1,4 +1,4 @@
-import { RELEASE_FOLDER_PATH } from '#/kernel/constants';
+import { releaseFolderInProject } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
 import type { ProjectUnit, ProjectWarning } from '#/kernel/entities';
 import { AbsolutePath } from '#/kernel/value-objects';
@@ -17,7 +17,7 @@ const findReleaseLoops = (input: FindReleaseLoopsInput): readonly ProjectWarning
 
     return PresetsProject.releaseLoopOf({
       realReleaseFolderPath: input.files.realFolder(
-        AbsolutePath.join(unitFolderPath, RELEASE_FOLDER_PATH),
+        AbsolutePath.join(unitFolderPath, releaseFolderInProject),
       ),
       realUnitFolderPath: input.files.realFolder(unitFolderPath),
       unitPath: unit.path,

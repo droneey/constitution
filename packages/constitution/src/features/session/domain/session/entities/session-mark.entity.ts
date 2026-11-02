@@ -1,7 +1,6 @@
 enum SessionMark {
   Turn = 'turn',
   Checked = 'checked',
-  Blocked = 'blocked',
   Reviewed = 'reviewed',
   Unjudged = 'unjudged',
 }

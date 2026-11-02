@@ -1,5 +1,7 @@
+import type { ActiveBlock } from '#/kernel/entities';
 import { ConfigReadStatus } from '#/kernel/entities';
 
+import type { KeptBlock } from '../../../../domain/session/entities';
 import { DigestKind, SessionDigest } from '../../../../domain/session-digest/entities';
 import { SessionStart } from '../../../../domain/session-start/entities';
 import type { RulesSource, WorkingTree } from '../../../contracts';
@@ -8,6 +10,13 @@ interface DigestSessionPorts {
   readonly source: RulesSource;
   readonly workingTree: WorkingTree;
 }
+
+const keptBlockOf = (block: ActiveBlock): KeptBlock => ({
+  files: block.files.map((file) => file.path),
+  governs: block.governs,
+  id: block.id,
+  unit: block.unit,
+});
 
 /**
  * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
@@ -59,7 +68,6 @@ const digestSession = (input: DigestSessionPorts & SessionStart): SessionDigest 
   return {
     contents: {
       core,
-      count: rules.activeInAnyUnitCount,
       isStartup: SessionStart.isStartup(input),
       kind: DigestKind.Resolved,
       listing: rules.listing,
@@ -71,7 +79,7 @@ const digestSession = (input: DigestSessionPorts & SessionStart): SessionDigest 
       }),
     },
     state: {
-      active: rules.active,
+      active: rules.active.map(keptBlockOf),
       mustsBesideCore: rules.mustsBesideCore,
       repositoryFolderPath,
       status: ConfigReadStatus.Parsed,

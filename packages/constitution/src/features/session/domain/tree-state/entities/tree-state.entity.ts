@@ -1,4 +1,5 @@
 import type { TreeFingerprint } from '../value-objects';
+import type { FileSignatures } from './shell-tree.entity';
 
 enum TreeStateStatus {
   Read = 'read',
@@ -6,11 +7,7 @@ enum TreeStateStatus {
   Failed = 'failed',
 }
 
-type TreeState =
-  | {
-      readonly fingerprint: TreeFingerprint;
-      readonly status: TreeStateStatus.Read;
-    }
+type UnreadTree =
   | {
       readonly status: TreeStateStatus.NoRepository;
     }
@@ -19,5 +16,19 @@ type TreeState =
       readonly status: TreeStateStatus.Failed;
     };
 
-export type { TreeState };
+type TreeState =
+  | {
+      readonly fingerprint: TreeFingerprint;
+      readonly status: TreeStateStatus.Read;
+    }
+  | UnreadTree;
+
+type TreeSnapshot =
+  | {
+      readonly fileSignatures: FileSignatures;
+      readonly status: TreeStateStatus.Read;
+    }
+  | UnreadTree;
+
+export type { TreeSnapshot, TreeState, UnreadTree };
 export { TreeStateStatus };

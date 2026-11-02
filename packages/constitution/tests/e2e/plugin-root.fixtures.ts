@@ -164,7 +164,6 @@ export {
   createPluginRoot,
   createRealPluginRoot,
   distributionOf,
-  INSTALLED,
   LINK,
   linkDistribution,
   removeFolder,

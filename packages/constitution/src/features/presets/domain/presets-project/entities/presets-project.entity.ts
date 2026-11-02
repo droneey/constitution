@@ -1,4 +1,4 @@
-import { PATH_SEPARATOR, RELEASE_FOLDER_PATH } from '#/kernel/constants';
+import { PATH_SEPARATOR, releaseFolderInProject } from '#/kernel/constants';
 import type { BlockModel, ProjectPlace, ProjectUnit, ProjectWarning } from '#/kernel/entities';
 import { WarningKind } from '#/kernel/entities';
 import type { AbsolutePath, PackPath, UnitPath } from '#/kernel/value-objects';
@@ -60,7 +60,7 @@ interface ReleaseLink {
 }
 
 const releaseLoopOf = (link: ReleaseLink): readonly ProjectWarning[] => {
-  const segments = `${link.realUnitFolderPath}${PATH_SEPARATOR}${RELEASE_FOLDER_PATH}`.split(
+  const segments = `${link.realUnitFolderPath}${PATH_SEPARATOR}${releaseFolderInProject}`.split(
     PATH_SEPARATOR,
   );
   const holders = segments.map((_, index) => segments.slice(0, index).join(PATH_SEPARATOR));

@@ -1,12 +1,18 @@
 import { describe, expect, it } from 'bun:test';
 
-import { BlockId } from '#/kernel/value-objects';
+import { AbsolutePath, BlockId } from '#/kernel/value-objects';
 
-import { heldSessionsOf, keptSession } from '../../../../../__tests__/session.fixtures';
+import {
+  heldSessionsOf,
+  keptSession,
+  ownChangesIn,
+  reviewDebtIn,
+} from '../../../../../__tests__/session.fixtures';
 import { createFakeSessionRepository } from '../../../../../__tests__/session-command-repository.fake';
-import { SessionMark } from '../../../../../domain/session/entities';
+import { SessionAgent, SessionMark } from '../../../../../domain/session/entities';
+import { AgentId } from '../../../../../domain/session/value-objects';
 import type { StopJudgement } from '../../../../../domain/stop-judgement/entities';
-import { StopVerdict } from '../../../../../domain/stop-judgement/entities';
+import { HandBackStep, StopVerdict } from '../../../../../domain/stop-judgement/entities';
 import { TreeFingerprint } from '../../../../../domain/tree-state/value-objects';
 import { recordJudgement } from '../record-judgement.use-case';
 
@@ -19,10 +25,6 @@ const heldBefore = {
       mark: SessionMark.Reviewed,
       value: treeBefore,
     },
-    {
-      mark: SessionMark.Blocked,
-      value: treeBefore,
-    },
   ],
 };
 
@@ -31,7 +33,6 @@ describe('recordJudgement', () => {
     condition: string;
     judgement: StopJudgement;
     marks: {
-      blocked: string;
       reviewed: string;
       unjudged: string | undefined;
     };
@@ -43,19 +44,25 @@ describe('recordJudgement', () => {
         verdict: StopVerdict.Reviewed,
       },
       marks: {
-        blocked: treeBefore,
         reviewed: treeNow,
         unjudged: undefined,
       },
     },
     {
-      condition: 'the gate blocked the hand-back',
+      condition: 'the gate held the hand-back, whose holds its own streak counts',
       judgement: {
+        blocks: [
+          BlockId.create('ui'),
+        ],
         fingerprint: treeNow,
+        missing: [
+          HandBackStep.Check,
+          HandBackStep.Review,
+        ],
+        subagentChanges: [],
         verdict: StopVerdict.Blocked,
       },
       marks: {
-        blocked: treeNow,
         reviewed: treeBefore,
         unjudged: undefined,
       },
@@ -67,7 +74,6 @@ describe('recordJudgement', () => {
         verdict: StopVerdict.Unjudged,
       },
       marks: {
-        blocked: treeBefore,
         reviewed: treeBefore,
         unjudged: 'fatal: bad config',
       },
@@ -78,6 +84,7 @@ describe('recordJudgement', () => {
 
     // Act
     recordJudgement({
+      agent: SessionAgent.main,
       judgement,
       session: keptSession,
       sessionRepository: createFakeSessionRepository(store),
@@ -85,32 +92,80 @@ describe('recordJudgement', () => {
 
     // Assert
     expect({
-      blocked: store.get(keptSession)?.marks.get(SessionMark.Blocked),
       reviewed: store.get(keptSession)?.marks.get(SessionMark.Reviewed),
       unjudged: store.get(keptSession)?.marks.get(SessionMark.Unjudged),
     }).toStrictEqual(marks);
   });
 
-  it('should record nothing when the gate asked for a review', () => {
+  it("should forget the session's own changes and the reviews judged once the check and the review cover them, and no review owed since nor any subagent's own changes", () => {
     // Arrange
     const store = heldSessionsOf(heldBefore);
+    const sessionRepository = createFakeSessionRepository(store);
+    const path = AbsolutePath.create('/work/project/src/a.ts');
+    const later = AbsolutePath.create('/work/project/src/b.ts');
+    const subagent = AgentId.create('agent-1');
+
+    sessionRepository.addOwnChanges({
+      agent: SessionAgent.main,
+      paths: [
+        path,
+      ],
+      session: keptSession,
+    });
+    sessionRepository.addOwnChanges({
+      agent: subagent,
+      paths: [
+        path,
+      ],
+      session: keptSession,
+    });
+    sessionRepository.addReviewDebt({
+      paths: [
+        path,
+        later,
+      ],
+      session: keptSession,
+      subagent,
+    });
 
     // Act
     recordJudgement({
+      agent: SessionAgent.main,
       judgement: {
-        blocks: [
-          BlockId.create('ui'),
+        subagentChanges: [
+          {
+            agent: subagent,
+            path,
+          },
         ],
-        verdict: StopVerdict.Review,
+        verdict: StopVerdict.Covered,
       },
       session: keptSession,
-      sessionRepository: createFakeSessionRepository(store),
+      sessionRepository,
     });
 
     // Assert
-    expect(Object.fromEntries(store.get(keptSession)?.marks ?? [])).toStrictEqual({
-      [SessionMark.Reviewed]: treeBefore,
-      [SessionMark.Blocked]: treeBefore,
+    expect({
+      debt: reviewDebtIn(store, keptSession),
+      own: ownChangesIn(store, {
+        agent: SessionAgent.main,
+        session: keptSession,
+      }),
+      subagent: ownChangesIn(store, {
+        agent: subagent,
+        session: keptSession,
+      }),
+    }).toStrictEqual({
+      debt: [
+        {
+          agent: subagent,
+          path: later,
+        },
+      ],
+      own: [],
+      subagent: [
+        path,
+      ],
     });
   });
 });

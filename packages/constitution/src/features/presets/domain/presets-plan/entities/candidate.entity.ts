@@ -1,4 +1,4 @@
-import { PARENT_SEGMENT, PATH_SEPARATOR, RELEASE_FOLDER_PATH } from '#/kernel/constants';
+import { PARENT_SEGMENT, PATH_SEPARATOR, releaseFolderInProject } from '#/kernel/constants';
 import type { ProjectUnit } from '#/kernel/entities';
 import type { RepositoryRelativePath } from '#/kernel/value-objects';
 import { configFilePath, UnitPath } from '#/kernel/value-objects';
@@ -67,11 +67,11 @@ const releaseProbesOf = (candidate: Candidate): readonly ReleaseProbe[] => {
           },
           () => PARENT_SEGMENT,
         ),
-        RELEASE_FOLDER_PATH,
+        releaseFolderInProject,
       ].join(PATH_SEPARATOR),
       releaseFolderPath: [
         ...folderNames.slice(0, depth),
-        RELEASE_FOLDER_PATH,
+        releaseFolderInProject,
       ].join(PATH_SEPARATOR),
     }));
 };

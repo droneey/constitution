@@ -8,8 +8,8 @@ import type { SessionState } from '../../../../domain/session/entities';
 import type { SessionId } from '../../../../domain/session/value-objects';
 import type { SessionDigest } from '../../../../domain/session-digest/entities';
 import type { SessionOrigin, SessionStart } from '../../../../domain/session-start/entities';
-import type { HookEventName } from '../../../../domain/shared/entities';
-import { HookField, hookEventTexts, sessionStartEventSchema } from '../../../constants';
+import { HookEventName } from '../../../../domain/shared/entities';
+import { HookField, sessionStartEventSchema } from '../../../constants';
 import { contextOutputOf, digestOf, hookEventOf } from '../../../utils';
 
 interface SessionStartContext extends CommandContext {
@@ -24,6 +24,12 @@ interface SessionStartContext extends CommandContext {
     session: SessionId;
     state: SessionState | undefined;
   }) => void;
+  readonly resetReading: (reset: {
+    event: HookEventName;
+    origin: SessionOrigin;
+    session: SessionId;
+  }) => void;
+  readonly sweepStaleSessions: (swept: { searchFrom: AbsolutePath; session: SessionId }) => void;
 }
 
 const createSessionStartCommand = (context: SessionStartContext): Command =>
@@ -42,10 +48,9 @@ const createSessionStartCommand = (context: SessionStartContext): Command =>
       });
       const { places } = context;
       const name = event[HookField.HookEventName];
-      const answered = hookEventTexts.get(name);
 
       // Why: Claude Code takes an answer only for an event it names.
-      if (answered === undefined) {
+      if (name === HookEventName.Unknown) {
         return;
       }
 
@@ -57,8 +62,24 @@ const createSessionStartCommand = (context: SessionStartContext): Command =>
           given: places.projectDir ?? event[HookField.Cwd] ?? places.cwd,
         }),
       };
-      const started = context.digestSession(start);
       const session = event[HookField.SessionId];
+
+      if (session !== undefined) {
+        context.resetReading({
+          event: start.event,
+          origin: start.origin,
+          session,
+        });
+
+        if (name === HookEventName.SessionStart) {
+          context.sweepStaleSessions({
+            searchFrom: start.searchFrom,
+            session,
+          });
+        }
+      }
+
+      const started = context.digestSession(start);
 
       if (started === undefined) {
         return;
@@ -77,7 +98,7 @@ const createSessionStartCommand = (context: SessionStartContext): Command =>
 
       context.io.write(
         contextOutputOf({
-          event: answered,
+          event: name,
           text: [
             ...head,
             ...(body.length === 0

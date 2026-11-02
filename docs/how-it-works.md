@@ -63,9 +63,11 @@ flowchart TD
 
 ## A session
 
-1. **At the start**, a hook gives the agent [the digest](reference/plugin.md#the-digest): the release, the warnings about `constitution.yaml` and the active blocks.
-2. **On each file** the agent reads or edits, a hook names the blocks that govern it and their MUST rules, once per block.
-3. **At the hand-back**, a hook blocks the stop when the tree changed since the check last passed, and tells the agent to run it.
-4. **On demand**, [`/constitution:check`](reference/skills.md#constitutioncheck) runs the check and asks the reviewer to judge the changed files against their rules.
+1. **At the start**, a hook gives the agent [the digest](reference/plugin.md#the-digest): the release, core's passport, the map of the active blocks and the warnings about `constitution.yaml`.
+2. **Before an edit, a command, a sub-agent or an MCP call**, [the rule gate](reference/plugin.md#the-rule-gate) refuses it until the agent has read, whole, the rules that govern it and those of the files it read or changed.
+3. **On each file** the agent reads or edits, a hook names the blocks that govern it and their MUST rules, once per block, and at its first change of a file the rules most often broken there.
+4. **At the hand-back**, a hook holds the stop until the agent has read the rules it owes and its own changes are checked on the tree and, for the session's agent, reviewed.
+5. **At the end**, a hook removes the session's folders from the projects; [the rest of what the hooks keep](reference/plugin.md#what-the-hooks-keep) stays for a resume.
+6. **On demand**, [`/constitution:check`](reference/skills.md#constitutioncheck) runs the check and asks the reviewer to judge the changed files against their rules.
 
 [The plugin](reference/plugin.md#hooks) describes each hook, and [Skills](reference/skills.md) each skill.

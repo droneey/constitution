@@ -1,3 +1,5 @@
+import { PATH_SEPARATOR } from './path.constants';
+
 const CONFIG_FILE_NAME = 'constitution.yaml';
 
 // Why: older releases read this key, which the warning of an unknown key now names apart.
@@ -37,14 +39,20 @@ const REQUIRED_CONFIG_KEYS = [
 
 type RequiredConfigKey = (typeof REQUIRED_CONFIG_KEYS)[number];
 
-const RELEASE_FOLDER_PATH = '.droneey/constitution';
+const DRONEEY_FOLDER_NAME = '.droneey';
+const releaseFolderInProject = `${DRONEEY_FOLDER_NAME}${PATH_SEPARATOR}constitution`;
+// Why: beside the release's link, never under it, so what the hooks write never lands in the
+// installed release.
+const sessionsFolderInProject = `${DRONEEY_FOLDER_NAME}${PATH_SEPARATOR}constitution-sessions`;
 
 export type { ListKey, RequiredConfigKey };
 export {
   CHECK_KEY,
   CONFIG_FILE_NAME,
   ConfigKey,
+  DRONEEY_FOLDER_NAME,
   LIST_KEYS,
-  RELEASE_FOLDER_PATH,
   REQUIRED_CONFIG_KEYS,
+  releaseFolderInProject,
+  sessionsFolderInProject,
 };

@@ -2,16 +2,16 @@ import { describe, expect, it } from 'bun:test';
 
 import { BlockId, RepositoryRelativePath } from '#/kernel/value-objects';
 
-import { activeBlockOf, mustOf, sessionStateOf } from '../../../../__tests__/session.fixtures';
+import { keptBlockOf, mustOf, sessionStateOf } from '../../../../__tests__/session.fixtures';
 import { Reminder } from '../reminder.entity';
 
-const ui = activeBlockOf({
+const ui = keptBlockOf({
   governs: [
     '**/ui/**',
   ],
   id: 'ui',
 });
-const typescript = activeBlockOf({
+const typescript = keptBlockOf({
   governs: [
     '**/*.ts',
   ],

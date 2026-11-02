@@ -4,7 +4,7 @@ import {
   ConfigKey,
   PATH_SEPARATOR,
   projectCheck,
-  RELEASE_FOLDER_PATH,
+  releaseFolderInProject,
 } from '#/kernel/constants';
 import type { WarningDetails } from '#/kernel/entities';
 import { WarningKind } from '#/kernel/entities';
@@ -152,7 +152,7 @@ const configurationsUncheckedBecauseMessage = (reason: string): string =>
   `cannot check the configurations: ${reason}`;
 
 const releaseLinkLoopsMessage = (unit: string): string =>
-  `${unit}${PATH_SEPARATOR}${RELEASE_FOLDER_PATH} leads back into a folder that holds it — link it to the release outside the unit`;
+  `${unit}${PATH_SEPARATOR}${releaseFolderInProject} leads back into a folder that holds it — link it to the release outside the unit`;
 
 export {
   abstractListedMessage,

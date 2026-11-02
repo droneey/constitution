@@ -1,7 +1,7 @@
 import { ConfigReadStatus } from '#/kernel/entities';
 
 import type { FingerprintMark } from '../../../../domain/session/entities';
-import { SessionMark } from '../../../../domain/session/entities';
+import { SessionAgent, SessionMark } from '../../../../domain/session/entities';
 import type { StopEvent } from '../../../../domain/stop-judgement/entities';
 import { StopJudgement } from '../../../../domain/stop-judgement/entities';
 import type { TreeFingerprint } from '../../../../domain/tree-state/value-objects';
@@ -27,25 +27,19 @@ const judgeStop = (input: JudgeStopInput): StopJudgement | undefined => {
       session,
     });
 
-  const call = StopJudgement.judge({
+  return StopJudgement.judge({
     event: input,
+    isMainThread: input.agent === SessionAgent.main,
     marks: {
-      [SessionMark.Blocked]: markOf(SessionMark.Blocked),
       [SessionMark.Checked]: markOf(SessionMark.Checked),
       [SessionMark.Reviewed]: markOf(SessionMark.Reviewed),
       [SessionMark.Turn]: markOf(SessionMark.Turn),
     },
+    own: sessionQueries.ownChanges(input),
+    reviewOwed: sessionQueries.reviewDebt(session),
+    state,
     tree: input.workingTree.stateOf(state.repositoryFolderPath),
     unjudged: sessionQueries.unjudged(session),
-  });
-
-  if (!call.isReviewDue) {
-    return call.judgement;
-  }
-
-  return StopJudgement.reviewOf({
-    changed: input.workingTree.changedAndUntrackedFiles(state.repositoryFolderPath),
-    state,
   });
 };
 

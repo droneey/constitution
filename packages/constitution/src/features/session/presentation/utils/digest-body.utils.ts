@@ -1,28 +1,25 @@
 import { splitFrontMatter } from '#/kernel/utils';
 
-const BUDGET_BYTES = 9400;
-const WARNING_BUDGET_BYTES = 1000;
-const LEFT_OUT_NOTE_BYTES = 200;
-const encoder = new TextEncoder();
+import {
+  bytesOf,
+  bytesOfLines,
+  countedNoteOf,
+  linesWithin,
+  listWithin,
+} from './bounded-list.utils';
+import {
+  mapLinesCutText,
+  moreWarningsText,
+  STARTUP_WARNINGS_HEADING,
+  WARNINGS_HEADING,
+} from './digest.messages';
+import { capShareOf } from './hook-output.utils';
 
-const bytesOf = (line: string): number => encoder.encode(line).length + 1;
-
-const bytesOfLines = (lines: readonly string[]): number =>
-  lines.reduce((sum, line) => sum + bytesOf(line), 0);
-
-const linesWithin = (input: { budget: number; lines: readonly string[] }): readonly string[] => {
-  let used = 0;
-
-  for (const [index, line] of input.lines.entries()) {
-    used += bytesOf(line);
-
-    if (used > input.budget) {
-      return input.lines.slice(0, index);
-    }
-  }
-
-  return input.lines;
-};
+const CAP_SHARES_PERCENT = {
+  body: 94,
+  mapCutNote: 2,
+  warnings: 10,
+} as const;
 
 const joinedSections = (sections: readonly (readonly string[])[]): readonly string[] =>
   sections
@@ -44,20 +41,13 @@ const warningSection = (input: {
     return [];
   }
 
-  const given = linesWithin({
-    budget: WARNING_BUDGET_BYTES,
-    lines: input.lines,
-  });
-  const left = input.lines.length - given.length;
-
   return [
-    input.isStartup ? '⚠️ Warnings — tell the user at the start of the session' : '⚠️ Warnings',
-    ...given,
-    ...(left > 0
-      ? [
-          `and ${left} more`,
-        ]
-      : []),
+    input.isStartup ? STARTUP_WARNINGS_HEADING : WARNINGS_HEADING,
+    ...listWithin({
+      budget: capShareOf(CAP_SHARES_PERCENT.warnings),
+      lines: input.lines,
+      note: moreWarningsText,
+    }),
   ];
 };
 
@@ -69,48 +59,56 @@ const coreBodyOf = (core: string): readonly string[] => {
   return text.slice(first, last + 1);
 };
 
-const blockListSection = (input: { lines: readonly string[]; room: number }): readonly string[] => {
-  const given = linesWithin({
-    budget: input.room - LEFT_OUT_NOTE_BYTES,
-    lines: input.lines,
-  });
-  const left = input.lines.length - given.length;
+const mapSection = (input: { lines: readonly string[]; room: number }): readonly string[] => {
+  const given =
+    bytesOfLines(input.lines) <= input.room
+      ? input.lines
+      : linesWithin({
+          budget: input.room - capShareOf(CAP_SHARES_PERCENT.mapCutNote),
+          lines: input.lines,
+        });
 
-  return left === 0
-    ? given
-    : [
-        ...given,
-        `${left} ${left === 1 ? 'more line' : 'more lines'} of the block list did not fit; constitution.yaml names every block.`,
-      ];
+  return [
+    ...given,
+    ...countedNoteOf({
+      count: input.lines.length - given.length,
+      note: mapLinesCutText,
+    }),
+  ];
 };
 
-interface BudgetedBodyInput {
+interface DigestBodyInput {
   readonly blockList: readonly string[];
   readonly core: string;
+  readonly duty: readonly string[];
   readonly isStartup: boolean;
-  readonly overrides: readonly string[];
   readonly warnings: readonly string[];
 }
 
-// Why: core and the overrides are given whole, so a rule the project lowered is never cut.
-const budgetedBodyOf = (input: BudgetedBodyInput): readonly string[] => {
-  const head = joinedSections([
-    warningSection({
-      isStartup: input.isStartup,
-      lines: input.warnings,
-    }),
-    coreBodyOf(input.core),
-    input.overrides,
+// Why: the gate relies on core and the duty, so they are never cut; the map takes the room the rest
+// leaves within what Claude Code shows of a hook's output.
+const digestBodyOf = (input: DigestBodyInput): readonly string[] => {
+  const core = coreBodyOf(input.core);
+  const warnings = warningSection({
+    isStartup: input.isStartup,
+    lines: input.warnings,
+  });
+  const besideMap = joinedSections([
+    core,
+    input.duty,
+    warnings,
   ]);
-  const blankBeforeList = head.length > 0 ? bytesOf('') : 0;
+  const blankBeforeMap = besideMap.length > 0 ? bytesOf('') : 0;
 
   return joinedSections([
-    head,
-    blockListSection({
+    core,
+    input.duty,
+    mapSection({
       lines: input.blockList,
-      room: BUDGET_BYTES - bytesOfLines(head) - blankBeforeList,
+      room: capShareOf(CAP_SHARES_PERCENT.body) - bytesOfLines(besideMap) - blankBeforeMap,
     }),
+    warnings,
   ]);
 };
 
-export { budgetedBodyOf, coreBodyOf };
+export { coreBodyOf, digestBodyOf };

@@ -1,3 +1,4 @@
+import type { LoweredLevel } from '#/kernel/constants';
 import { LOWERED_LEVELS } from '#/kernel/constants';
 import type { Lowering, ProjectWarning } from '#/kernel/entities';
 import { WarningKind } from '#/kernel/entities';
@@ -7,7 +8,14 @@ import type { RuleSlug, UnitPath } from '#/kernel/value-objects';
 import { ProjectModel } from '../../../../../block-set/entities';
 import type { ProjectConfig } from '../../../../../project-config/entities';
 import { ConfigOverride } from '../../../../../project-config/entities';
-import type { AppliedOverrides, ListedOverride } from '../../../../../resolution/entities';
+import type { AppliedOverrides } from '../../../../../resolution/entities';
+
+interface LiveOverride {
+  readonly level: LoweredLevel;
+  readonly reason: string;
+  readonly rule: RuleSlug;
+  readonly unit: UnitPath;
+}
 
 enum OverrideStatus {
   Live = 'live',
@@ -16,7 +24,7 @@ enum OverrideStatus {
 
 type OverrideCheck =
   | {
-      readonly override: ListedOverride;
+      readonly override: LiveOverride;
       readonly status: OverrideStatus.Live;
     }
   | {
@@ -98,13 +106,9 @@ const checkOverride = (input: {
   return {
     override: {
       level,
+      reason,
       rule: rule.slug,
       unit: input.unit,
-      ...(until === undefined
-        ? {}
-        : {
-            until,
-          }),
     },
     status: OverrideStatus.Live,
   };
@@ -112,7 +116,7 @@ const checkOverride = (input: {
 
 const loweredBy = (input: {
   model: ProjectModel;
-  override: ListedOverride;
+  override: LiveOverride;
 }): readonly {
   readonly lowering: Lowering;
   readonly rule: RuleSlug;
@@ -121,6 +125,7 @@ const loweredBy = (input: {
 
   const lowering = (via?: RuleSlug): Lowering => ({
     level: override.level,
+    reason: override.reason,
     unit: override.unit,
     ...(via === undefined
       ? {}
@@ -195,7 +200,6 @@ const applyOverrides = (input: ApplyOverridesInput): OverridesApplied => {
 
   return {
     applied: {
-      live,
       loweredIn: new Map(
         [
           ...Map.groupBy(lowered, ({ lowering }) => lowering.unit),

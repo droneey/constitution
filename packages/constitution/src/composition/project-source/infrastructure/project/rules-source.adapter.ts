@@ -6,20 +6,13 @@ import type {
 } from '#/features/presets';
 import { checkProject, presetsFindingTextOf } from '#/features/presets';
 import type { OpenedProject, ProjectPorts } from '#/features/project';
-import {
-  findProject,
-  Resolution,
-  readCore,
-  readDeclaration,
-  readRelease,
-} from '#/features/project';
+import { findProject, readCore, readDeclaration, readRelease } from '#/features/project';
 import type { ConfigurationsReport, DeclaredRules, RulesSource } from '#/features/session';
 import { ConfigurationsCheckStatus } from '#/features/session';
 import type { ProjectPlace, ProjectWarning } from '#/kernel/entities';
 import { ConfigReadStatus, ReleaseStatus, WarningKind } from '#/kernel/entities';
 import type { AbsolutePath, Version } from '#/kernel/value-objects';
 
-import { digestListingOf } from './digest-listing.utils';
 import { presetsProjectOf } from './presets-project.utils';
 
 interface PresetsPorts {
@@ -111,7 +104,6 @@ const createRulesSource = (input: RulesSourceInput): RulesSource => {
 
       return {
         active: resolution.active,
-        activeInAnyUnitCount: Resolution.activeInAnyUnitCountOf(resolution),
         configurations: configurationsOf({
           opened: {
             ...place,
@@ -120,7 +112,7 @@ const createRulesSource = (input: RulesSourceInput): RulesSource => {
           },
           ports: input,
         }),
-        listing: digestListingOf(resolution.listing),
+        listing: resolution.listing,
         mustsBesideCore: resolution.mustsBesideCore,
         status: ConfigReadStatus.Parsed,
         warnings: resolution.warnings,

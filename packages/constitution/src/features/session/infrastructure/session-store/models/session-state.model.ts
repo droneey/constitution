@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import { LOWERED_LEVELS } from '#/kernel/constants';
-import type { Lowering } from '#/kernel/entities';
+import type { LoweringPlace } from '#/kernel/entities';
 import { ConfigReadStatus } from '#/kernel/entities';
 import { AbsolutePath, BlockId, Glob, RuleSlug, UnitPath } from '#/kernel/value-objects';
 
@@ -43,7 +43,7 @@ const loweringModel = z
     via: ruleSlugModel.optional(),
   })
   .transform(
-    ({ via, ...lowering }): Lowering =>
+    ({ via, ...lowering }): LoweringPlace =>
       via === undefined
         ? lowering
         : {
@@ -79,4 +79,4 @@ const sessionStateModel = z.discriminatedUnion('status', [
 type SessionStateWire = z.input<typeof sessionStateModel>;
 
 export type { SessionStateWire };
-export { sessionStateModel };
+export { absolutePathModel, ruleSlugModel, sessionStateModel };

@@ -2,7 +2,6 @@
   "hooks": {
     "SessionStart": [
       {
-        "matcher": "startup|clear|compact",
         "hooks": [
           {
             "type": "command",
@@ -21,9 +20,20 @@
         ]
       }
     ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit|Bash|Agent|Task|mcp__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/hook.sh\" pre-tool-use"
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
-        "matcher": "Read|Edit|Write|MultiEdit|NotebookEdit",
+        "matcher": "Read|Edit|Write|MultiEdit|NotebookEdit|Bash|mcp__.*",
         "hooks": [
           {
             "type": "command",
@@ -37,6 +47,17 @@
           {
             "type": "command",
             "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/hook.sh\" record-check"
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "matcher": "Bash|mcp__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/hook.sh\" post-tool-use"
           }
         ]
       }
@@ -67,6 +88,16 @@
           {
             "type": "command",
             "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/hook.sh\" stop"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/hook.sh\" session-end"
           }
         ]
       }

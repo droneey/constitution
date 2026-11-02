@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { Axis, RELEASE_FOLDER_PATH } from '#/kernel/constants';
+import { Axis, releaseFolderInProject } from '#/kernel/constants';
 import { BlockId, BlockSource, RepositoryRelativePath } from '#/kernel/value-objects';
 
 import { unitOf } from '../../../../__tests__/presets.fixtures';
@@ -102,16 +102,16 @@ describe('Candidate.releaseProbesOf', () => {
     // Assert
     expect(probes).toStrictEqual([
       {
-        constitutionPath: RELEASE_FOLDER_PATH,
-        releaseFolderPath: `packages/kit/${RELEASE_FOLDER_PATH}`,
+        constitutionPath: releaseFolderInProject,
+        releaseFolderPath: `packages/kit/${releaseFolderInProject}`,
       },
       {
-        constitutionPath: `../${RELEASE_FOLDER_PATH}`,
-        releaseFolderPath: `packages/${RELEASE_FOLDER_PATH}`,
+        constitutionPath: `../${releaseFolderInProject}`,
+        releaseFolderPath: `packages/${releaseFolderInProject}`,
       },
       {
-        constitutionPath: `../../${RELEASE_FOLDER_PATH}`,
-        releaseFolderPath: RELEASE_FOLDER_PATH,
+        constitutionPath: `../../${releaseFolderInProject}`,
+        releaseFolderPath: releaseFolderInProject,
       },
     ]);
   });

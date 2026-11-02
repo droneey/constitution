@@ -1,4 +1,5 @@
-import type { SessionId } from '../../session/value-objects';
+import type { SessionAgent } from '../../session/entities';
+import type { AgentId, SessionId } from '../../session/value-objects';
 import type { HookEventName } from '../../shared/entities';
 
 interface StopFields {
@@ -8,9 +9,11 @@ interface StopFields {
 
 type StopEvent =
   | (StopFields & {
-      readonly event: Exclude<HookEventName, HookEventName.SubagentStop>;
+      readonly agent: typeof SessionAgent.main;
+      readonly event: HookEventName.Stop;
     })
   | (StopFields & {
+      readonly agent: AgentId;
       readonly agentName?: string;
       readonly agentType?: string;
       readonly event: HookEventName.SubagentStop;

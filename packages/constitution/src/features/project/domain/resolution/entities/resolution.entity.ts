@@ -1,11 +1,21 @@
-import type { ActiveBlock, BlockModel, MustRule, ProjectUnit } from '#/kernel/entities';
+import type {
+  ActiveBlock,
+  BlockModel,
+  CoreFiles,
+  Lowering,
+  MustRule,
+  ProjectUnit,
+} from '#/kernel/entities';
 import { ProjectWarning, WarningCode } from '#/kernel/entities';
+import type { RuleSlug } from '#/kernel/value-objects';
 
 import type { BlockListing } from './block-listing.entity';
 
 interface Resolution {
   readonly active: readonly ActiveBlock[];
+  readonly core: readonly CoreFiles[];
   readonly listing: BlockListing;
+  readonly lowerings: ReadonlyMap<RuleSlug, readonly Lowering[]>;
   readonly model: BlockModel;
   readonly mustsBesideCore: readonly MustRule[];
   readonly units: readonly ProjectUnit[];
@@ -29,14 +39,11 @@ const listedOnce = (warnings: readonly ProjectWarning[]): readonly ProjectWarnin
   );
 };
 
-const activeInAnyUnitCountOf = (resolution: Resolution): number =>
-  resolution.model.blocks.filter((block) =>
-    resolution.units.some((unit) => unit.blocks.has(block.id)),
-  ).length;
-
 const create = (input: Resolution): Resolution => ({
   active: input.active,
+  core: input.core,
   listing: input.listing,
+  lowerings: input.lowerings,
   model: input.model,
   mustsBesideCore: input.mustsBesideCore,
   units: input.units,
@@ -44,7 +51,6 @@ const create = (input: Resolution): Resolution => ({
 });
 
 const Resolution = {
-  activeInAnyUnitCountOf,
   create,
 } as const;
 

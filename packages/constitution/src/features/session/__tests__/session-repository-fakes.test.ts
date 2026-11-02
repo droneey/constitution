@@ -1,3 +1,7 @@
+import { AbsolutePath } from '#/kernel/value-objects';
+
+import { createFakeGateRepository } from './gate-command-repository.fake';
+import { runGateRepositorySuite } from './gate-command-repository.suite';
 import { heldSessionsOf } from './session.fixtures';
 import { createFakeSessionRepository } from './session-command-repository.fake';
 import { createFakeSessionQueries } from './session-query-repository.fake';
@@ -13,4 +17,10 @@ runSessionRepositorySuite({
       ...createFakeSessionRepository(sessions),
     };
   },
+});
+
+runGateRepositorySuite({
+  name: 'createFakeGateRepository',
+  projectOf: () => AbsolutePath.create('/work/project'),
+  repositoryOf: createFakeGateRepository,
 });

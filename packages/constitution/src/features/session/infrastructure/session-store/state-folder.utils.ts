@@ -143,10 +143,12 @@ const privateStateFolder = (input: PrivateFolderInput): string | undefined => {
 
 interface SweepInput {
   readonly folder: string;
+  readonly inner?: string;
   // Why: an instant subtracts no days, so the duration is in hours or smaller units.
   readonly kept: Temporal.Duration;
   readonly maxEntries: number;
   readonly now: Temporal.Instant;
+  readonly spared?: string;
 }
 
 interface StaleInput {
@@ -166,12 +168,41 @@ const isStale = (input: StaleInput): boolean =>
 
 interface ListingInput {
   readonly listing: Dir;
-  readonly maxEntries: number;
   readonly since: Temporal.Instant;
+  readonly sweep: SweepInput;
 }
 
+const isEntryStale = (
+  input: StaleInput & {
+    sweep: SweepInput;
+  },
+): boolean => {
+  if (!isStale(input)) {
+    return false;
+  }
+
+  if (input.sweep.inner === undefined) {
+    return true;
+  }
+
+  const inner = join(input.path, input.sweep.inner);
+
+  return (
+    attempted({
+      effect: () =>
+        isStale({
+          path: inner,
+          since: input.since,
+        }),
+      isRecognised: isSystemError,
+    }) ?? true
+  );
+};
+
 const sweepListing = (input: ListingInput): void => {
-  for (let looked = 0; looked < input.maxEntries; looked += 1) {
+  const { sweep } = input;
+
+  for (let looked = 0; looked < sweep.maxEntries; looked += 1) {
     const entry = input.listing.readSync();
 
     if (entry === null) {
@@ -183,9 +214,11 @@ const sweepListing = (input: ListingInput): void => {
     attempted({
       effect: () => {
         if (
-          isStale({
+          entry.name !== sweep.spared &&
+          isEntryStale({
             path,
             since: input.since,
+            sweep,
           })
         ) {
           rmSync(path, {
@@ -208,8 +241,8 @@ const sweepStale = (input: SweepInput): void => {
       try {
         sweepListing({
           listing,
-          maxEntries: input.maxEntries,
           since: input.now.subtract(input.kept),
+          sweep: input,
         });
       } finally /* Stryker disable next-line BlockStatement: Bun's listing holds no descriptor, so one left open leaks nothing a caller sees */ {
         // Stryker disable next-line CallExpression: Bun's listing holds no descriptor, so closing it changes nothing a caller sees
@@ -236,4 +269,10 @@ const removeOwnedFolder = (input: OwnedInput): void => {
 };
 
 export type { StateEnvironment, StateFolderWarning };
-export { privateStateFolder, removeOwnedFolder, StateFolderProblem, sweepStale };
+export {
+  PRIVATE_FOLDER_MODE,
+  privateStateFolder,
+  removeOwnedFolder,
+  StateFolderProblem,
+  sweepStale,
+};

@@ -3,7 +3,7 @@ import type { RepositoryRelativePath } from '#/kernel/value-objects';
 import { BlockId } from '#/kernel/value-objects';
 
 import type { ParsedState } from '../../session/entities';
-import { SessionState } from '../../session/entities';
+import { ActiveBlocks } from '../../session/entities';
 
 interface RemindedBlock {
   readonly files: readonly string[];
@@ -25,7 +25,7 @@ const of = (input: {
   const { state } = input;
 
   return {
-    blocks: SessionState.governing(state, input.path)
+    blocks: ActiveBlocks.governing(state, input.path)
       .filter((block) => !input.reminded.has(block.id))
       .map((block) => ({
         files: block.files,

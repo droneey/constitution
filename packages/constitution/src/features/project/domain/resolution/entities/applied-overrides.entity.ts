@@ -1,10 +1,7 @@
 import type { Lowering } from '#/kernel/entities';
 import type { RuleSlug, UnitPath } from '#/kernel/value-objects';
 
-import type { ListedOverride } from './block-listing.entity';
-
 interface AppliedOverrides {
-  readonly live: readonly ListedOverride[];
   readonly loweredIn: ReadonlyMap<UnitPath, ReadonlySet<RuleSlug>>;
   readonly lowerings: ReadonlyMap<RuleSlug, readonly Lowering[]>;
 }

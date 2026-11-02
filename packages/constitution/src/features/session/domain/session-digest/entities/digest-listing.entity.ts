@@ -1,56 +1,25 @@
-import type { Axis, Layer, LoweredLevel } from '#/kernel/constants';
-import type { BlockId, BlockSource, RuleSlug, UnitPath } from '#/kernel/value-objects';
+import type { Axis, Layer } from '#/kernel/constants';
+import type { BlockId, BlockSource, UnitPath } from '#/kernel/value-objects';
 
-interface DigestFiles {
-  readonly axis: Axis;
-  readonly chapters: readonly string[];
-  readonly seams: readonly BlockId[];
-}
-
-interface DigestBlock {
-  readonly files: readonly DigestFiles[];
+interface DigestUnitBlock {
   readonly id: BlockId;
-  readonly layer: Layer;
   readonly source: BlockSource;
-  readonly summary?: string;
 }
 
-enum DigestEntryKind {
-  Own = 'own',
-  Added = 'added',
+interface DigestBlock extends DigestUnitBlock {
+  readonly layer: Layer;
 }
-
-type DigestEntry =
-  | {
-      readonly block: DigestBlock;
-      readonly kind: DigestEntryKind.Own;
-    }
-  | {
-      readonly files: readonly DigestFiles[];
-      readonly id: BlockId;
-      readonly kind: DigestEntryKind.Added;
-      readonly layer: Layer;
-    };
 
 interface DigestUnit {
-  readonly entries: readonly DigestEntry[];
   readonly leftOutAxes: readonly Axis[];
   readonly leftOutBlocks: readonly BlockId[];
+  readonly own: readonly DigestUnitBlock[];
   readonly unit: UnitPath;
-}
-
-interface DigestOverride {
-  readonly level: LoweredLevel;
-  readonly rule: RuleSlug;
-  readonly unit: UnitPath;
-  readonly until?: Temporal.PlainDate;
 }
 
 interface DigestListing {
-  readonly overrides: readonly DigestOverride[];
   readonly repository: readonly DigestBlock[];
   readonly units: readonly DigestUnit[];
 }
 
-export type { DigestBlock, DigestEntry, DigestFiles, DigestListing, DigestOverride, DigestUnit };
-export { DigestEntryKind };
+export type { DigestBlock, DigestListing, DigestUnit, DigestUnitBlock };

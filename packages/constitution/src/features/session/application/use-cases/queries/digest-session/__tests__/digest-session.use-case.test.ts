@@ -3,8 +3,9 @@ import { describe, expect, it } from 'bun:test';
 import { PROJECT, releaseFolderPath } from '#/__tests__/project-place.fixtures';
 import type { ProjectWarning } from '#/kernel/entities';
 import { ConfigReadStatus, WarningKind } from '#/kernel/entities';
-import { AbsolutePath } from '#/kernel/value-objects';
+import { AbsolutePath, BlockId, Glob, repositoryUnit, SourceKind } from '#/kernel/value-objects';
 
+import { CORE_TEXT, QUIET, version } from '../../../../../__tests__/rules-source.fake';
 import { createFakeWorkingTree } from '../../../../../__tests__/working-tree.fake';
 import {
   ConfigurationsCheckStatus,
@@ -13,13 +14,7 @@ import {
 import { SessionOrigin } from '../../../../../domain/session-start/entities';
 import { HookEventName } from '../../../../../domain/shared/entities';
 import { digestSession } from '../digest-session.use-case';
-import {
-  CORE_TEXT,
-  createSessionPorts,
-  QUIET,
-  unchecked,
-  version,
-} from './digest-session.fixtures';
+import { createSessionPorts, unchecked } from './digest-session.fixtures';
 
 const searchFrom = AbsolutePath.create(PROJECT);
 const releaseFiles = {
@@ -83,7 +78,6 @@ describe('digestSession', () => {
       expect(digest).toStrictEqual({
         contents: {
           core: CORE_TEXT,
-          count: 1,
           isStartup,
           kind: DigestKind.Resolved,
           listing: QUIET.listing,
@@ -96,6 +90,60 @@ describe('digestSession', () => {
       });
     },
   );
+
+  it('should keep each active block in the state with its files named by their paths', () => {
+    // Arrange
+    const ports = createSessionPorts({
+      rules: {
+        ...QUIET,
+        active: [
+          {
+            files: [
+              {
+                path: 'blocks/domains/ui/ui.md',
+                source: SourceKind.Release,
+              },
+              {
+                path: 'packs/acme/acme/acme.md',
+                source: SourceKind.Pack,
+              },
+            ],
+            governs: [
+              Glob.create('src/**'),
+            ],
+            id: BlockId.create('ui'),
+            unit: repositoryUnit,
+          },
+        ],
+      },
+    });
+
+    // Act
+    const digest = digestSession({
+      ...ports,
+      event: HookEventName.SessionStart,
+      origin: SessionOrigin.Startup,
+      searchFrom,
+    });
+
+    // Assert
+    expect(digest?.state).toStrictEqual({
+      ...kept,
+      active: [
+        {
+          files: [
+            'blocks/domains/ui/ui.md',
+            'packs/acme/acme/acme.md',
+          ],
+          governs: [
+            Glob.create('src/**'),
+          ],
+          id: BlockId.create('ui'),
+          unit: repositoryUnit,
+        },
+      ],
+    });
+  });
 
   it('should warn that the gate cannot run, before the presets, when the project lies in no repository', () => {
     // Arrange
@@ -117,7 +165,6 @@ describe('digestSession', () => {
     // Assert
     expect(digest?.contents).toStrictEqual({
       core: CORE_TEXT,
-      count: 1,
       isStartup: true,
       kind: DigestKind.Resolved,
       listing: QUIET.listing,
@@ -154,7 +201,6 @@ describe('digestSession', () => {
     // Assert
     expect(digest?.contents).toStrictEqual({
       core: CORE_TEXT,
-      count: 1,
       isStartup: false,
       kind: DigestKind.Resolved,
       listing: QUIET.listing,
@@ -210,7 +256,6 @@ describe('digestSession', () => {
     // Assert
     expect(digest?.contents).toStrictEqual({
       core: CORE_TEXT,
-      count: 1,
       isStartup: false,
       kind: DigestKind.Resolved,
       listing: QUIET.listing,

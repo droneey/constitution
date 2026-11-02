@@ -1,338 +1,308 @@
 import { describe, expect, it } from 'bun:test';
 
-import { budgetedBodyOf } from '../digest-body.utils';
+import {
+  mapLinesCutText,
+  moreWarningsText,
+  STARTUP_WARNINGS_HEADING,
+  WARNINGS_HEADING,
+} from '../digest.messages';
+import { coreBodyOf, digestBodyOf } from '../digest-body.utils';
 
-const HEADING = '⚠️ Warnings';
-const NOTE_OF_ONE =
-  '1 more line of the block list did not fit; constitution.yaml names every block.';
-const NOTE_OF_TWO =
-  '2 more lines of the block list did not fit; constitution.yaml names every block.';
+const duty = [
+  'Read the rules.',
+];
+const blockList = [
+  '## Active blocks',
+  '- Domains: ui',
+];
 
 const m489 = `- wiring: ${'w'.repeat(489)}`;
 const m323 = `- wiring: ${'w'.repeat(323)}`;
 const m390 = `- wiring: ${'w'.repeat(390)}`;
-const m690 = `- wiring: ${'w'.repeat(690)}`;
+const m155 = `- wiring: ${'w'.repeat(155)}`;
+const m156 = `- wiring: ${'w'.repeat(156)}`;
 const m10 = `- wiring: ${'w'.repeat(10)}`;
 
-const overrideSection = [
-  '## Overrides',
-  '- inputs-are-labelled: SHOULD',
-];
+const filling9199 = 'a'.repeat(9199);
+const filling9200 = 'a'.repeat(9200);
+const filling9396 = 'a'.repeat(9396);
+const filling9397 = 'a'.repeat(9397);
+const filling9399 = 'a'.repeat(9399);
+const tail300 = 'b'.repeat(300);
+const core9300 = 'c'.repeat(9300);
+const map100 = 'm'.repeat(100);
+const warning500 = `- ${'w'.repeat(500)}`;
 
-const largeCore = 'c'.repeat(8999);
-
-describe('budgetedBodyOf', () => {
-  it.each([
-    {
-      condition: 'a session starts with warnings, one block and a block list',
+describe('digestBodyOf', () => {
+  it('should give core, the duty, the map of the blocks and the warnings, a blank line between each', () => {
+    // Arrange
+    const input = {
+      blockList,
       core: '# Core\n\nThe rules.\n',
-      body: [
-        '⚠️ Warnings — tell the user at the start of the session',
-        '- unknown: nope is not a block',
-        '- configurations: cannot check the configurations',
-        '',
-        '# Core',
-        '',
-        'The rules.',
-        '',
-        '- ui: the screens.',
-        '- api: the endpoints.',
-      ],
-      blockList: [
-        '- ui: the screens.',
-        '- api: the endpoints.',
-      ],
+      duty,
       isStartup: true,
       warnings: [
         '- unknown: nope is not a block',
-        '- configurations: cannot check the configurations',
       ],
-    },
-    {
-      condition: 'a subagent starts and core has front matter, blank edges and carriage returns',
-      core: '---\r\nid: core\r\n---\r\n\r\n# Core\r\n\r\nThe rules.\r\n\r\n',
-      body: [
-        HEADING,
-        '- config: constitution.yaml has no check',
-        '',
-        '# Core',
-        '',
-        'The rules.',
-      ],
+    };
+
+    // Act
+    const body = digestBodyOf(input);
+
+    // Assert
+    expect(body).toStrictEqual([
+      '# Core',
+      '',
+      'The rules.',
+      '',
+      'Read the rules.',
+      '',
+      '## Active blocks',
+      '- Domains: ui',
+      '',
+      STARTUP_WARNINGS_HEADING,
+      '- unknown: nope is not a block',
+    ]);
+  });
+
+  it('should leave out a section that holds no line', () => {
+    // Arrange
+    const input = {
       blockList: [],
+      core: '\n\n',
+      duty,
       isStartup: false,
-      warnings: [
-        '- config: constitution.yaml has no check',
+      warnings: [],
+    };
+
+    // Act
+    const body = digestBodyOf(input);
+
+    // Assert
+    expect(body).toStrictEqual(duty);
+  });
+
+  it.each([
+    {
+      condition: 'they fill their share to the byte',
+      given: [
+        m489,
+        m323,
+        m155,
+      ],
+      kept: [
+        m489,
+        m323,
+        m155,
       ],
     },
     {
-      condition: 'core is blank and nothing comes before the block list',
-      core: '\n\n',
-      body: [
-        '- ui: the screens.',
+      condition: 'the third passes their share by one byte',
+      given: [
+        m489,
+        m323,
+        m156,
       ],
+      kept: [
+        m489,
+        m323,
+        moreWarningsText.one,
+      ],
+    },
+    {
+      condition: 'the third passes their share',
+      given: [
+        m489,
+        m323,
+        m390,
+        m10,
+      ],
+      kept: [
+        m489,
+        m323,
+        moreWarningsText.many(2),
+      ],
+    },
+  ])(
+    'should cut the warnings at their share of the digest, and say how many it left out, when $condition',
+    ({ given, kept }) => {
+      // Arrange
+      const input = {
+        blockList: [],
+        core: '',
+        duty: [],
+        isStartup: false,
+        warnings: given,
+      };
+
+      // Act
+      const body = digestBodyOf(input);
+
+      // Assert
+      expect(body).toStrictEqual([
+        WARNINGS_HEADING,
+        ...kept,
+      ]);
+    },
+  );
+
+  it.each([
+    {
       blockList: [
-        '- ui: the screens.',
+        filling9399,
       ],
-      isStartup: false,
+      body: [
+        filling9399,
+      ],
+      condition: 'the map alone fills the 9,400 bytes to the byte',
+      core: '',
+      duty: [],
       warnings: [],
     },
     {
-      condition: 'core is blank and the block list empty after the warnings',
-      core: '',
-      body: [
-        HEADING,
-        '- config: constitution.yaml has no check',
+      blockList: [
+        filling9199,
+        tail300,
       ],
-      blockList: [],
-      isStartup: false,
+      body: [
+        filling9199,
+        mapLinesCutText.one,
+      ],
+      condition: 'its first line fills to the byte the room left for the note',
+      core: '',
+      duty: [],
+      warnings: [],
+    },
+    {
+      blockList: [
+        filling9200,
+        tail300,
+      ],
+      body: [
+        mapLinesCutText.many(2),
+      ],
+      condition: 'its first line passes by one byte the room left for the note',
+      core: '',
+      duty: [],
+      warnings: [],
+    },
+    {
+      blockList: [
+        filling9396,
+      ],
+      body: [
+        'd',
+        '',
+        filling9396,
+      ],
+      condition: 'the duty and the blank line before the map leave it room to the byte',
+      core: '',
+      duty: [
+        'd',
+      ],
+      warnings: [],
+    },
+    {
+      blockList: [
+        filling9397,
+      ],
+      body: [
+        'd',
+        '',
+        mapLinesCutText.one,
+      ],
+      condition: 'the blank line before the map leaves it one byte too few',
+      core: '',
+      duty: [
+        'd',
+      ],
+      warnings: [],
+    },
+    {
+      blockList: [
+        filling9399,
+      ],
+      body: [
+        mapLinesCutText.one,
+        '',
+        WARNINGS_HEADING,
+        warning500,
+      ],
+      condition: 'the warnings take their bytes before it',
+      core: '',
+      duty: [],
       warnings: [
-        '- config: constitution.yaml has no check',
+        warning500,
+      ],
+    },
+    {
+      blockList: [
+        map100,
+      ],
+      body: [
+        core9300,
+        '',
+        mapLinesCutText.one,
+      ],
+      condition: 'core, given whole, leaves it no room',
+      core: core9300,
+      duty: [],
+      warnings: [],
+    },
+  ])(
+    'should give the map as far as 9,400 bytes, less 200 for a note of the lines it cut, when $condition',
+    ({ blockList: lines, body, core, duty: givenDuty, warnings }) => {
+      // Arrange
+      const input = {
+        blockList: lines,
+        core,
+        duty: givenDuty,
+        isStartup: false,
+        warnings,
+      };
+
+      // Act
+      const given = digestBodyOf(input);
+
+      // Assert
+      expect(given).toStrictEqual(body);
+    },
+  );
+});
+
+describe('coreBodyOf', () => {
+  it.each([
+    {
+      condition: 'core has front matter, blank edges and carriage returns',
+      core: '---\r\nid: core\r\n---\r\n\r\n# Core\r\n\r\nThe rules.\r\n\r\n',
+      lines: [
+        '# Core',
+        '',
+        'The rules.',
       ],
     },
     {
       condition: "core's front matter is never closed, so it holds none",
       core: '---\nid: core\n# Core\n',
-      body: [
+      lines: [
         '---',
         'id: core',
         '# Core',
-        '',
-        '- ui: the screens.',
       ],
-      blockList: [
-        '- ui: the screens.',
-      ],
-      isStartup: false,
-      warnings: [],
     },
     {
-      condition: 'a rule line of core comes after its first line',
-      core: 'Intro\n---\nMore\n',
-      body: [
-        'Intro',
-        '---',
-        'More',
-      ],
-      blockList: [],
-      isStartup: false,
-      warnings: [],
+      condition: 'core is blank',
+      core: '\n\n',
+      lines: [],
     },
   ])(
-    'should give the warnings, core and the block list when $condition',
-    ({ blockList, body, core, isStartup, warnings }) => {
-      // Arrange
-      const contents = {
-        blockList,
-        core,
-        isStartup,
-        overrides: [],
-        warnings,
-      };
-
+    'should give core without its front matter and blank edges when $condition',
+    ({ core, lines }) => {
       // Act
-      const given = budgetedBodyOf(contents);
+      const body = coreBodyOf(core);
 
       // Assert
-      expect(given).toStrictEqual(body);
-    },
-  );
-
-  it.each([
-    {
-      body: [
-        HEADING,
-        m489,
-        m489,
-        'and 1 more',
-      ],
-      condition: 'two lines fill the 1000 bytes exactly',
-      warnings: [
-        m489,
-        m489,
-        m10,
-      ],
-    },
-    {
-      body: [
-        HEADING,
-        m323,
-        m323,
-        'and 1 more',
-      ],
-      condition: 'each line costs its line break too',
-      warnings: [
-        m323,
-        m323,
-        m323,
-      ],
-    },
-    {
-      body: [
-        HEADING,
-        m390,
-        'and 2 more',
-      ],
-      condition: 'a shorter line follows one that does not fit',
-      warnings: [
-        m390,
-        m690,
-        m10,
-      ],
-    },
-  ])(
-    'should give the warnings that fit in 1000 bytes and count the rest when $condition',
-    ({ body, warnings }) => {
-      // Arrange
-      const contents = {
-        blockList: [],
-        core: '',
-        isStartup: false,
-        overrides: [],
-        warnings,
-      };
-
-      // Act
-      const given = budgetedBodyOf(contents);
-
-      // Assert
-      expect(given).toStrictEqual(body);
-    },
-  );
-
-  it.each([
-    {
-      body: [
-        largeCore,
-        '',
-        'x'.repeat(198),
-        NOTE_OF_ONE,
-      ],
-      condition: "the first line fits exactly after core's section",
-      core: largeCore,
-      blockList: [
-        'x'.repeat(198),
-        'y',
-      ],
-    },
-    {
-      body: [
-        largeCore,
-        '',
-        NOTE_OF_TWO,
-      ],
-      condition: 'the blank line before the list leaves no room for its first line',
-      core: largeCore,
-      blockList: [
-        'x'.repeat(199),
-        'y',
-      ],
-    },
-    {
-      body: [
-        'a'.repeat(9000),
-        'b'.repeat(198),
-        NOTE_OF_ONE,
-      ],
-      condition: 'a later line fits exactly',
-      core: '',
-      blockList: [
-        'a'.repeat(9000),
-        'b'.repeat(198),
-        'c',
-      ],
-    },
-    {
-      body: [
-        'a'.repeat(9199),
-        NOTE_OF_ONE,
-      ],
-      condition: 'the first line fits exactly in an empty digest',
-      core: '',
-      blockList: [
-        'a'.repeat(9199),
-        'b',
-      ],
-    },
-  ])(
-    'should give the block list as far as 9400 bytes, less 200 for the note, let it when $condition',
-    ({ blockList, body, core }) => {
-      // Arrange
-      const contents = {
-        blockList,
-        core,
-        isStartup: false,
-        overrides: [],
-        warnings: [],
-      };
-
-      // Act
-      const given = budgetedBodyOf(contents);
-
-      // Assert
-      expect(given).toStrictEqual(body);
-    },
-  );
-
-  it.each([
-    {
-      body: [
-        '# Core',
-        '',
-        ...overrideSection,
-        '',
-        '- ui: the screens.',
-      ],
-      condition: 'core comes before them and the block list after',
-      core: '# Core\n',
-      blockList: [
-        '- ui: the screens.',
-      ],
-      overrides: overrideSection,
-    },
-    {
-      body: overrideSection,
-      condition: 'nothing comes before them',
-      core: '',
-      blockList: [],
-      overrides: overrideSection,
-    },
-    {
-      body: [
-        largeCore,
-        '',
-        '## Overrides',
-        `- ${'o'.repeat(400)}: MAY`,
-        '',
-        NOTE_OF_ONE,
-      ],
-      condition: 'they and core leave the block list no room',
-      core: largeCore,
-      blockList: [
-        '- ui: the screens.',
-      ],
-      overrides: [
-        '## Overrides',
-        `- ${'o'.repeat(400)}: MAY`,
-      ],
-    },
-  ])(
-    'should give the overrides whole, after core and before the block list, when $condition',
-    ({ blockList, body, core, overrides }) => {
-      // Arrange
-      const contents = {
-        blockList,
-        core,
-        isStartup: false,
-        overrides,
-        warnings: [],
-      };
-
-      // Act
-      const given = budgetedBodyOf(contents);
-
-      // Assert
-      expect(given).toStrictEqual(body);
+      expect(body).toStrictEqual(lines);
     },
   );
 });
