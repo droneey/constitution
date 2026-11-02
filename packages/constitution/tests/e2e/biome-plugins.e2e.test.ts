@@ -29,12 +29,11 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'css',
-    slug: 'theme-aliases-the-token-properties',
+    slug: 'utilities-only-from-tokens',
     unit: {
       axes: [],
       blocks: [
         'css',
-        'design-system',
         'tailwind',
       ],
     },
@@ -892,7 +891,7 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'typescript',
-    slug: 'schema-builds-values-through-the-domain',
+    slug: 'schema-builds-values-through-their-constructor',
     unit: {
       axes: [],
       blocks: [
@@ -1236,7 +1235,7 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'css',
-    slug: 'viewport-size-in-small-viewport-units',
+    slug: 'viewport-size-leaves-out-what-the-browser-draws',
     unit: {
       axes: [],
       blocks: [
@@ -1453,7 +1452,7 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'typescript',
-    slug: 'cache-key-built-by-its-features-factory',
+    slug: 'cache-key-built-by-its-owners-factory',
     unit: {
       blocks: [
         'remote-data',
@@ -1579,6 +1578,12 @@ const pluginRows: readonly PluginRow[] = [
   {
     language: 'typescript',
     slug: 'child-process-started-without-a-shell',
+    unit: {
+      axes: [],
+      blocks: [
+        'bun',
+      ],
+    },
     reported: [
       {
         condition: 'a process is started through exec',
@@ -1636,6 +1641,12 @@ const pluginRows: readonly PluginRow[] = [
   {
     language: 'typescript',
     slug: 'child-process-given-an-env-of-its-own',
+    unit: {
+      axes: [],
+      blocks: [
+        'bun',
+      ],
+    },
     reported: [
       {
         condition: 'a process is left to inherit process.env',
@@ -1824,7 +1835,7 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'typescript',
-    slug: 'boundary-values-unknown-until-parsed',
+    slug: 'outside-value-unknown-until-parsed',
     reported: [
       {
         condition: 'parsed JSON is cast to a type',

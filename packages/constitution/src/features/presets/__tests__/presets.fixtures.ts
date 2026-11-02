@@ -189,13 +189,13 @@ const roleFixtures: readonly RoleFixture[] = [
   {
     axis: Axis.Architecture,
     block: 'core',
-    id: 'gateway',
+    id: 'adapter',
     term: 'adapters/',
   },
   {
     axis: Axis.Architecture,
     block: 'core',
-    id: 'gateway-file',
+    id: 'adapter-file',
     kind: TermKind.Suffix,
     term: '.adapter',
   },

@@ -10,11 +10,8 @@
 credentials.json
 id_rsa
 *.secrets
-/local/
 .claude/settings.local.json
 .claude/worktrees/
-.env*
-!.env.example
 .DS_Store
 .vscode/*
 !.vscode/settings.json
@@ -29,6 +26,9 @@ id_rsa
 *.bak
 *.orig
 *~
+/local/
+.env*
+!.env.example
 
 # bun
 .npmrc
@@ -39,9 +39,6 @@ id_rsa
 
 # bun-test
 **/coverage/
-
-# mise
-mise.local.toml
 
 # rumdl
 .rumdl_cache/
@@ -64,3 +61,6 @@ reports/mutation/
 # vite
 **/dist/
 **/build/
+
+# mise
+mise.local.toml

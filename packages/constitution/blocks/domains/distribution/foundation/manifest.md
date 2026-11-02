@@ -10,7 +10,7 @@ The manifest names the unit's licence as an SPDX expression.
 
 | Why |
 |---|
-| a consumer's licence check reads an SPDX expression exactly, and free text leaves it to guess. |
+| a consumer's licence check reads an SPDX expression exactly, and free text leaves it to guess — SPDX. |
 
 ### manifest-names-the-source-repository · MUST
 
@@ -18,11 +18,11 @@ The manifest names the repository the unit is built from.
 
 | Why |
 |---|
-| a consumer finds the source from the registry, and a version's provenance is checked against the repository the manifest names. |
+| without it a consumer cannot find the source from the registry, and a version's provenance has no repository to be checked against. |
 
 ### manifest-paths-resolve-in-the-packed-unit · MUST
 
-Every path the manifest names — an entry, its types, a command — resolves inside the unit as it is packed for the registry.
+Every path the manifest names resolves in the packed unit. An entry, its types and a command each resolve inside the unit as it is packed for the registry.
 
 | Why |
 |---|
@@ -32,15 +32,15 @@ Every path the manifest names — an entry, its types, a command — resolves in
 
 ### manifest-declares-dependencies-by-range · SHOULD
 
-The manifest declares each dependency a consumer installs with the unit by the range of versions the unit works with.
+The manifest declares a dependency by the range of versions the unit works with. This holds for each dependency a consumer installs with the unit.
 
 | Why |
 |---|
-| a consumer's package manager can then share one compatible version among every package that needs it. |
+| a dependency pinned to one version makes a consumer's package manager install a second copy beside the one its other packages share, and the two copies drift apart. |
 
 ### manifest-declares-consumer-owned-dependencies-as-peers · MUST
 
-The manifest declares a dependency the consumer owns — the tool a package configures, the host framework it plugs into — with the lowest version the package supports — as a peer where the ecosystem has peers — and never bundles or pins it.
+The manifest declares a dependency the consumer owns by the lowest version the package supports, and never bundles or pins it. Such a dependency — the tool a package configures, the host framework it plugs into — is declared as a peer where the ecosystem has peers.
 
 | Why |
 |---|

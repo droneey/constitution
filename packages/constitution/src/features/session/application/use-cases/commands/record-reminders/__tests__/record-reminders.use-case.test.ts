@@ -3,7 +3,7 @@ import { describe, expect, it } from 'bun:test';
 import { BlockId } from '#/kernel/value-objects';
 
 import { heldSessionsOf, keptSession } from '../../../../../__tests__/session.fixtures';
-import { createFakeSessionCommandRepository } from '../../../../../__tests__/session-command-repository.fake';
+import { createFakeSessionRepository } from '../../../../../__tests__/session-command-repository.fake';
 import { SessionAgent } from '../../../../../domain/session/entities';
 import { AgentId } from '../../../../../domain/session/value-objects';
 import { recordReminders } from '../record-reminders.use-case';
@@ -39,7 +39,7 @@ describe('recordReminders', () => {
         BlockId.create('typescript'),
       ],
       session: keptSession,
-      sessions: createFakeSessionCommandRepository(store),
+      sessionRepository: createFakeSessionRepository(store),
     });
 
     // Assert
@@ -60,7 +60,7 @@ describe('recordReminders', () => {
       agent: SessionAgent.main,
       ids: [],
       session: keptSession,
-      sessions: createFakeSessionCommandRepository(store),
+      sessionRepository: createFakeSessionRepository(store),
     });
 
     // Assert

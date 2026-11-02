@@ -8,13 +8,13 @@ import { goldenFileText, goldenOf } from '#/__tests__/golden.fixtures';
 import { AbsolutePath } from '#/kernel/value-objects';
 
 import { runAppliedFilesRepositorySuite } from '../../../__tests__/applied-files-repository.suite';
-import { runLockRepositorySuite } from '../../../__tests__/lock-repository.suite';
+import { runLockQueriesSuite } from '../../../__tests__/lock-repository.suite';
 import { lockOf } from '../../../__tests__/presets.fixtures';
 import { ApplyError } from '../../../domain/apply-plan/errors';
 import type { Lock } from '../../../domain/lock/entities';
 import { LockReadStatus, RecordKind } from '../../../domain/lock/entities';
 import { createFileAppliedFilesRepository } from '../file-applied-files.repository';
-import { createFileLockRepository } from '../file-lock.repository';
+import { createFileLockQueries } from '../file-lock.repository';
 
 let folder = '';
 
@@ -36,7 +36,7 @@ const textOf = (path: string): string | undefined =>
   existsSync(at(path)) ? readFileSync(at(path), 'utf8') : undefined;
 
 const lockAt = (unitPath: string): Lock | undefined => {
-  const read = createFileLockRepository().read(at(unitPath));
+  const read = createFileLockQueries().read(at(unitPath));
 
   return existsSync(at(join(unitPath, LOCK_FILE))) && read.status === LockReadStatus.Read
     ? read.lock
@@ -83,7 +83,7 @@ afterEach(() => {
   });
 });
 
-describe('createFileLockRepository', () => {
+describe('createFileLockQueries', () => {
   it.each([
     {
       condition: 'it holds the markers a merge conflict leaves',
@@ -102,7 +102,7 @@ describe('createFileLockRepository', () => {
     writeFileSync(at(LOCK_FILE), text);
 
     // Act
-    const read = createFileLockRepository().read(at(''));
+    const read = createFileLockQueries().read(at(''));
 
     // Assert
     expect(read).toStrictEqual({
@@ -115,7 +115,7 @@ describe('createFileLockRepository', () => {
     mkdirSync(at(LOCK_FILE));
 
     // Act
-    const read = createFileLockRepository().read(at(''));
+    const read = createFileLockQueries().read(at(''));
 
     // Assert
     expect(read).toStrictEqual({
@@ -192,8 +192,8 @@ describe('createFileAppliedFilesRepository', () => {
   });
 });
 
-runLockRepositorySuite({
-  name: 'createFileLockRepository',
+runLockQueriesSuite({
+  name: 'createFileLockQueries',
   repositoryOf: (world) => {
     writeLocks(world.locks);
 
@@ -205,7 +205,7 @@ runLockRepositorySuite({
 
     return {
       folderOf: at,
-      repository: createFileLockRepository(),
+      lockQueries: createFileLockQueries(),
     };
   },
 });
@@ -223,7 +223,7 @@ runAppliedFilesRepositorySuite({
 
     return {
       projectFolderPath: at(''),
-      repository: createFileAppliedFilesRepository(),
+      appliedFilesRepository: createFileAppliedFilesRepository(),
       state: {
         lockOf: lockAt,
         textOf,

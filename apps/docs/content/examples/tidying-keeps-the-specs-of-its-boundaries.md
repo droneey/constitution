@@ -1,7 +1,7 @@
 ```text title="Avoid"
 refactor: Extract tax calculation
 
-  orders/total.spec.ts
+  orders/__tests__/total.test.ts
 - expect(total).is(110)
 + expect(total).is(100)
 ```
@@ -9,7 +9,7 @@ refactor: Extract tax calculation
 ```text title="Prefer"
 refactor: Move tax to its module
 
-  tax/total.spec.ts
+  tax/__tests__/total.test.ts
 - import "orders/total"
 + import "tax/total"
   expect(total).is(110)

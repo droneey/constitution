@@ -4,25 +4,17 @@
 
 ## General
 
-### workspaces-declared-in-the-root → workspace-tool-links-units-from-the-working-tree · SHOULD
+### own-units-linked-from-the-working-tree → workspace-tool-links-units-from-the-working-tree · SHOULD
 
-The root `package.json` declares every TypeScript package of the repository in `workspaces`, and no package's manifest declares `workspaces`.
-
-| Why |
-|---|
-| Bun 1.4.3 links a package from the working tree only when the root's `workspaces` lists it, and ignores a `workspaces` field in a package, so the packages it names are never linked. |
-
-### own-units-at-workspace-version → workspace-tool-links-units-from-the-working-tree · SHOULD
-
-A unit of the repository is required at `workspace:*`, by another unit or by the root, in `dependencies` and `devDependencies` alike; the root installs so each unit whose configuration it extends.
+Bun links every unit of the repository from the working tree. Only the root `package.json` declares `workspaces`, listing every TypeScript package of the repository, and no package's manifest declares the field; a unit is required at `workspace:*` by another unit and by the root, in `dependencies` and `devDependencies` alike, and the root so installs each unit whose configuration it extends.
 
 | Why |
 |---|
-| the importer then takes the working tree, never a published copy, and the root uses a unit's configuration as a consumer does. |
+| Bun 1.4.3 links a package from the working tree only when the root's `workspaces` lists it, and ignores a `workspaces` field in a package, so the packages it names are never linked; a unit required at a version resolves to a published copy, so the importer is tested against code other than the working tree's, and a root that reaches a unit's configuration by a path uses it as no consumer does. |
 
 ### shared-data-bundled-by-the-build → file-lives-once-across-units · MUST
 
-A TypeScript package imports the data it needs at run time from its single source, through the entry of the unit that holds it, and ships what `bun build` writes from it, never the source that imports the file.
+A TypeScript package ships the data it reads at run time bundled by `bun build`. It imports that data from its single source, through the entry of the unit that holds it, and ships what `bun build` writes from it, never the source that imports the file.
 
 | Why |
 |---|
@@ -30,7 +22,7 @@ A TypeScript package imports the data it needs at run time from its single sourc
 
 ### install-settings-only-in-the-root → new-release-adopted-after-a-cooldown · MUST
 
-The root's `bunfig.toml` holds the `[install]` of the whole workspace; no package's `bunfig.toml` holds an `[install]`.
+Only the root's `bunfig.toml` holds an `[install]`. It holds that of the whole workspace; no package's `bunfig.toml` holds one.
 
 | Why |
 |---|

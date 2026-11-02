@@ -6,8 +6,8 @@
 
 ### outdated-tab-moves-to-the-current-release → client-below-the-oldest-supported-release-updates-first · SHOULD
 
-A tab whose release is older than the oldest its server supports moves to the current release by a full load at its next navigation, or after its user accepts a reload, keeping what they typed.
+A tab older than the oldest release its server supports moves to the current release. It moves by a release reload.
 
 | Why |
 |---|
-| a tab stays open for days across releases, and its next call then sends a format the server no longer reads. |
+| a tab stays open for days across releases, and its next call then sends a format the server no longer reads, and fails. |

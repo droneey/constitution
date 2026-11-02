@@ -209,7 +209,7 @@ describe('checkPresets', () => {
       'biome/architecture.yaml': entryOf({
         block: 'core',
         rule: 'import-points-inward',
-        value: "files: ['${role.gateway}/**', '${role.source}/**']",
+        value: "files: ['${role.adapter}/**', '${role.source}/**']",
       }),
       'biome/foundation.yaml': entryOf({
         language: 'typescript',
@@ -1531,7 +1531,7 @@ describe('checkPresets', () => {
         code: PresetsCode.HandTypedRole,
         details: {
           block: BlockId.create('biome'),
-          role: 'gateway-file',
+          role: 'adapter-file',
           term: '.adapter',
           rule: '*',
         },

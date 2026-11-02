@@ -28,7 +28,7 @@ describe('applyChanges', () => {
     // Act
     applyChanges({
       changes,
-      writes: writes.repository,
+      appliedFilesRepository: writes.appliedFilesRepository,
     });
 
     // Assert
@@ -46,7 +46,7 @@ describe('applyChanges', () => {
     const apply = (): void => {
       applyChanges({
         changes,
-        writes: writes.repository,
+        appliedFilesRepository: writes.appliedFilesRepository,
       });
     };
 

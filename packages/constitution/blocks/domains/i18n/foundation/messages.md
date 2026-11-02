@@ -1,28 +1,28 @@
 # Messages
 
-> Governs a message: its catalog and its composition.
+> Governs a message: its catalogue and its composition.
 
-## Catalog
+## Catalogue
 
-### user-facing-text-from-catalog → text-a-person-reads-held-in-a-messages-file · MUST
+### user-facing-text-from-the-catalogue → text-a-person-reads-held-in-a-messages-file · MUST
 
-A string a person reads is looked up in the message catalog by its source message, which the `.messages` file holds; a translation lives only in its locale's catalog, never in the `.messages` file or in code.
-
-| Why |
-|---|
-| text in code cannot be translated or reworded without a code change, and each language's wording stays in its own catalog. |
-
-### source-catalog-ships-with-its-code · MUST
-
-A change to the code's messages and the change it makes to the source language's catalog ship together, in one change; translations may follow.
+A string a person reads comes from the message catalogue. It is looked up by a stable key or by its source text, and its source text sits in the `.messages` file; a translation lives only in its locale's catalogue, never in the `.messages` file or in code.
 
 | Why |
 |---|
-| a source catalog behind its code shows a message nobody can translate, and one ahead of it keeps messages nothing shows. |
+| text in code cannot be translated or reworded without a code change, and a translation kept beside its source message mixes every language's wording into one file. |
+
+### source-catalogue-ships-with-its-code · MUST
+
+The source catalogue ships with the code's messages. A change to the code's messages and the change it makes to the source language's catalogue ship together, in one change; translations may follow.
+
+| Why |
+|---|
+| a source catalogue behind its code shows a message nobody can translate, and one ahead of it keeps messages nothing shows. |
 
 ### module-level-text-holds-the-message · MUST
 
-Text defined at a module's top level — an option list, an enumeration's labels — holds the message, never its translated result, and is translated where it is shown.
+Text defined at a module's top level holds the message, never its translated result. Such text — an option list, an enumeration's labels — is translated where it is shown.
 
 | Why |
 |---|
@@ -32,7 +32,7 @@ Text defined at a module's top level — an option list, an enumeration's labels
 
 ### messages-take-named-parameters · MUST
 
-A message takes its values as named parameters inside it; a sentence is never built by joining strings.
+A message takes its values as named parameters inside it. A sentence is never built by joining strings.
 
 | Why |
 |---|
@@ -40,7 +40,7 @@ A message takes its values as named parameters inside it; a sentence is never bu
 
 ### interpolated-value-isolated-for-direction · MUST
 
-A value interpolated into a message — a name, a title the user wrote — is isolated for direction, so text of the other direction never reorders the sentence around it.
+A value interpolated into a message is isolated for direction. That holds for a name or a title the user wrote, so text of the other direction never reorders the sentence around it.
 
 | Why |
 |---|
@@ -48,11 +48,11 @@ A value interpolated into a message — a name, a title the user wrote — is is
 
 ### plural-forms-by-locale-rules · MUST
 
-Plural and ordinal forms are selected by the locale's CLDR rules, and the variants of a sentence that changes with a value — a gender, a role, a status — by a select, all inside the message, never by a condition in code such as "the count is one".
+Plural and ordinal forms and a sentence's other variants are chosen inside the message, plural and ordinal forms by the locale's rules. Those are the locale's CLDR rules, and the variants of a sentence that changes with a value — a gender, a role, a status — are chosen by a select inside the message; none is chosen by a condition in code such as "the count is one".
 
 | Why |
 |---|
-| many languages have more than two plural forms, and code written for one language gets the others wrong. |
+| many languages have more than two plural forms, and code written for one language gets the others wrong — CLDR's plural rules. |
 
 ### ambiguous-messages-carry-context · SHOULD
 
@@ -74,25 +74,25 @@ A message in MessageFormat writes no straight `'`: its apostrophe is its languag
 
 ### pseudo-locale-runs-in-development · SHOULD
 
-A pseudo-locale — accented, longer, and optionally right to left — runs in development.
+A pseudo-locale runs in development. It is accented and longer, and optionally right to left.
 
 | Why |
 |---|
-| it shows text written outside the catalog, text cut by its box, and sentences built by joining. |
+| without it, text written outside the catalogue, text cut by its box and sentences built by joining reach the first real translation unseen. |
 
 ## Requirements for implementation
 
-### i18n-messages-in-messageformat · MUST
+### message-format-handles-plural-gender-and-select · MUST
 
-The library reads messages in ICU MessageFormat or its successor, Unicode MessageFormat 2, so plurals, selects and named parameters live inside the message.
+The library's message format handles plural, gender and select inside the message. It selects plural and ordinal forms by each locale's rules and a gender or another variant by a select, takes named parameters, and is a format translation tools read.
 
 | Why |
 |---|
-| a catalog in the shared syntax keeps every form inside its message, and any translation tool can read it. |
+| a format that cannot hold plurals and selects pushes them out into code written for one language's forms, and a format no translation tool reads is translated by hand. |
 
-### i18n-missing-key-fails-the-check · SHOULD
+### missing-message-key-fails-the-check · SHOULD
 
-The library makes a missing or misspelt key fail the check.
+The library makes a missing or misspelt message key fail the check.
 
 | Why |
 |---|

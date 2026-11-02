@@ -10,7 +10,7 @@ lingui:
               - ^${role.source}/${role.extra-entry}/[^/]+/main\.[^/]+$
               - ^${role.source}/${role.composition-root}/
               - /locales/
-              - (^|/)__tests__/
+              - (^|/)${role.colocated-specs}/
               - ^${role.package-suites}/
           to:
             path: node_modules/@lingui/
@@ -23,7 +23,7 @@ lingui:
               - ^${role.source}/${role.extra-entry}/[^/]+/main\.[^/]+$
               - ^${role.source}/${role.composition-root}/
               - /locales/
-              - (^|/)__tests__/
+              - (^|/)${role.colocated-specs}/
               - ^${role.package-suites}/
           to:
             path:

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import { VersionsFailure } from '../../../domain/versions/errors';
 import { Version } from '../../../domain/versions/value-objects';
-import { createStaticFileVersionsRepository } from '../versions.repository';
+import { createStaticFileVersionQueries } from '../versions.repository';
 import {
   failureOf,
   transportFailing,
@@ -19,7 +19,7 @@ const servingFile = (file: unknown): ReturnType<typeof transportServing> =>
     },
   });
 
-describe('createStaticFileVersionsRepository', () => {
+describe('createStaticFileVersionQueries', () => {
   it.each([
     {
       condition: 'the file lists them',
@@ -58,13 +58,13 @@ describe('createStaticFileVersionsRepository', () => {
     },
   ])('should read the releases when $condition', async ({ file, latest, versions }) => {
     // Arrange
-    const repository = createStaticFileVersionsRepository({
+    const versionQueries = createStaticFileVersionQueries({
       address: '/versions.json',
       transport: servingFile(file),
     });
 
     // Act
-    const read = await repository.read(new AbortController().signal);
+    const read = await versionQueries.read(new AbortController().signal);
 
     // Assert
     expect(read).toStrictEqual({
@@ -75,7 +75,7 @@ describe('createStaticFileVersionsRepository', () => {
 
   it('should fail, naming the status, when the site answers no file', async () => {
     // Arrange
-    const repository = createStaticFileVersionsRepository({
+    const versionQueries = createStaticFileVersionQueries({
       address: '/versions.json',
       transport: transportServing({
         '/other.json': {
@@ -86,7 +86,7 @@ describe('createStaticFileVersionsRepository', () => {
     });
 
     // Act
-    const failure = await failureOf(repository.read(new AbortController().signal));
+    const failure = await failureOf(versionQueries.read(new AbortController().signal));
 
     // Assert
     expect(failure).toStrictEqual({
@@ -103,7 +103,7 @@ describe('createStaticFileVersionsRepository', () => {
     {
       cause: 'TypeError',
       condition: 'the network fails',
-      repository: createStaticFileVersionsRepository({
+      versionQueries: createStaticFileVersionQueries({
         address: '/versions.json',
         transport: transportFailing(new TypeError('Failed to fetch')),
       }),
@@ -111,15 +111,15 @@ describe('createStaticFileVersionsRepository', () => {
     {
       cause: 'TimeoutError',
       condition: 'the site gives no answer in time',
-      repository: createStaticFileVersionsRepository({
+      versionQueries: createStaticFileVersionQueries({
         address: '/versions.json',
         timeoutMs: 0,
         transport: transportSilent,
       }),
     },
-  ])('should fail as unreachable when $condition', async ({ cause, repository }) => {
+  ])('should fail as unreachable when $condition', async ({ cause, versionQueries }) => {
     // Act
-    const failure = await failureOf(repository.read(new AbortController().signal));
+    const failure = await failureOf(versionQueries.read(new AbortController().signal));
 
     // Assert
     expect(failure).toStrictEqual({
@@ -133,7 +133,7 @@ describe('createStaticFileVersionsRepository', () => {
 
   it('should fail with the caller’s reason when the caller has aborted the read', async () => {
     // Arrange
-    const repository = createStaticFileVersionsRepository({
+    const versionQueries = createStaticFileVersionQueries({
       address: '/versions.json',
       transport: servingFile(versionsFileOf()),
     });
@@ -142,7 +142,7 @@ describe('createStaticFileVersionsRepository', () => {
     controller.abort();
 
     // Act
-    const failure = await failureOf(repository.read(controller.signal));
+    const failure = await failureOf(versionQueries.read(controller.signal));
 
     // Assert
     expect(failure).toBe(controller.signal.reason);
@@ -150,13 +150,13 @@ describe('createStaticFileVersionsRepository', () => {
 
   it('should fail as malformed, naming the whole file, when the file holds no JSON', async () => {
     // Arrange
-    const repository = createStaticFileVersionsRepository({
+    const versionQueries = createStaticFileVersionQueries({
       address: '/versions.json',
       transport: () => Promise.resolve(new Response('<!doctype html>')),
     });
 
     // Act
-    const failure = await failureOf(repository.read(new AbortController().signal));
+    const failure = await failureOf(versionQueries.read(new AbortController().signal));
 
     // Assert
     expect(failure).toStrictEqual({
@@ -174,7 +174,7 @@ describe('createStaticFileVersionsRepository', () => {
   it('should let a failure of the body it does not know through as it is', async () => {
     // Arrange
     const unreadable = new RangeError('unreadable');
-    const repository = createStaticFileVersionsRepository({
+    const versionQueries = createStaticFileVersionQueries({
       address: '/versions.json',
       transport: () =>
         Promise.resolve(
@@ -185,7 +185,7 @@ describe('createStaticFileVersionsRepository', () => {
     });
 
     // Act
-    const failure = await failureOf(repository.read(new AbortController().signal));
+    const failure = await failureOf(versionQueries.read(new AbortController().signal));
 
     // Assert
     expect(failure).toBe(unreadable);
@@ -238,13 +238,13 @@ describe('createStaticFileVersionsRepository', () => {
     'should fail as malformed, naming each problem’s place, when $condition',
     async ({ file, problems }) => {
       // Arrange
-      const repository = createStaticFileVersionsRepository({
+      const versionQueries = createStaticFileVersionQueries({
         address: '/versions.json',
         transport: servingFile(file),
       });
 
       // Act
-      const failure = await failureOf(repository.read(new AbortController().signal));
+      const failure = await failureOf(versionQueries.read(new AbortController().signal));
 
       // Assert
       expect(failure).toStrictEqual({

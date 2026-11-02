@@ -7,7 +7,7 @@ import {
   keptSession,
   sessionStateOf,
 } from '../../../../../__tests__/session.fixtures';
-import { createFakeSessionCommandRepository } from '../../../../../__tests__/session-command-repository.fake';
+import { createFakeSessionRepository } from '../../../../../__tests__/session-command-repository.fake';
 import { SessionAgent } from '../../../../../domain/session/entities';
 import { SessionOrigin } from '../../../../../domain/session-start/entities';
 import { HookEventName } from '../../../../../domain/shared/entities';
@@ -54,7 +54,7 @@ describe('keepSession', () => {
         event: HookEventName.SessionStart,
         origin,
         session: keptSession,
-        sessions: createFakeSessionCommandRepository(store),
+        sessionRepository: createFakeSessionRepository(store),
         state: startedState,
       });
 
@@ -89,7 +89,7 @@ describe('keepSession', () => {
       event,
       origin: SessionOrigin.Startup,
       session: keptSession,
-      sessions: createFakeSessionCommandRepository(store),
+      sessionRepository: createFakeSessionRepository(store),
       state,
     });
 

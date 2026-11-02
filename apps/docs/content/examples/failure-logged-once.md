@@ -1,23 +1,24 @@
 ```pseudo title="Avoid"
-# orders/order-repository.ts
+# orders/infrastructure/postgres/order-repository.adapter
 catch error
   log(error)
   throw error
 
-# orders/order-service.ts
+# orders/application/use-cases/commands/place-order
 catch error
   log(error)
   throw error
-# the handler logs it a third time
+# the error filter logs it a third time
 ```
 
 ```pseudo title="Prefer"
-# orders/order-repository.ts
-# orders/order-service.ts
+# orders/infrastructure/postgres/order-repository.adapter
+# orders/application/use-cases/commands/place-order
 # no catch: the failure passes
 
-# api/order-handler.ts
+# presentation/bindings/error-filter
 catch error
   log(error)
+
   return errorAnswer(error)
 ```

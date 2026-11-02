@@ -1,20 +1,21 @@
 ```pseudo title="Avoid"
 function exportInvoice(invoice, format)
   if format is Pdf then
-    return renderPdf(invoice)
+    return toPdf(invoice)
+
   if format is Csv then
-    return renderCsv(invoice)
+    return toCsv(invoice)
+
   # each new format edits this
   if format is Xml then
-    return renderXml(invoice)
+    return toXml(invoice)
 ```
 
 ```pseudo title="Prefer"
 let exporters = {
-  Pdf: renderPdf,
-  Csv: renderCsv,
-  # a new format is one more line
-  Xml: renderXml
+  Pdf: toPdf,
+  Csv: toCsv,
+  Xml: toXml
 }
 
 function exportInvoice(invoice, format)

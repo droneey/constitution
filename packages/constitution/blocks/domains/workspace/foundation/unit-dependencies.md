@@ -6,7 +6,7 @@
 
 ### dependency-has-one-version-across-units · MUST
 
-A dependency has one version, or one range, across every manifest of the repository, which the lockfile resolves once — save the peer range a distributed unit declares for a dependency its consumer owns.
+A dependency has one version across the repository. Every manifest names it by that version or by one shared range, which the lockfile resolves once, save the peer range a distributed unit declares for a dependency its consumer owns.
 
 | Why |
 |---|
@@ -22,9 +22,9 @@ A unit declares in its own manifest every dependency it imports, and never relie
 
 ## Imports
 
-### unit-reached-only-through-its-entries → dependency-reached-through-its-public-entry · MUST
+### unit-reached-only-through-its-published-entries → dependency-reached-through-its-published-entries · MUST
 
-A unit, or a script of the root, reaches another unit only by its name, through its entries, never by a path into its folder.
+A unit, or a script of the root, reaches another unit only by its name, through its published entries, never by a path into its folder.
 
 | Why |
 |---|
@@ -36,15 +36,7 @@ The units of a workspace form no cycle, neither in the dependencies their manife
 
 | Why |
 |---|
-| units in a cycle cannot be built, released or versioned apart, so they are one unit in disguise. |
-
-### unit-generates-what-its-dependents-read → generated-file-made-by-its-own-step · SHOULD
-
-Types a language generates from shared data are generated in that language's unit, by a step of its own, never in the package that holds the data.
-
-| Why |
-|---|
-| the package of shared data holds no code, and a reader that ran another unit's build to get its types would build every product it depends on. |
+| units in a cycle cannot be built, released or versioned apart, so they are one unit in disguise — the acyclic dependencies principle. |
 
 ## Requirements for implementation
 
@@ -54,4 +46,4 @@ The tool that manages a workspace resolves the repository's own units from the w
 
 | Why |
 |---|
-| a change to a unit is then tested by every unit that uses it before it is published. |
+| a unit resolved from the registry gives the units that use it its last published version, so a change to it reaches them only after it is published, untested by them. |

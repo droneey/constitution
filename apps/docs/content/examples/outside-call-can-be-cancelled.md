@@ -1,14 +1,16 @@
 ```pseudo title="Avoid"
-function searchProducts(query)
-  return catalog.search(query, {
-    timeout: 3 seconds,
-  })
+# catalog/application/use-cases/queries/search-products
+function createSearchProducts({ catalog })
+  return function(input, context)
+    return catalog.search(input.query, {
+      timeout: 3 seconds,
+    })
 ```
 
 ```pseudo title="Prefer"
-function searchProducts(query, signal)
-  return catalog.search(query, {
-    timeout: 3 seconds,
-    signal: signal,
-  })
+# catalog/application/use-cases/queries/search-products
+function createSearchProducts({ catalog })
+  return function(input, context)
+    # Why: the adapter hands context.signal to its request
+    return catalog.search(input.query, context)
 ```

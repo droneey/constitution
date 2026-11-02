@@ -6,8 +6,8 @@
 
 ### ink-animation-driven-by-use-animation → reduced-motion-honoured · MUST
 
-An Ink animation — a spinner, a step that runs, a bar that fills — is driven by **`useAnimation`**, and is inactive, `isActive: false`, where the run asks for reduced motion; no component keeps a timer of its own.
+An Ink animation runs on **`useAnimation`**, never on a timer of its own, and stops where the run asks for reduced motion. Such an animation — a spinner, a step that runs, a bar that fills — is then inactive, `isActive: false`.
 
 | Why |
 |---|
-| Ink's animations then share one timer and redraw once per tick, and one setting stops every one of them, while a timer of a component's own keeps redrawing after the user asked for stillness. |
+| a timer of a component's own redraws the frame on a tick of its own and keeps animating after the user asked for stillness, where Ink's animations on one shared timer redraw once per tick and one setting stops them all. |

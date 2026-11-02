@@ -4,9 +4,9 @@
 
 ## Shutdown
 
-### nest-shutdown-hooks-enabled → resource-released-on-every-path · MUST
+### nest-shutdown-hooks-enabled → program-stops-cleanly · MUST
 
-The root calls `app.enableShutdownHooks()`, and a provider that keeps a pool or a client open closes it in `onModuleDestroy` or `beforeApplicationShutdown`.
+The root enables Nest's shutdown hooks. It calls `app.enableShutdownHooks()`, and a provider that keeps a pool or a client open closes it in `onModuleDestroy` or `beforeApplicationShutdown`.
 
 | Why |
 |---|

@@ -6,7 +6,7 @@
 
 ### memory-keeps-its-source-and-person · SHOULD
 
-What an agent writes to its memory from text others wrote keeps its source, is scoped to its person, and is read back as content, never as instructions.
+What an agent remembers from others' text keeps its source and its person, and is read back as content. What it writes to its memory from text others wrote keeps its source, is scoped to its person, and is read back as content, never as instructions.
 
 | Why |
 |---|

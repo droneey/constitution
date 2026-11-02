@@ -6,8 +6,8 @@
 
 ### increased-contrast-mode-follows-the-system → theme-follows-system-until-chosen · MUST
 
-Until the user chooses one in the app, the theme's increased-contrast mode follows the system's contrast setting — Increase Contrast on iOS, the contrast settings on Android — read when the app starts and again when the setting changes.
+The theme's increased-contrast mode follows the system's contrast setting until the user chooses one in the app. The setting is Increase Contrast on iOS and the contrast settings on Android, read when the app starts and again when it changes.
 
 | Why |
 |---|
-| the setting is the user's request, made once for every app, and the contrast it asks for is what lets a person with low vision read the screen. |
+| a person with low vision asks every app for more contrast once, in the system, and an app that ignores the request is one they cannot read. |

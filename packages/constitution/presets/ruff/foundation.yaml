@@ -52,7 +52,7 @@ core:
             lint:
               extend-select:
                 - FBT
-  comment-explains-why:
+  comment-says-only-what-the-code-cannot:
     python:
       pyproject.toml:
         tool:

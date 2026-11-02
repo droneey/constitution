@@ -6,15 +6,15 @@
 
 ### matomo-waits-for-consent → processing-waits-for-its-consent · MUST
 
-Where the law subjects the measurement to consent, `requireConsent` is set before the first push and tracking starts only on the consent the user gave; elsewhere tracking is cookieless and anonymised — `disableCookies`, the address masked.
+Matomo tracks only on consent where the law asks for it, and elsewhere cookieless and anonymised. Where the law subjects the measurement to consent, `requireConsent` is set before the first push and tracking starts only on the consent the user gave; elsewhere tracking is cookieless and anonymised — `disableCookies`, the address masked.
 
 | Why |
 |---|
-| without it, Matomo tracks from the first page view, before the user has chosen. |
+| without it, Matomo tracks from the first page view, before the user has chosen, and tracking that sets cookies or keeps the full address where no consent was asked collects what only consent would allow. |
 
 ### matomo-objection-keeps-the-tracker-off → objection-honoured · MUST
 
-Where tracking runs without consent, a person's objection stops it before the next event and is kept by the program, which loads no tracker in that browser until they take the objection back; `optUserOut` alone does not keep it, since it stores the objection in a cookie and `disableCookies` turns every cookie off.
+A person's objection keeps Matomo off. Where tracking runs without consent, an objection stops it before the next event and is kept by the program, which loads no tracker in that browser until the person takes it back; `optUserOut` alone does not keep it, since it stores the objection in a cookie and `disableCookies` turns every cookie off.
 
 | Why |
 |---|

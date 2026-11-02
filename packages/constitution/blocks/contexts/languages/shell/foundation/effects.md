@@ -6,7 +6,7 @@
 
 ### temporary-file-removed-by-an-exit-trap → resource-released-on-every-path · MUST
 
-A temporary file or folder is made by `mktemp` and removed by a `trap` on `EXIT` — in POSIX sh also on `HUP`, `INT` and `TERM`, by a handler that exits — set right after it is made.
+A temporary file or folder is made by `mktemp` and removed by a `trap` on `EXIT`. In POSIX sh the trap is also set on `HUP`, `INT` and `TERM`, by a handler that exits, and it is set right after the file is made.
 
 | Why |
 |---|
@@ -16,7 +16,7 @@ A temporary file or folder is made by `mktemp` and removed by a `trap` on `EXIT`
 
 ### script-diagnostics-on-standard-error → diagnostics-written-through-a-logger · MUST
 
-A script writes its diagnostics and errors through one function of its own that prints to standard error — `log() { printf '%s\n' "$*" >&2; }` — and only its output to standard output.
+A script writes its diagnostics and errors to standard error, through one function of its own. Only its output goes to standard output.
 
 | Why |
 |---|

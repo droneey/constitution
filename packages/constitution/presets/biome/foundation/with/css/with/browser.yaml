@@ -12,9 +12,9 @@ css:
         plugins[path=./${constitution.path}/presets/biome/plugins/css/web-font-served-as-woff2.${role.grit-rule}]:
           includes:
             - '**/*.css'
-  viewport-size-in-small-viewport-units:
+  viewport-size-leaves-out-what-the-browser-draws:
     css:
       biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/css/viewport-size-in-small-viewport-units.${role.grit-rule}]:
+        plugins[path=./${constitution.path}/presets/biome/plugins/css/viewport-size-leaves-out-what-the-browser-draws.${role.grit-rule}]:
           includes:
             - '**/*.css'

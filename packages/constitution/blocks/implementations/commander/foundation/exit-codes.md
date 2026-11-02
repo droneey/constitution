@@ -6,7 +6,7 @@
 
 ### commander-exits-overridden-and-mapped → exit-codes-from-one-map · MUST
 
-The program calls `exitOverride()`, and a `CommanderError` whose `exitCode` is 0 — help or the version, asked for — ends the run with 0, and every other — an unknown command or option, a missing or bad argument, help shown because no command was given — with the usage code 2. No action calls commander's `error()`; it throws the program's own failure.
+commander's exits are overridden and mapped by the exit map. The program calls `exitOverride()`; a `CommanderError` whose `exitCode` is 0 — help or the version, asked for — ends the run with 0, and every other — an unknown command or option, a missing or bad argument, help shown because no command was given — with the usage code 2. No action calls commander's `error()`; it throws the program's own failure.
 
 | Why |
 |---|
@@ -14,7 +14,7 @@ The program calls `exitOverride()`, and a `CommanderError` whose `exitCode` is 0
 
 ### commander-run-by-parse-async-inside-the-last-resort-handler → last-resort-handler-one-per-entry · MUST
 
-The program is run with `await program.parseAsync(argv)`, never with `parse`, inside the program's one handler of last resort, which every `CommanderError` and every failure an action lets escape reach.
+The program runs by `await program.parseAsync(argv)` inside its one handler of last resort. It never runs by `parse`, and every `CommanderError` and every failure an action lets escape reach that handler.
 
 | Why |
 |---|

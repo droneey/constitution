@@ -6,10 +6,10 @@ yaml-js:
           severity: error
           from:
             pathNot:
-              - ^${role.source}/${role.gateway}/
-              - ^${role.source}/(?:${role.bounded-context}|${role.composition-module})/[^/]+/${role.gateway}/
+              - ^${role.source}/${role.adapter}/
+              - ^${role.source}/(?:${role.bounded-context}|${role.composition-module})/[^/]+/${role.adapter}/
               - ^${role.source}/${role.generic-library}/
-              - (^|/)__tests__/
+              - (^|/)${role.colocated-specs}/
               - ^${role.package-suites}/
           to:
             path: node_modules/yaml/

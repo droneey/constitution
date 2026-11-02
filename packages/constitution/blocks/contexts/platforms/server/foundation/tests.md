@@ -6,7 +6,7 @@
 
 ### server-stop-proven-by-a-spec · SHOULD
 
-A server has a spec that starts it, gives it work, tells it to stop while the work runs, and checks that the work finishes, new work is refused and the process exits within its bound.
+A server's stop is proven by a spec. The spec starts the server, gives it work, tells it to stop while the work runs, and checks that the work finishes, new work is refused and the stop ends within its bound.
 
 | Why |
 |---|

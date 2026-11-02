@@ -7,8 +7,8 @@ export type {
   ProjectReader,
 } from './application/contracts';
 export { PresetFileReadStatus } from './application/contracts';
-export type { AppliedFilesCommandRepository } from './application/contracts/repositories/commands';
-export type { LockQueryRepository } from './application/contracts/repositories/queries';
+export type { AppliedFilesRepository } from './application/contracts/repositories/commands';
+export type { LockQueries } from './application/contracts/repositories/queries';
 export { applyChanges } from './application/use-cases/commands/apply-changes';
 export type { CheckConfigurationsInput } from './application/use-cases/queries/check-configurations';
 export { checkConfigurations } from './application/use-cases/queries/check-configurations';

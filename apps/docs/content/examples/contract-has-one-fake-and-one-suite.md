@@ -1,27 +1,27 @@
 ```pseudo title="Avoid"
-# pay-order.use-case.test
-function fakeGateway()
+# __tests__/pay-order.use-case.test
+function fakePayment()
   return { charge: approve }
 
-# refund-order.use-case.test
-function fakeGateway()
+# __tests__/refund-order.use-case.test
+function fakePayment()
   return { charge: approve,
     refund: approve }
 ```
 
 ```pseudo title="Prefer"
-# __tests__/payment-gateway.fake
-type PaymentGatewayFake = {
+# __tests__/payment.fake
+type PaymentFake = {
   charges: Charge[], refunds: Refund[] }
 
-# __tests__/payment-gateway.suite
-function paymentGatewaySuite(newGateway)
+# __tests__/payment.suite
+function paymentSuite(createPayment)
   test "should refund the charge it took"
     ...
 
-# __tests__/payment-gateway.fake.test
-paymentGatewaySuite(newPaymentGatewayFake)
+# __tests__/payment.fake.test
+paymentSuite(createPaymentFake)
 
-# infrastructure/stripe/__tests__/payment-gateway.integration.test
-paymentGatewaySuite(newStripePaymentGateway)
+# infrastructure/stripe/__tests__/payment.adapter.integration.test
+paymentSuite(createStripePaymentAdapter)
 ```

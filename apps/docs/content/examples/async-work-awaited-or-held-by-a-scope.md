@@ -1,13 +1,21 @@
 ```pseudo title="Avoid"
-function placeOrder(order)
-  await orders.save(order)
-  sendReceipt(order)  # nobody awaits it
-  return order.id
+# orders/application/use-cases/commands/place-order
+function createPlaceOrder({ cartRepository, orderRepository, receipts })
+  return function(input, context)
+    let cart = cartRepository.find(input.cartId, context)
+    let order = create(input.orderId, cart)
+
+    await orderRepository.save(order, context)
+    receipts.send(order, context)  # nobody awaits it
 ```
 
 ```pseudo title="Prefer"
-function placeOrder(order)
-  await orders.save(order)
-  await sendReceipt(order)
-  return order.id
+# orders/application/use-cases/commands/place-order
+function createPlaceOrder({ cartRepository, orderRepository, receipts })
+  return function(input, context)
+    let cart = cartRepository.find(input.cartId, context)
+    let order = create(input.orderId, cart)
+
+    await orderRepository.save(order, context)
+    await receipts.send(order, context)
 ```

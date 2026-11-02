@@ -8,7 +8,7 @@ import { onceSucceeded } from '#/libs/once-succeeded';
 import { DOCS_ROUTE } from '#/shared/constants';
 import type { SiteLayout } from '#/shared/types';
 
-import type { PagesQueryRepository, SearchIndex } from '../../application/contracts';
+import type { PageQueries, SearchIndex } from '../../application/contracts';
 import type { PageCatalog } from '../../domain/page/entities';
 import { Page } from '../../domain/page/entities';
 import type { PageSlugs, SiteBasePath } from '../../domain/page/value-objects';
@@ -56,7 +56,7 @@ const createFumadocsContent = ({
   collections: { blocks, documents, glossary, guide, overview, quickStart },
   layout,
   siteBasePath,
-}: FumadocsContentInput): PagesQueryRepository<SerializedPageTree> & SearchIndex => {
+}: FumadocsContentInput): PageQueries<SerializedPageTree> & SearchIndex => {
   const content = onceSucceeded(() => {
     const { collectionPathOf, servedUnderSitePaths } = createSitePaths();
     const guideSource: SiteSource = {

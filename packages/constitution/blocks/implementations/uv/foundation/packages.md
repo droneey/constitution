@@ -6,11 +6,11 @@
 
 ### uv-is-the-only-python-package-manager → dependencies-locked-by-one-lockfile · MUST
 
-`uv.lock` is the only lockfile of the repository's Python; no `requirements.txt` and no lockfile of pip, Poetry or Pipenv is kept.
+`uv.lock` is the only lockfile of the repository's Python. No `requirements.txt` and no lockfile of pip, Poetry or Pipenv is kept.
 
 | Why |
 |---|
-| two package managers resolve differently, and a second lockfile is a second truth about what is installed. |
+| two package managers resolve differently, and a second lockfile is a second truth about what is installed — a single source of truth. |
 
 ## Installs
 
@@ -20,11 +20,11 @@
 
 | Why |
 |---|
-| the resolver then holds the cooldown on every lock, not only the bot. |
+| a cooldown held only where updates are proposed lets a day-old release in through every lock a person runs by hand, while the resolver holds it on every lock. |
 
 ### sources-stay-in-the-repository-or-an-index → dependency-installed-only-from-a-registry · MUST
 
-A dependency is named by its name and range alone, never by an address, `name @ <url>`, and `[tool.uv.sources]` gives it only `{ workspace = true }`, `{ path = "<a wheel or archive inside the repository>" }` or `{ index = "<name>" }` of an index marked `explicit = true`.
+A Python dependency comes only from an index or from the repository. It is named by its name and range alone, never by an address, `name @ <url>`, and `[tool.uv.sources]` gives it only `{ workspace = true }`, `{ path = "<a wheel or archive inside the repository>" }` or `{ index = "<name>" }` of an index marked `explicit = true`.
 
 | Why |
 |---|
@@ -32,16 +32,26 @@ A dependency is named by its name and range alone, never by an address, `name @ 
 
 ### sdists-never-built → install-scripts-run-only-for-listed-dependencies · MUST
 
-`no-build = true` under `[tool.uv]`: uv installs wheels only and builds no source distribution.
+uv builds no source distribution. `no-build = true` under `[tool.uv]` makes it install wheels only.
 
 | Why |
 |---|
-| building a source distribution runs its build code with the developer's rights; a wheel is only unpacked. |
+| building a source distribution runs its build code with the developer's rights before anyone has read it, while a wheel is only unpacked. |
 
 ### python-never-downloaded-by-uv → tool-pinned-exactly-by-the-repository · MUST
 
-`python-downloads = "never"` and `python-preference = "only-system"` under `[tool.uv]`, so uv runs the interpreter the repository's toolchain pins.
+uv runs the interpreter the repository's toolchain pins, never one it downloads. `python-downloads = "never"` and `python-preference = "only-system"` are set under `[tool.uv]`.
 
 | Why |
 |---|
 | uv otherwise downloads an interpreter of its own, or picks another it finds, which the toolchain neither pinned nor verified. |
+
+## Builds
+
+### packages-built-by-uv-build · SHOULD
+
+A Python package builds with uv's own backend. Its `[build-system]` requires `uv_build` and names it as its `build-backend`.
+
+| Why |
+|---|
+| what a package ships is set in `uv_build`'s settings, `[tool.uv.build-backend]`, which another backend ignores, so a package it builds ships the files those settings leave out. |

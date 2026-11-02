@@ -9,7 +9,8 @@ jscpd:
         ignore:
           - '**/${role.colocated-specs}/**'
           - '**/${role.end-to-end-suite}/**'
-          - '**/*.gen.*'
+          - '**/*.${role.generated-file}.*'
+          - '**/*.${role.generated-file}/**'
         minLines: 5
         minTokens: 50
         exitCode: 1
@@ -19,8 +20,8 @@ jscpd:
         format:
           - python
         ignore:
-          - '**/*_gen.py'
-          - '**/*_gen/**'
+          - '**/*_${role.generated-file}.py'
+          - '**/*_${role.generated-file}/**'
         minLines: 5
         minTokens: 50
         exitCode: 1

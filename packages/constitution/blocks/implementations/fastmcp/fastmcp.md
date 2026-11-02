@@ -1,6 +1,6 @@
 ---
 id: fastmcp
-summary: FastMCP serves the program's tools to models over MCP.
+summary: FastMCP serves the program's tools to language models over MCP.
 requires: [python, pydantic, mcp-api]
 extends: null
 abstract: false
@@ -10,9 +10,9 @@ governs: ["**/presentation/**", "**/root/**"]
 
 # FastMCP
 
-> **FastMCP**, the package **`fastmcp`**, serves the program's tools, resources and prompts to models over MCP.
+> **FastMCP**, the package **`fastmcp`**, serves the program's tools, resources and prompts to language models over MCP.
 
-A tool's docstring and annotations are all the model knows of it, and pydantic parses its arguments before it runs.
+A tool's docstring and annotations are all the language model knows of it, and pydantic parses its arguments before it runs.
 
 ## Requirements
 

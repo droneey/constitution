@@ -1,32 +1,24 @@
 # Sandbox
 
-> Governs the sandbox the specs run in: the network, patching, waits and async specs.
+> Governs the sandbox the specs run in: the network, patching and waits.
 
 ## General
 
 ### network-refused-by-the-conftest → unit-spec-refuses-the-network · MUST
 
-`tests/conftest.py` holds an autouse fixture that replaces `socket.getaddrinfo`, `socket.socket.connect` and `connect_ex` with functions that raise; `tests/integration/conftest.py` overrides the fixture by its name.
+The network is refused by an autouse fixture of `tests/conftest.py`. It replaces `socket.getaddrinfo`, `socket.socket.connect` and `connect_ex` with functions that raise, and `tests/integration/conftest.py` overrides the fixture by its name.
 
 | Why |
 |---|
-| the standard library's clients, and the libraries built on them, open a connection through these calls of `socket`, and an autouse fixture holds for every spec under its folder with no line in the spec. |
+| the standard library's clients, and the libraries built on them, open every connection through these calls of `socket`, so a spec that reaches a server past them talks to the world, and a refusal each spec must write is missing from the first spec that forgets it; an autouse fixture holds for every spec under its folder with no line in the spec — fail fast. |
 
 ### module-never-patched-in-a-spec → effect-faked-never-mocked · SHOULD
 
-No `unittest.mock`, and no `monkeypatch` over a module of the program; `monkeypatch` changes only what the sandbox and the environment hold.
+A spec patches no module of the program. It uses no `unittest.mock`, and `monkeypatch` changes only what the sandbox and the environment hold.
 
 | Why |
 |---|
-| these are pytest's and Python's ways to put another object in a module's place; the environment has no contract to fake, so `monkeypatch` stays for it. |
-
-### async-specs-by-anyio → async-work-awaited-or-held-by-a-scope · MUST
-
-Async specs run on anyio's plugin, with `anyio_mode = "auto"`; pytest-asyncio is not installed.
-
-| Why |
-|---|
-| one plugin runs every async spec in the task groups the program uses, and two plugins fight over the same specs. |
+| an object put in a module's place by `unittest.mock` or `monkeypatch` replaces the code the spec claims to test and breaks when the module moves; the environment has no contract to fake, so `monkeypatch` stays for it. |
 
 ### spec-never-calls-a-sleep → test-never-sleeps-a-fixed-time · SHOULD
 
@@ -34,4 +26,4 @@ A spec never calls `time.sleep`, nor `asyncio.sleep` or `anyio.sleep` with a del
 
 | Why |
 |---|
-| these are the fixed delays a Python spec reaches for; the anyio clock or a wait on a condition replaces them. |
+| a fixed delay is too short on a slow machine and wasted on a fast one, and these are the calls a Python spec makes it with; the anyio clock or a wait on a condition replaces them. |

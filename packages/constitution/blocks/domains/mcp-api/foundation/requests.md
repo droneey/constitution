@@ -6,7 +6,7 @@
 
 ### long-tool-call-answered-with-a-task → long-operation-answered-with-a-handle · SHOULD
 
-A tool call that may outlast the client's patience answers with a task of the protocol's tasks extension where the client supports it, and otherwise sends progress notifications on its response stream when its request asks for them.
+A long tool call answers with a task. A tool call that may outlast the client's patience answers with a task of the protocol's tasks extension where the client supports it, and otherwise sends progress notifications on its response stream when its request asks for them.
 
 | Why |
 |---|
@@ -16,8 +16,8 @@ A tool call that may outlast the client's patience answers with a task of the pr
 
 ### request-state-verified-when-it-returns → outside-value-untyped-until-parsed · MUST
 
-A `requestState` a tool server hands a client is read as the caller's input when it returns: where it steers access or what the tool does it is protected by an HMAC or an AEAD and carries the caller, a short expiry and the request it belongs to, each checked, and a state that may be used once is consumed on the server.
+A `requestState` is verified when it returns. A state a tool server hands a client is read as the caller's input when it comes back: where it steers access or what the tool does, it is protected by an HMAC or an AEAD and carries the caller, a short expiry and the request it belongs to, each checked, and a state that may be used once is consumed on the server.
 
 | Why |
 |---|
-| the state passes through the client, which may change it, replay it or hand it to another caller. |
+| the state passes through the client, which may change it, replay it or hand it to another caller, so a state trusted unchecked acts for whoever did. |

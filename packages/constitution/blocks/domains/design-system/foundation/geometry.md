@@ -6,7 +6,7 @@
 
 ### nested-radius-concentric · SHOULD
 
-A rounded element nested in another takes the outer radius less the space between them, so both curves share a centre, and is square where that leaves nothing.
+A rounded element nested in another is concentric with it. It takes the outer radius less the space between them, so both curves share a centre, and is square where that leaves nothing.
 
 | Why |
 |---|

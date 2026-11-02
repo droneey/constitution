@@ -6,7 +6,7 @@
 
 ### read-superseded-for-its-key-is-cancelled → outside-call-can-be-cancelled · MUST
 
-A read superseded by one that replaces what is cached for its key — a refetch after a write or an invalidation — is cancelled, so only the latest answer reaches the cache; any other read of the key joins the one in flight.
+A read superseded for its key is cancelled, so only the latest answer reaches the cache. A read is superseded by one that replaces what is cached for its key — a refetch after a write or an invalidation —, and any other read of the key joins the one in flight.
 
 | Why |
 |---|
@@ -16,11 +16,11 @@ A read superseded by one that replaces what is cached for its key — a refetch 
 
 ### spec-cache-fresh-without-retries → case-independent-of-order · MUST
 
-Each spec builds a cache of its own, with its retries off, and no cache is shared between specs.
+Each spec builds a cache of its own, with its retries off. No cache is shared between specs.
 
 | Why |
 |---|
-| nothing leaks from one spec's cache into the next, and a failed answer fails the case at once instead of being retried. |
+| a cache shared between specs carries one spec's data into the next, which then passes or fails by their order, and a failed answer retried hides behind the retries' delay instead of failing the case at once. |
 
 ## Requirements for implementation
 
@@ -32,13 +32,13 @@ The cache shares one request and one entry among all the reads of one key.
 |---|
 | without it, two readers of the same data make two requests and may get two answers. |
 
-### cache-invalidates-by-key-prefix · MUST
+### cache-invalidates-a-writes-entries-in-one-call · MUST
 
-The cache invalidates every entry under a prefix of its key, with or without reading it again.
+The cache invalidates a write's entries in one call. They are every entry the write affects, named by a key prefix, a tag or a type, and the call reads them again or not.
 
 | Why |
 |---|
-| keys are built by prefix, and a write must be able to refresh every entry it touched. |
+| a cache that invalidates only one exact key at a time makes each write list every entry it touched, and an entry it misses stays stale. |
 
 ### cache-passes-every-failure-to-one-handler · MUST
 
@@ -46,7 +46,7 @@ The cache passes every failed read and write to one handler the program register
 
 | Why |
 |---|
-| a failure any read or write can meet — an ended session — is then handled once, there. |
+| a failure any read or write can meet (an ended session) is otherwise handled at each read and write, each its own way, and missed at one of them. |
 
 ### cache-sets-staleness-per-key · SHOULD
 
@@ -54,4 +54,4 @@ The cache sets per key how long an entry stays fresh and when it is read again.
 
 | Why |
 |---|
-| data that changes every second and data that never changes need different policies. |
+| one policy for every key either fetches again data that never changes or shows stale data that changes every second. |

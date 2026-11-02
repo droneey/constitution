@@ -1,6 +1,6 @@
 export type { DeclaredRules, RulesSource, WorkingTree } from './application/contracts';
-export type { SessionCommandRepository } from './application/contracts/repositories/commands';
-export type { SessionQueryRepository } from './application/contracts/repositories/queries';
+export type { SessionRepository } from './application/contracts/repositories/commands';
+export type { SessionQueries } from './application/contracts/repositories/queries';
 export { keepSession } from './application/use-cases/commands/keep-session';
 export { markTurn } from './application/use-cases/commands/mark-turn';
 export { recordCheck } from './application/use-cases/commands/record-check';

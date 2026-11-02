@@ -27,5 +27,5 @@ mutmut:
               - ${role.source}
             do_not_mutate:
               - '*/main.py'
-              - '*_gen.py'
-              - '*_gen/*'
+              - '*_${role.generated-file}.py'
+              - '*_${role.generated-file}/*'

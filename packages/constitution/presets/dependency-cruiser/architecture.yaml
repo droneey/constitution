@@ -22,13 +22,13 @@ core:
         'allowed[comment=layer-imports-dependencies-by-its-role: the edge and the specs import any package]':
           from:
             path:
-              - ^${role.source}/${role.gateway}/
-              - ^${role.source}/(?:${role.bounded-context}|${role.composition-module})/[^/]+/${role.gateway}/
+              - ^${role.source}/${role.adapter}/
+              - ^${role.source}/(?:${role.bounded-context}|${role.composition-module})/[^/]+/${role.adapter}/
               - ^${role.source}/(?!index\.)[^/]+\.[^/]+$
               - ^${role.source}/${role.extra-entry}/[^/]+/main\.[^/]+$
               - ^${role.source}/${role.composition-root}/
               - ^${role.source}/(${role.generic-library}|${role.host-integration})/
-              - (^|/)__tests__/
+              - (^|/)${role.colocated-specs}/
               - ^${role.package-suites}/
               - ^${role.build-code}/
           to:
@@ -46,7 +46,7 @@ core:
           from:
             pathNot:
               - ^${role.source}/${role.host-integration}/
-              - (^|/)__tests__/
+              - (^|/)${role.colocated-specs}/
               - ^${role.package-suites}/
           to:
             path: ^${role.source}/${role.host-integration}/
@@ -57,76 +57,76 @@ core:
           to:
             path: ^${role.source}/${role.host-integration}/
             pathNot: ^${role.source}/${role.host-integration}/$1/
-  contract-knows-no-vendor:
+  port-knows-no-vendor:
     typescript:
       .dependency-cruiser.jsonc:
         forbidden[name=domain-reaches-only-itself-and-the-kernel]:
           severity: error
           from:
-            path: ^${role.source}/${role.bounded-context}/([^/]+)/${role.pure-layer}/
+            path: ^${role.source}/${role.bounded-context}/([^/]+)/${role.domain-layer}/
             pathNot:
-              - (^|/)__tests__/
+              - (^|/)${role.colocated-specs}/
               - ^${role.package-suites}/
           to:
             dependencyTypesNot:
               - core
             pathNot:
-              - ^${role.source}/${role.bounded-context}/$1/${role.pure-layer}/
-              - ^${role.source}/${role.shared-domain}/
+              - ^${role.source}/${role.bounded-context}/$1/${role.domain-layer}/
+              - ^${role.source}/${role.shared-kernel}/
         forbidden[name=kernel-reaches-only-itself]:
           severity: error
           from:
-            path: ^${role.source}/${role.shared-domain}/
+            path: ^${role.source}/${role.shared-kernel}/
             pathNot:
-              - (^|/)__tests__/
+              - (^|/)${role.colocated-specs}/
               - ^${role.package-suites}/
           to:
             dependencyTypesNot:
               - core
             pathNot:
-              - ^${role.source}/${role.shared-domain}/
+              - ^${role.source}/${role.shared-kernel}/
               - \.(?:json|ya?ml)$
         forbidden[name=contract-reaches-only-its-model-and-the-kernel]:
           severity: error
           from:
-            path: ^${role.source}/${role.bounded-context}/([^/]+)/${role.application-layer}/${role.port}/
+            path: ^${role.source}/${role.bounded-context}/([^/]+)/${role.application}/${role.port}/
             pathNot:
-              - (^|/)__tests__/
+              - (^|/)${role.colocated-specs}/
               - ^${role.package-suites}/
           to:
             dependencyTypesNot:
               - core
             pathNot:
-              - ^${role.source}/${role.bounded-context}/$1/(${role.pure-layer}|${role.application-layer}/${role.port})/
-              - ^${role.source}/${role.shared-domain}/
+              - ^${role.source}/${role.bounded-context}/$1/(${role.domain-layer}|${role.application}/${role.port})/
+              - ^${role.source}/${role.shared-kernel}/
   import-points-inward:
     typescript:
       .dependency-cruiser.jsonc:
         forbidden[name=domain-reaches-only-itself-and-the-kernel]:
           severity: error
           from:
-            path: ^${role.source}/${role.bounded-context}/([^/]+)/${role.pure-layer}/
+            path: ^${role.source}/${role.bounded-context}/([^/]+)/${role.domain-layer}/
             pathNot:
-              - (^|/)__tests__/
+              - (^|/)${role.colocated-specs}/
               - ^${role.package-suites}/
           to:
             dependencyTypesNot:
               - core
             pathNot:
-              - ^${role.source}/${role.bounded-context}/$1/${role.pure-layer}/
-              - ^${role.source}/${role.shared-domain}/
+              - ^${role.source}/${role.bounded-context}/$1/${role.domain-layer}/
+              - ^${role.source}/${role.shared-kernel}/
         forbidden[name=kernel-reaches-only-itself]:
           severity: error
           from:
-            path: ^${role.source}/${role.shared-domain}/
+            path: ^${role.source}/${role.shared-kernel}/
             pathNot:
-              - (^|/)__tests__/
+              - (^|/)${role.colocated-specs}/
               - ^${role.package-suites}/
           to:
             dependencyTypesNot:
               - core
             pathNot:
-              - ^${role.source}/${role.shared-domain}/
+              - ^${role.source}/${role.shared-kernel}/
               - \.(?:json|ya?ml)$
         forbidden[name=libs-know-no-application]:
           severity: error
@@ -134,7 +134,7 @@ core:
             path: ^${role.source}/${role.generic-library}/
           to:
             path:
-              - ^${role.source}/(${role.bounded-context}|${role.shared-domain}|${role.shared-code}|${role.gateway}|${role.composition-root}|${role.composition-module}|${role.host-integration}|${role.extra-entry})/
+              - ^${role.source}/(${role.bounded-context}|${role.shared-kernel}|${role.shared-code}|${role.adapter}|${role.composition-root}|${role.composition-module}|${role.host-integration}|${role.extra-entry})/
               - ^${role.source}/(?!index\.)[^/]+\.[^/]+$
         forbidden[name=shared-knows-no-feature-adapter-contract-or-root]:
           severity: error
@@ -142,8 +142,8 @@ core:
             path: ^${role.source}/${role.shared-code}/
           to:
             path:
-              - ^${role.source}/(${role.bounded-context}|${role.gateway}|${role.composition-root}|${role.composition-module}|${role.host-integration}|${role.extra-entry})/
-              - ^${role.source}/${role.shared-domain}/${role.port}/
+              - ^${role.source}/(${role.bounded-context}|${role.adapter}|${role.composition-root}|${role.composition-module}|${role.host-integration}|${role.extra-entry})/
+              - ^${role.source}/${role.shared-kernel}/${role.port}/
               - ^${role.source}/(?!index\.)[^/]+\.[^/]+$
         forbidden[name=features-know-no-composition]:
           severity: error
@@ -155,11 +155,11 @@ core:
           severity: error
           from:
             path:
-              - ^${role.source}/${role.gateway}/
-              - ^${role.source}/(?:${role.bounded-context}|${role.composition-module})/[^/]+/${role.gateway}/
+              - ^${role.source}/${role.adapter}/
+              - ^${role.source}/(?:${role.bounded-context}|${role.composition-module})/[^/]+/${role.adapter}/
           to:
             path:
-              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/(${role.application-layer}/${role.use-case}|${role.presentation-layer})/
+              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/(${role.application}/${role.use-case}|${role.presentation-layer})/
               - ^${role.source}/(${role.composition-root}|${role.extra-entry})/
               - ^${role.source}/(?!index\.)[^/]+\.[^/]+$
   domain-imports-only-itself-and-the-kernel:
@@ -168,41 +168,41 @@ core:
         forbidden[name=domain-reaches-only-itself-and-the-kernel]:
           severity: error
           from:
-            path: ^${role.source}/${role.bounded-context}/([^/]+)/${role.pure-layer}/
+            path: ^${role.source}/${role.bounded-context}/([^/]+)/${role.domain-layer}/
             pathNot:
-              - (^|/)__tests__/
+              - (^|/)${role.colocated-specs}/
               - ^${role.package-suites}/
           to:
             dependencyTypesNot:
               - core
             pathNot:
-              - ^${role.source}/${role.bounded-context}/$1/${role.pure-layer}/
-              - ^${role.source}/${role.shared-domain}/
+              - ^${role.source}/${role.bounded-context}/$1/${role.domain-layer}/
+              - ^${role.source}/${role.shared-kernel}/
         forbidden[name=domain-reaches-no-port]:
           severity: error
           from:
-            path: ^${role.source}/${role.bounded-context}/[^/]+/${role.pure-layer}/
+            path: ^${role.source}/${role.bounded-context}/[^/]+/${role.domain-layer}/
             pathNot:
-              - (^|/)__tests__/
+              - (^|/)${role.colocated-specs}/
               - ^${role.package-suites}/
           to:
-            path: ^${role.source}/${role.shared-domain}/${role.port}/
-  application-imports-only-the-domain-and-its-contracts:
+            path: ^${role.source}/${role.shared-kernel}/${role.port}/
+  application-imports-only-the-domain-and-the-kernel:
     typescript:
       .dependency-cruiser.jsonc:
         forbidden[name=application-reaches-only-the-domain-and-its-contracts]:
           severity: error
           from:
-            path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/([^/]+)/${role.application-layer}/
+            path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/([^/]+)/${role.application}/
             pathNot:
-              - (^|/)__tests__/
+              - (^|/)${role.colocated-specs}/
               - ^${role.package-suites}/
           to:
             dependencyTypesNot:
               - core
             pathNot:
-              - ^${role.source}/$1/$2/(${role.application-layer}|${role.pure-layer})/
-              - ^${role.source}/${role.shared-domain}/
+              - ^${role.source}/$1/$2/(${role.application}|${role.domain-layer})/
+              - ^${role.source}/${role.shared-kernel}/
               - ^${role.source}/${role.bounded-context}/[^/]+/index\.[^/]+$
   kernel-imports-only-itself:
     typescript:
@@ -210,17 +210,17 @@ core:
         forbidden[name=kernel-reaches-only-itself]:
           severity: error
           from:
-            path: ^${role.source}/${role.shared-domain}/
+            path: ^${role.source}/${role.shared-kernel}/
             pathNot:
-              - (^|/)__tests__/
+              - (^|/)${role.colocated-specs}/
               - ^${role.package-suites}/
           to:
             dependencyTypesNot:
               - core
             pathNot:
-              - ^${role.source}/${role.shared-domain}/
+              - ^${role.source}/${role.shared-kernel}/
               - \.(?:json|ya?ml)$
-  libs-import-no-application-code:
+  libs-import-no-code-of-the-program:
     typescript:
       .dependency-cruiser.jsonc:
         forbidden[name=libs-know-no-application]:
@@ -229,9 +229,9 @@ core:
             path: ^${role.source}/${role.generic-library}/
           to:
             path:
-              - ^${role.source}/(${role.bounded-context}|${role.shared-domain}|${role.shared-code}|${role.gateway}|${role.composition-root}|${role.composition-module}|${role.host-integration}|${role.extra-entry})/
+              - ^${role.source}/(${role.bounded-context}|${role.shared-kernel}|${role.shared-code}|${role.adapter}|${role.composition-root}|${role.composition-module}|${role.host-integration}|${role.extra-entry})/
               - ^${role.source}/(?!index\.)[^/]+\.[^/]+$
-  shared-imports-no-feature-adapter-contract-or-root:
+  shared-imports-no-feature-adapter-port-or-root:
     typescript:
       .dependency-cruiser.jsonc:
         forbidden[name=shared-knows-no-feature-adapter-contract-or-root]:
@@ -240,10 +240,10 @@ core:
             path: ^${role.source}/${role.shared-code}/
           to:
             path:
-              - ^${role.source}/(${role.bounded-context}|${role.gateway}|${role.composition-root}|${role.composition-module}|${role.host-integration}|${role.extra-entry})/
-              - ^${role.source}/${role.shared-domain}/${role.port}/
+              - ^${role.source}/(${role.bounded-context}|${role.adapter}|${role.composition-root}|${role.composition-module}|${role.host-integration}|${role.extra-entry})/
+              - ^${role.source}/${role.shared-kernel}/${role.port}/
               - ^${role.source}/(?!index\.)[^/]+\.[^/]+$
-  root-imported-only-by-entries:
+  root-imported-only-by-entry-files:
     typescript:
       .dependency-cruiser.jsonc:
         forbidden[name=root-reached-only-from-entries]:
@@ -254,7 +254,7 @@ core:
               - ^${role.source}/${role.extra-entry}/[^/]+/main\.[^/]+$
               - ^${role.source}/${role.host-integration}/[^/]+/main\.[^/]+$
               - ^${role.source}/${role.composition-root}/
-              - (^|/)__tests__/
+              - (^|/)${role.colocated-specs}/
               - ^${role.package-suites}/
           to:
             path: ^${role.source}/${role.composition-root}/
@@ -305,22 +305,22 @@ core:
         forbidden[name=module-reached-through-its-surface]:
           severity: error
           from:
-            path: ^(${role.source}/(${role.bounded-context}|${role.gateway}|${role.shared-code}|${role.generic-library}|${role.composition-module}|${role.host-integration})/[^/]+)/
+            path: ^(${role.source}/(${role.bounded-context}|${role.adapter}|${role.shared-code}|${role.generic-library}|${role.composition-module}|${role.host-integration})/[^/]+)/
           to:
-            path: ^${role.source}/(${role.bounded-context}|${role.gateway}|${role.shared-code}|${role.generic-library}|${role.composition-module}|${role.host-integration})/[^/]+/
+            path: ^${role.source}/(${role.bounded-context}|${role.adapter}|${role.shared-code}|${role.generic-library}|${role.composition-module}|${role.host-integration})/[^/]+/
             pathNot:
               - ^$1/
-              - ^${role.source}/(${role.bounded-context}|${role.gateway}|${role.shared-code}|${role.generic-library}|${role.composition-module}|${role.host-integration})/[^/]+/index\.[^/]+$
+              - ^${role.source}/(${role.bounded-context}|${role.adapter}|${role.shared-code}|${role.generic-library}|${role.composition-module}|${role.host-integration})/[^/]+/index\.[^/]+$
         forbidden[name=module-reached-through-its-surface-from-outside-modules]:
           severity: error
           from:
             pathNot:
-              - ^${role.source}/(${role.bounded-context}|${role.gateway}|${role.shared-code}|${role.generic-library}|${role.composition-module}|${role.host-integration})/[^/]+/
+              - ^${role.source}/(${role.bounded-context}|${role.adapter}|${role.shared-code}|${role.generic-library}|${role.composition-module}|${role.host-integration})/[^/]+/
               - ^${role.source}/${role.composition-root}/
               - ^${role.source}/[^/]+\.[^/]+$
           to:
-            path: ^${role.source}/(${role.bounded-context}|${role.gateway}|${role.shared-code}|${role.generic-library}|${role.composition-module}|${role.host-integration})/[^/]+/
-            pathNot: ^${role.source}/(${role.bounded-context}|${role.gateway}|${role.shared-code}|${role.generic-library}|${role.composition-module}|${role.host-integration})/[^/]+/index\.[^/]+$
+            path: ^${role.source}/(${role.bounded-context}|${role.adapter}|${role.shared-code}|${role.generic-library}|${role.composition-module}|${role.host-integration})/[^/]+/
+            pathNot: ^${role.source}/(${role.bounded-context}|${role.adapter}|${role.shared-code}|${role.generic-library}|${role.composition-module}|${role.host-integration})/[^/]+/index\.[^/]+$
         forbidden[name=module-reached-through-its-surface-from-the-root]:
           severity: error
           from:
@@ -328,18 +328,18 @@ core:
               - ^${role.source}/${role.composition-root}/
               - ^${role.source}/[^/]+\.[^/]+$
           to:
-            path: ^${role.source}/(${role.bounded-context}|${role.gateway}|${role.shared-code}|${role.generic-library}|${role.composition-module}|${role.host-integration})/[^/]+/
+            path: ^${role.source}/(${role.bounded-context}|${role.adapter}|${role.shared-code}|${role.generic-library}|${role.composition-module}|${role.host-integration})/[^/]+/
             pathNot:
-              - ^${role.source}/(${role.bounded-context}|${role.gateway}|${role.shared-code}|${role.generic-library}|${role.composition-module}|${role.host-integration})/[^/]+/index\.[^/]+$
-              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.gateway}/[^/]+/index\.[^/]+$
+              - ^${role.source}/(${role.bounded-context}|${role.adapter}|${role.shared-code}|${role.generic-library}|${role.composition-module}|${role.host-integration})/[^/]+/index\.[^/]+$
+              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.adapter}/[^/]+/index\.[^/]+$
         forbidden[name=kernel-role-reached-through-its-surface]:
           severity: error
           from:
-            pathNot: ^${role.source}/${role.shared-domain}/
+            pathNot: ^${role.source}/${role.shared-kernel}/
           to:
-            path: ^${role.source}/${role.shared-domain}/
-            pathNot: ^${role.source}/${role.shared-domain}/[^/]+/index\.[^/]+$
-  module-files-import-each-other-directly:
+            path: ^${role.source}/${role.shared-kernel}/
+            pathNot: ^${role.source}/${role.shared-kernel}/[^/]+/index\.[^/]+$
+  file-never-imports-its-own-modules-surface:
     typescript:
       .dependency-cruiser.jsonc:
         forbidden[name=module-never-imports-its-own-surface]:
@@ -353,15 +353,15 @@ core:
         forbidden[name=role-reached-through-its-surface]:
           severity: error
           from:
-            path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/([^/]+)/(${role.pure-layer}/[^/]+/[^/]+(?=/)|[^/]+/[^/]+(?=/)|)
+            path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/([^/]+)/(${role.domain-layer}/[^/]+/[^/]+(?=/)|[^/]+/[^/]+(?=/)|)
           to:
             path:
-              - ^${role.source}/$1/$2/(?:${role.pure-layer}|${role.application-layer}|${role.presentation-layer})/[^/]+/
+              - ^${role.source}/$1/$2/(?:${role.domain-layer}|${role.application}|${role.presentation-layer})/[^/]+/
             pathNot:
               - ^${role.source}/$1/$2/$3/
-              - (^|/)__tests__/
+              - (^|/)${role.colocated-specs}/
               - ^${role.source}/$1/$2/[^/]+/[^/]+/index\.[^/]+$
-              - ^${role.source}/$1/$2/${role.pure-layer}/[^/]+/[^/]+/index\.[^/]+$
+              - ^${role.source}/$1/$2/${role.domain-layer}/[^/]+/[^/]+/index\.[^/]+$
               - ^${role.source}/$1/$2/[^/]+/[^/]+/(?:[^/]+/|)(?:${role.read-operation}|${role.write-operation})/index\.[^/]+$
               - ^${role.source}/$1/$2/[^/]+/[^/]+/(?:${role.read-operation}|${role.write-operation}|${role.shared-code})/[^/]+/index\.[^/]+$
         forbidden[name=integration-role-reached-through-its-surface]:
@@ -372,15 +372,15 @@ core:
             path: ^${role.source}/${role.host-integration}/$1/[^/]+/
             pathNot:
               - ^${role.source}/${role.host-integration}/$1/$2/
-              - (^|/)__tests__/
+              - (^|/)${role.colocated-specs}/
               - ^${role.source}/${role.host-integration}/$1/[^/]+/index\.[^/]+$
         forbidden[name=kernel-role-reaches-a-sibling-through-its-surface]:
           severity: error
           from:
-            path: ^${role.source}/${role.shared-domain}/([^/]+)/
+            path: ^${role.source}/${role.shared-kernel}/([^/]+)/
           to:
-            path: ^${role.source}/${role.shared-domain}/(?!$1/)[^/]+/
-            pathNot: ^${role.source}/${role.shared-domain}/[^/]+/index\.[^/]+$
+            path: ^${role.source}/${role.shared-kernel}/(?!$1/)[^/]+/
+            pathNot: ^${role.source}/${role.shared-kernel}/[^/]+/index\.[^/]+$
   effects-held-only-by-the-edge:
     typescript:
       .dependency-cruiser.jsonc:
@@ -389,13 +389,13 @@ core:
           from:
             path: ^${role.source}/
             pathNot:
-              - ^${role.source}/${role.gateway}/
-              - ^${role.source}/(?:${role.bounded-context}|${role.composition-module})/[^/]+/${role.gateway}/
+              - ^${role.source}/${role.adapter}/
+              - ^${role.source}/(?:${role.bounded-context}|${role.composition-module})/[^/]+/${role.adapter}/
               - ^${role.source}/(?!index\.)[^/]+\.[^/]+$
               - ^${role.source}/${role.extra-entry}/[^/]+/main\.[^/]+$
               - ^${role.source}/${role.composition-root}/
               - ^${role.source}/(${role.generic-library}|${role.host-integration})/
-              - (^|/)__tests__/
+              - (^|/)${role.colocated-specs}/
               - ^${role.package-suites}/
               - ^${role.source}/index\.[^/]+$
           to:
@@ -410,47 +410,47 @@ core:
           to:
             path:
               - ^${role.source}/index\.[^/]+$
-              - ^${role.source}/(${role.bounded-context}|${role.generic-library}|${role.gateway}|${role.host-integration}|${role.shared-domain}|${role.shared-code}|${role.composition-module})/index\.[^/]+$
-              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/(${role.pure-layer}|${role.application-layer}|${role.presentation-layer}|${role.gateway})/index\.[^/]+$
-              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.pure-layer}/[^/]+/index\.[^/]+$
+              - ^${role.source}/(${role.bounded-context}|${role.generic-library}|${role.adapter}|${role.host-integration}|${role.shared-kernel}|${role.shared-code}|${role.composition-module})/index\.[^/]+$
+              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/(${role.domain-layer}|${role.application}|${role.presentation-layer}|${role.adapter})/index\.[^/]+$
+              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.domain-layer}/[^/]+/index\.[^/]+$
   adapter-imports-only-its-owners-domain-and-shared-layers:
     typescript:
       .dependency-cruiser.jsonc:
         forbidden[name=adapters-blind-to-each-other]:
           severity: error
           from:
-            path: ^${role.source}/${role.gateway}/([^/]+)/
+            path: ^${role.source}/${role.adapter}/([^/]+)/
           to:
             path:
-              - ^${role.source}/${role.gateway}/
-              - ^${role.source}/(?:${role.bounded-context}|${role.composition-module})/[^/]+/${role.gateway}/
-            pathNot: ^${role.source}/${role.gateway}/$1/
+              - ^${role.source}/${role.adapter}/
+              - ^${role.source}/(?:${role.bounded-context}|${role.composition-module})/[^/]+/${role.adapter}/
+            pathNot: ^${role.source}/${role.adapter}/$1/
         forbidden[name=feature-adapters-blind-to-each-other]:
           severity: error
           from:
-            path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/([^/]+)/${role.gateway}/([^/]+)/
+            path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/([^/]+)/${role.adapter}/([^/]+)/
           to:
             path:
-              - ^${role.source}/${role.gateway}/
-              - ^${role.source}/(?:${role.bounded-context}|${role.composition-module})/[^/]+/${role.gateway}/
-            pathNot: ^${role.source}/$1/$2/${role.gateway}/$3/
+              - ^${role.source}/${role.adapter}/
+              - ^${role.source}/(?:${role.bounded-context}|${role.composition-module})/[^/]+/${role.adapter}/
+            pathNot: ^${role.source}/$1/$2/${role.adapter}/$3/
         forbidden[name=adapters-know-no-caller]:
           severity: error
           from:
             path:
-              - ^${role.source}/${role.gateway}/
-              - ^${role.source}/(?:${role.bounded-context}|${role.composition-module})/[^/]+/${role.gateway}/
+              - ^${role.source}/${role.adapter}/
+              - ^${role.source}/(?:${role.bounded-context}|${role.composition-module})/[^/]+/${role.adapter}/
           to:
             path:
-              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/(${role.application-layer}/${role.use-case}|${role.presentation-layer})/
+              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/(${role.application}/${role.use-case}|${role.presentation-layer})/
               - ^${role.source}/(${role.composition-root}|${role.extra-entry})/
               - ^${role.source}/(?!index\.)[^/]+\.[^/]+$
         forbidden[name=adapters-outside-composition-know-no-feature-or-composition]:
           severity: error
           from:
             path:
-              - ^${role.source}/${role.gateway}/
-              - ^${role.source}/${role.bounded-context}/[^/]+/${role.gateway}/
+              - ^${role.source}/${role.adapter}/
+              - ^${role.source}/${role.bounded-context}/[^/]+/${role.adapter}/
           to:
             path:
               - ^${role.source}/${role.bounded-context}/[^/]+/index\.[^/]+$
@@ -462,16 +462,16 @@ core:
           severity: error
           from:
             pathNot:
-              - ^${role.source}/${role.gateway}/
-              - ^${role.source}/(?:${role.bounded-context}|${role.composition-module})/[^/]+/${role.gateway}/
+              - ^${role.source}/${role.adapter}/
+              - ^${role.source}/(?:${role.bounded-context}|${role.composition-module})/[^/]+/${role.adapter}/
               - ^${role.source}/${role.composition-root}/
-              - (^|/)__tests__/
+              - (^|/)${role.colocated-specs}/
               - ^${role.package-suites}/
               - ^${role.source}/index\.[^/]+$
           to:
             path:
-              - ^${role.source}/${role.gateway}/
-              - ^${role.source}/(?:${role.bounded-context}|${role.composition-module})/[^/]+/${role.gateway}/
+              - ^${role.source}/${role.adapter}/
+              - ^${role.source}/(?:${role.bounded-context}|${role.composition-module})/[^/]+/${role.adapter}/
   binding-unit-calls-only-use-cases:
     typescript:
       .dependency-cruiser.jsonc:
@@ -480,11 +480,11 @@ core:
           from:
             path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/([^/]+)/${role.presentation-layer}/
             pathNot:
-              - (^|/)__tests__/
+              - (^|/)${role.colocated-specs}/
               - ^${role.package-suites}/
           to:
-            path: ^${role.source}/$1/$2/${role.application-layer}/${role.port}/
-  model-changed-only-through-a-use-case:
+            path: ^${role.source}/$1/$2/${role.application}/${role.port}/
+  domain-model-changed-only-through-a-use-case:
     typescript:
       .dependency-cruiser.jsonc:
         forbidden[name=presentation-reaches-no-transition]:
@@ -492,11 +492,11 @@ core:
           from:
             path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.presentation-layer}/
             pathNot:
-              - (^|/)__tests__/
+              - (^|/)${role.colocated-specs}/
               - ^${role.package-suites}/
           to:
-            path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.pure-layer}/[^/]+/${role.aggregate-transition}/
-  container-wires-only-declared-bindings:
+            path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.domain-layer}/[^/]+/${role.aggregate-transition}/
+  container-holds-only-registrations-the-root-declares:
     typescript:
       .dependency-cruiser.jsonc:
         forbidden[name=root-wires-without-a-container-library]:
@@ -510,17 +510,15 @@ core:
         forbidden[name=reads-never-reach-writes]:
           severity: error
           from:
-            path: /(${role.use-case}|${role.binding}|${role.data-port})/${role.read-operation}/
+            path: /(${role.use-case}|${role.binding})/${role.read-operation}/
           to:
-            path: /(${role.use-case}|${role.binding}|${role.data-port})/${role.write-operation}/
-            reachable: true
+            path: /(${role.use-case}|${role.binding})/${role.write-operation}/
         forbidden[name=writes-never-reach-reads]:
           severity: error
           from:
-            path: /(${role.use-case}|${role.binding}|${role.data-port})/${role.write-operation}/
+            path: /(${role.use-case}|${role.binding})/${role.write-operation}/
           to:
-            path: /(${role.use-case}|${role.binding}|${role.data-port})/${role.read-operation}/
-            reachable: true
+            path: /(${role.use-case}|${role.binding})/${role.read-operation}/
 _js-runtime:
   hash-imports-leave-the-module:
     typescript:
@@ -530,7 +528,7 @@ _js-runtime:
         forbidden[name=relative-import-stays-in-its-module]:
           severity: error
           from:
-            path: ^(${role.source}/(?:${role.bounded-context}|${role.composition-module}|${role.gateway}|${role.shared-code}|${role.generic-library}|${role.host-integration}|${role.extra-entry})/[^/]+|${role.source}/(?:${role.shared-domain}|${role.composition-root})|(?:${role.build-code}|${role.package-suites})/[^/]+)/
+            path: ^(${role.source}/(?:${role.bounded-context}|${role.composition-module}|${role.adapter}|${role.shared-code}|${role.generic-library}|${role.host-integration}|${role.extra-entry})/[^/]+|${role.source}/(?:${role.shared-kernel}|${role.composition-root})|(?:${role.build-code}|${role.package-suites})/[^/]+)/
           to:
             path: ^${role.source}/
             pathNot: ^$1/
@@ -541,7 +539,7 @@ _js-runtime:
         forbidden[name=hash-import-leaves-its-module]:
           severity: error
           from:
-            path: ^(${role.source}/(?:${role.bounded-context}|${role.composition-module}|${role.gateway}|${role.shared-code}|${role.generic-library}|${role.host-integration}|${role.extra-entry})/[^/]+|${role.source}/(?:${role.shared-domain}|${role.composition-root}))/
+            path: ^(${role.source}/(?:${role.bounded-context}|${role.composition-module}|${role.adapter}|${role.shared-code}|${role.generic-library}|${role.host-integration}|${role.extra-entry})/[^/]+|${role.source}/(?:${role.shared-kernel}|${role.composition-root}))/
           to:
             path: ^$1/
             dependencyTypes:

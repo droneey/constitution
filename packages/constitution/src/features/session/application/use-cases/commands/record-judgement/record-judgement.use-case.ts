@@ -1,12 +1,12 @@
 import { SessionMark } from '../../../../domain/session/entities';
 import type { SessionId } from '../../../../domain/session/value-objects';
 import { StopJudgement } from '../../../../domain/stop-judgement/entities';
-import type { SessionCommandRepository } from '../../../contracts/repositories/commands';
+import type { SessionRepository } from '../../../contracts/repositories/commands';
 
 interface RecordJudgementInput {
   readonly judgement: StopJudgement;
   readonly session: SessionId;
-  readonly sessions: SessionCommandRepository;
+  readonly sessionRepository: SessionRepository;
 }
 
 const recordJudgement = (input: RecordJudgementInput): void => {
@@ -18,7 +18,7 @@ const recordJudgement = (input: RecordJudgementInput): void => {
   }
 
   if (record.mark === SessionMark.Unjudged) {
-    input.sessions.recordUnjudged({
+    input.sessionRepository.recordUnjudged({
       reason: record.reason,
       session,
     });
@@ -26,7 +26,7 @@ const recordJudgement = (input: RecordJudgementInput): void => {
     return;
   }
 
-  input.sessions.recordFingerprint({
+  input.sessionRepository.recordFingerprint({
     fingerprint: record.fingerprint,
     mark: record.mark,
     session,

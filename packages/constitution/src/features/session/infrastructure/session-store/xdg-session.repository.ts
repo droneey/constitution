@@ -7,9 +7,9 @@ import { isSystemError } from '#/libs/system-error';
 
 import type {
   SaveStateInput,
-  SessionCommandRepository,
+  SessionRepository,
 } from '../../application/contracts/repositories/commands';
-import type { SessionQueryRepository } from '../../application/contracts/repositories/queries';
+import type { SessionQueries } from '../../application/contracts/repositories/queries';
 import type { SessionState } from '../../domain/session/entities';
 import { SessionAgent, SessionMark } from '../../domain/session/entities';
 import type { SessionId } from '../../domain/session/value-objects';
@@ -130,7 +130,7 @@ interface XdgSessionRepositoryInput extends SessionsPlace {
 
 const createXdgSessionRepository = (
   input: XdgSessionRepositoryInput,
-): SessionCommandRepository & SessionQueryRepository => {
+): SessionRepository & SessionQueries => {
   let prepared:
     | {
         readonly folder: string | undefined;

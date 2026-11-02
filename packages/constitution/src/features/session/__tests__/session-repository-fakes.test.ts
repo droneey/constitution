@@ -1,16 +1,16 @@
 import { heldSessionsOf } from './session.fixtures';
-import { createFakeSessionCommandRepository } from './session-command-repository.fake';
-import { createFakeSessionQueryRepository } from './session-query-repository.fake';
+import { createFakeSessionRepository } from './session-command-repository.fake';
+import { createFakeSessionQueries } from './session-query-repository.fake';
 import { runSessionRepositorySuite } from './session-repository.suite';
 
 runSessionRepositorySuite({
-  name: 'createFakeSessionCommandRepository and createFakeSessionQueryRepository',
+  name: 'createFakeSessionRepository and createFakeSessionQueries',
   repositoryOf: () => {
     const sessions = heldSessionsOf();
 
     return {
-      ...createFakeSessionQueryRepository(sessions),
-      ...createFakeSessionCommandRepository(sessions),
+      ...createFakeSessionQueries(sessions),
+      ...createFakeSessionRepository(sessions),
     };
   },
 });

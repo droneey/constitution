@@ -6,15 +6,15 @@
 
 ### bunli-flags-declared-by-schema → outside-value-untyped-until-parsed · MUST
 
-Every flag is `option(schema, { short, description })`, its schema a standard schema, and the handler receives the parsed flags.
+Every flag is declared by a schema. It is `option(schema, { short, description })`, its schema a standard schema, and the handler receives the parsed flags.
 
 | Why |
 |---|
-| a flag is validated once, before the handler runs, and the handler works with typed values. |
+| a flag read raw reaches the handler as whatever the user typed, under a type the input never promised, while a flag declared by its schema is checked once, before the handler runs — parse, don't validate. |
 
 ### program-keeps-no-bunli-config → fact-has-one-source · MUST
 
-The program's configuration, meaning its name, version, description and plugins, is given to `createCLI` in code, and the program keeps no `bunli.config.*`.
+The program keeps no `bunli.config.*`. Its configuration — its name, version, description and plugins — is given to `createCLI` in code.
 
 | Why |
 |---|
@@ -22,8 +22,8 @@ The program's configuration, meaning its name, version, description and plugins,
 
 ### bunli-spec-with-fake-terminal → command-tested-through-its-command-line · SHOULD
 
-A command's spec builds the program with a fake terminal and prompt session — `createCLI(meta, terminal)` — and runs it on an argument list.
+A command's spec runs the program on a fake terminal. It builds the program with a fake terminal and prompt session — `createCLI(meta, terminal)` — and runs it on an argument list.
 
 | Why |
 |---|
-| the spec drives the command as a user does, and reads what the user would see. |
+| a spec that calls the handler alone misses the parsing, the output and the exit a user meets, and one run on the real terminal writes to the runner's streams, where no case reads what the user would see. |

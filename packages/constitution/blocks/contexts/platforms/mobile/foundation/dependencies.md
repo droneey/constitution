@@ -6,7 +6,7 @@
 
 ### minimum-os-version-declared-and-reviewed · SHOULD
 
-The oldest system version the app supports is declared with its reason, and reviewed each year against the versions its users run and those its vendor still ships security updates for.
+The oldest system version the app supports is declared and reviewed each year. It is declared with its reason, and reviewed against the versions its users run and those its vendor still ships security updates for.
 
 | Why |
 |---|

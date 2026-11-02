@@ -6,7 +6,7 @@
 
 ### signal-carries-the-service-identity · SHOULD
 
-Every log record, span and metric carries the identity of the service that wrote it: its name, its version and its environment.
+Every signal carries the identity of the service that wrote it. Each log record, span and metric carries the service's name, its version and its environment.
 
 | Why |
 |---|
@@ -14,23 +14,23 @@ Every log record, span and metric carries the identity of the service that wrote
 
 ### signals-emitted-through-opentelemetry · SHOULD
 
-Spans and metrics are emitted through OpenTelemetry's API, logs through the program's logger, bridged to it or collected from its output, and every signal reaches the backend over OTLP.
+Signals are emitted through OpenTelemetry and reach the backend over OTLP. Spans and metrics are emitted through OpenTelemetry's API, and logs through the program's logger, bridged to it or collected from its output.
 
 | Why |
 |---|
-| one vendor-neutral API and protocol let the backend change with no change of code and let libraries instrument themselves. |
+| signals emitted through a vendor's own API or protocol tie every instrumented line to that vendor, so a change of backend is a change of code, and the libraries that instrument themselves through OpenTelemetry go unseen — OpenTelemetry. |
 
 ### signal-named-by-the-semantic-conventions · SHOULD
 
-A measure, an attribute or a resource that a stable semantic convention of OpenTelemetry names — `http.server.request.duration`, `service.name` — takes that name, its unit and its attributes.
+A signal takes the name a stable semantic convention of OpenTelemetry gives it. A measure, an attribute or a resource such a convention names — `http.server.request.duration`, `service.name` — takes that name, its unit and its attributes.
 
 | Why |
 |---|
-| the conventions' names make two services of one project measure alike, and a backend reads them without a mapping of its own. |
+| a measure named its own way differs between two services of one project, and every backend needs a mapping of its own before it can read it — OpenTelemetry's semantic conventions. |
 
 ### signals-flushed-before-exit → program-stops-cleanly · MUST
 
-A program told to stop flushes the log records, spans and metrics it holds in buffers before it exits, within the bound of its stop.
+Signals are flushed before the program exits. A program told to stop flushes the log records, spans and metrics it holds in buffers before it exits, within the bound of its stop.
 
 | Why |
 |---|
@@ -40,8 +40,8 @@ A program told to stop flushes the log records, spans and metrics it holds in bu
 
 ### signal-value-masked-by-its-key → secret-kept-out-of-output · MUST
 
-Before any output or export, the value of every key of a signal — a log record's field, a span's attribute, a metric's exemplar — that holds the words of a name the project lists as secret — such as `password`, `token`, `api key`, `private key`, `authorization`, `cookie` and `secret` — is replaced, the words compared as whole words, at any depth: `refreshToken` and `apiKey` are masked, `input_tokens` is not. An address is recorded without its query, and a database statement only with placeholders for its values.
+A signal's value is masked by its key before any output or export, and an address or a statement by its form. The value of every key of a signal — a log record's field, a span's attribute, a metric's exemplar — that holds the words of a name the project lists as secret, such as `password`, `token`, `api key`, `private key`, `authorization`, `cookie` and `secret`, is replaced at any depth, a key's words found across its case and separators and compared as whole words. An address is recorded without its query, and a database statement only with placeholders for its values.
 
 | Why |
 |---|
-| a secret passed as a field by mistake is masked whichever code wrote it, while a mask of exact keys misses `refreshToken` and one of substrings masks the counts of tokens a span must carry; instrumentation records the full URL and the statement's text by default, so a mask on logs alone leaves the same secret in every trace. |
+| a secret passed as a field by mistake is masked whichever code wrote it, while a mask of exact keys misses a key that only holds a secret's name among other words, and one of substrings masks the counts of tokens a span must carry; instrumentation records the full address and the statement's text by default, so a mask on logs alone leaves the same secret in every trace. |

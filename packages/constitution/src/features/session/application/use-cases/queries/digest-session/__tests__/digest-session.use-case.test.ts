@@ -13,7 +13,13 @@ import {
 import { SessionOrigin } from '../../../../../domain/session-start/entities';
 import { HookEventName } from '../../../../../domain/shared/entities';
 import { digestSession } from '../digest-session.use-case';
-import { CORE_TEXT, QUIET, sessionPortsOf, unchecked, version } from './digest-session.fixtures';
+import {
+  CORE_TEXT,
+  createSessionPorts,
+  QUIET,
+  unchecked,
+  version,
+} from './digest-session.fixtures';
 
 const searchFrom = AbsolutePath.create(PROJECT);
 const releaseFiles = {
@@ -61,7 +67,7 @@ describe('digestSession', () => {
     'should warn of presets it cannot check, and give the state to keep, when $condition',
     ({ event, isStartup, origin }) => {
       // Arrange
-      const ports = sessionPortsOf({
+      const ports = createSessionPorts({
         rules: uncheckedRules,
       });
 
@@ -93,7 +99,7 @@ describe('digestSession', () => {
 
   it('should warn that the gate cannot run, before the presets, when the project lies in no repository', () => {
     // Arrange
-    const ports = sessionPortsOf({
+    const ports = createSessionPorts({
       rules: uncheckedRules,
       workingTree: createFakeWorkingTree({
         repositoryFolderPath: '/work/elsewhere',
@@ -128,7 +134,7 @@ describe('digestSession', () => {
 
   it('should warn of presets it cannot check, naming no reason, when the check gives none', () => {
     // Arrange
-    const ports = sessionPortsOf({
+    const ports = createSessionPorts({
       rules: {
         ...QUIET,
         configurations: {
@@ -178,7 +184,7 @@ describe('digestSession', () => {
       },
       kind: WarningKind.ConfigurationFinding,
     };
-    const ports = sessionPortsOf({
+    const ports = createSessionPorts({
       rules: {
         ...QUIET,
         configurations: {
@@ -229,7 +235,7 @@ describe('digestSession', () => {
     'should give core alone, and a state of no rules, when constitution.yaml does not parse and $condition',
     ({ event }) => {
       // Arrange
-      const ports = sessionPortsOf({
+      const ports = createSessionPorts({
         rules: {
           lines: [
             1,
@@ -266,7 +272,7 @@ describe('digestSession', () => {
 
   it('should point to doctor alone, and give no state, when no release is installed', () => {
     // Arrange
-    const ports = sessionPortsOf({
+    const ports = createSessionPorts({
       version: undefined,
     });
 
@@ -289,7 +295,7 @@ describe('digestSession', () => {
 
   it('should give nothing when no project lies around the start', () => {
     // Arrange
-    const ports = sessionPortsOf();
+    const ports = createSessionPorts();
 
     // Act
     const digest = digestSession({
@@ -306,7 +312,7 @@ describe('digestSession', () => {
   it('should let a failure of the source through when it cannot read core', () => {
     // Arrange
     const failure = new Error('core unreadable');
-    const ports = sessionPortsOf({
+    const ports = createSessionPorts({
       core: failure,
     });
 

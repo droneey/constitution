@@ -2,10 +2,10 @@
 id: zod
 summary: zod parses untrusted input into the program's types.
 requires: [typescript]
-extends: null
+extends: _schema
 abstract: false
 languages: []
-governs: ["**/models/**", "**/infrastructure/**"]
+governs: ["**/models/**", "**/infrastructure/**", "**/presentation/**", "**/libs/**", "**/shared/**"]
 ---
 
 # zod

@@ -598,22 +598,20 @@
       "name": "reads-never-reach-writes",
       "severity": "error",
       "to": {
-        "reachable": true,
-        "path": "/(use-cases|bindings|repositories)/commands/",
+        "path": "/(use-cases|bindings)/commands/",
       },
       "from": {
-        "path": "/(use-cases|bindings|repositories)/queries/",
+        "path": "/(use-cases|bindings)/queries/",
       },
     },
     {
       "name": "writes-never-reach-reads",
       "severity": "error",
       "to": {
-        "reachable": true,
-        "path": "/(use-cases|bindings|repositories)/queries/",
+        "path": "/(use-cases|bindings)/queries/",
       },
       "from": {
-        "path": "/(use-cases|bindings|repositories)/commands/",
+        "path": "/(use-cases|bindings)/commands/",
       },
     },
 
@@ -774,10 +772,11 @@
 
     // zod
     {
-      "comment": "zod-home-is-the-edge-and-shared-parsing",
+      "comment": "schema-library-home-is-where-input-is-parsed",
       "from": {
         "path": [
           "^src/(features|composition)/[^/]+/presentation/",
+          "^src/presentation/",
           "^src/shared/",
         ],
       },

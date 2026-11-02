@@ -4,10 +4,10 @@
 
 ## General
 
-### settings-model-prefixed-and-closed → configuration-parsed-once-at-start · MUST
+### settings-model-prefixed-and-closed → configuration-enters-only-through-its-declaration · MUST
 
 A `BaseSettings` sets an `env_prefix` and `extra='forbid'`.
 
 | Why |
 |---|
-| the prefix keeps the program's variables apart from those of every other tool in the process's environment, and a key of the local environment file that the model does not know fails instead of being dropped. |
+| without a prefix the settings model reads a variable of the same name that another tool in the process's environment sets, and without `extra='forbid'` a key of the local environment file it does not know, a misspelt one among them, is dropped in silence instead of failing the start. |

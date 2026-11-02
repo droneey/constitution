@@ -6,7 +6,7 @@ import { recognisedFailure } from '#/kernel/utils';
 import { AbsolutePath } from '#/kernel/value-objects';
 import { isSystemError } from '#/libs/system-error';
 
-import type { AppliedFilesCommandRepository } from '../../application/contracts/repositories/commands';
+import type { AppliedFilesRepository } from '../../application/contracts/repositories/commands';
 import type { AppliedFiles, FileText } from '../../domain/apply-plan/entities';
 import { ApplyError, ApplyFailure } from '../../domain/apply-plan/errors';
 import { LOCK_FILE_NAME } from '../../domain/shared/constants';
@@ -118,7 +118,7 @@ const write = (applied: AppliedFiles): void => {
   }
 };
 
-const createFileAppliedFilesRepository = (): AppliedFilesCommandRepository => ({
+const createFileAppliedFilesRepository = (): AppliedFilesRepository => ({
   write,
 });
 

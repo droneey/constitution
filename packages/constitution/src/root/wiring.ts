@@ -45,7 +45,7 @@ import { createConfigurationFormat } from '#/features/presets/infrastructure/con
 import {
   createDistributionMapSources,
   createFileAppliedFilesRepository,
-  createFileLockRepository,
+  createFileLockQueries,
 } from '#/features/presets/infrastructure/file-system';
 import { createShellCommandRunner } from '#/features/presets/infrastructure/process';
 import { createYamlPresetFileParser } from '#/features/presets/infrastructure/yaml';
@@ -79,7 +79,6 @@ import {
   remindOfFile,
 } from '#/features/session';
 import { createGitWorkingTree } from '#/features/session/infrastructure/git';
-import { createXdgSessionRepository } from '#/features/session/infrastructure/session-store';
 import { createNodeProjectFiles } from '#/infrastructure/file-system';
 import { EXECUTABLE_NAME } from '#/kernel/constants';
 import type { AbsolutePath } from '#/kernel/value-objects';
@@ -97,6 +96,7 @@ import { HOOK_GROUP } from './hook.constants';
 import { createPresentation } from './presentation';
 import type { Program, ProgramInput } from './program.types';
 import type { Ports, PresetsInput, Registration } from './registration.types';
+import { createSessionPorts } from './session-ports';
 import { stateFolderWarningText } from './state-folder-warning';
 
 const GIT_TIMEOUT_MS = 30_000;
@@ -118,7 +118,7 @@ const portsOf = (input: ProgramInput): Ports => {
     mapName: DISTRIBUTION_MAP_NAME,
   });
   const formats = createConfigurationFormat();
-  const locks = createFileLockRepository();
+  const lockQueries = createFileLockQueries();
   const project = {
     cardParser: createYamlBlockCardParser(),
     clock: clockOf(input.environment.today),
@@ -132,12 +132,12 @@ const portsOf = (input: ProgramInput): Ports => {
   };
 
   return {
-    appliedFiles: createFileAppliedFilesRepository(),
+    appliedFilesRepository: createFileAppliedFilesRepository(),
     commands: createShellCommandRunner(),
     distribution,
     files,
     formats,
-    locks,
+    lockQueries,
     pinned: createPinnedRelease(project),
     presetFiles,
     reader: createProjectReader(project),
@@ -145,12 +145,12 @@ const portsOf = (input: ProgramInput): Ports => {
       presets: {
         distribution,
         formats,
-        lockOf: locks.read,
+        lockOf: lockQueries.read,
         parser: presetFiles,
       },
       project,
     }),
-    sessions: createXdgSessionRepository({
+    ...createSessionPorts({
       ...input.environment.sessions,
       maxSessions: FOLDER_FILES,
       now: (): Temporal.Instant => Temporal.Now.instant(),
@@ -190,7 +190,7 @@ const hookCommandsOf = ({ context, ports, program }: Registration): Command =>
         keepSession: (kept): void => {
           keepSession({
             ...kept,
-            sessions: ports.sessions,
+            sessionRepository: ports.sessionRepository,
           });
         },
       }),
@@ -199,13 +199,13 @@ const hookCommandsOf = ({ context, ports, program }: Registration): Command =>
         recordReminders: (named): void => {
           recordReminders({
             ...named,
-            sessions: ports.sessions,
+            sessionRepository: ports.sessionRepository,
           });
         },
         remindOfFile: (asked): Reminder | undefined =>
           remindOfFile({
             ...asked,
-            sessions: ports.sessions,
+            sessionQueries: ports.sessionQueries,
           }),
       }),
       createRecordCheckCommand({
@@ -236,7 +236,7 @@ const hookCommandsOf = ({ context, ports, program }: Registration): Command =>
         recordJudgement: (judged): void => {
           recordJudgement({
             ...judged,
-            sessions: ports.sessions,
+            sessionRepository: ports.sessionRepository,
           });
         },
       }),
@@ -278,7 +278,7 @@ const presetsInputOf =
     distribution: ports.distribution,
     files: ports.files,
     formats: ports.formats,
-    locks: ports.locks,
+    lockQueries: ports.lockQueries,
     parser: ports.presetFiles,
     reader: ports.reader,
     startFolderPath,
@@ -335,7 +335,7 @@ const presetsCommandsOf = ({ context, ports, program }: Registration): Command =
         applyChanges: (changes: AppliedFiles): void => {
           applyChanges({
             changes,
-            writes: ports.appliedFiles,
+            appliedFilesRepository: ports.appliedFilesRepository,
           });
         },
         /**

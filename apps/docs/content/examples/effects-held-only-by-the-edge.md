@@ -1,17 +1,17 @@
 ```pseudo title="Avoid"
-# application/use-cases/expire-cart
-function expireCart(cart)
-  let now = Date.now()
-  if cart.expiresAt < now
-    return markExpired(cart)
-  return cart
+# coupons/application/use-cases/commands/issue-coupon
+function createIssueCoupon({ couponRepository })
+  return function(input, context)
+    let code = randomCode()
+
+    call couponRepository.save(create(input.couponId, code), context)
 ```
 
 ```pseudo title="Prefer"
-# application/use-cases/expire-cart
-function expireCart(cart, clock: Clock)
-  let now = clock.now()
-  if cart.expiresAt < now
-    return markExpired(cart)
-  return cart
+# coupons/application/use-cases/commands/issue-coupon
+function createIssueCoupon({ couponRepository, codeSource })
+  return function(input, context)
+    let code = codeSource.next()
+
+    call couponRepository.save(create(input.couponId, code), context)
 ```

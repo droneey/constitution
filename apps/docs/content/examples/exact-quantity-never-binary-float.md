@@ -11,5 +11,5 @@ type Price = {
   currency: Currency
 }
 
-let totalCents = 10 + 20  # 30
+let totalCents = 10 + 20
 ```

@@ -4,9 +4,9 @@
 
 ## General
 
-### build-env-holds-only-build-facts → runtime-configuration-served-beside-bundle · MUST
+### build-env-holds-only-build-facts → one-bundle-serves-every-environment · MUST
 
-`import.meta.env` carries only facts of the build itself — its mode, its version — never a setting that differs by environment, and the bundle's code never reads `process.env`.
+The bundle reads from the build only the facts of the build itself. `import.meta.env` carries only such facts — its mode, its version —, never a setting that differs by environment, and the bundle's code never reads `process.env`.
 
 | Why |
 |---|

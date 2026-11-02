@@ -6,7 +6,7 @@
 
 ### call-handle-random-and-never-a-credential · MUST
 
-A handle that relates one request to the next — one an operation minted, a task's — is unguessable, never authenticates the caller by itself, and when expired or unknown is answered as an expected failure that says so.
+A handle that relates one request to the next is unguessable and never a credential, and one expired or unknown is answered as such. Such a handle — an operation's or a task's — never authenticates the caller by itself, and when expired or unknown is answered as an expected failure that says so.
 
 | Why |
 |---|
@@ -16,7 +16,7 @@ A handle that relates one request to the next — one an operation minted, a tas
 
 ### abandoned-request-stops-its-work → outside-call-can-be-cancelled · SHOULD
 
-A request its caller cancels or abandons — by a cancel message or a closed connection — stops its work and the calls it made, and sends nothing more.
+An abandoned request stops its work. A request its caller cancels or abandons — by a cancel message or a closed connection — stops its work and the calls it made, and sends nothing more.
 
 | Why |
 |---|
@@ -26,7 +26,7 @@ A request its caller cancels or abandons — by a cancel message or a closed con
 
 ### long-operation-answered-with-a-handle · SHOULD
 
-An operation that may outlast a request answers at once with a handle the caller follows for its state and its result, never holding the request open until it ends.
+An operation that may outlast a request answers at once with a handle. The caller follows the handle for its state and its result, and the request is never held open until the operation ends.
 
 | Why |
 |---|

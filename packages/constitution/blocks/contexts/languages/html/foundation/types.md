@@ -16,7 +16,7 @@ A document declares `<meta charset="utf-8">` within its first 1024 bytes.
 
 ### boolean-attribute-written-by-presence · MUST
 
-A boolean attribute is present where it is true and absent where it is false — never `disabled="false"`, which the browser reads as true.
+A boolean attribute is present where it is true and absent where it is false. It is never present with a value meant as false, such as `disabled="false"`, which the browser reads as true.
 
 | Why |
 |---|

@@ -3,5 +3,5 @@ export type {
   RecordFingerprintInput,
   RecordUnjudgedInput,
   SaveStateInput,
-  SessionCommandRepository,
+  SessionRepository,
 } from './session.repository';

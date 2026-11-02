@@ -6,7 +6,7 @@
 
 ### stateful-package-resolved-once · SHOULD
 
-A package that holds state or types across the program — the schema library, the user-interface framework — resolves to one version in the lockfile.
+A package that holds state or types across the program resolves to one version in the lockfile. Such packages include the schema library and the user-interface framework.
 
 | Why |
 |---|
@@ -16,8 +16,8 @@ A package that holds state or types across the program — the schema library, t
 
 ### missing-built-in-polyfilled-by-the-entry · MUST
 
-A built-in the code relies on that a runtime it supports lacks — `Temporal`, `Symbol.dispose`, `DisposableStack` — gets its polyfill once, imported by the entry file before any code uses it; a package others install imports the polyfill's module value and never installs it globally.
+A missing built-in is polyfilled once, by the entry file. It is a built-in the code relies on that a runtime it supports lacks — `Temporal`, `Symbol.dispose`, `DisposableStack` — and the entry file imports its polyfill before any code uses it; a package others install imports the polyfill's module value and never installs it globally.
 
 | Why |
 |---|
-| every module then finds the one `Temporal`, and no date is read before it exists or through a second copy. |
+| a polyfill imported where it is first used leaves the modules that load before it without the built-in, and one imported in two places gives two copies whose values do not mix, as the dates of two `Temporal`s do not; one a package installs globally replaces its consumer's. |

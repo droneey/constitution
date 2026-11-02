@@ -1,1 +1,1 @@
-export { createStaticFileVersionsRepository } from './versions.repository';
+export { createStaticFileVersionQueries } from './versions.repository';

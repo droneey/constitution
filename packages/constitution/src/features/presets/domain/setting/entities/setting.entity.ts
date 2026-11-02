@@ -166,6 +166,14 @@ const canonicalTextOf = (setting: Setting): string => {
 
 const pathTextOf = (keyPath: readonly string[]): string => keyPath.join(KEY_SEPARATOR);
 
+const withItemsNotYetHeld = (
+  current: readonly Setting[],
+  items: readonly Setting[],
+): readonly Setting[] => [
+  ...current,
+  ...items.filter((listed) => !current.some((known) => same(known, listed))),
+];
+
 const Setting = {
   addressedIn,
   at,
@@ -178,6 +186,7 @@ const Setting = {
   same,
   withAt,
   withAtKeysAsWritten,
+  withItemsNotYetHeld,
 } as const;
 
 export type { Addressed, SettingMap };

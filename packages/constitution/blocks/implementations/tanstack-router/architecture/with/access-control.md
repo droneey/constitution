@@ -6,7 +6,7 @@
 
 ### guards-in-before-load → screen-guarded-through-the-session-owners-surface · MUST
 
-Access control of a route sits in its `beforeLoad`, which calls the use case that decides access, taken from the router's context, never a hook or a component, and ends in `redirect`.
+A route's access control is applied in its `beforeLoad`. It hands the binding unit that decides access the use case that unit calls, taken from the router's context, never through a hook or a component, and ends in `redirect`.
 
 | Why |
 |---|

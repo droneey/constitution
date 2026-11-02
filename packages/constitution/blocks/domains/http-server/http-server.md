@@ -10,4 +10,4 @@ governs: ["**"]
 
 # HTTP server
 
-> A program that answers HTTP requests — an API, a server of tools, its pages — and what HTTP itself asks of it: methods that are safe, the origins it trusts, the type of every body, how its answers are cached, and TLS.
+> A program that answers HTTP requests — an API, a server of tools, its pages — and what HTTP itself asks of it: its methods and statuses, the origins it trusts, the types of its bodies, the caching of its answers, its transport and its vulnerability contact.

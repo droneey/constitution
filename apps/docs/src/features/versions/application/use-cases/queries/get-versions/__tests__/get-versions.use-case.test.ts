@@ -2,12 +2,12 @@ import { describe, expect, it } from 'bun:test';
 
 import { Version } from '../../../../../domain/versions/value-objects';
 import { createGetVersions } from '../get-versions.use-case';
-import { createFakeVersionsRepository } from './versions.repository.fake';
+import { createFakeVersionQueries } from './versions.repository.fake';
 
 describe('createGetVersions', () => {
   it('should read the releases the repository holds, under the caller’s signal', async () => {
     // Arrange
-    const repository = createFakeVersionsRepository({
+    const versionQueries = createFakeVersionQueries({
       latest: Version.create('0.70.0'),
       versions: [
         Version.create('0.70.0'),
@@ -16,11 +16,11 @@ describe('createGetVersions', () => {
     const { signal } = new AbortController();
 
     // Act
-    const versions = await createGetVersions(repository)(signal);
+    const versions = await createGetVersions(versionQueries)(signal);
 
     // Assert
     expect({
-      signals: repository.signals,
+      signals: versionQueries.signals,
       versions,
     }).toStrictEqual({
       signals: [

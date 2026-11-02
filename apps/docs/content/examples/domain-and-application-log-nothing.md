@@ -1,21 +1,33 @@
 ```pseudo title="Avoid"
-# use-cases/commands/cancel-order
-function cancelOrder(orderId)
-  let order = orders.get(orderId)
-  if order.status is Shipped then
-    logger.warn("cancel refused")
-  call orders.save(cancel(order))
+# orders/application/use-cases/commands/cancel-order
+function createCancelOrder({ orderRepository })
+  return function(input, context)
+    let order = orderRepository.find(input.orderId, context)
+
+    try
+      call orderRepository.save(cancel(order), context)
+    catch OrderAlreadyShippedError as error
+      logger.warn("cancel refused", input.orderId)
+
+      throw error
 ```
 
 ```pseudo title="Prefer"
-# use-cases/commands/cancel-order
-function cancelOrder(orderId)
-  let order = orders.get(orderId)
-  call orders.save(cancel(order))
+# orders/application/use-cases/commands/cancel-order
+function createCancelOrder({ orderRepository })
+  return function(input, context)
+    let order = orderRepository.find(input.orderId, context)
 
-# orders/presentation/bindings/commands/cancel-order
-try
-  cancelOrder(orderId)
-catch AlreadyShippedError
-  logger.info("cancel refused", orderId)
+    call orderRepository.save(cancel(order), context)
+
+# orders/presentation/bindings/commands/cancel-order.cli
+function runCancelOrder(input, cancelOrder, context)
+  try
+    call cancelOrder(input, context)
+  catch OrderAlreadyShippedError
+    logger.info("cancel refused", input.orderId)
+
+    return refused(OrderAlreadyShippedError)
+
+  return done()
 ```

@@ -1,29 +1,34 @@
 ```pseudo title="Avoid"
-# steps/validate-order
-function validateOrder(rawOrder)
-  let order = checkFields(rawOrder)
-  return priceOrder(order)
+# import-lines/steps/merge-lines-by-sku
+function mergeLinesBySku(lines)
+  let merged = groupBy(lines, "sku").map(sumQuantities)
 
-# steps/price-order
-function priceOrder(order)
-  return saveOrder(applyPrices(order))
+  return applyPrices(merged)
 
-# import-order.use-case
-function importOrder(rawOrder)
-  return validateOrder(rawOrder)
+# import-lines/steps/apply-prices
+function applyPrices(lines)
+  let priced = lines.map(withListPrice)
+
+  return formatLines(priced)
+
+# import-lines/import-lines
+function importLines(lines)
+  return mergeLinesBySku(lines)
 ```
 
 ```pseudo title="Prefer"
-# steps/validate-order
-function validateOrder(rawOrder)
-  return checkFields(rawOrder)
+# import-lines/steps/merge-lines-by-sku
+function mergeLinesBySku(lines)
+  return groupBy(lines, "sku").map(sumQuantities)
 
-# steps/price-order
-function priceOrder(order)
-  return applyPrices(order)
+# import-lines/steps/apply-prices
+function applyPrices(lines)
+  return lines.map(withListPrice)
 
-# import-order.use-case
-function importOrder(rawOrder)
-  let order = validateOrder(rawOrder)
-  call saveOrder(priceOrder(order))
+# import-lines/import-lines
+function importLines(lines)
+  let merged = mergeLinesBySku(lines)
+  let priced = applyPrices(merged)
+
+  return formatLines(priced)
 ```

@@ -6,47 +6,39 @@
 
 ### data-printed-as-json-on-the-json-flag · SHOULD
 
-A command that reports data prints it as JSON when given `--json`.
+A command that reports data prints it as JSON when given `--json`. That JSON is a format another program reads, and its schema is the one core asks of such a format.
 
 | Why |
 |---|
-| another program then reads the result without parsing text written for people. |
+| without it another program parses text written for people, which breaks at the first rewording. |
 
 ### progressive-report-printed-as-events-arrive · SHOULD
 
-A report of a run's progress is printed as its events arrive; the result is printed once, whole, when the run ends.
+A run prints its progress as it goes and its result once, at its end. A report of the run's progress is printed as its events arrive; the result is printed whole, when the run ends.
 
 | Why |
 |---|
-| a person watching a long run sees it move, and any other result is read whole, by a person or by the next program in a pipe. |
+| a long run that reports only at its end looks hung to the person watching it, and a result printed in pieces is read half done by a person or by the next program in a pipe. |
 
 ### styling-only-on-a-terminal · MUST
 
-A stream is styled — colour, animation, cursor movement — only when it is a terminal, `TERM` is not `dumb`, `NO_COLOR` is unset or empty and `--no-color` was not given, save colour that an explicit request turns on.
+A stream is styled only on a terminal, unless colour is asked for explicitly. By default, styling — colour, animation, cursor movement — applies only when the stream is a terminal, `TERM` is not `dumb`, `NO_COLOR` is unset or empty and `--no-color` was not given. An explicit request turns colour on whatever the stream: `--color`, which overrides `NO_COLOR`, or `FORCE_COLOR` set to any non-empty value, `0` included, which a non-empty `NO_COLOR` overrides; `--no-color` overrides both.
 
 | Why |
 |---|
-| escape codes in a pipe, a file or a log are noise to whoever reads it, and `NO_COLOR` is a person's one setting for every program. |
-
-### colour-forced-by-an-explicit-request · SHOULD
-
-An explicit request for colour turns colour on whatever the stream: `--color`, which overrides `NO_COLOR`, or `FORCE_COLOR` set to any non-empty value, `0` included, which a non-empty `NO_COLOR` overrides; `--no-color` overrides both.
-
-| Why |
-|---|
-| a request for colour serves a log that renders it, a flag given for one run outranks a setting for every program, and of the two settings the one that keeps colour off wins. |
+| escape codes in a pipe, a file or a log are noise to whoever reads it, and `NO_COLOR` is a person's one setting for every program; a log that renders colour gets none unless it can ask for it, and a setting for every program that outranked a flag given for one run could not be overridden for that run — the NO_COLOR convention. |
 
 ### status-never-shown-by-colour-alone · SHOULD
 
-A status shown in colour also carries a word or a symbol.
+A status a command prints carries its word or its symbol in the text. Its colour only adorns that word or symbol, so the line says the same with the colour stripped — under `NO_COLOR`, in a pipe or in a log.
 
 | Why |
 |---|
-| without colour — in a log, under `NO_COLOR`, for a reader who cannot tell the colours apart — colour alone says nothing. |
+| in a log, under `NO_COLOR` or for a reader who cannot tell the colours apart, a status shown by colour alone says nothing. |
 
 ### slow-step-announced-before-it-starts · SHOULD
 
-Before a step that may take long — a network call, a large read — a command prints on standard error what it is doing.
+A slow step is announced before it starts. Before a step that may take long — a network call, a large read — a command prints on standard error what it is doing.
 
 | Why |
 |---|

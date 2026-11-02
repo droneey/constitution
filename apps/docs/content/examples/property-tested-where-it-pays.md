@@ -1,18 +1,20 @@
 ```pseudo
-property "should return an Order or an InvalidRow for any row"
+property "should return an Order or an InvalidRowError for any row"
   # Arrange
   given row from anyString()
   # Act
-  let result = parseOrderRow(row)
+  let parsed = parseOrderRow(row)
+
   # Assert
-  assert result is Order or result is InvalidRow
+  assert parsed is Order or parsed is InvalidRowError
 
 # a counterexample the property found, kept as a fixed case
-test "should return InvalidRow when the row ends inside a quote"
+test "should return InvalidRowError when the row ends inside a quote"
   # Arrange
   let row = 'order-7,"Crème'
   # Act
-  let result = parseOrderRow(row)
+  let parsed = parseOrderRow(row)
+
   # Assert
-  assert result is InvalidRow({ line: 1, reason: "unclosed quote" })
+  assert parsed is InvalidRowError({ line: 1, reason: "unclosed quote" })
 ```

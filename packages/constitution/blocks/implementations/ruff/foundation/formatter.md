@@ -10,4 +10,4 @@ Ruff formats every Python file, with single quotes and docstrings in double quot
 
 | Why |
 |---|
-| one formatter for Python ends every argument about its layout. |
+| two formatters of Python undo each other's work, and a layout no formatter fixes is argued over in every review. |

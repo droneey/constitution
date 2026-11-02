@@ -1,15 +1,24 @@
 ```pseudo title="Avoid"
-function placeOrder(order)
-  await orders.insert(order)
-  await bus.publish(
-    new OrderPlaced(order.id))
+# orders/infrastructure/postgres/order-repository.adapter
+function save(order, events, context)
+  let transaction = context.transaction
+
+  await transaction.orders.upsert(toRow(order))
+  await bus.publish(events)
 ```
 
 ```pseudo title="Prefer"
-function placeOrder(order)
-  await db.transaction(function(tx)
-    tx.orders.insert(order)
-    tx.outbox.insert(
-      new OrderPlaced(order.id))
-  )
+# orders/infrastructure/postgres/order-repository.adapter
+# writes through the transaction the decorator around the use case opened
+function save(order, events, context)
+  let transaction = context.transaction
+
+  await transaction.orders.upsert(toRow(order))
+  await transaction.outbox.insert(events)
+
+# root/orders
+let placeOrder = createTransactional({
+  database,
+  useCase: createPlaceOrder({ cartRepository, orderRepository }),
+})
 ```

@@ -6,7 +6,7 @@
 
 ### webhook-verified-before-it-is-acted-on · MUST
 
-A webhook the program receives from a sender that signs is acted on only once one of the signatures it carries verifies, compared in constant time, with the sender's secret or public key, over its raw body: the bytes as the server received them, never a form a framework parsed and wrote again. Where the sender signs a timestamp, the signature covers it and the timestamp falls within a window the project sets. In Standard Webhooks' format, the signed content is `webhook-id`, `webhook-timestamp` and the raw body joined by full stops, checked against each signature `webhook-signature` lists.
+A webhook from a sender that signs is acted on only once one of its signatures verifies. The signature is compared in constant time, with the sender's secret or public key, over the raw body: the bytes as the server received them, never a form a framework parsed and wrote again. Where the sender signs a timestamp, the signature covers it and the timestamp falls within a window the project sets. In Standard Webhooks' format, the signed content is `webhook-id`, `webhook-timestamp` and the raw body joined by full stops, checked against each signature `webhook-signature` lists.
 
 | Why |
 |---|
@@ -14,7 +14,7 @@ A webhook the program receives from a sender that signs is acted on only once on
 
 ### unsigned-webhook-acted-on-only-by-a-read-back · MUST
 
-From a sender that signs nothing, the program acts only on what it reads back from the sender itself, never on the webhook's content.
+An unsigned webhook is acted on only through a read-back. From a sender that signs nothing, the program acts only on what it reads back from the sender itself, never on the webhook's content.
 
 | Why |
 |---|
@@ -22,11 +22,11 @@ From a sender that signs nothing, the program acts only on what it reads back fr
 
 ### webhook-delivery-processed-once → operation-idempotent-by-design · MUST
 
-A webhook delivery is processed once: a delivery seen before — known by an identifier the signature covers, `webhook-id` in Standard Webhooks' format, or by the signature itself where the sender signs no timestamp — is acknowledged and not acted on again, and what was seen is kept for as long as the sender may redeliver, then dropped.
+A webhook delivery is processed once. A delivery seen before — known by an identifier the signature covers, `webhook-id` in Standard Webhooks' format, or by the signature itself where the sender signs no timestamp — is acknowledged and not acted on again, and what was seen is kept for as long as the sender may redeliver, then dropped.
 
 | Why |
 |---|
-| a sender redelivers whatever it did not see acknowledged, and an effect run for each copy repeats a payment or a message. |
+| a sender redelivers whatever it did not see acknowledged, and an effect run for each copy repeats a payment or a message — the idempotent receiver. |
 
 ### webhook-acknowledged-once-recorded · SHOULD
 

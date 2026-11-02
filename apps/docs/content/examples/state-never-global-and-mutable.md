@@ -8,9 +8,9 @@ function addLine(line)
 
 ```pseudo title="Prefer"
 # cart/cart.ts
-function newCart()
+function createCart()
   return { lines: [] }
 
 function addLine(cart, line)
-  cart.lines.add(line)
+  return cart with { lines: cart.lines + [line] }
 ```

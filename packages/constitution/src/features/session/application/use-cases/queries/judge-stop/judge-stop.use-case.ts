@@ -6,23 +6,23 @@ import type { StopEvent } from '../../../../domain/stop-judgement/entities';
 import { StopJudgement } from '../../../../domain/stop-judgement/entities';
 import type { TreeFingerprint } from '../../../../domain/tree-state/value-objects';
 import type { WorkingTree } from '../../../contracts';
-import type { SessionQueryRepository } from '../../../contracts/repositories/queries';
+import type { SessionQueries } from '../../../contracts/repositories/queries';
 
 type JudgeStopInput = StopEvent & {
-  readonly sessions: SessionQueryRepository;
+  readonly sessionQueries: SessionQueries;
   readonly workingTree: WorkingTree;
 };
 
 const judgeStop = (input: JudgeStopInput): StopJudgement | undefined => {
-  const { sessions, session } = input;
-  const state = sessions.state(session);
+  const { sessionQueries, session } = input;
+  const state = sessionQueries.state(session);
 
   if (state?.status !== ConfigReadStatus.Parsed) {
     return undefined;
   }
 
   const markOf = (mark: FingerprintMark): TreeFingerprint | undefined =>
-    sessions.fingerprint({
+    sessionQueries.fingerprint({
       mark,
       session,
     });
@@ -36,7 +36,7 @@ const judgeStop = (input: JudgeStopInput): StopJudgement | undefined => {
       [SessionMark.Turn]: markOf(SessionMark.Turn),
     },
     tree: input.workingTree.stateOf(state.repositoryFolderPath),
-    unjudged: sessions.unjudged(session),
+    unjudged: sessionQueries.unjudged(session),
   });
 
   if (!call.isReviewDue) {

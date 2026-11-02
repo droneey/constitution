@@ -28,7 +28,7 @@ describe('termsOf', () => {
           '',
           '## Wiring',
           '',
-          '### composition-root-wires-everything · MUST',
+          '### composition-root-assembles-the-program · MUST',
           '',
           'The **composition root** chooses every implementation.  It wires the program, its **graph**.',
           '',
@@ -102,7 +102,7 @@ describe('termsOf', () => {
         sentence: '**Bun** runs the program, and **`bunfig.toml`** holds its settings.',
       },
       {
-        address: '/docs/core/architecture/root#composition-root-wires-everything',
+        address: '/docs/core/architecture/root#composition-root-assembles-the-program',
         axis: Axis.Architecture,
         blockId: 'core',
         kind: TermKind.Folder,
@@ -110,7 +110,7 @@ describe('termsOf', () => {
         sentence: 'Its **`cache/`**`{#cache}` sits beside **`store/`**',
       },
       {
-        address: '/docs/core/architecture/root#composition-root-wires-everything',
+        address: '/docs/core/architecture/root#composition-root-assembles-the-program',
         axis: Axis.Architecture,
         blockId: 'core',
         kind: TermKind.Concept,
@@ -118,7 +118,7 @@ describe('termsOf', () => {
         sentence: 'The **composition root** chooses every implementation.',
       },
       {
-        address: '/docs/core/architecture/root#composition-root-wires-everything',
+        address: '/docs/core/architecture/root#composition-root-assembles-the-program',
         axis: Axis.Architecture,
         blockId: 'core',
         kind: TermKind.Concept,
@@ -134,7 +134,7 @@ describe('termsOf', () => {
         sentence: 'An **early** term, before any heading.',
       },
       {
-        address: '/docs/core/architecture/root#composition-root-wires-everything',
+        address: '/docs/core/architecture/root#composition-root-assembles-the-program',
         axis: Axis.Architecture,
         blockId: 'core',
         kind: TermKind.Concept,
@@ -166,7 +166,7 @@ describe('termsOf', () => {
         sentence: 'A **section** term, below a heading above the rules.',
       },
       {
-        address: '/docs/core/architecture/root#composition-root-wires-everything',
+        address: '/docs/core/architecture/root#composition-root-assembles-the-program',
         axis: Axis.Architecture,
         blockId: 'core',
         kind: TermKind.Folder,

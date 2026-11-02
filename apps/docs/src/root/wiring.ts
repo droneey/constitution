@@ -45,7 +45,7 @@ import {
 } from '#/features/content/infrastructure/fumadocs-browser';
 import type { GetVersions } from '#/features/versions';
 import { createGetVersions, Version } from '#/features/versions';
-import { createStaticFileVersionsRepository } from '#/features/versions/infrastructure/static-file';
+import { createStaticFileVersionQueries } from '#/features/versions/infrastructure/static-file';
 import { onceSucceeded } from '#/libs/once-succeeded';
 import { trackedForUse } from '#/libs/ui';
 import { DOCS_ROUTE } from '#/shared/constants';
@@ -184,7 +184,7 @@ interface RootProviders {
 const rootProviders: RootProviders = {
   builtVersion: Version.create(import.meta.env.VITE_CONSTITUTION_VERSION),
   getVersions: createGetVersions(
-    createStaticFileVersionsRepository({
+    createStaticFileVersionQueries({
       address: VERSIONS_ADDRESS,
     }),
   ),

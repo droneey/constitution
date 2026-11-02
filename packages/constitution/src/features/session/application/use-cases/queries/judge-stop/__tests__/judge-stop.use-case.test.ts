@@ -9,7 +9,7 @@ import {
   keptSession,
   sessionStateOf,
 } from '../../../../../__tests__/session.fixtures';
-import { createFakeSessionQueryRepository } from '../../../../../__tests__/session-query-repository.fake';
+import { createFakeSessionQueries } from '../../../../../__tests__/session-query-repository.fake';
 import { createFakeWorkingTree } from '../../../../../__tests__/working-tree.fake';
 import { SessionMark } from '../../../../../domain/session/entities';
 import { SessionId } from '../../../../../domain/session/value-objects';
@@ -75,7 +75,7 @@ describe('judgeStop', () => {
     },
   ])('should judge the tree reviewed when $condition', ({ agent, isHookActive }) => {
     // Arrange
-    const sessions = createFakeSessionQueryRepository(
+    const sessionQueries = createFakeSessionQueries(
       heldSessionsOf({
         state: savedState,
       }),
@@ -87,7 +87,7 @@ describe('judgeStop', () => {
       event: HookEventName.SubagentStop,
       isHookActive,
       session: keptSession,
-      sessions,
+      sessionQueries,
       workingTree: createFakeWorkingTree({
         changed: changedFiles,
         state: treeNow,
@@ -134,7 +134,7 @@ describe('judgeStop', () => {
     },
   ])('should block the hand-back until the check passes when $condition', ({ event, marks }) => {
     // Arrange
-    const sessions = createFakeSessionQueryRepository(
+    const sessionQueries = createFakeSessionQueries(
       heldSessionsOf({
         marks,
         state: savedState,
@@ -146,7 +146,7 @@ describe('judgeStop', () => {
       event,
       isHookActive: false,
       session: keptSession,
-      sessions,
+      sessionQueries,
       workingTree: createFakeWorkingTree({
         changed: changedFiles,
         state: treeNow,
@@ -187,7 +187,7 @@ describe('judgeStop', () => {
     'should ask for a review of the blocks the changed files fall under when $condition',
     ({ marks }) => {
       // Arrange
-      const sessions = createFakeSessionQueryRepository(
+      const sessionQueries = createFakeSessionQueries(
         heldSessionsOf({
           marks,
           state: savedState,
@@ -199,7 +199,7 @@ describe('judgeStop', () => {
         event: HookEventName.Stop,
         isHookActive: false,
         session: keptSession,
-        sessions,
+        sessionQueries,
         workingTree: createFakeWorkingTree({
           changed: changedFiles,
           state: treeNow,
@@ -281,7 +281,7 @@ describe('judgeStop', () => {
     },
   ])('should let the agent stop when $condition', ({ changed, event, isHookActive, marks }) => {
     // Arrange
-    const sessions = createFakeSessionQueryRepository(
+    const sessionQueries = createFakeSessionQueries(
       heldSessionsOf({
         marks,
         state: savedState,
@@ -293,7 +293,7 @@ describe('judgeStop', () => {
       event,
       isHookActive,
       session: keptSession,
-      sessions,
+      sessionQueries,
       workingTree: createFakeWorkingTree({
         changed,
         state: treeNow,
@@ -306,7 +306,7 @@ describe('judgeStop', () => {
 
   it('should tell the gate cannot judge the tree when git fails for a reason not yet told', () => {
     // Arrange
-    const sessions = createFakeSessionQueryRepository(
+    const sessionQueries = createFakeSessionQueries(
       heldSessionsOf({
         marks: [
           {
@@ -323,7 +323,7 @@ describe('judgeStop', () => {
       event: HookEventName.Stop,
       isHookActive: false,
       session: keptSession,
-      sessions,
+      sessionQueries,
       workingTree: createFakeWorkingTree({
         changed: changedFiles,
         state: {
@@ -427,7 +427,7 @@ describe('judgeStop', () => {
     },
   ])('should say nothing of the tree when $condition', ({ event, marks, tree }) => {
     // Arrange
-    const sessions = createFakeSessionQueryRepository(
+    const sessionQueries = createFakeSessionQueries(
       heldSessionsOf({
         marks,
         state: savedState,
@@ -437,7 +437,7 @@ describe('judgeStop', () => {
     // Act
     const judgement = judgeStop({
       ...event,
-      sessions,
+      sessionQueries,
       workingTree: createFakeWorkingTree(tree),
     });
 
@@ -456,7 +456,7 @@ describe('judgeStop', () => {
     },
   ])('should judge nothing when $condition', ({ session }) => {
     // Arrange
-    const sessions = createFakeSessionQueryRepository(
+    const sessionQueries = createFakeSessionQueries(
       heldSessionsOf({
         state: {
           repositoryFolderPath: AbsolutePath.create('/work/project'),
@@ -471,7 +471,7 @@ describe('judgeStop', () => {
       event: HookEventName.SubagentStop,
       isHookActive: false,
       session,
-      sessions,
+      sessionQueries,
       workingTree: createFakeWorkingTree({
         changed: changedFiles,
         state: treeNow,

@@ -7,7 +7,7 @@ import type { MDXComponents } from 'mdx/types';
 
 import { trackedForUse } from '#/libs/ui';
 
-import type { PageBodiesQueryRepository } from '../../application/contracts';
+import type { PageBodyQueries } from '../../application/contracts';
 import type { PageLocation } from '../../domain/page/entities';
 import { Page } from '../../domain/page/entities';
 
@@ -35,7 +35,7 @@ const render = ({ default: Body }: CompiledMDXProperties, props: BodyProps): Rea
 
 const createPageBodies = (
   collections: Readonly<Record<string, BodyCollection>>,
-): PageBodiesQueryRepository<PageBody> => {
+): PageBodyQueries<PageBody> => {
   const loadersByCollection = new Map(
     Object.entries(collections).map(([collectionName, collection]) => [
       collectionName,

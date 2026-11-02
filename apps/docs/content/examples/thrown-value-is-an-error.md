@@ -5,5 +5,5 @@ if cart.isEmpty then
 
 ```pseudo title="Prefer"
 if cart.isEmpty then
-  throw new EmptyCart(cart.id)
+  throw new EmptyCartError(cart.id)
 ```

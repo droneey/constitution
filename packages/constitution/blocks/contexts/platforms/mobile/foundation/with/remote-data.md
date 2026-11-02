@@ -6,7 +6,7 @@
 
 ### cached-remote-data-served-offline · SHOULD
 
-Remote data the app has cached is served offline, at start included, each value with the time it was fetched.
+Remote data the app has cached is served offline, each value with the time it was fetched. It is served so at start too.
 
 | Why |
 |---|
@@ -14,7 +14,7 @@ Remote data the app has cached is served offline, at start included, each value 
 
 ### offline-write-queued-or-refused · MUST
 
-A write made offline is queued durably and sent when the network returns, or refused at once with its reason; none is dropped silently.
+A write made offline is queued or refused, never dropped silently. It is queued durably and sent when the network returns, or refused at once with its reason.
 
 | Why |
 |---|

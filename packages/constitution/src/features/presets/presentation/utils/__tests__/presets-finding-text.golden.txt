@@ -73,6 +73,9 @@ gets an insert into the slot checks of jobs, which is no list
 # slot-placed-twice
 gets an insert into the item of overrides that places the slot injected-classes, which two items place
 
+# inheritance-malformed
+declares at overrides..<rule>.<rule> an inheritance it cannot follow: step 2 of the inheriting path is empty; step 4 of the inheriting path binds a name an earlier step binds; step 1 of the inherited path is *, which names no one value to inherit; step 3 of the inherited path reads a name the inheriting path does not bind; step 1 of the inherited path is no text
+
 # missing-name
 gives no name, which an entry it takes writes as ${package.name}; add name
 

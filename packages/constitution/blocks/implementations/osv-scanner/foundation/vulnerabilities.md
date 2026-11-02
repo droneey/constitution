@@ -6,11 +6,11 @@
 
 ### every-lockfile-scanned-for-vulnerabilities → dependency-free-of-known-vulnerabilities · MUST
 
-OSV-Scanner reads every lockfile of the repository, in every language, development dependencies included, and a known vulnerability of any severity in any of them is a finding.
+OSV-Scanner reads every lockfile of the repository. It reads them in every language, development dependencies included, and a known vulnerability of any severity in any of them is a finding.
 
 | Why |
 |---|
-| a vulnerability is then dealt with before release, in every language the same way. |
+| a lockfile the scanner skips ships its known vulnerabilities unseen, and a language checked some other way, or not at all, is held to another bar. |
 
 ### accepted-vulnerability-states-reason-and-expiry → dependency-free-of-known-vulnerabilities · MUST
 
@@ -18,4 +18,4 @@ An accepted vulnerability is an `[[IgnoredVulns]]` entry in **`osv-scanner.toml`
 
 | Why |
 |---|
-| an acceptance with a reason can be argued, and one with an expiry is looked at again. |
+| an acceptance without a reason cannot be argued, and one without an expiry is never looked at again, so it outlives the fix that would end it. |

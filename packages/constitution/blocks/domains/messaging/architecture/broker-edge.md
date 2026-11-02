@@ -4,28 +4,28 @@
 
 ## Delivery units
 
-### consumers-and-jobs-beside-the-work-they-run → delivery-unit-beside-what-it-serves · SHOULD
+### consumers-and-jobs-beside-the-work-they-run → delivery-unit-beside-what-it-serves · MUST
 
-A consumer, one `.consumer` file per message type, lives in **`consumers/`**{#message-consumer} of the presentation of the feature that owns the work, or of the composition module whose reaction it carries; a job, one `.job` file per job, lives in **`jobs/`**{#background-job} the same way.
-
-| Why |
-|---|
-| a consumer changes with the work it starts, and the root's registration still lists every way work enters the program. |
-
-### message-handler-stays-thin → delivery-unit-stays-thin · SHOULD
-
-A consumer or a job parses its message or its tick, calls one operation of the feature that owns the work and returns its outcome for settlement; it holds no business rule and decides no retry.
+Consumers and jobs live beside the work they run, each kind in a folder of its own. A consumer, one `.consumer` file per message type, lives in **`consumers/`**{#message-consumer} of its presentation, and a job, one `.job` file per job, in **`jobs/`**{#background-job}.
 
 | Why |
 |---|
-| the operation is then reached the same way from a request, a message or a spec, and the policy of settlement stays in one handler of last resort. |
+| a consumer or a job kept apart from the work it starts changes in a second place whenever that work does, and the reader of the feature misses a way work enters it. |
+
+### consumer-and-job-stay-thin → delivery-unit-stays-thin · MUST
+
+A consumer or a job stays thin. It parses its message or its tick, calls one operation of the feature or the composition module that owns the work and returns its outcome for settlement; it holds no business rule and decides no retry.
+
+| Why |
+|---|
+| a business rule in a consumer or a job is reached only through the broker, so a request or a spec that calls the operation skips it, and a retry decided there splits the policy of settlement away from the one handler of last resort. |
 
 ## The broker
 
-### publisher-is-a-port-in-the-domains-words → contract-knows-no-vendor · MUST
+### publisher-is-a-port-in-the-domains-words → port-knows-no-vendor · MUST
 
-Code outside the edge publishes through a port in the application's contracts that takes the feature's own events and commands, and the broker's client, its channels and its wire shape live only in the port's adapter.
+The broker is reached through a port in the domain's words. The port takes the feature's domain events and its command messages; the broker's client, its channels and the integration events it maps them to live only in the port's adapter.
 
 | Why |
 |---|
-| the broker, its topology and its envelope change without touching the business rules, and a spec replaces the broker through the port. |
+| code that speaks the broker's client or envelope changes with every change of the broker or its topology, and its spec can replace the broker only by patching the client — ports and adapters. |

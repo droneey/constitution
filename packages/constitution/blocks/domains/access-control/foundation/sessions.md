@@ -14,7 +14,7 @@ A session gets a new identifier at sign-in and whenever its rights rise, and the
 
 ### sessions-ended-on-the-server-when-trust-ends · MUST
 
-A session ends on the server — its identifier and its refresh tokens refused from then on, whatever copy survives on a client — when its person signs out; a change of password, a reset, an account recovery and a change or removal of a factor end the account's other sessions; and a disabled or deleted account loses every session, refresh token and key at once.
+Sessions end on the server when trust ends. An ended session's identifier and refresh tokens are refused from then on, whatever copy survives on a client. A session ends when its person signs out; a change of password, a reset, an account recovery and a change or removal of a factor end the account's other sessions; and a disabled or deleted account loses every session, refresh token and key at once.
 
 | Why |
 |---|
@@ -22,7 +22,7 @@ A session ends on the server — its identifier and its refresh tokens refused f
 
 ### revoked-right-read-on-the-next-request · MUST
 
-A revoked right is read from the store by every session and key the server keeps on the next request that needs it, and left out of every token issued after it; an access token checked without the store lives only minutes.
+A revoked right is read from the store on the next request. Every session and key the server keeps reads it there on the next request that needs it, and every token issued after it leaves it out; an access token checked without the store lives no longer than a bound the project sets.
 
 | Why |
 |---|
@@ -30,7 +30,7 @@ A revoked right is read from the store by every session and key the server keeps
 
 ### session-has-idle-and-absolute-limits · SHOULD
 
-A session ends after a time without activity and after a time since sign-in, both set by the project.
+A session has an idle limit and an absolute limit. It ends after a time without activity and after a time since sign-in, both set by the project.
 
 | Why |
 |---|
@@ -38,7 +38,7 @@ A session ends after a time without activity and after a time since sign-in, bot
 
 ### sessions-listed-and-ended-by-their-owner · SHOULD
 
-A person can see their active sessions and, after proving a factor again, end any or all of them; an administrator can end a person's sessions.
+A person can see and end their own sessions, and an administrator can end them too. They see their active sessions and, after proving a factor again, end any or all of them; an administrator can end a person's sessions.
 
 | Why |
 |---|

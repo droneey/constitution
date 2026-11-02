@@ -1,20 +1,12 @@
 # Root
 
-> Governs the composition root in Python: its wiring file and the reading of the environment.
+> Governs the composition root in Python: the reading of the environment.
 
-## Wiring
+## Environment
 
-### wiring-file-is-root-wiring-py → composition-root-wires-everything · MUST
+### environment-read-only-by-the-configuration-provider-and-entry-files → root-alone-reads-the-environment · MUST
 
-The composition root wires the program in `root/wiring.py`.
-
-| Why |
-|---|
-| every concrete choice of a Python program is then found in one file of one name. |
-
-### environment-read-only-under-root → root-alone-reads-the-environment · MUST
-
-`os.environ`, `os.getenv` and `os.putenv` are reached only under `root/`, in the entry files and in specs.
+`os.environ`, `os.getenv` and `os.putenv` are reached only by the configuration provider, the entry files and specs. No file of the composition root reaches them.
 
 | Why |
 |---|

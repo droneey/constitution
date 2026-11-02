@@ -1,14 +1,14 @@
 import type { Page } from '../../../domain/page/entities';
 import type { PageSlugs } from '../../../domain/page/value-objects';
-import type { PagesQueryRepository } from '../../contracts';
+import type { PageQueries } from '../../contracts';
 
 interface FakePagesInput {
   readonly pages: ReadonlyMap<string, Page>;
 }
 
-export const createFakePagesRepository = ({
+export const createFakePageQueries = ({
   pages,
-}: FakePagesInput): PagesQueryRepository<readonly string[]> => {
+}: FakePagesInput): PageQueries<readonly string[]> => {
   const pageAt = (slugs: PageSlugs): Page | undefined => pages.get(slugs.join('/'));
 
   const textOf = (page: Page): string => `${page.collection}:${page.path}`;

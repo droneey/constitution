@@ -6,7 +6,7 @@
 
 ### button-names-its-result · SHOULD
 
-A button names its result, verb and object — never "Submit" or "OK". "Cancel" and "Close" serve a secondary action, and one label such as "Continue" moves a flow to its next step; a confirmation of a destructive action names the action; a payment button shows the amount.
+A button names its result. Its label is a verb and an object, never "Submit" or "OK"; "Cancel" and "Close" serve a secondary action, and one label such as "Continue" moves a flow to its next step; a confirmation of a destructive action names the action; a payment button shows the amount.
 
 | Why |
 |---|
@@ -14,15 +14,15 @@ A button names its result, verb and object — never "Submit" or "OK". "Cancel" 
 
 ### same-action-same-label · MUST
 
-A control that does the same thing on several screens or steps carries the same label on each.
+The same action carries the same label everywhere. That holds for a control that does the same thing on several screens or steps.
 
 | Why |
 |---|
-| a user knows a control by its name, so a new name for the same action reads as a new action. |
+| a user knows a control by its name, so a new name for the same action reads as a new action — WCAG 2.2, Consistent Identification. |
 
 ### switch-labelled-by-its-on-state · SHOULD
 
-A switch or a checkbox is labelled by what it does when it is on, never by a negation: "Send notifications", never "Disable notifications" or "Don't send notifications".
+A switch or a checkbox is labelled by what it does when it is on. Neither is labelled by a negation: "Send notifications", never "Disable notifications" or "Don't send notifications".
 
 | Why |
 |---|

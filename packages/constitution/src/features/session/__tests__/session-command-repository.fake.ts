@@ -1,13 +1,13 @@
-import type { SessionCommandRepository } from '../application/contracts/repositories/commands';
+import type { SessionRepository } from '../application/contracts/repositories/commands';
 import type { SessionState } from '../domain/session/entities';
 import { SessionMark } from '../domain/session/entities';
 import type { SessionId } from '../domain/session/value-objects';
 import type { HeldSessions } from './session.fixtures';
 import { heldSessionsOf } from './session.fixtures';
 
-const createFakeSessionCommandRepository = (
+const createFakeSessionRepository = (
   sessions: HeldSessions = heldSessionsOf(),
-): SessionCommandRepository => ({
+): SessionRepository => ({
   addReminded: (added): void => {
     const reminded = sessions.get(added.session)?.reminded;
 
@@ -37,4 +37,4 @@ const createFakeSessionCommandRepository = (
   state: (session: SessionId): SessionState | undefined => sessions.get(session)?.state,
 });
 
-export { createFakeSessionCommandRepository };
+export { createFakeSessionRepository };

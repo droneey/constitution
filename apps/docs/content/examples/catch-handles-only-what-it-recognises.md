@@ -10,7 +10,8 @@ catch error
 try
   call chargePayment(order)
 catch error
-  if error.code is "payment.declined"
-    then return askForAnotherCard()
+  if error.code is PaymentDeclinedError.code then
+    return askForAnotherCard()
+
   throw error
 ```

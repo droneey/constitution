@@ -1,1 +1,1 @@
-export type { AppliedFilesCommandRepository } from './applied-files.repository';
+export type { AppliedFilesRepository } from './applied-files.repository';

@@ -10,8 +10,8 @@ orders/__tests__/
 ```text title="Prefer"
 orders/__tests__/
 ├── cancel-order.use-case.test.ts
-├── order.repository.fake.ts
-├── order.repository.suite.ts
+├── order-repository.fake.ts
+├── order-repository.suite.ts
 ├── orders.fixtures.ts
 └── invoice.golden.xml
 ```

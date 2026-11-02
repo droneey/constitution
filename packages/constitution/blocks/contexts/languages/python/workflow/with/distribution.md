@@ -10,4 +10,4 @@ A published package raises its `requires-python` floor in a minor or a major rel
 
 | Why |
 |---|
-| an installer skips a release whose `requires-python` the consumer's Python misses, so a consumer on the Python dropped keeps the last minor that supports it, while a patch must reach every consumer of the minor it fixes. |
+| an installer skips a release whose `requires-python` the consumer's Python misses, so a consumer on the Python dropped keeps the last minor that supports it, while a floor raised in a patch withholds that patch from consumers of the minor it fixes. |

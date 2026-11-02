@@ -4,9 +4,9 @@
 
 ## General
 
-### every-tool-runs-on-bun → tool-pinned-exactly-by-the-repository · MUST
+### node-shebang-tool-runs-on-bun → tool-pinned-exactly-by-the-repository · MUST
 
-`bunfig.toml` sets `[run] bun = true`, so a tool with a Node shebang runs on the pinned Bun.
+A tool with a Node shebang runs on the pinned Bun. `bunfig.toml` sets `[run] bun = true`.
 
 | Why |
 |---|
@@ -18,7 +18,7 @@ Another runtime is pinned only for a tool Bun cannot run, with the reason writte
 
 | Why |
 |---|
-| each exception is a second runtime to pin and keep; its reason says when it can go. |
+| each exception is a second runtime to pin and keep, and one without its reason stays on after Bun can run the tool. |
 
 ### programs-built-by-bun-build · SHOULD
 
@@ -26,11 +26,11 @@ A program whose build no other active block owns is built by `bun build`.
 
 | Why |
 |---|
-| the build resolves modules as the runtime does, so what was run and tested is what ships. |
+| a build that resolves modules otherwise than the runtime ships code that differs from what was run and tested. |
 
-### env-file-never-loaded-automatically → configuration-parsed-once-at-start · MUST
+### env-file-never-loaded-automatically → configuration-enters-only-through-its-declaration · MUST
 
-Bun's automatic loading of the local environment file is off — `--no-env-file` in the entry's shebang — so the program parses only the variables its deployment provides.
+Bun never loads the local environment file on its own. Its automatic loading is off — `--no-env-file` in the entry's shebang — so the program parses only the variables its deployment provides.
 
 | Why |
 |---|

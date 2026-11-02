@@ -1,5 +1,5 @@
 ```pseudo title="Avoid"
-# invoice/entities/invoice.entity
+# invoices/domain/invoice/entities/invoice.aggregate
 type Invoice = { total: Money }
 
 function isWeekend(date)
@@ -7,7 +7,7 @@ function isWeekend(date)
 ```
 
 ```pseudo title="Prefer"
-# invoice/entities/invoice.entity
+# invoices/domain/invoice/entities/invoice.aggregate
 type Invoice = { total: Money }
 
 # shared/utils/is-weekend.utils

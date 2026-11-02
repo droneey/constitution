@@ -175,7 +175,7 @@ describe('Term.allIn', () => {
         misshapen: [],
         terms: [
           {
-            id: 'gateway',
+            id: 'adapter',
             kind: TermKind.Folder,
             term: 'adapters/',
           },
@@ -194,7 +194,7 @@ describe('Term.allIn', () => {
         ],
       },
       name: 'ids right after the bold, and braces apart from it or broken by a line',
-      text: '**`adapters/`**{#gateway}, **`.port`**{#}, **binding unit** {#unit}, **`ports/`**{#por\nt} and **`index.ts`**{#Entry_File}.',
+      text: '**`adapters/`**{#adapter}, **`.port`**{#}, **binding unit** {#unit}, **`ports/`**{#por\nt} and **`index.ts`**{#Entry_File}.',
     },
     {
       expected: {

@@ -1,5 +1,5 @@
 import type { PageLocation } from '../../../../domain/page/entities';
 
-export interface PageBodiesQueryRepository<TBody> {
+export interface PageBodyQueries<TBody> {
   readonly find: (page: PageLocation) => TBody | undefined;
 }

@@ -5,7 +5,7 @@ requires: [analytics, browser, typescript]
 extends: null
 abstract: false
 languages: []
-governs: ["**/matomo.sink.ts"]
+governs: ["**/infrastructure/matomo/**"]
 ---
 
 # Matomo
@@ -16,5 +16,5 @@ governs: ["**/matomo.sink.ts"]
 
 | Requirement | How | Met |
 |---|---|---|
-| `analytics-stores-nothing-until-consent` | `requireConsent`, `requireCookieConsent`, cookieless mode | yes |
+| `analytics-library-can-wait-for-consent` | `requireConsent`, `requireCookieConsent`, cookieless mode | yes |
 | `analytics-drops-the-ip-address` | address anonymisation on the instance; `setUserId` is never called | yes |

@@ -5,14 +5,14 @@ core:
         overrides:
           - includes:
               - '**/${role.source}/**'
-              - '!**/${role.source}/${role.gateway}/**'
-              - '!**/${role.source}/${role.bounded-context}/*/${role.gateway}/**'
-              - '!**/${role.source}/${role.composition-module}/*/${role.gateway}/**'
+              - '!**/${role.source}/${role.adapter}/**'
+              - '!**/${role.source}/${role.bounded-context}/*/${role.adapter}/**'
+              - '!**/${role.source}/${role.composition-module}/*/${role.adapter}/**'
               - '!**/${role.source}/${role.generic-library}/**'
               - '!**/${role.source}/${role.composition-root}/**'
               - '!**/${role.source}/*.ts'
               - '!**/${role.source}/*.tsx'
-              - '!**/${role.source}/${role.extra-entry}/**'
+              - '!**/${role.source}/${role.extra-entry}/*/main.*'
               - '!**/${role.source}/${role.host-integration}/**'
               - '!**/${role.colocated-specs}/**'
             linter:

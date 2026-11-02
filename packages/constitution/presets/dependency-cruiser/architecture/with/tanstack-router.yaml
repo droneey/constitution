@@ -12,7 +12,7 @@ tanstack-router:
               - ^${role.source}/(?!index\.)[^/]+\.[^/]+$
               - ^${role.source}/${role.extra-entry}/[^/]+/main\.[^/]+$
               - ^${role.source}/${role.composition-root}/
-              - (^|/)__tests__/
+              - (^|/)${role.colocated-specs}/
               - ^${role.package-suites}/
           to:
             path: node_modules/@tanstack/react-router/
@@ -23,7 +23,7 @@ tanstack-router:
               - ^${role.source}/(?!index\.)[^/]+\.[^/]+$
               - ^${role.source}/${role.extra-entry}/[^/]+/main\.[^/]+$
               - ^${role.source}/${role.composition-root}/
-              - (^|/)__tests__/
+              - (^|/)${role.colocated-specs}/
               - ^${role.package-suites}/
           to:
             path: node_modules/@tanstack/react-router/

@@ -2,13 +2,13 @@ import type { BlockId } from '#/kernel/value-objects';
 
 import type { SessionAgent } from '../../../../domain/session/entities';
 import type { SessionId } from '../../../../domain/session/value-objects';
-import type { SessionCommandRepository } from '../../../contracts/repositories/commands';
+import type { SessionRepository } from '../../../contracts/repositories/commands';
 
 interface RecordRemindersInput {
   readonly agent: SessionAgent;
   readonly ids: readonly BlockId[];
   readonly session: SessionId;
-  readonly sessions: SessionCommandRepository;
+  readonly sessionRepository: SessionRepository;
 }
 
 const recordReminders = (input: RecordRemindersInput): void => {
@@ -16,7 +16,7 @@ const recordReminders = (input: RecordRemindersInput): void => {
     return;
   }
 
-  input.sessions.addReminded({
+  input.sessionRepository.addReminded({
     agent: input.agent,
     ids: input.ids,
     session: input.session,

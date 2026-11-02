@@ -10,4 +10,4 @@ governs: ["**/*.tsx"]
 
 # TanStack Form
 
-> **TanStack Form**, the project's only form library, whose form state **`useForm`** holds.
+> **TanStack Form**, the form library, whose form state **`useForm`** holds.

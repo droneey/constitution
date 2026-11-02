@@ -1,1 +1,1 @@
-export type { LockQueryRepository } from './lock.repository';
+export type { LockQueries } from './lock.repository';

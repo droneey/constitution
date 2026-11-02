@@ -13,8 +13,11 @@ import { isPresetFileRefusal, PresetFileRefusal as Refusal } from './errors';
 
 type ValueNode = Scalar | YAMLMap | YAMLSeq;
 
-const marks: Readonly<Record<string, ValueKind.Default | ValueKind.Replace>> = {
+type Mark = ValueKind.Default | ValueKind.Inherit | ValueKind.Replace;
+
+const marks: Readonly<Record<string, Mark>> = {
   '!default': ValueKind.Default,
+  '!inherits': ValueKind.Inherit,
   '!replace': ValueKind.Replace,
 };
 const SORTED = '!sorted';
@@ -56,7 +59,7 @@ const offsetOf = (node: ValueNode): number => node.range?.[0] ?? 0;
 const isCoreTagged = (node: ValueNode): boolean =>
   node.tag === undefined || node.tag.startsWith(CORE_TAG);
 
-const markOf = (node: ValueNode): ValueKind.Default | ValueKind.Replace | undefined =>
+const markOf = (node: ValueNode): Mark | undefined =>
   // Stryker disable next-line ConditionalExpression: no mark is keyed by an absent tag
   node.tag === undefined ? undefined : marks[node.tag];
 

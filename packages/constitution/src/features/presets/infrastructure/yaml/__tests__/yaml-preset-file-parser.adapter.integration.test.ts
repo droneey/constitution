@@ -21,6 +21,7 @@ const texts = fc.oneof(
         '? ',
         ': ',
         '!default ',
+        '!inherits ',
         '!replace ',
         '!sorted ',
         '!words ',
@@ -86,6 +87,7 @@ describe('createYamlPresetFileParser', () => {
       '        command: !words',
       '          - bun run',
       '          - slot: checks',
+      '        overrides.*.<rule>: !inherits rules.<rule>',
       '      .gitignore: !default',
       '        - dist/',
     ].join('\n');
@@ -193,6 +195,14 @@ describe('createYamlPresetFileParser', () => {
                               slot: 'checks',
                             },
                           ]),
+                        },
+                        {
+                          key: 'overrides.*.<rule>',
+                          value: {
+                            isWords: false,
+                            kind: ValueKind.Inherit,
+                            setting: 'rules.<rule>',
+                          },
                         },
                       ]),
                     },

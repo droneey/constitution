@@ -4,7 +4,7 @@ import type { z } from 'zod';
 import { onceSucceeded } from '#/libs/once-succeeded';
 import { isNoJson, isUnreachable, problemPathsOf, WHOLE_FILE_PATH } from '#/libs/served-json';
 
-import type { NavigationQueryRepository, PageLookup } from '../../application/contracts';
+import type { NavigationQueries, PageLookup } from '../../application/contracts';
 import type { PageCatalog } from '../../domain/page/entities';
 import { Page } from '../../domain/page/entities';
 import { ExportError, ExportFailure } from '../../domain/page/errors';
@@ -35,7 +35,7 @@ export const createStaticExports = ({
   catalogAddress,
   navigationAddress,
   transport = fetch,
-}: StaticExportsInput): NavigationQueryRepository<SerializedPageTree> & PageLookup => {
+}: StaticExportsInput): NavigationQueries<SerializedPageTree> & PageLookup => {
   /**
    * @throws {ExportError} when the site gives no answer in time, answers no file, or a file
    * that holds no JSON or no value the model takes

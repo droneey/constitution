@@ -4,10 +4,10 @@
 
 ## General
 
-### server-framework-imported-by-the-delivery-units → layer-imports-dependencies-by-its-role · MUST
+### server-framework-imported-by-the-presentation → layer-imports-dependencies-by-its-role · MUST
 
-The framework that serves the program's operations has its home past the edge in the presentation of features and of composition modules, where its delivery units sit — the routers, handlers and tools that declare the operations, and the modules and providers of a framework that has them — and in `root/`, which assembles it.
+The server framework has its home in the presentation, where its delivery units sit. Outside the edge, that is the presentation of features, of composition modules and of the program, where its delivery units and binding units sit — the routers, handlers and tools that declare the operations, the handlers that answer its failures, and the modules and providers of a framework that has them.
 
 | Why |
 |---|
-| a delivery unit lives with the feature it serves, and the framework stays out of the domain and the use cases below it. |
+| a framework imported below its delivery units ties the domain and the use cases to it, so they change with each of its releases and cannot be tested without it. |

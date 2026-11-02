@@ -6,8 +6,8 @@
 
 ### knip-ignore-states-its-reason → suppression-silences-one-finding · MUST
 
-An entry a project adds to `ignore`, `ignoreDependencies`, `ignoreBinaries` or `ignoreExportsUsedInFile` in `knip.jsonc` carries its reason in a comment beside it.
+Every entry a project adds to knip's ignore lists carries its reason. An entry of `ignore`, `ignoreDependencies`, `ignoreBinaries` or `ignoreExportsUsedInFile` in `knip.jsonc` carries it in a comment beside it.
 
 | Why |
 |---|
-| these lists are where knip is silenced, so each entry must say why the file, dependency or export is in use. |
+| these lists are where knip is silenced, so an entry without its reason cannot be judged, and stays after the file, dependency or export it excused is gone. |

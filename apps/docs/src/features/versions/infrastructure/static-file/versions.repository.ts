@@ -1,6 +1,6 @@
 import { isNoJson, isUnreachable, problemPathsOf, WHOLE_FILE_PATH } from '#/libs/served-json';
 
-import type { VersionsQueryRepository } from '../../application/contracts';
+import type { VersionQueries } from '../../application/contracts';
 import type { Versions } from '../../domain/versions/entities';
 import { VersionsError, VersionsFailure } from '../../domain/versions/errors';
 import { versionsModel } from './models';
@@ -38,11 +38,11 @@ const malformedError = (
     },
   );
 
-export const createStaticFileVersionsRepository = ({
+export const createStaticFileVersionQueries = ({
   address,
   timeoutMs = READ_TIMEOUT_MS,
   transport = fetch,
-}: StaticFileVersionsInput): VersionsQueryRepository => ({
+}: StaticFileVersionsInput): VersionQueries => ({
   /** @throws {VersionsError} when the site answers no list of releases, in time or at all */
   read: async (signal): Promise<Versions> => {
     const response = await transport(address, {

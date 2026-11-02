@@ -7,11 +7,8 @@
 credentials.json
 id_rsa
 *.secrets
-/local/
 .claude/settings.local.json
 .claude/worktrees/
-.env*
-!.env.example
 .DS_Store
 .vscode/*
 !.vscode/settings.json
@@ -26,6 +23,8 @@ id_rsa
 *.bak
 *.orig
 *~
+.env*
+!.env.example
 
 # bun
 .npmrc

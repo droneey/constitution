@@ -1,6 +1,6 @@
 import type { BlockId } from '#/kernel/value-objects';
 
-import type { SessionQueryRepository } from '../application/contracts/repositories/queries';
+import type { SessionQueries } from '../application/contracts/repositories/queries';
 import type { SessionState } from '../domain/session/entities';
 import { SessionMark } from '../domain/session/entities';
 import type { SessionId } from '../domain/session/value-objects';
@@ -8,9 +8,7 @@ import { TreeFingerprint } from '../domain/tree-state/value-objects';
 import type { HeldSessions } from './session.fixtures';
 import { heldSessionsOf } from './session.fixtures';
 
-const createFakeSessionQueryRepository = (
-  sessions: HeldSessions = heldSessionsOf(),
-): SessionQueryRepository => ({
+const createFakeSessionQueries = (sessions: HeldSessions = heldSessionsOf()): SessionQueries => ({
   fingerprint: (asked): TreeFingerprint | undefined => {
     const text = sessions.get(asked.session)?.marks.get(asked.mark);
 
@@ -23,4 +21,4 @@ const createFakeSessionQueryRepository = (
     sessions.get(session)?.marks.get(SessionMark.Unjudged),
 });
 
-export { createFakeSessionQueryRepository };
+export { createFakeSessionQueries };

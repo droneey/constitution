@@ -5,7 +5,7 @@ requires: [python, observability]
 extends: null
 abstract: false
 languages: []
-governs: ["**/root/**"]
+governs: ["**/libs/**", "**/root/**"]
 ---
 
 # structlog

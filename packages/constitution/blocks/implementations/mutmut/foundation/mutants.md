@@ -6,15 +6,15 @@
 
 ### text-for-a-person-left-out-by-configuration → every-mutant-killed · MUST
 
-Text only a person reads is left out by mutmut's configuration where a line or a file holds nothing else: the calls to the module's logger by `do_not_mutate_patterns`, and the modules of messages by `do_not_mutate`.
+mutmut's configuration leaves out text only a person reads, where a line or a file holds nothing else. It leaves out the calls to the module's logger by `do_not_mutate_patterns`, and the modules of messages by `do_not_mutate`.
 
 | Why |
 |---|
-| a log call's level and text and a module of messages, text and the templates that fill it with no branch, are no behaviour a caller relies on, and mutmut leaves out no kind of mutant narrower than a file or a line. |
+| a log call's level and text, and a module of messages, which holds text and the templates that fill it with no branch, are no behaviour a caller relies on, so their mutants live unless a case pins wording; mutmut leaves out no kind of mutant narrower than a file or a line. |
 
 ### mutants-run-without-the-gates → every-mutant-killed · MUST
 
-mutmut runs pytest with `pytest_add_cli_args = ["-p", "no:randomly", "-o", "norecursedirs=.* e2e"]`, and `addopts` holds no `--cov`.
+mutmut runs pytest over the specs the coverage gate counts, without the gate or the shuffle. Its `pytest_add_cli_args` is `["-p", "no:randomly", "-o", "norecursedirs=.* e2e"]`, and `addopts` holds no `--cov`.
 
 | Why |
 |---|
@@ -30,7 +30,7 @@ A spec reaches a file outside `tests/` by searching up from its own file for the
 
 ### equivalent-mutant-marked-by-pragma → suppression-silences-one-finding · MUST
 
-An equivalent mutant, and one in text only a person reads that the configuration does not leave out, an error's message among them, is marked on its line — `# pragma: no mutate -- <reason>` — never by the pragma's `block`, `start` and `end`, `function` or `class` forms, and never by `do_not_mutate` over a file of logic.
+A mutant the code keeps — an equivalent one, or one in text only a person reads — is marked on its line by `# pragma: no mutate -- <reason>`. Text only a person reads counts where the configuration does not leave it out, an error's message included; neither is marked by the pragma's `block`, `start` and `end`, `function` or `class` forms, nor by `do_not_mutate` over a file of logic.
 
 | Why |
 |---|

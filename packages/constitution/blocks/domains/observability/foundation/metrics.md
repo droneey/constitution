@@ -6,7 +6,7 @@
 
 ### metric-labels-bounded · MUST
 
-A metric's labels take values from a bounded set — never an identifier, an address or free text.
+A metric's labels take values from a bounded set. A label never takes an identifier, an address or free text.
 
 | Why |
 |---|
@@ -20,11 +20,11 @@ Every kind of request or task the program serves is measured by its rate, its fa
 
 | Why |
 |---|
-| these three measures show a service's health at a glance, and an alert on them fires before users report a fault. |
+| a service measured without its rate, its failures or its duration looks healthy while the missing one goes wrong, and its users report the fault before any alert fires — the RED method. |
 
 ### duration-recorded-as-a-distribution · SHOULD
 
-A duration is recorded as a histogram whose bucket bounds the project sets around its latency bounds, and is read by its percentiles — p50, p95, p99 — never by its average alone.
+A duration is recorded as a distribution and read by its percentiles. It is recorded as a histogram whose bucket bounds the project sets around its latency bounds, and read by its percentiles — p50, p95, p99 — never by its average alone.
 
 | Why |
 |---|

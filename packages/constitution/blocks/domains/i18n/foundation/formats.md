@@ -6,7 +6,7 @@
 
 ### values-formatted-by-the-active-locale · MUST
 
-Numbers, dates, times, amounts and lists are formatted by the active locale, which every formatter is given; none is left to the runtime's locale.
+Values are formatted by the active locale. That holds for numbers, dates, times, amounts and lists, and every formatter is given that locale; none is left to the runtime's locale.
 
 | Why |
 |---|
@@ -14,7 +14,7 @@ Numbers, dates, times, amounts and lists are formatted by the active locale, whi
 
 ### entered-value-parsed-by-the-active-locale · SHOULD
 
-A number, a date or an amount its user types is parsed by the active locale's rules, the same that format it.
+A value its user types is parsed by the active locale. That holds for a number, a date or an amount, by the same rules that format it.
 
 | Why |
 |---|
@@ -22,7 +22,7 @@ A number, a date or an amount its user types is parsed by the active locale's ru
 
 ### instant-shown-in-the-readers-zone → instant-is-an-exact-time · MUST
 
-An instant is shown in the reader's time zone, with the zone named where a reader could take it for another; a time bound to a place — a departure, an opening hour — is shown in that place's zone, and names it.
+An instant is shown in the reader's time zone. The zone is named where a reader could take it for another, and a time bound to a place — a departure, an opening hour — is shown in that place's zone, and names it.
 
 | Why |
 |---|
@@ -30,7 +30,7 @@ An instant is shown in the reader's time zone, with the zone named where a reade
 
 ### currency-from-the-amount · MUST
 
-An amount is shown in its own currency, which travels with the amount; the locale changes only how it is written.
+An amount is shown in its own currency. The currency travels with the amount, and the locale changes only how it is written.
 
 | Why |
 |---|
@@ -38,7 +38,7 @@ An amount is shown in its own currency, which travels with the amount; the local
 
 ### text-sorted-by-the-locale · SHOULD
 
-Text a person reads in order — names, options, titles — is sorted by the active locale's collation, never by code point.
+Text a person reads in order is sorted by the active locale's collation. Such text — names, options, titles — is never sorted by code point.
 
 | Why |
 |---|

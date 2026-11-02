@@ -1,22 +1,22 @@
-lingui:
-  '*':
+bun-test:
+  macros-expanded-by-the-test-preload:
     typescript:
       bunfig.integration.toml:
         test:
           preload@fixtures:
-            - ./${role.source}/${role.colocated-specs}/lingui.fixtures.ts
+            - ./${role.source}/${role.colocated-specs}/lingui.${role.fixtures-file}.ts
       bunfig.toml:
         test:
           preload@fixtures:
-            - ./${role.source}/${role.colocated-specs}/lingui.fixtures.ts
+            - ./${role.source}/${role.colocated-specs}/lingui.${role.fixtures-file}.ts
       bunfig.mutation.toml:
         test:
           preload@fixtures:
-            - ./${role.source}/${role.colocated-specs}/lingui.fixtures.ts
+            - ./${role.source}/${role.colocated-specs}/lingui.${role.fixtures-file}.ts
       # Why: the fixture's own text, laid out at its depth by its formatter, runs past YAML's width
       # here.
       # yamllint disable rule:line-length
-      ${role.source}/${role.colocated-specs}/lingui.fixtures.ts: !default |
+      ${role.source}/${role.colocated-specs}/lingui.${role.fixtures-file}.ts: !default |
         import { basename, relative } from 'node:path';
 
         import { plugin } from 'bun';

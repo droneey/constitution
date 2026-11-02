@@ -1,1 +1,1 @@
-export type { SessionQueryRepository } from './session.repository';
+export type { SessionQueries } from './session.repository';

@@ -6,8 +6,8 @@
 
 ### ignored-names-state-their-reasons → suppression-silences-one-finding · MUST
 
-A name only a framework or an entry reaches — a route, a tool function, a console script — is listed in `ignore_names` or `ignore_decorators` of `[tool.vulture]`, each with its reason in a comment beside it.
+A name vulture ignores is listed with its reason. Such a name is one only a framework or an entry reaches — a route, a tool function, a console script —; its list is `ignore_names` or `ignore_decorators` of `[tool.vulture]`, and its reason a comment beside it.
 
 | Why |
 |---|
-| these lists are where vulture is silenced, so each entry must say why the name is in use. |
+| these lists are where vulture is silenced, and an entry without its reason cannot be judged, so a name kept after its framework stopped reaching it hides dead code for good. |

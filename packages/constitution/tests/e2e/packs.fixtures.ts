@@ -70,7 +70,7 @@ const packFilesOf = (parent: string): Files => ({
   ].join('\n'),
 });
 
-const createPack = (parent = 'dependency-reached-through-its-public-entry'): string => {
+const createPack = (parent = 'dependency-reached-through-its-published-entries'): string => {
   const folder = realpathSync(mkdtempSync(join(tmpdir(), 'constitution-pack-')));
 
   created.push(folder);

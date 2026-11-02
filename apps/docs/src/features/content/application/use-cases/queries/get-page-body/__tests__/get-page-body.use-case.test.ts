@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { createFakePageBodiesRepository } from '../../../__tests__/page-bodies.repository.fake';
+import { createFakePageBodyQueries } from '../../../__tests__/page-bodies.repository.fake';
 import { createGetPageBody } from '../get-page-body.use-case';
 
 const PAGE_BODY = 'body of guide:guides/write-a-pack.md';
@@ -13,7 +13,7 @@ describe('createGetPageBody', () => {
       path: 'guides/write-a-pack.md',
     };
     const getPageBody = createGetPageBody(
-      createFakePageBodiesRepository([
+      createFakePageBodyQueries([
         page,
       ]),
     );

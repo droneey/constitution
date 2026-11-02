@@ -30,6 +30,7 @@ enum PresetsCode {
   MissingSlot = 'missing-slot',
   SlotInNoList = 'slot-in-no-list',
   SlotPlacedTwice = 'slot-placed-twice',
+  InheritanceMalformed = 'inheritance-malformed',
   MissingName = 'missing-name',
   MissingConstitution = 'missing-constitution',
   Loosened = 'loosened',
@@ -40,6 +41,25 @@ enum PresetsCode {
   LockUnparsed = 'lock-unparsed',
   RunMisshapen = 'run-misshapen',
   ToolWithoutRunner = 'tool-without-runner',
+}
+
+enum InheritanceFlaw {
+  EmptyStep = 'empty-step',
+  NameBoundTwice = 'name-bound-twice',
+  AnyChildInSource = 'any-child-in-source',
+  UnboundName = 'unbound-name',
+  SourceNotText = 'source-not-text',
+}
+
+enum PathSide {
+  Inheriting = 'inheriting',
+  Source = 'source',
+}
+
+interface PlacedFlaw {
+  readonly flaw: InheritanceFlaw;
+  readonly side: PathSide;
+  readonly step: number;
 }
 
 interface EntryNamed {
@@ -130,6 +150,9 @@ interface PresetsDetails {
   readonly [PresetsCode.MissingSlot]: SlotNamed;
   readonly [PresetsCode.SlotInNoList]: SlotNamed;
   readonly [PresetsCode.SlotPlacedTwice]: SlotNamed;
+  readonly [PresetsCode.InheritanceMalformed]: SettingNamed & {
+    readonly flaws: readonly PlacedFlaw[];
+  };
   readonly [PresetsCode.MissingName]: object;
   readonly [PresetsCode.MissingConstitution]: object;
   readonly [PresetsCode.Loosened]: SettingNamed & {
@@ -168,6 +191,7 @@ type MergeProblem = Extract<
   {
     readonly code:
       | PresetsCode.Clash
+      | PresetsCode.InheritanceMalformed
       | PresetsCode.MissingSlot
       | PresetsCode.SlotInNoList
       | PresetsCode.SlotPlacedTwice
@@ -175,5 +199,5 @@ type MergeProblem = Extract<
   }
 >;
 
-export type { EntryNamed, MergeProblem, PresetsDetails, PresetsProblem, UnreachedRole };
-export { PresetsCode, PresetsFinding };
+export type { EntryNamed, MergeProblem, PlacedFlaw, PresetsDetails, PresetsProblem, UnreachedRole };
+export { InheritanceFlaw, PathSide, PresetsCode, PresetsFinding };

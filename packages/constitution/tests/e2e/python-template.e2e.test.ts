@@ -360,7 +360,7 @@ describe('the files apply writes for a unit of Python', () => {
           'src/shop/root/wiring.py': 'WIRED = 1\n',
         },
         finding: [
-          'root-imported-only-by-entries BROKEN',
+          'root-imported-only-by-entry-files BROKEN',
         ],
         task: 'check:architecture',
       },
@@ -457,7 +457,7 @@ describe('the files apply writes for a unit of Python', () => {
           'src/shop/shared/mail/__init__.py': 'from shop.kernel.contracts import MAILER\n',
         },
         finding: [
-          'shared-imports-no-feature-adapter-contract-or-root BROKEN',
+          'shared-imports-no-feature-adapter-port-or-root BROKEN',
         ],
         task: 'check:architecture',
       },

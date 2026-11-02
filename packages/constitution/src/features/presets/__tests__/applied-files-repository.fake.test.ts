@@ -43,7 +43,7 @@ const locksAfter = (written: readonly AppliedFiles[]): ReadonlyMap<string, Lock>
 runAppliedFilesRepositorySuite({
   name: 'createFakeAppliedFilesRepository',
   repositoryOf: (world) => {
-    const { repository, written } = createFakeAppliedFilesRepository(
+    const { appliedFilesRepository, written } = createFakeAppliedFilesRepository(
       world.unwritable === undefined
         ? undefined
         : new ApplyError({
@@ -56,7 +56,7 @@ runAppliedFilesRepositorySuite({
 
     return {
       projectFolderPath,
-      repository,
+      appliedFilesRepository,
       state: {
         lockOf: (unitPath) => locksAfter(written()).get(unitPath),
         textOf: (filePath) =>

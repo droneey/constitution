@@ -6,8 +6,8 @@
 
 ### page-view-named-by-route-template · MUST
 
-A page view names its screen by the template of its address — `/chats/:id` — never by the address with its identifiers or query values.
+A page view names its screen by its route template. The template is that of its address, never the address with its identifiers or query values.
 
 | Why |
 |---|
-| views of one screen then add up to one row, and no identifier in an address reaches the analytics service. |
+| a page view named by its full address splits one screen into a row per identifier, and sends every identifier in the address to the analytics service. |

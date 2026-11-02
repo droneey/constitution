@@ -6,7 +6,7 @@
 
 ### unit-compiled-by-its-own-options → unit-checked-by-its-own-tools · MUST
 
-Each package is compiled with its own compiler options alone: a package that imports another is checked against the declarations of the other's entries, never against the other's source compiled with its own options.
+Each package is compiled with its own compiler options alone. A package that imports another is checked against the declarations of the other's entries, never against the other's source compiled with its own options.
 
 | Why |
 |---|

@@ -23,7 +23,7 @@ const LINGUI = 'blocks/implementations/lingui/lingui.md';
 const withCoreTerms = (files: Files): Files => ({
   ...files,
   [PORTS]:
-    '# Ports\n\nA **port** names a need; a **binding unit** binds it, in **`adapters/`**{#gateway}, in a file **`.port`**{#port-file}.\n',
+    '# Ports\n\nA **port** names a need; a **binding unit** binds it, in **`adapters/`**{#adapter}, in a file **`.port`**{#port-file}.\n',
   [WORKFLOW]: `# Workflow\n\nA **squash merge** lands **\`feature/\`**{#feature-branch} branches.\n\n## General\n\n${rule(
     {
       slug: 'rules-bind',
@@ -209,6 +209,19 @@ describe('termsCheck', () => {
       path: WORKFLOW,
       text: '# Workflow\n\nA **squash merge** lands **`feature/`**{#feature-branch} and touches one port.\n',
     },
+    {
+      expected: [
+        inFoundation('port'),
+        inFoundation('binding unit'),
+      ],
+      name: 'a statement uses one after a dash, and a Why in the principle that closes it',
+      path: PRINCIPLES,
+      text: `# Principles\n\n${rule({
+        slug: 'ports-stay',
+        statement: 'It holds — for a binding unit.',
+        why: 'it breaks when code moves — the stable port principle.',
+      })}`,
+    },
   ])('should report each term off its axis when $name', ({ expected, path, text }) => {
     // Act
     const findings = checked({
@@ -296,7 +309,7 @@ describe('termsCheck', () => {
     // Act
     const findings = checked({
       path: PORTS,
-      text: '# Ports\n\nA **port** names a need; a **binding unit** binds it, in **`adapters/`**{#gateway} — not `adapters` — in a file **`.port`**{#port-file}, not `port`; see `adapters/http`.\n',
+      text: '# Ports\n\nA **port** names a need; a **binding unit** binds it, in **`adapters/`**{#adapter} — not `adapters` — in a file **`.port`**{#port-file}, not `port`; see `adapters/http`.\n',
     });
 
     // Assert

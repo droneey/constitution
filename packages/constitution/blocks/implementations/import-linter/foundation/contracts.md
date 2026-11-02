@@ -10,4 +10,4 @@ A contract's `name` is the slug of the rule it holds.
 
 | Why |
 |---|
-| a broken contract then names the rule it breaks, which says why the import is refused. |
+| a contract named otherwise breaks with a name that says nothing of why the import is refused, and its reader must find the rule it holds. |

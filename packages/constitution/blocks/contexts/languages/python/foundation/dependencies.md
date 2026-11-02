@@ -10,7 +10,7 @@ A tool PyPI publishes is pinned with `==` in the `dev` group of `[dependency-gro
 
 | Why |
 |---|
-| a dependency group is installed in the repository and never published with a package built from it. |
+| a tool declared among the package's dependencies or extras is published with every package built from it and installed by its consumers, and one pinned by a range runs in another version on each machine, while a dependency group stays in the repository. |
 
 ### requires-python-at-the-pinned-minor · SHOULD
 
@@ -22,10 +22,10 @@ A unit that no registry distributes floors its `requires-python` in `[project]` 
 
 ## Choosing and using
 
-### private-name-of-a-dependency-never-imported → dependency-reached-through-its-public-entry · MUST
+### private-name-of-a-dependency-never-imported → dependency-reached-through-its-published-entries · MUST
 
 Code never imports, from another distribution, a module or a name whose path has a segment that opens with `_`.
 
 | Why |
 |---|
-| a leading underscore is Python's mark of what a package keeps to itself and changes without notice. |
+| a leading underscore is Python's mark of what a package keeps to itself, so code that imports such a name breaks at an update that changed it without notice. |

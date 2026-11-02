@@ -10,8 +10,12 @@ function isSignedByPsp(webhook)
 function isSignedByPsp(webhook)
   if pspKey is nothing
     return false
+
   try
     return verify(webhook, pspKey)
   catch error
-    return false
+    if error is InvalidSignatureError
+      return false
+
+    throw error
 ```

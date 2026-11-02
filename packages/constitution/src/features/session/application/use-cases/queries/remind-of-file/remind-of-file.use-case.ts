@@ -5,17 +5,17 @@ import { AbsolutePath, RepositoryRelativePath } from '#/kernel/value-objects';
 import { Reminder } from '../../../../domain/reminder/entities';
 import type { SessionAgent } from '../../../../domain/session/entities';
 import type { SessionId } from '../../../../domain/session/value-objects';
-import type { SessionQueryRepository } from '../../../contracts/repositories/queries';
+import type { SessionQueries } from '../../../contracts/repositories/queries';
 
 interface RemindOfFileInput {
   readonly agent: SessionAgent;
   readonly path: string;
   readonly session: SessionId;
-  readonly sessions: SessionQueryRepository;
+  readonly sessionQueries: SessionQueries;
 }
 
 const remindOfFile = (input: RemindOfFileInput): Reminder | undefined => {
-  const state = input.sessions.state(input.session);
+  const state = input.sessionQueries.state(input.session);
 
   if (state?.status !== ConfigReadStatus.Parsed) {
     return undefined;
@@ -31,7 +31,7 @@ const remindOfFile = (input: RemindOfFileInput): Reminder | undefined => {
 
   return Reminder.of({
     path,
-    reminded: input.sessions.reminded({
+    reminded: input.sessionQueries.reminded({
       agent: input.agent,
       session: input.session,
     }),

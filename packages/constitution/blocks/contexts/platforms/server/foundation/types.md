@@ -6,8 +6,8 @@
 
 ### server-process-time-zone-is-utc → instant-is-an-exact-time · MUST
 
-A server's process runs with its time zone set to UTC, never to its host's zone or to one its configuration chooses; a local time is computed from a zone the data names.
+A server's process runs in UTC. Its time zone is never its host's or one its configuration chooses; a local time is computed from a zone the data names.
 
 | Why |
 |---|
-| a library that falls back to the process's zone then gives one answer on every copy, whichever host runs it, and a time shown to a person follows that person's zone, not the machine's. |
+| a library that falls back to the process's zone gives another answer on each host that runs a copy, and a time shown to a person follows the machine's zone instead of theirs. |

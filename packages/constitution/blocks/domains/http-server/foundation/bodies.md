@@ -6,7 +6,7 @@
 
 ### answer-declares-its-exact-content-type · MUST
 
-Every answer carries its exact `Content-Type` and `X-Content-Type-Options: nosniff`, and an operation that answers JSON never answers `text/html`, its failures and the framework's defaults included.
+Every answer declares its exact content type. It carries its exact `Content-Type` and `X-Content-Type-Options: nosniff`, and an operation that answers JSON never answers `text/html`, its failures and the framework's defaults included.
 
 | Why |
 |---|
@@ -14,7 +14,7 @@ Every answer carries its exact `Content-Type` and `X-Content-Type-Options: nosni
 
 ### request-body-refused-in-an-undeclared-type · MUST
 
-A request whose body is in a media type its operation does not declare is refused with `415` before it is read; an operation of JSON never accepts `text/plain` or a form encoding.
+A request body in a media type its operation does not declare is refused before it is read. It is refused with `415`, and an operation of JSON never accepts `text/plain` or a form encoding.
 
 | Why |
 |---|
@@ -24,7 +24,7 @@ A request whose body is in a media type its operation does not declare is refuse
 
 ### uploaded-file-never-rendered-from-the-programs-origin · MUST
 
-A file a person uploaded is served from another registrable domain than the program's, or with `Content-Disposition: attachment` or `Content-Security-Policy: sandbox`; it is never opened as a page of the program's own origin.
+An uploaded file is never opened as a page of the program's own origin. A file a person uploaded is served from another registrable domain than the program's, or with `Content-Disposition: attachment` or `Content-Security-Policy: sandbox`.
 
 | Why |
 |---|

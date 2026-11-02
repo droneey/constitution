@@ -1,5 +1,5 @@
 ```pseudo title="Avoid"
-function labelOf(status: OrderStatus)
+function label(status: OrderStatus)
   when status
     is Draft then return "Draft"
     is Paid then return "Paid"
@@ -8,11 +8,10 @@ function labelOf(status: OrderStatus)
 ```
 
 ```pseudo title="Prefer"
-function labelOf(status: OrderStatus)
+# Why: no else, so the checker proves every member is named
+function label(status: OrderStatus)
   when status
     is Draft then return "Draft"
     is Paid then return "Paid"
     is Shipped then return "Shipped"
-# no else: the checker proves every
-# member is named
 ```

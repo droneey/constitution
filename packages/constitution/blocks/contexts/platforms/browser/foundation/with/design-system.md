@@ -6,8 +6,8 @@
 
 ### increased-contrast-mode-follows-prefers-contrast → theme-follows-system-until-chosen · MUST
 
-Until the user chooses one in the program, the theme's increased-contrast mode follows `prefers-contrast: more`, read before the first paint and again when the query changes.
+The theme's increased-contrast mode follows `prefers-contrast: more` until the user chooses one in the program. The query is read before the first paint and again when it changes.
 
 | Why |
 |---|
-| the setting is the person's request, made once for every site, and the contrast it asks for is what lets a person with low vision read the screen. |
+| a person with low vision asks every site for more contrast once, in their settings, and a page that ignores the request is one they cannot read. |

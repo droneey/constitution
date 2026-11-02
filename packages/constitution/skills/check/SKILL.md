@@ -18,7 +18,7 @@ If there is no state, the session did not start in a repository with `constituti
 
 The `check` line above names the project's command, `constitution run check`, which runs every unit's checks as their runner blocks give them. Run it from the project root, exactly as written, and read its output whole.
 
-- It fails: report the failures and fix them, in the code, never by loosening a check or a suppression without its reason; then run it again. The review waits for a passing check.
+- It fails: report the failures and fix them, as `check-never-weakened-to-pass` asks; then run it again. The review waits for a passing check.
 - It passes: go on.
 
 ## 2. Gather the files

@@ -10,4 +10,4 @@ The `postinstall` hook of the shared configuration's distribution also installs 
 
 | Why |
 |---|
-| the hooks then arrive with the configuration they belong to, in a repository of any language. |
+| hooks installed by a step of their own are missing wherever that step is forgotten, while the configuration they belong to is installed in every repository that uses it. |

@@ -42,7 +42,7 @@ interface SessionPortsInput {
   readonly workingTree?: WorkingTree;
 }
 
-const sessionPortsOf = (input: SessionPortsInput = {}): DigestSessionPorts => {
+const createSessionPorts = (input: SessionPortsInput = {}): DigestSessionPorts => {
   const source: RulesSource = {
     findProjectAround: (searchFrom: AbsolutePath): ProjectPlace | undefined =>
       searchFrom === PROJECT || searchFrom.startsWith(`${PROJECT}/`) ? projectPlace : undefined,
@@ -65,4 +65,4 @@ const sessionPortsOf = (input: SessionPortsInput = {}): DigestSessionPorts => {
   };
 };
 
-export { CORE_TEXT, QUIET, sessionPortsOf, unchecked, version };
+export { CORE_TEXT, createSessionPorts, QUIET, unchecked, version };

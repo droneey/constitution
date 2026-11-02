@@ -10,7 +10,7 @@ The contract of a REST API is an OpenAPI document of version 3.1 or later, with 
 
 | Why |
 |---|
-| callers, generated clients and checks all read one machine-readable contract, and a server that drifts from it fails a spec, not a caller. |
+| a contract in a format no standard tool reads gets no generated client and no check, so each caller writes its client by hand and drifts from the server unseen — OpenAPI. |
 
 ### answer-enumeration-a-string-of-known-values → answer-enumeration-extensible-in-the-contract · MUST
 
@@ -22,11 +22,11 @@ An enumeration in an answer is declared in the OpenAPI document as a string whos
 
 ### version-named-once-by-its-major · SHOULD
 
-Every path begins with the API's major from its first release — `/v1/orders` — and nowhere else names it; a new major comes only with a breaking change.
+A REST API names its major version once, at the head of every path. Every path begins with the major from the first release, and nowhere else names it; a new major comes only with a breaking change.
 
 | Why |
 |---|
-| a version in the path shows in every log, cache key, route and link, and one scheme for every API leaves no caller unsure what it gets; versions kept for breaking changes alone stay few. |
+| a version named in a header or a parameter is invisible in logs, cache keys, routes and links, so a cache serves one version's answer for another, and versions cut for changes that break nothing multiply what every caller must choose between. |
 
 ## Retirement
 
@@ -36,12 +36,12 @@ A field being retired is marked `deprecated` in the OpenAPI document, naming its
 
 | Why |
 |---|
-| a field has no header of its own, so the contract is where a caller and a generated client learn it is going. |
+| a field has no header of its own, so one retired without the mark in the contract disappears from under a caller and a generated client that never learned it was going — OpenAPI. |
 
 ### retired-operation-answers-deprecation-headers → retired-operation-announced-before-removal · MUST
 
-An operation being retired answers with `Deprecation` (RFC 9745) and `Sunset` (RFC 8594), the sunset no earlier than the deprecation, and a `Link` with `rel="deprecation"` to its notice.
+An operation being retired answers with `Deprecation` and `Sunset`. They are `Deprecation` (RFC 9745) and `Sunset` (RFC 8594), the sunset no earlier than the deprecation, beside a `Link` with `rel="deprecation"` to its notice.
 
 | Why |
 |---|
-| a caller's monitoring sees the retirement in every answer, long before the removal breaks it. |
+| a retirement announced only in documents is missed by a caller's monitoring, which first learns of it from the removal that breaks it — RFC 9745 and RFC 8594. |

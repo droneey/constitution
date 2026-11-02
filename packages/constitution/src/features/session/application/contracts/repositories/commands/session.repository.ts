@@ -32,7 +32,7 @@ interface SaveStateInput {
 }
 
 // Why: a write that cannot land is dropped, costing the reminders and the gate but never the hook.
-interface SessionCommandRepository {
+interface SessionRepository {
   readonly addReminded: (input: AddRemindedInput) => void;
   readonly recordFingerprint: (input: RecordFingerprintInput) => void;
   readonly recordUnjudged: (input: RecordUnjudgedInput) => void;
@@ -45,5 +45,5 @@ export type {
   RecordFingerprintInput,
   RecordUnjudgedInput,
   SaveStateInput,
-  SessionCommandRepository,
+  SessionRepository,
 };

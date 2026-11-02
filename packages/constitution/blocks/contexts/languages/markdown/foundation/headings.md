@@ -6,7 +6,7 @@
 
 ### document-has-one-title-heading · MUST
 
-A document read as a page has one first-level heading, its title, before any other heading; a file only a tool or an agent reads, or whose form a tool generates, needs none.
+A document read as a page has one first-level heading, its title. The title comes before any other heading; a file only a tool or an agent reads, or whose form a tool generates, needs none.
 
 | Why |
 |---|
@@ -14,7 +14,7 @@ A document read as a page has one first-level heading, its title, before any oth
 
 ### heading-level-never-skipped · MUST
 
-A heading is at most one level deeper than the heading before it: a `###` follows a `##` or any deeper heading, never a `#` — save in a file whose heading levels a tool or a schema fixes.
+A heading is at most one level deeper than the heading before it. A `###` follows a `##` or any deeper heading, never a `#`, save in a file whose heading levels a tool or a schema fixes.
 
 | Why |
 |---|
@@ -34,4 +34,4 @@ A line that titles a section is a heading, never a paragraph of bold or italic t
 
 | Why |
 |---|
-| emphasis has no level, so the section is missing from the outline, the table of contents and the anchors. |
+| emphasis has no level, so the section is missing from the outline, the table of contents and the anchors — WCAG 2.2, Info and Relationships. |

@@ -1,13 +1,13 @@
 # Document
 
-> Governs who renders the document's metadata and a third-party script.
+> Governs who inserts a third-party script into the document.
 
 ## General
 
-### third-party-script-rendered-as-element → third-party-script-declared-where-it-is-used · SHOULD
+### third-party-script-loaded-by-what-needs-it → third-party-script-declared-where-it-is-used · MUST
 
-A third-party script a component uses is rendered as `<script async src>` by that component; one a service behind a port needs is appended once to the body by the adapter that implements the port, and no other code inserts a script.
+A third-party script is declared by the component or the adapter that needs it. One a component uses is rendered as `<script async src>` by that component, and one a service behind a port needs is inserted by the adapter that implements the port alone.
 
 | Why |
 |---|
-| React dedupes and orders rendered scripts, and the script loads with the component that needs it; a service behind a port stays unknown to every component, so its adapter loads its script, and a script inserted elsewhere runs twice or too early. |
+| a script declared elsewhere loads where nothing needs it, or before what it needs; React dedupes and orders the scripts it renders, which load with the component that needs them, and a service behind a port stays unknown to every component, so its adapter loads its script. |

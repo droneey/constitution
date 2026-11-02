@@ -6,8 +6,8 @@
 
 ### yaml-configuration-names-its-schema → configuration-names-its-schema · SHOULD
 
-A configuration written in YAML names its reader's schema on its first line — `# yaml-language-server: $schema=<schema URL>`.
+A configuration written in YAML names its reader's schema on its first line. The line is `# yaml-language-server: $schema=<schema URL>`.
 
 | Why |
 |---|
-| the first line is where editors of YAML look for a schema. |
+| a schema named anywhere else is not found by YAML editors, so the file is checked and completed against nothing. |

@@ -5,4 +5,4 @@ core:
         tool:
           mutmut:
             do_not_mutate:
-              - '*/${role.composition-root}/wiring.py'
+              - '*/${role.composition-root}/*'

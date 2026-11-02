@@ -91,6 +91,8 @@ biome:
               useDefaultSwitchClauseLast: error
               useGoogleFontDisplay: error
               useIsArray: error
+        overrides.*.linter.rules.<group>.<rule>.options: !inherits >-
+          linter.rules.<group>.<rule>.options
         $schema: !default ./node_modules/@biomejs/biome/configuration_schema.json
     css:
       biome.jsonc:
@@ -233,16 +235,16 @@ biome:
         overrides:
           - includes:
               - '**/${role.colocated-specs}/**'
-              - '**/*.test.ts'
-              - '**/*.test.tsx'
+              - '**/*.${role.spec-file}.ts'
+              - '**/*.${role.spec-file}.tsx'
             linter:
               rules:
                 complexity:
                   noStaticOnlyClass: 'off'
           - includes:
               - '**/${role.colocated-specs}/**'
-              - '**/*.test.ts'
-              - '**/*.test.tsx'
+              - '**/*.${role.spec-file}.ts'
+              - '**/*.${role.spec-file}.tsx'
             linter:
               rules:
                 suspicious:
@@ -301,8 +303,8 @@ core:
         overrides:
           - includes:
               - '**/${role.colocated-specs}/**'
-              - '**/*.test.ts'
-              - '**/*.test.tsx'
+              - '**/*.${role.spec-file}.ts'
+              - '**/*.${role.spec-file}.tsx'
               - '**/${role.package-suites}/**'
             linter:
               rules:
@@ -372,16 +374,16 @@ core:
                   maxLines: 500
         overrides:
           - includes:
-              - '**/*.gen.*'
-              - '**/*.gen/**'
+              - '**/*.${role.generated-file}.*'
+              - '**/*.${role.generated-file}/**'
             linter:
               rules:
                 style:
                   noExcessiveLinesPerFile: 'off'
           - includes:
               - '**/${role.colocated-specs}/**'
-              - '**/*.test.ts'
-              - '**/*.test.tsx'
+              - '**/*.${role.spec-file}.ts'
+              - '**/*.${role.spec-file}.tsx'
               - '**/${role.package-suites}/**'
             linter:
               rules:
@@ -420,8 +422,8 @@ core:
         overrides:
           - includes:
               - '**/${role.colocated-specs}/**'
-              - '**/*.test.ts'
-              - '**/*.test.tsx'
+              - '**/*.${role.spec-file}.ts'
+              - '**/*.${role.spec-file}.tsx'
               - '**/${role.package-suites}/**'
             linter:
               rules:
@@ -443,16 +445,16 @@ core:
                   maxLines: 100
         overrides:
           - includes:
-              - '**/*.gen.*'
-              - '**/*.gen/**'
+              - '**/*.${role.generated-file}.*'
+              - '**/*.${role.generated-file}/**'
             linter:
               rules:
                 complexity:
                   noExcessiveLinesPerFunction: 'off'
           - includes:
               - '**/${role.colocated-specs}/**'
-              - '**/*.test.ts'
-              - '**/*.test.tsx'
+              - '**/*.${role.spec-file}.ts'
+              - '**/*.${role.spec-file}.tsx'
               - '**/${role.package-suites}/**'
             linter:
               rules:
@@ -503,30 +505,30 @@ core:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/case-named-should-when.${role.grit-rule}]:
           includes:
             - '**/${role.colocated-specs}/**'
-            - '**/*.test.ts'
-            - '**/*.test.tsx'
+            - '**/*.${role.spec-file}.ts'
+            - '**/*.${role.spec-file}.tsx'
   case-holds-no-logic:
     typescript:
       biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/case-holds-no-logic.${role.grit-rule}]:
           includes:
             - '**/${role.colocated-specs}/**'
-            - '**/*.test.ts'
-            - '**/*.test.tsx'
+            - '**/*.${role.spec-file}.ts'
+            - '**/*.${role.spec-file}.tsx'
   case-split-by-arrange-act-assert-comments:
     typescript:
       biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/case-split-by-arrange-act-assert-comments.${role.grit-rule}]:
           includes:
             - '**/${role.colocated-specs}/**'
-            - '**/*.test.ts'
-            - '**/*.test.tsx'
+            - '**/*.${role.spec-file}.ts'
+            - '**/*.${role.spec-file}.tsx'
   case-pins-meaning-never-wording:
     typescript:
       biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/case-pins-meaning-never-wording.${role.grit-rule}]:
           includes:
             - '**/${role.colocated-specs}/**'
-            - '**/*.test.ts'
-            - '**/*.test.tsx'
+            - '**/*.${role.spec-file}.ts'
+            - '**/*.${role.spec-file}.tsx'
             - '**/${role.package-suites}/**'

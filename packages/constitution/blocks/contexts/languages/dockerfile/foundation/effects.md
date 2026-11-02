@@ -6,7 +6,7 @@
 
 ### commands-in-exec-form → program-stops-cleanly · MUST
 
-`CMD` and `ENTRYPOINT` use the JSON exec form, `["node", "main.js"]`.
+`CMD` and `ENTRYPOINT` use the JSON exec form.
 
 | Why |
 |---|

@@ -6,8 +6,8 @@
 
 ### one-ky-instance-per-system → one-transport-instance-per-system · MUST
 
-One ky instance per remote system is built by the composition root from the configuration — prefix, credentials, headers — and passed to the adapters' factories; no adapter builds an instance or uses ky's default export.
+Each remote system has one ky instance, built by the composition root. The root builds it from the configuration — prefix, credentials, headers — and passes it to the adapters' factories; no adapter builds an instance or uses ky's default export.
 
 | Why |
 |---|
-| every adapter speaks to the system the same way, and a spec passes another instance. |
+| an adapter that builds its own instance speaks to the system with a prefix, credentials and headers of its own, which drift from the others', and a spec cannot pass another instance in its place. |

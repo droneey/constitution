@@ -1,20 +1,28 @@
 ```pseudo title="Avoid"
-function findOrder(id: OrderId): Order
-  let order = orders.get(id)
-  if order is nothing then
-    throw new HttpError(404)
-  return order
+# orders/application/use-cases/queries/get-order
+function createGetOrder({ orderQueries })
+  return function(input, context): Order
+    let order = orderQueries.find(input.orderId, context)
+
+    if order is nothing then
+      throw new HttpError(404)
+
+    return order
 ```
 
 ```pseudo title="Prefer"
-# order/errors/order-not-found.error
+# orders/domain/order/errors/order-not-found.error
 class OrderNotFoundError extends Error
   code = "order.not-found"
   orderId: OrderId
 
-function findOrder(id: OrderId): Order
-  let order = orders.get(id)
-  if order is nothing then
-    throw new OrderNotFoundError(id)
-  return order
+# orders/application/use-cases/queries/get-order
+function createGetOrder({ orderQueries })
+  return function(input, context): Order
+    let order = orderQueries.find(input.orderId, context)
+
+    if order is nothing then
+      throw new OrderNotFoundError(input.orderId)
+
+    return order
 ```

@@ -1,3 +1,3 @@
-export type { NavigationQueryRepository } from './navigation.repository';
-export type { PageBodiesQueryRepository } from './page-bodies.repository';
-export type { PagesQueryRepository } from './pages.repository';
+export type { NavigationQueries } from './navigation.repository';
+export type { PageBodyQueries } from './page-bodies.repository';
+export type { PageQueries } from './pages.repository';

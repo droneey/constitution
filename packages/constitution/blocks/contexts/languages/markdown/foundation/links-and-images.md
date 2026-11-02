@@ -6,7 +6,7 @@
 
 ### repository-link-is-a-path · SHOULD
 
-A link to a file of the same repository is a path, relative to the document or to the repository's root, never a full URL on the forge.
+A link to a file of the same repository is a path, never a full URL on the forge. The path is relative to the document or to the repository's root.
 
 | Why |
 |---|
@@ -22,7 +22,7 @@ A link to a file of the repository leads to a file that exists, and its fragment
 
 ### link-text-names-its-target · SHOULD
 
-A link's text says where it leads, never `here`, `this`, `link` or the bare address.
+A link's text says where it leads. It is never `here`, `this`, `link` or the bare address.
 
 | Why |
 |---|
@@ -34,4 +34,4 @@ An image carries alt text that says what it shows, or empty alt text where it on
 
 | Why |
 |---|
-| a reader who cannot see the image, or whose renderer cannot show it, reads the alt text in its place. |
+| an image without alt text is lost to a reader who cannot see it or whose renderer cannot show it, and a decorative one without empty alt text is read aloud by its file name — WCAG 2.2, Non-text Content. |

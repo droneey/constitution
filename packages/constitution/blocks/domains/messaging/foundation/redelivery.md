@@ -6,17 +6,17 @@
 
 ### failed-message-settled-by-its-failure → last-resort-handler-one-per-entry · MUST
 
-A consumer's handler of last resort settles every failed message by its failure: an expected failure of the domain — a refusal its rules make — is acknowledged as handled, its outcome recorded or published; one that can never succeed — it fails its parse, its type or version is unknown, or a defect broke its handling — goes to its dead letters at once; and a transient one, a message naming what has not arrived yet among them, is released for a later delivery.
+A failed message is settled by its failure, in the consumer's handler of last resort. An expected failure of the domain — a refusal its rules make — is acknowledged as handled, its outcome recorded or published; one that can never succeed — it fails its parse, its type or version is unknown, or a defect broke its handling — goes to its dead letters at once; and a transient one, a message naming what has not arrived yet among them, is released for a later delivery.
 
 | Why |
 |---|
-| a refusal is an outcome of the business and no fault to page anyone for, a poison message retried returns for ever and blocks those behind it, and across ordering keys a message often arrives before the one that creates what it names. |
+| a refusal dead-lettered pages someone for an outcome of the business, a poison message retried returns for ever and blocks those behind it, and across ordering keys a message often arrives before the one that creates what it names, so dead-lettering it loses work that would have succeeded. |
 
 ## Retries
 
 ### redelivery-delayed-and-limited → failure-retried-only-when-transient · MUST
 
-A message released after a transient failure waits before its next delivery — by a delay set on the broker or the consumer, never the broker's default of redelivering at once — and past a number of attempts the project sets it goes to its dead letters.
+A released message is redelivered after a delay, a limited number of times. After a transient failure it waits a growing, randomly spread delay before its next delivery, set on the broker or the consumer, never the broker's default of redelivering at once, and past a number of attempts the project sets it goes to its dead letters.
 
 | Why |
 |---|
@@ -26,7 +26,7 @@ A message released after a transient failure waits before its next delivery — 
 
 ### dead-letter-keeps-the-message-and-its-cause · MUST
 
-A dead-lettered message keeps its body, its headers, its count of attempts and the code and cause of its last failure, and goes back to its queue only by a command run once the fault is fixed.
+A dead letter keeps the message and the cause of its failure, and returns to its queue only by a command. It keeps the message's body, its headers and its count of attempts, and the code and cause of its last failure, and the command that sends it back is run once the fault is fixed.
 
 | Why |
 |---|
@@ -34,17 +34,17 @@ A dead-lettered message keeps its body, its headers, its count of attempts and t
 
 ### key-held-while-its-message-is-dead-lettered · SHOULD
 
-A consumer for which the order of a key's messages matters holds the later messages of a key while one of its messages is dead-lettered, or states why a gap in that key is safe.
+A key's later messages are held while one of its messages is dead-lettered. A consumer for which the order of a key's messages matters holds them, or states why a gap in that key is safe.
 
 | Why |
 |---|
 | a later change applied on top of one that never landed leaves the object in a state no sequence of its changes produces. |
 
-## Delivery
+## Specs
 
 ### redelivery-and-reordering-have-cases → edge-cases-chosen-by-risk · SHOULD
 
-A consumer has a case that delivers one message twice and checks that its effect happened once, and, where order matters, a case that delivers two messages of one key out of order.
+A consumer's specs redeliver and reorder its messages. It has a case that delivers one message twice and checks that its effect happened once, and, where order matters, a case that delivers two messages of one key out of order.
 
 | Why |
 |---|

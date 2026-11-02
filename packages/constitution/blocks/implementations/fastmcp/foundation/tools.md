@@ -6,24 +6,24 @@
 
 ### tool-described-by-its-docstring → tool-described-for-the-model · MUST
 
-Every tool has a docstring that says what it does and when to call it, and every parameter a description, given as `Annotated[..., Field(description=...)]`.
+Every tool is described by its docstring, and every parameter by its `Field` description. The docstring says what the tool does and when to call it, and a parameter's description is given as `Annotated[..., Field(description=...)]`.
 
 | Why |
 |---|
-| FastMCP sends a tool's docstring as its description and a parameter's `Field` description in its input schema. |
+| FastMCP sends a tool's docstring as its description and a parameter's `Field` description in its input schema, so a tool without them reaches the language model as a name whose use it must guess. |
 
 ### tool-arguments-bounded-by-their-annotations → tool-input-schema-closed · MUST
 
-A tool's parameters are typed as narrowly as the business allows — a `Literal`, `Annotated[int, Field(ge=1, le=100)]`, a model with `extra='forbid'` — so the server refuses a wrong argument before the tool runs.
+A tool's parameters carry in their types every bound its input has — a set of values, a range, a closed shape —, so the server refuses a wrong argument before the tool runs. The type may be a `Literal`, `Annotated[int, Field(ge=1, le=100)]` or a pydantic model with `extra='forbid'`.
 
 | Why |
 |---|
-| a model fills arguments by guessing; a bound in the annotation is checked at the edge, while one in the body is code each tool repeats. |
+| a language model fills arguments by guessing, so a bound left to the body lets a wrong argument run into the tool and is code each tool repeats, while one in the annotation is checked at the edge — parse, don't validate. |
 
 ### specs-through-the-in-memory-client → server-spec-runs-in-process · MUST
 
-A spec calls a tool through `fastmcp.Client(server)`, the in-memory transport, on a server built with fakes, and opens the client with `async with` inside the case.
+A spec calls a tool through the in-memory client. It is `fastmcp.Client(server)` on a server built with fakes, opened with `async with` inside the case.
 
 | Why |
 |---|
-| the in-memory transport connects the client to the server object itself, and the session ends with the case. |
+| a spec that calls the tool's function directly skips the schema, the middleware and the answer the language model receives, and a session opened outside the case outlives it; the in-memory transport connects the client to the server object itself. |

@@ -24,9 +24,7 @@ nestjs:
       biome.jsonc:
         overrides[slot=decorated-constructors]:
           includes@decorated-constructors:
-            - '**/*.${role.gateway-file}.ts'
-            - '**/*.${role.data-port-file}.ts'
+            - '**/*.${role.adapter-file}.ts'
         overrides[slot=injected-classes]:
           includes@injected-classes:
-            - '**/*.${role.gateway-file}.ts'
-            - '**/*.${role.data-port-file}.ts'
+            - '**/*.${role.adapter-file}.ts'

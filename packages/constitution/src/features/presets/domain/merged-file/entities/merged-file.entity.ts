@@ -29,11 +29,12 @@ interface PlacedValue extends Placed {
 
 const placers: Readonly<
   Record<
-    ValueKind.Default | ValueKind.Plain | ValueKind.Replace,
+    ValueKind.Default | ValueKind.Inherit | ValueKind.Plain | ValueKind.Replace,
     (state: MergeState, placed: PlacedSetting) => MergeState
   >
 > = {
   [ValueKind.Default]: MergeState.defaulted,
+  [ValueKind.Inherit]: MergeState.inheritanceDeclared,
   [ValueKind.Plain]: MergeState.settingPlaced,
   [ValueKind.Replace]: MergeState.replaced,
 };
@@ -139,7 +140,9 @@ const merge = (contributions: readonly Contribution[]): MergedFile => {
       }),
     MergeState.unmerged,
   );
-  const merged = MergeState.withInserts(MergeState.withReplacers(placed));
+  const merged = MergeState.withInheritances(
+    MergeState.withInserts(MergeState.withReplacers(placed)),
+  );
   const { clashes, defaults, problems, sorted, unitedWholeDefault, value: written } = merged;
   const wholeDefault = WholeDefault.of(unitedWholeDefault);
 

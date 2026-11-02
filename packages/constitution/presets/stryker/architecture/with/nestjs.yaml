@@ -1,6 +1,0 @@
-core:
-  spec-boundaries-follow-the-tree:
-    typescript:
-      stryker.config.json:
-        mutate:
-          - '!${role.source}/${role.composition-root}/root.${role.nest-module}'

@@ -1,19 +1,21 @@
 ```pseudo title="Avoid"
-type InvoiceStore = {
-  get(id), save(invoice)
+type InvoiceRepository = {
+  find(id), save(invoice)
 }
 
-# archive.ts implements InvoiceStore
-function get(id)
-  return archiveFiles.find(id)
+# archive.ts implements InvoiceRepository
+function find(id)
+  return restore(archiveFiles.find(id))
+
 function save(invoice)
-  throw NotSupported
+  throw new NotSupportedError()
 ```
 
 ```pseudo title="Prefer"
-type InvoiceReader = { get(id) }
+# the archive only answers reads, so it implements the queries port
+type InvoiceQueries = { find(id): Invoice }
 
-# archive.ts implements InvoiceReader
-function get(id)
-  return archiveFiles.find(id)
+# archive.ts implements InvoiceQueries
+function find(id)
+  return restore(archiveFiles.find(id))
 ```

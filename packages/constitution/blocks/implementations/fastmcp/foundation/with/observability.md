@@ -6,7 +6,7 @@
 
 ### fastmcp-records-join-the-pipeline → log-record-passes-one-pipeline · MUST
 
-The program runs with `FASTMCP_LOG_ENABLED=false`, or its logging configuration removes the handlers fastmcp gives its `fastmcp` logger at import and lets the logger propagate, so fastmcp's records pass the one pipeline.
+fastmcp's records pass the one pipeline. The program runs with `FASTMCP_LOG_ENABLED=false`, or its logging configuration removes the handlers fastmcp gives its `fastmcp` logger at import and lets the logger propagate.
 
 | Why |
 |---|

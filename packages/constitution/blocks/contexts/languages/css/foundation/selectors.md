@@ -18,7 +18,7 @@ A selector holds no more classes than the limit the project sets.
 
 | Why |
 |---|
-| each class added to a selector ties the style to one more fact of the markup and raises the specificity the next rule has to beat. |
+| a selector of many classes stops matching when any one of the markup facts it ties to changes, and its specificity is one every later rule for the element must beat. |
 
 ### nested-rule-within-the-depth-limit · SHOULD
 
@@ -38,8 +38,8 @@ A selector never names an `id`.
 
 ### default-style-has-zero-specificity · SHOULD
 
-A default meant to be overridden — the reset's, the base layer's, a library's — wraps its selectors in `:where()`.
+A default meant to be overridden has zero specificity. The reset's, the base layer's or a library's default wraps its selectors in `:where()`.
 
 | Why |
 |---|
-| a default of zero specificity yields to any rule that styles the element, so an override never has to outweigh it, inside its layer or, for a library, in a stylesheet without layers. |
+| a default with a specificity of its own must be outweighed by every rule that overrides it, so overrides grow their selectors or reach for `!important`, inside its layer or, for a library, in a stylesheet without layers. |

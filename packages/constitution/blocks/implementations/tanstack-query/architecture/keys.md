@@ -4,10 +4,10 @@
 
 ## General
 
-### read-declared-once-as-query-options → cache-key-built-by-its-features-factory · MUST
+### read-declared-once-as-query-options → cache-key-built-by-its-owners-factory · MUST
 
-Each feature's key factory, and each composition module's, lives in `presentation/bindings/shared/cache.ts`, beside the binding units that use it, and each read is declared there once as `queryOptions`, taking its use case as input; the hook, the loader and the guard all use it. A `queryFn` is written only there, inside the read's `queryOptions`.
+Each read is declared once, as `queryOptions`, beside its key factory. Each feature's key factory, and each composition module's, lives in `presentation/bindings/shared/cache.ts`, beside the binding units that use it; a read's `queryOptions` there take its use case as input, and the hook, the loader and the guard all use them. A `queryFn` is written only there, inside the read's `queryOptions`.
 
 | Why |
 |---|
-| every binding unit takes its keys from one known module, so a read and the invalidation that refreshes it build the same key, and one declaration keeps the key, the function and the options of a read the same wherever it runs. |
+| a key built in two places drifts, so an invalidation misses the read it should refresh, and a read declared twice runs with different options in the hook and in the loader — a single source of truth. |

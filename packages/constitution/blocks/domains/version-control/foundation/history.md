@@ -14,7 +14,7 @@ History others have fetched is never rewritten or deleted, the main line's least
 
 ### secret-in-history-counts-as-leaked → leaked-secret-rotated-at-once · MUST
 
-A secret that reached any commit has leaked, even when a later commit removed it, and is rotated; rewriting the history does not undo the leak.
+A secret that reached any commit has leaked. It has leaked even when a later commit removed it, it is rotated, and rewriting the history does not undo the leak.
 
 | Why |
 |---|
@@ -22,7 +22,7 @@ A secret that reached any commit has leaked, even when a later commit removed it
 
 ### release-marked-by-immutable-tag · MUST
 
-A release is marked by a tag of its version on the commit it was built from, and the tag is never moved, deleted or reused.
+A release is marked by an immutable tag. The tag names its version, sits on the commit the release was built from, and is never moved, deleted or reused.
 
 | Why |
 |---|
@@ -34,4 +34,4 @@ A release tag is signed by its release's identity.
 
 | Why |
 |---|
-| a signed tag proves which identity released the code, and an attacker who can push a tag cannot forge the signature. |
+| an unsigned tag proves nothing of who released the code, so an attacker who can push a tag passes off their code as a release. |

@@ -1,12 +1,12 @@
 remote-service:
-  transport-library-home-is-the-infrastructure:
+  transport-library-imported-by-its-client-and-mapper:
     python:
       pyproject.toml:
         tool:
           python-check:
             homes:
               httpx2:
-                - ${role.gateway}
+                - ${role.adapter}
                 - ${role.generic-library}
                 - ${role.shared-code}
                 - ${role.composition-root}

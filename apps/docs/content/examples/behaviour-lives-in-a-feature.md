@@ -9,6 +9,5 @@ src/
 src/
 └── features/orders/
     └── application/use-cases/commands/
-        └── refund-order/
-            └── refund-order.use-case.ts
+        └── refund-order.use-case.ts
 ```

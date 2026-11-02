@@ -1,11 +1,11 @@
 ```pseudo title="Avoid"
-let data = getCustomer(customerId)
-let result = calculateTax(invoice)
-let info = getAddress(data)
+let data = findCustomer(customerId)
+let result = Invoice.tax(invoice)
+let info = Customer.address(data)
 ```
 
 ```pseudo title="Prefer"
-let customer = getCustomer(customerId)
-let tax = calculateTax(invoice)
-let address = getAddress(customer)
+let customer = findCustomer(customerId)
+let tax = Invoice.tax(invoice)
+let address = Customer.address(customer)
 ```

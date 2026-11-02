@@ -16,7 +16,7 @@ A deprecated entry names its replacement and the version that removes it.
 
 ### release-carries-its-notes · MUST
 
-Every release carries notes: what changed, each breaking change with its migration, and every vulnerability it fixes by its identifier.
+Every release carries notes. They say what changed, each breaking change with its migration, and every vulnerability the release fixes by its identifier.
 
 | Why |
 |---|
@@ -26,8 +26,8 @@ Every release carries notes: what changed, each breaking change with its migrati
 
 ### release-ships-an-sbom · SHOULD
 
-Every release ships a software bill of materials, in SPDX or CycloneDX, listing what the unit contains.
+Every release ships a software bill of materials. It is written in SPDX or CycloneDX and lists what the unit contains.
 
 | Why |
 |---|
-| a user learns from it whether a newly published vulnerability reaches them, and the EU's Cyber Resilience Act asks the maker to keep one with the technical documentation. |
+| without it a user cannot tell whether a newly published vulnerability reaches them, and the EU's Cyber Resilience Act asks the maker to keep one with the technical documentation. |

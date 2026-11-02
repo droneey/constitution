@@ -11,7 +11,7 @@ dockerfile:
     dockerfile:
       .hadolint.yaml:
         failure-threshold: style
-  shell-steps-fail-on-any-error:
+  piped-run-fails-on-any-failed-command:
     dockerfile:
       .hadolint.yaml:
         failure-threshold: style

@@ -10,51 +10,51 @@ A Compose file's top-level keys, and a service's keys, follow the one order the 
 
 | Why |
 |---|
-| a service read in one order everywhere is compared at a glance, and a diff shows a moved key as a move. |
+| keys in each file's own order make two services hard to compare, and a diff shows a moved key as one removed and one added. |
 
-### compose-without-version-field · MUST
+### compose-without-version-field → deprecated-form-never-used · MUST
 
 A Compose file has no `version` field.
 
 | Why |
 |---|
-| Compose ignores it and warns; it only suggests a schema version that no longer exists. |
+| Compose ignores the field and warns on every run, and a reader takes it for a schema version that no longer exists. |
 
 ### repeated-settings-in-extension-fields · SHOULD
 
-Settings several services share — environment, logging, health checks, security options — are written once, as an `x-*` extension with an anchor.
+Settings several services share are written once, as an `x-*` extension with an anchor. Such settings include the environment, logging, health checks and security options.
 
 | Why |
 |---|
-| a setting written once changes once; its copies drift apart one service at a time; Compose's reader defines the merge key `<<` that takes them into a service. |
+| copies of a setting drift apart one service at a time, as each is changed alone; Compose's reader defines the merge key `<<` that takes the extension into a service — a single source of truth. |
 
 ## Images
 
 ### service-image-pinned-by-version-and-digest → download-pinned-by-version-and-checksum · MUST
 
-A service's `image` names the most specific version the image is published under — `major.minor.patch` where it has one — and its digest, `image:x.y.z@sha256:<digest>`; never `latest`, never a floating major or minor, never a tag alone and never a digest alone.
+A service's `image` is written `image:x.y.z@sha256:<digest>`. The version is `major.minor.patch` where the image has one, never `latest` or a floating major or minor.
 
 | Why |
 |---|
-| any tag, a patch's included, can be pushed again under the same name, so only the digest fixes what a service runs; the version beside it tells a reader and an updater which release the digest is. |
+| a service whose image a tag names runs whatever the tag points at when its host pulls it, so two hosts of one deployment run different code. |
 
 ## Security
 
 ### published-address-bound-to-its-interface · MUST
 
-Every mapping under `ports` names the host interface it listens on: `'127.0.0.1:5432:5432'`.
+Every mapping under `ports` names the host's network interface it listens on.
 
 | Why |
 |---|
-| a mapping without an interface listens on every interface of the host, reachable from its network. |
+| a mapping without a network interface listens on every network interface of the host, reachable from its network. |
 
-### services-drop-privileges · SHOULD
+### services-drop-privileges → process-runs-with-only-the-rights-its-job-needs · MUST
 
-A service's `security_opt` includes `no-new-privileges:true`, it sets `cap_drop: [ALL]`, adds back with `cap_add` only the capabilities it needs, and runs on a read-only file system, `read_only: true`, writing only to its volumes and `tmpfs`.
+A service drops every privilege it does not need. Its `security_opt` includes `no-new-privileges:true`, it sets `cap_drop: [ALL]` and adds back with `cap_add` only the capabilities it needs, and it runs on a read-only file system, `read_only: true`, writing only to its volumes and `tmpfs`.
 
 | Why |
 |---|
-| a process broken into inside the container then cannot gain rights, reach the kernel's privileged calls or rewrite its own code. |
+| a process broken into inside a container that keeps its privileges can gain rights, reach the kernel's privileged calls and rewrite its own code — least privilege. |
 
 ## Running
 
@@ -66,7 +66,7 @@ A service that depends on another waits for `condition: service_healthy`, and th
 |---|
 | a started container is not a ready one; a service that starts before its database is ready fails its first requests. |
 
-### test-services-never-restart · SHOULD
+### test-services-never-restart → flaky-test-fixed-never-retried · SHOULD
 
 A service that runs tests or a job in CI sets `restart: 'no'`.
 

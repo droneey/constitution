@@ -1,14 +1,20 @@
 ```pseudo title="Avoid"
-function addItem(cartId, item)
-  let cart = await carts.get(cartId)
-  let next = cart.with(item)
-  await carts.save(next)
+# carts/application/use-cases/commands/add-item
+function createAddItem({ cartRepository })
+  return function(input, context)
+    let cart = await cartRepository.find(input.cartId, context)
+    let next = addLine(cart, input.line)
+
+    await cartRepository.save(next, context)
 ```
 
 ```pseudo title="Prefer"
-function addItem(cartId, item)
-  let cart = await carts.get(cartId)
-  let next = cart.with(item)
-  await carts.saveIfUnchanged(
-    next, cart.version)
+# carts/application/use-cases/commands/add-item
+function createAddItem({ cartRepository })
+  return function(input, context)
+    let cart = await cartRepository.find(input.cartId, context)
+    let next = addLine(cart, input.line)
+
+    # Why: the repository refuses the save when the stored version moved
+    await cartRepository.save(next, { expectedVersion: cart.version }, context)
 ```

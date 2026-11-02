@@ -2,18 +2,18 @@ import { PROJECT } from '#/__tests__/project-place.fixtures';
 import { AbsolutePath } from '#/kernel/value-objects';
 
 import { LockReadStatus } from '../domain/lock/entities';
-import { createFakeLockRepository } from './lock-repository.fake';
-import { runLockRepositorySuite } from './lock-repository.suite';
+import { createFakeLockQueries } from './lock-repository.fake';
+import { runLockQueriesSuite } from './lock-repository.suite';
 
 const projectFolderPath = AbsolutePath.create(PROJECT);
 
 const folderOf = (unitPath: string): AbsolutePath => AbsolutePath.join(projectFolderPath, unitPath);
 
-runLockRepositorySuite({
-  name: 'createFakeLockRepository',
+runLockQueriesSuite({
+  name: 'createFakeLockQueries',
   repositoryOf: (world) => ({
     folderOf,
-    repository: createFakeLockRepository(
+    lockQueries: createFakeLockQueries(
       Object.fromEntries([
         ...Object.entries(world.locks).map(([unitPath, lock]) => [
           folderOf(unitPath),

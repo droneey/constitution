@@ -1,15 +1,18 @@
 ```pseudo title="Avoid"
-# orders/presentation/show-order
-function showOrder(request)
-  return orderQueries.find(request.id)
+# orders/presentation/bindings/queries/show-order
+function showOrder(request, orderQueries)
+  return orderQueries.find(request.params.orderId)
 ```
 
 ```pseudo title="Prefer"
-# orders/application/use-cases/get-order
-function getOrder(orderId)
-  return orderQueries.find(orderId)
+# orders/application/use-cases/queries/get-order
+function createGetOrder({ orderQueries })
+  return function(input, context)
+    return orderQueries.find(input.orderId, context)
 
-# orders/presentation/show-order
-function showOrder(request)
-  return getOrder(request.id)
+# orders/presentation/bindings/queries/show-order
+function showOrder(request, getOrder, context)
+  let input = parseGetOrderInput(request.params)
+
+  return ok(getOrder(input, context))
 ```

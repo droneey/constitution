@@ -6,8 +6,8 @@
 
 ### decorator-is-a-standard-decorator · SHOULD
 
-A decorator is a standard ECMAScript decorator; the legacy form behind `experimentalDecorators` appears only where a framework's block requires it.
+A decorator takes the form of the TC39 decorators proposal, which TypeScript implements without `experimentalDecorators`. The legacy form behind `experimentalDecorators` appears only where a framework's block requires it.
 
 | Why |
 |---|
-| the standard form is the one the language keeps and every compiler runs alike, while the legacy form receives other arguments and runs at another time. |
+| the legacy form receives other arguments and runs at another time than the standard one, so a decorator written for one misbehaves under the other, and the legacy form follows an earlier draft the committee replaced — the TC39 decorators proposal. |

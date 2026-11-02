@@ -9,8 +9,13 @@ import { LIST_SEPARATOR } from '#/shared/cli';
 
 import { EntryPoint } from '../../domain/run-plan/entities';
 import { MAX_WITHS } from '../../domain/shared/constants';
-import type { EntryNamed, PresetsDetails, UnreachedRole } from '../../domain/shared/entities';
-import { PresetsCode } from '../../domain/shared/entities';
+import type {
+  EntryNamed,
+  PlacedFlaw,
+  PresetsDetails,
+  UnreachedRole,
+} from '../../domain/shared/entities';
+import { InheritanceFlaw, PathSide, PresetsCode } from '../../domain/shared/entities';
 import { Fact, FactName, PresetFilePath } from '../../domain/shared/value-objects';
 
 // Why: a messages file holds no branch, so the table of texts chooses among the messages below for
@@ -66,6 +71,22 @@ const entryOf = ({ block, rule }: EntryNamed): string => `${block}${KEY_SEPARATO
 
 const namesOf = (names: readonly string[]): string => names.join(' and ');
 
+const sideTexts: Readonly<Record<PathSide, string>> = {
+  [PathSide.Inheriting]: 'the inheriting path',
+  [PathSide.Source]: 'the inherited path',
+};
+
+const flawTexts: Readonly<Record<InheritanceFlaw, string>> = {
+  [InheritanceFlaw.EmptyStep]: 'is empty',
+  [InheritanceFlaw.NameBoundTwice]: 'binds a name an earlier step binds',
+  [InheritanceFlaw.AnyChildInSource]: 'is *, which names no one value to inherit',
+  [InheritanceFlaw.UnboundName]: 'reads a name the inheriting path does not bind',
+  [InheritanceFlaw.SourceNotText]: 'is no text',
+};
+
+const flawText = ({ flaw, side, step }: PlacedFlaw): string =>
+  `step ${String(step + 1)} of ${sideTexts[side]} ${flawTexts[flaw]}`;
+
 const presetsFindingMessages: Omit<TextsOf<PresetsDetails>, VariedCode> = {
   [PresetsCode.PresetFileMisplaced]: () => `is not a preset file: ${presetFilePlaces}`,
   [PresetsCode.UnknownReader]: ({ reader }) => `is the preset file of ${reader}, which is no block`,
@@ -102,6 +123,8 @@ const presetsFindingMessages: Omit<TextsOf<PresetsDetails>, VariedCode> = {
     `gets an insert into the slot ${slot} of ${settingPath}, which is no list`,
   [PresetsCode.SlotPlacedTwice]: ({ settingPath, slot }) =>
     `gets an insert into the item of ${settingPath} that places the slot ${slot}, which two items place`,
+  [PresetsCode.InheritanceMalformed]: ({ flaws, settingPath }) =>
+    `declares at ${settingPath} an inheritance it cannot follow: ${flaws.map(flawText).join('; ')}`,
   [PresetsCode.MissingName]: () =>
     `gives no name, which an entry it takes writes as ${packageNameFact}; add name`,
   [PresetsCode.MissingConstitution]: () =>

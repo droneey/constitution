@@ -6,16 +6,16 @@
 
 ### feature-owns-its-stored-records · MUST
 
-A feature's stored records — its tables, collections, keys — are read and written only by the adapters of its own repositories; another feature reaches them only through the owner's operations, composed in composition, never by a query, a join or a view over them.
+A feature owns its stored records. Its tables, collections and keys are read and written only by its own adapters — those of its repositories and queries ports, the relay that hands on the events saved with its changes, the workers of a queue it keeps in its store, and the writer of a projection it keeps —, and another feature reaches them only through the owner's operations, composed in composition, never by a query, a join or a view over them. A projection's writer is the adapter of a port of the feature's read side, which a reaction to the write side's events calls.
 
 | Why |
 |---|
 | a query over another feature's records couples the two through the store, where no import rule sees it, and the owner can no longer change its schema alone. |
 
-### feature-records-in-a-namespace-of-their-own · SHOULD
+### feature-records-in-a-namespace-of-their-own · MUST
 
-Each feature's records live in a schema or namespace of their own, reached, where the store grants access by namespace, by a role granted that namespace alone.
+Each feature's records live in a schema or namespace of their own. Where the store grants access by namespace, they are reached by a role granted that namespace alone.
 
 | Why |
 |---|
-| the store then refuses what the rule forbids, and a reader sees from the name which feature owns a record. |
+| records that share a namespace with another feature's are open to that feature's role, so a query across features goes through unrefused, and a reader cannot tell from a record's name which feature owns it — least privilege. |

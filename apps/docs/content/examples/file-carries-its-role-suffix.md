@@ -5,7 +5,7 @@ orders/
 ├── domain/order/errors/
 │   └── order-already-paid.ts
 └── application/contracts/
-    └── payment-gateway.ts
+    └── payment.ts
 ```
 
 ```text title="Prefer"
@@ -15,5 +15,5 @@ orders/
 ├── domain/order/errors/
 │   └── order-already-paid.error.ts
 └── application/contracts/
-    └── payment-gateway.port.ts
+    └── payment.port.ts
 ```

@@ -1,0 +1,9 @@
+core:
+  spec-boundaries-follow-the-tree:
+    python:
+      pyproject.toml:
+        tool:
+          coverage:
+            run:
+              omit:
+                - '**/${role.composition-root}/**'

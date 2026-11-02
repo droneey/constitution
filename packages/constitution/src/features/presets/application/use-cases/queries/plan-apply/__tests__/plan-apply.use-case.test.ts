@@ -5,7 +5,7 @@ import { AbsolutePath, BlockId, RepositoryRelativePath, UnitPath } from '#/kerne
 
 import { createFakeConfigurationFormat } from '../../../../../__tests__/configuration-format.fake';
 import { createFakeDistributionSources } from '../../../../../__tests__/distribution-sources.fake';
-import { createFakeLockRepository } from '../../../../../__tests__/lock-repository.fake';
+import { createFakeLockQueries } from '../../../../../__tests__/lock-repository.fake';
 import type { Files } from '../../../../../__tests__/presets.fixtures';
 import {
   answerOf,
@@ -91,7 +91,7 @@ const planOf = (step: Step): ApplyPlan => {
       distribution: createFakeDistributionSources(),
       files,
       formats: step.formats ?? format,
-      locks: createFakeLockRepository(step.locks),
+      lockQueries: createFakeLockQueries(step.locks),
       parser: presetFileParser,
       reader,
       startFolderPath: AbsolutePath.create(PROJECT),
@@ -225,7 +225,7 @@ describe('planApply', () => {
         distribution: createFakeDistributionSources(),
         files,
         formats: createFakeConfigurationFormat(),
-        locks: createFakeLockRepository(),
+        lockQueries: createFakeLockQueries(),
         parser: presetFileParser,
         reader,
         startFolderPath: AbsolutePath.create(PROJECT),
@@ -256,7 +256,7 @@ describe('planApply', () => {
       distribution: createFakeDistributionSources(),
       files,
       formats: createFakeConfigurationFormat(),
-      locks: createFakeLockRepository(),
+      lockQueries: createFakeLockQueries(),
       parser: presetFileParser,
       reader,
       startFolderPath: AbsolutePath.create('/work/elsewhere'),
@@ -487,7 +487,7 @@ describe('planApply', () => {
       distribution: createFakeDistributionSources(),
       files,
       formats: watched,
-      locks: createFakeLockRepository(readOf(first.locks)),
+      lockQueries: createFakeLockQueries(readOf(first.locks)),
       parser: presetFileParser,
       reader,
       startFolderPath: AbsolutePath.create(PROJECT),

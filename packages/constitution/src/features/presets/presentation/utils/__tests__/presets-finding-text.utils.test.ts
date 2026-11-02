@@ -5,7 +5,7 @@ import { Axis } from '#/kernel/constants';
 import { BlockId } from '#/kernel/value-objects';
 
 import type { PresetsFinding } from '../../../domain/shared/entities';
-import { PresetsCode } from '../../../domain/shared/entities';
+import { InheritanceFlaw, PathSide, PresetsCode } from '../../../domain/shared/entities';
 import {
   ALL_SETTINGS,
   AT_TOP,
@@ -252,6 +252,40 @@ const findingOfEachCode: {
     details: {
       settingPath: 'overrides',
       slot: 'injected-classes',
+    },
+    path: 'biome.jsonc',
+  },
+  [PresetsCode.InheritanceMalformed]: {
+    code: PresetsCode.InheritanceMalformed,
+    details: {
+      flaws: [
+        {
+          flaw: InheritanceFlaw.EmptyStep,
+          side: PathSide.Inheriting,
+          step: 1,
+        },
+        {
+          flaw: InheritanceFlaw.NameBoundTwice,
+          side: PathSide.Inheriting,
+          step: 3,
+        },
+        {
+          flaw: InheritanceFlaw.AnyChildInSource,
+          side: PathSide.Source,
+          step: 0,
+        },
+        {
+          flaw: InheritanceFlaw.UnboundName,
+          side: PathSide.Source,
+          step: 2,
+        },
+        {
+          flaw: InheritanceFlaw.SourceNotText,
+          side: PathSide.Source,
+          step: 0,
+        },
+      ],
+      settingPath: 'overrides..<rule>.<rule>',
     },
     path: 'biome.jsonc',
   },

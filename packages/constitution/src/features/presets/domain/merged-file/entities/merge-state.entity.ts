@@ -2,6 +2,7 @@ import type { PresetPair, PresetValue } from '../../setting/entities';
 import { Setting, PresetValue as Value } from '../../setting/entities';
 import type { MergeProblem } from '../../shared/entities';
 import { PresetsCode } from '../../shared/entities';
+import { Inheritance } from './inheritance.entity';
 import { Insert } from './insert.entity';
 
 interface Replacer {
@@ -19,6 +20,7 @@ interface MergeState {
     readonly keyPath: readonly string[];
     readonly value: Setting;
   }[];
+  readonly inheritances: readonly Inheritance[];
   readonly inserts: ReadonlyMap<string, Insert>;
   readonly keptEmptyMaps: ReadonlySet<string>;
   readonly owners: ReadonlyMap<string, string>;
@@ -46,6 +48,7 @@ interface PlacedMap extends Placed {
 const unmerged: MergeState = {
   clashes: new Map(),
   defaults: [],
+  inheritances: [],
   inserts: new Map(),
   keptEmptyMaps: new Set(),
   owners: new Map(),
@@ -150,14 +153,6 @@ const replaced = (state: MergeState, placed: PlacedSetting): MergeState => {
       });
 };
 
-const withItemsNotYetHeld = (
-  current: readonly Setting[],
-  items: readonly Setting[],
-): readonly Setting[] => [
-  ...current,
-  ...items.filter((listed) => !current.some((known) => Setting.same(known, listed))),
-];
-
 const wholeDefaultsUnited = (state: MergeState, placed: PlacedSetting): MergeState => {
   const { unitedWholeDefault } = state;
   const { setting } = placed;
@@ -172,7 +167,7 @@ const wholeDefaultsUnited = (state: MergeState, placed: PlacedSetting): MergeSta
   if (Setting.isList(unitedWholeDefault) && Setting.isList(setting)) {
     return {
       ...state,
-      unitedWholeDefault: withItemsNotYetHeld(unitedWholeDefault, setting),
+      unitedWholeDefault: Setting.withItemsNotYetHeld(unitedWholeDefault, setting),
     };
   }
 
@@ -210,6 +205,23 @@ const defaulted = (state: MergeState, placed: PlacedSetting): MergeState => {
             keyPath,
             value: setting,
           },
+        ],
+      };
+};
+
+const inheritanceDeclared = (state: MergeState, placed: PlacedSetting): MergeState => {
+  const parsed = Inheritance.parse({
+    keyPath: placed.keyPath,
+    source: placed.setting,
+  });
+
+  return 'problem' in parsed
+    ? withProblem(state, parsed.problem)
+    : {
+        ...state,
+        inheritances: [
+          ...state.inheritances,
+          parsed.inheritance,
         ],
       };
 };
@@ -265,7 +277,7 @@ const settingPlaced = (state: MergeState, placed: PlacedSetting): MergeState => 
 
   if (Setting.isList(setting) && Setting.isList(current)) {
     return placedAt(state, {
-      held: withItemsNotYetHeld(current, setting),
+      held: Setting.withItemsNotYetHeld(current, setting),
       keyPath: placed.keyPath,
     });
   }
@@ -348,17 +360,34 @@ const withInsert = (state: MergeState, insert: Insert): MergeState => {
 const withInserts = (state: MergeState): MergeState =>
   state.inserts.values().reduce(withInsert, state);
 
+const withInheritances = (state: MergeState): MergeState => {
+  const { inheritances, value: written } = state;
+
+  // Stryker disable next-line ConditionalExpression: a state that holds no value opened no map, so it declares no inheritance and passes unchanged either way
+  return written === undefined
+    ? state
+    : {
+        ...state,
+        value: inheritances.reduce(
+          (held, inheritance) => Inheritance.inheritedIn(inheritance, held),
+          written,
+        ),
+      };
+};
+
 const isKeptEmpty = (state: MergeState, keyPath: readonly string[]): boolean =>
   state.keptEmptyMaps.has(keyOf(keyPath));
 
 const MergeState = {
   defaulted,
+  inheritanceDeclared,
   inserted,
   isKeptEmpty,
   mapOpened,
   replaced,
   settingPlaced,
   unmerged,
+  withInheritances,
   withInserts,
   withReplacers,
 } as const;

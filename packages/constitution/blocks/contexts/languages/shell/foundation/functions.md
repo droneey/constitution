@@ -6,8 +6,8 @@
 
 ### script-logic-in-a-main-function · SHOULD
 
-A script that defines functions runs its logic in a function `main`, called on its last line as `main "$@"`.
+A script that defines functions runs its logic in a function `main`. It calls it on its last line as `main "$@"`.
 
 | Why |
 |---|
-| the shell then reads the whole file before it runs a line, so a script cut short in transfer or edited while it runs never executes half of itself. |
+| a shell runs a script as it reads it, so one cut short in transfer or edited while it runs executes half of itself; called on the last line, `main` runs only once the whole file is read. |

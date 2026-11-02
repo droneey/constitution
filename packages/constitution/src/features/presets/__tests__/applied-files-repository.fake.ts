@@ -1,16 +1,16 @@
-import type { AppliedFilesCommandRepository } from '../application/contracts/repositories/commands';
+import type { AppliedFilesRepository } from '../application/contracts/repositories/commands';
 import type { AppliedFiles } from '../domain/apply-plan/entities';
 
 const createFakeAppliedFilesRepository = (
   failure?: Error,
 ): {
-  readonly repository: AppliedFilesCommandRepository;
+  readonly appliedFilesRepository: AppliedFilesRepository;
   readonly written: () => readonly AppliedFiles[];
 } => {
   const written: AppliedFiles[] = [];
 
   return {
-    repository: {
+    appliedFilesRepository: {
       write: (applied: AppliedFiles): void => {
         if (failure !== undefined) {
           throw failure;

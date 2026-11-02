@@ -10,4 +10,4 @@ npm publishes a distributed unit, never `bun publish`.
 
 | Why |
 |---|
-| `bun publish` has neither provenance nor trusted publishing, which npm has, so only npm can publish by the run's identity. |
+| `bun publish` has neither provenance nor trusted publishing, so a unit it publishes carries no proof of the run that built it; only npm publishes by the run's identity. |

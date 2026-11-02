@@ -18,4 +18,4 @@ A style names no literal colour.
 
 | Why |
 |---|
-| a literal colour is a second palette the next theme misses. |
+| a literal colour is a second palette the next theme misses — a single source of truth. |

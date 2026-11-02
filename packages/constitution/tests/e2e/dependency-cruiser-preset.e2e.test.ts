@@ -48,12 +48,14 @@ const wellFormed = {
       from: '../../../../application/use-cases/queries/count-orders',
       name: 'countOrders',
     }),
-  'src/features/orders/application/contracts/repositories/queries/index.ts':
-    "export type { OrderReader } from './order.repository';\n",
-  'src/features/orders/application/contracts/repositories/queries/order.repository.ts':
-    'export interface OrderReader { count: number }\n',
+  'src/features/orders/application/contracts/index.ts':
+    "export type { OrderQueries } from './order-queries.port';\nexport type { OrderRepository } from './order-repository.port';\n",
+  'src/features/orders/application/contracts/order-queries.port.ts':
+    'export interface OrderQueries { count: number }\n',
+  'src/features/orders/application/contracts/order-repository.port.ts':
+    'export interface OrderRepository { save: number }\n',
   'src/features/orders/application/use-cases/queries/count-orders/count-orders.use-case.ts':
-    "import type { Mail } from '../../../../../../kernel/contracts';\nimport type { OrderReader } from '../../../contracts/repositories/queries';\nexport const countOrders = (mail: Mail, reader: OrderReader): unknown => [mail, reader];\n",
+    "import type { Mail } from '../../../../../../kernel/contracts';\nimport type { OrderQueries } from '../../../contracts';\nexport const countOrders = (mail: Mail, queries: OrderQueries): unknown => [mail, queries];\n",
   'src/features/orders/application/use-cases/queries/count-orders/index.ts':
     "export { countOrders } from './count-orders.use-case';\n",
   'src/features/orders/application/use-cases/commands/ship-order/ship-order.use-case.ts': importing(
@@ -561,9 +563,9 @@ const layerViolations = [
     condition: "a binding unit imports a port of its feature's domain",
     files: {
       'src/features/orders/presentation/bindings/queries/list-orders/list-orders.hooks.ts':
-        "import type { OrderQueryRepository } from '../../../../application/contracts';\nexport type Uses = OrderQueryRepository;\n",
+        "import type { OrderQueries } from '../../../../application/contracts';\nexport type Uses = OrderQueries;\n",
       'src/features/orders/application/contracts/index.ts':
-        'export interface OrderQueryRepository { list(): number }\n',
+        'export interface OrderQueries { list(): number }\n',
     },
     rule: 'binding-units-reach-no-port',
   },
@@ -740,22 +742,6 @@ const layerViolations = [
       }),
     },
     rule: 'shared-knows-no-feature-adapter-contract-or-root',
-  },
-  {
-    condition: 'a write reaches a read through a surface that joins both',
-    files: {
-      'src/features/orders/presentation/bindings/commands/cancel/cancel.use-case.ts': importing({
-        from: '../../../../application/contracts',
-        name: 'cancelOrder',
-      }),
-      'src/features/orders/application/contracts/index.ts':
-        "export { cancelOrder } from './repositories/commands/order.repository';\nexport { listOrders } from './repositories/queries/order.repository';\n",
-      'src/features/orders/application/contracts/repositories/commands/order.repository.ts':
-        exported('cancelOrder'),
-      'src/features/orders/application/contracts/repositories/queries/order.repository.ts':
-        exported('listOrders'),
-    },
-    rule: 'writes-never-reach-reads',
   },
 ];
 
@@ -1027,6 +1013,20 @@ const blockViolations = [
     rule: 'ui-reaches-no-mechanism',
   },
   {
+    condition: "a widget imports a use case from the surface of its feature's use cases",
+    files: {
+      'src/features/orders/application/use-cases/index.ts': exported('listOrders'),
+      'src/features/orders/presentation/widgets/orders.tsx': importing({
+        from: '../../application/use-cases',
+        name: 'listOrders',
+      }),
+    },
+    blocks: [
+      'ui',
+    ],
+    rule: 'ui-takes-only-read-model-types-of-its-use-cases',
+  },
+  {
     condition: 'a primitive imports the message library',
     files: {
       'src/libs/ui/button.tsx': importing({
@@ -1067,13 +1067,13 @@ const blockViolations = [
     rule: 'router-only-in-its-home',
   },
   {
-    condition: "a use case of a feature's domain sends an event through a sink",
+    condition: "a use case of a feature sends an event through the kernel's analytics port",
     files: {
       'src/features/orders/application/use-cases/commands/place/place.use-case.ts': importing({
-        from: '../../../../../../shared/sinks',
+        from: '../../../../../../kernel/contracts/analytics.port',
         name: 'track',
       }),
-      'src/shared/sinks/index.ts': exported('track'),
+      'src/kernel/contracts/analytics.port.ts': exported('track'),
     },
     blocks: [
       'analytics',
@@ -1106,7 +1106,7 @@ const blockViolations = [
     blocks: [
       'storybook',
     ],
-    rule: 'stories-unreachable-from-production',
+    rule: 'no-stories-in-production',
   },
   {
     condition: 'the application layer imports yaml',
@@ -1146,7 +1146,7 @@ const blockViolations = [
       'ky',
       'remote-service',
     ],
-    rule: 'transport-library-home-is-the-infrastructure-ky',
+    rule: 'transport-library-imported-by-its-client-and-mapper-ky',
   },
   {
     condition: 'a component imports a widget',
@@ -1529,6 +1529,64 @@ describe('the dependency-cruiser layer set', () => {
       blocks: [
         'ui',
       ],
+    };
+
+    // Act
+    const cruised = await cruise(project);
+
+    // Assert
+    expect(cruised).toStrictEqual({
+      isCruised: true,
+      violations: [],
+    });
+  });
+
+  it("should report no violation when a widget and a component import a read model's type from the surface of their feature's use cases", async () => {
+    // Arrange
+    const typeOfOrderListItem =
+      "import type { OrderListItem } from '../../../application/use-cases';\nexport type Uses = OrderListItem;\n";
+    const project = {
+      files: {
+        'src/features/orders/application/contracts/index.ts':
+          "export type { OrderListItem } from './order-queries.port';\n",
+        'src/features/orders/application/contracts/order-queries.port.ts':
+          'export interface OrderListItem {\n  readonly id: string;\n}\n',
+        'src/features/orders/application/use-cases/index.ts':
+          "export type { OrderListItem } from '../contracts';\n",
+        'src/features/orders/presentation/components/order-row/order-row.tsx': typeOfOrderListItem,
+        'src/features/orders/presentation/widgets/orders-widget/orders-widget.tsx':
+          typeOfOrderListItem,
+      },
+      blocks: [
+        'ui',
+      ],
+    };
+
+    // Act
+    const cruised = await cruise(project);
+
+    // Assert
+    expect(cruised).toStrictEqual({
+      isCruised: true,
+      violations: [],
+    });
+  });
+
+  it('should report no violation when a write binding takes its use case by name from a surface that offers both sides', async () => {
+    // Arrange
+    const project = {
+      files: {
+        'src/features/orders/presentation/bindings/commands/cancel/cancel.use-case.ts': importing({
+          from: '../../../../application/use-cases',
+          name: 'cancelOrder',
+        }),
+        'src/features/orders/application/use-cases/index.ts':
+          "export { cancelOrder } from './commands/cancel-order/cancel-order.use-case';\nexport { listOrders } from './queries/list-orders/list-orders.use-case';\n",
+        'src/features/orders/application/use-cases/commands/cancel-order/cancel-order.use-case.ts':
+          exported('cancelOrder'),
+        'src/features/orders/application/use-cases/queries/list-orders/list-orders.use-case.ts':
+          exported('listOrders'),
+      },
     };
 
     // Act

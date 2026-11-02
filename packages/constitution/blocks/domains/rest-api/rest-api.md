@@ -12,4 +12,4 @@ governs: ["**"]
 
 > An API whose operations are HTTP methods on resources.
 
-The block's rules bind the operations the program serves as REST resources, and no other: how a resource is named and changed, what a status and a body mean, how a value travels, and the contract every caller reads.
+The block's rules bind the operations the program serves as REST resources, and no other: how a resource is named and changed, its answers, and the contract every caller reads.

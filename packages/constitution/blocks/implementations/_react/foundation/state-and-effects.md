@@ -1,12 +1,12 @@
 # State and effects
 
-> Governs a component's state and its effects.
+> Governs a component's effects and its state.
 
-## General
+## Effects
 
 ### effects-only-for-external-systems · MUST
 
-An effect synchronises with a system outside React — never state from state, never the response to an event: a value that can be derived is computed during render, never stored in state. An external store is read with `useSyncExternalStore`.
+An effect only synchronises with a system outside React, never a value React can derive. An effect never sets state from state and never responds to an event, a derivable value is computed during render and never kept in state, and an external store is read with `useSyncExternalStore`.
 
 | Why |
 |---|
@@ -22,23 +22,25 @@ A function an effect needs but must not re-run on is wrapped in `useEffectEvent`
 
 ### effect-cleans-up-and-cancels → resource-released-on-every-path · MUST
 
-Every effect cleans up what it starts — subscriptions, listeners, sockets, timers — and aborts its asynchronous work, so only the latest response lands.
+Every effect cleans up and cancels what it starts. Its cleanup releases its subscriptions, listeners, sockets and timers and aborts its asynchronous work, so only the latest response lands.
 
 | Why |
 |---|
 | an effect that does not clean up leaks, and a late response overwrites a newer one. |
 
+## State
+
 ### async-ui-state-through-actions · SHOULD
 
-Pending, optimistic and transition state go through `useActionState`, `useTransition` and `useOptimistic`; optimism local to a component is `useOptimistic`, optimism over cached data is the data library's.
+Asynchronous state of the interface goes through React's actions. Pending, optimistic and transition state go through `useActionState`, `useTransition` and `useOptimistic`; optimism local to a component is `useOptimistic`, and optimism over cached data is the data library's.
 
 | Why |
 |---|
-| React then knows what is pending, and keeps the user interface responsive while it is. |
+| pending state kept by hand is unknown to React, which then cannot keep the interface responsive while it waits, and a flag set by hand drifts from the work it tracks. |
 
 ### fast-source-batched-in-its-hook → fast-source-updates-once-per-frame · SHOULD
 
-A hook that folds a fast source schedules its state once per animation frame; an expensive render driven by input reads `useDeferredValue`.
+A hook that folds a fast source sets its state once per animation frame. An expensive render driven by input reads `useDeferredValue`.
 
 | Why |
 |---|

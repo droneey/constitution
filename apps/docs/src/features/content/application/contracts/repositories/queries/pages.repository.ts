@@ -1,11 +1,9 @@
 import type { PageCatalog } from '../../../../domain/page/entities';
 import type { PageSlugs } from '../../../../domain/page/value-objects';
 import type { PageLookup } from '../../page-lookup.port';
-import type { NavigationQueryRepository } from './navigation.repository';
+import type { NavigationQueries } from './navigation.repository';
 
-export interface PagesQueryRepository<TNavigation>
-  extends PageLookup,
-    NavigationQueryRepository<TNavigation> {
+export interface PageQueries<TNavigation> extends PageLookup, NavigationQueries<TNavigation> {
   readonly findMarkdown: (slugs: PageSlugs) => Promise<string | undefined>;
   readonly readCatalog: () => Promise<PageCatalog>;
   readonly readFullText: () => Promise<string>;

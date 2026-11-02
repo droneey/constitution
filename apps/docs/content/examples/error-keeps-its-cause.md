@@ -1,14 +1,15 @@
 ```pseudo title="Avoid"
 catch error
   if isCardDeclined(error) then
-    throw new PaymentDeclined()
+    throw new PaymentDeclinedError()
+
   throw error
 ```
 
 ```pseudo title="Prefer"
 catch error
   if isCardDeclined(error) then
-    throw new PaymentDeclined(
-      { cause: error })
+    throw new PaymentDeclinedError({ cause: error })
+
   throw error
 ```

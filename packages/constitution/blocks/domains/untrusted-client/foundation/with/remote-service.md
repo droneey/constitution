@@ -6,7 +6,7 @@
 
 ### client-below-the-oldest-supported-release-updates-first · SHOULD
 
-A client whose release its user holds — an installed app, a tab left open — learns the oldest release of it its server still supports and, below it, moves to the current release before going on.
+A client below the oldest supported release updates before it goes on. That holds for any client whose release its user holds — an installed app, a tab left open —, which learns the oldest release of it its server still supports and, below it, moves to the current release.
 
 | Why |
 |---|

@@ -10,4 +10,4 @@ Syncpack's configuration holds the shared order of a manifest's fields.
 
 | Why |
 |---|
-| one order of fields shows each field where every manifest keeps it. |
+| manifests that each order their fields their own way keep a field in a different place in each, and a diff shows a moved field as a change. |

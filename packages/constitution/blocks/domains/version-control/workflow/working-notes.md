@@ -1,0 +1,13 @@
+# Working notes
+
+> Governs the working notes kept out of history.
+
+## General
+
+### working-notes-stay-out-of-history · SHOULD
+
+Working notes stay out of history. Plans and working notes live in a **`local/`**{#working-notes} folder that version control ignores; a decision record is committed.
+
+| Why |
+|---|
+| working notes are true for a day, and committed they mislead every later reader. |

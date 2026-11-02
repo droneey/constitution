@@ -1,11 +1,4 @@
 react-dom:
-  aria-attributes-as-the-dom-spells-them:
-    typescript:
-      biome.jsonc:
-        linter:
-          rules:
-            suspicious:
-              noUnknownAttribute: error
   ids-from-use-id:
     typescript:
       biome.jsonc:
@@ -53,6 +46,8 @@ react-dom:
               useFocusableInteractive: error
               noNoninteractiveElementInteractions: error
               noNoninteractiveElementToInteractiveRole: error
+            suspicious:
+              noUnknownAttribute: error
   inline-style-only-custom-properties-and-geometry:
     typescript:
       biome.jsonc:

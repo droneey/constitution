@@ -1,11 +1,11 @@
 import type { Versions } from '../../../../../domain/versions/entities';
-import type { VersionsQueryRepository } from '../../../../contracts';
+import type { VersionQueries } from '../../../../contracts';
 
-interface FakeVersionsRepository extends VersionsQueryRepository {
+interface FakeVersionQueries extends VersionQueries {
   signals: AbortSignal[];
 }
 
-export const createFakeVersionsRepository = (versions: Versions): FakeVersionsRepository => {
+export const createFakeVersionQueries = (versions: Versions): FakeVersionQueries => {
   const signals: AbortSignal[] = [];
 
   return {

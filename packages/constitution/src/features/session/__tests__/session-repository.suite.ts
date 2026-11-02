@@ -4,19 +4,19 @@ import { Level } from '#/kernel/constants';
 import { ConfigReadStatus } from '#/kernel/entities';
 import { AbsolutePath, BlockId } from '#/kernel/value-objects';
 
-import type { SessionCommandRepository } from '../application/contracts/repositories/commands';
-import type { SessionQueryRepository } from '../application/contracts/repositories/queries';
+import type { SessionRepository } from '../application/contracts/repositories/commands';
+import type { SessionQueries } from '../application/contracts/repositories/queries';
 import type { SessionState } from '../domain/session/entities';
 import { SessionAgent, SessionMark } from '../domain/session/entities';
 import { AgentId, SessionId } from '../domain/session/value-objects';
 import { TreeFingerprint } from '../domain/tree-state/value-objects';
 import { activeBlockOf, mustOf, sessionStateOf } from './session.fixtures';
 
-type SessionRepository = SessionCommandRepository & SessionQueryRepository;
+type SessionPort = SessionRepository & SessionQueries;
 
 interface SessionRepositorySuiteInput {
   readonly name: string;
-  readonly repositoryOf: () => SessionRepository;
+  readonly repositoryOf: () => SessionPort;
 }
 
 const session = SessionId.create('session-3');
@@ -63,16 +63,16 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
   describe(`${input.name}: the session repository contracts`, () => {
     it('should read back the state it saved', () => {
       // Arrange
-      const sessions = input.repositoryOf();
+      const sessionPort = input.repositoryOf();
 
-      sessions.saveState({
+      sessionPort.saveState({
         isReminderKept: false,
         session,
         state: savedState,
       });
 
       // Act
-      const state = sessions.state(session);
+      const state = sessionPort.state(session);
 
       // Assert
       expect(state).toStrictEqual(savedState);
@@ -80,19 +80,19 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
 
     it('should read no state, no mark and no block reminded when the session was never saved', () => {
       // Arrange
-      const sessions = input.repositoryOf();
+      const sessionPort = input.repositoryOf();
 
       // Act
       const seen = {
-        mark: sessions.fingerprint({
+        mark: sessionPort.fingerprint({
           mark: SessionMark.Turn,
           session,
         }),
-        reminded: sessions.reminded({
+        reminded: sessionPort.reminded({
           agent: SessionAgent.main,
           session,
         }),
-        state: sessions.state(session),
+        state: sessionPort.state(session),
       };
 
       // Assert
@@ -106,8 +106,8 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
     it.each([
       {
         condition: 'a mark is recorded',
-        write: (sessions: SessionRepository): void => {
-          sessions.recordFingerprint({
+        write: (sessionPort: SessionPort): void => {
+          sessionPort.recordFingerprint({
             fingerprint: TreeFingerprint.create('abc'),
             mark: SessionMark.Turn,
             session,
@@ -116,8 +116,8 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
       },
       {
         condition: 'blocks are reminded',
-        write: (sessions: SessionRepository): void => {
-          sessions.addReminded({
+        write: (sessionPort: SessionPort): void => {
+          sessionPort.addReminded({
             agent: SessionAgent.main,
             ids: [
               BlockId.create('ui'),
@@ -128,18 +128,18 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
       },
     ])('should drop the write when $condition to a session never saved', ({ write }) => {
       // Arrange
-      const sessions = input.repositoryOf();
+      const sessionPort = input.repositoryOf();
 
       // Act
-      write(sessions);
+      write(sessionPort);
 
       // Assert
       expect({
-        mark: sessions.fingerprint({
+        mark: sessionPort.fingerprint({
           mark: SessionMark.Turn,
           session,
         }),
-        reminded: sessions.reminded({
+        reminded: sessionPort.reminded({
           agent: SessionAgent.main,
           session,
         }),
@@ -151,48 +151,48 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
 
     it('should read the last value recorded of each mark', () => {
       // Arrange
-      const sessions = input.repositoryOf();
+      const sessionPort = input.repositoryOf();
 
-      sessions.saveState({
+      sessionPort.saveState({
         isReminderKept: false,
         session,
         state: savedState,
       });
-      sessions.recordFingerprint({
+      sessionPort.recordFingerprint({
         fingerprint: TreeFingerprint.create('abc'),
         mark: SessionMark.Turn,
         session,
       });
-      sessions.recordFingerprint({
+      sessionPort.recordFingerprint({
         fingerprint: TreeFingerprint.create('def'),
         mark: SessionMark.Turn,
         session,
       });
-      sessions.recordFingerprint({
+      sessionPort.recordFingerprint({
         fingerprint: TreeFingerprint.create('f00d'),
         mark: SessionMark.Checked,
         session,
       });
-      sessions.recordUnjudged({
+      sessionPort.recordUnjudged({
         reason: 'git timed out',
         session,
       });
 
       // Act
       const seen = {
-        blocked: sessions.fingerprint({
+        blocked: sessionPort.fingerprint({
           mark: SessionMark.Blocked,
           session,
         }),
-        checked: sessions.fingerprint({
+        checked: sessionPort.fingerprint({
           mark: SessionMark.Checked,
           session,
         }),
-        turn: sessions.fingerprint({
+        turn: sessionPort.fingerprint({
           mark: SessionMark.Turn,
           session,
         }),
-        unjudged: sessions.unjudged(session),
+        unjudged: sessionPort.unjudged(session),
       };
 
       // Assert
@@ -206,14 +206,14 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
 
     it('should read every block reminded so far, to the session and to each agent apart', () => {
       // Arrange
-      const sessions = input.repositoryOf();
+      const sessionPort = input.repositoryOf();
 
-      sessions.saveState({
+      sessionPort.saveState({
         isReminderKept: false,
         session,
         state: savedState,
       });
-      sessions.addReminded({
+      sessionPort.addReminded({
         agent: SessionAgent.main,
         ids: [
           BlockId.create('core'),
@@ -221,14 +221,14 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
         ],
         session,
       });
-      sessions.addReminded({
+      sessionPort.addReminded({
         agent: SessionAgent.main,
         ids: [
           BlockId.create('api'),
         ],
         session,
       });
-      sessions.addReminded({
+      sessionPort.addReminded({
         agent,
         ids: [
           BlockId.create('web'),
@@ -238,15 +238,15 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
 
       // Act
       const seen = {
-        agent: sessions.reminded({
+        agent: sessionPort.reminded({
           agent,
           session,
         }),
-        otherAgent: sessions.reminded({
+        otherAgent: sessionPort.reminded({
           agent: otherAgent,
           session,
         }),
-        own: sessions.reminded({
+        own: sessionPort.reminded({
           agent: SessionAgent.main,
           session,
         }),
@@ -291,35 +291,35 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
       'should replace the state and keep the marks when a session saved before is saved again and $condition',
       ({ isReminderKept, reminded }) => {
         // Arrange
-        const sessions = input.repositoryOf();
+        const sessionPort = input.repositoryOf();
 
-        sessions.saveState({
+        sessionPort.saveState({
           isReminderKept: false,
           session,
           state: savedState,
         });
-        sessions.addReminded({
+        sessionPort.addReminded({
           agent: SessionAgent.main,
           ids: [
             BlockId.create('ui'),
           ],
           session,
         });
-        sessions.addReminded({
+        sessionPort.addReminded({
           agent,
           ids: [
             BlockId.create('web'),
           ],
           session,
         });
-        sessions.recordFingerprint({
+        sessionPort.recordFingerprint({
           fingerprint: TreeFingerprint.create('abc'),
           mark: SessionMark.Turn,
           session,
         });
 
         // Act
-        sessions.saveState({
+        sessionPort.saveState({
           isReminderKept,
           session,
           state: laterState,
@@ -327,16 +327,16 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
 
         // Assert
         expect({
-          agent: sessions.reminded({
+          agent: sessionPort.reminded({
             agent,
             session,
           }),
-          own: sessions.reminded({
+          own: sessionPort.reminded({
             agent: SessionAgent.main,
             session,
           }),
-          state: sessions.state(session),
-          turn: sessions.fingerprint({
+          state: sessionPort.state(session),
+          turn: sessionPort.fingerprint({
             mark: SessionMark.Turn,
             session,
           }),

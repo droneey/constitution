@@ -6,7 +6,7 @@
 
 ### input-driven-requests-debounced · SHOULD
 
-A request driven by typing is sent once the typing pauses, for a pause the project sets, never on every keystroke.
+A request driven by typing waits for the typing to pause. It is sent once the typing pauses, for a pause the project sets, never on every keystroke.
 
 | Why |
 |---|
@@ -14,26 +14,26 @@ A request driven by typing is sent once the typing pauses, for a pause the proje
 
 ### remote-field-error-shown-on-its-field · SHOULD
 
-A form shows each field error the remote system returns on the field it names.
+A field error the remote system returns is shown on its field. A form shows each such error on the field it names.
 
 | Why |
 |---|
-| the user sees the remote system's refusal where they can fix it. |
+| an error shown away from its field leaves the user searching the form for what the remote system refused. |
 
 ### user-input-survives-connection-loss · SHOULD
 
-Input the user entered survives a request that times out or loses its connection, and is sent again without being typed again.
+The user's input survives a lost connection. Input the user entered survives a request that times out or loses its connection, and is sent again without being typed again.
 
 | Why |
 |---|
-| a user who loses their input to a dropped connection does not type it twice. |
+| a user whose input a dropped connection erases must type it again, and many give up instead. |
 
 ## Specs
 
-### ui-specs-replace-the-transport → effect-faked-never-mocked · MUST
+### screen-spec-replaces-only-the-transport → effect-faked-never-mocked · MUST
 
-A screen's spec, and the spec of what reads or writes its data, run the real code down to the transport and replace the transport with captured responses; a fake of a business operation serves only a screen that shows nothing the remote system gives.
+A screen's spec runs the real code down to the transport. That spec, and the spec of what reads or writes the screen's data, replace only the transport, with captured responses; a fake of a business operation serves only a screen that shows nothing the remote system gives.
 
 | Why |
 |---|
-| the spec then runs the real data bindings, the code that talks to the remote system and the mapping, and catches a response the mapping gets wrong, which a faked operation never sees. |
+| a spec over a faked operation skips the data bindings, the code that talks to the remote system and the mapping, so a response the mapping gets wrong passes it. |

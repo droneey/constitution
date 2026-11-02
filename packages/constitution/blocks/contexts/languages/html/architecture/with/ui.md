@@ -4,18 +4,18 @@
 
 ## Screens
 
-### document-metadata-owned-by-screen · SHOULD
+### document-metadata-owned-by-screen · MUST
 
 The description and links of the document are declared by the screen that owns them.
 
 | Why |
 |---|
-| metadata declared beside what it describes changes with it, and no central file must know every screen. |
+| metadata declared in a central file is left stale when its screen changes, and that file must know every screen. |
 
-### third-party-script-declared-where-it-is-used · SHOULD
+### third-party-script-declared-where-it-is-used · MUST
 
-A script of another party is declared by the code that uses it — a screen, a component, or the adapter of a service behind a port — never in a shared document every screen loads.
+A script of another party is declared by the code that uses it, never in a shared document every screen loads. That code is a screen, a component, or the adapter of a service behind a port.
 
 | Why |
 |---|
-| a script declared where it is used loads only where it is needed and leaves with the code that needs it. |
+| a script declared in a shared document loads on every screen, those that never use it included, and stays after the code that needed it is gone. |

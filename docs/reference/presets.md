@@ -44,6 +44,7 @@ The settings are those the file holds, in its own shape: a table of JSON, TOML o
 | `!default` | written once, while the file lacks it, and never checked again: a starter file the project owns, on whose content no rule depends |
 | `!words` | on a list: written as one text, its items joined by spaces |
 | `!sorted` | on a map of a JSON or YAML file: its keys, the project's own among them, stand in their order as texts, as Bun's `scripts` do, each action's script heading its group; in a file of another format, whose writer keeps no order of its keys, the check of the presets reports it (`sorted-in-unsortable-file`) |
+| `<path>: !inherits <path>` | no setting but a declaration: the value at each path its key names starts, once the entries have joined, from the value at the path its text names, both paths read from the map that holds it, step by step at each `.` — `*` every item or key, `<name>` every key, which the text may then name; the inheriting value lies over the inherited one, maps joined key by key, lists holding the inherited items and then those not yet held, any other value the inheriting one's. A path that holds nothing changes nothing, and a declaration whose paths cannot be followed is `inheritance-malformed`, each flaw named. Biome's preset declares `overrides.*.linter.rules.<group>.<rule>.options: !inherits linter.rules.<group>.<rule>.options`, since Biome replaces a rule's options in an override instead of joining them |
 
 Within a value, a fact stands for what `constitution` knows of the unit:
 

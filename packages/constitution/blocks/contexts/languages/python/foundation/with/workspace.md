@@ -10,14 +10,14 @@ A unit is the distribution `<scope>-<name>`, imported as `<scope>_<name>`.
 
 | Why |
 |---|
-| the folder, the distribution and the import then say one name, each in the spelling its form allows, and every unit is a top-level package of its own. |
+| a unit whose distribution or import name differs from its folder's is looked for under the wrong name, and one imported without its scope can collide with another top-level package. |
 
 ## Shared data
 
 ### shared-data-read-through-its-import-package → file-lives-once-across-units · MUST
 
-A Python package reads data another unit holds by importing that unit's import package and reading through `importlib.resources.files()` of it, never by a path or by the package's name in a string.
+A Python package reads another unit's data through that unit's import package. It imports the import package and reads through `importlib.resources.files()` of it, never by a path or by the package's name in a string.
 
 | Why |
 |---|
-| the data then comes from the installed package wherever it is installed, and the import shows a checker of the declared dependencies that the dependency is used, where a name in a string shows it nothing. |
+| a path reaches the data only where the working tree lays it out, so the installed package misses it, and a name in a string hides the dependency from the checker of declared dependencies. |

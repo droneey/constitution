@@ -1,15 +1,15 @@
 ```pseudo title="Avoid"
-# orders/new-order-id.ts
+# infrastructure/system/order-id-source.adapter
 import { faker } from "@faker-js/faker"
 
-function newOrderId()
-  return faker.string.uuid()
+function createOrderIdSource()
+  return { next: function() return faker.string.uuid() }
 ```
 
 ```pseudo title="Prefer"
-# orders/new-order-id.ts
+# infrastructure/system/order-id-source.adapter
 import { randomUUID } from "crypto"
 
-function newOrderId()
-  return randomUUID()
+function createOrderIdSource()
+  return { next: function() return randomUUID() }
 ```

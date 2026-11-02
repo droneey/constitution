@@ -27,7 +27,7 @@ bun-test:
         test:
           pathIgnorePatterns:
             - ${role.package-suites}/**
-            - '**/*.integration.test.*'
+            - '**/*.${role.integration-spec-file}.*'
   coverage-gate-on-loaded-files:
     typescript:
       bunfig.integration.toml:
@@ -42,8 +42,7 @@ bun-test:
           coveragePathIgnorePatterns:
             - '**/${role.colocated-specs}/**'
             - '**/main.*'
-            - '**/${role.composition-root}/wiring.*'
-            - '**/*.gen.*'
+            - '**/*.${role.generated-file}.*'
       bunfig.toml:
         test:
           coverage: false
@@ -52,8 +51,8 @@ bun-test:
       bunfig.toml:
         test:
           preload:
-            - ./${role.source}/${role.colocated-specs}/sandbox.fixtures.ts
-      ${role.source}/${role.colocated-specs}/sandbox.fixtures.ts: !default |
+            - ./${role.source}/${role.colocated-specs}/sandbox.${role.fixtures-file}.ts
+      ${role.source}/${role.colocated-specs}/sandbox.${role.fixtures-file}.ts: !default |
         import http from 'node:http';
         import https from 'node:https';
         import net from 'node:net';

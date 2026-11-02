@@ -6,6 +6,7 @@ test "should total the open invoices"
   let today = now()
   # Act
   let total = openTotal(invoices, today)
+
   # Assert
   print(total)
   assert total is 340
@@ -14,10 +15,11 @@ test "should total the open invoices"
 ```pseudo title="Prefer"
 test "should total the open invoices"
   # Arrange
-  let invoices = [anInvoice()]
+  let invoices = [createInvoice()]
   let today = date("2026-03-01")
   # Act
   let total = openTotal(invoices, today)
+
   # Assert
   assert total is 340
 ```

@@ -14,7 +14,7 @@ A token a caller presents is trusted only after it is checked. A self-contained 
 
 ### caller-token-never-forwarded · MUST
 
-A token a caller presents is never sent on to another system; a call onward carries the program's own credential for that system, or a token issued for that system by an exchange that keeps the caller's identity.
+A token a caller presents is never sent on to another system. A call onward carries the program's own credential for that system, or a token issued for that system by an exchange that keeps the caller's identity.
 
 | Why |
 |---|
@@ -22,17 +22,17 @@ A token a caller presents is never sent on to another system; a call onward carr
 
 ### refresh-token-rotated-or-sender-bound · MUST
 
-A refresh token the program issues to a public client is either rotated on every use, a reused one revoking every token of its family, or bound to its client by DPoP or mutual TLS, as RFC 9700 says.
+A refresh token issued to a public client is rotated or bound to its sender. It is either rotated on every use, a reused one revoking every token of its family, or bound to its client by DPoP or mutual TLS, as RFC 9700 says.
 
 | Why |
 |---|
-| a refresh token lives long, so one stolen and neither rotated nor bound works for its thief as long as for its owner. |
+| a refresh token lives long, so one stolen and neither rotated nor bound works for its thief as long as for its owner — RFC 9700. |
 
 ## Machine credentials
 
 ### issued-key-stored-hashed-scoped-and-expiring · MUST
 
-A key or token the program issues for another program to call it is shown once, stored only as a hash, scoped to what its holder needs, expires, and can be revoked by its owner, and every call made with it is attributed to it.
+A key or a token the program issues for another program to call it is stored hashed, scoped and expiring. It is shown once and kept as a hash alone, its scope is what its holder needs, its owner can revoke it, and every call made with it is attributed to it.
 
 | Why |
 |---|

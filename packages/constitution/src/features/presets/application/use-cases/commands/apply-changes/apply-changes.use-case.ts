@@ -1,14 +1,14 @@
 import type { AppliedFiles } from '../../../../domain/apply-plan/entities';
-import type { AppliedFilesCommandRepository } from '../../../contracts/repositories/commands';
+import type { AppliedFilesRepository } from '../../../contracts/repositories/commands';
 
 interface ApplyChangesInput {
+  readonly appliedFilesRepository: AppliedFilesRepository;
   readonly changes: AppliedFiles;
-  readonly writes: AppliedFilesCommandRepository;
 }
 
 /** @throws {ApplyError} when a file cannot be written, which leaves every file as it was */
 const applyChanges = (input: ApplyChangesInput): void => {
-  input.writes.write(input.changes);
+  input.appliedFilesRepository.write(input.changes);
 };
 
 export type { ApplyChangesInput };

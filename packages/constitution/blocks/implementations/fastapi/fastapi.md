@@ -20,5 +20,5 @@ pydantic parses a handler's parameters and renders its return value, and the app
 
 | Requirement | How | Met |
 |---|---|---|
-| `framework-passes-every-failure-to-one-handler` | an exception handler per class on the one app receives every failure (`error-kit-handlers-registered-by-the-root`) | yes |
+| `framework-passes-every-failure-to-one-handler` | an exception handler per class on the one app receives every failure (`error-handlers-registered-by-the-root`) | yes |
 | `framework-parses-a-request-before-its-handler` | the body, query, path and headers are parsed by the handler's annotations before it runs, and a failure is a `RequestValidationError` whose errors give the location of each field | yes |

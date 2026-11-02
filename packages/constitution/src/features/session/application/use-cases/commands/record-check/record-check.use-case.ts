@@ -2,13 +2,13 @@ import { SessionMark } from '../../../../domain/session/entities';
 import type { SessionId } from '../../../../domain/session/value-objects';
 import { ShellCommand } from '../../../../domain/shell-command/value-objects';
 import type { WorkingTree } from '../../../contracts';
-import type { SessionCommandRepository } from '../../../contracts/repositories/commands';
+import type { SessionRepository } from '../../../contracts/repositories/commands';
 import { recordTree } from '../shared/record-tree';
 
 interface RecordCheckInput {
   readonly command: string;
   readonly session: SessionId;
-  readonly sessions: SessionCommandRepository;
+  readonly sessionRepository: SessionRepository;
   readonly workingTree: WorkingTree;
 }
 

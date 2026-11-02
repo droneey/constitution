@@ -1,0 +1,5 @@
+version-control:
+  working-notes-stay-out-of-history:
+    '*':
+      .gitignore:
+        - /${role.working-notes}/

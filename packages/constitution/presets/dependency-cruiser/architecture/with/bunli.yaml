@@ -9,6 +9,8 @@ cli:
       .dependency-cruiser.jsonc:
         'allowed[comment=command-parser-imported-by-the-command-files: bunli]':
           from:
-            path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.presentation-layer}/.*\.${role.command-binding}\.[^/]+$
+            path:
+              - ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/${role.presentation-layer}/.*\.${role.command-binding}\.[^/]+$
+              - ^${role.source}/${role.presentation-layer}/.*\.${role.command-binding}\.[^/]+$
           to:
             path: node_modules/@bunli/

@@ -40,6 +40,36 @@ describe("the configuration import-linter's presets write", () => {
       },
     },
     {
+      condition: "a binding unit names a read model the surface of its feature's use cases offers",
+      files: {
+        ...feature,
+        [`${ORDERS}/application/contracts/__init__.py`]:
+          'from typing import Protocol\n\n\nclass OrderCount:\n  pass\n\n\nclass Store(Protocol):\n  def size(self) -> int: ...\n',
+        [`${ORDERS}/application/use_cases/__init__.py`]:
+          'from unit.features.orders.application.contracts import OrderCount as OrderCount\nfrom unit.features.orders.application.use_cases.count import count as count\n',
+        [`${ORDERS}/presentation/orders_cli.py`]:
+          'from unit.features.orders.application.use_cases import OrderCount as OrderCount\nfrom unit.features.orders.application.use_cases import count as count\n',
+      },
+      lint: {
+        broken: [],
+        status: 0,
+      },
+    },
+    {
+      condition: "a binding unit imports a port from its feature's contracts",
+      files: {
+        ...feature,
+        [`${ORDERS}/presentation/orders_cli.py`]:
+          'from unit.features.orders.application.contracts import Store as Store\n',
+      },
+      lint: {
+        broken: [
+          'binding-unit-calls-only-use-cases',
+        ],
+        status: 1,
+      },
+    },
+    {
       condition:
         'a binding unit builds an adapter, which only the adapters themselves and not their packages may',
       files: {
@@ -82,7 +112,7 @@ describe("the configuration import-linter's presets write", () => {
       },
       lint: {
         broken: [
-          'model-changed-only-through-a-use-case',
+          'domain-model-changed-only-through-a-use-case',
         ],
         status: 1,
       },

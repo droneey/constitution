@@ -5,12 +5,12 @@ requires: [_react, remote-data]
 extends: null
 abstract: false
 languages: []
-governs: ["**/*.hooks.ts", "**/root/providers/**", "**/bindings/shared/cache.ts"]
+governs: ["**/*.hooks.ts", "**/root/**", "**/bindings/shared/cache.ts"]
 ---
 
 # TanStack Query
 
-> **TanStack Query**, the project's only cache of server data.
+> **TanStack Query**, the cache of server data.
 
 One **`QueryClient`** holds the cache; a read goes through **`useQuery`** or **`useSuspenseQuery`**, and a write through **`useMutation`**.
 
@@ -19,7 +19,7 @@ One **`QueryClient`** holds the cache; a read goes through **`useQuery`** or **`
 | Requirement | How | Met |
 |---|---|---|
 | `cache-shares-one-read-per-key` | reads with one key share one query and one request | yes |
-| `cache-invalidates-by-key-prefix` | `invalidateQueries` by a key prefix, with or without a refetch | yes |
+| `cache-invalidates-a-writes-entries-in-one-call` | `invalidateQueries` by a key prefix, with or without a refetch | yes |
 | `cache-undoes-only-the-failed-writes-change` | `onMutate` returns a snapshot that `onError` restores before reapplying the mutations still pending on the key, and `onSettled` invalidates | yes |
 | `cache-exposes-the-input-of-pending-writes` | `useMutationState` reads the variables of pending writes | yes |
 | `cache-passes-every-failure-to-one-handler` | `onError` of `QueryCache` and `MutationCache` | yes |

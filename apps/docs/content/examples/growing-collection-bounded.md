@@ -1,22 +1,19 @@
 ```pseudo title="Avoid"
-let sessions = new Map()
-
-function overdueInvoices(cursor)
-  return invoices.find({ dueBefore: today(), after: cursor })
+function overdueInvoices(cursor, today, invoiceQueries)
+  return invoiceQueries.list({ dueBefore: today, after: cursor })
 
 function remindAll(users)
   await all(users.map(sendReminder))
+
+# root/sessions
+let sessions = new Map()
+let signIn = createSignIn({ sessions })
 ```
 
 ```pseudo title="Prefer"
-let sessions = new BoundedMap({
-  maxEntries: maxSessions,
-  whenFull: evictLeastRecentlyUsed,
-})
-
-function overdueInvoices(cursor)
-  return invoices.find({
-    dueBefore: today(),
+function overdueInvoices(cursor, today, invoiceQueries)
+  return invoiceQueries.list({
+    dueBefore: today,
     after: cursor,
     limit: maxPageSize,
   })
@@ -26,4 +23,11 @@ function remindAll(users)
     limit: maxConcurrentSends,
     run: sendReminder,
   })
+
+# root/sessions
+let sessions = new BoundedMap({
+  maxEntries: maxSessions,
+  whenFull: evictLeastRecentlyUsed,
+})
+let signIn = createSignIn({ sessions })
 ```

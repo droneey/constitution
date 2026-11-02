@@ -4,20 +4,20 @@ ky:
       .dependency-cruiser.jsonc:
         allowedSeverity: error
 remote-service:
-  transport-library-home-is-the-infrastructure:
+  transport-library-imported-by-its-client-and-mapper:
     typescript:
       .dependency-cruiser.jsonc:
-        'allowed[comment=transport-library-home-is-the-infrastructure: ky]':
+        'allowed[comment=transport-library-imported-by-its-client-and-mapper: ky]':
           from:
             path: ^${role.source}/${role.shared-code}/
           to:
             path: node_modules/ky/
-        forbidden[name=transport-library-home-is-the-infrastructure-ky]:
+        forbidden[name=transport-library-imported-by-its-client-and-mapper-ky]:
           severity: error
           from:
             pathNot:
-              - ^${role.source}/${role.gateway}/
-              - ^${role.source}/(?:${role.bounded-context}|${role.composition-module})/[^/]+/${role.gateway}/
+              - ^${role.source}/${role.adapter}/
+              - ^${role.source}/(?:${role.bounded-context}|${role.composition-module})/[^/]+/${role.adapter}/
               - ^${role.source}/${role.generic-library}/
               - ^${role.source}/${role.shared-code}/
               - ^${role.source}/${role.composition-root}/

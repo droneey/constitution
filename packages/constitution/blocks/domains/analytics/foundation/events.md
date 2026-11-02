@@ -6,23 +6,23 @@
 
 ### tracking-plan-is-the-one-vocabulary → fact-has-one-source · MUST
 
-Every event, its typed parameters and its meaning are declared in one tracking plan, a closed vocabulary: the code sends only from it, a text parameter takes its value from a closed set, and the reports are read by it.
+The tracking plan is the one vocabulary of events. Every event, its typed parameters and its meaning are declared in one tracking plan, a closed vocabulary: the code sends only from it, a text parameter takes its value from a closed set, and the reports are read by it.
 
 | Why |
 |---|
-| an event declared in two places drifts, a mistyped name reads zero, and a free value splits one answer into many rows. |
+| an event declared in two places drifts, a mistyped name reads zero, and a free value splits one answer into many rows — a single source of truth. |
 
 ### event-names-object-action → event-name-in-past-tense · SHOULD
 
-An analytics event is named after its object and the action done to it — `order_placed` — and its parameters in the same case.
+An analytics event is named by its object and the action done to it. Its parameters are named in the same case.
 
 | Why |
 |---|
-| one grammar makes the vocabulary readable and its names predictable. |
+| names built each their own way make the vocabulary unpredictable, so one action is tracked under two names and a report reads only one of them. |
 
 ### event-sent-once-per-occurrence · MUST
 
-An event is sent once for each time what it records happens — never again when a screen redraws, a request retries or a handler runs twice.
+An event is sent once per occurrence. An occurrence is each time what it records happens, and a screen that redraws, a request that retries or a handler that runs twice sends it no second time.
 
 | Why |
 |---|
@@ -30,7 +30,7 @@ An event is sent once for each time what it records happens — never again when
 
 ### event-never-renamed · SHOULD
 
-An event, once sent, keeps its name and its meaning; a change of meaning is a new event, and the old one is retired.
+An event, once sent, is never renamed. It keeps its name and its meaning; a change of meaning is a new event, and the old one is retired.
 
 | Why |
 |---|
@@ -44,11 +44,11 @@ The outcome of every critical scenario of `PROJECT.md` — completed, abandoned,
 |---|
 | the measures that matter are the ones the product exists for, and one nobody tracks is a decision made without its data. |
 
-## Data
+## Destinations
 
 ### environment-sends-to-its-own-destination · MUST
 
-Each environment — development, preview, production — sends to its own destination or to none, so only production's events reach production's reports.
+Each environment sends to its own destination or to none. Whatever the environment — development, preview, production — only production's events reach production's reports.
 
 | Why |
 |---|
@@ -58,8 +58,8 @@ Each environment — development, preview, production — sends to its own desti
 
 ### analytics-fault-isolated → optional-part-isolated-from-its-faults · MUST
 
-Each analytics destination is isolated from the others: one that fails, or whose sending code fails, never stops the events sent to the rest.
+Each analytics destination is isolated from the others' faults. One that fails, or whose sending code fails, never stops the events sent to the rest.
 
 | Why |
 |---|
-| one broken service would otherwise blind every report, not only its own. |
+| one broken service would otherwise blind every report, not only its own — the bulkhead pattern. |

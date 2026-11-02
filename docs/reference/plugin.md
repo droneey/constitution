@@ -17,7 +17,7 @@ Each skill is called by its slash command:
 The `reviewer` agent reads the files and the rules that govern them, and never edits. A broken `MUST` is a finding; a broken `SHOULD` is one unless the code shows its reason; a `MAY` never is. It skips what the tools already hold, and returns one finding per line, `<path>:<line> — <rule> — <what is wrong> — <the fix>`:
 
 ```text
-src/orders/order.ts:42 — fact-has-one-source — the total is stored beside the lines it sums — compute it from the lines
+src/features/orders/domain/order/entities/order.aggregate.ts:42 — fact-has-one-source — the total is stored beside the lines it sums — compute it from the lines
 ```
 
 ## Hooks

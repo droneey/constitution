@@ -4,7 +4,8 @@ import { BlockId } from '#/kernel/value-objects';
 
 import type { Setting, WholeDefault } from '../../../setting/entities';
 import { PresetValue, ValueKind, WholeKind } from '../../../setting/entities';
-import { PresetsCode } from '../../../shared/entities';
+import type { PlacedFlaw } from '../../../shared/entities';
+import { InheritanceFlaw, PathSide, PresetsCode } from '../../../shared/entities';
 import type { Contribution } from '../merged-file.entity';
 import { MergedFile } from '../merged-file.entity';
 
@@ -18,7 +19,10 @@ const map = (pairs: Readonly<Record<string, PresetValue>>): PresetValue =>
 
 const plain = (setting: Setting): PresetValue => PresetValue.plain(setting);
 
-const markedOf = (kind: ValueKind.Default | ValueKind.Replace, setting: Setting): PresetValue => ({
+const markedOf = (
+  kind: ValueKind.Default | ValueKind.Inherit | ValueKind.Replace,
+  setting: Setting,
+): PresetValue => ({
   isWords: false,
   kind,
   setting,
@@ -28,6 +32,17 @@ const from = (source: string, given: PresetValue): Contribution => ({
   block: BlockId.create(source),
   source,
   value: given,
+});
+
+const inherits = (source: Setting): PresetValue => markedOf(ValueKind.Inherit, source);
+
+const SETTINGS_OF_EACH_TOOL = 'stages.*.tools.<tool>.settings';
+const TOOLS_SETTINGS = 'tools.<tool>.settings';
+
+const flawAt = (side: PathSide, step: number, flaw: InheritanceFlaw): PlacedFlaw => ({
+  flaw,
+  side,
+  step,
 });
 
 describe('MergedFile.merge', () => {
@@ -907,6 +922,778 @@ describe('MergedFile.merge', () => {
               'a',
               'c',
             ],
+          },
+        },
+      ]);
+    },
+  );
+
+  it.each<{
+    condition: string;
+    contributions: readonly Contribution[];
+    file: Setting;
+  }>([
+    {
+      condition: 'the inherited map joins the inheriting one key by key, at every depth',
+      contributions: [
+        from(
+          'a',
+          map({
+            [SETTINGS_OF_EACH_TOOL]: inherits(TOOLS_SETTINGS),
+            stages: plain([
+              {
+                tools: {
+                  lint: {
+                    settings: {
+                      limits: {
+                        memory: 2,
+                      },
+                    },
+                  },
+                },
+              },
+            ]),
+            tools: plain({
+              lint: {
+                settings: {
+                  limits: {
+                    cpu: 1,
+                  },
+                  strict: true,
+                },
+              },
+            }),
+          }),
+        ),
+      ],
+      file: {
+        stages: [
+          {
+            tools: {
+              lint: {
+                settings: {
+                  limits: {
+                    cpu: 1,
+                    memory: 2,
+                  },
+                  strict: true,
+                },
+              },
+            },
+          },
+        ],
+        tools: {
+          lint: {
+            settings: {
+              limits: {
+                cpu: 1,
+              },
+              strict: true,
+            },
+          },
+        },
+      },
+    },
+    {
+      condition: 'the inherited list goes first and the inheriting one adds the items it lacks',
+      contributions: [
+        from(
+          'a',
+          map({
+            [SETTINGS_OF_EACH_TOOL]: inherits(TOOLS_SETTINGS),
+            stages: plain([
+              {
+                tools: {
+                  lint: {
+                    settings: {
+                      paths: [
+                        'lib',
+                        'tests',
+                      ],
+                    },
+                  },
+                },
+              },
+            ]),
+            tools: plain({
+              lint: {
+                settings: {
+                  paths: [
+                    'src',
+                    'lib',
+                  ],
+                },
+              },
+            }),
+          }),
+        ),
+      ],
+      file: {
+        stages: [
+          {
+            tools: {
+              lint: {
+                settings: {
+                  paths: [
+                    'src',
+                    'lib',
+                    'tests',
+                  ],
+                },
+              },
+            },
+          },
+        ],
+        tools: {
+          lint: {
+            settings: {
+              paths: [
+                'src',
+                'lib',
+              ],
+            },
+          },
+        },
+      },
+    },
+    {
+      condition: 'the inheriting value is a scalar or of another kind than the inherited one',
+      contributions: [
+        from(
+          'a',
+          map({
+            [SETTINGS_OF_EACH_TOOL]: inherits(TOOLS_SETTINGS),
+            stages: plain([
+              {
+                tools: {
+                  lint: {
+                    settings: {
+                      level: {
+                        value: 2,
+                      },
+                      limits: 'none',
+                      paths: 'none',
+                      strict: false,
+                    },
+                  },
+                },
+              },
+            ]),
+            tools: plain({
+              lint: {
+                settings: {
+                  level: 'high',
+                  limits: {
+                    cpu: 1,
+                  },
+                  paths: [
+                    'src',
+                  ],
+                  strict: true,
+                },
+              },
+            }),
+          }),
+        ),
+      ],
+      file: {
+        stages: [
+          {
+            tools: {
+              lint: {
+                settings: {
+                  level: {
+                    value: 2,
+                  },
+                  limits: 'none',
+                  paths: 'none',
+                  strict: false,
+                },
+              },
+            },
+          },
+        ],
+        tools: {
+          lint: {
+            settings: {
+              level: 'high',
+              limits: {
+                cpu: 1,
+              },
+              paths: [
+                'src',
+              ],
+              strict: true,
+            },
+          },
+        },
+      },
+    },
+    {
+      condition: 'a named step binds each key it meets, and a key step passes its siblings by',
+      contributions: [
+        from(
+          'a',
+          map({
+            'stages.*.tools.<tool-name>.settings': inherits('tools.<tool-name>.settings'),
+            stages: plain([
+              {
+                notes: {
+                  lint: {
+                    settings: {
+                      fix: false,
+                    },
+                  },
+                },
+                tools: {
+                  lint: {
+                    settings: {
+                      fix: false,
+                    },
+                  },
+                  test: {
+                    settings: {
+                      bail: true,
+                    },
+                  },
+                },
+              },
+            ]),
+            tools: plain({
+              lint: {
+                settings: {
+                  strict: true,
+                },
+              },
+              test: {
+                settings: {
+                  timeout: 10,
+                },
+              },
+            }),
+          }),
+        ),
+      ],
+      file: {
+        stages: [
+          {
+            notes: {
+              lint: {
+                settings: {
+                  fix: false,
+                },
+              },
+            },
+            tools: {
+              lint: {
+                settings: {
+                  fix: false,
+                  strict: true,
+                },
+              },
+              test: {
+                settings: {
+                  bail: true,
+                  timeout: 10,
+                },
+              },
+            },
+          },
+        ],
+        tools: {
+          lint: {
+            settings: {
+              strict: true,
+            },
+          },
+          test: {
+            settings: {
+              timeout: 10,
+            },
+          },
+        },
+      },
+    },
+    {
+      condition: 'several items of a list each hold the inheriting path',
+      contributions: [
+        from(
+          'a',
+          map({
+            [SETTINGS_OF_EACH_TOOL]: inherits(TOOLS_SETTINGS),
+            stages: plain([
+              {
+                tools: {
+                  lint: {
+                    settings: {
+                      fix: true,
+                    },
+                  },
+                },
+              },
+              {
+                tools: {
+                  lint: {
+                    settings: {
+                      fix: false,
+                    },
+                  },
+                },
+              },
+            ]),
+            tools: plain({
+              lint: {
+                settings: {
+                  strict: true,
+                },
+              },
+            }),
+          }),
+        ),
+      ],
+      file: {
+        stages: [
+          {
+            tools: {
+              lint: {
+                settings: {
+                  fix: true,
+                  strict: true,
+                },
+              },
+            },
+          },
+          {
+            tools: {
+              lint: {
+                settings: {
+                  fix: false,
+                  strict: true,
+                },
+              },
+            },
+          },
+        ],
+        tools: {
+          lint: {
+            settings: {
+              strict: true,
+            },
+          },
+        },
+      },
+    },
+    {
+      condition: 'the inherited path holds nothing',
+      contributions: [
+        from(
+          'a',
+          map({
+            [SETTINGS_OF_EACH_TOOL]: inherits(TOOLS_SETTINGS),
+            stages: plain([
+              {
+                tools: {
+                  build: {
+                    settings: {
+                      minify: true,
+                    },
+                  },
+                },
+              },
+            ]),
+            tools: plain({
+              lint: {
+                settings: {
+                  strict: true,
+                },
+              },
+            }),
+          }),
+        ),
+      ],
+      file: {
+        stages: [
+          {
+            tools: {
+              build: {
+                settings: {
+                  minify: true,
+                },
+              },
+            },
+          },
+        ],
+        tools: {
+          lint: {
+            settings: {
+              strict: true,
+            },
+          },
+        },
+      },
+    },
+    {
+      condition: 'the inheriting path meets a text before its end',
+      contributions: [
+        from(
+          'a',
+          map({
+            [SETTINGS_OF_EACH_TOOL]: inherits(TOOLS_SETTINGS),
+            stages: plain([
+              {
+                tools: {
+                  lint: 'off',
+                },
+              },
+            ]),
+            tools: plain({
+              lint: {
+                settings: {
+                  strict: true,
+                },
+              },
+            }),
+          }),
+        ),
+      ],
+      file: {
+        stages: [
+          {
+            tools: {
+              lint: 'off',
+            },
+          },
+        ],
+        tools: {
+          lint: {
+            settings: {
+              strict: true,
+            },
+          },
+        },
+      },
+    },
+    {
+      condition: 'a step of any child meets a map',
+      contributions: [
+        from(
+          'a',
+          map({
+            env: plain({
+              ci: 'true',
+            }),
+            'profiles.*.env': inherits('env'),
+            profiles: plain({
+              dev: {
+                env: {
+                  debug: '1',
+                },
+              },
+              prod: {
+                env: {
+                  ci: 'false',
+                },
+              },
+            }),
+          }),
+        ),
+      ],
+      file: {
+        env: {
+          ci: 'true',
+        },
+        profiles: {
+          dev: {
+            env: {
+              ci: 'true',
+              debug: '1',
+            },
+          },
+          prod: {
+            env: {
+              ci: 'false',
+            },
+          },
+        },
+      },
+    },
+    {
+      condition: 'a step that names a key meets a list',
+      contributions: [
+        from(
+          'a',
+          map({
+            env: plain({
+              ci: 'true',
+            }),
+            'stages.<stage>.env': inherits('env'),
+            stages: plain([
+              {
+                env: {
+                  debug: '1',
+                },
+              },
+            ]),
+          }),
+        ),
+      ],
+      file: {
+        env: {
+          ci: 'true',
+        },
+        stages: [
+          {
+            env: {
+              debug: '1',
+            },
+          },
+        ],
+      },
+    },
+    {
+      condition: 'the declaration sits inside a map, where both its paths start',
+      contributions: [
+        from(
+          'a',
+          map({
+            env: plain({
+              root: '1',
+            }),
+            pipeline: map({
+              ci: map({
+                env: plain({
+                  ci: 'true',
+                }),
+                'stages.*.env': inherits('env'),
+                stages: plain([
+                  {
+                    env: {
+                      debug: '1',
+                    },
+                  },
+                ]),
+              }),
+            }),
+          }),
+        ),
+      ],
+      file: {
+        env: {
+          root: '1',
+        },
+        pipeline: {
+          ci: {
+            env: {
+              ci: 'true',
+            },
+            stages: [
+              {
+                env: {
+                  ci: 'true',
+                  debug: '1',
+                },
+              },
+            ],
+          },
+        },
+      },
+    },
+    {
+      condition: 'one entry declares and others give the values, two declarations among them',
+      contributions: [
+        from(
+          'a',
+          map({
+            [SETTINGS_OF_EACH_TOOL]: inherits(TOOLS_SETTINGS),
+            'stages.*.env': inherits('env'),
+          }),
+        ),
+        from(
+          'b',
+          map({
+            env: plain({
+              ci: 'true',
+            }),
+            tools: plain({
+              lint: {
+                settings: {
+                  strict: true,
+                },
+              },
+            }),
+          }),
+        ),
+        from(
+          'c',
+          map({
+            stages: plain([
+              {
+                env: {
+                  debug: '1',
+                },
+                tools: {
+                  lint: {
+                    settings: {
+                      fix: true,
+                    },
+                  },
+                },
+              },
+            ]),
+          }),
+        ),
+      ],
+      file: {
+        env: {
+          ci: 'true',
+        },
+        stages: [
+          {
+            env: {
+              ci: 'true',
+              debug: '1',
+            },
+            tools: {
+              lint: {
+                settings: {
+                  fix: true,
+                  strict: true,
+                },
+              },
+            },
+          },
+        ],
+        tools: {
+          lint: {
+            settings: {
+              strict: true,
+            },
+          },
+        },
+      },
+    },
+  ])(
+    'should lay the inherited value under the inheriting one when $condition',
+    ({ contributions, file }) => {
+      // Act
+      const merged = MergedFile.merge(contributions);
+
+      // Assert
+      expect(merged).toStrictEqual({
+        defaults: [],
+        problems: [],
+        value: file,
+      });
+    },
+  );
+
+  it.each<{
+    condition: string;
+    declaration: PresetValue;
+    flaws: readonly PlacedFlaw[];
+    settingPath: string;
+  }>([
+    {
+      condition: 'a step of the inheriting path is empty',
+      declaration: map({
+        tools: map({
+          'stages..env': inherits('env'),
+        }),
+      }),
+      flaws: [
+        flawAt(PathSide.Inheriting, 1, InheritanceFlaw.EmptyStep),
+      ],
+      settingPath: 'tools.stages..env',
+    },
+    {
+      condition: 'the inheriting path binds one name twice',
+      declaration: map({
+        'stages.<stage>.<stage>': inherits('env.<stage>'),
+      }),
+      flaws: [
+        flawAt(PathSide.Inheriting, 2, InheritanceFlaw.NameBoundTwice),
+      ],
+      settingPath: 'stages.<stage>.<stage>',
+    },
+    {
+      condition: 'the inherited path steps into any child',
+      declaration: map({
+        'stages.*.env': inherits('*.env'),
+      }),
+      flaws: [
+        flawAt(PathSide.Source, 0, InheritanceFlaw.AnyChildInSource),
+      ],
+      settingPath: 'stages.*.env',
+    },
+    {
+      condition: 'the inherited path reads a name the inheriting path does not bind',
+      declaration: map({
+        'stages.*.env': inherits('env.<stage>'),
+      }),
+      flaws: [
+        flawAt(PathSide.Source, 1, InheritanceFlaw.UnboundName),
+      ],
+      settingPath: 'stages.*.env',
+    },
+    {
+      condition: 'a step of the inherited path is empty',
+      declaration: map({
+        'stages.*.env': inherits('env.'),
+      }),
+      flaws: [
+        flawAt(PathSide.Source, 1, InheritanceFlaw.EmptyStep),
+      ],
+      settingPath: 'stages.*.env',
+    },
+    {
+      condition: 'the inherited path is no text, and the inheriting one has a flaw of its own',
+      declaration: map({
+        'stages..env': inherits([
+          'env',
+        ]),
+      }),
+      flaws: [
+        flawAt(PathSide.Inheriting, 1, InheritanceFlaw.EmptyStep),
+        flawAt(PathSide.Source, 0, InheritanceFlaw.SourceNotText),
+      ],
+      settingPath: 'stages..env',
+    },
+    {
+      condition: 'the declaration stands for the whole file',
+      declaration: inherits('env'),
+      flaws: [
+        flawAt(PathSide.Inheriting, 0, InheritanceFlaw.EmptyStep),
+      ],
+      settingPath: '',
+    },
+    {
+      condition: 'both paths have several flaws, and angle brackets inside a step name a key',
+      declaration: map({
+        'stages..<stage>.<stage>': inherits('*.<step>.v<other>.<other>v'),
+      }),
+      flaws: [
+        flawAt(PathSide.Inheriting, 1, InheritanceFlaw.EmptyStep),
+        flawAt(PathSide.Inheriting, 3, InheritanceFlaw.NameBoundTwice),
+        flawAt(PathSide.Source, 0, InheritanceFlaw.AnyChildInSource),
+        flawAt(PathSide.Source, 1, InheritanceFlaw.UnboundName),
+      ],
+      settingPath: 'stages..<stage>.<stage>',
+    },
+  ])(
+    'should refuse the declaration and name each of its flaws when $condition',
+    ({ declaration, flaws, settingPath }) => {
+      // Act
+      const merged = MergedFile.merge([
+        from('a', declaration),
+      ]);
+
+      // Assert
+      expect(merged.problems).toStrictEqual([
+        {
+          code: PresetsCode.InheritanceMalformed,
+          details: {
+            flaws,
+            settingPath,
           },
         },
       ]);

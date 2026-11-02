@@ -1,13 +1,14 @@
 ```pseudo title="Avoid"
-function addItem(cart, item)
-  cart.items.push(item)
+function addLine(cart, line)
+  cart.lines.push(line)
+
   return cart
 # every holder of cart sees it change
 ```
 
 ```pseudo title="Prefer"
-function addItem(cart, item)
+function addLine(cart, line)
   return cart with {
-    items: cart.items + [item]
+    lines: cart.lines + [line]
   }
 ```

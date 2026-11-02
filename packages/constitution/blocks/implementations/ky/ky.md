@@ -5,7 +5,7 @@ requires: [typescript, remote-service]
 extends: null
 abstract: false
 languages: []
-governs: ["**/providers/**", "**/infrastructure/**"]
+governs: ["**/root/**", "**/libs/**", "**/infrastructure/**"]
 ---
 
 # ky

@@ -6,8 +6,8 @@
 
 ### json-configuration-names-its-schema → configuration-names-its-schema · SHOULD
 
-A configuration written in JSON names its reader's schema in `$schema`, where the reader accepts the key.
+A configuration written in JSON names its reader's schema in `$schema`. This holds where the reader accepts the key.
 
 | Why |
 |---|
-| the key is where JSON tools look for a schema. |
+| a schema named anywhere else is not found by JSON tools, so an editor checks and completes the file against nothing. |

@@ -4,9 +4,9 @@
 
 ## Catching and carrying
 
-### shell-steps-fail-on-any-error → catch-handles-only-what-it-recognises · MUST
+### piped-run-fails-on-any-failed-command → catch-handles-only-what-it-recognises · MUST
 
-A `RUN` that pipes sets `-o pipefail` through `SHELL`.
+A `RUN` that pipes fails when any command of its pipe fails. It sets `-o pipefail` through `SHELL`.
 
 | Why |
 |---|

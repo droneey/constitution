@@ -6,7 +6,7 @@
 
 ### text-addresses-the-reader-as-you · SHOULD
 
-Text a person reads speaks to them as `you`, never as `the user`, and in a language with a formal and an informal `you`, in the one form the product chose.
+Text a person reads addresses them as `you`. It never speaks of `the user`, and in a language with a formal and an informal `you` it takes the one form the product chose.
 
 | Why |
 |---|
@@ -18,12 +18,12 @@ Text a person reads is written in sentence case, with only the capitals its lang
 
 | Why |
 |---|
-| one case reads as one voice, and a translator keeps the case the source shows. |
+| text set in several cases reads as several voices, and a translator carries whatever case the source shows into every language. |
 
 ### text-uses-the-locales-punctuation · SHOULD
 
-Text a person reads uses its locale's typographic punctuation — its quotation marks, `«…»` in Ukrainian, `„…”` in Polish, `“…”` in English; its apostrophe, `’` in English and `ʼ` in Ukrainian; its dashes, `–` for a range and the dash its language sets an aside with; and the ellipsis `…` — never straight quotes, a hyphen for a dash or three dots.
+Text a person reads uses its locale's typographic punctuation. That is its quotation marks, `«…»` in Ukrainian, `„…”` in Polish, `“…”` in English; its apostrophe, `’` in English and `ʼ` in Ukrainian; its dashes, `–` for a range and the dash its language sets an aside with; and the ellipsis `…` — never straight quotes, a hyphen for a dash or three dots.
 
 | Why |
 |---|
-| typed punctuation reads as unfinished text, and each language quotes in its own marks. |
+| typed punctuation reads as unfinished text, and one language's marks read as a mistake in another, which quotes in its own. |

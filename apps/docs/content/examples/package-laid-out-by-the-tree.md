@@ -1,12 +1,27 @@
-```text
-invoices/
-├── package.json        the manifest
-├── package-lock.json   the lockfile
-├── .editorconfig       a file a tool looks up at the root
-├── README.md
-├── src/                the source: only the folders of the tree
-├── tests/
-│   └── e2e/            suites that drive the built package
-├── docs/               writing for readers outside the code
-└── templates/          content shipped as it is, one folder per kind
+```text title="Avoid"
+features/orders/
+├── domain/
+│   └── order.entity.ts
+├── infrastructure/postgres/
+│   ├── order-repository.adapter.ts
+│   └── index.ts
+├── order.model.ts
+└── index.ts
+```
+
+```text title="Prefer"
+features/orders/
+├── domain/
+│   └── order/
+│       ├── entities/
+│       │   ├── order.aggregate.ts
+│       │   └── index.ts
+│       └── transitions/
+│           ├── order.transitions.ts
+│           └── index.ts
+├── infrastructure/postgres/
+│   ├── models/order.model.ts
+│   ├── order-repository.adapter.ts
+│   └── index.ts
+└── index.ts
 ```

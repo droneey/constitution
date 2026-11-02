@@ -10,7 +10,7 @@ import {
   mustOf,
   sessionStateOf,
 } from '../../../../../__tests__/session.fixtures';
-import { createFakeSessionQueryRepository } from '../../../../../__tests__/session-query-repository.fake';
+import { createFakeSessionQueries } from '../../../../../__tests__/session-query-repository.fake';
 import type { RemindedBlock } from '../../../../../domain/reminder/entities';
 import { SessionAgent } from '../../../../../domain/session/entities';
 import { AgentId, SessionId } from '../../../../../domain/session/value-objects';
@@ -100,7 +100,7 @@ describe('remindOfFile', () => {
     'should name every block that governs the file, with its MUST rules, when $condition',
     ({ path }) => {
       // Arrange
-      const sessions = createFakeSessionQueryRepository(
+      const sessionQueries = createFakeSessionQueries(
         heldSessionsOf({
           state: savedState,
         }),
@@ -111,7 +111,7 @@ describe('remindOfFile', () => {
         agent: SessionAgent.main,
         path,
         session: keptSession,
-        sessions,
+        sessionQueries,
       });
 
       // Assert
@@ -154,7 +154,7 @@ describe('remindOfFile', () => {
     'should leave out the blocks already named to the session or its agent when $condition',
     ({ asker, blocks }) => {
       // Arrange
-      const sessions = createFakeSessionQueryRepository(
+      const sessionQueries = createFakeSessionQueries(
         heldSessionsOf({
           reminded: [
             {
@@ -178,7 +178,7 @@ describe('remindOfFile', () => {
         ...asker,
         path: 'src/ui/a.ts',
         session: keptSession,
-        sessions,
+        sessionQueries,
       });
 
       // Assert
@@ -202,7 +202,7 @@ describe('remindOfFile', () => {
     },
   ])('should name no block when $condition', ({ path, state }) => {
     // Arrange
-    const sessions = createFakeSessionQueryRepository(
+    const sessionQueries = createFakeSessionQueries(
       heldSessionsOf({
         state,
       }),
@@ -213,7 +213,7 @@ describe('remindOfFile', () => {
       agent: SessionAgent.main,
       path,
       session: keptSession,
-      sessions,
+      sessionQueries,
     });
 
     // Assert
@@ -246,7 +246,7 @@ describe('remindOfFile', () => {
     },
   ])('should give no reminder when $condition', ({ path, session }) => {
     // Arrange
-    const sessions = createFakeSessionQueryRepository(
+    const sessionQueries = createFakeSessionQueries(
       heldSessionsOf({
         state: savedState,
       }),
@@ -257,7 +257,7 @@ describe('remindOfFile', () => {
       agent: SessionAgent.main,
       path,
       session,
-      sessions,
+      sessionQueries,
     });
 
     // Assert

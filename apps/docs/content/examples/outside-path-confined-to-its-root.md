@@ -7,7 +7,9 @@ return readFile(
 ```pseudo title="Prefer"
 let path = realPath(
   join(invoicesRoot, name))
+
 if not isInside(path, invoicesRoot)
-  throw PathOutsideRootError
+  throw new PathOutsideRootError()
+
 return readFile(path)
 ```

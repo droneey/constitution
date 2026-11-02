@@ -259,11 +259,11 @@ describe('PresetEntry.roleIdsOf', () => {
       condition: 'its path, its guard and its value name roles beside other facts',
       expected: [
         'source',
-        'gateway',
-        'gateway-file',
+        'adapter',
+        'adapter-file',
       ],
-      key: '${role.source}/biome.json ? ${unit.parent} = ${role.gateway}',
-      pattern: '**/*${role.gateway-file}.${unit.name}',
+      key: '${role.source}/biome.json ? ${unit.parent} = ${role.adapter}',
+      pattern: '**/*${role.adapter-file}.${unit.name}',
     },
     {
       condition: 'its guard tests a role and its value names none',

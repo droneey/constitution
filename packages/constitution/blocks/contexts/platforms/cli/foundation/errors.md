@@ -1,26 +1,16 @@
 # Errors
 
-> Governs a failure of a command-line program: its exit code, an unknown command, and who decides the exit.
+> Governs a failure of a command-line program: an unknown command, and who decides its exit code.
 
 ## General
 
 ### unknown-command-never-guessed · SHOULD
 
-An unknown command or flag is a usage error that names the closest match and never runs it; no command answers to an abbreviation of its name.
+An unknown command or flag is never guessed. It is a usage error that names the closest match and never runs it; no command answers to an abbreviation of its name.
 
 | Why |
 |---|
 | a guess run in place of what was typed may be the destructive command, and an abbreviation that works today runs another command once a new one shares its start. |
-
-## Kinds of failure
-
-### exit-codes-from-one-map → failure-told-apart-by-code · MUST
-
-Exit codes come from one map: 0 success, 1 a failure the user can act on, 2 a usage error — an unknown command, a bad flag, a missing answer — 70 the program's own defect, and 128 plus the number of the signal that ended a run — 130 an interrupt, 141 a closed pipe, 143 a termination request (`SIGTERM`); any other outcome a caller branches on takes a code of its own in the map.
-
-| Why |
-|---|
-| a script decides what to do from the exit code alone, so each code must mean one thing in every command; 2 is the usage code of the shell's utilities, 70 is the code sysexits gives an internal error, and 130 is how shells report an interrupt, 128 plus the signal's number. |
 
 ## Requirements for implementation
 
@@ -30,4 +20,4 @@ The program's handler decides every exit code, the framework's own failures incl
 
 | Why |
 |---|
-| without it, the one map of exit codes cannot hold. |
+| a framework that exits on its own failures uses codes outside the one map, and a script reads them wrong. |

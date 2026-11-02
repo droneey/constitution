@@ -6,7 +6,7 @@
 
 ### nestjs-keeps-decorator-metadata · MUST
 
-The compiler and the build keep what Nest's injector reads: `experimentalDecorators` and `emitDecoratorMetadata` in `tsconfig.json`, and, where swc builds the program, `legacyDecorator` and `decoratorMetadata` in `.swcrc`.
+The compiler and the build keep the decorator metadata Nest's injector reads. They set `experimentalDecorators` and `emitDecoratorMetadata` in `tsconfig.json` and, where swc builds the program, `legacyDecorator` and `decoratorMetadata` in `.swcrc`.
 
 | Why |
 |---|
@@ -14,7 +14,7 @@ The compiler and the build keep what Nest's injector reads: `experimentalDecorat
 
 ### injected-classes-imported-as-values → type-only-import-written-as-import-type · MUST
 
-A class a decorated constructor names is imported as a value, never with `import type`; the lint rule that asks for the type import is lifted only in the files of the classes the injector builds.
+A class a decorated constructor names is imported as a value, never with `import type`. The lint rule that asks for the type import is lifted only in the files of the classes the injector builds.
 
 | Why |
 |---|
@@ -22,8 +22,8 @@ A class a decorated constructor names is imported as a value, never with `import
 
 ### framework-filled-fields-marked-definite → compiler-is-the-type-gate · MUST
 
-A field of a class the framework fills — a body, a query or the parameters of a request — has no initializer and is marked definite: `name!: string`, or `name?: string` when it may be absent.
+A field the framework fills is marked definite, or optional where it may be absent, and has no initializer. Such a field — a body, a query or the parameters of a request — is written `name!: string`, or `name?: string` when it may be absent.
 
 | Why |
 |---|
-| the framework assigns these fields after it builds the object, and `!` says so to `strictPropertyInitialization`, which still refuses any other field left unset. |
+| the framework assigns these fields after it builds the object, so `strictPropertyInitialization` refuses them unmarked; `!` says so, and the compiler still refuses any other field left unset. |

@@ -6,7 +6,7 @@
 
 ### rule-lists-extended-never-replaced → own-settings-only-add · MUST
 
-A project adds a rule with `extend-enable` and removes with `extend-disable` only a rumdl rule that holds no rule of the Constitution, never with `enable` or `disable`, and a `[per-file-ignores]` of its own repeats the entries of the Constitution's distribution.
+A project extends rumdl's rule lists, never replaces them. It adds a rule with `extend-enable` and removes with `extend-disable` only a rumdl rule that holds no rule of the Constitution, never with `enable` or `disable`, and a `[per-file-ignores]` of its own repeats the entries of the Constitution's distribution.
 
 | Why |
 |---|
@@ -14,7 +14,7 @@ A project adds a rule with `extend-enable` and removes with `extend-disable` onl
 
 ### rumdl-suppression-names-rule-and-reason → suppression-silences-one-finding · MUST
 
-A suppression is `<!-- rumdl-disable-next-line MD<nnn> -->` on the line above its finding, followed on that line by its reason in a comment of its own; never a `rumdl-disable` over a range or a `rumdl-disable-file`.
+A suppression is `<!-- rumdl-disable-next-line MD<nnn> -->` on the line above its finding. Its reason follows on that line in a comment of its own, and no `rumdl-disable` over a range or `rumdl-disable-file` is written.
 
 | Why |
 |---|

@@ -4,9 +4,9 @@
 
 ## General
 
-### uv-workspace-globbed-by-the-tree · SHOULD
+### uv-workspace-globbed-by-the-tree · MUST
 
-`members` lists the glob `packages/*/python`, which matches only the Python package of each group, and the path of every other Python package: an app, `apps/<name>` or `apps/<group>/<name>`, a package in Python alone, `packages/<name>`, and a group's `shared/` that a Python package reads, `packages/<group>/shared`.
+The uv workspace's `members` matches the Python packages alone, by the tree. It lists the glob `packages/*/python`, which matches only the Python package of each group, and the path of every other Python package: an app, `apps/<name>` or `apps/<group>/<name>`, a package in Python alone, `packages/<name>`, and a group's `shared/` that a Python package reads, `packages/<group>/shared`.
 
 | Why |
 |---|

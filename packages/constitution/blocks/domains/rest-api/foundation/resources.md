@@ -6,7 +6,7 @@
 
 ### resource-path-names-nouns · SHOULD
 
-A path names resources: a collection by a plural noun, then an identifier — `/orders/{orderId}/items` — never a verb; an action no standard method expresses is a sub-resource or a custom method of its resource.
+A path names resources, never a verb. A collection is named by a plural noun, then an identifier; an action no standard method expresses is a sub-resource or a custom method of its resource.
 
 | Why |
 |---|
@@ -14,9 +14,9 @@ A path names resources: a collection by a plural noun, then an identifier — `/
 
 ## Methods
 
-### partial-update-by-merge-patch · SHOULD
+### partial-update-sets-only-what-it-names · SHOULD
 
-A partial update is a `PATCH` in JSON Merge Patch (RFC 7396) or with a field mask naming what it sets: a field it leaves out stays as it was, and `null` clears one.
+A partial update is a `PATCH` that sets only what it names. It is written in JSON Merge Patch (RFC 7396) or with a field mask naming what it sets: a field it leaves out stays as it was, and `null` clears one.
 
 | Why |
 |---|

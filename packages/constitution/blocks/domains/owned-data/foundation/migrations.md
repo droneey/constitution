@@ -6,7 +6,7 @@
 
 ### schema-changed-only-by-a-migration · MUST
 
-The schema of a store the program owns changes only by a migration kept in the repository and applied in order, never by hand and never by a sync from the program's models at start.
+The schema of a store the program owns changes only by a migration. The migration is kept in the repository and applied in order; the schema never changes by hand, nor by a sync from the program's code at start.
 
 | Why |
 |---|
@@ -14,7 +14,7 @@ The schema of a store the program owns changes only by a migration kept in the r
 
 ### applied-migration-never-edited · MUST
 
-A migration applied to any shared store is never edited or removed; a correction is a new migration.
+A migration applied to any shared store is never edited or removed. A correction is a new migration.
 
 | Why |
 |---|
@@ -24,7 +24,7 @@ A migration applied to any shared store is never edited or removed; a correction
 
 ### migration-applied-once-before-its-release · MUST
 
-A migration of a store several instances share is applied once, by one run before the release that needs it starts, never by each instance as it boots.
+A migration of a store several instances share is applied once, before the release that needs it starts. One run applies it, never each instance as it boots.
 
 | Why |
 |---|
@@ -32,7 +32,7 @@ A migration of a store several instances share is applied once, by one run befor
 
 ### migration-holds-no-long-lock · SHOULD
 
-A migration on a store in use sets a lock timeout, builds an index without blocking writes where the engine can, and leaves a backfill to a run of its own in bounded batches.
+A migration on a store in use holds no long lock. It sets a lock timeout, builds an index without blocking writes where the engine can, and leaves a backfill to a run of its own in bounded batches.
 
 | Why |
 |---|

@@ -14,4 +14,4 @@ bun-test:
         test:
           preload:
             - slot: fixtures
-            - ./${role.source}/${role.colocated-specs}/sandbox.fixtures.ts
+            - ./${role.source}/${role.colocated-specs}/sandbox.${role.fixtures-file}.ts

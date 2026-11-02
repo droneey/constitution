@@ -1,17 +1,17 @@
 ```pseudo title="Avoid"
-# src/root/wiring.ts
-import PaymentGatewayFake from
-  "../__tests__/payment-gateway.fake"
+# src/root/payments.ts
+import createPaymentFake from
+  "../__tests__/payment.fake"
 
-let payments = new PaymentGatewayFake()
-let payOrder = newPayOrder(payments)
+let payments = createPaymentFake()
+let payOrder = createPayOrder({ payments })
 ```
 
 ```pseudo title="Prefer"
-# src/root/wiring.ts
-import CardPaymentAdapter from
-  "../infrastructure/card-payments"
+# src/root/payments.ts
+import createStripePaymentAdapter from
+  "../infrastructure/stripe"
 
-let payments = new CardPaymentAdapter()
-let payOrder = newPayOrder(payments)
+let payments = createStripePaymentAdapter({ client: stripeClient })
+let payOrder = createPayOrder({ payments })
 ```

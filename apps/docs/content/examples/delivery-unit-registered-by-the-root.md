@@ -1,23 +1,26 @@
 ```pseudo title="Avoid"
-# orders/presentation/show-order
-function showOrder(request)
-  return getOrder(request.id)
+# orders/presentation/bindings/queries/show-order
+function showOrder(request, getOrder, context)
+  let input = parseGetOrderInput(request.params)
+
+  return ok(getOrder(input, context))
 
 # registers itself on import
 router.get("/orders/:id", showOrder)
 
 # root/routes
-call loadEvery("features/*/app")
+call loadEvery("features/*/presentation")
 ```
 
 ```pseudo title="Prefer"
-# orders/presentation/show-order
-function showOrder(request)
-  return getOrder(request.id)
+# orders/presentation/bindings/queries/show-order
+function showOrder(request, getOrder, context)
+  let input = parseGetOrderInput(request.params)
+
+  return ok(getOrder(input, context))
 
 # root/routes
-import listOrders from "orders"
-import showOrder from "orders"
+import { listOrders, showOrder } from "features/orders"
 
 router.get("/orders", listOrders)
 router.get("/orders/:id", showOrder)

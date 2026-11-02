@@ -1,8 +1,8 @@
-import type { PagesQueryRepository } from '../../../contracts';
+import type { PageQueries } from '../../../contracts';
 
 export type GetFullText = () => Promise<string>;
 
 export const createGetFullText =
-  (pages: PagesQueryRepository<unknown>): GetFullText =>
+  (pageQueries: PageQueries<unknown>): GetFullText =>
   (): Promise<string> =>
-    pages.readFullText();
+    pageQueries.readFullText();

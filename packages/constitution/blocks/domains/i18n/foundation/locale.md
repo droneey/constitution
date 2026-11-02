@@ -6,7 +6,7 @@
 
 ### locale-negotiated-from-the-user · MUST
 
-The locale is chosen in this order: the user's explicit choice, their account's setting, the platform's preferred languages, then the product's default — never from the network address.
+The locale is negotiated from the user, never from the network address. It is chosen in this order: the user's explicit choice, their account's setting, the platform's preferred languages, then the product's default.
 
 | Why |
 |---|
@@ -14,7 +14,7 @@ The locale is chosen in this order: the user's explicit choice, their account's 
 
 ### missing-translation-falls-back · MUST
 
-A message missing in the active locale falls back along the locale's chain — `pt-BR`, then `pt`, then the source language — and never shows its key.
+A missing translation falls back along the locale's chain and never shows its key. A message missing in the active locale falls back — `pt-BR`, then `pt`, then the source language.
 
 | Why |
 |---|

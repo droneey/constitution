@@ -66,8 +66,10 @@ const preset = z.object({
 
 const biome = nodeBinary('biome');
 const blocks = join(release, 'blocks');
+const ARCHITECTURE = 'architecture';
 const CONFIG = 'biome.jsonc';
 const PRESETS = 'presets';
+const RESTRICTED_IMPORT = 'lint/style/noRestrictedImports';
 const SOURCE = 'src/order.ts';
 const WARN = 'warn';
 
@@ -168,9 +170,12 @@ const warnedRules = (): readonly string[] => {
     .map(({ rule }) => rule);
 };
 
-const codesOfWholeTree = async (
-  files: Readonly<Record<string, string>>,
-): Promise<readonly string[]> => {
+interface Tree {
+  readonly axes: readonly string[];
+  readonly files: Readonly<Record<string, string>>;
+}
+
+const diagnosticsOfTree = async ({ axes, files }: Tree): Promise<readonly BiomeDiagnostic[]> => {
   const folder = mkdtempSync(join(tmpdir(), 'constitution-biome-'));
 
   try {
@@ -181,7 +186,7 @@ const codesOfWholeTree = async (
         [CONFIG]: readFileSync(
           join(
             appliedUnit({
-              axes: [],
+              axes,
               implementations: [
                 'biome',
               ],
@@ -197,7 +202,7 @@ const codesOfWholeTree = async (
       folder,
     });
 
-    return (await biomeDiagnostics(folder)).map(({ category }) => category);
+    return await biomeDiagnostics(folder);
   } finally {
     rmSync(folder, {
       force: true,
@@ -206,10 +211,36 @@ const codesOfWholeTree = async (
   }
 };
 
+const codesOfWholeTree = async (
+  files: Readonly<Record<string, string>>,
+): Promise<readonly string[]> =>
+  (
+    await diagnosticsOfTree({
+      axes: [],
+      files,
+    })
+  ).map(({ category }) => category);
+
+const filesWithRestrictedImports = async (
+  files: Readonly<Record<string, string>>,
+): Promise<readonly string[]> =>
+  (
+    await diagnosticsOfTree({
+      axes: [
+        ARCHITECTURE,
+      ],
+      files,
+    })
+  )
+    .filter(({ category }) => category === RESTRICTED_IMPORT)
+    .map(({ location }) => location.path)
+    .toSorted();
+
 export type { BiomeDiagnostic };
 export {
   biomeDiagnostics,
   codesOfWholeTree,
+  filesWithRestrictedImports,
   repeatedPluginPaths,
   unwrittenPresetWords,
   warnedRules,

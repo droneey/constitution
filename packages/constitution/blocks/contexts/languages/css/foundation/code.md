@@ -6,7 +6,7 @@
 
 ### class-declared-is-used → dead-code-deleted · MUST
 
-Every class a stylesheet declares is used by markup, save a class a package offers to other packages through the stylesheet it publishes.
+Every class a stylesheet declares is used by markup. A class a package offers to other packages through the stylesheet it publishes is exempt.
 
 | Why |
 |---|

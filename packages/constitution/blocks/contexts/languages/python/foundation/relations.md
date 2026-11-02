@@ -10,13 +10,13 @@ No code reads or changes `sys.path`.
 
 | Why |
 |---|
-| a module then resolves only as a member of an installed package, the project's own included, so it imports the same way in the program, the specs and every tool. |
+| code that changes `sys.path` makes a module import one way in the program and another in the specs or a tool, or shadows an installed package with a file of the working folder. |
 
 ## Construction and state
 
 ### module-level-state-never-mutable → state-never-global-and-mutable · MUST
 
-No code uses the `global` statement; no module-level name or class attribute holds a value whose state changes after import — a container, an object whose attributes change, a cache of `functools.cache` or `lru_cache` — save the diagnostics facades configured once at start and a spec's setup that its hooks set for each case.
+No module-level state changes after import. No code uses the `global` statement, and no module-level name or class attribute holds a value whose state changes after import — a container, an object whose attributes change, a cache of `functools.cache` or `lru_cache` — save the diagnostics facades configured once at start and a spec's setup that its hooks set for each case.
 
 | Why |
 |---|
@@ -26,11 +26,11 @@ No code uses the `global` statement; no module-level name or class attribute hol
 
 ### overrides-marked-by-decorator → override-marked-where-declared · MUST
 
-A method that overrides one of a base class is decorated `@typing.override`; `__init__`, `__new__`, `__init_subclass__` and `__post_init__` aside.
+A method that overrides one of a base class is decorated `@typing.override`. `__init__`, `__new__`, `__init_subclass__` and `__post_init__` are exempt.
 
 | Why |
 |---|
-| a marked method whose base renamed or dropped its counterpart then fails the type check, and the methods aside are hooks of the language that no mark would make clearer. |
+| an unmarked override stops overriding unseen when its base renames or drops its counterpart, while a marked one then fails the type check. |
 
 ## Deprecation
 
@@ -40,4 +40,4 @@ Code kept only for its old callers is decorated `@warnings.deprecated` with a me
 
 | Why |
 |---|
-| the mark warns at every call at run time and flags every call where it is written, both with the message, which a docstring never does. |
+| a deprecation said only in a docstring is never seen where the code is called, so new callers keep coming, while the decorator warns at every call at run time and flags every call where it is written, each time with the message that names the replacement. |

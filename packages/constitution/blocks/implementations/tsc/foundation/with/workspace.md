@@ -6,8 +6,8 @@
 
 ### unit-built-as-a-composite-project → unit-compiled-by-its-own-options · MUST
 
-Each package's configuration is a `composite` project that emits only its declarations, with its `.tsbuildinfo`, into the package's **`.tsc-cache/`**{#declaration-cache}, a folder the repository ignores and every other tool leaves out; a package that imports another lists the other in `references`.
+Each package is a `composite` project that emits only its declarations. It emits them, with its `.tsbuildinfo`, into the package's **`.tsc-cache/`**{#declaration-cache}, a folder the repository ignores and every other tool leaves out; a package that imports another lists the other in `references`.
 
 | Why |
 |---|
-| `tsc -b` in a package checks the packages it imports first, each with its own options, and the importer reads their declarations instead of compiling their files; the declarations are a cache of the check, kept out of the tree the tools read. |
+| a package that compiles another's files checks them by its own options instead of theirs, and declarations left in the tree are read by the other tools as source; `tsc -b` checks each referenced package first, by its own options, and the importer reads its declarations. |

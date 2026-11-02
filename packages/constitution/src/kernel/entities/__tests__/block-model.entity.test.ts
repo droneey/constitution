@@ -448,7 +448,7 @@ describe('BlockModel.rolesIn', () => {
       {
         axis: Axis.Architecture,
         block: BlockId.create('ui'),
-        body: 'A screen sits in **`screens/`**{#screen}, named **`.screen`**, beside **`kernel/`**{#shared-domain}.',
+        body: 'A screen sits in **`screens/`**{#screen}, named **`.screen`**, beside **`kernel/`**{#shared-kernel}.',
       },
     ];
 

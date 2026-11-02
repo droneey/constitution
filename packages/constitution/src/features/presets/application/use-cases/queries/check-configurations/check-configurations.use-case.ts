@@ -9,14 +9,14 @@ import type {
   PresetFileParser,
   ProjectReader,
 } from '../../../contracts';
-import type { LockQueryRepository } from '../../../contracts/repositories/queries';
+import type { LockQueries } from '../../../contracts/repositories/queries';
 import { checkProject } from '../../shared/check-project';
 
 interface CheckConfigurationsInput {
   readonly distribution: DistributionSources;
   readonly files: ProjectFiles;
   readonly formats: ConfigurationFormat;
-  readonly locks: LockQueryRepository;
+  readonly lockQueries: LockQueries;
   readonly parser: PresetFileParser;
   readonly reader: ProjectReader;
   readonly startFolderPath: AbsolutePath;
@@ -32,7 +32,7 @@ const checkConfigurations = (input: CheckConfigurationsInput): ProjectRead<Confi
       distribution: input.distribution,
       files: input.files,
       formats: input.formats,
-      lockOf: input.locks.read,
+      lockOf: input.lockQueries.read,
       parser: input.parser,
       project,
     });

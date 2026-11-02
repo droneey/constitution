@@ -1,21 +1,31 @@
 ```pseudo title="Avoid"
 test "should email the receipt"
   # Arrange
+  let orderRepository = new OrderRepositoryFake([createOrder()])
+
   mockModule("../infrastructure/smtp")
+
+  let payOrder = createPayOrder({ orderRepository })
+  let context = createContext()
+
   # Act
-  payOrder(anOrder())
+  payOrder({ orderId: createOrder().id }, context)
   # Assert
   assert smtp.send.calls
-    is [aReceipt()]
+    is [createReceipt()]
 ```
 
 ```pseudo title="Prefer"
 test "should email the receipt"
   # Arrange
+  let orderRepository = new OrderRepositoryFake([createOrder()])
   let mailer = new MailerFake()
+  let payOrder = createPayOrder({ orderRepository, mailer })
+  let context = createContext()
+
   # Act
-  payOrder(anOrder(), mailer)
+  payOrder({ orderId: createOrder().id }, context)
   # Assert
   assert mailer.outbox
-    is [aReceipt()]
+    is [createReceipt()]
 ```

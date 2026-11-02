@@ -4,10 +4,10 @@
 
 ## General
 
-### unauthorized-handled-once-in-the-cache → unauthenticated-failure-ends-the-session-once · MUST
+### unauthenticated-failure-handled-once-in-the-cache → unauthenticated-failure-ends-the-session-once · MUST
 
-`onError` of the `QueryCache` and the `MutationCache`, set where the providers build the client, is the one place that acts on an unauthorized error.
+An unauthenticated failure, a `401`, is handled once, in the cache. `onError` of the `QueryCache` and the `MutationCache`, set where the providers build the client, is the one place that acts on it.
 
 | Why |
 |---|
-| every read and write then ends in the same handler, and no query or mutation acts on the error on its own. |
+| a query or a mutation that acts on the error on its own ends the session in a way of its own, and one that forgets to leaves the user on a screen that no longer works. |

@@ -10,4 +10,4 @@ The interval `useAnimation` takes is a duration token of the design system, read
 
 | Why |
 |---|
-| the pace of a spinner is then the one the rest of the interface moves at, and a change of the token reaches every animation at once. |
+| a number written in a component moves its animation at a pace of its own, out of step with the rest of the interface, and a change of the token never reaches it — a single source of truth. |

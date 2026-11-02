@@ -14,7 +14,7 @@ The manifest declares the lowest version of its language's runtime the unit supp
 
 ### runtime-floor-within-the-ecosystems-support-window · SHOULD
 
-A unit published for others floors its runtime no lower than the oldest release line the runtime's maintainers still support, unless its language's block names a narrower window.
+A unit published for others floors its runtime within the support window of the runtime's maintainers. Its floor is no lower than the oldest release line they still support, unless its language's block names a narrower window.
 
 | Why |
 |---|
@@ -24,7 +24,7 @@ A unit published for others floors its runtime no lower than the oldest release 
 
 ### unit-checked-on-every-runtime-it-supports · MUST
 
-A unit published for others is checked on its floor's release line and on each later line of its runtime that the runtime's maintainers still support, up to the newest stable one.
+A unit published for others is checked on every runtime line it supports. These are its floor's release line and each later line of its runtime that the runtime's maintainers still support, up to the newest stable one.
 
 | Why |
 |---|

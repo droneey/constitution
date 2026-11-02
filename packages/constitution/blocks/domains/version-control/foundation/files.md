@@ -14,7 +14,7 @@ Text is stored in the history with one line ending, whatever the platform of the
 
 ### working-copy-clean-at-hand-back · SHOULD
 
-When work is handed back, the working copy holds no stray change and no scratch file outside the ignored folders.
+The working copy is clean when work is handed back. It holds no stray change and no scratch file outside the ignored folders.
 
 | Why |
 |---|
@@ -38,14 +38,6 @@ A generated file is not committed. Two kinds are committed: a file the code impo
 |---|
 | a committed build output drifts from its source and fills every diff, while a fresh clone's type check needs the generated files the code imports, and a reader outside the code finds a copy only where it is committed. |
 
-### working-notes-stay-out-of-history · SHOULD
-
-Plans and working notes live in a **`local/`**{#working-notes} folder that version control ignores; a decision record is committed.
-
-| Why |
-|---|
-| working notes are true for a day, and committed they mislead every later reader. |
-
 ### ignored-file-never-tracked · SHOULD
 
 A file the ignore list covers is not tracked.
@@ -56,11 +48,11 @@ A file the ignore list covers is not tracked.
 
 ### machine-local-files-ignored · SHOULD
 
-Files local to one machine — the local environment file, a person's overrides of the project's tools — are ignored by version control.
+Files local to one machine are ignored by version control. They include the local environment file and a person's overrides of the project's tools.
 
 | Why |
 |---|
-| what belongs to one machine stays on it and changes nobody else's setup. |
+| a file of one machine that is committed replaces every other machine's setup with its own at their next pull. |
 
 ### environment-example-holds-only-placeholders · SHOULD
 

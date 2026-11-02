@@ -8,7 +8,7 @@ import {
   keptSession,
   sessionStateOf,
 } from '../../../../../__tests__/session.fixtures';
-import { createFakeSessionCommandRepository } from '../../../../../__tests__/session-command-repository.fake';
+import { createFakeSessionRepository } from '../../../../../__tests__/session-command-repository.fake';
 import { createFakeWorkingTree } from '../../../../../__tests__/working-tree.fake';
 import { SessionMark } from '../../../../../domain/session/entities';
 import { SessionId } from '../../../../../domain/session/value-objects';
@@ -39,7 +39,7 @@ describe('recordCheck', () => {
       recordCheck({
         command,
         session: keptSession,
-        sessions: createFakeSessionCommandRepository(store),
+        sessionRepository: createFakeSessionRepository(store),
         workingTree: createFakeWorkingTree({
           state: TREE,
         }),
@@ -85,7 +85,7 @@ describe('recordCheck', () => {
     recordCheck({
       command: 'constitution run check',
       session,
-      sessions: createFakeSessionCommandRepository(store),
+      sessionRepository: createFakeSessionRepository(store),
       workingTree: createFakeWorkingTree({
         state: tree,
       }),

@@ -3,19 +3,23 @@ function refundOrder(order)
   if order.isPaid then
     if not order.isRefunded then
       issueRefund(order)
-      markRefunded(order)
+
+      return markRefunded(order)
     else
-      throw AlreadyRefunded
+      throw new OrderAlreadyRefundedError()
   else
-    throw NotPaid
+    throw new OrderNotPaidError()
 ```
 
 ```pseudo title="Prefer"
 function refundOrder(order)
   if not order.isPaid then
-    throw NotPaid
+    throw new OrderNotPaidError()
+
   if order.isRefunded then
-    throw AlreadyRefunded
+    throw new OrderAlreadyRefundedError()
+
   issueRefund(order)
-  markRefunded(order)
+
+  return markRefunded(order)
 ```

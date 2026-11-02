@@ -6,7 +6,7 @@
 
 ### log-record-passes-one-pipeline → diagnostics-written-through-a-logger · MUST
 
-Every log record — the program's, its libraries' and its server's — passes one pipeline that enriches, masks and renders it.
+Every log record passes one pipeline. The program's records, its libraries' and its server's all pass it, and it enriches, masks and renders each.
 
 | Why |
 |---|
@@ -16,15 +16,15 @@ Every log record — the program's, its libraries' and its server's — passes o
 
 ### log-record-is-an-event-with-fields · SHOULD
 
-A log record's message is a fixed phrase that names what happened, and its values travel as fields beside it; nothing is formatted into the message.
+A log record is an event with fields. Its message is a fixed phrase that names what happened, and its values travel as fields beside it; nothing is formatted into the message.
 
 | Why |
 |---|
-| a fixed message is counted and searched as one event and a field is filtered by its value, while a formatted message is a new string every time. |
+| a value formatted into the message makes a new string of every record, so one event can no longer be counted or searched as one and its values cannot be filtered — structured logging. |
 
 ### log-record-of-a-failure-carries-its-code-and-cause · SHOULD
 
-A log record of a failure carries, as fields, the failure's code, its chain of causes and its stack.
+A log record of a failure carries its code and its cause. The failure's code, its chain of causes and its stack travel as fields of the record.
 
 | Why |
 |---|
@@ -32,26 +32,26 @@ A log record of a failure carries, as fields, the failure's code, its chain of c
 
 ### log-record-carries-the-trace-id · SHOULD
 
-Every log record a unit of work — a request, a task, a message — writes carries its trace id, bound once at the unit's start through the runtime's context, never passed down by hand.
+Every log record carries the trace id of its unit of work, without its logging call adding it. The unit — a request, a task, a message — binds the id once at its start, in the runtime's context or in the context value its language passes explicitly, and the pipeline writes it into each record.
 
 | Why |
 |---|
-| the records of one unit are then found together, across every function and library it passes through, while an id passed by hand is lost at the first call that does not take it. |
+| a record without its trace id cannot be found with the other records of its unit across the functions and libraries it passed through, and an id each logging call must add is lost at the first call that does not add it. |
 
 ### log-level-has-one-meaning · SHOULD
 
-A record's level says what its reader must do: an error, that someone acts; a warning, that the work degraded and may need action; info, a step of normal work; debug, detail for a developer, off in production.
+A log level has one meaning: what its reader must do. An error says that someone acts; a warning, that the work degraded and may need action; info, a step of normal work; debug, detail for a developer, off in production.
 
 | Why |
 |---|
-| an alert on errors works only while an error always means someone must act. |
+| an error logged for what needs no action pages someone for nothing, until the alert on errors is ignored and a real one is missed. |
 
 ## Output
 
 ### log-output-structured-in-production · SHOULD
 
-The log is written as one structured object per record in production and as readable lines in development, as a setting read at the program's start chooses.
+The log is structured in production and readable in development. A setting read at the program's start chooses between one structured object per record and readable lines.
 
 | Why |
 |---|
-| a collector parses one object per record and a person reads lines. |
+| a collector cannot parse lines meant for a person, and a person cannot read objects meant for a collector, so one form everywhere fails one of them. |

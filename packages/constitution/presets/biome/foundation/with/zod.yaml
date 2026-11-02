@@ -6,10 +6,10 @@ zod:
           includes:
             - '**/*.ts'
             - '**/*.tsx'
-  schema-builds-values-through-the-domain:
+  schema-builds-values-through-their-constructor:
     typescript:
       biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/schema-builds-values-through-the-domain.${role.grit-rule}]:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/schema-builds-values-through-their-constructor.${role.grit-rule}]:
           includes:
             - '**/*.ts'
             - '**/*.tsx'

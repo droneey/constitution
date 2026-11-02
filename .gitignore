@@ -11,12 +11,9 @@
 credentials.json
 id_rsa
 *.secrets
-/local/
 /.droneey
 .claude/settings.local.json
 .claude/worktrees/
-.env*
-!.env.example
 .DS_Store
 .vscode/*
 !.vscode/settings.json
@@ -31,6 +28,9 @@ id_rsa
 *.bak
 *.orig
 *~
+/local/
+.env*
+!.env.example
 
 # bun
 .npmrc
@@ -38,9 +38,6 @@ id_rsa
 # _js-runtime
 **/node_modules/
 *.tgz
-
-# mise
-mise.local.toml
 
 # python
 __pycache__/
@@ -53,3 +50,6 @@ __pycache__/
 # uv
 .venv/
 **/dist/
+
+# mise
+mise.local.toml

@@ -18,9 +18,9 @@ describe('Fact', () => {
     {
       fact: {
         kind: FactKind.Role,
-        role: 'gateway',
+        role: 'adapter',
       },
-      text: 'role.gateway',
+      text: 'role.adapter',
     },
     {
       fact: {
@@ -51,9 +51,9 @@ describe('Fact', () => {
     {
       fact: {
         kind: FactKind.Role,
-        role: 'gateway',
+        role: 'adapter',
       },
-      written: '${role.gateway}',
+      written: '${role.adapter}',
     },
     {
       fact: {

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'bun:test';
 import { BlockId } from '#/kernel/value-objects';
 
 import { heldSessionsOf, keptSession } from '../../../../../__tests__/session.fixtures';
-import { createFakeSessionCommandRepository } from '../../../../../__tests__/session-command-repository.fake';
+import { createFakeSessionRepository } from '../../../../../__tests__/session-command-repository.fake';
 import { SessionMark } from '../../../../../domain/session/entities';
 import type { StopJudgement } from '../../../../../domain/stop-judgement/entities';
 import { StopVerdict } from '../../../../../domain/stop-judgement/entities';
@@ -80,7 +80,7 @@ describe('recordJudgement', () => {
     recordJudgement({
       judgement,
       session: keptSession,
-      sessions: createFakeSessionCommandRepository(store),
+      sessionRepository: createFakeSessionRepository(store),
     });
 
     // Assert
@@ -104,7 +104,7 @@ describe('recordJudgement', () => {
         verdict: StopVerdict.Review,
       },
       session: keptSession,
-      sessions: createFakeSessionCommandRepository(store),
+      sessionRepository: createFakeSessionRepository(store),
     });
 
     // Assert

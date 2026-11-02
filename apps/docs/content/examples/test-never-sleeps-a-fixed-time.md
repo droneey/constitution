@@ -2,10 +2,13 @@
 test "should expire an idle cart"
   # Arrange
   let clock = new SystemClock()
-  let cart = aCart({ ttl: seconds(2) })
+  let cart = createCart({ ttl: seconds(2) })
+
   sleep(seconds(3))
+
   # Act
   let expired = isExpired(cart, clock)
+
   # Assert
   assert expired is true
 ```
@@ -14,10 +17,13 @@ test "should expire an idle cart"
 test "should expire an idle cart"
   # Arrange
   let clock = new ClockFake("10:00")
-  let cart = aCart({ ttl: minutes(30) })
+  let cart = createCart({ ttl: minutes(30) })
+
   clock.advance(minutes(31))
+
   # Act
   let expired = isExpired(cart, clock)
+
   # Assert
   assert expired is true
 ```

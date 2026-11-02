@@ -4,9 +4,9 @@
 
 ## Requests
 
-### personal-data-exported-on-request · MUST
+### personal-data-exported-or-corrected-on-request · MUST
 
-A person's request for their data is answered with all of it, in a format a machine reads, and a request to correct it corrects it, each within the time the law of the region sets.
+A person's request to export or correct their data is carried out in full. An export holds all of their data, in a format a machine reads, and each request is carried out within the time the law of the region sets.
 
 | Why |
 |---|
@@ -14,7 +14,7 @@ A person's request for their data is answered with all of it, in a format a mach
 
 ### rights-request-verified-before-it-is-answered · MUST
 
-A request to export, erase or correct personal data is answered only once the requester is shown to be its person — through their sign-in where they have an account, otherwise by a check proportionate to the data — and the check asks for no more data than it needs.
+A request about personal data is answered only once the requester is shown to be its person. This holds for a request to export, erase or correct it; the proof is their sign-in where they have an account, otherwise a check proportionate to the data, and the check asks for no more data than it needs.
 
 | Why |
 |---|
@@ -22,7 +22,7 @@ A request to export, erase or correct personal data is answered only once the re
 
 ### personal-data-erased-on-request · MUST
 
-A person's request to erase their data erases it everywhere the program keeps it — its stores, its caches, its processors — and is passed on to the other recipients it reached, save what a law makes it keep, within the time the law of the region sets; a backup that holds it expires within its retention, and a restore re-applies every erasure made since.
+A person's request to erase their data erases it everywhere the program keeps it. That is its stores, its caches and its processors, and the request is passed on to the other recipients the data reached, save what a law makes the program keep, within the time the law of the region sets. A backup that holds the data expires within its retention, and a restore re-applies every erasure made since.
 
 | Why |
 |---|
@@ -30,7 +30,7 @@ A person's request to erase their data erases it everywhere the program keeps it
 
 ### objection-honoured · MUST
 
-A person's objection to a processing based on the program's legitimate interest stops it unless the inventory records grounds that override theirs, and an objection to direct marketing always stops it, within the time the law of the region sets.
+A person's objection stops the processing it objects to. An objection to a processing based on the program's legitimate interest stops it unless the inventory records grounds that override theirs, and an objection to direct marketing always stops it, within the time the law of the region sets.
 
 | Why |
 |---|
@@ -40,8 +40,8 @@ A person's objection to a processing based on the program's legitimate interest 
 
 ### opt-out-signal-honoured · MUST
 
-A browser's opt-out signal, Global Privacy Control, is honoured as the person's opt-out of the sale and sharing of their data and of targeted advertising, wherever the law of the region the product serves makes it binding.
+A browser's opt-out signal is honoured as the person's opt-out. The signal, Global Privacy Control, opts the person out of the sale and sharing of their data and of targeted advertising, wherever the law of the region the product serves makes it binding.
 
 | Why |
 |---|
-| the signal is the person's choice made once for every site, and the laws that bind it fine whoever ignores it. |
+| the signal is the person's choice made once for every site, and the laws that make it binding, California's CCPA among them, fine whoever ignores it. |

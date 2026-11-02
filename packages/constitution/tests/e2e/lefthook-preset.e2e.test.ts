@@ -44,12 +44,12 @@ const messageRejections = [
   {
     commit: 'chore: Wip',
     condition: 'the subject is a placeholder',
-    rule: 'commit-subject-says-what-changed',
+    rule: 'commit-subject-never-a-placeholder',
   },
   {
     commit: 'fix: Fix stuff',
     condition: 'the subject is a placeholder of two words',
-    rule: 'commit-subject-says-what-changed',
+    rule: 'commit-subject-never-a-placeholder',
   },
   {
     commit: `feat: ${'A'.repeat(95)}`,
@@ -170,7 +170,7 @@ describe('the commit message hook', () => {
       expect(check).toStrictEqual({
         exitCode: 1,
         rules: [
-          'commit-subject-says-what-changed',
+          'commit-subject-never-a-placeholder',
         ],
       });
     },
@@ -184,8 +184,8 @@ describe('the commit message hook', () => {
     expect(check).toStrictEqual({
       exitCode: 1,
       rules: [
-        'commit-subject-says-what-changed',
         'commit-header-type-and-subject',
+        'commit-subject-never-a-placeholder',
       ],
     });
   });
@@ -195,15 +195,15 @@ describe('the jobs of the commit message hook', () => {
   it.each([
     {
       jobs: [
-        'commit-placeholder',
         'commit-header',
+        'commit-placeholder',
       ],
       rule: 'commit-body-empty-and-footer-only-trailers',
     },
     {
       jobs: [
-        'commit-placeholder',
         'commit-body',
+        'commit-placeholder',
       ],
       rule: 'commit-header-type-and-subject',
     },
@@ -212,7 +212,7 @@ describe('the jobs of the commit message hook', () => {
         'commit-body',
         'commit-header',
       ],
-      rule: 'commit-subject-says-what-changed',
+      rule: 'commit-subject-never-a-placeholder',
     },
   ])('should keep every job but that of $rule when an override lowers it', ({ jobs, rule }) => {
     // Act

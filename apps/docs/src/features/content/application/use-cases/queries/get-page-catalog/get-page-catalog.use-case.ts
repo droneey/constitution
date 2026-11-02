@@ -1,9 +1,9 @@
 import type { PageCatalog } from '../../../../domain/page/entities';
-import type { PagesQueryRepository } from '../../../contracts';
+import type { PageQueries } from '../../../contracts';
 
 export type GetPageCatalog = () => Promise<PageCatalog>;
 
 export const createGetPageCatalog =
-  (pages: PagesQueryRepository<unknown>): GetPageCatalog =>
+  (pageQueries: PageQueries<unknown>): GetPageCatalog =>
   (): Promise<PageCatalog> =>
-    pages.readCatalog();
+    pageQueries.readCatalog();

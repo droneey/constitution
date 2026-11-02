@@ -10,14 +10,14 @@ import type {
   PresetFileParser,
   ProjectReader,
 } from '../../../contracts';
-import type { LockQueryRepository } from '../../../contracts/repositories/queries';
+import type { LockQueries } from '../../../contracts/repositories/queries';
 import { computeChanges } from '../../shared/compute-changes';
 
 interface PlanApplyInput {
   readonly distribution: DistributionSources;
   readonly files: ProjectFiles;
   readonly formats: ConfigurationFormat;
-  readonly locks: LockQueryRepository;
+  readonly lockQueries: LockQueries;
   readonly parser: PresetFileParser;
   readonly reader: ProjectReader;
   readonly startFolderPath: AbsolutePath;
@@ -31,7 +31,7 @@ const planOf = (
   ApplyPlan.of({
     ...computeChanges({
       ...input,
-      lockOf: input.locks.read,
+      lockOf: input.lockQueries.read,
     }),
     repositoryFolderPath: input.project.repositoryFolderPath,
   });

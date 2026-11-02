@@ -46,6 +46,7 @@ interface RunPlanInput {
 
 const runCodes: ReadonlySet<PresetsCode> = new Set([
   PresetsCode.Clash,
+  PresetsCode.InheritanceMalformed,
   PresetsCode.MissingSlot,
   PresetsCode.RunMisshapen,
   PresetsCode.SlotInNoList,

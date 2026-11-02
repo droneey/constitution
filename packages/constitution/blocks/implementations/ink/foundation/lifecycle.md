@@ -6,7 +6,7 @@
 
 ### ink-app-awaited-and-unmounted → resource-released-on-every-path · MUST
 
-The program awaits each Ink app's `waitUntilExit()` and unmounts it on every way out, a failure's included, before it sets its exit code.
+Every Ink app is awaited and unmounted before the program sets its exit code. The program awaits each app's `waitUntilExit()` and unmounts it on every way out, a failure's included.
 
 | Why |
 |---|
@@ -16,7 +16,7 @@ The program awaits each Ink app's `waitUntilExit()` and unmounts it on every way
 
 ### ink-interrupt-ends-the-run-as-interrupted → interrupt-ends-the-run-promptly · MUST
 
-An app that reads keys is rendered with **`exitOnCtrlC`** set to `false`, and its Ctrl-C ends the run as an interrupt, through the program's own stopping, with the interrupt's exit code.
+An Ink app's Ctrl-C ends the run as an interrupt. An app that reads keys is rendered with **`exitOnCtrlC`** set to `false`, and its Ctrl-C ends the run through the program's own stopping, with the interrupt's exit code.
 
 | Why |
 |---|

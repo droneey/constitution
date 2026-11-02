@@ -6,11 +6,11 @@
 
 ### polymorphism-through-render · SHOULD
 
-A polymorphic render is Base UI's `render` prop, the kit's only polymorphism; no `as` or `asChild` of the kit's own.
+The kit's one polymorphism is Base UI's `render` prop. A polymorphic render goes through it, and the kit adds no `as` or `asChild` of its own.
 
 | Why |
 |---|
-| one mechanism renders the consumer's element with the primitive's behaviour, everywhere the same. |
+| a second mechanism gives each component its own way to swap its element, which callers learn one by one and which joins the primitive's behaviour to the element differently each time. |
 
 ### parts-marked-by-data-slot · SHOULD
 
@@ -18,11 +18,11 @@ A primitive marks itself and each of its parts with `data-slot`, named after the
 
 | Why |
 |---|
-| a caller and a spec then reach a part by its slot, as shadcn source does, with no class written for it. |
+| a part with no slot is reached by a class written for it or by its place in the markup, which breaks when the markup changes. |
 
 ### shadcn-text-passed-by-props → primitives-take-text-by-props · MUST
 
-The text shadcn source ships — a screen reader's "Close" among it — is removed on arrival, and the component takes it by a prop.
+The text shadcn source ships is replaced by a prop when the source arrives. Each string it ships — a screen reader's "Close" among them — is removed on arrival, and the component takes it by a prop.
 
 | Why |
 |---|

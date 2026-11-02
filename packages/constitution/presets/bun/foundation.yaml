@@ -4,7 +4,7 @@ bun:
       bunfig.toml ? ${file.isTop}:
         install:
           minimumReleaseAge: 259200
-  every-tool-runs-on-bun:
+  node-shebang-tool-runs-on-bun:
     typescript:
       bunfig.toml:
         run:

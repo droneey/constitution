@@ -6,7 +6,7 @@ import { AbsolutePath, UnitPath } from '#/kernel/value-objects';
 
 import { createFakeConfigurationFormat } from '../../../../../__tests__/configuration-format.fake';
 import { createFakeDistributionSources } from '../../../../../__tests__/distribution-sources.fake';
-import { createFakeLockRepository } from '../../../../../__tests__/lock-repository.fake';
+import { createFakeLockQueries } from '../../../../../__tests__/lock-repository.fake';
 import type { Files } from '../../../../../__tests__/presets.fixtures';
 import {
   answerOf,
@@ -93,7 +93,7 @@ const checkedOf = (input: {
       distribution: createFakeDistributionSources(),
       files: project.files,
       formats: createFakeConfigurationFormat(),
-      locks: createFakeLockRepository(input.locks),
+      lockQueries: createFakeLockQueries(input.locks),
       parser: presetFileParser,
       reader: project.reader,
       startFolderPath: AbsolutePath.create(PROJECT),
@@ -113,7 +113,7 @@ describe('checkConfigurations', () => {
       distribution: createFakeDistributionSources(),
       files: project.files,
       formats: createFakeConfigurationFormat(),
-      locks: createFakeLockRepository(),
+      lockQueries: createFakeLockQueries(),
       parser: presetFileParser,
       reader: project.reader,
       startFolderPath: AbsolutePath.create('/work/elsewhere'),
@@ -313,7 +313,7 @@ describe('checkConfigurations', () => {
         distribution: createFakeDistributionSources(),
         files: project.files,
         formats: createFakeConfigurationFormat(),
-        locks: createFakeLockRepository(),
+        lockQueries: createFakeLockQueries(),
         parser: presetFileParser,
         reader: project.reader,
         startFolderPath: AbsolutePath.create(PROJECT),

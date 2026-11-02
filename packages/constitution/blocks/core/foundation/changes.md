@@ -6,15 +6,15 @@
 
 ### change-limited-to-its-task · SHOULD
 
-A change does what its task asks and nothing else — no unrelated refactor, reformat or rename; a problem found outside the task is reported, not fixed on the way, and what the task asked but was not done is said.
+A change does what its task asks and nothing else, and says what of the task it left undone. It holds no unrelated refactor, reformat or rename; a problem found outside the task is reported, not fixed on the way.
 
 | Why |
 |---|
-| a change that does one thing is reviewed, reverted and understood as one thing. |
+| a change that also does something else hides its task among lines nobody asked for, so a reviewer misses what it changed and a revert takes the rest with it, while a part of the task left undone and unsaid is taken for done. |
 
 ### change-corrects-the-documents-it-falsifies · SHOULD
 
-A change that makes a document false — a readme, `PROJECT.md`, an example of the environment, a comment, a guide — corrects it in the same change.
+A change that makes a document false corrects it in the same change. The document may be a readme, `PROJECT.md`, an example of the environment, a comment or a guide.
 
 | Why |
 |---|
@@ -30,43 +30,45 @@ A change that moves a file moves it, never deletes it and writes it anew.
 
 ### tidying-shipped-before-the-behaviour · SHOULD
 
-A tidying or a refactoring the task needs ships as its own change, before the change of behaviour, unless it stays within the files the change of behaviour touches.
+A tidying ships before the change of behaviour, as its own change. This holds for each tidying or refactoring the task needs, unless it stays within the files the change of behaviour touches.
 
 | Why |
 |---|
-| each diff then reads as one thing, and a reviewer sees the behaviour change alone. |
+| a diff that mixes a tidying with a change of behaviour hides the behaviour among moved lines, so a reviewer cannot tell which line changed what the program does. |
 
 ### tidying-keeps-the-specs-of-its-boundaries · SHOULD
 
-A tidying or a refactoring changes no case's setup or expectation in a spec of a boundary, and a spec follows a boundary it renames or moves; an expectation that must change marks a change of behaviour, which ships as one.
+A tidying or a refactoring leaves the specs of its boundaries unchanged. Neither changes a case's setup or expectation in a spec of a boundary, and a spec follows a boundary it renames or moves; an expectation that must change marks a change of behaviour, which ships as one.
 
 | Why |
 |---|
-| specs that pass unchanged are what prove a tidying kept the behaviour. |
+| a tidying or a refactoring that also edits its specs can change the behaviour unseen, since the specs that would have caught it changed with it. |
+
+## What it carries
 
 ### format-changed-in-steps · MUST
 
-A change to a format that is stored or that others read — a schema, a file, a message, a contract another deployable or a released consumer reads — keeps the old data and the running readers working: the readers learn the new form beside the old one first, the writers and the stored data move to it next, and the old form is removed last.
+A stored or shared format changes in steps. A change to a format that is stored or that others read — a schema, a file, a message, a contract another deployable or a released consumer reads — keeps the old data and the running readers working: the readers learn the new form beside the old one first, the writers and the stored data move to it next, and the old form is removed last.
 
 | Why |
 |---|
-| data written before the change and readers deployed before it outlive the change, and a format switched in one step breaks them. |
+| data written before a change and readers deployed before it outlive the change, and a format switched in one step breaks them — the expand–contract pattern. |
 
 ### choice-between-alternatives-recorded · MUST
 
-A choice between real alternatives that a later reader could propose again — a store, a framework, a protocol, a boundary, a design turned down — is recorded in the project's `DECISIONS.md` by the change that makes it: what was chosen, what was rejected and why, and its date; a choice the code, a rule or the commit already explains — a version bump, a fix, a rename, a tool's default kept — is not.
+A choice between real alternatives is recorded with what it rejected. Such a choice is one a later reader could propose again — a store, a framework, a protocol, the split between two modules, a design turned down —, and the change that makes it records it in the project's `DECISIONS.md`: what was chosen, what was rejected and why, and its date. A choice the code, a rule or the commit already explains — a version bump, a fix, a rename, a tool's default kept — is not.
 
 | Why |
 |---|
-| a choice recorded without its rejected alternatives is argued again by everyone who meets them. |
+| a choice recorded without its rejected alternatives is argued again by everyone who meets them — an architecture decision record. |
 
 ### change-to-a-trust-boundary-names-its-threats · SHOULD
 
-A change that adds a way into the program — an endpoint, a command, an upload, a consumer of messages — or a crossing of a trust boundary names the threats it meets and how each is met, in the change.
+A change at a trust boundary, or one that adds a way into the program, names its threats. Such a way is an endpoint, a command, an upload or a consumer of messages, and the change names how each threat is met.
 
 | Why |
 |---|
-| a threat named while the design is still open costs a sentence, and one found in production costs a breach. |
+| a threat left unnamed while the design is still open is found in production, where it costs a breach instead of a sentence — threat modelling. |
 
 ## Hand-back
 
@@ -80,8 +82,8 @@ A change is reported done only once the check passes with no error and no warnin
 
 ### change-seen-working-before-hand-back · SHOULD
 
-A change to what a user or a caller observes is run once in the built program, the way its user or caller reaches it — the command run, the endpoint called, the interface used — and the hand-back says how.
+A change to what a user or a caller observes is seen working before it is handed back. It is run once in the built program, the way its user or caller reaches it — the command run, the endpoint called, the screen used — and the hand-back says how.
 
 | Why |
 |---|
-| a passing check proves the cases written, not that the change works as asked. |
+| a passing check proves only the cases written, so a change handed back unrun fails its user at the first use the cases missed. |

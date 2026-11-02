@@ -4,7 +4,7 @@ import { attempted, isSyntaxError } from '#/kernel/utils';
 import { AbsolutePath } from '#/kernel/value-objects';
 import { isSystemError } from '#/libs/system-error';
 
-import type { LockQueryRepository } from '../../application/contracts/repositories/queries';
+import type { LockQueries } from '../../application/contracts/repositories/queries';
 import type { LockRead } from '../../domain/lock/entities';
 import { LockReadStatus } from '../../domain/lock/entities';
 import { LOCK_FILE_NAME } from '../../domain/shared/constants';
@@ -49,8 +49,8 @@ const read = (unitFolderPath: AbsolutePath): LockRead => {
     : unparsed;
 };
 
-const createFileLockRepository = (): LockQueryRepository => ({
+const createFileLockQueries = (): LockQueries => ({
   read,
 });
 
-export { createFileLockRepository };
+export { createFileLockQueries };

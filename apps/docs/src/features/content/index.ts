@@ -1,7 +1,7 @@
 export type {
-  PageBodiesQueryRepository,
+  PageBodyQueries,
+  PageQueries,
   PageSearch,
-  PagesQueryRepository,
   SearchIndex,
 } from './application/contracts';
 export type {

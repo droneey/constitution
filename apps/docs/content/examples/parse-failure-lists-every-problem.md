@@ -1,16 +1,16 @@
 ```pseudo title="Avoid"
 # the first problem only, by value
-return failure(InvalidOrder, {
+throw new InvalidOrderError({
   problem: "bob@ is not an email"
 })
 ```
 
 ```pseudo title="Prefer"
-return failure(InvalidOrder, {
+throw new InvalidOrderError({
   problems: [
     { path: "email",
       problem: "format" },
-    { path: "items[0].quantity",
+    { path: "lines[0].quantity",
       problem: "below minimum" }
   ]
 })

@@ -6,7 +6,7 @@
 
 ### specs-checked-by-their-own-config · MUST
 
-Where the program's configuration gives no Bun types — a browser program — it is `tsconfig.src.json`, which leaves the specs out, and the specs and their fixtures are checked by `tsconfig.test.json`, which extends it, adds `types: ["bun"]`, includes only `__tests__/` and `tests/`, and references `tsconfig.src.json` where that is `composite`, as a unit of a workspace is. `tsconfig.json` extends `tsconfig.src.json`, holds no files (`files` and `include` empty) and references both.
+Where the program's configuration gives no Bun types, the specs are checked by a configuration of their own. The program's configuration is then `tsconfig.src.json`, which leaves the specs out — a browser program's, say — and the specs and their fixtures are checked by `tsconfig.test.json`, which extends it, adds `types: ["bun"]`, includes only `__tests__/` and `tests/`, and references `tsconfig.src.json` where that is `composite`, as a unit of a workspace is. `tsconfig.json` extends `tsconfig.src.json`, holds no files (`files` and `include` empty) and references both.
 
 | Why |
 |---|

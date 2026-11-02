@@ -10,4 +10,4 @@ In a workspace, each package with code its specs run has its own `stryker.config
 
 | Why |
 |---|
-| Stryker reads its `mutate` globs and the folder it copies into its sandbox from the folder it starts in, and a package's mutants are killed by the package's own specs. |
+| Stryker reads its `mutate` globs and the folder it copies into its sandbox from the folder it starts in, so one configuration for the workspace reads every package by one package's paths, while a package's mutants are killed by the package's own specs. |

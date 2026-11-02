@@ -1,15 +1,17 @@
 ```pseudo title="Avoid"
-let gateway =
+# root/payments
+let payments =
   if env.name is "production" then
-    new LiveGateway()
+    new LivePaymentAdapter(client)
   else
-    new SandboxGateway()
+    new SandboxPaymentAdapter(client)
 ```
 
 ```pseudo title="Prefer"
-let gateway =
-  if config.paymentsSandbox then
-    new SandboxGateway()
-  else
-    new LiveGateway()
+# root/payments
+let paymentAdapters = {
+  sandbox: createSandboxPaymentAdapter,
+  live: createLivePaymentAdapter,
+}
+let payments = paymentAdapters[config.paymentsMode](client)
 ```

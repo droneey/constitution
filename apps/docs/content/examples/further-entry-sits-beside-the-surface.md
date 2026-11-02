@@ -5,5 +5,6 @@ payments/src/
 ├── features/
 └── kernel/
     └── contracts/
-        └── payment-gateway.fake.ts
+        └── __tests__/
+            └── payment.fake.ts
 ```

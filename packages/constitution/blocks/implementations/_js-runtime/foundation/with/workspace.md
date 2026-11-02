@@ -10,7 +10,7 @@ The `name` of a unit's `package.json` is `@<scope>/<name>`.
 
 | Why |
 |---|
-| a registry takes one slash in a name, the scope's, so the unit's own name is all that follows it. |
+| a registry takes one slash in a name, the scope's, so a unit named any other way either leaves the repository's scope or cannot be published under its folder's name. |
 
 ### root-manifest-private → root-and-internal-units-private · MUST
 
@@ -18,4 +18,4 @@ The root `package.json` of a workspace sets `"private": true`.
 
 | Why |
 |---|
-| a package manager refuses to publish a manifest marked private, so the root can never be published by mistake. |
+| a root without the mark is published by the first publish run over the workspace, and whoever installs it gets the repository's tooling; a package manager refuses to publish a manifest marked private. |

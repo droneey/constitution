@@ -1,65 +1,57 @@
 # Components
 
-> Governs a component's place in the tree, its name, its folder and what it may import.
+> Governs a component's place in the tree, its name, its folder and the data it takes.
 
-An interface lives in the presentation of a feature and of a composition module, beside its binding units; `shared/ui` and `libs/ui` hold the application's shared and generic pieces. In a presentation, **`screens/`**{#screen} holds a composition module's screens, **`components/`**{#component} the presentational components, **`widgets/`**{#widget} the smart ones and `assets/` the icons, images and fonts: a feature adds `components/` and `widgets/`, a composition module `screens/`, `components/` and `widgets/`. A component's map of variants lives in a file ending in **`.variants`**{#style-variants}.
+The folder **`ui/`**{#ui-kit} holds the interface's shared pieces in `shared/` and its generic ones in `libs/`, as `shared/ui` and `libs/ui`. In a presentation, **`screens/`**{#screen} holds the program's screens, **`components/`**{#component} the presentational components, **`widgets/`**{#widget} the smart ones and **`assets/`**{#asset} the icons, images and fonts: a feature and a composition module add `components/` and `widgets/`, the program's presentation `screens/`, `components/` and `widgets/`. A widget's folder name ends in **`-widget`**{#widget-suffix}, a default a language's block respells where a module's name takes no hyphen. A component's map of variants lives in a file ending in **`.variants`**{#style-variants}.
 
 ## Place
 
 ### component-lives-where-its-knowledge-lives → code-placed-by-its-reason-to-change · MUST
 
-A component lives where its knowledge lives: used by one screen, beside it and private to it, with the binding units only that screen uses; knows one feature, in that feature's presentation; assembles several features — the application's shell, a widget of several features — in a composition module's presentation; a generic primitive, in `libs/ui`; specific to the application and used by two or more features, in `shared/ui`.
+A component lives where its knowledge lives. Used by one screen, it lives beside it; knowing one feature, in that feature's presentation; assembling several features — the program's shell, a widget of several features — in the program's presentation; a generic primitive, in `libs/ui`; specific to the program and used by two or more features, in `shared/ui`.
 
 | Why |
 |---|
-| a component placed by what it knows can be found, it moves only when its knowledge does, and what one screen uses is reached by nothing else by accident. |
+| a component placed apart from its knowledge is not where a reader looks for it, and changes with code it does not sit beside — the common closure principle. |
 
-### component-named-by-location → folder-takes-its-layer-or-role-name · MUST
+### component-named-by-location → name-reveals-intent · MUST
 
-A component's folder name carries its location and role: no prefix in `libs/ui` and `shared/ui`, the feature's name in a feature, the module's name in a composition module, and `-widget` on every widget.
+A component's folder name carries its location and role. It takes no prefix in `libs/ui` and `shared/ui`, the feature's name in a feature, the module's name in a composition module, and `-widget` on every widget.
 
 | Why |
 |---|
-| the name alone tells where a component comes from and whether it holds logic. |
+| a component named without its location and role must be opened to learn where it comes from and whether it holds logic. |
 
 ### component-in-its-own-folder → module-reached-only-through-its-surface · MUST
 
-A component has its own folder holding the files named after it, its sub-components prefixed with its name in `components/`, its folder of specs and a surface offering only its public interface; `components/` and `widgets/` hold only component folders and a surface.
+A component has its own folder. The folder holds the files named after it, its sub-components prefixed with its name in `components/`, its folder of specs and a surface offering only what its callers use; `components/` and `widgets/` hold only component folders and a surface.
 
 | Why |
 |---|
-| everything about one component is in one place, and its internals stay private. |
+| a component spread over shared folders is changed in several places, and internals reachable past a surface become what its callers depend on — information hiding. |
 
 ### vendored-component-placed-by-its-home · MUST
 
-A component installed as source is moved, before review, to the home its knowledge gives it and named by that home, never left where its installer put it.
+A component installed as source is moved to its home before review. It moves to the home its knowledge gives it and is named by that home, never left where its installer put it.
 
 | Why |
 |---|
 | an installer's folder follows another project's layout, and a component left there is not where any reader looks for it. |
 
-## Data and imports
+## Data
 
 ### presentational-component-performs-no-io → effects-held-only-by-the-edge · MUST
 
-A component in `components/` takes data and callbacks and performs no input or output.
+A presentational component performs no input or output. A component in `components/` takes data and callbacks.
 
 | Why |
 |---|
-| a presentational component can then be shown, reused and tested with any data. |
+| a component that performs input or output cannot be shown, reused or tested without the system it reaches — Humble Object. |
 
-### component-never-imports-a-widget · MUST
+### prop-never-threaded-through-components-that-ignore-it · MUST
 
-A component never imports a widget.
-
-| Why |
-|---|
-| a component that holds a widget holds its logic too, and stops being presentational. |
-
-### props-drilled-at-most-two-levels · SHOULD
-
-A prop passed unchanged through more than two levels calls for composition or a nearer widget that loads the data itself, never for a store the deep component reads to spare the prop its path.
+A prop never travels through components that ignore it. A component ignores a prop when it neither reads it nor hands it to an element or a component that reads it; a screen that hands what its registration gives it to the pieces of its page ignores none of it. A prop that would travel further is replaced by composition — the part that needs it taken as children or a slot — or by a nearer widget that loads the data itself, never by a store the deep component reads to spare the prop its path.
 
 | Why |
 |---|
-| a prop threaded through components that do not use it couples them all to it, and state moved to a store to save threading becomes global, shared by accident and kept long after the screen that needed it. |
+| a prop threaded through components that ignore it couples them all to it, and a store made to avoid the threading makes the state global, shared by accident and kept after the screen that needed it. |

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import type { AbsolutePath } from '#/kernel/value-objects';
 
-import type { LockQueryRepository } from '../application/contracts/repositories/queries';
+import type { LockQueries } from '../application/contracts/repositories/queries';
 import type { Lock } from '../domain/lock/entities';
 import { LockReadStatus, RecordKind } from '../domain/lock/entities';
 import { lockOf } from './presets.fixtures';
@@ -12,11 +12,11 @@ interface LockWorld {
   readonly unparsed: readonly string[];
 }
 
-interface LockRepositorySuiteInput {
+interface LockQueriesSuiteInput {
   readonly name: string;
   readonly repositoryOf: (world: LockWorld) => {
     readonly folderOf: (unitPath: string) => AbsolutePath;
-    readonly repository: LockQueryRepository;
+    readonly lockQueries: LockQueries;
   };
 }
 
@@ -46,11 +46,11 @@ const lock = lockOf({
   },
 });
 
-const runLockRepositorySuite = (input: LockRepositorySuiteInput): void => {
-  describe(`${input.name}: the LockQueryRepository contract`, () => {
+const runLockQueriesSuite = (input: LockQueriesSuiteInput): void => {
+  describe(`${input.name}: the LockQueries contract`, () => {
     it('should read the lock a unit holds', () => {
       // Arrange
-      const { folderOf, repository } = input.repositoryOf({
+      const { folderOf, lockQueries } = input.repositoryOf({
         locks: {
           apps: lock,
         },
@@ -58,7 +58,7 @@ const runLockRepositorySuite = (input: LockRepositorySuiteInput): void => {
       });
 
       // Act
-      const read = repository.read(folderOf('apps'));
+      const read = lockQueries.read(folderOf('apps'));
 
       // Assert
       expect(read).toStrictEqual({
@@ -69,7 +69,7 @@ const runLockRepositorySuite = (input: LockRepositorySuiteInput): void => {
 
     it('should read a unit without a lock as holding an empty one', () => {
       // Arrange
-      const { folderOf, repository } = input.repositoryOf({
+      const { folderOf, lockQueries } = input.repositoryOf({
         locks: {
           apps: lock,
         },
@@ -77,7 +77,7 @@ const runLockRepositorySuite = (input: LockRepositorySuiteInput): void => {
       });
 
       // Act
-      const read = repository.read(folderOf('packages'));
+      const read = lockQueries.read(folderOf('packages'));
 
       // Assert
       expect(read).toStrictEqual({
@@ -88,7 +88,7 @@ const runLockRepositorySuite = (input: LockRepositorySuiteInput): void => {
 
     it('should read a lock that does not parse as unparsed', () => {
       // Arrange
-      const { folderOf, repository } = input.repositoryOf({
+      const { folderOf, lockQueries } = input.repositoryOf({
         locks: {},
         unparsed: [
           'apps',
@@ -96,7 +96,7 @@ const runLockRepositorySuite = (input: LockRepositorySuiteInput): void => {
       });
 
       // Act
-      const read = repository.read(folderOf('apps'));
+      const read = lockQueries.read(folderOf('apps'));
 
       // Assert
       expect(read).toStrictEqual({
@@ -106,4 +106,4 @@ const runLockRepositorySuite = (input: LockRepositorySuiteInput): void => {
   });
 };
 
-export { runLockRepositorySuite };
+export { runLockQueriesSuite };

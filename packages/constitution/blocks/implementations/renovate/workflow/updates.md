@@ -10,7 +10,7 @@ Dependency updates arrive as change requests from the bot, each passing the chec
 
 | Why |
 |---|
-| updates that arrive on their own, small and checked, keep the project current without a risky update all at once. |
+| updates left to a person pile up until one large update breaks many things at once, and an update merged unchecked ships whatever its release broke. |
 
 ### updates-from-the-shared-preset · SHOULD
 
@@ -18,11 +18,11 @@ Dependency updates arrive as change requests from the bot, each passing the chec
 
 | Why |
 |---|
-| one policy for every repository, changed in one place. |
+| a policy copied into each repository drifts, so each updates by its own rules and a fix to the policy reaches none of the copies — a single source of truth. |
 
 ### peer-ranges-widened-others-bumped · SHOULD
 
-Dependency ranges are bumped; a peer range is widened, so its floor stays.
+Dependency ranges are bumped and peer ranges widened. A peer range is widened, so its floor stays.
 
 | Why |
 |---|

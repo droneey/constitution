@@ -6,7 +6,7 @@
 
 ### consent-asked-only-where-the-law-requires-it · SHOULD
 
-Consent is asked only for a processing the law of the region the product serves subjects to it — storing on or reading from the device what the service the person asked for does not need, tracking across sites, advertising — unless the product chooses to ask for more; what that law allows without consent runs without asking.
+Consent is asked only where the law requires it. It is asked for a processing the law of the region the product serves subjects to it — storing on or reading from the device what the service the person asked for does not need, tracking across sites, advertising — unless the product chooses to ask for more; what that law allows without consent runs without asking.
 
 | Why |
 |---|
@@ -16,7 +16,7 @@ Consent is asked only for a processing the law of the region the product serves 
 
 ### processing-waits-for-its-consent · MUST
 
-A processing that needs consent does not begin before the person consents to its purpose: nothing is stored on or read from their device for it, no identifier is set, and no request reaches its third party — an embedded video, a map, a chat widget, a social button or an advertising pixel loads only after it.
+A processing that needs consent waits for it. It does not begin before the person consents to its purpose: nothing is stored on or read from their device for it, no identifier is set, and no request reaches its third party — an embedded video, a map, a chat widget, a social button or an advertising pixel loads only after it.
 
 | Why |
 |---|
@@ -28,7 +28,7 @@ Declining consent changes nothing in the product beyond the processing declined.
 
 | Why |
 |---|
-| consent paid for with a feature is not given freely, and the law does not count it. |
+| consent paid for with a feature is not given freely, and the GDPR does not count it as given. |
 
 ## Asking
 
@@ -60,15 +60,15 @@ Consent can be withdrawn at any time, as easily as it was given, and the process
 
 ### consent-choice-recorded · MUST
 
-Each choice — a consent, a refusal, a withdrawal — is recorded with its time and its purposes.
+Each consent choice is recorded with its time and its purposes. A choice is a consent, a refusal or a withdrawal.
 
 | Why |
 |---|
-| the record is the only proof the choice was the person's, and the law asks for it. |
+| a choice left unrecorded cannot be proven the person's when the GDPR asks the program to show it. |
 
 ### refusal-respected-for-the-set-period · SHOULD
 
-A recorded refusal is not asked about again for the period the project sets — six months in France, by the CNIL's guidance — unless the purposes change.
+A recorded refusal is not asked about again for the period the project sets. Only a change of the purposes asks again sooner; in France, by the CNIL's guidance, the period is six months.
 
 | Why |
 |---|
