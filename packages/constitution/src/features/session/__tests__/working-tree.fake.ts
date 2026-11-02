@@ -2,13 +2,14 @@ import { sessionsFolderInProject } from '#/kernel/constants';
 import { AbsolutePath } from '#/kernel/value-objects';
 
 import type {
-  IgnoredInput,
+  IgnoredAmongInput,
+  IgnoredPaths,
   TreeSnapshot,
   TreeState,
   UnreadTree,
   WorkingTree,
 } from '../domain/contracts';
-import { IgnoreAnswer, TreeStateStatus } from '../domain/contracts';
+import { IgnoreStatus, TreeStateStatus } from '../domain/contracts';
 import { FileSignature, TreeFingerprint } from '../domain/value-objects';
 
 interface FakeWorkingTree {
@@ -41,12 +42,32 @@ const createFakeWorkingTree = (tree: FakeWorkingTree = {}): WorkingTree => {
   ];
 
   return {
-    isIgnored: (asked: IgnoredInput): IgnoreAnswer => {
-      if (!isOwn(asked.repositoryFolderPath)) {
-        return IgnoreAnswer.Unknown;
+    ignoredAmong: (asked: IgnoredAmongInput): IgnoredPaths => {
+      if (asked.paths.length === 0) {
+        return {
+          paths: new Set(),
+          status: IgnoreStatus.Told,
+        };
       }
 
-      return ignored.includes(asked.path) ? IgnoreAnswer.Ignored : IgnoreAnswer.NotIgnored;
+      if (!isOwn(asked.repositoryFolderPath)) {
+        return {
+          status: IgnoreStatus.Unknown,
+        };
+      }
+
+      return {
+        paths: new Set(
+          asked.paths.filter((path) =>
+            ignored.some((pattern) => {
+              const ignoredPath = AbsolutePath.join(asked.repositoryFolderPath, pattern);
+
+              return path === ignoredPath || path.startsWith(`${ignoredPath}/`);
+            }),
+          ),
+        ),
+        status: IgnoreStatus.Told,
+      };
     },
     mainCheckoutOf: (folderPath: AbsolutePath): AbsolutePath | undefined => {
       if (!isOwn(folderPath)) {

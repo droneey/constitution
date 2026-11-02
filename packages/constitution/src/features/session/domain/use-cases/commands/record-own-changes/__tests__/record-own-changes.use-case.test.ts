@@ -10,6 +10,7 @@ import {
   ownChangesIn,
 } from '../../../../../__tests__/session.fixtures';
 import { createFakeSessionCommandRepository } from '../../../../../__tests__/session-command-repository.fake';
+import { createFakeWorkingTree } from '../../../../../__tests__/working-tree.fake';
 import { SessionAgent } from '../../../../entities';
 import { recordOwnChanges } from '../record-own-changes.use-case';
 
@@ -24,6 +25,39 @@ describe('recordOwnChanges', () => {
       paths: [
         '/link/src/a.ts',
         '/work/project/src/b.ts',
+      ],
+      writes: [
+        StoreWrite.AddOwnChanges,
+      ],
+    },
+    {
+      condition: 'the agent changed a file git ignores beside one it does not',
+      own: [
+        '/work/project/src/a.ts',
+      ],
+      paths: [
+        '/work/project/build/out.js',
+        '/work/project/src/a.ts',
+      ],
+      writes: [
+        StoreWrite.AddOwnChanges,
+      ],
+    },
+    {
+      condition: 'the agent changed only files git ignores',
+      own: [],
+      paths: [
+        '/work/project/build/out.js',
+      ],
+      writes: [],
+    },
+    {
+      condition: 'the agent changed a file in no project',
+      own: [
+        '/tmp/notes.md',
+      ],
+      paths: [
+        '/tmp/notes.md',
       ],
       writes: [
         StoreWrite.AddOwnChanges,
@@ -51,6 +85,11 @@ describe('recordOwnChanges', () => {
           '/link/src/a.ts': AbsolutePath.create('/work/project/src/a.ts'),
         },
       }),
+      workingTree: createFakeWorkingTree({
+        ignored: [
+          'build',
+        ],
+      }),
     });
 
     // Assert
@@ -64,5 +103,37 @@ describe('recordOwnChanges', () => {
       own: own.map(AbsolutePath.create),
       writes,
     });
+  });
+
+  it('should note a changed file when git cannot tell whether it ignores it', () => {
+    // Arrange
+    const held = heldSessionsOf();
+
+    // Act
+    recordOwnChanges({
+      agent: SessionAgent.main,
+      paths: [
+        AbsolutePath.create('/work/project/build/out.js'),
+      ],
+      session: keptSession,
+      sessions: createFakeSessionCommandRepository(held),
+      source: createFakeActiveRulesSource(),
+      workingTree: createFakeWorkingTree({
+        ignored: [
+          'build',
+        ],
+        repositoryFolderPath: '/work/elsewhere',
+      }),
+    });
+
+    // Assert
+    expect(
+      ownChangesIn(held, {
+        agent: SessionAgent.main,
+        session: keptSession,
+      }),
+    ).toStrictEqual([
+      AbsolutePath.create('/work/project/build/out.js'),
+    ]);
   });
 });

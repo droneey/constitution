@@ -83,6 +83,7 @@ const gateCommandsOf = ({ context, ports }: Registration): readonly Command[] =>
           ...own,
           sessions: ports.sessions,
           source: ports.activeRules,
+          workingTree: ports.workingTree,
         });
       },
       recordRead: (read): void => {
@@ -90,6 +91,7 @@ const gateCommandsOf = ({ context, ports }: Registration): readonly Command[] =>
           ...read,
           gates: ports.gates,
           source: ports.activeRules,
+          workingTree: ports.workingTree,
         });
       },
       remindHotRules: (asked): readonly HotReminder[] =>
@@ -101,6 +103,7 @@ const gateCommandsOf = ({ context, ports }: Registration): readonly Command[] =>
         remindOfFile({
           ...asked,
           sessions: ports.sessions,
+          workingTree: ports.workingTree,
         }),
       settleShell: (settled): readonly AbsolutePath[] =>
         settleShell({

@@ -7,6 +7,7 @@ import { createFakeActiveRulesSource } from '../../../../../__tests__/active-rul
 import { notingGateWritesOf, StoreWrite } from '../../../../../__tests__/gate.fixtures';
 import { createFakeGateCommandRepository } from '../../../../../__tests__/gate-command-repository.fake';
 import { keptSession } from '../../../../../__tests__/session.fixtures';
+import { createFakeWorkingTree } from '../../../../../__tests__/working-tree.fake';
 import type { AgentInSession, RuleDebt } from '../../../../entities';
 import { DebtKind, SessionAgent } from '../../../../entities';
 import { RuleHash, RuleSetHash } from '../../../../value-objects';
@@ -71,6 +72,12 @@ const recordOf = (input: {
     session: keptSession,
     source: createFakeActiveRulesSource({
       links: input.links ?? {},
+    }),
+    workingTree: createFakeWorkingTree({
+      ignored: [
+        '.droneey/constitution-sessions',
+        'node_modules',
+      ],
     }),
   });
 
@@ -229,6 +236,7 @@ describe('recordRead', () => {
         path: readDebt.path,
         range: {},
         source: createFakeActiveRulesSource(),
+        workingTree: createFakeWorkingTree(),
       });
 
       // Assert
@@ -267,6 +275,11 @@ describe('recordRead', () => {
       condition: 'a part the gate wrote for another session',
       debts: [],
       path: '/work/project/.droneey/constitution-sessions/other/parts/0123456789abcdef.1.md',
+    },
+    {
+      condition: 'a file git ignores',
+      debts: [],
+      path: '/work/project/node_modules/zod/index.js',
     },
     {
       condition: 'another file of the droneey folder, owing its rules',

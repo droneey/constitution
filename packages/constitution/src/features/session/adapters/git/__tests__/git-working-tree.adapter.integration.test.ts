@@ -15,11 +15,11 @@ import { dirname, join, relative } from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
-import { AbsolutePath, RepositoryRelativePath } from '#/kernel/value-objects';
+import { AbsolutePath } from '#/kernel/value-objects';
 
 import { runWorkingTreeSuite, snapshotFilesOf } from '../../../__tests__/working-tree.suite';
 import type { TreeSnapshot, TreeState, WorkingTree } from '../../../domain/contracts';
-import { IgnoreAnswer, TreeStateStatus } from '../../../domain/contracts';
+import { IgnoreStatus, TreeStateStatus } from '../../../domain/contracts';
 import { ShellTree } from '../../../domain/entities';
 import { TreeFingerprint } from '../../../domain/value-objects';
 import { createGitWorkingTree } from '../git-working-tree.adapter';
@@ -672,18 +672,22 @@ describe('createGitWorkingTree', () => {
     expect(root).toBeUndefined();
   });
 
-  it('should answer that it cannot tell whether git ignores a path when git fails', () => {
+  it('should answer that it cannot tell which paths git ignores when git fails', () => {
     // Arrange
     const tree = treeWithGitIn("echo 'fatal: broken' >&2; exit 128");
 
     // Act
-    const answer = tree.isIgnored({
-      path: RepositoryRelativePath.create('b.txt'),
+    const answer = tree.ignoredAmong({
+      paths: [
+        AbsolutePath.join(projectPath(), 'b.txt'),
+      ],
       repositoryFolderPath: projectPath(),
     });
 
     // Assert
-    expect(answer).toBe(IgnoreAnswer.Unknown);
+    expect(answer).toStrictEqual({
+      status: IgnoreStatus.Unknown,
+    });
   });
 
   it('should give the state as no repository when the environment names a locale git speaks otherwise in', () => {

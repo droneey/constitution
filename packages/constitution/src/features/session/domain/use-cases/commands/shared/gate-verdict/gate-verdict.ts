@@ -1,10 +1,9 @@
 import { sessionsFolderInProject } from '#/kernel/constants';
 import { firstBy } from '#/kernel/utils';
-import type { AbsolutePath } from '#/kernel/value-objects';
-import { RepositoryRelativePath } from '#/kernel/value-objects';
+import { AbsolutePath } from '#/kernel/value-objects';
 
 import type { TextHasher, WorkingTree } from '../../../../contracts';
-import { IgnoreAnswer } from '../../../../contracts';
+import { IgnoreStatus } from '../../../../contracts';
 import type { GateCommandRepository } from '../../../../contracts/repositories/commands';
 import type { AgentInSession, GateVerdict, RuleDebt, RulesRead } from '../../../../entities';
 import {
@@ -106,6 +105,21 @@ const unreadProjectsOf = (input: {
     }))
     .filter((project) => project.unread.length > 0);
 
+const isSessionsFolderUnignored = (input: {
+  projectFolderPath: AbsolutePath;
+  workingTree: WorkingTree;
+}): boolean => {
+  const sessionsFolder = AbsolutePath.join(input.projectFolderPath, sessionsFolderInProject);
+  const told = input.workingTree.ignoredAmong({
+    paths: [
+      sessionsFolder,
+    ],
+    repositoryFolderPath: input.projectFolderPath,
+  });
+
+  return told.status === IgnoreStatus.Told && !told.paths.has(sessionsFolder);
+};
+
 const refusedOf = (input: {
   debts: readonly DebtRules[];
   parts: readonly AbsolutePath[];
@@ -122,11 +136,7 @@ const refusedOf = (input: {
     .map((debt) => debt.debt.path),
   kind: GateVerdictKind.Refused,
   parts: input.parts,
-  shouldIgnoreParts:
-    input.workingTree.isIgnored({
-      path: RepositoryRelativePath.create(sessionsFolderInProject),
-      repositoryFolderPath: input.projectFolderPath,
-    }) === IgnoreAnswer.NotIgnored,
+  shouldIgnoreParts: isSessionsFolderUnignored(input),
   unreadCount: input.unreadCount,
 });
 

@@ -2,11 +2,10 @@ import { relative } from 'node:path';
 
 import { describe, expect, it } from 'bun:test';
 
-import type { AbsolutePath } from '#/kernel/value-objects';
-import { RepositoryRelativePath } from '#/kernel/value-objects';
+import { AbsolutePath } from '#/kernel/value-objects';
 
 import type { TreeSnapshot, WorkingTree } from '../domain/contracts';
-import { IgnoreAnswer, TreeStateStatus } from '../domain/contracts';
+import { IgnoreStatus, TreeStateStatus } from '../domain/contracts';
 
 interface WorkingTreeWorld {
   readonly committed: readonly string[];
@@ -104,49 +103,99 @@ const runWorkingTreeSuite = (input: WorkingTreeSuiteInput): void => {
       });
     });
 
-    it.each([
+    it.each<{
+      condition: string;
+      ignored: readonly string[];
+      path: string;
+    }>([
       {
-        answer: IgnoreAnswer.Ignored,
         condition: 'git ignores it',
+        ignored: [
+          'ignored.txt',
+        ],
         path: 'ignored.txt',
       },
       {
-        answer: IgnoreAnswer.NotIgnored,
+        condition: 'git ignores the folder that holds it',
+        ignored: [
+          'build/out.js',
+        ],
+        path: 'build/out.js',
+      },
+      {
+        condition: 'its name holds a line break',
+        ignored: [
+          'build/line\nbreak.js',
+        ],
+        path: 'build/line\nbreak.js',
+      },
+      {
         condition: 'git does not ignore it',
+        ignored: [],
         path: 'b.txt',
       },
-    ])('should tell whether git ignores a path when $condition', ({ answer, path }) => {
+    ])('should tell which paths git ignores when $condition', ({ ignored, path }) => {
       // Arrange
       const { repositoryFolderPath, tree } = input.treeOf(
         worldOf({
           ignored: [
+            'build',
             'ignored.txt',
           ],
         }),
       );
 
       // Act
-      const told = tree.isIgnored({
-        path: RepositoryRelativePath.create(path),
+      const told = tree.ignoredAmong({
+        paths: [
+          AbsolutePath.join(repositoryFolderPath, 'a.txt'),
+          AbsolutePath.join(repositoryFolderPath, path),
+        ],
         repositoryFolderPath,
       });
 
       // Assert
-      expect(told).toBe(answer);
+      expect(told).toStrictEqual({
+        paths: new Set(
+          ignored.map((ignoredPath) => AbsolutePath.join(repositoryFolderPath, ignoredPath)),
+        ),
+        status: IgnoreStatus.Told,
+      });
     });
 
-    it('should answer that it cannot tell whether git ignores a path in a folder of no repository', () => {
+    it('should tell that git ignores none of no paths', () => {
       // Arrange
       const { elsewhere, tree } = input.treeOf(worldOf());
 
       // Act
-      const answer = tree.isIgnored({
-        path: RepositoryRelativePath.create('b.txt'),
+      const told = tree.ignoredAmong({
+        paths: [],
         repositoryFolderPath: elsewhere,
       });
 
       // Assert
-      expect(answer).toBe(IgnoreAnswer.Unknown);
+      expect(told).toStrictEqual({
+        paths: new Set(),
+        status: IgnoreStatus.Told,
+      });
+    });
+
+    it('should answer that it cannot tell which paths git ignores in a folder of no repository', () => {
+      // Arrange
+      const { elsewhere, tree } = input.treeOf(worldOf());
+
+      // Act
+      const answer = tree.ignoredAmong({
+        paths: [
+          AbsolutePath.join(elsewhere, 'b.txt'),
+        ],
+        repositoryFolderPath: elsewhere,
+      });
+
+      // Assert
+      expect(answer).toStrictEqual({
+        status: IgnoreStatus.Unknown,
+      });
     });
 
     it.each([

@@ -97,15 +97,6 @@ describe('createPreToolUseCommand', () => {
       },
     },
     {
-      condition: 'a subagent starts in the folder the run starts in',
-      stdin:
-        '{"hook_event_name":"PreToolUse","session_id":"s1","agent_id":"agent-1","tool_name":"Agent","tool_input":{}}',
-      target: {
-        kind: TargetKind.Folder,
-        path: AbsolutePath.create('/work/project'),
-      },
-    },
-    {
       condition: 'an edit names no file',
       stdin:
         '{"hook_event_name":"PreToolUse","session_id":"s1","agent_id":"agent-1","tool_name":"Edit","tool_input":{}}',
@@ -115,18 +106,9 @@ describe('createPreToolUseCommand', () => {
       },
     },
     {
-      condition: 'an MCP tool names a file, which it does not edit',
+      condition: 'a command runs',
       stdin:
-        '{"hook_event_name":"PreToolUse","session_id":"s1","agent_id":"agent-1","tool_name":"mcp__docs__create_page","tool_input":{"file_path":"a.ts"}}',
-      target: {
-        kind: TargetKind.Folder,
-        path: AbsolutePath.create('/work/project'),
-      },
-    },
-    {
-      condition: 'an MCP tool writes',
-      stdin:
-        '{"hook_event_name":"PreToolUse","session_id":"s1","agent_id":"agent-1","cwd":"/work/project","tool_name":"mcp__docs__create_page","tool_input":{}}',
+        '{"hook_event_name":"PreToolUse","session_id":"s1","agent_id":"agent-1","cwd":"/work/project","tool_name":"Bash","tool_input":{}}',
       target: {
         kind: TargetKind.Folder,
         path: AbsolutePath.create('/work/project'),
@@ -215,29 +197,6 @@ describe('createPreToolUseCommand', () => {
       },
     },
     {
-      condition: 'the gate closes on an MCP call',
-      marked: [],
-      stdin: MCP_CALL,
-      verdict: {
-        causes: [],
-        kind: GateVerdictKind.Closed,
-      },
-    },
-    {
-      condition: 'the gate lets an MCP call through',
-      marked: [
-        {
-          call: ToolUseId.create('toolu_1'),
-          folderRunIn: AbsolutePath.create('/work/project'),
-          session: SessionId.create('s1'),
-        },
-      ],
-      stdin: MCP_CALL,
-      verdict: {
-        kind: GateVerdictKind.Allowed,
-      },
-    },
-    {
       condition: 'the gate allows an edit',
       marked: [],
       stdin:
@@ -257,6 +216,40 @@ describe('createPreToolUseCommand', () => {
 
       // Assert
       expect(run.marked).toStrictEqual(marked);
+    },
+  );
+
+  it.each([
+    {
+      condition: 'it names no file',
+      stdin: MCP_CALL,
+    },
+    {
+      condition: 'it names a file, which it does not edit',
+      stdin:
+        '{"hook_event_name":"PreToolUse","session_id":"s1","cwd":"/work/project","tool_name":"mcp__docs__create_page","tool_use_id":"toolu_1","tool_input":{"file_path":"a.ts"}}',
+    },
+  ])(
+    'should keep the tree of an MCP call without asking the gate when $condition',
+    async ({ stdin }) => {
+      // Act
+      const run = await runOf({
+        stdin,
+        verdict: refused,
+      });
+
+      // Assert
+      expect(run).toStrictEqual({
+        gated: [],
+        marked: [
+          {
+            call: ToolUseId.create('toolu_1'),
+            folderRunIn: AbsolutePath.create('/work/project'),
+            session: SessionId.create('s1'),
+          },
+        ],
+        stdout: '',
+      });
     },
   );
 
@@ -297,6 +290,21 @@ describe('createPreToolUseCommand', () => {
       condition: 'the tool only reads',
       stdin:
         '{"hook_event_name":"PreToolUse","session_id":"s1","tool_name":"Read","tool_input":{"file_path":"/work/a.ts"}}',
+    },
+    {
+      condition: 'a subagent starts',
+      stdin:
+        '{"hook_event_name":"PreToolUse","session_id":"s1","tool_name":"Agent","tool_use_id":"toolu_1","tool_input":{}}',
+    },
+    {
+      condition: 'a subagent starts by the older name of its tool',
+      stdin:
+        '{"hook_event_name":"PreToolUse","session_id":"s1","tool_name":"Task","tool_use_id":"toolu_1","tool_input":{}}',
+    },
+    {
+      condition: 'an MCP call names no call',
+      stdin:
+        '{"hook_event_name":"PreToolUse","session_id":"s1","cwd":"/work/project","tool_name":"mcp__docs__list_pages","tool_input":{}}',
     },
     {
       condition: 'the event names no session',

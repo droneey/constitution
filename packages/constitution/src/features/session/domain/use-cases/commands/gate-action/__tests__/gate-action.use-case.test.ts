@@ -187,6 +187,56 @@ describe('gateAction', () => {
     expect(unreadOf(verdict)).toBe(unread);
   });
 
+  it('should allow an edit of a file git ignores, owing no rule for it', () => {
+    // Arrange
+    const gates = createFakeGateCommandRepository();
+
+    // Act
+    const verdict = gateOf({
+      gates,
+      targets: [
+        {
+          kind: TargetKind.File,
+          path: AbsolutePath.create('/work/project/build/out.js'),
+        },
+      ],
+      workingTree: createFakeWorkingTree({
+        ignored: [
+          'build',
+        ],
+      }),
+    });
+
+    // Assert
+    expect(verdict).toStrictEqual({
+      kind: GateVerdictKind.Allowed,
+    });
+  });
+
+  it('should refuse a command run in a folder git ignores until its rules are read', () => {
+    // Arrange
+    const gates = createFakeGateCommandRepository();
+
+    // Act
+    const verdict = gateOf({
+      gates,
+      targets: [
+        {
+          kind: TargetKind.Folder,
+          path: AbsolutePath.create('/work/project/build'),
+        },
+      ],
+      workingTree: createFakeWorkingTree({
+        ignored: [
+          'build',
+        ],
+      }),
+    });
+
+    // Assert
+    expect(verdict.kind).toBe(GateVerdictKind.Refused);
+  });
+
   it('should allow an edit once the rules its parts name are read', () => {
     // Arrange
     const gates = createFakeGateCommandRepository();

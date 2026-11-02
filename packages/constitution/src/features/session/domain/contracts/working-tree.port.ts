@@ -1,4 +1,4 @@
-import type { AbsolutePath, RepositoryRelativePath } from '#/kernel/value-objects';
+import type { AbsolutePath } from '#/kernel/value-objects';
 
 import type { FileSignatures } from '../entities';
 import type { TreeFingerprint } from '../value-objects';
@@ -32,23 +32,31 @@ type TreeSnapshot =
     }
   | UnreadTree;
 
-enum IgnoreAnswer {
-  Ignored = 'ignored',
-  NotIgnored = 'not-ignored',
+enum IgnoreStatus {
+  Told = 'told',
   Unknown = 'unknown',
 }
 
-interface IgnoredInput {
-  readonly path: RepositoryRelativePath;
+type IgnoredPaths =
+  | {
+      readonly paths: ReadonlySet<AbsolutePath>;
+      readonly status: IgnoreStatus.Told;
+    }
+  | {
+      readonly status: IgnoreStatus.Unknown;
+    };
+
+interface IgnoredAmongInput {
+  readonly paths: readonly AbsolutePath[];
   readonly repositoryFolderPath: AbsolutePath;
 }
 
 interface WorkingTree {
-  readonly isIgnored: (input: IgnoredInput) => IgnoreAnswer;
+  readonly ignoredAmong: (input: IgnoredAmongInput) => IgnoredPaths;
   readonly mainCheckoutOf: (folderPath: AbsolutePath) => AbsolutePath | undefined;
   readonly snapshotOf: (repositoryFolderPath: AbsolutePath) => TreeSnapshot;
   readonly stateOf: (repositoryFolderPath: AbsolutePath) => TreeState;
 }
 
-export type { IgnoredInput, TreeSnapshot, TreeState, UnreadTree, WorkingTree };
-export { IgnoreAnswer, TreeStateStatus };
+export type { IgnoredAmongInput, IgnoredPaths, TreeSnapshot, TreeState, UnreadTree, WorkingTree };
+export { IgnoreStatus, TreeStateStatus };
