@@ -10,13 +10,14 @@ import type { ChildProcessSettings } from '#/libs/child-process';
 import { isSystemError } from '#/libs/system-error';
 
 import type {
-  IgnoredInput,
+  IgnoredAmongInput,
+  IgnoredPaths,
   TreeSnapshot,
   TreeState,
   UnreadTree,
   WorkingTree,
 } from '../../domain/contracts';
-import { IgnoreAnswer, TreeStateStatus } from '../../domain/contracts';
+import { IgnoreStatus, TreeStateStatus } from '../../domain/contracts';
 import { FileSignature, TreeFingerprint } from '../../domain/value-objects';
 import { gitEndedMessage } from './git-working-tree.messages';
 
@@ -44,9 +45,10 @@ const cLocale: Readonly<Record<string, string>> = Object.fromEntries([
 // write the index meanwhile, unless optional locks are off.
 const NO_OPTIONAL_LOCKS = '--no-optional-locks';
 
-// Why: check-ignore answers that git does not ignore a path by ending with 1, and fails by any
+// Why: check-ignore answers that git ignores none of the paths by ending with 1, and fails by any
 // other status but 0.
-const NOT_IGNORED_EXIT_CODE = 1;
+const NONE_IGNORED_EXIT_CODE = 1;
+const PATH_SEPARATOR = '\0';
 
 enum GitRunStatus {
   Ran = 'ran',
@@ -68,11 +70,12 @@ type GitRunInput = ChildProcessSettings & {
   readonly repositoryFolderPath: AbsolutePath;
 };
 
-const runGit = (
-  input: GitRunInput & {
-    readonly args: readonly string[];
-  },
-): GitRun => {
+interface GitArguments {
+  readonly args: readonly string[];
+  readonly stdin?: string;
+}
+
+const runGit = (input: GitRunInput & GitArguments): GitRun => {
   const run = spawnSync(
     'git',
     [
@@ -85,6 +88,7 @@ const runGit = (
         ...input.env,
         ...cLocale,
       },
+      input: input.stdin,
       maxBuffer: OUTPUT_LIMIT_BYTES,
       timeout: input.timeoutMs,
     },
@@ -315,24 +319,51 @@ const stateOf = (input: GitRunInput): TreeState => {
   };
 };
 
+// Why: with -z, check-ignore reads its paths and names the ignored ones each ended by a NUL, so a
+// name that holds a line break is told whole, in one run for every path.
+const ignoredAmong = (input: ChildProcessSettings & IgnoredAmongInput): IgnoredPaths => {
+  if (input.paths.length === 0) {
+    return {
+      paths: new Set(),
+      status: IgnoreStatus.Told,
+    };
+  }
+
+  const run = runGit({
+    ...input,
+    args: [
+      'check-ignore',
+      '--stdin',
+      '-z',
+    ],
+    stdin: input.paths.map((path) => `${path}${PATH_SEPARATOR}`).join(''),
+  });
+
+  if (run.status === GitRunStatus.Ran) {
+    const named = new Set(new TextDecoder().decode(run.output).split(PATH_SEPARATOR));
+
+    return {
+      paths: new Set(input.paths.filter((path) => named.has(path))),
+      status: IgnoreStatus.Told,
+    };
+  }
+
+  return run.exitCode === NONE_IGNORED_EXIT_CODE
+    ? {
+        paths: new Set(),
+        status: IgnoreStatus.Told,
+      }
+    : {
+        status: IgnoreStatus.Unknown,
+      };
+};
+
 const createGitWorkingTree = (input: ChildProcessSettings): WorkingTree => ({
-  isIgnored: (asked: IgnoredInput): IgnoreAnswer => {
-    const run = runGit({
+  ignoredAmong: (asked: IgnoredAmongInput): IgnoredPaths =>
+    ignoredAmong({
       ...input,
-      args: [
-        'check-ignore',
-        '--quiet',
-        asked.path,
-      ],
-      repositoryFolderPath: asked.repositoryFolderPath,
-    });
-
-    if (run.status === GitRunStatus.Ran) {
-      return IgnoreAnswer.Ignored;
-    }
-
-    return run.exitCode === NOT_IGNORED_EXIT_CODE ? IgnoreAnswer.NotIgnored : IgnoreAnswer.Unknown;
-  },
+      ...asked,
+    }),
   mainCheckoutOf: (folderPath: AbsolutePath): AbsolutePath | undefined => {
     const run = runGit({
       ...input,

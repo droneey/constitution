@@ -25,8 +25,8 @@ src/orders/order.ts:42 — fact-has-one-source — the total is stored beside th
 | When | The hook |
 |---|---|
 | A session starts, is resumed, cleared or compacted, or a sub-agent starts | gives the digest; a clear or a compaction also forgets the rules the session's agent has read; and the session's start, never a sub-agent's, removes from the project the folders of other sessions [untouched for a day](#what-the-hooks-keep) |
-| Before the agent edits a file, runs a command, starts a sub-agent or calls an MCP tool | [the rule gate](#the-rule-gate) refuses the action until the agent has read the rules that govern it |
-| The agent reads or edits a file | names the blocks that govern it, their files and their `MUST` rules, once per block |
+| Before the agent edits a file or runs a command | [the rule gate](#the-rule-gate) refuses the action until the agent has read the rules that govern it; before an MCP call, a hook keeps the tree to find what the call changed |
+| The agent reads or edits a file git does not ignore | names the blocks that govern it, their files and their `MUST` rules, once per block |
 | The agent reads a file | records the rules it read whole, or the [debt](#debts) of the rules that govern the file |
 | The agent edits a file, runs a command or calls an MCP tool, the command or call failing included | records the files it changed, and at its first change of a file gives [the hot list](#the-hot-list) |
 | The agent runs a command | records the tree when the project's check passes |
@@ -60,11 +60,11 @@ Before an action, the gate works out the rules that govern it, read afresh from 
 
 The refusal names the files to read within 4,000 bytes and the files a command changed within 2,000; a note counts the rest, which the next refusal names once these are read. Three refusals in a row of the same thing — the same rules unread, or the same reason [the rules cannot be read](#when-the-rules-cannot-be-read) — let the action through and tell you so, and the next stop tells you how many went through.
 
-A path is followed through its links, so a file reached through a link is governed as the file it is. What the gate writes is never a change to the tree, and git should ignore `.droneey/`; the gate says so when git tells it does not, and says nothing when git cannot tell.
+A path is followed through its links, so a file reached through a link is governed as the file it is. A file git ignores — `.droneey/`, `node_modules/`, a build's output — is outside the gate: editing it owes no rule, reading it leaves no debt and names no block, and changing it is no change of the hand-back; a file git cannot tell of is governed. A sub-agent and an MCP call touch no file they name, so neither is gated before it starts: the sub-agent meets the gate at its own actions, and what an MCP call changed is found after it. What the gate writes is never a change to the tree, and git should ignore `.droneey/`; the gate says so when git tells it does not, and says nothing when git cannot tell.
 
 ### Debts
 
-Reading a file of the project leaves a debt: the rules that govern it are owed before the agent's next action and before its turn ends, and once they are read the debt is settled. A command or an MCP call is bracketed by the tree before and after it, and each file it changed becomes a debt too, whatever the command was and whether or not it failed; the command itself is never read. A debt on a file of a project whose rules cannot be read holds only the turn, never an action on another project's files.
+Reading a file of the project that git does not ignore leaves a debt: the rules that govern it are owed before the agent's next action and before its turn ends, and once they are read the debt is settled. A command or an MCP call is bracketed by the tree before and after it, and each file it changed becomes a debt too, whatever the command was and whether or not it failed; the command itself is never read. A debt on a file of a project whose rules cannot be read holds only the turn, never an action on another project's files.
 
 ### The hot list
 
@@ -89,7 +89,7 @@ A project with no `constitution.yaml` is never gated. One that declares a Consti
 
 ### What the hooks need
 
-bash and the `constitution` executable on `PATH`, which mise installs from the release the project pins ([the quick start](../../README.md#-quick-start)); nothing else in the project, so a project in any language can follow the Constitution. Each hook of `hooks.json` runs `hooks/hook.sh <event>`, which hands Claude Code's event on standard input to `constitution hook <event>`: `session-start`, `pre-tool-use`, `post-tool-use`, `record-check`, `user-prompt-submit`, `stop` or `session-end`. Without the executable a hook prints one line that says to install it, and never fails the session.
+bash and the `constitution` executable, which mise installs from the release the project pins ([the quick start](../../README.md#-quick-start)); nothing else in the project, so a project in any language can follow the Constitution. Each hook of `hooks.json` runs `hooks/hook.sh <event>`, which hands Claude Code's event on standard input, unchanged, to `constitution hook <event>`: `session-start`, `pre-tool-use`, `post-tool-use`, `record-check`, `user-prompt-submit`, `stop` or `session-end`. The hook runs the `constitution` mise resolves in the folder of the call, so each project and each worktree is gated by the release it pins, and the one on `PATH` where mise is missing; mise installs nothing during a hook. Without the executable a hook prints one line that says to install it, and never fails the session; before an action, an executable that fails to start or crashes refuses the action with its error.
 
 ### What the hooks keep
 

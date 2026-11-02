@@ -19,8 +19,17 @@ tombi = "1.9.5"
 uv = "0.13.5"
 yamllint = "1.38.0"
 
+[env]
+# Why: the hooks run the constitution mise resolves in the folder of the call, so this tree's own
+# executable, linked as a release's distribution holds it, gates each checkout and worktree.
+_.path = ["{{config_root}}/.droneey/constitution/bin"]
+
 [hooks]
+# Why: the executable of the tree runs from its sources once the packages and the files they
+# generate are in place, so it is linked, and found on PATH, only after them.
 postinstall = [
+  "bun install --frozen-lockfile",
+  "bun run --filter '@droneey/constitution^...' generate",
   "mkdir -p .droneey",
   "ln -sfn ../packages/constitution .droneey/constitution",
   "cd packages/constitution && bun link",

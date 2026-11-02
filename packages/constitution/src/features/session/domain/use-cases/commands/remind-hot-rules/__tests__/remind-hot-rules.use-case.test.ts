@@ -63,6 +63,32 @@ describe('remindHotRules', () => {
     ]);
   });
 
+  it('should give no hot rule of a file git ignores', () => {
+    // Arrange
+    const store = storeOf();
+
+    // Act
+    const reminders = remindHotRules({
+      agent: SessionAgent.main,
+      changedPaths: [
+        AbsolutePath.create('/work/project/build/out.ts'),
+      ],
+      gates: store,
+      hasher: testHasher,
+      hotSlugs,
+      session: keptSession,
+      source: createFakeActiveRulesSource(),
+      workingTree: createFakeWorkingTree({
+        ignored: [
+          'build',
+        ],
+      }),
+    });
+
+    // Assert
+    expect(reminders).toStrictEqual([]);
+  });
+
   it('should give no hot rule of a file it reminded of before', () => {
     // Arrange
     const store = storeOf();

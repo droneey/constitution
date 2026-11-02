@@ -5,6 +5,7 @@ import type { GateCommandRepository } from '../../../contracts/repositories/comm
 import type { AgentInSession, HotRule } from '../../../entities';
 import { HotReminder, TargetKind } from '../../../entities';
 import { rulesOwedBy } from '../shared/owe-rules';
+import { unignoredFilesAmong } from '../shared/unignored-files';
 
 interface RemindHotRulesInput extends AgentInSession {
   readonly changedPaths: readonly AbsolutePath[];
@@ -17,9 +18,13 @@ interface RemindHotRulesInput extends AgentInSession {
 
 const remindHotRules = (input: RemindHotRulesInput): readonly HotReminder[] => {
   const shown = input.gates.hotReminded(input);
-  const fresh = [
-    ...new Set(input.changedPaths.map(input.source.realPathOf)),
-  ].filter((path) => !shown.has(path));
+  const fresh = unignoredFilesAmong({
+    paths: [
+      ...new Set(input.changedPaths.map(input.source.realPathOf)),
+    ].filter((path) => !shown.has(path)),
+    source: input.source,
+    workingTree: input.workingTree,
+  });
 
   if (fresh.length === 0) {
     return [];

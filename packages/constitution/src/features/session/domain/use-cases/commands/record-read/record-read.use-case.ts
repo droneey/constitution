@@ -2,10 +2,11 @@ import { sessionsFolderInProject } from '#/kernel/constants';
 import type { ProjectPlace } from '#/kernel/entities';
 import { AbsolutePath, RepositoryRelativePath } from '#/kernel/value-objects';
 
-import type { ActiveRulesSource } from '../../../contracts';
+import type { ActiveRulesSource, WorkingTree } from '../../../contracts';
 import type { GateCommandRepository, RulesPart } from '../../../contracts/repositories/commands';
 import type { AgentInSession } from '../../../entities';
 import { DebtKind } from '../../../entities';
+import { unignoredFilesAmong } from '../shared/unignored-files';
 
 interface ReadRange {
   readonly limit?: number;
@@ -17,6 +18,7 @@ interface RecordReadInput extends AgentInSession {
   readonly path: AbsolutePath;
   readonly range: ReadRange;
   readonly source: ActiveRulesSource;
+  readonly workingTree: WorkingTree;
 }
 
 const FIRST_LINE = 1;
@@ -64,7 +66,14 @@ const oweRulesOfCodeRead = (input: RecordReadInput): void => {
         realPath,
       ],
       place,
-    })
+    }) ||
+    unignoredFilesAmong({
+      paths: [
+        realPath,
+      ],
+      source: input.source,
+      workingTree: input.workingTree,
+    }).length === 0
   ) {
     return;
   }

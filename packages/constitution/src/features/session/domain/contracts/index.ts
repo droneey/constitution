@@ -4,10 +4,11 @@ export type { ConfigurationsReport, DeclaredRules, RulesSource } from './rules-s
 export { ConfigurationsCheckStatus } from './rules-source.port';
 export type { TextHasher } from './text-hasher.port';
 export type {
-  IgnoredInput,
+  IgnoredAmongInput,
+  IgnoredPaths,
   TreeSnapshot,
   TreeState,
   UnreadTree,
   WorkingTree,
 } from './working-tree.port';
-export { IgnoreAnswer, TreeStateStatus } from './working-tree.port';
+export { IgnoreStatus, TreeStateStatus } from './working-tree.port';
