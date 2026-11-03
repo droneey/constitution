@@ -16,8 +16,6 @@ export { GateVerdictKind } from './gate-verdict.entity';
 export type { RuleLowered, RuleRead, RuleStanding, RulesRead } from './gated-rule.entity';
 export { GatedRule } from './gated-rule.entity';
 export { HookEventName } from './hook-event-name.entity';
-export type { HotRule } from './hot-reminder.entity';
-export { HotReminder } from './hot-reminder.entity';
 export type { RemindedBlock, Reminder } from './reminder.entity';
 export { ReviewDebt } from './review-debt.entity';
 export type { RuleDebt } from './rule-debt.entity';

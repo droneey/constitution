@@ -1,6 +1,5 @@
 export type {
   AddGateEntryInput,
-  AddHotRemindedInput,
   AddRulesReadInput,
   DebtsInput,
   GateCommandRepository,

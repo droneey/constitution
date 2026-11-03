@@ -92,7 +92,6 @@ const defaultFiles: Readonly<Record<string, readonly RuleWording[]>> = {
 
 enum StoreWrite {
   AddDebts = 'addDebts',
-  AddHotReminded = 'addHotReminded',
   AddOwnChanges = 'addOwnChanges',
   AddReviewDebt = 'addReviewDebt',
   ClearOwnChanges = 'clearOwnChanges',
@@ -112,10 +111,6 @@ const notingGateWritesOf = (store: GateCommandRepository): Noted<GateCommandRepo
       addDebts: (added) => {
         writes.push(StoreWrite.AddDebts);
         store.addDebts(added);
-      },
-      addHotReminded: (added) => {
-        writes.push(StoreWrite.AddHotReminded);
-        store.addHotReminded(added);
       },
     },
     writes,

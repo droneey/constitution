@@ -17,7 +17,6 @@ import type { RuleHash, SessionId, ToolUseId } from '../domain/value-objects';
 interface HeldGate {
   readonly debts: Map<SessionAgent, Map<string, RuleDebt>>;
   readonly entries: Map<SessionAgent, GateEntry[]>;
-  readonly hot: Map<SessionAgent, Set<AbsolutePath>>;
   readonly parts: Map<string, RulesPart>;
   readonly read: Map<SessionAgent, RuleRead[]>;
   readonly shells: Map<ToolUseId, ShellTree>;
@@ -58,7 +57,6 @@ const createFakeGateCommandRepository = (): GateCommandRepository => {
     const held = gates.get(session) ?? {
       debts: new Map(),
       entries: new Map(),
-      hot: new Map(),
       parts: new Map(),
       read: new Map(),
       shells: new Map(),
@@ -89,17 +87,6 @@ const createFakeGateCommandRepository = (): GateCommandRepository => {
     addGateEntry: (added): void => {
       listOf(gateOf(added.session).entries, added.agent).push(added.entry);
     },
-    addHotReminded: (added): void => {
-      const { hot } = gateOf(added.session);
-
-      hot.set(
-        added.agent,
-        new Set([
-          ...(hot.get(added.agent) ?? []),
-          ...added.paths,
-        ]),
-      );
-    },
     addRulesRead: (added): void => {
       listOf(gateOf(added.session).read, added.agent).push(...added.rules);
     },
@@ -109,8 +96,6 @@ const createFakeGateCommandRepository = (): GateCommandRepository => {
     gateEntries: (asked): readonly GateEntry[] => [
       ...listOf(gateOf(asked.session).entries, asked.agent),
     ],
-    hotReminded: (asked): ReadonlySet<AbsolutePath> =>
-      new Set(gateOf(asked.session).hot.get(asked.agent)),
     keepShellTree: (kept): void => {
       gateOf(kept.session).shells.set(kept.call, kept.tree);
     },
@@ -122,7 +107,6 @@ const createFakeGateCommandRepository = (): GateCommandRepository => {
       const held = gateOf(reset.session);
 
       held.read.delete(reset.agent);
-      held.hot.delete(reset.agent);
 
       listOf(held.entries, reset.agent).push({
         kind: GateEntryKind.Reset,

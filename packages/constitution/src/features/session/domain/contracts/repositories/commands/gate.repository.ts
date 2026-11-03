@@ -19,10 +19,6 @@ interface AddGateEntryInput extends AgentInSession {
   readonly entry: GateEntry;
 }
 
-interface AddHotRemindedInput extends AgentInSession {
-  readonly paths: readonly AbsolutePath[];
-}
-
 interface AddRulesReadInput extends AgentInSession {
   readonly rules: readonly RuleRead[];
 }
@@ -59,18 +55,16 @@ interface SweepStaleSessionsInput {
 }
 
 // Why: a write that cannot land is dropped, costing the gate but never the hook. A settled debt is
-// resolved no more, and a debt outlives a compaction, which forgets only what was read and shown.
+// resolved no more, and a debt outlives a compaction, which forgets only what was read.
 // The session's folder in a project goes when the session ends, or a day after the session last
 // wrote there; the rest stays for a resumed session and goes from the state folder 30 days after
 // it was last saved, the one bound a session that crashed relies on.
 interface GateCommandRepository {
   readonly addDebts: (input: DebtsInput) => void;
   readonly addGateEntry: (input: AddGateEntryInput) => void;
-  readonly addHotReminded: (input: AddHotRemindedInput) => void;
   readonly addRulesRead: (input: AddRulesReadInput) => void;
   readonly debts: (input: AgentInSession) => readonly RuleDebt[];
   readonly gateEntries: (input: AgentInSession) => readonly GateEntry[];
-  readonly hotReminded: (input: AgentInSession) => ReadonlySet<AbsolutePath>;
   readonly keepShellTree: (input: KeepShellTreeInput) => void;
   readonly partOf: (input: PartInput) => RulesPart | undefined;
   readonly removeSessionFolders: (session: SessionId) => void;
@@ -84,7 +78,6 @@ interface GateCommandRepository {
 
 export type {
   AddGateEntryInput,
-  AddHotRemindedInput,
   AddRulesReadInput,
   DebtsInput,
   GateCommandRepository,

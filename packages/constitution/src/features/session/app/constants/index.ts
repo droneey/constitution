@@ -8,4 +8,3 @@ export {
   stopEventSchema,
   toolEventSchema,
 } from './hook-events.constants';
-export { hotRuleSlugs } from './hot-list.constants';
