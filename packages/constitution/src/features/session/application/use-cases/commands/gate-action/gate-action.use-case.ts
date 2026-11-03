@@ -1,10 +1,11 @@
 import type { GateCause, GateTarget, GateVerdict } from '../../../../domain/gate/entities';
-import { GateCauseKind } from '../../../../domain/gate/entities';
+import { GateCauseKind, TargetKind } from '../../../../domain/gate/entities';
 import type { ActiveRulesSource } from '../../../contracts';
 import type { GatePorts } from '../shared/gate-verdict';
 import { debtRulesOf, uniqueCausesOf, verdictOf } from '../shared/gate-verdict';
 import type { TargetRules } from '../shared/owe-rules';
 import { rulesOwedBy } from '../shared/owe-rules';
+import { unignoredFilesAmong } from '../shared/unignored-files';
 
 interface GateActionInput extends GatePorts {
   readonly source: ActiveRulesSource;
@@ -24,9 +25,21 @@ const closingCausesOf = (actions: readonly TargetRules[]): readonly GateCause[] 
   });
 };
 
+// Why: an edit of a file git ignores owes no rule, while a command's folder is gated whatever git
+// says of it, and the debts the agent carries still hold it.
+const isGoverned = (input: GateActionInput, target: GateTarget): boolean =>
+  target.kind !== TargetKind.File ||
+  unignoredFilesAmong({
+    paths: [
+      input.source.realPathOf(target.path),
+    ],
+    source: input.source,
+    workingTree: input.workingTree,
+  }).length > 0;
+
 const gateAction = (input: GateActionInput): GateVerdict => {
   const owedFor = rulesOwedBy(input);
-  const actions = input.targets.map(owedFor);
+  const actions = input.targets.filter((target) => isGoverned(input, target)).map(owedFor);
   const debts = debtRulesOf({
     ...input,
     owedFor,

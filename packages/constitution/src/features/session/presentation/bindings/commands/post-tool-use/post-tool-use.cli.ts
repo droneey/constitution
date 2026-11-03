@@ -1,19 +1,17 @@
 import { Command } from 'commander';
 
-import type { AbsolutePath, BlockId, RuleSlug } from '#/kernel/value-objects';
+import type { AbsolutePath, BlockId } from '#/kernel/value-objects';
 import type { CommandContext } from '#/shared/cli';
 import { folderPathOf } from '#/shared/cli';
 
 import type { ReadRange } from '../../../../application/use-cases/commands/record-read';
-import type { HotReminder, Reminder } from '../../../../domain/reminder/entities';
+import type { Reminder } from '../../../../domain/reminder/entities';
 import type { AgentInSession } from '../../../../domain/session/entities';
 import type { ToolUseId } from '../../../../domain/session/value-objects';
 import { HookEventName } from '../../../../domain/shared/entities';
-import { hotRuleSlugs } from '../../../constants';
 import { contextOutputOf, reminderNotesOf, ToolKind } from '../../../utils';
 import type { ToolCall } from '../shared/tool-call';
 import { toolCallOf } from '../shared/tool-call';
-import { hotListLines } from './hot-list.utils';
 
 interface PostToolUseContext extends CommandContext {
   readonly recordOwnChanges: (
@@ -32,12 +30,6 @@ interface PostToolUseContext extends CommandContext {
       ids: readonly BlockId[];
     },
   ) => void;
-  readonly remindHotRules: (
-    input: AgentInSession & {
-      changedPaths: readonly AbsolutePath[];
-      hotSlugs: readonly RuleSlug[];
-    },
-  ) => readonly HotReminder[];
   readonly remindOfFile: (
     input: AgentInSession & {
       path: string;
@@ -120,24 +112,10 @@ const remindOfGoverningBlocks = (done: ToolDone): readonly string[] => {
   return notes.lines;
 };
 
-const hotLinesOf = (input: {
-  changedPaths: readonly AbsolutePath[];
-  done: ToolDone;
-}): readonly string[] =>
-  input.changedPaths.length === 0
-    ? []
-    : hotListLines(
-        input.done.context.remindHotRules({
-          ...input.done.agent,
-          changedPaths: input.changedPaths,
-          hotSlugs: hotRuleSlugs,
-        }),
-      );
-
 const createPostToolUseCommand = (context: PostToolUseContext): Command =>
   new Command('post-tool-use')
     .description(
-      'Record what an agent read or changed, name the blocks that govern a file it reads or edits, and show the hot rules of a file at its first change.',
+      'Record what an agent read or changed, and name the blocks that govern a file it reads or edits.',
     )
     .addHelpText(
       'before',
@@ -178,13 +156,7 @@ const createPostToolUseCommand = (context: PostToolUseContext): Command =>
         return;
       }
 
-      const lines = [
-        ...remindOfGoverningBlocks(done),
-        ...hotLinesOf({
-          changedPaths,
-          done,
-        }),
-      ];
+      const lines = remindOfGoverningBlocks(done);
 
       if (lines.length > 0) {
         context.io.write(

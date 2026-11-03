@@ -25,7 +25,6 @@ export { recordJudgement } from './application/use-cases/commands/record-judgeme
 export { recordOwnChanges } from './application/use-cases/commands/record-own-changes';
 export { recordRead } from './application/use-cases/commands/record-read';
 export { recordReminders } from './application/use-cases/commands/record-reminders';
-export { remindHotRules } from './application/use-cases/commands/remind-hot-rules';
 export { resetReading } from './application/use-cases/commands/reset-reading';
 export { settleShell } from './application/use-cases/commands/settle-shell';
 export { sweepStaleSessions } from './application/use-cases/commands/sweep-stale-sessions';
@@ -34,7 +33,7 @@ export { digestSession } from './application/use-cases/queries/digest-session';
 export { judgeStop } from './application/use-cases/queries/judge-stop';
 export { remindOfFile } from './application/use-cases/queries/remind-of-file';
 export type { GateVerdict } from './domain/gate/entities';
-export type { HotReminder, Reminder } from './domain/reminder/entities';
+export type { Reminder } from './domain/reminder/entities';
 export type { SessionId } from './domain/session/value-objects';
 export type { ConfigurationsReport, SessionDigest } from './domain/session-digest/entities';
 export { ConfigurationsCheckStatus } from './domain/session-digest/entities';

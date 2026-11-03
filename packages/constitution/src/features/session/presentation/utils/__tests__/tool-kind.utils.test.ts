@@ -29,7 +29,11 @@ describe('toolKindOf', () => {
       name: 'Bash',
     },
     {
-      kind: ToolKind.Spawning,
+      kind: ToolKind.Ungated,
+      name: 'Agent',
+    },
+    {
+      kind: ToolKind.Ungated,
       name: 'Task',
     },
     {

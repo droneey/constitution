@@ -7,12 +7,11 @@ Every change starts from an issue and reaches `main` through a pull request, as 
 ## Set up
 
 ```bash
-mise trust && mise install   # the pinned toolchain, the Python tools and the git hooks
-bun install                  # the packages of the workspace
+mise trust && mise install   # the pinned toolchain, the packages, the Python tools and the git hooks
 claude --plugin-dir packages/constitution   # a session on the working tree's hooks and skills
 ```
 
-`mise install` also links `constitution` from its sources into `~/.bun/bin`, so the hooks of every session run the working tree with no build between an edit and the next hook. Here `.droneey/constitution` links to `packages/constitution`, so this repository's sessions read the rules as they are; to try unreleased rules in another project, point its `.droneey/constitution` at this working tree with `ln -sfn <this repository>/packages/constitution .droneey/constitution`, until its next `mise install` links its pinned release back.
+Here `.droneey/constitution` links to `packages/constitution`, whose `bin/constitution` links to its sources, and `mise.toml` puts that `bin` first on `PATH`, as a release's distribution does: the hooks run the `constitution` mise resolves in the folder of each call, so each checkout and each worktree, once `mise install` has installed its packages and linked it, is gated by its own tree's rules and code, and before that by the global link, with no build between an edit and the next hook. `mise install` also links `constitution` from its sources into `~/.bun/bin`, for the projects that pin no executable of their own; to try unreleased rules in another project, point its `.droneey/constitution` at this working tree with `ln -sfn <this repository>/packages/constitution .droneey/constitution`, until its next `mise install` links its pinned release back.
 
 ## Check
 

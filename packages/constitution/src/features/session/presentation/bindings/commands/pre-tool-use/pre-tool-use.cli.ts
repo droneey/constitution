@@ -40,11 +40,11 @@ const targetOf = (call: ToolCall): GateTarget =>
         path: call.folderRunIn,
       };
 
+// Why: an MCP call touches no file it names, so it is not gated beforehand; its tree is kept to find
+// after it what it changed.
 const gatedKinds: ReadonlySet<ToolKind> = new Set([
   ToolKind.Editing,
   ToolKind.Shell,
-  ToolKind.Spawning,
-  ToolKind.Mcp,
 ]);
 
 const treeBracketedKinds: ReadonlySet<ToolKind> = new Set([
@@ -59,6 +59,18 @@ const passingKinds: ReadonlySet<GateVerdictKind> = new Set([
 ]);
 
 const goesThrough = (verdict: GateVerdict): boolean => passingKinds.has(verdict.kind);
+
+const keepTree = (input: { call: ToolCall; context: PreToolUseContext }): void => {
+  const { call } = input;
+
+  if (treeBracketedKinds.has(call.kind) && call.call !== undefined) {
+    input.context.markShell({
+      call: call.call,
+      folderRunIn: call.folderRunIn,
+      session: call.agent.session,
+    });
+  }
+};
 
 const createPreToolUseCommand = (context: PreToolUseContext): Command =>
   new Command('pre-tool-use')
@@ -77,11 +89,16 @@ const createPreToolUseCommand = (context: PreToolUseContext): Command =>
         text: await context.io.readInput(),
       });
 
-      if (
-        call === undefined ||
-        !gatedKinds.has(call.kind) ||
-        call.eventName !== HookEventName.PreToolUse
-      ) {
+      if (call === undefined || call.eventName !== HookEventName.PreToolUse) {
+        return;
+      }
+
+      if (!gatedKinds.has(call.kind)) {
+        keepTree({
+          call,
+          context,
+        });
+
         return;
       }
 
@@ -97,11 +114,10 @@ const createPreToolUseCommand = (context: PreToolUseContext): Command =>
         context.io.write(hookOutputOf(answer));
       }
 
-      if (treeBracketedKinds.has(call.kind) && call.call !== undefined && goesThrough(verdict)) {
-        context.markShell({
-          call: call.call,
-          folderRunIn: call.folderRunIn,
-          session: call.agent.session,
+      if (goesThrough(verdict)) {
+        keepTree({
+          call,
+          context,
         });
       }
     });

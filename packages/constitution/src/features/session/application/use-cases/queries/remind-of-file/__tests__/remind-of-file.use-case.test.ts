@@ -11,6 +11,7 @@ import {
   sessionStateOf,
 } from '../../../../../__tests__/session.fixtures';
 import { createFakeSessionQueries } from '../../../../../__tests__/session-query-repository.fake';
+import { createFakeWorkingTree } from '../../../../../__tests__/working-tree.fake';
 import type { RemindedBlock } from '../../../../../domain/reminder/entities';
 import { SessionAgent } from '../../../../../domain/session/entities';
 import { AgentId, SessionId } from '../../../../../domain/session/value-objects';
@@ -77,8 +78,36 @@ const typescriptReminded: RemindedBlock = {
   musts: [],
 };
 const keptAgent = AgentId.create('agent-1');
+const workingTree = createFakeWorkingTree({
+  ignored: [
+    'node_modules',
+  ],
+});
 
 describe('remindOfFile', () => {
+  it('should name the blocks of a file when git cannot tell whether it ignores it', () => {
+    // Arrange
+    const sessionQueries = createFakeSessionQueries(
+      heldSessionsOf({
+        state: savedState,
+      }),
+    );
+
+    // Act
+    const reminder = remindOfFile({
+      agent: SessionAgent.main,
+      path: 'src/ui/a.ts',
+      session: keptSession,
+      sessionQueries,
+      workingTree: createFakeWorkingTree({
+        repositoryFolderPath: '/work/elsewhere',
+      }),
+    });
+
+    // Assert
+    expect(reminder?.path).toBe(RepositoryRelativePath.create('src/ui/a.ts'));
+  });
+
   it.each([
     {
       condition: 'the path is absolute',
@@ -112,6 +141,7 @@ describe('remindOfFile', () => {
         path,
         session: keptSession,
         sessionQueries,
+        workingTree,
       });
 
       // Assert
@@ -179,6 +209,7 @@ describe('remindOfFile', () => {
         path: 'src/ui/a.ts',
         session: keptSession,
         sessionQueries,
+        workingTree,
       });
 
       // Assert
@@ -214,6 +245,7 @@ describe('remindOfFile', () => {
       path,
       session: keptSession,
       sessionQueries,
+      workingTree,
     });
 
     // Assert
@@ -228,6 +260,16 @@ describe('remindOfFile', () => {
       condition: 'the session kept no state',
       path: 'src/ui/a.ts',
       session: SessionId.create('session-2'),
+    },
+    {
+      condition: 'git ignores the file',
+      path: 'node_modules/ui/a.ts',
+      session: keptSession,
+    },
+    {
+      condition: 'git ignores the file, named by its absolute path',
+      path: '/work/project/node_modules/ui/a.ts',
+      session: keptSession,
     },
     {
       condition: 'the file lies outside the project',
@@ -258,6 +300,7 @@ describe('remindOfFile', () => {
       path,
       session,
       sessionQueries,
+      workingTree,
     });
 
     // Assert

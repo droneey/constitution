@@ -5,6 +5,8 @@ import { AbsolutePath, RepositoryRelativePath } from '#/kernel/value-objects';
 import { Reminder } from '../../../../domain/reminder/entities';
 import type { SessionAgent } from '../../../../domain/session/entities';
 import type { SessionId } from '../../../../domain/session/value-objects';
+import type { WorkingTree } from '../../../contracts';
+import { IgnoreStatus } from '../../../contracts';
 import type { SessionQueries } from '../../../contracts/repositories/queries';
 
 interface RemindOfFileInput {
@@ -12,6 +14,7 @@ interface RemindOfFileInput {
   readonly path: string;
   readonly session: SessionId;
   readonly sessionQueries: SessionQueries;
+  readonly workingTree: WorkingTree;
 }
 
 const remindOfFile = (input: RemindOfFileInput): Reminder | undefined => {
@@ -26,6 +29,18 @@ const remindOfFile = (input: RemindOfFileInput): Reminder | undefined => {
     : normalizePath(input.path);
 
   if (!RepositoryRelativePath.is(path)) {
+    return undefined;
+  }
+
+  const filePath = AbsolutePath.join(state.repositoryFolderPath, path);
+  const told = input.workingTree.ignoredAmong({
+    paths: [
+      filePath,
+    ],
+    repositoryFolderPath: state.repositoryFolderPath,
+  });
+
+  if (told.status === IgnoreStatus.Told && told.paths.has(filePath)) {
     return undefined;
   }
 

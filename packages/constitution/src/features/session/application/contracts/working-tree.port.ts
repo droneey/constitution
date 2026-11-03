@@ -1,24 +1,32 @@
-import type { AbsolutePath, RepositoryRelativePath } from '#/kernel/value-objects';
+import type { AbsolutePath } from '#/kernel/value-objects';
 
 import type { TreeSnapshot, TreeState } from '../../domain/tree-state/entities';
 
-enum IgnoreAnswer {
-  Ignored = 'ignored',
-  NotIgnored = 'not-ignored',
+enum IgnoreStatus {
+  Told = 'told',
   Unknown = 'unknown',
 }
 
-interface IgnoredInput {
-  readonly path: RepositoryRelativePath;
+type IgnoredPaths =
+  | {
+      readonly paths: ReadonlySet<AbsolutePath>;
+      readonly status: IgnoreStatus.Told;
+    }
+  | {
+      readonly status: IgnoreStatus.Unknown;
+    };
+
+interface IgnoredAmongInput {
+  readonly paths: readonly AbsolutePath[];
   readonly repositoryFolderPath: AbsolutePath;
 }
 
 interface WorkingTree {
-  readonly isIgnored: (input: IgnoredInput) => IgnoreAnswer;
+  readonly ignoredAmong: (input: IgnoredAmongInput) => IgnoredPaths;
   readonly mainCheckoutOf: (folderPath: AbsolutePath) => AbsolutePath | undefined;
   readonly snapshotOf: (repositoryFolderPath: AbsolutePath) => TreeSnapshot;
   readonly stateOf: (repositoryFolderPath: AbsolutePath) => TreeState;
 }
 
-export type { IgnoredInput, WorkingTree };
-export { IgnoreAnswer };
+export type { IgnoredAmongInput, IgnoredPaths, WorkingTree };
+export { IgnoreStatus };

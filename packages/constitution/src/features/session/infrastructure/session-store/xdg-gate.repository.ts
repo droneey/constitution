@@ -17,7 +17,6 @@ import {
   entriesOfLines,
   LineMark,
   markLineOf,
-  pathsAfterMarkOf,
   pathsOfLines,
   ruleReadLineOf,
   rulesReadOfLines,
@@ -33,7 +32,6 @@ import { PRIVATE_FOLDER_MODE, sweepStale } from './state-folder.utils';
 const RULES_READ_FILE_NAME = 'rules';
 const DEBT_FILE_NAME = 'debt';
 const GATE_FILE_NAME = 'gate';
-const HOT_REMINDED_FILE_NAME = 'hot';
 const PROJECTS_FILE_NAME = 'projects';
 const PARTS_FOLDER_NAME = 'parts';
 const PART_FILE_NAME = /^([0-9a-f]+)\.(\d+)\.md$/u;
@@ -159,7 +157,6 @@ const gateWritesOf = (
   GateRepository,
   | 'addDebts'
   | 'addGateEntry'
-  | 'addHotReminded'
   | 'addRulesRead'
   | 'keepShellTree'
   | 'resetReading'
@@ -183,13 +180,6 @@ const gateWritesOf = (
           added.entry,
         ],
         name: GATE_FILE_NAME,
-      });
-    },
-    addHotReminded: (added): void => {
-      lines.append({
-        ...added,
-        lines: added.paths,
-        name: HOT_REMINDED_FILE_NAME,
       });
     },
     addRulesRead: (added): void => {
@@ -217,18 +207,13 @@ const gateWritesOf = (
       });
     },
     resetReading: (reset): void => {
-      for (const name of [
-        RULES_READ_FILE_NAME,
-        HOT_REMINDED_FILE_NAME,
-      ]) {
-        lines.append({
-          ...reset,
-          lines: [
-            markLineOf(LineMark.Reset),
-          ],
-          name,
-        });
-      }
+      lines.append({
+        ...reset,
+        lines: [
+          markLineOf(LineMark.Reset),
+        ],
+        name: RULES_READ_FILE_NAME,
+      });
 
       lines.append({
         ...reset,
@@ -326,7 +311,7 @@ const gatePartsOf = (
 
 const gateReadsOf = (
   lines: SessionLines,
-): Pick<GateRepository, 'debts' | 'gateEntries' | 'hotReminded' | 'rulesRead'> => ({
+): Pick<GateRepository, 'debts' | 'gateEntries' | 'rulesRead'> => ({
   debts: (asked) =>
     debtsOfLines(
       lines.readLines({
@@ -340,16 +325,6 @@ const gateReadsOf = (
         ...asked,
         name: GATE_FILE_NAME,
       }),
-    ),
-  hotReminded: (asked): ReadonlySet<AbsolutePath> =>
-    new Set(
-      pathsAfterMarkOf(
-        lines.readLines({
-          ...asked,
-          name: HOT_REMINDED_FILE_NAME,
-        }),
-        LineMark.Reset,
-      ),
     ),
   rulesRead: (asked) =>
     rulesReadOfLines(
