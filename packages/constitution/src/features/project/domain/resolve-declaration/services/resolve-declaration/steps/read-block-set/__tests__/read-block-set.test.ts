@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { Axis, Layer, Level } from '#/kernel/constants';
+import { Axis, BlockFormat, Layer, Level } from '#/kernel/constants';
 import { Met, TermKind, WarningKind } from '#/kernel/entities';
 import {
   AbsolutePath,
@@ -274,6 +274,75 @@ describe('readBlockSet', () => {
         [
           Glob.create('**/kit/**'),
         ],
+      ],
+      warnings: [],
+    });
+  });
+
+  it('should read a child block by its id path, its chapters and its seams with a nested block, when the source marks its axis folders by @', () => {
+    // Arrange
+    const sources = [
+      sourceOf({
+        files: {
+          'blocks/core/@foundation/code.md': ruleOf({
+            slug: 'code-reads-as-prose',
+          }),
+          'blocks/implementations/react/ink/@foundation/rendering.md': ruleOf({
+            slug: 'frame-drawn-once',
+          }),
+          'blocks/implementations/react/ink/@foundation/with/presentation/design-system.md': ruleOf(
+            {
+              slug: 'terminal-colour-from-a-token',
+            },
+          ),
+          'blocks/implementations/react/ink/ink.md': passportOf({
+            id: 'react/ink',
+          }),
+        },
+      }),
+    ];
+
+    // Act
+    const blockSet = blockSetOf(sources);
+
+    // Assert
+    expect({
+      blocks: blockSet.blocks.map(({ chapters, format, id, seams }) => ({
+        chapters,
+        format,
+        id,
+        seams,
+      })),
+      warnings: blockSet.warnings,
+    }).toStrictEqual({
+      blocks: [
+        {
+          chapters: [
+            {
+              axis: Axis.Foundation,
+              name: 'code',
+            },
+          ],
+          format: BlockFormat.Nested,
+          id: BlockId.create('core'),
+          seams: [],
+        },
+        {
+          chapters: [
+            {
+              axis: Axis.Foundation,
+              name: 'rendering',
+            },
+          ],
+          format: BlockFormat.Nested,
+          id: BlockId.create('react/ink'),
+          seams: [
+            {
+              axis: Axis.Foundation,
+              other: BlockId.create('presentation/design-system'),
+            },
+          ],
+        },
       ],
       warnings: [],
     });

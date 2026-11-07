@@ -27,7 +27,7 @@ interface CoreChaptersDetails {
 
 type CoreChaptersFinding = FindingOf<CoreChaptersDetails>;
 
-const AXIS_ITEM = /^- `[a-z]+\/`:/;
+const AXIS_ITEM = /^- `@?[a-z]+\/`:/;
 
 const listedIn = (core: Block): readonly string[] =>
   withoutCodeFences(core.passport.body)

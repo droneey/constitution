@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
+import { BlockFormat } from '#/kernel/constants';
 import { BlockId } from '#/kernel/value-objects';
 
 import { validFiles } from '../../../../__tests__/valid-files.fixtures';
@@ -131,7 +132,7 @@ describe('Block', () => {
 });
 
 const groupOf = (paths: readonly string[]): BlockGroup => {
-  const [group] = BlockFile.locate(paths.map(TreePath.create)).groups;
+  const [group] = BlockFile.locate(paths.map(TreePath.create), BlockFormat.Legacy).groups;
 
   if (group === undefined) {
     throw new Error('The paths hold no block folder');

@@ -1,3 +1,5 @@
+import type { BlockFormat } from '#/kernel/constants';
+
 import type {
   BlockGroup,
   BlockLoadFinding,
@@ -5,6 +7,7 @@ import type {
   PlaceFinding,
 } from '../../../../../../../../domain/block/entities';
 import { Block, BlockFile, BlockLoadStatus } from '../../../../../../../../domain/block/entities';
+import type { TreePath } from '../../../../../../../../domain/shared/value-objects';
 import type { FileTree, FrontMatterParser } from '../../../../../../../contracts';
 
 type BlocksLoadedFinding = BlockLoadFinding | PlaceFinding;
@@ -16,6 +19,7 @@ type BlockLoaded = BlockLoadStep<{
 
 /** @throws {TreeError} when a file of the block cannot be read */
 const loadBlock = (input: {
+  format: BlockFormat;
   group: BlockGroup;
   parser: FrontMatterParser;
   tree: FileTree;
@@ -38,6 +42,7 @@ const loadBlock = (input: {
   }
 
   const parsed = Block.parsePassport({
+    format: input.format,
     path,
     read: input.parser.parse(opened.frontMatter),
   });
@@ -70,15 +75,18 @@ interface BlocksLoaded {
 }
 
 interface LoadBlocksInput {
+  readonly format: BlockFormat;
+  readonly listed: readonly TreePath[];
   readonly parser: FrontMatterParser;
   readonly tree: FileTree;
 }
 
-/** @throws {TreeError} when git cannot list the files, or a file of a block cannot be read */
+/** @throws {TreeError} when a file of a block cannot be read */
 const loadBlocks = (input: LoadBlocksInput): BlocksLoaded => {
-  const located = BlockFile.locate(input.tree.list());
+  const located = BlockFile.locate(input.listed, input.format);
   const loaded = located.groups.map((group) =>
     loadBlock({
+      format: input.format,
       group,
       parser: input.parser,
       tree: input.tree,

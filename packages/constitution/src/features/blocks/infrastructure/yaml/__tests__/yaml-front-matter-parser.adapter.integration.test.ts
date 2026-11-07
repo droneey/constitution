@@ -50,6 +50,33 @@ describe('createYamlFrontMatterParser', () => {
     });
   });
 
+  it('should read the block as not abstract and extending none when the front matter declares neither', () => {
+    // Arrange
+    const parser = createYamlFrontMatterParser();
+    const yaml = fieldTable.replace('extends: null\nabstract: false\n', '');
+
+    // Act
+    const read = parser.parse(yaml);
+
+    // Assert
+    expect(read).toStrictEqual({
+      fields: {
+        abstract: false,
+        governs: [
+          '**/ui/**',
+        ],
+        id: 'ui',
+        languages: [
+          'css',
+        ],
+        requires: [],
+        summary: 'Screens.',
+      },
+      keys: keyLines.filter((key) => key !== 'extends' && key !== 'abstract'),
+      status: ReadStatus.Mapping,
+    });
+  });
+
   it('should keep the base when the block extends one', () => {
     // Arrange
     const parser = createYamlFrontMatterParser();

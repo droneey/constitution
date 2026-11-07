@@ -11,9 +11,7 @@ import type {
   AbstractBlocksDetails,
   BlockFormDetails,
   BudgetDetails,
-  ConfigurationLanguagesDetails,
   CoreChaptersDetails,
-  CorePartDetails,
   CyclesDetails,
   DecisionsDetails,
   FrontMatterDetails,
@@ -32,9 +30,7 @@ import type {
 type BlockFindingDetails = AbstractBlocksDetails &
   BlockFormDetails &
   BudgetDetails &
-  ConfigurationLanguagesDetails &
   CoreChaptersDetails &
-  CorePartDetails &
   CyclesDetails &
   DecisionsDetails &
   FrontMatterDetails &

@@ -22,6 +22,8 @@ const ruleFormTexts: TextsOf<RequirementsTableDetails & RuleFormDetails> = {
     `rule "${slug}" has a row of ${count} cells; a rule's table has ${RULE_TABLE_CELLS}`,
   [RuleFormCode.HoldsLabel]: ({ label, slug }) =>
     `rule "${slug}" has the label "${label}"; a rule states its Why in its table and holds no label but Example`,
+  [RuleFormCode.LevelRetired]: ({ slug }) =>
+    `rule "${slug}" is MAY in its heading; a heading states MUST or SHOULD, and only an override sets a rule to MAY`,
   [RequirementsTableCode.HeaderMisshapen]: ({ row }) =>
     `has the header "${row}" in its Requirements; it is "${REQUIREMENTS_TABLE_HEADER}"`,
   [RequirementsTableCode.RowMisshapen]: ({ row }) =>

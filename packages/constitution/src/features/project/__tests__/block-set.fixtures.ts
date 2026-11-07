@@ -1,4 +1,4 @@
-import { AXES, Axis, Layer, Level } from '#/kernel/constants';
+import { AXES, Axis, BlockFormat, Layer, Level } from '#/kernel/constants';
 import { BlockId, BlockSource, Glob, PackPath, RuleSlug } from '#/kernel/value-objects';
 
 import type { BlockSetBlock, BlockSetRule } from '../domain/block-set/entities';
@@ -36,6 +36,7 @@ const blockSetBlockOf = (block: BlockSetBlockFixture): BlockSetBlock => ({
     : {
         extends: BlockId.create(block.extends),
       }),
+  format: BlockFormat.Legacy,
   governs: (block.governs ?? []).map(Glob.create),
   id: BlockId.create(block.id),
   isAbstract: block.isAbstract ?? false,

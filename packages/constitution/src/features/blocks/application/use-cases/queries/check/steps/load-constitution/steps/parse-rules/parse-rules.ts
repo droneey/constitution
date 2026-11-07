@@ -1,3 +1,4 @@
+import { BlockFormat } from '#/kernel/constants';
 import type { RequirementsParsed, Rule, RulesParsed } from '#/kernel/entities';
 import { RequirementAnswer, StatedRule } from '#/kernel/entities';
 
@@ -12,18 +13,25 @@ interface BlockRulesParsed {
   readonly rules: readonly Rule[];
 }
 
-const parseRules = (blocks: readonly Block[]): BlockRulesParsed => {
-  const sources = blocks.flatMap(Block.ruleSourcesOf);
-  const rules = sources.map(StatedRule.parse);
+interface ParseRulesInput {
+  readonly blocks: readonly Block[];
+  readonly format: BlockFormat;
+}
+
+const parseRules = (input: ParseRulesInput): BlockRulesParsed => {
+  const sources = input.blocks.flatMap(Block.ruleSourcesOf);
+  const parsed = sources.map(StatedRule.parse);
+  const stated = parsed.flatMap((rules) => rules.rules);
   const answers = sources.map(RequirementAnswer.parse);
 
   return {
-    answers: answers.flatMap((parsed) => parsed.answers),
+    answers: answers.flatMap((read) => read.answers),
     findings: [
-      ...rules.flatMap((parsed) => parsed.findings),
-      ...answers.flatMap((parsed) => parsed.findings),
+      ...parsed.flatMap((rules) => rules.findings),
+      ...(input.format === BlockFormat.Nested ? StatedRule.retiredLevelsIn(stated) : []),
+      ...answers.flatMap((read) => read.findings),
     ],
-    rules: StatedRule.inheritLevels(rules.flatMap((parsed) => parsed.rules)),
+    rules: StatedRule.inheritLevels(stated),
   };
 };
 

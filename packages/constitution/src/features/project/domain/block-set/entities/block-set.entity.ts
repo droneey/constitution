@@ -1,4 +1,4 @@
-import type { Axis, Layer, Level } from '#/kernel/constants';
+import type { Axis, BlockFormat, Layer, Level } from '#/kernel/constants';
 import type { Met, RoleTerm } from '#/kernel/entities';
 import { FileReadStatus } from '#/kernel/entities';
 import { compareText, splitFrontMatter } from '#/kernel/utils';
@@ -25,6 +25,7 @@ interface SeamPlace {
 interface BlockSetBlock {
   readonly chapters: readonly ChapterPlace[];
   readonly extends?: BlockId;
+  readonly format: BlockFormat;
   readonly governs: readonly Glob[];
   readonly id: BlockId;
   readonly isAbstract: boolean;
@@ -70,11 +71,16 @@ type SourceFile = {
     }
 );
 
-const inReadOrder = (files: readonly SourceFile[]): readonly SourceFile[] =>
-  files
+const formatOf = (files: readonly SourceFile[]): BlockFormat =>
+  BlockFilePlace.formatOf(files.map((file) => file.path));
+
+const inReadOrder = (files: readonly SourceFile[]): readonly SourceFile[] => {
+  const format = formatOf(files);
+
+  return files
     .map((file) => ({
       file,
-      place: BlockFilePlace.parse(file.path),
+      place: BlockFilePlace.parse(file.path, format),
     }))
     .toSorted((left, right) => {
       if (left.place === undefined || right.place === undefined) {
@@ -87,8 +93,10 @@ const inReadOrder = (files: readonly SourceFile[]): readonly SourceFile[] =>
       return BlockFilePlace.compare(left.place, right.place);
     })
     .map(({ file }) => file);
+};
 
 const SourceFile = {
+  formatOf,
   inReadOrder,
 } as const;
 

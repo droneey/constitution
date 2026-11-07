@@ -6,6 +6,7 @@ import type {
 } from '#/kernel/entities';
 import type { FindingOf } from '#/kernel/types';
 import { normalizePath } from '#/kernel/utils';
+import { BlockFilePlace } from '#/kernel/value-objects';
 
 import { Block } from '../../../../../../domain/block/entities';
 import type { LoadFindingDetails } from '../../../../../../domain/constitution/entities';
@@ -49,7 +50,15 @@ const loadConstitution = (input: LoadConstitutionInput): ConstitutionLoaded => {
   const listed = input.tree.list();
   const paths = new Set(listed);
   const repositoryPaths = new Set(input.repository.list());
+  // Stryker disable next-line ArrayDeclaration: with no base the list is never loaded, and a path outside blocks/ sets no format
+  const baseListed = input.base?.tree.list() ?? [];
+  const format = BlockFilePlace.formatOf([
+    ...listed,
+    ...baseListed,
+  ]);
   const own = loadBlocks({
+    format,
+    listed,
     parser: input.frontMatterParser,
     tree: input.tree,
   });
@@ -59,6 +68,8 @@ const loadConstitution = (input: LoadConstitutionInput): ConstitutionLoaded => {
       : {
           folder: folderOf(input.base),
           loaded: loadBlocks({
+            format,
+            listed: baseListed,
             parser: input.frontMatterParser,
             tree: input.base.tree,
           }),
@@ -69,7 +80,10 @@ const loadConstitution = (input: LoadConstitutionInput): ConstitutionLoaded => {
       ? []
       : base.loaded.blocks.map((block) => Block.asBase(block, base.folder))),
   ].toSorted(Block.compare);
-  const parsed = parseRules(blocks);
+  const parsed = parseRules({
+    blocks,
+    format,
+  });
 
   return {
     constitution: {

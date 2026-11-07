@@ -15,8 +15,10 @@ export {
 export type { LoweredLevel } from './vocabulary.constants';
 export {
   AXES,
+  AXIS_FOLDER_NAME,
   Axis,
   BLOCKS_FOLDER_NAME,
+  BlockFormat,
   LAYER_FOLDER_NAME,
   LAYER_RANK,
   LAYERS,

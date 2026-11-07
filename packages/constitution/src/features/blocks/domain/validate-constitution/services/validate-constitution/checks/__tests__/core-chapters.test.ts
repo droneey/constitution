@@ -3,6 +3,7 @@ import { describe, expect, it } from 'bun:test';
 import type { FindingOf } from '#/kernel/types';
 
 import { passportFile } from '../../../../../../__tests__/constitution.fixtures';
+import { nestedFiles, nestedPassportFile } from '../../../../../../__tests__/nested-files.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { checkInputOf } from '../../../../../../application/use-cases/queries/check/__tests__/check.fixtures';
 import type { CoreChaptersDetails } from '../core-chapters';
@@ -46,6 +47,23 @@ describe('coreChaptersCheck', () => {
       '- `foundation/`: [principles](foundation/principles.md).',
       '- `workflow/`: [workflow](workflow/workflow.md).',
     ]);
+
+    // Assert
+    expect(findings).toStrictEqual([]);
+  });
+
+  it("should find nothing when the passport's list links every chapter of a nested core by its axis folder marked by @", () => {
+    // Arrange
+    const files = {
+      ...nestedFiles(),
+      [CORE]: nestedPassportFile({
+        body: '# Core\n\n## Its chapters\n\n- `@foundation/`: [code](@foundation/code.md).\n',
+        id: 'core',
+      }),
+    };
+
+    // Act
+    const findings = coreChaptersCheck(checkInputOf(files));
 
     // Assert
     expect(findings).toStrictEqual([]);

@@ -1,7 +1,7 @@
 import type { Axis, Layer, Level } from '../constants';
 import { LAYER_RANK } from '../constants';
-import type { BlockId, Glob, RuleSlug } from '../value-objects';
-import { coreBlockId } from '../value-objects';
+import type { Glob, RuleSlug } from '../value-objects';
+import { BlockId, coreBlockId } from '../value-objects';
 import type { RoleKind } from './term.entity';
 import { Term } from './term.entity';
 
@@ -82,10 +82,11 @@ const rolesIn = (texts: readonly BlockText[]): readonly RoleTerm[] => {
   ];
 };
 
-const extendedAndRequiredOf = (block: ModelBlock): readonly BlockId[] =>
+const linksOf = (block: ModelBlock): readonly BlockId[] =>
   [
     block.extends,
     ...block.requires,
+    BlockId.parentOf(block.id),
   ].filter((link) => link !== undefined);
 
 const reachOf = (model: BlockModel, reader: BlockId): ReadonlySet<BlockId> => {
@@ -111,7 +112,7 @@ const reachOf = (model: BlockModel, reader: BlockId): ReadonlySet<BlockId> => {
 
     if (block !== undefined && !reached.has(next)) {
       reached.add(next);
-      queue.push(...extendedAndRequiredOf(block));
+      queue.push(...linksOf(block));
     }
   }
 

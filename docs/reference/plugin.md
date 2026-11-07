@@ -50,7 +50,7 @@ It holds:
 4. the map of the active blocks: their names, one line to a layer, a pack's with its pack in square brackets; then a line for each member of the workspace whose own `constitution.yaml` adds blocks or leaves some out;
 5. the warnings about `constitution.yaml` and the `presets` findings about the tools' configurations, to tell you at the start of a session.
 
-All after the first part is held to 9,400 bytes, so the digest stays within Claude Code's limit. Core's passport and the three lines are given whole, and the blocks check holds core's passport within 3,500 bytes; the warnings are given within a share of 1,000 bytes, with a count of the rest. The map takes the room left and, when it does not fit, is cut from its end, the members' lines first, with a note of how many lines were cut and that `constitution.yaml` names every block.
+All after the first part is held to 9,400 bytes, so the digest stays within Claude Code's limit. Core's passport and the three lines are given whole; the warnings are given within a share of 1,000 bytes, with a count of the rest. The map takes the room left and, when it does not fit, is cut from its end, the members' lines first, with a note of how many lines were cut and that `constitution.yaml` names every block.
 
 The rules themselves the gate gives as they are needed. A repository without `constitution.yaml` gets nothing. When `constitution.yaml` does not parse, the digest is core's passport and the three lines, with no map. When `.droneey/constitution/` is missing, or holds a release of a block format this executable cannot read, the digest is one line that names it and points to `constitution doctor`.
 

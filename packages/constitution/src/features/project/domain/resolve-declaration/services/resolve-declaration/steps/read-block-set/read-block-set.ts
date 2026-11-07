@@ -1,4 +1,4 @@
-import type { Layer } from '#/kernel/constants';
+import type { BlockFormat, Layer } from '#/kernel/constants';
 import type { ProjectWarning } from '#/kernel/entities';
 import { BlockModel, Rule, StatedRule, WarningKind } from '#/kernel/entities';
 import { firstBy } from '#/kernel/utils';
@@ -24,6 +24,7 @@ import { PartKind, readBlockFile } from './steps/read-block-file';
 interface BlockDraft {
   readonly card: BlockCard;
   readonly chapters: readonly ChapterPlace[];
+  readonly format: BlockFormat;
   readonly id: BlockId;
   readonly layer: Layer;
   readonly seams: readonly SeamPlace[];
@@ -47,6 +48,7 @@ const draftOf = (input: { first: FileInFolder; own: readonly FileReading[] }): B
           ]
         : [],
     ),
+    format: input.first.format,
     id: input.first.block,
     layer: input.first.layer,
     seams: reads.flatMap((read) =>
@@ -230,6 +232,7 @@ const blockOf = (draft: BlockDraft): BlockSetBlock => {
           extends: base,
         }
       : {}),
+    format: draft.format,
     governs: draft.card.governs.filter(Glob.is),
     id: draft.id,
     isAbstract: draft.card.isAbstract,

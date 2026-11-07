@@ -181,6 +181,61 @@ describe('BlockModel.reachOf', () => {
       reader: 'a',
     },
     {
+      blocks: [
+        {
+          id: 'task-runner',
+        },
+        {
+          id: 'js-runtime',
+        },
+        {
+          id: 'js-runtime/bun',
+          requires: [
+            'task-runner',
+          ],
+        },
+        {
+          id: 'react',
+        },
+      ],
+      condition: 'it sits in the folder of a parent and requires a block',
+      expected: [
+        'js-runtime/bun',
+        'core',
+        'task-runner',
+        'js-runtime',
+      ],
+      reader: 'js-runtime/bun',
+    },
+    {
+      blocks: [
+        {
+          id: 'react',
+          requires: [
+            'typescript',
+          ],
+        },
+        {
+          id: 'react/react-native',
+        },
+        {
+          id: 'react/react-native/expo',
+        },
+        {
+          id: 'typescript',
+        },
+      ],
+      condition: 'it sits two folders below a parent that requires a block',
+      expected: [
+        'react/react-native/expo',
+        'core',
+        'react/react-native',
+        'react',
+        'typescript',
+      ],
+      reader: 'react/react-native/expo',
+    },
+    {
       blocks: [],
       condition: 'the reader is no block',
       expected: [],

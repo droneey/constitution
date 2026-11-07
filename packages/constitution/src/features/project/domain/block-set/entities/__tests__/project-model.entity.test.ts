@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { Axis, Layer, Level } from '#/kernel/constants';
+import { Axis, BlockFormat, Layer, Level } from '#/kernel/constants';
 import { BlockId, BlockSource, RuleSlug } from '#/kernel/value-objects';
 
 import type { BlockSetBlock, BlockSetRule } from '../block-set.entity';
@@ -13,6 +13,7 @@ const blockOf = (input: { base?: string; id: string; layer?: Layer }): BlockSetB
     : {
         extends: BlockId.create(input.base),
       }),
+  format: BlockFormat.Legacy,
   governs: [],
   id: BlockId.create(input.id),
   isAbstract: false,

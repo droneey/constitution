@@ -3201,6 +3201,18 @@
 - **Rejected.** A composition query that calls a command: it saves while it answers, against command–query separation.
 - **Why.** Each fix puts back what an earlier edit of this review broke: a rule's parent, its axis or its name. The book holds 1767 rules, two more.
 
+## ADR-0295 — The blocks check drops core's byte budget and the language of a governed file
+
+**Date:** 2026-11-07 · **Status:** Accepted
+
+- **Decision.** Amends ADR-0205 and ADR-0216.
+  - `blocks:check` no longer holds core's passport within 3,500 bytes (`core-over-byte-budget`); the digest still gives it whole.
+  - `blocks:check` no longer asks a block to require the language of every configuration file it governs (`configuration-language-not-required`); a block requires only what its rules cannot work without, so `python` keeps `requires: []`.
+- **Rejected.**
+  - Raising the budget to fit the rewritten core, whose passport runs to 3,553 bytes: a number moved each time core grows guards nothing.
+  - Keeping the language check for the configuration files alone: a manifest's language is the runtime's or the tool's concern, which their own rules hold, not a link every block must declare.
+- **Why.** The owner dropped both checks with the rewrite of the rule tree: the rewritten core outgrows the old budget by what it now says, and a `requires` that names only what a block cannot work without keeps the graph to real needs.
+
 ## Rule aliases
 
 > Every rule slug removed, merged, split, renamed or moved between blocks since the release 0.88, with where its meaning lives now and the entry under which it was recorded (ADR-0274). A slug that moved keeps its name; the others name their successor, or say what holds them.

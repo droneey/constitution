@@ -8,9 +8,7 @@ import {
 import type {
   AbstractBlocksDetails,
   BlockFormDetails,
-  ConfigurationLanguagesDetails,
   CoreChaptersDetails,
-  CorePartDetails,
   CyclesDetails,
   FrontMatterDetails,
   SeamsDetails,
@@ -18,9 +16,7 @@ import type {
 import {
   AbstractBlocksCode,
   BlockFormCode,
-  ConfigurationLanguagesCode,
   CoreChaptersCode,
-  CorePartCode,
   CyclesCode,
   FrontMatterCode,
   SeamsCode,
@@ -30,9 +26,7 @@ import { aBlock, blocksOf } from './wording.utils';
 const structureTexts: TextsOf<
   AbstractBlocksDetails &
     BlockFormDetails &
-    ConfigurationLanguagesDetails &
     CoreChaptersDetails &
-    CorePartDetails &
     CyclesDetails &
     FrontMatterDetails &
     SeamsDetails
@@ -55,15 +49,11 @@ const structureTexts: TextsOf<
     `has sections after "${REQUIREMENTS_SECTION}", which is the last section`,
   [BlockFormCode.GeneralNotFirst]: () =>
     `has sections before "${GENERAL_SECTION}", which is the first section`,
-  [ConfigurationLanguagesCode.NotRequired]: ({ glob, language }) =>
-    `governs ${glob}, a file of ${language}, without requiring ${language} directly or through the blocks it requires or extends`,
   [CoreChaptersCode.ChapterUnlisted]: ({ chapter }) =>
     `leaves ${chapter} out of its list of core's chapters; it lists every chapter of core once`,
   [CoreChaptersCode.ListsNoChapter]: ({ entry }) =>
     `lists ${entry}, which is not a chapter of core`,
   [CoreChaptersCode.ListedTwice]: ({ entry }) => `lists ${entry} twice`,
-  [CorePartCode.OverBudget]: ({ budget, bytes }) =>
-    `makes a core part of ${bytes} bytes; the digest holds at most ${budget} of core`,
   [CyclesCode.Cycle]: ({ cycle }) => `is part of a dependency cycle: ${cycle.join(' → ')}`,
   [FrontMatterCode.IdMismatch]: ({ declared, folder }) =>
     `declares the id "${declared}"; its folder names it "${folder}"`,

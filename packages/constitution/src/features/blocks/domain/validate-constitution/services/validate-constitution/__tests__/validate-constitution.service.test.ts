@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
+import { BlockFormat } from '#/kernel/constants';
 import { BlockId, RuleSlug } from '#/kernel/value-objects';
 
 import { rule, textOf } from '../../../../../__tests__/constitution.fixtures';
@@ -49,7 +50,9 @@ describe('validateConstitution', () => {
       findings: [
         {
           code: PlaceCode.StrayBlockFile,
-          details: {},
+          details: {
+            format: BlockFormat.Legacy,
+          },
           path: 'blocks/domains/ui/notes.txt',
         },
         {

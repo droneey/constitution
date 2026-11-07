@@ -10,6 +10,24 @@ const AXES = [
   Axis.Workflow,
 ] as const;
 
+enum BlockFormat {
+  Legacy = 'legacy',
+  Nested = 'nested',
+}
+
+const AXIS_FOLDER_NAME = {
+  [BlockFormat.Legacy]: {
+    [Axis.Architecture]: 'architecture',
+    [Axis.Foundation]: 'foundation',
+    [Axis.Workflow]: 'workflow',
+  },
+  [BlockFormat.Nested]: {
+    [Axis.Architecture]: '@architecture',
+    [Axis.Foundation]: '@foundation',
+    [Axis.Workflow]: '@workflow',
+  },
+} as const satisfies Readonly<Record<BlockFormat, Readonly<Record<Axis, string>>>>;
+
 enum Layer {
   Core = 'core',
   Domain = 'domain',
@@ -73,8 +91,10 @@ const REQUIREMENTS_TABLE_HEADER = '| Requirement | How | Met |';
 export type { LoweredLevel };
 export {
   AXES,
+  AXIS_FOLDER_NAME,
   Axis,
   BLOCKS_FOLDER_NAME,
+  BlockFormat,
   LAYER_FOLDER_NAME,
   LAYER_RANK,
   LAYERS,

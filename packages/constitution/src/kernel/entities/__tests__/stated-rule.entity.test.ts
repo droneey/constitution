@@ -609,6 +609,52 @@ describe('StatedRule.wordingsOf', () => {
   });
 });
 
+describe('StatedRule.retiredLevelsIn', () => {
+  it('should report each rule whose heading states MAY, at its file, and pass the others', () => {
+    // Arrange
+    const stated = [
+      ruleOf({
+        slug: RuleSlug.create('a'),
+        statedLevel: Level.May,
+      }),
+      ruleOf({
+        slug: RuleSlug.create('b'),
+        statedLevel: Level.Should,
+      }),
+      unstatedRuleOf({
+        file: AGREEMENT,
+        slug: RuleSlug.create('c'),
+      }),
+      ruleOf({
+        file: AGREEMENT,
+        slug: RuleSlug.create('d'),
+        statedLevel: Level.May,
+      }),
+    ];
+
+    // Act
+    const findings = StatedRule.retiredLevelsIn(stated);
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        code: RuleFormCode.LevelRetired,
+        details: {
+          slug: RuleSlug.create('a'),
+        },
+        path: FILE,
+      },
+      {
+        code: RuleFormCode.LevelRetired,
+        details: {
+          slug: RuleSlug.create('d'),
+        },
+        path: AGREEMENT,
+      },
+    ]);
+  });
+});
+
 describe('StatedRule.inheritLevels', () => {
   it('should bind a rule at the level its heading states and keep where and what it is', () => {
     // Arrange

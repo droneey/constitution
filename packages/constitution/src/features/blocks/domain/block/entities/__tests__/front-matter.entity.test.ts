@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
+import { BlockFormat } from '#/kernel/constants';
 import { ValueSite } from '#/kernel/entities';
 import { ValueFailure } from '#/kernel/errors';
 import { BlockId, Glob } from '#/kernel/value-objects';
@@ -74,7 +75,7 @@ describe('FrontMatter.parse', () => {
     });
 
     // Act
-    const parsed = FrontMatter.parse(read);
+    const parsed = FrontMatter.parse(read, BlockFormat.Legacy);
 
     // Assert
     expect(parsed).toStrictEqual({
@@ -107,7 +108,7 @@ describe('FrontMatter.parse', () => {
     });
 
     // Act
-    const parsed = FrontMatter.parse(read);
+    const parsed = FrontMatter.parse(read, BlockFormat.Legacy);
 
     // Assert
     expect(parsed).toStrictEqual({
@@ -133,7 +134,7 @@ describe('FrontMatter.parse', () => {
     });
 
     // Act
-    const parsed = FrontMatter.parse(read);
+    const parsed = FrontMatter.parse(read, BlockFormat.Legacy);
 
     // Assert
     expect(parsed.status).toBe(FrontMatterStatus.Valid);
@@ -249,7 +250,7 @@ describe('FrontMatter.parse', () => {
     },
   ])('should report $problem.code when the parser reads $name', ({ problem, read }) => {
     // Act
-    const parsed = FrontMatter.parse(read);
+    const parsed = FrontMatter.parse(read, BlockFormat.Legacy);
 
     // Assert
     expect(parsed).toStrictEqual({
@@ -458,7 +459,7 @@ describe('FrontMatter.parse', () => {
     });
 
     // Act
-    const parsed = FrontMatter.parse(read);
+    const parsed = FrontMatter.parse(read, BlockFormat.Legacy);
 
     // Assert
     expect(parsed).toStrictEqual({
@@ -480,7 +481,7 @@ describe('FrontMatter.parse', () => {
     });
 
     // Act
-    const parsed = FrontMatter.parse(read);
+    const parsed = FrontMatter.parse(read, BlockFormat.Legacy);
 
     // Assert
     expect(parsed).toStrictEqual({
@@ -506,7 +507,7 @@ describe('FrontMatter.parse', () => {
     });
 
     // Act
-    const parsed = FrontMatter.parse(read);
+    const parsed = FrontMatter.parse(read, BlockFormat.Legacy);
 
     // Assert
     expect(parsed).toStrictEqual({
@@ -523,6 +524,172 @@ describe('FrontMatter.parse', () => {
           details: {
             entry: 'Bad',
             field: FrontMatterField.Requires,
+          },
+        },
+      ],
+      status: FrontMatterStatus.Invalid,
+    });
+  });
+});
+
+const nestedKeys = [
+  'id',
+  'summary',
+  'requires',
+  'languages',
+  'governs',
+];
+
+const nestedMappingOf = (input: {
+  fields?: Partial<FrontMatterFields>;
+  keys?: readonly string[];
+}): FrontMatterRead => ({
+  fields: {
+    abstract: false,
+    governs: [],
+    id: 'react/react-dom',
+    languages: [],
+    requires: [],
+    summary: 'React in the browser.',
+    ...input.fields,
+  },
+  keys: input.keys ?? nestedKeys,
+  status: ReadStatus.Mapping,
+});
+
+describe('FrontMatter.parse of the nested format', () => {
+  it('should return the typed front matter, never abstract, when it declares neither extends nor abstract', () => {
+    // Arrange
+    const read = nestedMappingOf({
+      fields: {
+        requires: [
+          'client/browser',
+        ],
+      },
+    });
+
+    // Act
+    const parsed = FrontMatter.parse(read, BlockFormat.Nested);
+
+    // Assert
+    expect(parsed).toStrictEqual({
+      frontMatter: {
+        abstract: false,
+        governs: [],
+        id: BlockId.create('react/react-dom'),
+        languages: [],
+        requires: [
+          BlockId.create('client/browser'),
+        ],
+        summary: 'React in the browser.',
+      },
+      status: FrontMatterStatus.Valid,
+    });
+  });
+
+  it.each<{
+    keys: readonly string[];
+    name: string;
+    problems: readonly FrontMatterProblem[];
+  }>([
+    {
+      keys: keyLines,
+      name: 'extends and abstract in their legacy places',
+      problems: [
+        {
+          code: FrontMatterReadCode.FieldRetired,
+          details: {
+            field: FrontMatterField.Extends,
+          },
+        },
+        {
+          code: FrontMatterReadCode.FieldRetired,
+          details: {
+            field: FrontMatterField.Abstract,
+          },
+        },
+      ],
+    },
+    {
+      keys: [
+        ...nestedKeys,
+        'abstract',
+      ],
+      name: 'abstract alone',
+      problems: [
+        {
+          code: FrontMatterReadCode.FieldRetired,
+          details: {
+            field: FrontMatterField.Abstract,
+          },
+        },
+      ],
+    },
+    {
+      keys: [
+        'summary',
+        'id',
+        ...nestedKeys.slice(2),
+      ],
+      name: 'its fields out of order',
+      problems: [
+        {
+          code: FrontMatterReadCode.OutOfOrder,
+          details: {
+            order: [
+              FrontMatterField.Id,
+              FrontMatterField.Summary,
+              FrontMatterField.Requires,
+              FrontMatterField.Languages,
+              FrontMatterField.Governs,
+            ],
+          },
+        },
+      ],
+    },
+  ])('should report $name as the nested format words it', ({ keys, problems }) => {
+    // Arrange
+    const read = nestedMappingOf({
+      keys,
+    });
+
+    // Act
+    const parsed = FrontMatter.parse(read, BlockFormat.Nested);
+
+    // Assert
+    expect(parsed).toStrictEqual({
+      problems,
+      status: FrontMatterStatus.Invalid,
+    });
+  });
+
+  it('should report a retired field beside a missing one when the passport lacks a field too', () => {
+    // Arrange
+    const read: FrontMatterRead = {
+      issues: [],
+      keys: [
+        ...nestedKeys.filter((key) => key !== 'governs'),
+        'extends',
+      ],
+      status: ReadStatus.Mismatched,
+    };
+
+    // Act
+    const parsed = FrontMatter.parse(read, BlockFormat.Nested);
+
+    // Assert
+    expect(parsed).toStrictEqual({
+      problems: [
+        {
+          code: FrontMatterReadCode.FieldMissing,
+          details: {
+            field: FrontMatterField.Governs,
+          },
+        },
+        {
+          code: FrontMatterReadCode.FieldRetired,
+          details: {
+            field: FrontMatterField.Extends,
           },
         },
       ],

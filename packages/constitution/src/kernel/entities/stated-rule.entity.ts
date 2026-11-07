@@ -26,6 +26,7 @@ enum RuleFormCode {
   RowsNotOne = 'rule-table-rows-not-one',
   CellsMiscounted = 'rule-table-cells-miscounted',
   HoldsLabel = 'rule-holds-label',
+  LevelRetired = 'rule-level-retired',
 }
 
 interface RuleFormDetails {
@@ -52,6 +53,9 @@ interface RuleFormDetails {
   };
   readonly [RuleFormCode.HoldsLabel]: {
     readonly label: string;
+    readonly slug: RuleSlug;
+  };
+  readonly [RuleFormCode.LevelRetired]: {
     readonly slug: RuleSlug;
   };
 }
@@ -414,9 +418,25 @@ const inheritLevels = (stated: readonly StatedRule[]): readonly Rule[] => {
   });
 };
 
+const retiredLevelsIn = (stated: readonly StatedRule[]): readonly RuleFormFinding[] =>
+  stated.flatMap((rule) =>
+    rule.statedLevel === Level.May
+      ? [
+          {
+            code: RuleFormCode.LevelRetired,
+            details: {
+              slug: rule.slug,
+            },
+            path: rule.file,
+          },
+        ]
+      : [],
+  );
+
 const StatedRule = {
   inheritLevels,
   parse,
+  retiredLevelsIn,
   wordingsOf,
 } as const;
 

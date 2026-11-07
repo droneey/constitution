@@ -2,16 +2,14 @@ import { describe, expect, it } from 'bun:test';
 
 import { Layer } from '#/kernel/constants';
 import type { ProblemOf } from '#/kernel/types';
-import { BlockId, Glob, RuleSlug } from '#/kernel/value-objects';
+import { BlockId, RuleSlug } from '#/kernel/value-objects';
 import { textOf } from '#/shared/cli';
 
 import { FrontMatterField } from '../../../domain/block/entities';
 import type {
   AbstractBlocksDetails,
   BlockFormDetails,
-  ConfigurationLanguagesDetails,
   CoreChaptersDetails,
-  CorePartDetails,
   CyclesDetails,
   FrontMatterDetails,
   SeamsDetails,
@@ -19,9 +17,7 @@ import type {
 import {
   AbstractBlocksCode,
   BlockFormCode,
-  ConfigurationLanguagesCode,
   CoreChaptersCode,
-  CorePartCode,
   CyclesCode,
   FrontMatterCode,
   SeamsCode,
@@ -33,9 +29,7 @@ describe('structureTexts', () => {
     problem: ProblemOf<
       AbstractBlocksDetails &
         BlockFormDetails &
-        ConfigurationLanguagesDetails &
         CoreChaptersDetails &
-        CorePartDetails &
         CyclesDetails &
         FrontMatterDetails &
         SeamsDetails
@@ -122,16 +116,6 @@ describe('structureTexts', () => {
     },
     {
       problem: {
-        code: ConfigurationLanguagesCode.NotRequired,
-        details: {
-          glob: Glob.create('**/*.json'),
-          language: BlockId.create('json'),
-        },
-      },
-      text: 'governs **/*.json, a file of json, without requiring json directly or through the blocks it requires or extends',
-    },
-    {
-      problem: {
         code: CoreChaptersCode.ChapterUnlisted,
         details: {
           chapter: 'blocks/core/workflow/workflow.md',
@@ -156,16 +140,6 @@ describe('structureTexts', () => {
         },
       },
       text: 'lists blocks/core/foundation/code.md twice',
-    },
-    {
-      problem: {
-        code: CorePartCode.OverBudget,
-        details: {
-          budget: 3500,
-          bytes: 3509,
-        },
-      },
-      text: 'makes a core part of 3509 bytes; the digest holds at most 3500 of core',
     },
     {
       problem: {

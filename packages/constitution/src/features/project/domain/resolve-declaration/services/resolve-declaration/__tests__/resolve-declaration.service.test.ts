@@ -2281,6 +2281,72 @@ describe('resolveDeclaration', () => {
     ]);
   });
 
+  it('should give the files of core and of an active block in their axis folders marked by @ when the release is nested', () => {
+    // Arrange
+    const config = configOf({
+      axes: 'axes: [architecture]',
+      domains: 'domains: [ui, kit]',
+    });
+
+    // Act
+    const resolution = resolvedOf({
+      config,
+      sources: [
+        sourceOf({
+          blocks: [
+            {
+              files: {
+                '@architecture/with/kit.md': '# Kit\n',
+                '@foundation/screens.md': '# Screens\n',
+              },
+              id: 'ui',
+            },
+            {
+              id: 'kit',
+            },
+          ],
+          core: {
+            files: {
+              '@architecture/layers.md': '# Layers\n',
+            },
+          },
+        }),
+      ],
+      today,
+    });
+
+    // Assert
+    expect({
+      active: resolution.active.map(({ files, id }) => ({
+        files: files.map(({ path }) => path),
+        id,
+      })),
+      core: resolution.core.map(({ files }) => files.map(({ path }) => path)),
+    }).toStrictEqual({
+      active: [
+        {
+          files: [
+            'blocks/domains/kit/kit.md',
+          ],
+          id: BlockId.create('kit'),
+        },
+        {
+          files: [
+            'blocks/domains/ui/ui.md',
+            'blocks/domains/ui/@foundation/screens.md',
+            'blocks/domains/ui/@architecture/with/kit.md',
+          ],
+          id: BlockId.create('ui'),
+        },
+      ],
+      core: [
+        [
+          'blocks/core/@architecture/layers.md',
+        ],
+      ],
+    });
+  });
+
   it('should give each unit its name, its packs and its languages, and the model of every block at every level, when units name themselves and list packs', () => {
     // Arrange
     const config = configOf(

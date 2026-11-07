@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { Axis } from '#/kernel/constants';
+import { Axis, BlockFormat } from '#/kernel/constants';
 import {
   RequirementAnswer,
   RequirementsTableCode,
@@ -13,16 +13,23 @@ import { BlockId, RuleSlug } from '#/kernel/value-objects';
 import type { Files } from '../../../../../../../__tests__/constitution.fixtures';
 import {
   blockFiles,
+  chapterFile,
   passportFile,
   rule,
   textOf,
 } from '../../../../../../../__tests__/constitution.fixtures';
+import {
+  nestedBlockFiles,
+  nestedFiles,
+  nestedPassportFile,
+} from '../../../../../../../__tests__/nested-files.fixtures';
 import { packFiles } from '../../../../../../../__tests__/pack-files.fixtures';
 import { validFiles } from '../../../../../../../__tests__/valid-files.fixtures';
 import {
   Block,
   BlockFile,
   BlockLoadCode,
+  FrontMatterField,
   FrontMatterReadCode,
   PlaceCode,
 } from '../../../../../../../domain/block/entities';
@@ -241,7 +248,9 @@ describe('loadConstitution', () => {
       expect(loaded.findings).toStrictEqual([
         {
           code: PlaceCode.StrayBlockFile,
-          details: {},
+          details: {
+            format: BlockFormat.Legacy,
+          },
           path,
         },
       ]);
@@ -780,4 +789,222 @@ describe('loadConstitution', () => {
       expect(loaded.findings).toStrictEqual(findings);
     },
   );
+});
+
+describe('loadConstitution of a nested tree', () => {
+  it('should load every block by its id path without a finding when its axis folders are marked by @', () => {
+    // Arrange
+    const files = nestedFiles();
+
+    // Act
+    const loaded = loadedOf(files);
+
+    // Assert
+    expect({
+      blocks: loaded.constitution.blocks.map((block) => String(block.id)),
+      findings: loaded.findings,
+      rules: loaded.constitution.rules.map((stated) => [
+        String(stated.slug),
+        stated.seam,
+      ]),
+    }).toStrictEqual({
+      blocks: [
+        'core',
+        'presentation',
+        'presentation/design-system',
+        'client',
+        'client/browser',
+        'typescript',
+        'js-runtime',
+        'js-runtime/bun',
+        'react',
+        'react/ink',
+        'react/react-dom',
+        'task-runner',
+      ],
+      findings: [],
+      rules: [
+        [
+          'code-reads-as-prose',
+          undefined,
+        ],
+        [
+          'screen-shows-one-task',
+          undefined,
+        ],
+        [
+          'colour-taken-from-a-token',
+          undefined,
+        ],
+        [
+          'tab-keeps-no-secret',
+          undefined,
+        ],
+        [
+          'hook-named-by-its-use',
+          undefined,
+        ],
+        [
+          'terminal-colour-taken-from-a-token',
+          'presentation/design-system',
+        ],
+      ],
+    });
+  });
+
+  it('should report extends and abstract as retired when a passport of a nested tree still declares them', () => {
+    // Arrange
+    const files = {
+      ...nestedFiles(),
+      'blocks/implementations/react/react-dom/react-dom.md': passportFile({
+        body: '# React DOM\n',
+        id: 'react/react-dom',
+      }),
+    };
+
+    // Act
+    const loaded = loadedOf(files);
+
+    // Assert
+    expect(loaded.findings).toStrictEqual([
+      {
+        code: FrontMatterReadCode.FieldRetired,
+        details: {
+          field: FrontMatterField.Extends,
+        },
+        path: 'blocks/implementations/react/react-dom/react-dom.md',
+      },
+      {
+        code: FrontMatterReadCode.FieldRetired,
+        details: {
+          field: FrontMatterField.Abstract,
+        },
+        path: 'blocks/implementations/react/react-dom/react-dom.md',
+      },
+    ]);
+  });
+
+  it.each([
+    {
+      findings: [
+        {
+          code: RuleFormCode.LevelRetired,
+          details: {
+            slug: RuleSlug.create('tab-may-cache'),
+          },
+          path: 'blocks/contexts/platforms/client/browser/@foundation/cache.md',
+        },
+      ],
+      format: 'nested',
+      path: 'blocks/contexts/platforms/client/browser/@foundation/cache.md',
+      tree: nestedFiles(),
+    },
+    {
+      findings: [],
+      format: 'legacy',
+      path: 'blocks/domains/ui/foundation/cache.md',
+      tree: validFiles(),
+    },
+  ])(
+    'should take a MAY heading for a finding only when the tree is $format',
+    ({ findings, path, tree }) => {
+      // Arrange
+      const files = {
+        ...tree,
+        [path]: chapterFile(
+          'Cache',
+          rule({
+            level: 'MAY',
+            slug: 'tab-may-cache',
+          }),
+        ),
+      };
+
+      // Act
+      const loaded = loadedOf(files);
+
+      // Assert
+      expect(loaded.findings).toStrictEqual(findings);
+    },
+  );
+
+  it("should load a pack's child block under a parent of the release it extends", () => {
+    // Arrange
+    const source = packSourceOf({
+      base: nestedFiles(),
+      pack: nestedBlockFiles({
+        id: 'react/preact',
+        layerFolder: 'implementations',
+      }),
+    });
+
+    // Act
+    const loaded = loadConstitution(source);
+
+    // Assert
+    expect({
+      findings: loaded.findings,
+      own: loaded.constitution.blocks.filter((block) => !Block.isBase(block)).map(Block.linksOf),
+    }).toStrictEqual({
+      findings: [],
+      own: [
+        [
+          BlockId.create('react'),
+        ],
+      ],
+    });
+  });
+
+  it('should report a child block without its passport when its folder holds only an axis', () => {
+    // Arrange
+    const files = {
+      ...nestedFiles(),
+      'blocks/implementations/react/react-native/@foundation/components.md': '# Components\n',
+    };
+
+    // Act
+    const loaded = loadedOf(files);
+
+    // Assert
+    expect(loaded.findings).toStrictEqual([
+      {
+        code: BlockLoadCode.WithoutPassport,
+        details: {
+          id: BlockId.create('react/react-native'),
+        },
+        path: 'blocks/implementations/react/react-native',
+      },
+    ]);
+  });
+
+  it('should report extends and abstract as missing when a passport of the legacy tree leaves them out', () => {
+    // Arrange
+    const files = {
+      ...validFiles(),
+      'blocks/domains/ui/ui.md': nestedPassportFile({
+        id: 'ui',
+      }),
+    };
+
+    // Act
+    const loaded = loadedOf(files);
+
+    // Assert
+    expect(loaded.findings).toStrictEqual([
+      {
+        code: FrontMatterReadCode.FieldMissing,
+        details: {
+          field: FrontMatterField.Extends,
+        },
+        path: 'blocks/domains/ui/ui.md',
+      },
+      {
+        code: FrontMatterReadCode.FieldMissing,
+        details: {
+          field: FrontMatterField.Abstract,
+        },
+        path: 'blocks/domains/ui/ui.md',
+      },
+    ]);
+  });
 });

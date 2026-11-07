@@ -1,3 +1,4 @@
+import { BlockFormat } from '#/kernel/constants';
 import type { ValueFindingDetails } from '#/kernel/entities';
 import { ValueSite } from '#/kernel/entities';
 import { ValueFailure } from '#/kernel/errors';
@@ -67,6 +68,7 @@ enum FrontMatterReadCode {
   NotMapping = 'front-matter-not-a-mapping',
   FieldMissing = 'front-matter-field-missing',
   FieldUnknown = 'front-matter-field-unknown',
+  FieldRetired = 'front-matter-field-retired',
   OutOfOrder = 'front-matter-out-of-order',
   OffSchema = 'front-matter-off-schema',
   SummaryTooLong = 'summary-too-long',
@@ -101,6 +103,9 @@ interface FrontMatterReadDetails {
   };
   readonly [FrontMatterReadCode.FieldUnknown]: {
     readonly key: string;
+  };
+  readonly [FrontMatterReadCode.FieldRetired]: {
+    readonly field: RetiredField;
   };
   readonly [FrontMatterReadCode.OutOfOrder]: {
     readonly order: readonly FrontMatterField[];
@@ -144,7 +149,20 @@ type FrontMatterParsed =
       readonly status: FrontMatterStatus.Invalid;
     };
 
-const fieldOrder: readonly FrontMatterField[] = Object.values(FrontMatterField);
+type RetiredField = FrontMatterField.Extends | FrontMatterField.Abstract;
+
+const retiredFields: readonly RetiredField[] = [
+  FrontMatterField.Extends,
+  FrontMatterField.Abstract,
+];
+const retiredNames: readonly string[] = retiredFields;
+
+const FIELD_ORDER = {
+  [BlockFormat.Legacy]: Object.values(FrontMatterField),
+  [BlockFormat.Nested]: Object.values(FrontMatterField).filter(
+    (field) => !retiredNames.includes(field),
+  ),
+} as const satisfies Readonly<Record<BlockFormat, readonly FrontMatterField[]>>;
 const ONE_SENTENCE = /^[^\n\r\t]+\.$/;
 const SUMMARY_LENGTH = 70;
 const OPENING_LINES = 1;
@@ -172,7 +190,30 @@ const yamlProblem = (
   },
 });
 
-const keyProblems = (keys: readonly string[]): readonly FrontMatterProblem[] => {
+const retiredProblems = (input: {
+  format: BlockFormat;
+  keys: readonly string[];
+}): readonly FrontMatterProblem[] =>
+  input.format === BlockFormat.Nested
+    ? retiredFields
+        .filter((field) => input.keys.includes(field))
+        .map(
+          (field): FrontMatterProblem => ({
+            code: FrontMatterReadCode.FieldRetired,
+            details: {
+              field,
+            },
+          }),
+        )
+    : [];
+
+const keyProblems = (input: {
+  format: BlockFormat;
+  keys: readonly string[];
+}): readonly FrontMatterProblem[] => {
+  const { keys } = input;
+  const fieldOrder = FIELD_ORDER[input.format];
+  const retired = retiredProblems(input);
   const missing = fieldOrder
     .filter((field) => !keys.includes(field))
     .map(
@@ -184,7 +225,7 @@ const keyProblems = (keys: readonly string[]): readonly FrontMatterProblem[] => 
       }),
     );
   const unknown = keys
-    .filter((key) => !fieldOrder.some((field) => field === key))
+    .filter((key) => !(fieldOrder.some((field) => field === key) || retiredNames.includes(key)))
     .map(
       (key): FrontMatterProblem => ({
         code: FrontMatterReadCode.FieldUnknown,
@@ -194,10 +235,11 @@ const keyProblems = (keys: readonly string[]): readonly FrontMatterProblem[] => 
       }),
     );
 
-  if (missing.length > 0 || unknown.length > 0) {
+  if (missing.length > 0 || unknown.length > 0 || retired.length > 0) {
     return [
       ...missing,
       ...unknown,
+      ...retired,
     ];
   }
 
@@ -335,6 +377,7 @@ type MappingRead = Extract<
 
 const unreadProblems = (
   read: Exclude<FrontMatterRead, MappingRead>,
+  format: BlockFormat,
 ): readonly FrontMatterProblem[] => {
   if (read.status === ReadStatus.NotYaml) {
     return [
@@ -351,13 +394,19 @@ const unreadProblems = (
     ];
   }
 
-  const keys = keyProblems(read.keys);
+  const keys = keyProblems({
+    format,
+    keys: read.keys,
+  });
 
   return keys.length > 0 ? keys : read.issues.map(issueProblem);
 };
 
-const mappingProblems = (read: MappingRead): readonly FrontMatterProblem[] => {
-  const keys = keyProblems(read.keys);
+const mappingProblems = (read: MappingRead, format: BlockFormat): readonly FrontMatterProblem[] => {
+  const keys = keyProblems({
+    format,
+    keys: read.keys,
+  });
 
   return keys.length > 0
     ? keys
@@ -393,12 +442,12 @@ const frontMatterOf = (fields: FrontMatterFields): FrontMatter => ({
   summary: fields.summary,
 });
 
-const parse = (read: FrontMatterRead): FrontMatterParsed => {
+const parse = (read: FrontMatterRead, format: BlockFormat): FrontMatterParsed => {
   if (read.status !== ReadStatus.Mapping) {
-    return invalid(unreadProblems(read));
+    return invalid(unreadProblems(read, format));
   }
 
-  const problems = mappingProblems(read);
+  const problems = mappingProblems(read, format);
 
   return problems.length === 0
     ? {

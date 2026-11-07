@@ -4,6 +4,7 @@ import { BlockId } from '#/kernel/value-objects';
 
 import type { Files } from '../../../../__tests__/constitution.fixtures';
 import { passportFile } from '../../../../__tests__/constitution.fixtures';
+import { nestedFiles } from '../../../../__tests__/nested-files.fixtures';
 import { validFiles } from '../../../../__tests__/valid-files.fixtures';
 import { checkInputOf } from '../../../../application/use-cases/queries/check/__tests__/check.fixtures';
 import type { BlockPlace } from '../../../block/entities';
@@ -101,6 +102,52 @@ describe('closureOf', () => {
         ...validFiles(),
         ...files,
       });
+
+      // Act
+      const closure = BlockGraph.closureOf(graph, BlockId.create(blockId));
+
+      // Assert
+      expect<readonly string[]>([
+        ...closure,
+      ]).toStrictEqual(expected);
+    },
+  );
+});
+
+describe('closureOf of a nested tree', () => {
+  it.each([
+    {
+      blockId: 'react/react-dom',
+      expected: [
+        'client/browser',
+        'react',
+        'client',
+        'presentation',
+        'typescript',
+      ],
+      name: 'a child requires a block and its parent requires others',
+    },
+    {
+      blockId: 'js-runtime/bun',
+      expected: [
+        'task-runner',
+        'js-runtime',
+      ],
+      name: 'a child requires a block beside its parent',
+    },
+    {
+      blockId: 'react',
+      expected: [
+        'presentation',
+        'typescript',
+      ],
+      name: 'a parent reaches none of its children',
+    },
+  ])(
+    'should hold the folder ancestors and what they require when $name',
+    ({ blockId, expected }) => {
+      // Arrange
+      const { graph } = checkInputOf(nestedFiles());
 
       // Act
       const closure = BlockGraph.closureOf(graph, BlockId.create(blockId));

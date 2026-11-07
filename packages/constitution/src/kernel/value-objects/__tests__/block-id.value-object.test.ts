@@ -31,9 +31,34 @@ describe('BlockId', () => {
       text: 'Ui',
     },
     {
-      condition: 'it holds a slash',
+      condition: 'it is a path of segments joined by slashes',
+      isBlockId: true,
+      text: 'react/react-native/expo',
+    },
+    {
+      condition: 'it opens with a slash',
       isBlockId: false,
-      text: 'rules/ui',
+      text: '/client',
+    },
+    {
+      condition: 'it ends with a slash',
+      isBlockId: false,
+      text: 'client/',
+    },
+    {
+      condition: 'its slashes are doubled',
+      isBlockId: false,
+      text: 'client//browser',
+    },
+    {
+      condition: 'a segment past the first opens with the abstract mark',
+      isBlockId: false,
+      text: 'react/_native',
+    },
+    {
+      condition: 'a path opens with the abstract mark',
+      isBlockId: false,
+      text: '_react/react-dom',
     },
     {
       condition: 'it holds whitespace',
@@ -134,6 +159,63 @@ describe('BlockId', () => {
 
     // Assert
     expect(isSame).toBe(isEqual);
+  });
+
+  it.each([
+    {
+      condition: 'it is one segment',
+      isSegment: true,
+      name: 'react-dom',
+    },
+    {
+      condition: 'it opens with the abstract mark',
+      isSegment: false,
+      name: '_react',
+    },
+    {
+      condition: 'it holds a slash',
+      isSegment: false,
+      name: 'react/react-dom',
+    },
+  ])('should say $isSegment of a folder name when $condition', ({ isSegment, name }) => {
+    // Act
+    const answer = BlockId.isSegment(name);
+
+    // Assert
+    expect(answer).toBe(isSegment);
+  });
+
+  it.each([
+    {
+      id: 'client',
+      last: 'client',
+      parent: undefined,
+    },
+    {
+      id: 'client/browser',
+      last: 'browser',
+      parent: 'client',
+    },
+    {
+      id: 'react/react-native/expo',
+      last: 'expo',
+      parent: 'react/react-native',
+    },
+  ])('should read the folder above $id and its own last segment', ({ id, last, parent }) => {
+    // Arrange
+    const blockId = BlockId.create(id);
+
+    // Act
+    const read = {
+      last: BlockId.lastSegmentOf(blockId),
+      parent: BlockId.parentOf(blockId),
+    };
+
+    // Assert
+    expect<object>(read).toStrictEqual({
+      last,
+      parent,
+    });
   });
 
   it.each([

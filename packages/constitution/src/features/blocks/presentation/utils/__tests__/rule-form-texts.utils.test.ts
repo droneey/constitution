@@ -82,6 +82,15 @@ describe('ruleFormTexts', () => {
     },
     {
       problem: {
+        code: RuleFormCode.LevelRetired,
+        details: {
+          slug: RuleSlug.create('a'),
+        },
+      },
+      text: 'rule "a" is MAY in its heading; a heading states MUST or SHOULD, and only an override sets a rule to MAY',
+    },
+    {
+      problem: {
         code: RequirementsTableCode.HeaderMisshapen,
         details: {
           row: '| Requirement | How in lingui | Status |',

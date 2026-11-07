@@ -1,3 +1,4 @@
+import type { BlockFormat } from '#/kernel/constants';
 import { Layer, PATH_SEPARATOR } from '#/kernel/constants';
 import type { ProjectWarning, WarningDetails } from '#/kernel/entities';
 import { WarningKind } from '#/kernel/entities';
@@ -17,6 +18,7 @@ import { SourceFile, SourceStatus } from '../../../../../../../block-set/entitie
 interface FileInFolder {
   readonly block: BlockId;
   readonly file: SourceFile;
+  readonly format: BlockFormat;
   readonly layer: Layer;
   readonly named: WarningDetails[WarningKind.FileUnreadable];
   readonly part: FileInBlock;
@@ -61,9 +63,13 @@ const passed = (warnings: readonly ProjectWarning[]): Placed => ({
   warnings,
 });
 
-const placedOf = (input: { file: SourceFile; source: BlockSetSource }): Placed => {
-  const { file, source } = input;
-  const place = BlockFilePlace.parse(file.path);
+const placedOf = (input: {
+  file: SourceFile;
+  format: BlockFormat;
+  source: BlockSetSource;
+}): Placed => {
+  const { file, format, source } = input;
+  const place = BlockFilePlace.parse(file.path, format);
   const named = {
     file: `${source.shownFolderPath}${PATH_SEPARATOR}${file.path}`,
     source: source.source.kind,
@@ -100,6 +106,7 @@ const placedOf = (input: { file: SourceFile; source: BlockSetSource }): Placed =
     file: {
       block: place.folder.id,
       file,
+      format,
       layer: place.folder.layer,
       named,
       part: place.file,
@@ -149,16 +156,21 @@ const weighedOf = (input: {
 };
 
 const placeFiles = (sources: readonly BlockSetSource[]): readonly PlacedFile[] => {
-  const placed = sources.flatMap((source) =>
-    source.status === SourceStatus.Unlisted
-      ? []
-      : SourceFile.inReadOrder(source.files).map((file) =>
-          placedOf({
-            file,
-            source,
-          }),
-        ),
-  );
+  const placed = sources.flatMap((source) => {
+    if (source.status === SourceStatus.Unlisted) {
+      return [];
+    }
+
+    const format = SourceFile.formatOf(source.files);
+
+    return SourceFile.inReadOrder(source.files).map((file) =>
+      placedOf({
+        file,
+        format,
+        source,
+      }),
+    );
+  });
   const inFolder = placed
     .filter((place) => place.spot === Spot.InFolder)
     .map((place) => place.file);

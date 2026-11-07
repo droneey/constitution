@@ -1,7 +1,9 @@
 import type { Axis } from '../constants';
 import {
   AXES,
+  AXIS_FOLDER_NAME,
   BLOCKS_FOLDER_NAME,
+  BlockFormat,
   LAYER_FOLDER_NAME,
   LAYERS,
   Layer,
@@ -90,6 +92,8 @@ interface LayerFolder {
 }
 
 const HIDDEN_NAME_PREFIX = '.';
+const AXIS_MARK = '@';
+const blocksPrefix = `${BLOCKS_FOLDER_NAME}${PATH_SEPARATOR}`;
 
 const prefixOf = (layer: Layer): string =>
   `${BLOCKS_FOLDER_NAME}${PATH_SEPARATOR}${LAYER_FOLDER_NAME[layer]}${PATH_SEPARATOR}`;
@@ -115,10 +119,45 @@ const STRAY = {
 const isMarkdown = (name: string): boolean =>
   !name.startsWith(HIDDEN_NAME_PREFIX) && name.endsWith(MARKDOWN_EXTENSION);
 
-const fileOf = (input: { id: BlockId; segments: readonly string[] }): FileInBlock => {
-  const [first, name, seam, ...deeper] = input.segments;
-  const own = `${input.id}${MARKDOWN_EXTENSION}`;
-  const axis = AXES.find((candidate) => candidate === first);
+const nestedAxisFolders: ReadonlySet<string> = new Set(
+  Object.values(AXIS_FOLDER_NAME[BlockFormat.Nested]),
+);
+
+const axisNamed = (format: BlockFormat, name: string | undefined): Axis | undefined =>
+  AXES.find((axis) => AXIS_FOLDER_NAME[format][axis] === name);
+
+const seamFileOf = (input: {
+  axis: Axis;
+  format: BlockFormat;
+  segments: readonly string[];
+}): FileInBlock => {
+  const written = input.segments.join(PATH_SEPARATOR);
+
+  if (!isMarkdown(written) || (input.format === BlockFormat.Legacy && input.segments.length > 1)) {
+    return STRAY;
+  }
+
+  const other = written.slice(0, -MARKDOWN_EXTENSION.length);
+
+  return BlockId.is(other)
+    ? {
+        axis: input.axis,
+        kind: BlockFileKind.Seam,
+        other,
+      }
+    : {
+        kind: BlockFileKind.SeamOfNoBlockId,
+      };
+};
+
+const fileOf = (input: {
+  format: BlockFormat;
+  id: BlockId;
+  segments: readonly string[];
+}): FileInBlock => {
+  const [first, name, ...seam] = input.segments;
+  const own = `${BlockId.lastSegmentOf(input.id)}${MARKDOWN_EXTENSION}`;
+  const axis = axisNamed(input.format, first);
 
   if (name === undefined) {
     return first === own
@@ -128,11 +167,11 @@ const fileOf = (input: { id: BlockId; segments: readonly string[] }): FileInBloc
       : STRAY;
   }
 
-  if (axis === undefined || deeper.length > 0) {
+  if (axis === undefined) {
     return STRAY;
   }
 
-  if (seam === undefined) {
+  if (seam.length === 0) {
     if (!isMarkdown(name)) {
       return STRAY;
     }
@@ -148,85 +187,108 @@ const fileOf = (input: { id: BlockId; segments: readonly string[] }): FileInBloc
         };
   }
 
-  if (name !== SEAM_FOLDER_NAME || !isMarkdown(seam)) {
-    return STRAY;
-  }
-
-  const other = seam.slice(0, -MARKDOWN_EXTENSION.length);
-
-  return BlockId.is(other)
-    ? {
+  return name === SEAM_FOLDER_NAME
+    ? seamFileOf({
         axis,
-        kind: BlockFileKind.Seam,
-        other,
-      }
-    : {
-        kind: BlockFileKind.SeamOfNoBlockId,
-      };
+        format: input.format,
+        segments: seam,
+      })
+    : STRAY;
 };
 
-const placeInBlockFolder = (input: {
-  dir: string;
-  layer: Layer;
-  name: string;
-  path: string;
-  segments: readonly string[];
-}): PlaceFields =>
-  BlockId.is(input.name)
-    ? {
-        file: fileOf({
-          id: input.name,
-          segments: input.segments,
-        }),
-        folder: {
-          dir: input.dir,
-          id: input.name,
-          layer: input.layer,
-        },
-        path: input.path,
-        placement: Placement.InBlock,
-      }
-    : {
-        dir: input.dir,
-        layer: input.layer,
-        name: input.name,
-        path: input.path,
-        placement: Placement.MisnamedFolder,
-      };
+const isFolderBelowBlock = (folder: string, index: number): boolean =>
+  index > 0 && (folder.startsWith(AXIS_MARK) || folder.startsWith(HIDDEN_NAME_PREFIX));
 
-const placeOf = (path: string): PlaceFields | undefined => {
+const blockFoldersOf = (format: BlockFormat, segments: readonly string[]): readonly string[] => {
+  const folders = segments.slice(0, -1);
+  const below = folders.findIndex(isFolderBelowBlock);
+
+  if (format === BlockFormat.Legacy) {
+    return folders.slice(0, 1);
+  }
+
+  return below === -1 ? folders : folders.slice(0, below);
+};
+
+const isFolderName = (format: BlockFormat, name: string): boolean =>
+  format === BlockFormat.Legacy ? BlockId.is(name) : BlockId.isSegment(name);
+
+const placeInLayer = (input: {
+  format: BlockFormat;
+  layer: Layer;
+  path: string;
+  prefix: string;
+  segments: readonly string[];
+}): PlaceFields => {
+  const names = blockFoldersOf(input.format, input.segments);
+  const misnamed = names.find((name) => !isFolderName(input.format, name));
+
+  if (misnamed !== undefined) {
+    return {
+      dir: `${input.prefix}${names.slice(0, names.indexOf(misnamed) + 1).join(PATH_SEPARATOR)}`,
+      layer: input.layer,
+      name: misnamed,
+      path: input.path,
+      placement: Placement.MisnamedFolder,
+    };
+  }
+
+  const id = BlockId.create(names.join(PATH_SEPARATOR));
+
+  return {
+    file: fileOf({
+      format: input.format,
+      id,
+      segments: input.segments.slice(names.length),
+    }),
+    folder: {
+      dir: `${input.prefix}${id}`,
+      id,
+      layer: input.layer,
+    },
+    path: input.path,
+    placement: Placement.InBlock,
+  };
+};
+
+const placeOf = (path: string, format: BlockFormat): PlaceFields | undefined => {
   const folder = layerFolders.find((candidate) => path.startsWith(candidate.prefix));
 
   if (folder === undefined) {
     return undefined;
   }
 
-  const rest = path.slice(folder.prefix.length);
+  const segments = path.slice(folder.prefix.length).split(PATH_SEPARATOR);
 
   if (folder.layer === Layer.Core) {
-    return placeInBlockFolder({
-      dir: folder.prefix.slice(0, -PATH_SEPARATOR.length),
-      layer: folder.layer,
-      name: coreBlockId,
+    return {
+      file: fileOf({
+        format,
+        id: coreBlockId,
+        segments,
+      }),
+      folder: {
+        dir: folder.prefix.slice(0, -PATH_SEPARATOR.length),
+        id: coreBlockId,
+        layer: folder.layer,
+      },
       path,
-      segments: rest.split(PATH_SEPARATOR),
-    });
+      placement: Placement.InBlock,
+    };
   }
 
-  const slash = rest.indexOf(PATH_SEPARATOR);
-
-  return slash === -1
+  return segments.length === 1
     ? {
         layer: folder.layer,
         path,
         placement: Placement.Loose,
       }
-    : placeInBlockFolder({
-        dir: `${folder.prefix}${rest.slice(0, slash)}`,
+    : placeInLayer({
+        format,
         layer: folder.layer,
-        name: rest.slice(0, slash),
         path,
-        segments: rest.slice(slash + PATH_SEPARATOR.length).split(PATH_SEPARATOR),
+        prefix: folder.prefix,
+        segments,
       });
 };
 
@@ -276,14 +338,19 @@ const compare = (left: BlockFilePlace, right: BlockFilePlace): number => {
   );
 };
 
+const formats: readonly BlockFormat[] = Object.values(BlockFormat);
+
 const is = (candidate: unknown): candidate is BlockFilePlace => {
   const path = fieldsOf(candidate).get('path');
 
-  return typeof path === 'string' && isDeepEqual(placeOf(path), candidate);
+  return (
+    typeof path === 'string' &&
+    formats.some((format) => isDeepEqual(placeOf(path, format), candidate))
+  );
 };
 
-const parse = (path: string): BlockFilePlace | undefined => {
-  const place = placeOf(path);
+const parse = (path: string, format: BlockFormat): BlockFilePlace | undefined => {
+  const place = placeOf(path, format);
 
   // Stryker disable next-line ConditionalExpression: a place made from a path is always the place it parses to
   return is(place) ? place : undefined;
@@ -292,6 +359,7 @@ const parse = (path: string): BlockFilePlace | undefined => {
 interface PathInput {
   readonly block: BlockId;
   readonly file: BlockPart;
+  readonly format: BlockFormat;
   readonly layer: Layer;
 }
 
@@ -304,19 +372,31 @@ const pathOf = (input: PathInput): string => {
 
   switch (file.kind) {
     case BlockFileKind.Passport:
-      return `${folder}${input.block}${MARKDOWN_EXTENSION}`;
+      return `${folder}${BlockId.lastSegmentOf(input.block)}${MARKDOWN_EXTENSION}`;
     case BlockFileKind.Chapter:
-      return `${folder}${file.axis}${PATH_SEPARATOR}${file.name}${MARKDOWN_EXTENSION}`;
+      return `${folder}${AXIS_FOLDER_NAME[input.format][file.axis]}${PATH_SEPARATOR}${file.name}${MARKDOWN_EXTENSION}`;
     case BlockFileKind.Seam:
-      return `${folder}${file.axis}${PATH_SEPARATOR}${SEAM_FOLDER_NAME}${PATH_SEPARATOR}${file.other}${MARKDOWN_EXTENSION}`;
+      return `${folder}${AXIS_FOLDER_NAME[input.format][file.axis]}${PATH_SEPARATOR}${SEAM_FOLDER_NAME}${PATH_SEPARATOR}${file.other}${MARKDOWN_EXTENSION}`;
   }
 };
+
+const isUnderBlocks = (path: string): boolean => path.startsWith(blocksPrefix);
+
+const formatOf = (paths: readonly string[]): BlockFormat =>
+  paths.some(
+    (path) =>
+      isUnderBlocks(path) &&
+      path.split(PATH_SEPARATOR).some((segment) => nestedAxisFolders.has(segment)),
+  )
+    ? BlockFormat.Nested
+    : BlockFormat.Legacy;
 
 const equals = (left: BlockFilePlace, right: BlockFilePlace): boolean => left.path === right.path;
 
 const BlockFilePlace = {
   compare,
   equals,
+  formatOf,
   is,
   parse,
   pathOf,

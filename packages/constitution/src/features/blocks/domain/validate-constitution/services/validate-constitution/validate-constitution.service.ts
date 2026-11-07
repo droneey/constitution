@@ -9,9 +9,7 @@ import {
   abstractBlocksCheck,
   blockFormCheck,
   budgetCheck,
-  configurationLanguagesCheck,
   coreChaptersCheck,
-  corePartCheck,
   cyclesCheck,
   decisionsCheck,
   frontMatterCheck,
@@ -30,7 +28,6 @@ import {
 const packChecks: readonly Check<BlockFinding>[] = [
   frontMatterCheck,
   requiresCheck,
-  configurationLanguagesCheck,
   seamsCheck,
   cyclesCheck,
   abstractBlocksCheck,
@@ -41,7 +38,6 @@ const packChecks: readonly Check<BlockFinding>[] = [
   budgetCheck,
   linksCheck,
   decisionsCheck,
-  corePartCheck,
   coreChaptersCheck,
   blockFormCheck,
 ];

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
+import { BlockFormat } from '#/kernel/constants';
 import type { ProblemOf } from '#/kernel/types';
 import { BlockId } from '#/kernel/value-objects';
 import { textOf } from '#/shared/cli';
@@ -34,6 +35,15 @@ describe('loadTexts', () => {
         },
       },
       text: 'has no passport ui.md',
+    },
+    {
+      problem: {
+        code: BlockLoadCode.WithoutPassport,
+        details: {
+          id: BlockId.create('react/react-native/expo'),
+        },
+      },
+      text: 'has no passport expo.md',
     },
     {
       problem: {
@@ -100,6 +110,15 @@ describe('loadTexts', () => {
         },
       },
       text: 'front matter has "brands", which is not a field',
+    },
+    {
+      problem: {
+        code: FrontMatterReadCode.FieldRetired,
+        details: {
+          field: FrontMatterField.Extends,
+        },
+      },
+      text: 'front matter has "extends", which a block no longer declares; the folder a block sits in is its parent',
     },
     {
       problem: {
@@ -220,9 +239,20 @@ describe('loadTexts', () => {
     {
       problem: {
         code: PlaceCode.StrayBlockFile,
-        details: {},
+        details: {
+          format: BlockFormat.Legacy,
+        },
       },
       text: 'is not a block file; a block holds at its root its passport <id>.md, and in foundation/, architecture/ and workflow/ its chapters <name>.md and its seams with/<block>.md',
+    },
+    {
+      problem: {
+        code: PlaceCode.StrayBlockFile,
+        details: {
+          format: BlockFormat.Nested,
+        },
+      },
+      text: 'is not a block file; a block holds at its root its passport <name>.md and the folders of its child blocks, and in @foundation/, @architecture/ and @workflow/ its chapters <name>.md and its seams with/<block>.md',
     },
     {
       problem: {

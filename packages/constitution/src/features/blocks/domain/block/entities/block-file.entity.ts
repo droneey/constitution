@@ -1,4 +1,4 @@
-import type { Axis } from '#/kernel/constants';
+import type { Axis, BlockFormat } from '#/kernel/constants';
 import { BLOCKS_FOLDER_NAME, PATH_SEPARATOR } from '#/kernel/constants';
 import type { ValueFindingDetails } from '#/kernel/entities';
 import { ValueSite } from '#/kernel/entities';
@@ -95,7 +95,9 @@ enum PlaceCode {
 
 interface PlaceDetails {
   readonly [PlaceCode.OutsideBlockFolder]: object;
-  readonly [PlaceCode.StrayBlockFile]: object;
+  readonly [PlaceCode.StrayBlockFile]: {
+    readonly format: BlockFormat;
+  };
   readonly [PlaceCode.ChapterNamedAfterBlock]: object;
 }
 
@@ -117,24 +119,37 @@ type PlacedFile = Exclude<
 
 const blocksPrefix = `${BLOCKS_FOLDER_NAME}${PATH_SEPARATOR}`;
 
-const UNPLACED = {
-  [BlockFileKind.NamedAfterBlock]: {
-    code: PlaceCode.ChapterNamedAfterBlock,
-    details: {},
-  },
-  [BlockFileKind.SeamOfNoBlockId]: {
-    code: ValueFailure.BlockId,
-    details: {
-      site: ValueSite.SeamFile,
-    },
-  },
-  [BlockFileKind.Stray]: {
-    code: PlaceCode.StrayBlockFile,
-    details: {},
-  },
-} as const satisfies Readonly<Record<UnplacedFile, PlaceProblem>>;
+const unplacedKinds: ReadonlySet<BlockFileKind> = new Set<UnplacedFile>([
+  BlockFileKind.NamedAfterBlock,
+  BlockFileKind.SeamOfNoBlockId,
+  BlockFileKind.Stray,
+]);
 
-const isPlaced = (file: FileInBlock): file is PlacedFile => !Object.hasOwn(UNPLACED, file.kind);
+const unplacedProblemOf = (file: UnplacedFile, format: BlockFormat): PlaceProblem => {
+  switch (file) {
+    case BlockFileKind.NamedAfterBlock:
+      return {
+        code: PlaceCode.ChapterNamedAfterBlock,
+        details: {},
+      };
+    case BlockFileKind.SeamOfNoBlockId:
+      return {
+        code: ValueFailure.BlockId,
+        details: {
+          site: ValueSite.SeamFile,
+        },
+      };
+    case BlockFileKind.Stray:
+      return {
+        code: PlaceCode.StrayBlockFile,
+        details: {
+          format,
+        },
+      };
+  }
+};
+
+const isPlaced = (file: FileInBlock): file is PlacedFile => !unplacedKinds.has(file.kind);
 
 interface Located {
   readonly file: PlacedFile;
@@ -170,10 +185,10 @@ interface BlockFilesLocated {
   readonly groups: readonly BlockGroup[];
 }
 
-const locationOf = (paths: readonly TreePath[]): Location => {
+const locationOf = (paths: readonly TreePath[], format: BlockFormat): Location => {
   const places = paths.map((path) => ({
     path,
-    place: BlockFilePlace.parse(path),
+    place: BlockFilePlace.parse(path, format),
   }));
   const inBlock = places.flatMap(({ path, place }) =>
     place?.placement === Placement.InBlock
@@ -240,8 +255,11 @@ const groupByFolder = (located: readonly Located[]): readonly BlockGroup[] =>
     folder,
   }));
 
-const locate = (listed: readonly TreePath[]): BlockFilesLocated => {
-  const location = locationOf(listed.filter((path) => path.startsWith(blocksPrefix)));
+const locate = (listed: readonly TreePath[], format: BlockFormat): BlockFilesLocated => {
+  const location = locationOf(
+    listed.filter((path) => path.startsWith(blocksPrefix)),
+    format,
+  );
 
   return {
     findings: [
@@ -262,10 +280,12 @@ const locate = (listed: readonly TreePath[]): BlockFilesLocated => {
           path: dir,
         }),
       ),
-      ...location.unplaced.map(({ file, path }) => ({
-        ...UNPLACED[file],
-        path,
-      })),
+      ...location.unplaced.map(
+        ({ file, path }): PlaceFinding => ({
+          ...unplacedProblemOf(file, format),
+          path,
+        }),
+      ),
     ],
     groups: groupByFolder(location.placed),
   };
