@@ -2,9 +2,9 @@ FROM oven/bun:1.4.3-alpine@sha256:629e17411f1f129dbec3af78d5af9c9f2a937435c80349
 
 WORKDIR /usr/src/app
 
-# Why: the base image's own zlib carries ALPINE-CVE-2026-85091, and BusyBox's env has no -S,
-# which the shebangs of the packages' commands use.
-RUN apk add --no-cache coreutils-env=9.11-r0 dumb-init=1.2.5-r4 zlib=1.3.2-r1 && \
+# Why: the base image's own musl and zlib carry ALPINE-CVE-2026-107891 and ALPINE-CVE-2026-4738,
+# and BusyBox's env has no -S, which the shebangs of the packages' commands use.
+RUN apk add --no-cache coreutils-env=9.11-r0 dumb-init=1.2.5-r4 musl=1.2.6-r3 musl-utils=1.2.6-r3 zlib=1.4-r0 && \
   chown 1000:1000 /usr/src/app
 
 USER 1000
