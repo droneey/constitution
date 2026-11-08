@@ -41,7 +41,19 @@ const parentOf = (id: BlockId): BlockId | undefined => {
   return end === -1 ? undefined : create(id.slice(0, end));
 };
 
+const ancestorsOf = (id: BlockId): readonly BlockId[] => {
+  const parent = parentOf(id);
+
+  return parent === undefined
+    ? []
+    : [
+        parent,
+        ...ancestorsOf(parent),
+      ];
+};
+
 const BlockId = {
+  ancestorsOf,
   create,
   equals,
   is,

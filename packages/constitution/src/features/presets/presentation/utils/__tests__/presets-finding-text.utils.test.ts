@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import { goldenFileText, goldenOf } from '#/__tests__/golden.fixtures';
-import { Axis } from '#/kernel/constants';
+import { Axis, BlockFormat, Level } from '#/kernel/constants';
 import { BlockId } from '#/kernel/value-objects';
 
 import type { PresetsFinding } from '../../../domain/shared/entities';
@@ -76,6 +76,14 @@ const findingOfEachCode: {
     },
     path: 'presets/biome/foundation.yaml',
   },
+  [PresetsCode.PartnerRelatedToReader]: {
+    code: PresetsCode.PartnerRelatedToReader,
+    details: {
+      partner: BlockId.create('js-runtime/bun'),
+      reader: BlockId.create('js-runtime'),
+    },
+    path: 'presets/js-runtime/@foundation/with/js-runtime/bun.yaml',
+  },
   [PresetsCode.UnknownRule]: {
     code: PresetsCode.UnknownRule,
     details: named,
@@ -103,9 +111,10 @@ const findingOfEachCode: {
       ...named,
       belongs: {
         axis: Axis.Foundation,
+        format: BlockFormat.Nested,
         reader: BlockId.create('biome'),
         withs: [
-          BlockId.create('git'),
+          BlockId.create('react/react-dom'),
           BlockId.create('typescript'),
         ],
       },
@@ -148,6 +157,14 @@ const findingOfEachCode: {
       ruleAxis: Axis.Architecture,
     },
     path: 'presets/biome/foundation.yaml',
+  },
+  [PresetsCode.KeyedRuleNotMust]: {
+    code: PresetsCode.KeyedRuleNotMust,
+    details: {
+      ...named,
+      level: Level.Should,
+    },
+    path: 'presets/biome/@foundation.yaml',
   },
   [PresetsCode.FileOutsideItsUnit]: {
     code: PresetsCode.FileOutsideItsUnit,
@@ -214,6 +231,14 @@ const findingOfEachCode: {
       rule: 'gone',
     },
     path: 'presets/biome/plugins/typescript/gone.grit',
+  },
+  [PresetsCode.PluginRuleNotMust]: {
+    code: PresetsCode.PluginRuleNotMust,
+    details: {
+      level: Level.Should,
+      rule: 'file-within-500-lines',
+    },
+    path: 'presets/biome/plugins/typescript/file-within-500-lines.grit',
   },
   [PresetsCode.Clash]: {
     code: PresetsCode.Clash,
@@ -366,6 +391,7 @@ const findingOfEachCode: {
 
 const uiPath = {
   axis: Axis.Foundation,
+  format: BlockFormat.Legacy,
   reader: BlockId.create('biome'),
   withs: [
     BlockId.create('ui'),

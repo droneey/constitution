@@ -2,13 +2,14 @@ import { describe, expect, it } from 'bun:test';
 
 import { Axis, releaseFolderInProject } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
-import type { ProjectUnit } from '#/kernel/entities';
+import type { BlockModel, ProjectUnit } from '#/kernel/entities';
 import { BlockId, UnitRelativePath } from '#/kernel/value-objects';
 
 import { createFakeConfigurationFormat } from '../../../../../__tests__/configuration-format.fake';
 import { createFakeDistributionSources } from '../../../../../__tests__/distribution-sources.fake';
 import type { Files } from '../../../../../__tests__/presets.fixtures';
 import {
+  nestedPresetsModel,
   PROJECT,
   presetFileParser,
   projectFiles,
@@ -25,6 +26,7 @@ import { computePresets } from '../compute-presets';
 
 const planOf = (input: {
   files: Files;
+  model?: BlockModel;
   packs?: readonly string[];
   units: readonly ProjectUnit[];
 }): PresetsPlan => {
@@ -253,6 +255,138 @@ describe('computePresets', () => {
           },
         },
         unit: 'packages/kit',
+      },
+    ]);
+  });
+
+  it('should take an entry of a nested preset file while its reader, key block and partners are active or the parents of active blocks, and none while one is absent', () => {
+    // Arrange
+    const asked = {
+      files: releasePresets({
+        'biome/@foundation.yaml': [
+          'biome:',
+          "  '*':",
+          "    '*':",
+          '      biome.json:',
+          '        width: 100',
+        ].join('\n'),
+        'biome/@foundation/with/react.yaml': [
+          'react:',
+          '  hooks-called-at-the-top:',
+          "    '*':",
+          '      biome.json:',
+          '        hooks: true',
+        ].join('\n'),
+        'biome/@foundation/with/task-runner/poe.yaml': [
+          'task-runner/poe:',
+          "  '*':",
+          "    '*':",
+          '      biome.json:',
+          '        poe: true',
+        ].join('\n'),
+        'js-runtime/@foundation.yaml': [
+          'js-runtime:',
+          "  '*':",
+          "    '*':",
+          '      runtime.json:',
+          '        runtime: true',
+        ].join('\n'),
+      }),
+      model: nestedPresetsModel,
+      units: [
+        unitOf({
+          blocks: [
+            'core',
+            'biome',
+            'js-runtime/bun',
+            'react/react-dom',
+          ],
+        }),
+      ],
+    };
+
+    // Act
+    const plan = planOf(asked);
+
+    // Assert
+    expect(valuesOf(plan)).toStrictEqual([
+      {
+        file: 'biome.json',
+        value: {
+          hooks: true,
+          width: 100,
+        },
+      },
+      {
+        file: 'runtime.json',
+        value: {
+          runtime: true,
+        },
+      },
+    ]);
+  });
+
+  it('should serve a reader the repository follows through a child alone by its file, and a reader a member follows through a child in that member too', () => {
+    // Arrange
+    const asked = {
+      files: releasePresets({
+        'js-runtime/@foundation/with/react.yaml': [
+          'react:',
+          "  '*':",
+          "    '*':",
+          '      runtime.json:',
+          '        react: true',
+        ].join('\n'),
+        'task-runner/@foundation.yaml': [
+          'task-runner:',
+          "  '*':",
+          "    '*':",
+          '      tasks.json:',
+          '        tasks: true',
+        ].join('\n'),
+      }),
+      model: nestedPresetsModel,
+      units: [
+        unitOf({
+          blocks: [
+            'core',
+            'js-runtime/bun',
+            'task-runner/poe',
+          ],
+        }),
+        unitOf({
+          blocks: [
+            'core',
+            'react',
+            'task-runner/poe',
+          ],
+          path: 'packages/app',
+        }),
+      ],
+    };
+
+    // Act
+    const plan = planOf(asked);
+
+    // Assert
+    expect(valuesOf(plan)).toStrictEqual([
+      {
+        file: 'packages/app/tasks.json',
+        value: {
+          tasks: true,
+        },
+      },
+      {
+        file: 'runtime.json',
+        value: {
+          react: true,
+        },
+      },
+      {
+        file: 'tasks.json',
+        value: {
+          tasks: true,
+        },
       },
     ]);
   });

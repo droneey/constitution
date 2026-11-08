@@ -11,4 +11,4 @@ every preset file is sound
 3 findings in the presets
   presets/a.yaml: cannot be read [preset-file-unparsed]
   presets/a.yaml: is the preset file of gone, which is no block [unknown-reader]
-  presets/b.yaml: is not a preset file: presets/<reader>/<axis>.yaml, presets/<reader>/<axis>/with/<block>.yaml or presets/<reader>/<axis>/with/<first>/with/<second>.yaml [preset-file-misplaced]
+  presets/b.yaml: is not a preset file: presets/<reader>/@<axis>.yaml, presets/<reader>/@<axis>/with/<block>.yaml or presets/<reader>/@<axis>/with/<first>/with/<second>.yaml, where <reader> and each <block> are block ids [preset-file-misplaced]

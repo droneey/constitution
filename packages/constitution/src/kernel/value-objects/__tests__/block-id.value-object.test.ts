@@ -220,6 +220,29 @@ describe('BlockId', () => {
 
   it.each([
     {
+      ancestors: [],
+      id: 'client',
+    },
+    {
+      ancestors: [
+        'react/react-native',
+        'react',
+      ],
+      id: 'react/react-native/expo',
+    },
+  ])('should read every folder above $id, the nearest first', ({ ancestors, id }) => {
+    // Arrange
+    const blockId = BlockId.create(id);
+
+    // Act
+    const read = BlockId.ancestorsOf(blockId);
+
+    // Assert
+    expect<readonly string[]>(read).toStrictEqual(ancestors);
+  });
+
+  it.each([
+    {
       condition: 'it opens with the abstract mark',
       isAbstractId: true,
       text: '_store',

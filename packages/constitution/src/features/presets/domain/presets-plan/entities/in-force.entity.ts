@@ -1,7 +1,8 @@
 import type { Axis } from '#/kernel/constants';
 import { AXES } from '#/kernel/constants';
 import type { ModelRule, ProjectUnit } from '#/kernel/entities';
-import type { BlockId, RuleSlug } from '#/kernel/value-objects';
+import type { RuleSlug } from '#/kernel/value-objects';
+import { BlockId } from '#/kernel/value-objects';
 
 import type { PresetEntry } from '../../preset-entry/entities';
 import { EVERY } from '../../shared/constants';
@@ -18,9 +19,19 @@ interface InForce {
   readonly lowered: ReadonlySet<RuleSlug>;
 }
 
+const activeOf = (blocks: Iterable<BlockId>): ReadonlySet<BlockId> =>
+  new Set(
+    [
+      ...blocks,
+    ].flatMap((block) => [
+      block,
+      ...BlockId.ancestorsOf(block),
+    ]),
+  );
+
 const ofUnit = (unit: ProjectUnit): InForce => ({
   axes: new Set(unit.axes),
-  blocks: unit.blocks,
+  blocks: activeOf(unit.blocks),
   languages: unit.languages,
   lowered: unit.loweredRules,
 });
@@ -30,7 +41,7 @@ const ofUnits = (input: {
   units: readonly ProjectUnit[];
 }): InForce => ({
   axes: new Set(input.units.flatMap((unit) => unit.axes)),
-  blocks: new Set(
+  blocks: activeOf(
     input.units.flatMap((unit) => [
       ...unit.blocks,
     ]),
@@ -83,6 +94,7 @@ const isDroppedByOverrideOrAxis = (inForce: InForce, input: EntryAsked): boolean
   );
 
 const InForce = {
+  activeOf,
   isDroppedByOverrideOrAxis,
   ofUnit,
   ofUnits,

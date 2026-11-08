@@ -1,5 +1,5 @@
 # preset-file-misplaced
-is not a preset file: presets/<reader>/<axis>.yaml, presets/<reader>/<axis>/with/<block>.yaml or presets/<reader>/<axis>/with/<first>/with/<second>.yaml
+is not a preset file: presets/<reader>/@<axis>.yaml, presets/<reader>/@<axis>/with/<block>.yaml or presets/<reader>/@<axis>/with/<first>/with/<second>.yaml, where <reader> and each <block> are block ids
 
 # preset-file-unparsed
 does not parse at line 3
@@ -13,6 +13,9 @@ is the preset file of gone, which is no block
 # unknown-block
 names gone, which is no block
 
+# partner-related-to-reader
+names js-runtime/bun in its with/ path, which its reader js-runtime reaches or which reaches it; a with/ path names only blocks unrelated to its reader
+
 # unknown-rule
 biome → file-within-500-lines: file-within-500-lines is no rule
 
@@ -23,13 +26,16 @@ biome → file-within-500-lines: gone is no language
 biome → file-within-500-lines: file-within-500-lines is a rule of core
 
 # entry-misplaced
-biome → file-within-500-lines: belongs in presets/biome/foundation/with/git/with/typescript.yaml, to reach ${role.ignore-file}, defined by git; ${role.typescript-source}, defined by typescript; its path names ui, which it does not need
+biome → file-within-500-lines: belongs in presets/biome/@foundation/with/react/react-dom/with/typescript.yaml, to reach ${role.ignore-file}, defined by git; ${role.typescript-source}, defined by typescript; its path names ui, which it does not need
 
 # entry-needs-too-many-blocks
 biome → file-within-500-lines: needs css, browser, git beyond its reader, and a preset file's path names at most 2; leave out a role that needs a block of its own
 
 # entry-off-its-axis
 biome → file-within-500-lines: file-within-500-lines is a rule of architecture, not of this preset file's axis
+
+# keyed-rule-not-must
+biome → file-within-500-lines: file-within-500-lines is a SHOULD rule, and a rule a tool checks is a MUST
 
 # file-outside-its-unit
 biome → file-within-500-lines: ../biome.json leaves the folder of its unit
@@ -57,6 +63,9 @@ is a plugin no entry names
 
 # plugin-names-no-rule
 is named "gone", which is no rule; a plugin is named after the rule it holds
+
+# plugin-rule-not-must
+names [file-within-500-lines] in a message, and file-within-500-lines is a SHOULD rule; a rule a tool checks is a MUST
 
 # clash
 gets two values at linter.rules from presets/a.yaml: core → * and presets/b.yaml: biome → *

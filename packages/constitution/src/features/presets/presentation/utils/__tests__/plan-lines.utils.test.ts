@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import { goldenFileText, goldenOf } from '#/__tests__/golden.fixtures';
-import { Axis } from '#/kernel/constants';
+import { Axis, BlockFormat } from '#/kernel/constants';
 import { BlockId, BlockSource, RepositoryRelativePath, UnitPath } from '#/kernel/value-objects';
 
 import type { PresetEntry } from '../../../domain/preset-entry/entities';
@@ -23,6 +23,7 @@ const entry: PresetEntry = {
     filePath: RepositoryRelativePath.create('presets/biome/foundation.yaml'),
     placeInPresets: {
       axis: Axis.Foundation,
+      format: BlockFormat.Legacy,
       reader: BlockId.create('biome'),
       withs: [],
     },

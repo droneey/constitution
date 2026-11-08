@@ -3,7 +3,7 @@ import { describe, expect, it } from 'bun:test';
 import fc from 'fast-check';
 
 import { createFakeProjectFiles } from '#/__tests__/project-files.fake';
-import { AXES, Axis, Layer } from '#/kernel/constants';
+import { AXES, Axis, BlockFormat, Layer, Level } from '#/kernel/constants';
 import { BlockModel } from '#/kernel/entities';
 import type { RuleSlug } from '#/kernel/value-objects';
 import { AbsolutePath, BlockId, BlockSource, PackPath } from '#/kernel/value-objects';
@@ -11,7 +11,11 @@ import { AbsolutePath, BlockId, BlockSource, PackPath } from '#/kernel/value-obj
 import { createFakeConfigurationFormat } from '../../../../../__tests__/configuration-format.fake';
 import { createFakeDistributionSources } from '../../../../../__tests__/distribution-sources.fake';
 import type { Files } from '../../../../../__tests__/presets.fixtures';
-import { presetFileParser, presetsModel } from '../../../../../__tests__/presets.fixtures';
+import {
+  nestedPresetsModel,
+  presetFileParser,
+  presetsModel,
+} from '../../../../../__tests__/presets.fixtures';
 import type { PresetsFinding } from '../../../../../domain/shared/entities';
 import { PresetsCode } from '../../../../../domain/shared/entities';
 import { PresetFilePath } from '../../../../../domain/shared/value-objects';
@@ -47,8 +51,18 @@ const findingsOf = (input: {
 
 const placeOf = (reader: string, axis: Axis, ...withs: readonly string[]): PresetFilePath => ({
   axis,
+  format: BlockFormat.Legacy,
   reader: BlockId.create(reader),
   withs: withs.map(BlockId.create),
+});
+
+const nestedPlaceOf = (
+  reader: string,
+  axis: Axis,
+  ...withs: readonly string[]
+): PresetFilePath => ({
+  ...placeOf(reader, axis, ...withs),
+  format: BlockFormat.Nested,
 });
 
 const entryOf = (input: {
@@ -159,6 +173,7 @@ const modelPlacesOn = (axis: Axis): readonly PresetFilePath[] =>
         ]),
       ].map((withs) => ({
         axis,
+        format: BlockFormat.Legacy,
         reader,
         withs,
       })),
@@ -1905,5 +1920,326 @@ describe('checkPresets', () => {
         path: '${constitution.run}',
       },
     ]);
+  });
+
+  it('should find nothing when every nested preset file is sound, its reader, keys and partners named by id paths', () => {
+    // Arrange
+    const presets = {
+      'biome/@foundation/with/js-runtime/bun.yaml': entryOf({
+        block: 'js-runtime',
+      }),
+      'biome/@foundation/with/react.yaml': entryOf({
+        block: 'react',
+        rule: 'hooks-called-at-the-top',
+        value: "files: ['**/*${role.typescript-source}']",
+      }),
+      'core/@foundation.yaml': entryOf({
+        block: 'core',
+        file: 'AGENTS.md',
+        rule: 'file-within-500-lines',
+        value: 'lines: 500',
+      }),
+      'js-runtime/bun/@foundation.yaml': [
+        entryOf({
+          block: 'js-runtime/bun',
+          file: 'bunfig.toml',
+          rule: 'lock-file-is-bun-lock',
+        }),
+        entryOf({
+          block: 'task-runner',
+          file: 'package.json',
+          rule: 'check-runs-every-tool',
+        }),
+      ].join('\n'),
+      'js-runtime/bun/@foundation/with/react/react-dom/with/presentation.yaml': entryOf({
+        block: 'react/react-dom',
+        file: 'bunfig.toml',
+        rule: 'screen-reads-the-tokens',
+        value: 'tokens: true',
+      }),
+      'task-runner/poe/@foundation/with/biome.yaml': entryOf({
+        file: 'pyproject.toml',
+      }),
+    };
+
+    // Act
+    const found = findingsOf({
+      model: nestedPresetsModel,
+      presets,
+    });
+
+    // Assert
+    expect(found).toStrictEqual([]);
+  });
+
+  it.each<{
+    condition: string;
+    findings: readonly PresetsFinding[];
+    model: BlockModel;
+    presets: Files;
+  }>([
+    {
+      condition: 'its reader is an id path of no block',
+      findings: [
+        {
+          code: PresetsCode.UnknownReader,
+          details: {
+            reader: BlockId.create('js-runtime/deno'),
+          },
+          path: 'presets/js-runtime/deno/@foundation.yaml',
+        },
+        {
+          code: PresetsCode.EntryMisplaced,
+          details: {
+            belongs: nestedPlaceOf('js-runtime/deno', Axis.Foundation, 'core'),
+            block: BlockId.create('core'),
+            rule: '*',
+            unneededBlocks: [],
+            unreachedRoles: [],
+          },
+          path: 'presets/js-runtime/deno/@foundation.yaml',
+        },
+      ],
+      model: nestedPresetsModel,
+      presets: {
+        'js-runtime/deno/@foundation.yaml': entryOf({
+          block: 'core',
+        }),
+      },
+    },
+    {
+      condition: 'its path names a partner whose id path is no block',
+      findings: [
+        {
+          code: PresetsCode.UnknownBlock,
+          details: {
+            block: BlockId.create('react/react-native'),
+          },
+          path: 'presets/biome/@foundation/with/react/react-native.yaml',
+        },
+      ],
+      model: nestedPresetsModel,
+      presets: {
+        'biome/@foundation/with/react/react-native.yaml': entryOf({}),
+      },
+    },
+    {
+      condition: 'its key is an id path of no block',
+      findings: [
+        {
+          code: PresetsCode.UnknownBlock,
+          details: {
+            block: BlockId.create('js-runtime/deno'),
+          },
+          path: 'presets/biome/@foundation.yaml',
+        },
+      ],
+      model: nestedPresetsModel,
+      presets: {
+        'biome/@foundation.yaml': entryOf({
+          block: 'js-runtime/deno',
+        }),
+      },
+    },
+    {
+      condition: 'its key is a child block its path does not name',
+      findings: [
+        {
+          code: PresetsCode.EntryMisplaced,
+          details: {
+            belongs: nestedPlaceOf('biome', Axis.Foundation, 'react/react-dom'),
+            block: BlockId.create('react/react-dom'),
+            rule: '*',
+            unneededBlocks: [],
+            unreachedRoles: [],
+          },
+          path: 'presets/biome/@foundation.yaml',
+        },
+      ],
+      model: nestedPresetsModel,
+      presets: {
+        'biome/@foundation.yaml': entryOf({
+          block: 'react/react-dom',
+        }),
+      },
+    },
+    {
+      condition: 'its path names its reader’s parent',
+      findings: [
+        {
+          code: PresetsCode.PartnerRelatedToReader,
+          details: {
+            partner: BlockId.create('js-runtime'),
+            reader: BlockId.create('js-runtime/bun'),
+          },
+          path: 'presets/js-runtime/bun/@foundation/with/js-runtime.yaml',
+        },
+      ],
+      model: nestedPresetsModel,
+      presets: {
+        'js-runtime/bun/@foundation/with/js-runtime.yaml': entryOf({
+          block: 'js-runtime',
+        }),
+      },
+    },
+    {
+      condition: 'its path names a child of its reader',
+      findings: [
+        {
+          code: PresetsCode.PartnerRelatedToReader,
+          details: {
+            partner: BlockId.create('js-runtime/bun'),
+            reader: BlockId.create('js-runtime'),
+          },
+          path: 'presets/js-runtime/@foundation/with/js-runtime/bun.yaml',
+        },
+      ],
+      model: nestedPresetsModel,
+      presets: {
+        'js-runtime/@foundation/with/js-runtime/bun.yaml': entryOf({
+          block: 'js-runtime/bun',
+        }),
+      },
+    },
+    {
+      condition: 'its legacy path names a block that builds on its reader',
+      findings: [],
+      model: presetsModel,
+      presets: {
+        '_runtime/foundation/with/bun.yaml': entryOf({
+          block: 'bun',
+        }),
+      },
+    },
+    {
+      condition: 'its key names a rule below MUST',
+      findings: [
+        {
+          code: PresetsCode.KeyedRuleNotMust,
+          details: {
+            block: BlockId.create('core'),
+            level: Level.Should,
+            rule: 'code-reads-plainly',
+          },
+          path: 'presets/core/@foundation.yaml',
+        },
+      ],
+      model: nestedPresetsModel,
+      presets: {
+        'core/@foundation.yaml': entryOf({
+          block: 'core',
+          rule: 'code-reads-plainly',
+        }),
+      },
+    },
+    {
+      condition: 'its legacy key names a rule below MUST',
+      findings: [],
+      model: nestedPresetsModel,
+      presets: {
+        'core/foundation.yaml': entryOf({
+          block: 'core',
+          rule: 'code-reads-plainly',
+        }),
+      },
+    },
+  ])(
+    'should find what a nested preset file breaks when $condition',
+    ({ findings, model, presets }) => {
+      // Act
+      const found = findingsOf({
+        model,
+        presets,
+      });
+
+      // Assert
+      expect(found).toStrictEqual(findings);
+    },
+  );
+
+  it('should find each rule below MUST a plugin a nested preset file names keys in its messages, and none a legacy one names', () => {
+    // Arrange
+    const presets = {
+      'biome/@foundation.yaml': entryOf({
+        value:
+          "plugins: ['${constitution.path}/presets/biome/plugins/typescript/image-declares-its-size.grit']",
+      }),
+      'biome/foundation.yaml': entryOf({
+        file: 'legacy.json',
+        value:
+          "plugins: ['${constitution.path}/presets/biome/plugins/typescript/code-reads-plainly.grit']",
+      }),
+      'biome/plugins/typescript/code-reads-plainly.grit':
+        'register_diagnostic(message="[code-reads-plainly] write it plainly")',
+      'biome/plugins/typescript/image-declares-its-size.grit': [
+        'register_diagnostic(message="[image-declares-its-size] give its size")',
+        'register_diagnostic(message="[file-within-500-lines] split it")',
+        'register_diagnostic(message="[code-reads-plainly] write it plainly")',
+        '`$name` where $name <: r"[a-z]+" and $name <: not r"[A-Z]"',
+      ].join('\n'),
+      'js-runtime/bun/plugins/typescript/no-such-rule.grit': 'language js',
+    };
+
+    // Act
+    const found = findingsOf({
+      model: nestedPresetsModel,
+      presets,
+    });
+
+    // Assert
+    expect(found).toStrictEqual([
+      {
+        code: PresetsCode.PluginRuleNotMust,
+        details: {
+          level: Level.Should,
+          rule: 'image-declares-its-size',
+        },
+        path: 'presets/biome/plugins/typescript/image-declares-its-size.grit',
+      },
+      {
+        code: PresetsCode.PluginRuleNotMust,
+        details: {
+          level: Level.Should,
+          rule: 'code-reads-plainly',
+        },
+        path: 'presets/biome/plugins/typescript/image-declares-its-size.grit',
+      },
+      {
+        code: PresetsCode.PluginNamesNoRule,
+        details: {
+          rule: 'no-such-rule',
+        },
+        path: 'presets/js-runtime/bun/plugins/typescript/no-such-rule.grit',
+      },
+      {
+        code: PresetsCode.PluginUnreferenced,
+        details: {},
+        path: 'presets/js-runtime/bun/plugins/typescript/no-such-rule.grit',
+      },
+    ]);
+  });
+
+  it('should find no level a plugin that cannot be read keys, and leave the rest of its findings', () => {
+    // Arrange
+    const presets = {
+      'biome/@foundation.yaml': entryOf({
+        value:
+          "plugins: ['${constitution.path}/presets/biome/plugins/typescript/image-declares-its-size.grit']",
+      }),
+      'biome/plugins/typescript/image-declares-its-size.grit':
+        'register_diagnostic(message="[image-declares-its-size] give its size")',
+    };
+
+    // Act
+    const found = findingsOf({
+      model: nestedPresetsModel,
+      presets,
+      unreadable: [
+        'biome/plugins/typescript/image-declares-its-size.grit',
+      ],
+    });
+
+    // Assert
+    expect(found).toStrictEqual([]);
   });
 });

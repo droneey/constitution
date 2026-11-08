@@ -141,7 +141,7 @@ const takenBy = (
 const selectEntries = (input: SelectEntriesInput): readonly Candidate[] => {
   const { model, units } = input;
   const repository = units.find(ProjectUnit.isRepository);
-  const memberBlocks = new Set(
+  const memberBlocks = InForce.activeOf(
     units
       .filter((unit) => !ProjectUnit.isRepository(unit))
       .flatMap((unit) => [
@@ -163,7 +163,7 @@ const selectEntries = (input: SelectEntriesInput): readonly Candidate[] => {
     shared: new Set(
       [
         // Stryker disable next-line ArrayDeclaration: with no repository's unit no entry is served as a shared reader's, whatever the set holds
-        ...(repository?.blocks ?? []),
+        ...InForce.activeOf(repository?.blocks ?? []),
       ].filter((block) => !memberBlocks.has(block)),
     ),
   };

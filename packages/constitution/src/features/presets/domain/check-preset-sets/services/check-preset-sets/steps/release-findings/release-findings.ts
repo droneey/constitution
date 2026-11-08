@@ -1,5 +1,5 @@
-import { PATH_SEPARATOR, PRESETS_FOLDER_NAME } from '#/kernel/constants';
-import type { BlockModel } from '#/kernel/entities';
+import { BlockFormat, Level, PATH_SEPARATOR, PRESETS_FOLDER_NAME } from '#/kernel/constants';
+import type { BlockModel, ModelRule } from '#/kernel/entities';
 import { compareText } from '#/kernel/utils';
 import { RepositoryRelativePath, RuleSlug, SourceKind } from '#/kernel/value-objects';
 
@@ -14,6 +14,7 @@ interface ReleaseFiles {
   readonly existing: ReadonlySet<string>;
   readonly folderPathFromRepository: RepositoryRelativePath;
   readonly pathsInPresets: readonly string[];
+  readonly pluginTexts: ReadonlyMap<string, string>;
 }
 
 const releaseFile = new RegExp(
@@ -21,13 +22,14 @@ const releaseFile = new RegExp(
   'g',
 );
 const TRAILING_SEPARATOR = /\/$/;
-const pluginPath = new RegExp(`^[^/]+/${PLUGINS_FOLDER_NAME}/[^/]+/([^/]+)\\.[^./]+$`);
+const pluginPath = new RegExp(`^(?:[^/]+/)+?${PLUGINS_FOLDER_NAME}/[^/]+/([^/]+)\\.[^./]+$`);
+const BRACKETED = /\[([^\]\s]+)\]/g;
 
 interface ReleaseFindingsInput {
   readonly entries: readonly PresetEntry[];
   readonly model: BlockModel;
   readonly release: ReleaseFiles;
-  readonly rules: ReadonlySet<RuleSlug>;
+  readonly rules: ReadonlyMap<RuleSlug, ModelRule>;
 }
 
 const releaseFilesIn = (input: {
@@ -100,6 +102,7 @@ interface NamedFilesInput {
 const namedInReleaseOf = (
   input: NamedFilesInput,
 ): readonly {
+  readonly format: BlockFormat;
   readonly pathInRelease: string;
   readonly setFilePath: RepositoryRelativePath;
 }[] =>
@@ -110,6 +113,7 @@ const namedInReleaseOf = (
         entry,
         model: input.model,
       }).map((pathInRelease) => ({
+        format: entry.set.placeInPresets.format,
         pathInRelease,
         setFilePath: entry.set.filePath,
       })),
@@ -119,10 +123,89 @@ const releaseFilesNamedBy = (input: NamedFilesInput): readonly string[] => [
   ...new Set(namedInReleaseOf(input).map(({ pathInRelease }) => pathInRelease)),
 ];
 
+const isPluginPath = (pathInPresets: string): boolean => pluginPath.test(pathInPresets);
+
+const rulesTheMessagesKey = (input: {
+  rules: ReadonlyMap<RuleSlug, ModelRule>;
+  text: string;
+}): readonly ModelRule[] => [
+  ...new Set(
+    [
+      ...input.text.matchAll(BRACKETED),
+    ].flatMap((match) => {
+      const slug = String(match[1]);
+
+      return RuleSlug.is(slug) ? (input.rules.get(slug) ?? []) : [];
+    }),
+  ),
+];
+
+const pluginFindings = (
+  input: ReleaseFindingsInput & {
+    namedPaths: ReadonlySet<string>;
+    nestedNamedPaths: ReadonlySet<string>;
+    pathInPresets: string;
+    rule: string;
+  },
+): readonly PresetsFinding[] => {
+  const { release } = input;
+  const pathInRelease = `${PRESETS_FOLDER_NAME}${PATH_SEPARATOR}${input.pathInPresets}`;
+  const path = RepositoryRelativePath.join(release.folderPathFromRepository, pathInRelease);
+  const text = release.pluginTexts.get(input.pathInPresets);
+
+  return [
+    ...(RuleSlug.is(input.rule) && input.rules.has(input.rule)
+      ? []
+      : [
+          {
+            code: PresetsCode.PluginNamesNoRule,
+            details: {
+              rule: input.rule,
+            },
+            path,
+          } satisfies PresetsFinding,
+        ]),
+    ...(input.namedPaths.has(pathInRelease)
+      ? []
+      : [
+          {
+            code: PresetsCode.PluginUnreferenced,
+            details: {},
+            path,
+          } satisfies PresetsFinding,
+        ]),
+    // Why: the legacy presets name rules the nested tree raises to MUST, so a level is held only
+    // for a plugin a preset file of the nested format names until the legacy format goes.
+    ...(input.nestedNamedPaths.has(pathInRelease) && text !== undefined
+      ? rulesTheMessagesKey({
+          rules: input.rules,
+          text,
+        })
+          .filter(({ level }) => level !== Level.Must)
+          .map(
+            ({ level, slug }) =>
+              ({
+                code: PresetsCode.PluginRuleNotMust,
+                details: {
+                  level,
+                  rule: slug,
+                },
+                path,
+              }) satisfies PresetsFinding,
+          )
+      : []),
+  ];
+};
+
 const releaseFindings = (input: ReleaseFindingsInput): readonly PresetsFinding[] => {
   const { release } = input;
   const named = namedInReleaseOf(input);
   const namedPaths = new Set(named.map(({ pathInRelease }) => pathInRelease));
+  const nestedNamedPaths = new Set(
+    named
+      .filter(({ format }) => format === BlockFormat.Nested)
+      .map(({ pathInRelease }) => pathInRelease),
+  );
   const missing = named.flatMap(({ pathInRelease, setFilePath }) =>
     isSound({
       pathInRelease,
@@ -141,38 +224,16 @@ const releaseFindings = (input: ReleaseFindingsInput): readonly PresetsFinding[]
   );
   const plugins = release.pathsInPresets.toSorted(compareText).flatMap((pathInPresets) => {
     const rule = pluginPath.exec(pathInPresets)?.[1];
-    const pathInRelease = `${PRESETS_FOLDER_NAME}${PATH_SEPARATOR}${pathInPresets}`;
 
     return rule === undefined
       ? []
-      : [
-          ...(RuleSlug.is(rule) && input.rules.has(rule)
-            ? []
-            : [
-                {
-                  code: PresetsCode.PluginNamesNoRule,
-                  details: {
-                    rule,
-                  },
-                  path: RepositoryRelativePath.join(
-                    release.folderPathFromRepository,
-                    pathInRelease,
-                  ),
-                } satisfies PresetsFinding,
-              ]),
-          ...(namedPaths.has(pathInRelease)
-            ? []
-            : [
-                {
-                  code: PresetsCode.PluginUnreferenced,
-                  details: {},
-                  path: RepositoryRelativePath.join(
-                    release.folderPathFromRepository,
-                    pathInRelease,
-                  ),
-                } satisfies PresetsFinding,
-              ]),
-        ];
+      : pluginFindings({
+          ...input,
+          namedPaths,
+          nestedNamedPaths,
+          pathInPresets,
+          rule,
+        });
   });
 
   return [
@@ -182,4 +243,4 @@ const releaseFindings = (input: ReleaseFindingsInput): readonly PresetsFinding[]
 };
 
 export type { NamedFilesInput, ReleaseFiles };
-export { releaseFilesNamedBy, releaseFindings };
+export { isPluginPath, releaseFilesNamedBy, releaseFindings };

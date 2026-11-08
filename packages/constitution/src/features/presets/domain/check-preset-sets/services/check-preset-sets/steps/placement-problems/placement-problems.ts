@@ -1,4 +1,4 @@
-import { Layer } from '#/kernel/constants';
+import { BlockFormat, Layer, Level } from '#/kernel/constants';
 import type { ModelRule } from '#/kernel/entities';
 import { BlockModel } from '#/kernel/entities';
 import { isDeepEqual } from '#/kernel/utils';
@@ -13,6 +13,7 @@ import type { ModelIndex } from '../index-model';
 
 interface SetProblemsInput {
   readonly index: ModelIndex;
+  readonly model: BlockModel;
   readonly set: PresetSet;
 }
 
@@ -21,34 +22,6 @@ interface EntryProblemsInput {
   readonly index: ModelIndex;
   readonly model: BlockModel;
 }
-
-const setProblems = (input: SetProblemsInput): readonly PresetsProblem[] => {
-  const { placeInPresets } = input.set;
-
-  return [
-    ...(input.index.blocks.has(placeInPresets.reader)
-      ? []
-      : [
-          {
-            code: PresetsCode.UnknownReader,
-            details: {
-              reader: placeInPresets.reader,
-            },
-          } satisfies PresetsProblem,
-        ]),
-    ...placeInPresets.withs
-      .filter((block) => !input.index.blocks.has(block))
-      .map(
-        (block) =>
-          ({
-            code: PresetsCode.UnknownBlock,
-            details: {
-              block,
-            },
-          }) satisfies PresetsProblem,
-      ),
-  ];
-};
 
 // Why: an entry's placement weighs each block's reach against every other's and asks again whether
 // a role is reached, each answer walking the whole model, so a model gives each answer once.
@@ -73,6 +46,51 @@ const reachOf = (model: BlockModel, block: BlockId): ReadonlySet<BlockId> => {
   reachesByModel.set(model, reaches.set(block, reach));
 
   return reach;
+};
+
+const setProblems = (input: SetProblemsInput): readonly PresetsProblem[] => {
+  const { placeInPresets } = input.set;
+  const { reader } = placeInPresets;
+
+  return [
+    ...(input.index.blocks.has(reader)
+      ? []
+      : [
+          {
+            code: PresetsCode.UnknownReader,
+            details: {
+              reader,
+            },
+          } satisfies PresetsProblem,
+        ]),
+    ...placeInPresets.withs.flatMap((block): readonly PresetsProblem[] => {
+      if (!input.index.blocks.has(block)) {
+        return [
+          {
+            code: PresetsCode.UnknownBlock,
+            details: {
+              block,
+            },
+          },
+        ];
+      }
+
+      // Why: the legacy presets file settings under a block that builds on their reader, so the
+      // pairing is held only by a preset file of the nested format until the legacy format goes.
+      return placeInPresets.format === BlockFormat.Nested &&
+        (reachOf(input.model, reader).has(block) || reachOf(input.model, block).has(reader))
+        ? [
+            {
+              code: PresetsCode.PartnerRelatedToReader,
+              details: {
+                partner: block,
+                reader,
+              },
+            },
+          ]
+        : [];
+    }),
+  ];
 };
 
 interface DefinedRole {
@@ -306,6 +324,19 @@ const ruleProblems = (input: {
             details: {
               ...named,
               ruleAxis: rule.axis,
+            },
+          } satisfies PresetsProblem,
+        ]),
+    // Why: the legacy presets key rules the nested tree raises to MUST, so a level is held only by
+    // a preset file of the nested format until the legacy format goes.
+    ...(rule.level === Level.Must || entry.set.placeInPresets.format === BlockFormat.Legacy
+      ? []
+      : [
+          {
+            code: PresetsCode.KeyedRuleNotMust,
+            details: {
+              ...named,
+              level: rule.level,
             },
           } satisfies PresetsProblem,
         ]),

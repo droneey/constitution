@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { Axis, Layer } from '#/kernel/constants';
+import { Axis, BlockFormat, Layer } from '#/kernel/constants';
 import { BlockModel, TermKind } from '#/kernel/entities';
 import {
   BlockId,
@@ -28,6 +28,7 @@ const entryOf = (input: { index: number; key?: string; pack?: string }): Entry =
     filePath: RepositoryRelativePath.create('presets/biome/foundation.yaml'),
     placeInPresets: {
       axis: Axis.Foundation,
+      format: BlockFormat.Legacy,
       reader: BlockId.create('biome'),
       withs: [],
     },

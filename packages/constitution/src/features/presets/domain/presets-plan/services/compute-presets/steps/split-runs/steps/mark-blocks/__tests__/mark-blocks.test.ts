@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { Axis } from '#/kernel/constants';
+import { Axis, BlockFormat } from '#/kernel/constants';
 import { BlockId, BlockSource, coreBlockId, RepositoryRelativePath } from '#/kernel/value-objects';
 
 import type { Contribution } from '../../../../../../../../merged-file/entities';
@@ -21,6 +21,7 @@ const entryOf = (input: { file: string; reader: BlockId }): PresetEntry & Target
     filePath: RepositoryRelativePath.create(`presets/${input.reader}/foundation.yaml`),
     placeInPresets: {
       axis: Axis.Foundation,
+      format: BlockFormat.Legacy,
       reader: input.reader,
       withs: [],
     },

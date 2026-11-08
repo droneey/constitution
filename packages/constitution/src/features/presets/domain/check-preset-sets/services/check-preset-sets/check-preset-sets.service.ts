@@ -51,6 +51,7 @@ const checkPresetSets = (input: CheckPresetSetsInput): readonly PresetsFinding[]
     ...sets.flatMap((set) =>
       setProblems({
         index,
+        model: input.model,
         set,
       }).map(at(set)),
     ),
@@ -82,7 +83,7 @@ const checkPresetSets = (input: CheckPresetSetsInput): readonly PresetsFinding[]
           entries: input.entries,
           model: input.model,
           release: input.release,
-          rules: new Set(index.rules.keys()),
+          rules: index.rules,
         })),
   ]);
 };

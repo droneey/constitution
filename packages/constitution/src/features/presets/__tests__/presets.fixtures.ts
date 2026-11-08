@@ -32,6 +32,7 @@ interface BlockFixture {
 interface RuleFixture {
   readonly axis?: Axis;
   readonly block: string;
+  readonly level?: Level;
   readonly seam?: string;
   readonly slug: string;
 }
@@ -235,6 +236,127 @@ const roleFixtures: readonly RoleFixture[] = [
   },
 ];
 
+const nestedBlockFixtures: readonly BlockFixture[] = [
+  {
+    id: 'core',
+    layer: Layer.Core,
+  },
+  {
+    id: 'presentation',
+    layer: Layer.Domain,
+  },
+  {
+    governs: [
+      '**/*.ts',
+    ],
+    id: 'typescript',
+    layer: Layer.Language,
+  },
+  {
+    id: 'client',
+    layer: Layer.Platform,
+  },
+  {
+    id: 'client/browser',
+    layer: Layer.Platform,
+  },
+  {
+    governs: [
+      'biome.json',
+    ],
+    id: 'biome',
+    layer: Layer.Implementation,
+  },
+  {
+    id: 'task-runner',
+    layer: Layer.Implementation,
+  },
+  {
+    governs: [
+      'pyproject.toml',
+    ],
+    id: 'task-runner/poe',
+    layer: Layer.Implementation,
+  },
+  {
+    id: 'js-runtime',
+    layer: Layer.Implementation,
+  },
+  {
+    governs: [
+      'bunfig.toml',
+    ],
+    id: 'js-runtime/bun',
+    layer: Layer.Implementation,
+    requires: [
+      'task-runner',
+      'typescript',
+    ],
+  },
+  {
+    id: 'react',
+    layer: Layer.Implementation,
+    requires: [
+      'typescript',
+    ],
+  },
+  {
+    id: 'react/react-dom',
+    layer: Layer.Implementation,
+    requires: [
+      'client/browser',
+    ],
+  },
+];
+
+const nestedRuleFixtures: readonly RuleFixture[] = [
+  {
+    block: 'core',
+    slug: 'file-within-500-lines',
+  },
+  {
+    block: 'core',
+    level: Level.Should,
+    slug: 'code-reads-plainly',
+  },
+  {
+    block: 'task-runner',
+    slug: 'check-runs-every-tool',
+  },
+  {
+    block: 'js-runtime/bun',
+    slug: 'lock-file-is-bun-lock',
+  },
+  {
+    block: 'react',
+    slug: 'hooks-called-at-the-top',
+  },
+  {
+    block: 'react/react-dom',
+    level: Level.Should,
+    slug: 'image-declares-its-size',
+  },
+  {
+    block: 'react/react-dom',
+    seam: 'presentation',
+    slug: 'screen-reads-the-tokens',
+  },
+];
+
+const nestedRoleFixtures: readonly RoleFixture[] = [
+  {
+    block: 'core',
+    id: 'source',
+    term: 'src/',
+  },
+  {
+    block: 'typescript',
+    id: 'typescript-source',
+    kind: TermKind.Suffix,
+    term: '.ts',
+  },
+];
+
 const modelBlockOf = (block: BlockFixture): ModelBlock => ({
   ...(block.extends === undefined
     ? {}
@@ -252,7 +374,7 @@ const modelBlockOf = (block: BlockFixture): ModelBlock => ({
 const modelRuleOf = (rule: RuleFixture): ModelRule => ({
   axis: rule.axis ?? Axis.Foundation,
   block: BlockId.create(rule.block),
-  level: Level.Must,
+  level: rule.level ?? Level.Must,
   ...(rule.seam === undefined
     ? {}
     : {
@@ -282,6 +404,12 @@ const presetsModel: BlockModel = BlockModel.create({
   blocks: blockFixtures.map(modelBlockOf),
   roles: roleFixtures.map(roleOf),
   rules: ruleFixtures.map(modelRuleOf),
+});
+
+const nestedPresetsModel: BlockModel = BlockModel.create({
+  blocks: nestedBlockFixtures.map(modelBlockOf),
+  roles: nestedRoleFixtures.map(roleOf),
+  rules: nestedRuleFixtures.map(modelRuleOf),
 });
 
 interface UnitFixture {
@@ -336,6 +464,7 @@ const projectFiles = (files: Files): Files =>
 interface ProjectFixture {
   readonly files?: Files;
   readonly links?: FakeTree['links'];
+  readonly model?: BlockModel;
   readonly packs?: readonly string[];
   readonly units: readonly ProjectUnit[];
   readonly unreadable?: readonly string[];
@@ -351,7 +480,7 @@ const projectOf = (
 } => {
   const project: PresetsProject = {
     ...projectPlace,
-    model: presetsModel,
+    model: input.model ?? presetsModel,
     packs: (input.packs ?? []).map(PackPath.create),
     units: input.units,
     warnings: input.warnings ?? [],
@@ -408,6 +537,7 @@ export type { Files };
 export {
   answerOf,
   lockOf,
+  nestedPresetsModel,
   presetFileParser,
   presetsModel,
   projectFiles,

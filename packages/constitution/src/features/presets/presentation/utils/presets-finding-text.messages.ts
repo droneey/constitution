@@ -1,4 +1,5 @@
 import {
+  Level,
   PATH_SEPARATOR,
   PRESETS_FOLDER_NAME,
   releaseFolderInProject,
@@ -53,7 +54,9 @@ const presetFilePlaceOf = (...segments: readonly string[]): string =>
     ...segments,
   ].join(PATH_SEPARATOR);
 
-const presetFilePlaces = `${presetFilePlaceOf('<axis>.yaml')}, ${presetFilePlaceOf('<axis>', SEAM_FOLDER_NAME, '<block>.yaml')} or ${presetFilePlaceOf('<axis>', SEAM_FOLDER_NAME, '<first>', SEAM_FOLDER_NAME, '<second>.yaml')}`;
+const AXIS_PLACE = '@<axis>';
+
+const presetFilePlaces = `${presetFilePlaceOf(`${AXIS_PLACE}.yaml`)}, ${presetFilePlaceOf(AXIS_PLACE, SEAM_FOLDER_NAME, '<block>.yaml')} or ${presetFilePlaceOf(AXIS_PLACE, SEAM_FOLDER_NAME, '<first>', SEAM_FOLDER_NAME, '<second>.yaml')}, where <reader> and each <block> are block ids`;
 const ENTRY_KEYS = 'block → rule or * → language or * → file';
 const KEY_SEPARATOR = ' → ';
 const APPLY = ' — run constitution presets apply';
@@ -91,6 +94,8 @@ const presetsFindingMessages: Omit<TextsOf<PresetsDetails>, VariedCode> = {
   [PresetsCode.PresetFileMisplaced]: () => `is not a preset file: ${presetFilePlaces}`,
   [PresetsCode.UnknownReader]: ({ reader }) => `is the preset file of ${reader}, which is no block`,
   [PresetsCode.UnknownBlock]: ({ block }) => `names ${block}, which is no block`,
+  [PresetsCode.PartnerRelatedToReader]: ({ partner, reader }) =>
+    `names ${partner} in its ${SEAM_FOLDER_NAME}/ path, which its reader ${reader} reaches or which reaches it; a ${SEAM_FOLDER_NAME}/ path names only blocks unrelated to its reader`,
   [PresetsCode.UnknownRule]: (named) => `${entryOf(named)}: ${named.rule} is no rule`,
   [PresetsCode.UnknownLanguage]: (named) => `${entryOf(named)}: ${named.language} is no language`,
   [PresetsCode.RuleOfAnotherBlock]: (named) =>
@@ -99,6 +104,8 @@ const presetsFindingMessages: Omit<TextsOf<PresetsDetails>, VariedCode> = {
     `${entryOf(named)}: needs ${named.needed.join(LIST_SEPARATOR)} beyond its reader, and a preset file's path names at most ${String(MAX_WITHS)}; leave out a role that needs a block of its own`,
   [PresetsCode.EntryOffItsAxis]: (named) =>
     `${entryOf(named)}: ${named.rule} is a rule of ${named.ruleAxis}, not of this preset file's axis`,
+  [PresetsCode.KeyedRuleNotMust]: (named) =>
+    `${entryOf(named)}: ${named.rule} is a ${named.level} rule, and a rule a tool checks is a ${Level.Must}`,
   [PresetsCode.FileOutsideItsUnit]: (named) =>
     `${entryOf(named)}: ${named.file} leaves the folder of its unit`,
   [PresetsCode.UnknownFact]: (named) =>
@@ -113,6 +120,8 @@ const presetsFindingMessages: Omit<TextsOf<PresetsDetails>, VariedCode> = {
   [PresetsCode.PluginUnreferenced]: () => 'is a plugin no entry names',
   [PresetsCode.PluginNamesNoRule]: ({ rule }) =>
     `is named "${rule}", which is no rule; a plugin is named after the rule it holds`,
+  [PresetsCode.PluginRuleNotMust]: ({ level, rule }) =>
+    `names [${rule}] in a message, and ${rule} is a ${level} rule; a rule a tool checks is a ${Level.Must}`,
   [PresetsCode.Clash]: ({ settingPath, sources }) =>
     `gets two values at ${settingPath} from ${namesOf(sources)}`,
   [PresetsCode.TwoReplacers]: ({ settingPath, sources }) =>

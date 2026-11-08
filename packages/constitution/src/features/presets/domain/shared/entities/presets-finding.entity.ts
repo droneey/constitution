@@ -1,4 +1,4 @@
-import type { Axis } from '#/kernel/constants';
+import type { Axis, Level } from '#/kernel/constants';
 import type { FindingOf, ProblemOf } from '#/kernel/types';
 import type { BlockId } from '#/kernel/value-objects';
 
@@ -10,12 +10,14 @@ enum PresetsCode {
   EntryMisshapen = 'entry-misshapen',
   UnknownReader = 'unknown-reader',
   UnknownBlock = 'unknown-block',
+  PartnerRelatedToReader = 'partner-related-to-reader',
   UnknownRule = 'unknown-rule',
   UnknownLanguage = 'unknown-language',
   RuleOfAnotherBlock = 'rule-of-another-block',
   EntryMisplaced = 'entry-misplaced',
   EntryNeedsTooManyBlocks = 'entry-needs-too-many-blocks',
   EntryOffItsAxis = 'entry-off-its-axis',
+  KeyedRuleNotMust = 'keyed-rule-not-must',
   FileOutsideItsUnit = 'file-outside-its-unit',
   UnknownFact = 'unknown-fact',
   UnknownRole = 'unknown-role',
@@ -25,6 +27,7 @@ enum PresetsCode {
   MissingDistributionFile = 'missing-distribution-file',
   PluginUnreferenced = 'plugin-unreferenced',
   PluginNamesNoRule = 'plugin-names-no-rule',
+  PluginRuleNotMust = 'plugin-rule-not-must',
   Clash = 'clash',
   TwoReplacers = 'two-replacers',
   MissingSlot = 'missing-slot',
@@ -102,6 +105,10 @@ interface PresetsDetails {
   readonly [PresetsCode.UnknownBlock]: {
     readonly block: string;
   };
+  readonly [PresetsCode.PartnerRelatedToReader]: {
+    readonly partner: BlockId;
+    readonly reader: BlockId;
+  };
   readonly [PresetsCode.UnknownRule]: EntryNamed;
   readonly [PresetsCode.UnknownLanguage]: EntryNamed & {
     readonly language: string;
@@ -119,6 +126,9 @@ interface PresetsDetails {
   };
   readonly [PresetsCode.EntryOffItsAxis]: EntryNamed & {
     readonly ruleAxis: Axis;
+  };
+  readonly [PresetsCode.KeyedRuleNotMust]: EntryNamed & {
+    readonly level: Level;
   };
   readonly [PresetsCode.FileOutsideItsUnit]: EntryNamed & {
     readonly file: string;
@@ -143,6 +153,10 @@ interface PresetsDetails {
   };
   readonly [PresetsCode.PluginUnreferenced]: object;
   readonly [PresetsCode.PluginNamesNoRule]: {
+    readonly rule: string;
+  };
+  readonly [PresetsCode.PluginRuleNotMust]: {
+    readonly level: Level;
     readonly rule: string;
   };
   readonly [PresetsCode.Clash]: SourcesNamed;
