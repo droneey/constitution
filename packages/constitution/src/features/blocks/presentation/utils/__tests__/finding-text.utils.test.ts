@@ -40,8 +40,8 @@ const slug = RuleSlug.create('loading-state-shown');
 const overBudget = {
   code: BudgetCode.FileOverBudget,
   details: {
-    budget: 500,
-    lines: 501,
+    budget: 1500,
+    lines: 1501,
   },
   path: PATH,
 } satisfies BlockFinding;

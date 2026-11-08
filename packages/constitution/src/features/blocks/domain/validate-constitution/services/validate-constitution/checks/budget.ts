@@ -16,7 +16,7 @@ interface BudgetDetails {
 
 type BudgetFinding = FindingOf<BudgetDetails>;
 
-const FILE_LINE_BUDGET = 500;
+const FILE_LINE_BUDGET = 1500;
 
 const budgetCheck: Check<BudgetFinding> = ({
   constitution,

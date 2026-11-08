@@ -16,11 +16,11 @@ describe('budgetTexts', () => {
       problem: {
         code: BudgetCode.FileOverBudget,
         details: {
-          budget: 500,
-          lines: 501,
+          budget: 1500,
+          lines: 1501,
         },
       },
-      text: 'has 501 lines outside its examples; a file holds at most 500, and a longer block splits into chapters',
+      text: 'has 1501 lines; a file holds at most 1500, and a longer block splits into chapters',
     },
   ])('should say $problem.code as the report words it', ({ problem, text }) => {
     // Act

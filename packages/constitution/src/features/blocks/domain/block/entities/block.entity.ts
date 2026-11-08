@@ -1,7 +1,6 @@
 import type { Layer } from '#/kernel/constants';
 import { Axis, LAYERS, PATH_SEPARATOR } from '#/kernel/constants';
 import type { RuleSource } from '#/kernel/entities';
-import { StatedRule } from '#/kernel/entities';
 import type { FindingOf } from '#/kernel/types';
 import { compareText, splitFrontMatter } from '#/kernel/utils';
 import type { BlockFolder } from '#/kernel/value-objects';
@@ -226,12 +225,7 @@ const partsIn = (group: BlockGroup): readonly PartEntry[] =>
           ],
     );
 
-// Why: no agent is handed a rule's examples, so a file's budget counts the lines it gives to read.
-const lineCount = (file: string): number => {
-  const text = StatedRule.withoutExamples(file);
-
-  return text.split('\n').length - (text.endsWith('\n') ? 1 : 0);
-};
+const lineCount = (text: string): number => text.split('\n').length - (text.endsWith('\n') ? 1 : 0);
 
 const partOf = ({ file, path, text }: PartRead): PartFile => {
   const blockText = {

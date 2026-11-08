@@ -426,9 +426,10 @@ describe('RuleBody.formsOf', () => {
 });
 
 describe('RuleBody.withoutExamples', () => {
-  it('should leave out the lines of each Examples section to the next heading of its level or above, a fenced heading among them', () => {
+  it('should keep the lines before any heading and leave out each Examples section to the next heading of its level or above, a fenced heading among them', () => {
     // Arrange
     const text = [
+      'Before any heading.',
       '### a · MUST',
       'A.',
       '#### Why',
@@ -455,6 +456,7 @@ describe('RuleBody.withoutExamples', () => {
     // Assert
     expect(stripped).toBe(
       [
+        'Before any heading.',
         '### a · MUST',
         'A.',
         '#### Why',

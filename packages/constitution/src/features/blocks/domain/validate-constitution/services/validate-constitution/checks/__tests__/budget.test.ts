@@ -25,22 +25,22 @@ describe('budgetCheck', () => {
   }>([
     {
       expected: [],
-      lines: 500,
+      lines: 1500,
     },
     {
       expected: [
         {
           code: BudgetCode.FileOverBudget,
           details: {
-            budget: 500,
-            lines: 501,
+            budget: 1500,
+            lines: 1501,
           },
           path: PRINCIPLES,
         },
       ],
-      lines: 501,
+      lines: 1501,
     },
-  ])('should hold a file to 500 lines when it has $lines', ({ expected, lines }) => {
+  ])('should hold a file to 1500 lines when it has $lines', ({ expected, lines }) => {
     // Arrange
     const files = validFiles();
 
