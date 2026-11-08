@@ -1,5 +1,5 @@
 import type { AccentScale, Output, OutputFlags, Theme } from '@droneey/design-cli';
-import { chooseOutput, createTheme, OutputMode } from '@droneey/design-cli';
+import { ColourLevel, chooseOutput, createTheme, OutputMode } from '@droneey/design-cli';
 
 import type { CommandIo, Renderer, Report, Task } from '#/shared/cli';
 
@@ -8,6 +8,8 @@ import type { Streams, TerminalRenderer } from './terminal-renderer';
 
 interface Presentation {
   readonly close: () => Promise<void>;
+  /** @throws {UsageError} when the options do not parse */
+  readonly isColoured: () => boolean;
   readonly renderer: Renderer;
   readonly theme: () => Theme;
 }
@@ -92,6 +94,8 @@ const createPresentation = (input: PresentationInput): Presentation => {
     close: async (): Promise<void> => {
       await (await terminal)?.close();
     },
+    /** @throws {UsageError} when the options do not parse */
+    isColoured: (): boolean => outputOf().colourLevel !== ColourLevel.None,
     renderer: {
       /** @throws {UsageError} when the options do not parse */
       print: async (report: Report): Promise<void> => {

@@ -78,6 +78,7 @@ const program = createProgram({
       formerFolder: `/tmp/droneey-constitution-${String(process.getuid?.() ?? 0)}`,
       owner: process.geteuid?.(),
     },
+    tools: process.env,
     ...(today === undefined
       ? {}
       : {

@@ -14,6 +14,7 @@ interface ProgramInput {
     readonly pluginRoot: string | undefined;
     readonly sessions: SessionsPlace;
     readonly today?: string;
+    readonly tools: Readonly<Record<string, string | undefined>>;
   };
   readonly fetch: (url: string, init: RequestInit) => Promise<Response>;
   readonly io: CommandIo;

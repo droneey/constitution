@@ -1,9 +1,14 @@
 import { spawn } from 'node:child_process';
+import { stripVTControlCharacters } from 'node:util';
 
 import type { CommandRunner } from '../../application/contracts';
 import type { CommandRan } from '../../domain/run-plan/entities';
 
-interface CommandOutputs {
+type Environment = Readonly<Record<string, string | undefined>>;
+
+interface ShellCommandRunnerInput {
+  readonly environment: Environment;
+  readonly isColoured: () => boolean;
   readonly stderr: NodeJS.WritableStream;
   readonly stdout: NodeJS.WritableStream;
 }
@@ -11,7 +16,36 @@ interface CommandOutputs {
 const SHELL = 'sh';
 const NO_CODE = 1;
 
-const createShellCommandRunner = (outputs: CommandOutputs): CommandRunner => ({
+// Why: a tool writing into a pipe prints no colour unless forced, and the tools disagree on the
+// variable: Biome reads CLICOLOR_FORCE alone, TypeScript and Bun FORCE_COLOR alone.
+const forcingVariables: readonly string[] = [
+  'CLICOLOR_FORCE',
+  'FORCE_COLOR',
+];
+const NO_COLOUR_VARIABLE = 'NO_COLOR';
+const colourVariables: ReadonlySet<string> = new Set([
+  ...forcingVariables,
+  NO_COLOUR_VARIABLE,
+]);
+const SET = '1';
+
+const environmentOf = (input: ShellCommandRunnerInput): Environment => {
+  const chosen = input.isColoured()
+    ? forcingVariables
+    : [
+        NO_COLOUR_VARIABLE,
+      ];
+
+  return Object.fromEntries([
+    ...Object.entries(input.environment).filter(([name]) => !colourVariables.has(name)),
+    ...chosen.map((name) => [
+      name,
+      SET,
+    ]),
+  ]);
+};
+
+const createShellCommandRunner = (input: ShellCommandRunnerInput): CommandRunner => ({
   run: ({ command, folderPath }) =>
     new Promise<CommandRan>((resolve) => {
       const chunks: Buffer[] = [];
@@ -23,6 +57,7 @@ const createShellCommandRunner = (outputs: CommandOutputs): CommandRunner => ({
         ],
         {
           cwd: folderPath,
+          env: environmentOf(input),
           // Stryker disable next-line ArrayDeclaration: the command reads the user's terminal, which no spec feeds, and its outputs are piped either way
           stdio: [
             'inherit',
@@ -39,8 +74,8 @@ const createShellCommandRunner = (outputs: CommandOutputs): CommandRunner => ({
           output.write(chunk);
         };
 
-      child.stdout.on('data', passTo(outputs.stdout));
-      child.stderr.on('data', passTo(outputs.stderr));
+      child.stdout.on('data', passTo(input.stdout));
+      child.stderr.on('data', passTo(input.stderr));
       child.once('error', () => {
         resolve({
           code: NO_CODE,
@@ -50,7 +85,7 @@ const createShellCommandRunner = (outputs: CommandOutputs): CommandRunner => ({
       child.once('close', (code: number | null) => {
         resolve({
           code: code ?? NO_CODE,
-          output: Buffer.concat(chunks).toString(),
+          output: stripVTControlCharacters(Buffer.concat(chunks).toString()),
         });
       });
     }),

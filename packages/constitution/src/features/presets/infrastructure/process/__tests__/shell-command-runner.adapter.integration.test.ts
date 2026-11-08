@@ -22,7 +22,20 @@ afterEach(() => {
   });
 });
 
-const outputsOf = (): Parameters<typeof createShellCommandRunner>[0] & {
+const SYSTEM_PATH = '/usr/bin:/bin';
+const ESCAPE = '\u001B';
+const pathOnly = Object.fromEntries([
+  [
+    'PATH',
+    SYSTEM_PATH,
+  ],
+]);
+
+const outputsOf = (
+  given: Partial<
+    Pick<Parameters<typeof createShellCommandRunner>[0], 'environment' | 'isColoured'>
+  > = {},
+): Parameters<typeof createShellCommandRunner>[0] & {
   readonly written: () => {
     readonly stderr: string;
     readonly stdout: string;
@@ -32,6 +45,8 @@ const outputsOf = (): Parameters<typeof createShellCommandRunner>[0] & {
   const stdout = new PassThrough();
 
   return {
+    environment: given.environment ?? pathOnly,
+    isColoured: given.isColoured ?? ((): boolean => false),
     stderr,
     stdout,
     written: () => ({
@@ -110,6 +125,72 @@ describe('createShellCommandRunner', () => {
     expect(ran).toStrictEqual({
       code: 1,
       output: '',
+    });
+  });
+
+  it.each([
+    {
+      condition: 'it prints in colour',
+      isColoured: true,
+      variables: '1 1 unset',
+    },
+    {
+      condition: 'it prints without colour',
+      isColoured: false,
+      variables: 'unset unset 1',
+    },
+  ])('should hand each command the colour choice of the program when $condition', async (given) => {
+    // Arrange
+    const outputs = outputsOf({
+      environment: Object.fromEntries([
+        [
+          'CLICOLOR_FORCE',
+          '0',
+        ],
+        [
+          'FORCE_COLOR',
+          '3',
+        ],
+        [
+          'NO_COLOR',
+          '',
+        ],
+        [
+          'PATH',
+          SYSTEM_PATH,
+        ],
+      ]),
+      isColoured: (): boolean => given.isColoured,
+    });
+
+    // Act
+    const ran = await createShellCommandRunner(outputs).run({
+      command:
+        'printf "%s %s %s" "${FORCE_COLOR-unset}" "${CLICOLOR_FORCE-unset}" "${NO_COLOR-unset}"',
+      folderPath: AbsolutePath.create(folder),
+    });
+
+    // Assert
+    expect(ran.output).toBe(given.variables);
+  });
+
+  it('should pass the colours a command prints on, and give its output without them', async () => {
+    // Arrange
+    const outputs = outputsOf();
+
+    // Act
+    const ran = await createShellCommandRunner(outputs).run({
+      command: `printf '${ESCAPE}[1;91mF401${ESCAPE}[0m'`,
+      folderPath: AbsolutePath.create(folder),
+    });
+
+    // Assert
+    expect({
+      output: ran.output,
+      written: outputs.written().stdout,
+    }).toStrictEqual({
+      output: 'F401',
+      written: `${ESCAPE}[1;91mF401${ESCAPE}[0m`,
     });
   });
 });

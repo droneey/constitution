@@ -92,8 +92,14 @@ const FOLDER_FILES = 10_000;
 const WORKSPACE_FOLDERS = 10_000;
 const WORKSPACE_GLOBS = 1000;
 
+interface PortsInput {
+  /** @throws {UsageError} when the options do not parse */
+  readonly isColoured: () => boolean;
+  readonly program: ProgramInput;
+}
+
 /** @throws {ConfigurationError} when the day is written otherwise than YYYY-MM-DD */
-const portsOf = (input: ProgramInput): Ports => {
+const portsOf = ({ isColoured, program: input }: PortsInput): Ports => {
   const files = createNodeProjectFiles({
     maxFiles: FOLDER_FILES,
   });
@@ -119,7 +125,12 @@ const portsOf = (input: ProgramInput): Ports => {
   return {
     activeRules: createActiveRulesSource(project),
     appliedFilesRepository: createFileAppliedFilesRepository(),
-    commands: createShellCommandRunner(input.streams),
+    commands: createShellCommandRunner({
+      environment: input.environment.tools,
+      isColoured,
+      stderr: input.streams.stderr,
+      stdout: input.streams.stdout,
+    }),
     distribution,
     files,
     formats,
@@ -429,7 +440,10 @@ const createProgram = (input: ProgramInput): Program => {
               isFailed = true;
             },
           },
-          ports: portsOf(input),
+          ports: portsOf({
+            isColoured: presentation.isColoured,
+            program: input,
+          }),
           program,
           programInput: input,
         });

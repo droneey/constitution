@@ -231,4 +231,47 @@ describe('createPresentation', () => {
       stdout: '',
     });
   });
+
+  it.each([
+    {
+      condition: 'it draws on a terminal',
+      flags: {},
+      isColoured: true,
+      isTerminal: true,
+    },
+    {
+      condition: 'it writes into a pipe',
+      flags: {},
+      isColoured: false,
+      isTerminal: false,
+    },
+    {
+      condition: 'it writes into a pipe and is asked for colour',
+      flags: {
+        colour: true,
+      },
+      isColoured: true,
+      isTerminal: false,
+    },
+    {
+      condition: 'it draws on a terminal and is asked for none',
+      flags: {
+        colour: false,
+      },
+      isColoured: false,
+      isTerminal: true,
+    },
+  ])('should say $isColoured of printing in colour when $condition', (given) => {
+    // Arrange
+    const { presentation } = presentationOf({
+      flags: given.flags,
+      isTerminal: given.isTerminal,
+    });
+
+    // Act
+    const isColoured = presentation.isColoured();
+
+    // Assert
+    expect(isColoured).toBe(given.isColoured);
+  });
 });
