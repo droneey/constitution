@@ -1,6 +1,7 @@
 import type { AbsolutePath } from '#/kernel/value-objects';
 
 import type { GateCause } from './gate-cause.entity';
+import type { ReadingCount } from './owed-reading.entity';
 
 enum GateVerdictKind {
   Allowed = 'allowed',
@@ -20,14 +21,14 @@ type GateVerdict =
     }
   | {
       readonly kind: GateVerdictKind.PassedUnread;
-      readonly unreadCount: number;
+      readonly unread: ReadingCount;
     }
   | {
       readonly changedByCommands: readonly AbsolutePath[];
       readonly kind: GateVerdictKind.Refused;
       readonly parts: readonly AbsolutePath[];
       readonly shouldIgnoreParts: boolean;
-      readonly unreadCount: number;
+      readonly unread: ReadingCount;
     };
 
 export type { GateVerdict };

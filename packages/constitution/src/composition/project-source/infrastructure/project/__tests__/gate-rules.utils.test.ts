@@ -52,37 +52,42 @@ describe('realPathOf', () => {
 });
 
 describe('rulesInOf', () => {
-  it('should give the rules a block file words, its code samples left out', () => {
+  it('should give the definitions of its vocabulary and the rules a block file words, its code samples left out of the rules', () => {
     // Arrange
     const files = createFakeProjectFiles({
       files: {
-        [chapterPath]: chapterText,
+        [chapterPath]: `---\nid: core\n---\n${chapterText}`,
       },
     });
 
     // Act
-    const rules = rulesInOf(files, AbsolutePath.create(chapterPath));
+    const chapter = rulesInOf(files, AbsolutePath.create(chapterPath));
 
     // Assert
-    expect(rules).toStrictEqual([
-      {
-        slug: RuleSlug.create('name-reveals-intent'),
-        statedLevel: Level.Must,
-        statement: 'A name says what the thing is for.',
-        why: 'a reader learns it from the name.',
-      },
-      {
-        slug: RuleSlug.create('name-reveals-more'),
-        statement: 'A name says more.',
-        tightens: RuleSlug.create('name-reveals-intent'),
-        why: 'more is clearer.',
-      },
-    ]);
+    expect(chapter).toStrictEqual({
+      definitions: [
+        'A **name** is what a thing is called.',
+      ],
+      wordings: [
+        {
+          slug: RuleSlug.create('name-reveals-intent'),
+          statedLevel: Level.Must,
+          statement: 'A name says what the thing is for.',
+          why: 'a reader learns it from the name.',
+        },
+        {
+          slug: RuleSlug.create('name-reveals-more'),
+          statement: 'A name says more.',
+          tightens: RuleSlug.create('name-reveals-intent'),
+          why: 'more is clearer.',
+        },
+      ],
+    });
   });
 
   it('should give no rules when the file cannot be read', () => {
     // Act
-    const rules = rulesInOf(
+    const chapter = rulesInOf(
       createFakeProjectFiles({
         files: {},
       }),
@@ -90,7 +95,7 @@ describe('rulesInOf', () => {
     );
 
     // Assert
-    expect(rules).toBeUndefined();
+    expect(chapter).toBeUndefined();
   });
 });
 

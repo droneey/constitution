@@ -48,6 +48,7 @@ const payPartRead = (
 
   input.gateRepository.addRulesRead({
     agent: input.agent,
+    definitions: input.part.definitions,
     rules: input.part.rules,
     session: input.session,
   });

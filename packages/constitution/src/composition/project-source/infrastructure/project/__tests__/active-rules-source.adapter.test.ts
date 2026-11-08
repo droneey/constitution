@@ -44,7 +44,7 @@ describe('createActiveRulesSource', () => {
     expect<string>(real).toBe(`${PROJECT}/src/new.ts`);
   });
 
-  it('should give the wording of the rules a block file holds', () => {
+  it('should give the definitions and the wording of the rules a block file holds', () => {
     // Arrange
     const source = sourceOf(
       projectTreeOf({
@@ -55,12 +55,20 @@ describe('createActiveRulesSource', () => {
     );
 
     // Act
-    const wordings = source.rulesIn(AbsolutePath.create(chapterPath));
+    const chapter = source.rulesIn(AbsolutePath.create(chapterPath));
 
     // Assert
-    expect(wordings?.map((wording) => wording.slug)).toStrictEqual([
-      RuleSlug.create('name-reveals-intent'),
-      RuleSlug.create('name-reveals-more'),
-    ]);
+    expect({
+      definitions: chapter?.definitions,
+      slugs: chapter?.wordings.map((wording) => wording.slug),
+    }).toStrictEqual({
+      definitions: [
+        'A **name** is what a thing is called.',
+      ],
+      slugs: [
+        RuleSlug.create('name-reveals-intent'),
+        RuleSlug.create('name-reveals-more'),
+      ],
+    });
   });
 });

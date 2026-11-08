@@ -1,10 +1,10 @@
+import { VOCABULARY_SECTION } from '#/kernel/constants';
 import type { TextsOf } from '#/shared/cli';
 
 import {
   GENERAL_SECTION,
   GOVERNS_LINE,
   REQUIREMENTS_SECTION,
-  VOCABULARY_SECTION,
 } from '../../domain/validate-constitution/constants';
 import type {
   AbstractBlocksDetails,

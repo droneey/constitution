@@ -7,8 +7,8 @@ import {
   DebtKind,
   GateCause,
   GateCauseKind,
-  GatedRule,
   GateVerdictKind,
+  OwedReading,
   TargetKind,
 } from '../../../../../domain/gate/entities';
 import { RuleSetHash } from '../../../../../domain/gate/value-objects';
@@ -43,7 +43,7 @@ interface VerdictInput extends GatePorts {
 
 interface UnreadProject {
   readonly folderPath: AbsolutePath;
-  readonly unread: readonly GatedRule[];
+  readonly unread: OwedReading;
 }
 
 const uniqueCausesOf = (causes: readonly GateCause[]): readonly GateCause[] => [
@@ -59,11 +59,16 @@ const debtRulesOf = (input: DebtRulesInput): readonly DebtRules[] =>
     }),
   }));
 
-const unreadIn = (project: ProjectRules | undefined, read: RulesRead): readonly GatedRule[] =>
-  (project?.rules ?? []).filter((rule) => !GatedRule.isRead(rule, read));
+const nothingOwed: OwedReading = {
+  definitions: [],
+  rules: [],
+};
+
+const unreadIn = (project: ProjectRules | undefined, read: RulesRead): OwedReading =>
+  OwedReading.unreadOf(project ?? nothingOwed, read);
 
 const isPaid = (debt: DebtRules, read: RulesRead): boolean =>
-  debt.owed.causes.length === 0 && unreadIn(debt.owed.project, read).length === 0;
+  debt.owed.causes.length === 0 && OwedReading.isEmpty(unreadIn(debt.owed.project, read));
 
 const closedOf = (
   input: GatePorts & {
@@ -104,7 +109,7 @@ const unreadProjectsOf = (input: {
       folderPath: project.folderPath,
       unread: unreadIn(project, input.read),
     }))
-    .filter((project) => project.unread.length > 0);
+    .filter((project) => !OwedReading.isEmpty(project.unread));
 
 const isSessionsFolderUnignored = (input: {
   projectFolderPath: AbsolutePath;
@@ -126,33 +131,34 @@ const refusedOf = (input: {
   parts: readonly AbsolutePath[];
   projectFolderPath: AbsolutePath;
   read: RulesRead;
-  unreadCount: number;
+  unread: OwedReading;
   workingTree: WorkingTree;
 }): GateVerdict => ({
   changedByCommands: input.debts
     .filter(
       (debt) =>
-        debt.debt.kind === DebtKind.Changed && unreadIn(debt.owed.project, input.read).length > 0,
+        debt.debt.kind === DebtKind.Changed &&
+        !OwedReading.isEmpty(unreadIn(debt.owed.project, input.read)),
     )
     .map((debt) => debt.debt.path),
   kind: GateVerdictKind.Refused,
   parts: input.parts,
   shouldIgnoreParts: isSessionsFolderUnignored(input),
-  unreadCount: input.unreadCount,
+  unread: OwedReading.countOf(input.unread),
 });
 
 const unreadVerdictOf = (
   input: VerdictInput & {
     projectFolderPath: AbsolutePath;
     read: RulesRead;
-    unread: readonly GatedRule[];
+    unread: OwedReading;
   },
 ): GateVerdict => {
   const { unread } = input;
-  const unreadText = GatedRule.hashedTextOfSet(unread);
+  const unreadText = OwedReading.hashedTextOf(unread);
   const parts = input.gateRepository.writeParts({
+    ...unread,
     projectFolderPath: input.projectFolderPath,
-    rules: unread,
     session: input.session,
     set: RuleSetHash.create(input.hasher.hashOf(unreadText)),
   });
@@ -177,14 +183,13 @@ const unreadVerdictOf = (
   ) {
     return {
       kind: GateVerdictKind.PassedUnread,
-      unreadCount: unread.length,
+      unread: OwedReading.countOf(unread),
     };
   }
 
   return refusedOf({
     ...input,
     parts,
-    unreadCount: unread.length,
   });
 };
 
@@ -219,12 +224,7 @@ const verdictOf = (input: VerdictInput): GateVerdict => {
     ...input,
     projectFolderPath: project.folderPath,
     read,
-    unread: [
-      ...firstBy(
-        projects.flatMap((each) => each.unread),
-        GatedRule.keyOf,
-      ).values(),
-    ],
+    unread: OwedReading.joinedOf(projects.map((each) => each.unread)),
   });
 };
 

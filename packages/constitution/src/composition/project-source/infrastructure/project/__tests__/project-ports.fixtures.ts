@@ -12,6 +12,12 @@ const chapterPath = `${releaseFolderPath}/blocks/core/foundation/names.md`;
 const chapterText = [
   '# Names',
   '',
+  '## Vocabulary',
+  '',
+  'A **name** is what a thing is called.',
+  '',
+  '## General',
+  '',
   '### name-reveals-intent · MUST',
   '',
   'A name says what the thing is for.',

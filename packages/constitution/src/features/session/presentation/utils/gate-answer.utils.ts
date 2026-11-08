@@ -1,30 +1,32 @@
 import type { AbsolutePath } from '#/kernel/value-objects';
 import { LIST_SEPARATOR } from '#/shared/cli';
 
-import type { GateCause, GateVerdict } from '../../domain/gate/entities';
+import type { GateCause, GateVerdict, ReadingCount } from '../../domain/gate/entities';
 import { GateCauseKind, GateVerdictKind } from '../../domain/gate/entities';
 import { HookEventName } from '../../domain/shared/entities';
 import { HOOK_EVENT_TEXTS } from '../constants';
 import { moreFilesText } from './bounded-list.messages';
 import { listWithin } from './bounded-list.utils';
 import { countedTextOf } from './counted-text.utils';
-import type { OwedInput } from './gate.messages';
+import type { OwedCount, OwedInput } from './gate.messages';
 import {
   causeLineMessage,
   changedByCommandsMessage,
   closedMessage,
-  governingRulesText,
+  governingMessage,
   moreCausesText,
   morePartsText,
   noReleaseCauseMessage,
   partLineMessage,
   passedClosedMessage,
-  passedUnreadText,
+  passedUnreadMessage,
   refusedMessage,
   turnHeldMessage,
   unignoredMessage,
   unparsedCauseMessage,
   unreadableCauseMessage,
+  unreadDefinitionsText,
+  unreadRulesText,
   unwritableCauseMessage,
 } from './gate.messages';
 import type { HookOutput } from './hook-output.utils';
@@ -56,12 +58,31 @@ const changedLinesOf = (changed: readonly AbsolutePath[]): readonly string[] =>
         ),
       ];
 
+const owedCountOf = (unread: ReadingCount): OwedCount => ({
+  isOne: unread.definitions + unread.rules === 1,
+  owed: [
+    ...(unread.rules === 0
+      ? []
+      : [
+          countedTextOf({
+            count: unread.rules,
+            text: unreadRulesText,
+          }),
+        ]),
+    ...(unread.definitions === 0
+      ? []
+      : [
+          countedTextOf({
+            count: unread.definitions,
+            text: unreadDefinitionsText,
+          }),
+        ]),
+  ].join(' and '),
+});
+
 const owedOf = (verdict: RefusedVerdict): OwedInput => ({
   changedLines: changedLinesOf(verdict.changedByCommands),
-  governingRules: countedTextOf({
-    count: verdict.unreadCount,
-    text: governingRulesText,
-  }),
+  governingRules: governingMessage(owedCountOf(verdict.unread)),
   partLines: listWithin({
     budget: capShareOf(CAP_SHARES_PERCENT.parts),
     lines: verdict.parts.map(partLineMessage),
@@ -111,10 +132,7 @@ const actionAnswerOf = (verdict: GateVerdict): HookOutput | undefined => {
       };
     case GateVerdictKind.PassedUnread:
       return {
-        systemMessage: countedTextOf({
-          count: verdict.unreadCount,
-          text: passedUnreadText,
-        }),
+        systemMessage: passedUnreadMessage(owedCountOf(verdict.unread)),
       };
     case GateVerdictKind.Refused:
       return {

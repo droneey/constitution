@@ -7,13 +7,14 @@ import { AbsolutePath } from '#/kernel/value-objects';
 import { isSystemError } from '#/libs/system-error';
 
 import type { GateRepository, RulesPart } from '../../application/contracts/repositories/commands';
-import type { GatedRule } from '../../domain/gate/entities';
+import type { OwedReading } from '../../domain/gate/entities';
 import { GateEntryKind } from '../../domain/gate/entities';
 import { SessionAgent } from '../../domain/session/entities';
 import type { SessionId } from '../../domain/session/value-objects';
 import type { ShellTree } from '../../domain/tree-state/entities';
 import {
   debtsOfLines,
+  definitionReadLineOf,
   entriesOfLines,
   LineMark,
   markLineOf,
@@ -75,10 +76,10 @@ const partsFolderOf = (input: { projectFolderPath: string; session: SessionId })
 
 const partFilesOf = (input: {
   partsFolder: string;
-  rules: readonly GatedRule[];
+  reading: OwedReading;
   set: string;
 }): readonly PartFile[] =>
-  partTextsOf(input.rules).map((text, index) => ({
+  partTextsOf(input.reading).map((text, index) => ({
     path: AbsolutePath.create(join(input.partsFolder, `${input.set}.${index + 1}.md`)),
     text,
   }));
@@ -185,7 +186,10 @@ const gateWritesOf = (
     addRulesRead: (added): void => {
       lines.append({
         ...added,
-        lines: added.rules.map(ruleReadLineOf),
+        lines: [
+          ...added.rules.map(ruleReadLineOf),
+          ...added.definitions.map(definitionReadLineOf),
+        ],
         name: RULES_READ_FILE_NAME,
       });
     },
@@ -281,7 +285,7 @@ const gatePartsOf = (
     const partsFolder = partsFolderOf(written);
     const parts = partFilesOf({
       partsFolder,
-      rules: written.rules,
+      reading: written,
       set: written.set,
     });
     const paths = parts.map((part) => part.path);

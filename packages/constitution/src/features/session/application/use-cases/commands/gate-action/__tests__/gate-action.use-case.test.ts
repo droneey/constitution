@@ -16,7 +16,12 @@ import {
 import { createFakeGateRepository } from '../../../../../__tests__/gate-command-repository.fake';
 import { keptSession } from '../../../../../__tests__/session.fixtures';
 import { createFakeWorkingTree } from '../../../../../__tests__/working-tree.fake';
-import type { GateTarget, GateVerdict, RuleDebt } from '../../../../../domain/gate/entities';
+import type {
+  GateTarget,
+  GateVerdict,
+  ReadingCount,
+  RuleDebt,
+} from '../../../../../domain/gate/entities';
 import {
   DebtKind,
   GateCauseKind,
@@ -101,13 +106,15 @@ const partsReadAfter = (input: {
   verdict: GateVerdict;
 }): void => {
   for (const path of input.verdict.kind === GateVerdictKind.Refused ? input.verdict.parts : []) {
+    const part = input.gateRepository.partOf({
+      path,
+      session: keptSession,
+    });
+
     input.gateRepository.addRulesRead({
       agent: input.agent ?? Agents.main,
-      rules:
-        input.gateRepository.partOf({
-          path,
-          session: keptSession,
-        })?.rules ?? [],
+      definitions: part?.definitions ?? [],
+      rules: part?.rules ?? [],
       session: keptSession,
     });
   }
@@ -144,8 +151,11 @@ const refusedThrice = (input: {
 
 const unreadOf = (verdict: GateVerdict): number | undefined =>
   verdict.kind === GateVerdictKind.Refused || verdict.kind === GateVerdictKind.PassedUnread
-    ? verdict.unreadCount
+    ? verdict.unread.rules
     : undefined;
+
+const unreadReadingOf = (verdict: GateVerdict): ReadingCount | undefined =>
+  verdict.kind === GateVerdictKind.Refused ? verdict.unread : undefined;
 
 const changedOf = (verdict: GateVerdict): readonly AbsolutePath[] | undefined =>
   verdict.kind === GateVerdictKind.Refused ? verdict.changedByCommands : undefined;
@@ -333,6 +343,115 @@ describe('gateAction', () => {
     expect(unreadOf(verdict)).toBe(1);
   });
 
+  it('should ask for nothing again when only the Why of a rule changed since it was read', () => {
+    // Arrange
+    const gateRepository = createFakeGateRepository();
+
+    readRulesOf({
+      gateRepository,
+      target: sourceFile,
+    });
+
+    // Act
+    const verdict = gateOf({
+      gateRepository,
+      source: createFakeActiveRulesSource({
+        files: {
+          ...defaultFiles,
+          [uiPassport]: [
+            {
+              ...wordingOf('four-data-states'),
+              why: 'A screen in no state leaves its user guessing.',
+            },
+          ],
+        },
+      }),
+    });
+
+    // Assert
+    expect(verdict).toStrictEqual({
+      kind: GateVerdictKind.Allowed,
+    });
+  });
+
+  it('should refuse an edit until the definitions of its chapters are read with their rules, then allow it', () => {
+    // Arrange
+    const gateRepository = createFakeGateRepository();
+    const source = createFakeActiveRulesSource({
+      vocabularies: {
+        [coreChapter]: [
+          'A **name** is what a thing is called.',
+        ],
+      },
+    });
+    const refused = gateOf({
+      gateRepository,
+      source,
+    });
+
+    partsReadAfter({
+      gateRepository,
+      verdict: refused,
+    });
+
+    // Act
+    const verdict = gateOf({
+      gateRepository,
+      source,
+    });
+
+    // Assert
+    expect({
+      refused: unreadReadingOf(refused),
+      verdict,
+    }).toStrictEqual({
+      refused: {
+        definitions: 1,
+        rules: 3,
+      },
+      verdict: {
+        kind: GateVerdictKind.Allowed,
+      },
+    });
+  });
+
+  it('should ask again for a definition rewritten since it was read, and for no rule', () => {
+    // Arrange
+    const gateRepository = createFakeGateRepository();
+
+    partsReadAfter({
+      gateRepository,
+      verdict: gateOf({
+        gateRepository,
+        source: createFakeActiveRulesSource({
+          vocabularies: {
+            [coreChapter]: [
+              'A **name** is what a thing is called.',
+            ],
+          },
+        }),
+      }),
+    });
+
+    // Act
+    const verdict = gateOf({
+      gateRepository,
+      source: createFakeActiveRulesSource({
+        vocabularies: {
+          [coreChapter]: [
+            'A **name** is the word a thing is called by.',
+          ],
+        },
+      }),
+    });
+
+    // Assert
+    expect(unreadReadingOf(verdict)).toStrictEqual({
+      definitions: 1,
+      rules: 0,
+    });
+  });
+
   it('should refuse the third time it refuses one set', () => {
     // Arrange
     const gateRepository = createFakeGateRepository();
@@ -370,7 +489,10 @@ describe('gateAction', () => {
     // Assert
     expect(verdict).toStrictEqual({
       kind: GateVerdictKind.PassedUnread,
-      unreadCount: 3,
+      unread: {
+        definitions: 0,
+        rules: 3,
+      },
     });
   });
 

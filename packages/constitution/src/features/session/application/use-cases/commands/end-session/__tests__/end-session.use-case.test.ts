@@ -17,6 +17,7 @@ describe('endSession', () => {
     const gateRepository = createFakeGateRepository();
 
     gateRepository.writeParts({
+      definitions: [],
       projectFolderPath: AbsolutePath.create('/work/project'),
       rules: [],
       session: keptSession,

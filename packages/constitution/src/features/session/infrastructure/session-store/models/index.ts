@@ -1,5 +1,6 @@
 export {
   debtsOfLines,
+  definitionReadLineOf,
   entriesOfLines,
   LineMark,
   markLineOf,

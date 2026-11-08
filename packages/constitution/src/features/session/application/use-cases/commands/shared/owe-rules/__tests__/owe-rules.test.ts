@@ -153,7 +153,7 @@ describe('rulesOwedBy', () => {
     expect(owed.project?.rules).toStrictEqual([
       {
         file: AbsolutePath.create(coreChapter),
-        hash: RuleHash.create('fa77ac89fc6eec28'),
+        hash: RuleHash.create('f5f2536495987a62'),
         level: Level.Should,
         lowered: {
           level: Level.May,
@@ -177,7 +177,7 @@ describe('rulesOwedBy', () => {
       condition: 'no override lowers it and it tightens no rule',
       expected: {
         file: AbsolutePath.create(coreChapter),
-        hash: RuleHash.create('b8c9a0f3073789e9'),
+        hash: RuleHash.create('607e61bb22833467'),
         level: Level.Must,
         slug,
         statement: 'A name says more.',
@@ -189,7 +189,7 @@ describe('rulesOwedBy', () => {
       condition: 'its unit lowers it directly',
       expected: {
         file: AbsolutePath.create(coreChapter),
-        hash: RuleHash.create('9b46a4a70b32b970'),
+        hash: RuleHash.create('b38c7cd80c2d9de8'),
         level: Level.Must,
         lowered: {
           level: Level.May,
@@ -211,7 +211,7 @@ describe('rulesOwedBy', () => {
       condition: 'another unit lowers it',
       expected: {
         file: AbsolutePath.create(coreChapter),
-        hash: RuleHash.create('b8c9a0f3073789e9'),
+        hash: RuleHash.create('607e61bb22833467'),
         level: Level.Must,
         slug,
         statement: 'A name says more.',
@@ -327,11 +327,46 @@ describe('rulesOwedBy', () => {
     // Assert
     expect({
       causes: owed.causes,
+      definitions: owed.project?.definitions,
       rules: owed.project?.rules,
     }).toStrictEqual({
       causes,
+      definitions: [],
       rules: [],
     });
+  });
+
+  it("should owe the definitions of each governing chapter's vocabulary, each hashed by its text", () => {
+    // Arrange
+    const source = createFakeActiveRulesSource({
+      vocabularies: {
+        [coreChapter]: [
+          'A **name** is what a thing is called.',
+        ],
+        [uiPassport]: [
+          'A **screen** is what a user sees at once.',
+        ],
+      },
+    });
+
+    // Act
+    const owed = oweOf({
+      source,
+    });
+
+    // Assert
+    expect(owed.project?.definitions).toStrictEqual([
+      {
+        file: AbsolutePath.create(coreChapter),
+        hash: RuleHash.create(testHasher.hashOf('A **name** is what a thing is called.')),
+        text: 'A **name** is what a thing is called.',
+      },
+      {
+        file: AbsolutePath.create(uiPassport),
+        hash: RuleHash.create(testHasher.hashOf('A **screen** is what a user sees at once.')),
+        text: 'A **screen** is what a user sees at once.',
+      },
+    ]);
   });
 
   it('should read the release of the main checkout when a worktree has none of its own', () => {
@@ -358,8 +393,8 @@ describe('rulesOwedBy', () => {
 
     // Assert
     expect(owed.project?.rules.map((rule) => rule.hash)).toStrictEqual([
-      RuleHash.create('ae5e35970b775168'),
-      RuleHash.create('8fecb23fc9a9dd01'),
+      RuleHash.create('17cea8d6389ae3a0'),
+      RuleHash.create('2be41a7176347e8f'),
     ]);
   });
 
@@ -444,6 +479,7 @@ describe('rulesOwedBy', () => {
     expect(owed).toStrictEqual({
       causes: [],
       project: {
+        definitions: [],
         folderPath: projectPlace.repositoryFolderPath,
         rules: [],
       },

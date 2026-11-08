@@ -4,7 +4,7 @@ import { Level } from '#/kernel/constants';
 import { AbsolutePath, RuleSlug } from '#/kernel/value-objects';
 
 import type { GateRepository, PartInput } from '../application/contracts/repositories/commands';
-import type { GatedRule, RuleDebt } from '../domain/gate/entities';
+import type { GatedDefinition, GatedRule, OwedReading, RuleDebt } from '../domain/gate/entities';
 import { DebtKind, GateEntryKind } from '../domain/gate/entities';
 import { RefusalKey, RuleHash, RuleSetHash } from '../domain/gate/value-objects';
 import type { SessionAgent } from '../domain/session/entities';
@@ -43,6 +43,17 @@ const rules = [
   namesRule,
   functionsRule,
 ];
+const definition: GatedDefinition = {
+  file: AbsolutePath.create('/work/blocks/core/foundation/names.md'),
+  hash: RuleHash.create('00000000000000aa'),
+  text: 'A **name** is what a thing is called.',
+};
+const reading: OwedReading = {
+  definitions: [
+    definition,
+  ],
+  rules,
+};
 
 const firstPartIn = (project: AbsolutePath): AbsolutePath =>
   AbsolutePath.create(
@@ -70,12 +81,15 @@ const tree = {
 
 const runGateRepositorySuite = (input: GateRepositorySuiteInput): void => {
   describe(`${input.name}: the gate repository contract`, () => {
-    it('should read back the rules an agent read', () => {
+    it('should read back the rules and the definitions an agent read', () => {
       // Arrange
       const gates = input.repositoryOf();
 
       gates.addRulesRead({
         agent: Agents.main,
+        definitions: [
+          definition.hash,
+        ],
         rules,
         session,
       });
@@ -87,8 +101,11 @@ const runGateRepositorySuite = (input: GateRepositorySuiteInput): void => {
       });
 
       // Assert
-      expect(known).toStrictEqual(
-        new Map([
+      expect(known).toStrictEqual({
+        definitions: new Set([
+          RuleHash.create('00000000000000aa'),
+        ]),
+        rules: new Map([
           [
             RuleSlug.create('name-reveals-intent'),
             new Set([
@@ -102,7 +119,7 @@ const runGateRepositorySuite = (input: GateRepositorySuiteInput): void => {
             ]),
           ],
         ]),
-      );
+      });
     });
 
     it.each<{
@@ -118,27 +135,30 @@ const runGateRepositorySuite = (input: GateRepositorySuiteInput): void => {
       {
         asked: agent,
         condition: 'another agent',
-        expected: 1,
+        expected: 2,
       },
     ])(
-      'should read $expected rules read, after the main context starts afresh, for $condition',
+      'should read $expected rules and definitions read, after the main context starts afresh, for $condition',
       ({ asked, expected }) => {
         // Arrange
         const gates = input.repositoryOf();
+        const marked = {
+          definitions: [
+            definition.hash,
+          ],
+          rules: [
+            namesRule,
+          ],
+          session,
+        };
 
         gates.addRulesRead({
+          ...marked,
           agent: Agents.main,
-          rules: [
-            namesRule,
-          ],
-          session,
         });
         gates.addRulesRead({
+          ...marked,
           agent,
-          rules: [
-            namesRule,
-          ],
-          session,
         });
         gates.resetReading({
           agent: Agents.main,
@@ -152,7 +172,7 @@ const runGateRepositorySuite = (input: GateRepositorySuiteInput): void => {
         });
 
         // Assert
-        expect(known.size).toBe(expected);
+        expect(known.definitions.size + known.rules.size).toBe(expected);
       },
     );
 
@@ -352,8 +372,8 @@ const runGateRepositorySuite = (input: GateRepositorySuiteInput): void => {
 
       // Act
       const parts = gates.writeParts({
+        ...reading,
         projectFolderPath: project,
-        rules,
         session,
         set,
       });
@@ -367,7 +387,12 @@ const runGateRepositorySuite = (input: GateRepositorySuiteInput): void => {
     it.each<{
       askedOf: (part: AbsolutePath) => PartInput;
       condition: string;
-      expected: readonly RuleSlug[] | undefined;
+      expected:
+        | {
+            readonly definitions: readonly RuleHash[];
+            readonly rules: readonly RuleSlug[];
+          }
+        | undefined;
     }>([
       {
         askedOf: (part) => ({
@@ -375,10 +400,15 @@ const runGateRepositorySuite = (input: GateRepositorySuiteInput): void => {
           session,
         }),
         condition: 'it wrote the part for the session',
-        expected: [
-          RuleSlug.create('name-reveals-intent'),
-          RuleSlug.create('function-does-one-thing'),
-        ],
+        expected: {
+          definitions: [
+            RuleHash.create('00000000000000aa'),
+          ],
+          rules: [
+            RuleSlug.create('name-reveals-intent'),
+            RuleSlug.create('function-does-one-thing'),
+          ],
+        },
       },
       {
         askedOf: () => ({
@@ -396,26 +426,40 @@ const runGateRepositorySuite = (input: GateRepositorySuiteInput): void => {
         condition: 'the part is of another session',
         expected: undefined,
       },
-    ])('should give back the rules of a part when $condition', ({ askedOf, expected }) => {
-      // Arrange
-      const gates = input.repositoryOf();
-      const project = input.projectOf();
+    ])(
+      'should give back the rules and the definitions of a part when $condition',
+      ({ askedOf, expected }) => {
+        // Arrange
+        const gates = input.repositoryOf();
+        const project = input.projectOf();
 
-      gates.writeParts({
-        projectFolderPath: project,
-        rules,
-        session,
-        set,
-      });
+        gates.writeParts({
+          ...reading,
+          projectFolderPath: project,
+          session,
+          set,
+        });
 
-      // Act
-      const found = gates.partOf(askedOf(firstPartIn(project)));
+        // Act
+        const found = gates.partOf(askedOf(firstPartIn(project)));
 
-      // Assert
-      expect<readonly RuleSlug[] | undefined>(found?.rules.map((rule) => rule.slug)).toStrictEqual(
-        expected,
-      );
-    });
+        // Assert
+        expect<
+          | {
+              readonly definitions: readonly RuleHash[];
+              readonly rules: readonly RuleSlug[];
+            }
+          | undefined
+        >(
+          found === undefined
+            ? undefined
+            : {
+                definitions: found.definitions,
+                rules: found.rules.map((rule) => rule.slug),
+              },
+        ).toStrictEqual(expected);
+      },
+    );
 
     it.each([
       {
@@ -437,8 +481,8 @@ const runGateRepositorySuite = (input: GateRepositorySuiteInput): void => {
       const project = input.projectOf();
 
       gates.writeParts({
+        ...reading,
         projectFolderPath: project,
-        rules,
         session,
         set,
       });
@@ -485,8 +529,8 @@ const runGateRepositorySuite = (input: GateRepositorySuiteInput): void => {
       // Arrange
       const gates = input.repositoryOf();
       const written = {
+        ...reading,
         projectFolderPath: input.projectOf(),
-        rules,
         session,
         set,
       };

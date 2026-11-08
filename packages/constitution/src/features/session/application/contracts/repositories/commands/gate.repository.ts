@@ -1,10 +1,10 @@
 import type { AbsolutePath } from '#/kernel/value-objects';
 
 import type {
-  GatedRule,
   GateEntry,
+  MarkedReading,
+  OwedReading,
   RuleDebt,
-  RuleRead,
   RulesRead,
 } from '../../../../domain/gate/entities';
 import type { RuleSetHash } from '../../../../domain/gate/value-objects';
@@ -20,13 +20,10 @@ interface AddGateEntryInput extends AgentInSession {
   readonly entry: GateEntry;
 }
 
-interface AddRulesReadInput extends AgentInSession {
-  readonly rules: readonly RuleRead[];
-}
+interface AddRulesReadInput extends AgentInSession, MarkedReading {}
 
-interface WritePartsInput {
+interface WritePartsInput extends OwedReading {
   readonly projectFolderPath: AbsolutePath;
-  readonly rules: readonly GatedRule[];
   readonly session: SessionId;
   readonly set: RuleSetHash;
 }
@@ -36,9 +33,8 @@ interface PartInput {
   readonly session: SessionId;
 }
 
-interface RulesPart {
+interface RulesPart extends MarkedReading {
   readonly lineCount: number;
-  readonly rules: readonly RuleRead[];
 }
 
 interface ShellTreeInput {

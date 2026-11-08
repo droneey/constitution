@@ -436,7 +436,10 @@ describe('createStopCommand', () => {
         parts: [
           AbsolutePath.create('/work/.droneey/constitution-sessions/s1/parts/abc.1.md'),
         ],
-        unreadCount: 2,
+        unread: {
+          definitions: 0,
+          rules: 2,
+        },
       },
     },
     {

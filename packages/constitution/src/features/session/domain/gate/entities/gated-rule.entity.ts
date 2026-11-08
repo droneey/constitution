@@ -28,7 +28,10 @@ interface RuleRead {
   readonly slug: RuleSlug;
 }
 
-type RulesRead = ReadonlyMap<RuleSlug, ReadonlySet<RuleHash>>;
+interface RulesRead {
+  readonly definitions: ReadonlySet<RuleHash>;
+  readonly rules: ReadonlyMap<RuleSlug, ReadonlySet<RuleHash>>;
+}
 
 interface GatedRuleInput {
   readonly file: AbsolutePath;
@@ -40,6 +43,7 @@ interface GatedRuleInput {
 const levelOf = (input: { declared: Level | undefined; wording: RuleWording }): Level =>
   input.declared ?? input.wording.statedLevel ?? unstatedLevel;
 
+// Why: a rule is given without its Why, so a Why rewritten alone asks for no reading again.
 const hashedTextOf = (rule: RuleText & RuleStanding): string =>
   JSON.stringify([
     rule.slug,
@@ -49,7 +53,6 @@ const hashedTextOf = (rule: RuleText & RuleStanding): string =>
     rule.lowered?.via ?? '',
     rule.lowered?.reason ?? '',
     rule.statement,
-    rule.why,
   ]);
 
 const create = (input: GatedRuleInput): GatedRule => {
@@ -76,17 +79,13 @@ const create = (input: GatedRuleInput): GatedRule => {
 const appliedLevelOf = (rule: GatedRule): Level => rule.lowered?.level ?? rule.level;
 
 const isRead = (rule: RuleRead, read: RulesRead): boolean =>
-  read.get(rule.slug)?.has(rule.hash) === true;
+  read.rules.get(rule.slug)?.has(rule.hash) === true;
 
 const keyOf = (rule: RuleRead): string => `${rule.slug} ${rule.hash}`;
-
-const hashedTextOfSet = (rules: readonly RuleRead[]): string =>
-  rules.map(keyOf).toSorted().join('\n');
 
 const GatedRule = {
   appliedLevelOf,
   create,
-  hashedTextOfSet,
   isRead,
   keyOf,
   levelOf,

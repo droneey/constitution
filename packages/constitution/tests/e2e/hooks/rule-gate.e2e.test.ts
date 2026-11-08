@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
@@ -11,7 +11,7 @@ import {
   runHook,
   runScript,
 } from '../hook.fixtures';
-import { createPluginRoot, removePluginRoots } from '../plugin-root.fixtures';
+import { createPluginRoot, distributionOf, removePluginRoots } from '../plugin-root.fixtures';
 import { configOf, createProject, removeProjects } from '../project.fixtures';
 
 let root = '';
@@ -19,13 +19,20 @@ let root = '';
 const SOURCE_FILE = 'src/orders/order-card.ts';
 
 const PART = /^- (\/\S+\.md)$/gmu;
+const GROUP = /^## (Vocabulary|MUST rules|SHOULD rules) of /u;
+const groupOrder = [
+  'Vocabulary',
+  'MUST rules',
+  'SHOULD rules',
+];
+const PRINCIPLES = 'blocks/core/foundation/principles.md';
 
 interface Started {
   readonly project: string;
   readonly session: string;
 }
 
-const startSession = (): Started => {
+const startSession = (pluginRoot = root): Started => {
   const project = createProject({
     config: configOf({
       domains: '[ui]',
@@ -40,7 +47,7 @@ const startSession = (): Started => {
   runHook({
     event: HookEvent.Startup,
     project,
-    root,
+    root: pluginRoot,
     session,
   });
 
@@ -50,10 +57,14 @@ const startSession = (): Started => {
   };
 };
 
-const hookOf = (script: string, event: Readonly<Record<string, unknown>>): unknown => {
+const hookOf = (
+  pluginRoot: string,
+  script: string,
+  event: Readonly<Record<string, unknown>>,
+): unknown => {
   const { stdout } = runScript({
     event,
-    root,
+    root: pluginRoot,
     script,
   });
 
@@ -95,8 +106,9 @@ const toolEventOf = (
     ],
   ]);
 
-const editOf = (started: Started): unknown =>
+const editOf = (started: Started, pluginRoot = root): unknown =>
   hookOf(
+    pluginRoot,
     'pre-tool-use',
     toolEventOf({
       ...started,
@@ -112,6 +124,7 @@ const readOf = (
   },
 ): unknown =>
   hookOf(
+    root,
     'post-tool-use',
     toolEventOf({
       ...input,
@@ -200,6 +213,58 @@ describe('the rule gate', () => {
 
     // Act
     const retried = editOf(started);
+
+    // Assert
+    expect(retried).toBeUndefined();
+  });
+
+  it('should open each part with the vocabularies, then give the statements MUST before SHOULD, with no Why', () => {
+    // Arrange
+    const started = startSession();
+
+    // Act
+    const texts = partsOf(editOf(started)).map((part) => readFileSync(part, 'utf8'));
+    const groups = texts.flatMap((text) =>
+      text.split('\n').flatMap((line) => GROUP.exec(line)?.[1] ?? []),
+    );
+
+    // Assert
+    expect({
+      groups: [
+        ...new Set(groups),
+      ],
+      holdsWhy: texts.some((text) => text.includes('Why:') || text.includes('| Why |')),
+      isOrdered: groups.every(
+        (group, index) =>
+          index === 0 || groupOrder.indexOf(group) >= groupOrder.indexOf(groups[index - 1] ?? ''),
+      ),
+    }).toStrictEqual({
+      groups: groupOrder,
+      holdsWhy: false,
+      isOrdered: true,
+    });
+  });
+
+  it('should ask for nothing again when only the Why of a rule read before changed', () => {
+    // Arrange
+    const pluginRoot = createPluginRoot();
+    const started = startSession(pluginRoot);
+    const principles = `${distributionOf(pluginRoot)}/${PRINCIPLES}`;
+
+    readAll({
+      ...started,
+      parts: partsOf(editOf(started, pluginRoot)),
+    });
+    writeFileSync(
+      principles,
+      readFileSync(principles, 'utf8').replace(
+        '| it keeps the fixture honest. |',
+        '| a fixture that drifts tests nothing. |',
+      ),
+    );
+
+    // Act
+    const retried = editOf(started, pluginRoot);
 
     // Assert
     expect(retried).toBeUndefined();

@@ -1,7 +1,8 @@
-import type { AbsolutePath } from '#/kernel/value-objects';
+import { LEVELS } from '#/kernel/constants';
 import { RuleSlug } from '#/kernel/value-objects';
 
 import type { RulesPart } from '../../application/contracts/repositories/commands';
+import type { GatedDefinition, OwedReading } from '../../domain/gate/entities';
 import { GatedRule } from '../../domain/gate/entities';
 import { RuleHash } from '../../domain/gate/value-objects';
 import { isPastPartBudget, PART_LINE_WIDTH } from './part-budget.utils';
@@ -10,10 +11,17 @@ import {
   loweredThroughMessage,
   partIntroMessage,
   partTitleMessage,
-  whyMessage,
+  rulesHeadingMessage,
+  vocabularyHeadingMessage,
 } from './rules-part.messages';
 
-const MARK = /^<!-- rule ([a-z0-9-]+) ([0-9a-f]+) -->$/u;
+interface PartEntry {
+  readonly heading: string;
+  readonly lines: readonly string[];
+}
+
+const RULE_MARK = /^<!-- rule ([a-z0-9-]+) ([0-9a-f]+) -->$/u;
+const DEFINITION_MARK = /^<!-- definition ([0-9a-f]+) -->$/u;
 
 const wrappedAtSpaces = (text: string): readonly string[] => {
   const lines: string[] = [];
@@ -34,6 +42,17 @@ const wrappedAtSpaces = (text: string): readonly string[] => {
   ];
 };
 
+// Why: a definition may hold a code sample, whose lines and indents stay as written unless a line
+// is too long for one Read.
+const definitionLinesOf = (text: string): readonly string[] =>
+  text.split('\n').flatMap((line) =>
+    line.length > PART_LINE_WIDTH
+      ? wrappedAtSpaces(line)
+      : [
+          line,
+        ],
+  );
+
 const headingOf = (rule: GatedRule): string =>
   `### ${rule.slug}${rule.tightens === undefined ? '' : ` → ${rule.tightens}`} · ${GatedRule.appliedLevelOf(rule)}`;
 
@@ -50,15 +69,40 @@ const loweredLines = ({ lowered }: GatedRule): readonly string[] =>
         '',
       ];
 
-const ruleLines = (rule: GatedRule): readonly string[] => [
-  `<!-- rule ${rule.slug} ${rule.hash} -->`,
-  headingOf(rule),
-  '',
-  ...loweredLines(rule),
-  ...wrappedAtSpaces(rule.statement),
-  '',
-  ...wrappedAtSpaces(whyMessage(rule.why)),
-  '',
+const definitionEntryOf = (definition: GatedDefinition): PartEntry => ({
+  heading: `## ${vocabularyHeadingMessage(definition.file)}`,
+  lines: [
+    `<!-- definition ${definition.hash} -->`,
+    ...definitionLinesOf(definition.text),
+    '',
+  ],
+});
+
+const ruleEntryOf = (rule: GatedRule): PartEntry => ({
+  heading: `## ${rulesHeadingMessage({
+    file: rule.file,
+    level: GatedRule.appliedLevelOf(rule),
+  })}`,
+  lines: [
+    `<!-- rule ${rule.slug} ${rule.hash} -->`,
+    headingOf(rule),
+    '',
+    ...loweredLines(rule),
+    ...wrappedAtSpaces(rule.statement),
+    '',
+  ],
+});
+
+const byLevel = (rules: readonly GatedRule[]): readonly GatedRule[] =>
+  rules.toSorted(
+    (first, second) =>
+      LEVELS.indexOf(GatedRule.appliedLevelOf(first)) -
+      LEVELS.indexOf(GatedRule.appliedLevelOf(second)),
+  );
+
+const entriesOf = (reading: OwedReading): readonly PartEntry[] => [
+  ...reading.definitions.map(definitionEntryOf),
+  ...byLevel(reading.rules).map(ruleEntryOf),
 ];
 
 const headLines = (input: { count: number; index: number }): readonly string[] => [
@@ -71,21 +115,18 @@ const headLines = (input: { count: number; index: number }): readonly string[] =
   '',
 ];
 
-const bodiesOf = (rules: readonly GatedRule[]): readonly (readonly string[])[] => {
+const bodiesOf = (entries: readonly PartEntry[]): readonly (readonly string[])[] => {
   const bodies: string[][] = [];
   let body: string[] = [];
-  let file: AbsolutePath | undefined;
+  let heading: string | undefined;
 
-  for (const rule of rules) {
-    const lines = [
-      ...(rule.file === file
-        ? []
-        : [
-            `## ${rule.file}`,
-            '',
-          ]),
-      ...ruleLines(rule),
+  for (const entry of entries) {
+    const opened = [
+      entry.heading,
+      '',
+      ...entry.lines,
     ];
+    const lines = entry.heading === heading ? entry.lines : opened;
 
     if (
       body.length > 0 &&
@@ -95,16 +136,12 @@ const bodiesOf = (rules: readonly GatedRule[]): readonly (readonly string[])[] =
       })
     ) {
       bodies.push(body);
-      body = [
-        `## ${rule.file}`,
-        '',
-        ...ruleLines(rule),
-      ];
+      body = opened;
     } else {
       body.push(...lines);
     }
 
-    file = rule.file;
+    heading = entry.heading;
   }
 
   return body.length === 0
@@ -115,8 +152,8 @@ const bodiesOf = (rules: readonly GatedRule[]): readonly (readonly string[])[] =
       ];
 };
 
-const partTextsOf = (rules: readonly GatedRule[]): readonly string[] => {
-  const bodies = bodiesOf(rules);
+const partTextsOf = (reading: OwedReading): readonly string[] => {
+  const bodies = bodiesOf(entriesOf(reading));
 
   return bodies.map((body, index) =>
     [
@@ -133,9 +170,18 @@ const partRulesOf = (text: string): RulesPart => {
   const lines = text.split('\n');
 
   return {
+    definitions: lines.flatMap((line) => {
+      const hash = DEFINITION_MARK.exec(line)?.[1];
+
+      return RuleHash.is(hash)
+        ? [
+            hash,
+          ]
+        : [];
+    }),
     lineCount: lines.length,
     rules: lines.flatMap((line) => {
-      const mark = MARK.exec(line);
+      const mark = RULE_MARK.exec(line);
       const slug = mark?.[1];
       const hash = mark?.[2];
 

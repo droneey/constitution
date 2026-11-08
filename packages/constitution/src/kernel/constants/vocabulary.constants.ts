@@ -92,6 +92,8 @@ const RULE_TABLE_CELLS = 1;
 const REQUIREMENTS_HEADING = '## Requirements';
 const REQUIREMENTS_TABLE_HEADER = '| Requirement | How | Met |';
 
+const VOCABULARY_SECTION = 'Vocabulary';
+
 export type { LoweredLevel };
 export {
   AXES,
@@ -113,4 +115,5 @@ export {
   RULE_TABLE_HEADER,
   reservedWords,
   SEAM_FOLDER_NAME,
+  VOCABULARY_SECTION,
 };

@@ -33,4 +33,5 @@ export {
   RULE_TABLE_HEADER,
   reservedWords,
   SEAM_FOLDER_NAME,
+  VOCABULARY_SECTION,
 } from './vocabulary.constants';

@@ -7,22 +7,29 @@ import { AbsolutePath, RepositoryRelativePath } from '#/kernel/value-objects';
 import type {
   GateCause,
   GateTarget,
+  OwedReading,
   RuleLowered,
   RuleStanding,
 } from '../../../../../domain/gate/entities';
 import {
   ActiveRules,
   GateCauseKind,
+  GatedDefinition,
   GatedRule,
   TargetKind,
 } from '../../../../../domain/gate/entities';
 import { ActiveBlocks } from '../../../../../domain/session/entities';
-import type { ActiveRead, ActiveRulesSource, TextHasher, WorkingTree } from '../../../../contracts';
+import type {
+  ActiveRead,
+  ActiveRulesSource,
+  ChapterRules,
+  TextHasher,
+  WorkingTree,
+} from '../../../../contracts';
 import { ActiveReadStatus } from '../../../../contracts';
 
-interface ProjectRules {
+interface ProjectRules extends OwedReading {
   readonly folderPath: AbsolutePath;
-  readonly rules: readonly GatedRule[];
 }
 
 interface TargetRules {
@@ -39,15 +46,14 @@ interface OweRulesInput {
   readonly workingTree: WorkingTree;
 }
 
-interface FoundRules {
+interface FoundRules extends OwedReading {
   readonly causes: readonly GateCause[];
-  readonly rules: readonly GatedRule[];
 }
 
 interface RuleReaders {
   readonly activeOf: (place: ProjectPlace) => ActiveRead;
+  readonly chapterOf: (file: AbsolutePath) => ChapterRules | undefined;
   readonly hasher: TextHasher;
-  readonly wordingsOf: (file: AbsolutePath) => readonly RuleWording[] | undefined;
 }
 
 // Stryker disable next-line StringLiteral: the repository's own folder lies in no member unit, and any path no member holds is given the same rules
@@ -175,6 +181,7 @@ const rulesOf = (input: {
           read,
         }),
       ],
+      definitions: [],
       rules: [],
     };
   }
@@ -184,6 +191,7 @@ const rulesOf = (input: {
   if (path === undefined) {
     return {
       causes: [],
+      definitions: [],
       rules: [],
     };
   }
@@ -194,13 +202,13 @@ const rulesOf = (input: {
     kind: input.target.kind,
     path,
   }).map((file) => ({
+    chapter: readers.chapterOf(file),
     file,
-    wordings: readers.wordingsOf(file),
   }));
 
   return {
-    causes: files.flatMap(({ file, wordings }): readonly GateCause[] =>
-      wordings === undefined
+    causes: files.flatMap(({ chapter, file }): readonly GateCause[] =>
+      chapter === undefined
         ? [
             {
               file,
@@ -209,8 +217,17 @@ const rulesOf = (input: {
           ]
         : [],
     ),
-    rules: files.flatMap(({ file, wordings }) =>
-      (wordings ?? []).map((wording) =>
+    definitions: files.flatMap(({ chapter, file }) =>
+      (chapter?.definitions ?? []).map((text) =>
+        GatedDefinition.create({
+          file,
+          hashOf: readers.hasher.hashOf,
+          text,
+        }),
+      ),
+    ),
+    rules: files.flatMap(({ chapter, file }) =>
+      (chapter?.wordings ?? []).map((wording) =>
         GatedRule.create({
           file,
           hashOf: readers.hasher.hashOf,
@@ -239,8 +256,8 @@ const rulesOwedBy = (input: OweRulesInput): RulesOwedFor => {
         }),
       (place) => place.repositoryFolderPath,
     ),
+    chapterOf: memoised((file: AbsolutePath) => source.rulesIn(file)),
     hasher: input.hasher,
-    wordingsOf: memoised((file: AbsolutePath) => source.rulesIn(file)),
   };
 
   return (target: GateTarget): TargetRules => {
@@ -256,7 +273,7 @@ const rulesOwedBy = (input: OweRulesInput): RulesOwedFor => {
       };
     }
 
-    const { causes, rules } = rulesOf({
+    const { causes, ...reading } = rulesOf({
       place,
       readers,
       realPath,
@@ -266,8 +283,8 @@ const rulesOwedBy = (input: OweRulesInput): RulesOwedFor => {
     return {
       causes,
       project: {
+        ...reading,
         folderPath: place.repositoryFolderPath,
-        rules,
       },
       realPath,
     };

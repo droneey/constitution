@@ -1,6 +1,7 @@
 export type {
   ActiveRead,
   ActiveRulesSource,
+  ChapterRules,
   DeclaredRules,
   RulesSource,
   TextHasher,

@@ -2,13 +2,13 @@ import { basename } from 'node:path';
 
 import type { ProjectPorts } from '#/features/project';
 import { isProjectError, readDeclaration, readRelease } from '#/features/project';
-import type { ActiveRead } from '#/features/session';
+import type { ActiveRead, ChapterRules } from '#/features/session';
 import { ActiveReadStatus } from '#/features/session';
 import { PATH_SEPARATOR } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
-import type { ProjectPlace, RuleWording } from '#/kernel/entities';
+import type { ProjectPlace } from '#/kernel/entities';
 import { ConfigReadStatus, FileReadStatus, ReleaseStatus, StatedRule } from '#/kernel/entities';
-import { splitFrontMatter, withoutCodeFences } from '#/kernel/utils';
+import { splitFrontMatter, vocabularyOf, withoutCodeFences } from '#/kernel/utils';
 import { AbsolutePath } from '#/kernel/value-objects';
 
 const realPathOf = (files: ProjectFiles, path: AbsolutePath): AbsolutePath => {
@@ -83,12 +83,19 @@ const readActiveOf = (project: ProjectPorts, place: ProjectPlace): ActiveRead =>
   }
 };
 
-const rulesInOf = (files: ProjectFiles, file: AbsolutePath): readonly RuleWording[] | undefined => {
+const rulesInOf = (files: ProjectFiles, file: AbsolutePath): ChapterRules | undefined => {
   const read = files.read(file);
 
-  return read.status === FileReadStatus.Read
-    ? StatedRule.wordingsOf(withoutCodeFences(splitFrontMatter(read.text).body))
-    : undefined;
+  if (read.status !== FileReadStatus.Read) {
+    return undefined;
+  }
+
+  const { body } = splitFrontMatter(read.text);
+
+  return {
+    definitions: vocabularyOf(body),
+    wordings: StatedRule.wordingsOf(withoutCodeFences(body)),
+  };
 };
 
 export { readActiveOf, realPathOf, rulesInOf };

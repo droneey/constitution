@@ -40,6 +40,7 @@ describe('resetReading', () => {
 
       gateRepository.addRulesRead({
         agent: SessionAgent.main,
+        definitions: [],
         rules: [
           {
             hash: RuleHash.create('0123456789abcdef'),
@@ -62,7 +63,7 @@ describe('resetReading', () => {
         gateRepository.rulesRead({
           agent: SessionAgent.main,
           session: keptSession,
-        }).size,
+        }).rules.size,
       ).toBe(read);
     },
   );

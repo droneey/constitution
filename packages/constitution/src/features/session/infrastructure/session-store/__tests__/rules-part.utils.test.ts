@@ -4,26 +4,47 @@ import { goldenFileText } from '#/__tests__/golden.fixtures';
 import { Level } from '#/kernel/constants';
 import { AbsolutePath, RuleSlug } from '#/kernel/value-objects';
 
-import type { GatedRule } from '../../../domain/gate/entities';
+import type { GatedDefinition, GatedRule, OwedReading } from '../../../domain/gate/entities';
 import { RuleHash } from '../../../domain/gate/value-objects';
-import { partIntroMessage, partTitleMessage, whyMessage } from '../rules-part.messages';
+import {
+  partIntroMessage,
+  partTitleMessage,
+  rulesHeadingMessage,
+  vocabularyHeadingMessage,
+} from '../rules-part.messages';
 import { partRulesOf, partTextsOf } from '../rules-part.utils';
 
-const NAMES_FILE = '/work/blocks/core/foundation/names.md';
-const FUNCTIONS_FILE = '/work/blocks/core/foundation/functions.md';
+const namesFile = AbsolutePath.create('/work/blocks/core/foundation/names.md');
+const functionsFile = AbsolutePath.create('/work/blocks/core/foundation/functions.md');
 
 const ruleOf = (
   input: Partial<GatedRule> & {
     index: number;
   },
 ): GatedRule => ({
-  file: AbsolutePath.create(NAMES_FILE),
+  file: namesFile,
   hash: RuleHash.create(input.index.toString(16).padStart(16, '0')),
   level: Level.Must,
   slug: RuleSlug.create(`rule-${input.index}`),
   statement: 'A name reveals intent.',
   why: 'Readers learn from names.',
   ...input,
+});
+
+const definitionOf = (
+  input: Partial<GatedDefinition> & {
+    index: number;
+  },
+): GatedDefinition => ({
+  file: namesFile,
+  hash: RuleHash.create(`a${input.index.toString(16).padStart(15, '0')}`),
+  text: 'A **name** is what a thing is called.',
+  ...input,
+});
+
+const rulesOnly = (rules: readonly GatedRule[]): OwedReading => ({
+  definitions: [],
+  rules,
 });
 
 const headOf = (input: { count: number; number: number }): readonly string[] => [
@@ -33,58 +54,78 @@ const headOf = (input: { count: number; number: number }): readonly string[] => 
   '',
 ];
 
+const mustHeading = `## ${rulesHeadingMessage({
+  file: namesFile,
+  level: Level.Must,
+})}`;
+
 const soleRulePartOf = (statementLines: readonly string[]): string =>
   [
     ...headOf({
       count: 1,
       number: 1,
     }),
-    `## ${NAMES_FILE}`,
+    mustHeading,
     '',
     '<!-- rule rule-1 0000000000000001 -->',
     '### rule-1 · MUST',
     '',
     ...statementLines,
     '',
-    whyMessage('Readers learn from names.'),
-    '',
   ].join('\n');
 
-const goldenRules: readonly GatedRule[] = [
-  ruleOf({
-    index: 1,
-  }),
-  ruleOf({
-    index: 2,
-    tightens: RuleSlug.create('rule-1'),
-  }),
-  ruleOf({
-    index: 3,
-    lowered: {
-      level: Level.May,
-      reason: 'generated names',
-    },
-  }),
-  ruleOf({
-    index: 4,
-    lowered: {
+const goldenReading: OwedReading = {
+  definitions: [
+    definitionOf({
+      index: 1,
+    }),
+    definitionOf({
+      index: 2,
+      text: 'The tree:\n```text\nsrc/\n  names/\n```',
+    }),
+    definitionOf({
+      file: functionsFile,
+      index: 3,
+      text: 'A **function** is code a caller runs by its name.',
+    }),
+  ],
+  rules: [
+    ruleOf({
+      index: 1,
       level: Level.Should,
-      reason: 'generated names',
-      via: RuleSlug.create('generated-code'),
-    },
-  }),
-  ruleOf({
-    file: AbsolutePath.create(FUNCTIONS_FILE),
-    index: 5,
-    statement: 'A function does one thing.',
-    why: 'One thing is read, named and tested at once.',
-  }),
-];
+    }),
+    ruleOf({
+      index: 2,
+      tightens: RuleSlug.create('rule-1'),
+    }),
+    ruleOf({
+      index: 3,
+      lowered: {
+        level: Level.May,
+        reason: 'generated names',
+      },
+    }),
+    ruleOf({
+      index: 4,
+      lowered: {
+        level: Level.Should,
+        reason: 'generated names',
+        via: RuleSlug.create('generated-code'),
+      },
+    }),
+    ruleOf({
+      file: functionsFile,
+      index: 5,
+      statement: 'A function does one thing.',
+      why: 'One thing is read, named and tested at once.',
+    }),
+  ],
+};
 
 describe('partTextsOf', () => {
-  it('should word and lay out a part, each rule under its file, at the level that binds here, as the golden file shows', async () => {
+  it('should give the vocabularies first, then the statements at the level that binds here, MUST first and with no Why, as the golden file shows', async () => {
     // Act
-    const [text = ''] = partTextsOf(goldenRules);
+    const [text = ''] = partTextsOf(goldenReading);
 
     // Assert
     expect(text).toBe(
@@ -113,15 +154,15 @@ describe('partTextsOf', () => {
     'should break a statement at its spaces into lines of at most 400 characters when $condition',
     ({ expected, statement }) => {
       // Arrange
-      const rules = [
+      const reading = rulesOnly([
         ruleOf({
           index: 1,
           statement,
         }),
-      ];
+      ]);
 
       // Act
-      const texts = partTextsOf(rules);
+      const texts = partTextsOf(reading);
 
       // Assert
       expect(texts).toStrictEqual([
@@ -130,9 +171,60 @@ describe('partTextsOf', () => {
     },
   );
 
-  it('should give no part when no rule is to be read', () => {
+  it.each([
+    {
+      condition: 'a line is as long as a line may be',
+      expected: [
+        `  ${'x'.repeat(398)}`,
+        '',
+      ],
+      text: `  ${'x'.repeat(398)}\n`,
+    },
+    {
+      condition: 'a line is longer than a line may be',
+      expected: [
+        `${'x'.repeat(200)} ${'y'.repeat(199)}`,
+        'z',
+      ],
+      text: `${'x'.repeat(200)} ${'y'.repeat(199)} z`,
+    },
+  ])(
+    'should keep the lines of a definition as written, and break only a line past 400 characters, when $condition',
+    ({ expected, text }) => {
+      // Arrange
+      const reading: OwedReading = {
+        definitions: [
+          definitionOf({
+            index: 1,
+            text,
+          }),
+        ],
+        rules: [],
+      };
+
+      // Act
+      const texts = partTextsOf(reading);
+
+      // Assert
+      expect(texts).toStrictEqual([
+        [
+          ...headOf({
+            count: 1,
+            number: 1,
+          }),
+          `## ${vocabularyHeadingMessage(namesFile)}`,
+          '',
+          '<!-- definition a000000000000001 -->',
+          ...expected,
+          '',
+        ].join('\n'),
+      ]);
+    },
+  );
+
+  it('should give no part when nothing is to be read', () => {
     // Act
-    const texts = partTextsOf([]);
+    const texts = partTextsOf(rulesOnly([]));
 
     // Assert
     expect(texts).toStrictEqual([]);
@@ -140,15 +232,15 @@ describe('partTextsOf', () => {
 
   it('should keep in one part a rule past the budget of a part on its own', () => {
     // Arrange
-    const rules = [
+    const reading = rulesOnly([
       ruleOf({
         index: 1,
         statement: 'x'.repeat(70_000),
       }),
-    ];
+    ]);
 
     // Act
-    const texts = partTextsOf(rules);
+    const texts = partTextsOf(reading);
 
     // Assert
     expect(texts).toStrictEqual([
@@ -158,9 +250,9 @@ describe('partTextsOf', () => {
     ]);
   });
 
-  it('should open the next part, numbered, with the heading of the file of the rule that no longer fits', () => {
+  it('should open the next part, numbered, with the heading of the rule that no longer fits', () => {
     // Arrange
-    const rules = [
+    const reading = rulesOnly([
       ruleOf({
         index: 1,
         statement: 'x'.repeat(70_000),
@@ -168,10 +260,10 @@ describe('partTextsOf', () => {
       ruleOf({
         index: 2,
       }),
-    ];
+    ]);
 
     // Act
-    const [, second] = partTextsOf(rules);
+    const [, second] = partTextsOf(reading);
 
     // Assert
     expect(second).toBe(
@@ -180,47 +272,61 @@ describe('partTextsOf', () => {
           count: 2,
           number: 2,
         }),
-        `## ${NAMES_FILE}`,
+        mustHeading,
         '',
         '<!-- rule rule-2 0000000000000002 -->',
         '### rule-2 · MUST',
         '',
         'A name reveals intent.',
         '',
-        whyMessage('Readers learn from names.'),
-        '',
       ].join('\n'),
     );
   });
 
-  it("should keep each rule's mark in order, none lost or repeated, when rules past one Read are split into parts", () => {
+  it("should keep each rule's and each definition's mark in order, none lost or repeated, when they are split into parts past one Read", () => {
     // Arrange
-    const rules = Array.from(
-      {
-        length: 400,
-      },
-      (_, index) =>
-        ruleOf({
-          index: index + 1,
-          statement: 'word '.repeat(60).trim(),
-        }),
-    );
+    const reading: OwedReading = {
+      definitions: Array.from(
+        {
+          length: 300,
+        },
+        (_, index) =>
+          definitionOf({
+            index: index + 1,
+            text: 'word '.repeat(60).trim(),
+          }),
+      ),
+      rules: Array.from(
+        {
+          length: 400,
+        },
+        (_, index) =>
+          ruleOf({
+            index: index + 1,
+            statement: 'word '.repeat(60).trim(),
+          }),
+      ),
+    };
 
     // Act
-    const texts = partTextsOf(rules);
+    const parts = partTextsOf(reading).map(partRulesOf);
 
     // Assert
-    expect(texts.flatMap((text) => partRulesOf(text).rules)).toStrictEqual(
-      rules.map((rule) => ({
+    expect({
+      definitions: parts.flatMap((part) => part.definitions),
+      rules: parts.flatMap((part) => part.rules),
+    }).toStrictEqual({
+      definitions: reading.definitions.map((definition) => definition.hash),
+      rules: reading.rules.map((rule) => ({
         hash: rule.hash,
         slug: rule.slug,
       })),
-    );
+    });
   });
 });
 
 describe('partRulesOf', () => {
-  it('should read the rules a part marks, and leave out a mark of another form or one inside a line', () => {
+  it('should read the rules and the definitions a part marks, and leave out a mark of another form or one inside a line', () => {
     // Arrange
     const text = [
       '<!-- rule rule-1 0000000000000001 -->',
@@ -230,6 +336,11 @@ describe('partRulesOf', () => {
       '<!-- rule -rule-5- 0000000000000005 -->',
       'x<!-- rule rule-6 0000000000000006 -->',
       '<!-- rule rule-7 0000000000000007 -->x',
+      '<!-- definition 00000000000000a1 -->',
+      '<!-- definition xyz -->',
+      '<!-- definition abc -->',
+      'x<!-- definition 00000000000000a2 -->',
+      '<!-- definition 00000000000000a3 -->x',
       'text',
     ].join('\n');
 
@@ -238,7 +349,10 @@ describe('partRulesOf', () => {
 
     // Assert
     expect(part).toStrictEqual({
-      lineCount: 8,
+      definitions: [
+        RuleHash.create('00000000000000a1'),
+      ],
+      lineCount: 13,
       rules: [
         {
           hash: RuleHash.create('0000000000000001'),

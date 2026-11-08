@@ -117,6 +117,7 @@ const inodesOf = (paths: readonly string[]): readonly number[] =>
 
 const writePartsOfManyRules = (sessions: XdgSessions): readonly AbsolutePath[] =>
   sessions.writeParts({
+    definitions: [],
     projectFolderPath: AbsolutePath.create(join(folder, 'project')),
     rules: rulesOfParts,
     session: keptSession,
@@ -970,6 +971,7 @@ describe("createXdgSessionRepository: the gate's files", () => {
 
     // Act
     const parts = sessions.writeParts({
+      definitions: [],
       projectFolderPath: AbsolutePath.create(join(folder, 'project-file')),
       rules: [
         gatedRuleOf(1),
@@ -1103,6 +1105,7 @@ describe("createXdgSessionRepository: the gate's files", () => {
       add: (sessions: XdgSessions): void => {
         sessions.addRulesRead({
           agent: keptAgent,
+          definitions: [],
           rules: [
             gatedRuleOf(1),
           ],
@@ -1214,11 +1217,16 @@ describe("createXdgSessionRepository: the gate's files", () => {
       read: (sessions) => sessions.reviewDebt(keptSession),
     },
     {
-      expected: new Map(),
+      expected: {
+        definitions: new Set(),
+        rules: new Map(),
+      },
       lines: [
         '{"hash":"0123456789abcdef","slug":"Bad_Slug"}',
         '{"hash":"xyz","slug":"rule-1"}',
         'rule-1 0123456789abcdef',
+        '{"definition":"xyz"}',
+        '{"definition":"0123456789abcdef","slug":"rule-1"}',
       ],
       list: 'the rules read',
       name: 'rules.agent-7',
@@ -1278,6 +1286,7 @@ describe("createXdgSessionRepository: the gate's files", () => {
     {
       condition: 'it names a part numbered past nine',
       expected: {
+        definitions: [],
         lineCount: 2,
         rules: [
           {
@@ -1607,6 +1616,7 @@ const partsWrittenIn = (input: {
   sessions: XdgSessions;
 }): void => {
   input.sessions.writeParts({
+    definitions: [],
     projectFolderPath: AbsolutePath.create(projectFolder(input.project)),
     rules: [
       gatedRuleOf(1),

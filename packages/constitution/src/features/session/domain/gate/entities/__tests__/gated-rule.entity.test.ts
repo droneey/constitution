@@ -4,7 +4,6 @@ import { Level } from '#/kernel/constants';
 import { AbsolutePath, RuleSlug } from '#/kernel/value-objects';
 
 import { RuleHash } from '../../value-objects';
-import type { RuleRead } from '../gated-rule.entity';
 import { GatedRule } from '../gated-rule.entity';
 
 const base = {
@@ -54,7 +53,6 @@ describe('GatedRule.create', () => {
         '',
         '',
         'A name reveals intent.',
-        'Readers.',
       ],
       standing: {
         level: Level.Must,
@@ -87,7 +85,6 @@ describe('GatedRule.create', () => {
         'name-from-the-glossary',
         'generated code',
         'A name reveals intent.',
-        'Readers.',
       ],
       standing: {
         level: Level.Must,
@@ -105,7 +102,7 @@ describe('GatedRule.create', () => {
       },
     },
   ] as const)(
-    'should give the rule, hashed from every field in its place, when $condition',
+    'should give the rule, hashed from every field in its place but its Why, when $condition',
     ({ expected, fields, standing, wording }) => {
       // Arrange
       const texts: string[] = [];
@@ -230,34 +227,14 @@ describe('GatedRule.isRead', () => {
     },
   ])('should say $isRead when $condition', ({ isRead, read }) => {
     // Act
-    const answer = GatedRule.isRead(ruleOf(), read);
+    const answer = GatedRule.isRead(ruleOf(), {
+      definitions: new Set([
+        hash,
+      ]),
+      rules: read,
+    });
 
     // Assert
     expect(answer).toBe(isRead);
-  });
-});
-
-describe('GatedRule.hashedTextOfSet', () => {
-  it('should give one line of slug and hash per rule, in sorted order', () => {
-    // Arrange
-    const rules: readonly RuleRead[] = [
-      {
-        hash,
-        slug: base.slug,
-      },
-      {
-        hash: RuleHash.create('fedcba9876543210'),
-        slug: RuleSlug.create('function-does-one-thing'),
-      },
-    ];
-
-    // Act
-    const text = GatedRule.hashedTextOfSet(rules);
-
-    // Assert
-    expect(text.split('\n')).toStrictEqual([
-      'function-does-one-thing fedcba9876543210',
-      'name-reveals-intent 0123456789abcdef',
-    ]);
   });
 });

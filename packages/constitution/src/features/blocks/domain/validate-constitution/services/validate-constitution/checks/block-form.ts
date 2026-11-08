@@ -1,16 +1,11 @@
-import { BlockFormat, Layer } from '#/kernel/constants';
+import { BlockFormat, Layer, VOCABULARY_SECTION } from '#/kernel/constants';
 import type { Rule } from '#/kernel/entities';
 import type { FindingOf, ProblemOf } from '#/kernel/types';
 import { maskInlineCode, withoutCodeFences } from '#/kernel/utils';
 import type { RuleSlug } from '#/kernel/value-objects';
 
 import type { Block, BlockFile } from '../../../../block/entities';
-import {
-  GENERAL_SECTION,
-  GOVERNS_LINE,
-  REQUIREMENTS_SECTION,
-  VOCABULARY_SECTION,
-} from '../../../constants';
+import { GENERAL_SECTION, GOVERNS_LINE, REQUIREMENTS_SECTION } from '../../../constants';
 import { findingsAt } from '../../../utils';
 import type { Check, CheckInput } from '../check.types';
 

@@ -1,31 +1,44 @@
 # The rules to read, part 1 of 1
 
-Each rule is given at the level that binds where you work, with its Why. Read the whole file.
+Each chapter's vocabulary comes first, then each rule's statement at the level that binds where you work, MUST before SHOULD. A rule's Why stays in the chapter its heading names. Read the whole file.
 
-## /work/blocks/core/foundation/names.md
+## Vocabulary of /work/blocks/core/foundation/names.md
 
-<!-- rule rule-1 0000000000000001 -->
-### rule-1 · MUST
+<!-- definition a000000000000001 -->
+A **name** is what a thing is called.
 
-A name reveals intent.
+<!-- definition a000000000000002 -->
+The tree:
+```text
+src/
+  names/
+```
 
-Why: Readers learn from names.
+## Vocabulary of /work/blocks/core/foundation/functions.md
+
+<!-- definition a000000000000003 -->
+A **function** is code a caller runs by its name.
+
+## MUST rules of /work/blocks/core/foundation/names.md
 
 <!-- rule rule-2 0000000000000002 -->
 ### rule-2 → rule-1 · MUST
 
 A name reveals intent.
 
-Why: Readers learn from names.
+## MUST rules of /work/blocks/core/foundation/functions.md
 
-<!-- rule rule-3 0000000000000003 -->
-### rule-3 · MAY
+<!-- rule rule-5 0000000000000005 -->
+### rule-5 · MUST
 
-Lowered here to MAY: generated names
+A function does one thing.
+
+## SHOULD rules of /work/blocks/core/foundation/names.md
+
+<!-- rule rule-1 0000000000000001 -->
+### rule-1 · SHOULD
 
 A name reveals intent.
-
-Why: Readers learn from names.
 
 <!-- rule rule-4 0000000000000004 -->
 ### rule-4 · SHOULD
@@ -34,13 +47,11 @@ Lowered here to SHOULD through generated-code: generated names
 
 A name reveals intent.
 
-Why: Readers learn from names.
+## MAY rules of /work/blocks/core/foundation/names.md
 
-## /work/blocks/core/foundation/functions.md
+<!-- rule rule-3 0000000000000003 -->
+### rule-3 · MAY
 
-<!-- rule rule-5 0000000000000005 -->
-### rule-5 · MUST
+Lowered here to MAY: generated names
 
-A function does one thing.
-
-Why: One thing is read, named and tested at once.
+A name reveals intent.

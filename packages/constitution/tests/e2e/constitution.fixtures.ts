@@ -53,12 +53,18 @@ const rule = (input: RuleFixture): string =>
     '',
   ].join('\n');
 
+const vocabularyOf = (definitions: readonly string[] | undefined): string =>
+  definitions === undefined
+    ? ''
+    : `## Vocabulary\n\n${definitions.map((definition) => `${definition}\n\n`).join('')}## General\n\n`;
+
 const section = (input: {
   governs?: string;
   rules: readonly RuleFixture[];
   title: string;
+  vocabulary?: readonly string[];
 }): string =>
-  `# ${input.title}\n\n${input.governs === undefined ? '' : `> Governs ${input.governs}\n\n`}${input.rules.map(rule).join('\n')}`;
+  `# ${input.title}\n\n${input.governs === undefined ? '' : `> Governs ${input.governs}\n\n`}${vocabularyOf(input.vocabulary)}${input.rules.map(rule).join('\n')}`;
 
 const inAxis = (path: string): string =>
   AXES.some((axis) => path.startsWith(`${axis}/`)) ? path : `${Axis.Foundation}/${path}`;
@@ -121,6 +127,9 @@ const coreFiles = (): Files =>
           },
         ],
         title: 'Principles',
+        vocabulary: [
+          'A **name** is what a thing is called by.',
+        ],
       }),
       'code.md': section({
         governs: 'any code no other chapter governs.',

@@ -8,7 +8,7 @@ import { notingGateWritesOf, StoreWrite } from '../../../../../__tests__/gate.fi
 import { createFakeGateRepository } from '../../../../../__tests__/gate-command-repository.fake';
 import { keptSession } from '../../../../../__tests__/session.fixtures';
 import { createFakeWorkingTree } from '../../../../../__tests__/working-tree.fake';
-import type { RuleDebt } from '../../../../../domain/gate/entities';
+import type { GatedDefinition, RuleDebt } from '../../../../../domain/gate/entities';
 import { DebtKind } from '../../../../../domain/gate/entities';
 import { RuleHash, RuleSetHash } from '../../../../../domain/gate/value-objects';
 import type { AgentInSession } from '../../../../../domain/session/entities';
@@ -19,6 +19,11 @@ import { recordRead } from '../record-read.use-case';
 const rule = {
   hash: RuleHash.create('0123456789abcdef'),
   slug: RuleSlug.create('name-reveals-intent'),
+};
+const definition: GatedDefinition = {
+  file: AbsolutePath.create('/work/project/names.md'),
+  hash: RuleHash.create('00000000000000aa'),
+  text: 'A **name** is what a thing is called.',
 };
 
 const readDebt: RuleDebt = {
@@ -42,6 +47,9 @@ const storeOf = () => {
   const store = createFakeGateRepository();
 
   store.writeParts({
+    definitions: [
+      definition,
+    ],
     projectFolderPath: AbsolutePath.create('/work/project'),
     rules: [
       {
@@ -107,30 +115,38 @@ describe('recordRead', () => {
     {
       condition: 'it starts at line 1 and reaches the last',
       range: {
-        limit: 8,
+        limit: 16,
         offset: 1,
       },
     },
-  ])('should record the rules of a part read whole when $condition', ({ range }) => {
-    // Act
-    const recorded = recordOf({
-      path: part,
-      range,
-    });
+  ])(
+    'should record the rules and the definitions of a part read whole when $condition',
+    ({ range }) => {
+      // Act
+      const recorded = recordOf({
+        path: part,
+        range,
+      });
 
-    // Assert
-    expect(recorded).toStrictEqual({
-      debts: [],
-      read: new Map([
-        [
-          rule.slug,
-          new Set([
-            rule.hash,
+      // Assert
+      expect(recorded).toStrictEqual({
+        debts: [],
+        read: {
+          definitions: new Set([
+            definition.hash,
           ]),
-        ],
-      ]),
-    });
-  });
+          rules: new Map([
+            [
+              rule.slug,
+              new Set([
+                rule.hash,
+              ]),
+            ],
+          ]),
+        },
+      });
+    },
+  );
 
   it.each<{
     condition: string;
@@ -145,7 +161,7 @@ describe('recordRead', () => {
     {
       condition: 'it stops before the last line',
       range: {
-        limit: 7,
+        limit: 15,
       },
     },
   ])('should record nothing of a part when $condition', ({ range }) => {
@@ -158,7 +174,10 @@ describe('recordRead', () => {
     // Assert
     expect(recorded).toStrictEqual({
       debts: [],
-      read: new Map(),
+      read: {
+        definitions: new Set(),
+        rules: new Map(),
+      },
     });
   });
 

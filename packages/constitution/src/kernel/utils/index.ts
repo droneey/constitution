@@ -1,4 +1,4 @@
-export { withoutCodeFences } from './code-fences.utils';
+export { fencedLinesOf, withoutCodeFences } from './code-fences.utils';
 export { compareText } from './compare-text.utils';
 export { dayOf } from './days.utils';
 export {
@@ -26,3 +26,4 @@ export {
   WordKind,
   wordMatcher,
 } from './tokens.utils';
+export { vocabularyOf } from './vocabulary.utils';

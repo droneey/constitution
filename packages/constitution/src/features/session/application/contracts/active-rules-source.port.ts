@@ -27,12 +27,17 @@ type ActiveRead =
       readonly status: ActiveReadStatus.Failed;
     };
 
+interface ChapterRules {
+  readonly definitions: readonly string[];
+  readonly wordings: readonly RuleWording[];
+}
+
 interface ActiveRulesSource {
   readonly findProjectAround: (searchFrom: AbsolutePath) => ProjectPlace | undefined;
   readonly readActive: (place: ProjectPlace) => ActiveRead;
   readonly realPathOf: (path: AbsolutePath) => AbsolutePath;
-  readonly rulesIn: (file: AbsolutePath) => readonly RuleWording[] | undefined;
+  readonly rulesIn: (file: AbsolutePath) => ChapterRules | undefined;
 }
 
-export type { ActiveRead, ActiveRulesSource };
+export type { ActiveRead, ActiveRulesSource, ChapterRules };
 export { ActiveReadStatus };

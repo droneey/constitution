@@ -3,20 +3,18 @@ import { describe, expect, it } from 'bun:test';
 import { AbsolutePath } from '#/kernel/value-objects';
 import { LIST_SEPARATOR } from '#/shared/cli';
 
-import type { GateCause, GateVerdict } from '../../../domain/gate/entities';
+import type { GateCause, GateVerdict, ReadingCount } from '../../../domain/gate/entities';
 import { GateCauseKind, GateVerdictKind } from '../../../domain/gate/entities';
 import { moreFilesText } from '../bounded-list.messages';
 import {
   causeLineMessage,
   changedByCommandsMessage,
   closedMessage,
-  governingRulesText,
   moreCausesText,
   morePartsText,
   noReleaseCauseMessage,
   partLineMessage,
   passedClosedMessage,
-  passedUnreadText,
   refusedMessage,
   turnHeldMessage,
   unignoredMessage,
@@ -75,7 +73,7 @@ const refusedOf = (input: {
   shouldIgnoreParts: boolean;
   changedByCommands: readonly AbsolutePath[];
   parts?: readonly AbsolutePath[];
-  unreadCount?: number;
+  unread?: ReadingCount;
 }): Extract<
   GateVerdict,
   {
@@ -88,7 +86,10 @@ const refusedOf = (input: {
   parts: input.parts ?? [
     part,
   ],
-  unreadCount: input.unreadCount ?? 3,
+  unread: input.unread ?? {
+    definitions: 0,
+    rules: 3,
+  },
 });
 
 const causes: readonly GateCause[] = [
@@ -138,7 +139,7 @@ const causeLines = [
 const closedReason = closedMessage(causeLines);
 
 const owedOne = {
-  governingRules: governingRulesText.many(3),
+  governingRules: '3 rules that govern',
   partLines: [
     partLineMessage(part),
   ],
@@ -229,7 +230,7 @@ describe('actionAnswerOf', () => {
       answer: denialOf(
         refusedMessage({
           changedLines: [],
-          governingRules: governingRulesText.one,
+          governingRules: '1 rule that governs',
           partLines: [
             partLineMessage(part),
           ],
@@ -239,7 +240,50 @@ describe('actionAnswerOf', () => {
       verdict: refusedOf({
         shouldIgnoreParts: false,
         changedByCommands: [],
-        unreadCount: 1,
+        unread: {
+          definitions: 0,
+          rules: 1,
+        },
+      }),
+    },
+    {
+      answer: denialOf(
+        refusedMessage({
+          changedLines: [],
+          governingRules: '1 definition that governs',
+          partLines: [
+            partLineMessage(part),
+          ],
+        }),
+      ),
+      condition: 'one definition is unread',
+      verdict: refusedOf({
+        shouldIgnoreParts: false,
+        changedByCommands: [],
+        unread: {
+          definitions: 1,
+          rules: 0,
+        },
+      }),
+    },
+    {
+      answer: denialOf(
+        refusedMessage({
+          changedLines: [],
+          governingRules: '1 rule and 2 definitions that govern',
+          partLines: [
+            partLineMessage(part),
+          ],
+        }),
+      ),
+      condition: 'rules and definitions are unread',
+      verdict: refusedOf({
+        shouldIgnoreParts: false,
+        changedByCommands: [],
+        unread: {
+          definitions: 2,
+          rules: 1,
+        },
       }),
     },
     {
@@ -249,22 +293,30 @@ describe('actionAnswerOf', () => {
     },
     {
       answer: {
-        systemMessage: passedUnreadText.many(2),
+        systemMessage:
+          'The rule gate let this through after three refusals; 2 rules and 1 definition it asked for are still unread.',
       },
-      condition: 'the gate passes after three refusals of unread rules',
+      condition: 'the gate passes after three refusals of unread rules and definitions',
       verdict: {
         kind: GateVerdictKind.PassedUnread,
-        unreadCount: 2,
+        unread: {
+          definitions: 1,
+          rules: 2,
+        },
       },
     },
     {
       answer: {
-        systemMessage: passedUnreadText.one,
+        systemMessage:
+          'The rule gate let this through after three refusals; 1 rule it asked for is still unread.',
       },
       condition: 'the gate passes after three refusals of one unread rule',
       verdict: {
         kind: GateVerdictKind.PassedUnread,
-        unreadCount: 1,
+        unread: {
+          definitions: 0,
+          rules: 1,
+        },
       },
     },
     {
@@ -357,7 +409,10 @@ describe('actionAnswerOf', () => {
       verdict: refusedOf({
         shouldIgnoreParts: false,
         changedByCommands: [],
-        unreadCount: 17,
+        unread: {
+          definitions: 0,
+          rules: 17,
+        },
       }),
     },
     {
@@ -397,7 +452,10 @@ describe('actionAnswerOf', () => {
     // Arrange
     const verdict: GateVerdict = {
       kind: GateVerdictKind.PassedUnread,
-      unreadCount: 17,
+      unread: {
+        definitions: 0,
+        rules: 17,
+      },
     };
 
     // Act
@@ -413,7 +471,10 @@ describe('actionAnswerOf', () => {
       shouldIgnoreParts: false,
       changedByCommands: manyChanged,
       parts: manyParts,
-      unreadCount: 900,
+      unread: {
+        definitions: 0,
+        rules: 900,
+      },
     });
 
     // Act
@@ -431,7 +492,7 @@ describe('actionAnswerOf', () => {
               ].join(LIST_SEPARATOR),
             ),
           ],
-          governingRules: governingRulesText.many(900),
+          governingRules: '900 rules that govern',
           partLines: [
             ...manyParts.slice(0, 9).map(partLineMessage),
             morePartsText.many(491),
@@ -538,7 +599,10 @@ describe('turnAnswerOf', () => {
       condition: 'the gate passed after three refusals',
       verdict: {
         kind: GateVerdictKind.PassedUnread,
-        unreadCount: 2,
+        unread: {
+          definitions: 0,
+          rules: 2,
+        },
       },
     },
     {

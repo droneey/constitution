@@ -22,13 +22,23 @@ interface SettledLine<TOwed> {
   readonly settled: TOwed;
 }
 
+interface DefinitionReadLine {
+  readonly definition: RuleHash;
+}
+
 const markLineModel: z.ZodType<MarkLine> = z.strictObject({
   mark: z.enum(LineMark),
 });
 
+const ruleHashModel = z.string().refine(RuleHash.is).transform(RuleHash.create);
+
 const ruleReadModel: z.ZodType<RuleRead> = z.strictObject({
-  hash: z.string().refine(RuleHash.is).transform(RuleHash.create),
+  hash: ruleHashModel,
   slug: ruleSlugModel,
+});
+
+const definitionReadModel: z.ZodType<DefinitionReadLine> = z.strictObject({
+  definition: ruleHashModel,
 });
 
 const debtModel: z.ZodType<RuleDebt> = z.strictObject({
@@ -149,19 +159,23 @@ const pathsAfterMarkOf = (lines: readonly unknown[], mark: LineMark): readonly A
   pathsOfLines(afterLastMark(lines, mark));
 
 const rulesReadOfLines = (lines: readonly unknown[]): RulesRead => {
-  const read = new Map<RuleSlug, Set<RuleHash>>();
+  const sinceReset = afterLastMark(lines, LineMark.Reset);
+  const rules = new Map<RuleSlug, Set<RuleHash>>();
 
-  for (const rule of parsedOf(ruleReadModel, afterLastMark(lines, LineMark.Reset))) {
-    read.set(
+  for (const rule of parsedOf(ruleReadModel, sinceReset)) {
+    rules.set(
       rule.slug,
       new Set([
-        ...(read.get(rule.slug) ?? []),
+        ...(rules.get(rule.slug) ?? []),
         rule.hash,
       ]),
     );
   }
 
-  return read;
+  return {
+    definitions: new Set(parsedOf(definitionReadModel, sinceReset).map((line) => line.definition)),
+    rules,
+  };
 };
 
 const markLineOf = (mark: LineMark): MarkLine => ({
@@ -177,8 +191,13 @@ const ruleReadLineOf = (rule: RuleRead): RuleRead => ({
   slug: rule.slug,
 });
 
+const definitionReadLineOf = (definition: RuleHash): DefinitionReadLine => ({
+  definition,
+});
+
 export {
   debtsOfLines,
+  definitionReadLineOf,
   entriesOfLines,
   LineMark,
   markLineOf,

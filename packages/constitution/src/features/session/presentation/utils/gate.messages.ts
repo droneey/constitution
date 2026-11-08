@@ -10,10 +10,23 @@ interface OwedInput {
   readonly partLines: readonly string[];
 }
 
-const governingRulesText: CountedText = {
-  many: (count) => `${count} rules that govern`,
-  one: '1 rule that governs',
+interface OwedCount {
+  readonly isOne: boolean;
+  readonly owed: string;
+}
+
+const unreadRulesText: CountedText = {
+  many: (count) => `${count} rules`,
+  one: '1 rule',
 };
+
+const unreadDefinitionsText: CountedText = {
+  many: (count) => `${count} definitions`,
+  one: '1 definition',
+};
+
+const governingMessage = (input: OwedCount): string =>
+  `${input.owed} that ${input.isOne ? 'governs' : 'govern'}`;
 
 const actionsText: CountedText = {
   many: (count) => `${count} actions`,
@@ -86,35 +99,34 @@ const passedClosedMessage = (causeLines: readonly string[]): string =>
     ...causeLines,
   ].join('\n');
 
-const passedUnreadText: CountedText = {
-  many: (count) =>
-    `The rule gate let this through after three refusals; ${count} rules it asked for are still unread.`,
-  one: 'The rule gate let this through after three refusals; 1 rule it asked for is still unread.',
-};
+const passedUnreadMessage = (input: OwedCount): string =>
+  `The rule gate let this through after three refusals; ${input.owed} it asked for ${input.isOne ? 'is' : 'are'} still unread.`;
 
 const passesToldMessage = (actions: string): string =>
   `The gates let ${actions} through after three refusals; what they asked for was not done.`;
 
 const unignoredMessage = `git does not ignore ${sessionsFolderInProject}, where the rule gate writes the rules to read; add ${DRONEEY_FOLDER_NAME}/ to .gitignore.`;
 
-export type { OwedInput };
+export type { OwedCount, OwedInput };
 export {
   actionsText,
   causeLineMessage,
   changedByCommandsMessage,
   closedMessage,
-  governingRulesText,
+  governingMessage,
   moreCausesText,
   morePartsText,
   noReleaseCauseMessage,
   partLineMessage,
   passedClosedMessage,
-  passedUnreadText,
+  passedUnreadMessage,
   passesToldMessage,
   refusedMessage,
   turnHeldMessage,
   unignoredMessage,
   unparsedCauseMessage,
   unreadableCauseMessage,
+  unreadDefinitionsText,
+  unreadRulesText,
   unwritableCauseMessage,
 };

@@ -29,12 +29,18 @@ const refused: GateVerdict = {
   parts: [
     AbsolutePath.create('/state/parts/abc.1.md'),
   ],
-  unreadCount: 2,
+  unread: {
+    definitions: 0,
+    rules: 2,
+  },
 };
 
 const passed: GateVerdict = {
   kind: GateVerdictKind.PassedUnread,
-  unreadCount: 2,
+  unread: {
+    definitions: 0,
+    rules: 2,
+  },
 };
 
 const SHELL_CALL =
@@ -179,7 +185,10 @@ describe('createPreToolUseCommand', () => {
       stdin: SHELL_CALL,
       verdict: {
         kind: GateVerdictKind.PassedUnread,
-        unreadCount: 2,
+        unread: {
+          definitions: 0,
+          rules: 2,
+        },
       },
     },
     {
