@@ -16,6 +16,7 @@ const axisOf = (place: string): Axis => {
 interface BlockSetBlockFixture {
   readonly chapters?: readonly string[];
   readonly extends?: string;
+  readonly format?: BlockFormat;
   readonly governs?: readonly string[];
   readonly id: string;
   readonly isAbstract?: boolean;
@@ -36,7 +37,7 @@ const blockSetBlockOf = (block: BlockSetBlockFixture): BlockSetBlock => ({
     : {
         extends: BlockId.create(block.extends),
       }),
-  format: BlockFormat.Legacy,
+  format: block.format ?? BlockFormat.Legacy,
   governs: (block.governs ?? []).map(Glob.create),
   id: BlockId.create(block.id),
   isAbstract: block.isAbstract ?? false,

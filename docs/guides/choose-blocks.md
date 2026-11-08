@@ -49,10 +49,9 @@ A new session reads `constitution.yaml` and reports what does not hold, at the t
 | Warning | What to do |
 |---|---|
 | `requirements: A needs B — add B to <key>` | list B as well; a block brings the blocks it requires |
+| `requirements: A needs B — add B or B/c to <key>` | list B alone, or one of its children; a child brings its parent |
 | `blocks: X is not a block — check the name` | correct the id, or [write a block](write-a-pack.md) for it |
 | `blocks: X is an implementation — move it from languages to implementations` | move the id to its layer's key |
-| `blocks: _x cannot be listed — list <heirs>` | list the block that extends it instead |
-| `requirements: X does not meet <rule>` | read X's Requirements table: another rule stands in, or the block does not fit |
 | `configurations: <file>: lacks <setting>, as the presets give them — run constitution presets apply [missing]` | run `constitution presets apply`, which writes [the presets' settings](../reference/presets.md#what-a-unit-takes) into the file |
 
 ## Give a part of a workspace its own blocks

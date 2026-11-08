@@ -31,15 +31,18 @@ const create = (
   ),
 });
 
-const basesOf = (model: ProjectModel, id: BlockId): readonly BlockId[] =>
+const ancestorsOf = (model: ProjectModel, id: BlockId): readonly BlockId[] =>
   model.ancestors.get(id) ?? [];
 
-const extendsBlock = (block: BlockSetBlock, id: BlockId): boolean =>
-  // Stryker disable next-line ConditionalExpression,LogicalOperator: the test only narrows the type; an absent base equals none
-  block.extends !== undefined && BlockId.equals(block.extends, id);
+const childrenOf = (model: ProjectModel, id: BlockId): readonly BlockId[] =>
+  model.blocks
+    .filter((block) => {
+      const [parent] = ancestorsOf(model, block.id);
 
-const heirsOf = (model: ProjectModel, id: BlockId): readonly BlockId[] =>
-  model.blocks.filter((block) => extendsBlock(block, id)).map((block) => block.id);
+      // Stryker disable next-line ConditionalExpression,LogicalOperator: the test only narrows the type; a block with no parent is no child
+      return parent !== undefined && BlockId.equals(parent, id);
+    })
+    .map((block) => block.id);
 
 const inheritorsOf = (model: ProjectModel, slug: RuleSlug): readonly RuleSlug[] =>
   [
@@ -66,10 +69,10 @@ const ruleNamed = (model: ProjectModel, slug: string): BlockSetRule | undefined 
   RuleSlug.is(slug) ? model.rules.get(slug) : undefined;
 
 const ProjectModel = {
-  basesOf,
+  ancestorsOf,
   blockNamed,
+  childrenOf,
   create,
-  heirsOf,
   inheritorsOf,
   languagesOf,
   ruleNamed,

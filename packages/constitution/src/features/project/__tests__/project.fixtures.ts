@@ -46,8 +46,16 @@ const passportOf = (block: BlockFixture): string =>
     `id: ${block.id}`,
     `summary: ${JSON.stringify(`The ${block.id} block.`)}`,
     `requires: ${listOf(block.requires)}`,
-    `extends: ${block.extends ?? 'null'}`,
-    `abstract: ${String(block.abstract ?? false)}`,
+    ...(block.extends === undefined
+      ? []
+      : [
+          `extends: ${block.extends}`,
+        ]),
+    ...(block.abstract === undefined
+      ? []
+      : [
+          `abstract: ${String(block.abstract)}`,
+        ]),
     `languages: ${listOf(block.languages)}`,
     `governs: ${listOf(block.governs)}`,
     '---',
@@ -75,7 +83,7 @@ const blockFilesOf = (input: BlockFilesFixture): Readonly<Record<string, string>
 
       return [
         [
-          `${folder}/${block.id}.md`,
+          `${folder}/${block.id.slice(block.id.lastIndexOf('/') + 1)}.md`,
           passportOf(block),
         ],
         ...Object.entries(block.files ?? {}).map(([path, text]) => [

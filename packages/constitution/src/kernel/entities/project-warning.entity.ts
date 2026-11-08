@@ -30,7 +30,6 @@ enum WarningKind {
   NameUnknown = 'name-unknown',
   CoreListed = 'core-listed',
   BlockUnderWrongKey = 'block-under-wrong-key',
-  AbstractListed = 'abstract-listed',
   PackUnlisted = 'pack-unlisted',
   PackNotInstalled = 'pack-not-installed',
   FileUnreadable = 'file-unreadable',
@@ -45,7 +44,6 @@ enum WarningKind {
   RequiredNoBlock = 'required-no-block',
   TightensUnknownRule = 'tightens-unknown-rule',
   BlockNeeded = 'block-needed',
-  RequirementNotMet = 'requirement-not-met',
   OverrideNamesNoRule = 'override-names-no-rule',
   OverrideExpired = 'override-expired',
   ConfigurationFinding = 'configuration-finding',
@@ -114,9 +112,6 @@ interface WarningDetails {
     readonly layer: Layer;
     readonly toKey: ConfigKey;
   };
-  readonly [WarningKind.AbstractListed]: NameGiven & {
-    readonly heirs: readonly BlockId[];
-  };
   readonly [WarningKind.PackUnlisted]: FileNamed &
     NameGiven & {
       readonly pack: PackPath;
@@ -155,14 +150,9 @@ interface WarningDetails {
   };
   readonly [WarningKind.BlockNeeded]: {
     readonly block: BlockId;
-    readonly heirs?: readonly BlockId[];
+    readonly children?: readonly BlockId[];
     readonly key: ConfigKey;
     readonly required: BlockId;
-    readonly unit: UnitPath;
-  };
-  readonly [WarningKind.RequirementNotMet]: {
-    readonly block: BlockId;
-    readonly requirement: RuleSlug;
     readonly unit: UnitPath;
   };
   readonly [WarningKind.OverrideNamesNoRule]: OverrideNamed;
@@ -216,10 +206,8 @@ const codeOfKind: {
   [WarningKind.NameUnknown]: WarningCode.Blocks,
   [WarningKind.CoreListed]: WarningCode.Blocks,
   [WarningKind.BlockUnderWrongKey]: WarningCode.Blocks,
-  [WarningKind.AbstractListed]: WarningCode.Blocks,
   [WarningKind.PackUnlisted]: WarningCode.Blocks,
   [WarningKind.BlockNeeded]: WarningCode.Requirements,
-  [WarningKind.RequirementNotMet]: WarningCode.Requirements,
   [WarningKind.OverrideIncomplete]: WarningCode.Overrides,
   [WarningKind.OverrideLevelNotLowered]: WarningCode.Overrides,
   [WarningKind.OverrideUntilMalformed]: WarningCode.Overrides,

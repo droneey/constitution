@@ -72,8 +72,6 @@ const resolveDeclaration = (input: ResolveDeclarationInput): Resolution => {
       ...resolved.warnings,
       ...overrides.warnings,
       ...checkNeeds({
-        answers: blockSet.answers,
-        applied,
         model,
         units,
       }),

@@ -44,7 +44,7 @@ const neededOf = (input: {
   unit: ResolvedUnit;
 }): readonly BlockId[] => [
   ...input.block.requires,
-  ...ProjectModel.basesOf(input.model, input.block.id),
+  ...ProjectModel.ancestorsOf(input.model, input.block.id),
   ...input.block.seams
     .filter((seam) => ResolvedUnit.isAxisOn(input.unit, seam.axis))
     .map((seam) => seam.other),

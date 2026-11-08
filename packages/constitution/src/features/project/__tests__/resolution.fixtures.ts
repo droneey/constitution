@@ -284,18 +284,6 @@ const listingOf = (input: Partial<BlockListing> = {}): BlockListing => ({
   units: input.units ?? [],
 });
 
-const requirementsOf = (answers: Readonly<Record<string, string>>): string =>
-  [
-    '## Requirements',
-    '',
-    '| Requirement | How | Met |',
-    '|---|---|---|',
-    ...Object.entries(answers).map(
-      ([requirement, met]) => `| \`${requirement}\` | A way. | ${met} |`,
-    ),
-    '',
-  ].join('\n');
-
 export {
   activeOf,
   configOf,
@@ -306,7 +294,6 @@ export {
   modelOf,
   mustOf,
   parsedOf,
-  requirementsOf,
   sourceOf,
   today,
   unitListingOf,

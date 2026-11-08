@@ -12,8 +12,7 @@ import {
   SourceKind,
 } from '#/kernel/value-objects';
 
-import type { BlockSetSource } from '../../../../../../../block-set/entities';
-import { SourceFile, SourceStatus } from '../../../../../../../block-set/entities';
+import { BlockSetSource, SourceFile, SourceStatus } from '../../../../../../../block-set/entities';
 
 interface FileInFolder {
   readonly block: BlockId;
@@ -156,21 +155,18 @@ const weighedOf = (input: {
 };
 
 const placeFiles = (sources: readonly BlockSetSource[]): readonly PlacedFile[] => {
-  const placed = sources.flatMap((source) => {
-    if (source.status === SourceStatus.Unlisted) {
-      return [];
-    }
-
-    const format = SourceFile.formatOf(source.files);
-
-    return SourceFile.inReadOrder(source.files).map((file) =>
-      placedOf({
-        file,
-        format,
-        source,
-      }),
-    );
-  });
+  const format = BlockSetSource.formatOf(sources);
+  const placed = sources.flatMap((source) =>
+    source.status === SourceStatus.Unlisted
+      ? []
+      : SourceFile.inReadOrder(source.files, format).map((file) =>
+          placedOf({
+            file,
+            format,
+            source,
+          }),
+        ),
+  );
   const inFolder = placed
     .filter((place) => place.spot === Spot.InFolder)
     .map((place) => place.file);

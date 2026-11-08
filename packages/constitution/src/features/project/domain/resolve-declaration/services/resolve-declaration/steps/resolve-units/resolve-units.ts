@@ -123,6 +123,12 @@ const axesOf = (
   };
 };
 
+const isPathOutsideBlocks = (model: ProjectModel, name: string): boolean => {
+  const end = name.indexOf(PATH_SEPARATOR);
+
+  return end !== -1 && ProjectModel.blockNamed(model, name.slice(0, end)) === undefined;
+};
+
 const declaredOf = (input: {
   entry: ConfigItem;
   model: ProjectModel;
@@ -132,21 +138,12 @@ const declaredOf = (input: {
   const name = entry.text;
   const block = ProjectModel.blockNamed(model, name);
 
-  if (name.includes(PATH_SEPARATOR)) {
-    return refused({
-      details: {
-        name,
-      },
-      kind: WarningKind.NameIsPath,
-    });
-  }
-
   if (block === undefined) {
     return refused({
       details: {
         name,
       },
-      kind: WarningKind.NameUnknown,
+      kind: isPathOutsideBlocks(model, name) ? WarningKind.NameIsPath : WarningKind.NameUnknown,
     });
   }
 
@@ -156,16 +153,6 @@ const declaredOf = (input: {
         key: entry.key,
       },
       kind: WarningKind.CoreListed,
-    });
-  }
-
-  if (block.isAbstract) {
-    return refused({
-      details: {
-        heirs: ProjectModel.heirsOf(model, block.id),
-        name,
-      },
-      kind: WarningKind.AbstractListed,
     });
   }
 
@@ -183,7 +170,7 @@ const declaredOf = (input: {
   return {
     blocks: [
       block.id,
-      ...ProjectModel.basesOf(model, block.id),
+      ...ProjectModel.ancestorsOf(model, block.id),
     ],
     warnings:
       block.layer === layerOfKey(entry.key)

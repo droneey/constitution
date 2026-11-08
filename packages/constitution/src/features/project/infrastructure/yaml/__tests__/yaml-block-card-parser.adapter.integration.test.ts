@@ -44,7 +44,6 @@ describe('createYamlBlockCardParser', () => {
     {
       card: {
         governs: [],
-        isAbstract: false,
         languages: [],
         requires: [],
       },
@@ -53,8 +52,21 @@ describe('createYamlBlockCardParser', () => {
     },
     {
       card: {
+        governs: [
+          '**/package.json',
+        ],
+        languages: [],
+        requires: [
+          'task-runner',
+        ],
+      },
+      condition:
+        'a nested passport names its id by its path and states neither extends nor abstract',
+      yaml: 'id: js-runtime/bun\nsummary: Bun.\nrequires: [task-runner]\nlanguages: []\ngoverns: ["**/package.json"]',
+    },
+    {
+      card: {
         governs: [],
-        isAbstract: false,
         languages: [],
         requires: [],
       },
@@ -64,7 +76,6 @@ describe('createYamlBlockCardParser', () => {
     {
       card: {
         governs: [],
-        isAbstract: false,
         languages: [],
         requires: [],
       },
@@ -74,7 +85,6 @@ describe('createYamlBlockCardParser', () => {
     {
       card: {
         governs: [],
-        isAbstract: false,
         languages: [],
         requires: [],
       },
@@ -84,7 +94,6 @@ describe('createYamlBlockCardParser', () => {
     {
       card: {
         governs: [],
-        isAbstract: false,
         languages: [],
         requires: [],
       },
@@ -94,7 +103,6 @@ describe('createYamlBlockCardParser', () => {
     {
       card: {
         governs: [],
-        isAbstract: false,
         languages: [],
         requires: [],
       },
@@ -104,7 +112,6 @@ describe('createYamlBlockCardParser', () => {
     {
       card: {
         governs: [],
-        isAbstract: false,
         languages: [],
         requires: [],
       },

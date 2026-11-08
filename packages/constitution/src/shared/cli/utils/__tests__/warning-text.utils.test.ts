@@ -149,43 +149,6 @@ const warnings: readonly ProjectWarning[] = [
   },
   {
     details: {
-      heirs: [],
-      name: '_store',
-    },
-    kind: WarningKind.AbstractListed,
-  },
-  {
-    details: {
-      heirs: [
-        BlockId.create('redux'),
-      ],
-      name: '_store',
-    },
-    kind: WarningKind.AbstractListed,
-  },
-  {
-    details: {
-      heirs: [
-        BlockId.create('redux'),
-        BlockId.create('zustand'),
-      ],
-      name: '_store',
-    },
-    kind: WarningKind.AbstractListed,
-  },
-  {
-    details: {
-      heirs: [
-        BlockId.create('jotai'),
-        BlockId.create('redux'),
-        BlockId.create('zustand'),
-      ],
-      name: '_store',
-    },
-    kind: WarningKind.AbstractListed,
-  },
-  {
-    details: {
       file: 'apps/web/constitution.yaml',
       name: 'acme',
       pack: PackPath.create('packs/acme'),
@@ -293,31 +256,27 @@ const warnings: readonly ProjectWarning[] = [
   {
     details: {
       block: BlockId.create('ui'),
-      heirs: [
-        BlockId.create('redux'),
-        BlockId.create('zustand'),
+      children: [
+        BlockId.create('store/redux'),
       ],
       key: ConfigKey.Implementations,
-      required: BlockId.create('_store'),
+      required: BlockId.create('store'),
       unit: UnitPath.create('apps/web'),
     },
     kind: WarningKind.BlockNeeded,
   },
   {
     details: {
-      block: BlockId.create('tailwind'),
-      requirement: RuleSlug.create('tokens-only'),
-      unit: UnitPath.create(''),
-    },
-    kind: WarningKind.RequirementNotMet,
-  },
-  {
-    details: {
-      block: BlockId.create('tailwind'),
-      requirement: RuleSlug.create('tokens-only'),
+      block: BlockId.create('ui'),
+      children: [
+        BlockId.create('store/redux'),
+        BlockId.create('store/zustand'),
+      ],
+      key: ConfigKey.Implementations,
+      required: BlockId.create('store'),
       unit: UnitPath.create('apps/web'),
     },
-    kind: WarningKind.RequirementNotMet,
+    kind: WarningKind.BlockNeeded,
   },
   {
     details: {

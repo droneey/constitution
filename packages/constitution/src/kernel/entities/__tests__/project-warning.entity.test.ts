@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import { ConfigKey } from '../../constants';
-import { BlockId, RuleSlug, SourceKind, UnitPath } from '../../value-objects';
+import { BlockId, SourceKind, UnitPath } from '../../value-objects';
 import { ProjectWarning, WarningCode, WarningKind } from '../project-warning.entity';
 
 describe('ProjectWarning.codeOf', () => {
@@ -33,14 +33,15 @@ describe('ProjectWarning.codeOf', () => {
     },
     {
       code: WarningCode.Requirements,
-      subject: "a block's requirement",
+      subject: 'a block a listed block requires',
       warning: {
         details: {
           block: BlockId.create('matomo'),
-          requirement: RuleSlug.create('analytics-consent-first'),
+          key: ConfigKey.Domains,
+          required: BlockId.create('analytics'),
           unit: UnitPath.create(''),
         },
-        kind: WarningKind.RequirementNotMet,
+        kind: WarningKind.BlockNeeded,
       },
     },
     {

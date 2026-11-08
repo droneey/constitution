@@ -25,7 +25,6 @@ import {
   modelOf,
   mustOf,
   parsedOf,
-  requirementsOf,
   sourceOf,
   today,
   unitListingOf,
@@ -111,21 +110,10 @@ const TYPESCRIPT: BlockFixture = {
   id: 'typescript',
 } as const;
 const react: BlockFixture = {
-  body: requirementsOf({
-    'focus-is-shown': 'no',
-    'inputs-are-labelled': 'no',
-    'no-such-rule': 'no',
-    'screens-are-reviewed': 'no',
-    'state-is-not-in-screens': 'no',
-    'themes-are-tokens': 'yes',
-  }),
   folder: Folder.Implementation,
   id: 'react',
 };
 const vite: BlockFixture = {
-  body: requirementsOf({
-    'inputs-are-labelled': 'no',
-  }),
   folder: Folder.Implementation,
   id: 'vite',
   requires: [
@@ -146,6 +134,45 @@ const blockSet = sourceOf({
     vite,
   ],
 });
+
+const NESTED_CORE = {
+  files: {
+    '@foundation/code.md': '# Code\n',
+  },
+} as const;
+const JS_RUNTIME: BlockFixture = {
+  folder: Folder.Implementation,
+  governs: [
+    '**/package.json',
+    '**/*.ts',
+  ],
+  id: 'js-runtime',
+} as const;
+const BUN: BlockFixture = {
+  folder: Folder.Implementation,
+  governs: [
+    '**/bunfig.toml',
+    '**/package.json',
+  ],
+  id: 'js-runtime/bun',
+  requires: [
+    'task-runner',
+  ],
+} as const;
+const TASK_RUNNER: BlockFixture = {
+  files: {
+    '@foundation/tasks.md': '# Tasks\n',
+  },
+  folder: Folder.Implementation,
+  id: 'task-runner',
+} as const;
+const POE: BlockFixture = {
+  folder: Folder.Implementation,
+  governs: [
+    'pyproject.toml',
+  ],
+  id: 'task-runner/poe',
+} as const;
 
 describe('resolveDeclaration', () => {
   it.each<{
@@ -478,33 +505,14 @@ describe('resolveDeclaration', () => {
     {
       blocks: [
         'core',
+        'store',
+        'base',
       ],
-      condition: 'abstract blocks are listed',
+      condition: 'a parent is listed alone',
       keys: {
         domains: 'domains: [store, base]',
       },
-      warnings: [
-        {
-          details: {
-            heirs: [
-              BlockId.create('mobx'),
-              BlockId.create('redux'),
-              BlockId.create('zustand'),
-            ],
-            name: 'store',
-          },
-          kind: WarningKind.AbstractListed,
-        },
-        {
-          details: {
-            heirs: [
-              BlockId.create('store'),
-            ],
-            name: 'base',
-          },
-          kind: WarningKind.AbstractListed,
-        },
-      ],
+      warnings: [],
     },
     {
       blocks: [
@@ -601,7 +609,7 @@ describe('resolveDeclaration', () => {
 
   it.each([
     {
-      condition: 'the abstract block it needs has no heir',
+      condition: 'the block it needs has no child',
       keys: {
         implementations: 'implementations: [vite]',
       },
@@ -621,7 +629,6 @@ describe('resolveDeclaration', () => {
         {
           details: {
             block: BlockId.create('vite'),
-            heirs: [],
             key: ConfigKey.Domains,
             required: BlockId.create('ui'),
             unit: UnitPath.create(''),
@@ -677,7 +684,6 @@ describe('resolveDeclaration', () => {
         {
           details: {
             block: BlockId.create('nest'),
-            heirs: [],
             key: ConfigKey.Domains,
             required: BlockId.create('store'),
             unit: UnitPath.create('apps/web'),
@@ -726,140 +732,6 @@ describe('resolveDeclaration', () => {
     // Assert
     expect(resolution.warnings).toStrictEqual(warnings);
   });
-
-  it.each([
-    {
-      condition: 'the repository and a member of another axis list the library',
-      keys: {
-        axes: 'axes: [architecture]',
-        domains: 'domains: [ui]',
-        implementations: 'implementations: [react]',
-      },
-      members: {
-        'apps/web': {
-          axes: 'axes: [workflow]',
-          domains: 'domains: [ui]',
-          implementations: 'implementations: [react]',
-        },
-      },
-      warnings: [
-        {
-          details: {
-            block: BlockId.create('react'),
-            requirement: RuleSlug.create('inputs-are-labelled'),
-            unit: UnitPath.create(''),
-          },
-          kind: WarningKind.RequirementNotMet,
-        },
-        {
-          details: {
-            block: BlockId.create('react'),
-            requirement: RuleSlug.create('inputs-are-labelled'),
-            unit: UnitPath.create('apps/web'),
-          },
-          kind: WarningKind.RequirementNotMet,
-        },
-        {
-          details: {
-            block: BlockId.create('react'),
-            requirement: RuleSlug.create('screens-are-reviewed'),
-            unit: UnitPath.create('apps/web'),
-          },
-          kind: WarningKind.RequirementNotMet,
-        },
-      ],
-    },
-    {
-      condition: 'two members list the library',
-      keys: {},
-      members: {
-        'apps/api': {
-          domains: 'domains: [ui]',
-          implementations: 'implementations: [vite]',
-        },
-        'apps/web': {
-          domains: 'domains: [ui]',
-          implementations: 'implementations: [vite]',
-        },
-      },
-      warnings: [
-        {
-          details: {
-            block: BlockId.create('vite'),
-            requirement: RuleSlug.create('inputs-are-labelled'),
-            unit: UnitPath.create('apps/api'),
-          },
-          kind: WarningKind.RequirementNotMet,
-        },
-        {
-          details: {
-            block: BlockId.create('vite'),
-            requirement: RuleSlug.create('inputs-are-labelled'),
-            unit: UnitPath.create('apps/web'),
-          },
-          kind: WarningKind.RequirementNotMet,
-        },
-      ],
-    },
-    {
-      condition:
-        'the repository lowers the rule a member lists the library for, which reaches no member',
-      keys: {
-        domains: 'domains: [ui]',
-        overrides:
-          'overrides:\n  - rule: inputs-are-labelled\n    level: SHOULD\n    reason: A reason.',
-      },
-      members: {
-        'apps/web': {
-          domains: 'domains: [ui]',
-          implementations: 'implementations: [vite]',
-        },
-      },
-      warnings: [
-        {
-          details: {
-            block: BlockId.create('vite'),
-            requirement: RuleSlug.create('inputs-are-labelled'),
-            unit: UnitPath.create('apps/web'),
-          },
-          kind: WarningKind.RequirementNotMet,
-        },
-      ],
-    },
-    {
-      condition: 'a member lowers the rule it lists the library for',
-      keys: {
-        domains: 'domains: [ui]',
-      },
-      members: {
-        'apps/web': {
-          domains: 'domains: [ui]',
-          implementations: 'implementations: [vite]',
-          overrides:
-            'overrides:\n  - rule: inputs-are-labelled\n    level: MAY\n    reason: A reason.',
-        },
-      },
-      warnings: [],
-    },
-  ])(
-    'should warn of a MUST a library does not meet when $condition',
-    ({ keys, members, warnings }) => {
-      // Arrange
-      const config = configOf(keys, members);
-
-      // Act
-      const resolution = resolvedOf({
-        config,
-        sources: [
-          blockSet,
-        ],
-        today,
-      });
-
-      // Assert
-      expect(resolution.warnings).toStrictEqual(warnings);
-    },
-  );
 
   it.each([
     {
@@ -2344,6 +2216,296 @@ describe('resolveDeclaration', () => {
           'blocks/core/@architecture/layers.md',
         ],
       ],
+    });
+  });
+
+  it.each([
+    {
+      blocks: [
+        'core',
+        'client/browser',
+        'client',
+        'react/react-native/expo',
+        'react/react-native',
+        'react',
+      ],
+      condition: 'a child and a grandchild are listed',
+      keys: {
+        implementations: 'implementations: [react/react-native/expo]',
+        platforms: 'platforms: [client/browser]',
+      },
+      warnings: [],
+    },
+    {
+      blocks: [
+        'core',
+        'client',
+        'react',
+      ],
+      condition: 'parents are listed alone',
+      keys: {
+        implementations: 'implementations: [react]',
+        platforms: 'platforms: [client]',
+      },
+      warnings: [],
+    },
+    {
+      blocks: [
+        'core',
+      ],
+      condition: 'a child is misspelt and a path names no block',
+      keys: {
+        domains: 'domains: [rules/ui]',
+        platforms: 'platforms: [client/brwser]',
+      },
+      warnings: [
+        {
+          details: {
+            name: 'rules/ui',
+          },
+          kind: WarningKind.NameIsPath,
+        },
+        {
+          details: {
+            name: 'client/brwser',
+          },
+          kind: WarningKind.NameUnknown,
+        },
+      ],
+    },
+  ])(
+    'should turn on the ancestors of each nested block listed when $condition',
+    ({ blocks, keys, warnings }) => {
+      // Arrange
+      const config = configOf(keys);
+
+      // Act
+      const resolution = resolvedOf({
+        config,
+        sources: [
+          sourceOf({
+            blocks: [
+              {
+                folder: Folder.Platform,
+                id: 'client',
+              },
+              {
+                folder: Folder.Platform,
+                id: 'client/browser',
+              },
+              {
+                folder: Folder.Implementation,
+                id: 'react',
+              },
+              {
+                folder: Folder.Implementation,
+                id: 'react/react-native',
+              },
+              {
+                folder: Folder.Implementation,
+                id: 'react/react-native/expo',
+              },
+            ],
+            core: {
+              files: {
+                '@foundation/code.md': '# Code\n',
+              },
+            },
+          }),
+        ],
+        today,
+      });
+
+      // Assert
+      expect({
+        blocks: [
+          ...(resolution.units[0]?.blocks ?? []),
+        ].map((id): string => id),
+        warnings: resolution.warnings,
+      }).toStrictEqual({
+        blocks: [
+          ...blocks,
+        ],
+        warnings,
+      });
+    },
+  );
+
+  it.each([
+    {
+      condition: 'the block it needs is left out, and its child is offered with it',
+      implementations: 'implementations: [js-runtime/bun]',
+      warnings: [
+        {
+          details: {
+            block: BlockId.create('js-runtime/bun'),
+            children: [
+              BlockId.create('task-runner/poe'),
+            ],
+            key: ConfigKey.Implementations,
+            required: BlockId.create('task-runner'),
+            unit: UnitPath.create(''),
+          },
+          kind: WarningKind.BlockNeeded,
+        },
+      ],
+    },
+    {
+      condition: 'the block it needs is listed alone',
+      implementations: 'implementations: [js-runtime/bun, task-runner]',
+      warnings: [],
+    },
+    {
+      condition: 'a child of the block it needs is listed',
+      implementations: 'implementations: [js-runtime/bun, task-runner/poe]',
+      warnings: [],
+    },
+  ])(
+    "should meet a nested block's need by its parent or a child when $condition",
+    ({ implementations, warnings }) => {
+      // Arrange
+      const config = configOf({
+        implementations,
+      });
+
+      // Act
+      const resolution = resolvedOf({
+        config,
+        sources: [
+          sourceOf({
+            blocks: [
+              JS_RUNTIME,
+              BUN,
+              TASK_RUNNER,
+              POE,
+            ],
+            core: NESTED_CORE,
+          }),
+        ],
+        today,
+      });
+
+      // Assert
+      expect(resolution.warnings).toStrictEqual(warnings);
+    },
+  );
+
+  it('should give a parent the globs of the children and the blocks that reach it, when a parent governs no file of its own', () => {
+    // Arrange
+    const config = configOf({
+      implementations: 'implementations: [js-runtime/bun, task-runner/poe]',
+    });
+
+    // Act
+    const resolution = resolvedOf({
+      config,
+      sources: [
+        sourceOf({
+          blocks: [
+            JS_RUNTIME,
+            BUN,
+            TASK_RUNNER,
+            POE,
+          ],
+          core: NESTED_CORE,
+        }),
+      ],
+      today,
+    });
+
+    // Assert
+    expect(resolution.active).toStrictEqual([
+      activeOf({
+        files: [
+          'blocks/implementations/js-runtime/js-runtime.md',
+        ],
+        governs: [
+          '**/package.json',
+          '**/*.ts',
+          '**/bunfig.toml',
+        ],
+        id: 'js-runtime',
+      }),
+      activeOf({
+        files: [
+          'blocks/implementations/js-runtime/bun/bun.md',
+        ],
+        governs: [
+          '**/bunfig.toml',
+          '**/package.json',
+        ],
+        id: 'js-runtime/bun',
+      }),
+      activeOf({
+        files: [
+          'blocks/implementations/task-runner/task-runner.md',
+          'blocks/implementations/task-runner/@foundation/tasks.md',
+        ],
+        governs: [
+          '**/bunfig.toml',
+          '**/package.json',
+          'pyproject.toml',
+        ],
+        id: 'task-runner',
+      }),
+      activeOf({
+        files: [
+          'blocks/implementations/task-runner/poe/poe.md',
+        ],
+        governs: [
+          'pyproject.toml',
+        ],
+        id: 'task-runner/poe',
+      }),
+    ]);
+  });
+
+  it("should turn on the release parent of a pack's child when the unit lists the child and its pack", () => {
+    // Arrange
+    const config = configOf({
+      implementations: 'implementations: [schema/valibot]',
+      packs: 'packs: [./rules]',
+    });
+
+    // Act
+    const resolution = resolvedOf({
+      config,
+      sources: [
+        sourceOf({
+          blocks: [
+            {
+              folder: Folder.Implementation,
+              id: 'schema',
+            },
+          ],
+          core: NESTED_CORE,
+        }),
+        sourceOf({
+          blocks: [
+            {
+              folder: Folder.Implementation,
+              id: 'schema/valibot',
+            },
+          ],
+          source: './rules',
+        }),
+      ],
+      today,
+    });
+
+    // Assert
+    expect({
+      blocks: [
+        ...(resolution.units[0]?.blocks ?? []),
+      ].map((id): string => id),
+      warnings: resolution.warnings,
+    }).toStrictEqual({
+      blocks: [
+        'core',
+        'schema/valibot',
+        'schema',
+      ],
+      warnings: [],
     });
   });
 

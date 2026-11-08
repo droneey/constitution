@@ -6,16 +6,4 @@ interface AppliedOverrides {
   readonly lowerings: ReadonlyMap<RuleSlug, readonly Lowering[]>;
 }
 
-const isLowered = (
-  applied: AppliedOverrides,
-  input: {
-    rule: RuleSlug;
-    unit: UnitPath;
-  },
-): boolean => applied.loweredIn.get(input.unit)?.has(input.rule) === true;
-
-const AppliedOverrides = {
-  isLowered,
-} as const;
-
-export { AppliedOverrides };
+export type { AppliedOverrides };

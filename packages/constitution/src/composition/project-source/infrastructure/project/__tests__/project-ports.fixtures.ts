@@ -58,7 +58,6 @@ const projectPortsOf = (tree: FakeTree = projectTreeOf()): ProjectPorts => ({
   cardParser: {
     card: () => ({
       governs: [],
-      isAbstract: false,
       languages: [],
       requires: [],
     }),

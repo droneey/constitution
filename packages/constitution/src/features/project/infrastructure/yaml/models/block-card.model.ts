@@ -41,7 +41,11 @@ const blockCardModel: z.ZodType<BlockCard> = z
           extends: base,
         }),
     governs,
-    isAbstract: abstract,
+    ...(abstract
+      ? {
+          isAbstract: true as const,
+        }
+      : {}),
     languages,
     requires,
   }));

@@ -38,11 +38,6 @@ const EVERY_CODE_WARNINGS = [
   ],
   [
     'blocks',
-    '_react',
-    'react-dom',
-  ],
-  [
-    'blocks',
     'tanstak-query',
   ],
   [
@@ -53,11 +48,6 @@ const EVERY_CODE_WARNINGS = [
     'requirements',
     'react-dom',
     'browser',
-  ],
-  [
-    'requirements',
-    'matomo',
-    'analytics-consent-first',
   ],
   [
     'overrides',

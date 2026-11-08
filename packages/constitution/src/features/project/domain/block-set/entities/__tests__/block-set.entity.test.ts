@@ -1,11 +1,24 @@
 import { describe, expect, it } from 'bun:test';
 
+import { BlockFormat } from '#/kernel/constants';
 import { FileReadStatus } from '#/kernel/entities';
 import { AbsolutePath, BlockSource, PackPath } from '#/kernel/value-objects';
 
 import { BlockSetSource, SourceFile, SourceStatus } from '../block-set.entity';
 
 const pack = PackPath.create('./packs/acme');
+
+const sourceOf = (input: { pack?: PackPath; paths: readonly string[] }): BlockSetSource => ({
+  files: input.paths.map(
+    (path): SourceFile => ({
+      path,
+      status: FileReadStatus.Unreadable,
+    }),
+  ),
+  shownFolderPath: input.pack ?? AbsolutePath.create('/release'),
+  source: BlockSource.create(input.pack),
+  status: SourceStatus.Listed,
+});
 
 describe('SourceFile.inReadOrder', () => {
   it('should order by layer, id, folder, then passport, chapters, seams and other files by axis and path, and files in no block last, when the files are shuffled', () => {
@@ -44,7 +57,7 @@ describe('SourceFile.inReadOrder', () => {
     );
 
     // Act
-    const ordered = SourceFile.inReadOrder(files);
+    const ordered = SourceFile.inReadOrder(files, BlockFormat.Legacy);
 
     // Assert
     expect(ordered).toStrictEqual(
@@ -132,6 +145,51 @@ describe('BlockSetSource.withoutBlocksFolder', () => {
 
     // Assert
     expect(listed).toStrictEqual(expected);
+  });
+});
+
+describe('BlockSetSource.formatOf', () => {
+  it.each([
+    {
+      condition: 'the release marks its axis folders by @ and a pack holds only a child passport',
+      format: BlockFormat.Nested,
+      sources: [
+        sourceOf({
+          paths: [
+            'blocks/core/core.md',
+            'blocks/core/@foundation/code.md',
+          ],
+        }),
+        sourceOf({
+          pack,
+          paths: [
+            'blocks/implementations/schema/valibot/valibot.md',
+          ],
+        }),
+      ],
+    },
+    {
+      condition: 'neither the release nor an unlisted pack marks an axis folder by @',
+      format: BlockFormat.Legacy,
+      sources: [
+        sourceOf({
+          paths: [
+            'blocks/core/foundation/code.md',
+          ],
+        }),
+        {
+          shownFolderPath: pack,
+          source: BlockSource.create(pack),
+          status: SourceStatus.Unlisted,
+        },
+      ],
+    },
+  ])('should read every source as $format when $condition', ({ format, sources }) => {
+    // Act
+    const read = BlockSetSource.formatOf(sources);
+
+    // Assert
+    expect(read).toBe(format);
   });
 });
 

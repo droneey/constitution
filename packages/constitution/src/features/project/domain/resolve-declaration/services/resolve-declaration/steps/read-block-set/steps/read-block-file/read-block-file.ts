@@ -1,6 +1,6 @@
 import { Axis } from '#/kernel/constants';
 import type { BlockText, ProjectWarning } from '#/kernel/entities';
-import { FileReadStatus, RequirementAnswer, StatedRule, WarningKind } from '#/kernel/entities';
+import { FileReadStatus, StatedRule, WarningKind } from '#/kernel/entities';
 import { splitFrontMatter, withoutCodeFences } from '#/kernel/utils';
 import type { BlockId } from '#/kernel/value-objects';
 import { BlockFileKind } from '#/kernel/value-objects';
@@ -8,7 +8,6 @@ import { BlockFileKind } from '#/kernel/value-objects';
 import type {
   BlockCard,
   BlockCards,
-  BlockSetAnswer,
   ChapterPlace,
   SeamPlace,
 } from '../../../../../../../block-set/entities';
@@ -23,7 +22,6 @@ enum PartKind {
 }
 
 interface Statements {
-  readonly answers: readonly BlockSetAnswer[];
   readonly rules: readonly StatedRule[];
   readonly texts: readonly BlockText[];
 }
@@ -52,24 +50,9 @@ type BlockFileRead = Stated &
   );
 
 const NOTHING_STATED = {
-  answers: [],
   rules: [],
   texts: [],
 } as const satisfies Statements;
-
-const answerOf = (answer: RequirementAnswer): BlockSetAnswer => {
-  const met = RequirementAnswer.metOf(answer);
-
-  return {
-    block: answer.block,
-    ...(met === undefined
-      ? {}
-      : {
-          met,
-        }),
-    requirement: answer.requirement,
-  };
-};
 
 const statementsOf = (input: {
   axis: Axis;
@@ -80,7 +63,7 @@ const statementsOf = (input: {
 }): Statements => {
   const place = {
     block: input.block,
-    // Stryker disable next-line ConditionalExpression: the rules, the answers and the role terms leave an absent seam out
+    // Stryker disable next-line ConditionalExpression: the rules and the role terms leave an absent seam out
     ...(input.seam === undefined
       ? {}
       : {
@@ -94,7 +77,6 @@ const statementsOf = (input: {
   };
 
   return {
-    answers: RequirementAnswer.parse(read).answers.map(answerOf),
     rules: StatedRule.parse({
       ...read,
       axis: input.axis,

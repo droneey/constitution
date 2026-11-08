@@ -1,4 +1,5 @@
-import type { BlockFormat, Layer } from '#/kernel/constants';
+import type { Layer } from '#/kernel/constants';
+import { BlockFormat } from '#/kernel/constants';
 import type { ProjectWarning } from '#/kernel/entities';
 import { BlockModel, Rule, StatedRule, WarningKind } from '#/kernel/entities';
 import { firstBy } from '#/kernel/utils';
@@ -94,10 +95,42 @@ const draftNamed = (input: {
   name: string | undefined;
 }): BlockDraft | undefined => (BlockId.is(input.name) ? input.drafts.get(input.name) : undefined);
 
-const ancestorsOf = (input: {
+const folderParentOf = (input: {
   drafts: ReadonlyMap<BlockId, BlockDraft>;
-  heirs: readonly BlockDraft[];
-}): ReadonlyMap<BlockId, readonly BlockId[]> => {
+  id: BlockId;
+}): BlockDraft | undefined => {
+  const above = BlockId.parentOf(input.id);
+
+  if (above === undefined) {
+    return undefined;
+  }
+
+  return (
+    input.drafts.get(above) ??
+    folderParentOf({
+      drafts: input.drafts,
+      id: above,
+    })
+  );
+};
+
+const parentOf = (input: {
+  draft: BlockDraft;
+  drafts: ReadonlyMap<BlockId, BlockDraft>;
+}): BlockDraft | undefined =>
+  input.draft.format === BlockFormat.Legacy
+    ? draftNamed({
+        drafts: input.drafts,
+        name: input.draft.card.extends,
+      })
+    : folderParentOf({
+        drafts: input.drafts,
+        id: input.draft.id,
+      });
+
+const ancestorsOf = (
+  drafts: ReadonlyMap<BlockId, BlockDraft>,
+): ReadonlyMap<BlockId, readonly BlockId[]> => {
   const ancestors = new Map<BlockId, readonly BlockId[]>();
   const visiting = new Set<BlockId>();
 
@@ -108,16 +141,16 @@ const ancestorsOf = (input: {
 
     visiting.add(draft.id);
 
-    const base = draftNamed({
-      drafts: input.drafts,
-      name: draft.card.extends,
+    const parent = parentOf({
+      draft,
+      drafts,
     });
     const found =
-      base === undefined
+      parent === undefined
         ? []
         : [
-            base.id,
-            ...of(base),
+            parent.id,
+            ...of(parent),
           ];
 
     ancestors.set(draft.id, found);
@@ -125,11 +158,15 @@ const ancestorsOf = (input: {
     return found;
   };
 
-  for (const heir of input.heirs) {
-    of(heir);
+  for (const draft of drafts.values()) {
+    of(draft);
   }
 
-  return ancestors;
+  return new Map(
+    [
+      ...ancestors,
+    ].filter(([, found]) => found.length > 0),
+  );
 };
 
 const baseWarningsOf = (input: {
@@ -139,7 +176,11 @@ const baseWarningsOf = (input: {
   const { draft, model } = input;
   const base = draft.card.extends;
 
-  if (base === undefined || BlockModel.isExtensible(model, base)) {
+  if (
+    draft.format === BlockFormat.Nested ||
+    base === undefined ||
+    BlockModel.isExtensible(model, base)
+  ) {
     return [];
   }
 
@@ -183,17 +224,6 @@ const linkWarningsOf = (input: {
     }),
   ]);
 
-const heirsOf = (drafts: ReadonlyMap<BlockId, BlockDraft>): readonly BlockDraft[] =>
-  [
-    ...drafts.values(),
-  ].filter(
-    (draft) =>
-      draftNamed({
-        drafts,
-        name: draft.card.extends,
-      }) !== undefined,
-  );
-
 const tightenedWarningsOf = (input: {
   drafts: ReadonlyMap<BlockId, BlockDraft>;
   rules: readonly StatedRule[];
@@ -223,7 +253,8 @@ const tightenedWarningsOf = (input: {
 };
 
 const blockOf = (draft: BlockDraft): BlockSetBlock => {
-  const base = draft.card.extends;
+  const isLegacy = draft.format === BlockFormat.Legacy;
+  const base = isLegacy ? draft.card.extends : undefined;
 
   return {
     chapters: draft.chapters,
@@ -235,7 +266,7 @@ const blockOf = (draft: BlockDraft): BlockSetBlock => {
     format: draft.format,
     governs: draft.card.governs.filter(Glob.is),
     id: draft.id,
-    isAbstract: draft.card.isAbstract,
+    isAbstract: isLegacy && draft.card.isAbstract === true,
     languages: draft.card.languages.filter(BlockId.is),
     layer: draft.layer,
     requires: draft.card.requires.filter(BlockId.is),
@@ -307,11 +338,7 @@ const readBlockSet = (input: ReadBlockSetInput): BlockSetRead => {
 
   return {
     blockSet: {
-      ancestors: ancestorsOf({
-        drafts,
-        heirs: heirsOf(drafts),
-      }),
-      answers: readings.flatMap(({ read }) => read.answers),
+      ancestors: ancestorsOf(drafts),
       blocks,
       roles,
       rules,

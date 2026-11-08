@@ -1,5 +1,5 @@
 import type { Axis, BlockFormat, Layer, Level } from '#/kernel/constants';
-import type { Met, RoleTerm } from '#/kernel/entities';
+import type { RoleTerm } from '#/kernel/entities';
 import { FileReadStatus } from '#/kernel/entities';
 import { compareText, splitFrontMatter } from '#/kernel/utils';
 import type {
@@ -46,14 +46,7 @@ interface BlockSetRule {
   readonly tightens?: RuleSlug;
 }
 
-interface BlockSetAnswer {
-  readonly block: BlockId;
-  readonly met?: Met;
-  readonly requirement: RuleSlug;
-}
-
 interface BlockSet {
-  readonly answers: readonly BlockSetAnswer[];
   readonly blocks: readonly BlockSetBlock[];
   readonly roles: readonly RoleTerm[];
   readonly rules: readonly BlockSetRule[];
@@ -71,13 +64,8 @@ type SourceFile = {
     }
 );
 
-const formatOf = (files: readonly SourceFile[]): BlockFormat =>
-  BlockFilePlace.formatOf(files.map((file) => file.path));
-
-const inReadOrder = (files: readonly SourceFile[]): readonly SourceFile[] => {
-  const format = formatOf(files);
-
-  return files
+const inReadOrder = (files: readonly SourceFile[], format: BlockFormat): readonly SourceFile[] =>
+  files
     .map((file) => ({
       file,
       place: BlockFilePlace.parse(file.path, format),
@@ -93,10 +81,8 @@ const inReadOrder = (files: readonly SourceFile[]): readonly SourceFile[] => {
       return BlockFilePlace.compare(left.place, right.place);
     })
     .map(({ file }) => file);
-};
 
 const SourceFile = {
-  formatOf,
   inReadOrder,
 } as const;
 
@@ -137,6 +123,9 @@ const withoutBlocksFolder = (input: {
         status: SourceStatus.Unlisted,
       };
 
+const listedFilesOf = (source: BlockSetSource): readonly SourceFile[] =>
+  source.status === SourceStatus.Listed ? source.files : [];
+
 const frontMatterOf = (file: SourceFile): readonly string[] => {
   const frontMatter =
     file.status === FileReadStatus.Read ? splitFrontMatter(file.text).frontMatter : undefined;
@@ -150,17 +139,17 @@ const frontMatterOf = (file: SourceFile): readonly string[] => {
 
 /** Each front matter the read files of the sources open with, once. */
 const frontMattersOf = (sources: readonly BlockSetSource[]): readonly string[] => [
-  ...new Set(
-    sources.flatMap((source) =>
-      source.status === SourceStatus.Listed ? source.files.flatMap(frontMatterOf) : [],
-    ),
-  ),
+  ...new Set(sources.flatMap(listedFilesOf).flatMap(frontMatterOf)),
 ];
 
+const formatOf = (sources: readonly BlockSetSource[]): BlockFormat =>
+  BlockFilePlace.formatOf(sources.flatMap(listedFilesOf).map((file) => file.path));
+
 const BlockSetSource = {
+  formatOf,
   frontMattersOf,
   withoutBlocksFolder,
 } as const;
 
-export type { BlockSet, BlockSetAnswer, BlockSetBlock, BlockSetRule, ChapterPlace, SeamPlace };
+export type { BlockSet, BlockSetBlock, BlockSetRule, ChapterPlace, SeamPlace };
 export { BlockSetSource, SourceFile, SourceStatus };

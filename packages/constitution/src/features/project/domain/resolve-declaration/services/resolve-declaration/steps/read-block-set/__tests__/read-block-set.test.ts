@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import { Axis, BlockFormat, Layer, Level } from '#/kernel/constants';
-import { Met, TermKind, WarningKind } from '#/kernel/entities';
+import { TermKind, WarningKind } from '#/kernel/entities';
 import {
   AbsolutePath,
   BlockId,
@@ -16,12 +16,12 @@ import { blockSetBlockOf, blockSetRuleOf } from '../../../../../../../__tests__/
 import { passportOf, ruleOf } from '../../../../../../../__tests__/project.fixtures';
 import type { BlockSetSource } from '../../../../../../block-set/entities';
 import { SourceStatus } from '../../../../../../block-set/entities';
-import { ancestorsOf, blockSetAnswerOf, blockSetOf, packOf, sourceOf } from './block-set.fixtures';
+import { ancestorsOf, blockSetOf, packOf, sourceOf } from './block-set.fixtures';
 
 const PLAIN = '# A file\n';
 
 describe('readBlockSet', () => {
-  it('should read every block, chapter, seam, rule, answer and role term in block set order, leaving out a glob whose braces do not pair, when the release and a pack are whole', () => {
+  it('should read every block, chapter, seam, rule and role term in block set order, leaving out a glob whose braces do not pair, when the release and a pack are whole', () => {
     // Arrange
     const sources = [
       sourceOf({
@@ -46,13 +46,6 @@ describe('readBlockSet', () => {
               '**`fenced/`**',
               '### fenced-example · MUST',
               '```',
-              '',
-              '## Requirements',
-              '',
-              '| Requirement | How | Met |',
-              '|---|---|---|',
-              '| `formatter` | by biome | yes |',
-              '| `linter` | by biome | soon |',
               '',
             ].join('\n'),
             governs: [
@@ -121,22 +114,10 @@ describe('readBlockSet', () => {
     // Assert
     expect(blockSet).toStrictEqual({
       ancestors: ancestorsOf({
-        api: [],
         kit: [
           'api',
         ],
       }),
-      answers: [
-        blockSetAnswerOf({
-          block: 'ui',
-          met: Met.Yes,
-          requirement: 'formatter',
-        }),
-        blockSetAnswerOf({
-          block: 'ui',
-          requirement: 'linter',
-        }),
-      ],
       blocks: [
         blockSetBlockOf({
           chapters: [
@@ -348,6 +329,88 @@ describe('readBlockSet', () => {
     });
   });
 
+  it("should list a nested block's ancestors by its folders nearest first, skip a folder with no passport, find a pack child's parent in the release, and ignore extends and abstract, when the tree marks its axis folders by @", () => {
+    // Arrange
+    const sources = [
+      sourceOf({
+        files: {
+          'blocks/core/@foundation/code.md': ruleOf({
+            slug: 'code-reads-as-prose',
+          }),
+          'blocks/implementations/react/react.md': passportOf({
+            id: 'react',
+          }),
+          'blocks/implementations/react/react-native/expo/expo.md': passportOf({
+            abstract: true,
+            extends: 'ghost',
+            id: 'react/react-native/expo',
+          }),
+          'blocks/implementations/react/react-native/react-native.md': passportOf({
+            id: 'react/react-native',
+          }),
+          'blocks/implementations/schema/schema.md': passportOf({
+            id: 'schema',
+          }),
+          'blocks/implementations/schema/zod/forms/forms.md': passportOf({
+            id: 'schema/zod/forms',
+          }),
+        },
+      }),
+      packOf({
+        files: {
+          'blocks/implementations/schema/valibot/valibot.md': passportOf({
+            id: 'schema/valibot',
+          }),
+        },
+        source: 'rules',
+      }),
+    ];
+
+    // Act
+    const blockSet = blockSetOf(sources);
+
+    // Assert
+    expect({
+      ancestors: blockSet.ancestors,
+      blocks: blockSet.blocks.map(({ extends: base, id, isAbstract }) => ({
+        base,
+        id,
+        isAbstract,
+      })),
+      warnings: blockSet.warnings,
+    }).toStrictEqual({
+      ancestors: ancestorsOf({
+        'react/react-native': [
+          'react',
+        ],
+        'react/react-native/expo': [
+          'react/react-native',
+          'react',
+        ],
+        'schema/valibot': [
+          'schema',
+        ],
+        'schema/zod/forms': [
+          'schema',
+        ],
+      }),
+      blocks: [
+        'core',
+        'react',
+        'react/react-native',
+        'react/react-native/expo',
+        'schema',
+        'schema/zod/forms',
+        'schema/valibot',
+      ].map((id) => ({
+        base: undefined,
+        id: BlockId.create(id),
+        isAbstract: false,
+      })),
+      warnings: [],
+    });
+  });
+
   it('should list the bases of a block nearest first, as far as each is a block, when its bases chain, close in a cycle or end at no block', () => {
     // Arrange
     const sources = [
@@ -395,7 +458,6 @@ describe('readBlockSet', () => {
     // Assert
     expect(blockSet).toStrictEqual({
       ancestors: ancestorsOf({
-        a: [],
         b: [
           'a',
         ],
@@ -403,7 +465,6 @@ describe('readBlockSet', () => {
           'b',
           'a',
         ],
-        d: [],
         e: [
           'd',
         ],
@@ -415,7 +476,6 @@ describe('readBlockSet', () => {
           'x',
         ],
       }),
-      answers: [],
       blocks: [
         blockSetBlockOf({
           id: 'a',
@@ -474,7 +534,6 @@ describe('readBlockSet', () => {
       condition: 'a pack is not installed',
       expected: {
         ancestors: ancestorsOf({}),
-        answers: [],
         blocks: [
           blockSetBlockOf({
             id: 'kit',
@@ -514,7 +573,6 @@ describe('readBlockSet', () => {
       condition: 'a file of the release lies outside every block folder',
       expected: {
         ancestors: ancestorsOf({}),
-        answers: [],
         blocks: [],
         roles: [],
         rules: [],
@@ -540,7 +598,6 @@ describe('readBlockSet', () => {
       condition: 'a pack holds core',
       expected: {
         ancestors: ancestorsOf({}),
-        answers: [],
         blocks: [],
         roles: [],
         rules: [],
@@ -569,7 +626,6 @@ describe('readBlockSet', () => {
       condition: 'a passport cannot be read',
       expected: {
         ancestors: ancestorsOf({}),
-        answers: [],
         blocks: [
           blockSetBlockOf({
             id: 'ui',
@@ -599,7 +655,6 @@ describe('readBlockSet', () => {
       condition: 'a chapter of a pack cannot be read',
       expected: {
         ancestors: ancestorsOf({}),
-        answers: [],
         blocks: [
           blockSetBlockOf({
             chapters: [
@@ -639,7 +694,6 @@ describe('readBlockSet', () => {
       condition: "a block's folder or a seam is named by no kebab-case id",
       expected: {
         ancestors: ancestorsOf({}),
-        answers: [],
         blocks: [
           blockSetBlockOf({
             id: 'ui',
@@ -682,7 +736,6 @@ describe('readBlockSet', () => {
       condition: 'a passport has no front matter',
       expected: {
         ancestors: ancestorsOf({}),
-        answers: [],
         blocks: [
           blockSetBlockOf({
             id: 'ui',
@@ -721,7 +774,6 @@ describe('readBlockSet', () => {
       condition: 'files of a block are neither a chapter nor a seam of an axis',
       expected: {
         ancestors: ancestorsOf({}),
-        answers: [],
         blocks: [
           blockSetBlockOf({
             id: 'ui',
@@ -810,7 +862,6 @@ describe('readBlockSet', () => {
       condition: 'packs repeat a block read before them',
       expected: {
         ancestors: ancestorsOf({}),
-        answers: [],
         blocks: [
           blockSetBlockOf({
             id: 'ui',
@@ -879,7 +930,6 @@ describe('readBlockSet', () => {
       condition: 'a source holds one block in two layer folders',
       expected: {
         ancestors: ancestorsOf({}),
-        answers: [],
         blocks: [
           blockSetBlockOf({
             chapters: [
@@ -936,7 +986,6 @@ describe('readBlockSet', () => {
       condition: 'a block of a source has its passport only in its second layer folder',
       expected: {
         ancestors: ancestorsOf({}),
-        answers: [],
         blocks: [
           blockSetBlockOf({
             chapters: [
@@ -976,7 +1025,6 @@ describe('readBlockSet', () => {
       condition: 'a rule is stated twice',
       expected: {
         ancestors: ancestorsOf({}),
-        answers: [],
         blocks: [
           blockSetBlockOf({
             chapters: [
@@ -1025,7 +1073,6 @@ describe('readBlockSet', () => {
       condition: 'a block requires an unknown block and a name no block id could be',
       expected: {
         ancestors: ancestorsOf({}),
-        answers: [],
         blocks: [
           blockSetBlockOf({
             id: 'api',
@@ -1081,7 +1128,6 @@ describe('readBlockSet', () => {
       condition: 'a block of a pack extends an unknown block',
       expected: {
         ancestors: ancestorsOf({}),
-        answers: [],
         blocks: [
           blockSetBlockOf({
             extends: 'ghost',
@@ -1119,12 +1165,10 @@ describe('readBlockSet', () => {
       condition: 'a block extends a concrete block',
       expected: {
         ancestors: ancestorsOf({
-          api: [],
           ui: [
             'api',
           ],
         }),
-        answers: [],
         blocks: [
           blockSetBlockOf({
             id: 'api',
@@ -1165,7 +1209,6 @@ describe('readBlockSet', () => {
       condition: 'a rule of the release tightens an unknown rule beside a pack',
       expected: {
         ancestors: ancestorsOf({}),
-        answers: [],
         blocks: [
           blockSetBlockOf({
             id: 'kit',

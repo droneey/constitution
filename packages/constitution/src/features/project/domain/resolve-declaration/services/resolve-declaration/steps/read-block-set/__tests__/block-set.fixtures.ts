@@ -1,13 +1,9 @@
-import type { Met, ProjectWarning } from '#/kernel/entities';
+import type { ProjectWarning } from '#/kernel/entities';
 import { FileReadStatus } from '#/kernel/entities';
-import { AbsolutePath, BlockId, BlockSource, PackPath, RuleSlug } from '#/kernel/value-objects';
+import { AbsolutePath, BlockId, BlockSource, PackPath } from '#/kernel/value-objects';
 
 import { cardsOf } from '../../../../../../../__tests__/project.fixtures';
-import type {
-  BlockSetAnswer,
-  BlockSetSource,
-  SourceFile,
-} from '../../../../../../block-set/entities';
+import type { BlockSetSource, SourceFile } from '../../../../../../block-set/entities';
 import { SourceStatus } from '../../../../../../block-set/entities';
 import { readBlockSet } from '../read-block-set';
 
@@ -66,22 +62,6 @@ const ancestorsOf = (
     ]),
   );
 
-interface BlockSetAnswerFixture {
-  readonly block: string;
-  readonly met?: Met;
-  readonly requirement: string;
-}
-
-const blockSetAnswerOf = (answer: BlockSetAnswerFixture): BlockSetAnswer => ({
-  block: BlockId.create(answer.block),
-  ...(answer.met === undefined
-    ? {}
-    : {
-        met: answer.met,
-      }),
-  requirement: RuleSlug.create(answer.requirement),
-});
-
 const blockSetOf = (
   sources: readonly BlockSetSource[],
 ): ReturnType<typeof readBlockSet>['blockSet'] & {
@@ -98,4 +78,4 @@ const blockSetOf = (
   };
 };
 
-export { ancestorsOf, blockSetAnswerOf, blockSetOf, packOf, sourceOf };
+export { ancestorsOf, blockSetOf, packOf, sourceOf };
