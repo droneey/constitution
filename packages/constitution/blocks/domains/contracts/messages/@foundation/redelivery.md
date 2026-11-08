@@ -8,25 +8,82 @@
 
 Every message refused by a rule of the business is acknowledged as handled by its message consumer's handler of last resort. Its outcome is recorded or published. Exempt: a message that hands the program's own event to what reacts to it within the program.
 
-| Why |
-|---|
-| a refusal dead-lettered pages someone for an outcome of the business, and one released is refused again on every delivery. |
+#### Why
+
+A refusal dead-lettered pages someone for an outcome of the business, and one released is refused again on every delivery.
+
+#### Examples
+
+```pseudo title="Avoid"
+# presentation/bindings/settle-message
+function settleMessage(message, error, context)
+  if isBusinessRefusal(error) then
+    return message.deadLetter(error)
+  ...
+```
+
+```pseudo title="Prefer"
+# presentation/bindings/settle-message
+function settleMessage(message, error, context)
+  if isBusinessRefusal(error) then
+    call outcomes.publish(messageRefused(message.id, error.code), context)
+    return message.ack()
+  ...
+```
 
 ### failed-message-settled-by-its-failure → last-resort-handler-one-per-interface · MUST
 
 Every message whose handling can never succeed goes to its dead letters at once, by its message consumer's handler of last resort. Such a message fails its parse, has a type or a version its message consumer does not know, or met a defect in its handling.
 
-| Why |
-|---|
-| a poison message retried returns for ever and blocks those behind it. |
+#### Why
+
+A poison message retried returns for ever and blocks those behind it.
+
+#### Examples
+
+```pseudo title="Avoid"
+# presentation/bindings/settle-message
+function settleMessage(message, error, context)
+  if error is MessageParseError or error is UnknownMessageTypeError then
+    return message.release(after: jitteredBackoff(message.deliveryCount))
+  ...
+```
+
+```pseudo title="Prefer"
+# presentation/bindings/settle-message
+function settleMessage(message, error, context)
+  if error is MessageParseError or error is UnknownMessageTypeError then
+    return message.deadLetter(error)
+  if isDefect(error) then
+    return message.deadLetter(error)
+  ...
+```
 
 ### transient-failure-releases-its-message → last-resort-handler-one-per-interface · MUST
 
 Every message whose handling failed transiently is released for a later delivery by its message consumer's handler of last resort. A message that names what has not arrived yet failed transiently.
 
-| Why |
-|---|
-| across ordering keys a message often arrives before the one that creates what it names, so a dead letter for it loses work that a later delivery would have done. |
+#### Why
+
+Across ordering keys a message often arrives before the one that creates what it names, so a dead letter for it loses work that a later delivery would have done.
+
+#### Examples
+
+```pseudo title="Avoid"
+# presentation/bindings/settle-message
+function settleMessage(message, error, context)
+  if error is OrderNotYetKnownError then
+    return message.deadLetter(error)
+  ...
+```
+
+```pseudo title="Prefer"
+# presentation/bindings/settle-message
+function settleMessage(message, error, context)
+  if error is OrderNotYetKnownError or isTransient(error) then
+    return message.release(after: jitteredBackoff(message.deliveryCount))
+  ...
+```
 
 ## Retries
 
@@ -34,17 +91,48 @@ Every message whose handling failed transiently is released for a later delivery
 
 Every message released after a transient failure waits a growing, randomly spread delay before its next delivery. The delay is set on the message broker or the message consumer, never left at the message broker's default of redelivering at once.
 
-| Why |
-|---|
-| a message broker often redelivers a released message at once, into the same outage, so every message consumer's retries land on the system that is down together. |
+#### Why
+
+A message broker often redelivers a released message at once, into the same outage, so every message consumer's retries land on the system that is down together.
+
+#### Examples
+
+```pseudo title="Avoid"
+if isTransient(error) then
+  return message.release()
+```
+
+```pseudo title="Prefer"
+if isTransient(error) then
+  return message.release(after: jitteredBackoff(message.deliveryCount))
+```
 
 ### redelivery-limited-then-dead-lettered → failure-retried-only-when-transient · MUST
 
 Every released message goes to its dead letters once delivered as often as the project's limit allows. The message broker counts the deliveries, and whatever takes the message reads its count there, keeping no count of its own.
 
-| Why |
-|---|
-| a message retried without a limit never leaves the queue, and a count the message consumer keeps on top of the message broker's multiplies the attempts the project meant to allow. |
+#### Why
+
+A message retried without a limit never leaves the queue, and a count the message consumer keeps on top of the message broker's multiplies the attempts the project meant to allow.
+
+#### Examples
+
+```pseudo title="Avoid"
+if isTransient(error) then
+  let attempts = retryCounts.increment(message.id)
+  if attempts > maxDeliveries then
+    return message.deadLetter(error)
+
+  return message.release(after: jitteredBackoff(attempts))
+```
+
+```pseudo title="Prefer"
+if isTransient(error) then
+  if message.deliveryCount >= maxDeliveries then
+    return message.deadLetter(error)
+
+  return message.release(after: jitteredBackoff(message.deliveryCount))
+```
 
 ## Dead letters
 
@@ -52,41 +140,131 @@ Every released message goes to its dead letters once delivered as often as the p
 
 Every dead letter keeps its message whole, with the cause of its last failure. That is the message's body, its headers and its count of attempts, and the code and the cause of the failure.
 
-| Why |
-|---|
-| a dead letter without its cause cannot be diagnosed, and one without its body or headers cannot be replayed. |
+#### Why
+
+A dead letter without its cause cannot be diagnosed, and one without its body or headers cannot be replayed.
+
+#### Examples
+
+```pseudo title="Avoid"
+call deadLetters.add({
+  messageId: message.id,
+  error: error.message,
+})
+```
+
+```pseudo title="Prefer"
+call deadLetters.add({
+  body: message.body,
+  headers: message.headers,
+  deliveryCount: message.deliveryCount,
+  failure: { code: error.code, cause: describeCause(error) },
+})
+```
 
 ### dead-letter-leaves-only-by-its-operators-command · MUST
 
 Every dead letter leaves its dead letters only by its operator's command. The command hands it on again once the fault is fixed, or gives it up. Exempt: a dead letter of another program's message whose data a retention the project sets forbids keeping longer, which leaves as abandoned once that retention ends.
 
-| Why |
-|---|
-| a dead letter sent back automatically fails again for the same reason, and one dropped by a purge or by the message broker's default retention loses work nobody decided to give up. |
+#### Why
+
+A dead letter sent back automatically fails again for the same reason, and one dropped by a purge or by the message broker's default retention loses work nobody decided to give up.
+
+#### Examples
+
+```pseudo title="Avoid"
+every hour
+  for deadLetter in deadLetters.all()
+    call broker.republish(deadLetter.message)
+```
+
+```pseudo title="Prefer"
+function replayDeadLetter(command, context)
+  call requireOperator(context)
+  let deadLetter = deadLetters.take(command.deadLetterId, context)
+
+  call broker.republish(deadLetter.message, context)
+
+function giveUpDeadLetter(command, context)
+  call requireOperator(context)
+  call deadLetters.giveUp(command.deadLetterId, command.reason, context)
+```
 
 ### abandoned-dead-letter-reported-to-its-operator · MUST
 
 Every dead letter of another program's message that leaves once its data's retention ends is reported to its operator as abandoned.
 
-| Why |
-|---|
-| a dead letter that leaves unreported is work abandoned with nobody aware, so its operator learns of it only from the effect that never came. |
+#### Why
+
+A dead letter that leaves unreported is work abandoned with nobody aware, so its operator learns of it only from the effect that never came.
+
+#### Examples
+
+```pseudo title="Avoid"
+every day
+  call deadLetters.deleteOlderThan(partnerDataRetention)
+```
+
+```pseudo title="Prefer"
+every day
+  for deadLetter in deadLetters.olderThan(partnerDataRetention)
+    call deadLetters.abandon(deadLetter.id)
+    call operatorAlerts.send(abandonedDeadLetter({
+      messageId: deadLetter.messageId,
+      type: deadLetter.type,
+      failure: deadLetter.failure.code,
+    }))
+```
 
 ### key-held-while-its-message-is-dead-lettered · MUST
 
 Where their order matters to its message consumer, each later message of a key is held while an earlier one is dead-lettered. Exempt: a message that hands the program's own event to what reacts to it within the program.
 
-| Why |
-|---|
-| a later change applied on top of one that never took effect leaves the object in a state no sequence of its changes produces. |
+#### Why
+
+A later change applied on top of one that never took effect leaves the object in a state no sequence of its changes produces.
+
+#### Examples
+
+```pseudo title="Avoid"
+function onStockChanged(message, context)
+  call stockLevels.apply(parseStockChanged(message), context)
+```
+
+```pseudo title="Prefer"
+function onStockChanged(message, context)
+  if deadLetters.holdsKey(message.orderingKey) then
+    return Held
+
+  call stockLevels.apply(parseStockChanged(message), context)
+```
 
 ### dead-letter-holds-back-only-its-key · MUST
 
 Where it holds back later messages, every dead letter holds back only those of its own ordering key, never another key's.
 
-| Why |
-|---|
-| a dead letter that stops its whole partition or queue holds every other object's changes for as long as its operator takes, though none of them depends on the one that failed. |
+#### Why
+
+A dead letter that stops its whole partition or queue holds every other object's changes for as long as its operator takes, though none of them depends on the one that failed.
+
+#### Examples
+
+```pseudo title="Avoid"
+function onStockChanged(message, context)
+  if deadLetters.count() > 0 then
+    call subscription.pause()
+    return Held
+
+  call stockLevels.apply(parseStockChanged(message), context)
+```
+
+```pseudo title="Prefer"
+function onStockChanged(message, context)
+  if deadLetters.holdsKey(message.orderingKey) then
+    return Held
+
+  call stockLevels.apply(parseStockChanged(message), context)
+```
 
 ## Specs
 
@@ -94,14 +272,44 @@ Where it holds back later messages, every dead letter holds back only those of i
 
 Every message consumer's specs deliver one message twice and check that its effect happened once.
 
-| Why |
-|---|
-| redelivery is rare on a developer's machine and certain in production, so only a case exercises it before a customer is charged twice. |
+#### Why
+
+Redelivery is rare on a developer's machine and certain in production, so only a case exercises it before a customer is charged twice.
+
+#### Examples
+
+```text title="Avoid"
+on-order-paid.test
+  should add points when the order is paid
+  should refuse the message when its customer is unknown
+```
+
+```text title="Prefer"
+on-order-paid.test
+  should add points when the order is paid
+  should refuse the message when its customer is unknown
+  should add points once when the message is delivered twice
+```
 
 ### reordering-has-a-case → edge-cases-chosen-by-risk · SHOULD
 
 Every message consumer to which order matters has a case that delivers two messages of one ordering key out of order.
 
-| Why |
-|---|
-| reordering is rare on a developer's machine and certain under competing message consumers, so only a case shows what the message consumer does with an older state that arrives last. |
+#### Why
+
+Reordering is rare on a developer's machine and certain under competing message consumers, so only a case shows what the message consumer does with an older state that arrives last.
+
+#### Examples
+
+```text title="Avoid"
+on-stock-changed.test
+  should set the stock level of a product
+  should set the level once when a change is delivered twice
+```
+
+```text title="Prefer"
+on-stock-changed.test
+  should set the stock level of a product
+  should set the level once when a change is delivered twice
+  should keep the newer level when the older change arrives last
+```

@@ -20,7 +20,6 @@ export type { PatternedText } from './patterned-text.utils';
 export { patternedTextOf } from './patterned-text.utils';
 export type { MarkdownSection } from './sections.utils';
 export { isHeading, sectionsOf } from './sections.utils';
-export { cellsOf, isTableLine, tablesOf } from './tables.utils';
 export {
   collapseWhitespace,
   ownedWordMatcher,

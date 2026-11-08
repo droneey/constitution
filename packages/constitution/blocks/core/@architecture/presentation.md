@@ -20,9 +20,32 @@ The **program's presentation**{#program-presentation}, at the top of the source,
 
 Every delivery unit lives in the presentation of the feature or the composition module whose operations it serves. It lives in the program's presentation when it spans several or its interface's block names it a page of the program.
 
-| Why |
-|---|
-| a delivery unit kept away from the operations it serves is changed in a second place whenever they change — the common closure principle. |
+#### Why
+
+A delivery unit kept away from the operations it serves is changed in a second place whenever they change — the common closure principle.
+
+#### Examples
+
+```text title="Avoid"
+src/
+├── features/orders/
+└── presentation/
+    └── bindings/commands/
+        └── cancel-order
+```
+
+```text title="Prefer"
+src/
+├── features/orders/presentation/
+│   └── bindings/commands/
+│       └── cancel-order
+├── composition/checkout/presentation/
+│   └── bindings/commands/
+│       └── check-out
+└── presentation/
+    └── screens/
+        └── order
+```
 
 ## What it calls
 
@@ -30,17 +53,64 @@ Every delivery unit lives in the presentation of the feature or the composition 
 
 Every presentation calls and renders only what it serves: a feature's, the operations and units its own feature offers; a composition module's, the operations it offers and the units of the features it composes; the program's, what the surfaces of features and composition modules offer.
 
-| Why |
-|---|
-| a presentation that calls or renders past what it serves is tied to features it does not serve, and changes whenever they do. |
+#### Why
+
+A presentation that calls or renders past what it serves is tied to features it does not serve, and changes whenever they do.
+
+#### Examples
+
+```pseudo title="Avoid"
+# orders/presentation/bindings/queries/show-order
+function showOrder(request, { getOrder, getInvoice }, context)
+  let order = getOrder(parseGetOrderInput(request.params), context)
+  let invoice = getInvoice(parseGetInvoiceInput({ orderId: order.id }), context)
+
+  return ok({ order, invoice })
+```
+
+```pseudo title="Prefer"
+# orders/presentation/bindings/queries/show-order
+function showOrder(request, { getOrder }, context)
+  return ok(getOrder(parseGetOrderInput(request.params), context))
+
+# presentation/screens/order
+function showOrderPage(request, { getOrder, getInvoice }, context)
+  let order = getOrder(parseGetOrderInput(request.params), context)
+  let invoice = getInvoice(parseGetInvoiceInput({ orderId: order.id }), context)
+
+  return page({ order, invoice })
+```
 
 ### binding-unit-calls-only-use-cases · MUST
 
 Every binding unit reaches its operation only through the operation's use case, never through a port of its feature. A delivery unit that serves several operations reaches each through its binding unit, or binds it itself as that binding unit would, through the operation's use case.
 
-| Why |
-|---|
-| a binding unit that calls a port skips the use case with its rules and steps, and ties the interface to the store or service the root chose — ports and adapters. |
+#### Why
+
+A binding unit that calls a port skips the use case with its rules and steps, and ties the interface to the store or service the root chose — ports and adapters.
+
+#### Examples
+
+```pseudo title="Avoid"
+# orders/presentation/bindings/commands/cancel-order
+function onCancel(request, orders: OrderRepositoryPort)
+  let order = orders.find(request.params.orderId)
+
+  orders.save(cancel(order))
+
+  return ok()
+```
+
+```pseudo title="Prefer"
+# orders/presentation/bindings/commands/cancel-order
+function onCancel(request, cancelOrder, context)
+  let input = parseCancelOrderInput(request.params)
+
+  # Why: the error filter answers an OrderNotFoundError for every command
+  call cancelOrder(input, context)
+
+  return ok()
+```
 
 ## What it decides
 
@@ -48,14 +118,75 @@ Every binding unit reaches its operation only through the operation's use case, 
 
 Every delivery unit stays thin and decides no rule of the business. It reads its input off what its calling framework hands it, calls the operations whose results it presents, and presents what they return or what reaches it through the progress reporter.
 
-| Why |
-|---|
-| a rule of the business decided in a delivery unit can be neither reused by another transport nor tested without it — Humble Object. |
+#### Why
+
+A rule of the business decided in a delivery unit can be neither reused by another transport nor tested without it — Humble Object.
+
+#### Examples
+
+```pseudo title="Avoid"
+# orders/presentation/bindings/commands/place-order
+function onPlace(request, { placeOrder, orderIds }, context)
+  let input = parsePlaceOrderInput(
+    { orderId: orderIds.next(), ...request.body })
+
+  if input.total > 100
+    input.discount = 10
+
+  placeOrder(input, context)
+
+  return created(input.orderId)
+```
+
+```pseudo title="Prefer"
+# orders/presentation/bindings/commands/place-order
+function onPlace(request, { placeOrder, orderIds }, context)
+  let input = parsePlaceOrderInput(
+    { orderId: orderIds.next(), ...request.body })
+
+  # Why: the error filter answers a refused input or order for every command
+  call placeOrder(input, context)
+
+  return created(input.orderId)
+```
 
 ### missing-refused-or-failed-answered-in-the-presentation · SHOULD
 
 Everything the program answers when something is missing, refused or failed is decided in the presentation. No unit of another layer decides it: the deciding unit is the operation's binding unit, the delivery unit that renders its answer, or an interface-wide unit; such answers are a not-found answer, a redirect, what a refusal shows its user, a failure's message with its exit code or its response, and the answer of the handler of last resort.
 
-| Why |
-|---|
-| such an answer decided elsewhere ties the business to one interface's way of answering, or sits in the root or a registration, where no case proves it — Humble Object. |
+#### Why
+
+Such an answer decided elsewhere ties the business to one interface's way of answering, or sits in the root or a registration, where no case proves it — Humble Object.
+
+#### Examples
+
+```pseudo title="Avoid"
+# orders/application/use-cases/queries/get-order.use-case
+function createGetOrder({ orderQueries })
+  return function(input, context)
+    let order = orderQueries.find(input.orderId, context)
+
+    if order is <absent> then
+      return notFound()
+
+    return order
+```
+
+```pseudo title="Prefer"
+# orders/application/use-cases/queries/get-order.use-case
+function createGetOrder({ orderQueries })
+  return function(input, context)
+    let order = orderQueries.find(input.orderId, context)
+
+    if order is <absent> then
+      throw new OrderNotFoundError(input.orderId)
+
+    return order
+
+# orders/presentation/bindings/queries/show-order
+function showOrder(request, getOrder, context)
+  try
+    return ok(getOrder(parseGetOrderInput(request.params), context))
+  catch OrderNotFoundError
+    return notFound()
+```

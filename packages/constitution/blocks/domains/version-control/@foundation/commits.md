@@ -12,9 +12,27 @@ A **commit message** is the text recorded with a version-control commit: its hea
 
 Every version-control commit holds only the files of its task, never whatever else lies in the working copy.
 
-| Why |
-|---|
-| a version-control commit of whatever lies around carries a scratch file, a key or a build output into the repository history. |
+#### Why
+
+A version-control commit of whatever lies around carries a scratch file, a key or a build output into the repository history.
+
+#### Examples
+
+```text title="Avoid"
+fix: Round invoice totals to the cent
+
+M invoices/totals
+M invoices/__tests__/totals.test
+A notes.txt
+A .env.local
+```
+
+```text title="Prefer"
+fix: Round invoice totals to the cent
+
+M invoices/totals
+M invoices/__tests__/totals.test
+```
 
 ## What it says
 
@@ -22,9 +40,19 @@ Every version-control commit holds only the files of its task, never whatever el
 
 Every version-control commit's subject says what its change does. It never names the files the change touched, and is never a placeholder such as “update”, “wip” or “fix stuff”.
 
-| Why |
-|---|
-| a subject that names files or says “update” repeats what the diff lists, so the repository history holds no line that says what the change means, and whoever searches or bisects it must read every diff. |
+#### Why
+
+A subject that names files or says “update” repeats what the diff lists, so the repository history holds no line that says what the change means, and whoever searches or bisects it must read every diff.
+
+#### Examples
+
+```text title="Avoid"
+fix: Update invoices/totals and invoices/__tests__/totals.test
+```
+
+```text title="Prefer"
+fix: Round invoice totals to the cent
+```
 
 ## Main line
 
@@ -32,6 +60,18 @@ Every version-control commit's subject says what its change does. It never names
 
 Every version-control commit of the main line passes the project's check.
 
-| Why |
-|---|
-| a version-control commit of the main line that fails the check breaks every bisect and every revert that lands on it. |
+#### Why
+
+A version-control commit of the main line that fails the check breaks every bisect and every revert that lands on it.
+
+#### Examples
+
+```text title="Avoid"
+main:  a1 ok   b2 FAILED   c3 ok
+               fix lands later in c3
+```
+
+```text title="Prefer"
+feature branch:  b2 FAILED  b3 ok
+main:            a1 ok   c3 ok (b2 and b3 joined)
+```

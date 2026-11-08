@@ -1,29 +1,10 @@
-import {
-  RULE_EXAMPLES_HEADING,
-  RULE_TABLE_CELLS,
-  RULE_TABLE_HEADER,
-  RULE_WHY_HEADING,
-} from '../constants';
+import { RULE_EXAMPLES_HEADING, RULE_WHY_HEADING } from '../constants';
 import type { MarkdownSection } from '../utils';
-import {
-  cellsOf,
-  fencedBlocksOf,
-  fencedLinesOf,
-  isDeepEqual,
-  isHeading,
-  isTableLine,
-  tablesOf,
-  withoutCodeFences,
-} from '../utils';
+import { fencedBlocksOf, fencedLinesOf, isHeading, withoutCodeFences } from '../utils';
 import type { RuleSlug } from '../value-objects';
 import type { RuleExample } from './rule.entity';
 import type { RuleFormProblem } from './rule-form.entity';
 import { RuleFormCode } from './rule-form.entity';
-
-enum RuleForm {
-  Tabled = 'tabled',
-  Sectioned = 'sectioned',
-}
 
 enum Part {
   Why = 'why',
@@ -44,7 +25,6 @@ interface RuleBody {
 }
 
 interface BodyInput {
-  readonly form: RuleForm;
   readonly lines: readonly string[];
   readonly slug: RuleSlug;
   readonly subsections: readonly MarkdownSection[];
@@ -57,7 +37,6 @@ interface PartRead {
   readonly part: Part;
 }
 
-const DASHES = /^:?-+:?$/;
 const DEEPER_HEADING = '#####';
 const TITLE_ATTRIBUTE = /(?:^|\s)title="([^"]+)"/;
 const LANGUAGE = /^[^\s=]+(?=\s|$)/;
@@ -81,96 +60,6 @@ const joinedOf = (lines: readonly string[]): string =>
     .map((line) => line.trim())
     .filter((line) => line !== '')
     .join(' ');
-
-const formsOf = (chunk: RuleChunk): readonly RuleForm[] => [
-  ...(proseOf(chunk.lines).some(isTableLine)
-    ? [
-        RuleForm.Tabled,
-      ]
-    : []),
-  ...(chunk.subsections.length > 0
-    ? [
-        RuleForm.Sectioned,
-      ]
-    : []),
-];
-
-const tabledOf = (input: BodyInput): RuleBody => {
-  const { slug } = input;
-  const tables = tablesOf(input.lines);
-  const read = {
-    examples: [],
-    proseLines: input.lines,
-  };
-
-  if (tables.length !== 1) {
-    const problem: RuleFormProblem =
-      tables.length === 0
-        ? {
-            code: RuleFormCode.WithoutTable,
-            details: {
-              slug,
-            },
-          }
-        : {
-            code: RuleFormCode.TablesMany,
-            details: {
-              count: tables.length,
-              slug,
-            },
-          };
-
-    return {
-      ...read,
-      problems: [
-        problem,
-      ],
-      why: '',
-    };
-  }
-
-  // Stryker disable next-line StringLiteral,ArrayDeclaration: the one table has a line, and a missing delimiter fails either way
-  const [header = '', delimiter = '', ...rows] = tables[0] ?? [];
-  const cells = rows.slice(0, 1).flatMap(cellsOf);
-  const isHeader =
-    isDeepEqual(cellsOf(header), cellsOf(RULE_TABLE_HEADER)) &&
-    cellsOf(delimiter).every((cell) => DASHES.test(cell));
-
-  const problems: readonly (RuleFormProblem | undefined)[] = [
-    isHeader
-      ? undefined
-      : {
-          code: RuleFormCode.HeaderMisshapen,
-          details: {
-            slug,
-          },
-        },
-    rows.length === 1
-      ? undefined
-      : {
-          code: RuleFormCode.RowsNotOne,
-          details: {
-            count: rows.length,
-            slug,
-          },
-        },
-    rows.length === 0 || cells.length === RULE_TABLE_CELLS
-      ? undefined
-      : {
-          code: RuleFormCode.CellsMiscounted,
-          details: {
-            count: cells.length,
-            slug,
-          },
-        },
-  ];
-
-  return {
-    ...read,
-    problems: problems.filter((problem) => problem !== undefined),
-    why: cells[0] ?? '',
-  };
-};
 
 const partOf = (input: { heading: string; isInExamples: boolean }): Part => {
   if (input.heading.startsWith(DEEPER_HEADING)) {
@@ -335,7 +224,7 @@ const examplesOf = (input: {
   };
 };
 
-const sectionedOf = (input: BodyInput): RuleBody => {
+const read = (input: BodyInput): RuleBody => {
   const { slug } = input;
   const parts = partsOf(input.subsections);
   const whyLines = proseOf(
@@ -396,11 +285,7 @@ const withoutExamples = (text: string): string => {
     .join('\n');
 };
 
-const read = (input: BodyInput): RuleBody =>
-  input.form === RuleForm.Sectioned ? sectionedOf(input) : tabledOf(input);
-
 const RuleBody = {
-  formsOf,
   joinedOf,
   proseOf,
   read,
@@ -408,4 +293,4 @@ const RuleBody = {
 } as const;
 
 export type { RuleChunk };
-export { RuleBody, RuleForm };
+export { RuleBody };

@@ -10,12 +10,25 @@ import { ValueSite } from '../value-finding.entity';
 
 const FILE = 'blocks/core/@foundation/principles.md';
 const AGREEMENT = 'blocks/core/@foundation/agreement.md';
-const table = [
+const sections = [
   '',
-  '| Why |',
-  '|---|',
-  '| it keeps the code honest. |',
+  '#### Why',
+  '',
+  'it keeps the code honest.',
+  '',
+  '#### Examples',
+  '',
+  '```sh title="Prefer"',
+  '# a comment, not a heading',
+  'run',
+  '```',
 ];
+
+const prefer = {
+  code: '# a comment, not a heading\nrun',
+  language: 'sh',
+  title: 'Prefer',
+};
 
 const sourceOf = (lines: readonly string[]): RuleSource => ({
   axis: Axis.Foundation,
@@ -27,7 +40,9 @@ const sourceOf = (lines: readonly string[]): RuleSource => ({
 const ruleOf = (fields: Partial<StatedRule>): StatedRule => ({
   axis: Axis.Foundation,
   block: coreBlockId,
-  examples: [],
+  examples: [
+    prefer,
+  ],
   file: FILE,
   slug: RuleSlug.create('a'),
   statedLevel: Level.Must,
@@ -39,7 +54,9 @@ const ruleOf = (fields: Partial<StatedRule>): StatedRule => ({
 const unstatedRuleOf = (fields: Partial<StatedRule>): StatedRule => ({
   axis: Axis.Foundation,
   block: coreBlockId,
-  examples: [],
+  examples: [
+    prefer,
+  ],
   file: FILE,
   slug: RuleSlug.create('a'),
   statement: 'A.',
@@ -48,7 +65,7 @@ const unstatedRuleOf = (fields: Partial<StatedRule>): StatedRule => ({
 });
 
 describe('StatedRule.parse', () => {
-  it('should read the heading, the statement and the table when a root rule is complete', () => {
+  it('should read the heading, the statement and the Why when a root rule is complete', () => {
     // Arrange
     const source = {
       ...sourceOf([
@@ -57,13 +74,17 @@ describe('StatedRule.parse', () => {
         '### four-data-states · MUST',
         'Every data view shows',
         '  four states.  ',
+        '#### Why',
         '',
-        '| Why |',
-        '| :-: |',
-        '|  an empty screen cannot be told from a slow one. |',
+        '  An empty screen cannot be told',
+        'from a slow one.',
         '',
-        '**Example:**',
-        'Prose after the example.',
+        '#### Examples',
+        '',
+        '```sh title="Prefer"',
+        '# a comment, not a heading',
+        'run',
+        '```',
       ]),
       axis: Axis.Architecture,
       file: 'blocks/core/@architecture/with/ui.md',
@@ -85,7 +106,7 @@ describe('StatedRule.parse', () => {
           section: 'Screens',
           slug: RuleSlug.create('four-data-states'),
           statement: 'Every data view shows four states.',
-          why: 'an empty screen cannot be told from a slow one.',
+          why: 'An empty screen cannot be told from a slow one.',
         }),
       ],
     });
@@ -121,7 +142,7 @@ describe('StatedRule.parse', () => {
       const source = sourceOf([
         heading,
         'A.',
-        ...table,
+        ...sections,
       ]);
 
       // Act
@@ -172,7 +193,7 @@ describe('StatedRule.parse', () => {
     const source = sourceOf([
       heading,
       'A.',
-      ...table,
+      ...sections,
     ]);
 
     // Act
@@ -192,7 +213,7 @@ describe('StatedRule.parse', () => {
     const source = sourceOf([
       '### a · MUST',
       'A rule names its reason after **Why:** and splits a | b.',
-      ...table,
+      ...sections,
     ]);
 
     // Act
@@ -264,220 +285,26 @@ describe('StatedRule.parse', () => {
     });
   });
 
-  it.each<{
-    findings: RulesParsed['findings'];
-    lines: readonly string[];
-    name: string;
-    rule: Partial<StatedRule>;
-  }>([
-    {
-      findings: [
-        {
-          code: RuleFormCode.WithoutTable,
-          details: {
-            slug: RuleSlug.create('a'),
-          },
-          path: FILE,
-        },
-      ],
-      lines: [],
-      name: 'no table',
-      rule: {
-        why: '',
-      },
-    },
-    {
-      findings: [
-        {
-          code: RuleFormCode.TablesMany,
-          details: {
-            count: 2,
-            slug: RuleSlug.create('a'),
-          },
-          path: FILE,
-        },
-      ],
-      lines: [
-        ...table,
-        '',
-        ...table,
-      ],
-      name: 'two tables',
-      rule: {
-        why: '',
-      },
-    },
-    {
-      findings: [
-        {
-          code: RuleFormCode.HeaderMisshapen,
-          details: {
-            slug: RuleSlug.create('a'),
-          },
-          path: FILE,
-        },
-        {
-          code: RuleFormCode.CellsMiscounted,
-          details: {
-            count: 2,
-            slug: RuleSlug.create('a'),
-          },
-          path: FILE,
-        },
-      ],
-      lines: [
-        '| Why | Tags |',
-        '|---|---|',
-        '| it keeps the code honest. | [] |',
-      ],
-      name: 'the table of the old form, with its Tags',
-      rule: {},
-    },
-    {
-      findings: [
-        {
-          code: RuleFormCode.HeaderMisshapen,
-          details: {
-            slug: RuleSlug.create('a'),
-          },
-          path: FILE,
-        },
-        {
-          code: RuleFormCode.RowsNotOne,
-          details: {
-            count: 0,
-            slug: RuleSlug.create('a'),
-          },
-          path: FILE,
-        },
-      ],
-      lines: [
-        '| Why |',
-        '| it keeps the code honest. |',
-      ],
-      name: 'no delimiter row',
-      rule: {
-        why: '',
-      },
-    },
-    {
-      findings: [
-        {
-          code: RuleFormCode.RowsNotOne,
-          details: {
-            count: 2,
-            slug: RuleSlug.create('a'),
-          },
-          path: FILE,
-        },
-      ],
-      lines: [
-        ...table,
-        '| it keeps the tests honest. |',
-      ],
-      name: 'two rows',
-      rule: {},
-    },
-    {
-      findings: [
-        {
-          code: RuleFormCode.HeaderMisshapen,
-          details: {
-            slug: RuleSlug.create('a'),
-          },
-          path: FILE,
-        },
-        {
-          code: RuleFormCode.CellsMiscounted,
-          details: {
-            count: 0,
-            slug: RuleSlug.create('a'),
-          },
-          path: FILE,
-        },
-      ],
-      lines: [
-        '| Why',
-        '|---',
-        '| it keeps the code honest.',
-      ],
-      name: 'a table whose lines lack their closing pipe',
-      rule: {
-        why: '',
-      },
-    },
-    {
-      findings: [],
-      lines: [
-        '| Why |',
-        '|---|',
-        '|  |',
-      ],
-      name: 'an empty Why, which the rules check reports',
-      rule: {
-        why: '',
-      },
-    },
-    {
-      findings: [
-        {
-          code: RuleFormCode.HeaderMisshapen,
-          details: {
-            slug: RuleSlug.create('a'),
-          },
-          path: FILE,
-        },
-      ],
-      lines: [
-        '| Why |',
-        '| x- |',
-        '| it keeps the code honest. |',
-      ],
-      name: 'a delimiter cell with a word before its dashes',
-      rule: {},
-    },
-    {
-      findings: [
-        {
-          code: RuleFormCode.HeaderMisshapen,
-          details: {
-            slug: RuleSlug.create('a'),
-          },
-          path: FILE,
-        },
-      ],
-      lines: [
-        '| Why |',
-        '| -x |',
-        '| it keeps the code honest. |',
-      ],
-      name: 'a delimiter cell with a word after its dashes',
-      rule: {},
-    },
-    {
-      findings: [
-        {
-          code: RuleFormCode.HeaderMisshapen,
-          details: {
-            slug: RuleSlug.create('a'),
-          },
-          path: FILE,
-        },
-      ],
-      lines: [
-        '| Why |',
-        '|---| x |',
-        '| it keeps the code honest. |',
-      ],
-      name: 'a delimiter row whose second cell holds no dashes',
-      rule: {},
-    },
-    {
+  it('should report each label the statement holds and end the statement at the first', () => {
+    // Arrange
+    const source = sourceOf([
+      '### a · MUST',
+      'A.',
+      '**Example:** `b`',
+      '**Implements:** `c`',
+      ...sections,
+    ]);
+
+    // Act
+    const parsed = StatedRule.parse(source);
+
+    // Assert
+    expect(parsed).toStrictEqual({
       findings: [
         {
           code: RuleFormCode.HoldsLabel,
           details: {
-            label: 'Why',
+            label: 'Example',
             slug: RuleSlug.create('a'),
           },
           path: FILE,
@@ -491,36 +318,11 @@ describe('StatedRule.parse', () => {
           path: FILE,
         },
       ],
-      lines: [
-        '**Why:** it keeps the code honest.',
-        ...table,
-        '**Implements:** `b`',
+      rules: [
+        ruleOf({}),
       ],
-      name: 'labels of the old form',
-      rule: {},
-    },
-  ])(
-    'should report the table and read what it can when a rule has $name',
-    ({ findings, lines, rule }) => {
-      // Arrange
-      const source = sourceOf([
-        '### a · MUST',
-        'A.',
-        ...lines,
-      ]);
-
-      // Act
-      const parsed = StatedRule.parse(source);
-
-      // Assert
-      expect(parsed).toStrictEqual({
-        findings,
-        rules: [
-          ruleOf(rule),
-        ],
-      });
-    },
-  );
+    });
+  });
 
   it('should read the rules of a chapter and report a heading that looks like a rule when the rules follow its title', () => {
     // Arrange
@@ -529,7 +331,7 @@ describe('StatedRule.parse', () => {
         '# Core',
         '### rules-bind · MUST',
         'The rules bind.',
-        ...table,
+        ...sections,
         '### x - MUST',
       ]),
       file: AGREEMENT,
@@ -582,13 +384,13 @@ describe('StatedRule.wordingsOf', () => {
       '## Screens',
       '### four-data-states · MUST',
       'Every data view shows four states.',
-      ...table,
+      ...sections,
       '### Not-A-Slug · MUST',
       'A misshapen slug.',
-      ...table,
+      ...sections,
       '### name-reveals-more → name-reveals-intent',
       'A name says more.',
-      ...table,
+      ...sections,
     ].join('\n');
 
     // Act
@@ -597,14 +399,18 @@ describe('StatedRule.wordingsOf', () => {
     // Assert
     expect(wordings).toStrictEqual([
       {
-        examples: [],
+        examples: [
+          prefer,
+        ],
         slug: RuleSlug.create('four-data-states'),
         statedLevel: Level.Must,
         statement: 'Every data view shows four states.',
         why: 'it keeps the code honest.',
       },
       {
-        examples: [],
+        examples: [
+          prefer,
+        ],
         slug: RuleSlug.create('name-reveals-more'),
         statement: 'A name says more.',
         tightens: RuleSlug.create('name-reveals-intent'),
@@ -680,7 +486,9 @@ describe('StatedRule.inheritLevels', () => {
       {
         axis: Axis.Foundation,
         block: coreBlockId,
-        examples: [],
+        examples: [
+          prefer,
+        ],
         file: FILE,
         isLevelStated: true,
         level: Level.Should,
@@ -848,26 +656,6 @@ describe('StatedRule.inheritLevels', () => {
   });
 });
 
-const sections = [
-  '',
-  '#### Why',
-  '',
-  'it keeps the code honest.',
-  '',
-  '#### Examples',
-  '',
-  '```sh title="Prefer"',
-  '# a comment, not a heading',
-  'run',
-  '```',
-];
-
-const prefer = {
-  code: '# a comment, not a heading\nrun',
-  language: 'sh',
-  title: 'Prefer',
-};
-
 describe('StatedRule.parse, a rule with its Why and Examples in sections', () => {
   it('should read the statement, the Why and the examples when the rule is complete', () => {
     // Arrange
@@ -891,16 +679,10 @@ describe('StatedRule.parse, a rule with its Why and Examples in sections', () =>
       rules: [
         ruleOf({
           chapterTitle: 'Principles',
-          examples: [
-            prefer,
-          ],
           section: 'Screens',
         }),
         ruleOf({
           chapterTitle: 'Principles',
-          examples: [
-            prefer,
-          ],
           section: 'Screens',
           slug: RuleSlug.create('b'),
           statedLevel: Level.Should,
@@ -910,7 +692,7 @@ describe('StatedRule.parse, a rule with its Why and Examples in sections', () =>
     });
   });
 
-  it('should report the mix and read each rule in its own form when a chapter holds both forms', () => {
+  it('should read the rules after a Vocabulary table and report a slug that is not kebab-case', () => {
     // Arrange
     const source = sourceOf([
       '## Vocabulary',
@@ -922,7 +704,7 @@ describe('StatedRule.parse, a rule with its Why and Examples in sections', () =>
       ...sections,
       '### a · MUST',
       'A.',
-      ...table,
+      ...sections,
       '### b · MUST',
       'B.',
       ...sections,
@@ -934,14 +716,6 @@ describe('StatedRule.parse, a rule with its Why and Examples in sections', () =>
     // Assert
     expect(parsed).toStrictEqual({
       findings: [
-        {
-          code: RuleFormCode.FormsMixed,
-          details: {
-            sectioned: RuleSlug.create('b'),
-            tabled: RuleSlug.create('a'),
-          },
-          path: FILE,
-        },
         {
           code: ValueFailure.RuleSlug,
           details: {
@@ -956,9 +730,6 @@ describe('StatedRule.parse, a rule with its Why and Examples in sections', () =>
           section: 'Vocabulary',
         }),
         ruleOf({
-          examples: [
-            prefer,
-          ],
           section: 'Vocabulary',
           slug: RuleSlug.create('b'),
           statement: 'B.',
@@ -967,7 +738,7 @@ describe('StatedRule.parse, a rule with its Why and Examples in sections', () =>
     });
   });
 
-  it('should read a rule that shows neither form in the form of its chapter', () => {
+  it('should report a rule that holds neither section', () => {
     // Arrange
     const source = sourceOf([
       '### a · MUST',
@@ -1096,39 +867,5 @@ describe('StatedRule.parse, a rule with its Why and Examples in sections', () =>
         why: 'it keeps the code honest.',
       },
     ]);
-  });
-
-  it('should read a rule that shows both forms in sections, and report the mix', () => {
-    // Arrange
-    const source = sourceOf([
-      '### a · MUST',
-      'A.',
-      ...table,
-      ...sections,
-    ]);
-
-    // Act
-    const parsed = StatedRule.parse(source);
-
-    // Assert
-    expect(parsed).toStrictEqual({
-      findings: [
-        {
-          code: RuleFormCode.FormsMixed,
-          details: {
-            sectioned: RuleSlug.create('a'),
-            tabled: RuleSlug.create('a'),
-          },
-          path: FILE,
-        },
-      ],
-      rules: [
-        ruleOf({
-          examples: [
-            prefer,
-          ],
-        }),
-      ],
-    });
   });
 });

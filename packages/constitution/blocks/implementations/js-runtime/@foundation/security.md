@@ -8,9 +8,21 @@
 
 Every child process is passed an `env` built for it. This holds for a process the program starts through `spawn`, `execFile` or the runtime's own forms of them, which is never left to inherit `process.env` and never given a copy of it. Exempt: a script that only runs other programs, which passes on what its caller built for them, each secret it received only to the program that reads it.
 
-| Why |
-|---|
-| each of these calls copies the whole of `process.env` into the child when `env` is left out, a secret among it — least privilege. |
+#### Why
+
+Each of these calls copies the whole of `process.env` into the child when `env` is left out, a secret among it — least privilege.
+
+#### Examples
+
+```ts title="Avoid"
+const child = spawn('pdf-render', [invoicePath, outputPath]);
+```
+
+```ts title="Prefer"
+const child = spawn('pdf-render', [invoicePath, outputPath], {
+  env: { PATH: config.renderPath, RENDER_FONTS_DIR: config.fontsDir },
+});
+```
 
 ## Input from outside
 
@@ -18,17 +30,50 @@ Every child process is passed an `env` built for it. This holds for a process th
 
 No process is started through a shell. Its arguments go as an array, through `execFile`, `spawn` and the runtime's own forms of them, never through `exec`, `execSync` or the option `shell: true`.
 
-| Why |
-|---|
-| a command line handed to a shell is parsed again, and a `;` or a `$(…)` in its input runs as a command of its own. |
+#### Why
+
+A command line handed to a shell is parsed again, and a `;` or a `$(…)` in its input runs as a command of its own.
+
+#### Examples
+
+```ts title="Avoid"
+await exec(`pdf-render ${invoicePath} ${outputPath}`, { env: renderEnv });
+```
+
+```ts title="Prefer"
+await execFile('pdf-render', [invoicePath, outputPath], { env: renderEnv });
+```
 
 ### outside-path-checked-by-relative → outside-path-confined-to-its-root · MUST
 
 Every path built from outside input is confined by `path.relative` between real paths. It is resolved with `path.resolve(root, input)`, taken to its real path by `fs.realpath` — of its folder, for a file not yet made — and refused when `path.relative` from the root's real path is `..`, starts with `..` and a separator, or is absolute; where another writer can change the tree, the file is opened and its handle's `stat()` device and inode are compared with those of the checked real path.
 
-| Why |
-|---|
-| `path.join` follows every `..` it is given, out of the root, and a check on the string before it is resolved misses an encoded or nested one. |
+#### Why
+
+`path.join` follows every `..` it is given, out of the root, and a check on the string before it is resolved misses an encoded or nested one.
+
+#### Examples
+
+```ts title="Avoid"
+export const resolveUpload = (name: string): string => {
+  if (name.includes('..')) {
+    throw new UploadOutsideRootError(name);
+  }
+  return path.join(UPLOADS_ROOT, name);
+};
+```
+
+```ts title="Prefer"
+export const resolveUpload = async (name: string): Promise<string> => {
+  const root = await realpath(UPLOADS_ROOT);
+  const target = await realpath(path.resolve(root, name));
+  const relative = path.relative(root, target);
+  if (relative === '..' || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) {
+    throw new UploadOutsideRootError(name);
+  }
+  return target;
+};
+```
 
 ## Primitives
 
@@ -36,6 +81,22 @@ Every path built from outside input is confined by `path.relative` between real 
 
 Every secret is compared by `timingSafeEqual`. A token, a signature or a key is compared with `timingSafeEqual` from `node:crypto`, or the runtime's equivalent, over the HMACs or digests of both sides, never with `===`.
 
-| Why |
-|---|
-| `===` stops at the first byte that differs, and the time it takes tells an attacker how much of a guess was right. |
+#### Why
+
+`===` stops at the first byte that differs, and the time it takes tells an attacker how much of a guess was right.
+
+#### Examples
+
+```ts title="Avoid"
+export const isSignedByProvider = (body: Buffer, signature: string, secret: string): boolean =>
+  createHmac('sha256', secret).update(body).digest('hex') === signature;
+```
+
+```ts title="Prefer"
+const digestOf = (value: Buffer): Buffer => createHash('sha256').update(value).digest();
+
+export const isSignedByProvider = (body: Buffer, signature: string, secret: string): boolean => {
+  const expected = createHmac('sha256', secret).update(body).digest();
+  return timingSafeEqual(digestOf(expected), digestOf(Buffer.from(signature, 'hex')));
+};
+```

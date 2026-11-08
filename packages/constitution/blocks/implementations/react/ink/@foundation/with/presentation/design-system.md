@@ -8,6 +8,17 @@
 
 Every interval `useAnimation` takes is a duration token of the design system, read through its theme, never a number in the component.
 
-| Why |
-|---|
-| a number written in a component moves its animation at a pace of its own, out of step with the rest of the interface, and a change of the token never reaches it — a single source of truth. |
+#### Why
+
+A number written in a component moves its animation at a pace of its own, out of step with the rest of the interface, and a change of the token never reaches it — a single source of truth.
+
+#### Examples
+
+```tsx title="Avoid"
+const { frame } = useAnimation({ interval: 80, isActive: !isReducedMotion });
+```
+
+```tsx title="Prefer"
+const theme = useTheme();
+const { frame } = useAnimation({ interval: theme.duration.spinner, isActive: !isReducedMotion });
+```

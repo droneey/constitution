@@ -8,6 +8,17 @@
 
 Every native module is at the version the project's Expo SDK supports, as `expo install --check` reports it.
 
-| Why |
-|---|
-| a native module at another version builds and then crashes on a device. |
+#### Why
+
+A native module at another version builds and then crashes on a device.
+
+#### Examples
+
+```bash title="Avoid"
+npm install expo-camera@latest
+```
+
+```bash title="Prefer"
+npx expo install expo-camera
+npx expo install --check
+```

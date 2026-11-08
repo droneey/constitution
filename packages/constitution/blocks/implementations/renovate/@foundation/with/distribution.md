@@ -8,6 +8,32 @@
 
 Every range of a consumer-owned dependency that Renovate updates is widened to take the new release, its floor kept.
 
-| Why |
-|---|
-| a raised floor drops support for the versions its consumers still run, so their next install of the package fails or splits their tooling in two. |
+#### Why
+
+A raised floor drops support for the versions its consumers still run, so their next install of the package fails or splits their tooling in two.
+
+#### Examples
+
+```json title="Avoid"
+{
+  "packageRules": [
+    {
+      "matchFileNames": ["packages/client/package.json"],
+      "matchDepTypes": ["peerDependencies"],
+      "rangeStrategy": "bump"
+    }
+  ]
+}
+```
+
+```json title="Prefer"
+{
+  "packageRules": [
+    {
+      "matchFileNames": ["packages/client/package.json"],
+      "matchDepTypes": ["peerDependencies"],
+      "rangeStrategy": "widen"
+    }
+  ]
+}
+```

@@ -9,7 +9,7 @@ You review the placement of rules, and of the terms they define, in the Droneey 
 
 ## Input
 
-A git range, `origin/main...HEAD` unless you are given another. Read the rules it adds or changes: every `### <slug> · <LEVEL>` or `### <slug> → <parent>` heading under `blocks/` whose heading, statement or table appears in `git diff <range> -- packages/constitution/blocks/`, and every rule of a file the range moves.
+A git range, `origin/main...HEAD` unless you are given another. Read the rules it adds or changes: every `### <slug> · <LEVEL>` or `### <slug> → <parent>` heading under `blocks/` whose heading, statement or Why appears in `git diff <range> -- packages/constitution/blocks/`, and every rule of a file the range moves.
 
 ## What to read first
 

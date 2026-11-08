@@ -12,6 +12,27 @@ A module's **stylesheet surface**, **`index.css`**{#surface}, is the surface it 
 
 Every module that ships styles offers them through its stylesheet surface.
 
-| Why |
-|---|
-| the surface a module's code offers in its programming language cannot re-export a stylesheet, and a path past the module's surface couples to a file the module is free to move — information hiding. |
+#### Why
+
+The surface a module's code offers in its programming language cannot re-export a stylesheet, and a path past the module's surface couples to a file the module is free to move — information hiding.
+
+#### Examples
+
+```css title="Avoid"
+/* src/styles/main.css */
+@layer reset, base, theme, components;
+
+@import "../features/checkout/presentation/components/checkout-form/checkout-form.css" layer(components);
+@import "../features/checkout/presentation/components/order-summary/order-summary.css" layer(components);
+```
+
+```css title="Prefer"
+/* src/features/checkout/index.css */
+@import "./presentation/components/checkout-form/checkout-form.css";
+@import "./presentation/components/order-summary/order-summary.css";
+
+/* src/styles/main.css */
+@layer reset, base, theme, components;
+
+@import "../features/checkout/index.css" layer(components);
+```

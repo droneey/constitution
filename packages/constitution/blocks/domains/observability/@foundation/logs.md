@@ -14,25 +14,99 @@ A **log record** is one entry the logging facade writes, with its level, its mes
 
 Every diagnostic logged goes only through the logging facade, and no code writes to a console or a standard stream directly. Exempt: the facade's own sink, which may be a standard stream; the output of a program whose output is its interface, such as a command-line program's; and a protocol the program speaks over a stream.
 
-| Why |
-|---|
-| output written past the logger escapes the one place that decides where diagnostics go and what they may carry, so it lands where nobody looks, mixes into its user's output and can leak what it prints. |
+#### Why
+
+Output written past the logger escapes the one place that decides where diagnostics go and what they may carry, so it lands where nobody looks, mixes into its user's output and can leak what it prints.
+
+#### Examples
+
+```pseudo title="Avoid"
+function chargeCard(payment)
+  print("charging", payment.id)
+
+  return payments.charge(payment)
+```
+
+```pseudo title="Prefer"
+function chargeCard(payment)
+  logger.info("charging", {
+    paymentId: payment.id,
+  })
+
+  return payments.charge(payment)
+```
 
 ### failure-logged-once · SHOULD
 
 Every failure is logged once, never again by each unit it passes. The unit that handles it logs it or, where that unit logs nothing, the one it reports the failure to does.
 
-| Why |
-|---|
-| a failure logged by every unit it passes reads as several, and whoever reads the log chases incidents that never happened. |
+#### Why
+
+A failure logged by every unit it passes reads as several, and whoever reads the log chases incidents that never happened.
+
+#### Examples
+
+```pseudo title="Avoid"
+# orders/infrastructure/database/order-repository.adapter
+catch StoreUnavailable as failure
+  logger.error("order store unavailable", failureFields(failure))  # logged here, and again by the filter
+
+  throw new OrderStoreUnavailableError({ cause: failure })
+
+# presentation/bindings/error-filter
+catch error
+  logger.error("request failed", failureFields(error))
+
+  return errorAnswer(error)
+```
+
+```pseudo title="Prefer"
+# orders/infrastructure/database/order-repository.adapter
+catch StoreUnavailable as failure
+  throw new OrderStoreUnavailableError({ cause: failure })
+
+# presentation/bindings/error-filter
+catch error
+  logger.error("request failed", failureFields(error))
+
+  return errorAnswer(error)
+```
 
 ### optional-part-fault-reported · MUST
 
 Every failure contained where an optional part is called is logged there, or reported there to the unit that logs it.
 
-| Why |
-|---|
-| a fault contained and not reported leaves the part unavailable while nobody sees why, so it stays broken. |
+#### Why
+
+A fault contained and not reported leaves the part unavailable while nobody sees why, so it stays broken.
+
+#### Examples
+
+```pseudo title="Avoid"
+# catalogue/application/use-cases/queries/show-product.use-case
+function createShowProduct({ productQueries, recommendations })
+  return function(input, context)
+    let product = await productQueries.find(input.productId, context)
+
+    try
+      return { product, related: await recommendations.forProduct(input.productId, context) }
+    catch RecommendationsUnavailableError
+      return { product, related: [] }  # broken, and nobody hears of it
+```
+
+```pseudo title="Prefer"
+# catalogue/application/use-cases/queries/show-product.use-case
+function createShowProduct({ productQueries, recommendations, faults })
+  return function(input, context)
+    let product = await productQueries.find(input.productId, context)
+
+    try
+      return { product, related: await recommendations.forProduct(input.productId, context) }
+    catch RecommendationsUnavailableError as failure
+      faults.report(failure)
+
+      return { product, related: [] }
+```
 
 ## The pipeline
 
@@ -40,9 +114,25 @@ Every failure contained where an optional part is called is logged there, or rep
 
 Every log record, and every record the program's libraries or the server running it log, passes the one telemetry pipeline.
 
-| Why |
-|---|
-| a record that bypasses the pipeline skips the mask and the trace id, and lands in a second format nobody parses. |
+#### Why
+
+A record that bypasses the pipeline skips the mask and the trace id, and lands in a second format nobody parses.
+
+#### Examples
+
+```pseudo title="Avoid"
+# root/run
+let logger = createLogger({ sink: telemetryPipeline(stdout) })
+let server = createHttpServer({ logger: true })  # its own records, its own format
+let client = new StoreClient(config.databaseUrl, { log: consoleLog })
+```
+
+```pseudo title="Prefer"
+# root/run
+let logger = createLogger({ sink: telemetryPipeline(stdout) })
+let server = createHttpServer({ logger: logger.child({ component: "http" }) })
+let client = new StoreClient(config.databaseUrl, { log: logger.child({ component: "store" }) })
+```
 
 ## Records
 
@@ -50,25 +140,66 @@ Every log record, and every record the program's libraries or the server running
 
 Every log record's message is a fixed phrase that names what happened, never formatted with its values. Its values travel as fields beside it.
 
-| Why |
-|---|
-| a value formatted into the message makes a new string of every record, so one event can no longer be counted or searched as one and its values cannot be filtered — structured logging. |
+#### Why
+
+A value formatted into the message makes a new string of every record, so one event can no longer be counted or searched as one and its values cannot be filtered — structured logging.
+
+#### Examples
+
+```pseudo title="Avoid"
+logger.info("order " + order.id + " placed for " + order.totalCents + " cents")
+```
+
+```pseudo title="Prefer"
+logger.info("order placed", { orderId: order.id, totalCents: order.totalCents })
+```
 
 ### logged-failure-carries-its-diagnosis · SHOULD
 
 Every log record of a failure carries the failure's code, its chain of causes and its stack as fields. Exempt: a code or a stack the failure does not carry, such as the code of a defect the runtime raised or the stack of a failure returned as a value.
 
-| Why |
-|---|
-| an operator counts failures by their code and finds the bug from the cause and the stack, and a failure logged by its message alone gives neither. |
+#### Why
+
+An operator counts failures by their code and finds the bug from the cause and the stack, and a failure logged by its message alone gives neither.
+
+#### Examples
+
+```pseudo title="Avoid"
+logger.error("payment failed", { message: failure.message })
+```
+
+```pseudo title="Prefer"
+logger.error("payment failed", {
+  code: failure.code,
+  causes: causeChainOf(failure),
+  stack: failure.stack
+})
+```
 
 ### log-record-carries-the-trace-id · SHOULD
 
 Every log record carries the trace id of its work item.
 
-| Why |
-|---|
-| a record without its trace id cannot be found with the other records of its work item across the functions and libraries it passed through. |
+#### Why
+
+A record without its trace id cannot be found with the other records of its work item across the functions and libraries it passed through.
+
+#### Examples
+
+```pseudo title="Avoid"
+# root/logging
+let logger = createLogger({
+  sink: telemetryPipeline(stdout)
+})
+```
+
+```pseudo title="Prefer"
+# root/logging
+let logger = createLogger({
+  sink: telemetryPipeline(stdout),
+  enrich: [traceContextFields]
+})
+```
 
 ## Levels
 
@@ -76,17 +207,50 @@ Every log record carries the trace id of its work item.
 
 Every log record is written at the one level whose meaning fits it. An error says that someone acts; a warning, that the work degraded and may need action; info, a step of normal work; debug, detail for a developer.
 
-| Why |
-|---|
-| an error logged for what needs no action pages someone for nothing, until the alert on errors is ignored and a real one is missed. |
+#### Why
+
+An error logged for what needs no action pages someone for nothing, until the alert on errors is ignored and a real one is missed.
+
+#### Examples
+
+```pseudo title="Avoid"
+# carts/presentation/bindings/queries/show-cart
+catch CartNotFoundError as failure
+  logger.error("cart not found", { cartId: input.cartId })  # pages someone for a stale link
+
+  return notFound(failure)
+```
+
+```pseudo title="Prefer"
+# carts/presentation/bindings/queries/show-cart
+catch CartNotFoundError as failure
+  logger.info("cart not found", { cartId: input.cartId })
+
+  return notFound(failure)
+```
 
 ### debug-level-off-in-production · SHOULD
 
 Every log's debug level is off in production.
 
-| Why |
-|---|
-| debug records in production multiply the volume a collector pays for and carry detail nobody meant an operator, or a leak, to read. |
+#### Why
+
+Debug records in production multiply the volume a collector pays for and carry detail nobody meant an operator, or a leak, to read.
+
+#### Examples
+
+```text title="Avoid"
+production settings
+  LOG_LEVEL    debug
+```
+
+```text title="Prefer"
+production settings
+  LOG_LEVEL    info
+
+development settings
+  LOG_LEVEL    debug
+```
 
 ## Output
 
@@ -94,14 +258,42 @@ Every log's debug level is off in production.
 
 Every log is written as one structured object per record in production, a form a setting read at the program's start chooses.
 
-| Why |
-|---|
-| a collector cannot parse lines meant for a person, so a log written as such lines in production reaches its collector as text it cannot search. |
+#### Why
+
+A collector cannot parse lines meant for a person, so a log written as such lines in production reaches its collector as text it cannot search.
+
+#### Examples
+
+```pseudo title="Avoid"
+# root/logging
+let logger = createLogger({ sink: readableLinesSink(stdout) })  # lines in production too
+```
+
+```pseudo title="Prefer"
+# root/logging
+let sinks = { structured: jsonLinesSink, readable: readableLinesSink }
+
+let logger = createLogger({ sink: sinks[config.logFormat](stdout) })
+```
 
 ### log-output-readable-in-development · SHOULD
 
 Every log is written as readable lines in development, a form a setting read at the program's start chooses.
 
-| Why |
-|---|
-| a person cannot read objects meant for a collector, so a log written as such objects in development hides the record its developer looks for. |
+#### Why
+
+A person cannot read objects meant for a collector, so a log written as such objects in development hides the record its developer looks for.
+
+#### Examples
+
+```pseudo title="Avoid"
+# root/logging
+let logger = createLogger({ sink: jsonLinesSink(stdout) })  # objects in development too
+```
+
+```pseudo title="Prefer"
+# root/logging
+let sinks = { structured: jsonLinesSink, readable: readableLinesSink }
+
+let logger = createLogger({ sink: sinks[config.logFormat](stdout) })
+```

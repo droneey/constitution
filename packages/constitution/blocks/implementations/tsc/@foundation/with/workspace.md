@@ -12,22 +12,78 @@ A package's compiler emits its declarations and its build information into the f
 
 Each package is a `composite` project that emits only its declarations. It emits them, with its `.tsbuildinfo`, into the package's `tsc-cache.gen/`.
 
-| Why |
-|---|
-| a package that compiles another's files checks them by its own options instead of theirs; `tsc -b` checks each referenced package first, by its own options, and the importer reads its declarations from that folder. |
+#### Why
+
+A package that compiles another's files checks them by its own options instead of theirs; `tsc -b` checks each referenced package first, by its own options, and the importer reads its declarations from that folder.
+
+#### Examples
+
+```json title="Avoid"
+{
+  "compilerOptions": {
+    "noEmit": true
+  }
+}
+```
+
+```json title="Prefer"
+{
+  "compilerOptions": {
+    "composite": true,
+    "emitDeclarationOnly": true,
+    "outDir": "tsc-cache.gen",
+    "tsBuildInfoFile": "tsc-cache.gen/tsconfig.tsbuildinfo"
+  }
+}
+```
 
 ### importer-references-what-it-imports → unit-compiled-by-its-own-options · MUST
 
 Every package that imports another lists the other in `references`.
 
-| Why |
-|---|
-| without the reference the importer compiles the other's source by its own options, or fails with TS6307 on a file outside its project. |
+#### Why
+
+Without the reference the importer compiles the other's source by its own options, or fails with TS6307 on a file outside its project.
+
+#### Examples
+
+```json title="Avoid"
+{
+  "compilerOptions": { "composite": true },
+  "include": ["src"]
+}
+```
+
+```json title="Prefer"
+{
+  "compilerOptions": { "composite": true },
+  "include": ["src"],
+  "references": [{ "path": "../billing" }]
+}
+```
 
 ### declaration-cache-left-out-by-every-other-tool · MUST
 
 Every tool but the compiler leaves `tsc-cache.gen/` out.
 
-| Why |
-|---|
-| declarations left in the tree are read by the other tools as source, and their findings on them point at code nobody wrote. |
+#### Why
+
+Declarations left in the tree are read by the other tools as source, and their findings on them point at code nobody wrote.
+
+#### Examples
+
+```json title="Avoid"
+{
+  "files": {
+    "includes": ["**"]
+  }
+}
+```
+
+```json title="Prefer"
+{
+  "files": {
+    "includes": ["**", "!**/tsc-cache.gen"]
+  }
+}
+```

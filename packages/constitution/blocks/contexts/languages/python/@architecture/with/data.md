@@ -8,6 +8,23 @@
 
 No feature's `__init__.py` offers its aggregates' rebuild from storage. It neither imports the rebuild nor lists it in its `__all__`, so only the feature's own adapters reach it, by its module.
 
-| Why |
-|---|
-| Python cannot keep a function of a module private, so a rebuild its feature's surface offers lets any caller outside build an aggregate from data no transition checked. |
+#### Why
+
+Python cannot keep a function of a module private, so a rebuild its feature's surface offers lets any caller outside build an aggregate from data no transition checked.
+
+#### Examples
+
+```py title="Avoid"
+# src/shop/features/orders/__init__.py
+from .application.use_cases.commands.place_order_use_case import place_order
+from .domain.order.entities.order_aggregate import restore_order
+
+__all__ = ["place_order", "restore_order"]
+```
+
+```py title="Prefer"
+# src/shop/features/orders/__init__.py
+from .application.use_cases.commands.place_order_use_case import place_order
+
+__all__ = ["place_order"]
+```

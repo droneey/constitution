@@ -72,8 +72,8 @@ const requiresItself = {
   details: {},
   path: PATH,
 } satisfies BlockFinding;
-const withoutTable = {
-  code: RuleFormCode.WithoutTable,
+const withoutWhySection = {
+  code: RuleFormCode.WithoutWhySection,
   details: {
     slug,
   },
@@ -155,8 +155,8 @@ describe('findingTextOf', () => {
       text: `[passport-requires-only-what-its-block-needs] ${textOf(requiresTexts, requiresItself.code, requiresItself.details)}`,
     },
     {
-      finding: withoutTable,
-      text: `[core.md: How to use it] ${textOf(ruleFormTexts, withoutTable.code, withoutTable.details)}`,
+      finding: withoutWhySection,
+      text: `[core.md: How to use it] ${textOf(ruleFormTexts, withoutWhySection.code, withoutWhySection.details)}`,
     },
     {
       finding: withoutWhy,

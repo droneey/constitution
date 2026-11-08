@@ -3,13 +3,13 @@ import { Level } from '../constants';
 import { ValueFailure } from '../errors';
 import type { FindingOf, ProblemOf } from '../types';
 import type { MarkdownSection } from '../utils';
-import { isTableLine, sectionsOf } from '../utils';
+import { sectionsOf } from '../utils';
 import type { BlockId } from '../value-objects';
 import { RuleSlug } from '../value-objects';
 import type { RuleExample, RulePlace, RuleText } from './rule.entity';
 import { Rule } from './rule.entity';
 import type { RuleChunk } from './rule-body.entity';
-import { RuleBody, RuleForm } from './rule-body.entity';
+import { RuleBody } from './rule-body.entity';
 import type { RuleFormDetails, RuleFormProblem } from './rule-form.entity';
 import { RuleFormCode } from './rule-form.entity';
 import { RuleHeading } from './rule-heading.entity';
@@ -47,14 +47,6 @@ interface SectionRead {
   readonly rule?: StatedRule;
 }
 
-interface ChapterRead {
-  readonly chunks: readonly {
-    readonly chunk: RuleChunk;
-    readonly form: RuleForm;
-  }[];
-  readonly problems: readonly RuleFormProblem[];
-}
-
 interface RulesParsed {
   readonly findings: readonly RuleFormFinding[];
   readonly rules: readonly StatedRule[];
@@ -66,7 +58,6 @@ const SECTION = /^## (.+)/;
 const SUBSECTION = /^#{4,6}(?:\s|$)/;
 const LOOKS_LIKE_RULE = /\b(?:MUST|SHOULD|MAY)\W*$| → /;
 const LABEL_LINE = /^\*\*([^*]+):\*\*/;
-const EXAMPLE = 'Example';
 
 const headingOf = (text: string): RuleHeading | undefined =>
   text.startsWith(RULE_MARK) ? RuleHeading.of(text.slice(RULE_MARK.length)) : undefined;
@@ -78,7 +69,7 @@ const labelProblems = (input: {
   input.lines.flatMap((line) => {
     const name = LABEL_LINE.exec(line)?.[1];
 
-    return name === undefined || name === EXAMPLE
+    return name === undefined
       ? []
       : [
           {
@@ -92,7 +83,7 @@ const labelProblems = (input: {
   });
 
 const statementOf = (lines: readonly string[]): string => {
-  const end = lines.findIndex((line) => isTableLine(line) || LABEL_LINE.test(line));
+  const end = lines.findIndex((line) => LABEL_LINE.test(line));
 
   return RuleBody.joinedOf(end === -1 ? lines : lines.slice(0, end));
 };
@@ -145,7 +136,7 @@ const placeOf = (input: {
       }),
 });
 
-const wordingOfSection = (input: { chunk: RuleChunk; form: RuleForm }): WordingRead => {
+const wordingOfSection = (input: { chunk: RuleChunk }): WordingRead => {
   const { chunk } = input;
   const heading = headingOf(chunk.heading);
 
@@ -177,7 +168,6 @@ const wordingOfSection = (input: { chunk: RuleChunk; form: RuleForm }): WordingR
   const lines = RuleBody.proseOf(chunk.lines);
   const slug = RuleSlug.create(heading.slug);
   const body = RuleBody.read({
-    form: input.form,
     lines,
     slug,
     subsections: chunk.subsections,
@@ -231,57 +221,6 @@ const chunksOf = (text: string): readonly RuleChunk[] => {
   return chunks;
 };
 
-const formOf = (input: { chapterForm: RuleForm; forms: readonly RuleForm[] }): RuleForm => {
-  if (input.forms.includes(RuleForm.Sectioned)) {
-    return RuleForm.Sectioned;
-  }
-
-  return input.forms.includes(RuleForm.Tabled) ? RuleForm.Tabled : input.chapterForm;
-};
-
-// Why: a chapter holds one form, so a rule that shows neither a table nor a section is read in the
-// form the chapter's other rules show.
-const chapterOf = (text: string): ChapterRead => {
-  const marked = chunksOf(text).map((chunk) => {
-    const slug = headingOf(chunk.heading)?.slug;
-
-    return {
-      chunk,
-      forms: RuleBody.formsOf(chunk),
-      slug: RuleSlug.is(slug) ? slug : undefined,
-    };
-  });
-
-  const firstIn = (form: RuleForm): RuleSlug | undefined =>
-    marked.find(({ forms, slug }) => slug !== undefined && forms.includes(form))?.slug;
-
-  const tabled = firstIn(RuleForm.Tabled);
-  const sectioned = firstIn(RuleForm.Sectioned);
-  const chapterForm = sectioned === undefined ? RuleForm.Tabled : RuleForm.Sectioned;
-
-  return {
-    chunks: marked.map(({ chunk, forms }) => ({
-      chunk,
-      form: formOf({
-        chapterForm,
-        forms,
-      }),
-    })),
-    problems:
-      tabled === undefined || sectioned === undefined
-        ? []
-        : [
-            {
-              code: RuleFormCode.FormsMixed,
-              details: {
-                sectioned,
-                tabled,
-              },
-            },
-          ],
-  };
-};
-
 const findingsOf = (input: {
   problems: readonly (RuleFormProblem | SlugProblem)[];
   source: RuleSource;
@@ -296,7 +235,6 @@ const findingsOf = (input: {
 const readSection = (input: {
   chapterTitle: string | undefined;
   chunk: RuleChunk;
-  form: RuleForm;
   section: string | undefined;
   source: RuleSource;
 }): SectionRead => {
@@ -320,30 +258,22 @@ const readSection = (input: {
 };
 
 const parse = (source: RuleSource): RulesParsed => {
-  const chapter = chapterOf(source.text);
   let chapterTitle: string | undefined;
   let section: string | undefined;
-  const read = chapter.chunks.map(({ chunk, form }) => {
+  const read = chunksOf(source.text).map((chunk) => {
     chapterTitle = TITLE.exec(chunk.heading)?.[1] ?? chapterTitle;
     section = SECTION.exec(chunk.heading)?.[1] ?? section;
 
     return readSection({
       chapterTitle,
       chunk,
-      form,
       section,
       source,
     });
   });
 
   return {
-    findings: [
-      ...findingsOf({
-        problems: chapter.problems,
-        source,
-      }),
-      ...read.flatMap((sectionRead) => sectionRead.findings),
-    ],
+    findings: read.flatMap((sectionRead) => sectionRead.findings),
     rules: read.flatMap((sectionRead) =>
       sectionRead.rule === undefined
         ? []
@@ -355,7 +285,12 @@ const parse = (source: RuleSource): RulesParsed => {
 };
 
 const wordingsOf = (text: string): readonly RuleWording[] =>
-  chapterOf(text).chunks.flatMap((chunk) => wordingOfSection(chunk).wording ?? []);
+  chunksOf(text).flatMap(
+    (chunk) =>
+      wordingOfSection({
+        chunk,
+      }).wording ?? [],
+  );
 
 const levelOf = (input: {
   rule: StatedRule;

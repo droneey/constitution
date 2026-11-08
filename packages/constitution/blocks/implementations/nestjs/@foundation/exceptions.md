@@ -8,6 +8,28 @@
 
 No code of the program throws `HttpException` or one of its subclasses. It throws the errors of its error library.
 
-| Why |
-|---|
-| an `HttpException` carries a status and no code, so no caller can branch on it, and it ties the code that throws it to HTTP. |
+#### Why
+
+An `HttpException` carries a status and no code, so no caller can branch on it, and it ties the code that throws it to HTTP.
+
+#### Examples
+
+```ts title="Avoid"
+export const ensureOrderFound = (order: Order | undefined): Order => {
+  if (order === undefined) {
+    throw new NotFoundException('order not found');
+  }
+
+  return order;
+};
+```
+
+```ts title="Prefer"
+export const ensureOrderFound = (order: Order | undefined, orderId: OrderId): Order => {
+  if (order === undefined) {
+    throw new OrderNotFoundError({ orderId });
+  }
+
+  return order;
+};
+```

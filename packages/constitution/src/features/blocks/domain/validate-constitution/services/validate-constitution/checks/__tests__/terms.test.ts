@@ -5,12 +5,7 @@ import type { FindingOf } from '#/kernel/types';
 import { BlockId, coreBlockId, RuleSlug } from '#/kernel/value-objects';
 
 import type { Files } from '../../../../../../__tests__/constitution.fixtures';
-import {
-  passportFile,
-  rule,
-  sectionedRule,
-  textOf,
-} from '../../../../../../__tests__/constitution.fixtures';
+import { passportFile, rule, textOf } from '../../../../../../__tests__/constitution.fixtures';
 import { nestedFiles } from '../../../../../../__tests__/nested-files.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { checkInputOf } from '../../../../../../application/use-cases/queries/check/__tests__/check.fixtures';
@@ -718,7 +713,7 @@ describe('termsCheck on rules with examples', () => {
     const files = nestedFiles();
 
     files[SCREENS] =
-      `# Screens\n\n> Governs screens.\n\n## Vocabulary\n\nA **wizard** is a guide through steps.\n\n## General\n\n${sectionedRule(
+      `# Screens\n\n> Governs screens.\n\n## Vocabulary\n\nA **wizard** is a guide through steps.\n\n## General\n\n${rule(
         {
           examples: '```text title="Prefer"\nwizard wizard\n```',
           slug: 'screen-shows-one-task',

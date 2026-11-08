@@ -84,9 +84,15 @@ const seamWithCore: Readonly<Record<string, string>> = {
     '',
     'Every check runs through the own runner.',
     '',
-    '| Why |',
-    '|---|',
-    '| a check run apart is skipped. |',
+    '#### Why',
+    '',
+    'a check run apart is skipped.',
+    '',
+    '#### Examples',
+    '',
+    '```sh title="Prefer"',
+    'constitution run check',
+    '```',
   ),
 };
 
@@ -281,8 +287,8 @@ describe('constitution run', () => {
       ],
       condition: 'with its Why when asked',
       whys: [
-        "  Why: a naming rule left to review is broken as soon as nobody reads for it; a list of words is what a lint can hold of the rule, and the suppression is where the code says it knows nothing of the value's shape.",
-        '  Why: a debug print left in code that reaches its users leaks what it prints to whoever reads the output, and a breakpoint halts the program for a user who has no debugger.',
+        "  Why: A naming rule left to review is broken as soon as nobody reads for it; a list of words is what a lint can hold of the rule, and the suppression is where the code says it knows nothing of the value's shape.",
+        '  Why: A debug print left in code that reaches its users leaks what it prints to whoever reads the output, and a breakpoint halts the program for a user who has no debugger.',
       ],
     },
   ])(

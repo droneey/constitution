@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import type { MarkdownSection } from '../../utils';
 import { RuleSlug } from '../../value-objects';
-import { RuleBody, RuleForm } from '../rule-body.entity';
+import { RuleBody } from '../rule-body.entity';
 import type { RuleFormProblem } from '../rule-form.entity';
 import { RuleFormCode } from '../rule-form.entity';
 
@@ -35,7 +35,6 @@ const pair = [
 
 const sectionedOf = (subsections: readonly MarkdownSection[]) =>
   RuleBody.read({
-    form: RuleForm.Sectioned,
     lines: [
       'Every name says what its thing is.',
     ],
@@ -362,66 +361,6 @@ describe('RuleBody.read', () => {
         title: 'Tree',
       },
     ]);
-  });
-});
-
-describe('RuleBody.formsOf', () => {
-  it.each([
-    {
-      condition: 'a table under its statement',
-      forms: [
-        RuleForm.Tabled,
-      ],
-      lines: [
-        '| Why |',
-      ],
-      subsections: [],
-    },
-    {
-      condition: 'a table only inside a fence and a section',
-      forms: [
-        RuleForm.Sectioned,
-      ],
-      lines: [
-        '```md',
-        '| Why |',
-        '```',
-      ],
-      subsections: [
-        whyOf(),
-      ],
-    },
-    {
-      condition: 'both a table and a section',
-      forms: [
-        RuleForm.Tabled,
-        RuleForm.Sectioned,
-      ],
-      lines: [
-        '| Why |',
-      ],
-      subsections: [
-        whyOf(),
-      ],
-    },
-    {
-      condition: 'neither',
-      forms: [],
-      lines: [
-        'A.',
-      ],
-      subsections: [],
-    },
-  ])('should give $forms when a rule shows $condition', ({ forms, lines, subsections }) => {
-    // Act
-    const given = RuleBody.formsOf({
-      heading: '### a · MUST',
-      lines,
-      subsections,
-    });
-
-    // Assert
-    expect(given).toStrictEqual(forms);
   });
 });
 

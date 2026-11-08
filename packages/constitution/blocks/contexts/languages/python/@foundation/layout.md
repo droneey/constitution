@@ -22,9 +22,29 @@ An integration spec's mark is the folder **`tests/integration/`**{#integration-s
 
 Every module, stub and folder of the import package or of `tests/` is named in snake_case. A folder of `tests/` takes it though it is no package. Exempt: the `__pycache__/` folders and `.pyc` files the interpreter writes, which keep the names it gives them.
 
-| Why |
-|---|
-| a module's name is the name it is imported by, and a module named with a hyphen cannot be imported at all, since the language allows none in a name, while a folder of specs named in another case than the modules it mirrors is not found from them. |
+#### Why
+
+A module's name is the name it is imported by, and a module named with a hyphen cannot be imported at all, since the language allows none in a name, while a folder of specs named in another case than the modules it mirrors is not found from them.
+
+#### Examples
+
+```text title="Avoid"
+src/shop/
+├── __init__.py
+├── order-totals.py         cannot be imported
+└── PaymentGateway/
+    ├── __init__.py
+    └── stripeAdapter.py
+```
+
+```text title="Prefer"
+src/shop/
+├── __init__.py
+├── order_totals.py
+└── payment_gateway/
+    ├── __init__.py
+    └── stripe_adapter.py
+```
 
 ## Folders
 
@@ -32,14 +52,58 @@ Every module, stub and folder of the import package or of `tests/` is named in s
 
 Every package's code sits in its import package, `src/<import name>/`, and no module of it sits beside `src/`.
 
-| Why |
-|---|
-| code beside `src/` is importable from the working folder without being installed, so the specs pass against files the built package may not ship. |
+#### Why
+
+Code beside `src/` is importable from the working folder without being installed, so the specs pass against files the built package may not ship.
+
+#### Examples
+
+```text title="Avoid"
+shop/
+├── pyproject.toml
+├── shop/                   importable from the working folder uninstalled
+│   ├── __init__.py
+│   └── order_totals.py
+└── tests/
+    └── test_order_totals.py
+```
+
+```text title="Prefer"
+shop/
+├── pyproject.toml
+├── src/
+│   └── shop/
+│       ├── __init__.py
+│       └── order_totals.py
+└── tests/
+    └── test_order_totals.py
+```
 
 ### source-folder-is-a-regular-package · MUST
 
 Every folder of an import package that holds a module, at any depth, holds an `__init__.py`.
 
-| Why |
-|---|
-| a folder without one is a namespace package, which another installed distribution can merge into, and whose files nothing imports go unmeasured by coverage. |
+#### Why
+
+A folder without one is a namespace package, which another installed distribution can merge into, and whose files nothing imports go unmeasured by coverage.
+
+#### Examples
+
+```text title="Avoid"
+src/shop/
+├── __init__.py
+└── features/               no __init__.py: a namespace package
+    └── orders/
+        ├── __init__.py
+        └── order_totals.py
+```
+
+```text title="Prefer"
+src/shop/
+├── __init__.py
+└── features/
+    ├── __init__.py
+    └── orders/
+        ├── __init__.py
+        └── order_totals.py
+```

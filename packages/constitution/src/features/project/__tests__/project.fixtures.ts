@@ -98,9 +98,15 @@ const ruleOf = (input: RuleFixture): string => {
     '',
     RULE_STATEMENT,
     '',
-    '| Why |',
-    '|---|',
-    `| ${RULE_WHY} |`,
+    '#### Why',
+    '',
+    RULE_WHY,
+    '',
+    '#### Examples',
+    '',
+    '```text title="Prefer"',
+    RULE_STATEMENT,
+    '```',
     '',
   ].join('\n');
 };

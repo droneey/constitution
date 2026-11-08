@@ -8,6 +8,20 @@
 
 No YAML string that holds a backslash is double-quoted. It is plain, it is single-quoted, as `'\bword\b'`, or it is a block scalar.
 
-| Why |
-|---|
-| a double-quoted scalar reads `\b`, `\t`, `\n` and `\f` as control characters and refuses other escapes, so `"\bword\b"` changes its meaning with no error. |
+#### Why
+
+A double-quoted scalar reads `\b`, `\t`, `\n` and `\f` as control characters and refuses other escapes, so `"\bword\b"` changes its meaning with no error.
+
+#### Examples
+
+```yaml title="Avoid"
+redaction:
+  patterns:
+    - "\bcard\b"  # \b is read as a backspace
+```
+
+```yaml title="Prefer"
+redaction:
+  patterns:
+    - '\bcard\b'
+```

@@ -11,7 +11,7 @@
 | Scope | ADR-0001 |
 | Blocks and layers | ADR-0002 – ADR-0005, ADR-0007 |
 | Project files | ADR-0009, ADR-0010, ADR-0102, ADR-0208, ADR-0231 |
-| Rules and roles | ADR-0013 – ADR-0016, ADR-0144, ADR-0219, ADR-0226, ADR-0232, ADR-0240 |
+| Rules and roles | ADR-0013 – ADR-0016, ADR-0144, ADR-0219, ADR-0226, ADR-0232, ADR-0240, ADR-0296 |
 | Overrides and precedence | ADR-0020 |
 | Delivery | ADR-0026 |
 | The anatomy | ADR-0029, ADR-0032, ADR-0033, ADR-0035, ADR-0036, ADR-0141, ADR-0143, ADR-0157, ADR-0158 |
@@ -2057,6 +2057,7 @@
   - The Why as a `**Why:**` label instead of a table: ADR-0089 rejected labels, which run on into the statement, and `blocks:check` already refuses any label but Example.
   - Deleting a replaced entry, as this log did until now: a later reader who proposes the old choice again finds neither it nor why it lost; MADR and Nygard's format both keep it, marked superseded.
 - **Why.** A rule is its statement and its reason; the tags asked a judgement of every writer, and only a filter that reviews less than the rules ask ever read them.
+- **Superseded in part.** The `| Why |` table, by ADR-0296: a rule's Why is a section `#### Why`.
 
 ## ADR-0227 — A package keeps the configuration of each tool in its folder, and Biome runs in it
 
@@ -3212,6 +3213,21 @@
   - Raising the budget to fit the rewritten core, whose passport runs to 3,553 bytes: a number moved each time core grows guards nothing.
   - Keeping the language check for the configuration files alone: a manifest's language is the runtime's or the tool's concern, which their own rules hold, not a link every block must declare.
 - **Why.** The owner dropped both checks with the rewrite of the rule tree: the rewritten core outgrows the old budget by what it now says, and a `requires` that names only what a block cannot work without keeps the graph to real needs.
+
+## ADR-0296 — A rule holds its Why and its Examples in sections of their own
+
+**Date:** 2026-11-08 · **Status:** Accepted
+
+- **Decision.** Amends ADR-0226.
+  - A rule is `### <slug> · <LEVEL>`, or `### <slug> → <parent> · <LEVEL>`; then its statement, with `Exempt:` last; then `#### Why`, its reason in prose; then, last, `#### Examples`, which holds only fenced blocks, each with a `title`: `Avoid` and `Prefer` for a pair, a title of its own for a tree or a diagram. Both sections are required on every rule of every layer, and `blocks:check` reports a rule without either, a Why after another section, Examples before one, a section of another name, a heading or prose among the examples and an untitled block.
+  - The gate and `constitution rules` hand a rule's statement, its Why only on `--why`, and never its examples; the gate's hash leaves out both. The site renders the examples from the rule itself.
+  - All 2,513 rules take the form at once, each with its example; `apps/docs/content/examples` goes, and with it the site's reading of a folder of examples by slug.
+  - A block file's line budget counts every line, its examples included, and rises from 500 to 1,500. Core's `tests`, 1,742 lines with its examples, splits: its section on how a case is written, with the words of a case's name and steps, becomes the chapter `cases`, read after it.
+- **Rejected.**
+  - The one-row `| Why |` table: a pipe in a Why had to be escaped as `\|`, the cell held one paragraph and no list, and a second row or cell was a form of its own to refuse.
+  - Examples in a folder of the docs, one file per slug, apart from their rules: they drifted, and when the rule tree was rewritten 36 slugs had lost their rule, found only by the site's build.
+  - A budget that leaves the examples out of the count: a file is read whole by its reviewer, examples and all, and a measure that skips part of it lets a chapter grow past what one sitting reads.
+- **Why.** An example beside its rule changes in the same edit as the rule and is reviewed with it, and a Why in a section of its own reads as prose and costs the gate nothing, since the gate hands neither.
 
 ## Rule aliases
 

@@ -52,12 +52,28 @@ const PARAGLIDE: ReadonlyArray<
     'A message is read through its compiled function.',
   ],
   [
-    "<The sentences that draw the slogan's limits: where it applies, what it covers, its exceptions.>",
+    "<The sentences that draw the slogan's limits: where it applies and what it covers.>",
     'No code reads one by its key.',
   ],
   [
-    '<the failure it prevents: what breaks, for whom, when the rule is broken> — <the principle, pattern or reference it applies or follows; drop this part and its dash when it follows none>',
-    'a message read by its key breaks for its reader once the key is renamed, since the compiler checks a function call and a key is only a string.',
+    "<Exempt: the cases it leaves out, as the statement's last sentence; drop it when there are none.>",
+    'Exempt: a message the compiler has not seen yet, as in its own spec.',
+  ],
+  [
+    '<The failure it prevents: what breaks, for whom, when the rule is broken> — <the principle, pattern or reference it applies or follows; drop this part and its dash when it follows none>',
+    'A message read by its key breaks for its reader once the key is renamed, since the compiler checks a function call and a key is only a string.',
+  ],
+  [
+    '<language>',
+    'ts',
+  ],
+  [
+    '<code that breaks the rule>',
+    "const title = messages['checkout.title'];",
+  ],
+  [
+    '<the same code meeting the rule>',
+    'const title = m.checkoutTitle();',
   ],
 ] as const;
 

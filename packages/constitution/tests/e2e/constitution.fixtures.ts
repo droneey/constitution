@@ -38,24 +38,24 @@ const headingOf = (input: RuleFixture): string =>
     ? `### ${input.slug} · ${input.level ?? 'MUST'}`
     : `### ${input.slug} → ${input.parent}${input.level === undefined ? '' : ` · ${input.level}`}`;
 
+const EXAMPLE_LINE = 'const exampleShown = true;';
+
 const rule = (input: RuleFixture): string =>
   [
     headingOf(input),
     input.statement,
     '',
-    '| Why |',
-    '|---|',
-    '| it keeps the fixture honest. |',
+    '#### Why',
+    '',
+    'it keeps the fixture honest.',
+    '',
+    '#### Examples',
+    '',
+    '```ts title="Prefer"',
+    EXAMPLE_LINE,
+    '```',
     '',
   ].join('\n');
-
-const EXAMPLE_LINE = 'const exampleShown = true;';
-
-const sectionedChapterOf = (text: string): string =>
-  text.replaceAll(
-    '\n| Why |\n|---|\n| it keeps the fixture honest. |\n',
-    `\n#### Why\n\nit keeps the fixture honest.\n\n#### Examples\n\n\`\`\`ts title="Prefer"\n${EXAMPLE_LINE}\n\`\`\`\n`,
-  );
 
 const vocabularyOf = (definitions: readonly string[] | undefined): string =>
   definitions === undefined
@@ -617,4 +617,4 @@ const constitutionFiles = (): Files => ({
 });
 
 export type { Files };
-export { constitutionFiles, coreText, EXAMPLE_LINE, sectionedChapterOf };
+export { constitutionFiles, coreText, EXAMPLE_LINE };

@@ -8,6 +8,21 @@
 
 Every app's crash rate stays below the project's crash budget, and below its app store's threshold where it sets a stricter one.
 
-| Why |
-|---|
-| a crash throws away what its user was doing, and an app store that publishes such thresholds shows an app that crosses them to fewer people, while each crash stays a defect the error rules hold. |
+#### Why
+
+A crash throws away what its user was doing, and an app store that publishes such thresholds shows an app that crosses them to fewer people, while each crash stays a defect the error rules hold.
+
+#### Examples
+
+```yaml title="Avoid"
+# budgets/app-vitals.yaml
+crashes:
+  userPerceivedCrashRatePercent: 2.0   # above Google Play's 1.09% threshold
+```
+
+```yaml title="Prefer"
+# budgets/app-vitals.yaml
+crashes:
+  userPerceivedCrashRatePercent: 0.5
+  googlePlayThresholdPercent: 1.09
+```

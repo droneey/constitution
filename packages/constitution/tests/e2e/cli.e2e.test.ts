@@ -8,7 +8,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 import { z } from 'zod';
 
 import { cliPath } from './cli.fixtures';
-import { EXAMPLE_LINE, sectionedChapterOf } from './constitution.fixtures';
+import { EXAMPLE_LINE } from './constitution.fixtures';
 import { environmentOf } from './package.fixtures';
 import {
   createPluginRoot,
@@ -244,7 +244,7 @@ describe('the constitution executable', () => {
       holdsWhy: true,
     },
   ])(
-    'should print the vocabularies, then the statements MUST first, of the rules that govern a file, with their Why $holdsWhy',
+    'should print the vocabularies, then the statements MUST first, of the rules that govern a file, with their Why $holdsWhy and never their examples',
     ({ args, holdsWhy }) => {
       // Arrange
       const project = linkedProject(
@@ -278,6 +278,7 @@ describe('the constitution executable', () => {
           ...new Set(groups),
         ],
         holdsDefinition: ran.stdout.includes('A **name** is what a thing is called by.'),
+        holdsExample: ran.stdout.includes(EXAMPLE_LINE),
         holdsWhy: ran.stdout.includes('Why: it keeps the fixture honest.'),
       }).toStrictEqual({
         exitCode: 0,
@@ -287,62 +288,7 @@ describe('the constitution executable', () => {
           '## SHOULD rules',
         ],
         holdsDefinition: true,
-        holdsWhy,
-      });
-    },
-  );
-
-  it.each([
-    {
-      args: [],
-      holdsWhy: false,
-    },
-    {
-      args: [
-        '--why',
-      ],
-      holdsWhy: true,
-    },
-  ])(
-    'should print a rule written with its Why and Examples in sections without its examples, with its Why $holdsWhy',
-    ({ args, holdsWhy }) => {
-      // Arrange
-      const pluginRoot = createPluginRoot();
-      const principles = join(distributionOf(pluginRoot), 'blocks/core/@foundation/principles.md');
-
-      writeFileSync(principles, sectionedChapterOf(readFileSync(principles, 'utf8')));
-
-      const project = linkedProject(
-        configOf({
-          languages: '[typescript]',
-        }),
-        pluginRoot,
-      );
-
-      mkdirSync(join(project, 'src'));
-      writeFileSync(join(project, 'src', 'a.ts'), 'export {};\n');
-
-      // Act
-      const ran = runExecutable({
-        args: [
-          'rules',
-          '--for',
-          'src/a.ts',
-          ...args,
-        ],
-        cwd: project,
-      });
-
-      // Assert
-      expect({
-        exitCode: ran.exitCode,
-        holdsExample: ran.stdout.includes(EXAMPLE_LINE),
-        holdsStatement: ran.stdout.includes('### names-reveal-intent · MUST'),
-        holdsWhy: ran.stdout.includes('Why: it keeps the fixture honest.'),
-      }).toStrictEqual({
-        exitCode: 0,
         holdsExample: false,
-        holdsStatement: true,
         holdsWhy,
       });
     },

@@ -17,10 +17,15 @@
 <p data-rule-why="">
 <span data-rule-why-label="">Why</span>A reader of <code>x</code> then knows.</p>
 <div data-rule-example="">
+<div data-rule-example-column="prefer">
+<p>
+<span data-rule-example-label="">Prefer</span>
+</p>
 <pre>
 <code class="language-ts">const count = 1;
 </code>
 </pre>
+</div>
 </div>
 </section>
 
@@ -68,7 +73,7 @@
 <code>x</code> is short.</p>
 </section>
 
-<!-- a why with no row -->
+<!-- a why section with nothing in it -->
 <section data-rule-card="">
 <p data-rule-meta="">
 <span data-rule-level="must">MUST</span>
@@ -79,9 +84,6 @@
 <span class="sr-only">MUST</span>
 </span>
 <code>name-says-what</code> [#name-says-what]</h3>
-<p data-rule-why="">
-<span data-rule-why-label="">Why</span>
-</p>
 </section>
 
 <!-- an example whose code is titled Avoid and Prefer -->
@@ -146,7 +148,7 @@
 </div>
 </section>
 
-<!-- a rule with its Why and its Examples in sections, before an example of the folder -->
+<!-- a rule whose Why holds more than a paragraph and whose Examples hold a diagram -->
 <section data-rule-card="">
 <p data-rule-meta="">
 <span data-rule-level="must">MUST</span>
@@ -187,33 +189,6 @@
 <code class="language-mermaid">graph TD
 </code>
 </pre>
-</div>
-</section>
-
-<!-- a rule with its Why in a section and an example of the folder -->
-<section data-rule-card="">
-<p data-rule-meta="">
-<span data-rule-level="must">MUST</span>
-</p>
-<h3 data-rule="">
-<span data-rule-mark="must">
-<span data-rule-mark-letter="">M</span>
-<span class="sr-only">MUST</span>
-</span>
-<code>name-says-what</code> [#name-says-what]</h3>
-<p>A name says.</p>
-<p data-rule-why="">
-<span data-rule-why-label="">Why</span>It reads.</p>
-<div data-rule-example="">
-<div data-rule-example-column="prefer">
-<p>
-<span data-rule-example-label="">Prefer</span>
-</p>
-<pre>
-<code class="language-ts">folder();
-</code>
-</pre>
-</div>
 </div>
 </section>
 

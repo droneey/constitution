@@ -3,7 +3,7 @@ import { join } from 'node:path';
 
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 
-import { EXAMPLE_LINE, sectionedChapterOf } from '../constitution.fixtures';
+import { EXAMPLE_LINE } from '../constitution.fixtures';
 import {
   HookEvent,
   isRecord,
@@ -269,7 +269,7 @@ describe('the rule gate', () => {
       groups: [
         ...new Set(groups),
       ],
-      holdsWhy: texts.some((text) => text.includes('Why:') || text.includes('| Why |')),
+      holdsWhy: texts.some((text) => text.includes('Why:') || text.includes('#### Why')),
       isOrdered: groups.every(
         (group, index) =>
           index === 0 || groupOrder.indexOf(group) >= groupOrder.indexOf(groups[index - 1] ?? ''),
@@ -281,38 +281,10 @@ describe('the rule gate', () => {
     });
   });
 
-  it('should ask for nothing again when only the Why of a rule read before changed', () => {
-    // Arrange
-    const pluginRoot = createPluginRoot();
-    const started = startSession(pluginRoot);
-    const principles = `${distributionOf(pluginRoot)}/${PRINCIPLES}`;
-
-    readAll({
-      ...started,
-      parts: partsOf(editOf(started, pluginRoot)),
-    });
-    writeFileSync(
-      principles,
-      readFileSync(principles, 'utf8').replace(
-        '| it keeps the fixture honest. |',
-        '| a fixture that drifts tests nothing. |',
-      ),
-    );
-
-    // Act
-    const retried = editOf(started, pluginRoot);
-
-    // Assert
-    expect(retried).toBeUndefined();
-  });
-
-  it('should hand a rule written with its Why and Examples in sections without either, and ask for nothing again when only they changed', () => {
+  it('should hand a rule without its Why and Examples, and ask for nothing again when only they changed', () => {
     // Arrange
     const pluginRoot = createPluginRoot();
     const principles = `${distributionOf(pluginRoot)}/${PRINCIPLES}`;
-
-    writeFileSync(principles, sectionedChapterOf(readFileSync(principles, 'utf8')));
-
     const started = startSession(pluginRoot);
     const parts = partsOf(editOf(started, pluginRoot));
     const handed = parts.map((part) => readFileSync(part, 'utf8')).join('\n');

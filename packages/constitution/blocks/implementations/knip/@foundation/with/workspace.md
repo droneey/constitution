@@ -8,6 +8,27 @@
 
 Every root that runs knip over its own files leaves each package to its own `knip.jsonc` through `ignoreWorkspaces`.
 
-| Why |
-|---|
-| a run from the root reads every package by the root's configuration, which then names each package's insides and holds one package to settings written for another, and `ignoreWorkspaces` is a key only the root's configuration takes. |
+#### Why
+
+A run from the root reads every package by the root's configuration, which then names each package's insides and holds one package to settings written for another, and `ignoreWorkspaces` is a key only the root's configuration takes.
+
+#### Examples
+
+```jsonc title="Avoid"
+// knip.jsonc
+{
+  "workspaces": {
+    ".": { "entry": ["scripts/*.ts"] },
+    "apps/shop-web": { "entry": ["src/main.tsx!"] },
+    "packages/money": { "entry": ["src/index.ts!"] }
+  }
+}
+```
+
+```jsonc title="Prefer"
+// knip.jsonc
+{
+  "entry": ["scripts/*.ts"],
+  "ignoreWorkspaces": ["apps/*", "packages/*"]
+}
+```

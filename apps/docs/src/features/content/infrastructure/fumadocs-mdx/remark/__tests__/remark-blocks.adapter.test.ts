@@ -11,7 +11,6 @@ import { codeMetasOf, linksOf, outlineOf } from './remark-blocks.adapter.fixture
 
 const noOptions: BlocksOptions = {
   addressesBySlug: new Map(),
-  examplesBySlug: new Map(),
 };
 
 const ruleAddresses = new Map([
@@ -25,23 +24,13 @@ const ruleAddresses = new Map([
   ],
 ]);
 
-const ruleCard = (markdown: string, example?: string): MarkdownVariant => ({
+const ruleCard = (markdown: string): MarkdownVariant => ({
   markdown,
   plugins: [
     [
       remarkBlocks,
       {
         addressesBySlug: ruleAddresses,
-        examplesBySlug: new Map(
-          example === undefined
-            ? []
-            : [
-                [
-                  'name-says-what',
-                  example,
-                ],
-              ],
-        ),
       },
     ],
   ],
@@ -52,39 +41,30 @@ describe('remarkBlocks', () => {
     // Arrange
     const variants = {
       'a MUST rule with every part, its why opening with a word': ruleCard(
-        '### name-says-what → name-is-short · MUST\n\nA name says what it holds.\n\n| Why |\n|---|\n| a reader of `x` then knows. |\n',
-        '```ts\nconst count = 1;\n```',
+        '### name-says-what → name-is-short · MUST\n\nA name says what it holds.\n\n#### Why\n\nA reader of `x` then knows.\n\n#### Examples\n\n```ts title="Prefer"\nconst count = 1;\n```\n',
       ),
       'a SHOULD rule with only its heading': ruleCard('### name-is-short · SHOULD'),
       'a SHOULD rule that tightens a rule with no address': ruleCard(
         '### strict-name → unknown-rule · SHOULD',
       ),
       'a why that opens with code': ruleCard(
-        '### name-says-what · MUST\n\n| Why |\n|---|\n| `x` is short. |\n',
+        '### name-says-what · MUST\n\n#### Why\n\n`x` is short.\n',
       ),
-      'a why with no row': ruleCard('### name-says-what · MUST\n\n| Why |\n|---|\n'),
+      'a why section with nothing in it': ruleCard('### name-says-what · MUST\n\n#### Why\n'),
       'an example whose code is titled Avoid and Prefer': ruleCard(
-        '### name-says-what · MUST',
-        '```ts title="Avoid"\nlet x;\n```\n\n```ts showLineNumbers title="Prefer" \nconst x = 1;\n```',
+        '### name-says-what · MUST\n\n#### Examples\n\n```ts title="Avoid"\nlet x;\n```\n\n```ts showLineNumbers title="Prefer" \nconst x = 1;\n```',
       ),
       'an example whose code is no pair': ruleCard(
-        '### name-says-what · MUST',
-        '```ts title="Avoid"\nlet x;\n```\n\nThen:\n\n```ts title="Other"\nrun();\n```',
+        '### name-says-what · MUST\n\n#### Examples\n\n```ts title="Avoid"\nlet x;\n```\n\nThen:\n\n```ts title="Other"\nrun();\n```',
       ),
-      'a rule with its Why and its Examples in sections, before an example of the folder': ruleCard(
-        '### name-says-what · MUST\n\nA name says what it holds.\n\n#### Why\n\nthe reader of `x` then knows.\n\nA second paragraph.\n\n- a list stays\n\n#### Examples\n\n```ts title="Avoid"\nlet x;\n```\n\n```ts title="Prefer"\nconst x = 1;\n```\n\n```mermaid title="The flow"\ngraph TD\n```\n',
-        '```ts\nfolder();\n```',
-      ),
-      'a rule with its Why in a section and an example of the folder': ruleCard(
-        '### name-says-what · MUST\n\nA name says.\n\n#### Why\n\nIt reads.\n',
-        '```ts title="Prefer"\nfolder();\n```',
+      'a rule whose Why holds more than a paragraph and whose Examples hold a diagram': ruleCard(
+        '### name-says-what · MUST\n\nA name says what it holds.\n\n#### Why\n\nThe reader of `x` then knows.\n\nA second paragraph.\n\n- a list stays\n\n#### Examples\n\n```ts title="Avoid"\nlet x;\n```\n\n```ts title="Prefer"\nconst x = 1;\n```\n\n```mermaid title="The flow"\ngraph TD\n```\n',
       ),
       'a rule with a section of another name': ruleCard(
         '### name-says-what · MUST\n\nA name says.\n\n#### Notes\n\nA note.\n',
       ),
       'an example of the better code alone': ruleCard(
-        '### name-says-what · MUST',
-        '```ts\nsetup();\n```\n\n```ts title="Prefer"\nconst x = 1;\n```',
+        '### name-says-what · MUST\n\n#### Examples\n\n```ts\nsetup();\n```\n\n```ts title="Prefer"\nconst x = 1;\n```',
       ),
     };
 
@@ -227,7 +207,6 @@ describe('remarkBlocks', () => {
     // Act
     remarkBlocks({
       addressesBySlug: ruleAddresses,
-      examplesBySlug: new Map(),
     })(tree);
 
     // Assert
@@ -245,18 +224,12 @@ describe('remarkBlocks', () => {
 
   it('should take its title off the code of an example, keeping the rest of its meta', () => {
     // Arrange
-    const tree = treeOf('### name-says-what · MUST');
+    const tree = treeOf(
+      '### name-says-what · MUST\n\n#### Examples\n\n```ts title="Avoid"\nlet x;\n```\n\n```ts showLineNumbers title="Prefer" \nconst x = 1;\n```\n\n```ts title="Other"\nrun();\n```',
+    );
 
     // Act
-    remarkBlocks({
-      addressesBySlug: new Map(),
-      examplesBySlug: new Map([
-        [
-          'name-says-what',
-          '```ts title="Avoid"\nlet x;\n```\n\n```ts showLineNumbers title="Prefer" \nconst x = 1;\n```\n\n```ts title="Other"\nrun();\n```',
-        ],
-      ]),
-    })(tree);
+    remarkBlocks(noOptions)(tree);
 
     // Assert
     expect(codeMetasOf(tree)).toStrictEqual([

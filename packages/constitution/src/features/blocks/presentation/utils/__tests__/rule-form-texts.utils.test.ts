@@ -24,54 +24,6 @@ describe('ruleFormTexts', () => {
     },
     {
       problem: {
-        code: RuleFormCode.WithoutTable,
-        details: {
-          slug: RuleSlug.create('a'),
-        },
-      },
-      text: 'rule "a" has no table "| Why |"',
-    },
-    {
-      problem: {
-        code: RuleFormCode.TablesMany,
-        details: {
-          count: 2,
-          slug: RuleSlug.create('a'),
-        },
-      },
-      text: 'rule "a" has 2 tables; a rule has one',
-    },
-    {
-      problem: {
-        code: RuleFormCode.HeaderMisshapen,
-        details: {
-          slug: RuleSlug.create('a'),
-        },
-      },
-      text: 'rule "a" has a table whose header is not "| Why |"',
-    },
-    {
-      problem: {
-        code: RuleFormCode.RowsNotOne,
-        details: {
-          count: 0,
-          slug: RuleSlug.create('a'),
-        },
-      },
-      text: `rule "a" has 0 rows in its table; a rule's table has one`,
-    },
-    {
-      problem: {
-        code: RuleFormCode.CellsMiscounted,
-        details: {
-          count: 2,
-          slug: RuleSlug.create('a'),
-        },
-      },
-      text: `rule "a" has a row of 2 cells; a rule's table has 1`,
-    },
-    {
-      problem: {
         code: RuleFormCode.WithoutWhySection,
         details: {
           slug: RuleSlug.create('a'),
@@ -157,23 +109,13 @@ describe('ruleFormTexts', () => {
     },
     {
       problem: {
-        code: RuleFormCode.FormsMixed,
-        details: {
-          sectioned: RuleSlug.create('b'),
-          tabled: RuleSlug.create('a'),
-        },
-      },
-      text: 'holds rules with a Why table, as "a", and rules with a section "#### Why", as "b"; a chapter holds one form',
-    },
-    {
-      problem: {
         code: RuleFormCode.HoldsLabel,
         details: {
           label: 'Why',
           slug: RuleSlug.create('a'),
         },
       },
-      text: 'rule "a" has the label "Why"; a rule states its Why in its table and holds no label but Example',
+      text: 'rule "a" has the label "Why"; a rule holds no label, its Why going in "#### Why" and its examples in "#### Examples"',
     },
     {
       problem: {

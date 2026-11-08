@@ -273,7 +273,7 @@ describe('blockFormCheck on chapters and seams', () => {
     },
     {
       condition: "a code fence shows a heading named like the file's title",
-      text: `# Plurals\n\n> Governs plurals.\n\n## General\n\n${pluralsRule}\n\`\`\`md\n## Plurals\n\`\`\`\n`,
+      text: `# Plurals\n\n> Governs plurals.\n\n## General\n\n${pluralsRule}\n\`\`\`md title="Avoid"\n## Plurals\n\`\`\`\n`,
     },
   ])('should find nothing when $condition', ({ text }) => {
     // Arrange

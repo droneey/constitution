@@ -3,11 +3,6 @@ import type { RuleSlug } from '../value-objects';
 
 enum RuleFormCode {
   HeadingMisshapen = 'rule-heading-misshapen',
-  WithoutTable = 'rule-without-table',
-  TablesMany = 'rule-with-many-tables',
-  HeaderMisshapen = 'rule-table-header-misshapen',
-  RowsNotOne = 'rule-table-rows-not-one',
-  CellsMiscounted = 'rule-table-cells-miscounted',
   HoldsLabel = 'rule-holds-label',
   LevelRetired = 'rule-level-retired',
   WithoutWhySection = 'rule-without-why-section',
@@ -18,30 +13,11 @@ enum RuleFormCode {
   ExamplesHoldHeading = 'rule-examples-hold-heading',
   ExampleUntitled = 'rule-example-untitled',
   SectionUnknown = 'rule-section-unknown',
-  FormsMixed = 'chapter-mixes-rule-forms',
 }
 
 interface RuleFormDetails {
   readonly [RuleFormCode.HeadingMisshapen]: {
     readonly heading: string;
-  };
-  readonly [RuleFormCode.WithoutTable]: {
-    readonly slug: RuleSlug;
-  };
-  readonly [RuleFormCode.TablesMany]: {
-    readonly count: number;
-    readonly slug: RuleSlug;
-  };
-  readonly [RuleFormCode.HeaderMisshapen]: {
-    readonly slug: RuleSlug;
-  };
-  readonly [RuleFormCode.RowsNotOne]: {
-    readonly count: number;
-    readonly slug: RuleSlug;
-  };
-  readonly [RuleFormCode.CellsMiscounted]: {
-    readonly count: number;
-    readonly slug: RuleSlug;
   };
   readonly [RuleFormCode.HoldsLabel]: {
     readonly label: string;
@@ -76,10 +52,6 @@ interface RuleFormDetails {
   readonly [RuleFormCode.SectionUnknown]: {
     readonly heading: string;
     readonly slug: RuleSlug;
-  };
-  readonly [RuleFormCode.FormsMixed]: {
-    readonly sectioned: RuleSlug;
-    readonly tabled: RuleSlug;
   };
 }
 

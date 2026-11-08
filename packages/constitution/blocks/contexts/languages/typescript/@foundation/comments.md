@@ -12,6 +12,24 @@
 
 Every published declaration's documentation is a JSDoc block.
 
-| Why |
-|---|
-| documentation in any other form is not shown by the editor where the declaration is used. |
+#### Why
+
+Documentation in any other form is not shown by the editor where the declaration is used.
+
+#### Examples
+
+```ts title="Avoid"
+// packages/money/src/money.ts
+export const Money = {
+  // Whether the amount is below zero, as a refund's is.
+  isNegative: (money: Money): boolean => money.amount < 0n,
+};
+```
+
+```ts title="Prefer"
+// packages/money/src/money.ts
+export const Money = {
+  /** Whether the amount is below zero, as a refund's is. */
+  isNegative: (money: Money): boolean => money.amount < 0n,
+};
+```

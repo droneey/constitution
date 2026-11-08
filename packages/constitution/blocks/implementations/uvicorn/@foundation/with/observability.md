@@ -8,6 +8,27 @@
 
 Every record of Uvicorn's passes the one pipeline. Uvicorn runs with `log_config=None`, so `uvicorn`, `uvicorn.error` and `uvicorn.access` keep no handler of their own and propagate.
 
-| Why |
-|---|
-| Uvicorn's default `log_config` gives `uvicorn` and `uvicorn.access` handlers of their own and stops them from propagating, so the server's records would skip the masking and the trace id. |
+#### Why
+
+Uvicorn's default `log_config` gives `uvicorn` and `uvicorn.access` handlers of their own and stops them from propagating, so the server's records would skip the masking and the trace id.
+
+#### Examples
+
+```py title="Avoid"
+config = uvicorn.Config(
+    app,
+    host=settings.host,
+    port=settings.port,
+    timeout_graceful_shutdown=settings.graceful_shutdown_seconds,
+)
+```
+
+```py title="Prefer"
+config = uvicorn.Config(
+    app,
+    host=settings.host,
+    port=settings.port,
+    log_config=None,
+    timeout_graceful_shutdown=settings.graceful_shutdown_seconds,
+)
+```

@@ -101,20 +101,33 @@ A term's owner is the block of the file that defines it, and its axis that file'
 
 ## A rule
 
-```md
-### data-view-shows-every-state · MUST
+````md
+### failure-told-apart-by-code · MUST
 
-A data view shows every state its data can have. Those are loading, failure, content, and the empty or not-found state where its data can be empty or missing; no default stands in for data not yet loaded.
+Every failure is told apart by its type or its code, never by its message.
 
-| Why |
-|---|
-| an empty view cannot otherwise be told from a slow or a broken one, and an invented default hides loading and failure behind something that looks like data, so the user does not know what to do. |
+#### Why
+
+A message is text anyone may reword at any time, so code that branches on it breaks silently at the next rewording.
+
+#### Examples
+
+```pseudo title="Avoid"
+if error.message.includes("not found") then
+  return showEmptyCart()
 ```
+
+```pseudo title="Prefer"
+if error.code is CartNotFoundError.code then
+  return showEmptyCart()
+```
+````
 
 - **The heading** is a third-level heading: the slug, unique in the Constitution, and the level. A second-level heading opens a section that groups rules and is no rule.
 - **The level** means what [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) gives it, in capitals: `MUST` where a breach is plainly wrong and answered yes or no, most often by a tool; `SHOULD` where it takes judgement or has reasonable exceptions; `MAY` for a permitted choice.
 - **The statement** opens with its slogan and states an outcome, as `rule-opens-with-its-slogan` and `rule-states-an-outcome` ask.
-- **The Why** names the failure the rule prevents, and closes as `why-names-the-failure-it-prevents` asks.
+- **The Why**, a section `#### Why` of prose right after the statement, names the failure the rule prevents, and closes as `why-names-the-failure-it-prevents` asks.
+- **The Examples**, a section `#### Examples` that every rule ends with, hold only fenced code blocks, each with a `title`: `Avoid` and `Prefer` for a pair, a title of its own for a tree or a diagram. `constitution rules` and the gate hand a rule's statement, its Why only on `--why`, and never its examples; the site shows them on the rule's card.
 
 A rule that tightens another names it after an arrow: `### query-result-returned-as-status-union → data-call-returns-a-union-of-its-states · MUST`. It tightens one rule of another block, never looser than it.
 
@@ -140,7 +153,7 @@ A domain, a platform or core may list, in a chapter under a heading `Requirement
 - a link or a slug that names another block anywhere but the front matter, a `with/` name or a heading's arrow;
 - an abstract block without an heir, or one that names its heirs;
 - a term defined twice; a term of the architecture or of the workflow used in a chapter or a seam of another axis — a passport speaks of the whole block, every axis at once; a term used in a file whose block cannot reach its owner — core's terms are every block's; a folder or a suffix written in backticks without its `/` or its `.`, where its owner is in reach; a folder or a suffix without an id, an id of another form, and an id two terms carry; and bold that is neither plain words nor one code span;
-- a rule without a statement or a Why, a slug used twice, and a heading or a table that misses the format;
+- a rule without a statement, a Why or Examples, a slug used twice, a heading that misses the format, a section a rule does not hold, and an example block without a title or with prose between the blocks;
 - a rule that tightens a rule of its own block or of an axis it may not reach, and one that tightens a rule at a level looser than that rule's — at the same level it passes;
 - a seam named after its own block, after no block or after core, after a block of a layer its block may not pair with, or after a block along a dependency — one its block requires or extends, or one that requires or extends its block, directly or through another — and a seam titled otherwise than the other block's passport;
 - a chapter or a seam that does not open with its title and its Governs line, holds no rule, keeps a rule outside a `##` section, names a section like its title, or puts a section before `General` or after `Requirements for implementation`;

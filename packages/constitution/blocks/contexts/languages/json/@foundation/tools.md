@@ -8,6 +8,31 @@
 
 Where its reader accepts the key, every configuration written in JSON names its reader's schema in its `$schema` key.
 
-| Why |
-|---|
-| a schema named anywhere else reaches an editor only through that editor's own configuration or a catalog entry that matches the file's name, so in every other editor a misspelt or misplaced key goes unmarked while its tool ignores it in silence. |
+#### Why
+
+A schema named anywhere else reaches an editor only through that editor's own configuration or a catalog entry that matches the file's name, so in every other editor a misspelt or misplaced key goes unmarked while its tool ignores it in silence.
+
+#### Examples
+
+```json title="Avoid"
+{
+  "formatter": {
+    "lineWidth": 100
+  },
+  "linter": {
+    "rules": { "recommended": true }
+  }
+}
+```
+
+```json title="Prefer"
+{
+  "$schema": "https://biomejs.dev/schemas/2.3.0/schema.json",
+  "formatter": {
+    "lineWidth": 100
+  },
+  "linter": {
+    "rules": { "recommended": true }
+  }
+}
+```

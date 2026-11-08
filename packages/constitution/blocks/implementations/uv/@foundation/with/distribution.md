@@ -8,14 +8,42 @@
 
 Every distributed Python package excludes in `pyproject.toml` each file of its import package's folder that does not ship. `uv_build` packs that folder whole, so `source-exclude` under `[tool.uv.build-backend]` names each such file, and `source-include` adds a file from outside it.
 
-| Why |
-|---|
-| `uv_build` puts every file of the import package's folder into the source distribution and the wheel alike, so a local configuration left there ships to every user. |
+#### Why
+
+`uv_build` puts every file of the import package's folder into the source distribution and the wheel alike, so a local configuration left there ships to every user.
+
+#### Examples
+
+```toml title="Avoid"
+[tool.uv.build-backend]
+module-name = "shop_client"
+```
+
+```toml title="Prefer"
+[tool.uv.build-backend]
+module-name = "shop_client"
+source-exclude = ["src/shop_client/_dev_server.py", "src/shop_client/fixtures/**"]
+```
 
 ### licence-named-by-license-files → distributed-package-ships-its-licence · MUST
 
 Every distributed Python package names its licence file in `license-files` under `[project]`.
 
-| Why |
-|---|
-| `uv_build` ships the licence only when `license-files` names it, so a package without the entry reaches its users with no licence beside it. |
+#### Why
+
+`uv_build` ships the licence only when `license-files` names it, so a package without the entry reaches its users with no licence beside it.
+
+#### Examples
+
+```toml title="Avoid"
+[project]
+name = "shop-client"
+license = "MIT"
+```
+
+```toml title="Prefer"
+[project]
+name = "shop-client"
+license = "MIT"
+license-files = ["LICENSE"]
+```

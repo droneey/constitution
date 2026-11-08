@@ -8,6 +8,26 @@
 
 The program's code branches on a setting named for what it changes, never on its deployment environment's name. Such settings include a log level, an address and an outside service's test mode, and the branches they key include the program's choice of an implementation.
 
-| Why |
-|---|
-| a branch on the name runs code in one deployment environment that no other runs, so what one deployment environment proves says nothing of the next, while a named setting can be turned on wherever it is needed — the twelve-factor app. |
+#### Why
+
+A branch on the name runs code in one deployment environment that no other runs, so what one deployment environment proves says nothing of the next, while a named setting can be turned on wherever it is needed — the twelve-factor app.
+
+#### Examples
+
+```pseudo title="Avoid"
+# root/payments
+let payments =
+  if env.name is "production" then
+    new LivePaymentAdapter(client)
+  else
+    new SandboxPaymentAdapter(client)
+```
+
+```pseudo title="Prefer"
+# root/payments
+let paymentAdapters = {
+  sandbox: createSandboxPaymentAdapter,
+  live: createLivePaymentAdapter,
+}
+let payments = paymentAdapters[config.paymentsMode](client)
+```

@@ -32,17 +32,29 @@ Inside a block, a rule sits in a chapter of one of three axes, each a folder of 
 
 ## A rule
 
-A rule is a heading with its slug and level, a statement that opens with its slogan, and a table of its reason:
+A rule is a heading with its slug and level, a statement that opens with its slogan, its reason under `#### Why`, and its examples under `#### Examples`:
 
-```md
+````md
 ### failure-told-apart-by-code · MUST
 
-A failure is told apart by its type or its code, never by its message.
+Every failure is told apart by its type or its code, never by its message.
 
-| Why |
-|---|
-| a message is text a person may reword at any time, so code that branches on it breaks silently at the next rewording. |
+#### Why
+
+A message is text anyone may reword at any time, so code that branches on it breaks silently at the next rewording.
+
+#### Examples
+
+```pseudo title="Avoid"
+if error.message.includes("not found") then
+  return showEmptyCart()
 ```
+
+```pseudo title="Prefer"
+if error.code is CartNotFoundError.code then
+  return showEmptyCart()
+```
+````
 
 `MUST` binds, `SHOULD` is left only with a stated reason, and `MAY` is a choice; [how to use it](../packages/constitution/blocks/core/core.md#how-to-use-it) says what each asks of the agent. [The block format](reference/block-format.md#a-rule) gives every part of a rule and how a rule tightens another.
 

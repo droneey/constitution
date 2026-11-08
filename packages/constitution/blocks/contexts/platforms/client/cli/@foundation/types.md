@@ -12,30 +12,119 @@ A program's **map of exit codes** is the table of its exit codes and what each m
 
 Every exit code takes its meaning from the program's one map of exit codes, the same in every subcommand.
 
-| Why |
-|---|
-| a script decides what to do from the exit code alone, so a code that means one thing in one subcommand and another elsewhere sends it wrong — a single source of truth. |
+#### Why
+
+A script decides what to do from the exit code alone, so a code that means one thing in one subcommand and another elsewhere sends it wrong — a single source of truth.
+
+#### Examples
+
+```ts title="Avoid"
+// src/features/orders/presentation/bindings/commands/export-orders.ts
+return 3;
+
+// src/features/orders/presentation/bindings/commands/import-orders.ts
+return 3; // "no orders matched" in export, "file not found" here
+```
+
+```ts title="Prefer"
+// src/presentation/exit-code.ts
+export enum ExitCode {
+  Success = 0,
+  Failure = 1,
+  Usage = 2,
+  NothingMatched = 3,
+  Defect = 70,
+  Interrupted = 130,
+  ClosedPipe = 141,
+  Terminated = 143,
+}
+
+// src/features/orders/presentation/bindings/commands/export-orders.ts
+return ExitCode.NothingMatched;
+```
 
 ### exit-code-map-keeps-the-conventional-codes · MUST
 
 Every program's map of exit codes gives the conventional codes their conventional meanings. In it 0 is success, and every other code a failure or an outcome a caller branches on that the map names, such as a change a plan finds. Of those codes, 2 is a usage error, such as an unknown subcommand, a bad flag or a missing answer, and 128 plus the number of the signal that ended a run is that run's code, such as 130 for an interrupt, 141 for a closed pipe and 143 for a termination request.
 
-| Why |
-|---|
-| shells and scripts read these codes alike across programs, so a program that ends a usage error with 64 or an interrupt with 1 is read wrong by every caller that knows them; 2 is the usage code of the shell's utilities, which the map keeps over sysexits' 64, and 130 is how shells report an interrupt, 128 plus the signal's number. |
+#### Why
+
+Shells and scripts read these codes alike across programs, so a program that ends a usage error with 64 or an interrupt with 1 is read wrong by every caller that knows them; 2 is the usage code of the shell's utilities, which the map keeps over sysexits' 64, and 130 is how shells report an interrupt, 128 plus the signal's number.
+
+#### Examples
+
+```ts title="Avoid"
+export enum ExitCode {
+  Success = 0,
+  Failure = 1,
+  Usage = 64,
+  Interrupted = 1, // shells and scripts read 2 and 130
+}
+```
+
+```ts title="Prefer"
+export enum ExitCode {
+  Success = 0,
+  Failure = 1,
+  Usage = 2,
+  Defect = 70,
+  Interrupted = 130,
+  ClosedPipe = 141,
+  Terminated = 143,
+}
+```
 
 ### program-defect-told-apart-by-its-exit-code · SHOULD
 
 Every map of exit codes gives 70 to a program defect. It gives 1 to a failure the user can act on that no other code of the map names.
 
-| Why |
-|---|
-| a person or a script that gets one code for a bug and for its own mistake looks for the fault in its own input, and the bug goes unreported — sysexits. |
+#### Why
+
+A person or a script that gets one code for a bug and for its own mistake looks for the fault in its own input, and the bug goes unreported — sysexits.
+
+#### Examples
+
+```ts title="Avoid"
+export const exitCodeOf = (error: unknown): ExitCode => {
+  if (error instanceof UsageError) {
+    return ExitCode.Usage;
+  }
+  return ExitCode.Failure; // a bug reads as the user's mistake
+};
+```
+
+```ts title="Prefer"
+export const exitCodeOf = (error: unknown): ExitCode => {
+  if (error instanceof UsageError) {
+    return ExitCode.Usage;
+  }
+  if (isExpectedFailure(error)) {
+    return ExitCode.Failure;
+  }
+  return ExitCode.Defect;
+};
+```
 
 ### branched-outcome-takes-an-exit-code-of-its-own → expected-failure-carries-a-stable-code · MUST
 
 Every outcome a caller branches on takes an exit code of its own in the program's map.
 
-| Why |
-|---|
-| a caller that cannot tell two outcomes apart by the code alone reads them from the program's messages, which change at the first rewording, or treats both alike. |
+#### Why
+
+A caller that cannot tell two outcomes apart by the code alone reads them from the program's messages, which change at the first rewording, or treats both alike.
+
+#### Examples
+
+```ts title="Avoid"
+const plan = await planRepricing(input, context);
+stdout.write(renderRepricingPlan(plan));
+
+return ExitCode.Success; // a script reads the text to learn whether prices change
+```
+
+```ts title="Prefer"
+const plan = await planRepricing(input, context);
+stdout.write(renderRepricingPlan(plan));
+
+return plan.changes.length > 0 ? ExitCode.ChangesFound : ExitCode.Success;
+```

@@ -14,7 +14,7 @@ The rules a repository is built by. The digest lists the active blocks and their
 
 1. Before a change, read every chapter that governs what it touches, then the active blocks, from the domain blocks down.
 2. Before handing a change back, read it against every active rule; a rule outranks the habit of the code around it, and a breach nearby is no precedent.
-3. A rule is `### <slug> · <level>`, or `### <slug> → <rule> · <level>` when it tightens another rule, never looser than it; then its statement and Why. MUST binds; SHOULD is left only with a stated reason.
+3. A rule is `### <slug> · <level>`, or `### <slug> → <rule> · <level>` when it tightens another rule, never looser than it; then its statement, its exemptions last after `Exempt:`, then its reason under `#### Why`, and last its examples under `#### Examples`, fenced blocks each with a title. MUST binds; SHOULD is left only with a stated reason.
 4. A request against a MUST gets the conflict and an alternative, never silent obedience.
 5. A rule is placed by `placement`. A case no rule covers follows the nearest rule, and of two choices the one that raises cohesion and lowers coupling wins; a real gap is amended or becomes a block of the project's own pack, never a habit.
 6. A dependency with no block follows the project's domain and language blocks; report each MUST it cannot meet, and propose its block as 5 says.
@@ -28,7 +28,7 @@ The rules a repository is built by. The digest lists the active blocks and their
 
 Read in order:
 
-- `@foundation/`: [placement](@foundation/placement.md), [code](@foundation/code.md), [names](@foundation/names.md), [functions](@foundation/functions.md), [relations](@foundation/relations.md), [types](@foundation/types.md), [data](@foundation/data.md), [errors](@foundation/errors.md), [effects](@foundation/effects.md), [security](@foundation/security.md), [dependencies](@foundation/dependencies.md), [tools](@foundation/tools.md), [changes](@foundation/changes.md), [layout](@foundation/layout.md), [comments](@foundation/comments.md), [accessibility](@foundation/accessibility.md), [tests](@foundation/tests.md), [agents](@foundation/agents.md).
+- `@foundation/`: [placement](@foundation/placement.md), [code](@foundation/code.md), [names](@foundation/names.md), [functions](@foundation/functions.md), [relations](@foundation/relations.md), [types](@foundation/types.md), [data](@foundation/data.md), [errors](@foundation/errors.md), [effects](@foundation/effects.md), [security](@foundation/security.md), [dependencies](@foundation/dependencies.md), [tools](@foundation/tools.md), [changes](@foundation/changes.md), [layout](@foundation/layout.md), [comments](@foundation/comments.md), [accessibility](@foundation/accessibility.md), [tests](@foundation/tests.md), [cases](@foundation/cases.md), [agents](@foundation/agents.md).
 - `@architecture/`: [layout](@architecture/layout.md), [domain](@architecture/domain.md), [application](@architecture/application.md), [ports](@architecture/ports.md), [composition](@architecture/composition.md), [presentation](@architecture/presentation.md), [root](@architecture/root.md), [layers](@architecture/layers.md), [tests](@architecture/tests.md).
 - `@workflow/`: [changes](@workflow/changes.md), [agents](@workflow/agents.md).
 

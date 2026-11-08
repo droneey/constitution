@@ -29,6 +29,7 @@ interface BlockFilesFixture extends CardFixture {
 }
 
 interface RuleFixture {
+  examples?: string;
   isLevelStated?: boolean;
   level?: string;
   slug: string;
@@ -84,28 +85,13 @@ const rule = (input: RuleFixture): string =>
     headingOf(input),
     input.statement ?? `The ${input.slug} rule holds.`,
     '',
-    '| Why |',
-    '|---|',
-    `| ${input.why ?? 'it keeps the code honest.'} |`,
-    '',
-  ].join('\n');
-
-interface SectionedRuleFixture extends RuleFixture {
-  examples: string;
-}
-
-const sectionedRule = (input: SectionedRuleFixture): string =>
-  [
-    headingOf(input),
-    input.statement ?? `The ${input.slug} rule holds.`,
-    '',
     '#### Why',
     '',
     input.why ?? 'it keeps the code honest.',
     '',
     '#### Examples',
     '',
-    input.examples,
+    input.examples ?? `\`\`\`text title="Prefer"\nThe ${input.slug} rule held.\n\`\`\``,
     '',
   ].join('\n');
 
@@ -200,7 +186,6 @@ export {
   checkSourceOf,
   passportFile,
   rule,
-  sectionedRule,
   sourceOf,
   textOf,
   vocabularyChapterFile,

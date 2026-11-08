@@ -8,14 +8,42 @@
 
 Every preview rule is selected only by its exact code, with `explicit-preview-rules = true`, never through a family.
 
-| Why |
-|---|
-| a family in preview grows with each release, so an update turns on rules nobody read and fails the check on them; a code names one rule someone read. |
+#### Why
+
+A family in preview grows with each release, so an update turns on rules nobody read and fails the check on them; a code names one rule someone read.
+
+#### Examples
+
+```toml title="Avoid"
+[tool.ruff.lint]
+preview = true
+select = ["E", "F", "PL", "RUF"]
+```
+
+```toml title="Prefer"
+[tool.ruff.lint]
+preview = true
+explicit-preview-rules = true
+select = ["E", "F", "PL", "RUF", "PLW0108"]
+```
 
 ### ruff-suppression-written-on-its-line → suppression-silences-one-finding · MUST
 
 Every Ruff suppression names one code on the finding's line or the line above it. It is `# noqa: <code>` at the end of the line, or `# ruff: ignore[<code>]` at its end or alone on the line above; never a bare `# noqa`, a range of `# ruff: disable[...]` and `# ruff: enable[...]`, a `# ruff: file-ignore[...]` nor a file-level `# ruff: noqa`.
 
-| Why |
-|---|
-| Ruff 0.17 also reads a bare `# noqa`, which silences every rule on its line, a range, which silences every line between its two comments, and the file-level forms, of which `# ruff: noqa` with no code silences every rule in the file, so each hides findings nobody meant to lift. |
+#### Why
+
+Ruff 0.17 also reads a bare `# noqa`, which silences every rule on its line, a range, which silences every line between its two comments, and the file-level forms, of which `# ruff: noqa` with no code silences every rule in the file, so each hides findings nobody meant to lift.
+
+#### Examples
+
+```py title="Avoid"
+# ruff: noqa: T201 Why: the report is the command's output, written to stdout.
+def write_report(report: str) -> None:
+    print(report)
+```
+
+```py title="Prefer"
+def write_report(report: str) -> None:
+    print(report)  # noqa: T201 Why: the report is the command's output, written to stdout.
+```

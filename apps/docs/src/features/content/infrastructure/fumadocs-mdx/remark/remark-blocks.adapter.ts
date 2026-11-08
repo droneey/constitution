@@ -11,9 +11,7 @@ import type {
   PhrasingContent,
   Root,
   RootContent,
-  Table,
 } from 'mdast';
-import { fromMarkdown } from 'mdast-util-from-markdown';
 import { toString as mdastTextOf } from 'mdast-util-to-string';
 import { visit } from 'unist-util-visit';
 
@@ -36,7 +34,6 @@ import { dropTitle } from './remark-drop-title.adapter';
 
 interface BlocksOptions {
   addressesBySlug: ReadonlyMap<string, string>;
-  examplesBySlug: ReadonlyMap<string, string>;
 }
 
 interface Box extends Parent {
@@ -167,17 +164,6 @@ const sectionEndOf = (children: readonly RootContent[], headingIndex: number): n
   return nextIndex === -1 ? children.length : nextIndex;
 };
 
-const capitalised = (children: PhrasingContent[]): PhrasingContent[] => {
-  const [first, ...rest] = children;
-
-  return first?.type === 'text'
-    ? [
-        textNode(first.value.charAt(0).toUpperCase() + first.value.slice(1)),
-        ...rest,
-      ]
-    : children;
-};
-
 const whyParagraphOf = (children: PhrasingContent[], isLabelled: boolean): Paragraph =>
   paragraph(part('rule-why'), [
     ...(isLabelled
@@ -187,14 +173,8 @@ const whyParagraphOf = (children: PhrasingContent[], isLabelled: boolean): Parag
           ]),
         ]
       : []),
-    ...capitalised(children),
+    ...children,
   ]);
-
-const whyOf = (table: Table): Paragraph => {
-  const cell = table.children[1]?.children[0];
-
-  return whyParagraphOf(cell?.children ?? [], true);
-};
 
 interface Column {
   node: RootContent;
@@ -325,9 +305,6 @@ const bodyOf = (nodes: readonly RootContent[]): Body => {
   };
 };
 
-const withWhyTables = (nodes: readonly RootContent[]): RootContent[] =>
-  nodes.map((node) => (node.type === 'table' ? whyOf(node) : node));
-
 const renderedPartOf = ({ heading, nodes }: BodyPart): RootContent[] => {
   const name = headingTextOf(heading);
 
@@ -345,20 +322,13 @@ const renderedPartOf = ({ heading, nodes }: BodyPart): RootContent[] => {
 
   return [
     heading,
-    ...withWhyTables(nodes),
+    ...nodes,
   ];
 };
 
-const cardOf = (
-  ruleSection: RuleSection,
-  body: RootContent[],
-  options: BlocksOptions,
-): RuleCard => {
+const cardOf = (ruleSection: RuleSection, body: RootContent[]): RuleCard => {
   const { rule } = ruleSection;
   const { lead, parts } = bodyOf(body);
-  const example = parts.some(({ heading }) => headingTextOf(heading) === RulePart.Examples)
-    ? undefined
-    : options.examplesBySlug.get(rule.slug);
 
   return {
     children: [
@@ -369,13 +339,8 @@ const cardOf = (
       ]),
       ruleHeadingOf(ruleSection),
       ...tightenedRuleLineOf(rule.tightens),
-      ...withWhyTables(lead),
+      ...lead,
       ...parts.flatMap(renderedPartOf),
-      ...(example === undefined
-        ? []
-        : [
-            exampleOf(fromMarkdown(example).children),
-          ]),
     ],
     data: {
       hName: 'section',
@@ -387,7 +352,7 @@ const cardOf = (
   };
 };
 
-const wrapRules = (tree: Root, options: BlocksOptions): void => {
+const wrapRules = (tree: Root): void => {
   // Why: from the last rule up, so a section ends at the card that follows it.
   for (const [index, node] of [
     ...tree.children.entries(),
@@ -398,7 +363,7 @@ const wrapRules = (tree: Root, options: BlocksOptions): void => {
       const endIndex = sectionEndOf(tree.children, index);
       const body = tree.children.slice(index + 1, endIndex);
 
-      tree.children.splice(index, endIndex - index, cardOf(ruleSection, body, options));
+      tree.children.splice(index, endIndex - index, cardOf(ruleSection, body));
     }
   }
 };
@@ -427,7 +392,7 @@ const remarkBlocks =
   (options: BlocksOptions) =>
   (tree: Root): void => {
     dropTitle(tree);
-    wrapRules(tree, options);
+    wrapRules(tree);
     linkSlugs(tree, options);
   };
 

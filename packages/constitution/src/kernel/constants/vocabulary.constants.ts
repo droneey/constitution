@@ -74,8 +74,6 @@ const LOWERED_LEVELS = [
 
 type LoweredLevel = (typeof LOWERED_LEVELS)[number];
 
-const RULE_TABLE_HEADER = '| Why |';
-const RULE_TABLE_CELLS = 1;
 const RULE_WHY_HEADING = '#### Why';
 const RULE_EXAMPLES_HEADING = '#### Examples';
 
@@ -96,8 +94,6 @@ export {
   LOWERED_LEVELS,
   MARKDOWN_EXTENSION,
   RULE_EXAMPLES_HEADING,
-  RULE_TABLE_CELLS,
-  RULE_TABLE_HEADER,
   RULE_WHY_HEADING,
   reservedWords,
   SEAM_FOLDER_NAME,

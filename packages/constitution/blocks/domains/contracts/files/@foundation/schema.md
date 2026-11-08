@@ -12,14 +12,58 @@ The **editor schema** is the schema that editors read to check and complete the 
 
 Every editor schema is generated from the config schema, never written by hand.
 
-| Why |
-|---|
-| a schema written twice drifts, and editors then accept files the program rejects — a single source of truth. |
+#### Why
+
+A schema written twice drifts, and editors then accept files the program rejects — a single source of truth.
+
+#### Examples
+
+```text title="Avoid"
+deploy-tool/
+├── schema/
+│   └── deploy.schema.json      written by hand
+└── src/config/
+    └── deploy-config.schema
+```
+
+```text title="Prefer"
+deploy-tool/
+├── schema/
+│   └── deploy.schema.gen.json
+├── scripts/
+│   └── generate-editor-schema
+└── src/config/
+    └── deploy-config.schema
+```
 
 ### committed-editor-schema-matches-a-fresh-generation · MUST
 
 Every copy of the editor schema kept in the repository differs in nothing from a fresh generation. A spec compares the two.
 
-| Why |
-|---|
-| a stale copy is what editors fetch, and only a spec notices that the config schema moved on without it. |
+#### Why
+
+A stale copy is what editors fetch, and only a spec notices that the config schema moved on without it.
+
+#### Examples
+
+```pseudo title="Avoid"
+test "should hold a valid editor schema"
+  # Arrange
+  let committed = readFile("schema/deploy.schema.gen.json")
+  # Act
+  let valid = isJsonSchema(committed)
+
+  # Assert
+  assert valid
+```
+
+```pseudo title="Prefer"
+test "should match a fresh generation of the editor schema"
+  # Arrange
+  let committed = readFile("schema/deploy.schema.gen.json")
+  # Act
+  let fresh = toJsonSchema(deployConfigSchema)
+
+  # Assert
+  assert fresh is committed
+```

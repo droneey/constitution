@@ -8,9 +8,28 @@
 
 Wherever the app offers a language written right to left, its app manifest sets `android:supportsRtl` to `true`.
 
-| Why |
-|---|
-| Android mirrors an app's layout only where its app manifest sets `android:supportsRtl` to `true`, which is `false` by default, so an app that leaves it unset shows every screen backwards to a right-to-left reader, however its screens place what they hold. |
+#### Why
+
+Android mirrors an app's layout only where its app manifest sets `android:supportsRtl` to `true`, which is `false` by default, so an app that leaves it unset shows every screen backwards to a right-to-left reader, however its screens place what they hold.
+
+#### Examples
+
+```xml title="Avoid"
+<!-- app/src/main/AndroidManifest.xml -->
+<application
+    android:label="@string/app_name"
+    android:localeConfig="@xml/locales_config"> <!-- ships Arabic, yet never mirrors -->
+</application>
+```
+
+```xml title="Prefer"
+<!-- app/src/main/AndroidManifest.xml -->
+<application
+    android:label="@string/app_name"
+    android:localeConfig="@xml/locales_config"
+    android:supportsRtl="true">
+</application>
+```
 
 ## Accessibility
 
@@ -18,6 +37,34 @@ Wherever the app offers a language written right to left, its app manifest sets 
 
 Every state of an Android app's screens is checked by Google's Accessibility Test Framework in a UI test. A view is checked through Espresso's `AccessibilityChecks`, run from the root view, and Jetpack Compose through the test rule's `enableAccessibilityChecks()`.
 
-| Why |
-|---|
-| a state no check reaches ships the label, contrast and touch-target issues a tool would have caught, and Espresso checks by default only the view an action touches and its descendants, so a check not run from the root view passes over the rest of the screen. |
+#### Why
+
+A state no check reaches ships the label, contrast and touch-target issues a tool would have caught, and Espresso checks by default only the view an action touches and its descendants, so a check not run from the root view passes over the rest of the screen.
+
+#### Examples
+
+```kotlin title="Avoid"
+@RunWith(AndroidJUnit4::class)
+class CheckoutScreenTest {
+    companion object {
+        @BeforeClass
+        @JvmStatic
+        fun enableAccessibilityChecks() {
+            AccessibilityChecks.enable()   // checks only the view each action touches
+        }
+    }
+}
+```
+
+```kotlin title="Prefer"
+@RunWith(AndroidJUnit4::class)
+class CheckoutScreenTest {
+    companion object {
+        @BeforeClass
+        @JvmStatic
+        fun enableAccessibilityChecks() {
+            AccessibilityChecks.enable().setRunChecksFromRootView(true)
+        }
+    }
+}
+```

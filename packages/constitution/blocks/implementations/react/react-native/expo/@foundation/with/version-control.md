@@ -8,6 +8,22 @@
 
 The native projects are never committed.
 
-| Why |
-|---|
-| prebuild makes them again from the configuration, so a copy kept in the history drifts from it, and a reviewer reads a diff that no one wrote. |
+#### Why
+
+Prebuild makes them again from the configuration, so a copy kept in the history drifts from it, and a reviewer reads a diff that no one wrote.
+
+#### Examples
+
+```text title="Avoid"
+# .gitignore
+node_modules/
+.expo/
+```
+
+```text title="Prefer"
+# .gitignore
+node_modules/
+.expo/
+/ios
+/android
+```

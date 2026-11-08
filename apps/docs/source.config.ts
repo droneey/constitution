@@ -1,5 +1,5 @@
 import { createRequire } from 'node:module';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, join } from 'node:path';
 
 import type { RehypeCodeOptions } from 'fumadocs-core/mdx-plugins';
 import { applyMdxPreset, defineConfig, defineDocs } from 'fumadocs-mdx/config';
@@ -241,12 +241,10 @@ const blocks = defineDocs({
       includeProcessedMarkdown: true,
     },
     schema: markdownSchema(() => undefined),
-    /** @throws {SourceError} when an example names no rule of the folders, or a rule that holds its own */
     mdxOptions: async (environment) => {
       const options = blocksOptionsOf({
         baseUrl: DOCS_ROUTE,
         blocksFolderPath: constitutionBlocksPath,
-        examplesFolderPath: AbsolutePath.create(resolve('content/examples')),
         layers: Object.values(BlockLayer),
       });
 

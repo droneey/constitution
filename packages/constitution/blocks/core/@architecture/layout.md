@@ -158,25 +158,92 @@ Every folder and suffix named here is a default.
 
 Every folder module has the one form of a folder module, at any depth. The source of a package others import, a feature, a composition module, a lib, and a folder module of a shared layer or of a role folder are folder modules.
 
-| Why |
-|---|
-| a folder module laid out its own way must be learned before it is read, and a role folder that means one thing here and another there misleads the reader who knows it from elsewhere. |
+#### Why
+
+A folder module laid out its own way must be learned before it is read, and a role folder that means one thing here and another there misleads the reader who knows it from elsewhere.
+
+#### Examples
+
+```text title="Tree"
+src/
+├── features/orders/              a feature
+│   ├── domain/order/
+│   │   └── entities/             a role folder: the same form
+│   │       ├── order.aggregate
+│   │       ├── order-line.entity
+│   │       └── <surface>
+│   ├── presentation/
+│   └── <surface>
+└── libs/retries/                 a lib: the same form
+    ├── retry.utils
+    └── <surface>
+```
 
 ### package-laid-out-by-the-tree · MUST
 
 Every package's source is laid out by the tree: it holds only the folders of the tree and role folders. A feature and a composition module hold only their layers, specs and surface; a domain layer holds only concept folders and its `shared/`, each holding role folders; an application and a presentation hold only role folders; and a role folder of a domain layer or of the kernel holds its files flat. Exempt: an open set's members, in the folder of their own foundation's `layout` gives them; a pipeline's runner, in a folder of its own with its `steps/`; a use case with its `callbacks/`, likewise; and, in a language whose visibility works by its own unit of encapsulation rather than by file, a concept made one such unit with its transitions as the root's methods, kept from the presentation and the adapters by the language's visibility or a check of imports.
 
-| Why |
-|---|
-| a source laid out its own way must be searched before it is changed, and a loose file belongs to no layer the import rules see, so they pass it unchecked. |
+#### Why
+
+A source laid out its own way must be searched before it is changed, and a loose file belongs to no layer the import rules see, so they pass it unchecked.
+
+#### Examples
+
+```text title="Avoid"
+features/orders/
+├── domain/
+│   └── order.aggregate
+├── infrastructure/database/
+│   ├── order-repository.adapter
+│   └── <surface>
+├── order-row.dto
+└── <surface>
+```
+
+```text title="Prefer"
+features/orders/
+├── domain/
+│   └── order/
+│       ├── entities/
+│       │   └── order.aggregate
+│       └── transitions/
+│           └── order.transitions
+├── infrastructure/database/
+│   ├── dtos/
+│   │   └── order-row.dto
+│   ├── order-repository.adapter
+│   └── <surface>
+└── <surface>
+```
 
 ### role-folder-holds-only-its-role · SHOULD
 
 Every role folder holds only members of the role the vocabulary gives it. `utils/` holds only pure helpers with no meaning of the product, and `constants/` and `types/` only vocabulary with no behaviour.
 
-| Why |
-|---|
-| a member kept in another role's folder is not found where its role is looked for, and a helper with an effect or a meaning of the product hides behaviour where no layer's rules reach it. |
+#### Why
+
+A member kept in another role's folder is not found where its role is looked for, and a helper with an effect or a meaning of the product hides behaviour where no layer's rules reach it.
+
+#### Examples
+
+```text title="Avoid"
+features/orders/domain/order/
+├── utils/
+│   ├── round-half-even.utils
+│   └── order-discount.utils       applies the loyalty discount
+└── constants/
+    └── order-limits.constants
+```
+
+```text title="Prefer"
+features/orders/domain/order/
+├── utils/
+│   └── round-half-even.utils
+├── services/
+│   └── order-discount.service
+└── constants/
+    └── order-limits.constants
+```
 
 ## Homes
 
@@ -184,65 +251,211 @@ Every role folder holds only members of the role the vocabulary gives it. `utils
 
 Every behaviour of the business lives in a feature or a composition module, with its layers. Exempt: vocabulary with no behaviour — types, constants, kinds —, which may live in the kernel and in role folders.
 
-| Why |
-|---|
-| behaviour kept outside a feature sits apart from the domain model, the adapters and the binding units it belongs with, so the reader who changes it misses them. |
+#### Why
+
+Behaviour kept outside a feature sits apart from the domain model, the adapters and the binding units it belongs with, so the reader who changes it misses them.
+
+#### Examples
+
+```text title="Avoid"
+src/
+├── features/orders/
+└── shared/utils/
+    └── refund-order.utils
+```
+
+```text title="Prefer"
+src/
+└── features/orders/
+    └── application/use-cases/commands/
+        └── refund-order.use-case
+```
 
 ### code-placed-by-its-reason-to-change · SHOULD
 
 All code lives in the layer that owns its reason to change, beside its consumer. It lifts to the nearest common level only when a second consumer appears, and a library or a helper is placed the same way.
 
-| Why |
-|---|
-| code kept away from its reason to change changes apart from what it changes with, and code lifted before its second consumer guesses at a sharing that may never come — the common closure principle. |
+#### Why
+
+Code kept away from its reason to change changes apart from what it changes with, and code lifted before its second consumer guesses at a sharing that may never come — the common closure principle.
+
+#### Examples
+
+```text title="Avoid"
+src/
+├── features/invoices/application/
+│   └── use-cases/commands/issue-invoice.use-case
+└── kernel/value-objects/
+    └── invoice-number.value-object
+```
+
+```text title="Prefer"
+src/features/invoices/
+├── application/use-cases/commands/issue-invoice.use-case
+└── domain/invoice/value-objects/
+    └── invoice-number.value-object
+```
 
 ### shared-piece-placed-by-meaning · SHOULD
 
 Every piece shared across features is placed by its meaning. With a business meaning it lifts to the kernel only as the rules of composition allow; without one it goes to the top-level `shared/`, or to a role folder of the kernel where the domain layer, the application layer or the kernel needs it, as a guard of exhaustiveness or a base error does; one any program could use goes to libs, a vendor's client among them. What two composition modules share is placed the same way, and what two adapter modules share goes to libs, taking what it needs of the program as parameters, or, where it knows the program and holds no effect, to the top-level `shared/`.
 
-| Why |
-|---|
-| a piece placed against its meaning is not where a reader looks for it, and one the inner layers need, placed where they may not import it, is copied into each. |
+#### Why
+
+A piece placed against its meaning is not where a reader looks for it, and one the inner layers need, placed where they may not import it, is copied into each.
+
+#### Examples
+
+```text title="Tree"
+src/
+├── kernel/
+│   ├── value-objects/         business meaning: money.value-object
+│   └── types/                 no meaning, needed by the domain: brand.types
+├── shared/
+│   └── pagination/            no business meaning
+└── libs/
+    └── retries/               makes sense in any program
+```
 
 ### vendor-client-one-lib-per-system · SHOULD
 
 Every vendor's client in `libs/` is a folder module of its own, one per outside system.
 
-| Why |
-|---|
-| two systems' clients in one folder module change together whenever either system changes, and the adapters of one system import the other's with it. |
+#### Why
+
+Two systems' clients in one folder module change together whenever either system changes, and the adapters of one system import the other's with it.
+
+#### Examples
+
+```text title="Avoid"
+src/libs/
+└── vendor-clients/
+    ├── card-provider-client
+    ├── mail-provider-client
+    └── <surface>
+```
+
+```text title="Prefer"
+src/libs/
+├── card-provider/
+│   ├── card-provider-client
+│   └── <surface>
+└── mail-provider/
+    ├── mail-provider-client
+    └── <surface>
+```
 
 ### piece-shared-within-a-feature-placed-by-its-owner · SHOULD
 
 Within a feature, every piece is placed by the concept that owns it. A piece one concept owns — its identifier, its value objects — stays with it however many concepts use it, and only what no concept owns goes to the domain layer's `shared/`.
 
-| Why |
-|---|
-| a piece moved to the domain layer's `shared/` because a second concept uses it loses its owner, and the next reader cannot tell whose rules it follows or who may change it. |
+#### Why
+
+A piece moved to the domain layer's `shared/` because a second concept uses it loses its owner, and the next reader cannot tell whose rules it follows or who may change it.
+
+#### Examples
+
+```text title="Avoid"
+features/orders/domain/
+├── order/
+│   └── entities/
+│       └── order.aggregate
+├── shipment/
+│   └── entities/
+│       └── shipment.aggregate        uses OrderId
+└── shared/
+    └── value-objects/
+        └── order-id.value-object
+```
+
+```text title="Prefer"
+features/orders/domain/
+├── order/
+│   ├── entities/
+│   │   └── order.aggregate
+│   └── value-objects/
+│       └── order-id.value-object
+└── shipment/
+    └── entities/
+        └── shipment.aggregate
+```
 
 ### domain-service-of-several-concepts-takes-its-own-folder · SHOULD
 
 Every domain service over the aggregates of several concepts sits in a concept folder of its own. It never sits in one of theirs or in the domain layer's `shared/`.
 
-| Why |
-|---|
-| a service of several concepts kept in one of them makes that concept know the others, and one kept in `shared/` makes the shared part know concepts it must stay below. |
+#### Why
+
+A service of several concepts kept in one of them makes that concept know the others, and one kept in `shared/` makes the shared part know concepts it must stay below.
+
+#### Examples
+
+```text title="Avoid"
+features/orders/domain/
+├── order/
+│   ├── entities/
+│   └── services/
+│       └── order-allocation.service      over orders and stock
+└── stock/
+    └── entities/
+```
+
+```text title="Prefer"
+features/orders/domain/
+├── order/
+│   └── entities/
+├── stock/
+│   └── entities/
+└── allocation/
+    └── services/
+        └── order-allocation.service
+```
 
 ### code-shared-by-several-products-kept-in-a-library · SHOULD
 
 All code run by programs of several products that knows nothing of those products lives in a library package of its own. The library package holds no product.
 
-| Why |
-|---|
-| code copied into each product drifts between the copies, and code kept beside a product can import that product. |
+#### Why
+
+Code copied into each product drifts between the copies, and code kept beside a product can import that product.
+
+#### Examples
+
+```mermaid title="Diagram"
+flowchart LR
+  money[Money library package] -->|imported by| shop[Shop product]
+  money -->|imported by| billing[Billing product]
+```
 
 ### pipeline-stages-live-under-steps · SHOULD
 
 Every pipeline's steps live in its runner's `steps/` and nowhere else. They sit beside the use case or the domain service that runs them, which then sits in a folder of its own.
 
-| Why |
-|---|
-| a step kept apart from its runner is not found where its order is read, and changes apart from the runner it changes with — the common closure principle. |
+#### Why
+
+A step kept apart from its runner is not found where its order is read, and changes apart from the runner it changes with — the common closure principle.
+
+#### Examples
+
+```text title="Avoid"
+features/catalog/application/use-cases/commands/
+├── import-catalog.use-case
+├── read-rows
+├── match-products
+└── save-prices
+```
+
+```text title="Prefer"
+features/catalog/application/use-cases/commands/
+└── import-catalog/
+    ├── steps/
+    │   ├── read-rows
+    │   ├── match-products
+    │   ├── save-prices
+    │   └── <surface>
+    ├── import-catalog.use-case
+    └── <surface>
+```
 
 ## Surfaces
 
@@ -250,57 +463,177 @@ Every pipeline's steps live in its runner's `steps/` and nowhere else. They sit 
 
 Every folder module, and every folder with a surface, is reached by code outside it only through its surface. Exempt: a spec, which may also take the fake and the contract suite that sit beside a port, and a fixture, which may reach past a surface to build the value it builds.
 
-| Why |
-|---|
-| a caller that reaches past a surface depends on what the folder module never offered, and breaks when it changes — information hiding. |
+#### Why
+
+A caller that reaches past a surface depends on what the folder module never offered, and breaks when it changes — information hiding.
+
+#### Examples
+
+```pseudo title="Avoid"
+# composition/checkout/application/use-cases/commands/check-out.use-case
+import PlaceOrder from
+  "features/orders/application/use-cases/commands/place-order.use-case"
+```
+
+```pseudo title="Prefer"
+# composition/checkout/application/use-cases/commands/check-out.use-case
+import PlaceOrder from "features/orders"
+```
 
 ### file-never-imports-its-own-modules-surface · MUST
 
 Inside a folder module, every file imports its own folder's files directly, never the surface of a folder that holds it. That includes its folder module's surface.
 
-| Why |
-|---|
-| a file that imports its own surface imports itself, and that is where cycles begin. |
+#### Why
+
+A file that imports its own surface imports itself, and that is where cycles begin.
+
+#### Examples
+
+```pseudo title="Avoid"
+# orders/domain/order/entities/order.aggregate
+import Line from "features/orders"
+import OrderId from "features/orders"
+
+type Order = {
+  id: OrderId,
+  lines: Line[],
+}
+```
+
+```pseudo title="Prefer"
+# orders/domain/order/entities/order.aggregate
+import Line from "./order-line.entity"
+import OrderId from "../value-objects"
+
+type Order = {
+  id: OrderId,
+  lines: Line[],
+}
+```
 
 ### surface-only-re-exports · MUST
 
 Every surface that is a file only re-exports, a further published entry included. It holds no declaration and no logic.
 
-| Why |
-|---|
-| a surface that declares becomes a room of its own, beside the tree that already holds what it offers. |
+#### Why
+
+A surface that declares becomes a room of its own, beside the tree that already holds what it offers.
+
+#### Examples
+
+```pseudo title="Avoid"
+# features/orders/<surface>
+export { placeOrder } from "./application/use-cases"
+export { OrderStatus } from "./domain/order/value-objects"
+
+function orderTotal(order)
+  return sum(order.lines)
+```
+
+```pseudo title="Prefer"
+# features/orders/<surface>
+export { placeOrder } from "./application/use-cases"
+export { OrderStatus } from "./domain/order/value-objects"
+export { orderTotal } from "./domain/order/entities"
+```
 
 ### surface-offers-only-what-callers-may-couple-to · SHOULD
 
 Every surface offers, by name, only what a caller may couple to, and never re-exports everything.
 
-| Why |
-|---|
-| a surface that offers more than its callers may couple to, or a wildcard, hands out internals nobody chose to offer, and every caller of them breaks when they change — information hiding. |
+#### Why
+
+A surface that offers more than its callers may couple to, or a wildcard, hands out internals nobody chose to offer, and every caller of them breaks when they change — information hiding.
+
+#### Examples
+
+```pseudo title="Avoid"
+# features/invoices/<surface>
+export * from "./application/use-cases"
+export * from "./domain/invoice/value-objects"
+```
+
+```pseudo title="Prefer"
+# features/invoices/<surface>
+export { issueInvoice, findInvoice } from "./application/use-cases"
+export { InvoiceNumber } from "./domain/invoice/value-objects"
+```
 
 ### further-entry-sits-beside-the-surface · SHOULD
 
 Every further published entry that serves no framework the package plugs into sits beside the package's surface, never inside the tree.
 
-| Why |
-|---|
-| a published entry kept elsewhere is a door a consumer does not find, and one placed inside the tree becomes a second home for what the tree already holds. |
+#### Why
+
+A published entry kept elsewhere is a door a consumer does not find, and one placed inside the tree becomes a second home for what the tree already holds.
+
+#### Examples
+
+```text title="Avoid"
+payments/src/
+├── <surface>
+└── kernel/contracts/__tests__/
+    ├── payment.fake
+    └── testing          a further entry inside the tree
+```
+
+```text title="Prefer"
+payments/src/
+├── <surface>
+├── testing              re-exports the fakes by name
+└── kernel/contracts/__tests__/
+    └── payment.fake
+```
 
 ### surface-offers-operations-not-mechanisms · SHOULD
 
 Every feature's or composition module's surface offers its operations, never its mechanisms. It offers its use cases and binding units, the units of its presentation the levels above render, the checked constructors of its value objects, the predicates and derived values of its aggregates and value objects and its domain events; as types, its aggregates with their inner entities, its value objects, the read models its queries return, its expected failures with their codes and the ports it asks another feature to answer, which composition implements. It never offers its adapters, mappers, wire models, an aggregate's transitions or, where the language lets it, its rebuild from storage.
 
-| Why |
-|---|
-| a caller that reaches a mechanism depends on how the feature works rather than what it does, and breaks when the feature changes how — information hiding. |
+#### Why
+
+A caller that reaches a mechanism depends on how the feature works rather than what it does, and breaks when the feature changes how — information hiding.
+
+#### Examples
+
+```pseudo title="Avoid"
+# features/orders/<surface>
+export { placeOrder } from "./application/use-cases"
+export { cancel } from "./domain/order/transitions"
+export { OrderRowDto } from "./infrastructure/database"
+```
+
+```pseudo title="Prefer"
+# features/orders/<surface>
+export { placeOrder, getOrder } from "./application/use-cases"
+export { Order } from "./domain/order/entities"
+export { OrderStatus } from "./domain/order/value-objects"
+export { OrderAlreadyShippedError } from "./domain/order/errors"
+```
 
 ### surface-only-on-a-module-or-one-kind · MUST
 
 Only a folder module and a folder of one kind, a role folder, have a surface. A layer folder, the source of a program no package imports and a domain layer's `shared/` have none. Exempt: `root/`, the one door through which an entry file takes the program.
 
-| Why |
-|---|
-| a surface on a layer folder lets one import reach members the import rules keep apart, and couples its caller to members it never uses. |
+#### Why
+
+A surface on a layer folder lets one import reach members the import rules keep apart, and couples its caller to members it never uses.
+
+#### Examples
+
+```text title="Tree"
+src/                            a program's source: no surface
+├── <entry>
+├── root/
+│   └── <surface>               the one layer with a surface
+└── features/                   a layer: no surface
+    └── orders/
+        ├── <surface>           a module: its door
+        └── domain/             a layer: no surface
+            └── order/          a concept folder: no surface
+                └── entities/
+                    └── <surface>   a role folder of one kind: a surface
+```
 
 ## Names
 
@@ -308,38 +641,130 @@ Only a folder module and a folder of one kind, a role folder, have a surface. A 
 
 Every folder takes the name the vocabulary gives its layer or role, wherever one names its purpose. A layer's name is a fixed word whatever its grammatical number.
 
-| Why |
-|---|
-| a folder named its own way hides its place in the tree, and the settings that find a layer or a role by name miss it. |
+#### Why
+
+A folder named its own way hides its place in the tree, and the settings that find a layer or a role by name miss it.
+
+#### Examples
+
+```text title="Avoid"
+src/
+├── feature/
+│   └── orders/
+│       ├── domain/
+│       │   ├── models/
+│       │   └── exceptions/
+│       └── app/
+│           └── ports/
+└── common/
+```
+
+```text title="Prefer"
+src/
+├── features/
+│   └── orders/
+│       ├── domain/order/
+│       │   ├── entities/
+│       │   └── errors/
+│       └── application/
+│           └── contracts/
+└── shared/
+```
 
 ### file-carries-its-role-suffix · MUST
 
 Every role file carries its role suffix, whatever its folder. A binding unit carries the suffix its platform's or framework's block names. Exempt: a surface, an entry file, a name a tool fixes, a unit named after its own folder, a member of a set whose role has no suffix, the file that registers an open set's members, and a binding unit where those blocks name no suffix.
 
-| Why |
-|---|
-| a file without its suffix hides its role until it is opened, and the tool that checks roles by suffix passes it unchecked. |
+#### Why
+
+A file without its suffix hides its role until it is opened, and the tool that checks roles by suffix passes it unchecked.
+
+#### Examples
+
+```text title="Avoid"
+orders/
+├── domain/order/entities/
+│   └── order
+├── domain/order/errors/
+│   └── order-already-paid
+└── application/contracts/
+    └── payment
+```
+
+```text title="Prefer"
+orders/
+├── domain/order/entities/
+│   └── order.aggregate
+├── domain/order/errors/
+│   └── order-already-paid.error
+└── application/contracts/
+    └── payment.port
+```
 
 ### spec-keeps-the-suffix-of-the-file-it-proves · MUST
 
 Every spec keeps the role suffix of the file it proves, before its own.
 
-| Why |
-|---|
-| a spec that drops its file's suffix, as one named after the order that proves the order's aggregate root, is not found beside the role it proves, and the tool that pairs specs with their files by name passes it. |
+#### Why
+
+A spec that drops its file's suffix, as one named after the order that proves the order's aggregate root, is not found beside the role it proves, and the tool that pairs specs with their files by name passes it.
+
+#### Examples
+
+```text title="Avoid"
+features/orders/domain/order/entities/
+├── order.aggregate
+└── __tests__/
+    └── order.test
+```
+
+```text title="Prefer"
+features/orders/domain/order/entities/
+├── order.aggregate
+└── __tests__/
+    └── order.aggregate.test
+```
 
 ### binding-unit-named-after-its-operation · SHOULD
 
 Every binding unit is named after the operation it binds.
 
-| Why |
-|---|
-| a binding unit named after its screen or its transport hides which operation it binds, and a second binding of the same operation is not found beside it. |
+#### Why
+
+A binding unit named after its screen or its transport hides which operation it binds, and a second binding of the same operation is not found beside it.
+
+#### Examples
+
+```text title="Avoid"
+features/orders/presentation/bindings/commands/
+├── checkout-page
+└── orders-post-route
+```
+
+```text title="Prefer"
+features/orders/presentation/bindings/commands/
+├── place-order
+└── cancel-order
+```
 
 ### further-entry-named-after-what-it-offers · SHOULD
 
 Every further published entry is named after what it offers.
 
-| Why |
-|---|
-| a published entry named after where it sits or who first used it tells a consumer nothing of what importing it brings. |
+#### Why
+
+A published entry named after where it sits or who first used it tells a consumer nothing of what importing it brings.
+
+#### Examples
+
+```text title="Avoid"
+payments/src/
+├── <surface>
+└── extra                re-exports the fakes for consumers' tests
+```
+
+```text title="Prefer"
+payments/src/
+├── <surface>
+└── testing              re-exports the fakes for consumers' tests
+```
