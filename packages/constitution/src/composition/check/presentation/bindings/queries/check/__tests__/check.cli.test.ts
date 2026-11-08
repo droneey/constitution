@@ -30,6 +30,7 @@ const model: BlockModel = {
 };
 const sound: Validation = {
   advice: [],
+  advised: [],
   findings: [],
   model,
   stage: ValidationStage.Checked,

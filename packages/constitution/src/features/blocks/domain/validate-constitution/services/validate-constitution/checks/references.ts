@@ -1,11 +1,13 @@
-import { PATH_SEPARATOR } from '#/kernel/constants';
+import { Layer, PATH_SEPARATOR } from '#/kernel/constants';
 import { Rule } from '#/kernel/entities';
 import type { FindingOf } from '#/kernel/types';
 import { inlineCodeSpans, withoutCodeFences } from '#/kernel/utils';
-import { BlockId, RuleSlug } from '#/kernel/value-objects';
+import type { BlockId } from '#/kernel/value-objects';
+import { RuleSlug } from '#/kernel/value-objects';
 
 import type { BlockFile } from '../../../../block/entities';
 import { Block } from '../../../../block/entities';
+import { BlockGraph } from '../../../../block-graph/entities';
 import { directoryOf, linkTargetsOf, resolveLink } from '../../../utils';
 import type { Check, CheckInput } from '../check.types';
 
@@ -41,11 +43,28 @@ const ownerOf = (input: { blocks: readonly Block[]; target: string }): Block | u
     return input.target === folder || input.target.startsWith(`${folder}${PATH_SEPARATOR}`);
   });
 
-const linkFindings = (input: {
-  block: Block;
-  blocks: readonly Block[];
-  file: BlockFile;
-}): readonly ReferencesFinding[] =>
+interface Place {
+  readonly block: Block;
+  readonly file: BlockFile;
+  readonly reached: ReadonlySet<BlockId>;
+}
+
+const placeOf = (input: { block: Block; file: BlockFile; graph: BlockGraph }): Place => ({
+  block: input.block,
+  file: input.file,
+  reached: BlockGraph.reachableFrom(input.graph, Block.placeOf(input.block, input.file)),
+});
+
+const isReached = (input: { owner: BlockId; place: Place; graph: BlockGraph }): boolean =>
+  // Stryker disable next-line OptionalChaining: every rule's block and every link's owner is in the graph
+  input.graph.get(input.owner)?.layer === Layer.Core || input.place.reached.has(input.owner);
+
+const linkFindings = (
+  input: Place & {
+    blocks: readonly Block[];
+    graph: BlockGraph;
+  },
+): readonly ReferencesFinding[] =>
   linkTargetsOf(input.file.body).flatMap((target) => {
     const owner = ownerOf({
       blocks: input.blocks,
@@ -55,7 +74,12 @@ const linkFindings = (input: {
       }),
     });
 
-    return owner === undefined || Block.sameAs(owner, input.block)
+    return owner === undefined ||
+      isReached({
+        graph: input.graph,
+        owner: owner.id,
+        place: input,
+      })
       ? []
       : [
           {
@@ -69,11 +93,12 @@ const linkFindings = (input: {
         ];
   });
 
-const slugFindings = (input: {
-  block: Block;
-  file: BlockFile;
-  slugs: ReadonlyMap<RuleSlug, Rule>;
-}): readonly ReferencesFinding[] => {
+const slugFindings = (
+  input: Place & {
+    graph: BlockGraph;
+    slugs: ReadonlyMap<RuleSlug, Rule>;
+  },
+): readonly ReferencesFinding[] => {
   const prose = withoutCodeFences(input.file.body)
     .split('\n')
     .filter((line) => !TABLE_ROW.test(line))
@@ -84,7 +109,12 @@ const slugFindings = (input: {
   ].flatMap((span) => {
     const rule = RuleSlug.is(span) ? input.slugs.get(span) : undefined;
 
-    return rule === undefined || BlockId.equals(rule.block, input.block.id)
+    return rule === undefined ||
+      isReached({
+        graph: input.graph,
+        owner: rule.block,
+        place: input,
+      })
       ? []
       : [
           {
@@ -112,23 +142,32 @@ const decisionFindings = (file: BlockFile): readonly ReferencesFinding[] =>
 
 const referencesCheck: Check<ReferencesFinding> = ({
   constitution,
+  graph,
 }: CheckInput): readonly ReferencesFinding[] => {
   const slugs = Rule.bySlug(constitution.rules);
 
   return constitution.blocks.flatMap((block) =>
-    Block.filesOf(block).flatMap((file) => [
-      ...linkFindings({
-        block,
-        blocks: constitution.blocks,
-        file,
-      }),
-      ...slugFindings({
+    Block.filesOf(block).flatMap((file) => {
+      const place = placeOf({
         block,
         file,
-        slugs,
-      }),
-      ...decisionFindings(file),
-    ]),
+        graph,
+      });
+
+      return [
+        ...linkFindings({
+          ...place,
+          blocks: constitution.blocks,
+          graph,
+        }),
+        ...slugFindings({
+          ...place,
+          graph,
+          slugs,
+        }),
+        ...decisionFindings(file),
+      ];
+    }),
   );
 };
 

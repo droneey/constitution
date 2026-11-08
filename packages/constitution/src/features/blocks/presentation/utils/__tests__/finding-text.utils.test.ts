@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import { RuleFormCode, ValueSite } from '#/kernel/entities';
 import { ValueFailure } from '#/kernel/errors';
-import { RuleSlug } from '#/kernel/value-objects';
+import { BlockId, RuleSlug } from '#/kernel/value-objects';
 import { textOf } from '#/shared/cli';
 
 import { LoadCode } from '../../../domain/constitution/entities';
@@ -12,21 +12,25 @@ import {
   CyclesCode,
   DecisionsCode,
   LinksCode,
+  NamesCode,
   PluginCode,
   RequirementsCode,
   RequiresCode,
   RulesCode,
   TermsCode,
+  WordingCode,
 } from '../../../domain/validate-constitution/services';
 import { budgetTexts } from '../budget-texts.utils';
 import { decisionsTexts } from '../decisions-texts.utils';
 import { findingTextOf } from '../finding-text.utils';
 import { loadTexts } from '../load-texts.utils';
+import { namesTexts } from '../names-texts.utils';
 import { pluginTexts } from '../plugin-texts.utils';
 import { referencesTexts } from '../references-texts.utils';
 import { requirementsTexts } from '../requirements-texts.utils';
 import { requiresTexts } from '../requires-texts.utils';
 import { ruleFormTexts } from '../rule-form-texts.utils';
+import { ruleWordingTexts } from '../rule-wording-texts.utils';
 import { rulesTexts } from '../rules-texts.utils';
 import { structureTexts } from '../structure-texts.utils';
 import { termsTexts } from '../terms-texts.utils';
@@ -103,6 +107,22 @@ const termMisshapen = {
   },
   path: PATH,
 } satisfies BlockFinding;
+const sloganTooLong = {
+  code: WordingCode.SloganTooLong,
+  details: {
+    slug,
+    words: 23,
+  },
+  path: PATH,
+} satisfies BlockFinding;
+const parentNamesChild = {
+  code: NamesCode.ParentNamesChild,
+  details: {
+    child: BlockId.create('react/ink'),
+    name: 'Ink',
+  },
+  path: PATH,
+} satisfies BlockFinding;
 const globWithSpace = {
   code: ValueFailure.Glob,
   details: {
@@ -143,23 +163,31 @@ describe('findingTextOf', () => {
     },
     {
       finding: requiresItself,
-      text: textOf(requiresTexts, requiresItself.code, requiresItself.details),
+      text: `[passport-requires-only-what-its-block-needs] ${textOf(requiresTexts, requiresItself.code, requiresItself.details)}`,
     },
     {
       finding: withoutTable,
-      text: textOf(ruleFormTexts, withoutTable.code, withoutTable.details),
+      text: `[core.md: How to use it] ${textOf(ruleFormTexts, withoutTable.code, withoutTable.details)}`,
     },
     {
       finding: withoutWhy,
-      text: textOf(rulesTexts, withoutWhy.code, withoutWhy.details),
+      text: `[core.md: How to use it] ${textOf(rulesTexts, withoutWhy.code, withoutWhy.details)}`,
     },
     {
       finding: cycle,
-      text: textOf(structureTexts, cycle.code, cycle.details),
+      text: `[passport-requires-only-what-its-block-needs] ${textOf(structureTexts, cycle.code, cycle.details)}`,
     },
     {
       finding: termMisshapen,
-      text: textOf(termsTexts, termMisshapen.code, termMisshapen.details),
+      text: `[rule-term-defined-in-a-vocabulary] ${textOf(termsTexts, termMisshapen.code, termMisshapen.details)}`,
+    },
+    {
+      finding: sloganTooLong,
+      text: `[rule-opens-with-its-slogan] ${textOf(ruleWordingTexts, sloganTooLong.code, sloganTooLong.details)}`,
+    },
+    {
+      finding: parentNamesChild,
+      text: `[rule-placed-in-the-rank-whose-loss-voids-it] ${textOf(namesTexts, parentNamesChild.code, parentNamesChild.details)}`,
     },
     {
       finding: globWithSpace,

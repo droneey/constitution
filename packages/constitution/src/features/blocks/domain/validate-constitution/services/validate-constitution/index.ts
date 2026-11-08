@@ -11,6 +11,7 @@ export type {
   HooksDetails,
   LinksDetails,
   MarketplaceDetails,
+  NamesDetails,
   PluginDetails,
   ReferencesDetails,
   RequirementsDetails,
@@ -18,6 +19,7 @@ export type {
   RulesDetails,
   SeamsDetails,
   TermsDetails,
+  WordingDetails,
 } from './checks';
 export {
   AbstractBlocksCode,
@@ -30,6 +32,7 @@ export {
   HooksCode,
   LinksCode,
   MarketplaceCode,
+  NamesCode,
   PluginCode,
   ReferencesCode,
   RequirementsCode,
@@ -37,6 +40,9 @@ export {
   RulesCode,
   SeamsCode,
   TermsCode,
+  WordingCode,
 } from './checks';
+export type { Held } from './held-rules';
+export { heldRuleOf } from './held-rules';
 export type { Validation } from './validate-constitution.service';
 export { ValidationStage, validateConstitution } from './validate-constitution.service';

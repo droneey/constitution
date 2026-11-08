@@ -1,12 +1,15 @@
 const PIPE = '|';
+const ESCAPED_PIPE = '\\|';
+// Why: GFM reads a pipe after a backslash as text of its cell, never as a cell's edge.
+const CELL_EDGE = /(?<!\\)\|/;
 
 const isTableLine = (line: string): boolean => line.startsWith(PIPE);
 
 const cellsOf = (line: string): readonly string[] =>
   line
-    .split(PIPE)
+    .split(CELL_EDGE)
     .slice(1, -1)
-    .map((cell) => cell.trim());
+    .map((cell) => cell.trim().replaceAll(ESCAPED_PIPE, PIPE));
 
 const tablesOf = (lines: readonly string[]): readonly (readonly string[])[] => {
   const tables: string[][] = [];

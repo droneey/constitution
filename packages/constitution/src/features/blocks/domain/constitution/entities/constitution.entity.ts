@@ -1,3 +1,4 @@
+import type { BlockFormat } from '#/kernel/constants';
 import type { RequirementAnswer, Rule } from '#/kernel/entities';
 import { BlockModel } from '#/kernel/entities';
 import type { FindingOf } from '#/kernel/types';
@@ -27,6 +28,7 @@ interface Documents {
 interface Constitution {
   readonly blocks: readonly Block[];
   readonly documents: Documents;
+  readonly format: BlockFormat;
   readonly paths: ReadonlySet<TreePath>;
   readonly repositoryPaths: ReadonlySet<TreePath>;
   readonly requirementAnswers: readonly RequirementAnswer[];

@@ -6,6 +6,7 @@ import { BlockId } from '#/kernel/value-objects';
 
 import type { BlockFixture } from '../../../../../../__tests__/constitution.fixtures';
 import { passportFile } from '../../../../../../__tests__/constitution.fixtures';
+import { nestedFiles, nestedPassportFile } from '../../../../../../__tests__/nested-files.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { checkInputOf } from '../../../../../../application/use-cases/queries/check/__tests__/check.fixtures';
 import type { RequiresDetails } from '../requires';
@@ -226,6 +227,98 @@ describe('requiresCheck', () => {
     // Assert
     expect(findings).toStrictEqual([
       finding,
+    ]);
+  });
+});
+
+const REACT_DOM = 'blocks/implementations/react/react-dom/react-dom.md';
+
+describe('requiresCheck on a nested tree', () => {
+  it('should find nothing when each block requires only what it needs beyond the blocks it sits under', () => {
+    // Act
+    const findings = requiresCheck(checkInputOf(nestedFiles()));
+
+    // Assert
+    expect(findings).toStrictEqual([]);
+  });
+
+  it.each<{
+    expected: FindingOf<RequiresDetails>;
+    name: string;
+    requires: readonly string[];
+  }>([
+    {
+      expected: {
+        code: RequiresCode.RequiresAncestor,
+        details: {
+          required: BlockId.create('react'),
+        },
+        path: REACT_DOM,
+      },
+      name: 'its parent',
+      requires: [
+        'client/browser',
+        'react',
+      ],
+    },
+    {
+      expected: {
+        code: RequiresCode.RequiresThroughParent,
+        details: {
+          parent: BlockId.create('react'),
+          required: BlockId.create('presentation'),
+        },
+        path: REACT_DOM,
+      },
+      name: 'what its parent requires',
+      requires: [
+        'client/browser',
+        'presentation',
+      ],
+    },
+  ])('should report a child block that requires $name', ({ expected, requires }) => {
+    // Arrange
+    const files = nestedFiles();
+
+    files[REACT_DOM] = nestedPassportFile({
+      id: 'react/react-dom',
+      requires,
+    });
+
+    // Act
+    const findings = requiresCheck(checkInputOf(files));
+
+    // Assert
+    expect(findings).toStrictEqual([
+      expected,
+    ]);
+  });
+
+  it('should report a block that requires a block two folders above it', () => {
+    // Arrange
+    const portal = 'blocks/implementations/react/react-dom/portal/portal.md';
+    const files = {
+      ...nestedFiles(),
+      [portal]: nestedPassportFile({
+        id: 'react/react-dom/portal',
+        requires: [
+          'react',
+        ],
+      }),
+    };
+
+    // Act
+    const findings = requiresCheck(checkInputOf(files));
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        code: RequiresCode.RequiresAncestor,
+        details: {
+          required: BlockId.create('react'),
+        },
+        path: portal,
+      },
     ]);
   });
 });

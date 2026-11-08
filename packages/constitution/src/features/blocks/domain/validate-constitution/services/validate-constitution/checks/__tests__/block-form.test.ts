@@ -4,6 +4,7 @@ import type { FindingOf } from '#/kernel/types';
 import { RuleSlug } from '#/kernel/value-objects';
 
 import { passportFile, rule } from '../../../../../../__tests__/constitution.fixtures';
+import { nestedFiles, nestedPassportFile } from '../../../../../../__tests__/nested-files.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { checkInputOf } from '../../../../../../application/use-cases/queries/check/__tests__/check.fixtures';
 import type { BlockFormDetails } from '../block-form';
@@ -269,6 +270,301 @@ describe('blockFormCheck on chapters and seams', () => {
 
     // Act
     const findings = blockFormCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([]);
+  });
+});
+
+const SCREENS = 'blocks/domains/presentation/@foundation/screens.md';
+const PRESENTATION = 'blocks/domains/presentation/presentation.md';
+
+const screensRule = rule({
+  slug: 'screen-shows-one-task',
+});
+
+describe('blockFormCheck on a nested tree', () => {
+  it('should find nothing when every file of the tree is laid out as placement asks', () => {
+    // Arrange
+    const files = nestedFiles();
+
+    files[SCREENS] =
+      `# Screens\n\n> Governs screens.\n\n## Vocabulary\n\nA **task** is what a user came to do.\n\n## General\n\n${screensRule}`;
+
+    // Act
+    const findings = blockFormCheck(checkInputOf(files));
+
+    // Assert
+    expect(findings).toStrictEqual([]);
+  });
+
+  it.each<{
+    expected: readonly FindingOf<BlockFormDetails>[];
+    name: string;
+    text: string;
+  }>([
+    {
+      expected: [
+        {
+          code: BlockFormCode.TextBeforeSections,
+          details: {},
+          path: SCREENS,
+        },
+      ],
+      name: 'text stands between its Governs line and its first section',
+      text: `# Screens\n\n> Governs screens.\n\nA note.\n\n## General\n\n${screensRule}`,
+    },
+    {
+      expected: [
+        {
+          code: BlockFormCode.VocabularyNotFirst,
+          details: {},
+          path: SCREENS,
+        },
+      ],
+      name: 'its Vocabulary follows another section',
+      text: `# Screens\n\n> Governs screens.\n\n## General\n\n${screensRule}\n## Vocabulary\n\nA **task** is a goal.\n`,
+    },
+    {
+      expected: [
+        {
+          code: BlockFormCode.RuleInVocabulary,
+          details: {
+            slug: RuleSlug.create('screen-shows-one-task'),
+          },
+          path: SCREENS,
+        },
+      ],
+      name: 'its Vocabulary holds a rule',
+      text: `# Screens\n\n> Governs screens.\n\n## Vocabulary\n\nA **task** is a goal.\n\n${screensRule}`,
+    },
+    {
+      expected: [
+        {
+          code: BlockFormCode.SectionWithoutRules,
+          details: {
+            section: 'Layout',
+          },
+          path: SCREENS,
+        },
+      ],
+      name: 'a section other than the Vocabulary holds no rule',
+      text: `# Screens\n\n> Governs screens.\n\n## General\n\n${screensRule}\n## Layout\n\nScreens are laid out.\n`,
+    },
+    {
+      expected: [
+        {
+          code: BlockFormCode.TermOutsideVocabulary,
+          details: {
+            written: '**task**',
+          },
+          path: SCREENS,
+        },
+        {
+          code: BlockFormCode.TermOutsideVocabulary,
+          details: {
+            written: '{#task}',
+          },
+          path: SCREENS,
+        },
+      ],
+      name: 'a rule sets a term in bold and gives it an id',
+      text: `# Screens\n\n> Governs screens.\n\n## General\n\n${rule({
+        slug: 'screen-shows-one-task',
+        statement: 'Every screen shows one **task**{#task}.',
+      })}`,
+    },
+    {
+      expected: [
+        {
+          code: BlockFormCode.WithoutRules,
+          details: {},
+          path: SCREENS,
+        },
+        {
+          code: BlockFormCode.TextBeforeSections,
+          details: {},
+          path: SCREENS,
+        },
+      ],
+      name: 'text after its Governs line closes it, with no section',
+      text: '# Screens\n\n> Governs screens.\n\nA note.',
+    },
+    {
+      expected: [
+        {
+          code: BlockFormCode.WithoutGoverns,
+          details: {},
+          path: SCREENS,
+        },
+      ],
+      name: 'it has no Governs line',
+      text: `# Screens\n\n## General\n\n${screensRule}`,
+    },
+    {
+      expected: [
+        {
+          code: BlockFormCode.WithoutRules,
+          details: {},
+          path: SCREENS,
+        },
+      ],
+      name: 'its one section holds no rule, as the whole file holds none',
+      text: '# Screens\n\n> Governs screens.\n\n## General\n\nNothing yet.\n',
+    },
+  ])('should report a chapter when $name', ({ expected, text }) => {
+    // Arrange
+    const files = nestedFiles();
+
+    files[SCREENS] = text;
+
+    // Act
+    const findings = blockFormCheck(checkInputOf(files));
+
+    // Assert
+    expect(findings).toStrictEqual(expected);
+  });
+
+  it.each([
+    {
+      body: '# Presentation\n\n> What users see.\n\n## Setup\n\nRun it.\n',
+      name: 'a section',
+    },
+    {
+      body: '# Presentation\n\n> What users see.\n\n> And what they touch.\n',
+      name: 'a second line under its title',
+    },
+    {
+      body: '# Presentation\n\nWhat users see.\n',
+      name: 'no one line under its title',
+    },
+    {
+      body: '> What users see.\n',
+      name: 'no title',
+    },
+    {
+      body: '# Presentation\n\nIts setup.\n\n> What users see.\n',
+      name: 'its setup before its one line',
+    },
+    {
+      body: 'Its setup.\n\n> What users see.\n',
+      name: 'a line of setup in place of its title',
+    },
+  ])('should report a passport that holds $name', ({ body }) => {
+    // Arrange
+    const files = nestedFiles();
+
+    files[PRESENTATION] = nestedPassportFile({
+      body,
+      id: 'presentation',
+    });
+
+    // Act
+    const findings = blockFormCheck(checkInputOf(files));
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        code: BlockFormCode.PassportMisshapen,
+        details: {},
+        path: PRESENTATION,
+      },
+    ]);
+  });
+
+  it('should report a term a passport defines', () => {
+    // Arrange
+    const files = nestedFiles();
+
+    files[PRESENTATION] = nestedPassportFile({
+      body: '# Presentation\n\n> What a **user** sees.\n\nIts setup.\n',
+      id: 'presentation',
+    });
+
+    // Act
+    const findings = blockFormCheck(checkInputOf(files));
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        code: BlockFormCode.TermOutsideVocabulary,
+        details: {
+          written: '**user**',
+        },
+        path: PRESENTATION,
+      },
+    ]);
+  });
+
+  it('should report nothing on a chapter whose opening holds only blank space', () => {
+    // Arrange
+    const files = nestedFiles();
+
+    files[SCREENS] = `# Screens\n\n> Governs screens.\n   \n## General\n\n${screensRule}`;
+
+    // Act
+    const findings = blockFormCheck(checkInputOf(files));
+
+    // Assert
+    expect(findings).toStrictEqual([]);
+  });
+
+  it('should report nothing on a passport with a blank line of spaces under its title', () => {
+    // Arrange
+    const files = nestedFiles();
+
+    files[PRESENTATION] = nestedPassportFile({
+      body: '# Presentation\n   \n> What users see.\n',
+      id: 'presentation',
+    });
+
+    // Act
+    const findings = blockFormCheck(checkInputOf(files));
+
+    // Assert
+    expect(findings).toStrictEqual([]);
+  });
+
+  it('should report a term a passport defines in a Vocabulary of its own', () => {
+    // Arrange
+    const files = nestedFiles();
+
+    files[PRESENTATION] = nestedPassportFile({
+      body: '# Presentation\n\n> What users see.\n\n## Vocabulary\n\nA **user** sees.\n',
+      id: 'presentation',
+    });
+
+    // Act
+    const findings = blockFormCheck(checkInputOf(files));
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        code: BlockFormCode.TermOutsideVocabulary,
+        details: {
+          written: '**user**',
+        },
+        path: PRESENTATION,
+      },
+      {
+        code: BlockFormCode.PassportMisshapen,
+        details: {},
+        path: PRESENTATION,
+      },
+    ]);
+  });
+
+  it('should report nothing on a legacy chapter that defines a term outside a Vocabulary', () => {
+    // Arrange
+    const files = validFiles();
+
+    files['blocks/core/foundation/principles.md'] =
+      `# Principles\n\n> Governs principles.\n\nA **port** names a need.\n\n## General\n\n${rule({
+        slug: 'dependencies-point-inward',
+      })}`;
+
+    // Act
+    const findings = blockFormCheck(checkInputOf(files));
 
     // Assert
     expect(findings).toStrictEqual([]);

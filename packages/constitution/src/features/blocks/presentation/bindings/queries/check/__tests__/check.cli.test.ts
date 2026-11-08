@@ -14,6 +14,7 @@ import { createBlocksCheckCommand } from '../check.cli';
 
 const soundValidation: Validation = {
   advice: [],
+  advised: [],
   findings: [],
   model: {
     blocks: [],

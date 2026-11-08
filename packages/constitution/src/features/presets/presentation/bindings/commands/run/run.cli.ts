@@ -1,7 +1,7 @@
 import { Argument, Command, InvalidArgumentError } from 'commander';
 
 import { AbsolutePath } from '#/kernel/value-objects';
-import type { CommandContext } from '#/shared/cli';
+import type { CommandContext, StepReport } from '#/shared/cli';
 
 import type { ProjectRead } from '../../../../domain/presets-project/entities';
 import type { RunAsked, RunPlan } from '../../../../domain/run-plan/entities';
@@ -10,6 +10,12 @@ import type { RunStepsContext } from '../../../utils';
 import { runSteps } from '../../../utils';
 
 interface RunContext extends CommandContext, RunStepsContext {
+  /**
+   * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
+   * @throws {ReleaseError} when the release's blocks cannot be listed
+   */
+  readonly checkPacks: (startFolderPath: AbsolutePath) => StepReport | undefined;
+  readonly packsLabel: string;
   /**
    * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
    * @throws {ReleaseError} when the release's blocks cannot be listed
@@ -49,11 +55,30 @@ const createRunCommand = (context: RunContext): Command =>
       ]),
     )
     .action(async (entryPoint: EntryPoint): Promise<void> => {
+      const startFolderPath = AbsolutePath.create(context.places.cwd);
+      const packs =
+        entryPoint === EntryPoint.Check ? context.checkPacks(startFolderPath) : undefined;
+
+      if (packs !== undefined) {
+        await context.renderer.run({
+          label: context.packsLabel,
+          outcomeOf: (report: StepReport) => report.outcome,
+          run: () => packs,
+        });
+        await context.renderer.print(packs.sections);
+      }
+
+      if (packs?.isFailed === true) {
+        context.setFailed();
+
+        return;
+      }
+
       await runSteps(
         context,
         context.planRun({
           entryPoint,
-          startFolderPath: AbsolutePath.create(context.places.cwd),
+          startFolderPath,
         }),
       );
     });

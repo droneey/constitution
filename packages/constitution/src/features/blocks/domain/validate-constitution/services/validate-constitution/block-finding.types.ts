@@ -18,6 +18,7 @@ import type {
   HooksDetails,
   LinksDetails,
   MarketplaceDetails,
+  NamesDetails,
   PluginDetails,
   ReferencesDetails,
   RequirementsDetails,
@@ -25,6 +26,7 @@ import type {
   RulesDetails,
   SeamsDetails,
   TermsDetails,
+  WordingDetails,
 } from './checks';
 
 type BlockFindingDetails = AbstractBlocksDetails &
@@ -39,6 +41,7 @@ type BlockFindingDetails = AbstractBlocksDetails &
   LoadFindingDetails &
   ManifestReadDetails &
   MarketplaceDetails &
+  NamesDetails &
   PluginDetails &
   ReferencesDetails &
   RequirementsDetails &
@@ -48,7 +51,8 @@ type BlockFindingDetails = AbstractBlocksDetails &
   RulesDetails &
   SeamsDetails &
   TermsDetails &
-  ValueFindingDetails;
+  ValueFindingDetails &
+  WordingDetails;
 
 type BlockFindingCode = keyof BlockFindingDetails & string;
 

@@ -66,7 +66,7 @@ describe('structureTexts', () => {
         code: BlockFormCode.PassportHoldsRules,
         details: {},
       },
-      text: "holds rules; a block's passport holds its front matter, its title, what the block is, its setup and an implementation's Requirements, and its rules live in the chapters of its axes",
+      text: "holds rules; a block's passport holds its front matter, its title, what the block is and its setup, and its rules live in the chapters of its axes",
     },
     {
       problem: {
@@ -260,23 +260,55 @@ describe('structureTexts', () => {
           other: BlockId.create('typescript'),
         },
       },
-      text: "is named after typescript, which biome requires or extends, or which requires or extends it; such a rule is the dependent block's own",
+      text: "is named after typescript, which biome requires or sits under, or which requires it or sits under it; such a rule is the dependent block's own",
     },
     {
       problem: {
-        code: SeamsCode.TitleMismatch,
+        code: BlockFormCode.TextBeforeSections,
         details: {},
       },
-      text: "is titled otherwise than the other block's passport, whose title a seam takes",
+      text: 'holds text between its Governs line and its first section; everything after the Governs line sits in a section',
     },
     {
       problem: {
-        code: SeamsCode.ChapterNamedAfterBlock,
+        code: BlockFormCode.VocabularyNotFirst,
+        details: {},
+      },
+      text: 'has sections before "Vocabulary", which comes first',
+    },
+    {
+      problem: {
+        code: BlockFormCode.RuleInVocabulary,
         details: {
-          block: BlockId.create('ui'),
+          slug: RuleSlug.create('screen-shows-one-task'),
         },
       },
-      text: 'takes the id of the block ui; a file named after a block belongs in with/',
+      text: 'has the rule "screen-shows-one-task" in its "Vocabulary"; a vocabulary holds only definitions',
+    },
+    {
+      problem: {
+        code: BlockFormCode.SectionWithoutRules,
+        details: {
+          section: 'Layout',
+        },
+      },
+      text: 'has the section "Layout", which holds no rule; every section but the "Vocabulary" holds one',
+    },
+    {
+      problem: {
+        code: BlockFormCode.TermOutsideVocabulary,
+        details: {
+          written: '**task**',
+        },
+      },
+      text: `defines **task** outside a "Vocabulary"; a term two rules share is defined in a vocabulary, and one rule's own term in its statement without bold or an id`,
+    },
+    {
+      problem: {
+        code: BlockFormCode.PassportMisshapen,
+        details: {},
+      },
+      text: 'holds more than its title, its one line under it and its setup; a passport introduces its block',
     },
   ])('should say $problem.code as the report words it', ({ problem, text }) => {
     // Act

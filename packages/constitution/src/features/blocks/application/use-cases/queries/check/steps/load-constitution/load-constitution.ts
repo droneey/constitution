@@ -97,6 +97,7 @@ const loadConstitution = (input: LoadConstitutionInput): ConstitutionLoaded => {
         repositoryPaths,
         tree: input.tree,
       }),
+      format,
       paths,
       repositoryPaths,
       requirementAnswers: parsed.answers,

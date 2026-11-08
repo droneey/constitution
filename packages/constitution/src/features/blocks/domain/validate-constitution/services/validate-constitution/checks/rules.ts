@@ -1,5 +1,4 @@
 import type { Axis, Level } from '#/kernel/constants';
-import { Layer } from '#/kernel/constants';
 import { Rule } from '#/kernel/entities';
 import type { FindingOf, ProblemOf } from '#/kernel/types';
 import type { RuleSlug } from '#/kernel/value-objects';
@@ -10,7 +9,6 @@ import { findingsAt } from '../../../utils';
 import type { Check, CheckInput } from '../check.types';
 
 enum RulesCode {
-  SlugOpensWithNo = 'slug-opens-with-no',
   WithoutStatement = 'rule-without-statement',
   WithoutWhy = 'rule-without-why',
   DefinedTwice = 'rule-defined-twice',
@@ -22,13 +20,9 @@ enum RulesCode {
   ParentOffAxis = 'parent-off-axis',
   LooserThanParent = 'rule-looser-than-parent',
   WithoutLevel = 'rule-without-level',
-  OutsideParentChapter = 'rule-outside-parent-chapter',
 }
 
 interface RulesDetails {
-  readonly [RulesCode.SlugOpensWithNo]: {
-    readonly slug: RuleSlug;
-  };
   readonly [RulesCode.WithoutStatement]: {
     readonly slug: RuleSlug;
   };
@@ -78,12 +72,6 @@ interface RulesDetails {
     readonly parent: RuleSlug;
     readonly slug: RuleSlug;
   };
-  readonly [RulesCode.OutsideParentChapter]: {
-    readonly chapter?: string;
-    readonly parent: RuleSlug;
-    readonly parentChapter?: string;
-    readonly slug: RuleSlug;
-  };
 }
 
 type RulesFinding = FindingOf<RulesDetails>;
@@ -94,14 +82,6 @@ const fieldProblems = (rule: Rule): readonly (RulesProblem | undefined)[] => {
   const { slug } = rule;
 
   return [
-    slug.startsWith('no-')
-      ? {
-          code: RulesCode.SlugOpensWithNo,
-          details: {
-            slug,
-          },
-        }
-      : undefined,
     rule.statement === ''
       ? {
           code: RulesCode.WithoutStatement,
@@ -196,46 +176,6 @@ const placementProblem = (input: {
       };
 };
 
-const MIRRORS_CORE: readonly Layer[] = [
-  Layer.Language,
-  Layer.Platform,
-] as const;
-
-const chapterProblem = (input: {
-  graph: BlockGraph;
-  rule: Rule;
-  target: Rule;
-}): RulesProblem | undefined => {
-  const { rule, target } = input;
-  // Stryker disable next-line OptionalChaining: every rule's block is in the index
-  const layer = input.graph.get(rule.block)?.layer;
-  // Stryker disable next-line OptionalChaining: every rule's block is in the index
-  const isCoreParent = input.graph.get(target.block)?.layer === Layer.Core;
-
-  return MIRRORS_CORE.some((mirror) => mirror === layer) &&
-    rule.seam === undefined &&
-    isCoreParent &&
-    rule.chapterTitle !== target.chapterTitle
-    ? {
-        code: RulesCode.OutsideParentChapter,
-        details: {
-          ...(rule.chapterTitle === undefined
-            ? {}
-            : {
-                chapter: rule.chapterTitle,
-              }),
-          parent: target.slug,
-          ...(target.chapterTitle === undefined
-            ? {}
-            : {
-                parentChapter: target.chapterTitle,
-              }),
-          slug: rule.slug,
-        },
-      }
-    : undefined;
-};
-
 const parentProblem = (input: {
   graph: BlockGraph;
   rule: Rule;
@@ -277,17 +217,12 @@ const parentProblem = (input: {
           slug,
         },
       }
-    : (placementProblem({
+    : placementProblem({
         graph: input.graph,
         parent,
         rule: input.rule,
         target,
-      }) ??
-        chapterProblem({
-          graph: input.graph,
-          rule: input.rule,
-          target,
-        }));
+      });
 };
 
 const rulesCheck: Check<RulesFinding> = ({

@@ -18,7 +18,6 @@ const UI = 'blocks/domains/ui/foundation/screens.md';
 const UI_WITH_REMOTE_DATA = 'blocks/domains/ui/architecture/with/remote-data.md';
 const PORTALS = 'blocks/implementations/react-dom/workflow/portals.md';
 const TYPES = 'blocks/contexts/languages/typescript/foundation/types.md';
-const UNTITLED = 'blocks/core/foundation/untitled.md';
 const DELIVERY = 'blocks/contexts/platforms/browser/foundation/delivery.md';
 const TYPESCRIPT_WITH_BROWSER = 'blocks/contexts/languages/typescript/architecture/with/browser.md';
 
@@ -66,13 +65,6 @@ describe('rulesCheck', () => {
         code: RulesCode.WithoutWhy,
         details: {
           slug: RuleSlug.create('bare'),
-        },
-        path: PRINCIPLES,
-      },
-      {
-        code: RulesCode.SlugOpensWithNo,
-        details: {
-          slug: RuleSlug.create('no-any-written'),
         },
         path: PRINCIPLES,
       },
@@ -487,110 +479,16 @@ describe('rulesCheck', () => {
     },
   );
 
-  it.each<{
-    body: string;
-    condition: string;
-    details: RulesDetails[RulesCode.OutsideParentChapter];
-    file: string;
-  }>([
+  it.each([
     {
+      condition:
+        'a rule of a language that carries out a rule of core sits in a chapter titled for another',
+      file: TYPES,
       body: `# Types\n\n## Principles\n\n${rule({
         tightens: 'dependencies-point-inward',
         slug: 'types-point-inward',
       })}`,
-      condition:
-        "of a language sits in a chapter titled for another, under a section named for its parent's",
-      details: {
-        chapter: 'Types',
-        parent: RuleSlug.create('dependencies-point-inward'),
-        parentChapter: 'Principles',
-        slug: RuleSlug.create('types-point-inward'),
-      },
-      file: TYPES,
     },
-    {
-      body: `# Delivery\n\n## General\n\n${rule({
-        tightens: 'dependencies-point-inward',
-        slug: 'delivery-points-inward',
-      })}`,
-      condition: 'of a platform sits in a chapter titled for another',
-      details: {
-        chapter: 'Delivery',
-        parent: RuleSlug.create('dependencies-point-inward'),
-        parentChapter: 'Principles',
-        slug: RuleSlug.create('delivery-points-inward'),
-      },
-      file: DELIVERY,
-    },
-    {
-      body: rule({
-        tightens: 'dependencies-point-inward',
-        slug: 'types-point-inward',
-      }),
-      condition: 'of a language sits in a file with no title',
-      details: {
-        parent: RuleSlug.create('dependencies-point-inward'),
-        parentChapter: 'Principles',
-        slug: RuleSlug.create('types-point-inward'),
-      },
-      file: TYPES,
-    },
-  ])(
-    'should report a rule that carries out a rule of core when it $condition',
-    ({ body, details, file }) => {
-      // Arrange
-      const files = validFiles();
-
-      files[file] = body;
-
-      const input = checkInputOf(files);
-
-      // Act
-      const findings = rulesCheck(input);
-
-      // Assert
-      expect(findings).toStrictEqual([
-        {
-          code: RulesCode.OutsideParentChapter,
-          details,
-          path: file,
-        },
-      ]);
-    },
-  );
-
-  it('should report a rule of a language whose parent of core sits in a file with no title', () => {
-    // Arrange
-    const files = validFiles();
-
-    files[UNTITLED] = rule({
-      slug: 'bare-rule',
-    });
-    files[TYPES] = `# Types\n\n## General\n\n${rule({
-      tightens: 'bare-rule',
-      slug: 'types-point-inward',
-    })}`;
-
-    const input = checkInputOf(files);
-
-    // Act
-    const findings = rulesCheck(input);
-
-    // Assert
-    expect(findings).toStrictEqual([
-      {
-        code: RulesCode.OutsideParentChapter,
-        details: {
-          chapter: 'Types',
-          parent: RuleSlug.create('bare-rule'),
-          slug: RuleSlug.create('types-point-inward'),
-        },
-        path: TYPES,
-      },
-    ]);
-  });
-
-  it.each([
     {
       condition: "a rule of a language sits in the chapter titled like its parent's, under General",
       file: TYPES,

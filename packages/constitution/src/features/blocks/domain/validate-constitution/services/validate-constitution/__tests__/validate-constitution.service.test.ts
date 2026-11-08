@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'bun:test';
 
-import { BlockFormat } from '#/kernel/constants';
+import { BlockFormat, Level } from '#/kernel/constants';
 import { BlockId, RuleSlug } from '#/kernel/value-objects';
 
-import { rule, textOf } from '../../../../../__tests__/constitution.fixtures';
+import type { Files } from '../../../../../__tests__/constitution.fixtures';
+import { chapterFile, rule, textOf } from '../../../../../__tests__/constitution.fixtures';
+import { nestedBlockFiles, nestedFiles } from '../../../../../__tests__/nested-files.fixtures';
 import { ACME, packFiles } from '../../../../../__tests__/pack-files.fixtures';
 import { validFiles } from '../../../../../__tests__/valid-files.fixtures';
 import {
@@ -12,7 +14,9 @@ import {
 } from '../../../../../application/use-cases/queries/check/__tests__/check.fixtures';
 import { FrontMatterField, FrontMatterReadCode, PlaceCode } from '../../../../block/entities';
 import { LoadCode } from '../../../../constitution/entities';
-import { RulesCode } from '../checks';
+import type { BlockFinding } from '../block-finding.types';
+import { DecisionsCode, RulesCode, SeamsCode, WordingCode } from '../checks';
+import type { Validation } from '../validate-constitution.service';
 import { ValidationStage, validateConstitution } from '../validate-constitution.service';
 
 const REMOTE_DATA = 'blocks/domains/remote-data/remote-data.md';
@@ -99,6 +103,7 @@ describe('validateConstitution', () => {
           },
         },
       ],
+      advised: [],
       findings: [],
       model: expect.any(Object),
       stage: ValidationStage.Checked,
@@ -121,6 +126,7 @@ describe('validateConstitution', () => {
     // Assert
     expect(validation).toStrictEqual({
       advice: [],
+      advised: [],
       findings: [],
       model: expect.any(Object),
       stage: ValidationStage.Checked,
@@ -150,6 +156,7 @@ describe('validateConstitution', () => {
     // Assert
     expect(validation).toStrictEqual({
       advice: [],
+      advised: [],
       findings: [
         {
           code: RulesCode.ParentNotRule,
@@ -204,6 +211,225 @@ describe('validateConstitution', () => {
         },
       ],
       stage: ValidationStage.Unloaded,
+    });
+  });
+});
+
+const ACME_CALLS = 'blocks/implementations/react/acme/@architecture/calls.md';
+const ACME_WITH_CORE = 'blocks/implementations/react/acme/@foundation/with/core.md';
+
+const nestedPackOf = (statement: string): Files => ({
+  ...nestedBlockFiles({
+    files: {
+      '@architecture/calls.md': chapterFile(
+        'Calls',
+        rule({
+          slug: 'acme-hook-named-by-its-call',
+          statement,
+          tightens: 'hook-named-by-its-use',
+        }),
+      ),
+    },
+    id: 'react/acme',
+    layerFolder: 'implementations',
+  }),
+  'DECISIONS.md': textOf({
+    files: packFiles(),
+    path: 'DECISIONS.md',
+  }),
+});
+
+const LONG_SLOGAN =
+  'Every hook of Acme is named by the call it makes to the service, so a reader finds the call by its hook.';
+
+const seamWithCore = {
+  code: SeamsCode.NotPair,
+  details: {
+    other: BlockId.create('core'),
+  },
+  path: ACME_WITH_CORE,
+} satisfies BlockFinding;
+
+const severityOf = (
+  validation: Validation,
+): {
+  readonly advised: readonly BlockFinding[];
+  readonly findings: readonly BlockFinding[];
+} => ({
+  advised: validation.stage === ValidationStage.Checked ? validation.advised : [],
+  findings: validation.findings,
+});
+
+const sloganTooLong = {
+  code: WordingCode.SloganTooLong,
+  details: {
+    slug: RuleSlug.create('acme-hook-named-by-its-call'),
+    words: 23,
+  },
+  path: ACME_CALLS,
+} satisfies BlockFinding;
+
+describe('validateConstitution on a nested tree', () => {
+  it('should find nothing when a pack child carries out a rule of its parent in the release', () => {
+    // Arrange
+    const loaded = packLoadedOf({
+      base: nestedFiles(),
+      pack: nestedPackOf('Every hook of Acme is named by its call.'),
+    });
+
+    // Act
+    const validation = validateConstitution({
+      ...loaded,
+      isPack: true,
+    });
+
+    // Assert
+    expect(severityOf(validation)).toStrictEqual({
+      advised: [],
+      findings: [],
+    });
+  });
+
+  it('should fail a pack on a finding of a MUST and advise on one of a SHOULD', () => {
+    // Arrange
+    const pack = nestedPackOf(LONG_SLOGAN);
+
+    pack[ACME_WITH_CORE] = chapterFile(
+      'Core',
+      rule({
+        slug: 'acme-with-core-holds',
+      }),
+    );
+
+    const loaded = packLoadedOf({
+      base: nestedFiles(),
+      pack,
+    });
+
+    // Act
+    const validation = validateConstitution({
+      ...loaded,
+      isPack: true,
+    });
+
+    // Assert
+    expect(severityOf(validation)).toStrictEqual({
+      advised: [
+        sloganTooLong,
+      ],
+      findings: [
+        seamWithCore,
+      ],
+    });
+  });
+
+  it('should advise on a finding of a MUST that the unit lowered', () => {
+    // Arrange
+    const pack = nestedPackOf('Every hook of Acme is named by its call.');
+
+    pack[ACME_WITH_CORE] = chapterFile(
+      'Core',
+      rule({
+        slug: 'acme-with-core-holds',
+      }),
+    );
+
+    const loaded = packLoadedOf({
+      base: nestedFiles(),
+      pack,
+    });
+
+    // Act
+    const validation = validateConstitution({
+      ...loaded,
+      isPack: true,
+      lowered: new Map([
+        [
+          'seam-never-pairs-with-core-or-a-related-block',
+          Level.Should,
+        ],
+      ]),
+    });
+
+    // Assert
+    expect(severityOf(validation)).toStrictEqual({
+      advised: [
+        seamWithCore,
+      ],
+      findings: [],
+    });
+  });
+
+  it('should fail the release on a finding of a SHOULD and only advise on a slug joined by "and"', () => {
+    // Arrange
+    const files = {
+      ...nestedFiles(),
+      ...nestedPackOf(LONG_SLOGAN),
+      'blocks/core/@foundation/code.md': chapterFile(
+        'Code',
+        rule({
+          slug: 'code-reads-as-prose',
+        }),
+        rule({
+          slug: 'names-and-types-agree',
+        }),
+      ),
+    };
+    const loaded = loadedOf(files);
+
+    // Act
+    const validation = validateConstitution({
+      ...loaded,
+      isPack: false,
+    });
+
+    const { advised, findings } = severityOf(validation);
+
+    // Assert
+    expect({
+      advised,
+      wording: findings.filter(({ path }) => path === ACME_CALLS),
+    }).toStrictEqual({
+      advised: [
+        {
+          code: WordingCode.SlugJoinsWithAnd,
+          details: {
+            slug: RuleSlug.create('names-and-types-agree'),
+          },
+          path: 'blocks/core/@foundation/code.md',
+        },
+      ],
+      wording: [
+        sloganTooLong,
+      ],
+    });
+  });
+
+  it('should fail a pack on a finding that holds no rule of placement', () => {
+    // Arrange
+    const pack = nestedPackOf('Every hook of Acme is named by its call.');
+    const { 'DECISIONS.md': _log, ...withoutLog } = pack;
+    const loaded = packLoadedOf({
+      base: nestedFiles(),
+      pack: withoutLog,
+    });
+
+    // Act
+    const validation = validateConstitution({
+      ...loaded,
+      isPack: true,
+    });
+
+    // Assert
+    expect(severityOf(validation)).toStrictEqual({
+      advised: [],
+      findings: [
+        {
+          code: DecisionsCode.LogMissing,
+          details: {},
+          path: 'DECISIONS.md',
+        },
+      ],
     });
   });
 });

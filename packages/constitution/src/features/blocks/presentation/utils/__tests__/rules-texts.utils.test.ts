@@ -16,15 +16,6 @@ describe('rulesTexts', () => {
   }>([
     {
       problem: {
-        code: RulesCode.SlugOpensWithNo,
-        details: {
-          slug: RuleSlug.create('no-any'),
-        },
-      },
-      text: 'rule "no-any" opens with "no-"; a slug says what holds',
-    },
-    {
-      problem: {
         code: RulesCode.WithoutStatement,
         details: {
           slug: RuleSlug.create('bare'),
@@ -141,28 +132,6 @@ describe('rulesTexts', () => {
         },
       },
       text: 'rule "portals" carries out "four-data-states" without a level; a rule that carries out another states its own, never looser than it',
-    },
-    {
-      problem: {
-        code: RulesCode.OutsideParentChapter,
-        details: {
-          chapter: 'Types',
-          parent: RuleSlug.create('dependencies-point-inward'),
-          slug: RuleSlug.create('types-point-inward'),
-        },
-      },
-      text: `rule "types-point-inward" sits in the chapter "Types" while it carries out "dependencies-point-inward" of core's chapter "untitled"; a rule of a language or a platform that tightens core sits in the chapter titled like its parent's`,
-    },
-    {
-      problem: {
-        code: RulesCode.OutsideParentChapter,
-        details: {
-          parent: RuleSlug.create('dependencies-point-inward'),
-          parentChapter: 'Principles',
-          slug: RuleSlug.create('types-point-inward'),
-        },
-      },
-      text: `rule "types-point-inward" sits in the chapter "untitled" while it carries out "dependencies-point-inward" of core's chapter "Principles"; a rule of a language or a platform that tightens core sits in the chapter titled like its parent's`,
     },
   ])('should say $problem.code as the report words it', ({ problem, text }) => {
     // Act

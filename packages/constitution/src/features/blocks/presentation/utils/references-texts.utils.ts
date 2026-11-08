@@ -6,11 +6,11 @@ import { LinksCode, ReferencesCode } from '../../domain/validate-constitution/se
 const referencesTexts: TextsOf<LinksDetails & ReferencesDetails> = {
   [LinksCode.MissingTarget]: ({ target }) => `links to a missing file "${target}"`,
   [ReferencesCode.LinkIntoOtherBlock]: ({ owner, target }) =>
-    `links to ${target}, a file of the block ${owner}; a block refers to another only through its front matter and with/ file names`,
+    `links to ${target}, a file of the block ${owner}, which its place does not reach; a block refers only to core, itself and the blocks it requires or sits under`,
   [ReferencesCode.NamesOtherRule]: ({ owner, slug }) =>
-    `names the rule ${slug} of ${owner}; a rule refers to another only as the parent in its heading`,
+    `names the rule ${slug} of ${owner}, which its place does not reach; a block refers only to core, itself and the blocks it requires or sits under`,
   [ReferencesCode.CitesDecision]: ({ decision }) =>
-    `cites ${decision}; a block states its rules without citing the decision log`,
+    `cites ${decision}; a rule is read alone, without the decision log`,
 };
 
 export { referencesTexts };

@@ -1,3 +1,4 @@
+import type { Level } from '#/kernel/constants';
 import { BLOCKS_FOLDER_NAME } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
 import { AbsolutePath } from '#/kernel/value-objects';
@@ -17,6 +18,7 @@ interface CheckBlocksInput {
   readonly files: ProjectFiles;
   readonly folderPath: AbsolutePath;
   readonly frontMatterParser: FrontMatterParser;
+  readonly lowered?: ReadonlyMap<string, Level>;
   readonly manifestParser: ManifestParser;
   readonly trees: FileTrees;
 }
@@ -51,6 +53,12 @@ const checkBlocks = (input: CheckBlocksInput): Validation | undefined => {
     constitution,
     findings,
     isPack: input.base !== undefined,
+    // Stryker disable next-line ConditionalExpression: a validation given no lowering lowers nothing
+    ...(input.lowered === undefined
+      ? {}
+      : {
+          lowered: input.lowered,
+        }),
   });
 };
 

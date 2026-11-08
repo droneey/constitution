@@ -6,3 +6,4 @@ export {
   localLinkTargets,
   resolveLink,
 } from './markdown-links.utils';
+export { proseOf } from './prose.utils';

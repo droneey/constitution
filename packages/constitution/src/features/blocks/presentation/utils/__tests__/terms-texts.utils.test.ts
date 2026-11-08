@@ -1,9 +1,8 @@
 import { describe, expect, it } from 'bun:test';
 
 import { Axis } from '#/kernel/constants';
-import { TermKind } from '#/kernel/entities';
 import type { ProblemOf } from '#/kernel/types';
-import { BlockId } from '#/kernel/value-objects';
+import { BlockId, RuleSlug } from '#/kernel/value-objects';
 import { textOf } from '#/shared/cli';
 
 import type { TermsDetails } from '../../../domain/validate-constitution/services';
@@ -40,11 +39,12 @@ describe('termsTexts', () => {
         code: TermsCode.OffAxis,
         details: {
           axis: Axis.Foundation,
+          slug: RuleSlug.create('ports-stay'),
           term: 'port',
           termAxis: Axis.Architecture,
         },
       },
-      text: 'uses "port", a term of the architecture; foundation holds whatever the architecture',
+      text: 'rule "ports-stay" on the foundation uses "port", a term of the architecture; a rule that needs it sits on the architecture',
     },
     {
       problem: {
@@ -55,18 +55,6 @@ describe('termsTexts', () => {
         },
       },
       text: 'uses "TypeScript", which typescript defines; only typescript and the blocks that build on it may',
-    },
-    {
-      problem: {
-        code: TermsCode.Misspelled,
-        details: {
-          kind: TermKind.Folder,
-          owner: BlockId.create('core'),
-          term: 'adapters/',
-          written: 'adapters',
-        },
-      },
-      text: 'writes `adapters`, which core defines as `adapters/`; a folder keeps one spelling',
     },
     {
       problem: {
@@ -98,6 +86,15 @@ describe('termsTexts', () => {
         },
       },
       text: 'gives "adapters/" the id "Gateway"; an id is lower-case words and digits joined by hyphens, opening with a letter',
+    },
+    {
+      problem: {
+        code: TermsCode.Unused,
+        details: {
+          term: 'wizard',
+        },
+      },
+      text: 'defines "wizard", which no rule or definition uses; a vocabulary holds the terms its rules share',
     },
   ])('should say $problem.code as the report words it', ({ problem, text }) => {
     // Act

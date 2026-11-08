@@ -9,7 +9,11 @@ import { BlockId, RuleSlug } from '#/kernel/value-objects';
 import { noteSection } from '#/shared/cli';
 
 import type { BlockFinding, Validation } from '../../../domain/validate-constitution/services';
-import { RequiresCode, ValidationStage } from '../../../domain/validate-constitution/services';
+import {
+  RequiresCode,
+  ValidationStage,
+  WordingCode,
+} from '../../../domain/validate-constitution/services';
 import { findingTextOf } from '../finding-text.utils';
 import { adviceMessage, SOUND } from '../report.messages';
 import { blocksOutcomeOf, blocksSectionsOf } from '../report.utils';
@@ -34,9 +38,20 @@ const advice = {
     slug: RuleSlug.create('b'),
   },
 };
+const slogan: BlockFinding = {
+  code: WordingCode.SloganTooLong,
+  details: {
+    slug: RuleSlug.create('a'),
+    words: 23,
+  },
+  path: 'blocks/domains/ui/@foundation/forms.md',
+};
 const advised = {
   advice: [
     advice,
+  ],
+  advised: [
+    slogan,
   ],
   findings: [
     finding,
@@ -94,7 +109,7 @@ describe('blocksSectionsOf', () => {
     );
   });
 
-  it('should give the findings, each closed by its code, then the advice when both are there', () => {
+  it('should give the findings, each closed by its code, then the advised findings and the advice', () => {
     // Act
     const sections = blocksSectionsOf(advised);
 
@@ -109,6 +124,7 @@ describe('blocksSectionsOf', () => {
       }),
       noteSection({
         lines: [
+          `blocks/domains/ui/@foundation/forms.md: ${findingTextOf(slogan)} [slogan-too-long]`,
           adviceMessage(advice),
         ],
         title: expect.any(String),
@@ -175,6 +191,7 @@ describe('blocksSectionsOf', () => {
       condition: 'the blocks are sound and nothing is advised',
       validation: {
         advice: [],
+        advised: [],
         findings: [],
         model,
         stage: ValidationStage.Checked,

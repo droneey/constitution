@@ -68,6 +68,25 @@ describe('requiresTexts', () => {
     },
     {
       problem: {
+        code: RequiresCode.RequiresAncestor,
+        details: {
+          required: BlockId.create('react'),
+        },
+      },
+      text: "requires react, which it sits under; a block's folder already turns its parent on",
+    },
+    {
+      problem: {
+        code: RequiresCode.RequiresThroughParent,
+        details: {
+          parent: BlockId.create('react'),
+          required: BlockId.create('presentation'),
+        },
+      },
+      text: 'requires presentation, which its parent react already turns on; a passport lists only what its block needs beyond the blocks it sits under',
+    },
+    {
+      problem: {
         code: RequiresCode.RequiresOutOfLayer,
         details: {
           allowed: [

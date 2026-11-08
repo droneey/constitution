@@ -4,7 +4,6 @@ import { Layer } from '#/kernel/constants';
 import type { FindingOf } from '#/kernel/types';
 import { BlockId } from '#/kernel/value-objects';
 
-import { passportFile } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { checkInputOf } from '../../../../../../application/use-cases/queries/check/__tests__/check.fixtures';
 import type { SeamsDetails } from '../seams';
@@ -132,38 +131,11 @@ describe('seamsCheck', () => {
     expect(findings).toStrictEqual([]);
   });
 
-  it('should report a chapter named after a block when core lists it', () => {
+  it('should report nothing for a chapter named after another block', () => {
     // Arrange
     const files = validFiles();
 
-    files['blocks/core/core.md'] = passportFile({
-      body: '# Core\n',
-      id: 'core',
-    });
     files['blocks/core/architecture/ui.md'] = '# UI in core\n';
-
-    const input = checkInputOf(files);
-
-    // Act
-    const findings = seamsCheck(input);
-
-    // Assert
-    expect(findings).toStrictEqual([
-      {
-        code: SeamsCode.ChapterNamedAfterBlock,
-        details: {
-          block: BlockId.create('ui'),
-        },
-        path: 'blocks/core/architecture/ui.md',
-      },
-    ]);
-  });
-
-  it("should take the title of the other block's passport when a chapter of it is titled otherwise", () => {
-    // Arrange
-    const files = validFiles();
-
-    files['blocks/domains/remote-data/foundation/caching.md'] = '# Remote data at large\n';
 
     const input = checkInputOf(files);
 
@@ -183,28 +155,18 @@ describe('seamsCheck', () => {
       condition: 'has no title',
       title: 'Text.\n',
     },
-  ])(
-    "should report a seam that $condition rather than as the other block's passport",
-    ({ title }) => {
-      // Arrange
-      const path = 'blocks/contexts/platforms/browser/foundation/with/ui.md';
-      const files = validFiles();
+  ])('should report nothing for a seam that $condition', ({ title }) => {
+    // Arrange
+    const files = validFiles();
 
-      files[path] = title;
+    files['blocks/contexts/platforms/browser/foundation/with/ui.md'] = title;
 
-      const input = checkInputOf(files);
+    const input = checkInputOf(files);
 
-      // Act
-      const findings = seamsCheck(input);
+    // Act
+    const findings = seamsCheck(input);
 
-      // Assert
-      expect(findings).toStrictEqual([
-        {
-          code: SeamsCode.TitleMismatch,
-          details: {},
-          path,
-        },
-      ]);
-    },
-  );
+    // Assert
+    expect(findings).toStrictEqual([]);
+  });
 });

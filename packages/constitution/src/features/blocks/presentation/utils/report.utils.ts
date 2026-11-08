@@ -49,11 +49,18 @@ const blocksSectionsOf = (validation: Validation | undefined): readonly Section[
           tone: Tone.Error,
         }),
       ]),
-  ...(validation?.stage !== ValidationStage.Checked || validation.advice.length === 0
+  ...(validation?.stage !== ValidationStage.Checked ||
+  validation.advice.length + validation.advised.length === 0
     ? []
     : [
         noteSection({
-          lines: validation.advice.map(adviceMessage),
+          lines: [
+            ...reportLinesOf({
+              findings: validation.advised,
+              textOf: findingTextOf,
+            }),
+            ...validation.advice.map(adviceMessage),
+          ],
           title: ADVICE_TITLE,
           tone: Tone.Info,
         }),

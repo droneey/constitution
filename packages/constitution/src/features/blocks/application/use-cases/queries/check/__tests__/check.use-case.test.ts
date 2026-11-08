@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'bun:test';
 
+import { Level } from '#/kernel/constants';
 import { AbsolutePath, BlockId, RuleSlug } from '#/kernel/value-objects';
 
 import { checkSourceOf, rule, textOf } from '../../../../../__tests__/constitution.fixtures';
-import { packFiles } from '../../../../../__tests__/pack-files.fixtures';
+import { ACME, packFiles } from '../../../../../__tests__/pack-files.fixtures';
 import { validFiles } from '../../../../../__tests__/valid-files.fixtures';
 import { LoadCode } from '../../../../../domain/constitution/entities';
 import { RulesCode, ValidationStage } from '../../../../../domain/validate-constitution/services';
@@ -59,6 +60,7 @@ describe('checkBlocks', () => {
           },
         },
       ],
+      advised: [],
       findings: [],
       model: expect.any(Object),
       stage: ValidationStage.Checked,
@@ -123,5 +125,42 @@ describe('checkBlocks', () => {
 
     // Assert
     expect(validation).toBeUndefined();
+  });
+
+  it("should advise on a pack's finding of a rule of placement the project lowered", () => {
+    // Arrange
+    const source = checkSourceOf({
+      base: validFiles(),
+      files: packFiles('no-such-rule'),
+    });
+
+    // Act
+    const validation = checkBlocks({
+      ...source,
+      lowered: new Map([
+        [
+          'rule-refers-only-within-its-reach',
+          Level.Should,
+        ],
+      ]),
+    });
+
+    // Assert
+    expect(validation).toStrictEqual({
+      advice: [],
+      advised: [
+        {
+          code: RulesCode.ParentNotRule,
+          details: {
+            parent: RuleSlug.create('no-such-rule'),
+            slug: RuleSlug.create('acme-called-inward'),
+          },
+          path: ACME,
+        },
+      ],
+      findings: [],
+      model: expect.any(Object),
+      stage: ValidationStage.Checked,
+    });
   });
 });

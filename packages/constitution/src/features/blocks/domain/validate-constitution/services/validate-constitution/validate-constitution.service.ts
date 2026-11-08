@@ -1,3 +1,4 @@
+import type { Level } from '#/kernel/constants';
 import type { BlockModel } from '#/kernel/entities';
 
 import { Block } from '../../../block/entities';
@@ -16,6 +17,7 @@ import {
   hooksCheck,
   linksCheck,
   marketplaceCheck,
+  namesCheck,
   pluginCheck,
   referencesCheck,
   requirementsCheck,
@@ -23,7 +25,10 @@ import {
   rulesCheck,
   seamsCheck,
   termsCheck,
+  wordingCheck,
 } from './checks';
+import type { Severity } from './held-rules';
+import { isAdvice } from './held-rules';
 
 const packChecks: readonly Check<BlockFinding>[] = [
   frontMatterCheck,
@@ -40,6 +45,8 @@ const packChecks: readonly Check<BlockFinding>[] = [
   decisionsCheck,
   coreChaptersCheck,
   blockFormCheck,
+  wordingCheck,
+  namesCheck,
 ];
 
 const releaseChecks: readonly Check<BlockFinding>[] = [
@@ -61,6 +68,7 @@ type Validation =
     }
   | {
       readonly advice: readonly SimilarRules[];
+      readonly advised: readonly BlockFinding[];
       readonly findings: readonly BlockFinding[];
       readonly model: BlockModel;
       readonly stage: ValidationStage.Checked;
@@ -70,7 +78,19 @@ interface ValidateConstitutionInput {
   readonly constitution: Constitution;
   readonly findings: readonly BlockFinding[];
   readonly isPack: boolean;
+  readonly lowered?: ReadonlyMap<string, Level>;
 }
+
+const splitBySeverity = (
+  all: readonly BlockFinding[],
+  severity: Severity,
+): {
+  readonly advised: readonly BlockFinding[];
+  readonly findings: readonly BlockFinding[];
+} => ({
+  advised: all.filter((finding) => isAdvice(finding, severity)),
+  findings: all.filter((finding) => !isAdvice(finding, severity)),
+});
 
 // Why: a block that did not load would otherwise be reported as missing by every check that names
 // it.
@@ -98,10 +118,15 @@ const validateConstitution = (input: ValidateConstitutionInput): Validation => {
     };
   }
 
+  const severity: Severity = {
+    isPack: input.isPack,
+    lowered: input.lowered ?? new Map(),
+  };
+
   if (input.isPack) {
     return {
       advice: [],
-      findings: ownOf(packChecks.flatMap((check) => check(checked))),
+      ...splitBySeverity(ownOf(packChecks.flatMap((check) => check(checked))), severity),
       model: checked.model,
       stage: ValidationStage.Checked,
     };
@@ -112,7 +137,10 @@ const validateConstitution = (input: ValidateConstitutionInput): Validation => {
       graph: checked.graph,
       rules: constitution.rules,
     }),
-    findings: releaseChecks.flatMap((check) => check(checked)),
+    ...splitBySeverity(
+      releaseChecks.flatMap((check) => check(checked)),
+      severity,
+    ),
     model: checked.model,
     stage: ValidationStage.Checked,
   };

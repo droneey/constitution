@@ -8,6 +8,7 @@ import { ReferencesCode, referencesCheck } from '../references';
 
 const PRINCIPLES = 'blocks/core/foundation/principles.md';
 const UI = 'blocks/domains/ui/foundation/forms.md';
+const BROWSER = 'blocks/contexts/platforms/browser/foundation/delivery.md';
 
 describe('referencesCheck', () => {
   it.each([
@@ -130,6 +131,16 @@ describe('referencesCheck', () => {
       name: 'a block names its own rule',
       path: PRINCIPLES,
       text: '# Principles\n\nAs `rules-bind` says.\n',
+    },
+    {
+      name: 'a block names a rule of a block it requires and of core',
+      path: BROWSER,
+      text: '# Delivery\n\nAs `secret-never-held-by-the-client` and `rules-bind` say.\n',
+    },
+    {
+      name: 'a block links to a file of core and of a block it requires',
+      path: BROWSER,
+      text: '# Delivery\n\nSee [principles](../../../../core/foundation/principles.md) and [the client](../../../../domains/untrusted-client/).\n',
     },
     {
       name: 'a fence holds the link and the rule',

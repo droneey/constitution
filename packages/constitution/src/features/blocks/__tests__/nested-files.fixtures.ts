@@ -28,7 +28,7 @@ const nestedPassportFile = (block: NestedPassportFixture): string =>
     `governs: ${list(block.governs)}`,
     '---',
     '',
-    block.body ?? `# ${block.id}\n`,
+    block.body ?? `# ${block.id}\n\n> The ${block.id} block.\n`,
   ].join('\n');
 
 const nestedBlockFiles = (input: NestedBlockFixture): Files => {

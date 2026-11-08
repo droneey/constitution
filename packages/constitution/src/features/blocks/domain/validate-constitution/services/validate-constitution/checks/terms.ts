@@ -1,19 +1,14 @@
-import { Axis, Layer } from '#/kernel/constants';
-import type { TermKind } from '#/kernel/entities';
-import { Term } from '#/kernel/entities';
+import { Axis, BlockFormat, Layer } from '#/kernel/constants';
+import type { Rule } from '#/kernel/entities';
+import { Term, TermKind } from '#/kernel/entities';
 import type { FindingOf } from '#/kernel/types';
-import {
-  collapseWhitespace,
-  firstBy,
-  inlineCodeSpans,
-  isHeading,
-  withoutCodeFences,
-} from '#/kernel/utils';
-import type { BlockId } from '#/kernel/value-objects';
+import { firstBy } from '#/kernel/utils';
+import type { BlockId, RuleSlug } from '#/kernel/value-objects';
 
 import type { BlockFile } from '../../../../block/entities';
 import { Block, BlockFileRole } from '../../../../block/entities';
 import { BlockGraph } from '../../../../block-graph/entities';
+import { proseOf } from '../../../utils';
 import type { Check, CheckInput } from '../check.types';
 
 enum TermsCode {
@@ -21,10 +16,10 @@ enum TermsCode {
   DefinedTwice = 'term-defined-twice',
   OffAxis = 'term-off-axis',
   OutOfReach = 'term-out-of-reach',
-  Misspelled = 'term-misspelled',
   WithoutId = 'term-without-id',
   IdRepeated = 'term-id-repeated',
   IdMisshapen = 'term-id-misshapen',
+  Unused = 'term-used-nowhere',
 }
 
 interface TermsDetails {
@@ -38,18 +33,13 @@ interface TermsDetails {
   };
   readonly [TermsCode.OffAxis]: {
     readonly axis: Axis;
+    readonly slug: RuleSlug;
     readonly term: string;
     readonly termAxis: Axis;
   };
   readonly [TermsCode.OutOfReach]: {
     readonly owner: BlockId;
     readonly term: string;
-  };
-  readonly [TermsCode.Misspelled]: {
-    readonly kind: TermKind;
-    readonly owner: BlockId;
-    readonly term: string;
-    readonly written: string;
   };
   readonly [TermsCode.WithoutId]: {
     readonly term: string;
@@ -62,6 +52,9 @@ interface TermsDetails {
   };
   readonly [TermsCode.IdMisshapen]: {
     readonly id: string;
+    readonly term: string;
+  };
+  readonly [TermsCode.Unused]: {
     readonly term: string;
   };
 }
@@ -248,89 +241,113 @@ const glossaryOf = (files: readonly Placed[]): Glossary => {
   };
 };
 
-const axisProseOf = (file: BlockFile): string =>
-  collapseWhitespace(
-    withoutCodeFences(file.body)
-      .split('\n')
-      .filter((line) => !isHeading(line))
-      .join('\n'),
+const wordKinds: ReadonlySet<TermKind> = new Set([
+  TermKind.Concept,
+  TermKind.Brand,
+]);
+
+const proseOfPlaced = ({ block, file }: Placed): string =>
+  proseOf(
+    file.role === BlockFileRole.Passport ? `${block.frontMatter.summary}\n${file.body}` : file.body,
   );
 
-const axisFindings = (input: {
-  defined: readonly Defined[];
+const reachFindings = (input: {
   files: readonly Placed[];
+  words: readonly Defined[];
 }): readonly TermsFinding[] =>
-  input.files
-    .filter(({ file }) => file.role !== BlockFileRole.Passport)
-    .flatMap(({ file }) => {
-      const prose = axisProseOf(file);
+  input.files.flatMap((placed) => {
+    const prose = proseOfPlaced(placed);
 
-      return input.defined
-        .filter(
-          (term) => term.axis !== Axis.Foundation && term.axis !== file.axis && term.matches(prose),
-        )
-        .map((term) => ({
+    return input.words
+      .filter((term) => !placed.isReached(term) && term.matches(prose))
+      .map(
+        (term): TermsFinding => ({
+          code: TermsCode.OutOfReach,
+          details: {
+            owner: term.block,
+            term: term.term,
+          },
+          path: placed.file.path,
+        }),
+      );
+  });
+
+// Why: a rule needs a term of an axis when its statement uses it; its Why and its file's Governs
+// line explain or name, and a word they share with an axis's term is no obligation on that axis.
+const axisFindings = (input: {
+  graph: BlockGraph;
+  rules: readonly Rule[];
+  words: readonly Defined[];
+}): readonly TermsFinding[] =>
+  input.rules.flatMap((rule) => {
+    const reached = BlockGraph.reachableFrom(input.graph, rule);
+    const prose = proseOf(rule.statement);
+
+    return input.words
+      .filter(
+        (term) =>
+          term.axis !== Axis.Foundation &&
+          term.axis !== rule.axis &&
+          (term.layer === Layer.Core || reached.has(term.block)) &&
+          term.matches(prose),
+      )
+      .map(
+        (term): TermsFinding => ({
           code: TermsCode.OffAxis,
           details: {
-            axis: file.axis,
+            axis: rule.axis,
+            slug: rule.slug,
             term: term.term,
             termAxis: term.axis,
           },
-          path: file.path,
-        }));
-    });
+          path: rule.file,
+        }),
+      );
+  });
 
-const reachProseOf = ({ block, file }: Placed): string => {
-  const body = withoutCodeFences(file.body);
+const UNUSED_WORDS = 4;
+const PLURAL_END = /s$/;
+const BOLD_MARK = '**';
 
-  return collapseWhitespace(
-    file.role === BlockFileRole.Passport ? `${block.frontMatter.summary}\n${body}` : body,
+const countIn = (input: { files: readonly Placed[]; pattern: RegExp }): number =>
+  input.files.reduce(
+    (sum, { file }) =>
+      sum +
+      [
+        ...file.body.matchAll(input.pattern),
+      ].length,
+    0,
   );
-};
 
-const useFindings = (input: {
+// Why: a definition's own bold is no use of its term, so a stem met only where it is set in bold
+// is used by no rule or definition.
+const unusedFindings = (input: {
   defined: readonly Defined[];
   files: readonly Placed[];
 }): readonly TermsFinding[] =>
-  input.files.flatMap((placed) => {
-    const prose = reachProseOf(placed);
-    const spans = new Set(inlineCodeSpans(withoutCodeFences(placed.file.body)));
+  input.defined
+    .filter((term) => term.kind === TermKind.Concept && term.term.split(' ').length <= UNUSED_WORDS)
+    .filter((term) => {
+      const stem = RegExp.escape(term.term.replace(PLURAL_END, ''));
 
-    return input.defined.flatMap((term): readonly TermsFinding[] => {
-      if (!placed.isReached(term)) {
-        return term.matches(prose)
-          ? [
-              {
-                code: TermsCode.OutOfReach,
-                details: {
-                  owner: term.block,
-                  term: term.term,
-                },
-                path: placed.file.path,
-              },
-            ]
-          : [];
-      }
-
-      const other = Term.otherSpellingOf(term);
-
-      // Stryker disable next-line ConditionalExpression: no span is undefined, so the check only narrows its type
-      return other !== undefined && spans.has(other)
-        ? [
-            {
-              code: TermsCode.Misspelled,
-              details: {
-                kind: term.kind,
-                owner: term.block,
-                term: term.term,
-                written: other,
-              },
-              path: placed.file.path,
-            },
-          ]
-        : [];
-    });
-  });
+      return (
+        countIn({
+          files: input.files,
+          pattern: new RegExp(`\\b${stem}`, 'gi'),
+        }) <=
+        countIn({
+          files: input.files,
+          pattern: new RegExp(`${RegExp.escape(BOLD_MARK)}${stem}`, 'gi'),
+        })
+      );
+    })
+    .map((term) => ({
+      code: TermsCode.Unused,
+      details: {
+        term: term.term,
+      },
+      path: term.path,
+    }));
 
 const termsCheck: Check<TermsFinding> = ({
   graph,
@@ -342,16 +359,26 @@ const termsCheck: Check<TermsFinding> = ({
   });
   const { defined, findings } = glossaryOf(files);
 
+  // Why: a name in code is a spelling a block may respell, not a use of the term it spells.
+  const words = defined.filter((term) => wordKinds.has(term.kind));
+
   return [
     ...findings,
+    ...reachFindings({
+      files,
+      words,
+    }),
     ...axisFindings({
-      defined,
-      files,
+      graph,
+      rules: constitution.rules,
+      words,
     }),
-    ...useFindings({
-      defined,
-      files,
-    }),
+    ...(constitution.format === BlockFormat.Nested
+      ? unusedFindings({
+          defined,
+          files,
+        })
+      : []),
   ];
 };
 

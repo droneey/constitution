@@ -1,10 +1,11 @@
 import type { Layer } from '#/kernel/constants';
+import { PATH_SEPARATOR } from '#/kernel/constants';
 import { BlockModel } from '#/kernel/entities';
 import type { FindingOf, ProblemOf } from '#/kernel/types';
 import { BlockId, coreBlockId } from '#/kernel/value-objects';
 
 import type { Block } from '../../../../block/entities';
-import { requirableBy } from '../../../../block-graph/entities';
+import { BlockGraph, requirableBy } from '../../../../block-graph/entities';
 import { findingsAt } from '../../../utils';
 import type { Check, CheckInput } from '../check.types';
 
@@ -13,6 +14,8 @@ enum RequiresCode {
   RequiresNoBlock = 'requires-no-block',
   RequiresItself = 'requires-itself',
   RequiresOutOfLayer = 'requires-out-of-layer',
+  RequiresAncestor = 'requires-a-block-it-sits-under',
+  RequiresThroughParent = 'requires-what-its-parent-turns-on',
   ExtendsNoBlock = 'extends-no-block',
   ExtendsItself = 'extends-itself',
   ExtendsOtherLayer = 'extends-other-layer',
@@ -30,6 +33,13 @@ interface RequiresDetails {
     readonly layer: Layer;
     readonly required: BlockId;
     readonly requiredLayer: Layer;
+  };
+  readonly [RequiresCode.RequiresAncestor]: {
+    readonly required: BlockId;
+  };
+  readonly [RequiresCode.RequiresThroughParent]: {
+    readonly parent: BlockId;
+    readonly required: BlockId;
   };
   readonly [RequiresCode.ExtendsNoBlock]: {
     readonly base: BlockId;
@@ -50,8 +60,46 @@ type RequiresProblem = ProblemOf<RequiresDetails>;
 
 interface Subject {
   readonly block: Block;
+  readonly graph: BlockGraph;
   readonly model: BlockModel;
 }
+
+const ancestorsOf = (id: BlockId): readonly BlockId[] =>
+  id
+    .split(PATH_SEPARATOR)
+    .slice(0, -1)
+    .map((_, index, parts) => BlockId.create(parts.slice(0, index + 1).join(PATH_SEPARATOR)));
+
+const treeProblem = (
+  input: Subject & {
+    id: BlockId;
+  },
+): RequiresProblem | undefined => {
+  const ancestors = ancestorsOf(input.block.id);
+
+  if (ancestors.includes(input.id)) {
+    return {
+      code: RequiresCode.RequiresAncestor,
+      details: {
+        required: input.id,
+      },
+    };
+  }
+
+  const parent = ancestors.find((ancestor) =>
+    BlockGraph.closureOf(input.graph, ancestor).has(input.id),
+  );
+
+  return parent === undefined
+    ? undefined
+    : {
+        code: RequiresCode.RequiresThroughParent,
+        details: {
+          parent,
+          required: input.id,
+        },
+      };
+};
 
 const requireProblem = (
   input: Subject & {
@@ -85,7 +133,7 @@ const requireProblem = (
   }
 
   return input.allowed.includes(target.layer)
-    ? undefined
+    ? treeProblem(input)
     : {
         code: RequiresCode.RequiresOutOfLayer,
         details: {
@@ -162,11 +210,13 @@ const blockFindings = (subject: Subject): readonly RequiresFinding[] => {
 
 const requiresCheck: Check<RequiresFinding> = ({
   constitution,
+  graph,
   model,
 }: CheckInput): readonly RequiresFinding[] =>
   constitution.blocks.flatMap((block) =>
     blockFindings({
       block,
+      graph,
       model,
     }),
   );

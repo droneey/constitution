@@ -10,9 +10,11 @@ export type {
   CyclesDetails,
   DecisionsDetails,
   FrontMatterDetails,
+  Held,
   HooksDetails,
   LinksDetails,
   MarketplaceDetails,
+  NamesDetails,
   PluginDetails,
   ReferencesDetails,
   RequirementsDetails,
@@ -21,6 +23,7 @@ export type {
   SeamsDetails,
   TermsDetails,
   Validation,
+  WordingDetails,
 } from './validate-constitution';
 export {
   AbstractBlocksCode,
@@ -31,8 +34,10 @@ export {
   DecisionsCode,
   FrontMatterCode,
   HooksCode,
+  heldRuleOf,
   LinksCode,
   MarketplaceCode,
+  NamesCode,
   PluginCode,
   ReferencesCode,
   RequirementsCode,
@@ -42,4 +47,5 @@ export {
   TermsCode,
   ValidationStage,
   validateConstitution,
+  WordingCode,
 } from './validate-constitution';

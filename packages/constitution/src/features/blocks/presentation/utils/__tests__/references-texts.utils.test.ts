@@ -24,7 +24,7 @@ describe('referencesTexts', () => {
           target: '../../i18n/',
         },
       },
-      text: 'links to ../../i18n/, a file of the block i18n; a block refers to another only through its front matter and with/ file names',
+      text: 'links to ../../i18n/, a file of the block i18n, which its place does not reach; a block refers only to core, itself and the blocks it requires or sits under',
     },
     {
       problem: {
@@ -34,7 +34,7 @@ describe('referencesTexts', () => {
           slug: RuleSlug.create('portals'),
         },
       },
-      text: 'names the rule portals of react-dom; a rule refers to another only as the parent in its heading',
+      text: 'names the rule portals of react-dom, which its place does not reach; a block refers only to core, itself and the blocks it requires or sits under',
     },
     {
       problem: {
@@ -43,7 +43,7 @@ describe('referencesTexts', () => {
           decision: 'ADR-0012',
         },
       },
-      text: 'cites ADR-0012; a block states its rules without citing the decision log',
+      text: 'cites ADR-0012; a rule is read alone, without the decision log',
     },
     {
       problem: {

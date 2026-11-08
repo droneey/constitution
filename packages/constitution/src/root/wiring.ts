@@ -1,6 +1,7 @@
 import { Command } from 'commander';
 
-import { createCheckCommand } from '#/composition/check';
+import type { PackCheckAsked } from '#/composition/check';
+import { createCheckCommand, PACKS_LABEL, packsStepOf } from '#/composition/check';
 import {
   createActiveRulesSource,
   createPinnedRelease,
@@ -36,6 +37,7 @@ import {
   createPresetsCheckCommand,
   createPresetsPlanCommand,
   createRunCommand,
+  ProjectReadStatus,
   planApply,
   planPresets,
   planRun,
@@ -259,12 +261,18 @@ const registerCommands = (registration: Registration): void => {
   const checkBlocksIn = (asked: {
     base: PackBase | undefined;
     folderPath: AbsolutePath;
+    lowered?: PackCheckAsked['lowered'];
   }): Validation | undefined =>
     checkBlocks({
       ...(asked.base === undefined
         ? {}
         : {
             base: asked.base,
+          }),
+      ...(asked.lowered === undefined
+        ? {}
+        : {
+            lowered: asked.lowered,
           }),
       files: ports.files,
       folderPath: asked.folderPath,
@@ -319,6 +327,21 @@ const registerCommands = (registration: Registration): void => {
     presetsCommandsOf(registration),
     createRunCommand({
       ...context,
+      /**
+       * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
+       * @throws {ReleaseError} when the release's blocks cannot be listed
+       */
+      checkPacks: (startFolderPath: AbsolutePath): StepReport | undefined => {
+        const read = ports.reader.open(startFolderPath);
+
+        return read.status === ProjectReadStatus.Opened
+          ? packsStepOf({
+              checkBlocks: checkBlocksIn,
+              project: read.answer,
+            })
+          : undefined;
+      },
+      packsLabel: PACKS_LABEL,
       planRun: planRunOf(ports),
       runCommand: ports.commands.run,
     }),

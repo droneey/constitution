@@ -5,6 +5,7 @@ import { StepStatus } from '@droneey/design-cli';
 import { createFakeContext, runCommand } from '#/__tests__/command-context.fake';
 import { goldenFileText, goldenOf } from '#/__tests__/golden.fixtures';
 import { AbsolutePath, BlockId, UnitPath } from '#/kernel/value-objects';
+import type { StepReport } from '#/shared/cli';
 
 import { ProjectRead, ProjectReadStatus } from '../../../../../domain/presets-project/entities';
 import type { RunAsked, RunPlan } from '../../../../../domain/run-plan/entities';
@@ -41,11 +42,22 @@ const plan: RunPlan = {
   ],
 };
 
+const packsReport = (isFailed: boolean): StepReport => ({
+  isFailed,
+  outcome: {
+    detail: isFailed ? '1 finding' : 'every pack is sound',
+    status: isFailed ? StepStatus.Failed : StepStatus.Done,
+  },
+  sections: [],
+});
+
 const runOf = async (input: {
   args: readonly string[];
   codes?: readonly number[];
+  packs?: StepReport;
   read?: ProjectRead<RunPlan>;
 }) => {
+  const packsAsked: AbsolutePath[] = [];
   const planned: RunAsked[] = [];
   const commands: string[] = [];
   const codes = [
@@ -61,6 +73,12 @@ const runOf = async (input: {
     args: input.args,
     command: createRunCommand({
       ...context,
+      checkPacks: (startFolderPath) => {
+        packsAsked.push(startFolderPath);
+
+        return input.packs;
+      },
+      packsLabel: 'Packs',
       planRun: (asking) => {
         planned.push(asking);
 
@@ -77,6 +95,7 @@ const runOf = async (input: {
   return {
     commands,
     failures: record().failures,
+    packsAsked,
     planned,
     steps: record().ran.map((ran) => ran.outcome.status),
     stderr: record().stderr,
@@ -183,6 +202,77 @@ describe('createRunCommand', () => {
       steps: [
         StepStatus.Failed,
       ],
+    });
+  });
+
+  it.each<{
+    condition: string;
+    expected: {
+      commands: string[];
+      failures: number;
+      steps: StepStatus[];
+    };
+    isFailed: boolean;
+  }>([
+    {
+      condition: 'a pack holds a finding that fails it',
+      expected: {
+        commands: [],
+        failures: 1,
+        steps: [
+          StepStatus.Failed,
+        ],
+      },
+      isFailed: true,
+    },
+    {
+      condition: 'every pack is sound',
+      expected: {
+        commands: [
+          'bun run check',
+          'bun run test',
+          'uv run --locked poe check',
+        ],
+        failures: 0,
+        steps: [
+          StepStatus.Done,
+        ],
+      },
+      isFailed: false,
+    },
+  ])('should check the packs before the units when $condition', async ({ expected, isFailed }) => {
+    // Act
+    const run = await runOf({
+      args: [
+        'check',
+      ],
+      packs: packsReport(isFailed),
+    });
+
+    // Assert
+    expect({
+      commands: run.commands,
+      failures: run.failures,
+      steps: run.steps,
+    }).toStrictEqual(expected);
+  });
+
+  it('should check no pack for an entry point other than check', async () => {
+    // Act
+    const run = await runOf({
+      args: [
+        'test',
+      ],
+      packs: packsReport(true),
+    });
+
+    // Assert
+    expect({
+      failures: run.failures,
+      packsAsked: run.packsAsked,
+    }).toStrictEqual({
+      failures: 0,
+      packsAsked: [],
     });
   });
 

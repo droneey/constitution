@@ -3,11 +3,7 @@ import type { TextsOf } from '#/shared/cli';
 import type { RulesDetails } from '../../domain/validate-constitution/services';
 import { RulesCode } from '../../domain/validate-constitution/services';
 
-const UNTITLED = 'untitled';
-
 const rulesTexts: TextsOf<RulesDetails> = {
-  [RulesCode.SlugOpensWithNo]: ({ slug }) =>
-    `rule "${slug}" opens with "no-"; a slug says what holds`,
   [RulesCode.WithoutStatement]: ({ slug }) => `rule "${slug}" has no statement`,
   [RulesCode.WithoutWhy]: ({ slug }) => `rule "${slug}" has no Why`,
   [RulesCode.DefinedTwice]: ({ firstFile, slug }) =>
@@ -28,8 +24,6 @@ const rulesTexts: TextsOf<RulesDetails> = {
     `rule "${slug}" is ${level} while it carries out the ${parentLevel} rule "${parent}"; a rule is never looser than the rule it carries out`,
   [RulesCode.WithoutLevel]: ({ parent, slug }) =>
     `rule "${slug}" carries out "${parent}" without a level; a rule that carries out another states its own, never looser than it`,
-  [RulesCode.OutsideParentChapter]: ({ chapter, parent, parentChapter, slug }) =>
-    `rule "${slug}" sits in the chapter "${chapter ?? UNTITLED}" while it carries out "${parent}" of core's chapter "${parentChapter ?? UNTITLED}"; a rule of a language or a platform that tightens core sits in the chapter titled like its parent's`,
 };
 
 export { rulesTexts };

@@ -21,6 +21,12 @@ interface Ran {
 }
 
 const runnerPack = (check: string): Readonly<Record<string, string>> => ({
+  'DECISIONS.md': linesOf(
+    '# Decision Log',
+    '',
+    '## ADR-0001 — The package runs its own checks',
+    '**Date:** 2026-10-17 · **Status:** Accepted',
+  ),
   [`${MEMBER}/pack/blocks/implementations/own-runner/own-runner.md`]: linesOf(
     '---',
     'id: own-runner',
@@ -63,7 +69,30 @@ afterAll(() => {
   removePluginRoots();
 });
 
-const projectOf = (check = 'echo checked > checked.txt'): string =>
+const seamWithCorePath = `${MEMBER}/pack/blocks/implementations/own-runner/foundation/with/core.md`;
+
+const seamWithCore: Readonly<Record<string, string>> = {
+  [seamWithCorePath]: linesOf(
+    '# Core',
+    '',
+    '> Governs the runner beside core.',
+    '',
+    '## General',
+    '',
+    '### own-runner-runs-every-check · MUST',
+    '',
+    'Every check runs through the own runner.',
+    '',
+    '| Why |',
+    '|---|',
+    '| a check run apart is skipped. |',
+  ),
+};
+
+const projectOf = (
+  check = 'echo checked > checked.txt',
+  extra: Readonly<Record<string, string>> = {},
+): string =>
   createLinkedProject({
     layout: {
       config: configOf({}),
@@ -75,6 +104,7 @@ const projectOf = (check = 'echo checked > checked.txt'): string =>
           }),
         }),
         ...runnerPack(check),
+        ...extra,
       },
     },
     root,
@@ -163,6 +193,33 @@ describe('constitution run', () => {
     }).toStrictEqual({
       exitCode: 1,
       marks: [],
+    });
+  });
+
+  it("should fail on a pack's finding of a MUST and run no unit's command", () => {
+    // Arrange
+    const project = projectOf(undefined, seamWithCore);
+
+    // Act
+    const ran = runIn({
+      args: [
+        'run',
+        'check',
+      ],
+      folder: project,
+    });
+
+    // Assert
+    expect({
+      exitCode: ran.exitCode,
+      marks: marksOf(project),
+      named: ran.stdout.includes(
+        `${seamWithCorePath}: [seam-never-pairs-with-core-or-a-related-block]`,
+      ),
+    }).toStrictEqual({
+      exitCode: 1,
+      marks: [],
+      named: true,
     });
   });
 

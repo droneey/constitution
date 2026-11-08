@@ -4,6 +4,7 @@ import {
   GENERAL_SECTION,
   GOVERNS_LINE,
   REQUIREMENTS_SECTION,
+  VOCABULARY_SECTION,
 } from '../../domain/validate-constitution/constants';
 import type {
   AbstractBlocksDetails,
@@ -37,7 +38,7 @@ const structureTexts: TextsOf<
   [AbstractBlocksCode.SeamNamesHeir]: ({ heir }) =>
     `is a with/ file named after the heir ${heir}; a base knows nothing of its heirs`,
   [BlockFormCode.PassportHoldsRules]: () =>
-    "holds rules; a block's passport holds its front matter, its title, what the block is, its setup and an implementation's Requirements, and its rules live in the chapters of its axes",
+    "holds rules; a block's passport holds its front matter, its title, what the block is and its setup, and its rules live in the chapters of its axes",
   [BlockFormCode.WithoutGoverns]: () =>
     `opens without its "# <Title>" and a "${GOVERNS_LINE}…" line; a chapter or a seam opens with both`,
   [BlockFormCode.WithoutRules]: () => 'holds no rule; a chapter or a seam holds at least one',
@@ -49,6 +50,18 @@ const structureTexts: TextsOf<
     `has sections after "${REQUIREMENTS_SECTION}", which is the last section`,
   [BlockFormCode.GeneralNotFirst]: () =>
     `has sections before "${GENERAL_SECTION}", which is the first section`,
+  [BlockFormCode.TextBeforeSections]: () =>
+    'holds text between its Governs line and its first section; everything after the Governs line sits in a section',
+  [BlockFormCode.VocabularyNotFirst]: () =>
+    `has sections before "${VOCABULARY_SECTION}", which comes first`,
+  [BlockFormCode.RuleInVocabulary]: ({ slug }) =>
+    `has the rule "${slug}" in its "${VOCABULARY_SECTION}"; a vocabulary holds only definitions`,
+  [BlockFormCode.SectionWithoutRules]: ({ section }) =>
+    `has the section "${section}", which holds no rule; every section but the "${VOCABULARY_SECTION}" holds one`,
+  [BlockFormCode.TermOutsideVocabulary]: ({ written }) =>
+    `defines ${written} outside a "${VOCABULARY_SECTION}"; a term two rules share is defined in a vocabulary, and one rule's own term in its statement without bold or an id`,
+  [BlockFormCode.PassportMisshapen]: () =>
+    'holds more than its title, its one line under it and its setup; a passport introduces its block',
   [CoreChaptersCode.ChapterUnlisted]: ({ chapter }) =>
     `leaves ${chapter} out of its list of core's chapters; it lists every chapter of core once`,
   [CoreChaptersCode.ListsNoChapter]: ({ entry }) =>
@@ -71,11 +84,7 @@ const structureTexts: TextsOf<
   [SeamsCode.OutOfLayer]: ({ allowed, layer, other, otherLayer }) =>
     `is named after ${other}, ${aBlock(otherLayer)}; ${aBlock(layer)} pairs only with ${blocksOf(allowed)}`,
   [SeamsCode.AlongDependency]: ({ block, other }) =>
-    `is named after ${other}, which ${block} requires or extends, or which requires or extends it; such a rule is the dependent block's own`,
-  [SeamsCode.TitleMismatch]: () =>
-    "is titled otherwise than the other block's passport, whose title a seam takes",
-  [SeamsCode.ChapterNamedAfterBlock]: ({ block }) =>
-    `takes the id of the block ${block}; a file named after a block belongs in with/`,
+    `is named after ${other}, which ${block} requires or sits under, or which requires it or sits under it; such a rule is the dependent block's own`,
 };
 
 export { structureTexts };

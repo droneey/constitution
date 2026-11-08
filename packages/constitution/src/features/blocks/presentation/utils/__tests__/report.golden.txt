@@ -1,6 +1,7 @@
 # sections
 1 finding in the blocks
-  blocks/domains/ui/ui.md: requires itself [requires-itself]
+  blocks/domains/ui/ui.md: [passport-requires-only-what-its-block-needs] requires itself [requires-itself]
 
 Advice on the blocks
+  blocks/domains/ui/@foundation/forms.md: [rule-opens-with-its-slogan] rule "a" opens with a slogan of 23 words; a slogan holds at most 22 [slogan-too-long]
   similar rules: a (x) and b (y)

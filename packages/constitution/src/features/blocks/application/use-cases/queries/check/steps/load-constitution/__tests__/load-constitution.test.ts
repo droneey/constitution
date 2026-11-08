@@ -65,6 +65,7 @@ describe('loadConstitution', () => {
           agents: [],
           skills: [],
         },
+        format: BlockFormat.Legacy,
         paths: new Set([
           TreePath.create('LICENSE.md'),
         ]),

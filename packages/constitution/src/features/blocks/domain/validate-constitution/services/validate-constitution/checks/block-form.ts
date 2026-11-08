@@ -1,10 +1,17 @@
+import { BlockFormat, Layer } from '#/kernel/constants';
 import type { Rule } from '#/kernel/entities';
 import type { FindingOf, ProblemOf } from '#/kernel/types';
-import { withoutCodeFences } from '#/kernel/utils';
+import { maskInlineCode, withoutCodeFences } from '#/kernel/utils';
 import type { RuleSlug } from '#/kernel/value-objects';
 
 import type { Block, BlockFile } from '../../../../block/entities';
-import { GENERAL_SECTION, GOVERNS_LINE, REQUIREMENTS_SECTION } from '../../../constants';
+import {
+  GENERAL_SECTION,
+  GOVERNS_LINE,
+  REQUIREMENTS_SECTION,
+  VOCABULARY_SECTION,
+} from '../../../constants';
+import { findingsAt } from '../../../utils';
 import type { Check, CheckInput } from '../check.types';
 
 enum BlockFormCode {
@@ -15,6 +22,12 @@ enum BlockFormCode {
   SectionRepeatsTitle = 'section-repeats-title',
   RequirementsNotLast = 'requirements-section-not-last',
   GeneralNotFirst = 'general-section-not-first',
+  TextBeforeSections = 'text-before-first-section',
+  VocabularyNotFirst = 'vocabulary-section-not-first',
+  RuleInVocabulary = 'rule-in-vocabulary',
+  SectionWithoutRules = 'section-without-rules',
+  TermOutsideVocabulary = 'term-defined-outside-vocabulary',
+  PassportMisshapen = 'passport-misshapen',
 }
 
 interface BlockFormDetails {
@@ -29,6 +42,18 @@ interface BlockFormDetails {
   };
   readonly [BlockFormCode.RequirementsNotLast]: object;
   readonly [BlockFormCode.GeneralNotFirst]: object;
+  readonly [BlockFormCode.TextBeforeSections]: object;
+  readonly [BlockFormCode.VocabularyNotFirst]: object;
+  readonly [BlockFormCode.RuleInVocabulary]: {
+    readonly slug: RuleSlug;
+  };
+  readonly [BlockFormCode.SectionWithoutRules]: {
+    readonly section: string;
+  };
+  readonly [BlockFormCode.TermOutsideVocabulary]: {
+    readonly written: string;
+  };
+  readonly [BlockFormCode.PassportMisshapen]: object;
 }
 
 type BlockFormFinding = FindingOf<BlockFormDetails>;
@@ -140,27 +165,167 @@ const ruleProblems = (rules: readonly Rule[]): readonly BlockFormProblem[] =>
           }),
         );
 
+const QUOTE = '> ';
+const HEADING = '#';
+const BOLD = /\*\*(?![\s*])([^*\n]+?)(?<![\s*])\*\*/g;
+const TERM_ID = /\{#[^}\n]*\}/g;
+
+const definitionsIn = (line: string): readonly string[] => {
+  const masked = maskInlineCode(line);
+
+  return [
+    ...[
+      ...masked.matchAll(BOLD),
+    ].map((match) => line.slice(match.index, match.index + match[0].length)),
+    ...(masked.match(TERM_ID) ?? []),
+  ];
+};
+
+const definitionProblems = (input: {
+  lines: readonly string[];
+  isPassport: boolean;
+}): readonly BlockFormProblem[] => {
+  let section: string | undefined;
+
+  return input.lines.flatMap((line): readonly BlockFormProblem[] => {
+    section = SECTION.exec(line)?.[1] ?? section;
+
+    return !input.isPassport && section === VOCABULARY_SECTION
+      ? []
+      : definitionsIn(line).map((written) => ({
+          code: BlockFormCode.TermOutsideVocabulary,
+          details: {
+            written,
+          },
+        }));
+  });
+};
+
+const layoutProblems = (input: {
+  lines: readonly string[];
+  rules: readonly Rule[];
+  sections: readonly string[];
+}): readonly BlockFormProblem[] => {
+  const { lines, sections } = input;
+  const governs = lines.findIndex((line) => line.startsWith(GOVERNS_LINE));
+  const afterGoverns = lines.slice(governs + 1);
+  const sectionAt = afterGoverns.findIndex((line) => SECTION.test(line));
+  const opening = sectionAt === -1 ? afterGoverns : afterGoverns.slice(0, sectionAt);
+  const ruleSections = new Set(input.rules.map((rule) => rule.section));
+  const vocabulary = sections.indexOf(VOCABULARY_SECTION);
+
+  return [
+    ...(governs !== -1 && opening.some((line) => line.trim() !== '')
+      ? [
+          {
+            code: BlockFormCode.TextBeforeSections,
+            details: {},
+          } satisfies BlockFormProblem,
+        ]
+      : []),
+    ...(vocabulary > 0
+      ? [
+          {
+            code: BlockFormCode.VocabularyNotFirst,
+            details: {},
+          } satisfies BlockFormProblem,
+        ]
+      : []),
+    ...input.rules
+      .filter((rule) => rule.section === VOCABULARY_SECTION)
+      .map(
+        (rule): BlockFormProblem => ({
+          code: BlockFormCode.RuleInVocabulary,
+          details: {
+            slug: rule.slug,
+          },
+        }),
+      ),
+    ...(input.rules.length === 0
+      ? []
+      : sections
+          .filter((section) => section !== VOCABULARY_SECTION && !ruleSections.has(section))
+          .map(
+            (section): BlockFormProblem => ({
+              code: BlockFormCode.SectionWithoutRules,
+              details: {
+                section,
+              },
+            }),
+          )),
+  ];
+};
+
+const nestedProblems = (input: {
+  lines: readonly string[];
+  rules: readonly Rule[];
+  sections: readonly string[];
+}): readonly BlockFormProblem[] => [
+  ...layoutProblems(input),
+  ...definitionProblems({
+    isPassport: false,
+    lines: input.lines,
+  }),
+];
+
 const fileFindings = (input: {
   file: BlockFile;
+  format: BlockFormat;
   rules: readonly Rule[];
 }): readonly BlockFormFinding[] => {
   const { file } = input;
   const lines = linesOf(file);
   const opening = openingOf(lines);
   const rules = input.rules.filter((rule) => rule.file === file.path);
+  const sections = lines.flatMap((line) => SECTION.exec(line)?.[1] ?? []);
 
   return [
     ...openingProblems(opening),
     ...ruleProblems(rules),
     ...sectionProblems({
       ruleSections: rules.map((rule) => rule.section),
-      sections: lines.flatMap((line) => SECTION.exec(line)?.[1] ?? []),
+      sections,
       title: opening.title,
     }),
+    ...(input.format === BlockFormat.Nested
+      ? nestedProblems({
+          lines,
+          rules,
+          sections,
+        })
+      : []),
   ].map((problem) => ({
     ...problem,
     path: file.path,
   }));
+};
+
+const isPassportShaped = (lines: readonly string[]): boolean => {
+  const written = lines.filter((line) => line.trim() !== '');
+
+  return (
+    written.findIndex((line) => TITLE.test(line)) === 0 &&
+    written.findIndex((line) => line.startsWith(QUOTE)) === 1 &&
+    written.slice(1).every((rest) => !rest.startsWith(HEADING)) &&
+    written.filter((rest) => rest.startsWith(QUOTE)).length === 1
+  );
+};
+
+const nestedPassportFindings = (block: Block): readonly BlockFormFinding[] => {
+  const lines = linesOf(block.passport);
+
+  return findingsAt(block.passport.path, [
+    ...definitionProblems({
+      isPassport: true,
+      lines,
+    }),
+    block.layer === Layer.Core || isPassportShaped(lines)
+      ? undefined
+      : {
+          code: BlockFormCode.PassportMisshapen,
+          details: {},
+        },
+  ]);
 };
 
 const blockFormCheck: Check<BlockFormFinding> = ({
@@ -168,9 +333,11 @@ const blockFormCheck: Check<BlockFormFinding> = ({
 }: CheckInput): readonly BlockFormFinding[] =>
   constitution.blocks.flatMap((block) => [
     ...passportFindings(block),
+    ...(constitution.format === BlockFormat.Nested ? nestedPassportFindings(block) : []),
     ...block.parts.flatMap((file) =>
       fileFindings({
         file,
+        format: constitution.format,
         rules: constitution.rules,
       }),
     ),
