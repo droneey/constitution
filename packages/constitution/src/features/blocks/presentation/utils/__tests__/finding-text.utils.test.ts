@@ -14,7 +14,6 @@ import {
   LinksCode,
   NamesCode,
   PluginCode,
-  RequirementsCode,
   RequiresCode,
   RulesCode,
   TermsCode,
@@ -27,7 +26,6 @@ import { loadTexts } from '../load-texts.utils';
 import { namesTexts } from '../names-texts.utils';
 import { pluginTexts } from '../plugin-texts.utils';
 import { referencesTexts } from '../references-texts.utils';
-import { requirementsTexts } from '../requirements-texts.utils';
 import { requiresTexts } from '../requires-texts.utils';
 import { ruleFormTexts } from '../rule-form-texts.utils';
 import { ruleWordingTexts } from '../rule-wording-texts.utils';
@@ -67,11 +65,6 @@ const missingTarget = {
   details: {
     target: 'local/plan.md',
   },
-  path: PATH,
-} satisfies BlockFinding;
-const answeredOutside = {
-  code: RequirementsCode.OutsideImplementation,
-  details: {},
   path: PATH,
 } satisfies BlockFinding;
 const requiresItself = {
@@ -156,10 +149,6 @@ describe('findingTextOf', () => {
     {
       finding: missingTarget,
       text: textOf(referencesTexts, missingTarget.code, missingTarget.details),
-    },
-    {
-      finding: answeredOutside,
-      text: textOf(requirementsTexts, answeredOutside.code, answeredOutside.details),
     },
     {
       finding: requiresItself,

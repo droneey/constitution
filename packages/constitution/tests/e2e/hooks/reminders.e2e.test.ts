@@ -213,12 +213,12 @@ describe('the reminders of the post-tool-use hook', () => {
     expect(reminder).toBe('');
   });
 
-  it('should name every block the governing block needs, through its requirements, bases and seams, when the agent first touches a file', () => {
+  it('should name every block the governing block needs, through its requirements, parents and seams, when the agent first touches a file', () => {
     // Arrange
     const { project, session } = startSession(
       configOf({
         domains: '[ui, untrusted-client, unreliable-network]',
-        implementations: '[react-dom]',
+        implementations: '[react/react-dom]',
         platforms: '[browser]',
       }),
     );
@@ -231,9 +231,9 @@ describe('the reminders of the post-tool-use hook', () => {
 
     // Assert
     expect(remindedOf(reminder)).toStrictEqual([
-      '_react',
       'browser',
-      'react-dom',
+      'react',
+      'react/react-dom',
       'ui',
       'unreliable-network',
       'untrusted-client',

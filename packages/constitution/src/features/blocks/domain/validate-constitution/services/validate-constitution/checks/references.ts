@@ -36,12 +36,17 @@ type ReferencesFinding = FindingOf<ReferencesDetails>;
 const TABLE_ROW = /^\s*\|/;
 const DECISION = /\bADR-\d{4}\b/g;
 
-const ownerOf = (input: { blocks: readonly Block[]; target: string }): Block | undefined =>
-  input.blocks.find((block) => {
-    const folder = directoryOf(block.passport.path);
+const folderOf = (block: Block): string => directoryOf(block.passport.path);
 
-    return input.target === folder || input.target.startsWith(`${folder}${PATH_SEPARATOR}`);
-  });
+const ownerOf = (input: { blocks: readonly Block[]; target: string }): Block | undefined =>
+  input.blocks
+    .filter((block) => {
+      const folder = folderOf(block);
+
+      return input.target === folder || input.target.startsWith(`${folder}${PATH_SEPARATOR}`);
+    })
+    .toSorted((left, right) => folderOf(right).length - folderOf(left).length)
+    .at(0);
 
 interface Place {
   readonly block: Block;

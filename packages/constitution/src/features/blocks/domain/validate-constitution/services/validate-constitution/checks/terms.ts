@@ -1,4 +1,4 @@
-import { Axis, BlockFormat, Layer } from '#/kernel/constants';
+import { Axis, Layer } from '#/kernel/constants';
 import type { Rule } from '#/kernel/entities';
 import { Term, TermKind } from '#/kernel/entities';
 import type { FindingOf } from '#/kernel/types';
@@ -373,12 +373,10 @@ const termsCheck: Check<TermsFinding> = ({
       rules: constitution.rules,
       words,
     }),
-    ...(constitution.format === BlockFormat.Nested
-      ? unusedFindings({
-          defined,
-          files,
-        })
-      : []),
+    ...unusedFindings({
+      defined,
+      files,
+    }),
   ];
 };
 

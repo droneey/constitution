@@ -1,4 +1,4 @@
-import { BlockFormat, Layer, PATH_SEPARATOR } from '#/kernel/constants';
+import { Layer, PATH_SEPARATOR } from '#/kernel/constants';
 import type { FindingOf, ProblemOf } from '#/kernel/types';
 import { BlockId } from '#/kernel/value-objects';
 
@@ -231,10 +231,6 @@ const namesCheck: Check<NamesFinding> = ({
   constitution,
   graph,
 }: CheckInput): readonly NamesFinding[] => {
-  if (constitution.format !== BlockFormat.Nested) {
-    return [];
-  }
-
   const matchers: Matchers = {
     languages: matcherOf(languageNamesOf(constitution.blocks)),
     products: matcherOf(productRegistryOf(constitution.blocks)),

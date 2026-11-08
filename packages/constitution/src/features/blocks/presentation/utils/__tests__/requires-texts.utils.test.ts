@@ -101,41 +101,6 @@ describe('requiresTexts', () => {
       },
       text: 'requires core, a core block; an implementation block requires only domain blocks, platform blocks or language blocks',
     },
-    {
-      problem: {
-        code: RequiresCode.ExtendsNoBlock,
-        details: {
-          base: BlockId.create('eslint'),
-        },
-      },
-      text: 'extends eslint, which is not a block',
-    },
-    {
-      problem: {
-        code: RequiresCode.ExtendsItself,
-        details: {},
-      },
-      text: 'extends itself',
-    },
-    {
-      problem: {
-        code: RequiresCode.ExtendsOtherLayer,
-        details: {
-          base: BlockId.create('ui'),
-          baseLayer: Layer.Domain,
-        },
-      },
-      text: 'extends ui, a domain block; a block extends only a base of its own layer',
-    },
-    {
-      problem: {
-        code: RequiresCode.ExtendsConcrete,
-        details: {
-          base: BlockId.create('lingui'),
-        },
-      },
-      text: 'extends lingui, a concrete block; a block extends only an abstract base — require it instead',
-    },
   ])('should say $problem.code as the report words it', ({ problem, text }) => {
     // Act
     const said = textOf(requiresTexts, problem.code, problem.details);

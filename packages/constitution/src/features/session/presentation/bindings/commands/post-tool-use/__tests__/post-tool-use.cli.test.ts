@@ -137,9 +137,9 @@ const manyBlocks: Reminder = {
     },
     (_, index) => ({
       files: [
-        `blocks/implementations/tool-${index}/foundation/a-chapter-of-some-length.md`,
+        `blocks/implementations/tool-${index}/@foundation/a-chapter-of-some-length.md`,
         `blocks/implementations/tool-${index}/tool-${index}.md`,
-        `blocks/implementations/tool-${index}/architecture/another-chapter.md`,
+        `blocks/implementations/tool-${index}/@architecture/another-chapter.md`,
       ],
       id: BlockId.create(`tool-${index}`),
       musts: [],

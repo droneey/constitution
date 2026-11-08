@@ -1,4 +1,4 @@
-import { BlockFormat, Layer, Level } from '#/kernel/constants';
+import { Layer, Level } from '#/kernel/constants';
 import type { ModelRule } from '#/kernel/entities';
 import { BlockModel } from '#/kernel/entities';
 import { isDeepEqual } from '#/kernel/utils';
@@ -75,10 +75,7 @@ const setProblems = (input: SetProblemsInput): readonly PresetsProblem[] => {
         ];
       }
 
-      // Why: the legacy presets file settings under a block that builds on their reader, so the
-      // pairing is held only by a preset file of the nested format until the legacy format goes.
-      return placeInPresets.format === BlockFormat.Nested &&
-        (reachOf(input.model, reader).has(block) || reachOf(input.model, block).has(reader))
+      return reachOf(input.model, reader).has(block) || reachOf(input.model, block).has(reader)
         ? [
             {
               code: PresetsCode.PartnerRelatedToReader,
@@ -327,9 +324,7 @@ const ruleProblems = (input: {
             },
           } satisfies PresetsProblem,
         ]),
-    // Why: the legacy presets key rules the nested tree raises to MUST, so a level is held only by
-    // a preset file of the nested format until the legacy format goes.
-    ...(rule.level === Level.Must || entry.set.placeInPresets.format === BlockFormat.Legacy
+    ...(rule.level === Level.Must
       ? []
       : [
           {

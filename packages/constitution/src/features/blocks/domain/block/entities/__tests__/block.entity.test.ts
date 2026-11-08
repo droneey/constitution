@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'bun:test';
 
-import { BlockFormat } from '#/kernel/constants';
 import { BlockId } from '#/kernel/value-objects';
 
 import { validFiles } from '../../../../__tests__/valid-files.fixtures';
@@ -66,7 +65,7 @@ describe('Block', () => {
       },
     },
     {
-      path: 'blocks/domains/ui/architecture/with/remote-data.md',
+      path: 'blocks/domains/ui/@architecture/with/remote-data.md',
       place: {
         block: 'ui',
         seam: 'remote-data',
@@ -101,8 +100,8 @@ describe('Block', () => {
       isBase: true,
       paths: [
         '.droneey/constitution/blocks/domains/ui/ui.md',
-        '.droneey/constitution/blocks/domains/ui/foundation/screens.md',
-        '.droneey/constitution/blocks/domains/ui/architecture/with/remote-data.md',
+        '.droneey/constitution/blocks/domains/ui/@foundation/screens.md',
+        '.droneey/constitution/blocks/domains/ui/@architecture/with/remote-data.md',
       ],
     });
   });
@@ -132,7 +131,7 @@ describe('Block', () => {
 });
 
 const groupOf = (paths: readonly string[]): BlockGroup => {
-  const [group] = BlockFile.locate(paths.map(TreePath.create), BlockFormat.Legacy).groups;
+  const [group] = BlockFile.locate(paths.map(TreePath.create)).groups;
 
   if (group === undefined) {
     throw new Error('The paths hold no block folder');
@@ -145,7 +144,7 @@ describe('Block.passportIn', () => {
   it('should leave the block unloaded with its folder when the folder holds no passport', () => {
     // Arrange
     const group = groupOf([
-      'blocks/domains/ui/foundation/screens.md',
+      'blocks/domains/ui/@foundation/screens.md',
     ]);
 
     // Act
@@ -196,9 +195,9 @@ describe('Block.partsIn', () => {
   it('should give the parts but the passport, chapters before seams, when the folder lists them otherwise', () => {
     // Arrange
     const group = groupOf([
-      'blocks/domains/ui/foundation/with/i18n.md',
+      'blocks/domains/ui/@foundation/with/i18n.md',
       'blocks/domains/ui/ui.md',
-      'blocks/domains/ui/foundation/screens.md',
+      'blocks/domains/ui/@foundation/screens.md',
     ]);
 
     // Act
@@ -206,8 +205,8 @@ describe('Block.partsIn', () => {
 
     // Assert
     expect(parts.map((part) => String(part.path))).toStrictEqual([
-      'blocks/domains/ui/foundation/screens.md',
-      'blocks/domains/ui/foundation/with/i18n.md',
+      'blocks/domains/ui/@foundation/screens.md',
+      'blocks/domains/ui/@foundation/with/i18n.md',
     ]);
   });
 });

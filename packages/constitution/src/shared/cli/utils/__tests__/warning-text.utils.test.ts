@@ -170,7 +170,7 @@ const warnings: readonly ProjectWarning[] = [
   },
   {
     details: {
-      file: '.droneey/constitution/blocks/domains/ui/foundation/screens.md',
+      file: '.droneey/constitution/blocks/domains/ui/@foundation/screens.md',
       rule: RuleSlug.create('four-data-states'),
       source: SourceKind.Release,
     },
@@ -211,22 +211,6 @@ const warnings: readonly ProjectWarning[] = [
       source: SourceKind.Pack,
     },
     kind: WarningKind.FolderMisnamed,
-  },
-  {
-    details: {
-      base: 'eslint',
-      block: BlockId.create('acme'),
-      source: SourceKind.Pack,
-    },
-    kind: WarningKind.BaseNoBlock,
-  },
-  {
-    details: {
-      base: 'ui',
-      block: BlockId.create('acme'),
-      source: SourceKind.Pack,
-    },
-    kind: WarningKind.BaseConcrete,
   },
   {
     details: {

@@ -7,8 +7,6 @@ const fieldTable = [
   'id: ui',
   'summary: Screens.',
   'requires: []',
-  'extends: null',
-  'abstract: false',
   'languages: [css]',
   'governs: ["**/ui/**"]',
 ].join('\n');
@@ -17,8 +15,6 @@ const keyLines = [
   'id',
   'summary',
   'requires',
-  'extends',
-  'abstract',
   'languages',
   'governs',
 ];
@@ -34,62 +30,6 @@ describe('createYamlFrontMatterParser', () => {
     // Assert
     expect(read).toStrictEqual({
       fields: {
-        abstract: false,
-        governs: [
-          '**/ui/**',
-        ],
-        id: 'ui',
-        languages: [
-          'css',
-        ],
-        requires: [],
-        summary: 'Screens.',
-      },
-      keys: keyLines,
-      status: ReadStatus.Mapping,
-    });
-  });
-
-  it('should read the block as not abstract and extending none when the front matter declares neither', () => {
-    // Arrange
-    const parser = createYamlFrontMatterParser();
-    const yaml = fieldTable.replace('extends: null\nabstract: false\n', '');
-
-    // Act
-    const read = parser.parse(yaml);
-
-    // Assert
-    expect(read).toStrictEqual({
-      fields: {
-        abstract: false,
-        governs: [
-          '**/ui/**',
-        ],
-        id: 'ui',
-        languages: [
-          'css',
-        ],
-        requires: [],
-        summary: 'Screens.',
-      },
-      keys: keyLines.filter((key) => key !== 'extends' && key !== 'abstract'),
-      status: ReadStatus.Mapping,
-    });
-  });
-
-  it('should keep the base when the block extends one', () => {
-    // Arrange
-    const parser = createYamlFrontMatterParser();
-    const yaml = fieldTable.replace('extends: null', 'extends: screens');
-
-    // Act
-    const read = parser.parse(yaml);
-
-    // Assert
-    expect(read).toStrictEqual({
-      fields: {
-        abstract: false,
-        extends: 'screens',
         governs: [
           '**/ui/**',
         ],
@@ -109,7 +49,7 @@ describe('createYamlFrontMatterParser', () => {
     // Arrange
     const parser = createYamlFrontMatterParser();
     const yaml = fieldTable
-      .replace('abstract: false', 'abstract: "no"')
+      .replace('requires: []', 'requires: "remote-data"')
       .replace('governs: ["**/ui/**"]', 'governs: ["**/ui/**", 19]');
 
     // Act
@@ -119,12 +59,12 @@ describe('createYamlFrontMatterParser', () => {
     expect(read).toStrictEqual({
       issues: [
         {
-          field: 'abstract',
-          message: expect.stringContaining('boolean'),
-        },
-        {
           field: 'governs.1',
           message: expect.stringContaining('string'),
+        },
+        {
+          field: 'requires',
+          message: expect.stringContaining('array'),
         },
       ],
       keys: keyLines,
@@ -144,7 +84,7 @@ describe('createYamlFrontMatterParser', () => {
     expect(read).toStrictEqual({
       at: {
         key: 'governs',
-        line: 7,
+        line: 5,
       },
       reason: 'Missing , or : between flow sequence items',
       status: ReadStatus.NotYaml,

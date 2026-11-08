@@ -1,4 +1,4 @@
-import type { Axis, BlockFormat, Layer, Level } from '#/kernel/constants';
+import type { Axis, Layer, Level } from '#/kernel/constants';
 import type { RoleTerm } from '#/kernel/entities';
 import { FileReadStatus } from '#/kernel/entities';
 import { compareText, splitFrontMatter } from '#/kernel/utils';
@@ -24,11 +24,8 @@ interface SeamPlace {
 
 interface BlockSetBlock {
   readonly chapters: readonly ChapterPlace[];
-  readonly extends?: BlockId;
-  readonly format: BlockFormat;
   readonly governs: readonly Glob[];
   readonly id: BlockId;
-  readonly isAbstract: boolean;
   readonly languages: readonly BlockId[];
   readonly layer: Layer;
   readonly requires: readonly BlockId[];
@@ -66,11 +63,11 @@ type SourceFile = {
     }
 );
 
-const inReadOrder = (files: readonly SourceFile[], format: BlockFormat): readonly SourceFile[] =>
+const inReadOrder = (files: readonly SourceFile[]): readonly SourceFile[] =>
   files
     .map((file) => ({
       file,
-      place: BlockFilePlace.parse(file.path, format),
+      place: BlockFilePlace.parse(file.path),
     }))
     .toSorted((left, right) => {
       if (left.place === undefined || right.place === undefined) {
@@ -125,9 +122,6 @@ const withoutBlocksFolder = (input: {
         status: SourceStatus.Unlisted,
       };
 
-const listedFilesOf = (source: BlockSetSource): readonly SourceFile[] =>
-  source.status === SourceStatus.Listed ? source.files : [];
-
 const frontMatterOf = (file: SourceFile): readonly string[] => {
   const frontMatter =
     file.status === FileReadStatus.Read ? splitFrontMatter(file.text).frontMatter : undefined;
@@ -141,14 +135,14 @@ const frontMatterOf = (file: SourceFile): readonly string[] => {
 
 /** Each front matter the read files of the sources open with, once. */
 const frontMattersOf = (sources: readonly BlockSetSource[]): readonly string[] => [
-  ...new Set(sources.flatMap(listedFilesOf).flatMap(frontMatterOf)),
+  ...new Set(
+    sources.flatMap((source) =>
+      source.status === SourceStatus.Listed ? source.files.flatMap(frontMatterOf) : [],
+    ),
+  ),
 ];
 
-const formatOf = (sources: readonly BlockSetSource[]): BlockFormat =>
-  BlockFilePlace.formatOf(sources.flatMap(listedFilesOf).map((file) => file.path));
-
 const BlockSetSource = {
-  formatOf,
   frontMattersOf,
   withoutBlocksFolder,
 } as const;

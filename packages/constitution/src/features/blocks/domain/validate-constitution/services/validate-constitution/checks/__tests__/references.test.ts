@@ -6,20 +6,20 @@ import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { checkInputOf } from '../../../../../../application/use-cases/queries/check/__tests__/check.fixtures';
 import { ReferencesCode, referencesCheck } from '../references';
 
-const PRINCIPLES = 'blocks/core/foundation/principles.md';
-const UI = 'blocks/domains/ui/foundation/forms.md';
-const BROWSER = 'blocks/contexts/platforms/browser/foundation/delivery.md';
+const PRINCIPLES = 'blocks/core/@foundation/principles.md';
+const UI = 'blocks/domains/ui/@foundation/forms.md';
+const BROWSER = 'blocks/contexts/platforms/browser/@foundation/delivery.md';
 
 describe('referencesCheck', () => {
   it.each([
     {
       details: {
-        owner: BlockId.create('react-dom'),
-        target: '../../implementations/react-dom/react-dom.md',
+        owner: BlockId.create('react/react-dom'),
+        target: '../../implementations/react/react-dom/react-dom.md',
       },
       name: 'a file',
       path: PRINCIPLES,
-      text: '# Principles\n\nSee [portals](../../implementations/react-dom/react-dom.md).\n',
+      text: '# Principles\n\nSee [portals](../../implementations/react/react-dom/react-dom.md).\n',
     },
     {
       details: {
@@ -83,7 +83,7 @@ describe('referencesCheck', () => {
       {
         code: ReferencesCode.NamesOtherRule,
         details: {
-          owner: BlockId.create('react-dom'),
+          owner: BlockId.create('react/react-dom'),
           slug: RuleSlug.create('portals-for-overlays'),
         },
         path: PRINCIPLES,
@@ -140,7 +140,7 @@ describe('referencesCheck', () => {
     {
       name: 'a block links to a file of core and of a block it requires',
       path: BROWSER,
-      text: '# Delivery\n\nSee [principles](../../../../core/foundation/principles.md) and [the client](../../../../domains/untrusted-client/).\n',
+      text: '# Delivery\n\nSee [principles](../../../../core/@foundation/principles.md) and [the client](../../../../domains/untrusted-client/).\n',
     },
     {
       name: 'a fence holds the link and the rule',
@@ -149,7 +149,7 @@ describe('referencesCheck', () => {
         '# UI',
         '',
         '```md',
-        'Like `portals-for-overlays`, see [x](../../../implementations/react-dom/react-dom.md).',
+        'Like `portals-for-overlays`, see [x](../../../implementations/react/react-dom/react-dom.md).',
         '```',
       ].join('\n'),
     },

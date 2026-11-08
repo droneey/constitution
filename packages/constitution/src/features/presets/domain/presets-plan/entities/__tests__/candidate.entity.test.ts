@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { Axis, BlockFormat, releaseFolderInProject } from '#/kernel/constants';
+import { Axis, releaseFolderInProject } from '#/kernel/constants';
 import { BlockId, BlockSource, RepositoryRelativePath } from '#/kernel/value-objects';
 
 import { unitOf } from '../../../../__tests__/presets.fixtures';
@@ -22,10 +22,9 @@ const entryOf = (text: string): PresetEntry & TargetFile => ({
   language: EVERY,
   rule: EVERY,
   set: {
-    filePath: RepositoryRelativePath.create('presets/biome/foundation.yaml'),
+    filePath: RepositoryRelativePath.create('presets/biome/@foundation.yaml'),
     placeInPresets: {
       axis: Axis.Foundation,
-      format: BlockFormat.Legacy,
       reader: BlockId.create('biome'),
       withs: [],
     },

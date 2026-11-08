@@ -190,11 +190,11 @@ describe('createGitFileTrees: installed', () => {
       text: '# Core\n',
     });
     write({
-      path: 'presets/biome/foundation.yaml',
+      path: 'presets/biome/@foundation.yaml',
       text: '{}\n',
     });
     write({
-      path: 'blocks/core/architecture/layout.md',
+      path: 'blocks/core/@architecture/layout.md',
       text: '# Layout\n',
     });
     write({
@@ -210,7 +210,7 @@ describe('createGitFileTrees: installed', () => {
 
     // Assert
     expect<readonly string[]>(listed).toStrictEqual([
-      'blocks/core/architecture/layout.md',
+      'blocks/core/@architecture/layout.md',
       'blocks/core/core.md',
     ]);
   });
@@ -238,7 +238,7 @@ describe('createGitFileTrees: installed', () => {
       text: '# Core\n',
     });
     write({
-      path: 'blocks/core/architecture/layout.md',
+      path: 'blocks/core/@architecture/layout.md',
       text: '# Layout\n',
     });
     write({

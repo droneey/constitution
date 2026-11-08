@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'bun:test';
 
-import { BlockFormat } from '#/kernel/constants';
 import type { ProblemOf } from '#/kernel/types';
 import { BlockId } from '#/kernel/value-objects';
 import { textOf } from '#/shared/cli';
@@ -113,15 +112,6 @@ describe('loadTexts', () => {
     },
     {
       problem: {
-        code: FrontMatterReadCode.FieldRetired,
-        details: {
-          field: FrontMatterField.Extends,
-        },
-      },
-      text: 'front matter has "extends", which a block no longer declares; the folder a block sits in is its parent',
-    },
-    {
-      problem: {
         code: FrontMatterReadCode.OutOfOrder,
         details: {
           order: [
@@ -175,10 +165,10 @@ describe('loadTexts', () => {
         code: FrontMatterReadCode.NotBlockId,
         details: {
           entry: 'Bad',
-          field: FrontMatterField.Extends,
+          field: FrontMatterField.Requires,
         },
       },
-      text: 'front matter: extends "Bad", which is not a block id',
+      text: 'front matter: requires "Bad", which is not a block id',
     },
     {
       problem: {
@@ -239,18 +229,7 @@ describe('loadTexts', () => {
     {
       problem: {
         code: PlaceCode.StrayBlockFile,
-        details: {
-          format: BlockFormat.Legacy,
-        },
-      },
-      text: 'is not a block file; a block holds at its root its passport <id>.md, and in foundation/, architecture/ and workflow/ its chapters <name>.md and its seams with/<block>.md',
-    },
-    {
-      problem: {
-        code: PlaceCode.StrayBlockFile,
-        details: {
-          format: BlockFormat.Nested,
-        },
+        details: {},
       },
       text: 'is not a block file; a block holds at its root its passport <name>.md and the folders of its child blocks, and in @foundation/, @architecture/ and @workflow/ its chapters <name>.md and its seams with/<block>.md',
     },

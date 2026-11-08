@@ -165,75 +165,11 @@ describe('requiresCheck', () => {
     // Assert
     expect(findings).toStrictEqual([]);
   });
-
-  it.each<{
-    base: string;
-    finding: FindingOf<RequiresDetails>;
-  }>([
-    {
-      base: 'eslint',
-      finding: {
-        code: RequiresCode.ExtendsNoBlock,
-        details: {
-          base: BlockId.create('eslint'),
-        },
-        path: BIOME,
-      },
-    },
-    {
-      base: 'biome',
-      finding: {
-        code: RequiresCode.ExtendsItself,
-        details: {},
-        path: BIOME,
-      },
-    },
-    {
-      base: 'ui',
-      finding: {
-        code: RequiresCode.ExtendsOtherLayer,
-        details: {
-          base: BlockId.create('ui'),
-          baseLayer: Layer.Domain,
-        },
-        path: BIOME,
-      },
-    },
-    {
-      base: 'lingui',
-      finding: {
-        code: RequiresCode.ExtendsConcrete,
-        details: {
-          base: BlockId.create('lingui'),
-        },
-        path: BIOME,
-      },
-    },
-  ])('should report $finding.code when an implementation extends $base', ({ base, finding }) => {
-    // Arrange
-    const files = validFiles();
-
-    files[BIOME] = passportFile({
-      body: '# Biome\n',
-      extends: base,
-      id: 'biome',
-    });
-
-    const input = checkInputOf(files);
-
-    // Act
-    const findings = requiresCheck(input);
-
-    // Assert
-    expect(findings).toStrictEqual([
-      finding,
-    ]);
-  });
 });
 
 const REACT_DOM = 'blocks/implementations/react/react-dom/react-dom.md';
 
-describe('requiresCheck on a nested tree', () => {
+describe('requiresCheck on the blocks a block sits under', () => {
   it('should find nothing when each block requires only what it needs beyond the blocks it sits under', () => {
     // Act
     const findings = requiresCheck(checkInputOf(nestedFiles()));

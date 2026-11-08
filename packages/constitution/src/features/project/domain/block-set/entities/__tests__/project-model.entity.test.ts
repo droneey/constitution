@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { Axis, BlockFormat, Layer, Level } from '#/kernel/constants';
+import { Axis, Layer, Level } from '#/kernel/constants';
 import { BlockId, BlockSource, RuleSlug } from '#/kernel/value-objects';
 
 import type { BlockSetBlock, BlockSetRule } from '../block-set.entity';
@@ -8,10 +8,8 @@ import { ProjectModel } from '../project-model.entity';
 
 const blockOf = (input: { id: string; layer?: Layer }): BlockSetBlock => ({
   chapters: [],
-  format: BlockFormat.Nested,
   governs: [],
   id: BlockId.create(input.id),
-  isAbstract: false,
   languages: [],
   layer: input.layer ?? Layer.Domain,
   requires: [],

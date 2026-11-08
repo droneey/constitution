@@ -6,10 +6,8 @@ import type { RoleKind } from './term.entity';
 import { Term } from './term.entity';
 
 interface ModelBlock {
-  readonly extends?: BlockId;
   readonly governs: readonly Glob[];
   readonly id: BlockId;
-  readonly isAbstract: boolean;
   readonly languages: readonly BlockId[];
   readonly layer: Layer;
   readonly requires: readonly BlockId[];
@@ -86,7 +84,6 @@ const rolesIn = (texts: readonly BlockText[]): readonly RoleTerm[] => {
 
 const linksOf = (block: ModelBlock): readonly BlockId[] =>
   [
-    block.extends,
     ...block.requires,
     BlockId.parentOf(block.id),
   ].filter((link) => link !== undefined);
@@ -167,15 +164,11 @@ const roleOf = (model: BlockModel, input: RoleAsked): RoleTerm | undefined =>
 const blockOf = (model: BlockModel, id: string): ModelBlock | undefined =>
   model.blocks.find((block) => block.id === id);
 
-const isExtensible = (model: BlockModel, id: string): boolean =>
-  blockOf(model, id)?.isAbstract === true;
-
 const BlockModel = {
   blockOf,
   create,
   definersOf,
   definitionOf,
-  isExtensible,
   reachedRoleOf,
   reachOf,
   roleOf,

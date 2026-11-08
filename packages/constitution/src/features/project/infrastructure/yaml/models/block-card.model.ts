@@ -22,30 +22,12 @@ const listModel = z
 
 const blockCardModel: z.ZodType<BlockCard> = z
   .looseObject({
-    abstract: z
-      .union([
-        z.literal(true),
-        z.literal('true'),
-      ])
-      .transform(() => true)
-      .catch(false),
-    extends: textModel,
     governs: listModel,
     languages: listModel,
     requires: listModel,
   })
-  .transform(({ abstract, extends: base, governs, languages, requires }) => ({
-    ...(base === ''
-      ? {}
-      : {
-          extends: base,
-        }),
+  .transform(({ governs, languages, requires }) => ({
     governs,
-    ...(abstract
-      ? {
-          isAbstract: true as const,
-        }
-      : {}),
     languages,
     requires,
   }));

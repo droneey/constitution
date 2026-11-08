@@ -3,7 +3,6 @@ import { describe, expect, it } from 'bun:test';
 import type { FindingOf } from '#/kernel/types';
 
 import { passportFile } from '../../../../../../__tests__/constitution.fixtures';
-import { nestedFiles, nestedPassportFile } from '../../../../../../__tests__/nested-files.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { checkInputOf } from '../../../../../../application/use-cases/queries/check/__tests__/check.fixtures';
 import type { CoreChaptersDetails } from '../core-chapters';
@@ -16,12 +15,14 @@ const passportListing = (items: readonly string[]): string =>
     body: [
       '# Core',
       '',
-      'Prose may quote - `foundation/`: [principles](foundation/principles.md) mid-line.',
+      'Prose may quote - `@foundation/`: [principles](@foundation/principles.md) mid-line.',
       '',
-      '- `PROJECT.md`: [principles](foundation/principles.md).',
+      '- `PROJECT.md`: [principles](@foundation/principles.md).',
+      '',
+      '- `foundation/`: [principles](@foundation/principles.md), an axis spelled without its mark.',
       '',
       '```md',
-      '- `foundation/`: [principles](foundation/principles.md).',
+      '- `@foundation/`: [principles](@foundation/principles.md).',
       '```',
       '',
       '## Its chapters',
@@ -44,26 +45,9 @@ describe('coreChaptersCheck', () => {
   it("should find nothing when the passport's list links every chapter of core once", () => {
     // Act
     const findings = checkWith([
-      '- `foundation/`: [principles](foundation/principles.md).',
-      '- `workflow/`: [workflow](workflow/workflow.md).',
+      '- `@foundation/`: [principles](@foundation/principles.md).',
+      '- `@workflow/`: [workflow](@workflow/workflow.md).',
     ]);
-
-    // Assert
-    expect(findings).toStrictEqual([]);
-  });
-
-  it("should find nothing when the passport's list links every chapter of a nested core by its axis folder marked by @", () => {
-    // Arrange
-    const files = {
-      ...nestedFiles(),
-      [CORE]: nestedPassportFile({
-        body: '# Core\n\n## Its chapters\n\n- `@foundation/`: [code](@foundation/code.md).\n',
-        id: 'core',
-      }),
-    };
-
-    // Act
-    const findings = coreChaptersCheck(checkInputOf(files));
 
     // Assert
     expect(findings).toStrictEqual([]);
@@ -92,12 +76,12 @@ describe('coreChaptersCheck', () => {
       finding: {
         code: CoreChaptersCode.ChapterUnlisted,
         details: {
-          chapter: 'blocks/core/workflow/workflow.md',
+          chapter: 'blocks/core/@workflow/workflow.md',
         },
         path: CORE,
       },
       items: [
-        '- `foundation/`: [principles](foundation/principles.md).',
+        '- `@foundation/`: [principles](@foundation/principles.md).',
       ],
     },
     {
@@ -110,8 +94,8 @@ describe('coreChaptersCheck', () => {
         path: CORE,
       },
       items: [
-        '- `foundation/`: [principles](foundation/principles.md), [passport](core.md).',
-        '- `workflow/`: [workflow](workflow/workflow.md).',
+        '- `@foundation/`: [principles](@foundation/principles.md), [passport](core.md).',
+        '- `@workflow/`: [workflow](@workflow/workflow.md).',
       ],
     },
     {
@@ -119,13 +103,13 @@ describe('coreChaptersCheck', () => {
       finding: {
         code: CoreChaptersCode.ListsNoChapter,
         details: {
-          entry: 'blocks/core/foundation/gone.md',
+          entry: 'blocks/core/@foundation/gone.md',
         },
         path: CORE,
       },
       items: [
-        '- `foundation/`: [gone](foundation/gone.md), [principles](foundation/principles.md).',
-        '- `workflow/`: [workflow](workflow/workflow.md).',
+        '- `@foundation/`: [gone](@foundation/gone.md), [principles](@foundation/principles.md).',
+        '- `@workflow/`: [workflow](@workflow/workflow.md).',
       ],
     },
     {
@@ -133,13 +117,13 @@ describe('coreChaptersCheck', () => {
       finding: {
         code: CoreChaptersCode.ListedTwice,
         details: {
-          entry: 'blocks/core/foundation/principles.md',
+          entry: 'blocks/core/@foundation/principles.md',
         },
         path: CORE,
       },
       items: [
-        '- `foundation/`: [principles](foundation/principles.md), [principles](foundation/principles.md).',
-        '- `workflow/`: [workflow](workflow/workflow.md).',
+        '- `@foundation/`: [principles](@foundation/principles.md), [principles](@foundation/principles.md).',
+        '- `@workflow/`: [workflow](@workflow/workflow.md).',
       ],
     },
   ])('should report the passport when its list $condition', ({ finding, items }) => {

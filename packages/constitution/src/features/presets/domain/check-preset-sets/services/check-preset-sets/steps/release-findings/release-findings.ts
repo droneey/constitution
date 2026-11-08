@@ -1,4 +1,4 @@
-import { BlockFormat, Level, PATH_SEPARATOR, PRESETS_FOLDER_NAME } from '#/kernel/constants';
+import { Level, PATH_SEPARATOR, PRESETS_FOLDER_NAME } from '#/kernel/constants';
 import type { BlockModel, ModelRule } from '#/kernel/entities';
 import { compareText } from '#/kernel/utils';
 import { RepositoryRelativePath, RuleSlug, SourceKind } from '#/kernel/value-objects';
@@ -102,7 +102,6 @@ interface NamedFilesInput {
 const namedInReleaseOf = (
   input: NamedFilesInput,
 ): readonly {
-  readonly format: BlockFormat;
   readonly pathInRelease: string;
   readonly setFilePath: RepositoryRelativePath;
 }[] =>
@@ -113,7 +112,6 @@ const namedInReleaseOf = (
         entry,
         model: input.model,
       }).map((pathInRelease) => ({
-        format: entry.set.placeInPresets.format,
         pathInRelease,
         setFilePath: entry.set.filePath,
       })),
@@ -143,7 +141,6 @@ const rulesTheMessagesKey = (input: {
 const pluginFindings = (
   input: ReleaseFindingsInput & {
     namedPaths: ReadonlySet<string>;
-    nestedNamedPaths: ReadonlySet<string>;
     pathInPresets: string;
     rule: string;
   },
@@ -174,9 +171,7 @@ const pluginFindings = (
             path,
           } satisfies PresetsFinding,
         ]),
-    // Why: the legacy presets name rules the nested tree raises to MUST, so a level is held only
-    // for a plugin a preset file of the nested format names until the legacy format goes.
-    ...(input.nestedNamedPaths.has(pathInRelease) && text !== undefined
+    ...(input.namedPaths.has(pathInRelease) && text !== undefined
       ? rulesTheMessagesKey({
           rules: input.rules,
           text,
@@ -201,11 +196,6 @@ const releaseFindings = (input: ReleaseFindingsInput): readonly PresetsFinding[]
   const { release } = input;
   const named = namedInReleaseOf(input);
   const namedPaths = new Set(named.map(({ pathInRelease }) => pathInRelease));
-  const nestedNamedPaths = new Set(
-    named
-      .filter(({ format }) => format === BlockFormat.Nested)
-      .map(({ pathInRelease }) => pathInRelease),
-  );
   const missing = named.flatMap(({ pathInRelease, setFilePath }) =>
     isSound({
       pathInRelease,
@@ -230,7 +220,6 @@ const releaseFindings = (input: ReleaseFindingsInput): readonly PresetsFinding[]
       : pluginFindings({
           ...input,
           namedPaths,
-          nestedNamedPaths,
           pathInPresets,
           rule,
         });

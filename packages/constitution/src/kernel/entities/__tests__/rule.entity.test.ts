@@ -4,7 +4,7 @@ import { Axis, Level } from '../../constants';
 import { BlockId, coreBlockId, RuleSlug } from '../../value-objects';
 import { Rule } from '../rule.entity';
 
-const FILE = 'blocks/core/foundation/principles.md';
+const FILE = 'blocks/core/@foundation/principles.md';
 
 const ruleOf = (fields: Partial<Rule>): Rule =>
   Rule.create({

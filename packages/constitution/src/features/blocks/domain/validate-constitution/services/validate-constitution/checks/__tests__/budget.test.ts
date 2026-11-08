@@ -7,7 +7,7 @@ import { checkInputOf } from '../../../../../../application/use-cases/queries/ch
 import type { BudgetDetails } from '../budget';
 import { BudgetCode, budgetCheck } from '../budget';
 
-const PRINCIPLES = 'blocks/core/foundation/principles.md';
+const PRINCIPLES = 'blocks/core/@foundation/principles.md';
 
 const linesOf = (count: number): string =>
   Array.from(

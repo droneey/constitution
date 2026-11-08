@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'bun:test';
 
-import { BlockFormat } from '#/kernel/constants';
 import { FileReadStatus } from '#/kernel/entities';
 import { AbsolutePath, BlockSource, PackPath } from '#/kernel/value-objects';
 
@@ -8,46 +7,34 @@ import { BlockSetSource, SourceFile, SourceStatus } from '../block-set.entity';
 
 const pack = PackPath.create('./packs/acme');
 
-const sourceOf = (input: { pack?: PackPath; paths: readonly string[] }): BlockSetSource => ({
-  files: input.paths.map(
-    (path): SourceFile => ({
-      path,
-      status: FileReadStatus.Unreadable,
-    }),
-  ),
-  shownFolderPath: input.pack ?? AbsolutePath.create('/release'),
-  source: BlockSource.create(input.pack),
-  status: SourceStatus.Listed,
-});
-
 describe('SourceFile.inReadOrder', () => {
   it('should order by layer, id, folder, then passport, chapters, seams and other files by axis and path, and files in no block last, when the files are shuffled', () => {
     // Arrange
     const files = [
-      'blocks/implementations/biome/workflow/hooks.md',
-      'blocks/domains/ui/foundation/deep/x.md',
+      'blocks/implementations/biome/@workflow/hooks.md',
+      'blocks/domains/ui/@foundation/deep/x.md',
       'blocks/contexts/languages/python/python.md',
       'blocks/domains/ui-kit/ui-kit.md',
       'blocks/core/notes.md',
-      'blocks/domains/ui/architecture/with/deep/x.md',
-      'blocks/core/architecture/with/api.md',
+      'blocks/domains/ui/@architecture/with/deep/x.md',
+      'blocks/core/@architecture/with/api.md',
       'blocks/domains/ui/deep/x.md',
-      'blocks/core/foundation/with/ui.md',
-      'blocks/domains/ui/foundation/screens.md',
+      'blocks/core/@foundation/with/ui.md',
+      'blocks/domains/ui/@foundation/screens.md',
       'blocks/implementations/biome/biome.md',
-      'blocks/core/workflow/agents.md',
+      'blocks/core/@workflow/agents.md',
       'blocks/README.md',
       'blocks/domains/ui/ui.md',
       'blocks/contexts/x.md',
-      'blocks/core/architecture/layers.md',
+      'blocks/core/@architecture/layers.md',
       'blocks/contexts/platforms/web/web.md',
-      'blocks/domains/ui/foundation/forms.md',
-      'blocks/core/foundation/code.md',
+      'blocks/domains/ui/@foundation/forms.md',
+      'blocks/core/@foundation/code.md',
       'blocks/domains/api/api.md',
       'blocks/core/core.md',
       'blocks/implementations/1password/1password.md',
       'blocks/contexts/languages/4d/4d.md',
-      'blocks/contexts/languages/python/foundation/types.md',
+      'blocks/contexts/languages/python/@foundation/types.md',
       'blocks/domains/ui/foundations',
     ].map(
       (path): SourceFile => ({
@@ -57,34 +44,34 @@ describe('SourceFile.inReadOrder', () => {
     );
 
     // Act
-    const ordered = SourceFile.inReadOrder(files, BlockFormat.Legacy);
+    const ordered = SourceFile.inReadOrder(files);
 
     // Assert
     expect(ordered).toStrictEqual(
       [
         'blocks/core/core.md',
-        'blocks/core/foundation/code.md',
-        'blocks/core/architecture/layers.md',
-        'blocks/core/workflow/agents.md',
-        'blocks/core/foundation/with/ui.md',
-        'blocks/core/architecture/with/api.md',
+        'blocks/core/@foundation/code.md',
+        'blocks/core/@architecture/layers.md',
+        'blocks/core/@workflow/agents.md',
+        'blocks/core/@foundation/with/ui.md',
+        'blocks/core/@architecture/with/api.md',
         'blocks/core/notes.md',
         'blocks/domains/api/api.md',
         'blocks/domains/ui/ui.md',
-        'blocks/domains/ui/foundation/forms.md',
-        'blocks/domains/ui/foundation/screens.md',
-        'blocks/domains/ui/architecture/with/deep/x.md',
-        'blocks/domains/ui/deep/x.md',
-        'blocks/domains/ui/foundation/deep/x.md',
+        'blocks/domains/ui/@foundation/forms.md',
+        'blocks/domains/ui/@foundation/screens.md',
+        'blocks/domains/ui/@architecture/with/deep/x.md',
+        'blocks/domains/ui/@foundation/deep/x.md',
         'blocks/domains/ui/foundations',
         'blocks/domains/ui-kit/ui-kit.md',
+        'blocks/domains/ui/deep/x.md',
         'blocks/contexts/platforms/web/web.md',
         'blocks/contexts/languages/4d/4d.md',
         'blocks/contexts/languages/python/python.md',
-        'blocks/contexts/languages/python/foundation/types.md',
+        'blocks/contexts/languages/python/@foundation/types.md',
         'blocks/implementations/1password/1password.md',
         'blocks/implementations/biome/biome.md',
-        'blocks/implementations/biome/workflow/hooks.md',
+        'blocks/implementations/biome/@workflow/hooks.md',
         'blocks/README.md',
         'blocks/contexts/x.md',
       ].map((path) => ({
@@ -148,51 +135,6 @@ describe('BlockSetSource.withoutBlocksFolder', () => {
   });
 });
 
-describe('BlockSetSource.formatOf', () => {
-  it.each([
-    {
-      condition: 'the release marks its axis folders by @ and a pack holds only a child passport',
-      format: BlockFormat.Nested,
-      sources: [
-        sourceOf({
-          paths: [
-            'blocks/core/core.md',
-            'blocks/core/@foundation/code.md',
-          ],
-        }),
-        sourceOf({
-          pack,
-          paths: [
-            'blocks/implementations/schema/valibot/valibot.md',
-          ],
-        }),
-      ],
-    },
-    {
-      condition: 'neither the release nor an unlisted pack marks an axis folder by @',
-      format: BlockFormat.Legacy,
-      sources: [
-        sourceOf({
-          paths: [
-            'blocks/core/foundation/code.md',
-          ],
-        }),
-        {
-          shownFolderPath: pack,
-          source: BlockSource.create(pack),
-          status: SourceStatus.Unlisted,
-        },
-      ],
-    },
-  ])('should read every source as $format when $condition', ({ format, sources }) => {
-    // Act
-    const read = BlockSetSource.formatOf(sources);
-
-    // Assert
-    expect(read).toBe(format);
-  });
-});
-
 describe('BlockSetSource.frontMattersOf', () => {
   it('should give each front matter the read files open with once, leaving out unlisted sources and unread files', () => {
     // Arrange
@@ -206,7 +148,7 @@ describe('BlockSetSource.frontMattersOf', () => {
             text: `---\n${card}\n---\n# ui\n`,
           },
           {
-            path: 'blocks/domains/ui/foundation/forms.md',
+            path: 'blocks/domains/ui/@foundation/forms.md',
             status: FileReadStatus.Read,
             text: '# Forms\n',
           },

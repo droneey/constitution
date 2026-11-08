@@ -182,7 +182,7 @@ const biomePresetFile = [
 ].join('\n');
 
 const presetsWith = (files: readonly string[]): Files => ({
-  'biome/foundation.yaml': [
+  'biome/@foundation.yaml': [
     'biome:',
     "  '*':",
     "    '*':",
@@ -197,7 +197,7 @@ describe('planApply', () => {
   const biomeProject = (): ReturnType<typeof projectOf> =>
     projectOf({
       files: releasePresets({
-        'biome/foundation.yaml': [
+        'biome/@foundation.yaml': [
           'biome:',
           "  '*':",
           "    '*':",
@@ -463,7 +463,7 @@ describe('planApply', () => {
       ]),
     });
     const presets = {
-      'knip/foundation.yaml': [
+      'knip/@foundation.yaml': [
         'knip:',
         "  '*':",
         "    '*':",
@@ -528,7 +528,7 @@ describe('planApply', () => {
   const besideStep = (): Step => ({
     files: beside,
     presets: {
-      'biome/foundation.yaml': biomePresetFile,
+      'biome/@foundation.yaml': biomePresetFile,
     },
   });
 
@@ -603,7 +603,7 @@ describe('planApply', () => {
       },
       locks: readOf(first.locks),
       presets: {
-        'biome/foundation.yaml': biomePresetFile,
+        'biome/@foundation.yaml': biomePresetFile,
       },
     });
 
@@ -651,7 +651,7 @@ describe('planApply', () => {
       },
       locks: readOf(first.locks),
       presets: {
-        'biome/foundation.yaml': biomePresetFile
+        'biome/@foundation.yaml': biomePresetFile
           .replace('width: 100', 'width: 120')
           .replace("          - '**'\n", ''),
       },
@@ -708,7 +708,7 @@ describe('planApply', () => {
   it('should leave a file the user deleted absent while only the defaults it held are due', () => {
     // Arrange
     const presets = {
-      'biome/foundation.yaml': [
+      'biome/@foundation.yaml': [
         'biome:',
         "  '*':",
         "    '*':",
@@ -760,7 +760,7 @@ describe('planApply', () => {
         '.npmrc': 'own=1\n',
       },
       presets: {
-        'biome/foundation.yaml': [
+        'biome/@foundation.yaml': [
           'biome:',
           "  '*':",
           "    '*':",
@@ -804,7 +804,7 @@ describe('planApply', () => {
       files: {},
       formats: watched,
       presets: {
-        'biome/foundation.yaml': [
+        'biome/@foundation.yaml': [
           'biome:',
           "  '*':",
           "    '*':",
@@ -824,7 +824,7 @@ describe('planApply', () => {
   it('should take out of a file no entry gives any longer what an apply wrote there, its addressed elements with it', () => {
     // Arrange
     const owned = {
-      'biome/foundation.yaml': [
+      'biome/@foundation.yaml': [
         'biome:',
         "  '*':",
         "    '*':",
@@ -848,7 +848,7 @@ describe('planApply', () => {
       files: first.texts,
       locks: readOf(first.locks),
       presets: {
-        'biome/foundation.yaml': [
+        'biome/@foundation.yaml': [
           'biome:',
           "  '*':",
           "    '*':",
@@ -889,7 +889,7 @@ describe('planApply', () => {
     const applied = planOnce({
       files: {},
       presets: {
-        'biome/foundation.yaml': [
+        'biome/@foundation.yaml': [
           'biome:',
           "  '*':",
           "    '*':",
@@ -1017,7 +1017,7 @@ describe('planApply', () => {
           },
         },
         presets: {
-          'biome/foundation.yaml': [
+          'biome/@foundation.yaml': [
             'biome:',
             "  '*':",
             "    '*':",
@@ -1074,7 +1074,7 @@ describe('planApply', () => {
   it('should write a lock that does not parse again from the files and note it, then drop from the lock a file no entry gives once it is gone', () => {
     // Arrange
     const presets = {
-      'biome/foundation.yaml': [
+      'biome/@foundation.yaml': [
         'biome:',
         "  '*':",
         "    '*':",
@@ -1135,7 +1135,7 @@ describe('planApply', () => {
       },
       locks: readOf(sandboxLocked),
       presets: {
-        'biome/foundation.yaml': presets['biome/foundation.yaml'].replace(
+        'biome/@foundation.yaml': presets['biome/@foundation.yaml'].replace(
           '        width: 100\n',
           '        {}\n',
         ),
@@ -1158,7 +1158,7 @@ describe('planApply', () => {
       },
       locks: readOf(sandboxLocked),
       presets: {
-        'biome/foundation.yaml': [
+        'biome/@foundation.yaml': [
           'biome:',
           "  '*':",
           "    '*':",
@@ -1184,14 +1184,14 @@ describe('planApply', () => {
     const step = {
       files: {},
       presets: {
-        'biome/foundation.yaml': [
+        'biome/@foundation.yaml': [
           'biome:',
           "  '*':",
           "    '*':",
           '      biome.json:',
           '        width: 100',
         ].join('\n'),
-        'bun/foundation/with/biome.yaml': [
+        'bun/@foundation/with/biome.yaml': [
           'bun:',
           "  '*':",
           "    '*':",
@@ -1224,7 +1224,7 @@ describe('planApply', () => {
     const planned = planOf({
       files: {},
       presets: {
-        'biome/foundation.yaml': [
+        'biome/@foundation.yaml': [
           'biome:',
           "  '*':",
           "    '*':",
@@ -1245,7 +1245,7 @@ describe('planApply', () => {
     const step = {
       files: {},
       presets: {
-        'biome/foundation.yaml': [
+        'biome/@foundation.yaml': [
           'biome:',
           "  '*':",
           "    '*':",
@@ -1312,7 +1312,7 @@ describe('planApply', () => {
         }),
       },
       presets: {
-        'biome/foundation.yaml': [
+        'biome/@foundation.yaml': [
           'biome:',
           "  '*':",
           "    '*':",
@@ -1417,7 +1417,7 @@ describe('planApply', () => {
         },
       },
       presets: {
-        'biome/foundation.yaml': [
+        'biome/@foundation.yaml': [
           'biome:',
           "  '*':",
           "    '*':",

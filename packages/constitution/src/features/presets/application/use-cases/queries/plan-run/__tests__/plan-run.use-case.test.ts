@@ -20,7 +20,7 @@ import { planRun } from '../plan-run.use-case';
 
 const project = projectOf({
   files: releasePresets({
-    'bun/foundation.yaml': [
+    'bun/@foundation.yaml': [
       'bun:',
       "  '*':",
       "    '*':",
@@ -30,7 +30,7 @@ const project = projectOf({
       '        fix:',
       '          - bun run fix',
     ].join('\n'),
-    'bun/foundation/with/biome.yaml': [
+    'bun/@foundation/with/biome.yaml': [
       'biome:',
       "  '*':",
       "    '*':",
@@ -44,7 +44,7 @@ const project = projectOf({
       '        check:',
       '          - bun run test',
     ].join('\n'),
-    'biome/foundation.yaml': [
+    'biome/@foundation.yaml': [
       'biome:',
       "  '*':",
       "    '*':",

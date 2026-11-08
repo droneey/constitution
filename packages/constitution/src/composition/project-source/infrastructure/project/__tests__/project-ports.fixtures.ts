@@ -8,7 +8,7 @@ import { ConfigReadStatus } from '#/kernel/entities';
 import type { UnitPath } from '#/kernel/value-objects';
 import { Version } from '#/kernel/value-objects';
 
-const chapterPath = `${releaseFolderPath}/blocks/core/foundation/names.md`;
+const chapterPath = `${releaseFolderPath}/blocks/core/@foundation/names.md`;
 const chapterText = [
   '# Names',
   '',

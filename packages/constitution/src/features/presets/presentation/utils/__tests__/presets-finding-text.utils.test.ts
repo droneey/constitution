@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import { goldenFileText, goldenOf } from '#/__tests__/golden.fixtures';
-import { Axis, BlockFormat, Level } from '#/kernel/constants';
+import { Axis, Level } from '#/kernel/constants';
 import { BlockId } from '#/kernel/value-objects';
 
 import type { PresetsFinding } from '../../../domain/shared/entities';
@@ -50,7 +50,7 @@ const findingOfEachCode: {
     details: {
       line: 3,
     },
-    path: 'presets/biome/foundation.yaml',
+    path: 'presets/biome/@foundation.yaml',
   },
   [PresetsCode.EntryMisshapen]: {
     code: PresetsCode.EntryMisshapen,
@@ -60,21 +60,21 @@ const findingOfEachCode: {
         '*',
       ],
     },
-    path: 'presets/biome/foundation.yaml',
+    path: 'presets/biome/@foundation.yaml',
   },
   [PresetsCode.UnknownReader]: {
     code: PresetsCode.UnknownReader,
     details: {
       reader: BlockId.create('gone'),
     },
-    path: 'presets/gone/foundation.yaml',
+    path: 'presets/gone/@foundation.yaml',
   },
   [PresetsCode.UnknownBlock]: {
     code: PresetsCode.UnknownBlock,
     details: {
       block: 'gone',
     },
-    path: 'presets/biome/foundation.yaml',
+    path: 'presets/biome/@foundation.yaml',
   },
   [PresetsCode.PartnerRelatedToReader]: {
     code: PresetsCode.PartnerRelatedToReader,
@@ -87,7 +87,7 @@ const findingOfEachCode: {
   [PresetsCode.UnknownRule]: {
     code: PresetsCode.UnknownRule,
     details: named,
-    path: 'presets/biome/foundation.yaml',
+    path: 'presets/biome/@foundation.yaml',
   },
   [PresetsCode.UnknownLanguage]: {
     code: PresetsCode.UnknownLanguage,
@@ -95,7 +95,7 @@ const findingOfEachCode: {
       ...named,
       language: 'gone',
     },
-    path: 'presets/biome/foundation.yaml',
+    path: 'presets/biome/@foundation.yaml',
   },
   [PresetsCode.RuleOfAnotherBlock]: {
     code: PresetsCode.RuleOfAnotherBlock,
@@ -103,7 +103,7 @@ const findingOfEachCode: {
       ...named,
       owner: BlockId.create('core'),
     },
-    path: 'presets/biome/foundation.yaml',
+    path: 'presets/biome/@foundation.yaml',
   },
   [PresetsCode.EntryMisplaced]: {
     code: PresetsCode.EntryMisplaced,
@@ -111,7 +111,6 @@ const findingOfEachCode: {
       ...named,
       belongs: {
         axis: Axis.Foundation,
-        format: BlockFormat.Nested,
         reader: BlockId.create('biome'),
         withs: [
           BlockId.create('react/react-dom'),
@@ -136,7 +135,7 @@ const findingOfEachCode: {
         },
       ],
     },
-    path: 'presets/biome/foundation/with/ui.yaml',
+    path: 'presets/biome/@foundation/with/ui.yaml',
   },
   [PresetsCode.EntryNeedsTooManyBlocks]: {
     code: PresetsCode.EntryNeedsTooManyBlocks,
@@ -148,7 +147,7 @@ const findingOfEachCode: {
         BlockId.create('git'),
       ],
     },
-    path: 'presets/biome/foundation.yaml',
+    path: 'presets/biome/@foundation.yaml',
   },
   [PresetsCode.EntryOffItsAxis]: {
     code: PresetsCode.EntryOffItsAxis,
@@ -156,7 +155,7 @@ const findingOfEachCode: {
       ...named,
       ruleAxis: Axis.Architecture,
     },
-    path: 'presets/biome/foundation.yaml',
+    path: 'presets/biome/@foundation.yaml',
   },
   [PresetsCode.KeyedRuleNotMust]: {
     code: PresetsCode.KeyedRuleNotMust,
@@ -172,7 +171,7 @@ const findingOfEachCode: {
       ...named,
       file: '../biome.json',
     },
-    path: 'presets/biome/foundation.yaml',
+    path: 'presets/biome/@foundation.yaml',
   },
   [PresetsCode.UnknownFact]: {
     code: PresetsCode.UnknownFact,
@@ -180,7 +179,7 @@ const findingOfEachCode: {
       ...named,
       fact: '${file.name}',
     },
-    path: 'presets/biome/foundation.yaml',
+    path: 'presets/biome/@foundation.yaml',
   },
   [PresetsCode.UnknownRole]: {
     code: PresetsCode.UnknownRole,
@@ -188,7 +187,7 @@ const findingOfEachCode: {
       ...named,
       role: 'gone',
     },
-    path: 'presets/biome/foundation.yaml',
+    path: 'presets/biome/@foundation.yaml',
   },
   [PresetsCode.HandTypedRole]: {
     code: PresetsCode.HandTypedRole,
@@ -197,12 +196,12 @@ const findingOfEachCode: {
       role: 'source',
       term: 'src/',
     },
-    path: 'presets/biome/foundation.yaml',
+    path: 'presets/biome/@foundation.yaml',
   },
   [PresetsCode.MembersOutsideList]: {
     code: PresetsCode.MembersOutsideList,
     details: named,
-    path: 'presets/biome/foundation.yaml',
+    path: 'presets/biome/@foundation.yaml',
   },
   [PresetsCode.SortedInUnsortableFile]: {
     code: PresetsCode.SortedInUnsortableFile,
@@ -211,14 +210,14 @@ const findingOfEachCode: {
       file: 'pyproject.toml',
       settingPath: 'tool.poe.tasks',
     },
-    path: 'presets/poe/foundation.yaml',
+    path: 'presets/poe/@foundation.yaml',
   },
   [PresetsCode.MissingDistributionFile]: {
     code: PresetsCode.MissingDistributionFile,
     details: {
       file: 'presets/biome/plugins/typescript/gone.grit',
     },
-    path: 'presets/biome/foundation.yaml',
+    path: 'presets/biome/@foundation.yaml',
   },
   [PresetsCode.PluginUnreferenced]: {
     code: PresetsCode.PluginUnreferenced,
@@ -391,7 +390,6 @@ const findingOfEachCode: {
 
 const uiPath = {
   axis: Axis.Foundation,
-  format: BlockFormat.Legacy,
   reader: BlockId.create('biome'),
   withs: [
     BlockId.create('ui'),
@@ -432,7 +430,7 @@ describe('presetsFindingTextOf', () => {
           unneededBlocks: [],
           unreachedRoles: [],
         },
-        path: 'presets/biome/foundation.yaml',
+        path: 'presets/biome/@foundation.yaml',
       },
       text: entryMisplacedMessage({
         ...named,
@@ -453,7 +451,7 @@ describe('presetsFindingTextOf', () => {
           ],
           unreachedRoles: [],
         },
-        path: 'presets/biome/foundation/with/ui/with/git.yaml',
+        path: 'presets/biome/@foundation/with/ui/with/git.yaml',
       },
       text: `${entryMisplacedMessage({
         ...named,
@@ -469,7 +467,7 @@ describe('presetsFindingTextOf', () => {
       finding: {
         code: PresetsCode.PresetFileUnparsed,
         details: {},
-        path: 'presets/biome/foundation.yaml',
+        path: 'presets/biome/@foundation.yaml',
       },
       text: PRESET_FILE_UNREADABLE,
     },
@@ -480,7 +478,7 @@ describe('presetsFindingTextOf', () => {
         details: {
           keys: [],
         },
-        path: 'presets/biome/foundation.yaml',
+        path: 'presets/biome/@foundation.yaml',
       },
       text: entryMisshapenMessage(AT_TOP),
     },
@@ -508,7 +506,7 @@ describe('presetsFindingTextOf', () => {
           file: 'pyproject.toml',
           settingPath: '',
         },
-        path: 'presets/poe/foundation.yaml',
+        path: 'presets/poe/@foundation.yaml',
       },
       text: sortedInUnsortableMessage({
         file: 'pyproject.toml',

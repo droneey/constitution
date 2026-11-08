@@ -6,12 +6,10 @@ describe('createYamlBlockCardParser', () => {
   it.each([
     {
       card: {
-        extends: 'web',
         governs: [
           '**/ui/**',
           '**/web/**',
         ],
-        isAbstract: true,
         languages: [
           'typescript',
           'css',
@@ -21,15 +19,13 @@ describe('createYamlBlockCardParser', () => {
         ],
       },
       condition: 'every field is given in its own form',
-      yaml: 'summary: Screens.\nextends: web\nabstract: true\nrequires: [ui]\nlanguages: [typescript, css]\ngoverns: ["**/ui/**", "**/web/**"]',
+      yaml: 'summary: Screens.\nrequires: [ui]\nlanguages: [typescript, css]\ngoverns: ["**/ui/**", "**/web/**"]',
     },
     {
       card: {
-        extends: '7',
         governs: [
           '**/api/**',
         ],
-        isAbstract: true,
         languages: [
           'python',
         ],
@@ -39,7 +35,7 @@ describe('createYamlBlockCardParser', () => {
         ],
       },
       condition: 'scalars stand for text and a single pattern for a list',
-      yaml: 'summary: 12\nextends: 7\nabstract: "true"\nrequires: [3, true, "", null, {a: b}, [c]]\nlanguages: python\ngoverns: "**/api/**"',
+      yaml: 'summary: 12\nrequires: [3, true, "", null, {a: b}, [c]]\nlanguages: python\ngoverns: "**/api/**"',
     },
     {
       card: {
@@ -48,7 +44,7 @@ describe('createYamlBlockCardParser', () => {
         requires: [],
       },
       condition: 'the fields are of another form or empty',
-      yaml: 'summary: {text: Screens.}\nextends: ""\nabstract: yes\nrequires: ""\ngoverns: {a: b}',
+      yaml: 'summary: {text: Screens.}\nrequires: ""\ngoverns: {a: b}',
     },
     {
       card: {
@@ -60,8 +56,7 @@ describe('createYamlBlockCardParser', () => {
           'task-runner',
         ],
       },
-      condition:
-        'a nested passport names its id by its path and states neither extends nor abstract',
+      condition: 'a passport names its id by its path',
       yaml: 'id: js-runtime/bun\nsummary: Bun.\nrequires: [task-runner]\nlanguages: []\ngoverns: ["**/package.json"]',
     },
     {
@@ -107,7 +102,7 @@ describe('createYamlBlockCardParser', () => {
         requires: [],
       },
       condition: 'the front matter holds an alias',
-      yaml: 'summary: &s Screens.\nextends: *s',
+      yaml: 'summary: &s Screens.\nrequires: *s',
     },
     {
       card: {

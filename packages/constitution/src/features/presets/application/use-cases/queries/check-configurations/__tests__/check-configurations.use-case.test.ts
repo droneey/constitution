@@ -69,7 +69,7 @@ const checkedOf = (input: {
   const project = projectOf({
     files: {
       ...releasePresets({
-        'biome/foundation.yaml': input.presetFile ?? biomePresetFile,
+        'biome/@foundation.yaml': input.presetFile ?? biomePresetFile,
       }),
       ...projectFiles(input.files),
     },
@@ -282,7 +282,7 @@ describe('checkConfigurations', () => {
     const project = projectOf({
       files: {
         ...releasePresets({
-          'biome/foundation.yaml': [
+          'biome/@foundation.yaml': [
             'biome:',
             "  '*':",
             "    '*':",

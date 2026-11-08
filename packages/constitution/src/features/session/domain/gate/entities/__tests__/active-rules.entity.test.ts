@@ -15,7 +15,7 @@ describe('ActiveRules.ruleFilesOf', () => {
     {
       condition: 'a file of the repository its globs match',
       files: [
-        `${RELEASE}/blocks/core/foundation/names.md`,
+        `${RELEASE}/blocks/core/@foundation/names.md`,
         `${RELEASE}/blocks/domains/ui/ui.md`,
         `${RELEASE}/blocks/contexts/languages/typescript/typescript.md`,
       ],
@@ -25,7 +25,7 @@ describe('ActiveRules.ruleFilesOf', () => {
     {
       condition: 'a folder, which only core and the blocks of every file govern',
       files: [
-        `${RELEASE}/blocks/core/foundation/names.md`,
+        `${RELEASE}/blocks/core/@foundation/names.md`,
         `${RELEASE}/blocks/domains/ui/ui.md`,
       ],
       kind: TargetKind.Folder,
@@ -35,7 +35,7 @@ describe('ActiveRules.ruleFilesOf', () => {
       condition:
         'a folder named as the globs of a block name its files, which still only core and the blocks of every file govern',
       files: [
-        `${RELEASE}/blocks/core/foundation/names.md`,
+        `${RELEASE}/blocks/core/@foundation/names.md`,
         `${RELEASE}/blocks/domains/ui/ui.md`,
       ],
       kind: TargetKind.Folder,
@@ -44,7 +44,7 @@ describe('ActiveRules.ruleFilesOf', () => {
     {
       condition: 'a file of a member, which its own blocks govern',
       files: [
-        `${RELEASE}/blocks/core/foundation/names.md`,
+        `${RELEASE}/blocks/core/@foundation/names.md`,
         `${RELEASE}/blocks/domains/ui/ui.md`,
       ],
       kind: TargetKind.File,

@@ -1,5 +1,4 @@
-import type { BlockFormat } from '#/kernel/constants';
-import type { RequirementAnswer, Rule } from '#/kernel/entities';
+import type { Rule } from '#/kernel/entities';
 import { BlockModel } from '#/kernel/entities';
 import type { FindingOf } from '#/kernel/types';
 import type { BlockId } from '#/kernel/value-objects';
@@ -28,24 +27,16 @@ interface Documents {
 interface Constitution {
   readonly blocks: readonly Block[];
   readonly documents: Documents;
-  readonly format: BlockFormat;
   readonly paths: ReadonlySet<TreePath>;
   readonly repositoryPaths: ReadonlySet<TreePath>;
-  readonly requirementAnswers: readonly RequirementAnswer[];
   readonly rules: readonly Rule[];
 }
 
 const modelOf = (constitution: Constitution): BlockModel =>
   BlockModel.create({
     blocks: constitution.blocks.map(({ frontMatter, id, layer }) => ({
-      ...(frontMatter.extends === undefined
-        ? {}
-        : {
-            extends: frontMatter.extends,
-          }),
       governs: frontMatter.governs,
       id,
-      isAbstract: frontMatter.abstract,
       languages: frontMatter.languages,
       layer,
       requires: frontMatter.requires,

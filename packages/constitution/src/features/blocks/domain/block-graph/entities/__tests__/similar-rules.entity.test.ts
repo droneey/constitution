@@ -8,11 +8,11 @@ import { validFiles } from '../../../../__tests__/valid-files.fixtures';
 import { checkInputOf } from '../../../../application/use-cases/queries/check/__tests__/check.fixtures';
 import { SimilarRules } from '../similar-rules.entity';
 
-const I18N = 'blocks/domains/i18n/foundation/plurals.md';
-const UI = 'blocks/domains/ui/foundation/screens.md';
-const UI_WITH_REMOTE_DATA = 'blocks/domains/ui/architecture/with/remote-data.md';
-const BROWSER = 'blocks/contexts/platforms/browser/architecture/render.md';
-const TYPESCRIPT = 'blocks/contexts/languages/typescript/foundation/types.md';
+const I18N = 'blocks/domains/i18n/@foundation/plurals.md';
+const UI = 'blocks/domains/ui/@foundation/screens.md';
+const UI_WITH_REMOTE_DATA = 'blocks/domains/ui/@architecture/with/remote-data.md';
+const BROWSER = 'blocks/contexts/platforms/browser/@architecture/render.md';
+const TYPESCRIPT = 'blocks/contexts/languages/typescript/@foundation/types.md';
 const STATEMENT = 'Every visible label comes from a message catalog.';
 
 interface Scenario {

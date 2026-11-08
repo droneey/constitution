@@ -25,7 +25,7 @@ const key = RefusalKey.create('ffeeddccbbaa99887766554433221100');
 const call = ToolUseId.create('toolu_1');
 
 const ruleOf = (slug: string, hash: string): GatedRule => ({
-  file: AbsolutePath.create('/work/blocks/core/foundation/names.md'),
+  file: AbsolutePath.create('/work/blocks/core/@foundation/names.md'),
   hash: RuleHash.create(hash),
   level: Level.Must,
   lowered: {
@@ -44,7 +44,7 @@ const rules = [
   functionsRule,
 ];
 const definition: GatedDefinition = {
-  file: AbsolutePath.create('/work/blocks/core/foundation/names.md'),
+  file: AbsolutePath.create('/work/blocks/core/@foundation/names.md'),
   hash: RuleHash.create('00000000000000aa'),
   text: 'A **name** is what a thing is called.',
 };

@@ -1,5 +1,3 @@
-import type { BlockFormat } from '#/kernel/constants';
-
 import type {
   BlockGroup,
   BlockLoadFinding,
@@ -19,7 +17,6 @@ type BlockLoaded = BlockLoadStep<{
 
 /** @throws {TreeError} when a file of the block cannot be read */
 const loadBlock = (input: {
-  format: BlockFormat;
   group: BlockGroup;
   parser: FrontMatterParser;
   tree: FileTree;
@@ -42,7 +39,6 @@ const loadBlock = (input: {
   }
 
   const parsed = Block.parsePassport({
-    format: input.format,
     path,
     read: input.parser.parse(opened.frontMatter),
   });
@@ -75,7 +71,6 @@ interface BlocksLoaded {
 }
 
 interface LoadBlocksInput {
-  readonly format: BlockFormat;
   readonly listed: readonly TreePath[];
   readonly parser: FrontMatterParser;
   readonly tree: FileTree;
@@ -83,10 +78,9 @@ interface LoadBlocksInput {
 
 /** @throws {TreeError} when a file of a block cannot be read */
 const loadBlocks = (input: LoadBlocksInput): BlocksLoaded => {
-  const located = BlockFile.locate(input.listed, input.format);
+  const located = BlockFile.locate(input.listed);
   const loaded = located.groups.map((group) =>
     loadBlock({
-      format: input.format,
       group,
       parser: input.parser,
       tree: input.tree,

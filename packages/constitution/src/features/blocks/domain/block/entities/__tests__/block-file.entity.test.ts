@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'bun:test';
 
-import { BlockFormat } from '#/kernel/constants';
 import { ValueSite } from '#/kernel/entities';
 import { ValueFailure } from '#/kernel/errors';
 
@@ -18,12 +17,12 @@ describe('BlockFile.locate', () => {
       'blocks/domains/Bad_Name/y.md',
       'blocks/domains/ui/notes.txt',
       'blocks/domains/ui/ui.md',
-      'blocks/domains/ui/foundation/screens.md',
-      'blocks/domains/i18n/foundation/plurals.md',
+      'blocks/domains/ui/@foundation/screens.md',
+      'blocks/domains/i18n/@foundation/plurals.md',
     ].map(TreePath.create);
 
     // Act
-    const located = BlockFile.locate(listed, BlockFormat.Legacy);
+    const located = BlockFile.locate(listed);
 
     // Assert
     expect({
@@ -49,9 +48,7 @@ describe('BlockFile.locate', () => {
         },
         {
           code: PlaceCode.StrayBlockFile,
-          details: {
-            format: BlockFormat.Legacy,
-          },
+          details: {},
           path: 'blocks/domains/ui/notes.txt',
         },
       ],
@@ -60,13 +57,13 @@ describe('BlockFile.locate', () => {
           dir: 'blocks/domains/ui',
           paths: [
             'blocks/domains/ui/ui.md',
-            'blocks/domains/ui/foundation/screens.md',
+            'blocks/domains/ui/@foundation/screens.md',
           ],
         },
         {
           dir: 'blocks/domains/i18n',
           paths: [
-            'blocks/domains/i18n/foundation/plurals.md',
+            'blocks/domains/i18n/@foundation/plurals.md',
           ],
         },
       ],
@@ -87,7 +84,7 @@ describe('BlockFile.locate', () => {
     ].map(TreePath.create);
 
     // Act
-    const located = BlockFile.locate(listed, BlockFormat.Nested);
+    const located = BlockFile.locate(listed);
 
     // Assert
     expect({
@@ -100,9 +97,7 @@ describe('BlockFile.locate', () => {
       findings: [
         {
           code: PlaceCode.StrayBlockFile,
-          details: {
-            format: BlockFormat.Nested,
-          },
+          details: {},
           path: 'blocks/implementations/react/ink/notes.txt',
         },
       ],
@@ -151,14 +146,11 @@ describe('BlockFile.locate', () => {
       },
       path: 'blocks/implementations/react/ink/@foundation/with/Design_System.md',
     },
-  ])('should report $code at $path when the tree is nested', (finding) => {
+  ])('should report $code at $path', (finding) => {
     // Act
-    const located = BlockFile.locate(
-      [
-        TreePath.create(finding.path),
-      ],
-      BlockFormat.Nested,
-    );
+    const located = BlockFile.locate([
+      TreePath.create(finding.path),
+    ]);
 
     // Assert
     expect(located.findings).toStrictEqual([

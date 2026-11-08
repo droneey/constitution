@@ -30,7 +30,7 @@ describe('checkBlocks', () => {
   it("should advise on a rule that says nearly what a sibling block's does when the folder is a release", () => {
     // Arrange
     const files = validFiles();
-    const screens = 'blocks/domains/ui/foundation/screens.md';
+    const screens = 'blocks/domains/ui/@foundation/screens.md';
 
     files[screens] = `${textOf({
       files,

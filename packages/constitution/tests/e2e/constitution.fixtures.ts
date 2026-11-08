@@ -1,11 +1,9 @@
-import { AXES, Axis } from '#/kernel/constants';
+import { AXES, AXIS_FOLDER_NAME, Axis } from '#/kernel/constants';
 
 type Files = Record<string, string>;
 
 interface BlockFixture {
-  abstract?: boolean;
   body: string;
-  extends?: string;
   governs?: readonly string[];
   id: string;
   languages?: readonly string[];
@@ -28,8 +26,6 @@ const passportFile = (block: BlockFixture): string =>
     `id: ${block.id}`,
     `summary: ${block.summary}`,
     `requires: ${list(block.requires)}`,
-    `extends: ${block.extends ?? 'null'}`,
-    `abstract: ${String(block.abstract ?? false)}`,
     `languages: ${list(block.languages)}`,
     `governs: [${(block.governs ?? []).map((glob) => JSON.stringify(glob)).join(', ')}]`,
     '---',
@@ -67,7 +63,9 @@ const section = (input: {
   `# ${input.title}\n\n${input.governs === undefined ? '' : `> Governs ${input.governs}\n\n`}${vocabularyOf(input.vocabulary)}${input.rules.map(rule).join('\n')}`;
 
 const inAxis = (path: string): string =>
-  AXES.some((axis) => path.startsWith(`${axis}/`)) ? path : `${Axis.Foundation}/${path}`;
+  AXES.some((axis) => path.startsWith(`${AXIS_FOLDER_NAME[axis]}/`))
+    ? path
+    : `${AXIS_FOLDER_NAME[Axis.Foundation]}/${path}`;
 
 const blockFiles = (
   input: BlockFixture & {
@@ -78,7 +76,7 @@ const blockFiles = (
   const { dir, files = {}, ...card } = input;
 
   return {
-    [`${dir}/${input.id}.md`]: passportFile(card),
+    [`${dir}/${input.id.slice(input.id.lastIndexOf('/') + 1)}.md`]: passportFile(card),
     ...Object.fromEntries(
       Object.entries(files).map(([path, text]) => [
         `${dir}/${inAxis(path)}`,
@@ -141,7 +139,7 @@ const coreFiles = (): Files =>
         ],
         title: 'Code',
       }),
-      'architecture/principles.md': section({
+      '@architecture/principles.md': section({
         rules: [
           {
             slug: 'import-points-inward',
@@ -150,7 +148,7 @@ const coreFiles = (): Files =>
         ],
         title: 'Principles',
       }),
-      'workflow/delivery.md': section({
+      '@workflow/delivery.md': section({
         rules: [
           {
             slug: 'rules-bind',
@@ -172,10 +170,12 @@ const rulesFile = (input: {
   const chapter = input.chapter ?? 'code';
 
   return {
-    [`${input.axis === undefined ? '' : `${input.axis}/`}${chapter}.md`]: section({
-      rules: input.rules,
-      title: `${chapter.charAt(0).toUpperCase()}${chapter.slice(1)}`,
-    }),
+    [`${input.axis === undefined ? '' : `${AXIS_FOLDER_NAME[input.axis]}/`}${chapter}.md`]: section(
+      {
+        rules: input.rules,
+        title: `${chapter.charAt(0).toUpperCase()}${chapter.slice(1)}`,
+      },
+    ),
   };
 };
 
@@ -207,7 +207,7 @@ const domain = (input: {
 const domainFiles = (): Files => ({
   ...domain({
     files: {
-      'architecture/forms.md': section({
+      '@architecture/forms.md': section({
         rules: [
           {
             slug: 'labels-on-fields',
@@ -216,7 +216,7 @@ const domainFiles = (): Files => ({
         ],
         title: 'Forms',
       }),
-      'architecture/with/remote-data.md': section({
+      '@architecture/with/remote-data.md': section({
         rules: [
           {
             slug: 'optimistic-writes-roll-back',
@@ -424,11 +424,9 @@ const contextFiles = (): Files => ({
 });
 
 const implementation = (input: {
-  abstract?: boolean;
   axis?: Axis;
   body?: string;
   chapter?: string;
-  extends?: string;
   governs?: readonly string[];
   id: string;
   languages?: readonly string[];
@@ -463,17 +461,6 @@ const implementation = (input: {
 
 const implementationFiles = (): Files => ({
   ...implementation({
-    abstract: true,
-    id: '_lint-base',
-    languages: [
-      'typescript',
-    ],
-    requires: [
-      'typescript',
-    ],
-    summary: 'What every TypeScript linter shares.',
-  }),
-  ...implementation({
     id: 'markdownlint',
     requires: [],
     summary: 'Lints Markdown, which is no language block.',
@@ -489,9 +476,8 @@ const implementationFiles = (): Files => ({
     summary: 'Lints Python.',
   }),
   ...implementation({
-    abstract: true,
     chapter: 'hooks',
-    id: '_react',
+    id: 'react',
     requires: [
       'ui',
     ],
@@ -504,13 +490,12 @@ const implementationFiles = (): Files => ({
     summary: 'React as every renderer shares it.',
   }),
   ...implementation({
-    extends: '_react',
     axis: Axis.Architecture,
     governs: [
       '**/*.tsx',
     ],
     chapter: 'portals',
-    id: 'react-dom',
+    id: 'react/react-dom',
     requires: [
       'browser',
     ],
@@ -527,7 +512,7 @@ const implementationFiles = (): Files => ({
     chapter: 'queries',
     id: 'tanstack-query',
     requires: [
-      '_react',
+      'react',
       'remote-data',
     ],
     rules: [
@@ -601,15 +586,6 @@ const implementationFiles = (): Files => ({
     summary: 'Finds secrets in commits.',
   }),
   ...implementation({
-    body: [
-      '',
-      '## Requirements',
-      '',
-      '| Requirement | How | Met |',
-      '|---|---|---|',
-      '| `analytics-consent-first` | tracks from the first page view | no |',
-      '',
-    ].join('\n'),
     chapter: 'tracking',
     id: 'matomo',
     requires: [

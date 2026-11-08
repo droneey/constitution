@@ -10,16 +10,17 @@ import { checkInputOf } from '../../../../../../application/use-cases/queries/ch
 import type { RulesDetails } from '../rules';
 import { RulesCode, rulesCheck } from '../rules';
 
-const PRINCIPLES = 'blocks/core/foundation/principles.md';
-const WORKFLOW = 'blocks/core/workflow/workflow.md';
-const I18N = 'blocks/domains/i18n/foundation/plurals.md';
-const REMOTE_DATA = 'blocks/domains/remote-data/architecture/reads.md';
-const UI = 'blocks/domains/ui/foundation/screens.md';
-const UI_WITH_REMOTE_DATA = 'blocks/domains/ui/architecture/with/remote-data.md';
-const PORTALS = 'blocks/implementations/react-dom/workflow/portals.md';
-const TYPES = 'blocks/contexts/languages/typescript/foundation/types.md';
-const DELIVERY = 'blocks/contexts/platforms/browser/foundation/delivery.md';
-const TYPESCRIPT_WITH_BROWSER = 'blocks/contexts/languages/typescript/architecture/with/browser.md';
+const PRINCIPLES = 'blocks/core/@foundation/principles.md';
+const WORKFLOW = 'blocks/core/@workflow/workflow.md';
+const I18N = 'blocks/domains/i18n/@foundation/plurals.md';
+const REMOTE_DATA = 'blocks/domains/remote-data/@architecture/reads.md';
+const UI = 'blocks/domains/ui/@foundation/screens.md';
+const UI_WITH_REMOTE_DATA = 'blocks/domains/ui/@architecture/with/remote-data.md';
+const PORTALS = 'blocks/implementations/react/react-dom/@workflow/portals.md';
+const TYPES = 'blocks/contexts/languages/typescript/@foundation/types.md';
+const DELIVERY = 'blocks/contexts/platforms/browser/@foundation/delivery.md';
+const TYPESCRIPT_WITH_BROWSER =
+  'blocks/contexts/languages/typescript/@architecture/with/browser.md';
 
 describe('rulesCheck', () => {
   it('should report every empty or malformed field when rules break the rule format', () => {

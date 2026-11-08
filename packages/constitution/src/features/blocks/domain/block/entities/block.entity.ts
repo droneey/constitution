@@ -1,4 +1,4 @@
-import type { BlockFormat, Layer } from '#/kernel/constants';
+import type { Layer } from '#/kernel/constants';
 import { Axis, LAYERS, PATH_SEPARATOR } from '#/kernel/constants';
 import type { RuleSource } from '#/kernel/entities';
 import type { FindingOf } from '#/kernel/types';
@@ -34,7 +34,6 @@ interface BlockPlace {
 const linksOf = (block: Block): readonly BlockId[] =>
   [
     ...block.frontMatter.requires,
-    block.frontMatter.extends,
     BlockId.parentOf(block.id),
   ].filter((link) => link !== undefined);
 
@@ -191,13 +190,12 @@ const openPassport = (input: {
 };
 
 const parsePassport = (input: {
-  format: BlockFormat;
   path: TreePath;
   read: FrontMatterRead;
 }): BlockLoadStep<{
   readonly frontMatter: FrontMatter;
 }> => {
-  const parsed = FrontMatter.parse(input.read, input.format);
+  const parsed = FrontMatter.parse(input.read);
 
   return parsed.status === FrontMatterStatus.Invalid
     ? unloaded(

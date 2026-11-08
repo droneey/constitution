@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import fc from 'fast-check';
 
-import { Axis, BlockFormat } from '#/kernel/constants';
+import { Axis } from '#/kernel/constants';
 import { BlockId } from '#/kernel/value-objects';
 
 import type { PathRead } from '../preset-file-path.value-object';
@@ -47,11 +47,10 @@ describe('PresetFilePath', () => {
   }>([
     {
       condition: "it is a reader's axis",
-      path: 'biome/foundation.yaml',
+      path: 'biome/@foundation.yaml',
       read: {
         presetFile: {
           axis: Axis.Foundation,
-          format: BlockFormat.Legacy,
           reader: BlockId.create('biome'),
           withs: [],
         },
@@ -60,11 +59,10 @@ describe('PresetFilePath', () => {
     },
     {
       condition: 'it names one block beyond its reader',
-      path: 'biome/architecture/with/typescript.yaml',
+      path: 'biome/@architecture/with/typescript.yaml',
       read: {
         presetFile: {
           axis: Axis.Architecture,
-          format: BlockFormat.Legacy,
           reader: BlockId.create('biome'),
           withs: [
             BlockId.create('typescript'),
@@ -75,11 +73,10 @@ describe('PresetFilePath', () => {
     },
     {
       condition: 'it names a block and its seam partner',
-      path: 'biome/workflow/with/css/with/browser.yaml',
+      path: 'biome/@workflow/with/css/with/browser.yaml',
       read: {
         presetFile: {
           axis: Axis.Workflow,
-          format: BlockFormat.Legacy,
           reader: BlockId.create('biome'),
           withs: [
             BlockId.create('css'),
@@ -95,7 +92,6 @@ describe('PresetFilePath', () => {
       read: {
         presetFile: {
           axis: Axis.Foundation,
-          format: BlockFormat.Nested,
           reader: BlockId.create('js-runtime/bun'),
           withs: [],
         },
@@ -108,7 +104,6 @@ describe('PresetFilePath', () => {
       read: {
         presetFile: {
           axis: Axis.Foundation,
-          format: BlockFormat.Nested,
           reader: BlockId.create('js-runtime/bun'),
           withs: [
             BlockId.create('react/react-dom'),
@@ -124,7 +119,6 @@ describe('PresetFilePath', () => {
       read: {
         presetFile: {
           axis: Axis.Architecture,
-          format: BlockFormat.Nested,
           reader: BlockId.create('biome'),
           withs: [
             BlockId.create('react/react-native/expo'),
@@ -139,7 +133,6 @@ describe('PresetFilePath', () => {
       read: {
         presetFile: {
           axis: Axis.Workflow,
-          format: BlockFormat.Nested,
           reader: BlockId.create('core'),
           withs: [],
         },
@@ -196,10 +189,38 @@ describe('PresetFilePath', () => {
       },
     },
     {
-      condition: 'it names three blocks beyond its reader',
-      path: 'biome/foundation/with/a/with/b/with/c.yaml',
+      condition: 'its marked axis holds a folder other than with/',
+      path: 'biome/@foundation/via/typescript.yaml',
       read: {
         kind: PathKind.Misplaced,
+      },
+    },
+    {
+      condition: 'its marked axis holds a file named with',
+      path: 'biome/@foundation/with.yaml',
+      read: {
+        kind: PathKind.Misplaced,
+      },
+    },
+    {
+      condition: 'a block it names beyond its reader is spelled as no block is',
+      path: 'biome/@foundation/with/css/with/Browser.yaml',
+      read: {
+        kind: PathKind.Misplaced,
+      },
+    },
+    {
+      condition: 'its axis is spelled without its mark',
+      path: 'biome/foundation.yaml',
+      read: {
+        kind: PathKind.Misplaced,
+      },
+    },
+    {
+      condition: 'it holds no YAML below a marked axis',
+      path: 'biome/@foundation/with/css',
+      read: {
+        kind: PathKind.Data,
       },
     },
     {
@@ -217,41 +238,6 @@ describe('PresetFilePath', () => {
       },
     },
     {
-      condition: 'its axis holds a folder other than with/',
-      path: 'biome/foundation/via/typescript.yaml',
-      read: {
-        kind: PathKind.Misplaced,
-      },
-    },
-    {
-      condition: 'its axis holds a file named with',
-      path: 'biome/foundation/with.yaml',
-      read: {
-        kind: PathKind.Misplaced,
-      },
-    },
-    {
-      condition: 'a block of its legacy path holds a file of no with/',
-      path: 'biome/foundation/with/css/browser.yaml',
-      read: {
-        kind: PathKind.Misplaced,
-      },
-    },
-    {
-      condition: 'its reader is spelled as no block is',
-      path: 'Biome/foundation.yaml',
-      read: {
-        kind: PathKind.Misplaced,
-      },
-    },
-    {
-      condition: 'a block it names beyond its reader is spelled as no block is',
-      path: 'biome/foundation/with/css/with/Browser.yaml',
-      read: {
-        kind: PathKind.Misplaced,
-      },
-    },
-    {
       condition: "it lies in a reader's folder that is no axis",
       path: 'biome/plugins/settings.yaml',
       read: {
@@ -261,13 +247,6 @@ describe('PresetFilePath', () => {
     {
       condition: 'it is a plugin',
       path: 'biome/plugins/typescript/file-within-500-lines.grit',
-      read: {
-        kind: PathKind.Data,
-      },
-    },
-    {
-      condition: 'it holds no YAML below an axis',
-      path: 'biome/foundation/with/css',
       read: {
         kind: PathKind.Data,
       },
@@ -288,30 +267,10 @@ describe('PresetFilePath', () => {
     expect(run.counterexample).toBeNull();
   });
 
-  it('should write the path of a legacy preset file under presets/', () => {
-    // Arrange
-    const presetFile = {
-      axis: Axis.Foundation,
-      format: BlockFormat.Legacy,
-      reader: BlockId.create('biome'),
-      withs: [
-        BlockId.create('css'),
-        BlockId.create('browser'),
-      ],
-    };
-
-    // Act
-    const text = PresetFilePath.textOf(presetFile);
-
-    // Assert
-    expect(text).toBe('biome/foundation/with/css/with/browser.yaml');
-  });
-
-  it('should write the path of a nested preset file under presets/', () => {
+  it('should write the path of a preset file under presets/', () => {
     // Arrange
     const presetFile = {
       axis: Axis.Architecture,
-      format: BlockFormat.Nested,
       reader: BlockId.create('task-runner/poe'),
       withs: [
         BlockId.create('react/react-dom'),

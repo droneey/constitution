@@ -1,4 +1,3 @@
-import type { BlockFormat } from '#/kernel/constants';
 import { Layer, PATH_SEPARATOR } from '#/kernel/constants';
 import type { ProjectWarning, WarningDetails } from '#/kernel/entities';
 import { WarningKind } from '#/kernel/entities';
@@ -12,12 +11,12 @@ import {
   SourceKind,
 } from '#/kernel/value-objects';
 
-import { BlockSetSource, SourceFile, SourceStatus } from '../../../../../../../block-set/entities';
+import type { BlockSetSource } from '../../../../../../../block-set/entities';
+import { SourceFile, SourceStatus } from '../../../../../../../block-set/entities';
 
 interface FileInFolder {
   readonly block: BlockId;
   readonly file: SourceFile;
-  readonly format: BlockFormat;
   readonly layer: Layer;
   readonly named: WarningDetails[WarningKind.FileUnreadable];
   readonly part: FileInBlock;
@@ -62,13 +61,9 @@ const passed = (warnings: readonly ProjectWarning[]): Placed => ({
   warnings,
 });
 
-const placedOf = (input: {
-  file: SourceFile;
-  format: BlockFormat;
-  source: BlockSetSource;
-}): Placed => {
-  const { file, format, source } = input;
-  const place = BlockFilePlace.parse(file.path, format);
+const placedOf = (input: { file: SourceFile; source: BlockSetSource }): Placed => {
+  const { file, source } = input;
+  const place = BlockFilePlace.parse(file.path);
   const named = {
     file: `${source.shownFolderPath}${PATH_SEPARATOR}${file.path}`,
     source: source.source.kind,
@@ -105,7 +100,6 @@ const placedOf = (input: {
     file: {
       block: place.folder.id,
       file,
-      format,
       layer: place.folder.layer,
       named,
       part: place.file,
@@ -155,14 +149,12 @@ const weighedOf = (input: {
 };
 
 const placeFiles = (sources: readonly BlockSetSource[]): readonly PlacedFile[] => {
-  const format = BlockSetSource.formatOf(sources);
   const placed = sources.flatMap((source) =>
     source.status === SourceStatus.Unlisted
       ? []
-      : SourceFile.inReadOrder(source.files, format).map((file) =>
+      : SourceFile.inReadOrder(source.files).map((file) =>
           placedOf({
             file,
-            format,
             source,
           }),
         ),

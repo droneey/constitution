@@ -5,7 +5,6 @@ import { RuleSlug } from '#/kernel/value-objects';
 
 import { chapterFile, rule } from '../../../../../../__tests__/constitution.fixtures';
 import { nestedFiles } from '../../../../../../__tests__/nested-files.fixtures';
-import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { checkInputOf } from '../../../../../../application/use-cases/queries/check/__tests__/check.fixtures';
 import type { WordingDetails } from '../wording';
 import { WordingCode, wordingCheck } from '../wording';
@@ -273,24 +272,5 @@ describe('wordingCheck', () => {
         path: SCREENS,
       },
     ]);
-  });
-
-  it('should report nothing on a tree of the legacy format', () => {
-    // Arrange
-    const files = validFiles();
-
-    files['blocks/core/foundation/principles.md'] = chapterFile(
-      'Principles',
-      rule({
-        slug: 'a-rule',
-        statement: 'A rule must hold.',
-      }),
-    );
-
-    // Act
-    const findings = wordingCheck(checkInputOf(files));
-
-    // Assert
-    expect(findings).toStrictEqual([]);
   });
 });

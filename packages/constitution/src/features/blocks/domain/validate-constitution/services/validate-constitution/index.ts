@@ -1,7 +1,6 @@
 export type { BlockFinding, BlockFindingCode, BlockFindingDetails } from './block-finding.types';
 export type { CheckInput } from './check.types';
 export type {
-  AbstractBlocksDetails,
   BlockFormDetails,
   BudgetDetails,
   CoreChaptersDetails,
@@ -14,7 +13,6 @@ export type {
   NamesDetails,
   PluginDetails,
   ReferencesDetails,
-  RequirementsDetails,
   RequiresDetails,
   RulesDetails,
   SeamsDetails,
@@ -22,7 +20,6 @@ export type {
   WordingDetails,
 } from './checks';
 export {
-  AbstractBlocksCode,
   BlockFormCode,
   BudgetCode,
   CoreChaptersCode,
@@ -35,7 +32,6 @@ export {
   NamesCode,
   PluginCode,
   ReferencesCode,
-  RequirementsCode,
   RequiresCode,
   RulesCode,
   SeamsCode,

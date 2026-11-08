@@ -22,7 +22,7 @@ import {
   UNPARSED_LINE,
 } from './project-ports.fixtures';
 
-const PRESET_FILE = '.droneey/constitution/presets/biome/foundation.yaml';
+const PRESET_FILE = '.droneey/constitution/presets/biome/@foundation.yaml';
 
 const unparsed: PresetFileParser = {
   parse: () => ({
@@ -70,7 +70,7 @@ const sourceOf = (input: { config?: string; presets?: PresetsPorts } = {}) =>
               config: input.config,
             }),
         files: {
-          [`${releaseFolderPath}/presets/biome/foundation.yaml`]: 'biome: [\n',
+          [`${releaseFolderPath}/presets/biome/@foundation.yaml`]: 'biome: [\n',
         },
       }),
     ),

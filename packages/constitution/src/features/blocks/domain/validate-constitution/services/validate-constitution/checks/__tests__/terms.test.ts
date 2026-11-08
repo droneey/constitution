@@ -13,19 +13,20 @@ import type { TermsDetails } from '../terms';
 import { TermsCode, termsCheck } from '../terms';
 
 const CORE = 'blocks/core/core.md';
-const PRINCIPLES = 'blocks/core/foundation/principles.md';
-const PORTS = 'blocks/core/architecture/ports.md';
-const WORKFLOW = 'blocks/core/workflow/workflow.md';
+const PRINCIPLES = 'blocks/core/@foundation/principles.md';
+const PORTS = 'blocks/core/@architecture/ports.md';
+const WORKFLOW = 'blocks/core/@workflow/workflow.md';
 const UI = 'blocks/domains/ui/ui.md';
-const UI_CHAPTER = 'blocks/domains/ui/foundation/forms.md';
-const LINGUI = 'blocks/implementations/lingui/lingui.md';
-const PORTALS = 'blocks/implementations/react-dom/workflow/portals.md';
+const UI_CHAPTER = 'blocks/domains/ui/@foundation/forms.md';
+const CATALOGS = 'blocks/implementations/lingui/@foundation/catalogs.md';
+const CHECKS = 'blocks/implementations/biome/@foundation/checks.md';
+const PORTALS = 'blocks/implementations/react/react-dom/@workflow/portals.md';
 
 const withCoreTerms = (files: Files): Files => ({
   ...files,
   [PORTS]:
-    '# Ports\n\nA **port** names a need; a **binding unit** binds it, in **`adapters/`**{#adapter}, in a file **`.port`**{#port-file}.\n',
-  [WORKFLOW]: `# Workflow\n\nA **squash merge** lands **\`feature/\`**{#feature-branch} branches.\n\n## General\n\n${rule(
+    '# Ports\n\nA **port** names a need; a **binding unit** binds it, in **`adapters/`**{#adapter}, in a file **`.port`**{#port-file}. One binding unit binds one port.\n',
+  [WORKFLOW]: `# Workflow\n\nA **squash merge** lands **\`feature/\`**{#feature-branch} branches, one squash merge a branch.\n\n## General\n\n${rule(
     {
       slug: 'rules-bind',
     },
@@ -99,9 +100,9 @@ describe('termsCheck', () => {
     const files = withCoreTerms(validFiles());
 
     files[PRINCIPLES] = '# Principles\n\nEach **squash merge** is reviewed.\n';
-    files[LINGUI] = textOf({
+    files[CATALOGS] = textOf({
       files,
-      path: LINGUI,
+      path: CATALOGS,
     }).replace('**Lingui** compiles', '**Lingui** and **Biome** compile');
 
     // Act
@@ -122,14 +123,14 @@ describe('termsCheck', () => {
         code: TermsCode.DefinedTwice,
         details: {
           firstBlock: BlockId.create('biome'),
-          firstFile: 'blocks/implementations/biome/biome.md',
+          firstFile: CHECKS,
           term: 'Biome',
         },
-        path: LINGUI,
+        path: CATALOGS,
       },
       outOfReach({
         owner: 'biome',
-        path: LINGUI,
+        path: CATALOGS,
         term: 'Biome',
       }),
     ]);
@@ -201,7 +202,7 @@ describe('termsCheck', () => {
       ],
       name: 'a workflow rule uses a term of the architecture',
       path: WORKFLOW,
-      text: `# Workflow\n\nA **squash merge** lands **\`feature/\`**{#feature-branch}.\n\n## General\n\n${rule(
+      text: `# Workflow\n\nA **squash merge** lands **\`feature/\`**{#feature-branch}, one squash merge a branch.\n\n## General\n\n${rule(
         {
           slug: 'rules-bind',
           statement: 'Every change touches one port.',
@@ -252,7 +253,7 @@ describe('termsCheck', () => {
     {
       expected: [
         outOfReach({
-          owner: '_react',
+          owner: 'react',
           path: UI,
           term: 'React',
         }),
@@ -268,12 +269,12 @@ describe('termsCheck', () => {
     {
       expected: [
         outOfReach({
-          owner: '_react',
+          owner: 'react',
           path: UI_CHAPTER,
           term: 'React',
         }),
         outOfReach({
-          owner: 'react-dom',
+          owner: 'react/react-dom',
           path: UI_CHAPTER,
           term: 'React DOM',
         }),
@@ -317,7 +318,7 @@ describe('termsCheck', () => {
     // Act
     const findings = checked({
       path: PORTS,
-      text: '# Ports\n\nA **port** names a need; a **binding unit** binds it, in **`adapters/`**{#adapter} — not `adapters` — in a file **`.port`**{#port-file}, not `port`; see `adapters/http`.\n',
+      text: '# Ports\n\nA **port** names a need; a **binding unit** binds it, in **`adapters/`**{#adapter} — not `adapters` — in a file **`.port`**{#port-file}, not `port`; see `adapters/http`. One binding unit binds one port.\n',
     });
 
     // Assert
@@ -409,11 +410,10 @@ describe('termsCheck', () => {
   it('should let a block that builds on the owner of an id spell its term its own way', () => {
     // Arrange
     const files = withCoreTerms(validFiles());
-    const biome = 'blocks/implementations/biome/biome.md';
 
-    files[biome] = textOf({
+    files[CHECKS] = textOf({
       files,
-      path: biome,
+      path: CHECKS,
     }).replace('every `.ts` file.', 'every **`.mts`**{#typescript-source} file.');
 
     // Act
@@ -431,12 +431,14 @@ describe('termsCheck', () => {
     files[biome] = textOf({
       files,
       path: biome,
-    })
-      .replace('requires: ["typescript"]', 'requires: ["typescript", "lingui"]')
-      .replace('every `.ts` file.', 'every **`.mts`**{#catalog} file.');
-    files[LINGUI] = textOf({
+    }).replace('requires: ["typescript"]', 'requires: ["typescript", "lingui"]');
+    files[CHECKS] = textOf({
       files,
-      path: LINGUI,
+      path: CHECKS,
+    }).replace('every `.ts` file.', 'every **`.mts`**{#catalog} file.');
+    files[CATALOGS] = textOf({
+      files,
+      path: CATALOGS,
     }).replace('compiles its catalogs.', 'compiles its **`.po`**{#catalog} catalogs.');
 
     // Act
@@ -449,7 +451,7 @@ describe('termsCheck', () => {
   it('should report an id a block repeats that it does not build on', () => {
     // Arrange
     const files = withCoreTerms(validFiles());
-    const render = 'blocks/contexts/platforms/browser/architecture/render.md';
+    const render = 'blocks/contexts/platforms/browser/@architecture/render.md';
 
     files[render] = textOf({
       files,
@@ -469,7 +471,7 @@ describe('termsCheck', () => {
           id: 'typescript-source',
           term: '.ts',
         },
-        path: 'blocks/contexts/languages/typescript/typescript.md',
+        path: 'blocks/contexts/languages/typescript/@foundation/types.md',
       },
     ]);
   });
@@ -496,12 +498,12 @@ describe('termsCheck', () => {
     },
     {
       name: "a domain uses core's terms on their axis",
-      path: 'blocks/domains/ui/architecture/forms.md',
+      path: 'blocks/domains/ui/@architecture/forms.md',
       text: '# UI\n\nEach port keeps its binding unit.\n',
     },
     {
       name: 'a with/ file named after the owner names its terms',
-      path: 'blocks/contexts/platforms/browser/foundation/with/typescript.md',
+      path: 'blocks/contexts/platforms/browser/@foundation/with/typescript.md',
       text: '# Browser with TypeScript\n\nEach `index.ts` runs in the tab.\n',
     },
     {
@@ -559,7 +561,7 @@ describe('termsCheck on the axis and the reach of a rule', () => {
       expected: [],
       name: 'a rule on architecture uses a term of architecture',
       path: PORTS,
-      text: `# Ports\n\nA **port** names a need; a **binding unit** binds it, in **\`adapters/\`**{#adapter}, in a file **\`.port\`**{#port-file}.\n\n## General\n\n${rule(
+      text: `# Ports\n\nA **port** names a need; a **binding unit** binds it, in **\`adapters/\`**{#adapter}, in a file **\`.port\`**{#port-file}. One binding unit binds one port.\n\n## General\n\n${rule(
         {
           slug: 'ports-named',
           statement: 'Every port is named by its need.',
@@ -569,7 +571,7 @@ describe('termsCheck on the axis and the reach of a rule', () => {
     {
       expected: [
         outOfReach({
-          owner: 'react-dom',
+          owner: 'react/react-dom',
           path: UI_CHAPTER,
           term: 'portal',
         }),

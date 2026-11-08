@@ -16,10 +16,6 @@ enum RequiresCode {
   RequiresOutOfLayer = 'requires-out-of-layer',
   RequiresAncestor = 'requires-a-block-it-sits-under',
   RequiresThroughParent = 'requires-what-its-parent-turns-on',
-  ExtendsNoBlock = 'extends-no-block',
-  ExtendsItself = 'extends-itself',
-  ExtendsOtherLayer = 'extends-other-layer',
-  ExtendsConcrete = 'extends-concrete-block',
 }
 
 interface RequiresDetails {
@@ -40,17 +36,6 @@ interface RequiresDetails {
   readonly [RequiresCode.RequiresThroughParent]: {
     readonly parent: BlockId;
     readonly required: BlockId;
-  };
-  readonly [RequiresCode.ExtendsNoBlock]: {
-    readonly base: BlockId;
-  };
-  readonly [RequiresCode.ExtendsItself]: object;
-  readonly [RequiresCode.ExtendsOtherLayer]: {
-    readonly base: BlockId;
-    readonly baseLayer: Layer;
-  };
-  readonly [RequiresCode.ExtendsConcrete]: {
-    readonly base: BlockId;
   };
 }
 
@@ -145,51 +130,6 @@ const requireProblem = (
       };
 };
 
-const extendsProblem = (subject: Subject): RequiresProblem | undefined => {
-  const base = subject.block.frontMatter.extends;
-
-  if (base === undefined) {
-    return undefined;
-  }
-
-  const target = BlockModel.blockOf(subject.model, base);
-
-  if (target === undefined) {
-    return {
-      code: RequiresCode.ExtendsNoBlock,
-      details: {
-        base,
-      },
-    };
-  }
-
-  if (BlockId.equals(target.id, subject.block.id)) {
-    return {
-      code: RequiresCode.ExtendsItself,
-      details: {},
-    };
-  }
-
-  if (target.layer !== subject.block.layer) {
-    return {
-      code: RequiresCode.ExtendsOtherLayer,
-      details: {
-        base,
-        baseLayer: target.layer,
-      },
-    };
-  }
-
-  return BlockModel.isExtensible(subject.model, base)
-    ? undefined
-    : {
-        code: RequiresCode.ExtendsConcrete,
-        details: {
-          base,
-        },
-      };
-};
-
 const blockFindings = (subject: Subject): readonly RequiresFinding[] => {
   const allowed = requirableBy(subject.block.layer);
   const problems = [
@@ -202,7 +142,6 @@ const blockFindings = (subject: Subject): readonly RequiresFinding[] => {
             id,
           }),
         )),
-    extendsProblem(subject),
   ];
 
   return findingsAt(subject.block.passport.path, problems);

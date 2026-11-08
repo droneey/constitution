@@ -4,7 +4,7 @@ import type { FakeTree } from '#/__tests__/project-files.fake';
 import { PROJECT, releaseFolderPath } from '#/__tests__/project-place.fixtures';
 import type { PresetsProject, ProjectRead } from '#/features/presets';
 import { ProjectReadStatus } from '#/features/presets';
-import { Axis, BlockFormat, Layer } from '#/kernel/constants';
+import { Axis, Layer } from '#/kernel/constants';
 import { ProjectUnit } from '#/kernel/entities';
 import { AbsolutePath, BlockSource, coreBlockId, repositoryUnit } from '#/kernel/value-objects';
 
@@ -34,10 +34,8 @@ describe('createProjectReader', () => {
           blocks: [
             {
               chapters: [],
-              format: BlockFormat.Legacy,
               governs: [],
               id: coreBlockId,
-              isAbstract: false,
               languages: [],
               layer: Layer.Core,
               requires: [],

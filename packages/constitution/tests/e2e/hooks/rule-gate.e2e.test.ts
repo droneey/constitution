@@ -25,7 +25,7 @@ const groupOrder = [
   'MUST rules',
   'SHOULD rules',
 ];
-const PRINCIPLES = 'blocks/core/foundation/principles.md';
+const PRINCIPLES = 'blocks/core/@foundation/principles.md';
 
 interface Started {
   readonly project: string;

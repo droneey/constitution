@@ -14,12 +14,6 @@ const requiresTexts: TextsOf<RequiresDetails> = {
     `requires ${required}, which it sits under; a block's folder already turns its parent on`,
   [RequiresCode.RequiresThroughParent]: ({ parent, required }) =>
     `requires ${required}, which its parent ${parent} already turns on; a passport lists only what its block needs beyond the blocks it sits under`,
-  [RequiresCode.ExtendsNoBlock]: ({ base }) => `extends ${base}, which is not a block`,
-  [RequiresCode.ExtendsItself]: () => 'extends itself',
-  [RequiresCode.ExtendsOtherLayer]: ({ base, baseLayer }) =>
-    `extends ${base}, ${aBlock(baseLayer)}; a block extends only a base of its own layer`,
-  [RequiresCode.ExtendsConcrete]: ({ base }) =>
-    `extends ${base}, a concrete block; a block extends only an abstract base — require it instead`,
 };
 
 export { requiresTexts };

@@ -228,8 +228,6 @@ const packBlockFiles = (input: PackBlockInput): Files => ({
     id: input.id,
     summary: `The pack's ${input.id} block.`,
     requires: '[]',
-    extends: 'null',
-    abstract: 'false',
     languages: '[]',
     governs: '[]',
     ...input.fields,
@@ -251,7 +249,7 @@ const browserAppWithPackAndOverride: ProjectLayout = {
     '          untrusted-client, unreliable-network]',
     'platforms: [browser]',
     'languages: [typescript]',
-    'implementations: [react-dom, tanstack-query, matomo, biome, git, lefthook,',
+    'implementations: [react/react-dom, tanstack-query, matomo, biome, git, lefthook,',
     '                  betterleaks, paraglide]',
     `packs: [${OWN_PACK}]`,
     'overrides:',
@@ -340,7 +338,7 @@ const ratifiedFromTemplates: ProjectLayout = {
       ],
       name: 'block/block.md',
     }),
-    [packPath('paraglide').replace('/paraglide.md', '/foundation/messages.md')]: fromTemplate({
+    [packPath('paraglide').replace('/paraglide.md', '/@foundation/messages.md')]: fromTemplate({
       fills: [],
       name: 'block/@foundation/chapter.md',
     }),

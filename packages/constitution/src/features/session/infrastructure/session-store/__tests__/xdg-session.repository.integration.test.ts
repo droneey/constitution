@@ -94,7 +94,7 @@ const namesOf = (path: string): readonly string[] => readdirSync(path).toSorted(
 const set = RuleSetHash.create('0123456789abcdef');
 
 const gatedRuleOf = (index: number): GatedRule => ({
-  file: AbsolutePath.create('/work/blocks/core/foundation/names.md'),
+  file: AbsolutePath.create('/work/blocks/core/@foundation/names.md'),
   hash: RuleHash.create(index.toString(16).padStart(16, '0')),
   level: Level.Must,
   slug: RuleSlug.create(`rule-${index}`),

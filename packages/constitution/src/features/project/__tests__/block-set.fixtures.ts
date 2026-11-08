@@ -1,4 +1,4 @@
-import { AXES, Axis, BlockFormat, Layer, Level } from '#/kernel/constants';
+import { AXES, AXIS_FOLDER_NAME, Axis, Layer, Level } from '#/kernel/constants';
 import { BlockId, BlockSource, Glob, PackPath, RuleSlug } from '#/kernel/value-objects';
 
 import type { BlockSetBlock, BlockSetRule } from '../domain/block-set/entities';
@@ -7,7 +7,7 @@ const RULE_STATEMENT = 'A rule.';
 const RULE_WHY = 'a reason.';
 
 const axisOf = (place: string): Axis => {
-  const axis = AXES.find((candidate) => place.startsWith(`${candidate}/`));
+  const axis = AXES.find((candidate) => place.startsWith(`${AXIS_FOLDER_NAME[candidate]}/`));
 
   if (axis === undefined) {
     throw new Error(`${place} names no axis`);
@@ -18,11 +18,8 @@ const axisOf = (place: string): Axis => {
 
 interface BlockSetBlockFixture {
   readonly chapters?: readonly string[];
-  readonly extends?: string;
-  readonly format?: BlockFormat;
   readonly governs?: readonly string[];
   readonly id: string;
-  readonly isAbstract?: boolean;
   readonly languages?: readonly string[];
   readonly layer?: Layer;
   readonly requires?: readonly string[];
@@ -35,15 +32,8 @@ const blockSetBlockOf = (block: BlockSetBlockFixture): BlockSetBlock => ({
     axis: axisOf(chapter),
     name: chapter.slice(chapter.indexOf('/') + 1, -'.md'.length),
   })),
-  ...(block.extends === undefined
-    ? {}
-    : {
-        extends: BlockId.create(block.extends),
-      }),
-  format: block.format ?? BlockFormat.Legacy,
   governs: (block.governs ?? []).map(Glob.create),
   id: BlockId.create(block.id),
-  isAbstract: block.isAbstract ?? false,
   languages: (block.languages ?? []).map(BlockId.create),
   layer: block.layer ?? Layer.Domain,
   requires: (block.requires ?? []).map(BlockId.create),

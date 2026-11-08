@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { BlockFormat, Level } from '#/kernel/constants';
+import { Level } from '#/kernel/constants';
 import { BlockId, RuleSlug } from '#/kernel/value-objects';
 
 import type { Files } from '../../../../../__tests__/constitution.fixtures';
@@ -20,7 +20,7 @@ import type { Validation } from '../validate-constitution.service';
 import { ValidationStage, validateConstitution } from '../validate-constitution.service';
 
 const REMOTE_DATA = 'blocks/domains/remote-data/remote-data.md';
-const UI = 'blocks/domains/ui/foundation/screens.md';
+const UI = 'blocks/domains/ui/@foundation/screens.md';
 
 const similarRule = rule({
   slug: 'screens-plurals-by-cldr',
@@ -34,7 +34,7 @@ describe('validateConstitution', () => {
     files[REMOTE_DATA] = textOf({
       files,
       path: REMOTE_DATA,
-    }).replace('extends: null', 'extends: Bad');
+    }).replace('requires: []', 'requires: ["Bad"]');
     files[UI] = `${textOf({
       files,
       path: UI,
@@ -54,16 +54,14 @@ describe('validateConstitution', () => {
       findings: [
         {
           code: PlaceCode.StrayBlockFile,
-          details: {
-            format: BlockFormat.Legacy,
-          },
+          details: {},
           path: 'blocks/domains/ui/notes.txt',
         },
         {
           code: FrontMatterReadCode.NotBlockId,
           details: {
             entry: 'Bad',
-            field: FrontMatterField.Extends,
+            field: FrontMatterField.Requires,
           },
           path: REMOTE_DATA,
         },
@@ -180,9 +178,9 @@ describe('validateConstitution', () => {
       files: validFiles(),
       path: 'blocks/domains/i18n/i18n.md',
     });
-    pack['blocks/domains/i18n/foundation/plurals.md'] = textOf({
+    pack['blocks/domains/i18n/@foundation/plurals.md'] = textOf({
       files: validFiles(),
-      path: 'blocks/domains/i18n/foundation/plurals.md',
+      path: 'blocks/domains/i18n/@foundation/plurals.md',
     });
 
     const loaded = packLoadedOf({

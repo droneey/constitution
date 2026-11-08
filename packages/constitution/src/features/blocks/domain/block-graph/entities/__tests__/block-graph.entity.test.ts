@@ -48,10 +48,10 @@ const implementationRequiring = (input: { id: string; requires: readonly string[
 describe('closureOf', () => {
   it.each<ClosureCase>([
     {
-      blockId: 'react-dom',
+      blockId: 'react/react-dom',
       expected: [
         'browser',
-        '_react',
+        'react',
         'untrusted-client',
         'ui',
       ],
@@ -231,7 +231,7 @@ describe('mayReferTo', () => {
         block: 'ui',
       },
       name: 'a block of a layer below',
-      to: 'react-dom',
+      to: 'react/react-dom',
     },
     {
       expected: false,
@@ -284,7 +284,7 @@ describe('mayCarryOut', () => {
     {
       expected: true,
       from: {
-        block: 'react-dom',
+        block: 'react/react-dom',
       },
       name: 'a parent in a block its closure reaches',
       to: {
@@ -306,7 +306,7 @@ describe('mayCarryOut', () => {
     {
       expected: false,
       from: {
-        block: 'react-dom',
+        block: 'react/react-dom',
       },
       name: 'a parent in a seam whose other block its place does not reach',
       to: {

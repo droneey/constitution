@@ -1,14 +1,9 @@
-import type {
-  RequirementsTableDetails,
-  RuleFormDetails,
-  ValueFindingDetails,
-} from '#/kernel/entities';
+import type { RuleFormDetails, ValueFindingDetails } from '#/kernel/entities';
 import type { FindingOf } from '#/kernel/types';
 
 import type { LoadFindingDetails } from '../../../constitution/entities';
 import type { ManifestReadDetails } from '../../../manifest/entities';
 import type {
-  AbstractBlocksDetails,
   BlockFormDetails,
   BudgetDetails,
   CoreChaptersDetails,
@@ -21,7 +16,6 @@ import type {
   NamesDetails,
   PluginDetails,
   ReferencesDetails,
-  RequirementsDetails,
   RequiresDetails,
   RulesDetails,
   SeamsDetails,
@@ -29,8 +23,7 @@ import type {
   WordingDetails,
 } from './checks';
 
-type BlockFindingDetails = AbstractBlocksDetails &
-  BlockFormDetails &
+type BlockFindingDetails = BlockFormDetails &
   BudgetDetails &
   CoreChaptersDetails &
   CyclesDetails &
@@ -44,8 +37,6 @@ type BlockFindingDetails = AbstractBlocksDetails &
   NamesDetails &
   PluginDetails &
   ReferencesDetails &
-  RequirementsDetails &
-  RequirementsTableDetails &
   RequiresDetails &
   RuleFormDetails &
   RulesDetails &

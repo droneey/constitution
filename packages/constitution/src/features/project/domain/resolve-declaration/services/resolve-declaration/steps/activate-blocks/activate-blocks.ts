@@ -82,7 +82,6 @@ const pathInSourceOf = (block: BlockSetBlock, file: BlockPart): string => {
   const pathInBlocks = BlockFilePlace.pathOf({
     block: block.id,
     file,
-    format: block.format,
     layer: block.layer,
   });
 

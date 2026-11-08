@@ -63,11 +63,11 @@ const ui: BlockFixture = {
     }),
   ].join('\n'),
   files: {
-    'workflow/release.md': ruleOf({
+    '@workflow/release.md': ruleOf({
       level: 'MUST',
       slug: 'screens-are-reviewed',
     }),
-    'foundation/with/redux.md': ruleOf({
+    '@foundation/with/redux.md': ruleOf({
       level: 'MUST',
       slug: 'state-is-not-in-screens',
     }),
@@ -78,26 +78,20 @@ const ui: BlockFixture = {
   id: 'ui',
 };
 const BASE: BlockFixture = {
-  abstract: true,
   id: 'base',
 } as const;
 const STORE: BlockFixture = {
-  abstract: true,
-  extends: 'base',
-  id: 'store',
+  id: 'base/store',
 } as const;
 const REDUX: BlockFixture = {
-  extends: 'store',
   folder: Folder.Implementation,
   id: 'redux',
 } as const;
 const ZUSTAND: BlockFixture = {
-  extends: 'store',
   folder: Folder.Implementation,
   id: 'zustand',
 } as const;
 const MOBX: BlockFixture = {
-  extends: 'store',
   folder: Folder.Implementation,
   id: 'mobx',
 } as const;
@@ -505,12 +499,12 @@ describe('resolveDeclaration', () => {
     {
       blocks: [
         'core',
-        'store',
+        'base/store',
         'base',
       ],
       condition: 'a parent is listed alone',
       keys: {
-        domains: 'domains: [store, base]',
+        domains: 'domains: [base/store, base]',
       },
       warnings: [],
     },
@@ -519,8 +513,6 @@ describe('resolveDeclaration', () => {
         'core',
         'web',
         'redux',
-        'store',
-        'base',
         'ui',
         'typescript',
       ],
@@ -618,7 +610,6 @@ describe('resolveDeclaration', () => {
         sourceOf({
           blocks: [
             {
-              abstract: true,
               id: 'ui',
             },
             vite,
@@ -662,7 +653,7 @@ describe('resolveDeclaration', () => {
               folder: Folder.Implementation,
               id: 'nest',
               requires: [
-                'store',
+                'base/store',
                 'web',
                 'core',
                 'typescript',
@@ -685,7 +676,7 @@ describe('resolveDeclaration', () => {
           details: {
             block: BlockId.create('nest'),
             key: ConfigKey.Domains,
-            required: BlockId.create('store'),
+            required: BlockId.create('base/store'),
             unit: UnitPath.create('apps/web'),
           },
           kind: WarningKind.BlockNeeded,
@@ -1006,7 +997,7 @@ describe('resolveDeclaration', () => {
     },
   );
 
-  it('should hold in each unit the blocks its own file lists, with their bases, when members list blocks', () => {
+  it('should hold in each unit the blocks its own file lists, with the blocks they sit under, when members list blocks', () => {
     // Arrange
     const config = configOf(
       {
@@ -1014,10 +1005,10 @@ describe('resolveDeclaration', () => {
       },
       {
         'apps/web': {
-          implementations: 'implementations: [redux]',
+          implementations: 'implementations: [state/redux]',
         },
         'apps/api': {
-          implementations: 'implementations: [redis]',
+          implementations: 'implementations: [cache/redis]',
           platforms: 'platforms: [web]',
         },
       },
@@ -1035,28 +1026,32 @@ describe('resolveDeclaration', () => {
               ],
               id: 'ui',
             },
-            BASE,
-            STORE,
             {
-              ...REDUX,
+              folder: Folder.Implementation,
+              id: 'state',
+            },
+            {
+              folder: Folder.Implementation,
               governs: [
                 '**/*.store.ts',
               ],
+              id: 'state/redux',
             },
-            ZUSTAND,
+            {
+              folder: Folder.Implementation,
+              id: 'state/zustand',
+            },
             WEB,
             {
-              abstract: true,
-              extends: 'gone',
+              folder: Folder.Implementation,
               id: 'cache',
             },
             {
-              extends: 'cache',
               folder: Folder.Implementation,
               governs: [
                 '**/*.cache.ts',
               ],
-              id: 'redis',
+              id: 'cache/redis',
             },
           ],
         }),
@@ -1080,43 +1075,23 @@ describe('resolveDeclaration', () => {
         }),
         activeOf({
           files: [
-            'blocks/domains/base/base.md',
+            'blocks/implementations/state/state.md',
           ],
           governs: [
             '**/*.store.ts',
           ],
-          id: 'base',
+          id: 'state',
           unit: 'apps/web',
         }),
         activeOf({
           files: [
-            'blocks/domains/store/store.md',
+            'blocks/implementations/state/redux/redux.md',
           ],
           governs: [
             '**/*.store.ts',
           ],
-          id: 'store',
+          id: 'state/redux',
           unit: 'apps/web',
-        }),
-        activeOf({
-          files: [
-            'blocks/implementations/redux/redux.md',
-          ],
-          governs: [
-            '**/*.store.ts',
-          ],
-          id: 'redux',
-          unit: 'apps/web',
-        }),
-        activeOf({
-          files: [
-            'blocks/domains/cache/cache.md',
-          ],
-          governs: [
-            '**/*.cache.ts',
-          ],
-          id: 'cache',
-          unit: 'apps/api',
         }),
         activeOf({
           files: [
@@ -1128,12 +1103,22 @@ describe('resolveDeclaration', () => {
         }),
         activeOf({
           files: [
-            'blocks/implementations/redis/redis.md',
+            'blocks/implementations/cache/cache.md',
           ],
           governs: [
             '**/*.cache.ts',
           ],
-          id: 'redis',
+          id: 'cache',
+          unit: 'apps/api',
+        }),
+        activeOf({
+          files: [
+            'blocks/implementations/cache/redis/redis.md',
+          ],
+          governs: [
+            '**/*.cache.ts',
+          ],
+          id: 'cache/redis',
           unit: 'apps/api',
         }),
       ],
@@ -1148,13 +1133,10 @@ describe('resolveDeclaration', () => {
           unitListingOf({
             own: [
               {
-                id: 'base',
+                id: 'state',
               },
               {
-                id: 'store',
-              },
-              {
-                id: 'redux',
+                id: 'state/redux',
               },
             ],
             leftOutBlocks: [
@@ -1165,13 +1147,13 @@ describe('resolveDeclaration', () => {
           unitListingOf({
             own: [
               {
-                id: 'cache',
-              },
-              {
                 id: 'web',
               },
               {
-                id: 'redis',
+                id: 'cache',
+              },
+              {
+                id: 'cache/redis',
               },
             ],
             leftOutBlocks: [
@@ -1188,20 +1170,6 @@ describe('resolveDeclaration', () => {
             layer: Layer.Core,
           },
           {
-            id: 'base',
-            isAbstract: true,
-          },
-          {
-            extends: 'gone',
-            id: 'cache',
-            isAbstract: true,
-          },
-          {
-            extends: 'base',
-            id: 'store',
-            isAbstract: true,
-          },
-          {
             governs: [
               '**/*.tsx',
             ],
@@ -1212,24 +1180,29 @@ describe('resolveDeclaration', () => {
             layer: Layer.Platform,
           },
           {
-            extends: 'cache',
+            id: 'cache',
+            layer: Layer.Implementation,
+          },
+          {
             governs: [
               '**/*.cache.ts',
             ],
-            id: 'redis',
+            id: 'cache/redis',
             layer: Layer.Implementation,
           },
           {
-            extends: 'store',
+            id: 'state',
+            layer: Layer.Implementation,
+          },
+          {
             governs: [
               '**/*.store.ts',
             ],
-            id: 'redux',
+            id: 'state/redux',
             layer: Layer.Implementation,
           },
           {
-            extends: 'store',
-            id: 'zustand',
+            id: 'state/zustand',
             layer: Layer.Implementation,
           },
         ],
@@ -1245,9 +1218,8 @@ describe('resolveDeclaration', () => {
         unitOf({
           blocks: [
             'core',
-            'redux',
-            'store',
-            'base',
+            'state/redux',
+            'state',
           ],
           path: 'apps/web',
         }),
@@ -1255,22 +1227,13 @@ describe('resolveDeclaration', () => {
           blocks: [
             'core',
             'web',
-            'redis',
+            'cache/redis',
             'cache',
           ],
           path: 'apps/api',
         }),
       ],
-      warnings: [
-        {
-          details: {
-            base: 'gone',
-            block: BlockId.create('cache'),
-            source: SourceKind.Release,
-          },
-          kind: WarningKind.BaseNoBlock,
-        },
-      ],
+      warnings: [],
     });
   });
 
@@ -1703,12 +1666,12 @@ describe('resolveDeclaration', () => {
             {
               ...ui,
               files: {
-                'architecture/layers.md': '# Layers\n',
-                'architecture/with/redux.md': '# Redux\n',
-                'foundation/writing.md-files.md': '# Writing .md files\n',
-                'foundation/with/react.md': '# React\n',
-                'workflow/release.md': '# Release\n',
-                'workflow/with/react.md': '# React\n',
+                '@architecture/layers.md': '# Layers\n',
+                '@architecture/with/redux.md': '# Redux\n',
+                '@foundation/writing.md-files.md': '# Writing .md files\n',
+                '@foundation/with/react.md': '# React\n',
+                '@workflow/release.md': '# Release\n',
+                '@workflow/with/react.md': '# React\n',
               },
             },
             TYPESCRIPT,
@@ -1718,7 +1681,7 @@ describe('resolveDeclaration', () => {
             },
             {
               files: {
-                'workflow/deploy.md': '# Deploy\n',
+                '@workflow/deploy.md': '# Deploy\n',
               },
               folder: Folder.Platform,
               id: 'web',
@@ -1728,7 +1691,7 @@ describe('resolveDeclaration', () => {
           ],
           core: {
             files: {
-              'workflow/delivery.md': '# Delivery\n',
+              '@workflow/delivery.md': '# Delivery\n',
             },
           },
         }),
@@ -1829,11 +1792,11 @@ describe('resolveDeclaration', () => {
           blocks: [
             {
               files: {
-                'architecture/layers.md': '# Layers\n',
-                'foundation/with/react.md': '# React\n',
-                'workflow/release.md': '# Release\n',
-                'workflow/with/lint.md': '# Lint\n',
-                'workflow/with/redux.md': '# Redux\n',
+                '@architecture/layers.md': '# Layers\n',
+                '@foundation/with/react.md': '# React\n',
+                '@workflow/release.md': '# Release\n',
+                '@workflow/with/lint.md': '# Lint\n',
+                '@workflow/with/redux.md': '# Redux\n',
               },
               governs: [
                 '**/*.tsx',
@@ -1871,7 +1834,7 @@ describe('resolveDeclaration', () => {
           ],
           core: {
             files: {
-              'foundation/with/lint.md': '# Lint\n',
+              '@foundation/with/lint.md': '# Lint\n',
             },
             governs: [
               '**/*.md',
@@ -1882,7 +1845,7 @@ describe('resolveDeclaration', () => {
           blocks: [
             {
               files: {
-                'architecture/rules.md': '# Rules\n',
+                '@architecture/rules.md': '# Rules\n',
               },
               folder: Folder.Implementation,
               governs: [
@@ -1902,8 +1865,8 @@ describe('resolveDeclaration', () => {
       activeOf({
         files: [
           'blocks/domains/ui/ui.md',
-          'blocks/domains/ui/architecture/layers.md',
-          'blocks/domains/ui/foundation/with/react.md',
+          'blocks/domains/ui/@architecture/layers.md',
+          'blocks/domains/ui/@foundation/with/react.md',
         ],
         governs: [
           '**/*.tsx',
@@ -1938,7 +1901,7 @@ describe('resolveDeclaration', () => {
       activeOf({
         files: [
           './rules/blocks/implementations/lint/lint.md',
-          './rules/blocks/implementations/lint/architecture/rules.md',
+          './rules/blocks/implementations/lint/@architecture/rules.md',
         ],
         source: SourceKind.Pack,
         governs: [
@@ -1949,10 +1912,10 @@ describe('resolveDeclaration', () => {
       activeOf({
         files: [
           'blocks/domains/ui/ui.md',
-          'blocks/domains/ui/architecture/layers.md',
-          'blocks/domains/ui/workflow/release.md',
-          'blocks/domains/ui/foundation/with/react.md',
-          'blocks/domains/ui/workflow/with/lint.md',
+          'blocks/domains/ui/@architecture/layers.md',
+          'blocks/domains/ui/@workflow/release.md',
+          'blocks/domains/ui/@foundation/with/react.md',
+          'blocks/domains/ui/@workflow/with/lint.md',
         ],
         governs: [
           '**/*.tsx',
@@ -1990,7 +1953,7 @@ describe('resolveDeclaration', () => {
       activeOf({
         files: [
           './rules/blocks/implementations/lint/lint.md',
-          './rules/blocks/implementations/lint/architecture/rules.md',
+          './rules/blocks/implementations/lint/@architecture/rules.md',
         ],
         source: SourceKind.Pack,
         governs: [
@@ -2134,7 +2097,7 @@ describe('resolveDeclaration', () => {
         sourceOf({
           core: {
             files: {
-              'workflow/release.md': '# Release\n',
+              '@workflow/release.md': '# Release\n',
             },
           },
         }),
@@ -2146,7 +2109,7 @@ describe('resolveDeclaration', () => {
     expect(resolution.core).toStrictEqual([
       coreFilesOf({
         files: [
-          'blocks/core/workflow/release.md',
+          'blocks/core/@workflow/release.md',
         ],
         unit: 'apps/web',
       }),
@@ -2513,7 +2476,7 @@ describe('resolveDeclaration', () => {
     // Arrange
     const config = configOf(
       {
-        implementations: 'implementations: [kit]',
+        implementations: 'implementations: [runtime/kit]',
         languages: 'languages: [typescript]',
         name: "name: '@acme/workspace'",
         packs: 'packs: [rules]',
@@ -2535,7 +2498,7 @@ describe('resolveDeclaration', () => {
             {
               body: 'Screens sit in **`screens/`**.',
               files: {
-                'architecture/with/kit.md': ruleOf({
+                '@architecture/with/runtime/kit.md': ruleOf({
                   level: 'MAY',
                   slug: 'screens-use-the-kit',
                 }),
@@ -2544,18 +2507,16 @@ describe('resolveDeclaration', () => {
             },
             TYPESCRIPT,
             {
-              abstract: true,
               folder: Folder.Implementation,
-              id: '_runtime',
+              id: 'runtime',
             },
             {
               body: ruleOf({
                 level: 'SHOULD',
                 slug: 'kit-pinned',
               }),
-              extends: '_runtime',
               folder: Folder.Implementation,
-              id: 'kit',
+              id: 'runtime/kit',
               languages: [
                 'typescript',
               ],
@@ -2583,7 +2544,7 @@ describe('resolveDeclaration', () => {
           {
             id: 'ui',
             seams: [
-              'architecture/kit',
+              '@architecture/runtime/kit',
             ],
           },
           {
@@ -2591,13 +2552,11 @@ describe('resolveDeclaration', () => {
             layer: Layer.Language,
           },
           {
-            id: '_runtime',
-            isAbstract: true,
+            id: 'runtime',
             layer: Layer.Implementation,
           },
           {
-            extends: '_runtime',
-            id: 'kit',
+            id: 'runtime/kit',
             languages: [
               'typescript',
             ],
@@ -2620,11 +2579,11 @@ describe('resolveDeclaration', () => {
             axis: Axis.Architecture,
             block: 'ui',
             level: Level.May,
-            seam: 'kit',
+            seam: 'runtime/kit',
             slug: 'screens-use-the-kit',
           },
           {
-            block: 'kit',
+            block: 'runtime/kit',
             level: Level.Should,
             slug: 'kit-pinned',
           },
@@ -2635,8 +2594,8 @@ describe('resolveDeclaration', () => {
           blocks: [
             'core',
             'typescript',
-            'kit',
-            '_runtime',
+            'runtime/kit',
+            'runtime',
           ],
           languages: [
             'typescript',

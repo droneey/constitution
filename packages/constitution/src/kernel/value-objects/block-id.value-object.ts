@@ -5,9 +5,7 @@ import type { Brand } from '../types';
 type BlockId = Brand<string, 'BlockId'>;
 
 const ID_SEGMENT = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const ID_PATH =
-  /^(?:_[a-z0-9]+(?:-[a-z0-9]+)*|[a-z0-9]+(?:-[a-z0-9]+)*(?:\/[a-z0-9]+(?:-[a-z0-9]+)*)*)$/;
-const ABSTRACT_MARK = '_';
+const ID_PATH = /^[a-z0-9]+(?:-[a-z0-9]+)*(?:\/[a-z0-9]+(?:-[a-z0-9]+)*)*$/;
 const SEGMENT_SEPARATOR = '/';
 
 const isReserved = (segment: string): boolean => reservedWords.has(segment);
@@ -38,8 +36,6 @@ const create = (text: string): BlockId => {
 
 const equals = (left: BlockId, right: BlockId): boolean => left === right;
 
-const isAbstract = (id: BlockId): boolean => id.startsWith(ABSTRACT_MARK);
-
 const lastSegmentOf = (id: BlockId): string =>
   id.slice(id.lastIndexOf(SEGMENT_SEPARATOR) + SEGMENT_SEPARATOR.length);
 
@@ -65,7 +61,6 @@ const BlockId = {
   create,
   equals,
   is,
-  isAbstract,
   isSegment,
   lastSegmentOf,
   parentOf,

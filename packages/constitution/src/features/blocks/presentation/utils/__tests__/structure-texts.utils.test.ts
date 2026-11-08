@@ -7,7 +7,6 @@ import { textOf } from '#/shared/cli';
 
 import { FrontMatterField } from '../../../domain/block/entities';
 import type {
-  AbstractBlocksDetails,
   BlockFormDetails,
   CoreChaptersDetails,
   CyclesDetails,
@@ -15,7 +14,6 @@ import type {
   SeamsDetails,
 } from '../../../domain/validate-constitution/services';
 import {
-  AbstractBlocksCode,
   BlockFormCode,
   CoreChaptersCode,
   CyclesCode,
@@ -27,40 +25,10 @@ import { structureTexts } from '../structure-texts.utils';
 describe('structureTexts', () => {
   it.each<{
     problem: ProblemOf<
-      AbstractBlocksDetails &
-        BlockFormDetails &
-        CoreChaptersDetails &
-        CyclesDetails &
-        FrontMatterDetails &
-        SeamsDetails
+      BlockFormDetails & CoreChaptersDetails & CyclesDetails & FrontMatterDetails & SeamsDetails
     >;
     text: string;
   }>([
-    {
-      problem: {
-        code: AbstractBlocksCode.WithoutHeir,
-        details: {},
-      },
-      text: 'is abstract and has no heir',
-    },
-    {
-      problem: {
-        code: AbstractBlocksCode.NamesHeir,
-        details: {
-          heir: BlockId.create('react-dom'),
-        },
-      },
-      text: 'names its heir react-dom; a base knows nothing of its heirs',
-    },
-    {
-      problem: {
-        code: AbstractBlocksCode.SeamNamesHeir,
-        details: {
-          heir: BlockId.create('react-dom'),
-        },
-      },
-      text: 'is a with/ file named after the heir react-dom; a base knows nothing of its heirs',
-    },
     {
       problem: {
         code: BlockFormCode.PassportHoldsRules,
@@ -102,13 +70,6 @@ describe('structureTexts', () => {
     },
     {
       problem: {
-        code: BlockFormCode.RequirementsNotLast,
-        details: {},
-      },
-      text: 'has sections after "Requirements for implementation", which is the last section',
-    },
-    {
-      problem: {
         code: BlockFormCode.GeneralNotFirst,
         details: {},
       },
@@ -118,28 +79,28 @@ describe('structureTexts', () => {
       problem: {
         code: CoreChaptersCode.ChapterUnlisted,
         details: {
-          chapter: 'blocks/core/workflow/workflow.md',
+          chapter: 'blocks/core/@workflow/workflow.md',
         },
       },
-      text: "leaves blocks/core/workflow/workflow.md out of its list of core's chapters; it lists every chapter of core once",
+      text: "leaves blocks/core/@workflow/workflow.md out of its list of core's chapters; it lists every chapter of core once",
     },
     {
       problem: {
         code: CoreChaptersCode.ListsNoChapter,
         details: {
-          entry: 'blocks/core/foundation/gone.md',
+          entry: 'blocks/core/@foundation/gone.md',
         },
       },
-      text: 'lists blocks/core/foundation/gone.md, which is not a chapter of core',
+      text: 'lists blocks/core/@foundation/gone.md, which is not a chapter of core',
     },
     {
       problem: {
         code: CoreChaptersCode.ListedTwice,
         details: {
-          entry: 'blocks/core/foundation/code.md',
+          entry: 'blocks/core/@foundation/code.md',
         },
       },
-      text: 'lists blocks/core/foundation/code.md twice',
+      text: 'lists blocks/core/@foundation/code.md twice',
     },
     {
       problem: {
@@ -168,11 +129,11 @@ describe('structureTexts', () => {
       problem: {
         code: FrontMatterCode.FieldOutsideLayer,
         details: {
-          field: FrontMatterField.Abstract,
+          field: FrontMatterField.Requires,
           layer: Layer.Core,
         },
       },
-      text: 'sets "abstract", which a core block leaves empty',
+      text: 'sets "requires", which a core block leaves empty',
     },
     {
       problem: {
@@ -182,20 +143,6 @@ describe('structureTexts', () => {
         },
       },
       text: 'languages lists kotlin, which is not a language block',
-    },
-    {
-      problem: {
-        code: FrontMatterCode.AbstractWithoutUnderscore,
-        details: {},
-      },
-      text: 'is abstract, so its id starts with "_"',
-    },
-    {
-      problem: {
-        code: FrontMatterCode.UnderscoreNotAbstract,
-        details: {},
-      },
-      text: 'has an id starting with "_", so it is abstract',
     },
     {
       problem: {

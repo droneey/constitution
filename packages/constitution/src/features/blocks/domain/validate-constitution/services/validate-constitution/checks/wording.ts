@@ -1,4 +1,3 @@
-import { BlockFormat } from '#/kernel/constants';
 import type { Rule } from '#/kernel/entities';
 import type { FindingOf, ProblemOf } from '#/kernel/types';
 import { withoutInlineCode } from '#/kernel/utils';
@@ -160,19 +159,17 @@ const slugProblem = (rule: Rule): WordingProblem | undefined =>
 const wordingCheck: Check<WordingFinding> = ({
   constitution,
 }: CheckInput): readonly WordingFinding[] =>
-  constitution.format === BlockFormat.Nested
-    ? constitution.rules
-        .filter((rule) => rule.statement !== '')
-        .flatMap((rule) =>
-          findingsAt(rule.file, [
-            ...sloganProblems(rule),
-            exceptionProblem(rule),
-            modalProblem(rule),
-            ...whyProblems(rule),
-            slugProblem(rule),
-          ]),
-        )
-    : [];
+  constitution.rules
+    .filter((rule) => rule.statement !== '')
+    .flatMap((rule) =>
+      findingsAt(rule.file, [
+        ...sloganProblems(rule),
+        exceptionProblem(rule),
+        modalProblem(rule),
+        ...whyProblems(rule),
+        slugProblem(rule),
+      ]),
+    );
 
 export type { WordingDetails };
 export { WordingCode, wordingCheck };

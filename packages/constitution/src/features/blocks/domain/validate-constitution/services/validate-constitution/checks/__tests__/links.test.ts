@@ -5,7 +5,7 @@ import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { checkInputOf } from '../../../../../../application/use-cases/queries/check/__tests__/check.fixtures';
 import { LinksCode, linksCheck } from '../links';
 
-const PRINCIPLES = 'blocks/core/foundation/principles.md';
+const PRINCIPLES = 'blocks/core/@foundation/principles.md';
 const README = 'README.md';
 
 describe('linksCheck', () => {
@@ -106,7 +106,7 @@ describe('linksCheck', () => {
     files[README] = [
       '# constitution',
       '',
-      'Start with [core](blocks/core/), [its workflow](blocks/core/workflow/), [the blocks](blocks/) or [the root](./).',
+      'Start with [core](blocks/core/), [its workflow](blocks/core/@workflow/), [the blocks](blocks/) or [the root](./).',
       'Call `handlers[event.type](event)`.',
     ].join('\n');
     files[PRINCIPLES] = [

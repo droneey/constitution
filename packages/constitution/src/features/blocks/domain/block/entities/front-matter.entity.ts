@@ -1,4 +1,3 @@
-import { BlockFormat } from '#/kernel/constants';
 import type { ValueFindingDetails } from '#/kernel/entities';
 import { ValueSite } from '#/kernel/entities';
 import { ValueFailure } from '#/kernel/errors';
@@ -13,15 +12,11 @@ enum FrontMatterField {
   Id = 'id',
   Summary = 'summary',
   Requires = 'requires',
-  Extends = 'extends',
-  Abstract = 'abstract',
   Languages = 'languages',
   Governs = 'governs',
 }
 
 interface FrontMatter {
-  readonly abstract: boolean;
-  readonly extends?: BlockId;
   readonly governs: readonly Glob[];
   readonly id: BlockId;
   readonly languages: readonly BlockId[];
@@ -30,8 +25,6 @@ interface FrontMatter {
 }
 
 interface FrontMatterFields {
-  readonly abstract: boolean;
-  readonly extends?: string;
   readonly governs: readonly string[];
   readonly id: string;
   readonly languages: readonly string[];
@@ -68,7 +61,6 @@ enum FrontMatterReadCode {
   NotMapping = 'front-matter-not-a-mapping',
   FieldMissing = 'front-matter-field-missing',
   FieldUnknown = 'front-matter-field-unknown',
-  FieldRetired = 'front-matter-field-retired',
   OutOfOrder = 'front-matter-out-of-order',
   OffSchema = 'front-matter-off-schema',
   SummaryTooLong = 'summary-too-long',
@@ -86,7 +78,7 @@ const LIST_FIELDS = [
 
 type ListField = (typeof LIST_FIELDS)[number];
 
-type IdField = FrontMatterField.Requires | FrontMatterField.Languages | FrontMatterField.Extends;
+type IdField = FrontMatterField.Requires | FrontMatterField.Languages;
 
 interface FrontMatterReadDetails {
   readonly [FrontMatterReadCode.Missing]: object;
@@ -103,9 +95,6 @@ interface FrontMatterReadDetails {
   };
   readonly [FrontMatterReadCode.FieldUnknown]: {
     readonly key: string;
-  };
-  readonly [FrontMatterReadCode.FieldRetired]: {
-    readonly field: RetiredField;
   };
   readonly [FrontMatterReadCode.OutOfOrder]: {
     readonly order: readonly FrontMatterField[];
@@ -149,20 +138,7 @@ type FrontMatterParsed =
       readonly status: FrontMatterStatus.Invalid;
     };
 
-type RetiredField = FrontMatterField.Extends | FrontMatterField.Abstract;
-
-const retiredFields: readonly RetiredField[] = [
-  FrontMatterField.Extends,
-  FrontMatterField.Abstract,
-];
-const retiredNames: readonly string[] = retiredFields;
-
-const FIELD_ORDER = {
-  [BlockFormat.Legacy]: Object.values(FrontMatterField),
-  [BlockFormat.Nested]: Object.values(FrontMatterField).filter(
-    (field) => !retiredNames.includes(field),
-  ),
-} as const satisfies Readonly<Record<BlockFormat, readonly FrontMatterField[]>>;
+const fieldOrder: readonly FrontMatterField[] = Object.values(FrontMatterField);
 const ONE_SENTENCE = /^[^\n\r\t]+\.$/;
 const SUMMARY_LENGTH = 70;
 const OPENING_LINES = 1;
@@ -190,30 +166,7 @@ const yamlProblem = (
   },
 });
 
-const retiredProblems = (input: {
-  format: BlockFormat;
-  keys: readonly string[];
-}): readonly FrontMatterProblem[] =>
-  input.format === BlockFormat.Nested
-    ? retiredFields
-        .filter((field) => input.keys.includes(field))
-        .map(
-          (field): FrontMatterProblem => ({
-            code: FrontMatterReadCode.FieldRetired,
-            details: {
-              field,
-            },
-          }),
-        )
-    : [];
-
-const keyProblems = (input: {
-  format: BlockFormat;
-  keys: readonly string[];
-}): readonly FrontMatterProblem[] => {
-  const { keys } = input;
-  const fieldOrder = FIELD_ORDER[input.format];
-  const retired = retiredProblems(input);
+const keyProblems = (keys: readonly string[]): readonly FrontMatterProblem[] => {
   const missing = fieldOrder
     .filter((field) => !keys.includes(field))
     .map(
@@ -225,7 +178,7 @@ const keyProblems = (input: {
       }),
     );
   const unknown = keys
-    .filter((key) => !(fieldOrder.some((field) => field === key) || retiredNames.includes(key)))
+    .filter((key) => !fieldOrder.some((field) => field === key))
     .map(
       (key): FrontMatterProblem => ({
         code: FrontMatterReadCode.FieldUnknown,
@@ -235,11 +188,10 @@ const keyProblems = (input: {
       }),
     );
 
-  if (missing.length > 0 || unknown.length > 0 || retired.length > 0) {
+  if (missing.length > 0 || unknown.length > 0) {
     return [
       ...missing,
       ...unknown,
-      ...retired,
     ];
   }
 
@@ -298,17 +250,6 @@ const scalarProblems = (fields: FrontMatterFields): readonly FrontMatterProblem[
         } satisfies FrontMatterProblem,
       ]),
   ...summaryProblems(fields.summary),
-  ...(fields.extends === undefined || BlockId.is(fields.extends)
-    ? []
-    : [
-        {
-          code: FrontMatterReadCode.NotBlockId,
-          details: {
-            entry: fields.extends,
-            field: FrontMatterField.Extends,
-          },
-        } satisfies FrontMatterProblem,
-      ]),
 ];
 
 const notBlockIds = (input: {
@@ -377,7 +318,6 @@ type MappingRead = Extract<
 
 const unreadProblems = (
   read: Exclude<FrontMatterRead, MappingRead>,
-  format: BlockFormat,
 ): readonly FrontMatterProblem[] => {
   if (read.status === ReadStatus.NotYaml) {
     return [
@@ -394,19 +334,13 @@ const unreadProblems = (
     ];
   }
 
-  const keys = keyProblems({
-    format,
-    keys: read.keys,
-  });
+  const keys = keyProblems(read.keys);
 
   return keys.length > 0 ? keys : read.issues.map(issueProblem);
 };
 
-const mappingProblems = (read: MappingRead, format: BlockFormat): readonly FrontMatterProblem[] => {
-  const keys = keyProblems({
-    format,
-    keys: read.keys,
-  });
+const mappingProblems = (read: MappingRead): readonly FrontMatterProblem[] => {
+  const keys = keyProblems(read.keys);
 
   return keys.length > 0
     ? keys
@@ -429,12 +363,6 @@ const invalid = (problems: readonly FrontMatterProblem[]): FrontMatterParsed => 
 });
 
 const frontMatterOf = (fields: FrontMatterFields): FrontMatter => ({
-  abstract: fields.abstract,
-  ...(fields.extends === undefined
-    ? {}
-    : {
-        extends: BlockId.create(fields.extends),
-      }),
   governs: fields.governs.map(Glob.create),
   id: BlockId.create(fields.id),
   languages: fields.languages.map(BlockId.create),
@@ -442,12 +370,12 @@ const frontMatterOf = (fields: FrontMatterFields): FrontMatter => ({
   summary: fields.summary,
 });
 
-const parse = (read: FrontMatterRead, format: BlockFormat): FrontMatterParsed => {
+const parse = (read: FrontMatterRead): FrontMatterParsed => {
   if (read.status !== ReadStatus.Mapping) {
-    return invalid(unreadProblems(read, format));
+    return invalid(unreadProblems(read));
   }
 
-  const problems = mappingProblems(read, format);
+  const problems = mappingProblems(read);
 
   return problems.length === 0
     ? {

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
-import type { RequirementsTableDetails, RuleFormDetails } from '#/kernel/entities';
-import { RequirementsTableCode, RuleFormCode } from '#/kernel/entities';
+import type { RuleFormDetails } from '#/kernel/entities';
+import { RuleFormCode } from '#/kernel/entities';
 import type { ProblemOf } from '#/kernel/types';
 import { RuleSlug } from '#/kernel/value-objects';
 import { textOf } from '#/shared/cli';
@@ -10,7 +10,7 @@ import { ruleFormTexts } from '../rule-form-texts.utils';
 
 describe('ruleFormTexts', () => {
   it.each<{
-    problem: ProblemOf<RequirementsTableDetails & RuleFormDetails>;
+    problem: ProblemOf<RuleFormDetails>;
     text: string;
   }>([
     {
@@ -88,33 +88,6 @@ describe('ruleFormTexts', () => {
         },
       },
       text: 'rule "a" is MAY in its heading; a heading states MUST or SHOULD, and only an override sets a rule to MAY',
-    },
-    {
-      problem: {
-        code: RequirementsTableCode.HeaderMisshapen,
-        details: {
-          row: '| Requirement | How in lingui | Status |',
-        },
-      },
-      text: 'has the header "| Requirement | How in lingui | Status |" in its Requirements; it is "| Requirement | How | Met |"',
-    },
-    {
-      problem: {
-        code: RequirementsTableCode.RowMisshapen,
-        details: {
-          row: '| Block | Requirement | Met |',
-        },
-      },
-      text: 'has the row "| Block | Requirement | Met |" in its Requirements, which is not "| `<requirement>` | <how> | <met> |"',
-    },
-    {
-      problem: {
-        code: RequirementsTableCode.HeadingMisshapen,
-        details: {
-          heading: '# requirements',
-        },
-      },
-      text: 'has the heading "# requirements", which names the Requirements section; it is "## Requirements"',
     },
   ])('should say $problem.code as the report words it', ({ problem, text }) => {
     // Act

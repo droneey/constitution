@@ -1,13 +1,8 @@
 import { VOCABULARY_SECTION } from '#/kernel/constants';
 import type { TextsOf } from '#/shared/cli';
 
-import {
-  GENERAL_SECTION,
-  GOVERNS_LINE,
-  REQUIREMENTS_SECTION,
-} from '../../domain/validate-constitution/constants';
+import { GENERAL_SECTION, GOVERNS_LINE } from '../../domain/validate-constitution/constants';
 import type {
-  AbstractBlocksDetails,
   BlockFormDetails,
   CoreChaptersDetails,
   CyclesDetails,
@@ -15,7 +10,6 @@ import type {
   SeamsDetails,
 } from '../../domain/validate-constitution/services';
 import {
-  AbstractBlocksCode,
   BlockFormCode,
   CoreChaptersCode,
   CyclesCode,
@@ -25,18 +19,8 @@ import {
 import { aBlock, blocksOf } from './wording.utils';
 
 const structureTexts: TextsOf<
-  AbstractBlocksDetails &
-    BlockFormDetails &
-    CoreChaptersDetails &
-    CyclesDetails &
-    FrontMatterDetails &
-    SeamsDetails
+  BlockFormDetails & CoreChaptersDetails & CyclesDetails & FrontMatterDetails & SeamsDetails
 > = {
-  [AbstractBlocksCode.WithoutHeir]: () => 'is abstract and has no heir',
-  [AbstractBlocksCode.NamesHeir]: ({ heir }) =>
-    `names its heir ${heir}; a base knows nothing of its heirs`,
-  [AbstractBlocksCode.SeamNamesHeir]: ({ heir }) =>
-    `is a with/ file named after the heir ${heir}; a base knows nothing of its heirs`,
   [BlockFormCode.PassportHoldsRules]: () =>
     "holds rules; a block's passport holds its front matter, its title, what the block is and its setup, and its rules live in the chapters of its axes",
   [BlockFormCode.WithoutGoverns]: () =>
@@ -46,8 +30,6 @@ const structureTexts: TextsOf<
     `has the rule "${slug}" under no section; every rule sits under a "## " section`,
   [BlockFormCode.SectionRepeatsTitle]: ({ section }) =>
     `has the section "${section}", named like the file's title; a section names a part of the file's subject`,
-  [BlockFormCode.RequirementsNotLast]: () =>
-    `has sections after "${REQUIREMENTS_SECTION}", which is the last section`,
   [BlockFormCode.GeneralNotFirst]: () =>
     `has sections before "${GENERAL_SECTION}", which is the first section`,
   [BlockFormCode.TextBeforeSections]: () =>
@@ -74,8 +56,6 @@ const structureTexts: TextsOf<
     `sets "${field}", which ${aBlock(layer)} leaves empty`,
   [FrontMatterCode.NotLanguage]: ({ listed }) =>
     `languages lists ${listed}, which is not a language block`,
-  [FrontMatterCode.AbstractWithoutUnderscore]: () => 'is abstract, so its id starts with "_"',
-  [FrontMatterCode.UnderscoreNotAbstract]: () => 'has an id starting with "_", so it is abstract',
   [SeamsCode.NamedAfterOwnBlock]: () => 'is named after its own block',
   [SeamsCode.BlockPairsWithNone]: ({ block }) =>
     `is a with/ file of ${block}, which pairs with no block`,

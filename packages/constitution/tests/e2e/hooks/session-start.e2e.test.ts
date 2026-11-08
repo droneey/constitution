@@ -93,7 +93,7 @@ const fourDataStatesOverride = (fields: string): string =>
 const everyCode: ProjectLayout = {
   config: configOf({
     domains: '[analytics, version-control]',
-    implementations: '[_react, tanstak-query, ui, matomo, git, react-dom]',
+    implementations: '[react, tanstak-query, ui, matomo, git, react/react-dom]',
     languages: '[typescript]',
     omit: ConfigKey.Platforms,
     overrides: fourDataStatesOverride('    level: MAY\n    reason: "later"\n    until: 2020-01-01'),
@@ -118,7 +118,8 @@ const largeWorkspace: ProjectLayout = {
         member,
         configOf({
           domains: '[ui, i18n, analytics, remote-data, untrusted-client, unreliable-network]',
-          implementations: '[react-dom, tanstack-query, matomo, biome, lefthook, betterleaks]',
+          implementations:
+            '[react/react-dom, tanstack-query, matomo, biome, lefthook, betterleaks]',
           languages: '[typescript]',
           platforms: '[browser]',
         }),

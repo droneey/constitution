@@ -1,4 +1,4 @@
-import type { Axis, BlockFormat } from '#/kernel/constants';
+import type { Axis } from '#/kernel/constants';
 import { BLOCKS_FOLDER_NAME, PATH_SEPARATOR } from '#/kernel/constants';
 import type { ValueFindingDetails } from '#/kernel/entities';
 import { ValueSite } from '#/kernel/entities';
@@ -80,8 +80,6 @@ const seamOf = (file: BlockFile): BlockId | undefined => {
   }
 };
 
-const isSeamWith = (file: BlockFile, other: BlockId): boolean => seamOf(file) === other;
-
 const withPath = <TFile extends BlockFile>(file: TFile, path: string): TFile => ({
   ...file,
   path,
@@ -95,9 +93,7 @@ enum PlaceCode {
 
 interface PlaceDetails {
   readonly [PlaceCode.OutsideBlockFolder]: object;
-  readonly [PlaceCode.StrayBlockFile]: {
-    readonly format: BlockFormat;
-  };
+  readonly [PlaceCode.StrayBlockFile]: object;
   readonly [PlaceCode.ChapterNamedAfterBlock]: object;
 }
 
@@ -125,7 +121,7 @@ const unplacedKinds: ReadonlySet<BlockFileKind> = new Set<UnplacedFile>([
   BlockFileKind.Stray,
 ]);
 
-const unplacedProblemOf = (file: UnplacedFile, format: BlockFormat): PlaceProblem => {
+const unplacedProblemOf = (file: UnplacedFile): PlaceProblem => {
   switch (file) {
     case BlockFileKind.NamedAfterBlock:
       return {
@@ -142,9 +138,7 @@ const unplacedProblemOf = (file: UnplacedFile, format: BlockFormat): PlaceProble
     case BlockFileKind.Stray:
       return {
         code: PlaceCode.StrayBlockFile,
-        details: {
-          format,
-        },
+        details: {},
       };
   }
 };
@@ -185,10 +179,10 @@ interface BlockFilesLocated {
   readonly groups: readonly BlockGroup[];
 }
 
-const locationOf = (paths: readonly TreePath[], format: BlockFormat): Location => {
+const locationOf = (paths: readonly TreePath[]): Location => {
   const places = paths.map((path) => ({
     path,
-    place: BlockFilePlace.parse(path, format),
+    place: BlockFilePlace.parse(path),
   }));
   const inBlock = places.flatMap(({ path, place }) =>
     place?.placement === Placement.InBlock
@@ -255,11 +249,8 @@ const groupByFolder = (located: readonly Located[]): readonly BlockGroup[] =>
     folder,
   }));
 
-const locate = (listed: readonly TreePath[], format: BlockFormat): BlockFilesLocated => {
-  const location = locationOf(
-    listed.filter((path) => path.startsWith(blocksPrefix)),
-    format,
-  );
+const locate = (listed: readonly TreePath[]): BlockFilesLocated => {
+  const location = locationOf(listed.filter((path) => path.startsWith(blocksPrefix)));
 
   return {
     findings: [
@@ -282,7 +273,7 @@ const locate = (listed: readonly TreePath[], format: BlockFormat): BlockFilesLoc
       ),
       ...location.unplaced.map(
         ({ file, path }): PlaceFinding => ({
-          ...unplacedProblemOf(file, format),
+          ...unplacedProblemOf(file),
           path,
         }),
       ),
@@ -293,7 +284,6 @@ const locate = (listed: readonly TreePath[], format: BlockFormat): BlockFilesLoc
 
 const BlockFile = {
   chapter,
-  isSeamWith,
   locate,
   passport,
   seam,

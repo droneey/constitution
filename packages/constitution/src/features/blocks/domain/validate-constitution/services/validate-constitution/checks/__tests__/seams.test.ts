@@ -36,14 +36,14 @@ describe('seamsCheck', () => {
           other: BlockId.create('biome'),
           otherLayer: Layer.Implementation,
         },
-        path: 'blocks/contexts/platforms/browser/architecture/with/biome.md',
+        path: 'blocks/contexts/platforms/browser/@architecture/with/biome.md',
       },
     },
     {
       finding: {
         code: SeamsCode.NamedAfterOwnBlock,
         details: {},
-        path: 'blocks/domains/ui/foundation/with/ui.md',
+        path: 'blocks/domains/ui/@foundation/with/ui.md',
       },
     },
     {
@@ -52,7 +52,7 @@ describe('seamsCheck', () => {
         details: {
           other: BlockId.create('core'),
         },
-        path: 'blocks/domains/ui/workflow/with/core.md',
+        path: 'blocks/domains/ui/@workflow/with/core.md',
       },
     },
     {
@@ -61,7 +61,7 @@ describe('seamsCheck', () => {
         details: {
           other: BlockId.create('nowhere'),
         },
-        path: 'blocks/domains/ui/architecture/with/nowhere.md',
+        path: 'blocks/domains/ui/@architecture/with/nowhere.md',
       },
     },
     {
@@ -71,17 +71,17 @@ describe('seamsCheck', () => {
           block: BlockId.create('biome'),
           other: BlockId.create('typescript'),
         },
-        path: 'blocks/implementations/biome/foundation/with/typescript.md',
+        path: 'blocks/implementations/biome/@foundation/with/typescript.md',
       },
     },
     {
       finding: {
         code: SeamsCode.AlongDependency,
         details: {
-          block: BlockId.create('react-dom'),
+          block: BlockId.create('react/react-dom'),
           other: BlockId.create('ui'),
         },
-        path: 'blocks/implementations/react-dom/foundation/with/ui.md',
+        path: 'blocks/implementations/react/react-dom/@foundation/with/ui.md',
       },
     },
     {
@@ -90,7 +90,7 @@ describe('seamsCheck', () => {
         details: {
           block: BlockId.create('core'),
         },
-        path: 'blocks/core/foundation/with/ui.md',
+        path: 'blocks/core/@foundation/with/ui.md',
       },
     },
   ])(
@@ -114,8 +114,8 @@ describe('seamsCheck', () => {
   );
 
   it.each([
-    'blocks/contexts/platforms/browser/foundation/with/typescript.md',
-    'blocks/contexts/platforms/browser/workflow/with/ui.md',
+    'blocks/contexts/platforms/browser/@foundation/with/typescript.md',
+    'blocks/contexts/platforms/browser/@workflow/with/ui.md',
   ])('should accept %p when it pairs with a block of its own rank or above', (path) => {
     // Arrange
     const files = validFiles();
@@ -135,7 +135,7 @@ describe('seamsCheck', () => {
     // Arrange
     const files = validFiles();
 
-    files['blocks/core/architecture/ui.md'] = '# UI in core\n';
+    files['blocks/core/@architecture/ui.md'] = '# UI in core\n';
 
     const input = checkInputOf(files);
 
@@ -159,7 +159,7 @@ describe('seamsCheck', () => {
     // Arrange
     const files = validFiles();
 
-    files['blocks/contexts/platforms/browser/foundation/with/ui.md'] = title;
+    files['blocks/contexts/platforms/browser/@foundation/with/ui.md'] = title;
 
     const input = checkInputOf(files);
 

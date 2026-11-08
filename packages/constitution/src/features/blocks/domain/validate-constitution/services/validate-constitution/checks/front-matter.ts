@@ -12,14 +12,10 @@ enum FrontMatterCode {
   IdMismatch = 'id-mismatches-folder',
   FieldOutsideLayer = 'field-outside-layer',
   NotLanguage = 'languages-names-no-language',
-  AbstractWithoutUnderscore = 'abstract-id-without-underscore',
-  UnderscoreNotAbstract = 'underscore-id-not-abstract',
 }
 
 const LAYER_FIELDS = [
   FrontMatterField.Requires,
-  FrontMatterField.Extends,
-  FrontMatterField.Abstract,
   FrontMatterField.Languages,
 ] as const;
 
@@ -37,25 +33,18 @@ interface FrontMatterDetails {
   readonly [FrontMatterCode.NotLanguage]: {
     readonly listed: BlockId;
   };
-  readonly [FrontMatterCode.AbstractWithoutUnderscore]: object;
-  readonly [FrontMatterCode.UnderscoreNotAbstract]: object;
 }
 
 type FrontMatterFinding = FindingOf<FrontMatterDetails>;
 
-const builtOn: readonly Layer[] = LAYERS.filter((layer) => layer !== Layer.Core);
-
 const filledOn: Readonly<Record<LayerField, readonly Layer[]>> = {
-  [FrontMatterField.Abstract]: builtOn,
-  [FrontMatterField.Extends]: builtOn,
   [FrontMatterField.Languages]: [
     Layer.Implementation,
   ],
   [FrontMatterField.Requires]: LAYERS.filter((layer) => requirableBy(layer).length > 0),
 };
 
-const isEmpty = (field: FrontMatter[LayerField]): boolean =>
-  field === undefined || field === false || (Array.isArray(field) && field.length === 0);
+const isEmpty = (field: FrontMatter[LayerField]): boolean => field.length === 0;
 
 const identityFindings = (block: Block): readonly FrontMatterFinding[] =>
   BlockId.equals(block.frontMatter.id, block.id)
@@ -99,22 +88,6 @@ const languageFindings = (input: {
         }))
     : [];
 
-const flagFindings = (block: Block): readonly FrontMatterFinding[] => {
-  const isAbstract = block.frontMatter.abstract;
-
-  return isAbstract === BlockId.isAbstract(block.id)
-    ? []
-    : [
-        {
-          code: isAbstract
-            ? FrontMatterCode.AbstractWithoutUnderscore
-            : FrontMatterCode.UnderscoreNotAbstract,
-          details: {},
-          path: block.passport.path,
-        },
-      ];
-};
-
 const frontMatterCheck: Check<FrontMatterFinding> = ({
   graph,
   constitution,
@@ -126,7 +99,6 @@ const frontMatterCheck: Check<FrontMatterFinding> = ({
       block,
       graph,
     }),
-    ...flagFindings(block),
   ]);
 
 export type { FrontMatterDetails };

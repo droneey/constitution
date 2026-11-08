@@ -14,7 +14,7 @@ import type {
 import type { ActiveRules } from '../domain/gate/entities';
 import { activeBlockOf } from './session.fixtures';
 
-const coreChapter = `${PROJECT}/.droneey/constitution/blocks/core/foundation/names.md`;
+const coreChapter = `${PROJECT}/.droneey/constitution/blocks/core/@foundation/names.md`;
 const uiPassport = `${PROJECT}/.droneey/constitution/blocks/domains/ui/ui.md`;
 const typescriptPassport = `${PROJECT}/.droneey/constitution/blocks/contexts/languages/typescript/typescript.md`;
 
@@ -31,7 +31,7 @@ const wordingOf = (slug: string, statement = `The ${slug} rule.`): RuleWording =
 const coreOf = (unit = ''): CoreFiles => ({
   files: [
     {
-      path: 'blocks/core/foundation/names.md',
+      path: 'blocks/core/@foundation/names.md',
       source: SourceKind.Release,
     },
   ],

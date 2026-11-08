@@ -10,7 +10,6 @@ import { RoleNames } from '../role-names.value-object';
 const blockOf = (input: { governs?: readonly string[]; id: string; layer: Layer }) => ({
   governs: (input.governs ?? []).map(Glob.create),
   id: BlockId.create(input.id),
-  isAbstract: false,
   languages: [],
   layer: input.layer,
   requires: [],

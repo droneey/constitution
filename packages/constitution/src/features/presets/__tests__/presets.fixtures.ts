@@ -22,7 +22,6 @@ import { ProjectRead, ProjectReadStatus } from '../domain/presets-project/entiti
 import { createYamlPresetFileParser } from '../infrastructure/yaml';
 
 interface BlockFixture {
-  readonly extends?: string;
   readonly governs?: readonly string[];
   readonly id: string;
   readonly layer: Layer;
@@ -91,11 +90,6 @@ const blockFixtures: readonly BlockFixture[] = [
     ],
   },
   {
-    id: '_runtime',
-    layer: Layer.Implementation,
-  },
-  {
-    extends: '_runtime',
     governs: [
       'bunfig.toml',
     ],
@@ -360,14 +354,8 @@ const nestedRoleFixtures: readonly RoleFixture[] = [
 ];
 
 const modelBlockOf = (block: BlockFixture): ModelBlock => ({
-  ...(block.extends === undefined
-    ? {}
-    : {
-        extends: BlockId.create(block.extends),
-      }),
   governs: (block.governs ?? []).map(Glob.create),
   id: BlockId.create(block.id),
-  isAbstract: false,
   languages: [],
   layer: block.layer,
   requires: (block.requires ?? []).map(BlockId.create),

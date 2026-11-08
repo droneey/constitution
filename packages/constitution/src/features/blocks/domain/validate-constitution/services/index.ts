@@ -1,5 +1,4 @@
 export type {
-  AbstractBlocksDetails,
   BlockFinding,
   BlockFindingCode,
   BlockFindingDetails,
@@ -17,7 +16,6 @@ export type {
   NamesDetails,
   PluginDetails,
   ReferencesDetails,
-  RequirementsDetails,
   RequiresDetails,
   RulesDetails,
   SeamsDetails,
@@ -26,7 +24,6 @@ export type {
   WordingDetails,
 } from './validate-constitution';
 export {
-  AbstractBlocksCode,
   BlockFormCode,
   BudgetCode,
   CoreChaptersCode,
@@ -40,7 +37,6 @@ export {
   NamesCode,
   PluginCode,
   ReferencesCode,
-  RequirementsCode,
   RequiresCode,
   RulesCode,
   SeamsCode,

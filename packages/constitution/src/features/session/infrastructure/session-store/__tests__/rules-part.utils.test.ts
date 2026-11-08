@@ -15,8 +15,8 @@ import {
 } from '../rules-part.messages';
 import { partRulesOf, partTextsOf, readingTextOf } from '../rules-part.utils';
 
-const namesFile = AbsolutePath.create('/work/blocks/core/foundation/names.md');
-const functionsFile = AbsolutePath.create('/work/blocks/core/foundation/functions.md');
+const namesFile = AbsolutePath.create('/work/blocks/core/@foundation/names.md');
+const functionsFile = AbsolutePath.create('/work/blocks/core/@foundation/functions.md');
 
 const ruleOf = (
   input: Partial<GatedRule> & {

@@ -16,8 +16,8 @@ describe('BlockId', () => {
       text: 'version-control-2',
     },
     {
-      condition: 'it opens with the mark of an abstract block',
-      isBlockId: true,
+      condition: 'it opens with an underscore',
+      isBlockId: false,
       text: '_js-runtime',
     },
     {
@@ -51,12 +51,12 @@ describe('BlockId', () => {
       text: 'client//browser',
     },
     {
-      condition: 'a segment past the first opens with the abstract mark',
+      condition: 'a segment past the first opens with an underscore',
       isBlockId: false,
       text: 'react/_native',
     },
     {
-      condition: 'a path opens with the abstract mark',
+      condition: 'a path opens with an underscore',
       isBlockId: false,
       text: '_react/react-dom',
     },
@@ -76,7 +76,7 @@ describe('BlockId', () => {
       text: 'design--system',
     },
     {
-      condition: 'it holds the abstract mark inside',
+      condition: 'it holds an underscore inside',
       isBlockId: false,
       text: 'js_runtime',
     },
@@ -183,7 +183,7 @@ describe('BlockId', () => {
       name: 'react-dom',
     },
     {
-      condition: 'it opens with the abstract mark',
+      condition: 'it opens with an underscore',
       isSegment: false,
       name: '_react',
     },
@@ -259,27 +259,5 @@ describe('BlockId', () => {
 
     // Assert
     expect<readonly string[]>(read).toStrictEqual(ancestors);
-  });
-
-  it.each([
-    {
-      condition: 'it opens with the abstract mark',
-      isAbstractId: true,
-      text: '_store',
-    },
-    {
-      condition: 'it opens with a letter',
-      isAbstractId: false,
-      text: 'store',
-    },
-  ])('should say $isAbstractId when $condition', ({ isAbstractId, text }) => {
-    // Arrange
-    const id = BlockId.create(text);
-
-    // Act
-    const isAbstract = BlockId.isAbstract(id);
-
-    // Assert
-    expect(isAbstract).toBe(isAbstractId);
   });
 });

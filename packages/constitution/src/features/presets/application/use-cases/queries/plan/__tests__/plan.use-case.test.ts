@@ -20,7 +20,7 @@ describe('planPresets', () => {
     // Arrange
     const project = projectOf({
       files: releasePresets({
-        'biome/foundation.yaml': [
+        'biome/@foundation.yaml': [
           'biome:',
           "  '*':",
           "    '*':",

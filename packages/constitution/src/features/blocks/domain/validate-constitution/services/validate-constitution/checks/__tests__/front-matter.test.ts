@@ -19,38 +19,6 @@ const BIOME = 'blocks/implementations/biome/biome.md';
 const TYPESCRIPT = 'blocks/contexts/languages/typescript/typescript.md';
 
 describe('frontMatterCheck', () => {
-  it('should report an abstract core, which no block may build on', () => {
-    // Arrange
-    const input = checkInputOf({
-      ...validFiles(),
-      [CORE]: passportFile({
-        abstract: true,
-        body: '# Core\n',
-        id: 'core',
-      }),
-    });
-
-    // Act
-    const findings = frontMatterCheck(input);
-
-    // Assert
-    expect(findings).toStrictEqual([
-      {
-        code: FrontMatterCode.FieldOutsideLayer,
-        details: {
-          field: FrontMatterField.Abstract,
-          layer: Layer.Core,
-        },
-        path: CORE,
-      },
-      {
-        code: FrontMatterCode.AbstractWithoutUnderscore,
-        details: {},
-        path: CORE,
-      },
-    ]);
-  });
-
   it.each<{
     block: BlockFixture;
     finding: FindingOf<FrontMatterDetails>;
@@ -81,21 +49,6 @@ describe('frontMatterCheck', () => {
         code: FrontMatterCode.FieldOutsideLayer,
         details: {
           field: FrontMatterField.Requires,
-          layer: Layer.Core,
-        },
-        path: CORE,
-      },
-    },
-    {
-      block: {
-        body: '# Core\n',
-        extends: 'i18n',
-        id: 'core',
-      },
-      finding: {
-        code: FrontMatterCode.FieldOutsideLayer,
-        details: {
-          field: FrontMatterField.Extends,
           layer: Layer.Core,
         },
         path: CORE,
@@ -164,30 +117,6 @@ describe('frontMatterCheck', () => {
         details: {
           listed: BlockId.create('kotlin'),
         },
-        path: BIOME,
-      },
-    },
-    {
-      block: {
-        abstract: false,
-        body: '# React\n',
-        id: '_react',
-      },
-      finding: {
-        code: FrontMatterCode.UnderscoreNotAbstract,
-        details: {},
-        path: 'blocks/implementations/_react/_react.md',
-      },
-    },
-    {
-      block: {
-        abstract: true,
-        body: '# Biome\n',
-        id: 'biome',
-      },
-      finding: {
-        code: FrontMatterCode.AbstractWithoutUnderscore,
-        details: {},
         path: BIOME,
       },
     },

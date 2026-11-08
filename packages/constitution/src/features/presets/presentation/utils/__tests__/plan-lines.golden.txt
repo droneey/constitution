@@ -1,6 +1,6 @@
 # plan
 biome.json
-  presets/biome/foundation.yaml: biome → *
+  presets/biome/@foundation.yaml: biome → *
 run check
   bun run check
 packages/kit: run fix

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { Axis, BlockFormat, Layer, Level } from '#/kernel/constants';
+import { Axis, Layer, Level } from '#/kernel/constants';
 import { TermKind, WarningKind } from '#/kernel/entities';
 import {
   AbsolutePath,
@@ -26,7 +26,7 @@ describe('readBlockSet', () => {
     const sources = [
       sourceOf({
         files: {
-          'blocks/domains/ui/architecture/with/api.md': [
+          'blocks/domains/ui/@architecture/with/api.md': [
             'Its calls sit in **`calls/`**{#api-call}.',
             '',
             ruleOf({
@@ -34,7 +34,7 @@ describe('readBlockSet', () => {
               slug: 'ui-calls-api',
             }),
           ].join('\n'),
-          'blocks/domains/ui/workflow/review.md': ruleOf({
+          'blocks/domains/ui/@workflow/review.md': ruleOf({
             level: 'MAY',
             slug: 'ui-review',
           }),
@@ -65,10 +65,9 @@ describe('readBlockSet', () => {
             id: 'web',
           }),
           'blocks/domains/api/api.md': passportOf({
-            abstract: true,
             id: 'api',
           }),
-          'blocks/core/foundation/code.md': [
+          'blocks/core/@foundation/code.md': [
             'The **`kernel/`** holds the shared domain.',
             '',
             ruleOf({
@@ -96,7 +95,6 @@ describe('readBlockSet', () => {
                 slug: 'kit-rule',
               }),
             ].join('\n'),
-            extends: 'api',
             id: 'kit',
             languages: [
               'python',
@@ -113,26 +111,21 @@ describe('readBlockSet', () => {
 
     // Assert
     expect(blockSet).toStrictEqual({
-      ancestors: ancestorsOf({
-        kit: [
-          'api',
-        ],
-      }),
+      ancestors: ancestorsOf({}),
       blocks: [
         blockSetBlockOf({
           chapters: [
-            'foundation/code.md',
+            '@foundation/code.md',
           ],
           id: 'core',
           layer: Layer.Core,
         }),
         blockSetBlockOf({
           id: 'api',
-          isAbstract: true,
         }),
         blockSetBlockOf({
           chapters: [
-            'workflow/review.md',
+            '@workflow/review.md',
           ],
           governs: [
             '**/*.tsx',
@@ -142,7 +135,7 @@ describe('readBlockSet', () => {
             'api',
           ],
           seams: [
-            'architecture/api',
+            '@architecture/api',
           ],
         }),
         blockSetBlockOf({
@@ -154,7 +147,6 @@ describe('readBlockSet', () => {
           layer: Layer.Language,
         }),
         blockSetBlockOf({
-          extends: 'api',
           id: 'kit',
           languages: [
             'python',
@@ -288,9 +280,8 @@ describe('readBlockSet', () => {
 
     // Assert
     expect({
-      blocks: blockSet.blocks.map(({ chapters, format, id, seams }) => ({
+      blocks: blockSet.blocks.map(({ chapters, id, seams }) => ({
         chapters,
-        format,
         id,
         seams,
       })),
@@ -304,7 +295,6 @@ describe('readBlockSet', () => {
               name: 'code',
             },
           ],
-          format: BlockFormat.Nested,
           id: BlockId.create('core'),
           seams: [],
         },
@@ -315,7 +305,6 @@ describe('readBlockSet', () => {
               name: 'rendering',
             },
           ],
-          format: BlockFormat.Nested,
           id: BlockId.create('react/ink'),
           seams: [
             {
@@ -329,7 +318,7 @@ describe('readBlockSet', () => {
     });
   });
 
-  it("should list a nested block's ancestors by its folders nearest first, skip a folder with no passport, find a pack child's parent in the release, and ignore extends and abstract, when the tree marks its axis folders by @", () => {
+  it("should list a nested block's ancestors by its folders nearest first, skip a folder with no passport, and find a pack child's parent in the release", () => {
     // Arrange
     const sources = [
       sourceOf({
@@ -341,8 +330,6 @@ describe('readBlockSet', () => {
             id: 'react',
           }),
           'blocks/implementations/react/react-native/expo/expo.md': passportOf({
-            abstract: true,
-            extends: 'ghost',
             id: 'react/react-native/expo',
           }),
           'blocks/implementations/react/react-native/react-native.md': passportOf({
@@ -372,11 +359,7 @@ describe('readBlockSet', () => {
     // Assert
     expect({
       ancestors: blockSet.ancestors,
-      blocks: blockSet.blocks.map(({ extends: base, id, isAbstract }) => ({
-        base,
-        id,
-        isAbstract,
-      })),
+      blocks: blockSet.blocks.map(({ id }) => id),
       warnings: blockSet.warnings,
     }).toStrictEqual({
       ancestors: ancestorsOf({
@@ -402,126 +385,8 @@ describe('readBlockSet', () => {
         'schema',
         'schema/zod/forms',
         'schema/valibot',
-      ].map((id) => ({
-        base: undefined,
-        id: BlockId.create(id),
-        isAbstract: false,
-      })),
+      ].map(BlockId.create),
       warnings: [],
-    });
-  });
-
-  it('should list the bases of a block nearest first, as far as each is a block, when its bases chain, close in a cycle or end at no block', () => {
-    // Arrange
-    const sources = [
-      sourceOf({
-        files: {
-          'blocks/domains/a/a.md': passportOf({
-            abstract: true,
-            id: 'a',
-          }),
-          'blocks/domains/b/b.md': passportOf({
-            abstract: true,
-            extends: 'a',
-            id: 'b',
-          }),
-          'blocks/domains/c/c.md': passportOf({
-            extends: 'b',
-            id: 'c',
-          }),
-          'blocks/domains/d/d.md': passportOf({
-            abstract: true,
-            extends: 'ghost',
-            id: 'd',
-          }),
-          'blocks/domains/e/e.md': passportOf({
-            extends: 'd',
-            id: 'e',
-          }),
-          'blocks/domains/x/x.md': passportOf({
-            abstract: true,
-            extends: 'y',
-            id: 'x',
-          }),
-          'blocks/domains/y/y.md': passportOf({
-            abstract: true,
-            extends: 'x',
-            id: 'y',
-          }),
-        },
-      }),
-    ];
-
-    // Act
-    const blockSet = blockSetOf(sources);
-
-    // Assert
-    expect(blockSet).toStrictEqual({
-      ancestors: ancestorsOf({
-        b: [
-          'a',
-        ],
-        c: [
-          'b',
-          'a',
-        ],
-        e: [
-          'd',
-        ],
-        y: [
-          'x',
-        ],
-        x: [
-          'y',
-          'x',
-        ],
-      }),
-      blocks: [
-        blockSetBlockOf({
-          id: 'a',
-          isAbstract: true,
-        }),
-        blockSetBlockOf({
-          extends: 'a',
-          id: 'b',
-          isAbstract: true,
-        }),
-        blockSetBlockOf({
-          extends: 'b',
-          id: 'c',
-        }),
-        blockSetBlockOf({
-          extends: 'ghost',
-          id: 'd',
-          isAbstract: true,
-        }),
-        blockSetBlockOf({
-          extends: 'd',
-          id: 'e',
-        }),
-        blockSetBlockOf({
-          extends: 'y',
-          id: 'x',
-          isAbstract: true,
-        }),
-        blockSetBlockOf({
-          extends: 'x',
-          id: 'y',
-          isAbstract: true,
-        }),
-      ],
-      roles: [],
-      rules: [],
-      warnings: [
-        {
-          details: {
-            base: 'ghost',
-            block: BlockId.create('d'),
-            source: SourceKind.Release,
-          },
-          kind: WarningKind.BaseNoBlock,
-        },
-      ],
     });
   });
 
@@ -658,7 +523,7 @@ describe('readBlockSet', () => {
         blocks: [
           blockSetBlockOf({
             chapters: [
-              'foundation/screens.md',
+              '@foundation/screens.md',
             ],
             id: 'ui',
             source: 'rules',
@@ -669,7 +534,7 @@ describe('readBlockSet', () => {
         warnings: [
           {
             details: {
-              file: '/project/rules/blocks/domains/ui/foundation/screens.md',
+              file: '/project/rules/blocks/domains/ui/@foundation/screens.md',
               source: SourceKind.Pack,
             },
             kind: WarningKind.FileUnreadable,
@@ -685,7 +550,7 @@ describe('readBlockSet', () => {
           },
           source: 'rules',
           unreadable: [
-            'blocks/domains/ui/foundation/screens.md',
+            'blocks/domains/ui/@foundation/screens.md',
           ],
         }),
       ],
@@ -711,7 +576,7 @@ describe('readBlockSet', () => {
           },
           {
             details: {
-              file: '/release/blocks/domains/ui/architecture/with/Remote_Data.md',
+              file: '/release/blocks/domains/ui/@architecture/with/Remote_Data.md',
               source: SourceKind.Release,
             },
             kind: WarningKind.NotBlockFile,
@@ -724,7 +589,7 @@ describe('readBlockSet', () => {
             'blocks/domains/Design_System/Design_System.md': passportOf({
               id: 'design-system',
             }),
-            'blocks/domains/ui/architecture/with/Remote_Data.md': '# UI with remote data\n',
+            'blocks/domains/ui/@architecture/with/Remote_Data.md': '# UI with remote data\n',
             'blocks/domains/ui/ui.md': passportOf({
               id: 'ui',
             }),
@@ -784,49 +649,28 @@ describe('readBlockSet', () => {
         warnings: [
           {
             details: {
-              file: '/release/blocks/domains/ui/foundation/a.md/b.md',
+              file: '/release/blocks/domains/ui/@foundation/a.md/b.md',
               source: SourceKind.Release,
             },
             kind: WarningKind.NotBlockFile,
           },
           {
             details: {
-              file: '/release/blocks/domains/ui/foundation/deep/with/a.md',
+              file: '/release/blocks/domains/ui/@foundation/deep/with/a.md',
               source: SourceKind.Release,
             },
             kind: WarningKind.NotBlockFile,
           },
           {
             details: {
-              file: '/release/blocks/domains/ui/foundation/deep/x.md',
+              file: '/release/blocks/domains/ui/@foundation/deep/x.md',
               source: SourceKind.Release,
             },
             kind: WarningKind.NotBlockFile,
           },
           {
             details: {
-              file: '/release/blocks/domains/ui/foundation/with/a.md/b.md',
-              source: SourceKind.Release,
-            },
-            kind: WarningKind.NotBlockFile,
-          },
-          {
-            details: {
-              file: '/release/blocks/domains/ui/foundation/with/deep/x.md',
-              source: SourceKind.Release,
-            },
-            kind: WarningKind.NotBlockFile,
-          },
-          {
-            details: {
-              file: '/release/blocks/domains/ui/guides/a.md',
-              source: SourceKind.Release,
-            },
-            kind: WarningKind.NotBlockFile,
-          },
-          {
-            details: {
-              file: '/release/blocks/domains/ui/guides/with/a.md',
+              file: '/release/blocks/domains/ui/@foundation/with/a.md/b.md',
               source: SourceKind.Release,
             },
             kind: WarningKind.NotBlockFile,
@@ -843,13 +687,10 @@ describe('readBlockSet', () => {
       sources: [
         sourceOf({
           files: {
-            'blocks/domains/ui/foundation/a.md/b.md': PLAIN,
-            'blocks/domains/ui/foundation/deep/with/a.md': PLAIN,
-            'blocks/domains/ui/foundation/deep/x.md': PLAIN,
-            'blocks/domains/ui/foundation/with/a.md/b.md': PLAIN,
-            'blocks/domains/ui/foundation/with/deep/x.md': PLAIN,
-            'blocks/domains/ui/guides/a.md': PLAIN,
-            'blocks/domains/ui/guides/with/a.md': PLAIN,
+            'blocks/domains/ui/@foundation/a.md/b.md': PLAIN,
+            'blocks/domains/ui/@foundation/deep/with/a.md': PLAIN,
+            'blocks/domains/ui/@foundation/deep/x.md': PLAIN,
+            'blocks/domains/ui/@foundation/with/a.md/b.md': PLAIN,
             'blocks/domains/ui/notes.md': PLAIN,
             'blocks/domains/ui/ui.md': passportOf({
               id: 'ui',
@@ -903,7 +744,7 @@ describe('readBlockSet', () => {
         }),
         packOf({
           files: {
-            'blocks/domains/ui/foundation/screens.md': ruleOf({
+            'blocks/domains/ui/@foundation/screens.md': ruleOf({
               level: 'MUST',
               slug: 'pack-rule',
             }),
@@ -933,7 +774,7 @@ describe('readBlockSet', () => {
         blocks: [
           blockSetBlockOf({
             chapters: [
-              'foundation/screens.md',
+              '@foundation/screens.md',
             ],
             governs: [
               'domains/**',
@@ -964,14 +805,14 @@ describe('readBlockSet', () => {
             'blocks/contexts/languages/alpha/alpha.md': passportOf({
               id: 'alpha',
             }),
-            'blocks/contexts/languages/twin/foundation/types.md': PLAIN,
+            'blocks/contexts/languages/twin/@foundation/types.md': PLAIN,
             'blocks/contexts/languages/twin/twin.md': passportOf({
               governs: [
                 'languages/**',
               ],
               id: 'twin',
             }),
-            'blocks/domains/twin/foundation/screens.md': PLAIN,
+            'blocks/domains/twin/@foundation/screens.md': PLAIN,
             'blocks/domains/twin/twin.md': passportOf({
               governs: [
                 'domains/**',
@@ -989,7 +830,7 @@ describe('readBlockSet', () => {
         blocks: [
           blockSetBlockOf({
             chapters: [
-              'foundation/screens.md',
+              '@foundation/screens.md',
             ],
             id: 'twin',
           }),
@@ -1016,7 +857,7 @@ describe('readBlockSet', () => {
               ],
               id: 'twin',
             }),
-            'blocks/domains/twin/foundation/screens.md': PLAIN,
+            'blocks/domains/twin/@foundation/screens.md': PLAIN,
           },
         }),
       ],
@@ -1028,7 +869,7 @@ describe('readBlockSet', () => {
         blocks: [
           blockSetBlockOf({
             chapters: [
-              'foundation/screens.md',
+              '@foundation/screens.md',
             ],
             id: 'ui',
           }),
@@ -1043,7 +884,7 @@ describe('readBlockSet', () => {
         warnings: [
           {
             details: {
-              file: '/release/blocks/domains/ui/foundation/screens.md',
+              file: '/release/blocks/domains/ui/@foundation/screens.md',
               rule: RuleSlug.create('one'),
               source: SourceKind.Release,
             },
@@ -1054,7 +895,7 @@ describe('readBlockSet', () => {
       sources: [
         sourceOf({
           files: {
-            'blocks/domains/ui/foundation/screens.md': ruleOf({
+            'blocks/domains/ui/@foundation/screens.md': ruleOf({
               level: 'MAY',
               slug: 'one',
             }),
@@ -1119,87 +960,6 @@ describe('readBlockSet', () => {
                 'ghost',
                 'Bad_Name',
               ],
-            }),
-          },
-        }),
-      ],
-    },
-    {
-      condition: 'a block of a pack extends an unknown block',
-      expected: {
-        ancestors: ancestorsOf({}),
-        blocks: [
-          blockSetBlockOf({
-            extends: 'ghost',
-            id: 'kit',
-            layer: Layer.Implementation,
-            source: 'rules',
-          }),
-        ],
-        roles: [],
-        rules: [],
-        warnings: [
-          {
-            details: {
-              base: 'ghost',
-              block: BlockId.create('kit'),
-              source: SourceKind.Pack,
-            },
-            kind: WarningKind.BaseNoBlock,
-          },
-        ],
-      },
-      sources: [
-        packOf({
-          files: {
-            'blocks/implementations/kit/kit.md': passportOf({
-              extends: 'ghost',
-              id: 'kit',
-            }),
-          },
-          source: 'rules',
-        }),
-      ],
-    },
-    {
-      condition: 'a block extends a concrete block',
-      expected: {
-        ancestors: ancestorsOf({
-          ui: [
-            'api',
-          ],
-        }),
-        blocks: [
-          blockSetBlockOf({
-            id: 'api',
-          }),
-          blockSetBlockOf({
-            extends: 'api',
-            id: 'ui',
-          }),
-        ],
-        roles: [],
-        rules: [],
-        warnings: [
-          {
-            details: {
-              base: 'api',
-              block: BlockId.create('ui'),
-              source: SourceKind.Release,
-            },
-            kind: WarningKind.BaseConcrete,
-          },
-        ],
-      },
-      sources: [
-        sourceOf({
-          files: {
-            'blocks/domains/api/api.md': passportOf({
-              id: 'api',
-            }),
-            'blocks/domains/ui/ui.md': passportOf({
-              extends: 'api',
-              id: 'ui',
             }),
           },
         }),

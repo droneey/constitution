@@ -36,11 +36,11 @@ describe('rulesTexts', () => {
       problem: {
         code: RulesCode.DefinedTwice,
         details: {
-          firstFile: 'blocks/core/foundation/principles.md',
+          firstFile: 'blocks/core/@foundation/principles.md',
           slug: RuleSlug.create('rules-bind'),
         },
       },
-      text: 'rule "rules-bind" is also defined in blocks/core/foundation/principles.md',
+      text: 'rule "rules-bind" is also defined in blocks/core/@foundation/principles.md',
     },
     {
       problem: {

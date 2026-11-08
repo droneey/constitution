@@ -6,7 +6,6 @@ import { BlockId } from '#/kernel/value-objects';
 import type { Files } from '../../../../../../__tests__/constitution.fixtures';
 import { chapterFile, rule } from '../../../../../../__tests__/constitution.fixtures';
 import { nestedFiles, nestedPassportFile } from '../../../../../../__tests__/nested-files.fixtures';
-import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { checkInputOf } from '../../../../../../application/use-cases/queries/check/__tests__/check.fixtures';
 import type { NamesDetails } from '../names';
 import { NamesCode, namesCheck } from '../names';
@@ -300,22 +299,6 @@ describe('namesCheck', () => {
       path,
       text,
     });
-
-    // Assert
-    expect(findings).toStrictEqual([]);
-  });
-
-  it('should report nothing on a tree of the legacy format', () => {
-    // Arrange
-    const files = validFiles();
-
-    files['blocks/core/foundation/principles.md'] = chapterSaying(
-      'Principles',
-      'Every program runs in Docker.',
-    );
-
-    // Act
-    const findings = namesCheck(checkInputOf(files));
 
     // Assert
     expect(findings).toStrictEqual([]);

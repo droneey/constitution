@@ -1,11 +1,11 @@
-import { BlockFormat, Layer, VOCABULARY_SECTION } from '#/kernel/constants';
+import { Layer, VOCABULARY_SECTION } from '#/kernel/constants';
 import type { Rule } from '#/kernel/entities';
 import type { FindingOf, ProblemOf } from '#/kernel/types';
 import { maskInlineCode, withoutCodeFences } from '#/kernel/utils';
 import type { RuleSlug } from '#/kernel/value-objects';
 
 import type { Block, BlockFile } from '../../../../block/entities';
-import { GENERAL_SECTION, GOVERNS_LINE, REQUIREMENTS_SECTION } from '../../../constants';
+import { GENERAL_SECTION, GOVERNS_LINE } from '../../../constants';
 import { findingsAt } from '../../../utils';
 import type { Check, CheckInput } from '../check.types';
 
@@ -15,7 +15,6 @@ enum BlockFormCode {
   WithoutRules = 'chapter-without-rules',
   RuleOutsideSection = 'rule-outside-section',
   SectionRepeatsTitle = 'section-repeats-title',
-  RequirementsNotLast = 'requirements-section-not-last',
   GeneralNotFirst = 'general-section-not-first',
   TextBeforeSections = 'text-before-first-section',
   VocabularyNotFirst = 'vocabulary-section-not-first',
@@ -35,7 +34,6 @@ interface BlockFormDetails {
   readonly [BlockFormCode.SectionRepeatsTitle]: {
     readonly section: string;
   };
-  readonly [BlockFormCode.RequirementsNotLast]: object;
   readonly [BlockFormCode.GeneralNotFirst]: object;
   readonly [BlockFormCode.TextBeforeSections]: object;
   readonly [BlockFormCode.VocabularyNotFirst]: object;
@@ -106,7 +104,6 @@ const sectionProblems = (input: {
   title: string | undefined;
 }): readonly BlockFormProblem[] => {
   const { sections, title } = input;
-  const requirements = sections.indexOf(REQUIREMENTS_SECTION);
   // Why: a vocabulary or a tree that opens a chapter holds no rule, so General leads the
   // sections that hold one.
   const sectionsOfRules = sections.filter((section) => input.ruleSections.includes(section));
@@ -122,14 +119,6 @@ const sectionProblems = (input: {
           },
         }),
       ),
-    ...(requirements === -1 || requirements === sections.length - 1
-      ? []
-      : [
-          {
-            code: BlockFormCode.RequirementsNotLast,
-            details: {},
-          } satisfies BlockFormProblem,
-        ]),
     ...(sectionsOfRules.indexOf(GENERAL_SECTION) > 0
       ? [
           {
@@ -251,21 +240,8 @@ const layoutProblems = (input: {
   ];
 };
 
-const nestedProblems = (input: {
-  lines: readonly string[];
-  rules: readonly Rule[];
-  sections: readonly string[];
-}): readonly BlockFormProblem[] => [
-  ...layoutProblems(input),
-  ...definitionProblems({
-    isPassport: false,
-    lines: input.lines,
-  }),
-];
-
 const fileFindings = (input: {
   file: BlockFile;
-  format: BlockFormat;
   rules: readonly Rule[];
 }): readonly BlockFormFinding[] => {
   const { file } = input;
@@ -282,13 +258,15 @@ const fileFindings = (input: {
       sections,
       title: opening.title,
     }),
-    ...(input.format === BlockFormat.Nested
-      ? nestedProblems({
-          lines,
-          rules,
-          sections,
-        })
-      : []),
+    ...layoutProblems({
+      lines,
+      rules,
+      sections,
+    }),
+    ...definitionProblems({
+      isPassport: false,
+      lines,
+    }),
   ].map((problem) => ({
     ...problem,
     path: file.path,
@@ -306,7 +284,7 @@ const isPassportShaped = (lines: readonly string[]): boolean => {
   );
 };
 
-const nestedPassportFindings = (block: Block): readonly BlockFormFinding[] => {
+const passportFormFindings = (block: Block): readonly BlockFormFinding[] => {
   const lines = linesOf(block.passport);
 
   return findingsAt(block.passport.path, [
@@ -328,11 +306,10 @@ const blockFormCheck: Check<BlockFormFinding> = ({
 }: CheckInput): readonly BlockFormFinding[] =>
   constitution.blocks.flatMap((block) => [
     ...passportFindings(block),
-    ...(constitution.format === BlockFormat.Nested ? nestedPassportFindings(block) : []),
+    ...passportFormFindings(block),
     ...block.parts.flatMap((file) =>
       fileFindings({
         file,
-        format: constitution.format,
         rules: constitution.rules,
       }),
     ),

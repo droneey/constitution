@@ -1,5 +1,3 @@
-export type { AbstractBlocksDetails } from './abstract-blocks';
-export { AbstractBlocksCode, abstractBlocksCheck } from './abstract-blocks';
 export type { BlockFormDetails } from './block-form';
 export { BlockFormCode, blockFormCheck } from './block-form';
 export type { BudgetDetails } from './budget';
@@ -24,8 +22,6 @@ export type { PluginDetails } from './plugin';
 export { PluginCode, pluginCheck } from './plugin';
 export type { ReferencesDetails } from './references';
 export { ReferencesCode, referencesCheck } from './references';
-export type { RequirementsDetails } from './requirements';
-export { RequirementsCode, requirementsCheck } from './requirements';
 export type { RequiresDetails } from './requires';
 export { RequiresCode, requiresCheck } from './requires';
 export type { RulesDetails } from './rules';

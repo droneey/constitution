@@ -3,7 +3,7 @@ import { describe, expect, it } from 'bun:test';
 import fc from 'fast-check';
 
 import { createFakeProjectFiles } from '#/__tests__/project-files.fake';
-import { AXES, Axis, BlockFormat, Layer, Level } from '#/kernel/constants';
+import { AXES, Axis, Layer, Level } from '#/kernel/constants';
 import { BlockModel } from '#/kernel/entities';
 import type { RuleSlug } from '#/kernel/value-objects';
 import { AbsolutePath, BlockId, BlockSource, PackPath } from '#/kernel/value-objects';
@@ -22,7 +22,7 @@ import { PresetFilePath } from '../../../../../domain/shared/value-objects';
 import { checkPresets } from '../check-presets.use-case';
 
 const FOLDER = '/work/constitution';
-const FOUNDATION = 'presets/biome/foundation.yaml';
+const FOUNDATION = 'presets/biome/@foundation.yaml';
 
 const findingsOf = (input: {
   distributed?: readonly string[];
@@ -51,7 +51,6 @@ const findingsOf = (input: {
 
 const placeOf = (reader: string, axis: Axis, ...withs: readonly string[]): PresetFilePath => ({
   axis,
-  format: BlockFormat.Legacy,
   reader: BlockId.create(reader),
   withs: withs.map(BlockId.create),
 });
@@ -62,7 +61,6 @@ const nestedPlaceOf = (
   ...withs: readonly string[]
 ): PresetFilePath => ({
   ...placeOf(reader, axis, ...withs),
-  format: BlockFormat.Nested,
 });
 
 const entryOf = (input: {
@@ -173,7 +171,6 @@ const modelPlacesOn = (axis: Axis): readonly PresetFilePath[] =>
         ]),
       ].map((withs) => ({
         axis,
-        format: BlockFormat.Legacy,
         reader,
         withs,
       })),
@@ -216,33 +213,33 @@ describe('checkPresets', () => {
   it('should find nothing when every preset file is sound', () => {
     // Arrange
     const presets = {
-      'biome/foundation/with/bun/with/git.yaml': entryOf({
+      'biome/@foundation/with/bun/with/git.yaml': entryOf({
         block: 'bun',
         value: "files: ['**/*${role.ignore-file}']",
       }),
-      'biome/architecture/with/bun.yaml': entryOf({
+      'biome/@architecture/with/bun.yaml': entryOf({
         value: "files: ['**/*${role.typescript-source}']",
       }),
-      'biome/architecture.yaml': entryOf({
+      'biome/@architecture.yaml': entryOf({
         block: 'core',
         rule: 'import-points-inward',
         value: "files: ['${role.adapter}/**', '${role.source}/**']",
       }),
-      'biome/foundation.yaml': entryOf({
+      'biome/@foundation.yaml': entryOf({
         language: 'typescript',
         value: "includes: ['!!${workspace.members}', '**/*.ts', '.gitignore', 'docs/**']",
       }),
-      'biome/foundation/with/bun.yaml': entryOf({
+      'biome/@foundation/with/bun.yaml': entryOf({
         block: 'bun',
         value: "files: ['**/*${role.typescript-source}']",
       }),
-      'biome/foundation/with/git.yaml': entryOf({
+      'biome/@foundation/with/git.yaml': entryOf({
         value: "files: ['**/*${role.ignore-file}']",
       }),
-      'biome/foundation/with/typescript/with/workspace.yaml': entryOf({
+      'biome/@foundation/with/typescript/with/workspace.yaml': entryOf({
         value: "files: ['**/*${role.typescript-source}', '${role.declaration-cache}']",
       }),
-      'biome/foundation/with/nestjs/with/workspace.yaml': [
+      'biome/@foundation/with/nestjs/with/workspace.yaml': [
         entryOf({
           value: "files: ['**/*${role.nest-module}', '${role.declaration-cache}']",
         }),
@@ -251,44 +248,44 @@ describe('checkPresets', () => {
           value: "files: ['${role.declaration-cache}']",
         }),
       ].join('\n'),
-      'biome/foundation/with/git/with/bun.yaml': entryOf({
+      'biome/@foundation/with/git/with/bun.yaml': entryOf({
         block: 'git',
         rule: 'lock-file-committed',
         value: "files: ['**/*${role.typescript-source}']",
       }),
-      'biome/foundation/with/nx.yaml': entryOf({
+      'biome/@foundation/with/nx.yaml': entryOf({
         value: "files: ['${role.declaration-cache}']",
       }),
-      'biome/foundation/with/docker.yaml': entryOf({
+      'biome/@foundation/with/docker.yaml': entryOf({
         block: 'docker',
         value: "files: ['**/*${role.ignore-file}']",
       }),
-      'biome/foundation/with/bun/with/workspace.yaml': entryOf({
+      'biome/@foundation/with/bun/with/workspace.yaml': entryOf({
         block: 'bun',
         value: "files: ['${role.declaration-cache}']",
       }),
-      'biome/foundation/with/ui.yaml': entryOf({
+      'biome/@foundation/with/ui.yaml': entryOf({
         block: 'core',
       }),
-      'biome/workflow.yaml': entryOf({
+      'biome/@workflow.yaml': entryOf({
         block: 'core',
         rule: 'commit-checked-by-hooks',
       }),
-      'biome/foundation/with/nestjs.yaml': entryOf({
+      'biome/@foundation/with/nestjs.yaml': entryOf({
         block: 'typescript',
         rule: 'unchecked-type-never-used',
       }),
-      'biome/foundation/with/bun/with/nx.yaml': entryOf({
+      'biome/@foundation/with/bun/with/nx.yaml': entryOf({
         block: 'bun',
         rule: 'install-settings-only-in-the-root',
       }),
-      'biome/foundation/with/css/with/browser.yaml': entryOf({
+      'biome/@foundation/with/css/with/browser.yaml': entryOf({
         block: 'css',
         rule: 'css-loaded-by-the-bundle',
       }),
       'biome/plugins/typescript/unchecked-type-never-used.grit': 'language js',
       'biome/typescript/self.jsonc': '{}',
-      'bun/foundation.yaml': [
+      'bun/@foundation.yaml': [
         'bun:',
         "  '*':",
         "    '*':",
@@ -348,7 +345,7 @@ describe('checkPresets', () => {
         },
       ],
       presets: {
-        'biome/foundation.yaml': 'biome:\n  - [',
+        'biome/@foundation.yaml': 'biome:\n  - [',
       },
     },
     {
@@ -361,10 +358,10 @@ describe('checkPresets', () => {
         },
       ],
       presets: {
-        'biome/foundation.yaml': entryOf({}),
+        'biome/@foundation.yaml': entryOf({}),
       },
       unreadable: [
-        'biome/foundation.yaml',
+        'biome/@foundation.yaml',
       ],
     },
     {
@@ -375,7 +372,7 @@ describe('checkPresets', () => {
           details: {
             keys: [],
           },
-          path: 'presets/biome/architecture.yaml',
+          path: 'presets/biome/@architecture.yaml',
         },
         {
           code: PresetsCode.EntryMisshapen,
@@ -396,7 +393,7 @@ describe('checkPresets', () => {
               '*',
             ],
           },
-          path: 'presets/biome/foundation/with/ui.yaml',
+          path: 'presets/biome/@foundation/with/ui.yaml',
         },
         {
           code: PresetsCode.EntryMisshapen,
@@ -405,14 +402,14 @@ describe('checkPresets', () => {
               'biome',
             ],
           },
-          path: 'presets/biome/workflow.yaml',
+          path: 'presets/biome/@workflow.yaml',
         },
       ],
       presets: {
-        'biome/architecture.yaml': '- biome',
-        'biome/foundation.yaml': "biome:\n  '*': biome.json",
-        'biome/foundation/with/ui.yaml': "core:\n  '*':\n    '*': biome.json",
-        'biome/workflow.yaml': 'biome: biome.json',
+        'biome/@architecture.yaml': '- biome',
+        'biome/@foundation.yaml': "biome:\n  '*': biome.json",
+        'biome/@foundation/with/ui.yaml': "core:\n  '*':\n    '*': biome.json",
+        'biome/@workflow.yaml': 'biome: biome.json',
       },
     },
   ])(
@@ -446,7 +443,7 @@ describe('checkPresets', () => {
           details: {
             reader: BlockId.create('gone'),
           },
-          path: 'presets/gone/foundation.yaml',
+          path: 'presets/gone/@foundation.yaml',
         },
         {
           code: PresetsCode.EntryMisplaced,
@@ -457,11 +454,11 @@ describe('checkPresets', () => {
             unneededBlocks: [],
             unreachedRoles: [],
           },
-          path: 'presets/gone/foundation.yaml',
+          path: 'presets/gone/@foundation.yaml',
         },
       ],
       presets: {
-        'gone/foundation.yaml': entryOf({
+        'gone/@foundation.yaml': entryOf({
           block: 'core',
         }),
       },
@@ -474,11 +471,11 @@ describe('checkPresets', () => {
           details: {
             block: BlockId.create('gone'),
           },
-          path: 'presets/biome/foundation/with/gone.yaml',
+          path: 'presets/biome/@foundation/with/gone.yaml',
         },
       ],
       presets: {
-        'biome/foundation/with/gone.yaml': entryOf({}),
+        'biome/@foundation/with/gone.yaml': entryOf({}),
       },
     },
     {
@@ -493,7 +490,7 @@ describe('checkPresets', () => {
         },
       ],
       presets: {
-        'biome/foundation.yaml': entryOf({
+        'biome/@foundation.yaml': entryOf({
           block: 'gone',
         }),
       },
@@ -510,7 +507,7 @@ describe('checkPresets', () => {
         },
       ],
       presets: {
-        'biome/foundation.yaml': entryOf({
+        'biome/@foundation.yaml': entryOf({
           block: 'Biome',
           rule: 'No Rule',
         }),
@@ -529,7 +526,7 @@ describe('checkPresets', () => {
         },
       ],
       presets: {
-        'biome/foundation.yaml': entryOf({
+        'biome/@foundation.yaml': entryOf({
           language: 'Type Script',
           rule: 'No Rule',
         }),
@@ -549,7 +546,7 @@ describe('checkPresets', () => {
         },
       ],
       presets: {
-        'biome/foundation.yaml': [
+        'biome/@foundation.yaml': [
           'biome:',
           "  '*':",
           "    'Type Script': 1",
@@ -569,7 +566,7 @@ describe('checkPresets', () => {
         },
       ],
       presets: {
-        'biome/foundation.yaml': entryOf({
+        'biome/@foundation.yaml': entryOf({
           rule: 'gone',
         }),
       },
@@ -593,14 +590,14 @@ describe('checkPresets', () => {
             language: 'cobol',
             rule: '*',
           },
-          path: 'presets/biome/workflow.yaml',
+          path: 'presets/biome/@workflow.yaml',
         },
       ],
       presets: {
-        'biome/foundation.yaml': entryOf({
+        'biome/@foundation.yaml': entryOf({
           language: 'biome',
         }),
-        'biome/workflow.yaml': entryOf({
+        'biome/@workflow.yaml': entryOf({
           language: 'cobol',
         }),
       },
@@ -615,11 +612,11 @@ describe('checkPresets', () => {
             owner: BlockId.create('css'),
             rule: 'css-loaded-by-the-bundle',
           },
-          path: 'presets/biome/foundation/with/browser.yaml',
+          path: 'presets/biome/@foundation/with/browser.yaml',
         },
       ],
       presets: {
-        'biome/foundation/with/browser.yaml': entryOf({
+        'biome/@foundation/with/browser.yaml': entryOf({
           block: 'browser',
           rule: 'css-loaded-by-the-bundle',
         }),
@@ -640,7 +637,7 @@ describe('checkPresets', () => {
             ],
             unreachedRoles: [],
           },
-          path: 'presets/biome/foundation/with/css/with/browser.yaml',
+          path: 'presets/biome/@foundation/with/css/with/browser.yaml',
         },
         {
           code: PresetsCode.EntryMisplaced,
@@ -653,14 +650,14 @@ describe('checkPresets', () => {
             ],
             unreachedRoles: [],
           },
-          path: 'presets/biome/foundation/with/css/with/ui.yaml',
+          path: 'presets/biome/@foundation/with/css/with/ui.yaml',
         },
       ],
       presets: {
-        'biome/foundation/with/css/with/browser.yaml': entryOf({
+        'biome/@foundation/with/css/with/browser.yaml': entryOf({
           block: 'css',
         }),
-        'biome/foundation/with/css/with/ui.yaml': entryOf({
+        'biome/@foundation/with/css/with/ui.yaml': entryOf({
           block: 'css',
           rule: 'css-loaded-by-the-bundle',
         }),
@@ -680,7 +677,7 @@ describe('checkPresets', () => {
         },
       ],
       presets: {
-        'biome/foundation.yaml': entryOf({
+        'biome/@foundation.yaml': entryOf({
           rule: 'file-within-500-lines',
         }),
       },
@@ -701,7 +698,7 @@ describe('checkPresets', () => {
         },
       ],
       presets: {
-        'biome/foundation.yaml': entryOf({
+        'biome/@foundation.yaml': entryOf({
           block: 'ui',
         }),
       },
@@ -723,7 +720,7 @@ describe('checkPresets', () => {
         },
       ],
       presets: {
-        'biome/foundation.yaml': entryOf({
+        'biome/@foundation.yaml': entryOf({
           block: 'ui',
           value: "files: ['${role.source}/**']",
         }),
@@ -742,11 +739,11 @@ describe('checkPresets', () => {
             unneededBlocks: [],
             unreachedRoles: [],
           },
-          path: 'presets/biome/foundation/with/css.yaml',
+          path: 'presets/biome/@foundation/with/css.yaml',
         },
       ],
       presets: {
-        'biome/foundation/with/css.yaml': entryOf({
+        'biome/@foundation/with/css.yaml': entryOf({
           block: 'css',
           rule: 'css-loaded-by-the-bundle',
         }),
@@ -790,7 +787,7 @@ describe('checkPresets', () => {
               },
             ],
           },
-          path: 'presets/biome/architecture.yaml',
+          path: 'presets/biome/@architecture.yaml',
         },
         {
           code: PresetsCode.EntryMisplaced,
@@ -808,17 +805,17 @@ describe('checkPresets', () => {
               },
             ],
           },
-          path: 'presets/biome/workflow.yaml',
+          path: 'presets/biome/@workflow.yaml',
         },
       ],
       presets: {
-        'biome/architecture.yaml': entryOf({
+        'biome/@architecture.yaml': entryOf({
           file: 'biome.json ? ${role.ignore-file} = .gitignore',
         }),
-        'biome/foundation.yaml': entryOf({
+        'biome/@foundation.yaml': entryOf({
           file: '${role.ignore-file}',
         }),
-        'biome/workflow.yaml': entryOf({
+        'biome/@workflow.yaml': entryOf({
           file: 'biome.json ? ${unit.parent} = ${role.ignore-file}',
         }),
       },
@@ -846,7 +843,7 @@ describe('checkPresets', () => {
         },
       ],
       presets: {
-        'biome/foundation.yaml': entryOf({
+        'biome/@foundation.yaml': entryOf({
           value: "files: ['**/*${role.ignore-file}']",
         }),
       },
@@ -873,11 +870,11 @@ describe('checkPresets', () => {
               },
             ],
           },
-          path: 'presets/biome/foundation/with/ui.yaml',
+          path: 'presets/biome/@foundation/with/ui.yaml',
         },
       ],
       presets: {
-        'biome/foundation/with/ui.yaml': entryOf({
+        'biome/@foundation/with/ui.yaml': entryOf({
           value: "files: ['**/*${role.typescript-source}']",
         }),
       },
@@ -903,11 +900,11 @@ describe('checkPresets', () => {
               },
             ],
           },
-          path: 'presets/biome/foundation/with/typescript.yaml',
+          path: 'presets/biome/@foundation/with/typescript.yaml',
         },
       ],
       presets: {
-        'biome/foundation/with/typescript.yaml': entryOf({
+        'biome/@foundation/with/typescript.yaml': entryOf({
           value: "files: ['${role.declaration-cache}']",
         }),
       },
@@ -932,11 +929,11 @@ describe('checkPresets', () => {
               },
             ],
           },
-          path: 'presets/bun/foundation.yaml',
+          path: 'presets/bun/@foundation.yaml',
         },
       ],
       presets: {
-        'bun/foundation.yaml': entryOf({
+        'bun/@foundation.yaml': entryOf({
           block: 'bun',
           value: "files: ['${role.declaration-cache}']",
         }),
@@ -963,11 +960,11 @@ describe('checkPresets', () => {
               },
             ],
           },
-          path: 'presets/biome/foundation/with/bun.yaml',
+          path: 'presets/biome/@foundation/with/bun.yaml',
         },
       ],
       presets: {
-        'biome/foundation/with/bun.yaml': entryOf({
+        'biome/@foundation/with/bun.yaml': entryOf({
           block: 'bun',
           value: "files: ['${role.declaration-cache}']",
         }),
@@ -988,11 +985,11 @@ describe('checkPresets', () => {
             ],
             rule: 'css-loaded-by-the-bundle',
           },
-          path: 'presets/biome/foundation/with/css/with/browser.yaml',
+          path: 'presets/biome/@foundation/with/css/with/browser.yaml',
         },
       ],
       presets: {
-        'biome/foundation/with/css/with/browser.yaml': entryOf({
+        'biome/@foundation/with/css/with/browser.yaml': entryOf({
           block: 'css',
           rule: 'css-loaded-by-the-bundle',
           value: "files: ['**/*${role.ignore-file}']",
@@ -1011,11 +1008,11 @@ describe('checkPresets', () => {
             unneededBlocks: [],
             unreachedRoles: [],
           },
-          path: 'presets/biome/foundation/with/browser/with/css.yaml',
+          path: 'presets/biome/@foundation/with/browser/with/css.yaml',
         },
       ],
       presets: {
-        'biome/foundation/with/browser/with/css.yaml': entryOf({
+        'biome/@foundation/with/browser/with/css.yaml': entryOf({
           block: 'css',
           rule: 'css-loaded-by-the-bundle',
         }),
@@ -1031,11 +1028,11 @@ describe('checkPresets', () => {
             rule: 'import-points-inward',
             ruleAxis: Axis.Architecture,
           },
-          path: 'presets/biome/workflow.yaml',
+          path: 'presets/biome/@workflow.yaml',
         },
       ],
       presets: {
-        'biome/workflow.yaml': entryOf({
+        'biome/@workflow.yaml': entryOf({
           block: 'core',
           rule: 'import-points-inward',
         }),
@@ -1051,11 +1048,11 @@ describe('checkPresets', () => {
             rule: 'file-within-500-lines',
             ruleAxis: Axis.Foundation,
           },
-          path: 'presets/biome/architecture.yaml',
+          path: 'presets/biome/@architecture.yaml',
         },
       ],
       presets: {
-        'biome/architecture.yaml': entryOf({
+        'biome/@architecture.yaml': entryOf({
           block: 'core',
           rule: 'file-within-500-lines',
         }),
@@ -1075,11 +1072,11 @@ describe('checkPresets', () => {
             ],
             unreachedRoles: [],
           },
-          path: 'presets/biome/foundation/with/git.yaml',
+          path: 'presets/biome/@foundation/with/git.yaml',
         },
       ],
       presets: {
-        'biome/foundation/with/git.yaml': entryOf({
+        'biome/@foundation/with/git.yaml': entryOf({
           block: 'typescript',
           rule: 'unchecked-type-never-used',
         }),
@@ -1099,11 +1096,11 @@ describe('checkPresets', () => {
             ],
             unreachedRoles: [],
           },
-          path: 'presets/biome/foundation/with/typescript/with/nestjs.yaml',
+          path: 'presets/biome/@foundation/with/typescript/with/nestjs.yaml',
         },
       ],
       presets: {
-        'biome/foundation/with/typescript/with/nestjs.yaml': entryOf({
+        'biome/@foundation/with/typescript/with/nestjs.yaml': entryOf({
           block: 'typescript',
           rule: 'unchecked-type-never-used',
           value: "files: ['**/*${role.nest-module}']",
@@ -1141,7 +1138,7 @@ describe('checkPresets', () => {
         },
       ],
       presets: {
-        'biome/foundation.yaml': entryOf({
+        'biome/@foundation.yaml': entryOf({
           value: "files: ['${role.declaration-cache}', '**/*${role.nest-module}']",
         }),
       },
@@ -1160,11 +1157,11 @@ describe('checkPresets', () => {
             ],
             unreachedRoles: [],
           },
-          path: 'presets/biome/foundation/with/typescript/with/nestjs.yaml',
+          path: 'presets/biome/@foundation/with/typescript/with/nestjs.yaml',
         },
       ],
       presets: {
-        'biome/foundation/with/typescript/with/nestjs.yaml': entryOf({
+        'biome/@foundation/with/typescript/with/nestjs.yaml': entryOf({
           value: "files: ['**/*${role.typescript-source}']",
         }),
       },
@@ -1189,11 +1186,11 @@ describe('checkPresets', () => {
               },
             ],
           },
-          path: 'presets/biome/foundation/with/bun.yaml',
+          path: 'presets/biome/@foundation/with/bun.yaml',
         },
       ],
       presets: {
-        'biome/foundation/with/bun.yaml': entryOf({
+        'biome/@foundation/with/bun.yaml': entryOf({
           value: "files: ['**/*${role.typescript-source}', '**/*${role.ignore-file}']",
         }),
       },
@@ -1212,11 +1209,11 @@ describe('checkPresets', () => {
             ],
             unreachedRoles: [],
           },
-          path: 'presets/biome/foundation/with/nestjs/with/workspace.yaml',
+          path: 'presets/biome/@foundation/with/nestjs/with/workspace.yaml',
         },
       ],
       presets: {
-        'biome/foundation/with/nestjs/with/workspace.yaml': entryOf({
+        'biome/@foundation/with/nestjs/with/workspace.yaml': entryOf({
           value: "files: ['**/*${role.typescript-source}']",
         }),
       },
@@ -1588,7 +1585,7 @@ describe('checkPresets', () => {
     // Act
     const found = findingsOf({
       presets: {
-        'biome/foundation.yaml': entry,
+        'biome/@foundation.yaml': entry,
       },
     });
 
@@ -1602,7 +1599,7 @@ describe('checkPresets', () => {
     // Act
     const found = findingsOf({
       presets: {
-        'biome/foundation.yaml': [
+        'biome/@foundation.yaml': [
           'biome:',
           "  '*':",
           "    '*':",
@@ -1653,7 +1650,7 @@ describe('checkPresets', () => {
     const found = findingsOf({
       model,
       presets: {
-        'biome/foundation/with/git.yaml': entryOf({
+        'biome/@foundation/with/git.yaml': entryOf({
           value: "files: ['${role.gone}', '**/*${role.ignore-file}']",
         }),
       },
@@ -1668,7 +1665,7 @@ describe('checkPresets', () => {
           role: 'gone',
           rule: '*',
         },
-        path: 'presets/biome/foundation/with/git.yaml',
+        path: 'presets/biome/@foundation/with/git.yaml',
       },
     ]);
   });
@@ -1676,7 +1673,7 @@ describe('checkPresets', () => {
   it('should find the release’s files its entries name and lack, and its plugins no entry names or that name no rule, a name that is no slug among them', () => {
     // Arrange
     const presets = {
-      'biome/foundation.yaml': entryOf({
+      'biome/@foundation.yaml': entryOf({
         value:
           "plugins: ['${constitution.path}/presets/biome/plugins/typescript/gone.grit', '${constitution.path}/${role.gone}/x']",
       }),
@@ -1760,7 +1757,7 @@ describe('checkPresets', () => {
     ({ distributed, expected }) => {
       // Arrange
       const presets = {
-        'biome/foundation.yaml': entryOf({
+        'biome/@foundation.yaml': entryOf({
           value: "plugins: ['${constitution.path}/tools/gone.js']",
         }),
       };
@@ -1783,7 +1780,7 @@ describe('checkPresets', () => {
   it('should read a role in the path of a release file, a folder by its name, and no whole file a default writes', () => {
     // Arrange
     const presets = {
-      'biome/foundation.yaml': [
+      'biome/@foundation.yaml': [
         'biome:',
         "  '*':",
         "    '*':",
@@ -1814,7 +1811,7 @@ describe('checkPresets', () => {
   it('should hold a pack checked in its own folder to the terms’ ids', () => {
     // Arrange
     const presets = {
-      'biome/foundation.yaml': entryOf({
+      'biome/@foundation.yaml': entryOf({
         value: 'files: src/**',
       }),
     };
@@ -1834,7 +1831,7 @@ describe('checkPresets', () => {
   it('should hold a pack to its own preset files alone, and never to the release’s files', () => {
     // Arrange
     const presets = {
-      'biome/foundation.yaml': entryOf({
+      'biome/@foundation.yaml': entryOf({
         value: "plugin: '${constitution.path}/presets/gone.grit'",
       }),
       'biome/plugins/typescript/no-such-rule.grit': 'language js',
@@ -1853,7 +1850,7 @@ describe('checkPresets', () => {
   it("should find the clashes and missing slots of every entry of a file or of the unit's run taken at once, but none in a file whose entries only insert", () => {
     // Arrange
     const presets = {
-      'biome/foundation.yaml': [
+      'biome/@foundation.yaml': [
         'biome:',
         "  '*':",
         '    typescript:',
@@ -1865,7 +1862,7 @@ describe('checkPresets', () => {
         '      ${constitution.run}:',
         '        fix: biome',
       ].join('\n'),
-      'biome/foundation/with/css/with/browser.yaml': [
+      'biome/@foundation/with/css/with/browser.yaml': [
         'css:',
         '  css-loaded-by-the-bundle:',
         "    '*':",
@@ -1894,8 +1891,8 @@ describe('checkPresets', () => {
         details: {
           settingPath: 'width',
           sources: [
-            'presets/biome/foundation/with/css/with/browser.yaml: css → css-loaded-by-the-bundle',
-            'presets/biome/foundation.yaml: biome → *',
+            'presets/biome/@foundation/with/css/with/browser.yaml: css → css-loaded-by-the-bundle',
+            'presets/biome/@foundation.yaml: biome → *',
           ],
         },
         path: 'biome.json',
@@ -1913,8 +1910,8 @@ describe('checkPresets', () => {
         details: {
           settingPath: 'fix',
           sources: [
-            'presets/biome/foundation/with/css/with/browser.yaml: css → css-loaded-by-the-bundle',
-            'presets/biome/foundation.yaml: biome → *',
+            'presets/biome/@foundation/with/css/with/browser.yaml: css → css-loaded-by-the-bundle',
+            'presets/biome/@foundation.yaml: biome → *',
           ],
         },
         path: '${constitution.run}',
@@ -2102,16 +2099,6 @@ describe('checkPresets', () => {
       },
     },
     {
-      condition: 'its legacy path names a block that builds on its reader',
-      findings: [],
-      model: presetsModel,
-      presets: {
-        '_runtime/foundation/with/bun.yaml': entryOf({
-          block: 'bun',
-        }),
-      },
-    },
-    {
       condition: 'its key names a rule below MUST',
       findings: [
         {
@@ -2132,19 +2119,8 @@ describe('checkPresets', () => {
         }),
       },
     },
-    {
-      condition: 'its legacy key names a rule below MUST',
-      findings: [],
-      model: nestedPresetsModel,
-      presets: {
-        'core/foundation.yaml': entryOf({
-          block: 'core',
-          rule: 'code-reads-plainly',
-        }),
-      },
-    },
   ])(
-    'should find what a nested preset file breaks when $condition',
+    'should find what a preset file of nested blocks breaks when $condition',
     ({ findings, model, presets }) => {
       // Act
       const found = findingsOf({
@@ -2157,20 +2133,13 @@ describe('checkPresets', () => {
     },
   );
 
-  it('should find each rule below MUST a plugin a nested preset file names keys in its messages, and none a legacy one names', () => {
+  it('should find each rule below MUST a plugin a preset file names keys in its messages', () => {
     // Arrange
     const presets = {
       'biome/@foundation.yaml': entryOf({
         value:
           "plugins: ['${constitution.path}/presets/biome/plugins/typescript/image-declares-its-size.grit']",
       }),
-      'biome/foundation.yaml': entryOf({
-        file: 'legacy.json',
-        value:
-          "plugins: ['${constitution.path}/presets/biome/plugins/typescript/code-reads-plainly.grit']",
-      }),
-      'biome/plugins/typescript/code-reads-plainly.grit':
-        'register_diagnostic(message="[code-reads-plainly] write it plainly")',
       'biome/plugins/typescript/image-declares-its-size.grit': [
         'register_diagnostic(message="[image-declares-its-size] give its size")',
         'register_diagnostic(message="[file-within-500-lines] split it")',

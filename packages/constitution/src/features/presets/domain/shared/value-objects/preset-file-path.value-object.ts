@@ -1,18 +1,11 @@
 import type { Axis } from '#/kernel/constants';
-import {
-  AXES,
-  AXIS_FOLDER_NAME,
-  BlockFormat,
-  PATH_SEPARATOR,
-  SEAM_FOLDER_NAME,
-} from '#/kernel/constants';
+import { AXES, AXIS_FOLDER_NAME, PATH_SEPARATOR, SEAM_FOLDER_NAME } from '#/kernel/constants';
 import { BlockId } from '#/kernel/value-objects';
 
 import { MAX_WITHS, PRESET_FILE_EXTENSION } from '../constants';
 
 interface PresetFilePath {
   readonly axis: Axis;
-  readonly format: BlockFormat;
   readonly reader: BlockId;
   readonly withs: readonly BlockId[];
 }
@@ -32,13 +25,8 @@ type PathRead =
       readonly kind: PathKind.Data | PathKind.Misplaced;
     };
 
-interface Spelled {
-  readonly format: BlockFormat;
-  readonly segments: readonly string[];
-}
-
-const axisOf = (input: { format: BlockFormat; name: string }): Axis | undefined =>
-  AXES.find((axis) => AXIS_FOLDER_NAME[input.format][axis] === input.name);
+const axisOf = (name: string | undefined): Axis | undefined =>
+  AXES.find((axis) => AXIS_FOLDER_NAME[axis] === name);
 
 const dataPath: PathRead = {
   kind: PathKind.Data,
@@ -70,14 +58,10 @@ const partnerSegmentsOf = (segments: readonly string[]): readonly string[][] | u
   return partners;
 };
 
-const withsOf = (input: Spelled): readonly BlockId[] | undefined => {
-  const partners = partnerSegmentsOf(input.segments);
+const withsOf = (segments: readonly string[]): readonly BlockId[] | undefined => {
+  const partners = partnerSegmentsOf(segments);
 
-  if (
-    partners === undefined ||
-    partners.length > MAX_WITHS ||
-    (input.format === BlockFormat.Legacy && partners.some((partner) => partner.length > 1))
-  ) {
+  if (partners === undefined || partners.length > MAX_WITHS) {
     return undefined;
   }
 
@@ -86,23 +70,14 @@ const withsOf = (input: Spelled): readonly BlockId[] | undefined => {
   return withs.every((block) => BlockId.is(block)) ? withs : undefined;
 };
 
-const presetFileOf = (input: {
-  axis: Axis | undefined;
-  format: BlockFormat;
-  reader: string;
-  rest: readonly string[];
-}): PathRead => {
-  const withs = withsOf({
-    format: input.format,
-    segments: input.rest,
-  });
+const presetFileOf = (input: { axis: Axis; reader: string; rest: readonly string[] }): PathRead => {
+  const withs = withsOf(input.rest);
 
-  return input.axis === undefined || withs === undefined || !BlockId.is(input.reader)
+  return withs === undefined || !BlockId.is(input.reader)
     ? misplacedPath
     : {
         presetFile: {
           axis: input.axis,
-          format: input.format,
           reader: input.reader,
           withs,
         },
@@ -110,34 +85,7 @@ const presetFileOf = (input: {
       };
 };
 
-const nestedReadOf = (segments: readonly string[], axisAt: number): PathRead =>
-  presetFileOf({
-    axis: axisOf({
-      format: BlockFormat.Nested,
-      name: String(segments[axisAt]),
-    }),
-    format: BlockFormat.Nested,
-    reader: segments.slice(0, axisAt).join(PATH_SEPARATOR),
-    rest: segments.slice(axisAt + 1),
-  });
-
-const legacyReadOf = (segments: readonly string[]): PathRead => {
-  // Stryker disable next-line StringLiteral: neither default is ever read as a reader or an axis
-  const [reader = '', head = '', ...rest] = segments;
-  const axis = axisOf({
-    format: BlockFormat.Legacy,
-    name: head,
-  });
-
-  return rest.length > 0 && axis === undefined
-    ? dataPath
-    : presetFileOf({
-        axis,
-        format: BlockFormat.Legacy,
-        reader,
-        rest,
-      });
-};
+const FILE_IN_READER_FOLDER = 2;
 
 const readOf = (pathInPresets: string): PathRead => {
   if (!pathInPresets.endsWith(PRESET_FILE_EXTENSION)) {
@@ -145,21 +93,24 @@ const readOf = (pathInPresets: string): PathRead => {
   }
 
   const segments = pathInPresets.slice(0, -PRESET_FILE_EXTENSION.length).split(PATH_SEPARATOR);
-  const axisAt = segments.findIndex(
-    (name) =>
-      axisOf({
-        format: BlockFormat.Nested,
-        name,
-      }) !== undefined,
-  );
+  const axisAt = segments.findIndex((name) => axisOf(name) !== undefined);
+  const axis = axisOf(segments[axisAt]);
 
-  return axisAt === -1 ? legacyReadOf(segments) : nestedReadOf(segments, axisAt);
+  if (axis === undefined) {
+    return segments.length > FILE_IN_READER_FOLDER ? dataPath : misplacedPath;
+  }
+
+  return presetFileOf({
+    axis,
+    reader: segments.slice(0, axisAt).join(PATH_SEPARATOR),
+    rest: segments.slice(axisAt + 1),
+  });
 };
 
 const textOf = (presetFile: PresetFilePath): string =>
   [
     presetFile.reader,
-    AXIS_FOLDER_NAME[presetFile.format][presetFile.axis],
+    AXIS_FOLDER_NAME[presetFile.axis],
     ...presetFile.withs.flatMap((block) => [
       SEAM_FOLDER_NAME,
       block,

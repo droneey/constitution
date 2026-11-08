@@ -63,7 +63,7 @@ const factsPlanOf = (lines: readonly string[]): PresetsPlan =>
   planOf({
     files: {
       ...releasePresets({
-        'bun/foundation.yaml': [
+        'bun/@foundation.yaml': [
           'bun:',
           "  '*':",
           "    '*':",
@@ -105,7 +105,7 @@ const factsPlanOf = (lines: readonly string[]): PresetsPlan =>
 const lefthookPlanOf = (lines: readonly string[]): PresetsPlan =>
   planOf({
     files: releasePresets({
-      'lefthook/workflow.yaml': [
+      'lefthook/@workflow.yaml': [
         'lefthook:',
         "  '*':",
         "    '*':",
@@ -153,14 +153,14 @@ describe('computePresets', () => {
     // Arrange
     const asked = {
       files: releasePresets({
-        'biome/architecture.yaml': [
+        'biome/@architecture.yaml': [
           'core:',
           '  import-points-inward:',
           "    '*':",
           '      biome.json:',
           '        layers: true',
         ].join('\n'),
-        'biome/foundation.yaml': [
+        'biome/@foundation.yaml': [
           'core:',
           '  file-within-500-lines:',
           '    typescript:',
@@ -179,7 +179,7 @@ describe('computePresets', () => {
           '      biome.json:',
           '        width: 100',
         ].join('\n'),
-        'biome/foundation/with/ui.yaml': [
+        'biome/@foundation/with/ui.yaml': [
           'ui:',
           "  '*':",
           "    '*':",
@@ -395,7 +395,7 @@ describe('computePresets', () => {
     // Arrange
     const asked = {
       files: releasePresets({
-        'lefthook/workflow.yaml': [
+        'lefthook/@workflow.yaml': [
           'lefthook:',
           "  '*':",
           "    '*':",
@@ -472,7 +472,7 @@ describe('computePresets', () => {
     // Arrange
     const asked = {
       files: releasePresets({
-        'biome/foundation.yaml': [
+        'biome/@foundation.yaml': [
           'biome:',
           "  '*':",
           "    '*':",
@@ -554,7 +554,7 @@ describe('computePresets', () => {
       // Arrange
       const asked = {
         files: releasePresets({
-          'biome/foundation.yaml': [
+          'biome/@foundation.yaml': [
             'biome:',
             "  '*':",
             "    '*':",
@@ -587,7 +587,7 @@ describe('computePresets', () => {
     // Arrange
     const asked = {
       files: releasePresets({
-        'biome/foundation.yaml': [
+        'biome/@foundation.yaml': [
           'core:',
           '  file-within-500-lines:',
           "    '*':",
@@ -635,7 +635,7 @@ describe('computePresets', () => {
     // Arrange
     const asked = {
       files: releasePresets({
-        'biome/foundation.yaml': [
+        'biome/@foundation.yaml': [
           'biome:',
           "  '*':",
           "    '*':",
@@ -713,7 +713,7 @@ describe('computePresets', () => {
     const asked = {
       files: {
         ...releasePresets({
-          'biome/architecture.yaml': [
+          'biome/@architecture.yaml': [
             'core:',
             "  '*':",
             "    '*':",
@@ -721,7 +721,7 @@ describe('computePresets', () => {
             '        order:',
             '          - core-architecture',
           ].join('\n'),
-          'biome/foundation.yaml': [
+          'biome/@foundation.yaml': [
             'biome:',
             "  '*':",
             "    '*':",
@@ -753,7 +753,7 @@ describe('computePresets', () => {
             '        order:',
             '          - json',
           ].join('\n'),
-          'biome/foundation/with/workspace.yaml': [
+          'biome/@foundation/with/workspace.yaml': [
             'workspace:',
             "  '*':",
             "    '*':",
@@ -763,7 +763,7 @@ describe('computePresets', () => {
           ].join('\n'),
         }),
         ...projectFiles({
-          'packs/acme/presets/biome/foundation.yaml': [
+          'packs/acme/presets/biome/@foundation.yaml': [
             'core:',
             "  '*':",
             "    '*':",
@@ -814,7 +814,7 @@ describe('computePresets', () => {
     // Arrange
     const asked = {
       files: projectFiles({
-        'packs/acme/presets/biome/foundation.yaml': [
+        'packs/acme/presets/biome/@foundation.yaml': [
           'biome:',
           "  '*':",
           "    '*':",
@@ -858,7 +858,7 @@ describe('computePresets', () => {
     // Arrange
     const asked = {
       files: releasePresets({
-        'bun/foundation.yaml': [
+        'bun/@foundation.yaml': [
           'bun:',
           "  '*':",
           "    '*':",
@@ -1019,7 +1019,7 @@ describe('computePresets', () => {
             fact: '${file.isTop}',
             rule: '*',
           },
-          path: '.droneey/constitution/presets/bun/foundation.yaml',
+          path: '.droneey/constitution/presets/bun/@foundation.yaml',
         },
       ],
     });
@@ -1318,7 +1318,7 @@ describe('computePresets', () => {
       // Arrange
       const asked = {
         files: releasePresets({
-          'core/foundation.yaml': [
+          'core/@foundation.yaml': [
             'core:',
             "  '*':",
             "    '*':",
@@ -1341,7 +1341,7 @@ describe('computePresets', () => {
     // Arrange
     const { files, project } = projectOf({
       files: releasePresets({
-        'biome/foundation.yaml': [
+        'biome/@foundation.yaml': [
           'biome:',
           "  '*':",
           "    '*':",
@@ -1490,14 +1490,14 @@ describe('computePresets', () => {
       // Arrange
       const asked = {
         files: releasePresets({
-          'python/foundation.yaml': [
+          'python/@foundation.yaml': [
             'python:',
             "  '*':",
             "    '*':",
             '      pyproject.toml:',
             '        project: {}',
           ].join('\n'),
-          'uv/foundation.yaml': [
+          'uv/@foundation.yaml': [
             'uv:',
             "  '*':",
             "    '*':",
@@ -1532,7 +1532,7 @@ describe('computePresets', () => {
     // Arrange
     const asked = {
       files: releasePresets({
-        'bun/foundation.yaml': [
+        'bun/@foundation.yaml': [
           'bun:',
           "  '*':",
           "    '*':",
@@ -1541,7 +1541,7 @@ describe('computePresets', () => {
           '          - slot: checks',
           '          - slot: tests',
         ].join('\n'),
-        'bun/foundation/with/biome.yaml': [
+        'bun/@foundation/with/biome.yaml': [
           'biome:',
           "  '*':",
           "    '*':",
@@ -1659,14 +1659,14 @@ describe('computePresets', () => {
     // Arrange
     const asked = {
       files: releasePresets({
-        'biome/foundation/with/css.yaml': [
+        'biome/@foundation/with/css.yaml': [
           'css:',
           "  '*':",
           "    '*':",
           '      biome.json:',
           '        css: true',
         ].join('\n'),
-        'bun/foundation.yaml': [
+        'bun/@foundation.yaml': [
           'bun:',
           "  '*':",
           "    '*':",
@@ -1674,7 +1674,7 @@ describe('computePresets', () => {
           '        check:',
           '          - bun run check',
         ].join('\n'),
-        'bun/foundation/with/biome.yaml': [
+        'bun/@foundation/with/biome.yaml': [
           'biome:',
           "  '*':",
           "    '*':",
@@ -1729,7 +1729,7 @@ describe('computePresets', () => {
     // Arrange
     const asked = {
       files: releasePresets({
-        'lefthook/foundation.yaml': [
+        'lefthook/@foundation.yaml': [
           'lefthook:',
           "  '*':",
           "    '*':",
@@ -1899,7 +1899,7 @@ describe('computePresets', () => {
       codes: [],
       condition: 'its unit takes the entry that places the list',
       presets: {
-        'lefthook/foundation.yaml': [
+        'lefthook/@foundation.yaml': [
           ...placingEntryOf('file-within-500-lines'),
           ...INSERTING_ENTRY,
         ].join('\n'),
@@ -1916,7 +1916,7 @@ describe('computePresets', () => {
       codes: [],
       condition: 'an override lowers the rule of the entry that places the list',
       presets: {
-        'lefthook/foundation.yaml': [
+        'lefthook/@foundation.yaml': [
           ...placingEntryOf('unit-checked-by-its-own-tools'),
           ...INSERTING_ENTRY,
         ].join('\n'),
@@ -1929,8 +1929,8 @@ describe('computePresets', () => {
       codes: [],
       condition: 'its unit follows no axis of the rule of the entry that places the list',
       presets: {
-        'lefthook/architecture.yaml': placingEntryOf('import-points-inward').join('\n'),
-        'lefthook/foundation.yaml': INSERTING_ENTRY.join('\n'),
+        'lefthook/@architecture.yaml': placingEntryOf('import-points-inward').join('\n'),
+        'lefthook/@foundation.yaml': INSERTING_ENTRY.join('\n'),
       },
       written: {
         kept: 1,
@@ -1940,8 +1940,8 @@ describe('computePresets', () => {
       codes: [],
       condition: 'an entry the unit takes gives the list and a dropped one places the slot',
       presets: {
-        'lefthook/architecture.yaml': placingEntryOf('import-points-inward').join('\n'),
-        'lefthook/foundation.yaml': [
+        'lefthook/@architecture.yaml': placingEntryOf('import-points-inward').join('\n'),
+        'lefthook/@foundation.yaml': [
           'core:',
           '  file-within-500-lines:',
           "    '*':",
@@ -1964,8 +1964,8 @@ describe('computePresets', () => {
       ],
       condition: 'the entry that places the list lacks a block its path names',
       presets: {
-        'lefthook/foundation.yaml': INSERTING_ENTRY.join('\n'),
-        'lefthook/foundation/with/bun.yaml': placingEntryOf('file-within-500-lines').join('\n'),
+        'lefthook/@foundation.yaml': INSERTING_ENTRY.join('\n'),
+        'lefthook/@foundation/with/bun.yaml': placingEntryOf('file-within-500-lines').join('\n'),
       },
       written: {
         kept: 1,
@@ -1977,7 +1977,7 @@ describe('computePresets', () => {
       ],
       condition: 'the dropped entry whose guard does not hold places the list',
       presets: {
-        'lefthook/foundation.yaml': [
+        'lefthook/@foundation.yaml': [
           'core:',
           '  unit-checked-by-its-own-tools:',
           "    '*':",
@@ -1997,14 +1997,14 @@ describe('computePresets', () => {
       ],
       condition: 'a dropped entry gives the file only what places no list',
       presets: {
-        'lefthook/architecture.yaml': [
+        'lefthook/@architecture.yaml': [
           'core:',
           '  import-points-inward:',
           "    '*':",
           '      lefthook.yaml:',
           '        other: 2',
         ].join('\n'),
-        'lefthook/foundation.yaml': INSERTING_ENTRY.join('\n'),
+        'lefthook/@foundation.yaml': INSERTING_ENTRY.join('\n'),
       },
       written: {
         kept: 1,
@@ -2016,14 +2016,14 @@ describe('computePresets', () => {
       ],
       condition: 'two entries the unit takes clash where a dropped one writes too',
       presets: {
-        'lefthook/architecture.yaml': [
+        'lefthook/@architecture.yaml': [
           'core:',
           '  import-points-inward:',
           "    '*':",
           '      lefthook.yaml:',
           '        kept: 3',
         ].join('\n'),
-        'lefthook/foundation.yaml': [
+        'lefthook/@foundation.yaml': [
           'core:',
           '  file-within-500-lines:',
           "    '*':",
@@ -2227,7 +2227,7 @@ describe('computePresets', () => {
       // Arrange
       const asked = {
         files: projectFiles({
-          'packs/acme/presets/biome/foundation.yaml': [
+          'packs/acme/presets/biome/@foundation.yaml': [
             'biome:',
             "  '*':",
             "    '*':",
@@ -2317,7 +2317,7 @@ describe('computePresets', () => {
       // Arrange
       const asked = {
         files: projectFiles({
-          'packs/acme/presets/biome/foundation.yaml': [
+          'packs/acme/presets/biome/@foundation.yaml': [
             'biome:',
             "  '*':",
             "    '*':",
@@ -2404,7 +2404,7 @@ describe('computePresets', () => {
     {
       condition: "a pack's preset file does not parse",
       files: projectFiles({
-        'packs/acme/presets/biome/workflow.yaml': 'biome: [',
+        'packs/acme/presets/biome/@workflow.yaml': 'biome: [',
       }),
       findings: [
         {
@@ -2412,14 +2412,14 @@ describe('computePresets', () => {
           details: {
             line: 1,
           },
-          path: 'packs/acme/presets/biome/workflow.yaml',
+          path: 'packs/acme/presets/biome/@workflow.yaml',
         },
       ],
     },
     {
       condition: 'an entry names a rule no block holds, beside one that sets its setting otherwise',
       files: projectFiles({
-        'packs/acme/presets/biome/foundation.yaml': [
+        'packs/acme/presets/biome/@foundation.yaml': [
           'biome:',
           "  '*':",
           "    '*':",
@@ -2438,14 +2438,14 @@ describe('computePresets', () => {
             block: BlockId.create('biome'),
             rule: 'gone-rule',
           },
-          path: 'packs/acme/presets/biome/foundation.yaml',
+          path: 'packs/acme/presets/biome/@foundation.yaml',
         },
       ],
     },
     {
       condition: "the release's entry names a file the release lacks",
       files: releasePresets({
-        'biome/foundation.yaml': [
+        'biome/@foundation.yaml': [
           'biome:',
           "  '*':",
           "    '*':",
@@ -2459,14 +2459,14 @@ describe('computePresets', () => {
           details: {
             file: 'src/gone',
           },
-          path: '.droneey/constitution/presets/biome/foundation.yaml',
+          path: '.droneey/constitution/presets/biome/@foundation.yaml',
         },
       ],
     },
     {
       condition: 'the release holds a plugin no entry names and that names no rule',
       files: releasePresets({
-        'biome/foundation.yaml': [
+        'biome/@foundation.yaml': [
           'biome:',
           "  '*':",
           "    '*':",
@@ -2494,7 +2494,7 @@ describe('computePresets', () => {
     {
       condition: 'two entries set one setting otherwise',
       files: projectFiles({
-        'packs/acme/presets/biome/foundation.yaml': [
+        'packs/acme/presets/biome/@foundation.yaml': [
           'biome:',
           "  '*':",
           "    '*':",
@@ -2513,8 +2513,8 @@ describe('computePresets', () => {
           details: {
             settingPath: 'width',
             sources: [
-              'packs/acme/presets/biome/foundation.yaml: core → *',
-              'packs/acme/presets/biome/foundation.yaml: biome → *',
+              'packs/acme/presets/biome/@foundation.yaml: core → *',
+              'packs/acme/presets/biome/@foundation.yaml: biome → *',
             ],
           },
           path: 'biome.json',
@@ -2563,10 +2563,10 @@ describe('computePresets', () => {
     const asked = {
       files: {
         ...releasePresets({
-          'biome/foundation.yaml': typed,
+          'biome/@foundation.yaml': typed,
         }),
         ...projectFiles({
-          'packs/acme/presets/biome/foundation.yaml': typed,
+          'packs/acme/presets/biome/@foundation.yaml': typed,
         }),
       },
       packs: [
@@ -2597,7 +2597,7 @@ describe('computePresets', () => {
     ).toStrictEqual([
       [
         PresetsCode.HandTypedRole,
-        '.droneey/constitution/presets/biome/foundation.yaml',
+        '.droneey/constitution/presets/biome/@foundation.yaml',
       ],
     ]);
   });
@@ -2607,7 +2607,7 @@ describe('computePresets', () => {
     const asked = {
       files: {
         ...releasePresets({
-          'biome/foundation.yaml': [
+          'biome/@foundation.yaml': [
             'biome:',
             "  '*':",
             "    '*':",
@@ -2617,7 +2617,7 @@ describe('computePresets', () => {
           'biome/plugins/typescript/unchecked-type-never-used.grit': 'language js',
         }),
         ...projectFiles({
-          'packs/acme/presets/biome/foundation.yaml': [
+          'packs/acme/presets/biome/@foundation.yaml': [
             'biome:',
             "  '*':",
             "    '*':",
@@ -2700,7 +2700,7 @@ describe('computePresets', () => {
       // Arrange
       const asked = {
         files: releasePresets({
-          'biome/foundation.yaml': [
+          'biome/@foundation.yaml': [
             'biome:',
             "  '*':",
             "    '*':",

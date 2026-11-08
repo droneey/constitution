@@ -7,21 +7,13 @@ import { BlockModel } from '../block-model.entity';
 import { TermKind } from '../term.entity';
 
 interface BlockFixture {
-  readonly extends?: string;
   readonly id: string;
-  readonly isAbstract?: boolean;
   readonly requires?: readonly string[];
 }
 
 const blockOf = (input: BlockFixture): ModelBlock => ({
-  ...(input.extends === undefined
-    ? {}
-    : {
-        extends: BlockId.create(input.extends),
-      }),
   governs: [],
   id: BlockId.create(input.id),
-  isAbstract: input.isAbstract ?? false,
   languages: [],
   layer: Layer.Implementation,
   requires: (input.requires ?? []).map(BlockId.create),
@@ -33,7 +25,6 @@ const modelOf = (blocks: readonly BlockFixture[]): BlockModel =>
       {
         governs: [],
         id: coreBlockId,
-        isAbstract: false,
         languages: [],
         layer: Layer.Core,
         requires: [],
@@ -74,46 +65,6 @@ describe('BlockModel.blockOf', () => {
   });
 });
 
-describe('BlockModel.isExtensible', () => {
-  it.each([
-    {
-      condition: 'the block of the id is abstract',
-      expected: true,
-      id: '_store',
-    },
-    {
-      condition: 'the block of the id is concrete',
-      expected: false,
-      id: 'redis',
-    },
-    {
-      condition: 'no block of the model has the id',
-      expected: false,
-      id: 'mongo',
-    },
-  ])(
-    'should tell whether a block may extend the one of the id when $condition',
-    ({ expected, id }) => {
-      // Arrange
-      const model = modelOf([
-        {
-          id: '_store',
-          isAbstract: true,
-        },
-        {
-          id: 'redis',
-        },
-      ]);
-
-      // Act
-      const isExtensible = BlockModel.isExtensible(model, id);
-
-      // Assert
-      expect(isExtensible).toBe(expected);
-    },
-  );
-});
-
 describe('BlockModel.reachOf', () => {
   it.each<{
     blocks: readonly BlockFixture[];
@@ -124,10 +75,6 @@ describe('BlockModel.reachOf', () => {
     {
       blocks: [
         {
-          id: '_runtime',
-        },
-        {
-          extends: '_runtime',
           id: 'bun',
           requires: [
             'typescript',
@@ -146,11 +93,10 @@ describe('BlockModel.reachOf', () => {
           id: 'biome',
         },
       ],
-      condition: 'it extends a base and requires a block that requires another',
+      condition: 'it requires a block that requires another',
       expected: [
         'bun',
         'core',
-        '_runtime',
         'typescript',
         'json',
       ],
@@ -258,7 +204,6 @@ describe('BlockModel.reachOf', () => {
 const languageOf = (id: string): ModelBlock => ({
   governs: [],
   id: BlockId.create(id),
-  isAbstract: false,
   languages: [],
   layer: Layer.Language,
   requires: [],

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { Axis, BlockFormat, Layer } from '../../constants';
+import { Axis, Layer } from '../../constants';
 import type { BlockPart, FileInBlock } from '../block-file-place.value-object';
 import { BlockFileKind, BlockFilePlace, Placement } from '../block-file-place.value-object';
 import { BlockId, coreBlockId } from '../block-id.value-object';
@@ -33,7 +33,7 @@ describe('BlockFilePlace.parse', () => {
         kind: BlockFileKind.NamedAfterBlock,
       },
       name: 'a file of an axis named after its block',
-      path: `${UI}/architecture/ui.md`,
+      path: `${UI}/@architecture/ui.md`,
     },
     {
       file: {
@@ -42,7 +42,7 @@ describe('BlockFilePlace.parse', () => {
         name: 'design-system',
       },
       name: 'a chapter of foundation',
-      path: `${UI}/foundation/design-system.md`,
+      path: `${UI}/@foundation/design-system.md`,
     },
     {
       file: {
@@ -51,19 +51,14 @@ describe('BlockFilePlace.parse', () => {
         other: BlockId.create('remote-data'),
       },
       name: 'a seam of architecture',
-      path: `${UI}/architecture/with/remote-data.md`,
+      path: `${UI}/@architecture/with/remote-data.md`,
     },
     {
       file: {
         kind: BlockFileKind.SeamOfNoBlockId,
       },
       name: 'a seam named after no block id',
-      path: `${UI}/architecture/with/Remote_Data.md`,
-    },
-    {
-      file: STRAY,
-      name: 'a file below a file',
-      path: `${UI}/ui.md/notes.md`,
+      path: `${UI}/@architecture/with/Remote_Data.md`,
     },
     {
       file: STRAY,
@@ -73,46 +68,38 @@ describe('BlockFilePlace.parse', () => {
     {
       file: STRAY,
       name: 'a file below a chapter of an axis',
-      path: `${UI}/foundation/notes.md/ui.md`,
+      path: `${UI}/@foundation/notes.md/ui.md`,
     },
     {
       file: STRAY,
       name: 'a chapter that is no Markdown',
-      path: `${UI}/foundation/notes.mdx`,
+      path: `${UI}/@foundation/notes.mdx`,
     },
     {
       file: STRAY,
       name: 'a hidden chapter',
-      path: `${UI}/foundation/.notes.md`,
+      path: `${UI}/@foundation/.notes.md`,
     },
     {
-      file: STRAY,
-      name: 'a file of a folder that is no axis',
-      path: `${UI}/design/ui.md`,
-    },
-    {
-      file: STRAY,
-      name: 'a seam outside an axis',
-      path: `${UI}/with/i18n.md`,
-    },
-    {
-      file: STRAY,
+      file: {
+        kind: BlockFileKind.SeamOfNoBlockId,
+      },
       name: 'a file below a seam',
-      path: `${UI}/architecture/with/old.md/a.md`,
+      path: `${UI}/@architecture/with/old.md/a.md`,
     },
     {
       file: STRAY,
       name: 'a seam that is no Markdown',
-      path: `${UI}/architecture/with/i18n.txt`,
+      path: `${UI}/@architecture/with/i18n.txt`,
     },
     {
       file: STRAY,
       name: 'a file of a folder of an axis that is not with',
-      path: `${UI}/architecture/parts/i18n.md`,
+      path: `${UI}/@architecture/parts/i18n.md`,
     },
   ])('should place $name in its block when the path is $path', ({ file, path }) => {
     // Act
-    const place: object | undefined = BlockFilePlace.parse(path, BlockFormat.Legacy);
+    const place: object | undefined = BlockFilePlace.parse(path);
 
     // Assert
     expect(place).toStrictEqual({
@@ -125,10 +112,10 @@ describe('BlockFilePlace.parse', () => {
 
   it('should place a chapter of core in core when the path lies in its folder', () => {
     // Arrange
-    const path = 'blocks/core/workflow/delivery.md';
+    const path = 'blocks/core/@workflow/delivery.md';
 
     // Act
-    const place: object | undefined = BlockFilePlace.parse(path, BlockFormat.Legacy);
+    const place: object | undefined = BlockFilePlace.parse(path);
 
     // Assert
     expect(place).toStrictEqual({
@@ -176,19 +163,19 @@ describe('BlockFilePlace.parse', () => {
     {
       expected: undefined,
       name: 'a file outside the blocks',
-      path: 'presets/biome/foundation.yaml',
+      path: 'presets/biome/@foundation.yaml',
     },
   ])('should place $name apart from any block when the path is $path', ({ expected, path }) => {
     // Act
-    const place: object | undefined = BlockFilePlace.parse(path, BlockFormat.Legacy);
+    const place: object | undefined = BlockFilePlace.parse(path);
 
     // Assert
     expect(place).toStrictEqual(expected);
   });
 });
 
-const placeOf = (path: string, format: BlockFormat = BlockFormat.Legacy): BlockFilePlace => {
-  const place = BlockFilePlace.parse(path, format);
+const placeOf = (path: string): BlockFilePlace => {
+  const place = BlockFilePlace.parse(path);
 
   if (place === undefined) {
     throw new Error(`${path} lies outside every layer`);
@@ -201,7 +188,7 @@ const pathOf = (place: BlockFilePlace): string => place.path;
 
 const REACT = 'blocks/implementations/react';
 
-describe('BlockFilePlace.parse of the nested format', () => {
+describe('BlockFilePlace.parse of a nested block', () => {
   it.each<{
     block: string;
     file: FileInBlock;
@@ -283,7 +270,7 @@ describe('BlockFilePlace.parse of the nested format', () => {
     const id = BlockId.create(block);
 
     // Act
-    const place: object | undefined = BlockFilePlace.parse(path, BlockFormat.Nested);
+    const place: object | undefined = BlockFilePlace.parse(path);
 
     // Assert
     expect(place).toStrictEqual({
@@ -303,7 +290,7 @@ describe('BlockFilePlace.parse of the nested format', () => {
     const path = 'blocks/core/@workflow/changes.md';
 
     // Act
-    const place: object | undefined = BlockFilePlace.parse(path, BlockFormat.Nested);
+    const place: object | undefined = BlockFilePlace.parse(path);
 
     // Assert
     expect(place).toStrictEqual({
@@ -395,56 +382,10 @@ describe('BlockFilePlace.parse of the nested format', () => {
     },
   ])('should place $name apart from any block', ({ expected }) => {
     // Act
-    const place: object | undefined = BlockFilePlace.parse(expected.path, BlockFormat.Nested);
+    const place: object | undefined = BlockFilePlace.parse(expected.path);
 
     // Assert
     expect(place).toStrictEqual(expected);
-  });
-
-  it('should read a seam named by a nested id as stray in the legacy format', () => {
-    // Arrange
-    const path = 'blocks/implementations/ink/foundation/with/presentation/design-system.md';
-
-    // Act
-    const place = BlockFilePlace.parse(path, BlockFormat.Legacy);
-
-    // Assert
-    expect(place?.placement === Placement.InBlock && place.file).toStrictEqual(STRAY);
-  });
-});
-
-describe('BlockFilePlace.formatOf', () => {
-  it.each([
-    {
-      condition: 'a block folder holds an axis folder marked by @',
-      format: BlockFormat.Nested,
-      paths: [
-        'blocks/core/core.md',
-        'blocks/core/@foundation/code.md',
-      ],
-    },
-    {
-      condition: 'every axis folder is spelled without @',
-      format: BlockFormat.Legacy,
-      paths: [
-        'blocks/core/core.md',
-        'blocks/core/foundation/code.md',
-      ],
-    },
-    {
-      condition: 'only a file outside the blocks holds a folder marked by @',
-      format: BlockFormat.Legacy,
-      paths: [
-        'presets/@foundation/code.md',
-        'blocks/core/foundation/code.md',
-      ],
-    },
-  ])('should read the tree as $format when $condition', ({ format, paths }) => {
-    // Act
-    const read = BlockFilePlace.formatOf(paths);
-
-    // Assert
-    expect(read).toBe(format);
   });
 });
 
@@ -474,7 +415,7 @@ describe('BlockFilePlace.pathOf', () => {
       },
       layer: Layer.Domain,
       name: "a block's chapter",
-      path: `${UI}/architecture/screens.md`,
+      path: `${UI}/@architecture/screens.md`,
     },
     {
       block: 'react',
@@ -485,7 +426,7 @@ describe('BlockFilePlace.pathOf', () => {
       },
       layer: Layer.Implementation,
       name: "a block's seam",
-      path: 'blocks/implementations/react/foundation/with/ui.md',
+      path: 'blocks/implementations/react/@foundation/with/ui.md',
     },
     {
       block: 'core',
@@ -496,12 +437,11 @@ describe('BlockFilePlace.pathOf', () => {
       name: "core's passport",
       path: 'blocks/core/core.md',
     },
-  ])('should give the legacy path parse places $name at', ({ block, file, layer, path }) => {
+  ])('should give the path parse places $name at', ({ block, file, layer, path }) => {
     // Act
     const given = BlockFilePlace.pathOf({
       block: BlockId.create(block),
       file,
-      format: BlockFormat.Legacy,
       layer,
     });
 
@@ -510,7 +450,7 @@ describe('BlockFilePlace.pathOf', () => {
   });
 });
 
-describe('BlockFilePlace.pathOf of the nested format', () => {
+describe('BlockFilePlace.pathOf of a nested block', () => {
   it.each<{
     block: string;
     file: BlockPart;
@@ -545,18 +485,17 @@ describe('BlockFilePlace.pathOf of the nested format', () => {
       name: "a child's seam with a nested block",
       path: `${REACT}/ink/@workflow/with/presentation/design-system.md`,
     },
-  ])('should give the path parse places $name at', ({ block, file, path }) => {
+  ])('should give the path parse places $name at, and parse it back', ({ block, file, path }) => {
     // Act
     const given = BlockFilePlace.pathOf({
       block: BlockId.create(block),
       file,
-      format: BlockFormat.Nested,
       layer: Layer.Implementation,
     });
 
     // Assert
     expect(given).toBe(path);
-    expect<object | undefined>(BlockFilePlace.parse(given, BlockFormat.Nested)).toStrictEqual({
+    expect<object | undefined>(BlockFilePlace.parse(given)).toStrictEqual({
       file,
       folder: {
         dir: `blocks/implementations/${block}`,
@@ -576,11 +515,11 @@ describe('BlockFilePlace.compare', () => {
       'blocks/implementations/zod/zod.md',
       'blocks/domains/ui-kit/ui-kit.md',
       'blocks/domains/ui/notes.md',
-      'blocks/domains/ui/architecture/with/i18n.md',
-      'blocks/domains/ui/foundation/with/i18n.md',
-      'blocks/domains/ui/workflow/reviews.md',
-      'blocks/domains/ui/foundation/forms.md',
-      'blocks/domains/ui/foundation/a-b.md',
+      'blocks/domains/ui/@architecture/with/i18n.md',
+      'blocks/domains/ui/@foundation/with/i18n.md',
+      'blocks/domains/ui/@workflow/reviews.md',
+      'blocks/domains/ui/@foundation/forms.md',
+      'blocks/domains/ui/@foundation/a-b.md',
       'blocks/domains/Bad/Bad.md',
       'blocks/domains/README.md',
       'blocks/domains/ui/ui.md',
@@ -599,11 +538,11 @@ describe('BlockFilePlace.compare', () => {
       'blocks/domains/README.md',
       'blocks/domains/Bad/Bad.md',
       'blocks/domains/ui/ui.md',
-      'blocks/domains/ui/foundation/a-b.md',
-      'blocks/domains/ui/foundation/forms.md',
-      'blocks/domains/ui/workflow/reviews.md',
-      'blocks/domains/ui/foundation/with/i18n.md',
-      'blocks/domains/ui/architecture/with/i18n.md',
+      'blocks/domains/ui/@foundation/a-b.md',
+      'blocks/domains/ui/@foundation/forms.md',
+      'blocks/domains/ui/@workflow/reviews.md',
+      'blocks/domains/ui/@foundation/with/i18n.md',
+      'blocks/domains/ui/@architecture/with/i18n.md',
       'blocks/domains/ui/notes.md',
       'blocks/domains/ui-kit/ui-kit.md',
       'blocks/implementations/zod/zod.md',
@@ -612,7 +551,7 @@ describe('BlockFilePlace.compare', () => {
 });
 
 describe('BlockFilePlace', () => {
-  const place = placeOf('blocks/domains/ui/foundation/forms.md');
+  const place = placeOf('blocks/domains/ui/@foundation/forms.md');
 
   it.each([
     {
@@ -629,11 +568,8 @@ describe('BlockFilePlace', () => {
       isPlace: false,
     },
     {
-      candidate: placeOf(
-        'blocks/implementations/react/ink/@foundation/rendering.md',
-        BlockFormat.Nested,
-      ),
-      condition: 'it is the place its path parses to in the nested format',
+      candidate: placeOf('blocks/implementations/react/ink/@foundation/rendering.md'),
+      condition: 'it is the place the path of a nested block parses to',
       isPlace: true,
     },
     {
@@ -662,16 +598,16 @@ describe('BlockFilePlace', () => {
     {
       condition: 'they are one path',
       isEqual: true,
-      path: 'blocks/domains/ui/foundation/forms.md',
+      path: 'blocks/domains/ui/@foundation/forms.md',
     },
     {
       condition: 'they are two paths',
       isEqual: false,
-      path: 'blocks/domains/ui/foundation/screens.md',
+      path: 'blocks/domains/ui/@foundation/screens.md',
     },
   ])('should say $isEqual when $condition', ({ isEqual, path }) => {
     // Arrange
-    const left = placeOf('blocks/domains/ui/foundation/forms.md');
+    const left = placeOf('blocks/domains/ui/@foundation/forms.md');
     const right = placeOf(path);
 
     // Act

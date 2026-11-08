@@ -78,10 +78,6 @@ const warningMessages: Omit<TextsOf<WarningDetails>, ChosenKind> = {
     `${file} is not inside a block folder of a domain, a context or an implementation`,
   [WarningKind.FolderMisnamed]: ({ file }) =>
     `${file} is in a block folder whose name is not a kebab-case block id — rename the folder`,
-  [WarningKind.BaseNoBlock]: ({ base, block }) =>
-    `${block} extends ${base}, which is not a block — fix its front matter`,
-  [WarningKind.BaseConcrete]: ({ base, block }) =>
-    `${block} extends ${base}, a concrete block; a block extends only an abstract base — require it instead`,
   [WarningKind.RequiredNoBlock]: ({ block, required }) =>
     `${block} requires ${required}, which is not a block — fix its front matter`,
   [WarningKind.TightensUnknownRule]: ({ rule, tightens }) =>

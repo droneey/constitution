@@ -34,7 +34,7 @@ describe('reminderNotesOf', () => {
         {
           files: [
             'blocks/domains/ui/ui.md',
-            'blocks/domains/ui/foundation/ui.md',
+            'blocks/domains/ui/@foundation/ui.md',
           ],
           id: BlockId.create('ui'),
           musts: [
@@ -74,7 +74,7 @@ describe('reminderNotesOf', () => {
 
     // Assert
     expect(notes.lines).toStrictEqual([
-      'ui governs src/ui/a.ts: read blocks/domains/ui/ui.md blocks/domains/ui/foundation/ui.md; its MUST rules: one-screen, labelled (SHOULD; MAY in web via labels-shown).',
+      'ui governs src/ui/a.ts: read blocks/domains/ui/ui.md blocks/domains/ui/@foundation/ui.md; its MUST rules: one-screen, labelled (SHOULD; MAY in web via labels-shown).',
       'typescript governs src/ui/a.ts: read blocks/contexts/languages/typescript/typescript.md.',
     ]);
   });

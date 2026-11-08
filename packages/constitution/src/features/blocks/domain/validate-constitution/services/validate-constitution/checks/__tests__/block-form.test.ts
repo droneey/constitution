@@ -13,7 +13,7 @@ import { BlockFormCode, blockFormCheck } from '../block-form';
 const UNTRUSTED_CLIENT = 'blocks/domains/untrusted-client/untrusted-client.md';
 
 describe('blockFormCheck', () => {
-  it('should find nothing when every passport holds its title, its setup and its Requirements', () => {
+  it('should find nothing when every passport holds its title and its one line', () => {
     // Arrange
     const input = checkInputOf(validFiles());
 
@@ -29,7 +29,7 @@ describe('blockFormCheck', () => {
     const files = validFiles();
 
     files[UNTRUSTED_CLIENT] = passportFile({
-      body: `# Untrusted client\n\n${rule({
+      body: `# Untrusted client\n\n> The client is in the user's hands.\n\n${rule({
         slug: 'tokens-never-stored-in-the-client',
       })}`,
       id: 'untrusted-client',
@@ -47,28 +47,20 @@ describe('blockFormCheck', () => {
         details: {},
         path: UNTRUSTED_CLIENT,
       },
+      {
+        code: BlockFormCode.PassportMisshapen,
+        details: {},
+        path: UNTRUSTED_CLIENT,
+      },
     ]);
   });
 
-  it.each([
-    {
-      condition: 'a section that is no rule',
-      text: '## Notes\n\n#### Aside\n',
-    },
-    {
-      condition: 'a rule shown as an example in a code fence',
-      text: '```md\n### sample-rule · MUST\n```\n',
-    },
-    {
-      condition: 'its Requirements',
-      text: '## Requirements\n\n| Requirement | How | Met |\n|---|---|---|\n| `secret-never-held-by-the-client` | Cookies. | yes |\n',
-    },
-  ])('should find nothing when the passport holds $condition', ({ text }) => {
+  it('should find nothing when the passport holds a rule shown as an example in a code fence', () => {
     // Arrange
     const files = validFiles();
 
     files[UNTRUSTED_CLIENT] = passportFile({
-      body: `# Untrusted client\n\n> The client is in the user's hands.\n\n${text}`,
+      body: "# Untrusted client\n\n> The client is in the user's hands.\n\n```md\n### sample-rule · MUST\n```\n",
       id: 'untrusted-client',
     });
 
@@ -82,8 +74,8 @@ describe('blockFormCheck', () => {
   });
 });
 
-const PLURALS = 'blocks/domains/i18n/foundation/plurals.md';
-const UI_WITH_REMOTE_DATA = 'blocks/domains/ui/architecture/with/remote-data.md';
+const PLURALS = 'blocks/domains/i18n/@foundation/plurals.md';
+const UI_WITH_REMOTE_DATA = 'blocks/domains/ui/@architecture/with/remote-data.md';
 
 const pluralsRule = rule({
   slug: 'i18n-plurals-by-cldr',
@@ -118,15 +110,6 @@ describe('blockFormCheck on chapters and seams', () => {
       text: `> Governs plurals.\n\n## General\n\n${pluralsRule}`,
     },
     {
-      condition: 'a chapter opens with a section in place of its title',
-      finding: {
-        code: BlockFormCode.WithoutGoverns,
-        details: {},
-        path: PLURALS,
-      },
-      text: `## Plurals\n\n> Governs plurals.\n\n${pluralsRule}`,
-    },
-    {
       condition: 'a chapter puts prose between its title and its Governs line',
       finding: {
         code: BlockFormCode.WithoutGoverns,
@@ -157,17 +140,6 @@ describe('blockFormCheck on chapters and seams', () => {
       text: '# Plurals\n\n> Governs plurals.\n\n## General\n\nNothing is ruled yet.\n',
     },
     {
-      condition: 'a rule sits under no section',
-      finding: {
-        code: BlockFormCode.RuleOutsideSection,
-        details: {
-          slug: RuleSlug.create('i18n-plurals-by-cldr'),
-        },
-        path: PLURALS,
-      },
-      text: `# Plurals\n\n> Governs plurals.\n\n${pluralsRule}`,
-    },
-    {
       condition: "a section is named like the file's title",
       finding: {
         code: BlockFormCode.SectionRepeatsTitle,
@@ -177,15 +149,6 @@ describe('blockFormCheck on chapters and seams', () => {
         path: PLURALS,
       },
       text: `\n# Plurals\n\n> Governs plurals.\n\n## plurals\n\n${pluralsRule}`,
-    },
-    {
-      condition: 'a section follows the Requirements for implementation',
-      finding: {
-        code: BlockFormCode.RequirementsNotLast,
-        details: {},
-        path: PLURALS,
-      },
-      text: `# Plurals\n\n> Governs plurals.\n\n## Requirements for implementation\n\n${pluralsRule}\n## Forms\n\n${formsRule}`,
     },
     {
       condition: 'a section comes before General',
@@ -211,6 +174,58 @@ describe('blockFormCheck on chapters and seams', () => {
     expect(findings).toStrictEqual([
       finding,
     ]);
+  });
+
+  it.each<{
+    condition: string;
+    findings: readonly FindingOf<BlockFormDetails>[];
+    text: string;
+  }>([
+    {
+      condition: 'a chapter opens with a section in place of its title',
+      findings: [
+        {
+          code: BlockFormCode.WithoutGoverns,
+          details: {},
+          path: PLURALS,
+        },
+        {
+          code: BlockFormCode.TextBeforeSections,
+          details: {},
+          path: PLURALS,
+        },
+      ],
+      text: `## Plurals\n\n> Governs plurals.\n\n${pluralsRule}`,
+    },
+    {
+      condition: 'a rule sits under no section',
+      findings: [
+        {
+          code: BlockFormCode.RuleOutsideSection,
+          details: {
+            slug: RuleSlug.create('i18n-plurals-by-cldr'),
+          },
+          path: PLURALS,
+        },
+        {
+          code: BlockFormCode.TextBeforeSections,
+          details: {},
+          path: PLURALS,
+        },
+      ],
+      text: `# Plurals\n\n> Governs plurals.\n\n${pluralsRule}`,
+    },
+  ])('should report the file twice when $condition', ({ findings: expected, text }) => {
+    // Arrange
+    const files = validFiles();
+
+    files[PLURALS] = text;
+
+    // Act
+    const findings = blockFormCheck(checkInputOf(files));
+
+    // Assert
+    expect(findings).toStrictEqual(expected);
   });
 
   it('should report a chapter that holds its title alone', () => {
@@ -241,20 +256,20 @@ describe('blockFormCheck on chapters and seams', () => {
 
   it.each([
     {
-      condition: 'General opens its sections and the Requirements for implementation close them',
-      text: `  \n# Plurals\n\n> Governs plurals.\n\n## General\n\n${pluralsRule}\n## Forms\n\n${formsRule}\n## Requirements for implementation\n\n${rule(
+      condition: 'General opens its sections',
+      text: `  \n# Plurals\n\n> Governs plurals.\n\n## General\n\n${pluralsRule}\n## Forms\n\n${formsRule}\n## Catalogs\n\n${rule(
         {
           slug: 'i18n-catalog-compiled',
         },
       )}`,
     },
     {
-      condition: 'its sections are its own, with neither General nor Requirements',
+      condition: 'its sections are its own, with no General',
       text: `# Plurals\n\n> Governs plurals.\n\n## Forms\n\n${formsRule}\n## Ranges\n\n${pluralsRule}`,
     },
     {
       condition: 'a vocabulary that holds no rule comes before General',
-      text: `# Plurals\n\n> Governs plurals.\n\n## The vocabulary\n\nA plural form is a form of a word.\n\n## General\n\n${pluralsRule}`,
+      text: `# Plurals\n\n> Governs plurals.\n\n## Vocabulary\n\nA plural form is a form of a word.\n\n## General\n\n${pluralsRule}`,
     },
     {
       condition: "a code fence shows a heading named like the file's title",
@@ -283,7 +298,7 @@ const screensRule = rule({
   slug: 'screen-shows-one-task',
 });
 
-describe('blockFormCheck on a nested tree', () => {
+describe('blockFormCheck on the layout of a file', () => {
   it('should find nothing when every file of the tree is laid out as placement asks', () => {
     // Arrange
     const files = nestedFiles();
@@ -552,21 +567,5 @@ describe('blockFormCheck on a nested tree', () => {
         path: PRESENTATION,
       },
     ]);
-  });
-
-  it('should report nothing on a legacy chapter that defines a term outside a Vocabulary', () => {
-    // Arrange
-    const files = validFiles();
-
-    files['blocks/core/foundation/principles.md'] =
-      `# Principles\n\n> Governs principles.\n\nA **port** names a need.\n\n## General\n\n${rule({
-        slug: 'dependencies-point-inward',
-      })}`;
-
-    // Act
-    const findings = blockFormCheck(checkInputOf(files));
-
-    // Assert
-    expect(findings).toStrictEqual([]);
   });
 });

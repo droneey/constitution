@@ -1,7 +1,5 @@
 interface BlockCard {
-  readonly extends?: string;
   readonly governs: readonly string[];
-  readonly isAbstract?: true;
   readonly languages: readonly string[];
   readonly requires: readonly string[];
 }

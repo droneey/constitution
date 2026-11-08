@@ -22,7 +22,7 @@ describe('Constitution.modelOf', () => {
       ...blockFiles({
         dir: 'blocks/domains/ui',
         files: {
-          'architecture/screens.md': chapterFile(
+          '@architecture/screens.md': chapterFile(
             'Screens',
             'A screen lives in **`screens/`**{#screen}.\n',
             rule({
@@ -30,7 +30,7 @@ describe('Constitution.modelOf', () => {
               slug: 'screens-stay-thin',
             }),
           ),
-          'foundation/with/kit.md': chapterFile(
+          '@foundation/with/kit.md': chapterFile(
             'Kit',
             'Its parts sit in **`kit-parts/`**{#kit-part}.\n',
             rule({
@@ -41,17 +41,15 @@ describe('Constitution.modelOf', () => {
         id: 'ui',
       }),
       ...blockFiles({
-        abstract: true,
-        dir: 'blocks/implementations/_runtime',
-        id: '_runtime',
+        dir: 'blocks/implementations/runtime',
+        id: 'runtime',
       }),
       ...blockFiles({
-        dir: 'blocks/implementations/kit',
-        extends: '_runtime',
+        dir: 'blocks/implementations/runtime/kit',
         governs: [
           'kit.json',
         ],
-        id: 'kit',
+        id: 'runtime/kit',
         languages: [
           'typescript',
         ],
@@ -70,7 +68,6 @@ describe('Constitution.modelOf', () => {
         {
           governs: [],
           id: BlockId.create('core'),
-          isAbstract: false,
           languages: [],
           layer: Layer.Core,
           requires: [],
@@ -78,26 +75,22 @@ describe('Constitution.modelOf', () => {
         {
           governs: [],
           id: BlockId.create('ui'),
-          isAbstract: false,
           languages: [],
           layer: Layer.Domain,
           requires: [],
         },
         {
           governs: [],
-          id: BlockId.create('_runtime'),
-          isAbstract: true,
+          id: BlockId.create('runtime'),
           languages: [],
           layer: Layer.Implementation,
           requires: [],
         },
         {
-          extends: BlockId.create('_runtime'),
           governs: [
             Glob.create('kit.json'),
           ],
-          id: BlockId.create('kit'),
-          isAbstract: false,
+          id: BlockId.create('runtime/kit'),
           languages: [
             BlockId.create('typescript'),
           ],

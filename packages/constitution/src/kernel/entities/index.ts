@@ -12,8 +12,6 @@ export { ProjectUnit } from './project-unit.entity';
 export type { WarningDetails } from './project-warning.entity';
 export { ProjectWarning, WarningCode, WarningKind } from './project-warning.entity';
 export { OLDEST_FORMAT, Release, ReleaseStatus } from './release.entity';
-export type { RequirementsParsed, RequirementsTableDetails } from './requirement-answer.entity';
-export { Met, RequirementAnswer, RequirementsTableCode } from './requirement-answer.entity';
 export type { RuleText } from './rule.entity';
 export { Rule } from './rule.entity';
 export { RuleHeading } from './rule-heading.entity';

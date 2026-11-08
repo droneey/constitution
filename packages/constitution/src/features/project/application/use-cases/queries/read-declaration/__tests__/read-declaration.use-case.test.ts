@@ -65,7 +65,7 @@ describe('readDeclaration', () => {
           {
             body: uiRules,
             files: {
-              'foundation/forms.md': '# Forms\n',
+              '@foundation/forms.md': '# Forms\n',
               'notes.txt': 'Notes.\n',
             },
             governs: [
@@ -79,7 +79,7 @@ describe('readDeclaration', () => {
           blocks: [
             {
               files: {
-                'foundation/style.md': '# Style\n',
+                '@foundation/style.md': '# Style\n',
               },
               folder: Folder.Implementation,
               id: 'lint',
@@ -89,8 +89,8 @@ describe('readDeclaration', () => {
         }),
       }),
       unreadable: [
-        `${releaseFolderPath}/blocks/domains/ui/foundation/forms.md`,
-        `${PROJECT}/rules/blocks/implementations/lint/foundation/style.md`,
+        `${releaseFolderPath}/blocks/domains/ui/@foundation/forms.md`,
+        `${PROJECT}/rules/blocks/implementations/lint/@foundation/style.md`,
       ],
     });
 
@@ -116,7 +116,7 @@ describe('readDeclaration', () => {
           activeOf({
             files: [
               'blocks/domains/ui/ui.md',
-              'blocks/domains/ui/foundation/forms.md',
+              'blocks/domains/ui/@foundation/forms.md',
             ],
             governs: [
               '**/*.tsx',
@@ -126,7 +126,7 @@ describe('readDeclaration', () => {
           activeOf({
             files: [
               './rules/blocks/implementations/lint/lint.md',
-              './rules/blocks/implementations/lint/foundation/style.md',
+              './rules/blocks/implementations/lint/@foundation/style.md',
             ],
             governs: [],
             source: SourceKind.Pack,
@@ -154,7 +154,7 @@ describe('readDeclaration', () => {
             },
             {
               chapters: [
-                'foundation/forms.md',
+                '@foundation/forms.md',
               ],
               governs: [
                 '**/*.tsx',
@@ -163,7 +163,7 @@ describe('readDeclaration', () => {
             },
             {
               chapters: [
-                'foundation/style.md',
+                '@foundation/style.md',
               ],
               id: 'lint',
               layer: Layer.Implementation,
@@ -212,7 +212,7 @@ describe('readDeclaration', () => {
           },
           {
             details: {
-              file: './rules/blocks/implementations/lint/foundation/style.md',
+              file: './rules/blocks/implementations/lint/@foundation/style.md',
               source: SourceKind.Pack,
             },
             kind: WarningKind.FileUnreadable,
@@ -226,7 +226,7 @@ describe('readDeclaration', () => {
           },
           {
             details: {
-              file: '/work/project/.droneey/constitution/blocks/domains/ui/foundation/forms.md',
+              file: '/work/project/.droneey/constitution/blocks/domains/ui/@foundation/forms.md',
               source: SourceKind.Release,
             },
             kind: WarningKind.FileUnreadable,
@@ -338,7 +338,7 @@ describe('readDeclaration', () => {
           packs: 'packs: [shared, empty]',
         }),
         files: {
-          [`${PROJECT}/shared/presets/biome/foundation.yaml`]: 'biome: {}\n',
+          [`${PROJECT}/shared/presets/biome/@foundation.yaml`]: 'biome: {}\n',
         },
       }),
       folders: [
@@ -461,7 +461,7 @@ describe('readDeclaration', () => {
       tree: {
         [configPath]: yamlOf(),
         [manifest]: manifestOf(),
-        [`${releaseFolderPath}/presets/biome/foundation.yaml`]: 'biome: {}\n',
+        [`${releaseFolderPath}/presets/biome/@foundation.yaml`]: 'biome: {}\n',
       },
       unreadable: [],
     },

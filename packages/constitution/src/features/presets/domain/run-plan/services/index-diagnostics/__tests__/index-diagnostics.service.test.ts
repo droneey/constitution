@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { Axis, BlockFormat, Level } from '#/kernel/constants';
+import { Axis, Level } from '#/kernel/constants';
 import type { Lowering } from '#/kernel/entities';
 import { BlockModel } from '#/kernel/entities';
 import {
@@ -55,10 +55,9 @@ const entryOf = (input: { rule: string; value: PresetValue }): PresetEntry => ({
   language: EVERY,
   rule: input.rule === EVERY ? EVERY : RuleSlug.create(input.rule),
   set: {
-    filePath: RepositoryRelativePath.create('presets/biome/foundation.yaml'),
+    filePath: RepositoryRelativePath.create('presets/biome/@foundation.yaml'),
     placeInPresets: {
       axis: Axis.Foundation,
-      format: BlockFormat.Legacy,
       reader: BlockId.create('biome'),
       withs: [],
     },

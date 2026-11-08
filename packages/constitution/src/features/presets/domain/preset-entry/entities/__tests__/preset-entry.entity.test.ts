@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 
-import { Axis, BlockFormat, Layer } from '#/kernel/constants';
+import { Axis, Layer } from '#/kernel/constants';
 import { BlockModel, TermKind } from '#/kernel/entities';
 import {
   BlockId,
@@ -25,10 +25,9 @@ const entryOf = (input: { index: number; key?: string; pack?: string }): Entry =
   language: EVERY,
   rule: EVERY,
   set: {
-    filePath: RepositoryRelativePath.create('presets/biome/foundation.yaml'),
+    filePath: RepositoryRelativePath.create('presets/biome/@foundation.yaml'),
     placeInPresets: {
       axis: Axis.Foundation,
-      format: BlockFormat.Legacy,
       reader: BlockId.create('biome'),
       withs: [],
     },
@@ -43,7 +42,6 @@ const spelledModel = BlockModel.create({
     {
       governs: [],
       id: BlockId.create('python'),
-      isAbstract: false,
       languages: [],
       layer: Layer.Language,
       requires: [],
@@ -51,7 +49,6 @@ const spelledModel = BlockModel.create({
     {
       governs: [],
       id: BlockId.create('import-linter'),
-      isAbstract: false,
       languages: [],
       layer: Layer.Implementation,
       requires: [

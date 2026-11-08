@@ -1,5 +1,4 @@
 import type { Layer } from '#/kernel/constants';
-import { BlockFormat } from '#/kernel/constants';
 import type { ProjectWarning } from '#/kernel/entities';
 import { BlockModel, Rule, StatedRule, WarningKind } from '#/kernel/entities';
 import { firstBy } from '#/kernel/utils';
@@ -25,7 +24,6 @@ import { PartKind, readBlockFile } from './steps/read-block-file';
 interface BlockDraft {
   readonly card: BlockCard;
   readonly chapters: readonly ChapterPlace[];
-  readonly format: BlockFormat;
   readonly id: BlockId;
   readonly layer: Layer;
   readonly seams: readonly SeamPlace[];
@@ -49,7 +47,6 @@ const draftOf = (input: { first: FileInFolder; own: readonly FileReading[] }): B
           ]
         : [],
     ),
-    format: input.first.format,
     id: input.first.block,
     layer: input.first.layer,
     seams: reads.flatMap((read) =>
@@ -90,113 +87,55 @@ const repeatedWarningsOf = (input: {
       kind: WarningKind.RuleRepeated,
     }));
 
-const draftNamed = (input: {
-  drafts: ReadonlyMap<BlockId, BlockDraft>;
-  name: string | undefined;
-}): BlockDraft | undefined => (BlockId.is(input.name) ? input.drafts.get(input.name) : undefined);
-
-const folderParentOf = (input: {
+const parentOf = (input: {
   drafts: ReadonlyMap<BlockId, BlockDraft>;
   id: BlockId;
-}): BlockDraft | undefined => {
+}): BlockId | undefined => {
   const above = BlockId.parentOf(input.id);
 
-  if (above === undefined) {
-    return undefined;
+  if (above === undefined || input.drafts.has(above)) {
+    return above;
   }
 
-  return (
-    input.drafts.get(above) ??
-    folderParentOf({
-      drafts: input.drafts,
-      id: above,
-    })
-  );
+  return parentOf({
+    drafts: input.drafts,
+    id: above,
+  });
 };
-
-const parentOf = (input: {
-  draft: BlockDraft;
-  drafts: ReadonlyMap<BlockId, BlockDraft>;
-}): BlockDraft | undefined =>
-  input.draft.format === BlockFormat.Legacy
-    ? draftNamed({
-        drafts: input.drafts,
-        name: input.draft.card.extends,
-      })
-    : folderParentOf({
-        drafts: input.drafts,
-        id: input.draft.id,
-      });
 
 const ancestorsOf = (
   drafts: ReadonlyMap<BlockId, BlockDraft>,
 ): ReadonlyMap<BlockId, readonly BlockId[]> => {
-  const ancestors = new Map<BlockId, readonly BlockId[]>();
-  const visiting = new Set<BlockId>();
-
-  const of = (draft: BlockDraft): readonly BlockId[] => {
-    if (visiting.has(draft.id)) {
-      return ancestors.get(draft.id) ?? [];
-    }
-
-    visiting.add(draft.id);
-
+  const of = (id: BlockId): readonly BlockId[] => {
     const parent = parentOf({
-      draft,
       drafts,
+      id,
     });
-    const found =
-      parent === undefined
-        ? []
-        : [
-            parent.id,
-            ...of(parent),
-          ];
 
-    ancestors.set(draft.id, found);
-
-    return found;
+    return parent === undefined
+      ? []
+      : [
+          parent,
+          ...of(parent),
+        ];
   };
-
-  for (const draft of drafts.values()) {
-    of(draft);
-  }
 
   return new Map(
     [
-      ...ancestors,
-    ].filter(([, found]) => found.length > 0),
+      ...drafts.keys(),
+    ].flatMap((id) => {
+      const found = of(id);
+
+      return found.length === 0
+        ? []
+        : [
+            [
+              id,
+              found,
+            ] as const,
+          ];
+    }),
   );
-};
-
-const baseWarningsOf = (input: {
-  draft: BlockDraft;
-  model: BlockModel;
-}): readonly ProjectWarning[] => {
-  const { draft, model } = input;
-  const base = draft.card.extends;
-
-  if (
-    draft.format === BlockFormat.Nested ||
-    base === undefined ||
-    BlockModel.isExtensible(model, base)
-  ) {
-    return [];
-  }
-
-  return [
-    {
-      details: {
-        base,
-        block: draft.id,
-        source: draft.source.kind,
-      },
-      kind:
-        BlockModel.blockOf(model, base) === undefined
-          ? WarningKind.BaseNoBlock
-          : WarningKind.BaseConcrete,
-    },
-  ];
 };
 
 const linkWarningsOf = (input: {
@@ -205,8 +144,8 @@ const linkWarningsOf = (input: {
 }): readonly ProjectWarning[] =>
   [
     ...input.drafts.values(),
-  ].flatMap((draft) => [
-    ...draft.card.requires
+  ].flatMap((draft) =>
+    draft.card.requires
       .filter((required) => BlockModel.blockOf(input.model, required) === undefined)
       .map(
         (required): ProjectWarning => ({
@@ -218,11 +157,7 @@ const linkWarningsOf = (input: {
           kind: WarningKind.RequiredNoBlock,
         }),
       ),
-    ...baseWarningsOf({
-      draft,
-      model: input.model,
-    }),
-  ]);
+  );
 
 const tightenedWarningsOf = (input: {
   drafts: ReadonlyMap<BlockId, BlockDraft>;
@@ -252,28 +187,16 @@ const tightenedWarningsOf = (input: {
   );
 };
 
-const blockOf = (draft: BlockDraft): BlockSetBlock => {
-  const isLegacy = draft.format === BlockFormat.Legacy;
-  const base = isLegacy ? draft.card.extends : undefined;
-
-  return {
-    chapters: draft.chapters,
-    ...(BlockId.is(base)
-      ? {
-          extends: base,
-        }
-      : {}),
-    format: draft.format,
-    governs: draft.card.governs.filter(Glob.is),
-    id: draft.id,
-    isAbstract: isLegacy && draft.card.isAbstract === true,
-    languages: draft.card.languages.filter(BlockId.is),
-    layer: draft.layer,
-    requires: draft.card.requires.filter(BlockId.is),
-    seams: draft.seams,
-    source: draft.source,
-  };
-};
+const blockOf = (draft: BlockDraft): BlockSetBlock => ({
+  chapters: draft.chapters,
+  governs: draft.card.governs.filter(Glob.is),
+  id: draft.id,
+  languages: draft.card.languages.filter(BlockId.is),
+  layer: draft.layer,
+  requires: draft.card.requires.filter(BlockId.is),
+  seams: draft.seams,
+  source: draft.source,
+});
 
 const ruleOf = (rule: Rule): BlockSetRule => ({
   axis: rule.axis,

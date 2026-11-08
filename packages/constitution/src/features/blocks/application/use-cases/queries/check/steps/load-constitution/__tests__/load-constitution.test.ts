@@ -1,12 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
-import { Axis, BlockFormat } from '#/kernel/constants';
-import {
-  RequirementAnswer,
-  RequirementsTableCode,
-  RuleFormCode,
-  ValueSite,
-} from '#/kernel/entities';
+import { Axis } from '#/kernel/constants';
+import { RuleFormCode, ValueSite } from '#/kernel/entities';
 import { ValueFailure } from '#/kernel/errors';
 import { BlockId, RuleSlug } from '#/kernel/value-objects';
 
@@ -21,7 +16,6 @@ import {
 import {
   nestedBlockFiles,
   nestedFiles,
-  nestedPassportFile,
 } from '../../../../../../../__tests__/nested-files.fixtures';
 import { packFiles } from '../../../../../../../__tests__/pack-files.fixtures';
 import { validFiles } from '../../../../../../../__tests__/valid-files.fixtures';
@@ -29,7 +23,6 @@ import {
   Block,
   BlockFile,
   BlockLoadCode,
-  FrontMatterField,
   FrontMatterReadCode,
   PlaceCode,
 } from '../../../../../../../domain/block/entities';
@@ -65,14 +58,12 @@ describe('loadConstitution', () => {
           agents: [],
           skills: [],
         },
-        format: BlockFormat.Legacy,
         paths: new Set([
           TreePath.create('LICENSE.md'),
         ]),
         repositoryPaths: new Set([
           TreePath.create('LICENSE.md'),
         ]),
-        requirementAnswers: [],
         rules: [],
       },
       findings: [],
@@ -186,10 +177,10 @@ describe('loadConstitution', () => {
         'platform browser',
         'platform web',
         'language typescript',
-        'implementation _react',
         'implementation biome',
         'implementation lingui',
-        'implementation react-dom',
+        'implementation react',
+        'implementation react/react-dom',
       ],
       findings: [],
     });
@@ -222,18 +213,13 @@ describe('loadConstitution', () => {
 
   it.each([
     'blocks/domains/ui/parts.md',
-    'blocks/domains/ui/with/i18n.md',
-    'blocks/domains/ui/design/with/remote-data.md',
     'blocks/domains/ui/architecture',
     'blocks/domains/ui/.draft.md',
     'blocks/domains/ui/parts.mdx',
     'blocks/domains/ui/parts/a.md',
-    'blocks/domains/ui/old.md/a.md',
-    'blocks/domains/ui/with/notes.txt',
-    'blocks/domains/ui/with/old.md/a.md',
-    'blocks/domains/ui/architecture/.draft.md',
-    'blocks/domains/ui/architecture/parts/a.md',
-    'blocks/domains/ui/workflow/with/notes.txt',
+    'blocks/domains/ui/@architecture/.draft.md',
+    'blocks/domains/ui/@architecture/parts/a.md',
+    'blocks/domains/ui/@workflow/with/notes.txt',
   ])(
     "should report %p as a stray file when it sits at the block's root beside its passport, is hidden, nested, not markdown or in a folder that is neither an axis nor with/",
     (path) => {
@@ -249,9 +235,7 @@ describe('loadConstitution', () => {
       expect(loaded.findings).toStrictEqual([
         {
           code: PlaceCode.StrayBlockFile,
-          details: {
-            format: BlockFormat.Legacy,
-          },
+          details: {},
           path,
         },
       ]);
@@ -267,7 +251,7 @@ describe('loadConstitution', () => {
       condition: "a block's folder is named by no kebab-case id",
       files: {
         'blocks/domains/Design_System/Design_System.md': uiPassport,
-        'blocks/domains/Design_System/foundation/tokens.md': '# Tokens\n',
+        'blocks/domains/Design_System/@foundation/tokens.md': '# Tokens\n',
       },
       finding: {
         code: ValueFailure.BlockId,
@@ -281,7 +265,7 @@ describe('loadConstitution', () => {
     {
       condition: 'a seam is named by no kebab-case id',
       files: {
-        'blocks/domains/ui/architecture/with/Remote_Data.md': '# UI with remote data\n',
+        'blocks/domains/ui/@architecture/with/Remote_Data.md': '# UI with remote data\n',
         'blocks/domains/ui/ui.md': uiPassport,
       },
       finding: {
@@ -289,13 +273,13 @@ describe('loadConstitution', () => {
         details: {
           site: ValueSite.SeamFile,
         },
-        path: 'blocks/domains/ui/architecture/with/Remote_Data.md',
+        path: 'blocks/domains/ui/@architecture/with/Remote_Data.md',
       },
     },
     {
       condition: "a rule's heading names no kebab-case slug",
       files: {
-        'blocks/domains/ui/foundation/forms.md': `# Forms\n\n## General\n\n${rule({
+        'blocks/domains/ui/@foundation/forms.md': `# Forms\n\n## General\n\n${rule({
           slug: 'Inputs_Labelled',
         })}`,
         'blocks/domains/ui/ui.md': uiPassport,
@@ -306,7 +290,7 @@ describe('loadConstitution', () => {
           site: ValueSite.RuleHeading,
           written: 'Inputs_Labelled',
         },
-        path: 'blocks/domains/ui/foundation/forms.md',
+        path: 'blocks/domains/ui/@foundation/forms.md',
       },
     },
   ])('should report the malformed name where it is read when $condition', ({ files, finding }) => {
@@ -323,9 +307,9 @@ describe('loadConstitution', () => {
     // Arrange
     const files = {
       'blocks/domains/Design_System/Design_System.md': uiPassport,
-      'blocks/domains/Design_System/foundation/tokens.md': '# Tokens\n',
+      'blocks/domains/Design_System/@foundation/tokens.md': '# Tokens\n',
       'blocks/domains/Remote_Data/Remote_Data.md': uiPassport,
-      'blocks/domains/Remote_Data/foundation/fetching.md': '# Fetching\n',
+      'blocks/domains/Remote_Data/@foundation/fetching.md': '# Fetching\n',
     };
 
     // Act
@@ -355,13 +339,13 @@ describe('loadConstitution', () => {
   it('should load the passport, the chapters by axis, then the seams by axis, when the tree lists them otherwise', () => {
     // Arrange
     const files = {
-      'blocks/domains/ui/architecture/remote-data.md': '# Remote data\n\nText.',
-      'blocks/domains/ui/architecture/with/remote-data.md': '# UI with remote data\n',
-      'blocks/domains/ui/foundation/b.md': '# B\n',
-      'blocks/domains/ui/foundation/a.md': '# A\n',
-      'blocks/domains/ui/foundation/with/i18n.md': '# UI with i18n\n',
+      'blocks/domains/ui/@architecture/remote-data.md': '# Remote data\n\nText.',
+      'blocks/domains/ui/@architecture/with/remote-data.md': '# UI with remote data\n',
+      'blocks/domains/ui/@foundation/b.md': '# B\n',
+      'blocks/domains/ui/@foundation/a.md': '# A\n',
+      'blocks/domains/ui/@foundation/with/i18n.md': '# UI with i18n\n',
       'blocks/domains/ui/ui.md': uiPassport,
-      'blocks/domains/ui/workflow/reviews.md': '# Reviews\n',
+      'blocks/domains/ui/@workflow/reviews.md': '# Reviews\n',
     };
 
     // Act
@@ -377,39 +361,39 @@ describe('loadConstitution', () => {
           BlockFile.passport({
             axis: Axis.Foundation,
             body: '\n# UI\n',
-            lines: 11,
+            lines: 9,
             path: 'blocks/domains/ui/ui.md',
           }),
           BlockFile.chapter({
             axis: Axis.Foundation,
             body: '# A\n',
             lines: 1,
-            path: 'blocks/domains/ui/foundation/a.md',
+            path: 'blocks/domains/ui/@foundation/a.md',
           }),
           BlockFile.chapter({
             axis: Axis.Foundation,
             body: '# B\n',
             lines: 1,
-            path: 'blocks/domains/ui/foundation/b.md',
+            path: 'blocks/domains/ui/@foundation/b.md',
           }),
           BlockFile.chapter({
             axis: Axis.Architecture,
             body: '# Remote data\n\nText.',
             lines: 3,
-            path: 'blocks/domains/ui/architecture/remote-data.md',
+            path: 'blocks/domains/ui/@architecture/remote-data.md',
           }),
           BlockFile.chapter({
             axis: Axis.Workflow,
             body: '# Reviews\n',
             lines: 1,
-            path: 'blocks/domains/ui/workflow/reviews.md',
+            path: 'blocks/domains/ui/@workflow/reviews.md',
           }),
           BlockFile.seam(
             {
               axis: Axis.Foundation,
               body: '# UI with i18n\n',
               lines: 1,
-              path: 'blocks/domains/ui/foundation/with/i18n.md',
+              path: 'blocks/domains/ui/@foundation/with/i18n.md',
             },
 
             BlockId.create('i18n'),
@@ -419,7 +403,7 @@ describe('loadConstitution', () => {
               axis: Axis.Architecture,
               body: '# UI with remote data\n',
               lines: 1,
-              path: 'blocks/domains/ui/architecture/with/remote-data.md',
+              path: 'blocks/domains/ui/@architecture/with/remote-data.md',
             },
 
             BlockId.create('remote-data'),
@@ -436,24 +420,24 @@ describe('loadConstitution', () => {
   }>([
     {
       files: {
-        'blocks/domains/ui/foundation/with/i18n.md': '---\nid: i18n\n---\n# UI with i18n\n',
+        'blocks/domains/ui/@foundation/with/i18n.md': '---\nid: i18n\n---\n# UI with i18n\n',
         'blocks/domains/ui/ui.md': uiPassport,
       },
       finding: {
         code: BlockLoadCode.SecondaryFrontMatter,
         details: {},
-        path: 'blocks/domains/ui/foundation/with/i18n.md',
+        path: 'blocks/domains/ui/@foundation/with/i18n.md',
       },
     },
     {
       files: {
-        'blocks/domains/ui/architecture/ui.md': '# UI\n',
+        'blocks/domains/ui/@architecture/ui.md': '# UI\n',
         'blocks/domains/ui/ui.md': uiPassport,
       },
       finding: {
         code: PlaceCode.ChapterNamedAfterBlock,
         details: {},
-        path: 'blocks/domains/ui/architecture/ui.md',
+        path: 'blocks/domains/ui/@architecture/ui.md',
       },
     },
   ])(
@@ -476,7 +460,7 @@ describe('loadConstitution', () => {
   }>([
     {
       files: {
-        'blocks/domains/ui/foundation/screens.md': '# Screens\n',
+        'blocks/domains/ui/@foundation/screens.md': '# Screens\n',
       },
       finding: {
         code: BlockLoadCode.WithoutPassport,
@@ -569,24 +553,24 @@ describe('loadConstitution', () => {
     ]);
   });
 
-  it('should gather the rules, the answers and their findings of every block when they spread over passports, chapters and seams', () => {
+  it('should gather the rules and their findings of every block when they spread over chapters and seams', () => {
     // Arrange
     const files = {
-      'blocks/domains/i18n/foundation/plurals.md': `# i18n\n\n${rule({
+      'blocks/domains/i18n/@foundation/plurals.md': `# i18n\n\n${rule({
         slug: 'i18n-plurals-by-cldr',
       })}`,
       'blocks/domains/i18n/i18n.md': passportFile({
         body: '# i18n\n',
         id: 'i18n',
       }),
-      'blocks/implementations/lingui/architecture/with/react-dom.md': [
+      'blocks/implementations/lingui/@architecture/with/react/react-dom.md': [
         '# React DOM',
         '',
         rule({
           slug: 'provider-at-the-root',
         }),
       ].join('\n'),
-      'blocks/implementations/lingui/workflow/catalogs.md': [
+      'blocks/implementations/lingui/@workflow/catalogs.md': [
         '# Catalogs',
         '',
         '## loose · MUST',
@@ -596,15 +580,7 @@ describe('loadConstitution', () => {
         }),
       ].join('\n'),
       'blocks/implementations/lingui/lingui.md': passportFile({
-        body: [
-          '# Lingui',
-          '',
-          '## Requirements',
-          '',
-          '| `i18n-plurals-by-cldr` | ICU plural | yes |',
-          '| i18n typed keys | catalogs | yes |',
-          '',
-        ].join('\n'),
+        body: '# Lingui\n',
         id: 'lingui',
       }),
     };
@@ -614,7 +590,6 @@ describe('loadConstitution', () => {
 
     // Assert
     expect({
-      answers: loaded.constitution.requirementAnswers,
       findings: loaded.findings,
       rules: loaded.constitution.rules.map((parsed) => [
         parsed.block,
@@ -624,69 +599,51 @@ describe('loadConstitution', () => {
         parsed.slug,
       ]),
     }).toStrictEqual({
-      answers: [
-        RequirementAnswer.create({
-          block: BlockId.create('lingui'),
-          file: 'blocks/implementations/lingui/lingui.md',
-          how: 'ICU plural',
-          requirement: RuleSlug.create('i18n-plurals-by-cldr'),
-          writtenMet: 'yes',
-        }),
-      ],
       findings: [
         {
           code: RuleFormCode.HeadingMisshapen,
           details: {
             heading: '## loose · MUST',
           },
-          path: 'blocks/implementations/lingui/workflow/catalogs.md',
-        },
-        {
-          code: RequirementsTableCode.RowMisshapen,
-          details: {
-            row: '| i18n typed keys | catalogs | yes |',
-          },
-          path: 'blocks/implementations/lingui/lingui.md',
+          path: 'blocks/implementations/lingui/@workflow/catalogs.md',
         },
       ],
       rules: [
         [
           'i18n',
           'foundation',
-          'blocks/domains/i18n/foundation/plurals.md',
+          'blocks/domains/i18n/@foundation/plurals.md',
           undefined,
           'i18n-plurals-by-cldr',
         ],
         [
           'lingui',
           'workflow',
-          'blocks/implementations/lingui/workflow/catalogs.md',
+          'blocks/implementations/lingui/@workflow/catalogs.md',
           undefined,
           'catalogs-are-compiled',
         ],
         [
           'lingui',
           'architecture',
-          'blocks/implementations/lingui/architecture/with/react-dom.md',
-          'react-dom',
+          'blocks/implementations/lingui/@architecture/with/react/react-dom.md',
+          'react/react-dom',
           'provider-at-the-root',
         ],
       ],
     });
   });
 
-  it('should read neither rules nor answers when they sit in a code fence', () => {
+  it('should read no rule when it sits in a code fence', () => {
     // Arrange
     const files = {
-      'blocks/implementations/lingui/foundation/samples.md': [
+      'blocks/implementations/lingui/@foundation/samples.md': [
         '# Samples',
         '',
         '```markdown',
         rule({
           slug: 'sample-rule',
         }),
-        '## Requirements',
-        '| `sample-rule` | sample | yes |',
         '```',
         '',
       ].join('\n'),
@@ -700,13 +657,7 @@ describe('loadConstitution', () => {
     const loaded = loadedOf(files);
 
     // Assert
-    expect({
-      answers: loaded.constitution.requirementAnswers,
-      rules: loaded.constitution.rules,
-    }).toStrictEqual({
-      answers: [],
-      rules: [],
-    });
+    expect(loaded.constitution.rules).toStrictEqual([]);
   });
 
   it.each([
@@ -792,7 +743,7 @@ describe('loadConstitution', () => {
   );
 });
 
-describe('loadConstitution of a nested tree', () => {
+describe('loadConstitution of nested blocks', () => {
   it('should load every block by its id path without a finding when its axis folders are marked by @', () => {
     // Arrange
     const files = nestedFiles();
@@ -853,14 +804,18 @@ describe('loadConstitution of a nested tree', () => {
     });
   });
 
-  it('should report extends and abstract as retired when a passport of a nested tree still declares them', () => {
+  it('should take a MAY heading for a finding, since only an override sets a rule to MAY', () => {
     // Arrange
+    const path = 'blocks/contexts/platforms/client/browser/@foundation/cache.md';
     const files = {
       ...nestedFiles(),
-      'blocks/implementations/react/react-dom/react-dom.md': passportFile({
-        body: '# React DOM\n',
-        id: 'react/react-dom',
-      }),
+      [path]: chapterFile(
+        'Cache',
+        rule({
+          level: 'MAY',
+          slug: 'tab-may-cache',
+        }),
+      ),
     };
 
     // Act
@@ -869,65 +824,14 @@ describe('loadConstitution of a nested tree', () => {
     // Assert
     expect(loaded.findings).toStrictEqual([
       {
-        code: FrontMatterReadCode.FieldRetired,
+        code: RuleFormCode.LevelRetired,
         details: {
-          field: FrontMatterField.Extends,
+          slug: RuleSlug.create('tab-may-cache'),
         },
-        path: 'blocks/implementations/react/react-dom/react-dom.md',
-      },
-      {
-        code: FrontMatterReadCode.FieldRetired,
-        details: {
-          field: FrontMatterField.Abstract,
-        },
-        path: 'blocks/implementations/react/react-dom/react-dom.md',
+        path,
       },
     ]);
   });
-
-  it.each([
-    {
-      findings: [
-        {
-          code: RuleFormCode.LevelRetired,
-          details: {
-            slug: RuleSlug.create('tab-may-cache'),
-          },
-          path: 'blocks/contexts/platforms/client/browser/@foundation/cache.md',
-        },
-      ],
-      format: 'nested',
-      path: 'blocks/contexts/platforms/client/browser/@foundation/cache.md',
-      tree: nestedFiles(),
-    },
-    {
-      findings: [],
-      format: 'legacy',
-      path: 'blocks/domains/ui/foundation/cache.md',
-      tree: validFiles(),
-    },
-  ])(
-    'should take a MAY heading for a finding only when the tree is $format',
-    ({ findings, path, tree }) => {
-      // Arrange
-      const files = {
-        ...tree,
-        [path]: chapterFile(
-          'Cache',
-          rule({
-            level: 'MAY',
-            slug: 'tab-may-cache',
-          }),
-        ),
-      };
-
-      // Act
-      const loaded = loadedOf(files);
-
-      // Assert
-      expect(loaded.findings).toStrictEqual(findings);
-    },
-  );
 
   it("should load a pack's child block under a parent of the release it extends", () => {
     // Arrange
@@ -974,37 +878,6 @@ describe('loadConstitution of a nested tree', () => {
           id: BlockId.create('react/react-native'),
         },
         path: 'blocks/implementations/react/react-native',
-      },
-    ]);
-  });
-
-  it('should report extends and abstract as missing when a passport of the legacy tree leaves them out', () => {
-    // Arrange
-    const files = {
-      ...validFiles(),
-      'blocks/domains/ui/ui.md': nestedPassportFile({
-        id: 'ui',
-      }),
-    };
-
-    // Act
-    const loaded = loadedOf(files);
-
-    // Assert
-    expect(loaded.findings).toStrictEqual([
-      {
-        code: FrontMatterReadCode.FieldMissing,
-        details: {
-          field: FrontMatterField.Extends,
-        },
-        path: 'blocks/domains/ui/ui.md',
-      },
-      {
-        code: FrontMatterReadCode.FieldMissing,
-        details: {
-          field: FrontMatterField.Abstract,
-        },
-        path: 'blocks/domains/ui/ui.md',
       },
     ]);
   });

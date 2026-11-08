@@ -69,13 +69,13 @@ describe('termsTexts', () => {
       problem: {
         code: TermsCode.IdRepeated,
         details: {
-          firstFile: 'blocks/core/architecture/layout.md',
+          firstFile: 'blocks/core/@architecture/layout.md',
           firstTerm: 'utils/',
           id: 'helper',
           term: '.utils',
         },
       },
-      text: 'gives ".utils" the id "helper", which blocks/core/architecture/layout.md gives "utils/" already; an id names one term',
+      text: 'gives ".utils" the id "helper", which blocks/core/@architecture/layout.md gives "utils/" already; an id names one term',
     },
     {
       problem: {

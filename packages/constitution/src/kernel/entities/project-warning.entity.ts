@@ -39,8 +39,6 @@ enum WarningKind {
   BlockRepeated = 'block-repeated',
   OutsideBlockFolder = 'outside-block-folder',
   FolderMisnamed = 'folder-misnamed',
-  BaseNoBlock = 'base-no-block',
-  BaseConcrete = 'base-concrete',
   RequiredNoBlock = 'required-no-block',
   TightensUnknownRule = 'tightens-unknown-rule',
   BlockNeeded = 'block-needed',
@@ -132,14 +130,6 @@ interface WarningDetails {
     };
   readonly [WarningKind.OutsideBlockFolder]: FileNamed & SourceNamed;
   readonly [WarningKind.FolderMisnamed]: FileNamed & SourceNamed;
-  readonly [WarningKind.BaseNoBlock]: SourceNamed & {
-    readonly base: string;
-    readonly block: BlockId;
-  };
-  readonly [WarningKind.BaseConcrete]: SourceNamed & {
-    readonly base: string;
-    readonly block: BlockId;
-  };
   readonly [WarningKind.RequiredNoBlock]: SourceNamed & {
     readonly block: BlockId;
     readonly required: string;
@@ -187,8 +177,6 @@ type BlockSetKind =
   | WarningKind.BlockRepeated
   | WarningKind.OutsideBlockFolder
   | WarningKind.FolderMisnamed
-  | WarningKind.BaseNoBlock
-  | WarningKind.BaseConcrete
   | WarningKind.RequiredNoBlock
   | WarningKind.TightensUnknownRule;
 

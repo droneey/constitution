@@ -20,7 +20,7 @@ import { remindOfFile } from '../remind-of-file.use-case';
 const ui = keptBlockOf({
   files: [
     'blocks/domains/ui/ui.md',
-    'blocks/domains/ui/foundation/ui.md',
+    'blocks/domains/ui/@foundation/ui.md',
   ],
   governs: [
     '**/ui/**',

@@ -9,11 +9,12 @@ import { checkInputOf } from '../../../../../../application/use-cases/queries/ch
 import { CyclesCode, cyclesCheck } from '../cycles';
 
 const requiring = (input: { id: string; requires: readonly string[] }): Files => ({
-  [`blocks/implementations/${input.id}/${input.id}.md`]: passportFile({
-    body: `# ${input.id}\n`,
-    id: input.id,
-    requires: input.requires,
-  }),
+  [`blocks/implementations/${input.id}/${input.id.slice(input.id.lastIndexOf('/') + 1)}.md`]:
+    passportFile({
+      body: `# ${input.id}\n`,
+      id: input.id,
+      requires: input.requires,
+    }),
 });
 
 describe('cyclesCheck', () => {
@@ -23,7 +24,7 @@ describe('cyclesCheck', () => {
         ...requiring({
           id: 'biome',
           requires: [
-            '_react',
+            'react',
             'lingui',
           ],
         }),
@@ -51,7 +52,7 @@ describe('cyclesCheck', () => {
           ],
         }),
         ...requiring({
-          id: 'react-dom',
+          id: 'react/react-dom',
           requires: [
             'biome',
           ],
@@ -90,8 +91,8 @@ describe('cyclesCheck', () => {
       files: requiring({
         id: 'biome',
         requires: [
-          '_react',
-          'react-dom',
+          'react',
+          'react/react-dom',
         ],
       }),
       name: 'two implementations share a dependency',
@@ -120,7 +121,7 @@ describe('cyclesCheck', () => {
           body: '# Browser\n',
           id: 'browser',
           requires: [
-            'react-dom',
+            'react/react-dom',
           ],
         }),
       },

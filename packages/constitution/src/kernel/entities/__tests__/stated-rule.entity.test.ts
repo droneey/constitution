@@ -7,8 +7,8 @@ import type { RuleSource, RulesParsed } from '../stated-rule.entity';
 import { RuleFormCode, StatedRule } from '../stated-rule.entity';
 import { ValueSite } from '../value-finding.entity';
 
-const FILE = 'blocks/core/foundation/principles.md';
-const AGREEMENT = 'blocks/core/foundation/agreement.md';
+const FILE = 'blocks/core/@foundation/principles.md';
+const AGREEMENT = 'blocks/core/@foundation/agreement.md';
 const table = [
   '',
   '| Why |',
@@ -63,7 +63,7 @@ describe('StatedRule.parse', () => {
         'Prose after the example.',
       ]),
       axis: Axis.Architecture,
-      file: 'blocks/core/architecture/with/ui.md',
+      file: 'blocks/core/@architecture/with/ui.md',
       seam: BlockId.create('ui'),
     };
 
@@ -77,7 +77,7 @@ describe('StatedRule.parse', () => {
         ruleOf({
           axis: Axis.Architecture,
           chapterTitle: 'Principles',
-          file: 'blocks/core/architecture/with/ui.md',
+          file: 'blocks/core/@architecture/with/ui.md',
           seam: BlockId.create('ui'),
           section: 'Screens',
           slug: RuleSlug.create('four-data-states'),

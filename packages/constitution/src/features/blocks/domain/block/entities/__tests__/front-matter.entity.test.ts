@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'bun:test';
 
-import { BlockFormat } from '#/kernel/constants';
 import { ValueSite } from '#/kernel/entities';
 import { ValueFailure } from '#/kernel/errors';
 import { BlockId, Glob } from '#/kernel/value-objects';
@@ -19,7 +18,6 @@ import {
 } from '../front-matter.entity';
 
 const FIELDS: FrontMatterFields = {
-  abstract: false,
   governs: [],
   id: 'ui',
   languages: [],
@@ -30,8 +28,6 @@ const fieldOrder = [
   FrontMatterField.Id,
   FrontMatterField.Summary,
   FrontMatterField.Requires,
-  FrontMatterField.Extends,
-  FrontMatterField.Abstract,
   FrontMatterField.Languages,
   FrontMatterField.Governs,
 ];
@@ -39,8 +35,6 @@ const keyLines = [
   'id',
   'summary',
   'requires',
-  'extends',
-  'abstract',
   'languages',
   'governs',
 ];
@@ -75,12 +69,11 @@ describe('FrontMatter.parse', () => {
     });
 
     // Act
-    const parsed = FrontMatter.parse(read, BlockFormat.Legacy);
+    const parsed = FrontMatter.parse(read);
 
     // Assert
     expect(parsed).toStrictEqual({
       frontMatter: {
-        abstract: false,
         governs: [
           Glob.create('**/ui/**'),
         ],
@@ -97,28 +90,29 @@ describe('FrontMatter.parse', () => {
     });
   });
 
-  it('should keep the base a block extends when it names one', () => {
+  it('should return the typed front matter when its id and a required id are paths', () => {
     // Arrange
     const read = mappingOf({
       fields: {
-        abstract: true,
-        extends: '_store',
-        id: '_redux-like',
+        id: 'react/react-dom',
+        requires: [
+          'client/browser',
+        ],
       },
     });
 
     // Act
-    const parsed = FrontMatter.parse(read, BlockFormat.Legacy);
+    const parsed = FrontMatter.parse(read);
 
     // Assert
     expect(parsed).toStrictEqual({
       frontMatter: {
-        abstract: true,
-        extends: BlockId.create('_store'),
         governs: [],
-        id: BlockId.create('_redux-like'),
+        id: BlockId.create('react/react-dom'),
         languages: [],
-        requires: [],
+        requires: [
+          BlockId.create('client/browser'),
+        ],
         summary: 'The ui block.',
       },
       status: FrontMatterStatus.Valid,
@@ -134,7 +128,7 @@ describe('FrontMatter.parse', () => {
     });
 
     // Act
-    const parsed = FrontMatter.parse(read, BlockFormat.Legacy);
+    const parsed = FrontMatter.parse(read);
 
     // Assert
     expect(parsed.status).toBe(FrontMatterStatus.Valid);
@@ -193,16 +187,16 @@ describe('FrontMatter.parse', () => {
       problem: {
         code: FrontMatterReadCode.OffSchema,
         details: {
-          field: 'abstract',
-          reason: 'expected boolean',
+          field: 'requires',
+          reason: 'expected array',
         },
       },
       name: 'a field of the wrong type',
       read: {
         issues: [
           {
-            field: 'abstract',
-            message: 'expected boolean',
+            field: 'requires',
+            message: 'expected array',
           },
         ],
         keys: keyLines,
@@ -240,8 +234,8 @@ describe('FrontMatter.parse', () => {
       read: {
         issues: [
           {
-            field: 'abstract',
-            message: 'expected boolean',
+            field: 'requires',
+            message: 'expected array',
           },
         ],
         keys: keyLines.filter((key) => key !== 'governs'),
@@ -250,7 +244,7 @@ describe('FrontMatter.parse', () => {
     },
   ])('should report $problem.code when the parser reads $name', ({ problem, read }) => {
     // Act
-    const parsed = FrontMatter.parse(read, BlockFormat.Legacy);
+    const parsed = FrontMatter.parse(read);
 
     // Assert
     expect(parsed).toStrictEqual({
@@ -352,19 +346,6 @@ describe('FrontMatter.parse', () => {
     },
     {
       fields: {
-        extends: 'Bad',
-      },
-      problem: {
-        code: FrontMatterReadCode.NotBlockId,
-        details: {
-          entry: 'Bad',
-          field: FrontMatterField.Extends,
-        },
-      },
-      name: 'an extends that is no block id',
-    },
-    {
-      fields: {
         requires: [
           'Bad',
         ],
@@ -459,7 +440,7 @@ describe('FrontMatter.parse', () => {
     });
 
     // Act
-    const parsed = FrontMatter.parse(read, BlockFormat.Legacy);
+    const parsed = FrontMatter.parse(read);
 
     // Assert
     expect(parsed).toStrictEqual({
@@ -481,7 +462,7 @@ describe('FrontMatter.parse', () => {
     });
 
     // Act
-    const parsed = FrontMatter.parse(read, BlockFormat.Legacy);
+    const parsed = FrontMatter.parse(read);
 
     // Assert
     expect(parsed).toStrictEqual({
@@ -507,7 +488,7 @@ describe('FrontMatter.parse', () => {
     });
 
     // Act
-    const parsed = FrontMatter.parse(read, BlockFormat.Legacy);
+    const parsed = FrontMatter.parse(read);
 
     // Assert
     expect(parsed).toStrictEqual({
@@ -530,166 +511,33 @@ describe('FrontMatter.parse', () => {
       status: FrontMatterStatus.Invalid,
     });
   });
-});
 
-const nestedKeys = [
-  'id',
-  'summary',
-  'requires',
-  'languages',
-  'governs',
-];
-
-const nestedMappingOf = (input: {
-  fields?: Partial<FrontMatterFields>;
-  keys?: readonly string[];
-}): FrontMatterRead => ({
-  fields: {
-    abstract: false,
-    governs: [],
-    id: 'react/react-dom',
-    languages: [],
-    requires: [],
-    summary: 'React in the browser.',
-    ...input.fields,
-  },
-  keys: input.keys ?? nestedKeys,
-  status: ReadStatus.Mapping,
-});
-
-describe('FrontMatter.parse of the nested format', () => {
-  it('should return the typed front matter, never abstract, when it declares neither extends nor abstract', () => {
+  it('should report extends and abstract as fields it does not know', () => {
     // Arrange
-    const read = nestedMappingOf({
-      fields: {
-        requires: [
-          'client/browser',
-        ],
-      },
-    });
-
-    // Act
-    const parsed = FrontMatter.parse(read, BlockFormat.Nested);
-
-    // Assert
-    expect(parsed).toStrictEqual({
-      frontMatter: {
-        abstract: false,
-        governs: [],
-        id: BlockId.create('react/react-dom'),
-        languages: [],
-        requires: [
-          BlockId.create('client/browser'),
-        ],
-        summary: 'React in the browser.',
-      },
-      status: FrontMatterStatus.Valid,
-    });
-  });
-
-  it.each<{
-    keys: readonly string[];
-    name: string;
-    problems: readonly FrontMatterProblem[];
-  }>([
-    {
-      keys: keyLines,
-      name: 'extends and abstract in their legacy places',
-      problems: [
-        {
-          code: FrontMatterReadCode.FieldRetired,
-          details: {
-            field: FrontMatterField.Extends,
-          },
-        },
-        {
-          code: FrontMatterReadCode.FieldRetired,
-          details: {
-            field: FrontMatterField.Abstract,
-          },
-        },
-      ],
-    },
-    {
+    const read = mappingOf({
       keys: [
-        ...nestedKeys,
+        ...keyLines,
+        'extends',
         'abstract',
       ],
-      name: 'abstract alone',
-      problems: [
-        {
-          code: FrontMatterReadCode.FieldRetired,
-          details: {
-            field: FrontMatterField.Abstract,
-          },
-        },
-      ],
-    },
-    {
-      keys: [
-        'summary',
-        'id',
-        ...nestedKeys.slice(2),
-      ],
-      name: 'its fields out of order',
-      problems: [
-        {
-          code: FrontMatterReadCode.OutOfOrder,
-          details: {
-            order: [
-              FrontMatterField.Id,
-              FrontMatterField.Summary,
-              FrontMatterField.Requires,
-              FrontMatterField.Languages,
-              FrontMatterField.Governs,
-            ],
-          },
-        },
-      ],
-    },
-  ])('should report $name as the nested format words it', ({ keys, problems }) => {
-    // Arrange
-    const read = nestedMappingOf({
-      keys,
     });
 
     // Act
-    const parsed = FrontMatter.parse(read, BlockFormat.Nested);
-
-    // Assert
-    expect(parsed).toStrictEqual({
-      problems,
-      status: FrontMatterStatus.Invalid,
-    });
-  });
-
-  it('should report a retired field beside a missing one when the passport lacks a field too', () => {
-    // Arrange
-    const read: FrontMatterRead = {
-      issues: [],
-      keys: [
-        ...nestedKeys.filter((key) => key !== 'governs'),
-        'extends',
-      ],
-      status: ReadStatus.Mismatched,
-    };
-
-    // Act
-    const parsed = FrontMatter.parse(read, BlockFormat.Nested);
+    const parsed = FrontMatter.parse(read);
 
     // Assert
     expect(parsed).toStrictEqual({
       problems: [
         {
-          code: FrontMatterReadCode.FieldMissing,
+          code: FrontMatterReadCode.FieldUnknown,
           details: {
-            field: FrontMatterField.Governs,
+            key: 'extends',
           },
         },
         {
-          code: FrontMatterReadCode.FieldRetired,
+          code: FrontMatterReadCode.FieldUnknown,
           details: {
-            field: FrontMatterField.Extends,
+            key: 'abstract',
           },
         },
       ],

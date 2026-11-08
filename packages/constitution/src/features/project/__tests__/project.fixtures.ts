@@ -27,9 +27,7 @@ enum Folder {
 }
 
 interface BlockFixture {
-  readonly abstract?: boolean;
   readonly body?: string;
-  readonly extends?: string;
   readonly files?: Readonly<Record<string, string>>;
   readonly folder?: Folder;
   readonly governs?: readonly string[];
@@ -47,16 +45,6 @@ const passportOf = (block: BlockFixture): string =>
     `id: ${block.id}`,
     `summary: ${JSON.stringify(`The ${block.id} block.`)}`,
     `requires: ${listOf(block.requires)}`,
-    ...(block.extends === undefined
-      ? []
-      : [
-          `extends: ${block.extends}`,
-        ]),
-    ...(block.abstract === undefined
-      ? []
-      : [
-          `abstract: ${String(block.abstract)}`,
-        ]),
     `languages: ${listOf(block.languages)}`,
     `governs: ${listOf(block.governs)}`,
     '---',

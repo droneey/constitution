@@ -10,23 +10,11 @@ const AXES = [
   Axis.Workflow,
 ] as const;
 
-enum BlockFormat {
-  Legacy = 'legacy',
-  Nested = 'nested',
-}
-
 const AXIS_FOLDER_NAME = {
-  [BlockFormat.Legacy]: {
-    [Axis.Architecture]: 'architecture',
-    [Axis.Foundation]: 'foundation',
-    [Axis.Workflow]: 'workflow',
-  },
-  [BlockFormat.Nested]: {
-    [Axis.Architecture]: '@architecture',
-    [Axis.Foundation]: '@foundation',
-    [Axis.Workflow]: '@workflow',
-  },
-} as const satisfies Readonly<Record<BlockFormat, Readonly<Record<Axis, string>>>>;
+  [Axis.Architecture]: '@architecture',
+  [Axis.Foundation]: '@foundation',
+  [Axis.Workflow]: '@workflow',
+} as const satisfies Readonly<Record<Axis, string>>;
 
 enum Layer {
   Core = 'core',
@@ -89,9 +77,6 @@ type LoweredLevel = (typeof LOWERED_LEVELS)[number];
 const RULE_TABLE_HEADER = '| Why |';
 const RULE_TABLE_CELLS = 1;
 
-const REQUIREMENTS_HEADING = '## Requirements';
-const REQUIREMENTS_TABLE_HEADER = '| Requirement | How | Met |';
-
 const VOCABULARY_SECTION = 'Vocabulary';
 
 export type { LoweredLevel };
@@ -100,7 +85,6 @@ export {
   AXIS_FOLDER_NAME,
   Axis,
   BLOCKS_FOLDER_NAME,
-  BlockFormat,
   LAYER_FOLDER_NAME,
   LAYER_RANK,
   LAYERS,
@@ -109,8 +93,6 @@ export {
   Level,
   LOWERED_LEVELS,
   MARKDOWN_EXTENSION,
-  REQUIREMENTS_HEADING,
-  REQUIREMENTS_TABLE_HEADER,
   RULE_TABLE_CELLS,
   RULE_TABLE_HEADER,
   reservedWords,

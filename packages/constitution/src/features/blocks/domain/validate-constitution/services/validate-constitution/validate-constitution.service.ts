@@ -7,7 +7,6 @@ import { Constitution } from '../../../constitution/entities';
 import type { BlockFinding } from './block-finding.types';
 import type { Check, CheckInput } from './check.types';
 import {
-  abstractBlocksCheck,
   blockFormCheck,
   budgetCheck,
   coreChaptersCheck,
@@ -20,7 +19,6 @@ import {
   namesCheck,
   pluginCheck,
   referencesCheck,
-  requirementsCheck,
   requiresCheck,
   rulesCheck,
   seamsCheck,
@@ -35,10 +33,8 @@ const packChecks: readonly Check<BlockFinding>[] = [
   requiresCheck,
   seamsCheck,
   cyclesCheck,
-  abstractBlocksCheck,
   termsCheck,
   rulesCheck,
-  requirementsCheck,
   referencesCheck,
   budgetCheck,
   linksCheck,

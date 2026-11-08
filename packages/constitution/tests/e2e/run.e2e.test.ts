@@ -33,15 +33,15 @@ const runnerPack = (check: string): Readonly<Record<string, string>> => ({
     'id: own-runner',
     "summary: The package's own runner.",
     'requires: []',
-    'extends: null',
-    'abstract: false',
     'languages: []',
     'governs: []',
     '---',
     '',
     '# own-runner',
+    '',
+    "> The package's own runner.",
   ),
-  [`${MEMBER}/pack/presets/own-runner/foundation.yaml`]: linesOf(
+  [`${MEMBER}/pack/presets/own-runner/@foundation.yaml`]: linesOf(
     'own-runner:',
     "  '*':",
     "    '*':",
@@ -70,7 +70,7 @@ afterAll(() => {
   removePluginRoots();
 });
 
-const seamWithCorePath = `${MEMBER}/pack/blocks/implementations/own-runner/foundation/with/core.md`;
+const seamWithCorePath = `${MEMBER}/pack/blocks/implementations/own-runner/@foundation/with/core.md`;
 
 const seamWithCore: Readonly<Record<string, string>> = {
   [seamWithCorePath]: linesOf(
