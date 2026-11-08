@@ -1,4 +1,4 @@
-import { Axis, Block, BlockLayer } from '../../block/entities';
+import { Axis, axisOfFolder, BlockLayer } from '../../block/entities';
 import { PATH_SEPARATOR } from '../../shared/constants';
 import { InvalidValueError, ValueFailure } from '../../shared/errors';
 import type { BlockPath } from '../../shared/value-objects';
@@ -31,7 +31,7 @@ const layersAboveBlocks: readonly string[] = Object.values(BlockLayer).filter(
 const axisOf = (blockPath: BlockPath): Axis =>
   blockPath
     .split(PATH_SEPARATOR)
-    .map(Block.axisOfFolder)
+    .map(axisOfFolder)
     .find((axis) => axis !== undefined) ?? Axis.Foundation;
 
 const blockIdOf = (blockPath: BlockPath): string | undefined => {
@@ -42,7 +42,7 @@ const blockIdOf = (blockPath: BlockPath): string | undefined => {
     .slice(layer === undefined ? 0 : layer.length + PATH_SEPARATOR.length)
     .split(PATH_SEPARATOR)
     .slice(0, -1);
-  const axisIndex = folders.findIndex((folder) => Block.axisOfFolder(folder) !== undefined);
+  const axisIndex = folders.findIndex((folder) => axisOfFolder(folder) !== undefined);
   const idFolders = axisIndex === -1 ? folders : folders.slice(0, axisIndex);
 
   return idFolders.length === 0 ? undefined : idFolders.join(PATH_SEPARATOR);

@@ -6,7 +6,7 @@ import { BlockPath } from '../../../shared/value-objects';
 import { Page } from '../page.entity';
 
 describe('Page.sitePathOf', () => {
-  it('should name each axis folder of the path by its axis, whichever format spells it', () => {
+  it('should name each axis folder of the path by its axis, without its mark', () => {
     // Act
     const sitePath = Page.sitePathOf('domains/people/@architecture/with/@workflow-tools/workflow');
 
@@ -58,7 +58,7 @@ describe('Page.slugsOf', () => {
     },
     {
       condition: 'the file of an axis is named after its axis',
-      path: 'domains/ui/foundation/foundation.md',
+      path: 'domains/ui/@foundation/foundation.md',
       slugs: [
         'domains',
         'ui',
@@ -67,8 +67,7 @@ describe('Page.slugsOf', () => {
       ],
     },
     {
-      condition:
-        "the file is a chapter of the nested format, whose axis keeps the legacy format's address",
+      condition: "the file is a chapter, whose axis folder's address drops its mark",
       path: 'core/@foundation/names.md',
       slugs: [
         'core',

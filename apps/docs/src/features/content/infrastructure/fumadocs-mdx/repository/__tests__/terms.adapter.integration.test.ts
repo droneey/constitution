@@ -21,7 +21,7 @@ describe('termsOf', () => {
     // Arrange
     repository.leave = enterRepository({
       files: {
-        [`${BLOCKS}/core/architecture/root.md`]: [
+        [`${BLOCKS}/core/@architecture/root.md`]: [
           '# Root',
           '',
           '> Governs the root.',
@@ -62,8 +62,8 @@ describe('termsOf', () => {
           '',
         ].join('\n'),
         [`${BLOCKS}/README.md`]: 'A **file of no block** defines no term.\n',
-        [`${BLOCKS}/implementations/bun/foundation/notes.txt`]: '**Not a term**\n',
-        [`${BLOCKS}/implementations/bun/foundation/runtime.md`]: [
+        [`${BLOCKS}/implementations/bun/@foundation/notes.txt`]: '**Not a term**\n',
+        [`${BLOCKS}/implementations/bun/@foundation/runtime.md`]: [
           'An **early** term, before any heading.',
           '',
           '---',

@@ -23,11 +23,6 @@ describe('Term.axisOf and Term.blockIdOf', () => {
       path: 'core/core.md',
     },
     {
-      axis: Axis.Architecture,
-      blockId: 'core',
-      path: 'core/architecture/layout.md',
-    },
-    {
       axis: Axis.Foundation,
       blockId: 'bun',
       path: 'implementations/bun/bun.md',
@@ -35,12 +30,12 @@ describe('Term.axisOf and Term.blockIdOf', () => {
     {
       axis: Axis.Workflow,
       blockId: 'lefthook',
-      path: 'implementations/lefthook/workflow/with/betterleaks.md',
+      path: 'implementations/lefthook/@workflow/with/betterleaks.md',
     },
     {
       axis: Axis.Foundation,
       blockId: 'python',
-      path: 'contexts/languages/python/foundation/types.md',
+      path: 'contexts/languages/python/@foundation/types.md',
     },
     {
       axis: Axis.Architecture,

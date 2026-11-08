@@ -2,21 +2,16 @@ import { describe, expect, it } from 'bun:test';
 
 import { goldenText } from '#/__tests__/golden.fixtures';
 
-import { BlockFormat } from '../../../../domain/block/entities';
 import type { BlocksOptions } from '../remark-blocks.adapter';
 import { remarkBlocks } from '../remark-blocks.adapter';
-import { LEVEL_LETTERS_BY_FORMAT } from '../remark-blocks.constants';
 import type { MarkdownVariant } from './html.fixtures';
 import { htmlOfVariants } from './html.fixtures';
 import { treeOf } from './mdast.fixtures';
 import { codeMetasOf, linksOf, outlineOf } from './remark-blocks.adapter.fixtures';
 
-const legacyLetters = LEVEL_LETTERS_BY_FORMAT[BlockFormat.Legacy];
-
 const noOptions: BlocksOptions = {
   addressesBySlug: new Map(),
   examplesBySlug: new Map(),
-  levelLetters: legacyLetters,
 };
 
 const ruleAddresses = new Map([
@@ -47,7 +42,6 @@ const ruleCard = (markdown: string, example?: string): MarkdownVariant => ({
                 ],
               ],
         ),
-        levelLetters: legacyLetters,
       },
     ],
   ],
@@ -61,7 +55,7 @@ describe('remarkBlocks', () => {
         '### name-says-what → name-is-short · MUST\n\nA name says what it holds.\n\n| Why |\n|---|\n| a reader of `x` then knows. |\n',
         '```ts\nconst count = 1;\n```',
       ),
-      'a MAY rule with only its heading': ruleCard('### name-is-short · MAY'),
+      'a SHOULD rule with only its heading': ruleCard('### name-is-short · SHOULD'),
       'a SHOULD rule that tightens a rule with no address': ruleCard(
         '### strict-name → unknown-rule · SHOULD',
       ),
@@ -95,7 +89,7 @@ describe('remarkBlocks', () => {
   it.each([
     {
       condition: 'two rules follow each other',
-      markdown: '### first-rule · MUST\n\nFirst.\n\n### second-rule · MAY\n\nSecond.',
+      markdown: '### first-rule · MUST\n\nFirst.\n\n### second-rule · SHOULD\n\nSecond.',
       outline: [
         {
           body: [
@@ -172,15 +166,12 @@ describe('remarkBlocks', () => {
     ]);
   });
 
-  it("should leave a heading as it is when it states a level the nested format's headings never state", () => {
+  it('should leave a heading as it is when it states MAY, which only an override sets', () => {
     // Arrange
     const tree = treeOf('### name-is-short · MAY\n\n### name-says-what · SHOULD');
 
     // Act
-    remarkBlocks({
-      ...noOptions,
-      levelLetters: LEVEL_LETTERS_BY_FORMAT[BlockFormat.Nested],
-    })(tree);
+    remarkBlocks(noOptions)(tree);
 
     // Assert
     expect(outlineOf(tree)).toStrictEqual([
@@ -226,7 +217,6 @@ describe('remarkBlocks', () => {
     remarkBlocks({
       addressesBySlug: ruleAddresses,
       examplesBySlug: new Map(),
-      levelLetters: legacyLetters,
     })(tree);
 
     // Assert
@@ -255,7 +245,6 @@ describe('remarkBlocks', () => {
           '```ts title="Avoid"\nlet x;\n```\n\n```ts showLineNumbers title="Prefer" \nconst x = 1;\n```\n\n```ts title="Other"\nrun();\n```',
         ],
       ]),
-      levelLetters: legacyLetters,
     })(tree);
 
     // Assert

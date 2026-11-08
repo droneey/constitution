@@ -1,4 +1,4 @@
-import { Block } from '../../block/entities';
+import { axisOfFolder } from '../../block/entities';
 import { MARKDOWN_EXTENSION, PATH_SEPARATOR } from '../../shared/constants';
 import type { BlockPath } from '../../shared/value-objects';
 import { withoutMarkdownExtension } from '../utils';
@@ -25,17 +25,17 @@ const isPassportPath = (blockPath: BlockPath): boolean => {
   const [fileName, folderName] = blockPath.split(PATH_SEPARATOR).toReversed();
 
   return (
-    Block.axisOfFolder(folderName) === undefined &&
-    fileName === `${folderName}${MARKDOWN_EXTENSION}`
+    axisOfFolder(folderName) === undefined && fileName === `${folderName}${MARKDOWN_EXTENSION}`
   );
 };
 
-// Why: an axis keeps the address the legacy format gave its folder, so the version menu, which
-// opens a page at the same address in another release, still finds it.
+// Why: an axis folder's address drops its mark, as the releases before the nested tree named the
+// folder, so the version menu, which opens a page at the same address in another release, still
+// finds it.
 const sitePathOf = (blocksPath: string): string =>
   blocksPath
     .split(PATH_SEPARATOR)
-    .map((segment) => Block.axisOfFolder(segment) ?? segment)
+    .map((segment) => axisOfFolder(segment) ?? segment)
     .join(PATH_SEPARATOR);
 
 /** @throws {InvalidValueError} when no page can have the block's address */

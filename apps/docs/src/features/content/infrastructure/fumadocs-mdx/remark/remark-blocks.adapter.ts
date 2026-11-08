@@ -19,13 +19,12 @@ import { visit } from 'unist-util-visit';
 
 import { isHeading, isSectionHeading, SUBSECTION_HEADING_DEPTH, textNode } from '../markdown';
 import type { LevelLetters } from './remark-blocks.constants';
-import { ExampleTone, exampleTonesByTitle } from './remark-blocks.constants';
+import { ExampleTone, exampleTonesByTitle, LEVEL_LETTERS } from './remark-blocks.constants';
 import { dropTitle } from './remark-drop-title.adapter';
 
 interface BlocksOptions {
   addressesBySlug: ReadonlyMap<string, string>;
   examplesBySlug: ReadonlyMap<string, string>;
-  levelLetters: LevelLetters;
 }
 
 interface Box extends Parent {
@@ -108,10 +107,9 @@ const box = (properties: Properties, children: RootContent[]): Box => ({
   type: 'box',
 });
 
-const levelledRuleOf = (
-  headingText: string,
-  levelLetters: LevelLetters,
-): LevelledRule | undefined => {
+const levelLetters: LevelLetters = LEVEL_LETTERS;
+
+const levelledRuleOf = (headingText: string): LevelledRule | undefined => {
   const rule = RuleHeading.of(headingText);
 
   if (rule?.level === undefined) {
@@ -129,7 +127,7 @@ const levelledRuleOf = (
       };
 };
 
-const ruleSectionOf = (node: RootContent, levelLetters: LevelLetters): RuleSection | undefined => {
+const ruleSectionOf = (node: RootContent): RuleSection | undefined => {
   if (!isHeading(node, SUBSECTION_HEADING_DEPTH)) {
     return undefined;
   }
@@ -138,7 +136,6 @@ const ruleSectionOf = (node: RootContent, levelLetters: LevelLetters): RuleSecti
     mdastTextOf(node, {
       includeImageAlt: false,
     }),
-    levelLetters,
   );
 
   return rule === undefined
@@ -315,7 +312,7 @@ const wrapRules = (tree: Root, options: BlocksOptions): void => {
   for (const [index, node] of [
     ...tree.children.entries(),
   ].reverse()) {
-    const ruleSection = ruleSectionOf(node, options.levelLetters);
+    const ruleSection = ruleSectionOf(node);
 
     if (ruleSection !== undefined) {
       const endIndex = sectionEndOf(tree.children, index);

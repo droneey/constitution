@@ -49,7 +49,7 @@ export const siteCollectionsFixture = (): SiteCollections => ({
       title: 'Core',
     },
     {
-      path: 'core/foundation/code.md',
+      path: 'core/@foundation/code.md',
       text: 'read',
       title: 'Code',
     },

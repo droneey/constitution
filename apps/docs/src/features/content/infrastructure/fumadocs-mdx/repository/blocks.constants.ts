@@ -2,7 +2,7 @@ import { MARKDOWN_EXTENSION } from '../../../domain/shared/constants';
 
 const corePassportFileName = `core${MARKDOWN_EXTENSION}`;
 
-const AXIS_ITEM = /^- `@?[a-z]+\/`:/;
+const AXIS_ITEM = /^- `@[a-z]+\/`:/;
 
 const FRONT_MATTER = /^---\n([\s\S]*?)\n---\n/;
 

@@ -3,12 +3,11 @@ import { join } from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
-import { BlockFormat, BlockLayer } from '../../../../domain/block/entities';
+import { BlockLayer } from '../../../../domain/block/entities';
 import { SourceFailure } from '../../../../domain/source/errors';
 import { AbsolutePath } from '../../../../domain/source/value-objects';
 import { enterRepository, failureOf } from '../../repository/__tests__/repository.fixtures';
 import { blocksOptionsOf } from '../blocks-options.adapter';
-import { LEVEL_LETTERS_BY_FORMAT } from '../remark-blocks.constants';
 
 const BLOCK_FILES = {
   'blocks/core/core.md': '# Core\n\n### core-rule · MUST\n',
@@ -46,7 +45,7 @@ afterEach(() => {
 });
 
 describe('blocksOptionsOf', () => {
-  it('should address every rule of the folders the site renders, with the examples', () => {
+  it('should address every rule of the folders the site renders but a heading of MAY, with the examples', () => {
     // Arrange
     const input = {
       baseUrl: '/docs',
@@ -75,10 +74,6 @@ describe('blocksOptionsOf', () => {
           'name-says-what',
           '/docs/core/names#name-says-what',
         ],
-        [
-          'name-is-short',
-          '/docs/core/names#name-is-short',
-        ],
       ]),
       examplesBySlug: new Map([
         [
@@ -86,11 +81,10 @@ describe('blocksOptionsOf', () => {
           '```ts title="Avoid"\nlet a;\n```\n',
         ],
       ]),
-      levelLetters: LEVEL_LETTERS_BY_FORMAT[BlockFormat.Legacy],
     });
   });
 
-  it("should address the rules of a nested tree at their pages' addresses, by the levels its headings state", () => {
+  it("should address the rules of a nested block at their pages' addresses, and no heading of MAY", () => {
     // Arrange
     const input = {
       baseUrl: '/docs',
@@ -118,7 +112,6 @@ describe('blocksOptionsOf', () => {
           '```ts title="Prefer"\nexpire();\n```\n',
         ],
       ]),
-      levelLetters: LEVEL_LETTERS_BY_FORMAT[BlockFormat.Nested],
     });
   });
 

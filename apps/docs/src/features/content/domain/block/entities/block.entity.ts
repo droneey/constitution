@@ -1,4 +1,3 @@
-import { PATH_SEPARATOR } from '../../shared/constants';
 import type { ChapterListGaps } from '../../source/errors';
 import { SourceError, SourceFailure } from '../../source/errors';
 
@@ -16,53 +15,15 @@ enum BlockLayer {
   Implementation = 'implementations',
 }
 
-enum BlockFormat {
-  Legacy = 'legacy',
-  Nested = 'nested',
-}
-
-interface Block {
-  readonly extends?: string;
-  readonly id: string;
-}
-
 const axes: readonly Axis[] = Object.values(Axis);
 
 const AXIS_MARK = '@';
 
-const ABSTRACT_MARK = '_';
-
-const nestedFolderOf = (axis: Axis): string => `${AXIS_MARK}${axis}`;
-
 const axisOfFolder = (folderName: string | undefined): Axis | undefined =>
-  axes.find((axis) => folderName === nestedFolderOf(axis) || folderName === axis);
+  axes.find((axis) => folderName === `${AXIS_MARK}${axis}`);
 
 const axisFoldersAmong = (names: readonly string[]): readonly string[] =>
   axes.flatMap((axis) => names.filter((name) => axisOfFolder(name) === axis));
-
-const formatOf = (paths: readonly string[]): BlockFormat =>
-  paths.some((path) =>
-    path.split(PATH_SEPARATOR).some((segment) => axes.map(nestedFolderOf).includes(segment)),
-  )
-    ? BlockFormat.Nested
-    : BlockFormat.Legacy;
-
-const groupOf = (block: Block): string => {
-  const groupId = block.extends ?? block.id;
-
-  return groupId.startsWith(ABSTRACT_MARK) ? groupId.slice(ABSTRACT_MARK.length) : groupId;
-};
-
-// Why: it sorts below every character an id holds, so a group's blocks stay together.
-const KEY_SEPARATOR = '\u0000';
-
-// Why: the keys sort by code point, as the hook sorts the blocks, so `_` puts the abstract block
-// first in its group, right above the blocks that extend it.
-const readingOrderOf = (blocks: readonly Block[]): readonly string[] =>
-  blocks
-    .map((block) => `${groupOf(block)}${KEY_SEPARATOR}${block.id}`)
-    .toSorted()
-    .map((key) => key.slice(key.indexOf(KEY_SEPARATOR) + KEY_SEPARATOR.length));
 
 interface ChapterListInput {
   readonly chapters: readonly string[];
@@ -89,12 +50,4 @@ const listedChaptersOf = (input: ChapterListInput): readonly string[] => {
   return input.listed;
 };
 
-const Block = {
-  axisFoldersAmong,
-  axisOfFolder,
-  formatOf,
-  listedChaptersOf,
-  readingOrderOf,
-} as const;
-
-export { Axis, Block, BlockFormat, BlockLayer };
+export { Axis, axisFoldersAmong, axisOfFolder, BlockLayer, listedChaptersOf };

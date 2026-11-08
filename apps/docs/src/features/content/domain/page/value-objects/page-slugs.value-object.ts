@@ -8,7 +8,7 @@ type PageSlugs = Brand<readonly string[], 'PageSlugs'>;
 
 const MAX_DEPTH = 9;
 
-const SLUG = /^_?[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 const OVERVIEW_NAME = 'index';
 

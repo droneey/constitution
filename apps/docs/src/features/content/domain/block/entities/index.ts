@@ -1,1 +1,7 @@
-export { Axis, Block, BlockFormat, BlockLayer } from './block.entity';
+export {
+  Axis,
+  axisFoldersAmong,
+  axisOfFolder,
+  BlockLayer,
+  listedChaptersOf,
+} from './block.entity';

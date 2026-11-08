@@ -88,7 +88,7 @@ describe('createFumadocsContent', () => {
       expected: {
         collection: 'blocks',
         description: 'About Code',
-        path: 'core/foundation/code.md',
+        path: 'core/@foundation/code.md',
         title: 'Code',
       },
       slugs: PageSlugs.create([

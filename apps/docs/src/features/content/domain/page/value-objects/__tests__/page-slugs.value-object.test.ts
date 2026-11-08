@@ -52,7 +52,16 @@ describe('PageSlugs.is', () => {
         'domains',
         '_api',
       ],
-      condition: "an abstract block's page, whose id opens with its mark",
+      condition: 'a segment opens with an underscore',
+      expected: false,
+    },
+    {
+      candidate: [
+        'domains',
+        'people',
+        'accounts',
+      ],
+      condition: "a nested block's page",
       expected: true,
     },
     {
@@ -74,14 +83,6 @@ describe('PageSlugs.is', () => {
         '-draft',
       ],
       condition: 'a segment starts with a character no slug holds',
-      expected: false,
-    },
-    {
-      candidate: [
-        'domains',
-        '__api',
-      ],
-      condition: 'a segment opens with more than the one mark of an abstract block',
       expected: false,
     },
     {

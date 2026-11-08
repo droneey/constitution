@@ -4,7 +4,6 @@ import { basename, join } from 'node:path';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 
 import type { BlockLayer } from '../../../domain/block/entities';
-import { Block } from '../../../domain/block/entities';
 import { Page } from '../../../domain/page/entities';
 import { MARKDOWN_EXTENSION } from '../../../domain/shared/constants';
 import { BlockPath } from '../../../domain/shared/value-objects';
@@ -13,13 +12,11 @@ import type { AbsolutePath } from '../../../domain/source/value-objects';
 import { headingTextOf, isHeading, SUBSECTION_HEADING_DEPTH } from '../markdown';
 import type { BlocksOptions } from './remark-blocks.adapter';
 import { levelledRuleOf } from './remark-blocks.adapter';
-import type { LevelLetters } from './remark-blocks.constants';
-import { LEVEL_LETTERS_BY_FORMAT } from './remark-blocks.constants';
 
-const ruleSlugsIn = (markdown: string, levelLetters: LevelLetters): readonly string[] =>
+const ruleSlugsIn = (markdown: string): readonly string[] =>
   fromMarkdown(markdown).children.flatMap((node) => {
     const rule = isHeading(node, SUBSECTION_HEADING_DEPTH)
-      ? levelledRuleOf(headingTextOf(node), levelLetters)
+      ? levelledRuleOf(headingTextOf(node))
       : undefined;
 
     return rule === undefined
@@ -47,7 +44,6 @@ interface BlocksOptionsInput {
 const blocksOptionsOf = (input: BlocksOptionsInput): BlocksOptions => {
   const addressesBySlug = new Map<string, string>();
   const blockPaths = input.layers.flatMap((layer) => blockPathsIn(input.blocksFolderPath, layer));
-  const levelLetters = LEVEL_LETTERS_BY_FORMAT[Block.formatOf(blockPaths)];
 
   for (const blockPath of blockPaths) {
     const pageAddress = Page.addressOf(input.baseUrl, blockPath);
@@ -55,7 +51,6 @@ const blocksOptionsOf = (input: BlocksOptionsInput): BlocksOptions => {
     for (const slug of ruleSlugsIn(
       // Stryker disable next-line StringLiteral: Bun reads text whatever the encoding names
       readFileSync(join(input.blocksFolderPath, blockPath), 'utf8'),
-      levelLetters,
     )) {
       addressesBySlug.set(slug, `${pageAddress}#${slug}`);
     }
@@ -86,7 +81,6 @@ const blocksOptionsOf = (input: BlocksOptionsInput): BlocksOptions => {
         readFileSync(join(input.examplesFolderPath, fileName), 'utf8'),
       ]),
     ),
-    levelLetters,
   };
 };
 
