@@ -707,4 +707,70 @@ describe('the hand-back gate', () => {
     // Assert
     expect(reviewed).toStrictEqual(NOTHING);
   });
+
+  it('should hold the hand-back for the check, then for the review, and never ask the agent to review its own answer against rules it owes', () => {
+    // Arrange
+    const session = startSession(
+      configOf({
+        domains: '[ui]',
+      }),
+    );
+
+    prompt(session);
+    write({
+      path: 'src/features/orders/ui/order-card.tsx',
+      session,
+    });
+    fire({
+      event: 'PostToolUse',
+      fields: Object.fromEntries([
+        [
+          'tool_name',
+          'Read',
+        ],
+        [
+          'tool_input',
+          Object.fromEntries([
+            [
+              'file_path',
+              join(session.project, 'src/features/orders/ui/order-card.tsx'),
+            ],
+          ]),
+        ],
+      ]),
+      script: 'post-tool-use.sh',
+      session,
+    });
+
+    // Act
+    const before = stop({
+      session,
+    });
+    const check = ran({
+      command: CHECK,
+      session,
+    });
+    const checked = stop({
+      session,
+    });
+    const reviewerStop = reviewerStopOf(session);
+    const reviewed = stop({
+      session,
+    });
+
+    // Assert
+    expect({
+      before,
+      check: check.stdout,
+      checked,
+      reviewed,
+      reviewerStop,
+    }).toStrictEqual({
+      before: HELD_FOR_BOTH,
+      check: '',
+      checked: HELD_FOR_REVIEW,
+      reviewed: NOTHING,
+      reviewerStop: NOTHING,
+    });
+  });
 });

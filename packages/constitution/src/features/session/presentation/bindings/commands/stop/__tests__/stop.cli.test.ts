@@ -4,8 +4,6 @@ import { createFakeContext, runCommand } from '#/__tests__/command-context.fake'
 import { projectCheck } from '#/kernel/constants';
 import { AbsolutePath, BlockId } from '#/kernel/value-objects';
 
-import type { GateVerdict } from '../../../../../domain/gate/entities';
-import { GateCauseKind, GateVerdictKind } from '../../../../../domain/gate/entities';
 import type { AgentInSession } from '../../../../../domain/session/entities';
 import { SessionAgent } from '../../../../../domain/session/entities';
 import { AgentId, SessionId } from '../../../../../domain/session/value-objects';
@@ -17,7 +15,7 @@ import type {
 } from '../../../../../domain/stop-judgement/entities';
 import { HandBackStep, StopVerdict } from '../../../../../domain/stop-judgement/entities';
 import { TreeFingerprint } from '../../../../../domain/tree-state/value-objects';
-import { actionsText, passesToldMessage, turnAnswerOf } from '../../../../utils';
+import { actionsText, passesToldMessage } from '../../../../utils';
 import { createStopCommand } from '../stop.cli';
 import {
   checkAndReviewMessage,
@@ -51,20 +49,15 @@ const STDIN =
 
 const answerOf = (stdout: string): unknown => (stdout === '' ? undefined : JSON.parse(stdout));
 
-interface TurnGate {
+interface StopGate {
   readonly isHeld?: boolean;
   readonly passes?: number;
-  readonly turn?: GateVerdict;
-}
-
-interface TurnAsked extends AgentInSession {
-  readonly isHookActive: boolean;
 }
 
 const runOf = async (
   judgement: StopJudgement | undefined,
   stdin: string = STDIN,
-  gate: TurnGate = {},
+  gate: StopGate = {},
 ): Promise<{
   asked: StopEvent[];
   handed: AgentInSession[];
@@ -72,11 +65,9 @@ const runOf = async (
   recorded: Recorded[];
   stdout: string;
   told: AgentInSession[];
-  turns: TurnAsked[];
 }> => {
   const asked: StopEvent[] = [];
   const told: AgentInSession[] = [];
-  const turns: TurnAsked[] = [];
   const handed: AgentInSession[] = [];
   const held: HeldAsked[] = [];
   const recorded: Recorded[] = [];
@@ -88,15 +79,6 @@ const runOf = async (
     args: [],
     command: createStopCommand({
       ...context,
-      gateTurn: (turn: TurnAsked): GateVerdict => {
-        turns.push(turn);
-
-        return (
-          gate.turn ?? {
-            kind: GateVerdictKind.Allowed,
-          }
-        );
-      },
       handOverChanges: (handing: AgentInSession): void => {
         handed.push(handing);
       },
@@ -132,7 +114,6 @@ const runOf = async (
     recorded,
     stdout: record().stdout,
     told,
-    turns,
   };
 };
 
@@ -185,13 +166,6 @@ describe('createStopCommand', () => {
           session: SessionId.create('s1'),
         },
       ],
-      turns: [
-        {
-          agent: AgentId.create('agent-1'),
-          isHookActive: true,
-          session: SessionId.create('s1'),
-        },
-      ],
     });
   });
 
@@ -213,10 +187,6 @@ describe('createStopCommand', () => {
       // Act
       const run = await runOf(judgement, stdin, {
         passes: 1,
-        turn: {
-          causes: [],
-          kind: GateVerdictKind.Closed,
-        },
       });
 
       // Assert
@@ -227,7 +197,6 @@ describe('createStopCommand', () => {
         recorded: [],
         stdout: '',
         told: [],
-        turns: [],
       });
     },
   );
@@ -331,7 +300,6 @@ describe('createStopCommand', () => {
       recorded: [],
       stdout: '',
       told: [],
-      turns: [],
     });
   });
 
@@ -423,53 +391,6 @@ describe('createStopCommand', () => {
       });
     },
   );
-  it.each<{
-    condition: string;
-    turn: GateVerdict;
-  }>([
-    {
-      condition: 'the agent owes rules for what it read',
-      turn: {
-        shouldIgnoreParts: false,
-        changedByCommands: [],
-        kind: GateVerdictKind.Refused,
-        parts: [
-          AbsolutePath.create('/work/.droneey/constitution-sessions/s1/parts/abc.1.md'),
-        ],
-        unread: {
-          definitions: 0,
-          rules: 2,
-        },
-      },
-    },
-    {
-      condition: 'the Constitution the project declares cannot be read',
-      turn: {
-        causes: [
-          {
-            kind: GateCauseKind.Failed,
-            reason: 'the release cannot be listed',
-          },
-        ],
-        kind: GateVerdictKind.Closed,
-      },
-    },
-  ])('should hold the turn, and judge no tree, when $condition', async ({ turn }) => {
-    // Act
-    const run = await runOf(undefined, STDIN, {
-      turn,
-    });
-
-    // Assert
-    expect({
-      answer: answerOf(run.stdout),
-      asked: run.asked,
-    }).toStrictEqual({
-      answer: turnAnswerOf(turn),
-      asked: [],
-    });
-  });
-
   it('should tell the passes beside a held hand-back', async () => {
     // Act
     const run = await runOf(
@@ -561,7 +482,6 @@ describe('createStopCommand', () => {
       recorded: [],
       stdout: '',
       told: [],
-      turns: [],
     });
   });
   it('should hand the gate the subagent that stops, by its id, so it answers for its own changes', async () => {
@@ -675,32 +595,6 @@ describe('createStopCommand', () => {
 
       // Assert
       expect(run.handed.length).toBe(handed);
-    },
-  );
-
-  it.each([
-    {
-      isHookActive: true,
-      stdin: '{"session_id":"s1","hook_event_name":"Stop","stop_hook_active":true}',
-    },
-    {
-      isHookActive: false,
-      stdin: '{"session_id":"s1","hook_event_name":"Stop"}',
-    },
-  ])(
-    'should ask the turn gate with the stop hook active $isHookActive',
-    async ({ isHookActive, stdin }) => {
-      // Act
-      const run = await runOf(undefined, stdin);
-
-      // Assert
-      expect(run.turns).toStrictEqual([
-        {
-          agent: SessionAgent.main,
-          isHookActive,
-          session: SessionId.create('s1'),
-        },
-      ]);
     },
   );
 

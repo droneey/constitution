@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -230,6 +230,66 @@ describe('the constitution executable', () => {
       stdout: '',
     });
   });
+
+  it.each([
+    {
+      args: [],
+      holdsWhy: false,
+    },
+    {
+      args: [
+        '--why',
+      ],
+      holdsWhy: true,
+    },
+  ])(
+    'should print the vocabularies, then the statements MUST first, of the rules that govern a file, with their Why $holdsWhy',
+    ({ args, holdsWhy }) => {
+      // Arrange
+      const project = linkedProject(
+        configOf({
+          languages: '[typescript]',
+        }),
+      );
+
+      mkdirSync(join(project, 'src'));
+      writeFileSync(join(project, 'src', 'a.ts'), 'export {};\n');
+
+      // Act
+      const ran = runExecutable({
+        args: [
+          'rules',
+          '--for',
+          'src/a.ts',
+          ...args,
+        ],
+        cwd: project,
+      });
+      const groups = ran.stdout
+        .split('\n')
+        .filter((line) => line.startsWith('## '))
+        .map((line) => line.split(' of ')[0]);
+
+      // Assert
+      expect({
+        exitCode: ran.exitCode,
+        groups: [
+          ...new Set(groups),
+        ],
+        holdsDefinition: ran.stdout.includes('A **name** is what a thing is called by.'),
+        holdsWhy: ran.stdout.includes('Why: it keeps the fixture honest.'),
+      }).toStrictEqual({
+        exitCode: 0,
+        groups: [
+          '## Vocabulary',
+          '## MUST rules',
+          '## SHOULD rules',
+        ],
+        holdsDefinition: true,
+        holdsWhy,
+      });
+    },
+  );
 
   it('should print the warnings of the project and exit 1 when it has some', () => {
     // Arrange

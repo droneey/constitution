@@ -20,7 +20,6 @@ import {
   digestSession,
   endSession,
   gateAction,
-  gateTurn,
   handOverChanges,
   holdHandBack,
   judgeStop,
@@ -106,11 +105,6 @@ const gateCommandsOf = ({ context, ports }: Registration): readonly Command[] =>
     }),
     createStopCommand({
       ...context,
-      gateTurn: (asked): GateVerdict =>
-        gateTurn({
-          ...asked,
-          ...gatePorts,
-        }),
       handOverChanges: (handing): void => {
         handOverChanges({
           ...handing,

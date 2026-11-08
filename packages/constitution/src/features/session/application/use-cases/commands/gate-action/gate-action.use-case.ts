@@ -1,10 +1,10 @@
 import type { GateCause, GateTarget, GateVerdict } from '../../../../domain/gate/entities';
 import { GateCauseKind, TargetKind } from '../../../../domain/gate/entities';
 import type { ActiveRulesSource } from '../../../contracts';
+import type { TargetRules } from '../../shared/owe-rules';
+import { rulesOwedBy } from '../../shared/owe-rules';
 import type { GatePorts } from '../shared/gate-verdict';
 import { debtRulesOf, uniqueCausesOf, verdictOf } from '../shared/gate-verdict';
-import type { TargetRules } from '../shared/owe-rules';
-import { rulesOwedBy } from '../shared/owe-rules';
 import { unignoredFilesAmong } from '../shared/unignored-files';
 
 interface GateActionInput extends GatePorts {

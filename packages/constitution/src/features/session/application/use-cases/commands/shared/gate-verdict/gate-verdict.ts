@@ -16,7 +16,7 @@ import type { AgentInSession } from '../../../../../domain/session/entities';
 import type { TextHasher, WorkingTree } from '../../../../contracts';
 import { IgnoreStatus } from '../../../../contracts';
 import type { GateRepository } from '../../../../contracts/repositories/commands';
-import type { ProjectRules, RulesOwedFor, TargetRules } from '../owe-rules';
+import type { ProjectRules, RulesOwedFor, TargetRules } from '../../../shared/owe-rules';
 import { recordRefusalOrPass } from '../refusal-streak';
 
 interface DebtRules {

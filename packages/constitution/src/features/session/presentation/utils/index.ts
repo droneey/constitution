@@ -5,7 +5,7 @@ export type { CountedText } from './counted-text.utils';
 export { countedTextOf } from './counted-text.utils';
 export { digestOf } from './digest.utils';
 export { actionsText, passesToldMessage } from './gate.messages';
-export { actionAnswerOf, turnAnswerOf } from './gate-answer.utils';
+export { actionAnswerOf, causeLinesOf } from './gate-answer.utils';
 export { hookEventOf } from './hook-event.utils';
 export type { HookOutput } from './hook-output.utils';
 export { capShareOf, contextOutputOf, hookOutputOf } from './hook-output.utils';

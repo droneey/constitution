@@ -5,7 +5,6 @@ import { projectCheck } from '#/kernel/constants';
 import type { CommandContext } from '#/shared/cli';
 import { LIST_SEPARATOR } from '#/shared/cli';
 
-import type { GateVerdict } from '../../../../domain/gate/entities';
 import type { AgentInSession } from '../../../../domain/session/entities';
 import { SessionAgent } from '../../../../domain/session/entities';
 import { HookEventName } from '../../../../domain/shared/entities';
@@ -24,7 +23,6 @@ import {
   listWithin,
   moreFilesText,
   passesToldMessage,
-  turnAnswerOf,
 } from '../../../utils';
 import {
   checkAndReviewMessage,
@@ -43,11 +41,6 @@ const CAP_SHARES_PERCENT = {
 } as const;
 
 interface StopContext extends CommandContext {
-  readonly gateTurn: (
-    input: AgentInSession & {
-      isHookActive: boolean;
-    },
-  ) => GateVerdict;
   readonly handOverChanges: (input: AgentInSession) => void;
   readonly holdHandBack: (
     input: AgentInSession & {
@@ -257,7 +250,7 @@ const isHolding = (answer: HookOutput | undefined): boolean =>
 const createStopCommand = (context: StopContext): Command =>
   new Command('stop')
     .description(
-      'Hold the hand-back until the rules of what was read are read, and the check passed and the review was done on the tree.',
+      'Hold the hand-back until the check passed on the tree, then until the review covered it.',
     )
     .addHelpText(
       'before',
@@ -285,19 +278,6 @@ const createStopCommand = (context: StopContext): Command =>
       });
 
       if (stop === undefined) {
-        return;
-      }
-
-      const turnHeld = turnAnswerOf(
-        context.gateTurn({
-          ...agent,
-          isHookActive: stop.isHookActive,
-        }),
-      );
-
-      if (turnHeld !== undefined) {
-        context.io.write(hookOutputOf(turnHeld));
-
         return;
       }
 

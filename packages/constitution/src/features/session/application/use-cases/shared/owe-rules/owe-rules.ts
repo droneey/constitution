@@ -10,23 +10,23 @@ import type {
   OwedReading,
   RuleLowered,
   RuleStanding,
-} from '../../../../../domain/gate/entities';
+} from '../../../../domain/gate/entities';
 import {
   ActiveRules,
   GateCauseKind,
   GatedDefinition,
   GatedRule,
   TargetKind,
-} from '../../../../../domain/gate/entities';
-import { ActiveBlocks } from '../../../../../domain/session/entities';
+} from '../../../../domain/gate/entities';
+import { ActiveBlocks } from '../../../../domain/session/entities';
 import type {
   ActiveRead,
   ActiveRulesSource,
   ChapterRules,
   TextHasher,
   WorkingTree,
-} from '../../../../contracts';
-import { ActiveReadStatus } from '../../../../contracts';
+} from '../../../contracts';
+import { ActiveReadStatus } from '../../../contracts';
 
 interface ProjectRules extends OwedReading {
   readonly folderPath: AbsolutePath;

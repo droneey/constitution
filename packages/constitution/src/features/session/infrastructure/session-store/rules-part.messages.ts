@@ -24,7 +24,7 @@ const partTitleMessage = (input: PartTitleInput): string =>
   `The rules to read, part ${input.number} of ${input.count}`;
 
 const partIntroMessage = (): string =>
-  "Each chapter's vocabulary comes first, then each rule's statement at the level that binds where you work, MUST before SHOULD. A rule's Why stays in the chapter its heading names. Read the whole file.";
+  "Each chapter's vocabulary comes first, then each rule's statement at the level that binds where you work, MUST before SHOULD. A rule's Why stays in the chapter its heading names, and `constitution rules --for <file> --why` prints it. Read the whole file.";
 
 const vocabularyHeadingMessage = (file: AbsolutePath): string => `Vocabulary of ${file}`;
 
@@ -37,6 +37,8 @@ const loweredMessage = (input: LoweredInput): string =>
 const loweredThroughMessage = (input: LoweredThroughInput): string =>
   `Lowered here to ${input.level} through ${input.via}: ${input.reason}`;
 
+const whyMessage = (why: string): string => `Why: ${why}`;
+
 export {
   loweredMessage,
   loweredThroughMessage,
@@ -44,4 +46,5 @@ export {
   partTitleMessage,
   rulesHeadingMessage,
   vocabularyHeadingMessage,
+  whyMessage,
 };

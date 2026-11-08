@@ -13,12 +13,28 @@ import {
   partTitleMessage,
   rulesHeadingMessage,
   vocabularyHeadingMessage,
+  whyMessage,
 } from './rules-part.messages';
 
 interface PartEntry {
   readonly heading: string;
   readonly lines: readonly string[];
 }
+
+interface EntryForm {
+  readonly isMarked: boolean;
+  readonly withWhy: boolean;
+}
+
+interface ReadingTextInput {
+  readonly reading: OwedReading;
+  readonly withWhy: boolean;
+}
+
+const partForm: EntryForm = {
+  isMarked: true,
+  withWhy: false,
+};
 
 const RULE_MARK = /^<!-- rule ([a-z0-9-]+) ([0-9a-f]+) -->$/u;
 const DEFINITION_MARK = /^<!-- definition ([0-9a-f]+) -->$/u;
@@ -69,29 +85,58 @@ const loweredLines = ({ lowered }: GatedRule): readonly string[] =>
         '',
       ];
 
-const definitionEntryOf = (definition: GatedDefinition): PartEntry => ({
-  heading: `## ${vocabularyHeadingMessage(definition.file)}`,
-  lines: [
-    `<!-- definition ${definition.hash} -->`,
-    ...definitionLinesOf(definition.text),
-    '',
-  ],
-});
+const markLines = (input: { form: EntryForm; mark: string }): readonly string[] =>
+  input.form.isMarked
+    ? [
+        input.mark,
+      ]
+    : [];
 
-const ruleEntryOf = (rule: GatedRule): PartEntry => ({
-  heading: `## ${rulesHeadingMessage({
-    file: rule.file,
-    level: GatedRule.appliedLevelOf(rule),
-  })}`,
-  lines: [
-    `<!-- rule ${rule.slug} ${rule.hash} -->`,
-    headingOf(rule),
-    '',
-    ...loweredLines(rule),
-    ...wrappedAtSpaces(rule.statement),
-    '',
-  ],
-});
+const whyLines = (input: { form: EntryForm; rule: GatedRule }): readonly string[] =>
+  input.form.withWhy
+    ? [
+        ...wrappedAtSpaces(whyMessage(input.rule.why)),
+        '',
+      ]
+    : [];
+
+const definitionEntryOf =
+  (form: EntryForm) =>
+  (definition: GatedDefinition): PartEntry => ({
+    heading: `## ${vocabularyHeadingMessage(definition.file)}`,
+    lines: [
+      ...markLines({
+        form,
+        mark: `<!-- definition ${definition.hash} -->`,
+      }),
+      ...definitionLinesOf(definition.text),
+      '',
+    ],
+  });
+
+const ruleEntryOf =
+  (form: EntryForm) =>
+  (rule: GatedRule): PartEntry => ({
+    heading: `## ${rulesHeadingMessage({
+      file: rule.file,
+      level: GatedRule.appliedLevelOf(rule),
+    })}`,
+    lines: [
+      ...markLines({
+        form,
+        mark: `<!-- rule ${rule.slug} ${rule.hash} -->`,
+      }),
+      headingOf(rule),
+      '',
+      ...loweredLines(rule),
+      ...wrappedAtSpaces(rule.statement),
+      '',
+      ...whyLines({
+        form,
+        rule,
+      }),
+    ],
+  });
 
 const byLevel = (rules: readonly GatedRule[]): readonly GatedRule[] =>
   rules.toSorted(
@@ -100,9 +145,9 @@ const byLevel = (rules: readonly GatedRule[]): readonly GatedRule[] =>
       LEVELS.indexOf(GatedRule.appliedLevelOf(second)),
   );
 
-const entriesOf = (reading: OwedReading): readonly PartEntry[] => [
-  ...reading.definitions.map(definitionEntryOf),
-  ...byLevel(reading.rules).map(ruleEntryOf),
+const entriesOf = (input: { form: EntryForm; reading: OwedReading }): readonly PartEntry[] => [
+  ...input.reading.definitions.map(definitionEntryOf(input.form)),
+  ...byLevel(input.reading.rules).map(ruleEntryOf(input.form)),
 ];
 
 const headLines = (input: { count: number; index: number }): readonly string[] => [
@@ -115,12 +160,15 @@ const headLines = (input: { count: number; index: number }): readonly string[] =
   '',
 ];
 
-const bodiesOf = (entries: readonly PartEntry[]): readonly (readonly string[])[] => {
+const bodiesOf = (input: {
+  entries: readonly PartEntry[];
+  isSplit: boolean;
+}): readonly (readonly string[])[] => {
   const bodies: string[][] = [];
   let body: string[] = [];
   let heading: string | undefined;
 
-  for (const entry of entries) {
+  for (const entry of input.entries) {
     const opened = [
       entry.heading,
       '',
@@ -130,6 +178,7 @@ const bodiesOf = (entries: readonly PartEntry[]): readonly (readonly string[])[]
 
     if (
       body.length > 0 &&
+      input.isSplit &&
       isPastPartBudget({
         added: lines,
         held: body,
@@ -153,7 +202,13 @@ const bodiesOf = (entries: readonly PartEntry[]): readonly (readonly string[])[]
 };
 
 const partTextsOf = (reading: OwedReading): readonly string[] => {
-  const bodies = bodiesOf(entriesOf(reading));
+  const bodies = bodiesOf({
+    entries: entriesOf({
+      form: partForm,
+      reading,
+    }),
+    isSplit: true,
+  });
 
   return bodies.map((body, index) =>
     [
@@ -197,4 +252,19 @@ const partRulesOf = (text: string): RulesPart => {
   };
 };
 
-export { partRulesOf, partTextsOf };
+const readingTextOf = (input: ReadingTextInput): string =>
+  bodiesOf({
+    entries: entriesOf({
+      form: {
+        isMarked: false,
+        withWhy: input.withWhy,
+      },
+      reading: input.reading,
+    }),
+    isSplit: false,
+  })
+    .flat()
+    .join('\n')
+    .trimEnd();
+
+export { partRulesOf, partTextsOf, readingTextOf };

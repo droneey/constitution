@@ -42,11 +42,11 @@ Adds, changes or removes one override: a Constitution rule lowered for the whole
 
 ## /constitution:check
 
-Runs the project's check, then has the reviewer judge the files against the rules that govern them.
+Runs the project's check, then has one fresh reviewer judge the change against the rules that govern its files, routes its findings, and ends with a report to you.
 
 | Argument | Reviews |
 |---|---|
 | `edits`, the default | the files that differ from `HEAD`, new files included |
-| `all` | every file of the repository, a block at a time |
+| `all` | every file of the repository, in batches of at most one hundred files |
 
-A failing check is fixed before the review starts. [The reviewer](plugin.md#the-reviewer) returns one finding per line; a finding against a rule the repository does not want is a case for `/constitution:amend`.
+A failing check is fixed before the review starts. [The reviewer](plugin.md#the-reviewer) returns one finding per line, with its level and confidence. A clear breach whose fix fits the task is fixed; an uncertain one is answered `fixed` or `disagree, because …` and a disputed one settled by a second review; a `SHOULD` kept is kept with its reason; and you are asked only where the rules are silent, clash, or need a decision outside the task. A finding against a rule the repository does not want is a case for `/constitution:amend`. The report names what was done and run, what was not verified, the questions the agent would have asked, the decisions the rules could not make, and the `SHOULD` findings left aside.

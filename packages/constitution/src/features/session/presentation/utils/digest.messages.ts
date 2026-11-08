@@ -17,7 +17,7 @@ const unparsedMessage = (atLines: string): string =>
 const dutyLines = (): readonly string[] => [
   'Before an action, the hook names the rules that govern it and refuses the action until you have read them whole with Read.',
   'What you read is remembered, so only new or changed rules are asked for again.',
-  'Code you read leaves a debt: the turn cannot end until you have read the rules that govern it.',
+  'Code you read, or change through the shell, leaves a debt: your next action waits until you have read the rules that govern it.',
 ];
 
 const doctorNoticeMessage = (releaseFolderPath: AbsolutePath): string =>

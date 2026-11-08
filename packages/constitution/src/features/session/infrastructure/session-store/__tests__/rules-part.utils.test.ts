@@ -11,8 +11,9 @@ import {
   partTitleMessage,
   rulesHeadingMessage,
   vocabularyHeadingMessage,
+  whyMessage,
 } from '../rules-part.messages';
-import { partRulesOf, partTextsOf } from '../rules-part.utils';
+import { partRulesOf, partTextsOf, readingTextOf } from '../rules-part.utils';
 
 const namesFile = AbsolutePath.create('/work/blocks/core/foundation/names.md');
 const functionsFile = AbsolutePath.create('/work/blocks/core/foundation/functions.md');
@@ -360,5 +361,117 @@ describe('partRulesOf', () => {
         },
       ],
     });
+  });
+});
+
+describe('readingTextOf', () => {
+  it.each([
+    {
+      expected: [
+        `## ${vocabularyHeadingMessage(namesFile)}`,
+        '',
+        'A **name** is what a thing is called.',
+        '',
+        mustHeading,
+        '',
+        '### rule-2 · MUST',
+        '',
+        'A name reveals intent.',
+        '',
+        `## ${rulesHeadingMessage({
+          file: namesFile,
+          level: Level.Should,
+        })}`,
+        '',
+        '### rule-1 · SHOULD',
+        '',
+        'A name reveals intent.',
+      ],
+      withWhy: false,
+    },
+    {
+      expected: [
+        `## ${vocabularyHeadingMessage(namesFile)}`,
+        '',
+        'A **name** is what a thing is called.',
+        '',
+        mustHeading,
+        '',
+        '### rule-2 · MUST',
+        '',
+        'A name reveals intent.',
+        '',
+        whyMessage('Readers learn from names.'),
+        '',
+        `## ${rulesHeadingMessage({
+          file: namesFile,
+          level: Level.Should,
+        })}`,
+        '',
+        '### rule-1 · SHOULD',
+        '',
+        'A name reveals intent.',
+        '',
+        whyMessage('Readers learn from names.'),
+      ],
+      withWhy: true,
+    },
+  ])(
+    'should give the vocabularies, then the statements MUST first, unmarked and in one text, each with its Why $withWhy',
+    ({ expected, withWhy }) => {
+      // Arrange
+      const reading: OwedReading = {
+        definitions: [
+          definitionOf({
+            index: 1,
+          }),
+        ],
+        rules: [
+          ruleOf({
+            index: 1,
+            level: Level.Should,
+          }),
+          ruleOf({
+            index: 2,
+          }),
+        ],
+      };
+
+      // Act
+      const text = readingTextOf({
+        reading,
+        withWhy,
+      });
+
+      // Assert
+      expect<readonly string[]>(text.split('\n')).toStrictEqual(expected);
+    },
+  );
+
+  it('should keep in one text what past the budget of a part would be split', () => {
+    // Arrange
+    const reading = rulesOnly(
+      Array.from(
+        {
+          length: 400,
+        },
+        (_, index) =>
+          ruleOf({
+            index: index + 1,
+            statement: 'word '.repeat(60).trim(),
+          }),
+      ),
+    );
+
+    // Act
+    const text = readingTextOf({
+      reading,
+      withWhy: false,
+    });
+
+    // Assert
+    expect(text.split('\n').filter((line) => line.startsWith('## '))).toStrictEqual([
+      mustHeading,
+    ]);
   });
 });

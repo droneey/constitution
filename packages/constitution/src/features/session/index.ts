@@ -15,7 +15,6 @@ export type {
 export type { SessionQueries } from './application/contracts/repositories/queries';
 export { endSession } from './application/use-cases/commands/end-session';
 export { gateAction } from './application/use-cases/commands/gate-action';
-export { gateTurn } from './application/use-cases/commands/gate-turn';
 export { handOverChanges } from './application/use-cases/commands/hand-over-changes';
 export { holdHandBack } from './application/use-cases/commands/hold-hand-back';
 export { keepSession } from './application/use-cases/commands/keep-session';
@@ -32,8 +31,10 @@ export { sweepStaleSessions } from './application/use-cases/commands/sweep-stale
 export { tellPasses } from './application/use-cases/commands/tell-passes';
 export { digestSession } from './application/use-cases/queries/digest-session';
 export { judgeStop } from './application/use-cases/queries/judge-stop';
+export type { GoverningRules } from './application/use-cases/queries/read-rules';
+export { readRules } from './application/use-cases/queries/read-rules';
 export { remindOfFile } from './application/use-cases/queries/remind-of-file';
-export type { GateVerdict } from './domain/gate/entities';
+export type { GateVerdict, OwedReading } from './domain/gate/entities';
 export type { Reminder } from './domain/reminder/entities';
 export type { SessionId } from './domain/session/value-objects';
 export type { ConfigurationsReport, SessionDigest } from './domain/session-digest/entities';
@@ -47,3 +48,4 @@ export { createSessionEndCommand } from './presentation/bindings/commands/sessio
 export { createSessionStartCommand } from './presentation/bindings/commands/session-start';
 export { createStopCommand } from './presentation/bindings/commands/stop';
 export { createUserPromptSubmitCommand } from './presentation/bindings/commands/user-prompt-submit';
+export { createRulesCommand } from './presentation/bindings/queries/rules';

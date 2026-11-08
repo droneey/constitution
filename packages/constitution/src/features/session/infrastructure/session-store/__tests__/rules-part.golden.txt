@@ -1,6 +1,6 @@
 # The rules to read, part 1 of 1
 
-Each chapter's vocabulary comes first, then each rule's statement at the level that binds where you work, MUST before SHOULD. A rule's Why stays in the chapter its heading names. Read the whole file.
+Each chapter's vocabulary comes first, then each rule's statement at the level that binds where you work, MUST before SHOULD. A rule's Why stays in the chapter its heading names, and `constitution rules --for <file> --why` prints it. Read the whole file.
 
 ## Vocabulary of /work/blocks/core/foundation/names.md
 

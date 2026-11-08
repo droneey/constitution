@@ -58,8 +58,11 @@ import {
   createYamlBlockCardParser,
   createYamlConfigFileParser,
 } from '#/features/project/infrastructure/yaml';
+import type { GoverningRules } from '#/features/session';
+import { createRulesCommand, readRules } from '#/features/session';
 import { createSha256TextHasher } from '#/features/session/infrastructure/crypto';
 import { createGitWorkingTree } from '#/features/session/infrastructure/git';
+import { readingTextOf } from '#/features/session/infrastructure/session-store';
 import { createNodeProjectFiles } from '#/infrastructure/file-system';
 import { EXECUTABLE_NAME } from '#/kernel/constants';
 import type { AbsolutePath } from '#/kernel/value-objects';
@@ -344,6 +347,17 @@ const registerCommands = (registration: Registration): void => {
       packsLabel: PACKS_LABEL,
       planRun: planRunOf(ports),
       runCommand: ports.commands.run,
+    }),
+    createRulesCommand({
+      ...context,
+      readRules: (paths: readonly AbsolutePath[]): GoverningRules =>
+        readRules({
+          hasher: ports.hasher,
+          paths,
+          source: ports.activeRules,
+          workingTree: ports.workingTree,
+        }),
+      textOf: readingTextOf,
     }),
     hookCommandsOf(registration),
     doctorCommandOf(registration),

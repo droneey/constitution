@@ -16,13 +16,12 @@ import {
   partLineMessage,
   passedClosedMessage,
   refusedMessage,
-  turnHeldMessage,
   unignoredMessage,
   unparsedCauseMessage,
   unreadableCauseMessage,
   unwritableCauseMessage,
 } from '../gate.messages';
-import { actionAnswerOf, turnAnswerOf } from '../gate-answer.utils';
+import { actionAnswerOf } from '../gate-answer.utils';
 import type { HookOutput } from '../hook-output.utils';
 
 const CLAUDE_CODE_TEXT_CAP = 10_000;
@@ -552,111 +551,5 @@ describe('actionAnswerOf', () => {
 
     // Assert
     expect(JSON.stringify(answer).length < CLAUDE_CODE_TEXT_CAP).toBe(true);
-  });
-});
-
-describe('turnAnswerOf', () => {
-  it.each<{
-    answer: HookOutput | undefined;
-    condition: string;
-    verdict: GateVerdict;
-  }>([
-    {
-      answer: {
-        decision: 'block',
-        reason: turnHeldMessage({
-          ...owedOne,
-          changedLines: [
-            changedByCommandsMessage(changed),
-          ],
-        }),
-      },
-      condition: 'the agent owes rules',
-      verdict: refusedOf({
-        shouldIgnoreParts: false,
-        changedByCommands: [
-          changed,
-        ],
-      }),
-    },
-    {
-      answer: {
-        decision: 'block',
-        reason: closedReason,
-      },
-      condition: 'the gate is closed',
-      verdict: closed,
-    },
-    {
-      answer: undefined,
-      condition: 'every rule was read',
-      verdict: {
-        kind: GateVerdictKind.Allowed,
-      },
-    },
-    {
-      answer: undefined,
-      condition: 'the gate passed after three refusals',
-      verdict: {
-        kind: GateVerdictKind.PassedUnread,
-        unread: {
-          definitions: 0,
-          rules: 2,
-        },
-      },
-    },
-    {
-      answer: undefined,
-      condition: 'the gate passed a closed gate after three refusals',
-      verdict: {
-        causes,
-        kind: GateVerdictKind.PassedClosed,
-      },
-    },
-  ])('should answer the turn as the gate tells when $condition', ({ answer, verdict }) => {
-    // Act
-    const answered = turnAnswerOf(verdict);
-
-    // Assert
-    expect(answered).toStrictEqual(answer);
-  });
-
-  it("should keep its reason within Claude Code's cap when many files changed and many parts are owed", () => {
-    // Arrange
-    const verdict = refusedOf({
-      shouldIgnoreParts: false,
-      changedByCommands: manyChanged,
-      parts: manyParts,
-    });
-
-    // Act
-    const answer = turnAnswerOf(verdict);
-
-    // Assert
-    expect(JSON.stringify(answer).length < CLAUDE_CODE_TEXT_CAP).toBe(true);
-  });
-
-  it('should name in its reason each part to read and each file a command changed', () => {
-    // Arrange
-    const verdict = refusedOf({
-      shouldIgnoreParts: false,
-      changedByCommands: [
-        changed,
-      ],
-    });
-
-    // Act
-    const reason = reasonOf(turnAnswerOf(verdict));
-
-    // Assert
-    expect(namedValuesOf(reason)).toStrictEqual({
-      changed: true,
-      config: false,
-      failure: false,
-      part: true,
-      releaseFolderPath: false,
-      unreadableFile: false,
-      unwritableFolder: false,
-    });
   });
 });

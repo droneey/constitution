@@ -5,20 +5,20 @@ import { Level } from '#/kernel/constants';
 import type { Lowering, ProjectPlace } from '#/kernel/entities';
 import { AbsolutePath, RuleSlug, UnitPath } from '#/kernel/value-objects';
 
-import { createFakeActiveRulesSource } from '../../../../../../__tests__/active-rules-source.fake';
+import { createFakeActiveRulesSource } from '../../../../../__tests__/active-rules-source.fake';
 import {
   activeRulesOf,
   coreChapter,
   testHasher,
   typescriptPassport,
   uiPassport,
-} from '../../../../../../__tests__/gate.fixtures';
-import { createFakeWorkingTree } from '../../../../../../__tests__/working-tree.fake';
-import type { GateCause, GatedRule, GateTarget } from '../../../../../../domain/gate/entities';
-import { GateCauseKind, TargetKind } from '../../../../../../domain/gate/entities';
-import { RuleHash } from '../../../../../../domain/gate/value-objects';
-import type { ActiveRead, ActiveRulesSource, WorkingTree } from '../../../../../contracts';
-import { ActiveReadStatus } from '../../../../../contracts';
+} from '../../../../../__tests__/gate.fixtures';
+import { createFakeWorkingTree } from '../../../../../__tests__/working-tree.fake';
+import type { GateCause, GatedRule, GateTarget } from '../../../../../domain/gate/entities';
+import { GateCauseKind, TargetKind } from '../../../../../domain/gate/entities';
+import { RuleHash } from '../../../../../domain/gate/value-objects';
+import type { ActiveRead, ActiveRulesSource, WorkingTree } from '../../../../contracts';
+import { ActiveReadStatus } from '../../../../contracts';
 import type { TargetRules } from '../owe-rules';
 import { rulesOwedBy } from '../owe-rules';
 

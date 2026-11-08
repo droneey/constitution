@@ -60,14 +60,6 @@ const refusedMessage = (input: OwedInput): string =>
     'Then retry the action.',
   ].join('\n');
 
-const turnHeldMessage = (input: OwedInput): string =>
-  [
-    ...input.changedLines,
-    `Read the ${input.governingRules} what you read, then review your answer against them.`,
-    READ_EACH_MESSAGE,
-    ...input.partLines,
-  ].join('\n');
-
 interface UnparsedCauseInput {
   readonly config: AbsolutePath;
   readonly lines: readonly number[];
@@ -122,7 +114,6 @@ export {
   passedUnreadMessage,
   passesToldMessage,
   refusedMessage,
-  turnHeldMessage,
   unignoredMessage,
   unparsedCauseMessage,
   unreadableCauseMessage,

@@ -21,7 +21,6 @@ import {
   passedClosedMessage,
   passedUnreadMessage,
   refusedMessage,
-  turnHeldMessage,
   unignoredMessage,
   unparsedCauseMessage,
   unreadableCauseMessage,
@@ -146,23 +145,4 @@ const actionAnswerOf = (verdict: GateVerdict): HookOutput | undefined => {
   }
 };
 
-const turnAnswerOf = (verdict: GateVerdict): HookOutput | undefined => {
-  switch (verdict.kind) {
-    case GateVerdictKind.Allowed:
-    case GateVerdictKind.PassedClosed:
-    case GateVerdictKind.PassedUnread:
-      return undefined;
-    case GateVerdictKind.Closed:
-      return {
-        decision: 'block',
-        reason: closedMessage(causeLinesOf(verdict.causes)),
-      };
-    case GateVerdictKind.Refused:
-      return {
-        decision: 'block',
-        reason: turnHeldMessage(owedOf(verdict)),
-      };
-  }
-};
-
-export { actionAnswerOf, turnAnswerOf };
+export { actionAnswerOf, causeLinesOf };
