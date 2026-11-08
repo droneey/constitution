@@ -1,5 +1,5 @@
 import { LAYER_RANK, Layer } from '#/kernel/constants';
-import { BlockId } from '#/kernel/value-objects';
+import type { BlockId } from '#/kernel/value-objects';
 
 import type { BlockPlace } from '../../block/entities';
 import { Block } from '../../block/entities';
@@ -13,9 +13,6 @@ const createGraph = (blocks: readonly Block[]): BlockGraph =>
       block,
     ]),
   );
-
-const named = (graph: BlockGraph, name: string): Block | undefined =>
-  BlockId.is(name) ? graph.get(name) : undefined;
 
 const closureOf = (graph: BlockGraph, blockId: BlockId): ReadonlySet<BlockId> => {
   const linksOfId = (id: BlockId): readonly BlockId[] => {
@@ -100,7 +97,6 @@ const BlockGraph = {
   create: createGraph,
   mayCarryOut,
   mayReferTo,
-  named,
   reachableFrom,
 } as const;
 

@@ -14,7 +14,7 @@ export { globPiecesOf } from './glob-pieces.utils';
 export { globMatches } from './globs.utils';
 export { inlineCodeSpans, maskInlineCode, withoutInlineCode } from './inline-code.utils';
 export { memoised } from './memoised.utils';
-export { isInnerPath, normalizePath, stemOf, withoutDotSlash } from './paths.utils';
+export { isInnerPath, normalizePath, withoutDotSlash } from './paths.utils';
 export type { PatternedText } from './patterned-text.utils';
 export { patternedTextOf } from './patterned-text.utils';
 export type { MarkdownSection } from './sections.utils';
