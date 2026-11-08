@@ -14,15 +14,18 @@ interface FakeActiveRulesSourceInput {
   readonly vocabularies?: Readonly<Record<string, readonly string[]>>;
 }
 
+const projectHolding = (path: AbsolutePath): ProjectPlace | undefined =>
+  path === PROJECT || path.startsWith(`${PROJECT}/`)
+    ? {
+        ...projectPlace,
+      }
+    : undefined;
+
 const createFakeActiveRulesSource = (
   input: FakeActiveRulesSourceInput = {},
 ): ActiveRulesSource => ({
-  findProjectAround: (searchFrom: AbsolutePath): ProjectPlace | undefined =>
-    searchFrom === PROJECT || searchFrom.startsWith(`${PROJECT}/`)
-      ? {
-          ...projectPlace,
-        }
-      : undefined,
+  findProjectAround: projectHolding,
+  findProjectHolding: projectHolding,
   readActive: (place: ProjectPlace): ActiveRead =>
     input.activeByRelease?.[place.releaseFolderPath] ??
     input.active ?? {

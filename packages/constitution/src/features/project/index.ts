@@ -1,6 +1,6 @@
 export type { Clock } from './application/contracts';
 export { ManifestReadStatus } from './application/contracts';
-export { findProject } from './application/use-cases/queries/find-project';
+export { findProject, findProjectHolding } from './application/use-cases/queries/find-project';
 export { openProject } from './application/use-cases/queries/open-project';
 export { readCore } from './application/use-cases/queries/read-core';
 export type { ProjectPorts } from './application/use-cases/queries/read-declaration';

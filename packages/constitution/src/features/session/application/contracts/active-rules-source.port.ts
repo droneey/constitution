@@ -34,6 +34,7 @@ interface ChapterRules {
 
 interface ActiveRulesSource {
   readonly findProjectAround: (searchFrom: AbsolutePath) => ProjectPlace | undefined;
+  readonly findProjectHolding: (path: AbsolutePath) => ProjectPlace | undefined;
   readonly readActive: (place: ProjectPlace) => ActiveRead;
   readonly realPathOf: (path: AbsolutePath) => AbsolutePath;
   readonly rulesIn: (file: AbsolutePath) => ChapterRules | undefined;

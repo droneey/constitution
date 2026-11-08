@@ -1,1 +1,1 @@
-export { findProject } from './find-project.use-case';
+export { findProject, findProjectHolding } from './find-project.use-case';

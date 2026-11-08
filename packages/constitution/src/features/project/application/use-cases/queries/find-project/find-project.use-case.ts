@@ -27,4 +27,16 @@ const findProject = (input: FindProjectInput): ProjectPlace | undefined => {
   );
 };
 
-export { findProject };
+interface FindProjectHoldingInput {
+  readonly files: ProjectFiles;
+  readonly path: AbsolutePath;
+}
+
+const findProjectHolding = (input: FindProjectHoldingInput): ProjectPlace | undefined =>
+  findProject({
+    files: input.files,
+    startFolderPath:
+      AbsolutePath.upwardFrom(input.path).find((entry) => input.files.exists(entry)) ?? input.path,
+  });
+
+export { findProject, findProjectHolding };

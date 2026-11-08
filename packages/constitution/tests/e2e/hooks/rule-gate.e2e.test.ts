@@ -218,6 +218,41 @@ describe('the rule gate', () => {
     expect(retried).toBeUndefined();
   });
 
+  it('should refuse a write into folders not made yet until the agent has read the rules that govern it', () => {
+    // Arrange
+    const started = startSession();
+    const path = join(started.project, 'src', 'invoices', 'drafts', 'invoice-card.ts');
+
+    // Act
+    const answer = hookOf(
+      root,
+      'pre-tool-use',
+      toolEventOf({
+        ...started,
+        event: 'PreToolUse',
+        path,
+        tool: 'Write',
+      }),
+    );
+
+    // Assert
+    expect({
+      isMade: existsSync(join(started.project, 'src', 'invoices')),
+      parts: placedPartsOf({
+        ...started,
+        parts: partsOf(answer),
+      }),
+    }).toStrictEqual({
+      isMade: false,
+      parts: [
+        {
+          holdsRules: true,
+          isUnderSessions: true,
+        },
+      ],
+    });
+  });
+
   it('should open each part with the vocabularies, then give the statements MUST before SHOULD, with no Why', () => {
     // Arrange
     const started = startSession();

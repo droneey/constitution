@@ -75,10 +75,10 @@ const withOtherProject: ActiveRulesSource = {
       },
     },
   }),
-  findProjectAround: (searchFrom: AbsolutePath): ProjectPlace | undefined =>
-    searchFrom.startsWith('/work/other')
+  findProjectHolding: (path: AbsolutePath): ProjectPlace | undefined =>
+    path.startsWith('/work/other')
       ? otherPlace
-      : createFakeActiveRulesSource().findProjectAround(searchFrom),
+      : createFakeActiveRulesSource().findProjectHolding(path),
 };
 
 const gateOf = (input: {

@@ -1,5 +1,5 @@
 import type { ProjectPorts } from '#/features/project';
-import { findProject } from '#/features/project';
+import { findProject, findProjectHolding } from '#/features/project';
 import type { ActiveRead, ActiveRulesSource, ChapterRules } from '#/features/session';
 import type { ProjectPlace } from '#/kernel/entities';
 import type { AbsolutePath } from '#/kernel/value-objects';
@@ -11,6 +11,11 @@ const createActiveRulesSource = (project: ProjectPorts): ActiveRulesSource => ({
     findProject({
       files: project.files,
       startFolderPath: searchFrom,
+    }),
+  findProjectHolding: (path: AbsolutePath): ProjectPlace | undefined =>
+    findProjectHolding({
+      files: project.files,
+      path,
     }),
   readActive: (place: ProjectPlace): ActiveRead => readActiveOf(project, place),
   realPathOf: (path: AbsolutePath): AbsolutePath => realPathOf(project.files, path),

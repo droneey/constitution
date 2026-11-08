@@ -3,7 +3,7 @@ import { describe, expect, it } from 'bun:test';
 import { createFakeProjectFiles } from '#/__tests__/project-files.fake';
 import { AbsolutePath } from '#/kernel/value-objects';
 
-import { findProject } from '../find-project.use-case';
+import { findProject, findProjectHolding } from '../find-project.use-case';
 
 describe('findProject', () => {
   it.each([
@@ -131,6 +131,65 @@ describe('findProject', () => {
       const place = findProject({
         files: projectFiles,
         startFolderPath: AbsolutePath.create(start),
+      });
+
+      // Assert
+      expect<object | undefined>(place).toStrictEqual(expected);
+    },
+  );
+
+  it.each([
+    {
+      condition: 'neither it nor the folder above it is made yet',
+      expected: {
+        releaseFolderPath: '/work/project/.droneey/constitution',
+        repositoryFolderPath: '/work/project',
+      },
+      files: {
+        '/work/project/.git/HEAD': 'ref: refs/heads/main\n',
+        '/work/project/constitution.yaml': 'axes: []\n',
+      },
+      links: {},
+      path: '/work/project/apps/new/invoice.ts',
+    },
+    {
+      condition: 'a file stands where a folder above it would be',
+      expected: undefined,
+      files: {
+        '/work/project/.git/HEAD': 'ref: refs/heads/main\n',
+        '/work/project/apps': 'a file\n',
+        '/work/project/constitution.yaml': 'axes: []\n',
+      },
+      links: {},
+      path: '/work/project/apps/new/invoice.ts',
+    },
+    {
+      condition: 'its folder exists',
+      expected: {
+        releaseFolderPath: '/work/project/.droneey/constitution',
+        repositoryFolderPath: '/work/project',
+      },
+      files: {
+        '/work/project/.git/HEAD': 'ref: refs/heads/main\n',
+        '/work/project/constitution.yaml': 'axes: []\n',
+        '/work/project/src/order.ts': 'export {};\n',
+      },
+      links: {},
+      path: '/work/project/src',
+    },
+  ])(
+    'should find the project holding a path when $condition',
+    ({ expected, files, links, path }) => {
+      // Arrange
+      const projectFiles = createFakeProjectFiles({
+        files,
+        links,
+      });
+
+      // Act
+      const place = findProjectHolding({
+        files: projectFiles,
+        path: AbsolutePath.create(path),
       });
 
       // Assert

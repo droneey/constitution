@@ -18,6 +18,16 @@ describe('createActiveRulesSource', () => {
     expect(place).toStrictEqual(projectPlace);
   });
 
+  it('should find the project holding a file whose folder is not made yet', () => {
+    // Act
+    const place = sourceOf().findProjectHolding(
+      AbsolutePath.create(`${PROJECT}/src/drafts/draft.ts`),
+    );
+
+    // Assert
+    expect(place).toStrictEqual(projectPlace);
+  });
+
   it('should read the rules the project makes active, where they are read from', () => {
     // Act
     const read = sourceOf().readActive(projectPlace);

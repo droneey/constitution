@@ -245,7 +245,7 @@ const rulesOf = (input: {
 
 const rulesOwedBy = (input: OweRulesInput): RulesOwedFor => {
   const { source } = input;
-  const placeOf = memoised((folder: AbsolutePath) => source.findProjectAround(folder));
+  const placeOf = memoised((folder: AbsolutePath) => source.findProjectHolding(folder));
   const readers: RuleReaders = {
     activeOf: memoised(
       (place: ProjectPlace): ActiveRead =>

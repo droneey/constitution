@@ -100,7 +100,7 @@ const notingReadsOf = (
 
 const findingProjectFrom = (folder: string): ActiveRulesSource => ({
   ...createFakeActiveRulesSource(),
-  findProjectAround: (searchFrom) => (searchFrom === folder ? projectPlace : undefined),
+  findProjectHolding: (path) => (path === folder ? projectPlace : undefined),
 });
 
 describe('rulesOwedBy', () => {
@@ -462,7 +462,7 @@ describe('rulesOwedBy', () => {
     // Arrange
     const source: ActiveRulesSource = {
       ...createFakeActiveRulesSource(),
-      findProjectAround: () => projectPlace,
+      findProjectHolding: () => projectPlace,
     };
     const target = {
       kind: TargetKind.File,
@@ -588,7 +588,7 @@ describe('rulesOwedBy', () => {
     };
     const noted = notingReadsOf({
       ...createFakeActiveRulesSource(),
-      findProjectAround: (searchFrom) => places[searchFrom],
+      findProjectHolding: (path) => places[path],
     });
     const owedFor = rulesOwedBy({
       hasher: testHasher,
