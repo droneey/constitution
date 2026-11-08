@@ -1464,6 +1464,34 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'typescript',
+    slug: 'component-module-exports-only-components',
+    unit: {
+      axes: [],
+      blocks: [
+        'react/react-dom',
+      ],
+    },
+    reported: [
+      {
+        condition: 'a module exports a value beside its component',
+        files: {
+          'src/ui/panel.tsx':
+            'export const PANEL_WIDTH = 4;\n\nexport const Panel = (): React.ReactElement => <section />;\n',
+        },
+      },
+    ],
+    allowed: [
+      {
+        condition: 'a module exports a compound and its prop types',
+        files: {
+          'src/ui/menu.tsx':
+            'export type MenuProps = { readonly label: string };\n\nconst MenuRoot = (props: MenuProps): React.ReactElement => <ul aria-label={props.label} />;\nconst MenuItem = (): React.ReactElement => <li />;\n\nexport const Menu = Object.assign(MenuRoot, { Item: MenuItem });\n',
+        },
+      },
+    ],
+  },
+  {
+    language: 'typescript',
     slug: 'compound-part-keyed-in-pascal-case',
     unit: {
       axes: [],

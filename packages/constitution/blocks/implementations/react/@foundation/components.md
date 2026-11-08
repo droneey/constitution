@@ -1,6 +1,6 @@
 # Components
 
-> Governs a component's name, its hidden parts, a compound, its children and its controllable props.
+> Governs a component's name, its hidden parts, a compound, its children, its controllable props and what its module exports.
 
 ## Vocabulary
 
@@ -77,3 +77,13 @@ Every controllable value's props are named after it: the value is `<name>` and i
 | Why |
 |---|
 | a component that names the three its own way is learned apart from the primitive library and the platform's elements around it, which all use these names. |
+
+## Modules
+
+### component-module-exports-only-components → file-holds-one-topic · MUST
+
+Every module that exports a component exports only components and their types. A hook, a constant or a context the component shares sits in a module of its own. Exempt: an export the module's framework requires of it, such as a route's settings; and a program no bundler with Fast Refresh serves, such as a terminal program.
+
+| Why |
+|---|
+| Fast Refresh keeps a component's state across an edit only in a module whose every export is a component, a type being gone once compiled, and reloads any other module whole, so the screen being worked on loses its state at every save — React's Fast Refresh. |

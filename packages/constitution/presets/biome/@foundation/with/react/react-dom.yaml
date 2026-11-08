@@ -148,3 +148,10 @@ presentation:
             a11y:
               useFocusableInteractive: error
               useKeyWithClickEvents: error
+react:
+  component-module-exports-only-components:
+    typescript:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/component-module-exports-only-components.${role.grit-rule}]:
+          includes:
+            - '**/*.tsx'

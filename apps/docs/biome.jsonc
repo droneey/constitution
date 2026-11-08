@@ -2088,6 +2088,14 @@
       ],
     },
 
+    // react/react-dom
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/component-module-exports-only-components.grit",
+      "includes": [
+        "**/*.tsx",
+      ],
+    },
+
     // schema/zod
     {
       "path": "./.droneey/constitution/presets/biome/plugins/typescript/zod-four-forms-only.grit",

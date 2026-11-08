@@ -749,6 +749,14 @@
       ],
     },
 
+    // react/react-dom
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/component-module-exports-only-components.grit",
+      "includes": [
+        "**/*.tsx",
+      ],
+    },
+
     // tailwind
     {
       "path": "./.droneey/constitution/presets/biome/plugins/css/utilities-only-from-tokens.grit",
