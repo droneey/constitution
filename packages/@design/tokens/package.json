@@ -53,7 +53,7 @@
     "@biomejs/biome": "2.6.3",
     "@droneey/mutation-check-typescript": "workspace:*",
     "@stryker-mutator/core": "10.1.1",
-    "@types/bun": "1.4.3",
+    "@types/bun": "1.4.4",
     "colorjs.io": "0.7.1",
     "dependency-cruiser": "18.7.0",
     "jscpd": "5.4.2",

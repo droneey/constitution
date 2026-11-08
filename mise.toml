@@ -1,9 +1,7 @@
 [tools]
 actionlint = "1.7.12"
 betterleaks = "1.9.0"
-# Why: from 1.4.4, coverage counts as missed the default branch of an enum switch that ends in
-# `satisfies never`.
-bun = "1.4.3"
+bun = "1.4.4"
 hadolint = "2.15.1"
 lefthook = "2.2.2"
 "npm:dclint" = "3.1.0"

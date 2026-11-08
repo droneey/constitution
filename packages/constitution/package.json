@@ -75,7 +75,7 @@
     "@droneey/mutation-check-typescript": "workspace:*",
     "@stryker-mutator/core": "10.1.1",
     "@swc/core": "1.16.20",
-    "@types/bun": "1.4.3",
+    "@types/bun": "1.4.4",
     "@types/node": "26.6.5",
     "@types/react": "19.3.0",
     "babel-plugin-react-compiler": "1.0.0",
