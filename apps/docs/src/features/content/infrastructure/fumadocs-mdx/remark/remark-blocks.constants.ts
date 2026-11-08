@@ -7,6 +7,11 @@ const LEVEL_LETTERS = {
   [Level.Should]: 'S',
 } as const satisfies LevelLetters;
 
+enum RulePart {
+  Why = 'Why',
+  Examples = 'Examples',
+}
+
 enum ExampleTone {
   Avoid = 'avoid',
   Prefer = 'prefer',
@@ -24,4 +29,4 @@ const exampleTonesByTitle: ReadonlyMap<string, ExampleTone> = new Map([
 ]);
 
 export type { LevelLetters };
-export { ExampleTone, exampleTonesByTitle, LEVEL_LETTERS };
+export { ExampleTone, exampleTonesByTitle, LEVEL_LETTERS, RulePart };

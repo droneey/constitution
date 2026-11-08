@@ -146,6 +146,93 @@
 </div>
 </section>
 
+<!-- a rule with its Why and its Examples in sections, before an example of the folder -->
+<section data-rule-card="">
+<p data-rule-meta="">
+<span data-rule-level="must">MUST</span>
+</p>
+<h3 data-rule="">
+<span data-rule-mark="must">
+<span data-rule-mark-letter="">M</span>
+<span class="sr-only">MUST</span>
+</span>
+<code>name-says-what</code> [#name-says-what]</h3>
+<p>A name says what it holds.</p>
+<p data-rule-why="">
+<span data-rule-why-label="">Why</span>The reader of <code>x</code> then knows.</p>
+<p data-rule-why="">A second paragraph.</p>
+<ul>
+<li>a list stays</li>
+</ul>
+<div data-rule-example="pair">
+<div data-rule-example-column="avoid">
+<p>
+<span data-rule-example-label="">Avoid</span>
+</p>
+<pre>
+<code class="language-ts">let x;
+</code>
+</pre>
+</div>
+<div data-rule-example-column="prefer">
+<p>
+<span data-rule-example-label="">Prefer</span>
+</p>
+<pre>
+<code class="language-ts">const x = 1;
+</code>
+</pre>
+</div>
+<pre>
+<code class="language-mermaid">graph TD
+</code>
+</pre>
+</div>
+</section>
+
+<!-- a rule with its Why in a section and an example of the folder -->
+<section data-rule-card="">
+<p data-rule-meta="">
+<span data-rule-level="must">MUST</span>
+</p>
+<h3 data-rule="">
+<span data-rule-mark="must">
+<span data-rule-mark-letter="">M</span>
+<span class="sr-only">MUST</span>
+</span>
+<code>name-says-what</code> [#name-says-what]</h3>
+<p>A name says.</p>
+<p data-rule-why="">
+<span data-rule-why-label="">Why</span>It reads.</p>
+<div data-rule-example="">
+<div data-rule-example-column="prefer">
+<p>
+<span data-rule-example-label="">Prefer</span>
+</p>
+<pre>
+<code class="language-ts">folder();
+</code>
+</pre>
+</div>
+</div>
+</section>
+
+<!-- a rule with a section of another name -->
+<section data-rule-card="">
+<p data-rule-meta="">
+<span data-rule-level="must">MUST</span>
+</p>
+<h3 data-rule="">
+<span data-rule-mark="must">
+<span data-rule-mark-letter="">M</span>
+<span class="sr-only">MUST</span>
+</span>
+<code>name-says-what</code> [#name-says-what]</h3>
+<p>A name says.</p>
+<h4>Notes</h4>
+<p>A note.</p>
+</section>
+
 <!-- an example of the better code alone -->
 <section data-rule-card="">
 <p data-rule-meta="">

@@ -241,7 +241,7 @@ const blocks = defineDocs({
       includeProcessedMarkdown: true,
     },
     schema: markdownSchema(() => undefined),
-    /** @throws {SourceError} when an example names no rule of the folders */
+    /** @throws {SourceError} when an example names no rule of the folders, or a rule that holds its own */
     mdxOptions: async (environment) => {
       const options = blocksOptionsOf({
         baseUrl: DOCS_ROUTE,

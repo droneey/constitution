@@ -71,6 +71,17 @@ describe('remarkBlocks', () => {
         '### name-says-what · MUST',
         '```ts title="Avoid"\nlet x;\n```\n\nThen:\n\n```ts title="Other"\nrun();\n```',
       ),
+      'a rule with its Why and its Examples in sections, before an example of the folder': ruleCard(
+        '### name-says-what · MUST\n\nA name says what it holds.\n\n#### Why\n\nthe reader of `x` then knows.\n\nA second paragraph.\n\n- a list stays\n\n#### Examples\n\n```ts title="Avoid"\nlet x;\n```\n\n```ts title="Prefer"\nconst x = 1;\n```\n\n```mermaid title="The flow"\ngraph TD\n```\n',
+        '```ts\nfolder();\n```',
+      ),
+      'a rule with its Why in a section and an example of the folder': ruleCard(
+        '### name-says-what · MUST\n\nA name says.\n\n#### Why\n\nIt reads.\n',
+        '```ts title="Prefer"\nfolder();\n```',
+      ),
+      'a rule with a section of another name': ruleCard(
+        '### name-says-what · MUST\n\nA name says.\n\n#### Notes\n\nA note.\n',
+      ),
       'an example of the better code alone': ruleCard(
         '### name-says-what · MUST',
         '```ts\nsetup();\n```\n\n```ts title="Prefer"\nconst x = 1;\n```',

@@ -3,6 +3,7 @@ import { ProgramError } from '#/kernel/errors';
 
 enum SourceFailure {
   ChapterListMismatch = 'chapter-list-mismatch',
+  ExampleInRule = 'example-in-rule',
   ExampleRuleUnknown = 'example-rule-unknown',
   FileMalformed = 'file-malformed',
   ReadmeSectionMissing = 'readme-section-missing',
@@ -14,7 +15,7 @@ interface ChapterListGaps {
   readonly unknown: readonly string[];
 }
 
-interface UnknownExampleRules {
+interface ExampleRules {
   readonly slugs: readonly string[];
 }
 
@@ -29,7 +30,8 @@ interface MissingSection {
 
 type SourceFailed =
   | ProgramErrorInput<SourceFailure.ChapterListMismatch, ChapterListGaps>
-  | ProgramErrorInput<SourceFailure.ExampleRuleUnknown, UnknownExampleRules>
+  | ProgramErrorInput<SourceFailure.ExampleInRule, ExampleRules>
+  | ProgramErrorInput<SourceFailure.ExampleRuleUnknown, ExampleRules>
   | ProgramErrorInput<SourceFailure.FileMalformed, MalformedFile>
   | ProgramErrorInput<SourceFailure.ReadmeSectionMissing, MissingSection>;
 

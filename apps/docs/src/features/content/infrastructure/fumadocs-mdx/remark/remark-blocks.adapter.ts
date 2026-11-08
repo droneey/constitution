@@ -17,9 +17,21 @@ import { fromMarkdown } from 'mdast-util-from-markdown';
 import { toString as mdastTextOf } from 'mdast-util-to-string';
 import { visit } from 'unist-util-visit';
 
-import { isHeading, isSectionHeading, SUBSECTION_HEADING_DEPTH, textNode } from '../markdown';
+import {
+  headingTextOf,
+  isHeading,
+  isSectionHeading,
+  PART_HEADING_DEPTH,
+  SUBSECTION_HEADING_DEPTH,
+  textNode,
+} from '../markdown';
 import type { LevelLetters } from './remark-blocks.constants';
-import { ExampleTone, exampleTonesByTitle, LEVEL_LETTERS } from './remark-blocks.constants';
+import {
+  ExampleTone,
+  exampleTonesByTitle,
+  LEVEL_LETTERS,
+  RulePart,
+} from './remark-blocks.constants';
 import { dropTitle } from './remark-drop-title.adapter';
 
 interface BlocksOptions {
@@ -166,15 +178,22 @@ const capitalised = (children: PhrasingContent[]): PhrasingContent[] => {
     : children;
 };
 
+const whyParagraphOf = (children: PhrasingContent[], isLabelled: boolean): Paragraph =>
+  paragraph(part('rule-why'), [
+    ...(isLabelled
+      ? [
+          span(part('rule-why-label'), [
+            textNode('Why'),
+          ]),
+        ]
+      : []),
+    ...capitalised(children),
+  ]);
+
 const whyOf = (table: Table): Paragraph => {
   const cell = table.children[1]?.children[0];
 
-  return paragraph(part('rule-why'), [
-    span(part('rule-why-label'), [
-      textNode('Why'),
-    ]),
-    ...capitalised(cell?.children ?? []),
-  ]);
+  return whyParagraphOf(cell?.children ?? [], true);
 };
 
 interface Column {
@@ -211,8 +230,8 @@ const columnOf = (node: Code): Column => {
   };
 };
 
-const exampleOf = (markdown: string): Box => {
-  const columns = fromMarkdown(markdown).children.map(
+const exampleOf = (nodes: readonly RootContent[]): Box => {
+  const columns = nodes.map(
     (node): Column =>
       // Stryker disable next-line ConditionalExpression: only code has a meta to title it, so the type check only narrows the type
       node.type === 'code'
@@ -273,13 +292,73 @@ const ruleHeadingOf = ({ heading, rule }: RuleSection): Heading => ({
   },
 });
 
+interface BodyPart {
+  readonly heading: Heading;
+  readonly nodes: RootContent[];
+}
+
+interface Body {
+  readonly lead: RootContent[];
+  readonly parts: readonly BodyPart[];
+}
+
+const bodyOf = (nodes: readonly RootContent[]): Body => {
+  const lead: RootContent[] = [];
+  const parts: BodyPart[] = [];
+  let open = lead;
+
+  for (const node of nodes) {
+    if (isHeading(node, PART_HEADING_DEPTH)) {
+      open = [];
+      parts.push({
+        heading: node,
+        nodes: open,
+      });
+    } else {
+      open.push(node);
+    }
+  }
+
+  return {
+    lead,
+    parts,
+  };
+};
+
+const withWhyTables = (nodes: readonly RootContent[]): RootContent[] =>
+  nodes.map((node) => (node.type === 'table' ? whyOf(node) : node));
+
+const renderedPartOf = ({ heading, nodes }: BodyPart): RootContent[] => {
+  const name = headingTextOf(heading);
+
+  if (name === RulePart.Why) {
+    return nodes.map((node, index) =>
+      node.type === 'paragraph' ? whyParagraphOf(node.children, index === 0) : node,
+    );
+  }
+
+  if (name === RulePart.Examples) {
+    return [
+      exampleOf(nodes),
+    ];
+  }
+
+  return [
+    heading,
+    ...withWhyTables(nodes),
+  ];
+};
+
 const cardOf = (
   ruleSection: RuleSection,
   body: RootContent[],
   options: BlocksOptions,
 ): RuleCard => {
   const { rule } = ruleSection;
-  const example = options.examplesBySlug.get(rule.slug);
+  const { lead, parts } = bodyOf(body);
+  const example = parts.some(({ heading }) => headingTextOf(heading) === RulePart.Examples)
+    ? undefined
+    : options.examplesBySlug.get(rule.slug);
 
   return {
     children: [
@@ -290,11 +369,12 @@ const cardOf = (
       ]),
       ruleHeadingOf(ruleSection),
       ...tightenedRuleLineOf(rule.tightens),
-      ...body.map((node) => (node.type === 'table' ? whyOf(node) : node)),
+      ...withWhyTables(lead),
+      ...parts.flatMap(renderedPartOf),
       ...(example === undefined
         ? []
         : [
-            exampleOf(example),
+            exampleOf(fromMarkdown(example).children),
           ]),
     ],
     data: {

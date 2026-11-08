@@ -146,4 +146,76 @@ describe('blocksOptionsOf', () => {
       },
     });
   });
+
+  it('should fail, naming each example of the folder whose rule holds its own Examples', () => {
+    // Arrange
+    writeFileSync(
+      join(repository.root, 'blocks/domains/ui/ui.md'),
+      '### ui-rule · MUST\n\n#### Why\n\nA reason.\n\n#### Examples\n\n```ts title="Prefer"\nconst a = 1;\n```\n',
+    );
+    writeFileSync(
+      join(repository.root, 'examples/ui-rule.md'),
+      '```ts title="Prefer"\nconst a = 1;\n```\n',
+    );
+
+    const input = {
+      baseUrl: '/docs',
+      blocksFolderPath: AbsolutePath.create(join(repository.root, 'blocks')),
+      examplesFolderPath: AbsolutePath.create(join(repository.root, 'examples')),
+      layers: [
+        BlockLayer.Core,
+        BlockLayer.Domain,
+      ],
+    };
+
+    // Act
+    const failure = failureOf(() => blocksOptionsOf(input));
+
+    // Assert
+    expect(failure).toStrictEqual({
+      cause: undefined,
+      code: SourceFailure.ExampleInRule,
+      details: {
+        slugs: [
+          'ui-rule',
+        ],
+      },
+    });
+  });
+
+  it('should take an Examples heading for a rule only under that rule, and read no folder that is not there', () => {
+    // Arrange
+    writeFileSync(
+      join(repository.root, 'blocks/core/core.md'),
+      '# Core\n\n### core-rule · MUST\n\n#### Why\n\nA reason.\n\n## Notes\n\n#### Examples\n\n```ts title="Prefer"\nconst a = 1;\n```\n',
+    );
+
+    const blocksFolderPath = AbsolutePath.create(join(repository.root, 'blocks'));
+
+    // Act
+    const read = {
+      kept: blocksOptionsOf({
+        baseUrl: '/docs',
+        blocksFolderPath,
+        examplesFolderPath: AbsolutePath.create(join(repository.root, 'examples')),
+        layers: [
+          BlockLayer.Core,
+        ],
+      }).examplesBySlug.has('core-rule'),
+      none: blocksOptionsOf({
+        baseUrl: '/docs',
+        blocksFolderPath,
+        examplesFolderPath: AbsolutePath.create(join(repository.root, 'no-examples')),
+        layers: [
+          BlockLayer.Core,
+        ],
+      }).examplesBySlug.size,
+    };
+
+    // Assert
+    expect(read).toStrictEqual({
+      kept: true,
+      none: 0,
+    });
+  });
 });

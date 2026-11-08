@@ -36,7 +36,7 @@ Each release attaches its site as `constitution-docs.tar.gz` with its checksum. 
 | `src/features/content` | the pages and their search, behind ports: `infrastructure/fumadocs-mdx` compiles the collections at build time — the remark plugins, the repository's sidebar, the schema — `infrastructure/fumadocs` serves them on the server, and `infrastructure/fumadocs-browser` loads their bodies and searches their index in the tab |
 | `src/features/versions` | the releases the version menu lists, read from the host's `versions.json` |
 | `src/libs/ui` | the Fumadocs components the site composes, from the library it installs, and its skin: the stylesheets that map Fumadocs onto the design system's tokens, and `keepOneLayout` |
-| `content/examples` | one example per rule of core, `<slug>.md`, shown at the foot of its card |
+| `content/examples` | an example of a rule that holds no `#### Examples` of its own, `<slug>.md`, shown at the foot of its card |
 | `docker`, `compose.yaml`, `scripts` | the image, its Compose services, the script that runs them and the one that lays out the releases' sites |
 
 The site's look is `@droneey/design-browser`'s: its stylesheet, its Tailwind theme and its components, icons and popover through `@droneey/design-browser/react-dom`, with the site's own Fumadocs skin over them, and the repository's accent, `@droneey/constitution-brand`'s `brand.tokens.json`, which the root route hands to its `ThemeProvider`.
