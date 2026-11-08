@@ -49,6 +49,14 @@ const rule = (input: RuleFixture): string =>
     '',
   ].join('\n');
 
+const EXAMPLE_LINE = 'const exampleShown = true;';
+
+const sectionedChapterOf = (text: string): string =>
+  text.replaceAll(
+    '\n| Why |\n|---|\n| it keeps the fixture honest. |\n',
+    `\n#### Why\n\nit keeps the fixture honest.\n\n#### Examples\n\n\`\`\`ts title="Prefer"\n${EXAMPLE_LINE}\n\`\`\`\n`,
+  );
+
 const vocabularyOf = (definitions: readonly string[] | undefined): string =>
   definitions === undefined
     ? ''
@@ -609,4 +617,4 @@ const constitutionFiles = (): Files => ({
 });
 
 export type { Files };
-export { constitutionFiles, coreText };
+export { constitutionFiles, coreText, EXAMPLE_LINE, sectionedChapterOf };

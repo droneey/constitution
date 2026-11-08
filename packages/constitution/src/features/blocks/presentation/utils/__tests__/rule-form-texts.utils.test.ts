@@ -72,6 +72,101 @@ describe('ruleFormTexts', () => {
     },
     {
       problem: {
+        code: RuleFormCode.WithoutWhySection,
+        details: {
+          slug: RuleSlug.create('a'),
+        },
+      },
+      text: 'rule "a" has no section "#### Why" after its statement',
+    },
+    {
+      problem: {
+        code: RuleFormCode.WhyMisplaced,
+        details: {
+          slug: RuleSlug.create('a'),
+        },
+      },
+      text: 'rule "a" has its section "#### Why" after another; it comes right after the statement',
+    },
+    {
+      problem: {
+        code: RuleFormCode.WithoutExamples,
+        details: {
+          slug: RuleSlug.create('a'),
+        },
+      },
+      text: 'rule "a" has no section "#### Examples" after its Why',
+    },
+    {
+      problem: {
+        code: RuleFormCode.ExamplesNotLast,
+        details: {
+          slug: RuleSlug.create('a'),
+        },
+      },
+      text: 'rule "a" has a section after "#### Examples"; Examples comes last',
+    },
+    {
+      problem: {
+        code: RuleFormCode.ExamplesHoldProse,
+        details: {
+          slug: RuleSlug.create('a'),
+        },
+      },
+      text: 'rule "a" has text outside a code block in "#### Examples", which holds only fenced blocks',
+    },
+    {
+      problem: {
+        code: RuleFormCode.ExamplesHoldHeading,
+        details: {
+          heading: '##### Avoid',
+          slug: RuleSlug.create('a'),
+        },
+      },
+      text: 'rule "a" has the heading "##### Avoid" inside "#### Examples", which holds only fenced blocks',
+    },
+    {
+      problem: {
+        code: RuleFormCode.ExampleUntitled,
+        details: {
+          language: 'ts',
+          slug: RuleSlug.create('a'),
+        },
+      },
+      text: 'rule "a" has a ts block without a title in "#### Examples"; each block has title="…"',
+    },
+    {
+      problem: {
+        code: RuleFormCode.ExampleUntitled,
+        details: {
+          language: '',
+          slug: RuleSlug.create('a'),
+        },
+      },
+      text: 'rule "a" has a code block without a title in "#### Examples"; each block has title="…"',
+    },
+    {
+      problem: {
+        code: RuleFormCode.SectionUnknown,
+        details: {
+          heading: '#### Notes',
+          slug: RuleSlug.create('a'),
+        },
+      },
+      text: 'rule "a" has the section "#### Notes"; a rule holds only "#### Why" and "#### Examples"',
+    },
+    {
+      problem: {
+        code: RuleFormCode.FormsMixed,
+        details: {
+          sectioned: RuleSlug.create('b'),
+          tabled: RuleSlug.create('a'),
+        },
+      },
+      text: 'holds rules with a Why table, as "a", and rules with a section "#### Why", as "b"; a chapter holds one form',
+    },
+    {
+      problem: {
         code: RuleFormCode.HoldsLabel,
         details: {
           label: 'Why',

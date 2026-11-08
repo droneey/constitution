@@ -3,8 +3,9 @@ import { describe, expect, it } from 'bun:test';
 import { Axis, Level } from '../../constants';
 import { ValueFailure } from '../../errors';
 import { BlockId, coreBlockId, RuleSlug } from '../../value-objects';
+import { RuleFormCode } from '../rule-form.entity';
 import type { RuleSource, RulesParsed } from '../stated-rule.entity';
-import { RuleFormCode, StatedRule } from '../stated-rule.entity';
+import { StatedRule } from '../stated-rule.entity';
 import { ValueSite } from '../value-finding.entity';
 
 const FILE = 'blocks/core/@foundation/principles.md';
@@ -26,6 +27,7 @@ const sourceOf = (lines: readonly string[]): RuleSource => ({
 const ruleOf = (fields: Partial<StatedRule>): StatedRule => ({
   axis: Axis.Foundation,
   block: coreBlockId,
+  examples: [],
   file: FILE,
   slug: RuleSlug.create('a'),
   statedLevel: Level.Must,
@@ -37,6 +39,7 @@ const ruleOf = (fields: Partial<StatedRule>): StatedRule => ({
 const unstatedRuleOf = (fields: Partial<StatedRule>): StatedRule => ({
   axis: Axis.Foundation,
   block: coreBlockId,
+  examples: [],
   file: FILE,
   slug: RuleSlug.create('a'),
   statement: 'A.',
@@ -594,12 +597,14 @@ describe('StatedRule.wordingsOf', () => {
     // Assert
     expect(wordings).toStrictEqual([
       {
+        examples: [],
         slug: RuleSlug.create('four-data-states'),
         statedLevel: Level.Must,
         statement: 'Every data view shows four states.',
         why: 'it keeps the code honest.',
       },
       {
+        examples: [],
         slug: RuleSlug.create('name-reveals-more'),
         statement: 'A name says more.',
         tightens: RuleSlug.create('name-reveals-intent'),
@@ -675,6 +680,7 @@ describe('StatedRule.inheritLevels', () => {
       {
         axis: Axis.Foundation,
         block: coreBlockId,
+        examples: [],
         file: FILE,
         isLevelStated: true,
         level: Level.Should,
@@ -839,5 +845,290 @@ describe('StatedRule.inheritLevels', () => {
       Level.Should,
       false,
     ]);
+  });
+});
+
+const sections = [
+  '',
+  '#### Why',
+  '',
+  'it keeps the code honest.',
+  '',
+  '#### Examples',
+  '',
+  '```sh title="Prefer"',
+  '# a comment, not a heading',
+  'run',
+  '```',
+];
+
+const prefer = {
+  code: '# a comment, not a heading\nrun',
+  language: 'sh',
+  title: 'Prefer',
+};
+
+describe('StatedRule.parse, a rule with its Why and Examples in sections', () => {
+  it('should read the statement, the Why and the examples when the rule is complete', () => {
+    // Arrange
+    const source = sourceOf([
+      '# Principles',
+      '## Screens',
+      '### a · MUST',
+      'A.',
+      ...sections,
+      '### b · SHOULD',
+      'B.',
+      ...sections,
+    ]);
+
+    // Act
+    const parsed = StatedRule.parse(source);
+
+    // Assert
+    expect(parsed).toStrictEqual({
+      findings: [],
+      rules: [
+        ruleOf({
+          chapterTitle: 'Principles',
+          examples: [
+            prefer,
+          ],
+          section: 'Screens',
+        }),
+        ruleOf({
+          chapterTitle: 'Principles',
+          examples: [
+            prefer,
+          ],
+          section: 'Screens',
+          slug: RuleSlug.create('b'),
+          statedLevel: Level.Should,
+          statement: 'B.',
+        }),
+      ],
+    });
+  });
+
+  it('should report the mix and read each rule in its own form when a chapter holds both forms', () => {
+    // Arrange
+    const source = sourceOf([
+      '## Vocabulary',
+      '| Term | Meaning |',
+      '|---|---|',
+      '| a | b |',
+      '### Bad_Slug · MUST',
+      'X.',
+      ...sections,
+      '### a · MUST',
+      'A.',
+      ...table,
+      '### b · MUST',
+      'B.',
+      ...sections,
+    ]);
+
+    // Act
+    const parsed = StatedRule.parse(source);
+
+    // Assert
+    expect(parsed).toStrictEqual({
+      findings: [
+        {
+          code: RuleFormCode.FormsMixed,
+          details: {
+            sectioned: RuleSlug.create('b'),
+            tabled: RuleSlug.create('a'),
+          },
+          path: FILE,
+        },
+        {
+          code: ValueFailure.RuleSlug,
+          details: {
+            site: ValueSite.RuleHeading,
+            written: 'Bad_Slug',
+          },
+          path: FILE,
+        },
+      ],
+      rules: [
+        ruleOf({
+          section: 'Vocabulary',
+        }),
+        ruleOf({
+          examples: [
+            prefer,
+          ],
+          section: 'Vocabulary',
+          slug: RuleSlug.create('b'),
+          statement: 'B.',
+        }),
+      ],
+    });
+  });
+
+  it('should read a rule that shows neither form in the form of its chapter', () => {
+    // Arrange
+    const source = sourceOf([
+      '### a · MUST',
+      'A.',
+      ...sections,
+      '### b · MUST',
+      'B.',
+    ]);
+
+    // Act
+    const parsed = StatedRule.parse(source);
+
+    // Assert
+    expect(parsed.findings).toStrictEqual([
+      {
+        code: RuleFormCode.WithoutWhySection,
+        details: {
+          slug: RuleSlug.create('b'),
+        },
+        path: FILE,
+      },
+      {
+        code: RuleFormCode.WithoutExamples,
+        details: {
+          slug: RuleSlug.create('b'),
+        },
+        path: FILE,
+      },
+    ]);
+  });
+
+  it('should hold a deeper heading under the rule above it and none under a section', () => {
+    // Arrange
+    const source = sourceOf([
+      '## Screens',
+      '#### x · MUST',
+      '### a · MUST',
+      'A.',
+      ...sections,
+      '####',
+      '## Next ####',
+      '### b · MUST',
+      'B.',
+      ...sections,
+    ]);
+
+    // Act
+    const parsed = StatedRule.parse(source);
+
+    // Assert
+    expect(parsed.findings).toStrictEqual([
+      {
+        code: RuleFormCode.HeadingMisshapen,
+        details: {
+          heading: '#### x · MUST',
+        },
+        path: FILE,
+      },
+      {
+        code: RuleFormCode.ExamplesNotLast,
+        details: {
+          slug: RuleSlug.create('a'),
+        },
+        path: FILE,
+      },
+      {
+        code: RuleFormCode.SectionUnknown,
+        details: {
+          heading: '####',
+          slug: RuleSlug.create('a'),
+        },
+        path: FILE,
+      },
+    ]);
+  });
+
+  it('should report a label its Why holds', () => {
+    // Arrange
+    const source = sourceOf([
+      '### a · MUST',
+      'A.',
+      '#### Why',
+      '**Note:** it keeps the code honest.',
+      '#### Examples',
+      '```sh title="Prefer"',
+      'run',
+      '```',
+    ]);
+
+    // Act
+    const parsed = StatedRule.parse(source);
+
+    // Assert
+    expect(parsed.findings).toStrictEqual([
+      {
+        code: RuleFormCode.HoldsLabel,
+        details: {
+          label: 'Note',
+          slug: RuleSlug.create('a'),
+        },
+        path: FILE,
+      },
+    ]);
+  });
+
+  it('should give the wording with its examples to a reader of the text alone', () => {
+    // Arrange
+    const text = [
+      '### a · MUST',
+      'A.',
+      ...sections,
+    ].join('\n');
+
+    // Act
+    const wordings = StatedRule.wordingsOf(text);
+
+    // Assert
+    expect(wordings).toStrictEqual([
+      {
+        examples: [
+          prefer,
+        ],
+        slug: RuleSlug.create('a'),
+        statedLevel: Level.Must,
+        statement: 'A.',
+        why: 'it keeps the code honest.',
+      },
+    ]);
+  });
+
+  it('should read a rule that shows both forms in sections, and report the mix', () => {
+    // Arrange
+    const source = sourceOf([
+      '### a · MUST',
+      'A.',
+      ...table,
+      ...sections,
+    ]);
+
+    // Act
+    const parsed = StatedRule.parse(source);
+
+    // Assert
+    expect(parsed).toStrictEqual({
+      findings: [
+        {
+          code: RuleFormCode.FormsMixed,
+          details: {
+            sectioned: RuleSlug.create('a'),
+            tabled: RuleSlug.create('a'),
+          },
+          path: FILE,
+        },
+      ],
+      rules: [
+        ruleOf({
+          examples: [
+            prefer,
+          ],
+        }),
+      ],
+    });
   });
 });

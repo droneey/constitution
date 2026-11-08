@@ -2,6 +2,7 @@ import { describe, expect, it } from 'bun:test';
 
 import type { FindingOf } from '#/kernel/types';
 
+import { sectionedRule } from '../../../../../../__tests__/constitution.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { checkInputOf } from '../../../../../../application/use-cases/queries/check/__tests__/check.fixtures';
 import type { BudgetDetails } from '../budget';
@@ -52,5 +53,23 @@ describe('budgetCheck', () => {
 
     // Assert
     expect(findings).toStrictEqual(expected);
+  });
+
+  it('should leave the examples of a rule out of the lines it counts', () => {
+    // Arrange
+    const files = validFiles();
+
+    files[PRINCIPLES] = `# Principles\n\n## General\n\n${sectionedRule({
+      examples: `\`\`\`text title="Prefer"\n${linesOf(600)}\n\`\`\``,
+      slug: 'a-rule',
+    })}`;
+
+    const input = checkInputOf(files);
+
+    // Act
+    const findings = budgetCheck(input);
+
+    // Assert
+    expect(findings).toStrictEqual([]);
   });
 });

@@ -1,66 +1,27 @@
 import type { Axis } from '../constants';
-import { Level, RULE_TABLE_CELLS, RULE_TABLE_HEADER } from '../constants';
+import { Level } from '../constants';
 import { ValueFailure } from '../errors';
 import type { FindingOf, ProblemOf } from '../types';
 import type { MarkdownSection } from '../utils';
-import { cellsOf, isDeepEqual, isTableLine, sectionsOf, tablesOf } from '../utils';
+import { isTableLine, sectionsOf } from '../utils';
 import type { BlockId } from '../value-objects';
 import { RuleSlug } from '../value-objects';
-import type { RulePlace, RuleText } from './rule.entity';
+import type { RuleExample, RulePlace, RuleText } from './rule.entity';
 import { Rule } from './rule.entity';
+import type { RuleChunk } from './rule-body.entity';
+import { RuleBody, RuleForm } from './rule-body.entity';
+import type { RuleFormDetails, RuleFormProblem } from './rule-form.entity';
+import { RuleFormCode } from './rule-form.entity';
 import { RuleHeading } from './rule-heading.entity';
 import type { ValueFindingDetails } from './value-finding.entity';
 import { ValueSite } from './value-finding.entity';
 
 interface RuleWording extends RuleText {
+  readonly examples: readonly RuleExample[];
   readonly statedLevel?: Level;
 }
 
 interface StatedRule extends RulePlace, RuleWording {}
-
-enum RuleFormCode {
-  HeadingMisshapen = 'rule-heading-misshapen',
-  WithoutTable = 'rule-without-table',
-  TablesMany = 'rule-with-many-tables',
-  HeaderMisshapen = 'rule-table-header-misshapen',
-  RowsNotOne = 'rule-table-rows-not-one',
-  CellsMiscounted = 'rule-table-cells-miscounted',
-  HoldsLabel = 'rule-holds-label',
-  LevelRetired = 'rule-level-retired',
-}
-
-interface RuleFormDetails {
-  readonly [RuleFormCode.HeadingMisshapen]: {
-    readonly heading: string;
-  };
-  readonly [RuleFormCode.WithoutTable]: {
-    readonly slug: RuleSlug;
-  };
-  readonly [RuleFormCode.TablesMany]: {
-    readonly count: number;
-    readonly slug: RuleSlug;
-  };
-  readonly [RuleFormCode.HeaderMisshapen]: {
-    readonly slug: RuleSlug;
-  };
-  readonly [RuleFormCode.RowsNotOne]: {
-    readonly count: number;
-    readonly slug: RuleSlug;
-  };
-  readonly [RuleFormCode.CellsMiscounted]: {
-    readonly count: number;
-    readonly slug: RuleSlug;
-  };
-  readonly [RuleFormCode.HoldsLabel]: {
-    readonly label: string;
-    readonly slug: RuleSlug;
-  };
-  readonly [RuleFormCode.LevelRetired]: {
-    readonly slug: RuleSlug;
-  };
-}
-
-type RuleFormProblem = ProblemOf<RuleFormDetails>;
 
 type SlugProblem = ProblemOf<Pick<ValueFindingDetails, ValueFailure.RuleSlug>>;
 
@@ -76,11 +37,6 @@ interface RuleSource {
   readonly text: string;
 }
 
-interface Table {
-  readonly cells: readonly string[];
-  readonly problems: readonly RuleFormProblem[];
-}
-
 interface WordingRead {
   readonly problems: readonly (RuleFormProblem | SlugProblem)[];
   readonly wording?: RuleWording;
@@ -91,6 +47,14 @@ interface SectionRead {
   readonly rule?: StatedRule;
 }
 
+interface ChapterRead {
+  readonly chunks: readonly {
+    readonly chunk: RuleChunk;
+    readonly form: RuleForm;
+  }[];
+  readonly problems: readonly RuleFormProblem[];
+}
+
 interface RulesParsed {
   readonly findings: readonly RuleFormFinding[];
   readonly rules: readonly StatedRule[];
@@ -99,84 +63,13 @@ interface RulesParsed {
 const RULE_MARK = '### ';
 const TITLE = /^# (.+)/;
 const SECTION = /^## (.+)/;
+const SUBSECTION = /^#{4,6}(?:\s|$)/;
 const LOOKS_LIKE_RULE = /\b(?:MUST|SHOULD|MAY)\W*$| → /;
-const DASHES = /^:?-+:?$/;
 const LABEL_LINE = /^\*\*([^*]+):\*\*/;
 const EXAMPLE = 'Example';
 
 const headingOf = (text: string): RuleHeading | undefined =>
   text.startsWith(RULE_MARK) ? RuleHeading.of(text.slice(RULE_MARK.length)) : undefined;
-
-const tableOf = (input: { lines: readonly string[]; slug: RuleSlug }): Table => {
-  const { slug } = input;
-  const tables = tablesOf(input.lines);
-
-  if (tables.length !== 1) {
-    const problem: RuleFormProblem =
-      tables.length === 0
-        ? {
-            code: RuleFormCode.WithoutTable,
-            details: {
-              slug,
-            },
-          }
-        : {
-            code: RuleFormCode.TablesMany,
-            details: {
-              count: tables.length,
-              slug,
-            },
-          };
-
-    return {
-      cells: [],
-      problems: [
-        problem,
-      ],
-    };
-  }
-
-  // Stryker disable next-line StringLiteral,ArrayDeclaration: the one table has a line, and a missing delimiter fails either way
-  const [header = '', delimiter = '', ...rows] = tables[0] ?? [];
-  const cells = rows.slice(0, 1).flatMap(cellsOf);
-  const isHeader =
-    isDeepEqual(cellsOf(header), cellsOf(RULE_TABLE_HEADER)) &&
-    cellsOf(delimiter).every((cell) => DASHES.test(cell));
-
-  const problems: readonly (RuleFormProblem | undefined)[] = [
-    isHeader
-      ? undefined
-      : {
-          code: RuleFormCode.HeaderMisshapen,
-          details: {
-            slug,
-          },
-        },
-    rows.length === 1
-      ? undefined
-      : {
-          code: RuleFormCode.RowsNotOne,
-          details: {
-            count: rows.length,
-            slug,
-          },
-        },
-    rows.length === 0 || cells.length === RULE_TABLE_CELLS
-      ? undefined
-      : {
-          code: RuleFormCode.CellsMiscounted,
-          details: {
-            count: cells.length,
-            slug,
-          },
-        },
-  ];
-
-  return {
-    cells,
-    problems: problems.filter((problem) => problem !== undefined),
-  };
-};
 
 const labelProblems = (input: {
   lines: readonly string[];
@@ -201,10 +94,7 @@ const labelProblems = (input: {
 const statementOf = (lines: readonly string[]): string => {
   const end = lines.findIndex((line) => isTableLine(line) || LABEL_LINE.test(line));
 
-  return (end === -1 ? lines : lines.slice(0, end))
-    .map((line) => line.trim())
-    .filter((line) => line !== '')
-    .join(' ');
+  return RuleBody.joinedOf(end === -1 ? lines : lines.slice(0, end));
 };
 
 const slugProblemOf = (heading: RuleHeading): SlugProblem | undefined => {
@@ -255,17 +145,18 @@ const placeOf = (input: {
       }),
 });
 
-const wordingOfSection = (markdown: MarkdownSection): WordingRead => {
-  const heading = headingOf(markdown.heading);
+const wordingOfSection = (input: { chunk: RuleChunk; form: RuleForm }): WordingRead => {
+  const { chunk } = input;
+  const heading = headingOf(chunk.heading);
 
   if (heading === undefined) {
     return {
-      problems: LOOKS_LIKE_RULE.test(markdown.heading)
+      problems: LOOKS_LIKE_RULE.test(chunk.heading)
         ? [
             {
               code: RuleFormCode.HeadingMisshapen,
               details: {
-                heading: markdown.heading,
+                heading: chunk.heading,
               },
             },
           ]
@@ -283,23 +174,25 @@ const wordingOfSection = (markdown: MarkdownSection): WordingRead => {
     };
   }
 
-  const { lines } = markdown;
+  const lines = RuleBody.proseOf(chunk.lines);
   const slug = RuleSlug.create(heading.slug);
-  const table = tableOf({
+  const body = RuleBody.read({
+    form: input.form,
     lines,
     slug,
+    subsections: chunk.subsections,
   });
-  const [why = ''] = table.cells;
 
   return {
     problems: [
-      ...table.problems,
+      ...body.problems,
       ...labelProblems({
-        lines,
+        lines: body.proseLines,
         slug,
       }),
     ],
     wording: {
+      examples: body.examples,
       slug,
       ...(heading.level === undefined
         ? {}
@@ -312,24 +205,106 @@ const wordingOfSection = (markdown: MarkdownSection): WordingRead => {
         : {
             tightens: RuleSlug.create(heading.tightens),
           }),
-      why,
+      why: body.why,
     },
   };
 };
 
-const readSection = (input: {
-  chapterTitle: string | undefined;
-  markdown: MarkdownSection;
-  section: string | undefined;
+const chunksOf = (text: string): readonly RuleChunk[] => {
+  const chunks: (MarkdownSection & {
+    readonly subsections: MarkdownSection[];
+  })[] = [];
+
+  for (const section of sectionsOf(text)) {
+    const open = chunks.at(-1);
+
+    if (open?.heading.startsWith(RULE_MARK) === true && SUBSECTION.test(section.heading)) {
+      open.subsections.push(section);
+    } else {
+      chunks.push({
+        ...section,
+        subsections: [],
+      });
+    }
+  }
+
+  return chunks;
+};
+
+const formOf = (input: { chapterForm: RuleForm; forms: readonly RuleForm[] }): RuleForm => {
+  if (input.forms.includes(RuleForm.Sectioned)) {
+    return RuleForm.Sectioned;
+  }
+
+  return input.forms.includes(RuleForm.Tabled) ? RuleForm.Tabled : input.chapterForm;
+};
+
+// Why: a chapter holds one form, so a rule that shows neither a table nor a section is read in the
+// form the chapter's other rules show.
+const chapterOf = (text: string): ChapterRead => {
+  const marked = chunksOf(text).map((chunk) => {
+    const slug = headingOf(chunk.heading)?.slug;
+
+    return {
+      chunk,
+      forms: RuleBody.formsOf(chunk),
+      slug: RuleSlug.is(slug) ? slug : undefined,
+    };
+  });
+
+  const firstIn = (form: RuleForm): RuleSlug | undefined =>
+    marked.find(({ forms, slug }) => slug !== undefined && forms.includes(form))?.slug;
+
+  const tabled = firstIn(RuleForm.Tabled);
+  const sectioned = firstIn(RuleForm.Sectioned);
+  const chapterForm = sectioned === undefined ? RuleForm.Tabled : RuleForm.Sectioned;
+
+  return {
+    chunks: marked.map(({ chunk, forms }) => ({
+      chunk,
+      form: formOf({
+        chapterForm,
+        forms,
+      }),
+    })),
+    problems:
+      tabled === undefined || sectioned === undefined
+        ? []
+        : [
+            {
+              code: RuleFormCode.FormsMixed,
+              details: {
+                sectioned,
+                tabled,
+              },
+            },
+          ],
+  };
+};
+
+const findingsOf = (input: {
+  problems: readonly (RuleFormProblem | SlugProblem)[];
   source: RuleSource;
-}): SectionRead => {
-  const { problems, wording } = wordingOfSection(input.markdown);
-  const findings = problems.map(
+}): readonly RuleFormFinding[] =>
+  input.problems.map(
     (problem): RuleFormFinding => ({
       ...problem,
       path: input.source.file,
     }),
   );
+
+const readSection = (input: {
+  chapterTitle: string | undefined;
+  chunk: RuleChunk;
+  form: RuleForm;
+  section: string | undefined;
+  source: RuleSource;
+}): SectionRead => {
+  const { problems, wording } = wordingOfSection(input);
+  const findings = findingsOf({
+    problems,
+    source: input.source,
+  });
 
   return wording === undefined
     ? {
@@ -345,22 +320,30 @@ const readSection = (input: {
 };
 
 const parse = (source: RuleSource): RulesParsed => {
+  const chapter = chapterOf(source.text);
   let chapterTitle: string | undefined;
   let section: string | undefined;
-  const read = sectionsOf(source.text).map((markdown) => {
-    chapterTitle = TITLE.exec(markdown.heading)?.[1] ?? chapterTitle;
-    section = SECTION.exec(markdown.heading)?.[1] ?? section;
+  const read = chapter.chunks.map(({ chunk, form }) => {
+    chapterTitle = TITLE.exec(chunk.heading)?.[1] ?? chapterTitle;
+    section = SECTION.exec(chunk.heading)?.[1] ?? section;
 
     return readSection({
       chapterTitle,
-      markdown,
+      chunk,
+      form,
       section,
       source,
     });
   });
 
   return {
-    findings: read.flatMap((sectionRead) => sectionRead.findings),
+    findings: [
+      ...findingsOf({
+        problems: chapter.problems,
+        source,
+      }),
+      ...read.flatMap((sectionRead) => sectionRead.findings),
+    ],
     rules: read.flatMap((sectionRead) =>
       sectionRead.rule === undefined
         ? []
@@ -372,7 +355,7 @@ const parse = (source: RuleSource): RulesParsed => {
 };
 
 const wordingsOf = (text: string): readonly RuleWording[] =>
-  sectionsOf(text).flatMap((markdown) => wordingOfSection(markdown).wording ?? []);
+  chapterOf(text).chunks.flatMap((chunk) => wordingOfSection(chunk).wording ?? []);
 
 const levelOf = (input: {
   rule: StatedRule;
@@ -437,8 +420,9 @@ const StatedRule = {
   inheritLevels,
   parse,
   retiredLevelsIn,
+  withoutExamples: RuleBody.withoutExamples,
   wordingsOf,
 } as const;
 
-export type { RuleFormDetails, RuleSource, RulesParsed, RuleWording };
-export { RuleFormCode, StatedRule };
+export type { RuleSource, RulesParsed, RuleWording };
+export { StatedRule };

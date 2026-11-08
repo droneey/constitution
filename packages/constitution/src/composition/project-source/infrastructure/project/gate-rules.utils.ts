@@ -8,7 +8,7 @@ import { PATH_SEPARATOR } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
 import type { ProjectPlace } from '#/kernel/entities';
 import { ConfigReadStatus, FileReadStatus, ReleaseStatus, StatedRule } from '#/kernel/entities';
-import { splitFrontMatter, vocabularyOf, withoutCodeFences } from '#/kernel/utils';
+import { splitFrontMatter, vocabularyOf } from '#/kernel/utils';
 import { AbsolutePath } from '#/kernel/value-objects';
 
 const realPathOf = (files: ProjectFiles, path: AbsolutePath): AbsolutePath => {
@@ -94,7 +94,7 @@ const rulesInOf = (files: ProjectFiles, file: AbsolutePath): ChapterRules | unde
 
   return {
     definitions: vocabularyOf(body),
-    wordings: StatedRule.wordingsOf(withoutCodeFences(body)),
+    wordings: StatedRule.wordingsOf(body),
   };
 };
 

@@ -1,6 +1,11 @@
 const FENCE = /^\s*(?:`{3,}|~{3,})/;
 const BACKTICK = '`';
 
+interface FencedBlock {
+  readonly info: string;
+  readonly lines: readonly string[];
+}
+
 interface Fence {
   readonly character: string;
   readonly info: string;
@@ -62,6 +67,44 @@ const fencedLinesOf = (lines: readonly string[]): readonly boolean[] => {
   });
 };
 
+const fencedBlocksOf = (lines: readonly string[]): readonly FencedBlock[] => {
+  const blocks: FencedBlock[] = [];
+  let open:
+    | {
+        readonly fence: Fence;
+        readonly lines: string[];
+      }
+    | undefined;
+
+  for (const line of lines) {
+    if (open === undefined) {
+      const fence = openingOf(line);
+
+      if (fence !== undefined) {
+        open = {
+          fence,
+          lines: [],
+        };
+        blocks.push({
+          info: fence.info.trim(),
+          lines: open.lines,
+        });
+      }
+    } else if (
+      closes({
+        fence: open.fence,
+        line,
+      })
+    ) {
+      open = undefined;
+    } else {
+      open.lines.push(line);
+    }
+  }
+
+  return blocks;
+};
+
 const withoutCodeFences = (text: string): string => {
   const lines = text.split('\n');
   const fenced = fencedLinesOf(lines);
@@ -69,4 +112,5 @@ const withoutCodeFences = (text: string): string => {
   return lines.map((line, index) => (fenced[index] === true ? '' : line)).join('\n');
 };
 
-export { fencedLinesOf, withoutCodeFences };
+export type { FencedBlock };
+export { fencedBlocksOf, fencedLinesOf, withoutCodeFences };

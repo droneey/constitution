@@ -60,6 +60,7 @@ const sourceWithLowerings = (lowerings: readonly Lowering[]): ActiveRulesSource 
     files: {
       [coreChapter]: [
         {
+          examples: [],
           slug,
           statement: 'A name says more.',
           why: 'More is clearer.',
@@ -134,6 +135,7 @@ describe('rulesOwedBy', () => {
       files: {
         [coreChapter]: [
           {
+            examples: [],
             slug,
             statement: 'A name says more.',
             tightens: tightened,

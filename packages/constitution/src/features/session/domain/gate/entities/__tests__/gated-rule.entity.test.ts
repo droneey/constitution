@@ -23,6 +23,7 @@ const ruleOf = (input: Partial<GatedRule> = {}): GatedRule => ({
 
 const file = AbsolutePath.create('/work/names.md');
 const wordingBase = {
+  examples: [],
   slug: base.slug,
   statement: base.statement,
   why: base.why,
@@ -58,6 +59,7 @@ describe('GatedRule.create', () => {
         level: Level.Must,
       },
       wording: {
+        examples: [],
         slug: base.slug,
         statedLevel: Level.Should,
         statement: base.statement,
@@ -95,6 +97,7 @@ describe('GatedRule.create', () => {
         },
       },
       wording: {
+        examples: [],
         slug: base.slug,
         statement: base.statement,
         tightens: RuleSlug.create('name-from-the-glossary'),

@@ -12,10 +12,10 @@ The caller gives you:
 
 - the project root;
 - the diff of the change;
-- the rules that govern its files, as `constitution rules --for <files>` prints them: each governing chapter's vocabulary first, then each rule's statement at the level that binds where the file lies, MUST before SHOULD;
+- the rules that govern its files, as `constitution rules --for <files> --why` prints them: each governing chapter's vocabulary first, then each rule's statement at the level that binds where the file lies, MUST before SHOULD, with its Why under it;
 - the overrides in force, each with its reason.
 
-Read the rules whole before the code. A word a vocabulary defines means what it defines there. A rule's Why is left out of what you are given; when you need it to judge how far a rule reaches, read it in the chapter the rule's heading names.
+Read the rules whole before the code. A word a vocabulary defines means what it defines there. A rule's Why, under its statement, tells how far the rule reaches; judge by what you are given, and read no chapter of the Constitution for a rule.
 
 ## What to judge
 

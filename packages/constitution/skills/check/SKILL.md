@@ -33,10 +33,10 @@ The diff is the first command's output, with each new file the second lists adde
 ## 3. Gather the rules
 
 ```bash
-constitution rules --for <every file of the change>
+constitution rules --for <every file of the change> --why
 ```
 
-It prints the vocabulary of each chapter that governs those files, then each rule's statement at the level that binds where the file lies, MUST before SHOULD, with a lowered rule's override and reason under it. It fails, naming why, when the project's Constitution cannot be read: fix that first.
+It prints the vocabulary of each chapter that governs those files, then each rule's statement at the level that binds where the file lies, MUST before SHOULD, with a lowered rule's override and reason and the rule's Why under it. It fails, naming why, when the project's Constitution cannot be read: fix that first.
 
 The overrides are the `overrides` entries of `constitution.yaml`, at the root and in each unit the change touches, each with its rule, level and reason.
 
@@ -46,7 +46,7 @@ Dispatch the `constitution:reviewer` agent once, through the Agent tool, with ex
 
 - the project root;
 - the diff;
-- the output of `constitution rules`, whole;
+- the output of `constitution rules --why`, whole;
 - the overrides.
 
 Give it nothing of this conversation: no summary of the work, no intent and no reading of a rule. It judges the change as a stranger would. It returns one finding per line, `<path>:<line> — <slug> · <LEVEL> — <confidence> — <what is wrong> — <the fix>`, or `no findings`; when it finishes, a hook records the review on this tree.

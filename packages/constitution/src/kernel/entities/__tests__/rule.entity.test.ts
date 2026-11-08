@@ -10,6 +10,7 @@ const ruleOf = (fields: Partial<Rule>): Rule =>
   Rule.create({
     axis: Axis.Foundation,
     block: coreBlockId,
+    examples: [],
     file: FILE,
     isLevelStated: true,
     level: Level.Must,
@@ -33,6 +34,13 @@ describe('Rule', () => {
       axis: Axis.Architecture,
       block: BlockId.create('ui'),
       chapterTitle: 'Screens',
+      examples: [
+        {
+          code: 'const a = 1;',
+          language: 'ts',
+          title: 'Prefer',
+        },
+      ],
       file: FILE,
       isLevelStated: false,
       level: Level.Should,
@@ -56,6 +64,7 @@ describe('Rule', () => {
     const fields = {
       axis: Axis.Foundation,
       block: coreBlockId,
+      examples: [],
       file: FILE,
       isLevelStated: true,
       level: Level.Must,

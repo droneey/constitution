@@ -1,6 +1,6 @@
 import { Axis, Layer } from '#/kernel/constants';
 import type { Rule } from '#/kernel/entities';
-import { Term, TermKind } from '#/kernel/entities';
+import { StatedRule, Term, TermKind } from '#/kernel/entities';
 import type { FindingOf } from '#/kernel/types';
 import { firstBy } from '#/kernel/utils';
 import type { BlockId, RuleSlug } from '#/kernel/value-objects';
@@ -309,12 +309,12 @@ const UNUSED_WORDS = 4;
 const PLURAL_END = /s$/;
 const BOLD_MARK = '**';
 
-const countIn = (input: { files: readonly Placed[]; pattern: RegExp }): number =>
-  input.files.reduce(
-    (sum, { file }) =>
+const countIn = (input: { bodies: readonly string[]; pattern: RegExp }): number =>
+  input.bodies.reduce(
+    (sum, body) =>
       sum +
       [
-        ...file.body.matchAll(input.pattern),
+        ...body.matchAll(input.pattern),
       ].length,
     0,
   );
@@ -324,19 +324,21 @@ const countIn = (input: { files: readonly Placed[]; pattern: RegExp }): number =
 const unusedFindings = (input: {
   defined: readonly Defined[];
   files: readonly Placed[];
-}): readonly TermsFinding[] =>
-  input.defined
+}): readonly TermsFinding[] => {
+  const bodies = input.files.map(({ file }) => StatedRule.withoutExamples(file.body));
+
+  return input.defined
     .filter((term) => term.kind === TermKind.Concept && term.term.split(' ').length <= UNUSED_WORDS)
     .filter((term) => {
       const stem = RegExp.escape(term.term.replace(PLURAL_END, ''));
 
       return (
         countIn({
-          files: input.files,
+          bodies,
           pattern: new RegExp(`\\b${stem}`, 'gi'),
         }) <=
         countIn({
-          files: input.files,
+          bodies,
           pattern: new RegExp(`${RegExp.escape(BOLD_MARK)}${stem}`, 'gi'),
         })
       );
@@ -348,6 +350,7 @@ const unusedFindings = (input: {
       },
       path: term.path,
     }));
+};
 
 const termsCheck: Check<TermsFinding> = ({
   graph,

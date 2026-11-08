@@ -5,7 +5,12 @@ import type { FindingOf } from '#/kernel/types';
 import { BlockId, coreBlockId, RuleSlug } from '#/kernel/value-objects';
 
 import type { Files } from '../../../../../../__tests__/constitution.fixtures';
-import { passportFile, rule, textOf } from '../../../../../../__tests__/constitution.fixtures';
+import {
+  passportFile,
+  rule,
+  sectionedRule,
+  textOf,
+} from '../../../../../../__tests__/constitution.fixtures';
 import { nestedFiles } from '../../../../../../__tests__/nested-files.fixtures';
 import { validFiles } from '../../../../../../__tests__/valid-files.fixtures';
 import { checkInputOf } from '../../../../../../application/use-cases/queries/check/__tests__/check.fixtures';
@@ -483,7 +488,7 @@ describe('termsCheck', () => {
       text: `# Ports\n\n${rule({
         slug: 'ports-behind-adapters',
         statement: 'It holds.',
-      })}\n###### Binding units\n\n\`\`\`ts\nconst port = import("adapters/x.port");\n\`\`\`\n`,
+      })}\n## Binding units\n\n\`\`\`ts\nconst port = import("adapters/x.port");\n\`\`\`\n`,
     },
     {
       name: 'a passport uses terms of every axis',
@@ -704,5 +709,35 @@ describe('termsCheck on the terms no rule uses', () => {
         finding.code === TermsCode.Unused ? finding.details.term : finding.code,
       ),
     ).toStrictEqual(expected);
+  });
+});
+
+describe('termsCheck on rules with examples', () => {
+  it('should advise on a term only an example uses, reading no example as a use', () => {
+    // Arrange
+    const files = nestedFiles();
+
+    files[SCREENS] =
+      `# Screens\n\n> Governs screens.\n\n## Vocabulary\n\nA **wizard** is a guide through steps.\n\n## General\n\n${sectionedRule(
+        {
+          examples: '```text title="Prefer"\nwizard wizard\n```',
+          slug: 'screen-shows-one-task',
+          statement: 'Every screen shows one task.',
+        },
+      )}`;
+
+    // Act
+    const findings = termsCheck(checkInputOf(files));
+
+    // Assert
+    expect(findings).toStrictEqual([
+      {
+        code: TermsCode.Unused,
+        details: {
+          term: 'wizard',
+        },
+        path: SCREENS,
+      },
+    ]);
   });
 });

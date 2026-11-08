@@ -70,12 +70,14 @@ describe('rulesInOf', () => {
       ],
       wordings: [
         {
+          examples: [],
           slug: RuleSlug.create('name-reveals-intent'),
           statedLevel: Level.Must,
           statement: 'A name says what the thing is for.',
           why: 'a reader learns it from the name.',
         },
         {
+          examples: [],
           slug: RuleSlug.create('name-reveals-more'),
           statement: 'A name says more.',
           tightens: RuleSlug.create('name-reveals-intent'),

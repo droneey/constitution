@@ -70,22 +70,20 @@ const statementsOf = (input: {
           seam: input.seam,
         }),
   };
-  const read = {
-    ...place,
-    file: input.path,
-    text: withoutCodeFences(splitFrontMatter(input.text).body),
-  };
+  const { body } = splitFrontMatter(input.text);
 
   return {
     rules: StatedRule.parse({
-      ...read,
+      ...place,
       axis: input.axis,
+      file: input.path,
+      text: body,
     }).rules,
     texts: [
       {
         axis: input.axis,
         ...place,
-        body: read.text,
+        body: withoutCodeFences(body),
       },
     ],
   };

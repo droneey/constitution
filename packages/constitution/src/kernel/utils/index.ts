@@ -1,4 +1,5 @@
-export { fencedLinesOf, withoutCodeFences } from './code-fences.utils';
+export type { FencedBlock } from './code-fences.utils';
+export { fencedBlocksOf, fencedLinesOf, withoutCodeFences } from './code-fences.utils';
 export { compareText } from './compare-text.utils';
 export { dayOf } from './days.utils';
 export {

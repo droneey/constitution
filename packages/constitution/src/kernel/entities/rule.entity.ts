@@ -20,7 +20,14 @@ interface RuleText {
   readonly why: string;
 }
 
+interface RuleExample {
+  readonly code: string;
+  readonly language: string;
+  readonly title: string;
+}
+
 interface Rule extends RulePlace, RuleText {
+  readonly examples: readonly RuleExample[];
   readonly isLevelStated: boolean;
   readonly level: Level;
 }
@@ -33,6 +40,7 @@ const create = (input: Rule): Rule => ({
     : {
         chapterTitle: input.chapterTitle,
       }),
+  examples: input.examples,
   file: input.file,
   isLevelStated: input.isLevelStated,
   level: input.level,
@@ -102,5 +110,5 @@ const Rule = {
   tighteningCycleOf,
 } as const;
 
-export type { RulePlace, RuleText };
+export type { RuleExample, RulePlace, RuleText };
 export { Rule };

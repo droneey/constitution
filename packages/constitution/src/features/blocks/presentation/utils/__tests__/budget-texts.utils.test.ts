@@ -20,7 +20,7 @@ describe('budgetTexts', () => {
           lines: 501,
         },
       },
-      text: 'has 501 lines; a file holds at most 500, and a longer block splits into chapters',
+      text: 'has 501 lines outside its examples; a file holds at most 500, and a longer block splits into chapters',
     },
   ])('should say $problem.code as the report words it', ({ problem, text }) => {
     // Act

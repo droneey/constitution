@@ -59,4 +59,28 @@ describe('sectionsOf', () => {
       },
     ]);
   });
+
+  it('should keep a heading line inside a code fence as text of its section', () => {
+    // Arrange
+    const text = '# Title\n```sh\n# a comment\n```\n## Part';
+
+    // Act
+    const sections = sectionsOf(text);
+
+    // Assert
+    expect(sections).toStrictEqual([
+      {
+        heading: '# Title',
+        lines: [
+          '```sh',
+          '# a comment',
+          '```',
+        ],
+      },
+      {
+        heading: '## Part',
+        lines: [],
+      },
+    ]);
+  });
 });

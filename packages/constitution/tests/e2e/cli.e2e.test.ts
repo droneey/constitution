@@ -8,6 +8,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 import { z } from 'zod';
 
 import { cliPath } from './cli.fixtures';
+import { EXAMPLE_LINE, sectionedChapterOf } from './constitution.fixtures';
 import { environmentOf } from './package.fixtures';
 import {
   createPluginRoot,
@@ -84,13 +85,13 @@ afterAll(() => {
   });
 });
 
-const linkedProject = (config: string): string => {
+const linkedProject = (config: string, pluginRoot = root): string => {
   const project = createProject({
     config,
   });
 
   linkDistribution({
-    distribution: distributionOf(root),
+    distribution: distributionOf(pluginRoot),
     project,
   });
 
@@ -286,6 +287,62 @@ describe('the constitution executable', () => {
           '## SHOULD rules',
         ],
         holdsDefinition: true,
+        holdsWhy,
+      });
+    },
+  );
+
+  it.each([
+    {
+      args: [],
+      holdsWhy: false,
+    },
+    {
+      args: [
+        '--why',
+      ],
+      holdsWhy: true,
+    },
+  ])(
+    'should print a rule written with its Why and Examples in sections without its examples, with its Why $holdsWhy',
+    ({ args, holdsWhy }) => {
+      // Arrange
+      const pluginRoot = createPluginRoot();
+      const principles = join(distributionOf(pluginRoot), 'blocks/core/foundation/principles.md');
+
+      writeFileSync(principles, sectionedChapterOf(readFileSync(principles, 'utf8')));
+
+      const project = linkedProject(
+        configOf({
+          languages: '[typescript]',
+        }),
+        pluginRoot,
+      );
+
+      mkdirSync(join(project, 'src'));
+      writeFileSync(join(project, 'src', 'a.ts'), 'export {};\n');
+
+      // Act
+      const ran = runExecutable({
+        args: [
+          'rules',
+          '--for',
+          'src/a.ts',
+          ...args,
+        ],
+        cwd: project,
+      });
+
+      // Assert
+      expect({
+        exitCode: ran.exitCode,
+        holdsExample: ran.stdout.includes(EXAMPLE_LINE),
+        holdsStatement: ran.stdout.includes('### names-reveal-intent · MUST'),
+        holdsWhy: ran.stdout.includes('Why: it keeps the fixture honest.'),
+      }).toStrictEqual({
+        exitCode: 0,
+        holdsExample: false,
+        holdsStatement: true,
         holdsWhy,
       });
     },

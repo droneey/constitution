@@ -90,6 +90,25 @@ const rule = (input: RuleFixture): string =>
     '',
   ].join('\n');
 
+interface SectionedRuleFixture extends RuleFixture {
+  examples: string;
+}
+
+const sectionedRule = (input: SectionedRuleFixture): string =>
+  [
+    headingOf(input),
+    input.statement ?? `The ${input.slug} rule holds.`,
+    '',
+    '#### Why',
+    '',
+    input.why ?? 'it keeps the code honest.',
+    '',
+    '#### Examples',
+    '',
+    input.examples,
+    '',
+  ].join('\n');
+
 const chapterFile = (title: string, ...rules: readonly string[]): string =>
   `# ${title}\n\n> Governs ${title.toLowerCase()}.\n\n## General\n\n${rules.join('\n')}`;
 
@@ -181,6 +200,7 @@ export {
   checkSourceOf,
   passportFile,
   rule,
+  sectionedRule,
   sourceOf,
   textOf,
   vocabularyChapterFile,

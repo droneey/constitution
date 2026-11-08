@@ -3,6 +3,7 @@ import { join } from 'node:path';
 
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 
+import { EXAMPLE_LINE, sectionedChapterOf } from '../constitution.fixtures';
 import {
   HookEvent,
   isRecord,
@@ -303,5 +304,44 @@ describe('the rule gate', () => {
 
     // Assert
     expect(retried).toBeUndefined();
+  });
+
+  it('should hand a rule written with its Why and Examples in sections without either, and ask for nothing again when only they changed', () => {
+    // Arrange
+    const pluginRoot = createPluginRoot();
+    const principles = `${distributionOf(pluginRoot)}/${PRINCIPLES}`;
+
+    writeFileSync(principles, sectionedChapterOf(readFileSync(principles, 'utf8')));
+
+    const started = startSession(pluginRoot);
+    const parts = partsOf(editOf(started, pluginRoot));
+    const handed = parts.map((part) => readFileSync(part, 'utf8')).join('\n');
+
+    readAll({
+      ...started,
+      parts,
+    });
+    writeFileSync(
+      principles,
+      readFileSync(principles, 'utf8')
+        .replaceAll('it keeps the fixture honest.', 'a fixture that drifts tests nothing.')
+        .replaceAll(EXAMPLE_LINE, 'const exampleChanged = true;'),
+    );
+
+    // Act
+    const retried = editOf(started, pluginRoot);
+
+    // Assert
+    expect({
+      holdsExample: handed.includes(EXAMPLE_LINE),
+      holdsRule: handed.includes('<!-- rule names-reveal-intent '),
+      holdsWhy: handed.includes('it keeps the fixture honest.'),
+      retried,
+    }).toStrictEqual({
+      holdsExample: false,
+      holdsRule: true,
+      holdsWhy: false,
+      retried: undefined,
+    });
   });
 });

@@ -23,6 +23,7 @@ const testHasher: TextHasher = {
 };
 
 const wordingOf = (slug: string, statement = `The ${slug} rule.`): RuleWording => ({
+  examples: [],
   slug: Slug.create(slug),
   statement,
   why: `Why ${slug}.`,
