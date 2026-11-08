@@ -278,12 +278,6 @@ describe('BlockFilePlace.parse of the nested format', () => {
       name: 'a seam under with that is no Markdown',
       path: `${REACT}/@foundation/with/presentation.txt`,
     },
-    {
-      block: 'react/foundation',
-      file: STRAY,
-      name: 'a chapter in an axis folder spelled the legacy way, read as a child block',
-      path: `${REACT}/foundation/hooks.md`,
-    },
   ])('should place $name in its block', ({ block, file, path }) => {
     // Arrange
     const id = BlockId.create(block);
@@ -358,6 +352,26 @@ describe('BlockFilePlace.parse of the nested format', () => {
         placement: Placement.MisnamedFolder,
       },
       name: 'a misnamed folder above a child block',
+    },
+    {
+      expected: {
+        dir: 'blocks/implementations/react/foundation',
+        layer: Layer.Implementation,
+        name: 'foundation',
+        path: 'blocks/implementations/react/foundation/code.md',
+        placement: Placement.MisnamedFolder,
+      },
+      name: "a child folder named by an axis's name without its mark",
+    },
+    {
+      expected: {
+        dir: 'blocks/implementations/react/with',
+        layer: Layer.Implementation,
+        name: 'with',
+        path: 'blocks/implementations/react/with/with.md',
+        placement: Placement.MisnamedFolder,
+      },
+      name: 'a child folder named by the seam folder word',
     },
     {
       expected: {

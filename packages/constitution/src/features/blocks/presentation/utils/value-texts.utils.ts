@@ -1,16 +1,23 @@
+import { reservedWords } from '#/kernel/constants';
 import type { ValueFindingDetails } from '#/kernel/entities';
 import { ValueSite } from '#/kernel/entities';
 import { ValueFailure } from '#/kernel/errors';
 import type { TextsOf } from '#/shared/cli';
 
+const reserved = [
+  ...reservedWords,
+];
+
+const blockIdShape = `kebab-case segments joined by "/", none of them ${reserved.slice(0, -1).join(', ')} or ${reserved.at(-1)}`;
+
 const blockIdText = (details: ValueFindingDetails[ValueFailure.BlockId]): string => {
   switch (details.site) {
     case ValueSite.FrontMatterId:
-      return `front matter: id "${details.written}" is not a kebab-case block id`;
+      return `front matter: id "${details.written}" is no block id: ${blockIdShape}`;
     case ValueSite.BlockFolder:
-      return `is a block folder named "${details.written}", which is not a kebab-case block id`;
+      return `is a block folder named "${details.written}", which is no block id: ${blockIdShape}`;
     case ValueSite.SeamFile:
-      return "is a seam whose name is not a kebab-case block id; a seam is with/<block>.md, named after the other block's id";
+      return `is a seam whose name is no block id (${blockIdShape}); a seam is with/<block>.md, named after the other block's id`;
   }
 };
 

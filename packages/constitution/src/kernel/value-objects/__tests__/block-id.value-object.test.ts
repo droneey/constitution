@@ -80,6 +80,21 @@ describe('BlockId', () => {
       isBlockId: false,
       text: 'js_runtime',
     },
+    {
+      condition: 'it is the seam folder word',
+      isBlockId: false,
+      text: 'with',
+    },
+    {
+      condition: 'a segment past the first is an axis name',
+      isBlockId: false,
+      text: 'react/workflow',
+    },
+    {
+      condition: 'a segment only opens with a reserved word',
+      isBlockId: true,
+      text: 'withdrawals/foundations',
+    },
   ])('should tell a block id when $condition', ({ isBlockId, text }) => {
     // Act
     const isId = BlockId.is(text);
@@ -176,6 +191,11 @@ describe('BlockId', () => {
       condition: 'it holds a slash',
       isSegment: false,
       name: 'react/react-dom',
+    },
+    {
+      condition: 'it is an axis name',
+      isSegment: false,
+      name: 'architecture',
     },
   ])('should say $isSegment of a folder name when $condition', ({ isSegment, name }) => {
     // Act

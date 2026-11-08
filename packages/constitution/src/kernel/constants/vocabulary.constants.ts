@@ -62,6 +62,10 @@ const LAYER_FOLDER_NAME = {
 
 const BLOCKS_FOLDER_NAME = 'blocks';
 const SEAM_FOLDER_NAME = 'with';
+const reservedWords: ReadonlySet<string> = new Set([
+  SEAM_FOLDER_NAME,
+  ...AXES,
+]);
 const MARKDOWN_EXTENSION = '.md';
 
 enum Level {
@@ -107,5 +111,6 @@ export {
   REQUIREMENTS_TABLE_HEADER,
   RULE_TABLE_CELLS,
   RULE_TABLE_HEADER,
+  reservedWords,
   SEAM_FOLDER_NAME,
 };

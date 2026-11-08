@@ -21,7 +21,7 @@ describe('valueTexts', () => {
           written: 'Ui',
         },
       },
-      text: 'front matter: id "Ui" is not a kebab-case block id',
+      text: 'front matter: id "Ui" is no block id: kebab-case segments joined by "/", none of them with, foundation, architecture or workflow',
     },
     {
       problem: {
@@ -31,7 +31,7 @@ describe('valueTexts', () => {
           written: 'Ui',
         },
       },
-      text: 'is a block folder named "Ui", which is not a kebab-case block id',
+      text: 'is a block folder named "Ui", which is no block id: kebab-case segments joined by "/", none of them with, foundation, architecture or workflow',
     },
     {
       problem: {
@@ -40,7 +40,7 @@ describe('valueTexts', () => {
           site: ValueSite.SeamFile,
         },
       },
-      text: "is a seam whose name is not a kebab-case block id; a seam is with/<block>.md, named after the other block's id",
+      text: 'is a seam whose name is no block id (kebab-case segments joined by "/", none of them with, foundation, architecture or workflow); a seam is with/<block>.md, named after the other block\'s id',
     },
     {
       problem: {

@@ -31,5 +31,6 @@ export {
   REQUIREMENTS_TABLE_HEADER,
   RULE_TABLE_CELLS,
   RULE_TABLE_HEADER,
+  reservedWords,
   SEAM_FOLDER_NAME,
 } from './vocabulary.constants';
