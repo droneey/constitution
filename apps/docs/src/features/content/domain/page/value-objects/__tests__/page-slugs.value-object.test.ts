@@ -5,26 +5,25 @@ import { failureOf } from '../../../shared/errors/__tests__/invalid-value.fixtur
 import { PageSlugs } from '../page-slugs.value-object';
 
 describe('PageSlugs.create', () => {
-  it('should keep the segments of a page six deep', () => {
-    // Act
-    const slugs = PageSlugs.create([
+  it('should keep the segments of a page nine deep', () => {
+    // Arrange
+    const segments = [
       'contexts',
-      'languages',
-      'typescript',
+      'platforms',
+      'client',
+      'mobile',
+      'ios',
       'foundation',
       'with',
-      'workspace',
-    ]);
+      'people',
+      'accounts',
+    ];
+
+    // Act
+    const slugs = PageSlugs.create(segments);
 
     // Assert
-    expect<readonly string[]>(slugs).toStrictEqual([
-      'contexts',
-      'languages',
-      'typescript',
-      'foundation',
-      'with',
-      'workspace',
-    ]);
+    expect<readonly string[]>(slugs).toStrictEqual(segments);
   });
 
   it('should refuse the segments when one is no slug', () => {
@@ -102,6 +101,9 @@ describe('PageSlugs.is', () => {
         'e',
         'f',
         'g',
+        'h',
+        'i',
+        'j',
       ],
       condition: 'they are deeper than any page',
       expected: false,

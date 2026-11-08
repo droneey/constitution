@@ -2,7 +2,85 @@ import { describe, expect, it } from 'bun:test';
 
 import { failureOf } from '../../../shared/errors/__tests__/program-error.fixtures';
 import { SourceFailure } from '../../../source/errors';
-import { Block } from '../block.entity';
+import { Axis, Block, BlockFormat } from '../block.entity';
+
+describe('Block.axisOfFolder', () => {
+  it.each([
+    {
+      axis: Axis.Architecture,
+      condition: 'the nested format, which marks it',
+      folderName: '@architecture',
+    },
+    {
+      axis: Axis.Workflow,
+      condition: 'the legacy format',
+      folderName: 'workflow',
+    },
+    {
+      axis: undefined,
+      condition: "neither format, as a block's folder",
+      folderName: 'react-dom',
+    },
+    {
+      axis: undefined,
+      condition: 'neither format, marked twice',
+      folderName: '@@foundation',
+    },
+  ])('should name the axis of a folder as $condition names it', ({ axis, folderName }) => {
+    // Act
+    const folderAxis = Block.axisOfFolder(folderName);
+
+    // Assert
+    expect(folderAxis).toBe(axis);
+  });
+});
+
+describe('Block.axisFoldersAmong', () => {
+  it("should give the axis folders among a folder's names, in the axes' order", () => {
+    // Act
+    const axisFolders = Block.axisFoldersAmong([
+      '@workflow',
+      'react-dom',
+      'react.md',
+      '@foundation',
+      'architecture',
+    ]);
+
+    // Assert
+    expect(axisFolders).toStrictEqual([
+      '@foundation',
+      'architecture',
+      '@workflow',
+    ]);
+  });
+});
+
+describe('Block.formatOf', () => {
+  it.each([
+    {
+      condition: 'a folder of them is an axis the nested format marks',
+      format: BlockFormat.Nested,
+      paths: [
+        'domains/people/people.md',
+        'domains/people/accounts/@foundation/sign-in.md',
+      ],
+    },
+    {
+      condition: 'no folder of them is',
+      format: BlockFormat.Legacy,
+      paths: [
+        'domains/people/people.md',
+        'domains/people/foundation/@sign-in.md',
+      ],
+    },
+  ])('should tell the format of the paths when $condition', ({ format, paths }) => {
+    // Act
+    const pathsFormat = Block.formatOf(paths);
+
+    // Assert
+    expect(pathsFormat).toBe(format);
+  });
+});
 
 describe('Block.readingOrderOf', () => {
   it('should list the blocks by their names, an abstract one right above the blocks that extend it', () => {

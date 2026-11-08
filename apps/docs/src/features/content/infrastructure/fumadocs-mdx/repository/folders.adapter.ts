@@ -1,8 +1,17 @@
+import { basename, dirname } from 'node:path';
+
 import type { MetaFile, SidebarFolder, SiteLayout } from '#/shared/types';
 
 import { BlockLayer } from '../../../domain/block/entities';
+import { Page } from '../../../domain/page/entities';
 import { PATH_SEPARATOR } from '../../../domain/shared/constants';
-import { axisFoldersOf, coreChaptersOf, layerBlocksOf, seamHoldersOf } from './blocks.adapter';
+import {
+  axisFoldersOf,
+  childBlocksOf,
+  coreChaptersOf,
+  layerBlocksOf,
+  seamHoldersOf,
+} from './blocks.adapter';
 import { SEAMS_FOLDER } from './blocks.constants';
 import { LAYER_FOLDERS, layerGroupFolders } from './folders.constants';
 import { sidebarOf } from './navigation.adapter';
@@ -22,27 +31,36 @@ const metaFile = (path: string, sidebarFolder: SidebarFolder): MetaFile => ({
 
 const titleOfAxis = (axis: string): string => `${axis.charAt(0).toUpperCase()}${axis.slice(1)}`;
 
+const listedIn = (
+  sidebarFoldersByPath: Map<string, SidebarFolder>,
+  folderPath: string,
+  page: string,
+): void => {
+  sidebarFoldersByPath.set(folderPath, {
+    pages: [
+      ...(sidebarFoldersByPath.get(folderPath)?.pages ?? []),
+      page,
+    ],
+  });
+};
+
 // Why: in an axis folder, the library's `...` lists its other pages, so its seams come after all
 // else.
 const blockSubfolders = (): readonly MetaFile[] => {
   const sidebarFoldersByPath = new Map<string, SidebarFolder>();
 
-  for (const axisFolder of Object.values(BlockLayer).flatMap(axisFoldersOf)) {
-    const blockFolder = axisFolder.slice(0, axisFolder.lastIndexOf('/'));
-    const axis = axisFolder.slice(blockFolder.length + 1);
-
-    sidebarFoldersByPath.set(blockFolder, {
-      pages: [
-        ...(sidebarFoldersByPath.get(blockFolder)?.pages ?? []),
-        axis,
-      ],
-    });
+  for (const axisFolder of Object.values(BlockLayer).flatMap(axisFoldersOf).map(Page.sitePathOf)) {
+    listedIn(sidebarFoldersByPath, dirname(axisFolder), basename(axisFolder));
     sidebarFoldersByPath.set(axisFolder, {
-      title: titleOfAxis(axis),
+      title: titleOfAxis(basename(axisFolder)),
     });
   }
 
-  for (const axisFolder of Object.values(BlockLayer).flatMap(seamHoldersOf)) {
+  for (const childBlock of Object.values(BlockLayer).flatMap(childBlocksOf)) {
+    listedIn(sidebarFoldersByPath, dirname(childBlock), basename(childBlock));
+  }
+
+  for (const axisFolder of Object.values(BlockLayer).flatMap(seamHoldersOf).map(Page.sitePathOf)) {
     sidebarFoldersByPath.set(axisFolder, {
       ...sidebarFoldersByPath.get(axisFolder),
       pages: [
@@ -62,7 +80,7 @@ const blockSubfolders = (): readonly MetaFile[] => {
  * passport's front matter names no base it can read
  */
 const blockFoldersOf = (): readonly MetaFile[] => {
-  const chapters = coreChaptersOf();
+  const chapters = coreChaptersOf().map(Page.sitePathOf);
   const axes = [
     ...new Set(chapters.map((chapter) => chapter.slice(0, chapter.indexOf(PATH_SEPARATOR)))),
   ];

@@ -6,7 +6,7 @@ import { withoutMarkdownExtension } from '../utils';
 
 type PageSlugs = Brand<readonly string[], 'PageSlugs'>;
 
-const MAX_DEPTH = 6;
+const MAX_DEPTH = 9;
 
 const SLUG = /^_?[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -17,7 +17,7 @@ const is = (candidate: unknown): candidate is PageSlugs =>
   candidate.length <= MAX_DEPTH &&
   candidate.every((segment: unknown) => typeof segment === 'string' && SLUG.test(segment));
 
-/** @throws {InvalidValueError} when a segment is no slug or there are more than six */
+/** @throws {InvalidValueError} when a segment is no slug or there are more than nine */
 const create = (segments: readonly string[]): PageSlugs => {
   if (!is(segments)) {
     throw new InvalidValueError({

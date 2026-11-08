@@ -42,6 +42,21 @@ describe('Term.axisOf and Term.blockIdOf', () => {
       blockId: 'python',
       path: 'contexts/languages/python/foundation/types.md',
     },
+    {
+      axis: Axis.Architecture,
+      blockId: 'core',
+      path: 'core/@architecture/layout.md',
+    },
+    {
+      axis: Axis.Foundation,
+      blockId: 'react/react-dom',
+      path: 'implementations/react/react-dom/react-dom.md',
+    },
+    {
+      axis: Axis.Workflow,
+      blockId: 'client/mobile/ios',
+      path: 'contexts/platforms/client/mobile/ios/@workflow/with/people/accounts.md',
+    },
   ])('should place $path in $blockId on $axis', ({ axis, blockId, path }) => {
     // Arrange
     const blockPath = BlockPath.create(path);
@@ -59,9 +74,18 @@ describe('Term.axisOf and Term.blockIdOf', () => {
     });
   });
 
-  it('should name no block when the path holds no folder', () => {
+  it.each([
+    {
+      condition: 'holds no folder',
+      path: 'core.md',
+    },
+    {
+      condition: "sits loose in a layer's folder",
+      path: 'domains/notes.md',
+    },
+  ])('should name no block when the path $condition', ({ path }) => {
     // Arrange
-    const blockPath = BlockPath.create('core.md');
+    const blockPath = BlockPath.create(path);
 
     // Act
     const blockId = Term.blockIdOf(blockPath);

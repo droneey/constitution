@@ -18,12 +18,14 @@ import { toString as mdastTextOf } from 'mdast-util-to-string';
 import { visit } from 'unist-util-visit';
 
 import { isHeading, isSectionHeading, SUBSECTION_HEADING_DEPTH, textNode } from '../markdown';
-import { ExampleTone, exampleTonesByTitle, LEVEL_LETTERS } from './remark-blocks.constants';
+import type { LevelLetters } from './remark-blocks.constants';
+import { ExampleTone, exampleTonesByTitle } from './remark-blocks.constants';
 import { dropTitle } from './remark-drop-title.adapter';
 
 interface BlocksOptions {
   addressesBySlug: ReadonlyMap<string, string>;
   examplesBySlug: ReadonlyMap<string, string>;
+  levelLetters: LevelLetters;
 }
 
 interface Box extends Parent {
@@ -44,6 +46,7 @@ declare module 'mdast' {
 }
 
 interface LevelledRule extends RuleHeading {
+  readonly letter: string;
   readonly level: Level;
 }
 
@@ -105,18 +108,28 @@ const box = (properties: Properties, children: RootContent[]): Box => ({
   type: 'box',
 });
 
-const levelledRuleOf = (headingText: string): LevelledRule | undefined => {
+const levelledRuleOf = (
+  headingText: string,
+  levelLetters: LevelLetters,
+): LevelledRule | undefined => {
   const rule = RuleHeading.of(headingText);
 
-  return rule?.level === undefined
+  if (rule?.level === undefined) {
+    return undefined;
+  }
+
+  const letter = levelLetters[rule.level];
+
+  return letter === undefined
     ? undefined
     : {
         ...rule,
+        letter,
         level: rule.level,
       };
 };
 
-const ruleSectionOf = (node: RootContent): RuleSection | undefined => {
+const ruleSectionOf = (node: RootContent, levelLetters: LevelLetters): RuleSection | undefined => {
   if (!isHeading(node, SUBSECTION_HEADING_DEPTH)) {
     return undefined;
   }
@@ -125,6 +138,7 @@ const ruleSectionOf = (node: RootContent): RuleSection | undefined => {
     mdastTextOf(node, {
       includeImageAlt: false,
     }),
+    levelLetters,
   );
 
   return rule === undefined
@@ -237,7 +251,7 @@ const ruleHeadingOf = ({ heading, rule }: RuleSection): Heading => ({
   children: [
     span(part('rule-mark', rule.level.toLowerCase()), [
       span(part('rule-mark-letter'), [
-        textNode(LEVEL_LETTERS[rule.level]),
+        textNode(rule.letter),
       ]),
       span(
         {
@@ -301,7 +315,7 @@ const wrapRules = (tree: Root, options: BlocksOptions): void => {
   for (const [index, node] of [
     ...tree.children.entries(),
   ].reverse()) {
-    const ruleSection = ruleSectionOf(node);
+    const ruleSection = ruleSectionOf(node, options.levelLetters);
 
     if (ruleSection !== undefined) {
       const endIndex = sectionEndOf(tree.children, index);
@@ -341,4 +355,4 @@ const remarkBlocks =
   };
 
 export type { BlocksOptions };
-export { remarkBlocks };
+export { levelledRuleOf, remarkBlocks };

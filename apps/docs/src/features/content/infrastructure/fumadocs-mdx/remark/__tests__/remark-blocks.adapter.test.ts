@@ -2,16 +2,21 @@ import { describe, expect, it } from 'bun:test';
 
 import { goldenText } from '#/__tests__/golden.fixtures';
 
+import { BlockFormat } from '../../../../domain/block/entities';
 import type { BlocksOptions } from '../remark-blocks.adapter';
 import { remarkBlocks } from '../remark-blocks.adapter';
+import { LEVEL_LETTERS_BY_FORMAT } from '../remark-blocks.constants';
 import type { MarkdownVariant } from './html.fixtures';
 import { htmlOfVariants } from './html.fixtures';
 import { treeOf } from './mdast.fixtures';
 import { codeMetasOf, linksOf, outlineOf } from './remark-blocks.adapter.fixtures';
 
+const legacyLetters = LEVEL_LETTERS_BY_FORMAT[BlockFormat.Legacy];
+
 const noOptions: BlocksOptions = {
   addressesBySlug: new Map(),
   examplesBySlug: new Map(),
+  levelLetters: legacyLetters,
 };
 
 const ruleAddresses = new Map([
@@ -42,6 +47,7 @@ const ruleCard = (markdown: string, example?: string): MarkdownVariant => ({
                 ],
               ],
         ),
+        levelLetters: legacyLetters,
       },
     ],
   ],
@@ -166,6 +172,26 @@ describe('remarkBlocks', () => {
     ]);
   });
 
+  it("should leave a heading as it is when it states a level the nested format's headings never state", () => {
+    // Arrange
+    const tree = treeOf('### name-is-short · MAY\n\n### name-says-what · SHOULD');
+
+    // Act
+    remarkBlocks({
+      ...noOptions,
+      levelLetters: LEVEL_LETTERS_BY_FORMAT[BlockFormat.Nested],
+    })(tree);
+
+    // Assert
+    expect(outlineOf(tree)).toStrictEqual([
+      'name-is-short · MAY',
+      {
+        body: [],
+        rule: 'name-says-what',
+      },
+    ]);
+  });
+
   it('should leave the headings of another depth when they read like rules', () => {
     // Arrange
     const tree = treeOf('## second-level · MUST\n\n#### fourth-level · MUST\n\nText.');
@@ -200,6 +226,7 @@ describe('remarkBlocks', () => {
     remarkBlocks({
       addressesBySlug: ruleAddresses,
       examplesBySlug: new Map(),
+      levelLetters: legacyLetters,
     })(tree);
 
     // Assert
@@ -228,6 +255,7 @@ describe('remarkBlocks', () => {
           '```ts title="Avoid"\nlet x;\n```\n\n```ts showLineNumbers title="Prefer" \nconst x = 1;\n```\n\n```ts title="Other"\nrun();\n```',
         ],
       ]),
+      levelLetters: legacyLetters,
     })(tree);
 
     // Assert

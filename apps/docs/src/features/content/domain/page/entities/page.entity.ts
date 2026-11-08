@@ -1,4 +1,4 @@
-import { Axis } from '../../block/entities';
+import { Block } from '../../block/entities';
 import { MARKDOWN_EXTENSION, PATH_SEPARATOR } from '../../shared/constants';
 import type { BlockPath } from '../../shared/value-objects';
 import { withoutMarkdownExtension } from '../utils';
@@ -25,14 +25,22 @@ const isPassportPath = (blockPath: BlockPath): boolean => {
   const [fileName, folderName] = blockPath.split(PATH_SEPARATOR).toReversed();
 
   return (
-    !Object.values(Axis).some((axis) => axis === folderName) &&
+    Block.axisOfFolder(folderName) === undefined &&
     fileName === `${folderName}${MARKDOWN_EXTENSION}`
   );
 };
 
+// Why: an axis keeps the address the legacy format gave its folder, so the version menu, which
+// opens a page at the same address in another release, still finds it.
+const sitePathOf = (blocksPath: string): string =>
+  blocksPath
+    .split(PATH_SEPARATOR)
+    .map((segment) => Block.axisOfFolder(segment) ?? segment)
+    .join(PATH_SEPARATOR);
+
 /** @throws {InvalidValueError} when no page can have the block's address */
 const slugsOf = (blockPath: BlockPath): PageSlugs => {
-  const segments = withoutMarkdownExtension(blockPath).split(PATH_SEPARATOR);
+  const segments = sitePathOf(withoutMarkdownExtension(blockPath)).split(PATH_SEPARATOR);
 
   return PageSlugs.create(isPassportPath(blockPath) ? segments.slice(0, -1) : segments);
 };
@@ -48,6 +56,7 @@ const Page = {
   catalogKeyOf,
   isPassportPath,
   keyOf,
+  sitePathOf,
   slugsOf,
 } as const;
 

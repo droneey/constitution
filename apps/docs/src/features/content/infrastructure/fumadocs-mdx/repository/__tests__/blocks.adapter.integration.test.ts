@@ -2,7 +2,13 @@ import { afterEach, describe, expect, it } from 'bun:test';
 
 import { BlockLayer } from '../../../../domain/block/entities';
 import { SourceFailure } from '../../../../domain/source/errors';
-import { axisFoldersOf, coreChaptersOf, layerBlocksOf, seamHoldersOf } from '../blocks.adapter';
+import {
+  axisFoldersOf,
+  childBlocksOf,
+  coreChaptersOf,
+  layerBlocksOf,
+  seamHoldersOf,
+} from '../blocks.adapter';
 import { enterRepository, failureOf } from './repository.fixtures';
 
 const CORE = 'packages/constitution/blocks/core';
@@ -29,6 +35,20 @@ const CORE_FILES = {
 
 const cardOf = (id: string, base: string): string =>
   `---\nid: ${id}\nextends: ${base}\n---\n\n# ${id}\n`;
+
+const DOMAINS = 'packages/constitution/blocks/domains';
+
+const NESTED_DOMAINS = {
+  [`${DOMAINS}/people/people.md`]: '---\nid: people\n---\n\n# People\n',
+  [`${DOMAINS}/people/@workflow/reviews.md`]: '# Reviews\n',
+  [`${DOMAINS}/people/accounts/admins/admins.md`]: '---\nid: people/accounts/admins\n---\n',
+  [`${DOMAINS}/people/@foundation/with/client/browser.md`]: '# Browser\n',
+  [`${DOMAINS}/people/accounts/accounts.md`]: '---\nid: people/accounts\n---\n',
+  [`${DOMAINS}/people/accounts/@architecture/sessions.md`]: '# Sessions\n',
+  [`${DOMAINS}/ai/ai.md`]: '---\nid: ai\n---\n',
+  [`${DOMAINS}/people/@foundation/consent.md`]: '# Consent\n',
+  [`${DOMAINS}/contracts/contracts.md`]: '---\nid: contracts\n---\n',
+} as const;
 
 const repository = {
   leave: (): void => undefined,
@@ -57,6 +77,27 @@ describe('coreChaptersOf', () => {
       'foundation/placement',
       'foundation/code',
       'architecture/layers',
+    ]);
+  });
+
+  it('should read the chapters of a nested core, whose axis folders are marked', () => {
+    // Arrange
+    repository.leave = enterRepository({
+      files: {
+        [`${CORE}/@foundation/code.md`]: '# Code\n',
+        [`${CORE}/@workflow/changes.md`]: '# Changes\n',
+        [`${CORE}/core.md`]:
+          '# Core\n\n## Its chapters\n\n- `@foundation/`: [code](@foundation/code.md).\n- `@workflow/`: [changes](@workflow/changes.md).\n',
+      },
+    }).leave;
+
+    // Act
+    const chapters = coreChaptersOf();
+
+    // Assert
+    expect(chapters).toStrictEqual([
+      '@foundation/code',
+      '@workflow/changes',
     ]);
   });
 
@@ -140,6 +181,23 @@ describe('layerBlocksOf', () => {
     ]);
   });
 
+  it("should list a nested layer by the names of the blocks no other block's folder holds, reading no base", () => {
+    // Arrange
+    repository.leave = enterRepository({
+      files: NESTED_DOMAINS,
+    }).leave;
+
+    // Act
+    const blocks = layerBlocksOf(BlockLayer.Domain);
+
+    // Assert
+    expect(blocks).toStrictEqual([
+      'ai',
+      'contracts',
+      'people',
+    ]);
+  });
+
   it("should stop the build, naming the passport, when a card's base is no block's id", () => {
     // Arrange
     repository.leave = enterRepository({
@@ -187,6 +245,43 @@ describe('axisFoldersOf', () => {
   });
 });
 
+describe('axisFoldersOf in the nested format', () => {
+  it("should give each axis folder of a layer's blocks and of the blocks they hold, in the axes' order", () => {
+    // Arrange
+    repository.leave = enterRepository({
+      files: NESTED_DOMAINS,
+    }).leave;
+
+    // Act
+    const folders = axisFoldersOf(BlockLayer.Domain);
+
+    // Assert
+    expect(folders).toStrictEqual([
+      'domains/people/@foundation',
+      'domains/people/@workflow',
+      'domains/people/accounts/@architecture',
+    ]);
+  });
+});
+
+describe('childBlocksOf', () => {
+  it("should give each block of a layer that sits in another block's folder", () => {
+    // Arrange
+    repository.leave = enterRepository({
+      files: NESTED_DOMAINS,
+    }).leave;
+
+    // Act
+    const children = childBlocksOf(BlockLayer.Domain);
+
+    // Assert
+    expect(children).toStrictEqual([
+      'domains/people/accounts',
+      'domains/people/accounts/admins',
+    ]);
+  });
+});
+
 describe('seamHoldersOf', () => {
   it("should give each axis folder of a layer's blocks that holds seams", () => {
     // Arrange
@@ -209,6 +304,21 @@ describe('seamHoldersOf', () => {
     expect(folders).toStrictEqual([
       'domains/ui/architecture',
       'domains/ui/workflow',
+    ]);
+  });
+
+  it('should give each nested axis folder that holds seams, whatever folders its seams sit in', () => {
+    // Arrange
+    repository.leave = enterRepository({
+      files: NESTED_DOMAINS,
+    }).leave;
+
+    // Act
+    const folders = seamHoldersOf(BlockLayer.Domain);
+
+    // Assert
+    expect(folders).toStrictEqual([
+      'domains/people/@foundation',
     ]);
   });
 });

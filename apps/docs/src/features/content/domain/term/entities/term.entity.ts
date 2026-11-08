@@ -1,4 +1,4 @@
-import { Axis, Block } from '../../block/entities';
+import { Axis, Block, BlockLayer } from '../../block/entities';
 import { PATH_SEPARATOR } from '../../shared/constants';
 import { InvalidValueError, ValueFailure } from '../../shared/errors';
 import type { BlockPath } from '../../shared/value-objects';
@@ -23,14 +23,29 @@ interface Term {
 
 const SENTENCE_BREAK = /(?<=[.!?])\s+(?=[A-Z*`[(])/g;
 
+// Why: core's folder is both its layer's and its one block's, so its name is the block's id.
+const layersAboveBlocks: readonly string[] = Object.values(BlockLayer).filter(
+  (layer) => layer !== BlockLayer.Core,
+);
+
 const axisOf = (blockPath: BlockPath): Axis =>
-  blockPath.split(PATH_SEPARATOR).find(Block.isAxis) ?? Axis.Foundation;
+  blockPath
+    .split(PATH_SEPARATOR)
+    .map(Block.axisOfFolder)
+    .find((axis) => axis !== undefined) ?? Axis.Foundation;
 
 const blockIdOf = (blockPath: BlockPath): string | undefined => {
-  const segments = blockPath.split(PATH_SEPARATOR);
-  const axisIndex = segments.findIndex(Block.isAxis);
+  const layer = layersAboveBlocks.find((candidate) =>
+    blockPath.startsWith(`${candidate}${PATH_SEPARATOR}`),
+  );
+  const folders = blockPath
+    .slice(layer === undefined ? 0 : layer.length + PATH_SEPARATOR.length)
+    .split(PATH_SEPARATOR)
+    .slice(0, -1);
+  const axisIndex = folders.findIndex((folder) => Block.axisOfFolder(folder) !== undefined);
+  const idFolders = axisIndex === -1 ? folders : folders.slice(0, axisIndex);
 
-  return axisIndex === -1 ? segments.at(-2) : segments[axisIndex - 1];
+  return idFolders.length === 0 ? undefined : idFolders.join(PATH_SEPARATOR);
 };
 
 const sentenceAround = (input: { offset: number; text: string }): string => {

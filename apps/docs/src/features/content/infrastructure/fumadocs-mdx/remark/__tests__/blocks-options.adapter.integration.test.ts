@@ -3,11 +3,12 @@ import { join } from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 
-import { BlockLayer } from '../../../../domain/block/entities';
+import { BlockFormat, BlockLayer } from '../../../../domain/block/entities';
 import { SourceFailure } from '../../../../domain/source/errors';
 import { AbsolutePath } from '../../../../domain/source/value-objects';
 import { enterRepository, failureOf } from '../../repository/__tests__/repository.fixtures';
 import { blocksOptionsOf } from '../blocks-options.adapter';
+import { LEVEL_LETTERS_BY_FORMAT } from '../remark-blocks.constants';
 
 const BLOCK_FILES = {
   'blocks/core/core.md': '# Core\n\n### core-rule · MUST\n',
@@ -29,6 +30,10 @@ beforeEach(() => {
       ...BLOCK_FILES,
       'examples/core-rule.md': '```ts title="Avoid"\nlet a;\n```\n',
       'examples/notes.txt': 'no example',
+      'nested/blocks/domains/people/accounts/@foundation/sign-in.md':
+        '# Sign-in\n\n## Vocabulary\n\nA **session**{#session} is a sign-in.\n\n### session-expires · MUST\n\n### session-renewed · MAY\n',
+      'nested/blocks/domains/people/accounts/accounts.md': '# Accounts\n',
+      'nested/examples/session-expires.md': '```ts title="Prefer"\nexpire();\n```\n',
     },
   });
 
@@ -81,6 +86,39 @@ describe('blocksOptionsOf', () => {
           '```ts title="Avoid"\nlet a;\n```\n',
         ],
       ]),
+      levelLetters: LEVEL_LETTERS_BY_FORMAT[BlockFormat.Legacy],
+    });
+  });
+
+  it("should address the rules of a nested tree at their pages' addresses, by the levels its headings state", () => {
+    // Arrange
+    const input = {
+      baseUrl: '/docs',
+      blocksFolderPath: AbsolutePath.create(join(repository.root, 'nested/blocks')),
+      examplesFolderPath: AbsolutePath.create(join(repository.root, 'nested/examples')),
+      layers: [
+        BlockLayer.Domain,
+      ],
+    };
+
+    // Act
+    const options = blocksOptionsOf(input);
+
+    // Assert
+    expect(options).toStrictEqual({
+      addressesBySlug: new Map([
+        [
+          'session-expires',
+          '/docs/domains/people/accounts/foundation/sign-in#session-expires',
+        ],
+      ]),
+      examplesBySlug: new Map([
+        [
+          'session-expires',
+          '```ts title="Prefer"\nexpire();\n```\n',
+        ],
+      ]),
+      levelLetters: LEVEL_LETTERS_BY_FORMAT[BlockFormat.Nested],
     });
   });
 

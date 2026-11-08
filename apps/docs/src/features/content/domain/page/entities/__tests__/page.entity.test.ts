@@ -5,6 +5,16 @@ import { failureOf } from '../../../shared/errors/__tests__/program-error.fixtur
 import { BlockPath } from '../../../shared/value-objects';
 import { Page } from '../page.entity';
 
+describe('Page.sitePathOf', () => {
+  it('should name each axis folder of the path by its axis, whichever format spells it', () => {
+    // Act
+    const sitePath = Page.sitePathOf('domains/people/@architecture/with/@workflow-tools/workflow');
+
+    // Assert
+    expect(sitePath).toBe('domains/people/architecture/with/@workflow-tools/workflow');
+  });
+});
+
 describe('Page.slugsOf', () => {
   it.each([
     {
@@ -54,6 +64,35 @@ describe('Page.slugsOf', () => {
         'ui',
         'foundation',
         'foundation',
+      ],
+    },
+    {
+      condition:
+        "the file is a chapter of the nested format, whose axis keeps the legacy format's address",
+      path: 'core/@foundation/names.md',
+      slugs: [
+        'core',
+        'foundation',
+        'names',
+      ],
+    },
+    {
+      condition: "the file is the card of a block in its parent's folder",
+      path: 'implementations/react/react-dom/react-dom.md',
+      slugs: [
+        'implementations',
+        'react',
+        'react-dom',
+      ],
+    },
+    {
+      condition: 'the file of a nested axis is named after its axis',
+      path: 'domains/people/@workflow/@workflow.md',
+      slugs: [
+        'domains',
+        'people',
+        'workflow',
+        'workflow',
       ],
     },
     {

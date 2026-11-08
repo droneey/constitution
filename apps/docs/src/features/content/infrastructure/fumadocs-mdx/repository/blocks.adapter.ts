@@ -1,12 +1,12 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join, relative } from 'node:path';
 
 import type { Nodes } from 'mdast';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { parse } from 'yaml';
 
-import { Axis, Block, BlockLayer } from '../../../domain/block/entities';
-import { MARKDOWN_EXTENSION } from '../../../domain/shared/constants';
+import { Block, BlockFormat, BlockLayer } from '../../../domain/block/entities';
+import { MARKDOWN_EXTENSION, PATH_SEPARATOR } from '../../../domain/shared/constants';
 import { BlockPath } from '../../../domain/shared/value-objects';
 import { AbsolutePath } from '../../../domain/source/value-objects';
 import { AXIS_ITEM, corePassportFileName, FRONT_MATTER, SEAMS_FOLDER } from './blocks.constants';
@@ -64,7 +64,7 @@ const baseBlockIdOf = (layer: BlockLayer, id: string): string | undefined => {
 };
 
 /** @throws {SourceError} when the passport's front matter names no base it can read */
-const blockOf = (layer: BlockLayer, id: string): Block => {
+const legacyBlockOf = (layer: BlockLayer, id: string): Block => {
   const baseId = baseBlockIdOf(layer, id);
 
   // Stryker disable next-line ConditionalExpression: a block whose base is set to undefined sorts as one with none
@@ -78,18 +78,51 @@ const blockOf = (layer: BlockLayer, id: string): Block => {
       };
 };
 
-/** @throws {SourceError} when the passport's front matter names no base it can read */
-const layerBlocksOf = (layer: BlockLayer): readonly string[] =>
-  Block.readingOrderOf(readdirSync(inBlocks(layer)).map((id) => blockOf(layer, id)));
+const formatOnDisk = (): BlockFormat =>
+  Block.formatOf(
+    readdirSync(inBlocks(), {
+      recursive: true,
+    }).map(String),
+  );
+
+/** @throws {SourceError} when a legacy passport's front matter names no base it can read */
+const layerBlocksOf = (layer: BlockLayer): readonly string[] => {
+  const format = formatOnDisk();
+
+  return Block.readingOrderOf(
+    readdirSync(inBlocks(layer)).map((id) =>
+      format === BlockFormat.Nested
+        ? {
+            id,
+          }
+        : legacyBlockOf(layer, id),
+    ),
+  );
+};
+
+const blockFoldersIn = (layer: BlockLayer): readonly string[] =>
+  readdirSync(inBlocks(layer), {
+    recursive: true,
+    withFileTypes: true,
+  })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => relative(inBlocks(), join(entry.parentPath, entry.name)))
+    .filter((folder) =>
+      folder.split(PATH_SEPARATOR).every((segment) => Block.axisOfFolder(segment) === undefined),
+    )
+    .toSorted();
+
+const childBlocksOf = (layer: BlockLayer): readonly string[] =>
+  blockFoldersIn(layer).filter((folder) => dirname(folder) !== layer);
 
 const axisFoldersOf = (layer: BlockLayer): readonly string[] =>
-  readdirSync(inBlocks(layer)).flatMap((id) =>
-    Object.values(Axis)
-      .filter((axis) => existsSync(inBlocks(layer, id, axis)))
-      .map((axis) => `${layer}/${id}/${axis}`),
+  blockFoldersIn(layer).flatMap((blockFolder) =>
+    Block.axisFoldersAmong(readdirSync(inBlocks(blockFolder))).map(
+      (axisFolder) => `${blockFolder}/${axisFolder}`,
+    ),
   );
 
 const seamHoldersOf = (layer: BlockLayer): readonly string[] =>
   axisFoldersOf(layer).filter((axisFolder) => existsSync(inBlocks(axisFolder, SEAMS_FOLDER)));
 
-export { axisFoldersOf, coreChaptersOf, layerBlocksOf, seamHoldersOf };
+export { axisFoldersOf, childBlocksOf, coreChaptersOf, layerBlocksOf, seamHoldersOf };

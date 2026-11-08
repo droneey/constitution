@@ -1,3 +1,4 @@
+import { PATH_SEPARATOR } from '../../shared/constants';
 import type { ChapterListGaps } from '../../source/errors';
 import { SourceError, SourceFailure } from '../../source/errors';
 
@@ -15,16 +16,36 @@ enum BlockLayer {
   Implementation = 'implementations',
 }
 
+enum BlockFormat {
+  Legacy = 'legacy',
+  Nested = 'nested',
+}
+
 interface Block {
   readonly extends?: string;
   readonly id: string;
 }
 
-const axes: readonly string[] = Object.values(Axis);
+const axes: readonly Axis[] = Object.values(Axis);
+
+const AXIS_MARK = '@';
 
 const ABSTRACT_MARK = '_';
 
-const isAxis = (segment: string): segment is Axis => axes.includes(segment);
+const nestedFolderOf = (axis: Axis): string => `${AXIS_MARK}${axis}`;
+
+const axisOfFolder = (folderName: string | undefined): Axis | undefined =>
+  axes.find((axis) => folderName === nestedFolderOf(axis) || folderName === axis);
+
+const axisFoldersAmong = (names: readonly string[]): readonly string[] =>
+  axes.flatMap((axis) => names.filter((name) => axisOfFolder(name) === axis));
+
+const formatOf = (paths: readonly string[]): BlockFormat =>
+  paths.some((path) =>
+    path.split(PATH_SEPARATOR).some((segment) => axes.map(nestedFolderOf).includes(segment)),
+  )
+    ? BlockFormat.Nested
+    : BlockFormat.Legacy;
 
 const groupOf = (block: Block): string => {
   const groupId = block.extends ?? block.id;
@@ -69,9 +90,11 @@ const listedChaptersOf = (input: ChapterListInput): readonly string[] => {
 };
 
 const Block = {
-  isAxis,
+  axisFoldersAmong,
+  axisOfFolder,
+  formatOf,
   listedChaptersOf,
   readingOrderOf,
 } as const;
 
-export { Axis, Block, BlockLayer };
+export { Axis, Block, BlockFormat, BlockLayer };
