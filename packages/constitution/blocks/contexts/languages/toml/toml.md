@@ -1,9 +1,7 @@
 ---
 id: toml
-summary: "TOML files: strings, the version written and the form of tables."
+summary: "TOML files: the version written, tables, strings and the schema."
 requires: []
-extends: null
-abstract: false
 languages: []
 governs: ["**/*.toml"]
 ---

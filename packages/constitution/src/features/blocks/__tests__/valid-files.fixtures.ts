@@ -38,7 +38,7 @@ const pluginFiles = (): Files => ({
   'templates/PROJECT.md': '# Project Context\n',
   'templates/DECISIONS.md': '# Decisions\n',
   'templates/block/block.md': '---\nid: <id>\n---\n',
-  'templates/block/foundation/chapter.md': '# <Chapter>\n',
+  'templates/block/@foundation/chapter.md': '# <Chapter>\n',
   'templates/constitution.yaml': 'axes: []\n',
 });
 

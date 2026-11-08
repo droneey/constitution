@@ -1,0 +1,34 @@
+nestjs:
+  '*':
+    typescript:
+      tsconfig.json !jsonc:
+        compilerOptions:
+          allowImportingTsExtensions: !replace false
+          declaration: true
+          incremental: true
+      .swcrc !jsonc:
+        $schema: https://swc.rs/schema.json
+        jsc:
+          parser:
+            syntax: typescript
+            decorators: true
+            dynamicImport: true
+          target: es2023
+          keepClassNames: true
+        minify: false
+  nestjs-keeps-decorator-metadata:
+    typescript:
+      tsconfig.json !jsonc:
+        compilerOptions:
+          emitDecoratorMetadata: true
+          experimentalDecorators: true
+      .swcrc !jsonc:
+        jsc:
+          transform:
+            legacyDecorator: true
+            decoratorMetadata: true
+  framework-filled-fields-marked-definite:
+    typescript:
+      tsconfig.json !jsonc:
+        compilerOptions:
+          strictPropertyInitialization: true

@@ -769,7 +769,7 @@ const blockViolations = [
         "import { Database } from 'bun:sqlite';\nexport const open = Database;\n",
     },
     blocks: [
-      'bun',
+      'js-runtime/bun',
     ],
     rule: 'bun-effects-reached-only-from-the-edge',
   },
@@ -780,7 +780,7 @@ const blockViolations = [
         "import { Database } from 'bun:sqlite';\nexport const listOrders = Database;\n",
     },
     blocks: [
-      'bun',
+      'js-runtime/bun',
     ],
     rule: 'bun-effects-reached-only-from-the-edge',
   },
@@ -791,7 +791,7 @@ const blockViolations = [
         "import { spawn } from 'bun';\nexport const listOrders = spawn;\n",
     },
     blocks: [
-      'bun',
+      'js-runtime/bun',
     ],
     rule: 'bun-effects-reached-only-from-the-edge',
   },
@@ -805,7 +805,7 @@ const blockViolations = [
       }),
     },
     blocks: [
-      'ui',
+      'presentation',
     ],
     rule: 'components-take-data-and-callbacks',
   },
@@ -819,7 +819,7 @@ const blockViolations = [
       }),
     },
     blocks: [
-      'bun',
+      'js-runtime/bun',
     ],
     rule: 'relative-import-stays-in-its-module',
   },
@@ -833,7 +833,7 @@ const blockViolations = [
       }),
     },
     blocks: [
-      'bun',
+      'js-runtime/bun',
     ],
     rule: 'hash-import-leaves-its-module',
   },
@@ -849,7 +849,7 @@ const blockViolations = [
       }),
     },
     blocks: [
-      'ui',
+      'presentation',
     ],
     rule: 'role-reached-through-its-surface',
   },
@@ -889,7 +889,7 @@ const blockViolations = [
       }),
     },
     blocks: [
-      'expo',
+      'react/react-native/expo',
     ],
     rule: 'ui-imports-no-expo-router',
   },
@@ -915,7 +915,7 @@ const blockViolations = [
       }),
     },
     blocks: [
-      'react-dom',
+      'react/react-dom',
     ],
     rule: 'not-in-allowed',
   },
@@ -928,7 +928,7 @@ const blockViolations = [
       }),
     },
     blocks: [
-      'react-dom',
+      'react/react-dom',
     ],
     rule: 'not-in-allowed',
   },
@@ -1004,7 +1004,7 @@ const blockViolations = [
       }),
     },
     blocks: [
-      'remote-data',
+      'integrations/remote-data',
       'tanstack-query',
     ],
     rule: 'query-library-only-in-its-home',
@@ -1019,7 +1019,7 @@ const blockViolations = [
       }),
     },
     blocks: [
-      'ui',
+      'presentation',
     ],
     rule: 'ui-reaches-no-mechanism',
   },
@@ -1033,7 +1033,7 @@ const blockViolations = [
       }),
     },
     blocks: [
-      'ui',
+      'presentation',
     ],
     rule: 'ui-takes-only-read-model-types-of-its-use-cases',
   },
@@ -1047,7 +1047,7 @@ const blockViolations = [
     },
     blocks: [
       'lingui',
-      'ui',
+      'presentation',
     ],
     rule: 'lingui-only-in-its-home',
   },
@@ -1087,7 +1087,7 @@ const blockViolations = [
       'src/kernel/contracts/analytics.port.ts': exported('track'),
     },
     blocks: [
-      'analytics',
+      'people/analytics',
     ],
     rule: 'features-never-track',
   },
@@ -1101,7 +1101,7 @@ const blockViolations = [
     },
     blocks: [
       'lingui',
-      'ui',
+      'presentation',
     ],
     rule: 'lingui-only-in-its-home',
   },
@@ -1130,7 +1130,7 @@ const blockViolations = [
     blocks: [
       'yaml-js',
     ],
-    rule: 'yaml-home-is-the-parsing-adapter-and-lib',
+    rule: 'yaml-package-home-is-where-yaml-is-read-or-written',
   },
   {
     condition: 'an adapter imports the logging library',
@@ -1141,9 +1141,10 @@ const blockViolations = [
       }),
     },
     blocks: [
+      'observability',
       'pino',
     ],
-    rule: 'root-alone-configures-logging-pino',
+    rule: 'logging-library-imported-only-by-the-root-pino',
   },
   {
     condition: 'an integration imports the HTTP client',
@@ -1155,9 +1156,9 @@ const blockViolations = [
     },
     blocks: [
       'ky',
-      'remote-service',
+      'integrations',
     ],
-    rule: 'transport-library-imported-by-its-client-and-mapper-ky',
+    rule: 'transport-library-home-is-its-systems-client-ky',
   },
   {
     condition: 'a component imports a widget',
@@ -1169,7 +1170,7 @@ const blockViolations = [
       }),
     },
     blocks: [
-      'ui',
+      'presentation',
     ],
     rule: 'components-never-import-widgets',
   },
@@ -1184,7 +1185,7 @@ const blockViolations = [
         }),
     },
     blocks: [
-      'ui',
+      'presentation',
     ],
     rule: 'adapters-reached-only-from-the-root',
   },
@@ -1199,7 +1200,7 @@ const blockViolations = [
         }),
     },
     blocks: [
-      'ui',
+      'presentation',
     ],
     rule: 'binding-units-reach-no-ui',
   },
@@ -1212,7 +1213,7 @@ const blockViolations = [
       }),
     },
     blocks: [
-      'remote-data',
+      'integrations/remote-data',
       'tanstack-query',
     ],
     rule: 'query-library-only-in-its-home',
@@ -1226,7 +1227,7 @@ const blockViolations = [
       }),
     },
     blocks: [
-      'remote-data',
+      'integrations/remote-data',
       'tanstack-query',
     ],
     rule: 'query-library-only-in-its-home',
@@ -1512,7 +1513,7 @@ describe('the dependency-cruiser layer set', () => {
           exported('ordersWidget'),
       },
       blocks: [
-        'ui',
+        'presentation',
       ],
     };
 
@@ -1538,7 +1539,7 @@ describe('the dependency-cruiser layer set', () => {
         }),
       },
       blocks: [
-        'ui',
+        'presentation',
       ],
     };
 
@@ -1569,7 +1570,7 @@ describe('the dependency-cruiser layer set', () => {
           typeOfOrderListItem,
       },
       blocks: [
-        'ui',
+        'presentation',
       ],
     };
 
@@ -1679,20 +1680,20 @@ describe('the dependency-cruiser layer set', () => {
           "import { value } from '@tanstack/react-router';\nimport { value as kit } from 'kit';\nexport const route = [value, kit];\n",
       },
       blocks: [
-        'ui',
-        'react-dom',
+        'presentation',
+        'react/react-dom',
         'bunli',
         'tanstack-router',
-        'analytics',
+        'people/analytics',
         'lingui',
         'tanstack-query',
         'storybook',
         'yaml-js',
         'ky',
-        'zod',
-        'cli',
-        'remote-data',
-        'remote-service',
+        'schema/zod',
+        'client/cli',
+        'integrations/remote-data',
+        'integrations',
       ],
     };
 

@@ -1,0 +1,5 @@
+version-control:
+  generated-files-not-committed:
+    python:
+      .gitignore:
+        - .complexipy_cache/

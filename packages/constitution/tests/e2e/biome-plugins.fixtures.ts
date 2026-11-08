@@ -53,7 +53,7 @@ const RUNS_AT_ONCE = 4;
 const typescriptUnit: BiomeUnit = {
   blocks: [
     'bun-test',
-    'react-dom',
+    'react/react-dom',
   ],
 };
 

@@ -101,7 +101,7 @@ const pluginRows: readonly PluginRow[] = [
         unit: {
           axes: [],
           blocks: [
-            'react-dom',
+            'react/react-dom',
           ],
         },
       },
@@ -135,7 +135,7 @@ const pluginRows: readonly PluginRow[] = [
         unit: {
           blocks: [
             'bun-test',
-            'react-dom',
+            'react/react-dom',
           ],
         },
       },
@@ -268,7 +268,7 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'typescript',
-    slug: 'failed-test-never-retried',
+    slug: 'bun-test-retries-no-case',
     unit: {
       axes: [],
       blocks: [
@@ -300,12 +300,12 @@ const pluginRows: readonly PluginRow[] = [
     unit: {
       axes: [],
       blocks: [
-        'react-dom',
-        'browser',
+        'react/react-dom',
+        'client/browser',
         'tailwind',
         'testing-library',
         'html',
-        'ui',
+        'presentation',
       ],
     },
     reported: [
@@ -331,27 +331,15 @@ const pluginRows: readonly PluginRow[] = [
       },
     ],
   },
+
   {
     language: 'typescript',
-    slug: 'file-is-one-semantic-unit',
-    reported: [
-      {
-        condition: 'a module exports a value beside its component',
-        files: {
-          'src/Panel.tsx':
-            "export const PANEL_WIDTH = 4;\n\nexport function Panel(): string {\n  return 'panel';\n}\n",
-        },
-      },
-    ],
-  },
-  {
-    language: 'typescript',
-    slug: 'focus-shown-by-focusable-utility',
+    slug: 'focus-shown-by-an-outline-utility',
     unit: {
       axes: [],
       blocks: [
-        'react-dom',
-        'browser',
+        'react/react-dom',
+        'client/browser',
         'tailwind',
         'testing-library',
       ],
@@ -370,7 +358,7 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'typescript',
-    slug: 'identifier-case-by-kind',
+    slug: 'name-cased-by-the-typescript-conventions',
     reported: [
       {
         condition: 'a module-level constant holding a literal is camelCase',
@@ -386,8 +374,8 @@ const pluginRows: readonly PluginRow[] = [
     unit: {
       axes: [],
       blocks: [
-        'react-dom',
-        'browser',
+        'react/react-dom',
+        'client/browser',
         'tailwind',
         'testing-library',
       ],
@@ -421,12 +409,12 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'typescript',
-    slug: 'inline-style-only-custom-properties-and-geometry',
+    slug: 'inline-style-holds-only-custom-properties',
     unit: {
       axes: [],
       blocks: [
-        'react-dom',
-        'browser',
+        'react/react-dom',
+        'client/browser',
         'tailwind',
         'testing-library',
       ],
@@ -475,12 +463,12 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'typescript',
-    slug: 'labels-bound-with-use-id',
+    slug: 'ids-from-use-id',
     unit: {
       axes: [],
       blocks: [
-        'react-dom',
-        'browser',
+        'react/react-dom',
+        'client/browser',
         'tailwind',
         'testing-library',
       ],
@@ -531,7 +519,7 @@ const pluginRows: readonly PluginRow[] = [
     unit: {
       axes: [],
       blocks: [
-        'i18n',
+        'localization',
       ],
     },
     reported: [
@@ -558,11 +546,11 @@ const pluginRows: readonly PluginRow[] = [
     unit: {
       axes: [],
       blocks: [
-        'react-dom',
-        'browser',
+        'react/react-dom',
+        'client/browser',
         'tailwind',
         'testing-library',
-        'i18n',
+        'localization',
       ],
     },
     reported: [
@@ -588,8 +576,8 @@ const pluginRows: readonly PluginRow[] = [
         unit: {
           axes: [],
           blocks: [
-            'react-dom',
-            'browser',
+            'react/react-dom',
+            'client/browser',
             'tailwind',
             'testing-library',
           ],
@@ -599,12 +587,12 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'typescript',
-    slug: 'mobile-first-breakpoints',
+    slug: 'class-never-opens-with-a-max-variant',
     unit: {
       axes: [],
       blocks: [
-        'react-dom',
-        'browser',
+        'react/react-dom',
+        'client/browser',
         'tailwind',
         'testing-library',
       ],
@@ -638,8 +626,8 @@ const pluginRows: readonly PluginRow[] = [
     unit: {
       axes: [],
       blocks: [
-        'react-dom',
-        'browser',
+        'react/react-dom',
+        'client/browser',
         'tailwind',
         'testing-library',
       ],
@@ -665,7 +653,7 @@ const pluginRows: readonly PluginRow[] = [
         unit: {
           axes: [],
           blocks: [
-            'react-dom',
+            'react/react-dom',
           ],
         },
       },
@@ -677,7 +665,7 @@ const pluginRows: readonly PluginRow[] = [
     unit: {
       axes: [],
       blocks: [
-        'i18n',
+        'localization',
         'lingui',
       ],
     },
@@ -702,7 +690,7 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'typescript',
-    slug: 'module-level-value-never-changed',
+    slug: 'module-level-variable-declared-const',
     unit: {
       axes: [],
       blocks: [
@@ -720,7 +708,7 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'typescript',
-    slug: 'module-never-mocked-in-a-spec',
+    slug: 'bun-spec-mocks-no-module',
     reported: [
       {
         condition: 'a spec replaces a module',
@@ -742,11 +730,11 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'typescript',
-    slug: 'nothing-rendered-as-null',
+    slug: 'null-written-only-where-react-uses-it',
     unit: {
       axes: [],
       blocks: [
-        'react-dom',
+        'react/react-dom',
       ],
     },
     reported: [
@@ -825,7 +813,7 @@ const pluginRows: readonly PluginRow[] = [
     unit: {
       axes: [],
       blocks: [
-        'browser',
+        'client/browser',
       ],
     },
     reported: [
@@ -895,7 +883,7 @@ const pluginRows: readonly PluginRow[] = [
     unit: {
       axes: [],
       blocks: [
-        'zod',
+        'schema/zod',
       ],
     },
     reported: [
@@ -910,12 +898,12 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'typescript',
-    slug: 'screen-sized-classes-never-used',
+    slug: 'screen-height-class-never-used',
     unit: {
       axes: [],
       blocks: [
-        'react-dom',
-        'browser',
+        'react/react-dom',
+        'client/browser',
         'tailwind',
         'testing-library',
       ],
@@ -945,12 +933,47 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'typescript',
+    slug: 'screen-width-class-never-used',
+    unit: {
+      axes: [],
+      blocks: [
+        'react/react-dom',
+        'client/browser',
+        'tailwind',
+        'testing-library',
+      ],
+    },
+    reported: [
+      {
+        condition: 'a class list sizes with w-screen',
+        files: {
+          'package.json':
+            '{"name":"fixture","dependencies":{"react":"19.2.0","tailwindcss":"4.2.0"}}',
+          'src/panel.tsx':
+            "export function Panel(): React.ReactElement {\n  return (\n    <main className='w-screen' />\n  );\n}\n",
+        },
+      },
+    ],
+    allowed: [
+      {
+        condition: 'a class list sizes to its container',
+        files: {
+          'package.json':
+            '{"name":"fixture","dependencies":{"react":"19.2.0","tailwindcss":"4.2.0"}}',
+          'src/panel.tsx':
+            "export function Panel(): React.ReactElement {\n  return (\n    <main className='w-full' />\n  );\n}\n",
+        },
+      },
+    ],
+  },
+  {
+    language: 'typescript',
     slug: 'spec-never-selects-from-the-document',
     unit: {
       axes: [],
       blocks: [
-        'react-dom',
-        'browser',
+        'react/react-dom',
+        'client/browser',
         'tailwind',
         'testing-library',
       ],
@@ -980,7 +1003,7 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'typescript',
-    slug: 'spec-never-sleeps',
+    slug: 'bun-spec-never-sleeps',
     unit: {
       axes: [],
       blocks: [
@@ -1038,7 +1061,7 @@ const pluginRows: readonly PluginRow[] = [
         },
         unit: {
           blocks: [
-            'react-dom',
+            'react/react-dom',
             'tanstack-router',
           ],
         },
@@ -1047,7 +1070,7 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'typescript',
-    slug: 'test-never-skipped-or-empty',
+    slug: 'test-runs-unconditionally',
     reported: [
       {
         condition: 'a concurrent case is left to do',
@@ -1060,7 +1083,7 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'typescript',
-    slug: 'timer-set-only-by-the-edge-and-binding-units',
+    slug: 'set-timeout-called-only-at-the-edge',
     unit: {
       blocks: [],
     },
@@ -1085,7 +1108,7 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'typescript',
-    slug: 'type-names-undecorated',
+    slug: 'type-name-undecorated',
     unit: {
       axes: [],
       blocks: [
@@ -1129,7 +1152,7 @@ const pluginRows: readonly PluginRow[] = [
     unit: {
       axes: [],
       blocks: [
-        'zod',
+        'schema/zod',
       ],
     },
     reported: [
@@ -1210,7 +1233,7 @@ const pluginRows: readonly PluginRow[] = [
     unit: {
       axes: [],
       blocks: [
-        'browser',
+        'client/browser',
         'css',
       ],
     },
@@ -1235,11 +1258,11 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'css',
-    slug: 'viewport-size-leaves-out-what-the-browser-draws',
+    slug: 'viewport-height-leaves-out-the-browsers-toolbars',
     unit: {
       axes: [],
       blocks: [
-        'browser',
+        'client/browser',
         'css',
       ],
     },
@@ -1254,12 +1277,6 @@ const pluginRows: readonly PluginRow[] = [
         condition: "a page's height is taken in lvh",
         files: {
           'src/styles/page.css': '.page {\n  min-height: 100lvh;\n}\n',
-        },
-      },
-      {
-        condition: "a page's width is taken as 100vw",
-        files: {
-          'src/styles/page.css': '.page {\n  inline-size: calc(100vw - 2rem);\n}\n',
         },
       },
     ],
@@ -1277,12 +1294,6 @@ const pluginRows: readonly PluginRow[] = [
         },
       },
       {
-        condition: "a page's width is 100% of its block",
-        files: {
-          'src/styles/page.css': '.page {\n  inline-size: 100%;\n}\n',
-        },
-      },
-      {
         condition: "a media query measures the viewport's height in vh",
         files: {
           'src/styles/page.css':
@@ -1293,12 +1304,40 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'css',
+    slug: 'full-width-leaves-out-the-scrollbar',
+    unit: {
+      axes: [],
+      blocks: [
+        'client/browser',
+        'css',
+      ],
+    },
+    reported: [
+      {
+        condition: "a page's width is taken as 100vw",
+        files: {
+          'src/styles/page.css': '.page {\n  inline-size: calc(100vw - 2rem);\n}\n',
+        },
+      },
+    ],
+    allowed: [
+      {
+        condition: "a page's width is 100% of its block",
+        files: {
+          'src/styles/page.css': '.page {\n  inline-size: 100%;\n}\n',
+        },
+      },
+    ],
+  },
+
+  {
+    language: 'css',
     slug: 'type-sized-in-rem',
     unit: {
       axes: [],
       blocks: [
         'css',
-        'ui',
+        'presentation',
       ],
     },
     reported: [
@@ -1412,7 +1451,7 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'typescript',
-    slug: 'business-types-readonly',
+    slug: 'entity-value-or-event-typed-readonly',
     reported: [
       {
         condition: "an entity's field can be written in place",
@@ -1425,11 +1464,11 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'typescript',
-    slug: 'compound-parts-share-the-root-context',
+    slug: 'compound-part-keyed-in-pascal-case',
     unit: {
       axes: [],
       blocks: [
-        'react-dom',
+        'react/react-dom',
       ],
     },
     reported: [
@@ -1455,7 +1494,7 @@ const pluginRows: readonly PluginRow[] = [
     slug: 'cache-key-built-by-its-owners-factory',
     unit: {
       blocks: [
-        'remote-data',
+        'integrations/remote-data',
         'tanstack-query',
       ],
     },
@@ -1510,7 +1549,7 @@ const pluginRows: readonly PluginRow[] = [
     unit: {
       axes: [],
       blocks: [
-        'react-dom',
+        'react/react-dom',
         'tailwind',
       ],
     },
@@ -1581,7 +1620,7 @@ const pluginRows: readonly PluginRow[] = [
     unit: {
       axes: [],
       blocks: [
-        'bun',
+        'js-runtime/bun',
       ],
     },
     reported: [
@@ -1640,11 +1679,11 @@ const pluginRows: readonly PluginRow[] = [
   },
   {
     language: 'typescript',
-    slug: 'child-process-given-an-env-of-its-own',
+    slug: 'spawn-given-an-env-built-for-it',
     unit: {
       axes: [],
       blocks: [
-        'bun',
+        'js-runtime/bun',
       ],
     },
     reported: [

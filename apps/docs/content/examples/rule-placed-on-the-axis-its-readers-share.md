@@ -1,14 +1,14 @@
 ```text title="Avoid"
 domains/version-control/
-└── foundation/
-    ├── commits.md   commit-header-type-and-subject
+└── @foundation/
+    ├── commits.md   commit-header-follows-conventional-commits
     └── files.md     text-stored-with-one-line-ending
 ```
 
 ```text title="Prefer"
 domains/version-control/
-├── foundation/
+├── @foundation/
 │   └── files.md     text-stored-with-one-line-ending
-└── workflow/
-    └── commits.md   commit-header-type-and-subject
+└── @workflow/
+    └── commits.md   commit-header-follows-conventional-commits
 ```

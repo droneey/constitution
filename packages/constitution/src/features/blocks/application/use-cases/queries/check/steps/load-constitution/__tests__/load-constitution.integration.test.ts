@@ -13,16 +13,10 @@ describe('loadConstitution', () => {
 
     // Assert
     expect({
-      answers: loaded.constitution.requirementAnswers.map(
-        (answer) => `${answer.requirement} ${answer.writtenMet}`,
-      ),
       blocks: loaded.constitution.blocks.map((block) => `${block.layer} ${block.id}`),
       findings: loaded.findings,
       rules: loaded.constitution.rules.map((parsed) => `${parsed.slug} ${parsed.level}`),
     }).toStrictEqual({
-      answers: [
-        'i18n-plurals-by-cldr yes',
-      ],
       blocks: [
         'implementation paraglide',
       ],

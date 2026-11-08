@@ -17,7 +17,6 @@
         // biome
         "noEmptyBlockStatements": "error",
         "noAlert": "error",
-        "noConsole": "error",
         "noDebugger": "error",
         "noSkippedTests": "error",
         "noFocusedTests": "error",
@@ -179,9 +178,6 @@
         "noNamespace": "error",
         "noDefaultExport": "error",
         "noCommonJs": "error",
-
-        // _js-runtime
-        "noProcessEnv": "error",
 
         // biome
         "useArrayLiterals": "error",
@@ -404,7 +400,7 @@
 
     // bun-test
     {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/test-never-skipped-or-empty.grit",
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/test-runs-unconditionally.grit",
       "includes": [
         "**/__tests__/**",
         "**/*.test.ts",
@@ -424,7 +420,7 @@
         "!**/src/root/**",
         "!**/src/*.ts",
         "!**/src/*.tsx",
-        "!**/src/entrypoints/*/main.*",
+        "!**/src/entrypoints/*/main.ts",
         "!**/src/integrations/**",
         "!**/__tests__/**",
       ],
@@ -432,20 +428,20 @@
 
     // typescript
     {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/entity-value-or-event-typed-readonly.grit",
+      "includes": [
+        "**/domain/**",
+        "**/kernel/**",
+        "!**/__tests__/**",
+      ],
+    },
+    {
       "path": "./.droneey/constitution/presets/biome/plugins/typescript/closed-name-set-is-a-string-enum.grit",
       "includes": [
         "**/*.ts",
         "**/*.tsx",
         "!**/infrastructure/**",
-        "!**/models/**",
-      ],
-    },
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/business-types-readonly.grit",
-      "includes": [
-        "**/domain/**",
-        "**/kernel/**",
-        "!**/__tests__/**",
+        "!**/dtos/**",
       ],
     },
     {
@@ -457,7 +453,7 @@
       ],
     },
     {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/identifier-case-by-kind.grit",
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/name-cased-by-the-typescript-conventions.grit",
       "includes": [
         "**/*.ts",
         "**/*.tsx",
@@ -468,12 +464,12 @@
       "includes": [
         "**",
         "!**/infrastructure/**",
-        "!**/models/**",
+        "!**/dtos/**",
         "!**/*.tsx",
       ],
     },
     {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/module-level-value-never-changed.grit",
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/module-level-variable-declared-const.grit",
       "includes": [
         "**",
         "!**/*.test.ts",
@@ -508,7 +504,7 @@
       ],
     },
     {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/timer-set-only-by-the-edge-and-binding-units.grit",
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/set-timeout-called-only-at-the-edge.grit",
       "includes": [
         "**/src/**",
         "!**/src/infrastructure/**",
@@ -518,7 +514,7 @@
         "!**/src/root/**",
         "!**/src/*.ts",
         "!**/src/*.tsx",
-        "!**/src/entrypoints/*/main.*",
+        "!**/src/entrypoints/*/main.ts",
         "!**/src/integrations/**",
         "!**/src/features/*/presentation/bindings/**",
         "!**/src/composition/*/presentation/bindings/**",
@@ -527,25 +523,9 @@
       ],
     },
 
-    // _js-runtime
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/child-process-started-without-a-shell.grit",
-      "includes": [
-        "**/*.ts",
-        "**/*.tsx",
-      ],
-    },
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/child-process-given-an-env-of-its-own.grit",
-      "includes": [
-        "**/*.ts",
-        "**/*.tsx",
-      ],
-    },
-
     // bun-test
     {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/module-never-mocked-in-a-spec.grit",
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/bun-spec-mocks-no-module.grit",
       "includes": [
         "**/__tests__/**",
         "**/*.test.ts",
@@ -561,7 +541,7 @@
       ],
     },
     {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/failed-test-never-retried.grit",
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/bun-test-retries-no-case.grit",
       "includes": [
         "**/__tests__/**",
         "**/*.test.ts",
@@ -569,7 +549,7 @@
       ],
     },
     {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/spec-never-sleeps.grit",
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/bun-spec-never-sleeps.grit",
       "includes": [
         "**/__tests__/**",
         "**/*.test.ts",
@@ -577,7 +557,23 @@
       ],
     },
 
-    // zod
+    // js-runtime
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/child-process-started-without-a-shell.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/spawn-given-an-env-built-for-it.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+
+    // schema/zod
     {
       "path": "./.droneey/constitution/presets/biome/plugins/typescript/zod-four-forms-only.grit",
       "includes": [
@@ -598,7 +594,7 @@
     "./.droneey/constitution/presets/biome/plugins/typescript/statements-grouped-by-blank-lines.grit",
 
     // typescript
-    "./.droneey/constitution/presets/biome/plugins/typescript/type-names-undecorated.grit",
+    "./.droneey/constitution/presets/biome/plugins/typescript/type-name-undecorated.grit",
 
     // biome
     "./.droneey/constitution/presets/biome/plugins/typescript/biome-refuses-empty-verbs.grit",
@@ -707,6 +703,28 @@
         "rules": {
           "security": {
             "noSecrets": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/tests/**",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "useFilenamingConvention": {
+              "level": "error",
+              "options": {
+                "strictCase": true,
+                "filenameCases": [
+                  "kebab-case",
+                ],
+                "match": "([^.]+)[.]((?:[^.]+[.])?(?:integration[.]|e2e[.])?(?:test|fake|suite|fixtures)[.]tsx?)",
+              },
+            },
           },
         },
       },
@@ -854,7 +872,7 @@
       },
     },
 
-    // bun
+    // js-runtime/bun
     {
       "includes": [
         "**/src/**",
@@ -994,48 +1012,6 @@
         "rules": {
           "style": {
             "noDefaultExport": "off",
-          },
-        },
-      },
-    },
-    {
-      "includes": [
-        "**/__tests__/**",
-        "**/tests/**",
-      ],
-      "linter": {
-        "rules": {
-          "style": {
-            "useFilenamingConvention": {
-              "level": "error",
-              "options": {
-                "strictCase": true,
-                "filenameCases": [
-                  "kebab-case",
-                ],
-                "match": "([^.]+)[.]((?:[^.]+[.])?(?:integration[.]|e2e[.])?(?:test|fake|suite|fixtures)[.]tsx?)",
-              },
-            },
-          },
-        },
-      },
-    },
-
-    // _js-runtime
-    {
-      "includes": [
-        "**/src/infrastructure/*",
-        "**/main.*",
-        "**/entrypoints/*/main.*",
-        "**/__tests__/**",
-        "**/*.test.ts",
-        "**/*.test.tsx",
-        "**/tests/**",
-      ],
-      "linter": {
-        "rules": {
-          "style": {
-            "noProcessEnv": "off",
           },
         },
       },

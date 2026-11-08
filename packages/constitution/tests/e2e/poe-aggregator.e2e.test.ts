@@ -13,7 +13,7 @@ const MARKS = 'ran.txt';
 
 const appliedProject = appliedUnit({
   implementations: [
-    'poe',
+    'task-runner/poe',
   ],
   languages: [
     'python',

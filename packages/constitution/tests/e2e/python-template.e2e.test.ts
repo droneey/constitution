@@ -319,7 +319,7 @@ describe('the files apply writes for a unit of Python', () => {
           'src/shop/infrastructure/mail/__init__.py': 'from shop.features import orders\n',
         },
         finding: [
-          'adapter-imports-only-its-owners-domain-and-shared-layers BROKEN',
+          'adapter-imports-only-its-owners-domain-ports-or-shared-layers BROKEN',
         ],
         task: 'check:architecture',
       },

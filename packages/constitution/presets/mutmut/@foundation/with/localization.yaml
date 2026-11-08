@@ -1,0 +1,8 @@
+mutmut:
+  text-for-a-person-left-out-by-configuration:
+    python:
+      pyproject.toml:
+        tool:
+          mutmut:
+            do_not_mutate:
+              - '*_${role.message-file}.py'

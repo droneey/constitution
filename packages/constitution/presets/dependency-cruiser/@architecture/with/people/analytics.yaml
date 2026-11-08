@@ -1,0 +1,10 @@
+people/analytics:
+  event-sent-only-by-binding-units:
+    typescript:
+      .dependency-cruiser.jsonc:
+        forbidden[name=features-never-track]:
+          severity: error
+          from:
+            path: ^${role.source}/(${role.bounded-context}|${role.composition-module})/[^/]+/(${role.domain-layer}|${role.application}|${role.adapter})/
+          to:
+            path: ^${role.source}/${role.shared-kernel}/${role.port}/analytics

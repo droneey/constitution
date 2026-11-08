@@ -58,8 +58,9 @@ const analyseScript = (text: string): Analysis => {
 };
 
 const unitScripts = (): Readonly<Record<string, string>> =>
-  manifest.parse(JSON.parse(readFileSync(join(widestAppliedUnit('bun'), 'package.json'), 'utf8')))
-    .scripts;
+  manifest.parse(
+    JSON.parse(readFileSync(join(widestAppliedUnit('js-runtime/bun'), 'package.json'), 'utf8')),
+  ).scripts;
 
 const poeTasks = z.object({
   tool: z.object({
@@ -77,7 +78,9 @@ const unitShellTasks = (): Readonly<Record<string, string>> =>
   Object.fromEntries(
     Object.entries(
       poeTasks.parse(
-        Bun.TOML.parse(readFileSync(join(widestAppliedUnit('poe'), 'pyproject.toml'), 'utf8')),
+        Bun.TOML.parse(
+          readFileSync(join(widestAppliedUnit('task-runner/poe'), 'pyproject.toml'), 'utf8'),
+        ),
       ).tool.poe.tasks,
     ).flatMap(([task, declared]) => {
       const parsed = shellTask.safeParse(declared);

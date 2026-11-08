@@ -1,19 +1,13 @@
 ---
 id: bun-test
 summary: Bun's test runner, its coverage gate and its specs.
-requires: [bun]
-extends: null
-abstract: false
+requires: [js-runtime/bun]
 languages: [typescript]
-governs: ["**/__tests__/**"]
+governs: ["**/__tests__/**", "**/tests/**", "**/bunfig.toml", "**/bunfig.integration.toml"]
 ---
 
 # Bun test
 
-> Runs the specs, written against **`bun:test`**, and holds the coverage gate.
+> Runs the specs, written against `bun:test`, and holds the coverage gate.
 
-`bunfig.toml` runs the unit specs, sets no `retry` and measures no coverage; `bunfig.integration.toml` runs the unit and the integration specs in one run and holds the gate: `coverage = true`, `coverageReporter = ["text"]` — outside `--parallel`, the threshold is enforced only with the text reporter — `coverageSkipTestFiles = true`, `coverageThreshold = { lines = 1.0, functions = 1.0 }`, and `coveragePathIgnorePatterns` with core's exclusions and those each active block names. Bun measures no branches, and counts only the files a spec loads: a source file no spec imports is outside the gate and is reviewed. `constitution` writes both files from the presets; a rule they cannot hold is reported.
-
-Core's exclusions from coverage are the specs and their fixtures, `**/__tests__/**`, the entry file, `**/main.*`, and generated files, `**/*.gen.*`.
-
-On the architecture axis, core's tree adds to core's exclusions from coverage the composition root, `**/root/**`; their `**/main.*` already leaves out the entry file of each artefact.
+`constitution` writes a configuration for each run from the presets: `bunfig.toml`, which runs the unit specs, `bunfig.integration.toml`, which runs the unit and the integration specs in one run and holds the coverage gate, and, beside a mutation tool, the mutation run's. Bun measures lines and functions, not branches, and counts only the files a spec loads.

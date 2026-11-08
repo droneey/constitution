@@ -1,9 +1,7 @@
 ---
 id: python-check
 summary: The Constitution's own check of what no Python tool holds.
-requires: [python, toml, _task-runner]
-extends: null
-abstract: false
+requires: [python, task-runner]
 languages: [python]
 governs: ["pyproject.toml"]
 ---
@@ -12,6 +10,6 @@ governs: ["pyproject.toml"]
 
 > Holds the rules of Python no other tool holds: the length of a function and a file, and on the architecture axis what a module may import and where it may reach effects and the environment.
 
-**`python-check`** ships in the Constitution's distribution as `tools/python-check/dist/python-check.pyz`, which the project's interpreter runs, and it fails on each finding, printed as `<path>:<line>: <message>`. It reads `[tool.python-check]` of the `pyproject.toml` in the folder it runs from.
+The `python-check` command ships in the Constitution's distribution as `tools/python-check/dist/python-check.pyz`, which the project's interpreter runs, and it fails on each finding, printed as `<path>:<line>: <message>`. It reads `[tool.python-check]` of the `pyproject.toml` in the folder it runs from. The one suppression it reads is `# python-check: ignore[function-lines]  # <reason>` on the `def` line of the function it reports.
 
-On the architecture axis, each block gives its package, in `[tool.python-check.homes]`, the folders it is imported in, and the project's own homes join them. A home names `"edge"`, the whole edge; a top-level folder by its name; or `"domain"`, `"application"`, `"infrastructure"` or `"presentation"`, that layer wherever it sits — of every feature and composition module, and `infrastructure/` at the top as well. The units its `[tool.uv.sources]` links from the workspace are the repository's own code, never an installed dependency.
+On the architecture axis, each block gives its package, in `[tool.python-check.homes]`, the folders it is imported in, and the project's own homes join them. A home names `"edge"`, the whole edge; a top-level folder by its name; or `"domain"`, `"application"`, `"infrastructure"` or `"presentation"`, that layer wherever it sits, in every feature and composition module, and `infrastructure/` at the top as well. The tool counts the units `[tool.uv.sources]` links from the workspace as the repository's own code.

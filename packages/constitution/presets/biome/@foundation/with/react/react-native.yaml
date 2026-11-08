@@ -1,0 +1,16 @@
+core:
+  dependency-reached-through-its-published-entries:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            suspicious:
+              noReactNativeDeepImports: error
+presentation:
+  tokens-single-source-of-appearance:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            style:
+              noReactNativeLiteralColors: error

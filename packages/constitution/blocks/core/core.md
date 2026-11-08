@@ -1,11 +1,9 @@
 ---
 id: core
-summary: What holds for any program, in any language, of any kind.
+summary: The rules every repository is built by.
 requires: []
-extends: null
-abstract: false
 languages: []
-governs: []
+governs: ["**"]
 ---
 
 # The Constitution
@@ -14,36 +12,31 @@ The rules a repository is built by. The digest lists the active blocks and their
 
 ## How to use it
 
-1. Before a change, read every chapter that governs what it touches, then the active blocks, from domains to implementations.
-2. Before handing a change back, read it against every active rule, not only those it seemed to touch; a rule outranks the habit of the code around it, so a breach nearby is no precedent to copy.
-3. A rule is `### <slug> · <level>`, or `### <slug> → <rule> · <level>` when it tightens another rule, never looser than it; then its statement and Why. MUST binds; SHOULD is left only with a stated reason; MAY is a choice.
+1. Before a change, read every chapter that governs what it touches, then the active blocks, from the domain blocks down.
+2. Before handing a change back, read it against every active rule; a rule outranks the habit of the code around it, and a breach nearby is no precedent.
+3. A rule is `### <slug> · <level>`, or `### <slug> → <rule> · <level>` when it tightens another rule, never looser than it; then its statement and Why. MUST binds; SHOULD is left only with a stated reason.
 4. A request against a MUST gets the conflict and an alternative, never silent obedience.
 5. A rule is placed by `placement`. A case no rule covers follows the nearest rule, and of two choices the one that raises cohesion and lowers coupling wins; a real gap is amended or becomes a block of the project's own pack, never a habit.
+6. A dependency with no block follows the project's domain and language blocks; report each MUST it cannot meet, and propose its block as 5 says.
 
 ## Precedence
 
-1. An override in `constitution.yaml` lowers the one rule it names, core's included; the rules that tighten it keep their own levels. It is written only with the user's consent and its reason, and removed by the change that ends it.
-2. Otherwise the more specific layer wins: implementations, then contexts (platforms and languages), then domains, then core. A block tightens what is above it, never loosens it.
-3. A clash between a platform and a language means a misplaced rule; it moves to an implementation or the project's own pack.
-4. Two rules of one layer that disagree are a defect: until it is amended, the one naming the narrower case wins, and the clash is reported.
+1. An override in `constitution.yaml` names one rule, core's included, and either lowers it from MUST to SHOULD or sets it to `MAY`, a level an override alone may name, which the rule then only advises; the rules that tighten it keep their levels. It is written only with a person's consent and its reason, and goes with the change that ends it.
+2. Otherwise two active rules never contradict: a rule tightens only a rule within its reach, by its `→`, and never loosens it. A clash between two rules, whatever their blocks' ranks, a platform's and a language's included, is a defect: it is reported and fixed by narrowing one of them or by a seam, and until then the rule naming the narrower case holds.
 
 ## Its chapters
 
 Read in order:
 
-- `foundation/`: [placement](foundation/placement.md), [code](foundation/code.md), [names](foundation/names.md), [functions](foundation/functions.md), [relations](foundation/relations.md), [types](foundation/types.md), [errors](foundation/errors.md), [effects](foundation/effects.md), [security](foundation/security.md), [dependencies](foundation/dependencies.md), [tools](foundation/tools.md), [changes](foundation/changes.md), [layout](foundation/layout.md), [comments](foundation/comments.md), [tests](foundation/tests.md), [agents](foundation/agents.md).
-- `architecture/`: [layout](architecture/layout.md), [domain](architecture/domain.md), [application](architecture/application.md), [ports](architecture/ports.md), [composition](architecture/composition.md), [presentation](architecture/presentation.md), [root](architecture/root.md), [layers](architecture/layers.md), [tests](architecture/tests.md).
-- `workflow/`: [agents](workflow/agents.md).
-
-## A dependency with no block
-
-Hold it to the rules of the project's domains and language and their requirements for implementation, report every MUST it cannot meet, and propose a block for it in the project's own pack.
+- `@foundation/`: [placement](@foundation/placement.md), [code](@foundation/code.md), [names](@foundation/names.md), [functions](@foundation/functions.md), [relations](@foundation/relations.md), [types](@foundation/types.md), [data](@foundation/data.md), [errors](@foundation/errors.md), [effects](@foundation/effects.md), [security](@foundation/security.md), [dependencies](@foundation/dependencies.md), [tools](@foundation/tools.md), [changes](@foundation/changes.md), [layout](@foundation/layout.md), [comments](@foundation/comments.md), [accessibility](@foundation/accessibility.md), [tests](@foundation/tests.md), [agents](@foundation/agents.md).
+- `@architecture/`: [layout](@architecture/layout.md), [domain](@architecture/domain.md), [application](@architecture/application.md), [ports](@architecture/ports.md), [composition](@architecture/composition.md), [presentation](@architecture/presentation.md), [root](@architecture/root.md), [layers](@architecture/layers.md), [tests](@architecture/tests.md).
+- `@workflow/`: [changes](@workflow/changes.md), [agents](@workflow/agents.md).
 
 ## The project's files
 
-`constitution.yaml` sits at the root and in each package, each read alone: `axes`, the optional axes it follows; the blocks by layer; `packs`, the folders of blocks beside the Constitution's, its own among them; `overrides`. At the root also:
+`constitution.yaml` sits at the root and in each package, each read alone: `axes`, the optional axes it follows; the blocks by rank; `packs`, the folders of blocks beside the Constitution's, its own among them; `overrides`. At the root also:
 
 - `PROJECT.md`: the product and its users, subdomains by class, entities, boundaries, critical scenarios and glossary.
-- `DECISIONS.md`: the choices between real alternatives, each with what was rejected and why.
+- `DECISIONS.md`: the strategic choices between real alternatives, such as a store, a framework, an architecture or a policy many changes follow, each as it now stands with what was rejected and why; never what the code, a rule's Why or a change's description already explains.
 
 `constitution run check` runs the one check the blocks give.

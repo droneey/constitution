@@ -1,0 +1,7 @@
+biome:
+  biome-package-config-is-a-root:
+    '*':
+      biome.jsonc:
+        files:
+          includes:
+            - '!!${workspace.members}'

@@ -1,5 +1,5 @@
 import { readdirSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { basename, dirname, join } from 'node:path';
 
 import { describe, expect, it } from 'bun:test';
 
@@ -10,9 +10,28 @@ import { describe, expect, it } from 'bun:test';
 // tests.
 const packageFolder = join(import.meta.dir, '..', '..');
 const featureFolder = join(packageFolder, 'src', 'features', 'presets');
+const AXIS_MARK = '@';
 
+const implementationsFolder = join(packageFolder, 'blocks', 'implementations');
+const PASSPORT_EXTENSION = '.md';
+const ID_SEPARATOR = '/';
+
+const implementationIds: readonly string[] = readdirSync(implementationsFolder, {
+  recursive: true,
+})
+  .map(String)
+  .filter(
+    (path) =>
+      `${basename(dirname(path))}${PASSPORT_EXTENSION}` === basename(path) &&
+      !path.includes(AXIS_MARK),
+  )
+  .map(dirname);
+
+// Why: a block that holds others, as js-runtime or schema does, names a kind of tool and no tool.
 const toolWords: readonly string[] = [
-  ...readdirSync(join(packageFolder, 'blocks', 'implementations')),
+  ...implementationIds
+    .filter((id) => !implementationIds.some((other) => other.startsWith(`${id}${ID_SEPARATOR}`)))
+    .map((id) => id.split(ID_SEPARATOR).at(-1) ?? id),
   '.dependency-cruiser',
   '.editorconfig',
   '.gitignore',

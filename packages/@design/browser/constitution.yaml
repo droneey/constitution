@@ -5,12 +5,9 @@ axes:
 domains:
   - version-control
   - workspace
-  - ui
-  - design-system
-  - untrusted-client
-  - copy
+  - presentation/design-system
 platforms:
-  - browser
+  - client/browser
 languages:
   - typescript
   - json
@@ -20,7 +17,8 @@ languages:
   - html
   - css
 implementations:
-  - bun
+  - js-runtime/bun
+  - task-runner
   - tsc
   - biome
   - dependency-cruiser
@@ -32,7 +30,7 @@ implementations:
   - tombi
   - bun-test
   - stryker
-  - react-dom
+  - react/react-dom
   - tailwind
   - testing-library
 packs:

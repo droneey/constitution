@@ -18,7 +18,7 @@ const repository = join(import.meta.dir, '..', '..');
 const created: string[] = [];
 
 const packFilesOf = (parent: string): Files => ({
-  'blocks/implementations/acme/architecture/root.md': [
+  'blocks/implementations/acme/@architecture/root.md': [
     '# Root',
     '',
     '> Governs where Acme is called from.',
@@ -41,8 +41,6 @@ const packFilesOf = (parent: string): Files => ({
     'id: acme',
     'summary: "Acme sends the shop\'s events to its analytics."',
     'requires: []',
-    'extends: null',
-    'abstract: false',
     'languages: []',
     'governs: ["**/acme.*"]',
     '---',
@@ -52,7 +50,7 @@ const packFilesOf = (parent: string): Files => ({
     "> Acme, the shop's analytics.",
     '',
   ].join('\n'),
-  'blocks/implementations/acme/foundation/dependencies.md': [
+  'blocks/implementations/acme/@foundation/dependencies.md': [
     '# Dependencies',
     '',
     '> Governs the files that call Acme.',

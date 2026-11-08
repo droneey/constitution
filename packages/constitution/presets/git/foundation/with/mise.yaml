@@ -1,5 +1,0 @@
-mise:
-  personal-toolchain-overrides-ignored:
-    '*':
-      .gitignore:
-        - mise.local.toml

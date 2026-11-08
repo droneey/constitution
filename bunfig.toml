@@ -1,4 +1,4 @@
-# bun
+# js-runtime/bun
 [install]
 minimumReleaseAge = 259200 # three days, in seconds
 

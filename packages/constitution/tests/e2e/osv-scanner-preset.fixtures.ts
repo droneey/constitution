@@ -31,7 +31,7 @@ const licencesOf = (input: { languages: readonly string[]; script: string }): re
           join(
             appliedUnit({
               implementations: [
-                'bun',
+                'js-runtime/bun',
                 'osv-scanner',
               ],
               languages: input.languages,

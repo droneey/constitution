@@ -1,6 +1,0 @@
-workspace:
-  '*':
-    typescript:
-      stryker.config.json:
-        ignorePatterns:
-          - /.droneey

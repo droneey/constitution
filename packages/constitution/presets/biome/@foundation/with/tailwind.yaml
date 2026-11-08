@@ -1,0 +1,69 @@
+tailwind:
+  '*':
+    css:
+      biome.jsonc:
+        css:
+          parser:
+            tailwindDirectives: true
+        linter:
+          rules:
+            nursery:
+              noUndeclaredCustomProperties: !replace 'off'
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            nursery:
+              noUndeclaredClasses: !replace 'off'
+  utilities-only-from-tokens:
+    css:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/css/utilities-only-from-tokens.${role.grit-rule}]:
+          includes:
+            - '**/*.css'
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            nursery:
+              noTailwindArbitraryValue: error
+  transition-all-never-used:
+    css:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/css/transition-all-never-used.${role.grit-rule}]:
+          includes:
+            - '**/*.css'
+    typescript:
+      biome.jsonc:
+        plugins:
+          - ./${constitution.path}/presets/biome/plugins/typescript/transition-all-never-used.${role.grit-rule}
+  screen-height-class-never-used:
+    typescript:
+      biome.jsonc:
+        plugins:
+          - ./${constitution.path}/presets/biome/plugins/typescript/screen-height-class-never-used.${role.grit-rule}
+  screen-width-class-never-used:
+    typescript:
+      biome.jsonc:
+        plugins:
+          - ./${constitution.path}/presets/biome/plugins/typescript/screen-width-class-never-used.${role.grit-rule}
+  class-never-opens-with-a-max-variant:
+    typescript:
+      biome.jsonc:
+        plugins:
+          - ./${constitution.path}/presets/biome/plugins/typescript/class-never-opens-with-a-max-variant.${role.grit-rule}
+  focus-shown-by-an-outline-utility:
+    typescript:
+      biome.jsonc:
+        plugins:
+          - ./${constitution.path}/presets/biome/plugins/typescript/focus-shown-by-an-outline-utility.${role.grit-rule}
+  important-modifier-never-in-a-class-list:
+    typescript:
+      biome.jsonc:
+        plugins:
+          - ./${constitution.path}/presets/biome/plugins/typescript/important-modifier-never-in-a-class-list.${role.grit-rule}
+  logical-utilities-for-direction:
+    typescript:
+      biome.jsonc:
+        plugins:
+          - ./${constitution.path}/presets/biome/plugins/typescript/logical-utilities-for-direction.${role.grit-rule}

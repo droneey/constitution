@@ -17,7 +17,8 @@ languages:
   - markdown
 implementations:
   - actionlint
-  - bun
+  - js-runtime/bun
+  - task-runner
   - biome
   - syncpack
   - git

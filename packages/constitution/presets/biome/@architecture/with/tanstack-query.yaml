@@ -1,0 +1,35 @@
+tanstack-query:
+  query-client-built-by-the-root:
+    typescript:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/query-client-built-by-the-root.${role.grit-rule}]:
+          includes:
+            - '**/*.ts'
+            - '**/*.tsx'
+            - '!**/${role.source}/${role.composition-root}/**'
+            - '!**/main.ts'
+            - '!**/${role.extra-entry}/*/main.ts'
+            - '!**/${role.colocated-specs}/**'
+            - '!**/*.${role.spec-file}.ts'
+            - '!**/*.${role.spec-file}.tsx'
+  read-declared-once-as-query-options:
+    typescript:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/read-declared-once-as-query-options.${role.grit-rule}]:
+          includes:
+            - '**/*.ts'
+            - '**/*.tsx'
+            - '!**/${role.presentation-layer}/${role.binding}/${role.shared-code}/cache.ts'
+            - '!**/${role.source}/${role.composition-root}/**'
+            - '!**/${role.colocated-specs}/**'
+            - '!**/*.${role.spec-file}.ts'
+            - '!**/*.${role.spec-file}.tsx'
+integrations/remote-data:
+  cache-key-built-by-its-owners-factory:
+    typescript:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/cache-key-built-by-its-owners-factory.${role.grit-rule}]:
+          includes:
+            - '**/*.ts'
+            - '**/*.tsx'
+            - '!**/${role.presentation-layer}/${role.binding}/${role.shared-code}/cache.ts'

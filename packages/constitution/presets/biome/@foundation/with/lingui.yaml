@@ -1,0 +1,8 @@
+localization:
+  module-level-text-holds-the-message:
+    typescript:
+      biome.jsonc:
+        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/module-level-text-holds-the-message.${role.grit-rule}]:
+          includes:
+            - '**/*.ts'
+            - '**/*.tsx'

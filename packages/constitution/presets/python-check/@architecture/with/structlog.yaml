@@ -1,0 +1,9 @@
+observability:
+  logging-library-imported-only-by-the-root:
+    python:
+      pyproject.toml:
+        tool:
+          python-check:
+            homes:
+              structlog:
+                - ${role.composition-root}

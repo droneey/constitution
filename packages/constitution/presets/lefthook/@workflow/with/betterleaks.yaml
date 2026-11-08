@@ -1,0 +1,10 @@
+lefthook:
+  staged-secret-scan-in-pre-commit:
+    '*':
+      lefthook.yaml:
+        pre-commit:
+          jobs[name=secrets]:
+            run: !words
+              - betterleaks git --pre-commit --staged
+              - slot: redaction
+              - --no-banner

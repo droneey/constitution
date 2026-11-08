@@ -555,7 +555,8 @@ export const refundLine = (id: OrderId): string => \`refund of \${ORDER_PREFIX}:
 };
 
 const typescriptTools: readonly string[] = [
-  'bun',
+  'js-runtime/bun',
+  'task-runner',
   'bun-test',
   'tsc',
   'biome',
@@ -565,9 +566,9 @@ const typescriptTools: readonly string[] = [
 ];
 
 const strykerPack = `stryker:
-  stryker-runs-the-distribution-runner:
+  stryker-runs-the-bun-specs-runner:
     typescript:
-      stryker.config.json:
+      stryker.\${role.config-file}.json:
         plugins: !replace
           - ${fileURLToPath(import.meta.resolve('@droneey/mutation-check-typescript/runner'))}
           - ${fileURLToPath(import.meta.resolve('@droneey/mutation-check-typescript/ignorers'))}
@@ -580,7 +581,8 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
       'version-control',
     ],
     implementations: [
-      'bun',
+      'js-runtime/bun',
+      'task-runner',
       'tsc',
       'biome',
       'knip',
@@ -623,6 +625,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
     domains: [
       'workspace',
       'version-control',
+      'observability',
     ],
     implementations: [
       'uv',
@@ -651,7 +654,7 @@ const unitBlocks: Readonly<Record<string, UnitFixture>> = {
       OWN_PACK,
     ],
     platforms: [
-      'browser',
+      'client/browser',
     ],
   },
   'packages/@desk/shared': {
@@ -752,7 +755,7 @@ const workspaceFiles: Files = {
       constitutionOf(unit),
     ]),
   ),
-  [`apps/web/${OWN_PACK}/presets/stryker/foundation/with/bun-test.yaml`]: strykerPack,
+  [`apps/web/${OWN_PACK}/presets/stryker/@foundation/with/bun-test.yaml`]: strykerPack,
   'knip.jsonc': jsonFileOf({
     entry: [
       'scripts/*.ts!',

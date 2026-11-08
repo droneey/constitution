@@ -44,7 +44,7 @@ exclude_also = ["if TYPE_CHECKING:", "@overload", "assert_never\\("]
 [tool.mutmut]
 # mutmut
 source_paths = ["src"]
-do_not_mutate = ["*/root/*", "*_messages.py", "*/main.py", "*_gen.py", "*_gen/*"]
+do_not_mutate = ["*/root/*", "*/main.py", "*_gen.py", "*_gen/*"]
 # Why: a log call's text and level are no behaviour a caller relies on.
 do_not_mutate_patterns = ['^\s*logger\.(debug|info|warning|error|exception|critical)\(']
 # Why: each mutant's run collects the integration specs too, as the coverage gate's run does.
@@ -95,7 +95,6 @@ extend-select = [
   "RUF006",
   "S",
   "T10",
-  "T20",
   "E722",
   "G001",
   "G002",
@@ -225,7 +224,7 @@ docstring-code-format = true
 quote-style = "single"
 
 [tool.poe]
-# poe
+# task-runner/poe
 executor = "simple"
 
 [tool.poe.tasks]
@@ -270,7 +269,7 @@ executor = "simple"
 # jscpd
 "check:duplicates" = "bunx --bun jscpd"
 
-# poe
+# task-runner/poe
 [tool.poe.tasks.test]
 shell = "for task in $(poe _list_tasks | tr ' ' '\\n' | sort); do case \"$task\" in test:*) poe \"$task\" || exit 1;; esac; done"
 
@@ -281,7 +280,7 @@ shell = "for task in $(poe _list_tasks | tr ' ' '\\n' | sort); do case \"$task\"
 [tool.poe.tasks."check:toml"]
 shell = "tombi format --check && tombi lint"
 
-# poe
+# task-runner/poe
 [tool.poe.tasks.check]
 shell = "for task in $(poe _list_tasks | tr ' ' '\\n' | sort); do case \"$task\" in check:*) poe \"$task\" || exit 1;; esac; done && poe test && poe mutate:branch"
 

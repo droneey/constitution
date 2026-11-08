@@ -282,7 +282,7 @@ describe('constitution run', () => {
       condition: 'with its Why when asked',
       whys: [
         "  Why: a naming rule left to review is broken as soon as nobody reads for it; a list of words is what a lint can hold of the rule, and the suppression is where the code says it knows nothing of the value's shape.",
-        "  Why: output written past the logger escapes the one place that decides where diagnostics go and what they may carry, so it lands where nobody looks, mixes into its user's output and can leak what it prints.",
+        '  Why: a debug print left in code that reaches its users leaks what it prints to whoever reads the output, and a breakpoint halts the program for a user who has no debugger.',
       ],
     },
   ])(
@@ -292,7 +292,8 @@ describe('constitution run', () => {
       const unit = installedIn(
         appliedUnit({
           implementations: [
-            'bun',
+            'js-runtime/bun',
+            'task-runner',
             'biome',
           ],
           languages: [
@@ -341,9 +342,9 @@ describe('constitution run', () => {
       }).toStrictEqual({
         exitCode: 1,
         named: [
-          "biome-refuses-empty-names · SHOULD — Biome's lint refuses a variable named only by an empty word. A variable, a parameter or a destructured field named only `data`, `result`, `temp`, `info`, `item`, `value`, `obj`, `arr`, `stuff` or `thing` fails the lint wherever its setting reaches; one that holds a value whose shape the code does not know takes a suppression that says so.",
+          "biome-refuses-empty-names · MUST — Every variable named only by an empty word fails Biome's lint. A variable, a parameter or a destructured field named only `data`, `result`, `temp`, `info`, `item`, `value`, `obj`, `arr`, `stuff` or `thing` fails it wherever the setting applies; one that holds a value whose shape the code does not know takes a suppression that says so.",
           ...whys.slice(0, 1),
-          "diagnostics-written-through-a-logger · MUST — Diagnostics are written only through a logger. The logger is the program's one **logging facade**{#logging-facade}, the language’s standard one where its ecosystem commonly uses it, and its sink may be a standard stream; code writes to a console or a standard stream directly only a command-line program’s output to its user or a protocol the program speaks over it, and no debug output or breakpoint ships.",
+          "debug-output-never-ships · MUST — All code that reaches its users is free of every debug output and breakpoint. Debug output is output written only to follow a run while the code is developed, such as a printed value or a dump. Exempt: a diagnostic written through the diagnostic handles at a level the program's settings can turn off.",
           ...whys.slice(1),
         ],
       });

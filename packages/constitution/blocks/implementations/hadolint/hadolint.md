@@ -1,15 +1,13 @@
 ---
 id: hadolint
 summary: Lints Dockerfiles, their shell steps included.
-requires: [dockerfile, _task-runner]
-extends: null
-abstract: false
+requires: [dockerfile, task-runner]
 languages: [dockerfile]
-governs: []
+governs: [".hadolint.yaml"]
 ---
 
 # hadolint
 
-> **`hadolint`** lints Dockerfiles, and the scripts of their `RUN` steps through the shell analyser built into it.
+> hadolint, the `hadolint` command, lints Dockerfiles, and the scripts of their `RUN` steps through the shell analyser built into it.
 
-hadolint is pinned like any other tool and reads its configuration from the command line; any finding fails it. Together, hadolint and its configuration hold every active rule of a Dockerfile that a linter can see.
+hadolint is pinned like any other tool and reads its configuration from `.hadolint.yaml`, where `failure-threshold` sets the lowest severity that fails it and `ignored` lists the rules it turns off.

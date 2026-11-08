@@ -1,0 +1,34 @@
+language js
+
+`null` as $value where {
+  $value <: not within or {
+    `return null`,
+    `$_ === null`,
+    `$_ !== null`,
+    `null === $_`,
+    `null !== $_`,
+    `useRef($...)`,
+    `useRef<$_>($...)`,
+    `RefObject<$_>`,
+    `Object.create(null)`,
+    `JSON.stringify($_, null, $_)`,
+    JsPropertyObjectMember(value=`($...) => null`),
+    JsxExpressionAttributeValue(expression=`($...) => null`),
+    TsReturnTypeAnnotation(ty=TsUnionType(types=$alternatives)) where {
+      $alternatives <: some TsReferenceType(name=$type) where { $type <: r".*ReactElement" }
+    },
+    JsConditionalExpression(consequent=$shown, alternate=`null`) where {
+      $shown <: or {
+        JsxTagExpression(),
+        JsParenthesizedExpression(expression=JsxTagExpression())
+      }
+    },
+    JsConditionalExpression(consequent=`null`, alternate=$shown) where {
+      $shown <: or {
+        JsxTagExpression(),
+        JsParenthesizedExpression(expression=JsxTagExpression())
+      }
+    }
+  },
+  register_diagnostic(span=$value, message="[null-written-only-where-react-uses-it] null outside the boundary: internal code spells absence as undefined; an adapter maps null to it", severity="error")
+}

@@ -370,7 +370,7 @@ describe('pluginCheck', () => {
     'templates/PROJECT.md',
     'templates/DECISIONS.md',
     'templates/block/block.md',
-    'templates/block/foundation/chapter.md',
+    'templates/block/@foundation/chapter.md',
     'templates/constitution.yaml',
   ])('should report the template %s when it is missing', (path) => {
     // Arrange

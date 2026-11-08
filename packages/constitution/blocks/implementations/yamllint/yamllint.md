@@ -1,13 +1,11 @@
 ---
 id: yamllint
-summary: yamllint holds the style of YAML files.
-requires: [yaml, _task-runner]
-extends: null
-abstract: false
+summary: yamllint lints the style of YAML files.
+requires: [yaml, task-runner]
 languages: [yaml]
 governs: [".yamllint.yaml", ".yamlignore"]
 ---
 
 # yamllint
 
-> **`yamllint`**, set by **`.yamllint.yaml`**{#yamllint-settings}, holds the style of YAML files; a project's own style rules for its YAML stay in its configuration.
+> yamllint, the `yamllint` command, lints YAML files by its settings in `.yamllint.yaml`.

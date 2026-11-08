@@ -124,6 +124,28 @@
     },
     {
       "includes": [
+        "**/__tests__/**",
+        "**/tests/**",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "useFilenamingConvention": {
+              "level": "error",
+              "options": {
+                "strictCase": true,
+                "filenameCases": [
+                  "kebab-case",
+                ],
+                "match": "([^.]+)[.]((?:[^.]+[.])?(?:integration[.]|e2e[.])?(?:test|fake|suite|fixtures)[.]tsx?)",
+              },
+            },
+          },
+        },
+      },
+    },
+    {
+      "includes": [
         "**/use-cases/queries/**",
         "!**/__tests__/**",
       ],
@@ -265,7 +287,7 @@
       },
     },
 
-    // bun
+    // js-runtime/bun
     {
       "includes": [
         "**/src/**",
@@ -411,30 +433,6 @@
     },
     {
       "includes": [
-        "**/__tests__/**",
-        "**/tests/**",
-      ],
-      "linter": {
-        "rules": {
-          "style": {
-            "useFilenamingConvention": {
-              "level": "error",
-              "options": {
-                "strictCase": true,
-                "filenameCases": [
-                  "kebab-case",
-                ],
-                "match": "([^.]+)[.]((?:[^.]+[.])?(?:integration[.]|e2e[.])?(?:test|fake|suite|fixtures)[.]tsx?)",
-              },
-            },
-          },
-        },
-      },
-    },
-
-    // typescript
-    {
-      "includes": [
         "**/components/**",
         "!**/__tests__/**",
       ],
@@ -469,27 +467,147 @@
       },
     },
 
-    // _js-runtime
+    // biome
     {
       "includes": [
-        "**/src/infrastructure/*",
-        "**/main.*",
-        "**/entrypoints/*/main.*",
         "**/__tests__/**",
         "**/*.test.ts",
         "**/*.test.tsx",
-        "**/tests/**",
+      ],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noStaticOnlyClass": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noIdenticalTestTitle": "error",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/*.jsonc",
+      ],
+      "json": {
+        "formatter": {
+          "trailingCommas": "all",
+        },
+      },
+    },
+
+    // bun-test
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+      "linter": {
+        "domains": {
+          "test": "all",
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveNestedTestSuites": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
       ],
       "linter": {
         "rules": {
           "style": {
-            "noProcessEnv": "off",
+            "useConsistentTestIt": "error",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "useTestHooksInOrder": "error",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "useTestHooksOnTop": "error",
           },
         },
       },
     },
 
-    // _react
+    // dependency-cruiser
+    {
+      "includes": [
+        "**/.dependency-cruiser.js",
+        "**/.dependency-cruiser.mjs",
+        "**/.dependency-cruiser.cjs",
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noDefaultExport": "off",
+          },
+        },
+      },
+    },
+    {
+      "includes": [
+        "**/.dependency-cruiser.js",
+        "**/.dependency-cruiser.mjs",
+        "**/.dependency-cruiser.cjs",
+      ],
+      "linter": {
+        "rules": {
+          "security": {
+            "noSecrets": "off",
+          },
+        },
+      },
+    },
+
+    // react
     {
       "includes": [
         "**/*.ts",
@@ -1203,146 +1321,6 @@
       },
     },
 
-    // biome
-    {
-      "includes": [
-        "**/__tests__/**",
-        "**/*.test.ts",
-        "**/*.test.tsx",
-      ],
-      "linter": {
-        "rules": {
-          "complexity": {
-            "noStaticOnlyClass": "off",
-          },
-        },
-      },
-    },
-    {
-      "includes": [
-        "**/__tests__/**",
-        "**/*.test.ts",
-        "**/*.test.tsx",
-      ],
-      "linter": {
-        "rules": {
-          "suspicious": {
-            "noIdenticalTestTitle": "error",
-          },
-        },
-      },
-    },
-    {
-      "includes": [
-        "**/*.jsonc",
-      ],
-      "json": {
-        "formatter": {
-          "trailingCommas": "all",
-        },
-      },
-    },
-
-    // bun-test
-    {
-      "includes": [
-        "**/__tests__/**",
-        "**/*.test.ts",
-        "**/*.test.tsx",
-      ],
-      "linter": {
-        "domains": {
-          "test": "all",
-        },
-      },
-    },
-    {
-      "includes": [
-        "**/__tests__/**",
-        "**/*.test.ts",
-        "**/*.test.tsx",
-      ],
-      "linter": {
-        "rules": {
-          "complexity": {
-            "noExcessiveNestedTestSuites": "off",
-          },
-        },
-      },
-    },
-    {
-      "includes": [
-        "**/__tests__/**",
-        "**/*.test.ts",
-        "**/*.test.tsx",
-      ],
-      "linter": {
-        "rules": {
-          "style": {
-            "useConsistentTestIt": "error",
-          },
-        },
-      },
-    },
-    {
-      "includes": [
-        "**/__tests__/**",
-        "**/*.test.ts",
-        "**/*.test.tsx",
-      ],
-      "linter": {
-        "rules": {
-          "style": {
-            "useTestHooksInOrder": "error",
-          },
-        },
-      },
-    },
-    {
-      "includes": [
-        "**/__tests__/**",
-        "**/*.test.ts",
-        "**/*.test.tsx",
-      ],
-      "linter": {
-        "rules": {
-          "style": {
-            "useTestHooksOnTop": "error",
-          },
-        },
-      },
-    },
-
-    // dependency-cruiser
-    {
-      "includes": [
-        "**/.dependency-cruiser.js",
-        "**/.dependency-cruiser.mjs",
-        "**/.dependency-cruiser.cjs",
-      ],
-      "linter": {
-        "rules": {
-          "style": {
-            "noDefaultExport": "off",
-          },
-        },
-      },
-    },
-    {
-      "includes": [
-        "**/.dependency-cruiser.js",
-        "**/.dependency-cruiser.mjs",
-        "**/.dependency-cruiser.cjs",
-      ],
-      "linter": {
-        "rules": {
-          "security": {
-            "noSecrets": "off",
-          },
-        },
-      },
-    },
-
     // tanstack-router
     {
       "includes": [
@@ -1389,7 +1367,6 @@
         // biome
         "noEmptyBlockStatements": "error",
         "noAlert": "error",
-        "noConsole": "error",
         "noDebugger": "error",
         "noSkippedTests": "error",
         "noFocusedTests": "error",
@@ -1459,6 +1436,7 @@
         "noEmptyObjectKeys": "error",
         "noLoopFunc": "error",
 
+        // react/react-dom
         // react-dom
         "noUnknownAttribute": "error",
       },
@@ -1481,6 +1459,7 @@
         "useJsonImportAttributes": "error",
         "noUnusedInstantiation": "error",
 
+        // react/react-dom
         // react-dom
         "useUniqueElementIds": "error",
         "useImageSize": "error",
@@ -1570,9 +1549,6 @@
         "noDefaultExport": "error",
         "noCommonJs": "error",
 
-        // _js-runtime
-        "noProcessEnv": "error",
-
         // biome
         "useArrayLiterals": "error",
         "useConst": "error",
@@ -1637,6 +1613,7 @@
         // biome
         "usePromiseRejectErrors": "error",
 
+        // react/react-dom
         // react-dom
         "noObsoleteTags": "error",
 
@@ -1656,6 +1633,7 @@
         // tailwind
         "noUndeclaredClasses": "off",
 
+        // react/react-dom
         // react-dom
         "noMisplacedListElements": "error",
 
@@ -1681,6 +1659,7 @@
         "useModernMathApis": "error",
         "useFlatMathMinMax": "error",
 
+        // react/react-dom
         // react-dom
         "noInvalidFileInputAccept": "error",
         "useControlLabel": "error",
@@ -1781,6 +1760,7 @@
         // typescript
         "noGlobalEval": "error",
 
+        // react/react-dom
         // react-dom
         "noDangerouslySetInnerHtml": "error",
         "noDangerouslySetInnerHtmlWithChildren": "error",
@@ -1797,6 +1777,7 @@
         "noAwaitInLoops": "error",
       },
 
+      // react/react-dom
       // react-dom
       "a11y": {
         "useHtmlLang": "error",
@@ -1867,17 +1848,9 @@
       ],
     },
 
-    // _react
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/file-is-one-semantic-unit.grit",
-      "includes": [
-        "**/*.tsx",
-      ],
-    },
-
     // bun-test
     {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/test-never-skipped-or-empty.grit",
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/test-runs-unconditionally.grit",
       "includes": [
         "**/__tests__/**",
         "**/*.test.ts",
@@ -1897,12 +1870,11 @@
         "!**/src/root/**",
         "!**/src/*.ts",
         "!**/src/*.tsx",
-        "!**/src/entrypoints/*/main.*",
+        "!**/src/entrypoints/*/main.ts",
         "!**/src/integrations/**",
         "!**/__tests__/**",
       ],
     },
-
     {
       "path": "./.droneey/constitution/presets/biome/plugins/typescript/surface-only-re-exports.grit",
       "includes": [
@@ -1918,20 +1890,20 @@
 
     // typescript
     {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/entity-value-or-event-typed-readonly.grit",
+      "includes": [
+        "**/domain/**",
+        "**/kernel/**",
+        "!**/__tests__/**",
+      ],
+    },
+    {
       "path": "./.droneey/constitution/presets/biome/plugins/typescript/closed-name-set-is-a-string-enum.grit",
       "includes": [
         "**/*.ts",
         "**/*.tsx",
         "!**/infrastructure/**",
-        "!**/models/**",
-      ],
-    },
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/business-types-readonly.grit",
-      "includes": [
-        "**/domain/**",
-        "**/kernel/**",
-        "!**/__tests__/**",
+        "!**/dtos/**",
       ],
     },
 
@@ -1955,7 +1927,13 @@
       ],
     },
     {
-      "path": "./.droneey/constitution/presets/biome/plugins/css/viewport-size-leaves-out-what-the-browser-draws.grit",
+      "path": "./.droneey/constitution/presets/biome/plugins/css/viewport-height-leaves-out-the-browsers-toolbars.grit",
+      "includes": [
+        "**/*.css",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/css/full-width-leaves-out-the-scrollbar.grit",
       "includes": [
         "**/*.css",
       ],
@@ -1969,7 +1947,7 @@
 
     // typescript
     {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/identifier-case-by-kind.grit",
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/name-cased-by-the-typescript-conventions.grit",
       "includes": [
         "**/*.ts",
         "**/*.tsx",
@@ -1980,12 +1958,12 @@
       "includes": [
         "**",
         "!**/infrastructure/**",
-        "!**/models/**",
+        "!**/dtos/**",
         "!**/*.tsx",
       ],
     },
     {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/module-level-value-never-changed.grit",
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/module-level-variable-declared-const.grit",
       "includes": [
         "**",
         "!**/*.test.ts",
@@ -2020,7 +1998,7 @@
       ],
     },
     {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/timer-set-only-by-the-edge-and-binding-units.grit",
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/set-timeout-called-only-at-the-edge.grit",
       "includes": [
         "**/src/**",
         "!**/src/infrastructure/**",
@@ -2030,7 +2008,7 @@
         "!**/src/root/**",
         "!**/src/*.ts",
         "!**/src/*.tsx",
-        "!**/src/entrypoints/*/main.*",
+        "!**/src/entrypoints/*/main.ts",
         "!**/src/integrations/**",
         "!**/src/features/*/presentation/bindings/**",
         "!**/src/composition/*/presentation/bindings/**",
@@ -2039,46 +2017,9 @@
       ],
     },
 
-    // _js-runtime
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/child-process-started-without-a-shell.grit",
-      "includes": [
-        "**/*.ts",
-        "**/*.tsx",
-      ],
-    },
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/child-process-given-an-env-of-its-own.grit",
-      "includes": [
-        "**/*.ts",
-        "**/*.tsx",
-      ],
-    },
-
-    // _react
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/nothing-rendered-as-null.grit",
-      "includes": [
-        "**/*.tsx",
-      ],
-    },
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/compound-parts-share-the-root-context.grit",
-      "includes": [
-        "**/*.tsx",
-      ],
-    },
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/react-compiler-on.grit",
-      "includes": [
-        "**/*.ts",
-        "**/*.tsx",
-      ],
-    },
-
     // bun-test
     {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/module-never-mocked-in-a-spec.grit",
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/bun-spec-mocks-no-module.grit",
       "includes": [
         "**/__tests__/**",
         "**/*.test.ts",
@@ -2094,7 +2035,7 @@
       ],
     },
     {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/failed-test-never-retried.grit",
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/bun-test-retries-no-case.grit",
       "includes": [
         "**/__tests__/**",
         "**/*.test.ts",
@@ -2102,11 +2043,64 @@
       ],
     },
     {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/spec-never-sleeps.grit",
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/bun-spec-never-sleeps.grit",
       "includes": [
         "**/__tests__/**",
         "**/*.test.ts",
         "**/*.test.tsx",
+      ],
+    },
+
+    // js-runtime
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/child-process-started-without-a-shell.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/spawn-given-an-env-built-for-it.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+
+    // react
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/null-written-only-where-react-uses-it.grit",
+      "includes": [
+        "**/*.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/compound-part-keyed-in-pascal-case.grit",
+      "includes": [
+        "**/*.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/react-compiler-on.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+
+    // schema/zod
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/zod-four-forms-only.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+      ],
+    },
+    {
+      "path": "./.droneey/constitution/presets/biome/plugins/typescript/schema-builds-values-through-their-constructor.grit",
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
       ],
     },
 
@@ -2137,52 +2131,38 @@
       ],
     },
 
-    // zod
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/zod-four-forms-only.grit",
-      "includes": [
-        "**/*.ts",
-        "**/*.tsx",
-      ],
-    },
-    {
-      "path": "./.droneey/constitution/presets/biome/plugins/typescript/schema-builds-values-through-their-constructor.grit",
-      "includes": [
-        "**/*.ts",
-        "**/*.tsx",
-      ],
-    },
-
     // biome
     "./.droneey/constitution/presets/biome/plugins/typescript/catch-handles-only-what-it-recognises.grit",
     "./.droneey/constitution/presets/biome/plugins/typescript/statements-grouped-by-blank-lines.grit",
 
-    // browser
+    // typescript
+    "./.droneey/constitution/presets/biome/plugins/typescript/type-name-undecorated.grit",
+
+    // client/browser
     "./.droneey/constitution/presets/biome/plugins/typescript/raw-html-never-reaches-the-dom.grit",
 
-    // react-dom
+    // react/react-dom
     "./.droneey/constitution/presets/biome/plugins/typescript/field-declares-its-autocomplete.grit",
-
-    // typescript
-    "./.droneey/constitution/presets/biome/plugins/typescript/type-names-undecorated.grit",
-
-    // _react
-    "./.droneey/constitution/presets/biome/plugins/typescript/modern-react-api-only.grit",
 
     // biome
     "./.droneey/constitution/presets/biome/plugins/typescript/biome-refuses-empty-verbs.grit",
     "./.droneey/constitution/presets/biome/plugins/typescript/biome-refuses-empty-names.grit",
 
-    // react-dom
-    "./.droneey/constitution/presets/biome/plugins/typescript/labels-bound-with-use-id.grit",
-    "./.droneey/constitution/presets/biome/plugins/typescript/inline-style-only-custom-properties-and-geometry.grit",
+    // react
+    "./.droneey/constitution/presets/biome/plugins/typescript/modern-react-api-only.grit",
+
+    // react/react-dom
+    "./.droneey/constitution/presets/biome/plugins/typescript/ids-from-use-id.grit",
+    "./.droneey/constitution/presets/biome/plugins/typescript/inline-style-holds-only-custom-properties.grit",
 
     // tailwind
     "./.droneey/constitution/presets/biome/plugins/typescript/transition-all-never-used.grit",
-    "./.droneey/constitution/presets/biome/plugins/typescript/screen-sized-classes-never-used.grit",
-    "./.droneey/constitution/presets/biome/plugins/typescript/mobile-first-breakpoints.grit",
-    "./.droneey/constitution/presets/biome/plugins/typescript/focus-shown-by-focusable-utility.grit",
+    "./.droneey/constitution/presets/biome/plugins/typescript/screen-height-class-never-used.grit",
+    "./.droneey/constitution/presets/biome/plugins/typescript/screen-width-class-never-used.grit",
+    "./.droneey/constitution/presets/biome/plugins/typescript/class-never-opens-with-a-max-variant.grit",
+    "./.droneey/constitution/presets/biome/plugins/typescript/focus-shown-by-an-outline-utility.grit",
     "./.droneey/constitution/presets/biome/plugins/typescript/important-modifier-never-in-a-class-list.grit",
+    "./.droneey/constitution/presets/biome/plugins/typescript/logical-utilities-for-direction.grit",
   ],
   "assist": {
     "actions": {
@@ -2200,46 +2180,40 @@
               // biome
               ":URL:",
 
-              // _react
               ":BLANK_LINE:",
 
-              // biome
               ":NODE:",
 
-              // _react
               ":BLANK_LINE:",
 
-              // biome
               ":BUN:",
 
-              // _react
               ":BLANK_LINE:",
+
+              // react
               [
                 "react",
                 "react/**",
                 "react-*",
               ],
+
+              // biome
               ":BLANK_LINE:",
 
               // tanstack-router
               "@tanstack/**",
 
-              // _react
+              // biome
               ":BLANK_LINE:",
 
-              // biome
               ":PACKAGE:",
 
-              // _react
               ":BLANK_LINE:",
 
-              // biome
               ":ALIAS:",
 
-              // _react
               ":BLANK_LINE:",
 
-              // biome
               ":PATH:",
             ],
           },

@@ -5,10 +5,9 @@ axes:
 domains:
   - version-control
   - workspace
-  - ui
-  - copy
+  - presentation
 platforms:
-  - cli
+  - client/cli
 languages:
   - typescript
   - json
@@ -17,7 +16,8 @@ languages:
   - shell
   - markdown
 implementations:
-  - bun
+  - js-runtime/bun
+  - task-runner
   - tsc
   - biome
   - dependency-cruiser
@@ -32,10 +32,10 @@ implementations:
   - tombi
   - bun-test
   - stryker
-  - zod
+  - schema/zod
   - yaml-js
   - commander
-  - ink
+  - react/ink
 packs:
   - pack
 overrides:

@@ -1,0 +1,6 @@
+tanstack-router:
+  '*':
+    typescript:
+      stryker.${role.config-file}.json:
+        ignorePatterns:
+          - .tanstack

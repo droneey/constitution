@@ -60,7 +60,7 @@ Within a value, a fact stands for what `constitution` knows of the unit:
 In the place of a file, an entry of a runner's block may give `${constitution.run}`: what `constitution run` runs in the unit, a list of commands for each entry point, `check`, `test` and `fix`, which no file holds and `constitution` reads. The lists join as a file's do, so two runners of one unit both run, each by its unit's own `check`:
 
 ```yaml
-_task-runner:
+task-runner:
   unit-run-through-its-action-tasks:
     typescript:
       ${constitution.run}:
@@ -72,7 +72,7 @@ _task-runner:
 
 A list marked `!words` is written as one text, its items spaced, so the entries that join it, or insert at its slots, compose a command: Bun's `check` places the slots `checks`, `tests` and `mutations`, and the tools' pairings insert `'check:*'`, `test` and `mutate:branch`, each only where the unit has the scripts it names.
 
-A tool's block gives its scripts or tasks through its pairing with the runner, `presets/bun/foundation/with/biome.yaml`, so the runner decides how a tool runs. A tool's block requires the abstract runner it needs, `_task-runner` or `_js-runtime`, so a unit with the tool and no runner fails the requirement; a unit whose runners pair with none of a tool's preset files is reported as `tool-without-runner`.
+A tool's block gives its scripts or tasks through its pairing with the runner, `presets/js-runtime/bun/@foundation/with/biome.yaml`, so the runner decides how a tool runs. A tool's block requires the runner it needs, `task-runner` or `js-runtime`, so a unit with the tool and no runner fails the requirement; a unit whose runners pair with none of a tool's preset files is reported as `tool-without-runner`.
 
 A guard writes the file only where it holds: `${file.isTop}`, in the unit no unit above gets the same entry for; `${unit.isRepositoryRoot}`, in the repository's own unit, the root of a workspace or a repository of one unit; `${workspace.isRoot}`, at the root of a workspace; or a fact of a text compared with a text, its facts resolved, `${unit.parent} = ${role.deployed-unit}`, in a unit of `apps/`, where both resolve and are the same; each with `!` before its fact for its opposite.
 

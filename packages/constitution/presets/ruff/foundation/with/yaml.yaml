@@ -1,9 +1,0 @@
-yaml:
-  outside-yaml-loaded-by-a-safe-loader:
-    python:
-      pyproject.toml:
-        tool:
-          ruff:
-            lint:
-              extend-select:
-                - S

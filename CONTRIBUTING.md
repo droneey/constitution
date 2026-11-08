@@ -19,7 +19,7 @@ Here `.droneey/constitution` links to `packages/constitution`, whose `bin/consti
 
 ## Change a rule
 
-1. Place each rule a change adds or moves by the three questions of [placement](packages/constitution/blocks/core/foundation/placement.md), and write it in [the block format](docs/reference/block-format.md).
+1. Place each rule a change adds or moves by the three questions of [placement](packages/constitution/blocks/core/@foundation/placement.md), and write it in [the block format](docs/reference/block-format.md).
 2. The `rule-placement` agent reviews every change to `blocks/` or `presets/`; its table goes into the pull request, and each of its findings is fixed or answered there.
 3. A choice between real alternatives about a rule gets its entry in [`DECISIONS.md`](DECISIONS.md), naming what was rejected and why.
 

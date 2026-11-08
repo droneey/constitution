@@ -1,14 +1,15 @@
 ```text title="Avoid"
-implementations/tailwind/foundation/
+implementations/tailwind/@foundation/
 ├── utilities.md
 └── with/
-    ├── design-system.md   transition-all-never-used
-    └── ui.md              a seam with ui, which tailwind requires
+    └── presentation/
+        └── design-system.md   transition-all-never-used
 ```
 
 ```text title="Prefer"
-implementations/tailwind/foundation/
-├── utilities.md           transition-all-never-used
+implementations/tailwind/@foundation/
+├── utilities.md               transition-all-never-used
 └── with/
-    └── design-system.md   class-names-only-semantic-colors
+    └── presentation/
+        └── design-system.md   class-names-only-semantic-colors
 ```

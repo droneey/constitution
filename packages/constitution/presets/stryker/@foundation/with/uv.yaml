@@ -1,0 +1,6 @@
+uv:
+  '*':
+    typescript:
+      stryker.${role.config-file}.json:
+        ignorePatterns:
+          - /.venv

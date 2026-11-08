@@ -1,0 +1,9 @@
+observability:
+  diagnostics-written-through-a-logger:
+    python:
+      pyproject.toml:
+        tool:
+          ruff:
+            lint:
+              extend-select:
+                - T20

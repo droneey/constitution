@@ -139,7 +139,7 @@ const docsWrapperOf = (
       >
         <RootProvider
           search={{
-            // biome-ignore lint/plugin/compound-parts-share-the-root-context: Fumadocs' root provider names the search dialog's slot SearchDialog
+            // biome-ignore lint/plugin/compound-part-keyed-in-pascal-case: Fumadocs' root provider names the search dialog's slot SearchDialog
             SearchDialog: DocsSearchWidget,
           }}
           theme={{

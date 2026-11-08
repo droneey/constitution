@@ -1,0 +1,150 @@
+react/react-dom:
+  ids-from-use-id:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            correctness:
+              useUniqueElementIds: error
+        plugins:
+          - ./${constitution.path}/presets/biome/plugins/typescript/ids-from-use-id.${role.grit-rule}
+  dangerously-set-inner-html-never-used:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            security:
+              noDangerouslySetInnerHtml: error
+  '*':
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            security:
+              noDangerouslySetInnerHtmlWithChildren: error
+              noBlankTarget: error
+            a11y:
+              useButtonType: error
+              useHeadingContent: error
+              noAutofocus: error
+              noRedundantAlt: error
+            nursery:
+              noInvalidFileInputAccept: error
+  aria-attributes-written-hyphenated:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            suspicious:
+              noUnknownAttribute: error
+  inline-style-holds-only-custom-properties:
+    typescript:
+      biome.jsonc:
+        plugins:
+          - ./${constitution.path}/presets/biome/plugins/typescript/inline-style-holds-only-custom-properties.${role.grit-rule}
+core:
+  deprecated-form-never-used:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            nursery:
+              noObsoleteTags: error
+html:
+  tabindex-only-zero-or-minus-one:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            a11y:
+              noPositiveTabindex: error
+  focusable-element-never-aria-hidden:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            a11y:
+              noAriaHiddenOnFocusable: error
+  html-element-taken-for-each-structure:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            a11y:
+              useValidAnchor: error
+              useSemanticElements: error
+              noStaticElementInteractions: error
+              noNoninteractiveElementInteractions: error
+              noNoninteractiveElementToInteractiveRole: error
+            nursery:
+              noMisplacedListElements: error
+  image-declares-its-size:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            correctness:
+              useImageSize: error
+  field-declares-its-autocomplete:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            a11y:
+              useValidAutocomplete: error
+        plugins:
+          - ./${constitution.path}/presets/biome/plugins/typescript/field-declares-its-autocomplete.${role.grit-rule}
+  viewport-never-blocks-zoom:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            nursery:
+              noNonScalableViewport: error
+presentation:
+  every-control-has-an-accessible-name:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            a11y:
+              useAnchorContent: error
+              useAltText: error
+              noLabelWithoutControl: error
+              useIframeTitle: error
+              noSvgWithoutTitle: error
+            nursery:
+              useControlLabel: error
+  screen-declares-its-language:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            a11y:
+              useHtmlLang: error
+  added-role-true-to-its-element:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            a11y:
+              useAriaPropsForRole: error
+              noInteractiveElementToNoninteractiveRole: error
+              useValidAriaValues: error
+              useValidAriaProps: error
+              useValidAriaRole: error
+  native-semantics-first:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            a11y:
+              noRedundantRoles: error
+  control-operable-by-every-input:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            a11y:
+              useFocusableInteractive: error
+              useKeyWithClickEvents: error

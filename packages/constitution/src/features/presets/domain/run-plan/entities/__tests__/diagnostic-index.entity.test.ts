@@ -36,7 +36,7 @@ const index: DiagnosticIndex = new Map([
     'S',
     [
       heldOf('outside-call-has-a-timeout'),
-      heldOf('text-never-run-as-code'),
+      heldOf('text-never-passed-to-eval-or-exec'),
     ],
   ],
   [
@@ -84,7 +84,7 @@ describe('DiagnosticIndex', () => {
         'src/a.py:1:1: S113 Probable use of `requests` call without timeout\nsrc/a.py:2:1: T100 Trace found',
       slugs: [
         'outside-call-has-a-timeout',
-        'text-never-run-as-code',
+        'text-never-passed-to-eval-or-exec',
         'diagnostics-written-through-a-logger',
       ],
     },

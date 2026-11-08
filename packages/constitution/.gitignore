@@ -26,19 +26,19 @@ id_rsa
 *.bak
 *.orig
 *~
-/local/
 .env*
 !.env.example
+/local/
 
-# bun
+# js-runtime/bun
 .npmrc
-
-# _js-runtime
-**/node_modules/
-*.tgz
 
 # bun-test
 **/coverage/
+
+# js-runtime
+**/node_modules/
+*.tgz
 
 # rumdl
 .rumdl_cache/
@@ -49,4 +49,4 @@ reports/mutation/
 
 # tsc
 *.tsbuildinfo
-.tsc-cache/
+tsc-cache.gen/

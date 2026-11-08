@@ -2,14 +2,10 @@
 id: server
 summary: A long-running process a host starts, routes to, restarts and stops.
 requires: []
-extends: null
-abstract: false
 languages: []
 governs: ["**"]
 ---
 
 # Server
 
-> A program that runs until its host stops it — in a container, a virtual machine or a platform's process — and serves requests or works through messages and schedules.
-
-The program's host decides when it starts, when work is routed to it, how many copies of it run and when it is killed; the block covers what passes between the program and its host — its health, its stop, the rights it runs with — and how it is laid out and assembled.
+> A program that runs until its host stops it, in a container, a virtual machine or a platform's process, and serves requests or works through messages and schedules: what passes between it and its host, such as its health, its stop and the rights it runs with, and how it is laid out and assembled.

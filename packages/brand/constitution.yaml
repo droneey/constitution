@@ -10,7 +10,8 @@ languages:
   - toml
   - yaml
 implementations:
-  - bun
+  - js-runtime/bun
+  - task-runner
   - biome
   - git
 packs: []

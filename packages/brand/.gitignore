@@ -25,10 +25,11 @@ id_rsa
 *~
 .env*
 !.env.example
+/local/
 
-# bun
+# js-runtime/bun
 .npmrc
 
-# _js-runtime
+# js-runtime
 **/node_modules/
 *.tgz

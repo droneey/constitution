@@ -2,8 +2,6 @@
 id: json
 summary: "JSON: strict syntax, comments, schemas and exact values."
 requires: []
-extends: null
-abstract: false
 languages: []
 governs: ["**/*.json", "**/*.jsonc"]
 ---

@@ -1,15 +1,13 @@
 ---
 id: tombi
 summary: tombi formats and lints TOML files.
-requires: [toml, _task-runner]
-extends: null
-abstract: false
+requires: [toml, task-runner]
 languages: [toml]
 governs: ["tombi.toml"]
 ---
 
 # tombi
 
-> **`tombi`** formats TOML and lints it against the schema of each file it knows.
+> tombi, the `tombi` command, formats TOML and lints it against the schema of each file it knows.
 
-tombi reads no other file from **`tombi.toml`**, and only the one in the folder it runs in or above it, so `constitution` writes the settings into the file of each unit a run starts from.
+tombi reads the first of `.tombi.toml`, `tombi.toml`, `.config/tombi.toml` and `[tool.tombi]` of `pyproject.toml` that it finds in the folder it runs in or above it, so `constitution` writes the settings into the `tombi.toml` of each unit a run starts from.

@@ -17,7 +17,7 @@ blocks/<layer>/<id>/        the layer is its folder
     └── <chapter>.md
 ```
 
-[Where a rule goes](../../packages/constitution/blocks/core/foundation/placement.md) places the passport, the axes, the chapters and the seams: `block-root-holds-its-passport-and-axes`, `rule-placed-on-the-axis-its-readers-share`, `rule-placed-in-the-chapter-named-for-it`, `rule-placed-in-a-seam-only-when-it-needs-both-blocks` and `seam-held-by-the-block-whose-behaviour-it-constrains`. Beside them, the passport's front matter covers every axis of the block, and the passport never names the files that hold the rest, except core's, which lists its chapters in the order they are read; a block with no rules is its passport alone, and its id names only the passport. A seam, `<axis>/with/<other>.md`, is titled as the other block's passport, since its folder already names its own block.
+[Where a rule goes](../../packages/constitution/blocks/core/@foundation/placement.md) places the passport, the axes, the chapters and the seams: `block-root-holds-its-passport-beside-its-axes`, `rule-placed-on-the-axis-its-readers-share`, `rule-placed-in-the-chapter-named-for-it`, `rule-placed-in-a-seam-only-when-it-needs-both-blocks` and `seam-held-by-the-block-whose-behaviour-it-constrains`. Beside them, the passport's front matter covers every axis of the block, and the passport never names the files that hold the rest, except core's, which lists its chapters in the order they are read; a block with no rules is its passport alone, and its id names only the passport. A seam, `<axis>/with/<other>.md`, is titled as the other block's passport, since its folder already names its own block.
 
 ## Naming a chapter
 
@@ -61,7 +61,7 @@ The passport opens with every field, in this order:
 ---
 id: tanstack-query
 summary: Server data in the TanStack Query cache — keys, queries, mutations.
-requires: [_react, remote-data]
+requires: [react, integrations/remote-data]
 extends: null
 abstract: false
 languages: []

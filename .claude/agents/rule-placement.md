@@ -13,7 +13,7 @@ A git range, `origin/main...HEAD` unless you are given another. Read the rules i
 
 ## What to read first
 
-- `blocks/core/foundation/placement.md`, whose three questions are your test, and `blocks/core/core.md`, above all "Precedence".
+- `blocks/core/@foundation/placement.md`, whose three questions are your test, and `blocks/core/core.md`, above all "Precedence".
 - `DECISIONS.md` ADR-0088, ADR-0089 and ADR-0093: what architecture and workflow mean here, and the tie-breakers; ADR-0214: which block holds a seam, and what a seam may hold; ADR-0219: how a term is defined and owned.
 - For each rule, its whole file and the passport of its block: the block's `requires`, `extends` and summary tell you what the block is.
 

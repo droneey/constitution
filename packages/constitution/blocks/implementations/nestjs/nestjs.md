@@ -1,22 +1,13 @@
 ---
 id: nestjs
 summary: NestJS — modules, providers and the injector that assembles them.
-requires: [typescript, tsc, _api, http-server]
-extends: null
-abstract: false
+requires: [typescript, tsc, contracts/api, server]
 languages: []
-governs: ["nest-cli.json", ".swcrc", "**/root/**", "**/*.module.ts", "**/*.controller.ts", "**/*.filter.ts", "**/*.guard.ts", "**/*.pipe.ts", "**/*.interceptor.ts", "**/providers/**"]
+governs: ["nest-cli.json", ".swcrc", "**/root/**", "**/*.module.ts", "**/*.controller.ts", "**/*.filter.ts", "**/*.guard.ts", "**/*.pipe.ts", "**/*.interceptor.ts", "**/providers/**", "**/infrastructure/**", "**/dtos/**", "**/__tests__/**", "**/tests/**"]
 ---
 
 # NestJS
 
-> Builds an HTTP server program from modules whose providers the injector assembles by their constructors' types.
+> Builds a server program from modules whose providers the injector assembles by their constructors' types.
 
-**NestJS**, **Nest** for short, ships as the **`@nestjs`** packages, and **`nest-cli.json`** holds its command line's settings. Its settings, of **`.swcrc`**{#swc-settings} and `tsconfig.json` among them, keep the decorator metadata the injector reads.
-
-## Requirements
-
-| Requirement | How | Met |
-|---|---|---|
-| `framework-passes-every-failure-to-one-handler` | a global exception filter whose `@Catch()` names no class receives every exception, the `NotFoundException` of an unknown route or method and the `BadRequestException` of a malformed body included | yes |
-| `framework-parses-a-request-before-its-handler` | a pipe, global or bound to a parameter, parses it before the controller's method runs, and the error it throws reaches the filter | yes |
+NestJS, Nest for short, ships as the `@nestjs` packages, and `nest-cli.json` holds its command line's settings.

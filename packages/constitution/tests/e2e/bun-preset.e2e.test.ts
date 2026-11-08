@@ -10,7 +10,7 @@ const PROBE = 'probe';
 describe("the configuration Bun's presets write", () => {
   it("should run a script's node as Bun when a unit follows every block Bun is configured for", async () => {
     // Arrange
-    const folder = widestAppliedUnit('bun', {
+    const folder = widestAppliedUnit('js-runtime/bun', {
       files: {
         'package.json': `${JSON.stringify({
           name: 'unit',

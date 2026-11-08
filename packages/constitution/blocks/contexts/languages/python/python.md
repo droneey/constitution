@@ -2,14 +2,10 @@
 id: python
 summary: Python's modules, types, async code, specs and dependencies.
 requires: []
-extends: null
-abstract: false
 languages: []
-governs: ["**/*.py", "**/*.pyi"]
+governs: ["**/*.py", "**/*.pyi", "**/pyproject.toml", "**/py.typed"]
 ---
 
 # Python
 
-> Code written in **Python**: its modules and import packages, the annotations a type checker reads, its asynchronous code, and the specs that prove it.
-
-A program starts at **`main.py`**{#entry}, which **`__main__.py`** calls, and a project declares its packages, its dependencies and its tools' settings in **`pyproject.toml`**.
+> Code written in Python 3.13 or later: its modules and import packages, the annotations a type checker reads, its asynchronous code, and the specs that prove it.

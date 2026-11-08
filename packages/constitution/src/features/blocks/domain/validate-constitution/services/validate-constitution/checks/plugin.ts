@@ -65,7 +65,7 @@ enum Template {
   Project = 'templates/PROJECT.md',
   Decisions = 'templates/DECISIONS.md',
   Block = 'templates/block/block.md',
-  Chapter = 'templates/block/foundation/chapter.md',
+  Chapter = 'templates/block/@foundation/chapter.md',
   Config = 'templates/constitution.yaml',
 }
 

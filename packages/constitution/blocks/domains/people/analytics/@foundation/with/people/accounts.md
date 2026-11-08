@@ -1,0 +1,13 @@
+# Accounts
+
+> Governs the identity analytics knows of a caller.
+
+## Identity
+
+### identity-reset-on-sign-out · MUST
+
+Every sign-out resets the analytics library's identifier, so the next person on the device starts as a new visitor.
+
+| Why |
+|---|
+| an identifier kept across a sign-out joins two people's use into one profile. |

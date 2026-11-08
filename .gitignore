@@ -28,16 +28,19 @@ id_rsa
 *.bak
 *.orig
 *~
-/local/
 .env*
 !.env.example
+/local/
 
-# bun
+# js-runtime/bun
 .npmrc
 
-# _js-runtime
+# js-runtime
 **/node_modules/
 *.tgz
+
+# mise
+mise.local.toml
 
 # python
 __pycache__/
@@ -51,5 +54,5 @@ __pycache__/
 .venv/
 **/dist/
 
-# mise
-mise.local.toml
+# lefthook
+lefthook-local.yaml

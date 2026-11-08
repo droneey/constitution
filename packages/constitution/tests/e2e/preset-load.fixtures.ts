@@ -31,11 +31,6 @@ interface LoadInput extends Partial<Pick<UnitFixture, 'blocks' | 'files'>> {
   readonly isInstalled?: boolean;
 }
 
-interface Passport {
-  readonly abstract: boolean;
-  readonly extends: string | undefined;
-}
-
 const presetsFolder = join(release, 'presets');
 const blocksFolder = join(release, 'blocks');
 const PRESET_FILE = /\.yaml$/;
@@ -43,19 +38,17 @@ const EVERY = '*';
 const CORE = 'core';
 const FRONT_MATTER = /^---\n([\s\S]*?)\n---\n/;
 const PASSPORT_EXTENSION = '.md';
+const AXIS_MARK = '@';
+const ID_SEPARATOR = '/';
 
 const passportModel = z.object({
-  abstract: z.boolean(),
-  extends: z
-    .string()
-    .nullable()
-    .transform((parent) => parent ?? undefined),
+  id: z.string(),
 });
 
 const presetFile = z.record(z.string(), z.record(z.string(), z.record(z.string(), z.unknown())));
 
-const passportsIn = (folder: string): ReadonlyMap<string, Passport> =>
-  new Map(
+const blockIdsIn = (folder: string): ReadonlySet<string> =>
+  new Set(
     readdirSync(folder, {
       recursive: true,
     })
@@ -67,60 +60,45 @@ const passportsIn = (folder: string): ReadonlyMap<string, Passport> =>
         return frontMatter === undefined
           ? []
           : [
-              [
-                basename(path, PASSPORT_EXTENSION),
-                passportModel.parse(Bun.YAML.parse(frontMatter)),
-              ] as const,
+              passportModel.parse(Bun.YAML.parse(frontMatter)).id,
             ];
       }),
   );
 
 const read: {
-  passports?: ReadonlyMap<string, Passport>;
+  blockIds?: ReadonlySet<string>;
 } = {};
 
-const passports = (): ReadonlyMap<string, Passport> => {
-  read.passports ??= passportsIn(blocksFolder);
+const blockIds = (): ReadonlySet<string> => {
+  read.blockIds ??= blockIdsIn(blocksFolder);
 
-  return read.passports;
+  return read.blockIds;
 };
 
-const isHeirOf = (block: string, abstract: string): boolean => {
-  const parent = passports().get(block)?.extends;
-
-  return parent !== undefined && (parent === abstract || isHeirOf(parent, abstract));
-};
-
-const concreteBlocksOf = (blocks: ReadonlySet<string>): readonly string[] =>
+// Why: listing a child block turns its ancestors on, so the widest unit lists only the blocks no
+// other listed block descends from.
+const leavesOf = (blocks: ReadonlySet<string>): readonly string[] =>
   [
     ...blocks,
-  ].flatMap((block) => {
-    if (passports().get(block)?.abstract !== true) {
-      return [
-        block,
-      ];
-    }
-
-    const heirs = [
-      ...passports(),
-    ]
-      .filter(([heir, passport]) => !passport.abstract && isHeirOf(heir, block))
-      .map(([heir]) => heir)
-      .toSorted((left, right) => left.localeCompare(right));
-
-    return heirs.some((heir) => blocks.has(heir)) ? [] : heirs.slice(0, 1);
-  });
+  ].filter(
+    (block) =>
+      blockIds().has(block) &&
+      ![
+        ...blocks,
+      ].some((other) => other.startsWith(`${block}${ID_SEPARATOR}`)),
+  );
 
 const presetFilesOf = (reader: string): readonly string[] =>
   readdirSync(join(presetsFolder, reader), {
     recursive: true,
   })
     .map(String)
-    .filter((path) => PRESET_FILE.test(path));
+    .filter((path) => PRESET_FILE.test(path) && path.startsWith(AXIS_MARK));
 
 const blocksOfFile = (input: { path: string; reader: string }): readonly string[] => {
-  const segments = input.path.replace(PRESET_FILE, '').split('/');
-  const withs = segments.filter((_segment, index) => segments[index - 1] === SEAM_FOLDER_NAME);
+  const [, ...withs] = input.path
+    .replace(PRESET_FILE, '')
+    .split(`${ID_SEPARATOR}${SEAM_FOLDER_NAME}${ID_SEPARATOR}`);
   const entries = presetFile.parse(
     Bun.YAML.parse(readFileSync(join(presetsFolder, input.reader, input.path), 'utf8')),
   );
@@ -157,7 +135,7 @@ const blocksOfReader = (reader: string): readonly string[] => {
 
 const widestUnitOf = (reader: string, more: Partial<UnitFixture> = {}): UnitFixture => ({
   ...more,
-  blocks: concreteBlocksOf(
+  blocks: leavesOf(
     new Set(
       [
         reader,

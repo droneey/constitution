@@ -44,18 +44,6 @@ const PARAGLIDE: ReadonlyArray<
     'how a message is read',
   ],
   [
-    '<requirement>',
-    'i18n-plurals-by-cldr',
-  ],
-  [
-    '<how the library meets it; for partly or no, the rule of this block, its slug in backticks, that covers what it misses or replaces the requirement>',
-    'a variant per CLDR plural category',
-  ],
-  [
-    '<yes, it meets the rule as written; partly, it meets its purpose or part of its letter; no, it cannot meet it>',
-    'yes',
-  ],
-  [
     '<rule slug>',
     'paraglide-messages-by-function',
   ],
@@ -89,7 +77,7 @@ const paraglideFromTemplate = (path: string): string => {
 
 const paraglideCard = (): Readonly<Record<string, string>> => ({
   [`${PARAGLIDE_DIR}/paraglide.md`]: paraglideFromTemplate('block.md'),
-  [`${PARAGLIDE_DIR}/foundation/messages.md`]: paraglideFromTemplate('foundation/chapter.md'),
+  [`${PARAGLIDE_DIR}/@foundation/messages.md`]: paraglideFromTemplate('@foundation/chapter.md'),
 });
 
 export { paraglideCard };

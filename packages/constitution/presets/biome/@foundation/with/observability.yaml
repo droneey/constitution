@@ -1,0 +1,8 @@
+observability:
+  diagnostics-written-through-a-logger:
+    typescript:
+      biome.jsonc:
+        linter:
+          rules:
+            suspicious:
+              noConsole: error

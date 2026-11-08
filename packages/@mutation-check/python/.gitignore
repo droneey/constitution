@@ -23,9 +23,9 @@ id_rsa
 *.bak
 *.orig
 *~
-/local/
 .env*
 !.env.example
+/local/
 
 # complexipy
 .complexipy_cache/

@@ -1,15 +1,13 @@
 ---
 id: renovate
 summary: Dependency updates proposed by a bot.
-requires: [git, json]
-extends: null
-abstract: false
+requires: [git]
 languages: []
 governs: ["renovate.json"]
 ---
 
 # Renovate
 
-> **Renovate**, the bot that proposes dependency updates.
+> Renovate, the update bot that proposes dependency updates as change requests.
 
-Of the files it reads its settings from — **`renovate.json`**, `renovate.json5` and `.renovaterc` — the fleet uses the first.
+Renovate reads its settings from `renovate.json` or one of the other names it accepts, such as `renovate.json5` and `.github/renovate.json`; the project keeps them in `renovate.json`.

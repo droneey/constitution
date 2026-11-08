@@ -1,0 +1,19 @@
+storybook:
+  '*':
+    typescript:
+      .dependency-cruiser.jsonc:
+        allowedSeverity: error
+core:
+  layer-imports-dependencies-by-its-role:
+    typescript:
+      .dependency-cruiser.jsonc:
+        'allowed[comment=layer-imports-dependencies-by-its-role: a story imports any package]':
+          from:
+            path: \.${role.story}\.[^/]+$
+          to:
+            dependencyTypes:
+              - npm
+              - npm-dev
+              - npm-peer
+              - npm-optional
+              - npm-bundled

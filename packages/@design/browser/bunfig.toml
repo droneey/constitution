@@ -7,6 +7,6 @@ randomize = true
 coverage = false
 pathIgnorePatterns = ["tests/**", "**/*.integration.test.*"]
 
-# bun
+# js-runtime/bun
 [run]
 bun = true

@@ -1,0 +1,5 @@
+version-control:
+  generated-files-not-committed:
+    python:
+      .gitignore:
+        - .import_linter_cache/

@@ -1,9 +1,0 @@
-core:
-  root-alone-configures-logging:
-    python:
-      pyproject.toml:
-        tool:
-          python-check:
-            homes:
-              structlog:
-                - ${role.composition-root}

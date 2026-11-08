@@ -1,5 +1,5 @@
 ```yaml title="Avoid"
-# presets/dependency-cruiser/architecture.yaml
+# presets/dependency-cruiser/@architecture.yaml
 core:
   domain-imports-only-itself-and-the-kernel:
     typescript:
@@ -10,7 +10,7 @@ core:
 ```
 
 ```yaml title="Prefer"
-# presets/dependency-cruiser/architecture.yaml
+# presets/dependency-cruiser/@architecture.yaml
 core:
   domain-imports-only-itself-and-the-kernel:
     typescript:

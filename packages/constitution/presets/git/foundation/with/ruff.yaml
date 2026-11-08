@@ -1,5 +1,0 @@
-version-control:
-  generated-files-not-committed:
-    python:
-      .gitignore:
-        - ${role.ruff-cache}/

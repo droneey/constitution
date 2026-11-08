@@ -34,7 +34,7 @@ const readmeText = [
   '### Reference',
   '',
   '- [Precedence](packages/constitution/blocks/core/core.md#precedence) — which rule wins',
-  '- [Placement](packages/constitution/blocks/core/foundation/placement.md) — where a rule goes',
+  '- [Placement](packages/constitution/blocks/core/@foundation/placement.md) — where a rule goes',
   '- [Names](packages/constitution/blocks/core/names.md)',
   '- [Blocks](packages/constitution/blocks/domains) — every block, on GitHub',
   '- [Site](https://example.com/site) — not a file of the repository',

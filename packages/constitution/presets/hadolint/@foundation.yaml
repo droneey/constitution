@@ -1,0 +1,34 @@
+dockerfile:
+  start-instructions-in-exec-form:
+    dockerfile:
+      .hadolint.yaml:
+        failure-threshold: style
+  files-copied-never-added:
+    dockerfile:
+      .hadolint.yaml:
+        failure-threshold: style
+  base-image-pinned-to-its-full-version:
+    dockerfile:
+      .hadolint.yaml:
+        failure-threshold: style
+  piped-run-under-pipefail:
+    dockerfile:
+      .hadolint.yaml:
+        failure-threshold: style
+  system-package-pinned-to-its-version:
+    dockerfile:
+      .hadolint.yaml:
+        failure-threshold: style
+  system-package-step-keeps-only-what-the-image-uses:
+    dockerfile:
+      .hadolint.yaml:
+        failure-threshold: style
+  package-index-removed-in-the-step-that-fetched-it:
+    dockerfile:
+      .hadolint.yaml:
+        failure-threshold: style
+  '*':
+    dockerfile:
+      .hadolint.yaml:
+        ignored:
+          - DL3010

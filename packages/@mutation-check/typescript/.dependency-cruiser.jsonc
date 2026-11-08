@@ -2,6 +2,7 @@
   // dependency-cruiser
   "allowedSeverity": "error",
   "options": {
+    // js-runtime/bun
     // bun
     "builtInModules": {
       "add": [
@@ -629,7 +630,7 @@
       },
     },
 
-    // bun
+    // js-runtime/bun
     {
       "name": "bun-effects-reached-only-from-the-edge",
       "severity": "error",
@@ -680,36 +681,6 @@
 
     // dependency-cruiser
     {
-      "name": "relative-import-stays-in-its-module",
-      "severity": "error",
-      "to": {
-        "path": "^src/",
-        "pathNot": "^$1/",
-        "dependencyTypes": [
-          "local",
-        ],
-        "dependencyTypesNot": [
-          "aliased-subpath-import",
-        ],
-      },
-      "from": {
-        "path": "^(src/(?:features|composition|infrastructure|shared|libs|integrations|entrypoints)/[^/]+|src/(?:kernel|root)|(?:scripts|tests)/[^/]+)/",
-      },
-    },
-    {
-      "name": "hash-import-leaves-its-module",
-      "severity": "error",
-      "to": {
-        "path": "^$1/",
-        "dependencyTypes": [
-          "aliased-subpath-import",
-        ],
-      },
-      "from": {
-        "path": "^(src/(?:features|composition|infrastructure|shared|libs|integrations|entrypoints)/[^/]+|src/(?:kernel|root))/",
-      },
-    },
-    {
       "name": "no-undeclared-dependency",
       "severity": "error",
       "from": {},
@@ -738,6 +709,36 @@
           "type-only",
           "npm-peer",
         ],
+      },
+    },
+    {
+      "name": "relative-import-stays-in-its-module",
+      "severity": "error",
+      "to": {
+        "path": "^src/",
+        "pathNot": "^$1/",
+        "dependencyTypes": [
+          "local",
+        ],
+        "dependencyTypesNot": [
+          "aliased-subpath-import",
+        ],
+      },
+      "from": {
+        "path": "^(src/(?:features|composition|infrastructure|shared|libs|integrations|entrypoints)/[^/]+|src/(?:kernel|root)|(?:scripts|tests)/[^/]+)/",
+      },
+    },
+    {
+      "name": "hash-import-leaves-its-module",
+      "severity": "error",
+      "to": {
+        "path": "^$1/",
+        "dependencyTypes": [
+          "aliased-subpath-import",
+        ],
+      },
+      "from": {
+        "path": "^(src/(?:features|composition|infrastructure|shared|libs|integrations|entrypoints)/[^/]+|src/(?:kernel|root))/",
       },
     },
   ],
@@ -783,6 +784,7 @@
       },
     },
 
+    // schema/zod
     // zod
     {
       "comment": "schema-library-home-is-where-input-is-parsed",

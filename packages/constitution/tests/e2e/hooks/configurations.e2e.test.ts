@@ -25,7 +25,7 @@ let root = '';
 const projectOf = (files: Readonly<Record<string, string>>): string =>
   createProject({
     config: configOf({
-      [ConfigKey.Implementations]: '[biome, bun]',
+      [ConfigKey.Implementations]: '[biome, js-runtime/bun, task-runner]',
       [ConfigKey.Languages]: '[typescript, json]',
     }),
     files,
