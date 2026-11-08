@@ -308,7 +308,7 @@ describe('the constitution executable', () => {
     ({ args, holdsWhy }) => {
       // Arrange
       const pluginRoot = createPluginRoot();
-      const principles = join(distributionOf(pluginRoot), 'blocks/core/foundation/principles.md');
+      const principles = join(distributionOf(pluginRoot), 'blocks/core/@foundation/principles.md');
 
       writeFileSync(principles, sectionedChapterOf(readFileSync(principles, 'utf8')));
 
