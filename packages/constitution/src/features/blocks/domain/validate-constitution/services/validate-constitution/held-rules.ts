@@ -9,6 +9,7 @@ import { PLACEMENT_LEVEL, PlacementRule } from '../../constants';
 import type { BlockFinding, BlockFindingCode } from './block-finding.types';
 import {
   BlockFormCode,
+  BudgetCode,
   CyclesCode,
   FrontMatterCode,
   NamesCode,
@@ -33,6 +34,7 @@ const HELD_RULES = {
   [BlockFormCode.VocabularyNotFirst]: PlacementRule.SectionOrder,
   [BlockFormCode.WithoutGoverns]: PlacementRule.InSection,
   [BlockFormCode.WithoutRules]: PlacementRule.SectionHoldsRule,
+  [BudgetCode.FileOverBudget]: PlacementRule.FileBudget,
   [BlockLoadCode.SecondaryFrontMatter]: PlacementRule.BlockRoot,
   [BlockLoadCode.WithoutPassport]: PlacementRule.BlockRoot,
   [CyclesCode.Cycle]: PlacementRule.PassportRequires,

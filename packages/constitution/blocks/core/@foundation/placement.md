@@ -270,6 +270,27 @@ implementations/schema/zod/@foundation/
 └── schemas.md   schema-builds-values-through-their-constructor
 ```
 
+### block-file-holds-at-most-1500-lines · MUST
+
+Every passport, chapter and seam holds at most 1500 lines, its examples counted.
+
+#### Why
+
+A block's file too long to read in one sitting is read in part, by its reviewer or by an agent whose reader stops short of its end, so a rule in the unread part is broken by the very change it governs, and a file that long has seldom kept to one subject.
+
+#### Examples
+
+```text title="Avoid"
+core/@foundation/
+└── tests.md    1742 lines: what a spec proves, where test code lives, fakes, gates, how a case is written
+```
+
+```text title="Prefer"
+core/@foundation/
+├── tests.md    what a spec proves, where test code lives, fakes, gates
+└── cases.md    how a case is written: assertions, fixtures, golden files, names
+```
+
 ### context-chapters-follow-cores · SHOULD
 
 Every language or platform names its chapters after core's on the same axis. Exempt: a subject no core chapter names, which takes a short name of its own.

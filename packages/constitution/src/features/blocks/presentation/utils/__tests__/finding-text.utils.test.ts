@@ -132,7 +132,7 @@ describe('findingTextOf', () => {
   }>([
     {
       finding: overBudget,
-      text: textOf(budgetTexts, overBudget.code, overBudget.details),
+      text: `[block-file-holds-at-most-1500-lines] ${textOf(budgetTexts, overBudget.code, overBudget.details)}`,
     },
     {
       finding: logMissing,
