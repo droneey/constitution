@@ -3,6 +3,9 @@ import { BlockId, BlockSource, Glob, PackPath, RuleSlug } from '#/kernel/value-o
 
 import type { BlockSetBlock, BlockSetRule } from '../domain/block-set/entities';
 
+const RULE_STATEMENT = 'A rule.';
+const RULE_WHY = 'a reason.';
+
 const axisOf = (place: string): Axis => {
   const axis = AXES.find((candidate) => place.startsWith(`${candidate}/`));
 
@@ -74,12 +77,14 @@ const blockSetRuleOf = (rule: BlockSetRuleFixture): BlockSetRule => ({
         seam: BlockId.create(rule.seam),
       }),
   slug: RuleSlug.create(rule.slug),
+  statement: RULE_STATEMENT,
   ...(rule.tightens === undefined
     ? {}
     : {
         tightens: RuleSlug.create(rule.tightens),
       }),
+  why: RULE_WHY,
 });
 
 export type { BlockSetBlockFixture, BlockSetRuleFixture };
-export { blockSetBlockOf, blockSetRuleOf };
+export { blockSetBlockOf, blockSetRuleOf, RULE_STATEMENT, RULE_WHY };

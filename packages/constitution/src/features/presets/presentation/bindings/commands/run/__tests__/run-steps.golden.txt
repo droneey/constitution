@@ -1,6 +1,8 @@
 # stderr
 packages/py/constitution.yaml: follows biome, whose commands no runner it follows gives; add the block that runs them [tool-without-runner]
 uv run --locked poe check ended with code 3
+literal-with-a-meaning-is-named · MUST — A literal with a meaning is named.
+case-named-should-when · SHOULD — A case is named for what it should do and when.
 
 
 # stdout

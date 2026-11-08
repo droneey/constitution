@@ -29,11 +29,13 @@ const ruleOf = (input: {
   isLevelStated: input.isLevelStated,
   level: Level.Must,
   slug: RuleSlug.create(input.slug),
+  statement: '',
   ...(input.tightens === undefined
     ? {}
     : {
         tightens: RuleSlug.create(input.tightens),
       }),
+  why: '',
 });
 
 const modelOf = (input: {

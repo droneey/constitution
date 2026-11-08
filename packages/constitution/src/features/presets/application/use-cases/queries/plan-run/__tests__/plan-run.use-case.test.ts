@@ -52,6 +52,11 @@ const project = projectOf({
       '        width: 100',
       '      package.json:',
       '        name: ${package.name}',
+      'core:',
+      '  file-within-500-lines:',
+      "    '*':",
+      '      biome.json:',
+      '        linter.rules.style.noExcessiveLinesPerFile: error',
     ].join('\n'),
   }),
   units: [
@@ -243,5 +248,60 @@ describe('planRun', () => {
     expect(planned).toStrictEqual({
       status: ProjectReadStatus.NoProject,
     });
+  });
+
+  it("should hand each unit's steps the rule each of its tools' diagnostics names, by the presets it follows", () => {
+    // Act
+    const plan = answerOf(
+      planRun({
+        distribution: createFakeDistributionSources(),
+        entryPoint: EntryPoint.Check,
+        files: project.files,
+        formats: createFakeConfigurationFormat(),
+        parser: presetFileParser,
+        reader: project.reader,
+        startFolderPath: AbsolutePath.create(PROJECT),
+      }),
+    );
+
+    // Assert
+    expect(
+      plan.steps.map(({ command, diagnostics, unitPath }) => [
+        String(unitPath),
+        command,
+        Object.fromEntries(
+          [
+            ...diagnostics,
+          ].map(([id, rules]) => [
+            id,
+            rules.map(({ level, slug }) => `${slug} · ${level}`),
+          ]),
+        ),
+      ]),
+    ).toStrictEqual([
+      [
+        '',
+        'bun run check',
+        {
+          noExcessiveLinesPerFile: [
+            'file-within-500-lines · MUST',
+          ],
+        },
+      ],
+      [
+        '',
+        'bun run test',
+        {
+          noExcessiveLinesPerFile: [
+            'file-within-500-lines · MUST',
+          ],
+        },
+      ],
+      [
+        'packages/kit',
+        'bun run check',
+        {},
+      ],
+    ]);
   });
 });

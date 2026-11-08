@@ -116,7 +116,7 @@ const portsOf = (input: ProgramInput): Ports => {
   return {
     activeRules: createActiveRulesSource(project),
     appliedFilesRepository: createFileAppliedFilesRepository(),
-    commands: createShellCommandRunner(),
+    commands: createShellCommandRunner(input.streams),
     distribution,
     files,
     formats,

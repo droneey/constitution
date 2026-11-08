@@ -4,14 +4,47 @@ import { StepStatus } from '@droneey/design-cli';
 
 import { createFakeContext, runCommand } from '#/__tests__/command-context.fake';
 import { goldenFileText, goldenOf } from '#/__tests__/golden.fixtures';
-import { AbsolutePath, BlockId, UnitPath } from '#/kernel/value-objects';
+import { Level } from '#/kernel/constants';
+import { AbsolutePath, BlockId, RuleSlug, UnitPath } from '#/kernel/value-objects';
 import type { StepReport } from '#/shared/cli';
 
 import { ProjectRead, ProjectReadStatus } from '../../../../../domain/presets-project/entities';
-import type { RunAsked, RunPlan } from '../../../../../domain/run-plan/entities';
+import type { DiagnosticIndex, RunAsked, RunPlan } from '../../../../../domain/run-plan/entities';
 import { EntryPoint } from '../../../../../domain/run-plan/entities';
 import { PresetsCode } from '../../../../../domain/shared/entities';
 import { createRunCommand } from '../run.cli';
+
+const pythonRules: DiagnosticIndex = new Map([
+  [
+    'PLR',
+    [
+      {
+        level: Level.Must,
+        slug: RuleSlug.create('literal-with-a-meaning-is-named'),
+        statement: 'A literal with a meaning is named.',
+        why: 'a bare number hides what it means.',
+      },
+    ],
+  ],
+  [
+    '[case-named-should-when]',
+    [
+      {
+        level: Level.Should,
+        slug: RuleSlug.create('case-named-should-when'),
+        statement: 'A case is named for what it should do and when.',
+        why: 'a case named otherwise hides what it proves.',
+      },
+    ],
+  ],
+]);
+
+const pythonOutput = [
+  'src/kit.py:3:9: PLR2004 Magic value used in comparison',
+  'src/kit.py:7:1: PLR2004 Magic value used in comparison',
+  'tests/kit_test.py:2:1 [case-named-should-when] Name the case for what it should do',
+  'src/kit.py:9:1: E501 Line too long',
+].join('\n');
 
 const plan: RunPlan = {
   findings: [
@@ -26,16 +59,19 @@ const plan: RunPlan = {
   steps: [
     {
       command: 'bun run check',
+      diagnostics: new Map(),
       unitFolderPath: AbsolutePath.create('/work/project'),
       unitPath: UnitPath.create(''),
     },
     {
       command: 'bun run test',
+      diagnostics: new Map(),
       unitFolderPath: AbsolutePath.create('/work/project'),
       unitPath: UnitPath.create(''),
     },
     {
       command: 'uv run --locked poe check',
+      diagnostics: pythonRules,
       unitFolderPath: AbsolutePath.create('/work/project/packages/py'),
       unitPath: UnitPath.create('packages/py'),
     },
@@ -87,7 +123,10 @@ const runOf = async (input: {
       runCommand: ({ command }) => {
         commands.push(command);
 
-        return codes.shift() ?? 0;
+        return Promise.resolve({
+          code: codes.shift() ?? 0,
+          output: pythonOutput,
+        });
       },
     }),
   });
@@ -104,27 +143,44 @@ const runOf = async (input: {
 };
 
 describe('createRunCommand', () => {
-  it('should write each command, its unit outside the root, the findings and the failure as the golden file shows them', async () => {
-    // Act
-    const run = await runOf({
+  it.each([
+    {
+      args: [],
+      golden: 'run-steps.golden.txt',
+      shown: 'with each rule it breaks',
+    },
+    {
       args: [
-        'check',
+        '--why',
       ],
-      codes: [
-        0,
-        0,
-        3,
-      ],
-    });
+      golden: 'run-steps-why.golden.txt',
+      shown: "with each rule it breaks and the rule's Why",
+    },
+  ])(
+    'should write each command, its unit outside the root, the findings and the failure $shown as the golden file shows them',
+    async ({ args, golden }) => {
+      // Act
+      const run = await runOf({
+        args: [
+          'check',
+          ...args,
+        ],
+        codes: [
+          0,
+          0,
+          3,
+        ],
+      });
 
-    const said = goldenOf({
-      stderr: run.stderr,
-      stdout: run.stdout,
-    });
+      const said = goldenOf({
+        stderr: run.stderr,
+        stdout: run.stdout,
+      });
 
-    // Assert
-    expect(said).toBe(await goldenFileText(new URL('run-steps.golden.txt', import.meta.url), said));
-  });
+      // Assert
+      expect(said).toBe(await goldenFileText(new URL(golden, import.meta.url), said));
+    },
+  );
 
   it('should run each command the plan of the entry point gives, from the folder, in order', async () => {
     // Act

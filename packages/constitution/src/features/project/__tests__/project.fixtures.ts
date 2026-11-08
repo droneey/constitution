@@ -12,6 +12,7 @@ import type { ProjectError } from '../domain/shared/errors';
 import { isProjectError } from '../domain/shared/errors';
 import { createJsonReleaseManifestParser } from '../infrastructure/json';
 import { createYamlBlockCardParser, createYamlConfigFileParser } from '../infrastructure/yaml';
+import { RULE_STATEMENT, RULE_WHY } from './block-set.fixtures';
 
 const configPath = `${PROJECT}/constitution.yaml`;
 const manifest = `${releaseFolderPath}/package.json`;
@@ -107,11 +108,11 @@ const ruleOf = (input: RuleFixture): string => {
   return [
     `### ${input.slug}${arrow}${level}`,
     '',
-    'A rule.',
+    RULE_STATEMENT,
     '',
     '| Why |',
     '|---|',
-    '| a reason. |',
+    `| ${RULE_WHY} |`,
     '',
   ].join('\n');
 };

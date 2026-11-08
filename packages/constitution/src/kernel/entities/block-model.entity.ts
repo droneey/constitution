@@ -21,6 +21,8 @@ interface ModelRule {
   readonly level: Level;
   readonly seam?: BlockId;
   readonly slug: RuleSlug;
+  readonly statement: string;
+  readonly why: string;
 }
 
 interface RoleTerm {

@@ -286,11 +286,13 @@ const ruleOf = (rule: Rule): BlockSetRule => ({
         seam: rule.seam,
       }),
   slug: rule.slug,
+  statement: rule.statement,
   ...(rule.tightens === undefined
     ? {}
     : {
         tightens: rule.tightens,
       }),
+  why: rule.why,
 });
 
 interface ReadBlockSetInput {

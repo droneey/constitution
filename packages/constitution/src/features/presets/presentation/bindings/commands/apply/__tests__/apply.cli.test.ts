@@ -3,7 +3,8 @@ import { describe, expect, it } from 'bun:test';
 import { StepStatus } from '@droneey/design-cli';
 
 import { createFakeContext, runCommand } from '#/__tests__/command-context.fake';
-import { AbsolutePath, RepositoryRelativePath, UnitPath } from '#/kernel/value-objects';
+import { Level } from '#/kernel/constants';
+import { AbsolutePath, RepositoryRelativePath, RuleSlug, UnitPath } from '#/kernel/value-objects';
 import type { CommandPlaces, Report } from '#/shared/cli';
 
 import type {
@@ -71,6 +72,19 @@ const fixPlan: RunPlan = {
   steps: [
     {
       command: 'bun run fix',
+      diagnostics: new Map([
+        [
+          'noConsole',
+          [
+            {
+              level: Level.Must,
+              slug: RuleSlug.create('diagnostics-written-through-a-logger'),
+              statement: 'Diagnostics are written through a logger.',
+              why: 'a console call skips the log pipeline.',
+            },
+          ],
+        ],
+      ]),
       unitFolderPath: AbsolutePath.create('/work/project/packages/kit'),
       unitPath: UnitPath.create('packages/kit'),
     },
@@ -124,7 +138,10 @@ const runOf = async (input: {
           folderPath,
         });
 
-        return codes.shift() ?? 0;
+        return Promise.resolve({
+          code: codes.shift() ?? 0,
+          output: 'src/kit.ts:1:1 lint/suspicious/noConsole',
+        });
       },
     }),
     group: 'presets',
@@ -137,6 +154,7 @@ const runOf = async (input: {
     failures: record().failures,
     printed: record().printed,
     startPaths,
+    stderr: record().stderr,
     steps: record().ran.map((ran) => [
       ran.label,
       ran.outcome.status,
@@ -328,7 +346,7 @@ describe('createPresetsApplyCommand', () => {
     });
   });
 
-  it('should end the run as failed when the fix fails', async () => {
+  it('should end the run as failed when the fix fails, naming each rule it breaks without its Why', async () => {
     // Act
     const run = await runOf({
       codes: [
@@ -338,7 +356,14 @@ describe('createPresetsApplyCommand', () => {
     });
 
     // Assert
-    expect(run.failures).toBe(1);
+    expect({
+      failures: run.failures,
+      stderr: run.stderr,
+    }).toStrictEqual({
+      failures: 1,
+      stderr:
+        'bun run fix ended with code 2\ndiagnostics-written-through-a-logger · MUST — Diagnostics are written through a logger.\n',
+    });
   });
 
   it('should run the apply as one step, done when it finds nothing wrong', async () => {

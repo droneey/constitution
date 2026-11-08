@@ -29,6 +29,7 @@ describe('createProjectReader', () => {
     // Assert
     expect<object>(read).toStrictEqual({
       answer: {
+        lowerings: new Map(),
         model: {
           blocks: [
             {

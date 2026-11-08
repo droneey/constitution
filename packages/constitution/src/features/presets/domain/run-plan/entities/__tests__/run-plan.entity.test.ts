@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'bun:test';
 
-import { AbsolutePath, RepositoryRelativePath, UnitPath } from '#/kernel/value-objects';
+import { Level } from '#/kernel/constants';
+import { AbsolutePath, RepositoryRelativePath, RuleSlug, UnitPath } from '#/kernel/value-objects';
 
 import { PROJECT, unitOf } from '../../../../__tests__/presets.fixtures';
 import type { PresetsFinding } from '../../../shared/entities';
 import { PresetsCode } from '../../../shared/entities';
+import { DiagnosticIndex } from '../diagnostic-index.entity';
 import type { RunAsked, UnitRun } from '../run-plan.entity';
 import { EntryPoint, RunPlan } from '../run-plan.entity';
 
@@ -68,6 +70,7 @@ const stepsOf = (asked: RunAsked): readonly (readonly string[])[] =>
   RunPlan.of({
     asked,
     findings: [],
+    indexes: new Map(),
     project: {
       repositoryFolderPath: AbsolutePath.create(PROJECT),
       units,
@@ -169,6 +172,7 @@ describe('RunPlan.of', () => {
         clash,
         findingOf(PresetsCode.Missing),
       ],
+      indexes: new Map(),
       project: {
         repositoryFolderPath: AbsolutePath.create(PROJECT),
         units,
@@ -183,5 +187,48 @@ describe('RunPlan.of', () => {
       ],
       steps: [],
     });
+  });
+
+  it("should hand each step its unit's diagnostic index, and an empty one to a unit with none", () => {
+    // Arrange
+    const index: DiagnosticIndex = new Map([
+      [
+        'noMagicNumbers',
+        [
+          {
+            level: Level.Must,
+            slug: RuleSlug.create('literal-with-a-meaning-is-named'),
+            statement: 'A literal with a meaning is named.',
+            why: 'a bare number hides what it means.',
+          },
+        ],
+      ],
+    ]);
+
+    // Act
+    const plan = RunPlan.of({
+      asked: {
+        entryPoint: EntryPoint.Check,
+        startFolderPath: AbsolutePath.create(PROJECT),
+      },
+      findings: [],
+      indexes: new Map([
+        [
+          UnitPath.create(''),
+          index,
+        ],
+      ]),
+      project: {
+        repositoryFolderPath: AbsolutePath.create(PROJECT),
+        units,
+      },
+      runs,
+    });
+
+    // Assert
+    expect(plan.steps.map(({ diagnostics }) => diagnostics)).toStrictEqual([
+      index,
+      DiagnosticIndex.empty,
+    ]);
   });
 });

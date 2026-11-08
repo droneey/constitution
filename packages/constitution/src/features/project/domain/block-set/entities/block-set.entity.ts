@@ -43,7 +43,9 @@ interface BlockSetRule {
   readonly level: Level;
   readonly seam?: BlockId;
   readonly slug: RuleSlug;
+  readonly statement: string;
   readonly tightens?: RuleSlug;
+  readonly why: string;
 }
 
 interface BlockSet {

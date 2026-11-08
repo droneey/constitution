@@ -2,6 +2,7 @@ import type { PresetsProject } from '#/features/presets';
 import type { OpenedProject } from '#/features/project';
 
 const presetsProjectOf = (opened: OpenedProject): PresetsProject => ({
+  lowerings: opened.resolution.lowerings,
   model: opened.resolution.model,
   packs: opened.packs,
   releaseFolderPath: opened.releaseFolderPath,

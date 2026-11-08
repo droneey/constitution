@@ -35,6 +35,8 @@ interface RuleFixture {
   readonly level?: Level;
   readonly seam?: string;
   readonly slug: string;
+  readonly statement?: string;
+  readonly why?: string;
 }
 
 interface RoleFixture {
@@ -381,6 +383,8 @@ const modelRuleOf = (rule: RuleFixture): ModelRule => ({
         seam: BlockId.create(rule.seam),
       }),
   slug: RuleSlug.create(rule.slug),
+  statement: rule.statement ?? '',
+  why: rule.why ?? '',
 });
 
 const roleOf = (role: RoleFixture): RoleTerm => ({
@@ -464,6 +468,7 @@ const projectFiles = (files: Files): Files =>
 interface ProjectFixture {
   readonly files?: Files;
   readonly links?: FakeTree['links'];
+  readonly lowerings?: PresetsProject['lowerings'];
   readonly model?: BlockModel;
   readonly packs?: readonly string[];
   readonly units: readonly ProjectUnit[];
@@ -480,6 +485,7 @@ const projectOf = (
 } => {
   const project: PresetsProject = {
     ...projectPlace,
+    lowerings: input.lowerings ?? new Map(),
     model: input.model ?? presetsModel,
     packs: (input.packs ?? []).map(PackPath.create),
     units: input.units,

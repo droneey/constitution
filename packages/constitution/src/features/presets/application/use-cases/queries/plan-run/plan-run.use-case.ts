@@ -4,6 +4,7 @@ import type { PresetsProject } from '../../../../domain/presets-project/entities
 import { ProjectRead } from '../../../../domain/presets-project/entities';
 import type { RunAsked } from '../../../../domain/run-plan/entities';
 import { RunPlan } from '../../../../domain/run-plan/entities';
+import { indexDiagnostics } from '../../../../domain/run-plan/services';
 import type {
   ConfigurationFormat,
   DistributionSources,
@@ -25,12 +26,18 @@ const planOf = (
     project: PresetsProject;
   },
 ): RunPlan => {
+  const { project } = input;
   const plan = computePresets(input);
 
   return RunPlan.of({
     asked: input,
     findings: plan.findings,
-    project: input.project,
+    indexes: indexDiagnostics({
+      files: plan.files,
+      lowerings: project.lowerings,
+      model: project.model,
+    }),
+    project,
     runs: plan.runs,
   });
 };

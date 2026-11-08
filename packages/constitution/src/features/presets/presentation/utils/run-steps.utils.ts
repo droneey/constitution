@@ -4,16 +4,30 @@ import { ExitCode } from '#/shared/cli';
 
 import type { ProjectRead } from '../../domain/presets-project/entities';
 import { ProjectReadStatus } from '../../domain/presets-project/entities';
-import type { CommandToRun, RunPlan } from '../../domain/run-plan/entities';
+import type { CommandRan, CommandToRun, RunPlan } from '../../domain/run-plan/entities';
+import { DiagnosticIndex } from '../../domain/run-plan/entities';
 import { findingLinesOf } from './finding-lines.utils';
 import { failUnreadStep } from './project-unread.utils';
-import { lineMessage, stepFailedMessage, stepMessage, unitStepMessage } from './run-steps.messages';
+import {
+  brokenRuleMessage,
+  lineMessage,
+  stepFailedMessage,
+  stepMessage,
+  unitStepMessage,
+} from './run-steps.messages';
 
 interface RunStepsContext extends Pick<CommandContext, 'io' | 'renderer' | 'setFailed'> {
-  readonly runCommand: (command: CommandToRun) => number;
+  readonly runCommand: (command: CommandToRun) => Promise<CommandRan>;
 }
 
-const runSteps = async (context: RunStepsContext, read: ProjectRead<RunPlan>): Promise<void> => {
+interface RunStepsInput {
+  readonly isWhyShown: boolean;
+  readonly read: ProjectRead<RunPlan>;
+}
+
+const runSteps = async (context: RunStepsContext, input: RunStepsInput): Promise<void> => {
+  const { read } = input;
+
   if (read.status !== ProjectReadStatus.Opened) {
     await failUnreadStep(context, read);
 
@@ -38,7 +52,8 @@ const runSteps = async (context: RunStepsContext, read: ProjectRead<RunPlan>): P
           }),
     );
 
-    const code = context.runCommand({
+    // biome-ignore lint/performance/noAwaitInLoops: each command runs only once the one before it passed
+    const { code, output } = await context.runCommand({
       command,
       folderPath: step.unitFolderPath,
     });
@@ -50,6 +65,16 @@ const runSteps = async (context: RunStepsContext, read: ProjectRead<RunPlan>): P
           command,
         }),
       );
+
+      for (const rule of DiagnosticIndex.brokenIn(step.diagnostics, output)) {
+        context.io.writeError(
+          brokenRuleMessage({
+            isWhyShown: input.isWhyShown,
+            rule,
+          }),
+        );
+      }
+
       context.setFailed();
 
       return;

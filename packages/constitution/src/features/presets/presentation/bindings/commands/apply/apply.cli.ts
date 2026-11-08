@@ -102,14 +102,14 @@ const createPresetsApplyCommand = (context: PresetsApplyContext): Command =>
       }
 
       if (fix && read.answer.report.writtenUnitPaths.length > 0) {
-        await runSteps(
-          context,
-          context.planRun({
+        await runSteps(context, {
+          isWhyShown: false,
+          read: context.planRun({
             entryPoint: EntryPoint.Fix,
             startFolderPath,
             unitPaths: read.answer.report.writtenUnitPaths,
           }),
-        );
+        });
       }
     },
   });

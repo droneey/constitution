@@ -3,6 +3,7 @@ import { AbsolutePath, RepositoryRelativePath, UnitPath } from '#/kernel/value-o
 import type { PresetsProject } from '../../presets-project/entities';
 import type { PresetsFinding } from '../../shared/entities';
 import { PresetsCode } from '../../shared/entities';
+import { DiagnosticIndex } from './diagnostic-index.entity';
 
 enum EntryPoint {
   Check = 'check',
@@ -16,6 +17,11 @@ interface RunAsked {
   readonly unitPaths?: readonly UnitPath[];
 }
 
+interface CommandRan {
+  readonly code: number;
+  readonly output: string;
+}
+
 interface CommandToRun {
   readonly command: string;
   readonly folderPath: AbsolutePath;
@@ -23,6 +29,7 @@ interface CommandToRun {
 
 interface RunStep {
   readonly command: string;
+  readonly diagnostics: DiagnosticIndex;
   readonly unitFolderPath: AbsolutePath;
   readonly unitPath: UnitPath;
 }
@@ -40,6 +47,7 @@ interface RunPlan {
 interface RunPlanInput {
   readonly asked: RunAsked;
   readonly findings: readonly PresetsFinding[];
+  readonly indexes: ReadonlyMap<UnitPath, DiagnosticIndex>;
   readonly project: Pick<PresetsProject, 'repositoryFolderPath' | 'units'>;
   readonly runs: readonly UnitRun[];
 }
@@ -107,6 +115,7 @@ const of = (input: RunPlanInput): RunPlan => {
     steps: unitPaths.flatMap((unitPath) =>
       (runs.get(unitPath)?.commands.get(asked.entryPoint) ?? []).map((command) => ({
         command,
+        diagnostics: input.indexes.get(unitPath) ?? DiagnosticIndex.empty,
         unitFolderPath: AbsolutePath.join(repositoryFolderPath, unitPath),
         unitPath,
       })),
@@ -118,5 +127,5 @@ const RunPlan = {
   of,
 } as const;
 
-export type { CommandToRun, RunAsked, RunStep, UnitRun };
+export type { CommandRan, CommandToRun, RunAsked, RunStep, UnitRun };
 export { EntryPoint, RunPlan };

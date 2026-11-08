@@ -4,8 +4,9 @@ import { join } from 'node:path';
 
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
 
+import { appliedUnit } from './applied-unit.fixtures';
 import { cliPath } from './cli.fixtures';
-import { environmentOf } from './package.fixtures';
+import { environmentOf, installedIn, toolEnvironment, writeFiles } from './package.fixtures';
 import { removePluginRoots } from './plugin-root.fixtures';
 import {
   createLinkedProject,
@@ -267,4 +268,85 @@ describe('constitution run', () => {
       settings: true,
     });
   });
+
+  it.each([
+    {
+      args: [],
+      condition: 'alone',
+      whys: [],
+    },
+    {
+      args: [
+        '--why',
+      ],
+      condition: 'with its Why when asked',
+      whys: [
+        "  Why: a naming rule left to review is broken as soon as nobody reads for it; a list of words is what a lint can hold of the rule, and the suppression is where the code says it knows nothing of the value's shape.",
+        "  Why: output written past the logger escapes the one place that decides where diagnostics go and what they may carry, so it lands where nobody looks, mixes into its user's output and can leak what it prints.",
+      ],
+    },
+  ])(
+    "should name under the failed step each rule a tool's diagnostics show broken, $condition",
+    ({ args, whys }) => {
+      // Arrange
+      const unit = installedIn(
+        appliedUnit({
+          implementations: [
+            'bun',
+            'biome',
+          ],
+          languages: [
+            'typescript',
+          ],
+        }),
+      );
+
+      writeFiles({
+        files: {
+          'src/doubled.ts': linesOf(
+            'export const doubled = (count: number): number => {',
+            '  const data = count + count;',
+            '',
+            '  debugger;',
+            '',
+            '  return data;',
+            '};',
+          ),
+        },
+        folder: unit,
+      });
+
+      // Act
+      const ran = spawnSync(
+        cliPath,
+        [
+          'run',
+          'check',
+          ...args,
+          '--plain',
+        ],
+        {
+          cwd: unit,
+          encoding: 'utf8',
+          env: toolEnvironment(),
+        },
+      );
+
+      // Assert
+      expect({
+        exitCode: ran.status,
+        named: ran.stderr
+          .split('\n')
+          .filter((line) => line.includes(' · ') || line.startsWith('  Why: ')),
+      }).toStrictEqual({
+        exitCode: 1,
+        named: [
+          "biome-refuses-empty-names · SHOULD — Biome's lint refuses a variable named only by an empty word. A variable, a parameter or a destructured field named only `data`, `result`, `temp`, `info`, `item`, `value`, `obj`, `arr`, `stuff` or `thing` fails the lint wherever its setting reaches; one that holds a value whose shape the code does not know takes a suppression that says so.",
+          ...whys.slice(0, 1),
+          "diagnostics-written-through-a-logger · MUST — Diagnostics are written only through a logger. The logger is the program's one **logging facade**{#logging-facade}, the language’s standard one where its ecosystem commonly uses it, and its sink may be a standard stream; code writes to a console or a standard stream directly only a command-line program’s output to its user or a protocol the program speaks over it, and no debug output or breakpoint ships.",
+          ...whys.slice(1),
+        ],
+      });
+    },
+  );
 });

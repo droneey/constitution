@@ -1,9 +1,16 @@
 import { PATH_SEPARATOR, releaseFolderInProject } from '#/kernel/constants';
-import type { BlockModel, ProjectPlace, ProjectUnit, ProjectWarning } from '#/kernel/entities';
+import type {
+  BlockModel,
+  Lowering,
+  ProjectPlace,
+  ProjectUnit,
+  ProjectWarning,
+} from '#/kernel/entities';
 import { WarningKind } from '#/kernel/entities';
-import type { AbsolutePath, PackPath, UnitPath } from '#/kernel/value-objects';
+import type { AbsolutePath, PackPath, RuleSlug, UnitPath } from '#/kernel/value-objects';
 
 interface PresetsProject extends ProjectPlace {
+  readonly lowerings: ReadonlyMap<RuleSlug, readonly Lowering[]>;
   readonly model: BlockModel;
   readonly packs: readonly PackPath[];
   readonly units: readonly ProjectUnit[];

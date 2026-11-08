@@ -1,5 +1,7 @@
 import type { UnitPath } from '#/kernel/value-objects';
 
+import type { HeldRule } from '../../domain/run-plan/entities';
+
 interface UnitStepInput {
   readonly command: string;
   readonly unitPath: UnitPath;
@@ -8,6 +10,11 @@ interface UnitStepInput {
 interface StepFailedInput {
   readonly code: number;
   readonly command: string;
+}
+
+interface BrokenRuleInput {
+  readonly isWhyShown: boolean;
+  readonly rule: HeldRule;
 }
 
 const lineMessage = (line: string): string => `${line}\n`;
@@ -20,4 +27,9 @@ const unitStepMessage = ({ command, unitPath }: UnitStepInput): string =>
 const stepFailedMessage = ({ code, command }: StepFailedInput): string =>
   lineMessage(`${command} ended with code ${String(code)}`);
 
-export { lineMessage, stepFailedMessage, stepMessage, unitStepMessage };
+const brokenRuleMessage = ({ isWhyShown, rule }: BrokenRuleInput): string =>
+  `${lineMessage(`${rule.slug} · ${rule.level} — ${rule.statement}`)}${
+    isWhyShown ? lineMessage(`  Why: ${rule.why}`) : ''
+  }`;
+
+export { brokenRuleMessage, lineMessage, stepFailedMessage, stepMessage, unitStepMessage };
