@@ -2,7 +2,8 @@ import { describe, expect, it } from 'bun:test';
 
 import { Axis, releaseFolderInProject } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
-import type { BlockModel, ProjectUnit } from '#/kernel/entities';
+import type { ProjectUnit } from '#/kernel/entities';
+import { BlockModel } from '#/kernel/entities';
 import { BlockId, UnitRelativePath } from '#/kernel/value-objects';
 
 import { createFakeConfigurationFormat } from '../../../../../__tests__/configuration-format.fake';
@@ -12,6 +13,7 @@ import {
   nestedPresetsModel,
   PROJECT,
   presetFileParser,
+  presetsModel,
   projectFiles,
   projectOf,
   releasePresets,
@@ -2806,4 +2808,235 @@ describe('computePresets', () => {
       });
     },
   );
+});
+
+const PLUGIN = 'biome/plugins/typescript/unchecked-type-never-used.grit';
+const COPY = 'biome.gen/unchecked-type-never-used.grit';
+
+describe('computePresets of a plugin an entry copies', () => {
+  const listedModel = BlockModel.create({
+    ...presetsModel,
+    lists: [
+      {
+        axis: Axis.Foundation,
+        block: BlockId.create('core'),
+        id: 'empty-names',
+        members: [
+          'data',
+          'info',
+        ],
+      },
+      {
+        axis: Axis.Foundation,
+        block: BlockId.create('typescript'),
+        id: 'empty-names',
+        members: [
+          'data',
+          'item',
+        ],
+      },
+    ],
+  });
+
+  const copyPlanOf = (input: {
+    entry: readonly string[];
+    plugin?: string | undefined;
+  }): PresetsPlan =>
+    planOf({
+      files: releasePresets({
+        'biome/@foundation.yaml': [
+          'biome:',
+          "  '*':",
+          '    typescript:',
+          ...input.entry,
+        ].join('\n'),
+        ...(input.plugin === undefined
+          ? {}
+          : {
+              [PLUGIN]: input.plugin,
+            }),
+      }),
+      model: listedModel,
+      units: [
+        unitOf({
+          blocks: [
+            'core',
+            'biome',
+            'typescript',
+          ],
+          languages: [
+            'typescript',
+          ],
+        }),
+      ],
+    });
+
+  const copyEntry = [
+    `      ${COPY}: !copy \${constitution.path}/presets/${PLUGIN}`,
+  ] as const;
+
+  it("should write the plugin whole, each quoted term as the members its language's block spells and each role as its spelling", () => {
+    // Arrange
+    const plugin = 'language js\n\nor { `${term.empty-names}` } in ${role.source}\n';
+
+    // Act
+    const plan = copyPlanOf({
+      entry: copyEntry,
+      plugin,
+    });
+
+    // Assert
+    expect({
+      findings: plan.findings,
+      written: valuesOf(plan),
+    }).toStrictEqual({
+      findings: [],
+      written: [
+        {
+          file: COPY,
+          value: 'language js\n\nor { `data`, `item` } in src\n',
+        },
+      ],
+    });
+  });
+
+  it.each([
+    {
+      condition: 'the release lacks the plugin',
+      findings: [
+        {
+          code: PresetsCode.MissingDistributionFile,
+          details: {
+            file: `presets/${PLUGIN}`,
+          },
+          path: '.droneey/constitution/presets/biome/@foundation.yaml',
+        },
+      ],
+      plugin: undefined,
+    },
+    {
+      condition: 'the plugin names a term no block defines',
+      findings: [
+        {
+          code: PresetsCode.PluginUnknownFact,
+          details: {
+            fact: '${term.hollow-words}',
+          },
+          path: `.droneey/constitution/presets/${PLUGIN}`,
+        },
+      ],
+      plugin: 'or { `${term.hollow-words}` }\n',
+    },
+    {
+      condition: 'the plugin names a role no term carries',
+      findings: [
+        {
+          code: PresetsCode.PluginUnknownFact,
+          details: {
+            fact: '${role.gone}',
+          },
+          path: `.droneey/constitution/presets/${PLUGIN}`,
+        },
+      ],
+      plugin: 'in ${role.gone}\n',
+    },
+  ])('should write no copy, and find why, when $condition', ({ findings, plugin }) => {
+    // Act
+    const plan = copyPlanOf({
+      entry: copyEntry,
+      plugin,
+    });
+
+    // Assert
+    expect({
+      findings: plan.findings,
+      written: valuesOf(plan),
+    }).toStrictEqual({
+      findings,
+      written: [],
+    });
+  });
+
+  it.each([
+    {
+      condition: 'a fact of the unit',
+      fact: '${package.name}',
+    },
+    {
+      condition: 'a fact constitution does not know',
+      fact: '${unit.colour}',
+    },
+  ])('should find a plugin that names $condition', ({ fact }) => {
+    // Act
+    const plan = copyPlanOf({
+      entry: copyEntry,
+      plugin: `in ${fact}\n`,
+    });
+
+    // Assert
+    expect(plan.findings).toContainEqual({
+      code: PresetsCode.PluginUnknownFact,
+      details: {
+        fact,
+      },
+      path: `.droneey/constitution/presets/${PLUGIN}`,
+    });
+  });
+
+  it('should find a plugin that names a term where an entry names it by its path, which fills nothing', () => {
+    // Act
+    const plan = copyPlanOf({
+      entry: [
+        '      biome.json:',
+        '        plugins:',
+        `          - \${constitution.path}/presets/${PLUGIN}`,
+      ],
+      plugin: 'or { `${term.empty-names}` }\n',
+    });
+
+    // Assert
+    expect(plan.findings).toStrictEqual([
+      {
+        code: PresetsCode.PluginNamedUnfilled,
+        details: {},
+        path: `.droneey/constitution/presets/${PLUGIN}`,
+      },
+    ]);
+  });
+
+  it.each([
+    {
+      condition: 'in an item of its settings',
+      entry: [
+        '      biome.json:',
+        '        names:',
+        '          - ${term.empty-names}',
+      ],
+    },
+    {
+      condition: 'in the guard of its file',
+      entry: [
+        '      biome.json ? ${term.empty-names} = data:',
+        '        names: []',
+      ],
+    },
+  ])('should find an entry that names a term outside a copied file, $condition', ({ entry }) => {
+    // Act
+    const plan = copyPlanOf({
+      entry,
+    });
+
+    // Assert
+    expect(plan.findings).toStrictEqual([
+      {
+        code: PresetsCode.UnknownFact,
+        details: {
+          block: BlockId.create('biome'),
+          fact: '${term.empty-names}',
+          rule: '*',
+        },
+        path: '.droneey/constitution/presets/biome/@foundation.yaml',
+      },
+    ]);
+  });
 });

@@ -13,6 +13,7 @@ import { packsStepOf } from '../packs-step.utils';
 
 const model: BlockModel = {
   blocks: [],
+  lists: [],
   roles: [],
   rules: [],
 };

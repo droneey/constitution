@@ -105,6 +105,12 @@ const runConfigurationFormatSuite = (input: ConfigurationFormatSuiteInput): void
         ],
         text: 'dist/\n',
       },
+      {
+        condition: 'a GritQL rule is copied whole over an older copy',
+        path: 'biome.gen/no-data.grit',
+        settings: 'language js\n\n`data`\n',
+        text: 'language js\n',
+      },
     ])('should write a text that reads back as the settings when $condition', (row) => {
       // Arrange
       const written = writeOf(row);
@@ -164,6 +170,18 @@ const runConfigurationFormatSuite = (input: ConfigurationFormatSuiteInput): void
 
       // Assert
       expect(sortable).toBe(canSortKeys);
+    });
+
+    it('should write no text of a GritQL rule given no whole text', () => {
+      // Act
+      const written = writeOf({
+        path: 'biome.gen/no-data.grit',
+        settings: {},
+        text: 'language js\n',
+      });
+
+      // Assert
+      expect(written).toBe('');
     });
 
     it('should leave the text of a file of no format as it is', () => {

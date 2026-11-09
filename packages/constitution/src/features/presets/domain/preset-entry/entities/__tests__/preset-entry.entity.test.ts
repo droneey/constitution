@@ -12,11 +12,11 @@ import {
 } from '#/kernel/value-objects';
 
 import { presetsModel } from '../../../../__tests__/presets.fixtures';
-import { PresetValue } from '../../../setting/entities';
+import { PresetValue, ValueKind } from '../../../setting/entities';
 import { EVERY } from '../../../shared/constants';
 import { EntryTarget } from '../../../shared/value-objects';
 import type { PresetEntry as Entry, LanguageKey } from '../preset-entry.entity';
-import { PresetEntry } from '../preset-entry.entity';
+import { PresetEntry, TextPlace } from '../preset-entry.entity';
 
 const entryOf = (input: { index: number; key?: string; pack?: string }): Entry => ({
   ...EntryTarget.of(input.key ?? 'biome.json'),
@@ -71,8 +71,41 @@ const spelledModel = BlockModel.create({
       kind: TermKind.Folder,
       term: 'use_cases/',
     },
+    {
+      axis: Axis.Foundation,
+      block: coreBlockId,
+      id: 'entry',
+      kind: TermKind.File,
+      term: '<entry>',
+    },
+    {
+      axis: Axis.Foundation,
+      block: BlockId.create('python'),
+      id: 'entry',
+      kind: TermKind.File,
+      term: 'main.py',
+    },
   ],
   rules: [],
+  lists: [
+    {
+      axis: Axis.Foundation,
+      block: coreBlockId,
+      id: 'empty-names',
+      members: [
+        'data',
+      ],
+    },
+    {
+      axis: Axis.Foundation,
+      block: BlockId.create('python'),
+      id: 'empty-names',
+      members: [
+        'data',
+        'obj',
+      ],
+    },
+  ],
 });
 
 const keyedOf = (input: {
@@ -293,6 +326,155 @@ describe('PresetEntry.roleIdsOf', () => {
 
       // Assert
       expect(ids).toStrictEqual(expected);
+    },
+  );
+});
+
+describe('PresetEntry of a file role and a list term', () => {
+  const python = {
+    block: coreBlockId,
+    language: BlockId.create('python'),
+    reader: BlockId.create('import-linter'),
+    withs: [],
+  };
+  const typescript = {
+    ...python,
+    language: BlockId.create('typescript'),
+  };
+
+  it.each([
+    {
+      condition: 'its language spells the file',
+      expected: 'main',
+      key: python,
+    },
+    {
+      condition: 'no block it reaches spells the file core names only as a placeholder',
+      expected: undefined,
+      key: typescript,
+    },
+  ])(
+    'should name the file of a role without its extension when $condition',
+    ({ expected, key }) => {
+      // Act
+      const name = PresetEntry.roleNameOf({
+        entry: keyedOf(key),
+        id: 'entry',
+        model: spelledModel,
+      });
+
+      // Assert
+      expect(name).toBe(expected);
+    },
+  );
+
+  it.each([
+    {
+      condition: 'its language lists them its own way',
+      expected: [
+        'data',
+        'obj',
+      ],
+      id: 'empty-names',
+      key: python,
+    },
+    {
+      condition: 'only core lists them',
+      expected: [
+        'data',
+      ],
+      id: 'empty-names',
+      key: typescript,
+    },
+    {
+      condition: 'no concept carries the id',
+      expected: undefined,
+      id: 'dating-words',
+      key: python,
+    },
+  ])(
+    'should give the words of a term as the entry reads it when $condition',
+    ({ expected, id, key }) => {
+      // Act
+      const members = PresetEntry.membersOf({
+        entry: keyedOf(key),
+        id,
+        model: spelledModel,
+      });
+
+      // Assert
+      expect(members).toStrictEqual(expected);
+    },
+  );
+});
+
+describe('PresetEntry of a copy', () => {
+  const copyOf = (setting: string | readonly string[]): Entry => ({
+    ...entryOf({
+      index: 0,
+      key: 'biome.gen/rule.grit',
+    }),
+    value: {
+      isWords: false,
+      kind: ValueKind.Copy,
+      setting,
+    },
+  });
+
+  it('should give the text a copy names as the file it copies', () => {
+    // Act
+    const texts = PresetEntry.textsOf(
+      copyOf('${constitution.path}/presets/biome/plugins/rule.grit'),
+    );
+
+    // Assert
+    expect(texts).toStrictEqual([
+      {
+        place: TextPlace.Copied,
+        text: '${constitution.path}/presets/biome/plugins/rule.grit',
+      },
+    ]);
+  });
+
+  it.each([
+    {
+      condition: 'it names a file of the release, its roles spelled',
+      entry: copyOf('${constitution.path}/presets/${role.use-case}/rule.grit'),
+      expected: [
+        'presets/use-cases/rule.grit',
+      ],
+    },
+    {
+      condition: 'it names no file of the release',
+      entry: copyOf('presets/rule.grit'),
+      expected: [],
+    },
+    {
+      condition: 'its value holds no text',
+      entry: copyOf([
+        'presets/rule.grit',
+      ]),
+      expected: [],
+    },
+    {
+      condition: 'the entry copies nothing',
+      entry: keyedEntryOf({
+        key: 'biome.json',
+        pattern: '${constitution.path}/presets/rule.grit',
+      }),
+      expected: [],
+    },
+  ])(
+    'should give the path in the release an entry copies when $condition',
+    ({ entry, expected }) => {
+      // Act
+      const copied = PresetEntry.copiedPathsOf({
+        entry,
+        model: spelledModel,
+      });
+
+      // Assert
+      expect(copied).toStrictEqual(expected);
     },
   );
 });

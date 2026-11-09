@@ -51,6 +51,7 @@ const model: BlockModel = {
       layer: Layer.Domain,
     }),
   ],
+  lists: [],
   roles: [
     roleOf({
       block: 'core',

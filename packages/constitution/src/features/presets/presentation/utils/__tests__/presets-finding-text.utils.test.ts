@@ -239,6 +239,18 @@ const findingOfEachCode: {
     },
     path: 'presets/biome/plugins/typescript/file-within-500-lines.grit',
   },
+  [PresetsCode.PluginUnknownFact]: {
+    code: PresetsCode.PluginUnknownFact,
+    details: {
+      fact: '${term.hollow-words}',
+    },
+    path: 'presets/biome/plugins/typescript/biome-refuses-empty-names.grit',
+  },
+  [PresetsCode.PluginNamedUnfilled]: {
+    code: PresetsCode.PluginNamedUnfilled,
+    details: {},
+    path: 'presets/biome/plugins/typescript/biome-refuses-empty-names.grit',
+  },
   [PresetsCode.Clash]: {
     code: PresetsCode.Clash,
     details: {
@@ -513,6 +525,19 @@ describe('presetsFindingTextOf', () => {
         named,
         sorted: ALL_SETTINGS,
       }),
+    },
+    {
+      condition: 'the whole text of a copied file is missing',
+      finding: {
+        code: PresetsCode.Missing,
+        details: {
+          settingPaths: [
+            '',
+          ],
+        },
+        path: 'biome.gen/biome-refuses-empty-names.grit',
+      },
+      text: missingMessage(ALL_SETTINGS),
     },
     {
       condition: 'three settings are named',

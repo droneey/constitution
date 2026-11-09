@@ -25,6 +25,7 @@ const finding: Validation['findings'][number] = {
 };
 const model: BlockModel = {
   blocks: [],
+  lists: [],
   roles: [],
   rules: [],
 };

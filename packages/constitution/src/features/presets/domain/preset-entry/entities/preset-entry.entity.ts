@@ -19,6 +19,7 @@ import {
   EntryTarget,
   Fact,
   FactKind,
+  FactName,
   PresetFilePath,
   TargetKind,
 } from '../../shared/value-objects';
@@ -39,6 +40,7 @@ enum TextPlace {
   Value = 'value',
   Item = 'item',
   File = 'file',
+  Copied = 'copied',
 }
 
 interface EntryText {
@@ -103,27 +105,69 @@ const blocksCommentsNameOf = (entry: PresetEntry): readonly BlockId[] => [
   entry.block,
 ];
 
-const roleNameOf = (input: {
-  entry: PresetEntry;
-  id: string;
-  model: BlockModel;
-}): string | undefined => {
-  const { entry } = input;
+interface TermAsked {
+  readonly entry: PresetEntry;
+  readonly id: string;
+  readonly model: BlockModel;
+}
+
+const readersOf = (entry: PresetEntry): readonly BlockId[] =>
+  entry.language === EVERY
+    ? [
+        entry.block,
+        entry.set.placeInPresets.reader,
+        ...entry.set.placeInPresets.withs,
+      ]
+    : [
+        entry.language,
+      ];
+
+const roleNameOf = (input: TermAsked): string | undefined => {
   const term = BlockModel.roleOf(input.model, {
     id: input.id,
-    readers:
-      entry.language === EVERY
-        ? [
-            entry.block,
-            entry.set.placeInPresets.reader,
-            ...entry.set.placeInPresets.withs,
-          ]
-        : [
-            entry.language,
-          ],
+    readers: readersOf(input.entry),
   });
 
-  return term === undefined ? undefined : Term.roleNameOf(term);
+  return term === undefined ? undefined : Term.spellingOf(term);
+};
+
+const membersOf = (input: TermAsked): readonly string[] | undefined =>
+  BlockModel.listOf(input.model, {
+    id: input.id,
+    readers: readersOf(input.entry),
+  })?.members;
+
+const releaseFile = new RegExp(
+  `${RegExp.escape(Fact.textOf(Fact.of(FactName.ConstitutionPath)))}/([^\\s"'\`,;)\\]]+)`,
+  'g',
+);
+const TRAILING_SEPARATOR = /\/$/;
+
+const releaseFilesIn = (input: {
+  entry: PresetEntry;
+  model: BlockModel;
+  text: string;
+}): readonly string[] => {
+  const written = Fact.resolvedIn({
+    text: input.text,
+    valueOf: (fact) => {
+      if (fact.kind !== FactKind.Role) {
+        return Fact.textOf(fact);
+      }
+
+      return roleNameOf({
+        entry: input.entry,
+        id: fact.role,
+        model: input.model,
+      });
+    },
+  });
+
+  return written === undefined
+    ? []
+    : [
+        ...written.matchAll(releaseFile),
+      ].map((match) => String(match[1]).replace(TRAILING_SEPARATOR, ''));
 };
 
 const writtenPathOf = (input: {
@@ -184,15 +228,34 @@ const textsOfValue = (given: PresetValue): readonly EntryText[] =>
       ])
     : textsOfSetting(given.setting, TextPlace.Value);
 
-const textsOf = (entry: PresetEntry): readonly EntryText[] =>
-  entry.value.kind === ValueKind.Default && typeof entry.value.setting === 'string'
-    ? [
-        {
-          place: TextPlace.File,
-          text: entry.value.setting,
-        },
-      ]
-    : textsOfValue(entry.value);
+const wholeTextOf = (given: PresetValue): EntryText | undefined =>
+  (given.kind === ValueKind.Copy || given.kind === ValueKind.Default) &&
+  typeof given.setting === 'string'
+    ? {
+        place: given.kind === ValueKind.Copy ? TextPlace.Copied : TextPlace.File,
+        text: given.setting,
+      }
+    : undefined;
+
+const textsOf = (entry: PresetEntry): readonly EntryText[] => {
+  const whole = wholeTextOf(entry.value);
+
+  return whole === undefined
+    ? textsOfValue(entry.value)
+    : [
+        whole,
+      ];
+};
+
+const copiedPathsOf = (input: { entry: PresetEntry; model: BlockModel }): readonly string[] =>
+  textsOf(input.entry)
+    .filter(({ place }) => place === TextPlace.Copied)
+    .flatMap(({ text }) =>
+      releaseFilesIn({
+        ...input,
+        text,
+      }),
+    );
 
 const roleIdsOf = (entry: PresetEntry): readonly string[] =>
   [
@@ -229,9 +292,12 @@ const PresetEntry = {
   bringingBlockOf,
   blocksCommentsNameOf,
   contributionOf,
+  copiedPathsOf,
+  membersOf,
   mergeProblemsOf,
   namedOf,
   orderOf,
+  releaseFilesIn,
   roleIdsOf,
   roleNameOf,
   sourceOf,

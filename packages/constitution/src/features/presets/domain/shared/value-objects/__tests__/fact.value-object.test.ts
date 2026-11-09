@@ -3,6 +3,27 @@ import { describe, expect, it } from 'bun:test';
 import type { Fact } from '../fact.value-object';
 import { FactKind, FactName, Fact as Facts } from '../fact.value-object';
 
+const emptyNamesOf = (term: string): readonly string[] | undefined =>
+  term === 'empty-names'
+    ? [
+        'data',
+        'info',
+      ]
+    : undefined;
+
+const factValues = new Map([
+  [
+    '${role.source}',
+    'src',
+  ],
+  [
+    '${package.name}',
+    'app',
+  ],
+]);
+
+const valueOfFact = (fact: Fact): string | undefined => factValues.get(Facts.textOf(fact));
+
 describe('Fact', () => {
   it.each<{
     fact: Fact;
@@ -21,6 +42,13 @@ describe('Fact', () => {
         role: 'adapter',
       },
       text: 'role.adapter',
+    },
+    {
+      fact: {
+        kind: FactKind.Term,
+        term: 'empty-names',
+      },
+      text: 'term.empty-names',
     },
     {
       fact: {
@@ -54,6 +82,13 @@ describe('Fact', () => {
         role: 'adapter',
       },
       written: '${role.adapter}',
+    },
+    {
+      fact: {
+        kind: FactKind.Term,
+        term: 'empty-names',
+      },
+      written: '${term.empty-names}',
     },
     {
       fact: {
@@ -212,5 +247,64 @@ describe('Fact', () => {
 
     // Assert
     expect(isPackageName).toBe(isNamed);
+  });
+
+  it.each([
+    {
+      condition: 'each in the backticks of a code snippet',
+      expected: 'or { `data`, `info` }',
+      text: 'or { `${term.empty-names}` }',
+    },
+    {
+      condition: 'each in single quotes',
+      expected: "['data', 'info']",
+      text: "['${term.empty-names}']",
+    },
+    {
+      condition: 'each in double quotes',
+      expected: '["data", "info"]',
+      text: '["${term.empty-names}"]',
+    },
+    {
+      condition: 'bare, where no quote stands on both sides',
+      expected: 'words: `data, info"',
+      text: 'words: `${term.empty-names}"',
+    },
+    {
+      condition: 'beside the roles and the facts the text names',
+      expected: '`data`, `info` in src of app',
+      text: '`${term.empty-names}` in ${role.source} of ${package.name}',
+    },
+  ])("should fill a text with a term's members, $condition", ({ expected, text }) => {
+    // Act
+    const filled = Facts.filledIn({
+      membersOf: emptyNamesOf,
+      text,
+      valueOf: valueOfFact,
+    });
+
+    // Assert
+    expect(filled).toBe(expected);
+  });
+
+  it.each([
+    {
+      condition: 'no block lists the term',
+      text: 'or { `${term.hollow-words}` }',
+    },
+    {
+      condition: 'a fact it names has no value',
+      text: 'or { `${term.empty-names}` } in ${role.gone}',
+    },
+  ])('should fill no text when $condition', ({ text }) => {
+    // Act
+    const filled = Facts.filledIn({
+      membersOf: emptyNamesOf,
+      text,
+      valueOf: () => undefined,
+    });
+
+    // Assert
+    expect(filled).toBeUndefined();
   });
 });

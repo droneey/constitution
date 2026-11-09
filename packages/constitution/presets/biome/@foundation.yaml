@@ -277,13 +277,25 @@ biome:
   biome-refuses-empty-verbs:
     typescript:
       biome.jsonc:
+        files:
+          includes:
+            - '!!**/biome.${role.generated-file}'
         plugins:
-          - ./${constitution.path}/presets/biome/plugins/typescript/biome-refuses-empty-verbs.${role.grit-rule}
+          - ./biome.${role.generated-file}/biome-refuses-empty-verbs.${role.grit-rule}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      biome.${role.generated-file}/biome-refuses-empty-verbs.${role.grit-rule}: !copy ${constitution.path}/presets/biome/plugins/typescript/biome-refuses-empty-verbs.${role.grit-rule}
   biome-refuses-empty-names:
     typescript:
       biome.jsonc:
+        files:
+          includes:
+            - '!!**/biome.${role.generated-file}'
         plugins:
-          - ./${constitution.path}/presets/biome/plugins/typescript/biome-refuses-empty-names.${role.grit-rule}
+          - ./biome.${role.generated-file}/biome-refuses-empty-names.${role.grit-rule}
+      # Why: a key and a path, which YAML cannot break.
+      # yamllint disable-line rule:line-length
+      biome.${role.generated-file}/biome-refuses-empty-names.${role.grit-rule}: !copy ${constitution.path}/presets/biome/plugins/typescript/biome-refuses-empty-names.${role.grit-rule}
 core:
   formatters-share-one-indent:
     '*':

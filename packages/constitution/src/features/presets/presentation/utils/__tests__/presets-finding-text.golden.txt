@@ -67,6 +67,12 @@ is named "gone", which is no rule; a plugin is named after the rule it holds
 # plugin-rule-not-must
 names [file-within-500-lines] in a message, and file-within-500-lines is a SHOULD rule; a rule a tool checks is a MUST
 
+# plugin-unknown-fact
+names ${term.hollow-words}, and a plugin names only a role or a term a block defines
+
+# plugin-named-unfilled
+names a role or a term, which only a copy fills, and an entry names the plugin by its path
+
 # clash
 gets two values at linter.rules from presets/a.yaml: core → * and presets/b.yaml: biome → *
 

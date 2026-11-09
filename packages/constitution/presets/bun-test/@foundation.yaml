@@ -45,7 +45,7 @@ bun-test:
             lines: 1
           coveragePathIgnorePatterns:
             - '**/${role.colocated-specs}/**'
-            - '**/main.*'
+            - '**/${role.entry}.*'
             - '**/*.${role.generated-file}.*'
       bunfig.toml:
         test:

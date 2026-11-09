@@ -3,6 +3,6 @@ core:
     typescript:
       stryker.${role.config-file}.json:
         mutate:
-          - '!${role.source}/${role.extra-entry}/*/main.{ts,tsx}'
-          - '!${role.source}/${role.host-integration}/*/main.{ts,tsx}'
+          - '!${role.source}/${role.extra-entry}/*/${role.entry}.{ts,tsx}'
+          - '!${role.source}/${role.host-integration}/*/${role.entry}.{ts,tsx}'
           - '!${role.source}/${role.composition-root}/**'

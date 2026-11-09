@@ -1,5 +1,5 @@
 export type { ActiveBlock } from './active-block.entity';
-export type { BlockText, ModelBlock, ModelRule, RoleTerm } from './block-model.entity';
+export type { BlockText, ListTerm, ModelBlock, ModelRule, RoleTerm } from './block-model.entity';
 export { BlockModel } from './block-model.entity';
 export { ConfigReadStatus } from './config-read-status.entity';
 export type { CoreFiles } from './core-files.entity';
@@ -20,7 +20,7 @@ export { RuleHeading } from './rule-heading.entity';
 export type { SourcedFile } from './sourced-file.entity';
 export type { RuleSource, RulesParsed, RuleWording } from './stated-rule.entity';
 export { StatedRule } from './stated-rule.entity';
-export type { Bold, TermsRead } from './term.entity';
+export type { Bold, RoleKind, SpelledKind, TermsRead } from './term.entity';
 export { Term, TermKind } from './term.entity';
 export type { ValueFindingDetails } from './value-finding.entity';
 export { ValueSite } from './value-finding.entity';

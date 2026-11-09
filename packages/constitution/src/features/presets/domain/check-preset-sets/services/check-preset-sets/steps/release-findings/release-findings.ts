@@ -7,7 +7,8 @@ import { PresetEntry, TextPlace } from '../../../../../preset-entry/entities';
 import { PLUGINS_FOLDER_NAME } from '../../../../../shared/constants';
 import type { PresetsFinding } from '../../../../../shared/entities';
 import { PresetsCode } from '../../../../../shared/entities';
-import { Fact, FactKind, FactName } from '../../../../../shared/value-objects';
+import { Fact, FactKind } from '../../../../../shared/value-objects';
+import type { ModelIndex } from '../index-model';
 
 interface ReleaseFiles {
   readonly distributed: ReadonlySet<string>;
@@ -17,55 +18,28 @@ interface ReleaseFiles {
   readonly pluginTexts: ReadonlyMap<string, string>;
 }
 
-const releaseFile = new RegExp(
-  `${RegExp.escape(Fact.textOf(Fact.of(FactName.ConstitutionPath)))}/([^\\s"'\`,;)\\]]+)`,
-  'g',
-);
-const TRAILING_SEPARATOR = /\/$/;
 const pluginPath = new RegExp(`^(?:[^/]+/)+?${PLUGINS_FOLDER_NAME}/[^/]+/([^/]+)\\.[^./]+$`);
 const BRACKETED = /\[([^\]\s]+)\]/g;
 
 interface ReleaseFindingsInput {
   readonly entries: readonly PresetEntry[];
+  readonly index: ModelIndex;
   readonly model: BlockModel;
   readonly release: ReleaseFiles;
-  readonly rules: ReadonlyMap<RuleSlug, ModelRule>;
 }
 
-const releaseFilesIn = (input: {
-  entry: PresetEntry;
-  model: BlockModel;
-  text: string;
-}): readonly string[] => {
-  const written = Fact.resolvedIn({
-    text: input.text,
-    valueOf: (fact) => {
-      if (fact.kind !== FactKind.Role) {
-        return Fact.textOf(fact);
-      }
-
-      return PresetEntry.roleNameOf({
-        entry: input.entry,
-        id: fact.role,
-        model: input.model,
-      });
-    },
-  });
-
-  return written === undefined
-    ? []
-    : [
-        ...written.matchAll(releaseFile),
-      ].map((match) => String(match[1]).replace(TRAILING_SEPARATOR, ''));
-};
+interface NamedFile {
+  readonly isCopied: boolean;
+  readonly pathInRelease: string;
+}
 
 // Why: the files to look for are named before the check reads them again, and resolving an entry's
 // roles is the dearest step of either, so an entry's are resolved once for each model.
-const namedFilesByModel = new WeakMap<BlockModel, WeakMap<PresetEntry, readonly string[]>>();
+const namedFilesByModel = new WeakMap<BlockModel, WeakMap<PresetEntry, readonly NamedFile[]>>();
 
-const namedFilesOf = (input: { entry: PresetEntry; model: BlockModel }): readonly string[] => {
+const namedFilesOf = (input: { entry: PresetEntry; model: BlockModel }): readonly NamedFile[] => {
   const byEntry =
-    namedFilesByModel.get(input.model) ?? new WeakMap<PresetEntry, readonly string[]>();
+    namedFilesByModel.get(input.model) ?? new WeakMap<PresetEntry, readonly NamedFile[]>();
   const known = byEntry.get(input.entry);
 
   // Stryker disable next-line ConditionalExpression,BlockStatement: an answer worked out again equals the remembered one, which only saves time
@@ -76,10 +50,13 @@ const namedFilesOf = (input: { entry: PresetEntry; model: BlockModel }): readonl
   const named = PresetEntry.textsOf(input.entry)
     .filter((text) => text.place !== TextPlace.File)
     .flatMap((text) =>
-      releaseFilesIn({
+      PresetEntry.releaseFilesIn({
         ...input,
         text: text.text,
-      }),
+      }).map((pathInRelease) => ({
+        isCopied: text.place === TextPlace.Copied,
+        pathInRelease,
+      })),
     );
 
   // Stryker disable next-line CallExpression: an answer not remembered is worked out again, alike
@@ -101,18 +78,17 @@ interface NamedFilesInput {
 
 const namedInReleaseOf = (
   input: NamedFilesInput,
-): readonly {
-  readonly pathInRelease: string;
+): readonly (NamedFile & {
   readonly setFilePath: RepositoryRelativePath;
-}[] =>
+})[] =>
   input.entries
     .filter((entry) => entry.set.source.kind === SourceKind.Release)
     .flatMap((entry) =>
       namedFilesOf({
         entry,
         model: input.model,
-      }).map((pathInRelease) => ({
-        pathInRelease,
+      }).map((named) => ({
+        ...named,
         setFilePath: entry.set.filePath,
       })),
     );
@@ -122,6 +98,48 @@ const releaseFilesNamedBy = (input: NamedFilesInput): readonly string[] => [
 ];
 
 const isPluginPath = (pathInPresets: string): boolean => pluginPath.test(pathInPresets);
+
+const isKnownIn = (index: ModelIndex, fact: Fact): boolean => {
+  if (fact.kind === FactKind.Role) {
+    return index.roleIds.has(fact.role);
+  }
+
+  // Stryker disable next-line ConditionalExpression: the test of its kind only narrows the type
+  return fact.kind === FactKind.Term && index.listIds.has(fact.term);
+};
+
+const factFindingsOf = (input: {
+  index: ModelIndex;
+  isNamedUnfilled: boolean;
+  path: RepositoryRelativePath;
+  text: string;
+}): readonly PresetsFinding[] => {
+  const references = Fact.referencesIn(input.text);
+
+  return [
+    ...references
+      .filter(({ fact }) => !isKnownIn(input.index, fact))
+      .map(
+        ({ written }) =>
+          ({
+            code: PresetsCode.PluginUnknownFact,
+            details: {
+              fact: written,
+            },
+            path: input.path,
+          }) satisfies PresetsFinding,
+      ),
+    ...(input.isNamedUnfilled && references.length > 0
+      ? [
+          {
+            code: PresetsCode.PluginNamedUnfilled,
+            details: {},
+            path: input.path,
+          } satisfies PresetsFinding,
+        ]
+      : []),
+  ];
+};
 
 const rulesTheMessagesKey = (input: {
   rules: ReadonlyMap<RuleSlug, ModelRule>;
@@ -143,15 +161,17 @@ const pluginFindings = (
     namedPaths: ReadonlySet<string>;
     pathInPresets: string;
     rule: string;
+    uncopiedPaths: ReadonlySet<string>;
   },
 ): readonly PresetsFinding[] => {
   const { release } = input;
+  const { rules } = input.index;
   const pathInRelease = `${PRESETS_FOLDER_NAME}${PATH_SEPARATOR}${input.pathInPresets}`;
   const path = RepositoryRelativePath.join(release.folderPathFromRepository, pathInRelease);
   const text = release.pluginTexts.get(input.pathInPresets);
 
   return [
-    ...(RuleSlug.is(input.rule) && input.rules.has(input.rule)
+    ...(RuleSlug.is(input.rule) && rules.has(input.rule)
       ? []
       : [
           {
@@ -173,7 +193,7 @@ const pluginFindings = (
         ]),
     ...(input.namedPaths.has(pathInRelease) && text !== undefined
       ? rulesTheMessagesKey({
-          rules: input.rules,
+          rules,
           text,
         })
           .filter(({ level }) => level !== Level.Must)
@@ -189,6 +209,14 @@ const pluginFindings = (
               }) satisfies PresetsFinding,
           )
       : []),
+    ...(text === undefined
+      ? []
+      : factFindingsOf({
+          index: input.index,
+          isNamedUnfilled: input.uncopiedPaths.has(pathInRelease),
+          path,
+          text,
+        })),
   ];
 };
 
@@ -196,6 +224,9 @@ const releaseFindings = (input: ReleaseFindingsInput): readonly PresetsFinding[]
   const { release } = input;
   const named = namedInReleaseOf(input);
   const namedPaths = new Set(named.map(({ pathInRelease }) => pathInRelease));
+  const uncopiedPaths = new Set(
+    named.filter(({ isCopied }) => !isCopied).map(({ pathInRelease }) => pathInRelease),
+  );
   const missing = named.flatMap(({ pathInRelease, setFilePath }) =>
     isSound({
       pathInRelease,
@@ -222,6 +253,7 @@ const releaseFindings = (input: ReleaseFindingsInput): readonly PresetsFinding[]
           namedPaths,
           pathInPresets,
           rule,
+          uncopiedPaths,
         });
   });
 

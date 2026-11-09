@@ -1,4 +1,4 @@
-import { releaseFolderInProject } from '#/kernel/constants';
+import { PATH_SEPARATOR, PRESETS_FOLDER_NAME, releaseFolderInProject } from '#/kernel/constants';
 import type { ProjectFiles } from '#/kernel/contracts';
 import {
   AbsolutePath,
@@ -18,7 +18,7 @@ import type {
   PresetFileParser,
 } from '../../../contracts';
 import { loadPresetSets } from '../load-preset-sets';
-import { readCheckInputs } from '../read-check-inputs';
+import { readCheckInputs, releaseFilesOf } from '../read-check-inputs';
 
 interface ComputePresetsInput {
   readonly distribution: DistributionSources;
@@ -93,6 +93,14 @@ const computePresets = (input: ComputePresetsInput): PresetsPlan => {
     units,
   });
   const { entries } = selected;
+  const release = releaseFilesOf({
+    distribution: input.distribution,
+    entries,
+    files,
+    folderPath: project.releaseFolderPath,
+    folderPathFromRepository: releaseFolderPathFromRepository,
+    model,
+  });
 
   return presetsPlanOf({
     ...selected,
@@ -101,22 +109,25 @@ const computePresets = (input: ComputePresetsInput): PresetsPlan => {
       files,
       repositoryFolderPath: project.repositoryFolderPath,
     }),
+    copiedTexts: new Map(
+      [
+        ...release.pluginTexts,
+      ].map(([pathInPresets, text]) => [
+        `${PRESETS_FOLDER_NAME}${PATH_SEPARATOR}${pathInPresets}`,
+        text,
+      ]),
+    ),
     findings: [
       ...loaded.flatMap((one) => one.findings),
       ...checkPresetSets({
         entries,
         model,
         packRoleNaming: PackRoleNaming.ByIdOrName,
+        release,
         ...readCheckInputs({
           entries,
           formats: input.formats,
           model,
-          release: {
-            distribution: input.distribution,
-            files,
-            folderPath: project.releaseFolderPath,
-            folderPathFromRepository: releaseFolderPathFromRepository,
-          },
         }),
       }),
     ],

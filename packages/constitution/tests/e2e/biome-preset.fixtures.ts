@@ -1,4 +1,4 @@
-import { mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
+import { cpSync, mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, normalize } from 'node:path';
 
@@ -69,6 +69,7 @@ const blocks = join(release, 'blocks');
 const ARCHITECTURE = 'architecture';
 const CONFIG = 'biome.jsonc';
 const PRESETS = 'presets';
+const WRITTEN_PLUGINS = 'biome.gen';
 const RESTRICTED_IMPORT = 'lint/style/noRestrictedImports';
 const SOURCE = 'src/order.ts';
 const WARN = 'warn';
@@ -170,6 +171,19 @@ const warnedRules = (): readonly string[] => {
     .map(({ rule }) => rule);
 };
 
+// Why: the configuration names the plugins an apply wrote beside it, which a copy of the
+// configuration needs beside it too.
+interface PluginsCopied {
+  readonly from: string;
+  readonly to: string;
+}
+
+const copyWrittenPlugins = (input: PluginsCopied): void => {
+  cpSync(join(input.from, WRITTEN_PLUGINS), join(input.to, WRITTEN_PLUGINS), {
+    recursive: true,
+  });
+};
+
 interface Tree {
   readonly axes: readonly string[];
   readonly files: Readonly<Record<string, string>>;
@@ -179,25 +193,25 @@ const diagnosticsOfTree = async ({ axes, files }: Tree): Promise<readonly BiomeD
   const folder = mkdtempSync(join(tmpdir(), 'constitution-biome-'));
 
   try {
+    const applied = appliedUnit({
+      axes,
+      implementations: [
+        'biome',
+      ],
+      languages: [
+        'typescript',
+      ],
+    });
+
     linkRelease(folder, PRESETS);
+    copyWrittenPlugins({
+      from: applied,
+      to: folder,
+    });
     writeFiles({
       files: {
         ...files,
-        [CONFIG]: readFileSync(
-          join(
-            appliedUnit({
-              axes,
-              implementations: [
-                'biome',
-              ],
-              languages: [
-                'typescript',
-              ],
-            }),
-            CONFIG,
-          ),
-          'utf8',
-        ),
+        [CONFIG]: readFileSync(join(applied, CONFIG), 'utf8'),
       },
       folder,
     });
@@ -240,6 +254,7 @@ export type { BiomeDiagnostic };
 export {
   biomeDiagnostics,
   codesOfWholeTree,
+  copyWrittenPlugins,
   filesWithRestrictedImports,
   repeatedPluginPaths,
   unwrittenPresetWords,

@@ -32,8 +32,16 @@ interface Constitution {
   readonly rules: readonly Rule[];
 }
 
-const modelOf = (constitution: Constitution): BlockModel =>
-  BlockModel.create({
+const modelOf = (constitution: Constitution): BlockModel => {
+  const texts = constitution.blocks.flatMap((block) =>
+    Block.filesOf(block).map((file) => ({
+      axis: file.axis,
+      ...Block.placeOf(block, file),
+      body: file.body,
+    })),
+  );
+
+  return BlockModel.create({
     blocks: constitution.blocks.map(({ frontMatter, id, layer }) => ({
       governs: frontMatter.governs,
       id,
@@ -41,17 +49,11 @@ const modelOf = (constitution: Constitution): BlockModel =>
       layer,
       requires: frontMatter.requires,
     })),
-    roles: BlockModel.rolesIn(
-      constitution.blocks.flatMap((block) =>
-        Block.filesOf(block).map((file) => ({
-          axis: file.axis,
-          ...Block.placeOf(block, file),
-          body: file.body,
-        })),
-      ),
-    ),
+    lists: BlockModel.listsIn(texts),
+    roles: BlockModel.rolesIn(texts),
     rules: constitution.rules,
   });
+};
 
 enum LoadCode {
   BaseDoesNotLoad = 'base-does-not-load',

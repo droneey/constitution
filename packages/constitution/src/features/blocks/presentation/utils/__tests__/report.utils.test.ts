@@ -25,6 +25,7 @@ const finding: BlockFinding = {
 };
 const model: BlockModel = {
   blocks: [],
+  lists: [],
   roles: [],
   rules: [],
 };

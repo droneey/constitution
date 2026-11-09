@@ -20,7 +20,7 @@ const map = (pairs: Readonly<Record<string, PresetValue>>): PresetValue =>
 const plain = (setting: Setting): PresetValue => PresetValue.plain(setting);
 
 const markedOf = (
-  kind: ValueKind.Default | ValueKind.Inherit | ValueKind.Replace,
+  kind: ValueKind.Copy | ValueKind.Default | ValueKind.Inherit | ValueKind.Replace,
   setting: Setting,
 ): PresetValue => ({
   isWords: false,
@@ -674,6 +674,36 @@ describe('MergedFile.merge', () => {
     expect(merged).toStrictEqual({
       defaults: [],
       problems: [],
+    });
+  });
+
+  it('should hold one copy of a file once, and find two that copy other files', () => {
+    // Arrange
+    const contributions = [
+      from('a', markedOf(ValueKind.Copy, 'presets/one.grit')),
+      from('b', markedOf(ValueKind.Copy, 'presets/one.grit')),
+      from('c', markedOf(ValueKind.Copy, 'presets/two.grit')),
+    ];
+
+    // Act
+    const merged = MergedFile.merge(contributions);
+
+    // Assert
+    expect(merged).toStrictEqual({
+      defaults: [],
+      problems: [
+        {
+          code: PresetsCode.Clash,
+          details: {
+            settingPath: '',
+            sources: [
+              'a',
+              'c',
+            ],
+          },
+        },
+      ],
+      value: 'presets/one.grit',
     });
   });
 

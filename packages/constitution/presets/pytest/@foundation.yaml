@@ -61,7 +61,7 @@ pytest:
             run:
               branch: true
               omit:
-                - '**/main.py'
+                - '**/${role.entry}.py'
                 - '**/__main__.py'
                 - '**/*_${role.generated-file}.py'
                 - '**/*_${role.generated-file}/**'

@@ -18,6 +18,7 @@ const soundValidation: Validation = {
   findings: [],
   model: {
     blocks: [],
+    lists: [],
     roles: [],
     rules: [],
   },

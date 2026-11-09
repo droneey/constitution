@@ -479,3 +479,180 @@ describe('BlockModel.rolesIn', () => {
     ]);
   });
 });
+
+describe('BlockModel.rolesIn of files', () => {
+  it("should give a file a block spells under an id, and a name such as `<entry>` that stands for it under the same id, as the file's role", () => {
+    // Arrange
+    const texts = [
+      {
+        axis: Axis.Foundation,
+        block: coreBlockId,
+        body: 'A program starts at **`<entry>`**{#entry}, absence is **`<absent>`**{#absent}, **`renovate.json`** names updates and **`bun:test`** runs the specs.',
+      },
+      {
+        axis: Axis.Foundation,
+        block: BlockId.create('typescript'),
+        body: 'A program starts at **`main.ts`**{#entry}, and absence is **`undefined`**{#absent}.',
+      },
+    ];
+
+    // Act
+    const roles = BlockModel.rolesIn(texts);
+
+    // Assert
+    expect(roles).toStrictEqual([
+      {
+        axis: Axis.Foundation,
+        block: coreBlockId,
+        id: 'entry',
+        kind: TermKind.File,
+        term: '<entry>',
+      },
+      {
+        axis: Axis.Foundation,
+        block: BlockId.create('typescript'),
+        id: 'entry',
+        kind: TermKind.File,
+        term: 'main.ts',
+      },
+    ]);
+  });
+});
+
+describe('BlockModel.listsIn', () => {
+  it('should give the words each concept that carries an id lists, by the block and the seam that define it', () => {
+    // Arrange
+    const texts = [
+      {
+        axis: Axis.Foundation,
+        block: coreBlockId,
+        body: 'The **empty names**{#empty-names} are `data` and `info`; the **hollow words** are `try`, and **kebab-case**{#name-case} is the case.',
+      },
+      {
+        axis: Axis.Foundation,
+        block: BlockId.create('typescript'),
+        body: 'The **empty words**{#empty-names} are `data` and `item`.',
+        seam: BlockId.create('workspace'),
+      },
+    ];
+
+    // Act
+    const lists = BlockModel.listsIn(texts);
+
+    // Assert
+    expect(lists).toStrictEqual([
+      {
+        axis: Axis.Foundation,
+        block: coreBlockId,
+        id: 'empty-names',
+        members: [
+          'data',
+          'info',
+        ],
+      },
+      {
+        axis: Axis.Foundation,
+        block: BlockId.create('typescript'),
+        id: 'empty-names',
+        members: [
+          'data',
+          'item',
+        ],
+        seam: BlockId.create('workspace'),
+      },
+    ]);
+  });
+});
+
+describe('BlockModel.listOf', () => {
+  const listModel = BlockModel.create({
+    ...roleModel,
+    lists: [
+      {
+        axis: Axis.Foundation,
+        block: coreBlockId,
+        id: 'empty-names',
+        members: [
+          'data',
+        ],
+      },
+      {
+        axis: Axis.Foundation,
+        block: python,
+        id: 'empty-names',
+        members: [
+          'data',
+          'obj',
+        ],
+      },
+    ],
+  });
+
+  it.each([
+    {
+      condition: 'a language the readers reach spells it its own way',
+      expected: [
+        'data',
+        'obj',
+      ],
+      readers: [
+        'import-linter',
+      ],
+    },
+    {
+      condition: 'the readers reach only core',
+      expected: [
+        'data',
+      ],
+      readers: [
+        'typescript',
+      ],
+    },
+    {
+      condition: 'the model knows none of the readers',
+      expected: [
+        'data',
+      ],
+      readers: [
+        'go',
+      ],
+    },
+  ])(
+    'should give the words of the most specific block the readers reach when $condition',
+    ({ expected, readers }) => {
+      // Act
+      const list = BlockModel.listOf(listModel, {
+        id: 'empty-names',
+        readers: readers.map(BlockId.create),
+      });
+
+      // Assert
+      expect(list?.members).toStrictEqual(expected);
+    },
+  );
+
+  it('should give no words for an id no concept carries', () => {
+    // Act
+    const list = BlockModel.listOf(listModel, {
+      id: 'dating-words',
+      readers: [
+        python,
+      ],
+    });
+
+    // Assert
+    expect(list).toBeUndefined();
+  });
+
+  it('should hold no list in a model made without one', () => {
+    // Act
+    const { lists } = BlockModel.create({
+      blocks: [],
+      roles: [],
+      rules: [],
+    });
+
+    // Assert
+    expect(lists).toStrictEqual([]);
+  });
+});

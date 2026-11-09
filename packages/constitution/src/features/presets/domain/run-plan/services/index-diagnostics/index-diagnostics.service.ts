@@ -35,7 +35,12 @@ const idsOf = (text: EntryText): readonly string[] => {
 
 const idsOfEntry = (entry: PresetEntry): readonly string[] =>
   PresetEntry.textsOf(entry)
-    .filter((text) => text.place === TextPlace.Key || text.place === TextPlace.Item)
+    .filter(
+      (text) =>
+        text.place === TextPlace.Key ||
+        text.place === TextPlace.Item ||
+        text.place === TextPlace.Copied,
+    )
     .flatMap(idsOf);
 
 const heldOf = (input: {

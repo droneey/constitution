@@ -7,7 +7,7 @@ lingui:
             path:
               - ^${role.source}/(?!${role.generic-library}/).*/${role.presentation-layer}/(${role.screen}|${role.widget}|${role.component})/
               - ^${role.source}/(?!index\.)[^/]+\.[^/]+$
-              - ^${role.source}/${role.extra-entry}/[^/]+/main\.[^/]+$
+              - ^${role.source}/${role.extra-entry}/[^/]+/${role.entry}\.[^/]+$
               - ^${role.source}/${role.composition-root}/
               - /locales/
               - (^|/)${role.colocated-specs}/
@@ -20,7 +20,7 @@ lingui:
             pathNot:
               - ^${role.source}/(?!${role.generic-library}/).*/${role.presentation-layer}/(${role.screen}|${role.widget}|${role.component})/
               - ^${role.source}/(?!index\.)[^/]+\.[^/]+$
-              - ^${role.source}/${role.extra-entry}/[^/]+/main\.[^/]+$
+              - ^${role.source}/${role.extra-entry}/[^/]+/${role.entry}\.[^/]+$
               - ^${role.source}/${role.composition-root}/
               - /locales/
               - (^|/)${role.colocated-specs}/

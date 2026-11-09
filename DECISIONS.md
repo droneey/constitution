@@ -3246,6 +3246,23 @@
   - A number of commands as the bound of embedded shell: any number is arbitrary and guards nothing, while a branch, a loop or a pipeline is what fails unseen under a runner's flags. A preset's hook calling the Constitution's command line: a preset is the tool's alone.
 - **Why.** Each was a place where a rule could be read two ways or held nothing; each now has one reading a reviewer can check.
 
+## ADR-0298 — A plugin takes the project's words from their term, as a copy each unit holds
+
+**Date:** 2026-11-09 · **Status:** Accepted
+
+- **Decision.**
+  - A concept that carries an id lists its words in the code spans of the sentence that defines it, and a block that builds on its owner respells the list under the same id, as it respells a folder. Core's empty names and empty verbs take the words Biome refused already, `arr` and `run`, `get`, `set`, `update` among them, and Biome's rules name the terms instead of listing the words again.
+  - A plugin names the list as `${term.<id>}`, and an entry copies the plugin into the unit with `!copy`: `presets apply` writes it whole into `biome.gen/`, its terms and roles filled as the entry's language reads them, rewrites it from each release, and Biome's configuration names the copy and leaves `biome.gen/` out of what it checks. The copy runs with Biome alone.
+  - The entry file is a role: a file a block spells under an id, and core's placeholder `<entry>` that stands for it, so a setting names `${role.entry}`, the file's name without its extension, where it named `main`.
+- **Rejected.**
+  - The words kept in each plugin: a pack that respells the empty names cannot reach them, and the plugin's list drifts from the term's, as Biome's had.
+  - Biome's own respelling of the lists: the entries are read by their language, which never reaches Biome, and the words are no tool's.
+  - A plugin read from the release by its path with the words passed in: GritQL takes no outside list, and Biome loads a plugin only as a file.
+  - A copy kept beside the project's files and formatted by Biome's fix: the formatter rewrites it after every apply, which then reads it as loosened.
+  - A line of the plugin repeated for each member: Biome's formatter joins a one-item list onto one line, so the release's plugin would lose the line to repeat.
+  - `main` kept as a hard-coded file name: a language that names its entry otherwise, or a pack that respells it, gets settings that miss the file.
+- **Why.** A word list a tool enforces has one home, the term a reader also reads, and the tool's file is still one the tool runs without the Constitution.
+
 ## Rule aliases
 
 > Every rule slug removed, merged, split, renamed or moved between blocks since the release 0.88, with where its meaning lives now and the entry under which it was recorded (ADR-0274). A slug that moved keeps its name; the others name their successor, or say what holds them.

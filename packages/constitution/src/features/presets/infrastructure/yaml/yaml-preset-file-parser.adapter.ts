@@ -13,9 +13,10 @@ import { isPresetFileRefusal, PresetFileRefusal as Refusal } from './errors';
 
 type ValueNode = Scalar | YAMLMap | YAMLSeq;
 
-type Mark = ValueKind.Default | ValueKind.Inherit | ValueKind.Replace;
+type Mark = ValueKind.Copy | ValueKind.Default | ValueKind.Inherit | ValueKind.Replace;
 
 const marks: Readonly<Record<string, Mark>> = {
+  '!copy': ValueKind.Copy,
   '!default': ValueKind.Default,
   '!inherits': ValueKind.Inherit,
   '!replace': ValueKind.Replace,
@@ -130,12 +131,16 @@ const settingOf = (node: ValueNode): Setting => {
 };
 
 /**
- * @throws {PresetFileRefusal} when the node holds a tag the grammar refuses, or a key
- * `list[slot=<name>]` holds more than inserts
+ * @throws {PresetFileRefusal} when the node holds a tag the grammar refuses, a key
+ * `list[slot=<name>]` holds more than inserts, or a copy holds no text
  */
 const presetOf = (node: ValueNode): PresetValue => {
   const mark = markOf(node);
   const near = offsetOf(node);
+
+  if (mark === ValueKind.Copy && !isScalar(node)) {
+    throw refusalAt(near);
+  }
 
   if (mark !== undefined) {
     return {

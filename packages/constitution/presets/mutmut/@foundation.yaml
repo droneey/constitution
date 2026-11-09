@@ -24,6 +24,6 @@ mutmut:
             source_paths:
               - ${role.source}
             do_not_mutate:
-              - '*/main.py'
+              - '*/${role.entry}.py'
               - '*_${role.generated-file}.py'
               - '*_${role.generated-file}/*'

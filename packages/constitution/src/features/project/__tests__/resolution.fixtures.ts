@@ -178,6 +178,7 @@ interface ModelFixture {
 
 const modelOf = (input: ModelFixture = {}): BlockModel => ({
   blocks: (input.blocks ?? []).map(blockSetBlockOf),
+  lists: [],
   roles: input.roles ?? [],
   rules: (input.rules ?? []).map(blockSetRuleOf),
 });

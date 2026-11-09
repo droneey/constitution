@@ -28,6 +28,8 @@ enum PresetsCode {
   PluginUnreferenced = 'plugin-unreferenced',
   PluginNamesNoRule = 'plugin-names-no-rule',
   PluginRuleNotMust = 'plugin-rule-not-must',
+  PluginUnknownFact = 'plugin-unknown-fact',
+  PluginNamedUnfilled = 'plugin-named-unfilled',
   Clash = 'clash',
   TwoReplacers = 'two-replacers',
   MissingSlot = 'missing-slot',
@@ -152,6 +154,10 @@ interface PresetsDetails {
     readonly file: string;
   };
   readonly [PresetsCode.PluginUnreferenced]: object;
+  readonly [PresetsCode.PluginUnknownFact]: {
+    readonly fact: string;
+  };
+  readonly [PresetsCode.PluginNamedUnfilled]: object;
   readonly [PresetsCode.PluginNamesNoRule]: {
     readonly rule: string;
   };

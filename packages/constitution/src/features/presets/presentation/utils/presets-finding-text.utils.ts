@@ -24,13 +24,18 @@ import {
 
 const SHOWN = 3;
 
-const settingsOf = (settings: readonly string[]): string =>
-  settings.length > SHOWN
+const heldOf = (settingPath: string): string => (settingPath === '' ? ALL_SETTINGS : settingPath);
+
+const settingsOf = (settingPaths: readonly string[]): string => {
+  const settings = settingPaths.map(heldOf);
+
+  return settings.length > SHOWN
     ? moreSettingsMessage({
         more: settings.length - SHOWN,
         shown: settings.slice(0, SHOWN).join(LIST_SEPARATOR),
       })
     : settings.join(LIST_SEPARATOR);
+};
 
 const presetsFindingTexts: TextsOf<PresetsDetails> = {
   ...presetsFindingMessages,
@@ -46,14 +51,14 @@ const presetsFindingTexts: TextsOf<PresetsDetails> = {
     entryMisshapenMessage(keys.length === 0 ? AT_TOP : underKeysMessage(keys)),
   [PresetsCode.Loosened]: ({ settingPath, wanted }) =>
     loosenedMessage({
-      held: settingPath === '' ? ALL_SETTINGS : settingPath,
+      held: heldOf(settingPath),
       wanted,
     }),
   [PresetsCode.SortedInUnsortableFile]: ({ file, settingPath, ...named }) =>
     sortedInUnsortableMessage({
       file,
       named,
-      sorted: settingPath === '' ? ALL_SETTINGS : settingPath,
+      sorted: heldOf(settingPath),
     }),
   [PresetsCode.Missing]: ({ settingPaths }) => missingMessage(settingsOf(settingPaths)),
   [PresetsCode.Stale]: ({ settingPaths }) => staleMessage(settingsOf(settingPaths)),

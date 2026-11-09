@@ -20,6 +20,7 @@ const texts = fc.oneof(
         '- ',
         '? ',
         ': ',
+        '!copy ',
         '!default ',
         '!inherits ',
         '!replace ',
@@ -226,6 +227,35 @@ describe('createYamlPresetFileParser', () => {
     });
   });
 
+  it.each([
+    {
+      condition: 'a plain text',
+      text: 'rule.grit: !copy ${constitution.path}/presets/biome/plugins/rule.grit\n',
+    },
+    {
+      condition: 'a quoted text',
+      text: "rule.grit: !copy '${constitution.path}/presets/biome/plugins/rule.grit'\n",
+    },
+  ])('should read a copy of a file named by $condition', ({ text }) => {
+    // Act
+    const read = parser.parse(text);
+
+    // Assert
+    expect(read).toStrictEqual({
+      status: PresetFileReadStatus.Parsed,
+      value: PresetValue.mapOf([
+        {
+          key: 'rule.grit',
+          value: {
+            isWords: false,
+            kind: ValueKind.Copy,
+            setting: '${constitution.path}/presets/biome/plugins/rule.grit',
+          },
+        },
+      ]),
+    });
+  });
+
   it('should read an empty preset file as a map without pairs', () => {
     // Act
     const read = parser.parse('# nothing yet\n');
@@ -389,6 +419,22 @@ describe('createYamlPresetFileParser', () => {
         status: PresetFileReadStatus.Unparsed,
       },
       text: 'a: 1\noverrides[slot=injected]:\n  includes@injected: [x]\n  linter: 1\n',
+    },
+    {
+      condition: 'the copy mark tags a list',
+      read: {
+        line: 1,
+        status: PresetFileReadStatus.Unparsed,
+      },
+      text: 'a: !copy [b]\n',
+    },
+    {
+      condition: 'the copy mark tags a map',
+      read: {
+        line: 1,
+        status: PresetFileReadStatus.Unparsed,
+      },
+      text: 'a: !copy {b: 1}\n',
     },
     {
       condition: 'a mark tags a null',

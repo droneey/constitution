@@ -1,5 +1,5 @@
 import { Layer } from '#/kernel/constants';
-import type { BlockModel, RoleTerm } from '#/kernel/entities';
+import type { BlockModel, RoleKind, RoleTerm } from '#/kernel/entities';
 import { Term, TermKind } from '#/kernel/entities';
 
 interface NamedRole {
@@ -30,7 +30,9 @@ const FACT_MASK = '\u0000';
 const namedOf = (input: {
   governed: ReadonlySet<string>;
   layers: ReadonlyMap<string, Layer>;
-  term: RoleTerm;
+  term: RoleTerm & {
+    readonly kind: RoleKind;
+  };
 }): readonly NamedRole[] => {
   const { id, term } = input.term;
   const isLanguageSuffix =
@@ -89,9 +91,15 @@ const roleNamesOf = (model: BlockModel): RoleNames => {
   );
   const governed = new Set<string>(model.blocks.flatMap((block) => block.governs));
 
-  const namedBy = (kind: TermKind): readonly NamedRole[] =>
+  const namedBy = (kind: RoleKind): readonly NamedRole[] =>
     model.roles
-      .filter((term) => term.kind === kind)
+      .filter(
+        (
+          term,
+        ): term is RoleTerm & {
+          readonly kind: RoleKind;
+        } => term.kind === kind,
+      )
       .flatMap((term) =>
         namedOf({
           governed,

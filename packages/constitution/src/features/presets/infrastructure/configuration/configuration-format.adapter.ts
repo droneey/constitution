@@ -24,7 +24,14 @@ const DOT = '.';
 const RUN_COMMAND_EXTENSION = /\.[^.]+rc$/;
 const SECTION_LINE = /^\s*\[[^\]]+\]\s*$/m;
 
+// Why: a file the presets copy whole, such as a GritQL rule, holds no settings but its one text.
+const wholeTextFormat: Format = {
+  read: (text) => text,
+  write: (file) => (typeof file.settings === 'string' ? file.settings : ''),
+};
+
 const formatByExtension: Readonly<Record<string, Format>> = {
+  '.grit': wholeTextFormat,
   '.json': {
     read: readJson,
     write: writeJson,

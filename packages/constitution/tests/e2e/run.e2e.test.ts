@@ -413,7 +413,7 @@ describe('constitution run', () => {
       }).toStrictEqual({
         exitCode: 1,
         named: [
-          "biome-refuses-empty-names · MUST — Every variable named only by an empty word fails Biome's lint. A variable, a parameter or a destructured field named only `data`, `result`, `temp`, `info`, `item`, `value`, `obj`, `arr`, `stuff` or `thing` fails it wherever the setting applies; one that holds a value whose shape the code does not know takes a suppression that says so.",
+          "biome-refuses-empty-names · MUST — Every variable named only by an empty word fails Biome's lint. A variable, a parameter or a destructured field named only by one of the empty names fails it wherever the setting applies; one that holds a value whose shape the code does not know takes a suppression that says so.",
           ...whys.slice(0, 1),
           "debug-output-never-ships · MUST — All code that reaches its users is free of every debug output and breakpoint. Debug output is output written only to follow a run while the code is developed, such as a printed value or a dump. Exempt: a diagnostic written through the diagnostic handles at a level the program's settings can turn off.",
           ...whys.slice(1),

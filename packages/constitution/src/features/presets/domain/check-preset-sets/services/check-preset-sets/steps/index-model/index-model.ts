@@ -3,6 +3,7 @@ import type { BlockId, RuleSlug } from '#/kernel/value-objects';
 
 interface ModelIndex {
   readonly blocks: ReadonlyMap<BlockId, ModelBlock>;
+  readonly listIds: ReadonlySet<string>;
   readonly roleIds: ReadonlySet<string>;
   readonly rules: ReadonlyMap<RuleSlug, ModelRule>;
 }
@@ -14,6 +15,7 @@ const modelIndexOf = (model: BlockModel): ModelIndex => ({
       block,
     ]),
   ),
+  listIds: new Set(model.lists.map((list) => list.id)),
   // Stryker disable next-line ArrayDeclaration: no role a fact names is spelled as the text it adds
   roleIds: new Set(model.roles.flatMap((term) => term.id ?? [])),
   rules: new Map<RuleSlug, ModelRule>(

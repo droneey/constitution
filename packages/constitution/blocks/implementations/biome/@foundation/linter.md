@@ -10,7 +10,7 @@ A project's own GritQL rule is a file ending in **`.grit`**{#grit-rule}.
 
 ### biome-refuses-empty-names → name-never-an-empty-word · MUST
 
-Every variable named only by an empty word fails Biome's lint. A variable, a parameter or a destructured field named only `data`, `result`, `temp`, `info`, `item`, `value`, `obj`, `arr`, `stuff` or `thing` fails it wherever the setting applies; one that holds a value whose shape the code does not know takes a suppression that says so.
+Every variable named only by an empty word fails Biome's lint. A variable, a parameter or a destructured field named only by one of the empty names fails it wherever the setting applies; one that holds a value whose shape the code does not know takes a suppression that says so.
 
 #### Why
 
@@ -32,7 +32,7 @@ return order.total;
 
 ### biome-refuses-empty-verbs → name-never-an-empty-word · MUST
 
-Every function named only by an empty verb fails Biome's lint. A function or a method named only `handle`, `process`, `manage`, `do`, `run`, `execute`, `get`, `set` or `update` fails it; a proxy's handler passes, and another name an implemented contract imposes takes a suppression that says so.
+Every function named only by an empty verb fails Biome's lint. A function or a method named only by one of the empty verbs fails it; a proxy's handler passes, and another name an implemented contract imposes takes a suppression that says so.
 
 #### Why
 

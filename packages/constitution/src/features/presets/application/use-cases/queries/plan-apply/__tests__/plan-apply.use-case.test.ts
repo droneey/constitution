@@ -1459,3 +1459,106 @@ describe('planApply', () => {
     });
   });
 });
+
+const COPIED_PLUGIN = 'biome/plugins/typescript/unchecked-type-never-used.grit';
+const PLUGIN_COPY = 'biome.gen/unchecked-type-never-used.grit';
+
+const copyPresets = (plugin: string): Files => ({
+  'biome/@foundation.yaml': [
+    'biome:',
+    "  '*':",
+    "    '*':",
+    `      ${PLUGIN_COPY}: !copy \${constitution.path}/presets/${COPIED_PLUGIN}`,
+  ].join('\n'),
+  [COPIED_PLUGIN]: plugin,
+});
+
+const firstCopy = (): Planned =>
+  planOnce({
+    files: {},
+    presets: copyPresets('in ${role.source}\n'),
+  });
+
+describe('planApply of a plugin an entry copies', () => {
+  it('should write the copy whole, its roles spelled, where the project lacks it', () => {
+    // Act
+    const first = firstCopy();
+
+    // Assert
+    expect({
+      findings: first.findings,
+      notes: first.notes,
+      texts: first.texts[PLUGIN_COPY],
+    }).toStrictEqual({
+      findings: [],
+      notes: [],
+      texts: 'in src\n',
+    });
+  });
+
+  it("should write the copy again from a later release's plugin where it holds what the apply wrote", () => {
+    // Arrange
+    const first = firstCopy();
+
+    // Act
+    const later = planOnce({
+      files: first.texts,
+      locks: readOf(first.locks),
+      presets: copyPresets('at ${role.source}\n'),
+    });
+
+    // Assert
+    expect({
+      notes: later.notes,
+      text: later.texts[PLUGIN_COPY],
+    }).toStrictEqual({
+      notes: [],
+      text: 'at src\n',
+    });
+  });
+
+  it('should hold the plan, writing nothing, on a copy the project changed', () => {
+    // Arrange
+    const first = firstCopy();
+
+    // Act
+    const edited = planOnce({
+      files: {
+        ...first.texts,
+        [PLUGIN_COPY]: 'mine\n',
+      },
+      locks: readOf(first.locks),
+      presets: copyPresets('in ${role.source}\n'),
+    });
+
+    // Assert
+    expect({
+      codes: edited.findings.map(({ code }) => code),
+      text: edited.texts[PLUGIN_COPY],
+    }).toStrictEqual({
+      codes: [
+        PresetsCode.Loosened,
+      ],
+      text: undefined,
+    });
+  });
+
+  it('should delete the copy once no entry writes it', () => {
+    // Arrange
+    const first = firstCopy();
+
+    // Act
+    const gone = planOnce({
+      files: first.texts,
+      locks: readOf(first.locks),
+      presets: presetsWith([
+        'kept.json',
+      ]),
+    });
+
+    // Assert
+    expect(gone.deleted).toStrictEqual([
+      PLUGIN_COPY,
+    ]);
+  });
+});

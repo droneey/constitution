@@ -1,0 +1,19 @@
+language js
+
+or {
+  JsFunctionDeclaration(id=$name),
+  JsFunctionExportDefaultDeclaration(id=$name),
+  JsVariableDeclarator(id=$name, initializer=JsInitializerClause(expression=or {
+    JsArrowFunctionExpression(),
+    JsFunctionExpression()
+  })),
+  JsMethodClassMember(name=$name),
+  JsMethodObjectMember(name=$name)
+} as $function where {
+  $function <: not within or {
+    `new Proxy($...)`,
+    `const $_: ProxyHandler<$_> = $_`
+  },
+  $name <: or { `handle`, `process`, `manage`, `do`, `run`, `execute`, `get`, `set`, `update` },
+  register_diagnostic(span=$name, message="[biome-refuses-empty-verbs] Name what the function does and to what: a verb alone says nothing", severity="error")
+}

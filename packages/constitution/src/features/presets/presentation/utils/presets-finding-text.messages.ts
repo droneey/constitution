@@ -122,6 +122,10 @@ const presetsFindingMessages: Omit<TextsOf<PresetsDetails>, VariedCode> = {
     `is named "${rule}", which is no rule; a plugin is named after the rule it holds`,
   [PresetsCode.PluginRuleNotMust]: ({ level, rule }) =>
     `names [${rule}] in a message, and ${rule} is a ${level} rule; a rule a tool checks is a ${Level.Must}`,
+  [PresetsCode.PluginUnknownFact]: ({ fact }) =>
+    `names ${fact}, and a plugin names only a role or a term a block defines`,
+  [PresetsCode.PluginNamedUnfilled]: () =>
+    'names a role or a term, which only a copy fills, and an entry names the plugin by its path',
   [PresetsCode.Clash]: ({ settingPath, sources }) =>
     `gets two values at ${settingPath} from ${namesOf(sources)}`,
   [PresetsCode.TwoReplacers]: ({ settingPath, sources }) =>

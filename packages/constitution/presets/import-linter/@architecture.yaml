@@ -207,8 +207,8 @@ core:
               protected_modules:
                 - '*.${role.composition-root}'
               allowed_importers:
-                - '*.main'
-                - '*.${role.extra-entry}.*.main'
+                - '*.${role.entry}'
+                - '*.${role.extra-entry}.*.${role.entry}'
   adapter-imported-only-by-the-root:
     python:
       pyproject.toml:
@@ -260,7 +260,7 @@ core:
               name: entrypoint-never-imported
               type: protected
               protected_modules:
-                - '*.main'
+                - '*.${role.entry}'
               allowed_importers:
                 - '*.__main__'
   integration-never-imported:

@@ -29,10 +29,11 @@ interface PlacedValue extends Placed {
 
 const placers: Readonly<
   Record<
-    ValueKind.Default | ValueKind.Inherit | ValueKind.Plain | ValueKind.Replace,
+    ValueKind.Copy | ValueKind.Default | ValueKind.Inherit | ValueKind.Plain | ValueKind.Replace,
     (state: MergeState, placed: PlacedSetting) => MergeState
   >
 > = {
+  [ValueKind.Copy]: MergeState.settingPlaced,
   [ValueKind.Default]: MergeState.defaulted,
   [ValueKind.Inherit]: MergeState.inheritanceDeclared,
   [ValueKind.Plain]: MergeState.settingPlaced,

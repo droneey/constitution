@@ -14,7 +14,7 @@ import {
 
 import type { PresetEntry } from '../../../../preset-entry/entities';
 import type { PresetPair } from '../../../../setting/entities';
-import { PresetValue } from '../../../../setting/entities';
+import { PresetValue, ValueKind } from '../../../../setting/entities';
 import { EVERY } from '../../../../shared/constants';
 import { TargetKind } from '../../../../shared/value-objects';
 import type { DiagnosticIndex } from '../../../entities';
@@ -99,7 +99,7 @@ const levelsOf = (index: DiagnosticIndex | undefined): readonly string[] =>
   ].flatMap(([id, rules]) => rules.map(({ level, slug }) => `${id} → ${slug} · ${level}`));
 
 describe('indexDiagnostics', () => {
-  it("should key each rule name, code and plugin a unit's entries name by the rule its entry holds, with its statement and Why", () => {
+  it("should key each rule name, code and plugin a unit's entries name or copy by the rule its entry holds, with its statement and Why", () => {
     // Act
     const indexes = indexDiagnostics({
       files: [
@@ -113,6 +113,15 @@ describe('indexDiagnostics', () => {
             listed(NAMES, 'plugins', [
               './${constitution.path}/presets/biome/plugins/typescript/biome-refuses-empty-names.${role.grit-rule}',
             ]),
+            entryOf({
+              rule: NAMES,
+              value: {
+                isWords: false,
+                kind: ValueKind.Copy,
+                setting:
+                  '${constitution.path}/presets/biome/plugins/typescript/biome-refuses-empty-verbs.${role.grit-rule}',
+              },
+            }),
           ],
           unitPath: rootUnit,
         },
@@ -135,6 +144,7 @@ describe('indexDiagnostics', () => {
       `PLR2004 → ${LITERALS} · MUST`,
       `S → ${LITERALS} · MUST`,
       `[biome-refuses-empty-names] → ${NAMES} · MUST`,
+      `[biome-refuses-empty-verbs] → ${NAMES} · MUST`,
     ]);
   });
 

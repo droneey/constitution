@@ -299,7 +299,10 @@ const settleFile = (input: SettleFileInput): FileSettled => {
       .map(Leaf.keyOf),
   );
   const overlaid = overlayFile({
-    fileSetting: stale.value,
+    // Why: a file missing, or left empty once an earlier apply's settings are taken out, holds
+    // nothing, where a whole text read from it would differ from ours.
+    fileSetting:
+      read.status === FileReadStatus.Missing || isEmpty(stale.value) ? undefined : stale.value,
     locked: new Set(record.leaves),
     keyPath: [],
     ours,

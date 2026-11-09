@@ -1,17 +1,6 @@
 language js
 
 JsIdentifierBinding() as $name where {
-  $name <: or {
-    `data`,
-    `result`,
-    `temp`,
-    `info`,
-    `item`,
-    `value`,
-    `obj`,
-    `arr`,
-    `stuff`,
-    `thing`
-  },
+  $name <: or { `${term.empty-names}` },
   register_diagnostic(span=$name, message="[biome-refuses-empty-names] Name what it holds: an empty word says nothing", severity="error")
 }

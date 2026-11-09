@@ -5,12 +5,12 @@ core:
         mutate:
           - ${role.source}/**/*.{ts,tsx}
           - '!${role.source}/**/${role.colocated-specs}/**'
-          - '!${role.source}/main.{ts,tsx}'
+          - '!${role.source}/${role.entry}.{ts,tsx}'
           - '!${role.source}/**/*.${role.generated-file}.*'
           - '!${role.source}/**/*.d.ts'
           - ${role.build-code}/**/*.ts
           - '!${role.build-code}/**/${role.colocated-specs}/**'
-          - '!${role.build-code}/*/main.ts'
+          - '!${role.build-code}/*/${role.entry}.ts'
         thresholds:
           break: 100
   '*':

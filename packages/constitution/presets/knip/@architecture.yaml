@@ -3,5 +3,5 @@ core:
     typescript:
       knip.jsonc:
         entry:
-          - ${role.source}/${role.extra-entry}/*/main.{ts,tsx}!
+          - ${role.source}/${role.extra-entry}/*/${role.entry}.{ts,tsx}!
           - ${role.source}/**/index.{ts,tsx}!

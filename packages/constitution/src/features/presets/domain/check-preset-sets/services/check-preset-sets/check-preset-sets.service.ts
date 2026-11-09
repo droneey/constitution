@@ -81,9 +81,9 @@ const checkPresetSets = (input: CheckPresetSetsInput): readonly PresetsFinding[]
       ? []
       : releaseFindings({
           entries: input.entries,
+          index,
           model: input.model,
           release: input.release,
-          rules: index.rules,
         })),
   ]);
 };

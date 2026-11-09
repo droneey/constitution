@@ -30,12 +30,12 @@ interface CheckInputs {
   readonly sortable: ReadonlySet<PresetEntry>;
 }
 
-const releaseFilesOf = (
-  input: ReleaseSources & {
-    entries: readonly PresetEntry[];
-    model: BlockModel;
-  },
-): ReleaseFiles => {
+interface ReleaseFilesInput extends ReleaseSources {
+  readonly entries: readonly PresetEntry[];
+  readonly model: BlockModel;
+}
+
+const releaseFilesOf = (input: ReleaseFilesInput): ReleaseFiles => {
   const { files, folderPath } = input;
   const presetsFolderPath = AbsolutePath.join(folderPath, PRESETS_FOLDER_NAME);
   // Stryker disable next-line ArrayDeclaration: a path that is no plugin's gives no finding
@@ -88,5 +88,5 @@ const readCheckInputs = (input: ReadCheckInputsInput): CheckInputs => {
   };
 };
 
-export type { CheckInputs, ReadCheckInputsInput, ReleaseSources };
-export { readCheckInputs };
+export type { CheckInputs, ReadCheckInputsInput, ReleaseFilesInput, ReleaseSources };
+export { readCheckInputs, releaseFilesOf };

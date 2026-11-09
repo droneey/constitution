@@ -13,6 +13,7 @@
     "includes": [
       "**",
       "!!**/.droneey",
+      "!!**/biome.gen",
     ],
   },
   "markdown": {
@@ -790,8 +791,8 @@
     "./../../.droneey/constitution/presets/biome/plugins/typescript/type-name-undecorated.grit",
 
     // biome
-    "./../../.droneey/constitution/presets/biome/plugins/typescript/biome-refuses-empty-verbs.grit",
-    "./../../.droneey/constitution/presets/biome/plugins/typescript/biome-refuses-empty-names.grit",
+    "./biome.gen/biome-refuses-empty-verbs.grit",
+    "./biome.gen/biome-refuses-empty-names.grit",
   ],
   "assist": {
     "actions": {

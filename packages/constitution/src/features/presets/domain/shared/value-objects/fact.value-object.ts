@@ -12,6 +12,7 @@ enum FactName {
 enum FactKind {
   Named = 'named',
   Role = 'role',
+  Term = 'term',
   Unknown = 'unknown',
 }
 
@@ -25,6 +26,10 @@ type Fact =
       readonly role: string;
     }
   | {
+      readonly kind: FactKind.Term;
+      readonly term: string;
+    }
+  | {
       readonly kind: FactKind.Unknown;
       readonly text: string;
     };
@@ -36,6 +41,12 @@ interface FactReference {
 
 const REFERENCE = /\$\{([a-z]+\.[A-Za-z0-9_-]+)\}/g;
 const ROLE_PREFIX = 'role.';
+const TERM_PREFIX = 'term.';
+const listedTerm = new RegExp(
+  `([\`'"]?)\\$\\{${RegExp.escape(TERM_PREFIX)}([A-Za-z0-9_-]+)\\}\\1`,
+  'g',
+);
+const MEMBER_SEPARATOR = ', ';
 const factNames: readonly FactName[] = Object.values(FactName);
 const truthFacts: readonly FactName[] = [
   FactName.FileIsTop,
@@ -53,10 +64,17 @@ const of = (text: string): Fact => {
     };
   }
 
-  return text.startsWith(ROLE_PREFIX)
+  if (text.startsWith(ROLE_PREFIX)) {
+    return {
+      kind: FactKind.Role,
+      role: text.slice(ROLE_PREFIX.length),
+    };
+  }
+
+  return text.startsWith(TERM_PREFIX)
     ? {
-        kind: FactKind.Role,
-        role: text.slice(ROLE_PREFIX.length),
+        kind: FactKind.Term,
+        term: text.slice(TERM_PREFIX.length),
       }
     : {
         kind: FactKind.Unknown,
@@ -92,6 +110,30 @@ const resolvedIn = (input: {
   return isResolved ? resolved : undefined;
 };
 
+interface FillInput {
+  readonly membersOf: (term: string) => readonly string[] | undefined;
+  readonly text: string;
+  readonly valueOf: (fact: Fact) => string | undefined;
+}
+
+// Why: a term's members stand where it is named, each in the quotes around the name, as the items
+// of a list written on one line; a term no block lists stays, for its fact to find unresolved.
+const listedIn = (input: FillInput): string =>
+  input.text.replaceAll(
+    listedTerm,
+    (written, quote: string, term: string) =>
+      input
+        .membersOf(term)
+        ?.map((member) => `${quote}${member}${quote}`)
+        .join(MEMBER_SEPARATOR) ?? written,
+  );
+
+const filledIn = (input: FillInput): string | undefined =>
+  resolvedIn({
+    text: listedIn(input),
+    valueOf: input.valueOf,
+  });
+
 const wholeOf = (text: string): Fact | undefined => {
   const [reference] = referencesIn(text);
 
@@ -104,6 +146,8 @@ const textOf = (fact: Fact): string => {
       return `\${${fact.name}}`;
     case FactKind.Role:
       return `\${${ROLE_PREFIX}${fact.role}}`;
+    case FactKind.Term:
+      return `\${${TERM_PREFIX}${fact.term}}`;
     case FactKind.Unknown:
       return `\${${fact.text}}`;
   }
@@ -120,6 +164,7 @@ const isBoolean = (fact: Fact): boolean =>
 const membersItemText = `\${${FactName.WorkspaceMembers}}`;
 
 const Fact = {
+  filledIn,
   isBoolean,
   isNamed,
   of,

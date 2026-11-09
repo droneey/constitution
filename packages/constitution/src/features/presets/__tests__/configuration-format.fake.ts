@@ -11,6 +11,7 @@ const DOT = '.';
 const INDENT = 2;
 const JSON_FILE = '.json';
 const TEXT_FILE = '.py';
+const WHOLE_TEXT_FILE = '.grit';
 
 const jsonOf = (text: string): Setting | undefined => {
   try {
@@ -50,6 +51,10 @@ const linesOf = (text: string): Setting => text.split(NEWLINE).filter((line) => 
 const createFakeConfigurationFormat = (): ConfigurationFormat => ({
   canSortKeys: (target: ConfigurationTarget): boolean => target.writtenPath.endsWith(JSON_FILE),
   read: (file: ConfigurationFile): Setting | undefined => {
+    if (file.filePath.endsWith(WHOLE_TEXT_FILE)) {
+      return file.text;
+    }
+
     if (file.filePath.endsWith(JSON_FILE)) {
       return jsonOf(file.text);
     }
@@ -61,6 +66,10 @@ const createFakeConfigurationFormat = (): ConfigurationFormat => ({
     return isOfNoFormat(file.filePath) && isPairs(file) ? pairsOf(file.text) : linesOf(file.text);
   },
   write: (file: ConfigurationWrite): string => {
+    if (file.filePath.endsWith(WHOLE_TEXT_FILE)) {
+      return typeof file.settings === 'string' ? file.settings : '';
+    }
+
     if (file.filePath.endsWith(TEXT_FILE)) {
       return file.text;
     }

@@ -19,6 +19,7 @@ interface PresetsSelected {
 
 interface PresetsPlanInput extends PresetsSelected {
   readonly constitutionPaths: ReadonlyMap<RepositoryRelativePath, string>;
+  readonly copiedTexts: ReadonlyMap<string, string>;
   readonly findings: readonly PresetsFinding[];
   readonly model: BlockModel;
   readonly units: readonly ProjectUnit[];
@@ -97,6 +98,7 @@ const presetsPlanOf = (input: PresetsPlanInput): PresetsPlan => {
   const resolved = resolveFacts({
     candidates,
     constitutionPaths: input.constitutionPaths,
+    copiedTexts: input.copiedTexts,
     model,
     units,
   });

@@ -3,8 +3,7 @@ import type { RepositoryRelativePath } from '#/kernel/value-objects';
 
 import type { Contribution } from '../../../../../merged-file/entities';
 import { PresetEntry } from '../../../../../preset-entry/entities';
-import type { PresetValue } from '../../../../../setting/entities';
-import { Setting, ValueKind } from '../../../../../setting/entities';
+import { PresetValue, Setting, ValueKind } from '../../../../../setting/entities';
 import type { PresetsFinding } from '../../../../../shared/entities';
 import type { Guard } from '../../../../../shared/value-objects';
 import { Fact, FactName, membersItemText } from '../../../../../shared/value-objects';
@@ -178,7 +177,24 @@ const settingOf = (setting: Setting, facts: FileFacts): Outcome<Setting> => {
   return truth === undefined ? textOf(setting, facts) : resolved(truth);
 };
 
+const copyOf = (facts: FileFacts): Outcome<PresetValue> => {
+  const filled =
+    facts.copiedText === undefined
+      ? undefined
+      : Fact.filledIn({
+          membersOf: facts.membersOf,
+          text: facts.copiedText,
+          valueOf: facts.valueOf,
+        });
+
+  return filled === undefined ? unresolved : resolved(PresetValue.plain(filled));
+};
+
 const presetOf = (given: PresetValue, facts: FileFacts): Outcome<PresetValue> => {
+  if (given.kind === ValueKind.Copy) {
+    return copyOf(facts);
+  }
+
   if (given.kind !== ValueKind.Map) {
     const setting = settingOf(given.setting, facts);
 
@@ -234,6 +250,7 @@ const guardHolds = (guard: Guard | undefined, facts: FileFacts): boolean => {
 interface ResolveFactsInput {
   readonly candidates: readonly Candidate[];
   readonly constitutionPaths: ReadonlyMap<RepositoryRelativePath, string>;
+  readonly copiedTexts: ReadonlyMap<string, string>;
   readonly model: BlockModel;
   readonly units: readonly ProjectUnit[];
 }

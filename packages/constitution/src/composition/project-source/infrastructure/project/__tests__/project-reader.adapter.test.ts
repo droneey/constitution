@@ -43,6 +43,7 @@ describe('createProjectReader', () => {
               source: BlockSource.create(),
             },
           ],
+          lists: [],
           roles: [],
           rules: [],
         },

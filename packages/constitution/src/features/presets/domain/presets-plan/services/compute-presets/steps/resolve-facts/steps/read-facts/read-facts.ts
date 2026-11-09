@@ -13,10 +13,12 @@ import { Candidate } from '../../../../../../entities';
 type LackedFact = PresetsCode.MissingConstitution | PresetsCode.MissingName;
 
 interface FileFacts {
+  readonly copiedText: string | undefined;
   readonly isRepositoryRoot: boolean;
   readonly isRoot: boolean;
   readonly isTop: boolean;
   readonly memberPaths: readonly UnitRelativePath[];
+  readonly membersOf: (term: string) => readonly string[] | undefined;
   readonly valueOf: (fact: Fact) => string | undefined;
 }
 
@@ -24,6 +26,7 @@ interface ReadFactsInput {
   readonly candidate: Candidate;
   readonly candidates: readonly Candidate[];
   readonly constitutionPath: string | undefined;
+  readonly copiedTexts: ReadonlyMap<string, string>;
   readonly entry: PresetEntry;
   readonly model: BlockModel;
   readonly units: readonly ProjectUnit[];
@@ -88,6 +91,9 @@ const lackOf = (fact: Fact): LackedFact | undefined => {
     : undefined;
 };
 
+const copiedTextOf = (input: ReadFactsInput): string | undefined =>
+  PresetEntry.copiedPathsOf(input).flatMap((path) => input.copiedTexts.get(path) ?? [])[0];
+
 const readFacts = (input: ReadFactsInput): FileFacts => {
   const memberPaths = memberPathsOf(input.candidate.unit, input.units);
 
@@ -105,10 +111,17 @@ const readFacts = (input: ReadFactsInput): FileFacts => {
   };
 
   return {
+    copiedText: copiedTextOf(input),
     isRepositoryRoot: UnitPath.isRepository(input.candidate.unit.path),
     isRoot: memberPaths.length > 0,
     isTop: isTopOf(input),
     memberPaths,
+    membersOf: (term) =>
+      PresetEntry.membersOf({
+        entry: input.entry,
+        id: term,
+        model: input.model,
+      }),
     valueOf: factValueOf,
   };
 };

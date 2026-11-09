@@ -44,6 +44,7 @@ The settings are those the file holds, in its own shape: a table of JSON, TOML o
 | `list[slot=name]` | the item of a list one of whose own lists places the slot, which holds only inserts: `overrides[slot=injected-classes].includes@injected-classes` fills a Biome override that no field names; no item placing it is `missing-slot`, two are `slot-placed-twice` |
 | `!replace` | replaces what the entries before gave, a list or a value, instead of joining it |
 | `!default` | written once, while the file lacks it, and never checked again: a starter file the project owns, on whose content no rule depends |
+| `<file>: !copy ${constitution.path}/presets/<reader>/plugins/…` | the file holds a plugin of the release whole, its facts filled in: written again by each apply, so a later release's plugin replaces the copy, and checked as a whole text |
 | `!words` | on a list: written as one text, its items joined by spaces |
 | `!sorted` | on a map of a JSON or YAML file: its keys, the project's own among them, stand in their order as texts, as Bun's `scripts` do, each action's script heading its group; in a file of another format, whose writer keeps no order of its keys, the check of the presets reports it (`sorted-in-unsortable-file`) |
 | `<path>: !inherits <path>` | no setting but a declaration: the value at each path its key names starts, once the entries have joined, from the value at the path its text names, both paths read from the map that holds it, step by step at each `.` — `*` every item or key, `<name>` every key, which the text may then name; the inheriting value lies over the inherited one, maps joined key by key, lists holding the inherited items and then those not yet held, any other value the inheriting one's. A path that holds nothing changes nothing, and a declaration whose paths cannot be followed is `inheritance-malformed`, each flaw named. Biome's preset declares `overrides.*.linter.rules.<group>.<rule>.options: !inherits linter.rules.<group>.<rule>.options`, since Biome replaces a rule's options in an override instead of joining them |
@@ -56,7 +57,8 @@ Within a value, a fact stands for what `constitution` knows of the unit:
 | `${package.name}` | the unit's `name` in `constitution.yaml` |
 | `${unit.parent}` | the folder at the repository's root that holds the unit, `apps` or `packages`, however deep the unit lies in it; nothing for the repository's own unit |
 | `${unit.depth}` | how many folders the unit lies below that folder, `1` for `apps/web`, `2` for `apps/<group>/web`; nothing where `${unit.parent}` is nothing |
-| `${role.<id>}` | the spelling of the folder or the suffix whose term carries that id, as the most specific block the entry's language reaches spells it — for an entry of every language, the blocks of its key and its preset file's path |
+| `${role.<id>}` | the spelling of the folder, the suffix or the file whose term carries that id, a file's without its extension, as the most specific block the entry's language reaches spells it — for an entry of every language, the blocks of its key and its preset file's path; nothing where only a placeholder such as core's `<entry>` names the file |
+| `${term.<id>}` | in a copied plugin only: the words the concept carrying that id lists, as the same block spells them, each in the quotes around the fact and joined by `, `, so a GritQL snippet of `${term.empty-names}` in backticks becomes one snippet for each empty name |
 | `${workspace.members}` | each member's folder, one item each, at the root of a workspace; nothing elsewhere |
 
 In the place of a file, an entry of a runner's block may give `${constitution.run}`: what `constitution run` runs in the unit, a list of commands for each entry point, `check`, `test` and `fix`, which no file holds and `constitution` reads. The lists join as a file's do, so two runners of one unit both run, each by its unit's own `check`:
@@ -78,6 +80,21 @@ A tool's block gives its scripts or tasks through its pairing with the runner, `
 
 A guard writes the file only where it holds: `${file.isTop}`, in the unit no unit above gets the same entry for; `${unit.isRepositoryRoot}`, in the repository's own unit, the root of a workspace or a repository of one unit; `${workspace.isRoot}`, at the root of a workspace; or a fact of a text compared with a text, its facts resolved, `${unit.parent} = ${role.deployed-unit}`, in a unit of `apps/`, where both resolve and are the same; each with `!` before its fact for its opposite.
 
+A plugin that names the project's words is copied rather than named by its path, so that it runs with its tool alone: Biome's entry for `biome-refuses-empty-names` writes `biome.gen/biome-refuses-empty-names.grit` from the release's plugin, the empty names core's `names` chapter lists filled in, names that copy in `plugins`, and leaves `biome.gen/` out of the files Biome checks, so no fix reformats it.
+
+```yaml
+biome:
+  biome-refuses-empty-names:
+    typescript:
+      biome.jsonc:
+        files:
+          includes:
+            - '!!**/biome.${role.generated-file}'
+        plugins:
+          - ./biome.${role.generated-file}/biome-refuses-empty-names.${role.grit-rule}
+      biome.${role.generated-file}/biome-refuses-empty-names.${role.grit-rule}: !copy ${constitution.path}/presets/biome/plugins/typescript/biome-refuses-empty-names.${role.grit-rule}
+```
+
 A mark after the file's path names the format of its text where the name does not: `tsconfig.json !jsonc` writes JSON with comments under a `.json` name, for a tool that reads them there, its commas as plain JSON has them.
 
 ## What a unit takes
@@ -92,7 +109,7 @@ The entries of one file join in the blocks' order: a list holds the items of eac
 
 `constitution presets plan` prints, file by file, the entries that write into it.
 
-`constitution presets check`, `constitution check` and the session-start digest report, as `configurations` warnings, a setting a file lacks or holds as an earlier release gave it (`missing`), one an earlier apply wrote that no entry gives (`stale`), one the file loosens (`loosened`), a map kept sorted whose keys the file orders otherwise (`unsorted`), a file or a lock that does not parse, and what is wrong in the presets themselves: an entry of an unknown block or rule, a role no term carries, two entries that clash, and a file of the release an entry names that the release lacks and its distribution does not pack (`missing-distribution-file`): the distribution's map, `distribution.json` beside the package that delivers it, names each file it packs by the package whose `build` makes it and the file of that build's output, and such a file counts while that package declares a `build`.
+`constitution presets check`, `constitution check` and the session-start digest report, as `configurations` warnings, a setting a file lacks or holds as an earlier release gave it (`missing`), one an earlier apply wrote that no entry gives (`stale`), one the file loosens (`loosened`), a map kept sorted whose keys the file orders otherwise (`unsorted`), a file or a lock that does not parse, and what is wrong in the presets themselves: an entry of an unknown block or rule, a role no term carries, two entries that clash, a plugin that names a fact other than a role or a term a block defines (`plugin-unknown-fact`), or names one and is named by its path, which fills nothing (`plugin-named-unfilled`), and a file of the release an entry names that the release lacks and its distribution does not pack (`missing-distribution-file`): the distribution's map, `distribution.json` beside the package that delivers it, names each file it packs by the package whose `build` makes it and the file of that build's output, and such a file counts while that package declares a `build`.
 
 ## The block that brings each setting
 

@@ -1,2 +1,7 @@
-export type { CheckInputs, ReadCheckInputsInput, ReleaseSources } from './read-check-inputs';
-export { readCheckInputs } from './read-check-inputs';
+export type {
+  CheckInputs,
+  ReadCheckInputsInput,
+  ReleaseFilesInput,
+  ReleaseSources,
+} from './read-check-inputs';
+export { readCheckInputs, releaseFilesOf } from './read-check-inputs';

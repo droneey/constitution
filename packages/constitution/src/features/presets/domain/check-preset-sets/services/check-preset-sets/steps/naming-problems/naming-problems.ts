@@ -91,6 +91,7 @@ const referenceProblems = (
         ...input,
         role: fact.role,
       });
+    case FactKind.Term:
     case FactKind.Unknown:
       return [
         {
@@ -133,7 +134,7 @@ const guardProblems = (
   }
 
   const isText =
-    guard.fact.kind !== FactKind.Unknown &&
+    (guard.fact.kind === FactKind.Named || guard.fact.kind === FactKind.Role) &&
     !Fact.isBoolean(guard.fact) &&
     !Fact.isNamed(guard.fact, FactName.WorkspaceMembers);
   const fits = guard.equals === undefined ? Fact.isBoolean(guard.fact) : isText;

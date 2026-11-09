@@ -25,7 +25,7 @@ core:
               - ^${role.source}/${role.adapter}/
               - ^${role.source}/(?:${role.bounded-context}|${role.composition-module})/[^/]+/${role.adapter}/
               - ^${role.source}/(?!index\.)[^/]+\.[^/]+$
-              - ^${role.source}/${role.extra-entry}/[^/]+/main\.[^/]+$
+              - ^${role.source}/${role.extra-entry}/[^/]+/${role.entry}\.[^/]+$
               - ^${role.source}/${role.composition-root}/
               - ^${role.source}/(${role.generic-library}|${role.host-integration})/
               - (^|/)${role.colocated-specs}/
@@ -251,8 +251,8 @@ core:
           from:
             pathNot:
               - ^${role.source}/(?!index\.)[^/]+\.[^/]+$
-              - ^${role.source}/${role.extra-entry}/[^/]+/main\.[^/]+$
-              - ^${role.source}/${role.host-integration}/[^/]+/main\.[^/]+$
+              - ^${role.source}/${role.extra-entry}/[^/]+/${role.entry}\.[^/]+$
+              - ^${role.source}/${role.host-integration}/[^/]+/${role.entry}\.[^/]+$
               - ^${role.source}/${role.composition-root}/
               - (^|/)${role.colocated-specs}/
               - ^${role.package-suites}/
@@ -392,7 +392,7 @@ core:
               - ^${role.source}/${role.adapter}/
               - ^${role.source}/(?:${role.bounded-context}|${role.composition-module})/[^/]+/${role.adapter}/
               - ^${role.source}/(?!index\.)[^/]+\.[^/]+$
-              - ^${role.source}/${role.extra-entry}/[^/]+/main\.[^/]+$
+              - ^${role.source}/${role.extra-entry}/[^/]+/${role.entry}\.[^/]+$
               - ^${role.source}/${role.composition-root}/
               - ^${role.source}/(${role.generic-library}|${role.host-integration})/
               - (^|/)${role.colocated-specs}/

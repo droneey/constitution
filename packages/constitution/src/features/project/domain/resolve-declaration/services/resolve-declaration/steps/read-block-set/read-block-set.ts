@@ -254,9 +254,11 @@ const readBlockSet = (input: ReadBlockSetInput): BlockSetRead => {
     ...drafts.values(),
   ].map(blockOf);
   const rules = StatedRule.inheritLevels(kept).map(ruleOf);
-  const roles = BlockModel.rolesIn(readings.flatMap(({ read }) => read.texts));
+  const texts = readings.flatMap(({ read }) => read.texts);
+  const roles = BlockModel.rolesIn(texts);
   const model = BlockModel.create({
     blocks,
+    lists: BlockModel.listsIn(texts),
     roles,
     rules,
   });

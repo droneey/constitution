@@ -8,6 +8,7 @@ enum ValueKind {
   Replace = 'replace',
   Default = 'default',
   Inherit = 'inherit',
+  Copy = 'copy',
 }
 
 interface PresetPair {
@@ -18,7 +19,12 @@ interface PresetPair {
 type PresetValue =
   | {
       readonly isWords: boolean;
-      readonly kind: ValueKind.Default | ValueKind.Inherit | ValueKind.Plain | ValueKind.Replace;
+      readonly kind:
+        | ValueKind.Copy
+        | ValueKind.Default
+        | ValueKind.Inherit
+        | ValueKind.Plain
+        | ValueKind.Replace;
       readonly setting: Setting;
     }
   | {

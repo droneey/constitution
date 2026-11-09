@@ -3,8 +3,8 @@ knip:
     typescript:
       knip.jsonc:
         entry:
-          - ${role.source}/main.{ts,tsx}!
-          - ${role.build-code}/*/main.ts
+          - ${role.source}/${role.entry}.{ts,tsx}!
+          - ${role.build-code}/*/${role.entry}.ts
         project:
           - ${role.source}/**/*.{ts,tsx}!
           - '!${role.source}/**/${role.colocated-specs}/**!'

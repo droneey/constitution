@@ -14,16 +14,6 @@ or {
     `new Proxy($...)`,
     `const $_: ProxyHandler<$_> = $_`
   },
-  $name <: or {
-    `handle`,
-    `process`,
-    `manage`,
-    `do`,
-    `run`,
-    `execute`,
-    `get`,
-    `set`,
-    `update`
-  },
+  $name <: or { `${term.empty-verbs}` },
   register_diagnostic(span=$name, message="[biome-refuses-empty-verbs] Name what the function does and to what: a verb alone says nothing", severity="error")
 }

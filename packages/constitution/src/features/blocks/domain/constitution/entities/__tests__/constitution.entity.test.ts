@@ -11,11 +11,11 @@ import { Block } from '../../../block/entities';
 import { Constitution, LoadCode } from '../constitution.entity';
 
 describe('Constitution.modelOf', () => {
-  it('should give every block with its links, its rules, and the role terms of every file, a seam’s with its other block', () => {
+  it('should give every block with its links, its rules, and the role and list terms of every file, a seam’s with its other block', () => {
     // Arrange
     const { constitution } = loadedOf({
       ...blockFiles({
-        body: 'A package keeps its source in **`src/`**{#source}.\n',
+        body: 'A package keeps its source in **`src/`**{#source}. The **empty names**{#empty-names} are words such as `data` and `info`.\n',
         dir: 'blocks/core',
         id: 'core',
       }),
@@ -97,6 +97,17 @@ describe('Constitution.modelOf', () => {
           layer: Layer.Implementation,
           requires: [
             BlockId.create('ui'),
+          ],
+        },
+      ],
+      lists: [
+        {
+          axis: Axis.Foundation,
+          block: BlockId.create('core'),
+          id: 'empty-names',
+          members: [
+            'data',
+            'info',
           ],
         },
       ],

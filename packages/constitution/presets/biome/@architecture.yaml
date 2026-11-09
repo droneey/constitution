@@ -66,7 +66,7 @@ core:
               - '!**/${role.source}/${role.composition-root}/**'
               - '!**/${role.source}/*.ts'
               - '!**/${role.source}/*.tsx'
-              - '!**/${role.source}/${role.extra-entry}/*/main.*'
+              - '!**/${role.source}/${role.extra-entry}/*/${role.entry}.*'
               - '!**/${role.source}/${role.host-integration}/**'
               - '!**/${role.colocated-specs}/**'
             linter:
@@ -116,6 +116,6 @@ core:
             - '!**/${role.source}/${role.composition-root}/**'
             - '!**/${role.source}/*.ts'
             - '!**/${role.source}/*.tsx'
-            - '!**/${role.source}/${role.extra-entry}/*/main.ts'
+            - '!**/${role.source}/${role.extra-entry}/*/${role.entry}.ts'
             - '!**/${role.source}/${role.host-integration}/**'
             - '!**/${role.colocated-specs}/**'
