@@ -28,7 +28,7 @@ describe('termsOf', () => {
           '',
           '## Wiring',
           '',
-          '### composition-root-assembles-the-program · MUST',
+          '### composition-root-assembles-the-program · SHOULD',
           '',
           'The **composition root** chooses every implementation.  It wires the program, its **graph**.',
           '',
