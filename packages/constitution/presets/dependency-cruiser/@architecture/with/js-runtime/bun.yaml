@@ -9,13 +9,13 @@ core:
             pathNot:
               - ^${role.source}/${role.adapter}/
               - ^${role.source}/(?:${role.bounded-context}|${role.composition-module})/[^/]+/${role.adapter}/
-              - ^${role.source}/(?!index\.)[^/]+\.[^/]+$
+              - ^${role.source}/(?!${role.surface}\.)[^/]+\.[^/]+$
               - ^${role.source}/${role.extra-entry}/[^/]+/${role.entry}\.[^/]+$
               - ^${role.source}/${role.composition-root}/
               - ^${role.source}/(${role.generic-library}|${role.host-integration})/
               - (^|/)${role.colocated-specs}/
               - ^${role.package-suites}/
-              - ^${role.source}/index\.[^/]+$
+              - ^${role.source}/${role.surface}\.[^/]+$
           to:
             path: ^bun(?::|$)
             reachable: true

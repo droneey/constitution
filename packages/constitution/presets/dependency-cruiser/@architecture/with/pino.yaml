@@ -6,7 +6,7 @@ observability:
           severity: error
           from:
             pathNot:
-              - ^${role.source}/(?!index\.)[^/]+\.[^/]+$
+              - ^${role.source}/(?!${role.surface}\.)[^/]+\.[^/]+$
               - ^${role.source}/${role.extra-entry}/[^/]+/${role.entry}\.[^/]+$
               - ^${role.source}/${role.composition-root}/
               - (^|/)${role.colocated-specs}/

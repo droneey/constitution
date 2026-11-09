@@ -68,7 +68,7 @@ A preset is `presets/<reader>/@<axis>.yaml`, or that axis's `with/<block>.yaml` 
 - its reader's preset, on the axis of the rule it holds (`setting-sits-in-its-readers-preset`);
 - keyed by the rule it holds, or `*` where no rule asks for it (`setting-keyed-by-its-rule`);
 - under `with/` exactly the blocks beyond its reader's reach that it needs (`setting-path-names-the-blocks-it-needs`): a setting that names a library, a framework or a platform, such as `noTailwindArbitraryValue` or a JSX rule, sits under that block's `with/` even when its rule belongs to a block above;
-- a folder or a suffix named by its term id, never its spelling (`setting-names-folders-by-their-terms`).
+- each name a term with an id gives, a folder, a suffix, a file or a list of words, named by its term reference, never its spelling (`setting-names-terms-by-their-ids`), and a name no term reference gives, such as a built tool's own file, spelled out, never through a term it only coincides with (`setting-spells-a-name-no-term-gives`).
 
 Report an entry under a `with/` more general or more specific than it needs, keyed by another rule, or on another axis.
 

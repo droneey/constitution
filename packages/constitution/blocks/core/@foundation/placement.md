@@ -26,6 +26,8 @@ A chapter opens with its **`Governs`**{#governs-line} line, and its sections may
 
 A **term id** `{#id}` names a term where it is defined, and a block respells the term under it.
 
+A **term reference**, `${role.<id>}`, or `${term.<id>}` for a list of words, names a term in a setting by its id, and the presets substitute the term's spelling, a file's without its extension.
+
 A rule's **statement** is its **slogan**, its first and shortest true sentence, the one a reader remembers, as a heading would carry it, and the sentences under it, up to its Why.
 
 A **setting** is one named value of the configuration a program or a tool reads.
@@ -1097,65 +1099,64 @@ bun-test:
                 test: all
 ```
 
-### setting-names-folders-by-their-terms · MUST
+### setting-names-terms-by-their-ids · MUST
 
-Every setting names a folder or a suffix that a term names, by that term's id, never by its spelling. It does so in whatever form it writes it, such as a path, a pattern or a module's dotted name, and the presets substitute the spelling of the most specific block its language reaches.
+Every setting names each name a term with an id gives by its term reference, never by its spelling. Such a name is a folder, a suffix, a file or a list of words, a file's ending being the setting's own, and a list's reference is filled only in a plugin a setting copies. The setting does so in whatever form it writes the name, such as a path, a pattern or a module's dotted name, and the presets substitute the spelling of the most specific block its language reaches.
 
 #### Why
 
-A setting that spells a folder itself goes on checking a path that no longer exists once the folder's term is respelled, and a language's spelling written into each setting is copied wherever it is named.
+A setting that spells such a name itself goes on checking a path or a word that no longer exists once the term is respelled, and a language's spelling written into each setting is copied wherever it is named.
 
 #### Examples
 
 ```yaml title="Avoid"
-# presets/dependency-cruiser/@architecture.yaml
+# presets/knip/@architecture.yaml
 core:
-  domain-imports-only-itself-and-the-kernel:
+  '*':
     typescript:
-      .dependency-cruiser.jsonc:
-        forbidden[name=domain-reaches-only-itself-and-the-kernel]:
-          from:
-            path: ^src/features/([^/]+)/domain/
+      knip.jsonc:
+        entry:
+          - src/**/index.{ts,tsx}!
 ```
 
 ```yaml title="Prefer"
-# presets/dependency-cruiser/@architecture.yaml
+# presets/knip/@architecture.yaml
 core:
-  domain-imports-only-itself-and-the-kernel:
+  '*':
     typescript:
-      .dependency-cruiser.jsonc:
-        forbidden[name=domain-reaches-only-itself-and-the-kernel]:
-          from:
-            path: ^${role.source}/${role.bounded-context}/([^/]+)/${role.domain-layer}/
+      knip.jsonc:
+        entry:
+          - ${role.source}/**/${role.surface}.{ts,tsx}!
 ```
 
-### setting-spells-a-named-file-or-word-itself · MUST
+### setting-spells-a-name-no-term-gives · MUST
 
-Every setting spells itself a file or a word of a name that a term names. The presets substitute only a folder's or a suffix's id, so a block that respells such a term, such as an entry file or a surface, respells it in its settings too.
+Every setting spells itself each name that no term reference gives, never through a term it only coincides with. Such a name, of a file or a word, is a placeholder its language does not spell, or a name a tool, a framework or a shipped build fixes, such as a built tool's own `main.js`.
 
 #### Why
 
-A setting left with a spelling its block respelled checks a file or a name the project no longer has.
+A name written through the reference of a term it only coincides with moves when that term is respelled, while the tool or the build keeps the old name, so the setting checks or runs a file that does not exist.
 
 #### Examples
 
 ```yaml title="Avoid"
-core:
-  surface-only-re-exports:
+# presets/js-runtime/bun/@foundation/with/stryker.yaml
+stryker:
+  '*':
     typescript:
-      biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/surface-only-re-exports.${role.grit-rule}]:
-          includes:
-            - '**/${role.surface}'
+      package.json:
+        scripts:
+          mutate:branch: >-
+            bun --no-env-file ${constitution.path}/tools/mutation-check/dist/${role.entry}.js
 ```
 
 ```yaml title="Prefer"
-core:
-  surface-only-re-exports:
+# presets/js-runtime/bun/@foundation/with/stryker.yaml
+stryker:
+  '*':
     typescript:
-      biome.jsonc:
-        plugins[path=./${constitution.path}/presets/biome/plugins/typescript/surface-only-re-exports.${role.grit-rule}]:
-          includes:
-            - '**/index.ts'
-            - '**/index.tsx'
+      package.json:
+        scripts:
+          mutate:branch: >-
+            bun --no-env-file ${constitution.path}/tools/mutation-check/dist/main.js
 ```

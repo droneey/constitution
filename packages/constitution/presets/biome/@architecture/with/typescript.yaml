@@ -46,7 +46,7 @@ core:
       biome.jsonc:
         plugins[path=./${constitution.path}/presets/biome/plugins/typescript/surface-only-re-exports.${role.grit-rule}]:
           includes:
-            - '**/index.ts'
-            - '**/index.tsx'
-            - '!**/${role.source}/${role.composition-root}/**/index.tsx'
+            - '**/${role.surface}.ts'
+            - '**/${role.surface}.tsx'
+            - '!**/${role.source}/${role.composition-root}/**/${role.surface}.tsx'
             - slot: left-out

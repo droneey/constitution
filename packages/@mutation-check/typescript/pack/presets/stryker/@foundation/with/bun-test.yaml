@@ -1,8 +1,9 @@
-# This repository runs mutation-check from its workspace's source, never the distribution's build.
+# Why: this repository runs mutation-check from its workspace's source, never the distribution's
+# build.
 stryker:
   stryker-runs-the-bun-specs-runner:
     typescript:
       stryker.${role.config-file}.json:
         plugins: !replace
-          - ./${role.source}/${role.host-integration}/stryker/index.ts
+          - ./${role.source}/${role.host-integration}/stryker/${role.surface}.ts
           - ./${role.source}/${role.host-integration}/stryker/ignorers.ts

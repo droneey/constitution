@@ -6,7 +6,7 @@ lingui:
           from:
             path:
               - ^${role.source}/(?!${role.generic-library}/).*/${role.presentation-layer}/(${role.screen}|${role.widget}|${role.component})/
-              - ^${role.source}/(?!index\.)[^/]+\.[^/]+$
+              - ^${role.source}/(?!${role.surface}\.)[^/]+\.[^/]+$
               - ^${role.source}/${role.extra-entry}/[^/]+/${role.entry}\.[^/]+$
               - ^${role.source}/${role.composition-root}/
               - /locales/
@@ -19,7 +19,7 @@ lingui:
           from:
             pathNot:
               - ^${role.source}/(?!${role.generic-library}/).*/${role.presentation-layer}/(${role.screen}|${role.widget}|${role.component})/
-              - ^${role.source}/(?!index\.)[^/]+\.[^/]+$
+              - ^${role.source}/(?!${role.surface}\.)[^/]+\.[^/]+$
               - ^${role.source}/${role.extra-entry}/[^/]+/${role.entry}\.[^/]+$
               - ^${role.source}/${role.composition-root}/
               - /locales/
