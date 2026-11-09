@@ -14,9 +14,9 @@ The Constitution release installed in this project, in `.droneey/constitution/` 
 
 !`sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "${CLAUDE_PROJECT_DIR}/.droneey/constitution/package.json" 2>/dev/null || echo "(not installed)"`
 
-Blocks it offers, by layer — `- <layer> <id>: <summary> Requires: <ids>. Extends: <base>.`:
+Blocks it offers, by rank — `- <rank> <id>: <summary> Requires: <ids>.`:
 
-!`cd "${CLAUDE_PROJECT_DIR}/.droneey/constitution" 2>/dev/null && find blocks -path blocks/core -prune -o -name '*.md' -print | awk -F/ '$NF == $(NF-1) ".md"' | LC_ALL=C sort | xargs awk 'FNR == 1 { n = split(FILENAME, p, "/"); layer = (p[2] == "contexts") ? p[3] : p[2]; sub(/s$/, "", layer) } /^summary:/ { s = $0; sub(/^summary: *"?/, "", s); sub(/"$/, "", s) } /^requires:/ { r = $0; sub(/^requires: */, "", r); gsub(/[]["]/, "", r); gsub(/, */, " ", r) } /^extends:/ { e = $0; sub(/^extends: */, "", e); if (e == "null") e = ""; printf "- %s %s: %s Requires: %s. Extends: %s.\n", layer, p[n - 1], s, r, e }' | sed -e 's/ Requires: \.//' -e 's/ Extends: \.$//' || echo "(not installed)"`
+!`cd "${CLAUDE_PROJECT_DIR}/.droneey/constitution" 2>/dev/null && find blocks -name '*.md' ! -path 'blocks/core/*' ! -path '*/@*' | awk -F/ '$NF == $(NF-1) ".md"' | LC_ALL=C sort | xargs awk 'FNR == 1 { split(FILENAME, p, "/"); rank = (p[2] == "contexts") ? p[3] : p[2]; sub(/s$/, "", rank) } /^id:/ { id = $2 } /^summary:/ { s = $0; sub(/^summary: *"?/, "", s); sub(/"$/, "", s) } /^requires:/ { r = $0; sub(/^requires: */, "", r); gsub(/[]["]/, "", r); gsub(/, */, " ", r); printf "- %s %s: %s Requires: %s.\n", rank, id, s, r }' | sed 's/ Requires: \.$//' || echo "(not installed)"`
 
 The project folder holds:
 
@@ -24,21 +24,21 @@ The project folder holds:
 
 ## What you write
 
-- **`constitution.yaml`** at the repository root: the blocks the repository follows, its packs and its overrides; and in a workspace one in each member's folder, with the blocks that member follows. The session-start hook reads them and gives every agent the rules of those blocks, so a block listed by mistake costs every session, and a block left out leaves its rules unenforced.
-- **`PROJECT.md`** beside it: what the product is, for whom, the subdomains of its business by class, its entities, its boundaries, its critical scenarios and its glossary. It gives any agent the context of the whole, so a change fits the product and not just the task.
-- **`DECISIONS.md`** beside them, from the template, when the repository has none: the log where every later choice between real alternatives is recorded with what was rejected and why. Any choice the owner names during the interview — a store, a framework, a boundary — goes in as its first entries.
-- **A block of the project's own pack** for each library the owner wants rules for that the plugin has no block for: a folder of blocks shaped like the Constitution — `pack/` unless the owner names another — listed under `packs:`.
-- **Each tool's configuration**, which the executable writes with `constitution presets apply` from the presets of the release and of the unit's packs, into the files the project keeps, beside the settings of its own, and records in each unit's `constitution.lock`. The session-start hook warns of a setting a file lacks, keeps after its rule is gone or loosens, so a project whose blocks or release changed runs `constitution presets apply` again; with `constitution.yaml` already in place, offer to go straight to step 9.
+- **`constitution.yaml`** at the repository root: the blocks the repository follows, its packs and its overrides; in a workspace, one in each member's folder too. The hooks read them to give every agent the rules of those blocks, so a block listed by mistake costs every session, and one left out leaves its rules unenforced.
+- **`PROJECT.md`** beside it: the product, its users, its subdomains by class, its entities, its boundaries, its critical scenarios and its glossary.
+- **`DECISIONS.md`** beside them, when the repository has none: the strategic choices between real alternatives the owner names, each with what was rejected and why.
+- **A block of the project's own pack** for each library the owner wants rules for and the release has no block for.
+- **Each tool's configuration**, which `constitution presets apply` writes from the presets of the release and the packs. With `constitution.yaml` already in place, offer to go straight to step 9.
 
 The repository root is the folder, going up from the project folder, that holds `.git`. Core is always active and is never listed.
 
 ## How to run it
 
-Work in this order, and keep the owner in the loop: propose, let them confirm or correct, move on. Never invent an answer — a wrong block, command or sentence written with confidence is worse than a gap the owner can see.
+Propose, let the owner confirm or correct, then move on. Never invent an answer: a wrong block, command or sentence written with confidence is worse than a gap the owner can see.
 
 ### 1. Check what is there
 
-If the release above reads `(not installed)`, or the block list does, the project has no Constitution to read yet. Propose to install it first: in `mise.toml`, the tool `github:droneey/constitution` with the release's distribution for each platform, which holds the rules and the `constitution` executable the hooks run, and the `postinstall` hooks that link the release, with the installed plugin's version above:
+If the release above reads `(not installed)`, propose to install it first: in `mise.toml`, the tool `github:droneey/constitution` at the plugin's version, with the release's distribution for each platform, and the `postinstall` hooks that link it:
 
 ```toml
 [tools."github:droneey/constitution"]
@@ -61,57 +61,51 @@ postinstall = [
 
 and `/.droneey` in `.gitignore`. After the owner's yes, write them, run `mise install`, and ask the owner to run `/constitution:ratify` again, which then reads the release's blocks. Stop here until then.
 
-If `constitution.yaml`, `PROJECT.md` or `DECISIONS.md` is already at the root, say so and ask whether to replace it. If decisions are kept elsewhere — `docs/adr/`, `docs/decisions/` — say so and ask whether to move them into `DECISIONS.md` or leave them and write none. With a no, leave that file alone: do not write it and skip its part of the work. Either way, build the proposal from the repository and the owner, not from files already there.
+If `constitution.yaml`, `PROJECT.md` or `DECISIONS.md` is already at the root, say so and ask whether to replace it. If decisions are kept elsewhere, such as `docs/adr/`, ask whether to move them into `DECISIONS.md` or to leave them and write none. With a no, leave that file alone. Either way, build the proposal from the repository and the owner, not from the files already there.
 
-### 2. Show what the plugin offers
+### 2. Show what the release offers
 
-Tell the owner the installed release and the blocks above, grouped by layer, in a few lines. If the list is empty, the release offers no blocks: every layer key stays `[]`, and only the blocks of packs can be listed. When the repository links packs — folders of blocks beside the Constitution, such as `.droneey/constitution-extra` — list their paths under `packs:` and offer their blocks with the others, by id; `packs: []` stays when there are none.
+Tell the owner the installed release and its blocks, grouped by rank, in a few lines. A block's id is its path within its rank, such as `react/react-dom` or `client/browser`. When the repository links packs, folders of blocks beside the release such as `.droneey/constitution-extra`, list their paths under `packs:` and offer their blocks too.
 
-### 3. Ask for the axes, then look at the repository and propose the blocks
+### 3. Ask for the axes, then propose the blocks
 
-Every block holds its rules on three axes, a folder each: `foundation` — what holds for any team, always followed — and two optional ones: `architecture` — the Droneey structure of a system: its layers, dependency direction, ports and adapters, composition root and tree; `workflow` — how a change travels from the idea to the release: its branch, commit, review, version and release. Ask the owner which of the two the repository follows; a team with its own architecture or its own workflow leaves that axis out. Write the answer as `axes`: `[architecture, workflow]`, one of them, or `[]`.
+Every block holds its rules on three axes: `@foundation/`, which every project follows, and two optional ones: `@architecture/`, the Droneey structure of a system (its layers, the direction of its dependencies, its ports and adapters, its composition root and its tree), and `@workflow/`, how a change travels from the idea to the release (branch, commit, review, version and release). Ask which of the two the repository follows; a team with its own architecture or workflow leaves that axis out. Write the answer as `axes`: `[architecture, workflow]`, one of them, or `[]`.
 
-Read what tells you what the code is and where it runs: manifests (`package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`…), lock files, tool configurations (`biome.json`, `tsconfig.json`, `lefthook.yml`, `.betterleaks.toml`…), the top-level folders, the CI workflows, and the README.
-
-Propose, for each of the four keys, the blocks from the list above that the repository matches, each with the evidence that made you pick it:
+Read what tells you what the code is and where it runs: the manifests and lock files, the tools' configurations, the top-level folders, the CI workflows and the README. Propose, for each of the four keys, the blocks from the list above that the repository matches, each with its evidence:
 
 ```text
 implementations: biome — biome.json at the root and @biomejs/biome in devDependencies
 ```
 
-- **domains** — the aspects the product has, whatever its technology: `ui` when it has screens, `version-control` when it lives in git.
-- **platforms** — where the code runs; **languages** — what it is written in, and the formats of the files it keeps: JSON, TOML, YAML, HTML, a Dockerfile.
-- **implementations** — the frameworks, libraries and tools it uses.
+- **domains**: the aspects the product has, whatever its technology, such as `presentation` when it has screens and `version-control` when it lives in git;
+- **platforms**: where the code runs, such as `client/browser` or `server`;
+- **languages**: what it is written in, and the formats of the files it keeps, such as JSON, YAML or a Dockerfile;
+- **implementations**: the frameworks, libraries and tools it uses.
 
-Then close the list over `Requires:`: every block a proposed block requires must be listed too — a domain a platform requires, such as `untrusted-client`, goes under `domains`. A block's `Extends:` base is abstract and comes with it without being listed, and the base's own `Requires:` count as the block's. An id that starts with `_` is an abstract base: it is never listed, and any block that extends it satisfies a requirement of it. Say which blocks you added this way and why.
+A listed block brings every block whose folder holds it, so `react/react-dom` brings `react`, which then needs no line of its own. Then close the list over `Requires:`: every block a proposed block requires is listed too, under the key of its rank, or one of its child blocks is, which brings it. Say which blocks you added this way and why. The owner confirms or corrects each key; a block the owner adds must be one the list offers.
 
-The owner confirms or corrects each key. A block the owner drops is dropped; a block the owner adds must be one the list offers.
+**A library with no block.** Ask the owner whether to write a block of the project's own pack for it, or to leave it out; using a tool the Constitution has no block for is no departure. For a block of the pack, `pack/` unless the owner names another folder:
 
-**A library with no block.** When the repository relies on a framework, library or tool the list does not offer, ask the owner which they want:
-
-- **a block of the project's own pack** — you copy `.droneey/constitution/templates/block/` to `<pack>/blocks/implementations/<id>/`, rename its passport `block.md` to `<id>.md` and `foundation/chapter.md` to the subject of its rules — `foundation/retries.md`, named in the block's own terms, never `<id>.md` —, list the pack's folder under `packs:` and the block's id under `implementations`;
-- **nothing** — it is left out. Using a tool the Constitution has no block for is not a departure.
-
-For a block of the project's own pack, fill the template's placeholders from the repository and the owner:
-
-- `id` is its folder's name and its file's name without `.md`, and must not be an id from the list above;
+- copy `.droneey/constitution/templates/block/` to `<pack>/blocks/implementations/<id>/`, rename `block.md` to `<id>.md` and `@foundation/chapter.md` after the subject of its rules, such as `@foundation/retries.md`, never `<id>.md`; copy `.droneey/constitution/templates/DECISIONS.md` to `<pack>/DECISIONS.md` when the pack has none;
+- `id` is its folder's name, and no block of the list above holds it;
 - `summary` is one sentence of at most 70 characters, ending with a full stop;
-- `requires` names the blocks it needs — Constitution ids or other blocks of the pack —, the language of each configuration file it governs among them, unless a block it requires brings it; `extends` names an abstract Constitution base it inherits, an id that starts with `_`, or stays `null` — a Constitution block it builds on goes under `requires`;
-- `languages` lists, for a tool, the language blocks whose files its presets cover — Constitution ids or language blocks of the pack — and stays `[]` for a tool that covers no language's files and for a library; `governs` the file globs its rules govern, its configuration files among them — a language block governs only its files' extensions;
-- the passport's line of what the block is names the library in bold, `> **Paraglide** compiles …`, which defines it as the block's term, and each file, command or API the block owns is set in bold once, as a code span, where the passport first names it; a folder, which ends in `/`, or a suffix, which starts with `.`, carries right after its bold an id that names what it holds, in lower-case words joined by hyphens and unique across the blocks: ``**`project.inlang/`**{#translation-project}``; every other mention is plain;
-- the passport's **setup** paragraph says what the block's preset entries cannot show — how the library is set up, a quirk of the tool, a limit of what it holds; drop it when there is nothing to say;
-- the passport's **Requirements** table answers the requirements for implementation of the blocks above it — rules a domain, a platform or core asks of any library doing its job; read the files of the blocks it requires under `.droneey/constitution/blocks/` to find them. One row per requirement: its slug, how the library meets it, and whether it is met. `yes` — it meets the rule as written; `partly` — it meets the rule's purpose or part of its letter, and a rule of the block covers the part it misses; `no` — it cannot meet the rule, and a rule of the block replaces it. A `partly` or `no` row names that rule in How by its slug in backticks, and the rule is written with the owner as below. Drop the section when there is nothing to answer;
-- a **rule** is written only when the owner states one, in the chapter template's format and worded as the `Wording` rules of core's `placement` chapter ask, with a slug no rule heading of the Constitution's blocks holds. Drop the chapter, and its `foundation/` folder, when there is none.
+- `requires` names only the blocks it cannot work without, as core's `passport-requires-only-what-its-block-needs` asks;
+- `languages` lists, for a tool, the language blocks whose files its presets cover, and stays `[]` otherwise; `governs` lists the globs of the files its rules govern, its configuration files among them;
+- the passport's line says in plain words what the library is, and its setup paragraph what its preset entries cannot show, such as how the library is set up or a quirk of the tool; drop the paragraph when there is nothing to say. A passport defines no term;
+- a rule is written only when the owner states one, in the chapter template's form and worded as the `Wording` rules of core's `placement` chapter ask, with a slug no rule of the release holds. Drop the chapter and its `@foundation/` folder when there is none;
+- a term two or more rules use is defined in bold in a `## Vocabulary` section before `## General`, a folder or a suffix with an id right after its bold, ``**`project.inlang/`**{#translation-project}``; a term one rule needs is stated in that rule, without bold, as `rule-term-defined-in-a-vocabulary` asks.
+
+`constitution run check` checks the pack's blocks first, in its Packs step.
 
 A block of the project's own pack is a draft until a person reviews it; say so.
 
 ### 4. Find the runner and the project's own checks
 
-The one check is `constitution run check`: in each unit it runs what the unit's runner block gives — `bun run check` for Bun, `poe check` for Poe, each the unit's whole gate: its checks, its specs, and its mutants of the changed lines — and the scripts the tools' blocks write are named by their action first, `check:lint`, `test:unit`, `fix:lint`. Propose the runner the repository uses as a block of each unit. Look for the checks it runs that no block writes — a script in the manifest, a task runner target, a step of CI — and propose each under a name of the same form, `check:<what>`, so the runner's `check` takes it. A unit with tools and no runner is reported by the check.
+The one check is `constitution run check`: in each unit it runs the `check` its runner block gives, `bun run check` for `js-runtime/bun` and `poe check` for `task-runner/poe`, which runs every `check:<what>` script the tools' blocks write. Propose the runner each unit uses. Look for checks the repository runs that no block writes, such as a script in the manifest or a step of CI, and propose each under a name of the same form, `check:<what>`, so the runner's `check` takes it.
 
 ### 5. Ask about units
 
-When the repository is a workspace — apps, the packages they share or the repository releases, a server beside a web client — each member its manifests declare keeps a `constitution.yaml` of its own in its folder: the members are the folders that `workspaces` of the root's `package.json` and `members` of uv's workspace in the root's `pyproject.toml` name. Nothing passes from the root's file to a member's: ask which blocks, axes and packs each member follows, propose for each the root's blocks that hold its files too, and write them in its own file. A member's file takes the keys of the root's, and lists a pack by its path from the member's folder:
+In a workspace, each member its manifests declare keeps a `constitution.yaml` of its own in its folder: the folders that `workspaces` of the root's `package.json` and `members` of uv's workspace in the root's `pyproject.toml` name. Nothing passes from the root's file to a member's: ask which axes, blocks and packs each member follows, and write them in its own file, a pack listed by its path from the member's folder:
 
 ```yaml
 name: '@acme/web'
@@ -119,80 +113,68 @@ axes:
   - architecture
   - workflow
 domains:
-  - ui
-  - untrusted-client
+  - presentation
   - version-control
 platforms:
-  - browser
+  - client/browser
 languages:
   - typescript
   - html
 implementations:
-  - react-dom
+  - react/react-dom
+  - js-runtime/bun
+  - task-runner
   - biome
   - git
 packs: []
 overrides: []
 ```
 
-Every file, the root's and each member's, names its unit's package in `name`, as the unit's manifest gives it: `name` of its `package.json`, or `name` under `[project]` of its `pyproject.toml`. Propose each from there, and ask the owner for the name of a unit whose manifest gives none.
-
-A member with no `constitution.yaml` is a warning of the digest. A unit that needs a setting its blocks do not give — a folder of its own build tools as development code, say — keeps it in its own pack, `<unit>/pack/`, under `presets/` as the release's presets are laid out, and lists the pack under `packs:`.
+Every file names its unit's package in `name`, as its manifest gives it: `name` of its `package.json`, or `name` under `[project]` of its `pyproject.toml`; ask the owner for a unit whose manifest gives none. A unit that needs a setting its blocks do not give keeps it in its own pack, `<unit>/pack/`, under `presets/` laid out as the release's.
 
 ### 6. Interview for PROJECT.md
 
-Ask one or two questions at a time, in the order of the sections of `.droneey/constitution/templates/PROJECT.md`, and use each answer to sharpen the next question. Where the repository already says something — a README, a package description — propose it and let the owner confirm or correct it.
+Ask one or two questions at a time, in the order of the sections of `.droneey/constitution/templates/PROJECT.md`. Where the repository already says something, such as in its README, propose it and let the owner correct it.
 
 - **One-liner.** In one sentence, what is this product and who is it for?
-- **Context and users.** Who uses it, and what problem does it solve for them? Are there distinct roles?
-- **Subdomains.** What are the main areas of the business? Which one is the core domain, the reason the product exists, and is each of the others supporting or generic — something a library or an outside service already does? Which features serve each?
+- **Context and users.** Who uses it, what problem does it solve for them, and are there distinct roles?
+- **Subdomains.** What are the areas of the business? Which is the core domain, the reason the product exists, and is each other one supporting or generic? Which features serve each?
 - **Core entities and relationships.** What are the main business objects, and how do they relate?
-- **Boundaries.** What is out of scope — what will this product never do?
-- **Critical scenarios.** Which journeys must never break — the ones a user would leave over? Each one gets an end-to-end test.
+- **Boundaries.** What will this product never do?
+- **Critical scenarios.** Which journeys must never break? Each one gets an end-to-end spec.
 - **Glossary.** Which words does the business use, and what does each mean here?
 - **Non-functional notes.** Any hard constraint on scale, offline use, devices, compliance, performance or the systems it depends on?
-- **Decisions.** Which choices between real alternatives has the project already made — a store, a framework, a boundary — what was turned down, and why? These become the first entries of `DECISIONS.md`, not part of `PROJECT.md`.
+- **Decisions.** Which strategic choices between real alternatives has the project made, such as its store, its framework or its architecture, what was turned down, and why? These go into `DECISIONS.md`, not `PROJECT.md`.
 
-Use the owner's own words: the glossary seeds the language of the code. Keep it high-level — when an answer drifts into how a feature works or how to build it, keep its essence and steer back. What stays unanswered is left out: drop the section, and never write `TODO` or a promise about the future. A short file that is true beats a complete one that is not.
+Use the owner's words: the glossary seeds the language of the code. When an answer drifts into how a feature works, keep its essence and steer back. Leave out what stays unanswered: drop the section, and never write `TODO`.
 
 ### 7. Overrides
 
-`overrides` stays `[]`. When the owner names a rule the repository will not follow, do not write an override here: an override is recorded only through `/amend`, which asks for each of its fields and for the owner's consent to that override. Offer to run it once the files are written.
+`overrides` stays `[]`. When the owner names a rule the repository will not follow, offer `/constitution:amend` once the files are written: it asks for each field of an override and for the owner's consent to it.
 
 ### 8. Summarise, then write
 
-Show the owner everything you will write:
+Show the owner everything you will write: each `constitution.yaml` exactly as written, `PROJECT.md` and `DECISIONS.md` in full, and each block of the pack in full. Write only after the owner's yes, and only the files the owner agreed to.
 
-- `constitution.yaml` exactly as it will be written, the root's and each member's;
-- `PROJECT.md` in full;
-- `DECISIONS.md` in full, when it will be written;
-- each block of the project's own pack in full.
-
-Then list every `partly` and `no` row of the Requirements tables of the blocks you propose — the release's, from the chapters of their axes under `.droneey/constitution/blocks/`, and each block of the project's own pack — each with the rule its How names: what the library cannot do, and the rule the project follows for it instead. These need no override, and you write none.
-
-Write only after the owner's yes, and only the files the owner agreed to.
-
-- **`constitution.yaml`** is `.droneey/constitution/templates/constitution.yaml` with `<name>` replaced by the unit's name, and each `[]` where there is something to list; a member's is the same. Keep every key, in the template's order. Write every list as a block list, an item to a line, `[]` only when it is empty, as yamllint's preset asks. The hook reads a fixed subset of YAML: a block list, or a flow list `[a, b]`; a value holding `:` or `#`, or opening with `@`, is quoted, in single quotes unless it holds one; there are no anchors, tags or multi-line strings.
-- **`PROJECT.md`** keeps the template's title and blockquote as they are, then the sections that have content, without the template's `<!-- -->` guidance.
-- **`DECISIONS.md`** is `.droneey/constitution/templates/DECISIONS.md`, keeping its title, its blockquote and the `<!-- -->` entry format later entries copy, with the owner's choices as its entries; written only when the repository has none.
+- **`constitution.yaml`** is `.droneey/constitution/templates/constitution.yaml` with `<name>` filled in and each `[]` that has something to list. Keep every key, in the template's order, and write each list as a block list, `[]` only when it is empty. Quote a value that holds `:` or `#` or opens with `@`; write no anchor, tag or multi-line string, which the hooks refuse.
+- **`PROJECT.md`** keeps the template's title and quote, then the sections that have content, without the `<!-- -->` guidance.
+- **`DECISIONS.md`** is `.droneey/constitution/templates/DECISIONS.md`, its title, its quote and the entry form in its comment kept, with the owner's choices as its entries.
 
 ### 9. Write the tools' configurations
 
-Once every `constitution.yaml` is written, run, from the repository root:
+Once every `constitution.yaml` is written, run from the repository root:
 
 ```bash
 constitution presets plan
 ```
 
-It prints each file the active blocks give, with the preset entries that write into it, and what it finds wrong in the blocks or the presets. Ask the owner for what only they know — a unit with no `name`, the paths a task of `mise.toml` names such as a Dockerfile or a Compose file — and write them where the plan says. Then run:
+It prints each file the active blocks give, with the preset entries that write into it, and what it finds wrong. Ask the owner for what only they know, such as a unit with no `name`, and write it where the plan says. Then run:
 
 ```bash
 constitution presets apply
 ```
 
-It writes every file of every unit, keeps the settings each file holds of its own and its comments, adds what a block gives as a default only where the file lacks it, removes what an earlier apply wrote that no entry gives any longer, and writes each unit's `constitution.lock`. It never installs a tool or formats a file: the commit hooks format.
-
-Show the owner the diff of every file it wrote and every finding, grouped by the rule each finding names. A finding is fixed in the code, or offered to the owner as an override through `/amend`; it is never a reason to edit a written setting back by hand, which the next check reports as loosened. Run `constitution run check`.
+It writes every unit's files beside the settings each file holds of its own, removes what an earlier apply wrote that no entry gives any longer, writes each unit's `constitution.lock`, and then runs the fix of each unit it wrote a file of. Show the owner the diff and every finding. A finding is fixed in the code, or offered as an override through `/constitution:amend`; a written setting is never edited back by hand, which the next check reports. Then run `constitution run check`.
 
 ### 10. See what a session will receive
 
@@ -202,4 +184,4 @@ Run the hook as a session start would, from the repository root:
 printf '{"cwd":"%s","hook_event_name":"SessionStart","source":"startup"}\n' "$(pwd)" | constitution hook session-start
 ```
 
-It prints the digest as JSON. The digest's second line must say `constitution.yaml makes <n> blocks active.`; a line that says the file does not parse names the line to fix. Each line under `⚠️ Warnings` says what is wrong and how to fix it: fix a mistake of yours in the files, a `presets` finding included, and bring any other warning to the owner. Then tell the owner the files reach the main branch through a pull request like any change, and that the next session starts with the digest of these blocks.
+It prints the digest as JSON. Its `## Active blocks` map lists the blocks of each rank and each member's changes; a line saying `constitution.yaml does not parse` names the line to fix. Fix each line under `⚠️ Warnings` that is your mistake, and bring the others to the owner. Then tell the owner the files reach the main branch through a pull request like any change.
