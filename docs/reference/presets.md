@@ -19,6 +19,8 @@ presets/
     └── plugins/<language>/<rule>.* a plugin, named by the rule it holds
 ```
 
+A plugin of `shell`, such as `lefthook/plugins/shell/commit-body-left-empty.sh`, is a shell script a command of the tool's file runs, since shell code a file holds is a plain command and what needs more moves into a script. One the runners' scripts and tasks share sits in the folder of the tool it runs, `osv-scanner/plugins/shell/`, and one no rule names in `shell/`, as `shell/run-on-shell-scripts.sh`, which hands a command the unit's shell scripts.
+
 An entry sits on the axis of the rule it holds, in the reader's preset file, and under `with/` exactly when it needs a block the reader does not reach: `noTailwindRawColors` sits in `biome/foundation/with/tailwind/with/design-system.yaml`, as it needs both.
 
 ## An entry

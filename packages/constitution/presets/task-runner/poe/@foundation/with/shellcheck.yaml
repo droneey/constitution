@@ -7,8 +7,5 @@ shellcheck:
             tasks:
               check:shell:
                 shell: !words
-                  - git ls-files -z --cached --others --exclude-standard -- '*.sh' '*.bash'
-                  - "':(exclude)${workspace.members}'"
-                  - '| xargs -0 -r sh -c "for file do if [ -e \"\$file\" ];'
-                  - 'then printf ''%s\0'' \"\$file\"; fi; done" sh'
-                  - '| xargs -0 -r shellcheck'
+                  - ${constitution.path}/presets/shell/run-on-shell-scripts.sh shellcheck --
+                  - "'${workspace.members}'"

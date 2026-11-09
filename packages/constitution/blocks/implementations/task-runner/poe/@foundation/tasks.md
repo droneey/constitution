@@ -6,7 +6,7 @@
 
 ### task-group-walks-poes-own-list → task-group-run-by-its-prefix · MUST
 
-The task named by an action walks Poe's own list of tasks. It is a shell task that takes the names `poe _list_tasks` gives, sorted, and runs each of its prefix; where none is, it runs nothing, and it fails when `poe _list_tasks` fails.
+The task named by an action walks Poe's own list of tasks. It takes the names `poe _list_tasks` gives, sorted, and runs each of its prefix; where none is, it runs nothing, and it fails when `poe _list_tasks` fails.
 
 #### Why
 
@@ -23,14 +23,29 @@ fix = ["fix:format", "fix:lint"]
 
 ```toml title="Prefer"
 [tool.poe.tasks]
+fix = "scripts/run-task-group.sh fix"
 "fix:format" = "ruff format"
 "fix:lint" = "ruff check --fix"
+```
 
-[tool.poe.tasks.fix]
-shell = '''
-tasks=$(poe _list_tasks) || exit 1
-for task in $(printf '%s\n' $tasks | sort); do
-  case "$task" in fix:*) poe "$task" || exit 1;; esac
-done
-'''
+```bash title="Prefer"
+#!/usr/bin/env bash
+set -euo pipefail
+shopt -s inherit_errexit
+
+main() {
+  local prefix="$1"
+  local names
+  local task
+
+  names="$(poe _list_tasks | tr -s '[:space:]' '\n' | sort)"
+
+  while IFS= read -r task <&3; do
+    if [[ $task == "$prefix":* ]]; then
+      poe "$task"
+    fi
+  done 3<<<"$names"
+}
+
+main "$@"
 ```

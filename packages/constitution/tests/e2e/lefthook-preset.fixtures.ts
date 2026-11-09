@@ -11,7 +11,7 @@ import { goldenOf } from '#/__tests__/golden.fixtures';
 
 import type { UnitFixture } from './applied-unit.fixtures';
 import { miseBinary } from './mise.fixtures';
-import { gitIn, toolEnvironment } from './package.fixtures';
+import { gitIn, linkRelease, toolEnvironment } from './package.fixtures';
 import type { Load } from './preset-load.fixtures';
 import { loadOf, widestAppliedUnit } from './preset-load.fixtures';
 
@@ -63,11 +63,9 @@ const validation = (): Promise<Load> =>
     ],
   });
 
-const unitJobs = (more: Partial<UnitFixture> = {}): readonly UnitJob[] =>
+const jobsIn = (unit: string): readonly UnitJob[] =>
   Object.entries(
-    hooks.parse(
-      YAML.parse(readFileSync(join(widestAppliedUnit('lefthook', more), 'lefthook.yaml'), 'utf8')),
-    ),
+    hooks.parse(YAML.parse(readFileSync(join(unit, 'lefthook.yaml'), 'utf8'))),
   ).flatMap(([hook, parsed]) =>
     parsed.success
       ? parsed.data.jobs.map(({ name, run }) => ({
@@ -77,6 +75,9 @@ const unitJobs = (more: Partial<UnitFixture> = {}): readonly UnitJob[] =>
         }))
       : [],
   );
+
+const unitJobs = (more: Partial<UnitFixture> = {}): readonly UnitJob[] =>
+  jobsIn(widestAppliedUnit('lefthook', more));
 
 const shellcheckRc = (): string => join(widestAppliedUnit('lefthook'), '.shellcheckrc');
 
@@ -152,6 +153,7 @@ const headRun = (checkout: readonly string[]): HookRun => {
       'chore: Start',
     ]);
     gitIn(folder, checkout);
+    linkRelease(folder);
 
     const hookRun = spawnSync(
       'sh',
@@ -171,7 +173,7 @@ const headRun = (checkout: readonly string[]): HookRun => {
 
     return {
       exitCode: hookRun.status ?? undefined,
-      output: hookRun.stdout.trim(),
+      output: hookRun.stderr.trim(),
     };
   } finally {
     rmSync(folder, {
@@ -186,10 +188,11 @@ const commitMessageRun = (message: string, more: Partial<UnitFixture> = {}): Hoo
 
   try {
     const file = join(folder, 'COMMIT_EDITMSG');
+    const unit = widestAppliedUnit('lefthook', more);
 
     writeFileSync(file, message);
 
-    const runs = unitJobs(more)
+    const runs = jobsIn(unit)
       .filter(({ hook }) => hook === Hook.CommitMessage)
       .map(({ run }) =>
         spawnSync(
@@ -199,6 +202,7 @@ const commitMessageRun = (message: string, more: Partial<UnitFixture> = {}): Hoo
             run.replaceAll('{1}', file),
           ],
           {
+            cwd: unit,
             encoding: 'utf8',
             env: toolEnvironment(),
           },
@@ -209,7 +213,7 @@ const commitMessageRun = (message: string, more: Partial<UnitFixture> = {}): Hoo
     return {
       exitCode: failed === undefined ? 0 : (failed.status ?? undefined),
       output: runs
-        .map(({ stdout }) => stdout.trim())
+        .map(({ stderr }) => stderr.trim())
         .filter((output) => output !== '')
         .join('\n'),
     };

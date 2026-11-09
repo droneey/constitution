@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'bun:test';
 
 import { appliedUnit } from './applied-unit.fixtures';
-import { searchPathWith, toolEnvironment } from './package.fixtures';
+import { linkRelease, searchPathWith, toolEnvironment } from './package.fixtures';
 import { uvBinary, uvEnvironment } from './uv.fixtures';
 
 const MARKS = 'ran.txt';
@@ -36,6 +36,7 @@ const projectWith = (tasks: Readonly<Record<string, string>>): string => {
   const folder = mkdtempSync(join(tmpdir(), 'poe-aggregator-'));
 
   created.push(folder);
+  linkRelease(folder);
   cpSync(join(appliedProject, 'pyproject.toml'), join(folder, 'pyproject.toml'));
   writeFileSync(
     join(folder, 'pyproject.toml'),

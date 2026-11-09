@@ -6,19 +6,9 @@ pre-commit:
 
     # lefthook
     - name: validate-branch
-      run: |
-        BRANCH="$(git branch --show-current)"
-        if [ -z "$BRANCH" ]; then
-          exit 0
-        fi
-        PATTERN='^(feature|fix|hotfix)'
-        PATTERN="$PATTERN/[0-9]+-[a-z0-9]+(-[a-z0-9]+)*\$"
-        if ! echo "$BRANCH" | grep -qE "$PATTERN"; then
-          echo "[branch-named-type-issue-name] Branch must match:" \
-            "(feature|fix|hotfix)/{id}-{name}"
-          echo "  got: $BRANCH"
-          exit 1
-        fi
+      run: >-
+        .droneey/constitution/presets/lefthook/plugins/shell/branch-named-type-issue-name.sh feature
+        fix hotfix
 
     # biome
     - name: biome
@@ -197,65 +187,21 @@ pre-commit:
 commit-msg:
   jobs:
     - name: commit-body
-      run: |
-        # Why: git commit -v leaves the diff below its scissors line for the hook to read.
-        BODY="$(sed -e '/^# -\{24\} >8 -\{24\}$/,$d' -e '1d;/^#/d;/^$/d' {1} |
-          grep -vE '^[A-Za-z][A-Za-z-]*: .+$' || true)"
-        if [ -n "$BODY" ]; then
-          echo "[commit-body-left-empty]" \
-            "Body must be empty; a footer holds only trailers"
-          exit 1
-        fi
+      run: >-
+        .droneey/constitution/presets/lefthook/plugins/shell/commit-body-left-empty.sh {1}
     - name: commit-header-length
-      run: |
-        MSG="$(head -1 {1})"
-
-        if [ "${#MSG}" -gt 100 ]; then
-          echo "[commit-header-within-100-characters]" \
-            "Header must be 100 characters or less (got ${#MSG})"
-          exit 1
-        fi
+      run: >-
+        .droneey/constitution/presets/lefthook/plugins/shell/commit-header-within-100-characters.sh
+        {1}
     - name: commit-header-format
-      run: |
-        MSG="$(head -1 {1})"
-        TYPE="$(printf '%s\n' "$MSG" | sed -n 's/^\([a-z]*\)!\{0,1\}: .*/\1/p')"
-        SUBJECT="$(printf '%s\n' "$MSG" | sed -n 's/^[a-z]*!\{0,1\}: \(.*\)/\1/p')"
-
-        if [ -z "$TYPE" ] || [ -z "$SUBJECT" ]; then
-          echo "[commit-header-follows-conventional-commits]" \
-            "Commit must match format: type: Subject,"
-          echo "  or type!: Subject for a breaking change"
-          exit 1
-        fi
-
-        case "$TYPE" in
-          feat|fix|refactor|chore) ;;
-          *)
-            echo "[commit-header-follows-conventional-commits]" \
-              "Invalid type '$TYPE'. Allowed: feat, fix, refactor, chore"
-            exit 1
-            ;;
-        esac
+      run: >-
+        .droneey/constitution/presets/lefthook/plugins/shell/commit-header-follows-conventional-commits.sh
+        {1}
     - name: commit-subject-capital
-      run: |
-        SUBJECT="$(head -1 {1} | sed -n 's/^[a-z]*!\{0,1\}: \(.*\)/\1/p')"
-        FIRST_CHAR="$(printf '%s' "$SUBJECT" | cut -c1)"
-
-        if [ -n "$SUBJECT" ] && ! printf '%s' "$FIRST_CHAR" | grep -q '[A-Z]'; then
-          echo "[commit-subject-opens-with-a-capital]" \
-            "Subject must start with an uppercase letter (sentence-case)"
-          exit 1
-        fi
+      run: >-
+        .droneey/constitution/presets/lefthook/plugins/shell/commit-subject-opens-with-a-capital.sh
+        {1}
     - name: commit-placeholder
-      run: |
-        SUBJECT="$(head -1 {1} | sed 's/^[A-Za-z]*\(([^)]*)\)\{0,1\}!\{0,1\}: //')"
-
-        case "$(printf '%s' "$SUBJECT" | tr '[:upper:]' '[:lower:]')" in
-          update | updates | changes | change | misc | wip | fix | fixes | \
-            "fix stuff" | stuff | \
-            "minor changes" | "small fix" | tmp | test)
-            echo "[commit-msg-hook-rejects-a-placeholder-subject]" \
-              "Subject '$SUBJECT' says nothing; say what changed"
-            exit 1
-            ;;
-        esac
+      run: >-
+        .droneey/constitution/presets/lefthook/plugins/shell/commit-msg-hook-rejects-a-placeholder-subject.sh
+        {1}

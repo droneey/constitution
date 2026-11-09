@@ -269,23 +269,22 @@ executor = "simple"
 # jscpd
 "check:duplicates" = "bunx --bun jscpd"
 
-# task-runner/poe
-[tool.poe.tasks.test]
-shell = "for task in $(poe _list_tasks | tr ' ' '\\n' | sort); do case \"$task\" in test:*) poe \"$task\" || exit 1;; esac; done"
-
-[tool.poe.tasks.fix]
-shell = "for task in $(poe _list_tasks | tr ' ' '\\n' | sort); do case \"$task\" in fix:*) poe \"$task\" || exit 1;; esac; done"
-
 # tombi
 [tool.poe.tasks."check:toml"]
 shell = "tombi format --check && tombi lint"
 
-# task-runner/poe
-[tool.poe.tasks.check]
-shell = "for task in $(poe _list_tasks | tr ' ' '\\n' | sort); do case \"$task\" in check:*) poe \"$task\" || exit 1;; esac; done && poe test && poe mutate:branch"
-
 [tool.poe.tasks.build]
 shell = "mkdir -p dist && python -m zipapp src -m droneey_python_check.main:main -o dist/python-check.pyz"
+
+# task-runner/poe
+[tool.poe.tasks.check]
+shell = "../../.droneey/constitution/presets/task-runner/poe/plugins/shell/task-group-walks-poes-own-list.sh check && poe test && poe mutate:branch"
+
+[tool.poe.tasks.test]
+shell = "../../.droneey/constitution/presets/task-runner/poe/plugins/shell/task-group-walks-poes-own-list.sh test"
+
+[tool.poe.tasks.fix]
+shell = "../../.droneey/constitution/presets/task-runner/poe/plugins/shell/task-group-walks-poes-own-list.sh fix"
 
 # ty
 [tool.ty.rules]

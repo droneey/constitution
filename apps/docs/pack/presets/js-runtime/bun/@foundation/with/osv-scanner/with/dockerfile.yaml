@@ -5,8 +5,5 @@ osv-scanner:
       package.json:
         scripts:
           check:audit-image: !replace >-
-            docker build --quiet --target base --tag audit-image:base
-            --file docker/images/app.Dockerfile ../..
-            && { osv-scanner scan image
-            $(test -f osv-scanner.toml && echo --config osv-scanner.toml) audit-image:base;
-            status=$?; docker rmi audit-image:base > /dev/null; exit $status; }
+            ${constitution.path}/presets/osv-scanner/plugins/shell/built-image-scanned-at-its-base-stage.sh
+            docker/images/app.Dockerfile ../..

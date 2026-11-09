@@ -16,13 +16,13 @@ task-runner/poe:
             # does.
             tasks:
               test:
-                shell: >-
-                  for task in $(poe _list_tasks | tr ' ' '\n' | sort); do case "$task" in
-                  test:*) poe "$task" || exit 1;; esac; done
+                shell: !words
+                  - ${constitution.path}/presets/task-runner/poe/plugins/shell/task-group-walks-poes-own-list.sh
+                  - test
               fix:
-                shell: >-
-                  for task in $(poe _list_tasks | tr ' ' '\n' | sort); do case "$task" in
-                  fix:*) poe "$task" || exit 1;; esac; done
+                shell: !words
+                  - ${constitution.path}/presets/task-runner/poe/plugins/shell/task-group-walks-poes-own-list.sh
+                  - fix
 task-runner:
   check-task-is-the-units-whole-gate:
     python:
@@ -34,9 +34,8 @@ task-runner:
             tasks:
               check:
                 shell: !words
-                  - >-
-                    for task in $(poe _list_tasks | tr ' ' '\n' | sort); do case "$task" in
-                    check:*) poe "$task" || exit 1;; esac; done
+                  - ${constitution.path}/presets/task-runner/poe/plugins/shell/task-group-walks-poes-own-list.sh
+                  - check
                   - slot: tests
                   - slot: mutations
   unit-run-through-its-action-tasks:

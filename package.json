@@ -22,8 +22,8 @@
     "check:markdown": "rumdl check . && rumdl fmt --check .",
     "check:renovate": "renovate-config-validator --strict",
     "check:secrets": "betterleaks git . --redact --no-banner && betterleaks git . --pre-commit --redact --no-banner && betterleaks git . --pre-commit --staged --redact --no-banner",
-    "check:shell": "git ls-files -z --cached --others --exclude-standard -- '*.sh' '*.bash' ':(exclude)apps/docs' ':(exclude)packages/@design/browser' ':(exclude)packages/@design/cli' ':(exclude)packages/@design/tokens' ':(exclude)packages/@mutation-check/python' ':(exclude)packages/@mutation-check/typescript' ':(exclude)packages/brand' ':(exclude)packages/constitution' ':(exclude)packages/python-check' | xargs -0 -r sh -c \"for file do if [ -e \\\"\\$file\\\" ]; then printf '%s\\0' \\\"\\$file\\\"; fi; done\" sh | xargs -0 -r shellcheck",
-    "check:shell-format": "git ls-files -z --cached --others --exclude-standard -- '*.sh' '*.bash' ':(exclude)apps/docs' ':(exclude)packages/@design/browser' ':(exclude)packages/@design/cli' ':(exclude)packages/@design/tokens' ':(exclude)packages/@mutation-check/python' ':(exclude)packages/@mutation-check/typescript' ':(exclude)packages/brand' ':(exclude)packages/constitution' ':(exclude)packages/python-check' | xargs -0 -r sh -c \"for file do if [ -e \\\"\\$file\\\" ]; then printf '%s\\0' \\\"\\$file\\\"; fi; done\" sh | xargs -0 -r shfmt -d",
+    "check:shell": ".droneey/constitution/presets/shell/run-on-shell-scripts.sh shellcheck -- 'apps/docs' 'packages/@design/browser' 'packages/@design/cli' 'packages/@design/tokens' 'packages/@mutation-check/python' 'packages/@mutation-check/typescript' 'packages/brand' 'packages/constitution' 'packages/python-check'",
+    "check:shell-format": ".droneey/constitution/presets/shell/run-on-shell-scripts.sh shfmt -d -- 'apps/docs' 'packages/@design/browser' 'packages/@design/cli' 'packages/@design/tokens' 'packages/@mutation-check/python' 'packages/@mutation-check/typescript' 'packages/brand' 'packages/constitution' 'packages/python-check'",
     "check:toml": "tombi format --check && tombi lint",
     "check:workflows": "actionlint -pyflakes=",
     "check:yaml": "yamllint --strict .",
@@ -32,7 +32,7 @@
     "fix:lint": "biome check --write",
     "fix:manifests": "syncpack fix && syncpack format",
     "fix:markdown": "rumdl check --fix",
-    "fix:shell-format": "git ls-files -z --cached --others --exclude-standard -- '*.sh' '*.bash' ':(exclude)apps/docs' ':(exclude)packages/@design/browser' ':(exclude)packages/@design/cli' ':(exclude)packages/@design/tokens' ':(exclude)packages/@mutation-check/python' ':(exclude)packages/@mutation-check/typescript' ':(exclude)packages/brand' ':(exclude)packages/constitution' ':(exclude)packages/python-check' | xargs -0 -r sh -c \"for file do if [ -e \\\"\\$file\\\" ]; then printf '%s\\0' \\\"\\$file\\\"; fi; done\" sh | xargs -0 -r shfmt -w",
+    "fix:shell-format": ".droneey/constitution/presets/shell/run-on-shell-scripts.sh shfmt -w -- 'apps/docs' 'packages/@design/browser' 'packages/@design/cli' 'packages/@design/tokens' 'packages/@mutation-check/python' 'packages/@mutation-check/typescript' 'packages/brand' 'packages/constitution' 'packages/python-check'",
     "fix:toml": "tombi format"
   },
   "workspaces": [
