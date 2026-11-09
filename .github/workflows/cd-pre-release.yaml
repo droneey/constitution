@@ -26,38 +26,13 @@ jobs:
         run: bun install --frozen-lockfile --ignore-scripts
 
       - name: Pack the distribution
-        run: |
-          (
-            cd packages/constitution
-            for package in $(jq -r '[.[].package] | unique[]' distribution.json); do
-              if [ -f "$package/package.json" ]; then
-                bun run --cwd "$package" build
-              else
-                (cd "$package" && uv run --locked poe build)
-              fi
-            done
-            jq -r 'to_entries[] | "\(.key) \(.value.package)/\(.value.file)"' distribution.json |
-              while read -r target source; do
-                mkdir -p "$(dirname "$target")"
-                cp "$source" "$target"
-              done
-          )
-          for platform in linux-x64:linux-x64 linux-arm64:linux-arm64 \
-            darwin-x64:macos-x64 darwin-arm64:macos-arm64; do
-            target="${platform%%:*}"
-            name="${platform##*:}"
-            bun run --cwd packages/constitution build --target "bun-${target}" \
-              --outfile "$PWD/dist/cli/${name}/bin/constitution"
-            tar -czf "constitution-${name}.tar.gz" -C packages/constitution \
-              package.json blocks presets templates tools -C "$PWD/dist/cli/${name}" bin
-            sha256sum "constitution-${name}.tar.gz" > "constitution-${name}.tar.gz.sha256"
-          done
+        run: scripts/pack-distribution.sh
 
       - name: Build the site
-        run: |
+        run: >-
           bun run --cwd apps/docs build
-          tar -czf constitution-docs.tar.gz -C apps/docs/.output/public .
-          sha256sum constitution-docs.tar.gz > constitution-docs.tar.gz.sha256
+          && tar -czf constitution-docs.tar.gz -C apps/docs/.output/public .
+          && sha256sum constitution-docs.tar.gz > constitution-docs.tar.gz.sha256
 
       - name: Hand the files to the release
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
