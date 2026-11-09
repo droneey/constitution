@@ -8,10 +8,22 @@ readonly IMAGE='audit-image:base'
 readonly SETTINGS='osv-scanner.toml'
 
 main() {
-  local dockerfile="${1:-Dockerfile}"
-  local context="${2:-.}"
+  local -a inputs=()
   # Why: the image's own system is no dependency the project ships, so its scan checks no licence.
   local -a scan=(osv-scanner scan image)
+
+  while ((${#} > 0)) && [[ ${1} != -- ]]; do
+    inputs+=("${1}")
+    shift
+  done
+  # Why: the words after `--` are the scan's own flags, which the presets give.
+  if ((${#} > 1)); then
+    shift
+    scan+=("${@}")
+  fi
+
+  local dockerfile="${inputs[0]:-Dockerfile}"
+  local context="${inputs[1]:-.}"
   local status=0
 
   docker build --quiet --target base --tag "${IMAGE}" --file "${dockerfile}" "${context}"

@@ -23,7 +23,7 @@
     "build": "vite build",
     "check": "bun run --sequential 'check:*' test mutate:branch",
     "check:architecture": "depcruise src --config .dependency-cruiser.jsonc",
-    "check:audit-image": ".droneey/constitution/presets/osv-scanner/plugins/shell/built-image-scanned-at-its-base-stage.sh docker/images/app.Dockerfile ../..",
+    "check:audit-image": ".droneey/constitution/presets/osv-scanner/plugins/shell/built-image-scanned-at-its-base-stage.sh docker/images/app.Dockerfile ../.. -- --all-vulns",
     "check:compose": "dclint compose.yaml docker/compose/app.yaml",
     "check:dockerfile": "hadolint docker/images/app.Dockerfile",
     "check:duplicates": "jscpd",

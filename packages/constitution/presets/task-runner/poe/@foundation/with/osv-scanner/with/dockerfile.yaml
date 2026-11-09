@@ -6,5 +6,8 @@ osv-scanner:
           poe:
             tasks:
               check:audit-image:
-                shell: >-
-                  ${constitution.path}/presets/osv-scanner/plugins/shell/built-image-scanned-at-its-base-stage.sh
+                shell: !words
+                  - ${constitution.path}/presets/osv-scanner/plugins/shell/built-image-scanned-at-its-base-stage.sh
+                  - slot: inputs
+                  - --
+                  - slot: flags

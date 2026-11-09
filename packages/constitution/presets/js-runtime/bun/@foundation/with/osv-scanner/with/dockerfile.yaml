@@ -3,8 +3,11 @@ osv-scanner:
     dockerfile:
       package.json:
         scripts:
-          check:audit-image: >-
-            ${constitution.path}/presets/osv-scanner/plugins/shell/built-image-scanned-at-its-base-stage.sh
+          check:audit-image: !words
+            - ${constitution.path}/presets/osv-scanner/plugins/shell/built-image-scanned-at-its-base-stage.sh
+            - slot: inputs
+            - --
+            - slot: flags
 js-runtime/bun:
   '*':
     dockerfile:

@@ -7,7 +7,24 @@ osv-scanner:
             tasks:
               # Why: --no-ignore: a checkout nested in a folder another repository ignores, an
               # agent's worktree, is otherwise read as ignored, and no lockfile is found.
-              check:audit: >-
-                osv-scanner scan source
-                --licenses="0BSD,Apache-2.0,BlueOak-1.0.0,BSD-2-Clause,BSD-3-Clause,CC-BY-4.0,CC0-1.0,ISC,MIT,MIT-0,MPL-2.0,OFL-1.1,PSF-2.0,Python-2.0,Unlicense,Zlib"
-                --no-ignore .
+              check:audit: !words
+                - osv-scanner scan source
+                - slot: flags
+                - '--licenses="0BSD,Apache-2.0,BlueOak-1.0.0,BSD-2-Clause,BSD-3-Clause,CC-BY-4.0,CC0-1.0,ISC,MIT,MIT-0,MPL-2.0,OFL-1.1,PSF-2.0,Python-2.0,Unlicense,Zlib"'
+                - --no-ignore .
+  osv-scan-run-with-all-vulns:
+    '*':
+      pyproject.toml ? ${file.isTop}:
+        tool:
+          poe:
+            tasks:
+              check:audit@flags:
+                - --all-vulns
+    dockerfile:
+      pyproject.toml:
+        tool:
+          poe:
+            tasks:
+              check:audit-image:
+                shell@flags:
+                  - --all-vulns
