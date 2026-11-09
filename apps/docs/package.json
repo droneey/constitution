@@ -42,6 +42,7 @@
     "fix:toml": "tombi format",
     "mutate:all": "mutation-check all",
     "mutate:branch": "mutation-check",
+    "pack": "scripts/pack.sh",
     "postinstall": "fumadocs-mdx",
     "prebuild": "bun run --filter '@droneey/docs^...' generate",
     "precheck": "bun run --filter '@droneey/docs^...' generate",

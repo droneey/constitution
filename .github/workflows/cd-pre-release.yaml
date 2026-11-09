@@ -25,14 +25,8 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile --ignore-scripts
 
-      - name: Pack the distribution
-        run: scripts/pack-distribution.sh
-
-      - name: Build the site
-        run: >-
-          bun run --cwd apps/docs build
-          && tar -czf constitution-docs.tar.gz -C apps/docs/.output/public .
-          && sha256sum constitution-docs.tar.gz > constitution-docs.tar.gz.sha256
+      - name: Pack the release
+        run: scripts/pack-release.sh "${GITHUB_WORKSPACE}"
 
       - name: Hand the files to the release
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

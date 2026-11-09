@@ -48,6 +48,7 @@
     "fix:toml": "tombi format",
     "mutate:all": "mutation-check all",
     "mutate:branch": "mutation-check",
+    "pack": "scripts/pack.sh",
     "prebuild": "bun run --filter '@droneey/constitution^...' generate",
     "precheck": "bun run --filter '@droneey/constitution^...' generate",
     "preexecutable:test": "bun run --filter '@droneey/constitution^...' generate",
