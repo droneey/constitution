@@ -138,12 +138,7 @@ pre-commit:
       root: apps/docs/
       glob: '*.toml'
       stage_fixed: true
-      # Why: lefthook hands a job with a root its files as ./path, and tombi skips a file its
-      # tombi.toml excludes only when named without the ./.
-      run: &unit-toml |
-        set -- {staged_files}
-        for file; do shift; set -- "$@" "${file#./}"; done
-        tombi format "$@"
+      run: &unit-toml ../../scripts/format-toml.sh {staged_files}
     - name: tombi packages/constitution
       root: packages/constitution/
       glob: '*.toml'
@@ -153,27 +148,27 @@ pre-commit:
       root: packages/@design/cli/
       glob: '*.toml'
       stage_fixed: true
-      run: *unit-toml
+      run: &scoped-unit-toml ../../../scripts/format-toml.sh {staged_files}
     - name: tombi packages/@design/tokens
       root: packages/@design/tokens/
       glob: '*.toml'
       stage_fixed: true
-      run: *unit-toml
+      run: *scoped-unit-toml
     - name: tombi packages/@design/browser
       root: packages/@design/browser/
       glob: '*.toml'
       stage_fixed: true
-      run: *unit-toml
+      run: *scoped-unit-toml
     - name: tombi packages/@mutation-check/typescript
       root: packages/@mutation-check/typescript/
       glob: '*.toml'
       stage_fixed: true
-      run: *unit-toml
+      run: *scoped-unit-toml
     - name: tombi packages/@mutation-check/python
       root: packages/@mutation-check/python/
       glob: '*.toml'
       stage_fixed: true
-      run: *unit-toml
+      run: *scoped-unit-toml
     - name: tombi packages/python-check
       root: packages/python-check/
       glob: '*.toml'
