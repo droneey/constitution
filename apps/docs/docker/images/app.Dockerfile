@@ -62,7 +62,7 @@ COPY --chown=1000:1000 apps/docs/scripts/fetch-releases.sh packages/constitution
 COPY --chown=1000:1000 --from=builder /usr/src/app/apps/docs/.output/public ./current
 
 RUN --mount=type=secret,id=github_token,uid=1000 \
-  KEPT_RELEASES="$KEPT_RELEASES" ./fetch-releases.sh ./current "$(jq -r .version package.json)" ./site ./server.toml
+  KEPT_RELEASES="$KEPT_RELEASES" ./fetch-releases.sh ./current ./package.json ./site ./server.toml
 
 FROM base AS production
 
