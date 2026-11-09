@@ -6,6 +6,10 @@ const systemError = Object.assign(new Error('no such file'), {
   code: 'ENOENT',
   syscall: 'open',
 });
+const nameTooLong = Object.assign(new Error('name too long'), {
+  code: 'ENAMETOOLONG',
+  errno: -63,
+});
 const programError = Object.assign(new Error('no project'), {
   code: 'no-project',
 });
@@ -16,6 +20,12 @@ describe('isSystemError', () => {
     {
       condition: 'the error carries a code and the call that failed',
       error: systemError,
+      isSystem: true,
+    },
+    {
+      condition:
+        'the error carries a code and its number but no call, as Bun gives a name too long',
+      error: nameTooLong,
       isSystem: true,
     },
     {
