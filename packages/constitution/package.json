@@ -88,6 +88,6 @@
     "syncpack": "15.3.3",
     "typescript": "7.0.2"
   },
-  "constitutionFormat": 4,
+  "constitutionFormat": 5,
   "trustedDependencies": []
 }

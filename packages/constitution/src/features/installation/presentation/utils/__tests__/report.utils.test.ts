@@ -458,7 +458,7 @@ describe('installationSectionsOf', () => {
       status: StepStatus.Failed,
     },
     {
-      detail: 'the release is older than block format 4, the oldest this executable reads',
+      detail: 'the release is older than block format 5, the oldest this executable reads',
       diagnosis: {
         kind: Diagnosis.ReleaseFormatOlder,
       },

@@ -22,7 +22,7 @@ describe('Release.ofManifest', () => {
       version,
     },
     {
-      blockFormat: 3,
+      blockFormat: 4,
       condition: 'the block format is older than the oldest this program reads',
       expected: {
         status: ReleaseStatus.Older,
@@ -30,16 +30,16 @@ describe('Release.ofManifest', () => {
       version,
     },
     {
-      blockFormat: 5,
+      blockFormat: 6,
       condition: 'the block format is newer than the newest this program reads',
       expected: {
-        format: 5,
+        format: 6,
         status: ReleaseStatus.Newer,
       },
       version,
     },
     {
-      blockFormat: 4,
+      blockFormat: 5,
       condition: 'the manifest names no version',
       expected: {
         manifest: manifestPath,
@@ -48,7 +48,7 @@ describe('Release.ofManifest', () => {
       version: undefined,
     },
     {
-      blockFormat: 4,
+      blockFormat: 5,
       condition: 'the block format is one this program reads and a version is named',
       expected: {
         status: ReleaseStatus.Installed,

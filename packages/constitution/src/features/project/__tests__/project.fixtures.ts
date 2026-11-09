@@ -17,7 +17,7 @@ import { RULE_STATEMENT, RULE_WHY } from './block-set.fixtures';
 const configPath = `${PROJECT}/constitution.yaml`;
 const manifest = `${releaseFolderPath}/package.json`;
 const VERSION = '1.0.0';
-const FORMAT = 4;
+const FORMAT = 5;
 
 enum Folder {
   Domain = 'domains',

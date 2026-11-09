@@ -104,7 +104,7 @@ const projectPortsOf = (tree: FakeTree = projectTreeOf()): ProjectPorts => ({
   manifestParser: {
     parse: () => ({
       manifest: {
-        blockFormat: 4,
+        blockFormat: 5,
         version: Version.create('1.0.0'),
       },
       status: ManifestReadStatus.Read,

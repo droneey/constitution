@@ -43,7 +43,7 @@ describe('readRelease', () => {
         version: Version.create('1.0.0'),
       },
       files: {
-        [manifest]: '{\n  "constitutionFormat": 4,\n  "version": "1.0.0"\n}\n',
+        [manifest]: '{\n  "constitutionFormat": 5,\n  "version": "1.0.0"\n}\n',
       },
     },
   ])('should give the release the project pins when $condition', ({ expected, files }) => {
@@ -93,7 +93,7 @@ describe('readRelease', () => {
         status: ReleaseStatus.ManifestNotObject,
       },
       files: {
-        [manifest]: '{"constitutionFormat": 4,\n',
+        [manifest]: '{"constitutionFormat": 5,\n',
       },
       unreadable: [],
     },
@@ -107,7 +107,7 @@ describe('readRelease', () => {
         status: ReleaseStatus.ManifestMalformed,
       },
       files: {
-        [manifest]: '{"constitutionFormat": 4, "version": 1}\n',
+        [manifest]: '{"constitutionFormat": 5, "version": 1}\n',
       },
       unreadable: [],
     },

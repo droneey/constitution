@@ -39,8 +39,8 @@ type Release =
       readonly status: ReleaseStatus.ManifestMalformed;
     };
 
-const NEWEST_FORMAT = 4;
-const OLDEST_FORMAT = 4;
+const NEWEST_FORMAT = 5;
+const OLDEST_FORMAT = 5;
 
 interface ReleaseManifestFields {
   readonly blockFormat: number | undefined;
