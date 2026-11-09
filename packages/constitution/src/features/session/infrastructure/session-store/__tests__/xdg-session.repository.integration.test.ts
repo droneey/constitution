@@ -422,6 +422,42 @@ describe('createXdgSessionRepository', () => {
     }).toStrictEqual(expected);
   });
 
+  it('should record a start as a line break alone, in a private folder it makes, when the session has none', () => {
+    // Arrange
+    const sessions = repositoryOf();
+
+    // Act
+    sessions.recordStarted(keptSession);
+
+    // Assert
+    expect({
+      mode: modeOf(sessionFolder()),
+      written: readFileSync(join(sessionFolder(), 'started'), 'utf8'),
+    }).toStrictEqual({
+      mode: 0o700,
+      written: '\n',
+    });
+  });
+
+  it('should record a start in the folder the session already has', () => {
+    // Arrange
+    const sessions = repositoryOf();
+
+    sessions.addGateEntry({
+      agent: SessionAgent.main,
+      entry: {
+        kind: GateEntryKind.Told,
+      },
+      session: keptSession,
+    });
+
+    // Act
+    sessions.recordStarted(keptSession);
+
+    // Assert
+    expect(sessions.isStarted(keptSession)).toBe(true);
+  });
+
   it('should write a mark whole, as its own file ending in a line break, when a mark is recorded', () => {
     // Arrange
     const sessions = repositoryOf();
@@ -865,6 +901,7 @@ describe('createXdgSessionRepository: no folder to keep the sessions in', () => 
       session: keptSession,
       state: savedState,
     });
+    sessions.recordStarted(keptSession);
     sessions.recordFingerprint({
       fingerprint: TreeFingerprint.create('abc'),
       mark: SessionMark.Turn,
@@ -880,6 +917,7 @@ describe('createXdgSessionRepository: no folder to keep the sessions in', () => 
 
     // Act
     const seen = {
+      isStarted: sessions.isStarted(keptSession),
       mark: sessions.fingerprint({
         mark: SessionMark.Turn,
         session: keptSession,
@@ -899,6 +937,7 @@ describe('createXdgSessionRepository: no folder to keep the sessions in', () => 
     }).toStrictEqual({
       elsewhere: false,
       seen: {
+        isStarted: false,
         mark: undefined,
         reminded: new Set(),
         state: undefined,

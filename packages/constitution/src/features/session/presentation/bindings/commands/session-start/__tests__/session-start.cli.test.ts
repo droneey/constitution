@@ -13,7 +13,7 @@ import { DigestKind } from '../../../../../domain/session-digest/entities';
 import type { SessionStart } from '../../../../../domain/session-start/entities';
 import { SessionOrigin } from '../../../../../domain/session-start/entities';
 import { HookEventName } from '../../../../../domain/shared/entities';
-import { digestOf } from '../../../../utils';
+import { digestTextOf } from '../../../../utils';
 import { createSessionStartCommand } from '../session-start.cli';
 
 interface Kept {
@@ -45,7 +45,7 @@ const noRelease: SessionDigest = {
   },
   state: keptState,
 };
-const noReleaseLines = digestOf(noRelease.contents).head;
+const noReleaseLines = digestTextOf(noRelease.contents).split('\n').slice(0, -1);
 const UNPARSED = {
   core: '# The "droneey" core\n',
   kind: DigestKind.Unparsed,
@@ -57,7 +57,7 @@ const UNPARSED = {
     version: Version.create('1.0.0'),
   },
 } as const;
-const unparsedDigest = digestOf(UNPARSED);
+const unparsedLines = digestTextOf(UNPARSED).split('\n').slice(0, -1);
 
 const contextOf = (
   stdout: string,
@@ -263,11 +263,7 @@ describe('createSessionStartCommand', () => {
     {
       condition: 'the digest has a body',
       contents: UNPARSED,
-      lines: [
-        ...unparsedDigest.head,
-        '',
-        ...unparsedDigest.body,
-      ],
+      lines: unparsedLines,
     },
     {
       condition: 'the digest is its head alone',

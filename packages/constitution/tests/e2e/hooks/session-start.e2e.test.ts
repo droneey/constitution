@@ -542,7 +542,7 @@ describe('session-start hook', () => {
           text: context,
         }),
         rules: context.includes(coreText),
-        saved: existsSync(stateFolderOf(session)),
+        saved: existsSync(join(stateFolderOf(session), 'state.json')),
         stderr: run.stderr,
       }).toStrictEqual({
         exitCode: 0,

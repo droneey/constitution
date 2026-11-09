@@ -3,7 +3,7 @@ export { moreFilesText } from './bounded-list.messages';
 export { countedNoteOf, entriesWithin, listWithin } from './bounded-list.utils';
 export type { CountedText } from './counted-text.utils';
 export { countedTextOf } from './counted-text.utils';
-export { digestOf } from './digest.utils';
+export { digestTextOf } from './digest.utils';
 export { actionsText, passesToldMessage } from './gate.messages';
 export { actionAnswerOf, causeLinesOf } from './gate-answer.utils';
 export { hookEventOf } from './hook-event.utils';

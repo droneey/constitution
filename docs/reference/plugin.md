@@ -30,7 +30,7 @@ src/features/orders/domain/order/entities/order.aggregate.ts:42 — fact-has-one
 | The agent reads a file | records the rules it read whole, or the [debt](#debts) of the rules that govern the file |
 | The agent edits a file, runs a command or calls an MCP tool, the command or call failing included | records the files it changed |
 | The agent runs a command | records the tree when the project's check passes |
-| You send a prompt | records the tree the turn starts from |
+| You send a prompt | records the tree the turn starts from; in a session that had no start, as one whose plugin was turned on while it ran, first takes the start's step and gives the digest, once |
 | The agent or a sub-agent stops | holds [the hand-back](#the-hand-back) until its own changes are checked and, for the session's agent, then reviewed |
 | The session ends | removes its folders from the projects, and leaves the rest of [what the hooks keep](#what-the-hooks-keep) for a resume |
 

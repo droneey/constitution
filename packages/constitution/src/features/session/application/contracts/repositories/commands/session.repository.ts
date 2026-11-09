@@ -54,6 +54,7 @@ interface SessionRepository {
   readonly clearOwnChanges: (input: AgentInSession) => void;
   readonly ownChanges: (input: AgentInSession) => readonly AbsolutePath[];
   readonly recordFingerprint: (input: RecordFingerprintInput) => void;
+  readonly recordStarted: (session: SessionId) => void;
   readonly recordUnjudged: (input: RecordUnjudgedInput) => void;
   readonly saveState: (input: SaveStateInput) => void;
   readonly settleReviewDebt: (input: SettleReviewDebtInput) => void;

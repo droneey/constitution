@@ -78,4 +78,20 @@ const digestOf = (contents: DigestContents): Digest => {
   }
 };
 
-export { digestOf };
+const digestTextOf = (contents: DigestContents): string => {
+  const { body, head } = digestOf(contents);
+
+  return [
+    ...head,
+    ...(body.length === 0
+      ? []
+      : [
+          '',
+          ...body,
+        ]),
+  ]
+    .map((line) => `${line}\n`)
+    .join('');
+};
+
+export { digestTextOf };

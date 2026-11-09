@@ -1,29 +1,16 @@
 import { Command } from 'commander';
 
-import { AbsolutePath } from '#/kernel/value-objects';
-import type { CommandContext } from '#/shared/cli';
-import { folderPathOf } from '#/shared/cli';
+import type { AbsolutePath } from '#/kernel/value-objects';
 
-import type { SessionState } from '../../../../domain/session/entities';
 import type { SessionId } from '../../../../domain/session/value-objects';
-import type { SessionDigest } from '../../../../domain/session-digest/entities';
-import type { SessionOrigin, SessionStart } from '../../../../domain/session-start/entities';
+import type { SessionOrigin } from '../../../../domain/session-start/entities';
 import { HookEventName } from '../../../../domain/shared/entities';
 import { HookField, sessionStartEventSchema } from '../../../constants';
-import { contextOutputOf, digestOf, hookEventOf } from '../../../utils';
+import { hookEventOf } from '../../../utils';
+import type { StartSessionContext } from '../shared/session-start';
+import { sessionStartOf, startSession } from '../shared/session-start';
 
-interface SessionStartContext extends CommandContext {
-  /**
-   * @throws {UnreadableFileError} when the project's constitution.yaml cannot be read
-   * @throws {ReleaseError} when the release's blocks cannot be listed
-   */
-  readonly digestSession: (start: SessionStart) => SessionDigest | undefined;
-  readonly keepSession: (kept: {
-    event: HookEventName;
-    origin: SessionOrigin;
-    session: SessionId;
-    state: SessionState | undefined;
-  }) => void;
+interface SessionStartContext extends StartSessionContext {
   readonly resetReading: (reset: {
     event: HookEventName;
     origin: SessionOrigin;
@@ -46,7 +33,6 @@ const createSessionStartCommand = (context: SessionStartContext): Command =>
         schema: sessionStartEventSchema,
         text: await context.io.readInput(),
       });
-      const { places } = context;
       const name = event[HookField.HookEventName];
 
       // Why: Claude Code takes an answer only for an event it names.
@@ -54,14 +40,12 @@ const createSessionStartCommand = (context: SessionStartContext): Command =>
         return;
       }
 
-      const start: SessionStart = {
+      const start = sessionStartOf({
+        cwd: event[HookField.Cwd],
         event: name,
         origin: event[HookField.Source],
-        searchFrom: folderPathOf({
-          from: AbsolutePath.create(places.cwd),
-          given: places.projectDir ?? event[HookField.Cwd] ?? places.cwd,
-        }),
-      };
+        places: context.places,
+      });
       const session = event[HookField.SessionId];
 
       if (session !== undefined) {
@@ -79,39 +63,12 @@ const createSessionStartCommand = (context: SessionStartContext): Command =>
         }
       }
 
-      const started = context.digestSession(start);
-
-      if (started === undefined) {
-        return;
-      }
-
-      if (session !== undefined) {
-        context.keepSession({
-          event: start.event,
-          origin: start.origin,
-          session,
-          state: started.state,
-        });
-      }
-
-      const { body, head } = digestOf(started.contents);
-
-      context.io.write(
-        contextOutputOf({
-          event: name,
-          text: [
-            ...head,
-            ...(body.length === 0
-              ? []
-              : [
-                  '',
-                  ...body,
-                ]),
-          ]
-            .map((line) => `${line}\n`)
-            .join(''),
-        }),
-      );
+      startSession({
+        context,
+        event: name,
+        session,
+        start,
+      });
     });
 
 export { createSessionStartCommand };

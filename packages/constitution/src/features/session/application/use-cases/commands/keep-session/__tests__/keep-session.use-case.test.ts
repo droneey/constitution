@@ -8,7 +8,7 @@ import {
   sessionStateOf,
 } from '../../../../../__tests__/session.fixtures';
 import { createFakeSessionRepository } from '../../../../../__tests__/session-command-repository.fake';
-import { SessionAgent } from '../../../../../domain/session/entities';
+import { SessionAgent, SessionMark } from '../../../../../domain/session/entities';
 import { SessionOrigin } from '../../../../../domain/session-start/entities';
 import { HookEventName } from '../../../../../domain/shared/entities';
 import { keepSession } from '../keep-session.use-case';
@@ -69,38 +69,52 @@ describe('keepSession', () => {
     },
   );
 
-  it.each([
-    {
-      condition: 'a subagent starts',
-      event: HookEventName.SubagentStart,
-      state: startedState,
-    },
-    {
-      condition: 'the start gave no state',
-      event: HookEventName.SessionStart,
-      state: undefined,
-    },
-  ])('should keep nothing when $condition', ({ event, state }) => {
+  it('should keep nothing when a subagent starts', () => {
     // Arrange
     const store = heldSessionsOf(heldBefore);
 
     // Act
     keepSession({
-      event,
+      event: HookEventName.SubagentStart,
       origin: SessionOrigin.Startup,
       session: keptSession,
       sessionRepository: createFakeSessionRepository(store),
-      state,
+      state: startedState,
     });
 
     // Assert
     expect({
+      isStarted: store.get(keptSession)?.marks.has(SessionMark.Started),
       reminded: store.get(keptSession)?.reminded.get(SessionAgent.main),
       state: store.get(keptSession)?.state,
     }).toStrictEqual({
+      isStarted: false,
       reminded: new Set([
         BlockId.create('ui'),
       ]),
+      state: heldState,
+    });
+  });
+
+  it('should record the start and keep no state when the start gave none', () => {
+    // Arrange
+    const store = heldSessionsOf(heldBefore);
+
+    // Act
+    keepSession({
+      event: HookEventName.SessionStart,
+      origin: SessionOrigin.Startup,
+      session: keptSession,
+      sessionRepository: createFakeSessionRepository(store),
+      state: undefined,
+    });
+
+    // Assert
+    expect({
+      isStarted: store.get(keptSession)?.marks.has(SessionMark.Started),
+      state: store.get(keptSession)?.state,
+    }).toStrictEqual({
+      isStarted: true,
       state: heldState,
     });
   });

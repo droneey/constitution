@@ -21,6 +21,7 @@ Code you read, or change through the shell, leaves a debt: your next action wait
 - config: constitution.yaml has no packs key — add packs: []
 - installation: the project lies in no git repository, so no gate holds the hand-back — run git init to have one
 
+
 # resolved, its map cut to the budget
 The Droneey Constitution 1.0.0 supplies this repository's rules. Block files live under /work/project/.droneey/constitution.
 
@@ -180,6 +181,7 @@ Code you read, or change through the shell, leaves a debt: your next action wait
 - apps/member-140: adds api; leaves out ui, the workflow axis
 20 more lines of the map did not fit; constitution.yaml names every block.
 
+
 # resolved, its warnings cut to their share
 The Droneey Constitution 1.0.0 supplies this repository's rules. Block files live under /work/project/.droneey/constitution.
 
@@ -210,6 +212,7 @@ Code you read, or change through the shell, leaves a debt: your next action wait
 - installation: the project lies in no git repository, so no gate holds the hand-back — run git init to have one
 and 32 more
 
+
 # constitution.yaml does not parse
 The Droneey Constitution 1.0.0 supplies this repository's rules. Block files live under /work/project/.droneey/constitution.
 constitution.yaml does not parse at line 3; only core applies.
@@ -221,6 +224,7 @@ The rules a repository is built by.
 Before an action, the hook names the rules that govern it and refuses the action until you have read them whole with Read.
 What you read is remembered, so only new or changed rules are asked for again.
 Code you read, or change through the shell, leaves a debt: your next action waits until you have read the rules that govern it.
+
 
 # no release is installed
 The Droneey Constitution gives no rules here: /work/project/.droneey/constitution is missing or holds a release this executable cannot read. Tell the user to run constitution doctor.

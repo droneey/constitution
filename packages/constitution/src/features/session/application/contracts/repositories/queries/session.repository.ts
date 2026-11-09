@@ -16,6 +16,7 @@ interface FingerprintInput {
 
 interface SessionQueries {
   readonly fingerprint: (input: FingerprintInput) => TreeFingerprint | undefined;
+  readonly isStarted: (session: SessionId) => boolean;
   readonly ownChanges: (input: AgentInSession) => readonly AbsolutePath[];
   readonly reminded: (input: AgentInSession) => ReadonlySet<BlockId>;
   readonly reviewDebt: (session: SessionId) => readonly ReviewDebt[];

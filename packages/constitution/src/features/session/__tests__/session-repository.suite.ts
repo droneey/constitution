@@ -104,6 +104,7 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
 
       // Act
       const seen = {
+        isStarted: sessionPort.isStarted(session),
         mark: sessionPort.fingerprint({
           mark: SessionMark.Turn,
           session,
@@ -117,8 +118,28 @@ const runSessionRepositorySuite = (input: SessionRepositorySuiteInput): void => 
 
       // Assert
       expect(seen).toStrictEqual({
+        isStarted: false,
         mark: undefined,
         reminded: new Set(),
+        state: undefined,
+      });
+    });
+
+    it('should read a start recorded with no state as started, still holding no state', () => {
+      // Arrange
+      const sessionPort = input.repositoryOf();
+
+      sessionPort.recordStarted(session);
+
+      // Act
+      const seen = {
+        isStarted: sessionPort.isStarted(session),
+        state: sessionPort.state(session),
+      };
+
+      // Assert
+      expect(seen).toStrictEqual({
+        isStarted: true,
         state: undefined,
       });
     });

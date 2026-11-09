@@ -14,10 +14,9 @@ import type {
   AgentInSession,
   KeptBlock,
   ParsedState,
-  SessionMark,
   SessionState,
 } from '../domain/session/entities';
-import { SessionAgent } from '../domain/session/entities';
+import { SessionAgent, SessionMark } from '../domain/session/entities';
 import type { AgentId } from '../domain/session/value-objects';
 import { SessionId } from '../domain/session/value-objects';
 import type { ReviewDebt } from '../domain/stop-judgement/entities';
@@ -154,6 +153,24 @@ const heldSessionsOf = (held: HeldSessionFixture = {}): HeldSessions =>
     ],
   ]);
 
+const startedSessionsOf = (): HeldSessions =>
+  new Map([
+    [
+      keptSession,
+      {
+        marks: new Map([
+          [
+            SessionMark.Started,
+            '',
+          ],
+        ]),
+        own: new Map(),
+        reminded: new Map(),
+        review: new Map(),
+      },
+    ],
+  ]);
+
 const ownChangesIn = (sessions: HeldSessions, asked: AgentInSession): readonly AbsolutePath[] => [
   ...(sessions.get(asked.session)?.own.get(asked.agent) ?? []),
 ];
@@ -173,4 +190,5 @@ export {
   reviewDebtIn,
   reviewKeyOf,
   sessionStateOf,
+  startedSessionsOf,
 };

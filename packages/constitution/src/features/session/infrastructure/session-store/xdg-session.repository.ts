@@ -201,7 +201,13 @@ const marksOf = (
   folderOf: FolderOf,
 ): Pick<
   SessionRepository & SessionQueries,
-  'addReminded' | 'fingerprint' | 'recordFingerprint' | 'recordUnjudged' | 'reminded' | 'unjudged'
+  | 'addReminded'
+  | 'fingerprint'
+  | 'isStarted'
+  | 'recordFingerprint'
+  | 'recordUnjudged'
+  | 'reminded'
+  | 'unjudged'
 > => ({
   addReminded: (added): void => {
     const folder = folderOf(added.session);
@@ -242,6 +248,11 @@ const marksOf = (
 
     return TreeFingerprint.is(text) ? text : undefined;
   },
+  isStarted: (session: SessionId): boolean =>
+    readMark({
+      folder: folderOf(session),
+      mark: SessionMark.Started,
+    }) !== undefined,
   reminded: (asked): ReadonlySet<BlockId> => {
     const folder = folderOf(asked.session);
 
@@ -343,6 +354,24 @@ const createXdgSessionRepository = (
         writeState({
           folder: join(sessions, saved.session),
           saved,
+        });
+      });
+    },
+    recordStarted: (session: SessionId): void => {
+      const folder = folderOf(session);
+
+      if (folder === undefined) {
+        return;
+      }
+
+      writeOrDrop(() => {
+        mkdirSync(folder, {
+          mode: PRIVATE_FOLDER_MODE,
+          recursive: true,
+        });
+        writeWhole({
+          path: join(folder, SessionMark.Started),
+          text: '\n',
         });
       });
     },
